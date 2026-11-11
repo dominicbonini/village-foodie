@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} слот перегружен} few {{count} слота перегружены} many {{count} слотов перегружены} other {{count} слота перегружены}} — проверьте",
+  "batchOver": "{cat}: партия превышена — {count} на {slot} ({per} в партии)",
+  "eventStartOver": "Перегрузка в начале мероприятия — {n, plural, one {{count} позиция} few {{count} позиции} many {{count} позиций} other {{count} позиции}} на {slot}",
+  "kitchenOver": "Кухня перегружена — в работе {n, plural, one {{count} позиция} few {{count} позиции} many {{count} позиций} other {{count} позиции}} на {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} позиция} few {{count} позиции} many {{count} позиций} other {{count} позиции}}",
+  "placedAnyway": "Оформлены несмотря на перегрузку: {list}",
+  "placedItem": "#{id} на {slot}",
+  "orphans": "{times}: перегрузка — не найдено заказов, к которым её можно отнести",
+  "dismiss": "Скрыть",
+  "kitchenCapacity": "Мощность кухни",
+  "overCapacity": "Перегрузка",
+  "wakeUnsupported": "Это устройство не может держать экран включённым.",
+  "wakeInsecure": "С этого адреса нельзя держать экран включённым.",
+  "wakeRetry": "Не гасить экран — нажмите, чтобы попробовать ещё раз",
+  "wakeAcquire": "Не гасить экран",
+  "degraded": {
+    "serverError": "Сервер не смог загрузить заказы{hasStatus, select, yes { (ошибка {status})} other {}}. Показаны заказы на {at}. Новые заказы могут не отображаться.",
+    "unreachable": "Нет связи с сервером. Показаны заказы на {at}. Новые заказы могут не отображаться."
+  }
+}

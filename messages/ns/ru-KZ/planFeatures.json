@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Размещение на карте"
+    },
+    "web_dashboard": {
+      "name": "Универсальная веб-панель заказов"
+    },
+    "qr_code": {
+      "name": "QR-код"
+    },
+    "schedule_import": {
+      "name": "Автоматический импорт расписания"
+    },
+    "meal_deals_upsells": {
+      "name": "Комбо и допродажи"
+    },
+    "walkup_orders": {
+      "name": "Обработка заказов у окна"
+    },
+    "sold_out_toggle": {
+      "name": "Мгновенная отметка «Нет в наличии»"
+    },
+    "kitchen_app": {
+      "name": "Кухонное приложение для iPhone, iPad и Android"
+    },
+    "offline_protection": {
+      "name": "Защита заказов при потере связи"
+    },
+    "online_payments": {
+      "name": "Онлайн-платежи"
+    },
+    "advance_preordering": {
+      "name": "Предзаказ на будущие даты"
+    },
+    "preorder_deadline": {
+      "name": "Крайний срок предзаказа"
+    },
+    "time_slot_selection": {
+      "name": "Выбор временного слота клиентом"
+    },
+    "kitchen_capacity": {
+      "name": "Управление мощностью кухни"
+    },
+    "stock_countdown": {
+      "name": "Автоматический учёт остатков"
+    },
+    "auto_accept": {
+      "name": "Автоприём онлайн-заказов"
+    },
+    "branded_qr_code": {
+      "name": "Фирменный QR-код"
+    },
+    "private_events": {
+      "name": "Частные мероприятия"
+    },
+    "social_media_posts": {
+      "name": "Посты в соцсетях"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Автоответы в WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Автоответы в Messenger и Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Приём оплаты на телефоне"
+    },
+    "sms_order_alerts": {
+      "name": "SMS-уведомления о заказах"
+    },
+    "multi_device_kitchen": {
+      "name": "Синхронизация кухни на нескольких устройствах"
+    },
+    "multi_user_access": {
+      "name": "Доступ для нескольких пользователей"
+    },
+    "embed_schedule": {
+      "name": "Страница расписания на Вашем сайте"
+    },
+    "event_types": {
+      "name": "Свои типы мероприятий и цены"
+    },
+    "buzzer_tracking": {
+      "name": "Учёт пейджеров"
+    },
+    "documents_reminders": {
+      "name": "Документы и напоминания"
+    },
+    "profit_per_event": {
+      "name": "Прибыль с каждого мероприятия"
+    },
+    "accountant_reports": {
+      "name": "Отчёты для бухгалтера"
+    },
+    "ticket_printing": {
+      "name": "Печать кухонных чеков"
+    },
+    "customer_display": {
+      "name": "Экран для клиентов"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Цифровые карты лояльности со штампами"
+    }
+  },
+  "cardRegionOnline": "стандартные {region}",
+  "cardRegion": {
+    "UKcards": "карты Великобритании",
+    "EEAcards": "карты ЕЭЗ",
+    "UScards": "карты США",
+    "Australiancards": "австралийские карты",
+    "NewZealandcards": "новозеландские карты",
+    "Canadiancards": "канадские карты",
+    "Swisscards": "швейцарские карты",
+    "Braziliancards": "бразильские карты",
+    "Mexicancards": "мексиканские карты",
+    "Japanesecards": "японские карты",
+    "Singaporecards": "сингапурские карты",
+    "HongKongcards": "гонконгские карты",
+    "Malaysiancards": "малайзийские карты",
+    "Thaicards": "тайские карты",
+    "UAEcards": "карты ОАЭ"
+  },
+  "perMonth": {
+    "mo": "{amount}/мес.",
+    "month": "{amount} в месяц"
+  },
+  "priceWord": {
+    "free": "Бесплатно",
+    "freeTrial": "Бесплатный пробный период",
+    "lifetime": "Бессрочно",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Оплата на месте",
+    "unlimited": "Без ограничений",
+    "none": "—",
+    "masked": "Уточняется"
+  },
+  "cell": {
+    "included": "Включено"
+  }
+}

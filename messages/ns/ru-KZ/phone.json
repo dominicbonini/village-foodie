@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {Введите корректный мобильный номер ({name})} other {Введите корректный мобильный номер}}{withExample, select, yes {, например: {example}} other {}}",
+  "invalidPhone": "{withName, select, yes {Введите корректный номер телефона ({name})} other {Введите корректный номер телефона}}{withExample, select, yes {, например: {example}} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {Введите корректный номер телефона ({name})} other {Введите корректный номер телефона}}{withExample, select, yes {, например: {example}} other {}}."
+}

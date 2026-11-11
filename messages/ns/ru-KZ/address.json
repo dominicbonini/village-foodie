@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Адрес",
+    "postcode": "Почтовый индекс",
+    "zip": "ZIP-код",
+    "eircode": "Eircode",
+    "postalCode": "Почтовый индекс",
+    "state": "Штат",
+    "stateTerritory": "Штат или территория",
+    "province": "Провинция",
+    "county": "Графство",
+    "prefecture": "Префектура",
+    "emirate": "Эмират",
+    "region": "Область",
+    "area": "Населённый пункт (село, посёлок или город)",
+    "townOrArea": "Населённый пункт или район",
+    "city": "Город",
+    "suburb": "Район",
+    "townOrCity": "Город или посёлок"
+  },
+  "short": {
+    "area": "Населённый пункт",
+    "townOrArea": "Населённый пункт или район",
+    "city": "Город",
+    "suburb": "Район",
+    "townOrCity": "Город или посёлок"
+  },
+  "inSentence": {
+    "postcode": "почтовый индекс",
+    "zip": "ZIP-код",
+    "eircode": "Eircode",
+    "postalCode": "почтовый индекс"
+  },
+  "withArticle": {
+    "postcode": "почтовый индекс",
+    "zip": "ZIP-код",
+    "eircode": "Eircode",
+    "postalCode": "почтовый индекс"
+  },
+  "tradeLabel": {
+    "area": "Город или посёлок",
+    "townOrArea": "Населённый пункт или район",
+    "city": "Город",
+    "suburb": "Район",
+    "townOrCity": "Город или посёлок"
+  },
+  "basedIn": {
+    "area": "Город или посёлок, где Вы работаете",
+    "townOrArea": "Населённый пункт или район, где Вы работаете",
+    "city": "Город, где Вы работаете",
+    "suburb": "Район, где Вы работаете",
+    "townOrCity": "Город или посёлок, где Вы работаете"
+  },
+  "example": "например, {example}",
+  "customersSee": "Клиенты увидят:",
+  "postalWarning": "Это не похоже на {article} — например, {example}. Сохранить всё равно можно.",
+  "regionChoose": "Выберите…"
+}

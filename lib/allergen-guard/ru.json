@@ -1,0 +1,119 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for RUSSIAN as used in Kazakhstan (ru-KZ): аллерг / алерг (аллергия, аллергик), непереносимость, чувствительность, целиакия, анафилаксия, без <allergen> as stems that survive the cases (без глютена, без лактозы, без молока / молочного, без яиц, без орехов…), безглютеновый / безлактозный, не содержит, может содержать, следы, перекрёстное загрязнение / контаминация, безопасно, подходит для, мне нельзя — plus Latin translit (allergiya, bez glyutena) and English words. ё and й fold to е and и on both sides. Bare без is NOT a stem (без лука is a preference), nor bare след (inside следующий) or содержит ли (a presence question). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "ru",
+  "normalise": "unicode",
+  "stems": [
+    "аллерг",
+    "алерг",
+    "непереносим",
+    "чувствительн",
+    "целиак",
+    "анафила",
+    "эпипен",
+    "адреналин",
+    "без глют",
+    "безглютен",
+    "без лактоз",
+    "безлактоз",
+    "без молок",
+    "без молоч",
+    "без яиц",
+    "без яйц",
+    "без орех",
+    "без арахис",
+    "без сои",
+    "без кунжут",
+    "без рыб",
+    "без морепрод",
+    "без кревет",
+    "без ракообразн",
+    "без сульфит",
+    "не содерж",
+    "может содерж",
+    "могут содерж",
+    "следы",
+    "следов",
+    "перекрестн",
+    "контаминац",
+    "безопасн",
+    "подходит для",
+    "подходят для",
+    "подойдет для",
+    "мне нельзя",
+    "нельзя есть",
+    "не могу есть",
+    "bez glut",
+    "bez glyut",
+    "bez laktoz",
+    "bez moloka",
+    "ne soderzh",
+    "allerg",
+    "alerg",
+    "gluten free",
+    "glutenfree",
+    "lactose",
+    "intoleran",
+    "celiac",
+    "coeliac",
+    "nut free",
+    "epipen",
+    "epi pen"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "глютен",
+        "пшениц",
+        "мука",
+        "муки",
+        "ячмен",
+        "рожь"
+      ],
+      "crustaceans": [
+        "ракообразн",
+        "кревет",
+        "краб",
+        "омар",
+        "морепродукт"
+      ],
+      "eggs": [
+        "яйц",
+        "яиц",
+        "яйко",
+        "майонез"
+      ],
+      "fish": [
+        "рыб"
+      ],
+      "peanuts": [
+        "арахис"
+      ],
+      "soy": [
+        "соя",
+        "сои",
+        "сою",
+        "тофу"
+      ],
+      "milk": [
+        "молок",
+        "молоч",
+        "лактоз",
+        "сыр",
+        "сливк",
+        "сливоч"
+      ],
+      "tree nuts": [
+        "орех",
+        "миндал",
+        "фундук",
+        "кешью",
+        "фисташк"
+      ],
+      "sulphites": [
+        "сульфит",
+        "диоксид серы"
+      ]
+    }
+  }
+}

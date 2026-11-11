@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Время самовывоза",
+    "takes_cash": "Вы принимаете наличные?",
+    "offline_protection": "Защита заказов при потере связи",
+    "buzzer_prompt": "Напоминать добавить пейджер"
+  },
+  "typeFollowsVanTitle": "Как в обычных настройках каждого фургона",
+  "sameSettingsAllVansLabel": "Одинаковые настройки для всех фургонов",
+  "sameSettingsAllVansHeader": "Все фургоны",
+  "sameSettingsConfirm": "Скопировать настройки фургона 1 на все фургоны? Будут скопированы все настройки фургона 1 — так же, как при выборе «Как у фургона 1» в настройках. Для мощности кухни есть отдельный переключатель.",
+  "eventTypesFooterStandard": "«Стандарт» — Ваша обычная настройка. Если изменить её здесь, она изменится и в настройках.",
+  "eventTypesFooterOneEvent": "Чтобы изменить настройку только для одного мероприятия, откройте панель заказов этого мероприятия.",
+  "eventTypesSubtitle": "Изменения сохраняются сразу.",
+  "matchStandardLabel": "Как в «Стандарте»",
+  "matchStandardConfirm": "Вернуть все настройки этого типа к «Стандарту»? Все изменения, сделанные здесь, будут сброшены.",
+  "priceLabels": {
+    "price_change_on": "Изменить цены",
+    "price_mode": "Изменение цены",
+    "price_amount": "Сумма",
+    "price_rounding": "Округление",
+    "item_prices": "Цены позиций"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Указать каждую цену вручную"
+  },
+  "priceRounding": {
+    "none": "Без округления",
+    "nearest_1": "До ближайшего {symbol}1",
+    "up_1": "Всегда округлять вверх"
+  },
+  "pricesStandardCell": "Цены из Вашего меню",
+  "pricesTruckWideTitle": "Ваши цены одинаковы для всех фургонов",
+  "pricesMenuCell": "Меню",
+  "pricesTypeOffCell": "Цены меню",
+  "itemPricesShow": "Показать цены",
+  "itemPricesHide": "Скрыть цены",
+  "priceItemsHeading": "Укажите цену каждой позиции",
+  "priceItemsOpen": "Посмотреть или изменить цены позиций ›",
+  "priceItemsClose": "Скрыть цены позиций ⌃",
+  "ownPriceCount": "{n, plural, one {У {count} позиции своя цена} few {У {count} позиций своя цена} many {У {count} позиций своя цена} other {У {count} позиции своя цена}}",
+  "priceTypeHint": "Нажмите на цену, чтобы ввести свою.",
+  "pricesLiveNotice": "Это мероприятие идёт сейчас. Новые заказы оформляются по новым ценам. Уже оформленные заказы сохраняют свои цены.",
+  "placeTypeHelper": "При выборе этого места в «Добавить мероприятие» выбирается этот тип.",
+  "postPictureStandardNote": "Посты о мероприятиях здесь используют Ваш стандартный дизайн.",
+  "eventItemsCardDescription": "Цены, лимиты позиций и наличие только для этого мероприятия. Изменения вступают в силу сразу.",
+  "eventPriceColumnLabel": "Цена",
+  "eventPriceOwnNote": "{hasType, select, yes {{type}: {price} · это мероприятие} other {меню: {price} · это мероприятие}}",
+  "eventPriceEdit": "✎ Изменить цены",
+  "eventPriceCancel": "Отмена",
+  "eventPriceSave": "Сохранить цены",
+  "eventPriceEditNote": "Цены меняются только для этого мероприятия. Лимиты позиций и наличие заблокированы, пока Вы не сохраните.",
+  "eventPriceLiveNote": "Идёт: новые заказы — по новым ценам.",
+  "offlineWhenOfflineLabel": "При потере связи"
+}

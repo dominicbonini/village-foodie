@@ -1,0 +1,17 @@
+{
+  "back": "← Назад",
+  "title": "Применить комбо",
+  "save": "Экономия {amount}",
+  "selectItems": "Выберите позицию для каждого места в комбо",
+  "choose": "Выберите: {category}…",
+  "inYourBasket": "── В Вашей корзине ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (в корзине){state, select, used { — уже в комбо} taken { — выбрано в другом месте} other {}}",
+  "addNew": "── Добавить новое ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Обязательно · выберите одно} required {Обязательно} other {Выберите одно}}{unmet, select, yes { (обязательно)} other {}}",
+  "notePlaceholder": "Добавьте комментарий, например, без лука (необязательно)",
+  "backButton": "Назад",
+  "cancel": "Отмена",
+  "chooseRequired": "Выберите обязательные варианты",
+  "apply": "Применить комбо · {amount}"
+}

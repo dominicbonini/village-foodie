@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} входят в тариф {plan}.} other {{feature} входит в тариф {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} не входят в Ваш тариф.} other {{feature} не входит в Ваш тариф.}}",
+  "switchedOff": "{many, select, yes {Для Вашего фудтрака отключены: {feature}.} other {Для Вашего фудтрака отключено: {feature}.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Сменить тариф →",
+  "features": {
+    "discovery_map": {
+      "name": "Размещение на карте",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Веб-панель заказов",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Кухонное приложение",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR-меню",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Комбо-наборы",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Допродажи",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Заказы у окна",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Приём заказов с оплатой в фудтраке",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Отметка «Нет в наличии»",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Учёт остатков",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Защита заказов при потере связи",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Онлайн-платежи",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Предзаказ на будущие даты",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Временные слоты для клиентов",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Управление мощностью кухни",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Автоприём заказов",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Автоответы в Messenger и Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Фирменные QR-коды",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Расширенная отчётность",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Печать кухонных чеков",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Синхронизация кухни на нескольких устройствах",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Экран повара",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Автоответы в WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Расписание на Вашем сайте",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Посты в соцсетях",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Свои типы мероприятий",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Частные мероприятия",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Документы",
+      "many": "yes"
+    }
+  }
+}

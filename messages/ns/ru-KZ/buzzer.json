@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Пейджер <b>{number}</b> сейчас у <b>заказа №{holderId}</b>{hasName, select, yes { ({name})} other {}}. Передать его <b>{hasTarget, select, yes {заказу №{targetId}} other {этому заказу}}</b>?",
+  "cancel": "Отмена",
+  "take": "Забрать пейджер {number}",
+  "titleBlocking": "Пейджер для заказа №{id}?",
+  "title": "Выберите пейджер",
+  "subtitle": "{hasTarget, select, yes {Заказ №{id}} other {Этот заказ}}{hasCurrent, select, yes { · сейчас пейджер {current}} other {}}",
+  "allTaken": "{n, plural, one {Все пейджеры заняты ({count}). Нажмите на пейджер, чтобы забрать его у другого заказа.} few {Все {count} пейджера заняты. Нажмите на любой, чтобы забрать его у другого заказа.} many {Все {count} пейджеров заняты. Нажмите на любой, чтобы забрать его у другого заказа.} other {Все {count} пейджера заняты. Нажмите на любой, чтобы забрать его у другого заказа.}}",
+  "thisOrder": "Этот заказ",
+  "noBuzzer": "Без пейджера",
+  "done": "Готово",
+  "lostTitle": "У заказа №{id} нет пейджера",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}пока Вы были не в сети, другой заказ занял тот же пейджер. Выдайте клиенту другой.",
+  "dismiss": "Скрыть",
+  "assign": "Выдать"
+}

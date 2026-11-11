@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Закуски",
+    "mains": "Основные блюда",
+    "burgers": "Бургеры",
+    "pizza": "Пицца",
+    "wrapsSandwiches": "Роллы и сэндвичи",
+    "sides": "Гарниры",
+    "dipsSauces": "Соусы и дипы",
+    "desserts": "Десерты",
+    "drinks": "Напитки",
+    "kidsMenu": "Детское меню",
+    "specials": "Блюда дня",
+    "other": "Другое"
+  },
+  "demoEventName": "Демо-мероприятие",
+  "firstVanName": "Фургон 1",
+  "demoCategories": {
+    "pizza": "Пицца",
+    "burgers": "Бургеры",
+    "mains": "Основные блюда",
+    "sides": "Гарниры",
+    "drinks": "Напитки"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Фудтрак с пиццей",
+      "items": {
+        "margherita": "Маргарита",
+        "pepperoni": "Пепперони",
+        "ndujaHoney": "Ндуя с мёдом",
+        "fourCheese": "Четыре сыра",
+        "gardenVeg": "Овощная",
+        "garlicBread": "Чесночный хлеб",
+        "rocketParmesan": "Руккола с пармезаном",
+        "olives": "Оливки",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Кола"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Фудтрак с бургерами",
+      "items": {
+        "classicCheeseburger": "Классический чизбургер",
+        "doubleBacon": "Двойной с беконом",
+        "buttermilkChicken": "Курица в пахте",
+        "halloumiStack": "Бургер с халлуми",
+        "smashBurger": "Смэш-бургер",
+        "skinOnFries": "Картофель фри в кожуре",
+        "loadedCheeseFries": "Картофель фри с сыром",
+        "onionRings": "Луковые кольца",
+        "craftLemonade": "Домашний лимонад",
+        "coke": "Кола"
+      }
+    },
+    "curries": {
+      "label": "🍛 Фудтрак с карри",
+      "items": {
+        "chickenTikkaMasala": "Курица тикка масала",
+        "lambRoganJosh": "Баранина роган-джош",
+        "chanaMasala": "Чана масала",
+        "butterChicken": "Баттер чикен",
+        "saagPaneer": "Саг панир",
+        "pilauRice": "Рис пилау",
+        "garlicNaan": "Чесночный наан",
+        "onionBhaji": "Луковые бхаджи",
+        "mangoLassi": "Манго-ласси",
+        "coke": "Кола"
+      }
+    }
+  }
+}

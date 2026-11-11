@@ -1,0 +1,17 @@
+{
+  "features": "Функции",
+  "pricing": "Цены",
+  "faq": "Вопросы и ответы",
+  "privacy": "Конфиденциальность",
+  "terms": "Условия",
+  "contact": "Контакты",
+  "about": "О нас",
+  "copyright": "© {year} HatchGrab",
+  "credit": "От создателей <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Скачать HatchGrab в App Store",
+    "appStoreAlt": "Загрузите в App Store",
+    "googlePlayLink": "Скачать HatchGrab в Google Play",
+    "googlePlayAlt": "Доступно в Google Play"
+  }
+}

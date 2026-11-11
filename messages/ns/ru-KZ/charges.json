@@ -1,0 +1,13 @@
+{
+  "subtotal": "Подытог",
+  "taxFallback": "Налог",
+  "taxIncluded": "В т. ч. {label}",
+  "serviceFeeCustomer": "Сервисный сбор за онлайн-заказ",
+  "serviceFee": "Сервисный сбор",
+  "cardFee": "Комиссия за карту",
+  "tip": "Чаевые",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Налоги, сборы и чаевые} tax_tip {Налоги и чаевые} fees_tip {Сборы и чаевые} fees {Сборы} other {Налоги и сборы}}"
+}

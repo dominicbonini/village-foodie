@@ -31,6 +31,9 @@ const LPROJ = {
   'hr-HR': ['hr'], 'sl-SI': ['sl'], 'fi-FI': ['fi'], 'et-EE': ['et'], 'lv-LV': ['lv'], 'lt-LT': ['lt'], 'el-GR': ['el'], 'bg-BG': ['bg'],
   'ms-MY': ['ms'], 'ja-JP': ['ja'], 'zh-HK': ['zh-HK'], 'zh-TW': ['zh-Hant'], 'th-TH': ['th'], 'ar-AE': ['ar'],
   'tr-TR': ['tr'], 'ko-KR': ['ko'], 'id-ID': ['id'], 'vi-VN': ['vi'], 'he-IL': ['he'], 'is-IS': ['is'], 'sr-RS': ['sr-Latn'],
+  // languages-world-2 (11 November 2026): each new base's plain language folder, added as the language is merged (ru = Kazakhstan's
+  // Russian, the only Russian file; uz and bs are Latin, their CLDR default script).
+  'ru-KZ': ['ru'],
 }
 const PLIST_KEYS = { NSCameraUsageDescription: 'cameraUsage', NSBluetoothAlwaysUsageDescription: 'bluetoothUsage', NSLocalNetworkUsageDescription: 'localNetworkUsage', NSFaceIDUsageDescription: 'faceIdUsage' }
 const SWIFT_KEYS = ['offlineTitle', 'offlineDetail', 'retry']

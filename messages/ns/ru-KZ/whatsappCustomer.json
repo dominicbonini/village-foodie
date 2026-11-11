@@ -1,0 +1,15 @@
+{
+  "greeting": "Здравствуйте 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Полное меню и информация об аллергенах — здесь: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Наше полное меню — здесь: {url} — {truck} {emoji}",
+  "otherCategory": "Другое",
+  "categoryFrom": "{category} от {price}",
+  "listTwo": "{first} и {second}",
+  "listMany": "{init} и {last}",
+  "menuSummary": "{opener}У нас есть: {summary}. Полное меню и заказ заранее — здесь: {url} — {truck} {emoji}",
+  "allergenCaveat": "Пожалуйста, сверьтесь с полным меню по аллергенам — это автоматический ответ.",
+  "specificFallback": "{opener}Наше актуальное расписание — здесь: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Спасибо за все Ваши сообщения! Здесь я могу отвечать только несколько раз в день.\n\nДля заказа: {link}",
+  "capContact": "Связаться с нами напрямую: {number}"
+}

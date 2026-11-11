@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Даты недели",
+    "dayList": "Список дней",
+    "place": "Место",
+    "venue": "Площадка",
+    "area": "Район",
+    "dayDate": "День и дата",
+    "times": "Время",
+    "orderLink": "Ссылка для заказа",
+    "locationTag": "Геометка"
+  },
+  "weekHeader": "{truck} — где мы на этой неделе:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ОТМЕНЕНО, извините",
+  "noDates": "На этой неделе выездов нет — загляните позже.",
+  "orderAhead": "Закажите заранее: {url}",
+  "orderAheadTagged": "Закажите заранее: {url} {tag}",
+  "eventLine": "{truck}: {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck}: {where}, {when}.",
+  "cancelledSorry": "Извините — мы не сможем приехать: {where}, {when}.",
+  "cancelledApology": "Приносим извинения всем, кто собирался прийти. Скоро вернёмся.",
+  "when": {
+    "today": "сегодня",
+    "tonight": "сегодня вечером",
+    "tomorrow": "завтра",
+    "dated": "{date}"
+  }
+}
