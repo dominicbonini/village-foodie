@@ -271,6 +271,7 @@
         "_plans-catalog-fixture.cjs",
         "_lp-billing-1.cjs",
         "_lp-pricing-copy-1.cjs",
+        "_lp-pricing-copy-2.cjs",
         "_lp-seo-fixes.cjs",
         "_lp-pricing-tidy.cjs",
         "_lp-compare-tidy.cjs",

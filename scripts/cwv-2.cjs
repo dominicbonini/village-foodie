@@ -199,7 +199,14 @@ const demoChanged = MP.changedSince(BEFORE, DEMO)
 t('🔴 the demo funnel is untouched: its routes (/api/demo, the build request, the walkthrough, signup), /try, /demo/<ref> and lib/demo-events.ts (public.demo_events) — and the pop-up still posts to /api/demo and /api/demo/build-request',
   demoChanged.length === 0 && DB.includes("fetch('/api/demo', { method: 'POST', body: fd, signal: ac.signal })") && DB.includes("fetch('/api/demo/build-request', {"), demoChanged)
 const leaves = (o, p = '') => (o && typeof o === 'object' ? Object.entries(o).flatMap(([k, v]) => leaves(v, p ? `${p}.${k}` : k)) : [[p, o]])
-const el = Object.fromEntries(leaves(JSON.parse(read('messages/el-GR.json')))), el0 = Object.fromEntries(leaves(JSON.parse(git('show', `${BEFORE}:messages/el-GR.json`))))
+// ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the two language checks below compare cwv-2's OWN commits — the parent of its first
+// commit after BEFORE against its last — instead of BEFORE against the working tree. Every later brief that touched every language file
+// (languages-world-1's new keys, billing-2/3, pricing-copy-1/2, …) otherwise had to be named here one by one (AP1, IOS, DC2, JP_NAV
+// below are those names); anchored on cwv-2's commits, the checks still prove exactly what cwv-2 changed and nothing later can move them.
+const CWV2 = git('log', '--format=%H', '--reverse', `${BEFORE}..HEAD`, '--grep=^cwv-2:').trim().split('\n').filter(Boolean)
+const CWV2_FROM = CWV2.length ? git('rev-parse', `${CWV2[0]}~1`).trim() : BEFORE, CWV2_TO = CWV2.length ? CWV2[CWV2.length - 1] : 'HEAD'
+t('cwv-2\'s commits are found after its base (the anchor the language checks use)', CWV2.length >= 2, CWV2)
+const el = Object.fromEntries(leaves(JSON.parse(git('show', `${CWV2_TO}:messages/el-GR.json`)))), el0 = Object.fromEntries(leaves(JSON.parse(git('show', `${CWV2_FROM}:messages/el-GR.json`))))
 // ⚠️ RE-PINNED (compare-autopublish-1, 7 November 2026): that brief's own keys — the contact form's "comparison" topic, the "Not listed"
 // methodology sentence (no help centre), the comparison page's methodology and admin words — are left out of both checks below.
 const AP1_KEY = k => k === 'contactPage.form.topics.comparison' || k === 'comparisonSuits.method.notListed' || k.startsWith('comparison.')
@@ -215,7 +222,8 @@ const nsAp1 = f => /^messages\/ns\/[a-z]{2}-[A-Z]{2}\/(contactPage|comparisonSui
 // opportunity on a phone; scripts/jp-nav-1.cjs). That key passes only when its value is the old one with exactly that space added.
 const JP_NAV = (k, a, b) => (k === 'landingNav.ctaShort' || k === 'ctaShort') && typeof b === 'string' && a === b.replace('メニューを', 'メニューを\u200B')
 const onlyAp1 = f => { try { const a = Object.fromEntries(leaves(JSON.parse(read(f)))), b = Object.fromEntries(leaves(JSON.parse(git('show', `${BEFORE}:${f}`)))); return Object.keys({ ...a, ...b }).filter(k => a[k] !== b[k]).every(k => AP1_KEY(k) || IOS_KEY(k) || DC2_KEY(k) || (DC2_NS_KEY(f, k) && b[k] === undefined) || (/\/nativeShell\.json$/.test(f) && k.startsWith('binary.') && b[k] === undefined) || (/ja-JP/.test(f) && JP_NAV(k, a[k], b[k]))) } catch { return false } }
-const otherLangFiles = git('diff', '--name-only', BEFORE, '--', 'messages/*.json').trim().split('\n').filter(Boolean)
+// ⚠️ RE-PINNED (pricing-copy-2): the files cwv-2's own commits changed (not the working tree's difference from BEFORE).
+const otherLangFiles = [...new Set(CWV2.flatMap(c => git('show', '--name-only', '--format=', c, '--', 'messages/').trim().split('\n')))].filter(f => /\.json$/.test(f))
   .filter(f => !(f === 'messages/el-GR.json' || f === 'messages/ns/el-GR/landing.json' || nsAp1(f) || onlyAp1(f)))
 t('no other language file changed (the generated split file messages/ns/el-GR/landing.json follows el-GR)', otherLangFiles.length === 0, otherLangFiles)
 

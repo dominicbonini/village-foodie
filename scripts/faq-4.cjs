@@ -198,7 +198,10 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
     dump(`features:${seg}`, noFaqLink(r.html))
     // ⚠️ RE-PINNED (features-list-1, 4 November 2026): the table's three new rows are put back to the old "Advanced reporting" row
     // (PRECISE, scripts/_lp-features-list-1.cjs featuresRowsBack) before the comparison; every other byte is still compared.
-    const asBefore = FL1.LANDED ? FL1.featuresRowsBack(noFaqLink(SCX(r.html)), seg === 'uk' ? 'en-GB' : 'de-DE') : noFaqLink(SCX(r.html))
+    // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the plan table's fee row put back first (scripts/_lp-pricing-copy-2.cjs asBefore —
+    // "…on online orders*" was "…on online card orders*"; scripts/pricing-copy-2.cjs proves it).
+    const pc2 = require('./_lp-pricing-copy-2.cjs').asBefore(r.html, seg === 'uk' ? 'en-GB' : 'de-DE')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+    const asBefore = FL1.LANDED ? FL1.featuresRowsBack(noFaqLink(SCX(pc2)), seg === 'uk' ? 'en-GB' : 'de-DE') : noFaqLink(SCX(pc2))
     if (want) t(`/${seg}/features: byte-identical to a97c2a58 through the shared frame (MarketingFrame), apart from the footer FAQ link${FL1.LANDED ? ' and features-list-1\'s rows' : ''}`, sha(asBefore) === want[`features:${seg}`]?.sha256, { now: sha(asBefore), head: want[`features:${seg}`] })
   }
   t('/features and /faq share one frame (components/landing/MarketingFrame.tsx), not a copy', /<MarketingFrame visitor=\{visitor\}>/.test(read('app/(public)/(site)/features/page.tsx')) && /<MarketingFrame visitor=\{visitor\}>/.test(read('app/(public)/(site)/faq/page.tsx')) && !/Archivo\(/.test(read('app/(public)/(site)/features/page.tsx')) && /<FaqDetails items=\{sec\.items\} className="faq-q" \/>/.test(read('app/(public)/(site)/faq/page.tsx')))

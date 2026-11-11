@@ -37,5 +37,15 @@ module.exports = {
   'zh-HK': ['信用卡機', '讀卡器', '刷卡機', '收銀機', '收銀台', '付款終端', '支付終端', '終端機', 'pos', '銷售點'],
   'th-TH': ['เครื่องรูดบัตร', 'เครื่องอ่านบัตร', 'เครื่องรับบัตร', 'เครื่อง edc', 'เครื่องคิดเงิน', 'แคชเชียร์', 'ลิ้นชักเก็บเงิน', 'เครื่องรับชำระเงิน', 'เทอร์มินัลชำระเงิน', 'ระบบ pos', 'pos', 'จุดขายหน้าร้าน'],
   'ar-AE': ['جهاز الدفع', 'قارئ البطاقات', 'جهاز البطاقات', 'ماكينة البطاقات', 'آلة تسجيل النقد', 'ماكينة الكاشير', 'الكاشير', 'صندوق النقد', 'محطة الدفع', 'نقاط البيع', 'نقطة البيع', 'pos'],
+  // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): languages-world-1's eight new bases, which had no list (so compare-suits-1 checked
+  // them against nothing). Each language's words for card readers / card machines / tills / payment terminals / point of sale.
+  'id-ID': ['pembaca kartu', 'mesin kartu', 'mesin edc', 'edc', 'mesin kasir', 'kasir', 'terminal pembayaran', 'titik penjualan', 'pos'],
+  'vi-VN': ['máy đọc thẻ', 'máy quẹt thẻ', 'máy pos', 'máy tính tiền', 'quầy thu ngân', 'thu ngân', 'thiết bị thanh toán', 'điểm bán hàng', 'pos'],
+  'is-IS': ['kortalesar', 'kortaposi', 'greiðsluposi', 'posi', 'posa', 'afgreiðslukass', 'búðarkass', 'sjóðsvél', 'greiðslustöð', 'sölustaðakerfi', 'pos'],
+  'sr-RS': ['čitač kartica', 'kartični terminal', 'kasa', 'registar kasa', 'fiskalna kasa', 'terminal za plaćanje', 'pos terminal', 'pos uređaj', 'prodajno mesto', 'pos'],
+  'tr-TR': ['kart okuyucu', 'kart makinesi', 'pos cihaz', 'pos makinesi', 'yazar kasa', 'ödeme terminali', 'satış noktası', 'kasa', 'pos'],
+  'ko-KR': ['카드 리더기', '카드 단말기', '카드단말기', '결제 단말기', '단말기', '포스기', '포스', '금전 등록기', '계산대', '판매 시점', 'pos'],
+  'zh-TW': ['刷卡機', '讀卡機', '信用卡機', '收銀機', '收銀台', '收銀系統', '付款終端', '支付終端', '終端機', '銷售點', 'pos'],
+  'he-IL': ['קורא כרטיסים', 'מסופון', 'מסוף אשראי', 'מסוף תשלום', 'קופה רושמת', 'קופה', 'מערכת קופה', 'נקודת מכירה', 'pos'],
 }
 module.exports.NO_SPACES = NO_SPACES
