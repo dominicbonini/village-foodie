@@ -1222,9 +1222,7 @@
  "posterWords.placeSample.nameTown": "Bar La Plaza, San Telmo",
  "posterWords.placeSample.nameTownBelow": "Bar La Plaza\nSan Telmo",
  "pricing.banner.body": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. When your trial ends you move to the <plan>{fallback}</plan> plan{fallbackFree, select, yes { (no monthly fee)} other {}} unless you choose another plan. No card to start, no lock-in, cancel any time.",
- "pricing.banner.bodyCard": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to the <plan>{fallback}</plan> plan{fallbackFree, select, yes { (no monthly fee)} other {}} unless you choose another plan. No card to start, no lock-in, cancel any time.",
  "pricing.banner.bodyOnly": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. When your trial ends, the <plan>{fallback}</plan> plan will cost {price} a month. Before that date we’ll get in touch with you to set up payment. No card to start, no lock-in, cancel any time.",
- "pricing.banner.bodyOnlyCard": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. Prefer to take payment up front? Add online card payments any time. When your trial ends, the <plan>{fallback}</plan> plan will cost {price} a month. Before that date we’ll get in touch with you to set up payment. No card to start, no lock-in, cancel any time.",
  "pricing.base.preorders": "Pre-orders and pickup time",
  "pricing.card.tryFree": "Try free",
  "pricing.fee.noFee": "<b>No HatchGrab commission</b> on online orders, however busy you get. A fixed, predictable monthly cost.",
@@ -1368,5 +1366,7 @@
  "whereYouTrade.countryGuessed": "We guessed this from where you are. Change it if it’s wrong.",
  "whereYouTrade.saveFailed": "Couldn’t save settings — please try again.",
  "whereYouTrade.settingsHeading": "Where you trade",
- "whereYouTrade.townQuestion": "Town or city you’re based in"
+ "whereYouTrade.townQuestion": "Town or city you’re based in",
+ "pricing.banner.bodyCard": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to the <plan>{fallback}</plan> plan{fallbackFree, select, yes { (no monthly fee)} other {}} unless you choose another plan. No card to start, no lock-in, cancel any time.",
+ "pricing.banner.bodyOnlyCard": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. Prefer to take payment up front? Add online card payments any time. When your trial ends, the <plan>{fallback}</plan> plan will cost {price} a month. Before that date we’ll get in touch with you to set up payment. No card to start, no lock-in, cancel any time."
 }
