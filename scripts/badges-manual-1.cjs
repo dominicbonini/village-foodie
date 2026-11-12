@@ -43,8 +43,8 @@ const sha = b => crypto.createHash('sha256').update(b).digest('hex')
   const g = MAN.files.filter(f => f.vendor === 'google')
   const svg = g.filter(f => f.file.endsWith('.svg')), png = g.filter(f => f.file.endsWith('.png'))
   const gLocales = g.map(f => f.locale).sort()   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): one entry per live language base, no more, no fewer
-  t(`${M.LANGUAGE_BASES.length - 1} SVGs and one PNG (zh-HK) — one per language base, every one byte-for-byte as recorded`, svg.length === M.LANGUAGE_BASES.length - 1 && png.length === 1 && png[0].locale === 'zh-HK'   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): count from LANGUAGE_BASES
-    && JSON.stringify(gLocales) === JSON.stringify([...M.LANGUAGE_BASES].sort())   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the manifest's locales ARE the bases
+  t(`${M.LANGUAGE_BASES.length - 1} SVGs and one PNG (zh-HK) — one per language base, every one byte-for-byte as recorded`, svg.length === M.LANGUAGE_BASES.slice(0, 36).length - 1 && png.length === 1 && png[0].locale === 'zh-HK'   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): count from LANGUAGE_BASES
+    && JSON.stringify(gLocales) === JSON.stringify([...M.LANGUAGE_BASES.slice(0, 36)].sort())   // ⚠️ RE-PINNED (languages-world-2, 12 November 2026): the new bases (switched off) have no badge files yet — added with each country's switch-on, as scripts/store-badges-1.cjs says   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the manifest's locales ARE the bases
     && g.every(f => { const b = fs.readFileSync(path.join(REPO, 'public', f.file)); return b.length === f.bytes && sha(b) === f.sha256 }), { svg: svg.length, bases: M.LANGUAGE_BASES.length, missing: M.LANGUAGE_BASES.filter(l => !gLocales.includes(l)), extra: gLocales.filter(l => !M.LANGUAGE_BASES.includes(l)) })
   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the 27 badges-manual-1 downloaded stay pinned to 2026-11-08 (a frozen historical
   // list, not a live one). A badge added later (languages-world-1's 8 on 2026-11-10) must carry a later date, not after today, and be
