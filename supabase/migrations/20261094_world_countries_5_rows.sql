@@ -1532,7 +1532,7 @@ insert into public.plan_prices (plan_key, country_code, monthly_minor, included_
   ('unlimited', 'ZM', 34900, null, 0, 34900, true, true),   -- the trial-end plan: a finished trial drops to Unlimited
   ('payg', 'ZW', 0, 0, 99, 0, false, false),   -- not offered: no fee can be taken from a payment here
   ('pro', 'ZW', 1900, 250000, 99, 1900, false, false),   -- not offered (as BR/MX/TH): kept with its research price
-  ('unlimited', 'ZW', 4400, null, 0, 4400, true, true)   -- the trial-end plan: a finished trial drops to Unlimited;
+  ('unlimited', 'ZW', 4400, null, 0, 4400, true, true);   -- the trial-end plan: a finished trial drops to Unlimited
 
 insert into public.country_billing (country_code, payment_model, post_pay_surcharge_bps, post_pay_surcharge_fixed_minor, min_charge_minor, updated_by) values
   ('AL', 'billed_at_truck', 0, 0, 55000, 'world-countries-5'),
