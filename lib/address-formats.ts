@@ -30,6 +30,11 @@ export type AddressFormatKey = 'gb' | 'us' | 'ie' | 'au' | 'nz' | 'ca' | 'fr' | 
 export type EuropeKey = 'at' | 'be' | 'bg' | 'hr' | 'cy' | 'cz' | 'dk' | 'ee' | 'fi' | 'de' | 'gi' | 'gr' | 'hu' | 'it' | 'lv' | 'li' | 'lt' | 'lu' | 'mt' | 'nl' | 'no' | 'pl' | 'pt' | 'ro' | 'sk' | 'si' | 'es' | 'se' | 'ch'
 /** world-countries-1 (31 October 2026): Brazil, Mexico, Japan, Singapore, Hong Kong, Malaysia, Thailand and the UAE. */
 export type WorldKey = 'br' | 'mx' | 'jp' | 'sg' | 'hk' | 'my' | 'th' | 'ae'
+  // world-countries-5 (12 November 2026): ONE generic format shared by the new countries that have no format of their own (French
+  // overseas departments use 'fr', Puerto Rico 'us', the Crown Dependencies 'gb', Åland 'fi'). Town or city, an optional postal
+  // code checked loosely (warn-only), no region list; the AI reads the local language or English. A country gets its own format
+  // (postal pattern, regions, examples) when it is researched — the row's address_format then changes.
+  | 'intl'
 /** The two values `country_settings.address_format` held before this stage. Still accepted (see `addressFormatKeyOf`)
  *  so a deploy is safe before the "run after deploy" SQL maps them. */
 export type LegacyAddressStyle = 'postcode' | 'zip_state'
@@ -1170,6 +1175,13 @@ const TAX_TH: RegionSalesTax = { label: 'VAT', milli: 0 }
 const TAX_AE: RegionSalesTax = { label: 'VAT', milli: 0 }
 
 const WORLD_ROWS: readonly WorldRow[] = [
+  {
+    key: 'intl', country: 'the country', adminLabel: 'International — town or city, optional postal code (world-countries-5, shared)',
+    postal: { pattern: '^[A-Z0-9][A-Z0-9 -]{1,9}$', normaliser: 'none', example: '10000', label: 'postalCode', local: 'postal code', desc: 'letters, digits, spaces or a hyphen, as written locally', identifiesPremises: false },
+    townParts: ['{locality}', '{postalCode}'], localityLabel: 'townOrCity',
+    examples: { venue: 'Central Market', street: 'Main Street', locality: 'City Centre', paste: 'Central Market, City Centre' },
+    language: 'the local language or English', timeHint: '"6pm", "18:00", "18h"',
+  },
   {
     key: 'br', country: 'Brazil', adminLabel: 'Brazil — cidade, UF, CEP',
     postal: { pattern: '^\\d{5}-\\d{3}$', normaliser: 'nnnnn_nnn', example: '04094-050', label: 'postalCode', local: 'CEP', desc: '8 digits written "NNNNN-NNN"', identifiesPremises: false },
