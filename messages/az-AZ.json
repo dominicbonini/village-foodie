@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Abunəsiz",
       "subtitle": "Mövsümi və qismən işləyən satıcılar üçün",
-      "description": "Aylıq ödəniş yoxdur. Yalnız müştəri onlayn kartla ödəyəndə ödəyirsiniz."
+      "description": "Aylıq ödəniş yoxdur. Yalnız onlayn sifarişlərdən 0,99% ödəyirsiniz."
     },
     "pro": {
       "subtitle": "Müntəzəm əvvəlcədən sifariş qəbul edən food truck-lar üçün",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Hər ay daxil olan onlayn sifarişlər",
-      "fee": "Onlayn kart sifarişlərində HatchGrab haqqı*",
+      "fee": "Onlayn sifarişlərdə HatchGrab haqqı*",
       "walkUp": "Yerində sifarişlər"
     },
     "cell": {

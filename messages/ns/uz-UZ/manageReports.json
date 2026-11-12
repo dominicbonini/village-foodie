@@ -110,7 +110,7 @@
     "online": "Onlayn",
     "walkUp": "Oyna oldida",
     "cardOnline": "Onlayn karta",
-    "payAtTruck": "Fudtrakda toʻlash",
+    "payAtTruck": "Olib ketishda toʻlash",
     "cost": "Sotilgan taomlar tannarxi",
     "profit": "Foyda",
     "coverage": "{total, plural, one {# ta sotilgan taomdan {withCost} tasi uchun tannarx belgilangan} other {# ta sotilgan taomdan {withCost} tasi uchun tannarx belgilangan}}",

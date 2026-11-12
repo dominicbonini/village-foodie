@@ -32,7 +32,7 @@ const CARD = { ar: 'البطاقة', bg: 'карта', cs: 'kartou', da: 'kort',
   nl: 'kaart', pl: 'kartą', pt: 'cartão', ro: 'card', sk: 'kartou', sl: 'kartico', sr: 'karticom', sv: 'kort', th: 'บัตร', tr: 'kart', vi: 'thẻ', zh: '信用卡|刷卡',
   // ⚠️ RE-PINNED (pricing-copy-3, 12 November 2026): languages-world-2's new languages. Without their own word a new base fell back to
   // English "card" and its check passed against nothing (the gap compare-suits-1 had for the 8 earlier bases).
-  uk: 'карт', ru: 'карт', kk: 'карта', uz: 'karta', az: 'kart', ka: 'ბარათ' }
+  uk: 'карт', ru: 'карт', kk: 'карта', uz: 'karta', az: 'kart', ka: 'ბარათ', hy: 'քարտ', mn: 'карт' }
 // A base whose language has no word here is a FAILURE, never a silent pass.
 const cardRe = loc => { const w = CARD[loc.slice(0, 2)]; if (!w) throw new Error(`pricing-copy-2: no "card" word for ${loc} — add its language to CARD`); return new RegExp(w) }
 

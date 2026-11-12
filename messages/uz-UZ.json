@@ -4146,7 +4146,7 @@
       "online": "Onlayn",
       "walkUp": "Oyna oldida",
       "cardOnline": "Onlayn karta",
-      "payAtTruck": "Fudtrakda toʻlash",
+      "payAtTruck": "Olib ketishda toʻlash",
       "cost": "Sotilgan taomlar tannarxi",
       "profit": "Foyda",
       "coverage": "{total, plural, one {# ta sotilgan taomdan {withCost} tasi uchun tannarx belgilangan} other {# ta sotilgan taomdan {withCost} tasi uchun tannarx belgilangan}}",
@@ -5999,7 +5999,7 @@
     "payg": {
       "name": "Oylik toʻlovsiz",
       "subtitle": "Mavsumiy va qisman band sotuvchilar uchun",
-      "description": "Oylik toʻlov yoʻq. Faqat mijoz onlayn karta orqali toʻlaganda toʻlaysiz."
+      "description": "Oylik toʻlov yoʻq. Faqat onlayn buyurtmalar uchun 0,99% toʻlaysiz."
     },
     "pro": {
       "subtitle": "Muntazam oldindan buyurtma oladigan fudtraklar uchun",
@@ -6206,7 +6206,7 @@
     },
     "pay": {
       "included": "Har oy kiritilgan onlayn buyurtmalar",
-      "fee": "Onlayn karta buyurtmalari uchun HatchGrab komissiyasi*",
+      "fee": "Onlayn buyurtmalar uchun HatchGrab komissiyasi*",
       "walkUp": "Oyna oldida berilgan buyurtmalar"
     },
     "cell": {
