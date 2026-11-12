@@ -11,6 +11,7 @@
   "pay": {
     "included": "ہر ماہ شامل آن لائن آرڈرز",
     "fee": "آن لائن آرڈرز پر HatchGrab فیس*",
+    "feeNoMark": "آن لائن آرڈرز پر HatchGrab فیس",
     "walkUp": "واک اِن آرڈرز"
   },
   "cell": {

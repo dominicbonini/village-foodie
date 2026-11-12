@@ -2,7 +2,9 @@
   "banner": {
     "title": "{months, plural, one {İlk ayınız tamamilə pulsuzdur — bütün funksiyalar açıqdır.} other {İlk # ayınız tamamilə pulsuzdur — bütün funksiyalar açıqdır.}}",
     "body": "{brand} ilə müştərilər əvvəlcədən sifariş edir və götürərkən ödəyir, buna görə kart prosessoru qoşmadan da onlayn sifariş qəbul edə bilərsiniz. Sınaq müddəti bitəndə başqa plan seçməsəniz, <plan>{fallback}</plan> planına keçirsiniz{fallbackFree, select, yes { (aylıq ödəniş yoxdur)} other {}}. Başlamaq üçün kart lazım deyil, müqavilə yoxdur, istənilən vaxt ləğv edə bilərsiniz.",
-    "bodyOnly": "{brand} ilə müştərilər əvvəlcədən sifariş edir və götürərkən ödəyir, buna görə kart prosessoru qoşmadan da onlayn sifariş qəbul edə bilərsiniz. Sınaq müddəti bitəndə <plan>{fallback}</plan> planının qiyməti ayda {price} olur. Bundan əvvəl ödənişi qurmaq üçün sizinlə əlaqə saxlayacağıq. Başlamaq üçün kart lazım deyil, müqavilə yoxdur, istənilən vaxt ləğv edə bilərsiniz."
+    "bodyCard": "{brand} ilə müştərilər əvvəlcədən sifariş edir və götürərkən ödəyir, buna görə kart prosessoru qoşmadan da onlayn sifariş qəbul edə bilərsiniz. Sınaq müddəti bitəndə başqa plan seçməsəniz, <plan>{fallback}</plan> planına keçirsiniz{fallbackFree, select, yes { (aylıq ödəniş yoxdur)} other {}}. Başlamaq üçün kart lazım deyil, müqavilə yoxdur, istənilən vaxt ləğv edə bilərsiniz.",
+    "bodyOnly": "{brand} ilə müştərilər əvvəlcədən sifariş edir və götürərkən ödəyir, buna görə kart prosessoru qoşmadan da onlayn sifariş qəbul edə bilərsiniz. Sınaq müddəti bitəndə <plan>{fallback}</plan> planının qiyməti ayda {price} olur. Bundan əvvəl ödənişi qurmaq üçün sizinlə əlaqə saxlayacağıq. Başlamaq üçün kart lazım deyil, müqavilə yoxdur, istənilən vaxt ləğv edə bilərsiniz.",
+    "bodyOnlyCard": "{brand} ilə müştərilər əvvəlcədən sifariş edir və götürərkən ödəyir, buna görə kart prosessoru qoşmadan da onlayn sifariş qəbul edə bilərsiniz. Sınaq müddəti bitəndə <plan>{fallback}</plan> planının qiyməti ayda {price} olur. Bundan əvvəl ödənişi qurmaq üçün sizinlə əlaqə saxlayacağıq. Başlamaq üçün kart lazım deyil, müqavilə yoxdur, istənilən vaxt ləğv edə bilərsiniz."
   },
   "card": {
     "perTruckMonth": "hər food truck / ay",
@@ -14,7 +16,9 @@
   },
   "fee": {
     "feeOnly": "Yalnız onlayn sifarişlərdən <b>{fee}</b>. Yerində sifarişlər həmişə pulsuzdur.",
+    "feeOnlyCard": "Yalnız onlayn sifarişlərdən <b>{fee}*</b>. Yerində sifarişlər həmişə pulsuzdur.",
     "included": "Hər ay onlayn sifarişlərin ilk <b>{included}</b> məbləği daxildir, sonra <b>{fee}*</b>. Yerində sifarişlər həmişə pulsuzdur.",
+    "includedNoMark": "Hər ay onlayn sifarişlərin ilk <b>{included}</b> məbləği daxildir, sonra <b>{fee}</b>. Yerində sifarişlər həmişə pulsuzdur.",
     "noFee": "Nə qədər məşğul olsanız da, onlayn sifarişlərdə <b>HatchGrab haqqı yoxdur</b>. Hər ay eyni, əvvəlcədən bilinən xərc."
   },
   "base": {

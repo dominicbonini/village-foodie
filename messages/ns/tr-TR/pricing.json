@@ -2,7 +2,9 @@
   "banner": {
     "title": "{months, plural, one {İlk ayınız tamamen ücretsiz — tüm özellikler açık.} other {İlk # ayınız tamamen ücretsiz — tüm özellikler açık.}}",
     "body": "{brand} ile müşteriler önceden sipariş verir ve teslim alırken öder; böylece hiçbir kart ödeme altyapısı bağlamadan online sipariş alabilirsiniz. Deneme süreniz bitince, başka bir paket seçmezseniz <plan>{fallback}</plan> paketine geçersiniz{fallbackFree, select, yes { — aylık ücreti yoktur} other {}}. Başlamak için kart gerekmez, sözleşme yok, istediğiniz zaman iptal edin.",
-    "bodyOnly": "{brand} ile müşteriler önceden sipariş verir ve teslim alırken öder; böylece hiçbir kart ödeme altyapısı bağlamadan online sipariş alabilirsiniz. Deneme süreniz bitince <plan>{fallback}</plan> paketinin ücreti aylık {price}. Ödemeyi ayarlamak için o tarihten önce sizinle iletişime geçeceğiz. Başlamak için kart gerekmez, sözleşme yok, istediğiniz zaman iptal edin."
+    "bodyCard": "{brand} ile müşteriler önceden sipariş verir ve teslim alırken öder; böylece hiçbir kart ödeme altyapısı bağlamadan online sipariş alabilirsiniz. Ödemeyi önceden almayı mı tercih edersiniz? Online kartla ödemeyi istediğiniz zaman ekleyin. Deneme süreniz bitince, başka bir paket seçmezseniz <plan>{fallback}</plan> paketine geçersiniz{fallbackFree, select, yes { — aylık ücreti yoktur} other {}}. Başlamak için kart gerekmez, sözleşme yok, istediğiniz zaman iptal edin.",
+    "bodyOnly": "{brand} ile müşteriler önceden sipariş verir ve teslim alırken öder; böylece hiçbir kart ödeme altyapısı bağlamadan online sipariş alabilirsiniz. Deneme süreniz bitince <plan>{fallback}</plan> paketinin ücreti aylık {price}. Ödemeyi ayarlamak için o tarihten önce sizinle iletişime geçeceğiz. Başlamak için kart gerekmez, sözleşme yok, istediğiniz zaman iptal edin.",
+    "bodyOnlyCard": "{brand} ile müşteriler önceden sipariş verir ve teslim alırken öder; böylece hiçbir kart ödeme altyapısı bağlamadan online sipariş alabilirsiniz. Ödemeyi önceden almayı mı tercih edersiniz? Online kartla ödemeyi istediğiniz zaman ekleyin. Deneme süreniz bitince <plan>{fallback}</plan> paketinin ücreti aylık {price}. Ödemeyi ayarlamak için o tarihten önce sizinle iletişime geçeceğiz. Başlamak için kart gerekmez, sözleşme yok, istediğiniz zaman iptal edin."
   },
   "card": {
     "perTruckMonth": "food truck başına / ay",
@@ -14,7 +16,9 @@
   },
   "fee": {
     "feeOnly": "Yalnızca online siparişlerde <b>{fee}</b>. Yerinde siparişler her zaman ücretsiz.",
+    "feeOnlyCard": "Yalnızca online siparişlerde <b>{fee}*</b>. Yerinde siparişler her zaman ücretsiz.",
     "included": "Her ay ilk <b>{included}</b> tutarındaki online siparişler dahil, sonrasında <b>{fee}*</b>. Yerinde siparişler her zaman ücretsiz.",
+    "includedNoMark": "Her ay ilk <b>{included}</b> tutarındaki online siparişler dahil, sonrasında <b>{fee}</b>. Yerinde siparişler her zaman ücretsiz.",
     "noFee": "Ne kadar yoğun olursanız olun, online siparişlerde <b>HatchGrab ücreti yok</b>. Tek, öngörülebilir bir aylık maliyet."
   },
   "base": {

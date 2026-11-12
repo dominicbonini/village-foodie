@@ -11,6 +11,7 @@
   "pay": {
     "included": "Inklusive Online-Bestellungen pro Monat",
     "fee": "HatchGrab-Gebühr auf Online-Bestellungen*",
+    "feeNoMark": "HatchGrab-Gebühr auf Online-Bestellungen",
     "walkUp": "Bestellungen vor Ort"
   },
   "cell": {

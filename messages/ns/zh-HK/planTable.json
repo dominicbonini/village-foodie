@@ -11,6 +11,7 @@
   "pay": {
     "included": "每月包含的網上訂單",
     "fee": "網上訂單的 HatchGrab 收費*",
+    "feeNoMark": "網上訂單的 HatchGrab 收費",
     "walkUp": "現場訂單"
   },
   "cell": {

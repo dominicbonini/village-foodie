@@ -11,6 +11,7 @@
   "pay": {
     "included": "Pedidos online incluidos cada mes",
     "fee": "Comisión de HatchGrab en pedidos online*",
+    "feeNoMark": "Comisión de HatchGrab en pedidos online",
     "walkUp": "Pedidos en ventanilla"
   },
   "cell": {

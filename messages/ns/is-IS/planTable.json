@@ -11,6 +11,7 @@
   "pay": {
     "included": "Netpantanir innifaldar á mánuði",
     "fee": "HatchGrab-gjald af netpöntunum*",
+    "feeNoMark": "HatchGrab-gjald af netpöntunum",
     "walkUp": "Pantanir á staðnum"
   },
   "cell": {

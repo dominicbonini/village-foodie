@@ -11,6 +11,7 @@
   "pay": {
     "included": "Kuukausittain sisältyvät verkkotilaukset",
     "fee": "HatchGrabin maksu verkkotilauksista*",
+    "feeNoMark": "HatchGrabin maksu verkkotilauksista",
     "walkUp": "Tilaukset paikan päällä"
   },
   "cell": {

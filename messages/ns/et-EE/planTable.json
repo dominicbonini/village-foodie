@@ -11,6 +11,7 @@
   "pay": {
     "included": "Iga kuu hinnas sisalduvad veebitellimused",
     "fee": "HatchGrabi tasu veebitellimustelt*",
+    "feeNoMark": "HatchGrabi tasu veebitellimustelt",
     "walkUp": "Tellimused kohapeal"
   },
   "cell": {

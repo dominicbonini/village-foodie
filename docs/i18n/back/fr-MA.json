@@ -61,6 +61,8 @@
  "posterWords.placeSample.nameTown": "The Café on the Square, Casablanca",
  "posterWords.placeSample.nameTownBelow": "The Café on the Square\nCasablanca",
  "pricing.banner.body": "With {brand}, customers order ahead and pay on site, so you can take online orders without connecting a card processor at all. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
+ "pricing.banner.bodyCard": "With {brand}, customers order ahead and pay on site, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
  "pricing.banner.bodyOnly": "With {brand}, customers order ahead and pay on site, so you can take online orders without connecting a card processor at all. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime.",
+ "pricing.banner.bodyOnlyCard": "With {brand}, customers order ahead and pay on site, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime.",
  "truckPage.meta.orderDescription": "Order ahead from {truck} and collect your order at the food truck, at the time you chose."
 }

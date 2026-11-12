@@ -11,6 +11,7 @@
   "pay": {
     "included": "Online παραγγελίες που περιλαμβάνονται κάθε μήνα",
     "fee": "Προμήθεια HatchGrab στις online παραγγελίες*",
+    "feeNoMark": "Προμήθεια HatchGrab στις online παραγγελίες",
     "walkUp": "Παραγγελίες επί τόπου"
   },
   "cell": {

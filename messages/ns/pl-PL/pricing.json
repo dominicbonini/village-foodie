@@ -2,7 +2,9 @@
   "banner": {
     "title": "{months, plural, one {Przez pierwszy miesiąc korzystasz całkowicie za darmo — ze wszystkich funkcji.} few {Przez pierwsze # miesiące korzystasz całkowicie za darmo — ze wszystkich funkcji.} many {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.} other {Przez pierwsze # miesięcy korzystasz całkowicie za darmo — ze wszystkich funkcji.}}",
     "body": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili.",
-    "bodyOnly": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Po zakończeniu okresu próbnego plan <plan>{fallback}</plan> kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
+    "bodyCard": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego przechodzisz na plan <plan>{fallback}</plan>{fallbackFree, select, yes { (bez opłaty miesięcznej)} other {}}, chyba że wybierzesz inny plan. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili.",
+    "bodyOnly": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Po zakończeniu okresu próbnego plan <plan>{fallback}</plan> kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili.",
+    "bodyOnlyCard": "Z {brand} klienci zamawiają z wyprzedzeniem i płacą przy odbiorze, więc możesz przyjmować zamówienia online bez podłączania operatora płatności kartą. Wolisz pobierać płatność z góry? Włącz płatności kartą online w dowolnej chwili. Po zakończeniu okresu próbnego plan <plan>{fallback}</plan> kosztuje {price} miesięcznie. Skontaktujemy się z Tobą wcześniej, aby skonfigurować płatność. Bez karty na start, bez umowy, rezygnujesz w dowolnej chwili."
   },
   "card": {
     "perTruckMonth": "za food truck / miesiąc",
@@ -14,7 +16,9 @@
   },
   "fee": {
     "feeOnly": "<b>{fee}</b> tylko od zamówień online. Zamówienia na miejscu są zawsze bez opłat.",
+    "feeOnlyCard": "<b>{fee}*</b> tylko od zamówień online. Zamówienia na miejscu są zawsze bez opłat.",
     "included": "Zamówienia online do kwoty <b>{included}</b> miesięcznie w cenie, powyżej — <b>{fee}*</b>. Zamówienia na miejscu są zawsze bez opłat.",
+    "includedNoMark": "Zamówienia online do kwoty <b>{included}</b> miesięcznie w cenie, powyżej — <b>{fee}</b>. Zamówienia na miejscu są zawsze bez opłat.",
     "noFee": "<b>Bez prowizji HatchGrab</b> od zamówień online, niezależnie od tego, ile masz ruchu. Jeden przewidywalny koszt miesięczny."
   },
   "base": {

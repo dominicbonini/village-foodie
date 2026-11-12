@@ -2,7 +2,9 @@
   "banner": {
     "title": "{months, plural, one {Your first month is completely free — every feature unlocked.} other {Your first # months are completely free — every feature unlocked.}}",
     "body": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
-    "bodyOnly": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
+    "bodyCard": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
+    "bodyOnly": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime.",
+    "bodyOnlyCard": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
   },
   "card": {
     "perTruckMonth": "per truck / month",
@@ -14,7 +16,9 @@
   },
   "fee": {
     "feeOnly": "<b>{fee}</b> on online orders only. Walk-up orders are always free.",
+    "feeOnlyCard": "<b>{fee}*</b> on online orders only. Walk-up orders are always free.",
     "included": "First <b>{included}</b> of online orders included each month, then <b>{fee}*</b>. Walk-up orders are always free.",
+    "includedNoMark": "First <b>{included}</b> of online orders included each month, then <b>{fee}</b>. Walk-up orders are always free.",
     "noFee": "<b>No HatchGrab fees</b> on online orders, however busy you get. One predictable monthly cost."
   },
   "base": {

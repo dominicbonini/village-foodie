@@ -6149,7 +6149,9 @@
     "banner": {
       "title": "{months, plural, one {Il tuo primo mese è completamente gratis — tutte le funzioni sbloccate.} other {I tuoi primi # mesi sono completamente gratis — tutte le funzioni sbloccate.}}",
       "body": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Alla fine della prova passi al piano <plan>{fallback}</plan>{fallbackFree, select, yes { (nessun canone mensile)} other {}}, a meno che tu non scelga un altro piano. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi.",
-      "bodyOnly": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Alla fine della prova il piano <plan>{fallback}</plan> costa {price} al mese. Ti contatteremo prima di allora per impostare il pagamento. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi."
+      "bodyCard": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Preferisci incassare in anticipo? Aggiungi i pagamenti online con carta quando vuoi. Alla fine della prova passi al piano <plan>{fallback}</plan>{fallbackFree, select, yes { (nessun canone mensile)} other {}}, a meno che tu non scelga un altro piano. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi.",
+      "bodyOnly": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Alla fine della prova il piano <plan>{fallback}</plan> costa {price} al mese. Ti contatteremo prima di allora per impostare il pagamento. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi.",
+      "bodyOnlyCard": "Con {brand} i clienti ordinano in anticipo e pagano al ritiro, così puoi ricevere ordini online senza collegare alcun servizio di pagamento con carta. Preferisci incassare in anticipo? Aggiungi i pagamenti online con carta quando vuoi. Alla fine della prova il piano <plan>{fallback}</plan> costa {price} al mese. Ti contatteremo prima di allora per impostare il pagamento. Nessuna carta per iniziare, nessun vincolo, disdici quando vuoi."
     },
     "card": {
       "perTruckMonth": "per food truck / mese",
@@ -6161,7 +6163,9 @@
     },
     "fee": {
       "feeOnly": "<b>{fee}</b> solo sugli ordini online. Gli ordini al banco sono sempre gratuiti.",
+      "feeOnlyCard": "<b>{fee}*</b> solo sugli ordini online. Gli ordini al banco sono sempre gratuiti.",
       "included": "I primi <b>{included}</b> di ordini online sono inclusi ogni mese, poi <b>{fee}*</b>. Gli ordini al banco sono sempre gratuiti.",
+      "includedNoMark": "I primi <b>{included}</b> di ordini online sono inclusi ogni mese, poi <b>{fee}</b>. Gli ordini al banco sono sempre gratuiti.",
       "noFee": "<b>Nessuna commissione HatchGrab</b> sugli ordini online, anche nei periodi di punta. Un costo mensile fisso e prevedibile."
     },
     "base": {
@@ -6207,6 +6211,7 @@
     "pay": {
       "included": "Ordini online inclusi ogni mese",
       "fee": "Commissione HatchGrab sugli ordini online*",
+      "feeNoMark": "Commissione HatchGrab sugli ordini online",
       "walkUp": "Ordini al banco"
     },
     "cell": {

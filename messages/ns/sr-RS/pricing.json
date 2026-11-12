@@ -2,7 +2,9 @@
   "banner": {
     "title": "{months, plural, one {Prvi mesec je potpuno besplatan — sve funkcije su otključane.} few {Prva # meseca su potpuno besplatna — sve funkcije su otključane.} other {Prvih # meseci je potpuno besplatno — sve funkcije su otključane.}}",
     "body": "Uz {brand}, kupci poručuju unapred i plaćaju pri preuzimanju, pa možete primati online porudžbine bez povezivanja ikakvog procesora za kartice. Kada probni period istekne, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { — bez mesečne pretplate —} other {}}, osim ako ne izaberete drugi paket. Bez kartice na početku, bez ugovora, otkažite bilo kada.",
-    "bodyOnly": "Uz {brand}, kupci poručuju unapred i plaćaju pri preuzimanju, pa možete primati online porudžbine bez povezivanja ikakvog procesora za kartice. Kada probni period istekne, paket <plan>{fallback}</plan> košta {price} mesečno. Javićemo vam se pre toga da podesimo plaćanje. Bez kartice na početku, bez ugovora, otkažite bilo kada."
+    "bodyCard": "Uz {brand}, kupci poručuju unapred i plaćaju pri preuzimanju, pa možete primati online porudžbine bez povezivanja ikakvog procesora za kartice. Više volite naplatu unapred? Dodajte online plaćanje karticom bilo kada. Kada probni period istekne, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { — bez mesečne pretplate —} other {}}, osim ako ne izaberete drugi paket. Bez kartice na početku, bez ugovora, otkažite bilo kada.",
+    "bodyOnly": "Uz {brand}, kupci poručuju unapred i plaćaju pri preuzimanju, pa možete primati online porudžbine bez povezivanja ikakvog procesora za kartice. Kada probni period istekne, paket <plan>{fallback}</plan> košta {price} mesečno. Javićemo vam se pre toga da podesimo plaćanje. Bez kartice na početku, bez ugovora, otkažite bilo kada.",
+    "bodyOnlyCard": "Uz {brand}, kupci poručuju unapred i plaćaju pri preuzimanju, pa možete primati online porudžbine bez povezivanja ikakvog procesora za kartice. Više volite naplatu unapred? Dodajte online plaćanje karticom bilo kada. Kada probni period istekne, paket <plan>{fallback}</plan> košta {price} mesečno. Javićemo vam se pre toga da podesimo plaćanje. Bez kartice na početku, bez ugovora, otkažite bilo kada."
   },
   "card": {
     "perTruckMonth": "po food trucku / mesečno",
@@ -14,7 +16,9 @@
   },
   "fee": {
     "feeOnly": "<b>{fee}</b> samo na online porudžbine. Porudžbine na licu mesta su uvek besplatne.",
+    "feeOnlyCard": "<b>{fee}*</b> samo na online porudžbine. Porudžbine na licu mesta su uvek besplatne.",
     "included": "Prvih <b>{included}</b> online porudžbina svakog meseca je uključeno, zatim <b>{fee}*</b>. Porudžbine na licu mesta su uvek besplatne.",
+    "includedNoMark": "Prvih <b>{included}</b> online porudžbina svakog meseca je uključeno, zatim <b>{fee}</b>. Porudžbine na licu mesta su uvek besplatne.",
     "noFee": "<b>Bez HatchGrab naknada</b> na online porudžbine, koliko god posla imali. Jedan predvidiv mesečni trošak."
   },
   "base": {

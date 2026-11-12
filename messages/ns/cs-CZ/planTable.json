@@ -11,6 +11,7 @@
   "pay": {
     "included": "Online objednávky v ceně každý měsíc",
     "fee": "Poplatek HatchGrab z online objednávek*",
+    "feeNoMark": "Poplatek HatchGrab z online objednávek",
     "walkUp": "Objednávky na místě"
   },
   "cell": {

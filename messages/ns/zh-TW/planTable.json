@@ -11,6 +11,7 @@
   "pay": {
     "included": "每月包含的線上訂單額度",
     "fee": "線上訂單的 HatchGrab 手續費*",
+    "feeNoMark": "線上訂單的 HatchGrab 手續費",
     "walkUp": "現場點餐"
   },
   "cell": {

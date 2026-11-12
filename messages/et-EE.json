@@ -6149,7 +6149,9 @@
     "banner": {
       "title": "{months, plural, one {Sinu esimene kuu on täiesti tasuta — kõik funktsioonid avatud.} other {Sinu esimesed # kuud on täiesti tasuta — kõik funktsioonid avatud.}}",
       "body": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Kui prooviperiood lõpeb ja sa ei vali muud paketti, lähed üle paketile <plan>{fallback}</plan>{fallbackFree, select, yes { — ilma kuutasuta} other {}}. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal.",
-      "bodyOnly": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Kui prooviperiood lõpeb, on paketi <plan>{fallback}</plan> hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal."
+      "bodyCard": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb ja sa ei vali muud paketti, lähed üle paketile <plan>{fallback}</plan>{fallbackFree, select, yes { — ilma kuutasuta} other {}}. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal.",
+      "bodyOnly": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Kui prooviperiood lõpeb, on paketi <plan>{fallback}</plan> hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal.",
+      "bodyOnlyCard": "{brand} võimaldab klientidel ette tellida ja maksta kättesaamisel, nii et saad veebitellimusi vastu võtta ilma kaardimaksete teenusepakkujat üldse ühendamata. Eelistad makset kohe ette? Lisa veebipõhised kaardimaksed millal tahes. Kui prooviperiood lõpeb, on paketi <plan>{fallback}</plan> hind {price} kuus. Võtame sinuga enne seda ühendust, et maksmine korraldada. Alustamiseks pole pangakaarti vaja, lepingut pole, loobu igal ajal."
     },
     "card": {
       "perTruckMonth": "toiduauto kohta kuus",
@@ -6161,7 +6163,9 @@
     },
     "fee": {
       "feeOnly": "<b>{fee}</b> ainult veebitellimustelt. Tellimused kohapeal on alati tasuta.",
+      "feeOnlyCard": "<b>{fee}*</b> ainult veebitellimustelt. Tellimused kohapeal on alati tasuta.",
       "included": "Iga kuu on esimesed <b>{included}</b> veebitellimuste käibest hinnas, seejärel <b>{fee}*</b>. Tellimused kohapeal on alati tasuta.",
+      "includedNoMark": "Iga kuu on esimesed <b>{included}</b> veebitellimuste käibest hinnas, seejärel <b>{fee}</b>. Tellimused kohapeal on alati tasuta.",
       "noFee": "<b>HatchGrabi tasusid pole</b> veebitellimustelt, ükskõik kui palju sul tegemist on. Üks etteaimatav igakuine kulu."
     },
     "base": {
@@ -6207,6 +6211,7 @@
     "pay": {
       "included": "Iga kuu hinnas sisalduvad veebitellimused",
       "fee": "HatchGrabi tasu veebitellimustelt*",
+      "feeNoMark": "HatchGrabi tasu veebitellimustelt",
       "walkUp": "Tellimused kohapeal"
     },
     "cell": {

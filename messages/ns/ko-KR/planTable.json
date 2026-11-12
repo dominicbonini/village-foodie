@@ -11,6 +11,7 @@
   "pay": {
     "included": "매월 포함된 온라인 주문",
     "fee": "온라인 주문 HatchGrab 수수료*",
+    "feeNoMark": "온라인 주문 HatchGrab 수수료",
     "walkUp": "현장 주문"
   },
   "cell": {

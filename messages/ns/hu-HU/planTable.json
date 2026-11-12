@@ -11,6 +11,7 @@
   "pay": {
     "included": "Havi díjmentes online rendelési keret",
     "fee": "HatchGrab-díj online rendeléseknél*",
+    "feeNoMark": "HatchGrab-díj online rendeléseknél",
     "walkUp": "Helyszíni rendelések"
   },
   "cell": {

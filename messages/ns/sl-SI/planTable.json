@@ -11,6 +11,7 @@
   "pay": {
     "included": "Spletna naročila, vključena vsak mesec",
     "fee": "Provizija HatchGrab za spletna naročila*",
+    "feeNoMark": "Provizija HatchGrab za spletna naročila",
     "walkUp": "Naročila na mestu"
   },
   "cell": {

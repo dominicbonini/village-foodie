@@ -6149,7 +6149,9 @@
     "banner": {
       "title": "{months, plural, one {Az első hónap teljesen ingyenes — minden funkció elérhető.} other {Az első # hónap teljesen ingyenes — minden funkció elérhető.}}",
       "body": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. A próbaidőszak végén erre a csomagra vált: <plan>{fallback}</plan>{fallbackFree, select, yes { (havidíj nélkül)} other {}}, hacsak nem választ másikat. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja.",
-      "bodyOnly": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. A próbaidőszak után ez a csomag lesz érvényes: <plan>{fallback}</plan>, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja."
+      "bodyCard": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak végén erre a csomagra vált: <plan>{fallback}</plan>{fallbackFree, select, yes { (havidíj nélkül)} other {}}, hacsak nem választ másikat. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja.",
+      "bodyOnly": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. A próbaidőszak után ez a csomag lesz érvényes: <plan>{fallback}</plan>, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja.",
+      "bodyOnlyCard": "{brand} használatával a vásárlók előre rendelnek, és átvételkor fizetnek, így online rendeléseket fogadhat anélkül, hogy bármilyen kártyás fizetési szolgáltatót bekötne. Inkább előre fizettetne? Az online kártyás fizetést bármikor bekapcsolhatja. A próbaidőszak után ez a csomag lesz érvényes: <plan>{fallback}</plan>, havi {price} áron. Még a próbaidőszak vége előtt felvesszük Önnel a kapcsolatot, hogy beállítsuk a fizetést. Bankkártya nélkül indulhat, szerződés nélkül, és bármikor lemondhatja."
     },
     "card": {
       "perTruckMonth": "food truckonként / hónap",
@@ -6161,7 +6163,9 @@
     },
     "fee": {
       "feeOnly": "<b>{fee}</b> csak az online rendelésekre. A helyszíni rendelések mindig díjmentesek.",
+      "feeOnlyCard": "<b>{fee}*</b> csak az online rendelésekre. A helyszíni rendelések mindig díjmentesek.",
       "included": "Havonta az első <b>{included}</b> értékű online rendelés díjmentes, utána <b>{fee}*</b>. A helyszíni rendelések mindig díjmentesek.",
+      "includedNoMark": "Havonta az első <b>{included}</b> értékű online rendelés díjmentes, utána <b>{fee}</b>. A helyszíni rendelések mindig díjmentesek.",
       "noFee": "<b>Nincs HatchGrab-díj</b> az online rendeléseken, bármekkora is a forgalom. Kiszámítható havi költség."
     },
     "base": {
@@ -6207,6 +6211,7 @@
     "pay": {
       "included": "Havi díjmentes online rendelési keret",
       "fee": "HatchGrab-díj online rendeléseknél*",
+      "feeNoMark": "HatchGrab-díj online rendeléseknél",
       "walkUp": "Helyszíni rendelések"
     },
     "cell": {

@@ -6149,7 +6149,9 @@
     "banner": {
       "title": "{months, plural, one {Je eerste maand is helemaal gratis — met alle functies.} other {Je eerste # maanden zijn helemaal gratis — met alle functies.}}",
       "body": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Na je proefperiode ga je over op <plan>{fallback}</plan>{fallbackFree, select, yes { — zonder maandkosten —} other {}}, tenzij je zelf een abonnement kiest. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar.",
-      "bodyOnly": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Na je proefperiode kost <plan>{fallback}</plan> je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar."
+      "bodyCard": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode ga je over op <plan>{fallback}</plan>{fallbackFree, select, yes { — zonder maandkosten —} other {}}, tenzij je zelf een abonnement kiest. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar.",
+      "bodyOnly": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Na je proefperiode kost <plan>{fallback}</plan> je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar.",
+      "bodyOnlyCard": "Met {brand} bestellen klanten vooraf en betalen ze bij het afhalen, dus je kunt online bestellingen aannemen zonder een betaalprovider te koppelen. Liever vooraf laten betalen? Voeg op elk moment online kaartbetalingen toe. Na je proefperiode kost <plan>{fallback}</plan> je {price} per maand. We nemen voor die tijd contact met je op om de betaling te regelen. Geen creditcard nodig om te starten, geen contract, altijd opzegbaar."
     },
     "card": {
       "perTruckMonth": "per foodtruck / maand",
@@ -6161,7 +6163,9 @@
     },
     "fee": {
       "feeOnly": "<b>{fee}</b> alleen op online bestellingen. Bestellingen aan de truck zijn altijd gratis.",
+      "feeOnlyCard": "<b>{fee}*</b> alleen op online bestellingen. Bestellingen aan de truck zijn altijd gratis.",
       "included": "Eerste <b>{included}</b> aan online bestellingen per maand inbegrepen, daarna <b>{fee}*</b>. Bestellingen aan de truck zijn altijd gratis.",
+      "includedNoMark": "Eerste <b>{included}</b> aan online bestellingen per maand inbegrepen, daarna <b>{fee}</b>. Bestellingen aan de truck zijn altijd gratis.",
       "noFee": "<b>Geen HatchGrab-kosten</b> op online bestellingen, hoe druk je het ook krijgt. Eén voorspelbaar maandbedrag."
     },
     "base": {
@@ -6207,6 +6211,7 @@
     "pay": {
       "included": "Online bestellingen per maand inbegrepen",
       "fee": "HatchGrab-kosten op online bestellingen*",
+      "feeNoMark": "HatchGrab-kosten op online bestellingen",
       "walkUp": "Bestellingen aan de truck"
     },
     "cell": {

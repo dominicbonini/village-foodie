@@ -2,7 +2,9 @@
   "banner": {
     "title": "{months, plural, one {Tháng đầu tiên hoàn toàn miễn phí — mở khóa mọi tính năng.} other {# tháng đầu tiên hoàn toàn miễn phí — mở khóa mọi tính năng.}}",
     "body": "Với {brand}, khách đặt món trước và trả tiền khi nhận món, nên bạn có thể nhận đơn online mà không cần kết nối cổng thanh toán thẻ nào. Khi hết thời gian dùng thử, bạn sẽ chuyển sang gói <plan>{fallback}</plan>{fallbackFree, select, yes { — miễn phí hằng tháng —} other {}} trừ khi bạn chọn gói khác. Không cần thẻ để bắt đầu, không hợp đồng, hủy bất cứ lúc nào.",
-    "bodyOnly": "Với {brand}, khách đặt món trước và trả tiền khi nhận món, nên bạn có thể nhận đơn online mà không cần kết nối cổng thanh toán thẻ nào. Khi hết thời gian dùng thử, gói <plan>{fallback}</plan> có giá {price} mỗi tháng. Chúng tôi sẽ liên hệ trước thời điểm đó để thiết lập thanh toán. Không cần thẻ để bắt đầu, không hợp đồng, hủy bất cứ lúc nào."
+    "bodyCard": "Với {brand}, khách đặt món trước và trả tiền khi nhận món, nên bạn có thể nhận đơn online mà không cần kết nối cổng thanh toán thẻ nào. Muốn thu tiền trước? Bạn có thể thêm thanh toán thẻ online bất cứ lúc nào. Khi hết thời gian dùng thử, bạn sẽ chuyển sang gói <plan>{fallback}</plan>{fallbackFree, select, yes { — miễn phí hằng tháng —} other {}} trừ khi bạn chọn gói khác. Không cần thẻ để bắt đầu, không hợp đồng, hủy bất cứ lúc nào.",
+    "bodyOnly": "Với {brand}, khách đặt món trước và trả tiền khi nhận món, nên bạn có thể nhận đơn online mà không cần kết nối cổng thanh toán thẻ nào. Khi hết thời gian dùng thử, gói <plan>{fallback}</plan> có giá {price} mỗi tháng. Chúng tôi sẽ liên hệ trước thời điểm đó để thiết lập thanh toán. Không cần thẻ để bắt đầu, không hợp đồng, hủy bất cứ lúc nào.",
+    "bodyOnlyCard": "Với {brand}, khách đặt món trước và trả tiền khi nhận món, nên bạn có thể nhận đơn online mà không cần kết nối cổng thanh toán thẻ nào. Muốn thu tiền trước? Bạn có thể thêm thanh toán thẻ online bất cứ lúc nào. Khi hết thời gian dùng thử, gói <plan>{fallback}</plan> có giá {price} mỗi tháng. Chúng tôi sẽ liên hệ trước thời điểm đó để thiết lập thanh toán. Không cần thẻ để bắt đầu, không hợp đồng, hủy bất cứ lúc nào."
   },
   "card": {
     "perTruckMonth": "mỗi xe / tháng",
@@ -14,7 +16,9 @@
   },
   "fee": {
     "feeOnly": "<b>{fee}</b> chỉ tính trên đơn online. Đơn mua tại chỗ luôn miễn phí.",
+    "feeOnlyCard": "<b>{fee}*</b> chỉ tính trên đơn online. Đơn mua tại chỗ luôn miễn phí.",
     "included": "Mỗi tháng đã gồm <b>{included}</b> giá trị đơn online đầu tiên, sau đó tính <b>{fee}*</b>. Đơn mua tại chỗ luôn miễn phí.",
+    "includedNoMark": "Mỗi tháng đã gồm <b>{included}</b> giá trị đơn online đầu tiên, sau đó tính <b>{fee}</b>. Đơn mua tại chỗ luôn miễn phí.",
     "noFee": "<b>Không mất phí HatchGrab</b> trên đơn online, dù bạn bán đắt hàng đến đâu. Một khoản phí cố định mỗi tháng, dễ dự tính."
   },
   "base": {

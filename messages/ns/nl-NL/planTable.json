@@ -11,6 +11,7 @@
   "pay": {
     "included": "Online bestellingen per maand inbegrepen",
     "fee": "HatchGrab-kosten op online bestellingen*",
+    "feeNoMark": "HatchGrab-kosten op online bestellingen",
     "walkUp": "Bestellingen aan de truck"
   },
   "cell": {

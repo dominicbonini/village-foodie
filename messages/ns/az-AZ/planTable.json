@@ -11,6 +11,7 @@
   "pay": {
     "included": "Hər ay daxil olan onlayn sifarişlər",
     "fee": "Onlayn sifarişlərdə HatchGrab haqqı*",
+    "feeNoMark": "Onlayn sifarişlərdə HatchGrab haqqı",
     "walkUp": "Yerində sifarişlər"
   },
   "cell": {

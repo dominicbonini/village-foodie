@@ -11,6 +11,7 @@
   "pay": {
     "included": "Har oy kiritilgan onlayn buyurtmalar",
     "fee": "Onlayn buyurtmalar uchun HatchGrab komissiyasi*",
+    "feeNoMark": "Onlayn buyurtmalar uchun HatchGrab komissiyasi",
     "walkUp": "Oyna oldida berilgan buyurtmalar"
   },
   "cell": {

@@ -2,7 +2,9 @@
   "banner": {
     "title": "{months, plural, one {Birinchi oyingiz butunlay bepul — barcha imkoniyatlar ochiq.} other {Birinchi # oyingiz butunlay bepul — barcha imkoniyatlar ochiq.}}",
     "body": "{brand} bilan mijozlar oldindan buyurtma beradi va olib ketishda toʻlaydi, shuning uchun onlayn buyurtmalarni karta toʻlov tizimini umuman ulamasdan qabul qilishingiz mumkin. Sinov muddati tugagach, agar tarif tanlamasangiz, <plan>{fallback}</plan> tarifiga{fallbackFree, select, yes { (oylik toʻlovsiz)} other {}} oʻtasiz. Boshlash uchun karta kerak emas, shartnoma yoʻq, istalgan vaqtda bekor qilish mumkin.",
-    "bodyOnly": "{brand} bilan mijozlar oldindan buyurtma beradi va olib ketishda toʻlaydi, shuning uchun onlayn buyurtmalarni karta toʻlov tizimini umuman ulamasdan qabul qilishingiz mumkin. Sinov muddati tugagach, <plan>{fallback}</plan> tarifi oyiga {price} turadi. Undan oldin toʻlovni sozlash uchun siz bilan bogʻlanamiz. Boshlash uchun karta kerak emas, shartnoma yoʻq, istalgan vaqtda bekor qilish mumkin."
+    "bodyCard": "{brand} bilan mijozlar oldindan buyurtma beradi va olib ketishda toʻlaydi, shuning uchun onlayn buyurtmalarni karta toʻlov tizimini umuman ulamasdan qabul qilishingiz mumkin. Sinov muddati tugagach, agar tarif tanlamasangiz, <plan>{fallback}</plan> tarifiga{fallbackFree, select, yes { (oylik toʻlovsiz)} other {}} oʻtasiz. Boshlash uchun karta kerak emas, shartnoma yoʻq, istalgan vaqtda bekor qilish mumkin.",
+    "bodyOnly": "{brand} bilan mijozlar oldindan buyurtma beradi va olib ketishda toʻlaydi, shuning uchun onlayn buyurtmalarni karta toʻlov tizimini umuman ulamasdan qabul qilishingiz mumkin. Sinov muddati tugagach, <plan>{fallback}</plan> tarifi oyiga {price} turadi. Undan oldin toʻlovni sozlash uchun siz bilan bogʻlanamiz. Boshlash uchun karta kerak emas, shartnoma yoʻq, istalgan vaqtda bekor qilish mumkin.",
+    "bodyOnlyCard": "{brand} bilan mijozlar oldindan buyurtma beradi va olib ketishda toʻlaydi, shuning uchun onlayn buyurtmalarni karta toʻlov tizimini umuman ulamasdan qabul qilishingiz mumkin. Sinov muddati tugagach, <plan>{fallback}</plan> tarifi oyiga {price} turadi. Undan oldin toʻlovni sozlash uchun siz bilan bogʻlanamiz. Boshlash uchun karta kerak emas, shartnoma yoʻq, istalgan vaqtda bekor qilish mumkin."
   },
   "card": {
     "perTruckMonth": "har bir fudtrak uchun / oy",
@@ -14,7 +16,9 @@
   },
   "fee": {
     "feeOnly": "<b>{fee}</b> faqat onlayn buyurtmalar uchun. Oyna oldida berilgan buyurtmalar har doim bepul.",
+    "feeOnlyCard": "<b>{fee}*</b> faqat onlayn buyurtmalar uchun. Oyna oldida berilgan buyurtmalar har doim bepul.",
     "included": "Har oy onlayn buyurtmalarning dastlabki <b>{included}</b> qismi kiritilgan, keyin <b>{fee}*</b>. Oyna oldida berilgan buyurtmalar har doim bepul.",
+    "includedNoMark": "Har oy onlayn buyurtmalarning dastlabki <b>{included}</b> qismi kiritilgan, keyin <b>{fee}</b>. Oyna oldida berilgan buyurtmalar har doim bepul.",
     "noFee": "Onlayn buyurtmalar uchun <b>HatchGrab komissiyasi yoʻq</b>, qanchalik band boʻlmang. Bitta oldindan maʼlum oylik toʻlov."
   },
   "base": {

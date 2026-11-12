@@ -2,7 +2,9 @@
   "banner": {
     "title": "{months, plural, other {# bulan pertama anda percuma sepenuhnya — semua ciri dibuka.}}",
     "body": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Apabila percubaan anda tamat, anda beralih ke <plan>{fallback}</plan>{fallbackFree, select, yes { — tanpa yuran bulanan —} other {}} melainkan anda memilih pelan. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa.",
-    "bodyOnly": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Apabila percubaan anda tamat, harga pelan <plan>{fallback}</plan> ialah {price} sebulan. Kami akan menghubungi anda sebelum itu untuk menguruskan pembayaran. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa."
+    "bodyCard": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Lebih suka terima bayaran di awal? Tambah pembayaran kad dalam talian bila-bila masa. Apabila percubaan anda tamat, anda beralih ke <plan>{fallback}</plan>{fallbackFree, select, yes { — tanpa yuran bulanan —} other {}} melainkan anda memilih pelan. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa.",
+    "bodyOnly": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Apabila percubaan anda tamat, harga pelan <plan>{fallback}</plan> ialah {price} sebulan. Kami akan menghubungi anda sebelum itu untuk menguruskan pembayaran. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa.",
+    "bodyOnlyCard": "Dengan {brand}, pelanggan memesan awal dan membayar semasa ambil, jadi anda boleh menerima pesanan dalam talian tanpa menyambungkan pemproses kad langsung. Lebih suka terima bayaran di awal? Tambah pembayaran kad dalam talian bila-bila masa. Apabila percubaan anda tamat, harga pelan <plan>{fallback}</plan> ialah {price} sebulan. Kami akan menghubungi anda sebelum itu untuk menguruskan pembayaran. Tiada kad untuk bermula, tiada kontrak, batal bila-bila masa."
   },
   "card": {
     "perTruckMonth": "setiap trak / bulan",
@@ -14,7 +16,9 @@
   },
   "fee": {
     "feeOnly": "<b>{fee}</b> untuk pesanan dalam talian sahaja. Pesanan walk-in sentiasa percuma.",
+    "feeOnlyCard": "<b>{fee}*</b> untuk pesanan dalam talian sahaja. Pesanan walk-in sentiasa percuma.",
     "included": "<b>{included}</b> pertama pesanan dalam talian termasuk setiap bulan, kemudian <b>{fee}*</b>. Pesanan walk-in sentiasa percuma.",
+    "includedNoMark": "<b>{included}</b> pertama pesanan dalam talian termasuk setiap bulan, kemudian <b>{fee}</b>. Pesanan walk-in sentiasa percuma.",
     "noFee": "<b>Tiada yuran HatchGrab</b> untuk pesanan dalam talian, walau sesibuk mana pun anda. Satu kos bulanan yang boleh dijangka."
   },
   "base": {

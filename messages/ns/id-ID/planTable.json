@@ -11,6 +11,7 @@
   "pay": {
     "included": "Pesanan online yang sudah termasuk setiap bulan",
     "fee": "Biaya HatchGrab untuk pesanan online*",
+    "feeNoMark": "Biaya HatchGrab untuk pesanan online",
     "walkUp": "Pesanan langsung di tempat"
   },
   "cell": {

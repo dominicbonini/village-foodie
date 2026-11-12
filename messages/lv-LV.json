@@ -6149,7 +6149,9 @@
     "banner": {
       "title": "{months, plural, zero {Jūsu pirmie # mēneši ir pilnīgi bez maksas — visas funkcijas pieejamas.} one {Jūsu pirmais mēnesis ir pilnīgi bez maksas — visas funkcijas pieejamas.} other {Jūsu pirmie # mēneši ir pilnīgi bez maksas — visas funkcijas pieejamas.}}",
       "body": "Izmantojot {brand}, klienti pasūta iepriekš un maksā saņemot, tāpēc tiešsaistes pasūtījumus varat pieņemt, vispār nepievienojot karšu maksājumu apstrādātāju. Kad izmēģinājuma periods beidzas, jūs pārejat uz plānu <plan>{fallback}</plan>{fallbackFree, select, yes { (0 € mēnesī)} other {}}, ja vien neizvēlaties citu plānu. Lai sāktu, karte nav vajadzīga, nav līguma, atteikties var jebkurā laikā.",
-      "bodyOnly": "Izmantojot {brand}, klienti pasūta iepriekš un maksā saņemot, tāpēc tiešsaistes pasūtījumus varat pieņemt, vispār nepievienojot karšu maksājumu apstrādātāju. Kad izmēģinājuma periods beidzas, plāns <plan>{fallback}</plan> maksā {price} mēnesī. Pirms tam mēs ar jums sazināsimies, lai iestatītu maksājumu. Lai sāktu, karte nav vajadzīga, nav līguma, atteikties var jebkurā laikā."
+      "bodyCard": "Izmantojot {brand}, klienti pasūta iepriekš un maksā saņemot, tāpēc tiešsaistes pasūtījumus varat pieņemt, vispār nepievienojot karšu maksājumu apstrādātāju. Vēlaties saņemt samaksu uzreiz? Pievienojiet karšu maksājumus tiešsaistē jebkurā laikā. Kad izmēģinājuma periods beidzas, jūs pārejat uz plānu <plan>{fallback}</plan>{fallbackFree, select, yes { (0 € mēnesī)} other {}}, ja vien neizvēlaties citu plānu. Lai sāktu, karte nav vajadzīga, nav līguma, atteikties var jebkurā laikā.",
+      "bodyOnly": "Izmantojot {brand}, klienti pasūta iepriekš un maksā saņemot, tāpēc tiešsaistes pasūtījumus varat pieņemt, vispār nepievienojot karšu maksājumu apstrādātāju. Kad izmēģinājuma periods beidzas, plāns <plan>{fallback}</plan> maksā {price} mēnesī. Pirms tam mēs ar jums sazināsimies, lai iestatītu maksājumu. Lai sāktu, karte nav vajadzīga, nav līguma, atteikties var jebkurā laikā.",
+      "bodyOnlyCard": "Izmantojot {brand}, klienti pasūta iepriekš un maksā saņemot, tāpēc tiešsaistes pasūtījumus varat pieņemt, vispār nepievienojot karšu maksājumu apstrādātāju. Vēlaties saņemt samaksu uzreiz? Pievienojiet karšu maksājumus tiešsaistē jebkurā laikā. Kad izmēģinājuma periods beidzas, plāns <plan>{fallback}</plan> maksā {price} mēnesī. Pirms tam mēs ar jums sazināsimies, lai iestatītu maksājumu. Lai sāktu, karte nav vajadzīga, nav līguma, atteikties var jebkurā laikā."
     },
     "card": {
       "perTruckMonth": "par busiņu / mēnesī",
@@ -6161,7 +6163,9 @@
     },
     "fee": {
       "feeOnly": "<b>{fee}</b> tikai par tiešsaistes pasūtījumiem. Pasūtījumi uz vietas vienmēr ir bez maksas.",
+      "feeOnlyCard": "<b>{fee}*</b> tikai par tiešsaistes pasūtījumiem. Pasūtījumi uz vietas vienmēr ir bez maksas.",
       "included": "Katru mēnesī iekļauti pirmie <b>{included}</b> tiešsaistes pasūtījumu, pēc tam <b>{fee}*</b>. Pasūtījumi uz vietas vienmēr ir bez maksas.",
+      "includedNoMark": "Katru mēnesī iekļauti pirmie <b>{included}</b> tiešsaistes pasūtījumu, pēc tam <b>{fee}</b>. Pasūtījumi uz vietas vienmēr ir bez maksas.",
       "noFee": "<b>Bez HatchGrab komisijas</b> par tiešsaistes pasūtījumiem, lai cik daudz darba jums būtu. Viena paredzama ikmēneša maksa."
     },
     "base": {
@@ -6207,6 +6211,7 @@
     "pay": {
       "included": "Katru mēnesi iekļautie tiešsaistes pasūtījumi",
       "fee": "HatchGrab komisija par tiešsaistes pasūtījumiem*",
+      "feeNoMark": "HatchGrab komisija par tiešsaistes pasūtījumiem",
       "walkUp": "Pasūtījumi uz vietas"
     },
     "cell": {

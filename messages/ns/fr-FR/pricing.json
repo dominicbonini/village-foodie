@@ -2,7 +2,9 @@
   "banner": {
     "title": "{months, plural, one {Votre premier mois est entièrement gratuit, avec toutes les fonctionnalités.} other {Vos # premiers mois sont entièrement gratuits, avec toutes les fonctionnalités.}}",
     "body": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
-    "bodyOnly": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
+    "bodyCard": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, vous passez à l’offre <plan>{fallback}</plan>{fallbackFree, select, yes { (sans abonnement mensuel)} other {}}, sauf si vous choisissez une autre offre. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
+    "bodyOnly": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment.",
+    "bodyOnlyCard": "Avec {brand}, vos clients commandent à l’avance et paient au retrait : vous pouvez donc prendre des commandes en ligne sans aucun prestataire de paiement par carte. Vous préférez encaisser à l’avance ? Ajoutez le paiement en ligne par carte quand vous voulez. À la fin de votre essai gratuit, l’offre <plan>{fallback}</plan> coûtera {price} par mois. Nous vous contacterons d’ici là pour mettre en place le paiement. Sans carte bancaire pour démarrer, sans engagement, résiliable à tout moment."
   },
   "card": {
     "perTruckMonth": "par food truck / mois",
@@ -14,7 +16,9 @@
   },
   "fee": {
     "feeOnly": "<b>{fee}</b> uniquement sur les commandes en ligne. Les commandes au comptoir sont toujours gratuites.",
+    "feeOnlyCard": "<b>{fee}*</b> uniquement sur les commandes en ligne. Les commandes au comptoir sont toujours gratuites.",
     "included": "Les <b>{included}</b> premiers de commandes en ligne sont inclus chaque mois, puis <b>{fee}*</b>. Les commandes au comptoir sont toujours gratuites.",
+    "includedNoMark": "Les <b>{included}</b> premiers de commandes en ligne sont inclus chaque mois, puis <b>{fee}</b>. Les commandes au comptoir sont toujours gratuites.",
     "noFee": "<b>Aucuns frais HatchGrab</b> sur les commandes en ligne, même aux périodes les plus chargées. Un coût mensuel prévisible."
   },
   "base": {
