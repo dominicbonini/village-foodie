@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "კონფიდენციალურობის პოლიტიკა — HatchGrab",
+    "privacyDescription": "როგორ აგროვებს და იყენებს HatchGrab Ltd პერსონალურ მონაცემებს.",
+    "termsTitle": "მომსახურების პირობები — HatchGrab",
+    "termsDescription": "HatchGrab-ის გამოყენების პირობები.",
+    "countryTermsTitle": "ქვეყნის სპეციფიკური პირობები — HatchGrab",
+    "countryTermsDescription": "დამატებითი წესები, რომლებიც HatchGrab-ზე ზოგიერთ ქვეყანაში ვრცელდება."
+  },
+  "homeLabel": "HatchGrab — მთავარი გვერდი",
+  "privacy": "კონფიდენციალურობა",
+  "terms": "პირობები",
+  "countryTerms": "ქვეყნის პირობები",
+  "contact": "კონტაქტი",
+  "lastUpdated": "ბოლო განახლება: {date}",
+  "questions": "კითხვები გაქვთ? <link>დაგვიკავშირდით</link> — ჩვენ ნამდვილი ადამიანები ვართ.",
+  "translationNote": "ეს თარგმანია. თუ ის განსხვავდება <link>ინგლისური ვერსიისგან</link>, მოქმედებს ინგლისური ვერსია."
+}

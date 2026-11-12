@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "განთავსება HatchGrab-ის რუკაზე"
+    },
+    "web_dashboard": {
+      "name": "უნივერსალური ვებპანელი"
+    },
+    "qr_code": {
+      "name": "QR კოდი"
+    },
+    "schedule_import": {
+      "name": "განრიგის ავტომატური იმპორტი"
+    },
+    "meal_deals_upsells": {
+      "name": "კომბოები და დამატებითი შეთავაზებები"
+    },
+    "walkup_orders": {
+      "name": "შეკვეთების მიღება ადგილზე"
+    },
+    "sold_out_toggle": {
+      "name": "„გაყიდულია“ ერთი შეხებით"
+    },
+    "kitchen_app": {
+      "name": "სამზარეულოს აპლიკაცია iPhone-ის, iPad-ისა და Android-ისთვის"
+    },
+    "offline_protection": {
+      "name": "შეკვეთების ოფლაინ დაცვა"
+    },
+    "online_payments": {
+      "name": "ონლაინ გადახდები"
+    },
+    "advance_preordering": {
+      "name": "წინასწარი შეკვეთა მომავალი თარიღისთვის"
+    },
+    "preorder_deadline": {
+      "name": "წინასწარი შეკვეთის ბოლო ვადა"
+    },
+    "time_slot_selection": {
+      "name": "დროის ინტერვალის არჩევა მომხმარებლის მიერ"
+    },
+    "kitchen_capacity": {
+      "name": "სამზარეულოს დატვირთვის მართვა"
+    },
+    "stock_countdown": {
+      "name": "მარაგის ავტომატური აღრიცხვა"
+    },
+    "auto_accept": {
+      "name": "ონლაინ შეკვეთების ავტომატური მიღება"
+    },
+    "branded_qr_code": {
+      "name": "QR კოდი თქვენი ლოგოთი"
+    },
+    "private_events": {
+      "name": "კერძო ღონისძიებები"
+    },
+    "social_media_posts": {
+      "name": "სოციალური ქსელების პოსტები"
+    },
+    "whatsapp_auto_replies": {
+      "name": "ავტომატური პასუხები WhatsApp-ში"
+    },
+    "messenger_instagram_replies": {
+      "name": "ავტომატური პასუხები Messenger-სა და Instagram-ში"
+    },
+    "tap_to_pay": {
+      "name": "გადახდის მიღება ტელეფონით"
+    },
+    "sms_order_alerts": {
+      "name": "SMS შეტყობინებები შეკვეთებზე"
+    },
+    "multi_device_kitchen": {
+      "name": "სამზარეულოს სინქრონიზაცია რამდენიმე მოწყობილობაზე"
+    },
+    "multi_user_access": {
+      "name": "წვდომა რამდენიმე მომხმარებლისთვის"
+    },
+    "embed_schedule": {
+      "name": "განრიგის გვერდი თქვენს საიტზე"
+    },
+    "event_types": {
+      "name": "ღონისძიების საკუთარი ტიპები და ფასები"
+    },
+    "buzzer_tracking": {
+      "name": "პეიჯერების აღრიცხვა"
+    },
+    "documents_reminders": {
+      "name": "დოკუმენტები და შეხსენებები"
+    },
+    "profit_per_event": {
+      "name": "მოგება თითო ღონისძიებაზე"
+    },
+    "accountant_reports": {
+      "name": "ანგარიშები ბუღალტრისთვის"
+    },
+    "ticket_printing": {
+      "name": "სამზარეულოს ჩეკების ბეჭდვა"
+    },
+    "customer_display": {
+      "name": "ეკრანი მომხმარებლებისთვის"
+    },
+    "loyalty_stamp_cards": {
+      "name": "ციფრული ლოიალობის ბარათები"
+    }
+  },
+  "cardRegionOnline": "სტანდარტული {region}",
+  "cardRegion": {
+    "UKcards": "ბრიტანული ბარათები",
+    "EEAcards": "ევროპის ეკონომიკური ზონის ბარათები",
+    "UScards": "აშშ-ის ბარათები",
+    "Australiancards": "ავსტრალიური ბარათები",
+    "NewZealandcards": "ახალი ზელანდიის ბარათები",
+    "Canadiancards": "კანადური ბარათები",
+    "Swisscards": "შვეიცარიული ბარათები",
+    "Braziliancards": "ბრაზილიური ბარათები",
+    "Mexicancards": "მექსიკური ბარათები",
+    "Japanesecards": "იაპონური ბარათები",
+    "Singaporecards": "სინგაპურის ბარათები",
+    "HongKongcards": "ჰონკონგის ბარათები",
+    "Malaysiancards": "მალაიზიური ბარათები",
+    "Thaicards": "ტაილანდური ბარათები",
+    "UAEcards": "არაბთა გაერთიანებული საამიროების ბარათები"
+  },
+  "perMonth": {
+    "mo": "{amount}/თვე",
+    "month": "{amount}/თვეში"
+  },
+  "priceWord": {
+    "free": "უფასო",
+    "freeTrial": "უფასო საცდელი პერიოდი",
+    "lifetime": "სამუდამო",
+    "zeroPercent": "0%",
+    "payAtHatch": "გადახდა ფუდტრაკთან",
+    "unlimited": "ულიმიტო",
+    "none": "—",
+    "masked": "დასაზუსტებელია"
+  },
+  "cell": {
+    "included": "ჩართულია"
+  }
+}

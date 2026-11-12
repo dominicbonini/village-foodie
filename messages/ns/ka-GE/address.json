@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "მისამართი",
+    "postcode": "საფოსტო ინდექსი",
+    "zip": "ZIP კოდი",
+    "eircode": "Eircode",
+    "postalCode": "საფოსტო კოდი",
+    "state": "შტატი",
+    "stateTerritory": "შტატი ან ტერიტორია",
+    "province": "პროვინცია",
+    "county": "საგრაფო",
+    "prefecture": "პრეფექტურა",
+    "emirate": "საამირო",
+    "region": "რეგიონი",
+    "area": "დასახლება (სოფელი, დაბა ან ქალაქი)",
+    "townOrArea": "ქალაქი ან უბანი",
+    "city": "ქალაქი",
+    "suburb": "უბანი",
+    "townOrCity": "დაბა ან ქალაქი"
+  },
+  "short": {
+    "area": "დასახლება",
+    "townOrArea": "ქალაქი ან უბანი",
+    "city": "ქალაქი",
+    "suburb": "უბანი",
+    "townOrCity": "დაბა ან ქალაქი"
+  },
+  "inSentence": {
+    "postcode": "საფოსტო ინდექსი",
+    "zip": "ZIP კოდი",
+    "eircode": "Eircode",
+    "postalCode": "საფოსტო კოდი"
+  },
+  "withArticle": {
+    "postcode": "საფოსტო ინდექსი",
+    "zip": "ZIP კოდი",
+    "eircode": "Eircode",
+    "postalCode": "საფოსტო კოდი"
+  },
+  "tradeLabel": {
+    "area": "დაბა ან ქალაქი",
+    "townOrArea": "ქალაქი ან უბანი",
+    "city": "ქალაქი",
+    "suburb": "უბანი",
+    "townOrCity": "დაბა ან ქალაქი"
+  },
+  "basedIn": {
+    "area": "დაბა ან ქალაქი, სადაც საქმიანობთ",
+    "townOrArea": "ქალაქი ან უბანი, სადაც საქმიანობთ",
+    "city": "ქალაქი, სადაც საქმიანობთ",
+    "suburb": "უბანი, სადაც საქმიანობთ",
+    "townOrCity": "დაბა ან ქალაქი, სადაც საქმიანობთ"
+  },
+  "example": "მაგ.: {example}",
+  "customersSee": "მომხმარებლები ხედავენ:",
+  "postalWarning": "როგორც ჩანს, ეს არ არის სწორი {article} — მაგალითად: {example}. შენახვა მაინც შეგიძლიათ.",
+  "regionChoose": "აირჩიეთ…"
+}

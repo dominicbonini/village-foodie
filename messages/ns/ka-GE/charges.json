@@ -1,0 +1,13 @@
+{
+  "subtotal": "შუალედური ჯამი",
+  "taxFallback": "გადასახადი",
+  "taxIncluded": "მოიცავს: {label}",
+  "serviceFeeCustomer": "ონლაინ მომსახურების საფასური",
+  "serviceFee": "მომსახურების საფასური",
+  "cardFee": "ბარათის საკომისიო",
+  "tip": "ჩაის ფული",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {გადასახადი, საფასური და ჩაის ფული} tax_tip {გადასახადი და ჩაის ფული} fees_tip {საფასური და ჩაის ფული} fees {საფასური} other {გადასახადი და საფასური}}"
+}

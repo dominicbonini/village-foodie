@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "პეიჯერი <b>{number}</b> მიბმულია <b>შეკვეთაზე #{holderId}</b>{hasName, select, yes { ({name})} other {}}. გადავიტანოთ ის <b>{hasTarget, select, yes {შეკვეთაზე #{targetId}} other {ამ შეკვეთაზე}}</b>?",
+  "cancel": "გაუქმება",
+  "take": "პეიჯერის აღება: {number}",
+  "titleBlocking": "პეიჯერი შეკვეთისთვის #{id}?",
+  "title": "აირჩიეთ პეიჯერი",
+  "subtitle": "{hasTarget, select, yes {შეკვეთა #{id}} other {ეს შეკვეთა}}{hasCurrent, select, yes { · ამჟამინდელი პეიჯერი: {current}} other {}}",
+  "allTaken": "{n, plural, one {პეიჯერი გაცემულია. შეეხეთ მას, რომ სხვა შეკვეთას წაართვათ.} other {ყველა {count} პეიჯერი გაცემულია. შეეხეთ ერთ-ერთს, რომ სხვა შეკვეთას წაართვათ.}}",
+  "thisOrder": "ეს შეკვეთა",
+  "noBuzzer": "პეიჯერის გარეშე",
+  "done": "დასრულება",
+  "lostTitle": "შეკვეთა #{id} პეიჯერის გარეშე დარჩა",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}სანამ ოფლაინ იყავით, იგივე პეიჯერი სხვა შეკვეთამ დაიკავა. მიეცით სხვა პეიჯერი.",
+  "dismiss": "დახურვა",
+  "assign": "მინიჭება"
+}

@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "კვირის თარიღები",
+    "dayList": "დღეების სია",
+    "place": "ადგილი",
+    "venue": "ობიექტი",
+    "area": "რაიონი",
+    "dayDate": "დღე და თარიღი",
+    "times": "საათები",
+    "orderLink": "შეკვეთის ბმული",
+    "locationTag": "მდებარეობის თეგი"
+  },
+  "weekHeader": "{truck} — სად ვართ ამ კვირაში:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — გაუქმებულია, ბოდიშს გიხდით",
+  "noDates": "ამ კვირაში თარიღები არ არის — მალე შემოგვიარეთ.",
+  "orderAhead": "შეუკვეთეთ წინასწარ: {url}",
+  "orderAheadTagged": "შეუკვეთეთ წინასწარ: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "ბოდიშს გიხდით — {when} ვერ ვიქნებით აქ: {where}.",
+  "cancelledApology": "ბოდიშს ვუხდით ყველას, ვინც მოსვლას აპირებდა. მალე დავბრუნდებით.",
+  "when": {
+    "today": "დღეს",
+    "tonight": "ამაღამ",
+    "tomorrow": "ხვალ",
+    "dated": "{date}"
+  }
+}

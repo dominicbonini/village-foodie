@@ -1,0 +1,15 @@
+{
+  "greeting": "გამარჯობა 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}ჩვენი სრული მენიუ და ინფორმაცია ალერგენებზე იხილეთ აქ: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}ჩვენი სრული მენიუ იხილეთ აქ: {url} — {truck} {emoji}",
+  "otherCategory": "სხვა",
+  "categoryFrom": "{category} (მინ. {price})",
+  "listTwo": "{first} და {second}",
+  "listMany": "{init} და {last}",
+  "menuSummary": "{opener}გვაქვს: {summary}. სრული მენიუ იხილეთ და წინასწარ შეუკვეთეთ აქ: {url} — {truck} {emoji}",
+  "allergenCaveat": "ინფორმაცია ალერგენებზე გადაამოწმეთ სრულ მენიუში — ეს ავტომატური პასუხია.",
+  "specificFallback": "{opener}ჩვენი უახლესი განრიგი იხილეთ აქ: {url}\n\n{truck} {emoji}",
+  "capHandoff": "გმადლობთ შეტყობინებებისთვის! აქ დღეში მხოლოდ რამდენჯერმე შემიძლია პასუხის გაცემა.\n\nშესაკვეთად: {link}",
+  "capContact": "პირდაპირ დასაკავშირებლად: {number}"
+}

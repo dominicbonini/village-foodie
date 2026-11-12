@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck} — სად იქნება შემდეგ.",
+  "orderFrom": "{truck} — შეკვეთა",
+  "poweredBy": "მუშაობს <b>HatchGrab</b>-ზე",
+  "loadFailed": "განრიგის ჩატვირთვა ახლა ვერ მოხერხდა.",
+  "loading": "განრიგი იტვირთება…",
+  "empty": "{truck} — მომავალი ღონისძიებები ჯერ არ არის."
+}

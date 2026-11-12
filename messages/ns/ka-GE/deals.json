@@ -1,0 +1,17 @@
+{
+  "back": "← უკან",
+  "title": "კომბოს გამოყენება",
+  "save": "დაზოგეთ {amount}",
+  "selectItems": "აირჩიეთ პოზიცია კომბოს თითოეული ნაწილისთვის",
+  "choose": "აირჩიეთ: {category}…",
+  "inYourBasket": "── თქვენს კალათაში ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (კალათაში){state, select, used { — უკვე კომბოშია} taken { — არჩეულია სხვა ნაწილში} other {}}",
+  "addNew": "── ახლის დამატება ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {სავალდებულო · აირჩიეთ ერთი} required {სავალდებულო} other {აირჩიეთ ერთი}}{unmet, select, yes { (სავალდებულო)} other {}}",
+  "notePlaceholder": "დაამატეთ შენიშვნა, მაგ. ხახვის გარეშე (არასავალდებულო)",
+  "backButton": "უკან",
+  "cancel": "გაუქმება",
+  "chooseRequired": "აირჩიეთ სავალდებულო ვარიანტები",
+  "apply": "კომბოს გამოყენება · {amount}"
+}

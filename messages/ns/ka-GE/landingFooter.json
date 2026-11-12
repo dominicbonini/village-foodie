@@ -1,0 +1,17 @@
+{
+  "features": "ფუნქციები",
+  "pricing": "ფასები",
+  "faq": "ხშირი კითხვები",
+  "privacy": "კონფიდენციალურობა",
+  "terms": "პირობები",
+  "contact": "კონტაქტი",
+  "about": "ჩვენ შესახებ",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b>-ს შემქმნელებისგან",
+  "badges": {
+    "appStoreLink": "ჩამოტვირთეთ HatchGrab App Store-დან",
+    "appStoreAlt": "ჩამოტვირთეთ App Store-დან",
+    "googlePlayLink": "ჩამოტვირთეთ HatchGrab Google Play-დან",
+    "googlePlayAlt": "მიიღეთ Google Play-ზე"
+  }
+}

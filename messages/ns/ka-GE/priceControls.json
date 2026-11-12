@@ -1,0 +1,8 @@
+{
+  "change": "{label} — შეცვლა",
+  "useRule": "{label} — წესის გამოყენება",
+  "typePrice": "{label} — ფასის შეყვანა",
+  "backToRule": "წესზე დაბრუნება",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

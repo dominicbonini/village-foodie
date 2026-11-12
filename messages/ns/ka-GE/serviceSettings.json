@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "წაღების დრო",
+    "takes_cash": "იღებთ ნაღდ ფულს?",
+    "offline_protection": "შეკვეთების ოფლაინ დაცვა",
+    "buzzer_prompt": "შემახსენეთ პეიჯერის დამატება"
+  },
+  "typeFollowsVanTitle": "მიჰყვება თითოეული ფურგონის ჩვეულ პარამეტრს",
+  "sameSettingsAllVansLabel": "ერთნაირი პარამეტრები ყველა ფურგონისთვის",
+  "sameSettingsAllVansHeader": "ყველა ფურგონი",
+  "sameSettingsConfirm": "დავაკოპიროთ ფურგონი 1-ის პარამეტრები ყველა ფურგონზე? ეს აკოპირებს ფურგონი 1-ის ყველა პარამეტრს, ისევე როგორც „იგივე, რაც ფურგონი 1“ პარამეტრებში. სამზარეულოს დატვირთვას თავისი გადამრთველი აქვს.",
+  "eventTypesFooterStandard": "„სტანდარტული“ თქვენი ჩვეული პარამეტრებია. აქ შეცვლა მას პარამეტრებშიც ცვლის.",
+  "eventTypesFooterOneEvent": "მხოლოდ ერთი ღონისძიების პარამეტრის შესაცვლელად გამოიყენეთ ამ ღონისძიების შეკვეთების პანელი.",
+  "eventTypesSubtitle": "ცვლილებები ავტომატურად ინახება.",
+  "matchStandardLabel": "სტანდარტულის მიხედვით",
+  "matchStandardConfirm": "დავაბრუნოთ ამ ტიპის ყველა პარამეტრი სტანდარტულზე? აქ შეტანილი ყველა ცვლილება წაიშლება.",
+  "priceLabels": {
+    "price_change_on": "ფასების შეცვლა",
+    "price_mode": "ფასის ცვლილება",
+    "price_amount": "თანხა",
+    "price_rounding": "დამრგვალება",
+    "item_prices": "პოზიციების ფასები"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "თითოეულ ფასს თავად დავაყენებ"
+  },
+  "priceRounding": {
+    "none": "არ არის",
+    "nearest_1": "უახლოეს მთელამდე ({symbol}1)",
+    "up_1": "ყოველთვის ზემოთ დამრგვალება"
+  },
+  "pricesStandardCell": "თქვენი მენიუს ფასები",
+  "pricesTruckWideTitle": "თქვენი ფასები ყველა ფურგონისთვის ერთნაირია",
+  "pricesMenuCell": "მენიუ",
+  "pricesTypeOffCell": "მენიუს ფასები",
+  "itemPricesShow": "ფასების ჩვენება",
+  "itemPricesHide": "ფასების დამალვა",
+  "priceItemsHeading": "დააყენეთ თითოეული პოზიციის ფასი",
+  "priceItemsOpen": "თითოეული პოზიციის ფასის ნახვა ან შეცვლა ›",
+  "priceItemsClose": "პოზიციების ფასების დამალვა ⌃",
+  "ownPriceCount": "{n, plural, one {{count} პოზიციას საკუთარი ფასი აქვს} other {{count} პოზიციას საკუთარი ფასი აქვს}}",
+  "priceTypeHint": "დააჭირეთ ფასს, რომ საკუთარი ჩაწეროთ.",
+  "pricesLiveNotice": "ეს ღონისძიება მიმდინარეობს. ახალი შეკვეთები ახალ ფასებს იყენებს. უკვე გაკეთებული შეკვეთები ძველ ფასებს ინარჩუნებს.",
+  "placeTypeHelper": "„ღონისძიების დამატება“ ამ ტიპს ირჩევს, როცა ამ ადგილს აირჩევთ.",
+  "postPictureStandardNote": "აქ ღონისძიების პოსტები თქვენს სტანდარტულ დიზაინს იყენებს.",
+  "eventItemsCardDescription": "ფასები, პოზიციების ლიმიტები და ხელმისაწვდომობა მხოლოდ ამ ღონისძიებისთვის. ცვლილებები მაშინვე ამოქმედდება.",
+  "eventPriceColumnLabel": "ფასი",
+  "eventPriceOwnNote": "{hasType, select, yes {{type}: {price} · ეს ღონისძიება} other {მენიუ: {price} · ეს ღონისძიება}}",
+  "eventPriceEdit": "✎ ფასების რედაქტირება",
+  "eventPriceCancel": "გაუქმება",
+  "eventPriceSave": "ფასების შენახვა",
+  "eventPriceEditNote": "ფასებს არედაქტირებთ მხოლოდ ამ ღონისძიებისთვის. პოზიციების ლიმიტები და ხელმისაწვდომობა შენახვამდე დაბლოკილია.",
+  "eventPriceLiveNote": "მიმდინარეობს: ახალი შეკვეთები ახალ ფასებს იყენებს.",
+  "offlineWhenOfflineLabel": "კავშირის გაწყვეტისას"
+}

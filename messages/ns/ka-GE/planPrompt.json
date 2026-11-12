@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} შედის ტარიფში {plan}.} other {{feature} შედის ტარიფში {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} არ შედის თქვენს ტარიფში.} other {{feature} არ შედის თქვენს ტარიფში.}}",
+  "switchedOff": "{many, select, yes {{feature} გამორთულია თქვენი ფუდტრაკისთვის.} other {{feature} გამორთულია თქვენი ფუდტრაკისთვის.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "ტარიფის შეცვლა →",
+  "features": {
+    "discovery_map": {
+      "name": "განთავსება HatchGrab-ის რუკაზე",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "ვებპანელი",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "სამზარეულოს აპლიკაცია",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "მენიუ QR კოდით",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "კომბოები",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "დამატებითი შეთავაზებები",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "შეკვეთები ადგილზე",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "ონლაინ შეკვეთა — გადახდა შეკვეთის აღებისას",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "„გაყიდულია“ ღილაკი",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "მარაგის აღრიცხვა",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "შეკვეთების ოფლაინ დაცვა",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "ონლაინ გადახდები",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "წინასწარი შეკვეთა მომავალი თარიღისთვის",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "დროის ინტერვალები მომხმარებლებისთვის",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "სამზარეულოს დატვირთვის მართვა",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "ავტომატური მიღება",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "ავტომატური პასუხები Messenger-სა და Instagram-ში",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR კოდები თქვენი ლოგოთი",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "გაფართოებული ანგარიშები",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "სამზარეულოს ჩეკების ბეჭდვა",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "სამზარეულოს სინქრონიზაცია რამდენიმე მოწყობილობაზე",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "მზარეულის ეკრანი",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "ავტომატური პასუხები WhatsApp-ში",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "თქვენი განრიგი თქვენს საიტზე",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "სოციალური ქსელების პოსტები",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "ღონისძიების საკუთარი ტიპები",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "კერძო ღონისძიებები",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "დოკუმენტები",
+      "many": "yes"
+    }
+  }
+}

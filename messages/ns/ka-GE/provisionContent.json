@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "წასახემსებელი",
+    "mains": "ძირითადი კერძები",
+    "burgers": "ბურგერები",
+    "pizza": "პიცა",
+    "wrapsSandwiches": "ვრაპები და სენდვიჩები",
+    "sides": "გარნირები",
+    "dipsSauces": "დიპები და სოუსები",
+    "desserts": "დესერტები",
+    "drinks": "სასმელები",
+    "kidsMenu": "საბავშვო მენიუ",
+    "specials": "დღის შეთავაზებები",
+    "other": "სხვა"
+  },
+  "demoEventName": "დემო ღონისძიება",
+  "firstVanName": "ფურგონი 1",
+  "demoCategories": {
+    "pizza": "პიცა",
+    "burgers": "ბურგერები",
+    "mains": "ძირითადი კერძები",
+    "sides": "გარნირები",
+    "drinks": "სასმელები"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 პიცის ფუდტრაკი",
+      "items": {
+        "margherita": "მარგარიტა",
+        "pepperoni": "პეპერონი",
+        "ndujaHoney": "ნდუია და თაფლი",
+        "fourCheese": "ოთხი ყველი",
+        "gardenVeg": "ბოსტნეულის",
+        "garlicBread": "ნივრის პური",
+        "rocketParmesan": "რუკოლა და პარმეზანი",
+        "olives": "ზეთისხილი",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "კოკა-კოლა"
+      }
+    },
+    "burgers": {
+      "label": "🍔 ბურგერის ფუდტრაკი",
+      "items": {
+        "classicCheeseburger": "კლასიკური ჩიზბურგერი",
+        "doubleBacon": "ორმაგი ბეკონით",
+        "buttermilkChicken": "ქათამი დოს მარინადში",
+        "halloumiStack": "ჰალუმის ბურგერი",
+        "smashBurger": "სმეშ ბურგერი",
+        "skinOnFries": "კარტოფილი ფრი ქერქით",
+        "loadedCheeseFries": "ფრი ყველითა და დანამატებით",
+        "onionRings": "ხახვის რგოლები",
+        "craftLemonade": "ხელნაკეთი ლიმონათი",
+        "coke": "კოკა-კოლა"
+      }
+    },
+    "curries": {
+      "label": "🍛 კარის ფუდტრაკი",
+      "items": {
+        "chickenTikkaMasala": "ქათმის ტიკა მასალა",
+        "lambRoganJosh": "ცხვრის როგან ჯოში",
+        "chanaMasala": "ჩანა მასალა",
+        "butterChicken": "ბატერ ჩიკენი",
+        "saagPaneer": "საგ პანირი",
+        "pilauRice": "პილაუ ბრინჯი",
+        "garlicNaan": "ნივრის ნაანი",
+        "onionBhaji": "ხახვის ბჰაჯი",
+        "mangoLassi": "მანგოს ლასი",
+        "coke": "კოკა-კოლა"
+      }
+    }
+  }
+}
