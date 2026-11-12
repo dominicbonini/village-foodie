@@ -1,0 +1,142 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for BENGALI as in Bangladesh (bn-BD): এলার্জি / অ্যালার্জি, অসহিষ্ণুতা / ইনটলারেন্স, সহ্য হয় না, হজম হয় না, খেলে সমস্যা, খেতে পারি না, সিলিয়াক, গ্লুটেন ফ্রি / মুক্ত, <allergen> ছাড়া / <allergen> নেই, নিরাপদ, জন্য উপযুক্ত, কন্টামিনেশন / দূষণ — plus romanised Bangla (allergy ache, dudh chara). Vowel signs, hasanta, chandrabindu and the nukta of য় / ড় are stripped on both sides: bare ছাড়া (→ ছড, inside ছেড়ে) and bare মুক্ত (inside মুক্তি) are NOT stems, bare উপযুক্ত is not (উপযুক্ত দাম = fair price), and এলার্জ is not matched by লার্জ (large). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "bn",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "alerg",
+    "alerj",
+    "allerj",
+    "elerg",
+    "intoleran",
+    "celiac",
+    "coeliac",
+    "gluten free",
+    "glutenfree",
+    "dairy free",
+    "nut free",
+    "egg free",
+    "eggless",
+    "lactose",
+    "epipen",
+    "epi pen",
+    "anaphyla",
+    "cross contamina",
+    "may contain",
+    "traces of",
+    "free from",
+    "safe for",
+    "sensitive to",
+    "অ্যালার্জ",
+    "এলার্জ",
+    "এ্যালার্জ",
+    "অসহিষ্ণু",
+    "ইনটলার",
+    "সহ্য হয়",
+    "হজম হয় না",
+    "হজম হয়না",
+    "খেলে সমস্যা",
+    "খেতে পারি না",
+    "খেতে পারিনা",
+    "সিলিয়াক",
+    "অ্যানাফাইল",
+    "এপিপেন",
+    "গ্লুটেন ফ্রি",
+    "গ্লুটেন মুক্ত",
+    "গ্লুটেনমুক্ত",
+    "ল্যাকটোজ",
+    "ডেইরি ফ্রি",
+    "বাদাম মুক্ত",
+    "বাদামমুক্ত",
+    "গ্লুটেন ছাড়া",
+    "দুধ ছাড়া",
+    "ডিম ছাড়া",
+    "বাদাম ছাড়া",
+    "চিংড়ি ছাড়া",
+    "মাছ ছাড়া",
+    "ডেইরি ছাড়া",
+    "গ্লুটেন নেই",
+    "দুধ নেই",
+    "ডিম নেই",
+    "বাদাম নেই",
+    "চিংড়ি নেই",
+    "নিরাপদ",
+    "জন্য উপযুক্ত",
+    "সংবেদনশীল",
+    "কন্টামিন",
+    "দূষণ",
+    "gluten chara",
+    "gluten chhara",
+    "dudh chara",
+    "dudh chhara",
+    "dim chara",
+    "dim chhara",
+    "badam chara",
+    "badam chhara",
+    "chingri chara",
+    "khele somos",
+    "khele shomos",
+    "khete pari na",
+    "khete parina",
+    "hojom hoy na",
+    "hojom hoyna",
+    "nirapod"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "গ্লুটেন",
+        "গম",
+        "আটা",
+        "ময়দা",
+        "বার্লি"
+      ],
+      "crustaceans": [
+        "চিংড়ি",
+        "কাঁকড়া",
+        "লবস্টার",
+        "সামুদ্রিক খাবার",
+        "সিফুড"
+      ],
+      "eggs": [
+        "ডিম",
+        "মেয়োনিজ"
+      ],
+      "fish": [
+        "মাছ",
+        "ফিশ"
+      ],
+      "peanuts": [
+        "চিনাবাদাম",
+        "বাদাম"
+      ],
+      "soy": [
+        "সয়া",
+        "সয়াবিন",
+        "টোফু"
+      ],
+      "milk": [
+        "দুধ",
+        "ল্যাকটোজ",
+        "পনির",
+        "চিজ",
+        "মাখন",
+        "ঘি",
+        "ক্রিম",
+        "দই",
+        "ডেইরি"
+      ],
+      "tree nuts": [
+        "কাজু",
+        "কাঠবাদাম",
+        "আখরোট",
+        "পেস্তা",
+        "বাদাম"
+      ],
+      "sulphites": [
+        "সালফাইট"
+      ]
+    }
+  }
+}

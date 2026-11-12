@@ -1,0 +1,69 @@
+{
+  "close": "বন্ধ করুন",
+  "cancel": "বাতিল",
+  "selectReason": "একটি কারণ বেছে নিন",
+  "reject": {
+    "title": "অর্ডার #{orderId} প্রত্যাখ্যান করবেন?",
+    "reasonLabel": "কারণ — আবশ্যক (গ্রাহক দেখতে পাবেন)",
+    "reason": "{reason, select, sold_out {একটি আইটেম শেষ হয়ে গেছে} too_busy {অনেক ব্যস্ত — সময়মতো বানানো সম্ভব নয়} closing_soon {শিগগিরই বন্ধ হচ্ছে} other {অন্য কারণ}}",
+    "noteRequired": "কারণ — আবশ্যক",
+    "noteOptional": "অতিরিক্ত নোট — ঐচ্ছিক",
+    "notePlaceholder": "গ্রাহকের জন্য আরও বিস্তারিত লিখুন…",
+    "keep": "অর্ডার রাখুন",
+    "confirm": "অর্ডার প্রত্যাখ্যান করুন"
+  },
+  "eventCancel": {
+    "title": "এই ইভেন্ট বাতিল করবেন?",
+    "affected": "{n, plural, one {{count} অর্ডার} other {{count} অর্ডার}} বাতিল হবে এবং গ্রাহকদের জানিয়ে দেওয়া হবে।",
+    "reasonLabel": "কারণ — ঐচ্ছিক",
+    "reason": "{reason, select, vehicle_breakdown {গাড়ি নষ্ট হয়ে গেছে} weather {আবহাওয়া} venue_issue {ভেন্যুতে সমস্যা} personal_emergency {ব্যক্তিগত জরুরি অবস্থা} other {অন্য কারণ}}",
+    "messageLabel": "গ্রাহকদের জন্য বার্তা — ঐচ্ছিক",
+    "messagePlaceholder": "যেমন: দুঃখিত, ভেন্যুতে আসার পথে আমাদের গাড়ি নষ্ট হয়ে গেছে…",
+    "keep": "ইভেন্ট রাখুন",
+    "cancelling": "বাতিল করা হচ্ছে…",
+    "confirm": "ইভেন্ট বাতিল করুন"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {ইভেন্ট আবার শুরু করুন} other {ইভেন্ট শুরু করুন}}",
+    "changeEvent": "ইভেন্ট বদলান",
+    "changeEventType": "ইভেন্টের ধরন বদলান…",
+    "privateLink": "প্রাইভেট লিংক ও QR কোড",
+    "noteLabel": "গ্রাহকদের জন্য নোট",
+    "notePlaceholder": "যেমন: পার্কের মূল গেটের পাশে পার্কিং, কমলা রঙের ছাউনি খুঁজুন",
+    "noteHint": "অর্ডার পেজে আপনার ইভেন্টের বিস্তারিতের নিচে গ্রাহকরা এটি দেখতে পাবেন।",
+    "saveNote": "নোট সেভ করুন",
+    "resume": "অর্ডার আবার চালু করুন",
+    "pause": "অর্ডার সাময়িক বন্ধ করুন",
+    "changeFinishTime": "ইভেন্ট শেষের সময় বদলান",
+    "finishEvent": "ইভেন্ট শেষ করুন",
+    "cancelEvent": "ইভেন্ট বাতিল করুন"
+  },
+  "finish": {
+    "confirmTitle": "শেষের সময় বদলাবেন?",
+    "willFinish": "ইভেন্টটি শেষ হবে: <b>{selected}</b>{hasCurrent, select, yes { (আগে ছিল <b>{current}</b>)} other {}}।",
+    "dueAfter": "<b>নতুন শেষের সময় {selected}; এর পরে পিকআপ আছে: {n, plural, one {{count} অর্ডার} other {{count} অর্ডার}}।</b> {n, plural, one {এটি} other {এগুলো}} বোর্ডে থাকবে এবং এখনো {n, plural, one {বানাতে হবে} other {বানাতে হবে}}। শেষের সময় বদলালে শুধু পরের সময়ের জন্য নতুন অর্ডার নেওয়া বন্ধ হয়।",
+    "saving": "সেভ করা হচ্ছে…",
+    "confirm": "শেষের সময় বদলান",
+    "keepCurrent": "আগের সময় রাখুন: {current}",
+    "keepAsIs": "যেমন আছে রাখুন",
+    "title": "শেষের সময় বদলান",
+    "currentlySet": "এই ইভেন্টের শেষের সময় এখন ঠিক করা আছে: <b>{current}</b>।",
+    "noFinishTime": "এই ইভেন্টের কোনো শেষের সময় ঠিক করা নেই।",
+    "noTimesLeft": "আজ আর কোনো সময় বাকি নেই। এর বদলে “ইভেন্ট শেষ করুন” ব্যবহার করুন।",
+    "newFinishTime": "নতুন শেষের সময়",
+    "optionCurrent": "{time} (বর্তমান)",
+    "earlier": "এটি বর্তমান শেষের সময়ের চেয়ে আগে। এর পরের কোনো সময়ের জন্য গ্রাহকরা অর্ডার করতে পারবেন না।",
+    "review": "পরিবর্তনটি দেখুন",
+    "optionNextDay": "{time} (পরের দিন)"
+  },
+  "extraWait": {
+    "title": "বাড়তি অপেক্ষার সময় যোগ করুন",
+    "hint": "নতুন অর্ডারে জানানো পিকআপের সময়ের সঙ্গে যোগ হয়। ইভেন্ট শেষের সময় বদলায় না।",
+    "option": "+{mins} মিনিট"
+  },
+  "picker": {
+    "reconnect": "লোড করতে আবার কানেক্ট করুন",
+    "selected": "নির্বাচিত",
+    "status": "{tone, select, paused {⏸ সাময়িক বন্ধ} live {● লাইভ} finished {● সমাপ্ত} cancelled {বাতিল} other {শুরু হয়নি}}"
+  }
+}

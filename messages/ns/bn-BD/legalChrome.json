@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "প্রাইভেসি পলিসি — HatchGrab",
+    "privacyDescription": "HatchGrab Ltd কীভাবে ব্যক্তিগত তথ্য সংগ্রহ ও ব্যবহার করে।",
+    "termsTitle": "সেবার শর্তাবলি — HatchGrab",
+    "termsDescription": "HatchGrab ব্যবহারের শর্তাবলি।",
+    "countryTermsTitle": "দেশভিত্তিক শর্তাবলি — HatchGrab",
+    "countryTermsDescription": "কিছু দেশে HatchGrab-এর ক্ষেত্রে প্রযোজ্য বাড়তি নিয়ম।"
+  },
+  "homeLabel": "HatchGrab হোম",
+  "privacy": "প্রাইভেসি",
+  "terms": "শর্তাবলি",
+  "countryTerms": "দেশভিত্তিক শর্তাবলি",
+  "contact": "যোগাযোগ",
+  "lastUpdated": "সর্বশেষ হালনাগাদ: {date}",
+  "questions": "প্রশ্ন আছে? <link>যোগাযোগ করুন</link> — আমরা সত্যিকারের মানুষ।",
+  "translationNote": "এটি একটি অনুবাদ। <link>ইংরেজি সংস্করণের</link> সঙ্গে কোনো অমিল থাকলে ইংরেজি সংস্করণই প্রযোজ্য।"
+}

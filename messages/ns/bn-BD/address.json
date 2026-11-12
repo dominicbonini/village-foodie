@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "ঠিকানা",
+    "postcode": "পোস্ট কোড",
+    "zip": "ZIP কোড",
+    "eircode": "Eircode",
+    "postalCode": "পোস্টাল কোড",
+    "state": "রাজ্য",
+    "stateTerritory": "রাজ্য বা টেরিটরি",
+    "province": "প্রদেশ",
+    "county": "কাউন্টি",
+    "prefecture": "প্রিফেকচার",
+    "emirate": "আমিরাত",
+    "region": "অঞ্চল",
+    "area": "এলাকা (গ্রাম, শহর বা নগর)",
+    "townOrArea": "শহর বা এলাকা",
+    "city": "শহর",
+    "suburb": "উপশহর",
+    "townOrCity": "শহর বা নগর"
+  },
+  "short": {
+    "area": "এলাকা",
+    "townOrArea": "শহর বা এলাকা",
+    "city": "শহর",
+    "suburb": "উপশহর",
+    "townOrCity": "শহর বা নগর"
+  },
+  "inSentence": {
+    "postcode": "পোস্ট কোড",
+    "zip": "ZIP কোড",
+    "eircode": "Eircode",
+    "postalCode": "পোস্টাল কোড"
+  },
+  "withArticle": {
+    "postcode": "পোস্ট কোড",
+    "zip": "ZIP কোড",
+    "eircode": "Eircode",
+    "postalCode": "পোস্টাল কোড"
+  },
+  "tradeLabel": {
+    "area": "শহর বা নগর",
+    "townOrArea": "শহর বা এলাকা",
+    "city": "শহর",
+    "suburb": "উপশহর",
+    "townOrCity": "শহর বা নগর"
+  },
+  "basedIn": {
+    "area": "আপনার ব্যবসার শহর বা নগর",
+    "townOrArea": "আপনার ব্যবসার শহর বা এলাকা",
+    "city": "আপনার ব্যবসার শহর",
+    "suburb": "আপনার ব্যবসার উপশহর",
+    "townOrCity": "আপনার ব্যবসার শহর বা নগর"
+  },
+  "example": "যেমন {example}",
+  "customersSee": "গ্রাহকেরা দেখবেন:",
+  "postalWarning": "এটি সঠিক {article} বলে মনে হচ্ছে না — উদাহরণ: {example}। তবুও আপনি এটি সেভ করতে পারবেন।",
+  "regionChoose": "বেছে নিন…"
+}

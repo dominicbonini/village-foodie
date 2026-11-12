@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck} — এরপর কোথায় বসছে।",
+  "orderFrom": "অর্ডার করুন: {truck}",
+  "poweredBy": "চালিত: <b>HatchGrab</b>",
+  "loadFailed": "এই মুহূর্তে সময়সূচি লোড করা যায়নি।",
+  "loading": "সময়সূচি লোড হচ্ছে…",
+  "empty": "{truck} — কোনো আসন্ন ইভেন্ট তালিকায় নেই।"
+}

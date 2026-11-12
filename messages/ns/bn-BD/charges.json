@@ -1,0 +1,13 @@
+{
+  "subtotal": "সাবটোটাল",
+  "taxFallback": "ট্যাক্স",
+  "taxIncluded": "অন্তর্ভুক্ত: {label}",
+  "serviceFeeCustomer": "অনলাইন সার্ভিস ফি",
+  "serviceFee": "সার্ভিস ফি",
+  "cardFee": "কার্ড ফি",
+  "tip": "টিপ",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {ট্যাক্স, ফি ও টিপ} tax_tip {ট্যাক্স ও টিপ} fees_tip {ফি ও টিপ} fees {ফি} other {ট্যাক্স ও ফি}}"
+}

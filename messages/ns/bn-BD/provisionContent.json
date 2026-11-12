@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "স্টার্টার",
+    "mains": "মেইন কোর্স",
+    "burgers": "বার্গার",
+    "pizza": "পিৎজা",
+    "wrapsSandwiches": "র‍্যাপ ও স্যান্ডউইচ",
+    "sides": "সাইড আইটেম",
+    "dipsSauces": "ডিপ ও সস",
+    "desserts": "ডেজার্ট",
+    "drinks": "পানীয়",
+    "kidsMenu": "বাচ্চাদের মেনু",
+    "specials": "স্পেশাল",
+    "other": "অন্যান্য"
+  },
+  "demoEventName": "ডেমো ইভেন্ট",
+  "firstVanName": "ভ্যান 1",
+  "demoCategories": {
+    "pizza": "পিৎজা",
+    "burgers": "বার্গার",
+    "mains": "মেইন কোর্স",
+    "sides": "সাইড আইটেম",
+    "drinks": "পানীয়"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 পিৎজা ভ্যান",
+      "items": {
+        "margherita": "মার্গেরিটা",
+        "pepperoni": "পেপারোনি",
+        "ndujaHoney": "এনডুইয়া ও মধু",
+        "fourCheese": "ফোর চিজ",
+        "gardenVeg": "ভেজিটেবল",
+        "garlicBread": "গার্লিক ব্রেড",
+        "rocketParmesan": "রকেট ও পারমেজান",
+        "olives": "জলপাই",
+        "sanPellegrino": "স্পার্কলিং ওয়াটার",
+        "coke": "কোক"
+      }
+    },
+    "burgers": {
+      "label": "🍔 বার্গার ভ্যান",
+      "items": {
+        "classicCheeseburger": "ক্লাসিক চিজবার্গার",
+        "doubleBacon": "ডাবল বিফ",
+        "buttermilkChicken": "বাটারমিল্ক চিকেন",
+        "halloumiStack": "হালুমি স্ট্যাক",
+        "smashBurger": "স্ম্যাশ বার্গার",
+        "skinOnFries": "খোসাসহ ফ্রাই",
+        "loadedCheeseFries": "লোডেড চিজ ফ্রাই",
+        "onionRings": "অনিয়ন রিং",
+        "craftLemonade": "লেবুর শরবত",
+        "coke": "কোক"
+      }
+    },
+    "curries": {
+      "label": "🍛 কারি ভ্যান",
+      "items": {
+        "chickenTikkaMasala": "চিকেন টিক্কা মাসালা",
+        "lambRoganJosh": "খাসির রোগান জোশ",
+        "chanaMasala": "ছোলা মাসালা",
+        "butterChicken": "বাটার চিকেন",
+        "saagPaneer": "পালং পনির",
+        "pilauRice": "পোলাও",
+        "garlicNaan": "গার্লিক নান",
+        "onionBhaji": "পেঁয়াজু",
+        "mangoLassi": "আমের লাচ্ছি",
+        "coke": "কোক"
+      }
+    }
+  }
+}

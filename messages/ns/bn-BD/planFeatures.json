@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "ডিসকভারি ম্যাপে তালিকাভুক্তি"
+    },
+    "web_dashboard": {
+      "name": "সব ডিভাইসে ওয়েব ড্যাশবোর্ড"
+    },
+    "qr_code": {
+      "name": "QR কোড"
+    },
+    "schedule_import": {
+      "name": "স্বয়ংক্রিয় সময়সূচি ইমপোর্ট"
+    },
+    "meal_deals_upsells": {
+      "name": "কম্বো ও আপসেল"
+    },
+    "walkup_orders": {
+      "name": "ওয়াক-ইন অর্ডার প্রসেসিং"
+    },
+    "sold_out_toggle": {
+      "name": "এক ট্যাপে ‘শেষ’ চিহ্নিত করা"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad ও Android কিচেন অ্যাপ"
+    },
+    "offline_protection": {
+      "name": "অফলাইন অর্ডার সুরক্ষা"
+    },
+    "online_payments": {
+      "name": "অনলাইন পেমেন্ট"
+    },
+    "advance_preordering": {
+      "name": "আগাম প্রি-অর্ডার"
+    },
+    "preorder_deadline": {
+      "name": "প্রি-অর্ডারের শেষ সময়"
+    },
+    "time_slot_selection": {
+      "name": "গ্রাহকের টাইম স্লট বাছাই"
+    },
+    "kitchen_capacity": {
+      "name": "কিচেনের সক্ষমতা ব্যবস্থাপনা"
+    },
+    "stock_countdown": {
+      "name": "স্বয়ংক্রিয় স্টক কাউন্টডাউন"
+    },
+    "auto_accept": {
+      "name": "অনলাইন অর্ডার অটো-অ্যাকসেপ্ট"
+    },
+    "branded_qr_code": {
+      "name": "নিজস্ব লোগোসহ QR কোড"
+    },
+    "private_events": {
+      "name": "প্রাইভেট ইভেন্ট"
+    },
+    "social_media_posts": {
+      "name": "সোশ্যাল মিডিয়া পোস্ট"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp অটো-রিপ্লাই"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger ও Instagram অটো-রিপ্লাই"
+    },
+    "tap_to_pay": {
+      "name": "ফোনেই পেমেন্ট নিন"
+    },
+    "sms_order_alerts": {
+      "name": "SMS অর্ডার অ্যালার্ট"
+    },
+    "multi_device_kitchen": {
+      "name": "একাধিক ডিভাইসে কিচেন সিঙ্ক"
+    },
+    "multi_user_access": {
+      "name": "একাধিক ইউজারের অ্যাক্সেস"
+    },
+    "embed_schedule": {
+      "name": "নিজের ওয়েবসাইটে সময়সূচির পেজ"
+    },
+    "event_types": {
+      "name": "নিজস্ব ইভেন্টের ধরন ও দাম"
+    },
+    "buzzer_tracking": {
+      "name": "পেজার ট্র্যাকিং"
+    },
+    "documents_reminders": {
+      "name": "ডকুমেন্ট ও রিমাইন্ডার"
+    },
+    "profit_per_event": {
+      "name": "প্রতি ইভেন্টে লাভ"
+    },
+    "accountant_reports": {
+      "name": "হিসাবরক্ষকের জন্য রিপোর্ট"
+    },
+    "ticket_printing": {
+      "name": "কিচেন টিকিট প্রিন্টিং"
+    },
+    "customer_display": {
+      "name": "গ্রাহকদের জন্য ডিসপ্লে"
+    },
+    "loyalty_stamp_cards": {
+      "name": "ডিজিটাল লয়ালটি স্ট্যাম্প কার্ড"
+    }
+  },
+  "cardRegionOnline": "স্ট্যান্ডার্ড {region}",
+  "cardRegion": {
+    "UKcards": "যুক্তরাজ্যের কার্ড",
+    "EEAcards": "EEA কার্ড",
+    "UScards": "যুক্তরাষ্ট্রের কার্ড",
+    "Australiancards": "অস্ট্রেলিয়ার কার্ড",
+    "NewZealandcards": "নিউজিল্যান্ডের কার্ড",
+    "Canadiancards": "কানাডার কার্ড",
+    "Swisscards": "সুইজারল্যান্ডের কার্ড",
+    "Braziliancards": "ব্রাজিলের কার্ড",
+    "Mexicancards": "মেক্সিকোর কার্ড",
+    "Japanesecards": "জাপানের কার্ড",
+    "Singaporecards": "সিঙ্গাপুরের কার্ড",
+    "HongKongcards": "হংকংয়ের কার্ড",
+    "Malaysiancards": "মালয়েশিয়ার কার্ড",
+    "Thaicards": "থাইল্যান্ডের কার্ড",
+    "UAEcards": "সংযুক্ত আরব আমিরাতের কার্ড"
+  },
+  "perMonth": {
+    "mo": "{amount}/মাস",
+    "month": "{amount}/মাস"
+  },
+  "priceWord": {
+    "free": "ফ্রি",
+    "freeTrial": "ফ্রি ট্রায়াল",
+    "lifetime": "আজীবন",
+    "zeroPercent": "0%",
+    "payAtHatch": "পিকআপে পেমেন্ট",
+    "unlimited": "আনলিমিটেড",
+    "none": "—",
+    "masked": "চূড়ান্ত হয়নি"
+  },
+  "cell": {
+    "included": "অন্তর্ভুক্ত"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "সক্ষমতার বেশি: {n, plural, one {{count} টাইম স্লট} other {{count} টাইম স্লট}} — দেখে নিন",
+  "batchOver": "{cat} — ব্যাচের সীমার বেশি · টাইম স্লট {slot}: {count} (প্রতি ব্যাচে {per})",
+  "eventStartOver": "ইভেন্টের শুরুতেই সক্ষমতার বেশি — টাইম স্লট {slot}: {n, plural, one {{count} আইটেম} other {{count} আইটেম}}",
+  "kitchenOver": "কিচেন সক্ষমতার বেশি — টাইম স্লট {slot}: রান্না হচ্ছে {n, plural, one {{count} আইটেম} other {{count} আইটেম}}",
+  "orderItems": "#{id} — {n, plural, one {{count} আইটেম} other {{count} আইটেম}}",
+  "placedAnyway": "তবুও নেওয়া হয়েছে: {list}",
+  "placedItem": "#{id} (টাইম স্লট {slot})",
+  "orphans": "সক্ষমতার বেশি: {times} — কোনো অর্ডারের সঙ্গে মেলানো যায়নি",
+  "dismiss": "সরিয়ে দিন",
+  "kitchenCapacity": "কিচেনের সক্ষমতা",
+  "overCapacity": "সক্ষমতার বেশি",
+  "wakeUnsupported": "এই ডিভাইস স্ক্রিন চালু রাখতে পারে না।",
+  "wakeInsecure": "এই ঠিকানা থেকে স্ক্রিন চালু রাখা যায় না।",
+  "wakeRetry": "স্ক্রিন চালু রাখুন — আবার চেষ্টা করতে ট্যাপ করুন",
+  "wakeAcquire": "স্ক্রিন চালু রাখুন",
+  "degraded": {
+    "serverError": "সার্ভার অর্ডার লোড করতে পারেনি{hasStatus, select, yes { (ত্রুটি {status})} other {}}। অর্ডার দেখানো হচ্ছে — সর্বশেষ আপডেট: {at}। নতুন অর্ডার বাদ পড়ে থাকতে পারে।",
+    "unreachable": "সার্ভারে পৌঁছানো যাচ্ছে না। অর্ডার দেখানো হচ্ছে — সর্বশেষ আপডেট: {at}। নতুন অর্ডার বাদ পড়ে থাকতে পারে।"
+  }
+}

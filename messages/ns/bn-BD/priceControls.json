@@ -1,0 +1,8 @@
+{
+  "change": "{label} — বদলান",
+  "useRule": "{label} — বরং নিয়মটি ব্যবহার করুন",
+  "typePrice": "{label} — দাম লিখুন",
+  "backToRule": "নিয়মে ফিরে যান",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

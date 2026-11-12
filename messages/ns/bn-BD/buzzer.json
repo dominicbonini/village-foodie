@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "পেজার <b>{number}</b> এখন আছে: <b>অর্ডার #{holderId}</b>{hasName, select, yes { ({name})} other {}}। পেজারটি এখানে নিয়ে আসবেন — <b>{hasTarget, select, yes {অর্ডার #{targetId}} other {এই অর্ডার}}</b>?",
+  "cancel": "বাতিল",
+  "take": "পেজার {number} নিন",
+  "titleBlocking": "অর্ডার #{id} — পেজার দেবেন?",
+  "title": "একটি পেজার বেছে নিন",
+  "subtitle": "{hasTarget, select, yes {অর্ডার #{id}} other {এই অর্ডার}}{hasCurrent, select, yes { · এখন পেজার {current}} other {}}",
+  "allTaken": "{n, plural, one {পেজারটি অন্য অর্ডারে দেওয়া আছে। অন্য অর্ডার থেকে নিতে ট্যাপ করুন।} other {সব পেজার ({count}) দেওয়া হয়ে গেছে। অন্য অর্ডার থেকে নিতে যেকোনো একটিতে ট্যাপ করুন।}}",
+  "thisOrder": "এই অর্ডার",
+  "noBuzzer": "পেজার নেই",
+  "done": "সম্পন্ন",
+  "lostTitle": "অর্ডার #{id} — কোনো পেজার নেই",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}আপনি অফলাইনে থাকার সময় অন্য একটি অর্ডার একই পেজার নিয়ে নিয়েছে। এই গ্রাহককে অন্য একটি পেজার দিন।",
+  "dismiss": "সরিয়ে দিন",
+  "assign": "দিন"
+}

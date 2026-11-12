@@ -1,0 +1,17 @@
+{
+  "features": "ফিচার",
+  "pricing": "দাম",
+  "faq": "সাধারণ জিজ্ঞাসা",
+  "privacy": "প্রাইভেসি",
+  "terms": "শর্তাবলি",
+  "contact": "যোগাযোগ",
+  "about": "আমাদের সম্পর্কে",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b>-এর নির্মাতাদের কাছ থেকে",
+  "badges": {
+    "appStoreLink": "App Store থেকে HatchGrab ডাউনলোড করুন",
+    "appStoreAlt": "App Store থেকে ডাউনলোড করুন",
+    "googlePlayLink": "Google Play থেকে HatchGrab নিন",
+    "googlePlayAlt": "Google Play-তে পাবেন"
+  }
+}

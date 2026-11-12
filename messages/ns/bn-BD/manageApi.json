@@ -1,0 +1,10 @@
+{
+  "vanFallback": "ভ্যান",
+  "eventsFeed": {
+    "today": "আজ · {date}",
+    "tomorrow": "আগামীকাল · {date}"
+  },
+  "privacyNotSaved": "ইভেন্টটি লাইভ, কিন্তু এর প্রাইভেসি সেভ করা যায়নি।",
+  "stockWarning": "এই ক্যাটাগরিতে পাওয়া যায় এমন কোনো আইটেম নেই: “{category}”",
+  "uncategorised": "ক্যাটাগরি ছাড়া"
+}

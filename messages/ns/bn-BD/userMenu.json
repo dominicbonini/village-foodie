@@ -1,0 +1,18 @@
+{
+  "menuLabel": "ইউজার মেনু",
+  "screenOn": "স্ক্রিন চালু",
+  "screenOff": "স্ক্রিন বন্ধ",
+  "newOrderSound": "নতুন অর্ডারের সাউন্ড",
+  "copied": "কপি হয়েছে",
+  "orderLink": "অর্ডার লিংক",
+  "qrCode": "QR কোড",
+  "kitchenScreen": "কিচেন ডিসপ্লে",
+  "thisDevice": "এই ডিভাইস",
+  "manage": "ম্যানেজ",
+  "ordersDashboard": "অর্ডার ড্যাশবোর্ড",
+  "admin": "অ্যাডমিন",
+  "privacy": "প্রাইভেসি পলিসি",
+  "terms": "শর্তাবলি",
+  "signOut": "সাইন আউট",
+  "close": "বন্ধ করুন"
+}

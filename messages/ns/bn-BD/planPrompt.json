@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} {plan} প্ল্যানে অন্তর্ভুক্ত।} other {{feature} {plan} প্ল্যানে অন্তর্ভুক্ত।}}",
+  "notOnPlan": "{many, select, yes {{feature} আপনার প্ল্যানে নেই।} other {{feature} আপনার প্ল্যানে নেই।}}",
+  "switchedOff": "{many, select, yes {আপনার ট্রাকের জন্য বন্ধ রাখা আছে: {feature}।} other {আপনার ট্রাকের জন্য বন্ধ রাখা আছে: {feature}।}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "আপগ্রেড করুন →",
+  "features": {
+    "discovery_map": {
+      "name": "ডিসকভারি ম্যাপে তালিকাভুক্তি",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "ওয়েব ড্যাশবোর্ড",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "কিচেন অ্যাপ",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR কোড মেনু",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "কম্বো",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "আপসেল",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "ওয়াক-ইন অর্ডার",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "পিকআপের সময় পেমেন্টসহ অর্ডার",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "‘শেষ’ চিহ্নিত করার সুইচ",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "স্টক কাউন্টডাউন",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "অফলাইন অর্ডার সুরক্ষা",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "অনলাইন পেমেন্ট",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "আগাম প্রি-অর্ডার",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "গ্রাহকের টাইম স্লট",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "কিচেনের সক্ষমতা ব্যবস্থাপনা",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "অটো-অ্যাকসেপ্ট",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger ও Instagram অটো-রিপ্লাই",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "নিজস্ব লোগোসহ QR কোড",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "অ্যাডভান্সড রিপোর্টিং",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "কিচেন টিকিট প্রিন্টিং",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "একাধিক ডিভাইসে কিচেন সিঙ্ক",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "রাঁধুনির স্ক্রিন",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp অটো-রিপ্লাই",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "নিজের ওয়েবসাইটে আপনার সময়সূচি",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "সোশ্যাল মিডিয়া পোস্ট",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "নিজস্ব ইভেন্টের ধরন",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "প্রাইভেট ইভেন্ট",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "ডকুমেন্ট",
+      "many": "yes"
+    }
+  }
+}

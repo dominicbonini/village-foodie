@@ -1,0 +1,17 @@
+{
+  "back": "← ফিরে যান",
+  "title": "কম্বো বেছে নিন",
+  "save": "{amount} সাশ্রয়",
+  "selectItems": "প্রতিটি ঘরের জন্য আইটেম বেছে নিন",
+  "choose": "বেছে নিন: {category}…",
+  "inYourBasket": "── আপনার কার্টে ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (কার্টে){state, select, used { — ইতিমধ্যে একটি কম্বোতে আছে} taken { — অন্য ঘরে বেছে নেওয়া হয়েছে} other {}}",
+  "addNew": "── নতুন যোগ করুন ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {আবশ্যক · একটি বেছে নিন} required {আবশ্যক} other {একটি বেছে নিন}}{unmet, select, yes { (আবশ্যক)} other {}}",
+  "notePlaceholder": "নোট লিখুন, যেমন: পেঁয়াজ ছাড়া (ঐচ্ছিক)",
+  "backButton": "ফিরে যান",
+  "cancel": "বাতিল",
+  "chooseRequired": "প্রয়োজনীয় অপশনগুলো বেছে নিন",
+  "apply": "কম্বো যোগ করুন · {amount}"
+}

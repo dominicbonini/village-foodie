@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "সপ্তাহের তারিখ",
+    "dayList": "দিনের তালিকা",
+    "place": "জায়গা",
+    "venue": "ভেন্যু",
+    "area": "এলাকা",
+    "dayDate": "দিন ও তারিখ",
+    "times": "সময়",
+    "orderLink": "অর্ডারের লিংক",
+    "locationTag": "লোকেশন ট্যাগ"
+  },
+  "weekHeader": "{truck} — এই সপ্তাহে আমরা যেখানে থাকছি:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — বাতিল, দুঃখিত",
+  "noDates": "এই সপ্তাহে কোনো তারিখ নেই — শিগগির আবার দেখুন।",
+  "orderAhead": "আগে থেকে অর্ডার করুন: {url}",
+  "orderAheadTagged": "আগে থেকে অর্ডার করুন: {url} {tag}",
+  "eventLine": "{truck} থাকছে — {where}, {when}, {times}।",
+  "eventLineNoTimes": "{truck} থাকছে — {where}, {when}।",
+  "cancelledSorry": "দুঃখিত — {when} আমরা আসতে পারছি না: {where}।",
+  "cancelledApology": "যাঁরা আসার পরিকল্পনা করছিলেন, সবার কাছে আমরা দুঃখিত। শিগগিরই আবার আসছি।",
+  "when": {
+    "today": "আজ",
+    "tonight": "আজ রাতে",
+    "tomorrow": "আগামীকাল",
+    "dated": "{date} তারিখে"
+  }
+}

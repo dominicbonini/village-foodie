@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "পিকআপের সময়",
+    "takes_cash": "আপনি কি ক্যাশ নেন?",
+    "offline_protection": "অফলাইন অর্ডার সুরক্ষা",
+    "buzzer_prompt": "পেজার যোগ করতে মনে করিয়ে দিন"
+  },
+  "typeFollowsVanTitle": "প্রতিটি ভ্যানের নিয়মিত সেটিং অনুসরণ করে",
+  "sameSettingsAllVansLabel": "সব ভ্যানের জন্য একই সেটিংস",
+  "sameSettingsAllVansHeader": "সব ভ্যান",
+  "sameSettingsConfirm": "ভ্যান 1-এর সেটিংস সব ভ্যানে কপি করবেন? এতে ভ্যান 1-এর সব ভ্যান সেটিংস কপি হবে, সেটিংসে “একই সেটিংস: ভ্যান 1” বেছে নেওয়ার মতোই। কিচেনের সক্ষমতার জন্য আলাদা সুইচ আছে।",
+  "eventTypesFooterStandard": "স্ট্যান্ডার্ড হলো আপনার নিয়মিত সেটআপ। এখানে বদলালে সেটিংসেও বদলে যাবে।",
+  "eventTypesFooterOneEvent": "শুধু একটি ইভেন্টের সেটিং বদলাতে সেই ইভেন্টের ড্যাশবোর্ড ব্যবহার করুন।",
+  "eventTypesSubtitle": "পরিবর্তনগুলো সঙ্গে সঙ্গে সেভ হয়।",
+  "matchStandardLabel": "স্ট্যান্ডার্ডের মতো করুন",
+  "matchStandardConfirm": "এই ধরনের সব সেটিং আবার স্ট্যান্ডার্ডে ফিরিয়ে নেবেন? এখানে যা বদলেছেন সব মুছে যাবে।",
+  "priceLabels": {
+    "price_change_on": "দাম বদলান",
+    "price_mode": "দাম পরিবর্তন",
+    "price_amount": "পরিমাণ",
+    "price_rounding": "রাউন্ডিং",
+    "item_prices": "আইটেমের দাম"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "প্রতিটি দাম নিজে ঠিক করব"
+  },
+  "priceRounding": {
+    "none": "নেই",
+    "nearest_1": "নিকটতম {symbol}1",
+    "up_1": "সবসময় উপরের দিকে রাউন্ড করুন"
+  },
+  "pricesStandardCell": "আপনার মেনুর দাম",
+  "pricesTruckWideTitle": "সব ভ্যানে আপনার দাম একই",
+  "pricesMenuCell": "মেনু",
+  "pricesTypeOffCell": "মেনুর দাম",
+  "itemPricesShow": "দাম দেখান",
+  "itemPricesHide": "দাম লুকান",
+  "priceItemsHeading": "প্রতিটি আইটেমের দাম ঠিক করুন",
+  "priceItemsOpen": "প্রতিটি আইটেমের দাম দেখুন বা বদলান ›",
+  "priceItemsClose": "আইটেমের দাম লুকান ⌃",
+  "ownPriceCount": "{n, plural, one {{count} আইটেমের নিজস্ব দাম আছে} other {{count} আইটেমের নিজস্ব দাম আছে}}",
+  "priceTypeHint": "নিজের দাম লিখতে কোনো দামে চাপ দিন।",
+  "pricesLiveNotice": "এই ইভেন্টটি লাইভ। নতুন অর্ডারে নতুন দাম লাগবে। আগে দেওয়া অর্ডারগুলো আগের দামেই থাকবে।",
+  "placeTypeHelper": "এই জায়গাটি বেছে নিলে “ইভেন্ট যোগ করুন” সবসময় এই ধরনটি বেছে নেবে।",
+  "postPictureStandardNote": "এখানকার ইভেন্ট পোস্টে আপনার স্ট্যান্ডার্ড ডিজাইন ব্যবহার হয়।",
+  "eventItemsCardDescription": "শুধু এই ইভেন্টের জন্য দাম, আইটেমের সীমা ও প্রাপ্যতা। পরিবর্তন সঙ্গে সঙ্গে কার্যকর হয়।",
+  "eventPriceColumnLabel": "দাম",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · এই ইভেন্ট} other {মেনু {price} · এই ইভেন্ট}}",
+  "eventPriceEdit": "✎ দাম এডিট করুন",
+  "eventPriceCancel": "বাতিল",
+  "eventPriceSave": "দাম সেভ করুন",
+  "eventPriceEditNote": "শুধু এই ইভেন্টের দাম এডিট করছেন। সেভ না করা পর্যন্ত আইটেমের সীমা ও প্রাপ্যতা লক থাকবে।",
+  "eventPriceLiveNote": "লাইভ: নতুন অর্ডারে নতুন দাম লাগবে।",
+  "offlineWhenOfflineLabel": "অফলাইন হলে"
+}

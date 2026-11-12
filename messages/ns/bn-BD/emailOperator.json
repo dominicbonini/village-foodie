@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "নতুন অর্ডার #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "নতুন অর্ডার এসেছে",
+    "from": "<b>অর্ডার #{id}</b> — গ্রাহক: <b>{name}</b>",
+    "collection": "পিকআপ: {time}",
+    "asap": "নির্দিষ্ট সময় নেই — যত দ্রুত সম্ভব",
+    "total": "মোট",
+    "notes": "<b>নোট:</b> {notes}",
+    "autoConfirmed": "নিজে থেকেই কনফার্ম হয়েছে — কিছু করতে হবে না।",
+    "confirmPrompt": "এই অর্ডার কনফার্ম বা প্রত্যাখ্যান করতে আপনার HatchGrab ড্যাশবোর্ডে লগ ইন করুন।",
+    "text": "নতুন অর্ডার #{id} — গ্রাহক: {name}{withSlot, select, yes { · পিকআপ: {slot}} other {}}{withVenue, select, yes { · ভেন্যু: {venue}} other {}}।{withCharges, select, yes { {charges}।} other {}} মোট {total}।{withNotes, select, yes { নোট: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck}: নতুন ইভেন্ট পাওয়া গেছে — অনুগ্রহ করে দেখে নিন",
+    "hi": "হ্যালো,",
+    "found": "আপনার সময়সূচিতে আমরা <b>{n, plural, one {{count} নতুন ইভেন্ট} other {{count} নতুন ইভেন্ট}}</b> পেয়েছি, গ্রাহকদের কাছে দেখানোর আগে যেগুলোর জন্য আপনার অনুমোদন লাগবে।",
+    "listHeading": "যে ইভেন্টগুলো পাওয়া গেছে:",
+    "approve": "সময়সূচি ট্যাবে অনুমোদন দিলেই এগুলো ম্যাপে লাইভ হবে এবং আপনার অর্ডার পেজ প্রি-অর্ডার নেওয়ার জন্য তৈরি থাকবে।",
+    "cta": "আপনার সময়সূচি দেখুন →",
+    "signoff": "— HatchGrab টিম · hatchgrab.com",
+    "unknownVenue": "অজানা ভেন্যু",
+    "text": "হ্যালো,\n\nআপনার সময়সূচিতে আমরা {n, plural, one {{count} নতুন ইভেন্ট} other {{count} নতুন ইভেন্ট}} পেয়েছি, যেগুলোর জন্য আপনার অনুমোদন লাগবে:\n\n{list}\n\nএখানে দেখে নিন: {url}\n\nঅনুমোদন দিলেই এগুলো ম্যাপে লাইভ হবে।\n\n— HatchGrab টিম"
+  }
+}
