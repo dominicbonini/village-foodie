@@ -14,11 +14,10 @@
 // within the minute.
 
 import 'server-only'
-import type { CountrySettings } from '@/lib/country-settings-types'
+import { COUNTRY_PAYMENT_MODELS, type CountrySettings, type CountryPaymentModel } from '@/lib/country-settings-types'
 import { CURRENCY_CODES } from '@/lib/currencies'
 import { ACCEPTED_ADDRESS_FORMAT_VALUES, addressFormatKeyOf, type AddressFormatKey } from '@/lib/address-formats'
 import { ALLERGEN_SETS } from '@/lib/allergens'
-import { isPaymentModel, type PaymentModel } from '@/lib/billing/rules'   // pricing-copy-4: the country's payment model (pure)
 import { isMarketingRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache
 
 const TTL_MS = 60_000
@@ -86,12 +85,12 @@ export async function selectWithFallback<R extends { error: { message: string; c
 
 /** pricing-copy-4: the embedded country_billing row → its payment model; null when the country has no row. PostgREST sends a
  *  one-to-one embed as an object (or null); an array is accepted too. An unknown model is refused like any other value. */
-function paymentModelOf(code: string, v: unknown): PaymentModel | null {
+function paymentModelOf(code: string, v: unknown): CountryPaymentModel | null {
   const row = Array.isArray(v) ? (v.length > 1 ? fail(code, 'country_billing', v) : v[0] ?? null) : v
   if (row === null || row === undefined) return null
   const m = (row as Row).payment_model
-  if (!isPaymentModel(m)) fail(code, 'country_billing.payment_model', m)
-  return m
+  if (typeof m !== 'string' || !(COUNTRY_PAYMENT_MODELS as readonly string[]).includes(m)) fail(code, 'country_billing.payment_model', m)
+  return m as CountryPaymentModel
 }
 
 type Row = Record<string, unknown>

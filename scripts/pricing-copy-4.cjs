@@ -81,10 +81,13 @@ function markRules(m) {
   const L = await kit.bundle('pc4-lib', [
     "export { offersOnlineCardPayments } from '@/lib/country-settings-types'",
     "export { mapCountryRow, COUNTRY_SETTINGS_COLUMNS, COUNTRY_SETTINGS_COLUMNS_BEFORE_PC4 } from '@/lib/country-settings'",
+    "export { COUNTRY_PAYMENT_MODELS } from '@/lib/country-settings-types'", "export { PAYMENT_MODELS } from '@/lib/billing/rules'",
   ].join('\n'))
   const ok = L.offersOnlineCardPayments
   t('fee_from_payment and billed_online are card countries', ok({ paymentModel: 'fee_from_payment' }) && ok({ paymentModel: 'billed_online' }))
   t('billed_at_truck is monthly billing only', ok({ paymentModel: 'billed_at_truck' }) === false)
+  t('the settings type lists the same three payment models as Billing (lib/billing/rules.ts PAYMENT_MODELS)', JSON.stringify(L.COUNTRY_PAYMENT_MODELS) === JSON.stringify(L.PAYMENT_MODELS))
+  t('neither settings module imports lib/billing (some harnesses compile them against older files)', !/from '@\/lib\/billing\//.test(read('lib/country-settings-types.ts') + read('lib/country-settings.ts')))
   t('no country_billing row (null) is monthly billing only (Dominic)', ok({ paymentModel: null }) === false)
   t('a settings object the loader did not build (no field: a harness fixture) renders as today\'s live countries do', ok({}) === true)
   t('the loader embeds the payment model in its one read', L.COUNTRY_SETTINGS_COLUMNS.endsWith(', country_billing(payment_model)') && !L.COUNTRY_SETTINGS_COLUMNS_BEFORE_PC4.includes('country_billing'))

@@ -14,7 +14,6 @@ import type { AddressFormatKey } from '@/lib/address-formats'   // address-forma
 import { currencyInfo } from '@/lib/currencies'
 import type { MoneyFormat } from '@/lib/money-format'
 import type { AllergenSet } from '@/lib/allergens'
-import type { PaymentModel } from '@/lib/billing/rules'   // pricing-copy-4: a TYPE only (no runtime import, so no cycle)
 
 /** How a country's phone numbers are checked: 'length' — a plausible length (libphonenumber "possible",
  *  the default); 'strict' — real numbers only (libphonenumber "valid"); 'off' — anything not empty. */
@@ -106,8 +105,14 @@ export interface CountrySettings {
   /** pricing-copy-4 (12 November 2026, docs/pricing-copy-4-report.md): the country's public.country_billing.payment_model, read by
    *  the loader with the row (lib/country-settings.ts). null = the country has NO country_billing row. Absent (undefined) = not
    *  read — a harness fixture, or an object built before this field existed. Ask offersOnlineCardPayments() below, never this. */
-  paymentModel?: PaymentModel | null
+  paymentModel?: CountryPaymentModel | null
 }
+
+/** pricing-copy-4: public.country_billing.payment_model's three values — the same union as lib/billing/rules.ts PaymentModel (written
+ *  here, not imported, so this module keeps no import beyond the pure ones: some harnesses compile it on its own). */
+export type CountryPaymentModel = 'fee_from_payment' | 'billed_online' | 'billed_at_truck'
+/** The same three, as a list (scripts/pricing-copy-4.cjs checks it equals lib/billing/rules.ts PAYMENT_MODELS). */
+export const COUNTRY_PAYMENT_MODELS: readonly CountryPaymentModel[] = ['fee_from_payment', 'billed_online', 'billed_at_truck']
 
 /**
  * pricing-copy-4 (12 November 2026, Dominic; docs/pricing-copy-4-report.md): 🔴 THE ONE ANSWER TO "IS THIS A CARD COUNTRY?" — can a

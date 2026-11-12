@@ -1,18 +1,14 @@
 {
  "lib/country-settings-types.ts": [
   [
-   "import type { PaymentModel } from '@/lib/billing/rules'   // pricing-copy-4: a TYPE only (no runtime import, so no cycle)\n",
-   ""
-  ],
-  [
-   "\n  /** pricing-copy-4 (12 November 2026, docs/pricing-copy-4-report.md): the country's public.country_billing.payment_model, read by\n   *  the loader with the row (lib/country-settings.ts). null = the country has NO country_billing row. Absent (undefined) = not\n   *  read — a harness fixture, or an object built before this field existed. Ask offersOnlineCardPayments() below, never this. */\n  paymentModel?: PaymentModel | null\n}\n\n/**\n * pricing-copy-4 (12 November 2026, Dominic; docs/pricing-copy-4-report.md): 🔴 THE ONE ANSWER TO \"IS THIS A CARD COUNTRY?\" — can a\n * truck here take ONLINE CARD PAYMENTS? Yes when its country's payment model offers online payments (country_billing.payment_model\n * 'fee_from_payment' or 'billed_online': today's 44 live Stripe countries, and any country switched on later with one of those\n * models, e.g. Puerto Rico). No when the model is 'billed_at_truck' (\"monthly billing only\": customers pay at the truck, the truck's\n * card is billed monthly) or when the country has no country_billing row at all.\n * Every pricing surface asks this, never its own list: the landing's banner, Pay as you go's fee line, Pro's asterisk and the\n * card-fee footnote (components/pricing/PricingSection.tsx), the plan table's fee row (components/pricing/PlanTable.tsx), /features'\n * and Manage › Billing's footnote, the plans PDF (lib/plans-pdf.ts) and /llms.txt's card sentence (lib/llms-text.ts).\n * ⚠️ A settings object the loader did not build (paymentModel absent — a harness fixture) answers YES, i.e. it renders as every\n * live country renders today; the loader always sets the field (null when there is no row), so a real page never takes that path.\n */\nexport function offersOnlineCardPayments(s: Pick<CountrySettings, 'paymentModel'>): boolean {\n  if (s.paymentModel === undefined) return true\n  return s.paymentModel === 'fee_from_payment' || s.paymentModel === 'billed_online'\n",
+   "\n  /** pricing-copy-4 (12 November 2026, docs/pricing-copy-4-report.md): the country's public.country_billing.payment_model, read by\n   *  the loader with the row (lib/country-settings.ts). null = the country has NO country_billing row. Absent (undefined) = not\n   *  read — a harness fixture, or an object built before this field existed. Ask offersOnlineCardPayments() below, never this. */\n  paymentModel?: CountryPaymentModel | null\n}\n\n/** pricing-copy-4: public.country_billing.payment_model's three values — the same union as lib/billing/rules.ts PaymentModel (written\n *  here, not imported, so this module keeps no import beyond the pure ones: some harnesses compile it on its own). */\nexport type CountryPaymentModel = 'fee_from_payment' | 'billed_online' | 'billed_at_truck'\n/** The same three, as a list (scripts/pricing-copy-4.cjs checks it equals lib/billing/rules.ts PAYMENT_MODELS). */\nexport const COUNTRY_PAYMENT_MODELS: readonly CountryPaymentModel[] = ['fee_from_payment', 'billed_online', 'billed_at_truck']\n\n/**\n * pricing-copy-4 (12 November 2026, Dominic; docs/pricing-copy-4-report.md): 🔴 THE ONE ANSWER TO \"IS THIS A CARD COUNTRY?\" — can a\n * truck here take ONLINE CARD PAYMENTS? Yes when its country's payment model offers online payments (country_billing.payment_model\n * 'fee_from_payment' or 'billed_online': today's 44 live Stripe countries, and any country switched on later with one of those\n * models, e.g. Puerto Rico). No when the model is 'billed_at_truck' (\"monthly billing only\": customers pay at the truck, the truck's\n * card is billed monthly) or when the country has no country_billing row at all.\n * Every pricing surface asks this, never its own list: the landing's banner, Pay as you go's fee line, Pro's asterisk and the\n * card-fee footnote (components/pricing/PricingSection.tsx), the plan table's fee row (components/pricing/PlanTable.tsx), /features'\n * and Manage › Billing's footnote, the plans PDF (lib/plans-pdf.ts) and /llms.txt's card sentence (lib/llms-text.ts).\n * ⚠️ A settings object the loader did not build (paymentModel absent — a harness fixture) answers YES, i.e. it renders as every\n * live country renders today; the loader always sets the field (null when there is no row), so a real page never takes that path.\n */\nexport function offersOnlineCardPayments(s: Pick<CountrySettings, 'paymentModel'>): boolean {\n  if (s.paymentModel === undefined) return true\n  return s.paymentModel === 'fee_from_payment' || s.paymentModel === 'billed_online'\n",
    ""
   ]
  ],
  "lib/country-settings.ts": [
   [
-   "import { isPaymentModel, type PaymentModel } from '@/lib/billing/rules'   // pricing-copy-4: the country's payment model (pure)\n",
-   ""
+   "import { COUNTRY_PAYMENT_MODELS, type CountrySettings, type CountryPaymentModel } from '@/lib/country-settings-types'\n",
+   "import type { CountrySettings } from '@/lib/country-settings-types'\n"
   ],
   [
    "/** pricing-copy-4 (12 November 2026, docs/pricing-copy-4-report.md): the country's payment model, from public.country_billing\n *  (billing-1, 20261085; one row per country, its primary key a foreign key to this table), EMBEDDED in the same read — so every\n *  settings object the loader builds says whether the country takes online card payments (offersOnlineCardPayments in\n *  lib/country-settings-types.ts). No row = null. Read with the service role like the rest (country_billing has RLS on, no policy). */\nconst PC4_EMBED = 'country_billing(payment_model)'\nexport const COUNTRY_SETTINGS_COLUMNS = [...BASE_COLUMNS, ...WC1_COLUMNS, PC4_EMBED].join(', ')\n/** The column list without the payment model — what a database before billing-1 (20261085) can answer. */\nexport const COUNTRY_SETTINGS_COLUMNS_BEFORE_PC4 = [...BASE_COLUMNS, ...WC1_COLUMNS].join(', ')\n",
@@ -27,12 +23,22 @@
    "  const first = await run(COUNTRY_SETTINGS_COLUMNS)\n"
   ],
   [
-   "/** pricing-copy-4: the embedded country_billing row → its payment model; null when the country has no row. PostgREST sends a\n *  one-to-one embed as an object (or null); an array is accepted too. An unknown model is refused like any other value. */\nfunction paymentModelOf(code: string, v: unknown): PaymentModel | null {\n  const row = Array.isArray(v) ? (v.length > 1 ? fail(code, 'country_billing', v) : v[0] ?? null) : v\n  if (row === null || row === undefined) return null\n  const m = (row as Row).payment_model\n  if (!isPaymentModel(m)) fail(code, 'country_billing.payment_model', m)\n  return m\n}\n\n",
+   "/** pricing-copy-4: the embedded country_billing row → its payment model; null when the country has no row. PostgREST sends a\n *  one-to-one embed as an object (or null); an array is accepted too. An unknown model is refused like any other value. */\nfunction paymentModelOf(code: string, v: unknown): CountryPaymentModel | null {\n  const row = Array.isArray(v) ? (v.length > 1 ? fail(code, 'country_billing', v) : v[0] ?? null) : v\n  if (row === null || row === undefined) return null\n  const m = (row as Row).payment_model\n  if (typeof m !== 'string' || !(COUNTRY_PAYMENT_MODELS as readonly string[]).includes(m)) fail(code, 'country_billing.payment_model', m)\n  return m as CountryPaymentModel\n}\n\n",
    ""
   ],
   [
    "    // pricing-copy-4: only when the read embedded country_billing (null = no row) — a row built without it carries no field.\n    ...(r.country_billing === undefined ? {} : { paymentModel: paymentModelOf(c, r.country_billing) }),\n",
    ""
+  ]
+ ],
+ "app/(app)/manage/[token]/page.tsx": [
+  [
+   "import { moneyFormatOf, planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments, type CountrySettings } from '@/lib/country-settings-types'\n",
+   "import { moneyFormatOf, planMoneyFormatOf, currencyLineOf, type CountrySettings } from '@/lib/country-settings-types'\n"
+  ],
+  [
+   "        {/* pricing-copy-4: the card-fee footnote only in a card country (offersOnlineCardPayments) — the table's asterisk follows it. */}\n        {offersOnlineCardPayments(countryRow) && <p className=\"text-xs text-slate-500 mt-3 px-1\">{tPricing('footnote', { cardFee: cardPx(cardFeeOnlineLabel(countryRow)), country: countryRow.shortName ?? countryRow.name })}</p>}\n",
+   "        <p className=\"text-xs text-slate-500 mt-3 px-1\">{tPricing('footnote', { cardFee: cardPx(cardFeeOnlineLabel(countryRow)), country: countryRow.shortName ?? countryRow.name })}</p>\n"
   ]
  ]
 }

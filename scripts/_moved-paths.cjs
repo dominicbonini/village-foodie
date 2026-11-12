@@ -68,6 +68,7 @@ const tracked = (args) => execFileSync('git', args, { cwd: REPO, maxBuffer: 1 <<
 const CWV2_PROXY_BLOCK = /\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/
 const G2 = require('./_lp-gsc-index-2.cjs')
 const B1 = require('./_lp-billing-1.cjs')   // billing-1 (10 November 2026): its named edits, taken back exactly
+const PC4 = require('./_lp-pricing-copy-4.cjs')   // pricing-copy-4 (12 November 2026): its recorded code edits, taken back exactly
 function changedSince(rev, paths, { cwv2 = false } = {}) {
   const now = [...new Set(paths.map(nowPath))]
   const files = new Set([...tracked(['ls-files', '--', ...now]), ...tracked(['ls-tree', '-r', '--name-only', rev, '--', ...new Set(now.map(beforePath))]).map(nowPath)])
@@ -83,6 +84,11 @@ function changedSince(rev, paths, { cwv2 = false } = {}) {
     // ⚠️ RE-PINNED (billing-1, 10 November 2026): against a revision from before billing-1, its committed edits (the billing gate in
     // the menu and submit routes, the fee at capture and on refunds, the ledger's optional fee fields) are reverse-applied exactly
     // (scripts/_lp-billing-1.cjs asBefore; it throws if they are not there exactly), so every other byte is still compared.
+    // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026; docs/pricing-copy-4-report.md): against a revision from before pricing-copy-4, its
+    // recorded edits (the payment model in the two settings modules; Manage › Billing's footnote shown only in a card country) are put back
+    // exactly FIRST (scripts/_lp-pricing-copy-4.cjs undoCode — null if one is not there exactly once, which leaves the file changed), so
+    // billing-1's reverse patch then meets the text it was made against and every other byte is still compared.
+    if (cur && PC4.CODE_FILES.includes(f) && show(rev, 'scripts/_lp-pricing-copy-4.cjs') === null) { const u = PC4.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     if (cur && B1.LANDED && B1.FILES.includes(f) && show(rev, 'lib/billing/rules.ts') === null) { const b = B1.asBefore(f, Buffer.from(cur, 'latin1').toString('utf8')); cur = b === null ? null : Buffer.from(b, 'utf8').toString('latin1') }
     let then = show(rev, f) ?? show(rev, beforePath(f))
     if (then !== null) for (const [a, b] of MOVE_EDITS[f] || []) then = then.split(a).join(b)

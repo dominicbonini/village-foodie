@@ -126,7 +126,7 @@ const INTL_AMOUNT = /\b(?:A|NZ|CA|US)\$\s?\d|\bSEK\s?\d/
   const manage = code('app/(app)/manage/[token]/page.tsx')
   t('Billing: the line once, opening the footnotes under the table (currencyLineOf → pricing.currencyLine), in the footnote style',
     /const billingCurrencyLine = currencyLineOf\(countryRow\)/.test(manage) && count(manage, "tPricing('currencyLine', billingCurrencyLine)") === 1
-    && /\{billingCurrencyLine && <p className="text-xs text-slate-500 mt-3 px-1">\{tPricing\('currencyLine', billingCurrencyLine\)\}<\/p>\}\s*<p className="text-xs text-slate-500 mt-3 px-1">\{tPricing\('footnote'/.test(manage))
+    && /\{billingCurrencyLine && <p className="text-xs text-slate-500 mt-3 px-1">\{tPricing\('currencyLine', billingCurrencyLine\)\}<\/p>\}\s*(\{\}\s*)?(\{offersOnlineCardPayments\(countryRow\) && )?<p className="text-xs text-slate-500 mt-3 px-1">\{tPricing\('footnote'/.test(manage))   // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026): the footnote is shown only in a card country (offersOnlineCardPayments); the line still opens the footnotes
   t('Billing\'s card price, the van modal\'s add-on price and the plan prompts read planMoneyFormatOf (the home form)',
     // ⚠️ RE-PINNED (languages-1): perMonthLabel → perMonthText (lib/price-text.ts), the same amount through the same plan
     // format, with "/mo" / " a month" from `planFeatures.perMonth.*` in the format's locale (en-GB words unchanged).
