@@ -45,7 +45,8 @@ const { noFaqLink } = require('./_lp-faq-4.cjs')
 // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): the landing pages (seg given) have pricing-copy-1's wording put back first, in the page's
 // language (scripts/_lp-pricing-copy-1.cjs asBefore — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them).
 const PC1_LOCALE = { uk: 'en-GB', us: 'en-US', de: 'de-DE', jp: 'ja-JP' }
-const N = (h, seg) => SB1.strip(SG2.asBefore(noFaqLink(SCX(seg ? require('./_lp-pricing-copy-1.cjs').asBefore(h, PC1_LOCALE[seg]) : h))))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+// ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026; docs/pricing-copy-4-report.md): a card country's wording taken back first (scripts/_lp-pricing-copy-4.cjs pc1After4 — the banner's card sentence and Pay as you go's asterisk; scripts/pricing-copy-4.cjs proves them), then pricing-copy-1's.
+const N = (h, seg) => SB1.strip(SG2.asBefore(noFaqLink(SCX(seg ? require('./_lp-pricing-copy-4.cjs').pc1After4(h, PC1_LOCALE[seg]) : h))))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
 /** FAQ4_DUMP=<dir>: write each compared page (normalised) there, for a diff. */
 const dump = (key, h) => { if (process.env.FAQ4_DUMP) { fs.mkdirSync(process.env.FAQ4_DUMP, { recursive: true }); fs.writeFileSync(path.join(process.env.FAQ4_DUMP, key.replace(':', '-') + '.html'), String(h).replace(/></g, '>\n<')) } }
 

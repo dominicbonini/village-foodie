@@ -224,7 +224,8 @@
     "pricing-copy-1.cjs",
     "pricing-copy-2.cjs",
     "pricing-copy-3.cjs",
-    "longer-intervals-1.cjs"
+    "longer-intervals-1.cjs",
+    "pricing-copy-4.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -274,6 +275,7 @@
         "_lp-billing-1.cjs",
         "_lp-pricing-copy-1.cjs",
         "_lp-pricing-copy-2.cjs",
+        "_lp-pricing-copy-4.cjs",
         "_lp-seo-fixes.cjs",
         "_lp-pricing-tidy.cjs",
         "_lp-compare-tidy.cjs",
@@ -415,6 +417,8 @@
         "billing-2-screens.cjs",
         "billing-3-screens.cjs",
         "pricing-copy-1-screens.cjs",
+        "pricing-copy-4-screens.cjs",
+        "_pricing-copy-4-monthly-preload.cjs",
         "country-picker-1-screens.cjs",
         "compare-de-1-screens.cjs",
         "competitor-check-1-screens.cjs",

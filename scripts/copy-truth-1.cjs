@@ -46,7 +46,8 @@ async function views(tag, landingText, featuresText, gbApps = true) {
     // "Web, iOS, Android" where seo-geo-2 made it "Web" (scripts/_lp-seo-geo-2.cjs asBefore; the value is proven by seo-geo-2.cjs).
     // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): pricing-copy-1's wording put back first, in the page's language (scripts/
     // _lp-pricing-copy-1.cjs asBefore — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them).
-    out[`${cc}/landing`] = sha(once(SB1.strip(SG2.asBefore(JN.noBreak(require('./_lp-pricing-copy-1.cjs').asBefore(P.html, { GB: 'en-GB', US: 'en-US', BR: 'pt-BR', JP: 'ja-JP' }[cc])))), `<p>${landingText(cc)}</p>`, `${cc}/landing`)) + ':' + sha(JSON.stringify(P.meta))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+    // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026; docs/pricing-copy-4-report.md): a card country's wording taken back first (scripts/_lp-pricing-copy-4.cjs pc1After4 — the banner's card sentence and Pay as you go's asterisk; scripts/pricing-copy-4.cjs proves them), then pricing-copy-1's.
+    out[`${cc}/landing`] = sha(once(SB1.strip(SG2.asBefore(JN.noBreak(require('./_lp-pricing-copy-4.cjs').pc1After4(P.html, { GB: 'en-GB', US: 'en-US', BR: 'pt-BR', JP: 'ja-JP' }[cc])))), `<p>${landingText(cc)}</p>`, `${cc}/landing`)) + ':' + sha(JSON.stringify(P.meta))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
     cut[`${cc}/landing`] = P.html
   }
   for (const cc of ['GB', 'US']) {

@@ -17,6 +17,7 @@ const path = require('path')
 const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')
 const PC1 = require('./_lp-pricing-copy-1.cjs')
+const PC4 = require('./_lp-pricing-copy-4.cjs')   // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026): §3's pages and PDF, card wording taken back first
 const { BASE, AFTER, COMMITS, KEYS } = PC1
 
 let pass = 0, fail = 0
@@ -116,7 +117,10 @@ function removedSpan(a, b) {
   const nowOf = l => flat(JSON.parse(read(`messages/${l}.json`)))
   for (const [seg, l] of Object.entries(LOC)) {
     const P = await kit.quietAsync(() => R.page('landing', seg, rows))
-    const html = P.html ?? ''
+    // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026; docs/pricing-copy-4-report.md): every fixture country is a CARD country, whose banner
+    // carries the card sentence again and whose Pay as you go fee its asterisk; that is taken back first (scripts/_lp-pricing-copy-4.cjs
+    // asBefore — scripts/pricing-copy-4.cjs proves it), so this section still proves exactly what pricing-copy-1 did.
+    const html = PC4.asBefore(P.html ?? '', l)
     const M = { ...nowOf(l.startsWith('en') ? 'en-GB' : l), ...nowOf(l) }
     const B = { ...flat(JSON.parse(git(['show', `${BASE}:messages/${l.startsWith('en') ? 'en-GB' : l}.json`]))), ...flat(JSON.parse(git(['show', `${BASE}:messages/${l}.json`]))) }
     const tail = s => s.replace(/<[^>]+>|\{[^}]*\}/g, '\u0000').split('\u0000').filter(x => x.trim().length > 6).pop() || ''
@@ -127,7 +131,7 @@ function removedSpan(a, b) {
     t(`/${seg}: asBefore puts the old wording back (the identity harnesses' view)`, PC1.asBefore(html, l).includes(deleted.trim().replace(/'/g, '&#x27;')))
   }
   for (const cc of ['GB', 'FR']) {
-    const pdf = await R.pdf(rows, cc)
+    const pdf = PC4.asBefore(await R.pdf(rows, cc), cc === 'GB' ? 'en-GB' : 'fr-FR')   // ⚠️ RE-PINNED (pricing-copy-4): as above
     t(`plans PDF (${cc}): the Pay as you go line has no asterisk and no "card"`, cc === 'GB' ? pdf.includes('0.99%</b> on online orders only.') && !pdf.includes('Prefer to take payment up front') : !/payées par carte\. Les commandes au comptoir/.test(pdf) && !pdf.includes('Vous préférez encaisser'))
   }
 
