@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "पुष्टि गर्नुपर्ने नयाँ अर्डर",
+    "body": "अर्डर {number} — {truck}"
+  }
+}

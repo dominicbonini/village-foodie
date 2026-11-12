@@ -1,0 +1,10 @@
+{
+  "copy": "कपी गर्नुहोस्",
+  "copied": "कपी भयो ✓",
+  "failed": "कपी असफल भयो",
+  "aria": "{label} {thing}",
+  "announceCopied": "कपी भयो: {thing}",
+  "announceCopiedValue": "मान कपी भयो",
+  "announceFailed": "कपी गर्न सकिएन: {thing}। लेखाइ छानेर आफैँ कपी गर्नुहोस्।",
+  "announceFailedValue": "मान कपी गर्न सकिएन। लेखाइ छानेर आफैँ कपी गर्नुहोस्।"
+}

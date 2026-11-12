@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {अनिवार्य} other {ऐच्छिक}}{limit, select, one { · एउटा रोज्नुहोस्} upTo { · बढीमा {max} वटा रोज्नुहोस्} other {}}",
+  "operator": "{required, select, yes {अनिवार्य} other {ऐच्छिक}}{limit, select, one { · ग्राहकले एउटा रोज्छन्} upTo { · ग्राहकले बढीमा {max} वटा रोज्न सक्छन्} other {}}"
+}

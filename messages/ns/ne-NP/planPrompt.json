@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} — {plan} प्लानमा समावेश छन्।} other {{feature} — {plan} प्लानमा समावेश छ।}}",
+  "notOnPlan": "{many, select, yes {{feature} — तपाईंको प्लानमा छैनन्।} other {{feature} — तपाईंको प्लानमा छैन।}}",
+  "switchedOff": "{many, select, yes {{feature} — तपाईंको ट्रकका लागि बन्द गरिएका छन्।} other {{feature} — तपाईंको ट्रकका लागि बन्द गरिएको छ।}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "अपग्रेड गर्नुहोस् →",
+  "features": {
+    "discovery_map": {
+      "name": "डिस्कभरी नक्सामा सूची",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "वेब ड्यासबोर्ड",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "किचेन एप",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR कोड मेनु",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "कम्बो",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "अपसेल",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "वाक-इन अर्डर",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "पिकअप गर्दा भुक्तानीसहितको अनलाइन अर्डर",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "सकियो देखाउने स्विच",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "स्टक गणना",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "अफलाइन अर्डर सुरक्षा",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "अनलाइन भुक्तानी",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "अग्रिम प्रि-अर्डर",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "ग्राहकका टाइम स्लट",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "किचेनको क्षमता व्यवस्थापन",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "स्वतः स्वीकार",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger र Instagram अटो-रिप्लाई",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "ब्रान्डेड QR कोड",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "विस्तृत रिपोर्ट",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "किचेन टिकट प्रिन्टिङ",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "धेरै डिभाइसमा किचेन सिंक",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "कुक स्क्रिन",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp अटो-रिप्लाई",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "आफ्नै वेबसाइटमा तपाईंको तालिका",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "सामाजिक सञ्जाल पोस्ट",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "आफ्नै कार्यक्रमका प्रकार",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "निजी कार्यक्रम",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "कागजात",
+      "many": "yes"
+    }
+  }
+}

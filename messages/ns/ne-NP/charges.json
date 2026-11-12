@@ -1,0 +1,13 @@
+{
+  "subtotal": "उप-जम्मा",
+  "taxFallback": "कर",
+  "taxIncluded": "समावेश: {label}",
+  "serviceFeeCustomer": "अनलाइन सेवा शुल्क",
+  "serviceFee": "सेवा शुल्क",
+  "cardFee": "कार्ड शुल्क",
+  "tip": "टिप",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {कर, शुल्क र टिप} tax_tip {कर र टिप} fees_tip {शुल्क र टिप} fees {शुल्क} other {कर र शुल्क}}"
+}

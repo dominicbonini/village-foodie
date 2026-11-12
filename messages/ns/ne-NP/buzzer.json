@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "बजर <b>{number}</b> यो अर्डरमा छ: <b>अर्डर #{holderId}</b>{hasName, select, yes { ({name})} other {}}। यसलाई यहाँ लिने: <b>{hasTarget, select, yes {अर्डर #{targetId}} other {यो अर्डर}}</b>?",
+  "cancel": "रद्द गर्नुहोस्",
+  "take": "बजर {number} लिनुहोस्",
+  "titleBlocking": "बजर दिने? — अर्डर #{id}",
+  "title": "बजर रोज्नुहोस्",
+  "subtitle": "{hasTarget, select, yes {अर्डर #{id}} other {यो अर्डर}}{hasCurrent, select, yes { · अहिले बजर {current}} other {}}",
+  "allTaken": "{n, plural, one {बजर बाहिर छ। अर्को अर्डरबाट लिन त्यसमा थिच्नुहोस्।} other {सबै {count} बजर बाहिर छन्। अर्को अर्डरबाट लिन कुनै एउटामा थिच्नुहोस्।}}",
+  "thisOrder": "यो अर्डर",
+  "noBuzzer": "बजर छैन",
+  "done": "भयो",
+  "lostTitle": "अर्डर #{id}: बजर छैन",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}तपाईं अफलाइन हुँदा अर्को अर्डरले उही बजर लियो। उहाँलाई अर्कै बजर दिनुहोस्।",
+  "dismiss": "हटाउनुहोस्",
+  "assign": "दिनुहोस्"
+}

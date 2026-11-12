@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "स्टार्टर",
+    "mains": "मुख्य परिकार",
+    "burgers": "बर्गर",
+    "pizza": "पिज्जा",
+    "wrapsSandwiches": "र्याप र स्यान्डविच",
+    "sides": "साइड",
+    "dipsSauces": "डिप र सस",
+    "desserts": "डेजर्ट",
+    "drinks": "पेय",
+    "kidsMenu": "बालबालिकाको मेनु",
+    "specials": "विशेष",
+    "other": "अन्य"
+  },
+  "demoEventName": "डेमो कार्यक्रम",
+  "firstVanName": "भ्यान 1",
+  "demoCategories": {
+    "pizza": "पिज्जा",
+    "burgers": "बर्गर",
+    "mains": "मुख्य परिकार",
+    "sides": "साइड",
+    "drinks": "पेय"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 पिज्जा ट्रक",
+      "items": {
+        "margherita": "मार्गरिटा",
+        "pepperoni": "चिकेन पेपरोनी",
+        "ndujaHoney": "पिरो चिकेन र मह",
+        "fourCheese": "फोर चिज",
+        "gardenVeg": "मिक्स भेज",
+        "garlicBread": "गार्लिक ब्रेड",
+        "rocketParmesan": "रकेट र पार्मेजान सलाद",
+        "olives": "जैतुन",
+        "sanPellegrino": "सोडा पानी",
+        "coke": "कोक"
+      }
+    },
+    "burgers": {
+      "label": "🍔 बर्गर ट्रक",
+      "items": {
+        "classicCheeseburger": "क्लासिक चिकेन चिजबर्गर",
+        "doubleBacon": "डबल चिकेन बर्गर",
+        "buttermilkChicken": "बटरमिल्क चिकेन",
+        "halloumiStack": "पनिर स्ट्याक",
+        "smashBurger": "बफ स्म्यास बर्गर",
+        "skinOnFries": "बोक्रासहितको फ्राइज",
+        "loadedCheeseFries": "लोडेड चिज फ्राइज",
+        "onionRings": "अनियन रिङ्स",
+        "craftLemonade": "कागती पानी",
+        "coke": "कोक"
+      }
+    },
+    "curries": {
+      "label": "🍛 करी ट्रक",
+      "items": {
+        "chickenTikkaMasala": "चिकेन टिक्का मसला",
+        "lambRoganJosh": "मटन रोगन जोश",
+        "chanaMasala": "चना मसला",
+        "butterChicken": "बटर चिकेन",
+        "saagPaneer": "पालुङ्गो पनिर",
+        "pilauRice": "पुलाउ",
+        "garlicNaan": "गार्लिक नान",
+        "onionBhaji": "प्याजको पकौडा",
+        "mangoLassi": "आँपको लस्सी",
+        "coke": "कोक"
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "नयाँ अर्डर #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "नयाँ अर्डर आयो",
+    "from": "<b>अर्डर #{id}</b> — <b>{name}</b>",
+    "collection": "पिकअप: {time}",
+    "asap": "कुनै तोकिएको समय छैन — सकेसम्म छिटो",
+    "total": "जम्मा",
+    "notes": "<b>नोट:</b> {notes}",
+    "autoConfirmed": "स्वतः पुष्टि भयो — केही गर्नुपर्दैन।",
+    "confirmPrompt": "यो अर्डर पुष्टि वा अस्वीकार गर्न आफ्नो HatchGrab ड्यासबोर्डमा साइन इन गर्नुहोस्।",
+    "text": "नयाँ अर्डर #{id} — {name}{withSlot, select, yes {, पिकअप: {slot}} other {}}{withVenue, select, yes {, स्थान: {venue}} other {}}।{withCharges, select, yes { {charges}।} other {}} जम्मा: {total}।{withNotes, select, yes { नोट: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck} — नयाँ कार्यक्रम भेटिए, कृपया जाँच्नुहोस्",
+    "hi": "नमस्ते,",
+    "found": "हामीले तपाईंको तालिकामा <b>{n, plural, one {{count} नयाँ कार्यक्रम} other {{count} नयाँ कार्यक्रम}}</b> भेट्टायौँ, जुन ग्राहकहरूलाई देखिनुअघि तपाईंको स्वीकृति चाहिन्छ।",
+    "listHeading": "भेटिएका कार्यक्रम:",
+    "approve": "तपाईंले “तालिका” ट्याबमा स्वीकृत गरेपछि यी नक्सामा लाइभ हुनेछन् र तपाईंको अर्डर पेज प्रि-अर्डर लिन तयार हुनेछ।",
+    "cta": "आफ्नो तालिका जाँच्नुहोस् →",
+    "signoff": "— HatchGrab टिम · hatchgrab.com",
+    "unknownVenue": "अज्ञात स्थान",
+    "text": "नमस्ते,\n\nहामीले तपाईंको तालिकामा {n, plural, one {{count} नयाँ कार्यक्रम} other {{count} नयाँ कार्यक्रम}} भेट्टायौँ, जसलाई तपाईंको स्वीकृति चाहिन्छ:\n\n{list}\n\nयहाँ जाँच्नुहोस्: {url}\n\nतपाईंले स्वीकृत गरेपछि यी नक्सामा लाइभ हुनेछन्।\n\n— HatchGrab टिम"
+  }
+}

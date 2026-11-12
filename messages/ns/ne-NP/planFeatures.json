@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "डिस्कभरी नक्सामा सूची"
+    },
+    "web_dashboard": {
+      "name": "जुनसुकै डिभाइसमा चल्ने वेब ड्यासबोर्ड"
+    },
+    "qr_code": {
+      "name": "QR कोड"
+    },
+    "schedule_import": {
+      "name": "स्वचालित तालिका इम्पोर्ट"
+    },
+    "meal_deals_upsells": {
+      "name": "कम्बो र अपसेल"
+    },
+    "walkup_orders": {
+      "name": "वाक-इन अर्डर व्यवस्थापन"
+    },
+    "sold_out_toggle": {
+      "name": "तुरुन्तै सकियो देखाउने स्विच"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad र Android किचेन एप"
+    },
+    "offline_protection": {
+      "name": "अफलाइन अर्डर सुरक्षा"
+    },
+    "online_payments": {
+      "name": "अनलाइन भुक्तानी"
+    },
+    "advance_preordering": {
+      "name": "अग्रिम प्रि-अर्डर"
+    },
+    "preorder_deadline": {
+      "name": "प्रि-अर्डरको म्याद"
+    },
+    "time_slot_selection": {
+      "name": "ग्राहकले टाइम स्लट रोज्ने सुविधा"
+    },
+    "kitchen_capacity": {
+      "name": "किचेनको क्षमता व्यवस्थापन"
+    },
+    "stock_countdown": {
+      "name": "स्वचालित स्टक गणना"
+    },
+    "auto_accept": {
+      "name": "अनलाइन अर्डर स्वतः स्वीकार"
+    },
+    "branded_qr_code": {
+      "name": "ब्रान्डेड QR कोड"
+    },
+    "private_events": {
+      "name": "निजी कार्यक्रम"
+    },
+    "social_media_posts": {
+      "name": "सामाजिक सञ्जाल पोस्ट"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp अटो-रिप्लाई"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger र Instagram अटो-रिप्लाई"
+    },
+    "tap_to_pay": {
+      "name": "आफ्नै फोनमा भुक्तानी लिनुहोस्"
+    },
+    "sms_order_alerts": {
+      "name": "SMS अर्डर सूचना"
+    },
+    "multi_device_kitchen": {
+      "name": "धेरै डिभाइसमा किचेन सिंक"
+    },
+    "multi_user_access": {
+      "name": "धेरै प्रयोगकर्ताको पहुँच"
+    },
+    "embed_schedule": {
+      "name": "आफ्नै वेबसाइटमा तालिका पेज"
+    },
+    "event_types": {
+      "name": "आफ्नै कार्यक्रमका प्रकार र मूल्य"
+    },
+    "buzzer_tracking": {
+      "name": "बजर ट्र्याकिङ"
+    },
+    "documents_reminders": {
+      "name": "कागजात र रिमाइन्डर"
+    },
+    "profit_per_event": {
+      "name": "कार्यक्रमअनुसार नाफा"
+    },
+    "accountant_reports": {
+      "name": "लेखापालका लागि रिपोर्ट"
+    },
+    "ticket_printing": {
+      "name": "किचेन टिकट प्रिन्टिङ"
+    },
+    "customer_display": {
+      "name": "ग्राहकले देख्ने डिस्प्ले"
+    },
+    "loyalty_stamp_cards": {
+      "name": "डिजिटल लोयल्टी स्ट्याम्प कार्ड"
+    }
+  },
+  "cardRegionOnline": "स्ट्यान्डर्ड {region}",
+  "cardRegion": {
+    "UKcards": "बेलायती कार्ड",
+    "EEAcards": "EEA कार्ड",
+    "UScards": "अमेरिकी कार्ड",
+    "Australiancards": "अस्ट्रेलियाली कार्ड",
+    "NewZealandcards": "न्युजिल्यान्डका कार्ड",
+    "Canadiancards": "क्यानेडेली कार्ड",
+    "Swisscards": "स्विस कार्ड",
+    "Braziliancards": "ब्राजिली कार्ड",
+    "Mexicancards": "मेक्सिकन कार्ड",
+    "Japanesecards": "जापानी कार्ड",
+    "Singaporecards": "सिङ्गापुरका कार्ड",
+    "HongKongcards": "हङकङका कार्ड",
+    "Malaysiancards": "मलेसियाली कार्ड",
+    "Thaicards": "थाई कार्ड",
+    "UAEcards": "UAE का कार्ड"
+  },
+  "perMonth": {
+    "mo": "{amount}/महिना",
+    "month": "{amount} प्रति महिना"
+  },
+  "priceWord": {
+    "free": "निःशुल्क",
+    "freeTrial": "निःशुल्क ट्रायल",
+    "lifetime": "आजीवन",
+    "zeroPercent": "0%",
+    "payAtHatch": "ट्रकमै भुक्तानी",
+    "unlimited": "अनलिमिटेड",
+    "none": "—",
+    "masked": "निश्चित हुन बाँकी"
+  },
+  "cell": {
+    "included": "समावेश"
+  }
+}

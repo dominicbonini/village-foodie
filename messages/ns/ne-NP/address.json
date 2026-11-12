@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "ठेगाना",
+    "postcode": "पोस्टकोड",
+    "zip": "ZIP कोड",
+    "eircode": "Eircode",
+    "postalCode": "पोस्टल कोड",
+    "state": "राज्य",
+    "stateTerritory": "राज्य वा क्षेत्र",
+    "province": "प्रदेश",
+    "county": "काउन्टी",
+    "prefecture": "प्रिफेक्चर",
+    "emirate": "अमिरात",
+    "region": "क्षेत्र",
+    "area": "क्षेत्र (गाउँ, नगर वा सहर)",
+    "townOrArea": "नगर वा क्षेत्र",
+    "city": "सहर",
+    "suburb": "उपनगर",
+    "townOrCity": "नगर वा सहर"
+  },
+  "short": {
+    "area": "क्षेत्र",
+    "townOrArea": "नगर वा क्षेत्र",
+    "city": "सहर",
+    "suburb": "उपनगर",
+    "townOrCity": "नगर वा सहर"
+  },
+  "inSentence": {
+    "postcode": "पोस्टकोड",
+    "zip": "ZIP कोड",
+    "eircode": "Eircode",
+    "postalCode": "पोस्टल कोड"
+  },
+  "withArticle": {
+    "postcode": "पोस्टकोड",
+    "zip": "ZIP कोड",
+    "eircode": "Eircode",
+    "postalCode": "पोस्टल कोड"
+  },
+  "tradeLabel": {
+    "area": "नगर वा सहर",
+    "townOrArea": "नगर वा क्षेत्र",
+    "city": "सहर",
+    "suburb": "उपनगर",
+    "townOrCity": "नगर वा सहर"
+  },
+  "basedIn": {
+    "area": "तपाईं रहेको नगर वा सहर",
+    "townOrArea": "तपाईं रहेको नगर वा क्षेत्र",
+    "city": "तपाईं रहेको सहर",
+    "suburb": "तपाईं रहेको उपनगर",
+    "townOrCity": "तपाईं रहेको नगर वा सहर"
+  },
+  "example": "जस्तै: {example}",
+  "customersSee": "ग्राहकले देख्ने:",
+  "postalWarning": "यो सही {article} जस्तो देखिँदैन — उदाहरण: {example}। तपाईं यसलाई अझै सेभ गर्न सक्नुहुन्छ।",
+  "regionChoose": "छान्नुहोस्…"
+}

@@ -1,0 +1,18 @@
+{
+  "menuLabel": "प्रयोगकर्ता मेनु",
+  "screenOn": "स्क्रिन खुला",
+  "screenOff": "स्क्रिन बन्द",
+  "newOrderSound": "नयाँ अर्डरको आवाज",
+  "copied": "कपी भयो",
+  "orderLink": "अर्डर लिङ्क",
+  "qrCode": "QR कोड",
+  "kitchenScreen": "किचेन डिस्प्ले",
+  "thisDevice": "यो डिभाइस",
+  "manage": "व्यवस्थापन",
+  "ordersDashboard": "अर्डर ड्यासबोर्ड",
+  "admin": "एडमिन",
+  "privacy": "गोपनीयता नीति",
+  "terms": "सर्तहरू",
+  "signOut": "साइन आउट",
+  "close": "बन्द गर्नुहोस्"
+}

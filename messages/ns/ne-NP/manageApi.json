@@ -1,0 +1,10 @@
+{
+  "vanFallback": "भ्यान",
+  "eventsFeed": {
+    "today": "आज · {date}",
+    "tomorrow": "भोलि · {date}"
+  },
+  "privacyNotSaved": "कार्यक्रम लाइभ छ, तर यसको गोपनीयता सेटिङ सेभ गर्न सकिएन।",
+  "stockWarning": "यो श्रेणीमा उपलब्ध आइटम छैनन्: “{category}”",
+  "uncategorised": "श्रेणी नतोकिएका"
+}

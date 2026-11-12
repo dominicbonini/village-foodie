@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "पिकअप समयहरू",
+    "takes_cash": "तपाईं क्यास लिनुहुन्छ?",
+    "offline_protection": "अफलाइन अर्डर सुरक्षा",
+    "buzzer_prompt": "बजर दिन सम्झाइदिनुहोस्"
+  },
+  "typeFollowsVanTitle": "हरेक भ्यानको सामान्य सेटिङ अनुसार चल्छ",
+  "sameSettingsAllVansLabel": "सबै भ्यानका लागि एउटै सेटिङ",
+  "sameSettingsAllVansHeader": "सबै भ्यान",
+  "sameSettingsConfirm": "भ्यान 1 का सेटिङहरू सबै भ्यानमा कपी गर्ने? यसले भ्यान 1 का सबै भ्यान सेटिङ कपी गर्छ, सेटिङमा रहेको ‘भ्यान 1 जस्तै’ जस्तै। किचेनको क्षमताको आफ्नै छुट्टै स्विच छ।",
+  "eventTypesFooterStandard": "स्ट्यान्डर्ड तपाईंको सामान्य सेटअप हो। यहाँ बदल्दा सेटिङमा पनि बदलिन्छ।",
+  "eventTypesFooterOneEvent": "एउटा कार्यक्रमका लागि मात्र सेटिङ बदल्न, त्यो कार्यक्रमको ड्यासबोर्ड प्रयोग गर्नुहोस्।",
+  "eventTypesSubtitle": "परिवर्तनहरू तुरुन्तै सेभ हुन्छन्।",
+  "matchStandardLabel": "स्ट्यान्डर्ड जस्तै बनाउनुहोस्",
+  "matchStandardConfirm": "यो प्रकारका सबै सेटिङ फेरि स्ट्यान्डर्डमा ल्याउने? यहाँ गरेका सबै परिवर्तन हट्नेछन्।",
+  "priceLabels": {
+    "price_change_on": "मूल्य बदल्नुहोस्",
+    "price_mode": "मूल्य परिवर्तन",
+    "price_amount": "रकम",
+    "price_rounding": "राउन्डिङ",
+    "item_prices": "आइटमका मूल्य"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "हरेक मूल्य आफैँ राख्छु"
+  },
+  "priceRounding": {
+    "none": "छैन",
+    "nearest_1": "नजिकको {symbol}1",
+    "up_1": "सधैँ माथितिर राउन्ड गर्नुहोस्"
+  },
+  "pricesStandardCell": "तपाईंको मेनुका मूल्य",
+  "pricesTruckWideTitle": "तपाईंका मूल्य सबै भ्यानमा उस्तै छन्",
+  "pricesMenuCell": "मेनु",
+  "pricesTypeOffCell": "मेनुका मूल्य",
+  "itemPricesShow": "मूल्य देखाउनुहोस्",
+  "itemPricesHide": "मूल्य लुकाउनुहोस्",
+  "priceItemsHeading": "हरेक आइटमको मूल्य राख्नुहोस्",
+  "priceItemsOpen": "हरेक आइटमको मूल्य हेर्नुहोस् वा बदल्नुहोस् ›",
+  "priceItemsClose": "आइटमका मूल्य लुकाउनुहोस् ⌃",
+  "ownPriceCount": "{n, plural, one {{count} आइटमको आफ्नै मूल्य छ} other {{count} आइटमको आफ्नै मूल्य छ}}",
+  "priceTypeHint": "आफ्नै मूल्य टाइप गर्न कुनै मूल्यमा थिच्नुहोस्।",
+  "pricesLiveNotice": "यो कार्यक्रम लाइभ छ। नयाँ अर्डरमा नयाँ मूल्य लाग्छ। पहिले नै गरिएका अर्डरमा पुरानै मूल्य रहन्छ।",
+  "placeTypeHelper": "तपाईंले यो ठाउँ छान्दा “कार्यक्रम थप्नुहोस्” ले यही प्रकार छान्छ।",
+  "postPictureStandardNote": "यहाँका कार्यक्रम पोस्टमा तपाईंको स्ट्यान्डर्ड डिजाइन प्रयोग हुन्छ।",
+  "eventItemsCardDescription": "यो कार्यक्रमका लागि मात्र मूल्य, आइटम सीमा र उपलब्धता। परिवर्तन तुरुन्तै लागू हुन्छ।",
+  "eventPriceColumnLabel": "मूल्य",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · यो कार्यक्रम} other {मेनु {price} · यो कार्यक्रम}}",
+  "eventPriceEdit": "✎ मूल्य सम्पादन गर्नुहोस्",
+  "eventPriceCancel": "रद्द गर्नुहोस्",
+  "eventPriceSave": "मूल्य सेभ गर्नुहोस्",
+  "eventPriceEditNote": "यो कार्यक्रमका लागि मात्र मूल्य सम्पादन हुँदैछ। सेभ नगरेसम्म आइटम सीमा र उपलब्धता लक रहन्छ।",
+  "eventPriceLiveNote": "लाइभ: नयाँ अर्डरमा नयाँ मूल्य लाग्छ।",
+  "offlineWhenOfflineLabel": "अफलाइन हुँदा"
+}

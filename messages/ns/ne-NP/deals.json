@@ -1,0 +1,17 @@
+{
+  "back": "← पछाडि",
+  "title": "कम्बो लागू गर्नुहोस्",
+  "save": "बचत: {amount}",
+  "selectItems": "हरेक स्लटका लागि आइटम छान्नुहोस्",
+  "choose": "छान्नुहोस्: {category}…",
+  "inYourBasket": "── तपाईंको कार्टमा ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (कार्टमा){state, select, used { — पहिल्यै कम्बोमा छ} taken { — अर्को स्लटमा छानिएको} other {}}",
+  "addNew": "── नयाँ थप्नुहोस् ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {अनिवार्य · एउटा रोज्नुहोस्} required {अनिवार्य} other {एउटा रोज्नुहोस्}}{unmet, select, yes { (अनिवार्य)} other {}}",
+  "notePlaceholder": "नोट थप्नुहोस्, जस्तै: प्याज नहाल्ने (ऐच्छिक)",
+  "backButton": "पछाडि",
+  "cancel": "रद्द गर्नुहोस्",
+  "chooseRequired": "आवश्यक विकल्पहरू रोज्नुहोस्",
+  "apply": "कम्बो लागू गर्नुहोस् · {amount}"
+}

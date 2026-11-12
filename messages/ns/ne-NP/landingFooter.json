@@ -1,0 +1,17 @@
+{
+  "features": "फिचरहरू",
+  "pricing": "मूल्य",
+  "faq": "प्रश्नोत्तर",
+  "privacy": "गोपनीयता",
+  "terms": "सर्तहरू",
+  "contact": "सम्पर्क",
+  "about": "हाम्रोबारे",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b> बनाउने टोलीबाट",
+  "badges": {
+    "appStoreLink": "App Store बाट HatchGrab डाउनलोड गर्नुहोस्",
+    "appStoreAlt": "App Store बाट डाउनलोड गर्नुहोस्",
+    "googlePlayLink": "Google Play मा HatchGrab पाउनुहोस्",
+    "googlePlayAlt": "Google Play मा पाउनुहोस्"
+  }
+}

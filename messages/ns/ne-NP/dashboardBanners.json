@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} स्लट} other {{count} स्लट}} क्षमताभन्दा बढी — जाँच्नुहोस्",
+  "batchOver": "{cat}: ब्याचभन्दा बढी — स्लट {slot}: {count} (प्रति ब्याच {per})",
+  "eventStartOver": "कार्यक्रम सुरु हुँदा क्षमताभन्दा बढी — स्लट {slot}: {n, plural, one {{count} आइटम} other {{count} आइटम}}",
+  "kitchenOver": "किचेन क्षमताभन्दा बढी — स्लट {slot}: {n, plural, one {{count} आइटम पाक्दै} other {{count} आइटम पाक्दै}}",
+  "orderItems": "#{id} — {n, plural, one {{count} आइटम} other {{count} आइटम}}",
+  "placedAnyway": "जसरी पनि राखिएका: {list}",
+  "placedItem": "#{id} — स्लट {slot}",
+  "orphans": "{times} — क्षमताभन्दा बढी, तर यसको कारण बनेको कुनै अर्डर भेटिएन",
+  "dismiss": "हटाउनुहोस्",
+  "kitchenCapacity": "किचेनको क्षमता",
+  "overCapacity": "क्षमताभन्दा बढी",
+  "wakeUnsupported": "यो डिभाइसले स्क्रिन खुला राख्न सक्दैन।",
+  "wakeInsecure": "यो ठेगानाबाट स्क्रिन खुला राख्न सकिँदैन।",
+  "wakeRetry": "स्क्रिन खुला राख्नुहोस् — फेरि प्रयास गर्न थिच्नुहोस्",
+  "wakeAcquire": "स्क्रिन खुला राख्नुहोस्",
+  "degraded": {
+    "serverError": "सर्भरले अर्डर लोड गर्न सकेन{hasStatus, select, yes { (त्रुटि {status})} other {}}। यस समयका अर्डर देखाइँदैछ: {at}। नयाँ अर्डरहरू छुटेका हुन सक्छन्।",
+    "unreachable": "सर्भरसम्म पुग्न सकिँदैन। यस समयका अर्डर देखाइँदैछ: {at}। नयाँ अर्डरहरू छुटेका हुन सक्छन्।"
+  }
+}

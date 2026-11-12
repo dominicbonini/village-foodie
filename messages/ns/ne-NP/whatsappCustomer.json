@@ -1,0 +1,15 @@
+{
+  "greeting": "नमस्ते 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}हाम्रो पूरा मेनु र एलर्जी गराउने तत्त्वको जानकारी यहाँ हेर्नुहोस्: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}हाम्रो पूरा मेनु यहाँ हेर्नुहोस्: {url} — {truck} {emoji}",
+  "otherCategory": "अन्य",
+  "categoryFrom": "{category} — सुरु मूल्य {price}",
+  "listTwo": "{first} र {second}",
+  "listMany": "{init} र {last}",
+  "menuSummary": "{opener}हामीसँग यी छन्: {summary}। पूरा मेनु हेर्नुहोस् र यहाँ पहिल्यै अर्डर गर्नुहोस्: {url} — {truck} {emoji}",
+  "allergenCaveat": "एलर्जी गराउने तत्त्वको जानकारीका लागि कृपया पूरा मेनु फेरि जाँच्नुहोस् — यो स्वचालित जवाफ हो।",
+  "specificFallback": "{opener}हाम्रो पछिल्लो तालिका यहाँ हेर्नुहोस्: {url}\n\n{truck} {emoji}",
+  "capHandoff": "तपाईंका सबै सन्देशका लागि धन्यवाद! म यहाँ दिनमा केही पटक मात्र जवाफ दिन सक्छु।\n\nअर्डर गर्न: {link}",
+  "capContact": "हामीलाई सिधै सम्पर्क गर्न: {number}"
+}

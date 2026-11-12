@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {कृपया मान्य मोबाइल नम्बर हाल्नुहोस् ({name})} other {कृपया मान्य मोबाइल नम्बर हाल्नुहोस्}}{withExample, select, yes { (जस्तै: {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {कृपया मान्य फोन नम्बर हाल्नुहोस् ({name})} other {कृपया मान्य फोन नम्बर हाल्नुहोस्}}{withExample, select, yes { (जस्तै: {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {मान्य फोन नम्बर हाल्नुहोस् ({name})} other {मान्य फोन नम्बर हाल्नुहोस्}}{withExample, select, yes { (जस्तै: {example})} other {}}।"
+}

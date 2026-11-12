@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "हप्ताका मितिहरू",
+    "dayList": "दिनहरूको सूची",
+    "place": "ठाउँ",
+    "venue": "स्थान",
+    "area": "क्षेत्र",
+    "dayDate": "दिन र मिति",
+    "times": "समय",
+    "orderLink": "अर्डर लिङ्क",
+    "locationTag": "ठाउँ ट्याग"
+  },
+  "weekHeader": "{truck} — यो हप्ता हामी यहाँ छौँ:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — रद्द भयो, माफ गर्नुहोस्",
+  "noDates": "यो हप्ता कुनै मिति छैन — छिट्टै फेरि हेर्नुहोस्।",
+  "orderAhead": "पहिल्यै अर्डर गर्नुहोस्: {url}",
+  "orderAheadTagged": "पहिल्यै अर्डर गर्नुहोस्: {url} {tag}",
+  "eventLine": "{truck} {when} {where} आउँदैछ — {times}।",
+  "eventLineNoTimes": "{truck} {when} {where} आउँदैछ।",
+  "cancelledSorry": "माफ गर्नुहोस् — हामी {when} {where} आउन सक्दैनौँ।",
+  "cancelledApology": "आउने योजना बनाउनुभएका सबैसँग क्षमा चाहन्छौँ। हामी छिट्टै फर्कनेछौँ।",
+  "when": {
+    "today": "आज",
+    "tonight": "आज बेलुका",
+    "tomorrow": "भोलि",
+    "dated": "मिति {date}"
+  }
+}
