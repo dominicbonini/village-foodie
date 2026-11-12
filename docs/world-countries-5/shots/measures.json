@@ -1,0 +1,164 @@
+{
+ "laptop": {
+  "width": 1512,
+  "height": 945,
+  "region": "europe",
+  "regions": [
+   "Europe",
+   "Americas",
+   "Asia Pacific",
+   "Middle East",
+   "Africa"
+  ],
+  "items": 55,
+  "cols": 5,
+  "minItemH": 38,
+  "minTabH": 36,
+  "boxScrolls": false,
+  "listScrolls": false,
+  "pageSideways": false,
+  "box": [
+   1152,
+   608
+  ],
+  "lastItemBottom": 756,
+  "viewport": 945,
+  "codesShown": 0,
+  "ticks": 1
+ },
+ "laptop-asia": {
+  "width": 1512,
+  "height": 945,
+  "region": "asiaPacific",
+  "regions": [
+   "Europe",
+   "Americas",
+   "Asia Pacific",
+   "Middle East",
+   "Africa"
+  ],
+  "items": 53,
+  "cols": 5,
+  "minItemH": 38,
+  "minTabH": 36,
+  "boxScrolls": false,
+  "listScrolls": false,
+  "pageSideways": false,
+  "box": [
+   1152,
+   608
+  ],
+  "lastItemBottom": 756,
+  "viewport": 945,
+  "codesShown": 0,
+  "ticks": 1
+ },
+ "ipad-portrait": {
+  "width": 820,
+  "height": 1180,
+  "region": "europe",
+  "regions": [
+   "Europe",
+   "Americas",
+   "Asia Pacific",
+   "Middle East",
+   "Africa"
+  ],
+  "items": 55,
+  "cols": 4,
+  "minItemH": 38,
+  "minTabH": 36,
+  "boxScrolls": false,
+  "listScrolls": false,
+  "pageSideways": false,
+  "box": [
+   788,
+   727
+  ],
+  "lastItemBottom": 933,
+  "viewport": 1180,
+  "codesShown": 0,
+  "ticks": 1
+ },
+ "ipad-landscape": {
+  "width": 1180,
+  "height": 820,
+  "region": "europe",
+  "regions": [
+   "Europe",
+   "Americas",
+   "Asia Pacific",
+   "Middle East",
+   "Africa"
+  ],
+  "items": 55,
+  "cols": 5,
+  "minItemH": 38,
+  "minTabH": 36,
+  "boxScrolls": false,
+  "listScrolls": false,
+  "pageSideways": false,
+  "box": [
+   1148,
+   608
+  ],
+  "lastItemBottom": 693,
+  "viewport": 820,
+  "codesShown": 0,
+  "ticks": 1
+ },
+ "phone": {
+  "width": 390,
+  "height": 844,
+  "region": "europe",
+  "regions": [
+   "Europe",
+   "Americas",
+   "Asia Pacific",
+   "Middle East",
+   "Africa"
+  ],
+  "items": 55,
+  "cols": 1,
+  "minItemH": 44,
+  "minTabH": 44,
+  "boxScrolls": false,
+  "listScrolls": true,
+  "pageSideways": false,
+  "box": [
+   390,
+   844
+  ],
+  "lastItemBottom": 2574,
+  "viewport": 844,
+  "codesShown": 0,
+  "ticks": 1
+ },
+ "phone-americas": {
+  "width": 390,
+  "height": 844,
+  "region": "americas",
+  "regions": [
+   "Europe",
+   "Americas",
+   "Asia Pacific",
+   "Middle East",
+   "Africa"
+  ],
+  "items": 49,
+  "cols": 1,
+  "minItemH": 44,
+  "minTabH": 44,
+  "boxScrolls": false,
+  "listScrolls": true,
+  "pageSideways": false,
+  "box": [
+   390,
+   844
+  ],
+  "lastItemBottom": 2310,
+  "viewport": 844,
+  "codesShown": 0,
+  "ticks": 1
+ }
+}
