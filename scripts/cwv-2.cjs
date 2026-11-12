@@ -58,7 +58,12 @@ t('/contact, /privacy, /terms, /country-terms and /<c>/ legal pages stay on the 
 t('outside the groups: only route handlers, metadata routes, the two global pages and the embed component',
   J([...new Set(appFiles.filter(f => !/^app\/\((app|public)\)\//.test(f)).map(f => f.split('/').slice(0, 2).join('/')))].sort())
   === J(['app/api', 'app/auth', 'app/demo', 'app/embed', 'app/global-error.tsx', 'app/global-not-found.tsx', 'app/llms.txt', 'app/robots.ts', 'app/sitemap.ts']))
-const appChanged = MP.changedSince(BEFORE, ['app/(app)']).filter(notDc2)
+// ⚠️ RE-PINNED (longer collection times, 12 November 2026; scripts/_longer-intervals-order-page.cjs): the order page's fallback picker
+// asks each hour for its own minutes at 45. The page passes when putting exactly that edit back gives the file as it was at ae7ff8b4
+// (the commit before the edit, where this guard passed); any other change to it still fails.
+const LIOP = require('./_longer-intervals-order-page.cjs')
+const notLonger = f => { if (f !== LIOP.FILE) return true; const u = LIOP.undo(read(f)); return !(u && u === showAt(LIOP.BASE, f)) }
+const appChanged = MP.changedSince(BEFORE, ['app/(app)']).filter(notDc2).filter(notLonger)
 t('🔴 every file under app/(app) is its pre-move self, byte for byte (the two import lines the move had to change, named in _moved-paths.cjs, aside)',
   appChanged.length === 0, appChanged)
 t('the moved root layout, its provider and its stylesheet are byte-identical to before', ['app/(app)/layout.tsx', 'app/(app)/providers.tsx', 'app/(app)/globals.css']
@@ -232,7 +237,7 @@ head('5 · nothing in ordering, payments, the KDS, the dashboard or Manage (Pizz
 const CRIT = ['app/api/orders', 'app/api/payments', 'app/api/webhooks', 'app/api/menu', 'app/api/kds', 'app/api/dashboard', 'app/api/manage', 'lib/payments', 'lib/orders', 'lib/printing',
   'lib/order-charges.ts', 'lib/order-charge-rules.ts', 'lib/menu-loader.ts', 'app/(app)/order', 'app/(app)/o', 'app/(app)/trucks', 'app/(app)/kds', 'app/(app)/dashboard', 'app/(app)/manage',
   'app/(app)/p', 'components/dashboard'].filter(p => fs.existsSync(path.join(REPO, p)))
-const critChanged = MP.changedSince(BEFORE, CRIT).filter(notDc2)
+const critChanged = MP.changedSince(BEFORE, CRIT).filter(notDc2).filter(notLonger)   // ⚠️ RE-PINNED (longer collection times — above)
 t(`🔴 ${CRIT.length} ordering, payment, KDS, dashboard and Manage paths: unchanged since ${BEFORE} (the move aside)`, CRIT.length >= 18 && critChanged.length === 0, critChanged)
 
 console.log(`\n${fail ? '🔴' : '✅'} cwv-2: ${pass} passed, ${fail} failed`)

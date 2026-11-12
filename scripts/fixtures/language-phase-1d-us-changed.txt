@@ -1,12 +1,12 @@
-# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 320 changed). Written by scripts/language-phase-1d.cjs.
+# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 332 changed). Written by scripts/language-phase-1d.cjs.
 # view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
 menu/US|menuTab|list	words
 menu/US|menuTab|list|open	words
 menu/US|menuTab|list|openSides	words
 menu/US|menuTab|empty	words
 menu/US|menuTab|noEdit	words
-menu/US|menuTab|editCat|new	words
-menu/US|menuTab|editCat|existing	words
+menu/US|menuTab|editCat|new	code: longer-intervals-prep-to-60 + words
+menu/US|menuTab|editCat|existing	code: longer-intervals-prep-to-60 + words
 menu/US|menuTab|editItem|new	words
 menu/US|menuTab|editItem|existing	words
 menu/US|menuTab|editItem|spicy	words
@@ -30,8 +30,8 @@ menu/US|menuTab|import|allergens|chooser	words
 menu/US|menuTab|import|allergens|card	words
 menu/US|menuTab|import|allergens|review	words
 menu/US|menuTab|import|allergens|cardParsed	words
-menu/US|menuTab|import|prep	words
-menu/US|menuTab|import|saving	words
+menu/US|menuTab|import|prep	code: longer-intervals-prep-to-60+longer-intervals-window-to-60 + words
+menu/US|menuTab|import|saving	code: longer-intervals-prep-to-60+longer-intervals-window-to-60 + words
 menu/US|menuTab|import|done	words
 menu/US|menuTab|setup|intro	words
 menu/US|menuTab|setup|schedule|chooser	words
@@ -58,10 +58,10 @@ menu/US|deals|list	code: 1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-1-
 menu/US|deals|empty	words
 menu/US|deals|new	code: 1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-1-manage-join + words
 menu/US|deals|edit	code: 1d-us-dates-times+us-layout-fix-1-nbsp+us-layout-fix-1-manage-join + words
-menu/US|capacity|oneVan	words
-menu/US|capacity|twoVans	words
-menu/US|capacity|confirmAllSame	words
-menu/US|capacity|unavailable	words
+menu/US|capacity|oneVan	code: longer-intervals-prep-to-60+longer-intervals-window-to-60 + words
+menu/US|capacity|twoVans	code: longer-intervals-prep-to-60+longer-intervals-window-to-60 + words
+menu/US|capacity|confirmAllSame	code: longer-intervals-prep-to-60+longer-intervals-window-to-60 + words
+menu/US|capacity|unavailable	code: longer-intervals-prep-to-60+longer-intervals-window-to-60 + words
 schedule/US|tab|list	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
 schedule/US|tab|list|past	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
 schedule/US|tab|list|oneVan	code: 1d-us-address-style+us-layout-fix-1-nbsp+us-layout-fix-3-schedule-phone-cards+us-layout-fix-2-live-on-date-line + words
@@ -124,13 +124,13 @@ schedule/US|timeSelect|00:00|end	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+u
 schedule/US|timeSelect|empty	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
 schedule/US|timeSelect|empty|end	code: 1d-us-hour-pickers+us-layout-fix-1-nbsp+us-layout-fix-5a-phone-time-select
 schedule/US|badge|e4	words
-schedule/US|eventTypes|grid	words
-schedule/US|eventTypes|empty	words
+schedule/US|eventTypes|grid	code: longer-intervals-collection-45-60 + words
+schedule/US|eventTypes|empty	code: longer-intervals-collection-45-60 + words
 schedule/US|eventTypes|loading	words
-schedule/US|eventTypes|locked	words
-schedule/US|eventTypes|noItems	words
-schedule/US|eventTypes|twoVans	words
-schedule/US|eventTypes|modal	words
+schedule/US|eventTypes|locked	code: longer-intervals-collection-45-60 + words
+schedule/US|eventTypes|noItems	code: longer-intervals-collection-45-60 + words
+schedule/US|eventTypes|twoVans	code: longer-intervals-collection-45-60 + words
+schedule/US|eventTypes|modal	code: longer-intervals-collection-45-60 + words
 schedule/US|vanFilter|two	words
 schedule/US|vanFilter|label|all	words
 schedule/US|privateLink|on	words
@@ -162,7 +162,14 @@ settings/US|whereYouTrade|set	words
 settings/US|whereYouTrade|unset	words
 settings/US|whereYouTrade|readOnly	words
 settings/US|whereYouTrade|error	words
-settings/US|capacityEdit|none	words
+settings/US|capacityEdit|plain	code: longer-intervals-prep-to-60
+settings/US|capacityEdit|none	code: longer-intervals-prep-to-60 + words
+settings/US|capacityEdit|counts	code: longer-intervals-prep-to-60
+settings/US|capacityEdit|countsDisabled	code: longer-intervals-prep-to-60
+settings/US|capacityEdit|noBadge	code: longer-intervals-prep-to-60
+settings/US|capacityRow|c1	code: longer-intervals-prep-to-60
+settings/US|capacityRow|c2	code: longer-intervals-prep-to-60
+settings/US|capacityRow|c3	code: longer-intervals-prep-to-60
 copy/US|serviceSettings|EVENT_TYPES_FOOTER_ONE_EVENT	words
 copy/US|serviceSettings|SAME_SETTINGS_CONFIRM	words
 copy/US|serviceSettings|TYPE_FOLLOWS_VAN_TITLE	words
@@ -184,9 +191,14 @@ copy/US|scheduleVerify|VERIFY_MESSAGES	words
 copy/US|kitchenCapacity|KITCHEN_CAPACITY_DESC	words
 copy/US|kitchenCapacity|KITCHEN_CAPACITY_EXAMPLE	words
 copy/US|kitchenCapacity|KITCHEN_CAPACITY_WARNING	words
+copy/US|kitchenCapacity|PREP_TIME_OPTIONS	code: longer-intervals-prep-to-60
+copy/US|kitchenCapacity|prepTimeOptionsFor|0	code: longer-intervals-prep-to-60
+copy/US|kitchenCapacity|prepTimeOptionsFor|1	code: longer-intervals-prep-to-60
+copy/US|kitchenCapacity|prepTimeOptionsFor|2	code: longer-intervals-prep-to-60
 copy/US|privateEvents|MAX_ONLY_TITLE	code: plans-max-badge-gone
 copy/US|privateEvents|NEW_LINK_CONFIRM	words
 copy/US|privateEvents|PRIVATE_PREVIEW_NOTE	words
+copy/US|eventTypes|TYPE_INTERVAL_CHOICES	code: longer-intervals-collection-45-60
 copy/US|eventTypes|TYPE_NAME_CHIPS	words
 copy/US|tradeArea|check|badZone	code: named difference 1 (zone_unknown) + words
 copy/US|tradeArea|check|noTown	code: named difference 1 (town_missing)

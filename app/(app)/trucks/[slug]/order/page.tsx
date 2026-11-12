@@ -811,35 +811,26 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return hours
   }, [event])
 
-  // Filter minutes based on first/last hour of event
-  const availableMinutes = useMemo(() => {
-    // 🔴 FROM THE SHARED RULE, NOT A LOCAL LIST. At 5 this is exactly the twelve entries this used to
-    // hard-code; at 15 it is :00/:15/:30/:45 — the same clock-anchored multiples /api/slots generates.
-    // 🔴 THE SELECTED EVENT'S interval, not the truck's — a two-van truck offers a different grid per
-    // event, and this picker is only ever used for the event being ordered against.
-    const allMinutes = clockGridMinutes(event?.collection_interval_mins ?? 5)
-    
-    if (!event?.start_time || !event?.end_time || !slotHour) {
-      return allMinutes
-    }
-    
+  // The minutes one HOUR offers, filtered to the event's first/last hour.
+  // 🔴 FROM THE SHARED RULE, NOT A LOCAL LIST. At 5 this is exactly the twelve entries this used to
+  // hard-code; at 15 it is :00/:15/:30/:45 — the same clock-anchored multiples /api/slots generates.
+  // 🔴 THE SELECTED EVENT'S interval, not the truck's — a two-van truck offers a different grid per
+  // event, and this picker is only ever used for the event being ordered against.
+  // 🔴 PER HOUR (12 November 2026): at 45 minutes the grid's minutes differ hour to hour (18:00, 18:45,
+  // 19:30…), so the fallback list asks this for EACH hour instead of reusing one hour's minutes for all.
+  const minutesForHour = useCallback((hh: string | null | undefined): string[] => {
+    const allMinutes = clockGridMinutes(event?.collection_interval_mins ?? 5, hh ? parseInt(hh) : null)
+    if (!event?.start_time || !event?.end_time || !hh) return allMinutes
     const [startH, startM] = event.start_time.split(':').map(Number)
     const [endH, endM] = event.end_time.split(':').map(Number)
-    const selectedH = parseInt(slotHour)
-    
-    // First hour: filter out minutes before start
-    if (selectedH === startH) {
-      return allMinutes.filter(m => parseInt(m) >= startM)
-    }
-    
-    // Last hour: filter out minutes after end
-    if (selectedH === endH) {
-      return allMinutes.filter(m => parseInt(m) <= endM)
-    }
-    
-    // Middle hours: all minutes available
-    return allMinutes
-  }, [event, slotHour])
+    const h = parseInt(hh)
+    if (h === startH) return allMinutes.filter(m => parseInt(m) >= startM)   // first hour: not before start
+    if (h === endH) return allMinutes.filter(m => parseInt(m) <= endM)       // last hour: not after end
+    return allMinutes                                                         // middle hours: all
+  }, [event])
+
+  // The selected hour's minutes (every on-grid minute while no hour is chosen).
+  const availableMinutes = useMemo(() => minutesForHour(slotHour), [minutesForHour, slotHour])
 
   // Fetch available slots (must use date_iso yyyy-mm-dd to match orders.event_date in Supabase)
   const fetchSlots = async (truckId: string, dateIso: string, startTime?: string, endTime?: string, eventId?: string) => {
@@ -3903,7 +3894,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                     </option>
                                   ))
                               : availableHours.flatMap(h =>
-                                  availableMinutes
+                                  // 🔴 45 ONLY asks each hour for its own minutes (they differ hour to hour); every interval
+                                  // that divides an hour keeps the list it always had, byte for byte.
+                                  (60 % (event?.collection_interval_mins ?? 5) === 0 ? availableMinutes : minutesForHour(h))
                                     .filter(m => {
                                       const time = `${h}:${m}`
                                       if (!asapTime) return true

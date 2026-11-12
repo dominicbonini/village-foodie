@@ -111,7 +111,10 @@ check(!/operator_collection_interval_mins/.test(orderPage) && !/operator_collect
 // applyEventIntervals(...).customer, so the event override is honoured. Still customer-only.
 check(/ONLY THE CUSTOMER VALUE IS EXPOSED/.test(src('app/api/events/route.ts')) && /\)\.customer,/.test(eventsRoute) && !/\.truck\b/.test(eventsRoute), '/api/events publishes only the customer half')
 check(/collection_interval_mins: applyEventIntervals\(/.test(eventsRoute) && /eventOverrides\.byEventId\.get\(e\.id\)/.test(eventsRoute), '…attached PER EVENT: that event\'s own override, else its van\'s value')
-check(/clockGridMinutes\(event\?\.collection_interval_mins \?\? 5\)/.test(orderPage), 'the fallback picker draws from the SELECTED EVENT\'S interval, not the truck\'s')
+// ⚠️ RE-PINNED (12 November 2026): the picker now passes the HOUR too (at 45 the minutes differ hour to hour), and
+// the fallback list asks for each hour's minutes (minutesForHour(h)), never one hour's minutes for every hour.
+check(/clockGridMinutes\(event\?\.collection_interval_mins \?\? 5, hh \? parseInt\(hh\) : null\)/.test(orderPage), 'the fallback picker draws from the SELECTED EVENT\'S interval, not the truck\'s, for the hour it lists')
+check(/availableHours\.flatMap\(h =>[\s\S]{0,260}\? availableMinutes : minutesForHour\(h\)\)/.test(orderPage), '…and at 45 the fallback list takes EACH hour\'s own minutes (every other interval: its list as before)')
 
 console.log('\n── SOURCE: the dropped truck column is read nowhere ─────────────────────────────────────')
 for (const [label, text] of [['/api/slots', slotsRoute], ['/api/dashboard', dashRoute], ['submit', submit], ['promoteDraft', promote], ['place-in-slot', placeIn], ['order page', orderPage], ['/api/menu', menuRoute]]) {

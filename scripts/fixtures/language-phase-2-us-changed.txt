@@ -177,8 +177,8 @@
 1b/api/US|action|offline|noEvent	words
 1b/api/US|action|offline|badValue	words
 1b/api/US|action|intervals|noEvent	words
-1b/api/US|action|intervals|bad	words
-1b/api/US|action|intervals|badOp	words
+1b/api/US|action|intervals|bad	code: longer-intervals-refusal-choices + words
+1b/api/US|action|intervals|badOp	code: longer-intervals-refusal-choices + words
 1b/api/US|action|intervals|opFirst	words
 1b/api/US|action|orderReady|noEvent	words
 1b/api/US|action|orderReady|badValue	words
@@ -694,22 +694,22 @@
 1b/dashboard/US|prepAsapLater	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words
 1b/dashboard/US|addTab	code: P2-us-clock+us-layout-fix-1-nbsp
 1b/dashboard/US|addTabNoMenu	code: P2-us-clock+us-layout-fix-1-nbsp + words
-1b/dashboard/US|settings	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|offline	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|saving	code: P2-dashboard-off-since+P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|buzzer	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|scroll	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|offlineProtection	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|offlineNoAuto	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|intervalsOverride	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|intervalsEventOnly	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|intervalsVanSplit	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|intervalsUnavailable	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|capacity	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|capacity1	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
-1b/dashboard/US|settings|noVan	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|offline	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|saving	code: P2-dashboard-off-since+P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|buzzer	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|scroll	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|offlineProtection	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|offlineNoAuto	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|intervalsOverride	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|intervalsEventOnly	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|intervalsVanSplit	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|intervalsUnavailable	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|capacity	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|capacity1	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
+1b/dashboard/US|settings|noVan	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
 1b/dashboard/US|settings|noEvent	code: plans-printing-settings-props + words
-1b/dashboard/US|settings|privateLink	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props + words
+1b/dashboard/US|settings|privateLink	code: P2-us-clock+us-layout-fix-1-nbsp+plans-printing-settings-props+longer-intervals-collection-45-60+longer-intervals-window-to-60 + words
 1b/dashboard/US|stock	code: P2-us-clock+us-layout-fix-1-nbsp + words
 1b/dashboard/US|stock|options	code: P2-us-clock+us-layout-fix-1-nbsp + words
 1b/dashboard/US|stock|priceEditing	code: P2-us-clock+us-layout-fix-1-nbsp + words

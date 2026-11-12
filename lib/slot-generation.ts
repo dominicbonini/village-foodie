@@ -49,10 +49,23 @@ export const firstClockSlotAtOrAfter = (startMins: number, intervalMins: number)
  * server was start-anchored AND every start was a 5-minute mark; at any other interval that list would
  * have offered times the server never generates — the V11.15 outage class. One rule, both sides.
  */
-export function clockGridMinutes(intervalMins: number): string[] {
+//
+// 🔴 PASS THE HOUR. At an interval that divides 60 (5–30, 60) every hour has the same minutes and `hour`
+// changes nothing — byte-identical to the old one-argument form. At 45 it does not: the multiples of 45
+// from midnight fall on :00/:45 in one hour and :30 or :15 in the next, so the hour decides. With no hour
+// (nothing picked yet) the answer is every minute that is on the grid in SOME hour — at 45 that is
+// :00/:15/:30/:45 — and the customer's hour choice then narrows it.
+export function clockGridMinutes(intervalMins: number, hour?: number | null): string[] {
   const step = Math.max(1, Math.floor(intervalMins))
   const out: string[] = []
-  for (let m = 0; m < 60; m += step) out.push(String(m).padStart(2, '0'))
+  if (hour == null || !Number.isFinite(hour)) {
+    for (let m = 0; m < 60; m++) {
+      if (Array.from({ length: 24 }, (_, h) => h).some(h => (h * 60 + m) % step === 0)) out.push(String(m).padStart(2, '0'))
+    }
+    return out
+  }
+  const base = (Math.floor(hour) % 24) * 60
+  for (let m = 0; m < 60; m++) if ((base + m) % step === 0) out.push(String(m).padStart(2, '0'))
   return out
 }
 

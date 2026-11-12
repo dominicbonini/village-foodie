@@ -798,7 +798,37 @@ async function eventTypesView() {
     while (i < x.length && x[i] === y[i]) i++
     return `\n      before: …${x.slice(Math.max(0, i - 60), i + 80)}…\n      after:  …${y.slice(Math.max(0, i - 60), i + 80)}…`
   }
-  const A = leaves(JSON.parse(JSON.stringify(snap))), B = leaves(before)   // the same JSON round trip the fixture took
+  // ⚠️ RE-PINNED (longer collection times and capacity steps, 12 November 2026; scripts/_named-longer-intervals.cjs) — three
+  // NAMED differences, taken back off the AFTER side exactly, so every other byte is still compared as before:
+  //   prep selects gain 20m … 60m after 15m; collection-time selects gain 45 and 60 after 30; the capacity window reads
+  //   1 … 15, 20, 25 … 60 where it read 1 … 20. Each undo matches only its exact run of option values / words.
+  const LONGER = { prep: 0, interval: 0, window: 0 }
+  const unLonger = (o) => {
+    if (Array.isArray(o)) return o.map(unLonger)
+    if (!o || typeof o !== 'object') return o
+    const out = {}
+    for (const [k, v] of Object.entries(o)) {
+      if (k === 'attrs' && Array.isArray(v)) {
+        const a = [...v]
+        const run = (start, vals) => vals.every((x, i) => a[start + i] === `value=${x}`)
+        for (let i = 0; i < a.length; i++) {
+          if (a[i] === 'value=900' && a[i - 1] === 'value=840' && run(i + 1, [1200, 1500, 1800, 2100, 2400, 2700, 3000, 3300, 3600])) { a.splice(i + 1, 9); LONGER.prep++ }
+          if (a[i] === 'value=30' && run(i - 4, [5, 10, 15, 20, 30]) && run(i + 1, [45, 60])) { a.splice(i + 1, 2); LONGER.interval++ }
+          if (a[i] === 'value=1' && run(i, [...Array.from({ length: 15 }, (_, j) => j + 1), 20, 25, 30, 35, 40, 45, 50, 55, 60]) && !run(i, Array.from({ length: 20 }, (_, j) => j + 1))) {
+            a.splice(i, 24, ...Array.from({ length: 20 }, (_, j) => `value=${j + 1}`)); LONGER.window++
+          }
+        }
+        out[k] = a
+      } else if (k === 'text' && typeof v === 'string') {
+        out[k] = v.replace(/ 15m 20m 25m 30m 35m 40m 45m 50m 55m 60m\b/g, ' 15m')
+          .replace(/(Every 30 (?:min|minutes)) Every 45 (?:min|minutes) Every 60 (?:min|minutes)\b/g, '$1')
+          .replace(/every 15m every 20m every 25m every 30m every 35m every 40m every 45m every 50m every 55m every 60m\b/g, 'every 15m every 16m every 17m every 18m every 19m every 20m')
+      } else out[k] = unLonger(v)
+    }
+    return out
+  }
+  const A = leaves(unLonger(JSON.parse(JSON.stringify(snap)))), B = leaves(before)   // the same JSON round trip the fixture took
+  console.log(`  named: longer-intervals — ${LONGER.prep} prep select(s), ${LONGER.interval} collection-time select(s), ${LONGER.window} capacity-window select(s) taken back to BEFORE's options`)
   let bad = 0
   const fail = (msg) => { bad++; if (bad <= 40) console.log('  🔴 ' + msg) }
 

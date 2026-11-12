@@ -2676,6 +2676,10 @@ head('5b · THE MODAL AND THE CARD')
       /* ⚠️ RE-PINNED (US polish batch, 19 October 2026, docs/us-polish-batch-report.md): seven refusal lines now word the
        * route's refusal from its code + params (errorText — errorsKitchen for /api/dashboard/action, errorsManage for
        * /api/events/action), the English `error` the fallback. Each replacement is asserted below (refusalsWorded). */
+      /* ⚠️ RE-PINNED (12 November 2026, longer capacity window): the dashboard's capacity-window select reads the shared
+       * list (capacityWindowOptionsFor — 1–15, then every 5 to 60) instead of its own 1…20. An edit, not a loss; its
+       * replacement is asserted below (windowMoved). */
+      /^\{Array\.from\(\{length:20\},\(_,i\)=>i\+1\)\.concat\(\(capacityWindowMins>20\)\?\[capacityWindowMins\]:\[\]\)\.map\(n=>\($/,
       /^try\{ msg=\(await res\.clone\(\)\.json\(\)\)\?\.error \?\? msg \}catch\{\}$/,
       /^if\(!res\.ok\)throw new Error\(data\.error\)$/,
       /^const data=await res\.json\(\); if\(!res\.ok\) throw new Error\(data\.error\)$/,
@@ -3017,6 +3021,8 @@ head('5b · THE MODAL AND THE CARD')
     const refusalsWorded = now.includes("try{ msg=errorText(tErrK,await res.clone().json(),msg) }catch{}") && now.includes("if(!res.ok)throw new Error(errorText(tErrK,data,''))")
       && (now.match(/const data=await res\.json\(\); if\(!res\.ok\) throw new Error\(errorText\(tErrM,data,''\)\)/g) || []).length === 5
     if (!refusalsWorded) unexplained.push('(US polish batch: a refusal line is not worded from its code)')
+    const windowMoved = now.includes('{capacityWindowOptionsFor(capacityWindowMins).map(n=>(')
+    if (!windowMoved) unexplained.push('(Longer capacity window: the window select does not read capacityWindowOptionsFor)')
     if (!lp2Moved) unexplained.push('(Language Phase 2: the status labels / capacity description are not read from `dashboard` messages)')
     /* ⚠️ RE-PINNED (Language Phase 1d Part 2): the companion for the followed moves above — all seven are moves out of
      * `dashboard.settings.`, every one is gone from the page under its old key and read under its new one through

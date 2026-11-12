@@ -656,6 +656,10 @@ const NAMED = [
   // ── ⚠️ RE-PINNED (demo-claim-2, 9 November 2026; scripts/_lp-demo-claim-2.cjs) ─────────────────────────────────────────────
   //    create_truck's answers carry the demo menu carry-over's outcome ("menuCarry"), last. PRECISE.
   ...require('./_lp-demo-claim-2.cjs').LP2_ENTRIES,
+
+  // ── ⚠️ RE-PINNED (longer collection times and capacity steps, 12 November 2026; scripts/_named-longer-intervals.cjs) ──────
+  //    Collection times gain 45 and 60; prep time 20m … 60m; the capacity window 1 … 15 then every 5 to 60. PRECISE.
+  ...require('./_named-longer-intervals.cjs').entries({ mapStrings }),
 ]
 
 // ── ⚠️ RE-PINNED (ireland-1, 20 October 2026): helpers for the ie1-demo-* entries ─────────────────────────────────────────

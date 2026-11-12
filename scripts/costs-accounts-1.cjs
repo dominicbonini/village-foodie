@@ -338,7 +338,21 @@ const stripComments = s => s.replace(/--.*$/gm, '')
       if (then) for (const [a, b] of MPd.MOVE_EDITS[f] || []) then = then.split(a).join(b)
       return !then || showAt('64ac2eb7', f) !== then
     }
-    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).filter(notDc2).join('\n') } catch (e) { diff = String(e) }
+    // ⚠️ RE-PINNED (longer collection times, 12 November 2026; scripts/_longer-intervals-order-page.cjs): the order page's fallback
+    // picker asks each hour for its own minutes at 45. The page passes when putting exactly that edit back gives the file as it
+    // was at ae7ff8b4 (the commit before the edit, where it passed); any other change to it still fails.
+    const LIOP = require('./_longer-intervals-order-page.cjs')
+    const notLonger = f => {
+      if (f !== LIOP.FILE) return true
+      const undone = LIOP.undo(fs.readFileSync(path.join(REPO, f), 'utf8'))
+      return !(undone && undone === showAt(LIOP.BASE, f))
+    }
+    // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026; docs/pricing-copy-4-report.md; scripts/_lp-pricing-copy-4.cjs undoCode): the settings
+    // type gained the country's payment model and the one card-country helper (pricing wording only; no order path reads them). It passes
+    // when putting exactly those edits back gives BEFORE's file; any other change to it still fails.
+    const PC4 = require('./_lp-pricing-copy-4.cjs')
+    const notPc4 = f => !(PC4.CODE_FILES.includes(f) && PC4.undoCode(f, fs.readFileSync(path.join(REPO, f), 'utf8')) === showAt(BEFORE, f))
+    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).filter(notDc2).filter(notLonger).filter(notPc4).join('\n') } catch (e) { diff = String(e) }
     const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }).trim()
     t(`${PATHS.length} order, payment, menu, KDS, dashboard and ticket paths: no change against ${BEFORE} (working tree)`, PATHS.length >= 20 && diff.trim() === '' && untracked === '', diff + untracked)
     const PERF1_LINES = [
@@ -347,7 +361,9 @@ const stripComments = s => s.replace(/--.*$/gm, '')
       "  // the proxy included, keeps the 60-second copy below exactly as before.",
       "  if (isMarketingRender()) return (await import('@/lib/marketing-cache')).marketingCountryList()",
     ]
-    const csNow = read(PERF1_CS).split('\n'), taken = csNow.filter(l => PERF1_LINES.includes(l))
+    // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026): the loader also embeds the country's payment model in its one read (and maps it);
+    // exactly those edits are put back first (scripts/_lp-pricing-copy-4.cjs undoCode — null if any is not found once, which fails here).
+    const csNow = (PC4.undoCode(PERF1_CS, read(PERF1_CS)) ?? '').split('\n'), taken = csNow.filter(l => PERF1_LINES.includes(l))
     t(`${PERF1_CS}: byte-identical to ${BEFORE} once perf-1's four lines (its marketing branch) are taken out`, taken.length === 4 && csNow.filter(l => !PERF1_LINES.includes(l)).join('\n') === gitShow(PERF1_CS))
     const block = s => s.slice(s.indexOf("  if (action === 'upsert_item') {"), s.indexOf("  if (action === 'delete_item') {"))
     t('the upsert_item handler is byte-identical (the cost never rides on the item)', block(read('app/api/manage/route.ts')) === block(gitShow('app/api/manage/route.ts')) && block(read('app/api/manage/route.ts')).length > 1000)

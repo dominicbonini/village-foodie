@@ -265,7 +265,7 @@ export interface ProvisionVanOptions {
   /** Default 5. Pass an EXPLICIT null to leave it unset — a demo does that deliberately so the per-category
    *  batch is the only ceiling (see lib/provision-demo). Omitting the key still gets the default. */
   kitchen_capacity?: number | null
-  capacity_window_mins?: number   // omit → DB default 5 (NOT NULL, CHECK 1–20)
+  capacity_window_mins?: number   // omit → DB default 5 (NOT NULL, CHECK 1–60)
 }
 
 export interface ProvisionTruckOptions {

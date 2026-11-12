@@ -98,14 +98,33 @@ export function kitchenCapacityNeedsPrepWarning(
 // category editor (replaces the old minutes-input + 0s/30s-select pair, and Manage's whole-minutes
 // input). VALUE = prep_secs in SECONDS — fed straight to the existing writes (updateCategoryField /
 // upsert_category) with NO payload change. Mirrors the SCHEDULE_TIME_OPTIONS pattern.
-//   30s steps 30s→5m (30,60,…,300), then 1m steps 6m→15m (360,420,…,900). ~20 options.
+//   30s steps 30s→5m (30,60,…,300), then 1m steps 6m→15m (360,420,…,900), then 5m steps 20m→60m
+//   (1200,1500,…,3600; 12 November 2026). 29 options. prep_secs has no CHECK, so the longer steps need no migration.
 export const PREP_TIME_OPTIONS: number[] = [
   ...Array.from({ length: 10 }, (_, i) => (i + 1) * 30),   // 30,60,90,…,300  (30s … 5m)
   ...Array.from({ length: 10 }, (_, i) => 360 + i * 60),    // 360,420,…,900   (6m … 15m)
+  ...Array.from({ length: 9 }, (_, i) => 1200 + i * 300),   // 1200,1500,…,3600 (20m … 60m)
 ]
 
+// ── Shared capacity-window grid (12 November 2026) ─────────────────────────────────────────────
+// The "every [N minutes]" select beside Total capacity — ONE list for Manage › Settings, the dashboard's
+// settings and the menu-import wizard (each had its own `1…20`). 1m steps 1→15, then 5m steps 20→60.
+// 🔴 THE DATABASE CHECK IS A RANGE (truck_vans_capacity_window_mins_check, 1–60 since
+// 20261092_longer_intervals_and_capacity_window), so a van saved at 16–19 before this list keeps its value;
+// `capacityWindowOptionsFor` shows such a value as an extra option so the select never snaps it.
+export const CAPACITY_WINDOW_OPTIONS: number[] = [
+  ...Array.from({ length: 15 }, (_, i) => i + 1),           // 1 … 15
+  ...Array.from({ length: 9 }, (_, i) => 20 + i * 5),       // 20, 25, … 60
+]
+export function capacityWindowOptionsFor(stored: number | null | undefined): number[] {
+  const v = Number(stored)
+  const set = new Set<number>(CAPACITY_WINDOW_OPTIONS)
+  if (Number.isInteger(v) && v > 0) set.add(v)
+  return [...set].sort((a, b) => a - b)
+}
+
 /**
- * Human label for a prep_secs value: "Instant" (0), "30s", "1m", "1m 30s", "2m", … "20m".
+ * Human label for a prep_secs value: "Instant" (0), "30s", "1m", "1m 30s", "2m", … "60m".
  * 🔴 THE WORDS AND UNITS ARE `kitchenCapacity.prepSecs.*` (Language Phase 1d), in `locale` — the truck's country's;
  * en-GB when absent, which is exactly the old text. The dashboard and Manage share it.
  */

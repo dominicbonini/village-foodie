@@ -135,7 +135,7 @@ import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_DARK
 // 17 October 2026: an event that runs past midnight — the one rule (docs/midnight-and-format-fixes-report.md).
 import { crossesMidnight, eventTimeMins, eventTimeDate, eventEndMins, eventEndInstant, eventDates, nowOnEvent, toEngineClock, upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
 import { useAndroidBack } from '@/lib/native/backHandler'
-import { KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs, capacityWindowOptionsFor } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
@@ -5774,7 +5774,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       disabled={!activeEvent.van_id||kitchenCapacity==null||isOffline}
                       onChange={e=>saveCapacityWindow(parseInt(e.target.value))}
                       className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-                      {Array.from({length:20},(_,i)=>i+1).concat((capacityWindowMins>20)?[capacityWindowMins]:[]).map(n=>(
+                      {capacityWindowOptionsFor(capacityWindowMins).map(n=>(
                         <option key={n} value={n}>{tDash('settings.windowEvery',{duration:formatPrepSecs(n*60,dashTime.locale)})}</option>
                       ))}
                     </select>

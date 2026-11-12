@@ -106,8 +106,10 @@ console.log('\n── nothing reads the dropped trucks column ──────
 }
 
 console.log('\n── the library: NULL is not 5 ──────────────────────────────────────────────────────────')
-check(JSON.stringify(INTERVAL_CHOICES) === '[5,10,15,20,30]', 'INTERVAL_CHOICES = 5, 10, 15, 20, 30')
-check([5,10,15,20,30].every(isIntervalChoice) && ![0,7,25,60,'15',null,undefined,NaN,5.5].some(isIntervalChoice), 'isIntervalChoice accepts exactly the five')
+// ⚠️ RE-PINNED (12 November 2026): 45 and 60 added (Manage › Settings › Collection times), with the DB CHECKs widened
+// by 20261092_longer_intervals_and_capacity_window.
+check(JSON.stringify(INTERVAL_CHOICES) === '[5,10,15,20,30,45,60]', 'INTERVAL_CHOICES = 5, 10, 15, 20, 30, 45, 60')
+check([5,10,15,20,30,45,60].every(isIntervalChoice) && ![0,7,25,40,90,'15',null,undefined,NaN,5.5].some(isIntervalChoice), 'isIntervalChoice accepts exactly the seven')
 check(/const truck = override === null \|\| override === undefined \? customer : normaliseInterval\(override\)/.test(ivLib), '🔴 readVanIntervals resolves a null override to the CUSTOMER value, never to 5')
 check(/if \(!vanId\) return NO_VAN_INTERVALS/.test(ivLib), 'no van id ⇒ 5/5 with no query')
 check(/PGRST204/.test(ivLib) && /42703/.test(ivLib) && /return NO_VAN_INTERVALS/.test(ivLib), 'probe distinguishes PGRST204 from 42703 and falls back to 5/5, never throws')

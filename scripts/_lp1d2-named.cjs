@@ -296,6 +296,10 @@ const plansEntries2 = () => [
     expect: b => mapStrings(b, x => stProps(x, 'PaymentsTab', p => ('plan' in p ? renameKey(p, 'plan', 'onTrial', v => v === 'trial') : p))) },
   // The dashboard's PrintingSettings props — Phase 2's precise entry (scripts/_lp2-named.cjs), REUSED on the smoke-dash views.
   reuseLp2('plans-printing-settings-props', id => /^smoke-dash\/(GB|US)\|/.test(id)),
+  // ⚠️ RE-PINNED (longer collection times and capacity steps, 12 November 2026): the four entries of
+  // scripts/_named-longer-intervals.cjs, REUSED on the smoke views (Part 1's Settings, Menu and Schedule re-rendered here).
+  ...['longer-intervals-collection-45-60', 'longer-intervals-refusal-choices', 'longer-intervals-prep-to-60', 'longer-intervals-window-to-60']
+    .map(id => reuseLp2(id, v => /^smoke-/.test(v))),
   { id: 'plans-weekly-post-copy-gone', country: 'both', agent: 'plans-data-model Stage A (19 Oct 2026)',
     what: '⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): lib/copy/weeklyPost.ts (WEEKLY_POST_PLAN_REFUSAL, `weeklyPost.planRefusal`) is DELETED — the gate is override-only and refuses with errorsManage.feature_switched_off. The copy view records the export’s absence (scripts/_lp1d2-poster.cjs ADAPT). PRECISE.',
     views: id => /^poster\/(GB|US)\|copy\|weeklyPost\|W$/.test(id),

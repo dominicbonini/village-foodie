@@ -101,7 +101,7 @@ import { EventTypesPanel, EventTypeSelect } from '@/components/manage/EventTypes
 import { colourFor, STANDARD_COLOUR } from '@/lib/event-types/types'
 import { STANDARD_TYPE_NAME } from '@/lib/event-types/read'
 import { intervalExample } from '@/lib/slot-generation'
-import { KITCHEN_CAPACITY_GRID, formatPrepSecs } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_GRID, formatPrepSecs, capacityWindowOptionsFor } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { groupBySubcategory } from '@/lib/basket-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
@@ -6381,7 +6381,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     disabled={importKitchenCapacity.kitchen_capacity == null}
                     onChange={e => { setImportKitchenCapacity(c => ({ ...c, capacity_window_mins: parseInt(e.target.value) })); setImportKitchenDirty(true) }}
                     className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-                    {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
+                    {capacityWindowOptionsFor(importKitchenCapacity.capacity_window_mins ?? 5).map(n => (
                       <option key={n} value={n}>{tk('windowEvery', { duration: formatPrepSecs(n * 60, tkLocale) })}</option>
                     ))}
                   </select>

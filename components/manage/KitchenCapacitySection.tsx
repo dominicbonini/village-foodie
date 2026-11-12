@@ -37,7 +37,7 @@ import { Btn, Toggle } from '@/components/manage/primitives'
 /* 🔴 THE ANSWER'S ONE DEFINITION, shared with `add_van` on the server. */
 import { capacityAllSame, capacityStragglers } from '@/lib/van-category-settings'
 import {
-  KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs,
+  KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs, capacityWindowOptionsFor,
 } from '@/lib/kitchen-capacity'
 /* Language Phase 1d: every word here is `kitchenCapacity` in messages/ — the explainer pair is the SAME message the
  * dashboard's capacity card reads, so the two cannot drift again. */
@@ -381,7 +381,7 @@ function CapacityBox({ van, title, categories, available, effectiveVanCat, write
           disabled={van.kitchen_capacity == null}
           onChange={e => void updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
           className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-          {Array.from({ length: 20 }, (_, i) => i + 1).concat(((van.capacity_window_mins ?? 5) > 20) ? [van.capacity_window_mins as number] : []).map(n => (
+          {capacityWindowOptionsFor(van.capacity_window_mins ?? 5).map(n => (
             <option key={n} value={n}>{t('windowEvery', { duration: formatPrepSecs(n * 60, locale) })}</option>
           ))}
         </select>

@@ -491,6 +491,9 @@ const NAMED = [
       views: id => /^api\/US\|manageGET\|/.test(id),
       expect: b => require('./_lp-store-badges-1.cjs').manageGetApps(b) },
   ] : []),
+  // ── ⚠️ RE-PINNED (longer collection times and capacity steps, 12 November 2026; scripts/_named-longer-intervals.cjs) ──────
+  //    Collection times gain 45 and 60; prep time 20m … 60m; the capacity window 1 … 15 then every 5 to 60. PRECISE.
+  ...require('./_named-longer-intervals.cjs').entries({ mapStrings, refusalCodes: true }),
   // ── TODO: the agents' named code changes land here as they report them (SCHED-A: 12-hour hour pickers and US ZIP
   //    codes; SETTINGS / SCHED-B / MENU-A / MENU-B / API: any GB code change they list). Each one PRECISE where a
   //    transform can say it, LISTED (US only) where it cannot.

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.15
+HatchGrab Engineering Reference Manual · V16.16
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.15**
+**Version 16.16**
 
 November 2026
 
@@ -49,6 +49,14 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.16 — 12 November 2026 — **COLLECTION TIMES UP TO EVERY 60 MINUTES, PREP TIMES AND THE CAPACITY WINDOW UP TO 60**
+
+- **Collection times (Manage › Settings, the dashboard, event types, event overrides, Create Demo):** `INTERVAL_CHOICES` (`lib/slot-interval-core.ts`) is now **5, 10, 15, 20, 30, 45, 60**. Every select, validator and refusal reads it, so all of them gained 45 and 60 at once. The five interval CHECKs were widened by `supabase/migrations/20261092_longer_intervals_and_capacity_window.sql` (committed `ae7ff8b4`, run 12 Nov, verified read-only). See "Selectable collection times" in the slot & capacity engine section.
+- 🔴 **45 is the one choice that does not divide an hour.** The grid is clock-anchored from midnight, so at 45 the minutes change hour to hour (18:00, 18:45, 19:30, 20:15). `clockGridMinutes(interval, hour)` (`lib/slot-generation.ts`) now takes the hour. The customer page's fallback picker asks it for each hour, **at 45 only**; every other interval keeps its list byte for byte. `scripts/longer-intervals-1.cjs` proves picker ≡ server for all seven choices × 252 starts.
+- **Prep time:** `PREP_TIME_OPTIONS` (`lib/kitchen-capacity.ts`) runs 30-second steps to 5m, 1-minute steps to 15m, then **5-minute steps 20m … 60m**. `prep_secs` has no CHECK, so this needed no migration.
+- **Capacity window** (the "every N" select beside Total capacity): one shared list, `CAPACITY_WINDOW_OPTIONS`, with **1 … 15 minutes, then 20, 25 … 60**. It replaces the separate 1…20 lists in Manage › Settings, the dashboard and the menu-import wizard. `capacityWindowOptionsFor(stored)` keeps an existing 16–19 as an extra option, never snapped. `truck_vans_capacity_window_mins_check` is now the **range 1–60** (was 1–20).
+- **Harnesses:** new `longer-intervals-1.cjs` (33 checks + a broken variant). The language-phase identity harnesses name the four markup changes in `scripts/_named-longer-intervals.cjs`. `slot-interval-settings`, `slot-interval-grid-routing` and `event-types` are re-pinned.
 
 ## V16.15 — 9 November 2026 — **COMPARISON PAGES EASY TO READ ON ANY DEVICE, ONE "COMPARE" LINK IN THE FOOTER, AND THE JAPANESE NAV ON NARROW PHONES**
 
@@ -2787,7 +2795,7 @@ clock-anchored grids and the Add Order display. The five migrations were applied
 the two app store updates — see the open items.
 
 **Collection times are now a setting, per van and per audience.** Manage → Settings carries a Collection
-times box above each van's Kitchen capacity box: "Customer Collection Times" (5/10/15/20/30, default 5) and,
+times box above each van's Kitchen capacity box: "Customer Collection Times" (5/10/15/20/30, default 5; ⛔ V16.16 — now 5/10/15/20/30/45/60) and,
 behind "Use different times for orders I add", "Your Collection Times" (nullable — NULL means "same as
 customers"). The dashboard Settings tab carries the same box for the SELECTED EVENT, with "Use my usual
 setting" to clear it. Three layers resolve in order: `truck_events.*_override` → `truck_vans` → (no van)
@@ -7739,6 +7747,7 @@ Additive on V7.9 (26–27 Jun 2026). Documents this session's features from the 
 - **Kitchen-setup step** mimics the Settings capacity grid (shared `KitchenCapacityCategoryRow`, §63) — per-category prep/batch/counts + a total-capacity row. At commit, categories write `prep_secs`/`batch_size`/`counts_toward_capacity`; the van ceiling (`kitchen_capacity`/`capacity_window_mins`) is a **deferred, best-effort `update_van_settings`** written only if the operator changed it (`importKitchenDirty`), applied to all the truck's vans.
 
 **§63 — Kitchen-capacity ceiling model (the canonical concurrency model + shared UI). [BUILT].** `kitchen_capacity` (on `truck_vans`, nullable = ∞) is a **concurrency ceiling** — "N counted items in production at once" — measured over a `capacity_window_mins` window (on `truck_vans`, `NOT NULL DEFAULT 5`, migration `20260612`). What counts toward it is dual-track (`lib/slot-availability.ts:647-651, 904-907`): **cooked categories (`prep_secs > 0`) ALWAYS count** (engine-driven, no operator choice); **instant categories (`prep_secs === 0`) count only if `menu_categories.counts_toward_capacity` is ticked** (migration `20260610`, `DEFAULT false`). The write rule is one expression everywhere: `counts_toward_capacity = prep_secs > 0 ? true : <operator tick>` (e.g. `commit-menu:78,99`).
+- **The option lists (V16.16), one source each in `lib/kitchen-capacity.ts`:** prep time `PREP_TIME_OPTIONS` = 30s steps to 5m, 1m steps to 15m, then 5m steps 20m … 60m (stored off-grid values kept by `prepTimeOptionsFor`); the capacity window `CAPACITY_WINDOW_OPTIONS` = 1 … 15, then 20, 25 … 60 (an off-list stored value kept by `capacityWindowOptionsFor`). Items stay No limit + 1–20.
 - **Shared components (one source, three surfaces).** `KitchenCapacityCategoryRow` (bare cells: name · `BatchSizeSelect` · `PrepTimeSelect` · optional counts-checkbox, with `locked` force-checking cooked rows) + the `BatchSizeSelect`/`PrepTimeSelect` atoms (`components/manage/KitchenCapacityEdit.tsx`). Consumed by **manage Settings** (`page.tsx:6150`), the **dashboard Menu & Stock** grid (`app/dashboard/[token]/page.tsx:1794`), and the **import wizard** Kitchen-setup step (`page.tsx:2658`). All use the SAME grid template `grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem]` (CATEGORY · ITEMS · PREP · COUNTS-TO-TOTAL-CAPACITY), with the total-capacity ceiling row (`kitchen_capacity` · `capacity_window_mins`) aligned under the category rows via the identical column template.
 
 **§64 — Order-ready as a MASTER-SWITCH (FINAL — supersedes the V7.9 tri-state and a mid-session snapshot attempt). [BUILT, tsc-clean].** This is the current model — NOT inherit/tri-state, NOT snapshot-at-creation (both were tried and replaced this session). **Every event always carries a concrete `truck_events.order_ready_override` (true/false).** The Settings global toggle is a master switch; the dashboard is a simple on/off.
@@ -10135,7 +10144,7 @@ In the Add Order panel, the ASAP collection time is the later of (now + prep) an
 
 > **DO-NOT-UNDO (V6.7) — kitchen_capacity is a CONCURRENCY ceiling.** It means "no more than N counted items in production at the SAME INSTANT," judged by an exact SWEEP-LINE max-concurrency (`maxConcurrentCount`, lib/slot-availability.ts) — NOT per-window buckets, with NO anchor/origin constant (if you find yourself adding one, stop). A cooking batch of M items (prep P, window-start S) occupies `[S, S+P)` and counts M at every instant in that interval — a batch spanning a window boundary counts M in BOTH windows, NEVER split (splitting under-counts → oversell). An instant counted category (`secs:0`, `countsToCapacity:true`) is a zero-width point counting M at its instant.
 
-> **`truck_vans.capacity_window_mins` (V6.7)** — integer NOT NULL DEFAULT 5, CHECK 1–20; migration `20260612_capacity_window_mins.sql`. The ceiling's OWN cadence (`capacityStep`), independent of any category's prep AND of the cosmetic 5-min customer collection slots. Van-global — changing it propagates to all that van's events (an operating-mode setting, not transient event state — see Section 5 / Section 27). Read alongside `kitchen_capacity` in `/api/slots`, `/api/dashboard`, `/api/orders/submit` (`eventKitchenCapacity`), `/api/manage` `get_vans`; default 5 if null. Write via `update_van_settings`; an "every N min" 1–20 dropdown sits beside the items dropdown on the Manage van card AND the dashboard capacity card (disabled until a capacity is set).
+> **`truck_vans.capacity_window_mins` (V6.7)** — integer NOT NULL DEFAULT 5, CHECK 1–20 (⛔ V16.16: CHECK 1–60, `20261092`); migration `20260612_capacity_window_mins.sql`. The ceiling's OWN cadence (`capacityStep`), independent of any category's prep AND of the cosmetic 5-min customer collection slots. Van-global — changing it propagates to all that van's events (an operating-mode setting, not transient event state — see Section 5 / Section 27). Read alongside `kitchen_capacity` in `/api/slots`, `/api/dashboard`, `/api/orders/submit` (`eventKitchenCapacity`), `/api/manage` `get_vans`; default 5 if null. Write via `update_van_settings`; an "every N min" 1–20 dropdown sits beside the items dropdown on the Manage van card AND the dashboard capacity card (disabled until a capacity is set). ⛔ V16.16: the dropdown reads `CAPACITY_WINDOW_OPTIONS` (1 … 15, then 20, 25 … 60) everywhere, including the import wizard; a stored 16–19 stays as an extra option.
 
 > **What capacityStep drives** — where instant counted items are SEATED and how `placeInstantPoints` rolls instant overflow backward. Cooking batches are deterministic (prep grid + collection time) — the sweep-line READS their concurrency; the cascade does NOT relocate them. With no cooking category, capacityStep still gives the instant spread a real cadence (closes the old `step==0` collapse). Per-category batch placement (pizza on its prep grid, "Pizza 4/4" tones) is UNCHANGED and independent — it is the category's own ceiling. Both ceilings co-exist via the existing worst-wins `consider()` logic ("4 pizzas + 2 other, or 3 other → 3 pizzas").
 
@@ -13191,7 +13200,7 @@ pass a `truckId` that is used as a fallback rather than a test. **Latent while S
 - **scraper_preference** (text, 'manual'|'auto', default 'manual'), **schedule_url** (text), **scraper_rule** (text, 'scroll_lazy'|'scroll_next' — semantics in Section 24 "Scroll rules"), **scraper_last_changed_at** (timestamptz), **scraper_update_day** (smallint 0–6), **scraper_learning_complete** (boolean default false), **scraper_last_empty_notify_at** (timestamptz), **scraper_first_run_at** (timestamptz), **scraper_last_hash** (text). See Section 24.
 
 - **operators** — id, auth_user_id, email, name, first_name, last_name, phone, is_admin, terms_accepted_at, terms_version, marketing_opt_in, created_at, updated_at. **Thirteen columns, complete, live-verified 29 July.** **NO `billing`. NO `stripe_customer_id`.** See the §13 correction.
-- **truck_vans** — auto_pause_on_offline (offline-protection creation default), show_cooking_step, kitchen_capacity, **capacity_window_mins** (V6.7, integer NOT NULL DEFAULT 5, CHECK 1–20 — the concurrency ceiling's own window cadence, independent of category prep; Section 6), display_layout, split_screen, kds_token, name, active, last_heartbeat_at (device-online property), online_paused_until (VESTIGIAL post-V6.6), paused_until (VESTIGIAL post-V6.6). (V6.6 — pause moved to truck_events; the van keeps only `auto_pause_on_offline` as the default and `last_heartbeat_at` as the live device property. Section 5 / Section 11.)
+- **truck_vans** — auto_pause_on_offline (offline-protection creation default), show_cooking_step, kitchen_capacity, **capacity_window_mins** (V6.7, integer NOT NULL DEFAULT 5, CHECK 1–20, ⛔ 1–60 since V16.16 — the concurrency ceiling's own window cadence, independent of category prep; Section 6), display_layout, split_screen, kds_token, name, active, last_heartbeat_at (device-online property), online_paused_until (VESTIGIAL post-V6.6), paused_until (VESTIGIAL post-V6.6). (V6.6 — pause moved to truck_events; the van keeps only `auto_pause_on_offline` as the default and `last_heartbeat_at` as the live device property. Section 5 / Section 11.)
 - **truck_users** — role (owner/manager/staff), email, name, auth_user_id, invited_at, accepted_at.
 - **truck_user_vans** — staff ↔ vehicle access junction.
 - **operator_email_changes** — old_email, new_email, token, requested_at, verified_at, expires_at.
@@ -19274,7 +19283,7 @@ baseline is still stale.
 5-minute **collection slots are a SELECTION CONVENIENCE ONLY** — easy times for the customer/operator to pick. They are NOT cooking units. **Cooking capacity is the ENGINE's job**, handled by a rolling backward-fit/sweep-line over prep-length windows, constrained by two ceilings (batch + kitchen capacity). **There are NO fixed production windows.** A collection slot of 17:05 does not mean "cook in the 17:00–17:10 box"; it means "the customer collects at 17:05, and the engine ensures the food can be cooked to be ready by then."
 
 ### Selectable collection times — every N minutes, per van, per audience (V13.5)
-N is 5, 10, 15, 20 or 30. Resolution order for an event:
+N is 5, 10, 15, 20, 30, 45 or 60 (`INTERVAL_CHOICES`; 45 and 60 since V16.16). Resolution order for an event:
 `truck_events.collection_interval_mins_override` (and `operator_collection_interval_mins_override`) → the
 event's van (`truck_vans`) → 5 where no van resolves. The legacy `interval 0 ⇒ collection_times` contract
 still reads `trucks.collection_interval_mins`.
@@ -19282,9 +19291,13 @@ still reads `trucks.collection_interval_mins`.
 **Grids are clock-anchored from midnight.** The first selectable time is the first multiple at or after the
 event start, the last the last multiple at or before end + grace. An event opening at 17:50 on 15-minute
 times therefore starts at 18:00.
+🔴 **45 does not divide an hour (V16.16).** At 45 the minutes differ hour to hour (a 17:00 event offers 17:15, 18:00,
+18:45, 19:30). Anything that lists "the minutes of an hour" asks `clockGridMinutes(interval, hour)`
+(`lib/slot-generation.ts`), never one list for every hour. With no hour it returns every minute on the grid in
+*some* hour (:00/:15/:30/:45 at 45). Every other choice divides 60, so the hour changes nothing there.
 
 **Columns.**
-- `truck_vans` gains `collection_interval_mins` (integer NOT NULL default 5, CHECK in 5/10/15/20/30) and
+- `truck_vans` gains `collection_interval_mins` (integer NOT NULL default 5, CHECK in 5/10/15/20/30 — ⛔ V16.16: 5/10/15/20/30/45/60, all five interval CHECKs, `20261092`) and
   `operator_collection_interval_mins` (integer NULL, no default, same CHECK or NULL). ⚠️ **NULL means "same
   as customers"**, not 5.
 - `truck_events` gains `collection_interval_mins_override` and `operator_collection_interval_mins_override`
@@ -36900,7 +36913,7 @@ verified it. No proposed price is recorded here as decided.
   - **Data:** `docs/seo-geo-1/competitors-verified.csv` (149 rows) and `keywords.csv` (628).
 - **What HatchGrab can truthfully claim** (seo-geo-1, from code and this manual):
   - **Built:**
-    - collection time slots (5/10/15/20/30 min per van);
+    - collection time slots (5/10/15/20/30 min per van; ⛔ V16.16 — 5/10/15/20/30/45/60);
     - kitchen capacity;
     - a weekly multi-location schedule;
     - KDS and printed tickets (⛔ Corrected V16.8 — printed tickets in the iPad and Android app; printer not supplied,
