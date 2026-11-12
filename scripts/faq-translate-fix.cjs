@@ -67,7 +67,11 @@ const overloaded = () => Object.assign(new Error('529 Overloaded'), { status: 52
 
   // ══ 1 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('1 · the request — the checker\'s way: no tool_choice, one strict tool, the same model')
-  const one = await run({ queue: [clone(REPLY.message)], limit: 41 })
+  // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026): "limit 41" was one question's whole job when this was written (every base and every
+  // model variant then). languages-world-2's new bases made the job larger, so 41 cut it short and fewer bases came back "not returned"
+  // than the check expects. The limit is now the live job: every translated base plus every model variant, read from the code.
+  const JOB = M.TRANSLATED_BASES.length + M.MODEL_VARIANTS.length
+  const one = await run({ queue: [clone(REPLY.message)], limit: JOB })
   const p = one.calls[0]
   t('no tool_choice in the request (this model refuses "tool" and "any" with a 400)', !!p && !('tool_choice' in p) && !JSON.stringify(p).includes('tool_choice'), p && Object.keys(p))
   t('the same model, claude-sonnet-5-5', p.model === 'claude-sonnet-5-5' && M.TRANSLATOR_MODEL === 'claude-sonnet-5-5')
@@ -95,20 +99,20 @@ const overloaded = () => Object.assign(new Error('529 Overloaded'), { status: 52
   t(`the bases the reply left out: failed "not returned by the model" (${notReturned.length}), retried next run — as before`, notReturned.length === M.TRANSLATED_BASES.length - 8 && !notReturned.includes('de-DE'))
   const usd = M.costOf(REPLY.message.usage, 'claude-sonnet-5-5', PRICES).usd
   t(`the cost: the settings' Sonnet prices × the reply's usage ($${usd.toFixed(4)}), in the report and the log line`, Math.abs(one.report.usd - usd) < 1e-9 && one.lines.some(l => l.includes(`$${usd.toFixed(4)}`)))
-  t('one call for one question (limit 41 = its 41 locales)', one.calls.length === 1 && one.report.done === 1)
+  t(`one call for one question (limit ${JOB} = its ${JOB} locales)`, one.calls.length === 1 && one.report.done === 1)
 
   // ══ 3 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('3 · the checker\'s conversation: nudged once without the call, sent back once to fix')
   {
     const noCall = { ...clone(REPLY.message), id: 'msg_nocall', content: [{ type: 'text', text: 'Here are the translations…' }], stop_reason: 'end_turn' }
-    const r = await run({ queue: [noCall, clone(REPLY.message)], limit: 41 })
+    const r = await run({ queue: [noCall, clone(REPLY.message)], limit: JOB })
     const second = r.calls[1]
     t('a reply without save_translations is nudged once ("Call save_translations now…"), then the call is accepted', r.calls.length === 2 && /Call save_translations now/.test(JSON.stringify(second.messages.at(-1))) && r.writes.filter(w => w.status === 'ok').length === 4)
     t('…and both turns are paid for', Math.abs(r.report.usd - 2 * usd) < 1e-9)
   }
   {
     const bad = clone(REPLY.message); bad.id = 'msg_bad'; bad.content[1].input = { translations: 'not a list' }
-    const r = await run({ queue: [bad, clone(REPLY.message)], limit: 41 })
+    const r = await run({ queue: [bad, clone(REPLY.message)], limit: JOB })
     t('a malformed call is answered "Rejected — fix these…" with the reason, then the fixed call is accepted', r.calls.length === 2 && (r.calls[1].messages.at(-1).content || []).some(b => b.type === 'tool_result' && b.is_error && /^Rejected — fix these and call save_translations again: "translations" must be an array/.test(b.content)) && r.writes.filter(w => w.status === 'ok').length === 4)
   }
   t('validateTranslations: entries keep only the schema\'s keys; a bad locale or a non-text field is refused', JSON.stringify(M.validateTranslations({ translations: [{ locale: 'de-DE', question: 'Q', answer: 'A', answer_single_plan: '', title: '', extra: 1 }] }).value) === '[{"locale":"de-DE","question":"Q","answer":"A","answer_single_plan":"","title":""}]'

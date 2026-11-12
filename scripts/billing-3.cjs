@@ -221,7 +221,9 @@ const CATALOG = { plans: PLANS, prices: PRICES, features: [] }
       for (const k of KEYS) { const v = get(b, k); if (typeof v !== 'string' || !v.trim() || v === get(en, k)) missing.push(`${l}:${k}`) }
       if (b?.tab?.preorders && 'atTruck' in b.tab.preorders) missing.push(`${l}: atTruck still there`)
     }
-    t(`all ${bases.length} language bases have the 6 new/changed strings, translated (not English), and no longer the old title`, bases.length === 36 && missing.length === 0, missing.slice(0, 20))
+    // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026): "=== 36" was the base count when billing-3 landed; languages-world-2 adds bases, and
+    // every one is checked below by name (the live list), so the count is a floor, not a pin.
+    t(`all ${bases.length} language bases have the 6 new/changed strings, translated (not English), and no longer the old title`, bases.length >= 36 && missing.length === 0, missing.slice(0, 20))
     const none = []
     for (const l of bases) { const s = JSON.stringify(JSON.parse(read(`messages/${l}.json`)).billing); if (/[‪-‮⁦-⁩]/.test(s)) none.push(l) }
     t('no bidi control characters in any billing words', none.length === 0, none)
