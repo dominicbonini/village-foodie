@@ -314,6 +314,31 @@ export const CURRENCIES: readonly CurrencyInfo[] = [
   { code: 'UGX', name: 'Ugandan Shilling', namePlural: 'Ugandan shillings', symbol: 'USh', intlSymbol: 'USh', symbolShared: false, decimals: 2, minorSign: 'c', shortFee: 'amount', locale: 'sw-UG' },
   // K: shared (also another currency's sign) — side by side it is "ZMW". world-countries-5 (Zambia; Intl in en-ZM).
   { code: 'ZMW', name: 'Zambian Kwacha', namePlural: 'Zambian kwachas', symbol: 'K', intlSymbol: 'ZMW', symbolShared: true, decimals: 2, minorSign: 'c', shortFee: 'amount', locale: 'en-ZM' },
+  // ── world-countries-5 (12 November 2026, Dominic: "menus use local money in all 11"): the MENU currencies of the 11 countries billed in
+  // USD or EUR (country_settings.menu_currency, migration 20261096) — a truck there prices its menu in these; HatchGrab still bills it in
+  // USD/EUR (plan_prices). BHD JOD KWD OMR TND are THREE-decimal, as the card processor takes them (and as menus there are written).
+  // د.ب.: the Bahraini Dinar's own sign. world-countries-5 menu currency (Bahrain; Intl in ar-BH; three-decimal).
+  { code: 'BHD', name: 'Bahraini Dinar', namePlural: 'Bahraini dinars', symbol: 'د.ب.', intlSymbol: 'د.ب.', symbolShared: false, decimals: 3, minorSign: 'c', shortFee: 'amount', locale: 'ar-BH' },
+  // د.أ.: the Jordanian Dinar's own sign. world-countries-5 menu currency (Jordan; Intl in ar-JO; three-decimal).
+  { code: 'JOD', name: 'Jordanian Dinar', namePlural: 'Jordanian dinars', symbol: 'د.أ.', intlSymbol: 'د.أ.', symbolShared: false, decimals: 3, minorSign: 'c', shortFee: 'amount', locale: 'ar-JO' },
+  // د.ك.: the Kuwaiti Dinar's own sign. world-countries-5 menu currency (Kuwait; Intl in ar-KW; three-decimal).
+  { code: 'KWD', name: 'Kuwaiti Dinar', namePlural: 'Kuwaiti dinars', symbol: 'د.ك.', intlSymbol: 'د.ك.', symbolShared: false, decimals: 3, minorSign: 'c', shortFee: 'amount', locale: 'ar-KW' },
+  // ر.ع.: the Omani Rial's own sign. world-countries-5 menu currency (Oman; Intl in ar-OM; three-decimal).
+  { code: 'OMR', name: 'Omani Rial', namePlural: 'Omani rials', symbol: 'ر.ع.', intlSymbol: 'ر.ع.', symbolShared: false, decimals: 3, minorSign: 'c', shortFee: 'amount', locale: 'ar-OM' },
+  // DT: the Tunisian Dinar's own sign. world-countries-5 menu currency (Tunisia; Intl in fr-TN; three-decimal).
+  { code: 'TND', name: 'Tunisian Dinar', namePlural: 'Tunisian dinars', symbol: 'DT', intlSymbol: 'DT', symbolShared: false, decimals: 3, minorSign: 'c', shortFee: 'amount', locale: 'fr-TN' },
+  // BTN: the code itself (Intl has no native sign in a Latin-digit locale). world-countries-5 menu currency (Bhutan; Intl in en-BT).
+  { code: 'BTN', name: 'Bhutanese Ngultrum', namePlural: 'Bhutanese ngultrums', symbol: 'BTN', intlSymbol: 'BTN', symbolShared: false, decimals: 2, minorSign: 'c', shortFee: 'amount', locale: 'en-BT' },
+  // TMT: the code itself (Intl has no native sign in a Latin-digit locale). world-countries-5 menu currency (Turkmenistan; Intl in en-TM).
+  { code: 'TMT', name: 'Turkmenistani Manat', namePlural: 'Turkmenistani manats', symbol: 'TMT', intlSymbol: 'TMT', symbolShared: false, decimals: 2, minorSign: 'c', shortFee: 'amount', locale: 'en-TM' },
+  // Nfk: the Eritrean Nakfa's own sign. world-countries-5 menu currency (Eritrea; Intl in en-ER).
+  { code: 'ERN', name: 'Eritrean Nakfa', namePlural: 'Eritrean nakfas', symbol: 'Nfk', intlSymbol: 'Nfk', symbolShared: false, decimals: 2, minorSign: 'c', shortFee: 'amount', locale: 'en-ER' },
+  // أ.م.: the Mauritanian Ouguiya's own sign. world-countries-5 menu currency (Mauritania; Intl in ar-MR).
+  { code: 'MRU', name: 'Mauritanian Ouguiya', namePlural: 'Mauritanian ouguiyas', symbol: 'أ.م.', intlSymbol: 'أ.م.', symbolShared: false, decimals: 2, minorSign: 'c', shortFee: 'amount', locale: 'ar-MR' },
+  // Db: the São Tomé and Príncipe Dobra's own sign. world-countries-5 menu currency (São Tomé and Príncipe; Intl in pt-ST).
+  { code: 'STN', name: 'São Tomé and Príncipe Dobra', namePlural: 'São Tomé and Príncipe dobras', symbol: 'Db', intlSymbol: 'Db', symbolShared: false, decimals: 2, minorSign: 'c', shortFee: 'amount', locale: 'pt-ST' },
+  // ZWG: the code itself (Intl has no native sign in a Latin-digit locale). world-countries-5 menu currency (Zimbabwe; Intl in en-ZW).
+  { code: 'ZWG', name: 'Zimbabwe Gold', namePlural: 'Zimbabwe gold', symbol: 'ZWG', intlSymbol: 'ZWG', symbolShared: false, decimals: 2, minorSign: 'c', shortFee: 'amount', locale: 'en-ZW' },
 ]
 
 /** Every supported ISO 4217 code, in the list's order — what the database CHECK allows. */
