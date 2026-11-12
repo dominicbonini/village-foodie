@@ -7,6 +7,29 @@ words in every language, harness re-pins), `0db83f8b` (the 12 harnesses pricing-
 work, re-pinned, §7), `77c675ab` + `ba9384ff` (your §9 answers: the menu currency, Serbian in Latin script, iOS
 everywhere, Iceland's Monday, §9), and this report.
 
+## ✅ Switched on — 12 November 2026, 18:12 UTC
+
+- **Before running it, I checked the deploy was live.** Your first "deployed" came before Vercel served the new build: `/uk` still had
+  the old selector, so I didn't run it. On the second request `/uk` was a fresh prerender with the region tabs, and its bundle held the
+  new code.
+- **`20261095` was run** with `scripts/db-migrate.cjs --approved-by-dominic`: one transaction, no error. The file was identical to its
+  commit (`785f3ba5`).
+- **Read back:**
+  - 210 countries enabled: the 167 new and the 43 already live.
+  - Only Mexico is off.
+  - Every enabled country has `ios_app_available` and `android_app_available` on.
+  - `vat_number_required` is on for 41, AE and BR included.
+  - Iceland's week starts on Monday.
+  - 11 enabled countries have a menu currency.
+  - GB is unchanged (last updated 21 Oct by address-formats-1).
+- **Live pages, OBSERVED (public GETs, 18:12–18:19 UTC):** with no revalidation secret, each page picked up the change as its cache ran
+  out, all within about 6 minutes.
+  - Serving their own pages: `/ua` (200 after about 330 s), `/is`, `/bh`, `/pr`, `/al`, `/tr`, `/kr`, `/in`, `/za`, `/ge`, `/md`.
+  - `/ca` still serves.
+  - `/mx` and `/ke` redirect to `/uk`, as they should.
+  - `/uk`'s country selector lists **210** countries.
+  - `/sitemap.xml` has **834** URLs, up from 244.
+
 ## Summary
 
 - **Countries:** the 167 new countries are in the database as rows with **`enabled = false`**. That is 167 `country_settings`
@@ -477,7 +500,7 @@ union all
 select 'others changed', null, null, null, max(updated_at), count(*)::text from public.country_settings where updated_by = 'world-countries-5 (Mexico store badges off)' and country_code <> 'MX';
 ```
 
-### Prepared, NOT run
+### Run on 12 Nov 2026 at 18:12 UTC, after the deploy was confirmed live (`--approved-by-dominic`)
 
 - **`supabase/migrations/20261095_world_countries_5_switch_on.sql`:** in one transaction, it:
   - enables the 167;
@@ -485,7 +508,27 @@ select 'others changed', null, null, null, max(updated_at), count(*)::text from 
   - sets the VAT flag on AE and BR;
   - turns `ios_app_available` on for the 56 new countries that had it off, and `android_app_available` on for the 17;
   - sets Iceland's week start to Monday.
-- It needs `--approved-by-dominic`. **Run it only after the code is deployed.**
+- Read-only checks afterwards:
+
+```sql
+select
+  count(*) filter (where enabled) as enabled_total,
+  count(*) filter (where enabled and updated_by = 'world-countries-5 switch-on') as switched_on_now,
+  count(*) filter (where not enabled) as off_total,
+  string_agg(country_code, ' ' order by country_code) filter (where not enabled) as off_codes,
+  count(*) filter (where enabled and not ios_app_available) as enabled_ios_off,
+  count(*) filter (where enabled and not android_app_available) as enabled_android_off,
+  count(*) filter (where vat_number_required) as vat_flag,
+  string_agg(country_code, ' ') filter (where country_code in ('AE','BR') and vat_number_required) as ae_br_vat,
+  max(week_start) filter (where country_code = 'IS') as is_week_start,
+  count(*) filter (where menu_currency is not null and enabled) as enabled_with_menu_currency
+from public.country_settings;
+select country_code, enabled, ios_app_available, android_app_available, updated_at, updated_by from public.country_settings where country_code in ('MX','GB','UA','IS','BH','PR')
+order by country_code;
+```
+
+  Result: 210 enabled, 167 switched on now, 1 off (MX), 0 enabled with a store flag off, VAT flag 41 (AE and BR included), Iceland
+  monday, 11 enabled with a menu currency. MX is off with both flags false; GB is unchanged; UA, IS, BH and PR are on with both flags.
 
 ### Read-only checks run
 
