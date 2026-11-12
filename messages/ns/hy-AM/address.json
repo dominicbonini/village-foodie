@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Հասցե",
+    "postcode": "Փոստային ինդեքս",
+    "zip": "ZIP կոդ",
+    "eircode": "Eircode",
+    "postalCode": "Փոստային կոդ",
+    "state": "Նահանգ",
+    "stateTerritory": "Նահանգ կամ տարածք",
+    "province": "Պրովինցիա",
+    "county": "Կոմսություն",
+    "prefecture": "Պրեֆեկտուրա",
+    "emirate": "Էմիրություն",
+    "region": "Մարզ",
+    "area": "Բնակավայր (գյուղ, ավան կամ քաղաք)",
+    "townOrArea": "Քաղաք կամ բնակավայր",
+    "city": "Քաղաք",
+    "suburb": "Թաղամաս",
+    "townOrCity": "Քաղաք կամ ավան"
+  },
+  "short": {
+    "area": "Բնակավայր",
+    "townOrArea": "Քաղաք կամ բնակավայր",
+    "city": "Քաղաք",
+    "suburb": "Թաղամաս",
+    "townOrCity": "Քաղաք կամ ավան"
+  },
+  "inSentence": {
+    "postcode": "փոստային ինդեքս",
+    "zip": "ZIP կոդ",
+    "eircode": "Eircode",
+    "postalCode": "փոստային կոդ"
+  },
+  "withArticle": {
+    "postcode": "փոստային ինդեքս",
+    "zip": "ZIP կոդ",
+    "eircode": "Eircode",
+    "postalCode": "փոստային կոդ"
+  },
+  "tradeLabel": {
+    "area": "Քաղաք կամ ավան",
+    "townOrArea": "Քաղաք կամ բնակավայր",
+    "city": "Քաղաք",
+    "suburb": "Թաղամաս",
+    "townOrCity": "Քաղաք կամ ավան"
+  },
+  "basedIn": {
+    "area": "Քաղաքը կամ ավանը, որտեղ գտնվում եք",
+    "townOrArea": "Քաղաքը կամ բնակավայրը, որտեղ գտնվում եք",
+    "city": "Քաղաքը, որտեղ գտնվում եք",
+    "suburb": "Թաղամասը, որտեղ գտնվում եք",
+    "townOrCity": "Քաղաքը կամ ավանը, որտեղ գտնվում եք"
+  },
+  "example": "օր.՝ {example}",
+  "customersSee": "Հաճախորդները կտեսնեն՝",
+  "postalWarning": "Սա {article} չի թվում — օրինակ՝ {example}։ Միևնույն է, կարող եք պահպանել այն։",
+  "regionChoose": "Ընտրել…"
+}

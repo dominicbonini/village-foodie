@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} — ներառված են պլանում՝ {plan}։} other {{feature} — ներառված է պլանում՝ {plan}։}}",
+  "notOnPlan": "{many, select, yes {{feature} — ձեր պլանում չկան։} other {{feature} — ձեր պլանում չկա։}}",
+  "switchedOff": "{many, select, yes {{feature} — անջատված են ձեր ֆուդթրաքի համար։} other {{feature} — անջատված է ձեր ֆուդթրաքի համար։}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Բարելավել պլանը →",
+  "features": {
+    "discovery_map": {
+      "name": "Տեղ որոնման քարտեզում",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Վեբ վահանակ",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Խոհանոցի հավելված",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR կոդով ճաշացանկ",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Կոմբոներ",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Լրացուցիչ առաջարկներ",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Տեղում պատվերներ",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Պատվերներ «Վճարում վերցնելիս» տարբերակով",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "«Սպառված է» նշումը",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Պաշարի նվազեցում",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Պատվերների անցանց պաշտպանություն",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Առցանց վճարումներ",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Նախնական պատվեր ապագա ամսաթվի համար",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Ժամային միջակայքեր հաճախորդների համար",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Խոհանոցի թողունակության կառավարում",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Ավտոմատ ընդունում",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger-ի և Instagram-ի ավտոմատ պատասխաններ",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Բրենդային QR կոդեր",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Ընդլայնված հաշվետվություններ",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Խոհանոցի կտրոնների տպում",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Խոհանոցի համաժամեցում մի քանի սարքում",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Խոհարարի էկրան",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp-ի ավտոմատ պատասխաններ",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Ձեր գրաֆիկը ձեր սեփական կայքում",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Գրառումներ սոցիալական ցանցերում",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Միջոցառման անհատական տեսակներ",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Մասնավոր միջոցառումներ",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Փաստաթղթեր",
+      "many": "yes"
+    }
+  }
+}

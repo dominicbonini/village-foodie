@@ -1,0 +1,127 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for ARMENIAN (hy-AM): ալերգ (ալերգիա, ալերգիկ), անհանդուրժողականություն, զգայուն, ցելիակիա, անաֆիլաքսիա, առանց <allergen> (առանց գլյուտենի, առանց կաթի, առանց ձվի, առանց ընկույզի…), անգլյուտեն, չի պարունակում, կարող է պարունակել, հետքեր, անվտանգ, համար հարմար, չեմ կարող ուտել, խաչաձև աղտոտում — plus the Latin translit customers type (alergia, aranc glyuteni, chi parunakum, anvtang). The question mark ՞ is written inside the word and splits it on normalising, so stems end before the stressed vowel where it lands (անվտա for անվտա՞նգ). Bare առանց / aranc is NOT a stem (առանց սոխի is a preference), nor bare հարմար (= convenient). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "hy",
+  "normalise": "unicode",
+  "stems": [
+    "ալերգ",
+    "անհանդուրժող",
+    "զգայուն",
+    "ցելիակ",
+    "անաֆիլաքս",
+    "էպիպեն",
+    "ադրենալին",
+    "առանց գլյուտեն",
+    "առանց գլուտեն",
+    "անգլյուտեն",
+    "առանց լակտոզ",
+    "առանց կաթ",
+    "առանց կաթնամթերք",
+    "առանց ձվ",
+    "առանց ձու",
+    "առանց ընկույզ",
+    "առանց գետնանուշ",
+    "առանց սոյա",
+    "առանց ձկ",
+    "առանց ձուկ",
+    "առանց ծովամթերք",
+    "առանց ծովախեցգետն",
+    "առանց կրևետ",
+    "առանց քունջութ",
+    "առանց սուլֆիտ",
+    "չի պարունակ",
+    "չեն պարունակ",
+    "կարող է պարունակ",
+    "հետքեր",
+    "անվտա",
+    "համար հարմար",
+    "չեմ կարող ուտել",
+    "չեմ ուտում",
+    "խաչաձև",
+    "աղտոտ",
+    "aranc glut",
+    "arants glut",
+    "aranc glyut",
+    "arants glyut",
+    "aranc kat",
+    "arants kat",
+    "aranc dzv",
+    "arants dzv",
+    "aranc enkuyz",
+    "arants enkuyz",
+    "aranc ynkuyz",
+    "aranc getnanush",
+    "arants getnanush",
+    "chi parunak",
+    "chen parunak",
+    "anvtang",
+    "anhandur",
+    "tseliak",
+    "allerg",
+    "alerg",
+    "gluten free",
+    "glutenfree",
+    "lactose",
+    "intoleran",
+    "celiac",
+    "coeliac",
+    "nut free",
+    "epipen",
+    "epi pen"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "գլյուտեն",
+        "գլուտեն",
+        "ցորեն",
+        "ալյուր",
+        "գարի"
+      ],
+      "crustaceans": [
+        "խեցգետն",
+        "ծովախեցգետ",
+        "կրևետ",
+        "կրեւետ",
+        "ծովամթերք",
+        "օմար"
+      ],
+      "eggs": [
+        "ձու",
+        "ձվ",
+        "մայոնեզ"
+      ],
+      "fish": [
+        "ձուկ",
+        "ձկ"
+      ],
+      "peanuts": [
+        "գետնանուշ",
+        "արախիս"
+      ],
+      "soy": [
+        "սոյա",
+        "տոֆու"
+      ],
+      "milk": [
+        "կաթ",
+        "լակտոզ",
+        "պանիր",
+        "կարագ",
+        "սերուցք",
+        "մածուն"
+      ],
+      "tree nuts": [
+        "ընկույզ",
+        "նուշ",
+        "պնդուկ",
+        "կեշյու",
+        "պիստակ"
+      ],
+      "sulphites": [
+        "սուլֆիտ",
+        "ծծմբի երկօքսիդ"
+      ]
+    }
+  }
+}

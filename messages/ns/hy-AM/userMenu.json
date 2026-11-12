@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Օգտատիրոջ ընտրացանկ",
+  "screenOn": "Էկրանը միացված է",
+  "screenOff": "Էկրանն անջատվում է",
+  "newOrderSound": "Նոր պատվերի ձայն",
+  "copied": "Պատճենված է",
+  "orderLink": "Պատվերի հղում",
+  "qrCode": "QR կոդ",
+  "kitchenScreen": "Խոհանոցի էկրան (KDS)",
+  "thisDevice": "Այս սարքը",
+  "manage": "Կառավարում",
+  "ordersDashboard": "Պատվերների վահանակ",
+  "admin": "Admin",
+  "privacy": "Գաղտնիության քաղաքականություն",
+  "terms": "Պայմաններ",
+  "signOut": "Դուրս գալ",
+  "close": "Փակել"
+}

@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Շաբաթվա ամսաթվեր",
+    "dayList": "Օրերի ցանկ",
+    "place": "Վայր",
+    "venue": "Վայրի անվանում",
+    "area": "Բնակավայր",
+    "dayDate": "Օր և ամսաթիվ",
+    "times": "Ժամեր",
+    "orderLink": "Պատվերի հղում",
+    "locationTag": "Վայրի պիտակ"
+  },
+  "weekHeader": "{truck} — որտեղ կլինենք այս շաբաթ",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ՉԵՂԱՐԿՎԱԾ Է, ներողություն",
+  "noDates": "Այս շաբաթ ամսաթվեր չկան — շուտով կթարմացնենք։",
+  "orderAhead": "Պատվիրեք նախապես՝ {url}",
+  "orderAheadTagged": "Պատվիրեք նախապես՝ {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}։",
+  "eventLineNoTimes": "{truck} — {where}, {when}։",
+  "cancelledSorry": "Ներողություն — {when} չենք կարողանա գալ այստեղ՝ {where}։",
+  "cancelledApology": "Ներողություն բոլոր նրանցից, ովքեր պատրաստվում էին գալ։ Շուտով կվերադառնանք։",
+  "when": {
+    "today": "այսօր",
+    "tonight": "այսօր երեկոյան",
+    "tomorrow": "վաղը",
+    "dated": "{date}"
+  }
+}

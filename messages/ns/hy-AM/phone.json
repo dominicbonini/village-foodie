@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {Խնդրում ենք մուտքագրել վավեր բջջային համար (երկիր՝ {name})} other {Խնդրում ենք մուտքագրել վավեր բջջային համար}}{withExample, select, yes { — օր.՝ {example}} other {}}",
+  "invalidPhone": "{withName, select, yes {Խնդրում ենք մուտքագրել վավեր հեռախոսահամար (երկիր՝ {name})} other {Խնդրում ենք մուտքագրել վավեր հեռախոսահամար}}{withExample, select, yes { — օր.՝ {example}} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {Մուտքագրեք վավեր հեռախոսահամար (երկիր՝ {name})} other {Մուտքագրեք վավեր հեռախոսահամար}}{withExample, select, yes { — օր.՝ {example}} other {}}։"
+}

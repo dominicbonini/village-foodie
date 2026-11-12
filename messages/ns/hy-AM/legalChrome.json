@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "Գաղտնիության քաղաքականություն — HatchGrab",
+    "privacyDescription": "Ինչպես է HatchGrab Ltd-ն հավաքում և օգտագործում անձնական տվյալները։",
+    "termsTitle": "Ծառայության պայմաններ — HatchGrab",
+    "termsDescription": "HatchGrab-ի օգտագործման պայմանները։",
+    "countryTermsTitle": "Երկրին հատուկ պայմաններ — HatchGrab",
+    "countryTermsDescription": "Լրացուցիչ կանոններ, որոնք որոշ երկրներում կիրառվում են HatchGrab-ի նկատմամբ։"
+  },
+  "homeLabel": "HatchGrab — գլխավոր էջ",
+  "privacy": "Գաղտնիություն",
+  "terms": "Պայմաններ",
+  "countryTerms": "Երկրի պայմաններ",
+  "contact": "Կապ",
+  "lastUpdated": "Վերջին թարմացումը՝ {date}",
+  "questions": "Հարցեր ունե՞ք։ <link>Կապվեք մեզ հետ</link> — մենք իրական մարդիկ ենք։",
+  "translationNote": "Սա թարգմանություն է։ Եթե այն տարբերվում է <link>անգլերեն տարբերակից</link>, կիրառվում է անգլերեն տարբերակը։"
+}

@@ -1,0 +1,17 @@
+{
+  "features": "Հնարավորություններ",
+  "pricing": "Գներ",
+  "faq": "ՀՏՀ",
+  "privacy": "Գաղտնիություն",
+  "terms": "Պայմաններ",
+  "contact": "Կապ",
+  "about": "Մեր մասին",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b>-ի ստեղծողներից",
+  "badges": {
+    "appStoreLink": "Ներբեռնել HatchGrab-ը App Store-ից",
+    "appStoreAlt": "Ներբեռնել App Store-ից",
+    "googlePlayLink": "Ստանալ HatchGrab-ը Google Play-ում",
+    "googlePlayAlt": "Հասանելի է Google Play-ում"
+  }
+}

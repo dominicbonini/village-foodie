@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Տեղ որոնման քարտեզում"
+    },
+    "web_dashboard": {
+      "name": "Ունիվերսալ վեբ վահանակ"
+    },
+    "qr_code": {
+      "name": "QR կոդ"
+    },
+    "schedule_import": {
+      "name": "Գրաֆիկի ավտոմատ ներմուծում"
+    },
+    "meal_deals_upsells": {
+      "name": "Կոմբոներ և լրացուցիչ առաջարկներ"
+    },
+    "walkup_orders": {
+      "name": "Տեղում պատվերների մշակում"
+    },
+    "sold_out_toggle": {
+      "name": "«Սպառված է» նշում մեկ հպումով"
+    },
+    "kitchen_app": {
+      "name": "Խոհանոցի հավելված iPhone-ի, iPad-ի և Android-ի համար"
+    },
+    "offline_protection": {
+      "name": "Պատվերների անցանց պաշտպանություն"
+    },
+    "online_payments": {
+      "name": "Առցանց վճարումներ"
+    },
+    "advance_preordering": {
+      "name": "Նախնական պատվեր ապագա ամսաթվի համար"
+    },
+    "preorder_deadline": {
+      "name": "Նախնական պատվերի վերջնաժամկետ"
+    },
+    "time_slot_selection": {
+      "name": "Ժամային միջակայքի ընտրություն հաճախորդի կողմից"
+    },
+    "kitchen_capacity": {
+      "name": "Խոհանոցի թողունակության կառավարում"
+    },
+    "stock_countdown": {
+      "name": "Պաշարի ավտոմատ նվազեցում"
+    },
+    "auto_accept": {
+      "name": "Առցանց պատվերների ավտոմատ ընդունում"
+    },
+    "branded_qr_code": {
+      "name": "Բրենդային QR կոդ"
+    },
+    "private_events": {
+      "name": "Մասնավոր միջոցառումներ"
+    },
+    "social_media_posts": {
+      "name": "Գրառումներ սոցիալական ցանցերում"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp-ի ավտոմատ պատասխաններ"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger-ի և Instagram-ի ավտոմատ պատասխաններ"
+    },
+    "tap_to_pay": {
+      "name": "Վճարումների ընդունում հեռախոսով"
+    },
+    "sms_order_alerts": {
+      "name": "SMS ծանուցումներ պատվերների մասին"
+    },
+    "multi_device_kitchen": {
+      "name": "Խոհանոցի համաժամեցում մի քանի սարքում"
+    },
+    "multi_user_access": {
+      "name": "Բազմօգտատեր մուտք"
+    },
+    "embed_schedule": {
+      "name": "Գրաֆիկի էջ ձեր սեփական կայքում"
+    },
+    "event_types": {
+      "name": "Միջոցառման անհատական տեսակներ և գներ"
+    },
+    "buzzer_tracking": {
+      "name": "Ազդանշանիչների հետևում"
+    },
+    "documents_reminders": {
+      "name": "Փաստաթղթեր և հիշեցումներ"
+    },
+    "profit_per_event": {
+      "name": "Շահույթ ըստ միջոցառման"
+    },
+    "accountant_reports": {
+      "name": "Հաշվետվություններ ձեր հաշվապահի համար"
+    },
+    "ticket_printing": {
+      "name": "Խոհանոցի կտրոնների տպում"
+    },
+    "customer_display": {
+      "name": "Էկրան հաճախորդների համար"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Թվային կնիքների քարտեր հավատարիմ հաճախորդների համար"
+    }
+  },
+  "cardRegionOnline": "ստանդարտ՝ {region}",
+  "cardRegion": {
+    "UKcards": "Մեծ Բրիտանիայի քարտեր",
+    "EEAcards": "ԵՏՏ երկրների քարտեր",
+    "UScards": "ԱՄՆ քարտեր",
+    "Australiancards": "Ավստրալիայի քարտեր",
+    "NewZealandcards": "Նոր Զելանդիայի քարտեր",
+    "Canadiancards": "Կանադայի քարտեր",
+    "Swisscards": "Շվեյցարիայի քարտեր",
+    "Braziliancards": "Բրազիլիայի քարտեր",
+    "Mexicancards": "Մեքսիկայի քարտեր",
+    "Japanesecards": "Ճապոնիայի քարտեր",
+    "Singaporecards": "Սինգապուրի քարտեր",
+    "HongKongcards": "Հոնկոնգի քարտեր",
+    "Malaysiancards": "Մալայզիայի քարտեր",
+    "Thaicards": "Թաիլանդի քարտեր",
+    "UAEcards": "ԱՄԷ քարտեր"
+  },
+  "perMonth": {
+    "mo": "{amount}/ամս.",
+    "month": "{amount}/ամիս"
+  },
+  "priceWord": {
+    "free": "Անվճար",
+    "freeTrial": "Անվճար փորձաշրջան",
+    "lifetime": "Ցմահ",
+    "zeroPercent": "0%",
+    "payAtHatch": "Վճարում վերցնելիս",
+    "unlimited": "Անսահմանափակ",
+    "none": "—",
+    "masked": "Ճշտվում է"
+  },
+  "cell": {
+    "included": "Ներառված է"
+  }
+}

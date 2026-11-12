@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Ազդանշանիչ <b>{number}</b> այժմ <b>#{holderId} պատվերի</b> մոտ է{hasName, select, yes { ({name})} other {}}։ Վերցնե՞լ այն <b>{hasTarget, select, yes {#{targetId} պատվերի} other {այս պատվերի}}</b> համար։",
+  "cancel": "Չեղարկել",
+  "take": "Վերցնել ազդանշանիչ {number}",
+  "titleBlocking": "Ազդանշանի՞չ #{id} պատվերի համար",
+  "title": "Ընտրեք ազդանշանիչ",
+  "subtitle": "{hasTarget, select, yes {Պատվեր #{id}} other {Այս պատվերը}}{hasCurrent, select, yes { · ներկայիս ազդանշանիչը՝ {current}} other {}}",
+  "allTaken": "{n, plural, one {Բոլոր ազդանշանիչները ({count}) տրված են։ Հպեք որևէ մեկին՝ այն մեկ այլ պատվերից վերցնելու համար։} other {Բոլոր ազդանշանիչները ({count}) տրված են։ Հպեք մեկին՝ այն մեկ այլ պատվերից վերցնելու համար։}}",
+  "thisOrder": "Այս պատվերը",
+  "noBuzzer": "Առանց ազդանշանիչի",
+  "done": "Ավարտել",
+  "lostTitle": "#{id} պատվերն ազդանշանիչ չունի",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}մեկ այլ պատվեր վերցրել է նույն ազդանշանիչը, մինչ դուք կապ չունեիք։ Տվեք նրանց մեկ այլ ազդանշանիչ։",
+  "dismiss": "Փակել",
+  "assign": "Տալ"
+}

@@ -1,0 +1,8 @@
+{
+  "change": "{label} — փոխել",
+  "useRule": "{label} — օգտագործել կանոնը",
+  "typePrice": "{label} — մուտքագրել գինը",
+  "backToRule": "Վերադառնալ կանոնին",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

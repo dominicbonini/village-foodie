@@ -1,0 +1,13 @@
+{
+  "subtotal": "Միջանկյալ գումար",
+  "taxFallback": "Հարկ",
+  "taxIncluded": "Ներառում է՝ {label}",
+  "serviceFeeCustomer": "Առցանց սպասարկման վճար",
+  "serviceFee": "Սպասարկման վճար",
+  "cardFee": "Քարտի վճար",
+  "tip": "Թեյավճար",
+  "rate": "{rate}%",
+  "line": "{label}՝ {amount}",
+  "lineWithRate": "{label} {rate}՝ {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Հարկ, վճարներ և թեյավճար} tax_tip {Հարկ և թեյավճար} fees_tip {Վճարներ և թեյավճար} fees {Վճարներ} other {Հարկ և վճարներ}}"
+}

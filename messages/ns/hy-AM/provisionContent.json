@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Նախուտեստներ",
+    "mains": "Հիմնական ուտեստներ",
+    "burgers": "Բուրգերներ",
+    "pizza": "Պիցցա",
+    "wrapsSandwiches": "Ռոլեր և սենդվիչներ",
+    "sides": "Խավարտներ",
+    "dipsSauces": "Սոուսներ և դիփեր",
+    "desserts": "Աղանդեր",
+    "drinks": "Ըմպելիքներ",
+    "kidsMenu": "Մանկական ճաշացանկ",
+    "specials": "Օրվա առաջարկներ",
+    "other": "Այլ"
+  },
+  "demoEventName": "Դեմո միջոցառում",
+  "firstVanName": "Մեքենա 1",
+  "demoCategories": {
+    "pizza": "Պիցցա",
+    "burgers": "Բուրգերներ",
+    "mains": "Հիմնական ուտեստներ",
+    "sides": "Խավարտներ",
+    "drinks": "Ըմպելիքներ"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Պիցցայի ֆուդթրաք",
+      "items": {
+        "margherita": "Մարգարիտա",
+        "pepperoni": "Պեպերոնի",
+        "ndujaHoney": "Նդույա և մեղր",
+        "fourCheese": "Չորս պանիր",
+        "gardenVeg": "Բանջարեղենային",
+        "garlicBread": "Սխտորով հաց",
+        "rocketParmesan": "Ռուկոլա և պարմեզան",
+        "olives": "Ձիթապտուղ",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Կոլա"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Բուրգերի ֆուդթրաք",
+      "items": {
+        "classicCheeseburger": "Դասական չիզբուրգեր",
+        "doubleBacon": "Կրկնակի բեկոն",
+        "buttermilkChicken": "Թանով մարինացված հավ",
+        "halloumiStack": "Հալումիով բուրգեր",
+        "smashBurger": "Սմեշ բուրգեր",
+        "skinOnFries": "Կեղևով կարտոֆիլ ֆրի",
+        "loadedCheeseFries": "Պանրով կարտոֆիլ ֆրի",
+        "onionRings": "Սոխի օղակներ",
+        "craftLemonade": "Տնական լիմոնադ",
+        "coke": "Կոլա"
+      }
+    },
+    "curries": {
+      "label": "🍛 Կարիի ֆուդթրաք",
+      "items": {
+        "chickenTikkaMasala": "Հավի տիկկա մասալա",
+        "lambRoganJosh": "Գառան ռոգան ջոշ",
+        "chanaMasala": "Չանա մասալա",
+        "butterChicken": "Կարագով հավ",
+        "saagPaneer": "Սաագ պանիր",
+        "pilauRice": "Բրնձով փլավ",
+        "garlicNaan": "Սխտորով նաան",
+        "onionBhaji": "Սոխի բհաջի",
+        "mangoLassi": "Մանգոյով լասսի",
+        "coke": "Կոլա"
+      }
+    }
+  }
+}

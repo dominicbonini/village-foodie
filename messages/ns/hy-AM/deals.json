@@ -1,0 +1,17 @@
+{
+  "back": "← Հետ",
+  "title": "Կիրառել կոմբո",
+  "save": "Խնայում՝ {amount}",
+  "selectItems": "Ընտրեք ապրանքներ յուրաքանչյուր դիրքի համար",
+  "choose": "Ընտրեք՝ {category}…",
+  "inYourBasket": "── Ձեր զամբյուղում ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (զամբյուղում){state, select, used { — արդեն կոմբոյի մեջ է} taken { — ընտրված է այլ դիրքում} other {}}",
+  "addNew": "── Ավելացնել նոր ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Պարտադիր · ընտրեք մեկը} required {Պարտադիր} other {Ընտրեք մեկը}}{unmet, select, yes { (պարտադիր)} other {}}",
+  "notePlaceholder": "Ավելացրեք նշում, օր.՝ առանց սոխի (ըստ ցանկության)",
+  "backButton": "Հետ",
+  "cancel": "Չեղարկել",
+  "chooseRequired": "Ընտրեք պարտադիր տարբերակները",
+  "apply": "Կիրառել կոմբոն · {amount}"
+}

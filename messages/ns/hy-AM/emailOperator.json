@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Նոր պատվեր #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Ստացվել է նոր պատվեր",
+    "from": "<b>Պատվեր #{id}</b> — պատվիրող՝ <b>{name}</b>",
+    "collection": "Վերցնելու ժամ՝ {time}",
+    "asap": "Կոնկրետ ժամ չկա — հնարավորինս շուտ",
+    "total": "Ընդամենը",
+    "notes": "<b>Նշումներ՝</b> {notes}",
+    "autoConfirmed": "Ավտոմատ հաստատված է — ոչինչ անել պետք չէ։",
+    "confirmPrompt": "Մուտք գործեք ձեր HatchGrab վահանակ՝ այս պատվերը հաստատելու կամ մերժելու համար։",
+    "text": "Նոր պատվեր #{id}, պատվիրող՝ {name}{withSlot, select, yes {, ժամը՝ {slot}} other {}}{withVenue, select, yes {, վայրը՝ {venue}} other {}}։{withCharges, select, yes { {charges}։} other {}} Ընդամենը՝ {total}։{withNotes, select, yes { Նշումներ՝ {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck} — գտնվել են նոր միջոցառումներ, խնդրում ենք ստուգել",
+    "hi": "Բարև ձեզ,",
+    "found": "Ձեր գրաֆիկում գտել ենք <b>{n, plural, one {{count} նոր միջոցառում} other {{count} նոր միջոցառում}}</b>, որոնք պետք է ընդունեք, նախքան դրանք տեսանելի կդառնան հաճախորդներին։",
+    "listHeading": "Գտնված միջոցառումները",
+    "approve": "Հենց որ ընդունեք դրանք «Գրաֆիկ» ներդիրում, դրանք կհայտնվեն քարտեզի վրա, և ձեր պատվերի էջը պատրաստ կլինի նախնական պատվերներ ընդունելու։",
+    "cta": "Դիտել ձեր գրաֆիկը →",
+    "signoff": "— HatchGrab-ի թիմ · hatchgrab.com",
+    "unknownVenue": "Անհայտ վայր",
+    "text": "Բարև ձեզ,\n\nՁեր գրաֆիկում գտել ենք {n, plural, one {{count} նոր միջոցառում} other {{count} նոր միջոցառում}}, որոնք պետք է ընդունեք՝\n\n{list}\n\nԴիտեք դրանք այստեղ՝ {url}\n\nՀենց որ ընդունեք դրանք, դրանք կհայտնվեն քարտեզի վրա։\n\n— HatchGrab-ի թիմ"
+  }
+}

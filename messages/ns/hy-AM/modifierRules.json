@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Պարտադիր} other {Ըստ ցանկության}}{limit, select, one { · Ընտրեք մեկը} upTo { · Ընտրեք մինչև {max}} other {}}",
+  "operator": "{required, select, yes {Պարտադիր} other {Ըստ ցանկության}}{limit, select, one { · Հաճախորդն ընտրում է մեկը} upTo { · Հաճախորդը կարող է ընտրել մինչև {max}} other {}}"
+}

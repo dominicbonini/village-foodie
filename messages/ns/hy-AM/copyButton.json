@@ -1,0 +1,10 @@
+{
+  "copy": "Պատճենել",
+  "copied": "Պատճենված է ✓",
+  "failed": "Չհաջողվեց պատճենել",
+  "aria": "{label} {thing}",
+  "announceCopied": "Պատճենված է՝ {thing}",
+  "announceCopiedValue": "Արժեքը պատճենված է",
+  "announceFailed": "Չհաջողվեց պատճենել՝ {thing}։ Նշեք տեքստը և պատճենեք ինքներդ։",
+  "announceFailedValue": "Չհաջողվեց պատճենել արժեքը։ Նշեք տեքստը և պատճենեք ինքներդ։"
+}
