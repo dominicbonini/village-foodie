@@ -35,7 +35,7 @@ import { preorderOpenDate, formatPreorderOpenLabel } from '@/lib/preorder';
 import { crossesMidnight, eventTimeMins, eventEndMins, eventEndInstant, nowOnEvent, engineClock } from '@/lib/event-window';
 import { isModifierAvailable } from '@/lib/modifier-utils';
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules';
-import { clockGridMinutes } from '@/lib/slot-generation'
+import { generateCollectionTimes, firstGridTimeAtOrAfter } from '@/lib/slot-generation'
 import { currencySymbol as currencySymbolOf, formatMajorOrBare, formatMinorOrBare, type MoneyFormat } from '@/lib/money-format'
 import { currencyInfo } from '@/lib/currencies'
 import { minorDigits } from '@/lib/money-format'
@@ -197,10 +197,9 @@ type PendingPayment = {
 }
 
 const HOURS = Array.from({ length: 13 }, (_, i) => String(i + 9).padStart(2, '0'))
-// 🔴 THE HARDCODED MINUTE LIST IS GONE (16 September 2026). The fallback picker's minutes now come from
-// `clockGridMinutes(interval)` in lib/slot-generation.ts — the SAME rule the server's grid uses — so the
-// two cannot disagree at any interval. The old list agreed with the server only because the server was
-// start-anchored and every start was a 5-minute mark. (`MINUTES` had no reader besides its own definition.)
+// 🔴 THE HARDCODED MINUTE LIST IS GONE (16 September 2026). The fallback picker's times now come from
+// `generateCollectionTimes` in lib/slot-generation.ts — the SAME function the server's grid uses (start-anchored
+// since collection-anchor-1) — so the two cannot disagree at any interval. (`MINUTES` had no reader besides its own definition.)
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
 // Shared pre-order label for a GROUP (category or sub-category): returns the label only when EVERY
@@ -785,52 +784,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const selectedSlot = slotHour && slotMinute ? `${slotHour}:${slotMinute}` : ''
 
-  // Calculate available hours from event times (customer-facing only)
-  const availableHours = useMemo(() => {
-    if (!event?.start_time || !event?.end_time) {
-      // Fallback if no event hours: 10:00-23:00
-      return Array.from({length:14}, (_,i) => String(i+10).padStart(2,'0'))
-    }
-    
-    const [startH] = event.start_time.split(':').map(Number)
-    const [endH] = event.end_time.split(':').map(Number)
-    
-    const hours: string[] = []
-    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (lib/event-window.ts): its end hour is the next day's, so the walk runs on
-    // through 23 and wraps (20 … 23, 00). Any other event: the loop below, unchanged.
-    if (crossesMidnight(event.start_time, event.end_time)) {
-      for (let h = startH; h <= endH + 24; h++) {
-        const hh = String(h % 24).padStart(2, '0')
-        if (!hours.includes(hh)) hours.push(hh)
-      }
-      return hours
-    }
-    for (let h = startH; h <= endH; h++) {
-      hours.push(String(h).padStart(2, '0'))
-    }
-    return hours
+  // 🔴 THE BACKUP PICKER'S TIMES — straight from the ONE grid function the server uses (generateCollectionTimes,
+  // lib/slot-generation.ts): the event's start, start + interval, … to its end, at the SELECTED EVENT'S interval
+  // (a two-van truck offers a different grid per event). Used only when /api/slots has no list. collection-anchor-1
+  // (12 November 2026): this replaced the hour × minute lists (and their hour-by-hour workaround for 45), so this
+  // picker and the server cannot disagree at any interval or start time. No event times: 10:00–23:59, as before.
+  const backupTimes = useMemo(() => {
+    const iv = event?.collection_interval_mins ?? 5
+    const [from, to] = event?.start_time && event?.end_time ? [event.start_time, event.end_time] : ['10:00', '23:59']
+    return generateCollectionTimes(from, to, iv, iv, 0).map(r => r.collection_time)
   }, [event])
-
-  // The minutes one HOUR offers, filtered to the event's first/last hour.
-  // 🔴 FROM THE SHARED RULE, NOT A LOCAL LIST. At 5 this is exactly the twelve entries this used to
-  // hard-code; at 15 it is :00/:15/:30/:45 — the same clock-anchored multiples /api/slots generates.
-  // 🔴 THE SELECTED EVENT'S interval, not the truck's — a two-van truck offers a different grid per
-  // event, and this picker is only ever used for the event being ordered against.
-  // 🔴 PER HOUR (12 November 2026): at 45 minutes the grid's minutes differ hour to hour (18:00, 18:45,
-  // 19:30…), so the fallback list asks this for EACH hour instead of reusing one hour's minutes for all.
-  const minutesForHour = useCallback((hh: string | null | undefined): string[] => {
-    const allMinutes = clockGridMinutes(event?.collection_interval_mins ?? 5, hh ? parseInt(hh) : null)
-    if (!event?.start_time || !event?.end_time || !hh) return allMinutes
-    const [startH, startM] = event.start_time.split(':').map(Number)
-    const [endH, endM] = event.end_time.split(':').map(Number)
-    const h = parseInt(hh)
-    if (h === startH) return allMinutes.filter(m => parseInt(m) >= startM)   // first hour: not before start
-    if (h === endH) return allMinutes.filter(m => parseInt(m) <= endM)       // last hour: not after end
-    return allMinutes                                                         // middle hours: all
-  }, [event])
-
-  // The selected hour's minutes (every on-grid minute while no hour is chosen).
-  const availableMinutes = useMemo(() => minutesForHour(slotHour), [minutesForHour, slotHour])
 
   // Fetch available slots (must use date_iso yyyy-mm-dd to match orders.event_date in Supabase)
   const fetchSlots = async (truckId: string, dateIso: string, startTime?: string, endTime?: string, eventId?: string) => {
@@ -1890,7 +1853,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
     if (asapMins === eventStartMins && extraWait === 0) return event.start_time
 
-    const roundedMins = onClock(Math.ceil(asapMins / 5) * 5) // ceil-to-grid (next 5-min slot), never round DOWN below the floor
+    // ceil-to-grid: the first time ON THE EVENT'S GRID (start-anchored, collection-anchor-1) at or after the floor — never
+    // rounded DOWN below it. At interval 5 on a 5-minute-mark start this is the old next-5-minute rounding exactly.
+    const roundedMins = onClock(firstGridTimeAtOrAfter(eventStartMins, asapMins, event.collection_interval_mins ?? 5))
     const h = Math.floor(roundedMins / 60)
     const m = roundedMins % 60
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
@@ -3790,9 +3755,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     // pure ESTIMATE, last resort only when there's no real slot). asapSlot now ranks
                     // ABOVE the estimate so "Around HH:MM" equals the earliest selectable slot — both
                     // derive from the one prep floor. (Was: estimate ahead of asapSlot → the divergence.)
-                    const asapTime = backwardAsap || asapSlot || customerAsapTime || (availableHours.length > 0
-                      ? `${availableHours[0]}:${availableMinutes[0] || '00'}`
-                      : null)
+                    const asapTime = backwardAsap || asapSlot || customerAsapTime || backupTimes[0] || null
                     const isSelected = asapChosen
 
                     return (
@@ -3829,7 +3792,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     {truck?.time_selection_enabled ? (() => {
                       // ASAP display precedence (V7.1): real slot (backwardAsap → asapSlot) before the
                       // customerAsapTime ESTIMATE, so the picker floor == the displayed ASAP.
-                      const asapTime = backwardAsap || asapSlot || customerAsapTime || (availableHours.length > 0 ? `${availableHours[0]}:${availableMinutes[0] || '00'}` : null)
+                      const asapTime = backwardAsap || asapSlot || customerAsapTime || backupTimes[0] || null
                       const hasChosenTime = !asapChosen && selectedSlot
 
                       return (
@@ -3893,20 +3856,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                       {formatSlot(slot.collection_time, pageTs)}
                                     </option>
                                   ))
-                              : availableHours.flatMap(h =>
-                                  // 🔴 45 ONLY asks each hour for its own minutes (they differ hour to hour); every interval
-                                  // that divides an hour keeps the list it always had, byte for byte.
-                                  (60 % (event?.collection_interval_mins ?? 5) === 0 ? availableMinutes : minutesForHour(h))
-                                    .filter(m => {
-                                      const time = `${h}:${m}`
-                                      if (!asapTime) return true
-                                      return evMins(time) >= evMins(asapTime)
-                                    })
-                                    .map(m => {
-                                      const time = `${h}:${m}`
-                                      return <option key={time} value={time}>{formatSlot(time, pageTs)}</option>
-                                    })
-                                )
+                              : backupTimes
+                                  // the event's own grid (start-anchored, the server's rule), from the ASAP time on
+                                  .filter(time => !asapTime || evMins(time) >= evMins(asapTime))
+                                  .map(time => <option key={time} value={time}>{formatSlot(time, pageTs)}</option>)
                             }
                           </select>
                           <div className={`pointer-events-none absolute right-3 max-[379px]:right-2 top-1/2 -translate-y-1/2 text-xs ${hasChosenTime ? 'text-white' : 'text-slate-400'}`}>▾</div>

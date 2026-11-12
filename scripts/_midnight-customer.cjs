@@ -241,11 +241,12 @@ function checks(t, A, B) {
     t(`customer ${cc}: no ASAP text ever reads 24:xx`, asapAll.length > 0 && asapAll.every(a => !/\b24:/.test(a)), asapAll.join(' | '))
     t(`customer ${cc}: ASAP at 23:50 is ${cc === 'GB' ? '00:00' : '12:00 AM'} (the first open slot), at 00:15 it is ${cc === 'GB' ? '00:15' : '12:15 AM'}`,
       v(cc, '23:50', 'page').around === `Around ${cc === 'GB' ? '00:00' : '12:00 AM'}` && v(cc, '00:15', 'page').around === `Around ${cc === 'GB' ? '00:15' : '12:15 AM'}`, [v(cc, '23:50', 'page').around, v(cc, '00:15', 'page').around])
-    // The queue estimate (no slots): now + one 10-minute pizza cycle, on the clock.
-    t(`customer ${cc}: the queue estimate (no slots from the server) at 23:50 is ${cc === 'GB' ? '00:00' : '12:00 AM'}, at 00:15 it is ${cc === 'GB' ? '00:25' : '12:25 AM'} (now + a 10-min cycle, never 24:xx)`,
-      v(cc, '23:50', 'fallback').around === `Around ${cc === 'GB' ? '00:00' : '12:00 AM'}` && v(cc, '00:15', 'fallback').around === `Around ${cc === 'GB' ? '00:25' : '12:25 AM'}`, [v(cc, '23:50', 'fallback').around, v(cc, '00:15', 'fallback').around])
+    // The queue estimate (no slots): now + one 10-minute pizza cycle, rounded UP onto the event's grid (20:00, every 15 —
+    // ⚠️ RE-PINNED collection-anchor-1, 12 Nov 2026: it rounded to the next 5 minutes, 00:25 at 00:15), on the clock.
+    t(`customer ${cc}: the queue estimate (no slots from the server) at 23:50 is ${cc === 'GB' ? '00:00' : '12:00 AM'}, at 00:15 it is ${cc === 'GB' ? '00:30' : '12:30 AM'} (now + a 10-min cycle, on the event's 15-min grid, never 24:xx)`,
+      v(cc, '23:50', 'fallback').around === `Around ${cc === 'GB' ? '00:00' : '12:00 AM'}` && v(cc, '00:15', 'fallback').around === `Around ${cc === 'GB' ? '00:30' : '12:30 AM'}`, [v(cc, '23:50', 'fallback').around, v(cc, '00:15', 'fallback').around])
     const fb = opts(v(cc, '23:50', 'fallback'))
-    t(`customer ${cc}: the fallback picker at 23:50 walks past midnight — 00:00 … 00:55 offered (the hour runs on), nothing before 00:00`,
+    t(`customer ${cc}: the fallback picker at 23:50 walks past midnight — 00:00, 00:15, 00:30 offered (the event's own times to its 00:30 end), nothing before 00:00`,
       fb.includes('00:00') && fb.includes('00:15') && fb.includes('00:30') && !fb.some(s => s >= '20:00'), fb.join(' '))
     // The backward fit, fed on the engine clock: 00:15 fits at 23:50 (its cooking window 00:05–00:15 is ahead of now).
     const fit = opts(v(cc, '23:50', 'fit'))
@@ -277,8 +278,31 @@ function checks(t, A, B) {
  * order-page views (normal|US|<moment>|page / fallback / fit) that is the picker's option LABELS ("11:30=11:30 AM" →
  * "11:30=11:30\u00A0AM"); the option values, `closed` and `around` (whitespace-collapsed text) are BEFORE's exactly. GB: none. */
 function named(id, before) {
+  return collectionAnchor(id, uslNbsp(id, before))
+}
+function uslNbsp(id, before) {
   if (!/^normal\|US\|[^|]+\|(page|fallback|fit)$/.test(id) || !before || !Array.isArray(before.options)) return before
   return { ...before, options: before.options.map(o => o.replace(/^([^=]*=\d{1,2}:\d{2}) (AM|PM)$/, '$1\u00A0$2')) }
+}
+/* ══ NAMED (collection-anchor-1, 12 November 2026, docs/collection-anchor-1-report.md) ═════════════════════════════════════
+ * collection-anchor-estimate-on-grid: with no slots from the server, the order page's "Around HH:MM" estimate rounds UP onto
+ * the EVENT'S GRID (start, start + 15, … — lib/slot-generation.ts firstGridTimeAtOrAfter) where it rounded up to the next
+ * 5 minutes, so it now equals the first time the picker offers ("Around 12:10" beside a first option of 12:15 → "Around
+ * 12:15"). Applied to `around` on the normal fallback views only (the normal event starts 11:30, every 15 minutes), GB "HH:MM"
+ * and US "h:MM AM/PM" alike; options and `closed` stay BEFORE's exactly. A time already on the grid is unchanged. */
+function collectionAnchor(id, before) {
+  if (!/^normal\|(GB|US)\|[^|]+\|fallback$/.test(id) || !before || typeof before.around !== 'string') return before
+  const m = before.around.match(/^Around (\d{1,2}):(\d{2})(?:[ \u00A0](AM|PM))?$/)
+  if (!m) return before
+  let h = Number(m[1]); const mm = Number(m[2]), ap = m[3]
+  if (ap) h = (h % 12) + (ap === 'PM' ? 12 : 0)
+  const start = 11 * 60 + 30, iv = 15, t = h * 60 + mm
+  const g = t <= start ? start : start + Math.ceil((t - start) / iv) * iv
+  if (g === t) return before
+  const H = Math.floor(g / 60) % 24, M = String(g % 60).padStart(2, '0')
+  const sep = ap ? before.around.slice(m[0].length - m[3].length - 1, m[0].length - m[3].length) : ''
+  const text = ap ? `Around ${((H + 11) % 12) + 1}:${M}${sep}${H >= 12 ? 'PM' : 'AM'}` : `Around ${String(H).padStart(2, '0')}:${M}`
+  return { ...before, around: text }
 }
 
 module.exports = { views, checks, named }

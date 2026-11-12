@@ -30,7 +30,7 @@ import { resolveIntervalsFor } from '@/lib/slot-interval'
 import { readVanCategorySettings, resolveCategory } from '@/lib/van-category-settings'
 import { resolveBatchReservations } from '@/lib/features'
 import { admitForManual, writeReservationRecord, writeCookingReservation } from '@/lib/orders/cooking-reservation'
-import { generateCollectionTimes } from '@/lib/slot-generation'
+import { generateCollectionTimes, firstGridTimeAtOrAfter } from '@/lib/slot-generation'
 import { projectBackwardOccupancy, fitOrderBackward } from '@/lib/slot-availability'
 import { normaliseOrderLines, buildItemCatMap, type ProductionSlotUnits } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat, mergeQtyByCat, type QtyByCat } from '@/lib/slot-capacity'
@@ -490,9 +490,10 @@ export async function seedDemoOrders(
   // The demo truck's zone by the one rule (Phase 2B; was a fixed London) unless the caller names one.
   const nowMins = args.now ? venueNowMins(args.now, args.tz ?? await demoTruckZone(supabase, args.truckId)) : null
   const floorMins = nowMins != null ? Math.max(startPlusMins, nowMins + FIRST_COLLECTION_OFFSET_MINS) : startPlusMins
-  // Clock-anchored: the first time is the first MULTIPLE OF THE INTERVAL FROM MIDNIGHT at or after the
-  // floor, and every later one steps by the interval — the same rule generateCollectionTimes applies.
-  const firstMins = Math.ceil(floorMins / gridMins) * gridMins
+  // Start-anchored (collection-anchor-1): the first time is the first time ON THE EVENT'S GRID (start, start +
+  // interval, …) at or after the floor, and every later one steps by the interval — the rule generateCollectionTimes
+  // applies, through its own helper so the two cannot drift.
+  const firstMins = firstGridTimeAtOrAfter(toMinsLocal(args.startTime), floorMins, gridMins)
   const firstCollection = minsToHHMMLocal(firstMins)
   const slots = generateSlots(firstCollection, args.endTime, gridMins)
   if (!slots.length) return emptyResult({ warnings })

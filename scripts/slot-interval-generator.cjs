@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 // scripts/slot-interval-generator.cjs
 //
-// Proof for the clock-anchored grid (lib/slot-generation.ts) and the customer fallback picker's minutes.
+// Proof for the START-ANCHORED grid (lib/slot-generation.ts; collection-anchor-1, 12 November 2026 — it was clock-anchored
+// from 16 September to 12 November).
 //   node scripts/slot-interval-generator.cjs
 //
-// 🔴 WHAT A FAILURE LOOKS LIKE: at interval 5, the new generator emits a DIFFERENT list from HEAD's for
-// some start/end/grace — which would change what every 5-minute truck (Gusto) offers. Or at 15, a time
-// that is not a clock multiple (a 17:50 start yielding 17:50 rather than 18:00). Or the customer
-// fallback picker's minute list disagreeing with the server's grid — the V11.15 outage class.
+// 🔴 WHAT A FAILURE LOOKS LIKE: at any interval, the generator emits a DIFFERENT list from the frozen start-anchored walk for
+// some start/end/grace — a time that is not the start + a multiple of the interval (a 19:00 start at 45 yielding 19:15), or
+// a first time that is not the start. The customer page's backup picker builds from this same function (it has no list of
+// its own any more), so the picker ≡ server proof lives in scripts/longer-intervals-1.cjs and slot-interval-grid-routing.cjs.
 //
 // 🔴 THE ORACLE IS A FROZEN COPY OF HEAD'S GENERATOR, kept verbatim below. Do not "tidy" it to call the
 // new function; if the two agree only because the oracle was rewritten, this harness proves nothing.
@@ -52,79 +53,71 @@ function generateCollectionTimesHEAD(startTime, endTime, intervalMins, slotDurat
   }
   return result
 }
-// The OLD hardcoded customer minute list, frozen.
-const MINUTES_HEAD = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55']
-
-/** The fallback picker's list for an event, exactly as the page composes it: hours start→end, minutes
- *  from the minute list, first hour narrowed ≥ startM, last hour narrowed ≤ endM. */
-function fallbackList(minuteList, start, end) {
-  const [sH, sM] = start.split(':').map(Number); const [eH, eM] = end.split(':').map(Number)
-  const outL = []
-  for (let h = sH; h <= eH; h++) {
-    for (const m of minuteList) {
-      const mm = Number(m)
-      if (h === sH && mm < sM) continue
-      if (h === eH && mm > eM) continue
-      outL.push(`${String(h).padStart(2, '0')}:${m}`)
-    }
-  }
-  return outL
-}
-
 function runSuite(impl) {
   const ok = [], fails = []
   const t = (n, c) => (c ? ok : fails).push(n)
   const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b)
 
-  // ── 1. AT 5, IDENTICAL TO HEAD for every start 00:00–23:55, several ends incl. 23:59, grace 30 ────
+  // ── 1. ⚠️ RE-PINNED (collection-anchor-1, 12 November 2026): the grid is START-ANCHORED again at EVERY interval, which
+  //    is exactly the frozen walk above — so it must be IDENTICAL to it for every interval, every start 00:00–23:55 (on and off
+  //    the interval), several ends incl. 23:59, two durations and grace 0/30. (Until today this held at 5 only.)
   let compared = 0, mismatches = 0, firstMismatch = null
   const ENDS = ['12:00', '17:59', '20:00', '22:30', '23:59']
-  for (let s = 0; s < 24 * 60; s += 5) {
-    const start = toStr(s)
-    for (const end of ENDS) {
-      if (toMins(end) < s) continue
-      for (const dur of [5, 10]) {
-        for (const grace of [0, 30]) {
-          compared++
-          const a = impl.generate(start, end, 5, dur, grace), b = generateCollectionTimesHEAD(start, end, 5, dur, grace)
-          if (!eq(a, b)) { mismatches++; if (!firstMismatch) firstMismatch = `${start}→${end} dur ${dur} grace ${grace}` }
+  for (const iv of [5, 10, 15, 20, 30, 45, 60]) {
+    for (let s = 0; s < 24 * 60; s += 5) {
+      const start = toStr(s)
+      for (const end of ENDS) {
+        if (toMins(end) < s) continue
+        for (const dur of [5, 10]) {
+          for (const grace of [0, 30]) {
+            compared++
+            const a = impl.generate(start, end, iv, dur, grace), b = generateCollectionTimesHEAD(start, end, iv, dur, grace)
+            if (!eq(a, b)) { mismatches++; if (!firstMismatch) firstMismatch = `${iv} ${start}→${end} dur ${dur} grace ${grace}` }
+          }
         }
       }
     }
   }
-  t(`🔴 at interval 5: IDENTICAL to HEAD over ${compared} FIXTURE (start,end,dur,grace) combos${mismatches ? ` — ${mismatches} differ, first ${firstMismatch}` : ''}`, mismatches === 0)
+  t(`🔴 every interval: IDENTICAL to the start-anchored walk over ${compared} (interval,start,end,dur,grace) combos${mismatches ? ` — ${mismatches} differ, first ${firstMismatch}` : ''}`, mismatches === 0)
 
-  // ── 2. CLOCK ANCHORING at 10/15/20/30 ─────────────────────────────────────────────────────────────
+  // ── 2. START ANCHORING, by example ────────────────────────────────────────────────────────────────
   const times = (r) => r.map(x => x.collection_time)
-  t('17:50 start at 15 → 18:00, 18:15, 18:30 … (never 17:50)', eq(times(impl.generate('17:50', '18:45', 15, 10, 0)), ['18:00', '18:15', '18:30', '18:45']))
-  t('12:05 start at 15 → 12:15 first', times(impl.generate('12:05', '13:00', 15, 10, 0))[0] === '12:15')
-  t('16:35 start at 15 → 16:45 first', times(impl.generate('16:35', '17:30', 15, 10, 0))[0] === '16:45')
-  t('12:00 start at 15 → 12:00 first (already a multiple)', times(impl.generate('12:00', '12:45', 15, 10, 0))[0] === '12:00')
-  for (const iv of [10, 15, 20, 30]) {
+  t('19:00 start at 45 → 19:00, 19:45, 20:30, 21:15 (the brief\'s example)', eq(times(impl.generate('19:00', '21:30', 45, 45, 0)), ['19:00', '19:45', '20:30', '21:15']))
+  t('17:50 start at 15 → 17:50, 18:05, 18:20 … (the start itself first)', eq(times(impl.generate('17:50', '18:35', 15, 10, 0)), ['17:50', '18:05', '18:20', '18:35']))
+  t('17:10 start at 15 → 17:10 first', times(impl.generate('17:10', '18:00', 15, 10, 0))[0] === '17:10')
+  t('19:45 start at 60 → 19:45, 20:45', eq(times(impl.generate('19:45', '21:00', 60, 60, 0)), ['19:45', '20:45']))
+  t('12:00 start at 15 → the clock list it always gave (a start on a multiple)', eq(times(impl.generate('12:00', '12:45', 15, 10, 0)), ['12:00', '12:15', '12:30', '12:45']))
+  for (const iv of [10, 15, 20, 30, 45, 60]) {
     const all = times(impl.generate('17:50', '21:00', iv, 10, 30))
-    t(`every time at ${iv} is a clock multiple of ${iv}`, all.every(x => toMins(x) % iv === 0))
-    t(`no time at ${iv} precedes the start`, all.every(x => toMins(x) >= toMins('17:50')))
+    t(`every time at ${iv} is the start + a multiple of ${iv}`, all.every(x => (toMins(x) - toMins('17:50')) % iv === 0))
+    t(`no time at ${iv} precedes the start, and the first IS the start`, all[0] === '17:50' && all.every(x => toMins(x) >= toMins('17:50')))
   }
   // grace stays in MINUTES beyond the end, on the interval
   t('grace 30 at 15 with end 20:00 → last time 20:30', times(impl.generate('17:00', '20:00', 15, 10, 30)).slice(-1)[0] === '20:30')
-  t('grace 30 at 15 with end 20:10 → last time 20:30 (20:40 > 20:10+30)', times(impl.generate('17:00', '20:10', 15, 10, 30)).slice(-1)[0] === '20:30')
+  t('grace 30 at 15, start 17:10, end 20:10 → last time 20:40 (on the start\'s grid)', times(impl.generate('17:10', '20:10', 15, 10, 30)).slice(-1)[0] === '20:40')
   // production_slot derivation unchanged (floor to slot_duration)
   const r15 = impl.generate('18:00', '18:30', 15, 10, 0)
   t('production_slot still floors to slot_duration_mins (18:15 → 18:10)', r15.find(x => x.collection_time === '18:15')?.production_slot === '18:10')
-
-  // ── 3. THE FALLBACK PICKER EQUALS THE SERVER at 5 and 15 ──────────────────────────────────────────
-  for (const [iv, start, end] of [[5, '12:00', '14:00'], [5, '12:05', '14:00'], [5, '16:35', '18:00'], [15, '12:00', '14:00'], [15, '12:05', '14:00'], [15, '16:35', '18:00'], [15, '17:50', '19:00']]) {
-    const server = times(impl.generate(start, end, iv, 10, 0))
-    const picker = fallbackList(impl.minutes(iv), start, end)
-    t(`fallback picker == server grid at ${iv}, ${start}→${end}`, eq(server, picker))
+  // the one rounding helper (the seeder, the order page's estimate)
+  if (impl.first) {
+    t('firstGridTimeAtOrAfter: before the start → the start; on the grid → itself; between → the next', impl.first(1030, 1000, 15) === 1030 && impl.first(1030, 1045, 15) === 1045 && impl.first(1030, 1046, 15) === 1060)
   }
   return { ok, fails }
 }
 
-const REAL = { generate: GEN.generateCollectionTimes, minutes: GEN.clockGridMinutes }
+const REAL = { generate: GEN.generateCollectionTimes, first: GEN.firstGridTimeAtOrAfter }
+// The old D1 rule — multiples of the interval from MIDNIGHT — kept here only as the variant that must fail.
+function generateClockAnchored(startTime, endTime, intervalMins, slotDurationMins, graceAfterEndMins = 0) {
+  const start = toMins(startTime), end = toMins(endTime), result = []
+  for (let mins = Math.ceil(start / intervalMins) * intervalMins; mins <= end + graceAfterEndMins; mins += intervalMins) {
+    const prodMins = Math.floor(mins / slotDurationMins) * slotDurationMins
+    result.push({ collection_time: toStr(mins), production_slot: toStr(prodMins) })
+  }
+  return result
+}
 const VARIANTS = [
-  ['V1', 'event-start anchoring (HEAD\'s walk) at every interval', { generate: generateCollectionTimesHEAD, minutes: GEN.clockGridMinutes }],
-  ['V2', 'the old hardcoded 5-minute MINUTES list as the picker\'s minutes', { generate: GEN.generateCollectionTimes, minutes: () => MINUTES_HEAD }],
+  ['V1', 'clock anchoring from midnight (the old D1 rule)', { generate: generateClockAnchored }],
+  ['V2', 'a walk that starts one interval after the start', { generate: (s, e, iv, d, g) => generateCollectionTimesHEAD(toStr(toMins(s) + iv), e, iv, d, g) }],
 ]
 console.log('── BROKEN VARIANTS: each MUST report FAILURE ────────────────────────────────────────────')
 let allFailed = true

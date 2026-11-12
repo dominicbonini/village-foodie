@@ -660,6 +660,10 @@ const NAMED = [
   // ── ⚠️ RE-PINNED (longer collection times and capacity steps, 12 November 2026; scripts/_named-longer-intervals.cjs) ──────
   //    Collection times gain 45 and 60; prep time 20m … 60m; the capacity window 1 … 15 then every 5 to 60. PRECISE.
   ...require('./_named-longer-intervals.cjs').entries({ mapStrings }),
+
+  // ── ⚠️ RE-PINNED (collection times from the event's start, collection-anchor-1, 12 November 2026; scripts/_named-collection-anchor.cjs)
+  //    The order page's backup picker ends at the event's end (the server's own list). PRECISE.
+  ...require('./_named-collection-anchor.cjs').entries({ mapStrings }),
 ]
 
 // ── ⚠️ RE-PINNED (ireland-1, 20 October 2026): helpers for the ie1-demo-* entries ─────────────────────────────────────────

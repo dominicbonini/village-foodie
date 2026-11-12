@@ -827,7 +827,11 @@ async function eventTypesView() {
     }
     return out
   }
-  const A = leaves(unLonger(JSON.parse(JSON.stringify(snap)))), B = leaves(before)   // the same JSON round trip the fixture took
+  // ⚠️ RE-PINNED (collection-anchor-1, 12 November 2026; scripts/_named-collection-anchor.cjs) — the order page's backup picker
+  // ends at the event's end: exactly the five past-the-end times (21:10 … 21:50) come out of BEFORE's orderPage views.
+  const CA = require('./_named-collection-anchor.cjs').snapshotBefore(before)
+  const A = leaves(unLonger(JSON.parse(JSON.stringify(snap)))), B = leaves(CA.before)   // the same JSON round trip the fixture took
+  console.log(`  named: collection-anchor-backup-ends-at-end — ${CA.views} order-page view(s): the five times after the event's end removed from BEFORE`)
   console.log(`  named: longer-intervals — ${LONGER.prep} prep select(s), ${LONGER.interval} collection-time select(s), ${LONGER.window} capacity-window select(s) taken back to BEFORE's options`)
   let bad = 0
   const fail = (msg) => { bad++; if (bad <= 40) console.log('  🔴 ' + msg) }

@@ -2,21 +2,19 @@
 // Each slot gets a production_slot (batch window) by rounding down to the
 // nearest slot_duration_mins boundary.
 //
-// ── 🔴 CLOCK-ANCHORED (16 September 2026, decision D1) ─────────────────────────────────────────────
-// Selectable times are multiples of `intervalMins` measured from MIDNIGHT — at 15 that is :00/:15/:30/:45
-// — NOT multiples counted from the event start. The first time is the first multiple at or after the
-// start; the last is the last multiple at or before end + grace. A 17:50 start at 15 offers 18:00,
-// 18:15…; no earlier collection is offered, and that is accepted.
-// 🔴 AT INTERVAL 5 THIS IS BYTE-IDENTICAL TO THE OLD START-ANCHORED WALK, because every live event
-// starts on a 5-minute mark (LIVE-verified: no Gusto event ever, and no event from today onwards for any
-// truck, starts off one) — `ceil(start/5)*5 === start`, so the first time and every later one coincide.
-// scripts/slot-interval-generator.cjs proves that for every start 00:00–23:55 against a frozen copy.
+// ── 🔴 START-ANCHORED (collection-anchor-1, 12 November 2026; was clock-anchored from midnight, decision D1) ──────
+// Selectable times are counted FROM THE EVENT'S START at EVERY interval: start, start + interval,
+// start + 2×interval … to the last one at or before end + grace. Event 19:00 at 45 → 19:00, 19:45, 20:30, 21:15.
+// Event 17:10 at 15 → 17:10, 17:25, 17:40…. 🔴 ONE RULE FOR EVERYONE: /api/slots (the customer's list), /api/dashboard
+// (the operator's), the server's placement (lib/orders/place-in-slot.ts), the customer page's backup picker, the
+// demo seeder (`firstGridTimeAtOrAfter`) and every per-event override all build from this function, so no two can
+// disagree. A start on a multiple of the interval (17:00 at 15) gives exactly the clock-anchored list it gave before.
 //
 // Example: start=17:00, end=20:00, interval=5, slotDuration=15
 //   17:00 → prod 17:00 | 17:05 → prod 17:00 | 17:10 → prod 17:00
 //   17:15 → prod 17:15 | ... | 20:00 → prod 20:00
 // Example: start=17:50, end=20:00, interval=15, slotDuration=10
-//   18:00 → prod 18:00 | 18:15 → prod 18:10 | 18:30 → prod 18:30 | ... (never 17:50)
+//   17:50 → prod 17:50 | 18:05 → prod 18:00 | 18:20 → prod 18:20 | ...
 //
 // ⚠️ THE production_slot DERIVATION IS UNCHANGED (still floor to slot_duration_mins), and so is grace:
 // pass graceAfterEndMins > 0 to extend beyond end_time (truck-only grace slots), measured in minutes.
@@ -36,37 +34,12 @@ const toStr = (mins: number) =>
   `${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`
 
 /**
- * The first clock-anchored time at or after `startMins`. Exported so the customer page's fallback
- * picker and the harness derive their grids from THIS rule and not from a second one.
+ * 🔴 THE FIRST GRID TIME AT OR AFTER `atOrAfterMins` on an event's grid (start, start + interval, …) — the one
+ * rounding rule for "the earliest time a customer can be given". Before the start it is the start.
  */
-export const firstClockSlotAtOrAfter = (startMins: number, intervalMins: number): number =>
-  Math.ceil(startMins / intervalMins) * intervalMins
-
-/**
- * 🔴 THE MINUTE LIST FOR A CLOCK-ANCHORED GRID — ['00','05',…] at 5, ['00','15','30','45'] at 15.
- * The customer page's fallback picker (hour select + minute select) MUST take its minutes from here.
- * It used to hold its own hardcoded twelve-entry list, which agreed with the server only because the
- * server was start-anchored AND every start was a 5-minute mark; at any other interval that list would
- * have offered times the server never generates — the V11.15 outage class. One rule, both sides.
- */
-//
-// 🔴 PASS THE HOUR. At an interval that divides 60 (5–30, 60) every hour has the same minutes and `hour`
-// changes nothing — byte-identical to the old one-argument form. At 45 it does not: the multiples of 45
-// from midnight fall on :00/:45 in one hour and :30 or :15 in the next, so the hour decides. With no hour
-// (nothing picked yet) the answer is every minute that is on the grid in SOME hour — at 45 that is
-// :00/:15/:30/:45 — and the customer's hour choice then narrows it.
-export function clockGridMinutes(intervalMins: number, hour?: number | null): string[] {
-  const step = Math.max(1, Math.floor(intervalMins))
-  const out: string[] = []
-  if (hour == null || !Number.isFinite(hour)) {
-    for (let m = 0; m < 60; m++) {
-      if (Array.from({ length: 24 }, (_, h) => h).some(h => (h * 60 + m) % step === 0)) out.push(String(m).padStart(2, '0'))
-    }
-    return out
-  }
-  const base = (Math.floor(hour) % 24) * 60
-  for (let m = 0; m < 60; m++) if ((base + m) % step === 0) out.push(String(m).padStart(2, '0'))
-  return out
+export const firstGridTimeAtOrAfter = (startMins: number, atOrAfterMins: number, intervalMins: number): number => {
+  const iv = Math.max(1, Math.floor(intervalMins))
+  return atOrAfterMins <= startMins ? startMins : startMins + Math.ceil((atOrAfterMins - startMins) / iv) * iv
 }
 
 /**
@@ -75,8 +48,7 @@ export function clockGridMinutes(intervalMins: number, hour?: number | null): st
  * 🔴 IT CALLS THE REAL GENERATOR. The point of the example is to promise the operator what they will
  * actually get, so deriving it from a second hard-coded list would let the promise and the grid drift —
  * and the example is the ONLY place most operators will ever see the rule stated. 18:00 is a fixed
- * illustration, not the truck's event, so the list is clock-anchored from a whole hour at every
- * interval and the first entry is always 18:00.
+ * illustration (an event starting at 18:00), not the truck's event, so the first entry is always 18:00.
  *
  * The window is 18:00-23:00 with no grace, which yields far more than three entries at every choice in
  * INTERVAL_CHOICES; only the first three are shown.
@@ -104,9 +76,8 @@ export function generateCollectionTimes(
   // midnight keeps the "24:xx" grace labels it always produced — byte-identical (scripts/slot-interval-generator.cjs).
   const label = (m: number) => toStr(overnight ? m % 1440 : m)
   const result: CollectionTimeRow[] = []
-  // 🔴 CLOCK ANCHORING: begin at the first multiple of the interval at or after the start, not at the
-  // start itself. At interval 5 and a 5-minute-mark start this IS the start — see the header.
-  const first = firstClockSlotAtOrAfter(start, intervalMins)
+  // 🔴 START ANCHORING (collection-anchor-1): the grid begins AT the event's start — see the header.
+  const first = start
 
   for (let mins = first; mins <= end + graceAfterEndMins; mins += intervalMins) {
     const prodMins = Math.floor(mins / slotDurationMins) * slotDurationMins

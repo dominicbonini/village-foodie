@@ -17,9 +17,8 @@
 // ⚠️ THE DATABASE HAS A CHECK ON BOTH COLUMNS AND THIS LIST MUST MATCH IT
 // (20260917_van_collection_intervals; widened to 45 and 60 by 20261092_longer_intervals_and_capacity_window).
 // The CHECK is the backstop; this is the layer that can say something useful in an error message.
-// ⚠️ 45 IS THE ONE CHOICE THAT DOES NOT DIVIDE AN HOUR. The grid is clock-anchored from midnight, so at 45
-// the minutes differ hour to hour (18:00, 18:45, 19:30, 20:15). Anything that lists "the minutes of an
-// hour" must ask `clockGridMinutes(interval, hour)` (lib/slot-generation.ts), never assume one list.
+// Every choice, 45 included, is counted from the EVENT'S START (start, start + interval, …) — one grid function,
+// `generateCollectionTimes` (lib/slot-generation.ts), for the server and every picker (collection-anchor-1).
 
 export const INTERVAL_CHOICES = [5, 10, 15, 20, 30, 45, 60] as const
 export type IntervalChoice = (typeof INTERVAL_CHOICES)[number]

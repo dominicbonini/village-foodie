@@ -4,11 +4,12 @@
 // What changed, and what this proves:
 //   1. Collection times: INTERVAL_CHOICES gains 45 and 60 (lib/slot-interval-core.ts); the DB CHECKs widen with it
 //      (supabase/migrations/20261092_longer_intervals_and_capacity_window.sql).
-//   2. 45 is the one choice that does not divide an hour. The grid is clock-anchored from midnight, so its minutes differ
-//      hour to hour (18:00, 18:45, 19:30). `clockGridMinutes(interval, hour)` now takes the hour, and the customer page's
-//      fallback picker asks it per hour. 🔴 THE PROOF: for every choice and every 5-minute start, the picker's list equals
-//      the server's generator exactly — the V11.15 outage class (picker offers a time the server never makes) cannot recur.
-//      At every interval that divides 60, the hour changes nothing (byte-identical to the one-argument form).
+//   2. ⚠️ RE-PINNED (collection-anchor-1, 12 November 2026): every grid is counted FROM THE EVENT'S START (start, start +
+//      interval, …), 45 included, by ONE function — generateCollectionTimes — which the server's lists, server placement,
+//      the customer page's backup picker, the operator's list and the demo seeder (firstGridTimeAtOrAfter) all use. The
+//      hour-by-hour workaround for 45 is gone. 🔴 THE PROOF (§2): every interval × every 5-minute start, on and off the hour
+//      (17:00, 17:10, 19:00, 19:45 named), the backup picker ≡ the customer list ≡ placement, the customer's times sit on the
+//      operator's grid, and the first time offered is the first grid time at or after the earliest possible time.
 //   3. Prep time: 20–60 minutes in 5-minute steps after 15 (PREP_TIME_OPTIONS); the first 20 options unchanged.
 //   4. Capacity window: 1–15 then every 5 to 60 (CAPACITY_WINDOW_OPTIONS), one list for the three selects that each had
 //      their own 1…20; an off-list stored value (16–19) is kept as an extra option, never snapped.
@@ -54,27 +55,35 @@ const check = (ok, label) => { console.log(`  ${ok ? '✓' : '🔴'} ${label}`);
 const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b)
 const toStr = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
 
-/** The customer page's fallback list, composed exactly as the page does it now: hours start→end, EACH hour's own
- *  minutes from `minutesFor(interval, hour)`, the first hour narrowed ≥ startM, the last ≤ endM. */
-function fallbackList(minutesFor, iv, start, end) {
-  const [sH, sM] = start.split(':').map(Number); const [eH, eM] = end.split(':').map(Number)
-  const L = []
-  for (let h = sH; h <= eH; h++) for (const m of minutesFor(iv, h)) {
-    const mm = Number(m)
-    if (h === sH && mm < sM) continue
-    if (h === eH && mm > eM) continue
-    L.push(`${String(h).padStart(2, '0')}:${m}`)
-  }
-  return L
-}
-/** Picker ⇔ server for every choice and every 5-minute start 00:00–20:55, a three-hour event, no grace. */
-function pickerAgrees(minutesFor) {
+const GRACE = 30   // /api/slots and /api/dashboard (truck-only grace times); placement and the backup picker use none
+/** The customer page's BACKUP picker, composed exactly as the page does it: the event's times from the shared function
+ *  at the event's interval, from the ASAP time on. */
+const backupPicker = (gen, iv, start, end, asap) => gen(start, end, iv, iv, 0).map(r => r.collection_time).filter(t => !asap || toMinsH(t) >= toMinsH(asap))
+const toMinsH = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
+/** Every interval × every 5-minute start 00:00–20:55 (three-hour events) → the disagreements found. `gen` is the grid
+ *  function the pickers use; the server side is always the real generateCollectionTimes. */
+function agreement(gen) {
   const bad = []
   for (const iv of IV.INTERVAL_CHOICES) for (let s = 0; s <= 20 * 60 + 55; s += 5) {
     const start = toStr(s), end = toStr(s + 180)
-    const server = GEN.generateCollectionTimes(start, end, iv, iv, 0).map(r => r.collection_time)
-    const picker = fallbackList(minutesFor, iv, start, end)
-    if (!eq(server, picker)) bad.push(`${iv} @ ${start}: server ${server.slice(0, 4).join(',')}… picker ${picker.slice(0, 4).join(',')}…`)
+    const server = GEN.generateCollectionTimes(start, end, iv, iv, 0).map(r => r.collection_time)        // placement's list
+    const customer = GEN.generateCollectionTimes(start, end, iv, iv, GRACE).map(r => r.collection_time)  // /api/slots
+    const picker = backupPicker(gen, iv, start, end, null)
+    if (!eq(picker, server)) { bad.push(`${iv} @ ${start}: picker ${picker.slice(0, 3).join(',')}… server ${server.slice(0, 3).join(',')}…`); continue }
+    if (!eq(customer.filter(t => toMinsH(t) <= s + 180), server)) bad.push(`${iv} @ ${start}: /api/slots (before grace) ≠ placement`)
+    if (server[0] !== start || !server.every((t, i) => toMinsH(t) === s + i * iv)) bad.push(`${iv} @ ${start}: not start + k×${iv}`)
+    for (const op of IV.INTERVAL_CHOICES) if (iv % op === 0) {
+      const opList = GEN.generateCollectionTimes(start, end, op, op, GRACE).map(r => r.collection_time)
+      if (!server.every(t => opList.includes(t))) bad.push(`${iv} @ ${start}: a customer time is off the operator's ${op} grid`)
+    }
+    for (let f = s - 10; f <= s + 190; f += 7) {                                     // the earliest possible time, on and off the grid
+      const want = server.find(t => toMinsH(t) >= f) ?? null
+      const got = GEN.firstGridTimeAtOrAfter(s, f, iv)
+      if (want !== null && toStr(got) !== want) { bad.push(`${iv} @ ${start}: first ≥ ${toStr(f)} is ${want}, helper says ${toStr(got)}`); break }
+      if (want === null) continue                                                     // past the end: nothing to offer
+      const offered = backupPicker(gen, iv, start, end, want)[0] ?? null
+      if (offered !== want) { bad.push(`${iv} @ ${start}: picker offers ${offered} from ${want}`); break }
+    }
   }
   return bad
 }
@@ -84,16 +93,21 @@ check(eq([...IV.INTERVAL_CHOICES], [5, 10, 15, 20, 30, 45, 60]), 'INTERVAL_CHOIC
 check([45, 60].every(IV.isIntervalChoice) && ![40, 50, 90, 120].some(IV.isIntervalChoice), '45 and 60 accepted; 40, 50, 90, 120 still refused')
 check(IV.normaliseInterval(60) === 60 && IV.normaliseInterval(45) === 45, 'a stored 45 / 60 reads back as itself, not as 5')
 
-console.log('\n── 2 · THE FALLBACK PICKER EQUALS THE SERVER, AT EVERY CHOICE ──────────────────────────────')
-const bad = pickerAgrees((iv, h) => GEN.clockGridMinutes(iv, h))
-check(bad.length === 0, `picker ≡ server for ${IV.INTERVAL_CHOICES.length} intervals × 252 starts${bad.length ? ' — ' + bad.slice(0, 3).join(' | ') : ''}`)
-check([5, 10, 15, 20, 30, 60].every(iv => Array.from({ length: 24 }, (_, h) => h).every(h => eq(GEN.clockGridMinutes(iv, h), GEN.clockGridMinutes(iv)))),
-  'every interval that divides 60: the hour changes nothing (byte-identical to the one-argument form)')
-check(eq(GEN.clockGridMinutes(5), ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55']), '5: the twelve minutes, as ever')
-check(eq(GEN.clockGridMinutes(45, 18), ['00', '45']) && eq(GEN.clockGridMinutes(45, 19), ['30']) && eq(GEN.clockGridMinutes(45, 20), ['15']),
-  '45: 18 → :00 :45 · 19 → :30 · 20 → :15 (midnight-anchored)')
-check(eq(GEN.clockGridMinutes(45), ['00', '15', '30', '45']) && eq(GEN.clockGridMinutes(60), ['00']), 'no hour chosen: 45 → every minute on the grid in some hour; 60 → :00')
-check(GEN.intervalExample(45) === '18:00, 18:45, 19:30…' && GEN.intervalExample(60) === '18:00, 19:00, 20:00…', 'Manage\'s example under the select: 18:00, 18:45, 19:30… / 18:00, 19:00, 20:00…')
+console.log('\n── 2 · ONE GRID, FROM THE EVENT\'S START, FOR SERVER AND EVERY PICKER (collection-anchor-1) ───')
+const bad = agreement(GEN.generateCollectionTimes)
+check(bad.length === 0, `every interval × 252 starts: backup picker ≡ /api/slots ≡ placement, start + k×interval, customer ⊂ operator, first offered = first grid time ≥ the earliest${bad.length ? ' — ' + bad.slice(0, 3).join(' | ') : ''}`)
+const T = (iv, a, b) => GEN.generateCollectionTimes(a, b, iv, iv, 0).map(r => r.collection_time)
+check(eq(T(45, '19:00', '21:30'), ['19:00', '19:45', '20:30', '21:15']), '19:00 at 45 → 19:00, 19:45, 20:30, 21:15 (the brief\'s example)')
+for (const [iv, a, want] of [[15, '17:00', ['17:00', '17:15', '17:30']], [15, '17:10', ['17:10', '17:25', '17:40']], [60, '19:00', ['19:00', '20:00', '21:00']],
+  [60, '19:45', ['19:45', '20:45', '21:45']], [45, '17:10', ['17:10', '17:55', '18:40']], [20, '19:45', ['19:45', '20:05', '20:25']], [30, '17:10', ['17:10', '17:40', '18:10']]])
+  check(eq(T(iv, a, '22:00').slice(0, 3), want), `${a} at ${iv} → ${want.join(', ')}…`)
+check(GEN.intervalExample(45) === '18:00, 18:45, 19:30…' && GEN.intervalExample(60) === '18:00, 19:00, 20:00…', 'Manage\'s example under the select (an 18:00 start): 18:00, 18:45, 19:30… / 18:00, 19:00, 20:00…')
+// 🔴 EVERY CALL SITE builds from the one function; none rounds to a multiple of the interval from midnight any more.
+const SITES = { '/api/slots': 'app/api/slots/[truckId]/route.ts', '/api/dashboard': 'app/api/dashboard/route.ts', 'placement': 'lib/orders/place-in-slot.ts', 'demo seeder': 'lib/seed-demo-orders.ts' }
+for (const [label, f] of Object.entries(SITES)) check(/generateCollectionTimes\(/.test(src(f)), `${label} builds its times with generateCollectionTimes`)
+check(/firstGridTimeAtOrAfter\(toMinsLocal\(args\.startTime\), floorMins, gridMins\)/.test(src('lib/seed-demo-orders.ts')), 'the demo seeder\'s first time is firstGridTimeAtOrAfter (start-anchored)')
+check(!/Math\.ceil\(\w+ \/ (gridMins|intervalMins|iv)\) \* (gridMins|intervalMins|iv)/.test(Object.values(SITES).map(src).join('\n') + src('lib/slot-generation.ts')), 'no midnight rounding (ceil(x / interval) × interval) is left at any site')
+check(!/clockGridMinutes|firstClockSlotAtOrAfter/.test(src('lib/slot-generation.ts')), 'clockGridMinutes and firstClockSlotAtOrAfter are gone')
 
 console.log('\n── 3 · PREP TIME ────────────────────────────────────────────────────────────────────────')
 const OLD_PREP = [...Array.from({ length: 10 }, (_, i) => (i + 1) * 30), ...Array.from({ length: 10 }, (_, i) => 360 + i * 60)]
@@ -114,8 +128,9 @@ check(!/windowAria[\s\S]{0,700}length: ?20/.test(section + dash + manage), 'no w
 
 console.log('\n── 5 · THE PAGE AND THE DATABASE ────────────────────────────────────────────────────────')
 const order = src('app/(app)/trucks/[slug]/order/page.tsx')
-check(/availableHours\.flatMap\(h =>[\s\S]{0,600}60 % \(event\?\.collection_interval_mins \?\? 5\) === 0 \? availableMinutes : minutesForHour\(h\)\)/.test(order),
-  'the order page\'s fallback list: at 45 each hour\'s own minutes; at every other interval the list it always had')
+check(/generateCollectionTimes\(from, to, iv, iv, 0\)/.test(order) && /: backupTimes\s*\n[\s\S]{0,200}\.filter\(time => !asapTime \|\| evMins\(time\) >= evMins\(asapTime\)\)/.test(order),
+  'the order page\'s backup picker lists generateCollectionTimes\' own times, from the ASAP time on')
+check(/firstGridTimeAtOrAfter\(eventStartMins, asapMins, event\.collection_interval_mins \?\? 5\)/.test(order), '…and its "Around HH:MM" estimate rounds UP onto the same grid')
 const mig = src('supabase/migrations/20261092_longer_intervals_and_capacity_window.sql')
 const LIST = /in \(5, 10, 15, 20, 30, 45, 60\)/g
 check((mig.match(LIST) || []).length === 5, 'the migration widens all five interval CHECKs to 5 … 60')
@@ -126,10 +141,12 @@ check(/capacity_window_mins between 1 and 60/.test(mig), 'the window CHECK is a 
 check(/^begin;/m.test(mig) && /^commit;/m.test(mig) && !/\b(update|delete|insert)\b/i.test(mig.replace(/--.*$/gm, '')), 'one transaction; no row is written')
 
 console.log('\n── 6 · BROKEN VARIANT — must FAIL ───────────────────────────────────────────────────────')
-// The old picker: ONE minute list for every hour (the unhoured form). At 45 it offers 17:00/17:45 on a 17:00 event the
-// server starts at 17:15 — the outage class this work had to avoid.
-const v1 = pickerAgrees((iv) => GEN.clockGridMinutes(iv))
-check(v1.length > 0 && v1.every(b => b.startsWith('45 ')), `V1 one minute list for every hour → FAILS, and only at 45 (${v1.length} starts)`)
+// A picker on the OLD rule — multiples of the interval from MIDNIGHT — against the start-anchored server: it must disagree
+// wherever a start is off its interval, and nowhere else.
+const clock = (a, b, iv, d, g) => { const st = toMinsH(a), en = toMinsH(b), out = []
+  for (let m = Math.ceil(st / iv) * iv; m <= en + g; m += iv) out.push({ collection_time: toStr(m), production_slot: toStr(m) }); return out }
+const v1 = agreement(clock)
+check(v1.length > 0 && v1.every(b => { const [iv, , st] = b.split(' '); return toMinsH(st) % Number(iv) !== 0 }), `V1 a midnight-anchored picker → FAILS, and only on starts off the interval (${v1.length} found)`)
 
-console.log(`\n${fails ? '🔴 ' + fails + ' FAILED' : '✅ longer-intervals-1: collection times to 60, prep and capacity window to 60 — picker ≡ server at every choice'}`)
+console.log(`\n${fails ? '🔴 ' + fails + ' FAILED' : '✅ longer-intervals-1: collection times to 60 counted from the event start, prep and capacity window to 60 — picker ≡ server at every choice'}`)
 process.exit(fails ? 1 : 0)

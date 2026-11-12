@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.16
+HatchGrab Engineering Reference Manual · V16.17
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.16**
+**Version 16.17**
 
 November 2026
 
@@ -50,10 +50,19 @@ internally (`next build`, the sweep, `tsc`). Configuration is worked out from co
 
 # Changelog
 
+## V16.17 — 12 November 2026 — **COLLECTION TIMES COUNTED FROM THE EVENT'S START**
+
+- **Every interval is counted from the event's start (collection-anchor-1):** start, start + interval, … to the end (event 19:00 at 45 → 19:00, 19:45, 20:30, 21:15). This replaces clock anchoring from midnight (D1, 16 Sept), at every interval. `generateCollectionTimes` (`lib/slot-generation.ts`) is the one grid function. It serves `/api/slots`, `/api/dashboard`, server placement, the order page's backup picker (now built from it directly), the demo seeder (`firstGridTimeAtOrAfter`) and per-event overrides. `clockGridMinutes` and the 45 hour-by-hour workaround are gone.
+- **Unchanged:**
+  - A start on a multiple of its interval gets the same list as before. On 12 Nov no upcoming event (Pizzeria Gusto excluded, not queried) starts off its interval.
+  - Saved orders keep their times. No database change.
+  - Kitchen-capacity windows already hang off each order's collection time, not midnight, so they need no change.
+- **Proof:** `scripts/longer-intervals-1.cjs` §2 (every interval × 252 starts: backup picker ≡ `/api/slots` ≡ placement; customer ⊂ operator; first offered time = first grid time at or after the earliest) and `scripts/slot-interval-generator.cjs`. Report: `docs/collection-anchor-1-report.md`.
+
 ## V16.16 — 12 November 2026 — **COLLECTION TIMES UP TO EVERY 60 MINUTES, PREP TIMES AND THE CAPACITY WINDOW UP TO 60**
 
 - **Collection times (Manage › Settings, the dashboard, event types, event overrides, Create Demo):** `INTERVAL_CHOICES` (`lib/slot-interval-core.ts`) is now **5, 10, 15, 20, 30, 45, 60**. Every select, validator and refusal reads it, so all of them gained 45 and 60 at once. The five interval CHECKs were widened by `supabase/migrations/20261092_longer_intervals_and_capacity_window.sql` (committed `ae7ff8b4`, run 12 Nov, verified read-only). See "Selectable collection times" in the slot & capacity engine section.
-- 🔴 **45 is the one choice that does not divide an hour.** The grid is clock-anchored from midnight, so at 45 the minutes change hour to hour (18:00, 18:45, 19:30, 20:15). `clockGridMinutes(interval, hour)` (`lib/slot-generation.ts`) now takes the hour. The customer page's fallback picker asks it for each hour, **at 45 only**; every other interval keeps its list byte for byte. `scripts/longer-intervals-1.cjs` proves picker ≡ server for all seven choices × 252 starts.
+- ⛔ **Superseded V16.17 — grids now count from the event's start, so 45 needs no special case.** 🔴 **45 is the one choice that does not divide an hour.** The grid is clock-anchored from midnight, so at 45 the minutes change hour to hour (18:00, 18:45, 19:30, 20:15). `clockGridMinutes(interval, hour)` (`lib/slot-generation.ts`) now takes the hour. The customer page's fallback picker asks it for each hour, **at 45 only**; every other interval keeps its list byte for byte. `scripts/longer-intervals-1.cjs` proves picker ≡ server for all seven choices × 252 starts.
 - **Prep time:** `PREP_TIME_OPTIONS` (`lib/kitchen-capacity.ts`) runs 30-second steps to 5m, 1-minute steps to 15m, then **5-minute steps 20m … 60m**. `prep_secs` has no CHECK, so this needed no migration.
 - **Capacity window** (the "every N" select beside Total capacity): one shared list, `CAPACITY_WINDOW_OPTIONS`, with **1 … 15 minutes, then 20, 25 … 60**. It replaces the separate 1…20 lists in Manage › Settings, the dashboard and the menu-import wizard. `capacityWindowOptionsFor(stored)` keeps an existing 16–19 as an extra option, never snapped. `truck_vans_capacity_window_mins_check` is now the **range 1–60** (was 1–20).
 - **Harnesses:** new `longer-intervals-1.cjs` (33 checks + a broken variant). The language-phase identity harnesses name the four markup changes in `scripts/_named-longer-intervals.cjs`. `slot-interval-settings`, `slot-interval-grid-routing` and `event-types` are re-pinned.
@@ -2801,7 +2810,7 @@ customers"). The dashboard Settings tab carries the same box for the SELECTED EV
 setting" to clear it. Three layers resolve in order: `truck_events.*_override` → `truck_vans` → (no van)
 `trucks.collection_interval_mins`.
 
-**Grids are clock-anchored.** Selectable times are multiples of the interval measured from midnight; the
+⛔ **Superseded V16.17 — grids count from the event's start (collection-anchor-1).** **Grids are clock-anchored.** Selectable times are multiples of the interval measured from midnight; the
 first is the first multiple at or after the event start. At interval 5 this is byte-identical to V13.4 for
 every truck: LIVE-verified 16 September that no Gusto event, and no event from that date onward for any
 truck, starts off a 5-minute mark.
@@ -19288,13 +19297,13 @@ N is 5, 10, 15, 20, 30, 45 or 60 (`INTERVAL_CHOICES`; 45 and 60 since V16.16). R
 event's van (`truck_vans`) → 5 where no van resolves. The legacy `interval 0 ⇒ collection_times` contract
 still reads `trucks.collection_interval_mins`.
 
-**Grids are clock-anchored from midnight.** The first selectable time is the first multiple at or after the
-event start, the last the last multiple at or before end + grace. An event opening at 17:50 on 15-minute
-times therefore starts at 18:00.
-🔴 **45 does not divide an hour (V16.16).** At 45 the minutes differ hour to hour (a 17:00 event offers 17:15, 18:00,
-18:45, 19:30). Anything that lists "the minutes of an hour" asks `clockGridMinutes(interval, hour)`
-(`lib/slot-generation.ts`), never one list for every hour. With no hour it returns every minute on the grid in
-*some* hour (:00/:15/:30/:45 at 45). Every other choice divides 60, so the hour changes nothing there.
+**Grids count from the event's start (V16.17, collection-anchor-1; clock-anchored from midnight 16 Sept – 12 Nov).** At
+every interval the times are start, start + interval, … to the last one at or before end + grace: an event opening at
+17:50 on 15-minute times offers 17:50, 18:05, 18:20…; 19:00 at 45 offers 19:00, 19:45, 20:30, 21:15. ONE function,
+`generateCollectionTimes` (`lib/slot-generation.ts`), builds every list: `/api/slots`, `/api/dashboard`, server placement,
+the order page's backup picker, the demo seeder (`firstGridTimeAtOrAfter`), per-event overrides. The first time offered
+is the first grid time at or after the earliest possible time (event start, or now + prep/lead). A start on a multiple
+of its interval gives exactly the old clock list.
 
 **Columns.**
 - `truck_vans` gains `collection_interval_mins` (integer NOT NULL default 5, CHECK in 5/10/15/20/30 — ⛔ V16.16: 5/10/15/20/30/45/60, all five interval CHECKs, `20261092`) and

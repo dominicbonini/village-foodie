@@ -146,11 +146,14 @@ console.log('\n── THE OFFLINE CACHED GRID USES THE EFFECTIVE TRUCK INTERVAL 
   }
 }
 
-console.log('\n── A 17:50 START KEEPS CLOCK ANCHORING (D1, unchanged) ─────────────────────────────────')
+// ⚠️ RE-PINNED (collection-anchor-1, 12 November 2026): grids count from the EVENT'S START at every interval (was clock
+// anchoring, D1), so a 17:50 start at 15 begins at 17:50 — and the customer's times stay a subset of the operator's.
+console.log('\n── A 17:50 START: BOTH GRIDS BEGIN AT THE START (collection-anchor-1) ───────────────────')
 {
   const { intervals } = await resolveForEvent('ev-1750')
   const g15 = gridFor('ev-1750', intervals.customer)
-  check(g15[0] === '18:00', `customer 15 on a 17:50 start → first slot ${g15[0]}`)
+  check(g15[0] === '17:50' && g15[1] === '18:05', `customer 15 on a 17:50 start → ${g15.slice(0, 2).join(', ')}`)
+  check(g15.every(x => gridFor('ev-1750', intervals.truck).includes(x)), 'every customer time is on the operator\'s grid')
   const g5 = gridFor('ev-1750', intervals.truck)
   check(g5[0] === '17:50', `operator 5 on the same event → first slot ${g5[0]}`)
 }
