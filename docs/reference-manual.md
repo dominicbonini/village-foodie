@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.17
+HatchGrab Engineering Reference Manual · V16.18
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.17**
+**Version 16.18**
 
 November 2026
 
@@ -49,6 +49,38 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.18 — 12 November 2026 — **MONTHLY BILLING BUILT (SWITCHED OFF), PRICING WORDING FOR CARD AND MONTHLY-ONLY COUNTRIES, 210 GO-LIVE COUNTRIES PREPARED, 20 NEW LANGUAGES, AND THE APP IN EVERY APP STORE**
+
+- 🔴 **Correction: the apps were never "UK only".** The App Store has served the iPad app in **44 storefronts since 31 Aug 2026**, then 42 from 9 Nov (ios-intl-1), then **every App Store territory, 175, since 12 Nov** (world-countries-5). Google Play is not UK-only either (stated, 12 Nov); its country list is set by hand in Play Console and is not recorded here. Every "UK only" statement is marked corrected (§89.7).
+- **Billing (billing-1, -2, -3; built, switched OFF):** plan fees in advance, usage in arrears; the trial's end and upgrades pro rata; downgrades on the 1st; 5 full days to pay, then online ordering pauses at midnight; suspension is wording only (the lock is a TODO); the late fee is built at 0 everywhere; no billing notice or purchase button in the iOS app; Stripe's own customer emails off. Migrations 20261085–20261090 are run; `platform_switches.billing_enabled` is false (§89.1, 35.ar-1 to 35.ar-4).
+- **Pricing wording (pricing-copy-1 to -4):** "online orders", not "online card orders", everywhere. Card countries and monthly-billing-only countries now differ in the banner's "Prefer to take payment up front?" sentence, the fee asterisk and the card-fee footnote, through one helper, `offersOnlineCardPayments` (§89.2, 35.ar-5).
+- **Countries:**
+  - **world-countries-4:** research on all 249 ISO codes, and Dominic's rules: no tax registration outside the UK except the EU OSS later; **210 go live** (including the 41 "VAT number required"), 9 are held for the sanctions check, 11 cannot sell (Mexico among them) and 19 are excluded.
+  - **world-countries-5:** the 167 new countries are in the database, **all switched off**. The region blocks and the region-tabbed country selector are built. Menus use local money in 11 countries billed in USD/EUR.
+  - **The switch-on migration (20261095) has NOT been run** (§89.3–§89.5).
+- **Languages:**
+  - languages-world-1: 8 new full bases and 39 variants.
+  - languages-world-2: 12 of 23 new bases, paused (handover kit in `docs/languages-world-2/handover/`).
+  - **48 bases, 103 locales** in all, every new one switched off. Serbian country names and dates are in Latin script (§89.6).
+- **Also:**
+  - **ios-intl-1:** the app 1.1 in 29 languages, uploaded and not yet submitted (§89.7).
+  - **meta-sdk-1:** the Meta SDK no longer logs app events (§89.7).
+  - **email-sender-1:** every HatchGrab email sends from hatchgrab.com (§89.8).
+  - **gsc-index-2:** one hreflang cluster per legal document, and 244 sitemap URLs (§89.9).
+  - **demo-claim-2:** the demo's menu carries into the new account (§89.10).
+  - **capacity-window-1:** a diagnosis; one defect is left open (§89.11).
+  - **collection-anchor-1:** the V16.17 additions (§89.12).
+- **Backlog added (§89.14):**
+  - kitchen tickets print non-Latin scripts as "?";
+  - resume languages-world-2 (11 languages and the legal pages for all 23);
+  - the native-speaker checks;
+  - the billing switch-on steps.
+- **What is pushed (OBSERVED 12 Nov, `git fetch`):**
+  - **origin/main is `9c30a623`** (11 Nov 21:00). It holds billing-1 to -3, email-sender-1, gsc-index-2, meta-sdk-1, demo-claim-2, languages-world-1, and pricing-copy-1 and -2.
+  - **Local only:** languages-world-2, pricing-copy-3's later commits, pricing-copy-4, longer-intervals, collection-anchor-1 and world-countries-5.
+  - Whether Vercel deployed origin/main is not checked here.
+  - Every migration named above is RUN, except 20261095.
 
 ## V16.17 — 12 November 2026 — **COLLECTION TIMES COUNTED FROM THE EVENT'S START**
 
@@ -293,8 +325,8 @@ corrected or added: 2 (6 in all)._
   we get customers they will be available" (stated).
   - Both app flags are true in all 44 rows. Every app claim (landing, badges, FAQ, Manage card, comparison rows, JSON-LD)
     follows them.
-  - ⚠️ The store listings themselves are UK-only until Dominic releases them (OBSERVED 3 Nov for iOS: Apple's lookup
-    finds the app in GB only; Android UNVERIFIED).
+  - ~~⚠️ The store listings themselves are UK-only until Dominic releases them (OBSERVED 3 Nov for iOS: Apple's lookup
+    finds the app in GB only; Android UNVERIFIED).~~ ⛔ **Corrected V16.18 — never UK-only:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7.
 - **HatchGrab's own contact form (contact-1, mockup approved 2 Nov):**
   - three topics; the truck name is required for account help; every word in the page's language;
   - saved, then emailed through Brevo to `NEXT_PUBLIC_SUPPORT_EMAIL` (hello@hatchgrab.com, set in Vercel on 2 Nov,
@@ -369,6 +401,7 @@ corrected: 10 (37 corrections in all)._
     `operatingSystem` gap.
   - 5 still true and left: §36's Play availability, §85.6 (×2) and §86.2 (×2) say the **store listings** are UK-only,
     which is still the case (Apple lookup OBSERVED 3 Nov: GB only); the flags are a separate fact, recorded beside them.
+    ⛔ **Corrected V16.18 — it was not the case:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7.
 - **Pattern 4** (`operator_apps`): 0 found (the column was never built, Q1 → A; §82.12 says so).
 - **Pattern 5** (`free month|first live event`): 5 found, none stale.
   - 1 changelog line (Gusto's first live event); 4 a different meaning (free months in the calculator and in the
@@ -427,8 +460,9 @@ corrected: 10 (37 corrections in all)._
     question is hidden on the Czech page until the next run translates it cleanly.
 - **`/de/contact` answers 404.** There is no per-country contact route: the German footer's Contact link is
   `/contact?topic=General%20Enquiry`, and `/contact` carries no `tally.so` (OBSERVED 3 Nov).
-- **The iOS app is listed in the UK store only** (Apple's lookup for id 6803543106, 3 Nov: GB 1; DE, US, JP, IE 0). The
-  flags are on everywhere by decision, so a badge outside the UK leads to an unavailable listing until release (§27).
+- ~~**The iOS app is listed in the UK store only** (Apple's lookup for id 6803543106, 3 Nov: GB 1; DE, US, JP, IE 0). The
+  flags are on everywhere by decision, so a badge outside the UK leads to an unavailable listing until release (§27).~~
+  ⛔ **Corrected V16.18:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7; the lookup was misleading.
 - **`contact_messages` exists with 0 rows.**
 
 ## V16.9 — 1 November 2026 — **A DEMO THAT SHOWS THE VISITOR'S OWN ORDER ON THE KITCHEN SCREEN, SELF-SERVE SIGNUP SWITCHED ON, THE CHECKER'S TIMEOUTS AND BATCH FAILURES FIXED, THE TAGLINE GONE, EIGHT NEW COUNTRIES (THREE OF THEM AT LAUNCH-READY, FIVE UNLIMITED-ONLY, THE UAE HELD BACK), AND EVERY PAGE, LEGAL DOCUMENT AND EMAIL IN THE USER'S OWN LANGUAGE**
@@ -8548,7 +8582,7 @@ Major update following an extended build session. Adds operator account model, s
 
 - **Email provider is now Brevo**, not Resend. All transactional email (order confirmations, staff invites, email verification, ready notifications) sends via Brevo.
 
-- **HatchGrab email domain** — hello@hatchgrab.com is the operator-facing sender. Set via NEXT_PUBLIC_SUPPORT_EMAIL. Do NOT fall back to villagefoodie.co.uk. DNS propagating as of end of session; HatchGrab emails fail until complete.
+- **HatchGrab email domain** — hello@hatchgrab.com is the operator-facing sender. Set via NEXT_PUBLIC_SUPPORT_EMAIL. ⛔ *V16.18: the sender is the constant in `lib/email-config.ts`; NEXT_PUBLIC_SUPPORT_EMAIL sets no sender (§89.8).* Do NOT fall back to villagefoodie.co.uk. DNS propagating as of end of session; HatchGrab emails fail until complete.
 
 - **Trial is 3 months** for Pro/Max early signups (was 1 month default in V2). Trial maps to MAX features plus Pay-at-Hatch online ordering, so trial trucks can operate without entering billing details.
 
@@ -9545,7 +9579,7 @@ numbers. **It is not wired — that is a separate change with money on the end o
 - **Hidden for Tester plan (V6)** — the tab visibility guard is userRole === 'owner' && truck?.plan !== 'tester'.
 - ~~Trial maps to the MAX column; header shows "Free trial (Max features)" with trial end date.~~
 - ~~Transaction fees show actual values (0%, 0.99% + card fee, Pay at Hatch), not checkmarks.~~ ⛔ *Corrected V16.2 — §81.4.*
-- Upgrade buttons open an email-to-upgrade modal until Stripe Connect billing is built.
+- Upgrade buttons open an email-to-upgrade modal until Stripe Connect billing is built. ⛔ *V16.18: with billing on (or on a billing_test truck) the tab is `BillingScreen` with Change plan and a card through Stripe Checkout on the platform account, not Connect (§89.1); until then this tab is unchanged.*
 
 ### 🔴 BillingTab gates on the RAW PLAN STRING and has NO fallback (V11.1)
 
@@ -10197,7 +10231,7 @@ For ASAP orders (null slot), the cancellation cutoff falls back to the event end
 
 ## Time rounding and display
 
-- Customer-facing ASAP rounds to NEAREST 5 minutes. ASAP button shows "Around 17:10".
+- Customer-facing ASAP rounds to NEAREST 5 minutes. ASAP button shows "Around 17:10". ⛔ *V16.17/V16.18: the backup picker's "Around" estimate now rounds up onto the event's grid (`firstGridTimeAtOrAfter`, §89.12).*
 - Truck dashboard shows exact ready times.
 - Times display as HH:MM throughout — seconds stripped via the shared **formatTime** helper. Never inline t.slice(0,5).
 
@@ -10838,13 +10872,13 @@ the one clean control case for defects (a) and (b) — **the evidence, not just 
 
 # 11. Native app and offline architecture
 
-⛔ **V16.7 — where the apps are available:** the iOS (iPad) app is in the **UK App Store only** (Apple lookup for id
+⛔ **V16.7 — where the apps are available:** ~~the iOS (iPad) app is in the **UK App Store only** (Apple lookup for id
 6803543106, 24 Oct: GB 1 result; US, IE, AU, CA, NZ, DE, PL, SE, NL, DK, NO, CZ 0), and Android is UK-only on Play
-(deliberate since 1 Sep). ~~Any statement that the apps are available to operators in other countries is false (§86.2).~~
+(deliberate since 1 Sep).~~ ⛔ **Corrected V16.18 — the apps are not UK-only:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7. ~~Any statement that the apps are available to operators in other countries is false (§86.2).~~
 ⛔ **Corrected V16.10 (3 Nov):** by decision ("it should state the apps thats core feature by the time we get customers
 they will be available", stated), both app flags are **true in all 44 countries** (tidy-2, migration 20261063), so every
-app claim (landing, badges, FAQ, Manage card, comparison rows, JSON-LD) now names the apps everywhere. ⚠️ The store
-listings themselves are still UK-only until Dominic releases them (UNVERIFIED, 3 Nov). The flags and every surface: §48.
+app claim (landing, badges, FAQ, Manage card, comparison rows, JSON-LD) now names the apps everywhere. ~~⚠️ The store
+listings themselves are still UK-only until Dominic releases them (UNVERIFIED, 3 Nov).~~ ⛔ **Corrected V16.18:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7. The flags and every surface: §48.
 
 ## Why native is needed
 
@@ -12921,7 +12955,7 @@ grid, all sharing `applyStartTimeChange`. It is **deleted**, with no consumers r
 
 ### 🔴 WHY THE MINUTE STEP MUST BE 5, AND IS NOT REACHABLE FROM OUTSIDE THE MODULE
 
-The customer collection picker's `availableMinutes` is a **fixed list of multiples of 5**, only ever
+The customer collection picker's `availableMinutes` is a **fixed list of multiples of 5**, only ever (⛔ *V16.17: the backup picker is now `generateCollectionTimes`, the server's own grid — §89.12*)
 *filtered* by the event start and **never generated from it**. The server walks forward from the event
 start in `collection_interval_mins` steps. **The two agree if and only if the event start's minute is a
 multiple of 5.**
@@ -13998,7 +14032,7 @@ untested against real data.
 
 ## Provider
 
-> **V3** — Email via Brevo. Operator-facing sender is hello@hatchgrab.com via NEXT_PUBLIC_SUPPORT_EMAIL. Do NOT fall back to villagefoodie.co.uk.
+> **V3** — Email via Brevo. Operator-facing sender is hello@hatchgrab.com via NEXT_PUBLIC_SUPPORT_EMAIL. ⛔ *V16.18: via `lib/email-config.ts`, not the env var (§89.8).* Do NOT fall back to villagefoodie.co.uk.
 
 > 🔴 **V11.44 — ONE EMAIL SENDS A FULL OPERATOR CREDENTIAL IN PLAINTEXT.**
 > **`app/api/inbound-schedule/route.ts:275` emails a live `/manage/<token>` link** to the truck's
@@ -17025,7 +17059,7 @@ and markup**.
   operator sees a successful signup and dead-ends. ⚠️ **NEITHER `SIGNUP_PUBLIC` VARIABLE MAY FLIP UNTIL
   THIS IS FIXED.** The admin route is unaffected — it hand-rolls its own send from the verified
   `villagefoodie.co.uk` address.~~ ✅ **Done V16.9 — hatchgrab.com is verified in Brevo (stated, 31 Oct),
-  so the default `hello@hatchgrab.com` delivers; `EMAIL_FROM_ADDRESS` is optional (§43).**
+  so the default `hello@hatchgrab.com` delivers; `EMAIL_FROM_ADDRESS` is optional (§43).** ⛔ *V16.18: `EMAIL_FROM_ADDRESS` is no longer read (§89.8).*
 - 🔴 **The temp-password chain.** In priority order: **stop emailing the password** (the console already
   shows it behind a copy button); swap `Math.random()` for `crypto.randomBytes`; make
   `must_change_password` a real server-side gate rather than one client-side redirect. An invite link
@@ -17301,7 +17335,7 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 ## 🔴 V9.8 — added 30 July 2026 (branding)
 
 ### Found, reported, not fixed
-- **🔴 `HATCHGRAB_SENDER.email` is `hello@villagefoodie.co.uk`** (`email-config.ts:12`). Every HatchGrab-branded operator email sends from a Village Foodie address. Blocked on **hatchgrab.com not yet being set up**, then `hello@hatchgrab.com` in Brevo with SPF/DKIM. This is the largest remaining brand inconsistency.
+- **🔴 `HATCHGRAB_SENDER.email` is `hello@villagefoodie.co.uk`** (`email-config.ts:12`). ⛔ **Fixed V16.18 (email-sender-1): hello@hatchgrab.com, Brevo-authenticated; 9 of 9 test sends delivered to Outlook (§89.8).** Every HatchGrab-branded operator email sends from a Village Foodie address. Blocked on **hatchgrab.com not yet being set up**, then `hello@hatchgrab.com` in Brevo with SPF/DKIM. This is the largest remaining brand inconsistency.
 - **QR poster truck name has no `maxWidth`.** `generateQRCode.ts:203` calls `fillText` without clamping, so a long name renders *underneath* the logo. Budget is 273px (down 16px after the re-crop); threshold ~20-25 characters. Live names already at it: "Noodle and Dumpling Bar", "Kezmet Turkish Kitchen". Passing `maxWidth` squashes rather than truncates — the correct fix is a measure-and-ellipsis loop.
 - ⛔ **DISCHARGED V11.43 — ALL 31 RASTER ASSETS SHIPPED (§36).** `minSdk 24` predates adaptive icons, so **both** the legacy PNGs and the adaptive foregrounds were required, and both were generated. ⚠️ **The background question below was settled on the evidence of what ships (white), and the master SVG still disagrees.** *Original entry retained:* ~~**Native icons blocked on `minSdkVersion`.**~~ Assets generated and held back. Needs: `ic_launcher_background.xml` `#FFFFFF` → `#0F172A`; 5 adaptive foreground PNGs; 10 legacy PNGs (only if minSdk < 26); iOS `AppIcon-512@2x.png` (1 file). Note **three** conflicting darks exist natively: `#FFFFFF`, `capacitor.config.ts` `#1C1C1E`, and the icon's `#0F172A`.
 - **Landing CTA contrast.** White text on `--orange` is **2.50:1**, below the 3:1 large-text floor. Fixable on that button alone without touching the token or the logo. **Still open at V9.9** — re-reported in that session and merged here rather than duplicated.
@@ -18576,7 +18610,7 @@ verification, and a fix in the repository is not a fix in production.** §36, §
   ✅ **Resolved V16.2** — US `plan_prices` rows are $0 / $29 / $69 (Pay as you go / Pro / Unlimited, OBSERVED 20 Oct 2026); the US can be switched on with the current data (§81.2).
 - **Phase 5:** deferred-intent checkout, the credit-only card surcharge, and Manage › Payments "who pays the card fee". Mockups first.
 - **Service fee:** who keeps it (Dominic decides), and a home for a truck's own service fee in tax-inclusive countries.
-- Platform fee charging: `application_fee_amount` at capture, with a food-only clawback (§37).
+- Platform fee charging: `application_fee_amount` at capture, with a food-only clawback (§37). ⛔ *V16.18: built — capture asks the billing switch; refunds return the fee proportionally (§89.1). Still needs `platform_fee_enabled` per model-(a) country.*
 - ~~**Legal text per country,** with a lawyer before the first non-UK signup: UK GDPR, the ICO, English law, the £100 cap, the sterling/VAT clause, six-year retention.~~ ✅ **Done V16.1, best effort:** one set of documents plus a Country-specific terms page; **no lawyers at this stage** (DECIDED 18 Oct; §43).
 - ~~**Language phases 1a onwards (§77.3).**~~ ✅ **Done V16.0 for English** (1a–1e and 2; §77.7). Also:
   - ~~US screenshots and testimonial; US marketing URLs and hreflang; the demo provisioned in the visitor's country;~~ ✅ done V16.0 (US hero screenshots; the testimonial is hidden on US pages; `/uk` and `/us` with hreflang; the demo is built in the visitor's country);
@@ -18617,7 +18651,8 @@ closed); auto-open of an overnight event after midnight. New:
 - **Send Stripe the question:** can a UK platform onboard US connected accounts for direct charges, with USD
   settlement and Tap to Pay/Terminal? Then **test US card payments** (tips, service fee, card path) with Stripe test
   keys on localhost (§76.9).
-- **Make the iPad and Android apps available in the US storefronts.**
+- ~~**Make the iPad and Android apps available in the US storefronts.**~~ ⛔ **V16.18 — done for iOS:** the App Store has sold in the
+  US since 31 Aug and in every territory since 12 Nov; Google Play countries are added by hand in Play Console (stated 12 Nov) — §89.7.
 - **A US testimonial.**
 - **SMS opt-in wording** and STOP handling before SMS ships (§43).
 
@@ -18630,10 +18665,10 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 
 - **Monthly plan billing** — nothing collects Pro/Unlimited fees (upgrades are a mailto); build Stripe Checkout +
   subscriptions + a billing portal; until then manual invoices. Terms §4 already describes billing in advance and
-  the 7-day payment path.
+  the 7-day payment path. ⛔ *V16.18: monthly billing is built and switched OFF (billing-1/2/3, §89.1): one Stripe customer per owner and one-off invoices, not subscriptions; plan in advance, usage in arrears; the switch-on steps are in §89.1.*
 - **Platform fee switch-on** — application fee at capture, the month-to-date allowance meter (ledger needs a food
   amount column and an index on `order_payments (truck_id, created_at)`), concurrency at the allowance edge,
-  `refund_application_fee` with proportional fee refunds — all in one change; then terms/pricing already disclose it.
+  `refund_application_fee` with proportional fee refunds — all in one change; then terms/pricing already disclose it. ⛔ *V16.18: the meter, allocation and proportional refunds are built behind the billing switch (§89.1).*
 - **US online ordering fee** — cap 3% (today's max is 4% + 50¢), truck keeps 100%, off in CT, MA, ME, PR by the
   truck's base state (`base_region_code`); `card_surcharge_excluded_regions` exists but is never applied
   (OBSERVED 20 Oct 2026: it is read into `CountrySettings` and edited in Admin › Countries, and no order or charge
@@ -18674,7 +18709,7 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 - ~~**Per-country launch lists** (§82.10): Ireland, Australia (anz-1 block A, then block B), New Zealand, Canada.~~
   ⛔ Corrected V16.4 — all four are switched on (OBSERVED 22 Oct); what remains is in §82.10 and the V16.4 block below.
 - **Subscription billing** (Stripe Checkout and subscriptions); **the fee engine** (the allowance meter,
-  `refund_application_fee`).
+  `refund_application_fee`). ⛔ *V16.18: monthly billing is built and switched OFF (billing-1/2/3, §89.1).*
 - **The US online ordering fee:** a 3% cap, the excluded states (CT, MA, ME, PR), never on debit.
 - **Collect tax numbers at signup** (GST/ABN/VAT); an EU VAT check.
 - ~~**Language stages L-1 to L-7;** 🔴 a multilingual allergen guard; a `plan_translations` table; Dominic's European
@@ -18782,7 +18817,7 @@ question; the US storefronts; a US testimonial; SMS opt-in. New:
 - ~~**Register `scripts/pricing-check-1.cjs`** in `scripts/harnesses.json` (carried from V16.6).~~ ✅ Done V16.8
   (competitor-check-2 §5).
 - **Add web addresses** for Hatches Up, EasyEats, Eventifood and RapidOrderz, or they are never checked.
-- **The optional summary email** needs `BREVO_API_KEY` and `EMAIL_FROM_ADDRESS` as Actions secrets.
+- **The optional summary email** needs `BREVO_API_KEY` and `EMAIL_FROM_ADDRESS` as Actions secrets. ⛔ *V16.18: only `BREVO_API_KEY`; `EMAIL_FROM_ADDRESS` is no longer read (§89.8).*
 - **The Automatic checks tab** was built without the mockup; compare the two.
 
 **Comparison pages**
@@ -18880,7 +18915,7 @@ corrected).*
   country, translated automatically (§82.12).
 - **Subscription billing (Stripe Billing) for Pro and Unlimited in every country** (recommended next big build). No paid
   plan is billed anywhere yet. The missed-payment rule for the Unlimited-only countries (world-countries-2 G1) goes with
-  it.
+  it. ⛔ *V16.18: monthly billing is built and switched OFF (billing-1/2/3, §89.1); still nothing is charged. The missed-payment rule is 5 full days, then online ordering pauses at midnight, everywhere.*
 - ~~**Own contact form replacing Tally,** in every language, emailing Dominic directly — mockup first (decided, legal-
   languages-1 D5). Supersedes the 23 Oct line above.~~ ✅ Done V16.10 (contact-1, §48).
 - ~~**Privacy wording tidy not yet done (demo-2d was never run):** the demo section still says "We keep anonymous counts";
@@ -19435,7 +19470,7 @@ Cooking CANNOT seat earlier than that single run-up window — there is no secon
 - No in-repo code writes `collection_times` (verified by six audits, 16-17 Jun). It is externally/manually managed. The original Gusto range data (2026-05-06, event_id null, 48 rows) was a one-off stale seed, NOT produced by the scrape OR verify path (both proven to leave collection_times empty). If range data ever reappears, something external seeded it — DELETE it, do not write code to accommodate it.
 
 ### TRAFFIC-LIGHT DOTS: read the engine's occupancy, do NOT re-derive
-The day-load / slot dots (`buildSlotIndicators`, slot-display.ts) MUST read the engine's backward occupancy — `back.byStart.get(slotMins - step)` where back = projectBackwardOccupancy(...) and step = backwardWindowStepMins(catConfigs). This is the SAME source `buildSlotAvailability` uses, so dots, ASAP, capacity veto, and availability all AGREE.
+The day-load / slot dots (`buildSlotIndicators`, slot-display.ts) MUST read the engine's backward occupancy (🔴 *V16.18: open defect — with instant counted items at W > 5 the dots and empty-basket list mark a slot full up to W minutes early and disagree with the picker; capacity-window-1 §1.5, §89.11*) — `back.byStart.get(slotMins - step)` where back = projectBackwardOccupancy(...) and step = backwardWindowStepMins(catConfigs). This is the SAME source `buildSlotAvailability` uses, so dots, ASAP, capacity veto, and availability all AGREE.
 - Dot tone: category at/over batch ⇒ RED; partial ⇒ AMBER; empty ⇒ GREEN; kitchen-capacity ceiling hit ⇒ RED.
 - **Worked example** — 3 pizzas collected at 17:05 (batch 2): dots show 17:00 = 2 (RED, batch ceiling), 17:05 = 1 (AMBER, room for 1), 17:10 = 0 (GREEN). NOT 17:05 = 3.
 - **WRONG:** showing raw collection load (17:05 = 3) — that's collection-load, not cooking-load. The dots show what's IN THE OVEN per window, not what's collected per slot.
@@ -22559,6 +22594,30 @@ of this manual).
   its messages (`comparison.tldr.*` is deleted). "Which suits your food truck?", directly under the title and checked-date line, is the
   page's short answer, and it follows 35.aq-4.
 
+## 35.ar 🔴 BILLING, PRICING WORDING AND COUNTRIES (V16.18)
+
+- **35.ar-1 Billing's rules live in one pure module.** `lib/billing/rules.ts` decides every amount: plan in advance, usage in arrears,
+  pro rata at the trial's end and on upgrades, downgrades on the 1st, minimum and carry, the failure timeline. Screens, emails, the cron
+  and Admin read its results; none recomputes a charge or a date (§89.1).
+- **35.ar-2 No billing text says walk-up orders or the kitchen screen keep working.** This covers every billing screen, notice and
+  email, in every locale; billing-2's harness proves it. Only the "free" lines may name walk-ups ("Walk-up orders — Free").
+- **35.ar-3 No billing notice and no purchase button inside the iOS app.** iOS shows the facts (plan, dates, amounts, invoices,
+  statuses, "Online ordering is paused") and nothing to tap or follow. Android and the web get everything. The one predicate is
+  `purchaseCtaAllowed()`.
+- **35.ar-4 Billing changes nothing while `billing_enabled` is false.** Every billing path asks the switch, or is a `billing_test`
+  truck. `processor.ts` refuses a key that isn't `sk_test_` until switch-on day. The late fee is a per-country amount, 0 everywhere,
+  and a 0 fee does nothing.
+- **35.ar-5 Card country or monthly billing only: one helper.** Every pricing surface asks `offersOnlineCardPayments(s)`: the banner
+  sentence, the asterisks, the fee row, the footnote, /llms.txt and the PDF. No page keeps its own list or reads
+  `country_billing.payment_model` itself. **No `country_billing` row means monthly billing only.**
+- **35.ar-6 A truck's own money is the menu currency; what we bill is `currency`.** `moneyFormatOf` and the truck's
+  `trucks.currency` use `menuCurrency` (`menu_currency`, NULL = `currency`). Plan prices, Billing and the pricing pages use
+  `currency` (`planMoneyFormatOf` / `intlMoneyFormatOf`).
+- **35.ar-7 Region blocks are data in one place, checked in one function.** `lib/region-blocks.ts`, through `checkTradeArea`, for
+  signup, provisioning and Where you trade alike. The refusal never names the region.
+- **35.ar-8 A country row is inserted switched off; switching on is its own migration, run only after the code that reads it is
+  deployed** (world-countries-5: 20261094 and 20261096 run, 20261095 waiting).
+
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
 **All three recorded facts verified before changing anything:** no `.entitlements` file anywhere under `ios/` (`find` returns nothing); **no `CODE_SIGN_ENTITLEMENTS` in either build configuration**; and **no Push Notifications capability** — an enabled capability leaves a `SystemCapabilities` block and an entitlements key, and neither existed. §36's statement that the APNs path *"has been written, deployed and reasoned about, and has never been able to obtain a token"* was accurate, and the reason was this and only this.
@@ -22647,7 +22706,7 @@ the ONLY thing that can differ between what was verified and what a reviewer see
 ✅ **STATED, from the Console.** The Android app was **submitted for review on 1 September 2026.**
 The **production track shows Active**, release **HatchGrab V1**, **version code 1**, under the temporary
 app name `com.hatchgrab.app (unreviewed)` — **which is what Play displays until a reviewer approves the
-listing, not a sign anything is wrong.** **Availability is the United Kingdom only, deliberately.** ⛔ *V16.7: the iOS app is likewise in the UK App Store only (Apple lookup, 24 Oct; §86.2).*
+listing, not a sign anything is wrong.** ~~**Availability is the United Kingdom only, deliberately.** ⛔ *V16.7: the iOS app is likewise in the UK App Store only (Apple lookup, 24 Oct; §86.2).*~~ ⛔ **Corrected V16.18 (stated 12 Nov): the apps are not UK-only.** Play's countries are set by hand in Play Console (the current list is not recorded here); the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7.
 
 ⛔ **THIS SUPERSEDES THE V11.52 HEADING THIS SUBSECTION CARRIED** — *"the BINARY is ready; the LISTING
 is what blocks submission"*. **The listing no longer blocks anything; it was produced and filed.** The
@@ -24475,13 +24534,13 @@ v2 refuses `dashboard` without a merchant configuration, and refuses a merchant 
 | Online value per truck per period | 🔴 **nothing tracks it** — no column, no table, no query |
 | "Period" | 🔴 **not merely untracked but UNDEFINED** — no `stripe_customer_id`, no subscription, no billing anniversary anywhere |
 
-🔴 **SO THE FEE IS BLOCKED BEHIND SUBSCRIPTION BILLING, not just behind a counter.**
+🔴 **SO THE FEE IS BLOCKED BEHIND SUBSCRIPTION BILLING, not just behind a counter.** ⛔ *V16.18: unblocked — the period is the calendar month in the truck's zone and `operator_billing.stripe_customer_id` exists; monthly billing is built, switched off (§89.1).*
 
 🔴 **SHIPPING WITHOUT THE FEE IS NOT A TRAP — and the thing that makes it safe is not the fee.** It is that **every ledger row carries `channel: 'online'` with `truck_id` and `created_at`**, so **THE LEDGER IS THE ALLOWANCE HISTORY** and the running total stays **reconstructible**. ⚠️ **It becomes a trap only if a version writes `orders.payment_status` from the webhook and SKIPS the ledger.**
 
 ⚠️ **On a cached running total: this codebase has already had a money cache drift from its ledger.** Weigh that against adding a second.
 
-**OPEN COMMERCIAL DECISION:** an order straddling the threshold — fee on the excess only, or on the whole order. **The money is trivial (~40p a month); the stakes are entirely in the wording.**
+**OPEN COMMERCIAL DECISION:** an order straddling the threshold — fee on the excess only, or on the whole order. ⛔ *V16.18: decided and built — the excess only (`lib/billing/rules.ts`).* **The money is trivial (~40p a month); the stakes are entirely in the wording.**
 
 ---
 
@@ -24703,7 +24762,7 @@ Everything the operator sees derives from it: `amount_paid = Σcharges − Σref
 - **Operator-only edits today.** The difference is taken **at collection** — an increase creates a balance due, it must NOT silently re-charge a saved card. Customer-initiated edits are a later feature and drop into the ledger as another `online` row with no schema change.
 - **A downward edit creates a refund owed, operator-confirmed with the amount pre-filled.** Auto-refunding on every edit means a fat-fingered edit moves real money.
 - ✅ **DECIDED V11.9 — auth-at-order / capture-at-approval. This item is CLOSED; see "DECIDED — capture follows confirmation" below.** *(Original wording kept for the record:)* **OPEN:** charge-at-order versus **auth-at-order / capture-at-approval**. §510 already leans to the latter, and it is materially better — a downward edit before approval costs nothing, you simply capture less than you authorised, with no refund and no money leaving and returning. The two are different integrations, not a setting. **Decide before building.**
-- **OPEN:** refund the 0.99% pro-rata on partial refunds? (Stripe supports `refund_application_fee`.) Recommendation: yes.
+- **OPEN:** refund the 0.99% pro-rata on partial refunds? (Stripe supports `refund_application_fee`.) Recommendation: yes. ⛔ *V16.18: built — proportional, only when the charge carried a fee (§89.1).*
 
 ## Stripe Connect — the flow
 
@@ -24732,7 +24791,7 @@ Everything the operator sees derives from it: `amount_paid = Σcharges − Σref
 
 ## Fee mechanics
 
-- **The 0.99% is never billed — it is deducted.** `application_fee_amount` on the PaymentIntent; Stripe splits at settlement and the operator's balance simply increases by less. No collection risk, no failed payment, no chasing.
+- **The 0.99% is never billed — it is deducted.** ⛔ *V16.18: in model (a) only; models (b)/(c), post-pay and pay-at-truck pre-orders are invoiced on the 1st (§89.1).* `application_fee_amount` on the PaymentIntent; Stripe splits at settlement and the operator's balance simply increases by less. No collection risk, no failed payment, no chasing.
 - **It is per-charge and immutable once set** — which is the hard part, because **the allowance is monthly and cumulative**. The fee engine must decide, at the instant of each charge, how much of *this* order sits above the truck's month-to-date online total, and an order can straddle the threshold. **This does not compose cleanly and is the single hardest requirement in the model.**
 - **The threshold binds in reality.** Gusto took £2,633.20 across 108 orders in July — over the Pro allowance in their first month. This cannot be a v2 item.
 - **🔴 Exclude demo trucks from every fee and threshold calculation.** Five `demo-*` trucks generated ~£3,170 of synthetic gross in July — **more than Gusto's real trade**. The exclusion belongs in ONE shared helper, not remembered per call site.
@@ -25347,7 +25406,7 @@ it was not. Same class as the success-reporting writes already recorded. **OPEN.
 - **OBSERVED** Pay-at-the-truck orders go through `place_order_atomic_v2` (service-role only). The old
   `place_order_atomic` is untouched and still used by the live code until deploy; **never drop it** (its
   grants were closed on 12 October — §35).
-- **OBSERVED** **No platform fee is charged anywhere:** `application_fee_amount` is deliberately never sent
+- **OBSERVED** **No platform fee is charged anywhere:** `application_fee_amount` is deliberately never sent ⛔ *(V16.18: still true while billing is off; the code path now exists behind the switch, §89.1)*
   to Stripe (consistent with the omission recorded above). `platform_fee_enabled` stores a switch only; the
   Countries page says "Not charged yet".
 - **OBSERVED** The card surcharge is supported by the engine but always 0: the card's credit/debit type is
@@ -26378,12 +26437,12 @@ controls render there while iOS hides them. **Every one of those controls termin
 things: a tab switch, a copy string, or a `mailto:` to support.** All four upgrade buttons route through
 a modal whose **only** action is an email.
 
-🔴 **NOTHING IN THE PRODUCT CAN CHARGE A CARD FOR A PLAN OR SUBSCRIPTION, ON ANY PLATFORM.** There is no
+🔴 **NOTHING IN THE PRODUCT CAN CHARGE A CARD FOR A PLAN OR SUBSCRIPTION, ON ANY PLATFORM.** ⛔ *V16.18: Checkout (setup mode), invoices and a Change plan flow now exist behind the billing switch (§89.1); nothing is charged while it is off.* There is no
 `subscriptions.create`, no `checkout.sessions.create`, no billing portal and no subscription object
 anywhere. **The entire Stripe surface is payment intents, Connect and refunds — all on the CUSTOMER
 FOOD-ORDER path.**
 
-🔴 **AND NO OPERATOR CAN CHANGE THEIR OWN PLAN TIER AT ALL.** `plan` is absent from **both** write
+🔴 **AND NO OPERATOR CAN CHANGE THEIR OWN PLAN TIER AT ALL.** ⛔ *V16.18: Manage › Billing has Change plan — only while billing is on, or on a billing_test truck (§89.1).* `plan` is absent from **both** write
 allowlists, the only write is at admin provisioning, and **the admin console has no plan editor**. **A
 plan is set once at provisioning and changed thereafter only by a direct database edit.**
 
@@ -26392,6 +26451,8 @@ It is also why the whole arrangement is currently outside Google's Payments poli
 changes the moment billing is wired.**
 
 ## 🔴 THE DAY PLAN BILLING IS WIRED, ANDROID BECOMES A PLAY POLICY DECISION (V11.52)
+
+⛔ **V16.18: plan billing is now wired behind the billing switch (§89.1), and Android gets every purchase button.** The Play policy decision below is therefore a switch-on blocker; no report has addressed it (§89.14).
 
 **Google's Payments policy names cloud software and business productivity software as requiring Play's
 billing system.** The current `mailto:` arrangement sits outside that policy **only because nothing is
@@ -27297,7 +27358,7 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
   - cancel by contacting us or in the service;
   - "We are not registered for VAT";
   - "we will remind you in the app before your trial ends";
-  - the HatchGrab fee applies only to online card orders; Stripe's card fees are separate;
+  - the HatchGrab fee applies only to online card orders; Stripe's card fees are separate; ⛔ *(V16.18: the site now says "online orders" and the fee applies to every pre-order; align these terms at the next terms change, §89.14)*
   - 30 days' notice of price changes.
 - **Dates moved together to 20 October 2026:** the document's "Last updated", `TERMS_UPDATED` (`'20 October 2026'`)
   and `TERMS_VERSION` (`'2026-10-20'`) in `lib/legal.ts` (OBSERVED 20 Oct 2026). ⚠️ `COUNTRY_TERMS_UPDATED` stays
@@ -27305,7 +27366,7 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 - 🔴 **`TERMS_VERSION` is write-only** — stored on `operators.terms_version` at signup (`app/api/signup/route.ts`);
   nothing reads it; no re-accept prompt exists. Verified 20 Oct (re-checked 20 Oct: the only code uses are the
   signup write and comments).
-- ⚠️ The terms describe monthly billing in advance and a payment-failure path that the product cannot perform yet
+- ⚠️ The terms describe monthly billing in advance and a payment-failure path that the product cannot perform yet ⛔ *(V16.18: the product can, switched off; replacement terms are drafted, unpublished — billing-1 §11, billing-2 §10)*
   (§27).
 
 ## Country terms and company details in emails (V16.3 — 21 October 2026)
@@ -27346,7 +27407,7 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 ## Signup and email (V16.9 — 31 October – 1 November 2026)
 
 - **hatchgrab.com is verified in Brevo (stated, 31 Oct).** `lib/email-signup.ts` sends from
-  `EMAIL_FROM_ADDRESS || hello@hatchgrab.com`, so the default now delivers; setting `EMAIL_FROM_ADDRESS` is optional.
+  `EMAIL_FROM_ADDRESS || hello@hatchgrab.com`, so the default now delivers; setting `EMAIL_FROM_ADDRESS` is optional. ⛔ *V16.18: every HatchGrab email sends from `lib/email-config.ts`'s hatchgrab.com constants; `EMAIL_FROM_ADDRESS` is no longer read (email-sender-1, §89.8).*
 - **Why Brevo rather than sending directly (planning chat, 31 Oct; Dominic kept Brevo):** a mailbox's SMTP is capped and
   meant for people, and a self-run mail server is impractical on Vercel and lands in spam. Brevo gives trusted sending
   signed for the domain, a delivery log (which would have caught the rejected signup emails), bounce/complaint
@@ -27379,7 +27440,7 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 ## The legal documents in every language (V16.9 — legal-languages-1, world-countries-3, 1 November 2026)
 
 - **Rule (stated, 31 Oct):** "a user should always only see their language no matter what page they are on" (35.an-20).
-- **The Privacy Policy, Terms and Country-specific terms are translated** into all 28 language bases, at
+- **The Privacy Policy, Terms and Country-specific terms are translated** into all 28 language bases, at ⛔ *(V16.18: also the 8 languages-world-1 bases; not yet the 12 languages-world-2 bases, §89.6)*
   `/<country>/privacy`, `/<country>/terms` and `/<country>/country-terms` (`app/[country]/(legal)/…`; files
   `content/legal/<base>/<file>`). Regional locales read their base (de-AT/de-CH/de-LI → de-DE, es-MX → es-ES, nl-BE →
   nl-NL, el-CY → el-GR, fr-LU → fr-FR); de-CH and de-LI get ß → ss.
@@ -29452,7 +29513,7 @@ Recorded so they are not briefed again.
   Google ignores "UK" in hreflang, not in URLs.
 - **The root is a 302 router** (query → `hg_country` cookie → IP → GB) and the hreflang x-default. Switched-on
   country pages never redirect; a switched-off country's pages 302 to the UK until it is switched on.
-- **hreflang** is self-referencing and reciprocal, in `<head>` and the sitemap. **Self-canonicals** on one host (www).
+- **hreflang** is self-referencing and reciprocal, in `<head>` and the sitemap. **Self-canonicals** on one host (www). ⛔ *V16.18: the translated legal pages were one-way until gsc-index-2; each legal document is now one 37-entry cluster, and the sitemap has 244 URLs (§89.9).*
 - **Fixes made:**
   - the country switcher's options are real `<a href>` in the server HTML (hidden by CSS when closed);
   - the proxy matcher typo `_next_next/image` → `_next/static|_next/image` (present since 24 May 2026);
@@ -29591,7 +29652,7 @@ Recorded so they are not briefed again.
   - the FAQ's `{apps.sentence}` / `{apps.offline}` and "Show in: apps" (§82.12);
   - the comparison rows (iPad, Android) and the "not yet in the stores" clause;
   - Manage › Settings' get-the-app card (`GET /api/manage` → `appsAvailable`; hidden inside the native apps by design).
-- **The badges:** each vendor's own artwork in all 28 languages:
+- **The badges:** each vendor's own artwork in all 28 languages: ⛔ *(V16.18: 36 bases have badges; Apple has none for is or sr, so those use English; the languages-world-2 bases use English for now)*
   - `public/badges/apple/<locale>.svg` (black) and `public/badges/google/<locale>.png`, downloaded unmodified, with
     checksums in `scripts/fixtures/store-badges-1-manifest.json` and a README. The English files are untouched.
   - `lib/store-badge-files.ts` `badgeFor(vendor, locale)` picks the page language's file, else its base's, else English.
@@ -29604,9 +29665,9 @@ Recorded so they are not briefed again.
     was guarded and approved.
   - The live site followed within a minute (no deploy needed).
   - `scripts/tidy-2.cjs` proves every surface above in all 44 countries over the live values.
-  - ⚠️ **The store listings are still UK-only until Dominic releases them** (OBSERVED 3 Nov for iOS: Apple's lookup finds
+  - ~~⚠️ **The store listings are still UK-only until Dominic releases them** (OBSERVED 3 Nov for iOS: Apple's lookup finds
     id 6803543106 in GB only; Android UNVERIFIED). Until then a badge outside the UK leads to an unavailable listing
-    (§27 Added V16.10).
+    (§27 Added V16.10).~~ ⛔ **Corrected V16.18:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7. The Apple badge leads to a live listing everywhere.
 - OBSERVED 3 Nov: `/uk` shows both English badges (Play link without `hl`); `/de` shows `de-DE.svg` and `de-DE.png`.
 - **Harnesses:** `store-badges-1.cjs` (60), `tidy-2.cjs` (44).
 
@@ -29728,7 +29789,8 @@ OBSERVED on 3 Nov 2026, about 14:00–14:45 UTC, unless marked STATED.*
     **308** to `https://www.villagefoodie.co.uk/`.
   - `/llms.txt` 200: it links `https://www.hatchgrab.com/uk/faq` and has a "Frequently asked questions" section.
   - Truck pages: `tally.so` is absent on hatchgrab.com and still present on villagefoodie.co.uk (tidy-1 is live).
-  - Apple's lookup for id 6803543106: GB 1 result; DE, US, JP, IE 0.
+  - Apple's lookup for id 6803543106: GB 1 result; DE, US, JP, IE 0. ⛔ *V16.18: misleading — the app was on sale in 44 storefronts
+    at the time (ios-intl-1, §89.7).*
 - **Read-only SQL (each run, through the read-only connection; results in `docs/manual-v16-10-report.md`):**
   - **`faq_items`:** 24 published, 1 draft.
   - **`faq_translations`:**
@@ -31218,7 +31280,7 @@ on purpose:** it **never** deletes the operator's just-created truck, and record
   a signup is kept up to 30 days (`CLAIM_GRACE_DAYS`) so its menu can move into the account. The sweep runs hourly
   (`BATCH_LIMIT = 200`). The privacy text and these constants are tied by a drift check (`scripts/demo-2.cjs` §10).
 - **Signup carry-over:** `/api/signup` claims the demo by token **or by slug** (a slug claim takes only an unclaimed demo,
-  because a slug is more public than a token); `/manage/<token>?import=demo` then pre-loads the stored extraction.
+  because a slug is more public than a token); `/manage/<token>?import=demo` then pre-loads the stored extraction. ⛔ *V16.18: `create_truck` commits the claimed demo's menu itself, and the review is owed from saved state on any device; `?import=demo` is an alias (demo-claim-2, §89.10).*
 - **G11 closed (demo-2b):** the signup button gets the same inputs on every surface — the dashboard, the KDS (`isAdmin`
   from `/api/auth/me`, fetched only on a demo, and `extractionSource`), the demo order page and the walkthrough
   (`extractionSource`). A sample demo never calls a template menu "your menu".
@@ -35459,6 +35521,8 @@ which plans have it may not. Wording lives in `messages/` (en-GB base, ~~en-US o
 | Monthly (GB / US) | £0 / $0 | £29 / $29 | £69 / $69 |
 | Online orders included each month | 0 | 4,000 | unlimited |
 | HatchGrab fee on online card orders (food subtotal) | 0.99% | 0.99% above 4,000 | 0% |
+
+⛔ *V16.18: the row reads "HatchGrab fee on online orders" (pricing-copy-2); the fee applies to every pre-order, including pay-at-truck ones (§89.1–§89.2).*
 | Walk-up orders | 0% | 0% | 0% |
 | Pay at Hatch | allowed | allowed | allowed |
 | WhatsApp auto-replies, social media posts, Messenger & Instagram (coming soon), custom event types & pricing | — | ✓ | ✓ |
@@ -35484,7 +35548,7 @@ switched on; the 29 European rows are switched off (§83.1).
   (`plan_price_override_minor = 4900` + an until date); a 4-month trial via admin "Extend trial by 1 month" after
   signup; prospects linked to `/compare?free=4`.
 - **Pizzeria Gusto** (decided 20 Oct): treated like any customer. Its trial ends 31 Dec 2026; if it has not chosen
-  a plan it drops to Pay as you go (and loses WhatsApp, social media posts and custom event types).
+  a plan it drops to Pay as you go (and loses WhatsApp, social media posts and custom event types). ⛔ *V16.18: if billing is on by then and it has no card, its online ordering pauses; its plan can be chosen ahead (`trial_end_plan_key`, §89.1).*
 - **real-thai-food** is not a customer: `plan = 'payg'`, `is_customer = false`, no end date (the statement was
   given on 20 Oct — **verify whether it was run** and record the observed row). ~~⚠️ **OBSERVED 20 Oct 2026: NOT run.**~~
   ⛔ Corrected V16.10 — run 3 Nov (tidy-2, migration 20261064); OBSERVED 3 Nov: `payg`, `false`, null. The rest of this
@@ -35499,7 +35563,7 @@ switched on; the 29 European rows are switched off (§83.1).
 
 ## 81.2 The tables (OBSERVED live, 20 October 2026)
 
-- **`public.plans`** — one row per plan: `key` PK (`^[a-z][a-z0-9_]*$`), `name`, `description` (no numbers in it),
+- **`public.plans`** — one row per plan: `key` PK (`^[a-z][a-z0-9_]*$`), `name`, `description` (no numbers in it), ⛔ *(V16.18: Pay as you go's description now holds "0.99%" — migration 20261091 — so a fee change must update it, §89.2)*
   `subtitle`, `sort_order`, flags `is_public`, `is_internal`, `is_trial`, `is_signup_default` (exactly one),
   `is_expiry_fallback` (exactly one; public, active, not a trial — ⛔ V16.9: the fallback only where the truck's country has no `is_trial_end` row, §81.6), `is_demo` (exactly one), `is_highlighted` (at
   most one; public and active), `pay_at_hatch_allowed` (**enforced**), `included_vans` (≥1), `trial_months` (only on
@@ -35574,7 +35638,7 @@ switched on; the 29 European rows are switched off (§83.1).
   `platform_fee_enabled` is on (off everywhere)**; fee on food after discount (never tax, tips, service fee or
   surcharge). ⚠️ **The included allowance is not modelled in the engine yet, there is no month-to-date meter, and
   refunds do not pass `refund_application_fee`** — all three must land together before the switch is turned on
-  (§27). The application fee belongs at capture (`lib/payments/capture.ts`), the one point all capture paths meet.
+  (§27). ⛔ *V16.18: all three are built behind the billing switch (§89.1).* The application fee belongs at capture (`lib/payments/capture.ts`), the one point all capture paths meet.
   OBSERVED 21 Oct 2026: `platform_fee_enabled` is false in GB, IE and US (every row); the US has been
   `enabled = true` since 20 Oct, with surcharge, service fee and tipping allowed (§82.1).
 - **Manage first-load failure:** "Invalid or expired token" only for 401/403; anything else shows "Could not load
@@ -35588,7 +35652,7 @@ switched on; the 29 European rows are switched off (§83.1).
   plan switches on; "Try free" (orange on the highlighted card); the computed "Which plan is cheapest for me?" bar (⛔ *V16.3: centred; the title, then "Your online orders each
   month", then the bands "Under {to} → {plan}" / "{from} – {to} → {plan}" / "Over {from} → {plan}"; the plans PDF
   uses the same wording, §82.8*);
-  footnote with the country's card fees. Hero trust line "First {N} months completely free, everything unlocked".
+  footnote with the country's card fees. Hero trust line "First {N} months completely free, everything unlocked". ⛔ *V16.18: the banner's "Prefer to take payment up front?" sentence, the fee asterisks and the card-fee footnote show only in card countries (`offersOnlineCardPayments`, §89.2, 35.ar-5).*
 - **`/features`:** h1 "Everything to run your service, on every plan."; one table (a column per public plan,
   highlighted column from the flag ⛔ *V16.3: the class is still set from the flag, but /features no longer styles
   it — no visible highlight; the 32 descriptions are back, §82.8*): WHAT YOU PAY rows, then 32 capability rows in RUN YOUR SERVICE / ONLINE ORDERS
@@ -35616,7 +35680,7 @@ switched on; the 29 European rows are switched off (§83.1).
 ## 81.6 Offered plans and the trial-end plan, per country (V16.9 — world-countries-1, 31 October 2026)
 
 - **`plan_prices.offered`** (default true): a plan is shown only where its row is offered (35.an-18). Pay as you go and Pro
-  are kept but **not offered** in BR, MX, MY, SG and TH, so turning one on later is a single flag.
+  are kept but **not offered** in BR, MX, MY, SG and TH, so turning one on later is a single flag. ⛔ *V16.18: the world guard also requires billing on and model (b)/(c); the offer SQL is prepared, not run (§89.1). The 160 new model-(c) countries follow the same pattern (§89.3).*
 - **`plan_prices.is_trial_end`** (default false): the country's own trial-end plan — Unlimited in those five; elsewhere no
   row says so, and the global `plans.is_expiry_fallback` (Pay as you go) applies. A CHECK refuses an `is_trial_end` row
   that is not offered.
@@ -35624,7 +35688,7 @@ switched on; the 29 European rows are switched off (§83.1).
   its trial-end plan is offered there.
 - **A single offered plan renders as one centred card.**
 - **The wording there:** "When your trial ends, Unlimited is <price> a month. We'll be in touch before then to set up
-  payment." (world-countries-2 F1). **No paid plan is billed anywhere yet** — §82.11, §27.
+  payment." (world-countries-2 F1). **No paid plan is billed anywhere yet** — §82.11, §27. ⛔ *V16.18: billing is built, switched off; the design is a card in Manage › Billing, not a manual set-up (§89.1).*
 
 ## 81.7 Pay at Hatch: today and intended (V16.10 — 2 November 2026)
 
@@ -35639,6 +35703,7 @@ switched on; the 29 European rows are switched off (§83.1).
     - the FAQ;
     - a "your trial ends soon, connect Stripe" notice.
   - Mockup first (§27 Added V16.10).
+  - ⛔ **Superseded V16.18 by Decision 9 (billing-1):** with billing on, after the trial Pay at Hatch is for a truck that chose it (post_pay) with a valid card and not paused; the Billing screen's choice is the locale's "Pay at Hatch" word (§89.1).
 - **The mix-up (faq-1c and faq-1c-undo, 2 Nov):**
   - **What faq-1c did:** it read Dominic's FAQ note as a product change and **changed the product**: migration 20261057,
     run 11:48 UTC. It changed:
@@ -35929,7 +35994,7 @@ with a hidden test truck; then switch on in Admin › Countries.
     /dashboard/, /kds/, /admin, /o/, /order/, /p/, /embed/, /demo/, /setup, /auth/, /dev/.
   - **Village Foodie is unchanged:** the 5 June 2026 rules, which block training bots.
 - **/llms.txt** (HatchGrab host only, 404 on Village Foodie): built at request time from the switched-on countries,
-  public plans and prices, the fee rule, the trial and the footnotes. Every sentence is the site's own.
+  public plans and prices, the fee rule, the trial and the footnotes. Every sentence is the site's own. ⛔ *(V16.18: the card sentence only for card countries, §89.2)*
   ⛔ *V16.7 — OBSERVED 24 Oct (seo-geo-1) and 29 Oct (curl): `/llms.txt` 200, 426 lines, 36 countries; robots.txt
   allows the AI answer and training bots by name (GPTBot, ClaudeBot, OAI-SearchBot, PerplexityBot, CCBot…). **Known
   gaps:** each country's card sentence is in that country's language and in the home number form (against the
@@ -36032,11 +36097,11 @@ AU/NZ terms, the AU address state fix, Canada. **Remaining:** the Stripe Connect
 - **Billing (important, recommended):** no paid plan is billed anywhere yet, in any country (no subscription or checkout
   code). In the five Unlimited-only countries a finished trial lands on Unlimited and earns nothing until invoiced.
   Subscription billing (Stripe Billing) is recommended as the next big build, for every country. A missed payment in
-  those five has no consequence today (world-countries-2 G1); the rule belongs with the billing build.
+  those five has no consequence today (world-countries-2 G1); the rule belongs with the billing build. ⛔ *V16.18: monthly billing is built and switched OFF (billing-1/2/3, §89.1); the missed-payment rule is 5 full days, then a pause at midnight (§89.1).*
 - **Country settings:** per world-countries-1 §2 and block B — allergen sets `jp` (the CAA list), `br` (ANVISA) and
   `codex` (MX, SG, HK, MY, TH, AE); tax wording per country (each truck sets its own rate); card fees are Stripe's standard
   online rates copied into the in-person fields; Tap to Pay 0 until confirmed.
-- **Right to left (Arabic):** `dir="rtl"` on ar-AE pages only (35.an-24); marketing and customer pages mirror; converting
+- **Right to left (Arabic):** `dir="rtl"` on ar-AE pages only (35.an-24); ⛔ *(V16.18: Arabic in all 8 Arabic locales, Hebrew and Urdu — `/^(ar|he|ur)(-|$)/`, §89.6)* marketing and customer pages mirror; converting
   ~430 physical left/right classes in shared components is deferred until the UAE is meant to be live (decision, 1 Nov).
 - **Terms:** §4 now says a trial or failed payment moves the account to "the plan shown for its country on our pricing
   page, which in most countries has no monthly fee" (no plan named); the Country-specific terms have sections for all
@@ -36528,7 +36593,7 @@ regional overrides. A language prompt never changes English output.
 ⚠️ **The delta said de-AT 4 keys, de-CH 95 and de-LI empty.** The observed counts are higher by the localised team-phone
 examples (europe-languages-2 Stage 0) and, in de-CH, the card button that keeps the amount.
 
-- `LOCALES` = 35 and `LANGUAGE_BASES` = fr-FR plus the 21 above (OBSERVED in `lib/i18n/locales.ts`).
+- `LOCALES` = 35 and `LANGUAGE_BASES` = fr-FR plus the 21 above (OBSERVED in `lib/i18n/locales.ts`). ⛔ *V16.18: 103 locales and 48 bases (languages-world-1 and -2, §89.6).*
 - Plan names per language (`planNames.*`); Pro is never renamed. "Pay at Hatch" per the glossary (e.g. „Bezahlung bei
   Abholung", « Paiement sur place », "Betala vid upphämtning"); the word "hatch" appears in no language.
 - The EU 14 allergens use the official Annex II names (Regulation 1169/2011) per language; stored labels stay English.
@@ -36840,9 +36905,11 @@ verified it. No proposed price is recorded here as decided.
   - the CSV's other seven feature columns (KDS, printing…), which stay in the CSV only.
 - **Built for not recorded:** Eventifood, EasyEats and RapidOrderz have `focus` NULL, so "Food-truck tools only" dims
   them. Set it in the tab if they are food-truck tools.
-- **App availability:** the benchmarks say Android = GB only (Google Play availability is the United Kingdom only, §36).
-  ~~Where the iPhone app is sold is **not recorded** (NULL everywhere). Set it per country in Edit country data.~~ ⛔ Corrected V16.7 —
-  known: the UK App Store only (Apple lookup for id 6803543106, 24 Oct; §86.2). The benchmarks' column is still NULL; the
+- **App availability:** the benchmarks say Android = GB only (Google Play availability is the United Kingdom only, §36). ⛔ *V16.18:
+  not UK-only (stated 12 Nov; §89.7).*
+  ~~Where the iPhone app is sold is **not recorded** (NULL everywhere). Set it per country in Edit country data.~~ ~~⛔ Corrected V16.7 —
+  known: the UK App Store only (Apple lookup for id 6803543106, 24 Oct; §86.2).~~ ⛔ Corrected V16.18 — 44 App Store storefronts
+  from 31 Aug, every territory since 12 Nov (§89.7). The benchmarks' column is still NULL; the
   per-country flags are now `country_settings.ios_app_available` / `android_app_available` (~~GB true only, §86.3~~ ⛔ V16.10 — true in all 44 since 3 Nov, §48). ⛔ Corrected V16.8 — the benchmarks' app columns are retired; `country_settings` is the one
   source (§86.10).
 - ~~**France** stays in Planned until its row (`20261034`, block B) is run (§84.1).~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
@@ -36865,7 +36932,8 @@ verified it. No proposed price is recorded here as decided.
     recorded.
 - **Key features for comparisons** (stated, 23 Oct): pre-orders, WhatsApp, social media posts, own web address, and the
   iOS and Android apps. The rest is standard on every plan.
-- **iOS availability is now known:** the UK App Store only (Apple lookup, 24 Oct; §86.2). §85.6's "not recorded" is
+- ~~**iOS availability is now known:** the UK App Store only (Apple lookup, 24 Oct; §86.2).~~ ⛔ *Corrected V16.18: 44 App Store
+  storefronts from 31 Aug, every territory since 12 Nov (§89.7).* §85.6's "not recorded" is
   corrected.
 
 ---
@@ -36937,8 +37005,9 @@ verified it. No proposed price is recorded here as decided.
     MobilePay, Vipps, Klarna, TWINT, Bizum and MB WAY are not built.**
   - 🔴 **Kitchen-capacity wording:** never "slot throttling". Truthful: "Customers only see collection times your kitchen
     can actually make, based on each item's prep time and how many you cook at once."
-  - 🔴 **The iOS app is in the UK App Store only.** Apple's lookup for id 6803543106 (24 Oct): GB 1 result; US, IE, AU,
-    CA, NZ, DE, PL, SE, NL, DK, NO and CZ 0. **Android is UK-only on Play** (deliberate since 1 Sep; not re-checked).
+  - ~~🔴 **The iOS app is in the UK App Store only.** Apple's lookup for id 6803543106 (24 Oct): GB 1 result; US, IE, AU,
+    CA, NZ, DE, PL, SE, NL, DK, NO and CZ 0. **Android is UK-only on Play** (deliberate since 1 Sep; not re-checked).~~
+    ⛔ **Corrected V16.18 — the apps are not UK-only:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7.
   - **HatchGrab is not a fiscal till** (no TSE, EET, GKS or kassaregister). Where one is required, it sits beside the
     truck's certified till.
 - **competition-check-1 (24 Oct): a Bing-index picture only.**
@@ -37766,18 +37835,449 @@ Compare link and no column). **jp-nav-1 (the Japanese nav button and "Doesn't ap
   matches the file on disk. Nothing was changed (35.aq-11).
 
 
+# 89. Monthly billing (switched off), pricing wording, 210 go-live countries, 20 new languages and the App Store everywhere (V16.18 — 9–12 November 2026)
+
+Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-report.md`, `billing-3-report.md`, `pricing-copy-1-report.md` to
+`pricing-copy-4-report.md`, `world-countries-4-report.md` (with `docs/world-countries-4/countries.csv`, `go-live.csv` and the three
+`gemini-tax-*.md` files), `world-countries-5-report.md`, `languages-world-1-report.md`, `languages-world-2-report.md` (and
+`docs/languages-world-2/handover/`), `ios-intl-1-report.md`, `meta-sdk-1-report.md`, `email-sender-1-report.md`, `gsc-index-1-report.md`,
+`gsc-index-2-report.md`, `demo-claim-1-report.md`, `demo-claim-2-report.md`, `capacity-window-1-report.md` and
+`collection-anchor-1-report.md`. Invariants: 35.ar. Backlog: §89.14 and the tax backlog at the end of this manual.
+
+## 89.1 Monthly billing — built, switched OFF (billing-1, -2, -3)
+
+**State (OBSERVED by read-only SQL, billing-1-stripe §3 and billing-3 §8):**
+- **`platform_switches.billing_enabled` is false.** The live app behaves exactly as before.
+  - The hourly cron answers `skipped: switch_off`.
+  - `/api/manage/billing` answers `{visible:false}` unless the switch is on or the truck is a `truck_billing.billing_test` truck.
+- **All six migrations are RUN** (db-migrate, one transaction each): 20261085, 20261086 and 20261087 (10 Nov), 20261088, 20261089 and 20261090.
+- **Empty so far:** `truck_plan_history` has 0 rows, `billing_email_log` 0 and `trial_end_plan_key` 0. Pizzeria Gusto has no billing rows.
+- **`platform_fee_enabled` is false in all 44 countries.** Nothing is charged anywhere yet.
+- **Stripe:** test mode passed 26/26 (`scripts/billing-1-stripe-test.cjs`, with a test clock). **The live key is not wired**; that is a
+  switch-on-day step.
+
+**The rules** (`lib/billing/rules.ts`, pure, the one source; billing-1 §1–§2, billing-2 §1):
+1. **Plan fees are charged in advance and usage in arrears.** On the 1st, one charge covers this month's plan and last month's usage.
+   - Each order's usage is priced at the plan in force when it was placed.
+   - The period is the calendar month in the truck's time zone.
+2. **The trial's end and upgrades are charged pro rata, at once** ("that day", "immediately", stated).
+   - **Trial end:** floor(plan × days left ÷ days in the month).
+   - **Upgrade:** (new − already paid) × days left ÷ days in the month.
+3. **Downgrades wait for the 1st.** Nothing is refunded. A pending downgrade sits in `truck_billing.pending_plan_key/_from`.
+4. **5 full days to pay, then online ordering pauses at midnight.** Example: a charge fails on 1 Jan, the last day to pay is 6 Jan, and
+   online ordering pauses at 00:00 truck time on 7 Jan. (This replaced billing-1's "day-5 pause"; billing-2 §1.)
+5. **Suspension is wording only.** No lock is built. The warning date is the pause date + `billing_suspend_warning_days` (6), e.g. "pay by
+   13 January". 🔴 **TODO: lock the account 7 days after the pause** (§89.14).
+6. **The late fee is built and set to 0 in every country** (`country_billing.late_fee_minor`; "set it to 0 in every country", stated).
+   - At the pause, a 0 fee records 0 and does nothing else. A non-zero fee voids and re-issues the invoice (tested with a £3 test value).
+   - The Invoices card shows the fee only above 0.
+7. **The fee is charged on every pre-order** (Decision 2), including pre-orders paid at the truck.
+   - Model (a) deducts it at capture (`application_fee_amount`).
+   - Models (b) and (c), post-pay and pay-at-truck pre-orders are invoiced on the 1st.
+   - A threshold-straddling order pays the fee on the excess only.
+   - A partial refund refunds the fee proportionally (`refund_application_fee`), and only when the charge carried one.
+8. **Pay at Hatch on the Billing screen** ("How customers pay for pre-orders"):
+   - The second choice is the locale's own word, `PRICE_WORD.payAtHatch`: "Pay at Hatch" in en-GB, "Pay at the truck" in the other
+     English locales.
+   - The hint: "Customers pay when they collect. Our fee is added to your monthly charge."
+   - **Decision 9 replaced the 2 Nov "Pay at Hatch only during the trial" idea.** With billing on, after the trial, Pay at Hatch is for a
+     truck that chose it (post_pay) with a valid card and not paused.
+9. **No billing text says walk-up orders or the kitchen screen keep working** (35.ar-2). This covers every screen, notice and email, in
+   every locale (billing-2 §5, proven by its harness). Only the "free" lines name walk-ups ("Walk-up orders — Free").
+10. **No billing notice and no purchase button inside the iOS app** (35.ar-3; billing-2 §0.2, accepted; billing-3 §3).
+    - iOS still shows the facts: plan, dates, amounts, invoices, statuses and "Online ordering is paused".
+    - Android and the web get everything.
+    - The one predicate is `purchaseCtaAllowed()`.
+11. **Stripe's own customer emails are OFF** (billing-2 §6, reversing billing-1's hand step 3). We send our own seven.
+    - Smart Retries stay on (they apply to our one-off invoices; OBSERVED in test mode).
+    - `retryUnpaidInvoices` retries for 16 days.
+    - ⚠️ No report says the Dashboard switch has been flipped. It is a hand step (§89.14).
+
+**What exists:**
+- **Tables (20261085/86/88/89/90):**
+  - `country_billing`: the payment model (`fee_from_payment` (a) / `billed_online` (b) / `billed_at_truck` (c)), the post-pay surcharge,
+    the minimum charge and the late fee;
+  - `operator_billing` (`stripe_customer_id`, livemode);
+  - `truck_billing` (post_pay, billing_test, the payment-method state, a status cache, `pending_plan_*`, `trial_end_plan_key`);
+  - `billing_usage` and `billing_usage_orders` (the usage ledger);
+  - `billing_charges` (monthly / trial_end / upgrade, unique per truck, month, kind and ref);
+  - `billing_invoices` (one per charge, `first_failed_at`, `invoice_pdf_url`);
+  - `billing_email_log`;
+  - `truck_plan_history` (written by a trigger on `trucks.plan` / `trial_expires_at`, only while billing is on, never blocking a change);
+  - on `platform_switches`: `billing_enabled`, `billing_pause_after_days` (5) and `billing_suspend_warning_days` (6).
+  - `plan_prices_world_guard` gained a billing exception (20261086).
+- **Live model mix (OBSERVED):** 39 countries are model (a) and 5 are (b) (BR, MX, MY, SG, TH). The 167 new countries are 160 (c) and 7
+  (a) (§89.3).
+- **Code:**
+  - `lib/billing/`: `rules`, `engine` (`runBillingAll`, `requestPlanChange`, `applyLateFees`, `retryUnpaidInvoices`,
+    `applyTrialEndChoice`), `gate`, `store`, `processor`, `view`, `emails`, `mailer`, `notify` and `screen-server`.
+  - **`processor.ts` takes only `STRIPE_BILLING_TEST_SECRET_KEY`** and refuses anything that isn't `sk_test_`.
+  - The capture, refund and ledger code in `lib/payments/` asks the switch. The menu and submit routes ask `cardPaymentsAllowed`.
+- **Routes:**
+  - `/api/cron/billing`, hourly at :05;
+  - `/api/webhooks/stripe-billing` (the platform account; `STRIPE_BILLING_WEBHOOK_SECRET`; plus `checkout.session.completed`);
+  - `/api/admin/billing`;
+  - `/api/manage/billing`, with the actions view, notice, plan_preview, add_card, add_pix, setup_return and change_plan.
+- **Screens:**
+  - **Admin › Countries › Billing** (`CountryBillingPanel.tsx`): the model, surcharge, minimum and late fee. It shows the switch but
+    cannot set it.
+  - **`/admin/billing`:** status, usage, charges, invoices, history and Preview month; Run and Change plan for test trucks only.
+  - **Manage › Billing** (`BillingScreen.tsx`): Your plan, Payment method (a card through Stripe Checkout in setup mode, or Pix in
+    Brazil), What you pay / Next payment, How customers pay for pre-orders, Invoices, Payment failed, Paused, and the Change plan modal.
+    The trial's end plan can be chosen ahead of time (`trial_end_plan_key`).
+- **Notices A–F**, owner only, on every tab except Billing. Their priority is E → D → F → B → A → C. F is "Your free trial has ended."
+- **Seven Brevo emails**, each sent once, on its day only, from 08:00 truck time: payment_failed, two_days_left, one_day_left,
+  last_day, paused, trial_7_days and trial_1_day.
+- **Words:** the namespaces `billing` and `emailBilling`, 122 en-GB strings, in 36 bases.
+- **Harnesses:**
+  - in the sweep: billing-1 (131), billing-2 (72), billing-3 (51);
+  - by hand: billing-1-db-read (reads Gusto), billing-1-stripe-test, billing-2-screens and billing-3-screens.
+
+**Switch-on day, in order** (billing-1 §10.6; none of it is done):
+1. The operator screens approved.
+2. The pricing, FAQ and PDF wording (§89.2 already says "online orders").
+3. The new terms published. They are drafted in billing-1 §11 and billing-2 §10; "30 days" notice is a placeholder.
+4. The live key in `processor.ts`.
+5. `platform_fee_enabled` per model-(a) country.
+6. The emails.
+7. A migration setting `billing_enabled = true`.
+8. Then the prepared, not-run SQL that offers Pay as you go and Pro in BR, MY, SG and TH (and MX, if it were still on). The world guard
+   refuses that SQL until billing is on.
+- **Mind Gusto's trial end, 31 Dec.** With billing on and no card, its online ordering would pause.
+
+**Known limits (billing-1 §14, billing-2 §0.5):**
+- A downgrade on the 1st is applied at that hour's run, so up to an hour of orders is priced at the old plan.
+- Extra vans are not pro rata.
+- Two concurrent captures at the allowance line can under-take by one order's share.
+- Pix through Invoicing is unproven (the fallback is an off-session PaymentIntent).
+- Turning billing off after the BR/MY/… plans are offered is not refused.
+- A billing_test truck's tab can say "paused" while its ordering isn't gated.
+- A pending downgrade has no Cancel button; setting the plan back clears it.
+
+## 89.2 Pricing wording: card countries and monthly-billing-only countries (pricing-copy-1 to -4)
+
+- **"Online orders", not "online card orders"** (pricing-copy-1, 2; the fee applies to every pre-order, §89.1 rule 7). This covers:
+  - Pay as you go's card: "<b>0.99%</b> on online orders only. Walk-up orders are always free.";
+  - the plan table's fee row: "HatchGrab fee on online orders*";
+  - the FAQ answers …0001, …0002 and …0005, through migration **20261091 (RUN)**; their translations follow from the hourly
+    translator;
+  - Pay as you go's description: "No monthly fee. You only pay 0.99% on online orders." It now holds a figure, so a fee change must
+    update it;
+  - `compare.*`, `comparison.costs.feeOnly`, `lib/faq/live-values.ts` and /llms.txt.
+- **The terms are deliberately unchanged:** §4 still says "online card orders". Align it at the next terms change (§89.14).
+- **The split (pricing-copy-4):** `offersOnlineCardPayments(s)` (`lib/country-settings-types.ts`) reads `country_billing.payment_model`,
+  embedded in the settings loader's one read.
+  - `fee_from_payment` or `billed_online` → a **card country**.
+  - `billed_at_truck`, **or no `country_billing` row**, → **monthly billing only** (stated: "no row means monthly billing only").
+  - Every surface asks the helper; no page reads the model itself (35.ar-5).
+  - Saving a country's model in Admin expires the caches.
+
+| Surface | Card country | Monthly billing only |
+|---|---|---|
+| Landing banner (`pricing.banner.bodyCard` / `bodyOnlyCard`) | includes "Prefer to take payment up front? Add online card payments any time." — each language's own sentence, restored byte for byte | the same text without that sentence |
+| Pay as you go card | "<b>0.99%*</b> on online orders only. Walk-up orders are always free." | no asterisk |
+| Pro card | "…then <b>{fee}*</b>." | no asterisk |
+| Plan table fee row (/features, Billing, PDF) | "HatchGrab fee on online orders*" | "HatchGrab fee on online orders" (`feeNoMark`) |
+| Footnote (landing, /features, Billing, PDF) | "* Plus Stripe's card processing on online card orders (currently {cardFee} in the {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%." | hidden, walk-up sentence included |
+| /llms.txt | the card sentence (English) | not listed |
+| Plans PDF (`lib/plans-pdf.ts`) | the same rule throughout | the same rule throughout |
+
+- **Live today: every live country is a card country** (39 model (a) + 5 model (b)). The 160 new model-(c) countries will show the
+  monthly-only form once switched on.
+- **The same in every country:** the FAQ answers, Pay as you go's description and the comparison pages. Whether `comparison.costs.cardFee`
+  should follow the helper is open; no comparison page is live in a monthly-only country.
+- **Other fixes:**
+  - **Serbian dates** use `sr-Latn-RS` everywhere (`intlDateLocale`, `lib/i18n/intl-locale.ts`; pricing-copy-3, option (a)).
+  - **The accountant report's "pay at truck" label** is the language's own price word (option A).
+  - The pricing-copy-2/3 wording is in languages-world-2's new bases.
+- **Harnesses:** pricing-copy-1 (1,391), pricing-copy-2 (597), pricing-copy-3 (34), pricing-copy-4 (1,135), and the re-pin modules
+  `_lp-pricing-copy-1/2/4.cjs`.
+
+## 89.3 Countries: the research, Dominic's rules and the 167 new rows (world-countries-4, world-countries-5)
+
+**world-countries-4 (11 Nov, research only):**
+- **`countries.csv`:** one row for each of the 249 ISO 3166-1 codes, 36 columns (decision and sanctions, payment and Stripe, currency,
+  language, tax, stores, prices, notes, sources).
+- **Gemini's B2B tax checks:** `gemini-tax-84-countries.md`, `gemini-tax-list-1.md` (with a US state-nexus deep-dive) and
+  `gemini-tax-list-2.md`. Their key finding: an unregistered small business is a private consumer (B2C) unless it gives a valid local
+  VAT/GST number. Their lists became `go-live.csv`'s tax column. Gemini's sources are not individually verified.
+
+**Dominic's rules (stated 11 Nov):**
+- **HatchGrab does not register for tax in any country outside the UK, except the EU One Stop Shop later.**
+- **249 ISO codes = 210 go live + 9 held for the sanctions check + 11 cannot sell + 19 excluded.**
+  - **210 go live** (`docs/world-countries-4/go-live.csv`): the 43 live (Mexico isn't in the list) and 167 new. Tax: free 99, threshold
+    42, EU 28 and **"VAT number required" 41**. The 41 go live now, for SEO, before VAT-number capture is built; capture must exist
+    before billing is switched on in any of them.
+  - **Held for the sanctions check (9):** Haiti, Iraq, Lebanon, Libya, Mali, Myanmar, Palestine, South Sudan, Venezuela.
+  - **Cannot sell (11; registration needed even for business customers):** Mexico, the Philippines, Barbados, Cameroon, Congo,
+    Côte d'Ivoire, DR Congo, Ghana, Kenya, Rwanda, Vietnam.
+    - **Mexico is still switched on today.** It switches off in 20261095 (below). No truck has ever been in MX (OBSERVED 12 Nov).
+  - **Excluded (19):** Cuba, Iran, North Korea, Russia, Belarus, Syria, mainland China, Western Sahara, Afghanistan, Somalia, Yemen,
+    Sudan, and the uninhabited AQ, BV, HM, TF, GS, IO and UM.
+- The tax work (VAT-number capture, threshold logging, OSS) is the decided, unbuilt backlog at the end of this manual.
+
+**world-countries-5 (12 Nov) — the 167 new countries as data, ALL SWITCHED OFF:**
+- **Migrations:**
+  - **20261093 (RUN):** widens the currency and address-format CHECKs and adds `country_settings.vat_number_required` (data only;
+    nothing reads it).
+  - **20261094 (RUN):** generated by `scripts/_world-countries-5-rows.cjs` from `go-live.csv`. 167 `country_settings` rows with
+    `enabled = false`, 501 `plan_prices` and 167 `country_billing`.
+  - **20261096 (RUN):** `menu_currency` (below).
+  - 🔴 **20261095, the switch-on, is NOT RUN.** It waits for Dominic's deploy and needs `--approved-by-dominic`. It:
+    - enables the 167;
+    - turns MX off;
+    - sets `vat_number_required` on AE and BR;
+    - turns `ios_app_available` on for the 56 new countries that had it off;
+    - sets Iceland's week start to Monday.
+- **Locale:** the country's own language only where it is committed: UA uk-UA, KG ru-KZ, KZ kk-KZ, UZ uz-UZ, AZ az-AZ, GE ka-GE, AM
+  hy-AM, MN mn-MN, BD bn-BD and NP ne-NP. **India and Pakistan use en-GB.** Everyone else uses the CSV's `launch_locale`.
+  - Countries that switch language later: BA bs-BA, AD ca-AD, AL sq-AL, MK mk-MK, LK si-LK (or ta-LK), KH km-KH, LA lo-LA, TZ sw-TZ,
+    ET am-ET, and UG sw-TZ as a second language.
+  - (⚠️ world-countries-5's report also lists KE and PH there as "already live". They are not: both are on the cannot-sell list and
+    have no row.)
+- **Billing:** 160 are `billed_at_truck` with the BR/MX/TH plan pattern (Pay as you go and Pro kept but not offered; Unlimited offered
+  and the trial-end plan). The 7 Stripe onboards under a parent are `fee_from_payment` with every plan: GP, MQ, GF, RE, YT and MF as
+  France, PR as the US.
+  - Prices come from the CSV in its billing currency.
+  - `min_charge_minor` is about £5, never above the Unlimited price.
+- **Money:**
+  - **The registry has 127 currencies:** 22 before, 94 for the new countries and 11 menu currencies. BHD, JOD, KWD, OMR and TND are
+    three-decimal. **UGX and ISK are two-decimal, as Stripe takes them.**
+  - **Menu currency (stated 12 Nov: "menus use local money in all 11"):** `country_settings.menu_currency`, where NULL means
+    `currency`. It is set for BH BHD, JO JOD, KW KWD, OM OMR, TN TND, BT BTN, TM TMT, ER ERN, MR MRU, ST STN and ZW ZWG. HatchGrab still
+    bills those 11 in USD or EUR. A truck's own money (`moneyFormatOf`, provisioning, Manage's costs, reports and charges) uses the menu
+    currency. Plan prices and Billing use `currency` (35.ar-6).
+- **Other settings:**
+  - **Address:** one shared `intl` format (town or city, optional postal code, and the Places region name kept) for 156 countries;
+    the French territories use `fr`, PR `us`, JE/GG/IM `gb` and AX `fi`.
+  - **Allergens:** `codex`, except `uk14` (French territories, Åland, the Crown Dependencies) and `us9` (PR).
+  - **Card fees:** 0 where customers pay at the truck.
+  - **Tax label:** "Tax".
+  - **Clock, date order and week start** come from CLDR.
+  - **Pitcairn:** phone check off.
+  - **Ukraine** leaves out Europe/Simferopol.
+- **Landing segments:** all 167 have `/xx`. A switched-off country's page redirects to /uk, and it is in no sitemap, hreflang set, menu or
+  signup list.
+- **Until deploy, Admin › Countries names the 167 rows as unreadable,** because the deployed code doesn't know the new currencies or the
+  `intl` format. **Deploy before running the switch-on.**
+
+## 89.4 Region blocks (world-countries-5)
+
+- **One list, as data:** `lib/region-blocks.ts`. It is checked by `checkTradeArea`, which signup (`/api/setup`), the signup step,
+  provisioning and **Manage › Where you trade** all run.
+- **The refusal** is `tradeArea.region_blocked`: "Sorry, HatchGrab isn't available in your region yet." It is Dominic's wording, in all 48
+  bases, and it does not name the region.
+- **What is blocked:**
+  - **Ukraine:** Crimea (UA-43), Sevastopol (UA-40), all of Luhansk (UA-09), and the whole Donetsk (UA-14), Zaporizhzhia (UA-23) and
+    Kherson (UA-65) oblasts.
+  - **Georgia:** Abkhazia (GE-AB), and **South Ossetia by town** (Tskhinvali, Akhalgori, Java, Znauri, Kvaisi). Places files those towns
+    under Georgia's own regions, so no region name identifies it.
+  - **Moldova:** Transnistria (MD-SN). **Bender stays on its list** (stated 12 Nov).
+  - **Canada:** Saskatchewan (CA-SK). It moved here from canada-2's `signupClosed`; Quebec and Manitoba keep theirs.
+- **How a town is matched:**
+  - by a stem inside the picked place's region name (English, Ukrainian, Russian, Georgian, Romanian and more);
+  - by the town's own name (typed or picked);
+  - in Canada, by the region code.
+  - **A typed town not on a block's list is not caught.**
+- **Proof:** `scripts/world-countries-5.cjs` (33 towns refused, 16 accepted).
+
+## 89.5 The country selector (world-countries-5)
+
+- **Footer menu only** (`components/landing/CountryMenu.tsx`): the title "Choose your country" and the line "Prices, language and
+  settings change to match."
+- **Region buttons:** Europe, Americas, Asia Pacific, Middle East and Africa, at the top on every screen size. They are a tablist with
+  one list per region (`lib/country-regions.ts`, from the CSV).
+  - It opens on the visitor's region.
+  - Only enabled countries appear, and empty regions are hidden.
+  - With one region there are no buttons.
+- **Each country:** its flag, its name in its own language (Serbian in Latin script: Srbija, Crna Gora; `lib/region-name.ts`), and a
+  tick on the current one. Sorted by English name. No codes, no search. The closed footer button keeps its code chip.
+- **Laptop:** 5 columns. **iPad:** 4 columns at ≤1100px, with no scrolling. **Phone (≤720px):** a full-screen panel; the region
+  buttons scroll sideways, one country per row, everything 44px or more.
+- **Screenshots:** in `docs/world-countries-5/shots/`, from a local render with all 210 countries switched on in memory only.
+
+## 89.6 Languages: 48 bases, 103 locales, every new one switched off
+
+- **languages-world-1 (10–11 Nov; pushed):**
+  - **8 new full bases:** tr-TR, ko-KR, zh-TW, id-ID, vi-VN, he-IL, is-IS, sr-RS.
+  - **39 regional variants:** 15 Spanish over es-MX (AR, UY and PY use voseo); en-ZA/KE/NG/GH/JM/TT/BS/BB over en-GB and en-PH over
+    en-US; 7 Arabic over ar-AE; fr-MA/TN/SN/CI/MC; pt-AO/MZ/CV.
+  - Each new base has the Privacy Policy, Terms and Country-specific terms. 🔴 **The English Country-specific terms have no section for
+    any of these countries.** That is a lawyer's job before each switch-on.
+  - **Hebrew is right to left.** The RTL rule is `/^(ar|he|ur)(-|$)/` with Urdu (below).
+  - iOS `.lproj` folders were added; the store listings are staged in `data/store-listing/next/`.
+- **languages-world-2 (11–12 Nov; local, not pushed): PAUSED at 12 of 23.**
+  - **Done, committed, switched off:** uk-UA, ru-KZ, kk-KZ, uz-UZ (Latin), az-AZ, ka-GE, hy-AM, mn-MN (Cyrillic), hi-IN, bn-BD,
+    **ur-PK (right to left)** and ne-NP.
+  - Each has every key, back-translations, 0 structural problems, allergen-guard words, an iOS `.lproj` and its registration.
+  - SEO research is done for all 23, and allergen-guard lists for all 23 (11 are not installed yet).
+  - Store listings for 6 are staged.
+  - **Not done:** sq-AL, mk-MK, bs-BA, ca-AD, si-LK, ta-LK, km-KH, lo-LA, fil-PH (3 of 9 parts), sw-TZ, am-ET; **the legal pages
+    for all 23**; store listings for 14.
+  - **Resume from `docs/languages-world-2/handover/`.** Note that its `en-GB.start.json` lacks pricing-copy-4's 5 keys.
+- **Decisions still open:**
+  - Native digits (Intl writes Bengali and Devanagari digits for bn-BD and ne-NP) or `-u-nu-latn`. The same choice applies to the 7
+    Arabic variants.
+  - Each country's language where there are two: KZ ru-KZ or kk-KZ; LK si-LK or ta-LK; PH en-PH.
+  - French or Arabic for Morocco and Tunisia.
+  - tú, usted or vos in Central America.
+  - One zh-Hant listing serves both HK and TW.
+- **Serbian:** Latin script for dates (pricing-copy-3) and for country names (world-countries-5; live Serbia included).
+- **Sweep:** 5 harnesses fail until the new bases have legal pages: paperwork-1, legal-languages-1, world-countries-3, contact-1, tidy-1.
+
+## 89.7 The apps: the App Store everywhere, the 1.1 build, and Meta's SDK
+
+- 🔴 **Correction (stated 12 Nov): the iPad and Android apps are NOT "UK only".** Apple's iTunes lookup (GB only, 24 Oct and 3 Nov) was
+  misleading. App Store availability (`scripts/ios/availability.cjs`):
+  - **31 Aug – 9 Nov:** 44 storefronts, the 42 country_settings territories plus Moldova and Ukraine.
+  - **9 Nov:** 42. Moldova and Ukraine were removed (ios-intl-1, Dominic's decision). LI and GI are not App Store territories.
+  - **12 Nov: every App Store territory, 175** (world-countries-5, `--all --apply`, availability only; stated: "make the app available in
+    EVERY App Store storefront"). This added 133, including Moldova and Ukraine again, Russia, Belarus and China. **China also needs an
+    ICP filing number before the app appears there.** "Available in new territories" is still off.
+  - **Google Play:** not UK-only either. Dominic adds countries in Play Console by hand; the current list is not recorded here.
+- **Store flags:**
+  - `ios_app_available` is true for every go-live country. The 56 new countries still at false are set in 20261095.
+  - `android_app_available` is unchanged: on for 150 new countries and off for the 17 with no Play storefront in `countries.csv` (AD
+    BD BI CF DJ ER ET GN GQ KI KM LS MH TG TL TV WS). Whether those 17 should go on is open.
+- **ios-intl-1 (9 Nov):**
+  - **1.1 build 3** is uploaded, VALID and in internal TestFlight; App Store Connect shows PREPARE_FOR_SUBMISSION. It is in 29
+    languages (`scripts/ios/native-strings.cjs`), with 29 listing locales in `data/store-listing/` (bg, et, lv and lt have no ASC
+    locale and see en-GB).
+  - **The App Store Connect API key lives outside the repo:** `~/.appstoreconnect/hatchgrab-asc.json` and `private_keys/AuthKey_*.p8`,
+    chmod 600, read by `scripts/ios/asc.cjs`. It is never printed or committed, and never in a `.env*` file (Dominic's choice (b)).
+  - **Open:** the iPad TestFlight check; the App Privacy answers; the age rating; Submit for Review (Dominic only; freeze web deploys
+    until the decision); extend the demo events past 22 Nov if review runs long.
+- **meta-sdk-1 (pushed):** `FB.init` in `lib/whatsapp/embedded-signup.ts` sets `autoLogAppEvents: false` and `xfbml: false`. The SDK
+  still loads when the WhatsApp setup panel renders (option A only; stated). The privacy-form answers: App Store "Data used to track
+  you: None"; Play "not shared".
+
+## 89.8 Email sender (email-sender-1; pushed)
+
+- **`lib/email-config.ts`:** `HATCHGRAB_HELLO` = hello@hatchgrab.com, `HATCHGRAB_NOREPLY` = donotreply@hatchgrab.com.
+  - `HATCHGRAB_SENDER` sends from hello@ with Reply-To hello@.
+  - `brevoFrom(name)`: "HatchGrab" sends from hello@; a truck's name sends from donotreply@ with no Reply-To.
+  - Reviews and paperwork shares go as "<truck> via HatchGrab", Reply-To the truck's own address or else hello@.
+- **All 22 emails send from hatchgrab.com.** `EMAIL_FROM_ADDRESS` is no longer read. `NEXT_PUBLIC_SUPPORT_EMAIL` sets no sender; it
+  only sets the contact-form inbox and the dashboard support address.
+- **Brevo:** hatchgrab.com is authenticated (DKIM, Brevo code, DMARC green). 9 of 9 test sends were delivered to Outlook (inbox or junk
+  not known).
+- **Open:**
+  - the dashboard support address still falls back to hello@villagefoodie;
+  - delete `EMAIL_FROM_ADDRESS` from Vercel and the competitor-check secret;
+  - the calendar UID domain is still villagefoodie;
+  - ⚠️ email-sender-1 guesses `NEXT_PUBLIC_SUPPORT_EMAIL` is a villagefoodie address in Vercel, while this manual records it as
+    hello@hatchgrab.com (set 2 Nov, stated). Unresolved; ask Dominic.
+
+## 89.9 Search Console and the legal pages (gsc-index-1, gsc-index-2; pushed)
+
+- **gsc-index-1 (diagnosis):** 139 sitemap URLs, all 200, indexable and self-canonical. No live 404s or orphans.
+  - **The one defect:** the 105 translated legal pages declared hreflang one way and were not in the sitemap.
+  - A missing Village Foodie venue answers 200 (a soft 404); that is for its own workstream.
+- **gsc-index-2:** `legalLanguages(doc)` in `components/legal/translated-legal.tsx`. Each legal document is one hreflang cluster of 37
+  entries (en-GB, 35 translations, x-default), declared by every member.
+  - **The sitemap went from 139 to 244 URLs.**
+  - **`/support` → 308 `/contact`** (query kept, HatchGrab hosts only, in `proxy.ts`).
+  - Harness `scripts/gsc-index-2.cjs` (run by hand after a build). After deploy, check that Search Console's Sitemaps shows 244.
+
+## 89.10 The demo's menu carries into the new account (demo-claim-1, demo-claim-2; pushed)
+
+- **demo-claim-1 (diagnosis):** Le Roi du Churrasco's claimed menu was never committed. Its verify link opened on another device without
+  `?import=demo`.
+- **demo-claim-2:**
+  - **Migration 20261084 (RUN):** 7 `demo_sessions.menu_*` columns.
+  - **`lib/demo-menu-carry.ts`:** `/api/setup create_truck` commits the claimed upload demo's menu at the review's defaults.
+    - The defaults: variants grouped, prep empty, `allergens_verified` false, unpriced dishes hidden.
+    - A branded demo's logo is copied if the truck has none.
+    - **Never a template, never over an existing menu** (Dominic's rule: if the truck has items, do nothing and say so), never twice. A
+      failure wipes partial rows.
+  - **The review is owed from saved state** on any device (`/api/manage` `menu_review_state` / `set_menu_review`). A "Check your menu"
+    card appears after hand edits. `?import=demo` is now only an alias.
+  - `signup_started` fires from every `DemoGetStarted` surface.
+  - ⚠️ Le Roi's 11 dishes are confirmed with all 14 allergens and need a human look.
+
+## 89.11 The capacity window (capacity-window-1; diagnosis, STOPPED, nothing changed)
+
+- **Kitchen capacity is an "at once" limit.** The window W only steps instant counted items back from each order's own collection time.
+  It is not a bucket and not tied to the clock.
+- 🔴 **Open defect:** at W > 5 with instant counted items, the dashboard dots and the empty-basket list mark a slot full up to W minutes
+  too early, and so disagree with the picker (§1.5 of the report). It is worse now that W goes to 60 (V16.16). Questions Q1–Q3 (at once
+  or per window; Le Roi's sides) are unanswered (§89.14).
+
+## 89.12 Collection times from the event's start: what V16.17 left out (collection-anchor-1; local, not pushed)
+
+- **The backup picker** no longer offers times after the event's end. Its "Around" estimate rounds **up onto the event's grid**
+  (`firstGridTimeAtOrAfter`), not to the nearest 5 minutes.
+- `firstClockSlotAtOrAfter`, `clockGridMinutes` and `minutesForHour` are removed. `production_slot` still rounds down from midnight but
+  counts nothing.
+- **An existing order on an off-grid event** is booked as requested without a capacity check ("unrecognised slot") and has no dot. On 12
+  Nov no upcoming event was affected (Gusto not queried).
+
+## 89.13 What is pushed and what is run (OBSERVED 12 Nov)
+
+- **origin/main = `9c30a623`** (11 Nov 21:00). **37 local commits are not pushed:** languages-world-2, pricing-copy-3's later commits,
+  pricing-copy-4, longer-intervals, collection-anchor-1, world-countries-5 and their reports. Deploy is not checked here.
+- **Run in the database:** 20261084 (demo-claim-2), 20261085–20261090 (billing), 20261091 (pricing-copy-2), 20261092 (V16.16),
+  20261093, 20261094 and 20261096 (world-countries-5).
+- **Not run:** 20261095 (the switch-on) and the BR/MY/SG/TH plan-offer SQL (billing-1 §10.6).
+- **Last full sweep (12 Nov, after `10b41ccc`):** 218 run, 212 passed. 5 fail on the legal pages above, and `event-types-render` on a
+  `.next` build made by another session.
+
+## 89.14 Backlog (V16.18)
+
+- 🔴 **Kitchen tickets print non-Latin scripts as "?"** (languages-world-2 §4.5). `lib/printing/ticket.ts` `encodeEscPos` sends only
+  ASCII and "£" to the printer.
+  - Cyrillic, Georgian, Armenian, Devanagari, Bengali, Urdu, Sinhala, Tamil, Khmer, Lao and Ethiopic tickets would print as question
+    marks.
+  - **It already affects the live Greek, Bulgarian, Japanese, Chinese, Thai, Arabic and Hebrew;** Latin-script languages lose their
+    accents.
+  - It needs a raster (image) ticket path or printer code pages (Dominic's decision), before a country in those scripts switches on.
+- 🔴 **Resume languages-world-2:** the 11 languages (sq-AL, mk-MK, bs-BA, ca-AD, si-LK, ta-LK, km-KH, lo-LA, fil-PH, sw-TZ, am-ET),
+  **the legal pages for all 23**, 14 store listings, the 11 allergen-guard lists not yet installed, and pricing-copy-4's 5 keys in the
+  handover's start file.
+- **The country-specific terms sections** for the 47 languages-world-1 countries and the 167 new ones (a lawyer).
+- **Native-speaker checks** (each from the report's own list):
+  - **tr:** "parti" (batch), "çağrı cihazı", "KART BLOKEDE", "açık rıza".
+  - **ko:** 접수 / 확정, 카드 가승인, spelled-out numbers in the legal text.
+  - **zh-TW:** 優惠, 預先授權, 廚房顯示系統, 你 rather than 您.
+  - **id:** "buzzer", "kendaraan", "Promo".
+  - **vi:** "tồn kho", "thẻ rung".
+  - **he:** תפיסת מסגרת, בון, the feminine HatchGrab, פודטראק.
+  - **is:** "píptæki", "innheimta", "kynning", "Knúið af".
+  - **sr:** imperatives on short buttons, "akcija", "pejdžer", "bon".
+  - **Spanish variants:** "Platos fuertes", "plazo mínimo", "Pedile a {truck}".
+  - **Gulf Arabic:** the phone words. **SN/CI:** « Payer sur place ».
+  - **uk:** the order-button wording under Law 3153-IX, for a lawyer.
+  - **kk, uz, az, ka, hy, mn, hi, bn, ur, ne:** the term lists in languages-world-2 §8, e.g. ka Reports / Billing / account, ფუდტრაკი;
+    hy Approve vs Confirm; hi «बिलिंग», «रई».
+  - **lv, hr, sl, hu, de:** the billing words (billing-2 §0.10, billing-3 §6).
+  - **is, sl:** plurals (pricing-copy-2 §2).
+- **Billing switch-on** (§89.1): the steps in order, plus the hand steps in the Stripe Dashboard:
+  - Pix (test, then live);
+  - **customer emails OFF**;
+  - the billing webhook with its event list and its secret in Vercel;
+  - Checkout branding;
+  - Wise EUR/USD payout accounts.
+- 🔴 **Lock the account 7 days after the pause** (billing-2 §1).
+- **VAT-number capture** before billing is switched on in any of the 41 "VAT number required" countries (the tax backlog below).
+- **The terms' fee wording** ("online card orders") against the site's "online orders" (pricing-copy-1 §3).
+- **Whether `comparison.costs.cardFee` follows `offersOnlineCardPayments`** (pricing-copy-4).
+- **The capacity-window display defect and Q1–Q3** (§89.11).
+- **`android_app_available` for the 17 countries** with no Play storefront (§89.7), and Play Console countries (by hand).
+- **The switch-on itself:** deploy, check Admin › Countries reads the 167, then run 20261095 with `--approved-by-dominic`.
+
+
 ## BACKLOG ADDED 11 NOVEMBER 2026 — TAX: VAT NUMBERS, THRESHOLD LOGGING, OSS (decided, not built; review and build separately)
 
 Source research: `docs/world-countries-4-report.md`, `docs/world-countries-4/countries.csv`, Gemini's tax checks saved as `docs/world-countries-4/gemini-tax-84-countries.md`, `gemini-tax-list-1.md` and `gemini-tax-list-2.md`, and the agreed go-live list `docs/world-countries-4/go-live.csv` (210 countries, including the 41 "VAT number required" ones) (11 Nov 2026; Gemini's sources not individually verified). **Dominic's rule (stated 11 Nov 2026):** HatchGrab does not register for tax in any country outside the UK, except the EU One Stop Shop later. Key finding: in most VAT countries a small business **without a VAT number is treated as a consumer**, so "we only sell to businesses" does not protect us unless the truck gives a valid VAT number.
 
-1. **Capture the truck's VAT / tax number in the signup wizard** (and Manage › Settings): label per country (EU VAT number, UK VAT number, UAE TRN, Brazil CNPJ, etc.), validate where possible (VIES for the EU), store it, show it on our invoices. Optional in most countries; **required** in the "VAT number required" countries below.
+1. **Capture the truck's VAT / tax number in the signup wizard** (and Manage › Settings): label per country (EU VAT number, UK VAT number, UAE TRN, Brazil CNPJ, etc.), validate where possible (VIES for the EU), store it, show it on our invoices. Optional in most countries; **required** in the "VAT number required" countries below. ⛔ *V16.18: the per-country flag is stored, `country_settings.vat_number_required` (data only; true for the 39 new rows, and AE and BR in the not-yet-run switch-on); the capture itself is not built.*
 2. **"VAT number required" countries** (offered only once item 1 is built; the reverse charge then means we don't register): 41 countries: AE, BH, OM (Gemini: confirmed; free zones make no difference), BR (CNPJ), GE, AL, KZ, MD, ME, RS, TJ, TR, UZ, BJ, CF, LS, AM, BD, IN (GSTIN), SA, KR (business registration number, which small traders have), PE (RUC), CL, CO, GD, BF, CV, GA, KG, MW, MR, MA, SN, SL, TZ, TG, MK, AX (FI number), GP, MQ, RE (FR number; outside EU OSS). **Decided 11 Nov 2026: all 41 go live now (for SEO), before item 1 is built**, because no customers are expected for months and VAT capture should be live within weeks. Item 1 must be built before billing is switched on in any of them; a truck there without a valid number can't be billed.
 3. **Threshold logging (needed even though unlikely to be reached):** store each country's registration threshold (amount, currency, scope: that country only / worldwide turnover / per US state / per Canadian province, plus transaction counts where they apply); log billed revenue and invoice counts per country, US state and Canadian province; Admin view showing % of each threshold; alert at 75%, stop new signups in that country at 90%. Threshold countries (42): AD, AU, AZ, BA, BS, BT, BW, CA (GST/HST and QST C$30k; BC C$10k; Manitoba C$30k), CH and LI (CHF 100k **worldwide** turnover — above it they become "VAT number required"), CK, EG (EGP 500k), ET, GN, ID (also needs a DJP appointment), IM (counts towards UK £90k), IS, KH, LA, LK, LR, MN, MU, MY (MYR 500k, B2B included), NE, NG, NO (NOK 50k), NP, NZ, PR, SG, SR, SZ, TD, TH, TW, UA, UG (also 5% DST risk on unwithheld payments), US (per state, $100k–$500k, some with 200 transactions), ZA (ZAR 2.3m), ZM, ZW; plus GB (£90k UK VAT). Exact figures in the Gemini files.
 4. **EU (all 27 live):** keep selling, including to trucks without a VAT number. Register for the EU non-Union OSS (one registration for all 27) once there are paying EU customers. ⚠️ VAT is technically due from the first charge to an EU truck without a VAT number, so OSS should be in place before billing charges any such truck.
-5. **Canada:** block Saskatchewan at signup (provincial sales tax from the first sale). **Ukraine, Georgia, Moldova:** block occupied regions / Transnistria at signup (world-countries-4 §3).
+5. **Canada:** block Saskatchewan at signup (provincial sales tax from the first sale). **Ukraine, Georgia, Moldova:** block occupied regions / Transnistria at signup (world-countries-4 §3). ✅ *V16.18: built (world-countries-5) — `lib/region-blocks.ts` refuses all of these at signup and in Where you trade (§89.4).*
 6. **Japan:** our invoice/checkout must say the customer accounts for Japanese consumption tax under the reverse charge.
 7. **Terms:** prices exclude local taxes; any tax a customer must withhold from our fee is the customer's cost (or reduces what we receive). Wording for Dominic's approval.
-8. **Cannot sell (registration needed even for business customers):** Mexico (live today: switch off after checking no truck is trading there), Philippines, Barbados, Cameroon, Congo, Côte d'Ivoire, DR Congo, Ghana, Kenya, Rwanda, Vietnam. Also excluded: Western Sahara, mainland China, Afghanistan, Somalia, Yemen, Sudan, the sanctioned countries and uninhabited territories.
+8. **Cannot sell (registration needed even for business customers):** Mexico (live today: switch off after checking no truck is trading there), ⛔ *(V16.18: no truck has ever been in MX, OBSERVED 12 Nov; its switch-off is in migration 20261095, prepared, NOT run — §89.3)* Philippines, Barbados, Cameroon, Congo, Côte d'Ivoire, DR Congo, Ghana, Kenya, Rwanda, Vietnam. Also excluded: Western Sahara, mainland China, Afghanistan, Somalia, Yemen, Sudan, the sanctioned countries and uninhabited territories.
 9. **Sanctions name check at signup** against the UK and US lists. Held until it exists (tax-clear but sanctions-flagged): Haiti, Iraq, Lebanon, Libya, Mali, Myanmar, Palestine, South Sudan, Venezuela.
 10. **Research complete (11 Nov 2026):** 249 ISO codes = 210 go live (169 + the 41 VAT-number-required) + 9 held for the sanctions check + 11 cannot sell + 19 excluded.
 
