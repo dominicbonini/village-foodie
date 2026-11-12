@@ -96,16 +96,60 @@ Nothing arrived garbled, and no instructions contradicted each other. "The full 
 
 These are that session's work to finish. None involves a file of mine, and none existed at my last green sweep.
 
+## 3b · Follow-up (12 November 2026): the approved wording in languages-world-2's new languages
+
+You asked for the pricing-copy-2 and pricing-copy-3 wording in all 23 new languages, with everything else following en-GB at HEAD.
+
+- **Only 9 of the 23 exist at HEAD so far:** ru-KZ, uk-UA, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN and hi-IN. languages-world-2 is still committing them one at a time. **The other 14 don't exist yet**, so there was nothing to apply to.
+- Every new language is now **checked automatically** by pricing-copy-2, pricing-copy-3 and costs-accounts-1 (below), so any of the 14 that arrives with old wording fails by name.
+- **Audit of the 9:**
+  - pricing-copy-1's wording was already right in all 9: the banner has no up-front sentence, and the Pay as you go line has no asterisk and no "card".
+  - All 9 pass translation-check with 0 structural problems.
+  - **hi-IN** arrived already correct; languages-world-2 now translates from the current en-GB.
+  - **The first 8** were translated from the wording before pricing-copy-2/3.
+- **Applied to the 8** (commit `f37bc348`, minimal edits; each language reuses its own existing words for "online orders"):
+
+| Locale | Plan table fee row (asterisk kept) | Pay as you go description, 2nd sentence | "Pay at the truck" label |
+|---|---|---|---|
+| ru-KZ | Комиссия HatchGrab с онлайн-заказов* | Вы платите только 0,99 % с онлайн-заказов. | already = price word |
+| uk-UA | Комісія HatchGrab за онлайн-замовлення* | Ви платите лише 0,99% з онлайн-замовлень. | Оплата у фудтраку → **Оплата на місці** |
+| kk-KZ | Онлайн тапсырыстарға HatchGrab комиссиясы* | Тек онлайн тапсырыстарға 0,99% төлейсіз. | already = price word |
+| uz-UZ | Onlayn buyurtmalar uchun HatchGrab komissiyasi* | Faqat onlayn buyurtmalar uchun 0,99% toʻlaysiz. | Fudtrakda toʻlash → **Olib ketishda toʻlash** |
+| az-AZ | Onlayn sifarişlərdə HatchGrab haqqı* | Yalnız onlayn sifarişlərdən 0,99% ödəyirsiniz. | already = price word |
+| ka-GE | HatchGrab-ის საკომისიო ონლაინ შეკვეთებზე* | იხდით მხოლოდ 0,99%-ს ონლაინ შეკვეთებზე. | already = price word |
+| hy-AM | HatchGrab-ի վճար առցանց պատվերների համար* | Վճարում եք միայն 0,99%՝ առցանց պատվերների համար։ | Վճարել ֆուդթրաքում → **Վճարում վերցնելիս** |
+| mn-MN | Онлайн захиалгын HatchGrab шимтгэл* | Та зөвхөн онлайн захиалгад 0.99% төлнө. | Газар дээр нь төлөх → **Очиж авахдаа төлөх** |
+
+- Back-translations follow: "HatchGrab fee on online orders*", "…You only pay 0.99% on online orders.", and the label's back is the price word's back.
+- Only those keys moved in each file. I committed by path; the tree had no other changes to those files.
+- **Harness fixes this exposed (mine, no check loosened):**
+  - pricing-copy-2 knows Armenian and Mongolian "card". For any language without a word on file, it reads the key's English back-translation instead, which must exist and must not say "card". So a new language is never a silent pass, and never a hard stop (`44a283d6`).
+  - faq-translate-fix ran the translator with a fixed `limit: 41`, one question's whole job when it was written; the job is now the live base and variant count.
+  - billing-3's "=== 36 bases" is now a floor; every base is still checked by name (`83e707a5`).
+- **Checks:**
+  - translation-check, 0 structural in all 9;
+  - messages-split 205/0, messages-parity 1,143,852/0, RTL 119/0;
+  - costs-accounts-1 78/0, pricing-copy-2 624/0, pricing-copy-3 34/0, faq-translate-fix 42/0, billing-3 51/0.
+- **Full sweep at HEAD `83e707a5`** (45 bases): 215 run · 206 passed · 9 failed. One was pricing-copy-2, which stopped on hi-IN's missing "card" word; it is fixed in `44a283d6` and passes 624/0. **The other 8 are languages-world-2's unfinished assets for its new bases. None is a wording problem:**
+  - paperwork-1, world-countries-3, contact-1, tidy-1 and legal-languages-1: no `content/legal/<locale>/` files yet for the new bases (e.g. `content/legal/ru-KZ/privacy-policy.md`).
+  - badges-manual-1 and store-badges-1: no store badges yet for the 9.
+  - compare-suits-1: no "never name a card reader / till" word lists yet for the 9.
+
+  These are for languages-world-2 to add as it finishes each language.
+
 ## 4 · Commits (main, local, not pushed)
 - `9e389c11` the four labels (+ split files, back-translations)
 - `260a69c4` the Serbian date mapping and its uses; `scripts/pricing-copy-3.cjs`
 - `fa394199` weekly-post's variant compile carries `lib/i18n/intl-locale.ts`
 - `ece1caa6` pricing-copy-1 / pricing-copy-2 harness fixes for locales created after them
+- `f37bc348` the approved wording in the 8 new bases (§3b)
+- `83e707a5` faq-translate-fix's live job size, billing-3's base-count floor
+- `44a283d6` pricing-copy-2: a new language without a "card" word is checked through its back-translation
 - this report
 
 I committed by path only. Left alone in the tree (other sessions'): `docs/reference-manual.md`, `docs/world-countries-4/*`, and languages-world-2's files.
 
 ## Undo (only if Dominic asks)
 ⛔ DO NOT RUN unless Dominic asks.
-- `git revert` the pricing-copy-3 commits, newest first (`git log --grep=^pricing-copy-3:`).
+- `git revert` the pricing-copy-3 and pricing-copy-4 commits, newest first (`git log --grep='^pricing-copy-[34]:'`).
 - No database change was made.
