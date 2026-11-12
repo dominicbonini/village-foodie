@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "बज़र <b>{number}</b> अभी <b>ऑर्डर #{holderId}</b>{hasName, select, yes { ({name})} other {}} के पास है। इसे <b>{hasTarget, select, yes {ऑर्डर #{targetId}} other {इस ऑर्डर}}</b> के लिए ले लें?",
+  "cancel": "रद्द करें",
+  "take": "बज़र {number} लें",
+  "titleBlocking": "ऑर्डर #{id} के लिए बज़र?",
+  "title": "बज़र चुनें",
+  "subtitle": "{hasTarget, select, yes {ऑर्डर #{id}} other {यह ऑर्डर}}{hasCurrent, select, yes { · अभी बज़र {current}} other {}}",
+  "allTaken": "{n, plural, one {बज़र इस्तेमाल में है। इसे किसी दूसरे ऑर्डर से लेने के लिए टैप करें।} other {सभी {count} बज़र इस्तेमाल में हैं। किसी एक को दूसरे ऑर्डर से लेने के लिए टैप करें।}}",
+  "thisOrder": "यह ऑर्डर",
+  "noBuzzer": "कोई बज़र नहीं",
+  "done": "हो गया",
+  "lostTitle": "ऑर्डर #{id} के पास बज़र नहीं है",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}जब आप ऑफ़लाइन थे, तब किसी दूसरे ऑर्डर ने वही बज़र ले लिया। उन्हें कोई दूसरा बज़र दें।",
+  "dismiss": "हटाएँ",
+  "assign": "दें"
+}

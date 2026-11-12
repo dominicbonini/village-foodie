@@ -1,0 +1,10 @@
+{
+  "copy": "कॉपी करें",
+  "copied": "कॉपी हो गया ✓",
+  "failed": "कॉपी नहीं हो सका",
+  "aria": "{label} {thing}",
+  "announceCopied": "कॉपी हो गया: {thing}",
+  "announceCopiedValue": "वैल्यू कॉपी हो गई",
+  "announceFailed": "कॉपी नहीं हो सका: {thing}। टेक्स्ट चुनें और ख़ुद कॉपी करें।",
+  "announceFailedValue": "वैल्यू कॉपी नहीं हो सकी। टेक्स्ट चुनें और ख़ुद कॉपी करें।"
+}

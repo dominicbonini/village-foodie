@@ -1,0 +1,10 @@
+{
+  "vanFallback": "वैन",
+  "eventsFeed": {
+    "today": "आज · {date}",
+    "tomorrow": "कल · {date}"
+  },
+  "privacyNotSaved": "इवेंट लाइव है, लेकिन उसकी प्राइवेसी सेव नहीं हो सकी।",
+  "stockWarning": "“{category}” में कोई आइटम उपलब्ध नहीं",
+  "uncategorised": "बिना कैटेगरी"
+}

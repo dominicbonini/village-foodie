@@ -1,0 +1,18 @@
+{
+  "menuLabel": "यूज़र मेनू",
+  "screenOn": "स्क्रीन चालू",
+  "screenOff": "स्क्रीन बंद",
+  "newOrderSound": "नए ऑर्डर की आवाज़",
+  "copied": "कॉपी हो गया",
+  "orderLink": "ऑर्डर लिंक",
+  "qrCode": "QR कोड",
+  "kitchenScreen": "किचन डिस्प्ले (KDS)",
+  "thisDevice": "यह डिवाइस",
+  "manage": "मैनेज",
+  "ordersDashboard": "ऑर्डर डैशबोर्ड",
+  "admin": "एडमिन",
+  "privacy": "गोपनीयता नीति",
+  "terms": "शर्तें",
+  "signOut": "साइन आउट करें",
+  "close": "बंद करें"
+}

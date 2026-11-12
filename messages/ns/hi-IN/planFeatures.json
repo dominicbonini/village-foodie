@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "डिस्कवरी मैप पर लिस्टिंग"
+    },
+    "web_dashboard": {
+      "name": "हर डिवाइस पर वेब डैशबोर्ड"
+    },
+    "qr_code": {
+      "name": "QR कोड"
+    },
+    "schedule_import": {
+      "name": "शेड्यूल का ऑटोमैटिक इम्पोर्ट"
+    },
+    "meal_deals_upsells": {
+      "name": "कॉम्बो और अपसेल"
+    },
+    "walkup_orders": {
+      "name": "वॉक-इन ऑर्डर प्रोसेसिंग"
+    },
+    "sold_out_toggle": {
+      "name": "एक टैप में “ख़त्म” टॉगल"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad और Android किचन ऐप"
+    },
+    "offline_protection": {
+      "name": "ऑफ़लाइन ऑर्डर सुरक्षा"
+    },
+    "online_payments": {
+      "name": "ऑनलाइन पेमेंट"
+    },
+    "advance_preordering": {
+      "name": "आगे की तारीख़ के प्री-ऑर्डर"
+    },
+    "preorder_deadline": {
+      "name": "प्री-ऑर्डर की डेडलाइन"
+    },
+    "time_slot_selection": {
+      "name": "ग्राहकों के लिए टाइम स्लॉट चुनने की सुविधा"
+    },
+    "kitchen_capacity": {
+      "name": "किचन की क्षमता का मैनेजमेंट"
+    },
+    "stock_countdown": {
+      "name": "स्टॉक की ऑटोमैटिक गिनती"
+    },
+    "auto_accept": {
+      "name": "ऑनलाइन ऑर्डर ऑटो-एक्सेप्ट"
+    },
+    "branded_qr_code": {
+      "name": "ब्रांडेड QR कोड"
+    },
+    "private_events": {
+      "name": "प्राइवेट इवेंट"
+    },
+    "social_media_posts": {
+      "name": "सोशल मीडिया पोस्ट"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp ऑटो-रिप्लाई"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger और Instagram ऑटो-रिप्लाई"
+    },
+    "tap_to_pay": {
+      "name": "अपने फ़ोन पर पेमेंट लें"
+    },
+    "sms_order_alerts": {
+      "name": "SMS ऑर्डर अलर्ट"
+    },
+    "multi_device_kitchen": {
+      "name": "कई डिवाइस पर किचन सिंक"
+    },
+    "multi_user_access": {
+      "name": "कई यूज़र की एक्सेस"
+    },
+    "embed_schedule": {
+      "name": "आपकी अपनी वेबसाइट पर शेड्यूल पेज"
+    },
+    "event_types": {
+      "name": "कस्टम इवेंट टाइप और क़ीमतें"
+    },
+    "buzzer_tracking": {
+      "name": "बज़र ट्रैकिंग"
+    },
+    "documents_reminders": {
+      "name": "दस्तावेज़ और रिमाइंडर"
+    },
+    "profit_per_event": {
+      "name": "हर इवेंट का मुनाफ़ा"
+    },
+    "accountant_reports": {
+      "name": "आपके अकाउंटेंट के लिए रिपोर्ट"
+    },
+    "ticket_printing": {
+      "name": "किचन टिकट प्रिंटिंग"
+    },
+    "customer_display": {
+      "name": "ग्राहकों के लिए डिस्प्ले"
+    },
+    "loyalty_stamp_cards": {
+      "name": "डिजिटल लॉयल्टी स्टैम्प कार्ड"
+    }
+  },
+  "cardRegionOnline": "स्टैंडर्ड {region}",
+  "cardRegion": {
+    "UKcards": "ब्रिटिश कार्ड",
+    "EEAcards": "यूरोपीय (EEA) कार्ड",
+    "UScards": "अमेरिकी कार्ड",
+    "Australiancards": "ऑस्ट्रेलियाई कार्ड",
+    "NewZealandcards": "न्यूज़ीलैंड के कार्ड",
+    "Canadiancards": "कनाडाई कार्ड",
+    "Swisscards": "स्विस कार्ड",
+    "Braziliancards": "ब्राज़ीलियाई कार्ड",
+    "Mexicancards": "मैक्सिकन कार्ड",
+    "Japanesecards": "जापानी कार्ड",
+    "Singaporecards": "सिंगापुर के कार्ड",
+    "HongKongcards": "हांगकांग के कार्ड",
+    "Malaysiancards": "मलेशियाई कार्ड",
+    "Thaicards": "थाई कार्ड",
+    "UAEcards": "यूएई के कार्ड"
+  },
+  "perMonth": {
+    "mo": "{amount}/माह",
+    "month": "{amount}/माह"
+  },
+  "priceWord": {
+    "free": "फ़्री",
+    "freeTrial": "फ़्री ट्रायल",
+    "lifetime": "लाइफ़टाइम",
+    "zeroPercent": "0%",
+    "payAtHatch": "पिकअप पर भुगतान",
+    "unlimited": "अनलिमिटेड",
+    "none": "—",
+    "masked": "बाद में तय"
+  },
+  "cell": {
+    "included": "शामिल"
+  }
+}

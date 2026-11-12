@@ -1,0 +1,69 @@
+{
+  "close": "बंद करें",
+  "cancel": "रद्द करें",
+  "selectReason": "वजह चुनें",
+  "reject": {
+    "title": "ऑर्डर #{orderId} अस्वीकार करें?",
+    "reasonLabel": "वजह — ज़रूरी (ग्राहक को दिखेगी)",
+    "reason": "{reason, select, sold_out {कोई आइटम ख़त्म हो गया} too_busy {बहुत भीड़ है — समय पर नहीं बन पाएगा} closing_soon {जल्द बंद हो रहे हैं} other {अन्य}}",
+    "noteRequired": "वजह — ज़रूरी",
+    "noteOptional": "अतिरिक्त नोट — वैकल्पिक",
+    "notePlaceholder": "ग्राहक के लिए और जानकारी जोड़ें…",
+    "keep": "ऑर्डर रखें",
+    "confirm": "ऑर्डर अस्वीकार करें"
+  },
+  "eventCancel": {
+    "title": "यह इवेंट रद्द करें?",
+    "affected": "{n, plural, one {{count} ऑर्डर} other {{count} ऑर्डर}} रद्द कर दिए जाएँगे और ग्राहकों को सूचना दी जाएगी।",
+    "reasonLabel": "वजह — वैकल्पिक",
+    "reason": "{reason, select, vehicle_breakdown {गाड़ी ख़राब हो गई} weather {मौसम} venue_issue {जगह से जुड़ी समस्या} personal_emergency {निजी इमरजेंसी} other {अन्य}}",
+    "messageLabel": "ग्राहकों के लिए संदेश — वैकल्पिक",
+    "messagePlaceholder": "जैसे: माफ़ कीजिए, जगह पर आते समय रास्ते में हमारी गाड़ी ख़राब हो गई…",
+    "keep": "इवेंट रखें",
+    "cancelling": "रद्द हो रहा है…",
+    "confirm": "इवेंट रद्द करें"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {इवेंट फिर से शुरू करें} other {इवेंट शुरू करें}}",
+    "changeEvent": "इवेंट बदलें",
+    "changeEventType": "इवेंट का टाइप बदलें…",
+    "privateLink": "प्राइवेट लिंक और QR कोड",
+    "noteLabel": "ग्राहकों के लिए नोट",
+    "notePlaceholder": "जैसे: मेन पार्किंग में गाड़ी खड़ी करें, नारंगी टेंट ढूँढें",
+    "noteHint": "ऑर्डर पेज पर आपके इवेंट की जानकारी के नीचे ग्राहकों को दिखता है।",
+    "saveNote": "नोट सेव करें",
+    "resume": "ऑर्डर फिर शुरू करें",
+    "pause": "ऑर्डर रोकें",
+    "changeFinishTime": "इवेंट ख़त्म होने का समय बदलें",
+    "finishEvent": "इवेंट ख़त्म करें",
+    "cancelEvent": "इवेंट रद्द करें"
+  },
+  "finish": {
+    "confirmTitle": "ख़त्म होने का समय बदलें?",
+    "willFinish": "यह इवेंट <b>{selected}</b> पर ख़त्म होगा{hasCurrent, select, yes {, <b>{current}</b> पर नहीं} other {}}।",
+    "dueAfter": "<b>{n, plural, one {{count} ऑर्डर का पिकअप {selected} के बाद है।} other {{count} ऑर्डरों का पिकअप {selected} के बाद है।}}</b> {n, plural, one {वह बोर्ड पर बना रहेगा और उसे अब भी बनाना होगा।} other {वे बोर्ड पर बने रहेंगे और उन्हें अब भी बनाना होगा।}} ख़त्म होने का समय बदलने से सिर्फ़ बाद के समय के लिए नए ऑर्डर आने बंद होते हैं।",
+    "saving": "सेव हो रहा है…",
+    "confirm": "ख़त्म होने का समय बदलें",
+    "keepCurrent": "यही रखें: {current}",
+    "keepAsIs": "जैसा है वैसा रखें",
+    "title": "ख़त्म होने का समय बदलें",
+    "currentlySet": "यह इवेंट अभी <b>{current}</b> पर ख़त्म होने के लिए सेट है।",
+    "noFinishTime": "इस इवेंट के ख़त्म होने का कोई समय सेट नहीं है।",
+    "noTimesLeft": "आज के लिए कोई समय नहीं बचा है। इसके बजाय “इवेंट ख़त्म करें” इस्तेमाल करें।",
+    "newFinishTime": "ख़त्म होने का नया समय",
+    "optionCurrent": "{time} (अभी का)",
+    "earlier": "यह ख़त्म होने के मौजूदा समय से पहले है। ग्राहक इसके बाद के समय के लिए ऑर्डर नहीं कर पाएँगे।",
+    "review": "बदलाव देखें",
+    "optionNextDay": "{time} (अगले दिन)"
+  },
+  "extraWait": {
+    "title": "अतिरिक्त इंतज़ार जोड़ें",
+    "hint": "नए ऑर्डर पर बताए जाने वाले पिकअप के समय में जुड़ता है। इससे इवेंट ख़त्म होने का समय नहीं बदलता।",
+    "option": "+{mins} मिनट"
+  },
+  "picker": {
+    "reconnect": "लोड करने के लिए फिर से कनेक्ट करें",
+    "selected": "चुना गया",
+    "status": "{tone, select, paused {⏸ रुका हुआ} live {● लाइव} finished {● ख़त्म} cancelled {रद्द} other {शुरू नहीं हुआ}}"
+  }
+}

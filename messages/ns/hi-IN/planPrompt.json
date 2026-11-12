@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{plan} में {feature} शामिल हैं।} other {{plan} में {feature} शामिल है।}}",
+  "notOnPlan": "{many, select, yes {{feature} आपके प्लान में नहीं हैं।} other {{feature} आपके प्लान में नहीं है।}}",
+  "switchedOff": "{many, select, yes {आपके ट्रक के लिए {feature} बंद हैं।} other {आपके ट्रक के लिए {feature} बंद है।}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "अपग्रेड करें →",
+  "features": {
+    "discovery_map": {
+      "name": "डिस्कवरी मैप पर लिस्टिंग",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "वेब डैशबोर्ड",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "किचन ऐप",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR कोड मेनू",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "कॉम्बो",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "अपसेल",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "वॉक-इन ऑर्डर",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "पिकअप के समय भुगतान वाली ऑनलाइन ऑर्डरिंग",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "“ख़त्म” टॉगल",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "स्टॉक की गिनती",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "ऑफ़लाइन ऑर्डर सुरक्षा",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "ऑनलाइन पेमेंट",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "आगे की तारीख़ के प्री-ऑर्डर",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "ग्राहकों के लिए टाइम स्लॉट",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "किचन की क्षमता का मैनेजमेंट",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "ऑटो-एक्सेप्ट",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger और Instagram ऑटो-रिप्लाई",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "ब्रांडेड QR कोड",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "एडवांस्ड रिपोर्टिंग",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "किचन टिकट प्रिंटिंग",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "कई डिवाइस पर किचन सिंक",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "कुक स्क्रीन",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp ऑटो-रिप्लाई",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "आपकी अपनी वेबसाइट पर आपका शेड्यूल",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "सोशल मीडिया पोस्ट",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "कस्टम इवेंट टाइप",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "प्राइवेट इवेंट",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "दस्तावेज़",
+      "many": "yes"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "नया ऑर्डर #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "नया ऑर्डर मिला",
+    "from": "<b>ऑर्डर #{id}</b> · ग्राहक: <b>{name}</b>",
+    "collection": "पिकअप: {time}",
+    "asap": "कोई तय समय नहीं — जल्द से जल्द",
+    "total": "कुल",
+    "notes": "<b>नोट:</b> {notes}",
+    "autoConfirmed": "अपने-आप कन्फ़र्म — आपको कुछ करने की ज़रूरत नहीं।",
+    "confirmPrompt": "यह ऑर्डर कन्फ़र्म या अस्वीकार करने के लिए अपने HatchGrab डैशबोर्ड में लॉग इन करें।",
+    "text": "नया ऑर्डर #{id} — ग्राहक: {name}{withSlot, select, yes {, पिकअप: {slot}} other {}}{withVenue, select, yes {, जगह: {venue}} other {}}।{withCharges, select, yes { {charges}।} other {}} कुल {total}।{withNotes, select, yes { नोट: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck}: नए इवेंट मिले — कृपया देखें",
+    "hi": "नमस्ते,",
+    "found": "हमें आपके शेड्यूल में <b>{n, plural, one {{count} नया इवेंट मिला है} other {{count} नए इवेंट मिले हैं}}</b>। ग्राहकों को {n, plural, one {इसे} other {इन्हें}} दिखाने से पहले आपकी मंज़ूरी चाहिए।",
+    "listHeading": "मिले हुए इवेंट:",
+    "approve": "जब आप अपने शेड्यूल टैब में इन्हें मंज़ूर कर देंगे, तो ये मैप पर लाइव हो जाएँगे और आपका ऑर्डर पेज प्री-ऑर्डर लेने के लिए तैयार होगा।",
+    "cta": "अपना शेड्यूल देखें →",
+    "signoff": "— HatchGrab टीम · hatchgrab.com",
+    "unknownVenue": "अनजान जगह",
+    "text": "नमस्ते,\n\nहमें आपके शेड्यूल में {n, plural, one {{count} नया इवेंट मिला है} other {{count} नए इवेंट मिले हैं}}, जिनके लिए आपकी मंज़ूरी चाहिए:\n\n{list}\n\nइन्हें यहाँ देखें: {url}\n\nमंज़ूर करते ही ये मैप पर लाइव हो जाएँगे।\n\n— HatchGrab टीम"
+  }
+}

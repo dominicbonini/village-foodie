@@ -1,0 +1,17 @@
+{
+  "back": "← वापस",
+  "title": "कॉम्बो लगाएँ",
+  "save": "{amount} बचाएँ",
+  "selectItems": "हर स्लॉट के लिए आइटम चुनें",
+  "choose": "चुनें: {category}…",
+  "inYourBasket": "── आपके कार्ट में ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (कार्ट में){state, select, used { — पहले से किसी कॉम्बो में} taken { — दूसरे स्लॉट में चुना गया} other {}}",
+  "addNew": "── नया जोड़ें ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {ज़रूरी · एक चुनें} required {ज़रूरी} other {एक चुनें}}{unmet, select, yes { (ज़रूरी)} other {}}",
+  "notePlaceholder": "नोट जोड़ें, जैसे बिना प्याज़ (वैकल्पिक)",
+  "backButton": "वापस",
+  "cancel": "रद्द करें",
+  "chooseRequired": "ज़रूरी विकल्प चुनें",
+  "apply": "कॉम्बो लगाएँ · {amount}"
+}

@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} स्लॉट} other {{count} स्लॉट}} क्षमता से ज़्यादा — देखें",
+  "batchOver": "{cat}: बैच से ज़्यादा — {slot} के लिए {count} ({per} प्रति बैच)",
+  "eventStartOver": "इवेंट की शुरुआत में क्षमता से ज़्यादा — {slot} के लिए {n, plural, one {{count} आइटम} other {{count} आइटम}}",
+  "kitchenOver": "किचन क्षमता से ज़्यादा — {slot} के लिए {n, plural, one {{count} आइटम बन रहा है} other {{count} आइटम बन रहे हैं}}",
+  "orderItems": "#{id} — {n, plural, one {{count} आइटम} other {{count} आइटम}}",
+  "placedAnyway": "फिर भी लिए गए: {list}",
+  "placedItem": "#{id} — {slot} के लिए",
+  "orphans": "{times} पर क्षमता से ज़्यादा — कोई ऐसा ऑर्डर नहीं मिला जिससे इसे जोड़ा जा सके",
+  "dismiss": "हटाएँ",
+  "kitchenCapacity": "किचन की क्षमता",
+  "overCapacity": "क्षमता से ज़्यादा",
+  "wakeUnsupported": "यह डिवाइस स्क्रीन को चालू नहीं रख सकता।",
+  "wakeInsecure": "इस पते से स्क्रीन चालू नहीं रखी जा सकती।",
+  "wakeRetry": "स्क्रीन चालू रखें — फिर से कोशिश करने के लिए टैप करें",
+  "wakeAcquire": "स्क्रीन चालू रखें",
+  "degraded": {
+    "serverError": "सर्वर ऑर्डर लोड नहीं कर सका{hasStatus, select, yes { (एरर {status})} other {}}। {at} तक के ऑर्डर दिखाए जा रहे हैं। नए ऑर्डर छूट सकते हैं।",
+    "unreachable": "सर्वर तक नहीं पहुँच पा रहे। {at} तक के ऑर्डर दिखाए जा रहे हैं। नए ऑर्डर छूट सकते हैं।"
+  }
+}

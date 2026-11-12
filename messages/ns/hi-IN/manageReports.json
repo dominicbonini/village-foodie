@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 तारीख़ की रेंज",
+    "event": "📍 इवेंट",
+    "filterBy": "फ़िल्टर",
+    "show": "दिखाएँ",
+    "range": "<from></from><sep>से</sep><until></until>",
+    "selectEvent": "इवेंट चुनें…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "इवेंट",
+    "viewReport": "रिपोर्ट देखें",
+    "loading": "लोड हो रहा है…",
+    "orders": "📋 ऑर्डर",
+    "items": "📦 आइटम",
+    "exportCsv": "⬇ CSV एक्सपोर्ट करें"
+  },
+  "empty": {
+    "noOrders": "इस अवधि में कोई ऑर्डर नहीं मिला।",
+    "selectEvent": "रिपोर्ट देखने के लिए ऊपर कोई इवेंट चुनें।"
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} ऑर्डर} other {{count} ऑर्डर}} · {total}"
+  },
+  "revenue": {
+    "title": "आमदनी का ब्योरा",
+    "deals": "कॉम्बो से आमदनी",
+    "modifiers": "एक्स्ट्रा का अतिरिक्त शुल्क",
+    "foodSales": "खाने की बिक्री",
+    "total": "कुल",
+    "other": "अन्य",
+    "tax": "टैक्स",
+    "tips": "टिप",
+    "serviceFees": "सर्विस शुल्क",
+    "cardFees": "कार्ड शुल्क"
+  },
+  "itemsSold": {
+    "title": "बिके हुए आइटम"
+  },
+  "dealsCard": {
+    "title": "कॉम्बो"
+  },
+  "custom": {
+    "title": "कस्टमाइज़ेशन",
+    "paidModifiers": "पेड एक्स्ट्रा",
+    "customerNotes": "ग्राहकों के नोट",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "आइटम",
+    "modifier": "एक्स्ट्रा",
+    "qty": "मात्रा",
+    "total": "कुल",
+    "date": "तारीख़",
+    "time": "समय",
+    "channel": "चैनल"
+  },
+  "breakdown": {
+    "orders": "ऑर्डर का ब्योरा",
+    "items": "आइटम का ब्योरा"
+  },
+  "channel": {
+    "online": "ऑनलाइन",
+    "walkUp": "वॉक-इन"
+  },
+  "csv": {
+    "orderId": "ऑर्डर ID",
+    "date": "तारीख़",
+    "event": "इवेंट",
+    "timePlaced": "ऑर्डर का समय",
+    "collectionTime": "पिकअप का समय",
+    "customerName": "ग्राहक का नाम",
+    "orderType": "ऑर्डर का प्रकार",
+    "items": "आइटम",
+    "deals": "कॉम्बो",
+    "modifiers": "एक्स्ट्रा",
+    "notes": "नोट",
+    "subtotal": "सबटोटल",
+    "tip": "टिप",
+    "serviceFee": "सर्विस शुल्क",
+    "total": "कुल",
+    "itemName": "आइटम का नाम",
+    "qty": "मात्रा",
+    "unitPrice": "एक की क़ीमत",
+    "itemTotal": "आइटम का कुल",
+    "orderTotal": "ऑर्डर का कुल",
+    "unknownEvent": "अनजान इवेंट",
+    "asap": "जल्द से जल्द",
+    "unknownCustomer": "अनजान",
+    "customerOnline": "ग्राहक ने ऑनलाइन किया",
+    "placedByTruck": "ट्रक ने दर्ज किया"
+  },
+  "presets": {
+    "label": "अवधि",
+    "custom": "अपनी तारीख़ें",
+    "thisMonth": "इस महीने",
+    "lastMonth": "पिछले महीने",
+    "lastQuarter": "पिछली तिमाही",
+    "lastTaxYear": "पिछला वित्त वर्ष"
+  },
+  "accounts": {
+    "title": "आपके अकाउंटेंट के लिए",
+    "help": "बिक्री इवेंट वाले दिन गिनी जाती है। ग्रॉस वह है जो ग्राहकों ने चुकाया। नेट वह है जो रिफ़ंड और टैक्स के बाद बचता है।",
+    "gross": "ग्रॉस बिक्री",
+    "refunds": "रिफ़ंड",
+    "net": "नेट बिक्री",
+    "taxEstimated": "आपकी टैक्स दर से अनुमानित",
+    "taxNone": "आपके ट्रक के लिए कोई टैक्स दर सेट नहीं है, इसलिए यहाँ टैक्स का हिसाब नहीं लगाया गया।",
+    "byChannel": "चैनल के हिसाब से ग्रॉस बिक्री",
+    "byPayment": "पेमेंट के हिसाब से ग्रॉस बिक्री",
+    "online": "ऑनलाइन",
+    "walkUp": "वॉक-इन",
+    "cardOnline": "ऑनलाइन कार्ड",
+    "payAtTruck": "पिकअप पर भुगतान",
+    "cost": "बिकी डिश की लागत",
+    "profit": "मुनाफ़ा",
+    "coverage": "{total, plural, one {# बिकी डिश में से {withCost} की लागत सेट है} other {# बिकी डिश में से {withCost} की लागत सेट है}}",
+    "partial": "जिन डिश की लागत नहीं डाली गई, वे लागत में शामिल नहीं हैं, इसलिए यह मुनाफ़ा असल से ज़्यादा दिख रहा है। मेनू में हर डिश की लागत डालें।",
+    "noCosts": "अभी किसी डिश की लागत नहीं डाली गई है। अपना मुनाफ़ा देखने के लिए मेनू में अपनी डिश की लागत डालें।",
+    "byEvent": "इवेंट के हिसाब से",
+    "event": "इवेंट",
+    "sales": "नेट बिक्री",
+    "eventNoProfit": "डैश (—) का मतलब है कि वहाँ बिकी हर डिश की लागत नहीं डाली गई है।",
+    "downloadOrders": "⬇ अकाउंटेंट के लिए ऑर्डर",
+    "downloadEvents": "⬇ अकाउंटेंट के लिए इवेंट",
+    "downloadHelp": "दो स्प्रेडशीट फ़ाइलें: एक में हर ऑर्डर की एक लाइन, दूसरी में हर इवेंट की एक लाइन। ये Excel, Numbers, Xero और QuickBooks में खुलती हैं।"
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "तारीख़",
+      "time": "समय",
+      "orderNumber": "ऑर्डर नंबर",
+      "event": "इवेंट",
+      "channel": "चैनल",
+      "paymentMethod": "पेमेंट का तरीक़ा",
+      "currency": "करेंसी",
+      "gross": "ग्रॉस",
+      "tax": "टैक्स",
+      "taxBasis": "टैक्स का आधार",
+      "net": "नेट",
+      "refunded": "रिफ़ंड किया गया",
+      "cost": "लागत",
+      "profit": "मुनाफ़ा",
+      "eventDate": "इवेंट की तारीख़",
+      "orders": "ऑर्डर",
+      "dishesSold": "बिकी डिश",
+      "dishesWithCost": "लागत वाली डिश"
+    },
+    "taxBasis": {
+      "stored": "ऑर्डर के साथ सेव",
+      "estimated": "आपकी टैक्स दर से अनुमानित",
+      "none": "कोई टैक्स दर सेट नहीं"
+    }
+  }
+}

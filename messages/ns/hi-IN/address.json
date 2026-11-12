@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "पता",
+    "postcode": "PIN कोड",
+    "zip": "ZIP कोड",
+    "eircode": "Eircode",
+    "postalCode": "PIN कोड",
+    "state": "राज्य",
+    "stateTerritory": "राज्य या टेरिटरी",
+    "province": "प्रांत",
+    "county": "काउंटी",
+    "prefecture": "प्रीफ़ेक्चर",
+    "emirate": "अमीरात",
+    "region": "क्षेत्र",
+    "area": "इलाक़ा (गाँव, क़स्बा या शहर)",
+    "townOrArea": "क़स्बा या इलाक़ा",
+    "city": "शहर",
+    "suburb": "इलाक़ा",
+    "townOrCity": "क़स्बा या शहर"
+  },
+  "short": {
+    "area": "इलाक़ा",
+    "townOrArea": "क़स्बा या इलाक़ा",
+    "city": "शहर",
+    "suburb": "इलाक़ा",
+    "townOrCity": "क़स्बा या शहर"
+  },
+  "inSentence": {
+    "postcode": "PIN कोड",
+    "zip": "ZIP कोड",
+    "eircode": "Eircode",
+    "postalCode": "PIN कोड"
+  },
+  "withArticle": {
+    "postcode": "सही PIN कोड",
+    "zip": "सही ZIP कोड",
+    "eircode": "सही Eircode",
+    "postalCode": "सही PIN कोड"
+  },
+  "tradeLabel": {
+    "area": "क़स्बा या शहर",
+    "townOrArea": "क़स्बा या इलाक़ा",
+    "city": "शहर",
+    "suburb": "इलाक़ा",
+    "townOrCity": "क़स्बा या शहर"
+  },
+  "basedIn": {
+    "area": "आप किस क़स्बे या शहर में हैं",
+    "townOrArea": "आप किस क़स्बे या इलाक़े में हैं",
+    "city": "आप किस शहर में हैं",
+    "suburb": "आप किस इलाक़े में हैं",
+    "townOrCity": "आप किस क़स्बे या शहर में हैं"
+  },
+  "example": "जैसे {example}",
+  "customersSee": "ग्राहकों को दिखेगा:",
+  "postalWarning": "यह {article} नहीं लगता — उदाहरण: {example}। आप फिर भी इसे सेव कर सकते हैं।",
+  "regionChoose": "चुनें…"
+}

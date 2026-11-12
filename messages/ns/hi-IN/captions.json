@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "हफ़्ते की तारीख़ें",
+    "dayList": "दिनों की सूची",
+    "place": "जगह",
+    "venue": "जगह का नाम",
+    "area": "इलाक़ा",
+    "dayDate": "दिन और तारीख़",
+    "times": "समय",
+    "orderLink": "ऑर्डर लिंक",
+    "locationTag": "लोकेशन टैग"
+  },
+  "weekHeader": "{truck} — इस हफ़्ते हम कहाँ मिलेंगे:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — रद्द, माफ़ कीजिए",
+  "noDates": "इस हफ़्ते कोई तारीख़ नहीं — जल्द ही फिर देखें।",
+  "orderAhead": "पहले से ऑर्डर करें: {url}",
+  "orderAheadTagged": "पहले से ऑर्डर करें: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}।",
+  "eventLineNoTimes": "{truck} — {where}, {when}।",
+  "cancelledSorry": "माफ़ कीजिए — हम {when} यहाँ नहीं आ पाएँगे: {where}।",
+  "cancelledApology": "जो लोग आने वाले थे, उन सबसे माफ़ी चाहते हैं। हम जल्द वापस आएँगे।",
+  "when": {
+    "today": "आज",
+    "tonight": "आज रात",
+    "tomorrow": "कल",
+    "dated": "{date} को"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "पिकअप के समय",
+    "takes_cash": "क्या आप कैश लेते हैं?",
+    "offline_protection": "ऑफ़लाइन ऑर्डर सुरक्षा",
+    "buzzer_prompt": "बज़र देने की याद दिलाएँ"
+  },
+  "typeFollowsVanTitle": "हर वैन की सामान्य सेटिंग के अनुसार",
+  "sameSettingsAllVansLabel": "सभी वैन के लिए एक जैसी सेटिंग्स",
+  "sameSettingsAllVansHeader": "सभी वैन",
+  "sameSettingsConfirm": "वैन 1 की सेटिंग्स हर वैन में कॉपी करें? इससे वैन 1 की सारी वैन सेटिंग्स कॉपी होंगी, ठीक वैसे ही जैसे सेटिंग्स में “वैन 1 जैसा”। किचन की क्षमता का अपना अलग स्विच है।",
+  "eventTypesFooterStandard": "स्टैंडर्ड आपका सामान्य सेटअप है। इसे यहाँ बदलने से सेटिंग्स में भी बदल जाएगा।",
+  "eventTypesFooterOneEvent": "सिर्फ़ एक इवेंट की सेटिंग बदलने के लिए उस इवेंट का डैशबोर्ड इस्तेमाल करें।",
+  "eventTypesSubtitle": "बदलाव साथ-साथ सेव होते हैं।",
+  "matchStandardLabel": "स्टैंडर्ड जैसा करें",
+  "matchStandardConfirm": "इस टाइप की हर सेटिंग वापस स्टैंडर्ड पर करें? आपने यहाँ जो भी बदला है, वह हट जाएगा।",
+  "priceLabels": {
+    "price_change_on": "क़ीमतें बदलें",
+    "price_mode": "क़ीमत में बदलाव",
+    "price_amount": "रक़म",
+    "price_rounding": "राउंडिंग",
+    "item_prices": "आइटम की क़ीमतें"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "हर क़ीमत ख़ुद तय करें"
+  },
+  "priceRounding": {
+    "none": "कोई नहीं",
+    "nearest_1": "सबसे क़रीबी {symbol}1",
+    "up_1": "हमेशा ऊपर की ओर राउंड करें"
+  },
+  "pricesStandardCell": "आपके मेनू की क़ीमतें",
+  "pricesTruckWideTitle": "आपकी क़ीमतें हर वैन के लिए एक जैसी हैं",
+  "pricesMenuCell": "मेनू",
+  "pricesTypeOffCell": "मेनू की क़ीमतें",
+  "itemPricesShow": "क़ीमतें दिखाएँ",
+  "itemPricesHide": "क़ीमतें छिपाएँ",
+  "priceItemsHeading": "हर आइटम की क़ीमत तय करें",
+  "priceItemsOpen": "हर आइटम की क़ीमत देखें या बदलें ›",
+  "priceItemsClose": "आइटम की क़ीमतें छिपाएँ ⌃",
+  "ownPriceCount": "{n, plural, one {{count} आइटम की अपनी क़ीमत है} other {{count} आइटम की अपनी क़ीमत है}}",
+  "priceTypeHint": "अपनी क़ीमत लिखने के लिए किसी क़ीमत पर दबाएँ।",
+  "pricesLiveNotice": "यह इवेंट लाइव है। नए ऑर्डर नई क़ीमतों पर होंगे। जो ऑर्डर पहले हो चुके हैं, उनकी क़ीमतें वही रहेंगी।",
+  "placeTypeHelper": "जब भी आप यह जगह चुनेंगे, “इवेंट जोड़ें” यही टाइप चुनेगा।",
+  "postPictureStandardNote": "यहाँ इवेंट की पोस्ट आपके स्टैंडर्ड डिज़ाइन में बनती हैं।",
+  "eventItemsCardDescription": "सिर्फ़ इस इवेंट के लिए क़ीमतें, आइटम की सीमा और उपलब्धता। बदलाव तुरंत लागू होते हैं।",
+  "eventPriceColumnLabel": "क़ीमत",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · यह इवेंट} other {मेनू {price} · यह इवेंट}}",
+  "eventPriceEdit": "✎ क़ीमतें बदलें",
+  "eventPriceCancel": "रद्द करें",
+  "eventPriceSave": "क़ीमतें सेव करें",
+  "eventPriceEditNote": "सिर्फ़ इस इवेंट की क़ीमतें बदली जा रही हैं। सेव करने तक आइटम की सीमा और उपलब्धता लॉक रहेंगी।",
+  "eventPriceLiveNote": "लाइव: नए ऑर्डर नई क़ीमतों पर होंगे।",
+  "offlineWhenOfflineLabel": "ऑफ़लाइन होने पर"
+}
