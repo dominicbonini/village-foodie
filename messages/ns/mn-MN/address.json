@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Хаяг",
+    "postcode": "Шуудангийн код",
+    "zip": "ZIP код",
+    "eircode": "Eircode",
+    "postalCode": "Шуудангийн код",
+    "state": "Муж",
+    "stateTerritory": "Муж эсвэл нутаг дэвсгэр",
+    "province": "Аймаг",
+    "county": "Тойрог",
+    "prefecture": "Префектур",
+    "emirate": "Эмират",
+    "region": "Бүс нутаг",
+    "area": "Суурин газар (тосгон, сум эсвэл хот)",
+    "townOrArea": "Хот эсвэл дүүрэг",
+    "city": "Хот",
+    "suburb": "Дүүрэг",
+    "townOrCity": "Хот эсвэл суурин"
+  },
+  "short": {
+    "area": "Суурин газар",
+    "townOrArea": "Хот эсвэл дүүрэг",
+    "city": "Хот",
+    "suburb": "Дүүрэг",
+    "townOrCity": "Хот эсвэл суурин"
+  },
+  "inSentence": {
+    "postcode": "шуудангийн код",
+    "zip": "ZIP код",
+    "eircode": "Eircode",
+    "postalCode": "шуудангийн код"
+  },
+  "withArticle": {
+    "postcode": "шуудангийн код",
+    "zip": "ZIP код",
+    "eircode": "Eircode",
+    "postalCode": "шуудангийн код"
+  },
+  "tradeLabel": {
+    "area": "Хот эсвэл суурин",
+    "townOrArea": "Хот эсвэл дүүрэг",
+    "city": "Хот",
+    "suburb": "Дүүрэг",
+    "townOrCity": "Хот эсвэл суурин"
+  },
+  "basedIn": {
+    "area": "Таны байрладаг хот эсвэл суурин",
+    "townOrArea": "Таны байрладаг хот эсвэл дүүрэг",
+    "city": "Таны байрладаг хот",
+    "suburb": "Таны байрладаг дүүрэг",
+    "townOrCity": "Таны байрладаг хот эсвэл суурин"
+  },
+  "example": "жишээ нь: {example}",
+  "customersSee": "Үйлчлүүлэгчдэд харагдах нь:",
+  "postalWarning": "Энэ нь {article} биш бололтой — жишээ нь: {example}. Гэсэн ч та хадгалж болно.",
+  "regionChoose": "Сонгох…"
+}

@@ -1,0 +1,116 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for MONGOLIAN, Cyrillic (mn-MN): харшил / харшл (харшилтай, харшлын), аллерги, үл тэвчих, мэдрэг, целиак, анафилакси, the -гүй free-from forms (глютенгүй, сүүгүй, өндөггүй, самаргүй, загасгүй, лактозгүй…), агуулаагүй / агуулахгүй, агуулж болзошгүй, ул мөр, аюулгүй, идэж болохгүй / чадахгүй, бохирдол — stems survive the suffixes (самаргүй юу). Common Latin-keyboard spellings (harshil, glutengui, suugui, samargui, ayulgui) are added. ө and ү are kept by the normaliser. Bare гүй is NOT a stem (inside магадгүй; сонгиногүй is a preference), nor тохиромжтой (= convenient). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "mn",
+  "normalise": "unicode",
+  "stems": [
+    "харшил",
+    "харшл",
+    "аллерг",
+    "үл тэвч",
+    "тэсвэрлэхгүй",
+    "мэдрэг",
+    "целиак",
+    "анафилакс",
+    "эпипен",
+    "адреналин",
+    "глютенгүй",
+    "лактозгүй",
+    "сүүгүй",
+    "сүүн бүтээгдэхүүнгүй",
+    "өндөггүй",
+    "самаргүй",
+    "загасгүй",
+    "буурцаггүй",
+    "гүнжидгүй",
+    "кунжутгүй",
+    "хорхойгүй",
+    "агуулаагүй",
+    "агуулахгүй",
+    "агуулдаггүй",
+    "агуулж болзошгүй",
+    "агуулсан байж маг",
+    "ул мөр",
+    "аюулгүй",
+    "идэж болохгүй",
+    "идэж чадахгүй",
+    "бохирд",
+    "harshil",
+    "harshl",
+    "glutengui",
+    "gluten gui",
+    "laktozgui",
+    "suugui",
+    "ondoggui",
+    "undeggui",
+    "undgui",
+    "samargui",
+    "zagasgui",
+    "ayulgui",
+    "aguulaagui",
+    "aguulahgui",
+    "idej bolohgui",
+    "idej chadahgui",
+    "allerg",
+    "alerg",
+    "gluten free",
+    "glutenfree",
+    "lactose",
+    "intoleran",
+    "celiac",
+    "coeliac",
+    "nut free",
+    "epipen",
+    "epi pen"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "глютен",
+        "улаан буудай",
+        "гурил",
+        "арвай"
+      ],
+      "crustaceans": [
+        "хавч",
+        "сам хорхой",
+        "далайн хоол",
+        "далайн гаралтай"
+      ],
+      "eggs": [
+        "өндөг",
+        "майонез"
+      ],
+      "fish": [
+        "загас"
+      ],
+      "peanuts": [
+        "газрын самар"
+      ],
+      "soy": [
+        "шар буурцаг",
+        "соя",
+        "тофу"
+      ],
+      "milk": [
+        "сүү",
+        "лактоз",
+        "бяслаг",
+        "цөцгий",
+        "шар тос",
+        "тараг"
+      ],
+      "tree nuts": [
+        "самар",
+        "хушга",
+        "бүйлс",
+        "кешью",
+        "фисташ"
+      ],
+      "sulphites": [
+        "сульфит",
+        "хүхрийн давхар исэл"
+      ]
+    }
+  }
+}

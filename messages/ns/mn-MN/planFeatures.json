@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Газрын зураг дээр харагдах"
+    },
+    "web_dashboard": {
+      "name": "Бүх төхөөрөмжид ажиллах вэб хянах самбар"
+    },
+    "qr_code": {
+      "name": "QR код"
+    },
+    "schedule_import": {
+      "name": "Хуваарийг автоматаар оруулах"
+    },
+    "meal_deals_upsells": {
+      "name": "Сет ба санал болгох"
+    },
+    "walkup_orders": {
+      "name": "Газар дээрх захиалга боловсруулах"
+    },
+    "sold_out_toggle": {
+      "name": "Шууд дууссан гэж тэмдэглэх"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad, Android гал тогооны апп"
+    },
+    "offline_protection": {
+      "name": "Офлайн үеийн захиалгын хамгаалалт"
+    },
+    "online_payments": {
+      "name": "Онлайн төлбөр"
+    },
+    "advance_preordering": {
+      "name": "Урьдчилсан захиалга"
+    },
+    "preorder_deadline": {
+      "name": "Урьдчилсан захиалгын эцсийн хугацаа"
+    },
+    "time_slot_selection": {
+      "name": "Үйлчлүүлэгч цагийн интервал сонгох"
+    },
+    "kitchen_capacity": {
+      "name": "Гал тогооны хүчин чадлын удирдлага"
+    },
+    "stock_countdown": {
+      "name": "Үлдэгдлийг автоматаар хасах"
+    },
+    "auto_accept": {
+      "name": "Онлайн захиалгыг автоматаар хүлээн авах"
+    },
+    "branded_qr_code": {
+      "name": "Брэндийн QR код"
+    },
+    "private_events": {
+      "name": "Хувийн арга хэмжээ"
+    },
+    "social_media_posts": {
+      "name": "Сошиал медиа пост"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp автомат хариулт"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger ба Instagram автомат хариулт"
+    },
+    "tap_to_pay": {
+      "name": "Гар утсаараа төлбөр авах"
+    },
+    "sms_order_alerts": {
+      "name": "Захиалгын SMS мэдэгдэл"
+    },
+    "multi_device_kitchen": {
+      "name": "Гал тогооны олон төхөөрөмжийг уялдуулах"
+    },
+    "multi_user_access": {
+      "name": "Олон хэрэглэгчийн эрх"
+    },
+    "embed_schedule": {
+      "name": "Өөрийн вэбсайт дээрх хуваарийн хуудас"
+    },
+    "event_types": {
+      "name": "Арга хэмжээний төрөл ба тусгай үнэ"
+    },
+    "buzzer_tracking": {
+      "name": "Дуудлагын төхөөрөмж хянах"
+    },
+    "documents_reminders": {
+      "name": "Баримт бичиг ба сануулга"
+    },
+    "profit_per_event": {
+      "name": "Арга хэмжээ тус бүрийн ашиг"
+    },
+    "accountant_reports": {
+      "name": "Нягтлан бодогчид зориулсан тайлан"
+    },
+    "ticket_printing": {
+      "name": "Гал тогооны тасалбар хэвлэх"
+    },
+    "customer_display": {
+      "name": "Үйлчлүүлэгчдэд зориулсан дэлгэц"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Дижитал урамшууллын тамганы карт"
+    }
+  },
+  "cardRegionOnline": "стандарт {region}",
+  "cardRegion": {
+    "UKcards": "Их Британийн карт",
+    "EEAcards": "ЕЭЗБ-ийн карт",
+    "UScards": "АНУ-ын карт",
+    "Australiancards": "Австралийн карт",
+    "NewZealandcards": "Шинэ Зеландын карт",
+    "Canadiancards": "Канадын карт",
+    "Swisscards": "Швейцарийн карт",
+    "Braziliancards": "Бразилийн карт",
+    "Mexicancards": "Мексикийн карт",
+    "Japanesecards": "Японы карт",
+    "Singaporecards": "Сингапурын карт",
+    "HongKongcards": "Хонконгийн карт",
+    "Malaysiancards": "Малайзын карт",
+    "Thaicards": "Тайландын карт",
+    "UAEcards": "АНЭУ-ын карт"
+  },
+  "perMonth": {
+    "mo": "{amount}/сар",
+    "month": "{amount}/сар"
+  },
+  "priceWord": {
+    "free": "Үнэгүй",
+    "freeTrial": "Үнэгүй туршилт",
+    "lifetime": "Насан туршийн",
+    "zeroPercent": "0%",
+    "payAtHatch": "Очиж авахдаа төлөх",
+    "unlimited": "Хязгааргүй",
+    "none": "—",
+    "masked": "Тодруулна"
+  },
+  "cell": {
+    "included": "Багтсан"
+  }
+}

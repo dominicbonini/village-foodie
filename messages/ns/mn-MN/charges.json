@@ -1,0 +1,13 @@
+{
+  "subtotal": "Дэд дүн",
+  "taxFallback": "Татвар",
+  "taxIncluded": "Үүнд багтсан: {label}",
+  "serviceFeeCustomer": "Онлайн үйлчилгээний хураамж",
+  "serviceFee": "Үйлчилгээний хураамж",
+  "cardFee": "Картын шимтгэл",
+  "tip": "Цайны мөнгө",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Татвар, хураамж ба цайны мөнгө} tax_tip {Татвар ба цайны мөнгө} fees_tip {Хураамж ба цайны мөнгө} fees {Хураамж} other {Татвар ба хураамж}}"
+}

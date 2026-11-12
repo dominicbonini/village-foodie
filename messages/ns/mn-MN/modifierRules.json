@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Заавал} other {Заавал биш}}{limit, select, one { · Нэгийг сонгоно} upTo { · {max} хүртэл сонгоно} other {}}",
+  "operator": "{required, select, yes {Заавал} other {Заавал биш}}{limit, select, one { · Үйлчлүүлэгч нэгийг сонгоно} upTo { · Үйлчлүүлэгч {max} хүртэл сонгож болно} other {}}"
+}

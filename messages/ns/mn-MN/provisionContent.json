@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Хүйтэн зууш",
+    "mains": "Үндсэн хоол",
+    "burgers": "Бургер",
+    "pizza": "Пицца",
+    "wrapsSandwiches": "Ороомог ба сэндвич",
+    "sides": "Хачир",
+    "dipsSauces": "Соус",
+    "desserts": "Амттан",
+    "drinks": "Ундаа",
+    "kidsMenu": "Хүүхдийн цэс",
+    "specials": "Онцлох хоол",
+    "other": "Бусад"
+  },
+  "demoEventName": "Демо арга хэмжээ",
+  "firstVanName": "Машин 1",
+  "demoCategories": {
+    "pizza": "Пицца",
+    "burgers": "Бургер",
+    "mains": "Үндсэн хоол",
+    "sides": "Хачир",
+    "drinks": "Ундаа"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Пиццаны машин",
+      "items": {
+        "margherita": "Маргарита",
+        "pepperoni": "Пепперони",
+        "ndujaHoney": "Халуун ногоотой хиам ба зөгийн бал",
+        "fourCheese": "Дөрвөн бяслагтай",
+        "gardenVeg": "Ногоотой",
+        "garlicBread": "Сармистай талх",
+        "rocketParmesan": "Рукола ба пармезан",
+        "olives": "Чидун",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Кока-Кола"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Бургерийн машин",
+      "items": {
+        "classicCheeseburger": "Сонгодог чизбургер",
+        "doubleBacon": "Давхар бэконтой",
+        "buttermilkChicken": "Шаржигнуур тахиатай",
+        "halloumiStack": "Халлуми бяслагтай",
+        "smashBurger": "Смэш бургер",
+        "skinOnFries": "Хальстай шарсан төмс",
+        "loadedCheeseFries": "Бяслагтай шарсан төмс",
+        "onionRings": "Сонгины цагираг",
+        "craftLemonade": "Гар хийцийн лимонад",
+        "coke": "Кока-Кола"
+      }
+    },
+    "curries": {
+      "label": "🍛 Карри машин",
+      "items": {
+        "chickenTikkaMasala": "Тахианы тикка масала",
+        "lambRoganJosh": "Хурганы роган жош",
+        "chanaMasala": "Чана масала",
+        "butterChicken": "Цөцгийн тостой тахиа",
+        "saagPaneer": "Бууцайтай панир",
+        "pilauRice": "Пилау будаа",
+        "garlicNaan": "Сармистай наан",
+        "onionBhaji": "Сонгины бажи",
+        "mangoLassi": "Манготой ласси",
+        "coke": "Кока-Кола"
+      }
+    }
+  }
+}

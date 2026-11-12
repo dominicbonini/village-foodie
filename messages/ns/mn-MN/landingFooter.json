@@ -1,0 +1,17 @@
+{
+  "features": "Боломжууд",
+  "pricing": "Үнэ",
+  "faq": "Түгээмэл асуулт",
+  "privacy": "Нууцлал",
+  "terms": "Нөхцөл",
+  "contact": "Холбоо барих",
+  "about": "Бидний тухай",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b>-г бүтээсэн багаас",
+  "badges": {
+    "appStoreLink": "HatchGrab-ийг App Store-оос татах",
+    "appStoreAlt": "App Store-оос татах",
+    "googlePlayLink": "HatchGrab-ийг Google Play-ээс авах",
+    "googlePlayAlt": "Google Play-ээс авах"
+  }
+}

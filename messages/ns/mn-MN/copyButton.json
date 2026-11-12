@@ -1,0 +1,10 @@
+{
+  "copy": "Хуулах",
+  "copied": "Хуулагдлаа ✓",
+  "failed": "Хуулж чадсангүй",
+  "aria": "{label} {thing}",
+  "announceCopied": "Хуулагдлаа: {thing}",
+  "announceCopiedValue": "Утга хуулагдлаа",
+  "announceFailed": "Хуулж чадсангүй: {thing}. Текстийг сонгоод өөрөө хуулаарай.",
+  "announceFailedValue": "Утгыг хуулж чадсангүй. Текстийг сонгоод өөрөө хуулаарай."
+}

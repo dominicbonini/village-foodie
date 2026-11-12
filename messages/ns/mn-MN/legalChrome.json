@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "Нууцлалын бодлого — HatchGrab",
+    "privacyDescription": "HatchGrab Ltd хувийн мэдээллийг хэрхэн цуглуулж, ашигладаг тухай.",
+    "termsTitle": "Үйлчилгээний нөхцөл — HatchGrab",
+    "termsDescription": "HatchGrab-ийг ашиглах нөхцөл.",
+    "countryTermsTitle": "Улс тус бүрийн нөхцөл — HatchGrab",
+    "countryTermsDescription": "Зарим улсад HatchGrab-д хамаарах нэмэлт дүрэм."
+  },
+  "homeLabel": "HatchGrab нүүр хуудас",
+  "privacy": "Нууцлал",
+  "terms": "Нөхцөл",
+  "countryTerms": "Улсын нөхцөл",
+  "contact": "Холбоо барих",
+  "lastUpdated": "Сүүлд шинэчилсэн: {date}",
+  "questions": "Асуулт байна уу? <link>Бидэнтэй холбогдоорой</link> — бид жинхэнэ хүмүүс.",
+  "translationNote": "Энэ бол орчуулга. Хэрэв <link>англи хувилбараас</link> ялгаатай бол англи хувилбарыг баримтална."
+}

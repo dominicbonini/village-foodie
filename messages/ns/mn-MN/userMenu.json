@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Хэрэглэгчийн цэс",
+  "screenOn": "Дэлгэц асаалттай",
+  "screenOff": "Дэлгэц унтардаг",
+  "newOrderSound": "Шинэ захиалгын дуу",
+  "copied": "Хуулсан",
+  "orderLink": "Захиалгын холбоос",
+  "qrCode": "QR код",
+  "kitchenScreen": "Гал тогооны дэлгэц (KDS)",
+  "thisDevice": "Энэ төхөөрөмж",
+  "manage": "Удирдах",
+  "ordersDashboard": "Захиалгын хянах самбар",
+  "admin": "Админ",
+  "privacy": "Нууцлалын бодлого",
+  "terms": "Үйлчилгээний нөхцөл",
+  "signOut": "Гарах",
+  "close": "Хаах"
+}

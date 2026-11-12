@@ -1,0 +1,17 @@
+{
+  "back": "← Буцах",
+  "title": "Сет сонгох",
+  "save": "{amount} хэмнэх",
+  "selectItems": "Сетийн хэсэг бүрд бүтээгдэхүүн сонгоорой",
+  "choose": "Сонгох: {category}…",
+  "inYourBasket": "── Таны сагсанд ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (сагсанд){state, select, used { — аль хэдийн сетэд орсон} taken { — өөр хэсэгт сонгогдсон} other {}}",
+  "addNew": "── Шинээр нэмэх ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Заавал · нэгийг сонгоно} required {Заавал} other {Нэгийг сонгоно}}{unmet, select, yes { (заавал)} other {}}",
+  "notePlaceholder": "Тэмдэглэл нэмэх, ж.нь. сонгиногүй (заавал биш)",
+  "backButton": "Буцах",
+  "cancel": "Цуцлах",
+  "chooseRequired": "Заавал сонгох сонголтуудаа сонгоорой",
+  "apply": "Сет сонгох · {amount}"
+}

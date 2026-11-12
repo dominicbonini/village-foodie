@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Авах цагууд",
+    "takes_cash": "Та бэлэн мөнгө авдаг уу?",
+    "offline_protection": "Офлайн үеийн захиалгын хамгаалалт",
+    "buzzer_prompt": "Дуудлагын төхөөрөмж нэмэхийг сануулах"
+  },
+  "typeFollowsVanTitle": "Машин бүрийн ердийн тохиргоог дагана",
+  "sameSettingsAllVansLabel": "Бүх машинд ижил тохиргоо",
+  "sameSettingsAllVansHeader": "Бүх машин",
+  "sameSettingsConfirm": "Машин 1-ийн тохиргоог бүх машинд хуулах уу? Энэ нь Тохиргоо хэсгийн “Машин 1-тэй ижил”-тэй адилаар Машин 1-ийн бүх тохиргоог хуулна. Гал тогооны хүчин чадал тусдаа унтраалгатай.",
+  "eventTypesFooterStandard": "Стандарт бол таны ердийн тохиргоо. Үүнийг энд өөрчлөхөд Тохиргоо хэсэгт мөн өөрчлөгдөнө.",
+  "eventTypesFooterOneEvent": "Зөвхөн нэг арга хэмжээний тохиргоог өөрчлөхийн тулд тухайн арга хэмжээний хянах самбарыг ашиглаарай.",
+  "eventTypesSubtitle": "Өөрчлөлт шууд хадгалагдана.",
+  "matchStandardLabel": "Стандарттай ижилсүүлэх",
+  "matchStandardConfirm": "Энэ төрлийн бүх тохиргоог Стандарт руу буцаах уу? Энд өөрчилсөн бүх зүйл арилна.",
+  "priceLabels": {
+    "price_change_on": "Үнэ өөрчлөх",
+    "price_mode": "Үнийн өөрчлөлт",
+    "price_amount": "Дүн",
+    "price_rounding": "Бүхэлтгэл",
+    "item_prices": "Бүтээгдэхүүний үнэ"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Үнэ бүрийг өөрөө тогтоох"
+  },
+  "priceRounding": {
+    "none": "Үгүй",
+    "nearest_1": "Ойрын {symbol}1 хүртэл",
+    "up_1": "Үргэлж дээш бүхэлтгэх"
+  },
+  "pricesStandardCell": "Таны цэсний үнэ",
+  "pricesTruckWideTitle": "Таны үнэ бүх машинд ижил",
+  "pricesMenuCell": "Цэс",
+  "pricesTypeOffCell": "Цэсний үнэ",
+  "itemPricesShow": "Үнэ харуулах",
+  "itemPricesHide": "Үнэ нуух",
+  "priceItemsHeading": "Бүтээгдэхүүн бүрийн үнийг тогтоох",
+  "priceItemsOpen": "Бүтээгдэхүүн бүрийн үнийг харах эсвэл өөрчлөх ›",
+  "priceItemsClose": "Бүтээгдэхүүний үнийг нуух ⌃",
+  "ownPriceCount": "{n, plural, one {{count} бүтээгдэхүүн өөрийн үнэтэй} other {{count} бүтээгдэхүүн өөрийн үнэтэй}}",
+  "priceTypeHint": "Өөрийн үнээ бичихийн тулд үнэ дээр дараарай.",
+  "pricesLiveNotice": "Энэ арга хэмжээ явагдаж байна. Шинэ захиалгууд шинэ үнийг ашиглана. Аль хэдийн хийгдсэн захиалгууд хуучин үнээ хадгална.",
+  "placeTypeHelper": "Та энэ газрыг сонгох бүрд “Арга хэмжээ нэмэх” энэ төрлийг сонгоно.",
+  "postPictureStandardNote": "Энд байгаа арга хэмжээний постууд таны стандарт дизайныг ашиглана.",
+  "eventItemsCardDescription": "Зөвхөн энэ арга хэмжээний үнэ, бүтээгдэхүүний хязгаар, бэлэн байдал. Өөрчлөлт шууд хүчинтэй болно.",
+  "eventPriceColumnLabel": "Үнэ",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · энэ арга хэмжээ} other {цэс {price} · энэ арга хэмжээ}}",
+  "eventPriceEdit": "✎ Үнэ засах",
+  "eventPriceCancel": "Цуцлах",
+  "eventPriceSave": "Үнэ хадгалах",
+  "eventPriceEditNote": "Зөвхөн энэ арга хэмжээний үнийг засаж байна. Хадгалах хүртэл бүтээгдэхүүний хязгаар, бэлэн байдал түгжигдсэн.",
+  "eventPriceLiveNote": "Явагдаж байна: шинэ захиалгууд шинэ үнийг ашиглана.",
+  "offlineWhenOfflineLabel": "Офлайн үед"
+}

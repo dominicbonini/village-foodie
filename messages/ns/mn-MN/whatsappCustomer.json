@@ -1,0 +1,15 @@
+{
+  "greeting": "Сайн байна уу 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Манай бүтэн цэс болон харшил үүсгэгчийн мэдээллийг эндээс харна уу: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Манай бүтэн цэсийг эндээс үзээрэй: {url} — {truck} {emoji}",
+  "otherCategory": "Бусад",
+  "categoryFrom": "{category} — эхлэх үнэ {price}",
+  "listTwo": "{first} ба {second}",
+  "listMany": "{init} болон {last}",
+  "menuSummary": "{opener}Манайд байгаа зүйлс: {summary}. Бүтэн цэсийг үзэж, эндээс урьдчилан захиалаарай: {url} — {truck} {emoji}",
+  "allergenCaveat": "Харшил үүсгэгчийн мэдээллийг бүтэн цэснээс дахин шалгаарай — энэ бол автомат хариулт.",
+  "specificFallback": "{opener}Манай хамгийн сүүлийн хуваарийг эндээс үзээрэй: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Бүх мессежэнд тань баярлалаа! Би энд өдөрт хэдхэн удаа л хариулах боломжтой.\n\nЗахиалах: {link}",
+  "capContact": "Бидэнтэй шууд холбогдох: {number}"
+}

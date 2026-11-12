@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Машин",
+  "eventsFeed": {
+    "today": "Өнөөдөр · {date}",
+    "tomorrow": "Маргааш · {date}"
+  },
+  "privacyNotSaved": "Арга хэмжээ явагдаж байгаа ч нууцлалыг нь хадгалж чадсангүй.",
+  "stockWarning": "“{category}” ангилалд боломжтой бүтээгдэхүүн алга",
+  "uncategorised": "Ангилалгүй"
+}

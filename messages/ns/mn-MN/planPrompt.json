@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} — {plan} багцад багтсан.} other {{feature} — {plan} багцад багтсан.}}",
+  "notOnPlan": "{many, select, yes {{feature} — таны багцад байхгүй.} other {{feature} — таны багцад байхгүй.}}",
+  "switchedOff": "{many, select, yes {{feature} — таны фүүд тракийн хувьд унтраалттай байна.} other {{feature} — таны фүүд тракийн хувьд унтраалттай байна.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Багцаа ахиулах →",
+  "features": {
+    "discovery_map": {
+      "name": "Газрын зураг дээр харагдах",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Вэб хянах самбар",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Гал тогооны апп",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR код цэс",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Сет",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Санал болгох",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Газар дээрх захиалга",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "“Очиж авахдаа төлөх” захиалга",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Дууссан гэж тэмдэглэх",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Үлдэгдэл хасах",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Офлайн үеийн захиалгын хамгаалалт",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Онлайн төлбөр",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Урьдчилсан захиалга",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Үйлчлүүлэгчийн цагийн интервал",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Гал тогооны хүчин чадлын удирдлага",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Автоматаар хүлээн авах",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger ба Instagram автомат хариулт",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Брэндийн QR код",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Дэлгэрэнгүй тайлан",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Гал тогооны тасалбар хэвлэх",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Гал тогооны олон төхөөрөмжийг уялдуулах",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Тогоочийн дэлгэц",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp автомат хариулт",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Өөрийн вэбсайт дээрх хуваарь",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Сошиал медиа пост",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Арга хэмжээний тусгай төрөл",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Хувийн арга хэмжээ",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Баримт бичиг",
+      "many": "yes"
+    }
+  }
+}

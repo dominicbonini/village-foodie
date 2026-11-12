@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {Зөв гар утасны дугаар оруулаарай ({name})} other {Зөв гар утасны дугаар оруулаарай}}{withExample, select, yes { (ж.нь. {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {Зөв утасны дугаар оруулаарай ({name})} other {Зөв утасны дугаар оруулаарай}}{withExample, select, yes { (ж.нь. {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {Зөв утасны дугаар оруулна уу ({name})} other {Зөв утасны дугаар оруулна уу}}{withExample, select, yes { (ж.нь. {example})} other {}}."
+}

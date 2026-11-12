@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Долоо хоногийн огноо",
+    "dayList": "Өдрүүдийн жагсаалт",
+    "place": "Газар",
+    "venue": "Газрын нэр",
+    "area": "Суурин газар",
+    "dayDate": "Гараг ба огноо",
+    "times": "Цаг",
+    "orderLink": "Захиалгын холбоос",
+    "locationTag": "Байршлын таг"
+  },
+  "weekHeader": "{truck} — энэ долоо хоногт бид эдгээр газарт байна:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ЦУЦЛАГДСАН, уучлаарай",
+  "noDates": "Энэ долоо хоногт товлосон өдөр алга — удахгүй дахин шалгаарай.",
+  "orderAhead": "Урьдчилан захиалаарай: {url}",
+  "orderAheadTagged": "Урьдчилан захиалаарай: {url} {tag}",
+  "eventLine": "{truck}: {when} — {where}, {times}.",
+  "eventLineNoTimes": "{truck}: {when} — {where}.",
+  "cancelledSorry": "Уучлаарай — бид {when} очиж чадахгүй боллоо ({where}).",
+  "cancelledApology": "Ирэхээр төлөвлөж байсан бүх хүмүүсээс уучлалт гуйя. Удахгүй эргэн ирнэ.",
+  "when": {
+    "today": "өнөөдөр",
+    "tonight": "өнөө орой",
+    "tomorrow": "маргааш",
+    "dated": "{date} өдөр"
+  }
+}

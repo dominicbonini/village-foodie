@@ -1,0 +1,8 @@
+{
+  "change": "{label} — өөрчлөх",
+  "useRule": "{label} — дүрмийг ашиглах",
+  "typePrice": "{label} — үнэ оруулах",
+  "backToRule": "Дүрэм рүү буцах",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}
