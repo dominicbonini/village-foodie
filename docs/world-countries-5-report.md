@@ -4,7 +4,8 @@
 row, no `.env*` file opened. Commits: `71c9cf89` (the 210-row go-live.csv, its own commit, as asked), `5d90fbfb` + `f262d9b3`
 (the 167 countries as data: registry, generic address format, three migrations), `2d2a5e2e` (region blocks, the selector, the
 words in every language, harness re-pins), `0db83f8b` (the 12 harnesses pricing-copy-4's sweep listed as broken by this
-work, re-pinned, §7), and this report.
+work, re-pinned, §7), `77c675ab` + `ba9384ff` (your §9 answers: the menu currency, Serbian in Latin script, iOS
+everywhere, Iceland's Monday, §9), and this report.
 
 ## Summary
 
@@ -24,12 +25,18 @@ work, re-pinned, §7), and this report.
   - Phones get a full-screen panel: the region buttons scroll sideways, there is one country per row, and every target is
     44px or more.
   - No codes are shown and there is no search. The region names are translated into every language.
-- **Tests:** world-countries-5 22/22, and every harness this work touched passes. That includes the 12 that pricing-copy-4's
+- **Tests:** world-countries-5 29/29, and every harness this work touched passes. That includes the 12 that pricing-copy-4's
   sweep found broken by this work: they are re-pinned and listed in §7. The full sweep's result is in §7.
-- **Before switch-on — questions for you (§9):**
-  1. Store badges in the new countries.
-  2. 18 countries billed in USD or EUR whose menus would also show USD or EUR.
-  3. Serbian and Montenegrin names in the selector show in Cyrillic.
+- **Your §9 answers are done (§9):**
+  - **App Store:** the app is now available in **every App Store territory, all 175**. I added 133 in App Store Connect,
+    availability only; the list is in §6.
+  - **Badges:** `ios_app_available` goes on for the 56 new countries that had it off, in the switch-on.
+  - **Menus:** they use local money in the 11 countries, through the new `menu_currency` column (20261096, **run**). Billing
+    stays in USD/EUR.
+  - **Serbian:** country names are written in Latin script (Srbija, Crna Gora), live Serbia included.
+  - **Bender:** stays blocked.
+  - **Iceland:** the week starts on Monday, in the switch-on.
+  - The switch-on is still **not run**.
 
 ---
 
@@ -48,7 +55,7 @@ exchange rates in `docs/world-countries-5/fx-gbp.json` (open.er-api.com, GBP, 12
 | `country_billing` | The CSV's payment model. **160** countries are `billed_at_truck` (customers pay at the truck and the truck is billed monthly). **7** are `fee_from_payment`: GF, GP, MQ, MF, RE and YT as France, and PR as the US. `min_charge_minor` is about £5, never above the country's Unlimited price. |
 | Plans offered | The same pattern as BR, MX and TH, wherever no fee can be taken from a payment. Pay as you go and Pro exist as rows but are **not offered**. Unlimited is offered and is the trial-end plan. The 7 online territories offer every plan, as their parent does. |
 | Landing segment | `/xx` at the ISO code, for all 167 (`lib/marketing-country.ts`). As before, a switched-off country's `/xx` redirects to `/uk`. It is in no sitemap, hreflang set, router pick, menu or signup list until it is enabled. |
-| Currency | 94 new currencies in `lib/currencies.ts` (116 in all). Each has a comment line, Stripe's decimals and its home locale. The currency CHECK is widened to match (20261093). |
+| Currency | 94 new currencies in `lib/currencies.ts` (116 in all), plus 11 menu currencies (127 in all; §9). Each has a comment line, Stripe's decimals and its home locale. The currency CHECK is widened to match (20261093, then 20261096). |
 | Address format | One shared **`intl`** format: town or city, an optional postal code, and the Places top-level region name kept. The French territories use `fr`, Puerto Rico `us`, Jersey, Guernsey and the Isle of Man `gb`, and Åland `fi`. |
 | Allergen set | `codex` for 156 countries. `uk14` for the French territories, Åland and the Crown Dependencies (10). `us9` for Puerto Rico. |
 
@@ -78,10 +85,9 @@ exchange rates in `docs/world-countries-5/fx-gbp.json` (open.er-api.com, GBP, 12
 
 ### 1.3 Decisions I made (say if any should change)
 
-1. **The menu currency is the billing currency.** `plan_prices` has no currency column, so a country's prices and its menu
-   currency are the same column. Most of the 39 countries billed in USD or EUR use that currency anyway (EC, SV, PR, ME, AD and
-   others). **For 11 of them, the truck's menus would show USD or EUR instead of their own money: BH, JO, KW, OM, TN (all
-   three-decimal currencies, which we can't bill in), BT, TM, ER, MR, ST and ZW.** This is question 2 in §9.
+1. **The menu currency (your answer, §9):** menus use local money in the 11 countries billed in USD or EUR whose own money is
+   different: BH, JO, KW, OM, TN, BT, TM, ER, MR, ST and ZW. `plan_prices` (what we bill) stay in USD or EUR. The other 28 countries
+   billed in USD or EUR use that money anyway (EC, SV, PR, ME, AD and others), so their menus are the same.
 2. **One generic address format** (`intl`) for 156 countries, instead of 156 researched ones.
    - It takes a town or city, an optional postal code of 2 to 10 letters, digits, spaces or hyphens, and the Places region
      name.
@@ -93,8 +99,8 @@ exchange rates in `docs/world-countries-5/fx-gbp.json` (open.er-api.com, GBP, 12
    Prices include tax everywhere except Puerto Rico.
 5. **The minimum charge is about £5,** rounded to two significant figures, and **never above the Unlimited price.** That cap
    applies in Indonesia, Egypt and Nigeria, whose Unlimited price is under £5.
-6. **Clock, date order and week start come from Intl's data (CLDR) for each country.** One oddity: **Iceland's week starts on
-   Sunday** in Node's data. I kept Intl's answer; say if it should be Monday.
+6. **Clock, date order and week start come from Intl's data (CLDR) for each country.** The one exception is **Iceland: its week
+   starts on Monday** (your answer). Node's data says Sunday; the switch-on sets Monday.
 7. **Pitcairn (PN):** the phone library has no metadata for it. It has phone code 64 (as New Zealand), no example, and the
    phone check is off.
 8. **Ukraine's time zones leave out Europe/Simferopol (Crimea).**
@@ -228,9 +234,9 @@ exchange rates in `docs/world-countries-5/fx-gbp.json` (open.er-api.com, GBP, 12
   - No codes shown, and exactly one tick.
 - **Fonts:** the shots use the system font (the render has no built font files). The real page uses the site's fonts.
 
-**Seen in the shots, worth a look:**
-- **Serbia and Montenegro show in Cyrillic** (Србија, Црна Гора). Their locale is sr-RS, and Intl writes Serbian in Cyrillic by
-  default. Serbia already shows this way today; Montenegro is new. The app's Serbian is Latin, so this is question 3 in §9.
+**Seen in the shots:**
+- **Serbia and Montenegro were in Cyrillic** (Србија, Црна Гора). Since your answer they are written in **Latin script: Srbija,
+  Crna Gora** (§9). The shots were taken before that change; `scripts/world-countries-5.cjs` proves the new names.
 - **Two long names are cut short with "…" at 5 columns:** "Bosna i Hercegovina" and "Svalbard og Jan Mayen".
 
 ---
@@ -244,7 +250,34 @@ Countries that are not in the CSV get no rows.
 
 ## 6 · App stores
 
-**Nothing in App Store Connect or Google Play was changed.** From `countries.csv`'s storefront column:
+**App Store Connect, changed by me on 12 Nov 2026 (your answer, §9).** This is availability only; nothing else in App Store
+Connect was touched.
+- **Before:** 42 territories, the ios-intl-1 list.
+- **After:** **all 175 App Store territories**, which is every one Apple lists. Apple accepted all 133 additions, and a read-back
+  confirmed "exactly the wanted set".
+- **"Available in new territories"** was not changed and is still off. A territory Apple adds later won't be included
+  automatically; say if you want that switched on.
+- **How:** `node scripts/ios/availability.cjs --all --apply`. That is ios-intl-1's script with a new `--all` mode, using the API
+  key in `~/.appstoreconnect`. The key and its tokens were never printed.
+- **The 133 added:** AFG, AGO, AIA, ALB, ARG, ARM, ATG, AZE, BEN, BFA, BHR, BHS, BIH, BLR, BLZ, BMU, BOL, BRB, BRN, BTN, BWA, CHL, CHN, CIV, CMR, COD, COG, COL, CPV, CRI, CYM, DMA, DOM, DZA, ECU, EGY, FJI, FSM, GAB, GEO, GHA, GMB, GNB, GRD, GTM, GUY, HND, IDN, IND, IRQ, ISL, ISR, JAM, JOR, KAZ, KEN, KGZ, KHM, KNA, KOR, KWT, LAO, LBN, LBR, LBY, LCA, LKA, MAC, MAR, MDA, MDG, MDV, MKD, MLI, MMR, MNE, MNG, MOZ, MRT, MSR, MUS, MWI, NAM, NER, NGA, NIC, NPL, NRU, OMN, PAK, PAN, PER, PHL, PLW, PNG, PRY, QAT, RUS, RWA, SAU, SEN, SLB, SLE, SLV, SRB, STP, SUR, SWZ, SYC, TCA, TCD, TJK, TKM, TON, TTO, TUN, TUR, TWN, TZA, UGA, UKR, URY, UZB, VCT, VEN, VGB, VNM, VUT, XKS, YEM, ZAF, ZMB, ZWE.
+- **Points to know:**
+  - **Moldova (MDA) and Ukraine (UKR)** are back on. In ios-intl-1 you had removed them; "every storefront" includes them.
+  - **China (CHN):** Apple accepted the change. For China, Apple also asks for an ICP filing number before the app can actually
+    appear there, so it may stay unlisted in China until one is given.
+  - **Russia (RUS), Belarus (BLR), Iran-adjacent and sanctioned-region storefronts** (AFG, IRQ, LBY, MMR, VEN, YEM, XKS and
+    others) are on, as "all of them" says. No signup is possible in any country without a `country_settings` row.
+
+**Google Play** was not changed; you'll add those countries by hand.
+
+**The badges:**
+- **`ios_app_available` goes on for every go-live country.** The 56 new rows that had it off are set in the switch-on (§8).
+  Where a country has no storefront of its own, people use an Apple ID from another country, and the badge link opens their
+  own store.
+- **`android_app_available` is unchanged.** It is on for 150 new countries. ⚠️ **It is still off for the 17 below**, where
+  `countries.csv` lists no Play storefront. You said it "stays true", and for these 17 it isn't true today. Say if they should
+  go on too.
+
+From `countries.csv`'s storefront column:
 
 - **App Store and Google Play (111):**
   - AL AM AZ BA GE IS MD ME MK RS TR UA
@@ -259,15 +292,13 @@ Countries that are not in the CSV get no rows.
 - **Neither store (17):** AD BD KI MH WS TL TV BI CF KM DJ GQ ER ET GN LS TG.
 - **App Store only:** none.
 
-⚠️ **Question 1 (§9):** the new rows set `ios_app_available` / `android_app_available` from that column. So after switch-on, the
-store badges will show in those countries. That is only right if the app is actually *available* in those storefronts. If its
-availability is still limited to the live countries, badges would point at an app those visitors can't get.
+(The new rows took both flags from this column. The switch-on now turns iOS on for all of them, as above.)
 
 ---
 
 ## 7 · Tests
 
-**New:** `scripts/world-countries-5.cjs`, **22/22.** It checks:
+**New:** `scripts/world-countries-5.cjs`, **29/29.** It checks:
 - the CSV and the generator: 210 rows and 167 new;
 - the locales;
 - the rows migration: all off;
@@ -279,7 +310,14 @@ availability is still limited to the live countries, badges would point at an ap
 - the `intl` region name and SK's move;
 - the selector's tablist, panels, home region, region data, no codes, and the CSS at each width;
 - the six strings in all 48 bases;
-- the back-translations.
+- the back-translations;
+- **your §9 answers:**
+  - the switch-on turns iOS on for the 56, and sets Iceland to Monday;
+  - 20261096 sets the 11 menu currencies, and its CHECK equals the 127-code registry;
+  - through the real loader: Bahrain prices its menu in BHD (three decimals) and its plans in USD;
+  - a row without a menu currency is unchanged, and an unknown menu currency is refused;
+  - provisioning writes the menu currency, and Billing keeps the billing currency;
+  - Serbian names are in Latin script (Srbija, Crna Gora), and the selector, the FAQ values and /compare all use the helper.
 
 It is in `scripts/harnesses.json`.
 
@@ -287,7 +325,7 @@ It is in `scripts/harnesses.json`.
 
 | Harness | Result | Why |
 |---|---|---|
-| currency-registry | 40/40 | 116 currencies and the 20261093 CHECK. **UGX is two-decimal**: Stripe's currency page says UGX "transitioned to a zero-decimal currency, but backwards compatibility requires you to represent it as a two-decimal value" (5 UGX → 500), as for ISK. The old pin listed it as zero-decimal; it wasn't in the registry before, so nothing was wrong until now. The 94 new home and international money forms are pinned by a fixture. |
+| currency-registry | 40/40 | 127 currencies and the 20261096 CHECK (the 11 menu currencies' money forms are added to the fixture; the 94 earlier ones are unchanged). **UGX is two-decimal**: Stripe's currency page says UGX "transitioned to a zero-decimal currency, but backwards compatibility requires you to represent it as a two-decimal value" (5 UGX → 500), as for ISK. The old pin listed it as zero-decimal; it wasn't in the registry before, so nothing was wrong until now. The 94 new home and international money forms are pinned by a fixture. |
 | address-formats-1 | 53/53 | 45 formats; `intl` is last, as in the CHECK; its postal label |
 | address-formats-2 | 89/89 | unchanged |
 | canada-1 | 85/85 | unchanged |
@@ -306,12 +344,21 @@ its failure started, in `0db83f8b`, and each passes:
 
 | Harness | Cause | Re-pin | Now |
 |---|---|---|---|
-| ireland-2 | pinned "22 currencies" | 116, with the 22 first and in their order | 16/16 |
+| ireland-2 | pinned "22 currencies" | 127 (after the menu currencies), with the 22 first and in their order | 16/16 |
 | countries-api | pinned the 22-code message, and used KRW as the unsupported example | The message is read from the registry. The refused example is now Iran's rial (IRR); the won is supported for South Korea. | 85/85 |
 | world-countries-1 | pinned 22 currencies and 44 formats | the eight are still 15th to 22nd; 20261054's CHECK equals the first 22 currencies and all formats except `intl`; 45 formats | 178/178 |
 | compare-languages-1 | the 167 new segments had no fixture locale | their locale comes from the generator; every address is still lowercase ASCII | 24/24 |
 | faq-1, faq-2, faq-3, faq-4, seo-geo-2, copy-truth-1 | the landing (and /features) HTML differs in the country menu | `scripts/_lp-world-countries-5.cjs` `pc1After4AsBefore` / `asBefore` puts the list back as it was first: the region buttons out, one list re-sorted by English name, the codes back, the label in the page's language. Every other byte is still compared. | 208, 162, 187, 100, 89, 56 (0 failed) |
 | site-chrome-1, cwv-1 | landing.css byte checks | `cssAsBefore` puts `2d2a5e2e`'s landing.css hunks back exactly, read from git. It throws if a hunk is missing, and it restores the before-file byte for byte. | 35/35, 27/27 |
+
+**Re-pinned after your §9 answers** (`10b41ccc`; the menu currency moved them, and each passes):
+
+| Harness | Cause | Re-pin | Now |
+|---|---|---|---|
+| language-phase-1d, language-phase-1d2 | GET /api/manage's `countrySettings` gains `menuCurrency` (equal to `currency` for GB and US) | a named change, `world-countries-5-menu-currency`, through `scripts/_lp-world-countries-5.cjs` `menuCurrencyField` (inserts exactly that field after `currency`) | 408/408, 692/692 |
+| costs-accounts-1 | its byte check on `lib/country-settings.ts` and `lib/country-settings-types.ts` | `undoCode` puts `ba9384ff`'s edits to those two files back exactly, from git, before pricing-copy-4's own undo. It restores the before-files byte for byte. | 78/78 |
+| phase3-screens | it pins ChargesCard's fee phrases, which now read the menu currency | the two pinned strings now read `(cs.menuCurrency ?? cs.currency)` | 97/97 |
+| currency-registry, ireland-2 | 127 currencies | the CHECK is read from 20261096, and the forms fixture has the 11 added | 40/40, 16/16 |
 
 **contact-1** is on the expected legal-pages list and still fails there. Its truck-page byte check also carried my
 landingNav/tradeArea keys. Those are now named later key changes, and the Japanese file's jp-nav-1 exception now also sets aside
@@ -325,14 +372,19 @@ the region names. What it still reports there is the planTable files, which are 
 - No region block applies in GB.
 - store-badges-1's byte-identical /uk comparison passes.
 
-**Full sweep** (`node scripts/run-harnesses.cjs`, shared working tree, after `0db83f8b`): **218 run · 209 passed · 9 failed.**
-All 9 are the expected ones, the same that pricing-copy-4 lists:
-- **5 for the languages-world-2 legal pages** (no legal pages for the new language bases yet): paperwork-1, legal-languages-1,
-  world-countries-3, contact-1 and tidy-1.
-- **4 for the missing `.next` build:** event-types-render, pending-card-render, pending-card-buttons and midnight-events.
+**Full sweep, the last one** (`node scripts/run-harnesses.cjs`, shared working tree, after `10b41ccc`): **218 run · 212 passed ·
+6 failed.** All 6 are expected:
+- **5 for the languages-world-2 legal pages:** paperwork-1, legal-languages-1, world-countries-3, contact-1 and tidy-1.
+- **event-types-render**, one of the four that need a fresh build.
+  - The `.next` folder there was built at 15:45 by another session.
+  - Its two failing checks are Manage › Event types font sizes. Neither `components/manage/EventTypes.tsx` nor `app/globals.css`
+    has changed since pricing-copy-4's sweep passed it.
+  - The other three build-dependent harnesses pass against that build.
 
-None is this work's. An earlier sweep, before `0db83f8b`, had 22 failures; the 12 in the table above are the difference. One
-more, native-prices, passed once pricing-copy-4's fix landed.
+**Earlier sweeps:**
+- **Before `0db83f8b`:** 22 failures. The 12 in the first re-pin table are the difference, and native-prices passed once
+  pricing-copy-4's fix landed.
+- **After `ba9384ff`:** 10 failures. The 4 in the second table are the difference.
 
 ---
 
@@ -355,10 +407,34 @@ Checked afterwards (read-only):
 - prices 501, billing 167;
 - models `billed_at_truck` 160, `fee_from_payment` 7.
 
+3. `supabase/migrations/20261096_world_countries_5_menu_currency.sql` (your §9 answer 2; `--approved-by-dominic`):
+   - the currency CHECK widened to 127 codes;
+   - the new column `menu_currency` (NULL means the same as `currency`, so no other row changed), with its CHECK;
+   - the 11 rows set.
+   The full SQL is in the chat reply. Checked afterwards (read-only): 11 rows have a menu currency, and the other 200 (44 live,
+   156 new) are NULL.
+
+```sql
+select coalesce(menu_currency, '(null = currency)') as menu_currency, enabled, count(*) as n, string_agg(country_code || ':' || currency, ' ' order by country_code) as rows
+from public.country_settings group by 1, 2 order by 2 desc, 1;
+```
+
+Two read-only checks ran before it. The first found which rows had the iOS or Android flag off: 17 with both off, 39 with only
+iOS off, 111 with both on, and the 44 live ones on. The second found which tables CHECK a currency: only `country_settings` holds
+a list; the others check only the shape.
+
+```sql
+select enabled, ios_app_available, android_app_available, count(*) as n, string_agg(country_code, ' ' order by country_code) as codes
+from public.country_settings group by 1, 2, 3 order by 1, 2, 3;
+select conrelid::regclass as t, conname, left(pg_get_constraintdef(oid), 120) as d
+from pg_constraint where contype = 'c' and pg_get_constraintdef(oid) ilike '%currency%';
+```
+
 ### Prepared, NOT run
 
-- **`supabase/migrations/20261095_world_countries_5_switch_on.sql`:** enables the 167, disables MX, and sets the VAT flag on AE
-  and BR, in one transaction.
+- **`supabase/migrations/20261095_world_countries_5_switch_on.sql`:** in one transaction, it enables the 167, disables MX, sets
+  the VAT flag on AE and BR, turns `ios_app_available` on for the 56 new countries that had it off, and sets Iceland's week start
+  to Monday.
 - It needs `--approved-by-dominic`. **Run it only after the code is deployed.**
 
 ### Read-only checks run
@@ -424,21 +500,36 @@ delete from public.country_settings  where updated_by = 'world-countries-5' and 
 commit;
 ```
 
-The schema changes (20261093) are additive and can stay.
+The schema changes (20261093, 20261096) are additive and can stay. To take the 11 menu currencies back:
+`update public.country_settings set menu_currency = null where menu_currency is not null;`
 
 ---
 
-## 9 · Questions for you before the switch-on
+## 9 · Your answers (12 November 2026), and what I did
 
-1. **Store badges:** is the app available in the App Store and Play storefronts of the new countries? If not, I'll prepare an
-   update setting `ios_app_available` / `android_app_available` to false for them until it is.
-2. **Menu currency:** for BH, JO, KW, OM, TN, BT, TM, ER, MR, ST and ZW, truck menus would show USD or EUR, because that is
-   what we bill in. Is that acceptable at launch, or should menus use local money? That needs a separate column for the menu
-   currency, which is a small schema change.
-3. **Serbian names:** should the selector write Serbian and Montenegrin names in Latin (Srbija, Crna Gora), as the app's Serbian
-   is written? This changes how Serbia, which is already live, shows.
-4. **Bender:** should it stay on Transnistria's block list?
-5. **Iceland's week start:** Sunday (Intl) or Monday?
+1. **Store badges:**
+   - The app is available in every App Store territory: 133 added, 175 in all (§6).
+   - `ios_app_available` goes on for every go-live country: the 56 that were off, in the switch-on.
+   - `android_app_available` is unchanged. ⚠️ It is still off for 17 new countries (§6); say if those should go on.
+2. **Menu currency:** local money in all 11, built like this:
+   - **Registry:** BHD, JOD, KWD, OMR and TND (all three-decimal), and BTN, TMT, ERN, MRU, STN and ZWG.
+   - **Database:** the `menu_currency` column, where NULL means `currency`. Migration 20261096 is **run**; it set the 11 rows and
+     no others.
+   - **Code:**
+     - The loader reads the column (tolerantly) as `menuCurrency`.
+     - `moneyFormatOf`, a truck's own money (menu, Manage tabs, charges, costs, reports, card-fee labels), uses it.
+     - Plan prices, Billing and the pricing pages stay on `currency`, through `planMoneyFormatOf` / `intlMoneyFormatOf` and
+       BillingScreen.
+     - A new truck is written with the menu currency.
+     - Manage's cost box and reports use its digits, which are three for the dinars.
+   - **Note:** these 11 are all `billed_at_truck`. Customers pay at the truck, so no card payment is ever taken in these
+     currencies.
+3. **Serbian names in Latin script:**
+   - `lib/region-name.ts` names a country in a language with Serbian as `sr-Latn`, giving Srbija and Crna Gora.
+   - The selector, the FAQ's live values and /compare use it, so live Serbia changes too.
+   - Admin's own tabs still use Intl directly; they are only for us.
+4. **Bender:** kept on Transnistria's list. No change.
+5. **Iceland:** Monday, in the switch-on.
 
 ## 10 · After you deploy
 
