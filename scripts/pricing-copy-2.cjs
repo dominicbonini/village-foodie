@@ -35,6 +35,15 @@ const CARD = { ar: 'البطاقة', bg: 'карта', cs: 'kartou', da: 'kort',
   uk: 'карт', ru: 'карт', kk: 'карта', uz: 'karta', az: 'kart', ka: 'ბარათ', hy: 'քարտ', mn: 'карт' }
 // A base whose language has no word here is a FAILURE, never a silent pass.
 const cardRe = loc => { const w = CARD[loc.slice(0, 2)]; if (!w) throw new Error(`pricing-copy-2: no "card" word for ${loc} — add its language to CARD`); return new RegExp(w) }
+// ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026): languages-world-2 keeps adding languages. For a language with no word above, the
+// key's ENGLISH back-translation (docs/i18n/back/<locale>.json — every base has one) is read instead: it must exist and must not say
+// "card". Never a silent pass: a missing back-translation counts as saying it.
+const saysCard = (loc, key, value) => {
+  if (CARD[loc.slice(0, 2)]) return cardRe(loc).test(value)
+  const f = path.join(REPO, 'docs/i18n/back', `${loc}.json`)
+  const back = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8'))[key] : undefined
+  return typeof back !== 'string' || /card/i.test(back)
+}
 
 /** pricing-copy-2's message commit (the first "pricing-copy-2:" commit that touched messages/), and the one before it. */
 const C = git(['log', '--format=%H', '--grep=^pricing-copy-2:', '--reverse', '--', 'messages/']).trim().split('\n').filter(Boolean)
@@ -107,7 +116,7 @@ function migration() {
     const loc = f.slice(0, -5)
     let old; try { old = flat(JSON.parse(git(['show', `${BEFORE}:messages/${f}`]))) } catch { old = null }
     let now; try { now = flat(JSON.parse(atAfter(`messages/${f}`))) } catch { continue }
-    if (!old) { if ('planTable.pay.fee' in now) t(`${loc} (new since): the plan-table row has no "card"`, !cardRe(loc).test(now['planTable.pay.fee']) && now['planTable.pay.fee'].endsWith('*'), now['planTable.pay.fee']); continue }
+    if (!old) { if ('planTable.pay.fee' in now) t(`${loc} (new since): the plan-table row has no "card"`, !saysCard(loc, 'planTable.pay.fee', now['planTable.pay.fee']) && now['planTable.pay.fee'].endsWith('*'), now['planTable.pay.fee']); continue }
     const moved = Object.keys({ ...old, ...now }).filter(k => old[k] !== now[k])
     t(`${loc}: only planTable.pay.fee and planNames.payg.description moved`, moved.every(k => KEYS.includes(k)), moved.filter(k => !KEYS.includes(k)))
     if ('planTable.pay.fee' in old) {
@@ -127,7 +136,7 @@ function migration() {
   const EN = flat(JSON.parse(atAfter('messages/en-GB.json')))
   t('en-GB: "HatchGrab fee on online orders*"', EN['planTable.pay.fee'] === 'HatchGrab fee on online orders*')
   // ⚠️ Applied at HEAD too: any locale file added after the message commit (languages-world-2) carries the new row.
-  for (const f of files) { const m = flat(JSON.parse(read(`messages/${f}`))); if ('planTable.pay.fee' in m) t(`HEAD ${f.slice(0, -5)}: the plan-table row says no "card"`, !cardRe(f.slice(0, 5)).test(m['planTable.pay.fee']), m['planTable.pay.fee']) }
+  for (const f of files) { const m = flat(JSON.parse(read(`messages/${f}`))); if ('planTable.pay.fee' in m) t(`HEAD ${f.slice(0, -5)}: the plan-table row says no "card"`, !saysCard(f.slice(0, 5), 'planTable.pay.fee', m['planTable.pay.fee']), m['planTable.pay.fee']) }
 
   head('B1 / B3 · back-translations follow')
   for (const f of files) {
