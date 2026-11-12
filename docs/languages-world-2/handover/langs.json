@@ -1,0 +1,10 @@
+[
+ ["uk-UA","Ukrainian","UA","uk","UK"],["ru-KZ","Russian (as written in Kazakhstan)","KZ","ru","RU-KZ"],["kk-KZ","Kazakh","KZ","kk","KK"],
+ ["uz-UZ","Uzbek (Latin script)","UZ","uz","UZ"],["az-AZ","Azerbaijani","AZ","az","AZ"],["ka-GE","Georgian","GE","ka","KA"],
+ ["hy-AM","Armenian","AM","hy","HY"],["sq-AL","Albanian","AL","sq","SQ"],["mk-MK","Macedonian","MK","mk","MK"],
+ ["bs-BA","Bosnian (Latin script)","BA","bs","BS"],["ca-AD","Catalan (Andorra)","AD","ca","CA"],["hi-IN","Hindi","IN","hi","HI"],
+ ["bn-BD","Bengali (Bangladesh)","BD","bn","BN"],["ur-PK","Urdu (right to left)","PK","ur","UR"],["ne-NP","Nepali","NP","ne","NE"],
+ ["si-LK","Sinhala","LK","si","SI"],["ta-LK","Tamil (Sri Lanka)","LK","ta","TA"],["km-KH","Khmer","KH","km","KM"],
+ ["lo-LA","Lao","LA","lo","LO"],["mn-MN","Mongolian (Cyrillic script)","MN","mn","MN"],["fil-PH","Filipino","PH","fil","FIL"],
+ ["sw-TZ","Swahili (Tanzania)","TZ","sw","SW"],["am-ET","Amharic","ET","am","AM"]
+]

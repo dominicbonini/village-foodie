@@ -1,0 +1,944 @@
+{
+ "managePayments": {
+  "heading": "Payments",
+  "loading": "Checking your Stripe account…",
+  "state": {
+   "not_connected": {
+    "title": "Not set up",
+    "body": "Takes about 10 minutes. You’ll need your bank details and ID.",
+    "chip": "Not set up"
+   },
+   "requirements": {
+    "title": "Stripe needs your details",
+    "body": "Card payments won’t work until Stripe has your business and bank details.",
+    "chip": "Action needed"
+   },
+   "pending": {
+    "title": "Connected — Stripe is checking your details",
+    "body": "Nothing for you to do. Stripe is reviewing what you sent, and this page updates when they’re done.",
+    "chip": "Checking"
+   },
+   "ready": {
+    "title": "Connected",
+    "body": "Your Stripe account is connected and able to take payments.",
+    "chip": "Ready"
+   },
+   "restricted": {
+    "title": "Card payments paused",
+    "body": "Stripe has paused card payments on your account until something is resolved.",
+    "chip": "Paused"
+   },
+   "unsupported": {
+    "title": "Card payments aren’t available on this account",
+    "body": "Stripe cannot enable card payments here. Get in touch and we will sort it out with you.",
+    "chip": "Unavailable"
+   }
+  },
+  "keyMismatch": {
+   "title": "Stripe keys do not match",
+   "body": "This site’s server is using its <b>{server, select, live {live} other {test}}</b> Stripe key while the browser was built with the <b>{browser, select, live {live} other {test}}</b> one. Card payments would fail at the moment a customer tries to pay, so setting up Stripe is blocked until they agree.",
+   "fix": "Both keys must be set for the same environment, and the site rebuilt afterwards — the publishable key is baked in at build time, the secret key is read on every request."
+  },
+  "permission": {
+   "title": "Only the truck’s owner can set up payments",
+   "body": "Stripe is connected by the person whose bank account receives the money, so it has to be set up from their own signed-in account. Nothing is wrong with this truck or with HatchGrab."
+  },
+  "config": {
+   "keyMissingTitle": "Card payments aren’t configured yet",
+   "fetchTitle": "We couldn’t check this truck’s Stripe account",
+   "keyMissing": "{name} is not set — the embedded components cannot load."
+  },
+  "errors": {
+   "requestFailed": "Request failed ({status})",
+   "unreachable": "Could not reach Stripe"
+  },
+  "online": {
+   "heading": "Online payments",
+   "body": "Customers pay by card when they order. Money goes straight to your own Stripe account — we never hold it.",
+   "feeLine": "Stripe charges {fee} per payment on standard {region}. Other cards may cost more. HatchGrab’s own fee on online orders depends on your plan — see Billing.",
+   "testMode": "Test mode. No real payments can be taken yet."
+  },
+  "trialNote": "Setting this up doesn’t start your subscription or charge you anything today. It’s how your customers pay you — your plan is separate.",
+  "admin": {
+   "title": "Viewing as platform admin",
+   "body": "This truck has not set up online payments. Only the owner can start it, from their own signed-in account — there is nothing to press here."
+  },
+  "setUp": {
+   "button": "Set up online payments",
+   "busy": "Setting up…"
+  },
+  "toast": {
+   "alreadySetUp": "Already set up — continuing",
+   "addDetails": "Now add your details for Stripe",
+   "createFailed": "Could not create the account"
+  },
+  "onboarding": {
+   "restricted": "Stripe takes it from here — you’ll sign in to Stripe and update the details it needs.",
+   "firstRun": "Stripe takes it from here — you’ll sign in to Stripe, then give your business and bank details."
+  },
+  "details": {
+   "title": "Your Stripe details",
+   "body": "Change the bank account you get paid into, or update your business details and documents.",
+   "button": "View or edit"
+  },
+  "walkUp": {
+   "heading": "Walk-up payments",
+   "body": "How you take money at the hatch. HatchGrab charges no platform fee on walk-ups, whichever you choose.",
+   "ownTerminal": "Your own card terminal",
+   "current": "Current",
+   "ownTerminalHelp": "Zettle, Square, or whatever you already use. Nothing to set up — only your provider’s own fees apply.",
+   "hatchgrab": "Through HatchGrab",
+   "comingSoon": "Coming soon",
+   "hatchgrabHelp": "Uses the same Stripe connection as your online payments — a card reader, or contactless straight from your phone or tablet.",
+   "hatchgrabFees": "{fee} per payment on {region}, plus {surcharge} for contactless taken on a phone or tablet. Other cards may cost more."
+  }
+ },
+ "manageCharges": {
+  "heading": "Tax, tips and fees",
+  "rate": {
+   "label": "Sales tax rate",
+   "hint": "The rate you charge on every order. Customers see it added at checkout, on receipts and on tickets.",
+   "regionDefault": "Leave it empty to charge {label} at {rate}%, the rate on prepared food in {region}."
+  },
+  "included": {
+   "label": "{label} in your prices",
+   "hint": "Your prices already include {label}. This rate only says how much of each price is {label}, on receipts and tickets — nothing is added at checkout.",
+   "default": "Leave it empty to use {rate}%, the {label} rate on hot food sold to take away in {country}."
+  },
+  "tips": {
+   "label": "Tips",
+   "hint": "Customers paying online by card can add a tip. It all goes to you.",
+   "choices": "Choices customers see:",
+   "chip": "{rate}%",
+   "other": "Other amount"
+  },
+  "fee": {
+   "label": "Online service fee",
+   "hint": "Added to online orders only. Never on pay-at-the-truck or walk-up orders. You keep it.",
+   "pctAria": "Service fee percentage",
+   "fixedAria": "Service fee fixed amount",
+   "max": "Most you can charge: {max}",
+   "example": "Customers see it before they pay, as one line: “{label} {amount}”.",
+   "hatchgrab": "HatchGrab adds a {fee} service fee to your customers’ online orders. You don’t pay it and can’t change it."
+  },
+  "saveFailed": "Couldn’t save — please try again."
+ },
+ "takingPayment": {
+  "heading": "Taking payment",
+  "intro": "How your team records money for each order.",
+  "paidStepHelp": "Adds a Confirm button when you add an order yourself, so you can place it now and take payment later. Turn this on if you take phone or advance orders.",
+  "paidStepNote": "This only affects orders you add. It doesn’t affect online orders."
+ },
+ "designEditor": {
+  "item": {
+   "weekHeading": "Week heading",
+   "weekHeadingSample": "Week commencing …",
+   "daysSample": "{first} to {last}",
+   "date": "Date",
+   "place": "Place",
+   "venue": "Venue",
+   "area": "Area",
+   "time": "Time",
+   "rows": "Rows",
+   "rowsSample": "{px}px apart · {first} to {last}",
+   "ownText": "Your own text",
+   "noteTokenSample": "The note you type when you make the post",
+   "nothingYet": "Nothing yet",
+   "thisBox": "this box"
+  },
+  "sample": {
+   "venue": "The Kings Arms",
+   "area": "Lavenham"
+  },
+  "bar": {
+   "previewWith": "Preview with",
+   "undo": "Undo",
+   "undoTitle": "Undo (⌘Z)",
+   "redo": "Redo",
+   "redoTitle": "Redo (⇧⌘Z)",
+   "cancel": "Cancel",
+   "saving": "Saving…",
+   "save": "Save design"
+  },
+  "grid": {
+   "eachRow": "Each row",
+   "placeOff": "The place name is in your picture — HatchGrab won’t add it."
+  },
+  "background": {
+   "uploading": "Uploading…",
+   "replace": "Replace picture",
+   "shape": {
+    "square": "Square (1:1)",
+    "portrait45": "Portrait (4:5)",
+    "portrait916": "Portrait (9:16)",
+    "landscape169": "Landscape (16:9)",
+    "portrait": "Portrait",
+    "landscape": "Landscape"
+   }
+  },
+  "scope": {
+   "title": "Text positions",
+   "standard": "Same positions as Standard",
+   "own": "Own positions for {place}",
+   "locked": "These positions come from your Standard design. Choose “Own positions for {place}” to move them just here."
+  },
+  "stage": {
+   "hint": "Drag a box to move it · drag a corner to resize",
+   "zoomOut": "Zoom out",
+   "zoomIn": "Zoom in"
+  },
+  "rows": {
+   "spacing": "Spacing",
+   "daysRun": "Days run {first} to {last}. Row 1’s three boxes are copied down by this distance.",
+   "whichEvents": "Which events",
+   "showCancelled": "Show cancelled events",
+   "showCancelledHint": "A cancelled event shows its place crossed out and the word CANCELLED. Switched off, the day reads as a day off."
+  },
+  "days": {
+   "reorder": "Reorder",
+   "move": "move"
+  },
+  "picture": {
+   "picture": "Picture",
+   "fill": "Fill the box",
+   "fit": "Fit inside",
+   "corners": "Corners",
+   "square": "Square",
+   "rounded": "Rounded",
+   "ifMissing": "If a location has no image",
+   "noPicture": {
+    "omit": "Leave it out",
+    "blank": "Leave a blank space",
+    "logo": "Show your logo"
+   },
+   "border": "Border",
+   "drawBorder": "Draw a border",
+   "drawBorderHint": "A line around the picture, in your own colour.",
+   "borderWidth": "Border width",
+   "cornerRadius": "Corner radius",
+   "locationPictures": "Location pictures",
+   "addLocationPictures": "+ Add location pictures",
+   "allHaveImage": "{total, plural, =0 {You don’t have any locations yet.} one {Your location has an image.} other {All # of your locations have an image.}}",
+   "someWithout": "{without} of your {total, plural, one {# location} other {# locations}} {without, plural, one {has} other {have}} no image yet"
+  },
+  "settings": {
+   "font": "Font",
+   "colour": "Colour",
+   "textColour": "Text colour",
+   "ownStyleNote": "{count, plural, one {{names} has its own style, so it isn’t changed.} other {{names} have their own style, so they aren’t changed.}}",
+   "matchAgain": "Match it again",
+   "matchName": "Match {name}",
+   "lastToggle": "{kind, select, weekly {Keep either Place or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.} other {Keep either Venue or Time switched on. A cancelled event shows its place crossed out and the word CANCELLED, so with both off there would be nothing to say it is cancelled.}}"
+  },
+  "letters": {
+   "boldGlyph": "B",
+   "italicGlyph": "I",
+   "capsGlyph": "AA",
+   "italicTitle": "{italic} — this font has a real italic"
+  },
+  "align": {
+   "left": "Left",
+   "centre": "Centre",
+   "right": "Right"
+  },
+  "effects": {
+   "outlineColour": "Outline colour",
+   "bandColour": "Band colour",
+   "bandDaysOff": "Band on days off",
+   "bandCancelled": "Band when the event is cancelled",
+   "bandDaysOffHint": "Used instead of the band above on a day with no trading.",
+   "bandCancelledHint": "Used instead of the band above when the event is cancelled."
+  },
+  "more": {
+   "dayOwnLine": "Day on its own line",
+   "dayOwnLineHint": "The weekday above the date. Date only.",
+   "noEventDay": "On a day with no event",
+   "wordsBeforePlaceholder": "e.g. Find us",
+   "neverHyphenate": "One long word with no space in it is always shrunk — we never hyphenate a place name."
+  },
+  "bits": {
+   "less": "Less",
+   "more": "More",
+   "chooseColourFor": "{label} — choose any colour",
+   "chooseColour": "Choose any colour"
+  }
+ },
+ "fontPicker": {
+  "tab": {
+   "all": "All",
+   "bold": "Bold & tall",
+   "hand": "Handwritten",
+   "classic": "Classic",
+   "clean": "Clean",
+   "own": "Yours",
+   "ownCount": "Yours ({count})"
+  },
+  "yoursTag": "· yours",
+  "loadingFonts": "Loading fonts…",
+  "search": "Search {count, number} fonts",
+  "uploadButton": "↑ Upload your font",
+  "loadingLibrary": "Loading the font library…",
+  "tryAgain": "Try again",
+  "noOwn": "You haven’t uploaded a font yet. Use the “↑ Upload your font” button above.",
+  "recent": "Recently used",
+  "popular": "Popular for posters",
+  "adding": "Adding…",
+  "noMatch": "No font matches “{query}”.",
+  "showing": "Showing {shown} of {total, number} — type more to narrow it down.",
+  "couldNotAdd": "That font could not be added",
+  "tooBig": "That font is {size, number, ::.0 group-off}MB. The limit is 5MB.",
+  "woff": "Please upload a TTF or OTF file — you can usually download one from where you bought the font.",
+  "uploadIncomplete": "The upload did not complete",
+  "added": "Added “{name}” as its {face} version.",
+  "face": {
+   "regular": "regular",
+   "bold": "bold",
+   "italic": "italic"
+  },
+  "licenceTick": "I own this font or have a licence to use it",
+  "checking": "Checking the font…",
+  "addFont": "Add font",
+  "cancel": "Cancel",
+  "missingFaces": "Add the {faces} version of “{name}” (optional) — choose the file again.",
+  "somethingWrong": "Something went wrong",
+  "faceLower": {
+   "regular": "regular",
+   "bold": "bold",
+   "italic": "italic"
+  },
+  "ownLicence": "Your own",
+  "loadFailed": "Could not load fonts"
+ },
+ "weeklyPost": {
+  "error": {
+   "generic": "Something went wrong",
+   "previewFailed": "The preview could not be made",
+   "loadFailed": "Could not load",
+   "tooBig": "That image is {size, number, ::.0 group-off}MB. The limit is 10MB.",
+   "wrongType": "Please choose a PNG or JPG.",
+   "uploadIncomplete": "The upload did not complete",
+   "uploadFailed": "The upload failed",
+   "saveFailed": "Could not save",
+   "buildFailed": "Could not build the post",
+   "copyFailed": "Could not copy — select the text and copy it by hand."
+  },
+  "loading": "Loading…",
+  "missingTable": {
+   "title": "The weekly post needs a database update",
+   "body": "The design table has not been created yet. Once the migration has been applied this screen will work."
+  },
+  "kind": {
+   "label": "Which design",
+   "event": "Single event",
+   "week": "Weekly"
+  },
+  "setup": {
+   "title": "Set up your weekly post",
+   "intro": "Upload the blank version of the weekly schedule graphic you already make — the same design, with your own text boxes removed. HatchGrab fills in the week from your schedule.",
+   "canvaTitle": "How to export a blank from Canva",
+   "canvaStep1": "Open your usual weekly schedule design.",
+   "canvaStep2": "Delete the text boxes with the dates, places and times — leave the background and headings you want to keep.",
+   "canvaStep3": "Share › Download › PNG.",
+   "uploading": "Uploading…",
+   "upload": "Upload your blank image",
+   "uploadHint": "PNG or JPG, up to 10MB, at least {px}px on the short side.",
+   "phoneTip": "Best on a computer or iPad — the boxes are small to drag on a phone.",
+   "designName": "Weekly post design",
+   "backDesigns": "‹ Designs",
+   "back": "‹ Back",
+   "pictureNote": "Your picture without any date or place on it. We add those.",
+   "saved": "Design saved."
+  },
+  "week": {
+   "this": "This week",
+   "next": "Next week"
+  },
+  "post": {
+   "title": "Your weekly post",
+   "editDesign": "Edit design",
+   "weekOf": "w/c {date}",
+   "imageAlt": "Your weekly post",
+   "building": "Building your post…",
+   "updating": "Updating…",
+   "eventsTitle": "This week’s events",
+   "noEvents": "No events this week.",
+   "eventDateCancelled": "{date} · cancelled",
+   "showCancelled": "Show cancelled events",
+   "showPrivate": "Show private events",
+   "privateHint": "They show as “Private event” with the date and times — never the place.",
+   "noteTitle": "Note",
+   "notePlaceholder": "e.g. Pre-order for collection",
+   "noteHint": "Shows in the caption, and in the note box if you placed one.",
+   "captionTitle": "Caption for your page",
+   "perEventTitle": "Post for each event",
+   "nothingToPost": "Nothing to post this week.",
+   "textCopied": "Text copied.",
+   "copyText": "Copy text",
+   "image": "Image",
+   "share": "Share",
+   "noOrderLink": "No ordering link yet — set your truck’s web address in Settings."
+  }
+ },
+ "manageShell": {
+  "loading": "Loading management console…",
+  "loadFailed": "Failed to load",
+  "requestFailed": "Failed",
+  "invalidToken": "Invalid or expired token",
+  "loadFailedReason": "Could not load this page: {reason}",
+  "noCountrySettings": "Couldn’t load this truck’s country settings. Please refresh.",
+  "noPlans": "Couldn’t load this truck’s plan. Please refresh.",
+  "stale": "{hasTime, select, yes {Couldn’t refresh. Showing what was saved at {time}. Changes you make are still saved.} other {Couldn’t refresh. Showing what was saved. Changes you make are still saved.}}",
+  "verify": {
+   "ok": "Email confirmed — thank you.",
+   "expired": "That confirmation link has expired. Get in touch and we’ll sort it before you go live.",
+   "invalid": "That confirmation link didn’t work. Get in touch and we’ll sort it before you go live."
+  },
+  "profile": {
+   "updated": "Profile updated",
+   "saveFailed": "Failed to save",
+   "title": "Edit profile",
+   "name": "Name",
+   "namePlaceholder": "Your name",
+   "email": "Email",
+   "cancel": "Cancel",
+   "saving": "Saving…",
+   "save": "Save"
+  },
+  "header": {
+   "subtitle": "Management console",
+   "ordersDashboard": "← Orders dashboard"
+  },
+  "tabs": {
+   "menu": "Menu",
+   "schedule": "Schedule",
+   "paperwork": "Documents",
+   "social": "Social media",
+   "reports": "Reports",
+   "team": "Team",
+   "settings": "Settings",
+   "payments": "Payments",
+   "billing": "Billing",
+   "paymentsIcon": "💷",
+   "scheduleCount": "Schedule ({count})",
+   "stripeAttention": "Stripe needs your attention",
+   "allergensNotSet": "allergens not set"
+  },
+  "menuSections": {
+   "label": "Menu sections",
+   "items": "Items",
+   "capacity": "Kitchen capacity",
+   "extras": "Extras & upsells",
+   "deals": "Deals"
+  },
+  "socialSections": {
+   "label": "Social media sections",
+   "create": "Create a post",
+   "designs": "Designs",
+   "locations": "Location settings"
+  },
+  "notices": {
+   "review": "Review →",
+   "tour": "Want a quick tour of your dashboard?",
+   "showMeAround": "Show me around",
+   "dismiss": "Dismiss",
+   "approval": "{count, plural, one {We found <b>{count}</b> event for you — review and approve before it goes live.} other {We found <b>{count}</b> events for you — review and approve before they go live.}}",
+   "allergens": "<b>Allergens not set</b> — customers can’t see allergen info until you verify it. Review each dish’s allergens on the Menu tab.",
+   "domainLive": "<link>{domain}</link> is live. Have a look at it, then tell us it is right in Settings.",
+   "stripe": "<b>Stripe needs something from you</b> — card payments can stop until it’s sorted.",
+   "profileTitle": "Complete your profile",
+   "missing": "Missing: {fields}.",
+   "goToSettings": "Go to Settings →",
+   "field": {
+    "truckName": "truck name",
+    "cuisineType": "cuisine type",
+    "contactEmail": "contact email",
+    "contactPhone": "contact phone"
+   }
+  },
+  "trialPopup": {
+   "title": "{months, select, none {You’re on a free trial} other {You’re on a {months}-month free trial}}",
+   "ends": "{hasDate, select, yes {Trial ends <hl>{date}</hl>} other {Trial ends <hl>soon</hl>}}",
+   "offer": "{hasMonths, select, yes {{months, plural, one {Every feature free for # month} other {Every feature free for # months}}} other {Every feature free during your trial}}",
+   "body": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, you’ll move to {fallback} and some features will stop working.} other {You won’t be charged anything while you’re on trial. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay. Choose your plan before then — if you don’t, you’ll move to {fallback} and some features will stop working.}}",
+   "bodyPaidEnd": "{hasDate, select, yes {You won’t be charged anything during your trial, which runs until <b>{date}</b>. When your trial ends, {fallback} is {price} a month. We’ll be in touch before then to set up payment.} other {You won’t be charged anything while you’re on trial. When your trial ends, {fallback} is {price} a month. We’ll be in touch before then to set up payment.}}",
+   "fees": "*Standard card processing fees apply on online orders",
+   "upgrade": "Upgrade here →"
+  }
+ },
+ "manageBilling": {
+  "perTruckMonth": "per truck / month",
+  "transactionFees": "Transaction fees",
+  "comingSoon": "Coming soon",
+  "footnote2Masked": "Online payments are powered by Stripe Connect. Platform and card processing fees are TBC and will be confirmed at launch.",
+  "card": {
+   "title": "Billing & payments",
+   "managed": "Billing is managed by HatchGrab",
+   "earlyAccess": "During early access we set up and adjust plans manually.",
+   "planLine": "{trial, select, yes {{truck} · {plan} plan (trial)} other {{truck} · {plan} plan}}"
+  },
+  "currentPlan": "Current plan",
+  "plan": {
+   "included": "Includes {amount} of online orders a month.",
+   "includedUnlimited": "Unlimited online orders included.",
+   "promo": "Special price.",
+   "promoUntil": "Special price until {date}.",
+   "ended": "Your {plan} plan ended on {date}. You’re now on {now}.",
+   "trialMonths": "A {months}-month free trial."
+  },
+  "trialEnds": "Trial ends {date}",
+  "yourTrialEnds": "Your trial ends {date}",
+  "notStarted": {
+   "heading": "Your free trial has not started yet"
+  },
+  "onTrial": "You have every feature. Choose a plan before your trial ends.",
+  "onTrialPaidEnd": "You have every feature. When your trial ends, {plan} is {price} a month. We’ll be in touch before then to set up payment.",
+  "onTrialNoCta": "You have every feature.",
+  "noCharge": "🔒 You won’t be charged anything during your trial, which runs until {date}. Billing only ever starts when you choose a plan and enter your payment details. Until then there’s nothing to cancel and nothing to pay.",
+  "noChargePaidEnd": "🔒 You won’t be charged anything during your trial, which runs until {date}.",
+  "fees": "*Standard card processing fees apply on online orders",
+  "setUpPayment": "⏱ Choose a plan before your trial ends",
+  "changeYourPlan": "Change your plan",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+   "title": "Switch to {plan}",
+   "tagline": "{price} — {description}",
+   "body": "We’re setting up automated billing. To switch now, drop us a message and we’ll get you set up within 24 hours.",
+   "mailSubject": "Switch to {plan} — {truck}",
+   "mailBody": "Hi, I’d like to switch {truck} to the {plan} ({price}) plan.",
+   "email": "Email us to switch",
+   "cancel": "Cancel"
+  }
+ },
+ "manageTeam": {
+  "toast": {
+   "verificationSent": "Verification email sent",
+   "emailChangeFailed": "Email change failed",
+   "profileUpdated": "Profile updated",
+   "saveProfileFailed": "Failed to save profile",
+   "verificationResent": "Verification email resent — check your inbox",
+   "resendFailed": "Failed to resend",
+   "emailChangeCancelled": "Email change cancelled",
+   "cancelFailed": "Failed to cancel",
+   "memberUpdated": "Member updated",
+   "inviteSent": "Invite sent",
+   "memberRemoved": "Member removed"
+  },
+  "confirmRemove": "Remove this team member?",
+  "title": "Team members",
+  "intro": "Invite staff to access the order screen and take orders",
+  "inviteMember": "+ Invite member",
+  "ownerName": "{you, select, yes {{name} (you)} other {{name}}}",
+  "ownerLine": "Owner · All vans",
+  "edit": "Edit",
+  "remove": "Remove",
+  "awaiting": "⏳ Awaiting verification",
+  "sentTo": "Verification sent to <b>{email}</b>. Check your inbox.",
+  "sending": "Sending…",
+  "resend": "Resend",
+  "cancelling": "Cancelling…",
+  "cancel": "Cancel",
+  "myProfile": "My profile",
+  "firstName": "First name *",
+  "lastName": "Last name *",
+  "phone": "Phone",
+  "phonePlaceholder": "+44 7700 900000",
+  "email": "Email",
+  "verifyNote": "A verification link will be sent to this address. Your current email remains active until verified.",
+  "privacy": "Your personal details are private and never shown to customers. They’re used for account management and billing verification.",
+  "saving": "Saving…",
+  "save": "Save",
+  "memberLine": "{role, select, manager {Manager} other {Staff}} · {vans}{pending, select, yes { · Invite pending} other {}}",
+  "allTrucks": "All trucks",
+  "noMembers": "No team members yet",
+  "modal": {
+   "editTitle": "Edit team member",
+   "inviteTitle": "Invite team member",
+   "name": "Name",
+   "namePlaceholder": "e.g. Sarah",
+   "email": "Email",
+   "emailPlaceholder": "sarah@example.com",
+   "role": "Role",
+   "roleStaff": "Staff — Take orders and manage the kitchen",
+   "roleManager": "Manager — Full access including menu and settings",
+   "roleOwner": "Owner — Full access including team and billing",
+   "truckAccess": "Truck access",
+   "onlyTruck": "{van} <muted>(only truck)</muted>",
+   "selectOne": "Select at least one truck",
+   "saveChanges": "Save changes",
+   "sendInvite": "Send invite"
+  },
+  "inviteEmail": {
+   "subject": "You’ve been invited to join {truck} on HatchGrab",
+   "greeting": "{hasName, select, yes {Hi {name},} other {Hi there,}}",
+   "invited": "{truck} has invited you to join their team as {role, select, owner {an Owner} manager {a Manager} other {a Staff member}} on HatchGrab.",
+   "click": "Click the button below to set your password and get started. This link expires in 7 days.",
+   "button": "Accept invitation",
+   "ignore": "If you weren’t expecting this invitation, you can safely ignore this email."
+  }
+ },
+ "manageWhatsApp": {
+  "preview": {
+   "title": "Try it before you connect",
+   "intro": "Type a question like a customer would ask, and see exactly what they’d get back. Nothing is sent to anyone.",
+   "examples": {
+    "where": "Where are you tonight?",
+    "doYouDo": "Do you do pepperoni?",
+    "menu": "What’s on the menu?"
+   },
+   "placeholder": "What desserts do you do?",
+   "send": "Send",
+   "empty": "Your reply will appear here",
+   "working": "Working out the reply…",
+   "noReply": "No reply would be sent.",
+   "noReplyWhy": "That reads as spam, a booking request or something unrelated, so the auto-reply stays quiet.",
+   "footnote": "Replies are AI-generated and vary slightly each time, and can occasionally be wrong.",
+   "failed": "Could not build a preview just now.",
+   "unreachable": "Could not reach the server. Check your connection and try again."
+  },
+  "setup": {
+   "button": {
+    "preparing": "Preparing…",
+    "unavailable": "Unavailable",
+    "waiting": "Waiting for Facebook window…",
+    "finishing": "Finishing…",
+    "reconnect": "Reconnect",
+    "setUp": "Set up"
+   },
+   "startAgain": "Start again",
+   "popupHint": "Can’t see the Facebook window? It may have been blocked. Allow pop-ups for hatchgrab.com, then press Start again."
+  },
+  "notice": {
+   "sdkUnavailable": "WhatsApp setup is not available in this environment.",
+   "sdkBlocked": "Meta’s login script could not load. An ad blocker or tracking protection is the usual cause.",
+   "setupFailed": "Setup could not be completed. Nothing was changed.",
+   "setupFinished": "Setup finished.",
+   "metaError": "Meta reported a problem during setup. Nothing was changed. Try again, and contact us if it keeps happening.",
+   "closed": "Setup was closed before it finished. Nothing was changed — press Set up to try again.",
+   "disconnectedUnreachable": "WhatsApp is disconnected. We couldn’t reach Meta to remove access. Please remove HatchGrab in WhatsApp Business → Settings → Account → Business Platform.",
+   "disconnected": "WhatsApp is disconnected. Auto-replies have stopped.",
+   "close": "Close"
+  },
+  "card": {
+   "title": "Auto-replies",
+   "description": "Answer customer questions automatically on your social media, using your menu and schedule.",
+   "channels": "Channels",
+   "requiresAccount": "Requires a WhatsApp Business account.",
+   "connected": "Connected",
+   "popupInstruction": "A Facebook window will open to connect your WhatsApp Business account. If nothing appears, allow pop-ups for hatchgrab.com in your browser, then press Set up again.",
+   "switchedOff": "WhatsApp auto-replies are switched off for your truck.",
+   "expiring": "Your WhatsApp connection needs renewing soon. Press Reconnect to keep auto-replies running.",
+   "comingSoon": "Coming soon",
+   "instagram": "Auto-replies to Instagram direct messages. Will require an Instagram professional account.",
+   "messenger": "Auto-replies to Facebook Messenger. Will require a Facebook Page."
+  },
+  "blocked": {
+   "title": "Your replies are not being delivered",
+   "body": "WhatsApp is refusing to send your automatic replies because of a billing problem on your WhatsApp Business account. Customers can still message you and you will still see everything they send — but they are not getting a reply.",
+   "fix": "You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager. <link>Check your payment method</link>"
+  },
+  "limit": {
+   "heading": "Auto-replies",
+   "label": "Monthly limit",
+   "option": "{n, number}",
+   "usage": "{used, number} of {limit, number} used · resets {date}",
+   "perCustomer": "Up to {n} replies per customer in 24 hours, then one message saying you’ll reply personally.",
+   "emailAt": "Replies pause at your limit. We’ll email you at 80% and 100%.",
+   "saved": "Monthly reply limit saved",
+   "saveFailed": "Could not save the limit"
+  },
+  "billing": {
+   "heading": "Billing",
+   "paymentMethod": "Payment method",
+   "added": "Payment method added",
+   "missing": "No payment method added",
+   "addInManager": "Add in WhatsApp Manager",
+   "summary": "Meta, not HatchGrab, bills your WhatsApp account for replies. From {from} the first {free, number} a month are free. Correct at {checked}; check <link>Meta’s pricing</link> for changes.",
+   "howMetaCharges": "How Meta charges",
+   "chargesTitle": "Meta charges for WhatsApp replies, not HatchGrab.",
+   "chargesBody": "Each reply HatchGrab sends for you is billed by Meta to your WhatsApp Business account. From {from}, Meta includes {free, number} free replies a month per number; after that, each reply is charged at Meta’s rate. Replies you send yourself from the WhatsApp Business app aren’t charged. Meta sets these prices and may change them. <link>See Meta’s pricing</link>",
+   "addPaymentInManager": "Add a payment method in WhatsApp Manager",
+   "aboveMissing": "Your limit is above Meta’s {free, number} free replies. Without a payment method, Meta will stop all replies once those are used.",
+   "aboveGeneral": "Your limit is above Meta’s {free, number} free replies. Replies beyond that need a payment method on your WhatsApp account; without one, Meta stops all replies once the free ones are used.",
+   "addPaymentMethod": "Add a payment method"
+  },
+  "disconnect": {
+   "link": "Disconnect WhatsApp",
+   "title": "Disconnect WhatsApp?",
+   "body": "Auto-replies stop straight away and HatchGrab loses access to your WhatsApp account. Your number keeps working in the WhatsApp Business app. To remove HatchGrab completely, also open WhatsApp Business → Settings → Account → Business Platform.",
+   "cancel": "Cancel",
+   "confirm": "Disconnect",
+   "working": "Disconnecting…",
+   "failed": "Could not disconnect"
+  },
+  "signup": {
+   "logged": "Logged.",
+   "partial": "We linked your WhatsApp Business account but could not complete the connection. Nothing is wrong on your side — please contact us and we will finish it.",
+   "noNumber": "Your WhatsApp Business account is linked, but no phone number came back. Press Reconnect and finish the number step.",
+   "needsRegistering": "Your account is linked, but this number needs registering by us before replies can start. Please contact support — your setup is saved, do not run it again.",
+   "registerRefused": "Your account is linked but Meta would not register the number. Your setup is saved — please contact support rather than running it again.",
+   "deliveryRefused": "Your account is linked but Meta would not turn on message delivery. Your setup is saved — please contact support rather than running it again.",
+   "numberTaken": "That WhatsApp number is already connected to another HatchGrab account. A number can only answer for one truck. Contact support and we will move it across.",
+   "saveIncomplete": "Almost there — we could not finish saving. Your setup is saved, please contact support rather than running it again.",
+   "connected": "WhatsApp is connected. Auto-replies will start answering messages to this number."
+  }
+ },
+ "customDomain": {
+  "card": {
+   "title": "Add your schedule to your website",
+   "live": "<addr>{address}</addr> is showing your schedule.",
+   "create": "We create a page at <addr>{address}</addr> showing your schedule.",
+   "exampleDomain": "yourtruck.com",
+   "liveBadge": "Live",
+   "setUp": "Set up",
+   "viewSetup": "View setup",
+   "continue": "Continue",
+   "justLive": "<b>{address}</b> is working. Have a look at it, then tell us it is right below."
+  },
+  "waiting": {
+   "title": "We are waiting for {address}",
+   "bodySince": "You set this up on {date}. New web addresses usually start working within a few minutes, and occasionally take up to 24 hours to reach everyone — there is nothing you need to do while that happens. If someone else was adding the line for you, it is worth checking they did.",
+   "body": "New web addresses usually start working within a few minutes, and occasionally take up to 24 hours to reach everyone — there is nothing you need to do while that happens. If someone else was adding the line for you, it is worth checking they did."
+  },
+  "ready": {
+   "title": "{address} is live",
+   "body": "Have a look at it, then tell us it is right in your settings."
+  },
+  "confirm": {
+   "heading": "Have a look, then tell us it is right",
+   "open": "Open <link>{address}</link>",
+   "checkTimes": "Check the dates and times look right.",
+   "yes": "Yes, it looks right",
+   "no": "No, there’s a problem",
+   "problemLine": "Tell us what you are seeing and we will look at it.",
+   "emailUs": "Email us",
+   "mailSubject": "Problem with {address}",
+   "mailLiveSince": "Live since {date}",
+   "mailSeeing": "What I am seeing:"
+  },
+  "confirmed": {
+   "heading": "Thanks — that is all noted.",
+   "body": "There is nothing else to do."
+  },
+  "turnOff": {
+   "link": "Turn this off",
+   "heading": "Turn off your own web address?",
+   "stops": "This will stop working:",
+   "carriesOn": "This carries on exactly as it is, and is where your QR code sends people:",
+   "reAdd": "If you are setting it up again later, leave the line you added at your web address company. If you are not, ask them to remove it.",
+   "cancel": "Keep it on",
+   "confirm": "Turn it off",
+   "working": "Turning it off…",
+   "failed": "We could not switch that off just now. Nothing has changed — your address is still working. Try again shortly."
+  },
+  "wizard": {
+   "resumeFailedTitle": "We could not load your setup.",
+   "resumeFailedBody": "Nothing has changed. Try again shortly.",
+   "close": "Close",
+   "resuming": "Picking up where you left off…",
+   "genericError": "Something went wrong",
+   "saveFailed": "Could not save"
+  },
+  "address": {
+   "intro": "Your schedule gets its own web address.",
+   "question": "What is your web address?",
+   "hint": "The one people already use to find you.",
+   "aria": "Your own web address",
+   "willBe": "Your address will be <addr>{address}</addr>",
+   "example": "For example, <addr>{address}</addr>",
+   "noChange": "Your website does not change — you just add a link to the new address.",
+   "notSetUp": "We have not set this up.",
+   "restricted": "Whoever looks after your web address has to let us set up the padlock — the little lock customers see beside it. Until they add us it will not appear, so we have stopped rather than leave you waiting for it. Ask them to add us, then try again.",
+   "blocked": "Your web address currently blocks the padlock completely. Whoever looks after it has to allow it before this can work. Ask them to change that, then try again.",
+   "elsewhere": "Something already answers on that address. Send the message on the next screen to whoever looks after it — they will know what to do.",
+   "provider": "Your web address is looked after by <b>{provider}</b>. We will show you where to go.",
+   "provisionFailed": "We could not set that address up.",
+   "willNotWork": "That address will not work.",
+   "couldNotBeSetUp": "That address could not be set up.",
+   "couldNotSetUp": "Could not set that up",
+   "checking": "Checking…",
+   "setting": "Setting up…",
+   "tryAgain": "Try again",
+   "setUpAddress": "Set up this address",
+   "notNow": "Not now"
+  },
+  "apex": {
+   "empty": "Type the address you would like to use.",
+   "not_a_domain": "That does not look like a web address.",
+   "unparseable": "We could not read that as a web address. Check the spelling and try again.",
+   "apex": "{host} is your whole website address. If you point that at us, your website is replaced by this page. Put a word in front of it instead — for example events.{host}.",
+   "too_deep": "That address has too many parts. Something like events.{domain} works best."
+  },
+  "record": {
+   "addAt": "Add this at {provider}",
+   "open": "Open {provider}",
+   "guide": "{provider}’s own guide to this",
+   "addAtSave": "Add this at {provider}, and save.",
+   "addSomewhere": "Add this where your web address is looked after, and save.",
+   "hintChoose": "Choose this from the list.",
+   "hintWord": "Just this word, not the whole address.",
+   "hintExact": "Copy this exactly.",
+   "timing": "It usually starts working within an hour, though it can take longer. You do not need to keep this page open.",
+   "someoneElse": "Someone else looks after your web address?",
+   "sentTo": "Sent to {email}",
+   "emailPlaceholder": "their email address",
+   "sending": "Sending…",
+   "send": "Send these details",
+   "sendFailed": "Could not send"
+  },
+  "providers": {
+   "cloudflare": {
+    "open": "Open your web address, then “DNS” and “Records”.",
+    "add": "Select “Add record”, then pick “CNAME” as the “Type”.",
+    "name": "Put the first value below in “Name”.",
+    "value": "Put the second value below in “Target”.",
+    "proxy": "Set “Proxy status” to “DNS only” — the cloud beside it must be grey, not orange.",
+    "save": "Leave “TTL” as “Auto” and select “Save”.",
+    "caveat": "If the cloud stays orange the padlock will never appear, and nothing will say why."
+   },
+   "godaddy": {
+    "open": "Open your “Domain Portfolio” and choose your web address.",
+    "dns": "On “Domain Settings”, select “DNS”.",
+    "add": "Select “Add New Record”, then pick “CNAME” from the “Type” menu.",
+    "name": "Put the first value below in “Name”.",
+    "value": "Put the second value below in “Value”.",
+    "save": "Leave “TTL” as it is and select “Save”.",
+    "caveat": "If you added more than one at once, the button says “Save All Records”."
+   },
+   "123reg": {
+    "signIn": "Sign in to your “123 Reg Control Panel”.",
+    "manage": "Beside “Domains”, select “Manage All”, then choose your web address.",
+    "dns": "Select “DNS”, then “Add New Record”.",
+    "type": "Pick “CNAME” from the “Type” list.",
+    "name": "Put the first value below in “Name”.",
+    "value": "Put the second value below in “Value”, and add a full stop to the end of it.",
+    "save": "Leave “TTL” as “Default” and click “Save”.",
+    "caveat": "123 Reg needs a full stop at the end of the second value or it will not work."
+   },
+   "wix": {
+    "open": "Open “Domains”, then click the “Domain Actions” icon beside your web address.",
+    "manage": "Choose “Manage DNS Records”.",
+    "add": "In the “CNAME (Aliases)” section, click “+ Add Record”, then click “Got it”.",
+    "name": "Put the first value below in “Host Name”.",
+    "value": "Put the second value below in “Value”.",
+    "save": "Click “Save”, then click “Save Changes” in the pop-up.",
+    "caveat": "If your web address only points at Wix rather than being held there, Wix cannot make this change — whoever holds it has to."
+   }
+  },
+  "instructionsEmail": {
+   "subject": "One record to add for {truckName}’s schedule page",
+   "hello": "Hello,",
+   "introAt": "We are putting {truckName}’s live schedule on {address}, and it needs one record adding to our domain at {provider}.",
+   "introHolder": "We are putting {truckName}’s live schedule on {address}, and it needs one record adding to our domain with whoever holds our domain.",
+   "stepsAt": "At {provider}:",
+   "guide": "Their own guide: {url}",
+   "wholeChange": "That is the whole change — nothing else on the website is affected, and the rest of our domain keeps working exactly as it does now. It usually starts working within an hour.",
+   "pointsAt": "The page it points at shows where we are trading next and keeps itself up to date.",
+   "replyTo": "Reply to {email} if you have any questions.",
+   "thanks": "Thank you,"
+  },
+  "liveEmail": {
+   "subject": "{address} is working",
+   "goodNews": "Good news — {address} is working.",
+   "body": "Your schedule is now showing at your own address. Have a look at it and check it is right: open {address}, make sure the events are yours and the dates look correct.",
+   "confirm": "When you have, open your settings on HatchGrab and tell us it is right. Nothing depends on that — it just means we know a person has seen it."
+  }
+ },
+ "deleteAccount": {
+  "dangerZone": "Danger zone",
+  "scheduled": "This account is scheduled for deletion",
+  "requested": "Requested on <b>{requested}</b>. It is due to be deleted on <b>{due}</b>.",
+  "orderingStopped": "Online ordering has stopped. Your dashboard stays available to read until then.",
+  "cannotCancelPending": "<b>You cannot cancel this yourself.</b> To stop it, email <link>{email}</link> as soon as possible.",
+  "title": "Delete your account",
+  "body": "Permanently close this HatchGrab account and stop taking online orders.",
+  "open": "Delete account…",
+  "dialogTitle": "Delete your account?",
+  "stopsImmediately": "Online ordering stops immediately — not in 30 days. Customers will not be able to order from you as soon as you confirm.",
+  "upcoming": "<b>You have {count, plural, one {# upcoming order} other {# upcoming orders}}.</b> These will still need fulfilling.",
+  "allTrucks": "<b>All {count} trucks on this account are included:</b> {names}.",
+  "deletedAfter": "Your account will be deleted after <b>30 days</b>. Your dashboard stays available to read during that time.",
+  "cannotCancel": "You cannot cancel this yourself. To stop it, you must email <link>{email}</link>.",
+  "whatHeading": "What is deleted, and what is kept",
+  "whatPersonal": "Your personal details and your team's are deleted, and your logins are removed.",
+  "whatCustomers": "Your customers' names, emails and phone numbers are deleted from your orders.",
+  "whatAccounting": "Anonymous accounting records are <b>kept for six years</b>, as UK law requires. See our <link>privacy policy</link>.",
+  "copyFirst": "<b>Want a copy of your data first?</b> There is no download in the app. You have the right to a copy — email <link>{email}</link> <b>before</b> you confirm, and we will send it to you.",
+  "typeToConfirm": "Type <code>{name}</code> to confirm",
+  "typeAria": "Type {name} to confirm account deletion",
+  "cancel": "Cancel — keep my account",
+  "requesting": "Requesting…",
+  "confirm": "Delete my account",
+  "requestedToast": "Account deletion requested. Check your email.",
+  "failed": "Could not submit the request"
+ },
+ "copyButton": {
+  "copy": "Copy",
+  "copied": "Copied ✓",
+  "failed": "Copy failed",
+  "aria": "{label} {thing}",
+  "announceCopied": "{thing} copied",
+  "announceCopiedValue": "Value copied",
+  "announceFailed": "Could not copy {thing}. Select the writing and copy it yourself.",
+  "announceFailedValue": "Could not copy the value. Select the writing and copy it yourself."
+ },
+ "eventPost": {
+  "loading": "Loading…",
+  "uploading": "Uploading…",
+  "cancel": "Cancel",
+  "error": {
+   "somethingWrong": "Something went wrong.",
+   "previewFailed": "The preview could not be made.",
+   "imageTooBig": "That image is {size}MB. The limit is 10MB.",
+   "pngOrJpg": "Please choose a PNG or JPG.",
+   "uploadIncomplete": "The upload did not complete.",
+   "couldNotLoad": "Could not load.",
+   "uploadFailed": "The upload failed.",
+   "couldNotChange": "Could not change that.",
+   "couldNotRemove": "Could not remove.",
+   "couldNotSave": "Could not save.",
+   "couldNotBuild": "Could not build the picture."
+  },
+  "setup": {
+   "stranded": "These place pictures use the standard positions and are a different shape, so they won’t be used until you replace them: {places}.",
+   "pictureReplaced": "Picture replaced.",
+   "designSaved": "Design saved.",
+   "firstTitle": "Set up your single event post",
+   "firstBody": "Upload the picture you use for a single event — your artwork with no date, place or time on it. HatchGrab adds those for each event.",
+   "uploadYourPicture": "Upload your picture",
+   "fileRule": "PNG or JPG, up to 10MB, at least {px}px on the short side.",
+   "thisPlaceFallback": "This place",
+   "standard": "Standard",
+   "standardStatus": "Used at every other place",
+   "pendingStatus": "No picture yet — using Standard",
+   "phoneWarning": "Best on a computer or iPad — the boxes are small to drag on a phone.",
+   "designsHeading": "Designs",
+   "addPlaceDesignLink": "+ Add a design for a place",
+   "placeDesignName": "{name} · event post design",
+   "standardDesignName": "Single event post design",
+   "backToDesigns": "‹ Designs",
+   "back": "‹ Back",
+   "pictureNote": "Your picture without any date or place on it. We add those.",
+   "thisPlaceHeading": "This place",
+   "removeConfirm": "Remove {name}’s picture and text positions? Events there will use your Standard design.",
+   "remove": "Remove",
+   "keep": "Keep",
+   "removeLink": "Remove this place’s design",
+   "noEvents": "No events yet — add one and the preview will use it.",
+   "pickerTitle": "Add a design for a place",
+   "pickerSearch": "Search places",
+   "pickerNoPlaces": "No places yet.",
+   "pickerAllDone": "Every place already has a design."
+  },
+  "modal": {
+   "title": "Post for this event",
+   "close": "Close",
+   "imageAlt": "Your event post",
+   "building": "Building…",
+   "imageHeading": "Image",
+   "standardNotPlace": "Standard’s picture and Standard’s text positions — not {place}’s.",
+   "replaceIt": "Replace it",
+   "noteHeading": "Note (this post only)",
+   "postTextHeading": "Post text"
+  }
+ }
+}

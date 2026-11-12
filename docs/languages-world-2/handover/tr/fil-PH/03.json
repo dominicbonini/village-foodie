@@ -1,0 +1,1021 @@
+{
+ "alertsOperator": {
+  "hi": "Hi {name},",
+  "limit80": {
+   "subject": "Nagamit mo na ang 80% ng WhatsApp replies mo ngayong buwan",
+   "used": "Nakagamit na ang automatic WhatsApp replies mo ng <b>{used} sa {limit}</b> ngayong buwan.",
+   "nothingStopped": "Walang tumigil. Pag umabot ka sa {limit}, magpa-pause ang automatic replies hanggang mag-reset ang allowance mo sa <b>{reset}</b> — puwede ka pa ring i-message ng mga customer, at makikita mo pa rin lahat ng ipapadala nila.",
+   "raise": "Puwede mong taasan ang monthly limit mo sa Settings kahit kailan.",
+   "raiseLink": "Puwede mong taasan ang monthly limit mo sa Settings kahit kailan:",
+   "button": "Buksan ang Settings"
+  },
+  "limit100": {
+   "subject": "Naka-pause ang WhatsApp auto-replies mo ngayong buwan",
+   "usedAll": "Nagamit mo na lahat ng {limit} automatic WhatsApp replies ngayong buwan, kaya naka-pause na ang mga ito.",
+   "stillReach": "<b>Puwede ka pa ring i-message ng mga customer gaya ng dati, at natatanggap mo pa rin ang bawat message.</b> Ang tumigil lang ay ang automatic reply na ipinapadala pabalik.",
+   "startAgain": "Babalik ang mga ito sa <b>{reset}</b>, o agad-agad kung tataasan mo ang monthly limit mo sa Settings.",
+   "startAgainLink": "Babalik ang mga ito sa {reset}, o agad-agad kung tataasan mo ang monthly limit mo sa Settings:",
+   "button": "Taasan ang limit ko"
+  },
+  "paymentBlocked": {
+   "subject": "Kailangan ng WhatsApp ng payment method bago ito makapagpadala",
+   "stopped": "Pinahinto ng WhatsApp ang pagpapadala ng automatic replies mo dahil walang gumaganang payment method sa WhatsApp Business account mo.",
+   "stillMessage": "<b>Puwede ka pa ring i-message ng mga customer, at makikita mo pa rin lahat ng ipapadala nila</b> — pero hindi umaabot sa kanila ang mga reply.",
+   "payDirect": "Direkta kang nagbabayad sa WhatsApp para sa mga message na ito, kaya sa WhatsApp Manager ito inaayos, hindi sa HatchGrab. Magdagdag o mag-update ng card doon at kusang babalik ang mga reply.",
+   "payDirectLink": "Direkta kang nagbabayad sa WhatsApp para sa mga message na ito, kaya sa WhatsApp Manager ito inaayos, hindi sa HatchGrab. Magdagdag o mag-update ng card doon at kusang babalik ang mga reply:",
+   "button": "Buksan ang WhatsApp Manager",
+   "settings": "Ang HatchGrab settings mo: <link>{url}</link>"
+  }
+ },
+ "setup": {
+  "steps": {
+   "based": "Saan ka naka-base",
+   "identity": "Ang truck mo",
+   "menu": "Ang menu mo",
+   "event": "Unang event"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Sine-set up",
+  "loading": "Nilo-load",
+  "loadingCountries": "Nilo-load…",
+  "verify": {
+   "ok": "Nakumpirma na ang email — salamat.",
+   "expired": "Expired na ang confirmation link na iyan. Makipag-ugnayan sa amin at aayusin namin ito bago ka mag-go live.",
+   "invalid": "Hindi gumana ang confirmation link na iyan. Makipag-ugnayan sa amin at aayusin namin ito bago ka mag-go live."
+  },
+  "identity": {
+   "heading": "Ano ang pangalan ng truck mo?",
+   "intro": "Ito ang pangalang makikita ng mga customer. Walang magiging public hangga’t hindi ka nagdedesisyong mag-go live.",
+   "nameLabel": "Pangalan ng truck",
+   "namePlaceholder": "Kuya Jun’s Burgers",
+   "phoneLabel": "Mobile number",
+   "whatsappTick": "Naka-WhatsApp ang number na ito",
+   "phoneHelp": "Makikita ito ng mga customer sa order confirmation nila para makapagtanong sila tungkol sa order. Ang tick ang magdedesisyon kung “Tawagan kami” o “I-WhatsApp kami” ang lalabas. Puwede mong palitan ang dalawa sa Settings."
+  },
+  "phoneRequired": "Maglagay ng mobile number — ginagamit ito ng mga customer at namin para ma-contact ka.",
+  "createFailed": "Hindi namin magawa ang truck mo.",
+  "unreachable": "Hindi makakonekta sa amin ngayon — pakisubukan ulit.",
+  "back": "Bumalik",
+  "creating": "Ginagawa ang truck mo…",
+  "continue": "Magpatuloy"
+ },
+ "whereBased": {
+  "countriesFailed": "Hindi namin ma-load ang listahan ng mga bansa. Subukan ulit maya-maya."
+ },
+ "cuisinePicker": {
+  "choose": "Pumili ng cuisine…",
+  "other": "Iba pa…",
+  "otherPlaceholder": "Sabihin sa amin ang cuisine mo",
+  "addAnother": "+ Pumili ng isa pa",
+  "remove": "Alisin: {label}",
+  "cuisine": {
+   "Asian": "Asian",
+   "BBQ": "BBQ",
+   "Bakery": "Bakery",
+   "Burgers": "Burgers",
+   "Caribbean": "Caribbean",
+   "Chicken": "Chicken",
+   "Chinese": "Chinese",
+   "Coffee": "Kape",
+   "Desserts": "Desserts",
+   "FishChips": "Fish & Chips",
+   "Greek": "Greek",
+   "HotDogs": "Hotdog",
+   "Indian": "Indian",
+   "Italian": "Italian",
+   "JacketPotatoes": "Baked Potato",
+   "Kebab": "Kebab",
+   "Korean": "Korean",
+   "Mexican": "Mexican",
+   "PieMash": "Pie & Mash",
+   "Pizza": "Pizza",
+   "Seafood": "Seafood",
+   "Tacos": "Tacos",
+   "Thai": "Thai",
+   "Vegan": "Vegan",
+   "Wraps": "Wraps"
+  }
+ },
+ "priceControls": {
+  "change": "{label} — palitan",
+  "useRule": "{label} — gamitin na lang ang rule",
+  "typePrice": "{label} — mag-type ng presyo",
+  "backToRule": "Bumalik sa rule",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+ },
+ "goLive": {
+  "allergensUnanswered": {
+   "title": "Piliin kung paano mo ipapakita ang info sa allergens",
+   "detail": "Hangga’t hindi ka pumipili, wala sa mga dish mo ang makikita ng mga customer — pinoprotektahan ng menu ang sarili nito sa pag-hide ng anumang dish na hindi pa kumpirmado ang allergens, at sa ngayon, lahat iyon.",
+   "where": "Menu → Allergens"
+  },
+  "allergensCardMissing": {
+   "title": "Idagdag ang allergen card mo",
+   "detail": "Pinili mong magpakita ng allergen card, pero walang naka-save — kaya sasabihan ang mga customer na may info sa allergens, tapos wala silang makikita.",
+   "where": "Menu → Allergens"
+  },
+  "allergensItemsUnverified": {
+   "title": "{n, plural, one {Kumpirmahin ang allergens ng {count} dish} other {Kumpirmahin ang allergens ng {count} dish}}",
+   "detail": "{n, plural, one {{u, plural, one {Nakatago sa mga customer ang {unverified} sa {total} dish mo hanggang makumpirma ang allergens.} other {Nakatago sa mga customer ang {unverified} sa {total} dish mo hanggang makumpirma ang allergens.}}} other {{u, plural, one {Nakatago sa mga customer ang {unverified} sa {total} dish mo hanggang makumpirma ang allergens.} other {Nakatago sa mga customer ang {unverified} sa {total} dish mo hanggang makumpirma ang allergens.}}}} Ang dish na ipinapakita nang walang kumpirmadong allergens ay mababasang “walang allergens”, kaya itinatago ito ng menu para hindi magkamali.",
+   "where": "Menu → Allergens"
+  },
+  "noVan": {
+   "title": "Magdagdag ng van",
+   "detail": "Tumatakbo ang mga event sa isang van — kung wala nito, walang daanan ang mga order.",
+   "where": "Settings → Mga truck mo"
+  },
+  "kitchenCapacityUnset": {
+   "title": "I-set ang kitchen capacity mo",
+   "detail": "Walang naka-set na capacity para sa: {vans}. Kung wala ito, patuloy kaming mangangako sa mga customer ng oras ng pick-up na hindi kayang abutin ng kusina mo.",
+   "where": "Menu → Kitchen capacity",
+   "unnamedVan": "Van na walang pangalan"
+  },
+  "noPrepBearingCategory": {
+   "title": "Sabihin sa amin kung gaano katagal lutuin ang pagkain mo",
+   "detail": "{categories, select, none {Wala ka pang menu category, kaya hindi namin makukuwenta kung gaano katagal ang isang order.} other {Walang naka-set na cooking time sa alinman sa mga category mo, kaya mukhang instant ang bawat order para sa amin. Patuloy kaming magbibigay sa mga customer ng oras ng pick-up na hindi kayang abutin ng kusina mo, at habang dumarami ang order, lalong lalayo ang mga oras na iyon.}}",
+   "where": "Menu → Mga category → Kitchen setup"
+  },
+  "emailUnverified": {
+   "title": "Kumpirmahin ang email address mo",
+   "detail": "Dito namin ipinapadala ang mga order notification at account recovery. Kung mali ito, malalaman mo lang kapag may nagka-problema na.",
+   "where": "Hanapin sa inbox mo ang confirmation link namin"
+  },
+  "emailUnknown": {
+   "title": "Hindi alam ang status ng email confirmation",
+   "detail": "Hindi pa naka-set up ang email verification, kaya hindi ito ma-check. Sinadya itong mag-block sa halip na tahimik na pumasa.",
+   "where": "—"
+  }
+ },
+ "walkthrough": {
+  "intro": "Sa Manage mo sine-set up ang truck mo at tinitingnan kung kumusta ito. Sa Dashboard ka tumatanggap ng order at nagpapatakbo ng bawat event habang nangyayari ito.",
+  "ariaLabel": "Walkthrough ng Dashboard",
+  "step": "{current} sa {total}",
+  "skip": "Laktawan",
+  "back": "← Bumalik",
+  "next": "Susunod →",
+  "done": "Tapos na",
+  "stops": {
+   "menu": {
+    "title": "Menu",
+    "body": "Ang mga dish, presyo at allergens mo. Kapag may binago ka rito, live agad ito."
+   },
+   "schedule": {
+    "title": "Schedule",
+    "body": "Kung saan at kailan ka magtitinda. Magdagdag ng event dito at makaka-order na ang mga customer para dito."
+   },
+   "build": {
+    "title": "Combo meals at Extras & upsells",
+    "body": "Nasa ilalim ng Menu ang combo meals, upsells, customizations at kitchen capacity mo — subukan mo lang."
+   },
+   "settings": {
+    "title": "Settings",
+    "body": "Ang details ng truck mo at kung paano magbabayad ang mga customer."
+   },
+   "billing": {
+    "title": "Billing",
+    "body": "Dito makikita ang plan, billing at info tungkol sa features mo."
+   }
+  }
+ },
+ "auth": {
+  "fields": {
+   "email": "Email",
+   "password": "Password",
+   "emailPlaceholder": "you@example.com",
+   "passwordHint": "Hindi bababa sa 8 character"
+  },
+  "signup": {
+   "title": "Gumawa ng account mo",
+   "subtitle": "{months, plural, =0 {Magsisimula ang free trial mo pag nag-sign up ka.} one {Libre ang unang # buwan mo, simula pag nag-sign up ka.} other {Libre ang unang # buwan mo, simula pag nag-sign up ka.}}",
+   "emailPlaceholder": "you@yourfoodtruck.ph",
+   "codeLabel": "May code ka? <optional>(opsyonal)</optional>",
+   "codePlaceholder": "Ilagay dito",
+   "marketing": "I-email ako paminsan-minsan ng tips at product news. Walang kinalaman sa mga order mo — puwede mong itigil kahit kailan.",
+   "signIn": "Mag-sign in",
+   "submit": "Gawin ang account ko",
+   "submitting": "Ginagawa ang account mo…",
+   "consent": "Sa paggawa ng account, sumasang-ayon ka sa aming <terms>Terms</terms> at <privacy>Privacy Policy</privacy>. Hindi kailangan ng card. Walang magiging public hangga’t hindi mo sinasabi.",
+   "haveAccount": "May account ka na? Mag-sign in",
+   "errorFallback": "Hindi namin magawa ang account mo.",
+   "errorOffline": "Hindi makakonekta sa amin ngayon — pakisubukan ulit."
+  },
+  "login": {
+   "title": "Mag-sign in sa kusina mo",
+   "dashboardOf": "Operator dashboard ng {brand}",
+   "resetSuccess": "Na-update na ang password. Mag-sign in ka na.",
+   "emailChanged": "Na-update na ang email address. Mag-sign in gamit ang bago mong email address.",
+   "errorFallback": "Mali ang email o password. Pakisubukan ulit.",
+   "submit": "Mag-sign in",
+   "submitting": "Nagsa-sign in…",
+   "forgot": "Nakalimutan ang password mo?"
+  },
+  "forgot": {
+   "sentTitle": "I-check ang email mo",
+   "sentBody": "Kung may account na may ganyang email address, makakatanggap ka ng reset link maya-maya. I-check ang spam folder mo kung hindi ito dumating sa loob ng ilang minuto.",
+   "title": "I-reset ang password mo",
+   "subtitle": "Ilagay ang email mo at padadalhan ka namin ng reset link",
+   "submit": "Ipadala ang reset link",
+   "sending": "Ipinapadala…",
+   "back": "Bumalik sa sign in"
+  },
+  "reset": {
+   "invalidTitle": "Invalid ang reset link",
+   "invalidBody": "Invalid o expired na ang link na ito.",
+   "requestNew": "Humingi ng bagong reset link",
+   "mismatch": "Hindi magkatugma ang mga password",
+   "tooShort": "Dapat hindi bababa sa 8 character ang password.",
+   "errorFallback": "Nagka-problema. Pakisubukan ulit.",
+   "titleFirstLogin": "I-set ang password mo",
+   "titleReset": "Pumili ng bagong password",
+   "subtitleFirstLogin": "Pumili ng password para ma-secure ang account mo",
+   "subtitleReset": "Dapat hindi bababa sa 8 character ang bago mong password",
+   "newPassword": "Bagong password",
+   "confirmPassword": "Kumpirmahin ang password",
+   "confirmPlaceholder": "Ulitin ang password mo",
+   "submit": "I-set ang password",
+   "saving": "Sine-save…"
+  },
+  "verifyEmail": {
+   "goToLogin": "Pumunta sa login",
+   "failedTitle": "Hindi na-verify",
+   "invalidTitle": "Invalid o expired na link",
+   "invalidBody": "Invalid o expired na ang verification link na ito.",
+   "verifiedTitle": "Verified na",
+   "verifiedBody": "Verified na ang email address na ito.",
+   "expiredTitle": "Expired na ang link",
+   "expiredBody": "Expired na ang verification link na ito. Humingi ng bago sa profile settings mo.",
+   "accountNotFound": "Hindi mahanap ang account. Makipag-ugnayan sa support.",
+   "emailTaken": "Naka-link na ang email address na ito sa ibang account. Gumamit ng ibang email address.",
+   "updateFailed": "Hindi na-update ang email. Pakisubukan ulit.",
+   "loginUpdateFailed": "Hindi na-update ang login credentials. Hindi nabago ang email mo.",
+   "successTitle": "Na-update na ang email address",
+   "successBody": "Napalitan na ng <b>{email}</b> ang email mo. Sina-sign out ka namin…"
+  },
+  "sessionAlert": {
+   "title": "Kailangang ayusin ang sign-in mo",
+   "body": "Nandito pa rin lahat ng nasa screen. Baka hindi ma-save ang mga bagong pagbabago hangga’t hindi ka nagsa-sign in ulit.",
+   "signIn": "Mag-sign in ulit"
+  }
+ },
+ "emailSignup": {
+  "greeting": "{hasName, select, yes {Hi {name},} other {Hello,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Founder, HatchGrab",
+  "verify": {
+   "subject": "Kumpirmahin ang email address mo",
+   "thanks": "{hasTruck, select, yes {Salamat sa pag-set up ng {truck} sa HatchGrab.} other {Salamat sa pag-set up ng truck mo sa HatchGrab.}}",
+   "button": "Kumpirmahin ang email address ko",
+   "buttonText": "Kumpirmahin ang email address ko: {url}",
+   "why": "Ito ang address na gagamitin mo sa pag-log in, at dito pupunta ang mga order alert — kaya sulit itong gawin ngayon.",
+   "next": "Kapag nakumpirma na, ipapadala ko sa iyo lahat ng kailangan mo para makapagsimula.",
+   "carryOn": "Puwede mong ituloy ang pag-set up habang hinihintay ito.",
+   "stuck": "May problema? I-reply mo lang ito — ako mismo ang sumasagot sa mga ito.",
+   "fallbackLink": "Kung hindi gumana ang button, i-paste ito: {url}"
+  },
+  "welcome": {
+   "subject": "{hasName, select, yes {Welcome sa HatchGrab, {name}} other {Welcome sa HatchGrab}}",
+   "intro": "{hasTruck, select, yes {Masaya akong i-welcome ang {truck} sa HatchGrab.} other {Masaya akong i-welcome ang truck mo sa HatchGrab.}}",
+   "trial": "{months, plural, one {Nagsimula na ang free trial mo (# buwan) — naka-unlock ang lahat ng feature.} other {Nagsimula na ang free trial mo (# buwan) — naka-unlock ang lahat ng feature.}}",
+   "setup": "Kung hindi mo pa nagagawa, madali lang ang pag-set up at mga labinlimang minuto lang ito.",
+   "button": "Buksan ang dashboard mo",
+   "bookmark": "Sulit i-bookmark. Gumagana ito sa kahit anong device.",
+   "stuck": "I-reply mo lang ito kung may problema ka — ako mismo ang sumasagot sa mga ito.",
+   "lookingForward": "{hasTruck, select, yes {Excited na akong makitang nagtitinda ang {truck}.} other {Excited na akong makitang nagtitinda ang truck mo.}}"
+  }
+ },
+ "errorsOnboarding": {
+  "not_signed_in": "Hindi naka-sign in",
+  "no_operator_record": "Walang operator record",
+  "bad_request": "Maling request",
+  "truck_name_missing": "Bigyan ng pangalan ang truck mo.",
+  "contact_phone_required": "Kailangan ng contact number.",
+  "phone_invalid": "{withName, select, yes {Maglagay ng valid na phone number para sa {name}} other {Maglagay ng valid na phone number}}{withExample, select, yes { (hal. {example})} other {}}.",
+  "truck_create_failed": "Hindi namin magawa ang truck mo.",
+  "unknown_step": "Hindi kilalang step",
+  "unknown_action": "Hindi kilalang action",
+  "countries_unavailable": "Hindi namin ma-load ang listahan ng mga bansa. Subukan ulit maya-maya.",
+  "email_invalid": "Maglagay ng valid na email address.",
+  "password_too_short": "Dapat hindi bababa sa {min, plural, one {# character} other {# character}} ang password.",
+  "signup_closed": "Hindi pa bukas ang sign-up.",
+  "too_many_attempts": "Masyadong maraming subok ngayon — pakisubukan ulit maya-maya.",
+  "account_exists": "May account na gamit ang email na iyan — mag-sign in na lang.",
+  "account_create_failed": "Hindi magawa ang account.",
+  "account_finish_failed": "Hindi natapos ang paggawa ng account mo — pakisubukan ulit.",
+  "unauthorised": "Walang pahintulot",
+  "unauthenticated": "Hindi authenticated",
+  "change_id_required": "Nagka-problema — i-refresh ang page at subukan ulit.",
+  "operator_not_found": "Hindi mahanap ang operator",
+  "cancel_change_failed": "Hindi na-cancel ang pagbabago",
+  "email_required": "Kailangan ang email",
+  "email_already_current": "Iyan na ang kasalukuyang email mo",
+  "email_already_registered": "Naka-register na sa HatchGrab ang email na ito",
+  "change_request_failed": "Hindi magawa ang change request",
+  "verification_email_failed": "Hindi naipadala ang verification email",
+  "verification_request_not_found": "Hindi mahanap ang verification request",
+  "email_already_verified": "Verified na ang email",
+  "email_send_failed": "Hindi naipadala ang email. Pakisubukan ulit.",
+  "reset_email_failed": "Hindi naipadala ang reset email",
+  "token_and_password_required": "Kailangan ang token at password",
+  "new_password_too_short": "Dapat hindi bababa sa {min, plural, one {# character} other {# character}} ang password.",
+  "reset_link_invalid": "Invalid o expired na ang reset link. Humingi ng bago.",
+  "reset_link_used": "Nagamit na ang reset link na ito. Humingi ng bago.",
+  "reset_link_expired": "Expired na ang reset link na ito. Humingi ng bago.",
+  "account_not_found": "Hindi mahanap ang account.",
+  "password_update_failed": "Hindi na-update ang password. Pakisubukan ulit.",
+  "no_fields_to_update": "Walang field na ia-update",
+  "upload_unreadable": "Hindi namin mabasa ang in-upload mo — pakisubukan ulit.",
+  "file_too_big": "Masyadong malaki ang file na iyan (max {mb} MB). Puwede na ang ordinaryong litrato ng menu mo.",
+  "file_type_unsupported": "Hindi supported ang file type na iyan — magpadala ng litrato o PDF ng menu mo.",
+  "text_too_long": "Masyadong mahaba ang text — i-paste lang ang menu.",
+  "menu_missing": "Magdagdag ng litrato ng menu mo, o i-paste ito.",
+  "demo_rate_limited": "Nakagawa ka na ng ilang demo. Subukan ulit maya-maya, o makipag-ugnayan sa amin at tutulungan ka namin.",
+  "demo_build_failed": "Nagka-problema sa paggawa ng demo mo. Pakisubukan ulit.",
+  "request_unreadable": "Hindi namin iyan mabasa.",
+  "email_not_valid": "Mukhang hindi iyan email address.",
+  "try_again_shortly": "Pakisubukan ulit maya-maya.",
+  "invalid_request_body": "Invalid ang request body",
+  "not_demo_session": "Hindi demo session",
+  "demo_not_found": "Hindi mahanap ang demo",
+  "not_demo_truck": "Hindi demo truck",
+  "new_service_failed": "Hindi makapagsimula ng bagong service",
+  "not_available": "Hindi available.",
+  "demo_save_failed": "Hindi namin iyan ma-save ngayon — pakisubukan ulit.",
+  "deletion_view_owner_only": "Ang may-ari lang ng account ang puwedeng makakita nito.",
+  "deletion_sign_in": "Mag-sign in para mag-request ng pag-delete ng account.",
+  "deletion_owner_only": "Ang may-ari lang ng account ang puwedeng mag-request ng pag-delete.",
+  "confirm_mismatch": "I-type ang DELETE para kumpirmahin.",
+  "partial_stamp": "Na-record ang request mong i-delete ang account, pero hindi namin mapahinto ang ordering sa lahat ng truck. Makipag-ugnayan sa support."
+ },
+ "emailAccount": {
+  "newEmail": {
+   "subject": "I-verify ang bago mong HatchGrab email address",
+   "heading": "I-verify ang email address mo",
+   "button": "I-verify ang email address"
+  },
+  "changeEmail": {
+   "requested": "Nag-request kang palitan ang HatchGrab email address mo ng address na ito.",
+   "click": "I-click ang button sa ibaba para mag-verify. Mag-e-expire ang link na ito sa loob ng 24 oras.",
+   "ignore": "Kung hindi ikaw ang nag-request ng pagbabagong ito, puwede mong balewalain ang email na ito.",
+   "stillActive": "Active pa rin ang kasalukuyang email address mo."
+  },
+  "resendVerification": {
+   "requested": "Nag-request kang palitan ang HatchGrab email mo ng address na ito.",
+   "click": "I-click sa ibaba para mag-verify. Mag-e-expire ang link na ito sa loob ng 24 oras.",
+   "ignore": "Kung hindi ikaw ang nag-request nito, balewalain ang email na ito.",
+   "stillActive": "Active pa rin ang kasalukuyang email mo."
+  },
+  "passwordReset": {
+   "subject": "I-reset ang HatchGrab password mo",
+   "heading": "I-reset ang password mo",
+   "requested": "May natanggap kaming request na i-reset ang password ng HatchGrab account mo.",
+   "click": "I-click ang button sa ibaba para pumili ng bagong password. Mag-e-expire ang link na ito sa loob ng 1 oras.",
+   "button": "I-reset ang password",
+   "ignore": "Kung hindi ikaw ang nag-request nito, puwede mong balewalain ang email na ito.",
+   "unchanged": "Hindi magbabago ang password mo hangga’t hindi mo kini-click ang link sa itaas."
+  },
+  "deletionScheduled": {
+   "subject": "Naka-schedule nang i-delete ang HatchGrab account mo",
+   "received": "May natanggap kaming request na i-delete ang HatchGrab account na ito.",
+   "orderingStopped": "<b>Huminto agad ang online ordering</b> sa: {trucks}.",
+   "noTrucks": "(walang truck)",
+   "readable": "Mababasa mo pa rin ang dashboard mo\n    sa susunod na {days, plural, one {# araw} other {# araw}}.",
+   "scheduled": "Naka-schedule ang pag-delete ng account sa <b>{date}</b>.",
+   "cannotCancel": "<b>Hindi ito puwedeng i-cancel sa loob ng app.</b> Kung hindi ikaw ito, o kung\n    nagbago ang isip mo, i-reply agad ang email na ito.",
+   "kept": "Kapag na-delete na ang account, buburahin namin ang personal details mo at ng mga customer mo. Itinatago namin ang\n    anonymous na accounting records, na legal na kailangan naming panatilihin."
+  }
+ },
+ "demoSaveEmail": {
+  "subject": "Ang HatchGrab demo mo — narito ang link pabalik",
+  "heading": "Naka-save na ang demo mo",
+  "intro": "Narito ang link pabalik sa demo na may menu mo. Hindi kailangan ng login — i-tap lang.",
+  "button": "Buksan ang demo ko",
+  "freshDay": "Tuwing babalik ka, magse-set up kami ng bagong araw ng pagtitinda para may mapaglaruan ka.",
+  "deletion": "Demo ito, kaya hindi namin ito itatago habambuhay — buburahin namin ito at ang menu sa\n                <b>{date}</b> ({days, plural, one {# araw} other {# araw}}). Kung mag-sign up ka bago\n                iyon, sasama sa iyo ang menu mo.",
+  "notSent": "Na-save, pero hindi namin maipadala ang email ngayon."
+ },
+ "demoGetStarted": {
+  "upload": {
+   "bannerButton": "I-save ang menu ko →",
+   "heading": "I-set up ang truck mo",
+   "sub": "Diretsong lilipat ang menu mo.",
+   "privacy": "Gagamitin lang namin ito para i-set up ang truck mo at ipadala ang demo link mo — tingnan ang aming <link>privacy policy</link>."
+  },
+  "sample": {
+   "bannerButton": "I-set up ang truck ko →",
+   "heading": "I-set up ang truck mo",
+   "sub": "Susunod mong i-upload ang sarili mong menu — isang minuto lang.",
+   "privacy": "Gagamitin lang namin ito para i-set up ang truck mo at ipadala ang demo link mo — tingnan ang aming <link>privacy policy</link>."
+  },
+  "saveOnly": {
+   "bannerButton": "I-save ang menu ko →",
+   "heading": "I-save ang demo mo",
+   "sub": "Itatago namin ito nang 14 araw at ie-email agad sa iyo ang link pabalik.",
+   "privacy": "Gagamitin lang namin ito para ipadala ang demo link mo — tingnan ang aming <link>privacy policy</link>."
+  },
+  "confirmationHeading": "Ayos na lahat",
+  "postSaveButton": "I-set up ang truck ko →",
+  "enterSetupButton": "I-set up ang truck ko →",
+  "emailOnlyLink": "I-email mo na lang sa akin ang link para makabalik sa demo na ito",
+  "sendLinkButton": "Ipadala ang link",
+  "savingButton": "Sine-save…",
+  "continueButton": "Magpatuloy →",
+  "createAccountButton": "Gawin ang account ko →",
+  "retryButton": "Subukan ulit",
+  "backToDemoButton": "Bumalik sa demo",
+  "savedStatus": "{hasDate, select, yes {✓ Na-save — itatago hanggang {date}} other {✓ Na-save}}",
+  "back": "Bumalik",
+  "close": "Isara",
+  "truckStepHeading": "Tungkol sa truck mo",
+  "detailsStepHeading": "Tapusin ang pag-set up",
+  "stepper": {
+   "details": "Ang details mo",
+   "menu": "Menu",
+   "allergens": "Allergens",
+   "kitchen": "Kitchen setup",
+   "schedule": "Schedule"
+  },
+  "confirmEmailed": "Na-email na namin sa iyo ang link pabalik sa demo na ito — hindi kailangan ng login.",
+  "confirmKeepUntil": "Itatago namin ito hanggang <b>{date}</b>. Sasama ang menu mo kapag nag-set up ka nang totohanan.",
+  "loading": "Nilo-load…",
+  "firstName": "Pangalan",
+  "lastName": "Apelyido",
+  "truckName": "Pangalan ng truck",
+  "truckNamePlaceholder": "hal. Kusina ni Aling Nena",
+  "cuisine": "Cuisine",
+  "logoLabel": "Logo <opt>(opsyonal)</opt>",
+  "logoPreviewAlt": "Preview ng logo",
+  "changeLogo": "Palitan ang logo",
+  "removeLogo": "Alisin",
+  "uploadLogo": "📷 I-upload ang logo",
+  "readyTitle": "Ready na ang account mo",
+  "readyBody": "Ngayon, tapusin natin ang pag-set up ng truck mo — ang menu, allergens at kusina mo.",
+  "hangTight": "Sandali lang — sine-set up namin ang lahat.",
+  "stage": {
+   "account": "Ginagawa ang account mo",
+   "truck": "Sine-set up ang truck mo",
+   "menu": "Nilo-load ang menu mo"
+  },
+  "stageState": {
+   "done": "tapos na",
+   "recognised": "may account ka na",
+   "failed": "hindi natuloy",
+   "active": "ginagawa",
+   "pending": "naghihintay"
+  },
+  "signIn": "Mag-sign in",
+  "phone": "Mobile number",
+  "onWhatsapp": "Naka-WhatsApp ang number na ito",
+  "email": "Email",
+  "emailPlaceholder": "you@yourfoodtruck.ph",
+  "settingUpAs": "Nagse-set up bilang <b>{email}</b> <change>palitan</change>",
+  "password": "Password",
+  "passwordPlaceholder": "Hindi bababa sa 8 character",
+  "hidePassword": "Itago ang password",
+  "showPassword": "Ipakita ang password",
+  "promoLabel": "May code ka? <opt>(opsyonal)</opt>",
+  "promoPlaceholder": "Ilagay dito",
+  "agreeTerms": "Sumasang-ayon ako sa <terms>Terms</terms> at <privacy>Privacy Policy</privacy>.",
+  "freeMonth": "{months, plural, =0 {Magsisimula ang free trial mo pag nag-sign up ka.} one {Libre ang unang # buwan mo, simula pag nag-sign up ka.} other {Libre ang unang # buwan mo, simula pag nag-sign up ka.}}",
+  "fieldError": {
+   "firstName": "Sabihin sa amin ang pangalan mo.",
+   "lastName": "At ang apelyido mo.",
+   "truck": "Bigyan ng pangalan ang truck mo.",
+   "cuisine": "Sabihin sa amin kung ano ang niluluto mo.",
+   "phoneMissing": "Maglagay ng mobile number — ginagamit ito ng mga customer at namin para ma-contact ka.",
+   "email": "Maglagay ng valid na email address.",
+   "password": "Dapat hindi bababa sa 8 character ang password.",
+   "terms": "Pakitanggap ang terms para magpatuloy."
+  },
+  "error": {
+   "saveFailed": "Hindi iyan na-save — subukan ulit.",
+   "savedNoEmail": "Na-save — pero hindi namin ma-email ang link ngayon.",
+   "unreachable": "Hindi makakonekta sa amin ngayon — subukan ulit.",
+   "createAccountFailed": "Hindi namin magawa ang account mo.",
+   "truckCreateFailed": "Ready na ang account mo, pero hindi namin magawa ang truck mo. Subukan ulit.",
+   "truckUnreachable": "Ready na ang account mo, pero hindi namin magawa ang truck mo ngayon. Subukan ulit.",
+   "truckNoToken": "Naka-set up na ang truck mo, pero hindi namin ito mabuksan ngayon. Subukan ulit."
+  }
+ },
+ "demoUpload": {
+  "steps": {
+   "reading": "Binabasa ang menu mo…",
+   "found": "Nahanap na ang mga item mo…",
+   "kitchen": "Sine-set up ang kusina mo…",
+   "page": "Ginagawa ang ordering page mo…",
+   "almost": "Malapit na…"
+  },
+  "templateSteps": {
+   "truck": "Ginagawa ang sample truck mo…",
+   "menu": "Sine-set up ang menu…",
+   "kitchen": "Sine-set up ang kusina…",
+   "page": "Ginagawa ang ordering page…",
+   "almost": "Malapit na…"
+  },
+  "dialogLabel": "I-upload ang menu mo",
+  "heading": "✨ I-upload ang menu mo",
+  "failedHeading": "Hindi namin mabasa ang menu na iyan",
+  "close": "Isara",
+  "intro": "Litrato ng menu board mo, screenshot, PDF, o i-paste ito bilang text. Babasahin ito ng AI namin at gagawan ka ng gumaganang ordering page — ang mga item mo, ang mga presyo mo — sa loob ng wala pang 60 segundo. Walang sign-up, walang card.",
+  "failedIntro": "Minsan masyadong madilim, nakatagilid, o sulat-kamay ang litrato. Kami ang dapat umayos niyan — hindi ikaw ang nagkamali. Ilang puwede mong gawin:",
+  "usually": "Karaniwang wala pang 60 segundo ito.",
+  "slow": "Mas matagal ito kaysa karaniwan — minsan ganito ang malalaking menu.",
+  "keepWaiting": "Maghintay pa",
+  "sampleWhileYouWait": "O tumingin-tingin muna gamit ang sample menu habang naghihintay ka",
+  "standIn": "<b>Hindi ito ang magiging menu mo</b> — pansamantala lang ito para makita mo kung paano ito gumagana.",
+  "seeSample": "Tingnan ang sample menu",
+  "tryAgain": "Subukan ulit",
+  "tryPhotoAgain": "Subukan ulit ang litratong ito",
+  "tryDifferent": "Sumubok ng ibang litrato",
+  "uploadAnother": "← Mag-upload ng ibang litrato",
+  "orSample": "O tumingin-tingin gamit ang sample menu",
+  "orBuild": "O kami na ang gagawa nito para sa iyo",
+  "buildSent": "✓ Salamat — natanggap na namin. Ie-email ka namin.",
+  "buildBody": "Iwan ang email mo at isang totoong tao ang maglalagay ng menu mo at magpapadala sa iyo ng link.",
+  "emailPlaceholder": "you@yourfoodtruck.ph",
+  "sending": "…",
+  "send": "Ipadala",
+  "noPhoto": "Wala kang litrato ng menu ngayon?",
+  "noPhotoBody": "Tumingin-tingin muna gamit ang sample truck — puwede mong i-upload ang sa iyo kahit kailan.",
+  "build": "Gawin ang demo ko →",
+  "nothingPublished": "Walang naka-publish — ikaw lang ang nakakakita nito.",
+  "error": {
+   "somethingWrong": "Nagka-problema. Pakisubukan ulit.",
+   "serverUnreachable": "Hindi namin ma-reach ang server. I-check ang connection mo at subukan ulit.",
+   "sendFailed": "Hindi iyan naipadala — subukan ulit."
+  },
+  "fields": {
+   "uploadLabel": "I-upload ang menu file",
+   "dropHere": "I-drop dito ang menu mo",
+   "dragOrTap": "I-drag and drop o i-tap para pumili",
+   "fileTypes": "Image o PDF",
+   "or": "o",
+   "pasteLabel": "I-paste ang menu text",
+   "pastePlaceholder": "I-paste dito ang menu mo — pangalan ng item, description, presyo..."
+  },
+  "emailLabel": "Ang email mo",
+  "emailNote": "Ie-email namin sa iyo ang link sa demo mo at baka makipag-ugnayan kami tungkol sa pag-set up ng HatchGrab. <link>Privacy policy</link>",
+  "marketing": "Padalhan ako paminsan-minsan ng tips at balita mula sa HatchGrab",
+  "emailInvalid": "Pakilagay ang valid na email address."
+ },
+ "provisionContent": {
+  "standardCategories": {
+   "starters": "Appetizers",
+   "mains": "Main course",
+   "burgers": "Burgers",
+   "pizza": "Pizza",
+   "wrapsSandwiches": "Wraps at Sandwiches",
+   "sides": "Sides",
+   "dipsSauces": "Dips at Sauces",
+   "desserts": "Desserts",
+   "drinks": "Drinks",
+   "kidsMenu": "Kids Menu",
+   "specials": "Specials",
+   "other": "Iba pa"
+  },
+  "demoEventName": "Demo event",
+  "firstVanName": "Van 1",
+  "demoCategories": {
+   "pizza": "Pizza",
+   "burgers": "Burgers",
+   "mains": "Main course",
+   "sides": "Sides",
+   "drinks": "Drinks"
+  },
+  "demoTemplates": {
+   "pizza": {
+    "label": "🍕 Pizza truck",
+    "items": {
+     "margherita": "Margherita",
+     "pepperoni": "Pepperoni",
+     "ndujaHoney": "Nduja & Honey",
+     "fourCheese": "Four Cheese",
+     "gardenVeg": "Garden Veggie",
+     "garlicBread": "Garlic Bread",
+     "rocketParmesan": "Arugula & Parmesan",
+     "olives": "Olives",
+     "sanPellegrino": "San Pellegrino",
+     "coke": "Coke"
+    }
+   },
+   "burgers": {
+    "label": "🍔 Burger truck",
+    "items": {
+     "classicCheeseburger": "Classic Cheeseburger",
+     "doubleBacon": "Double Bacon",
+     "buttermilkChicken": "Buttermilk Chicken",
+     "halloumiStack": "Halloumi Stack",
+     "smashBurger": "Smash Burger",
+     "skinOnFries": "Skin-on Fries",
+     "loadedCheeseFries": "Loaded Cheese Fries",
+     "onionRings": "Onion Rings",
+     "craftLemonade": "Craft Lemonade",
+     "coke": "Coke"
+    }
+   },
+   "curries": {
+    "label": "🍛 Curry truck",
+    "items": {
+     "chickenTikkaMasala": "Chicken Tikka Masala",
+     "lambRoganJosh": "Lamb Rogan Josh",
+     "chanaMasala": "Chana Masala",
+     "butterChicken": "Butter Chicken",
+     "saagPaneer": "Saag Paneer",
+     "pilauRice": "Pilau Rice",
+     "garlicNaan": "Garlic Naan",
+     "onionBhaji": "Onion Bhaji",
+     "mangoLassi": "Mango Lassi",
+     "coke": "Coke"
+    }
+   }
+  }
+ },
+ "manageAllergens": {
+  "cardEditor": {
+   "title": "Ang allergen card mo",
+   "intro": "Makikita ito ng mga customer <b>nang eksakto kung paano mo ito isinulat</b> — walang binabago. Mag-type o mag-paste sa ibaba, o mag-upload ng litrato/PDF at babasahin namin ang text para ma-check mo.",
+   "empty": "Wala pang allergen card.",
+   "placeholder": "hal. May wheat at itlog ang lahat ng aming fried chicken. Iisa ang fryer na ginagamit sa mga item na may gluten at nuts. May vegan options — magtanong sa staff.",
+   "reading": "Binabasa ang image…",
+   "upload": "📷 I-upload ang image / PDF",
+   "uploadNote": "Binabasa namin ang text mula sa image mo para ma-review mo — hindi namin itinatago ang image."
+  },
+  "cardUpload": {
+   "dishFallback": "Dish",
+   "question": "May allergen card ka bang ia-upload?",
+   "perDish": "{detected, select, yes {Mag-upload ng isa at gagamitin namin ito para buuin ang allergens ng mga dish mo. Makikita ang mga na-detect na allergen sa susunod na page kung saan mo kukumpirmahin ang bawat dish.} other {Mag-upload ng isa at gagamitin namin ito para buuin ang allergens ng mga dish mo.}}",
+   "cardOnly": "I-upload ang allergen card na makikita ng mga customer.",
+   "yes": "Oo",
+   "no": "Hindi",
+   "noProblem": "Walang problema — hindi mo ito kailangan. Magpatuloy gamit ang button sa ibaba.",
+   "analysing": "Ina-analyze ang card…",
+   "dropzone": "I-drag and drop o i-tap para pumili",
+   "imageOrPdf": "Image o PDF",
+   "or": "o",
+   "pastePlaceholder": "I-paste dito ang text ng allergen card mo…",
+   "process": "I-process ang card",
+   "cardRead": "Nabasa na ang card ✓",
+   "unmatchedHeading": "Hindi ma-auto-match ang mga ito — i-assign o isara",
+   "quotedName": "“{name}”",
+   "ambiguous": "Malabo — tugma sa ilang dish; piliin ang tama.",
+   "assignTo": "I-assign sa dish…",
+   "dismiss": "Isara",
+   "blanket": "Sabi ng card, maaaring may <b>{list}</b> sa <b>lahat</b> ng dish. Idagdag sa bawat dish? (kukumpirmahin mo pa rin ang bawat isa) <muted>— naka-off by default</muted>",
+   "kitchenNotes": "Kitchen notes (naka-save sa info sa allergens mo)",
+   "matchSummary": "{n, plural, =0 {Na-match sa dish: {matched}.} one {Na-match sa dish: {matched}. Kailangan mong i-assign: {count}.} other {Na-match sa dish: {matched}. Kailangan mong i-assign: {count}.}}"
+  },
+  "savedCard": {
+   "showLess": "Ipakita nang mas kaunti",
+   "showMore": "Ipakita pa",
+   "fileOnly": "May naka-save na card file para sa truck na ito, pero walang naka-store na summary text. Buksan ang original para mabasa ito.",
+   "viewOriginal": "Tingnan ang original na card"
+  },
+  "wizard": {
+   "toast": {
+    "readFailed": "Hindi mabasa ang allergen card — subukan ulit",
+    "confirmed": "Nakumpirma: {name}",
+    "undo": "I-undo",
+    "saveFailed": "Hindi na-save — pakisubukan ulit",
+    "imageFailed": "Hindi mabasa ang image na iyan — i-type o i-paste na lang ang card mo",
+    "cardRead": "{n, plural, one {Nabasa ang card — na-match: {matched}, kailangang i-assign: {count}} other {Nabasa ang card — na-match: {matched}, kailangang i-assign: {count}}}"
+   },
+   "genericWarn": {
+    "text": "Na-detect ang “{generic}” pero hindi ito specific. Piliin ang {picks} kung may {family} ang dish na ito — o huwag piliin kung wala.",
+    "andOr": "{a} at/o {b}"
+   },
+   "badge": {
+    "justConfirmed": "✓ Nakumpirma",
+    "confirmed": "Kumpirmado",
+    "needsReview": "Kailangang i-review"
+   },
+   "confirm": {
+    "confirming": "Kinukumpirma…",
+    "confirmed": "Nakumpirma ✓",
+    "confirm": "Kumpirmahin",
+    "changed": "· binago",
+    "changedTitle": "Na-edit mula nang huli mong kumpirmahin — kumpirmahin ulit"
+   },
+   "allergens": "Allergens",
+   "dietary": "Dietary",
+   "uncategorised": "Walang category",
+   "review": {
+    "progress": "Nakumpirma: {confirmed} sa {total}",
+    "allConfirmed": "✓ Nakumpirma lahat",
+    "list": "Listahan",
+    "table": "Table",
+    "detected": "Na-detect mula sa menu mo — <b>i-check ang mga ito</b>. Nakatago sa mga customer ang allergens hangga’t hindi mo kinukumpirma ang bawat dish.",
+    "viewOnly": "👁 View only — ang may-ari lang ang puwedeng magkumpirma o magbago ng allergens.",
+    "emptyTitle": "Walang menu item",
+    "emptyBody": "Magdagdag muna ng menu items, tapos i-set dito ang allergens nila.",
+    "dish": "Dish",
+    "status": "Status"
+   },
+   "cardPanel": {
+    "reading": "Binabasa ang allergen information…",
+    "saved": "🛡️ Na-save ang allergen card",
+    "viewOriginal": "Tingnan ang original na card",
+    "replace": "Palitan ang card",
+    "uploadHelp": "I-upload ang allergen card mo (litrato/PDF) o i-paste ang info sa allergens — aayusin ito ng AI namin para sa mga customer.",
+    "add": "Magdagdag ng allergen card",
+    "viewOnly": "👁 View only — ang may-ari lang ang puwedeng magdagdag ng allergen card.",
+    "intro": "Makikita ng mga customer ang card na ito bilang allergen reference ng menu. Nakatago ang per-dish allergens sa card-only mode (itinatago ang data ng mga dish mo kung sakaling lumipat ka sa per-dish mamaya)."
+   },
+   "subtitle": {
+    "choose": "Piliin kung paano makikita ng mga customer ang info sa allergens",
+    "card": "Idagdag ang allergen card mo",
+    "cardOptional": "Magdagdag ng allergen card (opsyonal)",
+    "review": "I-check at kumpirmahin ang bawat dish"
+   },
+   "heading": {
+    "import": "Allergens",
+    "standalone": "Allergen setup"
+   },
+   "nav": {
+    "next": "Susunod →",
+    "back": "← Bumalik",
+    "skip": "Laktawan muna",
+    "saving": "Sine-save…",
+    "done": "Tapos na",
+    "saveLater": "I-save at tapusin mamaya",
+    "close": "Isara",
+    "finish": "Tapusin",
+    "skipImport": "Laktawan muna ang allergen setup"
+   },
+   "hint": {
+    "skipDefers": "Ipinagpapaliban lang ng Laktawan — nakatago sa mga customer ang mga dish na hindi mo pa nakumpirma hangga’t hindi nakumpirma ang allergens nila.",
+    "importIncomplete": "Kumpirmahin ang bawat dish para magpatuloy — o “Laktawan muna ang allergen setup”."
+   }
+  }
+ },
+ "manageUpsells": {
+  "heading": "Upsells",
+  "intro": "Hikayatin ang mga customer na magdagdag ng extra. Kapag may nag-order mula sa isang category, mag-suggest ng items mula sa iba — drink kasama ng pizza, sauce kasama ng burger.",
+  "add": "+ Magdagdag ng upsell",
+  "toast": {
+   "updated": "Na-update ang upsell rule",
+   "added": "Naidagdag ang upsell rule",
+   "removed": "Naalis ang rule"
+  },
+  "whenAdds": "Kapag nagdagdag ang customer ng…",
+  "suggestFrom": "Mag-suggest ng items mula sa…",
+  "chooseCategory": "Pumili ng category",
+  "cancel": "Kanselahin",
+  "saveChanges": "I-save ang mga pagbabago",
+  "addRule": "Idagdag ang rule",
+  "empty": "Wala pang upsell rules.",
+  "confirmRemove": "Alisin ang upsell rule na “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Hanggang {count} item ang isa-suggest} other {Hanggang {count} item ang isa-suggest}}"
+ },
+ "manageExtras": {
+  "toast": {
+   "groupCreated": "Nagawa ang group",
+   "groupRenamed": "Napalitan ang pangalan ng group",
+   "groupDeleted": "Na-delete ang group",
+   "optionUpdated": "Na-update ang option",
+   "optionAdded": "Naidagdag ang option",
+   "optionRemoved": "Naalis ang option"
+  },
+  "description": "Magdagdag ng may bayad o libreng options na puwedeng piliin ng mga customer kapag nag-o-order — hal. Extra Cheese +{price}, Walang Sibuyas {zero}",
+  "note": "Gumawa ng group ng options at i-assign ito sa isang menu category. Lahat ng item sa category na iyon ay mag-o-offer ng mga option na iyon kapag nag-order ang mga customer.",
+  "addLabel": "+ Magdagdag ng customization",
+  "emptyTitle": "Wala pang custom extras",
+  "optionCount": "{n, plural, one {{count} option} other {{count} option}}",
+  "dishCount": "{n, plural, one {{count} dish} other {{count} dish}}",
+  "rename": "Palitan ang pangalan",
+  "deleteGroup": "I-delete ang group",
+  "required": "Required",
+  "requiredHint": "(kailangang pumili ang customer)",
+  "selection": "Pagpili:",
+  "chooseOne": "Pumili ng isa",
+  "chooseMultiple": "Pumili ng marami",
+  "maxChoices": "Maximum na pipiliin",
+  "upTo": "Hanggang {n}",
+  "unlimited": "Walang limit",
+  "options": "Options",
+  "optionType": "{type, select, add {dagdag} remove {tanggal} other {{type}}}",
+  "soldOut": "Sold out",
+  "left": "Natitira: {count}",
+  "priceAdd": "+{price}",
+  "priceRemove": "-{price}",
+  "free": "Libre",
+  "addOption": "+ Magdagdag ng option",
+  "offeredOn": "Ino-offer sa",
+  "editPerDish": "I-edit ang per-dish options",
+  "notOffered": "Hindi pa ino-offer sa kahit anong dish.",
+  "catPartial": "{name} ({n} sa {m})",
+  "hiddenOptions": "* {dish}: nakatago ang {options}",
+  "matrix": {
+   "title": "{group} — per-dish options",
+   "dish": "Dish",
+   "include": "Isama",
+   "removeAll": "Alisin ang {group} sa lahat ng {category}",
+   "offerAll": "I-offer ang {group} sa lahat ng {category}",
+   "offerCount": "{n} sa {total} ang nag-o-offer nito",
+   "offeredRemoveGroup": "Ino-offer — i-click para alisin ang group sa dish na ito",
+   "notOfferedAdd": "Hindi ino-offer — i-click para idagdag",
+   "addGroupFirst": "Idagdag muna ang group sa dish na ito",
+   "requiredNeedsOne": "Kailangan ng required group ng kahit isang option para sa bawat dish",
+   "offeredRemove": "Ino-offer — i-click para alisin",
+   "help": "I-tick ang “Isama” para idagdag ang group sa isang dish, tapos i-tick kung aling options ang ipapakita nito. Agad itong nase-save."
+  },
+  "newGroup": {
+   "title": "Bagong custom extra",
+   "name": "Pangalan ng group",
+   "placeholder": "hal. Pizza extras"
+  },
+  "option": {
+   "editTitle": "I-edit ang option",
+   "newTitle": "Bagong option",
+   "name": "Pangalan ng option",
+   "placeholder": "hal. Extra Cheese",
+   "type": "Uri",
+   "add": "Dagdag",
+   "remove": "Tanggal",
+   "price": "Dagdag/bawas sa presyo ({symbol})",
+   "priceHint": "0 = libre",
+   "soldOut": "Sold out",
+   "stock": "Stock count <opt>(opsyonal)</opt>",
+   "stockPlaceholder": "∞ hindi tina-track",
+   "sharedPool": "Iisang stock para sa lahat ng dish na gumagamit ng option na ito.",
+   "allergens": "Allergens",
+   "dietary": "Dietary",
+   "allergensHelp": "Sariling allergens ng option na ito (hiwalay sa dish)"
+  },
+  "cancel": "Kanselahin",
+  "save": "I-save",
+  "title": "Custom extras",
+  "confirmDeleteGroup": "I-delete ang “{name}”? Aalisin ang lahat ng option at ia-unassign ito sa lahat ng category.",
+  "emptyBody": "Gumawa ng group gaya ng “Pizza extras” at magdagdag ng options gaya ng “Extra Cheese +{price}”",
+  "saving": "Sine-save…",
+  "uncategorized": "Walang category"
+ },
+ "manageDeals": {
+  "toast": {
+   "updated": "Na-update ang combo meal",
+   "created": "Nagawa ang combo meal",
+   "removed": "Naalis ang combo meal"
+  },
+  "confirmRemove": "Alisin ang combo meal na ito?",
+  "heading": "Combo meals",
+  "count": "{n, plural, one {{count} combo meal ang naka-set up} other {{count} combo meal ang naka-set up}}",
+  "newDeal": "+ Bagong combo meal",
+  "emptyTitle": "Wala pang combo meal",
+  "active": "Active",
+  "off": "Naka-off",
+  "autoApply": "Auto-apply",
+  "manual": "Manual",
+  "hidden": "Nakatago ngayon sa mga customer — {warning}",
+  "edit": "I-edit",
+  "delete": "I-delete",
+  "editTitle": "I-edit ang combo meal",
+  "newTitle": "Bagong combo meal",
+  "name": "Pangalan ng combo meal",
+  "namePlaceholder": "hal. Lunch Combo",
+  "description": "Description",
+  "descriptionPlaceholder": "Kahit anong pizza + drink + dip",
+  "price": "Presyo ng combo meal",
+  "originalPrice": "Original na presyo",
+  "originalPlaceholder": "iwang blangko = auto",
+  "originalHint": "blangko = kukuwentahin mula sa items",
+  "slots": "Item slots (mga category na kailangan sa combo meal na ito)",
+  "slot": "Slot {n}",
+  "notUsed": "— Hindi ginagamit —",
+  "dealActive": "Active ang combo meal",
+  "applyHeading": "Gamitin sa mga event",
+  "applyHelp": "Piliin kung awtomatikong gagamitin ang combo meal na ito sa mga event mo",
+  "applyAll": "Awtomatikong gamitin sa lahat ng susunod na event",
+  "applyAllHelp": "Magiging active ang combo meal na ito sa bawat bagong event na gagawin mo. Puwede mo pa rin itong i-off para sa mga partikular na event sa Schedule.",
+  "manualTitle": "Manual na piliin bawat event",
+  "applyAllNote": "Idadagdag ang combo meal na ito sa mga bagong event. Para sa mga kasalukuyang event, pumunta sa Schedule para i-manage ang combo meals bawat event.",
+  "cancel": "Kanselahin",
+  "save": "I-save ang combo meal",
+  "emptyBody": "Gumawa ng combo meal gaya ng “Lunch Combo — kahit anong pizza + drink + dip sa halagang {price}”",
+  "manualHelp": "Hindi lalabas ang combo meal na ito sa mga event maliban kung i-enable mo ito sa Schedule tab.",
+  "saving": "Sine-save…"
+ },
+ "eventTypes": {
+  "title": "Mga uri ng event",
+  "newTypeButton": "+ Bagong uri ng event",
+  "close": "Isara",
+  "loading": "Nilo-load…",
+  "missingTitle": "Hindi pa naka-on ang mga uri ng event.",
+  "missingBody": "Hindi pa na-apply ang database update para sa feature na ito. Walang sira — normal na setup mo ang gamit ng bawat event.",
+  "column": "Column",
+  "vanGone": "Wala na ang van na iyan.",
+  "typeGone": "Wala na ang uri na iyan.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Iba pa para sa {name}",
+  "rename": "Palitan ang pangalan",
+  "moveLeft": "Ilipat pakaliwa",
+  "moveRight": "Ilipat pakanan",
+  "delete": "I-delete",
+  "sections": {
+   "vans": "MGA VAN",
+   "prices": "MGA PRESYO",
+   "itemPrices": "PRESYO NG ITEMS",
+   "service": "SERVICE"
+  },
+  "labelFor": "{label} para sa {name}",
+  "intervalEvery": "Tuwing {mins} min",
+  "noTypes": "Wala ka pang uri ng event, kaya normal na setup mo ang gamit ng bawat event.",
+  "renameTitle": "Palitan ang pangalan ng uri na ito",
+  "name": "Pangalan",
+  "cancel": "Kanselahin",
+  "save": "I-save",
+  "copyVanOne": "Kopyahin ang settings ng Van 1",
+  "thisType": "ang uring ito",
+  "matchTitle": "Itugma sa Standard ang “{name}”?",
+  "matchKeeps": "Hindi magbabago ang anumang binago mo sa dashboard ng isang event, at hindi babaguhin ang mga presyo ng uring ito.",
+  "matchWillUse": "Gagamitin nito: {summary}",
+  "deleteTitle": "I-delete ang “{name}”?",
+  "deleteBody": "{n, plural, =0 {Walang paparating na event na gumagamit ng “{name}”.} one {{count} paparating na event ang gumagamit ng “{name}”. Babalik ang mga ito sa Standard.} other {{count} paparating na event ang gumagamit ng “{name}”. Babalik ang mga ito sa Standard.}} Hindi magbabago ang anumang binago mo sa isang event.",
+  "keep": "Panatilihin",
+  "phone": {
+   "standardTag": "Standard",
+   "defaultTag": "default",
+   "vanSetup": "Ang karaniwang setup ng van na ito — ginagamit sa bawat event na walang uri.",
+   "standardSetup": "Ang karaniwang setup mo — ginagamit sa bawat event na walang uri.",
+   "cardSummary": "{upcoming, plural, one {Paparating na event: {upcomingCount}} other {Paparating na event: {upcomingCount}}} · {changed, plural, =0 {wala pang binago} one {binago: {changedCount} sa {total}} other {binago: {changedCount} sa {total}}}",
+   "noMenuItems": "Wala pang menu items — idagdag ang mga ito sa Menu › Items."
+  },
+  "newType": {
+   "title": "Bagong uri ng event",
+   "namePlaceholder": "hal. School fair",
+   "help": "Mag-tap ng pangalan o mag-type ng sarili mo. Magsisimula ito bilang kopya ng Standard, at hindi ito magbabago kapag binago mo ang Standard mamaya. Baguhin ang kahit ano pagkatapos.",
+   "create": "Gumawa",
+   "chips": {
+    "festival": "Festival",
+    "pub": "Bar",
+    "market": "Night market",
+    "privateHire": "Food truck para sa events"
+   }
+  },
+  "select": {
+   "label": "Uri ng event",
+   "usual": "Karaniwan sa lugar na ito: {name}."
+  },
+  "summary": {
+   "normalSetup": "Ang normal na setup mo",
+   "sameAsStandard": "Kapareho ng Standard",
+   "buzzersOn": "naka-on ang buzzers",
+   "buzzersOff": "naka-off ang buzzers",
+   "takeCashOn": "tumatanggap ng cash",
+   "takeCashOff": "hindi tumatanggap ng cash",
+   "markReadyOn": "naka-on ang mark-ready step",
+   "markReadyOff": "naka-off ang mark-ready step",
+   "collectionEvery": "pick-up tuwing {mins} min",
+   "offlineOff": "naka-off ang offline protection",
+   "offlineKeepTaking": "offline: tuloy ang pagtanggap ng order",
+   "offlinePause": "offline: i-pause ang ordering"
+  },
+  "errors": {
+   "somethingWentWrong": "Nagka-problema",
+   "couldNotLoad": "Hindi ma-load",
+   "couldNotSave": "Hindi ma-save",
+   "noVans": "Walang van ang truck na ito na puwedeng baguhin."
+  }
+ },
+ "privateEvents": {
+  "publicName": "Private event",
+  "chip": "Private",
+  "grid": {
+   "orderingSection": "ORDERING",
+   "linkRowLabel": "Tumanggap ng order gamit ang private link at QR code",
+   "columnTitle": "Ang built-in na Private type. Hindi ito puwedeng palitan ng pangalan, ilipat o i-delete."
+  },
+  "form": {
+   "help": "Lalabas sa schedule mo bilang “Private event” na may petsa at oras lang — hindi kailanman ang address, ang mapa o ang Village Foodie.",
+   "linkPromise": "Mag-o-order ang mga bisita gamit ang private link at QR code — makukuha mo ang mga ito pagka-save.",
+   "nameLabel": "Pangalan ng event",
+   "nameHelp": "Makikita ito ng mga bisita sa itaas ng order page.",
+   "namePlaceholder": "Kasal nina Maria at Paolo",
+   "previewNote": "Ganito ito lalabas sa schedule mo — walang venue, bayan o ZIP code.",
+   "needsTimes": "Maglagay ng start at end time — kailangan ang mga ito ng private event na tumatanggap ng order gamit ang link."
+  },
+  "link": {
+   "button": "Link at QR",
+   "title": "Private link at QR code",
+   "label": "Private link",
+   "copy": "Kopyahin",
+   "copied": "Nakopya",
+   "qrDownload": "I-download ang QR",
+   "tableCards": "I-print ang table cards",
+   "newLink": "Gumawa ng bagong link",
+   "working": "Ginagawa…",
+   "newLinkConfirm": "Gumawa ng bagong link? Titigil agad gumana ang kasalukuyang link, at titigil din ang anumang QR code na na-print mo na.",
+   "newLinkHelp": "Gamitin ito kung napunta ang link sa lugar na hindi dapat. Titigil agad gumana ang kasalukuyang link, at titigil din ang mga na-print na QR code.",
+   "newLinkFailed": "Hindi makagawa ng bagong link.",
+   "offNotice": "Naka-off ang ordering gamit ang private link para sa event na ito, kaya walang link na maibabahagi. Lalabas pa rin ang event sa schedule mo bilang “Private event”."
+  },
+  "cards": {
+   "printTitle": "{truck} — table cards",
+   "scan": "I-scan para mag-order",
+   "blurb": "Mag-order at magbayad sa phone mo. Tatawagin namin ang pangalan mo kapag ready na.",
+   "footer": "Ordering gamit ang HatchGrab"
+  },
+  "noSinglePost": "Walang sariling post ang mga private event — lumalabas ang mga ito sa weekly poster mo bilang “Private event”.",
+  "confirmToPrivate": "Itatago nito ang address at ang event sa mapa. Kailangan ng mga bisita ang private link para makapag-order.",
+  "confirmFromPrivate": "Gagawin nitong public ang event: lalabas ang address at map pin nito, at titigil gumana ang private link."
+ }
+}

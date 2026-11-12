@@ -1,0 +1,8 @@
+// node check-fix.cjs <locale> — checks tr/<locale>/fix.json messages against en-GB's ICU structure + the locale's plural categories
+const fs=require('fs'),path=require('path');const REPO='/Users/dominicbonini/dev/village-foodie';const S=path.resolve(__dirname,'..');const tc=require(REPO+'/scripts/translation-check.cjs');
+const loc=process.argv[2];const fx=JSON.parse(fs.readFileSync(`${S}/tr/${loc}/fix.json`,'utf8'));const E=tc.flat(JSON.parse(fs.readFileSync(REPO+'/messages/en-GB.json','utf8')));const P=[];
+for(const[k,v]of Object.entries(fx.messages??{})){const isPlan=/^planNames\./.test(k);if(!(k in E)&&!isPlan){P.push('not in en-GB: '+k);continue}if(typeof v!=='string'||!v.trim()){P.push('empty '+k);continue}if(/'[{}#|']/.test(v))P.push('straight apostrophe '+k);
+  if(typeof (fx.back??{})[k]!=='string')P.push('no back for '+k);if(isPlan)continue;let a,b;try{a=tc.skeleton(v);b=tc.skeleton(E[k])}catch(e){P.push(k+' ICU '+e.message);continue}
+  if(a.args.join()!==b.args.join())P.push(`${k}: placeholders ${a.args} ≠ ${b.args}`);for(const[n,o]of Object.entries(b.selects))if((a.selects[n]??[]).join()!==o.join())P.push(k+': select '+n);
+  for(const[n,p]of Object.entries(b.plurals)){const q=a.plurals[n];if(!q||q.exact.join()!==p.exact.join()||!q.other)P.push(k+': plural '+n)}if(a.tags.join()!==b.tags.join())P.push(k+': tags');for(const m of tc.missingPluralCategories(v,loc))P.push(`${k}: plural lacks ${m.cat}`)}
+console.log(`${loc} fix.json: ${Object.keys(fx.messages??{}).length} corrections; ${P.length} problems`);for(const p of P.slice(0,50))console.log('  ✗ '+p);process.exit(P.length?1:0)

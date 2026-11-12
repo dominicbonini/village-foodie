@@ -1,0 +1,141 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for TAMIL as in Sri Lanka (ta-LK): ஒவ்வாமை / ஒவ்வாது, அலர்ஜி, சகிப்புத்தன்மை, செரிக்காது / ஜீரணிக்க, ஒத்துக்கொள்ளாது / ஒத்துவராது, சீலியாக், <allergen> இல்லாத / இல்லாமல் / இல்லையா (பசையம், குளுட்டன், பால், முட்டை, கடலை, கச்சான்…), சேர்க்காமல் / போடாமல், சாப்பிட முடியாது, பாதுகாப்பான, க்கு ஏற்றது / க்கு உகந்த, கலந்திருக்கலாம், தடயங்கள், குறுக்கு மாசு — plus Tanglish (allergy irukku, paal illama). Vowel signs and pulli are stripped on both sides, so every stem is checked by its skeleton: bare ஒவ்வா (→ the skeleton of ஒவ்வொரு, every) is NOT a stem, nor bare செரிக்கா (சரக்கு), தடய (தடையில்லை) or போடா (படம், photo), nor bare இல்லாத, nor bare ஏற்றது (விலை ஏற்றதா = has the price gone up). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "ta",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "alerg",
+    "alerj",
+    "allerj",
+    "elerg",
+    "intoleran",
+    "celiac",
+    "coeliac",
+    "gluten free",
+    "glutenfree",
+    "dairy free",
+    "nut free",
+    "egg free",
+    "eggless",
+    "lactose",
+    "epipen",
+    "epi pen",
+    "anaphyla",
+    "cross contamina",
+    "may contain",
+    "traces of",
+    "free from",
+    "safe for",
+    "sensitive to",
+    "ஒவ்வாமை",
+    "ஒவ்வாது",
+    "அலர்ஜ",
+    "சகிப்புத்தன்மை",
+    "செரிக்காது",
+    "ஜீரணிக்க",
+    "ஜீரணமாகா",
+    "ஒத்துக்கொள்ளாத",
+    "ஒத்துவராது",
+    "ஒத்து வராது",
+    "சீலியாக்",
+    "எபிபென்",
+    "லாக்டோஸ்",
+    "குளுட்டன் இல்ல",
+    "பசையம் இல்ல",
+    "பால் இல்ல",
+    "முட்டை இல்ல",
+    "கடலை இல்ல",
+    "கச்சான் இல்ல",
+    "கொட்டை இல்ல",
+    "முந்திரி இல்ல",
+    "இறால் இல்ல",
+    "நண்டு இல்ல",
+    "மீன் இல்ல",
+    "சோயா இல்ல",
+    "எள் இல்ல",
+    "சேர்க்காமல்",
+    "போடாமல்",
+    "சாப்பிட முடியாது",
+    "சாப்பிடக்கூடாது",
+    "பாதுகாப்பா",
+    "க்கு ஏற்ற",
+    "க்கு உகந்த",
+    "கலந்திருக்க",
+    "தடயங்க",
+    "தடயம்",
+    "குறுக்கு மாசு",
+    "மாசுபட",
+    "gluten illa",
+    "paal illa",
+    "muttai illa",
+    "kadalai illa",
+    "kachan illa",
+    "meen illa",
+    "iraal illa",
+    "saapida mudiyath",
+    "sapida mudiyath",
+    "saapida mudiyadh",
+    "sapida mudiyadh",
+    "othukkollathu",
+    "othukollathu"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "குளுட்டன்",
+        "க்ளூட்டன்",
+        "பசையம்",
+        "கோதுமை",
+        "மைதா",
+        "பார்லி"
+      ],
+      "crustaceans": [
+        "இறால்",
+        "இறா",
+        "நண்டு",
+        "கடலுணவு",
+        "கடல் உணவு",
+        "லாப்ஸ்டர்"
+      ],
+      "eggs": [
+        "முட்டை",
+        "மயோனைஸ்"
+      ],
+      "fish": [
+        "மீன்"
+      ],
+      "peanuts": [
+        "வேர்க்கடலை",
+        "நிலக்கடலை",
+        "கச்சான்",
+        "கடலை"
+      ],
+      "soy": [
+        "சோயா",
+        "டோஃபு",
+        "டோபு"
+      ],
+      "milk": [
+        "பால்",
+        "தயிர்",
+        "நெய்",
+        "வெண்ணெய்",
+        "பன்னீர்",
+        "சீஸ்",
+        "லாக்டோஸ்",
+        "கிரீம்"
+      ],
+      "tree nuts": [
+        "முந்திரி",
+        "பாதாம்",
+        "வால்நட்",
+        "பிஸ்தா",
+        "கொட்டை"
+      ],
+      "sulphites": [
+        "சல்பைட்"
+      ]
+    }
+  }
+}

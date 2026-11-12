@@ -1,0 +1,181 @@
+{
+  "country": "PH",
+  "locale": "fil-PH",
+  "language": "Filipino (Philippines)",
+  "addressForm": "Friendly singular ka/mo/iyong with Taglish verbs (Mag-order ka na, I-upload mo ang menu); no po/opo in UI labels (keep po for support e-mails only if Dominic wants). Evidence: the Filipino food-app vocabulary page (ling-app.com/fil) uses only ka (“Mag-order ka na ng pizza”); PH food-ordering businesses themselves (GrabFood PH, Grab merchant guides, Klikit, StoreHub PH) write their UI and marketing in ENGLISH, so the Taglish register is English nouns (order, pre-order, pick-up, menu, food truck) inside Filipino grammar. Avoid textbook deep Tagalog (paghahatid, talaan ng pagkain) and plural kayo/ninyo.",
+  "primaryKeyword": {
+    "landing": "food truck ordering system",
+    "features": "plans at features ng HatchGrab",
+    "faq": "FAQ food truck ordering system",
+    "comparison": "food truck ordering system comparison",
+    "compare": "cost calculator online order"
+  },
+  "secondaryTerms": [
+    "online ordering system Philippines",
+    "food truck POS system Philippines",
+    "pre-order",
+    "self pick-up",
+    "pick-up time",
+    "take-out",
+    "walk-in order",
+    "kitchen display (KDS)",
+    "walang commission",
+    "commission-free",
+    "food park",
+    "food truck for events",
+    "food truck catering",
+    "QR ordering",
+    "GCash",
+    "Maya"
+  ],
+  "terms": {
+    "foodTruck": "food truck",
+    "foodTruckPlural": "mga food truck",
+    "streetFood": "street food",
+    "mobileCatering": "mobile catering",
+    "preOrder": "pre-order",
+    "orderAhead": "Mag-pre-order",
+    "pickupCollect": "pick-up",
+    "pickupTime": "oras ng pick-up",
+    "takeaway": "take-out",
+    "timeSlot": "time slot",
+    "kitchenDisplay": "kitchen display (KDS)",
+    "pos": "POS",
+    "cardReader": "card reader",
+    "menuListOfDishes": "menu",
+    "combo": "combo meal",
+    "privateHire": "food truck para sa events",
+    "privateEvent": "private event",
+    "mobilePhone": "cellphone (mobile number)",
+    "commissionFree": "walang commission",
+    "whatsappAutoReply": "WhatsApp auto-reply",
+    "walkUpOrder": "walk-in order",
+    "orderButton": "I-place ang order",
+    "payAtHatchFeature": "Bayad sa Pick-up",
+    "payAtHatchShort": "Magbayad sa truck",
+    "payAsYouGo": "Pay as you go",
+    "unlimited": "Unlimited",
+    "freeTrial": "Free trial"
+  },
+  "differsFromBase": [
+    "vs en-GB: “takeaway” → take-out (PH English and Taglish never say takeaway); “walk-up” → walk-in; “mobile” (phone) → cellphone / CP; “till” → POS; prices in ₱ with two decimals (₱1,250.00).",
+    "vs en-PH: same nouns (order, pre-order, pick-up, menu) but Filipino grammar and verbs around them (Mag-order, I-upload, Pumili ng oras ng pick-up); en-PH stays full English."
+  ],
+  "seo": {
+    "landing.meta.title": "Food truck ordering system — HatchGrab {country}",
+    "landing.meta.description": "Tanggapin ang order at pre-order sa pwesto mo, walang pila. Ordering at kitchen screen para sa food truck at mobile catering ({country}) — hindi POS.",
+    "landing.jsonLd.subCategory": "Ordering system para sa food truck at mobile catering",
+    "landing.jsonLd.description": "Online ordering, pre-order at kitchen screen para sa mga food truck at mobile catering ({country}).",
+    "landing.jsonLd.audience": "Mga may-ari ng food truck at mobile catering",
+    "landing.hero.title": "Ang ordering system na ginawa para sa <lean>mga food truck.</lean>",
+    "landing.does.title": "Ginawa para sa food truck, hindi para sa restaurant.",
+    "landing.faq.metaTitle": "FAQ: mga madalas itanong | HatchGrab",
+    "landing.faq.metaDescription": "Diretsong sagot para sa mga food truck tungkol sa presyo ng HatchGrab, pag-set up, pagtanggap ng order at pagbabayad — basahin bago ka mag-sign up.",
+    "featuresPage.metaTitle": "Plans at features, magkatabi — HatchGrab {country}",
+    "compare.meta.title": "Cost calculator — HatchGrab {country}",
+    "compare.meta.description": "Ikumpara ang ginagastos mo ngayon sa online orders sa isang taon gamit ang HatchGrab — makakakuha ka ng estimate sa loob ng isang minuto.",
+    "comparison.meta.title": "Food truck ordering system comparison 2026 at mga presyo",
+    "comparison.meta.description": "Paghahambing ng food truck ordering system: pre-order na may oras ng pick-up, kapasidad ng kusina, schedule, fees at kontrata — sinuri sa site ng vendor.",
+    "comparison.meta.about": "Mga online ordering system para sa food truck",
+    "comparison.h1": "Food truck ordering system comparison 2026",
+    "aboutPage.meta.description": "Software ng HatchGrab para sa food truck at mobile catering: online order, oras ng pick-up, mas kaunting paulit-ulit na tanong. Itinatag ni Dominic Bonini.",
+    "truckPage.meta.orderTitle": "Mag-order sa {truck}",
+    "truckPage.meta.orderDescription": "Mag-pre-order sa {truck} at i-pick up ang order mo sa mismong truck."
+  },
+  "csvRows": [
+    [
+      "PH",
+      "food truck ordering system Philippines online order pickup",
+      1,
+      "food truck pos system philippines",
+      "https://klikit.io/zh-CN/learn/food-truck-pos-system-philippines",
+      "PH POS vendor landing (zh-CN locale of an English page)",
+      "n"
+    ],
+    [
+      "PH",
+      "food truck ordering system Philippines online order pickup",
+      2,
+      "How to Create an Online Ordering Website for Food Trucks in Manila, Philippines",
+      "https://www.zegashop.com/business/?p=179013",
+      "website-builder SEO guide (English)",
+      "n"
+    ],
+    [
+      "PH",
+      "food truck ordering system Philippines online order pickup",
+      3,
+      "Power Up Your F&B Profits With Takeaway & Pickup",
+      "https://www.storehub.com/ph/takeaway-and-pickup",
+      "PH POS vendor feature page, order-ahead self-pickup (English)",
+      "n"
+    ],
+    [
+      "PH",
+      "food truck ordering system Philippines online order pickup",
+      4,
+      "food truck pos system philippines",
+      "https://klikit.io/en/learn/food-truck-pos-system-philippines",
+      "PH POS vendor landing, “Best Food Truck POS Philippines 2026” (English)",
+      "n"
+    ],
+    [
+      "PH",
+      "food truck ordering system Philippines online order pickup",
+      5,
+      "food truck pos system philippines",
+      "https://klikit.io/ms/learn/food-truck-pos-system-philippines",
+      "PH POS vendor landing (ms locale)",
+      "n"
+    ],
+    [
+      "PH",
+      "food truck ordering system Philippines online order pickup",
+      6,
+      "tablevibe partners gcash for food services in the philippines",
+      "https://technode.global/2025/06/23/tablevibe-partners-gcash-for-food-services-in-the-philippines/",
+      "tech news (English)",
+      "n"
+    ],
+    [
+      "PH",
+      "food truck ordering system Philippines online order pickup",
+      7,
+      "🇵🇭 Built for Philippine Restaurants",
+      "https://deonde.co/philippines/online-ordering-and-delivery-system.shtml",
+      "white-label ordering vendor, commission-free (English)",
+      "n"
+    ],
+    [
+      "PH",
+      "food truck ordering system Philippines online order pickup",
+      8,
+      "online ordering system philippines",
+      "https://klikit.io/th/learn/online-ordering-system-philippines",
+      "PH POS vendor landing (th locale)",
+      "n"
+    ]
+  ],
+  "storeKeywords": "food truck,pre-order,pick-up,online order,ordering,kitchen display,menu,street food,take-out,walk-in",
+  "playShortDescription": "Mag-pre-order sa food truck, pumili ng oras ng pick-up, may kitchen screen pa.",
+  "sources": [
+    "https://klikit.io/en/learn/food-truck-pos-system-philippines — PH vendor page, entirely English: title “Best Food Truck POS Philippines 2026 | klikit”, “Mobile POS — Runs on any tablet”, “Low fees — 0.5% transaction fee”; Kitchen Display in nav; no Tagalog",
+    "https://merchant.grab.com/en-ph/guides/default/managing-self-pick-up-orders-and-scheduled-orders — Grab PH merchant guide, English only: “Self Pick-up”, “Scheduled Orders”, “GrabMerchant App”",
+    "https://merchant.grab.com/en-ph/blog/5-reasons-why-self-pick-up-is-part-of-the-new-normal — “Self Pick-Up”, “collection time for their order”; only Filipino words are dishes (bilaos, lechon, halo-halo)",
+    "https://www.grab.com/ph/food/ — (search snippet) “Skip the queue and save on delivery fees when you pick-up your order at the restaurant”; https://www.grab.com/ph/fil/food/ returned 404 (no Filipino-language GrabFood page found)",
+    "https://ling-app.com/fil/food-apps-in-the-philippines/ — Filipino-language food-app vocabulary: “Mag-order ka na ng pizza”, “Kanselahin ang Order”, “Katayuan ng Order”, “Ang paraan ng pagbabayad ko ay credit card”, “bayad centers”; address only ka; textbook terms (Paghahatid) that real apps do not use",
+    "https://www.storehub.com/ph/takeaway-and-pickup — PH POS vendor: “Takeaway & Pickup”, order-ahead self-pickup (search result title/snippet)",
+    "https://www.moneymax.ph/lifestyle/blog/food-delivery-apps-philippines — (search snippet) foodpanda “Pick-Up option for those who prefer to collect their orders themselves”",
+    "https://klikit.io/en/resources/guides/food-truck-delivery-guide-philippines — (search snippet) truck spots BGC, Maginhawa Street (Quezon City), Kapitolyo (Pasig); food truck parks with a fixed address",
+    "https://www.ordering.co/best-online-ordering-for-food-trucks-commission-free-pre-order — (search result title) “Food-truck ordering · commission-free”, pre-order, skip-the-line pickup"
+  ],
+  "confidence": "Med — the key finding is solid: every PH food-ordering business page seen (Grab PH, Grab merchant, Klikit, StoreHub, Deonde) is English, and Filipinos search these topics in English (Klikit’s SEO slugs: “food truck pos system philippines”, “online ordering system philippines”), so the English loan nouns are High; the Taglish verb frames, ka/mo address, Pay at Hatch wording and plan names rest on general Taglish usage (no Filipino-language GrabFood/foodpanda UI could be fetched: grab.com/ph/fil 404). csvRows are the WebSearch (US-indexed) results for the query “food truck ordering system Philippines online order pickup” (the primary keyword plus country and intent words), not local Google ranks.",
+  "decisions": [
+    "en-PH vs fil-PH: PH food-ordering apps and B2B vendors write in English, and Filipinos search in English. Consider making en-PH the default for PH and fil-PH an opt-in Taglish locale; the fil-PH SEO titles therefore keep the English keyword (“Food truck ordering system”) first and Filipino around it.",
+    "Address: friendly singular ka/mo, no po in UI (po reads as call-centre). Option: allow po in customer-support e-mails only.",
+    "Pay at Hatch: recommend feature “Bayad sa Pick-up” / short “Magbayad sa truck”. Avoid “COD” / “Cash on Delivery” (delivery). The PH online-seller term “COP” (cash on pick-up) is real but means cash only — HatchGrab’s pay-in-person may be card, so not used.",
+    "Messaging: in the Philippines Facebook Messenger and Viber are far more used than WhatsApp (general knowledge, not measured this session) — the WhatsApp auto-reply feature may need lower prominence on PH pages.",
+    "Plan names: keep English “Pay as you go”, “Unlimited”, “Free trial” (PH telco plans are English). Colloquial “Unli” (Globe/Smart “Unli” promos) is a possible friendlier label for Unlimited — Dominic’s call; default “Unlimited”.",
+    "Payments: GCash and Maya dominate PH online payments; card-only online payment will push many customers to Pay at the truck."
+  ]
+}

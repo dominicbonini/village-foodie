@@ -1,0 +1,172 @@
+{
+  "country": "NP",
+  "locale": "ne-NP",
+  "language": "Nepali (Nepal)",
+  "addressForm": "तपाईं with the polite -नुहोस् imperative (गर्नुहोस्, लिनुहोस्, हेर्नुहोस्): Nepali restaurant-software site Restro Core’s title “आफ्नो रेस्टुरेन्टलाई आधुनिक बनाउनुहोस्”; standard in Nepali business copy. Never तँ/तिमी. Avoid the honorific हजुर forms in UI (too ceremonious for software).",
+  "primaryKeyword": {
+    "landing": "फुड ट्रक अनलाइन अर्डर सिस्टम",
+    "features": "प्लान र फिचरहरूको तुलना",
+    "faq": "फुड ट्रक अर्डर सिस्टम बारम्बार सोधिने प्रश्न",
+    "comparison": "फुड ट्रक अर्डर सिस्टमहरूको तुलना",
+    "compare": "अनलाइन अर्डर लागत क्याल्कुलेटर"
+  },
+  "secondaryTerms": [
+    "food truck Nepal",
+    "online food order Kathmandu",
+    "फुड ट्रक व्यवसाय",
+    "अनलाइन अर्डर",
+    "प्रि-अर्डर",
+    "पिकअप",
+    "टेकअवे",
+    "किचेन डिस्प्ले",
+    "KOT",
+    "बिलिङ सफ्टवेयर",
+    "POS",
+    "Fonepay QR",
+    "कमिसनबिना",
+    "स्ट्रिट फुड",
+    "खाद्य महोत्सव"
+  ],
+  "terms": {
+    "foodTruck": "फुड ट्रक",
+    "foodTruckPlural": "फुड ट्रकहरू",
+    "streetFood": "स्ट्रिट फुड",
+    "mobileCatering": "मोबाइल क्याटरिङ",
+    "preOrder": "प्रि-अर्डर",
+    "orderAhead": "पहिल्यै अर्डर गर्नुहोस्",
+    "pickupCollect": "पिकअप",
+    "pickupTime": "पिकअप समय",
+    "takeaway": "टेकअवे",
+    "timeSlot": "टाइम स्लट",
+    "kitchenDisplay": "किचेन डिस्प्ले (KDS)",
+    "pos": "POS / बिलिङ सफ्टवेयर",
+    "cardReader": "कार्ड मेसिन",
+    "menuListOfDishes": "मेनु",
+    "combo": "कम्बो",
+    "privateHire": "कार्यक्रमका लागि फुड ट्रक बुकिङ",
+    "privateEvent": "निजी कार्यक्रम",
+    "mobilePhone": "मोबाइल नम्बर",
+    "commissionFree": "कमिसनबिना",
+    "whatsappAutoReply": "WhatsApp अटो-रिप्लाई",
+    "walkUpOrder": "वाक-इन अर्डर",
+    "orderButton": "अर्डर गर्नुहोस्",
+    "payAtHatchFeature": "पिकअप गर्दा भुक्तानी",
+    "payAtHatchShort": "ट्रकमै भुक्तानी",
+    "payAsYouGo": "मासिक शुल्कबिना",
+    "unlimited": "अनलिमिटेड",
+    "freeTrial": "निःशुल्क ट्रायल"
+  },
+  "differsFromBase": [],
+  "seo": {
+    "landing.meta.title": "फुड ट्रक अनलाइन अर्डर सिस्टम — HatchGrab {country}",
+    "landing.meta.description": "लाइन बिना आफ्नै ठाउँबाट अर्डर र प्रि-अर्डर लिनुहोस्। फुड ट्रक र मोबाइल क्याटरिङका लागि अर्डर तथा किचेन डिस्प्ले सफ्टवेयर ({country}) — POS होइन।",
+    "landing.jsonLd.subCategory": "फुड ट्रक र मोबाइल क्याटरिङका लागि अर्डर सिस्टम",
+    "landing.jsonLd.description": "फुड ट्रक र मोबाइल क्याटरिङका लागि अर्डर, प्रि-अर्डर र किचेन स्क्रिन ({country})।",
+    "landing.jsonLd.audience": "फुड ट्रक र मोबाइल क्याटरिङ सञ्चालकहरू",
+    "landing.hero.title": "<lean>फुड ट्रकका लागि</lean> बनाइएको अर्डर सिस्टम।",
+    "landing.does.title": "फुड ट्रकका लागि बनाइएको, रेस्टुरेन्टका लागि होइन।",
+    "landing.faq.metaTitle": "बारम्बार सोधिने प्रश्नहरू | HatchGrab",
+    "landing.faq.metaDescription": "फुड ट्रक सञ्चालकहरूका लागि HatchGrab को मूल्य, सेटअप, अर्डर लिने तरिका र भुक्तानीबारे सीधा र स्पष्ट जवाफ — सुरु गर्नुअघि सबै बुझ्नुहोस्।",
+    "featuresPage.metaTitle": "प्लान र फिचरहरूको तुलना — HatchGrab {country}",
+    "compare.meta.title": "लागत क्याल्कुलेटर — HatchGrab {country}",
+    "compare.meta.description": "अहिले अनलाइन अर्डरमा तपाईंको कति खर्च हुन्छ र HatchGrab सँग एक वर्षमा कति हुन्छ — तुलना गर्नुहोस्, एक मिनेटमै अनुमान पाउनुहोस्।",
+    "comparison.meta.title": "फुड ट्रक अर्डर सिस्टमहरूको तुलना 2026: फिचर र मूल्य",
+    "comparison.meta.description": "फुड ट्रक अर्डर सिस्टमहरूको तुलना: पिकअप समयसहित प्रि-अर्डर, किचेनको क्षमता, साप्ताहिक तालिका, शुल्क र सम्झौताको अवधि — हरेक कम्पनीको साइटमा जाँचिएको।",
+    "comparison.meta.about": "फुड ट्रकका लागि अनलाइन अर्डर सिस्टमहरू",
+    "comparison.h1": "फुड ट्रक अर्डर सिस्टमहरूको तुलना 2026",
+    "aboutPage.meta.description": "HatchGrab ले फुड ट्रक र मोबाइल क्याटरिङका लागि व्यावहारिक सफ्टवेयर बनाउँछ: अनलाइन अर्डर, पिकअप समय र दोहोरिने प्रश्नहरूमा कमी। संस्थापक: Dominic Bonini।",
+    "truckPage.meta.orderTitle": "{truck} — अनलाइन अर्डर गर्नुहोस्",
+    "truckPage.meta.orderDescription": "{truck} — पहिल्यै अर्डर गर्नुहोस् र ट्रकमै आएर लिनुहोस्।"
+  },
+  "csvRows": [
+    [
+      "NP",
+      "फुड ट्रक नेपाल अनलाइन अर्डर",
+      1,
+      "nepallive.com",
+      "https://nepallive.com/story/242340",
+      "Nepali news site (ne)",
+      "n"
+    ],
+    [
+      "NP",
+      "फुड ट्रक नेपाल अनलाइन अर्डर",
+      2,
+      "डेढ दशकदेखि देश-विदेशका परिकार पस्किरहेको फुडमान्डु",
+      "https://ekantipur.com/feature/2024/07/14/fudmandu-has-been-cooking-national-and-international-dishes-for-a-decade-and-a-half-51-02.html",
+      "Kantipur feature on Foodmandu (ne)",
+      "n"
+    ],
+    [
+      "NP",
+      "फुड ट्रक नेपाल अनलाइन अर्डर",
+      3,
+      "के खान्छ डिजिटल काठमाडौं ?",
+      "https://ekantipur.com/news/2023/07/01/168817269587953416.html",
+      "Kantipur news on online food ordering (ne)",
+      "n"
+    ],
+    [
+      "NP",
+      "फुड ट्रक नेपाल अनलाइन अर्डर",
+      4,
+      "government online shopping website nepal food",
+      "https://www.nepalitelecom.com/government-online-shopping-website-nepal-food",
+      "Nepali tech news (English)",
+      "n"
+    ],
+    [
+      "NP",
+      "फुड ट्रक नेपाल अनलाइन अर्डर",
+      5,
+      "best food delivery apps in nepal",
+      "https://www.nepalitelecom.com/best-food-delivery-apps-in-nepal",
+      "Nepali tech listicle of delivery apps (English)",
+      "n"
+    ],
+    [
+      "NP",
+      "फुड ट्रक नेपाल अनलाइन अर्डर",
+      6,
+      "online grocery shopping picks up steam in nepal",
+      "https://kathmandupost.com/money/2018/09/28/online-grocery-shopping-picks-up-steam-in-nepal",
+      "Kathmandu Post news (English)",
+      "n"
+    ],
+    [
+      "NP",
+      "फुड ट्रक नेपाल अनलाइन अर्डर",
+      7,
+      "Food Truck Business: Build a perfect system with online ordering",
+      "https://restolabs.com/blog/food-truck-build-perfect-system-online-ordering",
+      "vendor blog (English)",
+      "n"
+    ],
+    [
+      "NP",
+      "फुड ट्रक नेपाल अनलाइन अर्डर",
+      8,
+      "foodmario made to order food whose time may have come",
+      "https://kathmandupost.com/spotliight/2020/01/05/foodmario-made-to-order-food-whose-time-may-have-come",
+      "Kathmandu Post feature (English)",
+      "n"
+    ]
+  ],
+  "storeKeywords": "फुड ट्रक,अनलाइन अर्डर,प्रि-अर्डर,पिकअप,टेकअवे,किचेन डिस्प्ले,मेनु,स्ट्रिट फुड,कमिसनबिना,POS",
+  "playShortDescription": "फुड ट्रकमा पहिल्यै अर्डर, पिकअप समय छनोट र किचेन डिस्प्ले — सबै एकै ठाउँमा।",
+  "sources": [
+    "https://ekantipur.com/feature/2024/07/14/fudmandu-has-been-cooking-national-and-international-dishes-for-a-decade-and-a-half-51-02.html — Nepali press: फुडमान्डु, फुड डेलिभरी, अर्डर, अनलाइन, रेस्टुरेन्ट, मोबाइल एप, भुक्तानी, कस्टमर/ग्राहक, क्लाउड किचेन; Devanagari digits (२०८१, १२० कर्मचारी); danda written “ ।”",
+    "WebSearch “रेस्टुरेन्ट सफ्टवेयर नेपाल बिलिङ अर्डर किचेन KOT” — Nepali vendors CrossOver (POS बिलिङ, KOT), maBill, NRestro (KOT/BOT, Fonepay QR), Restro Core (title “आफ्नो रेस्टुरेन्टलाई आधुनिक बनाउनुहोस्”, plan रू २,४९९ प्रति महिना), TMBill, HamroSan; offline mode is a selling point",
+    "WebSearch “फुडमान्डु \"टेकअवे\" OR \"पिकअप\" …” — Foodmandu App Store: QR, wallet, card or cash on delivery (COD); BhojMandu offers “takeaway” and scheduled orders (its Nepali blog page is in English)",
+    "WebSearch “\"फुड ट्रक\" काठमाडौं” / “फुड ट्रक नेपाल अनलाइन अर्डर” — no Nepali-language food-truck coverage found; Onlinekhabar on Kathmandu Metropolitan City restricting street food; Foodmandu midnight delivery",
+    "https://nepallaws.com/?p=34327 — विद्युतीय व्यापार (इ-कमर्स) ऐन, २०८१: section headings dafa 6 विवरण खुलाउनु पर्ने, dafa 7 करार भएको मानिने, dafa 8 भुक्तानी, dafa 10 फिर्ता; no order-button wording in the headings"
+  ],
+  "confidence": "Low — address form, अर्डर/अनलाइन/रेस्टुरेन्ट/भुक्तानी/किचेन/बिलिङ/KOT and Devanagari digits are confirmed in Nepali press and vendor copy; फुड ट्रक follows the attested “फुड” spelling (फुड डेलिभरी) but no Nepali food-truck page was found; पिकअप/टेकअवे/प्रि-अर्डर, the Pay at Hatch wording and plan names are judgement. No search-volume tool: Nepali users search mostly in English or romanised Nepali; Devanagari queries returned Nepali news, not products. csvRows are the research tool’s (US-indexed) results for “फुड ट्रक नेपाल अनलाइन अर्डर”, a close variant of the primary keyword.",
+  "decisions": [
+    "Spelling: Nepali writes फुड (no nukta, short उ) — not Hindi फ़ूड. Keep Nepali loan spellings: किचेन (not किचन), कमिसन (not कमीशन), मेनु, बिलिङ/बुकिङ with ङ, अनलाइन (not ऑनलाइन — Nepali does not use ऑ).",
+    "Digits: Nepali press writes Devanagari digits (२०८१) and the app’s Intl formatting renders ne-NP numbers in Devanagari, so typed numbers in copy should be Devanagari too; exceptions: “2026” kept ASCII in comparison.meta.title / comparison.h1 per the SEO rule (२०२६ if the checker allows), URLs, e-mails, codes.",
+    "Pay at Hatch: “पिकअप गर्दा भुक्तानी” (feature) / “ट्रकमै भुक्तानी” (label). Avoid “क्यास अन डेलिभरी” (Foodmandu’s COD). At the truck people mostly pay by Fonepay/eSewa/Khalti QR or cash.",
+    "Messaging: Viber is widely used in Nepal alongside WhatsApp; the WhatsApp auto-reply feature may matter less here (unverified, Low).",
+    "Order button: no prescribed wording found (Consumer Protection Act 2075; E-Commerce Act 2081 — disclosure dafa 6, contract formation dafa 7). Market norm “अर्डर गर्नुहोस्” / “अर्डर पुष्टि गर्नुहोस्”."
+  ]
+}

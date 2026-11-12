@@ -1,0 +1,139 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for MACEDONIAN (mk-MK): алерг (алергија, алергичен), нетолеранција / интолеранција, чувствителен, целијакија, анафилакса, без <allergen> (без глутен, без лактоза, без млеко / млечни, без јајца, без ореви, без кикирики…), безглутенск, не содржи, може да содржи, траги од, вкрстена контаминација, безбедно, погоден / соодветен за, не смеам / не можам да јадам — plus the Latin-typed Macedonian customers use (alergija, bez gluten, ne sodrzi). ѓ and ќ fold to г and к on both sides. Bare без / bez is NOT a stem (без кромид is a preference), nor bare содржи (a presence question). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "mk",
+  "normalise": "unicode",
+  "stems": [
+    "алерг",
+    "нетолеранц",
+    "интолеранц",
+    "нетолерант",
+    "чувствител",
+    "целијак",
+    "анафилак",
+    "епипен",
+    "адреналин",
+    "без глутен",
+    "безглутен",
+    "без лактоз",
+    "безлактоз",
+    "без млеко",
+    "без млечн",
+    "без јајц",
+    "без јаја",
+    "без кикирики",
+    "без ореви",
+    "без јаткаст",
+    "без лешни",
+    "без бадем",
+    "без соја",
+    "без сусам",
+    "без риба",
+    "без морска храна",
+    "без морски плодови",
+    "без ракчиња",
+    "без шкампи",
+    "без сулфит",
+    "не содрж",
+    "може да содрж",
+    "траги од",
+    "вкрстен",
+    "контаминац",
+    "безбедн",
+    "погоден за",
+    "погодна за",
+    "погодно за",
+    "погодни за",
+    "соодветн",
+    "не смеам",
+    "не можам да јад",
+    "bez gluten",
+    "bezgluten",
+    "bez laktoz",
+    "bez mleko",
+    "bez mlecn",
+    "bez jajc",
+    "bez jaja",
+    "bez kikiriki",
+    "bez orevi",
+    "bez soja",
+    "bez susam",
+    "bez riba",
+    "ne sodrzi",
+    "moze da sodrzi",
+    "bezbedn",
+    "celijak",
+    "netoleranc",
+    "intoleranc",
+    "chuvstvitel",
+    "cuvstvitel",
+    "allerg",
+    "alerg",
+    "gluten free",
+    "glutenfree",
+    "lactose",
+    "intoleran",
+    "celiac",
+    "coeliac",
+    "nut free",
+    "epipen",
+    "epi pen"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "глутен",
+        "пченица",
+        "брашно",
+        "јачмен"
+      ],
+      "crustaceans": [
+        "ракови",
+        "ракчиња",
+        "шкампи",
+        "јастог",
+        "морска храна",
+        "морски плодови"
+      ],
+      "eggs": [
+        "јајца",
+        "јајце",
+        "мајонез"
+      ],
+      "fish": [
+        "риба",
+        "риби"
+      ],
+      "peanuts": [
+        "кикирики"
+      ],
+      "soy": [
+        "соја",
+        "тофу"
+      ],
+      "milk": [
+        "млеко",
+        "млечн",
+        "лактоза",
+        "сирење",
+        "кашкавал",
+        "путер",
+        "павлака",
+        "кајмак"
+      ],
+      "tree nuts": [
+        "ореви",
+        "оревче",
+        "јаткаст",
+        "лешници",
+        "бадеми",
+        "индиски ореви",
+        "фстаци"
+      ],
+      "sulphites": [
+        "сулфит",
+        "сулфур диоксид"
+      ]
+    }
+  }
+}

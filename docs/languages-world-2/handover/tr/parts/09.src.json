@@ -1,0 +1,677 @@
+{
+ "landing": {
+  "jsonLd": {
+   "subCategory": "Food truck and mobile catering ordering system",
+   "description": "Ordering, pre-orders and a kitchen screen for {country} food trucks and mobile catering.",
+   "audience": "Food truck and mobile catering operators"
+  },
+  "hero": {
+   "title": "The ordering system built for <lean>food trucks.</lean>",
+   "subSmall": "Upload your menu, no signup needed.<br></br>See a working demo in under 60 seconds.",
+   "cta": "Upload my menu →",
+   "ctaNote": "<lead>Upload a photo of your menu and see it working in under 60 seconds.</lead><small>No signup. No card.</small>"
+  },
+  "shots": {
+   "kitchenAlt": "The HatchGrab kitchen screen, showing order tickets in cook order",
+   "dashboardAlt": "Taking an order on HatchGrab: the menu on the left, the running basket and total on the right",
+   "phoneAlt": "Ordering from a food truck on HatchGrab: the menu with photos and prices, and a running basket total"
+  },
+  "trust": {
+   "freeMonth": "{months, plural, one {First month completely free, everything unlocked} other {First # months completely free, everything unlocked}}",
+   "noCard": "No card needed",
+   "cancel": "Cancel anytime, no contract"
+  },
+  "does": {
+   "eyebrow": "What it does",
+   "title": "Built for food trucks, not restaurants.",
+   "lede": "Most ordering systems assume a fixed address, reliable wifi and the same hours every week. You’re somewhere new every week, at different times, on patchy or no mobile coverage. HatchGrab was built for that.",
+   "slotsTitle": "Customers choose collection times",
+   "capacityTitle": "Set your kitchen capacity",
+   "capacityBody": "Set how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.",
+   "devicesTitle": "Works on any device",
+   "devicesBody": "Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.",
+   "postsTitle": "Automate your Facebook & Instagram posts",
+   "postsBody": "Upload the design you already post on Facebook or Instagram. We’ll fill in your dates, places and times, ready to share — every week or every day.",
+   "whatsappTitle": "WhatsApp auto-replies",
+   "whatsappBody": "“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to the pitch or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.",
+   "whatsappSoonTitle": "WhatsApp auto-replies <soon>Coming soon</soon>",
+   "whatsappSoonBody": "“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.",
+   "offlineTitle": "No signal? Keep serving.",
+   "offlineBody": "If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.",
+   "slotsBody": "Customers order ahead and pick a collection time. Fewer queues, and food ready when they arrive."
+  },
+  "steps": {
+   "eyebrow": "Getting going",
+   "title": "Get set up and start taking orders in about 15 minutes.",
+   "lede": "Three things to sort — and two of them just need a photo.",
+   "menuTitle": "Build your menu",
+   "menuBody": "Photograph your board or paste it in. Items, prices and extras all come across on their own. You just check they’re right.",
+   "scheduleTitle": "Add your schedule",
+   "scheduleBody": "Got it on your website? We’ll read it from there and keep it up to date. If not, photograph that too. You just approve what it finds.",
+   "shareTitle": "Share your link",
+   "shareBody": "Post it on Facebook, stick the QR on the van. Orders land on your screen, in the order you need to cook them."
+  },
+  "testimonial": {
+   "quote": "HatchGrab has made ordering so much easier. Everything's organised, we can track stock and know exactly how many pizzas we have left to sell — and the time slots are fantastic for busy villages.",
+   "award": "Mobile Pizzeria of the Year",
+   "awardScope": "Regional winner",
+   "business": "Pizzeria Gusto",
+   "byline": "Nadia & Bogdan — owners"
+  },
+  "pricing": {
+   "eyebrow": "Pricing",
+   "title": "Start free. Upgrade when you need to.",
+   "switchHead": "Switching from another platform?",
+   "switchBody": "See what you’d be paying on HatchGrab for the same orders. Takes about a minute.",
+   "switchCta": "Compare what you’re paying"
+  },
+  "faq": {
+   "title": "Frequently asked questions",
+   "metaTitle": "Frequently asked questions | HatchGrab",
+   "metaDescription": "Straight answers for food trucks about HatchGrab's prices, setting up, taking orders and payments."
+  },
+  "final": {
+   "truckLabel": "Food truck",
+   "title": "Want to see how easy setup is?",
+   "lede": "Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to have a play around with in under 60 seconds. Your items, your prices. No sign-up, no card, nothing to install. Have a look, then decide.",
+   "cta": "Upload my menu now →"
+  },
+  "meta": {
+   "title": "Food truck & mobile catering ordering system — HatchGrab {country}",
+   "description": "Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen software for {country} food trucks and mobile catering — not a POS."
+  }
+ },
+ "landingNav": {
+  "homeLabel": "HatchGrab home",
+  "cta": "Upload my menu →",
+  "ctaShort": "Upload menu",
+  "features": "Features",
+  "pricing": "Pricing",
+  "logIn": "Log in",
+  "country": {
+   "button": "Country: {name}. Change country",
+   "menu": "Country",
+   "title": "Choose your country",
+   "subline": "Prices, language and settings change to match."
+  }
+ },
+ "landingFooter": {
+  "features": "Features",
+  "pricing": "Pricing",
+  "faq": "FAQ",
+  "privacy": "Privacy",
+  "terms": "Terms",
+  "contact": "Contact",
+  "about": "About",
+  "copyright": "© {year} HatchGrab",
+  "credit": "From the people behind <b>Village Foodie</b>",
+  "badges": {
+   "appStoreLink": "Download HatchGrab on the App Store",
+   "appStoreAlt": "Download on the App Store",
+   "googlePlayLink": "Get HatchGrab on Google Play",
+   "googlePlayAlt": "Get it on Google Play"
+  }
+ },
+ "featuresPage": {
+  "eyebrow": "Compare",
+  "detail": {
+   "walkup_orders": "Take and manage orders at the hatch, paid on your own card terminal.",
+   "kitchen_app": "The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.",
+   "multi_device_kitchen": "Run several screens — front counter and kitchen — all showing the same live orders.",
+   "multi_user_access": "Give staff their own logins with the right level of access.",
+   "offline_protection": "If you lose signal, online ordering pauses so customers can’t place orders you won’t see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+   "ticket_printing": "Print order tickets to a Bluetooth or wired printer in the kitchen.",
+   "web_dashboard": "Run your service from any phone, tablet or laptop browser.",
+   "meal_deals_upsells": "Bundle items into deals and offer add-ons at checkout to lift the average order.",
+   "sold_out_toggle": "Mark any item sold out in one tap — it greys out for customers straight away.",
+   "stock_countdown": "Set a stock count and it counts down as orders come in, then sells out automatically.",
+   "buzzer_tracking": "Give an order a buzzer number when you hand one out, so you know which buzzer belongs to which order.",
+   "documents_reminders": "Save your certificates in one place, such as food hygiene, insurance and gas safety. We remind you before anything expires, and you can send them to an event or market organiser in one tap.",
+   "profit_per_event": "Add what each dish costs you and see what you actually made at every event, not just your takings.",
+   "accountant_reports": "Sales, tax and refunds for any month, quarter or tax year, ready to download for your accountant.",
+   "tap_to_pay": "Take card payments on a supported phone, so you don’t need a separate card machine.",
+   "customer_display": "A screen customers can see showing order numbers and when they’re ready.",
+   "online_payments": "Take card payment upfront when customers order online, via Stripe.",
+   "advance_preordering": "Let customers order for a future date or time before the event.",
+   "preorder_deadline": "Set a cut-off time for items that need notice.",
+   "time_slot_selection": "Customers pick a collection time slot, spreading demand across your service.",
+   "kitchen_capacity": "Set how much your kitchen can cook at a time and how long it takes. Once a slot is full, customers can’t pick it.",
+   "auto_accept": "Online orders are accepted automatically — no need to confirm each one.",
+   "private_events": "Add private events that don’t show on the map, with their own private ordering link and QR code.",
+   "embed_schedule": "Show your upcoming dates on your own website. Each one links straight through to its order page.",
+   "qr_code": "A printable QR code that opens your menu and ordering page.",
+   "branded_qr_code": "Add your logo to your QR code.",
+   "discovery_map_listing": "Your truck appears on the public HatchGrab map so nearby customers can find you.",
+   "schedule_import": "We fill your schedule automatically — from your website, or a photo you already post to Facebook. You just review and confirm.",
+   "event_types": "Create your own event types, with custom prices and settings for events and festivals.",
+   "social_media_posts": "Upload your designs — we add your dates, places and times for each week and event automatically.",
+   "whatsapp_auto_replies": "Auto-reply to WhatsApp enquiries about your menu and schedule.",
+   "messenger_instagram_replies": "Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.",
+   "sms_order_alerts": "Text customers automatically when their order’s ready.",
+   "loyalty_stamp_cards": "Reward repeat customers with digital stamp cards — collected and redeemed automatically."
+  },
+  "metaTitle": "Plans & features compared — HatchGrab {country}"
+ },
+ "planTable": {
+  "h1": "Everything to run your service, on every plan.",
+  "lede": "Ordering, pre-orders, capacity and the kitchen screen are included on every plan.{hasUpgrades, select, yes { {plans} add {features}, and lower fees.} other {}}",
+  "perMonth": "{price} / month",
+  "group": {
+   "pay": "What you pay",
+   "run": "Run your service",
+   "online": "Online orders",
+   "marketing": "Marketing & automation"
+  },
+  "pay": {
+   "included": "Online orders included each month",
+   "fee": "HatchGrab fee on online orders*",
+   "walkUp": "Walk-up orders"
+  },
+  "cell": {
+   "unlimited": "Unlimited",
+   "free": "Free",
+   "feeAbove": "<b>{fee}</b> above {included}",
+   "yes": "Included",
+   "none": "Not included",
+   "comingSoon": "Coming soon"
+  },
+  "short": {
+   "whatsapp_replies": "WhatsApp",
+   "schedule_graphics": "social media",
+   "event_types": "custom event pricing"
+  },
+  "meta": {
+   "description": "Every HatchGrab feature on every plan, side by side — {plans}, with fees and allowances.{months, plural, =0 {} one { Your first month includes everything.} other { Your first # months include everything.}}"
+  },
+  "notes": {
+   "whatsapp": "WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.",
+   "printing": "Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied)."
+  }
+ },
+ "pricing": {
+  "banner": {
+   "title": "{months, plural, one {Your first month is completely free — every feature unlocked.} other {Your first # months are completely free — every feature unlocked.}}",
+   "body": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
+   "bodyOnly": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
+  },
+  "card": {
+   "perTruckMonth": "per truck / month",
+   "mostTrucks": "Most trucks",
+   "tryFree": "Try free",
+   "seeEvery": "See every feature →",
+   "everything": "Everything to run a service",
+   "everythingIn": "Everything in {plan}, plus"
+  },
+  "fee": {
+   "feeOnly": "<b>{fee}</b> on online orders only. Walk-up orders are always free.",
+   "included": "First <b>{included}</b> of online orders included each month, then <b>{fee}*</b>. Walk-up orders are always free.",
+   "noFee": "<b>No HatchGrab fees</b> on online orders, however busy you get. One predictable monthly cost."
+  },
+  "base": {
+   "walkUp": "Walk-up orders & kitchen screen",
+   "online": "Online ordering",
+   "preorders": "Pre-orders & collection times",
+   "capacity": "Kitchen capacity management",
+   "privateEvents": "Private events",
+   "printing": "Kitchen ticket printing",
+   "app": "iPhone, iPad and Android kitchen app"
+  },
+  "added": {
+   "whatsapp_replies": "WhatsApp auto-replies",
+   "schedule_graphics": "Social media posts — your Facebook and Instagram schedule — ready to post",
+   "event_types": "Custom event types & pricing"
+  },
+  "money": {
+   "unlimitedOrders": "Unlimited online orders, 0% HatchGrab fee",
+   "samePrice": "Same price in your busiest month"
+  },
+  "comingSoon": "Coming soon",
+  "bar": {
+   "title": "Which plan is cheapest for me?",
+   "subtitle": "Your online orders each month",
+   "first": "Under {to} → <b>{plan}</b>",
+   "middle": "{from} – {to} → <b>{plan}</b>",
+   "last": "Over {from} → <b>{plan}</b>",
+   "only": "Any volume → <b>{plan}</b>"
+  },
+  "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in the {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%.",
+  "currencyLine": "Prices in {currency} ({code})"
+ },
+ "planFeatures": {
+  "row": {
+   "discovery_map_listing": {
+    "name": "Discovery map listing"
+   },
+   "web_dashboard": {
+    "name": "Universal web dashboard"
+   },
+   "qr_code": {
+    "name": "QR code"
+   },
+   "schedule_import": {
+    "name": "Automatic schedule import"
+   },
+   "meal_deals_upsells": {
+    "name": "Meal deals & upsells"
+   },
+   "walkup_orders": {
+    "name": "Walk-up order processing"
+   },
+   "sold_out_toggle": {
+    "name": "Instant sold-out toggle"
+   },
+   "kitchen_app": {
+    "name": "iPhone, iPad and Android kitchen app"
+   },
+   "offline_protection": {
+    "name": "Offline order protection"
+   },
+   "online_payments": {
+    "name": "Online payments"
+   },
+   "advance_preordering": {
+    "name": "Advance pre-ordering"
+   },
+   "preorder_deadline": {
+    "name": "Pre-order deadline"
+   },
+   "time_slot_selection": {
+    "name": "Customer time slot selection"
+   },
+   "kitchen_capacity": {
+    "name": "Kitchen capacity management"
+   },
+   "stock_countdown": {
+    "name": "Automated stock countdown"
+   },
+   "auto_accept": {
+    "name": "Auto-accept online orders"
+   },
+   "branded_qr_code": {
+    "name": "Branded QR code"
+   },
+   "private_events": {
+    "name": "Private events"
+   },
+   "social_media_posts": {
+    "name": "Social media posts"
+   },
+   "whatsapp_auto_replies": {
+    "name": "WhatsApp auto-replies"
+   },
+   "messenger_instagram_replies": {
+    "name": "Messenger & Instagram auto-replies"
+   },
+   "tap_to_pay": {
+    "name": "Take payment on your phone"
+   },
+   "sms_order_alerts": {
+    "name": "SMS order alerts"
+   },
+   "multi_device_kitchen": {
+    "name": "Multi-device kitchen sync"
+   },
+   "multi_user_access": {
+    "name": "Multi-user access"
+   },
+   "embed_schedule": {
+    "name": "Schedule page on your own website"
+   },
+   "event_types": {
+    "name": "Custom event types & pricing"
+   },
+   "buzzer_tracking": {
+    "name": "Buzzer tracking"
+   },
+   "documents_reminders": {
+    "name": "Documents and reminders"
+   },
+   "profit_per_event": {
+    "name": "Profit per event"
+   },
+   "accountant_reports": {
+    "name": "Reports for your accountant"
+   },
+   "ticket_printing": {
+    "name": "Kitchen ticket printing"
+   },
+   "customer_display": {
+    "name": "Customer-facing display"
+   },
+   "loyalty_stamp_cards": {
+    "name": "Digital loyalty stamp cards"
+   }
+  },
+  "cardRegionOnline": "standard {region}",
+  "cardRegion": {
+   "UKcards": "UK cards",
+   "EEAcards": "EEA cards",
+   "UScards": "US cards",
+   "Australiancards": "Australian cards",
+   "NewZealandcards": "New Zealand cards",
+   "Canadiancards": "Canadian cards",
+   "Swisscards": "Swiss cards",
+   "Braziliancards": "Brazilian cards",
+   "Mexicancards": "Mexican cards",
+   "Japanesecards": "Japanese cards",
+   "Singaporecards": "Singapore cards",
+   "HongKongcards": "Hong Kong cards",
+   "Malaysiancards": "Malaysian cards",
+   "Thaicards": "Thai cards",
+   "UAEcards": "UAE cards"
+  },
+  "perMonth": {
+   "mo": "{amount}/mo",
+   "month": "{amount}/month"
+  },
+  "priceWord": {
+   "free": "Free",
+   "freeTrial": "Free trial",
+   "lifetime": "Lifetime",
+   "zeroPercent": "0%",
+   "payAtHatch": "Pay at Hatch",
+   "unlimited": "Unlimited",
+   "none": "—",
+   "masked": "TBC"
+  },
+  "cell": {
+   "included": "Included"
+  }
+ },
+ "planPrompt": {
+  "includedOn": "{many, select, yes {{feature} are included on {plan}.} other {{feature} is included on {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} are not on your plan.} other {{feature} is not on your plan.}}",
+  "switchedOff": "{many, select, yes {{feature} are switched off for your truck.} other {{feature} is switched off for your truck.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Upgrade →",
+  "features": {
+   "discovery_map": {
+    "name": "Discovery map listing",
+    "many": "no"
+   },
+   "web_dashboard": {
+    "name": "The web dashboard",
+    "many": "no"
+   },
+   "ipad_kds": {
+    "name": "The kitchen app",
+    "many": "no"
+   },
+   "qr_menu": {
+    "name": "The QR code menu",
+    "many": "no"
+   },
+   "meal_deals": {
+    "name": "Meal deals",
+    "many": "yes"
+   },
+   "upsells": {
+    "name": "Upsells",
+    "many": "yes"
+   },
+   "walkup_orders": {
+    "name": "Walk-up orders",
+    "many": "yes"
+   },
+   "online_ordering_pay_at_hatch": {
+    "name": "Pay at Hatch ordering",
+    "many": "no"
+   },
+   "sold_out_toggle": {
+    "name": "The sold-out toggle",
+    "many": "no"
+   },
+   "stock_countdown": {
+    "name": "Stock countdown",
+    "many": "no"
+   },
+   "offline_protection": {
+    "name": "Offline order protection",
+    "many": "no"
+   },
+   "online_payments": {
+    "name": "Online payments",
+    "many": "yes"
+   },
+   "advance_preordering": {
+    "name": "Advance pre-ordering",
+    "many": "no"
+   },
+   "time_slot_selection": {
+    "name": "Customer time slots",
+    "many": "yes"
+   },
+   "smart_batch_pacing": {
+    "name": "Kitchen capacity management",
+    "many": "no"
+   },
+   "auto_accept": {
+    "name": "Auto-accept",
+    "many": "no"
+   },
+   "instagram_messenger_replies": {
+    "name": "Messenger & Instagram auto-replies",
+    "many": "yes"
+   },
+   "branded_qr_code": {
+    "name": "Branded QR codes",
+    "many": "yes"
+   },
+   "advanced_reporting": {
+    "name": "Advanced reporting",
+    "many": "no"
+   },
+   "ticket_printing": {
+    "name": "Kitchen ticket printing",
+    "many": "no"
+   },
+   "multi_device_kds": {
+    "name": "Multi-device kitchen sync",
+    "many": "no"
+   },
+   "cook_screen": {
+    "name": "The cook screen",
+    "many": "no"
+   },
+   "whatsapp_replies": {
+    "name": "WhatsApp auto-replies",
+    "many": "yes"
+   },
+   "embed_schedule": {
+    "name": "Your schedule on your own website",
+    "many": "no"
+   },
+   "schedule_graphics": {
+    "name": "Social media posts",
+    "many": "yes"
+   },
+   "event_types": {
+    "name": "Custom event types",
+    "many": "yes"
+   },
+   "private_events": {
+    "name": "Private events",
+    "many": "yes"
+   },
+   "paperwork": {
+    "name": "Documents",
+    "many": "yes"
+   }
+  }
+ },
+ "faq": {
+  "phrases": {
+   "appsSentence": "There’s also an iPad and Android app, which keeps taking walk-up orders if you lose signal.",
+   "appsOffline": "The iPad and Android app keeps taking walk-up orders without signal and sends them when you’re back online; the web dashboard needs a connection.",
+   "webOffline": "The web dashboard needs a connection to show new orders."
+  }
+ },
+ "aboutPage": {
+  "meta": {
+   "title": "About — HatchGrab",
+   "description": "HatchGrab builds practical software for food trucks and mobile caterers: online orders, collection times and fewer repetitive questions. Founded by Dominic Bonini."
+  },
+  "eyebrow": "About",
+  "title": "Built around the way food trucks actually work",
+  "photoAlt": "{name}, founder of HatchGrab",
+  "story": {
+   "start": "HatchGrab started with a simple observation: food trucks need better tools to run their businesses.",
+   "villageFoodie": "After creating Village Foodie, a directory helping people discover food trucks visiting their local area, I spent more time learning about the challenges mobile food businesses face. Unlike traditional restaurants, food trucks are constantly moving, working at different locations and serving customers in changing conditions.",
+   "fixedAddress": "Yet much of the software available to them is designed around businesses with a fixed address.",
+   "change": "HatchGrab was created to change that.",
+   "build": "We build practical software specifically for food trucks and mobile caterers, helping them take online orders, manage collection times, keep orders flowing smoothly and spend less time dealing with repetitive questions.",
+   "focus": "Our focus is simple: make running a food truck easier, with tools designed around how these businesses actually operate."
+  },
+  "signature": "<b>{name}</b><br></br>Founder, HatchGrab",
+  "company": "{company} · registered in England and Wales · company number {number} · registered office: {address}",
+  "contact": "Contact us"
+ },
+ "legalChrome": {
+  "meta": {
+   "privacyTitle": "Privacy Policy — HatchGrab",
+   "privacyDescription": "How HatchGrab Ltd collects and uses personal data.",
+   "termsTitle": "Terms of Service — HatchGrab",
+   "termsDescription": "The terms of using HatchGrab.",
+   "countryTermsTitle": "Country-specific terms — HatchGrab",
+   "countryTermsDescription": "The extra rules that apply to HatchGrab in some countries."
+  },
+  "homeLabel": "HatchGrab home",
+  "privacy": "Privacy",
+  "terms": "Terms",
+  "countryTerms": "Country terms",
+  "contact": "Contact",
+  "lastUpdated": "Last updated {date}",
+  "questions": "Questions? <link>Get in touch</link> — we’re real people.",
+  "translationNote": "This is a translation. If it differs from the <link>English version</link>, the English version applies."
+ },
+ "truckPage": {
+  "meta": {
+   "fallbackTitle": "Food Truck | Village Foodie",
+   "hgFallbackTitle": "Food truck",
+   "orderTitle": "Order from {truck}",
+   "orderDescription": "Order ahead from {truck} and collect it at the truck.",
+   "title": "{truck} | Village Foodie",
+   "logoAlt": "{truck} Logo"
+  },
+  "shareTitle": "{truck} Schedule",
+  "shareText": "Check out where {truck} is pitching up next! 🚚",
+  "linkCopied": "Profile link copied to clipboard! 📋",
+  "facebookPage": "Facebook Page",
+  "loadingMap": "Loading Map…",
+  "view": {
+   "list": "List",
+   "map": "Map"
+  },
+  "ownThisTruck": "Own this truck?",
+  "ownThisTruckTitle": "Own this truck? Click to update your profile",
+  "actions": {
+   "menu": "Menu",
+   "call": "Call",
+   "message": "Message",
+   "share": "Share",
+   "order": "Order"
+  },
+  "loadingSchedule": "Loading schedule…",
+  "loadError": {
+   "title": "Couldn’t load",
+   "body": "We couldn’t load the schedule just now — this is usually a brief hiccup. Please try again.",
+   "retry": "Retry"
+  },
+  "notFound": {
+   "title": "Truck not found",
+   "body": "We couldn’t find any details for this food truck. They might have moved or updated their profile.",
+   "cta": "View all trucks"
+  },
+  "noEvents": {
+   "title": "No upcoming events found",
+   "body": "We might be missing some details for this truck. Are you the owner, or do you know their schedule?",
+   "cta": "Drop us a message to update!"
+  },
+  "whereToFind": "Where to Find Us",
+  "missingEvent": "<strong>Are we missing an event?</strong> <br></br>If you’re the owner of this truck or just a dedicated fan, help us keep this page accurate! <br></br><link>Contact us to add missing details.</link>",
+  "weeklySchedule": "Get Weekly Schedule 🍕"
+ },
+ "contactPage": {
+  "meta": {
+   "title": "Support",
+   "description": "Get help with HatchGrab. Send us a message and we will come back to you by email."
+  },
+  "logIn": "Log in",
+  "eyebrow": "Support",
+  "title": "How can we help?",
+  "lede": "Something not working, or a question about your account? Two ways to reach us — either way we will come back to you by email.",
+  "emailUs": "Email us",
+  "formHeading": "Or send us a message",
+  "form": {
+   "topicLabel": "What’s it about?",
+   "topics": {
+    "question": "A question about HatchGrab",
+    "account": "Help with my account",
+    "comparison": "A correction to a comparison page",
+    "other": "Something else"
+   },
+   "nameLabel": "Your name",
+   "namePlaceholder": "Name",
+   "emailLabel": "Email",
+   "businessLabel": "Truck or business name",
+   "optional": "(optional)",
+   "businessPlaceholder": "e.g. Pizza Kitchen",
+   "messageLabel": "Your message",
+   "send": "Send message",
+   "sending": "Sending…",
+   "privacyLine": "We’ll use your details only to reply to you.",
+   "privacyLink": "Privacy policy",
+   "thanksTitle": "Thanks — your message has arrived.",
+   "thanksBody": "We’ll reply by email to the address you gave.",
+   "errors": {
+    "nameRequired": "Please enter your name.",
+    "nameTooLong": "Please keep your name to {max, number} characters or fewer.",
+    "emailRequired": "Please enter your email address.",
+    "emailInvalid": "Please enter a valid email address.",
+    "emailTooLong": "Please use an email address of {max, number} characters or fewer.",
+    "businessRequired": "Please enter your truck or business name, so we can find your account.",
+    "businessTooLong": "Please keep the truck or business name to {max, number} characters or fewer.",
+    "messageTooShort": "Please write at least {min, number} characters.",
+    "messageTooLong": "Please keep your message to {max, number} characters or fewer.",
+    "topicInvalid": "Please choose what your message is about.",
+    "rateLimited": "You’ve sent a few messages already — please try again later, or email us at {email}.",
+    "failed": "Something went wrong — please email us at {email}."
+   }
+  },
+  "privacy": "Privacy",
+  "terms": "Terms",
+  "about": "About",
+  "copyright": "© {year} HatchGrab"
+ },
+ "siteFooter": {
+  "title": "Never miss a slice 🍕",
+  "body": "Get the village food schedule sent to your inbox every week.",
+  "cta": "Get the Schedule",
+  "noSpam": "No Spam (but maybe Pepperoni). Unsubscribe Anytime.",
+  "heading": "Contact Us & Services",
+  "hire": "Hire a Food Truck",
+  "general": "General Enquiry",
+  "addBusiness": "Add my Business",
+  "reportIssue": "Report Issue",
+  "directory": "Truck Directory",
+  "disclaimer": "Disclaimer: Schedules are subject to change by vendors. We do our best, but we are not responsible for cancelled trucks or sold-out burgers. Always check the vendor’s social media for last-minute updates."
+ },
+ "errorPage": {
+  "notFoundTitle": "Page not found",
+  "notFoundBody": "We couldn’t find that page. It may have moved, or the address may be mistyped.",
+  "home": "Go to the home page",
+  "errorTitle": "Something went wrong",
+  "errorBody": "Sorry — this page didn’t load. Try again, or go back to the home page.",
+  "retry": "Try again"
+ },
+ "embed": {
+  "metaDescription": "Where {truck} is trading next.",
+  "orderFrom": "Order from {truck}",
+  "poweredBy": "Powered by <b>HatchGrab</b>",
+  "loadFailed": "Couldn't load the schedule just now.",
+  "loading": "Loading schedule…",
+  "empty": "No upcoming events listed for {truck}."
+ },
+ "planNames": {}
+}

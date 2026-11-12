@@ -1,0 +1,126 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for CATALAN (ca-ES): al·lèrgia / al·lèrgic (the middle dot becomes a space on normalising, so \"al lerg\" covers al·lèrgia, al.lèrgia and aŀlèrgia; alergia / allergia as typed are added), intolerància / intolerant, sensible a, celíac / celiaquia, anafilaxi, sense <allergen> (sense gluten, sense lactosa, sense llet, sense ous, sense fruits secs, sense cacauets…), no conté / no contenen, pot contenir, traces, contaminació creuada, apte / adequat / segur per a, no puc menjar — plus the Spanish forms bilingual customers type (sin gluten, sin lactosa). Bare sense is NOT a stem (sense ceba is a preference), nor bare segurs (esteu segurs = are you sure). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "ca",
+  "normalise": "unicode",
+  "stems": [
+    "al lerg",
+    "alerg",
+    "intoleran",
+    "sensible a",
+    "sensibles a",
+    "celiac",
+    "celiaqu",
+    "anafil",
+    "adrenalin",
+    "sense gluten",
+    "sense lactosa",
+    "sense llet",
+    "sense lacti",
+    "sense ou",
+    "sense fruits secs",
+    "sense fruita seca",
+    "sense nous",
+    "sense cacauet",
+    "sense avellan",
+    "sense ametll",
+    "sense soja",
+    "sense sesam",
+    "sense peix",
+    "sense marisc",
+    "sense crustaci",
+    "sense gamb",
+    "sense sulfit",
+    "sin gluten",
+    "sin lactosa",
+    "sin leche",
+    "sin huevo",
+    "sin frutos secos",
+    "sin cacahuet",
+    "no conte",
+    "pot contenir",
+    "poden contenir",
+    "puede contener",
+    "traces",
+    "traça",
+    "contaminacio",
+    "creuad",
+    "apte per",
+    "apta per",
+    "aptes per",
+    "apto para",
+    "adequat per",
+    "adequada per",
+    "segur per",
+    "segura per",
+    "segurs per",
+    "segures per",
+    "no puc menjar",
+    "no puc prendre",
+    "allerg",
+    "gluten free",
+    "glutenfree",
+    "lactose",
+    "coeliac",
+    "nut free",
+    "epipen",
+    "epi pen"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "gluten",
+        "blat",
+        "farina",
+        "ordi",
+        "sègol",
+        "civada"
+      ],
+      "crustaceans": [
+        "crustaci",
+        "gamba",
+        "gambes",
+        "llagost",
+        "marisc",
+        "cranc"
+      ],
+      "eggs": [
+        "ous",
+        "ou ",
+        "maionesa"
+      ],
+      "fish": [
+        "peix"
+      ],
+      "peanuts": [
+        "cacauet"
+      ],
+      "soy": [
+        "soja",
+        "tofu"
+      ],
+      "milk": [
+        "llet",
+        "làctic",
+        "lactosa",
+        "formatge",
+        "mantega",
+        "nata",
+        "iogurt"
+      ],
+      "tree nuts": [
+        "fruits secs",
+        "fruita seca",
+        "nous",
+        "avellan",
+        "ametll",
+        "anacard",
+        "pistatx"
+      ],
+      "sulphites": [
+        "sulfit",
+        "diòxid de sofre"
+      ]
+    }
+  }
+}

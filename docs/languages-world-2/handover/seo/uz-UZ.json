@@ -1,0 +1,178 @@
+{
+  "country": "UZ",
+  "locale": "uz-UZ",
+  "language": "Uzbek (Latin, Uzbekistan)",
+  "addressForm": "formal siz with polite -ing/-ng imperatives: Yandex Eda vendor UZ (uz) “Siz buyurtmani tayyorlaysiz va yigʻasiz”, “restoraningizni topish oson ekaniga ishonch hosil qiling”, “buyurtma raqamini tasdiqlang”. Never sen. LATIN script (Yandex Eda uz, Express24 “taom va do‘konlar”, spot.uz/oz, daryo.uz).",
+  "primaryKeyword": {
+    "landing": "fudtraklar uchun buyurtma tizimi",
+    "features": "tariflar va imkoniyatlar",
+    "faq": "koʻp beriladigan savollar",
+    "comparison": "fudtrak buyurtma tizimlarini solishtirish",
+    "compare": "onlayn buyurtma xarajatlari kalkulyatori"
+  },
+  "secondaryTerms": [
+    "onlayn buyurtma",
+    "buyurtma tizimi",
+    "oldindan buyurtma",
+    "oʻzi olib ketish",
+    "olib ketish vaqti",
+    "oshxona ekrani",
+    "KDS",
+    "POS-tizim",
+    "kassa",
+    "toʻlov terminali",
+    "fudtrak",
+    "street food",
+    "koʻcha taomlari",
+    "komissiyasiz",
+    "menyu",
+    "QR-menyu"
+  ],
+  "terms": {
+    "foodTruck": "fudtrak",
+    "foodTruckPlural": "fudtraklar",
+    "streetFood": "koʻcha taomlari (street food)",
+    "mobileCatering": "koʻchma keytering",
+    "preOrder": "oldindan buyurtma",
+    "orderAhead": "oldindan buyurtma bering",
+    "pickupCollect": "oʻzi olib ketish",
+    "pickupTime": "olib ketish vaqti",
+    "takeaway": "olib ketish uchun",
+    "timeSlot": "vaqt oraligʻi",
+    "kitchenDisplay": "oshxona ekrani (KDS)",
+    "pos": "POS-tizim (kassa)",
+    "cardReader": "toʻlov terminali",
+    "menuListOfDishes": "menyu",
+    "combo": "kombo (set)",
+    "privateHire": "fudtrakni tadbirga chaqirish",
+    "privateEvent": "shaxsiy tadbir",
+    "mobilePhone": "mobil telefon",
+    "commissionFree": "komissiyasiz",
+    "whatsappAutoReply": "WhatsApp avtojavoblari",
+    "walkUpOrder": "oyna oldida berilgan buyurtma",
+    "orderButton": "Buyurtmani rasmiylashtirish",
+    "payAtHatchFeature": "Fudtrakda toʻlash",
+    "payAtHatchShort": "Olib ketishda toʻlash",
+    "payAsYouGo": "Oylik toʻlovsiz",
+    "unlimited": "Cheksiz",
+    "freeTrial": "Bepul sinov muddati"
+  },
+  "differsFromBase": [
+    "Latin Uzbek with oʻ gʻ written with ʻ U+02BB and the tutuq belgisi ʼ U+02BC (taʼm, maʼlumot) — not ‘ ’ or the straight apostrophe U+0027",
+    "Uzbekistan payments: Click, Payme, Uzcard/Humo cards; currency soʻm (UZS)"
+  ],
+  "seo": {
+    "landing.meta.title": "Fudtraklar uchun buyurtma tizimi — HatchGrab {country}",
+    "landing.meta.description": "Buyurtma va oldindan buyurtmalarni navbatsiz qabul qiling: fudtrak va koʻchma keytering uchun buyurtma va oshxona ekrani ({country}) — POS-tizim emas.",
+    "landing.jsonLd.subCategory": "Fudtraklar va koʻchma keytering uchun buyurtma tizimi",
+    "landing.jsonLd.description": "Fudtraklar va koʻchma keytering uchun buyurtmalar, oldindan buyurtmalar va oshxona ekrani ({country}).",
+    "landing.jsonLd.audience": "Fudtrak va koʻchma keytering egalari",
+    "landing.hero.title": "<lean>Fudtraklar</lean> uchun yaratilgan buyurtma tizimi.",
+    "landing.does.title": "Restoranlar uchun emas, fudtraklar uchun yaratilgan.",
+    "landing.faq.metaTitle": "Koʻp beriladigan savollar | HatchGrab",
+    "landing.faq.metaDescription": "Fudtrak egalari uchun aniq javoblar: HatchGrab narxlari, sozlash, onlayn va oldindan buyurtma qabul qilish, oʻzi olib ketish va toʻlov.",
+    "featuresPage.metaTitle": "Tariflar va imkoniyatlar — HatchGrab {country}",
+    "compare.meta.title": "Xarajatlar kalkulyatori — HatchGrab {country}",
+    "compare.meta.description": "Onlayn buyurtmalar va komissiyalar hozir sizga qanchaga tushayotganini HatchGrab bilan bir yil bilan solishtiring — bir daqiqada taxminiy hisob.",
+    "comparison.meta.title": "Fudtrak buyurtma tizimlari 2026: imkoniyatlar va narxlar",
+    "comparison.meta.description": "Fudtrak buyurtma tizimlari: olib ketish vaqtli oldindan buyurtma, oshxona quvvati, jadval, komissiya va shartnoma muddati — sotuvchilar saytlaridan.",
+    "comparison.meta.about": "Fudtraklar uchun onlayn buyurtma tizimlari",
+    "comparison.h1": "Fudtrak buyurtma tizimlarini solishtirish 2026",
+    "aboutPage.meta.description": "HatchGrab fudtrak va koʻchma keytering uchun dastur yaratadi: onlayn buyurtma, olib ketish vaqti, kamroq takroriy savollar. Asoschisi — Dominic Bonini.",
+    "truckPage.meta.orderTitle": "{truck} — onlayn buyurtma",
+    "truckPage.meta.orderDescription": "{truck}: oldindan buyurtma bering va uni fudtrakdan olib keting."
+  },
+  "csvRows": [
+    [
+      "UZ",
+      "fudtrak uchun onlayn buyurtma tizimi",
+      1,
+      "order add",
+      "https://docs.bts.uz/page/order-add",
+      "courier API docs (uz)",
+      "n"
+    ],
+    [
+      "UZ",
+      "fudtrak uchun onlayn buyurtma tizimi",
+      2,
+      "Buyurtma bilan bogʻliq muammolarni qanday kamaytish mumkin",
+      "https://yandex.com/support/eda-vendor-uz/uz/orders/min-problems",
+      "Yandex Eda vendor help (uz)",
+      "n"
+    ],
+    [
+      "UZ",
+      "fudtrak uchun onlayn buyurtma tizimi",
+      3,
+      "Oʻzi olib ketish qanday yoqiladi",
+      "https://yandex.com/support/eda-vendor-uz/uz/orders/self-delivery",
+      "Yandex Eda vendor help, self-pickup (uz)",
+      "n"
+    ],
+    [
+      "UZ",
+      "fudtrak uchun onlayn buyurtma tizimi",
+      4,
+      "apps.apple.com",
+      "https://apps.apple.com/us/app/id6756119215",
+      "App Store listing, Fondex taxi/food app",
+      "n"
+    ],
+    [
+      "UZ",
+      "fudtrak uchun onlayn buyurtma tizimi",
+      5,
+      "apps.apple.com",
+      "https://apps.apple.com/pl/app/fondex/id6756119215",
+      "App Store listing, Fondex",
+      "n"
+    ],
+    [
+      "UZ",
+      "fudtrak uchun onlayn buyurtma tizimi",
+      6,
+      "apps.apple.com",
+      "https://apps.apple.com/us/app/-/id6756119215",
+      "App Store listing, Fondex",
+      "n"
+    ],
+    [
+      "UZ",
+      "fudtrak uchun onlayn buyurtma tizimi",
+      7,
+      "JavaScript required",
+      "https://coda.io/@fom/bilimar-bazasi/2-onlayn-vitrinani-boshqarish-dorixona-tovarlarining-korinishini-115",
+      "pharmacy knowledge base (uz)",
+      "n"
+    ],
+    [
+      "UZ",
+      "fudtrak uchun onlayn buyurtma tizimi",
+      8,
+      "tovarga buyurtma shakllantirish 138",
+      "https://coda.io/@fom/bilimar-bazasi/tovarga-buyurtma-shakllantirish-138",
+      "pharmacy knowledge base (uz)",
+      "n"
+    ]
+  ],
+  "storeKeywords": "fudtrak,buyurtma,oldindan buyurtma,olib ketish,menyu,oshxona ekrani,street food,kassa,komissiyasiz",
+  "playShortDescription": "Fudtraklardan oldindan buyurtma, olib ketish vaqti va oshxona ekrani.",
+  "sources": [
+    "https://yandex.com/support/eda-vendor-uz/uz/orders/self-delivery — Yandex Eda vendor UZ in Latin Uzbek with ʻ U+02BB: “Oʻzi olib ketish”, “Foydalanuvchi ilovada buyurtma beradi”, “Foydalanuvchi ilovada buyurtmaga toʻlaydi”, “naqdsiz toʻlovni oʻtkazamiz”, “olib ketishi mumkin boʻlgan vaqtni koʻrsatamiz”, “tayyorlik holatini oʻz vaqtida belgilang”; siz (“Siz buyurtmani tayyorlaysiz va yigʻasiz”)",
+    "https://www.spot.uz/oz/2023/06/08/baaztrucks/ — Uzbek business press: “fudtrak”, “fudtraklar”, “fudtrakda”, also “furgon”; “buyurtma”, “menyu”, “fast-fud”; apostrophes mixed (‘ in o‘zbek, ’ in ba’zilari)",
+    "https://daryo.uz/2020/01/21/rossiya-kompaniyasi-ozbekistonga-20-dona-fudtrak-sotdi/ — headline slug “…20 dona fudtrak sotdi” (search result)",
+    "https://www.olx.uz/oz/uslugi/tashkent/q-фудтрак/ — OLX Uzbekistan food-truck listings, 2026 (search result)",
+    "https://apps.apple.com/ru/app/id1367143501 — App Store title “Express24: taom va do‘konlar” (Latin, U+2018 apostrophe)",
+    "https://www.afisha.uz/gorod/2020/11/30/street-food-fest — Tashkent “street food fest” (English loan in use) (search result)",
+    "https://glotr.uz/uz/zpos-pos-dastur-p-1094448/ — Uzbek listing “ZPOS POS dastur”; OLX listings “kassa”, “POS-sistema”, “iiko dasturi ombor va kassa” (search results)"
+  ],
+  "confidence": "Low-Med — Latin script, siz, buyurtma, oʻzi olib ketish, olib ketish vaqti, menyu, fudtrak and kassa/POS are confirmed on Uzbek pages; oldindan buyurtma, oshxona ekrani, koʻchma keytering, toʻlov terminali, plan names and the Pay at Hatch wording rest on general usage (Uzum Tezkor and Express24 pages showed delivery only). csvRows are the US-indexed research tool’s results for “fudtrak uchun onlayn buyurtma tizimi”, not Uzbekistan Google ranks.",
+  "decisions": [
+    "Script: LATIN (official; Yandex Eda, Express24, Uzum, daryo/spot.uz ‘oz’ editions). Real sites often type oʻ/gʻ with ‘ (U+2018) or a straight apostrophe — our files use ʻ U+02BB and ʼ U+02BC as the brief requires; search engines generally treat them alike.",
+    "Order button: no statutory button wording found in Uzbekistan’s Law “Isteʼmolchilarning huquqlarini himoya qilish toʻgʻrisida”; market norm “Buyurtmani rasmiylashtirish” / “Buyurtma berish”; card variant “{amount} toʻlash”.",
+    "Pay at Hatch: recommend “Fudtrakda toʻlash” (feature) / “Olib ketishda toʻlash” (button). Avoid “yetkazib berilganda toʻlash”, “kuryerga naqd toʻlash”, “qabul qilganda toʻlash” (cash-on-delivery sense).",
+    "Mobile catering word “keytering” is Low confidence (could be “katering”); a native check is advised.",
+    "Telegram, not WhatsApp, is generally reported as Uzbekistan’s dominant messenger (general knowledge, not re-checked here) — WhatsApp auto-replies may matter less for UZ; consider whether to lead with them."
+  ]
+}

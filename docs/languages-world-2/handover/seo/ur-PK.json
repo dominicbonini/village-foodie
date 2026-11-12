@@ -1,0 +1,172 @@
+{
+  "country": "PK",
+  "locale": "ur-PK",
+  "language": "Urdu (Pakistan)",
+  "addressForm": "آپ with polite -یں imperatives (کریں، دیکھیں، چنیں، شروع کریں): MENU TIGER’s Urdu pages (“مفت شروع کریں”، “ڈیمو دیکھیں”، “آن لائن آرڈرنگ شروع کریں”); standard in Pakistani Urdu business copy. Never تم/تو. Pakistani delivery apps (foodpanda PK) run their UI mainly in English, so Urdu screens follow vendor/press Urdu.",
+  "primaryKeyword": {
+    "landing": "فوڈ ٹرک آن لائن آرڈر سسٹم",
+    "features": "پلانز اور فیچرز کا موازنہ",
+    "faq": "فوڈ ٹرک آرڈرنگ سسٹم اکثر پوچھے جانے والے سوالات",
+    "comparison": "فوڈ ٹرک آرڈرنگ سسٹمز کا موازنہ",
+    "compare": "آن لائن آرڈر لاگت کیلکولیٹر"
+  },
+  "secondaryTerms": [
+    "food truck business in Pakistan",
+    "فوڈ ٹرک بزنس",
+    "فوڈ کارٹ",
+    "آن لائن آرڈرنگ سسٹم",
+    "پری آرڈر",
+    "پک اپ",
+    "ٹیک اوے",
+    "کچن ڈسپلے",
+    "POS سسٹم",
+    "کمیشن فری",
+    "WhatsApp آرڈرنگ",
+    "ڈیل",
+    "اسٹریٹ فوڈ",
+    "فوڈ فیسٹیول"
+  ],
+  "terms": {
+    "foodTruck": "فوڈ ٹرک",
+    "foodTruckPlural": "فوڈ ٹرکس",
+    "streetFood": "اسٹریٹ فوڈ",
+    "mobileCatering": "موبائل کیٹرنگ",
+    "preOrder": "پری آرڈر",
+    "orderAhead": "پہلے سے آرڈر کریں",
+    "pickupCollect": "پک اپ",
+    "pickupTime": "پک اپ کا وقت",
+    "takeaway": "ٹیک اوے",
+    "timeSlot": "ٹائم سلاٹ",
+    "kitchenDisplay": "کچن ڈسپلے (KDS)",
+    "pos": "POS سسٹم",
+    "cardReader": "کارڈ مشین",
+    "menuListOfDishes": "مینو",
+    "combo": "ڈیل",
+    "privateHire": "تقریبات کے لیے فوڈ ٹرک بکنگ",
+    "privateEvent": "نجی تقریب",
+    "mobilePhone": "موبائل نمبر",
+    "commissionFree": "بغیر کمیشن",
+    "whatsappAutoReply": "WhatsApp آٹو ریپلائی",
+    "walkUpOrder": "واک اِن آرڈر",
+    "orderButton": "آرڈر کریں",
+    "payAtHatchFeature": "پک اپ پر ادائیگی",
+    "payAtHatchShort": "ٹرک پر ادائیگی",
+    "payAsYouGo": "ماہانہ فیس کے بغیر",
+    "unlimited": "ان لمیٹڈ",
+    "freeTrial": "مفت ٹرائل"
+  },
+  "differsFromBase": [],
+  "seo": {
+    "landing.meta.title": "فوڈ ٹرک آن لائن آرڈر سسٹم — HatchGrab {country}",
+    "landing.meta.description": "قطار کے بغیر اپنی جگہ پر آرڈرز اور پری آرڈرز لیں۔ فوڈ ٹرکس اور موبائل کیٹرنگ کے لیے آرڈرنگ اور کچن ڈسپلے سافٹ ویئر ({country}) — POS نہیں۔",
+    "landing.jsonLd.subCategory": "فوڈ ٹرکس اور موبائل کیٹرنگ کے لیے آرڈرنگ سسٹم",
+    "landing.jsonLd.description": "فوڈ ٹرکس اور موبائل کیٹرنگ کے لیے آرڈرز، پری آرڈرز اور کچن اسکرین ({country})۔",
+    "landing.jsonLd.audience": "فوڈ ٹرک اور موبائل کیٹرنگ کا کاروبار چلانے والے",
+    "landing.hero.title": "<lean>فوڈ ٹرکس کے لیے</lean> بنا آرڈرنگ سسٹم۔",
+    "landing.does.title": "فوڈ ٹرکس کے لیے بنا، ریسٹورنٹس کے لیے نہیں۔",
+    "landing.faq.metaTitle": "اکثر پوچھے جانے والے سوالات | HatchGrab",
+    "landing.faq.metaDescription": "فوڈ ٹرک مالکان کے لیے HatchGrab کی قیمتوں، سیٹ اپ، آرڈر لینے اور ادائیگیوں کے بارے میں سیدھے اور واضح جوابات — شروع کرنے سے پہلے سب جان لیں۔",
+    "featuresPage.metaTitle": "پلانز اور فیچرز کا موازنہ — HatchGrab {country}",
+    "compare.meta.title": "لاگت کیلکولیٹر — HatchGrab {country}",
+    "compare.meta.description": "آج آن لائن آرڈرز پر آپ کا کتنا خرچ آتا ہے اور HatchGrab کے ساتھ ایک سال میں کتنا آئے گا — موازنہ کریں اور ایک منٹ میں اندازہ پائیں۔",
+    "comparison.meta.title": "فوڈ ٹرک آرڈرنگ سسٹمز کا موازنہ 2026: فیچرز اور قیمتیں",
+    "comparison.meta.description": "فوڈ ٹرک آرڈرنگ سسٹمز کا موازنہ: پک اپ ٹائم کے ساتھ پری آرڈر، کچن کی گنجائش، ہفتہ وار شیڈول، فیس اور معاہدے کی مدت — ہر کمپنی کی ویب سائٹ پر جانچا گیا۔",
+    "comparison.meta.about": "فوڈ ٹرکس کے لیے آن لائن آرڈرنگ سسٹمز",
+    "comparison.h1": "فوڈ ٹرک آرڈرنگ سسٹمز کا موازنہ 2026",
+    "aboutPage.meta.description": "HatchGrab فوڈ ٹرکس اور موبائل کیٹرنگ کے لیے کام کا سافٹ ویئر بناتا ہے: آن لائن آرڈرز، پک اپ کے اوقات اور بار بار کے سوالات میں کمی۔ بانی: Dominic Bonini۔",
+    "truckPage.meta.orderTitle": "{truck} — آن لائن آرڈر کریں",
+    "truckPage.meta.orderDescription": "{truck} — پہلے سے آرڈر کریں اور ٹرک سے وصول کریں۔"
+  },
+  "csvRows": [
+    [
+      "PK",
+      "فوڈ ٹرک آن لائن آرڈر سسٹم پاکستان",
+      1,
+      "the rise of online fast food delivery in pakistan what restaurants need to know",
+      "https://www.blinkco.io/blog/the-rise-of-online-fast-food-delivery-in-pakistan-what-restaurants-need-to-know/",
+      "Pakistani ordering-vendor blog (English)",
+      "n"
+    ],
+    [
+      "PK",
+      "فوڈ ٹرک آن لائن آرڈر سسٹم پاکستان",
+      2,
+      "Food delivery apps see rapid growth",
+      "https://tribune.com.pk/story/2533298/entertainment",
+      "Express Tribune news (English)",
+      "n"
+    ],
+    [
+      "PK",
+      "فوڈ ٹرک آن لائن آرڈر سسٹم پاکستان",
+      3,
+      "sites.google.com",
+      "https://sites.google.com/view/alalwaan/",
+      "Google Sites page (unclear)",
+      "n"
+    ],
+    [
+      "PK",
+      "فوڈ ٹرک آن لائن آرڈر سسٹم پاکستان",
+      4,
+      "www.blinkco.io",
+      "https://www.blinkco.io/?p=27064",
+      "Pakistani ordering-vendor blog (English)",
+      "n"
+    ],
+    [
+      "PK",
+      "فوڈ ٹرک آن لائن آرڈر سسٹم پاکستان",
+      5,
+      "Best Hardees Fast food Delivery System in Pakistan",
+      "https://medium.com/@sadiasaleem/best-hardees-fast-food-delivery-system-in-pakistan-731bdf9d4f93",
+      "Medium blog post (English)",
+      "n"
+    ],
+    [
+      "PK",
+      "فوڈ ٹرک آن لائن آرڈر سسٹم پاکستان",
+      6,
+      "TODAY’S PAPER | April 03, 2026 | EPAPER",
+      "https://tribune.com.pk/story/2533298/food-delivery-apps-see-rapid-growth",
+      "Express Tribune news, same story (English)",
+      "n"
+    ],
+    [
+      "PK",
+      "فوڈ ٹرک آن لائن آرڈر سسٹم پاکستان",
+      7,
+      "Eat Mubarak Launches Take-Away Feature in Major Cities",
+      "https://propakistani.pk/2019/09/23/eat-mubarak-launches-take-away-feature-in-major-cities/",
+      "ProPakistani tech news (English)",
+      "n"
+    ],
+    [
+      "PK",
+      "فوڈ ٹرک آن لائن آرڈر سسٹم پاکستان",
+      8,
+      "Best Online Food Delivery Platforms in Pakistan (2026) And How to Manage Orders with a POS",
+      "https://oscar.pk/blog/best-online-food-delivery-platforms",
+      "Pakistani POS vendor blog comparing delivery platforms (English)",
+      "n"
+    ]
+  ],
+  "storeKeywords": "فوڈ ٹرک,آن لائن آرڈر,پری آرڈر,پک اپ,ٹیک اوے,کچن ڈسپلے,مینو,اسٹریٹ فوڈ,بغیر کمیشن,POS",
+  "playShortDescription": "فوڈ ٹرک سے پہلے سے آرڈر، پک اپ کا وقت اور کچن ڈسپلے — سب ایک جگہ۔",
+  "sources": [
+    "https://www.menutiger.com/ur/features/online-food-order-system — Urdu vendor page: H1 “ریسٹورنٹس کے لیے آن لائن فوڈ آرڈرنگ سسٹم”, “آرڈر/آرڈرز”, “کچن ڈسپلے”, “مینو”, “ایپ”, “گاہک”, “کمیشن”, “مفت ٹرائل”, “ٹیک آؤٹ”; آپ + کریں; ASCII digits",
+    "WebSearch “ریسٹورنٹ POS سافٹ ویئر پاکستان …” — Pakistani POS vendors (Oscar POS with Kitchen Display System, CORN POS, Blink) write in English; MENU TIGER Urdu KDS page",
+    "WebSearch “فوڈ ٹرک آن لائن آرڈر سسٹم پاکستان” — no Pakistani food-truck ordering product; market: foodpanda, Cheetay, Eat Mubarak, own websites and WhatsApp ordering; high aggregator commission pushes “commission-free” own ordering (blinkco, oscar.pk)",
+    "WebSearch “\"ٹیک اوے\" … کیش آن ڈیلیوری فوڈ پانڈا” — Pakistan is a cash-on-delivery market (Mastercard–foodpanda 2025 and Karandaaz 2023 partnerships to move COD users to digital); foodpanda pick-up = takeaway; Eat Mubarak takeaway paid by card, wallet or cash",
+    "WebSearch “\"فوڈ ٹرک\" لاہور کراچی کاروبار” — Dawn, The News, Express Tribune, Brandsynario: food trucks established in Karachi (Bao Bae, Eat Truck Co, Street Dudes), few in Lahore; all coverage in English"
+  ],
+  "confidence": "Low-Med — address form, آرڈر/مینو/کچن ڈسپلے/کمیشن/مفت ٹرائل/ایپ/گاہک are confirmed on an Urdu vendor page and the COD trap is well documented; فوڈ ٹرک, پک اپ, ٹیک اوے, پری آرڈر are the standard Urdu-script transliterations but no Pakistani Urdu food-truck page was found to confirm them (Pakistani food-truck coverage is in English). No search-volume tool: Pakistanis mostly search in English or Roman Urdu (“food truck business in pakistan”); Urdu-script searches are smaller. csvRows are the research tool’s (US-indexed) results for “فوڈ ٹرک آن لائن آرڈر سسٹم پاکستان”.",
+  "decisions": [
+    "Pay at Hatch: “پک اپ پر ادائیگی” (feature) / “ٹرک پر ادائیگی” (label). Must NOT be “کیش آن ڈیلیوری”/COD — COD is the habit Pakistani apps are trying to move away from, and there is no delivery. Payment at the truck can be cash, card or a wallet (JazzCash/Easypaisa).",
+    "Combo: Pakistani fast-food menus say “Deal” (ڈیل) far more than “combo” — recommend ڈیل; Dominic to confirm.",
+    "Plural of loan nouns: recommend English-style -س/-ز plurals as Urdu vendor copy does (ریسٹورنٹس، آرڈرز، فوڈ ٹرکس) rather than oblique فوڈ ٹرکوں.",
+    "Takeaway spelling: ٹیک اوے (Pakistani/British usage), not MENU TIGER’s ٹیک آؤٹ (US).",
+    "Script/direction: right to left, Urdu letters and punctuation (۔ ، ؟); ASCII digits (ur-PK Intl default is Latin digits) — keep typed digits ASCII too.",
+    "Order button: no statutory button wording found for Pakistan (not verified against the E-Commerce Policy 2019 or provincial consumer protection acts); market norm “آرڈر کریں” / “آرڈر کنفرم کریں”."
+  ]
+}

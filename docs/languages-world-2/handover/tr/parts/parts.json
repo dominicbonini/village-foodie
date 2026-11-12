@@ -1,0 +1,186 @@
+[
+ {
+  "id": "01",
+  "ns": [
+   "order",
+   "plansPdf",
+   "dashboard",
+   "soldOut",
+   "preorder",
+   "phone",
+   "modifierRules",
+   "charges",
+   "menuBadges",
+   "errorsCustomer",
+   "deals",
+   "whatsappCustomer",
+   "orderStatus",
+   "privateLink",
+   "emailCustomer"
+  ],
+  "bytes": 45563,
+  "seo": false
+ },
+ {
+  "id": "02",
+  "ns": [
+   "eventCard",
+   "orderLine",
+   "errorsKitchen",
+   "kitchenModals",
+   "ticket",
+   "printing",
+   "kds",
+   "nativeShell",
+   "push",
+   "buzzer",
+   "dashboardBanners",
+   "demo",
+   "userMenu",
+   "paymentActions",
+   "orderCard",
+   "addOrder",
+   "emailOperator"
+  ],
+  "bytes": 40816,
+  "seo": false
+ },
+ {
+  "id": "03",
+  "ns": [
+   "alertsOperator",
+   "setup",
+   "whereBased",
+   "cuisinePicker",
+   "priceControls",
+   "goLive",
+   "walkthrough",
+   "auth",
+   "emailSignup",
+   "errorsOnboarding",
+   "emailAccount",
+   "demoSaveEmail",
+   "demoGetStarted",
+   "demoUpload",
+   "provisionContent",
+   "manageAllergens",
+   "manageUpsells",
+   "manageExtras",
+   "manageDeals",
+   "eventTypes",
+   "privateEvents"
+  ],
+  "bytes": 41857,
+  "seo": false
+ },
+ {
+  "id": "04",
+  "ns": [
+   "vanFilter",
+   "manageMenu",
+   "manageMenuImport",
+   "errorsManage",
+   "tradeArea",
+   "manageApi",
+   "manageSchedule",
+   "manageScheduleEvent"
+  ],
+  "bytes": 40902,
+  "seo": false
+ },
+ {
+  "id": "05",
+  "ns": [
+   "manageScheduleImport",
+   "manageScheduleVerify",
+   "schedulePlaces",
+   "serviceSettings",
+   "offlineProtection",
+   "kitchenCapacity",
+   "settingsCopy",
+   "whereYouTrade",
+   "stockCopy",
+   "managePrimitives",
+   "manageSettings",
+   "manageReports",
+   "socialPosts"
+  ],
+  "bytes": 44319,
+  "seo": false
+ },
+ {
+  "id": "06",
+  "ns": [
+   "managePayments",
+   "manageCharges",
+   "takingPayment",
+   "designEditor",
+   "fontPicker",
+   "weeklyPost",
+   "manageShell",
+   "manageBilling",
+   "manageTeam",
+   "manageWhatsApp",
+   "customDomain",
+   "deleteAccount",
+   "copyButton",
+   "eventPost"
+  ],
+  "bytes": 41979,
+  "seo": false
+ },
+ {
+  "id": "07",
+  "ns": [
+   "postShare",
+   "posterWords",
+   "captions",
+   "weeklyPostApi",
+   "completionSettings",
+   "outreach",
+   "address",
+   "demoLinkEmail",
+   "demoWalk",
+   "paperwork",
+   "emailReview",
+   "billing",
+   "emailBilling"
+  ],
+  "bytes": 24035,
+  "seo": false
+ },
+ {
+  "id": "08",
+  "ns": [
+   "compare",
+   "comparison",
+   "comparisonSuits"
+  ],
+  "bytes": 27919,
+  "seo": true
+ },
+ {
+  "id": "09",
+  "ns": [
+   "landing",
+   "landingNav",
+   "landingFooter",
+   "featuresPage",
+   "planTable",
+   "pricing",
+   "planFeatures",
+   "planPrompt",
+   "faq",
+   "aboutPage",
+   "legalChrome",
+   "truckPage",
+   "contactPage",
+   "siteFooter",
+   "errorPage",
+   "embed",
+   "planNames"
+  ],
+  "bytes": 25441,
+  "seo": true
+ }
+]

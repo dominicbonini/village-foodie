@@ -1,0 +1,613 @@
+{
+ "postShare": {
+  "download": "Download picture",
+  "copied": "Copied ✓",
+  "copyCaption": "Copy caption",
+  "share": "Share",
+  "copiedStatus": "{kind, select, postText {Post text copied.} other {Caption copied.}}",
+  "copyFailed": "Could not copy — select the text and copy it by hand.",
+  "sharedStatus": "{kind, select, postText {Post text copied — paste it into your post.} other {Caption copied — paste it into your post.}}",
+  "shareRefused": "{kind, select, postText {Sharing was refused, so the picture has been downloaded. Post text copied.} other {Sharing was refused, so the picture has been downloaded. Caption copied.}}"
+ },
+ "posterWords": {
+  "heading": "Week commencing {start} to {end}",
+  "daysOff": "No trading today",
+  "cancelled": "CANCELLED",
+  "placeSample": {
+   "nameTownBelow": "The Kings Arms\nLavenham",
+   "nameTown": "The Kings Arms, Lavenham",
+   "nameOnly": "The Kings Arms"
+  },
+  "busyWeek": {
+   "venue1": "Lavenham Village Hall",
+   "town1": "Lavenham",
+   "venue2": "Great Waldingfield Recreation Ground and Playing Field",
+   "town2": "Great Waldingfield",
+   "venue3": "Market Square",
+   "town3": "Sudbury",
+   "venue4": "Food Festival",
+   "town4": "Bury St Edmunds",
+   "venue5": "The Bull Inn",
+   "town5": "Cavendish",
+   "venue6": "Church Green",
+   "town6": "Long Melford"
+  },
+  "poweredBy": "Powered by HatchGrab"
+ },
+ "captions": {
+  "labels": {
+   "weekDates": "Week dates",
+   "dayList": "List of days",
+   "place": "Place",
+   "venue": "Venue",
+   "area": "Area",
+   "dayDate": "Day & date",
+   "times": "Times",
+   "orderLink": "Order link",
+   "locationTag": "Location tag"
+  },
+  "weekHeader": "{truck} — where we are this week:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — CANCELLED, sorry",
+  "noDates": "No dates this week — check back soon.",
+  "orderAhead": "Order ahead: {url}",
+  "orderAheadTagged": "Order ahead: {url} {tag}",
+  "eventLine": "{truck} at {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} at {where} {when}.",
+  "cancelledSorry": "Sorry — we’re not able to make {where} {when}.",
+  "cancelledApology": "Apologies to everyone who was planning to come. We’ll be back soon.",
+  "when": {
+   "today": "today",
+   "tonight": "tonight",
+   "tomorrow": "tomorrow",
+   "dated": "on {date}"
+  }
+ },
+ "weeklyPostApi": {
+  "shortened": {
+   "heading": "The heading did not fit and was shortened.",
+   "date": "The date did not fit and was shortened.",
+   "daysOff": "The days-off text did not fit and was shortened.",
+   "place": "The place name did not fit and was shortened.",
+   "time": "The time did not fit and was shortened.",
+   "note": "Your own text did not fit and was shortened.",
+   "venue": "The venue did not fit and was shortened.",
+   "area": "The area did not fit and was shortened."
+  },
+  "fontFallback": "A font this design uses ({id}) could not be loaded — those boxes are in Oswald.",
+  "wrongShapeBackground": "This place’s picture is a different shape from your design, so the standard background is used.",
+  "rowsFit": "The last day falls {px}px below the bottom of the image — reduce the row spacing or move row 1 up.",
+  "placeStatus": {
+   "ownBoth": "Own picture and text positions",
+   "wrongShape": "Different shape — not used until replaced",
+   "ownPicture": "Own picture, standard positions",
+   "ownPositions": "Standard picture, own text positions",
+   "none": "No picture yet — using Standard"
+  },
+  "standardStatus": "Used at every other place",
+  "option": {
+   "oneOff": "Upload one for this post only",
+   "placePoster": "{name}’s poster",
+   "standard": "Standard design"
+  },
+  "previewLabel": {
+   "lastEvent": "Preview uses your last event here",
+   "noEvents": "No events here yet — preview shows your next event with this place’s name"
+  },
+  "fontUsage": {
+   "weekly": "your weekly post design",
+   "event": "your single event post design",
+   "place": "your design for {place}",
+   "placeUnnamed": "your design for a place"
+  },
+  "face": {
+   "regular": "Regular",
+   "bold": "Bold",
+   "italic": "Italic"
+  },
+  "picture": {
+   "legacy": "Event poster",
+   "fallback": "Picture",
+   "wrongShape": "Different shape — can’t be used as a whole background"
+  },
+  "noPicture": {
+   "omit": "Leave it out",
+   "blank": "Leave a blank space",
+   "logo": "Show your logo"
+  },
+  "noPicturesAll": "{total, plural, one {Your location has an image.} other {All {total} of your locations have an image.}}",
+  "noPicturesSome": "{without, plural, one {{without} of your {total} locations has no image yet} other {{without} of your {total} locations have no image yet}}",
+  "licenceTick": "I own this font or have a licence to use it",
+  "fontUploadButton": "↑ Upload your font"
+ },
+ "completionSettings": {
+  "paidStepTitle": "Take orders without payment",
+  "completionTitle": "Completing an unpaid order",
+  "completionHelp": "What happens when an unpaid order is ready to hand over.",
+  "pressesOne": "One press (“Mark paid & collected”)",
+  "pressesOneHelp": "Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.",
+  "pressesTwo": "Two presses (“Mark paid” & “Collected”)",
+  "pressesTwoHelp": "Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food."
+ },
+ "outreach": {
+  "optOut": {
+   "missing": "This email has no opt-out line, so it cannot be sent. Use Insert opt-out to add it.",
+   "notSetUp": "No opt-out sentence is set up, so no outreach email can be sent. Add one on the Templates tab’s Signature panel.",
+   "notLoaded": "The opt-out sentence has not loaded yet, so this cannot be sent.",
+   "unreadable": "The opt-out sentence could not be read, so nothing was sent."
+  },
+  "retry": {
+   "notRebuilt": "That message could not be rebuilt with the company line, so nothing was sent."
+  }
+ },
+ "address": {
+  "label": {
+   "street": "Address",
+   "postcode": "Postcode",
+   "zip": "ZIP code",
+   "eircode": "Eircode",
+   "postalCode": "Postal code",
+   "state": "State",
+   "stateTerritory": "State or territory",
+   "province": "Province",
+   "county": "County",
+   "prefecture": "Prefecture",
+   "emirate": "Emirate",
+   "region": "Region",
+   "area": "Area (village, town or city)",
+   "townOrArea": "Town or area",
+   "city": "City",
+   "suburb": "Suburb",
+   "townOrCity": "Town or city"
+  },
+  "short": {
+   "area": "Area",
+   "townOrArea": "Town or area",
+   "city": "City",
+   "suburb": "Suburb",
+   "townOrCity": "Town or city"
+  },
+  "inSentence": {
+   "postcode": "postcode",
+   "zip": "ZIP code",
+   "eircode": "Eircode",
+   "postalCode": "postal code"
+  },
+  "withArticle": {
+   "postcode": "a postcode",
+   "zip": "a ZIP code",
+   "eircode": "an Eircode",
+   "postalCode": "a postal code"
+  },
+  "tradeLabel": {
+   "area": "Town or city",
+   "townOrArea": "Town or area",
+   "city": "City",
+   "suburb": "Suburb",
+   "townOrCity": "Town or city"
+  },
+  "basedIn": {
+   "area": "Town or city you’re based in",
+   "townOrArea": "Town or area you’re based in",
+   "city": "City you’re based in",
+   "suburb": "Suburb you’re based in",
+   "townOrCity": "Town or city you’re based in"
+  },
+  "example": "e.g. {example}",
+  "customersSee": "Customers see:",
+  "postalWarning": "That doesn’t look like {article} — for example {example}. You can still save it.",
+  "regionChoose": "Choose…"
+ },
+ "demoLinkEmail": {
+  "subject": "Your HatchGrab demo — here’s your link",
+  "heading": "Your demo is ready",
+  "intro": "Here’s the link to the demo we built from your menu. Order from it like one of your customers, then watch the order arrive on your kitchen screen. No login needed — just tap it.",
+  "button": "Open my demo",
+  "deletion": "This is a demo, so we don’t keep it: we’ll delete it, and the menu you uploaded, on {date}. If you’d like longer, press “Save my menu” in the demo and we’ll keep it for 14 days.",
+  "deletionSoon": "This is a demo, so we don’t keep it: we’ll delete it, and the menu you uploaded, after 24 hours. If you’d like longer, press “Save my menu” in the demo and we’ll keep it for 14 days."
+ },
+ "demoWalk": {
+  "step1": "Step 1 of 3 · Order like one of your customers",
+  "paymentTitle": "Payment",
+  "paymentPanel": "Your customer pays here by card, Apple Pay or Google Pay, or chooses to pay at the truck. In the demo, nothing is charged.",
+  "defaultName": "Alex",
+  "step2": "Step 2 of 3",
+  "bubbleTitle": "This is your kitchen screen",
+  "bubbleArrived": "The order you just placed arrived here instantly, with the collection time. Tap Start cooking.",
+  "bubbleReady": "When the food is ready, tap Ready. Your customer is told straight away.",
+  "step3": "Step 3 of 3 · done",
+  "told": "{name} has just been told their food is ready.",
+  "thatsIt": "That’s HatchGrab: customers order on their phone, you see it here, they collect without queuing. Your menu is already set up.",
+  "startFree": "{months, plural, =0 {Start free, keep my menu} one {Start free for # month, keep my menu} other {Start free for # months, keep my menu}}",
+  "tryAnother": "Try another order",
+  "barOrder": "Order like a customer",
+  "barArrives": "It arrives in your kitchen",
+  "barReady": "Mark it ready",
+  "phoneLabel": "Your customer’s phone",
+  "kitchenLabel": "Your kitchen screen",
+  "waitingTitle": "Waiting for orders",
+  "waitingBody": "Order something on the phone. It appears here the moment your customer presses Order.",
+  "startCooking": "Start cooking",
+  "ready": "Ready",
+  "readyForCollection": "Ready for collection",
+  "cooking": "Cooking",
+  "readyBadge": "Ready",
+  "newBadge": "New order",
+  "orderNumber": "Order #{number}",
+  "collectAt": "Collect at {time}",
+  "collectAsap": "Collect as soon as possible",
+  "phoneReadyTitle": "Your order is ready",
+  "phoneReadyBody": "Collect it at the truck.",
+  "bandTitle": "That’s HatchGrab. Your menu is already set up.",
+  "bandStart": "Start free, keep my menu",
+  "orderAgain": "Order again",
+  "loading": "Setting up your demo…",
+  "goneTitle": "This demo has ended",
+  "goneBody": "Demos are deleted after a day. You can build a new one from your menu in under a minute.",
+  "goneButton": "Build a new demo",
+  "failed": "That didn’t work — please try again.",
+  "backToMenu": "Back to the menu",
+  "formNote": "This is a demo: nobody is charged and nothing is sent, so you don’t need to give an email.",
+  "namePlaceholder": "Alex"
+ },
+ "paperwork": {
+  "title": "Documents",
+  "intro": "Keep your certificates in one place. We’ll remind you before anything runs out, and you can send them to an organiser in one go.",
+  "loading": "Loading your documents…",
+  "loadFailed": "Your documents couldn’t be loaded. Please try again.",
+  "retry": "Try again",
+  "counts": {
+   "expired": "{count, plural, one {# expired} other {# expired}}",
+   "dueSoon": "{count, plural, one {# due soon} other {# due soon}}",
+   "missing": "{count, plural, one {# missing} other {# missing}}",
+   "upToDate": "{count, plural, one {# up to date} other {# up to date}}"
+  },
+  "status": {
+   "upToDate": "Up to date",
+   "dueSoon": "Due soon",
+   "expired": "Expired",
+   "upload": "Upload"
+  },
+  "line": {
+   "expires": "Expires {date}",
+   "expiresIn": "Expires {date} · {days, plural, one {in # day} other {in # days}}",
+   "expiresToday": "Expires today",
+   "expired": "Expired {date}",
+   "reviewBy": "Review by {date}",
+   "reviewByIn": "Review by {date} · {days, plural, one {in # day} other {in # days}}",
+   "reviewOverdue": "Review was due {date}",
+   "noExpiry": "No expiry",
+   "cover": "{amount} cover",
+   "notUploaded": "Not uploaded yet"
+  },
+  "select": "Select {document}",
+  "add": "+ Add a document",
+  "selected": "{count, plural, one {# selected} other {# selected}}",
+  "sendToOrganiser": "Send to organiser",
+  "types": {
+   "food_registration": "Food business registration",
+   "hygiene_rating": "Food hygiene rating",
+   "food_safety_plan": "Food safety plan (HACCP)",
+   "public_liability": "Public liability insurance",
+   "employers_liability": "Employers’ liability insurance",
+   "gas_safety": "Gas safety certificate",
+   "pat_test": "PAT test",
+   "fire_safety": "Fire safety",
+   "risk_assessment": "Risk assessment",
+   "allergen_info": "Allergen information",
+   "street_trading_licence": "Street trading licence",
+   "electrical_safety": "Electrical safety test",
+   "trading_licence": "Trading licence"
+  },
+  "upload": {
+   "title": "Add a document",
+   "intro": "Take a photo of it, or choose a photo or a file.",
+   "takePhoto": "Take a photo",
+   "chooseFile": "Choose a photo or file",
+   "accepted": "PDF, JPEG, PNG, HEIC or WebP, up to 20 MB.",
+   "uploading": "Uploading… {percent}%",
+   "reading": "Reading your document…",
+   "tooBig": "That file is over 20 MB. Please choose a smaller one.",
+   "wrongType": "That file type isn’t accepted. Please use a PDF, JPEG, PNG, HEIC or WebP file.",
+   "failed": "The upload didn’t work. Please try again.",
+   "cancel": "Cancel"
+  },
+  "check": {
+   "title": "Check the details",
+   "aiBanner": "We read this from your document. Please check it’s right before saving.",
+   "document": "Document",
+   "other": "Other…",
+   "otherName": "Name of the document",
+   "issuer": "Issued by",
+   "issued": "Issued",
+   "expires": "Expires",
+   "reviewBy": "Review by",
+   "nameOnDocument": "Name on the document",
+   "cover": "Insurance cover",
+   "coverHint": "Optional. The amount the policy covers.",
+   "currency": "Currency",
+   "save": "Save",
+   "saving": "Saving…",
+   "cancel": "Cancel",
+   "saved": "Saved",
+   "footer": "The previous certificate is kept as history. Your files are private: only you, and organisers you send them to, can see them.",
+   "needType": "Choose the document, or name it.",
+   "badDates": "The expiry date can’t be before the issue date."
+  },
+  "warnings": {
+   "notRead": "We couldn’t read this document. Please fill in the details yourself.",
+   "expired": "This expired on {date}. You can still save it, but organisers will see that it has expired.",
+   "expiresSoon": "{days, plural, =0 {This expires today. We’ll remind you every week until it’s renewed.} one {This expires in # day. We’ll remind you 4 weeks before, 1 week before and on the day.} other {This expires in # days. We’ll remind you 4 weeks before, 1 week before and on the day.}}",
+   "nameMismatch": "The name on it, “{name}”, doesn’t look like your business name. Please check it’s the right document."
+  },
+  "view": {
+   "close": "Close",
+   "open": "Open",
+   "download": "Download",
+   "noPreview": "This file can’t be shown here. Open it or download it instead.",
+   "details": "Details",
+   "edit": "Edit details",
+   "renew": "Upload a new version",
+   "earlier": "Earlier versions",
+   "uploaded": "Uploaded {date}",
+   "delete": "Delete",
+   "deleteConfirm": "Delete this document and its earlier versions? The files are removed, and it comes off any link you’ve sent.",
+   "deleteYes": "Delete",
+   "deleted": "Document deleted",
+   "keep": "Keep it"
+  },
+  "send": {
+   "title": "Send to organiser",
+   "intro": "They get an email with a link to view or download everything.",
+   "email": "Organiser’s email",
+   "emailHint": "Up to 5 addresses, separated by commas.",
+   "event": "Event (optional)",
+   "noEvent": "No event",
+   "documents": "Documents",
+   "message": "Message (optional)",
+   "messagePlaceholder": "Hi, here are our documents for the market.",
+   "until": "Link works until",
+   "untilAfterEvent": "{date} (the day after the event)",
+   "send": "Send",
+   "sending": "Sending…",
+   "footer": "If you renew a certificate, the organiser’s link shows the new one automatically. You’ll see when they open it.",
+   "sent": "Sent to {emails}",
+   "cancel": "Cancel",
+   "emailNone": "Enter the organiser’s email.",
+   "emailInvalid": "“{email}” isn’t an email address.",
+   "emailTooMany": "You can send to up to 5 addresses at once.",
+   "noDocuments": "Choose at least one document.",
+   "untilRange": "Choose a date from tomorrow up to 90 days from today."
+  },
+  "sent": {
+   "title": "Sent",
+   "empty": "Nothing sent yet.",
+   "to": "To {emails}",
+   "sentOn": "Sent {date}",
+   "opened": "Opened {date} · {count, plural, one {# view} other {# views}}",
+   "notOpened": "Not opened yet",
+   "until": "Works until {date}",
+   "expiredOn": "Expired {date}",
+   "off": "Turned off",
+   "turnOff": "Turn off link",
+   "turnOffConfirm": "Turn off this link? The organiser won’t be able to open it any more.",
+   "turnedOff": "Link turned off"
+  },
+  "page": {
+   "title": "Documents from {truck}",
+   "intro": "{truck} has shared these documents with you.",
+   "view": "View",
+   "download": "Download",
+   "downloadAll": "Download all",
+   "until": "This link works until {date}.",
+   "none": "There are no documents on this link at the moment.",
+   "expiredTitle": "This link has expired",
+   "expiredBody": "This link has expired, ask {truck} to send it again.",
+   "expiredBodyUnknown": "This link has expired. Please ask the business that sent it to send it again.",
+   "sharedWith": "Shared with HatchGrab"
+  },
+  "email": {
+   "shareSubject": "{truck} has sent you their documents",
+   "shareHeading": "Documents from {truck}",
+   "shareIntro": "{truck} has shared these documents with you.",
+   "event": "For: {event}",
+   "shareButton": "View the documents",
+   "shareUntil": "The link works until {date}. If it has expired, ask {truck} to send it again.",
+   "shareReply": "Reply to this email to contact {truck}.",
+   "expires": "expires {date}",
+   "reviewBy": "review by {date}",
+   "noExpiry": "no expiry",
+   "reminderSubject": "{count, plural, one {A document needs renewing} other {# documents need renewing}}",
+   "reminderHeading": "Your documents",
+   "reminderIntro": "Some of {truck}’s documents need renewing:",
+   "reminderIn": "{document} expires on {date} ({days, plural, one {in # day} other {in # days}})",
+   "reminderToday": "{document} expires today",
+   "reminderExpired": "{document} expired on {date}",
+   "reminderButton": "Open Documents",
+   "reminderFooter": "We remind you 4 weeks before, 1 week before and on the day, then every week until it’s renewed."
+  }
+ },
+ "emailReview": {
+  "subject": "How was your order from {truck}?",
+  "heading": "Thanks for ordering from {truck}",
+  "body": "{truck} would be grateful for an honest review on Google. It only takes a minute, and it helps other people find them.",
+  "button": "Leave a review on Google",
+  "linkText": "Leave a review on Google: {url}",
+  "from": "This email is from {truck}, sent through HatchGrab because you ordered from them.",
+  "unsubscribeLead": "Don’t want review requests from {truck}?",
+  "unsubscribeLink": "Unsubscribe",
+  "unsubscribeText": "Unsubscribe: {url}",
+  "unsubscribed": {
+   "title": "You’re unsubscribed",
+   "body": "{truck} won’t send you review requests any more.",
+   "invalid": "This unsubscribe link isn’t valid."
+  }
+ },
+ "billing": {
+  "tab": {
+   "plan": {
+    "title": "Your plan",
+    "trialPill": "Free trial",
+    "change": "Change plan",
+    "trialLine": "Your free trial ends on {date}. After that, {plan} is {price} a month.",
+    "trialLineFree": "Your free trial ends on {date}. After that, you’re on {plan}, with no monthly fee.",
+    "proLine": "Includes {allowance} of online orders a month. Then {fee}.",
+    "paygLine": "{fee} on online orders. No monthly fee.",
+    "unlimitedLine": "{price} a month. No fee on online orders.",
+    "pendingLine": "{plan} starts on {date}."
+   },
+   "payment": {
+    "title": "Payment method",
+    "none": "No card added yet. Add one to keep taking online orders after your trial.",
+    "add": "Add card",
+    "pix": "Use Pix Automático",
+    "card": "{brand} ending {last4}",
+    "pixOnFile": "Pix Automático",
+    "pending": "Waiting for confirmation.",
+    "change": "Change",
+    "lastFailed": "Last payment failed",
+    "update": "Update card",
+    "error": "We couldn’t open the payment page. Please try again.",
+    "noneAfterTrial": "No card added. Add one to turn online ordering back on."
+   },
+   "whatYouPay": {
+    "title": "What you pay",
+    "plan": "Your plan, charged on the 1st for the month ahead",
+    "fee": "Online orders over {allowance} a month, charged on the 1st for the month before",
+    "feePayg": "Online orders, charged on the 1st for the month before",
+    "walkUps": "Walk-up orders",
+    "free": "Free",
+    "trialEnd": "When your trial ends on {date}, we charge {amount} for the rest of {month}. Then {price} on {nextFirst}."
+   },
+   "next": {
+    "title": "Next payment · {date}",
+    "plan": "{plan} for {month}",
+    "fee": "{fee} on {month}’s online orders over {allowance} (so far)",
+    "feePayg": "{fee} on {month}’s online orders (so far)",
+    "vans": "Extra vans for {month}",
+    "surcharge": "Post-pay charge for {month}",
+    "carried": "Carried over from earlier",
+    "total": "Total so far",
+    "walkUps": "Walk-up orders are always free."
+   },
+   "preorders": {
+    "title": "How customers pay for pre-orders",
+    "online": "Online, when they order",
+    "onlineHint": "The money goes straight to your Stripe account.",
+    "atTruckHint": "Customers pay when they collect. Our fee is added to your monthly charge.",
+    "saved": "Saved.",
+    "error": "We couldn’t save that. Please try again."
+   },
+   "invoices": {
+    "title": "Invoices",
+    "date": "Date",
+    "for": "For",
+    "amount": "Amount",
+    "status": "Status",
+    "forMonthly": "{planMonth} plan, {usageMonth} fees",
+    "forMonthlyPlan": "{planMonth} plan",
+    "forTrialEnd": "Rest of {month}",
+    "forUpgrade": "Switch to {plan}",
+    "lateFee": "Late payment fee",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "overdue": "Overdue",
+    "download": "Download",
+    "payNow": "Pay now",
+    "none": "No invoices yet."
+   },
+   "failed": {
+    "title": "Your payment of {amount} didn’t go through.",
+    "body": "We’ll try again. Update your card by {date} to keep online ordering on.",
+    "button": "Update card"
+   },
+   "paused": {
+    "title": "Online ordering is paused",
+    "body": "{amount} is overdue. Pay now and online ordering comes straight back on.",
+    "warning": "Pay by {date} or your account may be suspended.",
+    "pay": "Pay {amount}",
+    "otherCard": "Use a different card"
+   },
+   "loading": "Loading billing…",
+   "loadError": "We couldn’t load your billing. Please try again."
+  },
+  "changePlan": {
+   "title": "Change plan",
+   "current": "You’re on {plan}.",
+   "free": "Free",
+   "perMonth": "{price} a month",
+   "paygLine": "{fee} on online orders.",
+   "proLine": "{allowance} of online orders included. Then {fee}.",
+   "unlimitedLine": "No fee on online orders.",
+   "yourPlan": "Your plan",
+   "startsNow": "Starts now.",
+   "chargeToday": "We’ll charge {amount} today for the rest of {month}. Then {price} on {nextFirst}.",
+   "startsLater": "Starts on {nextFirst}. You keep {plan} until then.",
+   "cancel": "Cancel",
+   "switchTo": "Switch to {plan}",
+   "error": "We couldn’t change your plan. Please try again.",
+   "trialLine": "You’re on a free trial. Choose your plan for when it ends on {date}.",
+   "startsAtTrialEnd": "Starts when your trial ends.",
+   "choose": "Choose {plan}"
+  },
+  "notices": {
+   "trialEndsSoon": "<b>Your free trial ends on {date}.</b> Add a card to keep online ordering on.",
+   "trialEndsTomorrow": "<b>Your free trial ends tomorrow.</b> Add a card or online ordering pauses.",
+   "allSet": "<b>You’re all set.</b> {plan} starts on {date}.",
+   "paymentFailed": "<b>Your payment didn’t go through.</b> Update your {method, select, payment_method {payment method} other {card}} by {date} to keep online ordering on.",
+   "paused": "<b>Online ordering is paused.</b> Pay {amount} by {date} or your account may be suspended.",
+   "addCard": "Add card →",
+   "updateCard": "Update {method, select, payment_method {payment method} other {card}} →",
+   "payNow": "Pay now →",
+   "dismiss": "Dismiss",
+   "trialEnded": "<b>Your free trial has ended.</b> Add a card to turn online ordering back on."
+  }
+ },
+ "emailBilling": {
+  "greeting": "{hasName, select, yes {Hi {name},} other {Hi there,}}",
+  "questions": "Questions? Just reply.",
+  "signoff": "The HatchGrab team",
+  "buttonUpdate": "Update {method, select, payment_method {payment method} other {card}}",
+  "buttonPay": "Pay now",
+  "buttonAddCard": "Add card",
+  "suspended": "If it stays unpaid, your account may be suspended.",
+  "failed": {
+   "subject": "Your HatchGrab payment didn’t go through",
+   "line1": "We couldn’t take {amount} for {truck} today. We’ll try again.",
+   "line2": "Please update your {method, select, payment_method {payment method} other {card}} by {date} to keep online ordering on."
+  },
+  "twoDays": {
+   "subject": "2 days left to update your {method, select, payment_method {payment method} other {card}}",
+   "line1": "{amount} for {truck} is still unpaid. Update your {method, select, payment_method {payment method} other {card}} by {date}, or online ordering pauses."
+  },
+  "oneDay": {
+   "subject": "Update your {method, select, payment_method {payment method} other {card}} by tomorrow",
+   "line1": "{amount} for {truck} is still unpaid. Update your {method, select, payment_method {payment method} other {card}} by tomorrow, or online ordering pauses."
+  },
+  "lastDay": {
+   "subject": "Last day to update your {method, select, payment_method {payment method} other {card}}",
+   "line1": "Today is the last day to pay {amount} for {truck}. If it’s still unpaid at midnight, online ordering pauses until you pay."
+  },
+  "paused": {
+   "subject": "Online ordering is paused",
+   "line1": "Online ordering for {truck} is paused because {amount} is unpaid. Pay now and it comes straight back on.",
+   "line2": "Pay by {date} or your account may be suspended."
+  },
+  "trial7": {
+   "subject": "Your free trial ends in 7 days",
+   "line1": "Your free trial for {truck} ends on {date}.",
+   "line2": "Add a card in Manage › Billing to keep online ordering on.",
+   "plan": "After that, {plan} is {price} a month. When your trial ends we charge {amount} for the rest of {month}, then {price} on {nextFirst}.",
+   "planFree": "After that, you’re on {plan}, with no monthly fee.",
+   "fee": "Our {fee} fee on online orders is charged on the 1st, for the month before."
+  },
+  "trial1": {
+   "subject": "Your free trial ends tomorrow",
+   "line1": "Your free trial for {truck} ends tomorrow.",
+   "noCard": "Add a card or online ordering pauses.",
+   "allSet": "You’re all set: {plan} starts on {date}.",
+   "charge": "We’ll charge {amount} for the rest of {month} when your trial ends."
+  }
+ }
+}

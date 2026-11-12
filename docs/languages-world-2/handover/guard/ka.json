@@ -1,0 +1,122 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for GEORGIAN (ka-GE): ალერგ (ალერგია, ალერგიული), აუტანლობა, მგრძნობიარე, ცელიაკია, ანაფილაქსია, the უ-…-ო free-from forms (უგლუტენო, ულაქტოზო), <allergen>-ის გარეშე (გლუტენის / რძის / კვერცხის / თხილის / არაქისის გარეშე…), არ შეიცავს, შეიძლება შეიცავდეს, უსაფრთხო, შესაფერისი, ვერ ვჭამ, ჯვარედინი დაბინძურება — plus the Latin-keyboard Georgian customers type (alergia, ugluteno, glutenis gareshe, ar sheicavs, usafrtxo). Bare გარეშე / gareshe is NOT a stem (ხახვის გარეშე is a preference), nor bare შეიცავს (a presence question). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "ka",
+  "normalise": "unicode",
+  "stems": [
+    "ალერგ",
+    "აუტანლობ",
+    "მგრძნობიარ",
+    "ცელიაკ",
+    "ანაფილაქს",
+    "ეპიპენ",
+    "ადრენალინ",
+    "უგლუტენ",
+    "ულაქტოზ",
+    "გლუტენის გარეშე",
+    "ლაქტოზის გარეშე",
+    "რძის გარეშე",
+    "რძის პროდუქტების გარეშე",
+    "კვერცხის გარეშე",
+    "თხილის გარეშე",
+    "კაკლის გარეშე",
+    "არაქისის გარეშე",
+    "თხილეულის გარეშე",
+    "სოიოს გარეშე",
+    "თევზის გარეშე",
+    "ზღვის პროდუქტების გარეშე",
+    "კრევეტების გარეშე",
+    "სეზამის გარეშე",
+    "ქუნჯუთის გარეშე",
+    "სულფიტების გარეშე",
+    "არ შეიცავ",
+    "შეიცავდეს",
+    "უსაფრთხო",
+    "შესაფერის",
+    "ვერ ვჭამ",
+    "ჯვარედინ",
+    "დაბინძურ",
+    "ugluten",
+    "glutenis gareshe",
+    "laqtozis gareshe",
+    "laktozis gareshe",
+    "rdzis gareshe",
+    "kvertskhis gareshe",
+    "kvercxis gareshe",
+    "kvertxis gareshe",
+    "tkhilis gareshe",
+    "txilis gareshe",
+    "araqisis gareshe",
+    "arakisis gareshe",
+    "tevzis gareshe",
+    "ar sheicav",
+    "ar sheitsav",
+    "usafrtx",
+    "usaprtx",
+    "usafrtkh",
+    "tseliak",
+    "autanlob",
+    "ver vcham",
+    "allerg",
+    "alerg",
+    "gluten free",
+    "glutenfree",
+    "lactose",
+    "intoleran",
+    "celiac",
+    "coeliac",
+    "nut free",
+    "epipen",
+    "epi pen"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "გლუტენ",
+        "ხორბალ",
+        "ფქვილ"
+      ],
+      "crustaceans": [
+        "კიბოსნაირ",
+        "კრევეტ",
+        "კიბო",
+        "ზღვის პროდუქტ"
+      ],
+      "eggs": [
+        "კვერცხ",
+        "მაიონეზ"
+      ],
+      "fish": [
+        "თევზ"
+      ],
+      "peanuts": [
+        "არაქის"
+      ],
+      "soy": [
+        "სოიო",
+        "ტოფუ"
+      ],
+      "milk": [
+        "რძე",
+        "რძის",
+        "ლაქტოზ",
+        "ყველ",
+        "კარაქ",
+        "ნაღებ",
+        "მაწონ"
+      ],
+      "tree nuts": [
+        "თხილ",
+        "კაკალ",
+        "კაკლ",
+        "ნუშ",
+        "ფისტ",
+        "კეშიუ"
+      ],
+      "sulphites": [
+        "სულფიტ",
+        "გოგირდის დიოქსიდ"
+      ]
+    }
+  }
+}

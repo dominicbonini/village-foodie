@@ -1,0 +1,179 @@
+{
+  "country": "KZ",
+  "locale": "kk-KZ",
+  "language": "Kazakh (Kazakhstan)",
+  "addressForm": "formal сіз with polite -ңыз/-ңіз imperatives: Kaspi partner guide (kk) “қоса аласыз”, “Kaspi Гидпен Чатқа жазыңыз”; Yandex Eda vendor KZ (kk) “Тапсырысты қабылдау батырмасын басыңыз”, “Сіз тапсырысты әзірлейсіз және жинақтайсыз”. Never сен. Written in CYRILLIC (Wolt kk, Kaspi kk, Yandex Eda kk are all Cyrillic).",
+  "primaryKeyword": {
+    "landing": "фудтрактарға арналған тапсырыс жүйесі",
+    "features": "тарифтер мен мүмкіндіктер",
+    "faq": "жиі қойылатын сұрақтар",
+    "comparison": "фудтрак тапсырыс жүйелерін салыстыру",
+    "compare": "онлайн тапсырыс шығынының калькуляторы"
+  },
+  "secondaryTerms": [
+    "онлайн тапсырыс",
+    "тапсырыс жүйесі",
+    "алдын ала тапсырыс",
+    "өзі алып кету",
+    "алып кету уақыты",
+    "ас үй экраны",
+    "KDS",
+    "POS-жүйе",
+    "касса",
+    "Kaspi QR",
+    "фудтрак",
+    "көше тағамдары",
+    "мобильді кейтеринг",
+    "комиссиясыз",
+    "мәзір",
+    "QR-мәзір"
+  ],
+  "terms": {
+    "foodTruck": "фудтрак",
+    "foodTruckPlural": "фудтрактар",
+    "streetFood": "көше тағамдары (стритфуд)",
+    "mobileCatering": "мобильді кейтеринг",
+    "preOrder": "алдын ала тапсырыс",
+    "orderAhead": "алдын ала тапсырыс беріңіз",
+    "pickupCollect": "өзі алып кету",
+    "pickupTime": "алып кету уақыты",
+    "takeaway": "алып кетуге",
+    "timeSlot": "уақыт аралығы",
+    "kitchenDisplay": "ас үй экраны (KDS)",
+    "pos": "POS-жүйе (касса)",
+    "cardReader": "төлем терминалы",
+    "menuListOfDishes": "мәзір",
+    "combo": "комбо",
+    "privateHire": "фудтракты іс-шараға шақыру",
+    "privateEvent": "жеке іс-шара",
+    "mobilePhone": "ұялы телефон",
+    "commissionFree": "комиссиясыз",
+    "whatsappAutoReply": "WhatsApp автожауаптары",
+    "walkUpOrder": "терезе алдындағы тапсырыс",
+    "orderButton": "Тапсырысты рәсімдеу",
+    "payAtHatchFeature": "Фудтракта төлеу",
+    "payAtHatchShort": "Орнында төлеу",
+    "payAsYouGo": "Абоненттік төлемсіз",
+    "unlimited": "Шексіз",
+    "freeTrial": "Тегін сынақ мерзімі"
+  },
+  "differsFromBase": [
+    "Cyrillic Kazakh (ә ғ қ ң ө ұ ү һ і), not the draft Latin alphabet",
+    "Kazakhstan payments: Kaspi QR / Kaspi Pay / Halyk; currency теңге (₸)"
+  ],
+  "seo": {
+    "landing.meta.title": "Фудтрактарға арналған тапсырыс жүйесі — HatchGrab {country}",
+    "landing.meta.description": "Тапсырыстарды кезексіз қабылдаңыз. Фудтрактар мен мобильді кейтерингке арналған онлайн және алдын ала тапсырыс, ас үй экраны ({country}) — POS-жүйе емес.",
+    "landing.jsonLd.subCategory": "Фудтрактар мен мобильді кейтерингке арналған тапсырыс жүйесі",
+    "landing.jsonLd.description": "Фудтрактар мен мобильді кейтерингке арналған тапсырыстар, алдын ала тапсырыстар және ас үй экраны ({country}).",
+    "landing.jsonLd.audience": "Фудтрак және мобильді кейтеринг иелері",
+    "landing.hero.title": "<lean>Фудтрактарға</lean> арналған тапсырыс жүйесі.",
+    "landing.does.title": "Мейрамханаларға емес, фудтрактарға арналған.",
+    "landing.faq.metaTitle": "Жиі қойылатын сұрақтар | HatchGrab",
+    "landing.faq.metaDescription": "Фудтрак иелеріне арналған нақты жауаптар: HatchGrab бағалары, баптау, онлайн және алдын ала тапсырыс қабылдау, өзі алып кету және төлем.",
+    "featuresPage.metaTitle": "Тарифтер мен мүмкіндіктер — HatchGrab {country}",
+    "compare.meta.title": "Шығын калькуляторы — HatchGrab {country}",
+    "compare.meta.description": "Онлайн тапсырыстар мен комиссиялар қазір сізге қаншаға түсетінін HatchGrab жүйесіндегі бір жылмен салыстырыңыз — бір минутта болжамды есеп.",
+    "comparison.meta.title": "Фудтрак тапсырыс жүйелері 2026: мүмкіндіктер мен бағалар",
+    "comparison.meta.description": "Фудтрак тапсырыс жүйелерін салыстыру: алып кету уақыты бар алдын ала тапсырыс, ас үй жүктемесі, кесте, комиссия, шарт мерзімі — жеткізушілер сайттарынан.",
+    "comparison.meta.about": "Фудтрактарға арналған онлайн тапсырыс жүйелері",
+    "comparison.h1": "Фудтрак тапсырыс жүйелерін салыстыру 2026",
+    "aboutPage.meta.description": "HatchGrab фудтрактар мен кейтерингке бағдарлама жасайды: онлайн тапсырыс, алып кету уақыты, қайталанатын сұрақтар азаяды. Негізін қалаған — Dominic Bonini.",
+    "truckPage.meta.orderTitle": "{truck} — онлайн тапсырыс",
+    "truckPage.meta.orderDescription": "{truck}: алдын ала тапсырыс беріп, оны фудтрактан алып кетіңіз."
+  },
+  "csvRows": [
+    [
+      "KZ",
+      "фудтрак тапсырыс жүйесі мобильді кафе",
+      1,
+      "Расылханова Қ.Б. Android платформасында «Онлайн кафе SU» мобильді қосымшасын құру. 2019",
+      "https://official.satbayev.university/download/document/11114/Расылханова Қ.Б. Android платформасында «Онлайн кафе SU» мобильді қосымшасын құру. 2019.pdf",
+      "university thesis PDF, cafe ordering app (kk)",
+      "n"
+    ],
+    [
+      "KZ",
+      "фудтрак тапсырыс жүйесі мобильді кафе",
+      2,
+      "sozdanie krossplatformennogo mobilnogo prilozheniia stadiia mvp1766568592",
+      "https://astanahub.com/kk/tech_task/sozdanie-krossplatformennogo-mobilnogo-prilozheniia-stadiia-mvp1766568592",
+      "Astana Hub tech task, food-ordering MVP (kk)",
+      "n"
+    ],
+    [
+      "KZ",
+      "фудтрак тапсырыс жүйесі мобильді кафе",
+      3,
+      "Fish Delivery Apps Development Company",
+      "https://sigosoft.com/kk/solutions/fish-delivery-apps/",
+      "app agency page (kk)",
+      "n"
+    ],
+    [
+      "KZ",
+      "фудтрак тапсырыс жүйесі мобильді кафе",
+      4,
+      "ruward.ru",
+      "https://ruward.ru/cases/8868/",
+      "Russian agency case study (ru)",
+      "n"
+    ],
+    [
+      "KZ",
+      "фудтрак тапсырыс жүйесі мобильді кафе",
+      5,
+      "Мобильное приложение для кафе: как увеличить клиентский поток и выручку",
+      "https://www.cleverence.ru/articles/auto-busines/-2-mobilnoe-prilozhenie-dlya-kafe-kak-uvelichit-klientskiy-potok-i-vyruchku/",
+      "Russian (RF) vendor blog (ru)",
+      "n"
+    ],
+    [
+      "KZ",
+      "фудтрак тапсырыс жүйесі мобильді кафе",
+      6,
+      "kak razrabotat prilozhenie dlya restoranov",
+      "https://www.purrweb.com/ru/blog/kak-razrabotat-prilozhenie-dlya-restoranov/",
+      "app agency blog (ru)",
+      "n"
+    ],
+    [
+      "KZ",
+      "фудтрак тапсырыс жүйесі мобильді кафе",
+      7,
+      "Kavapp: automation for catering establishments and stores",
+      "https://kavapp.com/",
+      "POS/automation vendor (en)",
+      "n"
+    ],
+    [
+      "KZ",
+      "фудтрак тапсырыс жүйесі мобильді кафе",
+      8,
+      "Автоматизация ресторана и кафе: системы и программы для работы, управления, учёта",
+      "https://www.cleverence.ru/articles/auto-busines/avtomatizatsiya-restorana-i-kafe-sistemy-i-programmy-dlya-raboty-upravleniya-uchyeta/",
+      "Russian (RF) vendor blog (ru)",
+      "n"
+    ]
+  ],
+  "storeKeywords": "фудтрак,тапсырыс,алдын ала тапсырыс,өзі алып кету,мәзір,ас үй экраны,көше тағамдары,касса",
+  "playShortDescription": "Фудтрактан алдын ала тапсырыс, алып кету уақыты және ас үй экраны.",
+  "sources": [
+    "https://wolt.com/kk/kaz/almaty — Wolt Kazakhstan in Kazakh, Cyrillic: “Wolt жеткізу”, “Тағамдар, мейрамханалар, азық-түлік…”",
+    "https://wolt.com/kk/kaz/oral/article/faq-pre-orders — Wolt KZ article title “Алдын ала тапсырыстар жайлы ⏰” (search result)",
+    "https://guide.kaspi.kz/partner/kz/restaurants/conditions/q3870 — Kaspi Мейрамханалар partner guide in Cyrillic Kazakh: сіз (“қоса аласыз”, “жазыңыз”), “тамақтану орны”, “тапсырыс беру”, “төлем қабылдау”, “Қосылу”",
+    "https://yandex.com/support/eda-vendor-kz/orders/self-delivery.html — Yandex Eda vendor KZ (kk): “Өзі алып кету — тапсырысты мейрамханадан пайдаланушыға табыстаудың қосымша форматы”; customer pays in the app; app shows when the order can be collected; сіз",
+    "https://yandex.com/support/eda-vendor-kz/kk/orders/take.md — “Тапсырысты қабылдау батырмасын басыңыз”, “Тапсырыс құрамы”, “тағам”, “Курьер”",
+    "https://bizmedia.kz/2026-09-08-v-kazahstane-poka-net-srokov-perehoda-na-latiniczu/md/ — 8 Sep 2026: Ministry of Science language committee says there are still no deadlines for the Latin switch; using Latin variants before the alphabet is adopted is ‘unjustified’ (search summary)",
+    "https://tengrinews.kz/kazakhstan_news/kogda-nachnetsya-perehod-na-novyiy-alfavit-v-kazahstane-427326/ — Latin-transition timeline coverage (search result)",
+    "WebSearch “фудтрак тапсырыс жүйесі мобильді кафе” — no Kazakh food-truck vendor; summary used “интерактивті мәзір”, “алып кету”"
+  ],
+  "confidence": "Med — script (Cyrillic), сіз, тапсырыс, алдын ала тапсырыс, өзі алып кету, мәзір, мейрамхана are confirmed on Kazakh pages by Wolt, Kaspi and Yandex Eda; фудтрак/фудтрактар (no Kazakh page using it was seen), ас үй экраны, plan names and Pay at Hatch wording are Low. csvRows are the US-indexed research tool’s results for a short variant of the primary keyword, not Kazakhstan Google ranks.",
+  "decisions": [
+    "Script: CYRILLIC. Kazakhstan has no adopted Latin alphabet or deadline (Ministry statement, 8 Sep 2026) and Wolt, Kaspi and Yandex Eda all publish Kazakh in Cyrillic. Revisit only if a Latin alphabet is legally adopted.",
+    "Food-truck word: “фудтрак” (pl. фудтрактар, dative фудтрактарға) borrowed via Russian; Low confidence — no Kazakh-language food-truck page was found; a native check is advised.",
+    "Order button: no statutory wording in Kazakhstan’s consumer law; market norm “Тапсырысты рәсімдеу” / “Тапсырыс беру”; card variant “{amount} төлеу”.",
+    "Pay at Hatch: recommend “Фудтракта төлеу” (feature) / “Орнында төлеу” (button). Avoid “алған кезде төлеу”, “курьерге төлеу” (cash-on-delivery sense).",
+    "Kazakh ads/visual information are commonly published in both Kazakh and Russian in Kazakhstan; offering kk-KZ alongside ru-KZ matches what Kaspi and Wolt do (ҚазРус switch)."
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for ALBANIAN (sq-AL): alerg (alergji, alergjik), intolerancë, i ndjeshëm, celiaki, anafilaksi, pa <allergen> (pa gluten, pa laktozë, pa qumësht / qumsht, pa vezë, pa arra, pa kikirikë…), nuk përmban, mund të përmbajë, gjurmë, i / e sigurt për, i përshtatshëm, kontaminim i kryqëzuar. ë and ç fold to e and c on both sides (\"qumesht\" = \"qumësht\"). Bare pa is NOT a stem (pa qepë is a preference), nor bare sigurt (a jeni të sigurt = are you sure). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "sq",
+  "normalise": "unicode",
+  "stems": [
+    "alerg",
+    "intoleranc",
+    "intolerant",
+    "ndjeshem",
+    "ndjeshme",
+    "celiak",
+    "anafilak",
+    "adrenalin",
+    "pa gluten",
+    "pa laktoz",
+    "pa qumesht",
+    "pa qumsht",
+    "pa bulmet",
+    "pa vez",
+    "pa arra",
+    "pa fruta arr",
+    "pa fruta me levozhg",
+    "pa kikirik",
+    "pa lajthi",
+    "pa bajame",
+    "pa soj",
+    "pa susam",
+    "pa peshk",
+    "pa karkalec",
+    "pa fruta deti",
+    "pa sulfit",
+    "nuk permban",
+    "nuk e permban",
+    "mund te permbaj",
+    "gjurm",
+    "sigurt per",
+    "sigurte per",
+    "pershtatsh",
+    "kontamin",
+    "kryqezuar",
+    "allerg",
+    "gluten free",
+    "glutenfree",
+    "lactose",
+    "celiac",
+    "coeliac",
+    "nut free",
+    "epipen",
+    "epi pen"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "gluten",
+        "grur",
+        "miell",
+        "elb",
+        "thekër"
+      ],
+      "crustaceans": [
+        "krustace",
+        "karkalec",
+        "gaforre",
+        "fruta deti",
+        "omar"
+      ],
+      "eggs": [
+        "vez",
+        "majonez"
+      ],
+      "fish": [
+        "peshk"
+      ],
+      "peanuts": [
+        "kikirik"
+      ],
+      "soy": [
+        "soj",
+        "tofu"
+      ],
+      "milk": [
+        "qumësht",
+        "laktoz",
+        "djath",
+        "gjalp",
+        "krem",
+        "kos"
+      ],
+      "tree nuts": [
+        "arra",
+        "lajthi",
+        "bajame",
+        "fëstëk",
+        "shqeme",
+        "fruta me lëvozhgë"
+      ],
+      "sulphites": [
+        "sulfit",
+        "dioksid squfuri"
+      ]
+    }
+  }
+}

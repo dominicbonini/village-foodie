@@ -1,0 +1,10 @@
+# STYLE — Lao (lo-LA, Laos) — LAO SCRIPT
+- Address operators and customers with **ທ່ານ / ຂອງທ່ານ** and polite **ກະລຸນາ** for requests, as foodpanda LA ("ການສັ່ງຊື້ຂອງທ່ານ", "ກະລຸນາເລືອກເວລາອື່ນ"), E-GetS Store, Q POS and BCEL OnePay Shop write. Not the casual ເຈົ້າ (Chompa, LOCA EV). Short buttons without pronoun ("ບັນທຶກ", "ສັ່ງເລີຍ").
+- **Lao, not Thai:** Lao spellings and words only; modern **ຫຼ / ໜ / ໝ** (not ຫລ / ຫນ / ຫມ — foodpanda mixes them); keep **ຣ** in loanwords as businesses write them (ໂປຣ, ແບຣນ, ຟຣີ). Never paste Thai script.
+- **Spacing:** no spaces between words; a space between phrases and around **ແລະ** / **ຫຼື** ("ສົ່ງໄວ ແລະ ສົ່ງງ່າຍ") and around Latin words. Lao uses "." "!" "?" and ໆ for repetition ("ແຊບໆ").
+- **Order words:** **ອໍເດີ້** (loan, foodpanda LA) in short UI, **ລາຍການສັ່ງຊື້** in formal text, verb **ສັ່ງ**; pickup **ໄປຮັບເອງ**, pickup time **ເວລາໄປຮັບ**, takeaway **ສັ່ງກັບບ້ານ** (all foodpanda LA). Keep **Food Truck, POS, KDS, QR, WhatsApp, HatchGrab** in Latin; Lao-script loans in real use: **ແອັບ**, **ອອນລາຍ**, **ເມນູ**, **ໄຣເດີ້**.
+- Plural categories (CLDR lo): **other** only ("3 ອໍເດີ້"); keep the English `one` key harmlessly identical.
+- Numbers: ASCII digits. Intl lo-LA renders 1.234.567,5 and "₭12.500", but Lao businesses write "10,000ກີບ" (LOCA) — see the decision in the SEO file; percent "20%". Phone: 020 5512 3456 (+856 20 5512 3456). Postcode 5 digits (01000); address = ບ້ານ, ເມືອງ, ແຂວງ / ນະຄອນຫຼວງວຽງຈັນ. Email/domain: you@yourfoodtruck.la.
+- Sample places: ນະຄອນຫຼວງວຽງຈັນ (ຈັນທະບູລີ, ສີສັດຕະນາກ, ບ້ານອານຸ), ຫຼວງພະບາງ, ວັງວຽງ, ປາກເຊ, ສະຫວັນນະເຂດ, ທ່າແຂກ; venues: "ຕະຫຼາດກາງຄືນ", "ຮິມຂອງ", "ສວນສາທາລະນະ", "ງານບຸນ".
+- **Pay at Hatch:** feature **"ຈ່າຍເງິນຕອນໄປຮັບ"**, short label **"ຈ່າຍທີ່ລົດ"**. NEVER "ເກັບເງິນປາຍທາງ" (cash on delivery) or delivery wording — there is no delivery.
+- Order button: no statutory order-button wording known in Lao law — market norm **"ສັ່ງເລີຍ"** (foodpanda "ລອງສັ່ງເລີຍ!"); card button "ຈ່າຍ {amount}".

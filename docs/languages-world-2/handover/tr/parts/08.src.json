@@ -1,0 +1,631 @@
+{
+ "compare": {
+  "eyebrow": "Cost comparison",
+  "title": "Compare your online<br></br><accent>ordering costs</accent>",
+  "system": {
+   "title": "Do you take online orders now?",
+   "yes": "Yes, with another system",
+   "no": "No, not yet"
+  },
+  "trucks": {
+   "title": "How many trucks do you run?",
+   "aria": "Number of trucks"
+  },
+  "plan": {
+   "yourChoice": "Your choice",
+   "weSuggest": "We suggest",
+   "summary": "{price} per truck per month, with {allowance} of online orders included{fleet, plural, one {} other { on each}}.",
+   "switchTo": "Use {plan} instead",
+   "summaryFeeOnly": "{hasMonthly, select, yes {{price} per truck per month, plus {pct} on online orders.} other {No monthly fee — {pct} on online orders only.}}",
+   "summaryNoFee": "{price} per truck per month, with unlimited online orders and no HatchGrab fee."
+  },
+  "orders": {
+   "titleYes": "Online orders per month, per truck",
+   "count": "~{count, plural, one {# order} other {# orders}}",
+   "captionNo": "A rough guess is fine — pre-orders and queue-skippers, not cash or card at the window.",
+   "captionYes": "Only orders placed through your ordering page — not cash or card at the window.",
+   "sliderAria": "Monthly online order value per truck",
+   "overAllowance": "{allowance} of online orders included per truck. The {excess} above is charged at {pct} — <b>{over}</b> a month each.",
+   "insideAllowance": "Inside the {allowance} of online orders included — nothing on top of the plan.",
+   "acrossFleet": "Across {fleet, plural, one {# truck} other {# trucks}}: <b>{amount}</b> a month.",
+   "titleNo": "How much do you think you’d take online, per month, per truck?",
+   "feeOnly": "{pct} on every online order — <b>{over}</b> a month per truck.",
+   "noFee": "Unlimited online orders included — nothing on top of the plan."
+  },
+  "fee": {
+   "title": "What do you pay per order now?",
+   "pctLabel": "Percentage",
+   "pctPlaceholder": "Your rate",
+   "pctAria": "Percentage fee",
+   "fixedLabel": "Plus per order",
+   "fixedPlaceholder": "Your fee",
+   "fixedAria": "Pence per order",
+   "modeLabel": "Their rate:",
+   "modeInclusive": "includes card processing",
+   "modeOnTop": "is charged on top",
+   "onTopNote": "Card processing of {fee} is charged on top of that, so you actually pay <b>{pct} + {fixed}</b> all in.",
+   "inclusiveNote": "Card processing of {fee} is inside that, and you’d pay it anywhere. Their own fee is <b>{pct}</b>."
+  },
+  "days": {
+   "title": "How many days a week do you trade?",
+   "help": "Events, markets, pitches — any day the van’s out."
+  },
+  "jump": {
+   "cost": "See what it costs ↓",
+   "saving": "See your saving ↓"
+  },
+  "noSystem": {
+   "hero": "<lead>Online ordering, pre-orders and your kitchen screen for</lead><figure>{amount}</figure><unit>a trading day</unit>",
+   "basedOn": "Based on {days, plural, one {# day} other {# days}} a week · {monthly} a month{fleet, plural, one {} other { per van}}"
+  },
+  "coffee": "Less than a coffee.",
+  "freeMonths": "{n, plural, one {And your first month is on us.} other {And your first # months are on us.}}",
+  "cta": {
+   "upload": "Upload my menu →",
+   "uploadSave": "Upload my menu and save {amount} →",
+   "ask": "Ask us a question",
+   "noCard": "No card needed to set up"
+  },
+  "breakdown": {
+   "title": "Your month, broken down",
+   "titleDearer": "Your month on HatchGrab",
+   "plan": "{plan} plan",
+   "over": "{pct} on the {excess} above the {allowance} included",
+   "inside": "Online orders inside the {allowance} included",
+   "total": "HatchGrab each month",
+   "freeMonths": "{n, plural, one {Month 1} other {Months 1–#}}",
+   "freeAmount": "{amount} — on us",
+   "acrossFleet": "Across {fleet, plural, one {# van} other {# vans}}",
+   "perMonth": "{amount} a month",
+   "card": "Card processing — Stripe’s {fee} per order, paid to Stripe. You’d pay much the same on a card machine at the window.",
+   "provider": "Your current provider’s own fee ({pct})",
+   "feeOnly": "{pct} on {excess} of online orders",
+   "noFee": "Online orders — unlimited, no HatchGrab fee"
+  },
+  "enterRate": "Enter what you pay now to see your saving.",
+  "panel": {
+   "nowYear": "<label>Right now you pay</label><fig>{amount}<q> a year</q></fig>",
+   "nowMonth": "<label>Right now you pay</label><fig>{amount}<q> a month</q></fig>",
+   "oursYear": "<label>With HatchGrab</label><fig>{amount}<q> in year one</q></fig>",
+   "oursMonth": "<label>With HatchGrab</label><fig>{amount}<q> a month</q></fig>",
+   "acrossFleet": "across {fleet, plural, one {# van} other {# vans}}"
+  },
+  "hero": {
+   "save": "<verb>You save</verb><figure>{amount}</figure><sub><num>{pct}</num> less in your first year</sub>",
+   "same": "<verb>About the same</verb><figure>{amount}</figure><sub><num>{pct}</num> more in your first year</sub>",
+   "dearer": "<lead>Everything HatchGrab does, for</lead><figure>{amount}</figure><unit>more a week</unit>",
+   "dearerSub": "{fleet, plural, one {{amount} a month more than now} other {{amount} more per van a month than now}}"
+  },
+  "anchor": {
+   "liability": "That’s a year’s public liability cover.",
+   "weekendPitch": "That’s a weekend pitch at a food festival.",
+   "festivalPitches": "That’s a couple of festival pitches.",
+   "fryer": "That’s a new fryer and griddle.",
+   "counter": "That’s a full refit of your serving counter.",
+   "vanDeposit": "That’s a deposit on a second van.",
+   "secondVan": "That’s a second van on the road."
+  },
+  "year": {
+   "one": "Year one",
+   "two": "Year two",
+   "save": "Save {amount}<note>({pct} less)</note>",
+   "extra": "Extra {amount}<note>({pct} more)</note>",
+   "current": "Current provider <b>{amount}</b>",
+   "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+   "no": "Estimates based on the figures you enter, assuming an average order of {aov}. Card processing applies whichever provider you use. Check before deciding.",
+   "yes": "Estimates based on the figures you enter, assuming an average order of {aov}. Card processing of {fee} per order applies whichever provider you use, so it’s excluded from both sides.",
+   "onTop": "The all-in figure in question {n} includes it — the comparison does not, on either side.",
+   "check": "Check your current provider’s rates before deciding."
+  },
+  "intro": "Takes about a minute. Already using a system? We’ll compare it. Not yet? We’ll show you exactly what it costs.",
+  "twoYear": "Over two years that’s <b>{amount}</b> saved.",
+  "meta": {
+   "title": "Cost calculator — HatchGrab {country}",
+   "description": "Compare what your online orders cost you now with a year on HatchGrab — an estimate in a minute."
+  }
+ },
+ "comparison": {
+  "path": {
+   "section": "comparison",
+   "slug": "food-truck-ordering-system"
+  },
+  "meta": {
+   "title": "Food truck ordering systems compared 2026: features & prices",
+   "description": "Food truck ordering systems compared: pre-orders with a collection time, kitchen capacity, weekly schedule, fees and contract length — checked on each vendor's site.",
+   "about": "Online ordering systems for food trucks"
+  },
+  "breadcrumb": {
+   "home": "HatchGrab",
+   "here": "Compare",
+   "label": "Breadcrumb"
+  },
+  "h1": "Food truck ordering systems compared 2026",
+  "byline": "Last checked: {date} · Made by HatchGrab. We are one of the vendors compared (see <link>How we compared</link>).",
+  "table": {
+   "title": "The ordering systems compared",
+   "caption": "Features and costs of online ordering systems for food trucks in {country}, as of {date}",
+   "note": "“Yes” only where the vendor says so publicly.",
+   "feature": "Feature",
+   "yes": "Yes",
+   "no": "No",
+   "unknown": "Not stated",
+   "fromPlan": "From {plan}",
+   "appNotInCountry": "Not in {country}",
+   "appFlagOff": "Yes – flag still off, shown once the stores list it",
+   "range": "{from} to {to}",
+   "feePlan": "{fee} ({plans})",
+   "noFee": "none",
+   "morePending": "More vendors appear here once we have checked their details on their own website.",
+   "priceHidden": "On request",
+   "feeAfter": "{fee} above {included} a month",
+   "legend": "✓ Yes · ◐ Partly · ✗ No · Not listed: not on their features or pricing pages · —: their website doesn't say · Doesn't apply: that kind of service doesn't have the feature · ⓘ: the note, quote and source",
+   "swipe": "Swipe sideways to see every product →"
+  },
+  "costs": {
+   "title": "What does a food truck ordering system cost?",
+   "ourPlan": "{plan}: {price} a month, {fee}",
+   "feeOnly": "{fee} per online order",
+   "feeIncluded": "online orders up to {included} a month included, then {fee}",
+   "feeNone": "no HatchGrab fee on online orders",
+   "rivalPlan": "{plan}: {price}",
+   "perMonth": "{price} a month",
+   "perMonthYearly": "{price} a month, billed yearly",
+   "vatExcl": "excl. VAT",
+   "vatIncl": "incl. VAT",
+   "setup": "{price} one-off setup",
+   "truckFee": "{fee} per order",
+   "customerFee": "{fee} per order, paid by the customer",
+   "source": "Source",
+   "checked": "checked on {date}",
+   "cardFee": "Online card payments with HatchGrab also carry Stripe's fees: {cardFee} per card payment in {country}.",
+   "vat": "HatchGrab Ltd is a UK company and is not registered for VAT in {country}, so no VAT is added to our fees. If you are registered for VAT, give us your VAT number; you then account for any VAT on our fees yourself, under the reverse charge.",
+   "bundledFee": "{fee} per online payment, card fee included"
+  },
+  "fit": {
+   "title": "Which system suits whom?",
+   "ours": "HatchGrab suits you if …",
+   "oursBody": "you trade at changing locations, want pre-orders with a collection time, don't want your kitchen overloaded, and don't want a contract.",
+   "oursNot": "HatchGrab doesn't suit you if …",
+   "oursNotBody": "your customers should pay with PayPal or Klarna, or you want a certified till with a TSE from one supplier.",
+   "appClause": "Or if you need the kitchen app on iPad or Android in {country}: it isn't in the stores there yet.",
+   "tills": "Tills and card machines",
+   "marketplaces": "Delivery platforms",
+   "rival": "{name} fits if …",
+   "tillsBody": "Tills take payment at the truck and cover the TSE requirement. An ordering system works alongside a till; it does not replace it.",
+   "tillsBodyNamed": "Tills take payment at the truck and cover the TSE requirement. {names} {count, plural, one {is} other {are}} also in the table above. An ordering system works alongside a till; it does not replace it.",
+   "marketplacesBody": "Delivery platforms bring new customers but take commission on every order. Uber Eats states 14% for collection and 30% for delivery by Uber couriers in Germany. Wolt says on its own website that it charges commission but gives no rates. We could not check Lieferando’s rates. That commission applies to regulars who pre-order with you, too."
+  },
+  "groups": {
+   "food_truck": "Food truck ordering system",
+   "nearest_local": "Ordering system",
+   "pos": "Till system"
+  },
+  "faq": {
+   "title": "Frequently asked questions",
+   "whatQ": "What is a food truck ordering system?",
+   "whatA": "An ordering system takes orders online before customers reach the truck: they choose dishes and a collection time, pay online or on collection, and the order appears in your kitchen. A till or card machine takes payment at the truck. The two complement each other.",
+   "costQ": "What does HatchGrab cost in {country}?",
+   "costA": "{plans}. Online card payments also carry Stripe’s fees: {cardFee} per card payment.",
+   "termQ": "Is there a minimum term?",
+   "termA": "No. There is no minimum term and no notice period. You can cancel any time; the fee is billed monthly in advance, and you keep access until the end of the month you have paid for.",
+   "locationsQ": "Does it work with changing locations?",
+   "locationsA": "Yes. You set up your weekly schedule with places and times, and customers order for the place and the day you are there.",
+   "capacityQ": "How does the system stop my kitchen being overloaded?",
+   "capacityA": "Customers only see collection times your kitchen can actually make. The system works from each dish's preparation time and how many you prepare at once.",
+   "tseQ": "Do I still need a till with a TSE?",
+   "tseA": "HatchGrab is not a till and has no TSE. How you record online orders in your till is a question for your tax adviser.",
+   "paymentsQ": "Which payment methods does HatchGrab support?",
+   "paymentsA": "Customers pay online by card, Apple Pay or Google Pay, or pay at the truck. PayPal and Klarna are not supported at the moment.",
+   "costTrial": "{months, plural, one {The first month is} other {The first # months are}} free, with every feature."
+  },
+  "method": {
+   "title": "How we compared",
+   "checked": "Last checked on {date}.",
+   "prices": "Prices are shown as the vendor states them, including VAT.",
+   "meaning": "“Yes” means the vendor states the feature publicly. “Not stated” means we found nothing about it on their website — not that the feature is missing.",
+   "vendor": "HatchGrab runs this page and is one of the vendors compared.",
+   "review": "Prices and features are checked automatically against each product’s own website; each claim links to its source.",
+   "corrections": "Found a mistake? Tell us through our <link>contact form</link>.",
+   "reportError": "<link>Report an error</link>",
+   "machine": "For AI assistants and developers: this table <md>as Markdown</md> · <json>as JSON</json>"
+  },
+  "cta": {
+   "title": "Try {months, plural, one {# month} other {# months}} free",
+   "noCard": "No credit card needed",
+   "cancel": "Cancel monthly",
+   "button": "Try it free"
+  },
+  "admin": {
+   "status": "Draft · noindex · not in the sitemap, llms.txt or hreflang · footer link for admins only",
+   "statusLive": "Live · public and indexable",
+   "viewAdmin": "Admin view",
+   "viewPublic": "What the public sees",
+   "pricingCheck": "Open the Pricing check",
+   "checklist": "Before going live",
+   "goLive": "The page goes live in Admin › Countries.",
+   "check": {
+    "apps": "iPad and Android flags on for {country}",
+    "placeholders": "No “[ … ]” placeholder left in the copy",
+    "vat": "VAT wording present"
+   },
+   "unverified": "not verified · hidden from the public",
+   "autoVerified": "auto-verified",
+   "unchecked": "not yet checked for every competitor shown · hidden from the public",
+   "label": "Admin",
+   "notShown": "Not on the page (at most four are shown): {names}.",
+   "reasonHidden": "{name} (hidden)",
+   "reasonBeyond": "{name} (beyond the four)",
+   "reasonNoWebsite": "{name} (no website)",
+   "liveAuto": "Live via auto-publish",
+   "adminsOnly": "Admins only — {reason}",
+   "whyFewer": "{n} of {total} competitors pass the automatic checks; 2 are needed",
+   "whyAutoOff": "auto-publish is off for this country",
+   "shown": "{n, plural, one {# competitor shown} other {# competitors shown}}",
+   "details": "Details"
+  },
+  "footer": {
+   "heading": "Compare",
+   "link": "Ordering system comparison"
+  },
+  "featureGroups": {
+   "ordering": "Ordering",
+   "payments": "Payments",
+   "kitchen": "Kitchen",
+   "marketing": "Marketing",
+   "apps_hardware": "Apps and hardware",
+   "price_contract": "Price and contract"
+  },
+  "cell": {
+   "yes": "Yes",
+   "no": "No",
+   "partial": "Partly",
+   "unknown": "Not stated",
+   "not_mentioned": "Not mentioned on their website",
+   "withNote": "{word}, {note}",
+   "soon": "coming soon",
+   "fromPlan": "from {plan}",
+   "perCardPayment": "{fee} per card payment",
+   "trial": "{months, plural, one {# month} other {# months}} free",
+   "setupFee": "{price} one-off",
+   "perMonth": "{price} a month",
+   "notInCountry": "not in {country}",
+   "flagOff": "flag still off; shown once the stores list it",
+   "notApplicable": "does not apply to a market",
+   "not_listed": "Not listed",
+   "details": "Details",
+   "doesntApply": "Doesn't apply",
+   "doesntSay": "Doesn't say",
+   "none": "None"
+  },
+  "explained": {
+   "title": "What the features mean"
+  },
+  "costBlock": {
+   "title": "What a truck pays each month",
+   "sizes": "Online sales a month",
+   "sizeSales": "{sales} a month",
+   "sizeOrders": "about {orders} orders",
+   "lead": "For a truck taking {sales} of online orders a month (about {orders} orders). Each bar is the total monthly cost: the ordering system’s own fee plus the card fees on those orders.",
+   "legendSoftware": "Software fee",
+   "legendCard": "Card fees",
+   "software": "Software fee {amount} a month",
+   "card": "Card fees {amount} a month",
+   "total": "{amount} per month including card fees",
+   "share": "{pct} of sales",
+   "assumed": "(rate not published, assumed)",
+   "customerFee": "Plus {amount} a month paid by customers ({fee} per order) — not in the bar",
+   "summaryCheapest": "{us}’s own fee is {ours} per month, against {theirs} per month for the cheapest rival shown. The card fees ({card} a month) are charged on every card payment whichever system you use, so the difference that matters is the software fee.",
+   "summaryNotCheapest": "{us}’s own fee is {ours} per month, more than {theirs} per month for {rival}, the cheapest rival shown. The card fees ({card} a month) are charged on every card payment whichever system you use.",
+   "summaryAlone": "{us}’s own fee is {ours} per month. The card fees ({card} a month) are charged on every card payment whichever system you use.",
+   "footOrder": "Average order {order}: a typical meal of {meal} × {multiplier} dishes per order ({source}).",
+   "footCard": "Card fees use {rate} per card payment: {source}.",
+   "footCardSource": "Stripe’s rate for {country}",
+   "footAssumed": "{names} {count, plural, one {does} other {do}} not publish a card rate, so ours is assumed.",
+   "footChecked": "Prices checked on {date}.",
+   "footCalculator": "Work out your own figures in the calculator.",
+   "noRivals": "No rival is verified in {country} yet, so there is nothing to compare."
+  },
+  "features": {
+   "preorder": {
+    "label": "Pre-orders with a chosen collection time",
+    "explain": "Customers order in advance and choose the time they collect."
+   },
+   "capacity": {
+    "label": "Collection times limited by kitchen capacity",
+    "explain": "Customers only see collection times the kitchen can actually make."
+   },
+   "asap": {
+    "label": "Orders for as soon as possible",
+    "explain": "Customers can order without choosing a time and collect as soon as it is ready."
+   },
+   "ahead": {
+    "label": "Order ahead for a later day or event",
+    "explain": "Customers can order today for a market or event on a later day."
+   },
+   "schedule": {
+    "label": "Weekly schedule with changing locations",
+    "explain": "The truck's week of places and times; customers order for the place and day it is there."
+   },
+   "walkup": {
+    "label": "Walk-up orders on the same screen as online orders",
+    "explain": "Orders taken at the window go into the same list as online orders."
+   },
+   "stock": {
+    "label": "Sold-out and stock limits per event",
+    "explain": "Mark dishes sold out and set how many of each can be sold at an event."
+   },
+   "notify": {
+    "label": "Customers told when their order is ready",
+    "explain": "How customers hear their order is ready: SMS, WhatsApp, email, push or a live order-status page.",
+    "ours": "email when the order-ready step is on, and an order-status page; no SMS, WhatsApp or push"
+   },
+   "allergens": {
+    "label": "Allergens on the menu",
+    "explain": "Each dish shows its allergens to customers before they order."
+   },
+   "menuphoto": {
+    "label": "Menu set up from a photo",
+    "explain": "A photo or PDF of the menu fills in the dishes for you to check."
+   },
+   "options": {
+    "label": "Options and extras on dishes",
+    "explain": "Sizes, sauces and extras, including choices the customer must make."
+   },
+   "deals": {
+    "label": "Meal deals and bundles",
+    "explain": "Several items sold together at one price."
+   },
+   "private": {
+    "label": "Private events and bookings",
+    "explain": "Orders for a private event through its own link, and requests to book the truck.",
+    "ours": "private events with their own order link; no booking requests"
+   },
+   "qr": {
+    "label": "Table / QR ordering at seats",
+    "explain": "Customers scan a code at their table and the order arrives with the table number.",
+    "ours": "a QR code opens the order page; no table numbers"
+   },
+   "cards": {
+    "label": "Online card payments incl. Apple Pay and Google Pay",
+    "explain": "Customers pay online by card, Apple Pay or Google Pay when they order."
+   },
+   "payattruck": {
+    "label": "Pay at the truck",
+    "explain": "Customers order online and pay when they collect."
+   },
+   "localpay": {
+    "label": "Local payment methods (BLIK, iDEAL, Swish, MobilePay…)",
+    "explain": "The country's own online payment methods, besides cards.",
+    "ours": "cards only"
+   },
+   "paypal": {
+    "label": "PayPal or Klarna",
+    "explain": "Customers can pay with PayPal or Klarna."
+   },
+   "custfee": {
+    "label": "Option for the customer to pay the order fee",
+    "explain": "The business can pass a service fee on to the customer."
+   },
+   "tips": {
+    "label": "Tips",
+    "explain": "Customers can add a tip when they pay online."
+   },
+   "paymethods": {
+    "label": "Payment methods offered",
+    "explain": "How customers can pay, as the vendor states it.",
+    "ours": "card, Apple Pay, Google Pay; pay at the truck"
+   },
+   "kds": {
+    "label": "Kitchen display (KDS)",
+    "explain": "Orders appear on a screen in the kitchen, in the order to make them."
+   },
+   "tickets": {
+    "label": "Printed kitchen tickets",
+    "explain": "Each order prints on a receipt printer in the truck.",
+    "ours": "in the iPad and Android app; printer not supplied"
+   },
+   "buzzers": {
+    "label": "Buzzers",
+    "explain": "Customers get a buzzer that tells them their order is ready.",
+    "ours": "buzzer numbers recorded with each order; buzzers not supplied"
+   },
+   "offline": {
+    "label": "Keeps working if the internet drops",
+    "explain": "Orders and changes made without a connection are kept and sent once it is back.",
+    "ours": "in the iPad and Android app; not in the web dashboard"
+   },
+   "vans": {
+    "label": "Several vans or trucks",
+    "explain": "One account runs more than one truck.",
+    "ours": "extra vans for an added monthly fee"
+   },
+   "staff": {
+    "label": "Staff logins",
+    "explain": "Staff sign in with their own login and role."
+   },
+   "reports": {
+    "label": "Sales reports",
+    "explain": "Totals, best sellers and sales by event or date, with a spreadsheet export."
+   },
+   "domain": {
+    "label": "Own web address",
+    "explain": "The ordering page on the business's own domain."
+   },
+   "whatsapp": {
+    "label": "WhatsApp auto-replies",
+    "explain": "Customers' WhatsApp messages are answered automatically."
+   },
+   "social": {
+    "label": "Social media posts from your schedule",
+    "explain": "Ready-made posts showing where the truck is this week."
+   },
+   "igmsg": {
+    "label": "Instagram and Messenger replies",
+    "explain": "Instagram and Facebook Messenger messages are answered automatically."
+   },
+   "discovery": {
+    "label": "Listed on a food-truck discovery map",
+    "explain": "Customers find the truck on a public map of food trucks near them.",
+    "ours": "Village Foodie"
+   },
+   "loyalty": {
+    "label": "Loyalty",
+    "explain": "Customers collect rewards for coming back."
+   },
+   "ipad": {
+    "label": "iPad app",
+    "explain": "The truck's app for taking and managing orders on an iPad."
+   },
+   "android": {
+    "label": "Android app",
+    "explain": "The same app on an Android tablet or phone."
+   },
+   "hardware": {
+    "label": "Hardware supplied (tablet, printer)",
+    "explain": "The vendor provides the tablet or the printer.",
+    "ours": "use your own"
+   },
+   "terminal": {
+    "label": "Card reader for the window supplied",
+    "explain": "The vendor provides a card reader for payments at the truck."
+   },
+   "fiscal": {
+    "label": "Certified till for tax rules (TSE, EET, kassaregister…)",
+    "explain": "A till certified for the country's rules on recording sales."
+   },
+   "delivery": {
+    "label": "Delivery",
+    "explain": "Orders delivered to the customer's address.",
+    "ours": "collection only"
+   },
+   "monthly": {
+    "label": "Monthly price",
+    "explain": "What the business pays each month for the software."
+   },
+   "perorder": {
+    "label": "Fee per online order",
+    "explain": "What the vendor charges on each online order, on top of the monthly price."
+   },
+   "cardfee": {
+    "label": "Card fee",
+    "explain": "The payment provider's fee on each card payment."
+   },
+   "term": {
+    "label": "Minimum contract",
+    "explain": "How long the business is tied in before it can cancel."
+   },
+   "setup": {
+    "label": "Set-up fee",
+    "explain": "A one-off charge to start."
+   },
+   "trial": {
+    "label": "Free trial",
+    "explain": "Time to use the system for free before paying."
+   }
+  }
+ },
+ "comparisonSuits": {
+  "title": "Which suits your food truck?",
+  "checked": "Checked {date}",
+  "evidence": "Evidence",
+  "adminPreview": "Admin preview — unverified",
+  "ours": {
+   "fromPlan": "{name} (from {plan})"
+  },
+  "q": {
+   "preorder": "Which ordering system lets my customers order ahead and pick a collection time?",
+   "capacity": "My truck gets swamped at peak times — which system limits the orders for each time slot?",
+   "whatsapp": "Customers keep asking where I am — which system answers them on WhatsApp?",
+   "social": "Which system makes the posts for my weekly locations, so I don’t have to design graphics?",
+   "schedule": "I trade somewhere different most days — which system shows customers where I am and takes orders for that stop?",
+   "priceLow": "I only trade a few days a month — which system costs the least?",
+   "priceHigh": "I do festivals and busy events — which system costs the least?",
+   "commission": "I don’t want to pay commission on every order — what does each product charge?",
+   "offline": "What happens to online orders if my signal drops?",
+   "strength": "Which product compared offers “{feature}”?"
+  },
+  "does": {
+   "preorder": "{names} {count, plural, one {lets} other {let}} customers order ahead and choose a collection time.",
+   "capacity": "{names} {count, plural, one {limits} other {limit}} how many orders each collection time takes, so the kitchen isn’t swamped.",
+   "whatsapp": "{names} {count, plural, one {answers} other {answer}} customers’ WhatsApp messages automatically.",
+   "social": "{names} {count, plural, one {makes} other {make}} ready-to-post graphics of the week’s locations.",
+   "schedule": "{names} {count, plural, one {shows} other {show}} customers where the truck is each day and {count, plural, one {takes} other {take}} orders for that stop."
+  },
+  "feat": {
+   "preorder": "collection times",
+   "capacity": "a limit on orders per time slot",
+   "whatsapp": "WhatsApp auto-replies",
+   "social": "graphics of the weekly schedule",
+   "schedule": "a schedule of changing locations",
+   "offlinePause": "Online ordering paused when the signal drops"
+  },
+  "others": {
+   "noQuoted": "{names} {count, plural, one {doesn’t} other {don’t}} offer this.",
+   "notListed": "{names} {count, plural, one {doesn’t list {feature} on its website} other {don’t list {feature} on their websites}}.",
+   "doesntSay": "{count, plural, one {{names}’s website doesn’t say} other {The websites of {names} don’t say}}.",
+   "noneLists": "None of the other products compared lists it, so {names} {count, plural, one {is} other {are}} the best fit among the products compared."
+  },
+  "price": {
+   "lead": "At {orders, number} online orders a month, {names} {count, plural, one {has} other {have}} the lowest monthly software cost among the products compared: {amount} a month{count, plural, one {} other { each}}.",
+   "includes": "This includes the subscription, the fees charged to the truck on each order, any charge for extra orders and any set-up fee spread over 12 months; card-processing fees are not included.",
+   "flat": "{name} ({plan}, a flat price with no per-order fee from {name})",
+   "planName": "{name} ({plan})"
+  },
+  "commission": {
+   "part": "{name}: {fee}",
+   "answer": "What each product charges on an order: {parts}."
+  },
+  "offline": {
+   "ours": "{name} can pause online ordering automatically when the truck loses signal, so customers can’t place orders the kitchen won’t receive.",
+   "noQuoted": "{names} {count, plural, one {doesn’t} other {don’t}} offer working without a connection.",
+   "doesntSay": "{count, plural, one {{names}’s website doesn’t say} other {The websites of {names} don’t say}} what happens when the signal drops."
+  },
+  "strength": {
+   "answer": "{names} {count, plural, one {says it offers} other {say they offer}} “{feature}”; {us} doesn’t.",
+   "answerSoon": "{names} {count, plural, one {says it offers} other {say they offer}} “{feature}”; {us} doesn’t yet."
+  },
+  "ev": {
+   "ours": {
+    "yes": "yes, from {us}’s own plans",
+    "no": "no, from {us}’s own plans"
+   },
+   "state": {
+    "yes": "says it offers this",
+    "partial": "offers part of it",
+    "no_quoted": "says it doesn’t offer this",
+    "no_unquoted": "no (no quote stored)",
+    "not_listed": "not listed on its website",
+    "not_mentioned": "its website doesn’t say",
+    "unknown": "not known"
+   },
+   "row": "{tool} — {feature}: {answer}.",
+   "quote": "Quote: “{quote}”.",
+   "pages": "Pages checked: {pages}.",
+   "pageRead": "{page}",
+   "pageNotRead": "{page} (could not be read)",
+   "page": {
+    "features": "features page",
+    "pricing": "pricing page",
+    "help": "help centre",
+    "other": "other page"
+   },
+   "help": {
+    "fetched": "Its help centre was read.",
+    "linked_not_fetched": "It has a help centre that was not read.",
+    "none_found": "No help centre was found."
+   },
+   "calc": {
+    "volume": "Worked out for {orders, number} online orders a month at {order} an order ({revenue} in online sales).",
+    "line": "{name} ({plan}): subscription {sub} + set-up fee spread over 12 months {setup} + fees per order {fees} + extra orders {over} = {total} a month.",
+    "excluded": "Card-processing fees and fees paid by customers are not included for any product.",
+    "date": "Worked out on {date} from the prices checked on each vendor’s website."
+   }
+  },
+  "method": {
+   "covers": "It covers up to four alternatives chosen for their relevance to food trucks and the availability of verifiable public information — not every product on the market.",
+   "notListed": "“Not listed” means we checked the product’s features and pricing pages and it isn’t mentioned, for features companies normally advertise. “Doesn’t say” means not confirmed either way."
+  }
+ }
+}

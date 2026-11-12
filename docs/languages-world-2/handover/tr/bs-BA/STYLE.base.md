@@ -1,0 +1,14 @@
+# STYLE — Bosnian (bs-BA, Bosnia and Herzegovina) — LATIN SCRIPT
+- **Write Bosnian in Latin script** (č ć dž đ lj nj š ž) — BiH business, tourism (tourismbih.com) and delivery apps (Glovo bs/ba) write Latin. Never mix in Cyrillic.
+- **Bosnian standard, ijekavian** — not Serbian, not Croatian: narudžba (not porudžbina), vrijeme / mjesec / uvijek (not vreme/mesec), sedmica (not tjedan/nedelja), hljeb (not hleb/kruh), historija, hiljada, tačka, uslovi, sedmični, mobitel, ekran (not zaslon), kasa (not blagajna), obaveza (not obveza), ponuđač, općina. Coffee: Bosnian standard “kahva” (menus also show “kafa”).
+- OPERATORS (B2B screens, e-mails): polite plural **vi/vaš**, lower-case on screens, plural imperatives (“Učitajte meni”, “Sačuvajte promjene”), matching the regional hr-HR/sr-RS files. Short buttons may be the singular imperative (“Sačuvaj”, “Dodaj”, “Naruči”) as regional apps do — pick one per screen and keep it.
+- CUSTOMERS (order page, status, e-mails, WhatsApp replies): **vi** with plural imperatives (“Naručite unaprijed i preuzmite narudžbu kod food trucka”); warm, short.
+- Loanwords: **food truck** in Latin, inflected like a Bosnian noun (food trucka, food trucku, food truckovi); “online” stays “online”; “app” → **aplikacija**; “QR” → **QR kod**; catering → **ketering**; takeaway → **za ponijeti**.
+- **Cases:** never put a case ending on a placeholder (“{truck}a” ✗) — apposition or colon: “food truck {truck}”, “Uklonjeno: {name}”, “({country})”. The brand may take an ending (HatchGraba) as in hr-HR.
+- Plural categories (CLDR bs): **one, few, other** — “1 narudžba”, “2–4 narudžbe” (few), “5 narudžbi” (other); 21 → one, 22–24 → few, 11–14 → other. Every count plural needs all three.
+- Numbers: 1.234,5; percent “20%”; money “12,50 KM” (BAM; the app’s Intl formatting renders it). Phone example: 061 123 456 (+387 61 123 456). Postcode 5 digits (71000 Sarajevo). Email/domain: vi@vasfoodtruck.ba.
+- Sample places: Sarajevo (Baščaršija, Marijin Dvor, Grbavica, Ilidža), Mostar, Tuzla, Zenica, Banja Luka, Bihać; venues: “Veliki park”, “gradska pijaca”, “Vilsonovo šetalište”, “street food festival”, “sajam”.
+- Order button: no single BiH phrase; RS law (Sl. glasnik RS 101/2025, čl. 55 st. 4) requires a clear notice of the payment obligation on the button; FBiH 2006 law, new law in procedure → **“Naruči uz obavezu plaćanja”**; card button “Plati {amount}”.
+- Pay at Hatch: feature **“Plaćanje pri preuzimanju”**, short label **“Platite pri preuzimanju”**. NEVER “plaćanje pouzećem” / “plaćanje pri dostavi” (cash on delivery). Pickup = **preuzimanje**.
+- “Not a POS”: **“nije kasa”**. Plans: **Bez mjesečne pretplate** (Pay as you go), **Pro**, **Neograničeno** (Unlimited), **Besplatni probni period** (Free trial).
+- Quotation marks: „…“ — never a straight ' (ICU).

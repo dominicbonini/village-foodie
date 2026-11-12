@@ -1,0 +1,119 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for AZERBAIJANI (az-AZ): allergiya / alerji, dözümsüzlük, həssas, çölyak / seliakiya, anafilaksiya, the -siz/-sız/-suz/-süz free-from forms (qlütensiz, südsüz, yumurtasız, fındıqsız, qozsuz, laktozasız…), … olmadan, ehtiva etmir / ehtiva edə bilər, təhlükəsiz, üçün uyğun, yeyə bilmirəm, çarpaz çirklənmə — stems survive the suffixes (südsüzdür). ı and ə are kept by the normaliser, so each such word is also listed with i / e (as customers without the keyboard type it). Bare siz is NOT a stem (siz = you; ətsiz / soğansız are preferences), nor bare izləri (inside sizləri). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "az",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "alerg",
+    "dözümsüz",
+    "həssas",
+    "hessas",
+    "çölyak",
+    "seliak",
+    "anafilak",
+    "adrenalin",
+    "qlütensiz",
+    "glütensiz",
+    "glutensiz",
+    "laktozasız",
+    "laktozasiz",
+    "laktozsuz",
+    "südsüz",
+    "süd olmadan",
+    "yumurtasız",
+    "yumurtasiz",
+    "fındıqsız",
+    "findiqsiz",
+    "qozsuz",
+    "araxissiz",
+    "balıqsız",
+    "baliqsiz",
+    "soyasız",
+    "soyasiz",
+    "küncütsüz",
+    "krevetsiz",
+    "qlüten olmadan",
+    "glüten olmadan",
+    "yumurta olmadan",
+    "ehtiva etmir",
+    "ehtiva etməyən",
+    "ehtiva etmeyen",
+    "ehtiva edə bilər",
+    "ehtiva ede biler",
+    "tərkibində yoxdur",
+    "terkibinde yoxdur",
+    "təhlükəsiz",
+    "tehlükesiz",
+    "üçün uyğun",
+    "yeyə bilmir",
+    "yeye bilmir",
+    "çarpaz",
+    "çirklənmə",
+    "çirklenme",
+    "kontaminas",
+    "gluten free",
+    "glutenfree",
+    "lactose",
+    "intoleran",
+    "celiac",
+    "coeliac",
+    "nut free",
+    "epipen",
+    "epi pen"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "qlüten",
+        "glüten",
+        "buğda",
+        "arpa",
+        "çovdar",
+        "yulaf"
+      ],
+      "crustaceans": [
+        "xərçəngkimi",
+        "krevet",
+        "xərçəng",
+        "dəniz məhsul"
+      ],
+      "eggs": [
+        "yumurta",
+        "mayonez"
+      ],
+      "fish": [
+        "balıq"
+      ],
+      "peanuts": [
+        "yerfındığı",
+        "yer fındığı",
+        "araxis"
+      ],
+      "soy": [
+        "soya",
+        "tofu"
+      ],
+      "milk": [
+        "süd",
+        "laktoza",
+        "pendir",
+        "kərə yağ",
+        "qaymaq",
+        "qatıq",
+        "xama"
+      ],
+      "tree nuts": [
+        "qoz",
+        "fındıq",
+        "badam",
+        "keşyu",
+        "püstə"
+      ],
+      "sulphites": [
+        "sulfit",
+        "kükürd dioksid"
+      ]
+    }
+  }
+}

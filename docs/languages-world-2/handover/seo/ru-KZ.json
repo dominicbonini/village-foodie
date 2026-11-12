@@ -1,0 +1,182 @@
+{
+  "country": "KZ",
+  "locale": "ru-KZ",
+  "language": "Russian (Kazakhstan)",
+  "addressForm": "formal Вы with capital В in direct address, polite imperatives: Kaspi partner guide (ru) “Вы можете подключить к сервису Kaspi Рестораны одну или несколько точек”, “выберите”, “Напишите”. Never ты. Also covers Kyrgyzstan (same register).",
+  "primaryKeyword": {
+    "landing": "система заказов для фудтраков",
+    "features": "тарифы и функции",
+    "faq": "частые вопросы",
+    "comparison": "сравнение систем заказов для фудтраков",
+    "compare": "калькулятор стоимости онлайн-заказов"
+  },
+  "secondaryTerms": [
+    "онлайн-заказы",
+    "система онлайн-заказов",
+    "предзаказ",
+    "самовывоз",
+    "время самовывоза",
+    "навынос",
+    "кухонный экран",
+    "KDS",
+    "POS-система",
+    "касса",
+    "ККМ",
+    "Kaspi QR",
+    "фудтрак",
+    "фудтрак на мероприятие",
+    "стритфуд",
+    "выездной кейтеринг",
+    "без комиссии",
+    "автоответы в WhatsApp",
+    "QR-меню"
+  ],
+  "terms": {
+    "foodTruck": "фудтрак",
+    "foodTruckPlural": "фудтраки",
+    "streetFood": "стритфуд (уличная еда)",
+    "mobileCatering": "выездной кейтеринг",
+    "preOrder": "предзаказ",
+    "orderAhead": "закажите заранее",
+    "pickupCollect": "самовывоз",
+    "pickupTime": "время самовывоза",
+    "takeaway": "навынос (с собой)",
+    "timeSlot": "временной слот",
+    "kitchenDisplay": "кухонный экран (KDS)",
+    "pos": "POS-система (касса)",
+    "cardReader": "платёжный терминал",
+    "menuListOfDishes": "меню",
+    "combo": "комбо",
+    "privateHire": "фудтрак на мероприятие",
+    "privateEvent": "частное мероприятие",
+    "mobilePhone": "мобильный телефон",
+    "commissionFree": "без комиссии",
+    "whatsappAutoReply": "автоответы в WhatsApp",
+    "walkUpOrder": "заказ у окна",
+    "orderButton": "Оформить заказ",
+    "payAtHatchFeature": "Оплата в фудтраке",
+    "payAtHatchShort": "Оплата на месте",
+    "payAsYouGo": "Без абонентской платы",
+    "unlimited": "Безлимит",
+    "freeTrial": "Бесплатный пробный период"
+  },
+  "differsFromBase": [
+    "Kazakhstan Russian, not Russia’s: currency тенге (₸), payments Kaspi QR / Kaspi Pay / Halyk, fiscal till = ККМ (онлайн-ККМ), not “онлайн-касса по 54-ФЗ”; no СБП, Сбер, ЮKassa, Честный знак or ₽",
+    "Capital Вы as Kaspi writes"
+  ],
+  "seo": {
+    "landing.meta.title": "Система заказов для фудтраков — HatchGrab {country}",
+    "landing.meta.description": "Принимайте заказы и предзаказы без очереди у окна. Онлайн-заказы и кухонный экран для фудтраков и выездного кейтеринга ({country}) — не POS-система.",
+    "landing.jsonLd.subCategory": "Система заказов для фудтраков и выездного кейтеринга",
+    "landing.jsonLd.description": "Заказы, предзаказы и кухонный экран для фудтраков и выездного кейтеринга ({country}).",
+    "landing.jsonLd.audience": "Владельцы фудтраков и выездного кейтеринга",
+    "landing.hero.title": "Система заказов, созданная <lean>для фудтраков.</lean>",
+    "landing.does.title": "Создано для фудтраков, а не для ресторанов.",
+    "landing.faq.metaTitle": "Частые вопросы | HatchGrab",
+    "landing.faq.metaDescription": "Понятные ответы для владельцев фудтраков: цены HatchGrab, настройка, приём онлайн-заказов и предзаказов, самовывоз и оплата.",
+    "featuresPage.metaTitle": "Тарифы и функции: сравнение — HatchGrab {country}",
+    "compare.meta.title": "Калькулятор стоимости — HatchGrab {country}",
+    "compare.meta.description": "Сравните, во сколько Вам сейчас обходятся онлайн-заказы и комиссии, с годом работы в HatchGrab — примерный расчёт за минуту.",
+    "comparison.meta.title": "Системы заказов для фудтраков 2026: функции и цены",
+    "comparison.meta.description": "Сравнение систем заказов для фудтраков: предзаказ со временем самовывоза, загрузка кухни, график, комиссии и срок договора — по сайтам поставщиков.",
+    "comparison.meta.about": "Системы онлайн-заказов для фудтраков",
+    "comparison.h1": "Сравнение систем заказов для фудтраков 2026",
+    "aboutPage.meta.description": "HatchGrab делает программы для фудтраков и выездного кейтеринга: онлайн-заказы, время самовывоза и меньше одинаковых вопросов. Основатель — Dominic Bonini.",
+    "truckPage.meta.orderTitle": "{truck} — онлайн-заказ",
+    "truckPage.meta.orderDescription": "Закажите заранее в {truck} и заберите заказ у фудтрака."
+  },
+  "csvRows": [
+    [
+      "KZ",
+      "система заказов для фудтраков",
+      1,
+      "okolo 0 poteryannyh zakazov pwa s oplatoy po sbp i kuhonnym dashbordom dlya strit fuda",
+      "https://workspace.ru/cases/okolo-0-poteryannyh-zakazov-pwa-s-oplatoy-po-sbp-i-kuhonnym-dashbordom-dlya-strit-fuda/",
+      "Russian (RF) agency case study, street-food PWA with SBP payment",
+      "n"
+    ],
+    [
+      "KZ",
+      "система заказов для фудтраков",
+      2,
+      "kontur.ru",
+      "https://kontur.ru/market/obshepit-loyalnost/fastfood",
+      "Russian (RF) POS vendor landing, fast food/street food",
+      "n"
+    ],
+    [
+      "KZ",
+      "система заказов для фудтраков",
+      3,
+      "razrabotka foodline veb sistemy avtomatizacii restoranov i upravleniya zakazami",
+      "https://workspace.ru/cases/razrabotka-foodline-veb-sistemy-avtomatizacii-restoranov-i-upravleniya-zakazami/",
+      "Russian (RF) agency case study",
+      "n"
+    ],
+    [
+      "KZ",
+      "система заказов для фудтраков",
+      4,
+      "Автоматизация ресторана и кафе: системы и программы для работы, управления, учёта",
+      "https://www.cleverence.ru/articles/auto-busines/avtomatizatsiya-restorana-i-kafe-sistemy-i-programmy-dlya-raboty-upravleniya-uchyeta/",
+      "Russian (RF) vendor blog article",
+      "n"
+    ],
+    [
+      "KZ",
+      "система заказов для фудтраков",
+      5,
+      "56730 otkryt fudtrak i skolko eto stoit",
+      "https://kontur.ru/market/spravka/56730-otkryt_fudtrak_i_skolko_eto_stoit",
+      "Russian (RF) guide: opening a food truck",
+      "n"
+    ],
+    [
+      "KZ",
+      "система заказов для фудтраков",
+      6,
+      "kontur.ru",
+      "https://kontur.ru/market/obshepit-loyalnost/canteen",
+      "Russian (RF) POS vendor landing, canteens",
+      "n"
+    ],
+    [
+      "KZ",
+      "система заказов для фудтраков",
+      7,
+      "Script Heads",
+      "https://workspace.ru/cases/avtomatizaciya-horeca/",
+      "Russian (RF) agency case study",
+      "n"
+    ],
+    [
+      "KZ",
+      "система заказов для фудтраков",
+      8,
+      "УПОМИНАЕТСЯ В",
+      "https://www.menutiger.com/ru/features/online-food-order-system",
+      "international vendor landing (ru)",
+      "n"
+    ]
+  ],
+  "storeKeywords": "фудтрак,заказ,предзаказ,самовывоз,навынос,кухонный экран,меню,стритфуд,без комиссии,касса",
+  "playShortDescription": "Предзаказ в фудтраках, выбор времени самовывоза и кухонный экран.",
+  "sources": [
+    "https://guide.kaspi.kz/partner/ru/restaurants/conditions/q3870 — Kaspi Рестораны partner FAQ (ru): capital “Вы” (“Вы можете подключить…”), “точки”, polite imperatives; “ҚазРус” language switch",
+    "https://wolt.com/ru/kaz/oral/article/faq-pre-orders — Wolt Kazakhstan article title “Всё о предзаказах ⏰” (search result); kk twin “Алдын ала тапсырыстар жайлы”",
+    "https://wolt.com/ru/kaz/almaty — Wolt KZ in Russian: “Алматы | Доставка Wolt | Еда, рестораны, продуктовые и другие магазины”",
+    "https://yandex.com/support/eda-vendor-kz/orders/self-delivery.html — Yandex Eda vendor help for Kazakhstan: self-pickup format, customer pays in the app, the app shows when the order can be collected",
+    "https://digitalbusiness.kz/2024-10-09/kaspi-zapuskaet-servis-zakaza-edi-v-restoranah-bistrogo-pitaniya/ — Kaspi launched food ordering in fast-food restaurants (search result)",
+    "https://joinposter.com/en/applications/kaspi — Poster POS integration with Kaspi POS / Kaspi QR (search result)",
+    "https://dashboard.paloma365.com/docs/en/pos/online-payment — Kazakhstan POS doc: online orders paid by Halyk QR, Kazakhstan accounts only (search summary)",
+    "WebSearch “система заказов для фудтраков” — results are Russian-Federation sites (kontur.ru, workspace.ru with СБП): a reminder that RF wording leaks into Russian SERPs"
+  ],
+  "confidence": "Med — Вы, предзаказ (Wolt KZ), самовывоз (Yandex Eda KZ), Kaspi QR/Halyk payments are confirmed on Kazakhstan pages; фудтрак, кухонный экран, ККМ, plan names and the Pay at Hatch wording rest on general Russian usage. csvRows come from the US-indexed research tool for the exact primary keyword and are dominated by Russian-Federation sites — not Kazakhstan Google ranks.",
+  "decisions": [
+    "Order button: Kazakhstan’s Law “О защите прав потребителей” (2010) has no statutory button wording (no EU-style rule found); use the market norm “Оформить заказ”, card variant “Оплатить {amount}”.",
+    "Pay at Hatch: recommend “Оплата в фудтраке” (feature) / “Оплата на месте” (button). Avoid “оплата при получении”, “оплата курьеру”, “наложенный платёж” (standard cash-on-delivery wording in Russian-language e-commerce).",
+    "Capital “Вы/Ваш” (Kaspi style) vs lower-case “вы” (most app UIs): recommend capital Вы to match Kaspi, the KZ benchmark; Dominic may prefer lower-case for a lighter tone — pick one for all parts.",
+    "ru-KZ also serves Kyrgyzstan: keep copy country-neutral (no “тенге” in text — let the app format currency; KG uses сом, +996, .kg).",
+    "WhatsApp is widely reported as Kazakhstan’s most-used messenger (general knowledge, not re-checked in this research), so WhatsApp auto-replies can be a headline feature for KZ."
+  ]
+}
