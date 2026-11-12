@@ -60,7 +60,8 @@ async function identitySet() {
       // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): pricing-copy-1's wording put back in the page's language first
       // (scripts/_lp-pricing-copy-1.cjs asBefore — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them).
       // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026; docs/pricing-copy-4-report.md): a card country's wording taken back first (scripts/_lp-pricing-copy-4.cjs pc1After4 — the banner's card sentence and Pay as you go's asterisk; scripts/pricing-copy-4.cjs proves them), then pricing-copy-1's.
-      const html = F4.noLandingFaq(F4.noFaqLink(SCX(require('./_lp-pricing-copy-4.cjs').pc1After4(r.html, PC1_LOCALE[seg]))))   // ⚠️ RE-PINNED (faq-4; site-chrome-1)
+      // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the country list's markup put back first (scripts/_lp-world-countries-5.cjs pc1After4AsBefore → asBefore, then pc1After4).
+      const html = F4.noLandingFaq(F4.noFaqLink(SCX(require('./_lp-world-countries-5.cjs').pc1After4AsBefore(r.html, PC1_LOCALE[seg]))))   // ⚠️ RE-PINNED (faq-4; site-chrome-1)
       out[`landing:${seg}`] = { html: sha(SB1.strip(html)), htmlWithoutOs: sha(withoutOs(SB1.strip(html))), meta: sha(JSON.stringify(r.meta)), os }
     }
   } finally { console.info = info }

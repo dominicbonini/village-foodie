@@ -172,9 +172,10 @@ if (mode === 'capture' || mode === 'compare') {
   // ⚠️ RE-PINNED (compare-ux-1, 8 November 2026): compare-ux-1 removed compare-de-1's "Vergleich" column rules (.foot-col) — the link is
   // in .foot-links now (scripts/compare-ux-1.cjs pins it). Only that block, and the one-line comment that replaced it, are set aside.
   // ⚠️ RE-PINNED (jp-nav-2, 9 November 2026): its Japanese-only nav rules are set aside exactly (scripts/_lp-jp-nav-1.cjs cssAsBefore).
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): its selector rules are set aside exactly (scripts/_lp-world-countries-5.cjs cssAsBefore).
   const FOOT_COL_BEFORE = /\/\* compare-de-1 \(24 October 2026\): the "Vergleich" column[\s\S]*?\.hg-landing \.foot-col a:hover \{ color: #fff; \}\n/
   const FOOT_COL_NOW = /\/\* compare-de-1's "Vergleich" column \(\.foot-col\) is gone: compare-ux-1[^\n]*\n/
-  t('🔴 desktop unchanged: every rule outside the ≤720px blocks is byte-identical to before (apart from compare-ux-1\'s removal of the .foot-col column)', FOOT_COL_BEFORE.test(cssBefore) && outside(require('./_lp-jp-nav-1.cjs').cssAsBefore(css).replace(FOOT_COL_NOW, '')) === outside(cssBefore.replace(FOOT_COL_BEFORE, '')))
+  t('🔴 desktop unchanged: every rule outside the ≤720px blocks is byte-identical to before (apart from compare-ux-1\'s removal of the .foot-col column)', FOOT_COL_BEFORE.test(cssBefore) && outside(require('./_lp-world-countries-5.cjs').cssAsBefore(require('./_lp-jp-nav-1.cjs').cssAsBefore(css)).replace(FOOT_COL_NOW, '')) === outside(cssBefore.replace(FOOT_COL_BEFORE, '')))
   const markupNow = read('components/landing/LandingFooter.tsx'), markupBefore = git('show', `${BEFORE}:components/landing/LandingFooter.tsx`)
   // ⚠️ RE-PINNED (compare-ux-1, 8 November 2026): compare-ux-1 moved the comparison link from its own column into the row (its old slot kept
   // as {null}, so React's ids are unchanged; scripts/compare-ux-1.cjs pins that). The footer is pinned to be what it was here up to the

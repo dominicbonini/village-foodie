@@ -89,7 +89,8 @@ const BEFORE = [
   const differ = codes.filter(c => M.minorUnitSign(c) !== M.minorUnitSuffix(c))
   const minorStyle = codes.filter(c => M.minorUnitSuffix(c) !== null)
   // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): + BRL MXN JPY SGD HKD MYR AED THB — 22.
-  t(`the registry lists 22 currencies (${codes.join(' ')})`, codes.length === 22, codes)
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): + the 94 of the 167 new countries — 116, the 22 first and in their order.
+  t(`the registry lists 116 currencies, the 22 before world-countries-5 first (${codes.slice(0, 22).join(' ')} …)`, codes.length === 116 && codes.slice(0, 22).join() === 'GBP,USD,EUR,CAD,AUD,NZD,CHF,SEK,NOK,DKK,PLN,CZK,HUF,RON,BRL,MXN,JPY,SGD,HKD,MYR,AED,THB', codes)
   t(`every "minor" currency's box keeps its sign (${minorStyle.map(c => `${c} ${M.minorUnitSign(c)}`).join(', ')})`,
     minorStyle.length > 0 && minorStyle.every(c => M.minorUnitSign(c) === M.minorUnitSuffix(c)) && minorStyle.includes('GBP') && minorStyle.includes('USD'))
   t(`the box changes only where a sentence writes an amount: ${differ.map(c => `${c} → "${M.minorUnitSign(c)}"`).join(', ')} (EUR among them; GBP and USD not)`,

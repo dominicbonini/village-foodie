@@ -55,7 +55,8 @@ async function identityViews(tag) {
     // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): hashed with pricing-copy-1's wording put back (scripts/_lp-pricing-copy-1.cjs
     // asBefore, in the page's language) — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them.
     // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026; docs/pricing-copy-4-report.md): a card country's wording taken back first (scripts/_lp-pricing-copy-4.cjs pc1After4 — the banner's card sentence and Pay as you go's asterisk; scripts/pricing-copy-4.cjs proves them), then pricing-copy-1's.
-    out[`${cc}/landing`] = sha(SB1.strip(SG2.asBefore(SCX(require('./_lp-pricing-copy-4.cjs').pc1After4(P.html, PC1_LOCALE[cc]))))) + ':' + sha(JSON.stringify(P.meta))
+    // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the country list's markup put back first (scripts/_lp-world-countries-5.cjs pc1After4AsBefore → asBefore, then pc1After4).
+    out[`${cc}/landing`] = sha(SB1.strip(SG2.asBefore(SCX(require('./_lp-world-countries-5.cjs').pc1After4AsBefore(P.html, PC1_LOCALE[cc]))))) + ':' + sha(JSON.stringify(P.meta))
   }
   // ⚠️ RE-PINNED (seo-geo-2 B4): /llms.txt is rebuilt on purpose — not compared with HEAD on a tree with seo-geo-2 (its content is
   // proven by seo-geo-2.cjs §5); captured as before on an older tree.

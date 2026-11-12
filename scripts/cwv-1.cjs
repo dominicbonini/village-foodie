@@ -114,7 +114,8 @@ const OWN = (() => { try { return git('log', '--format=%H', '--grep=^cwv-1: the 
   const UX1_COL = /\/\* compare-de-1's "Vergleich" column \(\.foot-col\) is gone: compare-ux-1[^\n]*\n/
   const footColBefore = (/\/\* compare-de-1 \(24 October 2026\): the "Vergleich" column[\s\S]*?\.hg-landing \.foot-col a:hover \{ color: #fff; \}\n/.exec(git('show', 'c892cb3d:app/(public)/(site)/landing/landing.css')) || [''])[0]
   // ⚠️ RE-PINNED (jp-nav-2, 9 November 2026): its Japanese-only nav rules are set aside exactly too (scripts/_lp-jp-nav-1.cjs cssAsBefore).
-  const CSSj = require('./_lp-jp-nav-1.cjs').cssAsBefore(CSS)
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): and world-countries-5's selector rules (scripts/_lp-world-countries-5.cjs cssAsBefore).
+  const CSSj = require('./_lp-world-countries-5.cjs').cssAsBefore(require('./_lp-jp-nav-1.cjs').cssAsBefore(CSS))
   const CSS0 = UX1_COL.test(CSSj) ? CSSj.replace(UX1_ROW, '').replace(UX1_COL, () => footColBefore) : CSSj
   t('it is appended: every byte before it is the file as it was (compare-ux-1\'s two footer changes set aside)', !!footColBefore && CSS0.startsWith(cssBefore) && /^\n\/\* ── cwv-1[\s\S]*\*\/\n$/.test(CSS0.slice(cssBefore.length, CSS0.length - RULES.length)))
 

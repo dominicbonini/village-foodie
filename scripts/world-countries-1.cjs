@@ -94,9 +94,10 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
   head('1 · CURRENCIES — the registry, the CHECK, the processor\'s decimals, native prices, whole yen')
   const R = await kit.bundle('wc1-cur', "export * from '@/lib/currencies'\nexport * from '@/lib/money-format'\nexport { toMinor, fromMinor } from '@/lib/order-repricing'\nexport { planMoneyFormatOf, intlMoneyFormatOf, currencyLineOf, platformFeeOn } from '@/lib/country-settings-types'")
   const NEW = ['BRL', 'MXN', 'JPY', 'SGD', 'HKD', 'MYR', 'AED', 'THB']
-  t(`the registry lists ${NEW.join(', ')} after the 14`, NEW.every(c => R.CURRENCY_CODES.includes(c)) && R.CURRENCY_CODES.length === 22)
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the registry goes on past the 22 (116 — scripts/currency-registry.cjs); these eight are still 15th–22nd.
+  t(`the registry lists ${NEW.join(', ')} after the 14`, R.CURRENCY_CODES.slice(14, 22).join() === NEW.join())
   const checkList = [.../check \(currency in \(([^)]*)\)\)/.exec(read(WF.SQL_A))[1].matchAll(/'([A-Z]{3})'/g)].map(m => m[1])
-  t('block A\'s country_settings_currency_chk = the registry\'s 22 codes, in order', JSON.stringify(checkList) === JSON.stringify([...R.CURRENCY_CODES]), checkList)
+  t('block A\'s country_settings_currency_chk = the registry\'s first 22 codes, in order (world-countries-5\'s 20261093 widens it later)', JSON.stringify(checkList) === JSON.stringify([...R.CURRENCY_CODES].slice(0, 22)), checkList)
   t('the processor\'s decimals: JPY 0 (zero-decimal), the other seven 2', R.currencyInfo('JPY').decimals === 0 && NEW.filter(c => c !== 'JPY').every(c => R.currencyInfo(c).decimals === 2) && R.minorDigits('JPY') === 0)
   // native prices: the app's own formatter on each block-B row, its Pro price
   // ⚠️ RE-PINNED (world-countries-2, 1 November 2026, Dominic): JPY's normal-width "¥" and MYR's "RM29" (no space).
@@ -161,9 +162,10 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
   // ══ 3 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('3 · COUNTRY SETTINGS — address formats, phones, allergen sets, short names')
   const AF = await kit.bundle('wc1-addr', "export * from '@/lib/address-formats'")
-  t('lib/address-formats validates (all 44 formats)', AF.validateAddressFormats().length === 0 && AF.ADDRESS_FORMAT_KEYS.length === 44, AF.validateAddressFormats())
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): + 'intl', last — 45 (its CHECK is 20261093's).
+  t('lib/address-formats validates (all 45 formats)', AF.validateAddressFormats().length === 0 && AF.ADDRESS_FORMAT_KEYS.length === 45, AF.validateAddressFormats())
   const fmtList = [.../check \(address_format in \(([^)]*)\)\)/.exec(A)[1].matchAll(/'([a-z]{2})'/g)].map(m => m[1])
-  t('block A\'s address-format CHECK = the config\'s 44 keys', JSON.stringify(fmtList) === JSON.stringify([...AF.ADDRESS_FORMAT_KEYS]))
+  t('block A\'s address-format CHECK = the config\'s first 44 keys (all but world-countries-5\'s \'intl\')', JSON.stringify(fmtList) === JSON.stringify([...AF.ADDRESS_FORMAT_KEYS].filter(k => k !== 'intl')))
   const lines = { br: 'Parque Ibirapuera, São Paulo, SP, 04094-050', mx: 'Zócalo, 06000 Ciudad de México, Ciudad de México', jp: '代々木公園 〒151-0052 東京都渋谷区', sg: 'Marina Bay Sands, Singapore 018956', hk: '中環海濱活動空間, 中環, 香港島', my: 'Dataran Merdeka, 50050 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur', th: 'สวนลุมพินี, กรุงเทพมหานคร 10330', ae: 'The Beach JBR, Dubai Marina, دبي' }
   for (const [k, line] of Object.entries(lines)) {
     const f = AF.ADDRESS_FORMATS[k]

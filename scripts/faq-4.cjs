@@ -46,7 +46,8 @@ const { noFaqLink } = require('./_lp-faq-4.cjs')
 // language (scripts/_lp-pricing-copy-1.cjs asBefore — the banner sentence and the Pay as you go fee line; scripts/pricing-copy-1.cjs proves them).
 const PC1_LOCALE = { uk: 'en-GB', us: 'en-US', de: 'de-DE', jp: 'ja-JP' }
 // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026; docs/pricing-copy-4-report.md): a card country's wording taken back first (scripts/_lp-pricing-copy-4.cjs pc1After4 — the banner's card sentence and Pay as you go's asterisk; scripts/pricing-copy-4.cjs proves them), then pricing-copy-1's.
-const N = (h, seg) => SB1.strip(SG2.asBefore(noFaqLink(SCX(seg ? require('./_lp-pricing-copy-4.cjs').pc1After4(h, PC1_LOCALE[seg]) : h))))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+// ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the country list's markup put back first (scripts/_lp-world-countries-5.cjs pc1After4AsBefore → asBefore, then pc1After4).
+const N = (h, seg) => SB1.strip(SG2.asBefore(noFaqLink(SCX(seg ? require('./_lp-world-countries-5.cjs').pc1After4AsBefore(h, PC1_LOCALE[seg]) : h))))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
 /** FAQ4_DUMP=<dir>: write each compared page (normalised) there, for a diff. */
 const dump = (key, h) => { if (process.env.FAQ4_DUMP) { fs.mkdirSync(process.env.FAQ4_DUMP, { recursive: true }); fs.writeFileSync(path.join(process.env.FAQ4_DUMP, key.replace(':', '-') + '.html'), String(h).replace(/></g, '>\n<')) } }
 
@@ -201,7 +202,8 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
     // (PRECISE, scripts/_lp-features-list-1.cjs featuresRowsBack) before the comparison; every other byte is still compared.
     // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the plan table's fee row put back first (scripts/_lp-pricing-copy-2.cjs asBefore —
     // "…on online orders*" was "…on online card orders*"; scripts/pricing-copy-2.cjs proves it).
-    const pc2 = require('./_lp-pricing-copy-2.cjs').asBefore(r.html, seg === 'uk' ? 'en-GB' : 'de-DE')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+    // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the country list's markup put back first (scripts/_lp-world-countries-5.cjs asBefore).
+    const pc2 = require('./_lp-pricing-copy-2.cjs').asBefore(require('./_lp-world-countries-5.cjs').asBefore(r.html, { locale: seg === 'uk' ? 'en-GB' : 'de-DE' }), seg === 'uk' ? 'en-GB' : 'de-DE')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
     const asBefore = FL1.LANDED ? FL1.featuresRowsBack(noFaqLink(SCX(pc2)), seg === 'uk' ? 'en-GB' : 'de-DE') : noFaqLink(SCX(pc2))
     if (want) t(`/${seg}/features: byte-identical to a97c2a58 through the shared frame (MarketingFrame), apart from the footer FAQ link${FL1.LANDED ? ' and features-list-1\'s rows' : ''}`, sha(asBefore) === want[`features:${seg}`]?.sha256, { now: sha(asBefore), head: want[`features:${seg}`] })
   }

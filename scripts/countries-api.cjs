@@ -222,24 +222,27 @@ function makeStore(seed, trucks, opts = {}) {
     // ⚠️ RE-PINNED (currency-registry, 21 October 2026): a country may only hold a currency lib/currencies.ts lists, so
     // the JPY country is REFUSED now (the registry has no JPY); the smuggled-price rule is proven on a registry currency
     // (CHF) instead — it saves, and a smuggled '29.5' is neither refused nor stored.
-    const s2 = makeStore([GB, US, { ...US, countryCode: 'KR', name: 'South Korea', currency: 'KRW', locale: 'ko-KR' }], { GB: 14 })
-    const rj = await save(s2, 'KR', f => Object.assign(f, { proMonthly: '29.5' }))
+    // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the won is supported now (South Korea); the refused currency is Iran's rial.
+    const s2 = makeStore([GB, US, { ...US, countryCode: 'IR', name: 'Iran', currency: 'IRR', locale: 'en-GB' }], { GB: 14 })
+    const rj = await save(s2, 'IR', f => Object.assign(f, { proMonthly: '29.5' }))
     // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): the yen is supported now (Japan); the refused currency is the won.
-    t('🔴 a KRW country is refused — KRW is not a currency we support', !rj.ok && JSON.stringify(rj.errors ?? rj).includes('Currency must be one we support'), rj)
+    t('🔴 an IRR country is refused — IRR is not a currency we support', !rj.ok && JSON.stringify(rj.errors ?? rj).includes('Currency must be one we support'), rj)
     const s3 = makeStore([GB, US, { ...US, countryCode: 'CH', name: 'Switzerland', currency: 'CHF', locale: 'de-CH', phoneCountryCode: '41', phoneExample: '044 668 18 00' }], { GB: 14 })
     const rc = await save(s3, 'CH', f => Object.assign(f, { proMonthly: '29.5' }))
     t('🔴 a CHF country saves; a smuggled 29.5 plan price is neither refused nor stored', rc.ok && rc.data.country.proMonthlyMinor === US.proMonthlyMinor)
   }
 
   console.log('── 3 · EVERY RULE REFUSES WITH ITS PLAIN MESSAGE, BEFORE ANY CHECK ───────────────────────')
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the message names the registry's 116 currencies, read from lib/currencies.ts.
+  const SUPPORTED = `Currency must be one we support: ${[...fs.readFileSync(path.join(REPO, 'lib/currencies.ts'), 'utf8').matchAll(/\{ code: '([A-Z]{3})',/g)].map(m => m[1]).join(', ')}.`
   const RULES = [
     // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): 'switching on with a plan price missing' is no longer
     // a form rule refused BEFORE the database — it IS the database trigger's rule now; see section 3b.
     ['changing the currency while trucks use the country', 'GB', f => { f.currency = 'USD' }, "The currency can't change while 14 trucks use this country."],
     // ⚠️ RE-PINNED (currency-registry, 21 October 2026): the message names the registry's currencies (lib/currencies.ts).
-    ['a currency that is not a code', 'US', f => { f.currency = 'Dollars' }, 'Currency must be one we support: GBP, USD, EUR, CAD, AUD, NZD, CHF, SEK, NOK, DKK, PLN, CZK, HUF, RON, BRL, MXN, JPY, SGD, HKD, MYR, AED, THB.'],
-    ['a currency code that does not exist', 'US', f => { f.currency = 'QQQ' }, 'Currency must be one we support: GBP, USD, EUR, CAD, AUD, NZD, CHF, SEK, NOK, DKK, PLN, CZK, HUF, RON, BRL, MXN, JPY, SGD, HKD, MYR, AED, THB.'],
-    ['a real currency we do not support', 'US', f => { f.currency = 'KRW' }, 'Currency must be one we support: GBP, USD, EUR, CAD, AUD, NZD, CHF, SEK, NOK, DKK, PLN, CZK, HUF, RON, BRL, MXN, JPY, SGD, HKD, MYR, AED, THB.'],
+    ['a currency that is not a code', 'US', f => { f.currency = 'Dollars' }, SUPPORTED],
+    ['a currency code that does not exist', 'US', f => { f.currency = 'QQQ' }, SUPPORTED],
+    ['a real currency we do not support', 'US', f => { f.currency = 'IRR' }, SUPPORTED],
     ['an empty country name', 'US', f => { f.name = '  ' }, 'Give the country a name.'],
     // ⚠️ RE-PINNED (plans-data-model, Stage A, 19 October 2026): the three plan price box rules (not an amount, three
     // decimals, our fee above 100) are gone with the boxes — section 2 asserts such values are ignored, never written.

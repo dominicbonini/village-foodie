@@ -86,6 +86,9 @@ const LATER_KEY_CHANGES = [
   ...[...new Set(PC1_MOD.KEYS.map(k => k.split('.')[0]))].map(ns => ({ by: 'pricing-copy-1', ns, keys: PC1_MOD.KEYS.filter(k => k.startsWith(ns + '.')).map(k => k.slice(ns.length + 1)), touched: touchedBy(PC1_MOD.COMMITS) })),
   { by: 'pricing-copy-2', ns: 'planTable', keys: ['pay.fee'], touched: touchedBy(commitsOf('pricing-copy-2')) },
   { by: 'languages-world-1', ns: 'provisionContent', keys: ['standardCategories', 'demoEventName'], touched: touchedBy(commitsOf('languages-world-1')) },
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the country selector's region buttons and the region-block sentence (2d2a5e2e).
+  { by: 'world-countries-5', ns: 'landingNav', keys: ['country.regions'], touched: touchedBy(commitsOf('world-countries-5')) },
+  { by: 'world-countries-5', ns: 'tradeArea', keys: ['region_blocked'], touched: touchedBy(commitsOf('world-countries-5')) },
 ]
 const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ?? {})) { const kk = p ? `${p}.${k}` : k; if (typeof v === 'string') out[kk] = v; else flat(v, kk, out) } return out }
 
@@ -410,7 +413,9 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     // ⚠️ RE-PINNED (jp-nav-1, 9 November 2026): the Japanese nav label gained one zero-width space (its break opportunity on a phone);
     // the Japanese landingNav split file passes when taking exactly that out gives back BASE's bytes (scripts/_lp-jp-nav-1.cjs).
     const JN = require('./_lp-jp-nav-1.cjs')
-    const jpNavOnly = f => f === 'messages/ns/ja-JP/landingNav.json' && JN.noBreak(nowOf(f)) === atBase(f)
+    // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the same file also carries world-countries-5's region names — set aside too.
+    const noRegions = s => { if (s === null) return s; const o = JSON.parse(s); if (o.country) delete o.country.regions; return JSON.stringify(o) }
+    const jpNavOnly = f => f === 'messages/ns/ja-JP/landingNav.json' && noRegions(JN.noBreak(nowOf(f))) === noRegions(atBase(f))
     // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): these pages bundle every locale's split message files. (1) A locale added since BASE
     // (languages-world-1 and later — not in BASE's lib/i18n/locales.ts LOCALES, read from git) brings split files that did not exist at
     // BASE: NEW files, never one of contact-1's, so they are set aside when absent at BASE (the rendered Village Foodie views above stay

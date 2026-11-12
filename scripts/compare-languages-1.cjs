@@ -68,7 +68,10 @@ const sig = s => { const a = shape(parse(s, { ignoreTag: false })); return JSON.
   const rows = require('./_europe-settings-fixtures.cjs').rowsWith([])
   const codes = Object.keys(L.COUNTRY_PATH_SEGMENTS)
   // A country's locale: the fixture's row, else the authored locale whose region is the country (lib/i18n/locales.ts LOCALES).
-  const localeOf = c => rows.find(r => r.countryCode === c)?.locale ?? L.LOCALES.find(l => l.endsWith(`-${c}`)) ?? null
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the 167 new countries (segments added, rows switched off) take their row's locale
+  // from scripts/_world-countries-5-rows.cjs — the fixture rows predate them.
+  const WC5 = Object.fromEntries(require('./_world-countries-5-rows.cjs').ROWS.map(r => [r.code, r.locale]))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+  const localeOf = c => rows.find(r => r.countryCode === c)?.locale ?? WC5[c] ?? L.LOCALES.find(l => l.endsWith(`-${c}`)) ?? null
   const addr = codes.map(c => [c, localeOf(c), localeOf(c) ? L.comparisonPath(c, localeOf(c)) : 'no-locale'])
   const none = addr.filter(([c, , p]) => c !== 'AE' && !p)
   t(`every country with an address has a comparison address but AE (${addr.filter(a => a[2] && a[2] !== 'no-locale').length} of ${codes.length})`, !none.length && L.comparisonPath('AE', 'ar-AE') === null && L.NO_COMPARISON_PAGE.includes('AE'), none)
