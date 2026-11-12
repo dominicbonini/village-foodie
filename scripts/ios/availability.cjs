@@ -6,6 +6,10 @@
 //   node scripts/ios/availability.cjs --all [--apply]   world-countries-5 (12 November 2026, Dominic): EVERY App Store territory, not just
 //     the country_settings ones — people anywhere can get the app from their own storefront. Availability only; "available in new
 //     territories" is still never changed.
+//   node scripts/ios/availability.cjs --list <file.json> [--apply]   world-countries-5 correction (12 November 2026, Dominic: "App Store
+//     availability must be exactly the App Store territories whose country is in docs/world-countries-4/go-live.csv"): the wanted set is
+//     the file's `countries` values (alpha-3) that are App Store territories — docs/world-countries-5/app-store-go-live.json. Every other
+//     territory is removed. Availability only; "available in new territories" is never changed.
 // The country list is lib/marketing-country.ts COUNTRY_PATH_SEGMENTS (the 44 country_settings rows, read-only checked 9 Nov).
 'use strict'
 const fs = require('fs')
@@ -17,11 +21,14 @@ const A3 = { GB: 'GBR', US: 'USA', IE: 'IRL', AU: 'AUS', NZ: 'NZL', CA: 'CAN', F
   RO: 'ROU', SK: 'SVK', SI: 'SVN', ES: 'ESP', SE: 'SWE', CH: 'CHE', BR: 'BRA', MX: 'MEX', JP: 'JPN', SG: 'SGP', HK: 'HKG', MY: 'MYS', TH: 'THA', AE: 'ARE' }
 ;(async () => {
   const apply = process.argv.includes('--apply'), all = process.argv.includes('--all')
+  const listFile = process.argv.includes('--list') ? process.argv[process.argv.indexOf('--list') + 1] : null
+  const listed = listFile ? JSON.parse(fs.readFileSync(listFile, 'utf8')).countries : null
   const src = fs.readFileSync(path.join(__dirname, '../../lib/marketing-country.ts'), 'utf8')
   const codes = [...(/export const COUNTRY_PATH_SEGMENTS[^=]*= \{([\s\S]*?)\}/.exec(src)?.[1] ?? '').matchAll(/\b([A-Z]{2}): '/g)].map(m => m[1])
-  if (!all && (codes.length !== 44 || codes.some(c => !A3[c]))) throw new Error(`expected the 44 countries, found ${codes.length}`)   // world-countries-5: 170 segments now — the list form needs A3 codes for them; --all does not
+  if (!all && !listed && (codes.length !== 44 || codes.some(c => !A3[c]))) throw new Error(`expected the 44 countries, found ${codes.length}`)   // world-countries-5: 170 segments now — the list form needs A3 codes for them; --all does not
   const territories = new Set((await A.all('/v1/territories?limit=200')).data.map(t => t.id))
-  const want = all ? new Set(territories) : new Set(codes.map(c => A3[c]).filter(t => territories.has(t)))
+  const want = all ? new Set(territories) : listed ? new Set(Object.values(listed).filter(t => territories.has(t))) : new Set(codes.map(c => A3[c]).filter(t => territories.has(t)))
+  const listedNotTerritories = listed ? Object.entries(listed).filter(([, t]) => !territories.has(t)).map(([c]) => c) : []
   const notTerritories = all ? [] : codes.filter(c => !territories.has(A3[c]))
   const av = A.must(await A.get(`/v1/apps/${A.APP_ID}/appAvailabilityV2`), 'availability')
   if (av.data.attributes.availableInNewTerritories !== false) throw new Error('"available in new territories" is on — this script never changes it; stop and ask')
@@ -29,7 +36,7 @@ const A3 = { GB: 'GBR', US: 'USA', IE: 'IRL', AU: 'AUS', NZ: 'NZL', CA: 'CAN', F
   const terr = t => t.relationships.territory.data.id
   const on = ta.data.filter(t => t.attributes.available).map(terr)
   const add = [...want].filter(t => !on.includes(t)), remove = on.filter(t => !want.has(t))
-  console.log(all ? `App Store territories: ${territories.size}; wanted: all ${want.size}` : `country_settings: ${codes.length}; App Store territories among them: ${want.size}; not territories: ${notTerritories.join(', ') || 'none'}`)
+  console.log(listed ? `App Store territories: ${territories.size}; listed countries: ${Object.keys(listed).length}; wanted (listed AND a territory): ${want.size}; listed but not a territory: ${listedNotTerritories.join(' ')}` : all ? `App Store territories: ${territories.size}; wanted: all ${want.size}` : `country_settings: ${codes.length}; App Store territories among them: ${want.size}; not territories: ${notTerritories.join(', ') || 'none'}`)
   console.log(`available now: ${on.length}; to add: ${add.join(', ') || 'none'}; to remove: ${remove.join(', ') || 'none'}`)
   if (!apply || (!add.length && !remove.length)) return
   for (const t of ta.data.filter(x => add.includes(terr(x)) || remove.includes(terr(x)))) {

@@ -5,9 +5,10 @@
 -- 2 · switches OFF Mexico (no truck has ever been in MX — checked 12 Nov 2026, report §2);
 -- 3 · sets vat_number_required on the two LIVE countries the list marks (AE, BR) — the 39 new ones already have it from block B.
 -- 4 · (Dominic, 12 Nov) ios_app_available ON for the 56 new countries that had it off — the app is now in EVERY App Store storefront, and
---     where a country has no storefront of its own people use an Apple ID from another and the badge opens their own store. Android
---     is unchanged.
+--     where a country has no storefront of its own people use an Apple ID from another and the badge opens their own store.
 -- 5 · (Dominic, 12 Nov) Iceland's week starts on Monday (block B took Intl's Sunday).
+-- 6 · (Dominic, 12 Nov: "yes, turn it on for the 17 with no Google Play storefront (same reasoning as iOS)") android_app_available ON
+--     for the 17 new countries that had it off.
 begin;
 
 update public.country_settings set enabled = true, updated_at = now(), updated_by = 'world-countries-5 switch-on'
@@ -25,5 +26,8 @@ update public.country_settings set ios_app_available = true, updated_at = now(),
 
 update public.country_settings set week_start = 'monday', updated_at = now(), updated_by = 'world-countries-5 switch-on'
  where country_code = 'IS';
+
+update public.country_settings set android_app_available = true, updated_at = now(), updated_by = 'world-countries-5 switch-on'
+ where country_code in ('AD', 'BD', 'BI', 'CF', 'DJ', 'ER', 'ET', 'GN', 'GQ', 'KI', 'KM', 'LS', 'MH', 'TG', 'TL', 'TV', 'WS') and android_app_available = false;
 
 commit;

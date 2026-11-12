@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.18
+HatchGrab Engineering Reference Manual · V16.19
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.18**
+**Version 16.19**
 
 November 2026
 
@@ -50,9 +50,22 @@ internally (`next build`, the sweep, `tsc`). Configuration is worked out from co
 
 # Changelog
 
+## V16.19 — 12 November 2026 — **THE APP STORE NARROWED TO THE 210 GO-LIVE COUNTRIES; ANDROID BADGES FOR ALL OF THEM**
+
+- **App Store availability is exactly the App Store territories whose country is in `docs/world-countries-4/go-live.csv`: 152.**
+  This was Dominic's correction to his first answer (stated 12 Nov: "exactly the App Store territories whose country is in
+  go-live.csv"). V16.18's "every territory, 175" lasted a few hours.
+  - **23 were removed:** Russia, Belarus, China, Kosovo; the held-for-sanctions IRQ, LBN, LBY, MLI, MMR, VEN; the cannot-sell MEX, PHL,
+    BRB, CMR, COG, CIV, COD, GHA, KEN, RWA, VNM; and the excluded AFG and YEM.
+  - **Ukraine and Moldova stay on.** "Available in new territories" stays off.
+  - Done with `scripts/ios/availability.cjs --list docs/world-countries-5/app-store-go-live.json --apply`, availability only (§89.7).
+- **`android_app_available` on for every go-live country.** The 17 new countries with no Play storefront are set in the switch-on
+  migration, 20261095, which is **still not run** (§89.3, §89.7).
+- ⚠️ **Mexico is still switched on** until 20261095 runs, so `/mx`'s App Store badge points to an app no longer sold there.
+
 ## V16.18 — 12 November 2026 — **MONTHLY BILLING BUILT (SWITCHED OFF), PRICING WORDING FOR CARD AND MONTHLY-ONLY COUNTRIES, 210 GO-LIVE COUNTRIES PREPARED, 20 NEW LANGUAGES, AND THE APP IN EVERY APP STORE**
 
-- 🔴 **Correction: the apps were never "UK only".** The App Store has served the iPad app in **44 storefronts since 31 Aug 2026**, then 42 from 9 Nov (ios-intl-1), then **every App Store territory, 175, since 12 Nov** (world-countries-5). Google Play is not UK-only either (stated, 12 Nov); its country list is set by hand in Play Console and is not recorded here. Every "UK only" statement is marked corrected (§89.7).
+- 🔴 **Correction: the apps were never "UK only".** The App Store has served the iPad app in **44 storefronts since 31 Aug 2026**, then 42 from 9 Nov (ios-intl-1), then ~~every App Store territory, 175, since 12 Nov~~ ⛔ (V16.19) **the go-live countries' 152 territories, since 12 Nov** (world-countries-5). Google Play is not UK-only either (stated, 12 Nov); its country list is set by hand in Play Console and is not recorded here. Every "UK only" statement is marked corrected (§89.7).
 - **Billing (billing-1, -2, -3; built, switched OFF):** plan fees in advance, usage in arrears; the trial's end and upgrades pro rata; downgrades on the 1st; 5 full days to pay, then online ordering pauses at midnight; suspension is wording only (the lock is a TODO); the late fee is built at 0 everywhere; no billing notice or purchase button in the iOS app; Stripe's own customer emails off. Migrations 20261085–20261090 are run; `platform_switches.billing_enabled` is false (§89.1, 35.ar-1 to 35.ar-4).
 - **Pricing wording (pricing-copy-1 to -4):** "online orders", not "online card orders", everywhere. Card countries and monthly-billing-only countries now differ in the banner's "Prefer to take payment up front?" sentence, the fee asterisk and the card-fee footnote, through one helper, `offersOnlineCardPayments` (§89.2, 35.ar-5).
 - **Countries:**
@@ -326,7 +339,7 @@ corrected or added: 2 (6 in all)._
   - Both app flags are true in all 44 rows. Every app claim (landing, badges, FAQ, Manage card, comparison rows, JSON-LD)
     follows them.
   - ~~⚠️ The store listings themselves are UK-only until Dominic releases them (OBSERVED 3 Nov for iOS: Apple's lookup
-    finds the app in GB only; Android UNVERIFIED).~~ ⛔ **Corrected V16.18 — never UK-only:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7.
+    finds the app in GB only; Android UNVERIFIED).~~ ⛔ **Corrected V16.18 — never UK-only:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov, and since 12 Nov exactly the 152 App Store territories of the 210 go-live countries; Google Play is not UK-only either (stated 12 Nov) — §89.7.
 - **HatchGrab's own contact form (contact-1, mockup approved 2 Nov):**
   - three topics; the truck name is required for account help; every word in the page's language;
   - saved, then emailed through Brevo to `NEXT_PUBLIC_SUPPORT_EMAIL` (hello@hatchgrab.com, set in Vercel on 2 Nov,
@@ -401,7 +414,7 @@ corrected: 10 (37 corrections in all)._
     `operatingSystem` gap.
   - 5 still true and left: §36's Play availability, §85.6 (×2) and §86.2 (×2) say the **store listings** are UK-only,
     which is still the case (Apple lookup OBSERVED 3 Nov: GB only); the flags are a separate fact, recorded beside them.
-    ⛔ **Corrected V16.18 — it was not the case:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7.
+    ⛔ **Corrected V16.18 — it was not the case:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov, and since 12 Nov exactly the 152 App Store territories of the 210 go-live countries; Google Play is not UK-only either (stated 12 Nov) — §89.7.
 - **Pattern 4** (`operator_apps`): 0 found (the column was never built, Q1 → A; §82.12 says so).
 - **Pattern 5** (`free month|first live event`): 5 found, none stale.
   - 1 changelog line (Gusto's first live event); 4 a different meaning (free months in the calculator and in the
@@ -462,7 +475,7 @@ corrected: 10 (37 corrections in all)._
   `/contact?topic=General%20Enquiry`, and `/contact` carries no `tally.so` (OBSERVED 3 Nov).
 - ~~**The iOS app is listed in the UK store only** (Apple's lookup for id 6803543106, 3 Nov: GB 1; DE, US, JP, IE 0). The
   flags are on everywhere by decision, so a badge outside the UK leads to an unavailable listing until release (§27).~~
-  ⛔ **Corrected V16.18:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7; the lookup was misleading.
+  ⛔ **Corrected V16.18:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov, and since 12 Nov exactly the 152 App Store territories of the 210 go-live countries; Google Play is not UK-only either (stated 12 Nov) — §89.7; the lookup was misleading.
 - **`contact_messages` exists with 0 rows.**
 
 ## V16.9 — 1 November 2026 — **A DEMO THAT SHOWS THE VISITOR'S OWN ORDER ON THE KITCHEN SCREEN, SELF-SERVE SIGNUP SWITCHED ON, THE CHECKER'S TIMEOUTS AND BATCH FAILURES FIXED, THE TAGLINE GONE, EIGHT NEW COUNTRIES (THREE OF THEM AT LAUNCH-READY, FIVE UNLIMITED-ONLY, THE UAE HELD BACK), AND EVERY PAGE, LEGAL DOCUMENT AND EMAIL IN THE USER'S OWN LANGUAGE**
@@ -10874,11 +10887,11 @@ the one clean control case for defects (a) and (b) — **the evidence, not just 
 
 ⛔ **V16.7 — where the apps are available:** ~~the iOS (iPad) app is in the **UK App Store only** (Apple lookup for id
 6803543106, 24 Oct: GB 1 result; US, IE, AU, CA, NZ, DE, PL, SE, NL, DK, NO, CZ 0), and Android is UK-only on Play
-(deliberate since 1 Sep).~~ ⛔ **Corrected V16.18 — the apps are not UK-only:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7. ~~Any statement that the apps are available to operators in other countries is false (§86.2).~~
+(deliberate since 1 Sep).~~ ⛔ **Corrected V16.18 — the apps are not UK-only:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov, and since 12 Nov exactly the 152 App Store territories of the 210 go-live countries; Google Play is not UK-only either (stated 12 Nov) — §89.7. ~~Any statement that the apps are available to operators in other countries is false (§86.2).~~
 ⛔ **Corrected V16.10 (3 Nov):** by decision ("it should state the apps thats core feature by the time we get customers
 they will be available", stated), both app flags are **true in all 44 countries** (tidy-2, migration 20261063), so every
 app claim (landing, badges, FAQ, Manage card, comparison rows, JSON-LD) now names the apps everywhere. ~~⚠️ The store
-listings themselves are still UK-only until Dominic releases them (UNVERIFIED, 3 Nov).~~ ⛔ **Corrected V16.18:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7. The flags and every surface: §48.
+listings themselves are still UK-only until Dominic releases them (UNVERIFIED, 3 Nov).~~ ⛔ **Corrected V16.18:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov, and since 12 Nov exactly the 152 App Store territories of the 210 go-live countries; Google Play is not UK-only either (stated 12 Nov) — §89.7. The flags and every surface: §48.
 
 ## Why native is needed
 
@@ -18652,7 +18665,7 @@ closed); auto-open of an overnight event after midnight. New:
   settlement and Tap to Pay/Terminal? Then **test US card payments** (tips, service fee, card path) with Stripe test
   keys on localhost (§76.9).
 - ~~**Make the iPad and Android apps available in the US storefronts.**~~ ⛔ **V16.18 — done for iOS:** the App Store has sold in the
-  US since 31 Aug and in every territory since 12 Nov; Google Play countries are added by hand in Play Console (stated 12 Nov) — §89.7.
+  US since 31 Aug; since 12 Nov it is sold in exactly the go-live countries' 152 territories; Google Play countries are added by hand in Play Console (stated 12 Nov) — §89.7.
 - **A US testimonial.**
 - **SMS opt-in wording** and STOP handling before SMS ships (§43).
 
@@ -22706,7 +22719,7 @@ the ONLY thing that can differ between what was verified and what a reviewer see
 ✅ **STATED, from the Console.** The Android app was **submitted for review on 1 September 2026.**
 The **production track shows Active**, release **HatchGrab V1**, **version code 1**, under the temporary
 app name `com.hatchgrab.app (unreviewed)` — **which is what Play displays until a reviewer approves the
-listing, not a sign anything is wrong.** ~~**Availability is the United Kingdom only, deliberately.** ⛔ *V16.7: the iOS app is likewise in the UK App Store only (Apple lookup, 24 Oct; §86.2).*~~ ⛔ **Corrected V16.18 (stated 12 Nov): the apps are not UK-only.** Play's countries are set by hand in Play Console (the current list is not recorded here); the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7.
+listing, not a sign anything is wrong.** ~~**Availability is the United Kingdom only, deliberately.** ⛔ *V16.7: the iOS app is likewise in the UK App Store only (Apple lookup, 24 Oct; §86.2).*~~ ⛔ **Corrected V16.18 (stated 12 Nov): the apps are not UK-only.** Play's countries are set by hand in Play Console (the current list is not recorded here); the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov, and since 12 Nov exactly the 152 App Store territories of the 210 go-live countries; Google Play is not UK-only either (stated 12 Nov) — §89.7.
 
 ⛔ **THIS SUPERSEDES THE V11.52 HEADING THIS SUBSECTION CARRIED** — *"the BINARY is ready; the LISTING
 is what blocks submission"*. **The listing no longer blocks anything; it was produced and filed.** The
@@ -29667,7 +29680,7 @@ Recorded so they are not briefed again.
   - `scripts/tidy-2.cjs` proves every surface above in all 44 countries over the live values.
   - ~~⚠️ **The store listings are still UK-only until Dominic releases them** (OBSERVED 3 Nov for iOS: Apple's lookup finds
     id 6803543106 in GB only; Android UNVERIFIED). Until then a badge outside the UK leads to an unavailable listing
-    (§27 Added V16.10).~~ ⛔ **Corrected V16.18:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7. The Apple badge leads to a live listing everywhere.
+    (§27 Added V16.10).~~ ⛔ **Corrected V16.18:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov, and since 12 Nov exactly the 152 App Store territories of the 210 go-live countries; Google Play is not UK-only either (stated 12 Nov) — §89.7. The Apple badge leads to a live listing everywhere.
 - OBSERVED 3 Nov: `/uk` shows both English badges (Play link without `hl`); `/de` shows `de-DE.svg` and `de-DE.png`.
 - **Harnesses:** `store-badges-1.cjs` (60), `tidy-2.cjs` (44).
 
@@ -36909,7 +36922,7 @@ verified it. No proposed price is recorded here as decided.
   not UK-only (stated 12 Nov; §89.7).*
   ~~Where the iPhone app is sold is **not recorded** (NULL everywhere). Set it per country in Edit country data.~~ ~~⛔ Corrected V16.7 —
   known: the UK App Store only (Apple lookup for id 6803543106, 24 Oct; §86.2).~~ ⛔ Corrected V16.18 — 44 App Store storefronts
-  from 31 Aug, every territory since 12 Nov (§89.7). The benchmarks' column is still NULL; the
+  from 31 Aug; the go-live countries' 152 territories since 12 Nov (§89.7). The benchmarks' column is still NULL; the
   per-country flags are now `country_settings.ios_app_available` / `android_app_available` (~~GB true only, §86.3~~ ⛔ V16.10 — true in all 44 since 3 Nov, §48). ⛔ Corrected V16.8 — the benchmarks' app columns are retired; `country_settings` is the one
   source (§86.10).
 - ~~**France** stays in Planned until its row (`20261034`, block B) is run (§84.1).~~ ⛔ Corrected V16.7 — France's row exists and is switched on (OBSERVED 29 Oct: written 23 Oct 21:21 UTC by dominic@hatchgrab.com, fr-FR, EUR, 3 `plan_prices` rows; `/fr` answers 200 and is in the sitemap).
@@ -36933,7 +36946,7 @@ verified it. No proposed price is recorded here as decided.
 - **Key features for comparisons** (stated, 23 Oct): pre-orders, WhatsApp, social media posts, own web address, and the
   iOS and Android apps. The rest is standard on every plan.
 - ~~**iOS availability is now known:** the UK App Store only (Apple lookup, 24 Oct; §86.2).~~ ⛔ *Corrected V16.18: 44 App Store
-  storefronts from 31 Aug, every territory since 12 Nov (§89.7).* §85.6's "not recorded" is
+  storefronts from 31 Aug; the go-live countries' 152 territories since 12 Nov (§89.7).* §85.6's "not recorded" is
   corrected.
 
 ---
@@ -37007,7 +37020,7 @@ verified it. No proposed price is recorded here as decided.
     can actually make, based on each item's prep time and how many you cook at once."
   - ~~🔴 **The iOS app is in the UK App Store only.** Apple's lookup for id 6803543106 (24 Oct): GB 1 result; US, IE, AU,
     CA, NZ, DE, PL, SE, NL, DK, NO and CZ 0. **Android is UK-only on Play** (deliberate since 1 Sep; not re-checked).~~
-    ⛔ **Corrected V16.18 — the apps are not UK-only:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov and every territory (175) since 12 Nov; Google Play is not UK-only either (stated 12 Nov) — §89.7.
+    ⛔ **Corrected V16.18 — the apps are not UK-only:** the App Store has served the iPad app in 44 storefronts since 31 Aug 2026, 42 from 9 Nov, and since 12 Nov exactly the 152 App Store territories of the 210 go-live countries; Google Play is not UK-only either (stated 12 Nov) — §89.7.
   - **HatchGrab is not a fiscal till** (no TSE, EET, GKS or kassaregister). Where one is required, it sits beside the
     truck's certified till.
 - **competition-check-1 (24 Oct): a Bing-index picture only.**
@@ -38027,7 +38040,7 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
     - enables the 167;
     - turns MX off;
     - sets `vat_number_required` on AE and BR;
-    - turns `ios_app_available` on for the 56 new countries that had it off;
+    - turns `ios_app_available` on for the 56 new countries that had it off, and `android_app_available` on for the 17 (V16.19);
     - sets Iceland's week start to Monday.
 - **Locale:** the country's own language only where it is committed: UA uk-UA, KG ru-KZ, KZ kk-KZ, UZ uz-UZ, AZ az-AZ, GE ka-GE, AM
   hy-AM, MN mn-MN, BD bn-BD and NP ne-NP. **India and Pakistan use en-GB.** Everyone else uses the CSV's `launch_locale`.
@@ -38131,14 +38144,22 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
   misleading. App Store availability (`scripts/ios/availability.cjs`):
   - **31 Aug – 9 Nov:** 44 storefronts, the 42 country_settings territories plus Moldova and Ukraine.
   - **9 Nov:** 42. Moldova and Ukraine were removed (ios-intl-1, Dominic's decision). LI and GI are not App Store territories.
-  - **12 Nov: every App Store territory, 175** (world-countries-5, `--all --apply`, availability only; stated: "make the app available in
+  - ~~**12 Nov: every App Store territory, 175** (world-countries-5, `--all --apply`, availability only; stated: "make the app available in
     EVERY App Store storefront"). This added 133, including Moldova and Ukraine again, Russia, Belarus and China. **China also needs an
-    ICP filing number before the app appears there.** "Available in new territories" is still off.
+    ICP filing number before the app appears there.**~~ ⛔ **Corrected V16.19, the same day (stated: "exactly the App Store territories
+    whose country is in go-live.csv"):**
+    - Availability is **152**: the go-live countries that are App Store territories (`docs/world-countries-5/app-store-go-live.json`,
+      `--list … --apply`).
+    - 23 were removed again: RUS, BLR, CHN, XKS, IRQ, LBN, LBY, MLI, MMR, VEN, MEX, PHL, BRB, CMR, COG, CIV, COD, GHA, KEN, RWA, VNM,
+      AFG and YEM.
+    - **Moldova and Ukraine stay on.**
+    - The 58 go-live countries that are not App Store territories (AD, LI, GI, the territories…) use an Apple ID from another country.
+    - "Available in new territories" is still off.
   - **Google Play:** not UK-only either. Dominic adds countries in Play Console by hand; the current list is not recorded here.
 - **Store flags:**
   - `ios_app_available` is true for every go-live country. The 56 new countries still at false are set in 20261095.
-  - `android_app_available` is unchanged: on for 150 new countries and off for the 17 with no Play storefront in `countries.csv` (AD
-    BD BI CF DJ ER ET GN GQ KI KM LS MH TG TL TV WS). Whether those 17 should go on is open.
+  - `android_app_available` is true for every go-live country too (V16.19, stated 12 Nov: "same reasoning as iOS"). The 17 with no Play
+    storefront in `countries.csv` (AD BD BI CF DJ ER ET GN GQ KI KM LS MH TG TL TV WS) are set in 20261095.
 - **ios-intl-1 (9 Nov):**
   - **1.1 build 3** is uploaded, VALID and in internal TestFlight; App Store Connect shows PREPARE_FOR_SUBMISSION. It is in 29
     languages (`scripts/ios/native-strings.cjs`), with 29 listing locales in `data/store-listing/` (bg, et, lv and lt have no ASC
@@ -38262,7 +38283,9 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
 - **The terms' fee wording** ("online card orders") against the site's "online orders" (pricing-copy-1 §3).
 - **Whether `comparison.costs.cardFee` follows `offersOnlineCardPayments`** (pricing-copy-4).
 - **The capacity-window display defect and Q1–Q3** (§89.11).
-- **`android_app_available` for the 17 countries** with no Play storefront (§89.7), and Play Console countries (by hand).
+- ~~**`android_app_available` for the 17 countries** with no Play storefront (§89.7)~~ ⛔ decided V16.19: on, in 20261095. Play Console
+  countries are still added by hand.
+- **Mexico's App Store badge:** `/mx` shows it until 20261095 turns Mexico off; the app is no longer sold in Mexico (V16.19).
 - **The switch-on itself:** deploy, check Admin › Countries reads the 167, then run 20261095 with `--approved-by-dominic`.
 
 

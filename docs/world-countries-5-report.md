@@ -25,12 +25,14 @@ everywhere, Iceland's Monday, §9), and this report.
   - Phones get a full-screen panel: the region buttons scroll sideways, there is one country per row, and every target is
     44px or more.
   - No codes are shown and there is no search. The region names are translated into every language.
-- **Tests:** world-countries-5 29/29, and every harness this work touched passes. That includes the 12 that pricing-copy-4's
+- **Tests:** world-countries-5 31/31, and every harness this work touched passes. That includes the 12 that pricing-copy-4's
   sweep found broken by this work: they are re-pinned and listed in §7. The full sweep's result is in §7.
 - **Your §9 answers are done (§9):**
-  - **App Store:** the app is now available in **every App Store territory, all 175**. I added 133 in App Store Connect,
-    availability only; the list is in §6.
-  - **Badges:** `ios_app_available` goes on for the 56 new countries that had it off, in the switch-on.
+  - **App Store (corrected the same day, your correction to answer 1):** availability is now **exactly the App Store
+    territories whose country is in go-live.csv: 152**. Russia, Belarus, China, Mexico and every excluded, held or cannot-sell
+    country are off again; 23 were removed. Ukraine and Moldova stay on. The lists are in §6.
+  - **Badges:** `ios_app_available` and `android_app_available` go on for every new country that had either off (56 and 17), in
+    the switch-on.
   - **Menus:** they use local money in the 11 countries, through the new `menu_currency` column (20261096, **run**). Billing
     stays in USD/EUR.
   - **Serbian:** country names are written in Latin script (Srbija, Crna Gora), live Serbia included.
@@ -250,22 +252,28 @@ Countries that are not in the CSV get no rows.
 
 ## 6 · App stores
 
-**App Store Connect, changed by me on 12 Nov 2026 (your answer, §9).** This is availability only; nothing else in App Store
-Connect was touched.
-- **Before:** 42 territories, the ios-intl-1 list.
-- **After:** **all 175 App Store territories**, which is every one Apple lists. Apple accepted all 133 additions, and a read-back
-  confirmed "exactly the wanted set".
-- **"Available in new territories"** was not changed and is still off. A territory Apple adds later won't be included
-  automatically; say if you want that switched on.
-- **How:** `node scripts/ios/availability.cjs --all --apply`. That is ios-intl-1's script with a new `--all` mode, using the API
-  key in `~/.appstoreconnect`. The key and its tokens were never printed.
-- **The 133 added:** AFG, AGO, AIA, ALB, ARG, ARM, ATG, AZE, BEN, BFA, BHR, BHS, BIH, BLR, BLZ, BMU, BOL, BRB, BRN, BTN, BWA, CHL, CHN, CIV, CMR, COD, COG, COL, CPV, CRI, CYM, DMA, DOM, DZA, ECU, EGY, FJI, FSM, GAB, GEO, GHA, GMB, GNB, GRD, GTM, GUY, HND, IDN, IND, IRQ, ISL, ISR, JAM, JOR, KAZ, KEN, KGZ, KHM, KNA, KOR, KWT, LAO, LBN, LBR, LBY, LCA, LKA, MAC, MAR, MDA, MDG, MDV, MKD, MLI, MMR, MNE, MNG, MOZ, MRT, MSR, MUS, MWI, NAM, NER, NGA, NIC, NPL, NRU, OMN, PAK, PAN, PER, PHL, PLW, PNG, PRY, QAT, RUS, RWA, SAU, SEN, SLB, SLE, SLV, SRB, STP, SUR, SWZ, SYC, TCA, TCD, TJK, TKM, TON, TTO, TUN, TUR, TWN, TZA, UGA, UKR, URY, UZB, VCT, VEN, VGB, VNM, VUT, XKS, YEM, ZAF, ZMB, ZWE.
-- **Points to know:**
-  - **Moldova (MDA) and Ukraine (UKR)** are back on. In ios-intl-1 you had removed them; "every storefront" includes them.
-  - **China (CHN):** Apple accepted the change. For China, Apple also asks for an ICP filing number before the app can actually
-    appear there, so it may stay unlisted in China until one is given.
-  - **Russia (RUS), Belarus (BLR), Iran-adjacent and sanctioned-region storefronts** (AFG, IRQ, LBY, MMR, VEN, YEM, XKS and
-    others) are on, as "all of them" says. No signup is possible in any country without a `country_settings` row.
+**App Store Connect, changed by me on 12 Nov 2026, in two steps.** Both changed availability only; nothing else in App Store
+Connect was touched. "Available in new territories" is still off.
+
+1. **Every territory (your first §9 answer):** `node scripts/ios/availability.cjs --all --apply` took availability from 42 (the
+   ios-intl-1 list) to all 175 App Store territories, adding 133.
+2. **Corrected the same day (your correction to answer 1: "exactly the App Store territories whose country is in go-live.csv"):**
+   `node scripts/ios/availability.cjs --list docs/world-countries-5/app-store-go-live.json --apply`.
+   - **The list file** maps the 210 go-live countries to Apple's alpha-3 ids. The codes come from the ISO 3166 table in `pycountry`
+     24.6.1, installed only in a scratch folder. 152 of the 210 are App Store territories. The other 58 aren't (AD, AS, AW, AX, BD,
+     BI, BL, BQ, CC, CF, CK, CW, CX, DJ, ER, ET, FK, FO, GF, GG, GI, GL, GN, GP, GQ, GU, IM, JE, KI, KM, LI, LS, MC, MF, MH, MP, MQ,
+     NC, NF, NU, PF, PM, PN, PR, RE, SH, SJ, SM, SX, TG, TK, TL, TV, VA, VI, WF, WS, YT). People there use an Apple ID from another
+     country.
+   - **Removed (23):** AFG, BLR, BRB, CHN, CIV, CMR, COD, COG, GHA, IRQ, KEN, LBN, LBY, MEX, MLI, MMR, PHL, RUS, RWA, VEN, VNM, XKS, YEM. That is Russia, Belarus and China; Kosovo (XKS, Apple-only, not in go-live.csv); the held-for-sanctions
+     countries (IRQ, LBN, LBY, MLI, MMR, VEN); the cannot-sell ones (MEX, PHL, BRB, CMR, COG, CIV, COD, GHA, KEN, RWA, VNM); and the
+     excluded AFG and YEM. Nothing was added.
+   - **Final list (152), read back as "exactly the wanted set":** AGO, AIA, ALB, ARE, ARG, ARM, ATG, AUS, AUT, AZE, BEL, BEN, BFA, BGR, BHR, BHS, BIH, BLZ, BMU, BOL, BRA, BRN, BTN, BWA, CAN, CHE, CHL, COL, CPV, CRI, CYM, CYP, CZE, DEU, DMA, DNK, DOM, DZA, ECU, EGY, ESP, EST, FIN, FJI, FRA, FSM, GAB, GBR, GEO, GMB, GNB, GRC, GRD, GTM, GUY, HKG, HND, HRV, HUN, IDN, IND, IRL, ISL, ISR, ITA, JAM, JOR, JPN, KAZ, KGZ, KHM, KNA, KOR, KWT, LAO, LBR, LCA, LKA, LTU, LUX, LVA, MAC, MAR, MDA, MDG, MDV, MKD, MLT, MNE, MNG, MOZ, MRT, MSR, MUS, MWI, MYS, NAM, NER, NGA, NIC, NLD, NOR, NPL, NRU, NZL, OMN, PAK, PAN, PER, PLW, PNG, POL, PRT, PRY, QAT, ROU, SAU, SEN, SGP, SLB, SLE, SLV, SRB, STP, SUR, SVK, SVN, SWE, SWZ, SYC, TCA, TCD, THA, TJK, TKM, TON, TTO, TUN, TUR, TWN, TZA, UGA, UKR, URY, USA, UZB, VCT, VGB, VUT, ZAF, ZMB, ZWE.
+   - **Ukraine (UKR) and Moldova (MDA) are on.** They are in go-live.csv, with their region blocks.
+   - ⚠️ **Mexico:** its row is still switched on until the switch-on migration runs, so `/mx` still shows the App Store badge for an
+     app that is no longer sold there. Setting MX's `ios_app_available` to false now would be a live-row update; I didn't do it
+     without your say. It goes away when 20261095 turns Mexico off.
+- **Script:** ios-intl-1's, with two new modes (`--all`, `--list <file>`), using the API key in `~/.appstoreconnect`. The key and its
+  tokens were never printed.
 
 **Google Play** was not changed; you'll add those countries by hand.
 
@@ -273,9 +281,8 @@ Connect was touched.
 - **`ios_app_available` goes on for every go-live country.** The 56 new rows that had it off are set in the switch-on (§8).
   Where a country has no storefront of its own, people use an Apple ID from another country, and the badge link opens their
   own store.
-- **`android_app_available` is unchanged.** It is on for 150 new countries. ⚠️ **It is still off for the 17 below**, where
-  `countries.csv` lists no Play storefront. You said it "stays true", and for these 17 it isn't true today. Say if they should
-  go on too.
+- **`android_app_available` goes on for every go-live country** too (your correction): the 17 new rows with no Play storefront
+  (AD BD BI CF DJ ER ET GN GQ KI KM LS MH TG TL TV WS) are set in the switch-on, for the same reason as iOS.
 
 From `countries.csv`'s storefront column:
 
@@ -298,7 +305,7 @@ From `countries.csv`'s storefront column:
 
 ## 7 · Tests
 
-**New:** `scripts/world-countries-5.cjs`, **29/29.** It checks:
+**New:** `scripts/world-countries-5.cjs`, **31/31.** It checks:
 - the CSV and the generator: 210 rows and 167 new;
 - the locales;
 - the rows migration: all off;
@@ -312,7 +319,8 @@ From `countries.csv`'s storefront column:
 - the six strings in all 48 bases;
 - the back-translations;
 - **your §9 answers:**
-  - the switch-on turns iOS on for the 56, and sets Iceland to Monday;
+  - the switch-on turns iOS on for the 56 and Android on for the 17, and sets Iceland to Monday;
+  - the App Store list file is exactly the 210 go-live countries, with none of the excluded, held or cannot-sell ones;
   - 20261096 sets the 11 menu currencies, and its CHECK equals the 127-code registry;
   - through the real loader: Bahrain prices its menu in BHD (three decimals) and its plans in USD;
   - a row without a menu currency is unchanged, and an unknown menu currency is refused;
@@ -432,9 +440,12 @@ from pg_constraint where contype = 'c' and pg_get_constraintdef(oid) ilike '%cur
 
 ### Prepared, NOT run
 
-- **`supabase/migrations/20261095_world_countries_5_switch_on.sql`:** in one transaction, it enables the 167, disables MX, sets
-  the VAT flag on AE and BR, turns `ios_app_available` on for the 56 new countries that had it off, and sets Iceland's week start
-  to Monday.
+- **`supabase/migrations/20261095_world_countries_5_switch_on.sql`:** in one transaction, it:
+  - enables the 167;
+  - disables MX;
+  - sets the VAT flag on AE and BR;
+  - turns `ios_app_available` on for the 56 new countries that had it off, and `android_app_available` on for the 17;
+  - sets Iceland's week start to Monday.
 - It needs `--approved-by-dominic`. **Run it only after the code is deployed.**
 
 ### Read-only checks run
@@ -508,9 +519,10 @@ The schema changes (20261093, 20261096) are additive and can stay. To take the 1
 ## 9 · Your answers (12 November 2026), and what I did
 
 1. **Store badges:**
-   - The app is available in every App Store territory: 133 added, 175 in all (§6).
+   - **Corrected the same day:** App Store availability is exactly the go-live countries' 152 territories. 23 were removed,
+     including Russia, Belarus, China and Mexico (§6). The first step (all 175) lasted a few hours.
    - `ios_app_available` goes on for every go-live country: the 56 that were off, in the switch-on.
-   - `android_app_available` is unchanged. ⚠️ It is still off for 17 new countries (§6); say if those should go on.
+   - `android_app_available` goes on for the 17 that were off, also in the switch-on (§6).
 2. **Menu currency:** local money in all 11, built like this:
    - **Registry:** BHD, JOD, KWD, OMR and TND (all three-decimal), and BTN, TMT, ERN, MRU, STN and ZWG.
    - **Database:** the `menu_currency` column, where NULL means `currency`. Migration 20261096 is **run**; it set the 11 rows and

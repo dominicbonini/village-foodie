@@ -46,6 +46,14 @@ const BLOCKED = 'Sorry, HatchGrab isn’t available in your region yet.'
   const iosIn = ((/set ios_app_available = true[^;]*where country_code in \(([^)]*)\)/.exec(sw) || [, ''])[1].match(/'[A-Z]{2}'/g) || []).map(x => x.slice(1, -1))
   t('switch-on: ios_app_available on for the 56 new countries that had it off (the app is in every storefront now); Iceland\'s week starts Monday',
     iosIn.length === 56 && IOS56.every(c => iosIn.includes(c)) && G.ROWS.filter(r => !r.iosApp).every(r => iosIn.includes(r.code)) && /set week_start = 'monday'[^;]*where country_code = 'IS'/.test(sw), iosIn.length)
+  // (Dominic, 12 Nov, correction to §9 answer 1) android_app_available on for the 17 with no Play storefront — same reasoning as iOS.
+  const A17 = 'AD BD BI CF DJ ER ET GN GQ KI KM LS MH TG TL TV WS'.split(' ')
+  const andIn = ((/set android_app_available = true[^;]*where country_code in \(([^)]*)\)/.exec(sw) || [, ''])[1].match(/'[A-Z]{2}'/g) || []).map(x => x.slice(1, -1))
+  t('switch-on: android_app_available on for the 17 new countries with no Google Play storefront (every new row has both flags on after it)',
+    andIn.length === 17 && A17.every(c => andIn.includes(c)) && G.ROWS.filter(r => !r.androidApp).every(r => andIn.includes(r.code)), andIn)
+  const asc = JSON.parse(read('docs/world-countries-5/app-store-go-live.json')).countries
+  t('App Store: the wanted list is exactly the 210 go-live countries (alpha-3), none of the excluded / held / cannot-sell ones',
+    Object.keys(asc).length === 210 && csv.every(r => asc[r.code]) && ['RU', 'BY', 'CN', 'MX', 'KE', 'GH', 'VN', 'PH', 'AF', 'YE', 'IQ', 'MM', 'VE'].every(c => !(c in asc)) && asc.UA === 'UKR' && asc.MD === 'MDA')
   const mc = read('supabase/migrations/20261096_world_countries_5_menu_currency.sql')
   const MENU = { BH: 'BHD', JO: 'JOD', KW: 'KWD', OM: 'OMR', TN: 'TND', BT: 'BTN', TM: 'TMT', ER: 'ERN', MR: 'MRU', ST: 'STN', ZW: 'ZWG' }
   const regCodes = [...read('lib/currencies.ts').matchAll(/\{ code: '([A-Z]{3})',/g)].map(m => m[1])
