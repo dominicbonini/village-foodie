@@ -362,6 +362,11 @@ const plansEntries = ({ prefix = '', beforeDir = 'language-phase-1d-before', smo
     views: under(prefix, /^api\/(GB|US)\|manageGET\|/),
     // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-1)
     expect: b => require('./_lp-tagline.cjs').manageFields(b) },
+  { id: 'world-countries-5-menu-currency', country: 'both', agent: 'world-countries-5 (12 Nov 2026)',
+    what: '⚠️ RE-PINNED (world-countries-5, 12 November 2026, 20261096): GET /api/manage’s `countrySettings` gains `menuCurrency` after `currency` — the money a truck’s menu is priced in, equal to `currency` here (GBP / USD). PRECISE (scripts/_lp-world-countries-5.cjs menuCurrencyField).',
+    views: under(prefix, /^api\/(GB|US)\|manageGET\|/),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (world-countries-5)
+    expect: b => require('./_lp-world-countries-5.cjs').menuCurrencyField(b) },
   { id: 'pricing-b-catalogue-ignored-features', country: 'both', agent: 'pricing-pages Stage B (20 Oct 2026)',
     what: '⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): the plan catalogue GET /api/manage answers (`plans`) ends with `ignoredFeatures` — the plan_features rows naming no code feature, which the loader sets aside for Admin’s warning (lib/plans.ts splitUnknownFeatures); [] on the seed. PRECISE: that one key, last.',
     views: under(prefix, /^api\/(GB|US)\|manageGET\|/),

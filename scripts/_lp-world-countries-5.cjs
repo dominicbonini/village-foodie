@@ -19,7 +19,7 @@ const { execFileSync } = require('child_process')
 const CSS_FILE = 'app/(public)/(site)/landing/landing.css'
 let HUNKS = null
 const hunks = () => HUNKS ?? (HUNKS = execFileSync('git', ['diff', '-U0', '2d2a5e2e~1', '2d2a5e2e', '--', CSS_FILE], { cwd: REPO, encoding: 'utf8' })
-  .split(/\n(?=@@ )/).slice(1).map(h => { const L = h.split('\n').slice(1); return { before: L.filter(l => l.startsWith('-')).map(l => l.slice(1)).join('\n'), after: L.filter(l => l.startsWith('+')).map(l => l.slice(1)).join('\n') } }))
+  .split(/\n(?=@@ )/).slice(1).map(h => { const L = h.split('\n').slice(1); return { before: L.filter(l => l.startsWith('-')).map(l => l.slice(1) + '\n').join(''), after: L.filter(l => l.startsWith('+')).map(l => l.slice(1) + '\n').join('') } }))
 function cssAsBefore(css) {
   let out = String(css)
   for (const h of hunks()) {
@@ -61,4 +61,40 @@ function asBefore(html, { names = {}, label, locale } = {}) {
 /** pricing-copy-4's pc1After4 with world-countries-5's list markup put back first — for the harnesses that hash a page against a
  *  snapshot taken before both (faq-1…4, seo-geo-2, copy-truth-1). */
 const pc1After4AsBefore = (html, locale, opts) => require('./_lp-pricing-copy-4.cjs').pc1After4(asBefore(html, { locale }), locale, opts)
-module.exports = { LANDED, asBefore, cssAsBefore, pc1After4AsBefore }
+// menuCurrencyField(body) — world-countries-5 (12 November 2026, 20261096): every country-settings object the loader builds gains
+// `menuCurrency` right after `currency` — the money a truck's menu is priced in; the same as `currency` in every country but the 11 billed in
+// USD/EUR, so for GB and US exactly `"menuCurrency":"GBP"` / `"USD"`. PRECISE: only an object with countryCode and currency and no
+// menuCurrency yet; JSON inside strings (a view's captured body) is rewritten in place, as _lp-tagline.cjs manageFields does.
+function onJson(s, f) {
+  if (!((s[0] === '{' || s[0] === '[') && /[}\]]$/.test(s))) return null
+  try { const p = JSON.parse(s); if (JSON.stringify(p) !== s) return null; return JSON.stringify(f(p)) } catch { return null }
+}
+function menuCurrencyField(v) {
+  if (typeof v === 'string') return onJson(v, menuCurrencyField) ?? v
+  if (Array.isArray(v)) return v.map(menuCurrencyField)
+  if (!v || typeof v !== 'object') return v
+  const isCs = 'countryCode' in v && typeof v.currency === 'string' && !('menuCurrency' in v)
+  const out = {}
+  for (const [k, x] of Object.entries(v)) {
+    out[k] = menuCurrencyField(x)
+    if (isCs && k === 'currency') out.menuCurrency = x
+  }
+  return out
+}
+// undoCode(file, text) — world-countries-5's menu-currency edits (commit ba9384ff, 20261096) to the country-settings loader and its types,
+// put back EXACTLY (each hunk read from git, replaced by the text it replaced); null when a hunk is not found once — for the harnesses
+// that compare those files with an older commit (costs-accounts-1). Other files: the text as it is.
+const CODE_COMMIT = 'ba9384ff', CODE_FILES = ['lib/country-settings.ts', 'lib/country-settings-types.ts']
+const codeHunks = {}
+function undoCode(file, text) {
+  if (!CODE_FILES.includes(file) || text === null || text === undefined) return text
+  const hs = codeHunks[file] ?? (codeHunks[file] = execFileSync('git', ['diff', '-U0', `${CODE_COMMIT}~1`, CODE_COMMIT, '--', file], { cwd: REPO, encoding: 'utf8' })
+    .split(/\n(?=@@ )/).slice(1).map(h => { const L = h.split('\n').slice(1); return { before: L.filter(l => l.startsWith('-')).map(l => l.slice(1) + '\n').join(''), after: L.filter(l => l.startsWith('+')).map(l => l.slice(1) + '\n').join('') } }))
+  let out = String(text)
+  for (const h of hs) {
+    if (out.split(h.after).length !== 2) return null
+    out = out.replace(h.after, () => h.before)
+  }
+  return out
+}
+module.exports = { LANDED, asBefore, cssAsBefore, pc1After4AsBefore, menuCurrencyField, undoCode, CODE_FILES }

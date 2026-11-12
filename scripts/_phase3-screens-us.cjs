@@ -326,12 +326,14 @@ module.exports = async function us(h) {
       const W = require('./_lp2-frozen.cjs').enGBForNode()
       const mc = W.manageCharges || {}
       const fill = (s, v) => String(s).replace(/\{(\w+)\}/g, (x, k) => (k in v ? v[k] : x))
+      // ⚠️ RE-PINNED (world-countries-5, 12 November 2026, 20261096): the fee phrases read the truck's MENU currency (`cs.menuCurrency ?? cs.currency`,
+      // the same as `cs.currency` everywhere but the 11 countries billed in USD/EUR).
       t('its title and three rows, worded as approved',
         has(card, "useT('manageCharges')", "useT('charges')", ">{t('heading')}<", "row(t('rate.label'),", "t('rate.hint'),", "aria-label={t('rate.label')}",
           "row(t('tips.label'),", "t('tips.hint'),", "{t('tips.choices')}", "{t('tips.other')}",
-          "row(t('fee.label'),", "t('fee.hint'),", "{t('fee.max', { max: feePhrase(maxPct, maxFixed, cs.currency, money) })}",
+          "row(t('fee.label'),", "t('fee.hint'),", "{t('fee.max', { max: feePhrase(maxPct, maxFixed, (cs.menuCurrency ?? cs.currency), money) })}",
           "{t('fee.example', { label: tCharges('serviceFeeCustomer'), amount: money(exampleFee) })}",
-          "{t('fee.hatchgrab', { fee: feePhrase(cs.serviceFeeHatchgrabBps, cs.serviceFeeHatchgrabFixedMinor, cs.currency, money) })}")
+          "{t('fee.hatchgrab', { fee: feePhrase(cs.serviceFeeHatchgrabBps, cs.serviceFeeHatchgrabFixedMinor, (cs.menuCurrency ?? cs.currency), money) })}")
         && mc.heading === 'Tax, tips and fees' && mc.rate?.label === 'Sales tax rate'
         && mc.rate?.hint === 'The rate you charge on every order. Customers see it added at checkout, on receipts and on tickets.'
         && mc.tips?.label === 'Tips' && mc.tips?.hint === 'Customers paying online by card can add a tip. It all goes to you.'

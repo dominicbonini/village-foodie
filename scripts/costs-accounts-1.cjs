@@ -351,7 +351,10 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     // type gained the country's payment model and the one card-country helper (pricing wording only; no order path reads them). It passes
     // when putting exactly those edits back gives BEFORE's file; any other change to it still fails.
     const PC4 = require('./_lp-pricing-copy-4.cjs')
-    const notPc4 = f => !(PC4.CODE_FILES.includes(f) && PC4.undoCode(f, fs.readFileSync(path.join(REPO, f), 'utf8')) === showAt(BEFORE, f))
+    // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the settings type also gained the menu currency (20261096; scripts/_lp-world-countries-5.cjs
+    // undoCode) — put back first, then pricing-copy-4's; any other change still fails.
+    const WC5 = require('./_lp-world-countries-5.cjs')
+    const notPc4 = f => !(PC4.CODE_FILES.includes(f) && PC4.undoCode(f, WC5.undoCode(f, fs.readFileSync(path.join(REPO, f), 'utf8'))) === showAt(BEFORE, f))
     try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).filter(notDc2).filter(notLonger).filter(notPc4).join('\n') } catch (e) { diff = String(e) }
     const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }).trim()
     t(`${PATHS.length} order, payment, menu, KDS, dashboard and ticket paths: no change against ${BEFORE} (working tree)`, PATHS.length >= 20 && diff.trim() === '' && untracked === '', diff + untracked)
@@ -363,7 +366,8 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     ]
     // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026): the loader also embeds the country's payment model in its one read (and maps it);
     // exactly those edits are put back first (scripts/_lp-pricing-copy-4.cjs undoCode — null if any is not found once, which fails here).
-    const csNow = (PC4.undoCode(PERF1_CS, read(PERF1_CS)) ?? '').split('\n'), taken = csNow.filter(l => PERF1_LINES.includes(l))
+    // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): and before that, the menu currency's read (scripts/_lp-world-countries-5.cjs undoCode).
+    const csNow = (PC4.undoCode(PERF1_CS, WC5.undoCode(PERF1_CS, read(PERF1_CS))) ?? '').split('\n'), taken = csNow.filter(l => PERF1_LINES.includes(l))
     t(`${PERF1_CS}: byte-identical to ${BEFORE} once perf-1's four lines (its marketing branch) are taken out`, taken.length === 4 && csNow.filter(l => !PERF1_LINES.includes(l)).join('\n') === gitShow(PERF1_CS))
     const block = s => s.slice(s.indexOf("  if (action === 'upsert_item') {"), s.indexOf("  if (action === 'delete_item') {"))
     t('the upsert_item handler is byte-identical (the cost never rides on the item)', block(read('app/api/manage/route.ts')) === block(gitShow('app/api/manage/route.ts')) && block(read('app/api/manage/route.ts')).length > 1000)
