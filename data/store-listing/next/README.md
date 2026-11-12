@@ -19,3 +19,19 @@ country's pages redirect. Move a file up one level when its country is switched 
 
 English back-translations: `docs/i18n/back-store-listing/next/`. `whatsNew` says 37 languages, not 29 (the rules script's
 "29" check applies to the live files only).
+
+## languages-world-2 (11–12 November 2026)
+
+Same staging, same rules (`node scripts/ios/listing-rules.cjs <file>` passes for each). Files are named by messages locale.
+
+| File | App Store locale | Google Play locale | Note |
+|---|---|---|---|
+| uk-UA.json | uk | uk | |
+| ru-KZ.json | ru | ru-RU | Kazakhstan's Russian; the ONE Russian listing is also what Russia's storefront would show (no Russia-only brands or money in it) |
+| kk-KZ.json | — | kk | App Store Connect has no Kazakh listing language: Kazakhstan sees the Russian or primary listing |
+| az-AZ.json | — | az-AZ | Play only |
+| ka-GE.json | — | ka-GE | Play only; Georgian has no capitals, so section headings use ■ |
+| hy-AM.json | — | hy-AM | Play only |
+
+⚠️ `whatsNew` in these six says the app supports **60 languages** (the number planned when they were written). Correct it to the
+real count before uploading.
