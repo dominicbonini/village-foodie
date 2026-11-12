@@ -61,7 +61,14 @@ internally (`next build`, the sweep, `tsc`). Configuration is worked out from co
   - Done with `scripts/ios/availability.cjs --list docs/world-countries-5/app-store-go-live.json --apply`, availability only (§89.7).
 - **`android_app_available` on for every go-live country.** The 17 new countries with no Play storefront are set in the switch-on
   migration, 20261095, which is **still not run** (§89.3, §89.7).
-- ⚠️ **Mexico is still switched on** until 20261095 runs, so `/mx`'s App Store badge points to an app no longer sold there.
+- **Mexico's store flags are off** (`ios_app_available` and `android_app_available` false; migration **20261097, RUN**, Dominic
+  approved, 12 Nov), so `/mx`, still switched on until 20261095, shows no store badges.
+- **Google Play countries, prepared:** `scripts/android/play-availability.cjs`, with its key at `~/.googleplay/hatchgrab-play.json`
+  (outside the repo and any `.env`; never printed). The target is the 187 go-live countries Play serves as countries of their own
+  (`docs/world-countries-5/play-go-live.json`, `applied: false`).
+  - ⚠️ The Play API can set a production release's countries only on an **inProgress** (staged-rollout) release, so for a completed
+    release the script refuses and the countries are set by hand in Play Console.
+  - Not run: the key did not exist yet (§89.7).
 
 ## V16.18 — 12 November 2026 — **MONTHLY BILLING BUILT (SWITCHED OFF), PRICING WORDING FOR CARD AND MONTHLY-ONLY COUNTRIES, 210 GO-LIVE COUNTRIES PREPARED, 20 NEW LANGUAGES, AND THE APP IN EVERY APP STORE**
 
@@ -38160,6 +38167,15 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
   - `ios_app_available` is true for every go-live country. The 56 new countries still at false are set in 20261095.
   - `android_app_available` is true for every go-live country too (V16.19, stated 12 Nov: "same reasoning as iOS"). The 17 with no Play
     storefront in `countries.csv` (AD BD BI CF DJ ER ET GN GQ KI KM LS MH TG TL TV WS) are set in 20261095.
+  - **Mexico: both flags false since 12 Nov** (20261097, run), because the apps are no longer sold there.
+- **Google Play's countries (V16.19, prepared, not run):** `scripts/android/play-availability.cjs` sets production to exactly the go-live
+  countries Play serves as countries of their own: **187**, in `docs/world-countries-5/play-go-live.json`.
+  - Not included: the 21 territories Play covers through a parent's listing, and MH and PW, which Play doesn't serve.
+  - Its key is `~/.googleplay/hatchgrab-play.json` (a service account, outside the repo; never printed). It is read-only without
+    `--apply`.
+  - ⚠️ **The Android Publisher API has no writable country list.** `edits.countryavailability` is GET-only. Countries are set only as
+    `releases[].countryTargeting` on an **inProgress** production release. With a completed release the script refuses, because the
+    only API route would turn it into a staged rollout, changing the release; then the countries are set by hand in Play Console.
 - **ios-intl-1 (9 Nov):**
   - **1.1 build 3** is uploaded, VALID and in internal TestFlight; App Store Connect shows PREPARE_FOR_SUBMISSION. It is in 29
     languages (`scripts/ios/native-strings.cjs`), with 29 listing locales in `data/store-listing/` (bg, et, lv and lt have no ASC
@@ -38238,7 +38254,7 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
 - **origin/main = `9c30a623`** (11 Nov 21:00). **37 local commits are not pushed:** languages-world-2, pricing-copy-3's later commits,
   pricing-copy-4, longer-intervals, collection-anchor-1, world-countries-5 and their reports. Deploy is not checked here.
 - **Run in the database:** 20261084 (demo-claim-2), 20261085–20261090 (billing), 20261091 (pricing-copy-2), 20261092 (V16.16),
-  20261093, 20261094 and 20261096 (world-countries-5).
+  20261093, 20261094, 20261096 and 20261097 (world-countries-5).
 - **Not run:** 20261095 (the switch-on) and the BR/MY/SG/TH plan-offer SQL (billing-1 §10.6).
 - **Last full sweep (12 Nov, after `10b41ccc`):** 218 run, 212 passed. 5 fail on the legal pages above, and `event-types-render` on a
   `.next` build made by another session.
@@ -38285,7 +38301,9 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
 - **The capacity-window display defect and Q1–Q3** (§89.11).
 - ~~**`android_app_available` for the 17 countries** with no Play storefront (§89.7)~~ ⛔ decided V16.19: on, in 20261095. Play Console
   countries are still added by hand.
-- **Mexico's App Store badge:** `/mx` shows it until 20261095 turns Mexico off; the app is no longer sold in Mexico (V16.19).
+- ~~**Mexico's App Store badge:** `/mx` shows it until 20261095 turns Mexico off~~ ⛔ done V16.19: MX's store flags are off (20261097).
+- **Google Play's countries:** create the key at `~/.googleplay/hatchgrab-play.json`, then run `scripts/android/play-availability.cjs`
+  read-only, then `--apply` (or set them by hand in Play Console if production's release is completed) (§89.7).
 - **The switch-on itself:** deploy, check Admin › Countries reads the 167, then run 20261095 with `--approved-by-dominic`.
 
 

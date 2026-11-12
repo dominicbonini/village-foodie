@@ -269,13 +269,31 @@ Connect was touched. "Available in new territories" is still off.
      excluded AFG and YEM. Nothing was added.
    - **Final list (152), read back as "exactly the wanted set":** AGO, AIA, ALB, ARE, ARG, ARM, ATG, AUS, AUT, AZE, BEL, BEN, BFA, BGR, BHR, BHS, BIH, BLZ, BMU, BOL, BRA, BRN, BTN, BWA, CAN, CHE, CHL, COL, CPV, CRI, CYM, CYP, CZE, DEU, DMA, DNK, DOM, DZA, ECU, EGY, ESP, EST, FIN, FJI, FRA, FSM, GAB, GBR, GEO, GMB, GNB, GRC, GRD, GTM, GUY, HKG, HND, HRV, HUN, IDN, IND, IRL, ISL, ISR, ITA, JAM, JOR, JPN, KAZ, KGZ, KHM, KNA, KOR, KWT, LAO, LBR, LCA, LKA, LTU, LUX, LVA, MAC, MAR, MDA, MDG, MDV, MKD, MLT, MNE, MNG, MOZ, MRT, MSR, MUS, MWI, MYS, NAM, NER, NGA, NIC, NLD, NOR, NPL, NRU, NZL, OMN, PAK, PAN, PER, PLW, PNG, POL, PRT, PRY, QAT, ROU, SAU, SEN, SGP, SLB, SLE, SLV, SRB, STP, SUR, SVK, SVN, SWE, SWZ, SYC, TCA, TCD, THA, TJK, TKM, TON, TTO, TUN, TUR, TWN, TZA, UGA, UKR, URY, USA, UZB, VCT, VGB, VUT, ZAF, ZMB, ZWE.
    - **Ukraine (UKR) and Moldova (MDA) are on.** They are in go-live.csv, with their region blocks.
-   - ⚠️ **Mexico:** its row is still switched on until the switch-on migration runs, so `/mx` still shows the App Store badge for an
-     app that is no longer sold there. Setting MX's `ios_app_available` to false now would be a live-row update; I didn't do it
-     without your say. It goes away when 20261095 turns Mexico off.
+   - **Mexico:** its row stays switched on until the switch-on migration runs. **Its store flags were set to false on 12 Nov**, with
+     your approval, by migration 20261097 (run; §8), so `/mx` shows no store badges for apps not sold there.
 - **Script:** ios-intl-1's, with two new modes (`--all`, `--list <file>`), using the API key in `~/.appstoreconnect`. The key and its
   tokens were never printed.
 
-**Google Play** was not changed; you'll add those countries by hand.
+**Google Play: prepared, not applied (the key wasn't there yet).** `scripts/android/play-availability.cjs` is ready.
+- **The key:** it reads `~/.googleplay/hatchgrab-play.json`, outside the repo and outside any `.env` file, only to sign a short-lived
+  token. Nothing from it is printed or saved.
+- **The wanted list: 187 countries**, saved as `docs/world-countries-5/play-go-live.json` with `applied: false`. These are the go-live
+  countries Play serves as countries of their own (`countries.csv` `google_play` = yes).
+  - Not included: the 21 go-live territories Play covers through a parent's listing (AS AX BL FO GF GL GP GU MF MP MQ NC PF PM PR RE SJ
+    SX VI WF YT) and the 2 it doesn't serve (MH, PW).
+  - None of Russia, Belarus, China, Mexico or any excluded, held or cannot-sell country is in it.
+- **Run without flags,** it is read-only: it opens an edit, shows the production release(s) and the current countries, and deletes the
+  edit.
+- ⚠️ **What the Play API allows** (Android Publisher v3, checked 12 Nov):
+  - Country availability can't be written directly; `edits.countryavailability` is read-only.
+  - A production release's countries can be set only as `countryTargeting` on an **inProgress** (staged-rollout) release.
+  - So `--apply` sets them only if production's release is inProgress, sending every release back exactly as read.
+  - **If the release is completed (the usual case), it refuses.** The only way the API could do it would be to turn the release into
+    a staged rollout, which changes the release you asked to keep unchanged. The countries are then set by hand in Play Console
+    (Production › Countries / regions) to the saved list.
+  - On success it reads the countries back and overwrites `play-go-live.json` with them.
+- **Not run yet.** It stops with "no key at ~/.googleplay/hatchgrab-play.json". When the key exists, I'll run it read-only first and
+  report what it finds.
 
 **The badges:**
 - **`ios_app_available` goes on for every go-live country.** The 56 new rows that had it off are set in the switch-on (§8).
@@ -438,6 +456,27 @@ select conrelid::regclass as t, conname, left(pg_get_constraintdef(oid), 120) as
 from pg_constraint where contype = 'c' and pg_get_constraintdef(oid) ilike '%currency%';
 ```
 
+4. `supabase/migrations/20261097_world_countries_5_mx_store_flags_off.sql` (your approval, 12 Nov; `--approved-by-dominic`): Mexico's
+   `ios_app_available` and `android_app_available` set to false; exactly one row. Read back: MX enabled true, both flags false; no
+   other row carries its `updated_by`.
+
+```sql
+begin;
+
+update public.country_settings
+   set ios_app_available = false, android_app_available = false, updated_at = now(), updated_by = 'world-countries-5 (Mexico store badges off)'
+ where country_code = 'MX';
+
+commit;
+```
+
+```sql
+select country_code, enabled, ios_app_available, android_app_available, updated_at, updated_by from public.country_settings where country_code = 'MX';
+select country_code, enabled, ios_app_available, android_app_available, updated_at, updated_by from public.country_settings where country_code = 'MX'
+union all
+select 'others changed', null, null, null, max(updated_at), count(*)::text from public.country_settings where updated_by = 'world-countries-5 (Mexico store badges off)' and country_code <> 'MX';
+```
+
 ### Prepared, NOT run
 
 - **`supabase/migrations/20261095_world_countries_5_switch_on.sql`:** in one transaction, it:
@@ -523,6 +562,9 @@ The schema changes (20261093, 20261096) are additive and can stay. To take the 1
      including Russia, Belarus, China and Mexico (§6). The first step (all 175) lasted a few hours.
    - `ios_app_available` goes on for every go-live country: the 56 that were off, in the switch-on.
    - `android_app_available` goes on for the 17 that were off, also in the switch-on (§6).
+   - **Mexico's store flags are off since 12 Nov** (20261097, run).
+   - **Google Play:** the script and the planned 187-country list are ready; they wait for the key, and the API can only set countries
+     on a staged rollout (§6).
 2. **Menu currency:** local money in all 11, built like this:
    - **Registry:** BHD, JOD, KWD, OMR and TND (all three-decimal), and BTN, TMT, ERN, MRU, STN and ZWG.
    - **Database:** the `menu_currency` column, where NULL means `currency`. Migration 20261096 is **run**; it set the 11 rows and
