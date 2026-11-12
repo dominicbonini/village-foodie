@@ -29,7 +29,12 @@ const KEYS = ['planTable.pay.fee', 'planNames.payg.description']
 // The word for "card" in each language's plan-table row (it must be gone, and only it).
 const CARD = { ar: 'البطاقة', bg: 'карта', cs: 'kartou', da: 'kort', de: 'Karte', el: 'κάρτα', en: 'card', es: 'tarjeta', et: 'kaardi', fi: 'korti', fr: 'carte',
   he: 'כרטיס', hr: 'karticom', hu: 'kártyás', id: 'kartu', is: 'korti', it: 'carta', ja: 'カード', ko: '카드', lt: 'kortele', lv: 'karti', ms: 'kad ', nb: 'kort',
-  nl: 'kaart', pl: 'kartą', pt: 'cartão', ro: 'card', sk: 'kartou', sl: 'kartico', sr: 'karticom', sv: 'kort', th: 'บัตร', tr: 'kart', vi: 'thẻ', zh: '信用卡|刷卡' }
+  nl: 'kaart', pl: 'kartą', pt: 'cartão', ro: 'card', sk: 'kartou', sl: 'kartico', sr: 'karticom', sv: 'kort', th: 'บัตร', tr: 'kart', vi: 'thẻ', zh: '信用卡|刷卡',
+  // ⚠️ RE-PINNED (pricing-copy-3, 12 November 2026): languages-world-2's new languages. Without their own word a new base fell back to
+  // English "card" and its check passed against nothing (the gap compare-suits-1 had for the 8 earlier bases).
+  uk: 'карт', ru: 'карт', kk: 'карта', uz: 'karta', az: 'kart', ka: 'ბარათ' }
+// A base whose language has no word here is a FAILURE, never a silent pass.
+const cardRe = loc => { const w = CARD[loc.slice(0, 2)]; if (!w) throw new Error(`pricing-copy-2: no "card" word for ${loc} — add its language to CARD`); return new RegExp(w) }
 
 /** pricing-copy-2's message commit (the first "pricing-copy-2:" commit that touched messages/), and the one before it. */
 const C = git(['log', '--format=%H', '--grep=^pricing-copy-2:', '--reverse', '--', 'messages/']).trim().split('\n').filter(Boolean)
@@ -102,17 +107,17 @@ function migration() {
     const loc = f.slice(0, -5)
     let old; try { old = flat(JSON.parse(git(['show', `${BEFORE}:messages/${f}`]))) } catch { old = null }
     let now; try { now = flat(JSON.parse(atAfter(`messages/${f}`))) } catch { continue }
-    if (!old) { if ('planTable.pay.fee' in now) t(`${loc} (new since): the plan-table row has no "card"`, !new RegExp(CARD[loc.slice(0, 2)] || 'card').test(now['planTable.pay.fee']) && now['planTable.pay.fee'].endsWith('*'), now['planTable.pay.fee']); continue }
+    if (!old) { if ('planTable.pay.fee' in now) t(`${loc} (new since): the plan-table row has no "card"`, !cardRe(loc).test(now['planTable.pay.fee']) && now['planTable.pay.fee'].endsWith('*'), now['planTable.pay.fee']); continue }
     const moved = Object.keys({ ...old, ...now }).filter(k => old[k] !== now[k])
     t(`${loc}: only planTable.pay.fee and planNames.payg.description moved`, moved.every(k => KEYS.includes(k)), moved.filter(k => !KEYS.includes(k)))
     if ('planTable.pay.fee' in old) {
-      const a = old['planTable.pay.fee'], b = now['planTable.pay.fee'], re = new RegExp(CARD[loc.slice(0, 2)])
+      const a = old['planTable.pay.fee'], b = now['planTable.pay.fee'], re = cardRe(loc)
       t(`${loc}: plan-table row — the word for "card" gone, the asterisk kept, nothing added`, re.test(a) && !re.test(b) && a.endsWith('*') && b.endsWith('*') && b.length < a.length, [a, b])
       feeN++
     }
     if ('planNames.payg.description' in old) {
       const a = old['planNames.payg.description'], b = now['planNames.payg.description']
-      t(`${loc}: Pay as you go's description — first sentence kept, the fee named (0.99 in its own form), no "card"`, b !== a && /0[.,]99/.test(b) && !new RegExp(CARD[loc.slice(0, 2)]).test(b) && b.startsWith(a.split(/[.。，]| (?=[\u0e00-\u0e7f])/)[0]) && !/[‎‏؜]/.test(b), [a, b])
+      t(`${loc}: Pay as you go's description — first sentence kept, the fee named (0.99 in its own form), no "card"`, b !== a && /0[.,]99/.test(b) && !cardRe(loc).test(b) && b.startsWith(a.split(/[.。，]| (?=[\u0e00-\u0e7f])/)[0]) && !/[‎‏؜]/.test(b), [a, b])
       descN++
     }
     for (const k of ['pricing.fee.included', 'pricing.footnote', 'pricing.fee.feeOnly']) t(`${loc}: ${k} unchanged (Pro, the footnote and the cards keep their text)`, old[k] === now[k])
@@ -122,7 +127,7 @@ function migration() {
   const EN = flat(JSON.parse(atAfter('messages/en-GB.json')))
   t('en-GB: "HatchGrab fee on online orders*"', EN['planTable.pay.fee'] === 'HatchGrab fee on online orders*')
   // ⚠️ Applied at HEAD too: any locale file added after the message commit (languages-world-2) carries the new row.
-  for (const f of files) { const m = flat(JSON.parse(read(`messages/${f}`))); if ('planTable.pay.fee' in m) t(`HEAD ${f.slice(0, -5)}: the plan-table row says no "card"`, !new RegExp(CARD[f.slice(0, 2)] || 'card').test(m['planTable.pay.fee']), m['planTable.pay.fee']) }
+  for (const f of files) { const m = flat(JSON.parse(read(`messages/${f}`))); if ('planTable.pay.fee' in m) t(`HEAD ${f.slice(0, -5)}: the plan-table row says no "card"`, !cardRe(f.slice(0, 5)).test(m['planTable.pay.fee']), m['planTable.pay.fee']) }
 
   head('B1 / B3 · back-translations follow')
   for (const f of files) {

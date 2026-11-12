@@ -50,7 +50,13 @@ function removedSpan(a, b) {
   const touched = []
   for (const f of files) {
     const loc = f.slice(0, -5)
-    let old; try { old = flat(JSON.parse(git(['show', `${BASE}:messages/${f}`]))) } catch { t(`${loc}: exists at ${BASE}`, false); continue }
+    // ⚠️ RE-PINNED (pricing-copy-3, 12 November 2026): a locale created AFTER pricing-copy-1 (languages-world-2's new bases) was never part
+    // of its change. It is checked only for not carrying the old Pay as you go wording (the asterisk), not compared with a BEFORE it never had.
+    let old; try { old = flat(JSON.parse(git(['show', `${BASE}:messages/${f}`]))) } catch {
+      const cur = flat(JSON.parse(read(`messages/${f}`)))
+      if ('pricing.fee.feeOnly' in cur) t(`${loc} (new since pricing-copy-1): the Pay as you go line has no asterisk`, !/\{fee\}\*/.test(cur['pricing.fee.feeOnly']), cur['pricing.fee.feeOnly'])
+      continue
+    }
     const now = flat(JSON.parse(git(['show', `${AFTER}:messages/${f}`])))
     const moved = Object.keys({ ...old, ...now }).filter(k => old[k] !== now[k])
     t(`${loc}: every key but the six is ${BASE}'s, and no key added or removed`, moved.every(k => KEYS.includes(k) && k in old && k in now), moved.filter(k => !KEYS.includes(k)))
