@@ -225,7 +225,8 @@
     "pricing-copy-2.cjs",
     "pricing-copy-3.cjs",
     "longer-intervals-1.cjs",
-    "pricing-copy-4.cjs"
+    "pricing-copy-4.cjs",
+    "world-countries-5.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -383,6 +384,8 @@
         "_perf-1-tables.cjs",
         "_moved-paths.cjs",
         "_compare-suits-1-words.cjs",
+        "_lp-world-countries-5.cjs",
+        "_world-countries-5-rows.cjs",
         "_lp-gsc-index-2.cjs",
         "_lp-email-sender-1.cjs",
         "_lp-demo-claim-2.cjs"

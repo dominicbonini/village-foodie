@@ -9,6 +9,13 @@
     "button": "Šalis: {name}. Keisti šalį",
     "menu": "Šalis",
     "title": "Pasirinkite savo šalį",
-    "subline": "Kainos, kalba ir nustatymai bus atitinkamai pritaikyti."
+    "subline": "Kainos, kalba ir nustatymai bus atitinkamai pritaikyti.",
+    "regions": {
+      "europe": "Europa",
+      "americas": "Amerika",
+      "asiaPacific": "Azija ir Ramusis vandenynas",
+      "middleEast": "Artimieji Rytai",
+      "africa": "Afrika"
+    }
   }
 }

@@ -9,6 +9,13 @@
     "button": "Riik: {name}. Muuda riiki",
     "menu": "Riik",
     "title": "Vali oma riik",
-    "subline": "Hinnad, keel ja seaded kohanduvad vastavalt."
+    "subline": "Hinnad, keel ja seaded kohanduvad vastavalt.",
+    "regions": {
+      "europe": "Euroopa",
+      "americas": "Ameerika",
+      "asiaPacific": "Aasia ja Vaikse ookeani piirkond",
+      "middleEast": "Lähis-Ida",
+      "africa": "Aafrika"
+    }
   }
 }

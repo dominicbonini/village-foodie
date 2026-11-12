@@ -3379,7 +3379,8 @@
     "zone_unknown": "Ce fuseau horaire n’est pas proposé pour ce pays. Choisissez-en un dans la liste.",
     "town_missing": "Indiquez la ville où votre food truck est basé.",
     "town_too_long": "Ce nom de ville est trop long — 120 caractères maximum.",
-    "region_closed": "Les food trucks basés dans la région {region} ne peuvent pas encore s’inscrire{reason, select, language { : HatchGrab n’est pas encore disponible en {language}} taxLines { : nous ajoutons d’abord des lignes TPS et TVP distinctes} other {}}. Si votre food truck est basé ailleurs, choisissez cette ville."
+    "region_closed": "Les food trucks basés dans la région {region} ne peuvent pas encore s’inscrire{reason, select, language { : HatchGrab n’est pas encore disponible en {language}} taxLines { : nous ajoutons d’abord des lignes TPS et TVP distinctes} other {}}. Si votre food truck est basé ailleurs, choisissez cette ville.",
+    "region_blocked": "Désolé, HatchGrab n’est pas encore disponible dans votre région."
   },
   "manageApi": {
     "vanFallback": "Camion",
@@ -5684,7 +5685,14 @@
       "button": "Pays : {name}. Changer de pays",
       "menu": "Pays",
       "title": "Choisissez votre pays",
-      "subline": "Les prix, la langue et les réglages s’adaptent à votre choix."
+      "subline": "Les prix, la langue et les réglages s’adaptent à votre choix.",
+      "regions": {
+        "europe": "Europe",
+        "americas": "Amériques",
+        "asiaPacific": "Asie-Pacifique",
+        "middleEast": "Moyen-Orient",
+        "africa": "Afrique"
+      }
     }
   },
   "landingFooter": {

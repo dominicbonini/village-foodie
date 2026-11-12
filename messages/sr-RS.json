@@ -3379,7 +3379,8 @@
     "zone_unknown": "Tu vremensku zonu ne nudimo za tu zemlju. Izaberite jednu sa liste.",
     "town_missing": "Navedite grad ili mesto u kom ste.",
     "town_too_long": "Naziv mesta je predugačak — najviše 120 znakova.",
-    "region_closed": "Food truckovi sa sedištem u regionu {region} još ne mogu da se registruju{reason, select, language {: HatchGrab još nije dostupan na jeziku {language}} taxLines {: prvo dodajemo zasebne stavke za GST i PST} other {}}. Ako je sedište vašeg food trucka negde drugde, izaberite taj grad ili mesto."
+    "region_closed": "Food truckovi sa sedištem u regionu {region} još ne mogu da se registruju{reason, select, language {: HatchGrab još nije dostupan na jeziku {language}} taxLines {: prvo dodajemo zasebne stavke za GST i PST} other {}}. Ako je sedište vašeg food trucka negde drugde, izaberite taj grad ili mesto.",
+    "region_blocked": "Nažalost, HatchGrab još nije dostupan u vašem regionu."
   },
   "manageApi": {
     "vanFallback": "Vozilo",
@@ -5684,7 +5685,14 @@
       "button": "Zemlja: {name}. Promenite zemlju",
       "menu": "Zemlja",
       "title": "Izaberite zemlju",
-      "subline": "Cene, jezik i podešavanja se prilagođavaju."
+      "subline": "Cene, jezik i podešavanja se prilagođavaju.",
+      "regions": {
+        "europe": "Evropa",
+        "americas": "Amerika",
+        "asiaPacific": "Azija i Pacifik",
+        "middleEast": "Bliski istok",
+        "africa": "Afrika"
+      }
     }
   },
   "landingFooter": {

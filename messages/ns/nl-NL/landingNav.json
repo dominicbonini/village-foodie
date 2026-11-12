@@ -9,6 +9,13 @@
     "button": "Land: {name}. Land wijzigen",
     "menu": "Land",
     "title": "Kies je land",
-    "subline": "Prijzen, taal en instellingen passen zich daarop aan."
+    "subline": "Prijzen, taal en instellingen passen zich daarop aan.",
+    "regions": {
+      "europe": "Europa",
+      "americas": "Amerika",
+      "asiaPacific": "Azië-Pacific",
+      "middleEast": "Midden-Oosten",
+      "africa": "Afrika"
+    }
   }
 }

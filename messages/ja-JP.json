@@ -3379,7 +3379,8 @@
     "zone_unknown": "そのタイムゾーンは、この国では選択できません。一覧から選んでください。",
     "town_missing": "拠点の市区町村を入力してください。",
     "town_too_long": "市区町村名が長すぎます。120文字以内にしてください。",
-    "region_closed": "{region}を拠点とするキッチンカーはまだ登録できません{reason, select, language {（HatchGrabはまだ{language}に対応していません）} taxLines {（現在、GSTとPSTを別々の行で表示する対応を進めています）} other {}}。別の場所を拠点にしている場合は、その市区町村を選んでください。"
+    "region_closed": "{region}を拠点とするキッチンカーはまだ登録できません{reason, select, language {（HatchGrabはまだ{language}に対応していません）} taxLines {（現在、GSTとPSTを別々の行で表示する対応を進めています）} other {}}。別の場所を拠点にしている場合は、その市区町村を選んでください。",
+    "region_blocked": "申し訳ありませんが、HatchGrabはお住まいの地域ではまだご利用いただけません。"
   },
   "manageApi": {
     "vanFallback": "車両",
@@ -5684,7 +5685,14 @@
       "button": "国：{name}。国を変更",
       "menu": "国",
       "title": "国を選択",
-      "subline": "料金、言語、設定が選んだ国に合わせて切り替わります。"
+      "subline": "料金、言語、設定が選んだ国に合わせて切り替わります。",
+      "regions": {
+        "europe": "ヨーロッパ",
+        "americas": "南北アメリカ",
+        "asiaPacific": "アジア太平洋",
+        "middleEast": "中東",
+        "africa": "アフリカ"
+      }
     }
   },
   "landingFooter": {

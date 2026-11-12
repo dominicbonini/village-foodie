@@ -9,6 +9,13 @@
     "button": "Zemlja: {name}. Promenite zemlju",
     "menu": "Zemlja",
     "title": "Izaberite zemlju",
-    "subline": "Cene, jezik i podešavanja se prilagođavaju."
+    "subline": "Cene, jezik i podešavanja se prilagođavaju.",
+    "regions": {
+      "europe": "Evropa",
+      "americas": "Amerika",
+      "asiaPacific": "Azija i Pacifik",
+      "middleEast": "Bliski istok",
+      "africa": "Afrika"
+    }
   }
 }

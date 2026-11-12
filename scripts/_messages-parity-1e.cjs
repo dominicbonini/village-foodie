@@ -144,6 +144,14 @@ const NEW_WORDING = {
   // ⚠️ RE-PINNED (canada-2, 22 October 2026): the reason is now a select — 'language' (Quebec) or 'taxLines' (Saskatchewan and
   // Manitoba: "we’re adding separate GST and PST lines first", Dominic's words); scripts/canada-2.cjs §1 holds both sentences.
   'tradeArea.region_closed': 'canada-1 / canada-2: "Trucks based in {region} can’t sign up yet: HatchGrab isn’t available in {language} yet…" (Quebec) / "…: we’re adding separate GST and PST lines first…" (Saskatchewan, Manitoba)',
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026, docs/world-countries-5-report.md): the region-block refusal (Dominic's
+  // approved sentence) and the country selector's five region buttons — new words; scripts/world-countries-5.cjs §2/§4 hold them.
+  'tradeArea.region_blocked': 'world-countries-5: "Sorry, HatchGrab isn’t available in your region yet." (lib/region-blocks.ts)',
+  'landingNav.country.regions.europe': 'world-countries-5: the country selector’s region button "Europe"',
+  'landingNav.country.regions.americas': 'world-countries-5: the country selector’s region button "Americas"',
+  'landingNav.country.regions.asiaPacific': 'world-countries-5: the country selector’s region button "Asia Pacific"',
+  'landingNav.country.regions.middleEast': 'world-countries-5: the country selector’s region button "Middle East"',
+  'landingNav.country.regions.africa': 'world-countries-5: the country selector’s region button "Africa"',
   // ⚠️ RE-PINNED (about-page, 22 October 2026, docs/about-page-report.md): the About page's words — new, Dominic's own (the brief,
   // verbatim); scripts/about-page.cjs holds each one's exact text and where it renders.
   'aboutPage.meta.description': 'about-page-2: the About page meta description (what HatchGrab builds; founded by Dominic Bonini)',

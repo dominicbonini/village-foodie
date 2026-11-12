@@ -1,0 +1,378 @@
+{
+ "ALL": {
+  "home": "29 Lekë",
+  "intl": "29 Lekë"
+ },
+ "AMD": {
+  "home": "29 ֏",
+  "intl": "29 ֏"
+ },
+ "AZN": {
+  "home": "29 ₼",
+  "intl": "29 ₼"
+ },
+ "BAM": {
+  "home": "29 KM",
+  "intl": "29 KM"
+ },
+ "GEL": {
+  "home": "29 ₾",
+  "intl": "29 ₾"
+ },
+ "ISK": {
+  "home": "29 kr.",
+  "intl": "ISK 29"
+ },
+ "MDL": {
+  "home": "29 L",
+  "intl": "MDL 29"
+ },
+ "MKD": {
+  "home": "29 ден.",
+  "intl": "29 ден."
+ },
+ "RSD": {
+  "home": "29 RSD",
+  "intl": "29 RSD"
+ },
+ "TRY": {
+  "home": "₺29",
+  "intl": "₺29"
+ },
+ "UAH": {
+  "home": "29 ₴",
+  "intl": "29 ₴"
+ },
+ "XCD": {
+  "home": "$29",
+  "intl": "EC$29"
+ },
+ "ARS": {
+  "home": "$ 29",
+  "intl": "ARS 29"
+ },
+ "AWG": {
+  "home": "Afl. 29",
+  "intl": "Afl. 29"
+ },
+ "BSD": {
+  "home": "$29",
+  "intl": "BSD 29"
+ },
+ "BZD": {
+  "home": "$29",
+  "intl": "BZD 29"
+ },
+ "BMD": {
+  "home": "$29",
+  "intl": "BMD 29"
+ },
+ "BOB": {
+  "home": "Bs 29",
+  "intl": "BOB 29"
+ },
+ "KYD": {
+  "home": "$29",
+  "intl": "KYD 29"
+ },
+ "CLP": {
+  "home": "$2.900",
+  "intl": "CLP 2,900"
+ },
+ "COP": {
+  "home": "$ 29",
+  "intl": "COP 29"
+ },
+ "CRC": {
+  "home": "₡29",
+  "intl": "₡29"
+ },
+ "XCG": {
+  "home": "Cg. 29",
+  "intl": "Cg. 29"
+ },
+ "DOP": {
+  "home": "RD$29",
+  "intl": "DOP 29"
+ },
+ "FKP": {
+  "home": "£29",
+  "intl": "FKP 29"
+ },
+ "GTQ": {
+  "home": "Q 29",
+  "intl": "GTQ 29"
+ },
+ "GYD": {
+  "home": "$29",
+  "intl": "GYD 29"
+ },
+ "HNL": {
+  "home": "L 29",
+  "intl": "HNL 29"
+ },
+ "JMD": {
+  "home": "$29",
+  "intl": "JMD 29"
+ },
+ "NIO": {
+  "home": "C$29",
+  "intl": "NIO 29"
+ },
+ "PAB": {
+  "home": "B/. 29",
+  "intl": "PAB 29"
+ },
+ "PYG": {
+  "home": "PYG 2,900",
+  "intl": "PYG 2,900"
+ },
+ "PEN": {
+  "home": "S/ 29",
+  "intl": "PEN 29"
+ },
+ "SRD": {
+  "home": "$ 29",
+  "intl": "SRD 29"
+ },
+ "TTD": {
+  "home": "$29",
+  "intl": "TTD 29"
+ },
+ "UYU": {
+  "home": "$ 29",
+  "intl": "UYU 29"
+ },
+ "BDT": {
+  "home": "২৯৳",
+  "intl": "২৯৳"
+ },
+ "BND": {
+  "home": "$ 29",
+  "intl": "BND 29"
+ },
+ "KHR": {
+  "home": "29៛",
+  "intl": "29៛"
+ },
+ "FJD": {
+  "home": "$29",
+  "intl": "FJD 29"
+ },
+ "XPF": {
+  "home": "2 900 FCFP",
+  "intl": "2 900 FCFP"
+ },
+ "INR": {
+  "home": "₹29",
+  "intl": "₹29"
+ },
+ "IDR": {
+  "home": "Rp 29",
+  "intl": "Rp 29"
+ },
+ "KZT": {
+  "home": "29 ₸",
+  "intl": "29 ₸"
+ },
+ "KRW": {
+  "home": "₩2,900",
+  "intl": "₩2,900"
+ },
+ "KGS": {
+  "home": "29 сом",
+  "intl": "29 сом"
+ },
+ "LAK": {
+  "home": "₭29",
+  "intl": "₭29"
+ },
+ "MOP": {
+  "home": "MOP$29",
+  "intl": "MOP$29"
+ },
+ "MVR": {
+  "home": "MVR 29",
+  "intl": "MVR 29"
+ },
+ "MNT": {
+  "home": "₮ 29",
+  "intl": "₮ 29"
+ },
+ "NPR": {
+  "home": "नेरू २९",
+  "intl": "नेरू २९"
+ },
+ "PKR": {
+  "home": "Rs 29",
+  "intl": "PKR 29"
+ },
+ "PGK": {
+  "home": "PGK 29",
+  "intl": "PGK 29"
+ },
+ "WST": {
+  "home": "WST 29",
+  "intl": "WST 29"
+ },
+ "SBD": {
+  "home": "$29",
+  "intl": "SBD 29"
+ },
+ "LKR": {
+  "home": "රු. 29",
+  "intl": "රු. 29"
+ },
+ "TWD": {
+  "home": "$29",
+  "intl": "NT$29"
+ },
+ "TJS": {
+  "home": "29 сом.",
+  "intl": "29 сом."
+ },
+ "TOP": {
+  "home": "T$ 29",
+  "intl": "TOP 29"
+ },
+ "UZS": {
+  "home": "29 soʻm",
+  "intl": "29 soʻm"
+ },
+ "VUV": {
+  "home": "VUV 2,900",
+  "intl": "VUV 2,900"
+ },
+ "ILS": {
+  "home": "‏29 ‏₪",
+  "intl": "‏29 ‏₪"
+ },
+ "QAR": {
+  "home": "‏٢٩ ر.ق.‏",
+  "intl": "‏٢٩ ر.ق.‏"
+ },
+ "SAR": {
+  "home": "‏٢٩ ر.س.‏",
+  "intl": "‏٢٩ ر.س.‏"
+ },
+ "DZD": {
+  "home": "‏29 د.ج.‏",
+  "intl": "‏29 د.ج.‏"
+ },
+ "AOA": {
+  "home": "29 Kz",
+  "intl": "29 Kz"
+ },
+ "XOF": {
+  "home": "2 900 F CFA",
+  "intl": "2 900 F CFA"
+ },
+ "BWP": {
+  "home": "P 29",
+  "intl": "BWP 29"
+ },
+ "BIF": {
+  "home": "2.900 FBu",
+  "intl": "2.900 FBu"
+ },
+ "CVE": {
+  "home": "CVE 29",
+  "intl": "CVE 29"
+ },
+ "XAF": {
+  "home": "FCFA 2.900",
+  "intl": "FCFA 2.900"
+ },
+ "KMF": {
+  "home": "‏٢٬٩٠٠ CF",
+  "intl": "‏٢٬٩٠٠ CF"
+ },
+ "DJF": {
+  "home": "2 900 Fdj",
+  "intl": "2 900 Fdj"
+ },
+ "EGP": {
+  "home": "‏٢٩ ج.م.‏",
+  "intl": "‏٢٩ ج.م.‏"
+ },
+ "SZL": {
+  "home": "E 29",
+  "intl": "SZL 29"
+ },
+ "ETB": {
+  "home": "ብር 29",
+  "intl": "ብር 29"
+ },
+ "GMD": {
+  "home": "D 29",
+  "intl": "D 29"
+ },
+ "GNF": {
+  "home": "2 900 FG",
+  "intl": "2 900 FG"
+ },
+ "LSL": {
+  "home": "M 29",
+  "intl": "M 29"
+ },
+ "LRD": {
+  "home": "$29",
+  "intl": "LRD 29"
+ },
+ "MGA": {
+  "home": "Ar 2,900",
+  "intl": "Ar 2,900"
+ },
+ "MWK": {
+  "home": "MK 29",
+  "intl": "MK 29"
+ },
+ "MUR": {
+  "home": "29 Rs",
+  "intl": "MUR 29"
+ },
+ "MAD": {
+  "home": "‏29 د.م.‏",
+  "intl": "‏29 د.م.‏"
+ },
+ "MZN": {
+  "home": "29 MTn",
+  "intl": "29 MTn"
+ },
+ "NAD": {
+  "home": "$29",
+  "intl": "NAD 29"
+ },
+ "NGN": {
+  "home": "₦29",
+  "intl": "₦29"
+ },
+ "SHP": {
+  "home": "£29",
+  "intl": "SHP 29"
+ },
+ "SCR": {
+  "home": "29 SR",
+  "intl": "29 SR"
+ },
+ "SLE": {
+  "home": "Le 29",
+  "intl": "SLE 29"
+ },
+ "ZAR": {
+  "home": "R 29",
+  "intl": "ZAR 29"
+ },
+ "TZS": {
+  "home": "TSh 29",
+  "intl": "TSh 29"
+ },
+ "UGX": {
+  "home": "USh 29",
+  "intl": "USh 29"
+ },
+ "ZMW": {
+  "home": "K 29",
+  "intl": "ZMW 29"
+ }
+}

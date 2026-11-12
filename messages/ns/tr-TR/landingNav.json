@@ -9,6 +9,13 @@
     "button": "Ülke: {name}. Ülkeyi değiştir",
     "menu": "Ülke",
     "title": "Ülkenizi seçin",
-    "subline": "Fiyatlar, dil ve ayarlar buna göre değişir."
+    "subline": "Fiyatlar, dil ve ayarlar buna göre değişir.",
+    "regions": {
+      "europe": "Avrupa",
+      "americas": "Amerika",
+      "asiaPacific": "Asya-Pasifik",
+      "middleEast": "Orta Doğu",
+      "africa": "Afrika"
+    }
   }
 }

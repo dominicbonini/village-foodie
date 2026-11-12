@@ -3379,7 +3379,8 @@
     "zone_unknown": "Zon waktu itu tiada dalam pilihan kami untuk negara itu. Pilih satu daripada senarai.",
     "town_missing": "Beritahu kami pekan atau bandar tempat anda berpangkalan.",
     "town_too_long": "Nama bandar itu terlalu panjang — maksimum 120 aksara.",
-    "region_closed": "Trak yang berpangkalan di {region} belum boleh mendaftar{reason, select, language {: HatchGrab belum tersedia dalam bahasa ini: {language}} taxLines {: kami sedang menambah baris GST dan PST yang berasingan dahulu} other {}}. Jika trak anda berpangkalan di tempat lain, pilih pekan atau bandar itu."
+    "region_closed": "Trak yang berpangkalan di {region} belum boleh mendaftar{reason, select, language {: HatchGrab belum tersedia dalam bahasa ini: {language}} taxLines {: kami sedang menambah baris GST dan PST yang berasingan dahulu} other {}}. Jika trak anda berpangkalan di tempat lain, pilih pekan atau bandar itu.",
+    "region_blocked": "Maaf, HatchGrab belum tersedia di kawasan anda."
   },
   "manageApi": {
     "vanFallback": "Van",
@@ -5684,7 +5685,14 @@
       "button": "Negara: {name}. Tukar negara",
       "menu": "Negara",
       "title": "Pilih negara anda",
-      "subline": "Harga, bahasa dan tetapan akan berubah mengikut negara."
+      "subline": "Harga, bahasa dan tetapan akan berubah mengikut negara.",
+      "regions": {
+        "europe": "Eropah",
+        "americas": "Amerika",
+        "asiaPacific": "Asia Pasifik",
+        "middleEast": "Timur Tengah",
+        "africa": "Afrika"
+      }
     }
   },
   "landingFooter": {

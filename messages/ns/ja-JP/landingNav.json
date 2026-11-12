@@ -9,6 +9,13 @@
     "button": "国：{name}。国を変更",
     "menu": "国",
     "title": "国を選択",
-    "subline": "料金、言語、設定が選んだ国に合わせて切り替わります。"
+    "subline": "料金、言語、設定が選んだ国に合わせて切り替わります。",
+    "regions": {
+      "europe": "ヨーロッパ",
+      "americas": "南北アメリカ",
+      "asiaPacific": "アジア太平洋",
+      "middleEast": "中東",
+      "africa": "アフリカ"
+    }
   }
 }

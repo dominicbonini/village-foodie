@@ -9,6 +9,13 @@
     "button": "국가: {name}. 국가 변경",
     "menu": "국가",
     "title": "국가 선택",
-    "subline": "가격, 언어, 설정이 선택한 국가에 맞게 바뀝니다."
+    "subline": "가격, 언어, 설정이 선택한 국가에 맞게 바뀝니다.",
+    "regions": {
+      "europe": "유럽",
+      "americas": "아메리카",
+      "asiaPacific": "아시아 태평양",
+      "middleEast": "중동",
+      "africa": "아프리카"
+    }
   }
 }

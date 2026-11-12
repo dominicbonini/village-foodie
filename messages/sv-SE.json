@@ -3379,7 +3379,8 @@
     "zone_unknown": "Den tidszonen erbjuder vi inte för det landet. Välj en i listan.",
     "town_missing": "Ange orten där du har din bas.",
     "town_too_long": "Ortnamnet är för långt – högst 120 tecken.",
-    "region_closed": "Foodtruckar med bas i {region} kan inte registrera sig än{reason, select, language {: HatchGrab finns inte på {language} än} taxLines {: vi lägger först till separata rader för GST och PST} other {}}. Om din foodtruck har sin bas någon annanstans, välj den orten."
+    "region_closed": "Foodtruckar med bas i {region} kan inte registrera sig än{reason, select, language {: HatchGrab finns inte på {language} än} taxLines {: vi lägger först till separata rader för GST och PST} other {}}. Om din foodtruck har sin bas någon annanstans, välj den orten.",
+    "region_blocked": "Tyvärr är HatchGrab inte tillgängligt i din region än."
   },
   "manageApi": {
     "vanFallback": "Foodtruck",
@@ -5684,7 +5685,14 @@
       "button": "Land: {name}. Byt land",
       "menu": "Land",
       "title": "Välj ditt land",
-      "subline": "Priser, språk och inställningar anpassas efter det."
+      "subline": "Priser, språk och inställningar anpassas efter det.",
+      "regions": {
+        "europe": "Europa",
+        "americas": "Amerika",
+        "asiaPacific": "Asien och Stillahavsområdet",
+        "middleEast": "Mellanöstern",
+        "africa": "Afrika"
+      }
     }
   },
   "landingFooter": {

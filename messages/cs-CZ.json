@@ -3379,7 +3379,8 @@
     "zone_unknown": "Toto časové pásmo pro danou zemi nenabízíme. Vyberte jedno ze seznamu.",
     "town_missing": "Uveďte město nebo obec, kde máte sídlo.",
     "town_too_long": "Název města je příliš dlouhý — nejvýše 120 znaků.",
-    "region_closed": "Food trucky se sídlem v regionu {region} se zatím nemohou registrovat{reason, select, language {: HatchGrab zatím není dostupný v tomto jazyce ({language})} taxLines {: nejprve přidáváme samostatné řádky GST a PST} other {}}. Pokud má váš food truck sídlo jinde, vyberte příslušné město nebo obec."
+    "region_closed": "Food trucky se sídlem v regionu {region} se zatím nemohou registrovat{reason, select, language {: HatchGrab zatím není dostupný v tomto jazyce ({language})} taxLines {: nejprve přidáváme samostatné řádky GST a PST} other {}}. Pokud má váš food truck sídlo jinde, vyberte příslušné město nebo obec.",
+    "region_blocked": "Omlouváme se, HatchGrab zatím ve vašem regionu není k dispozici."
   },
   "manageApi": {
     "vanFallback": "Food truck",
@@ -5684,7 +5685,14 @@
       "button": "Země: {name}. Změnit zemi",
       "menu": "Země",
       "title": "Vyberte svou zemi",
-      "subline": "Ceny, jazyk a nastavení se podle toho přizpůsobí."
+      "subline": "Ceny, jazyk a nastavení se podle toho přizpůsobí.",
+      "regions": {
+        "europe": "Evropa",
+        "americas": "Amerika",
+        "asiaPacific": "Asie a Tichomoří",
+        "middleEast": "Blízký východ",
+        "africa": "Afrika"
+      }
     }
   },
   "landingFooter": {

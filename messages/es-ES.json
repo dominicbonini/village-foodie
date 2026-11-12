@@ -3379,7 +3379,8 @@
     "zone_unknown": "Esa zona horaria no está disponible para ese país. Elige una de la lista.",
     "town_missing": "Indícanos la localidad o ciudad donde tienes tu base.",
     "town_too_long": "Ese nombre de localidad es demasiado largo: 120 caracteres como máximo.",
-    "region_closed": "Los food trucks con base en {region} aún no pueden registrarse{reason, select, language {: HatchGrab todavía no está disponible en {language}} taxLines {: primero estamos añadiendo líneas separadas para GST y PST} other {}}. Si tu food truck tiene su base en otro sitio, elige esa localidad o ciudad."
+    "region_closed": "Los food trucks con base en {region} aún no pueden registrarse{reason, select, language {: HatchGrab todavía no está disponible en {language}} taxLines {: primero estamos añadiendo líneas separadas para GST y PST} other {}}. Si tu food truck tiene su base en otro sitio, elige esa localidad o ciudad.",
+    "region_blocked": "Lo sentimos, HatchGrab aún no está disponible en tu región."
   },
   "manageApi": {
     "vanFallback": "Food truck",
@@ -5684,7 +5685,14 @@
       "button": "País: {name}. Cambiar de país",
       "menu": "País",
       "title": "Elige tu país",
-      "subline": "Los precios, el idioma y la configuración se adaptan a tu elección."
+      "subline": "Los precios, el idioma y la configuración se adaptan a tu elección.",
+      "regions": {
+        "europe": "Europa",
+        "americas": "América",
+        "asiaPacific": "Asia-Pacífico",
+        "middleEast": "Oriente Medio",
+        "africa": "África"
+      }
     }
   },
   "landingFooter": {

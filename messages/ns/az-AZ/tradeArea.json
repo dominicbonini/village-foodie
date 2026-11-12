@@ -4,5 +4,6 @@
   "zone_unknown": "Bu saat qurşağını həmin ölkə üçün təklif etmirik. Siyahıdan birini seçin.",
   "town_missing": "Yerləşdiyiniz şəhər və ya qəsəbəni bizə bildirin.",
   "town_too_long": "Bu şəhər adı çox uzundur — ən çoxu 120 simvol.",
-  "region_closed": "Bölgə: {region} — burada yerləşən food truck-lar hələ qeydiyyatdan keçə bilmir{reason, select, language {: HatchGrab bu dildə hələ mövcud deyil — {language}} taxLines {: əvvəlcə ayrıca GST və PST sətirləri əlavə edirik} other {}}. Food truck-ınız başqa yerdədirsə, həmin şəhər və ya qəsəbəni seçin."
+  "region_closed": "Bölgə: {region} — burada yerləşən food truck-lar hələ qeydiyyatdan keçə bilmir{reason, select, language {: HatchGrab bu dildə hələ mövcud deyil — {language}} taxLines {: əvvəlcə ayrıca GST və PST sətirləri əlavə edirik} other {}}. Food truck-ınız başqa yerdədirsə, həmin şəhər və ya qəsəbəni seçin.",
+  "region_blocked": "Təəssüf ki, HatchGrab hələ sizin regionda mövcud deyil."
 }

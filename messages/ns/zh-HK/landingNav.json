@@ -9,6 +9,13 @@
     "button": "國家／地區：{name}。更改國家／地區",
     "menu": "國家／地區",
     "title": "選擇你的國家／地區",
-    "subline": "價錢、語言及設定會隨之更改。"
+    "subline": "價錢、語言及設定會隨之更改。",
+    "regions": {
+      "europe": "歐洲",
+      "americas": "美洲",
+      "asiaPacific": "亞太區",
+      "middleEast": "中東",
+      "africa": "非洲"
+    }
   }
 }

@@ -3379,7 +3379,8 @@
     "zone_unknown": "Chúng tôi không hỗ trợ múi giờ đó cho quốc gia này. Hãy chọn một múi giờ trong danh sách.",
     "town_missing": "Cho chúng tôi biết thành phố hoặc thị trấn nơi bạn hoạt động.",
     "town_too_long": "Tên thành phố đó quá dài — tối đa 120 ký tự.",
-    "region_closed": "Food truck hoạt động tại {region} chưa thể đăng ký{reason, select, language {: HatchGrab chưa có bằng ngôn ngữ {language}} taxLines {: chúng tôi đang bổ sung các dòng thuế GST và PST riêng} other {}}. Nếu food truck của bạn hoạt động ở nơi khác, hãy chọn thành phố hoặc thị trấn đó."
+    "region_closed": "Food truck hoạt động tại {region} chưa thể đăng ký{reason, select, language {: HatchGrab chưa có bằng ngôn ngữ {language}} taxLines {: chúng tôi đang bổ sung các dòng thuế GST và PST riêng} other {}}. Nếu food truck của bạn hoạt động ở nơi khác, hãy chọn thành phố hoặc thị trấn đó.",
+    "region_blocked": "Rất tiếc, HatchGrab chưa có mặt tại khu vực của bạn."
   },
   "manageApi": {
     "vanFallback": "Xe",
@@ -5684,7 +5685,14 @@
       "button": "Quốc gia: {name}. Đổi quốc gia",
       "menu": "Quốc gia",
       "title": "Chọn quốc gia của bạn",
-      "subline": "Giá, ngôn ngữ và cài đặt sẽ thay đổi cho phù hợp."
+      "subline": "Giá, ngôn ngữ và cài đặt sẽ thay đổi cho phù hợp.",
+      "regions": {
+        "europe": "Châu Âu",
+        "americas": "Châu Mỹ",
+        "asiaPacific": "Châu Á - Thái Bình Dương",
+        "middleEast": "Trung Đông",
+        "africa": "Châu Phi"
+      }
     }
   },
   "landingFooter": {

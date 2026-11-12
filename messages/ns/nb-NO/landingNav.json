@@ -9,6 +9,13 @@
     "button": "Land: {name}. Bytt land",
     "menu": "Land",
     "title": "Velg ditt land",
-    "subline": "Priser, språk og innstillinger tilpasses deretter."
+    "subline": "Priser, språk og innstillinger tilpasses deretter.",
+    "regions": {
+      "europe": "Europa",
+      "americas": "Amerika",
+      "asiaPacific": "Asia og stillehavsområdet",
+      "middleEast": "Midtøsten",
+      "africa": "Afrika"
+    }
   }
 }

@@ -4,5 +4,6 @@
   "zone_unknown": "Não disponibilizamos esse fuso horário para esse país. Escolha um da lista.",
   "town_missing": "Indique a localidade onde está sediado.",
   "town_too_long": "Esse nome de localidade é demasiado longo — no máximo 120 caracteres.",
-  "region_closed": "Os food trucks sediados nesta região ({region}) ainda não se podem registar{reason, select, language {: o HatchGrab ainda não está disponível neste idioma ({language})} taxLines {: primeiro estamos a acrescentar linhas separadas para GST e PST} other {}}. Se o seu food truck estiver sediado noutro sítio, escolha essa localidade."
+  "region_closed": "Os food trucks sediados nesta região ({region}) ainda não se podem registar{reason, select, language {: o HatchGrab ainda não está disponível neste idioma ({language})} taxLines {: primeiro estamos a acrescentar linhas separadas para GST e PST} other {}}. Se o seu food truck estiver sediado noutro sítio, escolha essa localidade.",
+  "region_blocked": "Lamentamos, mas o HatchGrab ainda não está disponível na sua região."
 }

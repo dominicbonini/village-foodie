@@ -4,5 +4,6 @@
   "zone_unknown": "Ezt az időzónát nem kínáljuk ehhez az országhoz. Válasszon egyet a listából.",
   "town_missing": "Adja meg, melyik településen működik.",
   "town_too_long": "Ez a településnév túl hosszú — legfeljebb 120 karakter lehet.",
-  "region_closed": "Ebből a régióból a food truckok még nem regisztrálhatnak: {region}{reason, select, language { — a HatchGrab még nem érhető el ezen a nyelven: {language}} taxLines { — előbb külön GST- és PST-sorokat vezetünk be} other {}}. Ha a food truckja máshol működik, válassza azt a települést."
+  "region_closed": "Ebből a régióból a food truckok még nem regisztrálhatnak: {region}{reason, select, language { — a HatchGrab még nem érhető el ezen a nyelven: {language}} taxLines { — előbb külön GST- és PST-sorokat vezetünk be} other {}}. Ha a food truckja máshol működik, válassza azt a települést.",
+  "region_blocked": "Sajnáljuk, a HatchGrab az Ön régiójában még nem érhető el."
 }

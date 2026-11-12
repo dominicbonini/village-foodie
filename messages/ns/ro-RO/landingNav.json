@@ -9,6 +9,13 @@
     "button": "Țară: {name}. Schimbați țara",
     "menu": "Țară",
     "title": "Alegeți țara",
-    "subline": "Prețurile, limba și setările se vor adapta în consecință."
+    "subline": "Prețurile, limba și setările se vor adapta în consecință.",
+    "regions": {
+      "europe": "Europa",
+      "americas": "America",
+      "asiaPacific": "Asia-Pacific",
+      "middleEast": "Orientul Mijlociu",
+      "africa": "Africa"
+    }
   }
 }

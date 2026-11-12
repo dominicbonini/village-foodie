@@ -9,6 +9,13 @@
     "button": "Mamlakat: {name}. Mamlakatni oʻzgartirish",
     "menu": "Mamlakat",
     "title": "Mamlakatingizni tanlang",
-    "subline": "Narxlar, til va sozlamalar shunga mos oʻzgaradi."
+    "subline": "Narxlar, til va sozlamalar shunga mos oʻzgaradi.",
+    "regions": {
+      "europe": "Yevropa",
+      "americas": "Amerika",
+      "asiaPacific": "Osiyo-Tinch okeani",
+      "middleEast": "Yaqin Sharq",
+      "africa": "Afrika"
+    }
   }
 }

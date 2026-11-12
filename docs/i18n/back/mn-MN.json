@@ -5914,5 +5914,11 @@
  "whereYouTrade.stepIntro": "This sets your currency, prices, time zone and phone number format. The country is tied to your card payments, so it can’t be changed later.",
  "whereYouTrade.timezoneLabel": "Time zone",
  "whereYouTrade.townLabel": "Town or settlement",
- "whereYouTrade.townQuestion": "Town or settlement where you are based"
+ "whereYouTrade.townQuestion": "Town or settlement where you are based",
+ "landingNav.country.regions.europe": "Europe",
+ "landingNav.country.regions.americas": "Americas",
+ "landingNav.country.regions.asiaPacific": "Asia Pacific",
+ "landingNav.country.regions.middleEast": "Middle East",
+ "landingNav.country.regions.africa": "Africa",
+ "tradeArea.region_blocked": "Sorry, HatchGrab isn’t available in your region yet."
 }

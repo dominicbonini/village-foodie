@@ -4,5 +4,6 @@
   "zone_unknown": "我們沒有為該國家提供這個時區，請從清單中選擇。",
   "town_missing": "請告訴我們你所在的城市或鄉鎮。",
   "town_too_long": "城市名稱太長了——最多 120 個字元。",
-  "region_closed": "位於 {region} 的餐車目前還無法註冊{reason, select, language {：HatchGrab 尚未提供 {language} 版本} taxLines {：我們正先加入分開的 GST 和 PST 稅目} other {}}。如果你的餐車位於其他地方，請選擇那個城市或鄉鎮。"
+  "region_closed": "位於 {region} 的餐車目前還無法註冊{reason, select, language {：HatchGrab 尚未提供 {language} 版本} taxLines {：我們正先加入分開的 GST 和 PST 稅目} other {}}。如果你的餐車位於其他地方，請選擇那個城市或鄉鎮。",
+  "region_blocked": "抱歉，HatchGrab 目前尚未在你所在的地區提供服務。"
 }

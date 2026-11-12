@@ -9,6 +9,13 @@
     "button": "Země: {name}. Změnit zemi",
     "menu": "Země",
     "title": "Vyberte svou zemi",
-    "subline": "Ceny, jazyk a nastavení se podle toho přizpůsobí."
+    "subline": "Ceny, jazyk a nastavení se podle toho přizpůsobí.",
+    "regions": {
+      "europe": "Evropa",
+      "americas": "Amerika",
+      "asiaPacific": "Asie a Tichomoří",
+      "middleEast": "Blízký východ",
+      "africa": "Afrika"
+    }
   }
 }

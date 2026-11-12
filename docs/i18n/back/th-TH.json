@@ -5914,5 +5914,11 @@
  "emailBilling.trial1.line1": "The free trial period for {truck} will end tomorrow.",
  "emailBilling.trial1.noCard": "Please add a card, otherwise receiving online orders will temporarily stop.",
  "emailBilling.trial1.allSet": "Ready: the {plan} package will start on {date}.",
- "emailBilling.trial1.charge": "When the trial period ends, we will charge {amount} for the remaining period of {month}."
+ "emailBilling.trial1.charge": "When the trial period ends, we will charge {amount} for the remaining period of {month}.",
+ "landingNav.country.regions.europe": "Europe",
+ "landingNav.country.regions.americas": "Americas",
+ "landingNav.country.regions.asiaPacific": "Asia Pacific",
+ "landingNav.country.regions.middleEast": "Middle East",
+ "landingNav.country.regions.africa": "Africa",
+ "tradeArea.region_blocked": "Sorry, HatchGrab isn’t available in your region yet."
 }

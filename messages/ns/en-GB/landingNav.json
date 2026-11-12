@@ -9,6 +9,13 @@
     "button": "Country: {name}. Change country",
     "menu": "Country",
     "title": "Choose your country",
-    "subline": "Prices, language and settings change to match."
+    "subline": "Prices, language and settings change to match.",
+    "regions": {
+      "europe": "Europe",
+      "americas": "Americas",
+      "asiaPacific": "Asia Pacific",
+      "middleEast": "Middle East",
+      "africa": "Africa"
+    }
   }
 }

@@ -3379,7 +3379,8 @@
     "zone_unknown": "Bu saat dilimi o ülke için sunduklarımız arasında değil. Listeden birini seçin.",
     "town_missing": "Bulunduğunuz şehri veya ilçeyi yazın.",
     "town_too_long": "Bu şehir adı çok uzun — en fazla 120 karakter.",
-    "region_closed": "{region} bölgesindeki food truck’lar henüz kaydolamıyor{reason, select, language {: HatchGrab henüz {language} dilinde sunulmuyor} taxLines {: önce ayrı GST ve PST satırları ekliyoruz} other {}}. Food truck’ınız başka bir yerdeyse o şehri veya ilçeyi seçin."
+    "region_closed": "{region} bölgesindeki food truck’lar henüz kaydolamıyor{reason, select, language {: HatchGrab henüz {language} dilinde sunulmuyor} taxLines {: önce ayrı GST ve PST satırları ekliyoruz} other {}}. Food truck’ınız başka bir yerdeyse o şehri veya ilçeyi seçin.",
+    "region_blocked": "Üzgünüz, HatchGrab bölgenizde henüz kullanılamıyor."
   },
   "manageApi": {
     "vanFallback": "Araç",
@@ -5684,7 +5685,14 @@
       "button": "Ülke: {name}. Ülkeyi değiştir",
       "menu": "Ülke",
       "title": "Ülkenizi seçin",
-      "subline": "Fiyatlar, dil ve ayarlar buna göre değişir."
+      "subline": "Fiyatlar, dil ve ayarlar buna göre değişir.",
+      "regions": {
+        "europe": "Avrupa",
+        "americas": "Amerika",
+        "asiaPacific": "Asya-Pasifik",
+        "middleEast": "Orta Doğu",
+        "africa": "Afrika"
+      }
     }
   },
   "landingFooter": {

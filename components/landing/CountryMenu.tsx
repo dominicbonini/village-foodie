@@ -17,10 +17,17 @@
 // (`.cc-dlg-closed`), not absent. The click is unchanged: it keeps the cookie and navigates (the default navigation is
 // prevented and the same router call as before runs). Only switched-on countries are listed, so a switched-off
 // country is never linked.
+// 🔴 world-countries-5 (12 November 2026, Dominic's approved mockup, docs/world-countries-5-report.md §4): REGIONS. The box keeps its
+// title and line, and gains a row of REGION BUTTONS at the top on every screen size — Europe, Americas, Asia Pacific, Middle East,
+// Africa (lib/country-regions.ts; a region with no switched-on country is not shown). Below, the chosen region's countries: flag and
+// name in its own language, the current one ticked, sorted by the English name — no codes, no search. Laptop and iPad: a 5- / 4-column
+// grid that fits without scrolling; a phone: a full-screen panel, the buttons scrolling sideways, one country per row (44px+). It opens
+// on the visitor's own region. Every region's list is in the server-rendered HTML (inactive ones `hidden`), so every link stays crawlable.
 import { useEffect, useId, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { VISITOR_COUNTRY_COOKIE, VISITOR_COUNTRY_MAX_AGE, type VisitorCountryMenu } from '@/lib/visitor-country-types'
 import { switchCountryPath, countryPagePath } from '@/lib/marketing-country'   // pure, client-safe: the country-address table
+import { REGIONS, regionOfCountry, type RegionKey } from '@/lib/country-regions'   // pure, client-safe: world-countries-5
 // Language Phase 1e: the trigger's and the box's words are `landingNav.country` messages. The × reuses the landing's own
 // modal's "Close" (`demoUpload.close`), so the box adds only its title and subline.
 import { useT } from '@/lib/i18n/use-t'
@@ -59,6 +66,11 @@ export function CountryMenu({ menu }: { menu: VisitorCountryMenu }) {
   const { current, remember } = menu
   // Sorted by the ENGLISH name, so the list reads in the same order on every page and in every language.
   const options = [...menu.options].sort((a, b) => a.name.localeCompare(b.name, 'en'))
+  // world-countries-5: the regions that have a switched-on country, in the mockup's order; the box opens on the visitor's own.
+  const regions = REGIONS.filter(r => options.some(o => regionOfCountry(o.code) === r))
+  const home: RegionKey = regions.includes(regionOfCountry(current.code)) ? regionOfCountry(current.code) : (regions[0] ?? 'europe')
+  const [region, setRegion] = useState<RegionKey>(home)
+  const tabsId = useId()
 
   // ?country=XX chose this page's country — keep it, so the next page (and the next visit) agrees.
   useEffect(() => { if (remember) keepCountry(remember) }, [remember])
@@ -77,7 +89,8 @@ export function CountryMenu({ menu }: { menu: VisitorCountryMenu }) {
       if (e.key === 'Escape') { e.preventDefault(); setOpen(false); button.current?.focus(); return }
       if (e.key !== 'Tab') return
       // Tab stays inside the box (aria-modal): from the last control back to the first, and the other way.
-      const items = [...(box.current?.querySelectorAll<HTMLElement>('button, a[href]') ?? [])]
+      // world-countries-5: a hidden region's links are not reachable, so they are not in the loop.
+      const items = [...(box.current?.querySelectorAll<HTMLElement>('button, a[href]') ?? [])].filter(el => !el.closest('[hidden]'))
       if (!items.length) return
       const i = items.indexOf(document.activeElement as HTMLElement)
       if (e.shiftKey && i <= 0) { e.preventDefault(); items[items.length - 1].focus() }
@@ -105,7 +118,7 @@ export function CountryMenu({ menu }: { menu: VisitorCountryMenu }) {
   return (
     <span className="cc cc-foot">
       <button ref={button} type="button" className="cc-btn" aria-haspopup="dialog" aria-expanded={open} aria-controls={dialogId}
-        aria-label={t('country.button', { name: current.ownName })} onClick={() => setOpen(true)}>
+        aria-label={t('country.button', { name: current.ownName })} onClick={() => { setRegion(home); setOpen(true) }}>
         <Flag src={current.flag} />
         <span className="cc-code">{current.code}</span>
         <Chevron />
@@ -120,20 +133,32 @@ export function CountryMenu({ menu }: { menu: VisitorCountryMenu }) {
           </button>
           <h2 id={titleId} className="cc-title">{t('country.title')}</h2>
           <p className="cc-sub">{t('country.subline')}</p>
-          {/* A labelled list, not a <nav>: landing.css styles `.hg-landing nav` as the page's top bar. */}
-          <ul className="cc-list" aria-label={t('country.menu')}>
-            {options.map(o => (
-              <li key={o.code}>
-                <a href={hrefOf(o.code)} lang={o.lang} aria-current={o.code === current.code ? 'true' : undefined} className="cc-item"
-                  onClick={e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); choose(o.code) }}>
-                  <Flag src={o.flag} />
-                  <span className="cc-item-name">{o.ownName}</span>
-                  <span className="cc-item-code">{o.code}</span>
-                  <span className="cc-item-tick">{o.code === current.code && <Tick />}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
+          {/* world-countries-5: the region buttons (a tab row; each shows its own list below). */}
+          {regions.length > 1 && (
+            <div className="cc-regions" role="tablist" aria-label={t('country.title')}>
+              {regions.map(r => (
+                <button key={r} type="button" role="tab" id={`${tabsId}-${r}`} aria-selected={r === region} aria-controls={`${tabsId}-${r}-list`}
+                  className="cc-region" onClick={() => setRegion(r)}>{t(`country.regions.${r}`)}</button>
+              ))}
+            </div>
+          )}
+          {/* A labelled list per region, not a <nav>: landing.css styles `.hg-landing nav` as the page's top bar. Inactive ones are
+              `hidden` — out of view and the accessibility tree, still in the HTML (crawlable). */}
+          {regions.map(r => (
+            <ul key={r} id={`${tabsId}-${r}-list`} role={regions.length > 1 ? 'tabpanel' : undefined} aria-labelledby={regions.length > 1 ? `${tabsId}-${r}` : undefined}
+              aria-label={regions.length > 1 ? undefined : t('country.menu')} hidden={r !== region} className="cc-list">
+              {options.filter(o => regionOfCountry(o.code) === r).map(o => (
+                <li key={o.code}>
+                  <a href={hrefOf(o.code)} lang={o.lang} aria-current={o.code === current.code ? 'true' : undefined} className="cc-item"
+                    onClick={e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); choose(o.code) }}>
+                    <Flag src={o.flag} />
+                    <span className="cc-item-name">{o.ownName}</span>
+                    <span className="cc-item-tick">{o.code === current.code && <Tick />}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ))}
         </div>
       </div>
     </span>

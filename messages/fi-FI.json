@@ -3379,7 +3379,8 @@
     "zone_unknown": "Emme tarjoa tätä aikavyöhykettä kyseiselle maalle. Valitse aikavyöhyke luettelosta.",
     "town_missing": "Kerro paikkakunta, jossa toimit.",
     "town_too_long": "Paikkakunnan nimi on liian pitkä — enintään 120 merkkiä.",
-    "region_closed": "Alueella {region} toimivat ruokarekat eivät voi vielä rekisteröityä{reason, select, language {: HatchGrab ei ole vielä saatavilla kielellä {language}} taxLines {: lisäämme ensin erilliset GST- ja PST-rivit} other {}}. Jos ruokarekkasi toimii muualla, valitse se paikkakunta."
+    "region_closed": "Alueella {region} toimivat ruokarekat eivät voi vielä rekisteröityä{reason, select, language {: HatchGrab ei ole vielä saatavilla kielellä {language}} taxLines {: lisäämme ensin erilliset GST- ja PST-rivit} other {}}. Jos ruokarekkasi toimii muualla, valitse se paikkakunta.",
+    "region_blocked": "Valitettavasti HatchGrab ei ole vielä saatavilla alueellasi."
   },
   "manageApi": {
     "vanFallback": "Ruokarekka",
@@ -5684,7 +5685,14 @@
       "button": "Maa: {name}. Vaihda maata",
       "menu": "Maa",
       "title": "Valitse maasi",
-      "subline": "Hinnat, kieli ja asetukset mukautuvat valintasi mukaan."
+      "subline": "Hinnat, kieli ja asetukset mukautuvat valintasi mukaan.",
+      "regions": {
+        "europe": "Eurooppa",
+        "americas": "Amerikka",
+        "asiaPacific": "Aasia ja Tyynenmeren alue",
+        "middleEast": "Lähi-itä",
+        "africa": "Afrikka"
+      }
     }
   },
   "landingFooter": {

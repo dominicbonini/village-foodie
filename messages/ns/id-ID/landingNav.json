@@ -9,6 +9,13 @@
     "button": "Negara: {name}. Ganti negara",
     "menu": "Negara",
     "title": "Pilih negara Anda",
-    "subline": "Harga, bahasa, dan pengaturan akan menyesuaikan."
+    "subline": "Harga, bahasa, dan pengaturan akan menyesuaikan.",
+    "regions": {
+      "europe": "Eropa",
+      "americas": "Amerika",
+      "asiaPacific": "Asia Pasifik",
+      "middleEast": "Timur Tengah",
+      "africa": "Afrika"
+    }
   }
 }

@@ -74,7 +74,18 @@ export const COUNTRY_PATH_SEGMENTS: Readonly<Record<string, string>> = { GB: 'uk
   TW: 'tw',
   // languages-world-1 (10 November 2026): IL — prepared, each at its ISO code. A country with no enabled row 302s to /uk and is in no
   // router pick, hreflang set, sitemap or menu, so these appear only when the country is switched on.
-  IL: 'il' }
+  IL: 'il',
+  // world-countries-5 (12 November 2026): the rest of the 167 new countries of docs/world-countries-4/go-live.csv, each at its ISO code.
+  // Switched off until the switch-on migration (20261095) runs: a country with no enabled row 302s to /uk and is in no router pick,
+  // hreflang set, sitemap, menu or country selector.
+  AL: 'al', AD: 'ad', AM: 'am', AZ: 'az', BA: 'ba', FO: 'fo', GE: 'ge', GL: 'gl', GG: 'gg', VA: 'va', IM: 'im', JE: 'je', MD: 'md', ME: 'me', MK: 'mk', SM: 'sm',
+  SJ: 'sj', UA: 'ua', AX: 'ax', AI: 'ai', AG: 'ag', AW: 'aw', BZ: 'bz', BM: 'bm', BQ: 'bq', KY: 'ky', CW: 'cw', DM: 'dm', FK: 'fk', GF: 'gf', GD: 'gd', GP: 'gp',
+  GY: 'gy', MQ: 'mq', MS: 'ms', PR: 'pr', BL: 'bl', KN: 'kn', LC: 'lc', MF: 'mf', PM: 'pm', VC: 'vc', SX: 'sx', SR: 'sr', TC: 'tc', VG: 'vg', VI: 'vi', AS: 'as',
+  BD: 'bd', BT: 'bt', BN: 'bn', KH: 'kh', CX: 'cx', CC: 'cc', CK: 'ck', FJ: 'fj', PF: 'pf', GU: 'gu', IN: 'in', KZ: 'kz', KI: 'ki', KG: 'kg', LA: 'la', MO: 'mo',
+  MV: 'mv', MH: 'mh', FM: 'fm', MN: 'mn', NR: 'nr', NP: 'np', NC: 'nc', NU: 'nu', NF: 'nf', MP: 'mp', PK: 'pk', PW: 'pw', PG: 'pg', PN: 'pn', WS: 'ws', SB: 'sb',
+  LK: 'lk', TJ: 'tj', TL: 'tl', TK: 'tk', TO: 'to', TM: 'tm', TV: 'tv', UZ: 'uz', VU: 'vu', WF: 'wf', DZ: 'dz', BJ: 'bj', BW: 'bw', BF: 'bf', BI: 'bi', CF: 'cf',
+  TD: 'td', KM: 'km', DJ: 'dj', GQ: 'gq', ER: 'er', SZ: 'sz', ET: 'et', GA: 'ga', GM: 'gm', GN: 'gn', GW: 'gw', LS: 'ls', LR: 'lr', MG: 'mg', MW: 'mw', MR: 'mr',
+  MU: 'mu', YT: 'yt', NA: 'na', NE: 'ne', RE: 're', SH: 'sh', ST: 'st', SC: 'sc', SL: 'sl', TZ: 'tz', TG: 'tg', UG: 'ug', ZM: 'zm', ZW: 'zw' }
 
 /** The marketing pages that have a country address. faq-4 (2 November 2026): + 'faq' (/<country>/faq, routed from /faq like
  *  /features; a country whose FAQ has nothing to show answers 404 there — app/faq/page.tsx). */

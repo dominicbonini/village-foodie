@@ -9,6 +9,13 @@
     "button": "Land: {name}. Land ändern",
     "menu": "Land",
     "title": "Wählen Sie Ihr Land",
-    "subline": "Preise, Sprache und Einstellungen passen sich entsprechend an."
+    "subline": "Preise, Sprache und Einstellungen passen sich entsprechend an.",
+    "regions": {
+      "europe": "Europa",
+      "americas": "Amerika",
+      "asiaPacific": "Asien-Pazifik",
+      "middleEast": "Naher Osten",
+      "africa": "Afrika"
+    }
   }
 }

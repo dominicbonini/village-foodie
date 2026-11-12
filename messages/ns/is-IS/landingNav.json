@@ -9,6 +9,13 @@
     "button": "Land: {name}. Skipta um land",
     "menu": "Land",
     "title": "Veldu land",
-    "subline": "Verð, tungumál og stillingar breytast í samræmi við það."
+    "subline": "Verð, tungumál og stillingar breytast í samræmi við það.",
+    "regions": {
+      "europe": "Evrópa",
+      "americas": "Ameríka",
+      "asiaPacific": "Asía og Kyrrahaf",
+      "middleEast": "Mið-Austurlönd",
+      "africa": "Afríka"
+    }
   }
 }

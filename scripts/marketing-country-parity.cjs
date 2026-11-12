@@ -421,10 +421,12 @@ async function compare() {
     // (US switched off), a real link to /uk, checked, with the tick; the list's id is the button's aria-controls.
     // ⚠️ RE-PINNED (country-picker-1): the closed DIALOG, always rendered — its id the trigger's aria-controls, labelled by its
     // title; the UK only (US switched off): one real link to /uk, current, in English, with its code and the tick.
+    // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the list carries its panel id, and no code ("no codes", Dominic's brief) —
+    // one region only, so no region buttons and the list keeps its own label.
     if (PICKER.LANDED) {
       const ctl = ((foot || '').match(/aria-controls="([^"]+)"/) || [])[1]
-      const dlg = (foot || '').match(/<div class="cc-dlg cc-dlg-closed"><div id="([^"]+)" role="dialog" aria-modal="true" aria-labelledby="([^"]+)" class="cc-box" tabindex="-1">[\s\S]*?<h2 id="([^"]+)" class="cc-title">Choose your country<\/h2>[\s\S]*?<ul class="cc-list" aria-label="Country">(.*?)<\/ul>/)
-      ok(!!dlg && dlg[1] === ctl && dlg[2] === dlg[3] && /^<li><a href="\/uk" lang="en-GB" aria-current="true" class="cc-item"><img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/><span class="cc-item-name">United Kingdom<\/span><span class="cc-item-code">GB<\/span><span class="cc-item-tick"><svg class="cc-tick"[^>]*>.*?<\/svg><\/span><\/a><\/li>$/.test(dlg[4]),
+      const dlg = (foot || '').match(/<div class="cc-dlg cc-dlg-closed"><div id="([^"]+)" role="dialog" aria-modal="true" aria-labelledby="([^"]+)" class="cc-box" tabindex="-1">[\s\S]*?<h2 id="([^"]+)" class="cc-title">Choose your country<\/h2>[\s\S]*?<ul id="[^"]+" aria-label="Country" class="cc-list">(.*?)<\/ul>/)
+      ok(!!dlg && dlg[1] === ctl && dlg[2] === dlg[3] && /^<li><a href="\/uk" lang="en-GB" aria-current="true" class="cc-item"><img class="cc-flag" src="data:image\/svg\+xml;charset=utf-8,[^"]+" alt="" width="21" height="14"\/><span class="cc-item-name">United Kingdom<\/span><span class="cc-item-tick"><svg class="cc-tick"[^>]*>.*?<\/svg><\/span><\/a><\/li>$/.test(dlg[4]),
         `${p} · footer · the closed dialog is rendered: its id the trigger's aria-controls, one <a href="/uk" aria-current="true">`, dlg ? dlg[0].replace(/data:image[^"]*/g, 'DATA').slice(0, 600) : (foot || '').replace(/data:image[^"]*/g, 'DATA').slice(0, 600))
     }
     for (const [w, html] of PICKER.LANDED ? [] : AP.LANDED ? [['footer', foot]] : [['header', head], ['footer', foot]]) {

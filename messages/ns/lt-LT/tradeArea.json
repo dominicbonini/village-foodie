@@ -4,5 +4,6 @@
   "zone_unknown": "Šios laiko juostos šiai šaliai nesiūlome. Pasirinkite iš sąrašo.",
   "town_missing": "Nurodykite miestą ar gyvenvietę, kurioje esate įsikūrę.",
   "town_too_long": "Vietovės pavadinimas per ilgas – daugiausia 120 simbolių.",
-  "region_closed": "Regione {region} įsikūrę food truck kol kas negali registruotis{reason, select, language { – HatchGrab kol kas neprieinamas šia kalba: {language}} taxLines { – pirmiausia pridedame atskiras GST ir PST eilutes} other {}}. Jei jūsų food truck įsikūręs kitur, pasirinkite tą miestą ar gyvenvietę."
+  "region_closed": "Regione {region} įsikūrę food truck kol kas negali registruotis{reason, select, language { – HatchGrab kol kas neprieinamas šia kalba: {language}} taxLines { – pirmiausia pridedame atskiras GST ir PST eilutes} other {}}. Jei jūsų food truck įsikūręs kitur, pasirinkite tą miestą ar gyvenvietę.",
+  "region_blocked": "Atsiprašome, HatchGrab jūsų regione dar nepasiekiamas."
 }

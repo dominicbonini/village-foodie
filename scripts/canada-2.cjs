@@ -41,9 +41,11 @@ const TOWN = {
   NS: ['Halifax', 'Nova Scotia', 44.6488, -63.5752, 'America/Halifax'],
 }
 const placeOf = rg => { const [name, region, lat, lng, tz] = TOWN[rg]; return { base_place_id: `ChIJ-ca-${rg.toLowerCase()}-00001`, base_place_name: name, base_region: region, base_region_code: rg, base_lat: lat, base_lng: lng, timezone: tz } }
+const CODE = { QC: 'region_closed', SK: 'region_blocked', MB: 'region_closed' }
 const WORDS = {
   QC: 'Trucks based in Quebec can’t sign up yet: HatchGrab isn’t available in French yet. If your truck is based somewhere else, choose that town or city.',
-  SK: 'Trucks based in Saskatchewan can’t sign up yet: we’re adding separate GST and PST lines first. If your truck is based somewhere else, choose that town or city.',
+  // world-countries-5 (12 November 2026): Saskatchewan is refused by lib/region-blocks.ts (CA-SK) now — the approved plain sentence.
+  SK: 'Sorry, HatchGrab isn’t available in your region yet.',
   MB: 'Trucks based in Manitoba can’t sign up yet: we’re adding separate GST and PST lines first. If your truck is based somewhere else, choose that town or city.',
 }
 
@@ -76,7 +78,7 @@ const WORDS = {
   }
   for (const rg of ['QC', 'SK', 'MB']) {
     const r = await createTruck(rg)
-    t(`signup (/api/setup, create_truck) in ${TOWN[rg][1]}: refused, 400 — "${WORDS[rg]}"`, r.status === 400 && r.json.ok === false && r.json.code === 'region_closed' && r.json.error === WORDS[rg] && !r.truck, { status: r.status, json: r.json })
+    t(`signup (/api/setup, create_truck) in ${TOWN[rg][1]}: refused, 400 — "${WORDS[rg]}"`, r.status === 400 && r.json.ok === false && r.json.code === CODE[rg] && r.json.error === WORDS[rg] && !r.truck, { status: r.status, json: r.json })
   }
   for (const rg of ['ON', 'BC', 'AB', 'NS']) {
     const r = await createTruck(rg)
@@ -110,11 +112,11 @@ const WORDS = {
   const CA = rows.find(r => r.countryCode === 'CA')
   const sc = { code: 'CA', name: 'Canada', timezones: CA.timezones, defaultTimezone: CA.defaultTimezone, addressFormat: 'ca' }
   const step = rg => { const p = placeOf(rg); return STEP.baseAnswerErrors({ country: 'CA', timezone: p.timezone, place: { placeId: p.base_place_id, name: p.base_place_name, region: p.base_region, lat: p.base_lat, lng: p.base_lng, regionCode: rg } }, [sc]) }
-  t('the signup step refuses QC (reason "language", French), SK and MB (reason "taxLines"), and accepts ON / BC / AB / NS',
-    step('QC').town?.params?.reason === 'language' && step('QC').town?.params?.language === 'French' && ['SK', 'MB'].every(rg => step(rg).town?.code === 'region_closed' && step(rg).town?.params?.reason === 'taxLines')
+  t('the signup step refuses QC (reason "language", French), MB (reason "taxLines"), SK (region_blocked — world-countries-5), and accepts ON / BC / AB / NS',
+    step('QC').town?.params?.reason === 'language' && step('QC').town?.params?.language === 'French' && step('MB').town?.code === 'region_closed' && step('MB').town?.params?.reason === 'taxLines' && step('SK').town?.code === 'region_blocked'
     && ['ON', 'BC', 'AB', 'NS'].every(rg => !step(rg).town), ['QC', 'SK', 'MB', 'ON'].map(rg => step(rg).town))
   const ca = STEP.AF.ADDRESS_FORMATS.ca.regions.list
-  t('the closures are DATA on the regions: QC { language, French }, SK and MB { taxLines }; nothing else in Canada is closed', JSON.stringify(ca.filter(r => r.signupClosed).map(r => [r.code, r.signupClosed])) === JSON.stringify([['MB', { reason: 'taxLines' }], ['QC', { reason: 'language', needsLanguage: 'French' }], ['SK', { reason: 'taxLines' }]]))
+  t('the closures are DATA on the regions: QC { language, French }, MB { taxLines }; nothing else in Canada is closed (SK: lib/region-blocks.ts since world-countries-5)', JSON.stringify(ca.filter(r => r.signupClosed).map(r => [r.code, r.signupClosed])) === JSON.stringify([['MB', { reason: 'taxLines' }], ['QC', { reason: 'language', needsLanguage: 'French' }]]))
   t('Saskatchewan and Manitoba keep their tax data for when they open (GST + PST 11 %, GST + RST 12 %); the formats still validate',
     JSON.stringify(ca.find(r => r.code === 'SK').salesTax) === JSON.stringify({ label: 'GST + PST', milli: 11000 }) && JSON.stringify(ca.find(r => r.code === 'MB').salesTax) === JSON.stringify({ label: 'GST + RST', milli: 12000 }) && STEP.AF.validateAddressFormats().length === 0, STEP.AF.validateAddressFormats())
   const en = JSON.parse(read('messages/en-GB.json'))

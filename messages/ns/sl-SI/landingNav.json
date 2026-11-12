@@ -9,6 +9,13 @@
     "button": "Država: {name}. Spremeni državo",
     "menu": "Država",
     "title": "Izberite svojo državo",
-    "subline": "Cene, jezik in nastavitve se bodo ustrezno prilagodili."
+    "subline": "Cene, jezik in nastavitve se bodo ustrezno prilagodili.",
+    "regions": {
+      "europe": "Evropa",
+      "americas": "Amerika",
+      "asiaPacific": "Azija in Pacifik",
+      "middleEast": "Bližnji vzhod",
+      "africa": "Afrika"
+    }
   }
 }

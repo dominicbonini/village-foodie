@@ -122,7 +122,8 @@ function badgesOf(html) {
     // ⚠️ RE-PINNED (pricing-copy-1, 11 November 2026): pricing-copy-1's wording put back first (scripts/_lp-pricing-copy-1.cjs asBefore —
     // the banner sentence and the Pay as you go fee line, in en-GB; scripts/pricing-copy-1.cjs proves them).
     // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026; docs/pricing-copy-4-report.md): a card country's wording taken back first (scripts/_lp-pricing-copy-4.cjs pc1After4 — the banner's card sentence and Pay as you go's asterisk; scripts/pricing-copy-4.cjs proves them), then pricing-copy-1's.
-    const now = require('./_lp-site-chrome-1.cjs').asCopyTruth(require('./_lp-pricing-copy-4.cjs').pc1After4(await render('uk', rowsWith(c => (c === 'GB' ? [true, true] : [false, false]))), 'en-GB'))   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
+    // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the country list's markup put back first (scripts/_lp-world-countries-5.cjs asBefore).
+    const now = require('./_lp-site-chrome-1.cjs').asCopyTruth(require('./_lp-pricing-copy-4.cjs').pc1After4(require('./_lp-world-countries-5.cjs').asBefore(await render('uk', rowsWith(c => (c === 'GB' ? [true, true] : [false, false])))), 'en-GB'))   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (site-chrome-1): today's offline sentence written as copy-truth-1 wrote it (scripts/_lp-site-chrome-1.cjs asCopyTruth)
     const before = fs.readFileSync(IDENTITY.replace(/\.json$/, '.uk.html'), 'utf8')
     t('the HEAD capture is the one recorded (sha256)', sha(before) === want.uk.sha256)
     const PLAY = 'play.google.com/store/apps/details?id=com.hatchgrab.app'

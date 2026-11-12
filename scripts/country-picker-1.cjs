@@ -31,15 +31,20 @@ const dec = s => String(s).replace(/&amp;/g, '&').replace(/&#x27;/g, "'").replac
 ;(async () => {
   const R = EF.renderer(kit, 'cp1')
   const rows = CP.ROWS()
-  const L = await kit.bundle('cp1-lib', "export { flagDataUri } from '@/lib/flags'\nexport { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'")
+  const L = await kit.bundle('cp1-lib', "export { flagDataUri } from '@/lib/flags'\nexport { COUNTRY_PATH_SEGMENTS } from '@/lib/marketing-country'\nexport { REGIONS, regionOfCountry } from '@/lib/country-regions'")
   const SEG = L.COUNTRY_PATH_SEGMENTS
   const live = rows.filter(r => r.enabled && r.countryCode in SEG)
   const byEnglish = [...live].sort((a, b) => a.name.localeCompare(b.name, 'en'))
+  const byRegion = L.REGIONS.flatMap(rg => byEnglish.filter(r => L.regionOfCountry(r.countryCode) === rg))   // world-countries-5
   const own = r => new Intl.DisplayNames([r.locale], { type: 'region' }).of(r.countryCode)
   const footOf = html => (/<footer[\s\S]*<\/footer>/.exec(html) || [''])[0]
   const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(html) || [''])[0]
-  const itemsOf = html => [...footOf(html).matchAll(/<a href="([^"]*)" lang="([^"]+)"( aria-current="true")? class="cc-item"><img class="cc-flag" src="data:image\/svg\+xml[^"]*" alt="" width="21" height="14"\/><span class="cc-item-name">([^<]*)<\/span><span class="cc-item-code">([A-Z]{2})<\/span>/g)]
-    .map(m => ({ href: m[1], lang: m[2], current: !!m[3], name: dec(m[4]), code: m[5] }))
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): an item shows no code now ("no codes", Dominic's brief) — its code is read
+  // from its link (/de, /de/features → DE); the countries sit in one list per region (all in the HTML, the others hidden), each
+  // list in English-name order, so the whole is in region order, then English-name order (byRegion below).
+  const CODE_OF = Object.fromEntries(Object.entries(SEG).map(([c, sg]) => [sg, c]))
+  const itemsOf = html => [...footOf(html).matchAll(/<a href="([^"]*)" lang="([^"]+)"( aria-current="true")? class="cc-item"><img class="cc-flag" src="data:image\/svg\+xml[^"]*" alt="" width="21" height="14"\/><span class="cc-item-name">([^<]*)<\/span><span class="cc-item-tick">/g)]
+    .map(m => ({ href: m[1], lang: m[2], current: !!m[3], name: dec(m[4]), code: CODE_OF[m[1].split('/')[1]] }))
 
   t('the fixtures: 36 countries switched on, every one with a country address', live.length === 36 && rows.every(r => r.enabled), live.length)
 
@@ -70,8 +75,8 @@ const dec = s => String(s).replace(/&amp;/g, '&').replace(/&#x27;/g, "'").replac
     t(`${k}: the closed box is in the HTML — class "cc-dlg cc-dlg-closed", role="dialog" aria-modal="true", labelled by its <h2>`,
       /<div class="cc-dlg cc-dlg-closed"><div id="([^"]+)" role="dialog" aria-modal="true" aria-labelledby="([^"]+)" class="cc-box" tabindex="-1">/.test(f)
       && (() => { const m = /aria-controls="([^"]+)"[\s\S]*?<div id="([^"]+)" role="dialog" aria-modal="true" aria-labelledby="([^"]+)"[\s\S]*?<h2 id="([^"]+)" class="cc-title">/.exec(f); return !!m && m[1] === m[2] && m[3] === m[4] })())
-    t(`${k}: ${items.length} country links — exactly the 36 switched-on countries, in English-name order, each <a href="/<cc>">`,
-      items.map(i => i.code).join() === byEnglish.map(r => r.countryCode).join() && items.every(i => i.href === `/${SEG[i.code]}` || (k.endsWith('features') && i.href === `/${SEG[i.code]}/features`) || (k.endsWith('compare') && i.href === `/${SEG[i.code]}/compare`)),
+    t(`${k}: ${items.length} country links — exactly the 36 switched-on countries, by region then English name, each <a href="/<cc>">`,
+      items.map(i => i.code).join() === byRegion.map(r => r.countryCode).join() && items.every(i => i.href === `/${SEG[i.code]}` || (k.endsWith('features') && i.href === `/${SEG[i.code]}/features`) || (k.endsWith('compare') && i.href === `/${SEG[i.code]}/compare`)),
       items.map(i => `${i.code}${i.href}`).join(' '))
     t(`${k}: each name is the country's own (Intl, its row's locale) and carries that lang; only ${cc} is marked current`,
       items.every(i => i.name === own(live.find(r => r.countryCode === i.code)) && i.lang === live.find(r => r.countryCode === i.code).locale) && items.filter(i => i.current).map(i => i.code).join() === cc)
@@ -108,8 +113,11 @@ const dec = s => String(s).replace(/&amp;/g, '&').replace(/&#x27;/g, "'").replac
   const css = read('app/(public)/(site)/landing/landing.css')
   t('closed = display:none; the box is fixed over a dimmed page; max-height the window, scrolling inside', /\.hg-landing \.cc-dlg-closed \{ display: none; \}/.test(css) && /\.hg-landing \.cc-dlg \{ position: fixed; inset: 0;[^}]*background: rgba\(/.test(css)
     && /\.hg-landing \.cc-box \{[^}]*max-height: calc\(100dvh - 32px\); overflow-y: auto;/.test(css))
-  t('three columns; at ≤720px two, the code hidden, 44px rows, and the trigger on its own centred line', /\.hg-landing \.cc-list \{[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/.test(css)
-    && /@media\(max-width:720px\)\{[^@]*\.cc-list \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)[^@]*\.cc-item-code \{ display: none; \}/.test(css) && (/* ⚠️ RE-PINNED (site-chrome-1, 5 Nov 2026, Dominic): the trigger is an ordinary cell of the phone footer's four-column row now — its own line is gone on purpose (scripts/site-chrome-1.cjs §4) */ require('./_lp-site-chrome-1.cjs').LANDED ? !/\.foot-links \.cc \{ grid-column: 1 \/ -1; \}/.test(css) : /\.foot-links \.cc \{ grid-column: 1 \/ -1; \}/.test(css)))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026, Dominic's mockup): five columns on a laptop, four at ≤1100px (an iPad), and a
+  // full-screen panel on a phone with one country per row (scripts/world-countries-5.cjs §3 holds the region buttons).
+  t('five columns (four at ≤1100px); at ≤720px a full-screen panel, one column, the code hidden, 44px rows, and the trigger on its own centred line', /\.hg-landing \.cc-list \{[^}]*grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/.test(css)
+    && /max-width: 1100px\) \{ \.hg-landing \.cc-list \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/.test(css)
+    && /@media\(max-width:720px\)\{[^@]*\.cc-box \{ width: 100%; height: 100dvh;[^@]*\.cc-list \{ grid-template-columns: 1fr;[^@]*\.cc-item-code \{ display: none; \}/.test(css) && (/* ⚠️ RE-PINNED (site-chrome-1, 5 Nov 2026, Dominic): the trigger is an ordinary cell of the phone footer's four-column row now — its own line is gone on purpose (scripts/site-chrome-1.cjs §4) */ require('./_lp-site-chrome-1.cjs').LANDED ? !/\.foot-links \.cc \{ grid-column: 1 \/ -1; \}/.test(css) : /\.foot-links \.cc \{ grid-column: 1 \/ -1; \}/.test(css)))   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
   t('the old dropdown\'s rules are gone (.cc-menu, .cc-menu-closed)', !/\.cc-menu/.test(css))
 
   head('5 · hreflang and the sitemap — unchanged')

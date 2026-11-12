@@ -9,6 +9,13 @@
     "button": "Krajina: {name}. Zmeniť krajinu",
     "menu": "Krajina",
     "title": "Vyberte si svoju krajinu",
-    "subline": "Ceny, jazyk a nastavenia sa tomu prispôsobia."
+    "subline": "Ceny, jazyk a nastavenia sa tomu prispôsobia.",
+    "regions": {
+      "europe": "Európa",
+      "americas": "Amerika",
+      "asiaPacific": "Ázia a Tichomorie",
+      "middleEast": "Blízky východ",
+      "africa": "Afrika"
+    }
   }
 }

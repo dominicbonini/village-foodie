@@ -9,6 +9,13 @@
     "button": "Quốc gia: {name}. Đổi quốc gia",
     "menu": "Quốc gia",
     "title": "Chọn quốc gia của bạn",
-    "subline": "Giá, ngôn ngữ và cài đặt sẽ thay đổi cho phù hợp."
+    "subline": "Giá, ngôn ngữ và cài đặt sẽ thay đổi cho phù hợp.",
+    "regions": {
+      "europe": "Châu Âu",
+      "americas": "Châu Mỹ",
+      "asiaPacific": "Châu Á - Thái Bình Dương",
+      "middleEast": "Trung Đông",
+      "africa": "Châu Phi"
+    }
   }
 }

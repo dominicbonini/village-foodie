@@ -9,6 +9,13 @@
     "button": "País: {name}. Mudar de país",
     "menu": "País",
     "title": "Escolha o seu país",
-    "subline": "Os preços, o idioma e as definições ajustam-se em conformidade."
+    "subline": "Os preços, o idioma e as definições ajustam-se em conformidade.",
+    "regions": {
+      "europe": "Europa",
+      "americas": "Américas",
+      "asiaPacific": "Ásia-Pacífico",
+      "middleEast": "Médio Oriente",
+      "africa": "África"
+    }
   }
 }

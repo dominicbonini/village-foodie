@@ -8,6 +8,7 @@
 // `tradeAreaErrorBody` (lib/i18n/manage-errors.ts), provisioning through `translatorFor`, the signup step through `useT`.
 import { addressFormatOf, regionOf, type Region } from '@/lib/address-formats'
 import type { CountrySettings } from '@/lib/country-settings-types'
+import { blockedRegionOf } from '@/lib/region-blocks'
 
 type CountryFacts = Pick<CountrySettings, 'countryCode' | 'name' | 'enabled' | 'timezones' | 'defaultTimezone'>
   // D22 (Phase 3): a country whose address format keeps a Places region code (the US, Australia, Ireland, Canada —
@@ -16,7 +17,7 @@ type CountryFacts = Pick<CountrySettings, 'countryCode' | 'name' | 'enabled' | '
   & Partial<Pick<CountrySettings, 'addressFormat'>>
 
 /** A refusal: a `tradeArea` message key and its values (the country's name, already as the settings row writes it). */
-export type TradeAreaCode = 'country_missing' | 'country_off' | 'zone_unknown' | 'town_missing' | 'town_too_long' | 'region_closed'
+export type TradeAreaCode = 'country_missing' | 'country_off' | 'zone_unknown' | 'town_missing' | 'town_too_long' | 'region_closed' | 'region_blocked'
 export interface TradeAreaRefusal { code: TradeAreaCode; params: Record<string, string> }
 
 export const TRADE_AREA_ERRORS = {
@@ -30,6 +31,10 @@ export const TRADE_AREA_ERRORS = {
   // is in French) or 'taxLines' (Saskatchewan and Manitoba, until an order can show GST and PST as separate lines).
   regionClosed: (region: string, closed: NonNullable<Region['signupClosed']>): TradeAreaRefusal =>
     ({ code: 'region_closed', params: { region, reason: closed.reason, language: closed.reason === 'language' ? closed.needsLanguage : '' } }),
+  // world-countries-5 (12 November 2026): the town is in a region HatchGrab is not available in (lib/region-blocks.ts — Crimea,
+  // Sevastopol, Luhansk, Donetsk, Zaporizhzhia and Kherson; Abkhazia and South Ossetia; Transnistria; Saskatchewan). No values:
+  // the sentence does not name the region.
+  regionBlocked: { code: 'region_blocked', params: {} } as TradeAreaRefusal,
 } as const
 
 /** What is stored on the truck. Coordinates and the place id are present only when a suggestion was picked. */
@@ -76,6 +81,12 @@ export function checkTradeArea(input: Record<string, unknown>, c: CountryFacts):
   // trade all run this, so none can accept it. Only a PICKED place carries a region code; a typed town has none.
   const picked = pointed && regionCodeFormat && typeof input.base_region_code === 'string' ? regionOf(regionCodeFormat, input.base_region_code) : null
   if (picked && picked.code === input.base_region_code && picked.signupClosed) return { ok: false, ...TRADE_AREA_ERRORS.regionClosed(picked.name, picked.signupClosed) }
+  // world-countries-5: a blocked region — by the picked place's region (name or code), or by the town's own name, picked or typed.
+  if (blockedRegionOf(c.countryCode, {
+    region: pointed ? str(input.base_region, 120) : null,
+    regionCode: pointed && typeof input.base_region_code === 'string' ? input.base_region_code : null,
+    town,
+  })) return { ok: false, ...TRADE_AREA_ERRORS.regionBlocked }
   return {
     ok: true,
     values: {

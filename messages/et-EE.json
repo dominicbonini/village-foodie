@@ -3379,7 +3379,8 @@
     "zone_unknown": "Seda ajavööndit me selle riigi jaoks ei paku. Vali üks loendist.",
     "town_missing": "Sisesta linn või asula, kus sa asud.",
     "town_too_long": "Linna nimi on liiga pikk — kuni 120 tähemärki.",
-    "region_closed": "Piirkonnas {region} asuvad toiduautod ei saa veel registreeruda{reason, select, language {: HatchGrab pole veel saadaval keeles {language}} taxLines {: lisame esmalt eraldi GST ja PST read} other {}}. Kui sinu toiduauto asub mujal, vali see linn või asula."
+    "region_closed": "Piirkonnas {region} asuvad toiduautod ei saa veel registreeruda{reason, select, language {: HatchGrab pole veel saadaval keeles {language}} taxLines {: lisame esmalt eraldi GST ja PST read} other {}}. Kui sinu toiduauto asub mujal, vali see linn või asula.",
+    "region_blocked": "Vabandust, HatchGrab pole teie piirkonnas veel saadaval."
   },
   "manageApi": {
     "vanFallback": "Toiduauto",
@@ -5684,7 +5685,14 @@
       "button": "Riik: {name}. Muuda riiki",
       "menu": "Riik",
       "title": "Vali oma riik",
-      "subline": "Hinnad, keel ja seaded kohanduvad vastavalt."
+      "subline": "Hinnad, keel ja seaded kohanduvad vastavalt.",
+      "regions": {
+        "europe": "Euroopa",
+        "americas": "Ameerika",
+        "asiaPacific": "Aasia ja Vaikse ookeani piirkond",
+        "middleEast": "Lähis-Ida",
+        "africa": "Aafrika"
+      }
     }
   },
   "landingFooter": {

@@ -4,5 +4,6 @@
   "zone_unknown": "Zona waktu itu tidak tersedia untuk negara tersebut. Pilih salah satu dari daftar.",
   "town_missing": "Sebutkan kota tempat Anda berbasis.",
   "town_too_long": "Nama kota itu terlalu panjang — maksimal 120 karakter.",
-  "region_closed": "Truk yang berbasis di {region} belum bisa mendaftar{reason, select, language {: HatchGrab belum tersedia dalam bahasa {language}} taxLines {: kami sedang menambahkan baris GST dan PST terpisah terlebih dahulu} other {}}. Jika truk Anda berbasis di tempat lain, pilih kota tersebut."
+  "region_closed": "Truk yang berbasis di {region} belum bisa mendaftar{reason, select, language {: HatchGrab belum tersedia dalam bahasa {language}} taxLines {: kami sedang menambahkan baris GST dan PST terpisah terlebih dahulu} other {}}. Jika truk Anda berbasis di tempat lain, pilih kota tersebut.",
+  "region_blocked": "Maaf, HatchGrab belum tersedia di wilayah Anda."
 }

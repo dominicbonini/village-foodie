@@ -9,6 +9,13 @@
     "button": "Ország: {name}. Ország módosítása",
     "menu": "Ország",
     "title": "Válassza ki az országát",
-    "subline": "Az árak, a nyelv és a beállítások ehhez igazodnak."
+    "subline": "Az árak, a nyelv és a beállítások ehhez igazodnak.",
+    "regions": {
+      "europe": "Európa",
+      "americas": "Amerika",
+      "asiaPacific": "Ázsia és a csendes-óceáni térség",
+      "middleEast": "Közel-Kelet",
+      "africa": "Afrika"
+    }
   }
 }

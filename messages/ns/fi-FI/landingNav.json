@@ -9,6 +9,13 @@
     "button": "Maa: {name}. Vaihda maata",
     "menu": "Maa",
     "title": "Valitse maasi",
-    "subline": "Hinnat, kieli ja asetukset mukautuvat valintasi mukaan."
+    "subline": "Hinnat, kieli ja asetukset mukautuvat valintasi mukaan.",
+    "regions": {
+      "europe": "Eurooppa",
+      "americas": "Amerikka",
+      "asiaPacific": "Aasia ja Tyynenmeren alue",
+      "middleEast": "Lähi-itä",
+      "africa": "Afrikka"
+    }
   }
 }

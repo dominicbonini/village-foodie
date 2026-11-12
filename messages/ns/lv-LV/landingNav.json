@@ -9,6 +9,13 @@
     "button": "Valsts: {name}. Mainīt valsti",
     "menu": "Valsts",
     "title": "Izvēlieties savu valsti",
-    "subline": "Cenas, valoda un iestatījumi tiks attiecīgi pielāgoti."
+    "subline": "Cenas, valoda un iestatījumi tiks attiecīgi pielāgoti.",
+    "regions": {
+      "europe": "Eiropa",
+      "americas": "Amerika",
+      "asiaPacific": "Āzija un Klusā okeāna reģions",
+      "middleEast": "Tuvie Austrumi",
+      "africa": "Āfrika"
+    }
   }
 }

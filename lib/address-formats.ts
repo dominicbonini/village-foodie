@@ -217,7 +217,7 @@ const AU_STATES: readonly Region[] = [
 // "concession stands, food carts and food trucks" — Information Notice RST 26-01). ⚠️ A province with TWO taxes would be one
 // line ("GST + PST", the combined rate): an order holds one tax line (lib/order-charges.ts), and Saskatchewan asks for PST as a
 // separate amount on the invoice. canada-2 (Dominic, 22 October 2026): SASKATCHEWAN AND MANITOBA ARE THEREFORE CLOSED to signups
-// (`signupClosed: taxLines`) until the two-line build (docs/canada-1-report.md §2.4, in the backlog); their tax stays here.
+// (Manitoba: `signupClosed: taxLines`; Saskatchewan since world-countries-5: lib/region-blocks.ts CA-SK) until the two-line build (docs/canada-1-report.md §2.4, in the backlog); their tax stays here.
 const CA_TAX = {
   gst: { label: 'GST', milli: 5000 },
   hst13: { label: 'HST', milli: 13000 }, hst14: { label: 'HST', milli: 14000 }, hst15: { label: 'HST', milli: 15000 },
@@ -237,7 +237,9 @@ const CA_PROVINCES: readonly Region[] = [
   { code: 'ON', name: 'Ontario', salesTax: CA_TAX.hst13 },
   { code: 'PE', name: 'Prince Edward Island', salesTax: CA_TAX.hst15 },
   { code: 'QC', name: 'Quebec', signupClosed: { reason: 'language', needsLanguage: 'French' } },
-  { code: 'SK', name: 'Saskatchewan', salesTax: CA_TAX.gstPstSk, signupClosed: { reason: 'taxLines' } },
+  // world-countries-5 (12 November 2026): Saskatchewan is now refused by lib/region-blocks.ts (CA-SK, the plain "not available in
+  // your region yet" sentence), so it no longer carries its own closure here.
+  { code: 'SK', name: 'Saskatchewan', salesTax: CA_TAX.gstPstSk },
   { code: 'YT', name: 'Yukon', salesTax: CA_TAX.gst },
 ]
 
@@ -1013,6 +1015,9 @@ interface WorldRow {
   timeHint: string
   regions?: { list: readonly Region[]; label: RegionLabel; example: string; local: string; shownAs: 'code' | 'name'; required: boolean }
   includedTax?: RegionSalesTax
+  /** world-countries-5: keep the Places top-level region's NAME (no list, no code) on a picked town — the shared 'intl'
+   *  format, so lib/region-blocks.ts can refuse a blocked region (Crimea, Abkhazia, Transnistria…). Nothing displays it. */
+  regionName?: true
 }
 
 function worldAi(r: WorldRow): AddressAi {
@@ -1107,7 +1112,7 @@ function worldFormat(r: WorldRow): AddressFormat {
     },
     places: r.regions
       ? { localityTypes: ['locality', 'sublocality', 'postal_town'], regionFrom: ['administrative_area_level_1'], regionCode: 'match' }
-      : { localityTypes: ['locality', 'sublocality', 'postal_town'], regionFrom: [], regionCode: null },
+      : { localityTypes: ['locality', 'sublocality', 'postal_town'], regionFrom: r.regionName ? ['administrative_area_level_1'] : [], regionCode: null },
     ai: worldAi(r),
     ...(r.includedTax ? { includedTax: r.includedTax } : {}),
   }
@@ -1176,13 +1181,6 @@ const TAX_AE: RegionSalesTax = { label: 'VAT', milli: 0 }
 
 const WORLD_ROWS: readonly WorldRow[] = [
   {
-    key: 'intl', country: 'the country', adminLabel: 'International — town or city, optional postal code (world-countries-5, shared)',
-    postal: { pattern: '^[A-Z0-9][A-Z0-9 -]{1,9}$', normaliser: 'none', example: '10000', label: 'postalCode', local: 'postal code', desc: 'letters, digits, spaces or a hyphen, as written locally', identifiesPremises: false },
-    townParts: ['{locality}', '{postalCode}'], localityLabel: 'townOrCity',
-    examples: { venue: 'Central Market', street: 'Main Street', locality: 'City Centre', paste: 'Central Market, City Centre' },
-    language: 'the local language or English', timeHint: '"6pm", "18:00", "18h"',
-  },
-  {
     key: 'br', country: 'Brazil', adminLabel: 'Brazil — cidade, UF, CEP',
     postal: { pattern: '^\\d{5}-\\d{3}$', normaliser: 'nnnnn_nnn', example: '04094-050', label: 'postalCode', local: 'CEP', desc: '8 digits written "NNNNN-NNN"', identifiesPremises: false },
     townParts: ['{locality}', '{region}', '{postalCode}'], localityLabel: 'city',
@@ -1249,6 +1247,14 @@ const WORLD_ROWS: readonly WorldRow[] = [
     language: 'Arabic or English', timeHint: '"6 مساءً", "6pm", "18:00"',
     regions: { list: AE_EMIRATES, label: 'emirate', example: 'دبي', local: 'emirate', shownAs: 'name', required: true },
     includedTax: TAX_AE,
+  },
+  // world-countries-5 (12 November 2026): the shared format for the 167 new countries — LAST, as in 20261093's CHECK.
+  {
+    key: 'intl', country: 'the country', adminLabel: 'International — town or city, optional postal code (world-countries-5, shared)', regionName: true,
+    postal: { pattern: '^[A-Z0-9][A-Z0-9 -]{1,9}$', normaliser: 'none', example: '10000', label: 'postalCode', local: 'postal code', desc: 'letters, digits, spaces or a hyphen, as written locally', identifiesPremises: false },
+    townParts: ['{locality}', '{postalCode}'], localityLabel: 'townOrCity',
+    examples: { venue: 'Central Market', street: 'Main Street', locality: 'City Centre', paste: 'Central Market, City Centre' },
+    language: 'the local language or English', timeHint: '"6pm", "18:00", "18h"',
   },
 ]
 

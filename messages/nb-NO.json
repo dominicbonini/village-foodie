@@ -3379,7 +3379,8 @@
     "zone_unknown": "Vi tilbyr ikke den tidssonen for det landet. Velg en fra listen.",
     "town_missing": "Skriv inn byen eller stedet du har base i.",
     "town_too_long": "Stedsnavnet er for langt – maks 120 tegn.",
-    "region_closed": "Matbiler med base i {region} kan ikke registrere seg ennå{reason, select, language {: HatchGrab finnes ikke på {language} ennå} taxLines {: vi legger først til egne linjer for GST og PST} other {}}. Hvis matbilen din har base et annet sted, velg det stedet."
+    "region_closed": "Matbiler med base i {region} kan ikke registrere seg ennå{reason, select, language {: HatchGrab finnes ikke på {language} ennå} taxLines {: vi legger først til egne linjer for GST og PST} other {}}. Hvis matbilen din har base et annet sted, velg det stedet.",
+    "region_blocked": "Beklager, HatchGrab er ikke tilgjengelig i ditt område ennå."
   },
   "manageApi": {
     "vanFallback": "Matbil",
@@ -5684,7 +5685,14 @@
       "button": "Land: {name}. Bytt land",
       "menu": "Land",
       "title": "Velg ditt land",
-      "subline": "Priser, språk og innstillinger tilpasses deretter."
+      "subline": "Priser, språk og innstillinger tilpasses deretter.",
+      "regions": {
+        "europe": "Europa",
+        "americas": "Amerika",
+        "asiaPacific": "Asia og stillehavsområdet",
+        "middleEast": "Midtøsten",
+        "africa": "Afrika"
+      }
     }
   },
   "landingFooter": {
