@@ -30,7 +30,8 @@ const text = s => String(s).replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<s
 // to a zero-decimal currency, but backwards compatibility requires you to represent it as a two-decimal value" (5 UGX → 500).
 const ZERO_DECIMAL = ['BIF', 'CLP', 'DJF', 'GNF', 'JPY', 'KMF', 'KRW', 'MGA', 'PYG', 'RWF', 'VND', 'VUV', 'XAF', 'XOF', 'XPF']
 // The 22 currencies before world-countries-5, whose exact forms below stay pinned by hand; world-countries-5's 94 are pinned by
-// scripts/fixtures/world-countries-5-currency-forms.json (their home and international forms as built, 12 November 2026).
+// scripts/fixtures/world-countries-5-currency-forms.json (their home and international forms as built, 12 November 2026; + the 11 menu
+// currencies of 20261096 — BHD JOD KWD OMR TND three-decimal).
 const ORIG22 = ['GBP', 'USD', 'EUR', 'CAD', 'AUD', 'NZD', 'CHF', 'SEK', 'NOK', 'DKK', 'PLN', 'CZK', 'HUF', 'RON', 'BRL', 'MXN', 'JPY', 'SGD', 'HKD', 'MYR', 'AED', 'THB']
 const WC5_FORMS = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/world-countries-5-currency-forms.json'), 'utf8'))
 const THREE_DECIMAL = ['BHD', 'JOD', 'KWD', 'OMR', 'TND']
@@ -70,8 +71,8 @@ const THREE_DECIMAL = ['BHD', 'JOD', 'KWD', 'OMR', 'TND']
   // ══ 2 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('2 · THE DATABASE LIST — the CHECK names exactly the registry\'s codes')
   // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): the CHECK is now widened by 20261054 (block A) — the newest file that sets it.
-  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): …and again by 20261093 (116 codes).
-  const sql = fs.readFileSync(path.join(REPO, 'supabase/migrations/20261093_world_countries_5_schema.sql'), 'utf8')
+  // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): …and again by 20261093 (116 codes), then 20261096 (127: + the 11 menu currencies).
+  const sql = fs.readFileSync(path.join(REPO, 'supabase/migrations/20261096_world_countries_5_menu_currency.sql'), 'utf8')
   const m = /add constraint country_settings_currency_chk\s+check \(currency in \(([^)]*)\)\)/.exec(sql)
   const checkList = m ? [...m[1].matchAll(/'([A-Z]{3})'/g)].map(x => x[1]) : null
   t('the migration adds country_settings_currency_chk as an IN list', !!checkList && checkList.length > 0, sql.slice(0, 300))

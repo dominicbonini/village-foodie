@@ -11,6 +11,7 @@
 // • `comparisonAddress(code)` — the page's path from the country's own messages (comparison.path.section / slug), or
 //   null when the country's language has no comparison page.
 import 'server-only'
+import { regionNameIn } from '@/lib/region-name'
 import { getCountrySettings } from '@/lib/country-settings'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { localizePlans } from '@/lib/plan-names'
@@ -116,7 +117,7 @@ export async function comparisonPage(code: string, flags?: ComparisonFlags): Pro
   const [catalog, data, f] = await Promise.all([getPlanCatalog(), comparisonData(key), flags ? Promise.resolve(flags) : comparisonFlagsOf(key)])
   const page = HATCHGRAB_ORIGIN + path
   let countryName = settings.name
-  try { countryName = new Intl.DisplayNames([settings.locale], { type: 'region' }).of(key) ?? settings.name } catch { /* the row's name */ }
+  countryName = regionNameIn(settings.locale, key) ?? settings.name   // world-countries-5: Serbian in Latin script (lib/region-name.ts)
   // compare-languages-1: the English copy always says "in {country}" / "for {country}" — the two countries English names with "the".
   if (/^en(-|$)/i.test(settings.locale) && (key === 'GB' || key === 'US')) countryName = `the ${countryName}`
   return {

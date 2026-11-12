@@ -505,7 +505,7 @@ export async function provisionTruck(
         ...(profile.featureOverrides ? { feature_overrides: profile.featureOverrides } : {}),
         // 🔴 WRITTEN EXPLICITLY FROM THE COUNTRY'S SETTINGS, never left to the column defaults.
         country: countrySettings.countryCode,
-        currency: countrySettings.currency,
+        currency: countrySettings.menuCurrency ?? countrySettings.currency,   // world-countries-5: the MENU currency (20261096)
         timezone: truckTimezone,
         // Phase 2D-1 — written ONLY when given (a signup), so a create without them is byte-for-byte as before
         // and never names a column that a database without 20261010_13 does not have.

@@ -1991,7 +1991,7 @@ export async function POST(req: NextRequest) {
     const cs = await countrySettingsForTruck(truck)
     const { checkChargeSettings } = await import('@/lib/charge-settings')
     const { formatMinor } = await import('@/lib/money-format')
-    const fmt = { currency: cs.currency, locale: cs.locale }
+    const fmt = { currency: cs.menuCurrency ?? cs.currency, locale: cs.locale }   // world-countries-5: the truck's own (menu) money
     const input: Record<string, unknown> = {}
     for (const k of ['taxRate', 'tippingEnabled', 'serviceFeeEnabled', 'serviceFeePct', 'serviceFeeFixed']) if (k in body) input[k] = body[k]
     const r = checkChargeSettings(input, cs, m => formatMinor(m, fmt))
@@ -3136,11 +3136,11 @@ export async function POST(req: NextRequest) {
     const itemId = typeof body.itemId === 'string' ? body.itemId : ''
     if (!itemId) return refuse('item_not_found', 404)
     const cs = await countrySettingsForTruck(truck)
-    const digits = minorDigits(cs.currency)
+    const digits = minorDigits(cs.menuCurrency ?? cs.currency)   // world-countries-5: the menu money's digits
     if (action === 'get_item_cost') {
       const c = await currentItemCost(supabase, truck.id, itemId)
-      const minor = c && c.currency === cs.currency ? c.costMinor : null
-      return NextResponse.json({ ok: true, cost: minor === null ? null : minor / 10 ** digits, currency: cs.currency })
+      const minor = c && c.currency === (cs.menuCurrency ?? cs.currency) ? c.costMinor : null
+      return NextResponse.json({ ok: true, cost: minor === null ? null : minor / 10 ** digits, currency: cs.menuCurrency ?? cs.currency })
     }
     // The box's value in MAJOR units ("2.35", or null / '' to clear) → minor units, rounded to the currency's own digits.
     const raw = body.cost
@@ -3150,7 +3150,7 @@ export async function POST(req: NextRequest) {
       if (!Number.isFinite(n) || n < 0) return refuse('cost_invalid', 400)
       costMinor = Math.round(n * 10 ** digits)
     }
-    const r = await setItemCost(supabase, { truckId: truck.id, itemId, costMinor, currency: cs.currency, today: getLocalDateInTz(await truckTimeZone(truck)), actor: requestingUserId ?? null })
+    const r = await setItemCost(supabase, { truckId: truck.id, itemId, costMinor, currency: cs.menuCurrency ?? cs.currency, today: getLocalDateInTz(await truckTimeZone(truck)), actor: requestingUserId ?? null })
     if (!r.ok) return refuse(r.code, r.code === 'item_not_found' ? 404 : 400)
     return NextResponse.json({ ok: true, written: r.written, cost: costMinor === null ? null : costMinor / 10 ** digits })
   }
@@ -3365,9 +3365,9 @@ export async function POST(req: NextRequest) {
           rows: accountRows({
             orders: all, payments, costs: await readTruckCosts(supabase, truck.id), itemIdByName,
             tax: { inclusive: reportRules.taxInclusive, rateMilli: reportRules.taxRateMilli ?? null },
-            timeZone: waTz, currency: cs.currency,
+            timeZone: waTz, currency: cs.menuCurrency ?? cs.currency,
           }),
-          currency: cs.currency, taxLabel: reportRules.taxLabel, taxInclusive: reportRules.taxInclusive,
+          currency: cs.menuCurrency ?? cs.currency, taxLabel: reportRules.taxLabel, taxInclusive: reportRules.taxInclusive,
         }
       } catch (e) {
         console.error('[get_report] accounts could not be built — the report goes without them:', e instanceof Error ? e.message : e)

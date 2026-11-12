@@ -374,5 +374,49 @@
  "ZMW": {
   "home": "K 29",
   "intl": "ZMW 29"
+ },
+ "BHD": {
+  "home": "‏٣ د.ب.‏",
+  "intl": "‏٣ د.ب.‏"
+ },
+ "JOD": {
+  "home": "‏٣ د.أ.‏",
+  "intl": "‏٣ د.أ.‏"
+ },
+ "KWD": {
+  "home": "‏٣ د.ك.‏",
+  "intl": "‏٣ د.ك.‏"
+ },
+ "OMR": {
+  "home": "‏٣ ر.ع.‏",
+  "intl": "‏٣ ر.ع.‏"
+ },
+ "TND": {
+  "home": "3 DT",
+  "intl": "3 DT"
+ },
+ "BTN": {
+  "home": "BTN 29",
+  "intl": "BTN 29"
+ },
+ "TMT": {
+  "home": "TMT 29",
+  "intl": "TMT 29"
+ },
+ "ERN": {
+  "home": "Nfk 29",
+  "intl": "Nfk 29"
+ },
+ "MRU": {
+  "home": "‏٢٩ أ.م.",
+  "intl": "‏٢٩ أ.م."
+ },
+ "STN": {
+  "home": "29 Db",
+  "intl": "29 Db"
+ },
+ "ZWG": {
+  "home": "ZWG 29",
+  "intl": "ZWG 29"
  }
 }

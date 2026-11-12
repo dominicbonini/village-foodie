@@ -26,6 +26,10 @@ export interface CountrySettings {
   enabled: boolean
 
   currency: string
+  /** world-countries-5 (12 November 2026, 20261096): the money a truck's MENU is priced in — differs from `currency` (what HatchGrab bills
+   *  in, plan_prices) only in the 11 countries billed in USD/EUR whose own money is another (BH JO KW OM TN BT TM ER MR ST ZW). The loader
+   *  always sets it (to `currency` when the row has none); optional so a hand-built settings object (fixtures, the browser) still types. */
+  menuCurrency?: string
   locale: string
   timeFormat: '24h' | '12h'
   dateOrder: 'dmy' | 'mdy'
@@ -141,9 +145,11 @@ export function platformFeeOn(s: Pick<CountrySettings, 'platformFeeEnabled'> & {
   return s.platformFeeEnabled === true && s.platformFeeAllowed !== false
 }
 
-/** The two things a money formatter needs, taken from a settings row. */
-export function moneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): { currency: string; locale: string } {
-  return { currency: s.currency, locale: s.locale }
+/** The two things a money formatter needs, taken from a settings row — for A TRUCK'S OWN MONEY (its menu, charges, costs, reports): the
+ *  menu currency (world-countries-5), which is `currency` everywhere but the 11 countries billed in USD/EUR. Plan prices and billing use
+ *  planMoneyFormatOf / intlMoneyFormatOf, which keep to `currency`. */
+export function moneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'> & { menuCurrency?: string }): { currency: string; locale: string } {
+  return { currency: s.menuCurrency ?? s.currency, locale: s.locale }
 }
 
 /**
@@ -158,7 +164,7 @@ export function moneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): 
  * `planLocale` from currency-registry). That form now lives only where currencies sit side by side: intlMoneyFormatOf.
  */
 export function planMoneyFormatOf(s: Pick<CountrySettings, 'currency' | 'locale'>): MoneyFormat {
-  const own = moneyFormatOf(s)
+  const own = { currency: s.currency, locale: s.locale }   // world-countries-5: the BILLING currency (moneyFormatOf is the menu's now)
   const display = currencyInfo(own.currency)?.homeDisplay
   return display ? { ...own, currencyDisplay: display } : own
 }

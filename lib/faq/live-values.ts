@@ -13,6 +13,7 @@
 //   {K.name} {K.price} {K.included} {K.fee} {K.extraVan}   for any public plan key K offered in the country
 //   {trial.months}  {trialEnd.name}  {trialEnd.price}  {card.fee}  {payAtTruck}  {countries}  {plansWith.F}
 //   {apps.sentence}  {apps.offline}   phrases chosen by the country's app flags (faq.phrases.*)
+import { regionNameIn } from '@/lib/region-name'
 import { offerPlans, offerTrialMonths, offerFallback } from '@/lib/plan-offer'
 import { planByKey, planPriceFor, planAllowsFeature, type PlanCatalog } from '@/lib/plans'
 import { localizePlans } from '@/lib/plan-names'
@@ -69,7 +70,7 @@ const naturalList = (xs: string[], locale: string): string => new Intl.ListForma
 /** A country's name in `locale`: the row's own (English) name on an English page, else Intl's name for the code. */
 function countryName(s: CountrySettings, locale: string): string {
   if (isEnglish(locale)) return s.name
-  try { return new Intl.DisplayNames([locale], { type: 'region' }).of(s.countryCode) || s.name } catch { return s.name }
+  return regionNameIn(locale, s.countryCode) || s.name   // world-countries-5: Serbian in Latin script (lib/region-name.ts)
 }
 
 type Value = { value: string } | { problem: Problem }

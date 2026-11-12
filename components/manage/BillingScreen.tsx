@@ -17,7 +17,7 @@ import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { useTruckTime } from '@/components/TruckTimeContext'
 import { usePlanCatalog } from '@/components/PlanCatalogProvider'
 import { planByKey } from '@/lib/plans'
-import { moneyFormatOf, planMoneyFormatOf } from '@/lib/country-settings-types'
+import { planMoneyFormatOf } from '@/lib/country-settings-types'
 import { formatMinor, formatWholeAmount, pctLabel } from '@/lib/money-format'
 import { formatYmd, monthName } from '@/lib/time-utils'
 import { priceText } from '@/lib/price-text'
@@ -81,7 +81,7 @@ function useWords() {
   const catalog = usePlanCatalog()
   const country = useCountrySettings()
   const time = useTruckTime()
-  const money = moneyFormatOf(country)
+  const money = { currency: country.currency, locale: country.locale }   // world-countries-5: what HatchGrab BILLS in (moneyFormatOf is the menu's money)
   const planMoney = planMoneyFormatOf(country)
   return {
     t,

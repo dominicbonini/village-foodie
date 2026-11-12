@@ -51,7 +51,7 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
   const tCharges = useT('charges')
   // A refusal's code and values, worded (lib/charge-settings.ts returns `errorsManage` codes).
   const tErr = useT('errorsManage') as unknown as (code: string, params?: Record<string, string>) => string
-  const fmt = { currency: cs.currency, locale: cs.locale }
+  const fmt = { currency: cs.menuCurrency ?? cs.currency, locale: cs.locale }   // world-countries-5: the truck's own (menu) money
   const money = (minor: number) => formatMinor(minor, fmt)
   const [rate, setRate] = useState(truck.tax_rate_milli != null ? decimalForInput(formatRateMilli(truck.tax_rate_milli), cs.locale) : '')
   const [rateError, setRateError] = useState<string | null>(null)
@@ -92,7 +92,7 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
   const exampleFee = (() => {
     const pctNum = Number(normaliseDecimal(feePct, cs.locale)), fixedNum = Number(normaliseDecimal(feeFixed, cs.locale))   // france-1
     const bps = pctNum > 0 ? Math.round(pctNum * 100) : 0
-    const fixed = fixedNum > 0 ? toMinorUnits(fixedNum, cs.currency) : 0   // world-countries-1: the currency's minor units
+    const fixed = fixedNum > 0 ? toMinorUnits(fixedNum, (cs.menuCurrency ?? cs.currency)) : 0   // world-countries-1: the currency's minor units
     return applyBps(EXAMPLE_FOOD_MINOR, Math.min(bps, maxPct ?? 0)) + Math.min(fixed, maxFixed ?? 0)
   })()
 
@@ -186,7 +186,7 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
                   placeholder="0.00" className="w-20 rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-right focus:outline-none focus:ring-2 focus:ring-orange-400" />
               </>)}
             </div>
-            <p className="text-xs text-slate-500">{t('fee.max', { max: feePhrase(maxPct, maxFixed, cs.currency, money) })}</p>
+            <p className="text-xs text-slate-500">{t('fee.max', { max: feePhrase(maxPct, maxFixed, (cs.menuCurrency ?? cs.currency), money) })}</p>
             {feeError && <p className="text-xs text-red-600" role="alert">{feeError}</p>}
             <p className="text-xs text-slate-500">
               {t('fee.example', { label: tCharges('serviceFeeCustomer'), amount: money(exampleFee) })}
@@ -198,7 +198,7 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
           <div className="py-3" data-charges-row="fee-hatchgrab">
             <p className="text-sm font-semibold text-slate-800">{t('fee.label')}</p>
             <p className="text-xs text-slate-500 mt-0.5">
-              {t('fee.hatchgrab', { fee: feePhrase(cs.serviceFeeHatchgrabBps, cs.serviceFeeHatchgrabFixedMinor, cs.currency, money) })}
+              {t('fee.hatchgrab', { fee: feePhrase(cs.serviceFeeHatchgrabBps, cs.serviceFeeHatchgrabFixedMinor, (cs.menuCurrency ?? cs.currency), money) })}
             </p>
           </div>
         )}

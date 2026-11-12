@@ -40,6 +40,36 @@ const BLOCKED = 'Sorry, HatchGrab isn’t available in your region yet.'
   const MC = read('lib/marketing-country.ts')
   t('every new country has a landing segment (/xx, its ISO code) — shown only once it is enabled', G.ROWS.every(r => new RegExp(`\\b${r.code}: '${r.code.toLowerCase()}'`).test(MC)), G.ROWS.filter(r => !new RegExp(`\\b${r.code}: '${r.code.toLowerCase()}'`).test(MC)).map(r => r.code))
 
+  // Dominic's §9 answers (12 November 2026): the app in every App Store storefront, so iOS badges on for every go-live country (switch-on);
+  // Iceland's week starts on Monday (switch-on); menus in local money in 11 countries (20261096, RUN).
+  const IOS56 = 'AD AS AW AX BD BI BL BQ CC CF CK CW CX DJ ER ET FK FO GF GG GL GN GP GQ GU IM JE KI KM LS MC MF MH MP MQ NC NF NU PF PM PN PR RE SH SJ SM SX TG TK TL TV VA VI WF WS YT'.split(' ')
+  const iosIn = ((/set ios_app_available = true[^;]*where country_code in \(([^)]*)\)/.exec(sw) || [, ''])[1].match(/'[A-Z]{2}'/g) || []).map(x => x.slice(1, -1))
+  t('switch-on: ios_app_available on for the 56 new countries that had it off (the app is in every storefront now); Iceland\'s week starts Monday',
+    iosIn.length === 56 && IOS56.every(c => iosIn.includes(c)) && G.ROWS.filter(r => !r.iosApp).every(r => iosIn.includes(r.code)) && /set week_start = 'monday'[^;]*where country_code = 'IS'/.test(sw), iosIn.length)
+  const mc = read('supabase/migrations/20261096_world_countries_5_menu_currency.sql')
+  const MENU = { BH: 'BHD', JO: 'JOD', KW: 'KWD', OM: 'OMR', TN: 'TND', BT: 'BTN', TM: 'TMT', ER: 'ERN', MR: 'MRU', ST: 'STN', ZW: 'ZWG' }
+  const regCodes = [...read('lib/currencies.ts').matchAll(/\{ code: '([A-Z]{3})',/g)].map(m => m[1])
+  const mcList = ((/menu_currency is null or menu_currency in \(([^)]*)\)/.exec(mc) || [, ''])[1].match(/'[A-Z]{3}'/g) || []).map(x => x.slice(1, -1))
+  t('20261096: menu_currency (NULL = currency) checked against the registry\'s 127 codes; set to local money in exactly the 11 billed in USD/EUR',
+    regCodes.length === 127 && mcList.join() === regCodes.join() && Object.entries(MENU).every(([c, m]) => mc.includes(`set menu_currency = '${m}', updated_at = now(), updated_by = 'world-countries-5' where country_code = '${c}' and enabled = false;`))
+    && (mc.match(/set menu_currency =/g) || []).length === 11 && Object.keys(MENU).every(c => ['USD', 'EUR'].includes(G.ROWS.find(r => r.code === c).currency)))
+  const LP1E = require('./_lp1e-fixtures.cjs')
+  const ctx = LP1E.context(kit, REPO)
+  const CS = await ctx.bundle('wc5-cs', "export { mapCountryRow } from '@/lib/country-settings'\nexport { moneyFormatOf, planMoneyFormatOf, intlMoneyFormatOf } from '@/lib/country-settings-types'\nexport { regionNameIn } from '@/lib/region-name'\nexport { minorDigits } from '@/lib/money-format'")
+  const rowOf = r => ({ ...Object.fromEntries(Object.entries(r).map(([k, v]) => [k.replace(/[A-Z]/g, c => '_' + c.toLowerCase()), v])), updated_at: '2026-11-12T00:00:00Z' })
+  const bh = CS.mapCountryRow({ ...rowOf({ ...LP1E.GB(), countryCode: 'BH', name: 'Bahrain', currency: 'USD', locale: 'ar-BH' }), menu_currency: 'BHD' })
+  const gb = CS.mapCountryRow(rowOf(LP1E.GB()))
+  t('the loader: Bahrain prices its menu in BHD (three decimals) — moneyFormatOf, what provisioning, Manage and the reports use — and its plans in USD (planMoneyFormatOf / intlMoneyFormatOf, what Billing and the pricing pages use)',
+    bh.menuCurrency === 'BHD' && CS.moneyFormatOf(bh).currency === 'BHD' && CS.minorDigits('BHD') === 3 && CS.planMoneyFormatOf(bh).currency === 'USD' && CS.intlMoneyFormatOf(bh).currency === 'USD', { bh: bh.menuCurrency })
+  t('…a row with no menu_currency (every other country) is unchanged: menuCurrency = currency, and both formats are its currency', gb.menuCurrency === 'GBP' && CS.moneyFormatOf(gb).currency === 'GBP' && CS.planMoneyFormatOf(gb).currency === 'GBP')
+  let refusedMenu = null; try { CS.mapCountryRow({ ...rowOf(LP1E.GB()), menu_currency: 'XYZ' }) } catch (e) { refusedMenu = e.message }
+  t('…and a menu currency the registry does not list is refused, like an unknown currency', /menu_currency has an unusable value/.test(refusedMenu || ''), refusedMenu)
+  t('a new truck is written with the MENU currency (lib/provision-truck.ts); Billing keeps the billing currency (BillingScreen)',
+    /currency: countrySettings\.menuCurrency \?\? countrySettings\.currency,/.test(read('lib/provision-truck.ts')) && /const money = \{ currency: country\.currency, locale: country\.locale \}/.test(read('components/manage/BillingScreen.tsx')))
+  t('Serbian in Latin script: Srbija and Crna Gora in sr-RS (Intl alone writes Србија); the selector, the FAQ values and /compare all name countries through it',
+    CS.regionNameIn('sr-RS', 'RS') === 'Srbija' && CS.regionNameIn('sr-RS', 'ME') === 'Crna Gora' && CS.regionNameIn('de-DE', 'RS') === 'Serbien'
+    && ['lib/visitor-country.ts', 'lib/faq/live-values.ts', 'lib/comparison-server.ts'].every(f => /regionNameIn\(/.test(read(f))), [CS.regionNameIn('sr-RS', 'RS'), CS.regionNameIn('sr-RS', 'ME')])
+
   // ══ 2 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('2 · REGION BLOCKS — lib/region-blocks.ts through checkTradeArea (signup, provisioning, Where you trade)')
   const M = await kit.bundle('wc5-ta', "export { checkTradeArea } from '@/lib/trade-area'\nexport { REGION_BLOCKS, blockedRegionOf } from '@/lib/region-blocks'")

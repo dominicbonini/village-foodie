@@ -15,6 +15,7 @@
 // lib/marketing-country.ts). The four-source path here still serves any render without a country address (the
 // unlisted preview on another host, the plans PDF route) exactly as before.
 import 'server-only'
+import { regionNameIn } from '@/lib/region-name'
 import { cookies, headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { listCountrySettingsCached } from '@/lib/country-settings'
@@ -48,7 +49,7 @@ export const pickVisitorCountry = pickMarketingCountry
 /** country-picker-1: a country's name in its own language — Intl's region name in the row's locale; the English name if
  *  Intl has none. Computed HERE, on the server, so the browser's own ICU never re-words a server-rendered link. */
 function ownNameOf(c: CountrySettings): string {
-  try { return new Intl.DisplayNames([c.locale], { type: 'region' }).of(c.countryCode) || c.name } catch { return c.name }
+  return regionNameIn(c.locale, c.countryCode) || c.name   // world-countries-5: Serbian in Latin script (lib/region-name.ts)
 }
 
 const optionOf = (c: CountrySettings): VisitorCountryOption =>

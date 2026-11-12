@@ -4,6 +4,10 @@
 --     country selector (under its region) and signup;
 -- 2 · switches OFF Mexico (no truck has ever been in MX — checked 12 Nov 2026, report §2);
 -- 3 · sets vat_number_required on the two LIVE countries the list marks (AE, BR) — the 39 new ones already have it from block B.
+-- 4 · (Dominic, 12 Nov) ios_app_available ON for the 56 new countries that had it off — the app is now in EVERY App Store storefront, and
+--     where a country has no storefront of its own people use an Apple ID from another and the badge opens their own store. Android
+--     is unchanged.
+-- 5 · (Dominic, 12 Nov) Iceland's week starts on Monday (block B took Intl's Sunday).
 begin;
 
 update public.country_settings set enabled = true, updated_at = now(), updated_by = 'world-countries-5 switch-on'
@@ -15,5 +19,11 @@ update public.country_settings set enabled = false, updated_at = now(), updated_
 
 update public.country_settings set vat_number_required = true, updated_at = now(), updated_by = 'world-countries-5'
  where country_code in ('AE', 'BR');
+
+update public.country_settings set ios_app_available = true, updated_at = now(), updated_by = 'world-countries-5 switch-on'
+ where country_code in ('AD', 'AS', 'AW', 'AX', 'BD', 'BI', 'BL', 'BQ', 'CC', 'CF', 'CK', 'CW', 'CX', 'DJ', 'ER', 'ET', 'FK', 'FO', 'GF', 'GG', 'GL', 'GN', 'GP', 'GQ', 'GU', 'IM', 'JE', 'KI', 'KM', 'LS', 'MC', 'MF', 'MH', 'MP', 'MQ', 'NC', 'NF', 'NU', 'PF', 'PM', 'PN', 'PR', 'RE', 'SH', 'SJ', 'SM', 'SX', 'TG', 'TK', 'TL', 'TV', 'VA', 'VI', 'WF', 'WS', 'YT') and ios_app_available = false;
+
+update public.country_settings set week_start = 'monday', updated_at = now(), updated_by = 'world-countries-5 switch-on'
+ where country_code = 'IS';
 
 commit;

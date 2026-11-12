@@ -59,7 +59,9 @@ const BASE_COLUMNS = [
  *  (20261054)? Read by name like every column — but TOLERANTLY: until 20261054 runs, the select that names it fails with 42703
  *  and `selectWithFallback` reads the columns without it, and mapCountryRow takes its absence as `true` (every existing row's
  *  value). So this code may deploy before the SQL, and nothing changes until it runs. */
-const WC1_COLUMNS = ['platform_fee_allowed']
+// world-countries-5 (12 November 2026, 20261096): + menu_currency — read just as tolerantly (absent → the read without these; the menu is
+// then priced in `currency`, as before).
+const WC1_COLUMNS = ['platform_fee_allowed', 'menu_currency']
 /** pricing-copy-4 (12 November 2026, docs/pricing-copy-4-report.md): the country's payment model, from public.country_billing
  *  (billing-1, 20261085; one row per country, its primary key a foreign key to this table), EMBEDDED in the same read — so every
  *  settings object the loader builds says whether the country takes online card payments (offersOnlineCardPayments in
@@ -145,6 +147,9 @@ export function mapCountryRow(r: Row): CountrySettings {
     // currency-registry (21 October 2026): only a currency lib/currencies.ts lists (the database CHECK holds the same
     // codes) — refused like an unknown allergen set; a list skips the row (readAllCountryRows below).
     currency: oneOf(c, r, 'currency', CURRENCY_CODES),
+    // world-countries-5 (12 November 2026, 20261096): the money truck menus are priced in — `menu_currency`, else `currency` (NULL = the
+    // same, so every country without one is unchanged). Only a registry currency, like `currency`.
+    menuCurrency: r.menu_currency === null || r.menu_currency === undefined ? oneOf(c, r, 'currency', CURRENCY_CODES) : oneOf(c, r, 'menu_currency', CURRENCY_CODES),
     locale: str(c, r, 'locale'),
     timeFormat: oneOf(c, r, 'time_format', ['24h', '12h'] as const),
     dateOrder: oneOf(c, r, 'date_order', ['dmy', 'mdy'] as const),
