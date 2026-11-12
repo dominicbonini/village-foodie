@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "پتہ",
+    "postcode": "پوسٹ کوڈ",
+    "zip": "زپ کوڈ",
+    "eircode": "Eircode",
+    "postalCode": "پوسٹل کوڈ",
+    "state": "ریاست",
+    "stateTerritory": "ریاست یا علاقہ",
+    "province": "صوبہ",
+    "county": "کاؤنٹی",
+    "prefecture": "پریفیکچر",
+    "emirate": "امارت",
+    "region": "خطہ",
+    "area": "علاقہ (گاؤں، قصبہ یا شہر)",
+    "townOrArea": "قصبہ یا علاقہ",
+    "city": "شہر",
+    "suburb": "مضافاتی علاقہ",
+    "townOrCity": "قصبہ یا شہر"
+  },
+  "short": {
+    "area": "علاقہ",
+    "townOrArea": "قصبہ یا علاقہ",
+    "city": "شہر",
+    "suburb": "مضافاتی علاقہ",
+    "townOrCity": "قصبہ یا شہر"
+  },
+  "inSentence": {
+    "postcode": "پوسٹ کوڈ",
+    "zip": "زپ کوڈ",
+    "eircode": "Eircode",
+    "postalCode": "پوسٹل کوڈ"
+  },
+  "withArticle": {
+    "postcode": "پوسٹ کوڈ",
+    "zip": "زپ کوڈ",
+    "eircode": "Eircode",
+    "postalCode": "پوسٹل کوڈ"
+  },
+  "tradeLabel": {
+    "area": "قصبہ یا شہر",
+    "townOrArea": "قصبہ یا علاقہ",
+    "city": "شہر",
+    "suburb": "مضافاتی علاقہ",
+    "townOrCity": "قصبہ یا شہر"
+  },
+  "basedIn": {
+    "area": "آپ کا قصبہ یا شہر",
+    "townOrArea": "آپ کا قصبہ یا علاقہ",
+    "city": "آپ کا شہر",
+    "suburb": "آپ کا مضافاتی علاقہ",
+    "townOrCity": "آپ کا قصبہ یا شہر"
+  },
+  "example": "مثلاً {example}",
+  "customersSee": "گاہکوں کو یہ نظر آئے گا:",
+  "postalWarning": "یہ درست {article} نہیں لگتا — مثال: {example}۔ آپ پھر بھی اسے محفوظ کر سکتے ہیں۔",
+  "regionChoose": "چنیں…"
+}

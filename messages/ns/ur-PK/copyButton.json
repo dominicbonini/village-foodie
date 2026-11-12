@@ -1,0 +1,10 @@
+{
+  "copy": "کاپی کریں",
+  "copied": "کاپی ہو گیا ✓",
+  "failed": "کاپی نہیں ہو سکا",
+  "aria": "{label} {thing}",
+  "announceCopied": "کاپی ہو گیا: {thing}",
+  "announceCopiedValue": "ویلیو کاپی ہو گئی",
+  "announceFailed": "کاپی نہیں ہو سکا: {thing}۔ متن منتخب کر کے خود کاپی کریں۔",
+  "announceFailedValue": "ویلیو کاپی نہیں ہو سکی۔ متن منتخب کر کے خود کاپی کریں۔"
+}

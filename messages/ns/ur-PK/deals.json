@@ -1,0 +1,17 @@
+{
+  "back": "→ واپس",
+  "title": "ڈیل لگائیں",
+  "save": "{amount} کی بچت",
+  "selectItems": "ہر سلاٹ کے لیے آئٹمز منتخب کریں",
+  "choose": "چنیں: {category}…",
+  "inYourBasket": "── آپ کی کارٹ میں ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (کارٹ میں){state, select, used { — پہلے سے ایک ڈیل میں} taken { — دوسرے سلاٹ میں منتخب} other {}}",
+  "addNew": "── نیا شامل کریں ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {لازمی · ایک چنیں} required {لازمی} other {ایک چنیں}}{unmet, select, yes { (لازمی)} other {}}",
+  "notePlaceholder": "نوٹ لکھیں، مثلاً پیاز کے بغیر (اختیاری)",
+  "backButton": "واپس",
+  "cancel": "منسوخ کریں",
+  "chooseRequired": "لازمی آپشنز چنیں",
+  "apply": "ڈیل لگائیں · {amount}"
+}

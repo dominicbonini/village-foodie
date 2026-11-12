@@ -1,0 +1,10 @@
+{
+  "vanFallback": "گاڑی",
+  "eventsFeed": {
+    "today": "آج · {date}",
+    "tomorrow": "کل · {date}"
+  },
+  "privacyNotSaved": "ایونٹ لائیو ہے، لیکن اس کی پرائیویسی محفوظ نہیں ہو سکی۔",
+  "stockWarning": "“{category}” میں کوئی آئٹم دستیاب نہیں",
+  "uncategorised": "بغیر کیٹیگری"
+}

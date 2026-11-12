@@ -1,0 +1,69 @@
+{
+  "close": "بند کریں",
+  "cancel": "منسوخ کریں",
+  "selectReason": "وجہ چنیں",
+  "reject": {
+    "title": "آرڈر #{orderId} مسترد کریں؟",
+    "reasonLabel": "وجہ — ضروری (گاہک کو دکھائی جائے گی)",
+    "reason": "{reason, select, sold_out {ایک آئٹم ختم ہو گیا} too_busy {بہت مصروف — وقت پر تیار نہیں ہو سکتا} closing_soon {جلد بند ہو رہے ہیں} other {دیگر}}",
+    "noteRequired": "وجہ — ضروری",
+    "noteOptional": "اضافی نوٹ — اختیاری",
+    "notePlaceholder": "گاہک کے لیے مزید تفصیل لکھیں…",
+    "keep": "آرڈر برقرار رکھیں",
+    "confirm": "آرڈر مسترد کریں"
+  },
+  "eventCancel": {
+    "title": "یہ ایونٹ منسوخ کریں؟",
+    "affected": "{n, plural, one {{count} آرڈر منسوخ ہو جائے گا} other {{count} آرڈرز منسوخ ہو جائیں گے}} اور گاہکوں کو اطلاع دی جائے گی۔",
+    "reasonLabel": "وجہ — اختیاری",
+    "reason": "{reason, select, vehicle_breakdown {گاڑی خراب ہو گئی} weather {موسم} venue_issue {مقام کا مسئلہ} personal_emergency {ذاتی ایمرجنسی} other {دیگر}}",
+    "messageLabel": "گاہکوں کے لیے پیغام — اختیاری",
+    "messagePlaceholder": "مثلاً معذرت، مقام کی طرف آتے ہوئے ہمارا ٹرک خراب ہو گیا…",
+    "keep": "ایونٹ برقرار رکھیں",
+    "cancelling": "منسوخ ہو رہا ہے…",
+    "confirm": "ایونٹ منسوخ کریں"
+  },
+  "actions": {
+    "startEvent": "{restart, select, yes {ایونٹ دوبارہ شروع کریں} other {ایونٹ شروع کریں}}",
+    "changeEvent": "ایونٹ بدلیں",
+    "changeEventType": "ایونٹ کی قسم بدلیں…",
+    "privateLink": "نجی لنک اور QR کوڈ",
+    "noteLabel": "گاہکوں کے لیے نوٹ",
+    "notePlaceholder": "مثلاً مین پارکنگ میں گاڑی کھڑی کریں، نارنجی شامیانہ تلاش کریں",
+    "noteHint": "آرڈر کے صفحے پر آپ کے ایونٹ کی تفصیلات کے نیچے گاہکوں کو دکھایا جاتا ہے۔",
+    "saveNote": "نوٹ محفوظ کریں",
+    "resume": "آرڈرز دوبارہ شروع کریں",
+    "pause": "آرڈرز روکیں",
+    "changeFinishTime": "ایونٹ کے اختتام کا وقت بدلیں",
+    "finishEvent": "ایونٹ ختم کریں",
+    "cancelEvent": "ایونٹ منسوخ کریں"
+  },
+  "finish": {
+    "confirmTitle": "اختتام کا وقت بدلیں؟",
+    "willFinish": "یہ ایونٹ{hasCurrent, select, yes { <b>{current}</b> کے بجائے} other {}} <b>{selected}</b> پر ختم ہو گا۔",
+    "dueAfter": "<b>{n, plural, one {{count} آرڈر} other {{count} آرڈرز}} کا وقت {selected} کے بعد ہے۔</b> {n, plural, one {یہ بورڈ پر رہے گا اور اسے اب بھی بنانا ہے} other {یہ بورڈ پر رہیں گے اور انہیں اب بھی بنانا ہے}}۔ اختتام کا وقت بدلنے سے صرف بعد کے اوقات کے لیے نئے آرڈرز رکتے ہیں۔",
+    "saving": "محفوظ ہو رہا ہے…",
+    "confirm": "اختتام کا وقت بدلیں",
+    "keepCurrent": "{current} برقرار رکھیں",
+    "keepAsIs": "جیسا ہے رہنے دیں",
+    "title": "اختتام کا وقت بدلیں",
+    "currentlySet": "اس ایونٹ کے ختم ہونے کا وقت ابھی <b>{current}</b> ہے۔",
+    "noFinishTime": "اس ایونٹ کا اختتام کا وقت طے نہیں۔",
+    "noTimesLeft": "آج کوئی وقت باقی نہیں۔ اس کے بجائے “ایونٹ ختم کریں” استعمال کریں۔",
+    "newFinishTime": "اختتام کا نیا وقت",
+    "optionCurrent": "{time} (موجودہ)",
+    "earlier": "یہ موجودہ اختتام کے وقت سے پہلے ہے۔ گاہک اس کے بعد کے اوقات کے لیے آرڈر نہیں کر سکیں گے۔",
+    "review": "تبدیلی کا جائزہ لیں",
+    "optionNextDay": "{time} (اگلے دن)"
+  },
+  "extraWait": {
+    "title": "اضافی انتظار شامل کریں",
+    "hint": "نئے آرڈرز پر بتائے گئے پک اپ کے وقت میں اضافہ کرتا ہے۔ اس سے ایونٹ کے اختتام کا وقت نہیں بدلتا۔",
+    "option": "+{mins} منٹ"
+  },
+  "picker": {
+    "reconnect": "لوڈ کرنے کے لیے دوبارہ کنیکٹ کریں",
+    "selected": "منتخب",
+    "status": "{tone, select, paused {⏸ رکا ہوا} live {● لائیو} finished {● ختم} cancelled {منسوخ} other {شروع نہیں ہوا}}"
+  }
+}

@@ -59,6 +59,7 @@ import hy from './allergen-guard/hy.json'   // languages-world-2
 import mn from './allergen-guard/mn.json'   // languages-world-2
 import hi from './allergen-guard/hi.json'   // languages-world-2
 import bn from './allergen-guard/bn.json'   // languages-world-2
+import ur from './allergen-guard/ur.json'   // languages-world-2
 
 export interface GuardWords {
   language: string
@@ -79,7 +80,7 @@ export const GUARD_WORDS: Record<string, GuardWords> = { en: en as GuardWords, f
   es: es as GuardWords, it: it as GuardWords, pt: pt as GuardWords, nl: nl as GuardWords, sv: sv as GuardWords, da: da as GuardWords, nb: nb as GuardWords,
   pl: pl as GuardWords, cs: cs as GuardWords, sk: sk as GuardWords, hu: hu as GuardWords, ro: ro as GuardWords, hr: hr as GuardWords, sl: sl as GuardWords, fi: fi as GuardWords, et: et as GuardWords, lv: lv as GuardWords, lt: lt as GuardWords, el: el as GuardWords, bg: bg as GuardWords,
   ms: ms as GuardWords, ja: ja as GuardWords, zh: zh as GuardWords, th: th as GuardWords, ar: ar as GuardWords,
-  tr: tr as GuardWords, ko: ko as GuardWords, id: id as GuardWords, vi: vi as GuardWords, he: he as GuardWords, is: is as GuardWords, sr: sr as GuardWords, ru: ru as GuardWords, uk: uk as GuardWords, kk: kk as GuardWords, uz: uz as GuardWords, az: az as GuardWords, ka: ka as GuardWords, hy: hy as GuardWords, mn: mn as GuardWords, hi: hi as GuardWords, bn: bn as GuardWords }
+  tr: tr as GuardWords, ko: ko as GuardWords, id: id as GuardWords, vi: vi as GuardWords, he: he as GuardWords, is: is as GuardWords, sr: sr as GuardWords, ru: ru as GuardWords, uk: uk as GuardWords, kk: kk as GuardWords, uz: uz as GuardWords, az: az as GuardWords, ka: ka as GuardWords, hy: hy as GuardWords, mn: mn as GuardWords, hi: hi as GuardWords, bn: bn as GuardWords, ur: ur as GuardWords }
 
 const asciiNorm = (s: string) => ` ${s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `
 const unicodeNorm = (s: string) => ` ${s.normalize('NFKD').replace(/\p{M}+/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim()} `

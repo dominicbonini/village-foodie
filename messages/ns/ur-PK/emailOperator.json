@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "نیا آرڈر #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "نیا آرڈر موصول ہوا",
+    "from": "<b>آرڈر #{id}</b> — <b>{name}</b> کی طرف سے",
+    "collection": "پک اپ: {time}",
+    "asap": "کوئی مخصوص وقت نہیں — جلد از جلد",
+    "total": "کل",
+    "notes": "<b>نوٹس:</b> {notes}",
+    "autoConfirmed": "خود بخود کنفرم — کچھ کرنے کی ضرورت نہیں۔",
+    "confirmPrompt": "یہ آرڈر کنفرم یا مسترد کرنے کے لیے اپنے HatchGrab ڈیش بورڈ میں لاگ اِن کریں۔",
+    "text": "نیا آرڈر #{id} — {name} کی طرف سے{withSlot, select, yes {، {slot} کے لیے} other {}}{withVenue, select, yes {، مقام: {venue}} other {}}۔{withCharges, select, yes { {charges}۔} other {}} کل {total}۔{withNotes, select, yes { نوٹس: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "{truck} کے لیے نئے ایونٹس ملے — براہ کرم جائزہ لیں",
+    "hi": "السلام علیکم،",
+    "found": "ہمیں آپ کے شیڈول میں <b>{n, plural, one {{count} نیا ایونٹ} other {{count} نئے ایونٹس}}</b> ملے ہیں جنہیں گاہکوں کو نظر آنے سے پہلے آپ کی منظوری چاہیے۔",
+    "listHeading": "ملنے والے ایونٹس:",
+    "approve": "جب آپ انہیں اپنے “شیڈول” ٹیب میں منظور کر لیں گے تو یہ نقشے پر لائیو ہو جائیں گے اور آپ کا آرڈر صفحہ پری آرڈرز لینے کے لیے تیار ہو گا۔",
+    "cta": "اپنا شیڈول دیکھیں ←",
+    "signoff": "— HatchGrab ٹیم · hatchgrab.com",
+    "unknownVenue": "نامعلوم مقام",
+    "text": "السلام علیکم،\n\nہمیں آپ کے شیڈول میں {n, plural, one {{count} نیا ایونٹ} other {{count} نئے ایونٹس}} ملے ہیں جنہیں آپ کی منظوری چاہیے:\n\n{list}\n\nان کا جائزہ یہاں لیں: {url}\n\nمنظوری کے بعد یہ نقشے پر لائیو ہو جائیں گے۔\n\n— HatchGrab ٹیم"
+  }
+}

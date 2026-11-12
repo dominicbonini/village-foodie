@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} — {plan} پلان میں شامل ہیں۔} other {{feature} — {plan} پلان میں شامل ہے۔}}",
+  "notOnPlan": "{many, select, yes {{feature} — آپ کے پلان میں شامل نہیں ہیں۔} other {{feature} — آپ کے پلان میں شامل نہیں ہے۔}}",
+  "switchedOff": "{many, select, yes {{feature} — آپ کے ٹرک کے لیے بند ہیں۔} other {{feature} — آپ کے ٹرک کے لیے بند ہے۔}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "اپ گریڈ کریں ←",
+  "features": {
+    "discovery_map": {
+      "name": "ڈسکوری میپ پر لسٹنگ",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "ویب ڈیش بورڈ",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "کچن ایپ",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR کوڈ مینو",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "ڈیلز",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "اپ سیلز",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "واک اِن آرڈرز",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "پک اپ پر ادائیگی والی آرڈرنگ",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "سولڈ آؤٹ بٹن",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "اسٹاک کاؤنٹ ڈاؤن",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "آف لائن آرڈر تحفظ",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "آن لائن ادائیگیاں",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "آنے والی تاریخوں کے لیے پری آرڈر",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "گاہکوں کے ٹائم سلاٹس",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "کچن کی گنجائش کا انتظام",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "خودکار منظوری",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger اور Instagram آٹو ریپلائی",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "برانڈڈ QR کوڈز",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "ایڈوانسڈ رپورٹنگ",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "کچن ٹکٹ پرنٹنگ",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "کئی ڈیوائسز پر کچن سنک",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "باورچی اسکرین",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp آٹو ریپلائی",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "آپ کی اپنی ویب سائٹ پر آپ کا شیڈول",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "سوشل میڈیا پوسٹس",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "ایونٹ کی کسٹم اقسام",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "نجی تقریبات",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "دستاویزات",
+      "many": "yes"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} سلاٹ} other {{count} سلاٹس}} گنجائش سے زیادہ — جائزہ لیں",
+  "batchOver": "{cat} بیچ سے زیادہ — {slot} کے لیے {count} (فی بیچ {per})",
+  "eventStartOver": "ایونٹ کے آغاز پر گنجائش سے زیادہ — {slot} کے لیے {n, plural, one {{count} آئٹم} other {{count} آئٹمز}}",
+  "kitchenOver": "کچن گنجائش سے زیادہ — {slot} کے لیے {n, plural, one {{count} آئٹم پک رہا ہے} other {{count} آئٹمز پک رہے ہیں}}",
+  "orderItems": "#{id} — {n, plural, one {{count} آئٹم} other {{count} آئٹمز}}",
+  "placedAnyway": "پھر بھی دیے گئے: {list}",
+  "placedItem": "#{id} — {slot} کے لیے",
+  "orphans": "{times} گنجائش سے زیادہ — اس کا ذمہ دار کوئی آرڈر نہیں ملا",
+  "dismiss": "ہٹائیں",
+  "kitchenCapacity": "کچن کی گنجائش",
+  "overCapacity": "گنجائش سے زیادہ",
+  "wakeUnsupported": "یہ ڈیوائس اسکرین آن نہیں رکھ سکتی۔",
+  "wakeInsecure": "اس ایڈریس سے اسکرین آن نہیں رکھی جا سکتی۔",
+  "wakeRetry": "اسکرین آن رکھیں — دوبارہ کوشش کے لیے ٹیپ کریں",
+  "wakeAcquire": "اسکرین آن رکھیں",
+  "degraded": {
+    "serverError": "سرور آرڈرز لوڈ نہیں کر سکا{hasStatus, select, yes { (خرابی {status})} other {}}۔ {at} کے آرڈرز دکھائے جا رہے ہیں۔ ہو سکتا ہے نئے آرڈرز نظر نہ آ رہے ہوں۔",
+    "unreachable": "سرور سے رابطہ نہیں ہو رہا۔ {at} کے آرڈرز دکھائے جا رہے ہیں۔ ہو سکتا ہے نئے آرڈرز نظر نہ آ رہے ہوں۔"
+  }
+}

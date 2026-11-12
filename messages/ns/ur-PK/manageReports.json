@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 تاریخوں کی حد",
+    "event": "📍 ایونٹ",
+    "filterBy": "فلٹر کریں",
+    "show": "دکھائیں",
+    "range": "<from></from><sep>تا</sep><until></until>",
+    "selectEvent": "ایونٹ منتخب کریں…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "ایونٹ",
+    "viewReport": "رپورٹ دیکھیں",
+    "loading": "لوڈ ہو رہا ہے…",
+    "orders": "📋 آرڈرز",
+    "items": "📦 آئٹمز",
+    "exportCsv": "⬇ CSV ایکسپورٹ کریں"
+  },
+  "empty": {
+    "noOrders": "اس مدت میں کوئی آرڈر نہیں ملا۔",
+    "selectEvent": "رپورٹ دیکھنے کے لیے اوپر سے کوئی ایونٹ منتخب کریں۔"
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} آرڈر} other {{count} آرڈرز}} · {total}"
+  },
+  "revenue": {
+    "title": "آمدنی کی تفصیل",
+    "deals": "ڈیلز سے آمدنی",
+    "modifiers": "آپشنز کے اضافی چارجز",
+    "foodSales": "کھانے کی فروخت",
+    "total": "کل",
+    "other": "دیگر",
+    "tax": "ٹیکس",
+    "tips": "ٹپس",
+    "serviceFees": "سروس فیس",
+    "cardFees": "کارڈ فیس"
+  },
+  "itemsSold": {
+    "title": "فروخت شدہ آئٹمز"
+  },
+  "dealsCard": {
+    "title": "ڈیلز"
+  },
+  "custom": {
+    "title": "کسٹمائزیشنز",
+    "paidModifiers": "قیمت والے آپشنز",
+    "customerNotes": "گاہکوں کے نوٹس",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "آئٹم",
+    "modifier": "آپشن",
+    "qty": "تعداد",
+    "total": "کل",
+    "date": "تاریخ",
+    "time": "وقت",
+    "channel": "ذریعہ"
+  },
+  "breakdown": {
+    "orders": "آرڈرز کی تفصیل",
+    "items": "آئٹمز کی تفصیل"
+  },
+  "channel": {
+    "online": "آن لائن",
+    "walkUp": "واک اِن"
+  },
+  "csv": {
+    "orderId": "آرڈر ID",
+    "date": "تاریخ",
+    "event": "ایونٹ",
+    "timePlaced": "آرڈر کا وقت",
+    "collectionTime": "پک اپ کا وقت",
+    "customerName": "گاہک کا نام",
+    "orderType": "آرڈر کی قسم",
+    "items": "آئٹمز",
+    "deals": "ڈیلز",
+    "modifiers": "آپشنز",
+    "notes": "نوٹس",
+    "subtotal": "ذیلی کل",
+    "tip": "ٹپ",
+    "serviceFee": "سروس فیس",
+    "total": "کل",
+    "itemName": "آئٹم کا نام",
+    "qty": "تعداد",
+    "unitPrice": "فی یونٹ قیمت",
+    "itemTotal": "آئٹم کا کل",
+    "orderTotal": "آرڈر کا کل",
+    "unknownEvent": "نامعلوم ایونٹ",
+    "asap": "جلد از جلد",
+    "unknownCustomer": "نامعلوم",
+    "customerOnline": "گاہک (آن لائن)",
+    "placedByTruck": "ٹرک نے درج کیا"
+  },
+  "presets": {
+    "label": "مدت",
+    "custom": "اپنی تاریخیں",
+    "thisMonth": "اس مہینے",
+    "lastMonth": "پچھلے مہینے",
+    "lastQuarter": "پچھلی سہ ماہی",
+    "lastTaxYear": "پچھلا ٹیکس سال"
+  },
+  "accounts": {
+    "title": "آپ کے اکاؤنٹنٹ کے لیے",
+    "help": "فروخت ایونٹ کے دن میں شمار ہوتی ہے۔ مجموعی وہ ہے جو گاہکوں نے ادا کیا۔ خالص وہ ہے جو ریفنڈ اور ٹیکس کے بعد بچتا ہے۔",
+    "gross": "مجموعی فروخت",
+    "refunds": "ریفنڈز",
+    "net": "خالص فروخت",
+    "taxEstimated": "آپ کی ٹیکس شرح سے اندازہ",
+    "taxNone": "آپ کے ٹرک کے لیے کوئی ٹیکس شرح سیٹ نہیں، اس لیے یہاں ٹیکس کا حساب نہیں لگایا جاتا۔",
+    "byChannel": "ذریعے کے لحاظ سے مجموعی فروخت",
+    "byPayment": "ادائیگی کے لحاظ سے مجموعی فروخت",
+    "online": "آن لائن",
+    "walkUp": "واک اِن",
+    "cardOnline": "آن لائن کارڈ",
+    "payAtTruck": "ٹرک پر ادائیگی",
+    "cost": "فروخت شدہ ڈشز کی لاگت",
+    "profit": "منافع",
+    "coverage": "{total, plural, one {# فروخت شدہ ڈش میں سے {withCost} کی لاگت درج ہے} other {# فروخت شدہ ڈشز میں سے {withCost} کی لاگت درج ہے}}",
+    "partial": "جن ڈشز کی لاگت درج نہیں وہ لاگت میں شامل نہیں، اس لیے یہ منافع اصل سے زیادہ دکھ رہا ہے۔ مینو میں ہر ڈش کی لاگت درج کریں۔",
+    "noCosts": "ابھی کسی ڈش کی لاگت درج نہیں۔ اپنا منافع دیکھنے کے لیے مینو میں اپنی ڈشز کی لاگت درج کریں۔",
+    "byEvent": "ایونٹ کے لحاظ سے",
+    "event": "ایونٹ",
+    "sales": "خالص فروخت",
+    "eventNoProfit": "ڈیش (—) کا مطلب ہے کہ وہاں بکنے والی ہر ڈش کی لاگت درج نہیں۔",
+    "downloadOrders": "⬇ اکاؤنٹنٹ کے لیے آرڈرز",
+    "downloadEvents": "⬇ اکاؤنٹنٹ کے لیے ایونٹس",
+    "downloadHelp": "دو اسپریڈ شیٹ فائلیں: ایک میں ہر آرڈر کی ایک قطار، دوسری میں ہر ایونٹ کی ایک قطار۔ یہ Excel، Numbers، Xero اور QuickBooks میں کھلتی ہیں۔"
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "تاریخ",
+      "time": "وقت",
+      "orderNumber": "آرڈر نمبر",
+      "event": "ایونٹ",
+      "channel": "ذریعہ",
+      "paymentMethod": "ادائیگی کا طریقہ",
+      "currency": "کرنسی",
+      "gross": "مجموعی",
+      "tax": "ٹیکس",
+      "taxBasis": "ٹیکس کی بنیاد",
+      "net": "خالص",
+      "refunded": "ریفنڈ شدہ",
+      "cost": "لاگت",
+      "profit": "منافع",
+      "eventDate": "ایونٹ کی تاریخ",
+      "orders": "آرڈرز",
+      "dishesSold": "فروخت شدہ ڈشز",
+      "dishesWithCost": "لاگت والی ڈشز"
+    },
+    "taxBasis": {
+      "stored": "آرڈر کے ساتھ محفوظ",
+      "estimated": "آپ کی ٹیکس شرح سے اندازہ",
+      "none": "کوئی ٹیکس شرح سیٹ نہیں"
+    }
+  }
+}

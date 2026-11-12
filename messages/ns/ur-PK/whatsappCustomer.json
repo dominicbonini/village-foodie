@@ -1,0 +1,15 @@
+{
+  "greeting": "السلام علیکم 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}ہمارا مکمل مینو اور الرجی والے اجزا کی معلومات یہاں دیکھیں: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}ہمارا مکمل مینو یہاں دیکھیں: {url} — {truck} {emoji}",
+  "otherCategory": "دیگر",
+  "categoryFrom": "{category} — {price} سے شروع",
+  "listTwo": "{first} اور {second}",
+  "listMany": "{init} اور {last}",
+  "menuSummary": "{opener}ہمارے پاس: {summary}۔ مکمل مینو دیکھیں اور یہاں پہلے سے آرڈر کریں: {url} — {truck} {emoji}",
+  "allergenCaveat": "الرجی والے اجزا کی معلومات کے لیے براہ کرم مکمل مینو ضرور چیک کریں — یہ خودکار جواب ہے۔",
+  "specificFallback": "{opener}ہمارا تازہ ترین شیڈول یہاں دیکھیں: {url}\n\n{truck} {emoji}",
+  "capHandoff": "آپ کے تمام پیغامات کا شکریہ! ہم یہاں دن میں صرف چند بار جواب دے سکتے ہیں۔\n\nآرڈر کرنے کے لیے: {link}",
+  "capContact": "ہم سے براہ راست رابطہ: {number}"
+}

@@ -1,0 +1,8 @@
+{
+  "change": "{label} — تبدیل کریں",
+  "useRule": "{label} — اس کے بجائے اصول استعمال کریں",
+  "typePrice": "{label} — قیمت لکھیں",
+  "backToRule": "اصول پر واپس جائیں",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

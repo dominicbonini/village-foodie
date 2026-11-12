@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "پک اپ کے اوقات",
+    "takes_cash": "کیا آپ نقد لیتے ہیں؟",
+    "offline_protection": "آف لائن آرڈر تحفظ",
+    "buzzer_prompt": "بزر شامل کرنا یاد دلائیں"
+  },
+  "typeFollowsVanTitle": "ہر گاڑی کی معمول کی سیٹنگ کے مطابق",
+  "sameSettingsAllVansLabel": "تمام گاڑیوں کے لیے ایک جیسی سیٹنگز",
+  "sameSettingsAllVansHeader": "تمام گاڑیاں",
+  "sameSettingsConfirm": "گاڑی 1 کی سیٹنگز ہر گاڑی میں کاپی کریں؟ اس سے گاڑی 1 کی تمام گاڑی سیٹنگز کاپی ہو جائیں گی، بالکل سیٹنگز میں “اس جیسی: گاڑی 1” کی طرح۔ کچن کی گنجائش کا اپنا الگ سوئچ ہے۔",
+  "eventTypesFooterStandard": "معیاری آپ کا معمول کا سیٹ اپ ہے۔ اسے یہاں بدلنے سے یہ سیٹنگز میں بھی بدل جاتا ہے۔",
+  "eventTypesFooterOneEvent": "صرف ایک ایونٹ کی سیٹنگ بدلنے کے لیے اس ایونٹ کا ڈیش بورڈ استعمال کریں۔",
+  "eventTypesSubtitle": "تبدیلیاں ساتھ ساتھ محفوظ ہوتی ہیں۔",
+  "matchStandardLabel": "معیاری جیسا کریں",
+  "matchStandardConfirm": "اس قسم کی ہر سیٹنگ واپس معیاری پر کر دیں؟ یہاں آپ نے جو کچھ بدلا ہے وہ ختم ہو جائے گا۔",
+  "priceLabels": {
+    "price_change_on": "قیمتیں بدلیں",
+    "price_mode": "قیمت میں تبدیلی",
+    "price_amount": "رقم",
+    "price_rounding": "راؤنڈنگ",
+    "item_prices": "آئٹم کی قیمتیں"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "ہر قیمت خود مقرر کریں"
+  },
+  "priceRounding": {
+    "none": "کوئی نہیں",
+    "nearest_1": "قریب ترین {symbol}1",
+    "up_1": "ہمیشہ اوپر کی طرف راؤنڈ کریں"
+  },
+  "pricesStandardCell": "آپ کے مینو کی قیمتیں",
+  "pricesTruckWideTitle": "آپ کی قیمتیں ہر گاڑی کے لیے ایک جیسی ہیں",
+  "pricesMenuCell": "مینو",
+  "pricesTypeOffCell": "مینو کی قیمتیں",
+  "itemPricesShow": "قیمتیں دکھائیں",
+  "itemPricesHide": "قیمتیں چھپائیں",
+  "priceItemsHeading": "ہر آئٹم کی قیمت مقرر کریں",
+  "priceItemsOpen": "ہر آئٹم کی قیمت دیکھیں یا بدلیں ‹",
+  "priceItemsClose": "آئٹم کی قیمتیں چھپائیں ⌃",
+  "ownPriceCount": "{n, plural, one {{count} آئٹم کی اپنی قیمت ہے} other {{count} آئٹمز کی اپنی قیمت ہے}}",
+  "priceTypeHint": "اپنی قیمت لکھنے کے لیے کسی قیمت کو دبائیں۔",
+  "pricesLiveNotice": "یہ ایونٹ لائیو ہے۔ نئے آرڈرز پر نئی قیمتیں لگیں گی۔ پہلے سے دیے گئے آرڈرز کی قیمتیں وہی رہیں گی۔",
+  "placeTypeHelper": "جب بھی آپ یہ جگہ چنیں، “ایونٹ شامل کریں” یہی قسم چن لیتا ہے۔",
+  "postPictureStandardNote": "یہاں کی ایونٹ پوسٹس آپ کا معیاری ڈیزائن استعمال کرتی ہیں۔",
+  "eventItemsCardDescription": "صرف اس ایونٹ کے لیے قیمتیں، آئٹم کی حدیں اور دستیابی۔ تبدیلیاں فوراً لاگو ہوتی ہیں۔",
+  "eventPriceColumnLabel": "قیمت",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · یہ ایونٹ} other {مینو {price} · یہ ایونٹ}}",
+  "eventPriceEdit": "✎ قیمتوں میں ترمیم کریں",
+  "eventPriceCancel": "منسوخ کریں",
+  "eventPriceSave": "قیمتیں محفوظ کریں",
+  "eventPriceEditNote": "صرف اس ایونٹ کی قیمتوں میں ترمیم ہو رہی ہے۔ محفوظ کرنے تک آئٹم کی حدیں اور دستیابی لاک رہیں گی۔",
+  "eventPriceLiveNote": "لائیو: نئے آرڈرز پر نئی قیمتیں لگیں گی۔",
+  "offlineWhenOfflineLabel": "آف لائن ہونے پر"
+}

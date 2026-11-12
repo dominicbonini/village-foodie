@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "اسٹارٹرز",
+    "mains": "مین کورس",
+    "burgers": "برگرز",
+    "pizza": "پیزا",
+    "wrapsSandwiches": "ریپس اور سینڈوچز",
+    "sides": "سائیڈز",
+    "dipsSauces": "ڈپس اور ساسز",
+    "desserts": "میٹھے",
+    "drinks": "مشروبات",
+    "kidsMenu": "بچوں کا مینو",
+    "specials": "اسپیشلز",
+    "other": "دیگر"
+  },
+  "demoEventName": "ڈیمو ایونٹ",
+  "firstVanName": "گاڑی 1",
+  "demoCategories": {
+    "pizza": "پیزا",
+    "burgers": "برگرز",
+    "mains": "مین کورس",
+    "sides": "سائیڈز",
+    "drinks": "مشروبات"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 پیزا والی گاڑی",
+      "items": {
+        "margherita": "مارگریٹا",
+        "pepperoni": "پیپرونی",
+        "ndujaHoney": "اسپائسی بیف سلامی اور شہد",
+        "fourCheese": "فور چیز",
+        "gardenVeg": "ویجی پیزا",
+        "garlicBread": "گارلک بریڈ",
+        "rocketParmesan": "روکٹ اور پارمیزان",
+        "olives": "زیتون",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "کوک"
+      }
+    },
+    "burgers": {
+      "label": "🍔 برگر والی گاڑی",
+      "items": {
+        "classicCheeseburger": "کلاسک چیز برگر",
+        "doubleBacon": "ڈبل بیف",
+        "buttermilkChicken": "بٹر ملک چکن",
+        "halloumiStack": "حلومی اسٹیک",
+        "smashBurger": "اسمیش برگر",
+        "skinOnFries": "چھلکے والے فرائز",
+        "loadedCheeseFries": "لوڈڈ چیز فرائز",
+        "onionRings": "اونین رِنگز",
+        "craftLemonade": "تازہ لیمونیڈ",
+        "coke": "کوک"
+      }
+    },
+    "curries": {
+      "label": "🍛 کری والی گاڑی",
+      "items": {
+        "chickenTikkaMasala": "چکن تکہ مصالحہ",
+        "lambRoganJosh": "مٹن روغن جوش",
+        "chanaMasala": "چنا مصالحہ",
+        "butterChicken": "بٹر چکن",
+        "saagPaneer": "ساگ پنیر",
+        "pilauRice": "پلاؤ",
+        "garlicNaan": "گارلک نان",
+        "onionBhaji": "پیاز کے پکوڑے",
+        "mangoLassi": "آم کی لسی",
+        "coke": "کوک"
+      }
+    }
+  }
+}

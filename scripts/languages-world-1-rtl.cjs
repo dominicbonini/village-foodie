@@ -27,17 +27,17 @@ const regexOf = (file, name) => { const m = new RegExp(`export const ${name} = \
 head('1 · the rule')
 const A = regexOf('lib/script-fonts.ts', 'isRtl'), B = regexOf('lib/public-script.ts', 'isRtlLang')
 t('lib/script-fonts.ts isRtl and lib/public-script.ts isRtlLang are found and are the same test', A && B && A.source === B.source, `${A} vs ${B}`)
-const rtlLang = l => /^(ar|he)(-|$)/i.test(l)
+const rtlLang = l => /^(ar|he|ur)(-|$)/i.test(l)   // ⚠️ RE-PINNED (languages-world-2, 11 November 2026): + Urdu (ur-PK)
 if (A) for (const l of LOCALES) t(`${l}: ${rtlLang(l) ? 'right to left' : 'left to right'}`, A.test(l) === rtlLang(l) && (!B || B.test(l) === rtlLang(l)))
-t('Hebrew is right to left even before a he-IL row exists (he, he-IL) and English never is', A && A.test('he') && A.test('he-IL') && A.test('ar') && !A.test('en-GB') && !A.test('heb') && !A.test('fr-HE'))
+t('Hebrew is right to left even before a he-IL row exists (he, he-IL) and English never is', A && A.test('he') && A.test('he-IL') && A.test('ar') && A.test('ur') && A.test('ur-PK') && !A.test('uk-UA') && !A.test('en-GB') && !A.test('heb') && !A.test('fr-HE'))
 
 head('2 · the words of every right-to-left locale')
 const deep = (x, y) => { const o = { ...x }; for (const [k, v] of Object.entries(y ?? {})) o[k] = v && typeof v === 'object' && o[k] && typeof o[k] === 'object' ? deep(o[k], v) : v; return o }
 const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o)) { const kk = p ? `${p}.${k}` : k; if (v && typeof v === 'object') flat(v, kk, out); else out[kk] = v } return out }
 const CONTROLS = /[‪-‮⁦-⁩]/
-const SCRIPT = { ar: /\p{Script=Arabic}/u, he: /\p{Script=Hebrew}/u }
+const SCRIPT = { ar: /\p{Script=Arabic}/u, he: /\p{Script=Hebrew}/u, ur: /\p{Script=Arabic}/u }
 // Messages that are names, codes or examples in every language (a brand, a URL or e-mail placeholder, a file type list, a phone number).
-const NEUTRAL = /^[\s\p{P}\p{S}\p{N}]*$|^(HatchGrab|WhatsApp|Instagram|Facebook|Stripe|PIN|KDS|PDF|CSV|QR|URL|ID|Wi-?Fi|Bluetooth|Eircode|Apple|Google)\b|@|https?:|www\.|\.(com|sa|qa|kw|bh|om|jo|eg|ae|il|co)\b/u
+const NEUTRAL = /^[\s\p{P}\p{S}\p{N}]*$|^(HatchGrab|WhatsApp|Instagram|Facebook|Stripe|PIN|KDS|PDF|CSV|QR|URL|ID|Wi-?Fi|Bluetooth|Eircode|Apple|Google)\b|@|https?:|www\.|\.(com|sa|qa|kw|bh|om|jo|eg|pk|ae|il|co)\b/u
 for (const l of LOCALES.filter(rtlLang)) {
   if (!fs.existsSync(path.join(REPO, `messages/${l}.json`))) { t(`${l}: messages/${l}.json exists`, false); continue }
   const merged = flat(overrideChain(l).reduce((acc, x) => deep(acc, JSON.parse(read(`messages/${x}.json`))), JSON.parse(read('messages/en-GB.json'))))

@@ -24,5 +24,5 @@ export function scriptFontClassOf(lang: string | null | undefined): string | nul
   return l.startsWith('ja') ? ja.variable : l.startsWith('zh') ? zhHk.variable : l.startsWith('th') ? th.variable : l.startsWith('ar') ? ar.variable : null
 }
 
-/** Right to left: Arabic and (languages-world-1, 10 November 2026) Hebrew. Every other language is left to right (no `dir` attribute is written). */
-export const isRtl = (lang: string | null | undefined): boolean => /^(ar|he)(-|$)/i.test(String(lang ?? ''))
+/** Right to left: Arabic, (languages-world-1, 10 November 2026) Hebrew and (languages-world-2, 11 November 2026) Urdu. Every other language is left to right (no `dir` attribute is written). */
+export const isRtl = (lang: string | null | undefined): boolean => /^(ar|he|ur)(-|$)/i.test(String(lang ?? ''))

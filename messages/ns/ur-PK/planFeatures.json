@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "ڈسکوری میپ پر لسٹنگ"
+    },
+    "web_dashboard": {
+      "name": "یونیورسل ویب ڈیش بورڈ"
+    },
+    "qr_code": {
+      "name": "QR کوڈ"
+    },
+    "schedule_import": {
+      "name": "شیڈول کا خودکار امپورٹ"
+    },
+    "meal_deals_upsells": {
+      "name": "ڈیلز اور اپ سیلز"
+    },
+    "walkup_orders": {
+      "name": "واک اِن آرڈرز کی پروسیسنگ"
+    },
+    "sold_out_toggle": {
+      "name": "فوری سولڈ آؤٹ بٹن"
+    },
+    "kitchen_app": {
+      "name": "iPhone، iPad اور Android کچن ایپ"
+    },
+    "offline_protection": {
+      "name": "آف لائن آرڈر تحفظ"
+    },
+    "online_payments": {
+      "name": "آن لائن ادائیگیاں"
+    },
+    "advance_preordering": {
+      "name": "آنے والی تاریخوں کے لیے پری آرڈر"
+    },
+    "preorder_deadline": {
+      "name": "پری آرڈر کا آخری وقت"
+    },
+    "time_slot_selection": {
+      "name": "گاہک کے لیے ٹائم سلاٹ کا انتخاب"
+    },
+    "kitchen_capacity": {
+      "name": "کچن کی گنجائش کا انتظام"
+    },
+    "stock_countdown": {
+      "name": "خودکار اسٹاک کاؤنٹ ڈاؤن"
+    },
+    "auto_accept": {
+      "name": "آن لائن آرڈرز کی خودکار منظوری"
+    },
+    "branded_qr_code": {
+      "name": "برانڈڈ QR کوڈ"
+    },
+    "private_events": {
+      "name": "نجی تقریبات"
+    },
+    "social_media_posts": {
+      "name": "سوشل میڈیا پوسٹس"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp آٹو ریپلائی"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger اور Instagram آٹو ریپلائی"
+    },
+    "tap_to_pay": {
+      "name": "اپنے فون پر ادائیگی لیں"
+    },
+    "sms_order_alerts": {
+      "name": "SMS آرڈر الرٹس"
+    },
+    "multi_device_kitchen": {
+      "name": "کئی ڈیوائسز پر کچن سنک"
+    },
+    "multi_user_access": {
+      "name": "کئی صارفین کی رسائی"
+    },
+    "embed_schedule": {
+      "name": "آپ کی اپنی ویب سائٹ پر شیڈول پیج"
+    },
+    "event_types": {
+      "name": "ایونٹ کی کسٹم اقسام اور قیمتیں"
+    },
+    "buzzer_tracking": {
+      "name": "بزر ٹریکنگ"
+    },
+    "documents_reminders": {
+      "name": "دستاویزات اور یاد دہانیاں"
+    },
+    "profit_per_event": {
+      "name": "ہر ایونٹ کا منافع"
+    },
+    "accountant_reports": {
+      "name": "آپ کے اکاؤنٹنٹ کے لیے رپورٹس"
+    },
+    "ticket_printing": {
+      "name": "کچن ٹکٹ پرنٹنگ"
+    },
+    "customer_display": {
+      "name": "گاہکوں کے لیے ڈسپلے"
+    },
+    "loyalty_stamp_cards": {
+      "name": "ڈیجیٹل لائلٹی اسٹیمپ کارڈز"
+    }
+  },
+  "cardRegionOnline": "معیاری {region}",
+  "cardRegion": {
+    "UKcards": "برطانوی کارڈز",
+    "EEAcards": "EEA کارڈز",
+    "UScards": "امریکی کارڈز",
+    "Australiancards": "آسٹریلوی کارڈز",
+    "NewZealandcards": "نیوزی لینڈ کے کارڈز",
+    "Canadiancards": "کینیڈین کارڈز",
+    "Swisscards": "سوئس کارڈز",
+    "Braziliancards": "برازیلی کارڈز",
+    "Mexicancards": "میکسیکن کارڈز",
+    "Japanesecards": "جاپانی کارڈز",
+    "Singaporecards": "سنگاپور کے کارڈز",
+    "HongKongcards": "ہانگ کانگ کے کارڈز",
+    "Malaysiancards": "ملائیشین کارڈز",
+    "Thaicards": "تھائی کارڈز",
+    "UAEcards": "یو اے ای کے کارڈز"
+  },
+  "perMonth": {
+    "mo": "{amount}/ماہ",
+    "month": "{amount} ماہانہ"
+  },
+  "priceWord": {
+    "free": "مفت",
+    "freeTrial": "مفت ٹرائل",
+    "lifetime": "تاحیات",
+    "zeroPercent": "0%",
+    "payAtHatch": "ٹرک پر ادائیگی",
+    "unlimited": "لامحدود",
+    "none": "—",
+    "masked": "تصدیق باقی"
+  },
+  "cell": {
+    "included": "شامل"
+  }
+}

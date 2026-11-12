@@ -1,0 +1,13 @@
+{
+  "subtotal": "ذیلی کل",
+  "taxFallback": "ٹیکس",
+  "taxIncluded": "شامل: {label}",
+  "serviceFeeCustomer": "آن لائن سروس فیس",
+  "serviceFee": "سروس فیس",
+  "cardFee": "کارڈ فیس",
+  "tip": "ٹپ",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {ٹیکس، فیس اور ٹپ} tax_tip {ٹیکس اور ٹپ} fees_tip {فیس اور ٹپ} fees {فیس} other {ٹیکس اور فیس}}"
+}
