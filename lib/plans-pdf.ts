@@ -23,7 +23,7 @@
 // through lib/plan-offer.ts — the module the landing and /features read); every word from the `pricing` / `planTable`
 // messages. ⛔ NO PLAN KEY, NAME OR NUMBER IS WRITTEN HERE. The frozen display copy it used to read is deleted.
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { planMoneyFormatOf, currencyLineOf } from '@/lib/country-settings-types'
+import { planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments } from '@/lib/country-settings-types'
 import { getCountrySettings } from '@/lib/country-settings'
 import { HATCHGRAB_NAVY_HEX, HATCHGRAB_ORANGE_HEX, HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
 import { readFileSync } from 'node:fs'
@@ -174,17 +174,20 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   const words = (f: string) => (tp.has(`added.${f}` as never) ? tp(`added.${f}` as never) : tPrompt(`features.${f}.name` as never))
   const soon = `<span class="soon-chip">${esc(tp('comingSoon'))}</span>`
   const omit = PRICE_MODE === 'omit'
+  // pricing-copy-4 (docs/pricing-copy-4-report.md): a card country's wording (the banner's card sentence, the asterisks, the card-fee
+  // footnote) or a monthly-billing-only country's — the landing's own rule (lib/country-settings-types.ts offersOnlineCardPayments).
+  const cardsOn = offersOnlineCardPayments(s)
 
   // ── THE TRIAL BANNER ──
   const banner = months === null ? '' : `
     <div class="banner"><b>${esc(tp('banner.title', { months }))}</b>
       <span>${single
-        ? html(tp, 'banner.bodyOnly', { brand: priceText(PRICE_WORD.payAtHatch, locale), fallback: single.plan.name, price: show(formatAmount(single.monthlyMinor, money)) })
-        : html(tp, 'banner.body', { brand: priceText(PRICE_WORD.payAtHatch, locale), fallback: fallback.plan.name, fallbackFree: fallback.free ? 'yes' : 'no' })}</span></div>`
+        ? html(tp, cardsOn ? 'banner.bodyOnlyCard' : 'banner.bodyOnly', { brand: priceText(PRICE_WORD.payAtHatch, locale), fallback: single.plan.name, price: show(formatAmount(single.monthlyMinor, money)) })
+        : html(tp, cardsOn ? 'banner.bodyCard' : 'banner.body', { brand: priceText(PRICE_WORD.payAtHatch, locale), fallback: fallback.plan.name, fallbackFree: fallback.free ? 'yes' : 'no' })}</span></div>`
 
   // ── THE CARDS — one per public plan, the landing's content ──
-  const feeSentence = (p: OfferPlan) => p.shape === 'feeOnly' ? html(tp, 'fee.feeOnly', { fee: fee(p) })
-    : p.shape === 'included' ? html(tp, 'fee.included', { included: whole(p.includedMinor as number), fee: fee(p) })
+  const feeSentence = (p: OfferPlan) => p.shape === 'feeOnly' ? html(tp, cardsOn ? 'fee.feeOnlyCard' : 'fee.feeOnly', { fee: fee(p) })
+    : p.shape === 'included' ? html(tp, cardsOn ? 'fee.included' : 'fee.includedNoMark', { included: whole(p.includedMinor as number), fee: fee(p) })
       : html(tp, 'fee.noFee')
   const cards = `<div class="cards">${plans.map((p, i) => {
     const prev = i > 0 ? plans[i - 1] : null
@@ -223,7 +226,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   const grp = (label: string) => `<tr class="grp"><td colspan="${cols}">${esc(label)}</td></tr>`
   const pay = omit ? '' : grp(tt('group.pay'))
     + row(tt('pay.included'), plans.map(p => p.shape === 'feeOnly' ? none : `<span class="val">${esc(p.includedMinor === null ? tt('cell.unlimited') : whole(p.includedMinor))}</span>`))
-    + row(tt('pay.fee'), plans.map(p => p.shape === 'noFee' ? `<span class="val">${esc(show(pctLabel(0, s)))}</span>`
+    + row(tt(cardsOn ? 'pay.fee' : 'pay.feeNoMark'), plans.map(p => p.shape === 'noFee' ? `<span class="val">${esc(show(pctLabel(0, s)))}</span>`
       : p.shape === 'included' ? html(tt, 'cell.feeAbove', { fee: fee(p), included: whole(p.includedMinor as number) }) : `<span class="val">${esc(fee(p))}</span>`))
     + row(tt('pay.walkUp'), plans.map(p => walkUpFree(catalog, p) ? `<span class="val">${esc(tt('cell.free'))}</span>` : none))
   const sections = tableGroups().map(g => grp(tt(`group.${g.group}` as never)) + g.rows.map(r => row(tRow(`row.${r.id}.name` as never), plans.map(p => {
@@ -237,7 +240,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   // once, as on Billing. GB, US and IE: no line.
   const currencyLine = currencyLineOf(s)
   const footnote = (currencyLine ? `<p>${esc(tp('currencyLine', currencyLine))}</p>` : '')
-    + `<p>${esc(tp('footnote', { cardFee: show(cardFeeOnlineLabel(s)), country: s.shortName ?? s.name }))}</p>`
+    + (cardsOn ? `<p>${esc(tp('footnote', { cardFee: show(cardFeeOnlineLabel(s)), country: s.shortName ?? s.name }))}</p>` : '')
     + planTableNotes(locale).map(n => `<p><sup>${esc(n.marker)}</sup> ${esc(n.text)}</p>`).join('')
   const priceNote = (PRICE_MODE === 'follow-flag' && !PRICING_PUBLISHED) || masked
     ? `<p class="tbc">${esc(t('priceNoteMasked'))}</p>` : ''

@@ -18,6 +18,7 @@ import type { CountrySettings } from '@/lib/country-settings-types'
 import { CURRENCY_CODES } from '@/lib/currencies'
 import { ACCEPTED_ADDRESS_FORMAT_VALUES, addressFormatKeyOf, type AddressFormatKey } from '@/lib/address-formats'
 import { ALLERGEN_SETS } from '@/lib/allergens'
+import { isPaymentModel, type PaymentModel } from '@/lib/billing/rules'   // pricing-copy-4: the country's payment model (pure)
 import { isMarketingRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache
 
 const TTL_MS = 60_000
@@ -60,17 +61,37 @@ const BASE_COLUMNS = [
  *  and `selectWithFallback` reads the columns without it, and mapCountryRow takes its absence as `true` (every existing row's
  *  value). So this code may deploy before the SQL, and nothing changes until it runs. */
 const WC1_COLUMNS = ['platform_fee_allowed']
-export const COUNTRY_SETTINGS_COLUMNS = [...BASE_COLUMNS, ...WC1_COLUMNS].join(', ')
+/** pricing-copy-4 (12 November 2026, docs/pricing-copy-4-report.md): the country's payment model, from public.country_billing
+ *  (billing-1, 20261085; one row per country, its primary key a foreign key to this table), EMBEDDED in the same read — so every
+ *  settings object the loader builds says whether the country takes online card payments (offersOnlineCardPayments in
+ *  lib/country-settings-types.ts). No row = null. Read with the service role like the rest (country_billing has RLS on, no policy). */
+const PC4_EMBED = 'country_billing(payment_model)'
+export const COUNTRY_SETTINGS_COLUMNS = [...BASE_COLUMNS, ...WC1_COLUMNS, PC4_EMBED].join(', ')
+/** The column list without the payment model — what a database before billing-1 (20261085) can answer. */
+export const COUNTRY_SETTINGS_COLUMNS_BEFORE_PC4 = [...BASE_COLUMNS, ...WC1_COLUMNS].join(', ')
 /** The column list without world-countries-1's columns — what a database before 20261054 can answer. */
 export const COUNTRY_SETTINGS_COLUMNS_BEFORE_WC1 = BASE_COLUMNS.join(', ')
 
 /** world-countries-1: runs a read with COUNTRY_SETTINGS_COLUMNS; if the database has no world-countries-1 column yet (Postgres
- *  42703, "column … does not exist"), runs it again with the columns before it. Any other error is returned as it came. */
+ *  42703, "column … does not exist"), runs it again with the columns before it. Any other error is returned as it came.
+ *  pricing-copy-4: if the database has no country_billing table to embed yet, the read runs again without it (the objects then carry
+ *  no paymentModel, which renders exactly as before pricing-copy-4). */
 export async function selectWithFallback<R extends { error: { message: string; code?: string } | null }>(run: (columns: string) => PromiseLike<R>): Promise<R> {
-  const first = await run(COUNTRY_SETTINGS_COLUMNS)
+  let first = await run(COUNTRY_SETTINGS_COLUMNS)
+  if (first.error && first.error.message.includes('country_billing')) first = await run(COUNTRY_SETTINGS_COLUMNS_BEFORE_PC4)
   const e = first.error
   if (e && (e.code === '42703' || WC1_COLUMNS.some(c => e.message.includes(c)))) return run(COUNTRY_SETTINGS_COLUMNS_BEFORE_WC1)
   return first
+}
+
+/** pricing-copy-4: the embedded country_billing row → its payment model; null when the country has no row. PostgREST sends a
+ *  one-to-one embed as an object (or null); an array is accepted too. An unknown model is refused like any other value. */
+function paymentModelOf(code: string, v: unknown): PaymentModel | null {
+  const row = Array.isArray(v) ? (v.length > 1 ? fail(code, 'country_billing', v) : v[0] ?? null) : v
+  if (row === null || row === undefined) return null
+  const m = (row as Row).payment_model
+  if (!isPaymentModel(m)) fail(code, 'country_billing.payment_model', m)
+  return m
 }
 
 type Row = Record<string, unknown>
@@ -168,6 +189,8 @@ export function mapCountryRow(r: Row): CountrySettings {
     supportHours: strOrNull(c, r, 'support_hours'),
     updatedAt: str(c, r, 'updated_at'),
     updatedBy: strOrNull(c, r, 'updated_by'),
+    // pricing-copy-4: only when the read embedded country_billing (null = no row) — a row built without it carries no field.
+    ...(r.country_billing === undefined ? {} : { paymentModel: paymentModelOf(c, r.country_billing) }),
   }
 }
 

@@ -9,7 +9,7 @@
 // Server-rendered (no hooks): the landing page passes the translators. `cta` is the page's own "Try free" control.
 import { Fragment, type ReactNode } from 'react'
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { planMoneyFormatOf, currencyLineOf } from '@/lib/country-settings-types'
+import { planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments } from '@/lib/country-settings-types'
 import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import type { PlanCatalog } from '@/lib/plans'
@@ -57,10 +57,16 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
   const fee = (p: OfferPlan) => feeLabel(p.feeBps, settings.locale)
   const whole = (minor: number) => formatWholeAmount(minor, money)
   const soonChip = <span className="soon-inline">{t('comingSoon')}</span>
+  // pricing-copy-4 (12 November 2026, Dominic; docs/pricing-copy-4-report.md): A CARD COUNTRY (its payment model offers online card
+  // payments — lib/country-settings-types.ts offersOnlineCardPayments) gets the banner's "Prefer to take payment up front?" sentence,
+  // Pay as you go's fee with its asterisk, Pro's asterisk and the card-fee footnote. A MONTHLY-BILLING-ONLY country gets the banner
+  // without that sentence, no asterisk anywhere and no footnote. A language with no card sentence of its own carries its current
+  // banner in the card keys too (languages-world-2's bases), so a card country in that language shows the current text.
+  const cards = offersOnlineCardPayments(settings)
 
   const feeSentence = (p: OfferPlan) => {
-    if (p.shape === 'feeOnly') return t.rich('fee.feeOnly', { fee: fee(p), b })
-    if (p.shape === 'included') return t.rich('fee.included', { included: whole(p.includedMinor as number), fee: fee(p), b })
+    if (p.shape === 'feeOnly') return t.rich(cards ? 'fee.feeOnlyCard' : 'fee.feeOnly', { fee: fee(p), b })
+    if (p.shape === 'included') return t.rich(cards ? 'fee.included' : 'fee.includedNoMark', { included: whole(p.includedMinor as number), fee: fee(p), b })
     return t.rich('fee.noFee', { b })
   }
   // A feature's card wording (`pricing.added.<key>`), else its generic name — so a newly switched feature still shows.
@@ -72,8 +78,8 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
         <div className="trial-banner">
           <strong>{t('banner.title', { months })}</strong>
           <span>{single
-            ? t.rich('banner.bodyOnly', { brand, fallback: single.plan.name, price: formatAmount(single.monthlyMinor, money), plan: (c: ReactNode) => <u>{c}</u> })
-            : t.rich('banner.body', { brand, fallback: fallback.plan.name, fallbackFree: fallback.free ? 'yes' : 'no', plan: (c: ReactNode) => <u>{c}</u> })}</span>
+            ? t.rich(cards ? 'banner.bodyOnlyCard' : 'banner.bodyOnly', { brand, fallback: single.plan.name, price: formatAmount(single.monthlyMinor, money), plan: (c: ReactNode) => <u>{c}</u> })
+            : t.rich(cards ? 'banner.bodyCard' : 'banner.body', { brand, fallback: fallback.plan.name, fallbackFree: fallback.free ? 'yes' : 'no', plan: (c: ReactNode) => <u>{c}</u> })}</span>
         </div>
       )}
 
@@ -156,7 +162,7 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
         </div>
       )}
 
-      <p className="price-note">{t('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>
+      {cards && <p className="price-note">{t('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>}
     </>
   )
 }

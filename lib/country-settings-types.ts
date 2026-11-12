@@ -14,6 +14,7 @@ import type { AddressFormatKey } from '@/lib/address-formats'   // address-forma
 import { currencyInfo } from '@/lib/currencies'
 import type { MoneyFormat } from '@/lib/money-format'
 import type { AllergenSet } from '@/lib/allergens'
+import type { PaymentModel } from '@/lib/billing/rules'   // pricing-copy-4: a TYPE only (no runtime import, so no cycle)
 
 /** How a country's phone numbers are checked: 'length' — a plausible length (libphonenumber "possible",
  *  the default); 'strict' — real numbers only (libphonenumber "valid"); 'off' — anything not empty. */
@@ -101,6 +102,28 @@ export interface CountrySettings {
   supportHours: string | null
   updatedAt: string
   updatedBy: string | null
+
+  /** pricing-copy-4 (12 November 2026, docs/pricing-copy-4-report.md): the country's public.country_billing.payment_model, read by
+   *  the loader with the row (lib/country-settings.ts). null = the country has NO country_billing row. Absent (undefined) = not
+   *  read — a harness fixture, or an object built before this field existed. Ask offersOnlineCardPayments() below, never this. */
+  paymentModel?: PaymentModel | null
+}
+
+/**
+ * pricing-copy-4 (12 November 2026, Dominic; docs/pricing-copy-4-report.md): 🔴 THE ONE ANSWER TO "IS THIS A CARD COUNTRY?" — can a
+ * truck here take ONLINE CARD PAYMENTS? Yes when its country's payment model offers online payments (country_billing.payment_model
+ * 'fee_from_payment' or 'billed_online': today's 44 live Stripe countries, and any country switched on later with one of those
+ * models, e.g. Puerto Rico). No when the model is 'billed_at_truck' ("monthly billing only": customers pay at the truck, the truck's
+ * card is billed monthly) or when the country has no country_billing row at all.
+ * Every pricing surface asks this, never its own list: the landing's banner, Pay as you go's fee line, Pro's asterisk and the
+ * card-fee footnote (components/pricing/PricingSection.tsx), the plan table's fee row (components/pricing/PlanTable.tsx), /features'
+ * and Manage › Billing's footnote, the plans PDF (lib/plans-pdf.ts) and /llms.txt's card sentence (lib/llms-text.ts).
+ * ⚠️ A settings object the loader did not build (paymentModel absent — a harness fixture) answers YES, i.e. it renders as every
+ * live country renders today; the loader always sets the field (null when there is no row), so a real page never takes that path.
+ */
+export function offersOnlineCardPayments(s: Pick<CountrySettings, 'paymentModel'>): boolean {
+  if (s.paymentModel === undefined) return true
+  return s.paymentModel === 'fee_from_payment' || s.paymentModel === 'billed_online'
 }
 
 /**

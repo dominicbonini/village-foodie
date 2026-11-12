@@ -18,7 +18,9 @@ import { billingContextFor, computeUsage, runMonthly, settleMidMonth, applyLateF
 import { billingKeyState, stripeBillingProcessor } from '@/lib/billing/processor'
 import { billingStatusOf, arrangementOf, billableOf, isPaymentModel, isPeriod, trialEndOf, periodOf, planMonth } from '@/lib/billing/rules'
 import { getPlanCatalog } from '@/lib/plans-server'
-import { listCountrySettings } from '@/lib/country-settings'
+import { listCountrySettings, clearCountrySettingsCache } from '@/lib/country-settings'
+import { revalidateMarketing } from '@/lib/marketing-cache'   // pricing-copy-4: the pricing pages read the payment model
+import { MARKETING_TAGS } from '@/lib/marketing-tags'
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -101,6 +103,10 @@ export async function PUT(req: NextRequest) {
   const saved = await store.saveCountryBilling({ countryCode: code as string, paymentModel: model!, postPaySurchargeBps: bps!, postPaySurchargeFixedMinor: fixed!, minChargeMinor: min!, lateFeeMinor: late! },
     admin.email ?? admin.id, existing ? expected : null)
   if (!saved) return NextResponse.json({ error: 'Someone else saved this country since you loaded it. Reload the page.' }, { status: 409 })
+  // pricing-copy-4: the payment model decides the pricing wording (offersOnlineCardPayments) — every settings object carries it, so a
+  // change is read at once: this instance's cache dropped, and the marketing pages' shared cache expired.
+  clearCountrySettingsCache(code as string)
+  revalidateMarketing([MARKETING_TAGS.countries], 'admin/billing country model')
   return NextResponse.json({ row: saved })
 }
 

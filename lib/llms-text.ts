@@ -11,7 +11,7 @@
 //   • The English FAQ — the published questions as the UK page shows them (lib/faq/public.ts landingFaq, resolved for GB; the
 //     GB home form is the international form for GBP), passed in by the route. Nothing invented.
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { intlMoneyFormatOf } from '@/lib/country-settings-types'
+import { intlMoneyFormatOf, offersOnlineCardPayments } from '@/lib/country-settings-types'
 import { feeLabel, type MoneyFormat } from '@/lib/money-format'
 import { cardFees } from '@/lib/card-fees'
 import { isEnglish } from '@/lib/i18n/locales'
@@ -77,7 +77,8 @@ export function llmsText(countries: CountrySettings[], catalog: PlanCatalog, com
     L.push(`### ${c.name} (${c.currency})`, '')
     for (const p of plans) L.push(`- ${p.plan.name}: ${formatAmount(p.monthlyMinor, money)} per truck per month. ${feeSentence(p, money)}`)
     // The pricing section's own footnote (it also says walk-up orders carry no HatchGrab fee), in English (B4), its leading "* " dropped.
-    L.push(`- ${cardSentence(c)}`)
+    // pricing-copy-4: only where a truck can take online card payments (offersOnlineCardPayments) — the pricing section's own rule.
+    if (offersOnlineCardPayments(c)) L.push(`- ${cardSentence(c)}`)
     L.push(`- Details: ${url(c.countryCode, 'landing')}#pricing`, '')
   }
 

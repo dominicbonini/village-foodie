@@ -21,7 +21,7 @@ import { upperCasesPostcode, pasteExampleValues } from '@/lib/copy/addressPlaceh
 import { addressFormatOrDefault, fieldOf } from '@/lib/address-formats'   // address-formats-2: the truck's address format
 import { EventAddressFields, RegionInput, placeSubline, postalCodeForSave, useAddressWords } from '@/components/manage/AddressFields'
 import { TruckTimeContext, useTruckTime } from '@/components/TruckTimeContext'
-import { moneyFormatOf, planMoneyFormatOf, currencyLineOf, type CountrySettings } from '@/lib/country-settings-types'
+import { moneyFormatOf, planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments, type CountrySettings } from '@/lib/country-settings-types'
 import { maskPriceFor } from '@/lib/pricing'
 import { formatMajor, formatWholeAmount, formatAmount, currencySymbol, minorDigits, formatMinor, type MoneyFormat } from '@/lib/money-format'
 // costs-accounts-1: Reports' date presets (the tax year is the country's data), the accounts' totals and the accountant's two CSVs.
@@ -14548,7 +14548,8 @@ function BillingTab({ truck, token }: { truck: Truck | null; token: string }) {
         {/* native-prices (22 October 2026): where the country's currency symbol is shared ("$", "kr"), the line naming it —
             once on this tab, opening the footnotes. GB, US and IE: no line. */}
         {billingCurrencyLine && <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('currencyLine', billingCurrencyLine)}</p>}
-        <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('footnote', { cardFee: cardPx(cardFeeOnlineLabel(countryRow)), country: countryRow.shortName ?? countryRow.name })}</p>
+        {/* pricing-copy-4: the card-fee footnote only in a card country (offersOnlineCardPayments) — the table's asterisk follows it. */}
+        {offersOnlineCardPayments(countryRow) && <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('footnote', { cardFee: cardPx(cardFeeOnlineLabel(countryRow)), country: countryRow.shortName ?? countryRow.name })}</p>}
         {/* pricing-tidy: the table rows' disclosures (¹ WhatsApp auto-replies, ² Kitchen ticket printing), same style. */}
         {planTableNotes(countryRow.locale).map(n => <p key={n.marker} className="text-xs text-slate-500 mt-1 px-1"><sup>{n.marker}</sup> {n.text}</p>)}
       </div>

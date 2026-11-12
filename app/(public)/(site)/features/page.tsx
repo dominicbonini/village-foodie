@@ -44,7 +44,7 @@ import { getPlanCatalog } from '@/lib/plans-server'
 import { localizePlans } from '@/lib/plan-names'
 import { offerPlans, offerTrialMonths, upgradeSummary } from '@/lib/plan-offer'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
-import { currencyLineOf } from '@/lib/country-settings-types'
+import { currencyLineOf, offersOnlineCardPayments } from '@/lib/country-settings-types'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/planTable'
 import '@/lib/i18n/catalog/pricing'
@@ -187,9 +187,10 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
             {currencyLineOf(settings) && <p className="price-currency">{tPricing('currencyLine', currencyLineOf(settings)!)}</p>}
             <PlanTable catalog={catalog} settings={settings} highlight={plans.find(p => p.highlighted)?.plan.key ?? null}
               variant="features" details={details} />
-            {/* The card-fee footnote (*) and the rows' disclosures (¹ ², pricing-tidy), in the old table's footnote style. */}
+            {/* The card-fee footnote (*) and the rows' disclosures (¹ ², pricing-tidy), in the old table's footnote style.
+                pricing-copy-4: the footnote only in a card country (offersOnlineCardPayments); the table's asterisk follows the same rule. */}
             <div className="fn">
-              <p>{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>
+              {offersOnlineCardPayments(settings) && <p>{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>}
               {planTableNotes(settings.locale).map(n => <p key={n.marker}><sup>{n.marker}</sup> {n.text}</p>)}
             </div>
           </div>

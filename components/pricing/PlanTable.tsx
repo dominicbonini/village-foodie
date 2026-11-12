@@ -14,7 +14,7 @@
 // Manage › Billing — renders exactly as before.
 import type { CSSProperties, ReactNode } from 'react'
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { planMoneyFormatOf } from '@/lib/country-settings-types'
+import { planMoneyFormatOf, offersOnlineCardPayments } from '@/lib/country-settings-types'
 import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
 import type { PlanCatalog } from '@/lib/plans'
 import { offerPlans, tableGroups, tableCell, walkUpFree, type OfferPlan } from '@/lib/plan-offer'
@@ -111,7 +111,8 @@ export function PlanTable({ catalog, settings, highlight, px = v => v, stickyTop
         <Row label={name(t('pay.included'))} cells={plans.map(p => (
           p.shape === 'feeOnly' ? none : p.includedMinor === null ? val(b(t('cell.unlimited'))) : val(b(whole(p.includedMinor)))
         ))} />
-        <Row label={name(t('pay.fee'))} cells={plans.map(p => val(
+        {/* pricing-copy-4: the asterisk points at the card-fee footnote, which only a card country shows (offersOnlineCardPayments). */}
+        <Row label={name(t(offersOnlineCardPayments(settings) ? 'pay.fee' : 'pay.feeNoMark'))} cells={plans.map(p => val(
           p.shape === 'noFee' ? b(pctLabel(0, settings))
             : p.shape === 'included' ? <span>{t.rich('cell.feeAbove', { fee: fee(p), included: whole(p.includedMinor as number), b })}</span>
               : b(fee(p))
