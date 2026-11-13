@@ -2303,6 +2303,10 @@ function runWiringSuite(lib) {
        * buildGroupedItems, VARIANT_AXIS_TOKENS) moved VERBATIM out of MenuTab into this lib, so the server-side demo
        * carry-over applies the same review defaults. A line it absorbs is really present there (scripts/demo-claim-2.cjs §1). */
       'lib/menu-import-review.ts',
+      /* 🔴 RE-PINNED (deals-order-1, 13 November 2026, docs/deals-order-1-report.md): the category list's drag-to-reorder handlers
+       * and its "⋮⋮" handle moved VERBATIM into this component, so Menu › Deals uses the same mechanism. The lines that were renamed
+       * on the way (cat → row, categories → list) are named one by one in `movedEdits` with their new form. */
+      'components/manage/ReorderDrag.tsx',
     ]
     const movedTo = (() => {
       try {
@@ -2317,6 +2321,38 @@ function runWiringSuite(lib) {
      * ⚠️ ADDING AN ENTRY IS THE EXPENSIVE WAY TO SILENCE THIS GUARD, DELIBERATELY. The cheap way is
      * to leave the line alone. */
     const movedEdits = [
+      /* ── deals-order-1, 13 November 2026 (docs/deals-order-1-report.md) — the category list's drag code moved into
+       * components/manage/ReorderDrag.tsx (MOVED_INTO above); these lines were renamed on the way, each with its new form. ── */
+      { was: "draggable", now: "draggable: true,", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: the row's draggable, now a prop of reorderRowProps" },
+      { was: "onDragStart={(e: React.DragEvent<HTMLDivElement>) => {", now: "onDragStart: (e: DragEvent<HTMLDivElement>) => {", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: the handler, moved" },
+      { was: "onDragEnd={(e: React.DragEvent<HTMLDivElement>) => {", now: "onDragEnd: (e: DragEvent<HTMLDivElement>) => {", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: the handler, moved" },
+      { was: "onDragOver={(e: React.DragEvent<HTMLDivElement>) => {", now: "onDragOver: (e: DragEvent<HTMLDivElement>) => {", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: the handler, moved" },
+      { was: "onDragLeave={(e: React.DragEvent<HTMLDivElement>) => {", now: "onDragLeave: (e: DragEvent<HTMLDivElement>) => {", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: the handler, moved" },
+      { was: "onDrop={async (e: React.DragEvent<HTMLDivElement>) => {", now: "onDrop: async (e: DragEvent<HTMLDivElement>) => {", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: the handler, moved" },
+      { was: "e.dataTransfer.setData('text/html', cat.id)", now: "e.dataTransfer.setData('text/html', row.id)", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: cat \u2192 row" },
+      { was: "if (draggedId === cat.id) return", now: "if (draggedId === row.id) return", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: cat \u2192 row" },
+      { was: "const draggedIndex = categories.findIndex(c => c.id === draggedId)", now: "const draggedIndex = list.findIndex(c => c.id === draggedId)", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: categories \u2192 list" },
+      { was: "const newCategories = [...categories]", now: "const next = [...list]", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: categories \u2192 list" },
+      { was: "const [removed] = newCategories.splice(draggedIndex, 1)", now: "const [removed] = next.splice(draggedIndex, 1)", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: newCategories \u2192 next" },
+      { was: "newCategories.splice(targetIndex, 0, removed)", now: "next.splice(targetIndex, 0, removed)", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: newCategories \u2192 next" },
+      { was: "<div className=\"text-slate-600 hover:text-slate-900 cursor-grab active:cursor-grabbing text-xl font-bold select-none\" title={t('category.dragToReorder')} draggable={false}>", now: "<div className=\"text-slate-600 hover:text-slate-900 cursor-grab active:cursor-grabbing text-xl font-bold select-none\" title={title} draggable={false}>", nowIn: "components/manage/ReorderDrag.tsx", exact: true,
+        reason: "deals-order-1: the handle, its words passed in (the page passes t('category.dragToReorder'))" },
+      { was: "<Card key={bundle.id} className=\"p-4\">", now: "<Card className=\"p-4\">", nowIn: "app/(app)/manage/[token]/page.tsx", exact: true,
+        reason: "deals-order-1: a formule card: its key moves to the drag row that wraps it" },
+      { was: "{bundles.map(bundle => {", now: "{bundles.map((bundle, index) => {", nowIn: "app/(app)/manage/[token]/page.tsx", exact: true,
+        reason: "deals-order-1: the formules list passes each row's index to reorderRowProps" },
       // ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026): MenuTab gained `canSeeCosts` (owners and managers see the item editor's
       // "Cost to make"; staff never do) — its signature and its one mount, scripts/costs-accounts-1.cjs §9. Each is excused only while
       // the line it became is in the page. (The baseline lines are taken from 719ac91 as the harness reads it.)

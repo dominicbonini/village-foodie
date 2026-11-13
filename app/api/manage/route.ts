@@ -262,7 +262,7 @@ const MANAGE_TAB_ACTIONS: ReadonlySet<string> = new Set([
   'upsert_upsell_rule', 'delete_upsell_rule', 'get_upsell_rules', 'delete_modifier_group', 'upsert_modifier_option',
   'delete_modifier_option', 'assign_modifier_to_category', 'unassign_modifier_from_category', 'set_item_modifier_group',
   'set_item_modifier_groups_bulk', 'set_item_group_excluded_options', 'set_item_preorder_bulk', 'update_category_order',
-  'upsert_bundle', 'delete_bundle', 'update_bundle_default',
+  'upsert_bundle', 'delete_bundle', 'update_bundle_default', 'update_bundle_order',
   // Schedule
   'private_link', 'private_new_link', 'upsert_event', 'update_event_deal', 'delete_event',
   'get_exclusion_terms', 'add_exclusion_term', 'remove_exclusion_term', 'sg_places', 'sg_upsert_place',
@@ -334,7 +334,8 @@ export async function GET(req: NextRequest) {
     supabase.from('item_modifier_groups').select('menu_item_id, group_id, excluded_option_ids').in('group_id',
       (await supabase.from('modifier_groups').select('id').eq('truck_id', truck.id)).data?.map(g => g.id) || []
     ),
-    supabase.from('bundles_db').select('*').eq('truck_id', truck.id).order('sort_order'),
+    // deals-order-1: the truck's own order (sort_order, set by dragging in Menu › Deals); created_at only breaks a tie.
+    supabase.from('bundles_db').select('*').eq('truck_id', truck.id).order('sort_order').order('created_at'),
     supabase.from('discount_codes_db').select('*').eq('truck_id', truck.id),
     // From the truck's YESTERDAY (lib/event-window.ts): an overnight event that started yesterday is still upcoming
     // until it ends — `isUpcomingOrRunning` below drops every other row dated yesterday, so the list is as before.
@@ -1046,10 +1047,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
+  // deals-order-1 (13 November 2026): a formule's place in the truck's list — the category list's update_category_order, for
+  // bundles_db. Manage › Menu › Deals sends one per formule (1, 2, 3, …) after a drag, exactly as the category list does.
+  if (action === 'update_bundle_order') {
+    const { id, sort_order } = body
+    const { error } = await supabase.from('bundles_db').update({ sort_order }).eq('id', id).eq('truck_id', truck.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ success: true })
+  }
+
   // ── BUNDLE CRUD ───────────────────────────────────────────
   if (action === 'upsert_bundle') {
     const { id, stock_warning, ...fields } = body
     delete fields.token; delete fields.action
+    // deals-order-1: a NEW formule goes to the BOTTOM of the truck's list (its highest sort_order + 1). An edit keeps its place:
+    // the place is never taken from the editor's body, only from a drag (update_bundle_order).
+    delete fields.sort_order
+    if (!id) {
+      const { data: last } = await supabase.from('bundles_db').select('sort_order').eq('truck_id', truck.id)
+        .order('sort_order', { ascending: false, nullsFirst: false }).limit(1).maybeSingle()
+      fields.sort_order = ((last?.sort_order as number | null) ?? 0) + 1
+    }
     if (id) {
       const { data, error } = await supabase.from('bundles_db').update(fields).eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })

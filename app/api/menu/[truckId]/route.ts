@@ -136,6 +136,10 @@ export async function GET(
     supabase
       .from('bundles_db')
       .select('*, apply_to_new_events')
+      // deals-order-1 (13 November 2026): THE TRUCK'S ORDER (Manage › Menu › Deals, drag to reorder). Every list of formules reads
+      // this response — the order page's Formules tab and the dashboard's deals — and every filter below keeps the order.
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true })
       .eq('truck_id', truck.id),
 
     supabase

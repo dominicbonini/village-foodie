@@ -111,6 +111,7 @@ import { operatorSignOut } from '@/lib/native/signOut'
 import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import { useDragDrop } from '@/lib/useDragDrop'
+import { reorderRowProps, DragHandle } from '@/components/manage/ReorderDrag'   // deals-order-1: categories AND formules
 import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
 import { ImageDropSlot } from '@/components/manage/ImageDropSlot'
 import { clockOf, formatTime, formatSlot, getLocalDateInTz, addDaysYmd, instantOfLocal, localDateOfInstant, clockOfInstantInTz, formatYmd, formatInstant, formatInstantClock, formatNumericDate, formatNumericDayMonth, formatShortOrdinalDate, formatYmdShortMonth, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
@@ -4670,45 +4671,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         return (
           <div
             key={cat.id}
-            draggable
-            onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
-              e.dataTransfer.effectAllowed = 'move'
-              e.dataTransfer.setData('text/html', cat.id)
-              const target = e.currentTarget as HTMLElement
-              target.style.opacity = '0.5'
-              target.style.border = '2px dashed #fb923c'
-            }}
-            onDragEnd={(e: React.DragEvent<HTMLDivElement>) => {
-              const target = e.currentTarget as HTMLElement
-              target.style.opacity = '1'
-              target.style.border = ''
-            }}
-            onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
-              e.preventDefault()
-              e.dataTransfer.dropEffect = 'move'
-              const target = e.currentTarget as HTMLElement
-              target.style.borderTop = '3px solid #fb923c'
-            }}
-            onDragLeave={(e: React.DragEvent<HTMLDivElement>) => {
-              const target = e.currentTarget as HTMLElement
-              target.style.borderTop = ''
-            }}
-            onDrop={async (e: React.DragEvent<HTMLDivElement>) => {
-              e.preventDefault()
-              const target = e.currentTarget as HTMLElement
-              target.style.borderTop = ''
-              
-              const draggedId = e.dataTransfer.getData('text/html')
-              if (draggedId === cat.id) return
-              
-              const draggedIndex = categories.findIndex(c => c.id === draggedId)
-              const targetIndex = index
-              
-              // Reorder categories array
-              const newCategories = [...categories]
-              const [removed] = newCategories.splice(draggedIndex, 1)
-              newCategories.splice(targetIndex, 0, removed)
-              
+            // deals-order-1: the drag-to-reorder mechanism lives in components/manage/ReorderDrag.tsx (moved there unchanged from
+            // here) so the formules list uses the same one. What is SAVED stays here: each category's sort_order, 1, 2, 3, …
+            {...reorderRowProps(categories, index, async newCategories => {
               // Update sort_order in database
               try {
                 await Promise.all(
@@ -4721,7 +4686,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               } catch (e: any) {
                 showToast(e.message, 'error')
               }
-            }}
+            })}
             className="transition-all duration-200"
           >
             <Card>
@@ -4729,9 +4694,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
             <div
               className="flex items-center gap-3 p-4 hover:bg-slate-50 transition-colors cursor-pointer"
               onClick={() => handleExpandCat(isOpen ? null : cat.id)}>
-              <div className="text-slate-600 hover:text-slate-900 cursor-grab active:cursor-grabbing text-xl font-bold select-none" title={t('category.dragToReorder')} draggable={false}>
-                ⋮⋮
-              </div>
+              <DragHandle title={t('category.dragToReorder')} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-black text-slate-900">{cat.name}</span>
@@ -7109,6 +7072,7 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
   const tabAmount = (major: number) => formatMajor(major, tabFmt)
   const dealBox = useDecimalBox(useAppLocale())   // france-1: the deal's price boxes take "12,50" in a decimal-comma locale
   const t = useT('manageDeals')
+  const tMenu = useT('manageMenu')   // deals-order-1: the category list's "Drag to reorder" — the same words on the same handle
   // The truck's clock (Language Phase 1d): a deal's stored times, exactly as stored in 24h (GB unchanged).
   const ts = useTruckTime()
   const [editing, setEditing] = useState<Partial<Bundle> | null>(null)
@@ -7150,11 +7114,24 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
         <EmptyState icon="🎁" title={t('emptyTitle')} body={t('emptyBody', { price: formatMajor(12, tabFmt, { trimWhole: true }) })} />
       )}
 
-      {bundles.map(bundle => {
+      {bundles.map((bundle, index) => {
         const slots = activeSlotsOf(bundle)
         return (
-          <Card key={bundle.id} className="p-4">
+          // deals-order-1 (13 Nov 2026): drag to reorder, EXACTLY as the category list (components/manage/ReorderDrag.tsx). The order
+          // is each formule's sort_order (1, 2, 3, …), the order every list of formules reads (Manage here, /api/menu → the order
+          // page's Formules tab and the dashboard's deals). Saved like the categories: every row's sort_order, then reload.
+          <div key={bundle.id} {...reorderRowProps(bundles, index, async next => {
+            try {
+              await Promise.all(next.map((b, i) => api('update_bundle_order', { id: b.id, sort_order: i + 1 })))
+              reload()
+              showToast(t('toast.updated'))
+            } catch (e: unknown) {
+              showToast(e instanceof Error ? e.message : String(e), 'error')
+            }
+          })} className="transition-all duration-200" data-deal-row={bundle.id}>
+          <Card className="p-4">
             <div className="flex items-start justify-between gap-3">
+              <DragHandle title={tMenu('category.dragToReorder')} />
               <div className="flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-black text-slate-900">{bundle.name}</p>
@@ -7192,6 +7169,7 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
               </div>
             )}
           </Card>
+          </div>
         )
       })}
 

@@ -388,6 +388,14 @@ const plansEntries = ({ prefix = '', beforeDir = 'language-phase-1d-before', smo
 const NAMED = [
   // ⚠️ RE-PINNED (plans-data-model, Stage A): FIRST, so the sibling substitution runs before every later transform.
   ...plansEntries(),
+  // ── ⚠️ RE-PINNED (deals-order-1, 13 November 2026, docs/deals-order-1-report.md): Manage › Menu › Deals — each formule card is
+  //    wrapped in the category list's drag row and gains its six-dot handle (scripts/_named-deals-order-1.cjs, PRECISE: the
+  //    fixture's own deal ids b1, b2 and the existing "Drag to reorder" words). The US deals views stay LISTED (us-layout-fix-1-manage-join).
+  { id: 'deals-order-1-drag-handle', country: 'both', agent: 'deals-order-1 (13 Nov 2026)',
+    what: 'Manage › Menu › Deals: drag to reorder the formules, the category list’s own mechanism (components/manage/ReorderDrag.tsx) — each card wrapped in <div draggable="true" class="transition-all duration-200" data-deal-row="<id>">, the "⋮⋮" handle (title "Drag to reorder") first in its row. PRECISE.',
+    views: id => /^menu\/(GB|US)\|deals\|(list|new|edit)$/.test(id),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (deals-order-1)
+    expect: (b, id) => mapStrings(b, x => (typeof x === 'string' && x.includes('<') ? require('./_named-deals-order-1.cjs').dealsList(x, ['b1', 'b2'], countryOf(id)) : x)) },
   // ── SCHED-A ─────────────────────────────────────────────────────────────────────────────────────────────────
   { id: '1d-places-sept-sep', country: 'GB', agent: 'SCHED-A',
     what: 'Schedule › places (Add event picker, Tidy up, PlaceList / placeSubLine): a short month is "Sep", never Intl’s en-GB "Sept" — SchedulePlaces.shortDay now uses formatShortDate (Phase 2’s P2-sept-sep rule, reaching the places list). "Last: Sat 26 Sept" → "Last: Sat 26 Sep".',

@@ -830,6 +830,17 @@ async function eventTypesView() {
   // ⚠️ RE-PINNED (collection-anchor-1, 12 November 2026; scripts/_named-collection-anchor.cjs) — the order page's backup picker
   // ends at the event's end: exactly the five past-the-end times (21:10 … 21:50) come out of BEFORE's orderPage views.
   const CA = require('./_named-collection-anchor.cjs').snapshotBefore(before)
+  // ⚠️ RE-PINNED (deals-order-1, 13 November 2026; scripts/_named-deals-order-1.cjs): Manage › Menu › Deals gains the category list's
+  // drag handle on each formule — its TEXT gains "⋮⋮ " before each of this fixture's two deal names (found exactly once each) and its
+  // attributes gain one title="Drag to reorder" per deal (BEFORE had none). Applied to BEFORE's manage.deals only.
+  {
+    const DO1 = require('./_named-deals-order-1.cjs'), d = CA.before.manage && CA.before.manage.deals
+    if (d && Array.isArray(d.attrs) && d.attrs.length === 0) {
+      const names = M_BUNDLES.map(b => b.name)
+      d.text = DO1.dealsText(d.text, names)
+      d.attrs = names.map(() => `title=${DO1.title('GB')}`)
+    }
+  }
   const A = leaves(unLonger(JSON.parse(JSON.stringify(snap)))), B = leaves(CA.before)   // the same JSON round trip the fixture took
   console.log(`  named: collection-anchor-backup-ends-at-end — ${CA.views} order-page view(s): the five times after the event's end removed from BEFORE`)
   console.log(`  named: longer-intervals — ${LONGER.prep} prep select(s), ${LONGER.interval} collection-time select(s), ${LONGER.window} capacity-window select(s) taken back to BEFORE's options`)

@@ -237,7 +237,12 @@ head('5 · nothing in ordering, payments, the KDS, the dashboard or Manage (Pizz
 const CRIT = ['app/api/orders', 'app/api/payments', 'app/api/webhooks', 'app/api/menu', 'app/api/kds', 'app/api/dashboard', 'app/api/manage', 'lib/payments', 'lib/orders', 'lib/printing',
   'lib/order-charges.ts', 'lib/order-charge-rules.ts', 'lib/menu-loader.ts', 'app/(app)/order', 'app/(app)/o', 'app/(app)/trucks', 'app/(app)/kds', 'app/(app)/dashboard', 'app/(app)/manage',
   'app/(app)/p', 'components/dashboard'].filter(p => fs.existsSync(path.join(REPO, p)))
-const critChanged = MP.changedSince(BEFORE, CRIT).filter(notDc2).filter(notLonger)   // ⚠️ RE-PINNED (longer collection times — above)
+// ⚠️ RE-PINNED (deals-order-1, 13 November 2026; scripts/_named-deals-order-1.cjs undoMenu): the menu API reads the formules in the
+// truck's order (four lines before the read's filter). It passes when taking exactly those lines out gives the file as it was at
+// 391497fd (where this guard passed); any other change to it still fails.
+const DO1 = require('./_named-deals-order-1.cjs')
+const notDealsOrder = f => !(f === DO1.MENU_ROUTE && DO1.undoMenu(read(f)) === showAt(DO1.BASE, f))
+const critChanged = MP.changedSince(BEFORE, CRIT).filter(notDc2).filter(notLonger).filter(notDealsOrder)   // ⚠️ RE-PINNED (longer collection times; deals-order-1 — above)
 t(`🔴 ${CRIT.length} ordering, payment, KDS, dashboard and Manage paths: unchanged since ${BEFORE} (the move aside)`, CRIT.length >= 18 && critChanged.length === 0, critChanged)
 
 console.log(`\n${fail ? '🔴' : '✅'} cwv-2: ${pass} passed, ${fail} failed`)

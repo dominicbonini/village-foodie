@@ -359,7 +359,11 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     // protecting it. It passes when it is EXACTLY e499b335's file (whose parent passed this guard); any later change to it still fails.
     const HM = 'supabase/functions/heartbeat-monitor/index.ts'
     const notOfflineStart = f => f !== HM || fs.readFileSync(path.join(REPO, f), 'utf8') !== showAt('e499b335', f)
-    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).filter(notDc2).filter(notLonger).filter(notPc4).filter(notOfflineStart).join('\n') } catch (e) { diff = String(e) }
+    // ⚠️ RE-PINNED (deals-order-1, 13 November 2026; scripts/_named-deals-order-1.cjs undoMenu): the menu API reads the formules in
+    // the truck's order. It passes when taking exactly those four lines out gives 391497fd's file; any other change still fails.
+    const DO1 = require('./_named-deals-order-1.cjs')
+    const notDealsOrder = f => !(f === DO1.MENU_ROUTE && DO1.undoMenu(fs.readFileSync(path.join(REPO, f), 'utf8')) === showAt(DO1.BASE, f))
+    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).filter(notDc2).filter(notLonger).filter(notPc4).filter(notOfflineStart).filter(notDealsOrder).join('\n') } catch (e) { diff = String(e) }
     const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }).trim()
     t(`${PATHS.length} order, payment, menu, KDS, dashboard and ticket paths: no change against ${BEFORE} (working tree)`, PATHS.length >= 20 && diff.trim() === '' && untracked === '', diff + untracked)
     const PERF1_LINES = [

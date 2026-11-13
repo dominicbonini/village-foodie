@@ -458,6 +458,14 @@ const NAMED = [
     what: '⚠️ RE-PINNED (18 October 2026): app/(app)/manage/[token]/page.tsx DealsTab — a deal’s slot range on a 12-hour truck joins with U+00A0 + "– " ("11:30 AM – 2:00 PM"). PRECISE: the deals views’ "X – Y" (both clocks) gain the no-break space before the dash.',
     views: id => /^smoke-menu\/US\|deals\|/.test(id),
     expect: b => mapStrings(b, uslRangeJoin) },
+  // ⚠️ RE-PINNED (deals-order-1, 13 November 2026, docs/deals-order-1-report.md): Part 1's Deals views (smoke) — each formule card
+  // wrapped in the category list's drag row with its six-dot handle. PRECISE (scripts/_named-deals-order-1.cjs: the fixture's own
+  // deal ids b1, b2, the existing "Drag to reorder"); the same change scripts/_lp1d-named.cjs names for Part 1.
+  { id: 'deals-order-1-drag-handle', country: 'both', agent: 'deals-order-1 (13 Nov 2026)', smokeOnly: true,
+    what: 'Manage › Menu › Deals: drag to reorder the formules (components/manage/ReorderDrag.tsx) — each card wrapped in the drag row, the "⋮⋮" handle first in its row. PRECISE.',
+    views: id => /^smoke-menu\/(GB|US)\|deals\|(list|new|edit)$/.test(id),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (deals-order-1)
+    expect: (b, id) => mapStrings(b, x => (typeof x === 'string' && x.includes('<') ? require('./_named-deals-order-1.cjs').dealsList(x, ['b1', 'b2'], countryOf(id)) : x)) },
   ...uslEntries(/^smoke-schedule\/(GB|US)\|/, /^smoke-settings\/(GB|US)\|[^|]+\|page$/).map(e => ({ ...e, smokeOnly: true })),
   { id: 'us-layout-fix-4-import-heading', country: 'US', agent: 'US layout fixes (18 Oct 2026)', smokeOnly: true,
     what: '⚠️ RE-PINNED (18 October 2026): Manage › Import review, 12-hour trucks only — the row heading "{date} · {time}" is `<span class="max-sm:hidden">` (the one line, from 640px) + two `sm:hidden block` spans (date, time). PRECISE (uslImportHeading); 24-hour unchanged (no GB view claimed).',
