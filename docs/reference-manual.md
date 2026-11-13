@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.20
+HatchGrab Engineering Reference Manual · V16.21
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.20**
+**Version 16.21**
 
 November 2026
 
@@ -50,6 +50,35 @@ internally (`next build`, the sweep, `tsc`). Configuration is worked out from co
 
 # Changelog
 
+## V16.21 — 13 November 2026 — **THE ORDER PAGE: A THREE-LINE EVENT BOX, FORMULES AS THE FIRST MENU TAB, "CHANGE EVENT" FIXED; OFFLINE PROTECTION DEPLOYED**
+
+- **Event box (order-page-1, `80328fa5`):** the order page's selected-event header uses `TruckListCard`'s new `stacked` layout, three lines:
+  - date · range · the existing status label;
+  - a pin and the full venue and area/postcode, wrapping, never clipped;
+  - "Change event →".
+  The event's notes stay below. Every other caller of the card is unchanged.
+- **"Change event" opens `/trucks/<slug>/order`**, the truck's own events page (the chooser). It went to `/trucks/<slug>`, the Village Foodie discovery profile built from the discovery sheet, which answers "Truck not found" for a truck not in it. Only the order page shows the link; `/trucks/*` has no language or country prefix.
+- **Formules are the menu's first tab.**
+  - They get a chip and a section headed by the existing `order.mealDeals` word without its emoji (FORMULES, MENÜS, Meal deals…), shown only when the event has formules.
+  - Each one reads like a dish: name, Save pill, description, price, and the dish's Add / "N · Add", which opens the existing formule flow. Added formules are listed under their row with Remove.
+  - The cards above the menu are gone.
+  - One list (`navCategories`) feeds the chips, the sections and the scroll-spy, so the tabs stay pinned under the header and the active tab follows the scroll.
+- **The menu is full width on phones:** `-mx-4`, no box (`border-y` only). From `sm:` it is today's card, still `max-w-lg`.
+- **Proof** (`docs/order-page-1-report.md`):
+  - screenshots in WebKit and Chromium, from fixture data (`scripts/order-page-1-screens.cjs`);
+  - a live localhost check on the test truck App Tester (`scripts/order-page-1-live.cjs`): the link opens the chooser, and the tabs stay pinned (60px) with the active tab going PIZZA → DRINKS → DESSERTS;
+  - identity harnesses re-pinned through `scripts/_named-order-page-1.cjs`. No new words.
+- ✅ **Offline protection (V16.20) is LIVE.**
+  - `heartbeat-monitor` version 6 was deployed 13 Nov 2026 about 07:16 UTC (OBSERVED: the deployed source has the start-time gate; verify_jwt unchanged).
+  - LE ROI DU CHURRASCO's early pause cleared at 07:17 UTC when their device reconnected; nothing was written by hand.
+  - ⚠️ **Deploying edge functions:** the Supabase CLI auto-parses the repo's `.env.local` and stops on its multi-line value. Deploy from a clean folder holding only the committed function file, e.g. `supabase functions deploy heartbeat-monitor --project-ref <ref> --use-api`. Never open the env file to work around it.
+  - `costs-accounts-1` now excuses `supabase/functions/heartbeat-monitor/index.ts` only as `e499b335`'s exact file (re-pinned in `80328fa5`).
+- **world-countries-5, checked 13 Nov (read only):** the switch-on (20261095) HAS run.
+  - 210 countries are enabled, all with both store flags on.
+  - Mexico is off, with both flags off (20261097).
+  - Google Play countries are still prepared and not applied (V16.19). No world-countries-5 commit since V16.19.
+- **Backlog:** add formules to the App Tester truck (§27).
+
 ## V16.20 — 13 November 2026 — **OFFLINE ORDER PROTECTION STARTS AT THE EVENT'S START TIME**
 
 - **The heartbeat monitor** (`supabase/functions/heartbeat-monitor/index.ts`) protects an event only when it is **open AND its scheduled start has passed** on the truck's clock: `trucks.timezone`, else the country's `default_timezone`, as `lib/truck-time.ts` does.
@@ -58,7 +87,7 @@ internally (`next build`, the sweep, `tsc`). Configuration is worked out from co
   - **No readable zone or start time:** the old status-only rule applies (logged).
 - **This replaces V7.0's status-only gate** for offline protection. "Live" for the customer surfaces is unchanged.
 - **The trigger:** LE ROI DU CHURRASCO's 13 Nov event was opened on 9 Nov, so it was paused while offline days before its 19:00 start.
-- 🔴 **NEEDS DEPLOY:** the edge function, `supabase functions deploy heartbeat-monitor`. No migration.
+- ~~🔴 **NEEDS DEPLOY:** the edge function, `supabase functions deploy heartbeat-monitor`. No migration.~~ ⛔ **Updated V16.21 — DEPLOYED 13 Nov ~07:16 UTC (version 6, OBSERVED).**
 - **Proof:**
   - `scripts/offline-start-1.cjs`: the copied `instantOfLocal` ≡ lib's across 448 zone/date cases; the gate's scenarios; the monitor's order of checks.
   - `time-dates-parity` (allowance OS1).
@@ -8976,6 +9005,7 @@ components/dashboard/OrderLineItem.tsx renders a priced line item across all sur
 
 ### Shared discovery/list card + order-summary element (V7.6)
 
+> ⛔ **Updated V16.21:** a SIXTH opt-in pair, `stacked` + `footerAction` — the order page's three-line event box (order-page-1); every other caller unchanged.
 > **RULE (V7.6)** — `components/TruckListCard.tsx` is the SINGLE card used by the truck profile, the event chooser, AND the customer order page's event display. It gained two ADDITIVE, opt-in props this session — `compact?: boolean` (denser flex-row layout: date-left, venue-right, divider removed, venue line-clamped) and `cornerAction?: ReactNode` (an absolute top-right slot, used for the order page's "Change event" link, gated to `events.length > 1`). Both default OFF so the profile and chooser render byte-for-byte identical. Never fork this card for the order page.
 > ⚠️ **UPDATED V11.45 — THERE ARE NOW FIVE OPT-IN PROPS, ALL DEFAULT-OFF.** `compact` and
 > `cornerAction` (V7.6), plus `assumeHatchGrab`, `openOrderInNewTab` and `plainVenueName`. ⚠️ **V11.49
@@ -10039,6 +10069,8 @@ New columns on `truck_events`: `paused_until`, `online_paused_until`, `extra_wai
 
 ## The customer menu on phones (V11.13)
 
+⛔ **Corrected V16.21 (order-page-1):** on phones the menu is now FULL WIDTH with no box — `-mx-4 sm:mx-0 border-y sm:border sm:rounded-2xl sm:shadow-sm px-4`; the tab bar and sticky sub-headings mirror it with `-mx-4 px-4`. From `sm:` up it is the card below, unchanged. Formules are its first tab (V16.21).
+
 **`px-2 sm:px-4`** reclaims 16px at 390px. ⚠️ **Only 34px of the 66px was ever the card** (32px padding +
 2px border), and its frame is 2px — **so this was a padding problem, not a card-removal problem**, and the
 white-on-`bg-slate-50` contrast plus that border is the only thing separating the menu from the sticky
@@ -10314,6 +10346,7 @@ On the customer order page, ASAP is auto-selected by default (asapChosen initial
 
 ## Event card on the chooser — compact + postcode (V7.6)
 
+> ⛔ **Corrected V16.21 (order-page-1):** the order page now uses `TruckListCard` **`stacked`** (three lines: date · range · status / pin + full venue and area / "Change event →" via `footerAction`), not `compact` + `cornerAction`.
 > **RULE (V7.6)** — the order page renders its event display via the shared `TruckListCard` with `compact` + a `cornerAction="Change event"` link (gated `events.length > 1`); the old standalone Change-event row was deleted. **POSTCODE data-gap fix:** `/api/events` was omitting `postcode` from its SELECT and map — added to the select, the map, the `EventData` type, and `eventToVillage`. `TruckListCard` already rendered "village · POSTCODE" via `areaLine`, so no card change was needed.
 
 ## Item row — canonical food-app layout (V7.7)
@@ -10369,6 +10402,7 @@ If the customer picks a specific time then adds items that push ASAP past it, th
 >
 > **RULE (V6.5)** — On HatchGrab, the truck profile/schedule page (`/trucks/[slug]`) is the canonical place a customer picks WHICH event to order for. Each orderable event renders an Order button, ~~gated `isHatchGrab() && event.source === 'operator'`~~ — so it shows only on hatchgrab.com (Village Foodie's copy of the page is read-only) and only for confirmed operator events (a pending/scraped event is customer-invisible per the status gate, so no button). The button deep-links to `/trucks/[slug]/order?event_id=…`, threading the chosen event straight into the order page (which resolves by that id — Section 5). The cart/trolley emoji on the button was removed (plain "Order" reads cleaner).
 
+> ⛔ **Corrected V16.21 (order-page-1):** "Change event" goes to **`/trucks/<slug>/order`** — the order page with no event, which IS the chooser. `/trucks/[slug]` is the Village Foodie discovery profile and answers "Truck not found" for a truck missing from the discovery sheet.
 > **RULE (V6.5)** — The order page's "Change event" control navigates BACK to the profile page (`/trucks/[slug]`), the event chooser, rather than opening a second event picker on the order page itself. One chooser, one place — the profile page lists the events; the order page orders for one. (Piece A of the order-page consolidation; further consolidation of the in-order-page picker is follow-on.)
 
 ## Event lookup pattern (V4)
@@ -12945,7 +12979,7 @@ from the repository copy** — the V8.3 BST stale-deploy incident is the precede
 
 ### LIVE-REDEFINITION — status-driven "live" (V7.0 — BUILT, NEEDS DEPLOY)
 
-⛔ **Corrected V16.20 for offline protection:** the heartbeat monitor now also waits for the event's scheduled start (open AND start passed, on the truck's clock). An early-opened event is no longer protected before its start time. "Live" for the customer surfaces is unchanged.
+⛔ **Corrected V16.20 for offline protection (live since 13 Nov, V16.21):** the heartbeat monitor now also waits for the event's scheduled start (open AND start passed, on the truck's clock). An early-opened event is no longer protected before its start time. "Live" for the customer surfaces is unchanged.
 
 > **BUILT V7.0, tsc-clean, NOT live-verified.** "Live" = the operator STARTED the event (`status='open'`, set by Start / `auto-event-scheduler`), NOT the published clock window. Applied across the monitor AND customer surfaces: `/api/events` now exposes `status`+`opened_at`; `isEventLiveNow`, `isOpenNow`, `isEventLive` derive from `status==='open'`. Published `start_time`/`end_time` are DISPLAY-only. The `heartbeat-monitor` live-event gate keys off `status='open'` — by construction it EXCLUDES future `confirmed` events (over-pause fix preserved) AND protects an event from when the operator STARTED it (closes the future-event offline gap). DIAGNOSTIC LOGGING added (`[heartbeat-monitor]` prefix: stale vans, open events per van, pause/skip/already-paused decisions). Customer label UX: green "● Live" when live, Pre-order↔Order now flip, equal 104px button width. Scraped discovery events carry no status → not-live (correct). DEPLOY: REDEPLOY heartbeat-monitor edge function (gate + logging inert until redeployed); `/api/events` + pages deploy via Vercel.
 
@@ -16405,6 +16439,10 @@ diagnosis.
 
 # 27. Open backlog (June 2026)
 
+### Open as of V16.21 — 13 November 2026
+
+- ⚠️ **OPEN — NO TEST TRUCK HAS FORMULES.** Add formules to the App Tester truck (`app-tester`), so that formules as the menu's first tab (order-page-1) can be tested live. Until then they are proven on fixture renders only (`scripts/order-page-1-screens.cjs`).
+
 ## Open as of V11.57 — 2 September 2026
 
 ### Open as of V12.7 — 9 September 2026 (extraction, geocoding, screenshots)
@@ -17724,7 +17762,7 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 ## Logged this session (V7.0)
 
 - **LIVE-REDEFINITION (status-driven "live") — ✅ BUILT this session (Section 15).** "live" = `status='open'` (operator-started), not the clock window, across the monitor AND customer surfaces; the over-pause fix is preserved (future events are `confirmed`, never selected) and the future-event offline gap is closed (protected from when STARTED). Cron health GREEN-LIT it (`heartbeat-monitor` 30s + `auto-event-scheduler` 60s both succeeding in `cron.job_run_details`; Vault-secret regression NOT recurred). NEEDS DEPLOY: REDEPLOY heartbeat-monitor (gate + logging inert until then).
-- **OFFLINE-PROTECTION future-event gap (now addressed BY the live-redefinition)**: a future open event accepted pre-orders but was never offline-paused because the monitor's live-now gate only paused today+within-window events. Confirmed root via audit. The status-driven redefinition closes this.
+- ⛔ **Corrected V16.20 / V16.21:** an open event is now protected only from its scheduled start (or from when it is opened, if later) — an early-opened event is NOT paused before its start. **OFFLINE-PROTECTION future-event gap (now addressed BY the live-redefinition)**: a future open event accepted pre-orders but was never offline-paused because the monitor's live-now gate only paused today+within-window events. Confirmed root via audit. The status-driven redefinition closes this.
 - **CROSS-VAN heartbeat leak (multi-van trucks only)**: the no-vanId operator-dashboard heartbeat (Path A, `app/api/heartbeat`) stamps `last_heartbeat_at` AND clears `online_paused_until` for ALL the truck's active vans, not just the heartbeating one. So van A's dashboard keeps van B looking online and a reconnect on A clears B's offline pause. KDS (`kds_token`) and van-pinned dashboards (`?van_id=`) are correctly isolated. Monitor read/pause side is fully per-van isolated. Fix: scope Path A to the present van, or have the operator dashboard always carry a `van_id`. Not first-trial-blocking (one van).
 - **PHONE-BACKGROUNDING false pause**: a backgrounded/locked phone stops heartbeating and looks offline → monitor may pause when the operator just glanced at another app. No full software fix (a locked phone can't ping); answer is visibility-detection tuning + operator EDUCATION (let them knowingly disable protection with a clear notice). Design + UX, post-trial.
 - **OPERATOR FAQ/HELP section**: draft once the trial feature set is frozen and behaviours are live-verified (the manual is the raw material; needs translating to operator-facing plain English). Near-end task.
