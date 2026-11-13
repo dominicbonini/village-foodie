@@ -5,10 +5,41 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 )
 
-// ══ 🔴 NO CLOCK DECIDES ANYTHING HERE (Phase 2B, 10 October 2026) ══════════════════════════════════════
-// The live-event gate is status-based (status='open'), and the pause expiry is an INSTANT (now + 2h), so no
-// truck's "today" or "now" enters a decision. The London wall-clock this file used to compute fed one log
-// line only, and is gone — no zone is named for a truck anywhere in this function.
+// ══ 🔴 WHEN PROTECTION STARTS (offline-start-1, 13 November 2026) ══════════════════════════════════════
+// An event is protected only when it is OPEN (status='open') AND its scheduled START has passed, on the truck's own
+// clock. So protection starts at the LATER of the two:
+//   • opened early (auto-open the day before, or Start pressed at 14:00 for a 19:00 event) → it waits for 19:00;
+//   • opened late (Start pressed at 19:05) → it starts at 19:05, because a not-open event is never protected.
+// This replaces V7.0's status-only gate, which protected an event from the moment it was opened. The pause expiry is
+// still an INSTANT (now + 2h). The ONE clock read is the event's start: event_date + start_time in the truck's zone —
+// trucks.timezone, else its country's default_timezone (the rule of lib/truck-time.ts, which this Deno function cannot
+// import, so it reads the same two columns). No zone is ever named for a truck here.
+
+/** The UTC instant (ms) of a wall-clock date and time in `tz`. ⚠️ A COPY of lib/time-utils.ts instantOfLocal (this Deno
+ *  function cannot import lib/); scripts/offline-start-1.cjs proves the two give the same instant. */
+function instantOfLocal(ymd: string, time: string, tz: string): number {
+  const [y, m, d] = ymd.split('-').map(Number)
+  const [hh, mm, ss] = (time || '00:00').split(':').map(Number)
+  const wall = Date.UTC(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, ss || 0)
+  const offsetAt = (t: number) => {
+    const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      .formatToParts(new Date(t)).map(x => [x.type, x.value]))
+    return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - t
+  }
+  let t = wall - offsetAt(wall)
+  t = wall - offsetAt(t)
+  return t
+}
+const validZone = (tz: unknown): tz is string => {
+  if (typeof tz !== 'string' || !tz.trim()) return false
+  try { new Intl.DateTimeFormat('en', { timeZone: tz }); return true } catch { return false }
+}
+/** 🔴 THE GATE: is this open event at or past its scheduled start? An event with no readable start or zone keeps the
+ *  old behaviour (protected while open) — better a protection that starts early than none at all. */
+export function protectionStarted(ev: { event_date?: string | null; start_time?: string | null }, tz: string | null, nowMs: number): boolean {
+  if (!ev.event_date || !ev.start_time || !tz) return true
+  return nowMs >= instantOfLocal(ev.event_date, ev.start_time, tz)
+}
 
 Deno.serve(async () => {
   const STALE_THRESHOLD_SECONDS = 30
@@ -25,7 +56,7 @@ Deno.serve(async () => {
     // NOTE: NAMED SELECT — `offline_protection_mode` is added by 20260818_offline_protection_mode.sql.
     // PostgREST answers 42703 for a column it cannot see and fails the WHOLE statement, which here means
     // the monitor pauses nothing at all. APPLY THAT MIGRATION BEFORE DEPLOYING THIS.
-    .select('id, name, auto_pause_on_offline, offline_protection_mode, last_heartbeat_at')
+    .select('id, name, truck_id, auto_pause_on_offline, offline_protection_mode, last_heartbeat_at')
     .eq('active', true)
     .or(`last_heartbeat_at.lt.${staleThreshold},last_heartbeat_at.is.null`)
 
@@ -44,6 +75,24 @@ Deno.serve(async () => {
   if (!stalledVans || stalledVans.length === 0) {
     console.log('[heartbeat-monitor] no stale vans — nothing to pause')
     return new Response(JSON.stringify({ paused: 0 }), { headers: { 'Content-Type': 'application/json' } })
+  }
+
+  // The truck's zone, once per truck per run: trucks.timezone, else its country's default_timezone (lib/truck-time.ts's
+  // rule). null when neither can be read → the gate falls back to "protected while open" (logged).
+  const zoneCache = new Map<string, string | null>()
+  const truckZone = async (truckId: string | null | undefined): Promise<string | null> => {
+    if (!truckId) return null
+    if (zoneCache.has(truckId)) return zoneCache.get(truckId)!
+    let zone: string | null = null
+    const { data: t } = await supabase.from('trucks').select('timezone, country').eq('id', truckId).maybeSingle()
+    if (t && validZone(t.timezone)) zone = t.timezone
+    else if (t?.country) {
+      const { data: c } = await supabase.from('country_settings').select('default_timezone').eq('country_code', t.country).maybeSingle()
+      if (c && validZone(c.default_timezone)) zone = c.default_timezone
+    }
+    if (!zone) console.error(`[heartbeat-monitor]   truck ${truckId}: no readable time zone — offline protection follows the open status alone`)
+    zoneCache.set(truckId, zone)
+    return zone
   }
 
   let pausedCount = 0
@@ -106,6 +155,12 @@ Deno.serve(async () => {
       if (!effective) {
         console.log(`[heartbeat-monitor]     event ${ev.id}: SKIP — offline protection OFF (override=${ev.offline_protection_override}, vanDefault=${van.auto_pause_on_offline})`)
         continue // offline protection off for this event → don't pause
+      }
+      // 🔴 OPEN BUT NOT YET AT ITS START TIME → NOT PROTECTED YET (see the header). An early-opened event waits for its
+      // scheduled start; a late-opened one is already past it, so it is protected from the moment it opened.
+      if (!protectionStarted(ev, await truckZone(van.truck_id), now.getTime())) {
+        console.log(`[heartbeat-monitor]     event ${ev.id}: SKIP — open, but before its start (${ev.event_date} ${ev.start_time}); protection starts then`)
+        continue
       }
       // -- ONE SWITCH, TWO MODES. THE SWITCH DECIDED ABOVE; THIS DECIDES WHICH WRITE. --
       // Event override ?? van default ?? 'pause' — the SAME null-means-inherit chain the switch itself

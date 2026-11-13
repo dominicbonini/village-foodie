@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.19
+HatchGrab Engineering Reference Manual · V16.20
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.19**
+**Version 16.20**
 
 November 2026
 
@@ -49,6 +49,19 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.20 — 13 November 2026 — **OFFLINE ORDER PROTECTION STARTS AT THE EVENT'S START TIME**
+
+- **The heartbeat monitor** (`supabase/functions/heartbeat-monitor/index.ts`) protects an event only when it is **open AND its scheduled start has passed** on the truck's clock: `trucks.timezone`, else the country's `default_timezone`, as `lib/truck-time.ts` does.
+  - **Opened early** (auto-open days before, or Start at 14:00 for a 19:00 event): protection waits for 19:00.
+  - **Opened late** (Start at 19:05): protection starts at 19:05.
+  - **No readable zone or start time:** the old status-only rule applies (logged).
+- **This replaces V7.0's status-only gate** for offline protection. "Live" for the customer surfaces is unchanged.
+- **The trigger:** LE ROI DU CHURRASCO's 13 Nov event was opened on 9 Nov, so it was paused while offline days before its 19:00 start.
+- 🔴 **NEEDS DEPLOY:** the edge function, `supabase functions deploy heartbeat-monitor`. No migration.
+- **Proof:**
+  - `scripts/offline-start-1.cjs`: the copied `instantOfLocal` ≡ lib's across 448 zone/date cases; the gate's scenarios; the monitor's order of checks.
+  - `time-dates-parity` (allowance OS1).
 
 ## V16.19 — 12 November 2026 — **THE APP STORE NARROWED TO THE 210 GO-LIVE COUNTRIES; ANDROID BADGES FOR ALL OF THEM**
 
@@ -12931,6 +12944,8 @@ from the repository copy** — the V8.3 BST stale-deploy incident is the precede
 > **RULE** — Closing an event must be recoverable. A closed event still appears in the picker (confirmed, open, AND closed) with a Restart Event button. Cancelled events remain excluded.
 
 ### LIVE-REDEFINITION — status-driven "live" (V7.0 — BUILT, NEEDS DEPLOY)
+
+⛔ **Corrected V16.20 for offline protection:** the heartbeat monitor now also waits for the event's scheduled start (open AND start passed, on the truck's clock). An early-opened event is no longer protected before its start time. "Live" for the customer surfaces is unchanged.
 
 > **BUILT V7.0, tsc-clean, NOT live-verified.** "Live" = the operator STARTED the event (`status='open'`, set by Start / `auto-event-scheduler`), NOT the published clock window. Applied across the monitor AND customer surfaces: `/api/events` now exposes `status`+`opened_at`; `isEventLiveNow`, `isOpenNow`, `isEventLive` derive from `status==='open'`. Published `start_time`/`end_time` are DISPLAY-only. The `heartbeat-monitor` live-event gate keys off `status='open'` — by construction it EXCLUDES future `confirmed` events (over-pause fix preserved) AND protects an event from when the operator STARTED it (closes the future-event offline gap). DIAGNOSTIC LOGGING added (`[heartbeat-monitor]` prefix: stale vans, open events per van, pause/skip/already-paused decisions). Customer label UX: green "● Live" when live, Pre-order↔Order now flip, equal 104px button width. Scraped discovery events carry no status → not-live (correct). DEPLOY: REDEPLOY heartbeat-monitor edge function (gate + logging inert until redeployed); `/api/events` + pages deploy via Vercel.
 

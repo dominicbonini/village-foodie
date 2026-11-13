@@ -221,24 +221,27 @@ async function ordersView(M, D) {
 // ══════════════════════════════════════════════════════════════════════════════════════════════════════════
 // 4 · THE TWO EDGE FUNCTIONS — their writes against fixture rows
 // ══════════════════════════════════════════════════════════════════════════════════════════════════════════
+/** The edge fixtures' events: [id, event_date, start, end, status, extra]. Module-level so the OS1 allowance below reads
+ *  the same rows the monitor ran on. */
+const edgeEventSpecs = D => [
+  ['open-y', D.yesterday, '17:00:00', '21:00:00', 'open'],
+  ['conf-t-early', D.today, '12:00:00', '15:00:00', 'confirmed'],
+  ['conf-t-1500', D.today, '15:00:00', '18:00:00', 'confirmed'],
+  ['conf-t-1530', D.today, '15:30:00', '18:00:00', 'confirmed'],
+  ['conf-t-2300', D.today, '23:00:00', '23:59:00', 'confirmed'],
+  ['open-t-ended', D.today, '12:00:00', '15:00:00', 'open'],
+  ['open-t-2320', D.today, '20:00:00', '23:20:00', 'open'],
+  ['open-t-manual', D.today, '12:00:00', '15:00:00', 'open', { auto_close: false }],
+  ['conf-m-0015', D.tomorrow, '00:15:00', '02:00:00', 'confirmed'],
+  ['open-m', D.tomorrow, '11:00:00', '14:00:00', 'open'],
+]
 async function edgeView(M, D) {
   kit.setDeviceTz(SERVER)
   const out = {}
   globalThis.Deno = { env: { get: () => 'http://127.0.0.1:9' }, serve: hnd => { globalThis.__denoHandler = hnd } }
   const trucks = [GB_TRUCK, { ...GB_TRUCK, id: 'gb-2', timezone: null }]
   const ev = (id, date, start, end, status, extra = {}) => ({ id, truck_id: 'test-truck', van_id: 'van-1', event_date: date, start_time: start, end_time: end, status, auto_open: true, auto_close: true, online_paused_until: null, offline_no_autoaccept_until: null, offline_protection_override: null, offline_protection_mode_override: null, event_types: null, ...extra })
-  const events = [
-    ev('open-y', D.yesterday, '17:00:00', '21:00:00', 'open'),
-    ev('conf-t-early', D.today, '12:00:00', '15:00:00', 'confirmed'),
-    ev('conf-t-1500', D.today, '15:00:00', '18:00:00', 'confirmed'),
-    ev('conf-t-1530', D.today, '15:30:00', '18:00:00', 'confirmed'),
-    ev('conf-t-2300', D.today, '23:00:00', '23:59:00', 'confirmed'),
-    ev('open-t-ended', D.today, '12:00:00', '15:00:00', 'open'),
-    ev('open-t-2320', D.today, '20:00:00', '23:20:00', 'open'),
-    ev('open-t-manual', D.today, '12:00:00', '15:00:00', 'open', { auto_close: false }),
-    ev('conf-m-0015', D.tomorrow, '00:15:00', '02:00:00', 'confirmed'),
-    ev('open-m', D.tomorrow, '11:00:00', '14:00:00', 'open'),
-  ]
+  const events = edgeEventSpecs(D).map(a => ev(...a))
   for (const fn of ['auto-event-scheduler', 'heartbeat-monitor']) {
     const writes = []
     globalThis.__harnessDb = kit.fakeDb({
@@ -758,11 +761,32 @@ function leaves(o, p = '', out = {}) {
   if (o && typeof o === 'object') { const ks = Object.keys(o); if (!ks.length) out[p] = JSON.stringify(o); for (const k of ks) leaves(o[k], p ? `${p}/${k}` : k, out) } else out[p] = o === undefined ? '«undefined»' : JSON.stringify(o)
   return out
 }
+// ⚠️ RE-PINNED (offline-start-1, 13 November 2026, scripts/offline-start-1.cjs) — OS1, A TIME CHANGE ON PURPOSE: the heartbeat
+// monitor protects an OPEN event only from its scheduled START on the truck's clock (London here). The expected AFTER is BEFORE's
+// heartbeat-monitor view with exactly the writes for events not yet at their start dropped (and `paused` counting what is left);
+// every other leaf, and the writes for started events, are compared byte for byte as before.
+const londonInstant = (ymd, time) => {
+  const [y, m, d] = ymd.split('-').map(Number), [hh, mm, ss] = time.split(':').map(Number)
+  const wall = Date.UTC(y, m - 1, d, hh, mm, ss || 0)
+  const off = t => { const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: LONDON, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(new Date(t)).map(x => [x.type, x.value])); return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - t }
+  let t = wall - off(wall); t = wall - off(t); return t
+}
+function os1Expected(mk, beforeMk, D) {
+  const hm = beforeMk && beforeMk.edge && beforeMk.edge['heartbeat-monitor']
+  if (!hm || !Array.isArray(hm.writes)) return beforeMk
+  const nowMs = Date.parse(MOMENTS[mk])
+  const notYet = new Set(edgeEventSpecs(D).filter(([, date, start]) => nowMs < londonInstant(date, start)).map(([id]) => id))
+  const writes = hm.writes.filter(w => !w.split(':').pop().split(',').some(id => notYet.has(id)))
+  if (writes.length === hm.writes.length) return beforeMk
+  return { ...beforeMk, edge: { ...beforeMk.edge, 'heartbeat-monitor': { ...hm, body: { ...hm.body, paused: writes.length }, writes } } }
+}
 function compare(before, after) {
   const fails = [], allowed = {}
   let total = 0
   for (const mk of Object.keys(MOMENTS)) {
-    const A = leaves(before[mk]), B = leaves(after[mk])
+    const exp = os1Expected(mk, before[mk], after[mk].days)
+    if (exp !== before[mk]) (allowed.OS1 ??= []).push(`${mk} edge/heartbeat-monitor`)
+    const A = leaves(exp), B = leaves(after[mk])
     const D = after[mk].days
     for (const k of new Set([...Object.keys(A), ...Object.keys(B)])) {
       total++
