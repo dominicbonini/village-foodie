@@ -664,6 +664,10 @@ const NAMED = [
   // ── ⚠️ RE-PINNED (collection times from the event's start, collection-anchor-1, 12 November 2026; scripts/_named-collection-anchor.cjs)
   //    The order page's backup picker ends at the event's end (the server's own list). PRECISE.
   ...require('./_named-collection-anchor.cjs').entries({ mapStrings }),
+
+  // ── ⚠️ RE-PINNED (order-page-1, 13 November 2026; scripts/_named-order-page-1.cjs) ────────────────────────────────────────
+  //    The order page's three-line event box, formules as the menu's first category, and the full-width menu on phones. PRECISE.
+  ...require('./_named-order-page-1.cjs').entries({ mapStrings }),
 ]
 
 // ── ⚠️ RE-PINNED (ireland-1, 20 October 2026): helpers for the ie1-demo-* entries ─────────────────────────────────────────

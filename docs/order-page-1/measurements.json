@@ -1,0 +1,952 @@
+[
+ {
+  "shot": "webkit-fr-formules-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 160,
+    "bottom": 197.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 205.75,
+    "bottom": 229.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   }
+  ],
+  "clipped": false,
+  "locText": "Place du Marché Lyon · 69002",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Changer d’événement →",
+  "menu": {
+   "top": 260.75,
+   "bottom": 2136.75,
+   "left": 0,
+   "right": 390,
+   "width": 390
+  },
+  "chips": [
+   "FORMULES",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false,
+  "pinned": {
+   "top": 60,
+   "want": 60
+  }
+ },
+ {
+  "shot": "webkit-fr-formules-1440",
+  "scrollW": 1440,
+  "clientW": 1440,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 153,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   },
+   {
+    "top": 161,
+    "bottom": 200.125,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   },
+   {
+    "top": 208.125,
+    "bottom": 232.125,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   }
+  ],
+  "clipped": false,
+  "locText": "Place du Marché Lyon · 69002",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Changer d’événement →",
+  "menu": {
+   "top": 263.125,
+   "bottom": 2139.125,
+   "left": 480,
+   "right": 960,
+   "width": 480
+  },
+  "chips": [
+   "FORMULES",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false,
+  "pinned": {
+   "top": 60,
+   "want": 60
+  }
+ },
+ {
+  "shot": "webkit-fr-formules-pizzas-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 160,
+    "bottom": 197.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 205.75,
+    "bottom": 229.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   }
+  ],
+  "clipped": false,
+  "locText": "Place du Marché Lyon · 69002",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Changer d’événement →",
+  "menu": {
+   "top": 260.75,
+   "bottom": 2136.75,
+   "left": 0,
+   "right": 390,
+   "width": 390
+  },
+  "chips": [
+   "FORMULES",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false,
+  "pinned": {
+   "top": 60,
+   "want": 60
+  }
+ },
+ {
+  "shot": "webkit-fr-no-formules-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 160,
+    "bottom": 197.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 205.75,
+    "bottom": 229.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   }
+  ],
+  "clipped": false,
+  "locText": "Place du Marché Lyon · 69002",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Changer d’événement →",
+  "menu": {
+   "top": 260.75,
+   "bottom": 1829.75,
+   "left": 0,
+   "right": 390,
+   "width": 390
+  },
+  "chips": [
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": false,
+  "formules": 0,
+  "cardsAbove": false,
+  "chooser": false,
+  "pinned": {
+   "top": 60,
+   "want": 60
+  }
+ },
+ {
+  "shot": "webkit-fr-no-formules-1440",
+  "scrollW": 1440,
+  "clientW": 1440,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 153,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   },
+   {
+    "top": 161,
+    "bottom": 200.125,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   },
+   {
+    "top": 208.125,
+    "bottom": 232.125,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   }
+  ],
+  "clipped": false,
+  "locText": "Place du Marché Lyon · 69002",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Changer d’événement →",
+  "menu": {
+   "top": 263.125,
+   "bottom": 1832.125,
+   "left": 480,
+   "right": 960,
+   "width": 480
+  },
+  "chips": [
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": false,
+  "formules": 0,
+  "cardsAbove": false,
+  "chooser": false,
+  "pinned": {
+   "top": 60,
+   "want": 60
+  }
+ },
+ {
+  "shot": "webkit-de-long-320",
+  "scrollW": 320,
+  "clientW": 320,
+  "lines": [
+   {
+    "top": 171,
+    "bottom": 184,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   },
+   {
+    "top": 192,
+    "bottom": 306.75,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   },
+   {
+    "top": 314.75,
+    "bottom": 338.75,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   }
+  ],
+  "clipped": false,
+  "locText": "Wochenmarkt auf dem Rathausplatz der Gemeinde Garmisch-Partenkirchen (Haupteingang Nord, neben der Tourist-Information) 82467",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Event wechseln →",
+  "menu": {
+   "top": 369.75,
+   "bottom": 2192.75,
+   "left": 0,
+   "right": 320,
+   "width": 320
+  },
+  "chips": [
+   "MENÜS",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false
+ },
+ {
+  "shot": "webkit-de-long-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 160,
+    "bottom": 255.5,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 263.5,
+    "bottom": 287.5,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   }
+  ],
+  "clipped": false,
+  "locText": "Wochenmarkt auf dem Rathausplatz der Gemeinde Garmisch-Partenkirchen (Haupteingang Nord, neben der Tourist-Information) 82467",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Event wechseln →",
+  "menu": {
+   "top": 318.5,
+   "bottom": 2141.5,
+   "left": 0,
+   "right": 390,
+   "width": 390
+  },
+  "chips": [
+   "MENÜS",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false
+ },
+ {
+  "shot": "webkit-fi-long-320",
+  "scrollW": 320,
+  "clientW": 320,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   },
+   {
+    "top": 160,
+    "bottom": 255.5,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   },
+   {
+    "top": 263.5,
+    "bottom": 287.5,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   }
+  ],
+  "clipped": false,
+  "locText": "Kauppatori, Pohjoisesplanadin ja Eteläesplanadin välinen ruokarekkapaikka (Kolera-altaan puoleinen pää) Helsinki · 00170",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Vaihda tapahtumaa →",
+  "menu": {
+   "top": 318.5,
+   "bottom": 2141.5,
+   "left": 0,
+   "right": 320,
+   "width": 320
+  },
+  "chips": [
+   "ATERIAT",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false
+ },
+ {
+  "shot": "webkit-fi-long-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 160,
+    "bottom": 236.25,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 244.25,
+    "bottom": 268.25,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   }
+  ],
+  "clipped": false,
+  "locText": "Kauppatori, Pohjoisesplanadin ja Eteläesplanadin välinen ruokarekkapaikka (Kolera-altaan puoleinen pää) Helsinki · 00170",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Vaihda tapahtumaa →",
+  "menu": {
+   "top": 299.25,
+   "bottom": 2122.25,
+   "left": 0,
+   "right": 390,
+   "width": 390
+  },
+  "chips": [
+   "ATERIAT",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false
+ },
+ {
+  "shot": "webkit-fr-chooser-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [],
+  "clipped": null,
+  "locText": null,
+  "linkHref": null,
+  "linkText": null,
+  "menu": null,
+  "chips": [],
+  "formulesFirst": false,
+  "formules": 0,
+  "cardsAbove": false,
+  "chooser": true
+ },
+ {
+  "shot": "chromium-fr-formules-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 160,
+    "bottom": 197.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 205.75,
+    "bottom": 229.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   }
+  ],
+  "clipped": false,
+  "locText": "Place du Marché Lyon · 69002",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Changer d’événement →",
+  "menu": {
+   "top": 260.75,
+   "bottom": 2136.75,
+   "left": 0,
+   "right": 390,
+   "width": 390
+  },
+  "chips": [
+   "FORMULES",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false,
+  "pinned": {
+   "top": 60,
+   "want": 60
+  }
+ },
+ {
+  "shot": "chromium-fr-formules-1440",
+  "scrollW": 1440,
+  "clientW": 1440,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 153,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   },
+   {
+    "top": 161,
+    "bottom": 200.125,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   },
+   {
+    "top": 208.125,
+    "bottom": 232.125,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   }
+  ],
+  "clipped": false,
+  "locText": "Place du Marché Lyon · 69002",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Changer d’événement →",
+  "menu": {
+   "top": 263.125,
+   "bottom": 2139.125,
+   "left": 480,
+   "right": 960,
+   "width": 480
+  },
+  "chips": [
+   "FORMULES",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false,
+  "pinned": {
+   "top": 60,
+   "want": 60
+  }
+ },
+ {
+  "shot": "chromium-fr-formules-pizzas-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 160,
+    "bottom": 197.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 205.75,
+    "bottom": 229.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   }
+  ],
+  "clipped": false,
+  "locText": "Place du Marché Lyon · 69002",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Changer d’événement →",
+  "menu": {
+   "top": 260.75,
+   "bottom": 2136.75,
+   "left": 0,
+   "right": 390,
+   "width": 390
+  },
+  "chips": [
+   "FORMULES",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false,
+  "pinned": {
+   "top": 60,
+   "want": 60
+  }
+ },
+ {
+  "shot": "chromium-fr-no-formules-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 160,
+    "bottom": 197.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 205.75,
+    "bottom": 229.75,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   }
+  ],
+  "clipped": false,
+  "locText": "Place du Marché Lyon · 69002",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Changer d’événement →",
+  "menu": {
+   "top": 260.75,
+   "bottom": 1829.75,
+   "left": 0,
+   "right": 390,
+   "width": 390
+  },
+  "chips": [
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": false,
+  "formules": 0,
+  "cardsAbove": false,
+  "chooser": false,
+  "pinned": {
+   "top": 60,
+   "want": 60
+  }
+ },
+ {
+  "shot": "chromium-fr-no-formules-1440",
+  "scrollW": 1440,
+  "clientW": 1440,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 153,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   },
+   {
+    "top": 161,
+    "bottom": 200.125,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   },
+   {
+    "top": 208.125,
+    "bottom": 232.125,
+    "left": 493,
+    "right": 947,
+    "width": 454
+   }
+  ],
+  "clipped": false,
+  "locText": "Place du Marché Lyon · 69002",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Changer d’événement →",
+  "menu": {
+   "top": 263.125,
+   "bottom": 1832.125,
+   "left": 480,
+   "right": 960,
+   "width": 480
+  },
+  "chips": [
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": false,
+  "formules": 0,
+  "cardsAbove": false,
+  "chooser": false,
+  "pinned": {
+   "top": 60,
+   "want": 60
+  }
+ },
+ {
+  "shot": "chromium-de-long-320",
+  "scrollW": 320,
+  "clientW": 320,
+  "lines": [
+   {
+    "top": 171,
+    "bottom": 184,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   },
+   {
+    "top": 192,
+    "bottom": 306.75,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   },
+   {
+    "top": 314.75,
+    "bottom": 338.75,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   }
+  ],
+  "clipped": false,
+  "locText": "Wochenmarkt auf dem Rathausplatz der Gemeinde Garmisch-Partenkirchen (Haupteingang Nord, neben der Tourist-Information) 82467",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Event wechseln →",
+  "menu": {
+   "top": 369.75,
+   "bottom": 2192.75,
+   "left": 0,
+   "right": 320,
+   "width": 320
+  },
+  "chips": [
+   "MENÜS",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false
+ },
+ {
+  "shot": "chromium-de-long-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 160,
+    "bottom": 255.5,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 263.5,
+    "bottom": 287.5,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   }
+  ],
+  "clipped": false,
+  "locText": "Wochenmarkt auf dem Rathausplatz der Gemeinde Garmisch-Partenkirchen (Haupteingang Nord, neben der Tourist-Information) 82467",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Event wechseln →",
+  "menu": {
+   "top": 318.5,
+   "bottom": 2141.5,
+   "left": 0,
+   "right": 390,
+   "width": 390
+  },
+  "chips": [
+   "MENÜS",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false
+ },
+ {
+  "shot": "chromium-fi-long-320",
+  "scrollW": 320,
+  "clientW": 320,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   },
+   {
+    "top": 160,
+    "bottom": 255.5,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   },
+   {
+    "top": 263.5,
+    "bottom": 287.5,
+    "left": 29,
+    "right": 291,
+    "width": 262
+   }
+  ],
+  "clipped": false,
+  "locText": "Kauppatori, Pohjoisesplanadin ja Eteläesplanadin välinen ruokarekkapaikka (Kolera-altaan puoleinen pää) Helsinki · 00170",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Vaihda tapahtumaa →",
+  "menu": {
+   "top": 318.5,
+   "bottom": 2141.5,
+   "left": 0,
+   "right": 320,
+   "width": 320
+  },
+  "chips": [
+   "ATERIAT",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false
+ },
+ {
+  "shot": "chromium-fi-long-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [
+   {
+    "top": 139,
+    "bottom": 152,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 160,
+    "bottom": 236.25,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   },
+   {
+    "top": 244.25,
+    "bottom": 268.25,
+    "left": 29,
+    "right": 361,
+    "width": 332
+   }
+  ],
+  "clipped": false,
+  "locText": "Kauppatori, Pohjoisesplanadin ja Eteläesplanadin välinen ruokarekkapaikka (Kolera-altaan puoleinen pää) Helsinki · 00170",
+  "linkHref": "/trucks/camion-test/order",
+  "linkText": "Vaihda tapahtumaa →",
+  "menu": {
+   "top": 299.25,
+   "bottom": 2122.25,
+   "left": 0,
+   "right": 390,
+   "width": 390
+  },
+  "chips": [
+   "ATERIAT",
+   "PIZZAS",
+   "DESSERTS",
+   "BOISSONS"
+  ],
+  "formulesFirst": true,
+  "formules": 2,
+  "cardsAbove": false,
+  "chooser": false
+ },
+ {
+  "shot": "chromium-fr-chooser-390",
+  "scrollW": 390,
+  "clientW": 390,
+  "lines": [],
+  "clipped": null,
+  "locText": null,
+  "linkHref": null,
+  "linkText": null,
+  "menu": null,
+  "chips": [],
+  "formulesFirst": false,
+  "formules": 0,
+  "cardsAbove": false,
+  "chooser": true
+ }
+]

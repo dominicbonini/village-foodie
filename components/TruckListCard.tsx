@@ -32,6 +32,14 @@ interface TruckListCardProps {
   /** Optional node pinned to the card's top-right corner (e.g. a "Change event" link). Default
    *  undefined → nothing rendered. Only used with `compact` on the order page. */
   cornerAction?: ReactNode;
+  /** ── STACKED (order-page-1, 13 November 2026): THE ORDER PAGE'S EVENT BOX, THREE LINES ──────────────────────
+   *  line 1 date · time range · the status label ("● Live", same logic and word as every other variant);
+   *  line 2 a location pin and the FULL venue name and area/postcode — wrapping, never truncated or clamped;
+   *  line 3 `footerAction` (the order page's "Change event" link), when given.
+   *  Nothing is positioned over anything else, so a long language or a long venue name cannot overlap. Used ONLY by the
+   *  order page's selected-event header; every other caller renders exactly as before. */
+  stacked?: boolean;
+  footerAction?: ReactNode;
   /** ── HATCHGRAB SEMANTICS WITHOUT ASKING THE BROWSER WHAT HOST IT IS ON (V1, /embed) ──────────
    *  Set ONLY by /embed/<slug>, which is a HatchGrab surface served INSIDE AN IFRAME ON THE
    *  OPERATOR'S OWN DOMAIN. It cannot use the host test the other call sites use: `isHatchGrab()`
@@ -134,7 +142,7 @@ function isEventLive(status?: string): boolean {
   return status === 'open';
 }
 
-export default function TruckListCard({ event, slug, hideOrderButton, forceOrderButton, compact, cornerAction, assumeHatchGrab = false, openOrderInNewTab = false, plainVenueName = false, orderOrigin, time }: TruckListCardProps) {
+export default function TruckListCard({ event, slug, hideOrderButton, forceOrderButton, compact, cornerAction, stacked, footerAction, assumeHatchGrab = false, openOrderInNewTab = false, plainVenueName = false, orderOrigin, time }: TruckListCardProps) {
     const ts = time ?? DISCOVERY_TIME_SETTINGS
     // The words: messages/en-GB.json `eventCard` (Language Phase 1a — the order page's event chooser).
     const t = useT('eventCard')
@@ -170,6 +178,68 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
       )}
     </>
   );
+
+  // EVENT NOTES — lifted into one node so the stacked box and the other variants render the SAME block (order-page-1).
+  const notesBlock = (
+    <>
+        {(event.notes || event.eventNotes) && (
+            <div className="mt-3 flex flex-col gap-1.5 w-full min-w-0 shrink-0">
+                {event.notes && (
+                    <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md flex items-start shrink-0 min-w-0 shadow-sm">
+                        <div className="text-slate-700 text-[11px] font-semibold leading-tight w-full !m-0 !p-0">
+                            {renderTextWithLinks(event.notes)}
+                        </div>
+                    </div>
+                )}
+                {event.eventNotes && (
+                    <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md flex items-start shrink-0 min-w-0 shadow-sm">
+                        <div className="text-slate-700 text-[11px] font-semibold leading-tight w-full !m-0 !p-0">
+                            ⭐ {renderTextWithLinks(event.eventNotes)}
+                        </div>
+                    </div>
+                )}
+            </div>
+        )}
+    </>
+  );
+
+  if (stacked) {
+    // The full name and area, wrapping (break-words): no line-clamp, no truncate, no corner reserve.
+    const location = (
+      <>
+        <span className="block text-slate-800 text-[14px] sm:text-[15px] font-bold leading-snug break-words">{event.venueName}</span>
+        {areaLine && <span className="block text-slate-500 text-[12px] sm:text-xs font-medium leading-snug break-words mt-0.5">{areaLine}</span>}
+      </>
+    );
+    return (
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-3 py-2.5 mb-2" data-event-box>
+        {/* LINE 1 — date · range · status. flex-wrap: a long date or 12-hour range drops the status to the next line
+            instead of overlapping it. */}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 leading-none">
+          <span className="text-[13px] sm:text-sm font-bold text-orange-600 leading-none whitespace-nowrap">{formatStandardDate(event.date, ts)}</span>
+          <span className="text-[12px] font-bold text-slate-500 leading-none whitespace-nowrap">{cardTimeRange(event.startTime, event.endTime, ts)}</span>
+          {liveNow && <LiveBadge label={t('live')} className="inline-flex" />}
+        </div>
+        {/* LINE 2 — pin + the full location. */}
+        <div className="flex items-start gap-1.5 mt-2 min-w-0">
+          <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mt-px shrink-0 text-orange-500">
+            <path fillRule="evenodd" d="M10 18s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Zm0-7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" clipRule="evenodd" />
+          </svg>
+          {plainVenueName ? (
+            <div className="min-w-0 flex-1">{location}</div>
+          ) : (
+            <Link href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`} className="min-w-0 flex-1 hover:text-orange-600" title={t('venueDetails', { venue: event.venueName })}>
+              {location}
+            </Link>
+          )}
+        </div>
+        {/* LINE 3 — the action (Change event), on its own line. */}
+        {footerAction && <div className="mt-2">{footerAction}</div>}
+        {/* The event's notes, as on every other variant, below the three lines. */}
+        {notesBlock}
+      </div>
+    );
+  }
 
   return (
     <div className={`bg-white rounded-xl shadow-sm border border-slate-200 hover:border-orange-200 transition-colors ${compact ? 'relative px-3 py-2 mb-2' : 'p-3.5 sm:p-4 mb-3'}`}>
@@ -262,24 +332,7 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
         </div>
 
         {/* EVENT NOTES */}
-        {(event.notes || event.eventNotes) && (
-            <div className="mt-3 flex flex-col gap-1.5 w-full min-w-0 shrink-0">
-                {event.notes && (
-                    <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md flex items-start shrink-0 min-w-0 shadow-sm">
-                        <div className="text-slate-700 text-[11px] font-semibold leading-tight w-full !m-0 !p-0">
-                            {renderTextWithLinks(event.notes)}
-                        </div>
-                    </div>
-                )}
-                {event.eventNotes && (
-                    <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md flex items-start shrink-0 min-w-0 shadow-sm">
-                        <div className="text-slate-700 text-[11px] font-semibold leading-tight w-full !m-0 !p-0">
-                            ⭐ {renderTextWithLinks(event.eventNotes)}
-                        </div>
-                    </div>
-                )}
-            </div>
-        )}
+        {notesBlock}
 
     </div>
   );

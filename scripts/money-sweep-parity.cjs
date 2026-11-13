@@ -872,7 +872,12 @@ async function eventTypesView() {
   // "Privacy" link under Place order and on the confirmation. Not the CSVs, not the ticket bytes.
   const LFU = require('./_legal-followups-named.cjs')
   const privacy = (k, v) => (typeof v !== 'string' || /(^|\.)csv\./.test(k) || /^tickets\./.test(k) ? v : LFU.both(v))
-  const fix2 = (k, v) => privacy(k, grouped(k, fix2core(k, v)))
+  // ⚠️ RE-PINNED (order-page-1, 13 November 2026; scripts/_named-order-page-1.cjs snapshotText): on the order page's TEXT leaves,
+  // the event box's line 1 reads "<date> <range> Live" and the deals move inside the menu (a chip + a first section, the dish's Add
+  // words). Applied to BEFORE after every other named change; every other leaf and every attribute compared exactly as before.
+  const OP1 = require('./_named-order-page-1.cjs')
+  const op1 = (k, v) => (typeof v === 'string' && /^orderPage\.[^.]+\.text$/.test(k) ? OP1.snapshotText(v) : v)
+  const fix2 = (k, v) => op1(k, privacy(k, grouped(k, fix2core(k, v))))
   // …and on the order page's TEXT and ATTRIBUTE leaves (tag-stripped, so the markup transform cannot reach them): the
   // AFTER side gives back exactly what the link added — the word " Privacy" (BEFORE never contains it, asserted) and one
   // trailing `href=/privacy` attribute — and everything else is compared byte for byte as before.

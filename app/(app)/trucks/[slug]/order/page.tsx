@@ -201,6 +201,9 @@ const HOURS = Array.from({ length: 13 }, (_, i) => String(i + 9).padStart(2, '0'
 // `generateCollectionTimes` in lib/slot-generation.ts — the SAME function the server's grid uses (start-anchored
 // since collection-anchor-1) — so the two cannot disagree at any interval. (`MINUTES` had no reader besides its own definition.)
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+/** order-page-1: the formules' place in the menu's category list (chips, sections, scroll-spy). Starts with a NUL, so it
+ *  can never be a real category's name. */
+const FORMULES_KEY = '\u0000formules'
 
 // Shared pre-order label for a GROUP (category or sub-category): returns the label only when EVERY
 // available item in the group is an enabled pre-order item of the SAME state. Config is global so the
@@ -756,6 +759,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   useTruckLocale(pageTs.locale)
   // 🔴 THE WORDS (Language Phase 1a): messages/en-GB.json `order`, and `errorsCustomer` for a server refusal's code.
   const tOrder = useT('order')
+  // order-page-1: the formules' chip and heading — the language's existing word for them (`order.mealDeals`, e.g. "🎁
+  // Formules" in French) without its leading emoji, so it reads like every other category ("FORMULES"). No new words.
+  const formulesLabel = tOrder('mealDeals').replace(/^[^\p{L}\p{N}]+/u, '')
   const tWalk = useT('demoWalk')   // demo-2: the walkthrough's words on a demo truck
   const tErr = useT('errorsCustomer')
   const pageLocale = useAppLocale()
@@ -1364,21 +1370,30 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // Pizzeria Gusto's empty `Specials` has never had a chip and must never gain a heading. Two
   // derivations would put an empty heading in the list and shift every jump target after it.
   const menuCategories = useMemo(() => groupedMenu.map(([cat]) => cat), [groupedMenu])
+  // ── order-page-1 (13 November 2026): FORMULES ARE THE MENU'S FIRST CATEGORY ─────────────────────────────────────
+  // The truck's formules (deals/bundles) AVAILABLE for this event render inside the menu as its first section, with
+  // a chip and a heading like every other category, and the separate cards above the menu are gone. `navCategories`
+  // is the ONE list the chips, the sections and the scroll-spy read: FORMULES_KEY first when there are formules,
+  // else exactly `menuCategories` (a truck with none starts with its first category, as before).
+  // ⚠️ FORMULES_KEY cannot be a category name (it starts with a NUL), so it can never collide with one.
+  const availableBundles = useMemo(() => (menu?.bundles ?? []).filter(b => b.available), [menu])
+  const navCategories = useMemo(() => (availableBundles.length > 0 ? [FORMULES_KEY, ...menuCategories] : menuCategories), [availableBundles, menuCategories])
   // 🔴 B5 — A SINGLE-CATEGORY TRUCK RENDERS NO CHIP BAR, so nothing may be offset by its height.
   // The chip bar is gated on `length > 1` in the render; this mirrors that gate exactly. Getting it
   // wrong puts a bar's worth of dead space above every heading on a one-category menu.
-  const hasChipBar = menuCategories.length > 1
+  // (order-page-1: counted over `navCategories`, so formules + one category is two chips.)
+  const hasChipBar = navCategories.length > 1
   // THE READABLE TOP: everything pinned, measured. Used as the sections' CSS scroll-margin-top AND as
   // the spy's pin line — one number, so a heading cannot land somewhere the spy disagrees with.
   const pinnedTop = chipBarTop + (hasChipBar ? tabBarH : 0)
   // ⚠️ `selectedCategory` IS NOW A HIGHLIGHT, NOT A FILTER. It no longer decides what renders — every
   // category renders — it decides which chip is orange. The self-heal is kept: a category that
   // disappears on a menu reload must not leave a chip lit that no longer exists.
-  const selectedCategory = (activeCategory && menuCategories.includes(activeCategory)) ? activeCategory : (menuCategories[0] ?? null)
+  const selectedCategory = (activeCategory && navCategories.includes(activeCategory)) ? activeCategory : (navCategories[0] ?? null)
 
   // Feed the scroll handler without re-attaching it. Runs after every render, so the spy always reads
   // the current categories and the current measured pin line.
-  useEffect(() => { spyStateRef.current = { cats: menuCategories, pinnedTop } })
+  useEffect(() => { spyStateRef.current = { cats: navCategories, pinnedTop } })
 
   // ── KEEP THE ACTIVE CHIP VISIBLE IN THE BAR ──────────────────────────────────────────────────────
   // With five categories the chip row overflows horizontally, so the spy can light a chip that is
@@ -2839,15 +2854,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 // using the SAME card as the truck profile (TruckListCard) — DRY, identical look — with
                 // the CTA hidden (already ordering for this event). "Change" returns to the profile
                 // chooser when there are alternatives.
+                // order-page-1 (13 Nov 2026): the THREE-LINE box (TruckListCard `stacked`) — date · range · status, then the
+                // full location, then Change event — so a long language or venue name wraps instead of overlapping.
+                // 🔴 "Change event" goes to THIS page with no event (`/trucks/<slug>/order`), which shows the truck's
+                // event chooser. It went to `/trucks/<slug>`, the Village Foodie discovery profile, which is built from the
+                // discovery sheet and answers "Food truck not found" for a truck that is not in it. /trucks/* has no
+                // language or country prefix on this site, so there is none to keep.
                 <TruckListCard
                   event={eventToVillage(event, truckName)}
                   slug={slug}
                   time={pageTs}
                   hideOrderButton
-                  compact
-                  cornerAction={events.length > 1 && (
-                    <Link href={`/trucks/${slug}`} className="text-orange-600 text-xs font-bold hover:underline">
-                      {tOrder('changeEvent')}
+                  stacked
+                  footerAction={events.length > 1 && (
+                    <Link href={`/trucks/${slug}/order`} className="text-orange-600 text-xs font-bold hover:underline" data-change-event>
+                      {tOrder('changeEvent')} <span aria-hidden="true">→</span>
                     </Link>
                   )}
                 />
@@ -2884,82 +2905,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             block above is the order-entry schedule. Picking an event (?event_id) reveals this. */}
         {event && (<>
 
-        {/* MEAL DEALS — flat cards, before menu, hidden if none available */}
-        {menu && menu.bundles.filter(b => b.available).length > 0 && (
-          <div className="mb-4">
-            <h2 className="text-xs font-black text-orange-600 uppercase tracking-widest mb-2 px-1">{tOrder('mealDeals')}</h2>
-            <div className="space-y-2">
-              {menu.bundles.filter(b => b.available).map(bundle => {
-                const applied = dealsApplied(bundle)
-                const slots = getSlotCats(bundle)
-                const saving = bundle.original_price !== null && bundle.original_price > 0
-                  ? bundle.original_price - bundle.bundle_price : null
-
-                return (
-                  <div key={bundle.name} className="bg-white rounded-2xl border border-orange-200 shadow-sm overflow-hidden">
-                    <div className="px-4 py-3.5">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-black text-slate-900 text-sm">{bundle.name}</p>
-                            {saving !== null && saving > 0 && (
-                              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">{tOrder('save', { amount: amount(saving) })}</span>
-                            )}
-                            {applied > 0 && (
-                              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">{tOrder('dealsApplied', { count: String(applied) })}</span>
-                            )}
-                          </div>
-                          <p className="text-slate-500 text-xs mt-0.5">{bundle.description}</p>
-                        </div>
-                        <p className="font-black text-orange-600 text-lg shrink-0">{amount(bundle.bundle_price)}</p>
-                      </div>
-                      <button onClick={() => !isOrderingBlocked && addDeal(bundle)} disabled={isOrderingBlocked}
-                        className={`w-full font-bold text-sm py-2 rounded-xl transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
-                        {isOrderingBlocked ? (isClosed ? tOrder('orderingClosed') : orderingTimeNotSet ? tOrder('setupPending') : tOrder('orderingPaused')) : applied === 0 ? tOrder('addDeal') : tOrder('addAnotherDeal')}
-                      </button>
-                    </div>
-                    {/* Applied deal instances - compact summary */}
-                    {appliedDeals
-                      .filter(deal => deal.bundle.name === bundle.name)
-                      .map((deal, localIdx) => {
-                        const dynOrig = calcDealOriginalPrice(deal, menu.items)
-                        const dynSaving = dynOrig > 0 ? Math.max(0, dynOrig - deal.bundle.bundle_price) : null
-                        const globalIdx = appliedDeals.indexOf(deal)
-                        const itemsSummary = Object.entries(deal.slots)
-                          .filter(([, itemName]) => itemName)
-                          .map(([cat, itemName]) => {
-                            const mods = deal.slotModifiers?.[cat]
-                            return mods?.length ? `${itemName} (+ ${mods.map(m => m.name).join(', ')})` : itemName
-                          })
-                          .join(' + ')
-                        
-                        return (
-                          <div key={globalIdx} className="border-t border-orange-100 px-4 py-3 bg-orange-50">
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <p className="text-xs font-black text-orange-700">
-                                    {appliedDeals.filter(d => d.bundle.name === bundle.name).length > 1 
-                                      ? tOrder('dealNumber', { number: String(localIdx + 1) })
-                                      : tOrder('yourDeal')}
-                                  </p>
-                                  {dynSaving !== null && dynSaving > 0 && (
-                                    <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">{tOrder('save', { amount: amount(dynSaving) })}</span>
-                                  )}
-                                </div>
-                                <p className="text-xs text-slate-600 mt-0.5 truncate">{itemsSummary}</p>
-                              </div>
-                              <button onClick={() => removeDeal(globalIdx)} className="text-[10px] text-orange-400 hover:text-orange-600 font-bold shrink-0">{tOrder('remove')}</button>
-                            </div>
-                          </div>
-                        )
-                      })}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
+        {/* (order-page-1, 13 Nov 2026: the MEAL DEALS cards that sat here are now the menu's first category — FORMULES,
+            inside the menu card below, shown like dishes.) */}
 
         {/* (The old "allergens not verified — ask staff" banner was removed — replaced by the
             always-present "Allergen Info" link in the Menu header below, which shows confirmed info
@@ -2983,7 +2930,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             reclaim there, only the inset to lose. The breakpoint is sm: because it is the ONLY
             breakpoint this file already uses (Hdr), and 640px sits above the 512px cap so every
             viewport that is already width-capped keeps today's look exactly. */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-2 sm:px-4 py-4 mb-4">
+        {/* ── 🔴 order-page-1 (13 November 2026): FULL WIDTH ON PHONES — NO BOX. ─────────────────────────────────────
+            Below sm: the menu breaks out of main's px-4 (-mx-4) and drops its radius, side borders and shadow, so formules
+            and dishes use the whole screen; it keeps a top and bottom rule (border-y) as the only edge between it and the
+            slate-50 page and the white basket bar. Its own px-4 puts the text back on main's gutter, level with the event
+            box above. From sm: up it is today's card exactly (main stays max-w-lg, so the maximum content width is
+            unchanged). The tab bar's and the sticky sub-heading's negative margins mirror this px-4 (see them). */}
+        <div className="bg-white -mx-4 sm:mx-0 border-y sm:border border-slate-200 sm:rounded-2xl sm:shadow-sm px-4 py-4 mb-4" data-menu>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest">{tOrder('menu')}</h2>
             {/* Allergen Info — ALWAYS present (consistent, predictable entry point in every mode/state).
@@ -3018,9 +2971,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               `min-h-[44px]`, the horizontal scroll and the negative-margin mirror are all untouched —
               only the handler and the offset changed. */}
           {hasChipBar && (
-            <div ref={tabBarRef} style={{ top: chipBarTop }} className="sticky z-30 -mx-2 px-2 sm:-mx-4 sm:px-4 py-2 mb-2 bg-white border-b border-slate-100">
+            <div ref={tabBarRef} style={{ top: chipBarTop }} className="sticky z-30 -mx-4 px-4 py-2 mb-2 bg-white border-b border-slate-100">
               <div ref={chipScrollRef} className="flex gap-1.5 overflow-x-auto scrollbar-hide">
-                {menuCategories.map(cat => (
+                {navCategories.map(cat => (
                   <button
                     key={cat}
                     ref={el => { if (el) chipRefs.current.set(cat, el); else chipRefs.current.delete(cat) }}
@@ -3029,7 +2982,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       cat === selectedCategory ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                   >
-                    {cap(cat)}
+                    {cat === FORMULES_KEY ? formulesLabel : cap(cat)}
                   </button>
                 ))}
               </div>
@@ -3041,6 +2994,85 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <div>
           {/* 🔴 B1/B2: EVERY category renders. The old `.filter(… === selectedCategory)` is gone — that
               was the tabs. The array is `groupedMenu`, the same post-filter source the chips map over. */}
+          {/* ── order-page-1: FORMULES, THE FIRST SECTION ──────────────────────────────────────────────────────────────
+              Shown only when the truck has formules available for this event. Each one is laid out like a dish — name
+              (with the existing "Save £x" pill), description, then price left and the dish's own Add button right — and
+              Add opens the existing formule choice flow (addDeal → the deal modal). Formules already added are listed
+              under their row like a dish's added lines, each with the existing Remove. Same section ref, scroll margin
+              and heading as a category, so the chips jump to it and the spy lights it. */}
+          {availableBundles.length > 0 && (
+            <div
+              ref={el => { if (el) sectionRefs.current.set(FORMULES_KEY, el); else sectionRefs.current.delete(FORMULES_KEY) }}
+              style={{ scrollMarginTop: pinnedTop, ...(groupedMenu.length === 0 ? { minHeight: lastSectionMinHeight } : {}) }}
+              className="mb-4 last:mb-0"
+              data-formules
+            >
+              {hasChipBar && (
+                <p className="text-sm font-black text-orange-600 uppercase tracking-wider pt-1 pb-2">{formulesLabel}</p>
+              )}
+              <div className="divide-y divide-slate-200">
+              {availableBundles.map(bundle => {
+                const applied = dealsApplied(bundle)
+                const saving = bundle.original_price !== null && bundle.original_price > 0 ? bundle.original_price - bundle.bundle_price : null
+                const added = appliedDeals.filter(deal => deal.bundle.name === bundle.name)
+                return (
+                  <div key={bundle.name} data-formule>
+                    <div className="py-3">
+                      <div className="flex flex-wrap items-center gap-2 min-w-0">
+                        <p className="font-bold text-sm leading-snug break-words min-w-0 text-slate-900">{bundle.name}</p>
+                        {saving !== null && saving > 0 && (
+                          <span className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">{tOrder('save', { amount: amount(saving) })}</span>
+                        )}
+                      </div>
+                      {bundle.description && <p className="text-slate-500 text-sm mt-1 leading-snug">{bundle.description}</p>}
+                      <div className="flex items-center justify-between gap-2 mt-2 min-w-0">
+                        <span className="font-bold text-sm text-slate-700">{amount(bundle.bundle_price)}</span>
+                        <button onClick={() => !isOrderingBlocked && addDeal(bundle)} disabled={isOrderingBlocked}
+                          className={`shrink-0 font-bold text-xs px-3 py-1.5 rounded-lg transition-colors active:scale-95 ${
+                            isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                            : applied > 0 ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                            : 'bg-orange-600 text-white hover:bg-orange-700'
+                          }`}>
+                          {isOrderingBlocked ? (isClosed ? tOrder('closed') : orderingTimeNotSet ? tOrder('setupPending') : tOrder('paused')) : applied > 0 ? tOrder('addMore', { count: String(applied) }) : tOrder('add')}
+                        </button>
+                      </div>
+                    </div>
+                    {added.length > 0 && (
+                      <div className="pl-3 pb-2 space-y-1 -mt-2">
+                        {added.map((deal, localIdx) => {
+                          const dynOrig = calcDealOriginalPrice(deal, menu?.items ?? [])
+                          const dynSaving = dynOrig > 0 ? Math.max(0, dynOrig - deal.bundle.bundle_price) : null
+                          const globalIdx = appliedDeals.indexOf(deal)
+                          const itemsSummary = Object.entries(deal.slots)
+                            .filter(([, itemName]) => itemName)
+                            .map(([cat, itemName]) => {
+                              const mods = deal.slotModifiers?.[cat]
+                              return mods?.length ? `${itemName} (+ ${mods.map(m => m.name).join(', ')})` : itemName
+                            })
+                            .join(' + ')
+                          return (
+                            <div key={globalIdx} className="flex items-start justify-between gap-2 py-1.5">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="text-xs font-black text-orange-700">{added.length > 1 ? tOrder('dealNumber', { number: String(localIdx + 1) }) : tOrder('yourDeal')}</p>
+                                  {dynSaving !== null && dynSaving > 0 && (
+                                    <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">{tOrder('save', { amount: amount(dynSaving) })}</span>
+                                  )}
+                                </div>
+                                <p className="text-sm text-slate-700 break-words mt-0.5">{itemsSummary}</p>
+                              </div>
+                              <button onClick={() => removeDeal(globalIdx)} className="text-xs text-orange-500 hover:text-orange-700 font-bold shrink-0 py-0.5">{tOrder('remove')}</button>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+              </div>
+            </div>
+          )}
           {groupedMenu.map(([category, items], catIndex) => {
             const subGroups = groupBySubcategory(items, menu?.categories?.find(c => c.name === category)?.subcategories).filter(g => g.items.length > 0)
             // Category-level pre-order label — only when the category is FLAT (no named sub-category
@@ -3114,7 +3146,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     pinnedTop = stickyTop + statusBannerH + (hasChipBar ? tabBarH : 0). The
                     single-category branch (B5) is preserved inside pinnedTop, not lost here. */}
                 {group.name && (
-                  <p style={{ top: pinnedTop }} className="sticky z-20 -mx-2 px-2 sm:-mx-4 sm:px-4 py-2 bg-white text-sm font-black text-orange-500 uppercase tracking-wider">
+                  <p style={{ top: pinnedTop }} className="sticky z-20 -mx-4 px-4 py-2 bg-white text-sm font-black text-orange-500 uppercase tracking-wider">
                     {cap(group.name)}
                     {/* Sub-category pre-order pill — shown when every available item in THIS group is an
                         enabled pre-order item (shared global string). inline-block + whitespace-nowrap so

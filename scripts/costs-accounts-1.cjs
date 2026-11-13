@@ -355,7 +355,11 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     // undoCode) — put back first, then pricing-copy-4's; any other change still fails.
     const WC5 = require('./_lp-world-countries-5.cjs')
     const notPc4 = f => !(PC4.CODE_FILES.includes(f) && PC4.undoCode(f, WC5.undoCode(f, fs.readFileSync(path.join(REPO, f), 'utf8'))) === showAt(BEFORE, f))
-    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).filter(notDc2).filter(notLonger).filter(notPc4).join('\n') } catch (e) { diff = String(e) }
+    // ⚠️ RE-PINNED (offline-start-1, 13 November 2026, e499b335): the heartbeat monitor waits for an open event's scheduled start before
+    // protecting it. It passes when it is EXACTLY e499b335's file (whose parent passed this guard); any later change to it still fails.
+    const HM = 'supabase/functions/heartbeat-monitor/index.ts'
+    const notOfflineStart = f => f !== HM || fs.readFileSync(path.join(REPO, f), 'utf8') !== showAt('e499b335', f)
+    try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).filter(notDc2).filter(notLonger).filter(notPc4).filter(notOfflineStart).join('\n') } catch (e) { diff = String(e) }
     const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }).trim()
     t(`${PATHS.length} order, payment, menu, KDS, dashboard and ticket paths: no change against ${BEFORE} (working tree)`, PATHS.length >= 20 && diff.trim() === '' && untracked === '', diff + untracked)
     const PERF1_LINES = [
