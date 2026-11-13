@@ -1,7 +1,8 @@
 // scripts/_longer-intervals-order-page.cjs — the EDITS this work made to the customer order page since ae7ff8b4, as exact text:
 // longer-intervals (45 and 60), collection-anchor-1 (the grid counted from the event's start; the backup picker built from
 // generateCollectionTimes; the "Around" estimate on that grid) and order-page-1 (13 November 2026: the three-line event box,
-// "Change event" → /trucks/<slug>/order, formules as the menu's first category, the full-width menu on phones). NEW (what the
+// "Change event" → /trucks/<slug>/order, formules as the menu's first category, the full-width menu on phones) and order-page-2 (13 November 2026: the two-line box that is one link; the allergen pop-up's names
+// in the page's language). NEW (what the
 // page holds now) and OLD (what it held at ae7ff8b4). Read by harnesses that pin the order page to an older tree (costs-accounts-1,
 // cwv-2): they put OLD back in place of NEW and require the file to be exactly ae7ff8b4's — so only these edits are excused, and
 // any other change to the page still fails. Generated from git (`git diff ae7ff8b4`), proven by the round trip in undo().
@@ -53,12 +54,12 @@ const HUNKS = [
   "\n    const roundedMins = onClock(Math.ceil(asapMins / 5) * 5) // ceil-to-grid (next 5-min slot), never round DOWN below the floor\n    const h = Math.floor(roundedMins / 60)\n"
  ],
  [
-  "                // chooser when there are alternatives.\n                // order-page-1 (13 Nov 2026): the THREE-LINE box (TruckListCard `stacked`) \u2014 date \u00b7 range \u00b7 status, then the\n                // full location, then Change event \u2014 so a long language or venue name wraps instead of overlapping.\n                // \ud83d\udd34 \"Change event\" goes to THIS page with no event (`/trucks/<slug>/order`), which shows the truck's\n                // event chooser. It went to `/trucks/<slug>`, the Village Foodie discovery profile, which is built from the\n                // discovery sheet and answers \"Food truck not found\" for a truck that is not in it. /trucks/* has no\n                // language or country prefix on this site, so there is none to keep.\n                <TruckListCard\n",
+  "                // chooser when there are alternatives.\n                // order-page-1 (13 Nov 2026): the THREE-LINE box (TruckListCard `stacked`) — date · range · status, then the\n                // full location, then Change event — so a long language or venue name wraps instead of overlapping.\n                // order-page-2 (13 Nov 2026): TWO lines (venue · postcode on one wrapping line, no pin) and the WHOLE box is the\n                // \"Change event\" link, with a chevron; \"Change event\" is now the link's accessible name, not a text line.\n                // 🔴 \"Change event\" goes to THIS page with no event (`/trucks/<slug>/order`), which shows the truck's\n                // event chooser. It went to `/trucks/<slug>`, the Village Foodie discovery profile, which is built from the\n                // discovery sheet and answers \"Food truck not found\" for a truck that is not in it. /trucks/* has no\n                // language or country prefix on this site, so there is none to keep.\n                <TruckListCard\n",
   "                // chooser when there are alternatives.\n                <TruckListCard\n"
  ],
  [
-  "                  hideOrderButton\n                  stacked\n                  footerAction={events.length > 1 && (\n                    <Link href={`/trucks/${slug}/order`} className=\"text-orange-600 text-xs font-bold hover:underline\" data-change-event>\n                      {tOrder('changeEvent')} <span aria-hidden=\"true\">\u2192</span>\n                    </Link>\n",
-  "                  hideOrderButton\n                  compact\n                  cornerAction={events.length > 1 && (\n                    <Link href={`/trucks/${slug}`} className=\"text-orange-600 text-xs font-bold hover:underline\">\n                      {tOrder('changeEvent')}\n                    </Link>\n"
+  "                  hideOrderButton\n                  stacked\n                  boxLink={events.length > 1 ? { href: `/trucks/${slug}/order`, label: tOrder('changeEvent') } : undefined}\n                />\n",
+  "                  hideOrderButton\n                  compact\n                  cornerAction={events.length > 1 && (\n                    <Link href={`/trucks/${slug}`} className=\"text-orange-600 text-xs font-bold hover:underline\">\n                      {tOrder('changeEvent')}\n                    </Link>\n                  )}\n                />\n"
  ],
  [
   "\n        {/* (order-page-1, 13 Nov 2026: the MEAL DEALS cards that sat here are now the menu's first category \u2014 FORMULES,\n            inside the menu card below, shown like dishes.) */}\n\n",
@@ -99,7 +100,19 @@ const HUNKS = [
  [
   "                                  ))\n                              : backupTimes\n                                  // the event's own grid (start-anchored, the server's rule), from the ASAP time on\n                                  .filter(time => !asapTime || evMins(time) >= evMins(asapTime))\n                                  .map(time => <option key={time} value={time}>{formatSlot(time, pageTs)}</option>)\n                            }\n",
   "                                  ))\n                              : availableHours.flatMap(h =>\n                                  availableMinutes\n                                    .filter(m => {\n                                      const time = `${h}:${m}`\n                                      if (!asapTime) return true\n                                      return evMins(time) >= evMins(asapTime)\n                                    })\n                                    .map(m => {\n                                      const time = `${h}:${m}`\n                                      return <option key={time} value={time}>{formatSlot(time, pageTs)}</option>\n                                    })\n                                )\n                            }\n"
- ]
+ ],
+ [
+  "import { dietaryLabel } from '@/lib/dietary-label'\nimport { isEnglish } from '@/lib/i18n/locales'   // order-page-2: the allergen pop-up keeps English's old order\n",
+  "import { dietaryLabel } from '@/lib/dietary-label'\n"
+ ],
+ [
+  "                : []\n              // order-page-2 (13 Nov 2026): each name in the page's language — the SAME allergenLabel(…, pageLocale) the dish\n              // chips use (it showed the stored English label: \"Celery\" on a French page). Names only; which allergens\n              // are listed is unchanged. Sorted by the shown name in the page's language; English keeps the old order exactly (a stable no-op sort).\n              const perItemShown = perItem.map(a => ({ a, label: allergenLabel(a, pageLocale) }))\n                .sort((x, y) => isEnglish(pageLocale) ? 0 : x.label.localeCompare(y.label, pageLocale))\n              if (!showCard && perItem.length === 0) {\n",
+  "                : []\n              if (!showCard && perItem.length === 0) {\n"
+ ],
+ [
+  "                        {perItemShown.map(({ a, label }) => (\n                          <span key={a} className=\"text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg\">{label}</span>\n",
+  "                        {perItem.map(a => (\n                          <span key={a} className=\"text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg\">{a}</span>\n"
+ ],
 ]
 /** The page's text with these edits undone, or null when a NEW is not there exactly once. */
 function undo(text) {

@@ -11,6 +11,9 @@
 //   fr-chooser        /trucks/<slug>/order with no event — the page "Change event" now opens
 // Measured on every shot: no sideways scroll; the event box's three lines in order and not overlapping; the full venue name and
 // area present and not clipped; the change-event link's href; FORMULES first; the menu full-bleed on a phone and capped on desktop.
+// ⚠️ SUPERSEDED FOR THE EVENT BOX by order-page-2 (13 November 2026): the box is now TWO lines and one link (no "Change event"
+//    text line, no pin), so this script's event-box checks describe order-page-1's box and now fail by design. The event box's
+//    proof is scripts/order-page-2-live.cjs; this script's other checks (formules, full width, sticky tabs) still hold.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 const fs = require('fs')
 const path = require('path')

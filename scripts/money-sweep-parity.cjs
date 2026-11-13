@@ -876,7 +876,9 @@ async function eventTypesView() {
   // the event box's line 1 reads "<date> <range> Live" and the deals move inside the menu (a chip + a first section, the dish's Add
   // words). Applied to BEFORE after every other named change; every other leaf and every attribute compared exactly as before.
   const OP1 = require('./_named-order-page-1.cjs')
-  const op1 = (k, v) => (typeof v === 'string' && /^orderPage\.[^.]+\.text$/.test(k) ? OP1.snapshotText(v) : v)
+  // …and order-page-2 (13 November 2026): the box's location reads "The Green · Harnessville" (OP1.venueDot, this fixture's own
+  // venue and town, found exactly once).
+  const op1 = (k, v) => (typeof v === 'string' && /^orderPage\.[^.]+\.text$/.test(k) ? OP1.venueDot(OP1.snapshotText(v), EVENT.venue_name, EVENT.town) : v)
   const fix2 = (k, v) => op1(k, privacy(k, grouped(k, fix2core(k, v))))
   // …and on the order page's TEXT and ATTRIBUTE leaves (tag-stripped, so the markup transform cannot reach them): the
   // AFTER side gives back exactly what the link added — the word " Privacy" (BEFORE never contains it, asserted) and one

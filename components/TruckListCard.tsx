@@ -32,14 +32,17 @@ interface TruckListCardProps {
   /** Optional node pinned to the card's top-right corner (e.g. a "Change event" link). Default
    *  undefined → nothing rendered. Only used with `compact` on the order page. */
   cornerAction?: ReactNode;
-  /** ── STACKED (order-page-1, 13 November 2026): THE ORDER PAGE'S EVENT BOX, THREE LINES ──────────────────────
-   *  line 1 date · time range · the status label ("● Live", same logic and word as every other variant);
-   *  line 2 a location pin and the FULL venue name and area/postcode — wrapping, never truncated or clamped;
-   *  line 3 `footerAction` (the order page's "Change event" link), when given.
-   *  Nothing is positioned over anything else, so a long language or a long venue name cannot overlap. Used ONLY by the
-   *  order page's selected-event header; every other caller renders exactly as before. */
+  /** ── STACKED (order-page-1, 13 November 2026; order-page-2, 13 November 2026): THE ORDER PAGE'S EVENT BOX ─────────
+   *  line 1 date · time range · the status label ("● Live", same logic and word as every other variant), wrapping
+   *  only when the language needs it;
+   *  line 2 the FULL venue name, " · ", then the area/postcode (eventAreaLine), on ONE line that wraps onto more for a
+   *  long address — never truncated or clamped; no pin icon (order-page-2).
+   *  With `boxLink` the WHOLE box is the link (order-page-2): a chevron on the right, vertically centred, and the
+   *  link's accessible name is `boxLink.label` (the order page's existing "Change event" words). There is no separate
+   *  text line for it any more. Used ONLY by the order page's selected-event header; every other caller renders
+   *  exactly as before. */
   stacked?: boolean;
-  footerAction?: ReactNode;
+  boxLink?: { href: string; label: string };
   /** ── HATCHGRAB SEMANTICS WITHOUT ASKING THE BROWSER WHAT HOST IT IS ON (V1, /embed) ──────────
    *  Set ONLY by /embed/<slug>, which is a HatchGrab surface served INSIDE AN IFRAME ON THE
    *  OPERATOR'S OWN DOMAIN. It cannot use the host test the other call sites use: `isHatchGrab()`
@@ -142,7 +145,7 @@ function isEventLive(status?: string): boolean {
   return status === 'open';
 }
 
-export default function TruckListCard({ event, slug, hideOrderButton, forceOrderButton, compact, cornerAction, stacked, footerAction, assumeHatchGrab = false, openOrderInNewTab = false, plainVenueName = false, orderOrigin, time }: TruckListCardProps) {
+export default function TruckListCard({ event, slug, hideOrderButton, forceOrderButton, compact, cornerAction, stacked, boxLink, assumeHatchGrab = false, openOrderInNewTab = false, plainVenueName = false, orderOrigin, time }: TruckListCardProps) {
     const ts = time ?? DISCOVERY_TIME_SETTINGS
     // The words: messages/en-GB.json `eventCard` (Language Phase 1a — the order page's event chooser).
     const t = useT('eventCard')
@@ -204,39 +207,48 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
   );
 
   if (stacked) {
-    // The full name and area, wrapping (break-words): no line-clamp, no truncate, no corner reserve.
-    const location = (
-      <>
-        <span className="block text-slate-800 text-[14px] sm:text-[15px] font-bold leading-snug break-words">{event.venueName}</span>
-        {areaLine && <span className="block text-slate-500 text-[12px] sm:text-xs font-medium leading-snug break-words mt-0.5">{areaLine}</span>}
-      </>
-    );
+    // order-page-2: the box is ONE link when `boxLink` is given. It is a "stretched" link — an empty <Link> laid over the
+    // whole box — rather than a <Link> wrapping it, because the event notes below can hold links of their own and an
+    // <a> inside an <a> is invalid HTML. The notes' own links are lifted above it ([&_a]:relative [&_a]:z-10).
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-3 py-2.5 mb-2" data-event-box>
-        {/* LINE 1 — date · range · status. flex-wrap: a long date or 12-hour range drops the status to the next line
-            instead of overlapping it. */}
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 leading-none">
-          <span className="text-[13px] sm:text-sm font-bold text-orange-600 leading-none whitespace-nowrap">{formatStandardDate(event.date, ts)}</span>
-          <span className="text-[12px] font-bold text-slate-500 leading-none whitespace-nowrap">{cardTimeRange(event.startTime, event.endTime, ts)}</span>
-          {liveNow && <LiveBadge label={t('live')} className="inline-flex" />}
-        </div>
-        {/* LINE 2 — pin + the full location. */}
-        <div className="flex items-start gap-1.5 mt-2 min-w-0">
-          <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mt-px shrink-0 text-orange-500">
-            <path fillRule="evenodd" d="M10 18s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Zm0-7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" clipRule="evenodd" />
-          </svg>
-          {plainVenueName ? (
-            <div className="min-w-0 flex-1">{location}</div>
-          ) : (
-            <Link href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`} className="min-w-0 flex-1 hover:text-orange-600" title={t('venueDetails', { venue: event.venueName })}>
-              {location}
-            </Link>
+      <div className={boxLink ? 'relative bg-white rounded-xl shadow-sm border border-slate-200 mb-2 hover:border-orange-300 transition-colors' : 'relative bg-white rounded-xl shadow-sm border border-slate-200 mb-2'} data-event-box>
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="min-w-0 flex-1">
+            {/* LINE 1 — date · range · status. flex-wrap: a long date or 12-hour range drops the status to the next line
+                instead of overlapping it. */}
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 leading-none" data-event-line="when">
+              <span className="text-[13px] sm:text-sm font-bold text-orange-600 leading-none whitespace-nowrap">{formatStandardDate(event.date, ts)}</span>
+              <span className="text-[12px] font-bold text-slate-500 leading-none whitespace-nowrap">{cardTimeRange(event.startTime, event.endTime, ts)}</span>
+              {liveNow && <LiveBadge label={t('live')} className="inline-flex" />}
+            </div>
+            {/* LINE 2 — the full venue name · the postcode, one wrapping line. The no-break space keeps the "·" with the
+                name, so a wrap never starts a line with it. */}
+            {(() => {
+              const where = (
+                <p className="mt-1.5 text-slate-800 text-[14px] sm:text-[15px] font-bold leading-snug break-words" data-event-line="where">
+                  {event.venueName}
+                  {areaLine && <span className="font-medium text-slate-500">{`\u00A0· ${areaLine}`}</span>}
+                </p>
+              );
+              // With no box link (a truck with ONE event: nothing to change to) the venue name keeps its old link to the venue's
+              // page; with one, it cannot be a link of its own inside the box's.
+              return boxLink || plainVenueName ? where : (
+                <Link href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`} className="block hover:text-orange-600" title={t('venueDetails', { venue: event.venueName })}>{where}</Link>
+              );
+            })()}
+          </div>
+          {boxLink && (
+            <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 shrink-0 text-slate-400" data-event-chevron>
+              <path fillRule="evenodd" d="M7.2 4.2a.75.75 0 0 1 1.06 0l5.25 5.25a.75.75 0 0 1 0 1.06L8.26 15.8a.75.75 0 1 1-1.06-1.06L11.94 10 7.2 5.26a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+            </svg>
           )}
         </div>
-        {/* LINE 3 — the action (Change event), on its own line. */}
-        {footerAction && <div className="mt-2">{footerAction}</div>}
-        {/* The event's notes, as on every other variant, below the three lines. */}
-        {notesBlock}
+        {/* The event's notes, as on every other variant, below the two lines. */}
+        {(event.notes || event.eventNotes) && <div className="px-4 pb-3 -mt-1 [&_a]:relative [&_a]:z-10">{notesBlock}</div>}
+        {boxLink && (
+          <Link href={boxLink.href} aria-label={boxLink.label} title={boxLink.label} data-change-event
+            className="absolute inset-0 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500" />
+        )}
       </div>
     );
   }

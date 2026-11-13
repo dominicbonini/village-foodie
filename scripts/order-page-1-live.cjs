@@ -8,6 +8,9 @@
 //      /trucks/app-tester, is the discovery profile that answers "Food truck not found" for this truck (the cause);
 //   3. scrolling the menu, the category tabs stay pinned just under the header and the active tab follows the scroll.
 // Writes docs/order-page-1/live-*.png.
+// ⚠️ SUPERSEDED FOR THE EVENT BOX by order-page-2 (13 November 2026): the box is now TWO lines and one link (no "Change event"
+//    text line, no pin), so this script's event-box checks describe order-page-1's box and now fail by design. The event box's
+//    proof is scripts/order-page-2-live.cjs; this script's other checks (formules, full width, sticky tabs) still hold.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 const path = require('path')
 const REPO = path.resolve(__dirname, '..')

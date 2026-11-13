@@ -729,6 +729,11 @@ const ALLOWED = [
   // (components/TruckListCard.tsx; /Users/dominicbonini/dev/usl-out/REPIN-BRIEF.md). "● Live" moves from the range line to
   // the date line, so the order page header's text reads "<date> Live 12:00 – 23:59" where it read "<date> 12:00 – 23:59 Live".
   // At every instant; the new value must be EXACTLY the BEFORE value with that one move (found exactly once).
+  // ⚠️ RE-PINNED (order-page-2, 13 November 2026) — NOT A TIME CHANGE, a layout one: the order page's event box reads "<venue> ·
+  // <area>" (components/TruckListCard.tsx `stacked`, one wrapping line). At every instant the text must be EXACTLY the BEFORE value
+  // with " The Green Harnessville " → " The Green · Harnessville " (scripts/_named-order-page-1.cjs venueDot, found exactly once).
+  { id: 'OP2', site: 'components/TruckListCard.tsx — order-page-2: the event box reads "<venue> · <area>"', moments: Object.keys(MOMENTS), path: /^screens\/order\|(today|tomorrow|yesterday)$/,
+    expect: (v, D, after, p, before) => typeof before === 'string' && before !== v && v === require('./_named-order-page-1.cjs').venueDot(before, 'The Green', 'Harnessville') },
   { id: 'L2', site: 'components/TruckListCard.tsx — us-layout-fix-2-live-on-date-line: the order page header reads "<date> Live <range>"', moments: Object.keys(MOMENTS), path: /^screens\/order\|today$/,
     expect: (v, D, after, p, before) => { const re = /(Order from Pizza Kitchen \w{3} \d{1,2} \w{3}) (\d\d:\d\d – \d\d:\d\d) Live /g; return typeof before === 'string' && (before.match(re) || []).length === 1 && v === before.replace(re, '$1 Live $2 ') } },
   // ⚠️ RE-PINNED, 18 October 2026 — NOT A TIME CHANGE, a layout one: us-layout-fix-6-kds-full-badge (components/dashboard/

@@ -53,6 +53,7 @@ import { errorText, type CustomerErrorParams } from '@/lib/i18n/customer-errors'
 import '@/lib/i18n/catalog/order'
 import '@/lib/i18n/catalog/errorsCustomer'
 import { dietaryLabel } from '@/lib/dietary-label'
+import { isEnglish } from '@/lib/i18n/locales'   // order-page-2: the allergen pop-up keeps English's old order
 import { allergenLabel } from '@/lib/allergen-label'   // france-1: a stored allergen label in the page's language (English: as stored)   // languages-1: a stored dietary tag in the truck's language
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -2856,6 +2857,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 // chooser when there are alternatives.
                 // order-page-1 (13 Nov 2026): the THREE-LINE box (TruckListCard `stacked`) — date · range · status, then the
                 // full location, then Change event — so a long language or venue name wraps instead of overlapping.
+                // order-page-2 (13 Nov 2026): TWO lines (venue · postcode on one wrapping line, no pin) and the WHOLE box is the
+                // "Change event" link, with a chevron; "Change event" is now the link's accessible name, not a text line.
                 // 🔴 "Change event" goes to THIS page with no event (`/trucks/<slug>/order`), which shows the truck's
                 // event chooser. It went to `/trucks/<slug>`, the Village Foodie discovery profile, which is built from the
                 // discovery sheet and answers "Food truck not found" for a truck that is not in it. /trucks/* has no
@@ -2866,11 +2869,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   time={pageTs}
                   hideOrderButton
                   stacked
-                  footerAction={events.length > 1 && (
-                    <Link href={`/trucks/${slug}/order`} className="text-orange-600 text-xs font-bold hover:underline" data-change-event>
-                      {tOrder('changeEvent')} <span aria-hidden="true">→</span>
-                    </Link>
-                  )}
+                  boxLink={events.length > 1 ? { href: `/trucks/${slug}/order`, label: tOrder('changeEvent') } : undefined}
                 />
               ) : (
                 // No event selected → the ORDER-ENTRY SCHEDULE: pick a confirmed event. The SAME
@@ -4344,6 +4343,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               const perItem = mode !== 'card'
                 ? [...new Set((menu?.items ?? []).flatMap(i => i.allergens ?? []))].sort()
                 : []
+              // order-page-2 (13 Nov 2026): each name in the page's language — the SAME allergenLabel(…, pageLocale) the dish
+              // chips use (it showed the stored English label: "Celery" on a French page). Names only; which allergens
+              // are listed is unchanged. Sorted by the shown name in the page's language; English keeps the old order exactly (a stable no-op sort).
+              const perItemShown = perItem.map(a => ({ a, label: allergenLabel(a, pageLocale) }))
+                .sort((x, y) => isEnglish(pageLocale) ? 0 : x.label.localeCompare(y.label, pageLocale))
               if (!showCard && perItem.length === 0) {
                 // Honest fallback — never invents data; directs to a human.
                 return (
@@ -4368,8 +4372,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     <div>
                       <p className="text-xs font-semibold text-slate-500 mb-1">{tOrder('allergensUsed')}</p>
                       <div className="flex flex-wrap gap-1">
-                        {perItem.map(a => (
-                          <span key={a} className="text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg">{a}</span>
+                        {perItemShown.map(({ a, label }) => (
+                          <span key={a} className="text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg">{label}</span>
                         ))}
                       </div>
                       <p className="text-xs text-slate-400 mt-1">{tOrder('allergensSeeEach')}</p>

@@ -4,8 +4,10 @@
 // PRECISE: every transform rebuilds the new markup FROM THE OLD MARKUP'S OWN DATA (the event's date, range, Live label, venue,
 // area, notes, the deals' names, pills, descriptions, prices and added lines) and the language's EXISTING words (messages/en-GB.json
 // with en-US's overrides) — never from AFTER. Anything it does not recognise exactly is left as BEFORE had it, so the view fails.
-//   1. EVENT BOX: TruckListCard `compact` (one row, "Change event" in the corner) → `stacked` (three lines: date · range · status /
-//      pin + full venue and area / "Change event →" linking to /trucks/<slug>/order), notes kept below.
+//   1. EVENT BOX: TruckListCard `compact` (one row, "Change event" in the corner) → `stacked`. order-page-1 made it three lines (date ·
+//      range · status / pin + full venue and area / "Change event →"); order-page-2 (13 Nov 2026) makes it TWO lines (date · range ·
+//      status / the full venue " · " area, one wrapping line, no pin) and the WHOLE box the link to /trucks/<slug>/order (chevron on
+//      the right, "Change event" its accessible name, no text line); notes kept below.
 //   2. FORMULES: the "🎁 Meal deals" cards above the menu are removed; the menu gains a first chip and a first section with the same
 //      word (emoji dropped), each formule a dish-like row (name, Save pill, description, price, the dish's Add / "N · Add" button)
 //      with its added lines below it. The first chip is now the formules' (the active one by default).
@@ -55,7 +57,13 @@ const CARD_RE = new RegExp('^' + esc(CARD_OPEN) +
   '<h3 class="[^"]*line-clamp-1 pr-20">([^<]*)</h3>' +
   '(?:<p class="text-slate-400 text-\\[11px\\] sm:text-xs font-medium leading-tight mt-0\\.5 truncate">([^<]*)</p>)?' +
   '(?:</a>|</div>)</div></div></div>([\\s\\S]*)</div>$')
-const PIN = '<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mt-px shrink-0 text-orange-500"><path fill-rule="evenodd" d="M10 18s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Zm0-7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" clip-rule="evenodd"></path></svg>'
+// order-page-2 (13 Nov 2026): the box is now TWO lines and, when it has a "Change event" target, ONE link (a stretched <a> over the
+// whole box, a chevron on the right). The pin, the separate "Change event →" line and the venue's own link (inside the box link)
+// go. With no target (one event) the venue keeps its link to its page, round the location line. The render kit's next/link stub
+// keeps only href and className, so the box link's aria-label / title / data-change-event are not in these views (the live check,
+// scripts/order-page-2-live.cjs, proves them).
+const CHEVRON = '<svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0 text-slate-400" data-event-chevron="true"><path fill-rule="evenodd" d="M7.2 4.2a.75.75 0 0 1 1.06 0l5.25 5.25a.75.75 0 0 1 0 1.06L8.26 15.8a.75.75 0 1 1-1.06-1.06L11.94 10 7.2 5.26a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path></svg>'
+const BOX_LINK_CLS = 'absolute inset-0 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500'
 function eventBox(s) {
   const at = s.indexOf(CARD_OPEN)
   if (at < 0) return s
@@ -63,14 +71,18 @@ function eventBox(s) {
   if (end < 0) return s
   const m = s.slice(at, end).match(CARD_RE)
   if (!m) return s
-  const [, chHref, chText, date, live, range, venueHref, name, area, notes] = m
-  const loc = `<span class="block text-slate-800 text-[14px] sm:text-[15px] font-bold leading-snug break-words">${name}</span>` +
-    (area ? `<span class="block text-slate-500 text-[12px] sm:text-xs font-medium leading-snug break-words mt-0.5">${area}</span>` : '')
-  const out = '<div class="bg-white rounded-xl shadow-sm border border-slate-200 px-3 py-2.5 mb-2" data-event-box="true">' +
-    `<div class="flex flex-wrap items-center gap-x-2 gap-y-1 leading-none"><span class="text-[13px] sm:text-sm font-bold text-orange-600 leading-none whitespace-nowrap">${date}</span><span class="text-[12px] font-bold text-slate-500 leading-none whitespace-nowrap">${range}</span>${live}</div>` +
-    `<div class="flex items-start gap-1.5 mt-2 min-w-0">${PIN}${venueHref !== undefined ? `<a href="${venueHref}" class="min-w-0 flex-1 hover:text-orange-600">${loc}</a>` : `<div class="min-w-0 flex-1">${loc}</div>`}</div>` +
-    (chHref !== undefined ? `<div class="mt-2"><a href="${chHref.replace(/\/$/, '')}/order" class="text-orange-600 text-xs font-bold hover:underline">${chText} <span aria-hidden="true">→</span></a></div>` : '') +
-    notes + '</div>'
+  const [, chHref, , date, live, range, venueHref, name, area, notes] = m
+  const linked = chHref !== undefined
+  const where = `<p class="mt-1.5 text-slate-800 text-[14px] sm:text-[15px] font-bold leading-snug break-words" data-event-line="where">${name}` +
+    (area ? `<span class="font-medium text-slate-500">\u00A0· ${area}</span>` : '') + '</p>'
+  const out = `<div class="relative bg-white rounded-xl shadow-sm border border-slate-200 mb-2${linked ? ' hover:border-orange-300 transition-colors' : ''}" data-event-box="true">` +
+    '<div class="flex items-center gap-3 px-4 py-3"><div class="min-w-0 flex-1">' +
+    `<div class="flex flex-wrap items-center gap-x-2 gap-y-1 leading-none" data-event-line="when"><span class="text-[13px] sm:text-sm font-bold text-orange-600 leading-none whitespace-nowrap">${date}</span><span class="text-[12px] font-bold text-slate-500 leading-none whitespace-nowrap">${range}</span>${live}</div>` +
+    (linked || venueHref === undefined ? where : `<a href="${venueHref}" class="block hover:text-orange-600">${where}</a>`) +
+    '</div>' + (linked ? CHEVRON : '') + '</div>' +
+    (notes ? `<div class="px-4 pb-3 -mt-1 [&amp;_a]:relative [&amp;_a]:z-10">${notes}</div>` : '') +
+    (linked ? `<a href="${chHref.replace(/\/$/, '')}/order" class="${BOX_LINK_CLS}"></a>` : '') +
+    '</div>'
   return s.slice(0, at) + out + s.slice(end)
 }
 
@@ -186,16 +198,26 @@ function snapshotText(t) {
   return out
 }
 
+/** order-page-2 on a TEXT leaf (tag-stripped, whitespace — the no-break space included — single-spaced): the event box's location
+ *  reads "<venue> · <area>" where it read "<venue> <area>". The caller passes its fixture's OWN venue and area (the values it
+ *  rendered); the pair must be found EXACTLY once, or the text is returned unchanged (so the view fails). */
+function venueDot(t, venue, area) {
+  if (typeof t !== 'string' || !venue || !area) return t
+  const was = ` ${venue} ${area} `
+  if (t.split(was).length !== 2) return t
+  return t.replace(was, ` ${venue} · ${area} `)
+}
+
 /** The whole change on one order-page view's markup. Order matters: the formules are moved before the menu card's tag changes. */
 function orderPage(s, cc) { return fullWidth(formules(eventBox(s), cc)) }
 
 function entries({ mapStrings }) {
   return [
     { id: 'order-page-1', part: PART, country: 'both',
-      what: 'The customer order page (app/(app)/trucks/[slug]/order/page.tsx, components/TruckListCard.tsx `stacked`): the event box becomes three lines — date · range · status, a pin and the full venue and area (wrapping, never clipped), "Change event →" to /trucks/<slug>/order (it went to /trucks/<slug>, the discovery profile, "Food truck not found") — with the notes below; the "🎁 Meal deals" cards above the menu move INTO it as its first chip and section, each formule a dish-like row with the dish\'s Add / "N · Add" button and its added lines; the menu card is full width on phones (its classes and the tab bar\'s / sticky sub-heading\'s mirrors). PRECISE: rebuilt from BEFORE\'s own data and the existing words.',
+      what: 'The customer order page (app/(app)/trucks/[slug]/order/page.tsx, components/TruckListCard.tsx `stacked`): the event box becomes two lines — date · range · status, then the full venue " · " area on one wrapping line (no pin, never clipped) — and, with more than one event, the WHOLE box is the link to /trucks/<slug>/order with a chevron (order-page-2; it went to /trucks/<slug>, the discovery profile, "Food truck not found") — with the notes below; the "🎁 Meal deals" cards above the menu move INTO it as its first chip and section, each formule a dish-like row with the dish\'s Add / "N · Add" button and its added lines; the menu card is full width on phones (its classes and the tab bar\'s / sticky sub-heading\'s mirrors). PRECISE: rebuilt from BEFORE\'s own data and the existing words.',
       views: id => /^1a\/orderPage\/(GB|US)\|/.test(id),
       expect: (b, id) => { const cc = /\/US\|/.test(id) ? 'US' : 'GB'; return mapStrings(b, x => (typeof x === 'string' && x.includes('<') ? orderPage(x, cc) : x)) } },
   ]
 }
 
-module.exports = { entries, orderPage, eventBox, formules, fullWidth, words, snapshotText }
+module.exports = { entries, orderPage, eventBox, formules, fullWidth, words, snapshotText, venueDot }

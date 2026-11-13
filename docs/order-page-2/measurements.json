@@ -1,0 +1,638 @@
+[
+  {
+    "tag": "chromium 390px en-GB short",
+    "lang": "en",
+    "boxText": "Fri 13 Nov 09:00 – 17:00 Live The Green · Comberton · CB23 7ED",
+    "whenText": "Fri 13 Nov 09:00 – 17:00 Live",
+    "whereText": "The Green · Comberton · CB23 7ED",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 1,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 160.125,
+    "rowCentre": 160.125,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Change event",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "chromium 390px en-GB long",
+    "lang": "en",
+    "boxText": "Fri 13 Nov 09:00 – 17:00 Live The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "Fri 13 Nov 09:00 – 17:00 Live",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 4,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 189,
+    "rowCentre": 189,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Change event",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "chromium 390px de-DE short",
+    "lang": "de-DE",
+    "boxText": "Fr., 13. Nov 09:00 – 17:00 Live The Green · Comberton · CB23 7ED",
+    "whenText": "Fr., 13. Nov 09:00 – 17:00 Live",
+    "whereText": "The Green · Comberton · CB23 7ED",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 1,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 160.125,
+    "rowCentre": 160.125,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Event wechseln",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "chromium 390px de-DE long",
+    "lang": "de-DE",
+    "boxText": "Fr., 13. Nov 09:00 – 17:00 Live The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "Fr., 13. Nov 09:00 – 17:00 Live",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 4,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 189,
+    "rowCentre": 189,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Event wechseln",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "chromium 390px fi-FI short",
+    "lang": "fi-FI",
+    "boxText": "pe 13.marras. 09:00 – 17:00 Käynnissä The Green · Comberton · CB23 7ED",
+    "whenText": "pe 13.marras. 09:00 – 17:00 Käynnissä",
+    "whereText": "The Green · Comberton · CB23 7ED",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 1,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 160.125,
+    "rowCentre": 160.125,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Vaihda tapahtumaa",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "chromium 390px fi-FI long",
+    "lang": "fi-FI",
+    "boxText": "pe 13.marras. 09:00 – 17:00 Käynnissä The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "pe 13.marras. 09:00 – 17:00 Käynnissä",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 4,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 189,
+    "rowCentre": 189,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Vaihda tapahtumaa",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "chromium 320px en-GB long",
+    "lang": "en",
+    "boxText": "Fri 13 Nov 09:00 – 17:00 Live The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "Fri 13 Nov 09:00 – 17:00 Live",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 5,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 198.625,
+    "rowCentre": 198.625,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Change event",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "chromium 320px de-DE long",
+    "lang": "de-DE",
+    "boxText": "Fr., 13. Nov 09:00 – 17:00 Live The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "Fr., 13. Nov 09:00 – 17:00 Live",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 5,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 198.625,
+    "rowCentre": 198.625,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Event wechseln",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "chromium 320px fi-FI long",
+    "lang": "fi-FI",
+    "boxText": "pe 13.marras. 09:00 – 17:00 Käynnissä The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "pe 13.marras. 09:00 – 17:00 Käynnissä",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 170,
+    "whereTop": 176,
+    "whereLines": 5,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 206.625,
+    "rowCentre": 206.625,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Vaihda tapahtumaa",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "webkit 390px en-GB short",
+    "lang": "en",
+    "boxText": "Fri 13 Nov 09:00 – 17:00 Live The Green · Comberton · CB23 7ED",
+    "whenText": "Fri 13 Nov 09:00 – 17:00 Live",
+    "whereText": "The Green · Comberton · CB23 7ED",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 1,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 160.125,
+    "rowCentre": 160.125,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Change event",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "webkit 390px en-GB long",
+    "lang": "en",
+    "boxText": "Fri 13 Nov 09:00 – 17:00 Live The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "Fri 13 Nov 09:00 – 17:00 Live",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 4,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 189,
+    "rowCentre": 189,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Change event",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "webkit 390px de-DE short",
+    "lang": "de-DE",
+    "boxText": "Fr. 13. Nov 09:00 – 17:00 Live The Green · Comberton · CB23 7ED",
+    "whenText": "Fr. 13. Nov 09:00 – 17:00 Live",
+    "whereText": "The Green · Comberton · CB23 7ED",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 1,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 160.125,
+    "rowCentre": 160.125,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Event wechseln",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "webkit 390px de-DE long",
+    "lang": "de-DE",
+    "boxText": "Fr. 13. Nov 09:00 – 17:00 Live The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "Fr. 13. Nov 09:00 – 17:00 Live",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 4,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 189,
+    "rowCentre": 189,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Event wechseln",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "webkit 390px fi-FI short",
+    "lang": "fi-FI",
+    "boxText": "pe 13.marras. 09:00 – 17:00 Käynnissä The Green · Comberton · CB23 7ED",
+    "whenText": "pe 13.marras. 09:00 – 17:00 Käynnissä",
+    "whereText": "The Green · Comberton · CB23 7ED",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 1,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 160.125,
+    "rowCentre": 160.125,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Vaihda tapahtumaa",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "webkit 390px fi-FI long",
+    "lang": "fi-FI",
+    "boxText": "pe 13.marras. 09:00 – 17:00 Käynnissä The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "pe 13.marras. 09:00 – 17:00 Käynnissä",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 4,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 189,
+    "rowCentre": 189,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Vaihda tapahtumaa",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "webkit 320px en-GB long",
+    "lang": "en",
+    "boxText": "Fri 13 Nov 09:00 – 17:00 Live The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "Fri 13 Nov 09:00 – 17:00 Live",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 5,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 198.625,
+    "rowCentre": 198.625,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Change event",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "webkit 320px de-DE long",
+    "lang": "de-DE",
+    "boxText": "Fr. 13. Nov 09:00 – 17:00 Live The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "Fr. 13. Nov 09:00 – 17:00 Live",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 154,
+    "whereTop": 160,
+    "whereLines": 5,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 198.625,
+    "rowCentre": 198.625,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Event wechseln",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "webkit 320px fi-FI long",
+    "lang": "fi-FI",
+    "boxText": "pe 13.marras. 09:00 – 17:00 Käynnissä The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenText": "pe 13.marras. 09:00 – 17:00 Käynnissä",
+    "whereText": "The Old Schoolhouse Community Garden and Village Green Car Park (behind the Methodist Church) · Great Shelford · CB22 5EW",
+    "whenBottom": 170,
+    "whereTop": 176,
+    "whereLines": 5,
+    "whereClipped": false,
+    "pin": false,
+    "chevCentre": 206.625,
+    "rowCentre": 206.625,
+    "padL": 17,
+    "padR": 17,
+    "link": {
+      "href": "/trucks/app-tester/order",
+      "aria": "Vaihda tapahtumaa",
+      "cover": true
+    },
+    "hits": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "sideways": 0
+  },
+  {
+    "tag": "allergens fr-FR",
+    "stored": [
+      "Gluten",
+      "Dairy",
+      "Lactose",
+      "Tree nuts",
+      "Fish"
+    ],
+    "shown": [
+      "Fruits à coque",
+      "Gluten",
+      "Lactose",
+      "Lait",
+      "Poissons"
+    ],
+    "chips": [
+      "Gluten",
+      "Lait",
+      "Lactose",
+      "Fruits à coque",
+      "Poissons"
+    ]
+  },
+  {
+    "tag": "allergens de-DE",
+    "stored": [
+      "Gluten",
+      "Dairy",
+      "Lactose",
+      "Tree nuts",
+      "Fish"
+    ],
+    "shown": [
+      "Fisch",
+      "Gluten",
+      "Laktose",
+      "Milch",
+      "Schalenfrüchte"
+    ],
+    "chips": [
+      "Gluten",
+      "Milch",
+      "Laktose",
+      "Schalenfrüchte",
+      "Fisch"
+    ]
+  },
+  {
+    "tag": "allergens ja-JP",
+    "stored": [
+      "Gluten",
+      "Dairy",
+      "Lactose",
+      "Tree nuts",
+      "Fish"
+    ],
+    "shown": [
+      "グルテン",
+      "ナッツ類",
+      "魚類",
+      "乳製品",
+      "乳糖"
+    ],
+    "chips": [
+      "グルテン",
+      "乳製品",
+      "乳糖",
+      "ナッツ類",
+      "魚類"
+    ]
+  },
+  {
+    "tag": "allergens en-GB",
+    "stored": [
+      "Gluten",
+      "Dairy",
+      "Lactose",
+      "Tree nuts",
+      "Fish"
+    ],
+    "shown": [
+      "Dairy",
+      "Fish",
+      "Gluten",
+      "Lactose",
+      "Tree nuts"
+    ],
+    "chips": [
+      "Gluten",
+      "Dairy",
+      "Lactose",
+      "Tree nuts",
+      "Fish"
+    ]
+  }
+]
