@@ -148,9 +148,7 @@
   "allergenTitle": "Allergeninformasjon",
   "allergenNotProvided": "Allergeninformasjon er ikke oppgitt — sjekk direkte med matbilen.",
   "allergenCard": "📎 Se allergenliste (PDF/bilde)",
-  "allergensUsed": "Allergener brukt i denne menyen",
-  "allergensSeeEach": "Se hver rett for allergenene i den.",
-  "allergenSevere": "Har du en alvorlig allergi, ta kontakt med matbilen direkte før du bestiller.",
+  "allergenSevere": "Har du en matallergi, ta kontakt med matbilen før du bestiller.",
   "orderConfirmed": "Bestillingen er bekreftet!",
   "orderReceived": "Bestillingen er mottatt!",
   "thanksReady": "Takk! Vi har mottatt bestillingen din, og den er snart klar.",
@@ -171,5 +169,7 @@
   "backTo": "Tilbake til {truck}",
   "notePlaceholderCompact": "Noen ønsker? f.eks. uten løk",
   "noteHeading": "Noen ønsker? <muted>— valgfritt</muted>",
-  "notePlaceholder": "f.eks. uten løk, ekstra sprø"
+  "notePlaceholder": "f.eks. uten løk, ekstra sprø",
+  "kitchenHeading": "Allergener som håndteres på dette kjøkkenet",
+  "kitchenNote": "Hver rett viser allergenene i oppskriften sin. Vi kan ikke garantere at noen rett er fri for spor."
 }

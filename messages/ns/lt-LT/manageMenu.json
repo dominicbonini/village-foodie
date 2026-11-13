@@ -108,7 +108,9 @@
     "extract": "Ištraukti su DI",
     "needReview": "{count, plural, one {# patiekalas laukia} few {# patiekalai laukia} many {# patiekalų laukia} other {# patiekalų laukia}} peržiūros — kol nepatvirtinsite, klientai nemato informacijos apie alergenus",
     "reading": "Skaitoma informacija apie alergenus…",
-    "pastePlaceholder": "Įklijuokite informaciją apie alergenus čia…"
+    "pastePlaceholder": "Įklijuokite informaciją apie alergenus čia…",
+    "kitchenLine": "Virtuvėje taip pat naudojama: {list}",
+    "kitchenEdit": "Redaguoti"
   },
   "deleteItem": {
     "title": "Pašalinti „{name}“?",
@@ -172,7 +174,9 @@
     "add": "Pridėti patiekalą",
     "noGroups": "Parinkčių grupių dar nėra — sukurkite jas skiltyje „Priedai ir papildomi pasiūlymai“.",
     "costToMake": "Gamybos savikaina",
-    "costHelp": "Neprivaloma. Kiek jums kainuoja viena porcija: ingredientai ir pakuotė. Naudojama tik jūsų ataskaitose; klientai jos niekada nemato."
+    "costHelp": "Neprivaloma. Kiek jums kainuoja viena porcija: ingredientai ir pakuotė. Naudojama tik jūsų ataskaitose; klientai jos niekada nemato.",
+    "recipeOnly": "Tik tai, kas yra šio patiekalo recepte.",
+    "tooMany": "Pažymėti alergenai: {count}. Ar tikrai visi jie yra šio patiekalo recepte? Kitur jūsų virtuvėje naudojami alergenai nurodomi skiltyje „Virtuvėje taip pat naudojama“, skirtuke „Meniu“."
   },
   "summary": "{categories, plural, one {# kategorija} few {# kategorijos} many {# kategorijų} other {# kategorijų}} · {items, plural, one {# patiekalas} few {# patiekalai} many {# patiekalų} other {# patiekalų}}",
   "confirmDelete": {

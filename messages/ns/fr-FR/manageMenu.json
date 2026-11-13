@@ -108,7 +108,9 @@
     "extract": "Extraire avec l’IA",
     "needReview": "{count, plural, one {# plat doit être vérifié} other {# plats doivent être vérifiés}} : les clients ne voient pas les infos allergènes avant confirmation",
     "reading": "Lecture des informations sur les allergènes…",
-    "pastePlaceholder": "Collez vos informations sur les allergènes ici…"
+    "pastePlaceholder": "Collez vos informations sur les allergènes ici…",
+    "kitchenLine": "La cuisine utilise aussi : {list}",
+    "kitchenEdit": "Modifier"
   },
   "deleteItem": {
     "title": "Supprimer {name} ?",
@@ -172,7 +174,9 @@
     "add": "Ajouter l’article",
     "noGroups": "Aucun groupe d’options pour l’instant : créez-en dans Suppléments et ventes additionnelles.",
     "costToMake": "Coût de revient",
-    "costHelp": "Facultatif. Ce que vous coûte une portion en ingrédients et en emballage. Utilisé uniquement dans vos rapports ; les clients ne le voient jamais."
+    "costHelp": "Facultatif. Ce que vous coûte une portion en ingrédients et en emballage. Utilisé uniquement dans vos rapports ; les clients ne le voient jamais.",
+    "recipeOnly": "Uniquement ce qui est dans la recette de ce plat.",
+    "tooMany": "{count} allergènes cochés. Sont-ils vraiment tous dans la recette de ce plat ? Les allergènes utilisés ailleurs dans votre cuisine vont dans « La cuisine utilise aussi », dans l’onglet Carte."
   },
   "summary": "{categories, plural, one {# catégorie} other {# catégories}} · {items, plural, one {# article} other {# articles}}",
   "confirmDelete": {

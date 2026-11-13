@@ -10,6 +10,5 @@
   "stockNotice": "Lamentamos — {detail}. Actualizámos a sua encomenda — reveja-a e confirme.",
   "addItemsPrompt": "Adicione artigos do menu para fazer uma encomenda",
   "allergenNotProvided": "Informação sobre alergénios não indicada — confirme directamente com o food truck.",
-  "allergensUsed": "Alergénios presentes neste menu",
-  "allergenSevere": "Se tiver uma alergia grave, contacte directamente o food truck antes de encomendar."
+  "allergenSevere": "Se tiver uma alergia alimentar, contacte o food truck antes de encomendar."
 }

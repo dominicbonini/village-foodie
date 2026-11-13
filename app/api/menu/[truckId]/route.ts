@@ -25,6 +25,8 @@ import { readEventType } from '@/lib/event-types/read'
 import { readEventPricing } from '@/lib/event-pricing/read'
 import { moneyFormatForTruck } from '@/lib/money-server'
 import { countrySettingsForTruck } from '@/lib/country-settings'   // allergen-card-country
+import { kitchenAllergens, type KitchenDish, type KitchenOption } from '@/lib/allergen-kitchen'   // allergen-kitchen-1
+import type { AllergenSet } from '@/lib/allergens'
 // Phase 3 screens: what the order page needs to SHOW tax, a tip and a service fee (never to decide them).
 import { loadChargeRules } from '@/lib/order-charge-rules'
 import { checkoutRulesFrom } from '@/lib/order-charges'
@@ -99,6 +101,12 @@ export async function GET(
     try { cardOnlyAllowed = (await countrySettingsForTruck(truck)).allergenCardOnlyAllowed !== false } catch { cardOnlyAllowed = true }
   }
   const allergenDisplayMode = ((truck.allergen_display_mode ?? null) === 'card' && !cardOnlyAllowed ? 'per_dish' : (truck.allergen_display_mode ?? null)) as 'per_dish' | 'card' | 'both' | null
+  // allergen-kitchen-1 (13 November 2026): the country's allergen list, for "Allergens handled in this kitchen" (per-dish mode only —
+  // card mode shows the card, so it is never read there). A country that cannot be read uses the UK list, as every allergen reader does.
+  let kitchenSet: AllergenSet = 'uk14'
+  if (allergenDisplayMode !== 'card') {
+    try { kitchenSet = (await countrySettingsForTruck(truck)).allergenSet } catch { kitchenSet = 'uk14' }
+  }
 
   // Fetch all menu data from Supabase
   const [
@@ -901,6 +909,13 @@ export async function GET(
       // Allergen display mode (Slice 4): 'per_dish' | 'card' | 'both' | null. null = unset/legacy →
       // the customer page treats it as 'both' (show whatever exists) for backward compatibility.
       allergen_display_mode: allergenDisplayMode,   // allergen-card-country: 'card' read as 'per_dish' where the country does not allow it
+      // allergen-kitchen-1: "Allergens handled in this kitchen" — the truck's CONFIRMED active dishes ∪ its available extras ∪ the
+      // allergens it added (lib/allergen-kitchen.ts, the one definition). Labels of the country's list only, nothing else. Per-dish
+      // mode only (card mode: [] — the card is the display there).
+      kitchen_allergens: allergenDisplayMode === 'card' ? [] : kitchenAllergens({
+        dishes: (items || []) as KitchenDish[], options: (modifierOptions || []) as KitchenOption[],
+        extra: (truck as { allergen_kitchen_extra?: unknown }).allergen_kitchen_extra as unknown[] | null, allergenSet: kitchenSet,
+      }).all,
       preorder_open_rule: ((truck as any).preorder_open_rule ?? null) as string | null,   // V8.3 calendar "opens [date]"
       ordering_available: orderingAvailable,
       /** 🔴 Whether to OFFER a card option. `false` for every truck whose operator has not completed

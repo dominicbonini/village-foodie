@@ -7,8 +7,10 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 // 'card_match' = an allergen ADDED to a dish by the import allergen-card→dish matcher (verified=false,
 // staged for the operator's row-by-row confirm). Distinct from 'import' (menu AI detections) and 'confirm'
 // (the operator's later verification) so the trail reads: card added (unverified) → operator confirmed.
-export type AuditChangeType = 'confirm' | 'edit' | 'card_save' | 'import' | 'card_match'
-export type AuditField = 'allergens' | 'dietary' | 'allergens_verified' | 'card'
+// allergen-kitchen-1 (13 November 2026): 'kitchen_edit' = the truck's added kitchen allergens changed; 'kitchen_confirm' = the owner
+// ticked "the allergens for each dish are correct" (field 'kitchen'; 20261101_allergen_kitchen.sql widens the field CHECK).
+export type AuditChangeType = 'confirm' | 'edit' | 'card_save' | 'import' | 'card_match' | 'kitchen_edit' | 'kitchen_confirm'
+export type AuditField = 'allergens' | 'dietary' | 'allergens_verified' | 'card' | 'kitchen'
 export type Actor = { actor_user_id: string | null; actor_role: string | null; auth_method: 'token' | 'authenticated' }
 export type AllergenAuditRow = Actor & {
   truck_id: string

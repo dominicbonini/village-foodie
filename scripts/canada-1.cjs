@@ -213,7 +213,9 @@ const code = f => read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/
   // ⚠️ RE-PINNED (world-countries-1, 31 October 2026): the list starts uk14, us9, anz, ca (jp, br, codex follow); the admin form checks
   // a set against lib/allergens.ts ALLERGEN_SETS instead of naming each.
   t('the set list is uk14, us9, anz, ca; the ca list is Health Canada\'s priority allergens (13 entries)', JSON.stringify(A.ALLERGEN_SETS.slice(0, 4)) === JSON.stringify(['uk14', 'us9', 'anz', 'ca']) && JSON.stringify(A.allergenVocab('ca')) === JSON.stringify(CA_LIST))
-  const extractSrc = read('lib/menu-extract.ts')
+  // ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026): the menu reader's prompt changed ("may contain" never a dish allergen); the
+  // localiseExampleAllergens pin is taken on the source with exactly that edit undone (scripts/_named-allergen-kitchen-1.cjs).
+  const extractSrc = require('./_named-allergen-kitchen-1.cjs').undoMenuExtractSource(read('lib/menu-extract.ts')) ?? read('lib/menu-extract.ts')
   const surf = set => ({
     allergenVocab: JSON.stringify(A.allergenVocab(set)), genericReplacements: JSON.stringify(A.genericReplacements(set)),
     menuExtractAllergenLines: A.menuExtractAllergenLines(set), menuExtractAllergenExample: A.menuExtractAllergenExample(set),

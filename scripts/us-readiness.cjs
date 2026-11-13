@@ -171,6 +171,11 @@ async function main() {
   // OG / Twitter copies, which are the same string) names the catalogue's plans and the trial's months. Applied to BEFORE
   // exactly, leaf by leaf (a leaf holding anything else is left alone); every other tag must still be byte-identical.
   if (STAGE_B) before.featuresMeta = JSON.parse(JSON.stringify(before.featuresMeta), (k, v) => v === FEATURES_DESC_B[0] ? FEATURES_DESC_B[1] : v)
+  // ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026; scripts/_named-allergen-kitchen-1.cjs undoMenuPrompt): the AI menu reader
+  // never puts a "may contain" note into a dish — one menu-level may_contain list instead. The importer prompt is compared with
+  // exactly that edit taken out (found exactly once); any other change still fails.
+  const AK1 = require('./_named-allergen-kitchen-1.cjs')
+  if (typeof got.menuPrompt === 'string') { const u = AK1.undoMenuPrompt(got.menuPrompt); if (u !== null) got.menuPrompt = u }
   for (const [k, b] of Object.entries(before)) {
     if (k === 'placeholders') continue   // compared in §4 against the copy module (the page reads them from it now)
     const d = diffJson(b, got[k])

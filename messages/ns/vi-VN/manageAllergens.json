@@ -28,9 +28,9 @@
     "ambiguous": "Chưa rõ — khớp với nhiều món; hãy chọn đúng món.",
     "assignTo": "Gán cho món…",
     "dismiss": "Bỏ qua",
-    "blanket": "Bảng ghi rằng <b>{list}</b> có thể có trong <b>tất cả</b> các món. Thêm vào mọi món? (bạn vẫn sẽ xác nhận từng món) <muted>— mặc định tắt</muted>",
     "kitchenNotes": "Ghi chú của bếp (lưu vào thông tin chất gây dị ứng)",
-    "matchSummary": "{n, plural, =0 {{matched} mục đã khớp với món.} one {{matched} mục đã khớp với món. {count} mục cần bạn gán.} other {{matched} mục đã khớp với món. {count} mục cần bạn gán.}}"
+    "matchSummary": "{n, plural, =0 {{matched} mục đã khớp với món.} one {{matched} mục đã khớp với món. {count} mục cần bạn gán.} other {{matched} mục đã khớp với món. {count} mục cần bạn gán.}}",
+    "blanketInfo": "Bảng của bạn ghi rằng {list} có thể có trong tất cả các món. Chúng tôi sẽ thêm chúng vào các chất gây dị ứng mà bếp của bạn dùng. Bạn có thể kiểm tra ở bước cuối."
   },
   "savedCard": {
     "showLess": "Thu gọn",
@@ -92,7 +92,8 @@
       "choose": "Chọn cách khách xem thông tin chất gây dị ứng",
       "card": "Thêm bảng chất gây dị ứng",
       "cardOptional": "Thêm bảng chất gây dị ứng (không bắt buộc)",
-      "review": "Kiểm tra & xác nhận từng món"
+      "review": "Kiểm tra & xác nhận từng món",
+      "kitchen": "Bước cuối: bếp của bạn"
     },
     "heading": {
       "import": "Chất gây dị ứng",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Bỏ qua chỉ là để sau — các món bạn chưa xác nhận vẫn bị ẩn với khách cho đến khi chất gây dị ứng được xác nhận.",
       "importIncomplete": "Hãy xác nhận mọi món để tiếp tục — hoặc chọn “Tạm bỏ qua thiết lập chất gây dị ứng”."
-    }
+    },
+    "recipeOnly": "Chỉ những gì có trong công thức của món này.",
+    "tooMany": "Đã đánh dấu {count} chất gây dị ứng. Tất cả có thật sự nằm trong công thức của món này không? Chất gây dị ứng dùng trong món khác không đánh dấu ở đây. Bạn có thể thêm chúng ở bước cuối."
+  },
+  "kitchen": {
+    "title": "Bếp của bạn dùng những chất gây dị ứng nào?",
+    "body": "Chúng tôi đã đánh dấu những chất có trong các món của bạn. Hãy đánh dấu thêm những chất khác bạn dùng trên xe, ví dụ cho món đặc biệt trong ngày.",
+    "legendDishes": "trong các món của bạn",
+    "legendAdded": "do bạn thêm",
+    "customersSee": "Khách hàng sẽ thấy:",
+    "confirm": "Tôi xác nhận chất gây dị ứng của từng món là chính xác và tôi sẽ luôn cập nhật."
   }
 }

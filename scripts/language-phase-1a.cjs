@@ -104,7 +104,7 @@ function opFixtures(cc) {
   const menu = { categories: [{ id: 'c1', name: 'Pizzas', allowNotes: true }, { id: 'c2', name: 'Sides' }, { id: 'c3', name: 'Drinks' }], items, upsell_rules: [], bundles: [bundle], codes: [{ code: 'TENOFF', type: 'fixed', value: 2.5, active: true }],
     }
   const truck = (over = {}) => ({ id: 'test-truck', name: 'Pizza Kitchen', logo: null, mode: 'village', venue_name: null, time_selection_enabled: true, paused: false, plan: 'pro',
-    ordering_available: true, card_payments_ready: true, allergen_info_text: 'Contains: Gluten, Dairy.', allergen_display_mode: 'both', allergensVerified: true, money: c.fmt, phone: c.phone, time: c.time, ...(cc === 'US' ? { checkout: US_CHECKOUT } : {}), ...over })
+    ordering_available: true, card_payments_ready: true, allergen_info_text: 'Contains: Gluten, Dairy.', allergen_display_mode: 'both', allergensVerified: true, kitchen_allergens: ['Gluten', 'Dairy'] /* allergen-kitchen-1: what /api/menu now sends — the fixture's dishes' (Margherita: Gluten, Dairy; no extra has any) through lib/allergen-kitchen.ts */, money: c.fmt, phone: c.phone, time: c.time, ...(cc === 'US' ? { checkout: US_CHECKOUT } : {}), ...over })
   const event = (over = {}) => ({ id: 'ev-1', date: '09/10/2026', date_iso: '2026-10-09', date_friendly: 'Friday 9 October', start_time: '17:00', end_time: '21:00', venue_name: 'The Green', village: 'Harnessville', notes: 'By the pond', status: 'open', collection_interval_mins: 10, ...over })
   const it = n => items.find(i => i.name === n)
   const basket = [

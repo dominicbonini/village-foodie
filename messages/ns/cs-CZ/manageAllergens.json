@@ -28,9 +28,9 @@
     "ambiguous": "Nejednoznačné — odpovídá více jídlům; vyberte to správné.",
     "assignTo": "Přiřadit k jídlu…",
     "dismiss": "Zamítnout",
-    "blanket": "Podle karty se <b>{list}</b> mohou vyskytovat ve <b>všech</b> jídlech. Přidat ke každému jídlu? (každé stejně potvrdíte) <muted>— ve výchozím stavu vypnuto</muted>",
     "kitchenNotes": "Poznámky z kuchyně (uloží se k informacím o alergenech)",
-    "matchSummary": "{n, plural, =0 {Přiřazeno k jídlu: {matched}.} one {Přiřazeno k jídlu: {matched}. {count} položka čeká na vaše přiřazení.} few {Přiřazeno k jídlu: {matched}. {count} položky čekají na vaše přiřazení.} other {Přiřazeno k jídlu: {matched}. {count} položek čeká na vaše přiřazení.}}"
+    "matchSummary": "{n, plural, =0 {Přiřazeno k jídlu: {matched}.} one {Přiřazeno k jídlu: {matched}. {count} položka čeká na vaše přiřazení.} few {Přiřazeno k jídlu: {matched}. {count} položky čekají na vaše přiřazení.} other {Přiřazeno k jídlu: {matched}. {count} položek čeká na vaše přiřazení.}}",
+    "blanketInfo": "Podle vaší karty alergenů se {list} mohou vyskytovat ve všech jídlech. Přidáme je k alergenům používaným ve vaší kuchyni. Zkontrolovat je můžete v posledním kroku."
   },
   "savedCard": {
     "showLess": "Zobrazit méně",
@@ -92,7 +92,8 @@
       "choose": "Zvolte, jak zákazníci uvidí informace o alergenech",
       "card": "Přidejte kartu alergenů",
       "cardOptional": "Přidejte kartu alergenů (nepovinné)",
-      "review": "Zkontrolujte a potvrďte každé jídlo"
+      "review": "Zkontrolujte a potvrďte každé jídlo",
+      "kitchen": "Poslední krok: vaše kuchyně"
     },
     "heading": {
       "import": "Alergeny",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Přeskočením to jen odložíte — nepotvrzená jídla zůstanou před zákazníky skrytá, dokud nebudou jejich alergeny potvrzené.",
       "importIncomplete": "Pro pokračování potvrďte každé jídlo — nebo zvolte „Nastavení alergenů zatím přeskočit“."
-    }
+    },
+    "recipeOnly": "Jen to, co je v receptu tohoto jídla.",
+    "tooMany": "Zaškrtnuté alergeny: {count}. Jsou opravdu všechny v receptu tohoto jídla? Alergeny použité v jiných jídlech sem nepatří. Můžete je přidat v posledním kroku."
+  },
+  "kitchen": {
+    "title": "Které alergeny se ve vaší kuchyni používají?",
+    "body": "Alergeny z vašich jídel jsme už zaškrtli. Zaškrtněte další, které ve food trucku používáte, například pro denní nabídku.",
+    "legendDishes": "ve vašich jídlech",
+    "legendAdded": "přidáno vámi",
+    "customersSee": "Zákazníci uvidí:",
+    "confirm": "Potvrzuji, že alergeny u každého jídla jsou správné, a budu je udržovat aktuální."
   }
 }

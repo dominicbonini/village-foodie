@@ -3,8 +3,7 @@
     "intro": "Os clientes veem isto <b>exactamente como o escrever</b> — nada é reescrito. Escreva ou cole abaixo, ou carregue uma fotografia/PDF e nós extraímos o texto para o rever."
   },
   "cardUpload": {
-    "perDish": "{detected, select, yes {Carregue-a e usamo-la para preencher os alergénios dos seus pratos. Os alergénios detectados aparecem na página seguinte, onde confirma cada prato.} other {Carregue-a e usamo-la para preencher os alergénios dos seus pratos.}}",
-    "blanket": "A ficha indica que <b>{list}</b> pode estar presente em <b>todos</b> os pratos. Adicionar a todos os pratos? (continua a confirmar cada um) <muted>— desactivado por predefinição</muted>"
+    "perDish": "{detected, select, yes {Carregue-a e usamo-la para preencher os alergénios dos seus pratos. Os alergénios detectados aparecem na página seguinte, onde confirma cada prato.} other {Carregue-a e usamo-la para preencher os alergénios dos seus pratos.}}"
   },
   "wizard": {
     "genericWarn": {
@@ -21,5 +20,8 @@
     "hint": {
       "skipDefers": "Saltar adia — os pratos que não confirmou ficam ocultos para os clientes até os respectivos alergénios serem confirmados."
     }
+  },
+  "kitchen": {
+    "confirm": "Confirmo que os alergénios de cada prato estão correctos e vou mantê-los actualizados."
   }
 }

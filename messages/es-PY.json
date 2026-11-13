@@ -41,8 +41,7 @@
     "chooseAnOption": "Elegí una opción",
     "chooseRequired": "Elegí las opciones obligatorias",
     "allergenNotProvided": "No se ha facilitado información sobre alérgenos: confirmalo directamente con el food truck.",
-    "allergensSeeEach": "Consultá cada plato para ver sus alérgenos.",
-    "allergenSevere": "Si tenés una alergia grave, ponete en contacto directamente con el food truck antes de pedir.",
+    "allergenSevere": "Si tenés una alergia alimentaria, ponete en contacto con el food truck antes de pedir.",
     "collectionTime": "Horario de retiro: {time}",
     "preferredCollection": "Retiro preferido: {time}",
     "willConfirmTime": "{truck} confirmará tu horario de retiro cuando acepte tu pedido.",
@@ -812,7 +811,7 @@
       "pastePlaceholder": "Pegá aquí el texto de tu tabla de alérgenos…",
       "unmatchedHeading": "No se han podido asociar automáticamente: asignalos o descartalos",
       "ambiguous": "Ambiguo: coincide con varios platos; elegí el correcto.",
-      "blanket": "La tabla indica que <b>{list}</b> puede estar presente en <b>todos</b> los platos. ¿Agregarlo a todos? (de todos modos confirmarás cada uno) <muted>— desactivado de forma predeterminada</muted>"
+      "blanketInfo": "Tu tabla de alérgenos indica que puede haber {list} en todos los platos. Los vamos a agregar a los alérgenos que se usan en tu cocina. Podés revisarlos en el último paso."
     },
     "savedCard": {
       "fileOnly": "Hay un archivo de tabla guardado para este food truck, pero no se guardó ningún texto de resumen. Abrí el original para leerlo."
@@ -845,7 +844,12 @@
       },
       "hint": {
         "importIncomplete": "Confirmá todos los platos para continuar, o elegí “Saltar la configuración de alérgenos por ahora”."
-      }
+      },
+      "tooMany": "{count} alérgenos marcados. ¿De verdad están todos en la receta de este plato? Los alérgenos de otros platos no van acá. Podés agregarlos en el último paso."
+    },
+    "kitchen": {
+      "body": "Ya marcamos los que están en tus platos. Marcá cualquier otro que uses en el food truck, por ejemplo, para platos del día.",
+      "legendAdded": "agregado por vos"
     }
   },
   "manageUpsells": {

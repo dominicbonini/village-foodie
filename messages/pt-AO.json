@@ -11,8 +11,7 @@
     "stockNotice": "Lamentamos — {detail}. Actualizámos a sua encomenda — reveja-a e confirme.",
     "addItemsPrompt": "Adicione artigos do menu para fazer uma encomenda",
     "allergenNotProvided": "Informação sobre alergénios não indicada — confirme directamente com o food truck.",
-    "allergensUsed": "Alergénios presentes neste menu",
-    "allergenSevere": "Se tiver uma alergia grave, contacte directamente o food truck antes de encomendar."
+    "allergenSevere": "Se tiver uma alergia alimentar, contacte o food truck antes de encomendar."
   },
   "dashboard": {
     "toast": {
@@ -392,8 +391,7 @@
       "intro": "Os clientes veem isto <b>exactamente como o escrever</b> — nada é reescrito. Escreva ou cole abaixo, ou carregue uma fotografia/PDF e nós extraímos o texto para o rever."
     },
     "cardUpload": {
-      "perDish": "{detected, select, yes {Carregue-a e usamo-la para preencher os alergénios dos seus pratos. Os alergénios detectados aparecem na página seguinte, onde confirma cada prato.} other {Carregue-a e usamo-la para preencher os alergénios dos seus pratos.}}",
-      "blanket": "A ficha indica que <b>{list}</b> pode estar presente em <b>todos</b> os pratos. Adicionar a todos os pratos? (continua a confirmar cada um) <muted>— desactivado por predefinição</muted>"
+      "perDish": "{detected, select, yes {Carregue-a e usamo-la para preencher os alergénios dos seus pratos. Os alergénios detectados aparecem na página seguinte, onde confirma cada prato.} other {Carregue-a e usamo-la para preencher os alergénios dos seus pratos.}}"
     },
     "wizard": {
       "genericWarn": {
@@ -410,6 +408,9 @@
       "hint": {
         "skipDefers": "Saltar adia — os pratos que não confirmou ficam ocultos para os clientes até os respectivos alergénios serem confirmados."
       }
+    },
+    "kitchen": {
+      "confirm": "Confirmo que os alergénios de cada prato estão correctos e vou mantê-los actualizados."
     }
   },
   "manageUpsells": {
@@ -478,7 +479,8 @@
     "item": {
       "selectCategory": "Seleccione uma categoria…",
       "allergenGateBody": "Abra a caixa «Configurar / rever alergénios» no separador Menu — o assistente guia a confirmação de cada prato.",
-      "selectAll": "Seleccione todos os que se aplicam"
+      "selectAll": "Seleccione todos os que se aplicam",
+      "tooMany": "{count} alergénios marcados. Estão mesmo todos na receita deste prato? Os alergénios usados noutros pontos da sua cozinha vão em «A cozinha também usa», no separador Menu."
     },
     "confirmDelete": {
       "withItems": "Eliminar «{name}»? Isto também elimina {count, plural, one {# artigo} other {# artigos}} desta categoria. Esta acção não pode ser anulada.",

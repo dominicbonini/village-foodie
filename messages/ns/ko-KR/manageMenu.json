@@ -108,7 +108,9 @@
     "extract": "AI로 추출",
     "needReview": "검토가 필요한 메뉴: {count, plural, one {#개} other {#개}} — 확인하기 전까지 손님은 알레르기 유발물질 정보를 볼 수 없습니다",
     "reading": "알레르기 유발물질 정보를 읽는 중…",
-    "pastePlaceholder": "알레르기 유발물질 정보를 여기에 붙여 넣으세요…"
+    "pastePlaceholder": "알레르기 유발물질 정보를 여기에 붙여 넣으세요…",
+    "kitchenLine": "주방에서 함께 취급: {list}",
+    "kitchenEdit": "수정"
   },
   "deleteItem": {
     "title": "메뉴를 삭제할까요? ({name})",
@@ -172,7 +174,9 @@
     "add": "메뉴 추가",
     "noGroups": "아직 옵션 그룹이 없습니다. 추가 옵션·추가 판매에서 만드세요.",
     "costToMake": "원가",
-    "costHelp": "선택 사항입니다. 1인분에 드는 재료비와 포장비를 입력하세요. 내 보고서에만 쓰이며 손님에게는 절대 보이지 않습니다."
+    "costHelp": "선택 사항입니다. 1인분에 드는 재료비와 포장비를 입력하세요. 내 보고서에만 쓰이며 손님에게는 절대 보이지 않습니다.",
+    "recipeOnly": "이 메뉴의 레시피에 들어가는 것만 선택하세요.",
+    "tooMany": "알레르기 유발물질 {count}개가 체크되어 있어요. 정말 모두 이 메뉴의 레시피에 들어가나요? 주방의 다른 곳에서 쓰이는 알레르기 유발물질은 메뉴 탭의 “주방에서 함께 취급”에 넣어 주세요."
   },
   "summary": "카테고리 {categories, plural, one {#개} other {#개}} · 메뉴 {items, plural, one {#개} other {#개}}",
   "confirmDelete": {

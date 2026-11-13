@@ -148,9 +148,7 @@
   "allergenTitle": "Informații despre alergeni",
   "allergenNotProvided": "Informațiile despre alergeni nu au fost furnizate — confirmați direct cu food truck-ul.",
   "allergenCard": "📎 Vedeți fișa de alergeni (PDF/imagine)",
-  "allergensUsed": "Alergeni folosiți în acest meniu",
-  "allergensSeeEach": "Vedeți fiecare preparat pentru alergenii săi.",
-  "allergenSevere": "Dacă aveți o alergie severă, contactați direct comerciantul înainte de a comanda.",
+  "allergenSevere": "Dacă aveți o alergie alimentară, contactați comerciantul înainte de a comanda.",
   "orderConfirmed": "Comandă confirmată!",
   "orderReceived": "Comandă primită!",
   "thanksReady": "Mulțumim! Am primit comanda dumneavoastră și va fi gata în curând.",
@@ -171,5 +169,7 @@
   "backTo": "Înapoi la {truck}",
   "notePlaceholderCompact": "Aveți cerințe? ex.: fără ceapă",
   "noteHeading": "Aveți cerințe? <muted>— opțional</muted>",
-  "notePlaceholder": "ex.: fără ceapă, extra crocant"
+  "notePlaceholder": "ex.: fără ceapă, extra crocant",
+  "kitchenHeading": "Alergeni folosiți în această bucătărie",
+  "kitchenNote": "Fiecare preparat afișează alergenii din rețeta sa. Nu putem garanta că vreun preparat nu conține urme."
 }

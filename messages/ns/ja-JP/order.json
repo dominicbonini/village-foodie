@@ -148,9 +148,7 @@
   "allergenTitle": "アレルギー情報",
   "allergenNotProvided": "アレルギー情報が提供されていません。直接キッチンカーにご確認ください。",
   "allergenCard": "📎 アレルギー表を見る（PDF／画像）",
-  "allergensUsed": "このメニューで使用しているアレルゲン",
-  "allergensSeeEach": "各商品のアレルゲンはそれぞれの商品をご確認ください。",
-  "allergenSevere": "重いアレルギーをお持ちの方は、ご注文前に直接お店にお問い合わせください。",
+  "allergenSevere": "食物アレルギーをお持ちの方は、ご注文前にお店にお問い合わせください。",
   "orderConfirmed": "ご注文が確定しました！",
   "orderReceived": "ご注文を受け付けました！",
   "thanksReady": "ありがとうございます！ご注文を受け付けました。まもなくご用意できます。",
@@ -171,5 +169,7 @@
   "backTo": "{truck}に戻る",
   "notePlaceholderCompact": "ご要望はありますか？例：玉ねぎ抜き",
   "noteHeading": "ご要望はありますか？<muted>（任意）</muted>",
-  "notePlaceholder": "例：玉ねぎ抜き、カリカリに"
+  "notePlaceholder": "例：玉ねぎ抜き、カリカリに",
+  "kitchenHeading": "このキッチンで扱うアレルゲン",
+  "kitchenNote": "各商品には、そのレシピに含まれるアレルゲンを表示しています。微量の混入がないことは保証できません。"
 }

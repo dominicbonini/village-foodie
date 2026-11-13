@@ -668,6 +668,14 @@ const NAMED = [
   // ── ⚠️ RE-PINNED (order-page-1, 13 November 2026; scripts/_named-order-page-1.cjs) ────────────────────────────────────────
   //    The order page's three-line event box, formules as the menu's first category, and the full-width menu on phones. PRECISE.
   ...require('./_named-order-page-1.cjs').entries({ mapStrings }),
+  // ── ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026; scripts/_named-allergen-kitchen-1.cjs orderPageView): the customer order page —
+  //    the Allergen info pop-up lists "Allergens handled in this kitchen" (the truck's kitchen list) with the new note, the severe-allergy
+  //    line's new sentence, and an extra's name wrapped for its allergens line. PRECISE.
+  { id: 'allergen-kitchen-1-order-page', country: 'both', agent: 'allergen-kitchen-1 (13 Nov 2026)',
+    what: 'The customer order page: the pop-up\'s kitchen list and note, the severe line, the extras\' allergens line (allergen-kitchen-1). PRECISE.',
+    views: id => /^1a\/orderPage\/(GB|US)\|/.test(id),
+    expect: (b, id) => { const AK1 = require('./_named-allergen-kitchen-1.cjs'); const cc = /\/US\|/.test(id) ? 'US' : 'GB'
+      return mapStrings(b, x => (typeof x === 'string' && x.includes('<') ? AK1.orderPageView(x, cc) : x)) } },
 ]
 
 // ── ⚠️ RE-PINNED (ireland-1, 20 October 2026): helpers for the ie1-demo-* entries ─────────────────────────────────────────

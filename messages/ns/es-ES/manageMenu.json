@@ -108,7 +108,9 @@
     "extract": "Extraer con IA",
     "needReview": "{count, plural, one {# plato necesita} other {# platos necesitan}} revisión: los clientes no ven la información de alérgenos hasta que se confirma",
     "reading": "Leyendo la información de alérgenos…",
-    "pastePlaceholder": "Pega aquí tu información de alérgenos…"
+    "pastePlaceholder": "Pega aquí tu información de alérgenos…",
+    "kitchenLine": "La cocina también usa: {list}",
+    "kitchenEdit": "Editar"
   },
   "deleteItem": {
     "title": "¿Eliminar {name}?",
@@ -172,7 +174,9 @@
     "add": "Añadir producto",
     "noGroups": "Aún no hay grupos de opciones: créalos en Extras y ventas sugeridas.",
     "costToMake": "Coste de elaboración",
-    "costHelp": "Opcional. Lo que te cuesta una ración en ingredientes y envases. Solo se usa en tus informes; los clientes nunca lo ven."
+    "costHelp": "Opcional. Lo que te cuesta una ración en ingredientes y envases. Solo se usa en tus informes; los clientes nunca lo ven.",
+    "recipeOnly": "Solo lo que lleva la receta de este plato.",
+    "tooMany": "{count} alérgenos marcados. ¿De verdad están todos en la receta de este plato? Los alérgenos que se usan en otras partes de tu cocina van en “La cocina también usa”, en la pestaña Carta."
   },
   "summary": "{categories, plural, one {# categoría} other {# categorías}} · {items, plural, one {# producto} other {# productos}}",
   "confirmDelete": {

@@ -148,9 +148,7 @@
   "allergenTitle": "Informasi alergen",
   "allergenNotProvided": "Info alergen belum tersedia — tanyakan langsung ke truk.",
   "allergenCard": "📎 Lihat kartu alergen (PDF/gambar)",
-  "allergensUsed": "Alergen yang dipakai di menu ini",
-  "allergensSeeEach": "Lihat setiap hidangan untuk alergen spesifiknya.",
-  "allergenSevere": "Jika punya alergi berat, hubungi penjual langsung sebelum memesan.",
+  "allergenSevere": "Jika punya alergi makanan, hubungi penjual sebelum memesan.",
   "orderConfirmed": "Pesanan dikonfirmasi!",
   "orderReceived": "Pesanan diterima!",
   "thanksReady": "Terima kasih! Pesanan sudah kami terima dan akan segera siap.",
@@ -171,5 +169,7 @@
   "backTo": "Kembali ke {truck}",
   "notePlaceholderCompact": "Ada permintaan? mis. tanpa bawang",
   "noteHeading": "Ada permintaan? <muted>— opsional</muted>",
-  "notePlaceholder": "mis. tanpa bawang, ekstra garing"
+  "notePlaceholder": "mis. tanpa bawang, ekstra garing",
+  "kitchenHeading": "Alergen yang dipakai di dapur ini",
+  "kitchenNote": "Setiap hidangan menampilkan alergen dalam resepnya. Kami tidak dapat menjamin hidangan mana pun bebas dari jejak alergen."
 }

@@ -149,9 +149,7 @@
     "allergenTitle": "Informācija par alergēniem",
     "allergenNotProvided": "Informācija par alergēniem nav sniegta — lūdzu, precizējiet to tieši pie food truck komandas.",
     "allergenCard": "📎 Skatīt alergēnu karti (PDF/attēls)",
-    "allergensUsed": "Šajā ēdienkartē izmantotie alergēni",
-    "allergensSeeEach": "Konkrētos alergēnus skatiet pie katra ēdiena.",
-    "allergenSevere": "Ja jums ir smaga alerģija, lūdzu, pirms pasūtīšanas sazinieties tieši ar tirgotāju.",
+    "allergenSevere": "Ja jums ir pārtikas alerģija, lūdzu, pirms pasūtīšanas sazinieties ar tirgotāju.",
     "orderConfirmed": "Pasūtījums apstiprināts!",
     "orderReceived": "Pasūtījums saņemts!",
     "thanksReady": "Paldies! Mēs esam saņēmuši jūsu pasūtījumu, un tas drīz būs gatavs.",
@@ -172,7 +170,9 @@
     "backTo": "Atpakaļ uz lapu: {truck}",
     "notePlaceholderCompact": "Kādas vēlmes? piem., bez sīpoliem",
     "noteHeading": "Kādas vēlmes? <muted>— neobligāti</muted>",
-    "notePlaceholder": "piem., bez sīpoliem, īpaši kraukšķīgs"
+    "notePlaceholder": "piem., bez sīpoliem, īpaši kraukšķīgs",
+    "kitchenHeading": "Šajā virtuvē izmantotie alergēni",
+    "kitchenNote": "Pie katra ēdiena ir norādīti tā receptes alergēni. Mēs nevaram garantēt, ka kādā ēdienā nav alergēnu pēdu."
   },
   "plansPdf": {
     "title": "Plāni un funkcijas",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Neskaidrs — atbilst vairākiem ēdieniem; izvēlieties pareizo.",
       "assignTo": "Piešķirt ēdienam…",
       "dismiss": "Noraidīt",
-      "blanket": "Kartē norādīts, ka <b>{list}</b> var būt <b>visos</b> ēdienos. Pievienot katram ēdienam? (katru jūs tik un tā apstiprināsiet) <muted>— pēc noklusējuma izslēgts</muted>",
       "kitchenNotes": "Virtuves piezīmes (saglabātas jūsu alergēnu informācijā)",
-      "matchSummary": "{n, plural, =0 {Sasaistīti ar ēdieniem: {matched}.} zero {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.} one {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.} other {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.}}"
+      "matchSummary": "{n, plural, =0 {Sasaistīti ar ēdieniem: {matched}.} zero {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.} one {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.} other {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.}}",
+      "blanketInfo": "Jūsu kartē norādīts, ka {list} var būt visos ēdienos. Mēs tos pievienosim jūsu virtuvē izmantotajiem alergēniem. Tos varēsiet pārbaudīt pēdējā solī."
     },
     "savedCard": {
       "showLess": "Rādīt mazāk",
@@ -2468,7 +2468,8 @@
         "choose": "Izvēlieties, kā klienti redz alergēnu informāciju",
         "card": "Pievienojiet alergēnu karti",
         "cardOptional": "Pievienojiet alergēnu karti (neobligāti)",
-        "review": "Pārbaudiet un apstipriniet katru ēdienu"
+        "review": "Pārbaudiet un apstipriniet katru ēdienu",
+        "kitchen": "Pēdējais solis: jūsu virtuve"
       },
       "heading": {
         "import": "Alergēni",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Izlaišana tikai atliek — neapstiprinātie ēdieni paliek paslēpti klientiem, līdz to alergēni tiks apstiprināti.",
         "importIncomplete": "Lai turpinātu, apstipriniet katru ēdienu — vai izvēlieties “Pagaidām izlaist alergēnu iestatīšanu”."
-      }
+      },
+      "recipeOnly": "Tikai tas, kas ir šī ēdiena receptē.",
+      "tooMany": "Atzīmētie alergēni: {count}. Vai tiešām tie visi ir šī ēdiena receptē? Citos ēdienos izmantotie alergēni šeit nav jānorāda. Tos varēsiet pievienot pēdējā solī."
+    },
+    "kitchen": {
+      "title": "Kurus alergēnus izmanto jūsu virtuvē?",
+      "body": "Alergēnus no jūsu ēdieniem jau esam atzīmējuši. Atzīmējiet arī citus, ko izmantojat savā food truck, piemēram, dienas piedāvājumam.",
+      "legendDishes": "jūsu ēdienos",
+      "legendAdded": "pievienojāt jūs",
+      "customersSee": "Klienti redzēs:",
+      "confirm": "Apstiprinu, ka katra ēdiena alergēni ir pareizi, un uzturēšu tos aktuālus."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Nolasīt ar MI",
       "needReview": "{count, plural, zero {# ēdieni jāpārskata} one {# ēdiens jāpārskata} other {# ēdieni jāpārskata}} — klienti neredz alergēnu informāciju, kamēr tā nav apstiprināta",
       "reading": "Nolasa alergēnu informāciju…",
-      "pastePlaceholder": "Ielīmējiet alergēnu informāciju šeit…"
+      "pastePlaceholder": "Ielīmējiet alergēnu informāciju šeit…",
+      "kitchenLine": "Virtuvē izmanto arī: {list}",
+      "kitchenEdit": "Rediģēt"
     },
     "deleteItem": {
       "title": "Noņemt {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Pievienot pozīciju",
       "noGroups": "Vēl nav iespēju grupu — izveidojiet tās sadaļā “Piedevas un papildpiedāvājumi”.",
       "costToMake": "Pagatavošanas izmaksas",
-      "costHelp": "Neobligāti. Cik jums izmaksā viena porcija — sastāvdaļas un iepakojums. Tiek izmantots tikai jūsu atskaitēs; klienti to nekad neredz."
+      "costHelp": "Neobligāti. Cik jums izmaksā viena porcija — sastāvdaļas un iepakojums. Tiek izmantots tikai jūsu atskaitēs; klienti to nekad neredz.",
+      "recipeOnly": "Tikai tas, kas ir šī ēdiena receptē.",
+      "tooMany": "Atzīmētie alergēni: {count}. Vai tiešām tie visi ir šī ēdiena receptē? Citur jūsu virtuvē izmantotos alergēnus norādiet sadaļā “Virtuvē izmanto arī” cilnē “Ēdienkarte”."
     },
     "summary": "{categories, plural, zero {# kategorijas} one {# kategorija} other {# kategorijas}} · {items, plural, zero {# pozīcijas} one {# pozīcija} other {# pozīcijas}}",
     "confirmDelete": {

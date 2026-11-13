@@ -24,7 +24,8 @@
   "item": {
     "selectCategory": "Seleccione uma categoria…",
     "allergenGateBody": "Abra a caixa «Configurar / rever alergénios» no separador Menu — o assistente guia a confirmação de cada prato.",
-    "selectAll": "Seleccione todos os que se aplicam"
+    "selectAll": "Seleccione todos os que se aplicam",
+    "tooMany": "{count} alergénios marcados. Estão mesmo todos na receita deste prato? Os alergénios usados noutros pontos da sua cozinha vão em «A cozinha também usa», no separador Menu."
   },
   "confirmDelete": {
     "withItems": "Eliminar «{name}»? Isto também elimina {count, plural, one {# artigo} other {# artigos}} desta categoria. Esta acção não pode ser anulada.",

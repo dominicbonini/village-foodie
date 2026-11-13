@@ -108,7 +108,9 @@
     "extract": "Izlušči z UI",
     "needReview": "{count, plural, one {# jed potrebuje} two {# jedi potrebujeta} few {# jedi potrebujejo} other {# jedi potrebuje}} pregled — stranke podatkov o alergenih ne vidijo, dokler niso potrjeni",
     "reading": "Branje podatkov o alergenih …",
-    "pastePlaceholder": "Sem prilepite podatke o alergenih …"
+    "pastePlaceholder": "Sem prilepite podatke o alergenih …",
+    "kitchenLine": "Kuhinja uporablja tudi: {list}",
+    "kitchenEdit": "Uredi"
   },
   "deleteItem": {
     "title": "Želite odstraniti artikel {name}?",
@@ -172,7 +174,9 @@
     "add": "Dodaj artikel",
     "noGroups": "Še ni skupin možnosti — ustvarite jih v zavihku Dodatki in dodatna prodaja.",
     "costToMake": "Strošek priprave",
-    "costHelp": "Neobvezno. Koliko vas ena porcija stane v sestavinah in embalaži. Uporablja se samo v vaših poročilih; stranke tega nikoli ne vidijo."
+    "costHelp": "Neobvezno. Koliko vas ena porcija stane v sestavinah in embalaži. Uporablja se samo v vaših poročilih; stranke tega nikoli ne vidijo.",
+    "recipeOnly": "Samo to, kar je v receptu te jedi.",
+    "tooMany": "Označeni alergeni: {count}. So res vsi v receptu te jedi? Alergeni, ki se uporabljajo drugje v vaši kuhinji, spadajo pod „Kuhinja uporablja tudi“ v zavihku Jedilnik."
   },
   "summary": "{categories, plural, one {# kategorija} two {# kategoriji} few {# kategorije} other {# kategorij}} · {items, plural, one {# artikel} two {# artikla} few {# artikli} other {# artiklov}}",
   "confirmDelete": {

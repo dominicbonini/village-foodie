@@ -116,6 +116,7 @@ import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
 import { ImageDropSlot } from '@/components/manage/ImageDropSlot'
 import { clockOf, formatTime, formatSlot, getLocalDateInTz, addDaysYmd, instantOfLocal, localDateOfInstant, clockOfInstantInTz, formatYmd, formatInstant, formatInstantClock, formatNumericDate, formatNumericDayMonth, formatShortOrdinalDate, formatYmdShortMonth, timeSettingsOr, type TimeSettings } from '@/lib/time-utils'
 import { matchCardEntries, mergeAllergensUnion, cardEntryKey, type CardEntry, type DishRef, type CardMatchResult } from '@/lib/allergen-card-match'
+import { kitchenAllergens, kitchenNames, onlyListed, type KitchenDish, type KitchenOption } from '@/lib/allergen-kitchen'   // allergen-kitchen-1
 import { isExcluded } from '@/lib/schedule-extract'
 import { detectEventConflicts } from '@/lib/event-conflicts'
 // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT (end < start) — the one rule, lib/event-window.ts. Every "is it over?" below reads
@@ -201,6 +202,8 @@ import '@/lib/i18n/catalog/manageExtras'
 import '@/lib/i18n/catalog/manageDeals'
 // Language Phase 1d (Menu B): the menu editor (MenuTab) and its import wizard.
 import '@/lib/i18n/catalog/manageMenu'
+// allergen-kitchen-1: the wizard's last page quotes the customer pop-up's own words (order.kitchenHeading / kitchenNote).
+import '@/lib/i18n/catalog/order'
 import '@/lib/i18n/catalog/manageMenuImport'
 // The setup wizard's schedule step shows the Schedule tab's verify messages, by code (lib/copy/scheduleVerify.ts).
 import { verifyCode } from '@/lib/copy/scheduleVerify'
@@ -234,7 +237,7 @@ import { decimalForInput } from '@/lib/decimal-input'
 import { autoSplitConflicts, ungroupAiVariantsForReview, computeGroupingRows, buildGroupedItems as buildGroupedItemsWith } from '@/lib/menu-import-review'   // demo-claim-2: the review's pure passes, shared with the server carry-over
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: PlanKey; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }
+interface Truck { /** allergen-kitchen-1: the allergens the truck ADDED to its kitchen list, and when the owner confirmed. */ allergen_kitchen_extra?: string[] | null; allergens_confirmed_at?: string | null; custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: PlanKey; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -1937,7 +1940,7 @@ function CardOnlyEditor({ value, onChange, onTranscribe, transcribing, canEdit =
 // an opaque dishId: import passes index-as-string, standalone passes the committed uuid; the parent resolves
 // it. The matcher/merge/safety differences live in the parent's onProcess/onAssign — this is pure UI.
 type CardParse = { entries?: CardEntry[]; blanket?: string[]; cross_contamination?: string[]; formatted_text?: string; summary?: string; contains?: string[]; may_contain?: string[]; dietary_options?: string[]; additional_notes?: string }
-function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, onShowUpload, file, onFile, text, onText, onProcess, onCancelUpload, matchResult, resolvedKeys, dishes, onAssign, onDismiss, blanketOptIn, onBlanketToggle }: {
+function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, onShowUpload, file, onFile, text, onText, onProcess, onCancelUpload, matchResult, resolvedKeys, dishes, onAssign, onDismiss }: {
   perDish: boolean; anyDetected: boolean
   parsed: CardParse | null; processing: boolean
   showUpload: boolean; onShowUpload: () => void
@@ -1947,7 +1950,6 @@ function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, 
   matchResult: CardMatchResult | null; resolvedKeys: Set<string>
   dishes: { id: string; name: string }[]
   onAssign: (entry: CardEntry, dishId: string) => void; onDismiss: (entry: CardEntry) => void
-  blanketOptIn: boolean; onBlanketToggle: (b: boolean) => void
 }) {
   const cardLocale = useAppLocale()   // france-1: the allergen chips in the truck's language (stored as English labels)
   // Yes/No: uploading a card is OPTIONAL. Tri-state, defaults to NEITHER selected (null). The buttons stay
@@ -2039,13 +2041,12 @@ function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, 
               })}
             </div>
           )}
+          {/* allergen-kitchen-1: the card's "may be present in ALL dishes" line goes to the KITCHEN list (the wizard's last page) —
+              NEVER into a dish's allergens. An info line, no checkbox; the names in the truck's language. */}
           {!!parsed.blanket?.length && (
-            <label className="flex items-start gap-2 rounded-xl border border-slate-200 p-3 cursor-pointer">
-              <input type="checkbox" checked={blanketOptIn} onChange={e => onBlanketToggle(e.target.checked)} className="mt-0.5" />
-              <span className="text-xs text-slate-600">
-                {t.rich('cardUpload.blanket', { list: parsed.blanket.join(', '), b: c => <strong>{c}</strong>, muted: c => <span className="text-slate-400">{c}</span> })}
-              </span>
-            </label>
+            <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800" data-blanket-info>
+              {t('cardUpload.blanketInfo', { list: parsed.blanket.map(a => allergenLabel(a, cardLocale)).join(', ') })}
+            </p>
           )}
           {!!parsed.cross_contamination?.length && (
             <div className="rounded-xl border border-slate-200 p-3">
@@ -2141,7 +2142,7 @@ function SavedAllergenCard({ text, url, clampClass, className = '' }: {
   )
 }
 
-function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow, onUndoRow, onEditUnverify, showToast, cardText, cardUrl, cardProcessing, onAddCard, onSetDisplayMode, initialMode = 0, initialReviewView = 'list', onProcessCard, onCardMerge, onBack, importStepper, onSaveCard, onTranscribeCard }: {
+function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow, onUndoRow, onEditUnverify, showToast, cardText, cardUrl, cardProcessing, onAddCard, onSetDisplayMode, initialMode = 0, initialReviewView = 'list', onProcessCard, onCardMerge, onBack, importStepper, onSaveCard, onTranscribeCard, kitchenOptions, kitchenOtherDishes, kitchenExtra, kitchenStaged, onSaveKitchen }: {
   items: Item[]; categories: Category[]
   canEdit: boolean                                                       // owner/admin — VIEW for all, EDIT/confirm only here (server also enforces)
   onClose: () => void
@@ -2152,7 +2153,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   cardText: string; cardUrl: string; cardProcessing: boolean
   onAddCard: () => void                                                  // opens the existing (folded-in) card upload/text modal
   onSetDisplayMode: (mode: 'per_dish' | 'card' | 'both') => Promise<void>
-  initialMode?: 0 | 1 | 2                                                // 0 chooser (default); 1 review directly (import per-item → skips re-choosing); 2 card
+  initialMode?: 0 | 1 | 2 | 4                                            // 0 chooser (default); 1 review directly (import per-item → skips re-choosing); 2 card; 4 the kitchen page (allergen-kitchen-1: the Menu tab's "Kitchen also handles · Edit")
   // I2: which layout the mode-1 review OPENS in. Defaults to 'list', so every caller that does not ask
   // for anything keeps today's behaviour exactly — including the standalone wizard the Menu tab opens.
   // The import wizard passes 'table': it reviews a whole freshly-extracted menu at once, where the matrix
@@ -2167,6 +2168,13 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   importStepper?: React.ReactNode                                                     // IMPORT-only: the wizard's step-progress header (Menu·Extras·Allergens·Kitchen). Presence ⇒ import context (Next-rename + Next-disabled-until-all-confirmed). Standalone omits it.
   onSaveCard?: (text: string) => Promise<void>                                        // CARD-ONLY mode: persist the operator's VERBATIM card text to trucks.allergen_info_text (no extraction)
   onTranscribeCard?: (file: File) => Promise<string | null>                          // CARD-ONLY mode: image → faithful PROSE transcription (process-allergens?mode=transcribe); fills the editor
+  // ── allergen-kitchen-1 (13 November 2026): THE LAST PAGE, "your kitchen" (mode 4). Present ⇒ the review's Done (standalone) /
+  // Next (import) opens it instead of finishing. lib/allergen-kitchen.ts is the one definition of the list it shows.
+  kitchenOptions?: KitchenOption[]                                                    // the truck's extras (their allergens count when available)
+  kitchenOtherDishes?: KitchenDish[]                                                  // IMPORT: the truck's existing dishes, outside this review
+  kitchenExtra?: string[]                                                             // trucks.allergen_kitchen_extra as stored
+  kitchenStaged?: string[]                                                            // IMPORT: a card's blanket + may_contain and the menu's "may contain", staged
+  onSaveKitchen?: (extra: string[]) => Promise<void>                                  // standalone: update_settings; import: stage for the commit
 }) {
   // 🔴 US readiness (D35): the truck's country list and its generic families (lib/allergens.ts). A UK truck
   // reads exactly the UK list and families it always did; outside a provider it is the UK list too.
@@ -2182,7 +2190,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   const GENERIC_REPLACEMENTS = genericReplacements(allergenSet)
   const isVocab = (a: string) => ALLERGEN_VOCAB.includes(a)
   // mode 0 = chooser; 1 = per-dish review; 2 = card; 3 = per-dish CARD-UPLOAD page (#6, standalone only)
-  const [mode, setMode] = useState<0 | 1 | 2 | 3>(initialMode === 0 && !cardOnlyAllowed ? (onProcessCard ? 3 : 1) : initialMode)
+  const [mode, setMode] = useState<0 | 1 | 2 | 3 | 4>(initialMode === 0 && !cardOnlyAllowed ? (onProcessCard ? 3 : 1) : initialMode)
   // #4: the chooser is SELECT-then-Next (no auto-advance). Holds the operator's pick until they press Next.
   const [chooserMode, setChooserMode] = useState<'per_dish' | 'card' | null>(null)
   // #6 STANDALONE card→dish state (only used when onProcessCard/onCardMerge are provided). Matches the
@@ -2194,7 +2202,9 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   const [stdCardFile, setStdCardFile] = useState<File | null>(null)
   const [stdCardText, setStdCardText] = useState('')
   const [stdResolved, setStdResolved] = useState<Set<string>>(new Set())
-  const [stdBlanket, setStdBlanket] = useState(false)
+  // allergen-kitchen-1: the card's "may be present in all dishes" (blanket) and "may contain" lines go to the KITCHEN list — never into
+  // a dish's allergens. Staged here and shown pre-ticked on the last page (saved only from there).
+  const [stdKitchenStaged, setStdKitchenStaged] = useState<string[]>([])
   // Apply ONE matched entry to a committed item: union, then write ONLY if it CHANGED (Correction 1 —
   // never needlessly flip an unchanged confirmed dish). Flips verified=false on a real change (re-confirm).
   const applyCardToCommitted = async (itemId: string, allergens: string[]) => {
@@ -2210,6 +2220,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
       const parsed = await onProcessCard(stdCardFile, stdCardText)
       if (!parsed) { showToast(t('wizard.toast.readFailed'), 'error'); return }
       setStdCardParsed(parsed)
+      setStdKitchenStaged(onlyListed([...(parsed.blanket || []), ...(parsed.may_contain || [])], allergenSet))
       const entries: CardEntry[] = Array.isArray(parsed.entries) ? parsed.entries.filter((e: any) => e && e.name && Array.isArray(e.allergens)) : []
       const m = matchCardEntries(entries, items.map(i => ({ id: i.id, name: i.name })))
       setStdCardMatch(m)
@@ -2420,10 +2431,20 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
       </div>
     )
   }
+  // allergen-kitchen-1: 10 OR MORE of the country's allergens ticked on ONE dish → an amber question under the chips. It NEVER
+  // blocks Confirm (WARN-NOT-BLOCK, as the generic warning). Counted on the draft (list labels only — draftFor keeps nothing else).
+  const TOO_MANY = 10
+  const tooManyWarn = (draft: { allergens: string[] }, className = 'mt-2') => draft.allergens.filter(isVocab).length < TOO_MANY ? null : (
+    <p className={`rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] font-semibold text-amber-800 whitespace-normal ${className}`} data-too-many>
+      {t('wizard.tooMany', { count: draft.allergens.filter(isVocab).length })}
+    </p>
+  )
   const togglesBlock = (item: Item, draft: { allergens: string[]; dietary: string[] }) => (
     <>
-      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">{t('wizard.allergens')}</p>
+      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">{t('wizard.allergens')}</p>
+      <p className="text-[11px] text-slate-400 mb-1">{t('wizard.recipeOnly')}</p>
       <AllergenToggles value={draft.allergens} onChange={next => handleToggle(item, { allergens: next })} />
+      {tooManyWarn(draft)}
       <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mt-2 mb-1">{t('wizard.dietary')}</p>
       <DietaryToggles value={draft.dietary} onChange={next => handleToggle(item, { dietary: next })} />
     </>
@@ -2487,6 +2508,34 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   }
 
   const goBack = () => { setMode(0) }
+
+  // ── allergen-kitchen-1 (13 November 2026): THE LAST PAGE, "your kitchen" (mode 4) ─────────────────────────────────────────────
+  // Locked chips = the allergens already in the CONFIRMED dishes (this review's, plus — in the import — the truck's existing ones)
+  // and the AVAILABLE extras: lib/allergen-kitchen.ts, the same definition the customer pop-up reads. Tappable = everything else;
+  // ticked when it is in the truck's own list (stored, or staged from a card / the menu). Only the tappable part is saved.
+  const kitchenOn = !!onSaveKitchen
+  const tCustomer = useT('order')   // "Customers will see:" quotes the customer pop-up's OWN words
+  const kitchenLocked = kitchenAllergens({ dishes: [...items, ...(kitchenOtherDishes || [])], options: kitchenOptions || [], extra: [], allergenSet }).fromMenu
+  const seedKitchen = () => onlyListed([...(kitchenExtra || []), ...(kitchenStaged || []), ...stdKitchenStaged], allergenSet)
+  const [kitchenSel, setKitchenSel] = useState<string[]>(() => (initialMode === 4 ? onlyListed([...(kitchenExtra || []), ...(kitchenStaged || [])], allergenSet) : []))
+  const [kitchenAgreed, setKitchenAgreed] = useState(false)   // unticked EVERY time the page opens
+  const openKitchen = () => { setKitchenSel(seedKitchen()); setKitchenAgreed(false); setMode(4) }
+  const kitchenShown = kitchenNames(onlyListed([...kitchenLocked, ...kitchenSel], allergenSet), wizLocale)
+  const legendDish = ALLERGEN_VOCAB.includes('Dairy') ? 'Dairy' : ALLERGEN_VOCAB.includes('Milk') ? 'Milk' : ALLERGEN_VOCAB[0]
+  const legendAdded = ALLERGEN_VOCAB.includes('Sesame') ? 'Sesame' : ALLERGEN_VOCAB[1]
+  const finishKitchen = async () => {
+    if (!onSaveKitchen) return
+    setFinishing(true)
+    try {
+      await onSaveKitchen(kitchenSel)
+      await onSetDisplayMode('per_dish')
+      onClose()
+    } catch (e: unknown) {
+      showToast((e instanceof Error && e.message) || t('wizard.toast.saveFailed'), 'error')
+    } finally {
+      setFinishing(false)
+    }
+  }
 
   // ── Reusable Mode-1 review (shared by mode 1 and mode 3's review step) ────────────────────
   // Same data + per-row logic in BOTH layouts (re-confirm-on-edit, block-until-precise, toast/undo);
@@ -2622,7 +2671,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
                   {/* group headers spanning the allergen + dietary blocks */}
                   <tr>
                     <th colSpan={2} className="sticky left-0 z-40 bg-white h-6 border-b border-r border-slate-200" />
-                    <th colSpan={A} className="bg-amber-100 border-b border-r border-slate-200 text-center text-[11px] font-bold text-amber-700 uppercase tracking-wide py-1">{t('wizard.allergens')}</th>
+                    <th colSpan={A} className="bg-amber-100 border-b border-r border-slate-200 text-center text-[11px] font-bold text-amber-700 uppercase tracking-wide py-1">{t('wizard.allergens')}<span className="block text-[10px] font-medium normal-case tracking-normal text-amber-700/80">{t('wizard.recipeOnly')}</span></th>
                     <th colSpan={D} className={`bg-green-100 border-b border-r border-slate-200 ${DIVIDER} text-center text-[11px] font-bold text-green-700 uppercase tracking-wide py-1`}>{t('wizard.dietary')}</th>
                   </tr>
                   {/* per-column labels (horizontal, centred, hyphenated 2-line wrap). Dish frozen always;
@@ -2663,6 +2712,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
                                 {warnMarker(m)}
                               </div>
                               <div className="mt-1">{selectedPills(m.draft)}</div>
+                              {tooManyWarn(m.draft, 'mt-1.5')}
                             </td>
                             {/* Status frozen on sm+ ONLY (req 2): on a narrow phone it scrolls so the
                                 frozen pair (Dish+Status) doesn't fill the viewport. */}
@@ -2719,7 +2769,8 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
     mode === 0 ? t('wizard.subtitle.choose')
       : mode === 2 ? t('wizard.subtitle.card')
         : mode === 3 ? t('wizard.subtitle.cardOptional')
-          : t('wizard.subtitle.review')
+          : mode === 4 ? t('wizard.subtitle.kitchen')
+            : t('wizard.subtitle.review')
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -2776,8 +2827,6 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
                 dishes={items.map(i => ({ id: i.id, name: i.name }))}
                 onAssign={(entry, dishId) => { void assignStandaloneEntry(entry, dishId) }}
                 onDismiss={dismissStandaloneEntry}
-                blanketOptIn={stdBlanket}
-                onBlanketToggle={setStdBlanket}
               />
             </div>
             <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
@@ -2794,17 +2843,22 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
           <>
             {reviewTable}
             {canEdit ? (
-              <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
-                {(onBack || onProcessCard || cardOnlyAllowed) && <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => onBack ? onBack() : setMode(onProcessCard ? 3 : 0)} />}
-                <div className="flex-1" />
-                {/* Skip = defer, save AS-IS (per-row confirms already persisted; this doesn't confirm anything).
-                    ALWAYS available (the escape hatch) — never disabled, so the operator is never trapped when
-                    "Next" is greyed pending all-confirmed. Wording ties to the active-gated visibility rule. */}
-                <Btn label={importStepper ? t('wizard.nav.skipImport') : t('wizard.nav.skip')} colour="ghost" onClick={onClose} />
-                {importStepper
-                  ? /* IMPORT: "Next" — a wizard step; greyed until EVERY dish is confirmed (allDone). */
-                    <Btn label={finishing ? t('wizard.nav.saving') : t('wizard.nav.next')} colour="green" loading={finishing} disabled={finishing || !allDone} onClick={() => finishWith('per_dish')} />
-                  : <Btn label={finishing ? t('wizard.nav.saving') : allDone ? t('wizard.nav.done') : t('wizard.nav.saveLater')} colour={allDone ? 'green' : 'slate'} loading={finishing} disabled={finishing} onClick={() => finishWith('per_dish')} />}
+              // allergen-kitchen-1: Back and the main button on ONE row, Skip a centred text link underneath — at 390 px the three
+              // buttons in a row pushed the last one off the screen ("Save & finish later" clipped; allergen-screens-1 §5).
+              <div className="px-4 pt-4 pb-2 border-t border-slate-200 shrink-0">
+                <div className="flex items-center gap-2">
+                  {(onBack || onProcessCard || cardOnlyAllowed) && <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => onBack ? onBack() : setMode(onProcessCard ? 3 : 0)} />}
+                  <div className="flex-1" />
+                  {importStepper
+                    ? /* IMPORT: "Next" — a wizard step; greyed until EVERY dish is confirmed (allDone). → the kitchen page. */
+                      <Btn label={finishing ? t('wizard.nav.saving') : t('wizard.nav.next')} colour="green" loading={finishing} disabled={finishing || !allDone} onClick={() => kitchenOn ? openKitchen() : finishWith('per_dish')} />
+                    : <Btn label={finishing ? t('wizard.nav.saving') : allDone ? t('wizard.nav.done') : t('wizard.nav.saveLater')} colour={allDone ? 'green' : 'slate'} loading={finishing} disabled={finishing}
+                        onClick={() => allDone && kitchenOn ? openKitchen() : finishWith('per_dish')} />}
+                </div>
+                {/* Skip = defer, save AS-IS (per-row confirms already persisted; this doesn't confirm anything). ALWAYS available. */}
+                <div className="mt-2 text-center">
+                  <button type="button" onClick={onClose} className="text-xs font-semibold text-slate-500 underline hover:text-slate-700">{importStepper ? t('wizard.nav.skipImport') : t('wizard.nav.skip')}</button>
+                </div>
               </div>
             ) : (
               <div className="p-4 border-t border-slate-200 flex justify-end shrink-0"><Btn label={t('wizard.nav.close')} colour="slate" onClick={onClose} /></div>
@@ -2833,6 +2887,65 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
               {canEdit
                 ? <Btn label={finishing ? t('wizard.nav.saving') : t('wizard.nav.finish')} colour="green" loading={finishing} disabled={!cardEditText.trim() || finishing} onClick={finishCard} />
                 : <Btn label={t('wizard.nav.close')} colour="slate" onClick={onClose} />}
+            </div>
+          </>
+        )}
+
+        {/* MODE 4 — allergen-kitchen-1: THE LAST PAGE, "your kitchen". Never in card-only mode (only the per-dish review leads here). */}
+        {mode === 4 && (
+          <>
+            <div className="p-5 overflow-y-auto flex-1 min-h-0 flex flex-col gap-4" data-kitchen-page>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">{t('kitchen.title')}</h3>
+                <p className="text-sm text-slate-500 mt-1">{t('kitchen.body')}</p>
+              </div>
+              <div className="flex flex-wrap gap-2" data-kitchen-chips>
+                {ALLERGEN_VOCAB.map(a => {
+                  const locked = kitchenLocked.includes(a)
+                  const on = locked || kitchenSel.includes(a)
+                  return (
+                    <button key={a} type="button" disabled={locked || !canEdit} aria-pressed={on} data-kitchen-chip={locked ? 'dish' : on ? 'added' : 'off'}
+                      onClick={() => setKitchenSel(sel => (sel.includes(a) ? sel.filter(x => x !== a) : [...sel, a]))}
+                      className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${locked ? 'bg-amber-50 border-amber-300 text-amber-700 cursor-default'
+                        : on ? 'bg-white border-orange-500 text-orange-700 font-semibold' : `border-slate-200 text-slate-500 ${canEdit ? 'hover:border-slate-300' : 'cursor-default'}`}`}>
+                      {allergenLabel(a, wizLocale)}{on ? ' ✓' : ''}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500">
+                <span className="inline-flex items-center gap-1.5"><span className="px-2 py-0.5 rounded-md border bg-amber-50 border-amber-300 text-amber-700">{allergenLabel(legendDish, wizLocale)} ✓</span>{t('kitchen.legendDishes')}</span>
+                <span className="inline-flex items-center gap-1.5"><span className="px-2 py-0.5 rounded-md border bg-white border-orange-500 text-orange-700 font-semibold">{allergenLabel(legendAdded, wizLocale)} ✓</span>{t('kitchen.legendAdded')}</span>
+              </div>
+              {/* What the CUSTOMER sees, in the order page pop-up's own words (order.kitchenHeading / kitchenNote / allergenNotProvided). */}
+              <div className="rounded-xl bg-slate-100 border border-slate-200 p-3 text-xs text-slate-700" data-kitchen-preview>
+                <p className="font-bold text-slate-500 mb-1.5">{t('kitchen.customersSee')}</p>
+                {kitchenShown.length > 0 ? (
+                  <>
+                    <p className="font-semibold text-slate-800">{tCustomer('kitchenHeading')}</p>
+                    <p className="mt-0.5">{kitchenShown.join(', ')}</p>
+                    <p className="mt-1.5 text-slate-500">{tCustomer('kitchenNote')}</p>
+                  </>
+                ) : <p>{tCustomer('allergenNotProvided')}</p>}
+              </div>
+              {canEdit && (
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input type="checkbox" checked={kitchenAgreed} onChange={e => setKitchenAgreed(e.target.checked)} className="mt-0.5" data-kitchen-confirm />
+                  <span className="text-sm text-slate-700">{t('kitchen.confirm')}</span>
+                </label>
+              )}
+            </div>
+            <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
+              {canEdit ? (
+                <>
+                  <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => setMode(1)} />
+                  <div className="flex-1" />
+                  <Btn label={finishing ? t('wizard.nav.saving') : importStepper ? t('wizard.nav.next') : t('wizard.nav.done')} colour="green" loading={finishing}
+                    disabled={finishing || !kitchenAgreed} onClick={finishKitchen} />
+                </>
+              ) : (
+                <><div className="flex-1" /><Btn label={t('wizard.nav.close')} colour="slate" onClick={onClose} /></>
+              )}
             </div>
           </>
         )}
@@ -3022,7 +3135,13 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const [cardImportMatch, setCardImportMatch] = useState<CardMatchResult | null>(null)
   const [cardImportProcessing, setCardImportProcessing] = useState(false)
   const [cardImportDone, setCardImportDone] = useState(false)                 // a card was parsed this import → open wizard post-commit + save the artifact
-  const [cardBlanketOptIn, setCardBlanketOptIn] = useState(false)             // DEFAULT OFF — operator opts in to apply blanket may-contain to all dishes
+  // allergen-kitchen-1 (13 November 2026): the card's "may be present in all dishes" checkbox is GONE — a card's blanket and
+  // may_contain lines, and the menu's own "may contain" note (process-menu's may_contain), go to the KITCHEN list, staged until
+  // commit. importKitchenFinal = what the operator left ticked on the wizard's last page (null = never reached it).
+  const [importMenuMayContain, setImportMenuMayContain] = useState<string[]>([])
+  const [importKitchenFinal, setImportKitchenFinal] = useState<string[] | null>(null)
+  const [kitchenExtraLocal, setKitchenExtraLocal] = useState<string[]>(() => (Array.isArray(truck.allergen_kitchen_extra) ? truck.allergen_kitchen_extra : []))
+  const menuAllergenSet = useOptionalCountrySettings()?.allergenSet
   const [cardEntriesResolved, setCardEntriesResolved] = useState<Set<string>>(new Set())  // unmatched/ambiguous entry keys the operator has assigned or dismissed
   // Allergens step sub-screens: 'prompt' (detected + optional card upload) → 'chooser' (per-item vs card
   // DISPLAY mode — detection ≠ display; the detected data is retained-but-hidden regardless of choice).
@@ -3062,7 +3181,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // from the per-dish CardUploadPage state above so the card path never runs extraction. Saved verbatim at commit.
   const [importCardOnlyText, setImportCardOnlyText] = useState('')
   const [importCardOnlyTranscribing, setImportCardOnlyTranscribing] = useState(false)
-  const [wizardInitialMode, setWizardInitialMode] = useState<0 | 1 | 2>(0)   // 1 → open the post-commit wizard straight at the per-dish review (import per-item), skipping its chooser
+  const [wizardInitialMode, setWizardInitialMode] = useState<0 | 1 | 2 | 4>(0)   // 1 → open the post-commit wizard straight at the per-dish review (import per-item), skipping its chooser
   // ── SCHEDULE STEP (SETUP MODE ONLY) — reached AFTER the menu is committed (commit-first). Wires the
   // EXISTING ScheduleTab flows into the wizard: verify-schedule-url (Route A), process-schedule +
   // upsert_event (Route B). Nothing here is critical — the menu is already durable; every route can be
@@ -3196,6 +3315,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       // AI variant groups → importResult holds EVERY dish as a flat separate item for review. Page 1
       // shows the flat list; page 2 re-derives the grouping suggestions on top.
       setImportResult(withImpUids(ungroupAiVariantsForReview(autoSplitConflicts(data))))
+      setImportMenuMayContain(Array.isArray(data.may_contain) ? data.may_contain : [])   // allergen-kitchen-1
       setReviewStep(1)
       setGroupingChoice({}) // fresh import → all grouping rows default to grouped
       // Seed Total capacity from the van(s) — held in state, written to the van ONLY at commit.
@@ -3253,7 +3373,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     setCardImportMatch(null)
     setCardImportProcessing(false)
     setCardImportDone(false)
-    setCardBlanketOptIn(false)
+    setImportMenuMayContain([])
+    setImportKitchenFinal(null)
     setCardEntriesResolved(new Set())
     setAllergenSubStep('chooser')
     setPendingDisplayMode(null)
@@ -3493,6 +3614,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     const openOffer = async (extraction: any) => {
       // SAME pipeline as handleProcessMenu — the extraction is the same shape process-menu returns.
       setImportResult(withImpUids(ungroupAiVariantsForReview(autoSplitConflicts(extraction))))
+      setImportMenuMayContain(Array.isArray(extraction?.may_contain) ? extraction.may_contain : [])   // allergen-kitchen-1
       setReviewStep(1)
       setGroupingChoice({})
       try {
@@ -3686,6 +3808,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const stagedConfirm  = async (item: Item, allergens: string[], dietary: string[]) => patchStagedItem(item.id, { allergens, dietary, _allergensChecked: true })
   const stagedUndo     = async (item: Item, allergens: string[], dietary: string[], verified: boolean) => patchStagedItem(item.id, { allergens, dietary, _allergensChecked: verified })
   const stagedUnverify = async (item: Item) => patchStagedItem(item.id, { _allergensChecked: false })
+  // allergen-kitchen-1: the import's kitchen inputs. Staged = the card's blanket + may_contain and the menu's "may contain"
+  // (country-list labels only). The last page's locked chips also count the truck's EXISTING dishes and extras (a demo
+  // import replaces the menu, so those are left out there) and the staged extras' own allergens.
+  const importKitchenStaged = onlyListed([...(cardImportParsed?.blanket || []), ...(cardImportParsed?.may_contain || []), ...importMenuMayContain], menuAllergenSet)
+  const importKitchenOptions: KitchenOption[] = [
+    ...(demoImportMode ? [] : modifierOptions),
+    ...((importResult?.items || []) as { modifierGroups?: { options?: { allergens?: string[] }[] }[] }[])
+      .flatMap(it => (it.modifierGroups || []).flatMap(g => (g.options || []).map(o => ({ allergens: o.allergens || [], available: true })))),
+  ]
   // After the card-upload page: per-dish → staged review; card → Kitchen (card display set at commit).
   const advanceFromCardPage = () => { if (pendingDisplayMode === 'per_dish') setAllergenSubStep('review'); else goToKitchen() }
   const goToStep = (key: WizKey) => {
@@ -4178,12 +4309,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     // → individual items). Pure transform — importResult itself is untouched. Empty-name rows (blank
     // "+ Add item" rows the operator never filled in) are EXCLUDED so they can't import as £0 nameless items.
     let itemsToCommit = buildGroupedItems(importResult.items).filter(it => String(it.name || '').trim())
-    // Blanket "may contain X" — applied to EVERY dish ONLY if the operator opted in on the Allergens step
-    // (default off). Additive union, verified=false (reviewed next). Never subtractive.
-    const blanket = cardImportParsed?.blanket
-    if (cardBlanketOptIn && blanket?.length) {
-      itemsToCommit = itemsToCommit.map((it: any) => ({ ...it, allergens: mergeAllergensUnion(it.allergens || [], blanket), _allergensChecked: false }))
-    }
+    // ⛔ allergen-kitchen-1 (13 November 2026): a card's blanket "may be present in all dishes" is NEVER merged into any dish's
+    // allergens any more (it used to be, as if contained, behind an opt-in box). It goes to the kitchen list — below, after commit.
     try {
       const res = await fetch('/api/manage/commit-menu', {
         method: 'POST',
@@ -4223,6 +4350,19 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         // Apply the operator's chosen DISPLAY mode (decoupled from detection). null = skipped → leave the
         // existing mode. Detected data is committed verified=false regardless (retain-but-hide).
         if (chosenDisplayMode) { try { await api('update_settings', { allergen_display_mode: chosenDisplayMode }) } catch { /* non-fatal */ } }
+        // allergen-kitchen-1: the KITCHEN list. Reached the last page → exactly what the operator left ticked, and the confirmation.
+        // Didn't (skipped allergen setup / card-only) → the staged card and menu "may contain" allergens are still ADDED to what the
+        // truck had, unconfirmed. Best-effort, like every other post-commit write here.
+        try {
+          if (importKitchenFinal) {
+            await api('update_settings', { allergen_kitchen_extra: importKitchenFinal, allergens_confirmed_at: true })
+            setKitchenExtraLocal(onlyListed(importKitchenFinal, menuAllergenSet))
+          } else if (importKitchenStaged.some(a => !kitchenExtraLocal.includes(a))) {
+            const next = onlyListed([...kitchenExtraLocal, ...importKitchenStaged], menuAllergenSet)
+            await api('update_settings', { allergen_kitchen_extra: next })
+            setKitchenExtraLocal(next)
+          }
+        } catch { /* non-fatal */ }
         // The per-dish review already happened IN-FLOW on staged data → confirmed dishes commit verified=true
         // via _allergensChecked (atomic, here). No post-commit wizard auto-open.
         // COMMIT-FIRST: the menu is now durable. In SETUP mode a NEW, skippable step (Schedule) follows before
@@ -5029,6 +5169,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
             return data.ok ? (data.allergens as CardParse) : null
           }}
           onCardMerge={(item, union) => writeItemAllergens(item, union, item.dietary_info || [], false, 'card')}
+          // allergen-kitchen-1: the last page — the truck's extras and its own kitchen list; Done saves both fields (owner/admin).
+          kitchenOptions={modifierOptions}
+          kitchenExtra={kitchenExtraLocal}
+          onSaveKitchen={async extra => { await api('update_settings', { allergen_kitchen_extra: extra, allergens_confirmed_at: true }); setKitchenExtraLocal(onlyListed(extra, menuAllergenSet)) }}
           onSaveCard={async (t) => { await api('update_settings', { allergen_info_text: t }); setAllergenInfoText(t) }}
           onTranscribeCard={async (file) => {
             const fd = new FormData(); fd.append('token', token); fd.append('mode', 'transcribe'); fd.append('file', file)
@@ -5092,6 +5236,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                           {!cardMode && allergenInfoText ? ` · ${t('allergens.cardSaved')}` : ''}
                         </>}
                   </p>
+                  {/* allergen-kitchen-1: per-dish mode — "Kitchen also handles: …" (the live kitchen list, lib/allergen-kitchen.ts) and,
+                      for the owner/admin, Edit → the wizard straight on its last page. Staff see the line without Edit. */}
+                  {!noMenu && !cardMode && (
+                    <p className="text-xs text-slate-500 mt-1" data-kitchen-line>
+                      {t('allergens.kitchenLine', { list: kitchenNames(kitchenAllergens({ dishes: localItems, options: modifierOptions, extra: kitchenExtraLocal, allergenSet: menuAllergenSet }).all, tkLocale).join(', ') || '—' })}
+                      {canEditAllergens && <>{' · '}<button type="button" className="font-semibold text-orange-600 underline hover:text-orange-700" data-kitchen-edit
+                        onClick={() => { setWizardInitialMode(4); onOpenAllergenWizard() }}>{t('allergens.kitchenEdit')}</button></>}
+                    </p>
+                  )}
                   {/* allergen-card-country: the stored card-only mode is not allowed where this truck trades — say so. */}
                   {cardNotAllowed && <p className="text-xs text-amber-800 font-semibold mt-1">{t('allergens.cardNotAllowed')}</p>}
                 </div>
@@ -5533,11 +5686,18 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   {/* Allergens */}
                   <div>
                     <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('item.allergens')}</label>
+                    <p className="text-xs text-slate-400 mt-0.5">{t('item.recipeOnly')}</p>
                     <p className="text-xs text-slate-400 mt-0.5 mb-2">{t('item.selectAll')}</p>
                     <AllergenToggles
                       value={(editingItem as any).allergens || []}
                       onChange={next => saveItemPatch({ allergens: next, allergens_verified: true })}
                     />
+                    {/* allergen-kitchen-1: 10+ of the country's allergens on one dish → an amber question. Never blocks saving; the save
+                        and verified behaviour above is unchanged. */}
+                    {(() => {
+                      const n = onlyListed(editingItem.allergens || [], menuAllergenSet).length
+                      return n >= 10 ? <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-800" data-too-many>{t('item.tooMany', { count: n })}</p> : null
+                    })()}
                   </div>
 
                   {/* Dietary */}
@@ -6170,6 +6330,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               onClose={goToKitchen}
               onBack={() => setAllergenSubStep('card')}
               importStepper={renderWizardStepper('allergens')}
+              kitchenOptions={importKitchenOptions}
+              kitchenOtherDishes={demoImportMode ? [] : localItems}
+              kitchenExtra={kitchenExtraLocal}
+              kitchenStaged={importKitchenStaged}
+              onSaveKitchen={async extra => { setImportKitchenFinal(extra) }}
             />
           )
         }
@@ -6231,20 +6396,24 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 dishes={importResult.items.map((it: any, i: number) => ({ id: String(i), name: String(it.name || '').trim() })).filter(d => d.name)}
                 onAssign={(entry, dishId) => assignCardEntry(entry, Number(dishId))}
                 onDismiss={dismissCardEntry}
-                blanketOptIn={cardBlanketOptIn}
-                onBlanketToggle={setCardBlanketOptIn}
               />
               )}
             </div>
-            <div className="p-5 border-t border-slate-100 flex items-center gap-2 shrink-0">
-              <Btn label={ti('back')} colour="slate" onClick={() => allergenSubStep === 'card' && menuCardOnlyAllowed ? setAllergenSubStep('chooser') : (hasExtras ? (setImportStep('review'), setReviewStep(2)) : (setImportStep('review'), setReviewStep(1)))} />
-              <div className="flex-1" />
+            {/* allergen-kitchen-1: Back and Next on ONE row, "Skip allergen setup for now" a centred text link underneath — at 390 px the
+                three buttons in a row pushed Next off the screen (French) or clipped it (English; allergen-screens-1 §1). */}
+            <div className="px-5 pt-4 pb-3 border-t border-slate-100 shrink-0">
+              <div className="flex items-center gap-2">
+                <Btn label={ti('back')} colour="slate" onClick={() => allergenSubStep === 'card' && menuCardOnlyAllowed ? setAllergenSubStep('chooser') : (hasExtras ? (setImportStep('review'), setReviewStep(2)) : (setImportStep('review'), setReviewStep(1)))} />
+                <div className="flex-1" />
+                {/* #4: chooser needs an explicit Next (select a mode first); card page advances to review/Kitchen. */}
+                {allergenSubStep === 'chooser'
+                  ? <Btn label={ti('next')} disabled={!pendingDisplayMode} onClick={() => setAllergenSubStep('card')} />
+                  : <Btn label={ti('next')} onClick={advanceFromCardPage} />}
+              </div>
               {/* Skip the WHOLE allergen setup → Kitchen. NOTHING commits here (Kitchen "Save" is the commit). */}
-              <Btn label={ti('allergens.skip')} colour="ghost" onClick={goToKitchen} />
-              {/* #4: chooser needs an explicit Next (select a mode first); card page advances to review/Kitchen. */}
-              {allergenSubStep === 'chooser'
-                ? <Btn label={ti('next')} disabled={!pendingDisplayMode} onClick={() => setAllergenSubStep('card')} />
-                : <Btn label={ti('next')} onClick={advanceFromCardPage} />}
+              <div className="mt-2 text-center">
+                <button type="button" onClick={goToKitchen} className="text-xs font-semibold text-slate-500 underline hover:text-slate-700">{ti('allergens.skip')}</button>
+              </div>
             </div>
             </div>
           </div>

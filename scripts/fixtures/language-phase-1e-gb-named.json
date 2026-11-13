@@ -203,5 +203,29 @@
     "before": "We couldn't find any details for this food truck. They might have moved or updated their profile.",
     "after": "We couldn’t find any details for this food truck. They might have moved or updated their profile.",
     "kind": "GB fix (moved, then fixed)"
+  },
+  "order.allergenSevere": {
+    "before": "If you have a severe allergy, please contact the vendor directly before ordering.",
+    "after": "If you have a food allergy, please contact the truck before ordering.",
+    "kind": "eb7ed44 key reworded WITHOUT a recorded fix",
+    "why": "allergen-kitchen-1 (13 November 2026): Dominic’s approved allergen wording — the severe line reworded; the blanket checkbox and the pop-up’s old heading and note removed (docs/allergen-kitchen-1-report.md)"
+  },
+  "manageAllergens.cardUpload.blanket": {
+    "before": "The card says <b>{list}</b> may be present across <b>all</b> dishes. Add to every dish? (you’ll still confirm each) <muted>— off by default</muted>",
+    "after": null,
+    "kind": "eb7ed44 key deleted",
+    "why": "allergen-kitchen-1 (13 November 2026): Dominic’s approved allergen wording — the severe line reworded; the blanket checkbox and the pop-up’s old heading and note removed (docs/allergen-kitchen-1-report.md)"
+  },
+  "order.allergensSeeEach": {
+    "before": "See each dish for its specific allergens.",
+    "after": null,
+    "kind": "eb7ed44 key deleted",
+    "why": "allergen-kitchen-1 (13 November 2026): Dominic’s approved allergen wording — the severe line reworded; the blanket checkbox and the pop-up’s old heading and note removed (docs/allergen-kitchen-1-report.md)"
+  },
+  "order.allergensUsed": {
+    "before": "Allergens used in this menu",
+    "after": null,
+    "kind": "eb7ed44 key deleted",
+    "why": "allergen-kitchen-1 (13 November 2026): Dominic’s approved allergen wording — the severe line reworded; the blanket checkbox and the pop-up’s old heading and note removed (docs/allergen-kitchen-1-report.md)"
   }
 }

@@ -28,9 +28,9 @@
     "ambiguous": "Ambiguu — se potrivește cu mai multe preparate; alegeți-l pe cel corect.",
     "assignTo": "Alocați unui preparat…",
     "dismiss": "Ignorați",
-    "blanket": "Fișa spune că <b>{list}</b> pot fi prezenți în <b>toate</b> preparatele. Îi adăugați la fiecare preparat? (veți confirma totuși fiecare preparat) <muted>— dezactivat implicit</muted>",
     "kitchenNotes": "Note de bucătărie (salvate în informațiile despre alergeni)",
-    "matchSummary": "{n, plural, =0 {Asociate cu un preparat: {matched}.} one {Asociate cu un preparat: {matched}. De alocat de dumneavoastră: {count}.} few {Asociate cu un preparat: {matched}. De alocat de dumneavoastră: {count}.} other {Asociate cu un preparat: {matched}. De alocat de dumneavoastră: {count}.}}"
+    "matchSummary": "{n, plural, =0 {Asociate cu un preparat: {matched}.} one {Asociate cu un preparat: {matched}. De alocat de dumneavoastră: {count}.} few {Asociate cu un preparat: {matched}. De alocat de dumneavoastră: {count}.} other {Asociate cu un preparat: {matched}. De alocat de dumneavoastră: {count}.}}",
+    "blanketInfo": "Fișa dumneavoastră arată că {list} pot fi prezenți în toate preparatele. Îi vom adăuga la alergenii folosiți în bucătăria dumneavoastră. Îi puteți verifica la ultimul pas."
   },
   "savedCard": {
     "showLess": "Afișați mai puțin",
@@ -92,7 +92,8 @@
       "choose": "Alegeți cum văd clienții informațiile despre alergeni",
       "card": "Adăugați fișa de alergeni",
       "cardOptional": "Adăugați o fișă de alergeni (opțional)",
-      "review": "Verificați și confirmați fiecare preparat"
+      "review": "Verificați și confirmați fiecare preparat",
+      "kitchen": "Ultimul pas: bucătăria dumneavoastră"
     },
     "heading": {
       "import": "Alergeni",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Omiterea doar amână pasul — preparatele neconfirmate rămân ascunse clienților până când le sunt confirmați alergenii.",
       "importIncomplete": "Confirmați fiecare preparat pentru a continua — sau „Omiteți deocamdată configurarea alergenilor”."
-    }
+    },
+    "recipeOnly": "Doar ce conține rețeta acestui preparat.",
+    "tooMany": "Alergeni bifați: {count}. Sunt chiar toți în rețeta acestui preparat? Alergenii folosiți în alte preparate nu se trec aici. Îi puteți adăuga la ultimul pas."
+  },
+  "kitchen": {
+    "title": "Ce alergeni folosește bucătăria dumneavoastră?",
+    "body": "Am bifat deja alergenii din preparatele dumneavoastră. Bifați și alții pe care îi folosiți în food truck, de exemplu pentru preparatele zilei.",
+    "legendDishes": "în preparatele dumneavoastră",
+    "legendAdded": "adăugat de dumneavoastră",
+    "customersSee": "Clienții vor vedea:",
+    "confirm": "Confirm că alergenii fiecărui preparat sunt corecți și îi voi ține la zi."
   }
 }

@@ -391,6 +391,17 @@ const NAMED = [
   // ── ⚠️ RE-PINNED (deals-order-1, 13 November 2026, docs/deals-order-1-report.md): Manage › Menu › Deals — each formule card is
   //    wrapped in the category list's drag row and gains its six-dot handle (scripts/_named-deals-order-1.cjs, PRECISE: the
   //    fixture's own deal ids b1, b2 and the existing "Drag to reorder" words). The US deals views stay LISTED (us-layout-fix-1-manage-join).
+  // ── ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026, docs/allergen-kitchen-1-report.md): Manage › Menu and the allergen wizard —
+  //    the Allergens section's "Kitchen also handles: {list} · Edit" (per-dish mode; the list = this fixture's dishes and extras through
+  //    lib/allergen-kitchen.ts — "—" here: the fixture stores lower-case labels the UK list does not hold), the review's and the import
+  //    step's footers (Skip a centred link under Back + the main button), "Only what's in this dish's recipe." under "Allergens", and the
+  //    card page's info line in place of the "may be present" checkbox. PRECISE (scripts/_named-allergen-kitchen-1.cjs manageView).
+  { id: 'allergen-kitchen-1-manage', country: 'both', agent: 'allergen-kitchen-1 (13 Nov 2026)',
+    what: 'Manage › Menu / the allergen wizard: the kitchen line, the footers, the recipe helper lines, the card page info line (allergen-kitchen-1). PRECISE.',
+    views: id => /^menu\/(GB|US)\|(menuTab|wizard)\|/.test(id),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness modules (allergen-kitchen-1)
+    expect: (b, id) => { const AK1 = require('./_named-allergen-kitchen-1.cjs'), M = require('./_lp1d-menu.cjs'); const cc = countryOf(id), list = AK1.kitchenList(M.ITEMS, M.OPTS, [], cc === 'US' ? 'en-US' : 'en-GB')
+      return mapStrings(b, x => (typeof x === 'string' && x.includes('<') ? AK1.manageView(x, cc, list) : x)) } },
   { id: 'deals-order-1-drag-handle', country: 'both', agent: 'deals-order-1 (13 Nov 2026)',
     what: 'Manage › Menu › Deals: drag to reorder the formules, the category list’s own mechanism (components/manage/ReorderDrag.tsx) — each card wrapped in <div draggable="true" class="transition-all duration-200" data-deal-row="<id>">, the "⋮⋮" handle (title "Drag to reorder") first in its row. PRECISE.',
     views: id => /^menu\/(GB|US)\|deals\|(list|new|edit)$/.test(id),

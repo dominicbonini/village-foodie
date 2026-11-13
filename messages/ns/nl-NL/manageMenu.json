@@ -108,7 +108,9 @@
     "extract": "Uitlezen met AI",
     "needReview": "{count, plural, one {# gerecht moet} other {# gerechten moeten}} worden gecontroleerd — klanten zien de allergeneninfo pas na bevestiging",
     "reading": "Allergeneninformatie lezen…",
-    "pastePlaceholder": "Plak je allergeneninformatie hier…"
+    "pastePlaceholder": "Plak je allergeneninformatie hier…",
+    "kitchenLine": "De keuken verwerkt ook: {list}",
+    "kitchenEdit": "Bewerken"
   },
   "deleteItem": {
     "title": "{name} verwijderen?",
@@ -172,7 +174,9 @@
     "add": "Item toevoegen",
     "noGroups": "Nog geen optiegroepen — maak ze aan in Extra’s & upselling.",
     "costToMake": "Kostprijs",
-    "costHelp": "Optioneel. Wat één portie je kost aan ingrediënten en verpakking. Alleen gebruikt in je rapporten; klanten zien het nooit."
+    "costHelp": "Optioneel. Wat één portie je kost aan ingrediënten en verpakking. Alleen gebruikt in je rapporten; klanten zien het nooit.",
+    "recipeOnly": "Alleen wat in het recept van dit gerecht zit.",
+    "tooMany": "{count} allergenen aangevinkt. Zitten die echt allemaal in het recept van dit gerecht? Allergenen die elders in je keuken worden verwerkt, horen bij ‘De keuken verwerkt ook’ op het tabblad Menu."
   },
   "summary": "{categories, plural, one {# categorie} other {# categorieën}} · {items, plural, one {# item} other {# items}}",
   "confirmDelete": {

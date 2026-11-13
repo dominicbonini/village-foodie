@@ -149,9 +149,7 @@
     "allergenTitle": "Informations sur les allergènes",
     "allergenNotProvided": "Informations sur les allergènes non fournies — veuillez vérifier directement auprès du food truck.",
     "allergenCard": "📎 Voir la fiche allergènes (PDF/image)",
-    "allergensUsed": "Allergènes présents dans cette carte",
-    "allergensSeeEach": "Consultez chaque plat pour connaître ses allergènes.",
-    "allergenSevere": "En cas d’allergie sévère, veuillez contacter directement le commerçant avant de commander.",
+    "allergenSevere": "En cas d’allergie alimentaire, contactez le commerçant avant de commander.",
     "orderConfirmed": "Commande confirmée !",
     "orderReceived": "Commande reçue !",
     "thanksReady": "Merci ! Nous avons bien reçu votre commande, elle sera bientôt prête.",
@@ -172,7 +170,9 @@
     "backTo": "Retour à {truck}",
     "notePlaceholderCompact": "Une demande ? ex. sans oignons",
     "noteHeading": "Une demande ? <muted>— facultatif</muted>",
-    "notePlaceholder": "ex. sans oignons, bien croustillant"
+    "notePlaceholder": "ex. sans oignons, bien croustillant",
+    "kitchenHeading": "Allergènes utilisés dans cette cuisine",
+    "kitchenNote": "Chaque plat indique les allergènes de sa recette. Nous ne pouvons pas garantir l’absence de traces dans nos plats."
   },
   "plansPdf": {
     "title": "Offres et fonctionnalités",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Ambigu — correspond à plusieurs plats ; choisissez le bon.",
       "assignTo": "Attribuer à un plat…",
       "dismiss": "Ignorer",
-      "blanket": "La fiche indique que <b>{list}</b> peut être présent dans <b>tous</b> les plats. L’ajouter à chaque plat ? (vous confirmerez quand même chacun) <muted>— désactivé par défaut</muted>",
       "kitchenNotes": "Remarques de la cuisine (enregistrées dans vos infos allergènes)",
-      "matchSummary": "{n, plural, =0 {Associés à un plat : {matched}.} one {Associés à un plat : {matched}. {count} est à attribuer.} other {Associés à un plat : {matched}. {count} sont à attribuer.}}"
+      "matchSummary": "{n, plural, =0 {Associés à un plat : {matched}.} one {Associés à un plat : {matched}. {count} est à attribuer.} other {Associés à un plat : {matched}. {count} sont à attribuer.}}",
+      "blanketInfo": "Votre fiche indique que {list} peut être présent dans tous les plats. Nous les ajouterons aux allergènes utilisés dans votre cuisine. Vous pourrez les vérifier à la dernière étape."
     },
     "savedCard": {
       "showLess": "Voir moins",
@@ -2468,7 +2468,8 @@
         "choose": "Choisissez comment vos clients voient les informations sur les allergènes",
         "card": "Ajoutez votre fiche allergènes",
         "cardOptional": "Ajoutez une fiche allergènes (facultatif)",
-        "review": "Vérifiez et confirmez chaque plat"
+        "review": "Vérifiez et confirmez chaque plat",
+        "kitchen": "Dernière étape : votre cuisine"
       },
       "heading": {
         "import": "Allergènes",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Passer, c’est reporter — les plats que vous n’avez pas confirmés restent masqués pour les clients jusqu’à ce que leurs allergènes soient confirmés.",
         "importIncomplete": "Confirmez chaque plat pour continuer — ou « Passer la configuration des allergènes pour l’instant »."
-      }
+      },
+      "recipeOnly": "Uniquement ce qui est dans la recette de ce plat.",
+      "tooMany": "{count} allergènes cochés. Sont-ils vraiment tous dans la recette de ce plat ? Les allergènes utilisés dans d’autres plats ne vont pas ici. Vous pourrez les ajouter à la dernière étape."
+    },
+    "kitchen": {
+      "title": "Quels allergènes votre cuisine utilise-t-elle ?",
+      "body": "Nous avons coché ceux déjà présents dans vos plats. Cochez les autres que vous utilisez dans le camion, par exemple pour des plats du jour.",
+      "legendDishes": "dans vos plats",
+      "legendAdded": "ajouté par vous",
+      "customersSee": "Vos clients verront :",
+      "confirm": "Je confirme que les allergènes de chaque plat sont exacts et je les tiendrai à jour."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Extraire avec l’IA",
       "needReview": "{count, plural, one {# plat doit être vérifié} other {# plats doivent être vérifiés}} : les clients ne voient pas les infos allergènes avant confirmation",
       "reading": "Lecture des informations sur les allergènes…",
-      "pastePlaceholder": "Collez vos informations sur les allergènes ici…"
+      "pastePlaceholder": "Collez vos informations sur les allergènes ici…",
+      "kitchenLine": "La cuisine utilise aussi : {list}",
+      "kitchenEdit": "Modifier"
     },
     "deleteItem": {
       "title": "Supprimer {name} ?",
@@ -2942,7 +2955,9 @@
       "add": "Ajouter l’article",
       "noGroups": "Aucun groupe d’options pour l’instant : créez-en dans Suppléments et ventes additionnelles.",
       "costToMake": "Coût de revient",
-      "costHelp": "Facultatif. Ce que vous coûte une portion en ingrédients et en emballage. Utilisé uniquement dans vos rapports ; les clients ne le voient jamais."
+      "costHelp": "Facultatif. Ce que vous coûte une portion en ingrédients et en emballage. Utilisé uniquement dans vos rapports ; les clients ne le voient jamais.",
+      "recipeOnly": "Uniquement ce qui est dans la recette de ce plat.",
+      "tooMany": "{count} allergènes cochés. Sont-ils vraiment tous dans la recette de ce plat ? Les allergènes utilisés ailleurs dans votre cuisine vont dans « La cuisine utilise aussi », dans l’onglet Carte."
     },
     "summary": "{categories, plural, one {# catégorie} other {# catégories}} · {items, plural, one {# article} other {# articles}}",
     "confirmDelete": {

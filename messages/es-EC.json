@@ -177,9 +177,7 @@
     }
   },
   "manageAllergens": {
-    "cardUpload": {
-      "blanket": "La tabla indica que <b>{list}</b> puede estar presente en <b>todos</b> los platos. ¿Agregarlo a todos? (de todos modos confirmarás cada uno) <muted>— desactivado de forma predeterminada</muted>"
-    },
+    "cardUpload": {},
     "wizard": {
       "review": {
         "detected": "Detectados a partir de tu menú: <b>revísalos</b>. Los alérgenos siguen ocultos para los clientes hasta que confirmes cada plato."

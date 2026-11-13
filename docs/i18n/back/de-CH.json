@@ -48,7 +48,6 @@
  "kitchenCapacity.warning": "⚠️ For kitchen capacity to work properly, set a preparation time and a batch size for your menu categories (Menu & Stock). Without these details the capacity calculation does not know how long preparation takes.",
  "kitchenModals.close": "Close",
  "kitchenModals.reject.reason": "{reason, select, sold_out {An item is sold out} too_busy {Too busy – not doable in time} closing_soon {We are closing soon} other {Other}}",
- "manageAllergens.cardUpload.blanket": "According to the allergen card, <b>{list}</b> may be present in <b>all</b> dishes. Add to every dish? (you still confirm each one individually) <muted>– off by default</muted>",
  "manageAllergens.wizard.nav.close": "Close",
  "manageAllergens.wizard.nav.finish": "Complete",
  "manageMenu.item.close": "Close",
@@ -97,5 +96,7 @@
  "socialPosts.screen.imageTooBig": "This image is {size} MB in size. The limit is 10 MB.",
  "userMenu.close": "Close",
  "weeklyPost.error.tooBig": "This image is {size, number, ::.0 group-off} MB. The upper limit is 10 MB.",
- "manageReports.accounts.partial": "Dishes without a cost are left out of the cost, so this profit is higher than it really is. Add a cost to each dish in the Menu tab."
+ "manageReports.accounts.partial": "Dishes without a cost are left out of the cost, so this profit is higher than it really is. Add a cost to each dish in the Menu tab.",
+ "manageMenu.item.tooMany": "{count} allergens ticked. Are they really all in this dish's recipe? Allergens used elsewhere in your kitchen belong under “Also used in the kitchen” in the “Menu” tab.",
+ "manageMenu.allergens.kitchenLine": "Also used in the kitchen: {list}"
 }

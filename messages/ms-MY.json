@@ -149,9 +149,7 @@
     "allergenTitle": "Maklumat alergen",
     "allergenNotProvided": "Maklumat alergen tidak diberikan — sila sahkan terus dengan trak.",
     "allergenCard": "📎 Lihat kad alergen (PDF/imej)",
-    "allergensUsed": "Alergen yang digunakan dalam menu ini",
-    "allergensSeeEach": "Lihat setiap hidangan untuk alergen khususnya.",
-    "allergenSevere": "Jika anda mempunyai alahan yang teruk, sila hubungi peniaga secara terus sebelum membuat pesanan.",
+    "allergenSevere": "Jika anda mempunyai alahan makanan, sila hubungi peniaga sebelum membuat pesanan.",
     "orderConfirmed": "Pesanan disahkan!",
     "orderReceived": "Pesanan diterima!",
     "thanksReady": "Terima kasih! Kami telah menerima pesanan anda dan ia akan siap tidak lama lagi.",
@@ -172,7 +170,9 @@
     "backTo": "Kembali ke {truck}",
     "notePlaceholderCompact": "Ada permintaan? cth. tanpa bawang",
     "noteHeading": "Ada permintaan? <muted>— pilihan</muted>",
-    "notePlaceholder": "cth. tanpa bawang, lebih rangup"
+    "notePlaceholder": "cth. tanpa bawang, lebih rangup",
+    "kitchenHeading": "Alergen yang digunakan di dapur ini",
+    "kitchenNote": "Setiap hidangan menunjukkan alergen dalam resipinya. Kami tidak dapat menjamin mana-mana hidangan bebas daripada kesan surih alergen."
   },
   "plansPdf": {
     "title": "Pelan dan ciri",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Tidak jelas — sepadan dengan beberapa hidangan; pilih yang betul.",
       "assignTo": "Tetapkan kepada hidangan…",
       "dismiss": "Abaikan",
-      "blanket": "Kad ini menyatakan <b>{list}</b> mungkin ada dalam <b>semua</b> hidangan. Tambah pada setiap hidangan? (anda masih akan mengesahkan setiap satu) <muted>— dimatikan secara lalai</muted>",
       "kitchenNotes": "Nota dapur (disimpan dalam maklumat alergen anda)",
-      "matchSummary": "{n, plural, =0 {{matched} dipadankan dengan hidangan.} other {{matched} dipadankan dengan hidangan. {count} perlu anda tetapkan.}}"
+      "matchSummary": "{n, plural, =0 {{matched} dipadankan dengan hidangan.} other {{matched} dipadankan dengan hidangan. {count} perlu anda tetapkan.}}",
+      "blanketInfo": "Kad anda menyatakan {list} mungkin ada dalam semua hidangan. Kami akan menambahkannya pada alergen yang digunakan di dapur anda. Anda boleh menyemaknya pada langkah terakhir."
     },
     "savedCard": {
       "showLess": "Tunjuk kurang",
@@ -2468,7 +2468,8 @@
         "choose": "Pilih cara pelanggan melihat maklumat alergen",
         "card": "Tambah kad alergen anda",
         "cardOptional": "Tambah kad alergen (pilihan)",
-        "review": "Semak & sahkan setiap hidangan"
+        "review": "Semak & sahkan setiap hidangan",
+        "kitchen": "Langkah terakhir: dapur anda"
       },
       "heading": {
         "import": "Alergen",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Langkau bermaksud tangguh — hidangan yang belum anda sahkan kekal tersembunyi daripada pelanggan sehingga alergennya disahkan.",
         "importIncomplete": "Sahkan setiap hidangan untuk meneruskan — atau “Langkau tetapan alergen dahulu”."
-      }
+      },
+      "recipeOnly": "Hanya yang ada dalam resipi hidangan ini.",
+      "tooMany": "{count} alergen ditanda. Betulkah semuanya ada dalam resipi hidangan ini? Alergen yang digunakan dalam hidangan lain tidak diletakkan di sini. Anda boleh menambahkannya pada langkah terakhir."
+    },
+    "kitchen": {
+      "title": "Alergen manakah yang digunakan di dapur anda?",
+      "body": "Kami telah menandakan alergen yang sudah ada dalam hidangan anda. Tandakan yang lain yang anda gunakan dalam trak, contohnya untuk hidangan istimewa.",
+      "legendDishes": "dalam hidangan anda",
+      "legendAdded": "ditambah oleh anda",
+      "customersSee": "Pelanggan akan melihat:",
+      "confirm": "Saya mengesahkan bahawa alergen bagi setiap hidangan adalah betul dan saya akan sentiasa mengemas kininya."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Ekstrak dengan AI",
       "needReview": "{count, plural, other {# hidangan perlu}} disemak — pelanggan tidak dapat melihat maklumat alergen sehingga disahkan",
       "reading": "Membaca maklumat alergen…",
-      "pastePlaceholder": "Tampal maklumat alergen anda di sini…"
+      "pastePlaceholder": "Tampal maklumat alergen anda di sini…",
+      "kitchenLine": "Dapur juga menggunakan: {list}",
+      "kitchenEdit": "Edit"
     },
     "deleteItem": {
       "title": "Buang {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Tambah item",
       "noGroups": "Belum ada kumpulan pilihan — ciptanya dalam Tambahan & cadangan.",
       "costToMake": "Kos penyediaan",
-      "costHelp": "Pilihan. Kos satu hidangan kepada anda untuk bahan dan pembungkusan. Digunakan dalam laporan anda sahaja; pelanggan tidak akan nampak."
+      "costHelp": "Pilihan. Kos satu hidangan kepada anda untuk bahan dan pembungkusan. Digunakan dalam laporan anda sahaja; pelanggan tidak akan nampak.",
+      "recipeOnly": "Hanya yang ada dalam resipi hidangan ini.",
+      "tooMany": "{count} alergen ditanda. Betulkah semuanya ada dalam resipi hidangan ini? Alergen yang digunakan di bahagian lain dapur anda diletakkan dalam “Dapur juga menggunakan” pada tab Menu."
     },
     "summary": "{categories, plural, other {# kategori}} · {items, plural, other {# item}}",
     "confirmDelete": {

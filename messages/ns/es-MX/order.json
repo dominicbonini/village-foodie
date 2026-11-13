@@ -20,6 +20,5 @@
   "addItemsPrompt": "Añade productos del menú para hacer un pedido",
   "modalAdd": "Añadir al carrito · {amount}",
   "allergenCard": "📎 Ver la tabla de alérgenos (PDF/imagen)",
-  "allergensUsed": "Alérgenos presentes en este menú",
   "slotTaken": "Alguien acaba de tomar tu horario de las {time}: esta es la siguiente hora disponible."
 }

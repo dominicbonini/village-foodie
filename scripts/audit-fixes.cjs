@@ -187,7 +187,12 @@ async function compare() {
     // Pizza Kitchen is on pro (pay_at_hatch_allowed true, no plan_features row, no override) → `true`; checked, then
     // dropped with preordering_on. ordering_available is NOT dropped — it must still be byte-identical.
     ok(A[k].body.truck.pay_at_hatch_on === true, `${label}: truck.pay_at_hatch_on is true (pro allows Pay at Hatch; Stage A2 addition)`, A[k].body.truck.pay_at_hatch_on)
-    const aNoPre = JSON.parse(J(A[k])); delete aNoPre.body.truck.preordering_on; delete aNoPre.body.truck.pay_at_hatch_on
+    // ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026): the truck also gained `kitchen_allergens` — "Allergens handled in this
+    // kitchen" (lib/allergen-kitchen.ts): an array of the country list's labels, [] in card mode. Checked, then dropped like the two above.
+    ok(Array.isArray(A[k].body.truck.kitchen_allergens) && A[k].body.truck.kitchen_allergens.every(a => typeof a === 'string')
+      && (A[k].body.truck.allergen_display_mode !== 'card' || A[k].body.truck.kitchen_allergens.length === 0),
+      `${label}: truck.kitchen_allergens is a list of allergen labels ([] in card mode) — allergen-kitchen-1`, A[k].body.truck.kitchen_allergens)
+    const aNoPre = JSON.parse(J(A[k])); delete aNoPre.body.truck.preordering_on; delete aNoPre.body.truck.pay_at_hatch_on; delete aNoPre.body.truck.kitchen_allergens
     ok(J(aNoPre) === J(without(B[k], 'codes')), `${label}: otherwise byte-identical to BEFORE (named difference 1)`)
   }
   const page = read('app/(app)/trucks/[slug]/order/page.tsx'), menuSrc = read('app/api/menu/[truckId]/route.ts')

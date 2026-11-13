@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.21
+HatchGrab Engineering Reference Manual · V16.22
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.21**
+**Version 16.22**
 
 November 2026
 
@@ -49,6 +49,40 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.22 — 13 November 2026 — **ALLERGENS: "CONTAINS" PER DISH + ONE "KITCHEN HANDLES" LIST; FORMULES REORDERED BY DRAG**
+
+### The allergen model (allergen-kitchen-1, `docs/allergen-kitchen-1-report.md`)
+
+- **A dish has ONE allergen list, "contains"** — `menu_items_db.allergens`, what its recipe contains. There is no per-dish "may contain".
+- **A truck has ONE kitchen list, "allergens your kitchen handles"** = (allergens of every CONFIRMED active dish) ∪ (allergens of every AVAILABLE extra) ∪ (the allergens the truck ADDS). Only labels in the country's list count; dietary tags, generics and other countries' labels never do.
+  - **Only the added part is stored:** `trucks.allergen_kitchen_extra text[] not null default '{}'` (the same English labels as dish allergens). The rest is computed live, so the list follows the dishes on its own.
+  - **`trucks.allergens_confirmed_at timestamptz`**: set (server clock) when the owner ticks "I confirm the allergens for each dish are correct, and I'll keep them up to date."
+  - **One definition:** `lib/allergen-kitchen.ts` (`kitchenAllergens`, `onlyListed`, `kitchenNames`), used by `/api/menu` (`truck.kitchen_allergens`, per-dish mode only), the wizard's last page and the Menu tab line.
+  - **Writes:** `update_settings` (owner/admin, the allergen gate; labels filtered to the country list). Audit: `allergen_audit_log.field 'kitchen'`, `change_type 'kitchen_edit' / 'kitchen_confirm'`. Migration `20261101_allergen_kitchen.sql` (run 13 Nov, no backfill).
+- **What feeds the added part:** the operator's ticks on the wizard's last page; an allergen card's `blanket` ("may be present in all dishes") and `may_contain`; the AI menu reader's menu-level `may_contain` (import commit).
+  - ⛔ **A card's blanket NEVER goes into a dish's allergens any more.** The opt-in "may be present across all dishes" checkbox (import `cardBlanketOptIn`; the standalone `stdBlanket`, which never did anything) and the commit merge are gone. The card page shows an info line instead.
+  - ⛔ **The AI menu reader no longer puts "may contain" / traces / "prepared in a kitchen that…" into a dish** (`lib/menu-extract.ts`): one top-level `may_contain` list instead.
+- **Screens:**
+  - The wizard's **last page, "your kitchen"** (mode 4 of `AllergenWizardModal`): after all dishes are confirmed — standalone "Done", import "Next" (then ③ Kitchen setup). Locked chips = from dishes/extras; tappable = the truck's own; "Customers will see:" quotes the customer pop-up; Done/Next disabled until the confirmation is ticked. Import: staged, written after the commit. Card-only mode and "Skip allergen setup" never show it. Staff: read-only with Close.
+  - **10+ warning:** 10 or more of the country's allergens on one dish → an amber question (wizard list, table, item editor). Never blocks. Helper line "Only what's in this dish's recipe." under "Allergens".
+  - **Menu tab › Allergens (per-dish mode):** "Kitchen also handles: {list} · Edit" — Edit opens the wizard on the last page (owner/admin).
+  - **Customer pop-up (per-dish):** "Allergens handled in this kitchen" + the list + "Each dish shows the allergens in its recipe. We can't guarantee any dish is free from traces." Severe line, every locale: "If you have a food allergy, please contact the truck before ordering." Card mode unchanged but for that line.
+  - **Dish pop-up:** an extra's allergens in small orange text under its name, only when it has some and only in per-dish mode (reverses V7.8 §31, approved).
+  - **Footers at 390 px:** the import's Allergens step and the wizard review have Back + the main button on one row and Skip as a centred link underneath (Next / "Save & finish later" were cut off).
+- **Words:** en-GB and fr-FR as approved; every other language base translated (needs a native-speaker check); keys `manageAllergens.cardUpload.blanket`, `order.allergensUsed`, `order.allergensSeeEach` removed.
+- **Proof:** `scripts/allergen-kitchen-1.cjs` (swept) and `scripts/allergen-kitchen-1-live.cjs` (by hand; mounted Manage + localhost App Tester); screenshots in `docs/allergen-kitchen-1/`.
+
+### Formules reordered by drag (deals-order-1, `docs/deals-order-1-report.md`)
+
+- **Manage › Menu › Deals:** each formule card has the category list's six-dot handle and drag-to-reorder — the SAME mechanism, moved into `components/manage/ReorderDrag.tsx` (`reorderRowProps`, `DragHandle`) and used by both lists.
+- **The order is stored per truck** in `bundles_db.sort_order` (action `update_bundle_order`, 1, 2, 3… after a drag). New formules go to the bottom (`upsert_bundle` sets max + 1). Migration `20261098` numbered every truck's formules in their existing order (only Le Roi had any; unchanged).
+- **Read everywhere formules are listed:** Manage (`order by sort_order, created_at`), `/api/menu` (now sorted) → the customer order page's Formules tab and the dashboard's Add order / deals pop-up.
+- App Tester has three test formules (`20261099`, `20261100`) — the backlog item below is done.
+
+### Also since V16.21
+
+- **order-page-2** (`docs/order-page-2-report.md`): the order page's event box is two lines (date · range · status / venue · postcode) and one link with a chevron; the allergen pop-up's names are in the page's language.
 
 ## V16.21 — 13 November 2026 — **THE ORDER PAGE: A THREE-LINE EVENT BOX, FORMULES AS THE FIRST MENU TAB, "CHANGE EVENT" FIXED; OFFLINE PROTECTION DEPLOYED**
 
@@ -7739,7 +7773,7 @@ Consolidated delta covering all work since §70. **Status: mostly BUILT + tsc-cl
 1. **MATCHER** (`lib/allergen-card-match.ts` `matchCardEntries`) = deterministic normalized-EXACT only (`DishRef {id,name}`; reads name via `normName`; carries `id` opaque). One→matched, zero→unmatched, >1→ambiguous-with-candidates. **NO fuzzy/containment/threshold auto-applies; non-exact is operator-clicked only.** Everything the card produces is `verified=false` before customer-visible; the matcher NEVER writes `verified=true` or bypasses the wizard.
 2. **MERGE** (`mergeAllergensUnion`) = additive UNION only, never subtractive (a card omission never drops an existing allergen). Generics → warn-not-block.
 
-Card prompt (`process-allergens`) extended: `entries[]{name,allergens,confidence}` + `blanket[]` + `cross_contamination[]`, KEEPING the whole-card blob. Matrix + footnote-with-legend extract reliably; prose → blanket/note; **free-from NOT converted to allergens**; blanket default OFF (opt-in); stated-data-only, 14-UK vocab, temp 0.
+⛔ **Updated V16.22 (allergen-kitchen-1):** a card's `blanket[]` and `may_contain[]` now go to the truck's KITCHEN list (`trucks.allergen_kitchen_extra`), never into a dish's allergens; the import's opt-in blanket checkbox and its merge are removed. Card prompt (`process-allergens`) extended: `entries[]{name,allergens,confidence}` + `blanket[]` + `cross_contamination[]`, KEEPING the whole-card blob. Matrix + footnote-with-legend extract reliably; prose → blanket/note; **free-from NOT converted to allergens**; blanket default OFF (opt-in); stated-data-only, 14-UK vocab, temp 0.
 
 **THE WIZARD IS ATOMIC (staged review):** nothing persists until the wizard COMPLETES; abandon = nothing saved. The allergen review runs on STAGED `importResult` data, NOT committed rows: `AllergenWizardModal` reused via props (staged items mapped to Item-shape with a stable `_uid` [NOT array index], synthetic categories from `importResult.categories`; staged callbacks mutate `importResult`, no DB). The existing `commit-menu` maps `allergens_verified:(item._allergensChecked===true)` → **ONE atomic commit at Kitchen "Save"** carries items+categories+prep+per-item verified state together. Removed the post-commit auto-open wizard + the `displayModeOverride`/commit-at-chooser wiring; `handleCommitMenu` is called from EXACTLY ONE place (Kitchen "Save").
 
@@ -16441,7 +16475,7 @@ diagnosis.
 
 ### Open as of V16.21 — 13 November 2026
 
-- ⚠️ **OPEN — NO TEST TRUCK HAS FORMULES.** Add formules to the App Tester truck (`app-tester`), so that formules as the menu's first tab (order-page-1) can be tested live. Until then they are proven on fixture renders only (`scripts/order-page-1-screens.cjs`).
+- ⛔ **DONE V16.22 (deals-order-1): App Tester has three test formules.** ~~⚠️ OPEN — NO TEST TRUCK HAS FORMULES.~~ Add formules to the App Tester truck (`app-tester`), so that formules as the menu's first tab (order-page-1) can be tested live. Until then they are proven on fixture renders only (`scripts/order-page-1-screens.cjs`).
 
 ## Open as of V11.57 — 2 September 2026
 

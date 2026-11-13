@@ -108,7 +108,9 @@
     "extract": "Extrageți cu AI",
     "needReview": "{count, plural, one {# preparat necesită} few {# preparate necesită} other {# de preparate necesită}} verificare — clienții nu văd informațiile despre alergeni până la confirmare",
     "reading": "Se citesc informațiile despre alergeni…",
-    "pastePlaceholder": "Lipiți aici informațiile despre alergeni…"
+    "pastePlaceholder": "Lipiți aici informațiile despre alergeni…",
+    "kitchenLine": "Bucătăria mai folosește: {list}",
+    "kitchenEdit": "Editați"
   },
   "deleteItem": {
     "title": "Eliminați {name}?",
@@ -172,7 +174,9 @@
     "add": "Adăugați produsul",
     "noGroups": "Niciun grup de opțiuni încă — creați-le în Extra și sugestii.",
     "costToMake": "Cost de preparare",
-    "costHelp": "Opțional. Cât vă costă o porție în ingrediente și ambalaj. Se folosește doar în rapoartele dumneavoastră; clienții nu îl văd niciodată."
+    "costHelp": "Opțional. Cât vă costă o porție în ingrediente și ambalaj. Se folosește doar în rapoartele dumneavoastră; clienții nu îl văd niciodată.",
+    "recipeOnly": "Doar ce conține rețeta acestui preparat.",
+    "tooMany": "Alergeni bifați: {count}. Sunt chiar toți în rețeta acestui preparat? Alergenii folosiți în altă parte în bucătăria dumneavoastră se trec la „Bucătăria mai folosește”, în fila Meniu."
   },
   "summary": "{categories, plural, one {# categorie} few {# categorii} other {# de categorii}} · {items, plural, one {# produs} few {# produse} other {# de produse}}",
   "confirmDelete": {

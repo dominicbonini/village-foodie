@@ -461,6 +461,14 @@ const NAMED = [
   // ⚠️ RE-PINNED (deals-order-1, 13 November 2026, docs/deals-order-1-report.md): Part 1's Deals views (smoke) — each formule card
   // wrapped in the category list's drag row with its six-dot handle. PRECISE (scripts/_named-deals-order-1.cjs: the fixture's own
   // deal ids b1, b2, the existing "Drag to reorder"); the same change scripts/_lp1d-named.cjs names for Part 1.
+  // ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026): Part 1's Menu tab and wizard views (smoke) — the same change scripts/_lp1d-named.cjs
+  // names for Part 1 (scripts/_named-allergen-kitchen-1.cjs manageView: the kitchen line, the footers, the recipe lines, the card info line).
+  { id: 'allergen-kitchen-1-manage', country: 'both', agent: 'allergen-kitchen-1 (13 Nov 2026)', smokeOnly: true,
+    what: 'Manage › Menu / the allergen wizard: the kitchen line, the footers, the recipe helper lines, the card page info line (allergen-kitchen-1). PRECISE.',
+    views: id => /^smoke-menu\/(GB|US)\|(menuTab|wizard)\|/.test(id),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness modules (allergen-kitchen-1)
+    expect: (b, id) => { const AK1 = require('./_named-allergen-kitchen-1.cjs'), M = require('./_lp1d-menu.cjs'); const cc = countryOf(id), list = AK1.kitchenList(M.ITEMS, M.OPTS, [], cc === 'US' ? 'en-US' : 'en-GB')
+      return mapStrings(b, x => (typeof x === 'string' && x.includes('<') ? AK1.manageView(x, cc, list) : x)) } },
   { id: 'deals-order-1-drag-handle', country: 'both', agent: 'deals-order-1 (13 Nov 2026)', smokeOnly: true,
     what: 'Manage › Menu › Deals: drag to reorder the formules (components/manage/ReorderDrag.tsx) — each card wrapped in the drag row, the "⋮⋮" handle first in its row. PRECISE.',
     views: id => /^smoke-menu\/(GB|US)\|deals\|(list|new|edit)$/.test(id),

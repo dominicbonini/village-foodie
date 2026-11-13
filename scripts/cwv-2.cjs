@@ -62,7 +62,11 @@ t('outside the groups: only route handlers, metadata routes, the two global page
 // asks each hour for its own minutes at 45. The page passes when putting exactly that edit back gives the file as it was at ae7ff8b4
 // (the commit before the edit, where this guard passed); any other change to it still fails.
 const LIOP = require('./_longer-intervals-order-page.cjs')
-const notLonger = f => { if (f !== LIOP.FILE) return true; const u = LIOP.undo(read(f)); return !(u && u === showAt(LIOP.BASE, f)) }
+// ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026; scripts/_named-allergen-kitchen-1.cjs undoFile): this work's order-page edits are
+// taken out FIRST (exact pairs, round-trip proven), then the longer-intervals ones, as before.
+const AK1 = require('./_named-allergen-kitchen-1.cjs')
+const ak1 = f => AK1.undoFile(f, read(f)) ?? read(f)
+const notLonger = f => { if (f !== LIOP.FILE) return true; const u = LIOP.undo(ak1(f)); return !(u && u === showAt(LIOP.BASE, f)) }
 const appChanged = MP.changedSince(BEFORE, ['app/(app)']).filter(notDc2).filter(notLonger)
 t('🔴 every file under app/(app) is its pre-move self, byte for byte (the two import lines the move had to change, named in _moved-paths.cjs, aside)',
   appChanged.length === 0, appChanged)
@@ -241,7 +245,7 @@ const CRIT = ['app/api/orders', 'app/api/payments', 'app/api/webhooks', 'app/api
 // truck's order (four lines before the read's filter). It passes when taking exactly those lines out gives the file as it was at
 // 391497fd (where this guard passed); any other change to it still fails.
 const DO1 = require('./_named-deals-order-1.cjs')
-const notDealsOrder = f => !(f === DO1.MENU_ROUTE && DO1.undoMenu(read(f)) === showAt(DO1.BASE, f))
+const notDealsOrder = f => !(f === DO1.MENU_ROUTE && DO1.undoMenu(ak1(f)) === showAt(DO1.BASE, f))   // allergen-kitchen-1's edits out first
 const critChanged = MP.changedSince(BEFORE, CRIT).filter(notDc2).filter(notLonger).filter(notDealsOrder)   // ⚠️ RE-PINNED (longer collection times; deals-order-1 — above)
 t(`🔴 ${CRIT.length} ordering, payment, KDS, dashboard and Manage paths: unchanged since ${BEFORE} (the move aside)`, CRIT.length >= 18 && critChanged.length === 0, critChanged)
 

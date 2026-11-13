@@ -108,7 +108,9 @@
     "extract": "SI yordamida ajratib olish",
     "needReview": "{count, plural, one {# ta taomni} other {# ta taomni}} tekshirish kerak — tasdiqlanmaguncha mijozlar allergenlar maʼlumotini koʻrmaydi",
     "reading": "Allergenlar maʼlumoti oʻqilmoqda…",
-    "pastePlaceholder": "Allergenlar maʼlumotini shu yerga joylashtiring…"
+    "pastePlaceholder": "Allergenlar maʼlumotini shu yerga joylashtiring…",
+    "kitchenLine": "Oshxonada yana ishlatiladi: {list}",
+    "kitchenEdit": "Tahrirlash"
   },
   "deleteItem": {
     "title": "Olib tashlansinmi: {name}?",
@@ -172,7 +174,9 @@
     "add": "Mahsulot qoʻshish",
     "noGroups": "Hali variantlar guruhlari yoʻq — ularni “Qoʻshimchalar va qoʻshimcha sotuvlar” boʻlimida yarating.",
     "costToMake": "Tannarx",
-    "costHelp": "Ixtiyoriy. Bir porsiya uchun masalliq va qadoqqa ketadigan xarajatingiz. Faqat hisobotlaringizda ishlatiladi; mijozlar uni hech qachon koʻrmaydi."
+    "costHelp": "Ixtiyoriy. Bir porsiya uchun masalliq va qadoqqa ketadigan xarajatingiz. Faqat hisobotlaringizda ishlatiladi; mijozlar uni hech qachon koʻrmaydi.",
+    "recipeOnly": "Faqat shu taom retseptidagilar.",
+    "tooMany": "{count} ta allergen belgilandi. Ularning hammasi rostdan ham shu taom retseptidami? Oshxonangizning boshqa joylarida ishlatiladigan allergenlarni “Menyu” boʻlimidagi “Oshxonada yana ishlatiladi” qismiga kiriting."
   },
   "summary": "{categories, plural, one {# ta kategoriya} other {# ta kategoriya}} · {items, plural, one {# ta mahsulot} other {# ta mahsulot}}",
   "confirmDelete": {

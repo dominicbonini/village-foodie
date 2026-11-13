@@ -28,9 +28,9 @@
     "ambiguous": "Tvetydig — matchar flera rätter; välj den som stämmer.",
     "assignTo": "Koppla till rätt…",
     "dismiss": "Avfärda",
-    "blanket": "Listan anger att <b>{list}</b> kan förekomma i <b>alla</b> rätter. Lägga till på varje rätt? (du bekräftar ändå varje rätt) <muted>— av som standard</muted>",
     "kitchenNotes": "Köksanteckningar (sparas i din allergeninformation)",
-    "matchSummary": "{n, plural, =0 {{matched} kopplade till en rätt.} one {{matched} kopplade till en rätt. {count} behöver kopplas av dig.} other {{matched} kopplade till en rätt. {count} behöver kopplas av dig.}}"
+    "matchSummary": "{n, plural, =0 {{matched} kopplade till en rätt.} one {{matched} kopplade till en rätt. {count} behöver kopplas av dig.} other {{matched} kopplade till en rätt. {count} behöver kopplas av dig.}}",
+    "blanketInfo": "Enligt din allergenlista kan {list} förekomma i alla rätter. Vi lägger till dem bland allergenerna som hanteras i ditt kök. Du kan kontrollera dem i sista steget."
   },
   "savedCard": {
     "showLess": "Visa mindre",
@@ -92,7 +92,8 @@
       "choose": "Välj hur kunderna ser allergeninformationen",
       "card": "Lägg till din allergenlista",
       "cardOptional": "Lägg till en allergenlista (valfritt)",
-      "review": "Kontrollera och bekräfta varje rätt"
+      "review": "Kontrollera och bekräfta varje rätt",
+      "kitchen": "Sista steget: ditt kök"
     },
     "heading": {
       "import": "Allergener",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Att hoppa över skjuter bara upp det — rätter du inte har bekräftat döljs för kunderna tills deras allergener är bekräftade.",
       "importIncomplete": "Bekräfta varje rätt för att fortsätta — eller ”Hoppa över allergeninställningen tills vidare”."
-    }
+    },
+    "recipeOnly": "Bara det som finns i den här rättens recept.",
+    "tooMany": "{count} allergener ikryssade. Finns verkligen alla i den här rättens recept? Allergener som används i andra rätter hör inte hit. Du kan lägga till dem i sista steget."
+  },
+  "kitchen": {
+    "title": "Vilka allergener hanteras i ditt kök?",
+    "body": "Vi har redan kryssat i dem som finns i dina rätter. Kryssa i andra som du använder i foodtrucken, till exempel till dagens rätter.",
+    "legendDishes": "i dina rätter",
+    "legendAdded": "tillagt av dig",
+    "customersSee": "Kunderna ser:",
+    "confirm": "Jag bekräftar att allergenerna för varje rätt stämmer och att jag håller dem uppdaterade."
   }
 }

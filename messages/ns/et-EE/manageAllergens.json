@@ -28,9 +28,9 @@
     "ambiguous": "Mitmetähenduslik — sobib mitme roaga; vali õige.",
     "assignTo": "Määra roale…",
     "dismiss": "Loobu",
-    "blanket": "Kaardi järgi võib <b>{list}</b> esineda <b>kõigis</b> roogades. Kas lisada igale roale? (iga roa kinnitad ikkagi ise) <muted>— vaikimisi väljas</muted>",
     "kitchenNotes": "Köögi märkmed (salvestatakse sinu allergeeniteabesse)",
-    "matchSummary": "{n, plural, =0 {Roaga seotud: {matched}.} one {Roaga seotud: {matched}. Sinu määramist vajab: {count}.} other {Roaga seotud: {matched}. Sinu määramist vajavad: {count}.}}"
+    "matchSummary": "{n, plural, =0 {Roaga seotud: {matched}.} one {Roaga seotud: {matched}. Sinu määramist vajab: {count}.} other {Roaga seotud: {matched}. Sinu määramist vajavad: {count}.}}",
+    "blanketInfo": "Sinu kaardi järgi võib {list} esineda kõigis roogades. Lisame need sinu köögis kasutatavate allergeenide hulka. Saad neid kontrollida viimases sammus."
   },
   "savedCard": {
     "showLess": "Näita vähem",
@@ -92,7 +92,8 @@
       "choose": "Vali, kuidas kliendid allergeeniteavet näevad",
       "card": "Lisa oma allergeenikaart",
       "cardOptional": "Lisa allergeenikaart (valikuline)",
-      "review": "Kontrolli ja kinnita iga roog"
+      "review": "Kontrolli ja kinnita iga roog",
+      "kitchen": "Viimane samm: sinu köök"
     },
     "heading": {
       "import": "Allergeenid",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Vahelejätmine lükkab asja edasi — road, mida sa pole kinnitanud, jäävad klientide eest peidetuks, kuni nende allergeenid on kinnitatud.",
       "importIncomplete": "Jätkamiseks kinnita iga roog — või vali „Jäta allergeenide seadistamine praegu vahele“."
-    }
+    },
+    "recipeOnly": "Ainult see, mis on selle roa retseptis.",
+    "tooMany": "{count} allergeeni märgitud. Kas need kõik on tõesti selle roa retseptis? Teistes roogades kasutatud allergeenid ei käi siia. Saad need lisada viimases sammus."
+  },
+  "kitchen": {
+    "title": "Milliseid allergeene sinu köögis kasutatakse?",
+    "body": "Märkisime juba need, mis on sinu roogades. Märgi ka teised, mida toiduautos kasutad, näiteks päevapakkumiste jaoks.",
+    "legendDishes": "sinu roogades",
+    "legendAdded": "sinu lisatud",
+    "customersSee": "Kliendid näevad:",
+    "confirm": "Kinnitan, et iga roa allergeenid on õiged, ja hoian need ajakohasena."
   }
 }

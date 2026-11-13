@@ -108,7 +108,9 @@
     "extract": "Hent ut med KI",
     "needReview": "{count, plural, one {# rett må} other {# retter må}} gjennomgås – kundene ser ikke allergeninfo før den er bekreftet",
     "reading": "Leser allergeninformasjonen…",
-    "pastePlaceholder": "Lim inn allergeninformasjonen her…"
+    "pastePlaceholder": "Lim inn allergeninformasjonen her…",
+    "kitchenLine": "Kjøkkenet håndterer også: {list}",
+    "kitchenEdit": "Rediger"
   },
   "deleteItem": {
     "title": "Fjerne {name}?",
@@ -172,7 +174,9 @@
     "add": "Legg til vare",
     "noGroups": "Ingen valggrupper ennå – opprett dem under Tillegg og mersalg.",
     "costToMake": "Kostpris",
-    "costHelp": "Valgfritt. Hva én porsjon koster deg i råvarer og emballasje. Brukes bare i rapportene dine; kundene ser det aldri."
+    "costHelp": "Valgfritt. Hva én porsjon koster deg i råvarer og emballasje. Brukes bare i rapportene dine; kundene ser det aldri.",
+    "recipeOnly": "Bare det som er i oppskriften til denne retten.",
+    "tooMany": "{count} allergener er krysset av. Er virkelig alle i oppskriften til denne retten? Allergener som brukes andre steder på kjøkkenet ditt, hører hjemme under «Kjøkkenet håndterer også» i fanen Meny."
   },
   "summary": "{categories, plural, one {# kategori} other {# kategorier}} · {items, plural, one {# vare} other {# varer}}",
   "confirmDelete": {

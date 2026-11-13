@@ -149,9 +149,7 @@
     "allergenTitle": "Allergéninformációk",
     "allergenNotProvided": "Nincsenek megadva allergénadatok — kérjük, egyeztessen közvetlenül a food truckkal.",
     "allergenCard": "📎 Allergéntáblázat megtekintése (PDF/kép)",
-    "allergensUsed": "Az étlapon előforduló allergének",
-    "allergensSeeEach": "Az egyes ételek konkrét allergénjeit az ételeknél találja.",
-    "allergenSevere": "Súlyos allergia esetén rendelés előtt vegye fel a kapcsolatot közvetlenül az árussal.",
+    "allergenSevere": "Ételallergia esetén rendelés előtt vegye fel a kapcsolatot az árussal.",
     "orderConfirmed": "Rendelés megerősítve!",
     "orderReceived": "Rendelés beérkezett!",
     "thanksReady": "Köszönjük! Megkaptuk a rendelését, hamarosan elkészül.",
@@ -172,7 +170,9 @@
     "backTo": "Vissza: {truck}",
     "notePlaceholderCompact": "Kérése van? pl. hagyma nélkül",
     "noteHeading": "Kérése van? <muted>— nem kötelező</muted>",
-    "notePlaceholder": "pl. hagyma nélkül, extra ropogós"
+    "notePlaceholder": "pl. hagyma nélkül, extra ropogós",
+    "kitchenHeading": "Ebben a konyhában előforduló allergének",
+    "kitchenNote": "Minden ételnél a receptjében lévő allergének szerepelnek. Nem garantálhatjuk, hogy egyik étel sem tartalmaz nyomokban allergéneket."
   },
   "plansPdf": {
     "title": "Csomagok és funkciók",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Nem egyértelmű — több ételhez is illik; válassza ki a megfelelőt.",
       "assignTo": "Hozzárendelés ételhez…",
       "dismiss": "Elvetés",
-      "blanket": "A kártya szerint <b>{list}</b> <b>minden</b> ételben előfordulhat. Hozzáadja minden ételhez? (mindegyiket így is megerősíti) <muted>— alapból kikapcsolva</muted>",
       "kitchenNotes": "Konyhai megjegyzések (az allergéninformációk közé mentve)",
-      "matchSummary": "{n, plural, =0 {{matched} tétel párosítva ételhez.} one {{matched} tétel párosítva ételhez. {count} tétel hozzárendelésre vár.} other {{matched} tétel párosítva ételhez. {count} tétel hozzárendelésre vár.}}"
+      "matchSummary": "{n, plural, =0 {{matched} tétel párosítva ételhez.} one {{matched} tétel párosítva ételhez. {count} tétel hozzárendelésre vár.} other {{matched} tétel párosítva ételhez. {count} tétel hozzárendelésre vár.}}",
+      "blanketInfo": "A kártyája szerint {list} minden ételben előfordulhat. Hozzáadjuk ezeket a konyhájában előforduló allergénekhez. Az utolsó lépésben ellenőrizheti őket."
     },
     "savedCard": {
       "showLess": "Kevesebb",
@@ -2468,7 +2468,8 @@
         "choose": "Válassza ki, hogyan lássák a vásárlók az allergéninformációkat",
         "card": "Adja hozzá az allergénkártyáját",
         "cardOptional": "Allergénkártya hozzáadása (nem kötelező)",
-        "review": "Minden étel ellenőrzése és megerősítése"
+        "review": "Minden étel ellenőrzése és megerősítése",
+        "kitchen": "Utolsó lépés: az Ön konyhája"
       },
       "heading": {
         "import": "Allergének",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "A kihagyás csak elhalasztja — a meg nem erősített ételek rejtve maradnak a vásárlók elől, amíg az allergénjeiket meg nem erősítik.",
         "importIncomplete": "A folytatáshoz erősítsen meg minden ételt — vagy válassza ezt: „Allergénbeállítás kihagyása most”."
-      }
+      },
+      "recipeOnly": "Csak ami ennek az ételnek a receptjében van.",
+      "tooMany": "{count} allergén bejelölve. Valóban mind benne van ennek az ételnek a receptjében? A más ételekben használt allergének nem ide tartoznak. Ezeket az utolsó lépésben adhatja hozzá."
+    },
+    "kitchen": {
+      "title": "Milyen allergének fordulnak elő az Ön konyhájában?",
+      "body": "Az ételeiben már szereplő allergéneket bejelöltük. Jelölje be azokat is, amelyeket a food truckban használ, például napi ajánlatokhoz.",
+      "legendDishes": "az ételeiben",
+      "legendAdded": "Ön adta hozzá",
+      "customersSee": "A vásárlók ezt látják:",
+      "confirm": "Megerősítem, hogy minden étel allergénjei helyesek, és naprakészen tartom őket."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Kinyerés AI segítségével",
       "needReview": "{count, plural, one {# ételt} other {# ételt}} ellenőrizni kell — a vásárlók a megerősítésig nem látják az allergénadatokat",
       "reading": "Allergénadatok beolvasása…",
-      "pastePlaceholder": "Illessze be ide az allergénadatait…"
+      "pastePlaceholder": "Illessze be ide az allergénadatait…",
+      "kitchenLine": "A konyhában még előfordul: {list}",
+      "kitchenEdit": "Szerkesztés"
     },
     "deleteItem": {
       "title": "{name} eltávolítása?",
@@ -2942,7 +2955,9 @@
       "add": "Tétel hozzáadása",
       "noGroups": "Még nincsenek opciócsoportok — hozza létre őket az Extrák és ráajánlások részben.",
       "costToMake": "Előállítási költség",
-      "costHelp": "Nem kötelező. Mennyibe kerül Önnek egy adag alapanyagban és csomagolásban. Csak a kimutatásaiban jelenik meg; a vásárlók soha nem látják."
+      "costHelp": "Nem kötelező. Mennyibe kerül Önnek egy adag alapanyagban és csomagolásban. Csak a kimutatásaiban jelenik meg; a vásárlók soha nem látják.",
+      "recipeOnly": "Csak ami ennek az ételnek a receptjében van.",
+      "tooMany": "{count} allergén bejelölve. Valóban mind benne van ennek az ételnek a receptjében? A konyhájában máshol használt allergének az Étlap fül „A konyhában még előfordul” részébe kerülnek."
     },
     "summary": "{categories, plural, one {# kategória} other {# kategória}} · {items, plural, one {# tétel} other {# tétel}}",
     "confirmDelete": {

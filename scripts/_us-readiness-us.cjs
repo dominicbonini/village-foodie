@@ -45,7 +45,8 @@ module.exports = async function us(x) {
   const usMenu = await menuPrompt({ id: 'us-truck', name: 'Austin Eats', money: { currency: 'USD', locale: 'en-US' }, allergenSet: 'us9' })
   t('importer prompt: names the US 9, not the UK 14', usMenu.includes('The 9 major US food allergens') && usMenu.includes(US_9) && !usMenu.includes('14 UK') && usMenu.includes('["Milk", "Wheat", "Peanuts"]'), usMenu.slice(0, 200))
   const ukExplicit = await menuPrompt({ id: 'test-truck', name: 'Pizza Kitchen', money: { currency: 'GBP', locale: 'en-GB' }, allergenSet: 'uk14' })
-  t('importer prompt with the GB set passed explicitly (as the routes now do) = BEFORE', ukExplicit === before.menuPrompt)
+  // ⚠️ RE-PINNED (allergen-kitchen-1): compared with the "may contain" edit taken out (scripts/_named-allergen-kitchen-1.cjs).
+  t('importer prompt with the GB set passed explicitly (as the routes now do) = BEFORE', require('./_named-allergen-kitchen-1.cjs').undoMenuPrompt(ukExplicit) === before.menuPrompt)
   t('the importer callers pass the truck\'s set', /allergenSet/.test(read('app/api/manage/process-menu/route.ts')) && /allergenSet/.test(read('lib/provision-demo.ts')))
 
   /* ── 3 · metadata ── */

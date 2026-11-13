@@ -148,9 +148,7 @@
   "allergenTitle": "過敏原資訊",
   "allergenNotProvided": "未提供過敏原資訊，請直接向餐車確認。",
   "allergenCard": "📎 查看過敏原標示（PDF／圖片）",
-  "allergensUsed": "本菜單使用的過敏原",
-  "allergensSeeEach": "各餐點的過敏原請見個別品項。",
-  "allergenSevere": "如果你有嚴重過敏，請在下單前直接與店家聯繫。",
+  "allergenSevere": "如果你有食物過敏，請在下單前與店家聯繫。",
   "orderConfirmed": "訂單已確認！",
   "orderReceived": "已收到訂單！",
   "thanksReady": "謝謝！我們已收到你的訂單，很快就會準備好。",
@@ -171,5 +169,7 @@
   "backTo": "返回 {truck}",
   "notePlaceholderCompact": "有其他需求嗎？例如：不要洋蔥",
   "noteHeading": "有其他需求嗎？<muted>（選填）</muted>",
-  "notePlaceholder": "例如：不要洋蔥、炸酥一點"
+  "notePlaceholder": "例如：不要洋蔥、炸酥一點",
+  "kitchenHeading": "本廚房使用的過敏原",
+  "kitchenNote": "每道餐點都會標示其食譜中的過敏原。我們無法保證任何餐點完全不含微量過敏原。"
 }

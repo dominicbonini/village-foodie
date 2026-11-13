@@ -108,7 +108,9 @@
     "extract": "Võta välja tehisaru abil",
     "needReview": "{count, plural, one {# roog vajab} other {# rooga vajab}} ülevaatust — kliendid ei näe allergeeniteavet enne kinnitamist",
     "reading": "Loen allergeeniteavet…",
-    "pastePlaceholder": "Kleebi oma allergeeniteave siia…"
+    "pastePlaceholder": "Kleebi oma allergeeniteave siia…",
+    "kitchenLine": "Köögis kasutatakse ka: {list}",
+    "kitchenEdit": "Muuda"
   },
   "deleteItem": {
     "title": "Kas eemaldada toode {name}?",
@@ -172,7 +174,9 @@
     "add": "Lisa toode",
     "noGroups": "Valikugruppe veel pole — loo need jaotises Lisad ja lisamüük.",
     "costToMake": "Valmistamise kulu",
-    "costHelp": "Valikuline. Kui palju üks portsjon sulle koostisosade ja pakendi peale maksma läheb. Kasutatakse ainult sinu aruannetes; kliendid ei näe seda kunagi."
+    "costHelp": "Valikuline. Kui palju üks portsjon sulle koostisosade ja pakendi peale maksma läheb. Kasutatakse ainult sinu aruannetes; kliendid ei näe seda kunagi.",
+    "recipeOnly": "Ainult see, mis on selle roa retseptis.",
+    "tooMany": "{count} allergeeni märgitud. Kas need kõik on tõesti selle roa retseptis? Mujal sinu köögis kasutatud allergeenid käivad vahekaardil Menüü jaotisesse „Köögis kasutatakse ka“."
   },
   "summary": "{categories, plural, one {# kategooria} other {# kategooriat}} · {items, plural, one {# toode} other {# toodet}}",
   "confirmDelete": {

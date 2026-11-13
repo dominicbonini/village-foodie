@@ -148,9 +148,7 @@
   "allergenTitle": "Allergeninformationen",
   "allergenNotProvided": "Keine Allergeninformationen angegeben – bitte fragen Sie direkt beim Foodtruck nach.",
   "allergenCard": "📎 Allergenkarte ansehen (PDF/Bild)",
-  "allergensUsed": "Allergene auf dieser Speisekarte",
-  "allergensSeeEach": "Die jeweiligen Allergene finden Sie bei jedem Gericht.",
-  "allergenSevere": "Wenn Sie eine schwere Allergie haben, wenden Sie sich bitte vor der Bestellung direkt an den Betreiber.",
+  "allergenSevere": "Wenn Sie eine Lebensmittelallergie haben, wenden Sie sich bitte vor der Bestellung an den Betreiber.",
   "orderConfirmed": "Bestellung bestätigt!",
   "orderReceived": "Bestellung eingegangen!",
   "thanksReady": "Vielen Dank! Wir haben Ihre Bestellung erhalten, sie ist bald fertig.",
@@ -171,5 +169,7 @@
   "backTo": "Zurück zu {truck}",
   "notePlaceholderCompact": "Besondere Wünsche? z. B. ohne Zwiebeln",
   "noteHeading": "Besondere Wünsche? <muted>– optional</muted>",
-  "notePlaceholder": "z. B. ohne Zwiebeln, extra knusprig"
+  "notePlaceholder": "z. B. ohne Zwiebeln, extra knusprig",
+  "kitchenHeading": "In dieser Küche verwendete Allergene",
+  "kitchenNote": "Bei jedem Gericht stehen die Allergene aus seinem Rezept. Wir können nicht garantieren, dass ein Gericht frei von Spuren ist."
 }

@@ -148,9 +148,7 @@
   "allergenTitle": "Allergeeniteave",
   "allergenNotProvided": "Allergeeniteavet pole lisatud — palun täpsusta otse toiduautolt.",
   "allergenCard": "📎 Vaata allergeenikaarti (PDF/pilt)",
-  "allergensUsed": "Selles menüüs kasutatud allergeenid",
-  "allergensSeeEach": "Iga roa konkreetsed allergeenid leiad roa juurest.",
-  "allergenSevere": "Kui sul on raske allergia, võta palun enne tellimist otse müüjaga ühendust.",
+  "allergenSevere": "Kui sul on toiduallergia, võta enne tellimist müüjaga ühendust.",
   "orderConfirmed": "Tellimus kinnitatud!",
   "orderReceived": "Tellimus vastu võetud!",
   "thanksReady": "Aitäh! Saime sinu tellimuse kätte ja see on varsti valmis.",
@@ -171,5 +169,7 @@
   "backTo": "Tagasi: {truck}",
   "notePlaceholderCompact": "Erisoove? nt ilma sibulata",
   "noteHeading": "Erisoove? <muted>— valikuline</muted>",
-  "notePlaceholder": "nt ilma sibulata, eriti krõbe"
+  "notePlaceholder": "nt ilma sibulata, eriti krõbe",
+  "kitchenHeading": "Selles köögis kasutatavad allergeenid",
+  "kitchenNote": "Iga roa juures on näidatud selle retsepti allergeenid. Me ei saa tagada, et ükski roog ei sisalda jälgi."
 }

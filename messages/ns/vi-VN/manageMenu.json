@@ -108,7 +108,9 @@
     "extract": "Trích xuất bằng AI",
     "needReview": "{count, plural, one {# món cần} other {# món cần}} xem lại — khách chưa thấy thông tin chất gây dị ứng cho đến khi được xác nhận",
     "reading": "Đang đọc thông tin chất gây dị ứng…",
-    "pastePlaceholder": "Dán thông tin chất gây dị ứng của bạn vào đây…"
+    "pastePlaceholder": "Dán thông tin chất gây dị ứng của bạn vào đây…",
+    "kitchenLine": "Bếp cũng dùng: {list}",
+    "kitchenEdit": "Sửa"
   },
   "deleteItem": {
     "title": "Xóa món: {name}?",
@@ -172,7 +174,9 @@
     "add": "Thêm món",
     "noGroups": "Chưa có nhóm tùy chọn — hãy tạo trong Tùy chọn thêm & gợi ý mua thêm.",
     "costToMake": "Giá vốn",
-    "costHelp": "Không bắt buộc. Chi phí nguyên liệu và bao bì cho một phần. Chỉ dùng trong báo cáo của bạn; khách không bao giờ thấy."
+    "costHelp": "Không bắt buộc. Chi phí nguyên liệu và bao bì cho một phần. Chỉ dùng trong báo cáo của bạn; khách không bao giờ thấy.",
+    "recipeOnly": "Chỉ những gì có trong công thức của món này.",
+    "tooMany": "Đã đánh dấu {count} chất gây dị ứng. Tất cả có thật sự nằm trong công thức của món này không? Chất gây dị ứng dùng ở chỗ khác trong bếp của bạn thì đưa vào “Bếp cũng dùng” ở thẻ Thực đơn."
   },
   "summary": "{categories, plural, one {# danh mục} other {# danh mục}} · {items, plural, one {# món} other {# món}}",
   "confirmDelete": {

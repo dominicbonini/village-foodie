@@ -108,7 +108,9 @@
     "extract": "Nolasīt ar MI",
     "needReview": "{count, plural, zero {# ēdieni jāpārskata} one {# ēdiens jāpārskata} other {# ēdieni jāpārskata}} — klienti neredz alergēnu informāciju, kamēr tā nav apstiprināta",
     "reading": "Nolasa alergēnu informāciju…",
-    "pastePlaceholder": "Ielīmējiet alergēnu informāciju šeit…"
+    "pastePlaceholder": "Ielīmējiet alergēnu informāciju šeit…",
+    "kitchenLine": "Virtuvē izmanto arī: {list}",
+    "kitchenEdit": "Rediģēt"
   },
   "deleteItem": {
     "title": "Noņemt {name}?",
@@ -172,7 +174,9 @@
     "add": "Pievienot pozīciju",
     "noGroups": "Vēl nav iespēju grupu — izveidojiet tās sadaļā “Piedevas un papildpiedāvājumi”.",
     "costToMake": "Pagatavošanas izmaksas",
-    "costHelp": "Neobligāti. Cik jums izmaksā viena porcija — sastāvdaļas un iepakojums. Tiek izmantots tikai jūsu atskaitēs; klienti to nekad neredz."
+    "costHelp": "Neobligāti. Cik jums izmaksā viena porcija — sastāvdaļas un iepakojums. Tiek izmantots tikai jūsu atskaitēs; klienti to nekad neredz.",
+    "recipeOnly": "Tikai tas, kas ir šī ēdiena receptē.",
+    "tooMany": "Atzīmētie alergēni: {count}. Vai tiešām tie visi ir šī ēdiena receptē? Citur jūsu virtuvē izmantotos alergēnus norādiet sadaļā “Virtuvē izmanto arī” cilnē “Ēdienkarte”."
   },
   "summary": "{categories, plural, zero {# kategorijas} one {# kategorija} other {# kategorijas}} · {items, plural, zero {# pozīcijas} one {# pozīcija} other {# pozīcijas}}",
   "confirmDelete": {

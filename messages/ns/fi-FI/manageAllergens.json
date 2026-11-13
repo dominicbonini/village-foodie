@@ -28,9 +28,9 @@
     "ambiguous": "Epäselvä — sopii useaan annokseen; valitse oikea.",
     "assignTo": "Kohdista annokseen…",
     "dismiss": "Hylkää",
-    "blanket": "Kortin mukaan <b>{list}</b> voi esiintyä <b>kaikissa</b> annoksissa. Lisätäänkö jokaiseen annokseen? (vahvistat silti jokaisen erikseen) <muted>— oletuksena pois päältä</muted>",
     "kitchenNotes": "Keittiön huomautukset (tallennetaan allergeenitietoihisi)",
-    "matchSummary": "{n, plural, =0 {{matched} yhdistetty annokseen.} one {{matched} yhdistetty annokseen. {count} odottaa kohdistamista.} other {{matched} yhdistetty annokseen. {count} odottaa kohdistamista.}}"
+    "matchSummary": "{n, plural, =0 {{matched} yhdistetty annokseen.} one {{matched} yhdistetty annokseen. {count} odottaa kohdistamista.} other {{matched} yhdistetty annokseen. {count} odottaa kohdistamista.}}",
+    "blanketInfo": "Korttisi mukaan {list} voi esiintyä kaikissa annoksissa. Lisäämme ne keittiössäsi käsiteltäviin allergeeneihin. Voit tarkistaa ne viimeisessä vaiheessa."
   },
   "savedCard": {
     "showLess": "Näytä vähemmän",
@@ -92,7 +92,8 @@
       "choose": "Valitse, miten asiakkaat näkevät allergeenitiedot",
       "card": "Lisää allergeenikorttisi",
       "cardOptional": "Lisää allergeenikortti (valinnainen)",
-      "review": "Tarkista ja vahvista jokainen annos"
+      "review": "Tarkista ja vahvista jokainen annos",
+      "kitchen": "Viimeinen vaihe: keittiösi"
     },
     "heading": {
       "import": "Allergeenit",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Ohittaminen siirtää myöhemmäksi — annokset, joita et ole vahvistanut, pysyvät piilossa asiakkailta, kunnes niiden allergeenit on vahvistettu.",
       "importIncomplete": "Vahvista jokainen annos jatkaaksesi — tai ”Ohita allergeenien asetukset toistaiseksi”."
-    }
+    },
+    "recipeOnly": "Vain se, mitä tämän annoksen reseptissä on.",
+    "tooMany": "{count} allergeenia rastitettu. Ovatko ne kaikki todella tämän annoksen reseptissä? Muissa annoksissa käytetyt allergeenit eivät kuulu tähän. Voit lisätä ne viimeisessä vaiheessa."
+  },
+  "kitchen": {
+    "title": "Mitä allergeeneja keittiössäsi käsitellään?",
+    "body": "Olemme jo rastittaneet annoksissasi olevat allergeenit. Rastita muut, joita käytät ruokarekassa, esimerkiksi päivän erikoisannoksissa.",
+    "legendDishes": "annoksissasi",
+    "legendAdded": "itse lisätty",
+    "customersSee": "Asiakkaat näkevät:",
+    "confirm": "Vahvistan, että jokaisen annoksen allergeenit ovat oikein, ja pidän ne ajan tasalla."
   }
 }

@@ -28,9 +28,9 @@
     "ambiguous": "Belirsiz — birkaç ürünle eşleşiyor; doğru olanı seçin.",
     "assignTo": "Ürüne ata…",
     "dismiss": "Yok say",
-    "blanket": "Kartta <b>{list}</b> maddelerinin <b>tüm</b> ürünlerde bulunabileceği yazıyor. Her ürüne eklensin mi? (yine de her birini ayrıca onaylayacaksınız) <muted>— varsayılan olarak kapalı</muted>",
     "kitchenNotes": "Mutfak notları (alerjen bilgilerinize kaydedilir)",
-    "matchSummary": "{n, plural, =0 {{matched} öğe bir ürünle eşleşti.} one {{matched} öğe bir ürünle eşleşti. {count} öğeyi sizin atamanız gerekiyor.} other {{matched} öğe bir ürünle eşleşti. {count} öğeyi sizin atamanız gerekiyor.}}"
+    "matchSummary": "{n, plural, =0 {{matched} öğe bir ürünle eşleşti.} one {{matched} öğe bir ürünle eşleşti. {count} öğeyi sizin atamanız gerekiyor.} other {{matched} öğe bir ürünle eşleşti. {count} öğeyi sizin atamanız gerekiyor.}}",
+    "blanketInfo": "Kartınıza göre {list} tüm ürünlerde bulunabilir. Bunları mutfağınızda kullanılan alerjenlere ekleyeceğiz. Son adımda kontrol edebilirsiniz."
   },
   "savedCard": {
     "showLess": "Daha az göster",
@@ -92,7 +92,8 @@
       "choose": "Müşterilerin alerjen bilgilerini nasıl göreceğini seçin",
       "card": "Alerjen kartınızı ekleyin",
       "cardOptional": "Alerjen kartı ekleyin (isteğe bağlı)",
-      "review": "Her ürünü kontrol edip onaylayın"
+      "review": "Her ürünü kontrol edip onaylayın",
+      "kitchen": "Son adım: mutfağınız"
     },
     "heading": {
       "import": "Alerjenler",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Atlamak işi erteler — onaylamadığınız ürünler, alerjenleri onaylanana kadar müşterilerden gizli kalır.",
       "importIncomplete": "Devam etmek için her ürünü onaylayın — ya da “Alerjen ayarlarını şimdilik atla”."
-    }
+    },
+    "recipeOnly": "Yalnızca bu ürünün tarifinde olanlar.",
+    "tooMany": "{count} alerjen işaretlendi. Hepsi gerçekten bu ürünün tarifinde mi? Başka ürünlerde kullanılan alerjenler buraya girilmez. Onları son adımda ekleyebilirsiniz."
+  },
+  "kitchen": {
+    "title": "Mutfağınızda hangi alerjenler kullanılıyor?",
+    "body": "Ürünlerinizde zaten olanları işaretledik. Food truck’ta kullandığınız diğerlerini de işaretleyin, örneğin günün özel ürünleri için.",
+    "legendDishes": "ürünlerinizde",
+    "legendAdded": "sizin eklediğiniz",
+    "customersSee": "Müşterilerin göreceği:",
+    "confirm": "Her ürünün alerjenlerinin doğru olduğunu onaylıyorum ve bunları güncel tutacağım."
   }
 }

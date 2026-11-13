@@ -108,7 +108,9 @@
     "extract": "Ambil dengan AI",
     "needReview": "{count, plural, one {# hidangan perlu} other {# hidangan perlu}} ditinjau — pelanggan tidak bisa melihat info alergen sampai dikonfirmasi",
     "reading": "Membaca informasi alergen…",
-    "pastePlaceholder": "Tempel informasi alergen Anda di sini…"
+    "pastePlaceholder": "Tempel informasi alergen Anda di sini…",
+    "kitchenLine": "Dapur juga memakai: {list}",
+    "kitchenEdit": "Edit"
   },
   "deleteItem": {
     "title": "Hapus item: {name}?",
@@ -172,7 +174,9 @@
     "add": "Tambah item",
     "noGroups": "Belum ada grup pilihan — buat di Tambahan & upsell.",
     "costToMake": "Biaya pembuatan",
-    "costHelp": "Opsional. Biaya bahan dan kemasan untuk satu porsi. Hanya dipakai di laporan Anda; pelanggan tidak pernah melihatnya."
+    "costHelp": "Opsional. Biaya bahan dan kemasan untuk satu porsi. Hanya dipakai di laporan Anda; pelanggan tidak pernah melihatnya.",
+    "recipeOnly": "Hanya yang ada di resep hidangan ini.",
+    "tooMany": "{count} alergen dicentang. Benarkah semuanya ada di resep hidangan ini? Alergen yang dipakai di bagian lain dapur Anda masuk ke “Dapur juga memakai” di tab Menu."
   },
   "summary": "{categories, plural, one {# kategori} other {# kategori}} · {items, plural, one {# item} other {# item}}",
   "confirmDelete": {

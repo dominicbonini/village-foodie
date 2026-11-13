@@ -82,7 +82,6 @@
  "landing.meta.description": "Take orders and pre-orders wherever you are, without queues. Online ordering and a kitchen screen for food trucks in {country}. It is not a till system.",
  "landing.meta.title": "Ordering system for food trucks — HatchGrab {country}",
  "landing.steps.menuBody": "Photograph your board or paste it in. Items, prices and extras all come across on their own. You just check they’re right.",
- "manageAllergens.cardUpload.blanket": "The card says <b>{list}</b> may be present across <b>all</b> dishes. Add to every dish? (you’ll still confirm each) <muted>— off by default</muted>",
  "manageAllergens.wizard.cardPanel.intro": "Customers will see this card as the menu’s allergen reference. Per-dish allergens stay hidden in card-only mode (your dish data is kept for if you switch to per-dish later).",
  "manageAllergens.wizard.review.detected": "Detected from your menu — <b>check these</b>. Allergens stay hidden from customers until you confirm each dish.",
  "manageCharges.fee.fixedAria": "Service fee fixed amount",

@@ -149,9 +149,7 @@
     "allergenTitle": "Thông tin chất gây dị ứng",
     "allergenNotProvided": "Chưa có thông tin chất gây dị ứng — vui lòng hỏi trực tiếp xe.",
     "allergenCard": "📎 Xem bảng chất gây dị ứng (PDF/ảnh)",
-    "allergensUsed": "Các chất gây dị ứng có trong thực đơn này",
-    "allergensSeeEach": "Xem từng món để biết chất gây dị ứng cụ thể.",
-    "allergenSevere": "Nếu bạn bị dị ứng nặng, vui lòng liên hệ trực tiếp người bán trước khi đặt món.",
+    "allergenSevere": "Nếu bạn bị dị ứng thực phẩm, vui lòng liên hệ người bán trước khi đặt món.",
     "orderConfirmed": "Đơn đã được xác nhận!",
     "orderReceived": "Đã nhận đơn!",
     "thanksReady": "Cảm ơn bạn! Chúng tôi đã nhận đơn và món sẽ sớm sẵn sàng.",
@@ -172,7 +170,9 @@
     "backTo": "Quay lại {truck}",
     "notePlaceholderCompact": "Có yêu cầu gì không? VD: không hành",
     "noteHeading": "Có yêu cầu gì không? <muted>— không bắt buộc</muted>",
-    "notePlaceholder": "Ví dụ: không hành, thật giòn"
+    "notePlaceholder": "Ví dụ: không hành, thật giòn",
+    "kitchenHeading": "Chất gây dị ứng được dùng trong bếp này",
+    "kitchenNote": "Mỗi món hiển thị các chất gây dị ứng trong công thức của món. Chúng tôi không thể đảm bảo món nào hoàn toàn không có vết chất gây dị ứng."
   },
   "plansPdf": {
     "title": "Gói và tính năng",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Chưa rõ — khớp với nhiều món; hãy chọn đúng món.",
       "assignTo": "Gán cho món…",
       "dismiss": "Bỏ qua",
-      "blanket": "Bảng ghi rằng <b>{list}</b> có thể có trong <b>tất cả</b> các món. Thêm vào mọi món? (bạn vẫn sẽ xác nhận từng món) <muted>— mặc định tắt</muted>",
       "kitchenNotes": "Ghi chú của bếp (lưu vào thông tin chất gây dị ứng)",
-      "matchSummary": "{n, plural, =0 {{matched} mục đã khớp với món.} one {{matched} mục đã khớp với món. {count} mục cần bạn gán.} other {{matched} mục đã khớp với món. {count} mục cần bạn gán.}}"
+      "matchSummary": "{n, plural, =0 {{matched} mục đã khớp với món.} one {{matched} mục đã khớp với món. {count} mục cần bạn gán.} other {{matched} mục đã khớp với món. {count} mục cần bạn gán.}}",
+      "blanketInfo": "Bảng của bạn ghi rằng {list} có thể có trong tất cả các món. Chúng tôi sẽ thêm chúng vào các chất gây dị ứng mà bếp của bạn dùng. Bạn có thể kiểm tra ở bước cuối."
     },
     "savedCard": {
       "showLess": "Thu gọn",
@@ -2468,7 +2468,8 @@
         "choose": "Chọn cách khách xem thông tin chất gây dị ứng",
         "card": "Thêm bảng chất gây dị ứng",
         "cardOptional": "Thêm bảng chất gây dị ứng (không bắt buộc)",
-        "review": "Kiểm tra & xác nhận từng món"
+        "review": "Kiểm tra & xác nhận từng món",
+        "kitchen": "Bước cuối: bếp của bạn"
       },
       "heading": {
         "import": "Chất gây dị ứng",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Bỏ qua chỉ là để sau — các món bạn chưa xác nhận vẫn bị ẩn với khách cho đến khi chất gây dị ứng được xác nhận.",
         "importIncomplete": "Hãy xác nhận mọi món để tiếp tục — hoặc chọn “Tạm bỏ qua thiết lập chất gây dị ứng”."
-      }
+      },
+      "recipeOnly": "Chỉ những gì có trong công thức của món này.",
+      "tooMany": "Đã đánh dấu {count} chất gây dị ứng. Tất cả có thật sự nằm trong công thức của món này không? Chất gây dị ứng dùng trong món khác không đánh dấu ở đây. Bạn có thể thêm chúng ở bước cuối."
+    },
+    "kitchen": {
+      "title": "Bếp của bạn dùng những chất gây dị ứng nào?",
+      "body": "Chúng tôi đã đánh dấu những chất có trong các món của bạn. Hãy đánh dấu thêm những chất khác bạn dùng trên xe, ví dụ cho món đặc biệt trong ngày.",
+      "legendDishes": "trong các món của bạn",
+      "legendAdded": "do bạn thêm",
+      "customersSee": "Khách hàng sẽ thấy:",
+      "confirm": "Tôi xác nhận chất gây dị ứng của từng món là chính xác và tôi sẽ luôn cập nhật."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Trích xuất bằng AI",
       "needReview": "{count, plural, one {# món cần} other {# món cần}} xem lại — khách chưa thấy thông tin chất gây dị ứng cho đến khi được xác nhận",
       "reading": "Đang đọc thông tin chất gây dị ứng…",
-      "pastePlaceholder": "Dán thông tin chất gây dị ứng của bạn vào đây…"
+      "pastePlaceholder": "Dán thông tin chất gây dị ứng của bạn vào đây…",
+      "kitchenLine": "Bếp cũng dùng: {list}",
+      "kitchenEdit": "Sửa"
     },
     "deleteItem": {
       "title": "Xóa món: {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Thêm món",
       "noGroups": "Chưa có nhóm tùy chọn — hãy tạo trong Tùy chọn thêm & gợi ý mua thêm.",
       "costToMake": "Giá vốn",
-      "costHelp": "Không bắt buộc. Chi phí nguyên liệu và bao bì cho một phần. Chỉ dùng trong báo cáo của bạn; khách không bao giờ thấy."
+      "costHelp": "Không bắt buộc. Chi phí nguyên liệu và bao bì cho một phần. Chỉ dùng trong báo cáo của bạn; khách không bao giờ thấy.",
+      "recipeOnly": "Chỉ những gì có trong công thức của món này.",
+      "tooMany": "Đã đánh dấu {count} chất gây dị ứng. Tất cả có thật sự nằm trong công thức của món này không? Chất gây dị ứng dùng ở chỗ khác trong bếp của bạn thì đưa vào “Bếp cũng dùng” ở thẻ Thực đơn."
     },
     "summary": "{categories, plural, one {# danh mục} other {# danh mục}} · {items, plural, one {# món} other {# món}}",
     "confirmDelete": {

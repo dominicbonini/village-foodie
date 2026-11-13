@@ -108,7 +108,9 @@
     "extract": "Vytáhnout pomocí AI",
     "needReview": "{count, plural, one {# jídlo čeká} few {# jídla čekají} other {# jídel čeká}} na kontrolu — zákazníci informace o alergenech neuvidí, dokud je nepotvrdíte",
     "reading": "Načítání informací o alergenech…",
-    "pastePlaceholder": "Sem vložte informace o alergenech…"
+    "pastePlaceholder": "Sem vložte informace o alergenech…",
+    "kitchenLine": "Kuchyně používá také: {list}",
+    "kitchenEdit": "Upravit"
   },
   "deleteItem": {
     "title": "Odstranit položku {name}?",
@@ -172,7 +174,9 @@
     "add": "Přidat položku",
     "noGroups": "Zatím žádné skupiny možností — vytvořte je v sekci Doplňky a nabídky navíc.",
     "costToMake": "Náklady na přípravu",
-    "costHelp": "Nepovinné. Kolik vás stojí jedna porce za suroviny a obal. Používá se jen ve vašich statistikách; zákazníci to nikdy neuvidí."
+    "costHelp": "Nepovinné. Kolik vás stojí jedna porce za suroviny a obal. Používá se jen ve vašich statistikách; zákazníci to nikdy neuvidí.",
+    "recipeOnly": "Jen to, co je v receptu tohoto jídla.",
+    "tooMany": "Zaškrtnuté alergeny: {count}. Jsou opravdu všechny v receptu tohoto jídla? Alergeny používané jinde ve vaší kuchyni patří do „Kuchyně používá také“ na kartě Jídelní lístek."
   },
   "summary": "{categories, plural, one {# kategorie} few {# kategorie} other {# kategorií}} · {items, plural, one {# položka} few {# položky} other {# položek}}",
   "confirmDelete": {

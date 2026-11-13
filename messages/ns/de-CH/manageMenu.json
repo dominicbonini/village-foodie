@@ -3,6 +3,10 @@
     "notesHelp": "Kunden können zu jedem Artikel eine Notiz hinzufügen (z. B. „ohne Zwiebeln“). Der Foodtruck kann unabhängig davon immer Artikelnotizen hinzufügen. Alle Bestellungen haben ausserdem ein Notizfeld für die gesamte Bestellung."
   },
   "item": {
-    "close": "Schliessen"
+    "close": "Schliessen",
+    "tooMany": "{count} Allergene angehakt. Stehen wirklich alle im Rezept dieses Gerichts? Allergene, die anderswo in Ihrer Küche verwendet werden, gehören unter „In der Küche ausserdem verwendet“ im Tab „Speisekarte“."
+  },
+  "allergens": {
+    "kitchenLine": "In der Küche ausserdem verwendet: {list}"
   }
 }

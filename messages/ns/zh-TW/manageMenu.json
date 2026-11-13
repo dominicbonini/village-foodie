@@ -108,7 +108,9 @@
     "extract": "用 AI 擷取",
     "needReview": "{count, plural, one {# 道餐點需要} other {# 道餐點需要}}檢查——確認之前，顧客看不到過敏原資訊",
     "reading": "正在讀取過敏原資訊…",
-    "pastePlaceholder": "在這裡貼上你的過敏原資訊…"
+    "pastePlaceholder": "在這裡貼上你的過敏原資訊…",
+    "kitchenLine": "廚房另外會使用：{list}",
+    "kitchenEdit": "編輯"
   },
   "deleteItem": {
     "title": "要移除「{name}」嗎？",
@@ -172,7 +174,9 @@
     "add": "新增品項",
     "noGroups": "還沒有選項群組——請到「加料與加購」建立。",
     "costToMake": "製作成本",
-    "costHelp": "選填。一份餐點的食材和包材成本。只用在你的報表中，顧客永遠看不到。"
+    "costHelp": "選填。一份餐點的食材和包材成本。只用在你的報表中，顧客永遠看不到。",
+    "recipeOnly": "只勾選這道餐點食譜中有的。",
+    "tooMany": "已勾選 {count} 種過敏原。真的都在這道餐點的食譜裡嗎？廚房其他地方用到的過敏原，請放到「菜單」分頁的「廚房另外會使用」。"
   },
   "summary": "{categories, plural, one {# 個分類} other {# 個分類}} · {items, plural, one {# 個品項} other {# 個品項}}",
   "confirmDelete": {

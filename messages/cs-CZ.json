@@ -149,9 +149,7 @@
     "allergenTitle": "Informace o alergenech",
     "allergenNotProvided": "Informace o alergenech nebyly uvedeny — ověřte si je prosím přímo u food trucku.",
     "allergenCard": "📎 Zobrazit kartu alergenů (PDF/obrázek)",
-    "allergensUsed": "Alergeny v tomto jídelním lístku",
-    "allergensSeeEach": "Konkrétní alergeny najdete u jednotlivých jídel.",
-    "allergenSevere": "Máte-li závažnou alergii, kontaktujte prosím prodejce před objednáním přímo.",
+    "allergenSevere": "Máte-li potravinovou alergii, kontaktujte prosím před objednáním prodejce.",
     "orderConfirmed": "Objednávka potvrzena!",
     "orderReceived": "Objednávka přijata!",
     "thanksReady": "Děkujeme! Vaši objednávku jsme přijali a brzy bude připravená.",
@@ -172,7 +170,9 @@
     "backTo": "Zpět k food trucku {truck}",
     "notePlaceholderCompact": "Máte nějaké přání? např. bez cibule",
     "noteHeading": "Máte nějaké přání? <muted>— nepovinné</muted>",
-    "notePlaceholder": "např. bez cibule, extra křupavé"
+    "notePlaceholder": "např. bez cibule, extra křupavé",
+    "kitchenHeading": "Alergeny používané v této kuchyni",
+    "kitchenNote": "U každého jídla jsou uvedeny alergeny z jeho receptu. Nemůžeme zaručit, že žádné jídlo neobsahuje stopy."
   },
   "plansPdf": {
     "title": "Tarify a funkce",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Nejednoznačné — odpovídá více jídlům; vyberte to správné.",
       "assignTo": "Přiřadit k jídlu…",
       "dismiss": "Zamítnout",
-      "blanket": "Podle karty se <b>{list}</b> mohou vyskytovat ve <b>všech</b> jídlech. Přidat ke každému jídlu? (každé stejně potvrdíte) <muted>— ve výchozím stavu vypnuto</muted>",
       "kitchenNotes": "Poznámky z kuchyně (uloží se k informacím o alergenech)",
-      "matchSummary": "{n, plural, =0 {Přiřazeno k jídlu: {matched}.} one {Přiřazeno k jídlu: {matched}. {count} položka čeká na vaše přiřazení.} few {Přiřazeno k jídlu: {matched}. {count} položky čekají na vaše přiřazení.} other {Přiřazeno k jídlu: {matched}. {count} položek čeká na vaše přiřazení.}}"
+      "matchSummary": "{n, plural, =0 {Přiřazeno k jídlu: {matched}.} one {Přiřazeno k jídlu: {matched}. {count} položka čeká na vaše přiřazení.} few {Přiřazeno k jídlu: {matched}. {count} položky čekají na vaše přiřazení.} other {Přiřazeno k jídlu: {matched}. {count} položek čeká na vaše přiřazení.}}",
+      "blanketInfo": "Podle vaší karty alergenů se {list} mohou vyskytovat ve všech jídlech. Přidáme je k alergenům používaným ve vaší kuchyni. Zkontrolovat je můžete v posledním kroku."
     },
     "savedCard": {
       "showLess": "Zobrazit méně",
@@ -2468,7 +2468,8 @@
         "choose": "Zvolte, jak zákazníci uvidí informace o alergenech",
         "card": "Přidejte kartu alergenů",
         "cardOptional": "Přidejte kartu alergenů (nepovinné)",
-        "review": "Zkontrolujte a potvrďte každé jídlo"
+        "review": "Zkontrolujte a potvrďte každé jídlo",
+        "kitchen": "Poslední krok: vaše kuchyně"
       },
       "heading": {
         "import": "Alergeny",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Přeskočením to jen odložíte — nepotvrzená jídla zůstanou před zákazníky skrytá, dokud nebudou jejich alergeny potvrzené.",
         "importIncomplete": "Pro pokračování potvrďte každé jídlo — nebo zvolte „Nastavení alergenů zatím přeskočit“."
-      }
+      },
+      "recipeOnly": "Jen to, co je v receptu tohoto jídla.",
+      "tooMany": "Zaškrtnuté alergeny: {count}. Jsou opravdu všechny v receptu tohoto jídla? Alergeny použité v jiných jídlech sem nepatří. Můžete je přidat v posledním kroku."
+    },
+    "kitchen": {
+      "title": "Které alergeny se ve vaší kuchyni používají?",
+      "body": "Alergeny z vašich jídel jsme už zaškrtli. Zaškrtněte další, které ve food trucku používáte, například pro denní nabídku.",
+      "legendDishes": "ve vašich jídlech",
+      "legendAdded": "přidáno vámi",
+      "customersSee": "Zákazníci uvidí:",
+      "confirm": "Potvrzuji, že alergeny u každého jídla jsou správné, a budu je udržovat aktuální."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Vytáhnout pomocí AI",
       "needReview": "{count, plural, one {# jídlo čeká} few {# jídla čekají} other {# jídel čeká}} na kontrolu — zákazníci informace o alergenech neuvidí, dokud je nepotvrdíte",
       "reading": "Načítání informací o alergenech…",
-      "pastePlaceholder": "Sem vložte informace o alergenech…"
+      "pastePlaceholder": "Sem vložte informace o alergenech…",
+      "kitchenLine": "Kuchyně používá také: {list}",
+      "kitchenEdit": "Upravit"
     },
     "deleteItem": {
       "title": "Odstranit položku {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Přidat položku",
       "noGroups": "Zatím žádné skupiny možností — vytvořte je v sekci Doplňky a nabídky navíc.",
       "costToMake": "Náklady na přípravu",
-      "costHelp": "Nepovinné. Kolik vás stojí jedna porce za suroviny a obal. Používá se jen ve vašich statistikách; zákazníci to nikdy neuvidí."
+      "costHelp": "Nepovinné. Kolik vás stojí jedna porce za suroviny a obal. Používá se jen ve vašich statistikách; zákazníci to nikdy neuvidí.",
+      "recipeOnly": "Jen to, co je v receptu tohoto jídla.",
+      "tooMany": "Zaškrtnuté alergeny: {count}. Jsou opravdu všechny v receptu tohoto jídla? Alergeny používané jinde ve vaší kuchyni patří do „Kuchyně používá také“ na kartě Jídelní lístek."
     },
     "summary": "{categories, plural, one {# kategorie} few {# kategorie} other {# kategorií}} · {items, plural, one {# položka} few {# položky} other {# položek}}",
     "confirmDelete": {

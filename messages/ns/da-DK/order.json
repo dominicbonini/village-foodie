@@ -148,9 +148,7 @@
   "allergenTitle": "Allergenoplysninger",
   "allergenNotProvided": "Der er ikke oplyst allergener – spørg foodtrucken direkte.",
   "allergenCard": "📎 Se allergenlisten (PDF/billede)",
-  "allergensUsed": "Allergener på dette menukort",
-  "allergensSeeEach": "Se de enkelte retter for deres specifikke allergener.",
-  "allergenSevere": "Har du en alvorlig allergi, så kontakt sælgeren direkte, før du bestiller.",
+  "allergenSevere": "Har du en fødevareallergi, så kontakt sælgeren, før du bestiller.",
   "orderConfirmed": "Bestillingen er bekræftet!",
   "orderReceived": "Bestillingen er modtaget!",
   "thanksReady": "Tak! Vi har modtaget din bestilling, og den er klar snart.",
@@ -171,5 +169,7 @@
   "backTo": "Tilbage til {truck}",
   "notePlaceholderCompact": "Nogen ønsker? f.eks. uden løg",
   "noteHeading": "Nogen ønsker? <muted>– valgfrit</muted>",
-  "notePlaceholder": "f.eks. uden løg, ekstra sprød"
+  "notePlaceholder": "f.eks. uden løg, ekstra sprød",
+  "kitchenHeading": "Allergener, der håndteres i dette køkken",
+  "kitchenNote": "Hver ret viser allergenerne i sin opskrift. Vi kan ikke garantere, at nogen ret er fri for spor."
 }

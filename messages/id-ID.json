@@ -149,9 +149,7 @@
     "allergenTitle": "Informasi alergen",
     "allergenNotProvided": "Info alergen belum tersedia — tanyakan langsung ke truk.",
     "allergenCard": "📎 Lihat kartu alergen (PDF/gambar)",
-    "allergensUsed": "Alergen yang dipakai di menu ini",
-    "allergensSeeEach": "Lihat setiap hidangan untuk alergen spesifiknya.",
-    "allergenSevere": "Jika punya alergi berat, hubungi penjual langsung sebelum memesan.",
+    "allergenSevere": "Jika punya alergi makanan, hubungi penjual sebelum memesan.",
     "orderConfirmed": "Pesanan dikonfirmasi!",
     "orderReceived": "Pesanan diterima!",
     "thanksReady": "Terima kasih! Pesanan sudah kami terima dan akan segera siap.",
@@ -172,7 +170,9 @@
     "backTo": "Kembali ke {truck}",
     "notePlaceholderCompact": "Ada permintaan? mis. tanpa bawang",
     "noteHeading": "Ada permintaan? <muted>— opsional</muted>",
-    "notePlaceholder": "mis. tanpa bawang, ekstra garing"
+    "notePlaceholder": "mis. tanpa bawang, ekstra garing",
+    "kitchenHeading": "Alergen yang dipakai di dapur ini",
+    "kitchenNote": "Setiap hidangan menampilkan alergen dalam resepnya. Kami tidak dapat menjamin hidangan mana pun bebas dari jejak alergen."
   },
   "plansPdf": {
     "title": "Paket dan fitur",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Ambigu — cocok dengan beberapa hidangan; pilih yang benar.",
       "assignTo": "Tetapkan ke hidangan…",
       "dismiss": "Abaikan",
-      "blanket": "Kartu menyebutkan <b>{list}</b> mungkin ada di <b>semua</b> hidangan. Tambahkan ke setiap hidangan? (Anda tetap mengonfirmasi satu per satu) <muted>— awalnya nonaktif</muted>",
       "kitchenNotes": "Catatan dapur (disimpan ke info alergen Anda)",
-      "matchSummary": "{n, plural, =0 {{matched} cocok dengan hidangan.} one {{matched} cocok dengan hidangan. {count} perlu Anda tetapkan.} other {{matched} cocok dengan hidangan. {count} perlu Anda tetapkan.}}"
+      "matchSummary": "{n, plural, =0 {{matched} cocok dengan hidangan.} one {{matched} cocok dengan hidangan. {count} perlu Anda tetapkan.} other {{matched} cocok dengan hidangan. {count} perlu Anda tetapkan.}}",
+      "blanketInfo": "Kartu Anda menyebutkan {list} mungkin ada di semua hidangan. Kami akan menambahkannya ke alergen yang dipakai di dapur Anda. Anda bisa memeriksanya di langkah terakhir."
     },
     "savedCard": {
       "showLess": "Tampilkan lebih sedikit",
@@ -2468,7 +2468,8 @@
         "choose": "Pilih cara pelanggan melihat info alergen",
         "card": "Tambahkan kartu alergen Anda",
         "cardOptional": "Tambahkan kartu alergen (opsional)",
-        "review": "Periksa & konfirmasi setiap hidangan"
+        "review": "Periksa & konfirmasi setiap hidangan",
+        "kitchen": "Langkah terakhir: dapur Anda"
       },
       "heading": {
         "import": "Alergen",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Melewati berarti menunda — hidangan yang belum Anda konfirmasi tetap tersembunyi dari pelanggan sampai alergennya dikonfirmasi.",
         "importIncomplete": "Konfirmasi setiap hidangan untuk melanjutkan — atau “Lewati pengaturan alergen dulu”."
-      }
+      },
+      "recipeOnly": "Hanya yang ada di resep hidangan ini.",
+      "tooMany": "{count} alergen dicentang. Benarkah semuanya ada di resep hidangan ini? Alergen yang dipakai di hidangan lain tidak dimasukkan di sini. Anda bisa menambahkannya di langkah terakhir."
+    },
+    "kitchen": {
+      "title": "Alergen apa saja yang dipakai di dapur Anda?",
+      "body": "Kami sudah mencentang alergen yang ada di hidangan Anda. Centang alergen lain yang Anda pakai di truk, misalnya untuk menu spesial.",
+      "legendDishes": "di hidangan Anda",
+      "legendAdded": "ditambahkan oleh Anda",
+      "customersSee": "Pelanggan akan melihat:",
+      "confirm": "Saya mengonfirmasi bahwa alergen setiap hidangan sudah benar, dan saya akan selalu memperbaruinya."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Ambil dengan AI",
       "needReview": "{count, plural, one {# hidangan perlu} other {# hidangan perlu}} ditinjau — pelanggan tidak bisa melihat info alergen sampai dikonfirmasi",
       "reading": "Membaca informasi alergen…",
-      "pastePlaceholder": "Tempel informasi alergen Anda di sini…"
+      "pastePlaceholder": "Tempel informasi alergen Anda di sini…",
+      "kitchenLine": "Dapur juga memakai: {list}",
+      "kitchenEdit": "Edit"
     },
     "deleteItem": {
       "title": "Hapus item: {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Tambah item",
       "noGroups": "Belum ada grup pilihan — buat di Tambahan & upsell.",
       "costToMake": "Biaya pembuatan",
-      "costHelp": "Opsional. Biaya bahan dan kemasan untuk satu porsi. Hanya dipakai di laporan Anda; pelanggan tidak pernah melihatnya."
+      "costHelp": "Opsional. Biaya bahan dan kemasan untuk satu porsi. Hanya dipakai di laporan Anda; pelanggan tidak pernah melihatnya.",
+      "recipeOnly": "Hanya yang ada di resep hidangan ini.",
+      "tooMany": "{count} alergen dicentang. Benarkah semuanya ada di resep hidangan ini? Alergen yang dipakai di bagian lain dapur Anda masuk ke “Dapur juga memakai” di tab Menu."
     },
     "summary": "{categories, plural, one {# kategori} other {# kategori}} · {items, plural, one {# item} other {# item}}",
     "confirmDelete": {

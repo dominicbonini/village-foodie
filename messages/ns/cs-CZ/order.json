@@ -148,9 +148,7 @@
   "allergenTitle": "Informace o alergenech",
   "allergenNotProvided": "Informace o alergenech nebyly uvedeny — ověřte si je prosím přímo u food trucku.",
   "allergenCard": "📎 Zobrazit kartu alergenů (PDF/obrázek)",
-  "allergensUsed": "Alergeny v tomto jídelním lístku",
-  "allergensSeeEach": "Konkrétní alergeny najdete u jednotlivých jídel.",
-  "allergenSevere": "Máte-li závažnou alergii, kontaktujte prosím prodejce před objednáním přímo.",
+  "allergenSevere": "Máte-li potravinovou alergii, kontaktujte prosím před objednáním prodejce.",
   "orderConfirmed": "Objednávka potvrzena!",
   "orderReceived": "Objednávka přijata!",
   "thanksReady": "Děkujeme! Vaši objednávku jsme přijali a brzy bude připravená.",
@@ -171,5 +169,7 @@
   "backTo": "Zpět k food trucku {truck}",
   "notePlaceholderCompact": "Máte nějaké přání? např. bez cibule",
   "noteHeading": "Máte nějaké přání? <muted>— nepovinné</muted>",
-  "notePlaceholder": "např. bez cibule, extra křupavé"
+  "notePlaceholder": "např. bez cibule, extra křupavé",
+  "kitchenHeading": "Alergeny používané v této kuchyni",
+  "kitchenNote": "U každého jídla jsou uvedeny alergeny z jeho receptu. Nemůžeme zaručit, že žádné jídlo neobsahuje stopy."
 }

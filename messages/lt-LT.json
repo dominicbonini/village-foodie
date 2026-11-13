@@ -149,9 +149,7 @@
     "allergenTitle": "Informacija apie alergenus",
     "allergenNotProvided": "Informacija apie alergenus nepateikta — pasitikslinkite tiesiogiai pas food truck darbuotojus.",
     "allergenCard": "📎 Peržiūrėti alergenų kortelę (PDF / paveikslėlis)",
-    "allergensUsed": "Šiame meniu naudojami alergenai",
-    "allergensSeeEach": "Konkrečius alergenus rasite prie kiekvieno patiekalo.",
-    "allergenSevere": "Jei turite sunkią alergiją, prieš užsisakydami susisiekite tiesiogiai su pardavėju.",
+    "allergenSevere": "Jei turite maisto alergiją, prieš užsisakydami susisiekite su pardavėju.",
     "orderConfirmed": "Užsakymas patvirtintas!",
     "orderReceived": "Užsakymas gautas!",
     "thanksReady": "Ačiū! Gavome jūsų užsakymą — netrukus jis bus paruoštas.",
@@ -172,7 +170,9 @@
     "backTo": "Grįžti: {truck}",
     "notePlaceholderCompact": "Pageidavimai? pvz., be svogūnų",
     "noteHeading": "Pageidavimai? <muted>— neprivaloma</muted>",
-    "notePlaceholder": "pvz., be svogūnų, traškiau"
+    "notePlaceholder": "pvz., be svogūnų, traškiau",
+    "kitchenHeading": "Šioje virtuvėje naudojami alergenai",
+    "kitchenNote": "Prie kiekvieno patiekalo nurodyti jo recepto alergenai. Negalime garantuoti, kad patiekaluose nėra alergenų pėdsakų."
   },
   "plansPdf": {
     "title": "Planai ir funkcijos",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Neaišku — atitinka kelis patiekalus; pasirinkite tinkamą.",
       "assignTo": "Priskirti patiekalui…",
       "dismiss": "Atmesti",
-      "blanket": "Kortelėje nurodyta, kad <b>{list}</b> gali būti <b>visuose</b> patiekaluose. Pridėti prie kiekvieno patiekalo? (kiekvieną vis tiek patvirtinsite) <muted>— pagal numatytuosius nustatymus išjungta</muted>",
       "kitchenNotes": "Virtuvės pastabos (išsaugomos jūsų alergenų informacijoje)",
-      "matchSummary": "{n, plural, =0 {Susieta su patiekalais: {matched}.} one {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} few {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} many {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} other {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.}}"
+      "matchSummary": "{n, plural, =0 {Susieta su patiekalais: {matched}.} one {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} few {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} many {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} other {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.}}",
+      "blanketInfo": "Jūsų kortelėje nurodyta, kad {list} gali būti visuose patiekaluose. Pridėsime juos prie jūsų virtuvėje naudojamų alergenų. Juos galėsite patikrinti paskutiniame žingsnyje."
     },
     "savedCard": {
       "showLess": "Rodyti mažiau",
@@ -2468,7 +2468,8 @@
         "choose": "Pasirinkite, kaip klientai matys informaciją apie alergenus",
         "card": "Pridėkite alergenų kortelę",
         "cardOptional": "Pridėkite alergenų kortelę (neprivaloma)",
-        "review": "Patikrinkite ir patvirtinkite kiekvieną patiekalą"
+        "review": "Patikrinkite ir patvirtinkite kiekvieną patiekalą",
+        "kitchen": "Paskutinis žingsnis: jūsų virtuvė"
       },
       "heading": {
         "import": "Alergenai",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Praleidus tai tik atidedama — nepatvirtinti patiekalai klientams nerodomi, kol nebus patvirtinti jų alergenai.",
         "importIncomplete": "Kad galėtumėte tęsti, patvirtinkite kiekvieną patiekalą — arba spauskite „Kol kas praleisti alergenų nustatymą“."
-      }
+      },
+      "recipeOnly": "Tik tai, kas yra šio patiekalo recepte.",
+      "tooMany": "Pažymėti alergenai: {count}. Ar tikrai visi jie yra šio patiekalo recepte? Kituose patiekaluose naudojami alergenai čia nežymimi. Juos galėsite pridėti paskutiniame žingsnyje."
+    },
+    "kitchen": {
+      "title": "Kokie alergenai naudojami jūsų virtuvėje?",
+      "body": "Jau pažymėjome tuos, kurie yra jūsų patiekaluose. Pažymėkite kitus, kuriuos naudojate furgone, pavyzdžiui, dienos patiekalams.",
+      "legendDishes": "jūsų patiekaluose",
+      "legendAdded": "pridėjote jūs",
+      "customersSee": "Klientai matys:",
+      "confirm": "Patvirtinu, kad kiekvieno patiekalo alergenai nurodyti teisingai, ir nuolat juos atnaujinsiu."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Ištraukti su DI",
       "needReview": "{count, plural, one {# patiekalas laukia} few {# patiekalai laukia} many {# patiekalų laukia} other {# patiekalų laukia}} peržiūros — kol nepatvirtinsite, klientai nemato informacijos apie alergenus",
       "reading": "Skaitoma informacija apie alergenus…",
-      "pastePlaceholder": "Įklijuokite informaciją apie alergenus čia…"
+      "pastePlaceholder": "Įklijuokite informaciją apie alergenus čia…",
+      "kitchenLine": "Virtuvėje taip pat naudojama: {list}",
+      "kitchenEdit": "Redaguoti"
     },
     "deleteItem": {
       "title": "Pašalinti „{name}“?",
@@ -2942,7 +2955,9 @@
       "add": "Pridėti patiekalą",
       "noGroups": "Parinkčių grupių dar nėra — sukurkite jas skiltyje „Priedai ir papildomi pasiūlymai“.",
       "costToMake": "Gamybos savikaina",
-      "costHelp": "Neprivaloma. Kiek jums kainuoja viena porcija: ingredientai ir pakuotė. Naudojama tik jūsų ataskaitose; klientai jos niekada nemato."
+      "costHelp": "Neprivaloma. Kiek jums kainuoja viena porcija: ingredientai ir pakuotė. Naudojama tik jūsų ataskaitose; klientai jos niekada nemato.",
+      "recipeOnly": "Tik tai, kas yra šio patiekalo recepte.",
+      "tooMany": "Pažymėti alergenai: {count}. Ar tikrai visi jie yra šio patiekalo recepte? Kitur jūsų virtuvėje naudojami alergenai nurodomi skiltyje „Virtuvėje taip pat naudojama“, skirtuke „Meniu“."
     },
     "summary": "{categories, plural, one {# kategorija} few {# kategorijos} many {# kategorijų} other {# kategorijų}} · {items, plural, one {# patiekalas} few {# patiekalai} many {# patiekalų} other {# patiekalų}}",
     "confirmDelete": {

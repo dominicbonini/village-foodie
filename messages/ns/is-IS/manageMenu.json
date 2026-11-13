@@ -108,7 +108,9 @@
     "extract": "Lesa með gervigreind",
     "needReview": "{count, plural, one {# réttur þarf} other {# réttir þurfa}} yfirferð — viðskiptavinir sjá ekki ofnæmisupplýsingar fyrr en þær hafa verið staðfestar",
     "reading": "Les ofnæmisupplýsingar…",
-    "pastePlaceholder": "Límdu ofnæmisupplýsingarnar hér…"
+    "pastePlaceholder": "Límdu ofnæmisupplýsingarnar hér…",
+    "kitchenLine": "Eldhúsið notar líka: {list}",
+    "kitchenEdit": "Breyta"
   },
   "deleteItem": {
     "title": "Fjarlægja „{name}“?",
@@ -172,7 +174,9 @@
     "add": "Bæta við vöru",
     "noGroups": "Engir valkostahópar enn — búðu þá til í Aukaval og viðbótarsala.",
     "costToMake": "Framleiðslukostnaður",
-    "costHelp": "Valfrjálst. Hvað einn skammtur kostar þig í hráefni og umbúðum. Aðeins notað í skýrslunum þínum; viðskiptavinir sjá það aldrei."
+    "costHelp": "Valfrjálst. Hvað einn skammtur kostar þig í hráefni og umbúðum. Aðeins notað í skýrslunum þínum; viðskiptavinir sjá það aldrei.",
+    "recipeOnly": "Bara það sem er í uppskrift þessa réttar.",
+    "tooMany": "Ofnæmisvaldar sem hakað er við: {count}. Eru þeir virkilega allir í uppskrift þessa réttar? Ofnæmisvaldar sem eru notaðir annars staðar í eldhúsinu þínu fara undir „Eldhúsið notar líka“ á flipanum Matseðill."
   },
   "summary": "{categories, plural, one {# flokkur} other {# flokkar}} · {items, plural, one {# vara} other {# vörur}}",
   "confirmDelete": {

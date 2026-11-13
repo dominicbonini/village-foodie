@@ -1,53 +1,57 @@
-# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 332 changed). Written by scripts/language-phase-1d.cjs.
+# Language Phase 1d Part 1 — every in-scope US view that differs from BEFORE (503 US views; 336 changed). Written by scripts/language-phase-1d.cjs.
 # view id	why (code: named difference 1 / a named code change; words: the en-US words and moved messages)
-menu/US|menuTab|list	words
-menu/US|menuTab|list|open	words
-menu/US|menuTab|list|openSides	words
+menu/US|menuTab|list	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|list|open	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|list|openSides	code: allergen-kitchen-1-manage + words
 menu/US|menuTab|empty	words
-menu/US|menuTab|noEdit	words
-menu/US|menuTab|editCat|new	code: longer-intervals-prep-to-60 + words
-menu/US|menuTab|editCat|existing	code: longer-intervals-prep-to-60 + words
-menu/US|menuTab|editItem|new	words
-menu/US|menuTab|editItem|existing	words
-menu/US|menuTab|editItem|spicy	words
-menu/US|menuTab|deleteItem	words
-menu/US|menuTab|subcats	words
-menu/US|menuTab|import|catRename	words
-menu/US|menuTab|import|catRename|error	words
-menu/US|menuTab|import|catNew	words
-menu/US|menuTab|import|catDelete	words
-menu/US|menuTab|allergen|processing	words
-menu/US|menuTab|allergen|review	words
-menu/US|menuTab|allergen|idle	words
-menu/US|menuTab|import|upload	words
-menu/US|menuTab|import|processing	words
-menu/US|menuTab|import|offer	words
-menu/US|menuTab|import|review1	words
-menu/US|menuTab|import|review2	words
-menu/US|menuTab|import|review1|open	words
-menu/US|menuTab|import|discard	words
-menu/US|menuTab|import|allergens|chooser	words
-menu/US|menuTab|import|allergens|card	words
-menu/US|menuTab|import|allergens|review	words
-menu/US|menuTab|import|allergens|cardParsed	words
-menu/US|menuTab|import|prep	code: longer-intervals-prep-to-60+longer-intervals-window-to-60 + words
-menu/US|menuTab|import|saving	code: longer-intervals-prep-to-60+longer-intervals-window-to-60 + words
-menu/US|menuTab|import|done	words
-menu/US|menuTab|setup|intro	words
-menu/US|menuTab|setup|schedule|chooser	words
-menu/US|menuTab|setup|schedule|website	words
-menu/US|menuTab|setup|schedule|photo	words
-menu/US|menuTab|setup|schedule|manual	words
-menu/US|menuTab|setup|schedule|verifyError	words
-menu/US|menuTab|setup|schedule|verified	words
+menu/US|menuTab|noEdit	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|editCat|new	code: allergen-kitchen-1-manage+longer-intervals-prep-to-60 + words
+menu/US|menuTab|editCat|existing	code: allergen-kitchen-1-manage+longer-intervals-prep-to-60 + words
+menu/US|menuTab|editItem|new	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|editItem|existing	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|editItem|spicy	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|deleteItem	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|subcats	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|catRename	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|catRename|error	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|catNew	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|catDelete	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|allergen|processing	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|allergen|review	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|allergen|idle	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|upload	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|processing	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|offer	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|review1	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|review2	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|review1|open	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|discard	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|allergens|chooser	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|allergens|card	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|allergens|review	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|allergens|cardParsed	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|import|prep	code: allergen-kitchen-1-manage+longer-intervals-prep-to-60+longer-intervals-window-to-60 + words
+menu/US|menuTab|import|saving	code: allergen-kitchen-1-manage+longer-intervals-prep-to-60+longer-intervals-window-to-60 + words
+menu/US|menuTab|import|done	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|setup|intro	code: allergen-kitchen-1-manage + words
+menu/US|menuTab|setup|schedule|chooser	code: 1d-us-dates-times+us-layout-fix-1-nbsp + words
+menu/US|menuTab|setup|schedule|website	code: 1d-us-dates-times+us-layout-fix-1-nbsp + words
+menu/US|menuTab|setup|schedule|photo	code: 1d-us-dates-times+us-layout-fix-1-nbsp + words
+menu/US|menuTab|setup|schedule|manual	code: 1d-us-dates-times+us-layout-fix-1-nbsp + words
+menu/US|menuTab|setup|schedule|verifyError	code: 1d-us-dates-times+us-layout-fix-1-nbsp + words
+menu/US|menuTab|setup|schedule|verified	code: 1d-us-dates-times+us-layout-fix-1-nbsp + words
 menu/US|menuTab|setup|schedule|extracted	code: 1d-us-dates-times+us-layout-fix-1-nbsp + words
-menu/US|menuTab|setup|settings	code: 1d-cancel-row-sentence + words
-menu/US|menuTab|setup|done	words
+menu/US|menuTab|setup|settings	code: allergen-kitchen-1-manage+1d-cancel-row-sentence + words
+menu/US|menuTab|setup|done	code: allergen-kitchen-1-manage + words
+menu/US|wizard|review|list	code: allergen-kitchen-1-manage
+menu/US|wizard|review|table	code: allergen-kitchen-1-manage
+menu/US|wizard|review|confirmed	code: allergen-kitchen-1-manage
 menu/US|wizard|card	words
 menu/US|wizard|card|withText	words
 menu/US|wizard|card|upload	words
 menu/US|wizard|card|parsed	words
-menu/US|wizard|import	words
+menu/US|wizard|import	code: allergen-kitchen-1-manage + words
+menu/US|wizard|readOnly	code: allergen-kitchen-1-manage
 menu/US|wizard|cardOnly	words
 menu/US|extras|list	words
 menu/US|extras|open	words

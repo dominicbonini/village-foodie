@@ -108,7 +108,9 @@
     "extract": "Extrair com IA",
     "needReview": "{count, plural, one {# prato precisa} other {# pratos precisam}} de revisão — os clientes não veem a informação de alergénios até estar confirmada",
     "reading": "A ler a informação de alergénios…",
-    "pastePlaceholder": "Cole aqui a sua informação sobre alergénios…"
+    "pastePlaceholder": "Cole aqui a sua informação sobre alergénios…",
+    "kitchenLine": "A cozinha também usa: {list}",
+    "kitchenEdit": "Editar"
   },
   "deleteItem": {
     "title": "Remover {name}?",
@@ -172,7 +174,9 @@
     "add": "Adicionar artigo",
     "noGroups": "Ainda não há grupos de opções — crie-os em Extras e vendas adicionais.",
     "costToMake": "Custo de produção",
-    "costHelp": "Opcional. Quanto lhe custa uma dose em ingredientes e embalagem. Usado apenas nos seus relatórios; os clientes nunca o veem."
+    "costHelp": "Opcional. Quanto lhe custa uma dose em ingredientes e embalagem. Usado apenas nos seus relatórios; os clientes nunca o veem.",
+    "recipeOnly": "Apenas o que está na receita deste prato.",
+    "tooMany": "{count} alergénios marcados. Estão mesmo todos na receita deste prato? Os alergénios usados noutros pontos da sua cozinha vão em «A cozinha também usa», no separador Ementa."
   },
   "summary": "{categories, plural, one {# categoria} other {# categorias}} · {items, plural, one {# artigo} other {# artigos}}",
   "confirmDelete": {

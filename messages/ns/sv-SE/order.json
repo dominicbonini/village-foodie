@@ -148,9 +148,7 @@
   "allergenTitle": "Allergeninformation",
   "allergenNotProvided": "Ingen allergeninformation angiven — fråga foodtrucken direkt.",
   "allergenCard": "📎 Visa allergenlista (PDF/bild)",
-  "allergensUsed": "Allergener som används i den här menyn",
-  "allergensSeeEach": "Se varje rätt för dess specifika allergener.",
-  "allergenSevere": "Om du har en svår allergi, kontakta försäljaren direkt innan du beställer.",
+  "allergenSevere": "Om du har en matallergi, kontakta försäljaren innan du beställer.",
   "orderConfirmed": "Beställningen är bekräftad!",
   "orderReceived": "Beställningen är mottagen!",
   "thanksReady": "Tack! Vi har tagit emot din beställning och den är klar snart.",
@@ -171,5 +169,7 @@
   "backTo": "Tillbaka till {truck}",
   "notePlaceholderCompact": "Några önskemål? t.ex. ingen lök",
   "noteHeading": "Några önskemål? <muted>— valfritt</muted>",
-  "notePlaceholder": "t.ex. ingen lök, extra krispig"
+  "notePlaceholder": "t.ex. ingen lök, extra krispig",
+  "kitchenHeading": "Allergener som hanteras i det här köket",
+  "kitchenNote": "Varje rätt visar allergenerna i sitt recept. Vi kan inte garantera att någon rätt är fri från spår."
 }

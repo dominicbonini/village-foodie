@@ -28,9 +28,9 @@
     "ambiguous": "Birmənalı deyil — bir neçə yeməyə uyğun gəlir; düzgün olanı seçin.",
     "assignTo": "Yeməyə təyin et…",
     "dismiss": "Rədd et",
-    "blanket": "Karta görə, <b>{list}</b> <b>bütün</b> yeməklərdə ola bilər. Hər yeməyə əlavə edilsin? (hər birini yenə də təsdiqləyəcəksiniz) <muted>— standart olaraq söndürülüb</muted>",
     "kitchenNotes": "Mətbəx qeydləri (allergen məlumatınızda saxlanılır)",
-    "matchSummary": "{n, plural, =0 {Yeməyə uyğunlaşdırıldı: {matched}.} one {Yeməyə uyğunlaşdırıldı: {matched}. Təyin etməyiniz lazımdır: {count}.} other {Yeməyə uyğunlaşdırıldı: {matched}. Təyin etməyiniz lazımdır: {count}.}}"
+    "matchSummary": "{n, plural, =0 {Yeməyə uyğunlaşdırıldı: {matched}.} one {Yeməyə uyğunlaşdırıldı: {matched}. Təyin etməyiniz lazımdır: {count}.} other {Yeməyə uyğunlaşdırıldı: {matched}. Təyin etməyiniz lazımdır: {count}.}}",
+    "blanketInfo": "Kartınıza görə, {list} bütün yeməklərdə ola bilər. Onları mətbəxinizdə istifadə olunan allergenlərə əlavə edəcəyik. Son addımda onları yoxlaya bilərsiniz."
   },
   "savedCard": {
     "showLess": "Daha az göstər",
@@ -92,7 +92,8 @@
       "choose": "Müştərilərin allergen məlumatını necə görəcəyini seçin",
       "card": "Allergen kartınızı əlavə edin",
       "cardOptional": "Allergen kartı əlavə edin (istəyə bağlı)",
-      "review": "Hər yeməyi yoxlayın və təsdiqləyin"
+      "review": "Hər yeməyi yoxlayın və təsdiqləyin",
+      "kitchen": "Son addım: mətbəxiniz"
     },
     "heading": {
       "import": "Allergenlər",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Ötürmək təxirə salmaq deməkdir — təsdiqləmədiyiniz yeməklər allergenləri təsdiqlənənədək müştərilərdən gizli qalır.",
       "importIncomplete": "Davam etmək üçün hər yeməyi təsdiqləyin — və ya “Allergen ayarlarını indilik ötür” seçin."
-    }
+    },
+    "recipeOnly": "Yalnız bu yeməyin reseptində olanlar.",
+    "tooMany": "{count} allergen işarələnib. Onların hamısı həqiqətən bu yeməyin reseptindədir? Digər yeməklərdə istifadə olunan allergenlər bura daxil edilmir. Onları son addımda əlavə edə bilərsiniz."
+  },
+  "kitchen": {
+    "title": "Mətbəxinizdə hansı allergenlərdən istifadə olunur?",
+    "body": "Yeməklərinizdə olanları artıq işarələmişik. Food truck-da istifadə etdiyiniz digərlərini də işarələyin, məsələn, günün xüsusi yeməkləri üçün.",
+    "legendDishes": "yeməklərinizdə",
+    "legendAdded": "sizin əlavə etdiyiniz",
+    "customersSee": "Müştərilər görəcək:",
+    "confirm": "Hər yeməyin allergenlərinin düzgün olduğunu təsdiqləyirəm və onları daim yeniləyəcəyəm."
   }
 }

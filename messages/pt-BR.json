@@ -149,9 +149,7 @@
     "allergenTitle": "Informações sobre alérgenos",
     "allergenNotProvided": "Informações sobre alérgenos não disponíveis. Confirme direto com o food truck.",
     "allergenCard": "📎 Ver ficha de alérgenos (PDF/imagem)",
-    "allergensUsed": "Alérgenos usados neste cardápio",
-    "allergensSeeEach": "Veja os alérgenos específicos em cada prato.",
-    "allergenSevere": "Se você tem alergia grave, fale direto com o vendedor antes de pedir.",
+    "allergenSevere": "Se você tem alergia alimentar, fale com o vendedor antes de pedir.",
     "orderConfirmed": "Pedido confirmado!",
     "orderReceived": "Pedido recebido!",
     "thanksReady": "Obrigado! Recebemos seu pedido e ele logo vai estar pronto.",
@@ -172,7 +170,9 @@
     "backTo": "Voltar para: {truck}",
     "notePlaceholderCompact": "Alguma observação? ex.: sem cebola",
     "noteHeading": "Alguma observação? <muted>(opcional)</muted>",
-    "notePlaceholder": "ex.: sem cebola, bem crocante"
+    "notePlaceholder": "ex.: sem cebola, bem crocante",
+    "kitchenHeading": "Alérgenos usados nesta cozinha",
+    "kitchenNote": "Cada prato mostra os alérgenos da sua receita. Não podemos garantir que nenhum prato esteja livre de traços."
   },
   "plansPdf": {
     "title": "Planos e recursos",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Ambíguo — corresponde a vários pratos; escolha o certo.",
       "assignTo": "Atribuir ao prato…",
       "dismiss": "Descartar",
-      "blanket": "A ficha diz que <b>{list}</b> pode estar presente em <b>todos</b> os pratos. Adicionar a todos os pratos? (você ainda confirma cada um) <muted>— desativado por padrão</muted>",
       "kitchenNotes": "Observações da cozinha (salvas nas suas informações de alérgenos)",
-      "matchSummary": "{n, plural, =0 {Associados a um prato: {matched}.} one {Associados a um prato: {matched}. Aguardando sua atribuição: {count}.} other {Associados a um prato: {matched}. Aguardando sua atribuição: {count}.}}"
+      "matchSummary": "{n, plural, =0 {Associados a um prato: {matched}.} one {Associados a um prato: {matched}. Aguardando sua atribuição: {count}.} other {Associados a um prato: {matched}. Aguardando sua atribuição: {count}.}}",
+      "blanketInfo": "Sua ficha de alérgenos indica que pode haver {list} em todos os pratos. Vamos adicioná-los aos alérgenos usados na sua cozinha. Você pode conferi-los na última etapa."
     },
     "savedCard": {
       "showLess": "Mostrar menos",
@@ -2468,7 +2468,8 @@
         "choose": "Escolha como os clientes veem as informações de alérgenos",
         "card": "Adicione sua ficha de alérgenos",
         "cardOptional": "Adicione uma ficha de alérgenos (opcional)",
-        "review": "Confira e confirme cada prato"
+        "review": "Confira e confirme cada prato",
+        "kitchen": "Última etapa: sua cozinha"
       },
       "heading": {
         "import": "Alérgenos",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Pular só adia — os pratos que você não confirmou ficam ocultos para os clientes até que os alérgenos deles sejam confirmados.",
         "importIncomplete": "Confirme todos os pratos para continuar — ou “Pular a configuração de alérgenos por enquanto”."
-      }
+      },
+      "recipeOnly": "Só o que vai na receita deste prato.",
+      "tooMany": "{count} alérgenos marcados. Estão mesmo todos na receita deste prato? Alérgenos usados em outros pratos não entram aqui. Você pode adicioná-los na última etapa."
+    },
+    "kitchen": {
+      "title": "Quais alérgenos sua cozinha usa?",
+      "body": "Já marcamos os que estão nos seus pratos. Marque os outros que você usa no food truck, por exemplo, em pratos do dia.",
+      "legendDishes": "nos seus pratos",
+      "legendAdded": "adicionado por você",
+      "customersSee": "Seus clientes vão ver:",
+      "confirm": "Confirmo que os alérgenos de cada prato estão corretos e vou mantê-los atualizados."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Extrair com IA",
       "needReview": "{count, plural, one {# prato precisa} other {# pratos precisam}} de revisão — os clientes não veem as informações de alérgenos até a confirmação",
       "reading": "Lendo as informações de alérgenos…",
-      "pastePlaceholder": "Cole aqui as informações de alérgenos…"
+      "pastePlaceholder": "Cole aqui as informações de alérgenos…",
+      "kitchenLine": "A cozinha também usa: {list}",
+      "kitchenEdit": "Editar"
     },
     "deleteItem": {
       "title": "Remover {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Adicionar item",
       "noGroups": "Nenhum grupo de opções ainda — crie em Complementos e sugestões.",
       "costToMake": "Custo de preparo",
-      "costHelp": "Opcional. Quanto uma porção custa para você em ingredientes e embalagem. Usado só nos seus relatórios; os clientes nunca veem."
+      "costHelp": "Opcional. Quanto uma porção custa para você em ingredientes e embalagem. Usado só nos seus relatórios; os clientes nunca veem.",
+      "recipeOnly": "Só o que vai na receita deste prato.",
+      "tooMany": "{count} alérgenos marcados. Estão mesmo todos na receita deste prato? Alérgenos usados em outras partes da sua cozinha vão em “A cozinha também usa”, na aba Cardápio."
     },
     "summary": "{categories, plural, one {# categoria} other {# categorias}} · {items, plural, one {# item} other {# itens}}",
     "confirmDelete": {

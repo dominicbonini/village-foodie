@@ -149,9 +149,7 @@
     "allergenTitle": "Informacije o alergenima",
     "allergenNotProvided": "Informacije o alergenima nisu navedene — provjerite izravno s food truckom.",
     "allergenCard": "📎 Prikaži karticu alergena (PDF/slika)",
-    "allergensUsed": "Alergeni na ovom jelovniku",
-    "allergensSeeEach": "Alergene pojedinog jela potražite uz svako jelo.",
-    "allergenSevere": "Ako imate tešku alergiju, prije narudžbe izravno se obratite prodavaču.",
+    "allergenSevere": "Ako imate alergiju na hranu, prije narudžbe obratite se prodavaču.",
     "orderConfirmed": "Narudžba potvrđena!",
     "orderReceived": "Narudžba primljena!",
     "thanksReady": "Hvala! Primili smo vašu narudžbu i uskoro će biti spremna.",
@@ -172,7 +170,9 @@
     "backTo": "Natrag na food truck {truck}",
     "notePlaceholderCompact": "Imate li posebnih želja? npr. bez luka",
     "noteHeading": "Imate li posebnih želja? <muted>— neobavezno</muted>",
-    "notePlaceholder": "npr. bez luka, jako hrskavo"
+    "notePlaceholder": "npr. bez luka, jako hrskavo",
+    "kitchenHeading": "Alergeni koji se koriste u ovoj kuhinji",
+    "kitchenNote": "Uz svako jelo navedeni su alergeni iz njegova recepta. Ne možemo jamčiti da nijedno jelo ne sadrži tragove."
   },
   "plansPdf": {
     "title": "Paketi i značajke",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Nejasno – odgovara više jela; odaberite pravo.",
       "assignTo": "Dodijeli jelu…",
       "dismiss": "Odbaci",
-      "blanket": "Prema kartici, u <b>svim</b> jelima mogu biti prisutni: <b>{list}</b>. Dodati na svako jelo? (svako ćete i dalje potvrditi) <muted>– prema zadanim postavkama isključeno</muted>",
       "kitchenNotes": "Bilješke kuhinje (spremaju se uz vaše podatke o alergenima)",
-      "matchSummary": "{n, plural, =0 {Povezano s jelom: {matched}.} one {Povezano s jelom: {matched}. {count} stavka čeka vašu dodjelu.} few {Povezano s jelom: {matched}. {count} stavke čekaju vašu dodjelu.} other {Povezano s jelom: {matched}. {count} stavki čeka vašu dodjelu.}}"
+      "matchSummary": "{n, plural, =0 {Povezano s jelom: {matched}.} one {Povezano s jelom: {matched}. {count} stavka čeka vašu dodjelu.} few {Povezano s jelom: {matched}. {count} stavke čekaju vašu dodjelu.} other {Povezano s jelom: {matched}. {count} stavki čeka vašu dodjelu.}}",
+      "blanketInfo": "Prema vašoj kartici, u svim jelima mogu biti prisutni: {list}. Dodat ćemo ih alergenima koje koristi vaša kuhinja. Možete ih provjeriti u zadnjem koraku."
     },
     "savedCard": {
       "showLess": "Prikaži manje",
@@ -2468,7 +2468,8 @@
         "choose": "Odaberite kako kupci vide podatke o alergenima",
         "card": "Dodajte karticu alergena",
         "cardOptional": "Dodajte karticu alergena (neobavezno)",
-        "review": "Provjerite i potvrdite svako jelo"
+        "review": "Provjerite i potvrdite svako jelo",
+        "kitchen": "Zadnji korak: vaša kuhinja"
       },
       "heading": {
         "import": "Alergeni",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Preskakanje samo odgađa – jela koja niste potvrdili ostaju skrivena od kupaca dok im se alergeni ne potvrde.",
         "importIncomplete": "Za nastavak potvrdite svako jelo – ili odaberite „Preskoči postavke alergena zasad“."
-      }
+      },
+      "recipeOnly": "Samo ono što je u receptu ovog jela.",
+      "tooMany": "Označeni alergeni: {count}. Jesu li zaista svi u receptu ovog jela? Alergeni iz drugih jela ne idu ovdje. Možete ih dodati u zadnjem koraku."
+    },
+    "kitchen": {
+      "title": "Koje alergene koristi vaša kuhinja?",
+      "body": "Već smo označili one koji su u vašim jelima. Označite i ostale koje koristite u food trucku, na primjer za dnevna jela.",
+      "legendDishes": "u vašim jelima",
+      "legendAdded": "dodali ste vi",
+      "customersSee": "Kupci će vidjeti:",
+      "confirm": "Potvrđujem da su alergeni svakog jela točni i redovito ću ih ažurirati."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Izdvoji uz AI",
       "needReview": "{count, plural, one {# jelo čeka provjeru} few {# jela čekaju provjeru} other {# jela čeka provjeru}} – kupci ne vide podatke o alergenima dok se ne potvrde",
       "reading": "Čitanje podataka o alergenima…",
-      "pastePlaceholder": "Ovdje zalijepite podatke o alergenima…"
+      "pastePlaceholder": "Ovdje zalijepite podatke o alergenima…",
+      "kitchenLine": "Kuhinja koristi i: {list}",
+      "kitchenEdit": "Uredi"
     },
     "deleteItem": {
       "title": "Ukloniti artikl {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Dodaj artikl",
       "noGroups": "Još nema grupa opcija – izradite ih u kartici Dodaci i dodatna ponuda.",
       "costToMake": "Trošak pripreme",
-      "costHelp": "Neobavezno. Koliko vas jedna porcija stoji u sastojcima i ambalaži. Koristi se samo u vašim izvještajima; kupci to nikad ne vide."
+      "costHelp": "Neobavezno. Koliko vas jedna porcija stoji u sastojcima i ambalaži. Koristi se samo u vašim izvještajima; kupci to nikad ne vide.",
+      "recipeOnly": "Samo ono što je u receptu ovog jela.",
+      "tooMany": "Označeni alergeni: {count}. Jesu li zaista svi u receptu ovog jela? Alergeni koji se koriste drugdje u vašoj kuhinji idu pod „Kuhinja koristi i“ u kartici Jelovnik."
     },
     "summary": "{categories, plural, one {# kategorija} few {# kategorije} other {# kategorija}} · {items, plural, one {# artikl} few {# artikla} other {# artikala}}",
     "confirmDelete": {

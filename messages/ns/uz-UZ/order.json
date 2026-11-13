@@ -148,9 +148,7 @@
   "allergenTitle": "Allergenlar haqida maʼlumot",
   "allergenNotProvided": "Allergenlar haqida maʼlumot berilmagan — iltimos, fudtrakdan bevosita soʻrang.",
   "allergenCard": "📎 Allergenlar kartasini koʻrish (PDF/rasm)",
-  "allergensUsed": "Bu menyudagi allergenlar",
-  "allergensSeeEach": "Har bir taomning allergenlarini uning oʻzida koʻring.",
-  "allergenSevere": "Kuchli allergiyangiz boʻlsa, buyurtma berishdan oldin sotuvchi bilan bevosita bogʻlaning.",
+  "allergenSevere": "Oziq-ovqat allergiyangiz boʻlsa, buyurtma berishdan oldin sotuvchi bilan bogʻlaning.",
   "orderConfirmed": "Buyurtma tasdiqlandi!",
   "orderReceived": "Buyurtma qabul qilindi!",
   "thanksReady": "Rahmat! Buyurtmangizni qabul qildik, u tez orada tayyor boʻladi.",
@@ -171,5 +169,7 @@
   "backTo": "Ortga: {truck}",
   "notePlaceholderCompact": "Istaklaringiz bormi? Masalan, piyozsiz",
   "noteHeading": "Istaklaringiz bormi? <muted>— ixtiyoriy</muted>",
-  "notePlaceholder": "masalan, piyozsiz, qarsildoqroq"
+  "notePlaceholder": "masalan, piyozsiz, qarsildoqroq",
+  "kitchenHeading": "Bu oshxonada ishlatiladigan allergenlar",
+  "kitchenNote": "Har bir taomda uning retseptidagi allergenlar koʻrsatilgan. Hech bir taomda allergen izlari yoʻqligiga kafolat bera olmaymiz."
 }

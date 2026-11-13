@@ -43,7 +43,8 @@ const REVERT_MANAGE = [
   // On everywhere else, and outside a provider: exactly as before.
   const cardOnlyAllowed = useOptionalCountrySettings()?.allergenCardOnlyAllowed !== false
 `, to: '' },
-  { from: 'useState<0 | 1 | 2 | 3>(initialMode === 0 && !cardOnlyAllowed ? (onProcessCard ? 3 : 1) : initialMode)', to: 'useState<0 | 1 | 2 | 3>(initialMode)' },
+  // ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026): the wizard's mode gained 4 (the last page, "your kitchen") — the same line otherwise.
+  { from: 'useState<0 | 1 | 2 | 3 | 4>(initialMode === 0 && !cardOnlyAllowed ? (onProcessCard ? 3 : 1) : initialMode)', to: 'useState<0 | 1 | 2 | 3 | 4>(initialMode)' },
   { from: `              {/* allergen-card-country: no page 1 to go back to where an allergen card on its own is not allowed. */}
               {cardOnlyAllowed && <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => setMode(0)} />}`, to: `              <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => setMode(0)} />` },
   { from: `{(onBack || onProcessCard || cardOnlyAllowed) && <Btn label={t('wizard.nav.back')} colour="slate" onClick={() => onBack ? onBack() : setMode(onProcessCard ? 3 : 0)} />}`,
@@ -61,6 +62,10 @@ const REVERT_MENU = [
   { from: "        const perDish = (allergenDisplayMode as string | null) !== 'card'   // allergen-card-country: the effective mode", to: "        const perDish = ((truck.allergen_display_mode ?? null) as string) !== 'card'" },
   { from: "      allergen_display_mode: allergenDisplayMode,   // allergen-card-country: 'card' read as 'per_dish' where the country does not allow it", to: "      allergen_display_mode: (truck.allergen_display_mode ?? null) as 'per_dish' | 'card' | 'both' | null," },
   { from: "      allergensVerified: (allergenDisplayMode === 'card' && !!(truck.allergen_info_url || truck.allergen_info_text))", to: "      allergensVerified: ((truck.allergen_display_mode ?? null) === 'card' && !!(truck.allergen_info_url || truck.allergen_info_text))" },
+  // ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026): the kitchen list (per-dish mode only) also reads the effective mode — in
+  // BEFORE (this workstream reverted) it reads the stored mode, as every other reader above.
+  { from: "  if (allergenDisplayMode !== 'card') {\n    try { kitchenSet = ", to: "  if ((truck.allergen_display_mode ?? null) !== 'card') {\n    try { kitchenSet = " },
+  { from: "      kitchen_allergens: allergenDisplayMode === 'card' ? [] : kitchenAllergens({", to: "      kitchen_allergens: (truck.allergen_display_mode ?? null) === 'card' ? [] : kitchenAllergens({" },
 ].map(p => ({ file: MENU_ROUTE, ...p }))
 
 ;(async () => {

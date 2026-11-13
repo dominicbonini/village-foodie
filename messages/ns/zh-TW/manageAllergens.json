@@ -28,9 +28,9 @@
     "ambiguous": "無法判定：符合好幾道餐點，請選出正確的一道。",
     "assignTo": "指定給餐點…",
     "dismiss": "略過",
-    "blanket": "說明卡上寫著<b>所有</b>餐點都可能含有 <b>{list}</b>。要加到每一道餐點嗎？（你仍需逐道確認）<muted>預設為關閉</muted>",
     "kitchenNotes": "廚房備註（會儲存到你的過敏原資訊）",
-    "matchSummary": "{n, plural, =0 {已對應到餐點：{matched} 項。} one {已對應到餐點：{matched} 項。需要你指定：{count} 項。} other {已對應到餐點：{matched} 項。需要你指定：{count} 項。}}"
+    "matchSummary": "{n, plural, =0 {已對應到餐點：{matched} 項。} one {已對應到餐點：{matched} 項。需要你指定：{count} 項。} other {已對應到餐點：{matched} 項。需要你指定：{count} 項。}}",
+    "blanketInfo": "你的說明卡指出所有餐點都可能含有{list}。我們會把它們加入你廚房使用的過敏原，你可以在最後一步檢查。"
   },
   "savedCard": {
     "showLess": "顯示較少",
@@ -92,7 +92,8 @@
       "choose": "選擇顧客查看過敏原資訊的方式",
       "card": "新增你的過敏原說明卡",
       "cardOptional": "新增過敏原說明卡（選填）",
-      "review": "逐道檢查並確認餐點"
+      "review": "逐道檢查並確認餐點",
+      "kitchen": "最後一步：你的廚房"
     },
     "heading": {
       "import": "過敏原",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "略過只是延後：你尚未確認的餐點，在過敏原確認之前都不會顯示給顧客。",
       "importIncomplete": "請確認每一道餐點後再繼續，或選擇「暫時略過過敏原設定」。"
-    }
+    },
+    "recipeOnly": "只勾選這道餐點食譜中有的。",
+    "tooMany": "已勾選 {count} 種過敏原。真的都在這道餐點的食譜裡嗎？其他餐點用到的過敏原不放在這裡，你可以在最後一步加入。"
+  },
+  "kitchen": {
+    "title": "你的廚房會使用哪些過敏原？",
+    "body": "我們已經勾選了你餐點中有的過敏原。請勾選你在餐車上用到的其他過敏原，例如每日特餐。",
+    "legendDishes": "你的餐點中有",
+    "legendAdded": "你自行加入",
+    "customersSee": "顧客會看到：",
+    "confirm": "我確認每道餐點的過敏原都正確，並會隨時更新。"
   }
 }

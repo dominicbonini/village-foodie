@@ -149,9 +149,7 @@
     "allergenTitle": "Allergeninformation",
     "allergenNotProvided": "Ingen allergeninformation angiven — fråga foodtrucken direkt.",
     "allergenCard": "📎 Visa allergenlista (PDF/bild)",
-    "allergensUsed": "Allergener som används i den här menyn",
-    "allergensSeeEach": "Se varje rätt för dess specifika allergener.",
-    "allergenSevere": "Om du har en svår allergi, kontakta försäljaren direkt innan du beställer.",
+    "allergenSevere": "Om du har en matallergi, kontakta försäljaren innan du beställer.",
     "orderConfirmed": "Beställningen är bekräftad!",
     "orderReceived": "Beställningen är mottagen!",
     "thanksReady": "Tack! Vi har tagit emot din beställning och den är klar snart.",
@@ -172,7 +170,9 @@
     "backTo": "Tillbaka till {truck}",
     "notePlaceholderCompact": "Några önskemål? t.ex. ingen lök",
     "noteHeading": "Några önskemål? <muted>— valfritt</muted>",
-    "notePlaceholder": "t.ex. ingen lök, extra krispig"
+    "notePlaceholder": "t.ex. ingen lök, extra krispig",
+    "kitchenHeading": "Allergener som hanteras i det här köket",
+    "kitchenNote": "Varje rätt visar allergenerna i sitt recept. Vi kan inte garantera att någon rätt är fri från spår."
   },
   "plansPdf": {
     "title": "Abonnemang och funktioner",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Tvetydig — matchar flera rätter; välj den som stämmer.",
       "assignTo": "Koppla till rätt…",
       "dismiss": "Avfärda",
-      "blanket": "Listan anger att <b>{list}</b> kan förekomma i <b>alla</b> rätter. Lägga till på varje rätt? (du bekräftar ändå varje rätt) <muted>— av som standard</muted>",
       "kitchenNotes": "Köksanteckningar (sparas i din allergeninformation)",
-      "matchSummary": "{n, plural, =0 {{matched} kopplade till en rätt.} one {{matched} kopplade till en rätt. {count} behöver kopplas av dig.} other {{matched} kopplade till en rätt. {count} behöver kopplas av dig.}}"
+      "matchSummary": "{n, plural, =0 {{matched} kopplade till en rätt.} one {{matched} kopplade till en rätt. {count} behöver kopplas av dig.} other {{matched} kopplade till en rätt. {count} behöver kopplas av dig.}}",
+      "blanketInfo": "Enligt din allergenlista kan {list} förekomma i alla rätter. Vi lägger till dem bland allergenerna som hanteras i ditt kök. Du kan kontrollera dem i sista steget."
     },
     "savedCard": {
       "showLess": "Visa mindre",
@@ -2468,7 +2468,8 @@
         "choose": "Välj hur kunderna ser allergeninformationen",
         "card": "Lägg till din allergenlista",
         "cardOptional": "Lägg till en allergenlista (valfritt)",
-        "review": "Kontrollera och bekräfta varje rätt"
+        "review": "Kontrollera och bekräfta varje rätt",
+        "kitchen": "Sista steget: ditt kök"
       },
       "heading": {
         "import": "Allergener",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Att hoppa över skjuter bara upp det — rätter du inte har bekräftat döljs för kunderna tills deras allergener är bekräftade.",
         "importIncomplete": "Bekräfta varje rätt för att fortsätta — eller ”Hoppa över allergeninställningen tills vidare”."
-      }
+      },
+      "recipeOnly": "Bara det som finns i den här rättens recept.",
+      "tooMany": "{count} allergener ikryssade. Finns verkligen alla i den här rättens recept? Allergener som används i andra rätter hör inte hit. Du kan lägga till dem i sista steget."
+    },
+    "kitchen": {
+      "title": "Vilka allergener hanteras i ditt kök?",
+      "body": "Vi har redan kryssat i dem som finns i dina rätter. Kryssa i andra som du använder i foodtrucken, till exempel till dagens rätter.",
+      "legendDishes": "i dina rätter",
+      "legendAdded": "tillagt av dig",
+      "customersSee": "Kunderna ser:",
+      "confirm": "Jag bekräftar att allergenerna för varje rätt stämmer och att jag håller dem uppdaterade."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Läs ut med AI",
       "needReview": "{count, plural, one {# rätt behöver} other {# rätter behöver}} granskas — kunderna ser ingen allergeninformation förrän den är bekräftad",
       "reading": "Läser allergeninformation…",
-      "pastePlaceholder": "Klistra in din allergeninformation här…"
+      "pastePlaceholder": "Klistra in din allergeninformation här…",
+      "kitchenLine": "Köket hanterar också: {list}",
+      "kitchenEdit": "Redigera"
     },
     "deleteItem": {
       "title": "Ta bort {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Lägg till artikel",
       "noGroups": "Inga tillvalsgrupper än — skapa dem under Tillval & merförsäljning.",
       "costToMake": "Kostnad per portion",
-      "costHelp": "Valfritt. Vad en portion kostar dig i råvaror och förpackning. Används bara i dina rapporter; kunderna ser det aldrig."
+      "costHelp": "Valfritt. Vad en portion kostar dig i råvaror och förpackning. Används bara i dina rapporter; kunderna ser det aldrig.",
+      "recipeOnly": "Bara det som finns i den här rättens recept.",
+      "tooMany": "{count} allergener ikryssade. Finns verkligen alla i den här rättens recept? Allergener som används på andra ställen i ditt kök läggs under ”Köket hanterar också” på fliken Meny."
     },
     "summary": "{categories, plural, one {# kategori} other {# kategorier}} · {items, plural, one {# artikel} other {# artiklar}}",
     "confirmDelete": {

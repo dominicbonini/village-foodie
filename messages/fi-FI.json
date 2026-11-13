@@ -149,9 +149,7 @@
     "allergenTitle": "Allergeenitiedot",
     "allergenNotProvided": "Allergeenitietoja ei ole annettu — varmista asia suoraan ruokarekalta.",
     "allergenCard": "📎 Näytä allergeenikortti (PDF/kuva)",
-    "allergensUsed": "Tämän ruokalistan allergeenit",
-    "allergensSeeEach": "Katso kunkin annoksen omat allergeenit annoksen kohdalta.",
-    "allergenSevere": "Jos sinulla on vakava allergia, ota yhteyttä suoraan myyjään ennen tilaamista.",
+    "allergenSevere": "Jos sinulla on ruoka-allergia, ota yhteyttä myyjään ennen tilaamista.",
     "orderConfirmed": "Tilaus vahvistettu!",
     "orderReceived": "Tilaus vastaanotettu!",
     "thanksReady": "Kiitos! Olemme vastaanottaneet tilauksesi, ja se on pian valmis.",
@@ -172,7 +170,9 @@
     "backTo": "Takaisin: {truck}",
     "notePlaceholderCompact": "Toiveita? esim. ei sipulia",
     "noteHeading": "Toiveita? <muted>— valinnainen</muted>",
-    "notePlaceholder": "esim. ei sipulia, erityisen rapea"
+    "notePlaceholder": "esim. ei sipulia, erityisen rapea",
+    "kitchenHeading": "Tässä keittiössä käsiteltävät allergeenit",
+    "kitchenNote": "Jokaisen annoksen kohdalla näkyvät sen reseptin allergeenit. Emme voi taata, ettei mikään annos sisällä jäämiä."
   },
   "plansPdf": {
     "title": "Paketit ja ominaisuudet",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Epäselvä — sopii useaan annokseen; valitse oikea.",
       "assignTo": "Kohdista annokseen…",
       "dismiss": "Hylkää",
-      "blanket": "Kortin mukaan <b>{list}</b> voi esiintyä <b>kaikissa</b> annoksissa. Lisätäänkö jokaiseen annokseen? (vahvistat silti jokaisen erikseen) <muted>— oletuksena pois päältä</muted>",
       "kitchenNotes": "Keittiön huomautukset (tallennetaan allergeenitietoihisi)",
-      "matchSummary": "{n, plural, =0 {{matched} yhdistetty annokseen.} one {{matched} yhdistetty annokseen. {count} odottaa kohdistamista.} other {{matched} yhdistetty annokseen. {count} odottaa kohdistamista.}}"
+      "matchSummary": "{n, plural, =0 {{matched} yhdistetty annokseen.} one {{matched} yhdistetty annokseen. {count} odottaa kohdistamista.} other {{matched} yhdistetty annokseen. {count} odottaa kohdistamista.}}",
+      "blanketInfo": "Korttisi mukaan {list} voi esiintyä kaikissa annoksissa. Lisäämme ne keittiössäsi käsiteltäviin allergeeneihin. Voit tarkistaa ne viimeisessä vaiheessa."
     },
     "savedCard": {
       "showLess": "Näytä vähemmän",
@@ -2468,7 +2468,8 @@
         "choose": "Valitse, miten asiakkaat näkevät allergeenitiedot",
         "card": "Lisää allergeenikorttisi",
         "cardOptional": "Lisää allergeenikortti (valinnainen)",
-        "review": "Tarkista ja vahvista jokainen annos"
+        "review": "Tarkista ja vahvista jokainen annos",
+        "kitchen": "Viimeinen vaihe: keittiösi"
       },
       "heading": {
         "import": "Allergeenit",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Ohittaminen siirtää myöhemmäksi — annokset, joita et ole vahvistanut, pysyvät piilossa asiakkailta, kunnes niiden allergeenit on vahvistettu.",
         "importIncomplete": "Vahvista jokainen annos jatkaaksesi — tai ”Ohita allergeenien asetukset toistaiseksi”."
-      }
+      },
+      "recipeOnly": "Vain se, mitä tämän annoksen reseptissä on.",
+      "tooMany": "{count} allergeenia rastitettu. Ovatko ne kaikki todella tämän annoksen reseptissä? Muissa annoksissa käytetyt allergeenit eivät kuulu tähän. Voit lisätä ne viimeisessä vaiheessa."
+    },
+    "kitchen": {
+      "title": "Mitä allergeeneja keittiössäsi käsitellään?",
+      "body": "Olemme jo rastittaneet annoksissasi olevat allergeenit. Rastita muut, joita käytät ruokarekassa, esimerkiksi päivän erikoisannoksissa.",
+      "legendDishes": "annoksissasi",
+      "legendAdded": "itse lisätty",
+      "customersSee": "Asiakkaat näkevät:",
+      "confirm": "Vahvistan, että jokaisen annoksen allergeenit ovat oikein, ja pidän ne ajan tasalla."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Poimi tekoälyllä",
       "needReview": "{count, plural, one {# annos vaatii} other {# annosta vaatii}} tarkistuksen — asiakkaat eivät näe allergeenitietoja ennen vahvistusta",
       "reading": "Luetaan allergeenitietoja…",
-      "pastePlaceholder": "Liitä allergeenitietosi tähän…"
+      "pastePlaceholder": "Liitä allergeenitietosi tähän…",
+      "kitchenLine": "Keittiössä käsitellään myös: {list}",
+      "kitchenEdit": "Muokkaa"
     },
     "deleteItem": {
       "title": "Poistetaanko {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Lisää tuote",
       "noGroups": "Ei vielä valintaryhmiä — luo niitä kohdassa Lisävalinnat ja lisämyynti.",
       "costToMake": "Valmistuskustannus",
-      "costHelp": "Valinnainen. Mitä yksi annos maksaa sinulle raaka-aineina ja pakkauksina. Käytetään vain raporteissasi; asiakkaat eivät koskaan näe sitä."
+      "costHelp": "Valinnainen. Mitä yksi annos maksaa sinulle raaka-aineina ja pakkauksina. Käytetään vain raporteissasi; asiakkaat eivät koskaan näe sitä.",
+      "recipeOnly": "Vain se, mitä tämän annoksen reseptissä on.",
+      "tooMany": "{count} allergeenia rastitettu. Ovatko ne kaikki todella tämän annoksen reseptissä? Muualla keittiössäsi käsitellyt allergeenit kuuluvat Ruokalista-välilehden kohtaan ”Keittiössä käsitellään myös”."
     },
     "summary": "{categories, plural, one {# kategoria} other {# kategoriaa}} · {items, plural, one {# tuote} other {# tuotetta}}",
     "confirmDelete": {

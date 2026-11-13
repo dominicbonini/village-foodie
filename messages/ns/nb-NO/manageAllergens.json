@@ -28,9 +28,9 @@
     "ambiguous": "Tvetydig — passer til flere retter; velg den riktige.",
     "assignTo": "Tildel til rett…",
     "dismiss": "Avvis",
-    "blanket": "Listen sier at <b>{list}</b> kan forekomme i <b>alle</b> retter. Legge til i alle retter? (du bekrefter fortsatt hver enkelt) <muted>— av som standard</muted>",
     "kitchenNotes": "Kjøkkennotater (lagres i allergeninformasjonen din)",
-    "matchSummary": "{n, plural, =0 {{matched} koblet til en rett.} one {{matched} koblet til en rett. {count} må tildeles av deg.} other {{matched} koblet til en rett. {count} må tildeles av deg.}}"
+    "matchSummary": "{n, plural, =0 {{matched} koblet til en rett.} one {{matched} koblet til en rett. {count} må tildeles av deg.} other {{matched} koblet til en rett. {count} må tildeles av deg.}}",
+    "blanketInfo": "Ifølge allergenlisten din kan {list} forekomme i alle retter. Vi legger dem til blant allergenene kjøkkenet ditt håndterer. Du kan sjekke dem i siste steg."
   },
   "savedCard": {
     "showLess": "Vis mindre",
@@ -92,7 +92,8 @@
       "choose": "Velg hvordan kundene ser allergeninformasjon",
       "card": "Legg til allergenlisten din",
       "cardOptional": "Legg til en allergenliste (valgfritt)",
-      "review": "Sjekk og bekreft hver rett"
+      "review": "Sjekk og bekreft hver rett",
+      "kitchen": "Siste steg: kjøkkenet ditt"
     },
     "heading": {
       "import": "Allergener",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Å hoppe over utsetter bare — retter du ikke har bekreftet, er skjult for kundene til allergenene deres er bekreftet.",
       "importIncomplete": "Bekreft hver rett for å fortsette — eller velg «Hopp over allergenoppsettet nå»."
-    }
+    },
+    "recipeOnly": "Bare det som er i oppskriften til denne retten.",
+    "tooMany": "{count} allergener er krysset av. Er virkelig alle i oppskriften til denne retten? Allergener som brukes i andre retter, hører ikke hjemme her. Du kan legge dem til i siste steg."
+  },
+  "kitchen": {
+    "title": "Hvilke allergener håndteres på kjøkkenet ditt?",
+    "body": "Vi har allerede krysset av for dem som er i rettene dine. Kryss av for andre du bruker i matbilen, for eksempel til dagens retter.",
+    "legendDishes": "i rettene dine",
+    "legendAdded": "lagt til av deg",
+    "customersSee": "Kundene ser:",
+    "confirm": "Jeg bekrefter at allergenene for hver rett er riktige, og at jeg holder dem oppdatert."
   }
 }

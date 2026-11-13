@@ -149,9 +149,7 @@
     "allergenTitle": "Allergenlar haqida maʼlumot",
     "allergenNotProvided": "Allergenlar haqida maʼlumot berilmagan — iltimos, fudtrakdan bevosita soʻrang.",
     "allergenCard": "📎 Allergenlar kartasini koʻrish (PDF/rasm)",
-    "allergensUsed": "Bu menyudagi allergenlar",
-    "allergensSeeEach": "Har bir taomning allergenlarini uning oʻzida koʻring.",
-    "allergenSevere": "Kuchli allergiyangiz boʻlsa, buyurtma berishdan oldin sotuvchi bilan bevosita bogʻlaning.",
+    "allergenSevere": "Oziq-ovqat allergiyangiz boʻlsa, buyurtma berishdan oldin sotuvchi bilan bogʻlaning.",
     "orderConfirmed": "Buyurtma tasdiqlandi!",
     "orderReceived": "Buyurtma qabul qilindi!",
     "thanksReady": "Rahmat! Buyurtmangizni qabul qildik, u tez orada tayyor boʻladi.",
@@ -172,7 +170,9 @@
     "backTo": "Ortga: {truck}",
     "notePlaceholderCompact": "Istaklaringiz bormi? Masalan, piyozsiz",
     "noteHeading": "Istaklaringiz bormi? <muted>— ixtiyoriy</muted>",
-    "notePlaceholder": "masalan, piyozsiz, qarsildoqroq"
+    "notePlaceholder": "masalan, piyozsiz, qarsildoqroq",
+    "kitchenHeading": "Bu oshxonada ishlatiladigan allergenlar",
+    "kitchenNote": "Har bir taomda uning retseptidagi allergenlar koʻrsatilgan. Hech bir taomda allergen izlari yoʻqligiga kafolat bera olmaymiz."
   },
   "plansPdf": {
     "title": "Tariflar va imkoniyatlar",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Noaniq — bir nechta taomga mos keladi; toʻgʻrisini tanlang.",
       "assignTo": "Taomga biriktirish…",
       "dismiss": "Rad etish",
-      "blanket": "Kartada aytilishicha, <b>{list}</b> <b>barcha</b> taomlarda boʻlishi mumkin. Har bir taomga qoʻshilsinmi? (baribir har birini tasdiqlaysiz) <muted>— sukut boʻyicha oʻchiq</muted>",
       "kitchenNotes": "Oshxona izohlari (allergenlar maʼlumotingizga saqlanadi)",
-      "matchSummary": "{n, plural, =0 {Taomga moslandi: {matched}.} one {Taomga moslandi: {matched}. Siz biriktirishingiz kerak: {count}.} other {Taomga moslandi: {matched}. Siz biriktirishingiz kerak: {count}.}}"
+      "matchSummary": "{n, plural, =0 {Taomga moslandi: {matched}.} one {Taomga moslandi: {matched}. Siz biriktirishingiz kerak: {count}.} other {Taomga moslandi: {matched}. Siz biriktirishingiz kerak: {count}.}}",
+      "blanketInfo": "Kartangizda aytilishicha, {list} barcha taomlarda boʻlishi mumkin. Ularni oshxonangizda ishlatiladigan allergenlarga qoʻshamiz. Ularni oxirgi qadamda tekshirishingiz mumkin."
     },
     "savedCard": {
       "showLess": "Kamroq koʻrsatish",
@@ -2468,7 +2468,8 @@
         "choose": "Mijozlar allergenlar haqidagi maʼlumotni qanday koʻrishini tanlang",
         "card": "Allergenlar kartangizni qoʻshing",
         "cardOptional": "Allergenlar kartasini qoʻshing (ixtiyoriy)",
-        "review": "Har bir taomni tekshiring va tasdiqlang"
+        "review": "Har bir taomni tekshiring va tasdiqlang",
+        "kitchen": "Oxirgi qadam: oshxonangiz"
       },
       "heading": {
         "import": "Allergenlar",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Oʻtkazib yuborish keyinga qoldiradi — siz tasdiqlamagan taomlar allergenlari tasdiqlanmaguncha mijozlardan yashirin turadi.",
         "importIncomplete": "Davom etish uchun har bir taomni tasdiqlang — yoki “Allergenlarni sozlashni hozircha oʻtkazib yuborish” tugmasini bosing."
-      }
+      },
+      "recipeOnly": "Faqat shu taom retseptidagilar.",
+      "tooMany": "{count} ta allergen belgilandi. Ularning hammasi rostdan ham shu taom retseptidami? Boshqa taomlarda ishlatiladigan allergenlar bu yerga kiritilmaydi. Ularni oxirgi qadamda qoʻshishingiz mumkin."
+    },
+    "kitchen": {
+      "title": "Oshxonangizda qaysi allergenlar ishlatiladi?",
+      "body": "Taomlaringizda bor allergenlarni allaqachon belgiladik. Fudtrakda ishlatadigan boshqalarini ham belgilang, masalan, kun taomlari uchun.",
+      "legendDishes": "taomlaringizda",
+      "legendAdded": "siz qoʻshgansiz",
+      "customersSee": "Mijozlar koʻradi:",
+      "confirm": "Har bir taomning allergenlari toʻgʻri ekanini tasdiqlayman va ularni doim yangilab boraman."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "SI yordamida ajratib olish",
       "needReview": "{count, plural, one {# ta taomni} other {# ta taomni}} tekshirish kerak — tasdiqlanmaguncha mijozlar allergenlar maʼlumotini koʻrmaydi",
       "reading": "Allergenlar maʼlumoti oʻqilmoqda…",
-      "pastePlaceholder": "Allergenlar maʼlumotini shu yerga joylashtiring…"
+      "pastePlaceholder": "Allergenlar maʼlumotini shu yerga joylashtiring…",
+      "kitchenLine": "Oshxonada yana ishlatiladi: {list}",
+      "kitchenEdit": "Tahrirlash"
     },
     "deleteItem": {
       "title": "Olib tashlansinmi: {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Mahsulot qoʻshish",
       "noGroups": "Hali variantlar guruhlari yoʻq — ularni “Qoʻshimchalar va qoʻshimcha sotuvlar” boʻlimida yarating.",
       "costToMake": "Tannarx",
-      "costHelp": "Ixtiyoriy. Bir porsiya uchun masalliq va qadoqqa ketadigan xarajatingiz. Faqat hisobotlaringizda ishlatiladi; mijozlar uni hech qachon koʻrmaydi."
+      "costHelp": "Ixtiyoriy. Bir porsiya uchun masalliq va qadoqqa ketadigan xarajatingiz. Faqat hisobotlaringizda ishlatiladi; mijozlar uni hech qachon koʻrmaydi.",
+      "recipeOnly": "Faqat shu taom retseptidagilar.",
+      "tooMany": "{count} ta allergen belgilandi. Ularning hammasi rostdan ham shu taom retseptidami? Oshxonangizning boshqa joylarida ishlatiladigan allergenlarni “Menyu” boʻlimidagi “Oshxonada yana ishlatiladi” qismiga kiriting."
     },
     "summary": "{categories, plural, one {# ta kategoriya} other {# ta kategoriya}} · {items, plural, one {# ta mahsulot} other {# ta mahsulot}}",
     "confirmDelete": {

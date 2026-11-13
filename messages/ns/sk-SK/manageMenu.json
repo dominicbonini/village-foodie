@@ -108,7 +108,9 @@
     "extract": "Vyčítať pomocou AI",
     "needReview": "{count, plural, one {# jedlo potrebuje} few {# jedlá potrebujú} other {# jedál potrebuje}} kontrolu — zákazníci nevidia informácie o alergénoch, kým nie sú potvrdené",
     "reading": "Čítajú sa informácie o alergénoch…",
-    "pastePlaceholder": "Sem vložte informácie o alergénoch…"
+    "pastePlaceholder": "Sem vložte informácie o alergénoch…",
+    "kitchenLine": "Kuchyňa používa aj: {list}",
+    "kitchenEdit": "Upraviť"
   },
   "deleteItem": {
     "title": "Odstrániť {name}?",
@@ -172,7 +174,9 @@
     "add": "Pridať položku",
     "noGroups": "Zatiaľ žiadne skupiny možností — vytvorte ich v sekcii Doplnky a ponuky navyše.",
     "costToMake": "Náklady na prípravu",
-    "costHelp": "Nepovinné. Koľko vás stojí jedna porcia za suroviny a obal. Používa sa iba vo vašich štatistikách; zákazníci to nikdy neuvidia."
+    "costHelp": "Nepovinné. Koľko vás stojí jedna porcia za suroviny a obal. Používa sa iba vo vašich štatistikách; zákazníci to nikdy neuvidia.",
+    "recipeOnly": "Len to, čo je v recepte tohto jedla.",
+    "tooMany": "Označené alergény: {count}. Sú naozaj všetky v recepte tohto jedla? Alergény používané inde vo vašej kuchyni patria do „Kuchyňa používa aj“ na karte Jedálny lístok."
   },
   "summary": "{categories, plural, one {# kategória} few {# kategórie} other {# kategórií}} · {items, plural, one {# položka} few {# položky} other {# položiek}}",
   "confirmDelete": {

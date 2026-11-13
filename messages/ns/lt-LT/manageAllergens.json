@@ -28,9 +28,9 @@
     "ambiguous": "Neaišku — atitinka kelis patiekalus; pasirinkite tinkamą.",
     "assignTo": "Priskirti patiekalui…",
     "dismiss": "Atmesti",
-    "blanket": "Kortelėje nurodyta, kad <b>{list}</b> gali būti <b>visuose</b> patiekaluose. Pridėti prie kiekvieno patiekalo? (kiekvieną vis tiek patvirtinsite) <muted>— pagal numatytuosius nustatymus išjungta</muted>",
     "kitchenNotes": "Virtuvės pastabos (išsaugomos jūsų alergenų informacijoje)",
-    "matchSummary": "{n, plural, =0 {Susieta su patiekalais: {matched}.} one {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} few {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} many {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} other {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.}}"
+    "matchSummary": "{n, plural, =0 {Susieta su patiekalais: {matched}.} one {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} few {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} many {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.} other {Susieta su patiekalais: {matched}. Laukia jūsų priskyrimo: {count}.}}",
+    "blanketInfo": "Jūsų kortelėje nurodyta, kad {list} gali būti visuose patiekaluose. Pridėsime juos prie jūsų virtuvėje naudojamų alergenų. Juos galėsite patikrinti paskutiniame žingsnyje."
   },
   "savedCard": {
     "showLess": "Rodyti mažiau",
@@ -92,7 +92,8 @@
       "choose": "Pasirinkite, kaip klientai matys informaciją apie alergenus",
       "card": "Pridėkite alergenų kortelę",
       "cardOptional": "Pridėkite alergenų kortelę (neprivaloma)",
-      "review": "Patikrinkite ir patvirtinkite kiekvieną patiekalą"
+      "review": "Patikrinkite ir patvirtinkite kiekvieną patiekalą",
+      "kitchen": "Paskutinis žingsnis: jūsų virtuvė"
     },
     "heading": {
       "import": "Alergenai",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Praleidus tai tik atidedama — nepatvirtinti patiekalai klientams nerodomi, kol nebus patvirtinti jų alergenai.",
       "importIncomplete": "Kad galėtumėte tęsti, patvirtinkite kiekvieną patiekalą — arba spauskite „Kol kas praleisti alergenų nustatymą“."
-    }
+    },
+    "recipeOnly": "Tik tai, kas yra šio patiekalo recepte.",
+    "tooMany": "Pažymėti alergenai: {count}. Ar tikrai visi jie yra šio patiekalo recepte? Kituose patiekaluose naudojami alergenai čia nežymimi. Juos galėsite pridėti paskutiniame žingsnyje."
+  },
+  "kitchen": {
+    "title": "Kokie alergenai naudojami jūsų virtuvėje?",
+    "body": "Jau pažymėjome tuos, kurie yra jūsų patiekaluose. Pažymėkite kitus, kuriuos naudojate furgone, pavyzdžiui, dienos patiekalams.",
+    "legendDishes": "jūsų patiekaluose",
+    "legendAdded": "pridėjote jūs",
+    "customersSee": "Klientai matys:",
+    "confirm": "Patvirtinu, kad kiekvieno patiekalo alergenai nurodyti teisingai, ir nuolat juos atnaujinsiu."
   }
 }

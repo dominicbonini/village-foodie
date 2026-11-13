@@ -201,10 +201,12 @@ async function main() {
   // Kitchen is on pro (allowed, no plan_features row, no override) → true; asserted on its own, then set aside like
   // preordering_on. ordering_available stays in the byte-compare.
   const withoutPreorderingOn = v => (v && v.body && v.body.truck && typeof v.body.truck === 'object'
-    ? { ...v, body: { ...v.body, truck: Object.fromEntries(Object.entries(v.body.truck).filter(([k]) => k !== 'preordering_on' && k !== 'pay_at_hatch_on')) } } : v)
+    ? { ...v, body: { ...v.body, truck: Object.fromEntries(Object.entries(v.body.truck).filter(([k]) => k !== 'preordering_on' && k !== 'pay_at_hatch_on' && k !== 'kitchen_allergens')) } } : v)   // ⚠️ RE-PINNED (allergen-kitchen-1): + kitchen_allergens, checked below
   for (const [k, b] of Object.entries(before)) {
     const isStatus = /^status/.test(k), isMenu = /^menu/.test(k)
     if (isMenu) t(`${k}: …its truck sends preordering_on = true (no override → allowed; Stage A addition)`, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.preordering_on === true, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.preordering_on)
+    // ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026): the menu truck gained kitchen_allergens — a list of allergen labels ([] in card mode).
+    if (isMenu) t(`${k}: …its truck sends kitchen_allergens, a list of allergen labels (allergen-kitchen-1 addition)`, Array.isArray(got[k]?.body?.truck?.kitchen_allergens) && got[k].body.truck.kitchen_allergens.every(a => typeof a === 'string'), got[k]?.body?.truck?.kitchen_allergens)
     if (isMenu) t(`${k}: …its truck sends pay_at_hatch_on = true (pro allows Pay at Hatch; Stage A2 addition)`, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.pay_at_hatch_on === true, got[k] && got[k].body && got[k].body.truck && got[k].body.truck.pay_at_hatch_on)
     // ⚠️ RE-PINNED (costs-accounts-1, 4 November 2026): get_report gained `report.accounts` (one row per order for the "For your
     // accountant" card, owners and managers only). The report views are compared WITHOUT exactly that key; it is asserted on its own.

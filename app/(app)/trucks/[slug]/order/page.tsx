@@ -53,7 +53,7 @@ import { errorText, type CustomerErrorParams } from '@/lib/i18n/customer-errors'
 import '@/lib/i18n/catalog/order'
 import '@/lib/i18n/catalog/errorsCustomer'
 import { dietaryLabel } from '@/lib/dietary-label'
-import { isEnglish } from '@/lib/i18n/locales'   // order-page-2: the allergen pop-up keeps English's old order
+import { kitchenNames } from '@/lib/allergen-kitchen'   // allergen-kitchen-1: "Allergens handled in this kitchen", as the customer reads it
 import { allergenLabel } from '@/lib/allergen-label'   // france-1: a stored allergen label in the page's language (English: as stored)   // languages-1: a stored dietary tag in the truck's language
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -78,7 +78,7 @@ interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; act
 interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean; allergens?: string[]; dietary?: string[]; stock_count?: number | null }
 interface ModifierGroup { id: string; name: string; hide_name?: boolean; options: ModifierOption[]; is_required?: boolean; min_choices?: number; max_choices?: number }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[]; subcategories?: Array<{ id: string; name: string; sort_order?: number }> }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | 'account_closing' | null; extra_wait_mins?: number; plan: string; preordering_on?: boolean; allergen_info_url?: string | null; allergen_info_text?: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; ordering_available?: boolean; allergensVerified?: boolean; preorder_open_rule?: string | null;
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | 'account_closing' | null; extra_wait_mins?: number; plan: string; preordering_on?: boolean; allergen_info_url?: string | null; allergen_info_text?: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; kitchen_allergens?: string[]; ordering_available?: boolean; allergensVerified?: boolean; preorder_open_rule?: string | null;
   /** 🔴 The truck's zone and how its times and dates look (Phase 2B) — from /api/menu. */
   time?: TimeSettings | null;
   /** 🔴 The phone box's country, name and example (Phase 2C) — from /api/menu, never the settings row. */
@@ -4243,12 +4243,19 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                               className={`flex items-center gap-1.5 text-sm font-bold px-3.5 py-2 transition-all active:scale-95 border-2 rounded-xl ${
                                 selected ? 'bg-orange-600 border-orange-600 text-white' : lock ? 'bg-slate-50 border-slate-200 text-slate-400 line-through cursor-not-allowed opacity-60' : `bg-white text-slate-700 hover:border-orange-300 ${isUnmet ? 'border-amber-300' : 'border-slate-200'}`
                               }`}>
-                              <span>{opt.name}</span>
+                              {/* allergen-kitchen-1 (Dominic approved, reversing V7.8 §31): an extra's allergens under its name, small and orange,
+                                  translated — only when it has any, and only in per-dish mode (card mode shows the card instead). */}
+                              <span className="flex flex-col items-start leading-tight">
+                                <span>{opt.name}</span>
+                                {truck?.allergen_display_mode !== 'card' && (opt.allergens?.length ?? 0) > 0 && (
+                                  <span className={`text-[11px] font-medium ${selected ? 'text-orange-100' : 'text-orange-600'}`} data-option-allergens>
+                                    {(opt.allergens || []).map(a => allergenLabel(a, pageLocale)).join(', ')}
+                                  </span>
+                                )}
+                              </span>
                               {opt.price_adjustment > 0 && <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+{amount(opt.price_adjustment)}</span>}
                               {/* "N left" / sold-out (basket-aware) — shared badge, same thresholds as item stock. */}
                               <OptionStockBadge remaining={rem} />
-                              {/* Allergen chip removed from selection (V7.8 §31) — a single named ingredient is
-                                  self-evidently its allergen; the data still travels to the order + email (§25). */}
                             </button>
                           )
                         })}
@@ -4340,15 +4347,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               // union (the "derived card"), verified-gated server-side so ONLY confirmed ones appear.
               const mode = truck?.allergen_display_mode
               const showCard = mode === 'card' && !!(truck?.allergen_info_url || truck?.allergen_info_text)
-              const perItem = mode !== 'card'
-                ? [...new Set((menu?.items ?? []).flatMap(i => i.allergens ?? []))].sort()
-                : []
-              // order-page-2 (13 Nov 2026): each name in the page's language — the SAME allergenLabel(…, pageLocale) the dish
-              // chips use (it showed the stored English label: "Celery" on a French page). Names only; which allergens
-              // are listed is unchanged. Sorted by the shown name in the page's language; English keeps the old order exactly (a stable no-op sort).
-              const perItemShown = perItem.map(a => ({ a, label: allergenLabel(a, pageLocale) }))
-                .sort((x, y) => isEnglish(pageLocale) ? 0 : x.label.localeCompare(y.label, pageLocale))
-              if (!showCard && perItem.length === 0) {
+              // allergen-kitchen-1 (13 Nov 2026): per-dish mode lists "Allergens handled in this kitchen" — the server's kitchen list
+              // (/api/menu kitchen_allergens: confirmed active dishes ∪ available extras ∪ what the truck added; lib/allergen-kitchen.ts).
+              // Each name in the page's language, sorted as before (order-page-2: English by stored label, others by the shown name).
+              const kitchen = mode !== 'card' ? kitchenNames(truck?.kitchen_allergens ?? [], pageLocale) : []
+              if (!showCard && kitchen.length === 0) {
                 // Honest fallback — never invents data; directs to a human.
                 return (
                   <p className="text-sm text-slate-600">
@@ -4368,15 +4371,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   {showCard && truck?.allergen_info_text && (
                     <p className="text-sm text-slate-600 whitespace-pre-wrap">{truck.allergen_info_text}</p>
                   )}
-                  {perItem.length > 0 && (
-                    <div>
-                      <p className="text-xs font-semibold text-slate-500 mb-1">{tOrder('allergensUsed')}</p>
+                  {kitchen.length > 0 && (
+                    <div data-kitchen-allergens>
+                      <p className="text-xs font-semibold text-slate-500 mb-1">{tOrder('kitchenHeading')}</p>
                       <div className="flex flex-wrap gap-1">
-                        {perItemShown.map(({ a, label }) => (
-                          <span key={a} className="text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg">{label}</span>
+                        {kitchen.map(label => (
+                          <span key={label} className="text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg">{label}</span>
                         ))}
                       </div>
-                      <p className="text-xs text-slate-400 mt-1">{tOrder('allergensSeeEach')}</p>
+                      <p className="text-xs text-slate-400 mt-1">{tOrder('kitchenNote')}</p>
                     </div>
                   )}
                 </>

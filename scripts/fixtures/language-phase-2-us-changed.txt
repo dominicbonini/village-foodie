@@ -4,7 +4,7 @@
 1a/orderPage/US|eventsError	words
 1a/orderPage/US|eventLoading	code: order-page-1 + words
 1a/orderPage/US|menu	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+order-page-1 + words
-1a/orderPage/US|menuAllergens	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+order-page-1 + words
+1a/orderPage/US|menuAllergens	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+order-page-1+allergen-kitchen-1-order-page + words
 1a/orderPage/US|menuPaused	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+order-page-1 + words
 1a/orderPage/US|menuOffline	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+order-page-1 + words
 1a/orderPage/US|menuClosing	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+order-page-1 + words
@@ -18,8 +18,8 @@
 1a/orderPage/US|basket	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice+order-page-1 + words
 1a/orderPage/US|basketExpanded	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer+legal-followups-service-fee-notice+order-page-1 + words
 1a/orderPage/US|discounted	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer+legal-followups-service-fee-notice+order-page-1 + words
-1a/orderPage/US|itemModal	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice+order-page-1 + words
-1a/orderPage/US|itemModalEmpty	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice+order-page-1 + words
+1a/orderPage/US|itemModal	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice+order-page-1+allergen-kitchen-1-order-page + words
+1a/orderPage/US|itemModalEmpty	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice+order-page-1+allergen-kitchen-1-order-page + words
 1a/orderPage/US|dealModal	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice+order-page-1 + words
 1a/orderPage/US|sheet	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice+collection-anchor-backup-ends-at-end+order-page-1 + words
 1a/orderPage/US|sheetCard	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice+collection-anchor-backup-ends-at-end+order-page-1 + words
@@ -54,8 +54,8 @@
 1a/orderPage/US|privateNamed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+order-page-1 + words
 1a/orderPage/US|privateUnnamed	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+order-page-1 + words
 1a/orderPage/US|closedAtTime	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+order-page-1 + words
-1a/orderPage/US|itemModalEdit	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice+order-page-1 + words
-1a/orderPage/US|itemModalUpsell	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice+order-page-1 + words
+1a/orderPage/US|itemModalEdit	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice+order-page-1+allergen-kitchen-1-order-page + words
+1a/orderPage/US|itemModalUpsell	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+legal-followups-service-fee-notice+order-page-1+allergen-kitchen-1-order-page + words
 1a/orderPage/US|sheetEmailError	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice+collection-anchor-backup-ends-at-end+order-page-1 + words
 1a/orderPage/US|sheetNoTimeSelection	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice+order-page-1 + words
 1a/orderPage/US|sheetChosen	code: P2-us-clock+midnight-card-time-nbsp-US+us-layout-fix-1-nbsp+us-layout-fix-2-live-on-date-line+us-layout-fix-12-choose-time+us-layout-fix-10-charges-fold-order-footer+us-layout-fix-10-charges-fold-sheet-footer+legal-followups-privacy-link+legal-followups-service-fee-notice+order-page-1 + words

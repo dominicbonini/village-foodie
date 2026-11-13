@@ -108,7 +108,9 @@
     "extract": "Ekstrak dengan AI",
     "needReview": "{count, plural, other {# hidangan perlu}} disemak — pelanggan tidak dapat melihat maklumat alergen sehingga disahkan",
     "reading": "Membaca maklumat alergen…",
-    "pastePlaceholder": "Tampal maklumat alergen anda di sini…"
+    "pastePlaceholder": "Tampal maklumat alergen anda di sini…",
+    "kitchenLine": "Dapur juga menggunakan: {list}",
+    "kitchenEdit": "Edit"
   },
   "deleteItem": {
     "title": "Buang {name}?",
@@ -172,7 +174,9 @@
     "add": "Tambah item",
     "noGroups": "Belum ada kumpulan pilihan — ciptanya dalam Tambahan & cadangan.",
     "costToMake": "Kos penyediaan",
-    "costHelp": "Pilihan. Kos satu hidangan kepada anda untuk bahan dan pembungkusan. Digunakan dalam laporan anda sahaja; pelanggan tidak akan nampak."
+    "costHelp": "Pilihan. Kos satu hidangan kepada anda untuk bahan dan pembungkusan. Digunakan dalam laporan anda sahaja; pelanggan tidak akan nampak.",
+    "recipeOnly": "Hanya yang ada dalam resipi hidangan ini.",
+    "tooMany": "{count} alergen ditanda. Betulkah semuanya ada dalam resipi hidangan ini? Alergen yang digunakan di bahagian lain dapur anda diletakkan dalam “Dapur juga menggunakan” pada tab Menu."
   },
   "summary": "{categories, plural, other {# kategori}} · {items, plural, other {# item}}",
   "confirmDelete": {

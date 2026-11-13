@@ -148,9 +148,7 @@
   "allergenTitle": "Informacije o alergenima",
   "allergenNotProvided": "Informacije o alergenima nisu navedene — provjerite izravno s food truckom.",
   "allergenCard": "📎 Prikaži karticu alergena (PDF/slika)",
-  "allergensUsed": "Alergeni na ovom jelovniku",
-  "allergensSeeEach": "Alergene pojedinog jela potražite uz svako jelo.",
-  "allergenSevere": "Ako imate tešku alergiju, prije narudžbe izravno se obratite prodavaču.",
+  "allergenSevere": "Ako imate alergiju na hranu, prije narudžbe obratite se prodavaču.",
   "orderConfirmed": "Narudžba potvrđena!",
   "orderReceived": "Narudžba primljena!",
   "thanksReady": "Hvala! Primili smo vašu narudžbu i uskoro će biti spremna.",
@@ -171,5 +169,7 @@
   "backTo": "Natrag na food truck {truck}",
   "notePlaceholderCompact": "Imate li posebnih želja? npr. bez luka",
   "noteHeading": "Imate li posebnih želja? <muted>— neobavezno</muted>",
-  "notePlaceholder": "npr. bez luka, jako hrskavo"
+  "notePlaceholder": "npr. bez luka, jako hrskavo",
+  "kitchenHeading": "Alergeni koji se koriste u ovoj kuhinji",
+  "kitchenNote": "Uz svako jelo navedeni su alergeni iz njegova recepta. Ne možemo jamčiti da nijedno jelo ne sadrži tragove."
 }

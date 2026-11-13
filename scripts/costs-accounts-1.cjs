@@ -344,7 +344,9 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const LIOP = require('./_longer-intervals-order-page.cjs')
     const notLonger = f => {
       if (f !== LIOP.FILE) return true
-      const undone = LIOP.undo(fs.readFileSync(path.join(REPO, f), 'utf8'))
+      // ⚠️ RE-PINNED (allergen-kitchen-1): this work's order-page edits out first (scripts/_named-allergen-kitchen-1.cjs undoFile)
+      const raw = fs.readFileSync(path.join(REPO, f), 'utf8')
+      const undone = LIOP.undo(require('./_named-allergen-kitchen-1.cjs').undoFile(f, raw) ?? raw)
       return !(undone && undone === showAt(LIOP.BASE, f))
     }
     // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026; docs/pricing-copy-4-report.md; scripts/_lp-pricing-copy-4.cjs undoCode): the settings
@@ -362,7 +364,8 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     // ⚠️ RE-PINNED (deals-order-1, 13 November 2026; scripts/_named-deals-order-1.cjs undoMenu): the menu API reads the formules in
     // the truck's order. It passes when taking exactly those four lines out gives 391497fd's file; any other change still fails.
     const DO1 = require('./_named-deals-order-1.cjs')
-    const notDealsOrder = f => !(f === DO1.MENU_ROUTE && DO1.undoMenu(fs.readFileSync(path.join(REPO, f), 'utf8')) === showAt(DO1.BASE, f))
+    const ak1Menu = f => { const raw = fs.readFileSync(path.join(REPO, f), 'utf8'); return require('./_named-allergen-kitchen-1.cjs').undoFile(f, raw) ?? raw }   // allergen-kitchen-1's edits out first
+    const notDealsOrder = f => !(f === DO1.MENU_ROUTE && DO1.undoMenu(ak1Menu(f)) === showAt(DO1.BASE, f))
     try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).filter(notDc2).filter(notLonger).filter(notPc4).filter(notOfflineStart).filter(notDealsOrder).join('\n') } catch (e) { diff = String(e) }
     const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }).trim()
     t(`${PATHS.length} order, payment, menu, KDS, dashboard and ticket paths: no change against ${BEFORE} (working tree)`, PATHS.length >= 20 && diff.trim() === '' && untracked === '', diff + untracked)

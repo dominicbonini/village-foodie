@@ -28,9 +28,9 @@
     "ambiguous": "Ambigu — correspond à plusieurs plats ; choisissez le bon.",
     "assignTo": "Attribuer à un plat…",
     "dismiss": "Ignorer",
-    "blanket": "La fiche indique que <b>{list}</b> peut être présent dans <b>tous</b> les plats. L’ajouter à chaque plat ? (vous confirmerez quand même chacun) <muted>— désactivé par défaut</muted>",
     "kitchenNotes": "Remarques de la cuisine (enregistrées dans vos infos allergènes)",
-    "matchSummary": "{n, plural, =0 {Associés à un plat : {matched}.} one {Associés à un plat : {matched}. {count} est à attribuer.} other {Associés à un plat : {matched}. {count} sont à attribuer.}}"
+    "matchSummary": "{n, plural, =0 {Associés à un plat : {matched}.} one {Associés à un plat : {matched}. {count} est à attribuer.} other {Associés à un plat : {matched}. {count} sont à attribuer.}}",
+    "blanketInfo": "Votre fiche indique que {list} peut être présent dans tous les plats. Nous les ajouterons aux allergènes utilisés dans votre cuisine. Vous pourrez les vérifier à la dernière étape."
   },
   "savedCard": {
     "showLess": "Voir moins",
@@ -92,7 +92,8 @@
       "choose": "Choisissez comment vos clients voient les informations sur les allergènes",
       "card": "Ajoutez votre fiche allergènes",
       "cardOptional": "Ajoutez une fiche allergènes (facultatif)",
-      "review": "Vérifiez et confirmez chaque plat"
+      "review": "Vérifiez et confirmez chaque plat",
+      "kitchen": "Dernière étape : votre cuisine"
     },
     "heading": {
       "import": "Allergènes",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Passer, c’est reporter — les plats que vous n’avez pas confirmés restent masqués pour les clients jusqu’à ce que leurs allergènes soient confirmés.",
       "importIncomplete": "Confirmez chaque plat pour continuer — ou « Passer la configuration des allergènes pour l’instant »."
-    }
+    },
+    "recipeOnly": "Uniquement ce qui est dans la recette de ce plat.",
+    "tooMany": "{count} allergènes cochés. Sont-ils vraiment tous dans la recette de ce plat ? Les allergènes utilisés dans d’autres plats ne vont pas ici. Vous pourrez les ajouter à la dernière étape."
+  },
+  "kitchen": {
+    "title": "Quels allergènes votre cuisine utilise-t-elle ?",
+    "body": "Nous avons coché ceux déjà présents dans vos plats. Cochez les autres que vous utilisez dans le camion, par exemple pour des plats du jour.",
+    "legendDishes": "dans vos plats",
+    "legendAdded": "ajouté par vous",
+    "customersSee": "Vos clients verront :",
+    "confirm": "Je confirme que les allergènes de chaque plat sont exacts et je les tiendrai à jour."
   }
 }

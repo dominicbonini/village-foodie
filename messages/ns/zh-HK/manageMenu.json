@@ -108,7 +108,9 @@
     "extract": "用 AI 擷取",
     "needReview": "{count, plural, other {# 款菜式需要}}檢查：確認前顧客無法查看致敏原資料",
     "reading": "正在讀取致敏原資料…",
-    "pastePlaceholder": "在此貼上你的致敏原資料…"
+    "pastePlaceholder": "在此貼上你的致敏原資料…",
+    "kitchenLine": "廚房亦會處理：{list}",
+    "kitchenEdit": "編輯"
   },
   "deleteItem": {
     "title": "要移除「{name}」嗎？",
@@ -172,7 +174,9 @@
     "add": "加入食品",
     "noGroups": "暫時未有選項組別，請到「配料及加購」建立。",
     "costToMake": "製作成本",
-    "costHelp": "可選填。每份所需的材料及包裝成本。只會用於你的報告，顧客永遠不會看到。"
+    "costHelp": "可選填。每份所需的材料及包裝成本。只會用於你的報告，顧客永遠不會看到。",
+    "recipeOnly": "只選這款菜式食譜內有的致敏原。",
+    "tooMany": "已剔選 {count} 種致敏原。真的全部都在這款菜式的食譜內嗎？廚房其他地方用到的致敏原，請加到「餐牌」分頁的「廚房亦會處理」。"
   },
   "summary": "{categories, plural, other {# 個類別}} · {items, plural, other {# 項食品}}",
   "confirmDelete": {

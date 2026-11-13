@@ -108,7 +108,9 @@
     "extract": "Läs ut med AI",
     "needReview": "{count, plural, one {# rätt behöver} other {# rätter behöver}} granskas — kunderna ser ingen allergeninformation förrän den är bekräftad",
     "reading": "Läser allergeninformation…",
-    "pastePlaceholder": "Klistra in din allergeninformation här…"
+    "pastePlaceholder": "Klistra in din allergeninformation här…",
+    "kitchenLine": "Köket hanterar också: {list}",
+    "kitchenEdit": "Redigera"
   },
   "deleteItem": {
     "title": "Ta bort {name}?",
@@ -172,7 +174,9 @@
     "add": "Lägg till artikel",
     "noGroups": "Inga tillvalsgrupper än — skapa dem under Tillval & merförsäljning.",
     "costToMake": "Kostnad per portion",
-    "costHelp": "Valfritt. Vad en portion kostar dig i råvaror och förpackning. Används bara i dina rapporter; kunderna ser det aldrig."
+    "costHelp": "Valfritt. Vad en portion kostar dig i råvaror och förpackning. Används bara i dina rapporter; kunderna ser det aldrig.",
+    "recipeOnly": "Bara det som finns i den här rättens recept.",
+    "tooMany": "{count} allergener ikryssade. Finns verkligen alla i den här rättens recept? Allergener som används på andra ställen i ditt kök läggs under ”Köket hanterar också” på fliken Meny."
   },
   "summary": "{categories, plural, one {# kategori} other {# kategorier}} · {items, plural, one {# artikel} other {# artiklar}}",
   "confirmDelete": {

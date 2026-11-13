@@ -149,9 +149,7 @@
     "allergenTitle": "Allergenoplysninger",
     "allergenNotProvided": "Der er ikke oplyst allergener – spørg foodtrucken direkte.",
     "allergenCard": "📎 Se allergenlisten (PDF/billede)",
-    "allergensUsed": "Allergener på dette menukort",
-    "allergensSeeEach": "Se de enkelte retter for deres specifikke allergener.",
-    "allergenSevere": "Har du en alvorlig allergi, så kontakt sælgeren direkte, før du bestiller.",
+    "allergenSevere": "Har du en fødevareallergi, så kontakt sælgeren, før du bestiller.",
     "orderConfirmed": "Bestillingen er bekræftet!",
     "orderReceived": "Bestillingen er modtaget!",
     "thanksReady": "Tak! Vi har modtaget din bestilling, og den er klar snart.",
@@ -172,7 +170,9 @@
     "backTo": "Tilbage til {truck}",
     "notePlaceholderCompact": "Nogen ønsker? f.eks. uden løg",
     "noteHeading": "Nogen ønsker? <muted>– valgfrit</muted>",
-    "notePlaceholder": "f.eks. uden løg, ekstra sprød"
+    "notePlaceholder": "f.eks. uden løg, ekstra sprød",
+    "kitchenHeading": "Allergener, der håndteres i dette køkken",
+    "kitchenNote": "Hver ret viser allergenerne i sin opskrift. Vi kan ikke garantere, at nogen ret er fri for spor."
   },
   "plansPdf": {
     "title": "Abonnementer og funktioner",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Tvetydig – passer på flere retter; vælg den rigtige.",
       "assignTo": "Tildel til ret…",
       "dismiss": "Afvis",
-      "blanket": "Listen siger, at <b>{list}</b> kan forekomme i <b>alle</b> retter. Tilføj til hver ret? (du bekræfter stadig hver enkelt) <muted>– slået fra som standard</muted>",
       "kitchenNotes": "Køkkennoter (gemmes i din allergeninfo)",
-      "matchSummary": "{n, plural, =0 {{matched} matchet med en ret.} one {{matched} matchet med en ret. {count} skal tildeles af dig.} other {{matched} matchet med en ret. {count} skal tildeles af dig.}}"
+      "matchSummary": "{n, plural, =0 {{matched} matchet med en ret.} one {{matched} matchet med en ret. {count} skal tildeles af dig.} other {{matched} matchet med en ret. {count} skal tildeles af dig.}}",
+      "blanketInfo": "Ifølge din allergenliste kan {list} forekomme i alle retter. Vi tilføjer dem til de allergener, dit køkken håndterer. Du kan tjekke dem i sidste trin."
     },
     "savedCard": {
       "showLess": "Vis mindre",
@@ -2468,7 +2468,8 @@
         "choose": "Vælg, hvordan kunderne ser allergeninfo",
         "card": "Tilføj din allergenliste",
         "cardOptional": "Tilføj en allergenliste (valgfrit)",
-        "review": "Tjek og bekræft hver ret"
+        "review": "Tjek og bekræft hver ret",
+        "kitchen": "Sidste trin: dit køkken"
       },
       "heading": {
         "import": "Allergener",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Spring over udskyder kun – retter, du ikke har bekræftet, er skjult for kunderne, indtil deres allergener er bekræftet.",
         "importIncomplete": "Bekræft alle retter for at fortsætte – eller »Spring opsætning af allergener over indtil videre«."
-      }
+      },
+      "recipeOnly": "Kun det, der er i rettens opskrift.",
+      "tooMany": "Flueben ved {count} allergener. Er de virkelig alle i rettens opskrift? Allergener fra andre retter hører ikke til her. Du kan tilføje dem i sidste trin."
+    },
+    "kitchen": {
+      "title": "Hvilke allergener håndterer dit køkken?",
+      "body": "Vi har allerede sat flueben ved dem, der er i dine retter. Sæt flueben ved andre, du bruger i foodtrucken, fx til dagens retter.",
+      "legendDishes": "i dine retter",
+      "legendAdded": "tilføjet af dig",
+      "customersSee": "Kunderne ser:",
+      "confirm": "Jeg bekræfter, at allergenerne for hver ret er korrekte, og at jeg holder dem opdateret."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Udtræk med AI",
       "needReview": "{count, plural, one {# ret skal} other {# retter skal}} gennemgås — kunderne kan ikke se allergenoplysninger, før de er bekræftet",
       "reading": "Læser allergenoplysninger…",
-      "pastePlaceholder": "Indsæt dine allergenoplysninger her…"
+      "pastePlaceholder": "Indsæt dine allergenoplysninger her…",
+      "kitchenLine": "Køkkenet håndterer også: {list}",
+      "kitchenEdit": "Rediger"
     },
     "deleteItem": {
       "title": "Fjern {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Tilføj vare",
       "noGroups": "Ingen grupper med valgmuligheder endnu — opret dem under Tilvalg og mersalg.",
       "costToMake": "Kostpris",
-      "costHelp": "Valgfrit. Hvad én portion koster dig i råvarer og emballage. Bruges kun i dine rapporter; kunderne ser det aldrig."
+      "costHelp": "Valgfrit. Hvad én portion koster dig i råvarer og emballage. Bruges kun i dine rapporter; kunderne ser det aldrig.",
+      "recipeOnly": "Kun det, der er i rettens opskrift.",
+      "tooMany": "Flueben ved {count} allergener. Er de virkelig alle i rettens opskrift? Allergener, der bruges andre steder i dit køkken, skal under »Køkkenet håndterer også« på fanen Menukort."
     },
     "summary": "{categories, plural, one {# kategori} other {# kategorier}} · {items, plural, one {# vare} other {# varer}}",
     "confirmDelete": {

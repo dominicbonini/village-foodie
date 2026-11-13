@@ -108,7 +108,9 @@
     "extract": "Yapay zekâ ile çıkar",
     "needReview": "{count, plural, one {# ürünün} other {# ürünün}} incelenmesi gerekiyor — teyit edilene kadar müşteriler alerjen bilgisini göremez",
     "reading": "Alerjen bilgisi okunuyor…",
-    "pastePlaceholder": "Alerjen bilgilerinizi buraya yapıştırın…"
+    "pastePlaceholder": "Alerjen bilgilerinizi buraya yapıştırın…",
+    "kitchenLine": "Mutfakta ayrıca kullanılanlar: {list}",
+    "kitchenEdit": "Düzenle"
   },
   "deleteItem": {
     "title": "{name} kaldırılsın mı?",
@@ -172,7 +174,9 @@
     "add": "Ürün ekle",
     "noGroups": "Henüz seçenek grubu yok — Ekstralar ve ek satış önerileri bölümünde oluşturun.",
     "costToMake": "Maliyet",
-    "costHelp": "İsteğe bağlı. Bir porsiyonun malzeme ve ambalaj olarak size maliyeti. Yalnızca raporlarınızda kullanılır; müşteriler asla görmez."
+    "costHelp": "İsteğe bağlı. Bir porsiyonun malzeme ve ambalaj olarak size maliyeti. Yalnızca raporlarınızda kullanılır; müşteriler asla görmez.",
+    "recipeOnly": "Yalnızca bu ürünün tarifinde olanlar.",
+    "tooMany": "{count} alerjen işaretlendi. Hepsi gerçekten bu ürünün tarifinde mi? Mutfağınızın başka yerlerinde kullanılan alerjenler, Menü sekmesindeki “Mutfakta ayrıca kullanılanlar” bölümüne girilir."
   },
   "summary": "{categories, plural, one {# kategori} other {# kategori}} · {items, plural, one {# ürün} other {# ürün}}",
   "confirmDelete": {

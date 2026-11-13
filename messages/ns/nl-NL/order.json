@@ -148,9 +148,7 @@
   "allergenTitle": "Allergeneninformatie",
   "allergenNotProvided": "Geen allergeneninfo opgegeven — vraag het rechtstreeks na bij de foodtruck.",
   "allergenCard": "📎 Allergenenkaart bekijken (PDF/afbeelding)",
-  "allergensUsed": "Allergenen in dit menu",
-  "allergensSeeEach": "Bekijk per gerecht welke allergenen erin zitten.",
-  "allergenSevere": "Heb je een ernstige allergie? Neem dan vóór het bestellen rechtstreeks contact op met de verkoper.",
+  "allergenSevere": "Heb je een voedselallergie? Neem dan vóór het bestellen contact op met de verkoper.",
   "orderConfirmed": "Bestelling bevestigd!",
   "orderReceived": "Bestelling ontvangen!",
   "thanksReady": "Bedankt! We hebben je bestelling ontvangen en ze is zo klaar.",
@@ -171,5 +169,7 @@
   "backTo": "Terug naar {truck}",
   "notePlaceholderCompact": "Nog wensen? bijv. geen ui",
   "noteHeading": "Nog wensen? <muted>— optioneel</muted>",
-  "notePlaceholder": "bijv. geen ui, extra krokant"
+  "notePlaceholder": "bijv. geen ui, extra krokant",
+  "kitchenHeading": "Allergenen die in deze keuken worden verwerkt",
+  "kitchenNote": "Bij elk gerecht staan de allergenen uit het recept. We kunnen niet garanderen dat een gerecht vrij is van sporen."
 }

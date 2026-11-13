@@ -108,7 +108,9 @@
     "extract": "Izvuci uz AI",
     "needReview": "{count, plural, one {# jelo čeka} few {# jela čekaju} other {# jela čeka}} pregled — kupci ne vide podatke o alergenima dok se ne potvrde",
     "reading": "Čitamo podatke o alergenima…",
-    "pastePlaceholder": "Nalepite podatke o alergenima ovde…"
+    "pastePlaceholder": "Nalepite podatke o alergenima ovde…",
+    "kitchenLine": "Kuhinja koristi i: {list}",
+    "kitchenEdit": "Izmeni"
   },
   "deleteItem": {
     "title": "Ukloniti stavku: {name}?",
@@ -172,7 +174,9 @@
     "add": "Dodaj stavku",
     "noGroups": "Još nema grupa opcija — napravite ih u odeljku Dodaci i dodatna ponuda.",
     "costToMake": "Trošak pripreme",
-    "costHelp": "Nije obavezno. Koliko vas jedna porcija košta u sastojcima i ambalaži. Koristi se samo u vašim izveštajima; kupci to nikada ne vide."
+    "costHelp": "Nije obavezno. Koliko vas jedna porcija košta u sastojcima i ambalaži. Koristi se samo u vašim izveštajima; kupci to nikada ne vide.",
+    "recipeOnly": "Samo ono što je u receptu ovog jela.",
+    "tooMany": "Označeni alergeni: {count}. Da li su zaista svi u receptu ovog jela? Alergeni koji se koriste drugde u vašoj kuhinji idu pod „Kuhinja koristi i“ na kartici Meni."
   },
   "summary": "{categories, plural, one {# kategorija} few {# kategorije} other {# kategorija}} · {items, plural, one {# stavka} few {# stavke} other {# stavki}}",
   "confirmDelete": {

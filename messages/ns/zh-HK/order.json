@@ -148,9 +148,7 @@
   "allergenTitle": "致敏原資料",
   "allergenNotProvided": "未有提供致敏原資料，請直接向美食車確認。",
   "allergenCard": "📎 查看致敏原資料卡（PDF／圖片）",
-  "allergensUsed": "此餐牌使用的致敏原",
-  "allergensSeeEach": "各菜式的致敏原請查看個別菜式。",
-  "allergenSevere": "如你有嚴重過敏，落單前請直接聯絡商戶。",
+  "allergenSevere": "如你有食物過敏，落單前請聯絡商戶。",
   "orderConfirmed": "訂單已確認！",
   "orderReceived": "已收到訂單！",
   "thanksReady": "多謝！我們已收到你的訂單，很快便會準備好。",
@@ -171,5 +169,7 @@
   "backTo": "返回 {truck}",
   "notePlaceholderCompact": "有其他要求嗎？例如：走洋蔥",
   "noteHeading": "有其他要求嗎？<muted>（選填）</muted>",
-  "notePlaceholder": "例如：走洋蔥、加脆"
+  "notePlaceholder": "例如：走洋蔥、加脆",
+  "kitchenHeading": "此廚房處理的致敏原",
+  "kitchenNote": "每款菜式均列出其食譜中的致敏原。我們無法保證任何菜式完全不含微量致敏原。"
 }

@@ -28,9 +28,9 @@
     "ambiguous": "Tidak jelas — sepadan dengan beberapa hidangan; pilih yang betul.",
     "assignTo": "Tetapkan kepada hidangan…",
     "dismiss": "Abaikan",
-    "blanket": "Kad ini menyatakan <b>{list}</b> mungkin ada dalam <b>semua</b> hidangan. Tambah pada setiap hidangan? (anda masih akan mengesahkan setiap satu) <muted>— dimatikan secara lalai</muted>",
     "kitchenNotes": "Nota dapur (disimpan dalam maklumat alergen anda)",
-    "matchSummary": "{n, plural, =0 {{matched} dipadankan dengan hidangan.} other {{matched} dipadankan dengan hidangan. {count} perlu anda tetapkan.}}"
+    "matchSummary": "{n, plural, =0 {{matched} dipadankan dengan hidangan.} other {{matched} dipadankan dengan hidangan. {count} perlu anda tetapkan.}}",
+    "blanketInfo": "Kad anda menyatakan {list} mungkin ada dalam semua hidangan. Kami akan menambahkannya pada alergen yang digunakan di dapur anda. Anda boleh menyemaknya pada langkah terakhir."
   },
   "savedCard": {
     "showLess": "Tunjuk kurang",
@@ -92,7 +92,8 @@
       "choose": "Pilih cara pelanggan melihat maklumat alergen",
       "card": "Tambah kad alergen anda",
       "cardOptional": "Tambah kad alergen (pilihan)",
-      "review": "Semak & sahkan setiap hidangan"
+      "review": "Semak & sahkan setiap hidangan",
+      "kitchen": "Langkah terakhir: dapur anda"
     },
     "heading": {
       "import": "Alergen",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Langkau bermaksud tangguh — hidangan yang belum anda sahkan kekal tersembunyi daripada pelanggan sehingga alergennya disahkan.",
       "importIncomplete": "Sahkan setiap hidangan untuk meneruskan — atau “Langkau tetapan alergen dahulu”."
-    }
+    },
+    "recipeOnly": "Hanya yang ada dalam resipi hidangan ini.",
+    "tooMany": "{count} alergen ditanda. Betulkah semuanya ada dalam resipi hidangan ini? Alergen yang digunakan dalam hidangan lain tidak diletakkan di sini. Anda boleh menambahkannya pada langkah terakhir."
+  },
+  "kitchen": {
+    "title": "Alergen manakah yang digunakan di dapur anda?",
+    "body": "Kami telah menandakan alergen yang sudah ada dalam hidangan anda. Tandakan yang lain yang anda gunakan dalam trak, contohnya untuk hidangan istimewa.",
+    "legendDishes": "dalam hidangan anda",
+    "legendAdded": "ditambah oleh anda",
+    "customersSee": "Pelanggan akan melihat:",
+    "confirm": "Saya mengesahkan bahawa alergen bagi setiap hidangan adalah betul dan saya akan sentiasa mengemas kininya."
   }
 }

@@ -14,7 +14,6 @@
   "payAtTruckLine": "Pagas en el food truck al retirar · Sin datos de tarjeta",
   "addItemsPrompt": "Añade productos de la carta para hacer un pedido",
   "payEitherLine": "Paga con tarjeta o al retirar",
-  "allergensUsed": "Alérgenos presentes en esta carta",
   "collectionTime": "Hora de retiro: {time}",
   "preferredCollection": "Retiro preferido: {time}",
   "willConfirmTime": "{truck} confirmará tu hora de retiro cuando acepte tu pedido.",

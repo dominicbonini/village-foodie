@@ -148,9 +148,7 @@
   "allergenTitle": "Información sobre alérgenos",
   "allergenNotProvided": "No se ha facilitado información sobre alérgenos: confírmalo directamente con el food truck.",
   "allergenCard": "📎 Ver la carta de alérgenos (PDF/imagen)",
-  "allergensUsed": "Alérgenos presentes en esta carta",
-  "allergensSeeEach": "Consulta cada plato para ver sus alérgenos.",
-  "allergenSevere": "Si tienes una alergia grave, ponte en contacto directamente con el food truck antes de pedir.",
+  "allergenSevere": "Si tienes una alergia alimentaria, ponte en contacto con el food truck antes de pedir.",
   "orderConfirmed": "¡Pedido confirmado!",
   "orderReceived": "¡Pedido recibido!",
   "thanksReady": "¡Gracias! Hemos recibido tu pedido y estará listo pronto.",
@@ -171,5 +169,7 @@
   "backTo": "Volver a {truck}",
   "notePlaceholderCompact": "¿Alguna petición? p. ej. sin cebolla",
   "noteHeading": "¿Alguna petición? <muted>(opcional)</muted>",
-  "notePlaceholder": "p. ej. sin cebolla, extra crujiente"
+  "notePlaceholder": "p. ej. sin cebolla, extra crujiente",
+  "kitchenHeading": "Alérgenos que se usan en esta cocina",
+  "kitchenNote": "Cada plato muestra los alérgenos de su receta. No podemos garantizar que ningún plato esté libre de trazas."
 }

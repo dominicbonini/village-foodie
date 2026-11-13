@@ -149,9 +149,7 @@
     "allergenTitle": "Allergeeniteave",
     "allergenNotProvided": "Allergeeniteavet pole lisatud — palun täpsusta otse toiduautolt.",
     "allergenCard": "📎 Vaata allergeenikaarti (PDF/pilt)",
-    "allergensUsed": "Selles menüüs kasutatud allergeenid",
-    "allergensSeeEach": "Iga roa konkreetsed allergeenid leiad roa juurest.",
-    "allergenSevere": "Kui sul on raske allergia, võta palun enne tellimist otse müüjaga ühendust.",
+    "allergenSevere": "Kui sul on toiduallergia, võta enne tellimist müüjaga ühendust.",
     "orderConfirmed": "Tellimus kinnitatud!",
     "orderReceived": "Tellimus vastu võetud!",
     "thanksReady": "Aitäh! Saime sinu tellimuse kätte ja see on varsti valmis.",
@@ -172,7 +170,9 @@
     "backTo": "Tagasi: {truck}",
     "notePlaceholderCompact": "Erisoove? nt ilma sibulata",
     "noteHeading": "Erisoove? <muted>— valikuline</muted>",
-    "notePlaceholder": "nt ilma sibulata, eriti krõbe"
+    "notePlaceholder": "nt ilma sibulata, eriti krõbe",
+    "kitchenHeading": "Selles köögis kasutatavad allergeenid",
+    "kitchenNote": "Iga roa juures on näidatud selle retsepti allergeenid. Me ei saa tagada, et ükski roog ei sisalda jälgi."
   },
   "plansPdf": {
     "title": "Paketid ja funktsioonid",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Mitmetähenduslik — sobib mitme roaga; vali õige.",
       "assignTo": "Määra roale…",
       "dismiss": "Loobu",
-      "blanket": "Kaardi järgi võib <b>{list}</b> esineda <b>kõigis</b> roogades. Kas lisada igale roale? (iga roa kinnitad ikkagi ise) <muted>— vaikimisi väljas</muted>",
       "kitchenNotes": "Köögi märkmed (salvestatakse sinu allergeeniteabesse)",
-      "matchSummary": "{n, plural, =0 {Roaga seotud: {matched}.} one {Roaga seotud: {matched}. Sinu määramist vajab: {count}.} other {Roaga seotud: {matched}. Sinu määramist vajavad: {count}.}}"
+      "matchSummary": "{n, plural, =0 {Roaga seotud: {matched}.} one {Roaga seotud: {matched}. Sinu määramist vajab: {count}.} other {Roaga seotud: {matched}. Sinu määramist vajavad: {count}.}}",
+      "blanketInfo": "Sinu kaardi järgi võib {list} esineda kõigis roogades. Lisame need sinu köögis kasutatavate allergeenide hulka. Saad neid kontrollida viimases sammus."
     },
     "savedCard": {
       "showLess": "Näita vähem",
@@ -2468,7 +2468,8 @@
         "choose": "Vali, kuidas kliendid allergeeniteavet näevad",
         "card": "Lisa oma allergeenikaart",
         "cardOptional": "Lisa allergeenikaart (valikuline)",
-        "review": "Kontrolli ja kinnita iga roog"
+        "review": "Kontrolli ja kinnita iga roog",
+        "kitchen": "Viimane samm: sinu köök"
       },
       "heading": {
         "import": "Allergeenid",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Vahelejätmine lükkab asja edasi — road, mida sa pole kinnitanud, jäävad klientide eest peidetuks, kuni nende allergeenid on kinnitatud.",
         "importIncomplete": "Jätkamiseks kinnita iga roog — või vali „Jäta allergeenide seadistamine praegu vahele“."
-      }
+      },
+      "recipeOnly": "Ainult see, mis on selle roa retseptis.",
+      "tooMany": "{count} allergeeni märgitud. Kas need kõik on tõesti selle roa retseptis? Teistes roogades kasutatud allergeenid ei käi siia. Saad need lisada viimases sammus."
+    },
+    "kitchen": {
+      "title": "Milliseid allergeene sinu köögis kasutatakse?",
+      "body": "Märkisime juba need, mis on sinu roogades. Märgi ka teised, mida toiduautos kasutad, näiteks päevapakkumiste jaoks.",
+      "legendDishes": "sinu roogades",
+      "legendAdded": "sinu lisatud",
+      "customersSee": "Kliendid näevad:",
+      "confirm": "Kinnitan, et iga roa allergeenid on õiged, ja hoian need ajakohasena."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Võta välja tehisaru abil",
       "needReview": "{count, plural, one {# roog vajab} other {# rooga vajab}} ülevaatust — kliendid ei näe allergeeniteavet enne kinnitamist",
       "reading": "Loen allergeeniteavet…",
-      "pastePlaceholder": "Kleebi oma allergeeniteave siia…"
+      "pastePlaceholder": "Kleebi oma allergeeniteave siia…",
+      "kitchenLine": "Köögis kasutatakse ka: {list}",
+      "kitchenEdit": "Muuda"
     },
     "deleteItem": {
       "title": "Kas eemaldada toode {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Lisa toode",
       "noGroups": "Valikugruppe veel pole — loo need jaotises Lisad ja lisamüük.",
       "costToMake": "Valmistamise kulu",
-      "costHelp": "Valikuline. Kui palju üks portsjon sulle koostisosade ja pakendi peale maksma läheb. Kasutatakse ainult sinu aruannetes; kliendid ei näe seda kunagi."
+      "costHelp": "Valikuline. Kui palju üks portsjon sulle koostisosade ja pakendi peale maksma läheb. Kasutatakse ainult sinu aruannetes; kliendid ei näe seda kunagi.",
+      "recipeOnly": "Ainult see, mis on selle roa retseptis.",
+      "tooMany": "{count} allergeeni märgitud. Kas need kõik on tõesti selle roa retseptis? Mujal sinu köögis kasutatud allergeenid käivad vahekaardil Menüü jaotisesse „Köögis kasutatakse ka“."
     },
     "summary": "{categories, plural, one {# kategooria} other {# kategooriat}} · {items, plural, one {# toode} other {# toodet}}",
     "confirmDelete": {

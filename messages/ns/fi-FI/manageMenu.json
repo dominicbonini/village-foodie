@@ -108,7 +108,9 @@
     "extract": "Poimi tekoälyllä",
     "needReview": "{count, plural, one {# annos vaatii} other {# annosta vaatii}} tarkistuksen — asiakkaat eivät näe allergeenitietoja ennen vahvistusta",
     "reading": "Luetaan allergeenitietoja…",
-    "pastePlaceholder": "Liitä allergeenitietosi tähän…"
+    "pastePlaceholder": "Liitä allergeenitietosi tähän…",
+    "kitchenLine": "Keittiössä käsitellään myös: {list}",
+    "kitchenEdit": "Muokkaa"
   },
   "deleteItem": {
     "title": "Poistetaanko {name}?",
@@ -172,7 +174,9 @@
     "add": "Lisää tuote",
     "noGroups": "Ei vielä valintaryhmiä — luo niitä kohdassa Lisävalinnat ja lisämyynti.",
     "costToMake": "Valmistuskustannus",
-    "costHelp": "Valinnainen. Mitä yksi annos maksaa sinulle raaka-aineina ja pakkauksina. Käytetään vain raporteissasi; asiakkaat eivät koskaan näe sitä."
+    "costHelp": "Valinnainen. Mitä yksi annos maksaa sinulle raaka-aineina ja pakkauksina. Käytetään vain raporteissasi; asiakkaat eivät koskaan näe sitä.",
+    "recipeOnly": "Vain se, mitä tämän annoksen reseptissä on.",
+    "tooMany": "{count} allergeenia rastitettu. Ovatko ne kaikki todella tämän annoksen reseptissä? Muualla keittiössäsi käsitellyt allergeenit kuuluvat Ruokalista-välilehden kohtaan ”Keittiössä käsitellään myös”."
   },
   "summary": "{categories, plural, one {# kategoria} other {# kategoriaa}} · {items, plural, one {# tuote} other {# tuotetta}}",
   "confirmDelete": {

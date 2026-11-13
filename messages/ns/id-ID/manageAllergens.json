@@ -28,9 +28,9 @@
     "ambiguous": "Ambigu — cocok dengan beberapa hidangan; pilih yang benar.",
     "assignTo": "Tetapkan ke hidangan…",
     "dismiss": "Abaikan",
-    "blanket": "Kartu menyebutkan <b>{list}</b> mungkin ada di <b>semua</b> hidangan. Tambahkan ke setiap hidangan? (Anda tetap mengonfirmasi satu per satu) <muted>— awalnya nonaktif</muted>",
     "kitchenNotes": "Catatan dapur (disimpan ke info alergen Anda)",
-    "matchSummary": "{n, plural, =0 {{matched} cocok dengan hidangan.} one {{matched} cocok dengan hidangan. {count} perlu Anda tetapkan.} other {{matched} cocok dengan hidangan. {count} perlu Anda tetapkan.}}"
+    "matchSummary": "{n, plural, =0 {{matched} cocok dengan hidangan.} one {{matched} cocok dengan hidangan. {count} perlu Anda tetapkan.} other {{matched} cocok dengan hidangan. {count} perlu Anda tetapkan.}}",
+    "blanketInfo": "Kartu Anda menyebutkan {list} mungkin ada di semua hidangan. Kami akan menambahkannya ke alergen yang dipakai di dapur Anda. Anda bisa memeriksanya di langkah terakhir."
   },
   "savedCard": {
     "showLess": "Tampilkan lebih sedikit",
@@ -92,7 +92,8 @@
       "choose": "Pilih cara pelanggan melihat info alergen",
       "card": "Tambahkan kartu alergen Anda",
       "cardOptional": "Tambahkan kartu alergen (opsional)",
-      "review": "Periksa & konfirmasi setiap hidangan"
+      "review": "Periksa & konfirmasi setiap hidangan",
+      "kitchen": "Langkah terakhir: dapur Anda"
     },
     "heading": {
       "import": "Alergen",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Melewati berarti menunda — hidangan yang belum Anda konfirmasi tetap tersembunyi dari pelanggan sampai alergennya dikonfirmasi.",
       "importIncomplete": "Konfirmasi setiap hidangan untuk melanjutkan — atau “Lewati pengaturan alergen dulu”."
-    }
+    },
+    "recipeOnly": "Hanya yang ada di resep hidangan ini.",
+    "tooMany": "{count} alergen dicentang. Benarkah semuanya ada di resep hidangan ini? Alergen yang dipakai di hidangan lain tidak dimasukkan di sini. Anda bisa menambahkannya di langkah terakhir."
+  },
+  "kitchen": {
+    "title": "Alergen apa saja yang dipakai di dapur Anda?",
+    "body": "Kami sudah mencentang alergen yang ada di hidangan Anda. Centang alergen lain yang Anda pakai di truk, misalnya untuk menu spesial.",
+    "legendDishes": "di hidangan Anda",
+    "legendAdded": "ditambahkan oleh Anda",
+    "customersSee": "Pelanggan akan melihat:",
+    "confirm": "Saya mengonfirmasi bahwa alergen setiap hidangan sudah benar, dan saya akan selalu memperbaruinya."
   }
 }

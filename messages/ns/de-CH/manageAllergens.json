@@ -1,7 +1,5 @@
 {
-  "cardUpload": {
-    "blanket": "Laut Allergenkarte können <b>{list}</b> in <b>allen</b> Gerichten enthalten sein. Zu jedem Gericht hinzufügen? (Sie bestätigen trotzdem jedes einzeln) <muted>– standardmässig aus</muted>"
-  },
+  "cardUpload": {},
   "wizard": {
     "nav": {
       "close": "Schliessen",

@@ -108,7 +108,9 @@
     "extract": "Estrai con l’IA",
     "needReview": "{count, plural, one {# piatto da verificare} other {# piatti da verificare}}: i clienti non vedono le informazioni sugli allergeni finché non sono confermate",
     "reading": "Lettura delle informazioni sugli allergeni…",
-    "pastePlaceholder": "Incolla qui le informazioni sugli allergeni…"
+    "pastePlaceholder": "Incolla qui le informazioni sugli allergeni…",
+    "kitchenLine": "La cucina usa anche: {list}",
+    "kitchenEdit": "Modifica"
   },
   "deleteItem": {
     "title": "Rimuovere {name}?",
@@ -172,7 +174,9 @@
     "add": "Aggiungi prodotto",
     "noGroups": "Ancora nessun gruppo di opzioni: creali in Extra e upselling.",
     "costToMake": "Costo di produzione",
-    "costHelp": "Facoltativo. Quanto ti costa una porzione tra ingredienti e confezione. Usato solo nei tuoi report; i clienti non lo vedono mai."
+    "costHelp": "Facoltativo. Quanto ti costa una porzione tra ingredienti e confezione. Usato solo nei tuoi report; i clienti non lo vedono mai.",
+    "recipeOnly": "Solo ciò che c’è nella ricetta di questo piatto.",
+    "tooMany": "{count} allergeni spuntati. Sono davvero tutti nella ricetta di questo piatto? Gli allergeni usati altrove nella tua cucina vanno in «La cucina usa anche», nella scheda Menu."
   },
   "summary": "{categories, plural, one {# categoria} other {# categorie}} · {items, plural, one {# prodotto} other {# prodotti}}",
   "confirmDelete": {

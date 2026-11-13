@@ -21,7 +21,6 @@
     "addItemsPrompt": "Añade productos del menú para hacer un pedido",
     "modalAdd": "Añadir al carrito · {amount}",
     "allergenCard": "📎 Ver la tabla de alérgenos (PDF/imagen)",
-    "allergensUsed": "Alérgenos presentes en este menú",
     "slotTaken": "Alguien acaba de tomar tu horario de las {time}: esta es la siguiente hora disponible."
   },
   "dashboard": {
@@ -328,8 +327,7 @@
       "analysing": "Analizando la tabla…",
       "pastePlaceholder": "Pega aquí el texto de tu tabla de alérgenos…",
       "process": "Procesar tabla",
-      "cardRead": "Tabla leída ✓",
-      "blanket": "La tabla indica que <b>{list}</b> puede estar presente en <b>todos</b> los platillos. ¿Agregarlo a todos? (de todos modos confirmarás cada uno) <muted>— desactivado de forma predeterminada</muted>"
+      "cardRead": "Tabla leída ✓"
     },
     "savedCard": {
       "fileOnly": "Hay un archivo de tabla guardado para este food truck, pero no se guardó ningún texto de resumen. Abre el original para leerlo.",

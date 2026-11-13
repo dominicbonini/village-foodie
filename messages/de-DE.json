@@ -149,9 +149,7 @@
     "allergenTitle": "Allergeninformationen",
     "allergenNotProvided": "Keine Allergeninformationen angegeben – bitte fragen Sie direkt beim Foodtruck nach.",
     "allergenCard": "📎 Allergenkarte ansehen (PDF/Bild)",
-    "allergensUsed": "Allergene auf dieser Speisekarte",
-    "allergensSeeEach": "Die jeweiligen Allergene finden Sie bei jedem Gericht.",
-    "allergenSevere": "Wenn Sie eine schwere Allergie haben, wenden Sie sich bitte vor der Bestellung direkt an den Betreiber.",
+    "allergenSevere": "Wenn Sie eine Lebensmittelallergie haben, wenden Sie sich bitte vor der Bestellung an den Betreiber.",
     "orderConfirmed": "Bestellung bestätigt!",
     "orderReceived": "Bestellung eingegangen!",
     "thanksReady": "Vielen Dank! Wir haben Ihre Bestellung erhalten, sie ist bald fertig.",
@@ -172,7 +170,9 @@
     "backTo": "Zurück zu {truck}",
     "notePlaceholderCompact": "Besondere Wünsche? z. B. ohne Zwiebeln",
     "noteHeading": "Besondere Wünsche? <muted>– optional</muted>",
-    "notePlaceholder": "z. B. ohne Zwiebeln, extra knusprig"
+    "notePlaceholder": "z. B. ohne Zwiebeln, extra knusprig",
+    "kitchenHeading": "In dieser Küche verwendete Allergene",
+    "kitchenNote": "Bei jedem Gericht stehen die Allergene aus seinem Rezept. Wir können nicht garantieren, dass ein Gericht frei von Spuren ist."
   },
   "plansPdf": {
     "title": "Tarife und Funktionen",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Nicht eindeutig – passt zu mehreren Gerichten; wählen Sie das richtige aus.",
       "assignTo": "Gericht zuordnen…",
       "dismiss": "Verwerfen",
-      "blanket": "Laut Allergenkarte können <b>{list}</b> in <b>allen</b> Gerichten enthalten sein. Zu jedem Gericht hinzufügen? (Sie bestätigen trotzdem jedes einzeln) <muted>– standardmäßig aus</muted>",
       "kitchenNotes": "Küchenhinweise (werden in Ihren Allergeninformationen gespeichert)",
-      "matchSummary": "{n, plural, =0 {Einem Gericht zugeordnet: {matched}.} one {Einem Gericht zugeordnet: {matched}. Von Ihnen noch zuzuordnen: {count}.} other {Einem Gericht zugeordnet: {matched}. Von Ihnen noch zuzuordnen: {count}.}}"
+      "matchSummary": "{n, plural, =0 {Einem Gericht zugeordnet: {matched}.} one {Einem Gericht zugeordnet: {matched}. Von Ihnen noch zuzuordnen: {count}.} other {Einem Gericht zugeordnet: {matched}. Von Ihnen noch zuzuordnen: {count}.}}",
+      "blanketInfo": "Laut Ihrer Allergenkarte können {list} in allen Gerichten enthalten sein. Wir fügen sie den Allergenen hinzu, die in Ihrer Küche verwendet werden. Im letzten Schritt können Sie sie prüfen."
     },
     "savedCard": {
       "showLess": "Weniger anzeigen",
@@ -2468,7 +2468,8 @@
         "choose": "Wählen Sie, wie Kunden Allergeninformationen sehen",
         "card": "Fügen Sie Ihre Allergenkarte hinzu",
         "cardOptional": "Fügen Sie eine Allergenkarte hinzu (optional)",
-        "review": "Jedes Gericht prüfen & bestätigen"
+        "review": "Jedes Gericht prüfen & bestätigen",
+        "kitchen": "Letzter Schritt: Ihre Küche"
       },
       "heading": {
         "import": "Allergene",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Überspringen verschiebt nur – Gerichte, die Sie nicht bestätigt haben, bleiben für Kunden ausgeblendet, bis ihre Allergene bestätigt sind.",
         "importIncomplete": "Bestätigen Sie jedes Gericht, um fortzufahren – oder wählen Sie „Allergen-Einrichtung vorerst überspringen“."
-      }
+      },
+      "recipeOnly": "Nur, was im Rezept dieses Gerichts steht.",
+      "tooMany": "{count} Allergene angehakt. Stehen wirklich alle im Rezept dieses Gerichts? Allergene aus anderen Gerichten gehören nicht hierher. Diese können Sie im letzten Schritt hinzufügen."
+    },
+    "kitchen": {
+      "title": "Welche Allergene werden in Ihrer Küche verwendet?",
+      "body": "Die Allergene aus Ihren Gerichten haben wir bereits angehakt. Haken Sie alle weiteren an, die Sie im Foodtruck verwenden, zum Beispiel für Tagesgerichte.",
+      "legendDishes": "in Ihren Gerichten",
+      "legendAdded": "von Ihnen hinzugefügt",
+      "customersSee": "Das sehen Ihre Kunden:",
+      "confirm": "Ich bestätige, dass die Allergene jedes Gerichts korrekt sind, und halte sie aktuell."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Mit KI auslesen",
       "needReview": "{count, plural, one {# Gericht muss} other {# Gerichte müssen}} geprüft werden – Kunden sehen Allergeninformationen erst nach der Bestätigung",
       "reading": "Allergeninformationen werden gelesen…",
-      "pastePlaceholder": "Fügen Sie Ihre Allergeninformationen hier ein…"
+      "pastePlaceholder": "Fügen Sie Ihre Allergeninformationen hier ein…",
+      "kitchenLine": "In der Küche außerdem verwendet: {list}",
+      "kitchenEdit": "Bearbeiten"
     },
     "deleteItem": {
       "title": "{name} entfernen?",
@@ -2942,7 +2955,9 @@
       "add": "Artikel hinzufügen",
       "noGroups": "Noch keine Optionsgruppen – erstellen Sie sie unter Extras & Upselling.",
       "costToMake": "Herstellungskosten",
-      "costHelp": "Optional. Was Sie eine Portion an Zutaten und Verpackung kostet. Wird nur in Ihren Berichten verwendet; Kunden sehen das nie."
+      "costHelp": "Optional. Was Sie eine Portion an Zutaten und Verpackung kostet. Wird nur in Ihren Berichten verwendet; Kunden sehen das nie.",
+      "recipeOnly": "Nur, was im Rezept dieses Gerichts steht.",
+      "tooMany": "{count} Allergene angehakt. Stehen wirklich alle im Rezept dieses Gerichts? Allergene, die anderswo in Ihrer Küche verwendet werden, gehören unter „In der Küche außerdem verwendet“ im Tab „Speisekarte“."
     },
     "summary": "{categories, plural, one {# Kategorie} other {# Kategorien}} · {items, plural, one {# Artikel} other {# Artikel}}",
     "confirmDelete": {

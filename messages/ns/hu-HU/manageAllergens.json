@@ -28,9 +28,9 @@
     "ambiguous": "Nem egyértelmű — több ételhez is illik; válassza ki a megfelelőt.",
     "assignTo": "Hozzárendelés ételhez…",
     "dismiss": "Elvetés",
-    "blanket": "A kártya szerint <b>{list}</b> <b>minden</b> ételben előfordulhat. Hozzáadja minden ételhez? (mindegyiket így is megerősíti) <muted>— alapból kikapcsolva</muted>",
     "kitchenNotes": "Konyhai megjegyzések (az allergéninformációk közé mentve)",
-    "matchSummary": "{n, plural, =0 {{matched} tétel párosítva ételhez.} one {{matched} tétel párosítva ételhez. {count} tétel hozzárendelésre vár.} other {{matched} tétel párosítva ételhez. {count} tétel hozzárendelésre vár.}}"
+    "matchSummary": "{n, plural, =0 {{matched} tétel párosítva ételhez.} one {{matched} tétel párosítva ételhez. {count} tétel hozzárendelésre vár.} other {{matched} tétel párosítva ételhez. {count} tétel hozzárendelésre vár.}}",
+    "blanketInfo": "A kártyája szerint {list} minden ételben előfordulhat. Hozzáadjuk ezeket a konyhájában előforduló allergénekhez. Az utolsó lépésben ellenőrizheti őket."
   },
   "savedCard": {
     "showLess": "Kevesebb",
@@ -92,7 +92,8 @@
       "choose": "Válassza ki, hogyan lássák a vásárlók az allergéninformációkat",
       "card": "Adja hozzá az allergénkártyáját",
       "cardOptional": "Allergénkártya hozzáadása (nem kötelező)",
-      "review": "Minden étel ellenőrzése és megerősítése"
+      "review": "Minden étel ellenőrzése és megerősítése",
+      "kitchen": "Utolsó lépés: az Ön konyhája"
     },
     "heading": {
       "import": "Allergének",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "A kihagyás csak elhalasztja — a meg nem erősített ételek rejtve maradnak a vásárlók elől, amíg az allergénjeiket meg nem erősítik.",
       "importIncomplete": "A folytatáshoz erősítsen meg minden ételt — vagy válassza ezt: „Allergénbeállítás kihagyása most”."
-    }
+    },
+    "recipeOnly": "Csak ami ennek az ételnek a receptjében van.",
+    "tooMany": "{count} allergén bejelölve. Valóban mind benne van ennek az ételnek a receptjében? A más ételekben használt allergének nem ide tartoznak. Ezeket az utolsó lépésben adhatja hozzá."
+  },
+  "kitchen": {
+    "title": "Milyen allergének fordulnak elő az Ön konyhájában?",
+    "body": "Az ételeiben már szereplő allergéneket bejelöltük. Jelölje be azokat is, amelyeket a food truckban használ, például napi ajánlatokhoz.",
+    "legendDishes": "az ételeiben",
+    "legendAdded": "Ön adta hozzá",
+    "customersSee": "A vásárlók ezt látják:",
+    "confirm": "Megerősítem, hogy minden étel allergénjei helyesek, és naprakészen tartom őket."
   }
 }

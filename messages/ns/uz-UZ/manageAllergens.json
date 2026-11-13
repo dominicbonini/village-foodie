@@ -28,9 +28,9 @@
     "ambiguous": "Noaniq — bir nechta taomga mos keladi; toʻgʻrisini tanlang.",
     "assignTo": "Taomga biriktirish…",
     "dismiss": "Rad etish",
-    "blanket": "Kartada aytilishicha, <b>{list}</b> <b>barcha</b> taomlarda boʻlishi mumkin. Har bir taomga qoʻshilsinmi? (baribir har birini tasdiqlaysiz) <muted>— sukut boʻyicha oʻchiq</muted>",
     "kitchenNotes": "Oshxona izohlari (allergenlar maʼlumotingizga saqlanadi)",
-    "matchSummary": "{n, plural, =0 {Taomga moslandi: {matched}.} one {Taomga moslandi: {matched}. Siz biriktirishingiz kerak: {count}.} other {Taomga moslandi: {matched}. Siz biriktirishingiz kerak: {count}.}}"
+    "matchSummary": "{n, plural, =0 {Taomga moslandi: {matched}.} one {Taomga moslandi: {matched}. Siz biriktirishingiz kerak: {count}.} other {Taomga moslandi: {matched}. Siz biriktirishingiz kerak: {count}.}}",
+    "blanketInfo": "Kartangizda aytilishicha, {list} barcha taomlarda boʻlishi mumkin. Ularni oshxonangizda ishlatiladigan allergenlarga qoʻshamiz. Ularni oxirgi qadamda tekshirishingiz mumkin."
   },
   "savedCard": {
     "showLess": "Kamroq koʻrsatish",
@@ -92,7 +92,8 @@
       "choose": "Mijozlar allergenlar haqidagi maʼlumotni qanday koʻrishini tanlang",
       "card": "Allergenlar kartangizni qoʻshing",
       "cardOptional": "Allergenlar kartasini qoʻshing (ixtiyoriy)",
-      "review": "Har bir taomni tekshiring va tasdiqlang"
+      "review": "Har bir taomni tekshiring va tasdiqlang",
+      "kitchen": "Oxirgi qadam: oshxonangiz"
     },
     "heading": {
       "import": "Allergenlar",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Oʻtkazib yuborish keyinga qoldiradi — siz tasdiqlamagan taomlar allergenlari tasdiqlanmaguncha mijozlardan yashirin turadi.",
       "importIncomplete": "Davom etish uchun har bir taomni tasdiqlang — yoki “Allergenlarni sozlashni hozircha oʻtkazib yuborish” tugmasini bosing."
-    }
+    },
+    "recipeOnly": "Faqat shu taom retseptidagilar.",
+    "tooMany": "{count} ta allergen belgilandi. Ularning hammasi rostdan ham shu taom retseptidami? Boshqa taomlarda ishlatiladigan allergenlar bu yerga kiritilmaydi. Ularni oxirgi qadamda qoʻshishingiz mumkin."
+  },
+  "kitchen": {
+    "title": "Oshxonangizda qaysi allergenlar ishlatiladi?",
+    "body": "Taomlaringizda bor allergenlarni allaqachon belgiladik. Fudtrakda ishlatadigan boshqalarini ham belgilang, masalan, kun taomlari uchun.",
+    "legendDishes": "taomlaringizda",
+    "legendAdded": "siz qoʻshgansiz",
+    "customersSee": "Mijozlar koʻradi:",
+    "confirm": "Har bir taomning allergenlari toʻgʻri ekanini tasdiqlayman va ularni doim yangilab boraman."
   }
 }

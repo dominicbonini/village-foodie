@@ -301,7 +301,6 @@
  "landingNav.ctaShort": "Upload menu",
  "legalChrome.lastUpdated": "Last updated {date}",
  "manageAllergens.cardEditor.intro": "Customers see this <b>exactly as you write it</b> — nothing is rewritten. Type or paste below, or upload a photo/PDF and we’ll read the text in for you to check.",
- "manageAllergens.cardUpload.blanket": "The card says <b>{list}</b> may be present across <b>all</b> dishes. Add to every dish? (you’ll still confirm each) <muted>— off by default</muted>",
  "manageAllergens.cardUpload.perDish": "{detected, select, yes {Upload one and we’ll use it to build your dish allergens. Detected allergens will be visible on the next page where you confirm each dish.} other {Upload one and we’ll use it to build your dish allergens.}}",
  "manageAllergens.wizard.cardPanel.intro": "Customers will see this card as the menu’s allergen reference. Per-dish allergens stay hidden in card-only mode (your dish data is kept for if you switch to per-dish later).",
  "manageAllergens.wizard.genericWarn.text": "“{generic}” was detected but isn’t specific. Pick {picks} if this dish contains {family} — or leave them unselected if it doesn’t.",
@@ -461,8 +460,7 @@
  "offlineProtection.switchLabel": "Offline order protection",
  "order.addItemsPrompt": "Add items from the menu to place an order",
  "order.allergenNotProvided": "Allergen info not provided — please confirm directly with the truck.",
- "order.allergenSevere": "If you have a severe allergy, please contact the vendor directly before ordering.",
- "order.allergensUsed": "Allergens used in this menu",
+ "order.allergenSevere": "If you have a food allergy, contact the food truck before ordering.",
  "order.closedDemo": "This demo service has ended — that’s the event window running out, exactly as a real one would. Open your demo dashboard again and choose \"Start a new service\" to set up a fresh one. Your menu stays as it is.",
  "order.loadingMenu": "Loading menu…",
  "order.menu": "Menu",
@@ -548,5 +546,7 @@
  "whatsappCustomer.capContact": "To reach us directly: {number}",
  "whatsappCustomer.menuFallback": "{opener}You can check out our full menu here: {url} — {truck} {emoji}",
  "whatsappCustomer.menuSummary": "{opener}We’ve got {summary}. Check out the full menu and order ahead here: {url} — {truck} {emoji}",
- "whatsappCustomer.specificFallback": "{opener}Check out our latest schedule here: {url}\n\n{truck} {emoji}"
+ "whatsappCustomer.specificFallback": "{opener}Check out our latest schedule here: {url}\n\n{truck} {emoji}",
+ "manageMenu.item.tooMany": "{count} allergens ticked. Are they really all in this dish's recipe? Allergens used in other places in your kitchen go in “The kitchen also uses”, in the “Menu” tab.",
+ "manageAllergens.kitchen.confirm": "I confirm that the allergens of each dish are correct and I will keep them up to date."
 }

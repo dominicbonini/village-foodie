@@ -61,6 +61,8 @@ import { applyPrivacy, replacePrivateLink, privateLinkUrl } from '@/lib/private-
 import { readPrivateType } from '@/lib/private-events/type'
 import { resolveLinkOrdering } from '@/lib/private-events/resolve'
 import { logAllergenChanges, diffItemAllergens, tagJson, arrEq, type Actor } from '@/lib/allergen-audit'
+import { onlyListed } from '@/lib/allergen-kitchen'
+import type { AllergenSet } from '@/lib/allergens'   // allergen-kitchen-1: the kitchen list keeps only the country list's labels
 import { isDemoIdentifier, DEMO_PREFIX } from '@/lib/demo'
 import { normaliseUrl } from '@/lib/url-normalise'
 import { checkSubdomain, suggestFromWebsite } from '@/lib/custom-domain/apex'
@@ -2058,10 +2060,24 @@ export async function POST(req: NextRequest) {
       'whatsapp', 'phone_is_whatsapp',
       // Per-truck sound policy (jsonb: which sounds fire). REQUIRED here or the write is silently dropped.
       'sound_config',
+      // allergen-kitchen-1 (13 November 2026): the allergens the truck ADDS to its kitchen list, and the time the owner confirmed
+      // "the allergens for each dish are correct". Owner/admin only (the same gate as every allergen field, below).
+      'allergen_kitchen_extra', 'allergens_confirmed_at',
     ]
-    const safeData = Object.fromEntries(
+    const safeData: Record<string, unknown> = Object.fromEntries(
       Object.entries(body).filter(([key, val]) => ALLOWED.includes(key) && val !== undefined)
     )
+    // allergen-kitchen-1: the kitchen list keeps only labels in the truck's country list (lib/allergen-kitchen.ts onlyListed — a
+    // dietary tag or a generic never gets in), and the confirmation is stamped with the SERVER's clock: the body only says "yes".
+    if ('allergen_kitchen_extra' in safeData) {
+      let set: AllergenSet = 'uk14'
+      try { set = (await countrySettingsForTruck(truck)).allergenSet } catch { /* the UK list, as every allergen reader falls back */ }
+      safeData.allergen_kitchen_extra = onlyListed(Array.isArray(safeData.allergen_kitchen_extra) ? safeData.allergen_kitchen_extra : [], set)
+    }
+    if ('allergens_confirmed_at' in safeData) {
+      if (safeData.allergens_confirmed_at) safeData.allergens_confirmed_at = new Date().toISOString()
+      else delete safeData.allergens_confirmed_at
+    }
     if (Object.keys(safeData).length === 0) {
       return NextResponse.json({ truck: null })
     }
@@ -2069,7 +2085,12 @@ export async function POST(req: NextRequest) {
     // CHANGES (a manager saving contact/social via the same action is unaffected); log each as card_save.
     const ALLERGEN_SETTING_KEYS = ['allergen_info_url', 'allergen_info_text', 'allergen_display_mode']
     const touchedAllergenKeys = ALLERGEN_SETTING_KEYS.filter(k => k in safeData && (safeData as any)[k] !== (truck as any)[k])
-    if (touchedAllergenKeys.length && !canEditAllergens) return allergenForbidden()
+    // allergen-kitchen-1: the kitchen list (when it CHANGES) and the confirmation (always a new time) are allergen writes too.
+    const kTruck = truck as { allergen_kitchen_extra?: unknown; allergens_confirmed_at?: string | null }
+    const prevKitchen = Array.isArray(kTruck.allergen_kitchen_extra) ? kTruck.allergen_kitchen_extra as string[] : []
+    const kitchenChanged = 'allergen_kitchen_extra' in safeData && !arrEq(safeData.allergen_kitchen_extra as string[], prevKitchen)
+    const kitchenConfirmed = 'allergens_confirmed_at' in safeData
+    if ((touchedAllergenKeys.length || kitchenChanged || kitchenConfirmed) && !canEditAllergens) return allergenForbidden()
     // allergen-card-country (21 October 2026): an allergen card ON ITS OWN is refused where the truck's country does not
     // allow it (country_settings.allergen_card_only_allowed — off for Ireland, whose law needs allergens per dish). Only a
     // CHANGE to 'card' is refused: Manage's settings save sends the whole form, and a truck already on 'card' must still
@@ -2087,10 +2108,16 @@ export async function POST(req: NextRequest) {
       console.error('[update_settings] write failed:', error.message, '| fields:', Object.keys(safeData).join(', '))
       return await refuse('settings_save_failed', 400)
     }
-    await logAllergenChanges(supabase, touchedAllergenKeys.map(k => ({
-      ...actor, truck_id: truck.id, item_id: null, change_type: 'card_save', field: 'card',
-      old_value: (truck as any)[k] ?? null, new_value: (safeData as any)[k] ?? null,
-    })))
+    await logAllergenChanges(supabase, [
+      ...touchedAllergenKeys.map(k => ({
+        ...actor, truck_id: truck.id, item_id: null, change_type: 'card_save' as const, field: 'card' as const,
+        old_value: (truck as any)[k] ?? null, new_value: (safeData as any)[k] ?? null,
+      })),
+      ...(kitchenChanged ? [{ ...actor, truck_id: truck.id, item_id: null, change_type: 'kitchen_edit' as const, field: 'kitchen' as const,
+        old_value: tagJson(prevKitchen), new_value: tagJson(safeData.allergen_kitchen_extra as string[]) }] : []),
+      ...(kitchenConfirmed ? [{ ...actor, truck_id: truck.id, item_id: null, change_type: 'kitchen_confirm' as const, field: 'kitchen' as const,
+        old_value: kTruck.allergens_confirmed_at ?? null, new_value: String(safeData.allergens_confirmed_at) }] : []),
+    ])
     return NextResponse.json({ truck: data })
   }
 

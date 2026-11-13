@@ -28,9 +28,9 @@
     "ambiguous": "Onduidelijk — past bij meerdere gerechten; kies het juiste.",
     "assignTo": "Toewijzen aan gerecht…",
     "dismiss": "Negeren",
-    "blanket": "Volgens de kaart kan <b>{list}</b> in <b>alle</b> gerechten aanwezig zijn. Aan elk gerecht toevoegen? (je bevestigt ze daarna nog steeds één voor één) <muted>— standaard uit</muted>",
     "kitchenNotes": "Keukennotities (opgeslagen bij je allergeneninformatie)",
-    "matchSummary": "{n, plural, =0 {{matched} gekoppeld aan een gerecht.} one {{matched} gekoppeld aan een gerecht. Nog {count} door jou toe te wijzen.} other {{matched} gekoppeld aan een gerecht. Nog {count} door jou toe te wijzen.}}"
+    "matchSummary": "{n, plural, =0 {{matched} gekoppeld aan een gerecht.} one {{matched} gekoppeld aan een gerecht. Nog {count} door jou toe te wijzen.} other {{matched} gekoppeld aan een gerecht. Nog {count} door jou toe te wijzen.}}",
+    "blanketInfo": "Volgens je allergenenkaart kan {list} in alle gerechten aanwezig zijn. We voegen ze toe aan de allergenen die in je keuken worden verwerkt. Je kunt ze bij de laatste stap controleren."
   },
   "savedCard": {
     "showLess": "Minder tonen",
@@ -92,7 +92,8 @@
       "choose": "Kies hoe klanten allergeneninformatie zien",
       "card": "Voeg je allergenenkaart toe",
       "cardOptional": "Voeg een allergenenkaart toe (optioneel)",
-      "review": "Controleer en bevestig elk gerecht"
+      "review": "Controleer en bevestig elk gerecht",
+      "kitchen": "Laatste stap: je keuken"
     },
     "heading": {
       "import": "Allergenen",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Overslaan stelt het uit — gerechten die je niet hebt bevestigd, blijven verborgen voor klanten tot hun allergenen bevestigd zijn.",
       "importIncomplete": "Bevestig elk gerecht om verder te gaan — of kies ‘Allergenen voorlopig overslaan’."
-    }
+    },
+    "recipeOnly": "Alleen wat in het recept van dit gerecht zit.",
+    "tooMany": "{count} allergenen aangevinkt. Zitten die echt allemaal in het recept van dit gerecht? Allergenen uit andere gerechten horen hier niet. Die kun je bij de laatste stap toevoegen."
+  },
+  "kitchen": {
+    "title": "Welke allergenen verwerk je in je keuken?",
+    "body": "We hebben de allergenen uit je gerechten al aangevinkt. Vink ook de andere aan die je in de foodtruck gebruikt, bijvoorbeeld voor dagspecials.",
+    "legendDishes": "in je gerechten",
+    "legendAdded": "door jou toegevoegd",
+    "customersSee": "Dit zien je klanten:",
+    "confirm": "Ik bevestig dat de allergenen van elk gerecht kloppen en dat ik ze up-to-date houd."
   }
 }

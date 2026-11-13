@@ -28,9 +28,9 @@
     "ambiguous": "Nejasno – odgovara više jela; odaberite pravo.",
     "assignTo": "Dodijeli jelu…",
     "dismiss": "Odbaci",
-    "blanket": "Prema kartici, u <b>svim</b> jelima mogu biti prisutni: <b>{list}</b>. Dodati na svako jelo? (svako ćete i dalje potvrditi) <muted>– prema zadanim postavkama isključeno</muted>",
     "kitchenNotes": "Bilješke kuhinje (spremaju se uz vaše podatke o alergenima)",
-    "matchSummary": "{n, plural, =0 {Povezano s jelom: {matched}.} one {Povezano s jelom: {matched}. {count} stavka čeka vašu dodjelu.} few {Povezano s jelom: {matched}. {count} stavke čekaju vašu dodjelu.} other {Povezano s jelom: {matched}. {count} stavki čeka vašu dodjelu.}}"
+    "matchSummary": "{n, plural, =0 {Povezano s jelom: {matched}.} one {Povezano s jelom: {matched}. {count} stavka čeka vašu dodjelu.} few {Povezano s jelom: {matched}. {count} stavke čekaju vašu dodjelu.} other {Povezano s jelom: {matched}. {count} stavki čeka vašu dodjelu.}}",
+    "blanketInfo": "Prema vašoj kartici, u svim jelima mogu biti prisutni: {list}. Dodat ćemo ih alergenima koje koristi vaša kuhinja. Možete ih provjeriti u zadnjem koraku."
   },
   "savedCard": {
     "showLess": "Prikaži manje",
@@ -92,7 +92,8 @@
       "choose": "Odaberite kako kupci vide podatke o alergenima",
       "card": "Dodajte karticu alergena",
       "cardOptional": "Dodajte karticu alergena (neobavezno)",
-      "review": "Provjerite i potvrdite svako jelo"
+      "review": "Provjerite i potvrdite svako jelo",
+      "kitchen": "Zadnji korak: vaša kuhinja"
     },
     "heading": {
       "import": "Alergeni",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Preskakanje samo odgađa – jela koja niste potvrdili ostaju skrivena od kupaca dok im se alergeni ne potvrde.",
       "importIncomplete": "Za nastavak potvrdite svako jelo – ili odaberite „Preskoči postavke alergena zasad“."
-    }
+    },
+    "recipeOnly": "Samo ono što je u receptu ovog jela.",
+    "tooMany": "Označeni alergeni: {count}. Jesu li zaista svi u receptu ovog jela? Alergeni iz drugih jela ne idu ovdje. Možete ih dodati u zadnjem koraku."
+  },
+  "kitchen": {
+    "title": "Koje alergene koristi vaša kuhinja?",
+    "body": "Već smo označili one koji su u vašim jelima. Označite i ostale koje koristite u food trucku, na primjer za dnevna jela.",
+    "legendDishes": "u vašim jelima",
+    "legendAdded": "dodali ste vi",
+    "customersSee": "Kupci će vidjeti:",
+    "confirm": "Potvrđujem da su alergeni svakog jela točni i redovito ću ih ažurirati."
   }
 }

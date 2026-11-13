@@ -149,9 +149,7 @@
     "allergenTitle": "Allergenlər haqqında məlumat",
     "allergenNotProvided": "Allergenlər haqqında məlumat verilməyib — lütfən, birbaşa food truck ilə dəqiqləşdirin.",
     "allergenCard": "📎 Allergenlər kartına bax (PDF/şəkil)",
-    "allergensUsed": "Bu menyuda istifadə olunan allergenlər",
-    "allergensSeeEach": "Konkret allergenlər üçün hər yeməyə ayrıca baxın.",
-    "allergenSevere": "Ağır allergiyanız varsa, sifariş verməzdən əvvəl lütfən, birbaşa satıcı ilə əlaqə saxlayın.",
+    "allergenSevere": "Qida allergiyanız varsa, sifariş verməzdən əvvəl lütfən, satıcı ilə əlaqə saxlayın.",
     "orderConfirmed": "Sifariş təsdiqləndi!",
     "orderReceived": "Sifariş qəbul edildi!",
     "thanksReady": "Təşəkkür edirik! Sifarişinizi aldıq, tezliklə hazır olacaq.",
@@ -172,7 +170,9 @@
     "backTo": "Geri qayıt: {truck}",
     "notePlaceholderCompact": "İstəyiniz var? Məs. soğansız",
     "noteHeading": "İstəyiniz var? <muted>— istəyə bağlı</muted>",
-    "notePlaceholder": "məs. soğansız, daha xırtıldayan"
+    "notePlaceholder": "məs. soğansız, daha xırtıldayan",
+    "kitchenHeading": "Bu mətbəxdə istifadə olunan allergenlər",
+    "kitchenNote": "Hər yeməkdə onun reseptindəki allergenlər göstərilir. Heç bir yeməyin allergen izlərindən tamamilə azad olduğuna zəmanət verə bilmərik."
   },
   "plansPdf": {
     "title": "Planlar və funksiyalar",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Birmənalı deyil — bir neçə yeməyə uyğun gəlir; düzgün olanı seçin.",
       "assignTo": "Yeməyə təyin et…",
       "dismiss": "Rədd et",
-      "blanket": "Karta görə, <b>{list}</b> <b>bütün</b> yeməklərdə ola bilər. Hər yeməyə əlavə edilsin? (hər birini yenə də təsdiqləyəcəksiniz) <muted>— standart olaraq söndürülüb</muted>",
       "kitchenNotes": "Mətbəx qeydləri (allergen məlumatınızda saxlanılır)",
-      "matchSummary": "{n, plural, =0 {Yeməyə uyğunlaşdırıldı: {matched}.} one {Yeməyə uyğunlaşdırıldı: {matched}. Təyin etməyiniz lazımdır: {count}.} other {Yeməyə uyğunlaşdırıldı: {matched}. Təyin etməyiniz lazımdır: {count}.}}"
+      "matchSummary": "{n, plural, =0 {Yeməyə uyğunlaşdırıldı: {matched}.} one {Yeməyə uyğunlaşdırıldı: {matched}. Təyin etməyiniz lazımdır: {count}.} other {Yeməyə uyğunlaşdırıldı: {matched}. Təyin etməyiniz lazımdır: {count}.}}",
+      "blanketInfo": "Kartınıza görə, {list} bütün yeməklərdə ola bilər. Onları mətbəxinizdə istifadə olunan allergenlərə əlavə edəcəyik. Son addımda onları yoxlaya bilərsiniz."
     },
     "savedCard": {
       "showLess": "Daha az göstər",
@@ -2468,7 +2468,8 @@
         "choose": "Müştərilərin allergen məlumatını necə görəcəyini seçin",
         "card": "Allergen kartınızı əlavə edin",
         "cardOptional": "Allergen kartı əlavə edin (istəyə bağlı)",
-        "review": "Hər yeməyi yoxlayın və təsdiqləyin"
+        "review": "Hər yeməyi yoxlayın və təsdiqləyin",
+        "kitchen": "Son addım: mətbəxiniz"
       },
       "heading": {
         "import": "Allergenlər",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Ötürmək təxirə salmaq deməkdir — təsdiqləmədiyiniz yeməklər allergenləri təsdiqlənənədək müştərilərdən gizli qalır.",
         "importIncomplete": "Davam etmək üçün hər yeməyi təsdiqləyin — və ya “Allergen ayarlarını indilik ötür” seçin."
-      }
+      },
+      "recipeOnly": "Yalnız bu yeməyin reseptində olanlar.",
+      "tooMany": "{count} allergen işarələnib. Onların hamısı həqiqətən bu yeməyin reseptindədir? Digər yeməklərdə istifadə olunan allergenlər bura daxil edilmir. Onları son addımda əlavə edə bilərsiniz."
+    },
+    "kitchen": {
+      "title": "Mətbəxinizdə hansı allergenlərdən istifadə olunur?",
+      "body": "Yeməklərinizdə olanları artıq işarələmişik. Food truck-da istifadə etdiyiniz digərlərini də işarələyin, məsələn, günün xüsusi yeməkləri üçün.",
+      "legendDishes": "yeməklərinizdə",
+      "legendAdded": "sizin əlavə etdiyiniz",
+      "customersSee": "Müştərilər görəcək:",
+      "confirm": "Hər yeməyin allergenlərinin düzgün olduğunu təsdiqləyirəm və onları daim yeniləyəcəyəm."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Süni intellektlə çıxar",
       "needReview": "{count, plural, one {# yemək yoxlanılmalıdır} other {# yemək yoxlanılmalıdır}} — təsdiqlənənə qədər müştərilər allergen məlumatını görə bilmir",
       "reading": "Allergen məlumatı oxunur…",
-      "pastePlaceholder": "Allergen məlumatınızı bura yapışdırın…"
+      "pastePlaceholder": "Allergen məlumatınızı bura yapışdırın…",
+      "kitchenLine": "Mətbəxdə həmçinin istifadə olunur: {list}",
+      "kitchenEdit": "Redaktə et"
     },
     "deleteItem": {
       "title": "{name} silinsin?",
@@ -2942,7 +2955,9 @@
       "add": "Məhsul əlavə et",
       "noGroups": "Hələ seçim qrupu yoxdur — onları “Əlavələr və təkliflər” bölməsində yaradın.",
       "costToMake": "Maya dəyəri",
-      "costHelp": "İstəyə bağlı. Bir porsiyanın inqrediyentlər və qablaşdırma üzrə sizə neçəyə başa gəldiyi. Yalnız hesabatlarınızda istifadə olunur; müştərilər bunu heç vaxt görmür."
+      "costHelp": "İstəyə bağlı. Bir porsiyanın inqrediyentlər və qablaşdırma üzrə sizə neçəyə başa gəldiyi. Yalnız hesabatlarınızda istifadə olunur; müştərilər bunu heç vaxt görmür.",
+      "recipeOnly": "Yalnız bu yeməyin reseptində olanlar.",
+      "tooMany": "{count} allergen işarələnib. Onların hamısı həqiqətən bu yeməyin reseptindədir? Mətbəxinizin başqa yerlərində istifadə olunan allergenləri Menyu bölməsindəki “Mətbəxdə həmçinin istifadə olunur” hissəsinə əlavə edin."
     },
     "summary": "{categories, plural, one {# kateqoriya} other {# kateqoriya}} · {items, plural, one {# məhsul} other {# məhsul}}",
     "confirmDelete": {

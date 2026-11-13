@@ -149,9 +149,7 @@
     "allergenTitle": "Alerjen bilgisi",
     "allergenNotProvided": "Alerjen bilgisi verilmemiş — lütfen doğrudan food truck’a sorun.",
     "allergenCard": "📎 Alerjen kartını görüntüle (PDF/görsel)",
-    "allergensUsed": "Bu menüde kullanılan alerjenler",
-    "allergensSeeEach": "Her yemeğin kendi alerjenleri için yemeğin ayrıntısına bakın.",
-    "allergenSevere": "Ciddi bir alerjiniz varsa lütfen sipariş vermeden önce doğrudan satıcıyla iletişime geçin.",
+    "allergenSevere": "Gıda alerjiniz varsa lütfen sipariş vermeden önce satıcıyla iletişime geçin.",
     "orderConfirmed": "Sipariş onaylandı!",
     "orderReceived": "Sipariş alındı!",
     "thanksReady": "Teşekkürler! Siparişinizi aldık, birazdan hazır olacak.",
@@ -172,7 +170,9 @@
     "backTo": "Geri dön: {truck}",
     "notePlaceholderCompact": "Bir isteğiniz var mı? ör. soğansız",
     "noteHeading": "Bir isteğiniz var mı? <muted>— isteğe bağlı</muted>",
-    "notePlaceholder": "ör. soğansız, ekstra çıtır"
+    "notePlaceholder": "ör. soğansız, ekstra çıtır",
+    "kitchenHeading": "Bu mutfakta kullanılan alerjenler",
+    "kitchenNote": "Her üründe, tarifindeki alerjenler gösterilir. Hiçbir ürünün eser miktarda alerjen içermediğini garanti edemeyiz."
   },
   "plansPdf": {
     "title": "Paketler ve özellikler",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Belirsiz — birkaç ürünle eşleşiyor; doğru olanı seçin.",
       "assignTo": "Ürüne ata…",
       "dismiss": "Yok say",
-      "blanket": "Kartta <b>{list}</b> maddelerinin <b>tüm</b> ürünlerde bulunabileceği yazıyor. Her ürüne eklensin mi? (yine de her birini ayrıca onaylayacaksınız) <muted>— varsayılan olarak kapalı</muted>",
       "kitchenNotes": "Mutfak notları (alerjen bilgilerinize kaydedilir)",
-      "matchSummary": "{n, plural, =0 {{matched} öğe bir ürünle eşleşti.} one {{matched} öğe bir ürünle eşleşti. {count} öğeyi sizin atamanız gerekiyor.} other {{matched} öğe bir ürünle eşleşti. {count} öğeyi sizin atamanız gerekiyor.}}"
+      "matchSummary": "{n, plural, =0 {{matched} öğe bir ürünle eşleşti.} one {{matched} öğe bir ürünle eşleşti. {count} öğeyi sizin atamanız gerekiyor.} other {{matched} öğe bir ürünle eşleşti. {count} öğeyi sizin atamanız gerekiyor.}}",
+      "blanketInfo": "Kartınıza göre {list} tüm ürünlerde bulunabilir. Bunları mutfağınızda kullanılan alerjenlere ekleyeceğiz. Son adımda kontrol edebilirsiniz."
     },
     "savedCard": {
       "showLess": "Daha az göster",
@@ -2468,7 +2468,8 @@
         "choose": "Müşterilerin alerjen bilgilerini nasıl göreceğini seçin",
         "card": "Alerjen kartınızı ekleyin",
         "cardOptional": "Alerjen kartı ekleyin (isteğe bağlı)",
-        "review": "Her ürünü kontrol edip onaylayın"
+        "review": "Her ürünü kontrol edip onaylayın",
+        "kitchen": "Son adım: mutfağınız"
       },
       "heading": {
         "import": "Alerjenler",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Atlamak işi erteler — onaylamadığınız ürünler, alerjenleri onaylanana kadar müşterilerden gizli kalır.",
         "importIncomplete": "Devam etmek için her ürünü onaylayın — ya da “Alerjen ayarlarını şimdilik atla”."
-      }
+      },
+      "recipeOnly": "Yalnızca bu ürünün tarifinde olanlar.",
+      "tooMany": "{count} alerjen işaretlendi. Hepsi gerçekten bu ürünün tarifinde mi? Başka ürünlerde kullanılan alerjenler buraya girilmez. Onları son adımda ekleyebilirsiniz."
+    },
+    "kitchen": {
+      "title": "Mutfağınızda hangi alerjenler kullanılıyor?",
+      "body": "Ürünlerinizde zaten olanları işaretledik. Food truck’ta kullandığınız diğerlerini de işaretleyin, örneğin günün özel ürünleri için.",
+      "legendDishes": "ürünlerinizde",
+      "legendAdded": "sizin eklediğiniz",
+      "customersSee": "Müşterilerin göreceği:",
+      "confirm": "Her ürünün alerjenlerinin doğru olduğunu onaylıyorum ve bunları güncel tutacağım."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Yapay zekâ ile çıkar",
       "needReview": "{count, plural, one {# ürünün} other {# ürünün}} incelenmesi gerekiyor — teyit edilene kadar müşteriler alerjen bilgisini göremez",
       "reading": "Alerjen bilgisi okunuyor…",
-      "pastePlaceholder": "Alerjen bilgilerinizi buraya yapıştırın…"
+      "pastePlaceholder": "Alerjen bilgilerinizi buraya yapıştırın…",
+      "kitchenLine": "Mutfakta ayrıca kullanılanlar: {list}",
+      "kitchenEdit": "Düzenle"
     },
     "deleteItem": {
       "title": "{name} kaldırılsın mı?",
@@ -2942,7 +2955,9 @@
       "add": "Ürün ekle",
       "noGroups": "Henüz seçenek grubu yok — Ekstralar ve ek satış önerileri bölümünde oluşturun.",
       "costToMake": "Maliyet",
-      "costHelp": "İsteğe bağlı. Bir porsiyonun malzeme ve ambalaj olarak size maliyeti. Yalnızca raporlarınızda kullanılır; müşteriler asla görmez."
+      "costHelp": "İsteğe bağlı. Bir porsiyonun malzeme ve ambalaj olarak size maliyeti. Yalnızca raporlarınızda kullanılır; müşteriler asla görmez.",
+      "recipeOnly": "Yalnızca bu ürünün tarifinde olanlar.",
+      "tooMany": "{count} alerjen işaretlendi. Hepsi gerçekten bu ürünün tarifinde mi? Mutfağınızın başka yerlerinde kullanılan alerjenler, Menü sekmesindeki “Mutfakta ayrıca kullanılanlar” bölümüne girilir."
     },
     "summary": "{categories, plural, one {# kategori} other {# kategori}} · {items, plural, one {# ürün} other {# ürün}}",
     "confirmDelete": {

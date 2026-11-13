@@ -28,9 +28,9 @@
     "ambiguous": "Ambiguo: coincide con varios platos; elige el correcto.",
     "assignTo": "Asignar a un plato…",
     "dismiss": "Descartar",
-    "blanket": "La carta indica que <b>{list}</b> puede estar presente en <b>todos</b> los platos. ¿Añadirlo a todos? (seguirás confirmando cada uno) <muted>— desactivado por defecto</muted>",
     "kitchenNotes": "Notas de cocina (se guardan en tu información de alérgenos)",
-    "matchSummary": "{n, plural, =0 {{matched} asociados a un plato.} one {{matched} asociados a un plato. {count} necesita que lo asignes.} other {{matched} asociados a un plato. {count} necesitan que los asignes.}}"
+    "matchSummary": "{n, plural, =0 {{matched} asociados a un plato.} one {{matched} asociados a un plato. {count} necesita que lo asignes.} other {{matched} asociados a un plato. {count} necesitan que los asignes.}}",
+    "blanketInfo": "Tu carta de alérgenos indica que puede haber {list} en todos los platos. Los añadiremos a los alérgenos que se usan en tu cocina. Podrás revisarlos en el último paso."
   },
   "savedCard": {
     "showLess": "Ver menos",
@@ -92,7 +92,8 @@
       "choose": "Elige cómo ven los clientes la información de alérgenos",
       "card": "Añade tu carta de alérgenos",
       "cardOptional": "Añade una carta de alérgenos (opcional)",
-      "review": "Revisa y confirma cada plato"
+      "review": "Revisa y confirma cada plato",
+      "kitchen": "Último paso: tu cocina"
     },
     "heading": {
       "import": "Alérgenos",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Saltar lo deja para luego: los platos que no hayas confirmado siguen ocultos para los clientes hasta que se confirmen sus alérgenos.",
       "importIncomplete": "Confirma todos los platos para continuar, o elige “Saltar la configuración de alérgenos por ahora”."
-    }
+    },
+    "recipeOnly": "Solo lo que lleva la receta de este plato.",
+    "tooMany": "{count} alérgenos marcados. ¿De verdad están todos en la receta de este plato? Los alérgenos de otros platos no van aquí. Podrás añadirlos en el último paso."
+  },
+  "kitchen": {
+    "title": "¿Qué alérgenos se usan en tu cocina?",
+    "body": "Ya hemos marcado los que están en tus platos. Marca cualquier otro que uses en el food truck, por ejemplo, para platos del día.",
+    "legendDishes": "en tus platos",
+    "legendAdded": "añadido por ti",
+    "customersSee": "Tus clientes verán:",
+    "confirm": "Confirmo que los alérgenos de cada plato son correctos y los mantendré actualizados."
   }
 }

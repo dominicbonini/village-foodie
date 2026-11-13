@@ -148,9 +148,7 @@
   "allergenTitle": "Allergéninformációk",
   "allergenNotProvided": "Nincsenek megadva allergénadatok — kérjük, egyeztessen közvetlenül a food truckkal.",
   "allergenCard": "📎 Allergéntáblázat megtekintése (PDF/kép)",
-  "allergensUsed": "Az étlapon előforduló allergének",
-  "allergensSeeEach": "Az egyes ételek konkrét allergénjeit az ételeknél találja.",
-  "allergenSevere": "Súlyos allergia esetén rendelés előtt vegye fel a kapcsolatot közvetlenül az árussal.",
+  "allergenSevere": "Ételallergia esetén rendelés előtt vegye fel a kapcsolatot az árussal.",
   "orderConfirmed": "Rendelés megerősítve!",
   "orderReceived": "Rendelés beérkezett!",
   "thanksReady": "Köszönjük! Megkaptuk a rendelését, hamarosan elkészül.",
@@ -171,5 +169,7 @@
   "backTo": "Vissza: {truck}",
   "notePlaceholderCompact": "Kérése van? pl. hagyma nélkül",
   "noteHeading": "Kérése van? <muted>— nem kötelező</muted>",
-  "notePlaceholder": "pl. hagyma nélkül, extra ropogós"
+  "notePlaceholder": "pl. hagyma nélkül, extra ropogós",
+  "kitchenHeading": "Ebben a konyhában előforduló allergének",
+  "kitchenNote": "Minden ételnél a receptjében lévő allergének szerepelnek. Nem garantálhatjuk, hogy egyik étel sem tartalmaz nyomokban allergéneket."
 }

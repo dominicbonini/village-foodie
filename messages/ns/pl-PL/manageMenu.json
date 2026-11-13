@@ -108,7 +108,9 @@
     "extract": "Wyodrębnij z AI",
     "needReview": "{count, plural, one {# danie wymaga} few {# dania wymagają} many {# dań wymaga} other {# dania wymaga}} sprawdzenia — klienci nie zobaczą informacji o alergenach przed potwierdzeniem",
     "reading": "Odczytywanie informacji o alergenach…",
-    "pastePlaceholder": "Wklej tutaj informacje o alergenach…"
+    "pastePlaceholder": "Wklej tutaj informacje o alergenach…",
+    "kitchenLine": "Kuchnia używa też: {list}",
+    "kitchenEdit": "Edytuj"
   },
   "deleteItem": {
     "title": "Usunąć: {name}?",
@@ -172,7 +174,9 @@
     "add": "Dodaj pozycję",
     "noGroups": "Nie ma jeszcze grup opcji — utwórz je w zakładce Dodatki i dosprzedaż.",
     "costToMake": "Koszt przygotowania",
-    "costHelp": "Opcjonalnie. Ile kosztuje cię jedna porcja w składnikach i opakowaniu. Używane tylko w twoich raportach; klienci nigdy tego nie widzą."
+    "costHelp": "Opcjonalnie. Ile kosztuje cię jedna porcja w składnikach i opakowaniu. Używane tylko w twoich raportach; klienci nigdy tego nie widzą.",
+    "recipeOnly": "Tylko to, co jest w przepisie tego dania.",
+    "tooMany": "Zaznaczone alergeny: {count}. Czy naprawdę wszystkie są w przepisie tego dania? Alergeny używane w innych miejscach twojej kuchni dodaj w „Kuchnia używa też” w zakładce Menu."
   },
   "summary": "{categories, plural, one {# kategoria} few {# kategorie} many {# kategorii} other {# kategorii}} · {items, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
   "confirmDelete": {

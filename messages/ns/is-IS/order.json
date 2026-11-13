@@ -148,9 +148,7 @@
   "allergenTitle": "Upplýsingar um ofnæmisvalda",
   "allergenNotProvided": "Upplýsingar um ofnæmisvalda vantar — staðfestu beint við matarvagninn.",
   "allergenCard": "📎 Skoða ofnæmisvaldaspjald (PDF/mynd)",
-  "allergensUsed": "Ofnæmisvaldar á þessum matseðli",
-  "allergensSeeEach": "Sjá hvern rétt fyrir ofnæmisvalda hans.",
-  "allergenSevere": "Ef þú ert með alvarlegt ofnæmi skaltu hafa samband beint við söluaðilann áður en þú pantar.",
+  "allergenSevere": "Ef þú ert með fæðuofnæmi skaltu hafa samband við söluaðilann áður en þú pantar.",
   "orderConfirmed": "Pöntun staðfest!",
   "orderReceived": "Pöntun móttekin!",
   "thanksReady": "Takk! Við höfum fengið pöntunina þína og hún verður tilbúin fljótlega.",
@@ -171,5 +169,7 @@
   "backTo": "Til baka: {truck}",
   "notePlaceholderCompact": "Einhverjar óskir? t.d. enginn laukur",
   "noteHeading": "Einhverjar óskir? <muted>— valfrjálst</muted>",
-  "notePlaceholder": "t.d. enginn laukur, vel stökkt"
+  "notePlaceholder": "t.d. enginn laukur, vel stökkt",
+  "kitchenHeading": "Ofnæmisvaldar sem eru notaðir í þessu eldhúsi",
+  "kitchenNote": "Hver réttur sýnir ofnæmisvaldana í uppskrift sinni. Við getum ekki ábyrgst að neinn réttur sé laus við snefil af þeim."
 }

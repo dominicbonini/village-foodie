@@ -148,9 +148,7 @@
   "allergenTitle": "Allergenlər haqqında məlumat",
   "allergenNotProvided": "Allergenlər haqqında məlumat verilməyib — lütfən, birbaşa food truck ilə dəqiqləşdirin.",
   "allergenCard": "📎 Allergenlər kartına bax (PDF/şəkil)",
-  "allergensUsed": "Bu menyuda istifadə olunan allergenlər",
-  "allergensSeeEach": "Konkret allergenlər üçün hər yeməyə ayrıca baxın.",
-  "allergenSevere": "Ağır allergiyanız varsa, sifariş verməzdən əvvəl lütfən, birbaşa satıcı ilə əlaqə saxlayın.",
+  "allergenSevere": "Qida allergiyanız varsa, sifariş verməzdən əvvəl lütfən, satıcı ilə əlaqə saxlayın.",
   "orderConfirmed": "Sifariş təsdiqləndi!",
   "orderReceived": "Sifariş qəbul edildi!",
   "thanksReady": "Təşəkkür edirik! Sifarişinizi aldıq, tezliklə hazır olacaq.",
@@ -171,5 +169,7 @@
   "backTo": "Geri qayıt: {truck}",
   "notePlaceholderCompact": "İstəyiniz var? Məs. soğansız",
   "noteHeading": "İstəyiniz var? <muted>— istəyə bağlı</muted>",
-  "notePlaceholder": "məs. soğansız, daha xırtıldayan"
+  "notePlaceholder": "məs. soğansız, daha xırtıldayan",
+  "kitchenHeading": "Bu mətbəxdə istifadə olunan allergenlər",
+  "kitchenNote": "Hər yeməkdə onun reseptindəki allergenlər göstərilir. Heç bir yeməyin allergen izlərindən tamamilə azad olduğuna zəmanət verə bilmərik."
 }

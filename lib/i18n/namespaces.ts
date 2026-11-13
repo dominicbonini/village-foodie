@@ -60,7 +60,7 @@ export const NAMESPACES = {
     'address',
     // languages-1 (22 October 2026): the where-you-trade step's heading and button (components/DemoGetStarted.tsx, app/setup/page.tsx).
     'whereYouTrade'],
-  manage: ['eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell',
+  manage: ['order', 'eventCard', 'menuBadges', 'orderCard', 'paymentActions', 'kitchenModals', 'userMenu', 'nativeShell',
     // paperwork-1 (4 November 2026): Manage › Documents (components/manage/PaperworkTab.tsx).
     'paperwork',
     // billing-2 (11 November 2026): Manage › Billing when billing is shown, and its notice (components/manage/BillingScreen.tsx).

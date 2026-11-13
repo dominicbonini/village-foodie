@@ -149,9 +149,7 @@
     "allergenTitle": "Informacje o alergenach",
     "allergenNotProvided": "Brak informacji o alergenach — zapytaj bezpośrednio obsługę food trucka.",
     "allergenCard": "📎 Zobacz kartę alergenów (PDF/obraz)",
-    "allergensUsed": "Alergeny w tym menu",
-    "allergensSeeEach": "Alergeny konkretnych dań znajdziesz przy każdym daniu.",
-    "allergenSevere": "Jeśli masz poważną alergię, skontaktuj się bezpośrednio ze sprzedawcą przed złożeniem zamówienia.",
+    "allergenSevere": "Jeśli masz alergię pokarmową, skontaktuj się ze sprzedawcą przed złożeniem zamówienia.",
     "orderConfirmed": "Zamówienie potwierdzone!",
     "orderReceived": "Zamówienie przyjęte!",
     "thanksReady": "Dziękujemy! Otrzymaliśmy twoje zamówienie — wkrótce będzie gotowe.",
@@ -172,7 +170,9 @@
     "backTo": "Wróć: {truck}",
     "notePlaceholderCompact": "Masz jakieś życzenia? np. bez cebuli",
     "noteHeading": "Masz jakieś życzenia? <muted>— opcjonalnie</muted>",
-    "notePlaceholder": "np. bez cebuli, bardzo chrupiące"
+    "notePlaceholder": "np. bez cebuli, bardzo chrupiące",
+    "kitchenHeading": "Alergeny używane w tej kuchni",
+    "kitchenNote": "Przy każdym daniu podajemy alergeny z jego przepisu. Nie możemy zagwarantować, że żadne danie nie zawiera śladów."
   },
   "plansPdf": {
     "title": "Plany i funkcje",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Niejednoznaczne — pasuje do kilku dań; wybierz właściwe.",
       "assignTo": "Przypisz do dania…",
       "dismiss": "Odrzuć",
-      "blanket": "Według karty <b>{list}</b> może występować we <b>wszystkich</b> daniach. Dodać do każdego dania? (każde i tak potwierdzisz) <muted>— domyślnie wyłączone</muted>",
       "kitchenNotes": "Uwagi kuchni (zapisywane w informacjach o alergenach)",
-      "matchSummary": "{n, plural, =0 {Dopasowano do dań: {matched}.} one {Dopasowano do dań: {matched}. {count} pozycja wymaga twojego przypisania.} few {Dopasowano do dań: {matched}. {count} pozycje wymagają twojego przypisania.} many {Dopasowano do dań: {matched}. {count} pozycji wymaga twojego przypisania.} other {Dopasowano do dań: {matched}. {count} pozycji wymaga twojego przypisania.}}"
+      "matchSummary": "{n, plural, =0 {Dopasowano do dań: {matched}.} one {Dopasowano do dań: {matched}. {count} pozycja wymaga twojego przypisania.} few {Dopasowano do dań: {matched}. {count} pozycje wymagają twojego przypisania.} many {Dopasowano do dań: {matched}. {count} pozycji wymaga twojego przypisania.} other {Dopasowano do dań: {matched}. {count} pozycji wymaga twojego przypisania.}}",
+      "blanketInfo": "Według twojej karty alergenów {list} może występować we wszystkich daniach. Dodamy je do alergenów używanych w twojej kuchni. Możesz je sprawdzić w ostatnim kroku."
     },
     "savedCard": {
       "showLess": "Pokaż mniej",
@@ -2468,7 +2468,8 @@
         "choose": "Wybierz, jak klienci widzą informacje o alergenach",
         "card": "Dodaj kartę alergenów",
         "cardOptional": "Dodaj kartę alergenów (opcjonalnie)",
-        "review": "Sprawdź i potwierdź każde danie"
+        "review": "Sprawdź i potwierdź każde danie",
+        "kitchen": "Ostatni krok: twoja kuchnia"
       },
       "heading": {
         "import": "Alergeny",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Pominięcie odkłada sprawę — niepotwierdzone dania pozostają ukryte przed klientami, dopóki ich alergeny nie zostaną potwierdzone.",
         "importIncomplete": "Potwierdź każde danie, aby kontynuować — albo wybierz „Na razie pomiń konfigurację alergenów”."
-      }
+      },
+      "recipeOnly": "Tylko to, co jest w przepisie tego dania.",
+      "tooMany": "Zaznaczone alergeny: {count}. Czy naprawdę wszystkie są w przepisie tego dania? Alergeny używane w innych daniach nie należą tutaj. Możesz je dodać w ostatnim kroku."
+    },
+    "kitchen": {
+      "title": "Jakich alergenów używa twoja kuchnia?",
+      "body": "Zaznaczyliśmy już te, które są w twoich daniach. Zaznacz inne, których używasz w food trucku, na przykład do dań dnia.",
+      "legendDishes": "w twoich daniach",
+      "legendAdded": "dodane przez ciebie",
+      "customersSee": "Klienci zobaczą:",
+      "confirm": "Potwierdzam, że alergeny każdego dania są prawidłowe, i będę je aktualizować."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Wyodrębnij z AI",
       "needReview": "{count, plural, one {# danie wymaga} few {# dania wymagają} many {# dań wymaga} other {# dania wymaga}} sprawdzenia — klienci nie zobaczą informacji o alergenach przed potwierdzeniem",
       "reading": "Odczytywanie informacji o alergenach…",
-      "pastePlaceholder": "Wklej tutaj informacje o alergenach…"
+      "pastePlaceholder": "Wklej tutaj informacje o alergenach…",
+      "kitchenLine": "Kuchnia używa też: {list}",
+      "kitchenEdit": "Edytuj"
     },
     "deleteItem": {
       "title": "Usunąć: {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Dodaj pozycję",
       "noGroups": "Nie ma jeszcze grup opcji — utwórz je w zakładce Dodatki i dosprzedaż.",
       "costToMake": "Koszt przygotowania",
-      "costHelp": "Opcjonalnie. Ile kosztuje cię jedna porcja w składnikach i opakowaniu. Używane tylko w twoich raportach; klienci nigdy tego nie widzą."
+      "costHelp": "Opcjonalnie. Ile kosztuje cię jedna porcja w składnikach i opakowaniu. Używane tylko w twoich raportach; klienci nigdy tego nie widzą.",
+      "recipeOnly": "Tylko to, co jest w przepisie tego dania.",
+      "tooMany": "Zaznaczone alergeny: {count}. Czy naprawdę wszystkie są w przepisie tego dania? Alergeny używane w innych miejscach twojej kuchni dodaj w „Kuchnia używa też” w zakładce Menu."
     },
     "summary": "{categories, plural, one {# kategoria} few {# kategorie} many {# kategorii} other {# kategorii}} · {items, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
     "confirmDelete": {

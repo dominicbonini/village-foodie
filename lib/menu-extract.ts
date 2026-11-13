@@ -57,6 +57,11 @@ export interface MenuExtraction {
   categories: string[]
   items: ExtractedItem[]
   existing_categories: string[]
+  /** allergen-kitchen-1 (13 November 2026): the menu's "may contain" / traces / "prepared in a kitchen that…" allergens, ONE
+   *  menu-level list — never put into a dish's allergens. The import adds them to the truck's kitchen list at commit
+   *  (trucks.allergen_kitchen_extra). The extractor always sets it (empty when the menu has no such note); a hand-built extraction
+   *  (the demo's fallback) may leave it out. */
+  may_contain?: string[]
 }
 
 /** Raised when the model could not be reached or returned something unparseable. Language Phase 1d: it carries the
@@ -140,11 +145,15 @@ Rules:
 - description: the dish description ONLY — do NOT include allergen labels, dietary info, or "Contains/May contain" text in the description
 - allergens: extract any STATED allergen labels as a separate array (e.g. ${menuExtractAllergenExample(truck.allergenSet)})
 ${menuExtractAllergenLines(truck.allergenSet)}
-- ALLERGENS ARE STATED-DATA ONLY (same discipline as spiciness below — do NOT guess): extract an allergen
-  ONLY when the source menu STATES it — an explicit label ('GF', 'VG', 'contains nuts', 'N'), a listed
-  ingredient that is itself an allergen, or an allergen / "contains" / "may contain" note. NEVER infer an
-  allergen from the dish NAME alone or from what a dish "probably" contains. If there is NO stated allergen
-  data for an item, leave its allergens array EMPTY — do not guess.
+- ALLERGENS ARE STATED-DATA ONLY (same discipline as spiciness below — do NOT guess): a dish's allergens are ONLY
+  the allergens the source menu states the dish CONTAINS — an explicit label ('GF', 'VG', 'contains nuts', 'N'), a
+  listed ingredient that is itself an allergen, or an allergen / "contains" note. NEVER infer an allergen from the
+  dish NAME alone or from what a dish "probably" contains. If there is NO stated allergen data for an item, leave
+  its allergens array EMPTY — do not guess.
+- "MAY CONTAIN" IS NEVER A DISH ALLERGEN: a "may contain" / "may contain traces of" / "prepared in a kitchen that
+  handles…" / "made in an environment with…" note — whether it is printed on one dish or for the whole menu — must
+  NOT go into ANY dish's allergens. Put the allergen names it mentions (same vocabulary) in the ONE top-level
+  "may_contain" list instead (empty when the menu has no such note).
 - dietary: extract dietary preference labels as a separate array (e.g. ["Vegetarian", "Vegan", "Halal", "Kosher"])
 - spiciness: a BEST-EFFORT integer heat rating from 1 to 3, ONLY when there's a clear signal.
   Chili emoji: one chili (e.g. 🌶) = 1, two = 2, three = 3.
@@ -199,6 +208,7 @@ ${existingItemsSummary ? `\nTHIS OPERATOR'S EXISTING MENU (use to match their st
 Response format:
 {
   "categories": ["Mains", "Sides", "Drinks"],
+  "may_contain": [],
   "items": [
     {
       "name": "Tiramisu",
@@ -356,6 +366,7 @@ Response format:
       categories: parsed.categories || [],
       items,
       existing_categories: existingCatNames,
+      may_contain: Array.isArray(parsed.may_contain) ? parsed.may_contain.filter((a: unknown): a is string => typeof a === 'string') : [],
     }
   } catch (err) {
     if (err instanceof MenuExtractionError) throw err

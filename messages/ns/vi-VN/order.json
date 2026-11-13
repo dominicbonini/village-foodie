@@ -148,9 +148,7 @@
   "allergenTitle": "Thông tin chất gây dị ứng",
   "allergenNotProvided": "Chưa có thông tin chất gây dị ứng — vui lòng hỏi trực tiếp xe.",
   "allergenCard": "📎 Xem bảng chất gây dị ứng (PDF/ảnh)",
-  "allergensUsed": "Các chất gây dị ứng có trong thực đơn này",
-  "allergensSeeEach": "Xem từng món để biết chất gây dị ứng cụ thể.",
-  "allergenSevere": "Nếu bạn bị dị ứng nặng, vui lòng liên hệ trực tiếp người bán trước khi đặt món.",
+  "allergenSevere": "Nếu bạn bị dị ứng thực phẩm, vui lòng liên hệ người bán trước khi đặt món.",
   "orderConfirmed": "Đơn đã được xác nhận!",
   "orderReceived": "Đã nhận đơn!",
   "thanksReady": "Cảm ơn bạn! Chúng tôi đã nhận đơn và món sẽ sớm sẵn sàng.",
@@ -171,5 +169,7 @@
   "backTo": "Quay lại {truck}",
   "notePlaceholderCompact": "Có yêu cầu gì không? VD: không hành",
   "noteHeading": "Có yêu cầu gì không? <muted>— không bắt buộc</muted>",
-  "notePlaceholder": "Ví dụ: không hành, thật giòn"
+  "notePlaceholder": "Ví dụ: không hành, thật giòn",
+  "kitchenHeading": "Chất gây dị ứng được dùng trong bếp này",
+  "kitchenNote": "Mỗi món hiển thị các chất gây dị ứng trong công thức của món. Chúng tôi không thể đảm bảo món nào hoàn toàn không có vết chất gây dị ứng."
 }

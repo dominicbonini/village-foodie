@@ -108,7 +108,9 @@
     "extract": "Süni intellektlə çıxar",
     "needReview": "{count, plural, one {# yemək yoxlanılmalıdır} other {# yemək yoxlanılmalıdır}} — təsdiqlənənə qədər müştərilər allergen məlumatını görə bilmir",
     "reading": "Allergen məlumatı oxunur…",
-    "pastePlaceholder": "Allergen məlumatınızı bura yapışdırın…"
+    "pastePlaceholder": "Allergen məlumatınızı bura yapışdırın…",
+    "kitchenLine": "Mətbəxdə həmçinin istifadə olunur: {list}",
+    "kitchenEdit": "Redaktə et"
   },
   "deleteItem": {
     "title": "{name} silinsin?",
@@ -172,7 +174,9 @@
     "add": "Məhsul əlavə et",
     "noGroups": "Hələ seçim qrupu yoxdur — onları “Əlavələr və təkliflər” bölməsində yaradın.",
     "costToMake": "Maya dəyəri",
-    "costHelp": "İstəyə bağlı. Bir porsiyanın inqrediyentlər və qablaşdırma üzrə sizə neçəyə başa gəldiyi. Yalnız hesabatlarınızda istifadə olunur; müştərilər bunu heç vaxt görmür."
+    "costHelp": "İstəyə bağlı. Bir porsiyanın inqrediyentlər və qablaşdırma üzrə sizə neçəyə başa gəldiyi. Yalnız hesabatlarınızda istifadə olunur; müştərilər bunu heç vaxt görmür.",
+    "recipeOnly": "Yalnız bu yeməyin reseptində olanlar.",
+    "tooMany": "{count} allergen işarələnib. Onların hamısı həqiqətən bu yeməyin reseptindədir? Mətbəxinizin başqa yerlərində istifadə olunan allergenləri Menyu bölməsindəki “Mətbəxdə həmçinin istifadə olunur” hissəsinə əlavə edin."
   },
   "summary": "{categories, plural, one {# kateqoriya} other {# kateqoriya}} · {items, plural, one {# məhsul} other {# məhsul}}",
   "confirmDelete": {

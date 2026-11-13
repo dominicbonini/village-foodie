@@ -3573,8 +3573,51 @@ function runWiringSuite(lib) {
         && code.includes(": t('notStarted.heading')}") && code.includes('{truck.trial_expires_at && (')
         && !/notStarted\.body/.test(code)
     })()
+    /* ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026, docs/allergen-kitchen-1-report.md): the lines this work removed or reworded
+     * on the page — the "may be present across all dishes" checkbox (its props, state and the import's merge into every dish), the
+     * wizard's signature/modes gaining the last page, the review's and the import step's footers rebuilt (Skip as a link), the
+     * helper line under "Allergens", the Truck type's two new fields. ONE excuse each, and only while the new forms are in the page. */
+    const AK1_PAGE = read('app/(app)/manage/[token]/page.tsx')
+    const ak1Holds = /data-kitchen-page/.test(AK1_PAGE) && /t\('cardUpload\.blanketInfo'/.test(AK1_PAGE) && !/cardBlanketOptIn|stdBlanket\b/.test(AK1_PAGE)
+      && /t\('wizard\.recipeOnly'\)/.test(AK1_PAGE) && /allergen_kitchen_extra\?: string\[\] \| null/.test(AK1_PAGE)
+    const AK1_REMOVED = new Map([
+      ["interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: PlanKey; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null; timezone?: string | null; country?: string | null; /** Where the truck trades (Phase 2D-1) — Settings › Where you trade. */ base_place_id?: string | null; base_place_name?: string | null; base_region?: string | null; base_lat?: number | string | null; base_lng?: number | string | null; /** 🔴 The truck's zone and display settings (Phase 2B), from /api/manage. */ time?: TimeSettings | null; /** Phase 3 screens: Manage › Payments › Tax, tips and fees (20261010_17/_18). */ tax_rate_milli?: number | null; tipping_enabled?: boolean | null; service_fee_enabled?: boolean | null; service_fee_bps?: number | null; service_fee_fixed_minor?: number | null }", 1],
+      ["function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, onShowUpload, file, onFile, text, onText, onProcess, onCancelUpload, matchResult, resolvedKeys, dishes, onAssign, onDismiss, blanketOptIn, onBlanketToggle }: {", 1],
+      ["blanketOptIn: boolean; onBlanketToggle: (b: boolean) => void", 1],
+      ["<label className=\"flex items-start gap-2 rounded-xl border border-slate-200 p-3 cursor-pointer\">", 1],
+      ["<input type=\"checkbox\" checked={blanketOptIn} onChange={e => onBlanketToggle(e.target.checked)} className=\"mt-0.5\" />", 1],
+      ["<span className=\"text-xs text-slate-600\">", 1],
+      ["{t.rich('cardUpload.blanket', { list: parsed.blanket.join(', '), b: c => <strong>{c}</strong>, muted: c => <span className=\"text-slate-400\">{c}</span> })}", 1],
+      ["function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow, onUndoRow, onEditUnverify, showToast, cardText, cardUrl, cardProcessing, onAddCard, onSetDisplayMode, initialMode = 0, initialReviewView = 'list', onProcessCard, onCardMerge, onBack, importStepper, onSaveCard, onTranscribeCard }: {", 1],
+      ["initialMode?: 0 | 1 | 2", 1],
+      ["const [mode, setMode] = useState<0 | 1 | 2 | 3>(initialMode === 0 && !cardOnlyAllowed ? (onProcessCard ? 3 : 1) : initialMode)", 1],
+      ["const [stdBlanket, setStdBlanket] = useState(false)", 1],
+      ["<p className=\"text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1\">{t('wizard.allergens')}</p>", 1],
+      ["<th colSpan={A} className=\"bg-amber-100 border-b border-r border-slate-200 text-center text-[11px] font-bold text-amber-700 uppercase tracking-wide py-1\">{t('wizard.allergens')}</th>", 1],
+      ["blanketOptIn={stdBlanket}", 1],
+      ["onBlanketToggle={setStdBlanket}", 1],
+      ["{/* Skip = defer, save AS-IS (per-row confirms already persisted; this doesn't confirm anything).", 1],
+      ["ALWAYS available (the escape hatch) — never disabled, so the operator is never trapped when", 1],
+      ["\"Next\" is greyed pending all-confirmed. Wording ties to the active-gated visibility rule. */}", 1],
+      ["<Btn label={importStepper ? t('wizard.nav.skipImport') : t('wizard.nav.skip')} colour=\"ghost\" onClick={onClose} />", 1],
+      ["? /* IMPORT: \"Next\" — a wizard step; greyed until EVERY dish is confirmed (allDone). */", 1],
+      ["<Btn label={finishing ? t('wizard.nav.saving') : t('wizard.nav.next')} colour=\"green\" loading={finishing} disabled={finishing || !allDone} onClick={() => finishWith('per_dish')} />", 1],
+      [": <Btn label={finishing ? t('wizard.nav.saving') : allDone ? t('wizard.nav.done') : t('wizard.nav.saveLater')} colour={allDone ? 'green' : 'slate'} loading={finishing} disabled={finishing} onClick={() => finishWith('per_dish')} />}", 1],
+      ["const [cardBlanketOptIn, setCardBlanketOptIn] = useState(false)", 1],
+      ["const [wizardInitialMode, setWizardInitialMode] = useState<0 | 1 | 2>(0)", 1],
+      ["setCardBlanketOptIn(false)", 1],
+      ["const blanket = cardImportParsed?.blanket", 1],
+      ["if (cardBlanketOptIn && blanket?.length) {", 1],
+      ["itemsToCommit = itemsToCommit.map((it: any) => ({ ...it, allergens: mergeAllergensUnion(it.allergens || [], blanket), _allergensChecked: false }))", 1],
+      ["blanketOptIn={cardBlanketOptIn}", 1],
+      ["onBlanketToggle={setCardBlanketOptIn}", 1],
+      ["<div className=\"p-5 border-t border-slate-100 flex items-center gap-2 shrink-0\">", 1],
+      ["<Btn label={ti('allergens.skip')} colour=\"ghost\" onClick={goToKitchen} />", 1],
+      ["</span>", 1],
+    ])
     const unexplained = gone.filter(l => {
       if (!l) return false
+      if (ak1Holds && (AK1_REMOVED.get(l) || 0) > 0) { AK1_REMOVED.set(l, AK1_REMOVED.get(l) - 1); return false }   // allergen-kitchen-1 (above)
       // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): see TIDY_REMOVED above — one excuse each, while tidyHolds.
       if (tidyHolds && (TIDY_REMOVED.get(l) || 0) > 0) { TIDY_REMOVED.set(l, TIDY_REMOVED.get(l) - 1); return false }
       // ⚠️ RE-PINNED (pricing-pages, Stage B, 20 October 2026): see STAGE_B_REMOVED above — one excuse each, while stageBHolds.

@@ -15,7 +15,6 @@
     "payAtTruckLine": "Pagas en el food truck al retirar · Sin datos de tarjeta",
     "addItemsPrompt": "Añade productos de la carta para hacer un pedido",
     "payEitherLine": "Paga con tarjeta o al retirar",
-    "allergensUsed": "Alérgenos presentes en esta carta",
     "collectionTime": "Hora de retiro: {time}",
     "preferredCollection": "Retiro preferido: {time}",
     "willConfirmTime": "{truck} confirmará tu hora de retiro cuando acepte tu pedido.",
@@ -326,9 +325,7 @@
     }
   },
   "manageAllergens": {
-    "cardUpload": {
-      "blanket": "La tabla indica que <b>{list}</b> puede estar presente en <b>todos</b> los platos. ¿Agregarlo a todos? (de todos modos confirmarás cada uno) <muted>— desactivado de forma predeterminada</muted>"
-    },
+    "cardUpload": {},
     "wizard": {
       "review": {
         "detected": "Detectados a partir de tu carta: <b>revísalos</b>. Los alérgenos siguen ocultos para los clientes hasta que confirmes cada plato.",

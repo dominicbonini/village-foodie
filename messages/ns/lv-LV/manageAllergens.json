@@ -28,9 +28,9 @@
     "ambiguous": "Neskaidrs — atbilst vairākiem ēdieniem; izvēlieties pareizo.",
     "assignTo": "Piešķirt ēdienam…",
     "dismiss": "Noraidīt",
-    "blanket": "Kartē norādīts, ka <b>{list}</b> var būt <b>visos</b> ēdienos. Pievienot katram ēdienam? (katru jūs tik un tā apstiprināsiet) <muted>— pēc noklusējuma izslēgts</muted>",
     "kitchenNotes": "Virtuves piezīmes (saglabātas jūsu alergēnu informācijā)",
-    "matchSummary": "{n, plural, =0 {Sasaistīti ar ēdieniem: {matched}.} zero {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.} one {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.} other {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.}}"
+    "matchSummary": "{n, plural, =0 {Sasaistīti ar ēdieniem: {matched}.} zero {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.} one {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.} other {Sasaistīti ar ēdieniem: {matched}. Jums jāpiešķir: {count}.}}",
+    "blanketInfo": "Jūsu kartē norādīts, ka {list} var būt visos ēdienos. Mēs tos pievienosim jūsu virtuvē izmantotajiem alergēniem. Tos varēsiet pārbaudīt pēdējā solī."
   },
   "savedCard": {
     "showLess": "Rādīt mazāk",
@@ -92,7 +92,8 @@
       "choose": "Izvēlieties, kā klienti redz alergēnu informāciju",
       "card": "Pievienojiet alergēnu karti",
       "cardOptional": "Pievienojiet alergēnu karti (neobligāti)",
-      "review": "Pārbaudiet un apstipriniet katru ēdienu"
+      "review": "Pārbaudiet un apstipriniet katru ēdienu",
+      "kitchen": "Pēdējais solis: jūsu virtuve"
     },
     "heading": {
       "import": "Alergēni",
@@ -112,6 +113,16 @@
     "hint": {
       "skipDefers": "Izlaišana tikai atliek — neapstiprinātie ēdieni paliek paslēpti klientiem, līdz to alergēni tiks apstiprināti.",
       "importIncomplete": "Lai turpinātu, apstipriniet katru ēdienu — vai izvēlieties “Pagaidām izlaist alergēnu iestatīšanu”."
-    }
+    },
+    "recipeOnly": "Tikai tas, kas ir šī ēdiena receptē.",
+    "tooMany": "Atzīmētie alergēni: {count}. Vai tiešām tie visi ir šī ēdiena receptē? Citos ēdienos izmantotie alergēni šeit nav jānorāda. Tos varēsiet pievienot pēdējā solī."
+  },
+  "kitchen": {
+    "title": "Kurus alergēnus izmanto jūsu virtuvē?",
+    "body": "Alergēnus no jūsu ēdieniem jau esam atzīmējuši. Atzīmējiet arī citus, ko izmantojat savā food truck, piemēram, dienas piedāvājumam.",
+    "legendDishes": "jūsu ēdienos",
+    "legendAdded": "pievienojāt jūs",
+    "customersSee": "Klienti redzēs:",
+    "confirm": "Apstiprinu, ka katra ēdiena alergēni ir pareizi, un uzturēšu tos aktuālus."
   }
 }

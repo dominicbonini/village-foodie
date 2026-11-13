@@ -148,9 +148,7 @@
   "allergenTitle": "Informācija par alergēniem",
   "allergenNotProvided": "Informācija par alergēniem nav sniegta — lūdzu, precizējiet to tieši pie food truck komandas.",
   "allergenCard": "📎 Skatīt alergēnu karti (PDF/attēls)",
-  "allergensUsed": "Šajā ēdienkartē izmantotie alergēni",
-  "allergensSeeEach": "Konkrētos alergēnus skatiet pie katra ēdiena.",
-  "allergenSevere": "Ja jums ir smaga alerģija, lūdzu, pirms pasūtīšanas sazinieties tieši ar tirgotāju.",
+  "allergenSevere": "Ja jums ir pārtikas alerģija, lūdzu, pirms pasūtīšanas sazinieties ar tirgotāju.",
   "orderConfirmed": "Pasūtījums apstiprināts!",
   "orderReceived": "Pasūtījums saņemts!",
   "thanksReady": "Paldies! Mēs esam saņēmuši jūsu pasūtījumu, un tas drīz būs gatavs.",
@@ -171,5 +169,7 @@
   "backTo": "Atpakaļ uz lapu: {truck}",
   "notePlaceholderCompact": "Kādas vēlmes? piem., bez sīpoliem",
   "noteHeading": "Kādas vēlmes? <muted>— neobligāti</muted>",
-  "notePlaceholder": "piem., bez sīpoliem, īpaši kraukšķīgs"
+  "notePlaceholder": "piem., bez sīpoliem, īpaši kraukšķīgs",
+  "kitchenHeading": "Šajā virtuvē izmantotie alergēni",
+  "kitchenNote": "Pie katra ēdiena ir norādīti tā receptes alergēni. Mēs nevaram garantēt, ka kādā ēdienā nav alergēnu pēdu."
 }

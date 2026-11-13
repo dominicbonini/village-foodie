@@ -148,9 +148,7 @@
   "allergenTitle": "Allergeenitiedot",
   "allergenNotProvided": "Allergeenitietoja ei ole annettu — varmista asia suoraan ruokarekalta.",
   "allergenCard": "📎 Näytä allergeenikortti (PDF/kuva)",
-  "allergensUsed": "Tämän ruokalistan allergeenit",
-  "allergensSeeEach": "Katso kunkin annoksen omat allergeenit annoksen kohdalta.",
-  "allergenSevere": "Jos sinulla on vakava allergia, ota yhteyttä suoraan myyjään ennen tilaamista.",
+  "allergenSevere": "Jos sinulla on ruoka-allergia, ota yhteyttä myyjään ennen tilaamista.",
   "orderConfirmed": "Tilaus vahvistettu!",
   "orderReceived": "Tilaus vastaanotettu!",
   "thanksReady": "Kiitos! Olemme vastaanottaneet tilauksesi, ja se on pian valmis.",
@@ -171,5 +169,7 @@
   "backTo": "Takaisin: {truck}",
   "notePlaceholderCompact": "Toiveita? esim. ei sipulia",
   "noteHeading": "Toiveita? <muted>— valinnainen</muted>",
-  "notePlaceholder": "esim. ei sipulia, erityisen rapea"
+  "notePlaceholder": "esim. ei sipulia, erityisen rapea",
+  "kitchenHeading": "Tässä keittiössä käsiteltävät allergeenit",
+  "kitchenNote": "Jokaisen annoksen kohdalla näkyvät sen reseptin allergeenit. Emme voi taata, ettei mikään annos sisällä jäämiä."
 }

@@ -148,9 +148,7 @@
   "allergenTitle": "Allergen information",
   "allergenNotProvided": "Allergen info not provided — please confirm directly with the truck.",
   "allergenCard": "📎 View allergen card (PDF/image)",
-  "allergensUsed": "Allergens used in this menu",
-  "allergensSeeEach": "See each dish for its specific allergens.",
-  "allergenSevere": "If you have a severe allergy, please contact the vendor directly before ordering.",
+  "allergenSevere": "If you have a food allergy, please contact the truck before ordering.",
   "orderConfirmed": "Order confirmed!",
   "orderReceived": "Order received!",
   "thanksReady": "Thanks! We’ve received your order and it’ll be ready soon.",
@@ -171,5 +169,7 @@
   "backTo": "Back to {truck}",
   "notePlaceholderCompact": "Any requests? e.g. no onions",
   "noteHeading": "Any requests? <muted>— optional</muted>",
-  "notePlaceholder": "e.g. no onions, extra crispy"
+  "notePlaceholder": "e.g. no onions, extra crispy",
+  "kitchenHeading": "Allergens handled in this kitchen",
+  "kitchenNote": "Each dish shows the allergens in its recipe. We can’t guarantee any dish is free from traces."
 }

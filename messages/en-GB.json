@@ -149,9 +149,7 @@
     "allergenTitle": "Allergen information",
     "allergenNotProvided": "Allergen info not provided — please confirm directly with the truck.",
     "allergenCard": "📎 View allergen card (PDF/image)",
-    "allergensUsed": "Allergens used in this menu",
-    "allergensSeeEach": "See each dish for its specific allergens.",
-    "allergenSevere": "If you have a severe allergy, please contact the vendor directly before ordering.",
+    "allergenSevere": "If you have a food allergy, please contact the truck before ordering.",
     "orderConfirmed": "Order confirmed!",
     "orderReceived": "Order received!",
     "thanksReady": "Thanks! We’ve received your order and it’ll be ready soon.",
@@ -172,7 +170,9 @@
     "backTo": "Back to {truck}",
     "notePlaceholderCompact": "Any requests? e.g. no onions",
     "noteHeading": "Any requests? <muted>— optional</muted>",
-    "notePlaceholder": "e.g. no onions, extra crispy"
+    "notePlaceholder": "e.g. no onions, extra crispy",
+    "kitchenHeading": "Allergens handled in this kitchen",
+    "kitchenNote": "Each dish shows the allergens in its recipe. We can’t guarantee any dish is free from traces."
   },
   "plansPdf": {
     "title": "Plans and features",
@@ -2404,9 +2404,9 @@
       "ambiguous": "Ambiguous — matches several dishes; pick the right one.",
       "assignTo": "Assign to dish…",
       "dismiss": "Dismiss",
-      "blanket": "The card says <b>{list}</b> may be present across <b>all</b> dishes. Add to every dish? (you’ll still confirm each) <muted>— off by default</muted>",
       "kitchenNotes": "Kitchen notes (saved to your allergen info)",
-      "matchSummary": "{n, plural, =0 {{matched} matched to a dish.} one {{matched} matched to a dish. {count} needs your assignment.} other {{matched} matched to a dish. {count} need your assignment.}}"
+      "matchSummary": "{n, plural, =0 {{matched} matched to a dish.} one {{matched} matched to a dish. {count} needs your assignment.} other {{matched} matched to a dish. {count} need your assignment.}}",
+      "blanketInfo": "Your card says {list} may be present in all dishes. We’ll add them to the allergens your kitchen handles. You can check them at the last step."
     },
     "savedCard": {
       "showLess": "Show less",
@@ -2468,7 +2468,8 @@
         "choose": "Choose how customers see allergen info",
         "card": "Add your allergen card",
         "cardOptional": "Add an allergen card (optional)",
-        "review": "Check & confirm each dish"
+        "review": "Check & confirm each dish",
+        "kitchen": "Last step: your kitchen"
       },
       "heading": {
         "import": "Allergens",
@@ -2488,7 +2489,17 @@
       "hint": {
         "skipDefers": "Skip defers — dishes you haven’t confirmed stay hidden from customers until their allergens are confirmed.",
         "importIncomplete": "Confirm every dish to continue — or “Skip allergen setup for now”."
-      }
+      },
+      "recipeOnly": "Only what’s in this dish’s recipe.",
+      "tooMany": "{count} allergens ticked. Is that really all in this dish’s recipe? Allergens used in other dishes don’t go here. You can add those at the last step."
+    },
+    "kitchen": {
+      "title": "Which allergens does your kitchen handle?",
+      "body": "We’ve ticked the ones already in your dishes. Tick any others you use in the truck, for example for specials.",
+      "legendDishes": "in your dishes",
+      "legendAdded": "added by you",
+      "customersSee": "Customers will see:",
+      "confirm": "I confirm the allergens for each dish are correct, and I’ll keep them up to date."
     }
   },
   "manageUpsells": {
@@ -2878,7 +2889,9 @@
       "extract": "Extract with AI",
       "needReview": "{count, plural, one {# dish needs} other {# dishes need}} review — customers can’t see allergen info until confirmed",
       "reading": "Reading allergen information…",
-      "pastePlaceholder": "Paste your allergen information here…"
+      "pastePlaceholder": "Paste your allergen information here…",
+      "kitchenLine": "Kitchen also handles: {list}",
+      "kitchenEdit": "Edit"
     },
     "deleteItem": {
       "title": "Remove {name}?",
@@ -2942,7 +2955,9 @@
       "add": "Add item",
       "noGroups": "No option groups yet — create them in Extras & upsells.",
       "costToMake": "Cost to make",
-      "costHelp": "Optional. What one portion costs you in ingredients and packaging. Used only in your reports; customers never see it."
+      "costHelp": "Optional. What one portion costs you in ingredients and packaging. Used only in your reports; customers never see it.",
+      "recipeOnly": "Only what’s in this dish’s recipe.",
+      "tooMany": "{count} allergens ticked. Is that really all in this dish’s recipe? Allergens used elsewhere in your kitchen go in “Kitchen also handles” on the Menu tab."
     },
     "summary": "{categories, plural, one {# category} other {# categories}} · {items, plural, one {# item} other {# items}}",
     "confirmDelete": {

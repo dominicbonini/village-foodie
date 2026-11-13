@@ -742,7 +742,6 @@
  "manageAllergens.cardEditor.intro": "Customers see this <b>exactly as you write it</b> — nothing is rewritten. Type or paste below, or upload a photo/PDF and we’ll read the text in for you to check.",
  "manageAllergens.cardEditor.placeholder": "e.g. All our fish & chips contain wheat and milk. Fryer is shared with items containing gluten and nuts. Vegan options available — ask staff.",
  "manageAllergens.cardUpload.ambiguous": "Ambiguous — matches several dishes; pick the right one.",
- "manageAllergens.cardUpload.blanket": "The card says <b>{list}</b> may be present across <b>all</b> dishes. Add to every dish? (you’ll still confirm each) <muted>— off by default</muted>",
  "manageAllergens.cardUpload.cardOnly": "Upload the allergen card customers will see.",
  "manageAllergens.cardUpload.dropzone": "Drag and drop or tap to choose",
  "manageAllergens.cardUpload.noProblem": "No problem — you don’t need one. Continue with the button below.",
@@ -1077,8 +1076,7 @@
  "offlineProtection.reminder": "⚠️ Keep your dashboard or kitchen screen on and online during service, or offline protection may take over.",
  "order.addItemsPrompt": "Add items from the menu to place an order",
  "order.allergenNotProvided": "Allergen info not provided — please confirm directly with the truck.",
- "order.allergenSevere": "If you have a severe allergy, please contact the vendor directly before ordering.",
- "order.allergensSeeEach": "See each dish for its specific allergens.",
+ "order.allergenSevere": "If you have a food allergy, get in touch with the food truck before ordering.",
  "order.authFailed": "That payment could not be authorised. No money has been taken — please try another card, or choose Pay at the truck.",
  "order.busyNotice": "We are handling a lot of orders right now — please tap Place order again in a moment. Your order is saved here.",
  "order.cardFallback": "We couldn’t start the card payment, so your order is set to pay at the truck instead. Your order is placed — nothing has been charged.",
@@ -1365,5 +1363,9 @@
  "whereYouTrade.settingsHeading": "Where you trade",
  "whereYouTrade.townQuestion": "Town or city you’re based in",
  "pricing.banner.bodyCard": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to the <plan>{fallback}</plan> plan{fallbackFree, select, yes { (no monthly fee)} other {}} unless you choose another plan. No card to start, no lock-in, cancel any time.",
- "pricing.banner.bodyOnlyCard": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. Prefer to take payment up front? Add online card payments any time. When your trial ends, the <plan>{fallback}</plan> plan will cost {price} a month. Before that date we’ll get in touch with you to set up payment. No card to start, no lock-in, cancel any time."
+ "pricing.banner.bodyOnlyCard": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. Prefer to take payment up front? Add online card payments any time. When your trial ends, the <plan>{fallback}</plan> plan will cost {price} a month. Before that date we’ll get in touch with you to set up payment. No card to start, no lock-in, cancel any time.",
+ "manageAllergens.wizard.tooMany": "{count} allergens ticked. Are they really all in this dish's recipe? Allergens from other dishes don't go here. You can add them in the last step.",
+ "manageAllergens.kitchen.body": "We already ticked the ones in your dishes. Tick any other you use in the food truck, for example, for dishes of the day.",
+ "manageAllergens.kitchen.legendAdded": "added by you",
+ "manageAllergens.cardUpload.blanketInfo": "Your allergen chart indicates that there may be {list} in all dishes. We're going to add them to the allergens used in your kitchen. You can check them in the last step."
 }

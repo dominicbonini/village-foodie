@@ -40,6 +40,8 @@ function gbKeyDiff() {
     else if (k in (sa.removed || {}) && d.after === null && d.before === sa.removed[k]) d.kind = STAGE_A_REMOVED
     // ⚠️ RE-PINNED (ireland-1, 20 October 2026): ireland-1's two tradeArea rewordings, marked only on an EXACT match.
     else if (k in IE1_REWORDED && d.before === IE1_REWORDED[k].before && d.after === IE1_REWORDED[k].after) d.kind = IE1_KIND
+    // ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026): Dominic's approved severe-allergy line, marked only on an EXACT match.
+    else if (k in AK1_REWORDED && d.before === AK1_REWORDED[k].before && d.after === AK1_REWORDED[k].after) d.kind = AK1_KIND
   }
   return out
 }
@@ -53,6 +55,13 @@ const IE1_REWORDED = {
   'tradeArea.zone_unknown': { before: 'That time zone isn’t one we offer in {country}. Choose one from the list.', after: 'That time zone isn’t one we offer for that country. Choose one from the list.' },
 }
 const isIE1 = d => !!d && d.kind === IE1_KIND
+/* ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026, docs/allergen-kitchen-1-report.md): the order page's severe-allergy line,
+ * reworded to Dominic's approved sentence in every locale (scripts/allergen-kitchen-1.cjs §5 holds it). Exempt ONLY on this exact
+ * before → after. */
+const AK1_KIND = 'allergen-kitchen-1: the severe-allergy line reworded (Dominic\'s approved wording; scripts/_lp1e-words.cjs AK1_REWORDED)'
+const AK1_REWORDED = {
+  'order.allergenSevere': { before: 'If you have a severe allergy, please contact the vendor directly before ordering.', after: 'If you have a food allergy, please contact the truck before ordering.' },
+}
 const STAGE_A_REWORDED = 'plans-data-model Stage A: reworded (scripts/fixtures/plans-stage-a-messages.json)'
 const STAGE_A_REMOVED = 'plans-data-model Stage A: removed (scripts/fixtures/plans-stage-a-messages.json)'
 const isStageA = d => d.kind === STAGE_A_REWORDED || d.kind === STAGE_A_REMOVED

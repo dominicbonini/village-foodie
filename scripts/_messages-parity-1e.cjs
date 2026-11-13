@@ -293,6 +293,13 @@ for (const id of ['documents_reminders', 'profit_per_event', 'accountant_reports
   const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
   for (const k of flatKeys(enGB.emailReview || {}, 'emailReview.')) NEW_WORDING[k] = 'reviews-weather-1: the review request email (a new namespace)'
 }
+// ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026, docs/allergen-kitchen-1-report.md): Dominic's approved wording for the "contains"
+// per dish + "kitchen handles" model — NEW messages (the wizard's last page, the 10+ warning, the card page's info line, the Menu tab
+// line, the customer pop-up's heading and note). Their exact en-GB / fr-FR text is held by scripts/allergen-kitchen-1.cjs §5.
+for (const k of ['manageAllergens.wizard.recipeOnly', 'manageAllergens.wizard.tooMany', 'manageMenu.item.recipeOnly', 'manageMenu.item.tooMany',
+  'manageAllergens.wizard.subtitle.kitchen', 'manageAllergens.kitchen.title', 'manageAllergens.kitchen.body', 'manageAllergens.kitchen.legendDishes',
+  'manageAllergens.kitchen.legendAdded', 'manageAllergens.kitchen.customersSee', 'manageAllergens.kitchen.confirm', 'manageAllergens.cardUpload.blanketInfo',
+  'manageMenu.allergens.kitchenLine', 'manageMenu.allergens.kitchenEdit', 'order.kitchenHeading', 'order.kitchenNote']) NEW_WORDING[k] = 'allergen-kitchen-1: Dominic\'s approved allergen wording'
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

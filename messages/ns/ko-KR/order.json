@@ -148,9 +148,7 @@
   "allergenTitle": "알레르기 유발물질 정보",
   "allergenNotProvided": "알레르기 유발물질 정보가 제공되지 않았어요 — 푸드트럭에 직접 확인해 주세요.",
   "allergenCard": "📎 알레르기 유발물질 안내표 보기(PDF/이미지)",
-  "allergensUsed": "이 메뉴에 사용된 알레르기 유발물질",
-  "allergensSeeEach": "메뉴별 알레르기 유발물질은 각 메뉴에서 확인하세요.",
-  "allergenSevere": "심한 알레르기가 있다면 주문 전에 판매자에게 직접 문의해 주세요.",
+  "allergenSevere": "식품 알레르기가 있다면 주문 전에 판매자에게 문의해 주세요.",
   "orderConfirmed": "주문이 확정되었어요!",
   "orderReceived": "주문이 접수되었어요!",
   "thanksReady": "감사합니다! 주문이 접수되었고 곧 준비될 거예요.",
@@ -171,5 +169,7 @@
   "backTo": "{truck} 페이지로 돌아가기",
   "notePlaceholderCompact": "요청 사항이 있나요? 예: 양파 빼 주세요",
   "noteHeading": "요청 사항 <muted>— 선택</muted>",
-  "notePlaceholder": "예: 양파 빼기, 더 바삭하게"
+  "notePlaceholder": "예: 양파 빼기, 더 바삭하게",
+  "kitchenHeading": "이 주방에서 취급하는 알레르기 유발물질",
+  "kitchenNote": "각 메뉴에는 레시피에 들어가는 알레르기 유발물질이 표시됩니다. 어떤 메뉴도 미량 혼입이 없다고 보장할 수는 없습니다."
 }
