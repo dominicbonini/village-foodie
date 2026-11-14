@@ -63,7 +63,8 @@
     "stock": "Zapas: {count}",
     "preorder": "Zamówienia z wyprzedzeniem",
     "delete": "🗑 Usuń kategorię",
-    "prepHelp": "Ustaw Natychmiast dla pozycji takich jak napoje czy sosy. Nie będą wliczane do wydajności kuchni."
+    "prepHelp": "Ustaw Natychmiast dla pozycji takich jak napoje czy sosy. Nie będą wliczane do wydajności kuchni.",
+    "otherVans": "Food truck 1. Pozostałe food trucki: karta Wydajność kuchni."
   },
   "uncategorized": {
     "title": "Bez kategorii",

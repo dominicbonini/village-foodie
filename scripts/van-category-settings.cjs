@@ -166,8 +166,10 @@ head('2 · ONE RESOLVER, EVERY READER')
      * to SEED a new row from the effective values, and the resolver module names them because it IS
      * the resolution. `seed-demo-orders` is a reader and is asserted above. Anything else is a second
      * answer to "can this order be accepted". */
+    /* ⚠️ capacity-one-source-1 (13 November 2026): the writer's body moved to lib/category-capacity-write.ts,
+     * so its seeding select moved with it. It is still the writer, not a reader. */
     const allowed = new Set([SLOTS, DASHAPI, MENUAPI, PREP,
-      'app/api/manage/route.ts', 'lib/van-category-settings.ts', 'lib/seed-demo-orders.ts'])
+      'app/api/manage/route.ts', 'lib/van-category-settings.ts', 'lib/seed-demo-orders.ts', 'lib/category-capacity-write.ts'])
     const out = execFileSync('grep', ['-rln', 'counts_toward_capacity', '--include=*.ts', 'app', 'lib'],
       { cwd: REPO, encoding: 'utf8' }).trim().split('\n').filter(Boolean)
     const offenders = out.filter(f => !allowed.has(f) && /\.select\(/.test(read(f))
@@ -240,30 +242,40 @@ head('3 · THE SWITCH IS A WRITE FAN-OUT, NOT A READ')
 head('4 · THE WRITERS')
 {
   const api = codeOnly(read('app/api/manage/route.ts'))
-  t('🔴 upsert_van_category exists and upserts on (van_id, category_id)',
+  /* ⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026, docs/capacity-one-source-1-report.md): the body of
+   * `upsert_van_category` MOVED, unchanged in behaviour, to lib/category-capacity-write.ts
+   * (`writeVanCategoryCapacity`), so that Menu › Items, the dashboard and Kitchen capacity all write through ONE
+   * function. The handler now delegates; the checks below read the writer where it lives. It gained one step: an
+   * edit to the FIRST van is mirrored into menu_categories (asserted in §4b). */
+  const W = codeOnly(read('lib/category-capacity-write.ts'))
+  t('🔴 upsert_van_category exists, delegates to the ONE writer, which upserts on (van_id, category_id)',
     /action === 'upsert_van_category'/.test(api)
-    && /onConflict: 'van_id,category_id'/.test(api))
+    && /writeVanCategoryCapacity\(supabase, truck\.id, vanId as string, categoryId as string, capacityPatchOf\(body\)\)/.test(api)
+    && /onConflict: 'van_id,category_id'/.test(W))
   t('🔴 BOTH ids are confirmed to belong to THIS truck before anything is written', (() => {
-    const h = api.slice(api.indexOf("action === 'upsert_van_category'"), api.indexOf("action === 'set_van_same_as_first'"))
-    return /from\('truck_vans'\)\.select\('id'\)\.eq\('id', vanId\)\.eq\('truck_id', truck\.id\)/.test(h)
-      && /from\('menu_categories'\)\.select\('id, prep_secs, batch_size, counts_toward_capacity'\)\s*\n?\s*\.eq\('id', categoryId\)\.eq\('truck_id', truck\.id\)/.test(h)
+    const h = W.slice(W.indexOf('export async function writeVanCategoryCapacity'), W.indexOf('export async function writeCategoryCapacityForTruck'))
+    return /from\('truck_vans'\)\.select\('id'\)\.eq\('id', vanId\)\.eq\('truck_id', truckId\)/.test(h)
+      && /from\('menu_categories'\)\.select\('id, prep_secs, batch_size, counts_toward_capacity'\)\s*\n?\s*\.eq\('id', categoryId\)\.eq\('truck_id', truckId\)/.test(h)
+      && h.indexOf("if (!van) return") < h.indexOf(".upsert(")
   })())
   /* 🔴 THE FIRST EDIT SEEDS FROM THE EFFECTIVE VALUES. A row overrides all three fields, so writing
    * only the edited one would null the other two and silently change this van's batch size the moment
    * the operator touched prep. */
   t('🔴 a new row is seeded from effectiveCategorySettings, so nothing jumps on the first edit',
-    /const base = effectiveCategorySettings\(/.test(api)
-    && /prep_secs: prep_secs !== undefined \? \(prep_secs === null \? null : Number\(prep_secs\)\) : base\.prep_secs/.test(api))
+    /const base = effectiveCategorySettings\(/.test(W)
+    && /prep_secs: patch\.prep_secs !== undefined \? patch\.prep_secs : base\.prep_secs/.test(W))
   /* ⚠️ `!== undefined`, NEVER TRUTHINESS: prep_secs 0 means "instant" and counts false means
    * "excluded". A truthy test makes both unsettable — the exact bug update_van_settings' own comments
    * warn about for buzzer_count and the auto-reject delay. */
   t('⚠️ prep 0 and counts=false ARE settable — `!== undefined`, not a truthiness test',
-    /counts_toward_capacity: counts_toward_capacity !== undefined \? !!counts_toward_capacity : base\.counts_toward_capacity/.test(api))
+    /counts_toward_capacity: patch\.counts_toward_capacity !== undefined \? patch\.counts_toward_capacity : base\.counts_toward_capacity/.test(W)
+    && /if \(p\.counts_toward_capacity !== undefined\) out\.counts_toward_capacity = !!p\.counts_toward_capacity/.test(W))
   // ⚠️ RE-PINNED (Language Phase 1d): the inline sentence moved to errorsManage.van_capacity_save_failed and the route
   // returns it through `refuse(code, 500)` (manageErrorBody). Named GB fix (language-phase-1d-gb-named.json):
   // straight ' → ’ in "van’s" — the new words are accepted.
   t('🔴 a failed per-van save is VISIBLE, not a green toast on nothing',
-    /return await refuse\('van_capacity_save_failed', 500\)/.test(api)
+    /return \{ ok: false, code: 'van_capacity_save_failed', status: 500 \}/.test(W)
+    && /if \(!w\.ok\) return await refuse\(w\.code, w\.status\)/.test(api)
     && JSON.parse(read('messages/en-GB.json')).errorsManage.van_capacity_save_failed === 'That van’s capacity settings could not be saved right now.')
   /* ⚠️ THIS CHECK WAS MATCHING THE WRONG HANDLER, and the extraction of `copyCapacityFromFirst`
    * exposed it. Its name says `set_van_same_as_first`, but three of its four regexes ran against the
@@ -308,15 +320,44 @@ head('4 · THE WRITERS')
   })())
   /* 🔴 THE FAN-OUT: a change to the FIRST van reaches every van following it, in the SAME request. */
   t('🔴 editing the FIRST van fans out to every following van, in the same request',
-    /if \(first && first === vanId\)/.test(api)
-    && /\.upsert\(\{ \.\.\.row, van_id: fid \}, \{ onConflict: 'van_id,category_id' \}\)/.test(api))
+    /if \(first && first === vanId\)/.test(W)
+    && /\.upsert\(\{ \.\.\.row, van_id: fid \}, \{ onConflict: 'van_id,category_id' \}\)/.test(W))
+  /* ── 🔴 §4b capacity-one-source-1: ONE SOURCE OF TRUTH ─────────────────────────────────────────────── */
+  t('🔴 an edit to the FIRST van is mirrored into menu_categories (events with no van use the same numbers)', (() => {
+    const h = W.slice(W.indexOf('export async function writeVanCategoryCapacity'), W.indexOf('export async function writeCategoryCapacityForTruck'))
+    const ifFirst = h.indexOf('if (first && first === vanId)')
+    const mirror = h.indexOf("from('menu_categories').update(values).eq('id', categoryId).eq('truck_id', truckId)")
+    return ifFirst > 0 && mirror > ifFirst
+  })())
+  t('🔴 upsert_category no longer writes prep / batch / counts itself: they go through the ONE writer', (() => {
+    const h = api.slice(api.indexOf("action === 'upsert_category'"), api.indexOf("action === 'delete_category'"))
+    const upd = h.slice(h.indexOf('if (id) {'), h.indexOf('} else {'))
+    return /writeCategoryCapacityForTruck\(supabase, truck\.id, id, capacityPatchOf\(/.test(upd)
+      && !/\.update\(\{[^}]*prep_secs/.test(upd)
+  })())
+  t('🔴 the dashboard\'s category writers (update_category, save_prep_configs) go through the ONE writer', (() => {
+    const d = codeOnly(read('app/api/dashboard/action/route.ts'))
+    const a = d.slice(d.indexOf("action === 'save_prep_configs'"), d.indexOf("action === 'get_events'"))
+    return (a.match(/writeCategoryCapacityForTruck\(supabase, truck\.id,/g) || []).length === 2
+      && !/\.update\(\{[^}]*prep_secs/.test(a)
+  })())
+  t('🔴 no file outside the writer UPDATEs menu_categories\' prep_secs on an existing category from Manage or the dashboard', (() => {
+    const files = ['app/api/manage/route.ts', 'app/api/dashboard/action/route.ts']
+    return files.every(f => !/from\('menu_categories'\)\s*\n?\s*\.update\(\{[^}]*prep_secs/.test(codeOnly(read(f))))
+  })())
+  t('🔴 Menu › Items writes prep / batch through upsert_van_category for the first van', (() => {
+    const pg = codeOnly(read(PAGE))
+    const fn = pg.slice(pg.indexOf('const saveCat = async'), pg.indexOf('const [savedShown, setSavedShown]'))
+    return /api\('upsert_van_category', \{ vanId: capacityView\.firstVanId, categoryId: data\.id, \.\.\.capPatch \}\)/.test(fn)
+  })())
   t('⚠️ …and only the fields that were just written travel, never the whole van',
     /for \(const f of VAN_COPY_FIELDS\) \{\s*\n\s*if \(f in updates\) fanFields\[f\] = updates\[f\]/.test(api))
 
   /* ── 🔴 THE MENU TAB IS DELIBERATELY UNCHANGED ──────────────────────────────────────────────────
    * `upsert_category` still writes `menu_categories`, which is now the truck DEFAULT for any van with
    * no values of its own. Its wording is untouched. */
-  t('🔴 upsert_category still writes menu_categories, truck-scoped, unchanged',
+  // ⚠️ capacity-one-source-1: still true for the MENU fields (name, notes, stock, order); prep / batch / counts are §4b.
+  t('🔴 upsert_category still writes menu_categories, truck-scoped',
     /action === 'upsert_category'/.test(api)
     && /from\('menu_categories'\)/.test(api)
     && /\.eq\('truck_id', truck\.id\)/.test(api))
@@ -695,18 +736,27 @@ function variants() {
       v === null || !/buildCatConfigs\(supabase, resolvedTruckId, vanId\)/.test(codeOnly(v)))
   }
   {
-    const v = patched('app/api/manage/route.ts',
-      'counts_toward_capacity: counts_toward_capacity !== undefined ? !!counts_toward_capacity : base.counts_toward_capacity',
-      'counts_toward_capacity: counts_toward_capacity || base.counts_toward_capacity', 'V4')
+    // ⚠️ RE-TARGETED (capacity-one-source-1): the writer moved to lib/category-capacity-write.ts.
+    const v = patched('lib/category-capacity-write.ts',
+      'counts_toward_capacity: patch.counts_toward_capacity !== undefined ? patch.counts_toward_capacity : base.counts_toward_capacity',
+      'counts_toward_capacity: patch.counts_toward_capacity || base.counts_toward_capacity', 'V4')
     must('V4 🔴 a truthiness test makes "counts = false" unsettable — the buzzer_count bug again',
-      v === null || !/counts_toward_capacity: counts_toward_capacity !== undefined \? !!counts_toward_capacity : base\.counts_toward_capacity/.test(v))
+      v === null || !/counts_toward_capacity: patch\.counts_toward_capacity !== undefined \? patch\.counts_toward_capacity : base\.counts_toward_capacity/.test(v))
   }
   {
-    const v = patched('app/api/manage/route.ts',
+    const v = patched('lib/category-capacity-write.ts',
       'const base = effectiveCategorySettings(',
       'const base = { prep_secs: null, batch_size: null, counts_toward_capacity: false } || effectiveCategorySettings(', 'V5')
     must('V5 🔴 the first edit stops seeding from the effective values — batch silently nulls',
       v === null || !/const base = effectiveCategorySettings\(/.test(v))
+  }
+  {
+    /* capacity-one-source-1: dropping the mirror brings back the two stores disagreeing (Items 15m / 8, van 5m / 4). */
+    const v = patched('lib/category-capacity-write.ts',
+      "const { error: mErr } = await supabase.from('menu_categories').update(values).eq('id', categoryId).eq('truck_id', truckId)",
+      "const mErr = null", 'V5b')
+    must('V5b 🔴 the first van\'s edit stops reaching menu_categories — no-van events and the Items card drift again',
+      v === null || (() => { const c = codeOnly(v); const h = c.slice(c.indexOf('export async function writeVanCategoryCapacity'), c.indexOf('export async function writeCategoryCapacityForTruck')); return !/from\('menu_categories'\)\.update\(values\)\.eq\('id', categoryId\)/.test(h) })())
   }
   {
     /* ⚠️ RE-TARGETED (October 2026): the delete-then-insert moved into `copyCapacityFromFirst`, the

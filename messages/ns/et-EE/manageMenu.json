@@ -63,7 +63,8 @@
     "stock": "Laoseis: {count}",
     "preorder": "Ettetellimus",
     "delete": "🗑 Kustuta kategooria",
-    "prepHelp": "Vali „Kohene“ toodetele nagu joogid või dipikastmed. Neid ei arvestata köögi võimsuse sisse."
+    "prepHelp": "Vali „Kohene“ toodetele nagu joogid või dipikastmed. Neid ei arvestata köögi võimsuse sisse.",
+    "otherVans": "Toiduauto 1. Teised toiduautod: vahekaart Köögi võimsus."
   },
   "uncategorized": {
     "title": "Kategooriata",

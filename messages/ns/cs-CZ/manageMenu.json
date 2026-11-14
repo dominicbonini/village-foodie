@@ -63,7 +63,8 @@
     "stock": "Zásoba: {count}",
     "preorder": "Předobjednávka",
     "delete": "🗑 Smazat kategorii",
-    "prepHelp": "U položek jako nápoje nebo dipy nastavte „Okamžité“. Nebudou se započítávat do kapacity kuchyně."
+    "prepHelp": "U položek jako nápoje nebo dipy nastavte „Okamžité“. Nebudou se započítávat do kapacity kuchyně.",
+    "otherVans": "Food truck 1. Ostatní food trucky: karta Kapacita kuchyně."
   },
   "uncategorized": {
     "title": "Bez kategorie",

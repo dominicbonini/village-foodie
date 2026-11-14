@@ -2844,7 +2844,8 @@
       "stock": "Stoc: {count}",
       "preorder": "Precomandă",
       "delete": "🗑 Ștergeți categoria",
-      "prepHelp": "Setați Instant pentru produse precum băuturile sau sosurile. Acestea nu se vor socoti în capacitatea bucătăriei."
+      "prepHelp": "Setați Instant pentru produse precum băuturile sau sosurile. Acestea nu se vor socoti în capacitatea bucătăriei.",
+      "otherVans": "Food truck 1. Celelalte food truck-uri: fila Capacitatea bucătăriei."
     },
     "uncategorized": {
       "title": "Fără categorie",

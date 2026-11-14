@@ -62,6 +62,7 @@ import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { readEventType } from '@/lib/event-types/read'
 import { assignBuzzer } from '@/lib/buzzer'
 import { logAction, logActionOrThrow } from '@/lib/audit/actionAudit'
+import { writeCategoryCapacityForTruck, capacityPatchOf } from '@/lib/category-capacity-write'
 import type { DiscountCode } from '@/lib/order-calculations'
 import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
@@ -2895,10 +2896,8 @@ export async function POST(req: NextRequest) {
       for (const cat of (cats || [])) {
         const cfg = configs[cat.name.toLowerCase()]
         if (!cfg) continue
-        await supabase.from('menu_categories').update({
-          prep_secs: cfg.secs,
-          batch_size: cfg.batch,
-        }).eq('id', cat.id)
+        // 🔴 capacity-one-source-1: through the ONE writer (first van + followers + menu_categories mirror).
+        await writeCategoryCapacityForTruck(supabase, truck.id, cat.id, { prep_secs: cfg.secs, batch_size: cfg.batch })
       }
       return NextResponse.json({ success: true })
     }
@@ -2907,12 +2906,14 @@ export async function POST(req: NextRequest) {
     if (action === 'update_category') {
       const { categoryId, name, prep_secs, batch_size, allow_notes, counts_toward_capacity } = body
       if (!categoryId) return NextResponse.json(await kErr('category_id_required'), { status: 400 })
+      // 🔴 capacity-one-source-1: only the menu fields here; prep / items per batch / counts go through
+      // the ONE writer (lib/category-capacity-write.ts), never straight into menu_categories.
       await supabase.from('menu_categories')
-        // counts_toward_capacity only set when explicitly provided (the capacity tickbox) — a
-        // prep/batch save omits it and must NOT reset it. undefined fields are dropped by the PATCH.
-        .update({ name, prep_secs, batch_size, allow_notes, ...(counts_toward_capacity !== undefined ? { counts_toward_capacity: !!counts_toward_capacity } : {}) })
+        .update({ name, allow_notes })
         .eq('id', categoryId)
         .eq('truck_id', truck.id)
+      const cap = capacityPatchOf({ prep_secs, batch_size, counts_toward_capacity })
+      if (Object.keys(cap).length) await writeCategoryCapacityForTruck(supabase, truck.id, categoryId, cap)
       return NextResponse.json({ success: true })
     }
 

@@ -518,6 +518,14 @@ const NAMED = [
   // ── ⚠️ RE-PINNED (longer collection times and capacity steps, 12 November 2026; scripts/_named-longer-intervals.cjs) ──────
   //    Collection times gain 45 and 60; prep time 20m … 60m; the capacity window 1 … 15 then every 5 to 60. PRECISE.
   ...require('./_named-longer-intervals.cjs').entries({ mapStrings, refusalCodes: true }),
+  // ── ⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026, docs/capacity-one-source-1-report.md) ───────────────────────────
+  //    GET /api/manage answers `capacityView` right after `categories` (the categories are resolved for the first van; in these
+  //    fixtures nothing changes, there are no per-van rows). STRUCTURAL (scripts/_named-capacity-one-source-1.cjs).
+  ...(require('./_named-capacity-one-source-1.cjs').LANDED ? ['GB', 'US'].map(cc => (
+    { id: 'capacity-one-source-1-manage-get', country: cc, agent: 'capacity-one-source-1 (13 Nov 2026)',
+      what: '⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026): GET /api/manage answers `capacityView` ({ firstVanId, vanCount, vansDiffer }) right after `categories`. STRUCTURAL: with exactly that key taken out, F equals the expected answer byte for byte.',
+      views: id => new RegExp(`^api/${cc}\\|manageGET\\|`).test(id),
+      proveWith: (exp, f) => require('./_named-capacity-one-source-1.cjs').proveManageGet(exp, f) })) : []),
   // ── TODO: the agents' named code changes land here as they report them (SCHED-A: 12-hour hour pickers and US ZIP
   //    codes; SETTINGS / SCHED-B / MENU-A / MENU-B / API: any GB code change they list). Each one PRECISE where a
   //    transform can say it, LISTED (US only) where it cannot.

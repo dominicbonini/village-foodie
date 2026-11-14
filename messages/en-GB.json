@@ -2844,7 +2844,8 @@
       "stock": "Stock: {count}",
       "preorder": "Pre-order",
       "delete": "🗑 Delete category",
-      "prepHelp": "Set to Instant for items like drinks or dips. These won’t count toward kitchen capacity."
+      "prepHelp": "Set to Instant for items like drinks or dips. These won’t count toward kitchen capacity.",
+      "otherVans": "Van 1. Other vans: Kitchen capacity tab."
     },
     "uncategorized": {
       "title": "Uncategorized",

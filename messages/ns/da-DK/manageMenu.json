@@ -63,7 +63,8 @@
     "stock": "Lager: {count}",
     "preorder": "Forudbestilling",
     "delete": "🗑 Slet kategori",
-    "prepHelp": "Vælg Straks for varer som drikkevarer eller dip. De tæller ikke med i køkkenkapaciteten."
+    "prepHelp": "Vælg Straks for varer som drikkevarer eller dip. De tæller ikke med i køkkenkapaciteten.",
+    "otherVans": "Foodtruck 1. Andre foodtrucks: fanen Køkkenkapacitet."
   },
   "uncategorized": {
     "title": "Uden kategori",

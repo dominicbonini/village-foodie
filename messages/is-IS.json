@@ -2844,7 +2844,8 @@
       "stock": "Birgðir: {count}",
       "preorder": "Forpöntun",
       "delete": "🗑 Eyða flokki",
-      "prepHelp": "Veldu Strax fyrir vörur eins og drykki eða sósur. Þær teljast ekki með í afköstum eldhússins."
+      "prepHelp": "Veldu Strax fyrir vörur eins og drykki eða sósur. Þær teljast ekki með í afköstum eldhússins.",
+      "otherVans": "Vagn 1. Aðrir vagnar: flipinn Afköst eldhússins."
     },
     "uncategorized": {
       "title": "Óflokkað",

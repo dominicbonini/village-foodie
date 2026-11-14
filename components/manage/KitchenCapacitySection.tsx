@@ -63,8 +63,11 @@ interface VanRow {
   categorySettings?: { category_id: string; prep_secs: number | null; batch_size: number | null; counts_toward_capacity?: boolean | null }[]
 }
 
-export function KitchenCapacitySection({ categories, api, showToast }: {
+export function KitchenCapacitySection({ categories, api, showToast, onFirstVanCategoryChange }: {
   categories: CapacityCategory[]
+  /** capacity-one-source-1: an edit to the FIRST van's values is also the Items card's values (the server
+   * mirrors it into menu_categories), so the page's category list is patched to match, without a reload. */
+  onFirstVanCategoryChange?: (categoryId: string, next: { prep_secs: number | null; batch_size: number | null; counts_toward_capacity: boolean }) => void
   api: (action: string, extra?: Record<string, unknown>) => Promise<Record<string, unknown>>
   showToast: (msg: string, kind?: 'success' | 'error') => void
 }) {
@@ -165,6 +168,7 @@ export function KitchenCapacitySection({ categories, api, showToast }: {
        * would show their old numbers until a reload. */
       const fannedTo: string[] = Array.isArray(res?.fannedTo) ? res.fannedTo as string[] : []
       for (const fid of fannedTo) patchVanCat(fid, cat.id, next)
+      if (v.id === firstVan?.id) onFirstVanCategoryChange?.(cat.id, next)
     } catch (e) {
       setVans(prev => prev.map(x => {
         if (x.id !== v.id) return x
@@ -390,7 +394,8 @@ function CapacityBox({ van, title, categories, available, effectiveVanCat, write
       {van.kitchen_capacity == null && categories.length > 0 && (
         <p className="text-xs text-slate-400 mt-1.5">{t('setCapacityFirst')}</p>
       )}
-      {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories) && (
+      {/* capacity-one-source-1: THIS van's values, not the truck-level row. */}
+      {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories.map(c => ({ ...c, ...effectiveVanCat(van, c) }))) && (
         <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{t('warning')}</div>
       )}
       <p className="text-xs text-slate-400 mt-2">{t('desc')}</p>

@@ -63,7 +63,8 @@
     "stock": "Tồn kho: {count}",
     "preorder": "Đặt trước",
     "delete": "🗑 Xóa danh mục",
-    "prepHelp": "Chọn Tức thì cho các món như đồ uống hoặc nước chấm. Những món này không tính vào công suất bếp."
+    "prepHelp": "Chọn Tức thì cho các món như đồ uống hoặc nước chấm. Những món này không tính vào công suất bếp.",
+    "otherVans": "Xe 1. Các xe khác: thẻ Công suất bếp."
   },
   "uncategorized": {
     "title": "Chưa phân loại",

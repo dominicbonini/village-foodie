@@ -63,7 +63,8 @@
     "stock": "Scorta: {count}",
     "preorder": "Preordine",
     "delete": "🗑 Elimina categoria",
-    "prepHelp": "Imposta Istantaneo per prodotti come bibite o salse. Non conteranno per la capacità della cucina."
+    "prepHelp": "Imposta Istantaneo per prodotti come bibite o salse. Non conteranno per la capacità della cucina.",
+    "otherVans": "Food truck 1. Altri food truck: scheda Capacità della cucina."
   },
   "uncategorized": {
     "title": "Senza categoria",

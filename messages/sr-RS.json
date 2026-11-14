@@ -2844,7 +2844,8 @@
       "stock": "Zalihe: {count}",
       "preorder": "Porudžbina unapred",
       "delete": "🗑 Obriši kategoriju",
-      "prepHelp": "Podesite na „Instant“ za stavke kao što su pića ili dipovi. One neće ulaziti u kapacitet kuhinje."
+      "prepHelp": "Podesite na „Instant“ za stavke kao što su pića ili dipovi. One neće ulaziti u kapacitet kuhinje.",
+      "otherVans": "Vozilo 1. Ostala vozila: kartica Kapacitet kuhinje."
     },
     "uncategorized": {
       "title": "Bez kategorije",

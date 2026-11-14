@@ -2844,7 +2844,8 @@
       "stock": "Stok: {count}",
       "preorder": "Pra-pesanan",
       "delete": "🗑 Padam kategori",
-      "prepHelp": "Tetapkan kepada Segera untuk item seperti minuman atau sos celup. Item ini tidak dikira dalam kapasiti dapur."
+      "prepHelp": "Tetapkan kepada Segera untuk item seperti minuman atau sos celup. Item ini tidak dikira dalam kapasiti dapur.",
+      "otherVans": "Van 1. Van lain: tab Kapasiti dapur."
     },
     "uncategorized": {
       "title": "Tiada kategori",

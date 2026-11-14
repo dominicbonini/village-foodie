@@ -63,7 +63,8 @@
     "stock": "Stok: {count}",
     "preorder": "Ön sipariş",
     "delete": "🗑 Kategoriyi sil",
-    "prepHelp": "İçecek veya sos gibi ürünler için Anında olarak ayarlayın. Bunlar mutfak kapasitesine dahil edilmez."
+    "prepHelp": "İçecek veya sos gibi ürünler için Anında olarak ayarlayın. Bunlar mutfak kapasitesine dahil edilmez.",
+    "otherVans": "Araç 1. Diğer araçlar: Mutfak kapasitesi sekmesi."
   },
   "uncategorized": {
     "title": "Kategorisiz",

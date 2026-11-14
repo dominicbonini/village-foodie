@@ -63,7 +63,8 @@
     "stock": "Estoque: {count}",
     "preorder": "Pedido antecipado",
     "delete": "🗑 Excluir categoria",
-    "prepHelp": "Defina como Instantâneo para itens como bebidas ou molhos. Eles não contam para a capacidade da cozinha."
+    "prepHelp": "Defina como Instantâneo para itens como bebidas ou molhos. Eles não contam para a capacidade da cozinha.",
+    "otherVans": "Van 1. Outras vans: aba Capacidade da cozinha."
   },
   "uncategorized": {
     "title": "Sem categoria",

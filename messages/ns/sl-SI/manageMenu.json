@@ -63,7 +63,8 @@
     "stock": "Zaloga: {count}",
     "preorder": "Prednaročilo",
     "delete": "🗑 Izbriši kategorijo",
-    "prepHelp": "Za artikle, kot so pijače ali omake, izberite „Takoj“ (takojšnja kategorija). Ti ne štejejo v zmogljivost kuhinje."
+    "prepHelp": "Za artikle, kot so pijače ali omake, izberite „Takoj“ (takojšnja kategorija). Ti ne štejejo v zmogljivost kuhinje.",
+    "otherVans": "Food truck 1. Drugi food trucki: zavihek Zmogljivost kuhinje."
   },
   "uncategorized": {
     "title": "Brez kategorije",

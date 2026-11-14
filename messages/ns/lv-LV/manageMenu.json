@@ -63,7 +63,8 @@
     "stock": "Krājums: {count}",
     "preorder": "Iepriekšējs pasūtījums",
     "delete": "🗑 Dzēst kategoriju",
-    "prepHelp": "Dzērieniem, mērcēm un līdzīgām pozīcijām iestatiet “Uzreiz”. Tās netiks ieskaitītas virtuves jaudā."
+    "prepHelp": "Dzērieniem, mērcēm un līdzīgām pozīcijām iestatiet “Uzreiz”. Tās netiks ieskaitītas virtuves jaudā.",
+    "otherVans": "Busiņš 1. Citi busiņi: cilne “Virtuves jauda”."
   },
   "uncategorized": {
     "title": "Bez kategorijas",

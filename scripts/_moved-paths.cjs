@@ -69,6 +69,7 @@ const CWV2_PROXY_BLOCK = /\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\
 const G2 = require('./_lp-gsc-index-2.cjs')
 const B1 = require('./_lp-billing-1.cjs')   // billing-1 (10 November 2026): its named edits, taken back exactly
 const PC4 = require('./_lp-pricing-copy-4.cjs')   // pricing-copy-4 (12 November 2026): its recorded code edits, taken back exactly
+const CAP1 = require('./_named-capacity-one-source-1.cjs')   // capacity-one-source-1 (13 November 2026): its dashboard-action edits, taken back exactly
 function changedSince(rev, paths, { cwv2 = false } = {}) {
   const now = [...new Set(paths.map(nowPath))]
   const files = new Set([...tracked(['ls-files', '--', ...now]), ...tracked(['ls-tree', '-r', '--name-only', rev, '--', ...new Set(now.map(beforePath))]).map(nowPath)])
@@ -90,6 +91,11 @@ function changedSince(rev, paths, { cwv2 = false } = {}) {
     // billing-1's reverse patch then meets the text it was made against and every other byte is still compared.
     if (cur && PC4.CODE_FILES.includes(f) && show(rev, 'scripts/_lp-pricing-copy-4.cjs') === null) { const u = PC4.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     if (cur && B1.LANDED && B1.FILES.includes(f) && show(rev, 'lib/billing/rules.ts') === null) { const b = B1.asBefore(f, Buffer.from(cur, 'latin1').toString('utf8')); cur = b === null ? null : Buffer.from(b, 'utf8').toString('latin1') }
+    // ⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026; docs/capacity-one-source-1-report.md): against a revision from before
+    // it, its recorded edits to the dashboard action route (the import and the two category handlers, which now write through the one
+    // capacity writer) are put back exactly (scripts/_named-capacity-one-source-1.cjs undoCode — null if one is not there exactly
+    // once, which leaves the file changed), so every other byte of that order-path file is still compared.
+    if (cur && CAP1.CODE_FILES.includes(f) && show(rev, 'scripts/_named-capacity-one-source-1.cjs') === null) { const u = CAP1.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     let then = show(rev, f) ?? show(rev, beforePath(f))
     if (then !== null) for (const [a, b] of MOVE_EDITS[f] || []) then = then.split(a).join(b)
     if (cur !== then) changed.push(f)

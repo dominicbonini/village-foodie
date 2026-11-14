@@ -5933,5 +5933,6 @@
  "manageMenu.allergens.kitchenLine": "The kitchen also processes: {list}",
  "manageMenu.allergens.kitchenEdit": "Edit",
  "order.kitchenHeading": "Allergens processed in this kitchen",
- "order.kitchenNote": "Each dish lists the allergens from its recipe. We can't guarantee that a dish is free from traces."
+ "order.kitchenNote": "Each dish lists the allergens from its recipe. We can't guarantee that a dish is free from traces.",
+ "manageMenu.category.otherVans": "Food truck 1. Other food trucks: Kitchen capacity tab."
 }

@@ -63,7 +63,8 @@
     "stock": "Stock : {count}",
     "preorder": "Précommande",
     "delete": "🗑 Supprimer la catégorie",
-    "prepHelp": "Choisissez Instantané pour les articles comme les boissons ou les sauces. Ils ne compteront pas dans la capacité de la cuisine."
+    "prepHelp": "Choisissez Instantané pour les articles comme les boissons ou les sauces. Ils ne compteront pas dans la capacité de la cuisine.",
+    "otherVans": "Camion 1. Autres camions : onglet Capacité de la cuisine."
   },
   "uncategorized": {
     "title": "Sans catégorie",

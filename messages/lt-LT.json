@@ -2844,7 +2844,8 @@
       "stock": "Likutis: {count}",
       "preorder": "Išankstinis užsakymas",
       "delete": "🗑 Ištrinti kategoriją",
-      "prepHelp": "Gėrimams, padažams ir panašiems patiekalams nustatykite „Iškart“. Jie nebus įskaičiuojami į virtuvės pajėgumą."
+      "prepHelp": "Gėrimams, padažams ir panašiems patiekalams nustatykite „Iškart“. Jie nebus įskaičiuojami į virtuvės pajėgumą.",
+      "otherVans": "Furgonas 1. Kiti furgonai: skirtukas „Virtuvės pajėgumas“."
     },
     "uncategorized": {
       "title": "Be kategorijos",

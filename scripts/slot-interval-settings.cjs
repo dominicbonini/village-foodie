@@ -208,7 +208,9 @@ check((box.match(/t\('collection\.everyMinutes', \{ n, count: String\(n\) \}\)/g
   // asserting the single call, and nothing else.
   // ⚠️ RE-PINNED (Language Phase 1d): Manage's hint sentence moved from collectionTimesHint(mc) to the message
   // manageSettings.collection.misaligned (same words; named GB fix adds the "1 minute" plural). Still ONE call.
-  check((box.match(/t\('collection\.misaligned', \{ name: mc\.name, mins: mc\.prepMins \}\)/g) || []).length === 1 && /misalignedCookingCategory\(overrideOn \? operator : customer, categories\)/.test(box), 'the ONE conditional hint line (misalignedCookingCategory → manageSettings.collection.misaligned), and no other addition')
+  // ⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026, docs/capacity-one-source-1-report.md): the rule reads THIS van's
+  // values (`effectiveVanCat`, the van card's own resolution), not the truck-level row — still ONE call, nothing added to the box.
+  check((box.match(/t\('collection\.misaligned', \{ name: mc\.name, mins: mc\.prepMins \}\)/g) || []).length === 1 && /misalignedCookingCategory\(overrideOn \? operator : customer, categories\.map\(c => \(\{ \.\.\.c, \.\.\.effectiveVanCat\(van, c\) \}\)\)\)/.test(box), 'the ONE conditional hint line (misalignedCookingCategory → manageSettings.collection.misaligned), and no other addition')
   // ⚠️ RE-PINNED (Language Phase 1d): with the words in messages, the prose scan below sees no text at all, so the
   // "no extra text" guarantee is ALSO held on the message keys the box reads: exactly the V4 set, nothing added.
   const V4_KEYS = ['collection.help', 'collection.unavailable', 'collection.customerTimes', 'collection.everyMinutes', 'collection.canPick',

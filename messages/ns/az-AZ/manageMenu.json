@@ -63,7 +63,8 @@
     "stock": "Stok: {count}",
     "preorder": "Əvvəlcədən sifariş",
     "delete": "🗑 Kateqoriyanı sil",
-    "prepHelp": "İçkilər və ya souslar kimi məhsullar üçün “Dərhal” seçin. Bunlar mətbəx tutumuna daxil edilməyəcək."
+    "prepHelp": "İçkilər və ya souslar kimi məhsullar üçün “Dərhal” seçin. Bunlar mətbəx tutumuna daxil edilməyəcək.",
+    "otherVans": "Maşın 1. Digər maşınlar: Mətbəx tutumu bölməsi."
   },
   "uncategorized": {
     "title": "Kateqoriyasız",

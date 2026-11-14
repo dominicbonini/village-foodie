@@ -3328,6 +3328,31 @@ function runWiringSuite(lib) {
      * is computed once as `vanIsFree` (the same condition) and the modal opens on `!vanIsFree`. The claim is re-pointed to it. */
     const COPY_TRUTH_1_NOW = { 'if (vans.length >= vansIncluded && vanAddonMinor > 0) setShowVanBillingModal(true)': 'const vanIsFree = !(vans.length >= vansIncluded && vanAddonMinor > 0)' }
     for (const m of movedEdits) if (COPY_TRUTH_1_NOW[m.now]) m.now = COPY_TRUTH_1_NOW[m.now]
+    /* ⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026, docs/capacity-one-source-1-report.md): MenuTab also takes
+     * `capacityView` (the first van, the van count, the categories other vans run differently) and `onCategoriesPatch`, right
+     * after `categories` — its signature and its one mount. The costs-accounts-1 claims are re-pointed to those lines; the
+     * rest of each line is unchanged (asserted when this was written, and by language-phase-1d2's capacity-one-source-1-menu-props). */
+    const CAP1_NOW = {
+      "function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess, canSeeCosts = false }: {":
+        "function MenuTab({ truck, categories, capacityView = NO_CAPACITY_VIEW, onCategoriesPatch, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess, canSeeCosts = false }: {",
+      "{activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} canSeeCosts={userRole !== 'staff'} />}":
+        "{activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} capacityView={capacityView} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} canSeeCosts={userRole !== 'staff'} />}",
+    }
+    for (const m of movedEdits) if (CAP1_NOW[m.now]) m.now = CAP1_NOW[m.now]
+    // …and Menu › Items' `saveCat` was rewritten: prep / items per batch go through `upsert_van_category` for the first van
+    // (Kitchen capacity's own write); a name / notes / stock save no longer sends them. Its three lines of 719ac91, each named
+    // with the line that does its job now. Proved by scripts/capacity-one-source-1-screens.cjs §2 and van-category-settings.cjs §4b.
+    movedEdits.push(
+      { was: "await api('upsert_category', { id: data.id, name: data.name, prep_secs: data.prep_secs || 0, batch_size: data.batch_size || 0, allow_notes: !!(data as any).allow_notes, default_stock: (data as any).default_stock ?? null })", exact: true, nowIn: 'app/(app)/manage/[token]/page.tsx',
+        now: "else await api('upsert_category', { id: data.id, name: data.name, allow_notes: !!data.allow_notes, default_stock: data.default_stock ?? null, ...capPatch })",
+        reason: 'capacity-one-source-1: a no-van truck saves through upsert_category; prep / batch only when they were edited' },
+      { was: 'if (!data.id) { setEditingCat(null) }', exact: true, nowIn: 'app/(app)/manage/[token]/page.tsx',
+        now: "if (capacityView.firstVanId) await api('upsert_van_category', { vanId: capacityView.firstVanId, categoryId: data.id, ...capPatch })",
+        reason: 'capacity-one-source-1: new and existing categories split; an existing one writes prep / batch through the first van' },
+      { was: "} catch (e: any) { showToast(e.message, 'error') }", exact: true, nowIn: 'app/(app)/manage/[token]/page.tsx',
+        now: "} catch (e) { showToast(e instanceof Error ? e.message : String(e), 'error'); reload() }",
+        reason: 'capacity-one-source-1: saveCat\'s catch reloads (the optimistic chip patch is undone) and is typed' },
+    )
     /* ⚠️ RE-PINNED (US layout fixes, 18 October 2026): the FOUR lines of 719ac91 the US layout edits replaced — FIVE since
      * 19 October, when fix 3's van line had to be named too (see its note in the list) — (the diff
      * 4d72838 → now is exactly fixes 1-manage-join, 3, 4, 5a and 12-deadline-row; every other line they touched is

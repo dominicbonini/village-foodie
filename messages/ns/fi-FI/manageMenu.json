@@ -63,7 +63,8 @@
     "stock": "Varasto: {count}",
     "preorder": "Ennakkotilaus",
     "delete": "🗑 Poista kategoria",
-    "prepHelp": "Valitse Heti valmis esimerkiksi juomille tai dippikastikkeille. Niitä ei lasketa keittiön kapasiteettiin."
+    "prepHelp": "Valitse Heti valmis esimerkiksi juomille tai dippikastikkeille. Niitä ei lasketa keittiön kapasiteettiin.",
+    "otherVans": "Ruokarekka 1. Muut ruokarekat: Keittiön kapasiteetti -välilehti."
   },
   "uncategorized": {
     "title": "Ei kategoriaa",

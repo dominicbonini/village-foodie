@@ -63,7 +63,8 @@
     "stock": "Lager: {count}",
     "preorder": "Forhåndsbestilling",
     "delete": "🗑 Slett kategori",
-    "prepHelp": "Velg Umiddelbart for varer som drikke eller dipp. Disse teller ikke mot kjøkkenkapasiteten."
+    "prepHelp": "Velg Umiddelbart for varer som drikke eller dipp. Disse teller ikke mot kjøkkenkapasiteten.",
+    "otherVans": "Matbil 1. Andre matbiler: fanen Kjøkkenkapasitet."
   },
   "uncategorized": {
     "title": "Uten kategori",

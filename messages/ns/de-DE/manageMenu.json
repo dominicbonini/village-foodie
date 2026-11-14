@@ -63,7 +63,8 @@
     "stock": "Bestand: {count}",
     "preorder": "Vorbestellung",
     "delete": "🗑 Kategorie löschen",
-    "prepHelp": "Wählen Sie „Sofort“ für Artikel wie Getränke oder Dips. Diese zählen nicht zur Küchenkapazität."
+    "prepHelp": "Wählen Sie „Sofort“ für Artikel wie Getränke oder Dips. Diese zählen nicht zur Küchenkapazität.",
+    "otherVans": "Foodtruck 1. Andere Foodtrucks: Tab „Küchenkapazität“."
   },
   "uncategorized": {
     "title": "Ohne Kategorie",

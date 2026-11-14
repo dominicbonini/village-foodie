@@ -63,7 +63,8 @@
     "stock": "Zaliha: {count}",
     "preorder": "Prednarudžba",
     "delete": "🗑 Izbriši kategoriju",
-    "prepHelp": "Za artikle poput pića ili umaka postavite Bez pripreme. Oni se neće računati u kapacitet kuhinje."
+    "prepHelp": "Za artikle poput pića ili umaka postavite Bez pripreme. Oni se neće računati u kapacitet kuhinje.",
+    "otherVans": "Food truck 1. Ostali food truckovi: kartica Kapacitet kuhinje."
   },
   "uncategorized": {
     "title": "Bez kategorije",

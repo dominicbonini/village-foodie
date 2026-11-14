@@ -1,0 +1,22 @@
+{
+ "taken_at": "2026-11-13T20:53:35.205307+00:00",
+ "note": "capacity-one-source-1: menu_categories, van_category_settings and truck_vans for the two test trucks, before the data sync (migration 20261103_capacity_one_source_1.sql).",
+ "menu_categories": [
+  {"id": "0662c2a3-73c6-4101-a132-a6a06d301de7", "truck_id": "test-truck", "name": "Pizza", "prep_secs": 900, "batch_size": 8, "counts_toward_capacity": true},
+  {"id": "474f31d6-7fba-4373-a0e3-e78111e77675", "truck_id": "test-truck", "name": "Desserts", "prep_secs": 0, "batch_size": 0, "counts_toward_capacity": false},
+  {"id": "cb2845fd-4ee2-4b2a-98ee-1fc87202a2b5", "truck_id": "test-truck", "name": "Drinks", "prep_secs": 0, "batch_size": 0, "counts_toward_capacity": false},
+  {"id": "96b6f6b4-75fd-c404-d6bf-9ac22a4a81ac", "truck_id": "test-truck-us", "name": "Pizza", "prep_secs": 900, "batch_size": 8, "counts_toward_capacity": true},
+  {"id": "6ef00893-7962-bc1f-469b-a8359cebc37b", "truck_id": "test-truck-us", "name": "Desserts", "prep_secs": 0, "batch_size": 0, "counts_toward_capacity": false},
+  {"id": "c6f54510-d5b4-7a05-3a1d-1535f44413bf", "truck_id": "test-truck-us", "name": "Drinks", "prep_secs": 0, "batch_size": 0, "counts_toward_capacity": false}
+ ],
+ "van_category_settings": [
+  {"id": "cb79c85d-baa4-497d-be0e-661377e034aa", "van_id": "8c97df77-f205-4976-a256-157bc091ecfa", "truck_id": "test-truck", "category_id": "0662c2a3-73c6-4101-a132-a6a06d301de7", "prep_secs": 300, "batch_size": 4, "counts_toward_capacity": true, "created_at": "2026-10-14T20:18:56.93118+00:00", "updated_at": "2026-10-14T20:18:58.751+00:00"},
+  {"id": "62d75283-0567-4d06-b663-417efd8c80bb", "van_id": "8e38901e-113f-42fc-ac60-11cf1360212b", "truck_id": "test-truck", "category_id": "0662c2a3-73c6-4101-a132-a6a06d301de7", "prep_secs": 300, "batch_size": 4, "counts_toward_capacity": true, "created_at": "2026-10-14T20:18:56.867245+00:00", "updated_at": "2026-10-14T20:18:58.751+00:00"},
+  {"id": "1212e306-eca6-4492-94f3-1a96c8ba3906", "van_id": "715b46f3-3b98-4f3b-1bf7-e0acacb75371", "truck_id": "test-truck-us", "category_id": "96b6f6b4-75fd-c404-d6bf-9ac22a4a81ac", "prep_secs": 300, "batch_size": 4, "counts_toward_capacity": true, "created_at": "2026-10-18T20:43:39.914375+00:00", "updated_at": "2026-10-18T20:43:39.914375+00:00"}
+ ],
+ "vans": [
+  {"id": "8e38901e-113f-42fc-ac60-11cf1360212b", "truck_id": "test-truck", "name": "Van1", "active": true, "created_at": "2026-05-25T14:37:59.575058+00:00", "kitchen_capacity": null, "capacity_window_mins": 10},
+  {"id": "8c97df77-f205-4976-a256-157bc091ecfa", "truck_id": "test-truck", "name": "Van2", "active": false, "created_at": "2026-07-30T13:43:41.134555+00:00", "kitchen_capacity": null, "capacity_window_mins": 10},
+  {"id": "715b46f3-3b98-4f3b-1bf7-e0acacb75371", "truck_id": "test-truck-us", "name": "Truck 1", "active": true, "created_at": "2026-10-18T20:43:39.914375+00:00", "kitchen_capacity": null, "capacity_window_mins": 10}
+ ]
+}

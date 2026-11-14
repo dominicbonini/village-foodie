@@ -2844,7 +2844,8 @@
       "stock": "Stock: {count}",
       "preorder": "Encomenda antecipada",
       "delete": "🗑 Eliminar categoria",
-      "prepHelp": "Defina como Instantâneo para artigos como bebidas ou molhos. Estes não contam para a capacidade da cozinha."
+      "prepHelp": "Defina como Instantâneo para artigos como bebidas ou molhos. Estes não contam para a capacidade da cozinha.",
+      "otherVans": "Food truck 1. Outros food trucks: separador Capacidade da cozinha."
     },
     "uncategorized": {
       "title": "Sem categoria",

@@ -105,7 +105,7 @@ import { sendConfirmationEmail } from '@/lib/email'
 import { INTERVAL_CHOICES, isIntervalChoice, readVanIntervalsForTruck, DEFAULT_INTERVAL } from '@/lib/slot-interval'
 import {
   readVanCategorySettings, readVanCategorySettingsForTruck, readVanSameAsFirst,
-  effectiveCategorySettings, firstVanId, vanCopyPayload, vanCategoryCopyRows, VAN_COPY_FIELDS,
+  firstVanId, vanCopyPayload, vanCategoryCopyRows, VAN_COPY_FIELDS,
   CAPACITY_COPY_FIELDS, capacityCopyPayload, capacityAllSame,
 } from '@/lib/van-category-settings'
 /* 🔴 "Do you take cash?" PER VAN (5 October 2026). Its own PROBED reader, for the reason that file's
@@ -130,6 +130,11 @@ import {
   placeForEvent,
   type PlaceEvent, type Place as SgPlace,
 } from '@/lib/schedule-graphics/places'
+/* 🔴 capacity-one-source-1: the ONE writer of prep / items per batch / counts, and the read Manage shows. */
+import {
+  writeVanCategoryCapacity, writeCategoryCapacityForTruck, mirrorFirstVanToMenuCategories, readCategoriesForFirstVan,
+  hasCapacityFields, capacityPatchOf,
+} from '@/lib/category-capacity-write'
 /* 🔴 THE AUTOMATIC RULE AND THE WORD "Standard", both from the event-types module, so the Places
  * control's label and the Add event pre-selection are the same rule and the same word. */
 import { readPlaceTypeHistory, STANDARD_TYPE_NAME } from '@/lib/event-types/read'
@@ -486,6 +491,8 @@ export async function GET(req: NextRequest) {
   const flags = await comparisonFlagsOf((truck as { country?: string | null }).country ?? countrySettings.countryCode)
   const appsAvailable = { ios: flags.iosApp, android: flags.androidApp }
 
+  const firstVanCats = await readCategoriesForFirstVan(supabase, truck.id, (categories || []) as Array<{ id: string; prep_secs?: number | null; batch_size?: number | null; counts_toward_capacity?: boolean | null }>)
+
   return NextResponse.json({
     truck: { ...truck, logo, time },
     countrySettings,
@@ -493,7 +500,11 @@ export async function GET(req: NextRequest) {
     plans,
     whatsappConnection,
     whatsappUsage,
-    categories: categories || [],
+    /* 🔴 capacity-one-source-1: AS THE FIRST VAN RESOLVES THEM, so the Items card, the Settings warning and
+     * Kitchen capacity show the same numbers the van's orders use. `capacityView` says which van that is
+     * and which categories another van runs differently (the Items card's one-line pointer). */
+    categories: firstVanCats.categories,
+    capacityView: { firstVanId: firstVanCats.firstVanId, vanCount: firstVanCats.vanCount, vansDiffer: firstVanCats.vansDiffer },
     items: items || [],
     subcategories: subcategories || [],
     modifierGroups: modifierGroups || [],
@@ -677,12 +688,19 @@ export async function POST(req: NextRequest) {
     const { id, name, prep_secs, batch_size, allow_notes, default_stock, sort_order, counts_toward_capacity } = body
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
     if (id) {
+      /* 🔴 capacity-one-source-1: PREP / ITEMS PER BATCH / COUNTS ARE NOT WRITTEN HERE ANY MORE. They go
+       * through the one writer (lib/category-capacity-write.ts): the first van's row, its followers, and
+       * the mirror into menu_categories. Only the menu fields (name, notes, stock, order) are written by
+       * this update. A truck with no van has its values written to menu_categories by the same writer. */
       const { data, error } = await supabase.from('menu_categories')
-        // Only set counts_toward_capacity when explicitly provided — a partial save (e.g. the
-        // modal's notes toggle, which omits it) must NOT reset the flag to false.
-        .update({ name, slug, prep_secs, batch_size, allow_notes: !!allow_notes, default_stock: default_stock ?? null, sort_order, ...(counts_toward_capacity !== undefined ? { counts_toward_capacity: !!counts_toward_capacity } : {}) })
+        .update({ name, slug, allow_notes: !!allow_notes, default_stock: default_stock ?? null, ...(sort_order !== undefined ? { sort_order } : {}) })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      if (hasCapacityFields(body)) {
+        const w = await writeCategoryCapacityForTruck(supabase, truck.id, id, capacityPatchOf({ prep_secs, batch_size, counts_toward_capacity }))
+        if (!w.ok) return await refuse(w.code, w.status)
+        return NextResponse.json({ category: { ...data, ...w.row }, fannedTo: w.fannedTo })
+      }
       return NextResponse.json({ category: data })
     } else {
       const maxOrder = await supabase.from('menu_categories').select('sort_order').eq('truck_id', truck.id).order('sort_order', { ascending: false }).limit(1)
@@ -2664,73 +2682,16 @@ export async function POST(req: NextRequest) {
    * its wording is unchanged. This action is only for the per-van cards.
    */
   if (action === 'upsert_van_category') {
-    const { vanId, categoryId, prep_secs, batch_size, counts_toward_capacity } = body
+    const { vanId, categoryId } = body
     if (!vanId || !categoryId) return await refuse('van_category_ids_required', 400)
-
-    /* 🔴 OWNERSHIP IS CHECKED ON BOTH IDS, not just the token. `truck` comes from the operator's
-     * token, but `vanId` and `categoryId` arrive from the client — so both are confirmed to belong to
-     * THIS truck before anything is written. Without this, a crafted request could set another truck's
-     * van capacity, which decides whether that truck accepts orders. */
-    const [{ data: van }, { data: cat }] = await Promise.all([
-      supabase.from('truck_vans').select('id').eq('id', vanId).eq('truck_id', truck.id).maybeSingle(),
-      supabase.from('menu_categories').select('id, prep_secs, batch_size, counts_toward_capacity')
-        .eq('id', categoryId).eq('truck_id', truck.id).maybeSingle(),
-    ])
-    if (!van) return await refuse('van_not_found', 404)
-    if (!cat) return await refuse('category_not_found', 404)
-
-    /* 🔴 THE FIRST EDIT SEEDS FROM WHAT THIS VAN IS ALREADY RESOLVING, SO NOTHING JUMPS. A row is a
-     * WHOLE-row override carrying all three fields; writing only the edited field would leave the other
-     * two null and silently change this van's batch size or capacity membership at the moment the
-     * operator touched prep. `effectiveCategorySettings` is the same resolution every reader uses. */
-    const existing = await readVanCategorySettings(supabase, vanId)
-    const base = effectiveCategorySettings(cat as { id: string } & Record<string, unknown>, existing.byCategoryId)
-    const row = {
-      truck_id: truck.id,
-      van_id: vanId as string,
-      category_id: categoryId as string,
-      // ⚠️ `!== undefined`, NEVER A TRUTHINESS TEST. prep_secs 0 is a real value ("instant"), and so
-      // is counts_toward_capacity false — a truthy test would make both unsettable.
-      prep_secs: prep_secs !== undefined ? (prep_secs === null ? null : Number(prep_secs)) : base.prep_secs,
-      batch_size: batch_size !== undefined ? (batch_size === null ? null : Number(batch_size)) : base.batch_size,
-      counts_toward_capacity: counts_toward_capacity !== undefined ? !!counts_toward_capacity : base.counts_toward_capacity,
-      updated_at: new Date().toISOString(),
-    }
-
-    const { error: upErr } = await supabase
-      .from('van_category_settings')
-      .upsert(row, { onConflict: 'van_id,category_id' })
-    if (upErr) {
-      /* 🔴 A VISIBLE FAILURE, NOT A GREEN TOAST ON NOTHING — the silent-success shape this file's
-       * own allowlist comment warns about. Before the migration this is the only thing that tells an
-       * operator why a per-van prep time will not stick. */
-      const code = (upErr as { code?: string }).code
-      if (code === 'PGRST205' || code === '42P01') console.warn(`[van-category-settings] van ${vanId}: table absent (${code}) — migration not applied`)
-      else console.warn(`[van-category-settings] van ${vanId}: save failed (${code ?? 'no code'}): ${upErr.message}`)
-      return await refuse('van_capacity_save_failed', 500)
-    }
-
-    /* 🔴 THE SAME FAN-OUT AS THE VAN FIELDS: a change to the FIRST van reaches every van following
-     * it, in this request. Each follower gets its own row, so no reader indirects through the switch.
-     * 🔴 KEYED ON THE **CAPACITY** FLAG (October 2026). These rows ARE the capacity table — per-category
-     * batch sizes and prep times — so they travel with the capacity switch, not with Settings' one. A
-     * van following Van 1's service settings but set up with its own kitchen must keep its own rows. */
-    const same = await readVanSameAsFirst(supabase, truck.id)
-    const fannedTo: string[] = []
-    if (same.ok) {
-      const first = firstVanId([...same.createdAt.entries()].map(([id, created_at]) => ({ id, created_at, active: same.activeById.get(id) !== false })))
-      if (first && first === vanId) {
-        for (const [fid, on] of same.capacityByVanId.entries()) {
-          if (!on || fid === first) continue
-          const { error: fanErr } = await supabase
-            .from('van_category_settings')
-            .upsert({ ...row, van_id: fid }, { onConflict: 'van_id,category_id' })
-          if (fanErr) console.warn(`[van-same-as-first] van ${fid}: category follow-write failed (${(fanErr as { code?: string }).code ?? 'no code'}): ${fanErr.message}`)
-          else fannedTo.push(fid)
-        }
-      }
-    }
-    return NextResponse.json({ ok: true, fannedTo })
+    /* 🔴 capacity-one-source-1: THE BODY MOVED, UNCHANGED IN BEHAVIOUR, to lib/category-capacity-write.ts
+     * (ownership on both ids, seed from what the van resolves, upsert, fan-out to the vans following the
+     * first van's capacity) so Menu › Items and the dashboard write through the same function. It adds
+     * one step: an edit to the FIRST van is mirrored into menu_categories, so an event with no van uses
+     * the same numbers. */
+    const w = await writeVanCategoryCapacity(supabase, truck.id, vanId as string, categoryId as string, capacityPatchOf(body))
+    if (!w.ok) return await refuse(w.code, w.status)
+    return NextResponse.json({ ok: true, fannedTo: w.fannedTo, mirrored: w.mirrored })
   }
 
   /* ══ 🔴 THE "SAME AS VAN 1" SWITCH ══════════════════════════════════════════════════
@@ -2950,6 +2911,9 @@ export async function POST(req: NextRequest) {
       .update({ active: false })
       .eq('id', vanId)
       .eq('truck_id', truck.id)
+    /* 🔴 capacity-one-source-1: if that was the first van, the next-oldest is first now, and an event with
+     * no van must follow ITS numbers. Copying its own rows into menu_categories does that; a no-op otherwise. */
+    await mirrorFirstVanToMenuCategories(supabase, truck.id)
     return NextResponse.json({ ok: true })
   }
 

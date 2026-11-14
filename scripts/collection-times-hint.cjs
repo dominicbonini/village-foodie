@@ -23,7 +23,9 @@ check(hint(5, []) === null && hint(5, [{ name: 'Drinks', prep_secs: 0 }]) === nu
 check(hint(10, [{ name: 'Burgers', prep_secs: 600 }, { name: 'Pizza', prep_secs: 900 }, { name: 'Roast', prep_secs: 1500 }]) === 'Roast takes 25 minutes to cook, so some times between batches will show as full.', 'the LONGEST misaligned category is named (Burgers lines up at 10; Pizza 15 and Roast 25 do not → Roast)')
 console.log('\n── THE PAGES: one conditional line, the effective interval, identical on both ─────────────')
 const manage = fs.readFileSync(path.join(REPO, 'app/(app)/manage/[token]/page.tsx'), 'utf8'), dash = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
-const LINE = /\{\(\(\) => \{ const mc = misalignedCookingCategory\(overrideOn \? operator : customer, ([^)]*)\); return mc \? <p className="text-xs text-amber-700 mt-1">\{collectionTimesHint\(mc\)\}<\/p> : null \}\)\(\)\}/
+// ⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026): the categories expression may now contain parentheses —
+// Manage passes each category through THIS van's effective values — so the capture is non-greedy up to `); return mc`.
+const LINE = /\{\(\(\) => \{ const mc = misalignedCookingCategory\(overrideOn \? operator : customer, (.*?)\); return mc \? <p className="text-xs text-amber-700 mt-1">\{collectionTimesHint\(mc\)\}<\/p> : null \}\)\(\)\}/
 // ⚠️ RE-PINNED (Language Phase 1d): Manage's line now takes its sentence from the message
 // manageSettings.collection.misaligned — `t('collection.misaligned', { name: mc.name, mins: mc.prepMins })` — instead
 // of collectionTimesHint(mc); the dashboard still calls collectionTimesHint. Manage's LINE is the same line with that
@@ -31,7 +33,12 @@ const LINE = /\{\(\(\) => \{ const mc = misalignedCookingCategory\(overrideOn \?
 const MSG_CALL = "{t('collection.misaligned', { name: mc.name, mins: mc.prepMins })}"
 const LINE_MANAGE = new RegExp(LINE.source.replace('\\{collectionTimesHint\\(mc\\)\\}', "\\{t\\('collection\\.misaligned', \\{ name: mc\\.name, mins: mc\\.prepMins \\}\\)\\}"))
 if (LINE_MANAGE.source === LINE.source) { console.log('🔴 harness error: Manage LINE re-pin did not apply'); process.exit(1) }
-for (const [name, src, cats, line] of [['Manage', manage, 'categories', LINE_MANAGE], ['dashboard', dash, 'truckMenu?.categories ?? []', LINE]]) {
+/* ⚠️ RE-PINNED (capacity-one-source-1): Manage's warning reads the categories AS THIS VAN RESOLVES THEM
+ * (`effectiveVanCat`, the van card's own resolution) — the numbers the van's orders use, the same as Menu › Kitchen
+ * capacity — instead of the truck-level row, which warned about a 15-minute prep the orders were not using. The
+ * dashboard's `truckMenu.categories` already come from /api/menu resolved for the selected event's van. */
+const MANAGE_CATS = 'categories.map(c => ({ ...c, ...effectiveVanCat(van, c) }))'
+for (const [name, src, cats, line] of [['Manage', manage, MANAGE_CATS, LINE_MANAGE], ['dashboard', dash, 'truckMenu?.categories ?? []', LINE]]) {
   const LINE = line
   const m = src.match(new RegExp(LINE.source, 'g')) || []
   check(m.length === 1, `${name}: exactly one hint line (${m.length})`)
@@ -47,7 +54,7 @@ for (const [name, src, cats, line] of [['Manage', manage, 'categories', LINE_MAN
 const strip = s => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
 // ⚠️ RE-PINNED (Language Phase 1d): Manage's line is matched with LINE_MANAGE and its sentence expression is normalised
 // to the dashboard's before comparing; the sentence itself is then proven equal below, so "identical" still holds.
-const mLine = strip(manage).match(LINE_MANAGE)[0].replace('categories', 'CATS').replace(MSG_CALL, '{collectionTimesHint(mc)}'), dLine = strip(dash).match(LINE)[0].replace('truckMenu?.categories ?? []', 'CATS')
+const mLine = strip(manage).match(LINE_MANAGE)[0].replace(MANAGE_CATS, 'CATS').replace(MSG_CALL, '{collectionTimesHint(mc)}'), dLine = strip(dash).match(LINE)[0].replace('truckMenu?.categories ?? []', 'CATS')
 check(mLine === dLine, 'the line is identical on Manage and the dashboard (only the categories expression — and where the sentence is read from — differ)')
 {
   // ⚠️ RE-PINNED (Language Phase 1d): the sentence Manage shows is manageSettings.collection.misaligned (en-GB), rendered

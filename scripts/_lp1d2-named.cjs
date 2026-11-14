@@ -542,12 +542,32 @@ const NAMED = [
       views: id => /^api\/(GB|US)\|manage\|report\./.test(id),
       proveWith: (exp, f) => require('./_lp-costs-accounts-1.cjs').proveReportAccounts(exp, f) },
   ] : []),
+  // ── ⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026, docs/capacity-one-source-1-report.md) ───────────────────────────
+  //    GET /api/manage answers `capacityView` after `categories` (STRUCTURAL); Manage hands MenuTab `capacityView` +
+  //    `onCategoriesPatch` and KitchenCapacitySection `onFirstVanCategoryChange` (PRECISE, the stubbed props). scripts/_named-capacity-one-source-1.cjs.
+  ...(require('./_named-capacity-one-source-1.cjs').LANDED ? [
+    { id: 'capacity-one-source-1-manage-get', country: 'both', agent: 'capacity-one-source-1 (13 Nov 2026)',
+      what: '⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026): GET /api/manage answers `capacityView` ({ firstVanId, vanCount, vansDiffer }) right after `categories`. STRUCTURAL: with exactly that key taken out, F equals the expected answer byte for byte.',
+      // ⚠️ ONLY THE VIEWS THAT ANSWER WITH A MENU (ok, ok.staff): the refusals (noToken, badToken, noUser, notThisTruck) are unchanged.
+      views: id => /^(smoke-)?api\/(GB|US)\|manageGET\|ok/.test(id),
+      proveWith: (exp, f) => require('./_named-capacity-one-source-1.cjs').proveManageGet(exp, f) },
+    { id: 'capacity-one-source-1-menu-props', country: 'both', agent: 'capacity-one-source-1 (13 Nov 2026)',
+      what: '⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026): Manage hands MenuTab `capacityView` (the first van, the van count, the categories other vans run differently) and `onCategoriesPatch` right after `categories`, and KitchenCapacitySection `onFirstVanCategoryChange`. The shell stubs both, so their props record the new ones. PRECISE.',
+      views: id => /^(smoke-)?shell\/(GB|US)\|/.test(id),
+      expect: b => mapStrings(b, x => stProps(stProps(x, 'MenuTab', require('./_named-capacity-one-source-1.cjs').menuProp), 'KitchenCapacitySection', require('./_named-capacity-one-source-1.cjs').capacityProp)) },
+  ] : []),
   { id: 'seo-s7-badges-lazy', country: 'both', agent: 'seo-fixes (20 Oct 2026)', smokeOnly: true,
     what: '⚠️ RE-PINNED (seo-fixes S7, 20 October 2026): Manage › Settings — the App Store / Google Play badges load lazily: loading="lazy" on both <img>s (after height), their two <link rel="preload" as="image"> gone. PRECISE, GB and US.',
     views: id => /^smoke-settings\/(GB|US)\|[^|]+\|page$/.test(id),
     expect: b => mapStrings(b, require('./_lp-seo-fixes.cjs').badgesLazy) },
   // ⚠️ RE-PINNED (store-badges-1, 2 November 2026): AFTER seo-s7 (which needs the badges to make them lazy), the card goes.
   ...(require('./_lp-store-badges-1.cjs').LANDED ? [
+  ...(require('./_named-capacity-one-source-1.cjs').LANDED ? [
+    { id: 'capacity-one-source-1-manage-get', country: 'both', agent: 'capacity-one-source-1 (13 Nov 2026)', smokeOnly: true,
+      what: '⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026): GET /api/manage answers `capacityView` right after `categories`. STRUCTURAL (see the Part 2 entry of this id).',
+      views: id => /^smoke-api\/(GB|US)\|manageGET\|(?!noToken|badToken|noUser|notThisTruck)/.test(id),
+      proveWith: (exp, f) => require('./_named-capacity-one-source-1.cjs').proveManageGet(exp, f) },
+  ] : []),
   { id: 'store-badges-1-manage-get', country: 'both', agent: 'store-badges-1 (2 Nov 2026)', smokeOnly: true,
       what: '⚠️ RE-PINNED (store-badges-1, 2 November 2026): GET /api/manage answers `appsAvailable` right after countrySettings — { ios: false, android: false } in these fixtures. PRECISE.',
       views: id => /^smoke-api\/(GB|US)\|manageGET\|/.test(id),

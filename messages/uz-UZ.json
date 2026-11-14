@@ -2844,7 +2844,8 @@
       "stock": "Zaxira: {count}",
       "preorder": "Oldindan buyurtma",
       "delete": "🗑 Kategoriyani oʻchirish",
-      "prepHelp": "Ichimliklar yoki souslar kabi mahsulotlar uchun “Darhol” variantini tanlang. Ular oshxona quvvatiga hisoblanmaydi."
+      "prepHelp": "Ichimliklar yoki souslar kabi mahsulotlar uchun “Darhol” variantini tanlang. Ular oshxona quvvatiga hisoblanmaydi.",
+      "otherVans": "Furgon 1. Boshqa furgonlar: Oshxona quvvati bo‘limi."
     },
     "uncategorized": {
       "title": "Kategoriyasiz",

@@ -5933,5 +5933,6 @@
  "manageMenu.allergens.kitchenLine": "Also used in the kitchen: {list}",
  "manageMenu.allergens.kitchenEdit": "Edit",
  "order.kitchenHeading": "Allergens used in this kitchen",
- "order.kitchenNote": "Each dish shows the allergens in its recipe. We cannot guarantee that no dish has traces of allergens."
+ "order.kitchenNote": "Each dish shows the allergens in its recipe. We cannot guarantee that no dish has traces of allergens.",
+ "manageMenu.category.otherVans": "Van 1. Other vans: Kitchen capacity tab."
 }

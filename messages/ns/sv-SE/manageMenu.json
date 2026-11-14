@@ -63,7 +63,8 @@
     "stock": "Lager: {count}",
     "preorder": "Förbeställning",
     "delete": "🗑 Radera kategori",
-    "prepHelp": "Välj Direkt för artiklar som drycker eller dipp. De räknas inte mot kökskapaciteten."
+    "prepHelp": "Välj Direkt för artiklar som drycker eller dipp. De räknas inte mot kökskapaciteten.",
+    "otherVans": "Foodtruck 1. Andra foodtruckar: fliken Kökskapacitet."
   },
   "uncategorized": {
     "title": "Utan kategori",

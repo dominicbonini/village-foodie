@@ -247,6 +247,9 @@ interface Bundle { id: string; name: string; description: string | null; bundle_
 /* ⚠️ `categorySettings` AND `same_as_first_van` COME FROM TWO SEPARATE PROBED READS in `get_vans`,
  * not from its named select, so both are optional here: before the migration they arrive as `[]` and
  * `false`, which is exactly the pre-migration truth rather than a guess. */
+/** capacity-one-source-1: the manage GET's `capacityView` (lib/category-capacity-write.ts readCategoriesForFirstVan). */
+interface CapacityView { firstVanId: string | null; vanCount: number; vansDiffer: string[] }
+const NO_CAPACITY_VIEW: CapacityView = { firstVanId: null, vanCount: 0, vansDiffer: [] }
 interface VanCategorySetting { category_id: string; prep_secs: number | null; batch_size: number | null; counts_toward_capacity: boolean }
 interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null; collection_interval_mins?: number | null; operator_collection_interval_mins?: number | null; categorySettings?: VanCategorySetting[]; same_as_first_van?: boolean; capacity_same_as_first_van?: boolean; takes_cash?: boolean | null }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
@@ -685,6 +688,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [whatsappConnection, setWhatsappConnection] = useState<WhatsAppConnectionView | null>(null)
   const [whatsappUsage, setWhatsappUsage] = useState<{ used: number; limit: number; resetsOn: string; atLimit: boolean } | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
+  /* capacity-one-source-1: which van the categories' prep / items per batch were resolved for (the first
+   * van), how many vans, and the categories another van runs differently. From the manage GET. */
+  const [capacityView, setCapacityView] = useState<CapacityView>(NO_CAPACITY_VIEW)
   const [items, setItems] = useState<Item[]>([])
   const [subcategories, setSubcategories] = useState<Subcategory[]>([])
   const [modifierGroups, setModifierGroups] = useState<ModifierGroup[]>([])
@@ -858,6 +864,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setOwnerEmail(data.ownerEmail || null)
       setOwnerAuthUserId(data.ownerAuthUserId || null)
       setCategories(data.categories)
+      setCapacityView(data.capacityView ?? NO_CAPACITY_VIEW)
       setItems(data.items)
       setSubcategories(data.subcategories || [])
       setModifierGroups(data.modifierGroups)
@@ -1608,13 +1615,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {/* 🔴 EACH PILL RENDERS THE EXISTING COMPONENT, BODY UNEDITED — same props, same behaviour,
             same plan gating (each of these three already gates its own content where it needs to, and
             none of that is touched). The only change is which of them is on screen. */}
-        {activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} canSeeCosts={userRole !== 'staff'} />}
+        {activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} capacityView={capacityView} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} canSeeCosts={userRole !== 'staff'} />}
         {activeTab === 'menu' && menuSection === 'extras' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} />}
         {activeTab === 'menu' && menuSection === 'deals' && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={refresh} showToast={showToast} />}
         {/* 🔴 ONE MOUNT. Everything the capacity screen needs — its own vans, the picker, the switch
             and the moved table — is inside components/manage/KitchenCapacitySection.tsx, so the Menu
             tab gains one line rather than eight of SettingsTab's internals. */}
-        {activeTab === 'menu' && menuSection === 'capacity' && <KitchenCapacitySection categories={categories} api={api} showToast={showToast} />}
+        {activeTab === 'menu' && menuSection === 'capacity' && <KitchenCapacitySection categories={categories} api={api} showToast={showToast} onFirstVanCategoryChange={(id, next) => setCategories(prev => prev.map(c => c.id === id ? { ...c, prep_secs: next.prep_secs ?? 0, batch_size: next.batch_size ?? 0, counts_toward_capacity: next.counts_toward_capacity } : c))} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
         <ScheduleTab isActive={activeTab === 'schedule'} section={scheduleSection} onSectionChange={setScheduleSection} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab}
           /* 🔴 ONE HANDOFF INTO THE SOCIAL TAB. `eventId` is optional: "Make post" passes one so the
@@ -2955,8 +2962,12 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   )
 }
 
-function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess, canSeeCosts = false }: {
+function MenuTab({ truck, categories, capacityView = NO_CAPACITY_VIEW, onCategoriesPatch, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess, canSeeCosts = false }: {
   truck: Truck; categories: Category[]; items: Item[]; subcategories: Subcategory[]; token: string
+  /** capacity-one-source-1: `categories` carry the FIRST van's values; this names that van and the categories other vans run differently. */
+  capacityView?: CapacityView
+  /** Optimistic patch of the page's category list after a prep / batch write (so the header chips move at once). */
+  onCategoriesPatch?: (ids: string[], patch: Partial<Category>) => void
   modifierGroups: ModifierGroup[]; modifierOptions: ModifierOption[]; itemModGroups: {menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]
   setItemModGroups: React.Dispatch<React.SetStateAction<{menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]>>
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: ShowToast
@@ -4514,10 +4525,32 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     if (!data?.name) return
     setSaving(true)
     try {
-      await api('upsert_category', { id: data.id, name: data.name, prep_secs: data.prep_secs || 0, batch_size: data.batch_size || 0, allow_notes: !!(data as any).allow_notes, default_stock: (data as any).default_stock ?? null })
-      if (!data.id) { setEditingCat(null) } // only close for new category modal
+      if (!data.id) {
+        // A NEW category: one insert carries everything. No van has a row for it yet, so every van resolves
+        // to these values; nothing can disagree.
+        await api('upsert_category', { name: data.name, prep_secs: data.prep_secs || 0, batch_size: data.batch_size || 0, allow_notes: !!data.allow_notes, default_stock: data.default_stock ?? null })
+        setEditingCat(null)
+        reload()
+        return
+      }
+      /* ══ 🔴 capacity-one-source-1: PREP AND ITEMS PER BATCH GO THROUGH KITCHEN CAPACITY'S OWN WRITE ══
+       * `upsert_van_category` for the FIRST van: the same action, the same server function
+       * (lib/category-capacity-write.ts), the same fan-out to the vans following it, and the mirror into
+       * menu_categories for events with no van. Only a truck with no van at all writes the category row,
+       * and the server routes that through the same function too. */
+      const capPatch: { prep_secs?: number; batch_size?: number } = {}
+      if (overrides && 'prep_secs' in overrides) capPatch.prep_secs = overrides.prep_secs ?? 0
+      if (overrides && 'batch_size' in overrides) capPatch.batch_size = overrides.batch_size ?? 0
+      if (Object.keys(capPatch).length) {
+        onCategoriesPatch?.([data.id], capPatch)
+        if (capacityView.firstVanId) await api('upsert_van_category', { vanId: capacityView.firstVanId, categoryId: data.id, ...capPatch })
+        else await api('upsert_category', { id: data.id, name: data.name, allow_notes: !!data.allow_notes, default_stock: data.default_stock ?? null, ...capPatch })
+      } else {
+        // The menu fields only (name, notes, stock): no prep or batch in the body, so nothing capacity moves.
+        await api('upsert_category', { id: data.id, name: data.name, allow_notes: !!data.allow_notes, default_stock: data.default_stock ?? null })
+      }
       reload()
-    } catch (e: any) { showToast(e.message, 'error') }
+    } catch (e) { showToast(e instanceof Error ? e.message : String(e), 'error'); reload() }
     finally { setSaving(false) }
   }
 
@@ -4862,6 +4895,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                       className="text-[11px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{t('category.counts')}</span>
                   )}
                 </div>
+                {/* capacity-one-source-1: the chips are the FIRST van's numbers (the same as Menu › Kitchen capacity).
+                    When another van runs this category differently, one line says so and where to change it. */}
+                {capacityView.vanCount > 1 && capacityView.vansDiffer.includes(cat.id) && (
+                  <p className="text-xs text-slate-500 mt-0.5" data-other-vans-line>{t('category.otherVans')}</p>
+                )}
               </div>
               <div className="flex items-center shrink-0">
                 <span className={`transition-transform inline-block text-slate-400 text-xs select-none ${isOpen ? 'rotate-90' : ''}`}>▶</span>
@@ -13347,7 +13385,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                         (misalignedCookingCategory) — shown only when the EFFECTIVE interval (yours when ticked,
                         else the customers') is not a whole multiple of a cooking category's prep. Same line,
                         same rule, on the dashboard. `categories` is the tab's existing prop — no new read. */}
-                    {(() => { const mc = misalignedCookingCategory(overrideOn ? operator : customer, categories); return mc ? <p className="text-xs text-amber-700 mt-1">{t('collection.misaligned', { name: mc.name, mins: mc.prepMins })}</p> : null })()}
+                    {(() => { const mc = misalignedCookingCategory(overrideOn ? operator : customer, categories.map(c => ({ ...c, ...effectiveVanCat(van, c) }))); return mc ? <p className="text-xs text-amber-700 mt-1">{t('collection.misaligned', { name: mc.name, mins: mc.prepMins })}</p> : null })()}
                   </div>
                 )
               })()}

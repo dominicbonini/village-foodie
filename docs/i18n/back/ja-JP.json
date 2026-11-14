@@ -5933,5 +5933,6 @@
  "manageMenu.allergens.kitchenLine": "Other allergens handled in the kitchen: {list}",
  "manageMenu.allergens.kitchenEdit": "Edit",
  "order.kitchenHeading": "Allergens handled in this kitchen",
- "order.kitchenNote": "For each item, we show the allergens contained in its recipe. We cannot guarantee the absence of trace contamination."
+ "order.kitchenNote": "For each item, we show the allergens contained in its recipe. We cannot guarantee the absence of trace contamination.",
+ "manageMenu.category.otherVans": "Vehicle 1. Other vehicles: Kitchen capacity tab."
 }

@@ -1,4 +1,7 @@
 {
+  "category": {
+    "otherVans": "Truck 1. Other trucks: Kitchen capacity tab."
+  },
   "item": {
     "optionsHelp": "Check a group to offer it on this dish, then choose which of its options to show."
   }

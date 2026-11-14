@@ -63,7 +63,8 @@
     "stock": "Voorraad: {count}",
     "preorder": "Vooraf bestellen",
     "delete": "🗑 Categorie verwijderen",
-    "prepHelp": "Kies Direct voor items zoals drankjes of dips. Die tellen niet mee voor de keukencapaciteit."
+    "prepHelp": "Kies Direct voor items zoals drankjes of dips. Die tellen niet mee voor de keukencapaciteit.",
+    "otherVans": "Foodtruck 1. Andere foodtrucks: tabblad Keukencapaciteit."
   },
   "uncategorized": {
     "title": "Zonder categorie",

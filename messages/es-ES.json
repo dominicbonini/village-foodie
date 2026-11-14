@@ -2844,7 +2844,8 @@
       "stock": "Stock: {count}",
       "preorder": "Pedido anticipado",
       "delete": "🗑 Eliminar categoría",
-      "prepHelp": "Elige Instantáneo para productos como bebidas o salsas. No contarán para los pedidos máximos por franja."
+      "prepHelp": "Elige Instantáneo para productos como bebidas o salsas. No contarán para los pedidos máximos por franja.",
+      "otherVans": "Food truck 1. Otros food trucks: pestaña Capacidad de cocina."
     },
     "uncategorized": {
       "title": "Sin categoría",

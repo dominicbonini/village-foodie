@@ -63,7 +63,8 @@
     "stock": "Stok: {count}",
     "preorder": "Pre-order",
     "delete": "🗑 Hapus kategori",
-    "prepHelp": "Atur ke Instan untuk item seperti minuman atau saus cocolan. Item ini tidak dihitung dalam kapasitas dapur."
+    "prepHelp": "Atur ke Instan untuk item seperti minuman atau saus cocolan. Item ini tidak dihitung dalam kapasitas dapur.",
+    "otherVans": "Kendaraan 1. Kendaraan lain: tab Kapasitas dapur."
   },
   "uncategorized": {
     "title": "Tanpa kategori",

@@ -5933,5 +5933,6 @@
  "manageMenu.allergens.kitchenLine": "Also handled in the kitchen: {list}",
  "manageMenu.allergens.kitchenEdit": "Edit",
  "order.kitchenHeading": "Allergens handled in this kitchen",
- "order.kitchenNote": "For each dish, the allergens of its recipe are shown. We cannot guarantee that no dish contains residues."
+ "order.kitchenNote": "For each dish, the allergens of its recipe are shown. We cannot guarantee that no dish contains residues.",
+ "manageMenu.category.otherVans": "Food truck 1. Other food trucks: Kitchen capacity tab."
 }

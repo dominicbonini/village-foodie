@@ -63,7 +63,8 @@
     "stock": "Készlet: {count}",
     "preorder": "Előrendelés",
     "delete": "🗑 Kategória törlése",
-    "prepHelp": "Italokhoz, szószokhoz és hasonló tételekhez válassza az „Azonnali” értéket. Ezek nem számítanak bele a konyhai kapacitásba."
+    "prepHelp": "Italokhoz, szószokhoz és hasonló tételekhez válassza az „Azonnali” értéket. Ezek nem számítanak bele a konyhai kapacitásba.",
+    "otherVans": "Food truck 1. A többi food truck: Konyhai kapacitás fül."
   },
   "uncategorized": {
     "title": "Kategória nélkül",
