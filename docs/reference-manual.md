@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.22
+HatchGrab Engineering Reference Manual · V16.23
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.22**
+**Version 16.23**
 
 November 2026
 
@@ -49,6 +49,18 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.23 — 14 November 2026 — **PREP TIME AND ITEMS PER BATCH COME FROM ONE PLACE**
+
+capacity-one-source-1 (`docs/capacity-one-source-1-report.md`, `docs/capacity-one-source-2-report.md`). Supersedes §66.3's "Writers".
+
+- **THE values are the first van's** (Van 1 = the oldest active van): what `lib/van-category-settings.ts` resolves for it. The Items category card shows them, and Kitchen capacity shows the same numbers.
+- **One writer, on the server:** `lib/category-capacity-write.ts`. Every edit of prep / items per batch / counts goes through `upsert_van_category` for the first van, then its fan-out to "same as Van 1" followers, then a **mirror into `menu_categories`**, so an event with no van reads the same values. The callers are the Items card (`/api/manage` `upsert_van_category`), `upsert_category`, Kitchen capacity, Dashboard `save_prep_configs` and `update_category`; deleting Van 1 re-mirrors the next first van. Before mirroring, a van that does not follow Van 1 and has no row of its own gets pinned to its current values, so it does not move. A truck with no van writes `menu_categories` directly, through the same function. ⛔ Nothing else writes those three fields.
+- **Multi-van trucks whose vans differ:** the Items card has one line, "Van 1. Other vans: Kitchen capacity tab.", in every locale (`manageMenu.category.otherVans`).
+- **The misaligned-interval warning** (Manage › Settings and the dashboard) uses the effective per-van values.
+- **Unchanged:** the order-engine maths; the batch default (slots and dashboard read a missing batch as 1, `buildCatConfigs` as 999). That difference is noted, not fixed.
+- **Data:** migration `20261103` synced Pizza Kitchen and Pizza Kitchen US (test trucks) to their first van (Pizza 5 min / 4). No live truck differed or was touched.
+- **Proof:** `scripts/capacity-one-source-1.cjs` (swept), `-live.cjs` and `-screens.cjs` (by hand); screenshots in `docs/capacity-one-source-1/`.
 
 ## V16.22 — 13 November 2026 — **ALLERGENS: "CONTAINS" PER DISH + ONE "KITCHEN HANDLES" LIST; FORMULES REORDERED BY DRAG**
 
@@ -33126,6 +33138,10 @@ comparing outputs byte for byte, then running both through the real capacity eng
   van**. The first edit seeds the row from the values that van already resolves, so nothing jumps.
 - The **Menu tab** and **Dashboard category editors** still write `menu_categories`, which is now the
   **default** for vans with no override.
+
+> **V16.23 — superseded.** The Menu tab and the Dashboard category editors no longer write `menu_categories`
+> directly. Every edit goes through the first van (`lib/category-capacity-write.ts`) and is mirrored to
+> `menu_categories`. See the V16.23 changelog entry.
 
 ## 66.4 "Same as Van 1"
 
