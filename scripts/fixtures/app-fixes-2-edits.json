@@ -1,0 +1,67 @@
+{
+ "base": "612bbf7c",
+ "files": {
+  "app/(app)/admin/page.tsx": [
+   [
+    "        showToast(res.status === 404\n          ? 'Could not generate the PDF — your admin session may have expired. Reload and sign in again.'\n          : `Could not generate the PDF (${res.status}). Try again in a moment.`)\n",
+    "        showToast(res.status === 404\n          ? 'Could not generate the PDF — your admin session may have expired. Reload and log in again.'\n          : `Could not generate the PDF (${res.status}). Try again in a moment.`)\n"
+   ],
+   [
+    "        >\n          Sign out\n        </button>\n",
+    "        >\n          Log out\n        </button>\n"
+   ]
+  ],
+  "app/(app)/dashboard/[token]/page.tsx": [
+   [
+    "import '@/lib/i18n/catalog/dashboard'\nimport '@/lib/i18n/catalog/privateEvents'\n",
+    "import '@/lib/i18n/catalog/dashboard'\n// app-fixes-2: auth.forgot.back on the Access denied screen\nimport '@/lib/i18n/catalog/auth'\nimport '@/lib/i18n/catalog/privateEvents'\n"
+   ],
+   [
+    "  const tDash=useT('dashboard')\n  // languages-1: the private-event words in the truck's language (they were lib/private-events/copy.ts's en-GB exports).\n",
+    "  const tDash=useT('dashboard')\n  const tForgotGate=useT('auth.forgot')   // app-fixes-2: the Access denied screen's \"Back to log in\"\n  // languages-1: the private-event words in the truck's language (they were lib/private-events/copy.ts's en-GB exports).\n"
+   ],
+   [
+    "  // on `!authenticated` renders the full-page error exactly when it is the truth and never otherwise.\n  if(error&&!authenticated){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className=\"min-h-screen bg-slate-50 flex items-center justify-center px-4\"><div className=\"text-center\"><p className=\"text-slate-900 font-bold text-lg mb-2\">{tDash('gate.accessDenied')}</p><p className=\"text-slate-500 text-sm\">{error==='invalidAccessLink'?tDash('gate.invalidAccessLink'):error}</p>{isNativeApp()?<span className=\"mt-4 inline-block text-orange-600 text-sm hover:underline\">← {_brand}</span>:<Link href=\"/\" className=\"mt-4 inline-block text-orange-600 text-sm hover:underline\">← {_brand}</Link>}</div></div>}\n  // 🔴 NOTHING LOADED AND NOTHING SAVED — SAY SO, AND SAY WHAT TO DO ABOUT IT.\n",
+    "  // on `!authenticated` renders the full-page error exactly when it is the truth and never otherwise.\n  if(error&&!authenticated){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className=\"min-h-screen bg-slate-50 flex items-center justify-center px-4\"><div className=\"text-center\"><p className=\"text-slate-900 font-bold text-lg mb-2\">{tDash('gate.accessDenied')}</p><p className=\"text-slate-500 text-sm\">{error==='invalidAccessLink'?tDash('gate.invalidAccessLink'):error}</p>{/* app-fixes-2: a way forward — /login is the login page on the web AND in the app (docs/app-fixes-2-report.md §2). */}<div className=\"mt-5\"><Link href=\"/login\" data-gate-next=\"login\" className=\"inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl\">{tForgotGate('back')}</Link></div>{isNativeApp()?<span className=\"mt-4 inline-block text-orange-600 text-sm hover:underline\">← {_brand}</span>:<Link href=\"/\" className=\"mt-4 inline-block text-orange-600 text-sm hover:underline\">← {_brand}</Link>}</div></div>}\n  // 🔴 NOTHING LOADED AND NOTHING SAVED — SAY SO, AND SAY WHAT TO DO ABOUT IT.\n"
+   ]
+  ],
+  "app/(app)/forgot-password/page.tsx": [
+   [
+    "             className=\"mt-6 inline-block w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-xl\">\n            {t('backToLogin')}\n          </Link>\n",
+    "             className=\"mt-6 inline-block w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-xl\">\n            {t('back')}\n          </Link>\n"
+   ]
+  ],
+  "app/(app)/reset-password/page.tsx": [
+   [
+    "      <Link href=\"/forgot-password\" data-auth-next=\"forgot\" className={PRIMARY}>{t('sendNewLink')}</Link>\n      <Link href=\"/login\" data-auth-next=\"login\" className={SECONDARY}>{tForgot('backToLogin')}</Link>\n    </>\n",
+    "      <Link href=\"/forgot-password\" data-auth-next=\"forgot\" className={PRIMARY}>{t('sendNewLink')}</Link>\n      <Link href=\"/login\" data-auth-next=\"login\" className={SECONDARY}>{tForgot('back')}</Link>\n    </>\n"
+   ],
+   [
+    "        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}\n        <a href=\"/login\" data-auth-next=\"login\" className={PRIMARY}>{t('logIn')}</a>\n      </EndCard>\n",
+    "        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}\n        <a href=\"/login\" data-auth-next=\"login\" className={PRIMARY}>{tLogin('submit')}</a>\n      </EndCard>\n"
+   ]
+  ],
+  "lib/app-navigation.ts": [
+   [
+    "//               browser, never inside the app.\n//   'app'     — everything else (the landing page \"/\", country pages, features / FAQ / compare / about / contact / demo…):\n//               inside the app that is /app, which routes to the device's dashboard, or to login when signed out.\nexport type InAppRoute = 'stay' | 'browser' | 'app'\n",
+    "//               browser, never inside the app.\n//   'app'     — everything else (the landing page \"/\", country pages, features / FAQ / compare / about / contact / demo…,\n//               and /dev — the developer pages, app-fixes-2, 15 Nov 2026): inside the app that is /app, which routes to the\n//               device's dashboard, or to login when signed out. /signup, /setup and /admin stay (Dominic, app-fixes-2).\nexport type InAppRoute = 'stay' | 'browser' | 'app'\n"
+   ],
+   [
+    "\nconst STAY = ['/app', '/dashboard', '/manage', '/kds', '/login', '/signup', '/setup', '/forgot-password', '/reset-password', '/verify-email', '/auth', '/admin', '/dev', '/api', '/_next', '/monitoring', '/ingest']\nconst BROWSER = ['/trucks', '/o', '/p', '/order', '/embed', '/venues', '/hire', '/docs', '/privacy', '/terms', '/country-terms']\n",
+    "\nconst STAY = ['/app', '/dashboard', '/manage', '/kds', '/login', '/signup', '/setup', '/forgot-password', '/reset-password', '/verify-email', '/auth', '/admin', '/api', '/_next', '/monitoring', '/ingest']\nconst BROWSER = ['/trucks', '/o', '/p', '/order', '/embed', '/venues', '/hire', '/docs', '/privacy', '/terms', '/country-terms']\n"
+   ]
+  ],
+  "lib/i18n/namespaces.ts": [
+   [
+    "    // languages-1 (22 October 2026): the where-you-trade step's heading and button (components/DemoGetStarted.tsx, app/setup/page.tsx).\n    'whereYouTrade'],\n  kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell',\n",
+    "    // languages-1 (22 October 2026): the where-you-trade step's heading and button (components/DemoGetStarted.tsx, app/setup/page.tsx).\n    'whereYouTrade',\n    // app-fixes-2 (15 Nov 2026): the Access denied screen's \"Back to log in\" (auth.forgot.back).\n    'auth'],\n  kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell',\n"
+   ]
+  ],
+  "lib/truck-access.ts": [
+   [
+    "  if (!userId) {\n    return { ok: false, status: 401, error: 'Sign in required', code: 'sign_in_required' }\n  }\n",
+    "  if (!userId) {\n    return { ok: false, status: 401, error: 'Log in required', code: 'sign_in_required' }\n  }\n"
+   ]
+  ]
+ }
+}

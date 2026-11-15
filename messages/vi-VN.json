@@ -1962,8 +1962,7 @@
       "subtitle": "Nhập email, chúng tôi sẽ gửi link đặt lại mật khẩu",
       "submit": "Gửi link đặt lại",
       "sending": "Đang gửi…",
-      "back": "Quay lại đăng nhập",
-      "backToLogin": "Quay lại đăng nhập"
+      "back": "Quay lại đăng nhập"
     },
     "reset": {
       "invalidTitle": "Link đặt lại không hợp lệ",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Nhập lại mật khẩu",
       "submit": "Đặt mật khẩu",
       "saving": "Đang lưu…",
-      "logIn": "Đăng nhập",
       "sendNewLink": "Yêu cầu link đặt lại mới"
     },
     "verifyEmail": {

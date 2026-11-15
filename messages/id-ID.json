@@ -1962,8 +1962,7 @@
       "subtitle": "Masukkan email Anda dan kami akan mengirim link untuk mengatur ulang",
       "submit": "Kirim link atur ulang",
       "sending": "Mengirim…",
-      "back": "Kembali ke halaman masuk",
-      "backToLogin": "Kembali ke halaman masuk"
+      "back": "Kembali ke halaman masuk"
     },
     "reset": {
       "invalidTitle": "Link atur ulang tidak valid",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Ulangi kata sandi Anda",
       "submit": "Simpan kata sandi",
       "saving": "Menyimpan…",
-      "logIn": "Masuk",
       "sendNewLink": "Minta link atur ulang baru"
     },
     "verifyEmail": {

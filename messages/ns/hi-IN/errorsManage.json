@@ -1,7 +1,7 @@
 {
   "token_required": "टोकन ज़रूरी है",
   "invalid_token": "टोकन सही नहीं है",
-  "sign_in_required": "साइन इन करना ज़रूरी है",
+  "sign_in_required": "लॉग इन करना ज़रूरी है",
   "no_truck_access": "आपके पास इस ट्रक का एक्सेस नहीं है",
   "insufficient_permissions": "आपके पास पर्याप्त अनुमति नहीं है",
   "allergen_owner_only": "एलर्जेन जानकारी सिर्फ़ मालिक बदल सकता है",

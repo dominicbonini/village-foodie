@@ -1962,8 +1962,7 @@
       "subtitle": "Sisesta oma e-post ja me saadame sulle lähtestamislingi",
       "submit": "Saada lähtestamislink",
       "sending": "Saatmine…",
-      "back": "Tagasi sisselogimisse",
-      "backToLogin": "Tagasi sisselogimisse"
+      "back": "Tagasi sisselogimisse"
     },
     "reset": {
       "invalidTitle": "Kehtetu lähtestamislink",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Korda parooli",
       "submit": "Määra parool",
       "saving": "Salvestamine…",
-      "logIn": "Logi sisse",
       "sendNewLink": "Küsi uus lähtestamislink"
     },
     "verifyEmail": {

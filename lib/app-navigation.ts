@@ -12,11 +12,12 @@
 //   'browser' — customer- and organiser-facing pages (a truck's order page and schedule, order tracking, private-event and
 //               paperwork links, the embed, venue pages, the booking form, the legal documents): opened in the phone's
 //               browser, never inside the app.
-//   'app'     — everything else (the landing page "/", country pages, features / FAQ / compare / about / contact / demo…):
-//               inside the app that is /app, which routes to the device's dashboard, or to login when signed out.
+//   'app'     — everything else (the landing page "/", country pages, features / FAQ / compare / about / contact / demo…,
+//               and /dev — the developer pages, app-fixes-2, 15 Nov 2026): inside the app that is /app, which routes to the
+//               device's dashboard, or to login when signed out. /signup, /setup and /admin stay (Dominic, app-fixes-2).
 export type InAppRoute = 'stay' | 'browser' | 'app'
 
-const STAY = ['/app', '/dashboard', '/manage', '/kds', '/login', '/signup', '/setup', '/forgot-password', '/reset-password', '/verify-email', '/auth', '/admin', '/dev', '/api', '/_next', '/monitoring', '/ingest']
+const STAY = ['/app', '/dashboard', '/manage', '/kds', '/login', '/signup', '/setup', '/forgot-password', '/reset-password', '/verify-email', '/auth', '/admin', '/api', '/_next', '/monitoring', '/ingest']
 const BROWSER = ['/trucks', '/o', '/p', '/order', '/embed', '/venues', '/hire', '/docs', '/privacy', '/terms', '/country-terms']
 const under = (p: string, base: string) => p === base || p.startsWith(base + '/')
 

@@ -387,7 +387,7 @@ export default function AdminPage() {
         // answers 404 for both so it does not confirm the URL to someone guessing. From here, on the
         // Admin page, the overwhelmingly likely cause is an expired session, so that is what we say.
         showToast(res.status === 404
-          ? 'Could not generate the PDF — your admin session may have expired. Reload and sign in again.'
+          ? 'Could not generate the PDF — your admin session may have expired. Reload and log in again.'
           : `Could not generate the PDF (${res.status}). Try again in a moment.`)
         return
       }
@@ -812,7 +812,7 @@ export default function AdminPage() {
           onClick={() => operatorSignOut(router)}
           className="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl hover:bg-slate-700"
         >
-          Sign out
+          Log out
         </button>
       </div>
     </div>

@@ -1962,8 +1962,7 @@
       "subtitle": "Informe seu e-mail e enviaremos um link para redefinir a senha",
       "submit": "Enviar link",
       "sending": "Enviando…",
-      "back": "Voltar para o login",
-      "backToLogin": "Voltar para o login"
+      "back": "Voltar para o login"
     },
     "reset": {
       "invalidTitle": "Link de redefinição inválido",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Repita a senha",
       "submit": "Salvar senha",
       "saving": "Salvando…",
-      "logIn": "Entrar",
       "sendNewLink": "Pedir um novo link"
     },
     "verifyEmail": {

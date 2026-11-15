@@ -1559,7 +1559,7 @@
  "errorsKitchen.refund_reason_required": "Choose a reason for this refund.",
  "errorsKitchen.save_failed": "Order failed to save",
  "errorsKitchen.service_unavailable": "Service unavailable",
- "errorsKitchen.sign_in_check_failed": "Your sign-in could not be checked right now",
+ "errorsKitchen.sign_in_check_failed": "Your login could not be checked right now",
  "errorsKitchen.slot_board_not_updated": "Order saved, but the kitchen capacity board could not be updated — check that slot before relying on it.",
  "errorsKitchen.something_went_wrong": "A problem occurred",
  "errorsKitchen.stock_table_attention": "That extra could not be saved. The stock table needs checking.",
@@ -5035,7 +5035,7 @@
  "userMenu.qrCode": "QR code",
  "userMenu.screenOff": "Screen off",
  "userMenu.screenOn": "Screen on",
- "userMenu.signOut": "Sign out",
+ "userMenu.signOut": "Log out",
  "userMenu.terms": "Terms",
  "userMenu.thisDevice": "This device",
  "vanFilter.all": "All vans",
@@ -5936,10 +5936,8 @@
  "order.kitchenNote": "Each dish shows the allergens in its recipe. We cannot guarantee any dish is free from trace amounts of allergens.",
  "manageMenu.category.otherVans": "Van 1. Other vans: Kitchen capacity tab.",
  "auth.login.invalidLink": "This link has expired or is not valid.",
- "auth.reset.logIn": "Sign in",
  "errorPage.backToDashboard": "Back to the dashboard",
  "errorPage.errorBodyDashboard": "Sorry, this page did not load. Try again, or go back to the dashboard.",
  "errorPage.sectionFailed": "This section did not load.",
- "auth.forgot.backToLogin": "Back to log in",
  "auth.reset.sendNewLink": "Request a new reset link"
 }

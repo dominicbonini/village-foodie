@@ -34,20 +34,24 @@ head('§1 · every auth end state has a way forward')
 {
   const forgot = read('app/(app)/forgot-password/page.tsx')
   const sent = forgot.slice(forgot.indexOf('if (sent) {'), forgot.indexOf('return (', forgot.indexOf('if (sent) {') + 30) + 900)
-  t('"email sent": a link to /login worded auth.forgot.backToLogin', /<Link href="\/login" data-auth-next="login"[\s\S]{0,200}\{t\('backToLogin'\)\}/.test(sent))
+  // ⚠️ RE-PINNED (app-fixes-2, 15 November 2026, docs/app-fixes-2-report.md §1): "Log in" everywhere made auth.forgot.back
+  // "Back to log in", the same words as app-fixes-1's auth.forgot.backToLogin, so the two were merged into auth.forgot.back,
+  // and auth.reset.logIn into auth.login.submit ("Log in"). Same links, same places; only the key names changed.
+  t('"email sent": a link to /login worded auth.forgot.back (app-fixes-2: merged from backToLogin)', /<Link href="\/login" data-auth-next="login"[\s\S]{0,200}\{t\('back'\)\}/.test(sent))
   const reset = read('app/(app)/reset-password/page.tsx')
-  t('reset: one pair of ways forward — "Send a new link" (/forgot-password) + "Back to log in" (/login)', /<Link href="\/forgot-password" data-auth-next="forgot"[^>]*>\{t\('sendNewLink'\)\}<\/Link>\s*<Link href="\/login" data-auth-next="login"[^>]*>\{tForgot\('backToLogin'\)\}/.test(reset))
+  t('reset: one pair of ways forward — "Send a new link" (/forgot-password) + "Back to log in" (/login)', /<Link href="\/forgot-password" data-auth-next="forgot"[^>]*>\{t\('sendNewLink'\)\}<\/Link>\s*<Link href="\/login" data-auth-next="login"[^>]*>\{tForgot\('back'\)\}/.test(reset))
   t('reset: no token → the "invalid" card with both ways forward', /if \(!token && !isFirstLogin\) \{\s*return <EndCard state="invalid"[^>]*>\{nextSteps\}<\/EndCard>/.test(reset))
   t('reset: an expired / used / unknown link is a card with both ways forward, not a line under the form', /if \(linkError\) return <EndCard state="link-error"[^>]*>\{nextSteps\}<\/EndCard>/.test(reset) && /LINK_CODES = new Set\(\['reset_link_expired', 'reset_link_used', 'reset_link_invalid'\]\)/.test(reset))
   const api = read('app/api/auth/reset-password/route.ts')
   t('…and those are exactly the codes /api/auth/reset-password answers', ['reset_link_expired', 'reset_link_used', 'reset_link_invalid'].every(c => api.includes(`'${c}'`)))
-  t('reset: success → a card with a "Log in" button to /login (no jump to /login?message=…)', /if \(done\) \{[\s\S]{0,500}<a href="\/login" data-auth-next="login"[^>]*>\{t\('logIn'\)\}/.test(reset) && !stripComments(reset).includes("window.location.href = '/login?message=password_reset'"))
+  t('reset: success → a card with a "Log in" button to /login (no jump to /login?message=…)', /if \(done\) \{[\s\S]{0,500}<a href="\/login" data-auth-next="login"[^>]*>\{tLogin\('submit'\)\}/.test(reset) && !stripComments(reset).includes("window.location.href = '/login?message=password_reset'"))
   t('reset: the sign-out before the success card still runs', /auth\.signOut\(\)\s*\n[\s\S]{0,300}setDone\(true\)/.test(reset))
   t('first login: /app in the app, /dashboard on the web', reset.includes("router.push(isNativeApp() ? '/app' : '/dashboard')"))
   const login = read('app/(app)/login/page.tsx')
   t('login: /auth/callback\'s ?error=invalid_link now shows a sentence', /searchParams\.get\('error'\) === 'invalid_link'/.test(login) && /\{t\('invalidLink'\)\}/.test(login))
   t('login in the app still goes to /app (unchanged)', /if \(isNativeApp\(\)\) \{\s*router\.push\('\/app'\); return/.test(login))
-  t('en-GB wording: "Back to log in", "Send a new link", "Log in" (new keys; the existing "Back to sign in" / "Request a new reset link" unchanged)', get(EN, 'auth.forgot.backToLogin') === 'Back to log in' && get(EN, 'auth.reset.sendNewLink') === 'Send a new link' && get(EN, 'auth.reset.logIn') === 'Log in' && get(EN, 'auth.forgot.back') === 'Back to sign in' && get(EN, 'auth.reset.requestNew') === 'Request a new reset link')
+  // ⚠️ RE-PINNED (app-fixes-2): the merged keys; "Back to sign in" became "Back to log in" (scripts/app-fixes-2.cjs holds it).
+  t('en-GB wording: "Back to log in", "Send a new link", "Log in" (app-fixes-2: auth.forgot.back + auth.login.submit; "Request a new reset link" unchanged)', get(EN, 'auth.forgot.back') === 'Back to log in' && get(EN, 'auth.reset.sendNewLink') === 'Send a new link' && get(EN, 'auth.login.submit') === 'Log in' && get(EN, 'auth.forgot.backToLogin') === undefined && get(EN, 'auth.reset.logIn') === undefined && get(EN, 'auth.reset.requestNew') === 'Request a new reset link')
 }
 
 // ══ §2 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -145,7 +149,8 @@ head('§4 · only operator screens load inside the app')
 // ══ §5 ══════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 head('§5 · the words, in en-GB and every shipped language base')
 {
-  const keys = ['auth.reset.logIn', 'auth.login.invalidLink', 'errorPage.backToDashboard', 'errorPage.errorBodyDashboard', 'errorPage.sectionFailed', 'auth.forgot.backToLogin', 'auth.reset.sendNewLink', 'auth.login.resetSuccess']
+  // ⚠️ RE-PINNED (app-fixes-2): auth.reset.logIn → auth.login.submit, auth.forgot.backToLogin → auth.forgot.back (merged).
+  const keys = ['auth.login.submit', 'auth.login.invalidLink', 'errorPage.backToDashboard', 'errorPage.errorBodyDashboard', 'errorPage.sectionFailed', 'auth.forgot.back', 'auth.reset.sendNewLink', 'auth.login.resetSuccess']
   t('en-GB has every key', keys.every(k => typeof get(EN, k) === 'string'))
   const missing = []
   for (const l of BASES) { const m = json(`messages/${l}.json`); for (const k of keys) if (typeof get(m, k) !== 'string') missing.push(`${l}:${k}`) }

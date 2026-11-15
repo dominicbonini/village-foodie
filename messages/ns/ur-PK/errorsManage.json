@@ -1,7 +1,7 @@
 {
   "token_required": "ٹوکن ضروری ہے",
   "invalid_token": "غلط ٹوکن",
-  "sign_in_required": "سائن اِن ضروری ہے",
+  "sign_in_required": "لاگ اِن ضروری ہے",
   "no_truck_access": "آپ کو اس ٹرک تک رسائی حاصل نہیں",
   "insufficient_permissions": "اجازت ناکافی ہے",
   "allergen_owner_only": "الرجی والے اجزا کی معلومات صرف مالک بدل سکتا ہے",

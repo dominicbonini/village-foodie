@@ -89,6 +89,11 @@ const LATER_KEY_CHANGES = [
   // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the country selector's region buttons and the region-block sentence (2d2a5e2e).
   { by: 'world-countries-5', ns: 'landingNav', keys: ['country.regions'], touched: touchedBy(commitsOf('world-countries-5')) },
   { by: 'world-countries-5', ns: 'tradeArea', keys: ['region_blocked'], touched: touchedBy(commitsOf('world-countries-5')) },
+  // ⚠️ RE-PINNED (app-fixes-2, 15 November 2026, docs/app-fixes-2-report.md §1): "Log in", never "Sign in" — exactly the keys its stage record
+  // names (scripts/fixtures/app-fixes-2-messages.json, reworded + removed), per namespace, in the files its own commits changed.
+  ...(() => { const r = JSON.parse(require('fs').readFileSync(require('path').join(REPO, 'scripts/fixtures/app-fixes-2-messages.json'), 'utf8'))['en-GB']
+    const keys = [...Object.keys(r.reworded), ...Object.keys(r.removed)], t2 = touchedBy(commitsOf('app-fixes-2'))
+    return [...new Set(keys.map(k => k.split('.')[0]))].map(ns => ({ by: 'app-fixes-2', ns, keys: keys.filter(k => k.startsWith(ns + '.')).map(k => k.slice(ns.length + 1)), touched: t2 })) })(),
 ]
 const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ?? {})) { const kk = p ? `${p}.${k}` : k; if (typeof v === 'string') out[kk] = v; else flat(v, kk, out) } return out }
 

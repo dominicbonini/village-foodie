@@ -1,4 +1,4 @@
-# Language Phase 2 — every US view that differs from BEFORE (2083 US views; 1374 changed). Written by scripts/language-phase-2.cjs.
+# Language Phase 2 — every US view that differs from BEFORE (2083 US views; 1376 changed). Written by scripts/language-phase-2.cjs.
 # view id	why (named code change in F, or words only)
 1a/orderPage/US|loading	words
 1a/orderPage/US|eventsError	words
@@ -664,6 +664,8 @@
 1b/components/US|keepAwake|unsupported	words
 1b/components/US|keepAwake|insecure	words
 1b/dashboard/US|loading	words
+1b/dashboard/US|accessDenied	code: app-fixes-2-access-denied
+1b/dashboard/US|accessDeniedServer	code: app-fixes-2-access-denied
 1b/dashboard/US|boardUnavailableNoTruck	words
 1b/dashboard/US|orders	code: P2-us-clock+midnight-dayloadstrip-event-prop+midnight-completed-slot-US+us-layout-fix-1-nbsp + words
 1b/dashboard/US|ordersCollapsed	code: P2-us-clock+midnight-dayloadstrip-event-prop+us-layout-fix-1-nbsp + words

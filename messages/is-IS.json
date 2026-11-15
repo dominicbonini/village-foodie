@@ -1962,8 +1962,7 @@
       "subtitle": "Sláðu inn netfangið þitt og við sendum þér tengil til að endurstilla",
       "submit": "Senda endurstillingartengil",
       "sending": "Sendi…",
-      "back": "Aftur í innskráningu",
-      "backToLogin": "Aftur í innskráningu"
+      "back": "Aftur í innskráningu"
     },
     "reset": {
       "invalidTitle": "Ógildur endurstillingartengill",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Endurtaktu lykilorðið",
       "submit": "Vista lykilorð",
       "saving": "Vista…",
-      "logIn": "Skrá inn",
       "sendNewLink": "Biðja um nýjan endurstillingartengil"
     },
     "verifyEmail": {

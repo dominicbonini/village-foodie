@@ -1962,8 +1962,7 @@
       "subtitle": "Adja meg az e-mail-címét, és küldünk egy visszaállító linket",
       "submit": "Visszaállító link küldése",
       "sending": "Küldés…",
-      "back": "Vissza a bejelentkezéshez",
-      "backToLogin": "Vissza a bejelentkezéshez"
+      "back": "Vissza a bejelentkezéshez"
     },
     "reset": {
       "invalidTitle": "Érvénytelen visszaállító link",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Írja be újra a jelszót",
       "submit": "Jelszó beállítása",
       "saving": "Mentés…",
-      "logIn": "Bejelentkezés",
       "sendNewLink": "Új visszaállító link kérése"
     },
     "verifyEmail": {

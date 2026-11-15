@@ -1962,8 +1962,7 @@
       "subtitle": "Zadejte svůj e-mail a pošleme vám odkaz pro obnovení",
       "submit": "Poslat odkaz pro obnovení",
       "sending": "Odesílání…",
-      "back": "Zpět na přihlášení",
-      "backToLogin": "Zpět na přihlášení"
+      "back": "Zpět na přihlášení"
     },
     "reset": {
       "invalidTitle": "Neplatný odkaz pro obnovení",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Zopakujte heslo",
       "submit": "Nastavit heslo",
       "saving": "Ukládání…",
-      "logIn": "Přihlásit se",
       "sendNewLink": "Vyžádat nový odkaz pro obnovení"
     },
     "verifyEmail": {

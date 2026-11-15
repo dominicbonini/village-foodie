@@ -1962,8 +1962,7 @@
       "subtitle": "이메일을 입력하시면 재설정 링크를 보내 드립니다",
       "submit": "재설정 링크 보내기",
       "sending": "보내는 중…",
-      "back": "로그인으로 돌아가기",
-      "backToLogin": "로그인으로 돌아가기"
+      "back": "로그인으로 돌아가기"
     },
     "reset": {
       "invalidTitle": "유효하지 않은 재설정 링크",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "비밀번호를 다시 입력하세요",
       "submit": "비밀번호 설정",
       "saving": "저장 중…",
-      "logIn": "로그인",
       "sendNewLink": "새 재설정 링크 요청"
     },
     "verifyEmail": {

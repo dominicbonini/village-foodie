@@ -1962,8 +1962,7 @@
       "subtitle": "E-poçtunuzu daxil edin, sizə sıfırlama linki göndərək",
       "submit": "Sıfırlama linki göndər",
       "sending": "Göndərilir…",
-      "back": "Girişə qayıt",
-      "backToLogin": "Girişə qayıt"
+      "back": "Girişə qayıt"
     },
     "reset": {
       "invalidTitle": "Etibarsız sıfırlama linki",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Parolunuzu təkrarlayın",
       "submit": "Parolu təyin et",
       "saving": "Yadda saxlanılır…",
-      "logIn": "Daxil ol",
       "sendNewLink": "Yeni sıfırlama linki istəyin"
     },
     "verifyEmail": {

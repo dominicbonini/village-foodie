@@ -73,7 +73,12 @@ function proveAuthView(kind) {
     const problems = []
     const want = texts(exp).map(x => spec.replace[x] ?? x).concat(spec.addText)
     const got = texts(f)
-    if (!same([...got].sort(), [...want].sort())) problems.push(`texts: expected ${JSON.stringify(want)}, got ${JSON.stringify(got)}`)
+    // ⚠️ RE-PINNED (app-fixes-2, 15 November 2026; docs/app-fixes-2-report.md §1): "Back to log in" is now auth.forgot.back (merged from
+    // auth.forgot.backToLogin). The render harnesses word a view from the FROZEN catalogue, where auth.forgot.back is still the old
+    // "Back to sign in" (backToLogin, a new key, fell through to the current words). So the added link may read either — the SAME key,
+    // frozen or current; nothing else is loosened.
+    const alt = want.map(x => (spec.addText.includes(x) && x === 'Back to log in' ? 'Back to sign in' : x))
+    if (!same([...got].sort(), [...want].sort()) && !same([...got].sort(), [...alt].sort())) problems.push(`texts: expected ${JSON.stringify(want)}, got ${JSON.stringify(got)}`)
     const hrefs = h => [...h.matchAll(/<a [^>]*href="([^"]*)"/g)].map(m => m[1])
     const wantHref = hrefs(exp).map(h => (h === '/forgot-password' ? h : h)).concat(spec.addHref).sort()
     if (!same(hrefs(f).sort(), wantHref)) problems.push(`links: expected ${JSON.stringify(wantHref)}, got ${JSON.stringify(hrefs(f))}`)

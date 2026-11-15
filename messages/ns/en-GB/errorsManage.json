@@ -1,7 +1,7 @@
 {
   "token_required": "Token required",
   "invalid_token": "Invalid token",
-  "sign_in_required": "Sign in required",
+  "sign_in_required": "Log in required",
   "no_truck_access": "You do not have access to this truck",
   "insufficient_permissions": "Insufficient permissions",
   "allergen_owner_only": "Only the owner can change allergen information",

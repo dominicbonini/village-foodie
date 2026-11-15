@@ -1962,8 +1962,7 @@
       "subtitle": "Introduceți adresa de e-mail și vă trimitem un link de resetare",
       "submit": "Trimiteți linkul de resetare",
       "sending": "Se trimite…",
-      "back": "Înapoi la conectare",
-      "backToLogin": "Înapoi la conectare"
+      "back": "Înapoi la conectare"
     },
     "reset": {
       "invalidTitle": "Link de resetare nevalid",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Repetați parola",
       "submit": "Setați parola",
       "saving": "Se salvează…",
-      "logIn": "Conectați-vă",
       "sendNewLink": "Solicitați un nou link de resetare"
     },
     "verifyEmail": {

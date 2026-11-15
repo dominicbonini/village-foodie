@@ -236,7 +236,7 @@
  "manageMenuImport.checkMenu.body": "We saved the menu from your demo to your truck, and you’ve changed it since — so your changes are kept. Have a look over it below.",
  "manageMenuImport.checkMenu.title": "Check your menu",
  "manageMenuImport.discard.carriedBody": "Your menu from the demo is saved on your truck as it is. You can change it any time on your menu screen.",
- "manageMenuImport.discard.setupBody": "Your account and truck are saved — nothing is lost. You can add your menu any time: sign in and tap <b>Import menu</b> on your menu screen to pick up right here.",
+ "manageMenuImport.discard.setupBody": "Your account and truck are saved — nothing is lost. You can add your menu any time: log in and tap <b>Import menu</b> on your menu screen to pick up right here.",
  "manageMenuImport.done.added": "Your items have been added to the menu.",
  "manageMenuImport.done.imported": "Menu imported!",
  "manageMenuImport.extras.separate": "Separate menu items",

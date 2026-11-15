@@ -1962,8 +1962,7 @@
       "subtitle": "輸入你的電郵，我們會寄出重設連結",
       "submit": "發送重設連結",
       "sending": "發送中…",
-      "back": "返回登入",
-      "backToLogin": "返回登入"
+      "back": "返回登入"
     },
     "reset": {
       "invalidTitle": "重設連結無效",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "再次輸入密碼",
       "submit": "設定密碼",
       "saving": "儲存中…",
-      "logIn": "登入",
       "sendNewLink": "索取新的重設連結"
     },
     "verifyEmail": {

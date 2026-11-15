@@ -139,7 +139,7 @@
  "manageMenu.item.allergenGateBody": "Open the “Set up / review allergens” box on the Menu tab — the wizard walks each dish through confirmation.",
  "manageMenuImport.review.moveBody": "Deleting “{name}” needs somewhere to move its dishes — items with no category are not imported.",
  "manageMenuImport.schedule.urlPlaceholder": "https://yourtruck.co.uk/events",
- "managePayments.admin.body": "This truck has not set up online payments. Only the owner can start it, from their own signed-in account — there is nothing to press here.",
+ "managePayments.admin.body": "This truck has not set up online payments. Only the owner can start it, from their own logged-in account — there is nothing to press here.",
  "managePayments.online.feeLine": "Stripe charges {fee} per payment on standard {region}. Other cards may cost more. HatchGrab’s own fee on online orders depends on your plan — see Billing.",
  "managePayments.online.heading": "Online payments",
  "managePayments.setUp.button": "Set up online payments",

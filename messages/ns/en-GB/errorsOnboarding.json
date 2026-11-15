@@ -1,5 +1,5 @@
 {
-  "not_signed_in": "Not signed in",
+  "not_signed_in": "Not logged in",
   "no_operator_record": "No operator record",
   "bad_request": "Bad request",
   "truck_name_missing": "Give your truck a name.",
@@ -13,7 +13,7 @@
   "password_too_short": "Password must be at least {min, plural, one {# character} other {# characters}}.",
   "signup_closed": "Sign-up isn’t open yet.",
   "too_many_attempts": "Too many attempts just now — please try again shortly.",
-  "account_exists": "There’s already an account with that email — sign in instead.",
+  "account_exists": "There’s already an account with that email — log in instead.",
   "account_create_failed": "Could not create the account.",
   "account_finish_failed": "Could not finish creating your account — please try again.",
   "unauthorised": "Unauthorised",
@@ -56,7 +56,7 @@
   "not_available": "Not available.",
   "demo_save_failed": "We couldn’t save that just now — please try again.",
   "deletion_view_owner_only": "Only the account owner can view this.",
-  "deletion_sign_in": "Sign in to request account deletion.",
+  "deletion_sign_in": "Log in to request account deletion.",
   "deletion_owner_only": "Only the account owner can request deletion.",
   "confirm_mismatch": "Type DELETE to confirm.",
   "partial_stamp": "Your deletion request was recorded, but we could not stop ordering on every truck. Contact support."

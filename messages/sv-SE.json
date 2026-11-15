@@ -1962,8 +1962,7 @@
       "subtitle": "Ange din e-postadress så skickar vi en återställningslänk",
       "submit": "Skicka återställningslänk",
       "sending": "Skickar…",
-      "back": "Tillbaka till inloggningen",
-      "backToLogin": "Tillbaka till inloggningen"
+      "back": "Tillbaka till inloggningen"
     },
     "reset": {
       "invalidTitle": "Ogiltig återställningslänk",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Upprepa ditt lösenord",
       "submit": "Spara lösenord",
       "saving": "Sparar…",
-      "logIn": "Logga in",
       "sendNewLink": "Begär en ny återställningslänk"
     },
     "verifyEmail": {

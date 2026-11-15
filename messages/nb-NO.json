@@ -1962,8 +1962,7 @@
       "subtitle": "Skriv inn e-postadressen din, så sender vi en lenke for å tilbakestille",
       "submit": "Send lenke",
       "sending": "Sender…",
-      "back": "Tilbake til innlogging",
-      "backToLogin": "Tilbake til innlogging"
+      "back": "Tilbake til innlogging"
     },
     "reset": {
       "invalidTitle": "Ugyldig lenke",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Gjenta passordet",
       "submit": "Lagre passord",
       "saving": "Lagrer…",
-      "logIn": "Logg inn",
       "sendNewLink": "Be om en ny lenke"
     },
     "verifyEmail": {

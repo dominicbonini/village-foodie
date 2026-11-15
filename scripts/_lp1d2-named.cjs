@@ -300,6 +300,10 @@ const plansEntries2 = () => [
   ...(require('./_named-app-fixes-1.cjs').LANDED ? [{ id: 'app-fixes-1-stock-layout', country: 'both', smokeOnly: true, agent: 'app-fixes-1 (14 Nov 2026)',
     what: '⚠️ RE-PINNED (app-fixes-1, 14 November 2026): Carte & stock — the approved phone layout. STRUCTURAL: the text, every other attribute and every component stand-in byte-identical to BEFORE; only classes and the data-stock-* hooks change.',
     views: id => /^smoke-dash\/(GB|US)\|stock(\||$)/.test(id), proveWith: (exp, f) => require('./_named-app-fixes-1.cjs').proveStockView(exp, f) }] : []),
+  // ⚠️ RE-PINNED (app-fixes-2, 15 November 2026): the dashboard's "Access denied" gains "Back to log in" → /login, on the smoke views.
+  ...(require('./_named-app-fixes-2.cjs').LANDED ? [{ id: 'app-fixes-2-access-denied', country: 'both', smokeOnly: true, agent: 'app-fixes-2 (15 Nov 2026)',
+    what: '⚠️ RE-PINNED (app-fixes-2, 15 November 2026): Access denied gains a "Back to log in" button to /login. STRUCTURAL: with that one button taken out, byte-identical to BEFORE.',
+    views: id => /^smoke-dash\/(GB|US)\|accessDenied(Server)?$/.test(id), proveWith: (exp, f) => require('./_named-app-fixes-2.cjs').proveAccessDenied(exp, f) }] : []),
   // ⚠️ RE-PINNED (longer collection times and capacity steps, 12 November 2026): the four entries of
   // scripts/_named-longer-intervals.cjs, REUSED on the smoke views (Part 1's Settings, Menu and Schedule re-rendered here).
   ...['longer-intervals-collection-45-60', 'longer-intervals-refusal-choices', 'longer-intervals-prep-to-60', 'longer-intervals-window-to-60']

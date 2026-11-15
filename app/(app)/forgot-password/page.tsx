@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
           {/* app-fixes-1: the "email sent" end state had no way forward. /login is the login page on the web AND in the app. */}
           <Link href="/login" data-auth-next="login"
              className="mt-6 inline-block w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-xl">
-            {t('backToLogin')}
+            {t('back')}
           </Link>
         </div>
       </div>

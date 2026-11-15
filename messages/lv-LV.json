@@ -1962,8 +1962,7 @@
       "subtitle": "Ievadiet savu e-pastu, un mēs nosūtīsim atiestatīšanas saiti",
       "submit": "Nosūtīt atiestatīšanas saiti",
       "sending": "Notiek sūtīšana…",
-      "back": "Atpakaļ uz pieteikšanos",
-      "backToLogin": "Atpakaļ uz pieteikšanos"
+      "back": "Atpakaļ uz pieteikšanos"
     },
     "reset": {
       "invalidTitle": "Nederīga atiestatīšanas saite",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Atkārtojiet paroli",
       "submit": "Iestatīt paroli",
       "saving": "Saglabā…",
-      "logIn": "Pieteikties",
       "sendNewLink": "Pieprasīt jaunu atiestatīšanas saiti"
     },
     "verifyEmail": {

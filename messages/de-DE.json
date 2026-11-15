@@ -1962,8 +1962,7 @@
       "subtitle": "Geben Sie Ihre E-Mail-Adresse ein, und wir senden Ihnen einen Link zum Zurücksetzen",
       "submit": "Link senden",
       "sending": "Wird gesendet…",
-      "back": "Zurück zur Anmeldung",
-      "backToLogin": "Zurück zur Anmeldung"
+      "back": "Zurück zur Anmeldung"
     },
     "reset": {
       "invalidTitle": "Ungültiger Link",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Passwort wiederholen",
       "submit": "Passwort festlegen",
       "saving": "Wird gespeichert…",
-      "logIn": "Anmelden",
       "sendNewLink": "Neuen Link anfordern"
     },
     "verifyEmail": {

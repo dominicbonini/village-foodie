@@ -984,7 +984,7 @@
     "category_id_required": "Something went wrong — refresh the page and try again.",
     "unknown_action": "Unknown action",
     "something_went_wrong": "Something went wrong",
-    "sign_in_check_failed": "Could not check your sign-in right now",
+    "sign_in_check_failed": "Could not check your login right now",
     "device_id_required": "Something went wrong — refresh the page and try again.",
     "bad_request": "Bad request",
     "no_van_for_device": "This device isn’t set to a van yet, so wired printing isn’t available.",
@@ -1531,7 +1531,7 @@
     "admin": "Admin",
     "privacy": "Privacy policy",
     "terms": "Terms",
-    "signOut": "Sign out",
+    "signOut": "Log out",
     "close": "Close"
   },
   "paymentActions": {
@@ -1936,22 +1936,22 @@
       "codeLabel": "Have a code? <optional>(optional)</optional>",
       "codePlaceholder": "Enter it here",
       "marketing": "Email me occasional tips and product news. Nothing to do with your orders — you can stop any time.",
-      "signIn": "Sign in",
+      "signIn": "Log in",
       "submit": "Create my account",
       "submitting": "Creating your account…",
       "consent": "By creating an account you agree to our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>. No card needed. Nothing goes public until you say so.",
-      "haveAccount": "Already have an account? Sign in",
+      "haveAccount": "Already have an account? Log in",
       "errorFallback": "Could not create your account.",
       "errorOffline": "Couldn’t reach us just now — please try again."
     },
     "login": {
-      "title": "Sign in to your kitchen",
+      "title": "Log in to your kitchen",
       "dashboardOf": "{brand} operator dashboard",
-      "resetSuccess": "Password updated successfully. Please sign in.",
-      "emailChanged": "Email address updated. Please sign in with your new email address.",
+      "resetSuccess": "Password updated. Please log in.",
+      "emailChanged": "Email address updated. Please log in with your new email address.",
       "errorFallback": "Incorrect email or password. Please try again.",
-      "submit": "Sign in",
-      "submitting": "Signing in…",
+      "submit": "Log in",
+      "submitting": "Logging in…",
       "forgot": "Forgot your password?",
       "invalidLink": "That link has expired or isn’t valid."
     },
@@ -1962,8 +1962,7 @@
       "subtitle": "Enter your email and we’ll send a reset link",
       "submit": "Send reset link",
       "sending": "Sending…",
-      "back": "Back to sign in",
-      "backToLogin": "Back to log in"
+      "back": "Back to log in"
     },
     "reset": {
       "invalidTitle": "Invalid reset link",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Repeat your password",
       "submit": "Set password",
       "saving": "Saving…",
-      "logIn": "Log in",
       "sendNewLink": "Send a new link"
     },
     "verifyEmail": {
@@ -2001,9 +1999,9 @@
       "successBody": "Your email has been changed to <b>{email}</b>. Signing you out…"
     },
     "sessionAlert": {
-      "title": "Your sign-in needs attention",
-      "body": "Everything on screen is still here. New changes may not save until you sign in again.",
-      "signIn": "Sign in again"
+      "title": "Your login needs attention",
+      "body": "Everything on screen is still here. New changes may not save until you log in again.",
+      "signIn": "Log in again"
     }
   },
   "emailSignup": {
@@ -2033,7 +2031,7 @@
     }
   },
   "errorsOnboarding": {
-    "not_signed_in": "Not signed in",
+    "not_signed_in": "Not logged in",
     "no_operator_record": "No operator record",
     "bad_request": "Bad request",
     "truck_name_missing": "Give your truck a name.",
@@ -2047,7 +2045,7 @@
     "password_too_short": "Password must be at least {min, plural, one {# character} other {# characters}}.",
     "signup_closed": "Sign-up isn’t open yet.",
     "too_many_attempts": "Too many attempts just now — please try again shortly.",
-    "account_exists": "There’s already an account with that email — sign in instead.",
+    "account_exists": "There’s already an account with that email — log in instead.",
     "account_create_failed": "Could not create the account.",
     "account_finish_failed": "Could not finish creating your account — please try again.",
     "unauthorised": "Unauthorised",
@@ -2090,7 +2088,7 @@
     "not_available": "Not available.",
     "demo_save_failed": "We couldn’t save that just now — please try again.",
     "deletion_view_owner_only": "Only the account owner can view this.",
-    "deletion_sign_in": "Sign in to request account deletion.",
+    "deletion_sign_in": "Log in to request account deletion.",
     "deletion_owner_only": "Only the account owner can request deletion.",
     "confirm_mismatch": "Type DELETE to confirm.",
     "partial_stamp": "Your deletion request was recorded, but we could not stop ordering on every truck. Contact support."
@@ -2211,7 +2209,7 @@
       "active": "in progress",
       "pending": "pending"
     },
-    "signIn": "Sign in",
+    "signIn": "Log in",
     "phone": "Phone",
     "onWhatsapp": "This number is on WhatsApp",
     "email": "Email",
@@ -3152,7 +3150,7 @@
     },
     "discard": {
       "setupTitle": "Finish setting up later?",
-      "setupBody": "Your account and truck are saved — nothing is lost. You can add your menu any time: sign in and tap <b>Import menu</b> on your menu screen to pick up right here.",
+      "setupBody": "Your account and truck are saved — nothing is lost. You can add your menu any time: log in and tap <b>Import menu</b> on your menu screen to pick up right here.",
       "keepGoing": "Keep going",
       "finishLater": "Finish later",
       "title": "Discard this import?",
@@ -3169,7 +3167,7 @@
   "errorsManage": {
     "token_required": "Token required",
     "invalid_token": "Invalid token",
-    "sign_in_required": "Sign in required",
+    "sign_in_required": "Log in required",
     "no_truck_access": "You do not have access to this truck",
     "insufficient_permissions": "Insufficient permissions",
     "allergen_owner_only": "Only the owner can change allergen information",
@@ -4581,7 +4579,7 @@
     },
     "permission": {
       "title": "Only the truck’s owner can set up payments",
-      "body": "Stripe is connected by the person whose bank account receives the money, so it has to be set up from their own signed-in account. Nothing is wrong with this truck or with HatchGrab."
+      "body": "Stripe is connected by the person whose bank account receives the money, so it has to be set up from their own logged-in account. Nothing is wrong with this truck or with HatchGrab."
     },
     "config": {
       "keyMissingTitle": "Card payments aren’t configured yet",
@@ -4601,7 +4599,7 @@
     "trialNote": "Setting this up doesn’t start your subscription or charge you anything today. It’s how your customers pay you — your plan is separate.",
     "admin": {
       "title": "Viewing as platform admin",
-      "body": "This truck has not set up online payments. Only the owner can start it, from their own signed-in account — there is nothing to press here."
+      "body": "This truck has not set up online payments. Only the owner can start it, from their own logged-in account — there is nothing to press here."
     },
     "setUp": {
       "button": "Set up online payments",

@@ -40,7 +40,7 @@
   },
   "permission": {
     "title": "Only the truck’s owner can set up payments",
-    "body": "Stripe is connected by the person whose bank account receives the money, so it has to be set up from their own signed-in account. Nothing is wrong with this truck or with HatchGrab."
+    "body": "Stripe is connected by the person whose bank account receives the money, so it has to be set up from their own logged-in account. Nothing is wrong with this truck or with HatchGrab."
   },
   "config": {
     "keyMissingTitle": "Card payments aren’t configured yet",
@@ -60,7 +60,7 @@
   "trialNote": "Setting this up doesn’t start your subscription or charge you anything today. It’s how your customers pay you — your plan is separate.",
   "admin": {
     "title": "Viewing as platform admin",
-    "body": "This truck has not set up online payments. Only the owner can start it, from their own signed-in account — there is nothing to press here."
+    "body": "This truck has not set up online payments. Only the owner can start it, from their own logged-in account — there is nothing to press here."
   },
   "setUp": {
     "button": "Set up online payments",

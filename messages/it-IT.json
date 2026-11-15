@@ -1962,8 +1962,7 @@
       "subtitle": "Inserisci la tua email e ti invieremo un link per reimpostarla",
       "submit": "Invia il link",
       "sending": "Invio in corso…",
-      "back": "Torna all’accesso",
-      "backToLogin": "Torna all’accesso"
+      "back": "Torna all’accesso"
     },
     "reset": {
       "invalidTitle": "Link di reimpostazione non valido",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Ripeti la password",
       "submit": "Imposta password",
       "saving": "Salvataggio…",
-      "logIn": "Accedi",
       "sendNewLink": "Richiedi un nuovo link"
     },
     "verifyEmail": {

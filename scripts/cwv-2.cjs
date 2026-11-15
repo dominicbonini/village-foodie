@@ -71,7 +71,17 @@ const notLonger = f => { if (f !== LIOP.FILE) return true; const u = LIOP.undo(a
 // pages' way back, and the root layout's one added line (the in-app link guard). A file of those passes when putting exactly those
 // edits back gives the file as it was in the commit before app-fixes-1 (where this guard passed); any other change still fails.
 const AF1 = require('./_named-app-fixes-1.cjs')
-const notAf1 = f => { if (!AF1.EDITED_FILES.includes(f)) return true; const u = AF1.undoFile(f, read(f)); return !(u !== null && u === showAt(AF1.EDITS.base, f)) }
+// ⚠️ RE-PINNED (app-fixes-2, 15 November 2026; scripts/_named-app-fixes-2.cjs undoFile): its recorded edits (the merged auth keys,
+// Access denied's "Back to log in", the admin console's "Log out") are taken back first; a file it alone edited is excused only when
+// that gives exactly its text at app-fixes-2's base, and app-fixes-1's undo then runs on app-fixes-2's "before".
+const AF2 = require('./_named-app-fixes-2.cjs')
+const af2 = f => (AF2.EDITED_FILES.includes(f) ? AF2.undoFile(f, read(f)) : read(f))
+const notAf1 = f => {
+  if (AF2.EDITED_FILES.includes(f) && !AF1.EDITED_FILES.includes(f)) { const u = af2(f); return !(u !== null && u === showAt(AF2.EDITS.base, f)) }
+  if (!AF1.EDITED_FILES.includes(f)) return true
+  const pre = af2(f); if (pre === null) return true
+  const u = AF1.undoFile(f, pre); return !(u !== null && u === showAt(AF1.EDITS.base, f))
+}
 const appChanged = MP.changedSince(BEFORE, ['app/(app)']).filter(notDc2).filter(notLonger).filter(notAf1)
 t('🔴 every file under app/(app) is its pre-move self, byte for byte (the two import lines the move had to change, named in _moved-paths.cjs, aside)',
   appChanged.length === 0, appChanged)

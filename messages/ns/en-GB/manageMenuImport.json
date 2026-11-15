@@ -179,7 +179,7 @@
   },
   "discard": {
     "setupTitle": "Finish setting up later?",
-    "setupBody": "Your account and truck are saved — nothing is lost. You can add your menu any time: sign in and tap <b>Import menu</b> on your menu screen to pick up right here.",
+    "setupBody": "Your account and truck are saved — nothing is lost. You can add your menu any time: log in and tap <b>Import menu</b> on your menu screen to pick up right here.",
     "keepGoing": "Keep going",
     "finishLater": "Finish later",
     "title": "Discard this import?",

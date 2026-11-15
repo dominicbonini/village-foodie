@@ -55,7 +55,7 @@ function ResetPasswordForm() {
   const nextSteps = (
     <>
       <Link href="/forgot-password" data-auth-next="forgot" className={PRIMARY}>{t('sendNewLink')}</Link>
-      <Link href="/login" data-auth-next="login" className={SECONDARY}>{tForgot('backToLogin')}</Link>
+      <Link href="/login" data-auth-next="login" className={SECONDARY}>{tForgot('back')}</Link>
     </>
   )
 
@@ -70,7 +70,7 @@ function ResetPasswordForm() {
       <EndCard state="done" icon="✅" body={tLogin('resetSuccess')}>
         {/* A full page load, not <Link>: the old session was just signed out, and a fresh document is the clean start. */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        <a href="/login" data-auth-next="login" className={PRIMARY}>{t('logIn')}</a>
+        <a href="/login" data-auth-next="login" className={PRIMARY}>{tLogin('submit')}</a>
       </EndCard>
     )
   }

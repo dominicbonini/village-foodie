@@ -1,0 +1,101 @@
+{
+  "$comment": "app-fixes-2 (15 November 2026, docs/app-fixes-2-report.md §1): \"Log in\", never \"Sign in\", in HatchGrab’s own words; app-fixes-1’s duplicates merged (auth.forgot.backToLogin → auth.forgot.back, auth.reset.logIn → auth.login.submit). Exact before → after, generated from the diff against the commit before this work. The SEVENTH stage sibling (scripts/_lp2-frozen.cjs).",
+  "en-GB": {
+    "removed": {
+      "auth.forgot.backToLogin": "Back to log in",
+      "auth.reset.logIn": "Log in"
+    },
+    "reworded": {
+      "errorsKitchen.sign_in_check_failed": {
+        "before": "Could not check your sign-in right now",
+        "after": "Could not check your login right now"
+      },
+      "userMenu.signOut": {
+        "before": "Sign out",
+        "after": "Log out"
+      },
+      "auth.signup.signIn": {
+        "before": "Sign in",
+        "after": "Log in"
+      },
+      "auth.signup.haveAccount": {
+        "before": "Already have an account? Sign in",
+        "after": "Already have an account? Log in"
+      },
+      "auth.login.title": {
+        "before": "Sign in to your kitchen",
+        "after": "Log in to your kitchen"
+      },
+      "auth.login.resetSuccess": {
+        "before": "Password updated successfully. Please sign in.",
+        "after": "Password updated. Please log in."
+      },
+      "auth.login.emailChanged": {
+        "before": "Email address updated. Please sign in with your new email address.",
+        "after": "Email address updated. Please log in with your new email address."
+      },
+      "auth.login.submit": {
+        "before": "Sign in",
+        "after": "Log in"
+      },
+      "auth.login.submitting": {
+        "before": "Signing in…",
+        "after": "Logging in…"
+      },
+      "auth.forgot.back": {
+        "before": "Back to sign in",
+        "after": "Back to log in"
+      },
+      "auth.sessionAlert.title": {
+        "before": "Your sign-in needs attention",
+        "after": "Your login needs attention"
+      },
+      "auth.sessionAlert.body": {
+        "before": "Everything on screen is still here. New changes may not save until you sign in again.",
+        "after": "Everything on screen is still here. New changes may not save until you log in again."
+      },
+      "auth.sessionAlert.signIn": {
+        "before": "Sign in again",
+        "after": "Log in again"
+      },
+      "errorsOnboarding.not_signed_in": {
+        "before": "Not signed in",
+        "after": "Not logged in"
+      },
+      "errorsOnboarding.account_exists": {
+        "before": "There’s already an account with that email — sign in instead.",
+        "after": "There’s already an account with that email — log in instead."
+      },
+      "errorsOnboarding.deletion_sign_in": {
+        "before": "Sign in to request account deletion.",
+        "after": "Log in to request account deletion."
+      },
+      "demoGetStarted.signIn": {
+        "before": "Sign in",
+        "after": "Log in"
+      },
+      "manageMenuImport.discard.setupBody": {
+        "before": "Your account and truck are saved — nothing is lost. You can add your menu any time: sign in and tap <b>Import menu</b> on your menu screen to pick up right here.",
+        "after": "Your account and truck are saved — nothing is lost. You can add your menu any time: log in and tap <b>Import menu</b> on your menu screen to pick up right here."
+      },
+      "errorsManage.sign_in_required": {
+        "before": "Sign in required",
+        "after": "Log in required"
+      },
+      "managePayments.permission.body": {
+        "before": "Stripe is connected by the person whose bank account receives the money, so it has to be set up from their own signed-in account. Nothing is wrong with this truck or with HatchGrab.",
+        "after": "Stripe is connected by the person whose bank account receives the money, so it has to be set up from their own logged-in account. Nothing is wrong with this truck or with HatchGrab."
+      },
+      "managePayments.admin.body": {
+        "before": "This truck has not set up online payments. Only the owner can start it, from their own signed-in account — there is nothing to press here.",
+        "after": "This truck has not set up online payments. Only the owner can start it, from their own logged-in account — there is nothing to press here."
+      }
+    },
+    "added": {}
+  },
+  "en-US": {
+    "removed": {},
+    "reworded": {},
+    "added": {}
+  }
+}

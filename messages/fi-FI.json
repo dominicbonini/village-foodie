@@ -1962,8 +1962,7 @@
       "subtitle": "Anna sähköpostiosoitteesi, niin lähetämme linkin salasanan vaihtamiseen",
       "submit": "Lähetä linkki",
       "sending": "Lähetetään…",
-      "back": "Takaisin kirjautumiseen",
-      "backToLogin": "Takaisin kirjautumiseen"
+      "back": "Takaisin kirjautumiseen"
     },
     "reset": {
       "invalidTitle": "Virheellinen linkki",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Kirjoita salasana uudelleen",
       "submit": "Aseta salasana",
       "saving": "Tallennetaan…",
-      "logIn": "Kirjaudu",
       "sendNewLink": "Pyydä uusi linkki"
     },
     "verifyEmail": {

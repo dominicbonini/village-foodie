@@ -1962,8 +1962,7 @@
       "subtitle": "Upišite svoju e-poštu i poslat ćemo vam poveznicu za ponovno postavljanje",
       "submit": "Pošalji poveznicu",
       "sending": "Slanje…",
-      "back": "Natrag na prijavu",
-      "backToLogin": "Natrag na prijavu"
+      "back": "Natrag na prijavu"
     },
     "reset": {
       "invalidTitle": "Nevažeća poveznica",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Ponovite lozinku",
       "submit": "Postavi lozinku",
       "saving": "Spremanje…",
-      "logIn": "Prijava",
       "sendNewLink": "Zatražite novu poveznicu"
     },
     "verifyEmail": {

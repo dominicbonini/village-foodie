@@ -49,7 +49,7 @@
   "category_id_required": "Something went wrong — refresh the page and try again.",
   "unknown_action": "Unknown action",
   "something_went_wrong": "Something went wrong",
-  "sign_in_check_failed": "Could not check your sign-in right now",
+  "sign_in_check_failed": "Could not check your login right now",
   "device_id_required": "Something went wrong — refresh the page and try again.",
   "bad_request": "Bad request",
   "no_van_for_device": "This device isn’t set to a van yet, so wired printing isn’t available.",

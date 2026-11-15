@@ -63,7 +63,7 @@ export async function resolveTruckAccessWith(supabase: SupabaseClient, req: Next
   const userId = await resolveCallerId(supabase, req)
   // 🔴 THE INVERSION. No caller ⇒ no access. This is the line the whole workstream exists to add.
   if (!userId) {
-    return { ok: false, status: 401, error: 'Sign in required', code: 'sign_in_required' }
+    return { ok: false, status: 401, error: 'Log in required', code: 'sign_in_required' }
   }
 
   const { data: op } = await supabase

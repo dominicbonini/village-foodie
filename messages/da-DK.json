@@ -1962,8 +1962,7 @@
       "subtitle": "Skriv din e-mail, så sender vi et link til nulstilling",
       "submit": "Send link til nulstilling",
       "sending": "Sender…",
-      "back": "Tilbage til log ind",
-      "backToLogin": "Tilbage til log ind"
+      "back": "Tilbage til log ind"
     },
     "reset": {
       "invalidTitle": "Ugyldigt link til nulstilling",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Gentag din adgangskode",
       "submit": "Gem adgangskode",
       "saving": "Gemmer…",
-      "logIn": "Log ind",
       "sendNewLink": "Bed om et nyt link til nulstilling"
     },
     "verifyEmail": {

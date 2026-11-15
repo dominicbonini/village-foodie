@@ -150,12 +150,18 @@ const stageAF2 = () => (fs.existsSync(STAGE_AF2_FILE) ? readJson(STAGE_AF2_FILE)
 // frozen catalogue shows them at their text before, like the other stages.
 const STAGE_CT1_FILE = path.join(REPO, 'scripts/fixtures/copy-truth-1-messages.json')
 const stageCT1 = () => (fs.existsSync(STAGE_CT1_FILE) ? readJson(STAGE_CT1_FILE) : EMPTY_STAGE())
+// ⚠️ RE-PINNED (app-fixes-2, 15 November 2026, docs/app-fixes-2-report.md §1): app-fixes-2's message changes are a SEVENTH sibling
+// (scripts/fixtures/app-fixes-2-messages.json — "Log in", never "Sign in", in HatchGrab's own words: 21 en-GB keys reworded; the two
+// app-fixes-1 duplicates, auth.forgot.backToLogin and auth.reset.logIn, removed in favour of auth.forgot.back / auth.login.submit),
+// applied after copy-truth-1 by the same rule. No arguments change, so a frozen catalogue shows each at its text before.
+const STAGE_AFX2_FILE = path.join(REPO, 'scripts/fixtures/app-fixes-2-messages.json')
+const stageAFX2 = () => (fs.existsSync(STAGE_AFX2_FILE) ? readJson(STAGE_AFX2_FILE) : EMPTY_STAGE())
 const stageA = () => {
-  const a = stageAOnly(), b = stageA2(), sb = stageB(), st = stageTidy(), af2 = stageAF2(), ct1 = stageCT1(), out = {}
+  const a = stageAOnly(), b = stageA2(), sb = stageB(), st = stageTidy(), af2 = stageAF2(), ct1 = stageCT1(), afx2 = stageAFX2(), out = {}
   for (const loc of ['en-GB', 'en-US']) {
     const o = out[loc] = {}
     for (const part of ['removed', 'reworded', 'added']) o[part] = { ...((a[loc] || {})[part] || {}), ...((b[loc] || {})[part] || {}) }
-    for (const x of [sb[loc] || {}, st[loc] || {}, af2[loc] || {}, ct1[loc] || {}]) {
+    for (const x of [sb[loc] || {}, st[loc] || {}, af2[loc] || {}, ct1[loc] || {}, afx2[loc] || {}]) {
       for (const [k, v] of Object.entries(x.removed || {})) { const was = k in o.reworded ? o.reworded[k].before : k in o.added ? undefined : v; delete o.reworded[k]; delete o.added[k]; if (was !== undefined) o.removed[k] = was }
       for (const [k, v] of Object.entries(x.reworded || {})) { if (k in o.added) o.added[k] = v.after; else o.reworded[k] = k in o.reworded ? { before: o.reworded[k].before, after: v.after } : v }
       for (const [k, v] of Object.entries(x.added || {})) o.added[k] = v
@@ -316,4 +322,4 @@ function gbKeyDiff(frozenFile = FROZEN_DEFAULT, afterFile = fs.existsSync(PHASE2
   return out
 }
 
-module.exports = { stageA, stageAOnly, stageA2, stageB, stageTidy, stageAF2, STAGE_AF2_FILE, stageCT1, STAGE_CT1_FILE, STAGE_A_FILE, STAGE_A2_FILE, STAGE_B_FILE, STAGE_TIDY_FILE, REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }
+module.exports = { stageA, stageAOnly, stageA2, stageB, stageTidy, stageAF2, STAGE_AF2_FILE, stageCT1, STAGE_CT1_FILE, stageAFX2, STAGE_AFX2_FILE, STAGE_A_FILE, STAGE_A2_FILE, STAGE_B_FILE, STAGE_TIDY_FILE, REPO, MOVED_FILE, MOVED_FILE_1D2, MOVED_FILE_1E, MOVED_FILES, KEY_MOVES_FILE, KEY_MOVES_FILE_1E, keyMoves, withMoves, movedTree, PHASE2_END_GB, FROZEN_DEFAULT, FROZEN_REF, FROZEN_INLINE, withInline, SPEC, leaves, getPath, overlay, mode, catalogues, enGBForNode, generated, resolveMessages, gbKeyDiff, readJson }

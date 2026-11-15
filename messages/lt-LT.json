@@ -1962,8 +1962,7 @@
       "subtitle": "Įveskite el. pašto adresą ir atsiųsime atkūrimo nuorodą",
       "submit": "Siųsti atkūrimo nuorodą",
       "sending": "Siunčiama…",
-      "back": "Grįžti į prisijungimą",
-      "backToLogin": "Grįžti į prisijungimą"
+      "back": "Grįžti į prisijungimą"
     },
     "reset": {
       "invalidTitle": "Netinkama atkūrimo nuoroda",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Pakartokite slaptažodį",
       "submit": "Nustatyti slaptažodį",
       "saving": "Išsaugoma…",
-      "logIn": "Prisijungti",
       "sendNewLink": "Prašyti naujos atkūrimo nuorodos"
     },
     "verifyEmail": {

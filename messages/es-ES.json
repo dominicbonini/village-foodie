@@ -1962,8 +1962,7 @@
       "subtitle": "Escribe tu correo y te enviaremos un enlace para restablecerla",
       "submit": "Enviar enlace",
       "sending": "Enviando…",
-      "back": "Volver a iniciar sesión",
-      "backToLogin": "Volver a iniciar sesión"
+      "back": "Volver a iniciar sesión"
     },
     "reset": {
       "invalidTitle": "Enlace de restablecimiento no válido",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "Repite tu contraseña",
       "submit": "Guardar contraseña",
       "saving": "Guardando…",
-      "logIn": "Iniciar sesión",
       "sendNewLink": "Solicitar un enlace nuevo"
     },
     "verifyEmail": {

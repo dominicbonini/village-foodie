@@ -150,6 +150,8 @@ import { WALK_UP_NAME, isWalkUp } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 import { useT, useTruckLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/dashboard'
+// app-fixes-2: auth.forgot.back on the Access denied screen
+import '@/lib/i18n/catalog/auth'
 import '@/lib/i18n/catalog/privateEvents'
 import { errorText } from '@/lib/i18n/customer-errors'
 import '@/lib/i18n/catalog/errorsKitchen'
@@ -311,6 +313,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useTruckLocale(dashTime.locale)   // Language Phase 0: the truck's country's locale for this screen's words
   // Language Phase 1b: every word on this screen is a message in `dashboard` (messages/en-GB.json).
   const tDash=useT('dashboard')
+  const tForgotGate=useT('auth.forgot')   // app-fixes-2: the Access denied screen's "Back to log in"
   // languages-1: the private-event words in the truck's language (they were lib/private-events/copy.ts's en-GB exports).
   const tPrivEv=useT('privateEvents')
   // A refusal is worded from its code + params, its English `error` the fallback (US polish batch, 19 October 2026):
@@ -3801,7 +3804,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // the access-denied screen above the board. The failure was a display decision, not data loss.
   // `error` is now only set for a never-authenticated session (R2) or an authoritative 401, so gating
   // on `!authenticated` renders the full-page error exactly when it is the truth and never otherwise.
-  if(error&&!authenticated){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">{tDash('gate.accessDenied')}</p><p className="text-slate-500 text-sm">{error==='invalidAccessLink'?tDash('gate.invalidAccessLink'):error}</p>{isNativeApp()?<span className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</span>:<Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link>}</div></div>}
+  if(error&&!authenticated){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">{tDash('gate.accessDenied')}</p><p className="text-slate-500 text-sm">{error==='invalidAccessLink'?tDash('gate.invalidAccessLink'):error}</p>{/* app-fixes-2: a way forward — /login is the login page on the web AND in the app (docs/app-fixes-2-report.md §2). */}<div className="mt-5"><Link href="/login" data-gate-next="login" className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl">{tForgotGate('back')}</Link></div>{isNativeApp()?<span className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</span>:<Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link>}</div></div>}
   // 🔴 NOTHING LOADED AND NOTHING SAVED — SAY SO, AND SAY WHAT TO DO ABOUT IT.
   // Reached only when a first load failed AND this device has no truck snapshot. Deliberately NOT the
   // "Access denied" screen above: that one is a verdict on the credential and this is not — the link is

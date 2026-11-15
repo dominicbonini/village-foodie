@@ -47,7 +47,9 @@ export const NAMESPACES = {
     // address-formats-2 (21 Oct 2026): the town/address words by the country's address format (WhereBasedStep, AddressFields).
     'address',
     // languages-1 (22 October 2026): the where-you-trade step's heading and button (components/DemoGetStarted.tsx, app/setup/page.tsx).
-    'whereYouTrade'],
+    'whereYouTrade',
+    // app-fixes-2 (15 Nov 2026): the Access denied screen's "Back to log in" (auth.forgot.back).
+    'auth'],
   kds: ['kds', 'orderCard', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'nativeShell',
     'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea',   // Language Phase 1c
     // Language Phase 1d (Settings): copy modules the KDS imports, whose en-GB exports read these namespaces.

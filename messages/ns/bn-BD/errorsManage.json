@@ -1,7 +1,7 @@
 {
   "token_required": "টোকেন প্রয়োজন",
   "invalid_token": "টোকেন সঠিক নয়",
-  "sign_in_required": "সাইন ইন করতে হবে",
+  "sign_in_required": "লগ ইন করতে হবে",
   "no_truck_access": "এই ট্রাকে আপনার অ্যাক্সেস নেই",
   "insufficient_permissions": "যথেষ্ট অনুমতি নেই",
   "allergen_owner_only": "অ্যালার্জেনের তথ্য শুধু মালিক বদলাতে পারেন",

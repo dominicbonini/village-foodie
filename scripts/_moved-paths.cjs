@@ -70,6 +70,7 @@ const G2 = require('./_lp-gsc-index-2.cjs')
 const B1 = require('./_lp-billing-1.cjs')   // billing-1 (10 November 2026): its named edits, taken back exactly
 const PC4 = require('./_lp-pricing-copy-4.cjs')   // pricing-copy-4 (12 November 2026): its recorded code edits, taken back exactly
 const CAP1 = require('./_named-capacity-one-source-1.cjs')   // capacity-one-source-1 (13 November 2026): its dashboard-action edits, taken back exactly
+const AF2 = require('./_named-app-fixes-2.cjs')   // app-fixes-2 (15 November 2026): its recorded edits, taken back exactly BEFORE app-fixes-1's
 const AF1 = require('./_named-app-fixes-1.cjs')   // app-fixes-1 (14 November 2026): its proxy.ts edits (the in-app page rule), taken back exactly
 function changedSince(rev, paths, { cwv2 = false } = {}) {
   const now = [...new Set(paths.map(nowPath))]
@@ -100,6 +101,11 @@ function changedSince(rev, paths, { cwv2 = false } = {}) {
     // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026; docs/app-fixes-1-report.md §4): against a revision from before it, its two proxy.ts
     // edits (the lib/app-navigation import and the in-app page rule) are taken back exactly (scripts/_named-app-fixes-1.cjs undoCode —
     // null if one is not there exactly once, which leaves the file changed), so every other byte of proxy.ts is still compared.
+    // ⚠️ RE-PINNED (app-fixes-2, 15 November 2026; docs/app-fixes-2-report.md): against a revision from before it, its recorded edits
+    // (scripts/fixtures/app-fixes-2-edits.json: the merged auth keys, Access denied's "Back to log in", "Log out" in admin, /dev → /app,
+    // the dashboard's auth namespace) are put back exactly FIRST (null if one is not there exactly once, which leaves the file changed),
+    // so app-fixes-1's undo then meets the text it was made against.
+    if (cur && AF2.EDITED_FILES.includes(f) && show(rev, 'scripts/_named-app-fixes-2.cjs') === null) { const u = AF2.undoFile(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     if (cur && AF1.CODE_FILES.includes(f) && show(rev, 'scripts/_named-app-fixes-1.cjs') === null) { const u = AF1.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     // …and the same for its other recorded edits (scripts/fixtures/app-fixes-1-edits.json: the printing cycle fix in lib/printing, the Carte &
     // stock layout and the Paramètres boundaries in the dashboard, the auth / error / 404 pages, the layout's guard line), and the one file

@@ -742,6 +742,14 @@ function ie1Visit(b, id) {
     { id: 'app-fixes-1-reset-invalid', country: 'both', agent: 'app-fixes-1 (14 Nov 2026)', what: 'the invalid-link card: "Send a new link" + "Back to log in", the logo',
       views: id => /^1c\/auth\/(GB|US)\|reset\|invalidLink(\|falseFlag)?$/.test(id), proveWith: AF1.proveAuthView('resetInvalid') })
 }
+// ⚠️ RE-PINNED (app-fixes-2, 15 November 2026, docs/app-fixes-2-report.md §2): the dashboard's "Access denied" gains a "Back to log in"
+// button to /login. STRUCTURAL (scripts/_named-app-fixes-2.cjs proveAccessDenied): with that one button taken out, byte-identical to BEFORE.
+{
+  const AF2 = require('./_named-app-fixes-2.cjs')
+  if (AF2.LANDED) NAMED.push(
+    { id: 'app-fixes-2-access-denied', country: 'both', agent: 'app-fixes-2 (15 Nov 2026)', what: 'Access denied gains "Back to log in" → /login',
+      views: id => /^(1b\/dashboard|smoke-dash)\/(GB|US)\|accessDenied(Server)?$/.test(id), proveWith: (exp, f) => AF2.proveAccessDenied(exp, f) })
+}
 
 function apply(id, before) {
   return applyNamed(NAMED, countryOf(id) === 'US', id, before)

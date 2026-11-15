@@ -1962,8 +1962,7 @@
       "subtitle": "メールアドレスを入力すると、再設定用のリンクをお送りします",
       "submit": "再設定リンクを送信",
       "sending": "送信しています…",
-      "back": "ログイン画面に戻る",
-      "backToLogin": "ログイン画面に戻る"
+      "back": "ログイン画面に戻る"
     },
     "reset": {
       "invalidTitle": "無効な再設定リンク",
@@ -1981,7 +1980,6 @@
       "confirmPlaceholder": "もう一度パスワードを入力してください",
       "submit": "パスワードを設定",
       "saving": "保存しています…",
-      "logIn": "ログイン",
       "sendNewLink": "新しい再設定リンクをリクエスト"
     },
     "verifyEmail": {
