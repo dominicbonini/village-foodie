@@ -33,6 +33,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    // MARK: - UIScene (ios-uiscene-1, 15 November 2026, docs/ios-uiscene-1-report.md)
+    //
+    // Builds made with the Xcode 27 SDK must use the scene life cycle (Capacitor 8.5+,
+    // https://capacitorjs.com/docs/updating/8-5). iOS asks this method which delegate runs the app's one
+    // window scene; SceneDelegate.swift owns the window, the bridge and URL opening from here on.
+    // ⚠️ Once Info.plist has UIApplicationSceneManifest, iOS NO LONGER CALLS the two URL methods below, nor
+    // applicationWillResignActive / DidEnterBackground / WillEnterForeground / DidBecomeActive above: the
+    // SceneDelegate forwards URLs to Capacitor's SceneDelegateProxy, and the App plugin's pause / resume and
+    // appStateChange still fire (it observes UIApplication's notifications, which iOS still posts).
+    // The URL methods are kept, unchanged, only as the path an app without the manifest would take.
+    func application(_ application: UIApplication,
+                     configurationForConnecting connectingSceneSession: UISceneSession,
+                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        let config = UISceneConfiguration(name: "Default Configuration",
+                                          sessionRole: connectingSceneSession.role)
+        config.delegateClass = SceneDelegate.self
+        return config
+    }
+
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         // Called when the app was launched with a url. Feel free to add additional processing here,
         // but if you want the App API to support tracking app url opens, make sure to keep this call

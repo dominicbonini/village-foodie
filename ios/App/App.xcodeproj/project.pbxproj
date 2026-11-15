@@ -18,6 +18,7 @@
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		HG01BB0000000000000002 /* HGBridgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = HG01BB0000000000000001 /* HGBridgeViewController.swift */; };
+		HG05SD0000000000000002 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = HG05SD0000000000000001 /* SceneDelegate.swift */; };
 		HG01BB0000000000000006 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = HG01BB0000000000000005 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -131,6 +132,7 @@
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 		HG01BB0000000000000001 /* HGBridgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HGBridgeViewController.swift; sourceTree = "<group>"; };
+		HG05SD0000000000000001 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		HG01BB0000000000000003 /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		HG01BB0000000000000004 /* AppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppRelease.entitlements; sourceTree = "<group>"; };
 		HG01BB0000000000000005 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				HG01BB0000000000000001 /* HGBridgeViewController.swift */,
+				HG05SD0000000000000001 /* SceneDelegate.swift */,
 				HG01BB0000000000000003 /* App.entitlements */,
 				HG01BB0000000000000004 /* AppRelease.entitlements */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
@@ -320,6 +323,7 @@
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				HG01BB0000000000000002 /* HGBridgeViewController.swift in Sources */,
+				HG05SD0000000000000002 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
