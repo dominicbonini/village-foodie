@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.24
+HatchGrab Engineering Reference Manual · V16.25
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.24**
+**Version 16.25**
 
 November 2026
 
@@ -49,6 +49,39 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.25 — 15 November 2026 — **iOS: THE UISCENE LIFE CYCLE (BUILDS WITH THE XCODE 27 SDK LAUNCH AGAIN)**
+
+ios-uiscene-1 (`docs/ios-uiscene-1-report.md`). Native only; no website code changed. **Not uploaded to App Store Connect.**
+
+- **The problem (app-fixes-1 §3.6).** A build made with Xcode 27.2 compiled, but on the iOS 26.5 / 27 simulators it would not launch: *"UIScene life cycle is required for app"*. The app used the AppDelegate-only life cycle.
+- **The route is Capacitor's documented one** (capacitorjs.com/docs/updating/8-5: "Capacitor 8.5 adopts UIScene on iOS"):
+  - **Upgrade:** `@capacitor/core`, `@capacitor/ios` and `@capacitor/cli` 8.4.0 → **8.6.2**, a minor upgrade. `@capacitor/ios` 8.6 requires core ^8.6 as a peer.
+  - **SPM:** `capacitor-swift-pm` is pinned to exact 8.6.2.
+  - **Unchanged:** `@capacitor/android` stays 8.4.1. A later Android sync warns about the minor mismatch, which is harmless.
+  - ⚠️ **The core bump ships with the NEXT website deploy.** Core is in the website bundle. 8.5–8.6 core changes only listener bookkeeping.
+- **What changed in `ios/App`:**
+  - **`SceneDelegate.swift` (new).** It forwards every scene callback to Capacitor's `SceneDelegateProxy`, which posts the same `.capacitorOpenURL` / `.capacitorOpenUniversalLink` notifications the App plugin observes.
+    - 🔴 **It keeps the window `Main.storyboard` builds**, so the bridge is still **`HGBridgeViewController`** (the native "couldn't load" screen).
+    - Capacitor's template builds a plain `CAPBridgeViewController()` in code. Copying it would silently drop that screen.
+    - The code fallback builds an `HGBridgeViewController`, never the plain class.
+  - **`AppDelegate.swift`:** gains `configurationForConnecting`. APNs registration stays in AppDelegate, which is app-wide.
+    - ⚠️ With a scene manifest, iOS **no longer calls** AppDelegate's open-URL, continue-activity or foreground/background methods. Put any new logic of that kind in `SceneDelegate.swift`.
+    - The App plugin's `pause` / `resume` / `appStateChange` still fire: they come from UIApplication notifications, which iOS still posts.
+  - **`Info.plist`:** `UIApplicationSceneManifest`, one scene: `$(PRODUCT_MODULE_NAME).SceneDelegate`, storyboard `Main`, multiple scenes off.
+  - **`project.pbxproj`:** four entries for `SceneDelegate.swift`, added by hand.
+    - Capacitor's `addSwiftFileToAppTarget` helper reformatted the whole file and wrote `explicitFileType = undefined`. **Don't use it on this project.**
+- **Proved (Xcode 27.2):**
+  - **Simulators, iPhone and iPad, iOS 26.5 and 27, against localhost:**
+    - cold launch → `/app` → login;
+    - background → foreground (XCUITest, all four);
+    - iPad rotation to landscape and back (both iPads);
+    - the test truck's dashboard → Settings, with the Kitchen ticket printing card rendered;
+    - the notification permission prompt appears (push registration reaches native code).
+  - **Safari hand-off, against production:** the signup page's Terms link opens Safari (`hatchgrab.com`, with the "◀ HatchGrab" back link).
+  - **Release build for devices** (generic iOS, unsigned) succeeds, with the production URL baked in.
+  - **Not done:** logged-in Manage. It needs a real login, which only Dominic can do. Screenshots are in `docs/ios-uiscene-1/`.
+- ⚠️ **SwiftPM binary download in this environment.** Xcode's own download of the Capacitor xcframework hung. The two 8.6.2 zips were placed in `~/Library/Caches/org.swift.swiftpm/artifacts/`, checksum-verified against Capacitor's `Package.swift`. On Dominic's Mac, Xcode downloads them normally.
 
 ## V16.24 — 15 November 2026 — **THE APP: PARAMÈTRES CRASH (A PRODUCTION-ONLY BUNDLE DEFECT), ONE BOUNDARY PER CARD, AUTH WAYS FORWARD, ONLY OPERATOR SCREENS IN THE APP, "LOG IN" EVERYWHERE**
 
@@ -11296,6 +11329,8 @@ A **forwarding navigation-delegate proxy** that retains Capacitor's real handler
 ### ⚠️ THE XCODE PROJECT USES EXPLICIT FILE REFERENCES
 
 **A new `.swift` file on disk is NOT compiled unless it is added to `project.pbxproj`** — as a `PBXFileReference`, a `PBXBuildFile`, a group child, and a `Sources` build-phase entry. **And `Main.storyboard` names the root view-controller class.** Both had to change together: **either one alone would have failed to instantiate the root view controller at launch** — the storyboard naming a class not in the binary, or a subclass on disk the storyboard never names. ⚠️ `customModuleProvider="target"` is required on the storyboard entry, or the class is looked up in the Capacitor module and the app launches to a bare `UIViewController`.
+
+> ⛔ **Updated V16.25 (ios-uiscene-1):** the app now has a `SceneDelegate.swift` (UIScene). It keeps the storyboard's window, so `Main.storyboard` still names the root class (`HGBridgeViewController`), now loaded through the scene manifest's `UISceneStoryboardFile`.
 
 ## Kitchen ticket printing (design + Phase A built)
 
