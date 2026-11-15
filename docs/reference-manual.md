@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.23
+HatchGrab Engineering Reference Manual · V16.24
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.23**
+**Version 16.24**
 
 November 2026
 
@@ -49,6 +49,74 @@ form — including key names and set/missing checks. It may run the project's ow
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
 # Changelog
+
+## V16.24 — 15 November 2026 — **THE APP: PARAMÈTRES CRASH (A PRODUCTION-ONLY BUNDLE DEFECT), ONE BOUNDARY PER CARD, AUTH WAYS FORWARD, ONLY OPERATOR SCREENS IN THE APP, "LOG IN" EVERYWHERE**
+
+app-fixes-1 (`docs/app-fixes-1-report.md`, commit `c6e806cb`) and app-fixes-2 (`docs/app-fixes-2-report.md`, commit `e965d654`). Web code only: the apps load the website (Capacitor `server.url`), so no app resubmission. **Not deployed.**
+
+### The Paramètres crash and the raw printing keys: one cause (app-fixes-1)
+
+- 🔴 **THE CLASS: AN IMPORT CYCLE CLOSED BY `require()` CAN BE COLLAPSED BY TURBOPACK'S PRODUCTION BUILD.** `lib/printing/transport.ts` did `require('./netTransport')`; `netTransport.ts` imported `isNetPrinterAvailable` back from `./transport` (plus `printerText` and the `printing` catalog). The production build merged the five modules into one factory and emitted **only `transport.ts`'s body**. In the app (the only place the printing card renders) that gave `MISSING_MESSAGE: printing.card` (raw keys) and `printerMessageText is not a function` (the error page). **Dev builds were fine, so no dev-server test could see it.**
+- **Caused by two commits together:** `5f70e07a` (18 Sep, created the cycle with the wired printer) and `89b3f297` (15 Oct, Language Phase 1b's namespace split pulled `printerText` and the catalog into it). Broken in every production build from 15 Oct.
+- **Fix:** `isNetPrinterAvailable` / `NET_PRINTER_PLUGIN` live in `lib/printing/netAvailability.ts` (imports nothing from `lib/printing`; `transport.ts` re-exports them). `transport.ts` imports both backends **statically**. No `require()` and no value-import cycle is left in `lib/printing` (`scripts/app-fixes-1.cjs` checks both).
+- ⚠️ **RULE: no `require()` inside app code to "lazy-load" a module.** It does not keep anything out of the bundle (a synchronous `require` is bundled anyway), and it is how this cycle was hidden.
+- **The check: `scripts/turbopack-merged-modules-check.cjs`** (by hand, **after `next build`**; reads `.next/static/chunks`). Every module id another factory uses as a value must have its exports set somewhere. Before the fix it flagged exactly modules 47834, 852807, 967316 on the deployed chunks; after, it passes across 6,131 chunks. **Run it after any change to an import graph that crosses `lib/printing` or adds a `require()`.**
+
+### One broken card never takes Paramètres down (app-fixes-1)
+
+- `components/shared/IsolatedSections.tsx`: the dashboard's Paramètres tab is `<IsolatedSections>`; **each card is its own error boundary.** A card that throws becomes "This section didn't load. / Try again" (`errorPage.sectionFailed`); every other card stays usable; the error is still `console.error`ed.
+- 🔴 **Each card is `<Section>{() => …}</Section>`.** Inline JSX (`{cond && (<div>{format(x)}</div>)}`) is evaluated during the **parent's** render, where no child boundary can catch it. `<Section>` defers that work into its own render, inside the boundary. A new card added without `<Section>` is NOT contained.
+- The "Écran des commandes" group is one wrapper in the code, so it is one section.
+
+### The error page's way back (app-fixes-1)
+
+- `app/(app)/error.tsx`: under `/dashboard/<token>` (incl. its kitchen screen) and `/manage/<token>`, on the web and in the app, the second button is **"Back to dashboard"** (fr-FR "Retour au tableau de bord") → `/dashboard/<that token>`, with `errorPage.errorBodyDashboard` above it. Elsewhere in the app → `/app`, never "/". Elsewhere on the website: unchanged. `app/(app)/not-found.tsx`'s home link is `/app` in the app.
+
+### The auth end states (app-fixes-1, worded by app-fixes-2)
+
+Every end state has a way forward:
+
+| Screen | Ways forward |
+|---|---|
+| Forgot password, "email sent" | **Back to log in** → `/login` |
+| Reset link missing / expired / used / unknown (`reset_link_*`) | **Send a new link** → `/forgot-password` · **Back to log in** → `/login` |
+| Password updated | "Password updated. Please log in." · **Log in** → `/login` (a full page load, after sign-out) |
+| `/auth/callback` invalid link (`/login?error=invalid_link`) | a banner: "That link has expired or isn't valid." on the login page |
+| Dashboard **Access denied** (bad / expired token), web and app — app-fixes-2 | **Back to log in** → `/login` (`data-gate-next="login"`) |
+
+`/login` is the login route on the web **and** in the app (native sign-out also lands there). First login after a reset goes to `/app` in the app, `/dashboard` on the web.
+
+### Carte & stock on phones (app-fixes-1)
+
+- One set of **shared fixed right-hand columns**, header and rows alike: price `w-[3.75rem] sm:w-20` · limit `w-12 sm:w-16` · Actif `w-11 sm:w-12`, `gap-1 sm:gap-2`.
+- Category row: the **name on line 1**, the counts ("Reste : N", sold) on **line 2** (`data-stock-cat-counts`). Item names wrap (`min-w-0 [overflow-wrap:anywhere]`). Below `sm`, the limit box hides its spinners.
+- No horizontal overflow at 320 / 375 / 390 / 430 px; iPad and desktop unchanged or better. Behaviour and wording unchanged. Hooks: `data-stock-row`, `data-stock-col="price|limit|on"`.
+
+### Only operator screens load inside the app (app-fixes-1; /dev moved by app-fixes-2)
+
+- **`lib/app-navigation.ts`** is THE one list (pure; the edge proxy imports it). `inAppRoute(path)`:
+  - **stay:** `/app`, `/dashboard` (incl. `/dashboard/<token>/kds`), `/kds`, `/manage`, `/login`, `/signup`, `/setup`, `/forgot-password`, `/reset-password`, `/verify-email`, `/auth`, `/admin`, `/api`, `/_next`, `/monitoring`, `/ingest`, and any file (`/offline.html`, icons).
+  - **browser** (opened in the phone's browser): `/trucks`, `/o`, `/p`, `/order`, `/embed`, `/venues`, `/hire`, `/docs`, `/privacy`, `/terms`, `/country-terms`, `/<segment>/(privacy|terms|country-terms)`.
+  - **app** (→ `/app`): everything else — "/", country pages, features, FAQ, compare, about, contact, demo, **and `/dev`** (app-fixes-2, Dominic's decision; `/signup`, `/setup`, `/admin` stay).
+- **`components/native/InAppNavigationGuard.tsx`** (mounted in the `(app)` layout, active only when `isNativeApp()`): a capture-phase click listener on same-site links. 'browser' → `browserUrlFor(url)` (the **bare domain** `hatchgrab.com`, which neither shell keeps, so iOS opens Safari and Android the default browser; it 308s to `www` with the path kept). 'app' → `/app`.
+- **`proxy.ts`**, the catch-all: a GET carrying the app's UA marker (`HatchGrabNativeApp`) for a **page** (`Sec-Fetch-Dest: document`, or the `rsc` header) whose route is not 'stay' → 307 `/app`. API calls, assets and iframes pass. The website without the marker is unchanged.
+- ⚠️ A new operator route must be added to STAY, or the app sends it to `/app`.
+
+### Every key a screen uses exists (app-fixes-1)
+
+- **`scripts/messages-keys-used.cjs`** (swept): reads every `.ts`/`.tsx` under `app/`, `components/`, `lib/` with the TypeScript parser, ties each `t()` / `t.rich()` / `t.raw()` to its own translator by scope, and fails when a literal key is missing from en-GB **or any of the 48 shipped language bases**, or a key built at run time matches no real key's fixed part. It cannot see a namespace the BUNDLE drops; that is the turbopack check above.
+
+### "Log in", never "Sign in" (app-fixes-2)
+
+- **HatchGrab's own words say "Log in" / "Log out" / "login"**, matching the landing page's "Log in": the login title and button ("Log in to your kitchen", "Log in", "Logging in…"), "Back to log in", "Password updated. Please log in.", the sign-up page's "Already have an account? Log in", the session banner ("Your login needs attention", "Log in again"), the refusals ("Log in required", "Not logged in", "…log in instead.", "Log in to request account deletion."), the demo's "Log in", the user menu's **"Log out"**, the admin console, and the API's English fallback (`lib/truck-access.ts`; the code `sign_in_required` is unchanged).
+- **Left alone on purpose:** another company's steps ("sign in to Stripe", the 123 Reg steps) and the comparison table's "Staff sign in with their own login and role."
+- **Merged:** `auth.forgot.backToLogin` → `auth.forgot.back`; `auth.reset.logIn` → `auth.login.submit`.
+- **Other languages:** 45 bases already used their own word for "log in" in the auth flow (es-ES and ro-RO: the landing's nav label is a shorter synonym, "Entrar" / "Autentificare"; ne-NP's landing itself says "sign in", so it is unchanged). **Bengali, Hindi and Urdu** used the transliterated "sign in" in the auth flow while their landing page says "log in"; they now use লগ ইন / लॉग इन / لاگ اِن. Back-translations follow. `scripts/app-fixes-2.cjs` (swept) fails if a HatchGrab en-GB message says "sign in" again.
+
+### Open
+
+- 🔴 **UIScene (native, NOT changed — needs Dominic's decision before the next iOS build).** A build made with Xcode 27.2 does not launch on the iOS 26.5 / 27 simulators: *"UIScene life cycle is required for app"*. The app uses the old app-delegate-only lifecycle. The store build is unaffected; the next build made with this SDK may not run on current iOS. Adopting UIScene is an Xcode / native change.
+- 🔴 **gusto-move-1 (13 Nov 2026, `docs/gusto-move-1-report.md`): a duplicate event from the scraper split Pizzeria Gusto's evening.** Staff took 23 orders on a duplicate "unconfirmed" event with no van while online orders went to the live event. With Dominic's approval, migration `20261102_gusto_move_1.sql` (`78f9d77c`) moved all 23 onto the live event under a row lock, renumbered 6 that clashed (#1–#6 → #24–#29), merged kitchen capacity and set the counter to 29; backup and record in `docs/gusto-move-1/`. **Root cause (why the scraper's duplicate event existed alongside the live one) — NOT YET INVESTIGATED.**
 
 ## V16.23 — 14 November 2026 — **PREP TIME AND ITEMS PER BATCH COME FROM ONE PLACE**
 
@@ -23450,7 +23518,7 @@ unquantified submission risk. **READ, 15 August, and the answer is unambiguous:*
   the Supabase dashboard — but **a provider enabled server-side that no code path can initiate is not
   something the app "offers"**, which is what 4.8 asks about.
 - The login page holds **exactly one button** ("Sign in", submitting `signInWithPassword`) and **one
-  link** ("Forgot your password?"). The signup page holds one submit button and four internal links.
+  link** ("Forgot your password?"). ⛔ **Updated V16.24 (app-fixes-2):** the button reads **"Log in"** — still the one button. The signup page holds one submit button and four internal links.
   **No divider, no "or continue with", no provider icon.**
 - 🔴 **Customers have NO ACCOUNTS AT ALL** — guest checkout, with name, email and optional phone typed
   into a form. **A surface with no authentication cannot trigger 4.8.**
@@ -27264,6 +27332,8 @@ The Settings card **no longer manufactures a connection**. ⚠️ The settings w
 > stands until a ticket has come out of a real printer.**
 
 ## Wired (network) printing — Phase C (V13.5, BUILT, NOT SHIPPED)
+> ⛔ **Updated V16.24 (app-fixes-1):** `transport.ts` no longer `require()`s `./netTransport`; both backends are imported statically and `isNetPrinterAvailable` lives in `lib/printing/netAvailability.ts`. The old cycle made the production bundle drop the printing modules (the V16.24 changelog entry).
+
 `PrinterClass` gains `'net'`. `lib/printing/netTransport.ts` implements the existing `PrinterTransport` seam
 over a local Capacitor plugin, `@hatchgrab/net-printer` (Android `java.net.Socket`; iOS `Network.framework`),
 sending ESC/POS to `host[:port]`, default **9100**, one socket per ticket.
