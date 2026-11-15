@@ -4,5 +4,8 @@
   "home": "Na domačo stran",
   "errorTitle": "Prišlo je do napake",
   "errorBody": "Žal se ta stran ni naložila. Poskusite znova ali se vrnite na domačo stran.",
-  "retry": "Poskusi znova"
+  "retry": "Poskusi znova",
+  "backToDashboard": "Nazaj na nadzorno ploščo",
+  "errorBodyDashboard": "Žal se ta stran ni naložila. Poskusite znova ali se vrnite na nadzorno ploščo.",
+  "sectionFailed": "Ta razdelek se ni naložil."
 }

@@ -4,5 +4,8 @@
   "home": "前往主頁",
   "errorTitle": "出現問題",
   "errorBody": "抱歉，此頁面未能載入。請再試一次，或返回主頁。",
-  "retry": "再試一次"
+  "retry": "再試一次",
+  "backToDashboard": "返回控制台",
+  "errorBodyDashboard": "抱歉，此頁面未能載入。請再試一次，或返回控制台。",
+  "sectionFailed": "此部分未能載入。"
 }

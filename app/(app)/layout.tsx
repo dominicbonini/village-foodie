@@ -8,6 +8,7 @@ import { CSPostHogProvider } from "./providers";
 // renders the involuntary-sign-out banner. Harmless on customer pages: with no session, no SIGNED_OUT
 // can fire, so it renders null and costs one client construction.
 import { SessionAlertBanner } from "@/components/auth/SessionAlertBanner";
+import { InAppNavigationGuard } from "@/components/native/InAppNavigationGuard";
 import { siteMetaFor, siteOpenGraph } from "@/lib/site-metadata";
 import { PAGE_LANG_HEADER, htmlLangOf } from "@/lib/page-lang";
 
@@ -123,6 +124,8 @@ export default async function RootLayout({
         <CSPostHogProvider host={host}>
           {children}
           <SessionAlertBanner />
+          {/* app-fixes-1: in the app only — customer pages open in the phone's browser, the landing page goes to /app. */}
+          <InAppNavigationGuard />
         </CSPostHogProvider>
       </body>
     </html>

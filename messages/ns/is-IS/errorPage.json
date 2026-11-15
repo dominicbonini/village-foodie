@@ -4,5 +4,8 @@
   "home": "Fara á forsíðuna",
   "errorTitle": "Eitthvað fór úrskeiðis",
   "errorBody": "Því miður — þessi síða hlóðst ekki. Reyndu aftur eða farðu aftur á forsíðuna.",
-  "retry": "Reyna aftur"
+  "retry": "Reyna aftur",
+  "backToDashboard": "Aftur á stjórnborðið",
+  "errorBodyDashboard": "Því miður — þessi síða hlóðst ekki. Reyndu aftur eða farðu aftur á stjórnborðið.",
+  "sectionFailed": "Þessi hluti hlóðst ekki."
 }

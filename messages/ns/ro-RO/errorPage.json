@@ -4,5 +4,8 @@
   "home": "Mergi la pagina principală",
   "errorTitle": "Ceva nu a funcționat",
   "errorBody": "Ne pare rău, această pagină nu s-a încărcat. Încearcă din nou sau revino la pagina principală.",
-  "retry": "Încearcă din nou"
+  "retry": "Încearcă din nou",
+  "backToDashboard": "Înapoi la panoul de control",
+  "errorBodyDashboard": "Ne pare rău, această pagină nu s-a încărcat. Încearcă din nou sau revino la panoul de control.",
+  "sectionFailed": "Această secțiune nu s-a încărcat."
 }

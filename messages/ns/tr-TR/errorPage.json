@@ -4,5 +4,8 @@
   "home": "Ana sayfaya git",
   "errorTitle": "Bir sorun oluştu",
   "errorBody": "Üzgünüz — bu sayfa yüklenmedi. Tekrar deneyin ya da ana sayfaya dönün.",
-  "retry": "Tekrar dene"
+  "retry": "Tekrar dene",
+  "backToDashboard": "Panele dön",
+  "errorBodyDashboard": "Üzgünüz — bu sayfa yüklenmedi. Tekrar deneyin ya da panelinize dönün.",
+  "sectionFailed": "Bu bölüm yüklenmedi."
 }

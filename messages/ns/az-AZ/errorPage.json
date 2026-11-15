@@ -4,5 +4,8 @@
   "home": "Ana səhifəyə keçin",
   "errorTitle": "Xəta baş verdi",
   "errorBody": "Bağışlayın — bu səhifə yüklənmədi. Yenidən cəhd edin və ya ana səhifəyə qayıdın.",
-  "retry": "Yenidən cəhd et"
+  "retry": "Yenidən cəhd et",
+  "backToDashboard": "Panelə qayıt",
+  "errorBodyDashboard": "Bağışlayın — bu səhifə yüklənmədi. Yenidən cəhd edin və ya panelə qayıdın.",
+  "sectionFailed": "Bu bölmə yüklənmədi."
 }

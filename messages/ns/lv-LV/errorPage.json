@@ -4,5 +4,8 @@
   "home": "Uz sākumlapu",
   "errorTitle": "Kaut kas nogāja greizi",
   "errorBody": "Atvainojiet, šī lapa netika ielādēta. Mēģiniet vēlreiz vai atgriezieties sākumlapā.",
-  "retry": "Mēģināt vēlreiz"
+  "retry": "Mēģināt vēlreiz",
+  "backToDashboard": "Atpakaļ uz vadības paneli",
+  "errorBodyDashboard": "Atvainojiet, šī lapa netika ielādēta. Mēģiniet vēlreiz vai atgriezieties vadības panelī.",
+  "sectionFailed": "Šī sadaļa netika ielādēta."
 }

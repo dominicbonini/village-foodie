@@ -1952,7 +1952,8 @@
       "errorFallback": "Email atau kata sandi salah. Silakan coba lagi.",
       "submit": "Masuk",
       "submitting": "Sedang masuk…",
-      "forgot": "Lupa kata sandi?"
+      "forgot": "Lupa kata sandi?",
+      "invalidLink": "Link ini sudah kedaluwarsa atau tidak valid."
     },
     "forgot": {
       "sentTitle": "Cek email Anda",
@@ -1961,7 +1962,8 @@
       "subtitle": "Masukkan email Anda dan kami akan mengirim link untuk mengatur ulang",
       "submit": "Kirim link atur ulang",
       "sending": "Mengirim…",
-      "back": "Kembali ke halaman masuk"
+      "back": "Kembali ke halaman masuk",
+      "backToLogin": "Kembali ke halaman masuk"
     },
     "reset": {
       "invalidTitle": "Link atur ulang tidak valid",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Konfirmasi kata sandi",
       "confirmPlaceholder": "Ulangi kata sandi Anda",
       "submit": "Simpan kata sandi",
-      "saving": "Menyimpan…"
+      "saving": "Menyimpan…",
+      "logIn": "Masuk",
+      "sendNewLink": "Minta link atur ulang baru"
     },
     "verifyEmail": {
       "goToLogin": "Ke halaman masuk",
@@ -7055,7 +7059,10 @@
     "home": "Ke beranda",
     "errorTitle": "Terjadi kesalahan",
     "errorBody": "Maaf — halaman ini gagal dimuat. Coba lagi, atau kembali ke beranda.",
-    "retry": "Coba lagi"
+    "retry": "Coba lagi",
+    "backToDashboard": "Kembali ke dasbor",
+    "errorBodyDashboard": "Maaf — halaman ini gagal dimuat. Coba lagi, atau kembali ke dasbor Anda.",
+    "sectionFailed": "Bagian ini gagal dimuat."
   },
   "faq": {
     "phrases": {

@@ -296,6 +296,10 @@ const plansEntries2 = () => [
     expect: b => mapStrings(b, x => stProps(x, 'PaymentsTab', p => ('plan' in p ? renameKey(p, 'plan', 'onTrial', v => v === 'trial') : p))) },
   // The dashboard's PrintingSettings props — Phase 2's precise entry (scripts/_lp2-named.cjs), REUSED on the smoke-dash views.
   reuseLp2('plans-printing-settings-props', id => /^smoke-dash\/(GB|US)\|/.test(id)),
+  // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026): Carte & stock's approved phone layout — Phase 2's structural entry, REUSED on the smoke views.
+  ...(require('./_named-app-fixes-1.cjs').LANDED ? [{ id: 'app-fixes-1-stock-layout', country: 'both', smokeOnly: true, agent: 'app-fixes-1 (14 Nov 2026)',
+    what: '⚠️ RE-PINNED (app-fixes-1, 14 November 2026): Carte & stock — the approved phone layout. STRUCTURAL: the text, every other attribute and every component stand-in byte-identical to BEFORE; only classes and the data-stock-* hooks change.',
+    views: id => /^smoke-dash\/(GB|US)\|stock(\||$)/.test(id), proveWith: (exp, f) => require('./_named-app-fixes-1.cjs').proveStockView(exp, f) }] : []),
   // ⚠️ RE-PINNED (longer collection times and capacity steps, 12 November 2026): the four entries of
   // scripts/_named-longer-intervals.cjs, REUSED on the smoke views (Part 1's Settings, Menu and Schedule re-rendered here).
   ...['longer-intervals-collection-45-60', 'longer-intervals-refusal-choices', 'longer-intervals-prep-to-60', 'longer-intervals-window-to-60']

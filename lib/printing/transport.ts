@@ -37,6 +37,9 @@
 import { Capacitor } from '@capacitor/core'
 import { Preferences } from '@capacitor/preferences'
 import type { PrinterMessage } from './printerText'
+import { isNetPrinterAvailable } from './netAvailability'
+import { createNetTransport } from './netTransport'
+import { createBleTransport } from './bleTransport'
 
 // 'net' ADDED 17 September 2026 — the wired (network, port 9100) backend, lib/printing/netTransport.ts.
 export type PrinterClass = 'mfi' | 'ble' | 'net'
@@ -47,31 +50,9 @@ export type PrinterClass = 'mfi' | 'ble' | 'net'
 export type PrinterKind = 'ble' | 'net'
 export const PRINTER_KIND_KEY = 'hg_printer_kind'
 
-// ── 🔴 THE SHELL LOADS THE LIVE SITE, SO OLD BINARIES RUN NEW WEB CODE (17 September 2026) ─────────
-// capacitor.config's `server.url` is https://www.hatchgrab.com/app — the native app is a REMOTE-URL
-// shell (§36 / V11.3: "a VERCEL DEPLOY IS NOW AN INSTANT CHANGE TO A SHIPPED APP"). The moment this web
-// code deploys, every device still running the store build executes it — and those binaries contain NO
-// NetPrinterPlugin. Without the check below, such a device could choose Wired, store 'net', build the
-// wired transport, and every plugin call would reject with "NetPrinter does not have an implementation"
-// — which netTransport.sendBytes turns into a THROW, i.e. outcome 'unknown', i.e. a POSSIBLE DUPLICATE
-// banner on a printer that was never even addressable. WIRED MUST NOT EXIST UNTIL THE BINARY HAS IT.
-//
-// Capacitor.isPluginAvailable(name) is exactly this test. In @capacitor/core 8.4.0 a registered plugin
-// carries `platforms: new Set([...Object.keys(jsImplementations), ...(pluginHeader ? [platform] : [])])`
-// and the check is `platforms.has(getPlatform()) || getPluginHeader(name)`. Our registration
-// (plugins/hatchgrab-net-printer/index.js) supplies only a `web` implementation, so on iOS/Android the
-// answer comes solely from PluginHeaders — the list the NATIVE BRIDGE injects for the classes compiled
-// into THIS binary. Old binary ⇒ no header ⇒ false. New binary ⇒ header ⇒ true.
-// ⚠️ isNativePlatform() is required too: on web `platforms.has('web')` is true (the refusing stub), and
-// a browser must never be told the wired backend exists.
-/** The name BOTH native classes register under: @CapacitorPlugin(name = "NetPrinter") /
- *  CAPPluginRegistration "NetPrinter", and registerPlugin('NetPrinter') in the JS. */
-export const NET_PRINTER_PLUGIN = 'NetPrinter'
-
-/** Is the wired backend present in the RUNNING BINARY? Every wired surface is gated on this. */
-export function isNetPrinterAvailable(): boolean {
-  try { return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable(NET_PRINTER_PLUGIN) } catch { return false }
-}
+// The wired-backend check lives in lib/printing/netAvailability.ts (app-fixes-1: it closed an import cycle); re-exported
+// here so every caller keeps its import.
+export { NET_PRINTER_PLUGIN, isNetPrinterAvailable } from './netAvailability'
 
 /** `error` is a CODE (lib/printing/printerText.ts) the card turns into words in the truck's language, or a plain
  *  string that is not ours (a native error's own message). Language Phase 1b. */
@@ -197,20 +178,15 @@ export async function setPrinterKind(kind: PrinterKind): Promise<void> {
  *  NATIVE + 'ble' (or absent) -> the Bluetooth LE backend (lib/printing/bleTransport.ts) — TODAY'S path.
  *  NATIVE + 'net'             -> the wired backend (lib/printing/netTransport.ts).
  *  WEB                        -> the honest stub, whatever the kind: a browser has no printer.
- *  The native modules are required lazily so a web bundle never pulls a native plugin in. */
+ *  Both native backends are imported statically; on the web neither is ever constructed. */
 export function getPrinterTransport(): PrinterTransport {
   const kind = getPrinterKind()
   if (_transport && _transportKind === kind) return _transport
   if (Capacitor.isNativePlatform()) {
-    if (kind === 'net') {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { createNetTransport } = require('./netTransport') as typeof import('./netTransport')
-      _transport = createNetTransport()
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { createBleTransport } = require('./bleTransport') as typeof import('./bleTransport')
-      _transport = createBleTransport()
-    }
+    // app-fixes-1: static imports (top of file), not require(). A synchronous require() is bundled into the same
+    // chunk anyway, so it never kept a plugin out of the web bundle — and with netTransport importing back from
+    // this file it made the cycle that Turbopack's production build collapsed (lib/printing/netAvailability.ts).
+    _transport = kind === 'net' ? createNetTransport() : createBleTransport()
   } else {
     _transport = createStubTransport(() => { /* no sink in the app; see the note above */ })
   }

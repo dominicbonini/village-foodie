@@ -4,5 +4,8 @@
   "home": "Siirry etusivulle",
   "errorTitle": "Jokin meni vikaan",
   "errorBody": "Valitettavasti sivu ei latautunut. Yritä uudelleen tai palaa etusivulle.",
-  "retry": "Yritä uudelleen"
+  "retry": "Yritä uudelleen",
+  "backToDashboard": "Takaisin ohjauspaneeliin",
+  "errorBodyDashboard": "Valitettavasti sivu ei latautunut. Yritä uudelleen tai palaa ohjauspaneeliin.",
+  "sectionFailed": "Tämä osio ei latautunut."
 }

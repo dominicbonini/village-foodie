@@ -4,5 +4,8 @@
   "home": "Zur Startseite",
   "errorTitle": "Etwas ist schiefgelaufen",
   "errorBody": "Entschuldigung, diese Seite wurde nicht geladen. Versuchen Sie es erneut, oder gehen Sie zurück zur Startseite.",
-  "retry": "Erneut versuchen"
+  "retry": "Erneut versuchen",
+  "backToDashboard": "Zurück zum Dashboard",
+  "errorBodyDashboard": "Entschuldigung, diese Seite wurde nicht geladen. Versuchen Sie es erneut, oder gehen Sie zurück zu Ihrem Dashboard.",
+  "sectionFailed": "Dieser Bereich wurde nicht geladen."
 }

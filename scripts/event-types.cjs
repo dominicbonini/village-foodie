@@ -2503,7 +2503,8 @@ head('5b · THE MODAL AND THE CARD')
    * there is nothing to focus: the normal state is a `<p>`, not a disabled input. */
   t('🔴 NORMAL STATE: the price is plain right-aligned text in the truck\'s currency, not a box and not focusable', (() => {
     const page = codeOf(dashPage)
-    return /<p data-event-price className=\{`w-20 text-right text-sm font-bold tabular-nums/.test(page)
+    // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026): the shared phone columns — the price column is w-[3.75rem] below 640px, w-20 above.
+    return /<p data-event-price className=\{`w-\[3\.75rem\] sm:w-20 text-right text-sm font-bold tabular-nums/.test(page)
       // Phase 2A: the figure is the TRUCK's currency through the one formatter, never a typed £.
       && /\{truckAmount\(shownPrice\)\}/.test(page)
       /* ⛔ THE INPUT EXISTS ONLY INSIDE THE EDIT ARM, and the claim is STRUCTURAL: within the price
@@ -2512,9 +2513,9 @@ head('5b · THE MODAL AND THE CARD')
        * card HEADER's button pair, 14,000 characters earlier, and anchoring on it made the window a
        * number to be tuned rather than a boundary. */
       && (() => {
-        const a = page.indexOf('className="flex flex-col items-end gap-0.5 w-20 shrink-0"')
+        const a = page.indexOf('className="flex flex-col items-end gap-0.5 w-[3.75rem] sm:w-20 shrink-0" data-stock-col="price"')
         if (a < 0) return false
-        const col = page.slice(a, page.indexOf('<div className="flex flex-col items-center gap-0.5 w-16 shrink-0">', a))
+        const col = page.slice(a, page.indexOf('<div className="flex flex-col items-center gap-0.5 w-12 sm:w-16 shrink-0" data-stock-col="limit">', a))
         return col.length > 400
           && col.indexOf('{priceEditing?(') >= 0
           /* Language Phase 1b re-pin: the input's label is `stock.priceAria` ("Price for {item} at this event"). */
@@ -2661,7 +2662,11 @@ head('5b · THE MODAL AND THE CARD')
      * branch came from schedule-graphics, so that tip is what "left" is measured against. */
     const base = execFileSync('git', ['show', `${MERGE_PARENT_SG}:app/dashboard/[token]/page.tsx`],
       { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
-    const now = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
+    // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026; scripts/_named-app-fixes-1.cjs undoFile): its recorded dashboard edits (the Carte &
+    // stock columns, the Paramètres boundaries) are taken back exactly first, so every other line is still accounted for as before;
+    // null (an edit not there exactly once) leaves the page as it is, and the accounting then fails.
+    const nowRaw = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
+    const now = require('./_named-app-fixes-1.cjs').undoFile('app/(app)/dashboard/[token]/page.tsx', nowRaw) ?? nowRaw
     const strip = (src) => codeOf(src).split('\n').map(x => x.trim()).filter(Boolean)
     const left = new Map()
     for (const l of strip(now)) left.set(l, (left.get(l) || 0) + 1)
@@ -2926,7 +2931,7 @@ head('5b · THE MODAL AND THE CARD')
     /* 🔴 THE COMPANION CHECK FOR THE ONE ACCOUNTED EDIT. An entry on that list excuses a lost line
      * only while its replacement exists; without this, deleting the call outright would read as
      * "explained". This is the `movedEdits` pattern scripts/schedule-graphics-places.cjs uses. */
-    const nowPage = codeOf(fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8'))
+    const nowPage = codeOf((raw => require('./_named-app-fixes-1.cjs').undoFile('app/(app)/dashboard/[token]/page.tsx', raw) ?? raw)(fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')))   // app-fixes-1's edits out first (above)
     /* 🔴 FOUR ACCOUNTED EDITS NOW, AND EVERY ONE IS PROVED PRESENT IN ITS NEW FORM. An entry on the
      * ALLOWED list excuses a lost line only while its replacement exists; without this, deleting a
      * call outright would read as "explained". */

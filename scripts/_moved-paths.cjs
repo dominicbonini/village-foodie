@@ -70,6 +70,7 @@ const G2 = require('./_lp-gsc-index-2.cjs')
 const B1 = require('./_lp-billing-1.cjs')   // billing-1 (10 November 2026): its named edits, taken back exactly
 const PC4 = require('./_lp-pricing-copy-4.cjs')   // pricing-copy-4 (12 November 2026): its recorded code edits, taken back exactly
 const CAP1 = require('./_named-capacity-one-source-1.cjs')   // capacity-one-source-1 (13 November 2026): its dashboard-action edits, taken back exactly
+const AF1 = require('./_named-app-fixes-1.cjs')   // app-fixes-1 (14 November 2026): its proxy.ts edits (the in-app page rule), taken back exactly
 function changedSince(rev, paths, { cwv2 = false } = {}) {
   const now = [...new Set(paths.map(nowPath))]
   const files = new Set([...tracked(['ls-files', '--', ...now]), ...tracked(['ls-tree', '-r', '--name-only', rev, '--', ...new Set(now.map(beforePath))]).map(nowPath)])
@@ -96,6 +97,15 @@ function changedSince(rev, paths, { cwv2 = false } = {}) {
     // capacity writer) are put back exactly (scripts/_named-capacity-one-source-1.cjs undoCode — null if one is not there exactly
     // once, which leaves the file changed), so every other byte of that order-path file is still compared.
     if (cur && CAP1.CODE_FILES.includes(f) && show(rev, 'scripts/_named-capacity-one-source-1.cjs') === null) { const u = CAP1.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
+    // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026; docs/app-fixes-1-report.md §4): against a revision from before it, its two proxy.ts
+    // edits (the lib/app-navigation import and the in-app page rule) are taken back exactly (scripts/_named-app-fixes-1.cjs undoCode —
+    // null if one is not there exactly once, which leaves the file changed), so every other byte of proxy.ts is still compared.
+    if (cur && AF1.CODE_FILES.includes(f) && show(rev, 'scripts/_named-app-fixes-1.cjs') === null) { const u = AF1.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
+    // …and the same for its other recorded edits (scripts/fixtures/app-fixes-1-edits.json: the printing cycle fix in lib/printing, the Carte &
+    // stock layout and the Paramètres boundaries in the dashboard, the auth / error / 404 pages, the layout's guard line), and the one file
+    // it added (lib/printing/netAvailability.ts) reads as absent while it is exactly as written.
+    if (cur && AF1.EDITED_FILES.includes(f) && show(rev, 'scripts/_named-app-fixes-1.cjs') === null) { const u = AF1.undoFile(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
+    if (cur && f in AF1.NEW_FILES && show(rev, 'scripts/_named-app-fixes-1.cjs') === null && AF1.isOwnNewFile(f, Buffer.from(cur, 'latin1'))) cur = null
     let then = show(rev, f) ?? show(rev, beforePath(f))
     if (then !== null) for (const [a, b] of MOVE_EDITS[f] || []) then = then.split(a).join(b)
     if (cur !== then) changed.push(f)

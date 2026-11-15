@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/auth'
 import { FlowLogo } from '@/components/shared/FlowLogo'   // site-chrome-1: the focused flows' logo, linking home (inert in the app)
@@ -43,6 +44,11 @@ export default function ForgotPasswordPage() {
           <p className="text-sm text-slate-500">
             {t('sentBody')}
           </p>
+          {/* app-fixes-1: the "email sent" end state had no way forward. /login is the login page on the web AND in the app. */}
+          <Link href="/login" data-auth-next="login"
+             className="mt-6 inline-block w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-xl">
+            {t('backToLogin')}
+          </Link>
         </div>
       </div>
     )

@@ -4,5 +4,8 @@
   "home": "Ugrás a kezdőlapra",
   "errorTitle": "Hiba történt",
   "errorBody": "Sajnáljuk, ez az oldal nem töltődött be. Próbálja újra, vagy térjen vissza a kezdőlapra.",
-  "retry": "Újra"
+  "retry": "Újra",
+  "backToDashboard": "Vissza a vezérlőpultra",
+  "errorBodyDashboard": "Sajnáljuk, ez az oldal nem töltődött be. Próbálja újra, vagy térjen vissza a vezérlőpultra.",
+  "sectionFailed": "Ez a rész nem töltődött be."
 }

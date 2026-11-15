@@ -4,5 +4,8 @@
   "home": "Pergi ke halaman utama",
   "errorTitle": "Ada sesuatu yang tidak kena",
   "errorBody": "Maaf, halaman ini tidak dapat dimuatkan. Cuba lagi, atau kembali ke halaman utama.",
-  "retry": "Cuba lagi"
+  "retry": "Cuba lagi",
+  "backToDashboard": "Kembali ke papan pemuka",
+  "errorBodyDashboard": "Maaf, halaman ini tidak dapat dimuatkan. Cuba lagi, atau kembali ke papan pemuka anda.",
+  "sectionFailed": "Bahagian ini tidak dapat dimuatkan."
 }

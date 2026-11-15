@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { inAppRoute } from '@/lib/app-navigation'
 import { NextResponse, type NextRequest } from 'next/server'
 import { crossHostRedirect } from '@/lib/host-redirects'
 import { ratelimit, strictRatelimit, eventsRatelimit, embedRatelimit, customHostRatelimit } from '@/lib/ratelimit'
@@ -209,6 +210,20 @@ export async function proxy(request: NextRequest) {
 
     // The one endpoint the page fetches. Nothing else reaches this line.
     return NextResponse.next()
+  }
+
+  // ── 🔴 app-fixes-1 (14 November 2026, docs/app-fixes-1-report.md §4): ONLY OPERATOR SCREENS LOAD INSIDE THE APP. ─────────
+  // The shell (capacitor.config) keeps every address on this host inside the app, so the landing page, a country page or a
+  // customer's order page could load there — with no way back. A PAGE request carrying the app's user-agent marker (the same
+  // marker the auth guard below defers on; a browser never has it) for anything outside lib/app-navigation.ts's 'stay' list
+  // goes to /app, which routes to the device's dashboard (or login). Taps on links never get this far for customer pages:
+  // components/native/InAppNavigationGuard.tsx opens those in the phone's browser; this is the catch-all.
+  // ⚠️ PAGES ONLY: a top-level document (Sec-Fetch-Dest: document — an iframe preview says 'iframe' and is left alone) or a
+  // client-side navigation (the RSC header). API calls, assets and iframes pass. The website (no marker) is unchanged.
+  if (request.method === 'GET' && (request.headers.get('user-agent') || '').includes('HatchGrabNativeApp')) {
+    const dest = request.headers.get('sec-fetch-dest')
+    const isPage = request.headers.has('rsc') || (dest ? dest === 'document' : (request.headers.get('accept') || '').includes('text/html'))
+    if (isPage && inAppRoute(pathname) !== 'stay') return NextResponse.redirect(new URL('/app', request.url))
   }
 
   const isVillageFoodie =

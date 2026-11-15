@@ -1952,7 +1952,8 @@
       "errorFallback": "E-pochta yoki parol notoʻgʻri. Qayta urinib koʻring.",
       "submit": "Kirish",
       "submitting": "Kirilmoqda…",
-      "forgot": "Parolni unutdingizmi?"
+      "forgot": "Parolni unutdingizmi?",
+      "invalidLink": "Bu havolaning muddati tugagan yoki u yaroqsiz."
     },
     "forgot": {
       "sentTitle": "E-pochtangizni tekshiring",
@@ -1961,7 +1962,8 @@
       "subtitle": "E-pochtangizni kiriting — tiklash havolasini yuboramiz",
       "submit": "Tiklash havolasini yuborish",
       "sending": "Yuborilmoqda…",
-      "back": "Kirish sahifasiga qaytish"
+      "back": "Kirish sahifasiga qaytish",
+      "backToLogin": "Kirish sahifasiga qaytish"
     },
     "reset": {
       "invalidTitle": "Tiklash havolasi yaroqsiz",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Parolni tasdiqlang",
       "confirmPlaceholder": "Parolni takrorlang",
       "submit": "Parolni oʻrnatish",
-      "saving": "Saqlanmoqda…"
+      "saving": "Saqlanmoqda…",
+      "logIn": "Kirish",
+      "sendNewLink": "Yangi tiklash havolasini soʻrash"
     },
     "verifyEmail": {
       "goToLogin": "Kirish sahifasiga oʻtish",
@@ -7055,7 +7059,10 @@
     "home": "Bosh sahifaga oʻtish",
     "errorTitle": "Nimadir xato ketdi",
     "errorBody": "Kechirasiz — bu sahifa yuklanmadi. Qaytadan urinib koʻring yoki bosh sahifaga qayting.",
-    "retry": "Qayta urinish"
+    "retry": "Qayta urinish",
+    "backToDashboard": "Panelga qaytish",
+    "errorBodyDashboard": "Kechirasiz — bu sahifa yuklanmadi. Qaytadan urinib koʻring yoki panelga qayting.",
+    "sectionFailed": "Bu boʻlim yuklanmadi."
   },
   "faq": {
     "phrases": {

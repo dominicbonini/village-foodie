@@ -727,6 +727,22 @@ function ie1Visit(b, id) {
  *  language-phase-2 and by the 1a / 1b / 1c harnesses (which compare BEFORE + the named changes with their AFTER). */
 // ⚠️ RE-PINNED (pending-card fix, 16 Oct 2026, docs/private-event-approval-fix-report.md): through applyNamed, so a
 // `prove` entry (pending-card-layout) is understood; every other view gets exactly what the old loop gave it.
+// ⚠️ RE-PINNED (app-fixes-1, 14 November 2026, docs/app-fixes-1-report.md §1/§2): STRUCTURAL proofs (scripts/_named-app-fixes-1.cjs) —
+//   · Carte & stock on the dashboard: layout only (classes, data-stock-* hooks, the category counts on their own line) — the text, every
+//     other attribute and every component stand-in are byte-identical to BEFORE;
+//   · the auth end states: "email sent" gains "Back to log in" (/login); the invalid-link card gains the logo and "Back to log in" (/login),
+//     and its "Request a new reset link" reads "Send a new link". Everything else in those views is still there.
+{
+  const AF1 = require('./_named-app-fixes-1.cjs')
+  if (AF1.LANDED) NAMED.push(
+    { id: 'app-fixes-1-stock-layout', country: 'both', agent: 'app-fixes-1 (14 Nov 2026)', what: 'Carte & stock: the approved phone layout — layout only',
+      views: id => /^(1b\/dashboard|smoke-dash)\/(GB|US)\|stock(\||$)/.test(id), proveWith: (exp, f) => AF1.proveStockView(exp, f) },
+    { id: 'app-fixes-1-forgot-sent', country: 'both', agent: 'app-fixes-1 (14 Nov 2026)', what: '"email sent" gains "Back to log in"',
+      views: id => /^1c\/auth\/(GB|US)\|forgot\|sent$/.test(id), proveWith: AF1.proveAuthView('forgotSent') },
+    { id: 'app-fixes-1-reset-invalid', country: 'both', agent: 'app-fixes-1 (14 Nov 2026)', what: 'the invalid-link card: "Send a new link" + "Back to log in", the logo',
+      views: id => /^1c\/auth\/(GB|US)\|reset\|invalidLink(\|falseFlag)?$/.test(id), proveWith: AF1.proveAuthView('resetInvalid') })
+}
+
 function apply(id, before) {
   return applyNamed(NAMED, countryOf(id) === 'US', id, before)
 }

@@ -5934,5 +5934,12 @@
  "manageMenu.allergens.kitchenEdit": "Edit",
  "order.kitchenHeading": "Allergens used in this kitchen",
  "order.kitchenNote": "The allergens from its recipe are listed with each dish. We cannot guarantee that no dish contains traces.",
- "manageMenu.category.otherVans": "Vehicle 1. Other vehicles: Kitchen capacity tab."
+ "manageMenu.category.otherVans": "Vehicle 1. Other vehicles: Kitchen capacity tab.",
+ "auth.login.invalidLink": "This link has expired or is not valid.",
+ "auth.reset.logIn": "Sign in",
+ "errorPage.backToDashboard": "Back to the control board",
+ "errorPage.errorBodyDashboard": "Sorry, this page did not load. Try again, or go back to the control board.",
+ "errorPage.sectionFailed": "This section did not load.",
+ "auth.forgot.backToLogin": "Back to sign-in",
+ "auth.reset.sendNewLink": "Request a new reset link"
 }

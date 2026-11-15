@@ -4,5 +4,8 @@
   "home": "Gå til forsiden",
   "errorTitle": "Noget gik galt",
   "errorBody": "Beklager, siden blev ikke indlæst. Prøv igen, eller gå tilbage til forsiden.",
-  "retry": "Prøv igen"
+  "retry": "Prøv igen",
+  "backToDashboard": "Tilbage til oversigten",
+  "errorBodyDashboard": "Beklager, siden blev ikke indlæst. Prøv igen, eller gå tilbage til oversigten.",
+  "sectionFailed": "Denne sektion blev ikke indlæst."
 }

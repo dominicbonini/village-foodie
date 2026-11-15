@@ -4,5 +4,8 @@
   "home": "Gå til forsiden",
   "errorTitle": "Noe gikk galt",
   "errorBody": "Beklager, siden ble ikke lastet inn. Prøv igjen, eller gå tilbake til forsiden.",
-  "retry": "Prøv igjen"
+  "retry": "Prøv igjen",
+  "backToDashboard": "Tilbake til kontrollpanelet",
+  "errorBodyDashboard": "Beklager, siden ble ikke lastet inn. Prøv igjen, eller gå tilbake til kontrollpanelet.",
+  "sectionFailed": "Denne delen ble ikke lastet inn."
 }

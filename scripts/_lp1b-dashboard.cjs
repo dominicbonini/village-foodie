@@ -60,7 +60,10 @@ const MS_USE_NEW = "const __msUse = (k, p) => { const v = globalThis.__ms && Obj
 // inside it — so every word the page hands a component (a label, an aria-label, a total) is still captured, and a
 // change inside the component itself cannot show up as a change here. MoneyContext, the dashboard types and helpers
 // are not components and stay real.
-const REAL = new Set(['@/components/dashboard/types', '@/components/dashboard/helpers', '@/components/MoneyContext'])
+// ⚠️ RE-PINNED (app-fixes-1, 14 November 2026): IsolatedSections / Section are not another area's component but the Paramètres tab's own
+// container — one error boundary per card, no element of their own — so they render for real: the tab is then its old
+// <div className="space-y-4"> with the same children, and every byte of it is still compared.
+const REAL = new Set(['@/components/dashboard/types', '@/components/dashboard/helpers', '@/components/MoneyContext', '@/components/shared/IsolatedSections'])
 function componentStubs(src) {
   const stubs = {}
   for (const mm of src.matchAll(/^import\s+(?:(\w+)\s*,?\s*)?(?:\{([^}]*)\})?\s*from\s*'(@\/components\/[^']+)'/gm)) {

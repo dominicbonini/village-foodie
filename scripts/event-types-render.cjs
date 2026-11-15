@@ -781,8 +781,11 @@ function itemsFixture(css, editing = false, longName = false) {
   /* ⚠️ LIFTED FROM THE PAGE: the column header's class, the read-only price's class, the input's
    * class, and the blue note's. A re-typed copy here would keep measuring the old shape. */
   // ⚠️ RE-PINNED (Language Phase 1d): the header reads `{tSvc('eventPriceColumnLabel')}` in place of the import.
-  const headCls = lift(PAGE, /<span className="(w-20 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400)">\{tSvc\('eventPriceColumnLabel'\)\}/, 'the Price column header')
-  const plainCls = lift(PAGE, /<p data-event-price className=\{`(w-20 text-right text-sm font-bold tabular-nums) /, 'the read-only price')
+  // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026, docs/app-fixes-1-report.md §2): Dominic's approved phone layout — ONE set of fixed right-hand
+  // columns shared by headings, category rows and item rows (price w-[3.75rem]/sm:w-20 · limit w-12/sm:w-16 · switch w-11/sm:w-12, gap-1/
+  // sm:gap-2, the same 9px right inset). The fixture below is re-typed to that shape; the classes it can lift are lifted.
+  const headCls = lift(PAGE, /<span className="(w-\[3\.75rem\] sm:w-20 shrink-0 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400)">\{tSvc\('eventPriceColumnLabel'\)\}/, 'the Price column header')
+  const plainCls = lift(PAGE, /<p data-event-price className=\{`(w-\[3\.75rem\] sm:w-20 text-right text-sm font-bold tabular-nums) /, 'the read-only price')
   const noteCls = lift(PAGE, /<div className="(mb-4 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2)" data-price-edit-note>/, 'the edit note')
   /* ⚠️ 10 October 2026: the button is a COMPACT OUTLINED one on the title row at every width now —
    * it was `w-full sm:w-auto` and a solid grey bar under the title at 390. The lift is what made this
@@ -795,8 +798,8 @@ function itemsFixture(css, editing = false, longName = false) {
    * columns at 390. If either word grows again, this file rebuilds with it and the fit check speaks. */
   // Language Phase 1b re-pin: the two headings are `{tDash('stock.colLimit')}` / `{tDash('stock.colOn')}`; the words
   // measured are those messages' en-GB text, lifted through the key the page reads.
-  const limitHead = liftMessage(PAGE, /<span className="w-16 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">\{tDash\('([\w.]+)'\)\}<\/span>/, 'the Limit column header')
-  const onHead = liftMessage(PAGE, /<span className="w-12 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">\{tDash\('([\w.]+)'\)\}<\/span>/, 'the On column header')
+  const limitHead = liftMessage(PAGE, /<span className="w-12 sm:w-16 shrink-0 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">\{tDash\('([\w.]+)'\)\}<\/span>/, 'the Limit column header')
+  const onHead = liftMessage(PAGE, /<span className="w-11 sm:w-12 shrink-0 text-center text-\[10px\] font-black uppercase tracking-wide text-slate-400">\{tDash\('([\w.]+)'\)\}<\/span>/, 'the On column header')
   /* ⚠️ RE-PINNED (Language Phase 1d): the card's words are `serviceSettings` messages the page reads as `tSvc('<key>')`;
    * each key is lifted from the page's own call and its en-GB text rendered. */
   const editLabel = liftKey(PAGE, /\{tSvc\('(eventPriceEdit)'\)\}/, 'serviceSettings', 'the Edit prices label')
@@ -806,29 +809,29 @@ function itemsFixture(css, editing = false, longName = false) {
   const cardDesc = liftKey(PAGE, /\{tSvc\('(eventItemsCardDescription)'\)\}/, 'serviceSettings', 'the card description')
 
   const sw = (on, locked) => `<button type="button" role="switch" aria-checked="${on}" aria-label="Available" ${locked ? 'disabled' : ''} class="relative w-11 h-6 rounded-full shrink-0 ${locked ? 'opacity-50' : ''} ${on ? 'bg-green-500' : 'bg-slate-300'}"><span class="absolute top-1 w-4 h-4 rounded-full bg-white"></span></button>`
-  const limit = (locked) => `<input type="number" placeholder="–" ${locked ? 'disabled' : ''} value="8" class="w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold text-slate-900 border-slate-200 bg-slate-50 disabled:opacity-50"/>`
+  const limit = (locked) => `<input type="number" placeholder="–" ${locked ? 'disabled' : ''} value="8" class="w-12 sm:w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold max-sm:px-1 max-sm:[appearance:textfield] max-sm:[&::-webkit-inner-spin-button]:appearance-none max-sm:[&::-webkit-outer-spin-button]:appearance-none text-slate-900 border-slate-200 bg-slate-50 disabled:opacity-50"/>`
   /* A price cell in whichever mode. `own` = this event has set it, so blue (+ × in edit mode). */
   const price = (pounds, own) => editing
-    ? `<div class="relative w-20"><input type="text" aria-label="Price at this event" value="${pounds.toFixed(2)}" class="w-20 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-right font-bold focus:outline-none ${own ? 'border-blue-300 bg-blue-50 text-blue-700 pr-5' : 'border-slate-200 bg-white text-slate-900'}"/>${own ? '<button type="button" aria-label="Clear" class="absolute right-0.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-100 text-blue-600 text-[10px] font-bold flex items-center justify-center">&times;</button>' : ''}</div>`
+    ? `<div class="relative w-[3.75rem] sm:w-20"><input type="text" aria-label="Price at this event" value="${pounds.toFixed(2)}" class="w-[3.75rem] sm:w-20 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-right font-bold focus:outline-none ${own ? 'border-blue-300 bg-blue-50 text-blue-700 pr-5' : 'border-slate-200 bg-white text-slate-900'}"/>${own ? '<button type="button" aria-label="Clear" class="absolute right-0.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-100 text-blue-600 text-[10px] font-bold flex items-center justify-center">&times;</button>' : ''}</div>`
     : `<p data-event-price class="${plainCls} ${own ? 'text-blue-700' : 'text-slate-800'}">£${pounds.toFixed(2)}</p>`
 
   const NAME = longName
     ? 'Nduja, honey and smoked scamorza on a 48-hour fermented sourdough base'
     : 'Margherita'
   const item = (name, pounds, own) => `
-    <div class="flex items-center gap-2 p-2 rounded-xl border bg-slate-50 border-slate-100">
+    <div class="flex items-center gap-1 sm:gap-2 p-2 rounded-xl border bg-slate-50 border-slate-100">
       <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 flex-wrap"><p class="font-bold text-sm text-slate-800">${name}</p></div>
+        <div class="flex items-center gap-2 flex-wrap"><p class="font-bold text-sm min-w-0 [overflow-wrap:anywhere] text-slate-800">${name}</p></div>
         ${own ? `<p data-own-note class="text-[11px] text-blue-500 mt-0.5">Festival £12.00 · this event</p>` : ''}
       </div>
-      <div class="flex flex-col items-end gap-0.5 w-20 shrink-0">${price(pounds, own)}</div>
-      <div data-limit-cell class="flex flex-col items-center gap-0.5 w-16 shrink-0">${limit(editing)}</div>
-      <span data-on-cell class="w-12 shrink-0 flex justify-center">${sw(true, editing)}</span>
+      <div class="flex flex-col items-end gap-0.5 w-[3.75rem] sm:w-20 shrink-0">${price(pounds, own)}</div>
+      <div data-limit-cell class="flex flex-col items-center gap-0.5 w-12 sm:w-16 shrink-0">${limit(editing)}</div>
+      <span data-on-cell class="w-11 sm:w-12 shrink-0 flex justify-center">${sw(true, editing)}</span>
     </div>`
 
   return `${HEAD(css)}
 <div id="scope" style="background:#f8fafc;padding:16px">
-  <div id="card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+  <div id="card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-4">
     <div id="cardhead" class="${cardHeadCls}">
       <p class="text-sm font-semibold text-slate-800 tracking-wide">Items — this event</p>
       ${editing
@@ -837,11 +840,11 @@ function itemsFixture(css, editing = false, longName = false) {
     </div>
     <p class="text-slate-500 text-xs mb-4">${cardDesc}</p>
     ${editing ? `<div id="editnote" class="${noteCls}"><p class="text-xs text-blue-800">${editNote}</p><p class="text-xs font-semibold text-blue-900 mt-0.5">${liveNote}</p></div>` : ''}
-    <div class="flex items-center gap-2 pr-2 mb-2">
+    <div class="flex items-center gap-1 sm:gap-2 pr-[9px] mb-2">
       <span class="flex-1"></span>
       <span id="pricehead" class="${headCls}">Price</span>
-      <span id="limithead" class="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">${limitHead}</span>
-      <span id="onhead" class="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">${onHead}</span>
+      <span id="limithead" class="w-12 sm:w-16 shrink-0 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">${limitHead}</span>
+      <span id="onhead" class="w-11 sm:w-12 shrink-0 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">${onHead}</span>
     </div>
     <div class="space-y-1.5">
       ${item(NAME, 13, true)}
@@ -1867,7 +1870,10 @@ async function main() {
       // ── 3c · A VERY LONG ITEM NAME MUST NOT PUSH THE COLUMNS OUT ──────────────────────────────
       await eng.page.goto(write(`items-long-${w}-${eng.name}.html`, itemsFixture(css, false, true)))
       const lg = await eng.page.evaluate(probe)
-      t(!lg.pageScrollsSideways && lg.prices.every(x => x.right <= lg.card.right + 1) && lg.prices.every(x => x.width >= 70),
+      // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026): the Price column is a FIXED width — 60px below 640px (Dominic's approved phone
+      // layout, so names keep room to wrap), 80px from 640px. Not squeezed = the column keeps exactly its fixed width.
+      const fixedPrice = w < 640 ? 60 : 80
+      t(!lg.pageScrollsSideways && lg.prices.every(x => x.right <= lg.card.right + 1) && lg.prices.every(x => x.width >= fixedPrice - 0.5),
         `🔴 items ${w}: a 70-character item name does not squeeze the Price column (${lg.prices.map(x => x.width).join('/')}px)`)
 
       /* ══ 3d · THE DARK EVENT BAR — STANDARD, A CUSTOM TYPE, AND A PRIVATE EVENT ════════════════ */

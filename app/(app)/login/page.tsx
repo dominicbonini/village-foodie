@@ -25,6 +25,8 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null)
   const [showResetSuccess, setShowResetSuccess] = useState(message === 'password_reset')
   const showEmailChanged = message === 'email_changed'
+  // app-fixes-1: /auth/callback sends a failed email link here with ?error=invalid_link. It used to show nothing.
+  const showInvalidLink = searchParams.get('error') === 'invalid_link'
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -112,6 +114,13 @@ function LoginForm() {
           <div className="bg-orange-50 border border-orange-200 rounded-xl
                           px-4 py-3 text-sm text-orange-700 text-center">
             {t('resetSuccess')}
+          </div>
+        )}
+
+        {showInvalidLink && (
+          <div data-auth-end="callback-invalid" className="bg-amber-50 border border-amber-200 rounded-xl
+                          px-4 py-3 text-sm text-amber-800 text-center">
+            {t('invalidLink')}
           </div>
         )}
 

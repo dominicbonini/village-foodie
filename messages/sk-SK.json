@@ -1952,7 +1952,8 @@
       "errorFallback": "Nesprávny e-mail alebo heslo. Skúste to znova.",
       "submit": "Prihlásiť sa",
       "submitting": "Prihlasuje sa…",
-      "forgot": "Zabudli ste heslo?"
+      "forgot": "Zabudli ste heslo?",
+      "invalidLink": "Platnosť odkazu vypršala alebo je neplatný."
     },
     "forgot": {
       "sentTitle": "Skontrolujte si e-mail",
@@ -1961,7 +1962,8 @@
       "subtitle": "Zadajte svoj e-mail a pošleme vám odkaz na obnovenie",
       "submit": "Poslať odkaz na obnovenie",
       "sending": "Odosiela sa…",
-      "back": "Späť na prihlásenie"
+      "back": "Späť na prihlásenie",
+      "backToLogin": "Späť na prihlásenie"
     },
     "reset": {
       "invalidTitle": "Neplatný odkaz na obnovenie",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Potvrďte heslo",
       "confirmPlaceholder": "Zopakujte heslo",
       "submit": "Nastaviť heslo",
-      "saving": "Ukladá sa…"
+      "saving": "Ukladá sa…",
+      "logIn": "Prihlásiť sa",
+      "sendNewLink": "Požiadať o nový odkaz na obnovenie"
     },
     "verifyEmail": {
       "goToLogin": "Prejsť na prihlásenie",
@@ -7055,7 +7059,10 @@
     "home": "Prejsť na úvodnú stránku",
     "errorTitle": "Niečo sa pokazilo",
     "errorBody": "Ospravedlňujeme sa, táto stránka sa nenačítala. Skúste to znova alebo sa vráťte na úvodnú stránku.",
-    "retry": "Skúsiť znova"
+    "retry": "Skúsiť znova",
+    "backToDashboard": "Späť na prehľad",
+    "errorBodyDashboard": "Ospravedlňujeme sa, táto stránka sa nenačítala. Skúste to znova alebo sa vráťte na prehľad.",
+    "sectionFailed": "Táto časť sa nenačítala."
   },
   "faq": {
     "phrases": {

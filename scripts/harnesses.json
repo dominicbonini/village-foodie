@@ -228,7 +228,9 @@
     "pricing-copy-4.cjs",
     "world-countries-5.cjs",
     "allergen-kitchen-1.cjs",
-    "capacity-one-source-1.cjs"
+    "capacity-one-source-1.cjs",
+    "app-fixes-1.cjs",
+    "messages-keys-used.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -432,6 +434,8 @@
         "deals-order-1-live.cjs",
         "allergen-kitchen-1-live.cjs",
         "capacity-one-source-1-screens.cjs",
+        "app-fixes-1-screens.cjs",
+        "turbopack-merged-modules-check.cjs",
         "pricing-copy-1-screens.cjs",
         "pricing-copy-4-screens.cjs",
         "_pricing-copy-4-monthly-preload.cjs",

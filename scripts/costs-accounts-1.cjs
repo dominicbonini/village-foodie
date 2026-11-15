@@ -367,7 +367,10 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const ak1Menu = f => { const raw = fs.readFileSync(path.join(REPO, f), 'utf8'); return require('./_named-allergen-kitchen-1.cjs').undoFile(f, raw) ?? raw }   // allergen-kitchen-1's edits out first
     const notDealsOrder = f => !(f === DO1.MENU_ROUTE && DO1.undoMenu(ak1Menu(f)) === showAt(DO1.BASE, f))
     try { diff = require('./_moved-paths.cjs').changedSince(BEFORE, PATHS_REST, { cwv2: true }).filter(notDc2).filter(notLonger).filter(notPc4).filter(notOfflineStart).filter(notDealsOrder).join('\n') } catch (e) { diff = String(e) }
-    const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }).trim()
+    // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026): the one file it added (lib/printing/netAvailability.ts) is not "untracked" while it is
+    // exactly as written (scripts/_named-app-fixes-1.cjs isOwnNewFile — sha-256); changedSince above also reads it as absent.
+    const AF1 = require('./_named-app-fixes-1.cjs')
+    const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', ...PATHS_REST], { cwd: REPO, encoding: 'utf8' }).trim().split('\n').filter(f => f && !AF1.isOwnNewFile(f, fs.existsSync(path.join(REPO, f)) ? fs.readFileSync(path.join(REPO, f)) : null)).join('\n')
     t(`${PATHS.length} order, payment, menu, KDS, dashboard and ticket paths: no change against ${BEFORE} (working tree)`, PATHS.length >= 20 && diff.trim() === '' && untracked === '', diff + untracked)
     const PERF1_LINES = [
       "import { isMarketingRender } from '@/lib/marketing-render'   // perf-1: a marketing page's render reads the tagged shared cache",

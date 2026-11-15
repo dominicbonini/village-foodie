@@ -119,6 +119,9 @@ function diffJson(a, b, p = '') {
       if (p2.listed) { phase2Skipped.push(`${area} · ${k} (${p2.touched.join('+')})`); continue }
       if (p2.touched.length) { phase2Named[p2.touched.join('+')] = (phase2Named[p2.touched.join('+')] || 0) + 1; before[k] = p2.expected }
       if (!(k in views)) { t(`${area} · ${k}: still rendered`, false); continue }
+      // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026): a view a named entry proves STRUCTURALLY (scripts/_lp2-named.cjs `proveWith`, as the
+      // Phase 2 / 1d / 1d2 / 1e checks already honour) is checked by that proof — which passes or fails — instead of byte equality.
+      if (p2.matches) { const r = p2.matches(views[k], views); t(`${area} · ${k}: proven by ${p2.touched.join('+')}`, r.ok, (r.problems || []).join('; ')); continue }
       if (mod.compare && mod.compare(k, before[k], views[k], ctx)) continue   // the module proved (or failed) this view itself
       const d = diffJson(before[k], views[k]); t(`${area} · ${k}`, d === null, d)
     }

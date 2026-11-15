@@ -1952,7 +1952,8 @@
       "errorFallback": "E-mail ou senha incorretos. Tente de novo.",
       "submit": "Entrar",
       "submitting": "Entrando…",
-      "forgot": "Esqueceu a senha?"
+      "forgot": "Esqueceu a senha?",
+      "invalidLink": "Este link expirou ou não é válido."
     },
     "forgot": {
       "sentTitle": "Confira seu e-mail",
@@ -1961,7 +1962,8 @@
       "subtitle": "Informe seu e-mail e enviaremos um link para redefinir a senha",
       "submit": "Enviar link",
       "sending": "Enviando…",
-      "back": "Voltar para o login"
+      "back": "Voltar para o login",
+      "backToLogin": "Voltar para o login"
     },
     "reset": {
       "invalidTitle": "Link de redefinição inválido",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Confirme a senha",
       "confirmPlaceholder": "Repita a senha",
       "submit": "Salvar senha",
-      "saving": "Salvando…"
+      "saving": "Salvando…",
+      "logIn": "Entrar",
+      "sendNewLink": "Pedir um novo link"
     },
     "verifyEmail": {
       "goToLogin": "Ir para o login",
@@ -7055,7 +7059,10 @@
     "home": "Ir para a página inicial",
     "errorTitle": "Algo deu errado",
     "errorBody": "Desculpe, esta página não carregou. Tente de novo ou volte para a página inicial.",
-    "retry": "Tentar de novo"
+    "retry": "Tentar de novo",
+    "backToDashboard": "Voltar para o painel",
+    "errorBodyDashboard": "Desculpe, esta página não carregou. Tente de novo ou volte para o seu painel.",
+    "sectionFailed": "Esta seção não carregou."
   },
   "faq": {
     "phrases": {

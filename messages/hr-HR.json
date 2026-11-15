@@ -1952,7 +1952,8 @@
       "errorFallback": "Pogrešna e-pošta ili lozinka. Pokušajte ponovno.",
       "submit": "Prijava",
       "submitting": "Prijavljivanje…",
-      "forgot": "Zaboravili ste lozinku?"
+      "forgot": "Zaboravili ste lozinku?",
+      "invalidLink": "Ova je poveznica istekla ili nije valjana."
     },
     "forgot": {
       "sentTitle": "Provjerite e-poštu",
@@ -1961,7 +1962,8 @@
       "subtitle": "Upišite svoju e-poštu i poslat ćemo vam poveznicu za ponovno postavljanje",
       "submit": "Pošalji poveznicu",
       "sending": "Slanje…",
-      "back": "Natrag na prijavu"
+      "back": "Natrag na prijavu",
+      "backToLogin": "Natrag na prijavu"
     },
     "reset": {
       "invalidTitle": "Nevažeća poveznica",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Potvrdite lozinku",
       "confirmPlaceholder": "Ponovite lozinku",
       "submit": "Postavi lozinku",
-      "saving": "Spremanje…"
+      "saving": "Spremanje…",
+      "logIn": "Prijava",
+      "sendNewLink": "Zatražite novu poveznicu"
     },
     "verifyEmail": {
       "goToLogin": "Idi na prijavu",
@@ -7055,7 +7059,10 @@
     "home": "Idi na početnu stranicu",
     "errorTitle": "Nešto je pošlo po zlu",
     "errorBody": "Žao nam je, ova se stranica nije učitala. Pokušajte ponovno ili se vratite na početnu stranicu.",
-    "retry": "Pokušaj ponovno"
+    "retry": "Pokušaj ponovno",
+    "backToDashboard": "Natrag na nadzornu ploču",
+    "errorBodyDashboard": "Žao nam je, ova se stranica nije učitala. Pokušajte ponovno ili se vratite na nadzornu ploču.",
+    "sectionFailed": "Ovaj se odjeljak nije učitao."
   },
   "faq": {
     "phrases": {

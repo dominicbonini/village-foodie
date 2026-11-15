@@ -1952,7 +1952,8 @@
       "errorFallback": "Email hoặc mật khẩu không đúng. Vui lòng thử lại.",
       "submit": "Đăng nhập",
       "submitting": "Đang đăng nhập…",
-      "forgot": "Quên mật khẩu?"
+      "forgot": "Quên mật khẩu?",
+      "invalidLink": "Link này đã hết hạn hoặc không hợp lệ."
     },
     "forgot": {
       "sentTitle": "Kiểm tra email của bạn",
@@ -1961,7 +1962,8 @@
       "subtitle": "Nhập email, chúng tôi sẽ gửi link đặt lại mật khẩu",
       "submit": "Gửi link đặt lại",
       "sending": "Đang gửi…",
-      "back": "Quay lại đăng nhập"
+      "back": "Quay lại đăng nhập",
+      "backToLogin": "Quay lại đăng nhập"
     },
     "reset": {
       "invalidTitle": "Link đặt lại không hợp lệ",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Xác nhận mật khẩu",
       "confirmPlaceholder": "Nhập lại mật khẩu",
       "submit": "Đặt mật khẩu",
-      "saving": "Đang lưu…"
+      "saving": "Đang lưu…",
+      "logIn": "Đăng nhập",
+      "sendNewLink": "Yêu cầu link đặt lại mới"
     },
     "verifyEmail": {
       "goToLogin": "Đến trang đăng nhập",
@@ -7055,7 +7059,10 @@
     "home": "Về trang chủ",
     "errorTitle": "Đã xảy ra lỗi",
     "errorBody": "Rất tiếc — trang này không tải được. Hãy thử lại, hoặc quay về trang chủ.",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "backToDashboard": "Quay lại bảng điều khiển",
+    "errorBodyDashboard": "Rất tiếc — trang này không tải được. Hãy thử lại, hoặc quay về bảng điều khiển.",
+    "sectionFailed": "Phần này không tải được."
   },
   "faq": {
     "phrases": {

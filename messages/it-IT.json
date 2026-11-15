@@ -1952,7 +1952,8 @@
       "errorFallback": "Email o password errate. Riprova.",
       "submit": "Accedi",
       "submitting": "Accesso in corso…",
-      "forgot": "Password dimenticata?"
+      "forgot": "Password dimenticata?",
+      "invalidLink": "Questo link è scaduto o non è valido."
     },
     "forgot": {
       "sentTitle": "Controlla la tua email",
@@ -1961,7 +1962,8 @@
       "subtitle": "Inserisci la tua email e ti invieremo un link per reimpostarla",
       "submit": "Invia il link",
       "sending": "Invio in corso…",
-      "back": "Torna all’accesso"
+      "back": "Torna all’accesso",
+      "backToLogin": "Torna all’accesso"
     },
     "reset": {
       "invalidTitle": "Link di reimpostazione non valido",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Conferma password",
       "confirmPlaceholder": "Ripeti la password",
       "submit": "Imposta password",
-      "saving": "Salvataggio…"
+      "saving": "Salvataggio…",
+      "logIn": "Accedi",
+      "sendNewLink": "Richiedi un nuovo link"
     },
     "verifyEmail": {
       "goToLogin": "Vai all’accesso",
@@ -7055,7 +7059,10 @@
     "home": "Vai alla home page",
     "errorTitle": "Qualcosa è andato storto",
     "errorBody": "Ci dispiace, questa pagina non si è caricata. Riprova oppure torna alla home page.",
-    "retry": "Riprova"
+    "retry": "Riprova",
+    "backToDashboard": "Torna alla dashboard",
+    "errorBodyDashboard": "Ci dispiace, questa pagina non si è caricata. Riprova oppure torna alla tua dashboard.",
+    "sectionFailed": "Questa sezione non si è caricata."
   },
   "faq": {
     "phrases": {

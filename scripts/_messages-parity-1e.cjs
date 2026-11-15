@@ -300,6 +300,11 @@ for (const k of ['manageAllergens.wizard.recipeOnly', 'manageAllergens.wizard.to
   'manageAllergens.wizard.subtitle.kitchen', 'manageAllergens.kitchen.title', 'manageAllergens.kitchen.body', 'manageAllergens.kitchen.legendDishes',
   'manageAllergens.kitchen.legendAdded', 'manageAllergens.kitchen.customersSee', 'manageAllergens.kitchen.confirm', 'manageAllergens.cardUpload.blanketInfo',
   'manageMenu.allergens.kitchenLine', 'manageMenu.allergens.kitchenEdit', 'order.kitchenHeading', 'order.kitchenNote']) NEW_WORDING[k] = 'allergen-kitchen-1: Dominic\'s approved allergen wording'
+// ⚠️ RE-PINNED (app-fixes-1, 14 November 2026, docs/app-fixes-1-report.md §1/§3): NEW messages — the reset flow's ways forward ("Log in",
+// "Back to log in", "Send a new link"), /auth/callback's invalid-link sentence, the error page's "Back to dashboard" and its body, and the
+// contained-section notice. Their en-GB / fr-FR text is held by scripts/app-fixes-1.cjs §5.
+for (const k of ['auth.reset.logIn', 'auth.forgot.backToLogin', 'auth.reset.sendNewLink', 'auth.login.invalidLink', 'errorPage.backToDashboard',
+  'errorPage.errorBodyDashboard', 'errorPage.sectionFailed']) NEW_WORDING[k] = 'app-fixes-1: the auth end states, the error page\'s way back, the section notice'
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

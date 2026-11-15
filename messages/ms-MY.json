@@ -1952,7 +1952,8 @@
       "errorFallback": "E-mel atau kata laluan salah. Sila cuba lagi.",
       "submit": "Log masuk",
       "submitting": "Sedang log masuk…",
-      "forgot": "Terlupa kata laluan?"
+      "forgot": "Terlupa kata laluan?",
+      "invalidLink": "Pautan ini telah tamat tempoh atau tidak sah."
     },
     "forgot": {
       "sentTitle": "Semak e-mel anda",
@@ -1961,7 +1962,8 @@
       "subtitle": "Masukkan e-mel anda dan kami akan menghantar pautan set semula",
       "submit": "Hantar pautan set semula",
       "sending": "Menghantar…",
-      "back": "Kembali ke log masuk"
+      "back": "Kembali ke log masuk",
+      "backToLogin": "Kembali ke log masuk"
     },
     "reset": {
       "invalidTitle": "Pautan set semula tidak sah",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Sahkan kata laluan",
       "confirmPlaceholder": "Ulang kata laluan anda",
       "submit": "Tetapkan kata laluan",
-      "saving": "Menyimpan…"
+      "saving": "Menyimpan…",
+      "logIn": "Log masuk",
+      "sendNewLink": "Minta pautan set semula baharu"
     },
     "verifyEmail": {
       "goToLogin": "Pergi ke log masuk",
@@ -7055,7 +7059,10 @@
     "home": "Pergi ke halaman utama",
     "errorTitle": "Ada sesuatu yang tidak kena",
     "errorBody": "Maaf, halaman ini tidak dapat dimuatkan. Cuba lagi, atau kembali ke halaman utama.",
-    "retry": "Cuba lagi"
+    "retry": "Cuba lagi",
+    "backToDashboard": "Kembali ke papan pemuka",
+    "errorBodyDashboard": "Maaf, halaman ini tidak dapat dimuatkan. Cuba lagi, atau kembali ke papan pemuka anda.",
+    "sectionFailed": "Bahagian ini tidak dapat dimuatkan."
   },
   "faq": {
     "phrases": {

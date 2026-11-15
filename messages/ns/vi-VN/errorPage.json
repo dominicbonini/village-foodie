@@ -4,5 +4,8 @@
   "home": "Về trang chủ",
   "errorTitle": "Đã xảy ra lỗi",
   "errorBody": "Rất tiếc — trang này không tải được. Hãy thử lại, hoặc quay về trang chủ.",
-  "retry": "Thử lại"
+  "retry": "Thử lại",
+  "backToDashboard": "Quay lại bảng điều khiển",
+  "errorBodyDashboard": "Rất tiếc — trang này không tải được. Hãy thử lại, hoặc quay về bảng điều khiển.",
+  "sectionFailed": "Phần này không tải được."
 }

@@ -1952,7 +1952,8 @@
       "errorFallback": "Napačen e-poštni naslov ali geslo. Poskusite znova.",
       "submit": "Prijava",
       "submitting": "Prijavljanje…",
-      "forgot": "Ste pozabili geslo?"
+      "forgot": "Ste pozabili geslo?",
+      "invalidLink": "Ta povezava je potekla ali ni veljavna."
     },
     "forgot": {
       "sentTitle": "Preverite e-pošto",
@@ -1961,7 +1962,8 @@
       "subtitle": "Vnesite e-poštni naslov in poslali vam bomo povezavo za ponastavitev",
       "submit": "Pošlji povezavo",
       "sending": "Pošiljanje…",
-      "back": "Nazaj na prijavo"
+      "back": "Nazaj na prijavo",
+      "backToLogin": "Nazaj na prijavo"
     },
     "reset": {
       "invalidTitle": "Neveljavna povezava za ponastavitev",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Potrdite geslo",
       "confirmPlaceholder": "Ponovite geslo",
       "submit": "Nastavi geslo",
-      "saving": "Shranjevanje…"
+      "saving": "Shranjevanje…",
+      "logIn": "Prijava",
+      "sendNewLink": "Zahtevaj novo povezavo"
     },
     "verifyEmail": {
       "goToLogin": "Na prijavo",
@@ -7055,7 +7059,10 @@
     "home": "Na domačo stran",
     "errorTitle": "Prišlo je do napake",
     "errorBody": "Žal se ta stran ni naložila. Poskusite znova ali se vrnite na domačo stran.",
-    "retry": "Poskusi znova"
+    "retry": "Poskusi znova",
+    "backToDashboard": "Nazaj na nadzorno ploščo",
+    "errorBodyDashboard": "Žal se ta stran ni naložila. Poskusite znova ali se vrnite na nadzorno ploščo.",
+    "sectionFailed": "Ta razdelek se ni naložil."
   },
   "faq": {
     "phrases": {

@@ -1952,7 +1952,8 @@
       "errorFallback": "Feil e-post eller passord. Prøv igjen.",
       "submit": "Logg inn",
       "submitting": "Logger inn…",
-      "forgot": "Glemt passordet?"
+      "forgot": "Glemt passordet?",
+      "invalidLink": "Lenken har utløpt eller er ugyldig."
     },
     "forgot": {
       "sentTitle": "Sjekk e-posten din",
@@ -1961,7 +1962,8 @@
       "subtitle": "Skriv inn e-postadressen din, så sender vi en lenke for å tilbakestille",
       "submit": "Send lenke",
       "sending": "Sender…",
-      "back": "Tilbake til innlogging"
+      "back": "Tilbake til innlogging",
+      "backToLogin": "Tilbake til innlogging"
     },
     "reset": {
       "invalidTitle": "Ugyldig lenke",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Bekreft passord",
       "confirmPlaceholder": "Gjenta passordet",
       "submit": "Lagre passord",
-      "saving": "Lagrer…"
+      "saving": "Lagrer…",
+      "logIn": "Logg inn",
+      "sendNewLink": "Be om en ny lenke"
     },
     "verifyEmail": {
       "goToLogin": "Gå til innlogging",
@@ -7055,7 +7059,10 @@
     "home": "Gå til forsiden",
     "errorTitle": "Noe gikk galt",
     "errorBody": "Beklager, siden ble ikke lastet inn. Prøv igjen, eller gå tilbake til forsiden.",
-    "retry": "Prøv igjen"
+    "retry": "Prøv igjen",
+    "backToDashboard": "Tilbake til kontrollpanelet",
+    "errorBodyDashboard": "Beklager, siden ble ikke lastet inn. Prøv igjen, eller gå tilbake til kontrollpanelet.",
+    "sectionFailed": "Denne delen ble ikke lastet inn."
   },
   "faq": {
     "phrases": {

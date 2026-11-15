@@ -1952,7 +1952,8 @@
       "errorFallback": "Nesprávný e-mail nebo heslo. Zkuste to prosím znovu.",
       "submit": "Přihlásit se",
       "submitting": "Přihlašování…",
-      "forgot": "Zapomněli jste heslo?"
+      "forgot": "Zapomněli jste heslo?",
+      "invalidLink": "Platnost odkazu vypršela nebo je neplatný."
     },
     "forgot": {
       "sentTitle": "Zkontrolujte e-mail",
@@ -1961,7 +1962,8 @@
       "subtitle": "Zadejte svůj e-mail a pošleme vám odkaz pro obnovení",
       "submit": "Poslat odkaz pro obnovení",
       "sending": "Odesílání…",
-      "back": "Zpět na přihlášení"
+      "back": "Zpět na přihlášení",
+      "backToLogin": "Zpět na přihlášení"
     },
     "reset": {
       "invalidTitle": "Neplatný odkaz pro obnovení",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Potvrzení hesla",
       "confirmPlaceholder": "Zopakujte heslo",
       "submit": "Nastavit heslo",
-      "saving": "Ukládání…"
+      "saving": "Ukládání…",
+      "logIn": "Přihlásit se",
+      "sendNewLink": "Vyžádat nový odkaz pro obnovení"
     },
     "verifyEmail": {
       "goToLogin": "Přejít na přihlášení",
@@ -7055,7 +7059,10 @@
     "home": "Přejít na úvodní stránku",
     "errorTitle": "Něco se pokazilo",
     "errorBody": "Omlouváme se, tato stránka se nenačetla. Zkuste to znovu, nebo se vraťte na úvodní stránku.",
-    "retry": "Zkusit znovu"
+    "retry": "Zkusit znovu",
+    "backToDashboard": "Zpět na přehled",
+    "errorBodyDashboard": "Omlouváme se, tato stránka se nenačetla. Zkuste to znovu, nebo se vraťte na přehled.",
+    "sectionFailed": "Tato část se nenačetla."
   },
   "faq": {
     "phrases": {

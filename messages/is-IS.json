@@ -1952,7 +1952,8 @@
       "errorFallback": "Rangt netfang eða lykilorð. Reyndu aftur.",
       "submit": "Skrá inn",
       "submitting": "Skrái inn…",
-      "forgot": "Gleymdirðu lykilorðinu?"
+      "forgot": "Gleymdirðu lykilorðinu?",
+      "invalidLink": "Þessi tengill er útrunninn eða ógildur."
     },
     "forgot": {
       "sentTitle": "Athugaðu tölvupóstinn þinn",
@@ -1961,7 +1962,8 @@
       "subtitle": "Sláðu inn netfangið þitt og við sendum þér tengil til að endurstilla",
       "submit": "Senda endurstillingartengil",
       "sending": "Sendi…",
-      "back": "Aftur í innskráningu"
+      "back": "Aftur í innskráningu",
+      "backToLogin": "Aftur í innskráningu"
     },
     "reset": {
       "invalidTitle": "Ógildur endurstillingartengill",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Staðfestu lykilorð",
       "confirmPlaceholder": "Endurtaktu lykilorðið",
       "submit": "Vista lykilorð",
-      "saving": "Vista…"
+      "saving": "Vista…",
+      "logIn": "Skrá inn",
+      "sendNewLink": "Biðja um nýjan endurstillingartengil"
     },
     "verifyEmail": {
       "goToLogin": "Fara í innskráningu",
@@ -7055,7 +7059,10 @@
     "home": "Fara á forsíðuna",
     "errorTitle": "Eitthvað fór úrskeiðis",
     "errorBody": "Því miður — þessi síða hlóðst ekki. Reyndu aftur eða farðu aftur á forsíðuna.",
-    "retry": "Reyna aftur"
+    "retry": "Reyna aftur",
+    "backToDashboard": "Aftur á stjórnborðið",
+    "errorBodyDashboard": "Því miður — þessi síða hlóðst ekki. Reyndu aftur eða farðu aftur á stjórnborðið.",
+    "sectionFailed": "Þessi hluti hlóðst ekki."
   },
   "faq": {
     "phrases": {

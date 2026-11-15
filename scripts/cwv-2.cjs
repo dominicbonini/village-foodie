@@ -67,11 +67,16 @@ const LIOP = require('./_longer-intervals-order-page.cjs')
 const AK1 = require('./_named-allergen-kitchen-1.cjs')
 const ak1 = f => AK1.undoFile(f, read(f)) ?? read(f)
 const notLonger = f => { if (f !== LIOP.FILE) return true; const u = LIOP.undo(ak1(f)); return !(u && u === showAt(LIOP.BASE, f)) }
-const appChanged = MP.changedSince(BEFORE, ['app/(app)']).filter(notDc2).filter(notLonger)
+// ⚠️ RE-PINNED (app-fixes-1, 14 November 2026; scripts/_named-app-fixes-1.cjs undoFile): the auth pages' ways forward, the error / 404
+// pages' way back, and the root layout's one added line (the in-app link guard). A file of those passes when putting exactly those
+// edits back gives the file as it was in the commit before app-fixes-1 (where this guard passed); any other change still fails.
+const AF1 = require('./_named-app-fixes-1.cjs')
+const notAf1 = f => { if (!AF1.EDITED_FILES.includes(f)) return true; const u = AF1.undoFile(f, read(f)); return !(u !== null && u === showAt(AF1.EDITS.base, f)) }
+const appChanged = MP.changedSince(BEFORE, ['app/(app)']).filter(notDc2).filter(notLonger).filter(notAf1)
 t('🔴 every file under app/(app) is its pre-move self, byte for byte (the two import lines the move had to change, named in _moved-paths.cjs, aside)',
   appChanged.length === 0, appChanged)
 t('the moved root layout, its provider and its stylesheet are byte-identical to before', ['app/(app)/layout.tsx', 'app/(app)/providers.tsx', 'app/(app)/globals.css']
-  .every(f => read(f) === git('show', `${BEFORE}:${MP.beforePath(f)}`)))
+  .every(f => (AF1.EDITED_FILES.includes(f) ? AF1.undoFile(f, read(f)) : read(f)) === git('show', `${BEFORE}:${MP.beforePath(f)}`)))   // app-fixes-1: the layout's one added line taken back exactly
 t('the move\'s two import-line edits are exactly those (and the files are otherwise unchanged — the check above)', J(Object.keys(MP.MOVE_EDITS).sort()) === J(['app/(app)/contact/HatchGrabContact.tsx', 'app/(app)/kds/[kds_token]/page.tsx']))
 const gnf = read('app/global-not-found.tsx')
 t('an address no route matches renders today\'s 404: the app\'s document (lang, dir, data-brand, its stylesheet, PostHog, the session banner) around the app\'s not-found card (global-not-found)',
@@ -172,7 +177,8 @@ t('proxy.ts: a country-shaped address off HatchGrab or with no such country, and
   && PX.indexOf('const countryShaped') < PX.indexOf('request.headers.delete(PAGE_LANG_HEADER)') && PX.indexOf('const countryShaped') > PX.indexOf('export async function proxy('))
 t('proxy.ts is otherwise exactly as before (the switched-off redirects, Village Foodie, the language header, the session)',
   // ⚠️ RE-PINNED (gsc-index-2, 9 November 2026): its /support block taken back exactly first (scripts/_lp-gsc-index-2.cjs asBefore).
-  require('./_lp-gsc-index-2.cjs').asBefore('proxy.ts', PX).replace(/\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/, '\n').replace("import { isOwnOneSegment } from '@/lib/top-level-routes'\n", '') === git('show', `${BEFORE}:proxy.ts`))
+  // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026): its in-app page rule and import taken back exactly first (scripts/_named-app-fixes-1.cjs undoCode).
+  require('./_lp-gsc-index-2.cjs').asBefore('proxy.ts', require('./_named-app-fixes-1.cjs').undoCode('proxy.ts', PX) ?? PX).replace(/\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/, '\n').replace("import { isOwnOneSegment } from '@/lib/top-level-routes'\n", '') === git('show', `${BEFORE}:proxy.ts`))
 const TL = read('lib/top-level-routes.ts')
 const listOf = name => JSON.parse('[' + (TL.match(new RegExp(`export const ${name}: readonly string\\[\\] = \\[([\\s\\S]*?)\\]`)) || [, ''])[1].replace(/'/g, '"') + ']')
 const oneSeg = [...new Set(appFiles.map(f => f.split('/').slice(1).filter(p => !/^\(.*\)$/.test(p))).flatMap(p => (p.length === 2 && /^(page|route)\.(tsx?|js)$/.test(p[1]) && !p[0].startsWith('[') ? [p[0]]

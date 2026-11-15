@@ -1,0 +1,278 @@
+{
+ "base": "367c1e5b",
+ "files": {
+  "app/(app)/error.tsx": [
+   [
+    "import Link from 'next/link'\nimport { ensureLanguage } from '@/lib/i18n/registry'\n",
+    "import Link from 'next/link'\nimport { usePathname } from 'next/navigation'\nimport { isNativeApp } from '@/lib/native/device'\nimport { ensureLanguage } from '@/lib/i18n/registry'\n"
+   ],
+   [
+    "  const t = useTIn(locale, 'errorPage')\n  if (!t || ready !== locale) return null\n",
+    "  const t = useTIn(locale, 'errorPage')\n  // app-fixes-1 (docs/app-fixes-1-report.md §3): inside the dashboard (incl. its kitchen screen) and Manage, the second button\n  // goes back to THAT truck's dashboard — /dashboard/<token>, the same token both routes carry — never to the home page. In\n  // the app it is never the home page either: /app routes to the device's dashboard (or login). Everywhere else on the web:\n  // unchanged. A plain <a>: a full load, so nothing of the broken render survives.\n  const pathname = usePathname() || ''\n  // Read once on the client. Safe for hydration: nothing renders until the words are ready (`ready`, set in an effect).\n  const [native] = useState(() => typeof window !== 'undefined' && isNativeApp())\n  const m = pathname.match(/^\\/(?:dashboard|manage)\\/([^/?#]+)/)\n  const dashboardHref = m ? `/dashboard/${m[1]}` : native ? '/app' : null\n  if (!t || ready !== locale) return null\n"
+   ],
+   [
+    "        <h1 className=\"text-lg font-semibold text-slate-900\">{t('errorTitle')}</h1>\n        <p className=\"text-sm text-slate-500 mt-2\">{t('errorBody')}</p>\n        <div className=\"mt-6 flex justify-center gap-3\">\n",
+    "        <h1 className=\"text-lg font-semibold text-slate-900\">{t('errorTitle')}</h1>\n        <p className=\"text-sm text-slate-500 mt-2\">{dashboardHref ? t('errorBodyDashboard') : t('errorBody')}</p>\n        <div className=\"mt-6 flex justify-center gap-3\">\n"
+   ],
+   [
+    "          <button type=\"button\" onClick={reset} className=\"px-5 py-2.5 rounded-xl bg-orange-600 text-white text-sm font-semibold hover:bg-orange-700\">{t('retry')}</button>\n          <Link href=\"/\" className=\"px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-50\">{t('home')}</Link>\n        </div>\n",
+    "          <button type=\"button\" onClick={reset} className=\"px-5 py-2.5 rounded-xl bg-orange-600 text-white text-sm font-semibold hover:bg-orange-700\">{t('retry')}</button>\n          {dashboardHref\n            ? <a href={dashboardHref} data-error-next=\"dashboard\" className=\"px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-50\">{t('backToDashboard')}</a>\n            : <Link href=\"/\" className=\"px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-50\">{t('home')}</Link>}\n        </div>\n"
+   ]
+  ],
+  "app/(app)/forgot-password/page.tsx": [
+   [
+    "import { useState } from 'react'\nimport { useT } from '@/lib/i18n/use-t'\n",
+    "import { useState } from 'react'\nimport Link from 'next/link'\nimport { useT } from '@/lib/i18n/use-t'\n"
+   ],
+   [
+    "          </p>\n        </div>\n",
+    "          </p>\n          {/* app-fixes-1: the \"email sent\" end state had no way forward. /login is the login page on the web AND in the app. */}\n          <Link href=\"/login\" data-auth-next=\"login\"\n             className=\"mt-6 inline-block w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-xl\">\n            {t('backToLogin')}\n          </Link>\n        </div>\n"
+   ]
+  ],
+  "app/(app)/layout.tsx": [
+   [
+    "import { SessionAlertBanner } from \"@/components/auth/SessionAlertBanner\";\nimport { siteMetaFor, siteOpenGraph } from \"@/lib/site-metadata\";\n",
+    "import { SessionAlertBanner } from \"@/components/auth/SessionAlertBanner\";\nimport { InAppNavigationGuard } from \"@/components/native/InAppNavigationGuard\";\nimport { siteMetaFor, siteOpenGraph } from \"@/lib/site-metadata\";\n"
+   ],
+   [
+    "          <SessionAlertBanner />\n        </CSPostHogProvider>\n",
+    "          <SessionAlertBanner />\n          {/* app-fixes-1: in the app only — customer pages open in the phone's browser, the landing page goes to /app. */}\n          <InAppNavigationGuard />\n        </CSPostHogProvider>\n"
+   ]
+  ],
+  "app/(app)/login/page.tsx": [
+   [
+    "  const showEmailChanged = message === 'email_changed'\n\n",
+    "  const showEmailChanged = message === 'email_changed'\n  // app-fixes-1: /auth/callback sends a failed email link here with ?error=invalid_link. It used to show nothing.\n  const showInvalidLink = searchParams.get('error') === 'invalid_link'\n\n"
+   ],
+   [
+    "\n        {showEmailChanged && (\n",
+    "\n        {showInvalidLink && (\n          <div data-auth-end=\"callback-invalid\" className=\"bg-amber-50 border border-amber-200 rounded-xl\n                          px-4 py-3 text-sm text-amber-800 text-center\">\n            {t('invalidLink')}\n          </div>\n        )}\n\n        {showEmailChanged && (\n"
+   ]
+  ],
+  "app/(app)/not-found.tsx": [
+   [
+    "  const t = translatorFor(await notFoundLocale(), 'errorPage')\n  return (\n",
+    "  const t = translatorFor(await notFoundLocale(), 'errorPage')\n  // app-fixes-1: in the app (the shell's user-agent marker, capacitor.config appendUserAgent) \"home\" is /app — the device's\n  // dashboard or login — never the landing page. The web is unchanged.\n  const inApp = ((await headers()).get('user-agent') || '').includes('HatchGrabNativeApp')\n  return (\n"
+   ],
+   [
+    "        <p className=\"text-sm text-slate-500 mt-2\">{t('notFoundBody')}</p>\n        <Link href=\"/\" className=\"inline-block mt-6 px-5 py-2.5 rounded-xl bg-orange-600 text-white text-sm font-semibold hover:bg-orange-700\">{t('home')}</Link>\n      </div>\n",
+    "        <p className=\"text-sm text-slate-500 mt-2\">{t('notFoundBody')}</p>\n        <Link href={inApp ? '/app' : '/'} className=\"inline-block mt-6 px-5 py-2.5 rounded-xl bg-orange-600 text-white text-sm font-semibold hover:bg-orange-700\">{t('home')}</Link>\n      </div>\n"
+   ]
+  ],
+  "app/(app)/reset-password/page.tsx": [
+   [
+    "import { useState, Suspense } from 'react'\nimport { useRouter, useSearchParams } from 'next/navigation'\n",
+    "import { useState, Suspense } from 'react'\nimport Link from 'next/link'\nimport { useRouter, useSearchParams } from 'next/navigation'\n"
+   ],
+   [
+    "import '@/lib/i18n/catalog/errorsOnboarding'\n\n",
+    "import '@/lib/i18n/catalog/errorsOnboarding'\nimport { isNativeApp } from '@/lib/native/device'\n\n/** app-fixes-1: the reset flow's end states. Every one has a way forward (docs/app-fixes-1-report.md §1). The links are\n *  /login and /forgot-password, which are the same routes on the web and in the app (never the landing page). */\nconst LINK_CODES = new Set(['reset_link_expired', 'reset_link_used', 'reset_link_invalid'])\nfunction EndCard({ icon, title, body, children, state }: { icon: string; title?: string; body: string; children: React.ReactNode; state: string }) {\n  return (\n    <div className=\"min-h-screen bg-[#111827] flex items-center justify-center p-4\">\n      <div data-auth-end={state} className=\"bg-white rounded-2xl border border-slate-100 shadow-xl p-8 max-w-sm w-full text-center\">\n        <FlowLogo variant=\"card\" />\n        <div className=\"text-3xl mb-4\" aria-hidden=\"true\">{icon}</div>\n        {title && <h2 className=\"text-lg font-semibold text-slate-900 mb-2\">{title}</h2>}\n        <p className={title ? 'text-sm text-slate-500' : 'text-base font-medium text-slate-800'}>{body}</p>\n        <div className=\"mt-6 flex flex-col gap-3\">{children}</div>\n      </div>\n    </div>\n  )\n}\nconst PRIMARY = 'w-full inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-xl'\nconst SECONDARY = 'w-full inline-block border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold py-3 rounded-xl'\n\n"
+   ],
+   [
+    "  const tErr = useT('errorsOnboarding')\n\n",
+    "  const tErr = useT('errorsOnboarding')\n  const tForgot = useT('auth.forgot')\n  const tLogin = useT('auth.login')\n\n"
+   ],
+   [
+    "  const [error, setError] = useState<string | null>(null)\n\n",
+    "  const [error, setError] = useState<string | null>(null)\n  // app-fixes-1: an expired / used / unknown link is an END STATE (a card with a way forward), not a red line under a form\n  // that can never succeed; and a successful reset shows a \"Log in\" button instead of jumping away.\n  const [linkError, setLinkError] = useState<string | null>(null)\n  const [done, setDone] = useState(false)\n\n  const nextSteps = (\n    <>\n      <Link href=\"/forgot-password\" data-auth-next=\"forgot\" className={PRIMARY}>{t('sendNewLink')}</Link>\n      <Link href=\"/login\" data-auth-next=\"login\" className={SECONDARY}>{tForgot('backToLogin')}</Link>\n    </>\n  )\n\n"
+   ],
+   [
+    "  if (!token && !isFirstLogin) {\n    return (\n",
+    "  if (!token && !isFirstLogin) {\n    return <EndCard state=\"invalid\" icon=\"⚠️\" title={t('invalidTitle')} body={t('invalidBody')}>{nextSteps}</EndCard>\n  }\n  // The server said the link is expired, already used or unknown: its own sentence, and the two ways forward.\n  if (linkError) return <EndCard state=\"link-error\" icon=\"⏱️\" body={linkError}>{nextSteps}</EndCard>\n  if (done) {\n    return (\n"
+   ],
+   [
+    "    return (\n      <div className=\"min-h-screen bg-[#111827] flex items-center\n                      justify-center p-4\">\n        <div className=\"bg-white rounded-2xl border border-slate-200\n                        p-8 max-w-sm w-full text-center border-slate-100 shadow-xl\">\n          <div className=\"text-3xl mb-4\">⚠️</div>\n          <h2 className=\"text-lg font-semibold text-slate-900 mb-2\">\n            {t('invalidTitle')}\n          </h2>\n          <p className=\"text-sm text-slate-500 mb-4\">\n            {t('invalidBody')}\n          </p>\n          <a href=\"/forgot-password\"\n             className=\"text-sm text-orange-600 font-medium\">\n            {t('requestNew')}\n          </a>\n        </div>\n      </div>\n    )\n",
+    "    return (\n      <EndCard state=\"done\" icon=\"✅\" body={tLogin('resetSuccess')}>\n        {/* A full page load, not <Link>: the old session was just signed out, and a fresh document is the clean start. */}\n        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}\n        <a href=\"/login\" data-auth-next=\"login\" className={PRIMARY}>{t('logIn')}</a>\n      </EndCard>\n    )\n"
+   ],
+   [
+    "      if (!res.ok || data.error) {\n        setError(errorText(tErr, data, t('errorFallback')))\n",
+    "      if (!res.ok || data.error) {\n        if (typeof data?.code === 'string' && LINK_CODES.has(data.code)) { setLinkError(errorText(tErr, data, t('errorFallback'))); setLoading(false); return }\n        setError(errorText(tErr, data, t('errorFallback')))\n"
+   ],
+   [
+    "      await createSupabaseBrowserClient().auth.signOut()\n      window.location.href = '/login?message=password_reset'\n      return\n",
+    "      await createSupabaseBrowserClient().auth.signOut()\n      // app-fixes-1: a success screen with a \"Log in\" button (was a jump to /login?message=password_reset). The sign-out\n      // above still runs first, and the button is a full page load, so the old session is gone either way.\n      setDone(true)\n      setLoading(false)\n      return\n"
+   ],
+   [
+    "\n      router.push('/dashboard')\n      router.refresh()\n",
+    "\n      // app-fixes-1: in the app, /app routes to the device's truck (never a web-only page).\n      router.push(isNativeApp() ? '/app' : '/dashboard')\n      router.refresh()\n"
+   ]
+  ],
+  "lib/printing/transport.ts": [
+   [
+    "import type { PrinterMessage } from './printerText'\n\n",
+    "import type { PrinterMessage } from './printerText'\nimport { isNetPrinterAvailable } from './netAvailability'\nimport { createNetTransport } from './netTransport'\nimport { createBleTransport } from './bleTransport'\n\n"
+   ],
+   [
+    "\n// ── 🔴 THE SHELL LOADS THE LIVE SITE, SO OLD BINARIES RUN NEW WEB CODE (17 September 2026) ─────────\n// capacitor.config's `server.url` is https://www.hatchgrab.com/app — the native app is a REMOTE-URL\n// shell (§36 / V11.3: \"a VERCEL DEPLOY IS NOW AN INSTANT CHANGE TO A SHIPPED APP\"). The moment this web\n// code deploys, every device still running the store build executes it — and those binaries contain NO\n// NetPrinterPlugin. Without the check below, such a device could choose Wired, store 'net', build the\n// wired transport, and every plugin call would reject with \"NetPrinter does not have an implementation\"\n// — which netTransport.sendBytes turns into a THROW, i.e. outcome 'unknown', i.e. a POSSIBLE DUPLICATE\n// banner on a printer that was never even addressable. WIRED MUST NOT EXIST UNTIL THE BINARY HAS IT.\n//\n// Capacitor.isPluginAvailable(name) is exactly this test. In @capacitor/core 8.4.0 a registered plugin\n// carries `platforms: new Set([...Object.keys(jsImplementations), ...(pluginHeader ? [platform] : [])])`\n// and the check is `platforms.has(getPlatform()) || getPluginHeader(name)`. Our registration\n// (plugins/hatchgrab-net-printer/index.js) supplies only a `web` implementation, so on iOS/Android the\n// answer comes solely from PluginHeaders — the list the NATIVE BRIDGE injects for the classes compiled\n// into THIS binary. Old binary ⇒ no header ⇒ false. New binary ⇒ header ⇒ true.\n// ⚠️ isNativePlatform() is required too: on web `platforms.has('web')` is true (the refusing stub), and\n// a browser must never be told the wired backend exists.\n/** The name BOTH native classes register under: @CapacitorPlugin(name = \"NetPrinter\") /\n *  CAPPluginRegistration \"NetPrinter\", and registerPlugin('NetPrinter') in the JS. */\nexport const NET_PRINTER_PLUGIN = 'NetPrinter'\n\n/** Is the wired backend present in the RUNNING BINARY? Every wired surface is gated on this. */\nexport function isNetPrinterAvailable(): boolean {\n  try { return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable(NET_PRINTER_PLUGIN) } catch { return false }\n}\n\n",
+    "\n// The wired-backend check lives in lib/printing/netAvailability.ts (app-fixes-1: it closed an import cycle); re-exported\n// here so every caller keeps its import.\nexport { NET_PRINTER_PLUGIN, isNetPrinterAvailable } from './netAvailability'\n\n"
+   ],
+   [
+    " *  WEB                        -> the honest stub, whatever the kind: a browser has no printer.\n *  The native modules are required lazily so a web bundle never pulls a native plugin in. */\nexport function getPrinterTransport(): PrinterTransport {\n",
+    " *  WEB                        -> the honest stub, whatever the kind: a browser has no printer.\n *  Both native backends are imported statically; on the web neither is ever constructed. */\nexport function getPrinterTransport(): PrinterTransport {\n"
+   ],
+   [
+    "  if (Capacitor.isNativePlatform()) {\n    if (kind === 'net') {\n      // eslint-disable-next-line @typescript-eslint/no-require-imports\n      const { createNetTransport } = require('./netTransport') as typeof import('./netTransport')\n      _transport = createNetTransport()\n    } else {\n      // eslint-disable-next-line @typescript-eslint/no-require-imports\n      const { createBleTransport } = require('./bleTransport') as typeof import('./bleTransport')\n      _transport = createBleTransport()\n    }\n  } else {\n",
+    "  if (Capacitor.isNativePlatform()) {\n    // app-fixes-1: static imports (top of file), not require(). A synchronous require() is bundled into the same\n    // chunk anyway, so it never kept a plugin out of the web bundle — and with netTransport importing back from\n    // this file it made the cycle that Turbopack's production build collapsed (lib/printing/netAvailability.ts).\n    _transport = kind === 'net' ? createNetTransport() : createBleTransport()\n  } else {\n"
+   ]
+  ],
+  "lib/printing/netTransport.ts": [
+   [
+    "import type { NetPrinterErrorCode, NetPrinterPlugin } from '@hatchgrab/net-printer'\nimport { isNetPrinterAvailable } from './transport'\nimport type { PrinterTransport, PrinterAvailability, PrinterStatus, PrintResult, DiscoveredPrinter } from './transport'\n",
+    "import type { NetPrinterErrorCode, NetPrinterPlugin } from '@hatchgrab/net-printer'\nimport { isNetPrinterAvailable } from './netAvailability'\nimport type { PrinterTransport, PrinterAvailability, PrinterStatus, PrintResult, DiscoveredPrinter } from './transport'\n"
+   ]
+  ],
+  "app/(app)/dashboard/[token]/page.tsx": [
+   [
+    "import { registerServiceWorker } from '@/lib/native/serviceWorker'\nimport { nativeAuthHeader } from '@/lib/native/session'\n",
+    "import { registerServiceWorker } from '@/lib/native/serviceWorker'\nimport { IsolatedSections, Section } from '@/components/shared/IsolatedSections'\nimport { nativeAuthHeader } from '@/lib/native/session'\n"
+   ],
+   [
+    "        {activeTab==='settings'&&(\n          <div className=\"space-y-4\">\n            {/* SETTINGS-LOCK notice — the server-backed settings below are disabled offline (they'd fail\n",
+    "        {activeTab==='settings'&&(\n          // app-fixes-1: every card in its own error boundary — one card that throws can no longer take the whole tab to the\n          // error page (components/shared/IsolatedSections.tsx). Same element and class as the <div> it replaces.\n          <IsolatedSections className=\"space-y-4\">\n            {/* SETTINGS-LOCK notice — the server-backed settings below are disabled offline (they'd fail\n"
+   ],
+   [
+    "                BOTTOM of this tab) stay editable offline. */}\n            {isOffline&&(\n              <div className=\"bg-slate-100 border border-slate-200 rounded-2xl p-3 text-sm text-slate-600 flex items-center gap-2\">\n",
+    "                BOTTOM of this tab) stay editable offline. */}\n            <Section>{()=>(isOffline&&(\n              <div className=\"bg-slate-100 border border-slate-200 rounded-2xl p-3 text-sm text-slate-600 flex items-center gap-2\">\n"
+   ],
+   [
+    "              </div>\n            )}\n            {/* ⚠️ DEMO MODE keeps this TAB but strips it to the Kitchen-capacity card alone.\n",
+    "              </div>\n            ))}</Section>\n            {/* ⚠️ DEMO MODE keeps this TAB but strips it to the Kitchen-capacity card alone.\n"
+   ],
+   [
+    "                event, never the van's columns. The resolution through the event TYPE is unchanged. */}\n            {activeEvent&&(\n              <div className=\"p-4 bg-white rounded-2xl shadow-sm border border-slate-200\">\n",
+    "                event, never the van's columns. The resolution through the event TYPE is unchanged. */}\n            <Section>{()=>(activeEvent&&(\n              <div className=\"p-4 bg-white rounded-2xl shadow-sm border border-slate-200\">\n"
+   ],
+   [
+    "              </div>\n            )}\n            {/* Auto-accept + its dependent \"review notes\" sub-option read as ONE group (divide-y rows, same\n",
+    "              </div>\n            ))}</Section>\n            {/* Auto-accept + its dependent \"review notes\" sub-option read as ONE group (divide-y rows, same\n"
+   ],
+   [
+    "                convincing things a prospect can do. NOT locked. */}\n            <div className=\"bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100\">\n              {/* No conditional bottom padding any more: the notes sub-toggle that used to follow this\n",
+    "                convincing things a prospect can do. NOT locked. */}\n            <Section>{()=>(<div className=\"bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100\">\n              {/* No conditional bottom padding any more: the notes sub-toggle that used to follow this\n"
+   ],
+   [
+    "                  auto-accept description above now says it instead of a switch offering to turn it off. */}\n            </div>\n            {/* == ORDER SCREEN — THE FOUR SETTINGS THAT SHAPE IT ========================================\n",
+    "                  auto-accept description above now says it instead of a switch offering to turn it off. */}\n            </div>)}</Section>\n            {/* == ORDER SCREEN — THE FOUR SETTINGS THAT SHAPE IT ========================================\n"
+   ],
+   [
+    "                so the four read as one family rather than four neighbours. */}\n            <div>\n              <p className=\"text-xs font-black text-slate-500 uppercase tracking-widest mb-2\">{tDash('settings.orderScreen')}</p>\n",
+    "                so the four read as one family rather than four neighbours. */}\n            <Section>{()=>(<div>\n              <p className=\"text-xs font-black text-slate-500 uppercase tracking-widest mb-2\">{tDash('settings.orderScreen')}</p>\n"
+   ],
+   [
+    "              </div>\n            </div>\n\n",
+    "              </div>\n            </div>)}</Section>\n\n"
+   ],
+   [
+    "                paused truck must keep seeing why cards are off wherever it is in the app. */}\n            {(truck?.stripe_charges_enabled === true || truck?.online_payments_paused_at != null) && (\n            <div className=\"bg-white rounded-2xl shadow-sm border border-slate-200 p-4\">\n",
+    "                paused truck must keep seeing why cards are off wherever it is in the app. */}\n            <Section>{()=>((truck?.stripe_charges_enabled === true || truck?.online_payments_paused_at != null) && (\n            <div className=\"bg-white rounded-2xl shadow-sm border border-slate-200 p-4\">\n"
+   ],
+   [
+    "              </div>\n            </div>\n            )}\n\n            {/* SOUNDS — same trucks.sound_config as Manage → Settings (mirrors automatically). Which alerts\n",
+    "              </div>\n            </div>\n            ))}</Section>\n\n            {/* SOUNDS — same trucks.sound_config as Manage → Settings (mirrors automatically). Which alerts\n"
+   ],
+   [
+    "                go looking for it. Better to show nothing than to promise the wrong shape. */}\n            {!isDemo&&(()=>{\n              const sc=soundCfg\n",
+    "                go looking for it. Better to show nothing than to promise the wrong shape. */}\n            <Section>{()=>(!isDemo&&(()=>{\n              const sc=soundCfg\n"
+   ],
+   [
+    "              )\n            })()}\n            {/* The offline-pause alert ALWAYS fires (the per-device suppression toggle was removed) —\n",
+    "              )\n            })())}</Section>\n            {/* The offline-pause alert ALWAYS fires (the per-device suppression toggle was removed) —\n"
+   ],
+   [
+    "                but its position changed. */}\n            {activeEvent&&(\n              /* ⚠️ THE `id` STAYS, AND IT NOW HAS NO IN-APP CONSUMER (5 October 2026). It was the anchor\n",
+    "                but its position changed. */}\n            <Section>{()=>(activeEvent&&(\n              /* ⚠️ THE `id` STAYS, AND IT NOW HAS NO IN-APP CONSUMER (5 October 2026). It was the anchor\n"
+   ],
+   [
+    "              </div>\n            )}\n\n",
+    "              </div>\n            ))}</Section>\n\n"
+   ],
+   [
+    "                update_van_settings (Section 10). Behaviour unchanged. */}\n            {activeEvent&&(\n              <div className=\"bg-white rounded-2xl shadow-sm border border-slate-200 p-4\">\n",
+    "                update_van_settings (Section 10). Behaviour unchanged. */}\n            <Section>{()=>(activeEvent&&(\n              <div className=\"bg-white rounded-2xl shadow-sm border border-slate-200 p-4\">\n"
+   ],
+   [
+    "              </div>\n            )}\n            {/* Device-specific iPad-only cards LAST — both render null on web / non-native, so mobile & desktop\n",
+    "              </div>\n            ))}</Section>\n            {/* Device-specific iPad-only cards LAST — both render null on web / non-native, so mobile & desktop\n"
+   ],
+   [
+    "                confusion the scope rule exists to prevent. */}\n            {!isDemo&&truck&&<PrintingSettings features={features} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode} connected={printing.status.connected} statusDetail={printing.status.detail} waitingCount={printing.waitingCount} time={truck.time}/>}\n            {!isDemo&&<NotificationSettings token={token}/>}\n          </div>\n        )}\n",
+    "                confusion the scope rule exists to prevent. */}\n            <Section>{()=>(!isDemo&&truck&&<PrintingSettings features={features} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode} connected={printing.status.connected} statusDetail={printing.status.detail} waitingCount={printing.waitingCount} time={truck.time}/>)}</Section>\n            <Section>{()=>(!isDemo&&<NotificationSettings token={token}/>)}</Section>\n          </IsolatedSections>\n        )}\n"
+   ],
+   [
+    "                added nothing this tab did not already have on screen above it. */}\n            <div className=\"bg-white rounded-2xl shadow-sm border border-slate-200 p-4\">\n              {/* ══ 🔴 THE HEADER, WITH THE PRICE EDITOR'S ONE BUTTON ════════════════════════════════\n",
+    "                added nothing this tab did not already have on screen above it. */}\n            <div className=\"bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-4\">\n              {/* ══ 🔴 THE HEADER, WITH THE PRICE EDITOR'S ONE BUTTON ════════════════════════════════\n"
+   ],
+   [
+    "                    row below; pr-2 matches the item rows' p-2 right inset so each label sits over its column. */}\n                <div className=\"flex items-center gap-2 pr-2 mb-2\">\n                  <span className=\"flex-1\" />\n",
+    "                    row below; pr-2 matches the item rows' p-2 right inset so each label sits over its column. */}\n                <div className=\"flex items-center gap-1 sm:gap-2 pr-[9px] mb-2\" data-stock-head>\n                  <span className=\"flex-1\" />\n"
+   ],
+   [
+    "                      still hears \"Available\" and not \"On\". */}\n                  <span className=\"w-20 text-center text-[10px] font-black uppercase tracking-wide text-slate-400\">{tSvc('eventPriceColumnLabel')}</span>\n                  <span className=\"w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400\">{tDash('stock.colLimit')}</span>\n                  <span className=\"w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400\">{tDash('stock.colOn')}</span>\n                </div>\n",
+    "                      still hears \"Available\" and not \"On\". */}\n                  <span className=\"w-[3.75rem] sm:w-20 shrink-0 text-center text-[10px] font-black uppercase tracking-wide text-slate-400\">{tSvc('eventPriceColumnLabel')}</span>\n                  <span className=\"w-12 sm:w-16 shrink-0 text-center text-[10px] font-black uppercase tracking-wide text-slate-400\">{tDash('stock.colLimit')}</span>\n                  <span className=\"w-11 sm:w-12 shrink-0 text-center text-[10px] font-black uppercase tracking-wide text-slate-400\">{tDash('stock.colOn')}</span>\n                </div>\n"
+   ],
+   [
+    "                          {/* Line 1 (mobile) / full row (desktop) */}\n                          <div className=\"flex items-center gap-2 pr-2\">\n                            <p className=\"text-sm font-black text-orange-600 uppercase tracking-wide flex-1\">{cat.charAt(0).toUpperCase()+cat.slice(1)}{catOrdered>0&&<span className=\"ml-1.5 text-sm font-medium normal-case tracking-normal text-slate-500\">{tDash('stock.catSold',{count:String(catOrdered)})}</span>}{catRem!==null&&<span className={`ml-1.5 text-xs font-bold normal-case tracking-normal ${catRem<=5?'text-orange-500':'text-slate-500'}`}>{tDash('stock.left',{count:String(catRem)})}</span>}{catStock?.available===false&&<span className=\"ml-1.5 text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full normal-case tracking-normal\">{tDash('stock.closed')}</span>}</p>\n                            {/* Prep & batch moved to the \"Total capacity\" section (V7.8 §42) — this card is per-event STOCK only. */}\n",
+    "                          {/* Line 1 (mobile) / full row (desktop) */}\n                          <div className=\"flex items-center gap-1 sm:gap-2 pr-[9px]\" data-stock-row=\"category\">\n                            <div className=\"flex-1 min-w-0\" data-stock-cat-name>\n                              {/* app-fixes-1 (Dominic's approved phone layout): the NAME on line 1, the counts (\"Reste : N\", sold, closed) on\n                                  line 2 underneath — never beside the name, where they pushed the limit box and the switch off the card at 320px. */}\n                              <p className=\"text-sm font-black text-orange-600 uppercase tracking-wide [overflow-wrap:anywhere]\">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>\n                              {(catOrdered>0||catRem!==null||catStock?.available===false)&&<p className=\"mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5\" data-stock-cat-counts>{catOrdered>0&&<span className=\"text-xs font-medium text-slate-500 whitespace-nowrap\">{tDash('stock.catSold',{count:String(catOrdered)})}</span>}{catRem!==null&&<span className={`text-xs font-bold whitespace-nowrap ${catRem<=5?'text-orange-500':'text-slate-500'}`}>{tDash('stock.left',{count:String(catRem)})}</span>}{catStock?.available===false&&<span className=\"text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full\">{tDash('stock.closed')}</span>}</p>}\n                            </div>\n                            {/* Prep & batch moved to the \"Total capacity\" section (V7.8 §42) — this card is per-event STOCK only. */}\n"
+   ],
+   [
+    "                            {/* Prep & batch moved to the \"Total capacity\" section (V7.8 §42) — this card is per-event STOCK only. */}\n                            <div className=\"flex items-center gap-2\">\n                              {/* ⚠️ A SPACER UNDER THE PRICE COLUMN. A CATEGORY has no price — only an\n",
+    "                            {/* Prep & batch moved to the \"Total capacity\" section (V7.8 §42) — this card is per-event STOCK only. */}\n                            <div className=\"flex items-center gap-1 sm:gap-2\">\n                              {/* ⚠️ A SPACER UNDER THE PRICE COLUMN. A CATEGORY has no price — only an\n"
+   ],
+   [
+    "                                  under the Price header and every column below reads as shifted. */}\n                              <span className=\"w-20 shrink-0\" aria-hidden />\n                              <div className=\"flex flex-col items-center gap-0.5 w-16 shrink-0\">\n                                <input type=\"number\" inputMode=\"numeric\" min=\"0\" placeholder=\"∞\" disabled={priceEditing}\n",
+    "                                  under the Price header and every column below reads as shifted. */}\n                              <span className=\"w-[3.75rem] sm:w-20 shrink-0\" aria-hidden />\n                              <div className=\"flex flex-col items-center gap-0.5 w-12 sm:w-16 shrink-0\" data-stock-col=\"limit\">\n                                <input type=\"number\" inputMode=\"numeric\" min=\"0\" placeholder=\"∞\" disabled={priceEditing}\n"
+   ],
+   [
+    "                                  }}\n                                  className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${isCatDefault?'border-blue-200 bg-blue-50 text-blue-700':'border-orange-200 bg-orange-50'}`}\n                                  title={isCatDefault?tDash('stock.defaultStockTitle'):tDash('stock.categoryStockTitle')}/>\n",
+    "                                  }}\n                                  className={`w-12 sm:w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold text-slate-900 max-sm:px-1 max-sm:[appearance:textfield] max-sm:[&::-webkit-inner-spin-button]:appearance-none max-sm:[&::-webkit-outer-spin-button]:appearance-none focus:outline-none focus:ring-2 focus:ring-orange-400 ${isCatDefault?'border-blue-200 bg-blue-50 text-blue-700':'border-orange-200 bg-orange-50'}`}\n                                  title={isCatDefault?tDash('stock.defaultStockTitle'):tDash('stock.categoryStockTitle')}/>\n"
+   ],
+   [
+    "                                  change which items can be ordered at all while prices are unsaved. */}\n                              <span className=\"w-12 shrink-0 flex justify-center\"><Toggle on={catStock?.available??true} disabled={priceEditing} onToggle={()=>updateCategoryAvailable(cat,!(catStock?.available??true))}/></span>\n                            </div>\n",
+    "                                  change which items can be ordered at all while prices are unsaved. */}\n                              <span className=\"w-11 sm:w-12 shrink-0 flex justify-center\" data-stock-col=\"on\"><Toggle on={catStock?.available??true} disabled={priceEditing} onToggle={()=>updateCategoryAvailable(cat,!(catStock?.available??true))}/></span>\n                            </div>\n"
+   ],
+   [
+    "\n                        <div className=\"space-y-1.5 ml-2\">\n                          {groupBySubcategory(items, catObj?.subcategories)\n",
+    "\n                        <div className=\"space-y-1.5 sm:ml-2\">\n                          {groupBySubcategory(items, catObj?.subcategories)\n"
+   ],
+   [
+    "                            return(\n                              <div key={item.name} className={`flex items-center gap-2 p-2 rounded-xl border ${catClosed?'bg-slate-50 border-slate-100 opacity-50':!isAvailable?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>\n                                <div className=\"flex-1 min-w-0\">\n",
+    "                            return(\n                              <div key={item.name} data-stock-row=\"item\" className={`flex items-center gap-1 sm:gap-2 p-2 rounded-xl border ${catClosed?'bg-slate-50 border-slate-100 opacity-50':!isAvailable?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>\n                                <div className=\"flex-1 min-w-0\">\n"
+   ],
+   [
+    "                                        figure only where this event has changed it. */}\n                                    <p className={`font-bold text-sm ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}</p>\n                                    {!isAvailable&&<span className=\"text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full\">{tDash('stock.soldOut')}</span>}\n",
+    "                                        figure only where this event has changed it. */}\n                                    <p className={`font-bold text-sm min-w-0 [overflow-wrap:anywhere] ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}</p>\n                                    {!isAvailable&&<span className=\"text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full\">{tDash('stock.soldOut')}</span>}\n"
+   ],
+   [
+    "                                    and a closed category's items cannot be ordered at any price. */}\n                                <div className=\"flex flex-col items-end gap-0.5 w-20 shrink-0\">\n                                  {priceEditing?(\n",
+    "                                    and a closed category's items cannot be ordered at any price. */}\n                                <div className=\"flex flex-col items-end gap-0.5 w-[3.75rem] sm:w-20 shrink-0\" data-stock-col=\"price\">\n                                  {priceEditing?(\n"
+   ],
+   [
+    "                                       network — nothing leaves the page until Save. */\n                                    <div className=\"relative w-20\">\n                                      <input type=\"text\" inputMode=\"decimal\" disabled={!priceEditable}\n",
+    "                                       network — nothing leaves the page until Save. */\n                                    <div className=\"relative w-[3.75rem] sm:w-20\">\n                                      <input type=\"text\" inputMode=\"decimal\" disabled={!priceEditable}\n"
+   ],
+   [
+    "                                        }}\n                                        className={`w-20 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-right font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 ${priceOwn?'border-blue-300 bg-blue-50 text-blue-700 pr-5':'border-slate-200 bg-white text-slate-900'}`}\n                                        title={priceOwn?tDash('stock.ownPriceTitle'):tDash('stock.priceTitle')}/>\n",
+    "                                        }}\n                                        className={`w-[3.75rem] sm:w-20 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-right font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 ${priceOwn?'border-blue-300 bg-blue-50 text-blue-700 pr-5':'border-slate-200 bg-white text-slate-900'}`}\n                                        title={priceOwn?tDash('stock.ownPriceTitle'):tDash('stock.priceTitle')}/>\n"
+   ],
+   [
+    "                                       the whole point of the two modes. */\n                                    <p data-event-price className={`w-20 text-right text-sm font-bold tabular-nums ${priceOwn?'text-blue-700':'text-slate-800'}`}>\n                                      {truckAmount(shownPrice)}\n",
+    "                                       the whole point of the two modes. */\n                                    <p data-event-price className={`w-[3.75rem] sm:w-20 text-right text-sm font-bold tabular-nums ${priceOwn?'text-blue-700':'text-slate-800'}`}>\n                                      {truckAmount(shownPrice)}\n"
+   ],
+   [
+    "                                </div>\n                                <div className=\"flex flex-col items-center gap-0.5 w-16 shrink-0\">\n                                  <input type=\"number\" inputMode=\"numeric\" min=\"0\" placeholder=\"–\" disabled={stockLocked}\n",
+    "                                </div>\n                                <div className=\"flex flex-col items-center gap-0.5 w-12 sm:w-16 shrink-0\" data-stock-col=\"limit\">\n                                  <input type=\"number\" inputMode=\"numeric\" min=\"0\" placeholder=\"–\" disabled={stockLocked}\n"
+   ],
+   [
+    "                                    aria-label={tDash('stock.limitAria',{item:item.name})}\n                                    className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white disabled:cursor-not-allowed disabled:bg-slate-100 ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={catClosed?tDash('stock.categoryClosedTitle'):isDefault?tDash('stock.defaultStockTitle'):followsCategory?tDash('stock.followsCategoryTitle'):tDash('stock.itemStockTitle')}/>\n                                </div>\n",
+    "                                    aria-label={tDash('stock.limitAria',{item:item.name})}\n                                    className={`w-12 sm:w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold max-sm:px-1 max-sm:[appearance:textfield] max-sm:[&::-webkit-inner-spin-button]:appearance-none max-sm:[&::-webkit-outer-spin-button]:appearance-none focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white disabled:cursor-not-allowed disabled:bg-slate-100 ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={catClosed?tDash('stock.categoryClosedTitle'):isDefault?tDash('stock.defaultStockTitle'):followsCategory?tDash('stock.followsCategoryTitle'):tDash('stock.itemStockTitle')}/>\n                                </div>\n"
+   ],
+   [
+    "                                    screen reader now hears the dish's own name and \"Available\". */}\n                                <span className=\"w-12 shrink-0 flex justify-center\"><Toggle on={isAvailable} disabled={stockLocked} ariaLabel={tDash('stock.availableAria',{item:item.name})} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>\n                              </div>\n",
+    "                                    screen reader now hears the dish's own name and \"Available\". */}\n                                <span className=\"w-11 sm:w-12 shrink-0 flex justify-center\" data-stock-col=\"on\"><Toggle on={isAvailable} disabled={stockLocked} ariaLabel={tDash('stock.availableAria',{item:item.name})} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>\n                              </div>\n"
+   ]
+  ]
+ },
+ "new_files": {
+  "lib/printing/netAvailability.ts": "29b60a420d22a9acd535264c5abfad9e520e03a08bb03eb32b0f423ea06197e6"
+ }
+}

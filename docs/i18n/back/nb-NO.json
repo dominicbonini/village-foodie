@@ -5934,5 +5934,12 @@
  "manageMenu.allergens.kitchenEdit": "Edit",
  "order.kitchenHeading": "Allergens handled in this kitchen",
  "order.kitchenNote": "Each dish shows the allergens in its recipe. We cannot guarantee that any dish is free from traces.",
- "manageMenu.category.otherVans": "Food truck 1. Other food trucks: the Kitchen capacity tab."
+ "manageMenu.category.otherVans": "Food truck 1. Other food trucks: the Kitchen capacity tab.",
+ "auth.login.invalidLink": "This link has expired or is not valid.",
+ "auth.reset.logIn": "Sign in",
+ "errorPage.backToDashboard": "Back to the control panel",
+ "errorPage.errorBodyDashboard": "Sorry, this page did not load. Try again, or go back to the control panel.",
+ "errorPage.sectionFailed": "This section did not load.",
+ "auth.forgot.backToLogin": "Back to login",
+ "auth.reset.sendNewLink": "Ask for a new link"
 }

@@ -4,5 +4,8 @@
   "home": "Eiti į pradžios puslapį",
   "errorTitle": "Kažkas nepavyko",
   "errorBody": "Atsiprašome, šis puslapis neįsikėlė. Bandykite dar kartą arba grįžkite į pradžios puslapį.",
-  "retry": "Bandyti dar kartą"
+  "retry": "Bandyti dar kartą",
+  "backToDashboard": "Grįžti į valdymo skydelį",
+  "errorBodyDashboard": "Atsiprašome, šis puslapis neįsikėlė. Bandykite dar kartą arba grįžkite į valdymo skydelį.",
+  "sectionFailed": "Ši skiltis neįsikėlė."
 }

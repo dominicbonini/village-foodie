@@ -18,13 +18,16 @@ async function notFoundLocale(): Promise<AppLocale> {
 
 export default async function NotFound() {
   const t = translatorFor(await notFoundLocale(), 'errorPage')
+  // app-fixes-1: in the app (the shell's user-agent marker, capacitor.config appendUserAgent) "home" is /app — the device's
+  // dashboard or login — never the landing page. The web is unchanged.
+  const inApp = ((await headers()).get('user-agent') || '').includes('HatchGrabNativeApp')
   return (
     <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
         <p className="text-4xl mb-4" aria-hidden="true">🔍</p>
         <h1 className="text-lg font-semibold text-slate-900">{t('notFoundTitle')}</h1>
         <p className="text-sm text-slate-500 mt-2">{t('notFoundBody')}</p>
-        <Link href="/" className="inline-block mt-6 px-5 py-2.5 rounded-xl bg-orange-600 text-white text-sm font-semibold hover:bg-orange-700">{t('home')}</Link>
+        <Link href={inApp ? '/app' : '/'} className="inline-block mt-6 px-5 py-2.5 rounded-xl bg-orange-600 text-white text-sm font-semibold hover:bg-orange-700">{t('home')}</Link>
       </div>
     </main>
   )

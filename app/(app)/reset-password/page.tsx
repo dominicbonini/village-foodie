@@ -1,12 +1,33 @@
 'use client'
 
 import { useState, Suspense } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FlowLogo } from '@/components/shared/FlowLogo'   // site-chrome-1: the focused flows' logo, linking home (inert in the app)
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/auth'
 import { errorText } from '@/lib/i18n/customer-errors'
 import '@/lib/i18n/catalog/errorsOnboarding'
+import { isNativeApp } from '@/lib/native/device'
+
+/** app-fixes-1: the reset flow's end states. Every one has a way forward (docs/app-fixes-1-report.md §1). The links are
+ *  /login and /forgot-password, which are the same routes on the web and in the app (never the landing page). */
+const LINK_CODES = new Set(['reset_link_expired', 'reset_link_used', 'reset_link_invalid'])
+function EndCard({ icon, title, body, children, state }: { icon: string; title?: string; body: string; children: React.ReactNode; state: string }) {
+  return (
+    <div className="min-h-screen bg-[#111827] flex items-center justify-center p-4">
+      <div data-auth-end={state} className="bg-white rounded-2xl border border-slate-100 shadow-xl p-8 max-w-sm w-full text-center">
+        <FlowLogo variant="card" />
+        <div className="text-3xl mb-4" aria-hidden="true">{icon}</div>
+        {title && <h2 className="text-lg font-semibold text-slate-900 mb-2">{title}</h2>}
+        <p className={title ? 'text-sm text-slate-500' : 'text-base font-medium text-slate-800'}>{body}</p>
+        <div className="mt-6 flex flex-col gap-3">{children}</div>
+      </div>
+    </div>
+  )
+}
+const PRIMARY = 'w-full inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-xl'
+const SECONDARY = 'w-full inline-block border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold py-3 rounded-xl'
 
 function ResetPasswordForm() {
   const router = useRouter()
@@ -19,32 +40,38 @@ function ResetPasswordForm() {
   const tField = useT('auth.fields')
   // A refusal is worded from its code (errorsOnboarding), its English `error` the fallback (US polish batch, 19 Oct 2026).
   const tErr = useT('errorsOnboarding')
+  const tForgot = useT('auth.forgot')
+  const tLogin = useT('auth.login')
 
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // app-fixes-1: an expired / used / unknown link is an END STATE (a card with a way forward), not a red line under a form
+  // that can never succeed; and a successful reset shows a "Log in" button instead of jumping away.
+  const [linkError, setLinkError] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
+
+  const nextSteps = (
+    <>
+      <Link href="/forgot-password" data-auth-next="forgot" className={PRIMARY}>{t('sendNewLink')}</Link>
+      <Link href="/login" data-auth-next="login" className={SECONDARY}>{tForgot('backToLogin')}</Link>
+    </>
+  )
 
   // No token and not first login — invalid URL
   if (!token && !isFirstLogin) {
+    return <EndCard state="invalid" icon="⚠️" title={t('invalidTitle')} body={t('invalidBody')}>{nextSteps}</EndCard>
+  }
+  // The server said the link is expired, already used or unknown: its own sentence, and the two ways forward.
+  if (linkError) return <EndCard state="link-error" icon="⏱️" body={linkError}>{nextSteps}</EndCard>
+  if (done) {
     return (
-      <div className="min-h-screen bg-[#111827] flex items-center
-                      justify-center p-4">
-        <div className="bg-white rounded-2xl border border-slate-200
-                        p-8 max-w-sm w-full text-center border-slate-100 shadow-xl">
-          <div className="text-3xl mb-4">⚠️</div>
-          <h2 className="text-lg font-semibold text-slate-900 mb-2">
-            {t('invalidTitle')}
-          </h2>
-          <p className="text-sm text-slate-500 mb-4">
-            {t('invalidBody')}
-          </p>
-          <a href="/forgot-password"
-             className="text-sm text-orange-600 font-medium">
-            {t('requestNew')}
-          </a>
-        </div>
-      </div>
+      <EndCard state="done" icon="✅" body={tLogin('resetSuccess')}>
+        {/* A full page load, not <Link>: the old session was just signed out, and a fresh document is the clean start. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a href="/login" data-auth-next="login" className={PRIMARY}>{t('logIn')}</a>
+      </EndCard>
     )
   }
 
@@ -71,6 +98,7 @@ function ResetPasswordForm() {
       const data = await res.json()
 
       if (!res.ok || data.error) {
+        if (typeof data?.code === 'string' && LINK_CODES.has(data.code)) { setLinkError(errorText(tErr, data, t('errorFallback'))); setLoading(false); return }
         setError(errorText(tErr, data, t('errorFallback')))
         setLoading(false)
         return
@@ -83,7 +111,10 @@ function ResetPasswordForm() {
       // redirect, which properly clears the SSR cookie (plain client sign-out alone does not).
       const { createSupabaseBrowserClient } = await import('@/lib/supabase/client')
       await createSupabaseBrowserClient().auth.signOut()
-      window.location.href = '/login?message=password_reset'
+      // app-fixes-1: a success screen with a "Log in" button (was a jump to /login?message=password_reset). The sign-out
+      // above still runs first, and the button is a full page load, so the old session is gone either way.
+      setDone(true)
+      setLoading(false)
       return
     }
 
@@ -101,7 +132,8 @@ function ResetPasswordForm() {
         return
       }
 
-      router.push('/dashboard')
+      // app-fixes-1: in the app, /app routes to the device's truck (never a web-only page).
+      router.push(isNativeApp() ? '/app' : '/dashboard')
       router.refresh()
     }
   }

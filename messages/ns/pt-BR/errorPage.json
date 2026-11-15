@@ -4,5 +4,8 @@
   "home": "Ir para a página inicial",
   "errorTitle": "Algo deu errado",
   "errorBody": "Desculpe, esta página não carregou. Tente de novo ou volte para a página inicial.",
-  "retry": "Tentar de novo"
+  "retry": "Tentar de novo",
+  "backToDashboard": "Voltar para o painel",
+  "errorBodyDashboard": "Desculpe, esta página não carregou. Tente de novo ou volte para o seu painel.",
+  "sectionFailed": "Esta seção não carregou."
 }

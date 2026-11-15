@@ -1952,7 +1952,8 @@
       "errorFallback": "Väärä sähköposti tai salasana. Yritä uudelleen.",
       "submit": "Kirjaudu",
       "submitting": "Kirjaudutaan…",
-      "forgot": "Unohditko salasanasi?"
+      "forgot": "Unohditko salasanasi?",
+      "invalidLink": "Linkki on vanhentunut tai virheellinen."
     },
     "forgot": {
       "sentTitle": "Tarkista sähköpostisi",
@@ -1961,7 +1962,8 @@
       "subtitle": "Anna sähköpostiosoitteesi, niin lähetämme linkin salasanan vaihtamiseen",
       "submit": "Lähetä linkki",
       "sending": "Lähetetään…",
-      "back": "Takaisin kirjautumiseen"
+      "back": "Takaisin kirjautumiseen",
+      "backToLogin": "Takaisin kirjautumiseen"
     },
     "reset": {
       "invalidTitle": "Virheellinen linkki",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Vahvista salasana",
       "confirmPlaceholder": "Kirjoita salasana uudelleen",
       "submit": "Aseta salasana",
-      "saving": "Tallennetaan…"
+      "saving": "Tallennetaan…",
+      "logIn": "Kirjaudu",
+      "sendNewLink": "Pyydä uusi linkki"
     },
     "verifyEmail": {
       "goToLogin": "Siirry kirjautumaan",
@@ -7055,7 +7059,10 @@
     "home": "Siirry etusivulle",
     "errorTitle": "Jokin meni vikaan",
     "errorBody": "Valitettavasti sivu ei latautunut. Yritä uudelleen tai palaa etusivulle.",
-    "retry": "Yritä uudelleen"
+    "retry": "Yritä uudelleen",
+    "backToDashboard": "Takaisin ohjauspaneeliin",
+    "errorBodyDashboard": "Valitettavasti sivu ei latautunut. Yritä uudelleen tai palaa ohjauspaneeliin.",
+    "sectionFailed": "Tämä osio ei latautunut."
   },
   "faq": {
     "phrases": {

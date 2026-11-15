@@ -4,5 +4,8 @@
   "home": "Mine avalehele",
   "errorTitle": "Midagi läks valesti",
   "errorBody": "Vabandust, see leht ei laadinud. Proovige uuesti või minge tagasi avalehele.",
-  "retry": "Proovi uuesti"
+  "retry": "Proovi uuesti",
+  "backToDashboard": "Tagasi töölauale",
+  "errorBodyDashboard": "Vabandust, see leht ei laadinud. Proovige uuesti või minge tagasi töölauale.",
+  "sectionFailed": "See jaotis ei laadinud."
 }

@@ -1952,7 +1952,8 @@
       "errorFallback": "Incorrect email or password. Please try again.",
       "submit": "Sign in",
       "submitting": "Signing in…",
-      "forgot": "Forgot your password?"
+      "forgot": "Forgot your password?",
+      "invalidLink": "That link has expired or isn’t valid."
     },
     "forgot": {
       "sentTitle": "Check your email",
@@ -1961,7 +1962,8 @@
       "subtitle": "Enter your email and we’ll send a reset link",
       "submit": "Send reset link",
       "sending": "Sending…",
-      "back": "Back to sign in"
+      "back": "Back to sign in",
+      "backToLogin": "Back to log in"
     },
     "reset": {
       "invalidTitle": "Invalid reset link",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Confirm password",
       "confirmPlaceholder": "Repeat your password",
       "submit": "Set password",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "logIn": "Log in",
+      "sendNewLink": "Send a new link"
     },
     "verifyEmail": {
       "goToLogin": "Go to login",
@@ -7028,7 +7032,10 @@
     "home": "Go to the home page",
     "errorTitle": "Something went wrong",
     "errorBody": "Sorry — this page didn’t load. Try again, or go back to the home page.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "backToDashboard": "Back to dashboard",
+    "errorBodyDashboard": "Sorry, this page didn’t load. Try again, or go back to your dashboard.",
+    "sectionFailed": "This section didn’t load."
   },
   "faq": {
     "phrases": {

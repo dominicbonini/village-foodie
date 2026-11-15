@@ -1952,7 +1952,8 @@
       "errorFallback": "Nepareizs e-pasts vai parole. Lūdzu, mēģiniet vēlreiz.",
       "submit": "Pieteikties",
       "submitting": "Notiek pieteikšanās…",
-      "forgot": "Aizmirsāt paroli?"
+      "forgot": "Aizmirsāt paroli?",
+      "invalidLink": "Šīs saites derīgums ir beidzies, vai tā nav derīga."
     },
     "forgot": {
       "sentTitle": "Pārbaudiet savu e-pastu",
@@ -1961,7 +1962,8 @@
       "subtitle": "Ievadiet savu e-pastu, un mēs nosūtīsim atiestatīšanas saiti",
       "submit": "Nosūtīt atiestatīšanas saiti",
       "sending": "Notiek sūtīšana…",
-      "back": "Atpakaļ uz pieteikšanos"
+      "back": "Atpakaļ uz pieteikšanos",
+      "backToLogin": "Atpakaļ uz pieteikšanos"
     },
     "reset": {
       "invalidTitle": "Nederīga atiestatīšanas saite",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Apstipriniet paroli",
       "confirmPlaceholder": "Atkārtojiet paroli",
       "submit": "Iestatīt paroli",
-      "saving": "Saglabā…"
+      "saving": "Saglabā…",
+      "logIn": "Pieteikties",
+      "sendNewLink": "Pieprasīt jaunu atiestatīšanas saiti"
     },
     "verifyEmail": {
       "goToLogin": "Uz pieteikšanos",
@@ -7055,7 +7059,10 @@
     "home": "Uz sākumlapu",
     "errorTitle": "Kaut kas nogāja greizi",
     "errorBody": "Atvainojiet, šī lapa netika ielādēta. Mēģiniet vēlreiz vai atgriezieties sākumlapā.",
-    "retry": "Mēģināt vēlreiz"
+    "retry": "Mēģināt vēlreiz",
+    "backToDashboard": "Atpakaļ uz vadības paneli",
+    "errorBodyDashboard": "Atvainojiet, šī lapa netika ielādēta. Mēģiniet vēlreiz vai atgriezieties vadības panelī.",
+    "sectionFailed": "Šī sadaļa netika ielādēta."
   },
   "faq": {
     "phrases": {

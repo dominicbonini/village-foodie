@@ -1952,7 +1952,8 @@
       "errorFallback": "Email ou palavra-passe incorretos. Tente novamente.",
       "submit": "Iniciar sessão",
       "submitting": "A iniciar sessão…",
-      "forgot": "Esqueceu-se da palavra-passe?"
+      "forgot": "Esqueceu-se da palavra-passe?",
+      "invalidLink": "Esta ligação expirou ou não é válida."
     },
     "forgot": {
       "sentTitle": "Verifique o seu email",
@@ -1961,7 +1962,8 @@
       "subtitle": "Introduza o seu email e enviaremos uma ligação para repor a palavra-passe",
       "submit": "Enviar ligação",
       "sending": "A enviar…",
-      "back": "Voltar ao início de sessão"
+      "back": "Voltar ao início de sessão",
+      "backToLogin": "Voltar ao início de sessão"
     },
     "reset": {
       "invalidTitle": "Ligação inválida",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Confirmar palavra-passe",
       "confirmPlaceholder": "Repita a palavra-passe",
       "submit": "Definir palavra-passe",
-      "saving": "A guardar…"
+      "saving": "A guardar…",
+      "logIn": "Iniciar sessão",
+      "sendNewLink": "Pedir uma nova ligação"
     },
     "verifyEmail": {
       "goToLogin": "Ir para o início de sessão",
@@ -7055,7 +7059,10 @@
     "home": "Ir para a página inicial",
     "errorTitle": "Algo correu mal",
     "errorBody": "Lamentamos, esta página não carregou. Tente novamente ou volte à página inicial.",
-    "retry": "Tentar novamente"
+    "retry": "Tentar novamente",
+    "backToDashboard": "Voltar ao painel",
+    "errorBodyDashboard": "Lamentamos, esta página não carregou. Tente novamente ou volte ao seu painel.",
+    "sectionFailed": "Esta secção não carregou."
   },
   "faq": {
     "phrases": {

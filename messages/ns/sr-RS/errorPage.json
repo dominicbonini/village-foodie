@@ -4,5 +4,8 @@
   "home": "Idi na početnu stranicu",
   "errorTitle": "Nešto nije u redu",
   "errorBody": "Žao nam je — ova stranica se nije učitala. Pokušajte ponovo ili se vratite na početnu stranicu.",
-  "retry": "Pokušaj ponovo"
+  "retry": "Pokušaj ponovo",
+  "backToDashboard": "Nazad na kontrolnu tablu",
+  "errorBodyDashboard": "Žao nam je — ova stranica se nije učitala. Pokušajte ponovo ili se vratite na kontrolnu tablu.",
+  "sectionFailed": "Ovaj odeljak se nije učitao."
 }

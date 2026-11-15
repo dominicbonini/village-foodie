@@ -1952,7 +1952,8 @@
       "errorFallback": "Forkert e-mail eller adgangskode. Prøv igen.",
       "submit": "Log ind",
       "submitting": "Logger ind…",
-      "forgot": "Glemt din adgangskode?"
+      "forgot": "Glemt din adgangskode?",
+      "invalidLink": "Linket er udløbet eller ugyldigt."
     },
     "forgot": {
       "sentTitle": "Tjek din e-mail",
@@ -1961,7 +1962,8 @@
       "subtitle": "Skriv din e-mail, så sender vi et link til nulstilling",
       "submit": "Send link til nulstilling",
       "sending": "Sender…",
-      "back": "Tilbage til log ind"
+      "back": "Tilbage til log ind",
+      "backToLogin": "Tilbage til log ind"
     },
     "reset": {
       "invalidTitle": "Ugyldigt link til nulstilling",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Bekræft adgangskode",
       "confirmPlaceholder": "Gentag din adgangskode",
       "submit": "Gem adgangskode",
-      "saving": "Gemmer…"
+      "saving": "Gemmer…",
+      "logIn": "Log ind",
+      "sendNewLink": "Bed om et nyt link til nulstilling"
     },
     "verifyEmail": {
       "goToLogin": "Gå til log ind",
@@ -7055,7 +7059,10 @@
     "home": "Gå til forsiden",
     "errorTitle": "Noget gik galt",
     "errorBody": "Beklager, siden blev ikke indlæst. Prøv igen, eller gå tilbage til forsiden.",
-    "retry": "Prøv igen"
+    "retry": "Prøv igen",
+    "backToDashboard": "Tilbage til oversigten",
+    "errorBodyDashboard": "Beklager, siden blev ikke indlæst. Prøv igen, eller gå tilbage til oversigten.",
+    "sectionFailed": "Denne sektion blev ikke indlæst."
   },
   "faq": {
     "phrases": {

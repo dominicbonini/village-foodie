@@ -4,5 +4,8 @@
   "home": "Gå till startsidan",
   "errorTitle": "Något gick fel",
   "errorBody": "Tyvärr laddades inte sidan. Försök igen, eller gå tillbaka till startsidan.",
-  "retry": "Försök igen"
+  "retry": "Försök igen",
+  "backToDashboard": "Tillbaka till översikten",
+  "errorBodyDashboard": "Tyvärr laddades inte sidan. Försök igen, eller gå tillbaka till översikten.",
+  "sectionFailed": "Det här avsnittet laddades inte."
 }

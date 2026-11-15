@@ -129,6 +129,7 @@ import { usePrinting } from '@/lib/printing/usePrinting'   // the ONE mount of t
 import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory, collectionTimesHint } from '@/lib/slot-interval'
 import { intervalExample } from '@/lib/slot-generation'
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
+import { IsolatedSections, Section } from '@/components/shared/IsolatedSections'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, instantOfLocal, clockOfInstantInTz, formatInstantClock, formatSlot, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, formatLongDate, formatShortDate, localDateOfInstant } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_DARK } from '@/lib/event-display'
@@ -5022,11 +5023,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             notifications, kitchen capacity). The service-time Menu & Stock list renders in its own block
             below. Sections relocated VERBATIM from the old Menu & Stock tab — no behaviour change. */}
         {activeTab==='settings'&&(
-          <div className="space-y-4">
+          // app-fixes-1: every card in its own error boundary — one card that throws can no longer take the whole tab to the
+          // error page (components/shared/IsolatedSections.tsx). Same element and class as the <div> it replaces.
+          <IsolatedSections className="space-y-4">
             {/* SETTINGS-LOCK notice — the server-backed settings below are disabled offline (they'd fail
                 silently / desync the engine). The device-local Printer + Notifications cards (moved to the
                 BOTTOM of this tab) stay editable offline. */}
-            {isOffline&&(
+            <Section>{()=>(isOffline&&(
               <div className="bg-slate-100 border border-slate-200 rounded-2xl p-3 text-sm text-slate-600 flex items-center gap-2">
                 <span aria-hidden>📴</span>
                 {/* TRIMMED 14 August 2026 to the ONE fact nothing else says. The lead — "You're offline —
@@ -5034,7 +5037,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     now ends with "Settings are locked." This keeps the EXCEPTION to that rule. */}
                 <span>{tDash('settings.offlineStillWorks')}</span>
               </div>
-            )}
+            ))}</Section>
             {/* ⚠️ DEMO MODE keeps this TAB but strips it to the Kitchen-capacity card alone.
                 Reason: "adjust kitchen capacity and watch slots respond" is one of the four things the demo
                 exists to show (spec Stage 3), and that control lives HERE — hiding the tab outright would
@@ -5057,7 +5060,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 🔴 IT WAS ALWAYS PER-EVENT and still is: `truck_events.offline_protection_override`,
                 `offline_protection_mode_override`, `offline_auto_reject_mins_override` for the active
                 event, never the van's columns. The resolution through the event TYPE is unchanged. */}
-            {activeEvent&&(
+            <Section>{()=>(activeEvent&&(
               <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -5133,13 +5136,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   </div>
                 )}
               </div>
-            )}
+            ))}</Section>
             {/* Auto-accept + its dependent "review notes" sub-option read as ONE group (divide-y rows, same
                 treatment as the Sounds card). Notes-review only applies when auto-accept is on (conditional).
                 FIX 9 — DEMO: fully AVAILABLE and interactive, defaulted ON (set at provision). It genuinely
                 works end-to-end here, and toggling it then placing a test order is one of the more
                 convincing things a prospect can do. NOT locked. */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
+            <Section>{()=>(<div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
               {/* No conditional bottom padding any more: the notes sub-toggle that used to follow this
                    row is gone, so `pb-3` would pad against nothing. */}
               <div className="flex items-center justify-between">
@@ -5156,7 +5159,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   than a gap. Holding a NOTED order for a human is now unconditional — see
                   lib/orders/auto-accept. All 16 trucks stored `true`, so no behaviour changed; the
                   auto-accept description above now says it instead of a switch offering to turn it off. */}
-            </div>
+            </div>)}</Section>
             {/* == ORDER SCREEN — THE FOUR SETTINGS THAT SHAPE IT ========================================
                 GROUPED 15 August 2026, COMPLETED the same day. Four cards that were scattered down this tab,
                 now adjacent and in a fixed order: Menu layout, the paid-step card, the order-ready step, the
@@ -5173,7 +5176,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 headings): same classes, minus the outer mb-4, because this tab space-y-4 already separates
                 siblings and mb-4 would double it. The inner gap-3 is deliberately tighter than that space-y-4
                 so the four read as one family rather than four neighbours. */}
-            <div>
+            <Section>{()=>(<div>
               <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">{tDash('settings.orderScreen')}</p>
               <div className="flex flex-col gap-3">
             {/* ── MENU LAYOUT — trucks.add_order_layout (MOVED HERE 14 August 2026) ────────────────────
@@ -5466,7 +5469,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
               </div>
-            </div>
+            </div>)}</Section>
 
             {/* ── 🔴 TEMPORARY — ONLINE CARD PAYMENTS. DELETE THIS WHOLE BLOCK WITH THE SWITCH. ──────
                 🔴 DELIBERATELY OUTSIDE THE CARD ABOVE, AND THE SEPARATION IS THE POINT.
@@ -5507,7 +5510,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 the way out. Both is the ordinary paused-but-ready case. Neither is Gusto.
                 ⚠️ The BANNER above is deliberately gated on (b) ONLY and is not touched by this: a
                 paused truck must keep seeing why cards are off wherever it is in the app. */}
-            {(truck?.stripe_charges_enabled === true || truck?.online_payments_paused_at != null) && (
+            <Section>{()=>((truck?.stripe_charges_enabled === true || truck?.online_payments_paused_at != null) && (
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -5532,7 +5535,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               </div>
             </div>
-            )}
+            ))}</Section>
 
             {/* SOUNDS — same trucks.sound_config as Manage → Settings (mirrors automatically). Which alerts
                 fire; the on/off MASTER is the per-device header toggle.
@@ -5540,7 +5543,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 PER-DEVICE (the per-truck "which sounds" split is being retired — see the V9.0 note), so
                 advertising this card would be showing a prospect a control that won't exist where they'd
                 go looking for it. Better to show nothing than to promise the wrong shape. */}
-            {!isDemo&&(()=>{
+            <Section>{()=>(!isDemo&&(()=>{
               const sc=soundCfg
               return (
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
@@ -5568,7 +5571,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   </div>
                 </div>
               )
-            })()}
+            })())}</Section>
             {/* The offline-pause alert ALWAYS fires (the per-device suppression toggle was removed) —
                 an operator must never be able to silence "your orders were paused while you were away".
                 The per-event ack still prevents re-firing for the same pause. */}
@@ -5589,7 +5592,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 🔴 POSITION: DIRECTLY ABOVE THE KITCHEN CAPACITY CARD, matching Manage → Settings, where
                 the same box sits directly above the same card. Moved here 17 September 2026; nothing
                 but its position changed. */}
-            {activeEvent&&(
+            <Section>{()=>(activeEvent&&(
               /* ⚠️ THE `id` STAYS, AND IT NOW HAS NO IN-APP CONSUMER (5 October 2026). It was the anchor
                  the deleted "This event" card's Collection times row scrolled to. It is kept because
                  it is a stable hook for the render harnesses that measure this box, and because an
@@ -5676,14 +5679,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   )
                 })()}
               </div>
-            )}
+            ))}</Section>
 
             {/* Kitchen capacity — its own card now (was nested in Stock & availability). Event-scoped
                 ceiling + category scope; the control's bold "Kitchen capacity" label doubles as the
                 card heading. One tight, left-aligned unit (max-w stops it stretching on the wide
                 dashboard); mirrors Settings. Reads/writes via service-role /api/dashboard +
                 update_van_settings (Section 10). Behaviour unchanged. */}
-            {activeEvent&&(
+            <Section>{()=>(activeEvent&&(
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
                 <div>
                   <p className="text-sm font-semibold text-slate-800 tracking-wide mb-3">{tDash('settings.capacityTitle')}</p>
@@ -5797,7 +5800,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <p className="text-xs text-slate-400 mt-1">{tCap('example')}</p>
                 </div>
               </div>
-            )}
+            ))}</Section>
             {/* Device-specific iPad-only cards LAST — both render null on web / non-native, so mobile & desktop
                 show none of this block and the SHARED settings above (auto-accept → offline protection →
                 order-ready → kitchen capacity) sit in the same relative order on every surface. Kitchen ticket
@@ -5812,9 +5815,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 app/manage/[token]/page.tsx (SettingsTab, above the danger zone) and §46 of the manual.
                 🔴 DO NOT RE-ADD THEM HERE. A truck-wide setting on the per-event screen is the exact
                 confusion the scope rule exists to prevent. */}
-            {!isDemo&&truck&&<PrintingSettings features={features} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode} connected={printing.status.connected} statusDetail={printing.status.detail} waitingCount={printing.waitingCount} time={truck.time}/>}
-            {!isDemo&&<NotificationSettings token={token}/>}
-          </div>
+            <Section>{()=>(!isDemo&&truck&&<PrintingSettings features={features} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode} connected={printing.status.connected} statusDetail={printing.status.detail} waitingCount={printing.waitingCount} time={truck.time}/>)}</Section>
+            <Section>{()=>(!isDemo&&<NotificationSettings token={token}/>)}</Section>
+          </IsolatedSections>
         )}
 
         {/* MENU & STOCK TAB (service-time: per-event stock + availability operators adjust mid-service) */}
@@ -5826,7 +5829,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 It read "You're offline — stock changes are saved on this device and will sync when you
                 reconnect" — which OfflineBanner now says persistently, with a COUNT, on every tab. It
                 added nothing this tab did not already have on screen above it. */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-4">
               {/* ══ 🔴 THE HEADER, WITH THE PRICE EDITOR'S ONE BUTTON ════════════════════════════════
                   ⛔ **IT WAS A FULL-WIDTH GREY BAR UNDER THE TITLE AT 390px** (`w-full sm:w-auto`), on
                   the rule that a phone button drops to its own row. Dominic, on the device: make it a
@@ -5888,7 +5891,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <>
                 {/* Column headers — line up with the fixed LIMIT (w-16) + AVAILABLE (w-12) columns on every
                     row below; pr-2 matches the item rows' p-2 right inset so each label sits over its column. */}
-                <div className="flex items-center gap-2 pr-2 mb-2">
+                <div className="flex items-center gap-1 sm:gap-2 pr-[9px] mb-2" data-stock-head>
                   <span className="flex-1" />
                   {/* 🔴 PRICE FIRST, THEN LIMIT, THEN AVAILABLE — the order the brief asks for, and the
                       order of consequence: what it costs, how many there are, whether it is on at all.
@@ -5904,9 +5907,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       its own column at 390px. ⚠️ THE FULL WORDS SURVIVE WHERE THERE IS ROOM FOR THEM:
                       every limit input and every switch keeps its own `aria-label`, so a screen reader
                       still hears "Available" and not "On". */}
-                  <span className="w-20 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tSvc('eventPriceColumnLabel')}</span>
-                  <span className="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tDash('stock.colLimit')}</span>
-                  <span className="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tDash('stock.colOn')}</span>
+                  <span className="w-[3.75rem] sm:w-20 shrink-0 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tSvc('eventPriceColumnLabel')}</span>
+                  <span className="w-12 sm:w-16 shrink-0 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tDash('stock.colLimit')}</span>
+                  <span className="w-11 sm:w-12 shrink-0 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">{tDash('stock.colOn')}</span>
                 </div>
                 <div className="space-y-5">
                   {Object.entries(menuGroups).map(([cat,items])=>{
@@ -5925,16 +5928,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         {/* Mobile: two lines. Desktop: one line via hidden sm:flex */}
                         <div className="mb-2 pb-2 border-b border-slate-100">
                           {/* Line 1 (mobile) / full row (desktop) */}
-                          <div className="flex items-center gap-2 pr-2">
-                            <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}{catOrdered>0&&<span className="ml-1.5 text-sm font-medium normal-case tracking-normal text-slate-500">{tDash('stock.catSold',{count:String(catOrdered)})}</span>}{catRem!==null&&<span className={`ml-1.5 text-xs font-bold normal-case tracking-normal ${catRem<=5?'text-orange-500':'text-slate-500'}`}>{tDash('stock.left',{count:String(catRem)})}</span>}{catStock?.available===false&&<span className="ml-1.5 text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full normal-case tracking-normal">{tDash('stock.closed')}</span>}</p>
+                          <div className="flex items-center gap-1 sm:gap-2 pr-[9px]" data-stock-row="category">
+                            <div className="flex-1 min-w-0" data-stock-cat-name>
+                              {/* app-fixes-1 (Dominic's approved phone layout): the NAME on line 1, the counts ("Reste : N", sold, closed) on
+                                  line 2 underneath — never beside the name, where they pushed the limit box and the switch off the card at 320px. */}
+                              <p className="text-sm font-black text-orange-600 uppercase tracking-wide [overflow-wrap:anywhere]">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
+                              {(catOrdered>0||catRem!==null||catStock?.available===false)&&<p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5" data-stock-cat-counts>{catOrdered>0&&<span className="text-xs font-medium text-slate-500 whitespace-nowrap">{tDash('stock.catSold',{count:String(catOrdered)})}</span>}{catRem!==null&&<span className={`text-xs font-bold whitespace-nowrap ${catRem<=5?'text-orange-500':'text-slate-500'}`}>{tDash('stock.left',{count:String(catRem)})}</span>}{catStock?.available===false&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">{tDash('stock.closed')}</span>}</p>}
+                            </div>
                             {/* Prep & batch moved to the "Total capacity" section (V7.8 §42) — this card is per-event STOCK only. */}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 sm:gap-2">
                               {/* ⚠️ A SPACER UNDER THE PRICE COLUMN. A CATEGORY has no price — only an
                                   item does — so this cell is deliberately empty rather than carrying a
                                   control nothing could write. Without it the category's limit box sits
                                   under the Price header and every column below reads as shifted. */}
-                              <span className="w-20 shrink-0" aria-hidden />
-                              <div className="flex flex-col items-center gap-0.5 w-16 shrink-0">
+                              <span className="w-[3.75rem] sm:w-20 shrink-0" aria-hidden />
+                              <div className="flex flex-col items-center gap-0.5 w-12 sm:w-16 shrink-0" data-stock-col="limit">
                                 <input type="number" inputMode="numeric" min="0" placeholder="∞" disabled={priceEditing}
                                   value={catStockDrafts[cat] ?? (catCount??'').toString()}
                                   onFocus={()=>setCatStockDrafts(d=>({...d,[cat]:(catCount??'').toString()}))}
@@ -5948,7 +5956,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     const next=p!==null&&!isNaN(p)?Math.max(0,p):null
                                     if(next!==(catStock?.stock_count??null))updateCategoryStock(cat,next)
                                   }}
-                                  className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${isCatDefault?'border-blue-200 bg-blue-50 text-blue-700':'border-orange-200 bg-orange-50'}`}
+                                  className={`w-12 sm:w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold text-slate-900 max-sm:px-1 max-sm:[appearance:textfield] max-sm:[&::-webkit-inner-spin-button]:appearance-none max-sm:[&::-webkit-outer-spin-button]:appearance-none focus:outline-none focus:ring-2 focus:ring-orange-400 ${isCatDefault?'border-blue-200 bg-blue-50 text-blue-700':'border-orange-200 bg-orange-50'}`}
                                   title={isCatDefault?tDash('stock.defaultStockTitle'):tDash('stock.categoryStockTitle')}/>
                                 {isCatDefault&&<span className="text-[9px] text-blue-400 font-medium">{tDash('stock.default')}</span>}
                               </div>
@@ -5957,12 +5965,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                               {/* ⛔ LOCKED IN PRICE-EDIT MODE, like every other limit and availability
                                   control on this card. A category switched off mid-price-edit would
                                   change which items can be ordered at all while prices are unsaved. */}
-                              <span className="w-12 shrink-0 flex justify-center"><Toggle on={catStock?.available??true} disabled={priceEditing} onToggle={()=>updateCategoryAvailable(cat,!(catStock?.available??true))}/></span>
+                              <span className="w-11 sm:w-12 shrink-0 flex justify-center" data-stock-col="on"><Toggle on={catStock?.available??true} disabled={priceEditing} onToggle={()=>updateCategoryAvailable(cat,!(catStock?.available??true))}/></span>
                             </div>
                           </div>
                         </div>
 
-                        <div className="space-y-1.5 ml-2">
+                        <div className="space-y-1.5 sm:ml-2">
                           {groupBySubcategory(items, catObj?.subcategories)
                             .filter(g=>g.items.length>0)
                             .map(group=>(
@@ -6014,7 +6022,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                              * promises exactly this. */
                             const stockLocked=catClosed||priceEditing
                             return(
-                              <div key={item.name} className={`flex items-center gap-2 p-2 rounded-xl border ${catClosed?'bg-slate-50 border-slate-100 opacity-50':!isAvailable?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
+                              <div key={item.name} data-stock-row="item" className={`flex items-center gap-1 sm:gap-2 p-2 rounded-xl border ${catClosed?'bg-slate-50 border-slate-100 opacity-50':!isAvailable?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     {/* ⛔ THE PRICE IS NOT BESIDE THE NAME ANY MORE (5 October 2026,
@@ -6024,7 +6032,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                         price, i.e. not what a customer at this event pays. The column
                                         shows what they pay, and the note under the name shows the menu
                                         figure only where this event has changed it. */}
-                                    <p className={`font-bold text-sm ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}</p>
+                                    <p className={`font-bold text-sm min-w-0 [overflow-wrap:anywhere] ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}</p>
                                     {!isAvailable&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">{tDash('stock.soldOut')}</span>}
                                     {/* Show "X left" ONLY for an item with its OWN cap (itemRem !== null) — never echo
                                         the category number onto every item (the category header row shows {catRem} left).
@@ -6057,12 +6065,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     ⚠️ DISABLED UNTIL 20261011 IS APPLIED (`priceReady`) and while the
                                     category is closed — a box whose save would 400 is worse than none,
                                     and a closed category's items cannot be ordered at any price. */}
-                                <div className="flex flex-col items-end gap-0.5 w-20 shrink-0">
+                                <div className="flex flex-col items-end gap-0.5 w-[3.75rem] sm:w-20 shrink-0" data-stock-col="price">
                                   {priceEditing?(
                                     /* ── EDIT MODE: an input, blue and with an × when it is this
                                        event's own. ⚠️ `pricePending` IS WHAT IT WRITES, never the
                                        network — nothing leaves the page until Save. */
-                                    <div className="relative w-20">
+                                    <div className="relative w-[3.75rem] sm:w-20">
                                       <input type="text" inputMode="decimal" disabled={!priceEditable}
                                         aria-label={tDash('stock.priceAria',{item:item.name})}
                                         value={(itemId?priceDrafts[itemId]:undefined) ?? editableAmount(shownPrice,truck?.money)}
@@ -6091,7 +6099,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                           if(next===null&&!priceOwn)return
                                           setPricePending(p=>({...p,[itemId]:next}))
                                         }}
-                                        className={`w-20 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-right font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 ${priceOwn?'border-blue-300 bg-blue-50 text-blue-700 pr-5':'border-slate-200 bg-white text-slate-900'}`}
+                                        className={`w-[3.75rem] sm:w-20 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-right font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 ${priceOwn?'border-blue-300 bg-blue-50 text-blue-700 pr-5':'border-slate-200 bg-white text-slate-900'}`}
                                         title={priceOwn?tDash('stock.ownPriceTitle'):tDash('stock.priceTitle')}/>
                                       {priceOwn&&priceEditable&&itemId&&priceDrafts[itemId]===undefined&&(
                                         <button type="button" aria-label={tDash('stock.clearPriceAria',{item:item.name})}
@@ -6107,12 +6115,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                        Blue where this event has its own. ⛔ IT IS A `<p>`, SO THERE IS
                                        NOTHING TO TAB INTO AND NOTHING TO CHANGE BY ACCIDENT, which is
                                        the whole point of the two modes. */
-                                    <p data-event-price className={`w-20 text-right text-sm font-bold tabular-nums ${priceOwn?'text-blue-700':'text-slate-800'}`}>
+                                    <p data-event-price className={`w-[3.75rem] sm:w-20 text-right text-sm font-bold tabular-nums ${priceOwn?'text-blue-700':'text-slate-800'}`}>
                                       {truckAmount(shownPrice)}
                                     </p>
                                   )}
                                 </div>
-                                <div className="flex flex-col items-center gap-0.5 w-16 shrink-0">
+                                <div className="flex flex-col items-center gap-0.5 w-12 sm:w-16 shrink-0" data-stock-col="limit">
                                   <input type="number" inputMode="numeric" min="0" placeholder="–" disabled={stockLocked}
                                     value={stockDrafts[item.name] ?? (itemCount??'').toString()}
                                     onFocus={()=>setStockDrafts(d=>({...d,[item.name]:(itemCount??'').toString()}))}
@@ -6136,7 +6144,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     /* ⚠️ NAMED FOR THE SAME REASON THE SWITCH BESIDE IT IS — the
                                        heading over this column is now "Limit". */
                                     aria-label={tDash('stock.limitAria',{item:item.name})}
-                                    className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white disabled:cursor-not-allowed disabled:bg-slate-100 ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={catClosed?tDash('stock.categoryClosedTitle'):isDefault?tDash('stock.defaultStockTitle'):followsCategory?tDash('stock.followsCategoryTitle'):tDash('stock.itemStockTitle')}/>
+                                    className={`w-12 sm:w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold max-sm:px-1 max-sm:[appearance:textfield] max-sm:[&::-webkit-inner-spin-button]:appearance-none max-sm:[&::-webkit-outer-spin-button]:appearance-none focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white disabled:cursor-not-allowed disabled:bg-slate-100 ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={catClosed?tDash('stock.categoryClosedTitle'):isDefault?tDash('stock.defaultStockTitle'):followsCategory?tDash('stock.followsCategoryTitle'):tDash('stock.itemStockTitle')}/>
                                 </div>
                                 {/* ⛔ LOCKED WHILE PRICES ARE BEING EDITED — `stockLocked`, which the
                                     blue note above promises. One act at a time.
@@ -6147,7 +6155,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     "AVAILABLE" overflowed its 48px column at 390. ⚠️ SHORTENING THE
                                     VISIBLE WORD IS WHAT MADE THIS WORTH FIXING RATHER THAN NOTING: a
                                     screen reader now hears the dish's own name and "Available". */}
-                                <span className="w-12 shrink-0 flex justify-center"><Toggle on={isAvailable} disabled={stockLocked} ariaLabel={tDash('stock.availableAria',{item:item.name})} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>
+                                <span className="w-11 sm:w-12 shrink-0 flex justify-center" data-stock-col="on"><Toggle on={isAvailable} disabled={stockLocked} ariaLabel={tDash('stock.availableAria',{item:item.name})} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>
                               </div>
                             )
                           })}

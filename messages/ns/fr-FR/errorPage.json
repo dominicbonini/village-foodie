@@ -4,5 +4,8 @@
   "home": "Aller à la page d’accueil",
   "errorTitle": "Une erreur est survenue",
   "errorBody": "Désolés, cette page ne s’est pas chargée. Réessayez, ou revenez à la page d’accueil.",
-  "retry": "Réessayer"
+  "retry": "Réessayer",
+  "backToDashboard": "Retour au tableau de bord",
+  "errorBodyDashboard": "Désolés, cette page ne s’est pas chargée. Réessayez, ou revenez à votre tableau de bord.",
+  "sectionFailed": "Cette section ne s’est pas chargée."
 }

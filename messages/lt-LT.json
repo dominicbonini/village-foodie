@@ -1952,7 +1952,8 @@
       "errorFallback": "Neteisingas el. paštas arba slaptažodis. Bandykite dar kartą.",
       "submit": "Prisijungti",
       "submitting": "Jungiamasi…",
-      "forgot": "Pamiršote slaptažodį?"
+      "forgot": "Pamiršote slaptažodį?",
+      "invalidLink": "Ši nuoroda nebegalioja arba yra netinkama."
     },
     "forgot": {
       "sentTitle": "Patikrinkite el. paštą",
@@ -1961,7 +1962,8 @@
       "subtitle": "Įveskite el. pašto adresą ir atsiųsime atkūrimo nuorodą",
       "submit": "Siųsti atkūrimo nuorodą",
       "sending": "Siunčiama…",
-      "back": "Grįžti į prisijungimą"
+      "back": "Grįžti į prisijungimą",
+      "backToLogin": "Grįžti į prisijungimą"
     },
     "reset": {
       "invalidTitle": "Netinkama atkūrimo nuoroda",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Patvirtinkite slaptažodį",
       "confirmPlaceholder": "Pakartokite slaptažodį",
       "submit": "Nustatyti slaptažodį",
-      "saving": "Išsaugoma…"
+      "saving": "Išsaugoma…",
+      "logIn": "Prisijungti",
+      "sendNewLink": "Prašyti naujos atkūrimo nuorodos"
     },
     "verifyEmail": {
       "goToLogin": "Eiti į prisijungimą",
@@ -7055,7 +7059,10 @@
     "home": "Eiti į pradžios puslapį",
     "errorTitle": "Kažkas nepavyko",
     "errorBody": "Atsiprašome, šis puslapis neįsikėlė. Bandykite dar kartą arba grįžkite į pradžios puslapį.",
-    "retry": "Bandyti dar kartą"
+    "retry": "Bandyti dar kartą",
+    "backToDashboard": "Grįžti į valdymo skydelį",
+    "errorBodyDashboard": "Atsiprašome, šis puslapis neįsikėlė. Bandykite dar kartą arba grįžkite į valdymo skydelį.",
+    "sectionFailed": "Ši skiltis neįsikėlė."
   },
   "faq": {
     "phrases": {

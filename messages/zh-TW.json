@@ -1952,7 +1952,8 @@
       "errorFallback": "電子郵件或密碼不正確，請再試一次。",
       "submit": "登入",
       "submitting": "登入中…",
-      "forgot": "忘記密碼？"
+      "forgot": "忘記密碼？",
+      "invalidLink": "這個連結已過期或無效。"
     },
     "forgot": {
       "sentTitle": "請查看你的電子郵件",
@@ -1961,7 +1962,8 @@
       "subtitle": "輸入你的電子郵件，我們會寄送重設連結給你",
       "submit": "寄送重設連結",
       "sending": "寄送中…",
-      "back": "返回登入"
+      "back": "返回登入",
+      "backToLogin": "返回登入"
     },
     "reset": {
       "invalidTitle": "重設連結無效",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "確認密碼",
       "confirmPlaceholder": "再次輸入密碼",
       "submit": "設定密碼",
-      "saving": "儲存中…"
+      "saving": "儲存中…",
+      "logIn": "登入",
+      "sendNewLink": "重新索取重設連結"
     },
     "verifyEmail": {
       "goToLogin": "前往登入",
@@ -7055,7 +7059,10 @@
     "home": "回到首頁",
     "errorTitle": "發生錯誤",
     "errorBody": "抱歉，這個頁面沒有成功載入。請再試一次，或回到首頁。",
-    "retry": "再試一次"
+    "retry": "再試一次",
+    "backToDashboard": "回到控制台",
+    "errorBodyDashboard": "抱歉，這個頁面沒有成功載入。請再試一次，或回到控制台。",
+    "sectionFailed": "這個區塊沒有成功載入。"
   },
   "faq": {
     "phrases": {

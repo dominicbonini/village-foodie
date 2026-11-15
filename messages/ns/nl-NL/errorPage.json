@@ -4,5 +4,8 @@
   "home": "Naar de startpagina",
   "errorTitle": "Er ging iets mis",
   "errorBody": "Sorry, deze pagina is niet geladen. Probeer het opnieuw, of ga terug naar de startpagina.",
-  "retry": "Opnieuw proberen"
+  "retry": "Opnieuw proberen",
+  "backToDashboard": "Terug naar dashboard",
+  "errorBodyDashboard": "Sorry, deze pagina is niet geladen. Probeer het opnieuw, of ga terug naar je dashboard.",
+  "sectionFailed": "Dit onderdeel is niet geladen."
 }

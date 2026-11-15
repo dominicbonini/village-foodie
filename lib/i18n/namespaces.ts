@@ -25,7 +25,7 @@ export const NAMESPACES = {
   confirmation: ['orderStatus', 'errorsCustomer'],
   // Language Phase 1b: the kitchen surfaces and every shared piece they render (scripts/messages-split.cjs walks each
   // page's import graph and fails if an entry leaves out a namespace its components read).
-  dashboard: ['dashboard', 'orderCard', 'addOrder', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'userMenu',
+  dashboard: ['dashboard', 'errorPage', 'orderCard', 'addOrder', 'paymentActions', 'kitchenModals', 'buzzer', 'dashboardBanners', 'demo', 'userMenu',
     'orderLine', 'deals', 'menuBadges', 'printing', 'nativeShell',
     // Language Phase 1c: the demo sign-up flow with its pieces.
     'demoGetStarted', 'cuisinePicker', 'whereBased', 'tradeArea',

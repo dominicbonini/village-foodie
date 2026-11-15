@@ -4,5 +4,8 @@
   "home": "Go to the home page",
   "errorTitle": "Something went wrong",
   "errorBody": "Sorry — this page didn’t load. Try again, or go back to the home page.",
-  "retry": "Try again"
+  "retry": "Try again",
+  "backToDashboard": "Back to dashboard",
+  "errorBodyDashboard": "Sorry, this page didn’t load. Try again, or go back to your dashboard.",
+  "sectionFailed": "This section didn’t load."
 }

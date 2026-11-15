@@ -1952,7 +1952,8 @@
       "errorFallback": "E-Mail-Adresse oder Passwort falsch. Bitte versuchen Sie es erneut.",
       "submit": "Anmelden",
       "submitting": "Anmeldung läuft…",
-      "forgot": "Passwort vergessen?"
+      "forgot": "Passwort vergessen?",
+      "invalidLink": "Dieser Link ist abgelaufen oder ungültig."
     },
     "forgot": {
       "sentTitle": "Prüfen Sie Ihre E-Mails",
@@ -1961,7 +1962,8 @@
       "subtitle": "Geben Sie Ihre E-Mail-Adresse ein, und wir senden Ihnen einen Link zum Zurücksetzen",
       "submit": "Link senden",
       "sending": "Wird gesendet…",
-      "back": "Zurück zur Anmeldung"
+      "back": "Zurück zur Anmeldung",
+      "backToLogin": "Zurück zur Anmeldung"
     },
     "reset": {
       "invalidTitle": "Ungültiger Link",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Passwort bestätigen",
       "confirmPlaceholder": "Passwort wiederholen",
       "submit": "Passwort festlegen",
-      "saving": "Wird gespeichert…"
+      "saving": "Wird gespeichert…",
+      "logIn": "Anmelden",
+      "sendNewLink": "Neuen Link anfordern"
     },
     "verifyEmail": {
       "goToLogin": "Zur Anmeldung",
@@ -7055,7 +7059,10 @@
     "home": "Zur Startseite",
     "errorTitle": "Etwas ist schiefgelaufen",
     "errorBody": "Entschuldigung, diese Seite wurde nicht geladen. Versuchen Sie es erneut, oder gehen Sie zurück zur Startseite.",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "backToDashboard": "Zurück zum Dashboard",
+    "errorBodyDashboard": "Entschuldigung, diese Seite wurde nicht geladen. Versuchen Sie es erneut, oder gehen Sie zurück zu Ihrem Dashboard.",
+    "sectionFailed": "Dieser Bereich wurde nicht geladen."
   },
   "faq": {
     "phrases": {

@@ -1952,7 +1952,8 @@
       "errorFallback": "E-poçt və ya parol yanlışdır. Yenidən cəhd edin.",
       "submit": "Daxil ol",
       "submitting": "Daxil olunur…",
-      "forgot": "Parolunuzu unutmusunuz?"
+      "forgot": "Parolunuzu unutmusunuz?",
+      "invalidLink": "Bu linkin müddəti bitib və ya etibarsızdır."
     },
     "forgot": {
       "sentTitle": "E-poçtunuzu yoxlayın",
@@ -1961,7 +1962,8 @@
       "subtitle": "E-poçtunuzu daxil edin, sizə sıfırlama linki göndərək",
       "submit": "Sıfırlama linki göndər",
       "sending": "Göndərilir…",
-      "back": "Girişə qayıt"
+      "back": "Girişə qayıt",
+      "backToLogin": "Girişə qayıt"
     },
     "reset": {
       "invalidTitle": "Etibarsız sıfırlama linki",
@@ -1978,7 +1980,9 @@
       "confirmPassword": "Parolu təsdiqləyin",
       "confirmPlaceholder": "Parolunuzu təkrarlayın",
       "submit": "Parolu təyin et",
-      "saving": "Yadda saxlanılır…"
+      "saving": "Yadda saxlanılır…",
+      "logIn": "Daxil ol",
+      "sendNewLink": "Yeni sıfırlama linki istəyin"
     },
     "verifyEmail": {
       "goToLogin": "Girişə keç",
@@ -7055,7 +7059,10 @@
     "home": "Ana səhifəyə keçin",
     "errorTitle": "Xəta baş verdi",
     "errorBody": "Bağışlayın — bu səhifə yüklənmədi. Yenidən cəhd edin və ya ana səhifəyə qayıdın.",
-    "retry": "Yenidən cəhd et"
+    "retry": "Yenidən cəhd et",
+    "backToDashboard": "Panelə qayıt",
+    "errorBodyDashboard": "Bağışlayın — bu səhifə yüklənmədi. Yenidən cəhd edin və ya panelə qayıdın.",
+    "sectionFailed": "Bu bölmə yüklənmədi."
   },
   "faq": {
     "phrases": {

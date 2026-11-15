@@ -26,7 +26,7 @@
 import { Preferences } from '@capacitor/preferences'
 import { Capacitor } from '@capacitor/core'
 import type { NetPrinterErrorCode, NetPrinterPlugin } from '@hatchgrab/net-printer'
-import { isNetPrinterAvailable } from './transport'
+import { isNetPrinterAvailable } from './netAvailability'
 import type { PrinterTransport, PrinterAvailability, PrinterStatus, PrintResult, DiscoveredPrinter } from './transport'
 import { parseNetAddress } from './netAddress'
 import { printerMessageText, type PrinterText } from './printerText'

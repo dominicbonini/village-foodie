@@ -4,5 +4,8 @@
   "home": "Przejdź do strony głównej",
   "errorTitle": "Coś poszło nie tak",
   "errorBody": "Przepraszamy, ta strona się nie wczytała. Spróbuj ponownie lub wróć do strony głównej.",
-  "retry": "Spróbuj ponownie"
+  "retry": "Spróbuj ponownie",
+  "backToDashboard": "Wróć do panelu",
+  "errorBodyDashboard": "Przepraszamy, ta strona się nie wczytała. Spróbuj ponownie lub wróć do panelu.",
+  "sectionFailed": "Ta sekcja się nie wczytała."
 }

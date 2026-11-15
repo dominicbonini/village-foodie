@@ -4,5 +4,8 @@
   "home": "Přejít na úvodní stránku",
   "errorTitle": "Něco se pokazilo",
   "errorBody": "Omlouváme se, tato stránka se nenačetla. Zkuste to znovu, nebo se vraťte na úvodní stránku.",
-  "retry": "Zkusit znovu"
+  "retry": "Zkusit znovu",
+  "backToDashboard": "Zpět na přehled",
+  "errorBodyDashboard": "Omlouváme se, tato stránka se nenačetla. Zkuste to znovu, nebo se vraťte na přehled.",
+  "sectionFailed": "Tato část se nenačetla."
 }
