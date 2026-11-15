@@ -1,6 +1,7 @@
 // Frame an iPad web render (below the status bar, @2x) like the GB capture, then scale it to the GB file's size.
 // The status bar's right-hand icons (Wi-Fi, 100%, battery) are the GB file's own pixels; the clock is drawn in
 // the US form; the Stage Manager corner handle is redrawn. The full-size frame goes to `work`.
+require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const sharp = require('sharp')
 module.exports = async function frameIpad({ gb, web, out, work, outW, outH, bg, fg, clock, iconsFrom, W = 2752, webTop = 48, ck = { left: 56, top: 15 } }) {

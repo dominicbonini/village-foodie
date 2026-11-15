@@ -5,6 +5,7 @@
 // GB shot, then framed with the GB capture's own iOS status bar (clock repainted, 12-hour) and Safari bottom bar.
 // Step 1 of the AU/NZ order screenshot (frame-order-anz.cjs is step 2).
 //   node order-anz.cjs <au|nz> <workDir>  → <workDir>/order-web-<au|nz>.png (1284x2460) and order-<au|nz>.html
+require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const A = require('./anz-fixtures.cjs')
 const c = A.country()

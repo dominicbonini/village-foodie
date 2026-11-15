@@ -12,6 +12,7 @@
 //   4  URLs stay Latin: /gr /cy /bg are the pages' paths, canonicals and sitemap entries — no Greek or Cyrillic slug.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'europe-languages-2-fonts' })

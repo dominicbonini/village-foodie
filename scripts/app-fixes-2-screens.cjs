@@ -8,6 +8,7 @@
 // bridge, so @capacitor/core reports 'ios'.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness module, like every scripts/*.cjs */
 'use strict'
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const { webkit, devices } = require(path.join(REPO, 'node_modules/playwright'))

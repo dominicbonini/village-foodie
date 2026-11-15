@@ -4,6 +4,7 @@
 // painted in WebKit with the app's compiled CSS in a 1210x834pt viewport @2x (SAT env = the status-bar inset, default 24).
 // Step 1 of the IE dashboard screenshot (frame-dash-ie.cjs is step 2).
 //   node dash-ie.cjs <workDir> → <workDir>/dash-web-ie.png (2420x1668) and dash-ie.html
+require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const { REPO, dirs, appCss, fontClasses, serve } = require('./common.cjs')
 const { WORK } = dirs()

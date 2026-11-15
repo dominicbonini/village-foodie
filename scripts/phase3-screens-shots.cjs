@@ -15,6 +15,7 @@
 //   phase3-payments-{1440,820}-truck.png    Manage › Payments, the truck keeps the service fee
 //   phase3-payments-{1440,820}-hatchgrab.png  …HatchGrab keeps it
 //   phase3-countries-1440-fee-rows.png      Admin › Countries, the new fee rows (GB and US columns)
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const OUT = path.join(REPO, 'docs/screenshots')

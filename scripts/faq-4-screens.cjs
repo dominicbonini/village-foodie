@@ -9,6 +9,7 @@
 // question row has its orange +, the open one its −; the labels are small capitals.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'faq-4-screens' })

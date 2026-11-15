@@ -10,6 +10,7 @@
 // (Range.getClientRects grouped by line top), the document's horizontal overflow, the page height; GB vs US.
 //
 //   node scripts/us-layout-audit/D-print/emails.cjs
+require('../../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '../../..')
 const F = require('./_fixtures.cjs')

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.25
+HatchGrab Engineering Reference Manual · V16.26
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.25**
+**Version 16.26**
 
 November 2026
 
@@ -48,7 +48,53 @@ as **one line** of JSON in single quotes, update Vercel and any GitHub Actions s
 form — including key names and set/missing checks. It may run the project's own commands that load env
 internally (`next build`, the sweep, `tsc`). Configuration is worked out from code.
 
+**⚠️ STANDING RULE — DISK SPACE: BUILDS, EMULATORS AND SCREENSHOTS GO THROUGH THE GUARD (V16.26, disk-cleanup-1).**
+On 15 November 2026 the Mac's disk reached 98% (10 GB free) and an Android emulator run hung for three hours: the
+emulator could not create its data partition and the script waited forever for a device. Since then:
+- **The guard** is `scripts/_disk-guard.cjs`, the ONE place the thresholds live. **Below 40 GB free nothing starts**
+  (exit 3). **Below 20 GB during a run it stops cleanly** (exit 4): a 15-second check, registered clean-ups, the
+  browser / emulator killed. Off on Vercel and CI. `HG_DISK_MIN_START_GB` / `HG_DISK_MIN_RUN_GB` exist, but only
+  Dominic changes them; agents never set them to get past a refusal. Free space first.
+- **Screenshot harnesses:** every script that launches a browser (79) and the sweep runner (`run-harnesses.cjs`)
+  call `require('./_disk-guard.cjs').guard(__filename)` as their first statement. **A new screenshot script does the
+  same.** Each harness writes fixed file names into its own folder, so a re-run overwrites; it never adds a
+  timestamped folder. `_lp2-frozen.cjs` prunes its content-hash folders (`node_modules/.cache/lp2-messages`) that
+  have gone 2 days unused. ⚠️ The sweep runner checks only at the start, because `spawnSync` blocks its timer while
+  a harness runs; the guarded harnesses watch themselves.
+- **Builds:** `scripts/guarded.sh <command…>` (e.g. `npx next build`, `(cd android && ../scripts/guarded.sh ./gradlew
+  bundleRelease)`). **Xcode builds made by scripts or agents:** `scripts/ios/xcodebuild-scratch.sh <xcodebuild args>`,
+  which puts DerivedData in a throwaway folder (`HG_SCRATCH`, an agent's session scratch folder) and deletes it
+  afterwards. `HG_KEEP_APP=<folder>` copies the built `.app` out first. Never use `~/Library/Developer/Xcode/DerivedData`
+  from a script.
+- **Android emulators:** `scripts/android/emulator-checks.sh <tag> <system-image> <device> <phone|tablet>`.
+  - **One device at a time**, enforced by a lock and a check that no emulator is attached.
+  - A **temporary AVD** `hg-<tag>` with a **4 GB data partition**, booted with **no snapshots**.
+  - **Deleted on exit** however the run ends. A system image it had to download is uninstalled afterwards.
+  - Never run two emulators in parallel, and never leave a temporary AVD behind.
+  - The only AVD kept is `Android_Phone` (Android 16, API 36), with its one system image.
+- **What may be cleared when space runs low** (all regenerable): Xcode DerivedData; iOS DeviceSupport for iOS older than
+  the test devices; `xcrun simctl delete unavailable`; simulator runtimes other than the iOS versions being tested;
+  temporary AVDs and unused system images; Gradle `caches/*/transforms` older than 7 days; `npm cache clean
+  --force`; Playwright browser revisions the repo no longer pins; the repo's `.next` (stop `next dev` first) and
+  `android/app/build`. **Never** the Trash, Xcode Archives, the keystore, the signing config or `~/.googleplay`
+  without Dominic. `node_modules/.cache` (harness caches) and `~/.cache/puppeteer` (old Chrome builds) are regenerable
+  but are Dominic's call (disk-cleanup-1 report §5).
+
 # Changelog
+
+## V16.26 — 15 November 2026 — **DISK SPACE: THE GUARD, ONE EMULATOR AT A TIME, SCRATCH DERIVEDDATA**
+
+disk-cleanup-1 (`docs/disk-cleanup-1-report.md`). Tooling only; no website or app code changed.
+
+- **The trigger.** android-1-1's six-emulator run hung at 10 GB free: *"Not enough space to create userdata partition …
+  need 12288.00 MB"*, then `adb wait-for-device` waited forever.
+- **Cleared (all regenerable):** DerivedData, the API 34 / 35 / 37-beta system images, the `Android_Tablet` AVD, Gradle
+  transforms older than 7 days, the npm cache, `.next` and `android/app/build`. Free space went from 10 GB to 43 GB
+  (macOS took a few minutes to release some of it). Not cleared, listed for Dominic: the Trash (unreadable),
+  `node_modules/.cache` (11.4 GB), old Puppeteer Chromes (~1 GB) and the three Xcode archives (34 MB).
+- **Added:** `scripts/_disk-guard.cjs`, `scripts/guarded.sh`, `scripts/ios/xcodebuild-scratch.sh`,
+  `scripts/android/emulator-checks.sh`, the guard line in 80 scripts, and `_lp2-frozen.cjs`'s 2-day prune. The rules are
+  in the standing rule "DISK SPACE" above.
 
 ## V16.25 — 15 November 2026 — **iOS: THE UISCENE LIFE CYCLE (BUILDS WITH THE XCODE 27 SDK LAUNCH AGAIN)**
 

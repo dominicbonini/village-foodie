@@ -15,6 +15,7 @@
 //   2. it SCREENS every listed file's source before running it, so listing the wrong file is still safe.
 // (2) is the one that matters: a list is only as good as the hand that edits it, and the incident was
 // caused by exactly such a hand. The screen is a property of the FILE, not of anyone's intent.
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')

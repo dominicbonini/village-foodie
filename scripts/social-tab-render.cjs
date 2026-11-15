@@ -31,6 +31,7 @@
 // project has shipped a check that passed vacuously for a day. Each control removes the one rule the
 // claim rests on and asserts the measurement notices.
 
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

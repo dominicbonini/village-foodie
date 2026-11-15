@@ -24,6 +24,7 @@
 //      standard event with no times shows the new sentence; a private one shows its own times prompt).
 // ⚠️ It runs on any version of the card (it is how the BEFORE pictures were taken); the checks are what the
 // fixed card must satisfy, so on the old card they fail — which is the point.
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 process.env.TZ = 'Europe/London'

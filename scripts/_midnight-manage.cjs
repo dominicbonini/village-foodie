@@ -14,6 +14,7 @@
 // 🔴 'normal|' views must be byte-identical to BEFORE. 'fix|' views are NAMED changes (not compared): the editor's END
 //    options for a normal start (an end before the start is now offered — it is an overnight event) and the import
 //    review measurements.
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path'); const http = require('http'); const { execFileSync } = require('child_process')
 
 const M_FILE = 'app/(app)/manage/[token]/page.tsx'

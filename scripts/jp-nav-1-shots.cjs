@@ -13,6 +13,7 @@
 //       every other country's screens pixel-identical before and after (exit 1 if not)
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
 'use strict'
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')

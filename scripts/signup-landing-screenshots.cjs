@@ -23,6 +23,7 @@
 //   landing-country-390-footer-menu.png      the footer menu open on a phone
 // …and FAILS on overlap or cut-off: a sideways-scrolling page, header items overlapping or wrapping, a button
 // or menu item under 44px, a menu running off the screen.
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path'); const http = require('http')
 const REPO = path.resolve(__dirname, '..')
 const OUT = path.join(REPO, 'docs/screenshots')

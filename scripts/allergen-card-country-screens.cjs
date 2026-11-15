@@ -9,6 +9,7 @@
 //   ie-wizard-page2-<w>.png   the allergen wizard for an Irish truck: it opens on page 2 (no page 1, no Back)
 //   gb-wizard-page1-<w>.png   the same wizard for a UK truck: page 1, as before (for comparison)
 //   admin-row-<w>.png         Admin › Countries, the "Allergen card on its own" row (GB / IE / US)
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path'); const http = require('http')
 const REPO = path.resolve(__dirname, '..')
 const { gbFromSeed, usFromSeed } = require('./_country-settings-gb.cjs')

@@ -12,6 +12,7 @@
 //    text line, no pin), so this script's event-box checks describe order-page-1's box and now fail by design. The event box's
 //    proof is scripts/order-page-2-live.cjs; this script's other checks (formules, full width, sticky tabs) still hold.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const { chromium } = require(path.join(REPO, 'node_modules/playwright'))

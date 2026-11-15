@@ -26,6 +26,7 @@
 // handler → `preventDefault`), which is exactly what `SocialPosts.tsx` does and is asserted below.
 // ⚠️ NO NETWORK, NO DATABASE, NO LIVE TRUCK: one `file://` page and two local browser builds.
 
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const os = require('os')
 const path = require('path')

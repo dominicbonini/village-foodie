@@ -15,6 +15,7 @@
 // HEALTHY service (the manual's V11.35 rule): the event is live, every order is due in the future (no "late" badge), every capacity
 // slot green (no over-capacity banner), every order in a status with its action buttons, and the board full.
 'use strict'
+require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const path = require('path')
 const REPO = path.resolve(__dirname, '../..')

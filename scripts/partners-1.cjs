@@ -18,6 +18,7 @@
 //   I · truck outreach unchanged (Today before/after with fixtures, counts, a census of every outreach_messages read)
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, headWorktree, REPO } = require('./_slot-interval-compile.cjs')
 

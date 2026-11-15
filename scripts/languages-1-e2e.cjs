@@ -24,6 +24,7 @@
 // Nothing here touches this tree except docs/languages-1/ (screenshots and the findings JSON). Needs `npm run build` for --shots.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path'); const zlib = require('zlib')
 const { execFileSync, spawnSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')

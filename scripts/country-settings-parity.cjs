@@ -29,6 +29,7 @@
 // patch is checked for applying — a replace that finds nothing would silently measure the default state.
 // The repo's own files are never written.
 
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path'); const http = require('http')
 const REPO = path.resolve(__dirname, '..')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')

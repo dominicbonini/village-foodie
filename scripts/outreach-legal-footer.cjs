@@ -22,6 +22,7 @@
 // the server check. The server REFUSAL itself is proved end to end by scripts/outreach-instant-send.cjs (the
 // real route on an in-memory database), case "an email with no opt-out line is refused…".
 // ⚠️ NOTHING IS SENT. There is no SMTP, no IMAP, no database and no fetch that leaves the page.
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 

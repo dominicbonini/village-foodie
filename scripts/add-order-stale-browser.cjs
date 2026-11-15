@@ -20,6 +20,7 @@
 // the real route while this page sits on Add Order); (3) reject; (4) an edit that moves the time;
 // (5) a settings change (the event's operator collection interval). Each asserts the list moved in place —
 // same <select> element identity — with no reload.
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const puppeteer = require('puppeteer'); const crypto = require('crypto')
 const fs = require('fs'); const path = require('path')
 const TOKEN = process.env.HG_DASHBOARD_TOKEN || ''

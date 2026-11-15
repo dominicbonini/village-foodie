@@ -18,6 +18,7 @@
 // has no Save or another row gets one; a row is missing; the admin body is not full width with 32px side padding; or the
 // PUT body of the new page differs from the OLD page's (git HEAD CountriesTab.tsx) for the same edit.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path'); const http = require('http')
 const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')

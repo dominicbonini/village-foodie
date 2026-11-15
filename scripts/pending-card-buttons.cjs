@@ -19,6 +19,7 @@
 //   3. every width: nothing in a card overlaps anything else, nothing sticks out of the card, no sideways scroll;
 //   4. the "Needs confirmation" and confirmed cards are the height they were BEFORE at every width.
 // Card heights BEFORE → AFTER are printed (and written to the report by hand).
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path'); const crypto = require('crypto')
 const REPO = path.resolve(__dirname, '..')
 process.env.TZ = 'Europe/London'

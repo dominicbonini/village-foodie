@@ -4,6 +4,7 @@
 // painted in WebKit with the app's compiled CSS in a 1210x834pt viewport @2x (SAT env = the status-bar inset, default 24).
 // Step 1 of the dashboard screenshot (frame-dash.cjs is step 2).
 //   node dash-us.cjs <workDir> → <workDir>/dash-web.png (2420x1668) and dash-us.html
+require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const { REPO, dirs, appCss, fontClasses, serve } = require('./common.cjs')
 const { WORK } = dirs()

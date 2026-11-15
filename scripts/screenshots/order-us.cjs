@@ -5,6 +5,7 @@
 // then framed with the GB capture's own iOS status bar (time repainted, 12-hour) and Safari bottom bar.
 // Step 1 of the order screenshot (frame-order.cjs is step 2).
 //   node order-us.cjs <workDir>  → <workDir>/order-web.png (1284x2460) and order-us.html
+require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const { REPO, dirs, appCss, fontClasses, serve } = require('./common.cjs')
 const { WORK } = dirs()

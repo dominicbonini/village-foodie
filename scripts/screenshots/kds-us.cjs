@@ -4,6 +4,7 @@
 // 13-inch iPad's 1376pt width @2x, below the iPadOS status bar's 24pt — the GB capture's composition.
 // Step 1 of the kitchen screenshot (frame-kds.cjs is step 2).
 //   node kds-us.cjs <workDir> → <workDir>/kds-web.png (2752x2016) and kds-us.html
+require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const { REPO, dirs, appCss, fontClasses, serve } = require('./common.cjs')
 const { WORK } = dirs()

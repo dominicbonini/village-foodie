@@ -12,6 +12,7 @@
 //   NZ  a suburb and a town; CA a province
 // Writes docs/address-formats-2/<cc>-form-<w>[-chromium].png and <cc>-places-<w>[-chromium].png, for ie/au/nz/ca and,
 // for comparison, gb/us — at 390 and 1280, in WebKit and Chromium.
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path'); const http = require('http')
 const REPO = path.resolve(__dirname, '..')
 const { gbFromSeed, usFromSeed } = require('./_country-settings-gb.cjs')

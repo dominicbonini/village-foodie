@@ -30,6 +30,7 @@
 //  ② The toolbar buttons `preventDefault()` on mousedown so the selection survives the click. The
 //    driver therefore uses a REAL click (`p.click`), not `el.click()`, or that path is not exercised.
 //  ③ ONE FRESH PAGE PER BEHAVIOUR, so a mis-step cannot cascade into a cause.
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const esbuild = require(path.join(REPO, 'node_modules/esbuild'))

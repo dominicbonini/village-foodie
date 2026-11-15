@@ -2,6 +2,7 @@
 // database of scripts/_fake-pg.cjs; nothing live, nothing sent). BEFORE is the same module with the changed files
 // swapped for their source at 8a5c4b5a (the commit this batch started from), bundled side by side, so "byte-identical"
 // compares real outputs of both codes.
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path'); const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'us-polish-batch' })

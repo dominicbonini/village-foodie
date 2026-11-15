@@ -12,6 +12,7 @@
 //   base  = the constants as committed (PHONE_TIME_PICKER 'select' = 5A; *_STACK_GB false = GB unchanged)
 //   gbtoo = SCHEDULE_CARD_STACK_GB and IMPORT_HEADING_STACK_GB true ("AFTER, GB too")
 //   pickB = PHONE_TIME_PICKER 'toggle' (5B)
+require('../../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '../../..')
 const OUT = path.resolve(process.argv[2] || path.join(REPO, 'node_modules/.cache/uslp-C-out'))

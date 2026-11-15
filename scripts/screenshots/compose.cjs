@@ -1,6 +1,7 @@
 // Frame a phone web render with the GB capture's own device chrome (the iOS status bar, Safari's bar),
 // repainting only the status-bar clock in the US form. Everything is drawn in WebKit at DPR 1, pixel for pixel.
 //   compose({ gb, web, out, W, H, webTop, bottomFrom?, clocks: [{ id, text, cover:{x,y,w,h}, bg, x, y, size, weight, color?, ls? }], overlays? })
+require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const sharp = require('sharp')
 const uri = async (f, ex) => 'data:image/png;base64,' + (ex ? await sharp(f).extract(ex).png().toBuffer() : fs.readFileSync(f)).toString('base64')

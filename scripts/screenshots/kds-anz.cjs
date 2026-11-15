@@ -4,6 +4,7 @@
 // WebKit with the app's compiled CSS at a 13-inch iPad's 1376pt width @2x, below the iPadOS status bar's 24pt — the GB capture's
 // composition. Step 1 of the AU/NZ kitchen screenshot (frame-kds-anz.cjs is step 2).
 //   node kds-anz.cjs <au|nz> <workDir> → <workDir>/kds-web-<au|nz>.png (2752x2016) and kds-<au|nz>.html
+require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path')
 const A = require('./anz-fixtures.cjs')
 const c = A.country()

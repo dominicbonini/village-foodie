@@ -15,6 +15,7 @@
 // …and FAILS if anything overlaps or is cut off: the page scrolling sideways, a cell's contents spilling
 // out of it, a header's Save button overlapping its text, or the pinned header not staying put.
 
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path'); const http = require('http')
 const REPO = path.resolve(__dirname, '..')
 const { gbFromSeed, usFromSeed } = require('./_country-settings-gb.cjs')

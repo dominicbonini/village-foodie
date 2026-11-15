@@ -13,6 +13,7 @@
 // page scrolls sideways, a table spills out of its own box, or the page logs an error.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
 
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path'); const http = require('http')
 const REPO = path.resolve(__dirname, '..')
 const { seedCatalog } = require('./_plans-catalog-fixture.cjs')

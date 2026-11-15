@@ -20,6 +20,7 @@
 //      and only per dish (the extra is added to the BROWSER's copy of the menu — App Tester has no extras; nothing is written).
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path'); const http = require('http')
 const REPO = path.resolve(__dirname, '..')
 const OUT = path.join(REPO, 'docs/allergen-kitchen-1')

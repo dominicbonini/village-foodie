@@ -7,6 +7,7 @@
 //   the order page's checkout for an Ontario, British Columbia, Alberta and Saskatchewan truck (HST 13% / GST 5% / GST 5% /
 //   GST + PST 11%); the order card the dashboard and KDS show (Ontario); Manage › Payments › Tax for an Ontario truck.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'canada-1-screens' })

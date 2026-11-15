@@ -5,6 +5,7 @@
 // loopback name, the same local server. Each shot is the pricing section (#pricing) cut out of a FULL-PAGE screenshot, so anything
 // the viewport would clip shows as clipped (an element screenshot would hide it). Nothing is written anywhere but docs/.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const path = require('path')
 const REPO = path.resolve(__dirname, '..')

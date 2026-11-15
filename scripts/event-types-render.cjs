@@ -17,6 +17,7 @@
 // ⚠️ THE CLASS STRINGS ARE LIFTED FROM THE REAL COMPONENT, so a restyle breaks this file rather than
 // quietly leaving it measuring a layout nobody is served.
 
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const os = require('os')
 const path = require('path')

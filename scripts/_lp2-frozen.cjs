@@ -253,6 +253,21 @@ function catalogues(m = mode()) {
 function enGBForNode() { return catalogues()['en-GB'] }
 
 let GEN = null
+// disk-cleanup-1 (15 November 2026): every catalogue change made a NEW <content hash> folder and none was ever removed —
+// 593 folders, 988 MB by then. The folder in use is touched on every run; any OTHER folder not used for 2 days is
+// removed. Two days, not zero, so a concurrent run on a different catalogue (the reason for hashing) keeps its folder.
+const STALE_MS = 2 * 24 * 3600 * 1000
+function pruneStale(keep) {
+  try {
+    const now = new Date(); fs.utimesSync(keep, now, now)
+    const root = path.dirname(keep)
+    for (const d of fs.readdirSync(root)) {
+      const abs = path.join(root, d)
+      if (abs === keep) continue
+      try { if (Date.now() - fs.statSync(abs).mtimeMs > STALE_MS) fs.rmSync(abs, { recursive: true, force: true }) } catch {}
+    }
+  } catch {}
+}
 /** Writes the generated files for the current switch and returns { dir, resolve(spec) → abs path | null }. */
 function generated() {
   const m = mode()
@@ -282,6 +297,7 @@ function generated() {
   put('en-IE.json', ie)
   for (const ns of Object.keys(cat['en-GB'])) put(`ns/en-IE/${ns}.json`, ie[ns] ?? {})
   // A namespace the code imports but the authored file lacks (never valid — messages-split fails it) stays on disk's.
+  pruneStale(dir)
   GEN = { key: JSON.stringify(m), dir, m }
   return GEN
 }

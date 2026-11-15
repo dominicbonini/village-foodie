@@ -3,6 +3,7 @@
 // `next start`ed, with hostproxy.cjs in front for the HatchGrab host, the Village Foodie host and the native app user agent.
 // Nothing here reads a database, the live site or any .env file (lh-run.cjs reads the live site only when given its address).
 // node phproof.cjs <proxyPort> <label> <phlog> — visit as Android Chrome: /uk, a tap, tab hidden; report PostHog's requests and timing.
+require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const puppeteer = require('puppeteer'), fs = require('fs')
 const [port, label, LOG, pathArg] = process.argv.slice(2); const P = pathArg || '/uk'
 ;(async () => {

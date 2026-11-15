@@ -16,6 +16,7 @@
 //   dash-orders-open    the dashboard card's money summary opened (fix 10, the tap)
 // FIX1_ONLY=1 renders this tree with OrderCard.tsx and DayLoadStrip.tsx put back to commit 6910127 (fix 1 only):
 // the "fix 1 alone" measurements. RAW_PNG=1 skips the palette compression (for an exact GB pixel comparison).
+require('../../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs'); const path = require('path'); const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '../../..')
 const { appCss, fontClasses, serve } = require(path.join(REPO, 'scripts/screenshots/common.cjs'))

@@ -9,6 +9,7 @@
 // Writes docs/paperwork-1/: list-390, check-390, send-390, organiser-390 (WebKit, 390 px) and list-ipad-820, check-ipad-820.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'paperwork-1-screens' })
