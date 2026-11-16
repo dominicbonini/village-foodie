@@ -1,5 +1,5 @@
 {
- "_note": "Batches run in the background; this table is updated after each one.",
+ "_note": "5 countries a day (Dominic: save the weekly usage). Day 1 (16 Nov): MX, PE, CL, CO, AR. Next: UY from 17 Nov 09:00, then CR, EC, BR, PT; one at a time on Sonnet, ~20 searches each — lighter, so these batches find less (AR found no contact links). This table is updated after each batch.",
  "MX": {
   "batch": 1,
   "finished": "16 Nov 17:10",

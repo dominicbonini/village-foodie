@@ -306,7 +306,8 @@ Dominic's follow-up to partners-2 (`docs/partners-3-report.md` §0). Not deploye
 - **Templates approved** with three edits ({{features_url}}; "It's free for {{org}} to take part."; "Thanks for reading."), translated, 56 rows.
 - **13 site-published addresses** made primary (listed ones kept as alternates); the fta.team hub stays the only auto-sendable US metro contact.
 - **Migrations:** `20261108_partners_offer`, `20261109_partners_site_addresses`, `20261110_partner_templates`. Signup words: 3 new keys × 2 namespaces in every language.
-- **Proof:** `scripts/partners-2.cjs` 77 checks (section 9 is the offer).
+- **partners-3 (same day):** `partner_orgs.channel` (email | contact_form | facebook | instagram | whatsapp | linkedin) + facebook / instagram / contact-form URLs, `last_seen_active`, `members_estimate` (migration `20261107`); the Contact column shows the channel as a small badge / link; no verified email → "You send / DM". The second lists and the per-country research are imported by `scripts/partners-3-import.cjs` (`lists` | `research <CC>`, one committed migration each; nothing since 2024 → not_now "inactive"). Progress: `docs/partners-3-report.md` §3. New countries have no outreach rule, so they are manual_only.
+- **Proof:** `scripts/partners-2.cjs` 78 checks (section 9 is the offer, with a guard that the admin table's rules import no server-only module).
 
 ## V16.31 — 16 November 2026 — **THE PARTNER PROGRAMME: VERIFIED IMPORT, CODES THAT APPLY A DEAL, COMMISSION, LOCAL-HOURS SENDING**
 
