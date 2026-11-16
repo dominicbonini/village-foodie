@@ -47,5 +47,37 @@
    "single": 0
   },
   "migration": "20261114_partners_3_research_cl.sql"
+ },
+ "CO": {
+  "batch": 2,
+  "finished": "16 Nov 17:50",
+  "found": 5,
+  "counts": {
+   "email": 0,
+   "social": 1,
+   "unverified": 0,
+   "none": 0,
+   "inactive": 3,
+   "dropped": 0,
+   "software": 0,
+   "single": 1
+  },
+  "migration": "20261115_partners_3_research_co.sql"
+ },
+ "AR": {
+  "batch": 3,
+  "finished": "16 Nov 18:00 (Sonnet, light)",
+  "found": 4,
+  "counts": {
+   "email": 0,
+   "social": 0,
+   "unverified": 0,
+   "none": 3,
+   "inactive": 1,
+   "dropped": 0,
+   "software": 0,
+   "single": 0
+  },
+  "migration": "20261116_partners_3_research_ar.sql"
  }
 }
