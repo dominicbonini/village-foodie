@@ -100,7 +100,8 @@ if [ -f "$APKS/A-local-app.apk" ]; then
   $ADB shell input keyevent KEYCODE_HOME; sleep 3
   case "$(top)" in *com.hatchgrab.app*) check "home sends the app to the background" no "$(top)";; *) check "home sends the app to the background" ok;; esac
   $ADB shell am start -n com.hatchgrab.app/.MainActivity >/dev/null 2>&1; sleep 3
-  waitfor "Log in to your kitchen" 20; check "foreground again: the page is intact" "$(ok_if $?)"
+  waitfor "Log in to your kitchen" 20; r=$?; check "foreground again: the page is intact" "$(ok_if $r)" "$(top)"
+  [ $r = 0 ] || say "  app process: $($ADB shell pidof com.hatchgrab.app | tr -d '\r' || true) (empty = not running)"
   shot foreground-again
 fi
 
@@ -168,5 +169,10 @@ if [ -f "$APKS/D-local-www-signup.apk" ]; then
   $ADB shell am start -n com.hatchgrab.app/.MainActivity >/dev/null 2>&1; sleep 3
   has "Terms"; check "back in the app: still on signup" "$(ok_if $?)"
 fi
+
+# Crashes: Android's crash buffer for the whole run (a native crash or an uncaught Java exception in the app).
+crashes=$($ADB logcat -d -b crash 2>/dev/null | grep -c "com.hatchgrab.app")
+check "no app crash in the whole run (logcat crash buffer)" "$([ "$crashes" = 0 ] && echo ok)" "$crashes crash lines"
+[ "$crashes" = 0 ] || $ADB logcat -d -b crash 2>/dev/null | grep -A20 "com.hatchgrab.app" | head -40 >> "$LOG"
 
 say "== done $TAG: $(grep -c '✓' "$LOG") passed, $(grep -c '✗' "$LOG") failed"
