@@ -6228,6 +6228,10 @@
     "h1": "Alt du trenger for å drive serveringen, i alle abonnementer.",
     "lede": "Bestilling, forhåndsbestilling, kjøkkenkapasitet og kjøkkenskjerm er inkludert i alle abonnementer.{hasUpgrades, select, yes { {plans} gir i tillegg {features} og lavere gebyrer.} other {}}",
     "perMonth": "{price} / måned",
+    "trial": {
+      "length": "{months, plural, one {# måned} other {# måneder}}",
+      "ends": "Slutter {date}"
+    },
     "group": {
       "pay": "Hva du betaler",
       "run": "Driv serveringen",

@@ -4278,6 +4278,8 @@
  "planTable.short.event_types": "custom event pricing",
  "planTable.short.schedule_graphics": "social media",
  "planTable.short.whatsapp_replies": "WhatsApp",
+ "planTable.trial.ends": "Ends on {date}",
+ "planTable.trial.length": "{months} months",
  "plansPdf.allowanceHeading": "Online orders included",
  "plansPdf.generated": "Generated on {date}",
  "plansPdf.omitNote": "Prices have deliberately not been included in this document.",

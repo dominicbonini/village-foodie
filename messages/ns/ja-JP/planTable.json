@@ -2,6 +2,10 @@
   "h1": "営業に必要なものすべてを、すべてのプランで。",
   "lede": "注文、事前注文、調理キャパシティ、キッチンディスプレイはすべてのプランに含まれます。{hasUpgrades, select, yes {{plans}では{features}が加わり、手数料も下がります。} other {}}",
   "perMonth": "月額{price}",
+  "trial": {
+    "length": "{months, plural, other {#か月間}}",
+    "ends": "終了日：{date}"
+  },
   "group": {
     "pay": "お支払い",
     "run": "営業の運営",

@@ -6228,6 +6228,10 @@
     "h1": "Tot ce vă trebuie pentru serviciu, în fiecare plan.",
     "lede": "Preluarea comenzilor, precomanda, capacitatea bucătăriei și ecranul de bucătărie sunt incluse în fiecare plan.{hasUpgrades, select, yes { {plans} adaugă {features} și taxe mai mici.} other {}}",
     "perMonth": "{price} / lună",
+    "trial": {
+      "length": "{months, plural, one {# lună} few {# luni} other {# de luni}}",
+      "ends": "Se încheie pe {date}"
+    },
     "group": {
       "pay": "Ce plătiți",
       "run": "Gestionați serviciul",

@@ -2,6 +2,10 @@
   "h1": "Xizmatni yuritish uchun hamma narsa — har bir tarifda.",
   "lede": "Buyurtma, oldindan buyurtmalar, oshxona quvvati va oshxona ekrani (KDS) har bir tarifga kiradi.{hasUpgrades, select, yes { {plans} tariflariga {features} va pastroq komissiyalar qoʻshiladi.} other {}}",
   "perMonth": "{price} / oy",
+  "trial": {
+    "length": "{months, plural, one {# oy} other {# oy}}",
+    "ends": "Tugashi: {date}"
+  },
   "group": {
     "pay": "Nima uchun toʻlaysiz",
     "run": "Xizmatni yuritish",

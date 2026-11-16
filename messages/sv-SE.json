@@ -6228,6 +6228,10 @@
     "h1": "Allt du behöver för att driva din servering, i alla abonnemang.",
     "lede": "Beställningar, förbeställningar, kökskapacitet och köksskärmen ingår i alla abonnemang.{hasUpgrades, select, yes { {plans} ger dessutom {features} och lägre avgifter.} other {}}",
     "perMonth": "{price}/månad",
+    "trial": {
+      "length": "{months, plural, one {# månad} other {# månader}}",
+      "ends": "Slutar {date}"
+    },
     "group": {
       "pay": "Vad du betalar",
       "run": "Driv din servering",

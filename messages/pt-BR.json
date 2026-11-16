@@ -6200,6 +6200,10 @@
     "h1": "Tudo para tocar seu turno, em todos os planos.",
     "lede": "Pedidos, pedidos antecipados, capacidade e a tela da cozinha estão incluídos em todos os planos.{hasUpgrades, select, yes { Com {plans}, você ganha também {features} e taxas menores.} other {}}",
     "perMonth": "{price} / mês",
+    "trial": {
+      "length": "{months, plural, one {# mês} many {# de meses} other {# meses}}",
+      "ends": "Termina em {date}"
+    },
     "group": {
       "pay": "O que você paga",
       "run": "Gerencie seu turno",

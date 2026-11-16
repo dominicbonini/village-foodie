@@ -2,6 +2,10 @@
   "h1": "Viss, kas vajadzīgs darbam, — katrā plānā.",
   "lede": "Pasūtījumi, iepriekšēji pasūtījumi, virtuves jauda un virtuves ekrāns ir iekļauti katrā plānā.{hasUpgrades, select, yes { Plānos {plans} ir arī: {features} un zemākas komisijas.} other {}}",
   "perMonth": "{price} mēnesī",
+  "trial": {
+    "length": "{months, plural, zero {# mēneši} one {# mēnesis} other {# mēneši}}",
+    "ends": "Beidzas {date}"
+  },
   "group": {
     "pay": "Ko jūs maksājat",
     "run": "Jūsu darbs",

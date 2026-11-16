@@ -2,6 +2,10 @@
   "h1": "Semua yang diperlukan untuk menjalankan perkhidmatan anda, dalam setiap pelan.",
   "lede": "Pesanan, pra-pesanan, kapasiti dan skrin dapur termasuk dalam setiap pelan.{hasUpgrades, select, yes { {plans} menambah {features}, serta yuran yang lebih rendah.} other {}}",
   "perMonth": "{price} / bulan",
+  "trial": {
+    "length": "{months, plural, other {# bulan}}",
+    "ends": "Tamat {date}"
+  },
   "group": {
     "pay": "Apa yang anda bayar",
     "run": "Jalankan perkhidmatan anda",

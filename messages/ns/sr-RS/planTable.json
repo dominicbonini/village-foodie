@@ -2,6 +2,10 @@
   "h1": "Sve što vam treba za rad, u svakom paketu.",
   "lede": "Poručivanje, porudžbine unapred, kapacitet kuhinje i kuhinjski ekran (KDS) uključeni su u svaki paket.{hasUpgrades, select, yes { Uz {plans} dobijate još: {features}, kao i niže naknade.} other {}}",
   "perMonth": "{price} / mesečno",
+  "trial": {
+    "length": "{months, plural, one {# mesec} few {# meseca} other {# meseci}}",
+    "ends": "Ističe {date}"
+  },
   "group": {
     "pay": "Šta plaćate",
     "run": "Svakodnevni rad",

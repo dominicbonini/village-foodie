@@ -6200,6 +6200,10 @@
     "h1": "每個計劃都包含營業所需的一切。",
     "lede": "每個計劃都包含落單、預先落單、廚房容量管理及廚房顯示屏。{hasUpgrades, select, yes {{plans} 另加{features}，而且收費更低。} other {}}",
     "perMonth": "每月 {price}",
+    "trial": {
+      "length": "{months, plural, other {# 個月}}",
+      "ends": "{date} 結束"
+    },
     "group": {
       "pay": "你需支付的費用",
       "run": "營業運作",

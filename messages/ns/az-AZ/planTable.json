@@ -2,6 +2,10 @@
   "h1": "Xidmətinizi idarə etmək üçün hər şey — hər planda.",
   "lede": "Sifariş, əvvəlcədən sifariş, tutum və mətbəx ekranı hər plana daxildir.{hasUpgrades, select, yes { {plans} bunlara əlavə olaraq {features} və daha aşağı haqlar təklif edir.} other {}}",
   "perMonth": "{price} / ay",
+  "trial": {
+    "length": "{months, plural, one {# ay} other {# ay}}",
+    "ends": "Bitir: {date}"
+  },
   "group": {
     "pay": "Nə ödəyirsiniz",
     "run": "Xidmətin idarəsi",

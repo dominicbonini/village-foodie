@@ -2,6 +2,10 @@
   "h1": "經營所需的一切，每個方案都有。",
   "lede": "點餐、預約點餐、出餐量管理與廚房顯示系統（KDS），每個方案都包含。{hasUpgrades, select, yes {{plans} 另外加上{features}，手續費也更低。} other {}}",
   "perMonth": "每月 {price}",
+  "trial": {
+    "length": "{months, plural, one {# 個月} other {# 個月}}",
+    "ends": "{date} 結束"
+  },
   "group": {
     "pay": "你要付的費用",
     "run": "營運管理",

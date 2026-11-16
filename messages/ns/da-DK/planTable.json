@@ -2,6 +2,10 @@
   "h1": "Alt til at køre din service — i alle abonnementer.",
   "lede": "Bestilling, forudbestilling, kapacitet og køkkenskærm er inkluderet i alle abonnementer.{hasUpgrades, select, yes { {plans} tilføjer {features} og lavere gebyrer.} other {}}",
   "perMonth": "{price}/måned",
+  "trial": {
+    "length": "{months, plural, one {# måned} other {# måneder}}",
+    "ends": "Slutter {date}"
+  },
   "group": {
     "pay": "Det betaler du",
     "run": "Kør din service",

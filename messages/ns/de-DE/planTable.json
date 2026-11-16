@@ -2,6 +2,10 @@
   "h1": "Alles für Ihren Betrieb – in jedem Tarif.",
   "lede": "Bestellungen, Vorbestellungen, Küchenkapazität und der Küchenmonitor sind in jedem Tarif enthalten.{hasUpgrades, select, yes { Mit {plans} kommen {features} und niedrigere Gebühren hinzu.} other {}}",
   "perMonth": "{price} / Monat",
+  "trial": {
+    "length": "{months, plural, one {# Monat} other {# Monate}}",
+    "ends": "Endet am {date}"
+  },
   "group": {
     "pay": "Ihre Kosten",
     "run": "Ihr Tagesgeschäft",

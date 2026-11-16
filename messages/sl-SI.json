@@ -6228,6 +6228,10 @@
     "h1": "Vse za vodenje prodaje — v vsakem paketu.",
     "lede": "Naročanje, prednaročila, zmogljivost kuhinje in kuhinjski zaslon so vključeni v vsak paket.{hasUpgrades, select, yes { Nadgradnje ({plans}) dodajo: {features} ter nižje provizije.} other {}}",
     "perMonth": "{price} / mesec",
+    "trial": {
+      "length": "{months, plural, one {# mesec} two {# meseca} few {# meseci} other {# mesecev}}",
+      "ends": "Se konča {date}"
+    },
     "group": {
       "pay": "Kaj plačate",
       "run": "Vodenje prodaje",

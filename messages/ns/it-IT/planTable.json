@@ -2,6 +2,10 @@
   "h1": "Tutto per gestire il tuo servizio, in ogni piano.",
   "lede": "Ordini, preordini, ordini massimi per fascia oraria e monitor cucina sono inclusi in ogni piano.{hasUpgrades, select, yes { {plans} aggiungono {features} e commissioni più basse.} other {}}",
   "perMonth": "{price} / mese",
+  "trial": {
+    "length": "{months, plural, one {# mese} many {# di mesi} other {# mesi}}",
+    "ends": "Termina il {date}"
+  },
   "group": {
     "pay": "Quanto paghi",
     "run": "Gestisci il servizio",

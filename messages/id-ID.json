@@ -6228,6 +6228,10 @@
     "h1": "Semua yang Anda butuhkan untuk berjualan, di setiap paket.",
     "lede": "Pemesanan, pre-order, kapasitas dapur, dan layar dapur (KDS) sudah termasuk di setiap paket.{hasUpgrades, select, yes { Paket {plans} menambahkan {features}, serta biaya yang lebih rendah.} other {}}",
     "perMonth": "{price} / bulan",
+    "trial": {
+      "length": "{months, plural, one {# bulan} other {# bulan}}",
+      "ends": "Berakhir {date}"
+    },
     "group": {
       "pay": "Biaya yang Anda bayar",
       "run": "Jalankan layanan Anda",

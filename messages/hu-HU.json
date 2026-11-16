@@ -6228,6 +6228,10 @@
     "h1": "Minden, ami a működéshez kell, minden csomagban.",
     "lede": "A rendelés, az előrendelés, a kapacitáskezelés és a konyhai kijelző minden csomagban benne van.{hasUpgrades, select, yes { {plans}: emellett {features}, valamint alacsonyabb díjak.} other {}}",
     "perMonth": "{price} / hó",
+    "trial": {
+      "length": "{months, plural, one {# hónap} other {# hónap}}",
+      "ends": "Vége: {date}"
+    },
     "group": {
       "pay": "Mit fizet",
       "run": "A kiszolgálás",

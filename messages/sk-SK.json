@@ -6228,6 +6228,10 @@
     "h1": "Všetko, čo potrebujete na prevádzku, v každom pláne.",
     "lede": "Objednávanie, predobjednávky, kapacita kuchyne a kuchynská obrazovka sú súčasťou každého plánu.{hasUpgrades, select, yes { {plans} pridávajú {features} a nižšie poplatky.} other {}}",
     "perMonth": "{price} / mesiac",
+    "trial": {
+      "length": "{months, plural, one {# mesiac} few {# mesiace} many {# mesiaca} other {# mesiacov}}",
+      "ends": "Končí {date}"
+    },
     "group": {
       "pay": "Čo platíte",
       "run": "Riadenie prevádzky",

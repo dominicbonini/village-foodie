@@ -2,6 +2,10 @@
   "h1": "Allt sem þarf til að reka afgreiðsluna, í öllum áskriftarleiðum.",
   "lede": "Pantanir, forpantanir, afköst eldhúss og eldhússkjár fylgja öllum áskriftarleiðum.{hasUpgrades, select, yes { Með uppfærslu ({plans}) bætast við: {features} og lægri gjöld.} other {}}",
   "perMonth": "{price} / mán.",
+  "trial": {
+    "length": "{months, plural, one {# mánuður} other {# mánuðir}}",
+    "ends": "Lýkur {date}"
+  },
   "group": {
     "pay": "Það sem þú greiðir",
     "run": "Rekstur afgreiðslunnar",

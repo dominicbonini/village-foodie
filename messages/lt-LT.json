@@ -6228,6 +6228,10 @@
     "h1": "Viskas, ko reikia aptarnavimui, – kiekviename plane.",
     "lede": "Užsakymai, išankstiniai užsakymai, virtuvės pajėgumas ir virtuvės ekranas įtraukti į kiekvieną planą.{hasUpgrades, select, yes { {plans}: papildomai – {features}, o komisiniai mažesni.} other {}}",
     "perMonth": "{price} / mėn.",
+    "trial": {
+      "length": "{months, plural, one {# mėnuo} few {# mėnesiai} many {# mėnesio} other {# mėnesių}}",
+      "ends": "Baigiasi {date}"
+    },
     "group": {
       "pay": "Ką mokate",
       "run": "Aptarnavimas",

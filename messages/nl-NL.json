@@ -6228,6 +6228,10 @@
     "h1": "Alles om je service te draaien, in elk abonnement.",
     "lede": "Bestellen, vooraf bestellen, het maximaal aantal bestellingen per tijdslot en het keukenscherm zitten in elk abonnement.{hasUpgrades, select, yes { {plans} voegen {features} toe, met lagere kosten.} other {}}",
     "perMonth": "{price} / maand",
+    "trial": {
+      "length": "{months, plural, one {# maand} other {# maanden}}",
+      "ends": "Eindigt {date}"
+    },
     "group": {
       "pay": "Wat je betaalt",
       "run": "Je service draaien",

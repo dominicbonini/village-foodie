@@ -2,6 +2,10 @@
   "h1": "Sve za vođenje vašeg posla, u svakom paketu.",
   "lede": "Narudžbe, prednarudžbe, kapacitet kuhinje i kuhinjski zaslon uključeni su u svaki paket.{hasUpgrades, select, yes { Viši paketi ({plans}) dodaju {features} te niže naknade.} other {}}",
   "perMonth": "{price} / mjesečno",
+  "trial": {
+    "length": "{months, plural, one {# mjesec} few {# mjeseca} other {# mjeseci}}",
+    "ends": "Završava {date}"
+  },
   "group": {
     "pay": "Što plaćate",
     "run": "Vođenje posla",

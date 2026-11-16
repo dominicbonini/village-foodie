@@ -2,6 +2,10 @@
   "h1": "Everything to run your service, on every plan.",
   "lede": "Ordering, pre-orders, capacity and the kitchen screen are included on every plan.{hasUpgrades, select, yes { {plans} add {features}, and lower fees.} other {}}",
   "perMonth": "{price} / month",
+  "trial": {
+    "length": "{months, plural, one {# month} other {# months}}",
+    "ends": "Ends {date}"
+  },
   "group": {
     "pay": "What you pay",
     "run": "Run your service",

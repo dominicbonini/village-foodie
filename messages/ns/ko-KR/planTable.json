@@ -2,6 +2,10 @@
   "h1": "모든 요금제에 영업에 필요한 모든 것을 담았습니다.",
   "lede": "주문, 미리 주문, 주방 처리 용량, 주방 디스플레이(KDS)는 모든 요금제에 포함됩니다.{hasUpgrades, select, yes { {plans} 요금제에는 {features} 기능이 추가되고 수수료도 낮아집니다.} other {}}",
   "perMonth": "월 {price}",
+  "trial": {
+    "length": "{months, plural, one {#개월} other {#개월}}",
+    "ends": "종료일: {date}"
+  },
   "group": {
     "pay": "요금",
     "run": "영업 운영",

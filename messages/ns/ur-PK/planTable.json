@@ -2,6 +2,10 @@
   "h1": "سروس چلانے کے لیے سب کچھ، ہر پلان میں۔",
   "lede": "آرڈرنگ، پری آرڈرز، گنجائش اور کچن ڈسپلے ہر پلان میں شامل ہیں۔{hasUpgrades, select, yes { {plans} میں مزید: {features}، اور کم فیس۔} other {}}",
   "perMonth": "{price} / ماہ",
+  "trial": {
+    "length": "{months, plural, one {# مہینہ} other {# مہینے}}",
+    "ends": "ختم ہوگا: {date}"
+  },
   "group": {
     "pay": "آپ کیا ادا کرتے ہیں",
     "run": "اپنی سروس چلائیں",

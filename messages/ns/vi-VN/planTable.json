@@ -2,6 +2,10 @@
   "h1": "Mọi thứ để vận hành ca bán, ở mọi gói.",
   "lede": "Đặt món, đặt trước, công suất bếp và màn hình bếp có trong mọi gói.{hasUpgrades, select, yes { {plans} có thêm {features} và mức phí thấp hơn.} other {}}",
   "perMonth": "{price} / tháng",
+  "trial": {
+    "length": "{months, plural, one {# tháng} other {# tháng}}",
+    "ends": "Hết hạn: {date}"
+  },
   "group": {
     "pay": "Chi phí",
     "run": "Vận hành ca bán",

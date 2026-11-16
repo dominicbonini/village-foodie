@@ -6228,6 +6228,10 @@
     "h1": "Todo para gestionar tu servicio, en todos los planes.",
     "lede": "Los pedidos, los pedidos anticipados, los pedidos máximos por franja y la pantalla de cocina están incluidos en todos los planes.{hasUpgrades, select, yes { {plans} añaden {features}, y comisiones más bajas.} other {}}",
     "perMonth": "{price} / mes",
+    "trial": {
+      "length": "{months, plural, one {# mes} many {# de meses} other {# meses}}",
+      "ends": "Termina el {date}"
+    },
     "group": {
       "pay": "Lo que pagas",
       "run": "Gestiona tu servicio",

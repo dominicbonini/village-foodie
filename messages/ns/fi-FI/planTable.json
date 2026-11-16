@@ -2,6 +2,10 @@
   "h1": "Kaikki myyntivuoron pyörittämiseen kaikissa paketeissa.",
   "lede": "Tilaukset, ennakkotilaukset, keittiön kapasiteetti ja keittiönäyttö sisältyvät kaikkiin paketteihin.{hasUpgrades, select, yes { {plans} tuovat lisäksi {features} sekä pienemmät maksut.} other {}}",
   "perMonth": "{price} / kk",
+  "trial": {
+    "length": "{months, plural, one {# kuukausi} other {# kuukautta}}",
+    "ends": "Päättyy {date}"
+  },
   "group": {
     "pay": "Mitä maksat",
     "run": "Myyntivuoron pyörittäminen",

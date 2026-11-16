@@ -2,6 +2,10 @@
   "h1": "Wszystko, czego potrzebujesz do obsługi, w każdym planie.",
   "lede": "Zamówienia, zamówienia z wyprzedzeniem, wydajność kuchni i ekran kuchenny są w każdym planie.{hasUpgrades, select, yes { {plans} dodają {features} oraz niższe opłaty.} other {}}",
   "perMonth": "{price} / miesiąc",
+  "trial": {
+    "length": "{months, plural, one {# miesiąc} few {# miesiące} many {# miesięcy} other {# miesiąca}}",
+    "ends": "Kończy się {date}"
+  },
   "group": {
     "pay": "Ile płacisz",
     "run": "Obsługa sprzedaży",

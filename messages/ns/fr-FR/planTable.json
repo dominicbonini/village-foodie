@@ -2,6 +2,10 @@
   "h1": "Tout pour gérer votre service, dans chaque offre.",
   "lede": "La prise de commandes, la possibilité de commander à l’avance, la limite de commandes par créneau et l’écran cuisine sont inclus dans toutes les offres.{hasUpgrades, select, yes { {plans} ajoutent {features}, avec des frais réduits.} other {}}",
   "perMonth": "{price} / mois",
+  "trial": {
+    "length": "{months, plural, one {# mois} many {# de mois} other {# mois}}",
+    "ends": "Jusqu’au {date}"
+  },
   "group": {
     "pay": "Ce que vous payez",
     "run": "Gérer votre service",

@@ -2,6 +2,10 @@
   "h1": "Kõik vahetuse läbiviimiseks vajalik — igas paketis.",
   "lede": "Tellimine, ettetellimused, köögi võimsus ja köögiekraan sisalduvad igas paketis.{hasUpgrades, select, yes { Paketid {plans} lisavad juurde: {features}, ning madalamad tasud.} other {}}",
   "perMonth": "{price} / kuu",
+  "trial": {
+    "length": "{months, plural, one {# kuu} other {# kuud}}",
+    "ends": "Lõpeb {date}"
+  },
   "group": {
     "pay": "Mida sa maksad",
     "run": "Vahetuse juhtimine",

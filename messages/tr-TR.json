@@ -6228,6 +6228,10 @@
     "h1": "Servisinizi yürütmek için gereken her şey, her pakette.",
     "lede": "Sipariş, ön sipariş, kapasite yönetimi ve mutfak ekranı her pakette var.{hasUpgrades, select, yes { {plans}: ek olarak {features} ve daha düşük ücretler.} other {}}",
     "perMonth": "{price} / ay",
+    "trial": {
+      "length": "{months, plural, one {# ay} other {# ay}}",
+      "ends": "Bitiş: {date}"
+    },
     "group": {
       "pay": "Ne ödersiniz",
       "run": "Servisinizi yönetin",
