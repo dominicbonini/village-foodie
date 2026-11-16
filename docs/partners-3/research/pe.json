@@ -1,0 +1,88 @@
+{ "country": "PE", "checked": "2026-11-16", "orgs": [
+  {
+    "name": "FILO (Somos Filo) - Burger Fest, Gochiso, Foodies, Filo Summer Fest and other food festivals",
+    "type": "collective", "kind": "collective",
+    "region": "Lima", "language": "es",
+    "website": "https://filo.com.pe/", "website_ok": true,
+    "emails": [],
+    "channel": "contact_form", "facebook_url": "https://www.facebook.com/SomosFilo/", "instagram_url": "https://www.instagram.com/somosfilo/", "contact_form_url": "https://filo.com.pe/",
+    "last_seen_active": "2026-05-23", "last_seen_source": "https://diariocorreo.pe/gastronomia/burger-fest-vol-9-reunira-a-mas-de-30-hamburgueserias-el-23-de-mayo-en-lima-noticia/",
+    "members_estimate": "30+ burger businesses at Burger Fest Vol. 9 (Diario Correo, May 2026); ~124K Instagram followers (filo.com.pe, Nov 2026)",
+    "org_verdict": "active",
+    "notes": "Lima festival organiser (founder Nachi Benza) running Burger Fest, Gochiso (5th edition, 28 Mar 2026), Parriland, Pollito con Chifa and more, each with a roster of food vendors. No email published; the site's form is titled '¿Quieres ser parte de nuestros eventos?'."
+  },
+  {
+    "name": "Mercado 28",
+    "type": "collective", "kind": "market",
+    "region": "Lima (Miraflores)", "language": "es",
+    "website": "https://www.mercado28.pe/", "website_ok": true,
+    "emails": [
+      { "email": "comercial@mercado28.pe", "found_on": "https://www.mercado28.pe/", "domain_mx": true, "verdict": "verified", "reason": "Published as a mailto link on the home page; mercado28.pe has Google MX records." }
+    ],
+    "channel": "email", "facebook_url": "https://www.facebook.com/Mercado28Lima", "instagram_url": "https://www.instagram.com/mercado28lima/", "contact_form_url": "https://www.mercado28.pe/contactanos",
+    "last_seen_active": "2026-02", "last_seen_source": "https://gestion.pe/noticias/mercado-28/",
+    "members_estimate": "18 food stalls at Miraflores (Peru Retail, 2026)",
+    "org_verdict": "active",
+    "notes": "Food hall ('first gastronomic market in Peru') that manages a roster of small food concepts; Gestion reported early 2026 on its 2025 results and expansion plans. Stall vendors rather than trucks, so a weaker fit."
+  },
+  {
+    "name": "FENTEP - Federación Nacional de Trabajadores Emolienteros y Afines del Perú",
+    "type": "association", "kind": "association",
+    "region": "National", "language": "es",
+    "website": null, "website_ok": false,
+    "emails": [],
+    "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+    "last_seen_active": "2025-06-10", "last_seen_source": "https://www.congreso.gob.pe/Docs/comisiones2024/Trabajo/files/presentaciones/so-022-sustentacion-pl-11395-10-06-2025.pdf",
+    "members_estimate": "unknown; Congress says 20,000+ emoliente vendors still informal (Congreso, Jul 2026)",
+    "org_verdict": "active",
+    "notes": "National union of emoliente street-drink cart vendors (president Edgar Liberato Sáenz), named in the 2024-2026 emoliente bills and Ley 32570 debate. No website, social page or email found; poor fit for pre-ordering."
+  },
+  {
+    "name": "FENEGAP - Federación Nacional de Emolienteros Generadores de Autoempleo Productivo y Afines del Perú",
+    "type": "association", "kind": "association",
+    "region": "National", "language": "es",
+    "website": null, "website_ok": false,
+    "emails": [],
+    "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+    "last_seen_active": null, "last_seen_source": "https://comunicaciones.congreso.gob.pe/?p=235384",
+    "members_estimate": "unknown",
+    "org_verdict": "unknown",
+    "notes": "Second emoliente vendors' federation; its legal adviser is quoted in an undated Congress press note asking for municipal ordinances. No contact route found."
+  },
+  {
+    "name": "Lima Sabrosa (food truck park)",
+    "type": "collective", "kind": "market",
+    "region": "Lima (Surquillo)", "language": "es",
+    "website": null, "website_ok": false,
+    "emails": [],
+    "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+    "last_seen_active": null, "last_seen_source": "https://wanderlog.com/place/details/3727211/lima-sabrosa",
+    "members_estimate": "about 8 trucks (Wanderlog review, undated)",
+    "org_verdict": "unknown",
+    "notes": "Food truck court in Surquillo built around the Lima Sabrosa burger brand; reviews are undated and no current social page was found. Could be a single operator rather than a host of independent trucks."
+  },
+  {
+    "name": "Food Trucks Perú (collective)",
+    "type": "collective", "kind": "collective",
+    "region": "Lima", "language": "es",
+    "website": null, "website_ok": false,
+    "emails": [],
+    "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+    "last_seen_active": "2015-08", "last_seen_source": "https://www.peru-retail.com/demanda-food-trucks-llego-san-isidro/",
+    "members_estimate": "5 trucks (El Gringo, La Calé, Lima Sabrosa, Gohan and others) and about 3,000 visitors at Parque de la Pera (Peru Retail, 2015)",
+    "org_verdict": "inactive",
+    "notes": "Early group of Lima truck owners who ran joint events in San Isidro; nothing after 2015. Probably the same people who went on to form APEFOODT (the press also calls it 'AFTP')."
+  },
+  {
+    "name": "FEDEVAL - Federación Departamental de Vendedores Ambulantes de Lima y Callao",
+    "type": "association", "kind": "association",
+    "region": "Lima and Callao", "language": "es",
+    "website": null, "website_ok": false,
+    "emails": [],
+    "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+    "last_seen_active": "2014-11-28", "last_seen_source": "https://streetnet.org.za/2014/11/28/message-from-fedeval/",
+    "members_estimate": "unknown",
+    "org_verdict": "inactive",
+    "notes": "StreetNet affiliate for all street vendors (not only food) in Lima and Callao; the newest dated item found is from 2014. A general vendors' body, so a weak fit."
+  }
+] }
