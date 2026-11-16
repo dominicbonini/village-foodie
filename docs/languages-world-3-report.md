@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -13,8 +13,8 @@
 | 5 | ur-PK Urdu | ✅ (lw-2) | — | | |
 | 6 | kk-KZ Kazakh | ✅ (lw-2) | ✅ batch 3 — **needs native/legal check** | `_legal-translations.cjs kk-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | b77e79df |
 | 7 | uz-UZ Uzbek | ✅ (lw-2) | ✅ batch 4 — **needs native/legal check** | `_legal-translations.cjs uz-UZ` 3/3 ✓; `legal-languages-1` /uz/privacy, /uz/terms, /uz/country-terms ✓ | 3c2fb908 |
-| 8 | az-AZ Azerbaijani | ✅ (lw-2) | — next (batch 5) | | |
-| 9 | ka-GE Georgian | ✅ (lw-2) | — | | |
+| 8 | az-AZ Azerbaijani | ✅ (lw-2) | ✅ batch 5 — **needs native/legal check** | `_legal-translations.cjs az-AZ` 3/3 ✓; `legal-languages-1` /az/privacy, /az/terms, /az/country-terms ✓ | languages-world-3 batch 5 |
+| 9 | ka-GE Georgian | ✅ (lw-2) | — next (batch 6) | | |
 | 10 | hy-AM Armenian | ✅ (lw-2) | — | | |
 | 11 | mn-MN Mongolian | ✅ (lw-2) | — | | |
 | 12 | ne-NP Nepali | ✅ (lw-2) | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **4 of 23 languages done (12 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
+Legal pages: **5 of 23 languages done (15 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
 
 ## Batch order
 
@@ -136,6 +136,18 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 5: az-AZ legal pages
+
+**Files:** [privacy-policy.md](../content/legal/az-AZ/privacy-policy.md), [terms-and-conditions.md](../content/legal/az-AZ/terms-and-conditions.md), [country-specific-terms.md](../content/legal/az-AZ/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into Azerbaijani. No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs az-AZ` 3/3 ✓. `legal-languages-1`: /az/privacy, /az/terms and /az/country-terms render ("4 noyabr 2026", "1 noyabr 2026"), then the harness stops with ENOENT at the next missing base (ka-GE). **No screenshot**: the country has no row yet (see batch 2).
+
+**Translation choices:** Latin script. Lowercase «siz»; «Son yenilənmə:» (legalChrome); food truck written "food truck" with hyphenated suffixes ("food truck-dan"), as in the UI; Pay at Hatch «Yerində ödəniş»; hatch «pəncərə»; kitchen screen «mətbəx ekranı (KDS)»; dashboard «sifarişlər paneli»; account «hesab»; VAT «ƏDV». The demo checkbox is quoted exactly as the UI has it. Law names in Azerbaijani with the official name and year in brackets; merchant of record, reverse charge, chargeback, white-label, data intermediary, encargado and aviso de privacidad kept in English in brackets.
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -155,4 +167,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 5 is the az-AZ legal pages. Runs continue automatically (60-minute gaps, at most 5 batches a UK day).
+Batch 6 is the ka-GE legal pages. Runs continue automatically (60-minute gaps, at most 5 batches a UK day).
