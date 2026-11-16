@@ -300,6 +300,11 @@ async function load() {
       && /Thanks for reading\./.test(en.assoc['4_final_chase'].body) && !/Thanks for your time/.test(JSON.stringify(en)))
     const pw = fs.readFileSync(path.join(REPO, 'components/admin/ProspectWorkspace.tsx'), 'utf8')
     t('the truck composer lists no partner template', /\.filter\(t => !t\.slug\.startsWith\('partner-'\)\)/.test(pw))
+    // 🔴 The admin table (a client component) runs lib/partner-programme.ts's rules in the browser: neither it nor the offer lookup may
+    // import a server-only module (the plan catalogue's lib/plans-server.ts → server-only) — that broke /admin's compile once, caught here.
+    const prog = fs.readFileSync(path.join(REPO, 'lib/partner-programme.ts'), 'utf8'), offers = fs.readFileSync(path.join(REPO, 'lib/partner-offers.ts'), 'utf8')
+    const bad = /from '@\/lib\/(partner-codes-server|plans-server|supabase|marketing-cache|country-settings)'|import\('@\/lib\/(partner-codes-server|plans-server)'\)/
+    t('the table\'s rules stay client-safe: lib/partner-programme.ts and lib/partner-offers.ts import no server-only module', !bad.test(prog) && !bad.test(offers) && /from '@\/lib\/partner-offers'/.test(prog))
     const site = fs.readFileSync(path.join(REPO, 'supabase/migrations/20261109_partners_site_addresses.sql'), 'utf8')
     t('the 13 site-published addresses become primary, the listed ones alternates — guarded, status and auto_send untouched',
       (site.match(/^update public\.partner_orgs set email = /gm) || []).length === 13 && !/[^_]status =|auto_send =/.test(site))

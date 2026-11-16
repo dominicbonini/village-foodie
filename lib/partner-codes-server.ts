@@ -10,7 +10,7 @@
 //                     fixed-price deal becomes the existing promotional price (trucks.plan_price_override_*) from that day for N
 //                     months. Called after every plan write (lib/billing/store.ts setTruckPlan, Admin's plan change). Never throws.
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { codeState, extendedTrialEnd, normaliseCode, isPriceDeal, priceOverrideFor, offerCodeFor, type PartnerCode, type CodeState } from '@/lib/partner-codes'
+import { codeState, extendedTrialEnd, normaliseCode, isPriceDeal, priceOverrideFor, type PartnerCode, type CodeState } from '@/lib/partner-codes'
 import { planByKey, planPriceFor } from '@/lib/plans'
 import { localDateOfInstant } from '@/lib/time-utils'
 
@@ -168,35 +168,9 @@ export async function applyPartnerPrice(supabase: SupabaseClient, truckId: strin
   }
 }
 
-export const OFFER_CODE_COLUMNS = 'id, code, partner_id, deal_type, deal_value, deal_months, deal_plan_key, deal_currency, valid_until, max_uses, active, pct_year1, pct_year2, created_at'
-export interface OfferCode {
-  id: string; code: string; partner_id: string; deal_type: PartnerCode['dealType']; deal_value: number; deal_months: number | null
-  deal_plan_key: string | null; deal_currency: string | null; valid_until: string | null; max_uses: number | null; active: boolean
-  pct_year1: number; pct_year2: number; created_at: string | null
-}
-
-/**
- * Each partner's OFFER (its newest usable code — lib/partner-codes.ts offerCodeFor), for the given partners (all when omitted).
- * A partner missing from the map "Needs offer": it is never queued, sent by the scheduler, or emailed fresh from Admin.
- * Throws on a failed read (a caller then sends nothing).
- */
-export async function offersFor(supabase: SupabaseClient, now = new Date(), partnerIds?: string[]): Promise<Map<string, OfferCode>> {
-  let q = supabase.from('partner_codes').select(OFFER_CODE_COLUMNS).eq('active', true)
-  if (partnerIds) { if (!partnerIds.length) return new Map(); q = q.in('partner_id', partnerIds) }
-  const { data, error } = await q
-  if (error) throw new Error(`[partner-codes] the codes could not be read: ${error.message}`)
-  const codes = (data ?? []) as OfferCode[]
-  const uses: Record<string, number> = {}
-  if (codes.length) {
-    const { data: reds, error: rErr } = await supabase.from('partner_code_redemptions').select('code_id').in('code_id', codes.map(c => c.id))
-    if (rErr) throw new Error(`[partner-codes] the code uses could not be read: ${rErr.message}`)
-    for (const r of (reds ?? []) as { code_id: string }[]) uses[r.code_id] = (uses[r.code_id] ?? 0) + 1
-  }
-  const today = now.toISOString().slice(0, 10)
-  const out = new Map<string, OfferCode>()
-  for (const pid of new Set(codes.map(c => c.partner_id))) { const c = offerCodeFor(codes, pid, uses, today); if (c) out.set(pid, c) }
-  return out
-}
+// partners offer: the offer lookup lives in lib/partner-offers.ts (no server-only imports, so the admin table's rules can use it);
+// re-exported here for the server routes.
+export { offersFor, OFFER_CODE_COLUMNS, type OfferCode } from '@/lib/partner-offers'
 
 /** The language an email is written in → the messages locale its plan names come from (lib/plan-names.ts). */
 const PLAN_NAME_LOCALE: Record<string, string> = { en: 'en-GB', fr: 'fr-FR', nl: 'nl-NL', de: 'de-DE', es: 'es-ES', it: 'it-IT', sv: 'sv-SE' }

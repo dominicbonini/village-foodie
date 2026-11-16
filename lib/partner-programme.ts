@@ -9,7 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { CONTACT_KINDS, FOLLOW_UP_DAYS, type LadderKind } from '@/lib/outreach'
 import { planToday, dueDate, DEFAULT_WINDOW, DEFAULT_DAILY_CAP, SENDER_ZONE, type SendWindow, type PlannedSend } from '@/lib/partner-send-schedule'
 import { instantOfLocal, localDateOfInstant } from '@/lib/time-utils'
-import { offersFor } from '@/lib/partner-codes-server'
+import { offersFor } from '@/lib/partner-offers'   // partners offer: client-safe (no server-only imports)
 
 // ── the rules (pure) ──────────────────────────────────────────────────────────────────────────────────────────────────
 
