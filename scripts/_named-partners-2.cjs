@@ -39,6 +39,14 @@ const EDITS = {
     return src.replace(imp, '').replace(blk, '')
   },
   'app/(app)/signup/page.tsx': src => {
+    // partners offer (16 November 2026, docs/partners-3-report.md §0): the page passes its locale to the field, so a code's plan name and
+    // price come back in its language — two lines, named here and taken back exactly (the field's own block is replaced whole below).
+    const offerImp = ["import { useT, useAppLocale } from '@/lib/i18n/use-t'\n", "import { useT } from '@/lib/i18n/use-t'\n"]
+    const offerLine = "  const locale = useAppLocale()   // partners offer: a code's plan name and price come back in this language\n"
+    if (src.includes(offerImp[0]) || src.includes(offerLine)) {
+      if (!once(src, offerImp[0]) || !once(src, offerLine)) return null
+      src = src.replace(offerImp[0], offerImp[1]).replace(offerLine, '')
+    }
     const imp = "import PartnerCodeField from '@/components/PartnerCodeField'   // partners-2\n"
     const blk = blockOf(src, '{/* ⛔ UPDATED (partners-2, 16 November 2026)', '          }} />')
     const old = blockOf(show('app/(app)/signup/page.tsx'), "{t.rich('codeLabel'", '          </div>')

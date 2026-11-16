@@ -432,7 +432,8 @@
         "partners-2-import.cjs",
         "partners-offer-templates.cjs",
         "partners-3-import.cjs",
-        "partners-2-screens.cjs"
+        "partners-2-screens.cjs",
+        "partners-3-screens.cjs"
       ]
     },
     "needs_a_browser": {

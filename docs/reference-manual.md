@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.31
+HatchGrab Engineering Reference Manual · V16.32
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.31**
+**Version 16.32**
 
 November 2026
 
@@ -170,14 +170,12 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 22. **EU non-Union OSS registration** once there are paying EU customers.
 23. **Non-Latin ticket printing:** item 10.
 
-**Partners (partners-2, V16.31):**
-24. 🔴 **Decision: how a percent-off partner code reaches the paid plan** — the existing price override only applies while a truck
-    is on the plan it was given, and a signup is on the free trial (docs/partners-2-report.md §0, options A / B / C; A recommended).
-    Until then a percent-off code is recorded and attributed but writes no override.
-25. **Partner templates:** the English drafts are in the report §5 — "templates approved" → translations with back-translations →
-    the `partner-<assoc|dir>-<step>-<lang>` rows. Until they exist the scheduled sender sends nothing.
-26. **Partner addresses to choose:** 13 organisations' sites publish a different address from the list (report §2.3); and the real
-    partner codes are still to be created under Admin › Partners › Codes.
+**Partners (partners-2 V16.31, offer V16.32):**
+24. ~~Decision: how a percent-off code reaches the paid plan~~ ⛔ **Decided V16.32: A** — applied when the truck moves onto a paid plan.
+25. ~~Partner templates~~ ⛔ **Done V16.32:** approved with Dominic's edits, 56 rows in en fr nl de es it sv (back-translations in
+    `docs/partners-3-report.md` §0). Native-speaker read of fr nl de es it sv still advisable before the first real send.
+26. 🔴 **The offer is not decided: every partner shows "Needs offer".** Create each partner's code (deal + commission) by hand in
+    its drawer. Nothing is queued or sent until then. (The 13 site addresses: ⛔ done V16.32, site address primary.)
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -242,7 +240,7 @@ live, but customer links only reach the phone's browser on Android after the dep
    (Production → Countries / regions). Send for review.
 8. Watch **Android vitals** for the first days; with the mapping, stack traces are readable.
 
-# Partner programme (V16.31, partners-2)
+# Partner programme (V16.31 partners-2, V16.32 the offer)
 
 **Admin › Partners** is one compact table:
 - **Columns:** Organisation (type) · Country · Lang · Contact (✓ verified / ? unverified / ✗ dropped) · Status · Code · Deal · Commission · Next send · Last.
@@ -251,7 +249,9 @@ live, but customer links only reach the phone's browser on Android after the dep
 
 **The data:**
 - `partner_orgs` (+ verification, language, time zone, sequence, do_not_contact).
-- `partner_codes`: deal (extra trial months | percent off for N months), validity, commission pct year 1 / year 2 of plan fees.
+- `partner_codes`: **created by hand in the partner's drawer, nothing pre-filled or defaulted (V16.32)**. Deal: extra trial months |
+  percent off a chosen plan (Pro / Unlimited / any paid plan) for N months | a fixed monthly price on a chosen plan for N months
+  (`deal_plan_key`, `deal_currency`); validity; commission pct year 1 / year 2 of plan fees (no default — both must be given).
 - `partner_code_redemptions`.
 - `trucks.referred_partner_code_id`: set once at signup; a trigger refuses any change. Shown as 🤝 in the admin truck row.
 - `partner_commission_payments`.
@@ -263,8 +263,11 @@ live, but customer links only reach the phone's browser on Android after the dep
 - `components/PartnerCodeField.tsx` (signup page and the demo's last step) with Apply → `/api/signup/code` (public, read only, metered 60/min).
 - Never blocking: any code is still kept on `operators.signup_promo_code`. A live partner code is recorded (`lib/partner-codes-server.ts recordRedemption`) and its deal applied at `/api/setup create_truck` (`applyPartnerDeal`).
 - **Extra months:** the trial end moves (Admin's `extendTrialEnd` rule).
-- **Percent off:** pending a decision (Open items 24).
-- **iOS:** no gate. The field takes no payment and shows no price or purchase link (3.1.1 / 3.1.3).
+- **Percent off / fixed price (decision A, V16.32):** recorded at signup; applied when the truck MOVES ONTO A PAID PLAN (the one the
+  code names, or any paid plan), from that day for N months, as the existing promotional price (`trucks.plan_price_override_*`) —
+  `applyPartnerPrice`, called after billing's `setTruckPlan` (upgrade / downgrade / trial end) and Admin's plan change. Once only;
+  never over a hand-set promotional price; a fixed price only in the truck's own currency and only below the standard price.
+- **iOS:** the field takes no payment and has no purchase link (3.1.1 / 3.1.3); a fixed-price deal is shown there without its amount ("a special price on Pro for 6 months", `purchaseCtaAllowed()`).
 
 **Sending.** One path: `lib/partner-send.ts`, shared by Admin's compose and `/api/cron/partner-sends`, every 5 min, at most one email per run. The scheduler sends only when:
 - the queue row is approved (approval mode on);
@@ -272,7 +275,7 @@ live, but customer links only reach the phone's browser on Android after the dep
 - the cap isn't reached and the spacing holds;
 - it's inside the recipient's window;
 - the template exists;
-- the partner has an active code;
+- the partner has an **offer**: a usable code (active, in date, not used up). No offer → **"Needs offer"** in Next send: never queued, never sent by the scheduler, and Admin's compose refuses a fresh email (a reply to the partner's own message or a test still goes);
 - the opt-out line is present.
 
 `?dry_run=1&now=` tests it against a clock without the mailbox.
@@ -284,13 +287,26 @@ live, but customer links only reach the phone's browser on Android after the dep
 
 **Commission** (`lib/partner-commission.ts`): pct of `billing_charges.plan_minor` on paid invoices, year 1 / year 2 from each referred truck's signup. £0 while billing is off.
 
-🔴 **Templates are created only after Dominic signs the wording off**, never by an agent on its own. Merge fields: `{{contact_name|fallback}}`, `{{org}}`, `{{code}}`, `{{deal}}`, `{{commission}}`.
+🔴 **Templates are created only after Dominic signs the wording off**, never by an agent on its own. Approved 16 November 2026 (V16.32): 56 rows, `partner-<assoc|dir>-<step>-<en|fr|nl|de|es|it|sv>`, generated by `scripts/partners-offer-templates.cjs` from `docs/partners-3/templates/<lang>.json` (migration `20261110`). Merge fields: `{{contact_name|fallback}}`, `{{org}}`, `{{code}}`, `{{deal}}`, `{{commission}}`, `{{features_url}}` (the partner's country page, e.g. /fr/features). `{{deal}}` and `{{commission}}` come from the partner's own code, in the email's language (`lib/partner-template.ts offerValues`, words in `lib/partner-offer-phrases.ts`). The truck composer never lists a `partner-` template.
 
 **Proof:** `scripts/partners-2.cjs` (swept); `scripts/partners-2-import.cjs` (the import, from `docs/partners-2/verification.json`); `scripts/partners-2-screens.cjs`.
 
 **Re-pins:** `scripts/_named-partners-2.cjs` holds the exact undo of partners-2's edits (proxy, signup route and page, demo, admin row) and the code field's structural proof, for the byte-identity harnesses.
 
 # Changelog
+
+## V16.32 — 16 November 2026 — **THE PARTNER OFFER: NOTHING DEFAULTED, CODES BY HAND, DECISION A, TEMPLATES**
+
+Dominic's follow-up to partners-2 (`docs/partners-3-report.md` §0). Not deployed; nothing sent; approval mode stays ON.
+
+- **No default deal or commission:** the commission columns lost their defaults; the form starts empty; codes are made in the partner's drawer.
+- **Three deal kinds:** extra trial months; % off a chosen plan (or any) for N months; a fixed monthly price on a plan for N months.
+- **Decision 1 = A:** a price deal applies when the truck moves onto a paid plan, for N months from that day (existing promotional price).
+- **"Needs offer":** a partner with no usable code is never queued or sent.
+- **Templates approved** with three edits ({{features_url}}; "It's free for {{org}} to take part."; "Thanks for reading."), translated, 56 rows.
+- **13 site-published addresses** made primary (listed ones kept as alternates); the fta.team hub stays the only auto-sendable US metro contact.
+- **Migrations:** `20261108_partners_offer`, `20261109_partners_site_addresses`, `20261110_partner_templates`. Signup words: 3 new keys × 2 namespaces in every language.
+- **Proof:** `scripts/partners-2.cjs` 77 checks (section 9 is the offer).
 
 ## V16.31 — 16 November 2026 — **THE PARTNER PROGRAMME: VERIFIED IMPORT, CODES THAT APPLY A DEAL, COMMISSION, LOCAL-HOURS SENDING**
 
