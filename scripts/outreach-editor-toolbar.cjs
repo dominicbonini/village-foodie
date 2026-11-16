@@ -12,6 +12,7 @@
 //    ignore the toolbar, and then they cannot tell bold from not-bold before sending;
 //    and an `href` outside the allow-list, which is the only value in this schema that can execute.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 

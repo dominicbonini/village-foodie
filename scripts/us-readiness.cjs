@@ -15,6 +15,7 @@
 // every CSV by scripts/money-sweep-parity.cjs.) AFTER, every one is byte-identical for GB; the US side runs on
 // fixtures (the US stays switched off in the database).
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'us-readiness' })
 const { REPO } = kit

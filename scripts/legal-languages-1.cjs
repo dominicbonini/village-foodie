@@ -21,6 +21,7 @@
 //      name, stored dietary tags, a font failure's English reason — and every fixed-English translator is a named, deliberate one.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')

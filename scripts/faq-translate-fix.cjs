@@ -14,6 +14,7 @@
 //   6 · the workflow's `limit` input, the script's --limit, and no tool_choice left in the code
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const REPO = path.resolve(__dirname, '..')

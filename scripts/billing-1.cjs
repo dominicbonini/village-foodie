@@ -11,6 +11,7 @@
 //   12b · never billed twice   13 · the key (test only)   14 · the live paths (constructs)   15 · the migrations   16 · Admin's classes
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const REPO = path.resolve(__dirname, '..')

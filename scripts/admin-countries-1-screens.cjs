@@ -19,6 +19,7 @@
 // PUT body of the new page differs from the OLD page's (git HEAD CountriesTab.tsx) for the same edit.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path'); const http = require('http')
 const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')

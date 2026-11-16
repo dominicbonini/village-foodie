@@ -18,6 +18,7 @@
 //   6  MANAGE — an IE truck saved as 'card': the Allergens card reads "Per dish" with a notice asking it to confirm.
 //   7  GB AND US BYTE-IDENTICAL — the wizard (every page), the Menu tab (card mode, the import's Allergens step) and
 //      /api/menu, rendered by today's code and by the same code with this workstream's edits reverted (patches), equal.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'allergen-card-country' })

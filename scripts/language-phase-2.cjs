@@ -27,6 +27,7 @@
 // US  · F === BEFORE except the named Part 2 changes (precise, or LISTED);  A vs BEFORE: every changed view listed in
 //       scripts/fixtures/language-phase-2-us-changed.txt;  THE US-WORDS CHECK on every A(US) view;  every US ticket's
 //       bytes fit 32 / 48 columns (double width counted) and are plain ASCII.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const zlib = require('zlib'); const os = require('os')
 const { execFileSync, spawn } = require('child_process')
 const REPO = path.resolve(__dirname, '..')

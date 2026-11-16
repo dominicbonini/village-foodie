@@ -8,6 +8,7 @@
 //      the links; a switched-off country never appears.
 //   3  JSON-LD — Organization legalName and country from lib/company.ts; SoftwareApplication BusinessApplication, operating
 //      systems, countriesSupported = the switched-on countries, the Offers from the data; no invalid areaServed.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const kit = require('./_render-kit.cjs')({ cacheTag: 'ai-search-1' })
 const { REPO, h } = kit
 const LP1E = require('./_lp1e-fixtures.cjs')

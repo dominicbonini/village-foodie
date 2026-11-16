@@ -4,6 +4,7 @@
 //   node scripts/printing-dedupe.cjs
 // 🔴 FAILURE MODE: two devices both wired to the same printer each printing every ticket — the kitchen
 // gets everything twice and nobody is told.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs'); const { installMocks } = require('./_printing-mocks.cjs')
 const c = compile(REPO, ['lib/printing/printWatcher.ts', 'lib/printing/networkGuard.ts', 'lib/printing/testTicket.ts', 'lib/printing/ticket.ts'], 'dedupe')

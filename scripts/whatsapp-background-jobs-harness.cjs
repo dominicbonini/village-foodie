@@ -15,6 +15,7 @@
 // ⚠️ It compiles the TypeScript itself with the repo's own tsc — this repo has no test framework. A temp
 // tsconfig supplies `baseUrl`/`paths` because these modules import through the `@/lib/...` alias.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const { execFileSync } = require('child_process')
 const fs = require('fs')
 const os = require('os')

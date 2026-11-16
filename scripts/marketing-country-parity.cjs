@@ -14,6 +14,7 @@
 // The BEFORE snapshot was taken on the unchanged pages, before the first edit of this phase. AFTER, the UK text
 // must match byte for byte apart from the new flag buttons, which are named and removed before comparing.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 // ⚠️ RE-PINNED (Language Phase 1e): this harness asserts PHASE 2D-1's claims (the visitor's country, the menu, the gates)
 // on THIS code with the words as they stood at eb7ed44 — scripts/fixtures/language-phase-1e-messages-before.{en-GB,en-US}.json

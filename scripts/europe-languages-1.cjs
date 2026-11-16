@@ -12,6 +12,7 @@
 //   4  NUMBERS — the decimal separator from Intl (de-CH writes a POINT: "27.50", "CHF 27"); typed input follows it;
 //   5  THE SQL — the short names are each language's own; switched off, every /<cc> still 302s to /uk.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')

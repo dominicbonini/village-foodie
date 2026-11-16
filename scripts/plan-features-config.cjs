@@ -28,6 +28,7 @@
 //      submit — and a card order still goes through
 //   8  the Billing card's prices come from plan_prices and hide only under the van modal's rule (US switched on → real
 //      $, switched off → TBD; GB unchanged); the founder offer (unlimited at 4900 until a date) shows £49 and reverts
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'plan-features-config' })

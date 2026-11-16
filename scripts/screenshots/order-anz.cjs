@@ -6,6 +6,7 @@
 // Step 1 of the AU/NZ order screenshot (frame-order-anz.cjs is step 2).
 //   node order-anz.cjs <au|nz> <workDir>  → <workDir>/order-web-<au|nz>.png (1284x2460) and order-<au|nz>.html
 require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('../_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const A = require('./anz-fixtures.cjs')
 const c = A.country()

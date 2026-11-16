@@ -25,6 +25,7 @@
 // ⛔ WHAT THIS CANNOT DO: it cannot press "Make post" or upload a picture. Those are the numbered
 // localhost list in docs/social-posts-report.md, on Pizza Kitchen only.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const REPO = path.resolve(__dirname, '..')

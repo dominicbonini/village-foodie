@@ -17,6 +17,7 @@
 //
 // `node scripts/address-formats-2.cjs --capture` rewrites the BEFORE snapshot from the CURRENT code — run only on the
 // code before this stage.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'address-formats-2' })

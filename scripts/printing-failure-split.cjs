@@ -5,6 +5,7 @@
 // by a Node TCP implementation of EXACTLY the Java/Swift contract (connect → write → close, bytesWritten exact).
 // 🔴 FAILURE MODE: a failure AFTER a byte reported as ok:false. The watcher would read 'failed' — CERTAIN
 // nothing printed — and retry, and a ticket that DID come out would print twice with no banner.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const net = require('net'); const path = require('path'); const fs = require('fs'); const os = require('os'); const { spawn } = require('child_process')
 const { compile, REPO } = require('./_slot-interval-compile.cjs'); const { installMocks } = require('./_printing-mocks.cjs')
 const c = compile(REPO, ['lib/printing/netTransport.ts', 'lib/printing/transport.ts', 'lib/printing/netAddress.ts', 'lib/printing/ticket.ts'], 'fsplit')

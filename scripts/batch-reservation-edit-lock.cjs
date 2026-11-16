@@ -11,6 +11,7 @@
 // Two halves. STRUCTURE reads the real route text: exactly one acquire in the edit block, guarded by the
 // switch, released in a finally, and no callee that can take the lock again. BEHAVIOUR compiles the real
 // lib/stock-guard.ts against an in-memory booking_locks and shows what a nested acquire actually does.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 let fails = 0

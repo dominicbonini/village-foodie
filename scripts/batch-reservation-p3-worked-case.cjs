@@ -4,6 +4,7 @@
 // 🔴 FAILURE MODE: 9 @17:30 refused (or admitted with the wrong split), 9 @18:45 / 9 @19:30 admitted,
 // a 4-item order split, `why` not naming the windows, the stored record not matching the admission,
 // or the redraw (projection + dots) not showing the reserved windows. FIXTURE figures throughout.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), os = require('os'), path = require('path')
 const { load, REPO, fmt, mins, NEG, m2o, grid, Sim } = require('./_batch-reservation-sim.cjs')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }

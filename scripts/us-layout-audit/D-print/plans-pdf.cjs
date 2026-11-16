@@ -4,6 +4,7 @@
 // (A4 210 mm = 794 px, US Letter 8.5 in = 816 px, @96 dpi) and the header row is measured: does the stamp stay on the
 // title's row, and does anything overflow. The header strip is screenshotted for the sheet.
 require('../../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('../../_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '../../..')
 const F = require('./_fixtures.cjs')

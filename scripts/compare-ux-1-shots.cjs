@@ -11,6 +11,7 @@
 // <outdir>/<label>-measures.json. By hand only (it needs an export and a build): listed in harnesses.json's excluded group.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'compare-ux-1-shots' })

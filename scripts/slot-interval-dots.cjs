@@ -12,6 +12,7 @@
 //
 // The HEAD readers are compiled from a clean `git worktree` of HEAD, not reconstructed.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path')
 const { compile, headWorktree } = require('./_slot-interval-compile.cjs')
 const REPO = path.resolve(__dirname, '..')

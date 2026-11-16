@@ -10,6 +10,7 @@
 // capacity … Placed anyway: #9". Cause: the manual path REBUILDS production_slot_usage (now holding #9's 16)
 // and then admitForManual read those totals as "existing" — two full batches that were the order's own —
 // refused it, and stored the override. The real admitForManual runs here against an in-memory PostgREST.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const { installMocks } = require('./_printing-mocks.cjs')

@@ -14,6 +14,7 @@
 //    two buttons parked on top of the text of the email being written;
 //    and a banner that says "you have edited this" to somebody who has typed nothing.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

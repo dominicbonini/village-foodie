@@ -14,6 +14,7 @@
 //   6  AI PROMPTS — GB/US location lines unchanged; IE gets its own postal-code lines; every prompt names its language.
 //   7  DEMO — demoEventWindow takes its date from `now`; for the current time it equals the real-clock date.
 //   8  PLANS PDF (IE) — masked while IE is off, € and the footnote once on.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'ireland-1' })

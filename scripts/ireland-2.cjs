@@ -12,6 +12,7 @@
 //   4  AN IRISH FIXTURE TRUCK, THE NON-PAYMENT PATH (the test-truck checklist's checks, run on fixtures): the customer's
 //      confirmation, ready and refund emails, the printed ticket, the allergen list. € amounts, 24-hour Dublin times,
 //      "Pay at the truck on collection", uk14. No database, no network: Brevo is a recorder in this process.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')

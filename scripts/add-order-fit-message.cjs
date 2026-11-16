@@ -16,6 +16,7 @@
 // Everything below runs the REAL fitOrderBackward and the REAL lib/slot-fit-message.ts. The only thing
 // modelled is the React memo, and its argument list is asserted against the source at the end.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 

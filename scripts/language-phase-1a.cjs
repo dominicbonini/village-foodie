@@ -25,6 +25,7 @@
 //   1. the ?payment_failed= URL carries a CODE (and its values), not a sentence — the page shows the same words;
 //   2. every customer-facing API error body gains "code" and "params"; "error" and every other field unchanged.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const zlib = require('zlib')
 // ── RE-PINNED FOR LANGUAGE PHASE 2 (docs/language-phase-2-report.md) ─────────────────────────────────────────
 // This harness proves that MOVING the words into messages/ was invisible. Phase 2 then CHANGES words on purpose

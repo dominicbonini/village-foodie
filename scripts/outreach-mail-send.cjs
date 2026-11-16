@@ -13,6 +13,7 @@
 // HOW: the REAL libs compiled from lib/, and the REAL message composed by nodemailer's `streamTransport`
 // with `buffer: true` — a transport that writes the RFC822 bytes to memory. No socket is opened, no
 // mailbox is touched and no database is read. Every refusal below is the function the route calls.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const os = require('os')
 const nodemailer = require('nodemailer')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')

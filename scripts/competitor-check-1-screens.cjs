@@ -14,6 +14,7 @@
 // go to docs/competitor-check-2/ (docs/competitor-check-1/ keeps the 25 October ones).
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'competitor-check-1-screens' })
 const FX = require('./_competitor-check-1-fixtures.cjs')

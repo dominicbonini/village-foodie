@@ -15,6 +15,7 @@
 //   4  THE PAGES — /country-terms (English) and /mx/country-terms (es-ES, read by Mexico) render the named authority.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { execSync } = require('child_process')

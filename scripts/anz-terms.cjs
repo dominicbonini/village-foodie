@@ -15,6 +15,7 @@
 //   6. the page renders through the real renderer: BEFORE's HTML with the date moved, then the two sections, headings in order.
 // Reads files and git only; no database, no network.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'anz-terms' })

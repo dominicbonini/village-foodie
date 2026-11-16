@@ -5,6 +5,7 @@
 // 🔴 FAILURE MODE: any ON-mode output moving from the committed baseline — a verdict, a window, a dot, a
 // breach — on any of the 854 fixtures. Inputs come from the rolling golden; the ON digests from
 // scripts/fixtures/batch-reservation-golden-on.json. Missing/unreadable golden ⇒ FAIL, never skip.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), path = require('path'), crypto = require('crypto')
 const { load, REPO, mins, NEG, m2o } = require('./_batch-reservation-sim.cjs')
 const SN = require('./_batch-rolling-snapshot.cjs')

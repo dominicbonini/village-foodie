@@ -27,6 +27,7 @@
 //       in the .md and the .json carries its unit and period; HatchGrab's "Nein" rows show; an unverified answer hides the
 //       competitor publicly.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'compare-de-1' })

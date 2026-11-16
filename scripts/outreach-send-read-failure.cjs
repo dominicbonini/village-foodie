@@ -22,6 +22,7 @@
 //       than answering from rows nobody saw, confirming sends, and the override is recorded;
 //   3 · the route — the two reads no longer refuse, the rung is not guessed, and every hard refusal
 //       is still hard.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')

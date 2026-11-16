@@ -3,6 +3,7 @@
 //   node scripts/batch-reservation-immutability.cjs
 // 🔴 FAILURE MODE: placing, overriding, editing or cancelling one order changing ANOTHER order's stored
 // reservation or its displayed windows — including pre-switch orders (null reservation, today's split).
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), os = require('os'), path = require('path')
 const { load, REPO, fmt, mins, NEG, grid, rng, Sim } = require('./_batch-reservation-sim.cjs')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }

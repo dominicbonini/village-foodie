@@ -10,6 +10,7 @@
 // one instant of the span, and that ONE number feeds admission (reserveBatches / fitOrderBackward), the
 // window tone, the dot label and detectCapacityBreaches. Peak ≤ sum, so admission is a SUPERSET of before;
 // on an aligned grid every overlapping batch starts at the span's start, so peak == sum and nothing moves.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), os = require('os'), path = require('path')
 const { load, REPO, fmt, mins, NEG, grid, rng, Sim } = require('./_batch-reservation-sim.cjs')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }

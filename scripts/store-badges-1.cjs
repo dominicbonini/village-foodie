@@ -13,6 +13,7 @@
 //   (in <dir>) HG_KIT_CACHE_SUFFIX=sb1head node scripts/store-badges-1.cjs capture <this repo>/scripts/fixtures/store-badges-1-identity.json
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')

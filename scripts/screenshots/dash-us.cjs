@@ -5,6 +5,7 @@
 // Step 1 of the dashboard screenshot (frame-dash.cjs is step 2).
 //   node dash-us.cjs <workDir> → <workDir>/dash-web.png (2420x1668) and dash-us.html
 require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('../_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { REPO, dirs, appCss, fontClasses, serve } = require('./common.cjs')
 const { WORK } = dirs()

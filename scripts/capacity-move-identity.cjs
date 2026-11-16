@@ -21,6 +21,7 @@
  * reader consults the flag; a van's own stored values must decide, whatever the flag says. So each
  * fixture is resolved with the flag true AND false and the two answers must match.
  */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const { compile, headWorktree, REPO } = require('./_slot-interval-compile.cjs')
 const path = require('path'), fs = require('fs')
 

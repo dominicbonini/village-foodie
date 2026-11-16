@@ -11,6 +11,7 @@
 //
 // HOW: the REAL `rearmDemoFirstOpen`, `claimDemoFirstOpen`, `restartDemoService` and `provisionDemo` bundled
 // from lib/, against scripts/_fake-pg.cjs, which stores rows. Nothing touches the database or the network.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const kit = require('./_render-kit.cjs')({ cacheTag: 'demo-reset-for-sending' })
 const { makeFakePg } = require('./_fake-pg.cjs')
 const SEEDS = require('./_country-settings-gb.cjs')

@@ -11,6 +11,7 @@
 // NetPrinter plugin. 🔴 SECOND FAILURE MODE: such a device being offered "Wired", or acting on a stored
 // 'net'. Both are gated on Capacitor.isPluginAvailable('NetPrinter'); the section at the end proves the
 // gate by RENDERING the control with the plugin mocked absent.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO, headWorktree } = require('./_slot-interval-compile.cjs'); const { installMocks } = require('./_printing-mocks.cjs')
 // ⚠️ RE-PINNED (plan-features-config, Stage A2, 20 October 2026): lib/plans.ts compiled too — canAccess now needs the

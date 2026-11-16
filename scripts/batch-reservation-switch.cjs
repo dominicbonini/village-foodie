@@ -4,6 +4,7 @@
 // 🔴 FAILURE MODE: a live truck that never asked for the rule waking up ON — Gusto (plan 'trial',
 // feature_overrides {}) most of all — or a demo truck OFF, or the switch read from anything but the
 // truck row. Gusto's row shape below is a FIXTURE copied from the read-only SQL in the report.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const c = compile(REPO, ['lib/features.ts'], 'switch'); const F = c.req('lib/features.js')

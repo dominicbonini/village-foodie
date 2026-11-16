@@ -11,6 +11,7 @@
 //    an allow-list unless the URL is one;
 //    and a note that takes six rows, which stops the history being a list.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

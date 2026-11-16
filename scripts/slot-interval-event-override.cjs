@@ -15,6 +15,7 @@
 // The resolver is COMPILED FROM THE WORKING TREE and driven through a fake supabase client, so the real
 // branch order is under test rather than a re-description of it.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const src = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')

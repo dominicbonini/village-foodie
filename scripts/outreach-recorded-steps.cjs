@@ -17,6 +17,7 @@
 // first contact sent from Outlook and logged BY HAND (a contact row with no linked message), then the
 // same email imported later as a message row with `contact_id` null.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')

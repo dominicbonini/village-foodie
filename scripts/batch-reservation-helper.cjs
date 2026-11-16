@@ -4,6 +4,7 @@
 // 🔴 FAILURE MODE: the helper splitting an order that fits one batch, using more (or fewer) windows than
 // ceil(items/batch), filling an earlier window before the nearest one, or refusing when the free space
 // adds up. P3 will make the picker trust this function; today nothing does, which is when to prove it.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const c = compile(REPO, ['lib/slot-availability.ts'], 'brh'); const E = c.req('lib/slot-availability.js')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }

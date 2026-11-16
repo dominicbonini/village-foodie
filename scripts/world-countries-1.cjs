@@ -17,6 +17,7 @@
 //   6  THE WHATSAPP GUARD — each language's safety questions caught, plain questions answered;
 //   7  RIGHT TO LEFT — dir="rtl" only on Arabic pages; never on a Latin one.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const os = require('os')
 const path = require('path')

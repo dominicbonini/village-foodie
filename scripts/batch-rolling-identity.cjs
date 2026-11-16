@@ -17,6 +17,7 @@
 // scripts/_batch-rolling-golden-generate.cjs. NOT git HEAD fc0fddc, which lacks the collection-times work.
 // If the golden file is missing or unreadable this harness FAILS; it never skips.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const { mins, snapshot, digest, decodeCase, gridKey, GOLDEN_FIT_KEYS } = require('./_batch-rolling-snapshot.cjs')

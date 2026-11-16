@@ -12,6 +12,7 @@
 //    being read; or mailbox HTML rendered anywhere but the sandboxed iframe.
 //
 // HOW: the REAL libs compiled from lib/, plus a source census over the page and the list.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const os = require('os')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 let fails = 0

@@ -18,6 +18,7 @@
 //   9  THE NOT RUN SQL — block A widens the address-format CHECK; block B inserts FR switched off with the values sourced;
 //  10  THE TERMS — a France section in the same shape as the others; TERMS_VERSION with the documents' date.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')

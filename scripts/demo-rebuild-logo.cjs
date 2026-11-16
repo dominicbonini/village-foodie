@@ -17,6 +17,7 @@
 // HOW: the REAL `copyDemoLogo`, `demoLogoUpToDate` and `classifyDemoLogoSource` compiled from lib/, against
 // an in-memory Supabase whose `storage.upload` COUNTS — so "did no copying work" is observed, not asserted.
 // Nothing here touches the database, the bucket or the network.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const os = require('os')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 let fails = 0

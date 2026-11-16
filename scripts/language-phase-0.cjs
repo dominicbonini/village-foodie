@@ -18,6 +18,7 @@
 // (Reports, the CSVs, the dashboard, KDS, Manage and every email stay pinned by money-sweep-parity,
 // phase3-screens, order-charges and the rest of the sweep, which this phase must leave passing unchanged.)
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const zlib = require('zlib')
 // ── RE-PINNED FOR LANGUAGE PHASE 2 (docs/language-phase-2-report.md) ─────────────────────────────────────────
 // This harness proves that separating keys from labels was invisible. Phase 2 then changes words on purpose (en-US

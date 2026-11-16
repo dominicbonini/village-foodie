@@ -17,6 +17,7 @@
 //   7  EFTPOS — the card processor's dual-network notice on an AUD checkout only.
 //   8  MONEY AND PHONES — planMoneyFormatOf (GB / US / IE unchanged; AU / NZ "$", their international form A$ / NZ$); the
 //      AU / NZ example numbers are plausible.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')

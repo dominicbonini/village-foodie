@@ -9,6 +9,7 @@
 // against seven deliberately broken variants, each of which MUST report FAILURE first.
 // ⚠️ Self-compiling with the repo's own tsc — this repo has no test framework.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const { execFileSync } = require('child_process')
 const fs = require('fs')
 const os = require('os')

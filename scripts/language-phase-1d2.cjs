@@ -50,6 +50,7 @@
 //       its cause in scripts/fixtures/language-phase-1d2-us-changed.txt; THE US-WORDS CHECK (Phase 2's and Part 1's lists,
 //       extended) on every in-scope A(US) view; LEGAL keys have NO en-US override.
 // 🔴 EVERY VIEW RUNS ON BOTH CODES (826471a and this tree).
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const zlib = require('zlib'); const os = require('os')
 const { execFileSync, spawn } = require('child_process')
 const REPO = path.resolve(__dirname, '..')

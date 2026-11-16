@@ -10,6 +10,7 @@
 // which is enough to prove the window opens. Nothing is logged in, nothing is stored, no truck is touched.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const os = require('os')
 const path = require('path')

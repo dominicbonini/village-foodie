@@ -70,7 +70,59 @@ function guard(label) {
   return api
 }
 
-module.exports = { guard, canStart, freeGB, MIN_START_GB, MIN_RUN_GB }
+// ── THE SWEEP'S TEMP REPORT (tmp-cleanup-1, 16 November 2026) ─────────────────────────────────────────────────────────
+// The guard above sees only FREE SPACE, so it noticed the harnesses' temp leak (90 GB) only once the disk was nearly
+// full. The sweep now snapshots $TMPDIR before it starts and reports after it ends: what the harnesses used under
+// hatchgrab-harness/<run-id> (each one's own folder, removed when it ended), anything a harness left behind there,
+// and anything new that appeared in $TMPDIR OUTSIDE that parent (a script or library that ignored os.tmpdir()).
+function dirBytes(p) {
+  let total = 0; const stack = [p]
+  while (stack.length) {
+    const cur = stack.pop(); let st
+    try { st = fs.lstatSync(cur) } catch { continue }
+    if (st.isDirectory()) { let es = []; try { es = fs.readdirSync(cur) } catch {} for (const e of es) stack.push(path.join(cur, e)) }
+    else total += st.blocks ? st.blocks * 512 : st.size
+  }
+  return total
+}
+const human = b => b >= 2 ** 30 ? `${(b / 2 ** 30).toFixed(2)} GB` : b >= 2 ** 20 ? `${(b / 2 ** 20).toFixed(1)} MB` : `${Math.round(b / 1024)} KB`
+
+/** Top-level names in the real $TMPDIR, plus its size — taken before the sweep. */
+function tempSnapshot() {
+  const { realTmp } = require('./_harness-tmp-paths.cjs')
+  const T = realTmp()
+  let names = []; try { names = fs.readdirSync(T) } catch {}
+  return { T, names: new Set(names), bytes: dirBytes(T), at: Date.now() }
+}
+
+/** Print the sweep's temp usage and warn about leftovers. `leftovers` = [{ name, bytes }] the runner already removed. */
+function tempReport(before, runDir, leftovers = []) {
+  const { ROOT } = require('./_harness-tmp-paths.cjs')
+  const lines = []
+  let used = []
+  try {
+    used = fs.readFileSync(path.join(runDir, '.usage'), 'utf8').trim().split('\n').filter(Boolean)
+      .map(l => { const [name, pid, b] = l.split('\t'); return { name, pid, bytes: Number(b) || 0 } })
+  } catch {}
+  const total = used.reduce((s, u) => s + u.bytes, 0)
+  const top = [...used].sort((a, b) => b.bytes - a.bytes).slice(0, 5).filter(u => u.bytes > 0)
+  lines.push(`  harness temp used this sweep: ${human(total)} across ${used.length} process(es) (each removed its own folder when it ended)`)
+  if (top.length) lines.push(`    largest: ${top.map(u => `${u.name} ${human(u.bytes)}`).join(' · ')}`)
+  const after = tempSnapshot()
+  const fresh = [...after.names].filter(n => !before.names.has(n) && path.join(after.T, n) !== ROOT)
+  const freshSized = fresh.map(n => ({ name: n, bytes: dirBytes(path.join(after.T, n)) })).sort((a, b) => b.bytes - a.bytes)
+  const freshBytes = freshSized.reduce((s, f) => s + f.bytes, 0)
+  lines.push(`  $TMPDIR: ${human(before.bytes)} before → ${human(after.bytes)} after (${after.bytes >= before.bytes ? '+' : '−'}${human(Math.abs(after.bytes - before.bytes))})`)
+  const warn = leftovers.length > 0 || freshBytes > 5 * 2 ** 20
+  if (leftovers.length) lines.push(`  ⚠️ LEFT BEHIND under ${path.basename(ROOT)}/ (removed now): ${leftovers.map(l => `${l.name} ${human(l.bytes)}`).join(' · ')}`)
+  if (freshSized.length) lines.push(`  ${freshBytes > 5 * 2 ** 20 ? '⚠️' : '·'} new in $TMPDIR outside ${path.basename(ROOT)}/: ${freshSized.length} item(s), ${human(freshBytes)}` +
+    (freshSized.length ? ` — ${freshSized.slice(0, 6).map(f => `${f.name} ${human(f.bytes)}`).join(' · ')}` : ''))
+  if (!warn) lines.push('  ✓ nothing left behind')
+  console.log(lines.join('\n'))
+  return { total, leftovers, freshBytes, before: before.bytes, after: after.bytes, warn }
+}
+
+module.exports = { guard, canStart, freeGB, MIN_START_GB, MIN_RUN_GB, tempSnapshot, tempReport }
 
 // ── CLI, for shell scripts ────────────────────────────────────────────────────────────────────────────────────────────
 if (require.main === module) {

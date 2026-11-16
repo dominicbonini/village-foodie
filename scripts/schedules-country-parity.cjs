@@ -14,6 +14,7 @@
 // BEFORE was captured on the unchanged code (scripts/fixtures/schedules-country-before.json). AFTER, GB must
 // match it except the differences this harness names, one by one.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'schedules-country' })
 const { REPO } = kit

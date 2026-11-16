@@ -43,6 +43,7 @@
 // ROUTER · the table; no loops; country pages 200 and never redirect; a switched-off country's pages 302 to GB; every
 //       path the router must not touch answers as it did at eb7ed44.
 // 🔴 EVERY VIEW RUNS ON BOTH CODES (eb7ed44 and this tree).
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const zlib = require('zlib'); const os = require('os')
 const { execFileSync, spawn } = require('child_process')
 const REPO = path.resolve(__dirname, '..')

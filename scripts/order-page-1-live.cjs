@@ -13,6 +13,7 @@
 //    proof is scripts/order-page-2-live.cjs; this script's other checks (formules, full width, sticky tabs) still hold.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const { chromium } = require(path.join(REPO, 'node_modules/playwright'))

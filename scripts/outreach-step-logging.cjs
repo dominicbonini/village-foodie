@@ -21,6 +21,7 @@
 //    a follow-up scheduled from the step BEFORE the one that was sent (+3 instead of +7);
 //    a banner that calls a future date overdue, which sends somebody to do work that is not due.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 

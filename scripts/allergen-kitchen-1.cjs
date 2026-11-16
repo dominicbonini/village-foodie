@@ -12,6 +12,7 @@
 //      line NEW in EVERY locale (no locale resolves to its old sentence).
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path'); const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')

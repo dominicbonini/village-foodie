@@ -5,6 +5,7 @@
 // node pixels.cjs <outdir> <beforeBase> <afterBase> — full-page screenshots of every listed page at 390 and 1280 in both builds, compared
 // pixel for pixel (sharp → raw RGBA). Ports: base+0 HatchGrab host, +100 Village Foodie host, +200 the native app's user agent.
 require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('../_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const puppeteer = require('puppeteer')
 const sharp = require('sharp')
 const fs = require('fs'), path = require('path')

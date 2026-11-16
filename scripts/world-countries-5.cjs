@@ -3,6 +3,7 @@
 // as data (generator, migrations), the region blocks (lib/region-blocks.ts through lib/trade-area.ts), the region-tabbed
 // country selector (components/landing/CountryMenu.tsx + lib/country-regions.ts) and its messages in every language.
 // No database: the migrations are read as files; the switch-on migration (20261095) must stay unrun until Dominic deploys.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'world-countries-5' })

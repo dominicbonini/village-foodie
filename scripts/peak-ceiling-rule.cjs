@@ -8,6 +8,7 @@
 // span (9) while never more than 5 were in the kitchen. kitchenLoadOver, reserveBatches' per-window total
 // and the window's own `conc` now read peakLoadOver — the ONE implementation windowScopedPeak and
 // categoryLoadOver also use — so the dot, the label, admission and the breach detector name one number.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), os = require('os'), path = require('path')
 const { load, REPO, fmt, mins, NEG, grid, rng, Sim } = require('./_batch-reservation-sim.cjs')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }

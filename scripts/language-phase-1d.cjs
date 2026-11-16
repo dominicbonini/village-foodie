@@ -40,6 +40,7 @@
 //       THE US-WORDS CHECK (Phase 2's list, extended) on every in-scope A(US) view.
 // 🔴 EVERY VIEW RUNS ON BOTH CODES (756ca09 and this tree): a new export is guarded with typeof, a state an effect now
 //    holds as a CODE is given through `__after` (applied only on the new code), and a missing state name is skipped.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const zlib = require('zlib'); const os = require('os')
 const { execFileSync, spawn } = require('child_process')
 const REPO = path.resolve(__dirname, '..')

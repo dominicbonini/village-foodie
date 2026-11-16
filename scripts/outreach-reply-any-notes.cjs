@@ -11,6 +11,7 @@
 //    an Outlook send recorded twice, which puts two rungs on the ladder for one email;
 //    and a stage change that can be edited or deleted, which turns a history into a story.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

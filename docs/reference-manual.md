@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.28
+HatchGrab Engineering Reference Manual · V16.29
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.28**
+**Version 16.29**
 
 November 2026
 
@@ -81,9 +81,22 @@ emulator could not create its data partition and the script waited forever for a
   `~/.cache/puppeteer` Chrome builds were cleared with Dominic's approval on 16 November; both regenerate, so clearing them
   again is fine when space is low. **Kept for checks:** the `Android_Phone` AVD (Android 16) and, on iOS 27, the iPhone 18 Pro
   and iPad Pro 11-inch (M5) simulators, with both iOS runtimes (26.5, 27.0).
-- ⚠️ **The biggest leak is `$TMPDIR`, not the repo** (V16.28, measured): the harnesses' temp folders (`dot-*`, `cmp-*`, `slot-*`,
-  `ran-*`, `wp-var-*`, `et-render-*` under `/private/var/folders/…/T`) are never removed, ~30–45 GB per full sweep (Open items 18).
-  The guard sees only free space, so it notices this late. Clearing those folders while no harness runs is safe.
+- **Harness temp (V16.29, tmp-cleanup-1).** `$TMPDIR` had reached 90 GB: harnesses never removed the folders they made with
+  `mkdtemp` (build copies per broken variant, render bundles, browser profiles), ~30–45 GB per full sweep. Now:
+  - **`scripts/_harness-tmp.cjs`** is the first statement after the disk guard in every swept harness that makes temp or
+    starts a browser (200) and in 77 hand-run screenshot / render scripts. It points `os.tmpdir()` at
+    `$TMPDIR/hatchgrab-harness/<run-id>/<pid>/`, so every `mkdtemp`, Puppeteer / Playwright profile and library temp lands
+    there. **It removes that folder on exit**: pass, fail, crash, SIGINT / SIGTERM / SIGHUP. Child node processes share the
+    folder. `HG_KEEP_TMP=1` keeps it for debugging. **A new script that makes temp or starts a browser requires it too.**
+  - **The sweep** preloads it into every harness (`node --require`), removes harness runs older than 24 hours at the start,
+    removes and reports anything a killed harness left behind, and **ends with a TEMP report** (`_disk-guard.cjs`
+    `tempReport`): temp used, anything left behind, `$TMPDIR` before → after, and anything new outside
+    `hatchgrab-harness/`.
+  - **To clear old leftovers:** `node scripts/harness-tmp-clean.cjs --legacy` (dry run) then `--apply`. It matches only the
+    prefixes the repo's scripts use (read from the scripts), the test browsers' profiles and the emulator / XCUITest scratch,
+    and skips anything a running process has open.
+  - **Not covered:** the scrapers (`.js`), `.mjs` tools, and `scripts/screenshots/{anz,ie,us}-screens.cjs`, whose output folder
+    defaults to temp (pass an output folder).
 
 # Open items (V16.28, 16 November 2026) — THE ONLY CURRENT LIST
 
@@ -147,14 +160,8 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 16. **Wording decisions:** the terms' fee wording ("online card orders") against the site's "online orders" (pricing-copy-1 §3);
     whether `comparison.costs.cardFee` follows `offersOnlineCardPayments` (pricing-copy-4).
 17. **local-notifications 8.3** adds the `SCHEDULE_EXACT_ALARM` permission; held at 8.2.1 until Dominic decides (android-1-1).
-18. 🔴 **The harnesses leak their temp folders: a full sweep leaves ~30–45 GB in `$TMPDIR`** (manual-update-1 §2.3, measured
-    16 Nov: 90 GB, 14,465 folders, under `/private/var/folders/…/T`). Of the 109 scripts that `mkdtempSync`, 54 never remove
-    what they make; the big ones are each variant's copy of the tree (`dot-*`: `dot-overlap-labels.cjs`; `cmp-*`:
-    `compare-no-system.cjs` and the compare harnesses; `slot-*`, `ran-*`; `wp-var-*`: `weekly-post.cjs`; `et-render-*`:
-    `event-types-render.cjs`). Fix: one shared helper that removes its folder on exit (code change, not done yet). Until then,
-    clearing those folders when no harness is running is safe (Disk space rule).
-
-**Backlog (decided, not built — the tax backlog section near the end has the detail):**
+18. ~~🔴 **The harnesses leak their temp folders** (~30–45 GB per sweep)~~ ✅ **Fixed V16.29 (tmp-cleanup-1):** temp goes under
+    `$TMPDIR/hatchgrab-harness/` and is removed on exit; 90 GB of old folders cleared (Disk space rule).
 19. **VAT / tax-number capture** in signup and Manage › Settings (VIES for the EU). Needed before billing is switched on in any of
     the 41 "VAT number required" countries.
 20. **Threshold logging:** each country's registration threshold and our running turnover there.
@@ -227,6 +234,17 @@ live, but customer links only reach the phone's browser on Android after the dep
 8. Watch **Android vitals** for the first days; with the mapping, stack traces are readable.
 
 # Changelog
+
+## V16.29 — 16 November 2026 — **HARNESS TEMP IS REMOVED ON EXIT; 90 GB CLEARED; PLUGIN BUILD OUTPUT UNTRACKED**
+
+tmp-cleanup-1 (`docs/tmp-cleanup-1-report.md`). Tooling only; no app or website code changed.
+
+- **Cleared:** over 14,000 legacy harness temp folders and files in `$TMPDIR` (90.3 GB → 0.04 GB), by
+  `scripts/harness-tmp-clean.cjs --legacy --apply` (nothing a process had open; macOS-protected WebKit folders skipped).
+- **Fixed at the cause:** `scripts/_harness-tmp.cjs` (one parent folder, removed on exit), in 200 swept harnesses and 77
+  hand-run scripts; the sweep preloads it, prunes runs older than 24 h, and prints a TEMP report (Disk space rule).
+- **Untracked:** `plugins/hatchgrab-net-printer/android/build/` (1,241 generated files committed in `5e163940`; no secrets in
+  them); `.gitignore` covers `plugins/*/android/{build,.gradle,.cxx}`, `plugins/*/ios/build`, `plugins/*/.build`.
 
 ## V16.28 — 16 November 2026 — **THE MANUAL CATCHES UP: ONE OPEN-ITEMS LIST, THE 1.1 RELEASE STEPS**
 

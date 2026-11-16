@@ -14,6 +14,7 @@
 // HOW: the REAL seeder and the REAL validator compiled from lib/, run against an in-memory Supabase fake.
 // Nothing here touches the database. The "unchanged from today" check compiles the seeder from a clean
 // worktree of the last commit before this work.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const os = require('os')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 let fails = 0

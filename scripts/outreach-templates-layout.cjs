@@ -10,6 +10,7 @@
 //    template — instead of the resolver's own vocabulary;
 //    and anything but the editor's Save writing `outreach_templates`: the wording is Dominic's.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

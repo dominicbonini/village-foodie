@@ -14,6 +14,7 @@
 // executable text. (2) MODEL: the interval selection and the generator are run for real (compiled from
 // the working tree) against FIXTURE vans.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const src = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')

@@ -6,6 +6,7 @@
 // that THROWS and fails the order it was decorating; the column leaking into a select another surface
 // depends on (the day the migration has not landed, that surface 500s); or a reader counting a status
 // the write path does not.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), os = require('os'), path = require('path')
 const { execFileSync } = require('child_process')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')

@@ -14,6 +14,7 @@
 //   4 · the CSS: three columns, two on a phone, the box scrolls inside itself and never past the window;
 //   5 · nothing else: hreflang and the sitemap are unchanged (the same entries as with the old picker).
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')

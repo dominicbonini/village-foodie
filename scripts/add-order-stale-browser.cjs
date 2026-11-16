@@ -21,6 +21,7 @@
 // (5) a settings change (the event's operator collection interval). Each asserts the list moved in place —
 // same <select> element identity — with no reload.
 require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const puppeteer = require('puppeteer'); const crypto = require('crypto')
 const fs = require('fs'); const path = require('path')
 const TOKEN = process.env.HG_DASHBOARD_TOKEN || ''

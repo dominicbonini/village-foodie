@@ -16,6 +16,7 @@
 //   revert (static language imports) is proved by every other view being identical, GB and US.
 //   The two US views that hide Village Foodie's prompts are proved by CONTROLS: the same view with `discovery` forced
 //   on equals BEFORE's view exactly (and equals the normal view on the checkpoint, which has no such prop).
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const zlib = require('zlib'); const os = require('os')
 const { execFileSync, spawn } = require('child_process')
 const REPO = path.resolve(__dirname, '..')

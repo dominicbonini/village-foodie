@@ -29,6 +29,7 @@
 //      ⚠️ RE-PINNED (seo-fixes, 20 October 2026): two more listed changes — the landing JSON-LD (one @graph block:
 //      Organization, WebSite, SoftwareApplication with its own url + offers; seo-fixes M5/S9) and the /compare country
 //      pages' title / description and their og / twitter copies (seo-fixes N1). Everything else still equals BEFORE.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const zlib = require('zlib')

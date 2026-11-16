@@ -14,6 +14,7 @@
 // counts /api/slots reads and answers with whatever board the scenario says the server holds. Handlers
 // are called through the props React attached to the <select> (`__reactProps$…`), i.e. the exact
 // functions React would call on a pointerdown.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const { installMocks } = require('./_printing-mocks.cjs')

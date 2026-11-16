@@ -23,6 +23,7 @@
 // and run on identical FIXTURE inputs; the JSON outputs are compared byte for byte. Not "tsc-clean",
 // not "the diff looked small": the same inputs through both binaries.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path'); const fs = require('fs')
 const { compile, headWorktree } = require('./_slot-interval-compile.cjs')
 const REPO = path.resolve(__dirname, '..')

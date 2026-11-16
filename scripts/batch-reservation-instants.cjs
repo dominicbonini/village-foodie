@@ -4,6 +4,7 @@
 // 🔴 FAILURE MODE: after a NON-override admission, some minute carries more of a category than its batch,
 // or more in total than the kitchen ceiling — on fine grids where windows overlap by minutes, with
 // several categories, instant items and the pre-open run-up.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), os = require('os'), path = require('path')
 const { load, REPO, fmt, grid, rng, Sim } = require('./_batch-reservation-sim.cjs')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }

@@ -20,6 +20,7 @@
 // linkedom, react-test-renderer or testing-library, and this harness adds no dependency. renderToString
 // executes the component body and every useMemo/useCallback in it, which is exactly where this class of
 // bug lives. It does NOT run useEffect, so effect-only code is not covered here (see §"not covered").
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const { installMocks } = require('./_printing-mocks.cjs')

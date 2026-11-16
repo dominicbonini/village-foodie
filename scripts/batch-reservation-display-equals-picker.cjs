@@ -3,6 +3,7 @@
 //   node scripts/batch-reservation-display-equals-picker.cjs
 // 🔴 FAILURE MODE: the projection seating an admitted order's items in windows other than the ones the
 // admission (fitOrderBackward.reserved / why.windows) chose — the dot and the popup disagreeing.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), os = require('os'), path = require('path')
 const { load, REPO, fmt, mins, NEG, grid, rng, Sim } = require('./_batch-reservation-sim.cjs')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }

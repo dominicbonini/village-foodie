@@ -26,6 +26,7 @@
 // which section 3 proves is exactly today's behaviour. The end-to-end is the numbered localhost list
 // in docs/event-pricing-report.md, and it is blocked on the migration, not on this harness.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { compile } = require('./_slot-interval-compile.cjs')

@@ -15,6 +15,7 @@
 // the same select/eq/in/neq/not/order/limit/insert/update/delete shapes the seeder and the admission
 // path call). Nothing here touches the database. A clean HEAD worktree's seeder proves "5 minutes is
 // unchanged from today".
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const os = require('os')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 let fails = 0

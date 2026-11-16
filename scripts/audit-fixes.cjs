@@ -16,6 +16,7 @@
 //   3. tickets with accents, curly quotes, dashes or emoji print plain letters, not "?", and a line holding an
 //      emoji keeps its price in the right-hand column.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'audit-fixes' })
 const { REPO } = kit

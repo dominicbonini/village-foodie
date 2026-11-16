@@ -13,6 +13,7 @@
 // The pixels (before / after at 320, 360, 375, 390; every other country's screens identical): scripts/jp-nav-1-shots.cjs, by hand.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'jp-nav-1' })

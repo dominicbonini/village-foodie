@@ -9,6 +9,7 @@
 //   4. the renderer links ONLY a site-relative path ("/terms"), and drops or reorders no character;
 //   5. lib/legal.ts's dates read the documents' own date (the old privacy mismatch — "5 September" in the page,
 //      "6 August" in the constant — is gone).
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'us-legal-draft' })

@@ -13,6 +13,7 @@
 // 8 where its stretch [12:00, 12:15) held 4, the tone went red, and /api/slots' `available` went false —
 // which is what made getAsapSlot skip 12:15 so ASAP disagreed with the picker.
 // The record is now BUILT for [T − max(prep, grid), T). See docs/cover-dot-own-window-report.md.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), os = require('os'), path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 let fails = 0

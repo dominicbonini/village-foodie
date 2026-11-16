@@ -13,6 +13,7 @@
 // 3 · MARKETING_COPY_UPDATED moved to 2026-11-04 (35.aj-8); it is read by the sitemap only.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')

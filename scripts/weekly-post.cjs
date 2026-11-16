@@ -18,6 +18,7 @@
 // readability checks. No real truck's design is involved, and none is needed: these are checks about
 // layout and wording.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path')
 const fs = require('fs')
 const { compile } = require('./_slot-interval-compile.cjs')

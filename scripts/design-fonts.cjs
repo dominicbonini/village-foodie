@@ -24,6 +24,7 @@
 // 🔴 EVERY FONT USED HERE IS EITHER COMMITTED IN THIS REPOSITORY OR SYNTHESISED IN THIS FILE. No
 // network, and no real truck's uploaded font.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path')
 const fs = require('fs')
 const { compile } = require('./_slot-interval-compile.cjs')

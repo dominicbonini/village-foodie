@@ -15,6 +15,7 @@
 //   5. `{{plans_pdf}}` EMAILED AS TEXT, or the PDF not attached when a template asks for it.
 // Every check is one function, run on the real code AND on a broken variant that must fail it.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const { execFileSync } = require('child_process')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const esbuild = require(path.join(REPO, 'node_modules/esbuild'))

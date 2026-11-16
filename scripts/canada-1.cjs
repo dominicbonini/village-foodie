@@ -17,6 +17,7 @@
 //   8  THE RULE — no country-code or province-code check in the new code; the province data lives on the address format;
 //   9  THE SQL — block A widens the CHECK, block B inserts CA switched off with the service fee off (and says why).
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')

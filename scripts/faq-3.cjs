@@ -17,6 +17,7 @@
 //   HG_KIT_CACHE_SUFFIX=faq3head node scripts/faq-3.cjs capture <this repo>/scripts/fixtures/faq-3-identity.json
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS script, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')

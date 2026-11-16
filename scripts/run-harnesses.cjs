@@ -109,11 +109,41 @@ if (missing.length || refused.length) {
 console.log(`  ✓ all ${listed.length} listed files pass the screen (no createClient, no service-role key, no googleapis, no stripe, no non-local fetch)`)
 if (DRY) { console.log('\n--dry-run: nothing executed.'); process.exit(0) }
 
+// ── TEMP (tmp-cleanup-1, 16 November 2026) ──────────────────────────────────────────────────────────────────────────
+// Harnesses used to leave every temp folder they made in $TMPDIR (90 GB by 16 Nov, ~30–45 GB per sweep). Now:
+//   • start: remove harness runs older than 24 h, snapshot $TMPDIR;
+//   • each harness runs with `--require _harness-tmp.cjs`: its os.tmpdir() is hatchgrab-harness/<run-id>/<pid>/, removed
+//     when it ends (exit, crash, SIGINT/SIGTERM/SIGHUP). A folder still there afterwards (SIGKILL) is removed here and
+//     reported as LEFT BEHIND;
+//   • end: the temp report (_disk-guard.cjs tempReport): what was used, what was left behind, $TMPDIR before → after.
+const { ROOT: TMP_ROOT } = require('./_harness-tmp-paths.cjs')
+const { pruneOldRuns, sizeOf: tmpSize, fmt: tmpFmt } = require('./harness-tmp-clean.cjs')
+const { tempSnapshot, tempReport } = require('./_disk-guard.cjs')
+const pruned = pruneOldRuns()
+if (pruned.removed) console.log(`\n  temp: removed ${pruned.removed} harness run(s) older than 24 h (${tmpFmt(pruned.freed)})`)
+const RUN_ID = `sweep-${Date.now().toString(36)}`
+const RUN_DIR = path.join(TMP_ROOT, RUN_ID)
+fs.mkdirSync(RUN_DIR, { recursive: true })
+const tmpBefore = tempSnapshot()
+const HARNESS_TMP = path.join(__dirname, '_harness-tmp.cjs')
+const leftovers = []
+function collectLeftovers(name) {
+  let es = []; try { es = fs.readdirSync(RUN_DIR).filter(e => e !== '.usage') } catch {}
+  for (const e of es) {
+    const p = path.join(RUN_DIR, e)
+    leftovers.push({ name, bytes: tmpSize(p) })
+    try { fs.rmSync(p, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }) } catch {}
+  }
+}
+
 console.log('\n── RUNNING ──────────────────────────────────────────────────────────────────────────────')
 const results = []
 for (const name of listed) {
   const t0 = Date.now()
-  const r = spawnSync(process.execPath, [path.join('scripts', name)], { cwd: REPO, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
+  const r = spawnSync(process.execPath, ['--require', HARNESS_TMP, path.join('scripts', name)], {
+    cwd: REPO, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, env: { ...process.env, HG_HARNESS_RUN: RUN_ID },
+  })
+  collectLeftovers(name)
   // 🔴 THE TRUE EXIT CODE. A signal death (SIGKILL on an OOM, say) has a null status and MUST NOT be
   // read as 0 — that is how a failing sweep reports success. Signals are reported as 128+n, as a shell does.
   const code = r.status === null ? (r.signal ? 128 : 1) : r.status
@@ -134,5 +164,8 @@ if (failed.length) {
     console.log(f.out.split('\n').slice(-25).join('\n'))
   }
 }
+console.log('\n── TEMP ─────────────────────────────────────────────────────────────────────────────────')
+tempReport(tmpBefore, RUN_DIR, leftovers)
+try { fs.rmSync(RUN_DIR, { recursive: true, force: true }) } catch {}
 console.log(failed.length ? `\n🔴 ${failed.length} HARNESS(ES) FAILED` : '\n✅ every listed harness passed')
 process.exit(failed.length ? 1 : 0)

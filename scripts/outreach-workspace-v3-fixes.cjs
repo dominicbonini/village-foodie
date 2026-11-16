@@ -18,6 +18,7 @@
 // (`gridTemplateFor`) and are tested as one; the structure around them is class names and nesting,
 // which is what the census reads.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

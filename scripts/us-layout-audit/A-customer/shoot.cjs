@@ -4,6 +4,7 @@
 // and save GB/US crop pairs into docs/us-layout-audit/A-customer/.
 //   node scripts/us-layout-audit/A-customer/shoot.cjs <workDir>   → <workDir>/measure.json
 require('../../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('../../_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { REPO } = require('./fixtures.cjs')
 const { appCss, fontClasses, serve } = require(path.join(REPO, 'scripts/screenshots/common.cjs'))

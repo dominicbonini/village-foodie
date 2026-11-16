@@ -12,6 +12,7 @@
 // work in the tree or later commits never move what this compares. Run: node scripts/pricing-copy-1.cjs
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { execFileSync } = require('child_process')

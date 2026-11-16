@@ -11,6 +11,7 @@
 // and never unticked; the tickbox backed by a second stored flag that can drift from the column; the
 // example lines hard-coded instead of generated; or the box rendering below Kitchen capacity.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const src = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')

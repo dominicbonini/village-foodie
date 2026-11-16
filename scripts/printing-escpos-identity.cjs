@@ -3,6 +3,7 @@
 //   node scripts/printing-escpos-identity.cjs
 // 🔴 FAILURE MODE: any byte of any ticket differing from HEAD — the wired build must not change what a
 // ticket looks like on paper. Every review of the ticket since 6 August was made against these bytes.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const os = require('os')
 const { compile, headWorktree, REPO } = require('./_slot-interval-compile.cjs')
 const head = headWorktree('escpos')

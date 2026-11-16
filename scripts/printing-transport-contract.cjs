@@ -3,6 +3,7 @@
 //   node scripts/printing-transport-contract.cjs
 // 🔴 FAILURE MODE: a transport that says ok:true from sendBytes without sending, or reports `connected`
 // without a live success — the Phase-A stub's lie, which §42 calls the dangerous one.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const { compile, REPO } = require('./_slot-interval-compile.cjs'); const { installMocks } = require('./_printing-mocks.cjs')
 const c = compile(REPO, ['lib/printing/transport.ts', 'lib/printing/netTransport.ts', 'lib/printing/bleTransport.ts', 'lib/printing/netAddress.ts', 'lib/printing/printerText.ts'], 'contract')
 const g = installMocks(c.out, { native: true })

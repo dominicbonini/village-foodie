@@ -7,6 +7,7 @@
 //   node scripts/us-layout-audit/B-ops/render.cjs [stateFilter]
 //   → docs/us-layout-audit/B-ops/<state>-<WxH>-<gb|us>.png, scripts/us-layout-audit/B-ops/measures.json
 require('../../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('../../_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { REPO, appCss, fontClasses, serve } = require('../../screenshots/common.cjs')
 const kit = require('../../_render-kit.cjs')({ cacheTag: 'usaudit-B-ops' })

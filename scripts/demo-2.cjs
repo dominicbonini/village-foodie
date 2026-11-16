@@ -15,6 +15,7 @@
 //   7 · "START FREE" prefills the email and claims the demo; 8 · it falls back to Save my menu when signup is off.
 // Only the AI menu reader, the logo copier and (for §1) the provisioner are stubbed. Nothing touches the database,
 // storage or the network: `fetch` is a recorder.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'demo-2' })
 const { makeFakePg } = require('./_fake-pg.cjs')

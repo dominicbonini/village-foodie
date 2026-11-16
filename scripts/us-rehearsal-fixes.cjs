@@ -8,6 +8,7 @@
 //   3  the charge summary — one line plainly, two or more folded and named by their parts
 //   4  the cancel page — the card-refund sentence only when a card paid or is held
 //   5  the address line — "Pier A Park, Hoboken, NJ 07030" when the event has a state; every other line as before
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const { execFileSync } = require('child_process')
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'us-rehearsal-fixes' })

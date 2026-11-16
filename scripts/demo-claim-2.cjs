@@ -24,6 +24,7 @@
 //  12 · a branded demo's logo is copied to the real truck (only into one with none); a failed copy costs the logo only.
 // Nothing touches the database, storage or the network: `fetch` is a recorder.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'demo-claim-2' })
 const { makeFakePg } = require('./_fake-pg.cjs')

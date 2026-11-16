@@ -10,6 +10,7 @@
 // the database (the in-memory fake, which RECORDS every write — the truck insert is read back from there) and
 // Google (a function handed in, or a stand-in global for the routes). The country rows are PARSED FROM THE
 // SEED MIGRATIONS (scripts/_country-settings-gb.cjs), never typed here.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path'); const fs = require('fs')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'signup-country' })
 const { REPO } = kit

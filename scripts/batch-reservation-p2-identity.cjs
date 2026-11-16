@@ -8,6 +8,7 @@
 // 8 + 2 across two windows; their per-order reservations say 5 + 5 in the nearest window (R4). The
 // engine must therefore use a reservation only when it is the SOLE one at its slot and equals the
 // stored total (cachedReservationWindows) — the broken variant below drops that rule and must fail.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'), os = require('os'), path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }

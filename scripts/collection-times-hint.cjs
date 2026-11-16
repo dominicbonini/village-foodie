@@ -4,6 +4,7 @@
 // 🔴 FAILURE MODE: the hint missing when the effective interval is NOT a whole multiple of a cooking
 // category's prep (the operator then meets "Full" dots with no explanation), or SHOWN when every cooking
 // category lines up (Gusto: prep 5, every 5 — a line that would be false).
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }

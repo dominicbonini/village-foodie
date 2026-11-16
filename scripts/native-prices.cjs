@@ -12,6 +12,7 @@
 //      same format; a truck's own money (menu, orders) is untouched;
 //   6  THE RULE IS DATA — no `planLocale` left; the international form is used only where currencies sit side by side.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'native-prices' })

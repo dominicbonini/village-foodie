@@ -15,6 +15,7 @@
 // So: the list is read with its HEAD column set, the intervals come from a SEPARATE probed read, and a
 // failure degrades to 5/null rather than to nothing. This harness holds that open.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const src = (p) => fs.readFileSync(path.join(REPO, p), 'utf8')

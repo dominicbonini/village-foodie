@@ -17,6 +17,7 @@
 // ⚠️ THE SOURCE CHECKS BELOW ARE THE CHEAP HALF AND THEY ARE NOT THE PROOF. The proof is
 // scripts/outreach-bold-persists-render.cjs, which drives the real window in two engines. These exist
 // so the invariant is re-checked in every sweep, on a machine with no browser.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')

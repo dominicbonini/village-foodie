@@ -13,6 +13,7 @@
 // @17:00 and 1 @17:15 stored, the list read "17:05 🟢 – Order won't fit" — a green dot with no count on a
 // time every pizza order is refused at, because the dot read only the load booked at 17:05's own window
 // and the 16:45–17:00 batch merely overlaps it. Every line below is FIXTURE data through the real engine.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const { installMocks } = require('./_printing-mocks.cjs')

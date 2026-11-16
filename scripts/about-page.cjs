@@ -8,6 +8,7 @@
 // pages only), the sitemap entry and its lastmod, the /llms.txt line and link — and the country menu, which is in the FOOTER
 // only (Dominic, 22 October 2026: it left the nav). Negative controls prove each detector can fail.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const os = require('os')
 const path = require('path')

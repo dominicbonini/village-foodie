@@ -23,6 +23,7 @@
 // the same fixture categories through a stub Supabase; the resulting catConfigs are compared byte for
 // byte, and then run through the REAL capacity engine and compared again. Same inputs, two binaries.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path')
 const { execFileSync } = require('child_process')
 const fs = require('fs')

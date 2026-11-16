@@ -11,6 +11,7 @@
 // Every guard, the contact log and the refusal recording are the code that runs in production.
 // Each case passes on the real code AND FAILS on a broken variant with one plausible mistake patched in.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path'); const fs = require('fs')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'outreach-instant-send' })
 const { REPO } = kit

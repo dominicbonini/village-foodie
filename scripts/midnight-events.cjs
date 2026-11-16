@@ -16,6 +16,7 @@
 // NORMAL views must be BYTE-IDENTICAL to BEFORE (the event never crosses midnight, so nothing may move). MIDNIGHT views
 // are not compared with BEFORE (BEFORE refused such an event); each area asserts what the rule requires instead.
 // The capture modules are this tree's, copied into BEFORE's worktree — scripts only, never product code.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const zlib = require('zlib'); const os = require('os')
 const { execFileSync, spawn } = require('child_process')
 const REPO = path.resolve(__dirname, '..')

@@ -15,6 +15,7 @@
 //      their own 1…20; an off-list stored value (16–19) is kept as an extra option, never snapped.
 // ⚠️ Compiles the TypeScript with the repo's own tsc (no test framework here), the slot-interval-generator.cjs way.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const { execFileSync } = require('child_process')
 const fs = require('fs')
 const os = require('os')

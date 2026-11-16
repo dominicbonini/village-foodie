@@ -22,6 +22,7 @@
 //   4. the feed never serves such a row on Village Foodie (the HatchGrab host serves no scraped rows at all, unchanged) even when it was STORED public (the rows written before the
 //      fix) — and its output is otherwise byte-identical to the same feed with the guard removed;
 //   5. the public truck page: the old feed showed "Closed" as an event card; the new one does not.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'private-discovery-rows' })
 const { REPO } = kit

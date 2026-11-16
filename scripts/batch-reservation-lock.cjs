@@ -6,6 +6,7 @@
 // without the other, and the grill overbooked — which is exactly what happens if the reservation is
 // written AFTER the per-event lock is released. Modelled with a real async mutex over the real engine:
 // each "request" acquires the lock, reads the board, admits, [writes], releases. FIXTURE figures.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const { load, REPO, fmt, mins, NEG } = require('./_batch-reservation-sim.cjs')
 let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} ${l}`); if (!ok) fails++ }
 const X = load(REPO, 'lock')

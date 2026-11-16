@@ -401,7 +401,10 @@
         "_lp-gsc-index-2.cjs",
         "_lp-email-sender-1.cjs",
         "_lp-demo-claim-2.cjs",
-        "_disk-guard.cjs"
+        "_disk-guard.cjs",
+        "_harness-tmp.cjs",
+        "_harness-tmp-paths.cjs",
+        "harness-tmp-clean.cjs"
       ]
     },
     "fixture_generators": {

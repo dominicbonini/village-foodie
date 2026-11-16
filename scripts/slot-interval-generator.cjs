@@ -16,6 +16,7 @@
 // ⚠️ It compiles the TypeScript with the repo's own tsc — this repo has no test framework. Same alias
 // hook as scripts/whatsapp-*.cjs, because tsc leaves `@/` in the emitted require() calls.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const { execFileSync } = require('child_process')
 const fs = require('fs')
 const os = require('os')

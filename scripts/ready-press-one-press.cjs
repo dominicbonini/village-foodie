@@ -24,6 +24,7 @@
 // driven through the REAL lib/native/useGatedActionResult.tsx and lib/useReadyEmailUndo.ts on
 // scripts/_mini-dom.cjs, with `fetch` recording every request, so "exactly these requests" is observed
 // rather than asserted from reading the source.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const { installMocks } = require('./_printing-mocks.cjs'); const { installMiniDom } = require('./_mini-dom.cjs')

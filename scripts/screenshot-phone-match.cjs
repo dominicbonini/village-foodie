@@ -14,6 +14,7 @@
 // Each case is ONE function. It must PASS on the real code and FAIL on a broken variant — the same route
 // bundled with one plausible mistake patched in — so a check that cannot fail is caught here, not trusted.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path'); const fs = require('fs')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'screenshot-phone-match' })
 const { REPO } = kit

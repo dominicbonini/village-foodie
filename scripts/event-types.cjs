@@ -18,6 +18,7 @@
 // bulk-written when the van default flips, so it is never null — and a plain `override ?? type ??
 // default` chain could never let a type win for the mark-ready step. Section 4 is entirely about that.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { compile, headWorktree } = require('./_slot-interval-compile.cjs')

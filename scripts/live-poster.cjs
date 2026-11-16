@@ -29,6 +29,7 @@
 // which is what `live-fonts.ts` does with the bytes the GET returns — and it means this harness
 // measures the drawing, not the plumbing. The page makes **zero** network requests and that is asserted.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

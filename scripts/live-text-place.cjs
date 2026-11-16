@@ -33,6 +33,7 @@
 // request is the one thing the editor cannot do without, and answering it with the file that is
 // committed in `assets/` is the same bytes the real GET returns (proved in `social-tab-7-report.md`).
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

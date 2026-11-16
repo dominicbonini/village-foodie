@@ -26,6 +26,7 @@
 // ⚠️ IT IS COMMITTED ON PURPOSE. A baseline regenerated after a change proves nothing; one that is in
 // the tree can be read, dated and argued with.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

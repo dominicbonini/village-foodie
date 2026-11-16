@@ -15,6 +15,7 @@
 // from the frozen pre-fix copy of the working tree (sha256 108f72a8…, sha1 400779a9…). Nothing here
 // depends on anything outside the repo; if the golden file is missing this harness FAILS, never skips.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const GOLDEN = path.join(__dirname, 'fixtures', 'batch-rolling-golden.json')

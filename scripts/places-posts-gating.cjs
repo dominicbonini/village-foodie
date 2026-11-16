@@ -35,6 +35,7 @@
 //      HAS. Add event's place picker, Tidy up places, the usual-type pre-selection, event types,
 //      private events and pricing are not part of this feature. Switching one off to tidy a gate is a
 //      regression wearing a feature flag.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')

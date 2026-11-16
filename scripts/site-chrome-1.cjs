@@ -11,6 +11,7 @@
 //   3 · /contact and the logo → home on group A and B   4 · the phone footer CSS   5 · the offline words   6 · group C untouched
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { execFileSync } = require('child_process')

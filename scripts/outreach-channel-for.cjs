@@ -17,6 +17,7 @@
 // and a runtime hook maps `@/` to the compiled tree because tsc leaves the alias in the emitted
 // require() calls. Same mechanism as the five scripts/whatsapp-*.cjs harnesses.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const { execFileSync } = require('child_process')
 const fs = require('fs')
 const os = require('os')

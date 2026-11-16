@@ -13,6 +13,7 @@
 //   4  THE LOADER — a row with a currency the registry lacks is refused, and a LIST leaves that row out (the others load).
 //   5  NO "minor units" ANYWHERE — the rendered admin Countries tab (GB, IE, US, AU, NZ) shows p / c / ¢ / c / c beside the
 //      fixed-fee boxes and a currency dropdown, and no app source writes "minor units" for a person to read.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'currency-registry' })

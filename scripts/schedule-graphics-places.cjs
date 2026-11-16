@@ -24,6 +24,7 @@
 //       the migration and `ignoreDuplicates` at the call site are what make concurrent seeds safe, and
 //       they are asserted from source.
 //   4 · THE BROKEN VARIANTS — eight, each of which must fail.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

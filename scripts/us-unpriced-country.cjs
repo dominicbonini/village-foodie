@@ -11,6 +11,7 @@
 //   • planPricesDecided() is false for that row and true for GB; withPlaceholderPlanPrices(GB) is GB itself.
 // GB is proven unchanged by language-phase-1d2 (Billing byte-identical) and the rest of the sweep.
 // Fixtures only (Pizza Kitchen, 'test-truck'); nothing reaches a database or the network.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'us-unpriced-country' })

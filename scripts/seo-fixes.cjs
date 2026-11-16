@@ -23,6 +23,7 @@
 //   9  S7  the static-markup serializer is byte-identical to react-dom/server for every legal document (and the plan
 //          table as a wider fixture); one priority image; font preloads
 //  10  N1  /compare's own title and description per country, still noindex
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'seo-fixes' })

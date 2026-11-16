@@ -36,6 +36,7 @@
 //      badges' loading="lazy", the landing @graph JSON-LD, /compare's title + description, canonical + og:url on /contact
 //      /privacy /terms, the sitemap) are each verified exactly and mapped back to BEFORE's form before the checks above
 //      run — see seoFixes() in §8.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const os = require('os')
 const path = require('path')

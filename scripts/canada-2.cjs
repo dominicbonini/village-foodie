@@ -12,6 +12,7 @@
 //      the intro), the Terms of Service and the Privacy Policy byte-identical; the section's shape, its points written out in
 //      full, no [FLAG], the dates and TERMS_VERSION at the build date; the page renders it.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { execFileSync, spawnSync } = require('child_process')

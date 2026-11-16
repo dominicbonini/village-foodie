@@ -25,6 +25,7 @@
 //    Hence: no DOM ranges, paced keystrokes, a known caret, and ONE FRESH PAGE PER BEHAVIOUR so a single
 //    mis-step cannot cascade.
 require('./_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const REPO = path.resolve(__dirname, '..')
 const esbuild = require(path.join(REPO, 'node_modules/esbuild'))

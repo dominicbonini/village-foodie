@@ -32,6 +32,7 @@
 // effects run. `fetch` answers /api/slots with whatever board the scenario says the server holds, and
 // counts the reads. A "board" here is the whole capacity payload: grid interval, cooking categories, van
 // kitchen capacity and window, the units and their reservations.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const { installMocks } = require('./_printing-mocks.cjs'); const { installMiniDom } = require('./_mini-dom.cjs')

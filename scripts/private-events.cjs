@@ -24,6 +24,7 @@
 // place a real order. Those are the numbered localhost list in docs/private-events-report.md, on
 // Pizza Kitchen only. This harness proves the RULES; the list proves the screens.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const { compile } = require('./_slot-interval-compile.cjs')

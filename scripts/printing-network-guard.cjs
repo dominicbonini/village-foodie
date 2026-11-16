@@ -11,6 +11,7 @@
 // lib/printing/dashboardPin.ts GUESSED at four storage keys and always returned undefined, which turned
 // a knowable "not supported yet" into "Can't check which device is printing right now." The PIN
 // requirement is now OBSERVED from the route's own 401 + requiresPin, and nothing is ever claimed.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const { execFileSync } = require('child_process')
 const SAY = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'messages/en-GB.json'), 'utf8')).printing.say   // Language Phase 1b
 const { compile, REPO } = require('./_slot-interval-compile.cjs'); const { installMocks } = require('./_printing-mocks.cjs')

@@ -7,6 +7,7 @@
 //    shape, not content; or a sending host's IP left in a Received line.
 //
 // HOW: the REAL lib/outreach-mail-format.ts compiled from lib/. Pure functions, no IMAP, no database.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path'); const os = require('os')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 let fails = 0

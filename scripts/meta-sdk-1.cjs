@@ -14,6 +14,7 @@
 // The real SDK, over the network, is exercised by hand: scripts/meta-sdk-1-live.cjs.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness, like every scripts/*.cjs */
 'use strict'
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const os = require('os')
 const path = require('path')

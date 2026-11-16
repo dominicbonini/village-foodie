@@ -13,6 +13,7 @@
 //    an email that opens in the list again, five lines above the fold;
 //    and the panel stepping with a wrap, so the same email is read twice as though it were two.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs')
 const path = require('path')
 const os = require('os')

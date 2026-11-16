@@ -13,6 +13,7 @@
 // HOW: the REAL `provisionDemo` (menu commit, event, seeder, the new clear steps) bundled from lib/, run
 // against scripts/_fake-pg.cjs, which STORES rows. Only the logo copy and the AI menu reader are stubbed.
 // Nothing here touches the database, storage or the network.
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const kit = require('./_render-kit.cjs')({ cacheTag: 'demo-rebuild-replace' })
 const { makeFakePg } = require('./_fake-pg.cjs')
 const SEEDS = require('./_country-settings-gb.cjs')

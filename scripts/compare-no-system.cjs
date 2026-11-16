@@ -19,6 +19,7 @@
 //    the coffee claim surviving above its threshold, which makes a true line false;
 //    `monthly / 4 / days` creeping back in — it understates every per-day figure by ~8.3%, in our favour.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
 const GB = require('./_country-settings-gb.cjs').gbFromSeed()

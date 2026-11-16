@@ -14,6 +14,7 @@
 // "BEFORE" is reconstructed by mechanically removing this work's additions from a copy of the engine,
 // so the comparison needs nothing outside the repo and no stash.
 
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const os = require('os'); const path = require('path')
 const { execFileSync } = require('child_process')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')

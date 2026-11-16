@@ -3,6 +3,7 @@
 // sends (intercepted and answered here, so nothing reaches /api/demo or the database). Reports when the pop-up's code loaded and what
 // was sent. public.demo_events is written by /api/demo on the server (lib/demo-events.ts), which cwv-2 did not touch (cwv-2.cjs §4).
 require('../_disk-guard.cjs').guard(__filename) // disk-cleanup-1: refuses below 40 GB free, stops below 20 GB (docs/reference-manual.md, "Disk space")
+require('../_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const puppeteer = require('puppeteer')
 const [port, label] = process.argv.slice(2)
 ;(async () => {

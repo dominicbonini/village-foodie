@@ -20,6 +20,7 @@
 //      confidence; a NON-private generic title ("TBC") gets no venue either; a standard event at a real venue is
 //      matched exactly as before (venue, coordinates, postcode, confidence);
 //   5. scripts/run-scraper.js and lib/venue-matcher.ts read the ONE list (lib/generic-venue-names.json).
+require('./_harness-tmp.cjs') // tmp-cleanup-1: temp goes under $TMPDIR/hatchgrab-harness/ and is removed on exit ("Disk space")
 const fs = require('fs'); const path = require('path')
 const kit = require('./_render-kit.cjs')({ cacheTag: 'generic-venue-guess' })
 const { REPO } = kit
