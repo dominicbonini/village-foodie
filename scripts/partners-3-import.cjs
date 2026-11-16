@@ -55,6 +55,7 @@ const REGION_TZ = [[/Sarawak|Sabah/i, 'Asia/Kuching'], [/Bali/i, 'Asia/Makassar'
 // Verification found these are ONE business, not a network of traders: imported for the record, not_now.
 const NOT_A_NETWORK = [[/^Turnup Food Truck SA$/i, 'one food truck business, not a network (verification, 16 Nov 2026)'],
   [/Jakarta Food Truck/i, '@jktfoodtruck is a single food truck business, not an association (verification, 16 Nov 2026)'],
+  [/\bIPES\b/, 'a public agency (Bogotá\'s street-vendor institute) — the address is its official correspondence intake, not a partnership contact (research, 16 Nov 2026)'],
   [/^Futraki \/ Iskra Events$/i, 'a catering / events firm — futraki.pl redirects to iskra-events.pl and no "Futraki" festival was found (verification, 16 Nov 2026)']]
 const TYPES = new Set(['association', 'collective', 'organiser', 'consultant', 'supplier', 'directory', 'media', 'press', 'software_platform', 'other'])
 const CHANNELS = new Set(['email', 'contact_form', 'facebook', 'instagram', 'whatsapp', 'linkedin'])
@@ -106,7 +107,9 @@ for (const r of rows) {
   const seen = seenDate(v && v.last_seen_active)
   const inactive = !!(v && (v.org_verdict === 'inactive' || (seen && seen.year < 2024)))
   const verify = !v || !found ? 'dropped' : primary && primary.verdict === 'verified' ? 'verified' : 'unverified'
-  let channel = primary && primary.verdict === 'verified' ? 'email' : (v && CHANNELS.has(v.channel) && v.channel !== 'email' ? v.channel : null)
+  // A non-email channel counts only with its link (a "facebook" with no page found is no channel).
+  const linkOf = { contact_form: v && v.contact_form_url, facebook: v && v.facebook_url, instagram: v && v.instagram_url, whatsapp: v && v.whatsapp_url, linkedin: v && v.linkedin_url }
+  let channel = primary && primary.verdict === 'verified' ? 'email' : (v && CHANNELS.has(v.channel) && v.channel !== 'email' && linkOf[v.channel] ? v.channel : null)
   if (!channel) channel = v && v.contact_form_url ? 'contact_form' : v && v.facebook_url ? 'facebook' : v && v.instagram_url ? 'instagram' : 'email'
   const software = type === 'software_platform'
   const single = (NOT_A_NETWORK.find(([re]) => re.test(String(r.name))) || [])[1] || null

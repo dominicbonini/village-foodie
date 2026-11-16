@@ -1,0 +1,12 @@
+{
+ "CO": {
+  "email": 0,
+  "social": 1,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 3,
+  "dropped": 0,
+  "software": 0,
+  "single": 1
+ }
+}

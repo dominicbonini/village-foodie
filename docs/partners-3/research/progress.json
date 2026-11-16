@@ -1,0 +1,51 @@
+{
+ "_note": "Batches run in the background; this table is updated after each one.",
+ "MX": {
+  "batch": 1,
+  "finished": "16 Nov 17:10",
+  "found": 8,
+  "counts": {
+   "email": 0,
+   "social": 1,
+   "unverified": 0,
+   "none": 4,
+   "inactive": 3,
+   "dropped": 0,
+   "software": 0,
+   "single": 0
+  },
+  "migration": "20261111_partners_3_research_mx.sql"
+ },
+ "PE": {
+  "batch": 2,
+  "finished": "16 Nov 17:45",
+  "found": 7,
+  "counts": {
+   "email": 1,
+   "social": 1,
+   "unverified": 0,
+   "none": 3,
+   "inactive": 2,
+   "dropped": 0,
+   "software": 0,
+   "single": 0
+  },
+  "migration": "20261113_partners_3_research_pe.sql"
+ },
+ "CL": {
+  "batch": 2,
+  "finished": "16 Nov 17:47",
+  "found": 12,
+  "counts": {
+   "email": 1,
+   "social": 5,
+   "unverified": 0,
+   "none": 2,
+   "inactive": 4,
+   "dropped": 0,
+   "software": 0,
+   "single": 0
+  },
+  "migration": "20261114_partners_3_research_cl.sql"
+ }
+}
