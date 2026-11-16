@@ -27,7 +27,7 @@ export class AdminLoadError extends Error {
 /** Optional step timer (the report's measurement); the route passes none. */
 export type AdminStepTimer = (step: string, ms: number, note?: string) => void
 
-const TRUCK_COLUMNS = 'id,name,slug,country,timezone,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note,hide_pricing,plan_price_override_minor,plan_price_override_until,plan_price_override_note,show_on_vf,show_on_hg,order_link_vf,order_link_hg,is_customer,excluded,custom_domain,custom_domain_verified_at,custom_domain_confirmed_at,custom_domain_setup_state,custom_domain_setup_started_at,custom_domain_last_checked_at,custom_domain_last_ok_at,custom_domain_last_seen_value'
+const TRUCK_COLUMNS = 'id,name,slug,country,timezone,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note,hide_pricing,plan_price_override_minor,plan_price_override_until,plan_price_override_note,show_on_vf,show_on_hg,order_link_vf,order_link_hg,is_customer,excluded,custom_domain,custom_domain_verified_at,custom_domain_confirmed_at,custom_domain_setup_state,custom_domain_setup_started_at,custom_domain_last_checked_at,custom_domain_last_ok_at,custom_domain_last_seen_value,partner_codes!trucks_referred_partner_code_id_fkey(code)'
 
 async function step<T>(time: AdminStepTimer | undefined, name: string, f: () => Promise<T>, note?: (v: T) => string): Promise<T> {
   if (!time) return f()
@@ -62,7 +62,11 @@ export async function adminPayload(time?: AdminStepTimer): Promise<{
       catch (e) { return { ok: false as const, error: e } }
     }, v => (v.ok ? `${v.plans.plans.length} plans, ${v.plans.prices.length} prices` : 'failed')),
   ])
-  const trucks = (trucksRes.data || []) as Record<string, unknown>[]
+  // partners-2: the referred partner code rides as `referred_code` (the code's text), not as the embedded object.
+  const trucks = ((trucksRes.data || []) as Record<string, unknown>[]).map(({ partner_codes, ...t }) => {
+    const pc = (Array.isArray(partner_codes) ? partner_codes[0] : partner_codes) as { code?: string } | null | undefined
+    return pc?.code ? { ...t, referred_code: pc.code } : t
+  })
   // ── THE COUNTRY SETTINGS THIS SCREEN QUOTES, IN ONE QUERY — the marketing country's (the plan matrix) and every truck's own
   // (one truck's modal) are FATAL; every other country the catalogue PRICES (currency-registry: Ireland has prices and no
   // trucks) is BEST EFFORT, quoted only in the plans table, which shows "—" for one that cannot be read.

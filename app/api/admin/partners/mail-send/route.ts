@@ -13,22 +13,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { OUTREACH_FROM_ADDRESS } from '@/lib/outreach-mail-config'
-import { sendRow, fileCopyAndRecord, deliver } from '@/lib/outreach-mail-deliver'
-import { runAfter } from '@/lib/outreach-after'
-import { buildMessage, newMessageId, type QuotedMessage } from '@/lib/outreach-mail-message'
-import { sanitiseMailError } from '@/lib/outreach-mail-box'
+import { deliver } from '@/lib/outreach-mail-deliver'
+import { type QuotedMessage } from '@/lib/outreach-mail-message'
 import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
 import { readFromName } from '@/lib/outreach-settings-read'
-import { validateDoc, docPlainText, literalTokenRefusal } from '@/lib/outreach-doc'
 import { resolveAccounts, accountForSend, credentialsFor, accountOfRow } from '@/lib/outreach-mail-accounts'
 import { retryRefusal } from '@/lib/outreach-send-rules'
 import {
-  ATTACHMENT_BUCKET, parseOutboundAttachments, attachmentSetRefusal, uploadRefusal, safeFilename, type OutboundAttachment,
+  ATTACHMENT_BUCKET, parseOutboundAttachments, uploadRefusal, safeFilename, type OutboundAttachment,
 } from '@/lib/outreach-attachments'
 import { loadAttachments } from '@/lib/outreach-attachment-store'
 import { sanitiseQuotedHtml } from '@/lib/outreach-quote-sanitise'
 import { partnerSendRefusal, partnerStoragePath, pathBelongsToPartner } from '@/lib/partners'
-import { applyPartnerAutoStatus } from '@/lib/partner-mail-poll'
+import { sendPartnerEmail, doNotContactAddresses } from '@/lib/partner-send'   // partners-2: the send path, shared with the scheduler
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -40,19 +37,6 @@ const refuse = (message: string, extra: Record<string, unknown> = {}) =>
   NextResponse.json({ ok: false, refusal: message, ...extra }, { status: 200 })
 
 const DOWNLOAD_TTL_SECONDS = 300
-
-/** The lower-cased address of every prospect marked do_not_contact — the existing do-not-contact list. */
-async function doNotContactAddresses(): Promise<{ ok: true; set: Set<string> } | { ok: false }> {
-  const { data, error } = await supabase.from('outreach_prospects')
-    .select('do_not_contact, discovery_trucks(contact_email)').eq('do_not_contact', true)
-  if (error) return { ok: false }
-  const set = new Set<string>()
-  for (const r of (data ?? []) as unknown as { discovery_trucks: { contact_email: string | null } | null }[]) {
-    const e = (r.discovery_trucks?.contact_email ?? '').trim().toLowerCase()
-    if (e) set.add(e)
-  }
-  return { ok: true, set }
-}
 
 export async function GET(req: NextRequest) {
   // The partner's messages — what the outbox reads back after a send.
@@ -117,7 +101,7 @@ export async function POST(req: NextRequest) {
     const stop = retryRefusal(row, body.confirm_uncertain === true)
     if (stop) return refuse(stop.refusal, stop.needsConfirm ? { needsConfirm: true } : {})
     const { data: pr } = await supabase.from('partner_orgs').select('email').eq('id', row.partner_id).maybeSingle()
-    const dnc = await doNotContactAddresses()
+    const dnc = await doNotContactAddresses(supabase)
     if (!dnc.ok) return refuse('The do-not-contact list could not be read, so nothing was sent.')
     const blocked = partnerSendRefusal({ partner: pr as { email: string | null } | null, to: String(row.to_address ?? ''), dncAddresses: dnc.set, isTest: row.is_test })
     if (blocked && !row.is_test) return refuse(blocked)
@@ -176,71 +160,12 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ── REFUSALS: do-not-contact, no address ────────────────────────────────────────────────────────────
-  const dnc = await doNotContactAddresses()
-  if (!dnc.ok) return refuse('The do-not-contact list could not be read, so nothing was sent.')
-  const blocked = partnerSendRefusal({ partner, to: toAddress, dncAddresses: dnc.set, isTest })
-  if (blocked) return refuse(blocked)
-
-  // ── THE DOCUMENT — validated against the schema, never passed through (the truck route's own guard) ──
-  const parsed = validateDoc(body.document)
-  if (!parsed.ok) return refuse(`That message could not be sent — ${parsed.error}.`)
-  const doc = parsed.doc
-  if (!docPlainText(doc).trim()) return refuse('There is no message body to send.')
-  const literal = literalTokenRefusal(doc)
-  if (literal) return refuse(literal)
-  const subjectIn = String(body.subject ?? '').trim()
-  if (!parent && !subjectIn) return refuse('The email needs a subject.')
-
-  // ── ATTACHMENTS — paths in, bytes read server-side; only from this partner's folder ─────────────────
-  const declared = parseOutboundAttachments(body.attachments)
-  if (declared.some(a => !pathBelongsToPartner(a.storagePath, partnerId))) return refuse('An attachment is not in this partner’s folder, so nothing was sent.')
-  const tooBig = attachmentSetRefusal(declared)
-  if (tooBig) return refuse(tooBig.refusal)
-  const loaded = await loadAttachments(supabase, declared)
-  if (!loaded.ok) return refuse(loaded.refusal)
-
-  // ── THE ROW GOES IN FIRST, WITH ITS Message-ID ──────────────────────────────────────────────────────
-  const fromName = await readFromName(supabase)
-  const messageId = newMessageId()
-  const built = buildMessage({ doc, subject: subjectIn, messageId, parent, fromName, locale: null })
-  const recipient = isTest ? testRecipient! : toAddress
-  const { data: inserted, error: insErr } = await supabase.from('outreach_messages').insert({
-    partner_id: partnerId,
-    direction: 'outbound', status: 'sending', is_test: isTest, source: 'system',
-    account: sender.account,
-    message_id: messageId, in_reply_to: built.inReplyTo, references: built.references,
-    subject: built.subject, from_address: OUTREACH_FROM_ADDRESS, to_address: recipient,
-    message_date: new Date().toISOString(),
-    html_body: built.html, text_body: built.text, attempts: 0,
-    attachments: declared,
-    ...(idempotencyKey ? { idempotency_key: idempotencyKey } : {}),
-  }).select('*').single()
-  if (insErr || !inserted) {
-    if ((insErr as { code?: string } | null)?.code === '23505' && idempotencyKey) {
-      const { data: prior } = await supabase.from('outreach_messages')
-        .select('id, status, sent_copy, last_error').eq('idempotency_key', idempotencyKey).maybeSingle()
-      if (prior) return NextResponse.json({ ok: true, duplicate: true, ...(prior as object) })
-    }
-    return refuse(`The message could not be recorded, so nothing was sent — ${dbDetail(insErr)}`)
-  }
-
-  const row = inserted as Parameters<typeof sendRow>[1] & { id: string }
-  const sendable = { ...row, attachments: loaded.attachments, from_name: fromName }
-  const sent = await sendRow(supabase, sendable, { mailUser: sender.user, mailPass: sender.pass, isTest, testRecipient })
-  if (sent.result.status !== 'sent' || !sent.raw) return NextResponse.json(sent.result.payload)
-
-  // 🔴 A REAL SEND (never a test) is the partner's first email ⇒ `to_contact` → `contacted`, logged.
-  if (!isTest) await applyPartnerAutoStatus(supabase, partnerId, 'send', { last_contacted_at: new Date().toISOString() })
-
-  const raw = sent.raw
-  const sentAt = sent.date ?? new Date()
-  runAfter('Partner Sent copy', async () => {
-    try {
-      await fileCopyAndRecord(supabase, sendable, raw, sentAt, { mailUser: sender.user, mailPass: sender.pass })
-    } catch (e) {
-      await supabase.from('outreach_messages').update({ last_error: `post-send: the Sent copy — ${sanitiseMailError(e)}`, updated_at: new Date().toISOString() }).eq('id', row.id)
-    }
+  // ── THE SEND: refusals, the document, attachments, the row, SMTP, the Sent copy — lib/partner-send.ts (partners-2 moved it
+  // there unchanged, so the scheduled sender uses the same path) ──────────────────────────────────────────────────────────────
+  const result = await sendPartnerEmail(supabase, {
+    partner, toAddress, subject: String(body.subject ?? ''), document: body.document, parent, isTest, testRecipient,
+    attachments: body.attachments, idempotencyKey, sender,
   })
-  return NextResponse.json({ ...sent.result.payload, sent_copy: 'pending', post_steps: 'after' })
+  if (result.kind === 'refused') return refuse(result.refusal)
+  return NextResponse.json(result.payload)
 }

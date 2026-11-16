@@ -22,6 +22,7 @@ import { BrandHomeLink } from '@/components/shared/BrandHomeLink'
 import { HOME_HREF } from '@/components/shared/FlowLogo'
 import { useLegalPath } from '@/lib/i18n/use-legal-path'
 import { useT } from '@/lib/i18n/use-t'
+import PartnerCodeField from '@/components/PartnerCodeField'   // partners-2
 import { useTrialMonths } from '@/lib/trial-months'
 import '@/lib/i18n/catalog/auth'
 import { errorText } from '@/lib/i18n/customer-errors'
@@ -117,14 +118,11 @@ function SignupForm() {
                   so any acknowledgement on this screen would be a claim we cannot keep.
               Placed last, below the password, so it reads as an afterthought — which is what it is for
               the great majority of people, who will not have one. */}
-          <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">
-              {t.rich('codeLabel', { optional: c => <span className="normal-case font-normal text-slate-400">{c}</span> })}
-            </label>
-            <input type="text" value={promoCode} onChange={e => setPromoCode(e.target.value)}
-              maxLength={40} autoComplete="off" placeholder={t('codePlaceholder')}
-              className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-          </div>
+          {/* ⛔ UPDATED (partners-2, 16 November 2026): a code IS now checked when it is a partner code — Apply shows its deal
+              ("✓ Code applied: 2 extra months free (NCASS)") and the deal is applied when the truck is created. Everything
+              above still holds for every OTHER code: optional, never blocks, recorded as typed, honoured by hand. The field
+              and its words are components/PartnerCodeField.tsx, shared with the demo's last step. */}
+          <PartnerCodeField value={promoCode} onChange={setPromoCode} inputId="signup-code" />
 
           {/* The ONLY checkbox on the page, and it is not required. */}
           <label className="flex items-start gap-2 cursor-pointer">

@@ -30,6 +30,7 @@ import { localeForTruck } from '@/lib/i18n/server-locale'
 // Which document they agreed to — the documents' own version (lib/legal.ts TERMS_VERSION), not typed here: it went stale
 // here once. Accounts that signed up under 'holding-2026-07-23' are still queryable by that value for re-consent.
 import { TERMS_VERSION } from '@/lib/legal'
+import { recordRedemption } from '@/lib/partner-codes-server'   // partners-2
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -184,6 +185,11 @@ export async function POST(req: NextRequest) {
         `— has 20260804_operators_signup_promo_code.sql been run? (${codeErr.message})`)
     }
   }
+  // ── partners-2 (16 November 2026): A PARTNER CODE — the same field. If the code is a live partner code, the redemption is
+  // recorded (lib/partner-codes-server.ts): its deal is applied when the truck is created (/api/setup create_truck), and the
+  // truck is attributed to it. Best effort, like the line above: an unknown, expired or used-up code is simply not recorded,
+  // and nothing here can fail the signup.
+  if (signupPromoCode) await recordRedemption(supabase, operator.id, signupPromoCode)
 
   // ── CLAIM THE DEMO ──────────────────────────────────────────────────────────────────────────────
   // Marks which demo this account came from. Two jobs: it stops the cleanup job deleting a demo mid-

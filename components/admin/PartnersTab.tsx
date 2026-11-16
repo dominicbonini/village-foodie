@@ -17,6 +17,7 @@ import EmailReadingPanel, { PAGE_HEADER_ID } from '@/components/admin/EmailReadi
 import { getPartnerOutbox } from '@/components/admin/partner-outbox'
 import { MAIL_STATUS_LABEL, mailStatusTone, FIELD_CLS, LABEL_CLS } from '@/components/admin/outreach-shared'
 import { RowLabelCell } from '@/components/admin/outreach-icons'
+import { PartnersTable, CodesPanel, QueuePanel, ImportPanel, ProgrammeBox, type Overview } from '@/components/admin/PartnerProgramme'   // partners-2
 import { messageRowLabel, type TimelineMessage } from '@/lib/outreach-timeline'
 import type { OutboxEntry } from '@/lib/outreach-outbox'
 import type { TemplateContext } from '@/lib/outreach-template-render'
@@ -30,11 +31,6 @@ interface PartnerEvent { id: string; kind: 'note' | 'status'; body: string | nul
 interface Detail { partner: Partner; messages: TimelineMessage[]; events: PartnerEvent[] }
 
 const BTN = 'text-sm font-semibold px-3 py-1.5 rounded-lg border'
-const fmtDay = (d: string | null) => {
-  if (!d) return '—'
-  const dt = new Date(d.length === 10 ? `${d}T12:00:00Z` : d)
-  return Number.isNaN(dt.getTime()) ? d : dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit', timeZone: 'Europe/London' })
-}
 const fmtWhen = (d: string | null | undefined) => {
   if (!d) return '—'
   const dt = new Date(d)
@@ -63,6 +59,10 @@ export default function PartnersTab() {
   const [type, setType] = useState<PartnerType | ''>('')
   const [country, setCountry] = useState('')
   const [dueOnly, setDueOnly] = useState(false)
+  // partners-2: the verified filter, the programme overview (codes, queue, rules) and the open panel.
+  const [verified, setVerified] = useState<'' | 'verified' | 'unverified' | 'dropped'>('')
+  const [overview, setOverview] = useState<Overview | null>(null)
+  const [panel, setPanel] = useState<null | 'codes' | 'queue' | 'import'>(null)
   const [adding, setAdding] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const today = londonToday(new Date())
@@ -80,7 +80,12 @@ export default function PartnersTab() {
     if (!j || j.ok !== true) { setError(j?.refusal ?? 'That partner could not be read.'); return }
     setDetail({ partner: j.partner, messages: j.messages, events: j.events })
   }, [])
-  useEffect(() => { void Promise.resolve().then(loadList) }, [loadList])
+  const loadOverview = useCallback(async () => {
+    const r = await fetch('/api/admin/partners/programme?view=overview').catch(() => null)
+    const j = (await r?.json().catch(() => null)) as (Overview & { ok?: boolean }) | null
+    if (j?.ok) setOverview(j)
+  }, [])
+  useEffect(() => { void Promise.resolve().then(loadList); void Promise.resolve().then(loadOverview) }, [loadList, loadOverview])
   useEffect(() => { if (selectedId) void Promise.resolve().then(() => loadDetail(selectedId)) }, [selectedId, loadDetail])
 
   /** One partner row changed on the server: put it in the list and the detail. */
@@ -112,85 +117,72 @@ export default function PartnersTab() {
   }), [selectedId, loadList, loadDetail])
 
   const countries = useMemo(() => Array.from(new Set(partners.map(p => p.country_code).filter((c): c is string => !!c))).sort(), [partners])
-  const shown = useMemo(() => filterPartners(partners, { q, status, type, country, dueOnly }, today), [partners, q, status, type, country, dueOnly, today])
+  const shown = useMemo(() => filterPartners(partners, { q, status, type, country, dueOnly }, today)
+    .filter(p => !verified || p.verify_status === verified), [partners, q, status, type, country, dueOnly, today, verified])
+  const queuedToday = (overview?.queue ?? []).filter(x => x.status === 'planned' || x.status === 'approved').length
   const dueCount = useMemo(() => partners.filter(p => isDue(p, today)).length, [partners, today])
 
+  // ── partners-2: ONE COMPACT TABLE (the approved mockup) — the top bar, the table, and a row's detail in a drawer ──
   return (
-    <div className="flex gap-4 items-start" data-partners-tab>
-      {/* ── LEFT: the list ─────────────────────────────────────────────────────────────────────────── */}
-      <section className="w-[380px] 2xl:w-[440px] shrink-0 bg-white border border-slate-200 rounded-xl flex flex-col sticky top-[104px] max-h-[calc(100vh-120px)]">
-        <div className="p-2 border-b border-slate-100 flex flex-col gap-1.5">
-          <div className="flex items-center gap-1.5">
-            <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search name, contact, email, notes"
-              aria-label="Search partners" className={`${FIELD_CLS} flex-1`} />
-            <button type="button" onClick={() => setAdding(a => !a)} data-add-partner
-              className={`${BTN} border-slate-800 bg-slate-800 text-white hover:bg-slate-900`}>{adding ? 'Close' : 'Add'}</button>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <select aria-label="Status" value={status} onChange={e => setStatus(e.target.value as PartnerStatus | '')} className={`${FIELD_CLS} !w-auto flex-1`}>
-              <option value="">All statuses</option>
-              {PARTNER_STATUSES.map(s => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
-            </select>
-            <select aria-label="Type" value={type} onChange={e => setType(e.target.value as PartnerType | '')} className={`${FIELD_CLS} !w-auto flex-1`}>
-              <option value="">All types</option>
-              {PARTNER_TYPES.map(t => <option key={t} value={t}>{TYPE_LABEL[t]}</option>)}
-            </select>
-            <select aria-label="Country" value={country} onChange={e => setCountry(e.target.value)} className={`${FIELD_CLS} !w-auto`}>
-              <option value="">All</option>
-              {countries.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <button type="button" onClick={() => setDueOnly(d => !d)} aria-pressed={dueOnly} data-due-filter
-              title="Follow-up today or overdue"
-              className={`text-xs font-bold px-2 py-1.5 rounded-lg border whitespace-nowrap ${dueOnly ? 'bg-amber-500 border-amber-500 text-white' : 'bg-white border-slate-300 text-slate-700'}`}>
-              Due {dueCount}
-            </button>
-          </div>
-          {adding && <AddForm onDone={p => { setAdding(false); accept(p); setSelectedId(p.id) }} />}
+    <div className="space-y-2" data-partners-tab>
+      <div className="flex flex-wrap items-center gap-1.5 bg-white border border-slate-200 rounded-xl p-2">
+        <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search" aria-label="Search partners" className={`${FIELD_CLS} !w-44`} />
+        <select aria-label="Country" value={country} onChange={e => setCountry(e.target.value)} className={`${FIELD_CLS} !w-auto`}>
+          <option value="">All countries</option>
+          {countries.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <select aria-label="Status" value={status} onChange={e => setStatus(e.target.value as PartnerStatus | '')} className={`${FIELD_CLS} !w-auto`}>
+          <option value="">All statuses</option>
+          {PARTNER_STATUSES.map(s => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
+        </select>
+        <select aria-label="Verified" value={verified} onChange={e => setVerified(e.target.value as typeof verified)} className={`${FIELD_CLS} !w-auto`}>
+          <option value="">✓ ? ✗ all</option>
+          <option value="verified">✓ verified</option>
+          <option value="unverified">? unverified</option>
+          <option value="dropped">✗ dropped</option>
+        </select>
+        <select aria-label="Type" value={type} onChange={e => setType(e.target.value as PartnerType | '')} className={`${FIELD_CLS} !w-auto`}>
+          <option value="">All types</option>
+          {PARTNER_TYPES.map(t => <option key={t} value={t}>{TYPE_LABEL[t]}</option>)}
+        </select>
+        <button type="button" onClick={() => setDueOnly(d => !d)} aria-pressed={dueOnly} data-due-filter title="Follow-up today or overdue"
+          className={`text-xs font-bold px-2 py-1.5 rounded-lg border whitespace-nowrap ${dueOnly ? 'bg-amber-500 border-amber-500 text-white' : 'bg-white border-slate-300 text-slate-700'}`}>Due {dueCount}</button>
+        <span className="flex-1" />
+        <button type="button" onClick={() => setAdding(a => !a)} data-add-partner className={`${BTN} border-slate-300 bg-white text-slate-800`}>{adding ? 'Close' : 'Add'}</button>
+        <button type="button" onClick={() => setPanel(x => (x === 'import' ? null : 'import'))} className={`${BTN} border-slate-300 bg-white text-slate-800`}>Import CSV</button>
+        <button type="button" onClick={() => setPanel(x => (x === 'codes' ? null : 'codes'))} className={`${BTN} border-slate-300 bg-white text-slate-800`}>Codes</button>
+        <button type="button" onClick={() => setPanel(x => (x === 'queue' ? null : 'queue'))} data-queue-button
+          className={`${BTN} border-emerald-700 bg-emerald-700 text-white`}>Send queue · {queuedToday} today · Approve</button>
+      </div>
+      {adding && <div className="bg-white border border-slate-200 rounded-xl p-2"><AddForm onDone={p => { setAdding(false); accept(p); setSelectedId(p.id) }} /></div>}
+      {panel && (
+        <div className="bg-white border border-slate-200 rounded-xl p-3">
+          {panel === 'codes' && <CodesPanel overview={overview} partners={partners} onSaved={loadOverview} />}
+          {panel === 'queue' && <QueuePanel approvalMode={overview?.schedule.approvalMode ?? true} onChanged={loadOverview} />}
+          {panel === 'import' && <ImportPanel onDone={() => { void loadList() }} />}
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto">
-          {loaded === 'loading' && <p className="p-3 text-sm text-slate-500">Loading…</p>}
-          {loaded !== 'loading' && loaded !== 'ok' && <p className="p-3 text-sm text-red-700">{loaded}</p>}
-          {loaded === 'ok' && shown.length === 0 && (
-            <p className="p-3 text-sm text-slate-500">{partners.length ? 'Nothing matches these filters.' : 'No partners yet — press Add.'}</p>
-          )}
-          <ul>
-            {shown.map(p => {
-              const due = isDue(p, today)
-              return (
-                <li key={p.id}>
-                  <button type="button" onClick={() => setSelectedId(p.id)} data-partner-row
-                    className={`w-full text-left px-3 py-1.5 border-b border-slate-100 hover:bg-slate-50 grid grid-cols-[1fr_auto] gap-x-2 items-center ${selectedId === p.id ? 'bg-orange-50' : ''}`}>
-                    <span className="truncate text-sm font-semibold text-slate-900">
-                      {p.priority === 'high' && <span className="text-orange-600" title="High priority">● </span>}{p.name}
-                    </span>
-                    <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border ${STATUS_TONE[p.status]}`}>{STATUS_LABEL[p.status]}</span>
-                    <span className="truncate text-[11px] text-slate-500">{TYPE_LABEL[p.type]}{p.country_code ? ` · ${p.country_code}` : ''}{p.contact_name ? ` · ${p.contact_name}` : ''}</span>
-                    <span className={`text-[11px] text-right ${due ? 'font-bold text-amber-700' : 'text-slate-400'}`}>{p.next_follow_up_on ? fmtDay(p.next_follow_up_on) : ''}</span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-        <p className="px-3 py-1 text-[11px] text-slate-400 border-t border-slate-100">{shown.length} of {partners.length}</p>
-      </section>
+      )}
+      {error && <p className="text-[12px] text-red-800 bg-red-50 border border-red-200 rounded-lg px-2.5 py-1.5">{error}</p>}
+      {loaded === 'loading' && <p className="p-3 text-sm text-slate-500">Loading…</p>}
+      {loaded !== 'loading' && loaded !== 'ok' && <p className="p-3 text-sm text-red-700">{loaded}</p>}
+      {loaded === 'ok' && <PartnersTable rows={shown} overview={overview} selectedId={selectedId} onOpen={setSelectedId} />}
+      <p className="px-1 text-[11px] text-slate-400">{shown.length} of {partners.length} · ✓ {partners.filter(p => p.verify_status === 'verified').length} · ? {partners.filter(p => p.verify_status === 'unverified').length} · ✗ {partners.filter(p => p.verify_status === 'dropped').length}</p>
 
-      {/* ── RIGHT: the selected organisation ──────────────────────────────────────────────────────────── */}
-      <section className="flex-1 min-w-0">
-        {error && <p className="mb-2 text-[12px] text-red-800 bg-red-50 border border-red-200 rounded-lg px-2.5 py-1.5">{error}</p>}
-        {!selectedId && <p className="text-sm text-slate-500 p-6">Choose an organisation on the left, or press Add.</p>}
-        {selectedId && detail && detail.partner.id === selectedId && (
+      {/* ── the selected organisation: a drawer over the table's right side (laptop and desktop alike) ── */}
+      {selectedId && detail && detail.partner.id === selectedId && (
+        <aside className="fixed top-[96px] right-0 bottom-0 z-40 w-[min(760px,96vw)] overflow-y-auto bg-slate-50 border-l border-slate-200 shadow-2xl p-3 space-y-3" data-partner-drawer>
+          <div className="flex justify-end"><button type="button" onClick={() => setSelectedId(null)} className={`${BTN} border-slate-300 bg-white`}>Close</button></div>
+          <ProgrammeBox partner={detail.partner} overview={overview} onSave={fields => save(detail.partner.id, fields)} onChanged={() => { void loadList(); void loadOverview(); void loadDetail(detail.partner.id) }} />
           <PartnerDetail key={detail.partner.id} detail={detail} today={today}
             onSave={fields => save(detail.partner.id, fields)} onStatus={to => setStatusOf(detail.partner.id, to)}
             onReload={() => loadDetail(detail.partner.id)} />
-        )}
-      </section>
+        </aside>
+      )}
       <PartnerToasts />
     </div>
   )
 }
 
-// ── ADD ─────────────────────────────────────────────────────────────────────────────────────────────────
 function AddForm({ onDone }: { onDone: (p: Partner) => void }) {
   const [f, setF] = useState({ name: '', type: 'association', country_code: 'GB', website: '', contact_name: '', contact_role: '', email: '', priority: 'medium', notes: '' })
   const [busy, setBusy] = useState(false)

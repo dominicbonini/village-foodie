@@ -153,9 +153,11 @@ console.log('\nC · the two automatic moves, and only those')
   for (const s of S) await PM.applyPartnerAutoStatus(db2, `p-${s}`, 'reply', { last_reply_at: '2026-11-05T11:00:00Z' })
   eq(db2.tables.partner_orgs.map(r => r.status), ['to_contact', 'replied', 'replied', 'in_talks', 'partner', 'not_now'], 'on a reply: only contacted moved')
   eq((db2.tables.partner_events || []).map(e => `${e.from_status}→${e.to_status}`), ['contacted→replied'], '…logged once')
-  const send = read('app/api/admin/partners/mail-send/route.ts')
-  check(/if \(!isTest\) await applyPartnerAutoStatus\(supabase, partnerId, 'send'/.test(send), 'the send route moves the status only after a REAL (non-test) send the server accepted')
-  check(send.indexOf("applyPartnerAutoStatus(supabase, partnerId, 'send'") > send.indexOf("if (sent.result.status !== 'sent' || !sent.raw) return"), '…placed after the not-sent early return')
+  // ⚠️ RE-PINNED (partners-2, 16 November 2026): the send path moved, unchanged, into lib/partner-send.ts (shared with the scheduled
+  // sender); the route now calls it. These checks read the route AND that file — every condition below is the same.
+  const send = read('lib/partner-send.ts')
+  check(/if \(!isTest\) await applyPartnerAutoStatus\(supabase, partner\.id, 'send'/.test(send), 'the send route moves the status only after a REAL (non-test) send the server accepted')
+  check(send.indexOf("applyPartnerAutoStatus(supabase, partner.id, 'send'") > send.indexOf("if (sent.result.status !== 'sent' || !sent.raw) return"), '…placed after the not-sent early return')
 }
 
 console.log('\nD · the Due filter and the sort')
@@ -241,8 +243,10 @@ console.log('\nF · do-not-contact is honoured')
   check(P.partnerSendRefusal({ partner: { email: 'blocked@truck.example' }, to: 'events@assoc.example', dncAddresses: dnc, isTest: false }) !== null, 'a partner whose own address is listed is refused whatever the To')
   check(P.partnerSendRefusal({ partner: { email: 'events@assoc.example' }, to: 'events@assoc.example', dncAddresses: dnc, isTest: false }) === null, 'an address not on the list may be emailed')
   check(P.partnerSendRefusal({ partner: { email: null }, to: '', dncAddresses: dnc, isTest: false }) !== null, 'no address: refused')
-  const send = read('app/api/admin/partners/mail-send/route.ts')
-  const sendBlock = send.slice(send.indexOf("if (action !== 'send')"))
+  // ⚠️ RE-PINNED (partners-2, 16 November 2026): the send path moved, unchanged, into lib/partner-send.ts (shared with the scheduled
+  // sender); the route now calls it. These checks read the route AND that file — every condition below is the same.
+  const send = read('app/api/admin/partners/mail-send/route.ts') + read('lib/partner-send.ts')
+  const sendBlock = read('lib/partner-send.ts').slice(read('lib/partner-send.ts').indexOf('export async function sendPartnerEmail'))
   check(/from\('outreach_prospects'\)[\s\S]{0,120}\.eq\('do_not_contact', true\)/.test(send), 'the list is the existing one: outreach_prospects.do_not_contact, read server-side')
   check(sendBlock.indexOf('partnerSendRefusal(') > 0 && sendBlock.indexOf('partnerSendRefusal(') < sendBlock.indexOf(".from('outreach_messages').insert("), 'the refusal runs BEFORE the row is inserted and before the mail server is contacted')
   check(/if \(!dnc\.ok\) return refuse\('The do-not-contact list could not be read, so nothing was sent\.'\)/.test(sendBlock), 'an unreadable list refuses (it never sends on an empty read)')
@@ -250,7 +254,9 @@ console.log('\nF · do-not-contact is honoured')
 
 console.log('\nG · free-form compose: no templates, snippets, sequences, screenshots, logo or demo links')
 {
-  const send = read('app/api/admin/partners/mail-send/route.ts')
+  // ⚠️ RE-PINNED (partners-2, 16 November 2026): the send path moved, unchanged, into lib/partner-send.ts (shared with the scheduled
+  // sender); the route now calls it. These checks read the route AND that file — every condition below is the same.
+  const send = read('app/api/admin/partners/mail-send/route.ts') + '\n' + read('lib/partner-send.ts')
   const imports = send.split('\n').filter(l => /^import /.test(l)).join('\n')
   check(!/outreach-template-render|outreach-snippets|outreach-sequence|outreach-step|outreach-contact-log|plans-pdf|demo|logo|screenshot/i.test(imports), 'the partner route imports no template, snippet, sequence, step, contact-log, plans-PDF, demo, logo or screenshot module')
   check(/from '@\/lib\/outreach-mail-deliver'/.test(imports) && /buildMessage/.test(imports) && /accountForSend/.test(imports) && /readFromName/.test(imports), '…and sends through the outreach machinery: the same builder, account, display name and deliver functions')

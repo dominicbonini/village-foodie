@@ -57,6 +57,7 @@ import { phoneErrorMessage } from '@/lib/phone-message'
 import { WhereBasedStep, useSignupCountries, initialBaseAnswer, baseAnswerBody, baseAnswerErrors, type BaseAnswer, type BaseErrors } from '@/components/setup/WhereBasedStep'
 import '@/lib/i18n/catalog/whereYouTrade'
 import { useT, useAppLocale, useTIn } from '@/lib/i18n/use-t'
+import PartnerCodeField from '@/components/PartnerCodeField'   // partners-2
 import { resolveLocale } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/demoGetStarted'
 import { errorTextIn } from '@/lib/i18n/customer-errors'
@@ -1144,17 +1145,10 @@ export function DemoGetStarted({ token, slug, eventSlug = null, label, className
                           would be a claim the software cannot keep.
                       Enter submits the form, matching the password field beside it — a code field that
                       swallowed Enter would be a trap on the last step of a signup. */}
-                  <div>
-                    <label htmlFor="demo-promo" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">
-                      {t.rich('promoLabel', { opt: c => <span className="normal-case font-normal text-slate-400">{c}</span> })}
-                    </label>
-                    <input
-                      id="demo-promo" type="text" autoComplete="off" maxLength={40} value={promoCode}
-                      onChange={e => setPromoCode(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') runSetup() }}
-                      placeholder={t('promoPlaceholder')}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                  </div>
+                  {/* ⛔ UPDATED (partners-2, 16 November 2026): the signup page's field (components/PartnerCodeField.tsx) — a partner
+                      code's deal shows on Apply and is applied when the truck is created; any other code behaves as above. Enter
+                      still submits, as before. Its words are auth.signup.* in the wizard's language. */}
+                  <PartnerCodeField value={promoCode} onChange={setPromoCode} locale={wizardLocale} inputId="demo-promo" onEnter={runSetup} compact />
 
                   {/* Terms — must be ACTIVELY ticked (unticked by default); blocks submit via validateDetailsStep.
                       The acceptance itself is RECORDED server-side by /api/signup (operators.terms_accepted_at +

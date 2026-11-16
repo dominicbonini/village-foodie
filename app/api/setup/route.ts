@@ -27,6 +27,7 @@ import { checkSignupCountry, checkTradeArea } from '@/lib/trade-area'
 import { onboardingErrorBody, type OnboardingErrorCode, type OnboardingErrorParams } from '@/lib/i18n/onboarding-errors'
 import { tradeAreaErrorBody } from '@/lib/i18n/manage-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
+import { applyPartnerDeal } from '@/lib/partner-codes-server'   // partners-2
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 
 // 🔴 THE COUNTRY IS THE OPERATOR'S ANSWER (Phase 2D-1) — "Where's your truck based?", the wizard's first step.
@@ -173,6 +174,11 @@ export async function POST(req: NextRequest) {
       await supabase.from('trucks')
         .update({ operator_id: operator.id, setup_step: 'menu' })
         .eq('id', result.truck.id)
+
+      // ── partners-2 (16 November 2026): THE PARTNER CODE'S DEAL — if this operator signed up with a partner code, its deal is
+      // applied to the new truck through the existing plan mechanism (extra months → the trial end, Admin's "Extend trial"
+      // rule) and the truck is attributed to the code (set once; the database refuses a change). Never fails the create.
+      await applyPartnerDeal(supabase, operator.id, { id: result.truck.id })
 
       // ── THE DISCOVERY LINK — self-serve conversion of an OUTREACH demo ──────────────────────────
       // If this operator came from a demo that was built FOR a discovery truck (demo_sessions.

@@ -12,6 +12,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { insertMessageOnce } from '@/lib/outreach-poll-claims'
 import { bodyColumns, type StoredBodies } from '@/lib/outreach-mail-bodies'
 import type { PartnerDirectory } from '@/lib/outreach-mail-poll-rules'
+import { stopSequence } from '@/lib/partner-programme'   // partners-2
 import { autoStatusOnReply, autoStatusOnSend, isPartnerStatus } from '@/lib/partners'
 
 /** Partners by address and by our own Message-IDs. A missing table (before the migration) ⇒ empty. */
@@ -81,7 +82,11 @@ export async function recordPartnerIncoming(
   })
   if (!made.created) return { created: false, error: 'error' in made ? made.error : null }
   dir.byMessageId.set(m.messageId, partnerId)
-  if (kind === 'reply') await applyPartnerAutoStatus(supabase, partnerId, 'reply', { last_reply_at: m.date ?? new Date().toISOString() })
+  if (kind === 'reply') {
+    await applyPartnerAutoStatus(supabase, partnerId, 'reply', { last_reply_at: m.date ?? new Date().toISOString() })
+    // partners-2: a reply STOPS the automatic sequence (nothing queued for this partner goes out). An auto-reply does not.
+    await stopSequence(supabase, partnerId, 'reply')
+  }
   return { created: true, error: null }
 }
 
@@ -117,5 +122,7 @@ export async function recordPartnerBounce(
   })
   if (!made.created) return { created: false, error: 'error' in made ? made.error : null }
   dir.byMessageId.set(m.messageId, partnerId)
+  // partners-2: a bounce STOPS the automatic sequence too (a truck's ladder does not stop on one — that is unchanged).
+  await stopSequence(supabase, partnerId, 'bounce')
   return { created: true, error: null }
 }

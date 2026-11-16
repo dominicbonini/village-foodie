@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.30
+HatchGrab Engineering Reference Manual · V16.31
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.30**
+**Version 16.31**
 
 November 2026
 
@@ -170,6 +170,15 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 22. **EU non-Union OSS registration** once there are paying EU customers.
 23. **Non-Latin ticket printing:** item 10.
 
+**Partners (partners-2, V16.31):**
+24. 🔴 **Decision: how a percent-off partner code reaches the paid plan** — the existing price override only applies while a truck
+    is on the plan it was given, and a signup is on the free trial (docs/partners-2-report.md §0, options A / B / C; A recommended).
+    Until then a percent-off code is recorded and attributed but writes no override.
+25. **Partner templates:** the English drafts are in the report §5 — "templates approved" → translations with back-translations →
+    the `partner-<assoc|dir>-<step>-<lang>` rows. Until they exist the scheduled sender sends nothing.
+26. **Partner addresses to choose:** 13 organisations' sites publish a different address from the list (report §2.3); and the real
+    partner codes are still to be created under Admin › Partners › Codes.
+
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
 
@@ -233,7 +242,62 @@ live, but customer links only reach the phone's browser on Android after the dep
    (Production → Countries / regions). Send for review.
 8. Watch **Android vitals** for the first days; with the mapping, stack traces are readable.
 
+# Partner programme (V16.31, partners-2)
+
+**Admin › Partners** is one compact table:
+- **Columns:** Organisation (type) · Country · Lang · Contact (✓ verified / ? unverified / ✗ dropped) · Status · Code · Deal · Commission · Next send · Last.
+- **Top bar:** filters (country, status, verified, type), Add, Import CSV, Codes, "Send queue · N today · Approve".
+- **Row click:** a drawer with verification, language and time zone, the sequence, Stop / Opted out, code cards, the commission ledger and partners-1's timeline and compose.
+
+**The data:**
+- `partner_orgs` (+ verification, language, time zone, sequence, do_not_contact).
+- `partner_codes`: deal (extra trial months | percent off for N months), validity, commission pct year 1 / year 2 of plan fees.
+- `partner_code_redemptions`.
+- `trucks.referred_partner_code_id`: set once at signup; a trigger refuses any change. Shown as 🤝 in the admin truck row.
+- `partner_commission_payments`.
+- `outreach_country_rules`: allowed / manual_only. DE and CA are manual_only and show "You send".
+- `outreach_send_queue`.
+- `outreach_settings.send_schedule` (approval mode ON, cap 25, Tue–Thu 09:30–11:30, 3–8 min) and `postal_address` (US footers).
+
+**Signup:**
+- `components/PartnerCodeField.tsx` (signup page and the demo's last step) with Apply → `/api/signup/code` (public, read only, metered 60/min).
+- Never blocking: any code is still kept on `operators.signup_promo_code`. A live partner code is recorded (`lib/partner-codes-server.ts recordRedemption`) and its deal applied at `/api/setup create_truck` (`applyPartnerDeal`).
+- **Extra months:** the trial end moves (Admin's `extendTrialEnd` rule).
+- **Percent off:** pending a decision (Open items 24).
+- **iOS:** no gate. The field takes no payment and shows no price or purchase link (3.1.1 / 3.1.3).
+
+**Sending.** One path: `lib/partner-send.ts`, shared by Admin's compose and `/api/cron/partner-sends`, every 5 min, at most one email per run. The scheduler sends only when:
+- the queue row is approved (approval mode on);
+- the partner is still eligible: ✓ verified, an allowed country, not a software platform, not stopped or opted out;
+- the cap isn't reached and the spacing holds;
+- it's inside the recipient's window;
+- the template exists;
+- the partner has an active code;
+- the opt-out line is present.
+
+`?dry_run=1&now=` tests it against a clock without the mailbox.
+
+**Stopping and suppression:**
+- A reply or a bounce stops the sequence (`lib/partner-mail-poll.ts` → `stopSequence`).
+- An opt-out sets do_not_contact, which joins the prospects' do-not-contact list (`doNotContactAddresses`).
+- Public holidays are not applied: no source exists.
+
+**Commission** (`lib/partner-commission.ts`): pct of `billing_charges.plan_minor` on paid invoices, year 1 / year 2 from each referred truck's signup. £0 while billing is off.
+
+🔴 **Templates are created only after Dominic signs the wording off**, never by an agent on its own. Merge fields: `{{contact_name|fallback}}`, `{{org}}`, `{{code}}`, `{{deal}}`, `{{commission}}`.
+
+**Proof:** `scripts/partners-2.cjs` (swept); `scripts/partners-2-import.cjs` (the import, from `docs/partners-2/verification.json`); `scripts/partners-2-screens.cjs`.
+
 # Changelog
+
+## V16.31 — 16 November 2026 — **THE PARTNER PROGRAMME: VERIFIED IMPORT, CODES THAT APPLY A DEAL, COMMISSION, LOCAL-HOURS SENDING**
+
+partners-2 (`docs/partners-2-report.md`). Not deployed; nothing sent; no template created.
+
+- **Imported:** 110 organisations from the Gemini list, each verified on the web (45 ✓, 30 ?, 35 ✗). The fta.team "metro FTA" sites are one company: the hub is the contact.
+- **Built:** the "Partner programme" section above. Migrations `20261104_partners_2` and `20261105_partners_2_import`.
+- **Signup words:** in 49 languages (`f5640f13`).
+- **Open items 24–26:** the percent-off decision, template sign-off, and addresses to choose.
 
 ## V16.30 — 16 November 2026 — **/admin OPENS IN ~0.6 s, NOT ~16 s**
 

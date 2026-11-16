@@ -233,7 +233,8 @@
     "messages-keys-used.cjs",
     "app-fixes-2.cjs",
     "admin-speed-1.cjs",
-    "trial-column-1.cjs"
+    "trial-column-1.cjs",
+    "partners-2.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -426,7 +427,9 @@
       "files": [
         "_fetch-weekly-post-fonts.cjs",
         "_weekly-post-examples.cjs",
-        "legal-languages-1-audit.cjs"
+        "legal-languages-1-audit.cjs",
+        "partners-2-import.cjs",
+        "partners-2-screens.cjs"
       ]
     },
     "needs_a_browser": {

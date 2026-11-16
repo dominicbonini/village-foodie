@@ -47,6 +47,8 @@ interface AdminTruck {
   /** trucks.timezone — the zone a trial's end of day is counted in (null → the country's default). */
   timezone?: string | null
   plan_price_override_minor?: number | null
+  /** partners-2: the partner code it signed up with (from /api/admin), or absent. */
+  referred_code?: string | null
   plan_price_override_until?: string | null
   plan_price_override_note?: string | null
   feature_overrides: Record<string, boolean> | null
@@ -1310,6 +1312,14 @@ export default function AdminPage() {
                             <span title="Code entered at signup — recorded only, not applied"
                               className="ml-2 text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-full">
                               🎟 {promoCodes[r.op.operator_id]}
+                            </span>
+                          )}
+                          {/* partners-2: the partner code this truck signed up with (trucks.referred_partner_code_id — set once at
+                              signup, never changed). Its deal was applied at signup; the partner earns its commission. */}
+                          {isOp && r.op.referred_code && (
+                            <span title="Signed up with this partner code (attribution — set once, never changed)"
+                              className="ml-2 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded-full" data-referred-code>
+                              🤝 {r.op.referred_code}
                             </span>
                           )}
                         </td>

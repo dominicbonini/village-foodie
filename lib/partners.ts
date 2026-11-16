@@ -3,7 +3,8 @@
 // No network, no database, no clock of its own: the routes, the tab and scripts/partners-1.cjs all call these, so
 // "what is due", "what an edit may write" and "when the status moves by itself" have one implementation each.
 
-export const PARTNER_TYPES = ['association', 'organiser', 'consultant', 'supplier', 'directory', 'press', 'other'] as const
+// partners-2 (20261104): + collective, media, software_platform.
+export const PARTNER_TYPES = ['association', 'collective', 'organiser', 'consultant', 'supplier', 'directory', 'media', 'press', 'software_platform', 'other'] as const
 export type PartnerType = typeof PARTNER_TYPES[number]
 export const PARTNER_STATUSES = ['to_contact', 'contacted', 'replied', 'in_talks', 'partner', 'not_now'] as const
 export type PartnerStatus = typeof PARTNER_STATUSES[number]
@@ -11,8 +12,8 @@ export const PARTNER_PRIORITIES = ['high', 'medium', 'low'] as const
 export type PartnerPriority = typeof PARTNER_PRIORITIES[number]
 
 export const TYPE_LABEL: Record<PartnerType, string> = {
-  association: 'Association', organiser: 'Organiser', consultant: 'Consultant', supplier: 'Supplier',
-  directory: 'Directory', press: 'Press', other: 'Other',
+  association: 'Association', collective: 'Collective', organiser: 'Organiser', consultant: 'Consultant', supplier: 'Supplier',
+  directory: 'Directory', media: 'Media', press: 'Press', software_platform: 'Software platform', other: 'Other',
 }
 export const STATUS_LABEL: Record<PartnerStatus, string> = {
   to_contact: 'To contact', contacted: 'Contacted', replied: 'Replied', in_talks: 'In talks', partner: 'Partner', not_now: 'Not now',
@@ -50,10 +51,21 @@ export interface Partner {
   last_reply_at: string | null
   created_at: string
   updated_at: string
+  // ── partners-2 (20261104) ──
+  alternate_emails?: string[]
+  language?: string | null
+  timezone?: string | null
+  verify_status?: 'verified' | 'unverified' | 'dropped' | null
+  verify_note?: string | null
+  verify_evidence?: string | null
+  sequence_step?: string | null
+  sequence_stopped?: string | null
+  auto_send?: boolean
+  do_not_contact?: boolean
 }
 
 /** Every column the routes select — one list, so a select and the type cannot drift. */
-export const PARTNER_COLUMNS = 'id, name, type, country_code, region, website, contact_name, contact_role, email, phone, linkedin_url, source, status, priority, next_follow_up_on, offered, outcome, notes, last_contacted_at, last_reply_at, created_at, updated_at'
+export const PARTNER_COLUMNS = 'id, name, type, country_code, region, website, contact_name, contact_role, email, phone, linkedin_url, source, status, priority, next_follow_up_on, offered, outcome, notes, last_contacted_at, last_reply_at, created_at, updated_at, alternate_emails, language, timezone, verify_status, verify_note, verify_evidence, sequence_step, sequence_stopped, auto_send, do_not_contact'
 
 const TEXT_FIELDS = ['name', 'region', 'website', 'contact_name', 'contact_role', 'email', 'phone', 'linkedin_url', 'source', 'offered', 'outcome', 'notes'] as const
 const LONG_TEXT = new Set(['offered', 'outcome', 'notes'])
@@ -110,6 +122,17 @@ export function validatePartnerPatch(input: Record<string, unknown>, opts: { cre
     const d = String(input.next_follow_up_on ?? '').trim()
     if (d && !/^\d{4}-\d{2}-\d{2}$/.test(d)) return { ok: false, error: 'Follow-up must be a date (YYYY-MM-DD).' }
     patch.next_follow_up_on = d || null
+  }
+  // partners-2: the language the partner is written to in (editable — the import guesses it from the country) and its zone.
+  if ('language' in input) {
+    const l = String(input.language ?? '').trim().toLowerCase()
+    if (l && !/^[a-z]{2}$/.test(l)) return { ok: false, error: 'Language must be a two-letter code, e.g. fr.' }
+    patch.language = l || null
+  }
+  if ('timezone' in input) {
+    const z = String(input.timezone ?? '').trim()
+    if (z) { try { new Intl.DateTimeFormat('en-GB', { timeZone: z }) } catch { return { ok: false, error: `“${z}” is not a time zone, e.g. Europe/Paris.` } } }
+    patch.timezone = z || null
   }
   if ('status' in input) return { ok: false, error: 'Change the status with the status selector, so it is logged.' }
   return { ok: true, patch }
