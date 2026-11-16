@@ -7,7 +7,7 @@
 | # | Language | UI done | Legal done | Checks | Commit |
 |---|---|---|---|---|---|
 | 1 | ru-KZ Russian (Kazakhstan) | ✅ (languages-world-2) | ✅ batch 1 — **needs native/legal check** | `_legal-translations.cjs ru-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | 6ac91927 |
-| 2 | uk-UA Ukrainian | ✅ (lw-2) | ✅ batch 2 — **needs native/legal check** | `_legal-translations.cjs uk-UA` 3/3 ✓; `legal-languages-1` /ua/privacy, /ua/terms, /ua/country-terms ✓ | languages-world-3 batch 2 |
+| 2 | uk-UA Ukrainian | ✅ (lw-2) | ✅ batch 2 — **needs native/legal check** | `_legal-translations.cjs uk-UA` 3/3 ✓; `legal-languages-1` /ua/privacy, /ua/terms, /ua/country-terms ✓ | daf550f8 |
 | 3 | hi-IN Hindi | ✅ (lw-2) | — | | |
 | 4 | bn-BD Bengali | ✅ (lw-2) | — | | |
 | 5 | ur-PK Urdu | ✅ (lw-2) | — | | |
