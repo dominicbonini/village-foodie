@@ -212,7 +212,7 @@
  "auth.sessionAlert.body": "Everything on the screen is still in place. New changes may not be saved until you log in again.",
  "auth.sessionAlert.signIn": "Log in again",
  "auth.sessionAlert.title": "Your login needs attention",
- "auth.signup.codeLabel": "Do you have a code? <optional>(optional)</optional>",
+ "auth.signup.codeLabel": "Partner code or promo code (optional)",
  "auth.signup.codePlaceholder": "Enter it here",
  "auth.signup.consent": "By creating an account you agree to our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>. No card needed. Nothing is published until you decide.",
  "auth.signup.emailPlaceholder": "siz@fudtragynyz.kz",
@@ -5941,5 +5941,11 @@
  "errorPage.backToDashboard": "Back to the control panel",
  "errorPage.errorBodyDashboard": "Sorry, this page did not load. Try again, or go back to the control panel.",
  "errorPage.sectionFailed": "This section did not load.",
- "auth.reset.sendNewLink": "Request a new link"
+ "auth.reset.sendNewLink": "Request a new link",
+ "auth.signup.codeApply": "Apply",
+ "auth.signup.codeApplied": "Code applied: {deal} ({partner})",
+ "auth.signup.codeInvalid": "This code is invalid.",
+ "auth.signup.codeExpired": "This code's term has passed (expired).",
+ "auth.signup.dealExtraMonths": "an additional # month(s) free",
+ "auth.signup.dealPercentOff": "{pct}% discount for # month(s)"
 }

@@ -212,7 +212,7 @@
  "auth.sessionAlert.body": "Everything on screen remains as it is. New changes may not be saved until you log in again.",
  "auth.sessionAlert.signIn": "Log in again",
  "auth.sessionAlert.title": "Please check your login status",
- "auth.signup.codeLabel": "Do you have a code? <optional>(optional)</optional>",
+ "auth.signup.codeLabel": "Partner code / promo code (optional)",
  "auth.signup.codePlaceholder": "Please enter it here",
  "auth.signup.consent": "By creating an account you are deemed to agree to the <terms>Terms of Use</terms> and <privacy>Privacy Policy</privacy>. No card registration needed. Nothing is shown publicly until you make it public yourself.",
  "auth.signup.emailPlaceholder": "you@yourtruck.co.uk",
@@ -5941,5 +5941,11 @@
  "errorPage.backToDashboard": "Back to the dashboard",
  "errorPage.errorBodyDashboard": "Sorry, this page did not load. Try again, or go back to the dashboard.",
  "errorPage.sectionFailed": "This section did not load.",
- "auth.reset.sendNewLink": "Request a new reset link"
+ "auth.reset.sendNewLink": "Request a new reset link",
+ "auth.signup.codeApply": "Apply",
+ "auth.signup.codeApplied": "The code has been applied: {deal} ({partner})",
+ "auth.signup.codeInvalid": "This code is invalid.",
+ "auth.signup.codeExpired": "This code's validity period has run out.",
+ "auth.signup.dealExtraMonths": "a further # months free",
+ "auth.signup.dealPercentOff": "{pct}% off for # months"
 }

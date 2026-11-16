@@ -212,7 +212,7 @@
  "auth.sessionAlert.body": "Everything on the screen is still safe. New changes may not save until you log in again.",
  "auth.sessionAlert.signIn": "Log in again",
  "auth.sessionAlert.title": "Your login needs attention",
- "auth.signup.codeLabel": "Do you have a code? <optional>(optional)</optional>",
+ "auth.signup.codeLabel": "Partner or discount code (optional)",
  "auth.signup.codePlaceholder": "Enter it here",
  "auth.signup.consent": "By creating an account you accept our <terms>terms of use</terms> and our <privacy>privacy notice</privacy>. No card needed. Nothing is published until you decide so yourself.",
  "auth.signup.emailPlaceholder": "name@yourfoodtruck.fi",
@@ -5941,5 +5941,11 @@
  "errorPage.backToDashboard": "Back to the control panel",
  "errorPage.errorBodyDashboard": "Sorry, this page did not load. Try again, or go back to the control panel.",
  "errorPage.sectionFailed": "This section did not load.",
- "auth.reset.sendNewLink": "Request a new link"
+ "auth.reset.sendNewLink": "Request a new link",
+ "auth.signup.codeApply": "Use / Apply",
+ "auth.signup.codeApplied": "Code used: {deal} ({partner})",
+ "auth.signup.codeInvalid": "The code is not valid.",
+ "auth.signup.codeExpired": "The code has expired.",
+ "auth.signup.dealExtraMonths": "# extra month(s) free",
+ "auth.signup.dealPercentOff": "{pct}% discount for # month(s)"
 }

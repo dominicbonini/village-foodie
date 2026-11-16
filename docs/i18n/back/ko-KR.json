@@ -212,7 +212,7 @@
  "auth.sessionAlert.body": "Everything on the screen is still there. New changes may not be saved until you log in again.",
  "auth.sessionAlert.signIn": "Log in again",
  "auth.sessionAlert.title": "Please check your login status",
- "auth.signup.codeLabel": "Have a code? <optional>(optional)</optional>",
+ "auth.signup.codeLabel": "Partner code or promotion code (optional)",
  "auth.signup.codePlaceholder": "Enter it here",
  "auth.signup.consent": "By creating an account you agree to the <terms>Terms of Use</terms> and <privacy>Privacy Policy</privacy>. No card needed. Nothing is made public until you publish it yourself.",
  "auth.signup.emailPlaceholder": "you@yourfoodtruck.co.kr",
@@ -5941,5 +5941,11 @@
  "errorPage.backToDashboard": "Back to the dashboard",
  "errorPage.errorBodyDashboard": "Sorry, this page did not load. Try again, or go back to the dashboard.",
  "errorPage.sectionFailed": "This section did not load.",
- "auth.reset.sendNewLink": "Request a new reset link"
+ "auth.reset.sendNewLink": "Request a new reset link",
+ "auth.signup.codeApply": "Apply",
+ "auth.signup.codeApplied": "Code applied: {deal} ({partner})",
+ "auth.signup.codeInvalid": "It's an invalid code.",
+ "auth.signup.codeExpired": "It's an expired code.",
+ "auth.signup.dealExtraMonths": "# months additionally free",
+ "auth.signup.dealPercentOff": "{pct}% discount for # months"
 }
