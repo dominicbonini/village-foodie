@@ -79,6 +79,13 @@
   "showPassword": "Wachtwoord tonen",
   "promoLabel": "Heb je een code? <opt>(optioneel)</opt>",
   "promoPlaceholder": "Vul hem hier in",
+  "partnerCodeLabel": "Partner- of kortingscode <optional>(optioneel)</optional>",
+  "partnerCodeApply": "Toepassen",
+  "partnerCodeApplied": "Code toegepast: {deal} ({partner})",
+  "partnerCodeInvalid": "Die code is niet geldig.",
+  "partnerCodeExpired": "Die code is verlopen.",
+  "partnerDealExtraMonths": "{months, plural, one {# extra maand gratis} other {# extra maanden gratis}}",
+  "partnerDealPercentOff": "{pct}% korting gedurende {months, plural, one {# maand} other {# maanden}}",
   "agreeTerms": "Ik ga akkoord met de <terms>Voorwaarden</terms> en het <privacy>Privacybeleid</privacy>.",
   "freeMonth": "{months, plural, =0 {Je gratis proefperiode begint zodra je je account aanmaakt.} one {Je eerste maand is gratis, vanaf het moment dat je je account aanmaakt.} other {Je eerste # maanden zijn gratis, vanaf het moment dat je je account aanmaakt.}}",
   "fieldError": {

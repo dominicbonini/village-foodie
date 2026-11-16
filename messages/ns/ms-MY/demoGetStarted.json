@@ -79,6 +79,13 @@
   "showPassword": "Tunjukkan kata laluan",
   "promoLabel": "Ada kod? <opt>(pilihan)</opt>",
   "promoPlaceholder": "Masukkan di sini",
+  "partnerCodeLabel": "Kod rakan kongsi atau promosi <optional>(pilihan)</optional>",
+  "partnerCodeApply": "Guna",
+  "partnerCodeApplied": "Kod digunakan: {deal} ({partner})",
+  "partnerCodeInvalid": "Kod itu tidak sah.",
+  "partnerCodeExpired": "Kod itu telah tamat tempoh.",
+  "partnerDealExtraMonths": "{months, plural, other {# bulan tambahan percuma}}",
+  "partnerDealPercentOff": "diskaun {pct}% selama {months, plural, other {# bulan}}",
   "agreeTerms": "Saya bersetuju dengan <terms>Terma</terms> dan <privacy>Dasar Privasi</privacy>.",
   "freeMonth": "{months, plural, =0 {Percubaan percuma anda bermula apabila anda mencipta akaun.} other {# bulan pertama anda percuma, bermula apabila anda mencipta akaun.}}",
   "fieldError": {

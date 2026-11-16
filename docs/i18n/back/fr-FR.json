@@ -212,7 +212,7 @@
  "auth.sessionAlert.body": "Everything on screen is still there. New changes may not be saved until you have logged in again.",
  "auth.sessionAlert.signIn": "Log in again",
  "auth.sessionAlert.title": "Your login needs your attention",
- "auth.signup.codeLabel": "Partner or promo code (optional)",
+ "auth.signup.codeLabel": "Do you have a code? <optional>(optional)</optional>",
  "auth.signup.codePlaceholder": "Enter it here",
  "auth.signup.consent": "By creating an account, you accept our <terms>Terms of use</terms> and our <privacy>Privacy Policy</privacy>. No card required. Nothing is made public without your agreement.",
  "auth.signup.emailPlaceholder": "you@yourtruck.co.uk",
@@ -5947,5 +5947,13 @@
  "auth.signup.codeInvalid": "This code is not valid.",
  "auth.signup.codeExpired": "This code has expired.",
  "auth.signup.dealExtraMonths": "# additional month(s) free (offered)",
- "auth.signup.dealPercentOff": "{pct}% discount for # month(s)"
+ "auth.signup.dealPercentOff": "{pct}% discount for # month(s)",
+ "auth.signup.partnerCodeLabel": "Partner or promo code (optional)",
+ "demoGetStarted.partnerCodeLabel": "Partner or promo code (optional)",
+ "demoGetStarted.partnerCodeApply": "Apply",
+ "demoGetStarted.partnerCodeApplied": "Code applied: {deal} ({partner})",
+ "demoGetStarted.partnerCodeInvalid": "This code is not valid.",
+ "demoGetStarted.partnerCodeExpired": "This code has expired.",
+ "demoGetStarted.partnerDealExtraMonths": "# additional month(s) free (offered)",
+ "demoGetStarted.partnerDealPercentOff": "{pct}% discount for # month(s)"
 }

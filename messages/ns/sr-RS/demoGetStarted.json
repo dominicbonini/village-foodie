@@ -79,6 +79,13 @@
   "showPassword": "Prikaži lozinku",
   "promoLabel": "Imate kod? <opt>(nije obavezno)</opt>",
   "promoPlaceholder": "Unesite ga ovde",
+  "partnerCodeLabel": "Partnerski ili promo kod <optional>(nije obavezno)</optional>",
+  "partnerCodeApply": "Primeni",
+  "partnerCodeApplied": "Kod je primenjen: {deal} ({partner})",
+  "partnerCodeInvalid": "Taj kod nije važeći.",
+  "partnerCodeExpired": "Taj kod je istekao.",
+  "partnerDealExtraMonths": "{months, plural, one {# dodatni mesec besplatno} few {# dodatna meseca besplatno} other {# dodatnih meseci besplatno}}",
+  "partnerDealPercentOff": "{pct}% popusta tokom {months, plural, one {# meseca} few {# meseca} other {# meseci}}",
   "agreeTerms": "Prihvatam <terms>Uslove korišćenja</terms> i <privacy>Politiku privatnosti</privacy>.",
   "freeMonth": "{months, plural, =0 {Vaš besplatni probni period počinje kada se registrujete.} one {Prvi # mesec je besplatan, računajući od registracije.} few {Prva # meseca su besplatna, računajući od registracije.} other {Prvih # meseci je besplatno, računajući od registracije.}}",
   "fieldError": {

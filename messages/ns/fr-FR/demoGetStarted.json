@@ -79,6 +79,13 @@
   "showPassword": "Afficher le mot de passe",
   "promoLabel": "Vous avez un code ? <opt>(facultatif)</opt>",
   "promoPlaceholder": "Saisissez-le ici",
+  "partnerCodeLabel": "Code partenaire ou promo <optional>(facultatif)</optional>",
+  "partnerCodeApply": "Appliquer",
+  "partnerCodeApplied": "Code appliqué : {deal} ({partner})",
+  "partnerCodeInvalid": "Ce code n’est pas valide.",
+  "partnerCodeExpired": "Ce code a expiré.",
+  "partnerDealExtraMonths": "{months, plural, one {# mois supplémentaire offert} many {# de mois supplémentaires offerts} other {# mois supplémentaires offerts}}",
+  "partnerDealPercentOff": "{pct} % de réduction pendant {months, plural, one {# mois} many {# de mois} other {# mois}}",
   "agreeTerms": "J’accepte les <terms>Conditions</terms> et la <privacy>Politique de confidentialité</privacy>.",
   "freeMonth": "{months, plural, =0 {Votre essai gratuit commence à la création de votre compte.} one {Votre premier mois est gratuit, à partir de la création de votre compte.} many {Vos # premiers mois sont gratuits, à partir de la création de votre compte.} other {Vos # premiers mois sont gratuits, à partir de la création de votre compte.}}",
   "fieldError": {

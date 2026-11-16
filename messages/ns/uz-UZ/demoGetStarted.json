@@ -79,6 +79,13 @@
   "showPassword": "Parolni koʻrsatish",
   "promoLabel": "Kodingiz bormi? <opt>(ixtiyoriy)</opt>",
   "promoPlaceholder": "Shu yerga kiriting",
+  "partnerCodeLabel": "Hamkor kodi yoki promokod <optional>(ixtiyoriy)</optional>",
+  "partnerCodeApply": "Qoʻllash",
+  "partnerCodeApplied": "Kod qoʻllandi: {deal} ({partner})",
+  "partnerCodeInvalid": "Bu kod yaroqsiz.",
+  "partnerCodeExpired": "Bu kodning muddati tugagan.",
+  "partnerDealExtraMonths": "{months, plural, one {qoʻshimcha # oy bepul} other {qoʻshimcha # oy bepul}}",
+  "partnerDealPercentOff": "{months, plural, one {# oy} other {# oy}} davomida {pct}% chegirma",
   "agreeTerms": "<terms>Foydalanish shartlari</terms> hamda <privacy>Maxfiylik siyosati</privacy> bilan roziman.",
   "freeMonth": "{months, plural, =0 {Bepul sinov muddati roʻyxatdan oʻtgan paytingizdan boshlanadi.} one {Birinchi oy bepul — roʻyxatdan oʻtgan paytingizdan boshlab.} other {Birinchi # oy bepul — roʻyxatdan oʻtgan paytingizdan boshlab.}}",
   "fieldError": {

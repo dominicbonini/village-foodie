@@ -79,6 +79,13 @@
   "showPassword": "Құпиясөзді көрсету",
   "promoLabel": "Кодыңыз бар ма? <opt>(міндетті емес)</opt>",
   "promoPlaceholder": "Осында енгізіңіз",
+  "partnerCodeLabel": "Серіктес коды немесе промокод <optional>(міндетті емес)</optional>",
+  "partnerCodeApply": "Қолдану",
+  "partnerCodeApplied": "Код қолданылды: {deal} ({partner})",
+  "partnerCodeInvalid": "Бұл код жарамсыз.",
+  "partnerCodeExpired": "Бұл кодтың мерзімі өтіп кеткен.",
+  "partnerDealExtraMonths": "{months, plural, one {қосымша # ай тегін} other {қосымша # ай тегін}}",
+  "partnerDealPercentOff": "{months, plural, one {# айға} other {# айға}} {pct}% жеңілдік",
   "agreeTerms": "<terms>Шарттармен</terms> және <privacy>Құпиялылық саясатымен</privacy> келісемін.",
   "freeMonth": "{months, plural, =0 {Тегін сынақ мерзімі тіркелген сәттен басталады.} one {Алғашқы айыңыз тегін — тіркелген сәттен бастап.} other {Алғашқы # айыңыз тегін — тіркелген сәттен бастап.}}",
   "fieldError": {

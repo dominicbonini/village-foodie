@@ -79,6 +79,13 @@
   "showPassword": "Vis passord",
   "promoLabel": "Har du en kode? <opt>(valgfritt)</opt>",
   "promoPlaceholder": "Skriv den inn her",
+  "partnerCodeLabel": "Partner- eller rabattkode <optional>(valgfritt)</optional>",
+  "partnerCodeApply": "Bruk",
+  "partnerCodeApplied": "Koden er brukt: {deal} ({partner})",
+  "partnerCodeInvalid": "Koden er ikke gyldig.",
+  "partnerCodeExpired": "Koden har utløpt.",
+  "partnerDealExtraMonths": "{months, plural, one {# ekstra måned gratis} other {# ekstra måneder gratis}}",
+  "partnerDealPercentOff": "{pct} % rabatt i {months, plural, one {# måned} other {# måneder}}",
   "agreeTerms": "Jeg godtar <terms>vilkårene</terms> og <privacy>personvernerklæringen</privacy>.",
   "freeMonth": "{months, plural, =0 {Den gratis prøveperioden starter når du oppretter kontoen.} one {Den første måneden er gratis, regnet fra du oppretter kontoen.} other {De første # månedene er gratis, regnet fra du oppretter kontoen.}}",
   "fieldError": {

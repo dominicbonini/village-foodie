@@ -79,6 +79,13 @@
   "showPassword": "পাসওয়ার্ড দেখান",
   "promoLabel": "কোনো কোড আছে? <opt>(ঐচ্ছিক)</opt>",
   "promoPlaceholder": "এখানে লিখুন",
+  "partnerCodeLabel": "পার্টনার বা প্রোমো কোড <optional>(ঐচ্ছিক)</optional>",
+  "partnerCodeApply": "প্রয়োগ করুন",
+  "partnerCodeApplied": "কোড প্রয়োগ হয়েছে: {deal} ({partner})",
+  "partnerCodeInvalid": "এই কোডটি সঠিক নয়।",
+  "partnerCodeExpired": "এই কোডের মেয়াদ শেষ হয়ে গেছে।",
+  "partnerDealExtraMonths": "{months, plural, one {# মাস অতিরিক্ত ফ্রি} other {# মাস অতিরিক্ত ফ্রি}}",
+  "partnerDealPercentOff": "{months, plural, one {# মাস} other {# মাস}} ধরে {pct}% ছাড়",
   "agreeTerms": "আমি <terms>শর্তাবলি</terms> ও <privacy>গোপনীয়তা নীতি</privacy> মেনে নিচ্ছি।",
   "freeMonth": "{months, plural, =0 {সাইন আপ করলেই আপনার ফ্রি ট্রায়াল শুরু হবে।} one {সাইন আপ করার দিন থেকে আপনার প্রথম মাস ফ্রি।} other {সাইন আপ করার দিন থেকে আপনার প্রথম # মাস ফ্রি।}}",
   "fieldError": {

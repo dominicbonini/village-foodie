@@ -79,6 +79,13 @@
   "showPassword": "Parolu göstər",
   "promoLabel": "Kodunuz var? <opt>(istəyə bağlı)</opt>",
   "promoPlaceholder": "Buraya daxil edin",
+  "partnerCodeLabel": "Partnyor və ya promo kodu <optional>(istəyə bağlı)</optional>",
+  "partnerCodeApply": "Tətbiq et",
+  "partnerCodeApplied": "Kod tətbiq edildi: {deal} ({partner})",
+  "partnerCodeInvalid": "Bu kod etibarsızdır.",
+  "partnerCodeExpired": "Bu kodun müddəti bitib.",
+  "partnerDealExtraMonths": "{months, plural, one {# əlavə ay pulsuz} other {# əlavə ay pulsuz}}",
+  "partnerDealPercentOff": "{months, plural, one {# ay} other {# ay}} ərzində {pct}% endirim",
   "agreeTerms": "<terms>Şərtləri</terms> və <privacy>Məxfilik siyasətini</privacy> qəbul edirəm.",
   "freeMonth": "{months, plural, =0 {Pulsuz sınaq qeydiyyatdan keçdiyiniz an başlayır.} one {İlk ayınız pulsuzdur, qeydiyyatdan keçdiyiniz andan başlayaraq.} other {İlk # ayınız pulsuzdur, qeydiyyatdan keçdiyiniz andan başlayaraq.}}",
   "fieldError": {

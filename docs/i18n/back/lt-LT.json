@@ -212,7 +212,7 @@
  "auth.sessionAlert.body": "Everything on screen has been kept. New changes may not be saved until you log in again.",
  "auth.sessionAlert.signIn": "Log in again",
  "auth.sessionAlert.title": "Check your login",
- "auth.signup.codeLabel": "Partner or discount code (optional)",
+ "auth.signup.codeLabel": "Have a code? <optional>(optional)</optional>",
  "auth.signup.codePlaceholder": "Enter it here",
  "auth.signup.consent": "By creating an account you agree to our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>. No card needed. Nothing will become public until you decide so.",
  "auth.signup.emailPlaceholder": "jus@jusufoodtruck.lt",
@@ -5947,5 +5947,13 @@
  "auth.signup.codeInvalid": "This code is not valid.",
  "auth.signup.codeExpired": "This code's validity has ended.",
  "auth.signup.dealExtraMonths": "# additional month(s) free",
- "auth.signup.dealPercentOff": "{pct}% discount for # month(s)"
+ "auth.signup.dealPercentOff": "{pct}% discount for # month(s)",
+ "auth.signup.partnerCodeLabel": "Partner or discount code (optional)",
+ "demoGetStarted.partnerCodeLabel": "Partner or discount code (optional)",
+ "demoGetStarted.partnerCodeApply": "Apply",
+ "demoGetStarted.partnerCodeApplied": "Code applied: {deal} ({partner})",
+ "demoGetStarted.partnerCodeInvalid": "This code is not valid.",
+ "demoGetStarted.partnerCodeExpired": "This code's validity has ended.",
+ "demoGetStarted.partnerDealExtraMonths": "# additional month(s) free",
+ "demoGetStarted.partnerDealPercentOff": "{pct}% discount for # month(s)"
 }

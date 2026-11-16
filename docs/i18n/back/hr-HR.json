@@ -212,7 +212,7 @@
  "auth.sessionAlert.body": "Everything on screen is still here. New changes may not save until you log in again.",
  "auth.sessionAlert.signIn": "Log in again",
  "auth.sessionAlert.title": "Your login needs attention",
- "auth.signup.codeLabel": "Partner or promotional code (optional)",
+ "auth.signup.codeLabel": "Have a code? <optional>(optional)</optional>",
  "auth.signup.codePlaceholder": "Type it here",
  "auth.signup.consent": "By creating an account you accept our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>. No card needed. Nothing becomes public until you decide so.",
  "auth.signup.emailPlaceholder": "you@yourfoodtruck.hr",
@@ -5947,5 +5947,13 @@
  "auth.signup.codeInvalid": "That code is not valid.",
  "auth.signup.codeExpired": "That code has expired.",
  "auth.signup.dealExtraMonths": "# additional month(s) free",
- "auth.signup.dealPercentOff": "{pct}% discount during # month(s)"
+ "auth.signup.dealPercentOff": "{pct}% discount during # month(s)",
+ "auth.signup.partnerCodeLabel": "Partner or promotional code (optional)",
+ "demoGetStarted.partnerCodeLabel": "Partner or promotional code (optional)",
+ "demoGetStarted.partnerCodeApply": "Apply",
+ "demoGetStarted.partnerCodeApplied": "The code is applied: {deal} ({partner})",
+ "demoGetStarted.partnerCodeInvalid": "That code is not valid.",
+ "demoGetStarted.partnerCodeExpired": "That code has expired.",
+ "demoGetStarted.partnerDealExtraMonths": "# additional month(s) free",
+ "demoGetStarted.partnerDealPercentOff": "{pct}% discount during # month(s)"
 }

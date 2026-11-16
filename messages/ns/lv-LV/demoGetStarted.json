@@ -79,6 +79,13 @@
   "showPassword": "Rādīt paroli",
   "promoLabel": "Vai jums ir kods? <opt>(neobligāti)</opt>",
   "promoPlaceholder": "Ievadiet to šeit",
+  "partnerCodeLabel": "Partnera kods vai promokods <optional>(neobligāti)</optional>",
+  "partnerCodeApply": "Lietot",
+  "partnerCodeApplied": "Kods piemērots: {deal} ({partner})",
+  "partnerCodeInvalid": "Šis kods nav derīgs.",
+  "partnerCodeExpired": "Šī koda derīgums ir beidzies.",
+  "partnerDealExtraMonths": "{months, plural, zero {# papildu mēneši bez maksas} one {# papildu mēnesis bez maksas} other {# papildu mēneši bez maksas}}",
+  "partnerDealPercentOff": "{pct}% atlaide uz {months, plural, zero {# mēnešiem} one {# mēnesi} other {# mēnešiem}}",
   "agreeTerms": "Es piekrītu <terms>Noteikumiem</terms> un <privacy>Privātuma politikai</privacy>.",
   "freeMonth": "{months, plural, =0 {Jūsu bezmaksas izmēģinājuma periods sākas, kad izveidojat kontu.} zero {Jūsu pirmie # mēneši ir bez maksas, sākot no konta izveides.} one {Pirmais # mēnesis ir bez maksas, sākot no konta izveides.} other {Jūsu pirmie # mēneši ir bez maksas, sākot no konta izveides.}}",
   "fieldError": {

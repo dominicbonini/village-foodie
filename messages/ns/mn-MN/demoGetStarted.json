@@ -79,6 +79,13 @@
   "showPassword": "Нууц үгийг харуулах",
   "promoLabel": "Код байгаа юу? <opt>(заавал биш)</opt>",
   "promoPlaceholder": "Энд оруулаарай",
+  "partnerCodeLabel": "Түншийн код эсвэл промо код <optional>(заавал биш)</optional>",
+  "partnerCodeApply": "Ашиглах",
+  "partnerCodeApplied": "Код идэвхжлээ: {deal} ({partner})",
+  "partnerCodeInvalid": "Энэ код хүчингүй байна.",
+  "partnerCodeExpired": "Энэ кодын хугацаа дууссан байна.",
+  "partnerDealExtraMonths": "{months, plural, one {нэмэлт # сар үнэгүй} other {нэмэлт # сар үнэгүй}}",
+  "partnerDealPercentOff": "{months, plural, one {# сарын} other {# сарын}} хугацаанд {pct}% хөнгөлөлт",
   "agreeTerms": "Би дараахыг зөвшөөрч байна: <terms>Үйлчилгээний нөхцөл</terms>, <privacy>Нууцлалын бодлого</privacy>.",
   "freeMonth": "{months, plural, =0 {Таны үнэгүй туршилт бүртгүүлэхэд тань эхэлнэ.} one {Таны эхний сар үнэгүй — бүртгүүлсэн өдрөөс тань эхэлнэ.} other {Таны эхний # сар үнэгүй — бүртгүүлсэн өдрөөс тань эхэлнэ.}}",
   "fieldError": {

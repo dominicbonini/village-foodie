@@ -79,6 +79,13 @@
   "showPassword": "Afișați parola",
   "promoLabel": "Aveți un cod? <opt>(opțional)</opt>",
   "promoPlaceholder": "Introduceți-l aici",
+  "partnerCodeLabel": "Cod de partener sau promoțional <optional>(opțional)</optional>",
+  "partnerCodeApply": "Aplicați",
+  "partnerCodeApplied": "Cod aplicat: {deal} ({partner})",
+  "partnerCodeInvalid": "Acest cod nu este valid.",
+  "partnerCodeExpired": "Acest cod a expirat.",
+  "partnerDealExtraMonths": "{months, plural, one {# lună suplimentară gratuită} few {# luni suplimentare gratuite} other {# de luni suplimentare gratuite}}",
+  "partnerDealPercentOff": "{pct}% reducere timp de {months, plural, one {# lună} few {# luni} other {# de luni}}",
   "agreeTerms": "Accept <terms>Termenii</terms> și <privacy>Politica de confidențialitate</privacy>.",
   "freeMonth": "{months, plural, =0 {Perioada de probă gratuită începe când vă creați contul.} one {Prima lună este gratuită, de la crearea contului.} few {Primele # luni sunt gratuite, de la crearea contului.} other {Primele # de luni sunt gratuite, de la crearea contului.}}",
   "fieldError": {

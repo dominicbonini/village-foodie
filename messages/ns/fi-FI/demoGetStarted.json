@@ -79,6 +79,13 @@
   "showPassword": "Näytä salasana",
   "promoLabel": "Onko sinulla koodi? <opt>(valinnainen)</opt>",
   "promoPlaceholder": "Syötä se tähän",
+  "partnerCodeLabel": "Kumppani- tai alennuskoodi <optional>(valinnainen)</optional>",
+  "partnerCodeApply": "Käytä",
+  "partnerCodeApplied": "Koodi käytetty: {deal} ({partner})",
+  "partnerCodeInvalid": "Koodi ei kelpaa.",
+  "partnerCodeExpired": "Koodi on vanhentunut.",
+  "partnerDealExtraMonths": "{months, plural, one {# lisäkuukausi ilmaiseksi} other {# lisäkuukautta ilmaiseksi}}",
+  "partnerDealPercentOff": "{pct} % alennus {months, plural, one {# kuukaudeksi} other {# kuukaudeksi}}",
   "agreeTerms": "Hyväksyn <terms>käyttöehdot</terms> ja <privacy>tietosuojaselosteen</privacy>.",
   "freeMonth": "{months, plural, =0 {Ilmainen kokeilujaksosi alkaa, kun luot tilisi.} one {Ensimmäinen kuukautesi on ilmainen, tilin luomisesta alkaen.} other {Ensimmäiset # kuukauttasi ovat ilmaisia, tilin luomisesta alkaen.}}",
   "fieldError": {

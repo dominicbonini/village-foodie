@@ -79,6 +79,13 @@
   "showPassword": "პაროლის ჩვენება",
   "promoLabel": "გაქვთ კოდი? <opt>(არასავალდებულო)</opt>",
   "promoPlaceholder": "შეიყვანეთ აქ",
+  "partnerCodeLabel": "პარტნიორის კოდი ან პრომოკოდი <optional>(არასავალდებულო)</optional>",
+  "partnerCodeApply": "გამოყენება",
+  "partnerCodeApplied": "კოდი გამოყენებულია: {deal} ({partner})",
+  "partnerCodeInvalid": "ეს კოდი არასწორია.",
+  "partnerCodeExpired": "ამ კოდს ვადა გაუვიდა.",
+  "partnerDealExtraMonths": "{months, plural, one {# დამატებითი თვე უფასოდ} other {# დამატებითი თვე უფასოდ}}",
+  "partnerDealPercentOff": "{months, plural, one {# თვის} other {# თვის}} განმავლობაში {pct}% ფასდაკლება",
   "agreeTerms": "ვეთანხმები <terms>პირობებს</terms> და <privacy>კონფიდენციალურობის პოლიტიკას</privacy>.",
   "freeMonth": "{months, plural, =0 {უფასო საცდელი პერიოდი რეგისტრაციისთანავე იწყება.} one {პირველი თვე უფასოა — ათვლა რეგისტრაციისთანავე იწყება.} other {პირველი # თვე უფასოა — ათვლა რეგისტრაციისთანავე იწყება.}}",
   "fieldError": {

@@ -79,6 +79,13 @@
   "showPassword": "Sýna lykilorð",
   "promoLabel": "Ertu með kóða? <opt>(valfrjálst)</opt>",
   "promoPlaceholder": "Sláðu hann inn hér",
+  "partnerCodeLabel": "Samstarfs- eða afsláttarkóði <optional>(valfrjálst)</optional>",
+  "partnerCodeApply": "Nota",
+  "partnerCodeApplied": "Kóði samþykktur: {deal} ({partner})",
+  "partnerCodeInvalid": "Þessi kóði er ekki gildur.",
+  "partnerCodeExpired": "Þessi kóði er útrunninn.",
+  "partnerDealExtraMonths": "{months, plural, one {# aukamánuður ókeypis} other {# aukamánuðir ókeypis}}",
+  "partnerDealPercentOff": "{pct}% afsláttur í {months, plural, one {# mánuð} other {# mánuði}}",
   "agreeTerms": "Ég samþykki <terms>skilmálana</terms> og <privacy>persónuverndarstefnuna</privacy>.",
   "freeMonth": "{months, plural, =0 {Ókeypis prufan hefst þegar þú skráir þig.} one {# mánuður er ókeypis og hefst þegar þú skráir þig.} other {Fyrstu # mánuðirnir eru ókeypis og hefjast þegar þú skráir þig.}}",
   "fieldError": {

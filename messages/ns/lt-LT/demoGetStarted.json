@@ -79,6 +79,13 @@
   "showPassword": "Rodyti slaptažodį",
   "promoLabel": "Turite kodą? <opt>(neprivaloma)</opt>",
   "promoPlaceholder": "Įveskite jį čia",
+  "partnerCodeLabel": "Partnerio arba nuolaidos kodas <optional>(neprivaloma)</optional>",
+  "partnerCodeApply": "Taikyti",
+  "partnerCodeApplied": "Kodas pritaikytas: {deal} ({partner})",
+  "partnerCodeInvalid": "Šis kodas negalioja.",
+  "partnerCodeExpired": "Šio kodo galiojimas baigėsi.",
+  "partnerDealExtraMonths": "{months, plural, one {# papildomas mėnuo nemokamai} few {# papildomi mėnesiai nemokamai} many {# papildomo mėnesio nemokamai} other {# papildomų mėnesių nemokamai}}",
+  "partnerDealPercentOff": "{pct} % nuolaida {months, plural, one {# mėnesį} few {# mėnesius} many {# mėnesio} other {# mėnesių}}",
   "agreeTerms": "Sutinku su <terms>Sąlygomis</terms> ir <privacy>Privatumo politika</privacy>.",
   "freeMonth": "{months, plural, =0 {Nemokamas bandomasis laikotarpis prasideda, kai susikuriate paskyrą.} one {Pirmas # mėnuo nemokamas, skaičiuojant nuo paskyros sukūrimo.} few {Pirmi # mėnesiai nemokami, skaičiuojant nuo paskyros sukūrimo.} many {Pirmi # mėnesio nemokami, skaičiuojant nuo paskyros sukūrimo.} other {Pirmi # mėnesių nemokami, skaičiuojant nuo paskyros sukūrimo.}}",
   "fieldError": {

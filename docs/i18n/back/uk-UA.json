@@ -212,7 +212,7 @@
  "auth.sessionAlert.body": "Everything on screen hasn’t gone anywhere. New changes may not save until you log in again.",
  "auth.sessionAlert.signIn": "Log in again",
  "auth.sessionAlert.title": "You need to log in again",
- "auth.signup.codeLabel": "Partner code or promo code (optional)",
+ "auth.signup.codeLabel": "Have a code? <optional>(optional)</optional>",
  "auth.signup.codePlaceholder": "Enter it here",
  "auth.signup.consent": "By creating an account, you agree to our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>. No card needed. Nothing becomes public until you say so.",
  "auth.signup.emailPlaceholder": "vy@vashfudtrak.com.ua",
@@ -5947,5 +5947,13 @@
  "auth.signup.codeInvalid": "This code is invalid.",
  "auth.signup.codeExpired": "This code's validity period has passed.",
  "auth.signup.dealExtraMonths": "# additional month(s) free",
- "auth.signup.dealPercentOff": "{pct}% discount for # month(s)"
+ "auth.signup.dealPercentOff": "{pct}% discount for # month(s)",
+ "auth.signup.partnerCodeLabel": "Partner code or promo code (optional)",
+ "demoGetStarted.partnerCodeLabel": "Partner code or promo code (optional)",
+ "demoGetStarted.partnerCodeApply": "Apply",
+ "demoGetStarted.partnerCodeApplied": "Code applied: {deal} ({partner})",
+ "demoGetStarted.partnerCodeInvalid": "This code is invalid.",
+ "demoGetStarted.partnerCodeExpired": "This code's validity period has passed.",
+ "demoGetStarted.partnerDealExtraMonths": "# additional month(s) free",
+ "demoGetStarted.partnerDealPercentOff": "{pct}% discount for # month(s)"
 }

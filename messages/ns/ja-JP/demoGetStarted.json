@@ -79,6 +79,13 @@
   "showPassword": "パスワードを表示",
   "promoLabel": "コードをお持ちですか？<opt>（任意）</opt>",
   "promoPlaceholder": "こちらに入力してください",
+  "partnerCodeLabel": "パートナーコード・プロモコード<optional>（任意）</optional>",
+  "partnerCodeApply": "適用",
+  "partnerCodeApplied": "コードを適用しました：{deal}（{partner}）",
+  "partnerCodeInvalid": "このコードは無効です。",
+  "partnerCodeExpired": "このコードは有効期限が切れています。",
+  "partnerDealExtraMonths": "{months, plural, other {さらに#か月無料}}",
+  "partnerDealPercentOff": "{months, plural, other {#か月間}}{pct}%オフ",
   "agreeTerms": "<terms>利用規約</terms>および<privacy>プライバシーポリシー</privacy>に同意します。",
   "freeMonth": "{months, plural, =0 {無料トライアルはアカウント作成時に始まります。} other {アカウント作成時から最初の#か月間は無料です。}}",
   "fieldError": {

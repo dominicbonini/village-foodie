@@ -79,6 +79,13 @@
   "showPassword": "Показать пароль",
   "promoLabel": "Есть промокод? <opt>(необязательно)</opt>",
   "promoPlaceholder": "Введите его здесь",
+  "partnerCodeLabel": "Партнёрский код или промокод <optional>(необязательно)</optional>",
+  "partnerCodeApply": "Применить",
+  "partnerCodeApplied": "Код применён: {deal} ({partner})",
+  "partnerCodeInvalid": "Этот код недействителен.",
+  "partnerCodeExpired": "Срок действия этого кода истёк.",
+  "partnerDealExtraMonths": "{months, plural, one {# дополнительный месяц бесплатно} few {# дополнительных месяца бесплатно} many {# дополнительных месяцев бесплатно} other {# дополнительного месяца бесплатно}}",
+  "partnerDealPercentOff": "скидка {pct} % на {months, plural, one {# месяц} few {# месяца} many {# месяцев} other {# месяца}}",
   "agreeTerms": "Я принимаю <terms>Условия</terms> и <privacy>Политику конфиденциальности</privacy>.",
   "freeMonth": "{months, plural, =0 {Бесплатный пробный период начнётся с момента регистрации.} one {# месяц бесплатно — с момента регистрации.} few {# месяца бесплатно — с момента регистрации.} many {# месяцев бесплатно — с момента регистрации.} other {# месяца бесплатно — с момента регистрации.}}",
   "fieldError": {

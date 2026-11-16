@@ -79,6 +79,13 @@
   "showPassword": "顯示密碼",
   "promoLabel": "有優惠碼？<opt>（選填）</opt>",
   "promoPlaceholder": "在此輸入",
+  "partnerCodeLabel": "合作夥伴代碼或優惠碼<optional>（選填）</optional>",
+  "partnerCodeApply": "使用",
+  "partnerCodeApplied": "已使用代碼：{deal}（{partner}）",
+  "partnerCodeInvalid": "此代碼無效。",
+  "partnerCodeExpired": "此代碼已過期。",
+  "partnerDealExtraMonths": "{months, plural, other {額外免費 # 個月}}",
+  "partnerDealPercentOff": "{pct}% 折扣，為期 {months, plural, other {# 個月}}",
   "agreeTerms": "我同意<terms>條款</terms>及<privacy>私隱政策</privacy>。",
   "freeMonth": "{months, plural, =0 {免費試用由你建立帳戶時開始。} other {由建立帳戶起計，首 # 個月免費。}}",
   "fieldError": {

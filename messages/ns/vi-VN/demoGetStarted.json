@@ -79,6 +79,13 @@
   "showPassword": "Hiện mật khẩu",
   "promoLabel": "Bạn có mã? <opt>(không bắt buộc)</opt>",
   "promoPlaceholder": "Nhập mã tại đây",
+  "partnerCodeLabel": "Mã đối tác hoặc mã khuyến mãi <optional>(không bắt buộc)</optional>",
+  "partnerCodeApply": "Áp dụng",
+  "partnerCodeApplied": "Đã áp dụng mã: {deal} ({partner})",
+  "partnerCodeInvalid": "Mã này không hợp lệ.",
+  "partnerCodeExpired": "Mã này đã hết hạn.",
+  "partnerDealExtraMonths": "{months, plural, other {tặng thêm # tháng miễn phí}}",
+  "partnerDealPercentOff": "giảm {pct}% trong {months, plural, other {# tháng}}",
   "agreeTerms": "Tôi đồng ý với <terms>Điều khoản</terms> và <privacy>Chính sách quyền riêng tư</privacy>.",
   "freeMonth": "{months, plural, =0 {Thời gian dùng thử miễn phí bắt đầu khi bạn đăng ký.} one {Tháng đầu tiên miễn phí, tính từ khi bạn đăng ký.} other {# tháng đầu tiên miễn phí, tính từ khi bạn đăng ký.}}",
   "fieldError": {

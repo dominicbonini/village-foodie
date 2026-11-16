@@ -79,6 +79,13 @@
   "showPassword": "پاس ورڈ دکھائیں",
   "promoLabel": "کوئی کوڈ ہے؟ <opt>(اختیاری)</opt>",
   "promoPlaceholder": "یہاں درج کریں",
+  "partnerCodeLabel": "پارٹنر یا پرومو کوڈ <optional>(اختیاری)</optional>",
+  "partnerCodeApply": "لگائیں",
+  "partnerCodeApplied": "کوڈ لگ گیا: {deal} ({partner})",
+  "partnerCodeInvalid": "یہ کوڈ درست نہیں۔",
+  "partnerCodeExpired": "اس کوڈ کی میعاد ختم ہو چکی ہے۔",
+  "partnerDealExtraMonths": "{months, plural, one {# اضافی مہینہ مفت} other {# اضافی مہینے مفت}}",
+  "partnerDealPercentOff": "{months, plural, one {# مہینے} other {# مہینوں}} کے لیے {pct}% رعایت",
   "agreeTerms": "مجھے <terms>شرائط</terms> اور <privacy>پرائیویسی پالیسی</privacy> منظور ہیں۔",
   "freeMonth": "{months, plural, =0 {آپ کا مفت ٹرائل سائن اپ کرتے ہی شروع ہو جاتا ہے۔} one {آپ کا پہلا مہینہ مفت ہے، سائن اپ کرتے ہی شروع۔} other {آپ کے پہلے # مہینے مفت ہیں، سائن اپ کرتے ہی شروع۔}}",
   "fieldError": {

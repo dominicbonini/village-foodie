@@ -79,6 +79,13 @@
   "showPassword": "Tampilkan kata sandi",
   "promoLabel": "Punya kode? <opt>(opsional)</opt>",
   "promoPlaceholder": "Masukkan di sini",
+  "partnerCodeLabel": "Kode partner atau promo <optional>(opsional)</optional>",
+  "partnerCodeApply": "Pakai",
+  "partnerCodeApplied": "Kode berhasil dipakai: {deal} ({partner})",
+  "partnerCodeInvalid": "Kode itu tidak valid.",
+  "partnerCodeExpired": "Kode itu sudah kedaluwarsa.",
+  "partnerDealExtraMonths": "{months, plural, other {tambahan # bulan gratis}}",
+  "partnerDealPercentOff": "diskon {pct}% selama {months, plural, other {# bulan}}",
   "agreeTerms": "Saya menyetujui <terms>Ketentuan</terms> dan <privacy>Kebijakan Privasi</privacy>.",
   "freeMonth": "{months, plural, =0 {Masa coba gratis Anda dimulai saat Anda mendaftar.} one {Bulan pertama Anda gratis, mulai saat Anda mendaftar.} other {# bulan pertama Anda gratis, mulai saat Anda mendaftar.}}",
   "fieldError": {
