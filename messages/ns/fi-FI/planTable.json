@@ -3,7 +3,7 @@
   "lede": "Tilaukset, ennakkotilaukset, keittiön kapasiteetti ja keittiönäyttö sisältyvät kaikkiin paketteihin.{hasUpgrades, select, yes { {plans} tuovat lisäksi {features} sekä pienemmät maksut.} other {}}",
   "perMonth": "{price} / kk",
   "trial": {
-    "length": "{months, plural, one {# kuukausi} other {# kuukautta}}",
+    "length": "{months, plural, one {# kk} other {# kk}}",
     "ends": "Päättyy {date}"
   },
   "group": {
