@@ -431,6 +431,7 @@
         "legal-languages-1-audit.cjs",
         "partners-2-import.cjs",
         "partners-offer-templates.cjs",
+        "partners-3-import.cjs",
         "partners-2-screens.cjs"
       ]
     },
