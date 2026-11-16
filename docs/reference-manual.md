@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.27
+HatchGrab Engineering Reference Manual · V16.28
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.27**
+**Version 16.28**
 
 November 2026
 
@@ -77,10 +77,163 @@ emulator could not create its data partition and the script waited forever for a
   temporary AVDs and unused system images; Gradle `caches/*/transforms` older than 7 days; `npm cache clean
   --force`; Playwright browser revisions the repo no longer pins; the repo's `.next` (stop `next dev` first) and
   `android/app/build`. **Never** the Trash, Xcode Archives, the keystore, the signing config or `~/.googleplay`
-  without Dominic. `node_modules/.cache` (harness caches) and `~/.cache/puppeteer` (old Chrome builds) are regenerable
-  but are Dominic's call (disk-cleanup-1 report §5).
+  without Dominic. `node_modules/.cache` (harness caches) and old
+  `~/.cache/puppeteer` Chrome builds were cleared with Dominic's approval on 16 November; both regenerate, so clearing them
+  again is fine when space is low. **Kept for checks:** the `Android_Phone` AVD (Android 16) and, on iOS 27, the iPhone 18 Pro
+  and iPad Pro 11-inch (M5) simulators, with both iOS runtimes (26.5, 27.0).
+
+# Open items (V16.28, 16 November 2026) — THE ONLY CURRENT LIST
+
+**This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
+start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
+
+**Releases (in this order):**
+1. 🔴 **Deploy the website BEFORE releasing either app 1.1** (Dominic's order, 16 Nov). 22 local commits aren't pushed
+   (origin/main = `43d563c5`, 13 Nov). They include allergen-kitchen-1, allergen-screens-1, capacity-one-source-1/-2,
+   app-fixes-1/-2 (the Paramètres crash fix, "Log in", the in-app link guard, Access denied's "Back to log in"), gusto-move-1's
+   record, and the web side of Capacitor 8.6.2 (`@capacitor/core`, in the website bundle). order-page-2 is already pushed; check it is
+   live after the deploy. The deploy also brings the bare-host hand-off, so customer links open the phone's browser on Android.
+2. **iOS 1.1:** archive build 4 (build 3 is already in App Store Connect), the TestFlight check on a real iPhone and iPad, then
+   Submit for Review. Steps under "Releasing the 1.1 apps" below.
+3. **Android 1.1:** upload the AAB to internal testing, do the on-phone checks (printing, biometric unlock, push; R8 is the
+   risk), then promote to production. Steps below.
+4. **Google Play country availability (187, world-countries-5).** Needs the Play key at `~/.googleplay/hatchgrab-play.json`; then
+   `scripts/android/play-availability.cjs` read-only, then `--apply`. The script refuses while production's release is
+   "completed", so in practice set them by hand in Play Console when promoting 1.1 (§89.7).
+5. **iOS listing items still open from ios-intl-1:** the App Privacy answers and the age rating in App Store Connect; extend the demo
+   events if review runs long (§89.7).
+
+**Checks only people can do:**
+6. **Native-speaker checks.** **bn, hi, ur: the new "log in" word** (app-fixes-2 gave Bengali, Hindi and Urdu their own landing-page
+   "log in"). Then each language's own list:
+   - **tr:** "parti" (batch), "çağrı cihazı", "KART BLOKEDE", "açık rıza".
+   - **ko:** 접수 / 확정, 카드 가승인, spelled-out numbers in the legal text.
+   - **zh-TW:** 優惠, 預先授權, 廚房顯示系統, 你 rather than 您.
+   - **id:** "buzzer", "kendaraan", "Promo". **vi:** "tồn kho", "thẻ rung".
+   - **he:** תפיסת מסגרת, בון, the feminine HatchGrab, פודטראק. **is:** "píptæki", "innheimta", "kynning", "Knúið af"; plurals.
+   - **sr:** imperatives on short buttons, "akcija", "pejdžer", "bon".
+   - **Spanish variants:** "Platos fuertes", "plazo mínimo", "Pedile a {truck}". **Gulf Arabic:** the phone words.
+     **SN/CI:** « Payer sur place ».
+   - **uk:** the order-button wording under Law 3153-IX, for a lawyer.
+   - **kk, uz, az, ka, hy, mn, hi, bn, ur, ne:** the term lists in languages-world-2 §8 (e.g. ka Reports / Billing / account,
+     ფუდტრაკი; hy Approve vs Confirm; hi «बिलिंग», «रई»).
+   - **lv, hr, sl, hu, de:** the billing words (billing-2 §0.10, billing-3 §6). **sl:** plurals (pricing-copy-2 §2).
+7. **Le Roi du Churrasco fixes their allergens by hand:** their 11 dishes were confirmed with all 14 allergens ticked
+   (demo-claim-2) and need the truck's own look. Not something an agent edits.
+8. **The country-specific terms sections** for the 47 languages-world-1 countries and the 167 new ones (a lawyer).
+
+**Investigations and defects:**
+9. 🔴 **gusto-move-1's root cause, NOT YET INVESTIGATED:** why the scraper created an unapproved "unconfirmed" event alongside
+   Pizzeria Gusto's live one on 13 Nov (23 orders went to the duplicate; moved by `20261102`). Read-only investigation first.
+10. 🔴 **Kitchen tickets print non-Latin scripts as "?"** (`lib/printing/ticket.ts` `encodeEscPos` sends ASCII and "£" only).
+    Greek, Bulgarian, Japanese, Chinese, Thai, Arabic and Hebrew are live and affected; Latin scripts lose accents. Needs a raster
+    ticket path or printer code pages (Dominic's decision) before more countries in those scripts switch on.
+11. **The capacity-window display defect and Q1–Q3** (§89.11): at W > 5 with instant counted items the dashboard marks a slot full
+    up to W minutes early.
+12. **The five failing harnesses** (paperwork-1, legal-languages-1, world-countries-3, contact-1, tidy-1): translated legal files
+    missing (e.g. `content/legal/ru-KZ/privacy-policy.md`). They close with languages-world-2's legal pages (item 14).
+13. 🔴 **Rotate `FCM_SERVICE_ACCOUNT_JSON` and `GOOGLE_SHEETS_CREDENTIALS`** (the standing secrets rule at the top). It is still
+    recorded as open; Dominic confirms or strikes it.
+
+**Unfinished build work:**
+14. **Resume languages-world-2:** 11 languages (sq-AL, mk-MK, bs-BA, ca-AD, si-LK, ta-LK, km-KH, lo-LA, fil-PH, sw-TZ, am-ET),
+    the legal pages for all 23, 14 store listings, the 11 allergen-guard lists not yet installed, pricing-copy-4's 5 keys.
+15. **Billing switch-on** (§89.1), in order, with the Stripe Dashboard hand steps: Pix (test, then live); customer emails OFF; the
+    billing webhook with its event list and secret in Vercel; Checkout branding; Wise EUR/USD payout accounts. Plus 🔴 **lock the
+    account 7 days after the pause** (billing-2 §1).
+16. **Wording decisions:** the terms' fee wording ("online card orders") against the site's "online orders" (pricing-copy-1 §3);
+    whether `comparison.costs.cardFee` follows `offersOnlineCardPayments` (pricing-copy-4).
+17. **local-notifications 8.3** adds the `SCHEDULE_EXACT_ALARM` permission; held at 8.2.1 until Dominic decides (android-1-1).
+
+**Backlog (decided, not built — the tax backlog section near the end has the detail):**
+18. **VAT / tax-number capture** in signup and Manage › Settings (VIES for the EU). Needed before billing is switched on in any of
+    the 41 "VAT number required" countries.
+19. **Threshold logging:** each country's registration threshold and our running turnover there.
+20. **Sanctions name check at signup** (UK and US lists). Until it exists, 9 countries stay held: Haiti, Iraq, Lebanon, Libya,
+    Mali, Myanmar, Palestine, South Sudan, Venezuela.
+21. **EU non-Union OSS registration** once there are paying EU customers.
+22. **Non-Latin ticket printing:** item 10.
+
+**Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
+`localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
+
+# Releasing the 1.1 apps (V16.28)
+
+**Order:** deploy the website first (Open items 1), then the apps. Neither app needs the deploy to run, since both load whatever is
+live, but customer links only reach the phone's browser on Android after the deploy.
+
+## iOS 1.1 — archive, TestFlight, submit (ios-uiscene-1 §6)
+
+1. `git pull`, then `npm ci`, so `node_modules` has Capacitor 8.6.2.
+2. `npx cap sync ios` with **no** `CAP_SERVER_URL`. Check `ios/App/App/capacitor.config.json` says
+   `"url": "https://www.hatchgrab.com/app"`.
+3. Open `ios/App/App.xcodeproj` in **Xcode 27.2**. Let packages resolve; `capacitor-swift-pm` should read **8.6.2**.
+4. Target App → General: Version **1.1**, **Build 4**. Build 3 is already in App Store Connect and can't be reused.
+5. Signing & Capabilities: automatic, team `C24X5FG48V`, bundle ID `com.hatchgrab.app`, unchanged.
+6. Scheme **App**, destination **Any iOS Device (arm64)** → Product → **Archive**.
+7. Organizer → the new archive → **Distribute App → App Store Connect → Upload**, with the defaults.
+8. **TestFlight check on a real iPhone and iPad:** log in with your test account → dashboard, Manage, Paramètres (printing card);
+   background and back; rotate the iPad; a customer link opens Safari; allow notifications and confirm a test order alert arrives.
+9. App Store Connect → HatchGrab → iOS → **1.1**: select build 4 → **Add for Review / Submit**.
+
+## Android 1.1 — internal testing, then production (android-1-1 §9–§10)
+
+**The build:** versionName **1.1**, versionCode **2**, targetSdk **36**, signed with the HatchGrab Ltd upload key.
+- **Bundle:** `android/app/build/outputs/bundle/release/app-release.aab`. The R8 mapping is inside it, so Play reads it on upload.
+- **Fallback mapping:** `android/app/build/outputs/mapping/release/mapping.txt`, uploaded only if App bundle explorer shows no
+  ReTrace file for version 2.
+- **If `android/app/build` has been cleaned:** `env -u CAP_SERVER_URL npx cap sync android`, then
+  `cd android && ../scripts/guarded.sh ./gradlew bundleRelease`.
+
+**Steps:**
+1. Play Console → HatchGrab → **Test and release → Testing → Internal testing → Create new release**.
+2. Upload the AAB. Play should show version code 2, version name 1.1.
+3. Release name `1.1 (2)`. Release notes:
+   ```
+   <en-GB>
+   • Updated for Android 15 and 16: the app now uses the whole screen, and the header, tabs and buttons stay clear of the status bar, the camera and the navigation bar.
+   • Smaller download and faster start.
+   • Latest app framework and plugin updates.
+   • Stability improvements.
+   </en-GB>
+   <fr-FR>
+   • Mise à jour pour Android 15 et 16 : l'application utilise tout l'écran, et l'en-tête, les onglets et les boutons restent dégagés de la barre d'état, de la caméra et de la barre de navigation.
+   • Téléchargement plus léger et démarrage plus rapide.
+   • Mise à jour du framework de l'application et de ses modules.
+   • Améliorations de la stabilité.
+   </fr-FR>
+   ```
+4. Review the warnings: "no deobfuscation file" should be gone; a native-debug-symbols notice concerns androidx's stripped DataStore
+   library and can be ignored; there should be no new-permission warning.
+5. Start rollout to internal testing. Then App bundle explorer → version 2 → Downloads: a ReTrace mapping file is listed.
+6. **On your phone, from internal testing, with your own test truck (never Pizzeria Gusto or Le Roi):**
+   - **each plugin once (R8 risk: a missing keep rule only fails when called):** Bluetooth printer test ticket; network printer if
+     you have one; **biometric unlock** (turn on, close, reopen); **push** (a test order from another phone arrives and opens);
+     "Screen on" keeps the screen awake;
+   - logged-in **Manage**, every tab, nothing under the system bars;
+   - back never reaches the landing page; background and foreground; three-button navigation; dark mode.
+   If a plugin fails, don't promote: it needs a keep rule and a rebuild as versionCode 3.
+7. **Internal testing → Promote release → Production** (100%, or 20% for a day). Set the 187 countries by hand
+   (Production → Countries / regions). Send for review.
+8. Watch **Android vitals** for the first days; with the mapping, stack traces are readable.
 
 # Changelog
+
+## V16.28 — 16 November 2026 — **THE MANUAL CATCHES UP: ONE OPEN-ITEMS LIST, THE 1.1 RELEASE STEPS**
+
+manual-update-1 (`docs/manual-update-1-report.md`). Documentation only.
+
+- **New at the top:** "Open items" (the only current list) and "Releasing the 1.1 apps" (iOS build 4 archive → TestFlight →
+  submit; Android internal testing → on-phone checks → production, with the release notes).
+- **Superseded text removed and replaced with a pointer:**
+  - §89.13 (the 12 Nov push/run status);
+  - §89.14's backlog (its open items moved to the list; its done items dropped);
+  - V16.24's "Open" UIScene item (done in V16.25);
+  - §89.7's ios-intl-1 "Open" line;
+  - the V11.54 / §36 "R8 deferred" reasoning (R8 is on since V16.27);
+  - the "status-bar is one patch behind" note (8.0.4, iOS only).
+- **Disk space rule:** records the 16 Nov clean-up (`node_modules/.cache` and old Puppeteer Chromes cleared with approval) and
+  what is kept for checks.
 
 ## V16.27 — 16 November 2026 — **ANDROID 1.1: CAPACITOR 8.6.2, R8 + MAPPING, EDGE-TO-EDGE WITHOUT THE DEPRECATED APIs**
 
@@ -227,8 +380,8 @@ Every end state has a way forward:
 
 ### Open
 
-- 🔴 **UIScene (native, NOT changed — needs Dominic's decision before the next iOS build).** A build made with Xcode 27.2 does not launch on the iOS 26.5 / 27 simulators: *"UIScene life cycle is required for app"*. The app uses the old app-delegate-only lifecycle. The store build is unaffected; the next build made with this SDK may not run on current iOS. Adopting UIScene is an Xcode / native change.
-- 🔴 **gusto-move-1 (13 Nov 2026, `docs/gusto-move-1-report.md`): a duplicate event from the scraper split Pizzeria Gusto's evening.** Staff took 23 orders on a duplicate "unconfirmed" event with no van while online orders went to the live event. With Dominic's approval, migration `20261102_gusto_move_1.sql` (`78f9d77c`) moved all 23 onto the live event under a row lock, renumbered 6 that clashed (#1–#6 → #24–#29), merged kitchen capacity and set the counter to 29; backup and record in `docs/gusto-move-1/`. **Root cause (why the scraper's duplicate event existed alongside the live one) — NOT YET INVESTIGATED.**
+- ~~🔴 **UIScene (native, NOT changed).**~~ ⛔ **Done V16.25 (ios-uiscene-1).** Removed V16.28; see the Open items list.
+- 🔴 **gusto-move-1 (13 Nov 2026, `docs/gusto-move-1-report.md`): a duplicate event from the scraper split Pizzeria Gusto's evening.** Staff took 23 orders on a duplicate "unconfirmed" event with no van while online orders went to the live event. With Dominic's approval, migration `20261102_gusto_move_1.sql` (`78f9d77c`) moved all 23 onto the live event under a row lock, renumbered 6 that clashed (#1–#6 → #24–#29), merged kitchen capacity and set the counter to 29; backup and record in `docs/gusto-move-1/`. **Root cause (why the scraper's duplicate event existed alongside the live one) — NOT YET INVESTIGATED** (Open items 9).
 
 ## V16.23 — 14 November 2026 — **PREP TIME AND ITEMS PER BATCH COME FROM ONE PLACE**
 
@@ -4313,15 +4466,8 @@ appeared; three advisories deferred on purpose; and both stores now downstream o
   before that first upload was never evidence of a problem:** the certificate the Console shows is
   Google's own app signing key, which never matches the upload key, and the upload key block only
   appears once a bundle has been received. §36.
-- **THREE PLAY ADVISORIES DEFERRED DELIBERATELY, recorded as decisions so they are not re-litigated
-  each time the Console surfaces them.** None blocks review; **all three would require a rebuild, which
-  would destroy the verified artefact.** Obfuscation at 2% (fix-by February 2027) is *expected* for a
-  webview shell rather than a defect, and **enabling R8 on a Capacitor app is genuinely risky — plugins
-  resolve classes by reflection, so without correct keep rules the app builds cleanly, passes review,
-  and fails at runtime on one plugin call.** No deobfuscation file is correct because nothing is
-  obfuscated. Native debug symbols and the two edge-to-edge items are recommended, not required. §36.
-  ⛔ **Superseded V16.27 (android-1-1):** R8 is on with keep rules, the mapping is embedded in the AAB, and edge-to-edge
-  is done without the deprecated APIs. See the V16.27 changelog.
+- ⛔ **The three Play advisories (obfuscation 2%, no deobfuscation file, edge-to-edge) were deferred at V1. Superseded V16.27:**
+  R8 is on with keep rules, the mapping is embedded in the AAB, and edge-to-edge is done without the deprecated APIs.
 - 🔴 **WHAT BLOCKED SUBMISSION WAS THE LISTING, NEVER THE BINARY** — screenshots, the 1024×500 feature
   graphic, and the icon re-exported at 32-bit. **App access credentials are mandatory for any app behind
   a login**, because a reviewer who cannot sign in rejects on minimum functionality; **they point at a
@@ -18252,7 +18398,7 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 - **`ipad_kds` is now a stale name for a cross-platform feature.** It is the enforcement identifier in `lib/features.ts`, so renaming it needs a data migration — not copy.
 - **Portal hardening (extended):** `p-5`/`px-6` scroll containers appear throughout `app/manage/[token]/page.tsx`; any with horizontal-only padding and a focusable first or last child has the clipped-focus-ring bug. **The class is understood (§35) but the sweep has not been done.**
 - **`DemoGetStarted`'s form labels, placeholders and error messages are still inline** rather than in the copy object. **Deliberate** — the bug was variant drift, not string location, and error messages belong next to the branches that raise them. Recorded so the decision isn't relitigated.
-- **`@capacitor/status-bar` is ONE PATCH BEHIND — look at that diff deliberately, don't discover it in a build.** Installed **8.0.2**, latest **8.0.3** (`npm view`, 28 July). The declared range is **`^8.0.2`**, so **a fresh `npm install` picks it up SILENTLY** — and `lib/native/statusBar.ts` is precisely the file carrying **three verified no-ops on modern Android** and the **unresolved null-window question** (§35's native-throw invariant: `StatusBar.java:42`, `:102` dereference `activity.getWindow()` inside an unprotected `executeOnMainThread` Runnable). **Whether 8.0.3 touches this area is UNDETERMINED** — **no changelog ships in `node_modules`** (both this package and `keep-awake` contain only `README.md`), so answering it needs the upstream repo. For contrast, `@capacitor-community/keep-awake` **is already on latest (8.0.1)** — nothing to chase there.
+- ⛔ **Removed V16.28:** the "status-bar is one patch behind" note. `@capacitor/status-bar` is 8.0.4 and is used on iOS only (Android excludes it since V16.27).
 ### 🔴 Added V11.5 — the 7 August incident and the Stripe/stock work
 
 - ✅ **DONE V11.6 — THE `readLedger` FIX IS APPLIED**, carrying **BOTH** filters, and **exercised against real rows** (§35, §37): 1 row for an order versus 83 in the table; a paid order at `balanceMinor` 0; an unpaid order at exactly its £13.50 total. **A new scope assertion throws if returned rows do not all belong to the requested order** — and its first draft was **inert**, which is now its own §35 invariant.
@@ -23847,7 +23993,7 @@ configuration runs for every task**, which would break `assembleDebug` for anyon
 ⚠️ **`storeFile` must be a bare filename** — `rootProject.file()` resolves it from `android/`. A leading
 slash makes it absolute and the build fails at `validateSigningRelease`.
 ⚠️ **`versionCode` is still 1.** ✅ **V11.54 — that first upload has now happened: version code 1 is
-the shipped release.** **Every subsequent one must increment it.**
+the shipped release.** **Every subsequent one must increment it.** ⛔ **V16.27:** Android 1.1 is versionCode **2**.
 ~~⚠️ **PLAY APP SIGNING ENROLMENT IS NOT VERIFIED.**~~
 ✅ **STRUCK V11.54 — PLAY APP SIGNING ACTIVATED ON FIRST UPLOAD, as expected.** `android/SIGNING.md`'s
 recovery path is therefore the live one.
@@ -24064,21 +24210,12 @@ VERIFIED ARTEFACT** — the byte-identical bundle that was tested on hardware an
 🔴 **THEY ARE RECORDED AS DECISIONS, NOT AS BACKLOG, SO THEY ARE NOT RE-LITIGATED EVERY TIME THE
 CONSOLE SURFACES THEM.**
 
-**1. App optimisation below threshold — obfuscation at 2%, fix-by February 2027.**
-⚠️ **A LOW FIGURE IS EXPECTED HERE RATHER THAN A DEFECT.** The app is a **webview shell**; there is
-almost nothing of the developer's own code to obfuscate, so the percentage is measuring an absence.
-🔴 **AND ENABLING R8 MINIFICATION ON A CAPACITOR APP IS GENUINELY RISKY, NOT A CHECKBOX.** **Plugins
-resolve classes by reflection**, so without correct keep rules the app **builds cleanly, passes review,
-and fails at runtime on a specific plugin call.** ⚠️ **The failure is invisible in every pre-release
-signal.** **If it is ever done, it is deliberate work with device testing behind it.** ⛔ **Done V16.27 (android-1-1):** keep rules per plugin package, the mapping checked for renamed plugin classes (none), emulator-tested on the minified build; printing, biometrics and push still need the phone check.
-
-**2. No deobfuscation file.** ✅ **Correct, and not a gap** — **nothing is obfuscated, so there is no
-mapping to upload.** It is the same fact as item 1 seen from the other side.
-
-**3. No native debug symbols, plus two edge-to-edge advisories.** **The native code is Capacitor's and
-its dependencies', not the product's.** The edge-to-edge items concern **the activity changes already
-compiled into this bundle** and would need **a rebuild and a resubmission** to address.
-**Both are marked recommended, not required.**
+⛔ **Superseded V16.27 (android-1-1), detail removed V16.28.** All three were deferred at V1 because R8 on a Capacitor app is
+risky: plugins are found by reflection, so a missing keep rule builds cleanly and fails at runtime. android-1-1 did that work
+deliberately: keep rules per plugin package, the mapping checked (no plugin class renamed), emulator tests on the minified build,
+and on-phone checks of printing, biometrics and push before production. The mapping now travels inside the AAB. There are no
+native symbols to upload (androidx's prebuilt `.so` is stripped). Edge-to-edge: `EdgeToEdge.enable` plus MainActivity's insets,
+with status-bar excluded on Android. See V16.27.
 
 ## THE SUBMISSION CHECKLIST, AS IT ACTUALLY RAN (V11.54)
 
@@ -38481,8 +38618,8 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
     locale and see en-GB).
   - **The App Store Connect API key lives outside the repo:** `~/.appstoreconnect/hatchgrab-asc.json` and `private_keys/AuthKey_*.p8`,
     chmod 600, read by `scripts/ios/asc.cjs`. It is never printed or committed, and never in a `.env*` file (Dominic's choice (b)).
-  - **Open:** the iPad TestFlight check; the App Privacy answers; the age rating; Submit for Review (Dominic only; freeze web deploys
-    until the decision); extend the demo events past 22 Nov if review runs long.
+  - ⛔ **V16.28:** what is still open here (the TestFlight check, App Privacy, age rating, Submit for Review, the demo events) is in
+    the Open items list and "Releasing the 1.1 apps" at the top.
 - **meta-sdk-1 (pushed):** `FB.init` in `lib/whatsapp/embedded-signup.ts` sets `autoLogAppEvents: false` and `xfbml: false`. The SDK
   still loads when the WhatsApp setup panel renders (option A only; stated). The privacy-form answers: App Store "Data used to track
   you: None"; Play "not shared".
@@ -38548,64 +38685,14 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
 - **An existing order on an off-grid event** is booked as requested without a capacity check ("unrecognised slot") and has no dot. On 12
   Nov no upcoming event was affected (Gusto not queried).
 
-## 89.13 What is pushed and what is run (OBSERVED 12 Nov)
+## 89.13 What is pushed and what is run
 
-- **origin/main = `9c30a623`** (11 Nov 21:00). **37 local commits are not pushed:** languages-world-2, pricing-copy-3's later commits,
-  pricing-copy-4, longer-intervals, collection-anchor-1, world-countries-5 and their reports. Deploy is not checked here.
-- **Run in the database:** 20261084 (demo-claim-2), 20261085–20261090 (billing), 20261091 (pricing-copy-2), 20261092 (V16.16),
-  20261093, 20261094, 20261096 and 20261097 (world-countries-5).
-- **20261095 (the switch-on) RAN on 12 Nov at 18:12 UTC**; 20261097 (Mexico's store flags) ran before it.
-- **Not run:** the BR/MY/SG/TH plan-offer SQL (billing-1 §10.6).
-- **Last full sweep (12 Nov, after `10b41ccc`):** 218 run, 212 passed. 5 fail on the legal pages above, and `event-types-render` on a
-  `.next` build made by another session.
+⛔ **Removed V16.28:** the 12 November snapshot was out of date. What is pushed and deployed is now Open items 1 at the top.
 
-## 89.14 Backlog (V16.18)
+## 89.14 Backlog
 
-- 🔴 **Kitchen tickets print non-Latin scripts as "?"** (languages-world-2 §4.5). `lib/printing/ticket.ts` `encodeEscPos` sends only
-  ASCII and "£" to the printer.
-  - Cyrillic, Georgian, Armenian, Devanagari, Bengali, Urdu, Sinhala, Tamil, Khmer, Lao and Ethiopic tickets would print as question
-    marks.
-  - **It already affects the live Greek, Bulgarian, Japanese, Chinese, Thai, Arabic and Hebrew;** Latin-script languages lose their
-    accents.
-  - It needs a raster (image) ticket path or printer code pages (Dominic's decision), before a country in those scripts switches on.
-- 🔴 **Resume languages-world-2:** the 11 languages (sq-AL, mk-MK, bs-BA, ca-AD, si-LK, ta-LK, km-KH, lo-LA, fil-PH, sw-TZ, am-ET),
-  **the legal pages for all 23**, 14 store listings, the 11 allergen-guard lists not yet installed, and pricing-copy-4's 5 keys in the
-  handover's start file.
-- **The country-specific terms sections** for the 47 languages-world-1 countries and the 167 new ones (a lawyer).
-- **Native-speaker checks** (each from the report's own list):
-  - **tr:** "parti" (batch), "çağrı cihazı", "KART BLOKEDE", "açık rıza".
-  - **ko:** 접수 / 확정, 카드 가승인, spelled-out numbers in the legal text.
-  - **zh-TW:** 優惠, 預先授權, 廚房顯示系統, 你 rather than 您.
-  - **id:** "buzzer", "kendaraan", "Promo".
-  - **vi:** "tồn kho", "thẻ rung".
-  - **he:** תפיסת מסגרת, בון, the feminine HatchGrab, פודטראק.
-  - **is:** "píptæki", "innheimta", "kynning", "Knúið af".
-  - **sr:** imperatives on short buttons, "akcija", "pejdžer", "bon".
-  - **Spanish variants:** "Platos fuertes", "plazo mínimo", "Pedile a {truck}".
-  - **Gulf Arabic:** the phone words. **SN/CI:** « Payer sur place ».
-  - **uk:** the order-button wording under Law 3153-IX, for a lawyer.
-  - **kk, uz, az, ka, hy, mn, hi, bn, ur, ne:** the term lists in languages-world-2 §8, e.g. ka Reports / Billing / account, ფუდტრაკი;
-    hy Approve vs Confirm; hi «बिलिंग», «रई».
-  - **lv, hr, sl, hu, de:** the billing words (billing-2 §0.10, billing-3 §6).
-  - **is, sl:** plurals (pricing-copy-2 §2).
-- **Billing switch-on** (§89.1): the steps in order, plus the hand steps in the Stripe Dashboard:
-  - Pix (test, then live);
-  - **customer emails OFF**;
-  - the billing webhook with its event list and its secret in Vercel;
-  - Checkout branding;
-  - Wise EUR/USD payout accounts.
-- 🔴 **Lock the account 7 days after the pause** (billing-2 §1).
-- **VAT-number capture** before billing is switched on in any of the 41 "VAT number required" countries (the tax backlog below).
-- **The terms' fee wording** ("online card orders") against the site's "online orders" (pricing-copy-1 §3).
-- **Whether `comparison.costs.cardFee` follows `offersOnlineCardPayments`** (pricing-copy-4).
-- **The capacity-window display defect and Q1–Q3** (§89.11).
-- ~~**`android_app_available` for the 17 countries** with no Play storefront (§89.7)~~ ⛔ decided V16.19: on, in 20261095. Play Console
-  countries are still added by hand.
-- ~~**Mexico's App Store badge:** `/mx` shows it until 20261095 turns Mexico off~~ ⛔ done V16.19: MX's store flags are off (20261097).
-- **Google Play's countries:** create the key at `~/.googleplay/hatchgrab-play.json`, then run `scripts/android/play-availability.cjs`
-  read-only, then `--apply` (or set them by hand in Play Console if production's release is completed) (§89.7).
-- ~~**The switch-on itself:** deploy, check Admin › Countries reads the 167, then run 20261095 with `--approved-by-dominic`.~~ ✅ Run 12 Nov,
-  18:12 UTC.
+⛔ **Moved V16.28:** every item still open is in the Open items list at the top; the done ones (`android_app_available`, Mexico's
+badge, the 167-country switch-on) were dropped.
 
 
 ## BACKLOG ADDED 11 NOVEMBER 2026 — TAX: VAT NUMBERS, THRESHOLD LOGGING, OSS (decided, not built; review and build separately)

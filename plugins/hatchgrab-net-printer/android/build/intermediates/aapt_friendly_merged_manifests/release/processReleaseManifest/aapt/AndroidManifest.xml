@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hatchgrab.netprinter" >
+    <!--
+ No permissions declared here on purpose. android.permission.INTERNET and ACCESS_NETWORK_STATE are
+         already in the app's MERGED manifest (verified 16 September 2026); a raw TCP socket needs nothing more.
+    -->
+    <uses-sdk android:minSdkVersion="24" />
+
+</manifest>

@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "com.hatchgrab.netprinter.hatchgrab-net-printer-release-28:/layout-v21/notification_template_custom_big.xml",
+        "source": "com.hatchgrab.netprinter.hatchgrab-net-printer-core-1.17.0-0:/layout-v21/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "com.hatchgrab.netprinter.hatchgrab-net-printer-release-28:/layout-v21/notification_action.xml",
+        "source": "com.hatchgrab.netprinter.hatchgrab-net-printer-core-1.17.0-0:/layout-v21/notification_action.xml"
+    },
+    {
+        "merged": "com.hatchgrab.netprinter.hatchgrab-net-printer-release-28:/layout-v21/notification_action_tombstone.xml",
+        "source": "com.hatchgrab.netprinter.hatchgrab-net-printer-core-1.17.0-0:/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "com.hatchgrab.netprinter.hatchgrab-net-printer-release-28:/layout-v21/notification_template_icon_group.xml",
+        "source": "com.hatchgrab.netprinter.hatchgrab-net-printer-core-1.17.0-0:/layout-v21/notification_template_icon_group.xml"
+    }
+]
