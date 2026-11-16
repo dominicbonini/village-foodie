@@ -11,7 +11,7 @@
 | 3 | hi-IN Hindi | ✅ (lw-2) | — | | |
 | 4 | bn-BD Bengali | ✅ (lw-2) | — | | |
 | 5 | ur-PK Urdu | ✅ (lw-2) | — | | |
-| 6 | kk-KZ Kazakh | ✅ (lw-2) | ✅ batch 3 — **needs native/legal check** | `_legal-translations.cjs kk-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | languages-world-3 batch 3 |
+| 6 | kk-KZ Kazakh | ✅ (lw-2) | ✅ batch 3 — **needs native/legal check** | `_legal-translations.cjs kk-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | b77e79df |
 | 7 | uz-UZ Uzbek | ✅ (lw-2) | — next (batch 4) | | |
 | 8 | az-AZ Azerbaijani | ✅ (lw-2) | — | | |
 | 9 | ka-GE Georgian | ✅ (lw-2) | — | | |
