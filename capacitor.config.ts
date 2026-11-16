@@ -76,8 +76,32 @@ const config: CapacitorConfig = {
     // /dashboard and /manage navigation 307s to /login and the V8.7 login loop returns.
     // No contentInset / scrollEnabled here — both are WKWebView-specific with no Android counterpart.
     appendUserAgent: 'HatchGrabNativeApp',
+    // android-1-1 (15 Nov 2026, docs/android-1-1-report.md §3): EVERY plugin EXCEPT @capacitor/status-bar.
+    // That plugin was the only code in the Android app calling the edge-to-edge APIs Play now flags as
+    // deprecated (Window.setStatusBarColor, FLAG_TRANSLUCENT_STATUS, SYSTEM_UI_FLAG_*). On Android 15+ its
+    // colour and overlay calls are no-ops anyway, and the one that works, setStyle, is owned natively by
+    // MainActivity.enforceSystemBarAppearance(). lib/native/statusBar.ts's calls on Android reject inside its
+    // try/catch. iOS still includes it (it is load-bearing there). ⚠️ A NEW PLUGIN MUST BE ADDED HERE TOO, or
+    // `npx cap sync android` leaves it out of the Android app.
+    includePlugins: [
+      '@aparajita/capacitor-biometric-auth',
+      '@capacitor-community/bluetooth-le',
+      '@capacitor-community/keep-awake',
+      '@capacitor/app',
+      '@capacitor/local-notifications',
+      '@capacitor/network',
+      '@capacitor/preferences',
+      '@capacitor/push-notifications',
+      '@hatchgrab/net-printer',
+    ],
   },
   plugins: {
+    // android-1-1: Capacitor's own inset handling OFF on Android, so MainActivity is the one owner of the
+    // window insets (Capacitor 8.6 moved its listener to the decor view, where it would pad underneath ours).
+    // Read only by the Android SystemBars plugin; iOS's reads `style` and `animation` only.
+    SystemBars: {
+      insetsHandling: 'disable',
+    },
     SplashScreen: {
       launchShowDuration: 1000,
       backgroundColor: '#1C1C1E',

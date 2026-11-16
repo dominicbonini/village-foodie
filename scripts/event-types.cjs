@@ -2878,7 +2878,10 @@ head('5b · THE MODAL AND THE CARD')
         && /\{CANCEL_REASONS\.map\(v=><optionkey=\{v\}value=\{v\}>\{cancelReasonLabel\(v\)\}<\/option>\)\}/.test(flat)
         /* access denied: the brand stays inline; the title and the code's sentence are messages */
         && GB_MSG('dashboard.gate.accessDenied') === 'Access denied' && GB_MSG('dashboard.gate.invalidAccessLink') === 'Invalid access link'
-        && /'HatchGrab':'Village Foodie';return<div[^\n]*>\{tDash\('gate\.accessDenied'\)\}<\/p><p className="text-slate-500 text-sm">\{error==='invalidAccessLink'\?tDash\('gate\.invalidAccessLink'\):error\}<\/p>/.test(pg)
+        // ⚠️ RE-PINNED (android-1-1, 16 November 2026): the inert "← HatchGrab" line under "Back to log in" is gone, and
+        // with it the `_brand` const this matched after — the gate now opens `if(error&&!authenticated){return<div…`.
+        // The title and the code's sentence are still the same two messages, asserted exactly as before.
+        && /if\(error&&!authenticated\)\{(?:const _brand=[^;]*'HatchGrab':'Village Foodie';)?return<div[^\n]*>\{tDash\('gate\.accessDenied'\)\}<\/p><p className="text-slate-500 text-sm">\{error==='invalidAccessLink'\?tDash\('gate\.invalidAccessLink'\):error\}<\/p>/.test(pg)
         && /setError\('invalidAccessLink'\)/.test(pg)
         /* the extra-wait options and the pause lengths */
         && GB_MSG('dashboard.extraWait.option') === '+{mins} min'

@@ -29,8 +29,12 @@ android {
         applicationId "com.hatchgrab.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // android-1-1 (15 Nov 2026): 1.1, the second upload. Play's live release "HatchGrab V1" is version code 1.
+        versionCode 2
+        versionName "1.1"
+        // android-1-1: the one native library in the bundle (androidx DataStore's libdatastore_shared_counter.so)
+        // gets its symbol table packaged into the AAB, so Play can symbolise native crashes.
+        ndk { debugSymbolLevel 'SYMBOL_TABLE' }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -56,11 +60,16 @@ android {
             if (hasKeystore) {
                 signingConfig signingConfigs.release
             }
-            // 🔴 minifyEnabled AND shrinkResources ARE DELIBERATELY UNTOUCHED. An untested obfuscation
-            // pass on a Capacitor app breaks reflection-based plugin calls in ways that only show at
-            // runtime, on release, after upload. That is its own workstream — do not enable it here.
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // ⛔ android-1-1 (15 Nov 2026, docs/android-1-1-report.md §2): R8 IS ON — that "own workstream".
+            // Play flags the bundle's DEX as below its optimization / obfuscation threshold (enforced Feb 2027)
+            // and as having no deobfuscation file. R8 shrinks, optimizes and obfuscates; its mapping is written
+            // to app/build/outputs/mapping/release/mapping.txt AND embedded in the AAB's BUNDLE-METADATA, which
+            // Play reads on upload. The reflection the old comment feared is covered by Capacitor's own consumer
+            // rules (every Plugin subclass, every @PluginMethod) plus proguard-rules.pro (Capacitor and every
+            // plugin package kept whole). Proved on the MINIFIED build on Android 14, 15 and 16 before upload.
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }

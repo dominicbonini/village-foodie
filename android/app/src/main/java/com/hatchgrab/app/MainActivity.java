@@ -1,11 +1,18 @@
 package com.hatchgrab.app;
 
 import android.content.res.Configuration;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.Window;
+import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -50,6 +57,37 @@ import com.getcapacitor.BridgeActivity;
  * ⚠️ NO WEB FILE, NO SHARED COMPONENT, NO CSS AND NO CAPACITOR CONFIG KEY IS TOUCHED BY THIS CHANGE.
  * capacitor.config.ts is deliberately NOT edited — see installInsetOwner() for why that was possible.
  */
+/*
+ * ── ⚠️ UPDATED (android-1-1, 15 November 2026, docs/android-1-1-report.md §3) ─────────────────────────
+ * THREE THINGS CHANGED WITH CAPACITOR 8.6.2 AND PLAY'S EDGE-TO-EDGE NOTICES, AND THE NOTE ABOVE IS HISTORY:
+ *
+ * 1. @capacitor/android 8.6.2 MOVED SystemBars' LISTENER TO THE DECOR VIEW (plugin/SystemBars.java:190,
+ *    `getActivity().getWindow().getDecorView()`). Replacing the listener on the WebView's parent no longer
+ *    displaces it: the decor listener runs FIRST, pads the decor and hands the parent zeroed insets, so on a
+ *    WebView older than 140 the navy bottom band above would come straight back. So Capacitor's own handling
+ *    is now switched off the supported way, `plugins.SystemBars.insetsHandling: 'disable'` in
+ *    capacitor.config.ts (read only by the Android plugin; iOS's SystemBars.swift reads style and animation),
+ *    and this file remains the ONE owner of the insets.
+ *
+ * 2. THE BOTTOM IS PADDED AGAIN, BY THE NAVIGATION BAR, AND PAINTED LIGHT. Zero bottom padding put the page
+ *    under the navigation bar: harmless under a gesture pill, but with 3-button navigation (48dp) the phone
+ *    "Add order" total bar, the Documents send bar and the session banner sat UNDER the buttons, and none of
+ *    them carries env(safe-area-inset-bottom). Play's edge-to-edge review asks exactly that nothing sits under
+ *    a system bar. The fix keeps the old defect fixed too: the strip is painted the operator surfaces' own
+ *    light background (#F8FAFC), not the header navy, by BarsBackground below. Nothing in the web layer
+ *    changes and the insets handed to the WebView stay zero, so the shared CSS stays inert on Android.
+ *
+ * 3. EdgeToEdge.enable(this) (androidx.activity). Android 15+ draws edge-to-edge for any app targeting 35+;
+ *    Android 14 and older only when the app asks. Play's "edge-to-edge may not display for all users" notice
+ *    is about that difference, and Capacitor's own docs recommend this call (it becomes automatic in
+ *    Capacitor 9). With it, every Android version takes the SAME path through installInsetOwner().
+ *
+ * And @capacitor/status-bar is no longer in the Android build (capacitor.config.ts android.includePlugins): it
+ * was the only code in the app calling the edge-to-edge APIs Play flags as deprecated
+ * (Window.setStatusBarColor, FLAG_TRANSLUCENT_STATUS, SYSTEM_UI_FLAG_*). Its one useful Android call,
+ * setStyle, is what enforceSystemBarAppearance() below already owns. lib/native/statusBar.ts's calls on
+ * Android now reject inside its existing try/catch, which is all they did that mattered.
+ */
 public class MainActivity extends BridgeActivity {
 
     @Override
@@ -58,6 +96,10 @@ public class MainActivity extends BridgeActivity {
         // SystemBars has registered its listener by the time it returns. Both installers below depend on
         // running AFTER it; neither may be moved above this line.
         super.onCreate(savedInstanceState);
+
+        // android-1-1: edge-to-edge on EVERY Android version, not only 15+ (see the note above). After super,
+        // because BridgeActivity sets the theme and content view there; the insets are re-requested below.
+        EdgeToEdge.enable(this);
 
         installInsetOwner();
         installSystemBarAppearanceGuard();
@@ -95,6 +137,8 @@ public class MainActivity extends BridgeActivity {
      * content clear of a display cutout or a side-mounted navigation bar in landscape. NOTHING ABOUT
      * THE TOP OF THE APP CHANGES.
      *
+     * ⛔ SUPERSEDED (android-1-1): the bottom is padded by the navigation bar again and painted light by
+     * BarsBackground; see the note at the top of the class. The original reasoning follows.
      * BOTTOM IS ZERO. That is the whole fix. The WebView now reaches the bottom edge of the window, so
      * the bottom strip is whatever the page paints there — #F9F9F9 on the dashboard, #7C7D7E under a
      * modal scrim, white on the KDS — instead of a fixed navy that ignored all three.
@@ -118,6 +162,8 @@ public class MainActivity extends BridgeActivity {
         final View parent = (View) getBridge().getWebView().getParent();
         if (parent == null) return;
         insetParent = parent;
+        barsBackground = new BarsBackground(getResources().getColor(R.color.hgHeaderNavy, getTheme()), BOTTOM_STRIP);
+        parent.setBackground(barsBackground);
         applySurface(true);
 
         ViewCompat.setOnApplyWindowInsetsListener(parent, (v, insets) -> {
@@ -127,7 +173,11 @@ public class MainActivity extends BridgeActivity {
             Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
             boolean keyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
 
-            v.setPadding(bars.left, bars.top, bars.right, keyboardVisible ? ime.bottom : 0);
+            // android-1-1: the bottom is the navigation bar's height again (or the keyboard's), so nothing
+            // sits under 3-button navigation; BarsBackground paints that strip light, not navy.
+            int bottom = keyboardVisible ? ime.bottom : bars.bottom;
+            v.setPadding(bars.left, bars.top, bars.right, bottom);
+            if (barsBackground != null) barsBackground.setBands(bars.top, bottom);
 
             return new WindowInsetsCompat.Builder(insets)
                 .setInsets(
@@ -177,6 +227,31 @@ public class MainActivity extends BridgeActivity {
      * before this change. Navy strip: light glyphs. White strip: dark glyphs.
      */
     private View insetParent = null;
+    private BarsBackground barsBackground = null;
+    /** The operator surfaces' light background (slate-50, #F8FAFC: the dashboard, Manage and the KDS). */
+    private static final int BOTTOM_STRIP = 0xFFF8FAFC;
+
+    /**
+     * android-1-1: the WebView's parent background. A View paints its background across its padding, so this
+     * is what shows in the strips the insets reserve: the TOP band (and the side bands in landscape) in the
+     * header's colour, as before, and the BOTTOM band (the navigation bar's height) in the page's light colour,
+     * so padding the bottom again does not bring back the navy band the note above was written to remove.
+     */
+    private static final class BarsBackground extends Drawable {
+        private final Paint top = new Paint(), bottom = new Paint();
+        private int topBand = 0, bottomBand = 0;
+        BarsBackground(int topColor, int bottomColor) { top.setColor(topColor); bottom.setColor(bottomColor); }
+        void setTopColor(int c) { if (top.getColor() != c) { top.setColor(c); invalidateSelf(); } }
+        void setBands(int topPx, int bottomPx) { if (topPx != topBand || bottomPx != bottomBand) { topBand = topPx; bottomBand = bottomPx; invalidateSelf(); } }
+        @Override public void draw(Canvas canvas) {
+            Rect b = getBounds();
+            canvas.drawRect(b, top);                                   // top, sides and anything not yet covered
+            if (bottomBand > 0) canvas.drawRect(b.left, b.bottom - bottomBand, b.right, b.bottom, bottom);
+        }
+        @Override public void setAlpha(int alpha) {}
+        @Override public void setColorFilter(ColorFilter cf) {}
+        @Override public int getOpacity() { return PixelFormat.OPAQUE; }
+    }
     private boolean surfaceIsLight = false;
     private String lastUrl = null;
     private long lastUrlCheckMs = 0L;
@@ -207,7 +282,8 @@ public class MainActivity extends BridgeActivity {
         boolean light = isKdsUrl(url);
         surfaceIsLight = light;
         // bg-white on the KDS header; @color/hgHeaderNavy elsewhere, which is what AppHeader paints.
-        insetParent.setBackgroundColor(light ? Color.WHITE : getResources().getColor(R.color.hgHeaderNavy, getTheme()));
+        // android-1-1: only the TOP strip (and the sides) follow the surface; the bottom strip stays light.
+        if (barsBackground != null) barsBackground.setTopColor(light ? Color.WHITE : getResources().getColor(R.color.hgHeaderNavy, getTheme()));
         enforceSystemBarAppearance();
     }
 

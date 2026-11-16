@@ -116,7 +116,10 @@ head('§2 · "Access denied" has a way forward')
   const dash = read('app/(app)/dashboard/[token]/page.tsx')
   const line = dash.split('\n').find(l => l.includes("tDash('gate.accessDenied')")) || ''
   t('the Access denied screen has a "Back to log in" button to /login', /<Link href="\/login" data-gate-next="login"[^>]*>\{tForgotGate\('back'\)\}<\/Link>/.test(line))
-  t('…shown on the web AND in the app (outside the isNativeApp() branch)', line.indexOf('data-gate-next="login"') > -1 && line.indexOf('data-gate-next="login"') < line.indexOf('isNativeApp()'))
+  // ⚠️ RE-PINNED (android-1-1, 15 November 2026, docs/android-1-1-report.md §7): the "← HatchGrab" line under the button (a link home
+  // on the web, an inert span in the app) was removed, so there is no isNativeApp() branch left on this screen to sit outside of.
+  t('…shown on the web AND in the app (no platform branch on the screen), and it is the only way forward (android-1-1: the brand line is gone)',
+    line.includes('data-gate-next="login"') && !line.includes('isNativeApp()') && !line.includes('_brand') && (line.match(/<Link /g) || []).length === 1)
   t('…worded by auth.forgot.back', /const tForgotGate=useT\('auth\.forgot'\)/.test(dash) && dash.includes("import '@/lib/i18n/catalog/auth'"))
   const ns = read('lib/i18n/namespaces.ts')
   const dashList = ns.slice(ns.indexOf('dashboard: ['), ns.indexOf(']', ns.indexOf("'whereYouTrade'", ns.indexOf('dashboard: ['))) + 1)

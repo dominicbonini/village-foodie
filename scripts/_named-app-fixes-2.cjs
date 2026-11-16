@@ -28,11 +28,16 @@ const decode = x => x.replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&
 const texts = html => decode(html).replace(/<[^>]*>/g, '\u0000').split('\u0000').map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean)
 const hrefs = h => [...h.matchAll(/<a [^>]*href="([^"]*)"/g)].map(m => m[1])
 const BUTTON = /<div class="mt-5"><a href="\/login" class="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold text-sm px-5 py-2\.5 rounded-xl">(Back to log in|Back to sign in)<\/a><\/div>/
+const BRAND_LINK = /<a href="\/" class="mt-4 inline-block text-orange-600 text-sm hover:underline">← [^<]*<\/a>/
+const BRAND_GONE = (() => { try { const d = fs.readFileSync(path.join(__dirname, '..', 'app/(app)/dashboard/[token]/page.tsx'), 'utf8'); return !/const _brand=/.test(d) } catch { return false } })()
 function proveAccessDenied(exp, f) {
   if (typeof exp !== 'string' || typeof f !== 'string') return { ok: false, problems: ['not an HTML view'] }
   const m = f.match(BUTTON)
   if (!m) return { ok: false, problems: ['no "Back to log in" button to /login'] }
   const without = f.replace(m[0], '')
+  // ⚠️ RE-PINNED (android-1-1, 15 November 2026, docs/android-1-1-report.md §7): the "← brand" link under the button is REMOVED. BEFORE is
+  // compared with exactly that one link taken out (and only while the dashboard source has no `_brand` left, i.e. the removal landed).
+  if (BRAND_GONE) exp = exp.replace(BRAND_LINK, '')
   const problems = []
   if (without !== exp) problems.push('with the button taken out, the view is not byte-identical to BEFORE')
   const tb = texts(exp), tf = texts(f)
