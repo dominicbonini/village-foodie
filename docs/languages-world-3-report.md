@@ -1,17 +1,17 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Run:** batch 1 of 35 (ru-KZ legal pages) · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
 | # | Language | UI done | Legal done | Checks | Commit |
 |---|---|---|---|---|---|
 | 1 | ru-KZ Russian (Kazakhstan) | ✅ (languages-world-2) | ✅ batch 1 — **needs native/legal check** | `_legal-translations.cjs ru-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | 6ac91927 |
-| 2 | uk-UA Ukrainian | ✅ (lw-2) | — next (batch 2) | | |
+| 2 | uk-UA Ukrainian | ✅ (lw-2) | ✅ batch 2 — **needs native/legal check** | `_legal-translations.cjs uk-UA` 3/3 ✓; `legal-languages-1` /ua/privacy, /ua/terms, /ua/country-terms ✓ | languages-world-3 batch 2 |
 | 3 | hi-IN Hindi | ✅ (lw-2) | — | | |
 | 4 | bn-BD Bengali | ✅ (lw-2) | — | | |
 | 5 | ur-PK Urdu | ✅ (lw-2) | — | | |
-| 6 | kk-KZ Kazakh | ✅ (lw-2) | — | | |
+| 6 | kk-KZ Kazakh | ✅ (lw-2) | — next (batch 3) | | |
 | 7 | uz-UZ Uzbek | ✅ (lw-2) | — | | |
 | 8 | az-AZ Azerbaijani | ✅ (lw-2) | — | | |
 | 9 | ka-GE Georgian | ✅ (lw-2) | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **1 of 23 languages done (3 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
+Legal pages: **2 of 23 languages done (6 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
 
 ## Batch order
 
@@ -39,7 +39,8 @@ Batches go smallest and most-used first. Each legal batch is about half the size
 | Batch | Work |
 |---|---|
 | 1 | ru-KZ legal ✅ (this run) |
-| 2–12 | Legal pages for uk-UA, hi-IN, bn-BD, ur-PK, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, ne-NP (one language per batch) |
+| 2 | uk-UA legal ✅ |
+| 3–12 | Legal pages for kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP (one language per batch). The order now follows `legal-languages-1`, which stops at the first missing base, so each batch moves that harness one language further. |
 | 13 | fil-PH UI: parts 04–09, consistency pass, install, LPROJ (handover README loop) |
 | 14 | fil-PH legal |
 | 15–34 | UI, then legal, for each of sq-AL, bs-BA, mk-MK, ca-AD, sw-TZ, si-LK, ta-LK, km-KH, lo-LA, am-ET (two batches per language) |
@@ -47,7 +48,7 @@ Batches go smallest and most-used first. Each legal batch is about half the size
 
 That is 34 batches plus the closing one: 35 runs in all.
 
-When the UI batches for the 11 languages reach `translation-check`, it will flag the 5 pricing-copy-4 card-banner keys. `en-GB.start.json` in the handover kit does not have them, so each UI batch adds them from en-GB. The Swahili guard also needs languages-1's "no list" re-pin (handover kit note).
+Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.cjs` (see the 9/12 rule below). The Swahili guard also needs languages-1’s "no list" re-pin (handover kit note).
 
 ## Batch 1: ru-KZ legal pages
 
@@ -85,9 +86,42 @@ When the UI batches for the 11 languages reach `translation-check`, it will flag
 
 **Garbled spans:** none found in the English sources.
 
-## Flag: the "9/12 fixed languages" wording note
+## Batch 2: uk-UA legal pages
 
-The prompt asks me to read "the wording note about the 9/12 fixed languages". **No note with that wording exists** in the reference manual's languages section, in `docs/languages-world-2-report.md` or in the handover kit. The closest match is `docs/pricing-copy-4-report.md`: the **12** finished languages-world-2 bases already carry the current card-banner wording (option b), and the 11 still to come need its 5 keys. I have assumed that is the note meant and applied it as above (each new UI batch adds the 5 keys). If "9/12" means something else, for example a fixed set of 9, please say so before batch 13, the first UI batch.
+**Files:**
+- [content/legal/uk-UA/privacy-policy.md](../content/legal/uk-UA/privacy-policy.md)
+- [content/legal/uk-UA/terms-and-conditions.md](../content/legal/uk-UA/terms-and-conditions.md)
+- [content/legal/uk-UA/country-specific-terms.md](../content/legal/uk-UA/country-specific-terms.md)
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations. No Ukrainian-speaking lawyer has reviewed them.
+
+**Checks run** (this locale only):
+- `node scripts/_legal-translations.cjs uk-UA`: all 3 pass (stamp, date line, structure, numbers, links, addresses, processors).
+- `node scripts/legal-languages-1.cjs`: `/ua/privacy`, `/ua/terms` and `/ua/country-terms` render. Each has the translation, the note linking to the English, the Ukrainian date («4 листопада 2026 р.» and «1 листопада 2026 р.»), the UA footer and cross-links, a Ukrainian title and its own canonical. The harness then stops with ENOENT on `kk-KZ/privacy-policy.md`, the next batch.
+
+**Screenshot: not possible yet, for this or any languages-world-2 language.** Ukraine has no country row, and neither does Kazakhstan. On the real site their legal addresses redirect to the English page, which is the gate the harness proves. The harness then renders each page with a test copy of Japan's row. A real screenshot has to wait until Dominic adds the country rows. Adding them is a core-table change, so I am not doing it in this workstream.
+
+**Translation choices** (for the native reviewer):
+- Lowercase «ви»/«вам», as in the uk-UA UI (`legalChrome.questions`: «вам відповідять живі люди»). The page titles match `legalChrome`: «Політика конфіденційності», «Умови використання», «Умови для окремих країн». The date line is `**Останнє оновлення:** {{LAST_UPDATED}}`.
+- Product terms follow the uk-UA UI:
+  - Pay at Hatch → «оплата у фудтраку»;
+  - the hatch → «віконце»;
+  - kitchen screen → «екран кухні»;
+  - account → «обліковий запис».
+- The same conventions as ru-KZ: Ukrainian law names with the official name and year in brackets; untranslatable terms (merchant of record, reverse charge, chargeback, white-label, data intermediary) in English in brackets; allergen names, French button labels and Japanese law names verbatim; VAT → ПДВ, other tax abbreviations as in the English.
+
+**Garbled spans:** none.
+
+## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
+
+- The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
+- Each of the **11 languages still to come** gets pricing-copy-4's five pricing keys, translated from **current en-GB**. The handover file `docs/languages-world-2/handover/en-GB.start.json` predates these keys. The rules:
+  - `feeOnly` has **no** asterisk;
+  - `feeOnlyCard` is `feeOnly` **with** the asterisk;
+  - `includedNoMark` and `feeNoMark` have no asterisk;
+  - the card banner sentence ("…Prefer to take payment up front? Add online card payments any time…") and the asterisk footnote ("*0.99% on online card orders only") are included.
+- The site decides which countries show them: card countries do, monthly-billing-only countries don't.
+- **`node scripts/pricing-copy-4.cjs` is part of every UI batch's checks** and must pass for that language before the commit.
 
 ## Open decisions carried from languages-world-2 (not needed yet)
 
@@ -96,4 +130,4 @@ The prompt asks me to read "the wording note about the 9/12 fixed languages". **
 
 ## Next
 
-Batch 2 is the uk-UA legal pages. Start it with "Continue languages-world-3: next batch".
+Batch 3 is the kk-KZ legal pages. Start it with "Continue languages-world-3: next batch".
