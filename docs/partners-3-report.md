@@ -22,7 +22,7 @@
 ## 🔴 For you
 
 1. **The offer.** Every partner shows **"Needs offer"** until you create its code (deal + commission) in its drawer. Nothing is queued or sent before that.
-2. **Mexico (MX) is not switched on** (`country_settings.enabled = false`). It was researched first because the brief's order puts it first. Its rows are imported, and they are manual like every new country.
+2. **Mexico (MX) is not switched on** (`country_settings.enabled = false`). Its 11 imported rows are now `not_now`, "country not live". **Research is on hold after MX, PE, CL, CO, AR** (§3).
 3. **New countries have no outreach rule.** A country with no `outreach_country_rules` row is manual_only, so PT, DK, NO, PL, CZ, HU, SI, PE, CL, SA, FI and every researched country show "You send" (once they have an offer). Add an "allowed" rule for a country only if you want its ✓ partners sent to automatically.
 4. **A native-speaker read** of the fr / nl / de / es / it / sv templates is still advisable before the first real send. The back-translations are in Appendix A.
 
@@ -228,6 +228,8 @@ Migration `20261109`:
 
 ## 3. The slow research (item 3)
 
+> ⏸ **ON HOLD (Dominic, 16 November 2026): research is paused after MX, PE, CL, CO, AR.** The scheduled batches are cancelled: nothing resumes at 09:00 and no wait loop is running. **Any future research must skip countries that aren't live:** `country_settings.enabled = false`, or a country that can't sell or is held. The 11 Mexican rows already imported (MX isn't live) are now `not_now` with the note "country not live" (migration `20261117_partners_3_mx_hold.sql`).
+
 - **The method:**
   - One country per batch, by a background agent, which writes `docs/partners-3/research/<cc>.json`.
   - Then the same import and verification: `node scripts/partners-3-import.cjs research <CC>` → a committed migration `<n>_partners_3_research_<cc>.sql` → `db-migrate`.
@@ -270,7 +272,7 @@ Migration `20261109`:
 | 26 | KR | — | queued | | | | | | | |
 | 27 | IN | — | queued | | | | | | | |
 
-Then the other live HatchGrab countries, in the same way. 5 countries a day (Dominic: save the weekly usage). Day 1 (16 Nov): MX, PE, CL, CO, AR. Next: UY from 17 Nov 09:00, then CR, EC, BR, PT; one at a time on Sonnet, ~20 searches each — lighter, so these batches find less (AR found no contact links). This table is updated after each batch.
+Day 1 (16 Nov): MX, PE, CL, CO, AR. ⏸ **Paused there.** The "queued" rows above are not scheduled. If research resumes, drop any country that isn't live first.
 
 ## 4. Counts per country (everything imported in partners-3)
 
