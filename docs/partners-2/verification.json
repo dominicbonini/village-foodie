@@ -1,0 +1,3365 @@
+{
+ "source": "docs/partners-2/gemini-partner-list.md",
+ "checked": "2026-11-16",
+ "method": "site loads and is this organisation; the exact address appears on the site/contact page; dig MX for the domain",
+ "orgs": [
+  {
+   "section": 1,
+   "name": "NCASS (Nationwide Caterers Association)",
+   "region": "UK (National)",
+   "emails": [
+    "Demi@ncass.org.uk",
+    "marketing@ncass.org.uk",
+    "info@ncass.org.uk"
+   ],
+   "note": "UK's primary mobile food & street food trade body; runs a dedicated \"Member Deals & Rewards\" partner directory.",
+   "idx": 0,
+   "verification": {
+    "idx": 0,
+    "name": "NCASS (Nationwide Caterers Association)",
+    "website": "https://www.ncass.org.uk/",
+    "website_ok": true,
+    "website_note": "Official NCASS site, active",
+    "emails": [
+     {
+      "email": "Demi@ncass.org.uk",
+      "domain_mx": true,
+      "found_on": "https://www.ncass.org.uk/contact-us/",
+      "verdict": "verified",
+      "reason": "Partnerships contact on the contact page (Cloudflare-obfuscated)"
+     },
+     {
+      "email": "marketing@ncass.org.uk",
+      "domain_mx": true,
+      "found_on": "https://www.ncass.org.uk/contact-us/",
+      "verdict": "verified",
+      "reason": "Marketing & PR contact on the contact page"
+     },
+     {
+      "email": "info@ncass.org.uk",
+      "domain_mx": true,
+      "found_on": "https://www.ncass.org.uk/contact-us/",
+      "verdict": "verified",
+      "reason": "Membership and training contact on the contact page"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "All 3 on /contact-us/; Demi@ is the named partnerships contact",
+    "suggested_primary": "Demi@ncass.org.uk"
+   }
+  },
+  {
+   "section": 1,
+   "name": "British Street Food / European Street Food Awards",
+   "region": "UK & Europe",
+   "emails": [
+    "richard@britishstreetfood.co.uk",
+    "richard@europeanstreetfood.com",
+    "hello@buoyevents.co.uk"
+   ],
+   "note": "Largest street food network and awards organization across the UK and Europe.",
+   "idx": 1,
+   "verification": {
+    "idx": 1,
+    "name": "British Street Food / European Street Food Awards",
+    "website": "https://britishstreetfood.co.uk/",
+    "website_ok": true,
+    "website_note": "Official BSF site, active (2025 posts); contact page is a form",
+    "emails": [
+     {
+      "email": "richard@britishstreetfood.co.uk",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok. Not on the site; a search snippet ties it to 2014-era Pressat press releases (403 when fetched). Not seen directly"
+     },
+     {
+      "email": "richard@europeanstreetfood.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (self-hosted). europeanstreetfood.com loads, but no address on the home or contact page"
+     },
+     {
+      "email": "hello@buoyevents.co.uk",
+      "domain_mx": true,
+      "found_on": "https://www.buoyevents.co.uk/",
+      "verdict": "dropped",
+      "reason": "Real address, shown in the footer of buoyevents.co.uk, but Buoy Events is a Bristol street food markets company. Nothing found links it to British Street Food or the Scottish Street Food Awards, which are run by Richard Johnson / Food Mutiny. Wrong organisation for this row."
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Richard Johnson addresses have MX but don't appear on the sites. info@britishstreetfood.co.uk (not in input) appears at https://britishstreetfood.co.uk/2025/04/down-the-market/",
+    "suggested_primary": "richard@britishstreetfood.co.uk"
+   }
+  },
+  {
+   "section": 1,
+   "name": "KERB",
+   "region": "UK (London / National)",
+   "emails": [
+    "hello@kerbfood.com",
+    "info@kerbevents.com"
+   ],
+   "note": "Incubator and membership collective representing 150+ independent street food traders and trucks.",
+   "idx": 2,
+   "verification": {
+    "idx": 2,
+    "name": "KERB",
+    "website": "https://www.kerbfood.com/",
+    "website_ok": true,
+    "website_note": "Official KERB site, active; KERB Events site at kerbevents.com",
+    "emails": [
+     {
+      "email": "hello@kerbfood.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok, not found; the site shows HQ@kerbfood.com on the home and about pages"
+     },
+     {
+      "email": "info@kerbevents.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok, not found; the site shows hello@kerbevents.com at https://kerbevents.com/contact/"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Neither input address is published. The real published ones are hq@kerbfood.com and hello@kerbevents.com",
+    "suggested_primary": "hello@kerbfood.com"
+   }
+  },
+  {
+   "section": 1,
+   "name": "Digbeth Dining Club (DDC)",
+   "region": "UK (Midlands)",
+   "emails": [
+    "sales-admin@digbethdiningclub.com",
+    "info@digbethdiningclub.com"
+   ],
+   "note": "Manages the Midlands' largest roster of street food traders and regional touring food truck events.",
+   "idx": 3,
+   "verification": {
+    "idx": 3,
+    "name": "Digbeth Dining Club (DDC)",
+    "website": "https://digbethdiningclub.com",
+    "website_ok": true,
+    "website_note": "Official DDC site, active",
+    "emails": [
+     {
+      "email": "sales-admin@digbethdiningclub.com",
+      "domain_mx": true,
+      "found_on": "https://digbethdiningclub.com/privacy-policy",
+      "verdict": "verified",
+      "reason": "Listed on the privacy policy page"
+     },
+     {
+      "email": "info@digbethdiningclub.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Google), not found on the home, contact, about or privacy pages"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "sales-admin@ is published (privacy policy); info@ is not",
+    "suggested_primary": "sales-admin@digbethdiningclub.com"
+   }
+  },
+  {
+   "section": 1,
+   "name": "GRUB MCR",
+   "region": "UK (Manchester / North)",
+   "emails": [
+    "info@grubmcr.com"
+   ],
+   "note": "Northern England's primary street food trader collective and event network.",
+   "idx": 4,
+   "verification": {
+    "idx": 4,
+    "name": "GRUB MCR",
+    "website": "https://www.grubmcr.com/",
+    "website_ok": true,
+    "website_note": "Official GRUB site, active",
+    "emails": [
+     {
+      "email": "info@grubmcr.com",
+      "domain_mx": true,
+      "found_on": "https://www.grubmcr.com/contact-us",
+      "verdict": "verified",
+      "reason": "On the home and contact pages"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "info@grubmcr.com"
+   }
+  },
+  {
+   "section": 1,
+   "name": "Street Food Collective",
+   "region": "UK (West Midlands / Wales)",
+   "emails": [
+    "info@streetfoodcollective.co.uk"
+   ],
+   "note": "Regional mobile food and street food trader network covering Herefordshire, Worcestershire, and Shropshire.",
+   "idx": 5,
+   "verification": {
+    "idx": 5,
+    "name": "Street Food Collective",
+    "website": "https://streetfoodcollective.co.uk",
+    "website_ok": true,
+    "website_note": "Active, but a single caterer (sample menus, Herefordshire/Worcestershire/Shropshire), not a trader network",
+    "emails": [
+     {
+      "email": "info@streetfoodcollective.co.uk",
+      "domain_mx": true,
+      "found_on": "https://streetfoodcollective.co.uk",
+      "verdict": "verified",
+      "reason": "In the homepage header"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "Address is real, but the business looks like one caterer, not a regional trader network as the note claims",
+    "suggested_primary": "info@streetfoodcollective.co.uk"
+   }
+  },
+  {
+   "section": 1,
+   "name": "Scottish Street Food Awards / Bute Yard",
+   "region": "UK (Scotland)",
+   "emails": [
+    "hello@buoyevents.co.uk"
+   ],
+   "note": "Connects Scotland's mobile food and street food vendors into the national awards circuit.",
+   "idx": 6,
+   "verification": {
+    "idx": 6,
+    "name": "Scottish Street Food Awards / Bute Yard",
+    "website": "https://www.buoyevents.co.uk/",
+    "website_ok": false,
+    "website_note": "The only email's domain is Buoy Events (Bristol street food markets), not the Scottish Street Food Awards. No SSFA site found; no 'Bute Yard' found",
+    "emails": [
+     {
+      "email": "hello@buoyevents.co.uk",
+      "domain_mx": true,
+      "found_on": "https://www.buoyevents.co.uk/",
+      "verdict": "dropped",
+      "reason": "Real address, shown in the footer of buoyevents.co.uk, but Buoy Events is a Bristol street food markets company. Nothing found links it to British Street Food or the Scottish Street Food Awards, which are run by Richard Johnson / Food Mutiny. Wrong organisation for this row."
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "The only address belongs to another organisation (Buoy Events, Bristol). SSFA is run by Richard Johnson / Food Mutiny with The Pitt",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 1,
+   "name": "Real Food Festival & Markets",
+   "region": "UK (London)",
+   "emails": [
+    "info@realfoodfestival.co.uk",
+    "johnc@realfoodfestival.co.uk"
+   ],
+   "note": "Organizes independent street food trader markets across London.",
+   "idx": 7,
+   "verification": {
+    "idx": 7,
+    "name": "Real Food Festival & Markets",
+    "website": "https://www.realfoodfestival.co.uk/",
+    "website_ok": true,
+    "website_note": "Official site, active",
+    "emails": [
+     {
+      "email": "info@realfoodfestival.co.uk",
+      "domain_mx": true,
+      "found_on": "https://www.realfoodfestival.co.uk/join-us/",
+      "verdict": "verified",
+      "reason": "On the join-us page"
+     },
+     {
+      "email": "johnc@realfoodfestival.co.uk",
+      "domain_mx": true,
+      "found_on": "https://www.realfoodfestival.co.uk/contact/",
+      "verdict": "verified",
+      "reason": "Named staff address on the contact page"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "info@realfoodfestival.co.uk"
+   }
+  },
+  {
+   "section": 1,
+   "name": "The Food Truck Company UK",
+   "region": "UK (National)",
+   "emails": [
+    "hello@thefoodtruckcompany.co.uk"
+   ],
+   "note": "Dedicated UK food truck network and mobile catering hub.",
+   "idx": 8,
+   "verification": {
+    "idx": 8,
+    "name": "The Food Truck Company UK",
+    "website": "https://thefoodtruckcompany.co.uk",
+    "website_ok": false,
+    "website_note": "Placeholder page titled 'This domain is brand new'; no organisation content",
+    "emails": [
+     {
+      "email": "hello@thefoodtruckcompany.co.uk",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "MX exists (default host stackmail), but the site is a new-domain placeholder; no evidence the organisation exists"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "No real website or organisation found",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 1,
+   "name": "Irish Food Truck Association / Street Food Ireland",
+   "region": "Ireland",
+   "emails": [
+    "info@irishstreetfood.ie"
+   ],
+   "note": "Advocacy and directory hub for mobile food units and trailers in Ireland.",
+   "idx": 9,
+   "verification": {
+    "idx": 9,
+    "name": "Irish Food Truck Association / Street Food Ireland",
+    "website": null,
+    "website_ok": false,
+    "website_note": "irishstreetfood.ie does not resolve (no A/MX/NS); search found no Irish Food Truck Association",
+    "emails": [
+     {
+      "email": "info@irishstreetfood.ie",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "Domain has no MX, A or NS records"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Domain not registered/resolving; org not found",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 2,
+   "name": "Street Food En Mouvement (National HQ)",
+   "region": "France (National)",
+   "emails": [
+    "bureau@streetfoodenmouvement.fr",
+    "adhesion@streetfoodenmouvement.fr"
+   ],
+   "note": "France's official national food truck and street food trade association.",
+   "idx": 10,
+   "verification": {
+    "idx": 10,
+    "name": "Street Food En Mouvement (National HQ)",
+    "website": "https://www.streetfoodenmouvement.fr/",
+    "website_ok": true,
+    "website_note": "Official SFEM site, active (also hosted on ghr.fr/street-food-en-mouvement)",
+    "emails": [
+     {
+      "email": "bureau@streetfoodenmouvement.fr",
+      "domain_mx": true,
+      "found_on": "https://www.streetfoodenmouvement.fr/contact/",
+      "verdict": "verified",
+      "reason": "On the contact page and the ghr.fr SFEM pages"
+     },
+     {
+      "email": "adhesion@streetfoodenmouvement.fr",
+      "domain_mx": true,
+      "found_on": "https://www.streetfoodenmouvement.fr/contact/",
+      "verdict": "verified",
+      "reason": "Membership address on the contact page"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "bureau@ is the general address",
+    "suggested_primary": "bureau@streetfoodenmouvement.fr"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Street Food En Mouvement – Île-de-France",
+   "region": "France (Paris Region)",
+   "emails": [
+    "idf@streetfoodemouvement.fr"
+   ],
+   "note": "Regional branch for Paris and surrounding departments.",
+   "idx": 11,
+   "verification": {
+    "idx": 11,
+    "name": "Street Food En Mouvement – Île-de-France",
+    "website": "https://www.streetfoodenmouvement.fr/",
+    "website_ok": true,
+    "website_note": "Regional branch listed on the national SFEM contact page",
+    "emails": [
+     {
+      "email": "idf@streetfoodemouvement.fr",
+      "domain_mx": false,
+      "found_on": "https://www.streetfoodenmouvement.fr/contact/",
+      "verdict": "dropped",
+      "reason": "Typo domain: streetfoodemouvement.fr has no MX/A/NS. The real domain streetfoodenmouvement.fr has Google MX. The typo is printed on SFEM's own contact page, but mail to it can't be delivered"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Only address is on a dead typo domain. idf@streetfoodenmouvement.fr is the likely intended address but is not published anywhere I saw (unconfirmed)",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 2,
+   "name": "Street Food En Mouvement – Hauts-de-France",
+   "region": "France (North / Lille)",
+   "emails": [
+    "ndf@streetfoodenmouvement.fr"
+   ],
+   "note": "Regional branch covering Northern France (Lille/Linselles/Nord region).",
+   "idx": 12,
+   "verification": {
+    "idx": 12,
+    "name": "Street Food En Mouvement – Hauts-de-France",
+    "website": "https://www.streetfoodenmouvement.fr/",
+    "website_ok": true,
+    "website_note": "Regional branch listed on the national SFEM contact page",
+    "emails": [
+     {
+      "email": "ndf@streetfoodenmouvement.fr",
+      "domain_mx": true,
+      "found_on": "https://www.streetfoodenmouvement.fr/contact/",
+      "verdict": "verified",
+      "reason": "On the SFEM contact page"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "ndf@streetfoodenmouvement.fr"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Street Food En Mouvement – Nouvelle-Aquitaine",
+   "region": "France (Southwest)",
+   "emails": [
+    "naq@streetfoodenmouvement.fr"
+   ],
+   "note": "Regional branch covering Bordeaux and Southwest France.",
+   "idx": 13,
+   "verification": {
+    "idx": 13,
+    "name": "Street Food En Mouvement – Nouvelle-Aquitaine",
+    "website": "https://www.streetfoodenmouvement.fr/",
+    "website_ok": true,
+    "website_note": "Regional branch listed on the national SFEM contact page",
+    "emails": [
+     {
+      "email": "naq@streetfoodenmouvement.fr",
+      "domain_mx": true,
+      "found_on": "https://www.streetfoodenmouvement.fr/contact/",
+      "verdict": "verified",
+      "reason": "On the SFEM contact page"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "naq@streetfoodenmouvement.fr"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Street Food En Mouvement – Grand Est",
+   "region": "France (East)",
+   "emails": [
+    "ges@streetfoodenmouvement.fr"
+   ],
+   "note": "Regional branch covering Strasbourg and Eastern France.",
+   "idx": 14,
+   "verification": {
+    "idx": 14,
+    "name": "Street Food En Mouvement – Grand Est",
+    "website": "https://www.streetfoodenmouvement.fr/",
+    "website_ok": true,
+    "website_note": "Regional branch listed on the national SFEM contact page",
+    "emails": [
+     {
+      "email": "ges@streetfoodenmouvement.fr",
+      "domain_mx": true,
+      "found_on": "https://www.streetfoodenmouvement.fr/contact/",
+      "verdict": "verified",
+      "reason": "On the SFEM contact page"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "ges@streetfoodenmouvement.fr"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Food Trucks Association PACA",
+   "region": "France (South / Provence)",
+   "emails": [
+    "contact@foodtrucksassociation.fr"
+   ],
+   "note": "Regional trade association exclusively for food trucks in Southern France (PACA).",
+   "idx": 15,
+   "verification": {
+    "idx": 15,
+    "name": "Food Trucks Association PACA",
+    "website": "https://www.foodtrucksassociation.fr/",
+    "website_ok": true,
+    "website_note": "Official site: 'L'association des Foodtrucks PACA', active",
+    "emails": [
+     {
+      "email": "contact@foodtrucksassociation.fr",
+      "domain_mx": true,
+      "found_on": "https://www.foodtrucksassociation.fr/",
+      "verdict": "verified",
+      "reason": "On the homepage (the site also shows a variant without the s: contact@foodtruckassociation.fr)"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "contact@foodtrucksassociation.fr"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Belgian Food Truck Federation (BFTFed)",
+   "region": "Belgium",
+   "emails": [
+    "support@bftfed.be",
+    "info@bftfed.be"
+   ],
+   "note": "Official non-profit trade federation representing Belgian food trucks.",
+   "idx": 16,
+   "verification": {
+    "idx": 16,
+    "name": "Belgian Food Truck Federation (BFTFed)",
+    "website": "https://belgianfoodtruckfederation.org/",
+    "website_ok": false,
+    "website_note": "bftfed.be redirects to belgianfoodtruckfederation.org, which returns 403 to every automated fetch, so content couldn't be checked",
+    "emails": [
+     {
+      "email": "support@bftfed.be",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Google). Appears only in a third-party mirror of a federation dataset README; not seen on the official site"
+     },
+     {
+      "email": "info@bftfed.be",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Google), not found anywhere"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Site blocks fetching; neither address confirmed",
+    "suggested_primary": "info@bftfed.be"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Foodtruck.be Directory",
+   "region": "Belgium",
+   "emails": [
+    "info@foodtruck.be"
+   ],
+   "note": "Belgium's dedicated food truck finder and vendor directory.",
+   "idx": 17,
+   "verification": {
+    "idx": 17,
+    "name": "Foodtruck.be Directory",
+    "website": "https://www.foodtruck.be/",
+    "website_ok": true,
+    "website_note": "Active Belgian food truck directory",
+    "emails": [
+     {
+      "email": "info@foodtruck.be",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Google), not on the home, contact or privacy pages (only member trucks' emails are listed)"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "",
+    "suggested_primary": "info@foodtruck.be"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Foodtruckbestellen.be",
+   "region": "Belgium (Flanders)",
+   "emails": [
+    "info@foodtruckbestellen.be"
+   ],
+   "note": "Direct-to-owner food truck directory in Belgium.",
+   "idx": 18,
+   "verification": {
+    "idx": 18,
+    "name": "Foodtruckbestellen.be",
+    "website": "https://www.foodtruckbestellen.be/",
+    "website_ok": true,
+    "website_note": "Active directory site",
+    "emails": [
+     {
+      "email": "info@foodtruckbestellen.be",
+      "domain_mx": true,
+      "found_on": "https://www.foodtruckbestellen.be/contact",
+      "verdict": "verified",
+      "reason": "On the contact page"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "info@foodtruckbestellen.be"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Foodtruck Verband Schweiz",
+   "region": "Switzerland",
+   "emails": [
+    "info@foodtruck-verband.ch"
+   ],
+   "note": "Official Swiss Food Truck Association representing mobile vendors across Switzerland.",
+   "idx": 19,
+   "verification": {
+    "idx": 19,
+    "name": "Foodtruck Verband Schweiz",
+    "website": "https://foodtruck-verband.ch",
+    "website_ok": true,
+    "website_note": "Official Foodtruck Verband Schweiz site (© 2026), but its latest news (5 Dec 2024) says the association is closing and reinventing itself",
+    "emails": [
+     {
+      "email": "info@foodtruck-verband.ch",
+      "domain_mx": true,
+      "found_on": "https://foodtruck-verband.ch",
+      "verdict": "verified",
+      "reason": "In the homepage footer (seen via WebFetch; direct fetch returns 403). lukas@ and andreas@foodtruck-verband.ch also listed"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "Address is real, but the association may be winding down or restructuring",
+    "suggested_primary": "info@foodtruck-verband.ch"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Streetfood Verband Schweiz",
+   "region": "Switzerland (Bern)",
+   "emails": [
+    "info@streetfood-verband.ch"
+   ],
+   "note": "Swiss Association for Street Food operators and festivals.",
+   "idx": 20,
+   "verification": {
+    "idx": 20,
+    "name": "Streetfood Verband Schweiz",
+    "website": "https://streetfood-verband.ch",
+    "website_ok": false,
+    "website_note": "Parked: 'Hello, this domain has been purchased at Hostpoint'",
+    "emails": [
+     {
+      "email": "info@streetfood-verband.ch",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "MX exists (Hostpoint default), but the domain is a parked placeholder; no organisation found"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Site parked; org not found",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 2,
+   "name": "Foodtrucks Deutschland (Craft Guild)",
+   "region": "Germany",
+   "emails": [
+    "info@foodtrucks-deutschland.de"
+   ],
+   "note": "Germany's largest platform, directory, and industry network exclusively for food trucks.",
+   "idx": 21,
+   "verification": {
+    "idx": 21,
+    "name": "Foodtrucks Deutschland (Craft Guild)",
+    "website": "https://www.foodtrucks-deutschland.de/",
+    "website_ok": true,
+    "website_note": "Site loads ('Foodtrucks in Deutschland: Von Mittagspause bis Catering')",
+    "emails": [
+     {
+      "email": "info@foodtrucks-deutschland.de",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "Domain has no MX record (A record only), so mail can't be delivered; address not on the site"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "No MX on the domain",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 2,
+   "name": "Street Food Convention / Nürnberg",
+   "region": "Germany",
+   "emails": [
+    "info@street-food-convention.de"
+   ],
+   "note": "Europe's dedicated trade congress for food truck and street food operators.",
+   "idx": 22,
+   "verification": {
+    "idx": 22,
+    "name": "Street Food Convention / Nürnberg",
+    "website": "https://www.afag.de/",
+    "website_ok": false,
+    "website_note": "street-food-convention.de redirects to the homepage of the trade fair company AFAG; no Street Food Convention page found",
+    "emails": [
+     {
+      "email": "info@street-food-convention.de",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Hornetsecurity), not on the site; the redirect target shows info@afag.de"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "The convention's own site is gone (redirects to its organiser AFAG); the event may have been discontinued",
+    "suggested_primary": "info@street-food-convention.de"
+   }
+  },
+  {
+   "section": 2,
+   "name": "FoodtruckBooking.nl / ToetToetFood",
+   "region": "Netherlands",
+   "emails": [
+    "info@foodtruckbooking.nl",
+    "info@toettoetfood.nl"
+   ],
+   "note": "Major Dutch food truck networks connecting hundreds of independent mobile kitchens.",
+   "idx": 23,
+   "verification": {
+    "idx": 23,
+    "name": "FoodtruckBooking.nl / ToetToetFood",
+    "website": "https://www.foodtruckbooking.nl/",
+    "website_ok": true,
+    "website_note": "Both FoodtruckBooking.nl and ToetToetFood.nl load and are active",
+    "emails": [
+     {
+      "email": "info@foodtruckbooking.nl",
+      "domain_mx": true,
+      "found_on": "https://www.foodtruckbooking.nl/contact",
+      "verdict": "verified",
+      "reason": "On the contact page"
+     },
+     {
+      "email": "info@toettoetfood.nl",
+      "domain_mx": true,
+      "found_on": "https://toettoetfood.nl",
+      "verdict": "verified",
+      "reason": "On the ToetToetFood homepage"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "Two separate companies combined in one row",
+    "suggested_primary": "info@foodtruckbooking.nl"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Foodtruck-Vereniging Nederland",
+   "region": "Netherlands",
+   "emails": [
+    "info@foodtruckvereniging.nl"
+   ],
+   "note": "Dutch trade alliance for mobile food entrepreneurs.",
+   "idx": 24,
+   "verification": {
+    "idx": 24,
+    "name": "Foodtruck-Vereniging Nederland",
+    "website": null,
+    "website_ok": false,
+    "website_note": "foodtruckvereniging.nl does not resolve; search found no such Dutch association",
+    "emails": [
+     {
+      "email": "info@foodtruckvereniging.nl",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "Domain has no MX, A or NS records"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Domain not resolving; org not found",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 2,
+   "name": "Foodtruckya!",
+   "region": "Spain",
+   "emails": [
+    "info@foodtruckya.com"
+   ],
+   "note": "Spain's largest dedicated food truck directory, vendor guide, and industry blog (very high SEO authority in `.es`).",
+   "idx": 25,
+   "verification": {
+    "idx": 25,
+    "name": "Foodtruckya!",
+    "website": "https://foodtruckya.com/es/",
+    "website_ok": true,
+    "website_note": "Active Spanish food truck directory",
+    "emails": [
+     {
+      "email": "info@foodtruckya.com",
+      "domain_mx": true,
+      "found_on": "https://foodtruckya.com/es/contacto",
+      "verdict": "verified",
+      "reason": "On the contact page"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "info@foodtruckya.com"
+   }
+  },
+  {
+   "section": 2,
+   "name": "Street Food Madrid / Asociación",
+   "region": "Spain",
+   "emails": [
+    "info@streetfoodmadrid.es"
+   ],
+   "note": "Spanish street food and mobile vendor association.",
+   "idx": 26,
+   "verification": {
+    "idx": 26,
+    "name": "Street Food Madrid / Asociación",
+    "website": null,
+    "website_ok": false,
+    "website_note": "streetfoodmadrid.es does not resolve; the association only shows up in a 2015 Change.org petition",
+    "emails": [
+     {
+      "email": "info@streetfoodmadrid.es",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "Domain has no MX, A or NS records"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Domain dead; association looks inactive since about 2015",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 2,
+   "name": "Streetfood Italia (Associazione)",
+   "region": "Italy",
+   "emails": [
+    "info@streetfood.it"
+   ],
+   "note": "Italy's primary national street food association and vendor network (founded in 2004).",
+   "idx": 27,
+   "verification": {
+    "idx": 27,
+    "name": "Streetfood Italia (Associazione)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "streetfood.it does not resolve; the association (founded 2004) only appears in about 2015 press",
+    "emails": [
+     {
+      "email": "info@streetfood.it",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "Domain has no MX, A or NS records"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Domain dead",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 2,
+   "name": "Food Truck Italia Network",
+   "region": "Italy",
+   "emails": [
+    "info@foodtruckitalia.it"
+   ],
+   "note": "Directory and network of Italian food truck operators.",
+   "idx": 28,
+   "verification": {
+    "idx": 28,
+    "name": "Food Truck Italia Network",
+    "website": null,
+    "website_ok": false,
+    "website_note": "foodtruckitalia.it has an MX (IONOS) but no website (no A record); search found no such network",
+    "emails": [
+     {
+      "email": "info@foodtruckitalia.it",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "MX exists, but no website or organisation found; looks invented or defunct"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Org not found",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 2,
+   "name": "Svenska Foodtruck Förbundet",
+   "region": "Sweden",
+   "emails": [
+    "info@foodtruckforbundet.se"
+   ],
+   "note": "Swedish Food Truck Association representing mobile kitchens in Stockholm and nationwide.",
+   "idx": 29,
+   "verification": {
+    "idx": 29,
+    "name": "Svenska Foodtruck Förbundet",
+    "website": null,
+    "website_ok": false,
+    "website_note": "foodtruckforbundet.se does not resolve; search found no Swedish food truck association",
+    "emails": [
+     {
+      "email": "info@foodtruckforbundet.se",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "Domain has no MX, A or NS records"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Domain not resolving; org not found",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "National Food Truck Association (NFTA)",
+   "region": "USA (National)",
+   "emails": [
+    "info@nationalfoodtrucks.org"
+   ],
+   "note": "National umbrella association connecting regional food truck alliances across the US.",
+   "idx": 30,
+   "verification": {
+    "idx": 30,
+    "name": "National Food Truck Association (NFTA)",
+    "website": "https://nationalfoodtrucks.org",
+    "website_ok": true,
+    "website_note": "Active NFTA site",
+    "emails": [
+     {
+      "email": "info@nationalfoodtrucks.org",
+      "domain_mx": true,
+      "found_on": "https://nationalfoodtrucks.org",
+      "verdict": "verified",
+      "reason": "On the homepage"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "info@nationalfoodtrucks.org"
+   }
+  },
+  {
+   "section": 3,
+   "name": "National Street Food Vendors Association (NSFVA)",
+   "region": "USA (National)",
+   "emails": [
+    "info@nsfva.org"
+   ],
+   "note": "#1 mobile food entrepreneur community in the US for food trucks, trailers, and carts.",
+   "idx": 31,
+   "verification": {
+    "idx": 31,
+    "name": "National Street Food Vendors Association (NSFVA)",
+    "website": "https://www.nsfva.org/",
+    "website_ok": true,
+    "website_note": "Active NSFVA site",
+    "emails": [
+     {
+      "email": "info@nsfva.org",
+      "domain_mx": true,
+      "found_on": "https://www.nsfva.org/",
+      "verdict": "verified",
+      "reason": "On the homepage"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "info@nsfva.org"
+   }
+  },
+  {
+   "section": 3,
+   "name": "National Independent Concessionaires Assoc. (NICA)",
+   "region": "USA (National)",
+   "emails": [
+    "nica@nicainc.org",
+    "communications@nicainc.org"
+   ],
+   "note": "Trade association of 1,150+ mobile food concessionaires and festival food trailers.",
+   "idx": 32,
+   "verification": {
+    "idx": 32,
+    "name": "National Independent Concessionaires Assoc. (NICA)",
+    "website": "https://www.nicainc.org/",
+    "website_ok": true,
+    "website_note": "Active NICA site (© 1993-2026)",
+    "emails": [
+     {
+      "email": "nica@nicainc.org",
+      "domain_mx": true,
+      "found_on": "https://www.nicainc.org/",
+      "verdict": "verified",
+      "reason": "In the footer of every page"
+     },
+     {
+      "email": "communications@nicainc.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok, not found on the home, about, member or leadership pages (boardofdirectors@nicainc.org is listed)"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "nica@nicainc.org"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Mobile Food Network",
+   "region": "USA (National)",
+   "emails": [
+    "info@mobilefoodnetwork.com"
+   ],
+   "note": "National vendor support and advocacy network for mobile food businesses.",
+   "idx": 33,
+   "verification": {
+    "idx": 33,
+    "name": "Mobile Food Network",
+    "website": "https://mobilefoodnetwork.com",
+    "website_ok": true,
+    "website_note": "Active site ('Founded in 2025'), food cart/truck vendor network",
+    "emails": [
+     {
+      "email": "info@mobilefoodnetwork.com",
+      "domain_mx": true,
+      "found_on": "https://mobilefoodnetwork.com/Contacts/",
+      "verdict": "verified",
+      "reason": "On the Contacts page"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "info@mobilefoodnetwork.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Southern California Mobile Food Vendors Assoc. (SCMFVA)",
+   "region": "California (SoCal)",
+   "emails": [
+    "info@socalmfva.com"
+   ],
+   "note": "Historic owner-led advocacy association for Southern California food trucks.",
+   "idx": 34,
+   "verification": {
+    "idx": 34,
+    "name": "Southern California Mobile Food Vendors Assoc. (SCMFVA)",
+    "website": "https://www.socalmfva.com/",
+    "website_ok": true,
+    "website_note": "Official SoCal MFVA site, loads",
+    "emails": [
+     {
+      "email": "info@socalmfva.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Google), not on the home, about or contact pages, nor in search results"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "",
+    "suggested_primary": "info@socalmfva.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Food Truck Association of Georgia (FTAG)",
+   "region": "Georgia",
+   "emails": [
+    "info@foodtruckassociationofgeorgia.com",
+    "info@fdoamin.com"
+   ],
+   "note": "Active state association with a dedicated \"FTAG Affiliate Sponsors\" partner program.",
+   "idx": 35,
+   "verification": {
+    "idx": 35,
+    "name": "Food Truck Association of Georgia (FTAG)",
+    "website": "https://foodtruckassociationofgeorgia.com",
+    "website_ok": true,
+    "website_note": "Active FTAG site",
+    "emails": [
+     {
+      "email": "info@foodtruckassociationofgeorgia.com",
+      "domain_mx": true,
+      "found_on": "https://foodtruckassociationofgeorgia.com",
+      "verdict": "verified",
+      "reason": "On the homepage"
+     },
+     {
+      "email": "info@fdoamin.com",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "Junk placeholder: fdoamin.com has no MX/A/NS"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "info@foodtruckassociationofgeorgia.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Central Ohio Food Truck Association (COFTA)",
+   "region": "Ohio (Columbus)",
+   "emails": [
+    "board@centralohiofoodtrucks.org",
+    "info@centralohiofoodtrucks.org"
+   ],
+   "note": "Non-profit trade association with an active \"Allied Members\" directory page for B2B partners.",
+   "idx": 36,
+   "verification": {
+    "idx": 36,
+    "name": "Central Ohio Food Truck Association (COFTA)",
+    "website": "https://centralohiofoodtrucks.org",
+    "website_ok": true,
+    "website_note": "Active COFTA site",
+    "emails": [
+     {
+      "email": "board@centralohiofoodtrucks.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Google), not found; the site publishes contact@centralohiofoodtrucks.org on /about"
+     },
+     {
+      "email": "info@centralohiofoodtrucks.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Google), not found; the site publishes contact@centralohiofoodtrucks.org on /about"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Use contact@centralohiofoodtrucks.org (published at https://centralohiofoodtrucks.org/about) instead",
+    "suggested_primary": "info@centralohiofoodtrucks.org"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Cincinnati Food Truck Association (CFTA)",
+   "region": "Ohio (Cincinnati)",
+   "emails": [
+    "cincyfoodtruckassociation@gmail.com",
+    "info@cincinnatifoodtruckassociation.org"
+   ],
+   "note": "Non-profit association for food truck owners; maintains an \"Allied Members\" B2B page.",
+   "idx": 37,
+   "verification": {
+    "idx": 37,
+    "name": "Cincinnati Food Truck Association (CFTA)",
+    "website": "https://cincinnatifoodtruckassociation.org",
+    "website_ok": true,
+    "website_note": "Active CFTA site",
+    "emails": [
+     {
+      "email": "cincyfoodtruckassociation@gmail.com",
+      "domain_mx": true,
+      "found_on": "https://cincinnatifoodtruckassociation.org/Contact",
+      "verdict": "verified",
+      "reason": "On the contact page"
+     },
+     {
+      "email": "info@cincinnatifoodtruckassociation.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Google), not found on the site"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "cincyfoodtruckassociation@gmail.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Dayton Food Truck Association",
+   "region": "Ohio (Dayton)",
+   "emails": [
+    "info@daytonfoodtruckassociation.com"
+   ],
+   "note": "Regional Ohio food truck alliance that highlights industry sponsors on its site.",
+   "idx": 38,
+   "verification": {
+    "idx": 38,
+    "name": "Dayton Food Truck Association",
+    "website": "https://www.daytonfoodtruckassociation.com/",
+    "website_ok": true,
+    "website_note": "Active site (food truck booking)",
+    "emails": [
+     {
+      "email": "info@daytonfoodtruckassociation.com",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "Domain has no MX record (A only), so mail can't be delivered; not on the site"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "No MX; no association address published",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Northeast Ohio Food Truck Association (NEOFTA)",
+   "region": "Ohio (Cleveland)",
+   "emails": [
+    "info@neofta.org"
+   ],
+   "note": "Trade alliance for food trucks in the Greater Cleveland area.",
+   "idx": 39,
+   "verification": {
+    "idx": 39,
+    "name": "Northeast Ohio Food Truck Association (NEOFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "neofta.org does not resolve. NEOFTA exists (Crocker Park events, SCORE guide) but has no site found",
+    "emails": [
+     {
+      "email": "info@neofta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "Domain has no MX, A or NS records"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Org real but address undeliverable",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Washington State Food Truck Association (WSFTA)",
+   "region": "Washington",
+   "emails": [
+    "lori@wafoodtrucks.org",
+    "info@wafoodtrucks.org"
+   ],
+   "note": "High-authority state trade association offering software/business resources to members.",
+   "idx": 40,
+   "verification": {
+    "idx": 40,
+    "name": "Washington State Food Truck Association (WSFTA)",
+    "website": "https://wafoodtrucks.org",
+    "website_ok": true,
+    "website_note": "Active WSFTA site (Squarespace)",
+    "emails": [
+     {
+      "email": "lori@wafoodtrucks.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok, not found. A search result gives LoriJ@wafoodtrucks.org (Lori Johnson, Exec Director) in an Everett city contract; that page 404'd for me, so it's not seen directly"
+     },
+     {
+      "email": "info@wafoodtrucks.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Google), not on the home, membership or contact pages"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "The likely real address is LoriJ@wafoodtrucks.org (search result only, unconfirmed)",
+    "suggested_primary": "info@wafoodtrucks.org"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Minnesota Food Truck Association (MFTA)",
+   "region": "Minnesota",
+   "emails": [
+    "info@mnfoodtruckassociation.org"
+   ],
+   "note": "Represents 140+ food trucks; frequently partnered with by food tech platforms.",
+   "idx": 41,
+   "verification": {
+    "idx": 41,
+    "name": "Minnesota Food Truck Association (MFTA)",
+    "website": "https://mnfoodtruckassociation.org",
+    "website_ok": true,
+    "website_note": "Active MFTA site",
+    "emails": [
+     {
+      "email": "info@mnfoodtruckassociation.org",
+      "domain_mx": true,
+      "found_on": "https://mnfoodtruckassociation.org/contact/",
+      "verdict": "verified",
+      "reason": "On the contact page"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "",
+    "suggested_primary": "info@mnfoodtruckassociation.org"
+   }
+  },
+  {
+   "section": 3,
+   "name": "St. Louis Food Truck Association (STLFTA)",
+   "region": "Missouri",
+   "emails": [
+    "info@stlfta.com",
+    "secretary@stlfta.com"
+   ],
+   "note": "Member-run non-profit trade association for St. Louis mobile vendors.",
+   "idx": 42,
+   "verification": {
+    "idx": 42,
+    "name": "St. Louis Food Truck Association (STLFTA)",
+    "website": "https://stlfta.com",
+    "website_ok": true,
+    "website_note": "Active STLFTA site",
+    "emails": [
+     {
+      "email": "info@stlfta.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (GoDaddy), not on the home, about or member pages"
+     },
+     {
+      "email": "secretary@stlfta.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok, not found"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "",
+    "suggested_primary": "info@stlfta.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Louisville / Kentuckiana Food Truck Assoc. (LFTA)",
+   "region": "Kentucky / Indiana",
+   "emails": [
+    "louisvillefoodtruckassociation@gmail.com"
+   ],
+   "note": "Independent association of licensed food trucks in Louisville and Southern Indiana.",
+   "idx": 43,
+   "verification": {
+    "idx": 43,
+    "name": "Louisville / Kentuckiana Food Truck Assoc. (LFTA)",
+    "website": "https://louisvillefoodtruckassociation.com/",
+    "website_ok": true,
+    "website_note": "Active LFTA site (members, booking, calendar, join-us); no email address shown on home/join-us/booking pages",
+    "emails": [
+     {
+      "email": "louisvillefoodtruckassociation@gmail.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "gmail MX ok; address not on LFTA site or in search results"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Org real and active (KY SOS filing, site live) but address not found published",
+    "suggested_primary": "louisvillefoodtruckassociation@gmail.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "RDU Mobile Food Association (RDUMFA)",
+   "region": "North Carolina",
+   "emails": [
+    "ceo@rdumfa.org",
+    "info@rdumfa.org"
+   ],
+   "note": "Non-profit trade body for 50+ food trucks in the Raleigh-Durham Triangle.",
+   "idx": 44,
+   "verification": {
+    "idx": 44,
+    "name": "RDU Mobile Food Association (RDUMFA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "rdumfa.org 301-redirects to buffaloridgetradingpost.com (unrelated); no trace of the org in web search",
+    "emails": [
+     {
+      "email": "ceo@rdumfa.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "only MX is 'ghs.google.com' (not a mail server); domain redirects to unrelated site; org not found"
+     },
+     {
+      "email": "info@rdumfa.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "same domain: bogus MX (ghs.google.com), unrelated redirect, org not found"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Domain not this org's; org could not be found",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Queen City Mobile Food Truck Association (QCMFTA)",
+   "region": "North Carolina (Charlotte)",
+   "emails": [
+    "info@qcmfta.org"
+   ],
+   "note": "Regional trade association for Charlotte mobile food vendors.",
+   "idx": 45,
+   "verification": {
+    "idx": 45,
+    "name": "Queen City Mobile Food Truck Association (QCMFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "qcmfta.org has an A record but no site responds; no trace of the org in web search",
+    "emails": [
+     {
+      "email": "info@qcmfta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "no MX record; no site"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "No MX, no site, org not found",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Richmond Food Truck Association (RFTA)",
+   "region": "Virginia",
+   "emails": [
+    "info@richmondfoodtruckassociation.org"
+   ],
+   "note": "Member-driven food truck association in Virginia.",
+   "idx": 46,
+   "verification": {
+    "idx": 46,
+    "name": "Richmond Food Truck Association (RFTA)",
+    "website": "https://richmondfoodtruckassociation.org/",
+    "website_ok": true,
+    "website_note": "Active RFTA site with member directory",
+    "emails": [
+     {
+      "email": "info@richmondfoodtruckassociation.org",
+      "domain_mx": true,
+      "found_on": "https://richmondfoodtruckassociation.org/",
+      "verdict": "verified",
+      "reason": "on homepage; Google Workspace MX"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "Address published on own active site",
+    "suggested_primary": "info@richmondfoodtruckassociation.org"
+   }
+  },
+  {
+   "section": 3,
+   "name": "DMV Food Truck Association (DMVFTA)",
+   "region": "DC / MD / VA",
+   "emails": [
+    "info@dmvfta.org"
+   ],
+   "note": "Trade association advocating for mobile vendors across Washington DC, Maryland, and Virginia.",
+   "idx": 47,
+   "verification": {
+    "idx": 47,
+    "name": "DMV Food Truck Association (DMVFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "dmvfta.org (listed for the org on Idealist) now redirects to an unrelated gambling spam site; domain lapsed",
+    "emails": [
+     {
+      "email": "info@dmvfta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "no MX; domain lapsed/hijacked"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Org's old domain lapsed, no mail",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Maryland Mobile Food Vendors Association (MMFVA)",
+   "region": "Maryland",
+   "emails": [
+    "info@mdmobilefood.org"
+   ],
+   "note": "Statewide trade association for Maryland food trucks.",
+   "idx": 48,
+   "verification": {
+    "idx": 48,
+    "name": "Maryland Mobile Food Vendors Association (MMFVA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "mdmobilefood.org does not resolve; real org appears to be 'Maryland Mobile Food Vending Association' (Maryland Food Truck Week), marylandfoodtruckweek.com now redirects to an unrelated UK site",
+    "emails": [
+     {
+      "email": "info@mdmobilefood.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist (no MX, no A)"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Email domain does not exist",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Philly Mobile Food Association (PMFA)",
+   "region": "Pennsylvania (Philly)",
+   "emails": [
+    "info@phillymobilefood.org"
+   ],
+   "note": "Communal voice and resource hub for Philadelphia food trucks and carts.",
+   "idx": 49,
+   "verification": {
+    "idx": 49,
+    "name": "Philly Mobile Food Association (PMFA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "phillymobilefood.org does not resolve; org coverage dates to 2012-2013, no current site found",
+    "emails": [
+     {
+      "email": "info@phillymobilefood.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist (no MX, no A)"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Email domain does not exist; org appears dormant",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Western Pennsylvania Food Truck Alliance",
+   "region": "Pennsylvania (Pittsburgh)",
+   "emails": [
+    "westpennfoodtrucks@gmail.com"
+   ],
+   "note": "Alliance of mobile food operators in Western PA.",
+   "idx": 50,
+   "verification": {
+    "idx": 50,
+    "name": "Western Pennsylvania Food Truck Alliance",
+    "website": null,
+    "website_ok": false,
+    "website_note": "No site, social page or press found for this org name",
+    "emails": [
+     {
+      "email": "westpennfoodtrucks@gmail.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "no public trace of the org or address; likely invented"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Org could not be found anywhere",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Greater Lehigh Valley Food Truck Alliance",
+   "region": "Pennsylvania (Lehigh)",
+   "emails": [
+    "info@glvfta.org"
+   ],
+   "note": "Regional Pennsylvania food truck association.",
+   "idx": 51,
+   "verification": {
+    "idx": 51,
+    "name": "Greater Lehigh Valley Food Truck Alliance",
+    "website": "https://glvmobilefood.org/",
+    "website_ok": true,
+    "website_note": "Real org is Greater Lehigh Valley Mobile Food Alliance (GLVMFA), site glvmobilefood.org loads; glvfta.org does not resolve. 2016 press release gives glvmfa@gmail.com (not seen on site)",
+    "emails": [
+     {
+      "email": "info@glvfta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist (no MX, no A); wrong domain for the org"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Listed address is on a non-existent domain; possible alternative glvmfa@gmail.com (press release 2016, unverified)",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Syracuse Food Truck Association Inc.",
+   "region": "New York (Upstate)",
+   "emails": [
+    "syracusefoodtruckassociation@gmail.com"
+   ],
+   "note": "Non-profit representing ~40 member trucks in Central New York.",
+   "idx": 52,
+   "verification": {
+    "idx": 52,
+    "name": "Syracuse Food Truck Association Inc.",
+    "website": null,
+    "website_ok": false,
+    "website_note": "Org real (press coverage, facebook.com/syracusefoodtruckassociation); its site syrfoodtrucks.com does not respond (domain has Google MX). Third-party event listing gives info@syrfoodtrucks.com",
+    "emails": [
+     {
+      "email": "syracusefoodtruckassociation@gmail.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "gmail MX ok; address not found published (matches their Facebook handle)"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Org real; address not found on any official page",
+    "suggested_primary": "syracusefoodtruckassociation@gmail.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "New Jersey Food Truck Association (NJFTA)",
+   "region": "New Jersey",
+   "emails": [
+    "info@njfta.org"
+   ],
+   "note": "Statewide trade and promotional organization for NJ food trucks.",
+   "idx": 53,
+   "verification": {
+    "idx": 53,
+    "name": "New Jersey Food Truck Association (NJFTA)",
+    "website": "https://njfta.org/",
+    "website_ok": true,
+    "website_note": "Active NJFTA site; contact page uses a form only, no email shown",
+    "emails": [
+     {
+      "email": "info@njfta.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok (Proofpoint); not shown on home/contact/about"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Domain mail works but address not published",
+    "suggested_primary": "info@njfta.org"
+   }
+  },
+  {
+   "section": 3,
+   "name": "South Shore Food Truck Association (SSFTA)",
+   "region": "Massachusetts",
+   "emails": [
+    "SouthShoreFoodTruckAssoc@gmail.com"
+   ],
+   "note": "Massachusetts alliance exclusively for food trucks and trailers (has a Sponsorship page).",
+   "idx": 54,
+   "verification": {
+    "idx": 54,
+    "name": "South Shore Food Truck Association (SSFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "southshorefoodtruckassociation.com is a parked lander; press points to facebook.com/southshorefoodtruckassociation as the official channel (not fetched)",
+    "emails": [
+     {
+      "email": "SouthShoreFoodTruckAssoc@gmail.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "gmail MX ok; address not found published"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Org real and active (2025 food truck nights); address unconfirmed",
+    "suggested_primary": "SouthShoreFoodTruckAssoc@gmail.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Boston Food Truck Alliance (BFTA)",
+   "region": "Massachusetts (Boston)",
+   "emails": [
+    "info@bostonfoodtruckalliance.org"
+   ],
+   "note": "Founded to advance and support mobile food trucks in Greater Boston.",
+   "idx": 55,
+   "verification": {
+    "idx": 55,
+    "name": "Boston Food Truck Alliance (BFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "bostonfoodtruckalliance.org does not resolve",
+    "emails": [
+     {
+      "email": "info@bostonfoodtruckalliance.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist (no MX, no A)"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Email domain does not exist",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Nashville Food Truck Association",
+   "region": "Tennessee",
+   "emails": [
+    "nftainfo@gmail.com"
+   ],
+   "note": "Coalition of Nashville food truck owners.",
+   "idx": 56,
+   "verification": {
+    "idx": 56,
+    "name": "Nashville Food Truck Association",
+    "website": null,
+    "website_ok": false,
+    "website_note": "No NFTA site found; nashvillefoodtrucks.org ('Nashville Food Trucks', StreetFoodFinder-powered) is a similar active group but doesn't name NFTA or show this address",
+    "emails": [
+     {
+      "email": "nftainfo@gmail.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "gmail MX ok; not found on any page (tnvacation listing has blank email)"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Org existed (2010s press); address unconfirmed",
+    "suggested_primary": "nftainfo@gmail.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Gulf to Bay Food Truck Association (GTBFTA)",
+   "region": "Florida (Tampa Bay)",
+   "emails": [
+    "Gulftobayfta@gmail.com",
+    "gulftobayfta+1@gmail.com"
+   ],
+   "note": "Active Florida food truck association managing vendor lots and advocacy.",
+   "idx": 57,
+   "verification": {
+    "idx": 57,
+    "name": "Gulf to Bay Food Truck Association (GTBFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "gulftobayfta.org is a Wix site with domain disconnected (ConnectYourDomain error); org active via Facebook per press",
+    "emails": [
+     {
+      "email": "Gulftobayfta@gmail.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "gmail MX ok; site down, address not found published"
+     },
+     {
+      "email": "gulftobayfta+1@gmail.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "plus-alias duplicate of Gulftobayfta@gmail.com"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Org real; main address unconfirmed",
+    "suggested_primary": "Gulftobayfta@gmail.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "North Texas Food Truck Association (NTXFTA)",
+   "region": "Texas (Dallas / Fort Worth)",
+   "emails": [
+    "info@ntxfta.org"
+   ],
+   "note": "Regional trade association for DFW mobile food operators.",
+   "idx": 58,
+   "verification": {
+    "idx": 58,
+    "name": "North Texas Food Truck Association (NTXFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "ntxfta.org does not resolve; only an unclaimed wedding-directory listing and an old @ntxfta Twitter reference found",
+    "emails": [
+     {
+      "email": "info@ntxfta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist (no MX, no A)"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Email domain does not exist; org appears defunct",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Houston Area Food Truck Association (HAFTA)",
+   "region": "Texas (Houston)",
+   "emails": [
+    "info@hafta.org"
+   ],
+   "note": "Trade alliance for Houston mobile food vendors.",
+   "idx": 59,
+   "verification": {
+    "idx": 59,
+    "name": "Houston Area Food Truck Association (HAFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "hafta.org is parked and listed for sale on GoDaddy; no trace of the org in web search",
+    "emails": [
+     {
+      "email": "info@hafta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "null MX ('0 .', accepts no mail); domain for sale"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Domain parked/for sale, no mail; org not found",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Midessa Mobile Food Vendor Association",
+   "region": "Texas (West Texas)",
+   "emails": [
+    "info@midessamfva.org"
+   ],
+   "note": "Association for food trucks in Midland and Odessa, TX.",
+   "idx": 60,
+   "verification": {
+    "idx": 60,
+    "name": "Midessa Mobile Food Vendor Association",
+    "website": null,
+    "website_ok": false,
+    "website_note": "midessamfva.org does not resolve; no Midland/Odessa vendor association found in search",
+    "emails": [
+     {
+      "email": "info@midessamfva.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist (no MX, no A)"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Domain and org not found; likely invented",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 3,
+   "name": "Grand Rapids Food Truck Association (GRFTA)",
+   "region": "Michigan",
+   "emails": [
+    "info@foodtrucksgr.com"
+   ],
+   "note": "Michigan association with a dedicated \"Contact & Resources\" vendor guide page.",
+   "idx": 61,
+   "verification": {
+    "idx": 61,
+    "name": "Grand Rapids Food Truck Association (GRFTA)",
+    "website": "https://www.foodtrucksgr.com/",
+    "website_ok": true,
+    "website_note": "Active GRFTA Wix site with member list and contact page; contact page lists Kent County health email, no association address",
+    "emails": [
+     {
+      "email": "info@foodtrucksgr.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "Google MX ok; not on home or contact page"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Org site active, address not published",
+    "suggested_primary": "info@foodtrucksgr.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Phoenix Food Truck Association",
+   "region": "Arizona",
+   "emails": [
+    "info@foodtrucksphoenix.com"
+   ],
+   "note": "Paid-membership ($350/yr) association in Phoenix that explicitly bundles software/web perks for members.",
+   "idx": 62,
+   "verification": {
+    "idx": 62,
+    "name": "Phoenix Food Truck Association",
+    "website": "https://www.foodtrucksphoenix.com/",
+    "website_ok": true,
+    "website_note": "Active Phoenix Food Truck Association site; publishes help@foodtrucksphoenix.com, not info@",
+    "emails": [
+     {
+      "email": "info@foodtrucksphoenix.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok; site shows help@foodtrucksphoenix.com instead"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Listed address not published; site publishes help@foodtrucksphoenix.com (on homepage, domain MX ok)",
+    "suggested_primary": "help@foodtrucksphoenix.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Green Bay Food Truck Coalition",
+   "region": "Wisconsin",
+   "emails": [
+    "info@greenbayfoodtrucks.com"
+   ],
+   "note": "Coalition of mobile food vendors in Green Bay, WI.",
+   "idx": 63,
+   "verification": {
+    "idx": 63,
+    "name": "Green Bay Food Truck Coalition",
+    "website": "https://greenbayfoodtrucks.com/",
+    "website_ok": true,
+    "website_note": "Active Green Bay Food Truck Coalition site",
+    "emails": [
+     {
+      "email": "info@greenbayfoodtrucks.com",
+      "domain_mx": true,
+      "found_on": "https://greenbayfoodtrucks.com/",
+      "verdict": "verified",
+      "reason": "on homepage; Google MX"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "Address published on own active site",
+    "suggested_primary": "info@greenbayfoodtrucks.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Street Vendors Association of Chicago (SVAC)",
+   "region": "Illinois (Chicago)",
+   "emails": [
+    "Streetvendorskitchen@gmail.com"
+   ],
+   "note": "Non-profit network exclusively for Chicago street food and mobile vendors.",
+   "idx": 64,
+   "verification": {
+    "idx": 64,
+    "name": "Street Vendors Association of Chicago (SVAC)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "No official site found; org real (GuideStar profile, press); search did not surface its own page",
+    "emails": [
+     {
+      "email": "Streetvendorskitchen@gmail.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "gmail MX ok; address not found published"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Org real; address unconfirmed",
+    "suggested_primary": "Streetvendorskitchen@gmail.com"
+   }
+  },
+  {
+   "section": 3,
+   "name": "Street Vendor Project (NYC)",
+   "region": "New York (NYC)",
+   "emails": [
+    "info@streetvendor.org"
+   ],
+   "note": "Membership-based organization of 2,000+ NYC mobile food carts and trucks.",
+   "idx": 65,
+   "verification": {
+    "idx": 65,
+    "name": "Street Vendor Project (NYC)",
+    "website": "https://www.streetvendor.org/",
+    "website_ok": true,
+    "website_note": "Active Street Vendor Project site (part of Urban Justice Center); publishes svp@urbanjustice.org",
+    "emails": [
+     {
+      "email": "info@streetvendor.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok; site shows svp@urbanjustice.org instead"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Listed address not published; site publishes svp@urbanjustice.org (homepage, Outlook MX)",
+    "suggested_primary": "svp@urbanjustice.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Central Network / Multi-City Partnerships",
+   "region": "USA",
+   "emails": [
+    "info@fta.team"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 66,
+   "verification": {
+    "idx": 66,
+    "name": "Central Network / Multi-City Partnerships",
+    "website": "https://fta.team",
+    "website_ok": true,
+    "website_note": "The US Food Truck Association (network hub; lists ~35 city sites); part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@fta.team",
+      "domain_mx": true,
+      "found_on": "https://fta.team/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@fta.team); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@fta.team"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Los Angeles (FTALA)",
+   "region": "USA",
+   "emails": [
+    "info@ftala.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 67,
+   "verification": {
+    "idx": 67,
+    "name": "Los Angeles (FTALA)",
+    "website": "https://ftala.org",
+    "website_ok": true,
+    "website_note": "Food Truck Association Los Angeles; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@ftala.org",
+      "domain_mx": true,
+      "found_on": "https://ftala.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@ftala.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@ftala.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "New York City (NYFTA)",
+   "region": "USA",
+   "emails": [
+    "info@nyfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 68,
+   "verification": {
+    "idx": 68,
+    "name": "New York City (NYFTA)",
+    "website": "https://nyfta.org",
+    "website_ok": true,
+    "website_note": "New York Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@nyfta.org",
+      "domain_mx": true,
+      "found_on": "https://nyfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@nyfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@nyfta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "San Antonio (FTASA)",
+   "region": "USA",
+   "emails": [
+    "info@ftasa.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 69,
+   "verification": {
+    "idx": 69,
+    "name": "San Antonio (FTASA)",
+    "website": "https://ftasa.org",
+    "website_ok": true,
+    "website_note": "Food Truck Association of San Antonio; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@ftasa.org",
+      "domain_mx": true,
+      "found_on": "https://ftasa.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@ftasa.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@ftasa.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Austin (ATXFTA)",
+   "region": "USA",
+   "emails": [
+    "info@atxfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 70,
+   "verification": {
+    "idx": 70,
+    "name": "Austin (ATXFTA)",
+    "website": "https://atxfta.org",
+    "website_ok": true,
+    "website_note": "ATXFTA, Austin; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@atxfta.org",
+      "domain_mx": true,
+      "found_on": "https://atxfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@atxfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@atxfta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Atlanta (ATLFTA)",
+   "region": "USA",
+   "emails": [
+    "info@atlfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 71,
+   "verification": {
+    "idx": 71,
+    "name": "Atlanta (ATLFTA)",
+    "website": "https://atlfta.org",
+    "website_ok": true,
+    "website_note": "Atlanta Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@atlfta.org",
+      "domain_mx": true,
+      "found_on": "https://atlfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@atlfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@atlfta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "San Francisco / Bay Area (SFFTA)",
+   "region": "USA",
+   "emails": [
+    "info@sffta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 72,
+   "verification": {
+    "idx": 72,
+    "name": "San Francisco / Bay Area (SFFTA)",
+    "website": "https://sffta.org",
+    "website_ok": true,
+    "website_note": "SFFTA, San Francisco; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@sffta.org",
+      "domain_mx": true,
+      "found_on": "https://sffta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@sffta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@sffta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "San Diego (SDFTA)",
+   "region": "USA",
+   "emails": [
+    "info@sdfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 73,
+   "verification": {
+    "idx": 73,
+    "name": "San Diego (SDFTA)",
+    "website": "https://sdfta.org",
+    "website_ok": false,
+    "website_note": "unrelated business: Labyrinth Films (film production); MX points to itself, no FTA content",
+    "emails": [
+     {
+      "email": "info@sdfta.org",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "not the San Diego FTA; the network's real San Diego site is ftasd.org, which shows info@ftasd.org (MX ok)"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "not the San Diego FTA; the network's real San Diego site is ftasd.org, which shows info@ftasd.org (MX ok)",
+    "suggested_primary": "info@ftasd.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Orange County (OCFTA)",
+   "region": "USA",
+   "emails": [
+    "info@ocfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 74,
+   "verification": {
+    "idx": 74,
+    "name": "Orange County (OCFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "no DNS (whois: domain not found)",
+    "emails": [
+     {
+      "email": "info@ocfta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist; the fta.team network lists no Orange County site"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "domain does not exist; the fta.team network lists no Orange County site",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 4,
+   "name": "Seattle (SEAFTA)",
+   "region": "USA",
+   "emails": [
+    "info@seafta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 75,
+   "verification": {
+    "idx": 75,
+    "name": "Seattle (SEAFTA)",
+    "website": "https://seafta.org",
+    "website_ok": true,
+    "website_note": "Seattle Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@seafta.org",
+      "domain_mx": true,
+      "found_on": "https://seafta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@seafta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@seafta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Portland (PDXFTA)",
+   "region": "USA",
+   "emails": [
+    "info@pdxfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 76,
+   "verification": {
+    "idx": 76,
+    "name": "Portland (PDXFTA)",
+    "website": "https://pdxfta.org",
+    "website_ok": true,
+    "website_note": "Portland Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@pdxfta.org",
+      "domain_mx": true,
+      "found_on": "https://pdxfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@pdxfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@pdxfta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Denver (DENFTA)",
+   "region": "USA",
+   "emails": [
+    "info@denfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 77,
+   "verification": {
+    "idx": 77,
+    "name": "Denver (DENFTA)",
+    "website": "https://denfta.org",
+    "website_ok": true,
+    "website_note": "Denver Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@denfta.org",
+      "domain_mx": true,
+      "found_on": "https://denfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@denfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@denfta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Chicago (CHIFTA)",
+   "region": "USA",
+   "emails": [
+    "info@chifta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 78,
+   "verification": {
+    "idx": 78,
+    "name": "Chicago (CHIFTA)",
+    "website": "https://chifta.org",
+    "website_ok": true,
+    "website_note": "CHIFTA, Chicago; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@chifta.org",
+      "domain_mx": true,
+      "found_on": "https://chifta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@chifta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@chifta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Miami / South Florida (MIAFTA)",
+   "region": "USA",
+   "emails": [
+    "info@miafta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 79,
+   "verification": {
+    "idx": 79,
+    "name": "Miami / South Florida (MIAFTA)",
+    "website": "https://miafta.org",
+    "website_ok": true,
+    "website_note": "MIAFTA, Miami; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@miafta.org",
+      "domain_mx": true,
+      "found_on": "https://miafta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@miafta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@miafta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Orlando (ORLFTA)",
+   "region": "USA",
+   "emails": [
+    "info@orlfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 80,
+   "verification": {
+    "idx": 80,
+    "name": "Orlando (ORLFTA)",
+    "website": "https://orlfta.org",
+    "website_ok": true,
+    "website_note": "Orlando Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@orlfta.org",
+      "domain_mx": true,
+      "found_on": "https://orlfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@orlfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@orlfta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Tampa (TPAFTA)",
+   "region": "USA",
+   "emails": [
+    "info@tpafta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 81,
+   "verification": {
+    "idx": 81,
+    "name": "Tampa (TPAFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "no DNS (whois: domain not found)",
+    "emails": [
+     {
+      "email": "info@tpafta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist; the fta.team network lists no Tampa site"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "domain does not exist; the fta.team network lists no Tampa site",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 4,
+   "name": "Dallas (DALFTA)",
+   "region": "USA",
+   "emails": [
+    "info@dalfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 82,
+   "verification": {
+    "idx": 82,
+    "name": "Dallas (DALFTA)",
+    "website": "https://dalfta.org",
+    "website_ok": true,
+    "website_note": "Dallas Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@dalfta.org",
+      "domain_mx": true,
+      "found_on": "https://dalfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@dalfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@dalfta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Houston (HOUFTA)",
+   "region": "USA",
+   "emails": [
+    "info@houfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 83,
+   "verification": {
+    "idx": 83,
+    "name": "Houston (HOUFTA)",
+    "website": "https://houfta.org",
+    "website_ok": true,
+    "website_note": "Houston Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@houfta.org",
+      "domain_mx": true,
+      "found_on": "https://houfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@houfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@houfta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Phoenix (PHXFTA)",
+   "region": "USA",
+   "emails": [
+    "info@phxfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 84,
+   "verification": {
+    "idx": 84,
+    "name": "Phoenix (PHXFTA)",
+    "website": "https://phxfta.org",
+    "website_ok": true,
+    "website_note": "Phoenix Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@phxfta.org",
+      "domain_mx": true,
+      "found_on": "https://phxfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@phxfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@phxfta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Las Vegas (LVFTA)",
+   "region": "USA",
+   "emails": [
+    "info@lvfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 85,
+   "verification": {
+    "idx": 85,
+    "name": "Las Vegas (LVFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "no DNS (whois: domain not found)",
+    "emails": [
+     {
+      "email": "info@lvfta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist; the network's real Las Vegas site is ftalv.org, which shows info@ftalv.org (MX ok)"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "domain does not exist; the network's real Las Vegas site is ftalv.org, which shows info@ftalv.org (MX ok)",
+    "suggested_primary": "info@ftalv.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Nashville (BNAFTA)",
+   "region": "USA",
+   "emails": [
+    "info@bnafta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 86,
+   "verification": {
+    "idx": 86,
+    "name": "Nashville (BNAFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "no DNS (whois: domain not found)",
+    "emails": [
+     {
+      "email": "info@bnafta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist; the fta.team network lists no Nashville site"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "domain does not exist; the fta.team network lists no Nashville site",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 4,
+   "name": "Charlotte (CLTFTA)",
+   "region": "USA",
+   "emails": [
+    "info@cltfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 87,
+   "verification": {
+    "idx": 87,
+    "name": "Charlotte (CLTFTA)",
+    "website": "https://cltfta.org",
+    "website_ok": true,
+    "website_note": "Charlotte Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@cltfta.org",
+      "domain_mx": true,
+      "found_on": "https://cltfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@cltfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@cltfta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Boston (BOSFTA)",
+   "region": "USA",
+   "emails": [
+    "info@bosfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 88,
+   "verification": {
+    "idx": 88,
+    "name": "Boston (BOSFTA)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "no DNS (whois: domain not found)",
+    "emails": [
+     {
+      "email": "info@bosfta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist; the network's real Boston site is ftabos.org, which shows info@ftabos.org (MX ok)"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "domain does not exist; the network's real Boston site is ftabos.org, which shows info@ftabos.org (MX ok)",
+    "suggested_primary": "info@ftabos.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Philadelphia (PHLFTA)",
+   "region": "USA",
+   "emails": [
+    "info@phlfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 89,
+   "verification": {
+    "idx": 89,
+    "name": "Philadelphia (PHLFTA)",
+    "website": "https://phlfta.org",
+    "website_ok": false,
+    "website_note": "parked: GoDaddy nameservers, page only redirects to /lander; no MX",
+    "emails": [
+     {
+      "email": "info@phlfta.org",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "parked domain with no MX; the network's real Philadelphia site is phifta.org, which shows info@phifta.org (MX ok)"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "parked domain with no MX; the network's real Philadelphia site is phifta.org, which shows info@phifta.org (MX ok)",
+    "suggested_primary": "info@phifta.org"
+   }
+  },
+  {
+   "section": 4,
+   "name": "Washington DC (DCFTA)",
+   "region": "USA",
+   "emails": [
+    "info@dcfta.org"
+   ],
+   "note": "US Metro FTA network (suspect)",
+   "idx": 90,
+   "verification": {
+    "idx": 90,
+    "name": "Washington DC (DCFTA)",
+    "website": "https://dcfta.org",
+    "website_ok": true,
+    "website_note": "Washington DC Food Truck Association; part of the fta.team network: a commercial food-truck booking/catering site (NYC operator, 350 E 54th St; sister co. Food Truck Promotions) branded as the city's 'Food Truck Association', with truck membership sign-up; Google Workspace MX",
+    "emails": [
+     {
+      "email": "info@dcfta.org",
+      "domain_mx": true,
+      "found_on": "https://dcfta.org/",
+      "verdict": "verified",
+      "reason": "exact address in the site footer/contact block (also contact@dcfta.org); MX Google"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "live site with the exact address and MX. Note: it is a privately run booking network, not a member-run nonprofit trade association",
+    "suggested_primary": "info@dcfta.org"
+   }
+  },
+  {
+   "section": 5,
+   "name": "Australian Mobile Food Vendors Group (AMFVG)",
+   "region": "Australia (National)",
+   "emails": [
+    "info@amfvg.com.au",
+    "hello@wherethetruck.com.au"
+   ],
+   "note": "Australia's premier national association for food trucks; actively negotiates software/product discounts for members.",
+   "idx": 91,
+   "verification": {
+    "idx": 91,
+    "name": "Australian Mobile Food Vendors Group (AMFVG)",
+    "website": "https://www.amfvg.com.au/",
+    "website_ok": true,
+    "website_note": "Active AMFVG site",
+    "emails": [
+     {
+      "email": "info@amfvg.com.au",
+      "domain_mx": true,
+      "found_on": "https://www.amfvg.com.au/",
+      "verdict": "verified",
+      "reason": "on homepage; MX mail.amfvg.com.au"
+     },
+     {
+      "email": "hello@wherethetruck.com.au",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX present but domain has no site (redirects to wherethetruck.at); not tied to AMFVG on any page seen"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "info@ published on own active site",
+    "suggested_primary": "info@amfvg.com.au"
+   }
+  },
+  {
+   "section": 5,
+   "name": "Sunshine Coast Official Food Truck Assoc. (SCOFTA)",
+   "region": "Australia (QLD)",
+   "emails": [
+    "President@scofta.com.au"
+   ],
+   "note": "Regional Queensland food truck association.",
+   "idx": 92,
+   "verification": {
+    "idx": 92,
+    "name": "Sunshine Coast Official Food Truck Assoc. (SCOFTA)",
+    "website": "https://scofta.com.au/",
+    "website_ok": true,
+    "website_note": "Active SCOFTA site; contact page (scofta.com.au/126-2/) is a form plus Facebook, no email shown",
+    "emails": [
+     {
+      "email": "President@scofta.com.au",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok; not on home or contact page"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Org site active, address not published",
+    "suggested_primary": "President@scofta.com.au"
+   }
+  },
+  {
+   "section": 5,
+   "name": "Melbourne Food Truck Collective / Welcome to Thornbury",
+   "region": "Australia (VIC)",
+   "emails": [
+    "hello@welcometothornbury.com"
+   ],
+   "note": "Operates Australia's largest rotating food truck park and vendor network (100+ trucks).",
+   "idx": 93,
+   "verification": {
+    "idx": 93,
+    "name": "Melbourne Food Truck Collective / Welcome to Thornbury",
+    "website": "https://www.welcometothornbury.com/",
+    "website_ok": true,
+    "website_note": "Active Welcome To Thornbury site; publishes info@welcometothornbury.com, not hello@",
+    "emails": [
+     {
+      "email": "hello@welcometothornbury.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok; site shows info@welcometothornbury.com instead"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Listed address not published; site publishes info@welcometothornbury.com (homepage, Outlook MX)",
+    "suggested_primary": "info@welcometothornbury.com"
+   }
+  },
+  {
+   "section": 5,
+   "name": "Food Truck Carnivale (SA Network)",
+   "region": "Australia (South Aus)",
+   "emails": [
+    "info@foodtruckcarnivale.com.au"
+   ],
+   "note": "South Australia's largest touring food truck collective and vendor network.",
+   "idx": 94,
+   "verification": {
+    "idx": 94,
+    "name": "Food Truck Carnivale (SA Network)",
+    "website": "https://www.foodtruckcarnivale.com.au/",
+    "website_ok": true,
+    "website_note": "Active site (events run by Event People); contact page lists info@eventpeople.com.au",
+    "emails": [
+     {
+      "email": "info@foodtruckcarnivale.com.au",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok; contact page shows info@eventpeople.com.au instead"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Listed address not published; contact page publishes info@eventpeople.com.au (Outlook MX)",
+    "suggested_primary": "info@eventpeople.com.au"
+   }
+  },
+  {
+   "section": 5,
+   "name": "Auckland Food Truck Collective",
+   "region": "New Zealand",
+   "emails": [
+    "hello@aucklandfoodtruckcollective.com"
+   ],
+   "note": "New Zealand's primary collective representing hundreds of mobile food vendors.",
+   "idx": 95,
+   "verification": {
+    "idx": 95,
+    "name": "Auckland Food Truck Collective",
+    "website": null,
+    "website_ok": false,
+    "website_note": "aucklandfoodtruckcollective.com returns 404 (bare CloudFront), no content",
+    "emails": [
+     {
+      "email": "hello@aucklandfoodtruckcollective.com",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "no MX; site 404"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "No mail, no site",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 5,
+   "name": "Christchurch Food Truck Collective",
+   "region": "New Zealand",
+   "emails": [
+    "info@foodtruckcollective.co.nz"
+   ],
+   "note": "South Island mobile food vendor alliance.",
+   "idx": 96,
+   "verification": {
+    "idx": 96,
+    "name": "Christchurch Food Truck Collective",
+    "website": "https://foodtruckcollective.co.nz/",
+    "website_ok": true,
+    "website_note": "'Food Truck Collective' site loads (JS-rendered, no city shown); press names a CEO, so real NZ org, Christchurch link unconfirmed",
+    "emails": [
+     {
+      "email": "info@foodtruckcollective.co.nz",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "Outlook MX ok; no email shown on site"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Domain mail works, address not published",
+    "suggested_primary": "info@foodtruckcollective.co.nz"
+   }
+  },
+  {
+   "section": 5,
+   "name": "Association des Camions de Rue de Montréal (ACRM)",
+   "region": "Canada (Quebec)",
+   "emails": [
+    "info@camionsderue.com"
+   ],
+   "note": "Official Montreal street food truck association (`Cuisine de rue Montréal`).",
+   "idx": 97,
+   "verification": {
+    "idx": 97,
+    "name": "Association des Camions de Rue de Montréal (ACRM)",
+    "website": null,
+    "website_ok": false,
+    "website_note": "camionsderue.com does not resolve",
+    "emails": [
+     {
+      "email": "info@camionsderue.com",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist (no MX, no A)"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Email domain does not exist",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 5,
+   "name": "Ontario Food Trucks / Toronto Food Truck Directory",
+   "region": "Canada (Ontario)",
+   "emails": [
+    "info@torontofoodtrucks.ca",
+    "info@canadafoodtrucks.ca"
+   ],
+   "note": "Largest Canadian network and scheduling directory of mobile food trucks.",
+   "idx": 98,
+   "verification": {
+    "idx": 98,
+    "name": "Ontario Food Trucks / Toronto Food Truck Directory",
+    "website": null,
+    "website_ok": false,
+    "website_note": "torontofoodtrucks.ca does not resolve; canadafoodtrucks.ca is a Venture Food Trucks (truck builder) site, not a directory",
+    "emails": [
+     {
+      "email": "info@torontofoodtrucks.ca",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain does not exist (no MX, no A)"
+     },
+     {
+      "email": "info@canadafoodtrucks.ca",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "domain belongs to a different business (Venture Food Trucks builder); site lists info@venturefoodtrucks.com"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "One domain dead, the other is an unrelated business",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 5,
+   "name": "Greater Vancouver Food Truck Festival Collective",
+   "region": "Canada (BC)",
+   "emails": [
+    "info@greatervanfoodtruckfest.com"
+   ],
+   "note": "Manages British Columbia's largest network of 150+ member food trucks.",
+   "idx": 99,
+   "verification": {
+    "idx": 99,
+    "name": "Greater Vancouver Food Truck Festival Collective",
+    "website": "https://greatervanfoodtruckfest.com/",
+    "website_ok": true,
+    "website_note": "Active Greater Vancouver Food Truck Festival site; publishes hello@, not info@",
+    "emails": [
+     {
+      "email": "info@greatervanfoodtruckfest.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "Google MX ok; site shows hello@greatervanfoodtruckfest.com instead"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Listed address not published; site publishes hello@greatervanfoodtruckfest.com (homepage)",
+    "suggested_primary": "hello@greatervanfoodtruckfest.com"
+   }
+  },
+  {
+   "section": 5,
+   "name": "YYC Food Trucks",
+   "region": "Canada (Calgary, AB)",
+   "emails": [
+    "info@yycfoodtrucks.com"
+   ],
+   "note": "Calgary's food truck collective and vendor management alliance.",
+   "idx": 100,
+   "verification": {
+    "idx": 100,
+    "name": "YYC Food Trucks",
+    "website": "https://www.yycfoodtrucks.com/",
+    "website_ok": true,
+    "website_note": "Active YYCFoodTrucks site; publishes hello@calgaryfoodtrucks.com",
+    "emails": [
+     {
+      "email": "info@yycfoodtrucks.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "Google MX ok; site shows hello@calgaryfoodtrucks.com instead"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Listed address not published; site publishes hello@calgaryfoodtrucks.com (homepage, Google MX)",
+    "suggested_primary": "hello@calgaryfoodtrucks.com"
+   }
+  },
+  {
+   "section": 6,
+   "name": "Street Food Finder (SFF)",
+   "region": "US Association Software & Directory",
+   "emails": [
+    "support@streetfoodfinder.com"
+   ],
+   "note": "Powers the websites and member portals for COFTA, CFTA, STLFTA, and several other US associations.",
+   "idx": 101,
+   "verification": {
+    "idx": 101,
+    "name": "Street Food Finder (SFF)",
+    "website": "https://streetfoodfinder.com/",
+    "website_ok": true,
+    "website_note": "Site behind Cloudflare challenge (403 to fetchers); SFF is active (App Store app by 8 Socks, LLC; powers nashvillefoodtrucks.org)",
+    "emails": [
+     {
+      "email": "support@streetfoodfinder.com",
+      "domain_mx": true,
+      "found_on": "https://apps.apple.com/us/app/streetfoodfinder/id980385784",
+      "verdict": "verified",
+      "reason": "in SFF's own App Store description and footer of SFF-powered nashvillefoodtrucks.org; Google MX"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "Address published by SFF in its official app listing",
+    "suggested_primary": "support@streetfoodfinder.com"
+   }
+  },
+  {
+   "section": 6,
+   "name": "Food Truck Club",
+   "region": "US National Directory & Booking",
+   "emails": [
+    "support@foodtruckclub.com"
+   ],
+   "note": "Large multi-city food truck network with a dedicated vendor portal.",
+   "idx": 102,
+   "verification": {
+    "idx": 102,
+    "name": "Food Truck Club",
+    "website": "https://foodtruckclub.com/",
+    "website_ok": false,
+    "website_note": "Site behind Cloudflare challenge (403), could not read; company active per Trustpilot (corporate catering marketplace)",
+    "emails": [
+     {
+      "email": "support@foodtruckclub.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "Google MX ok; site unreadable, address not found in search"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Domain mail works, address unconfirmed",
+    "suggested_primary": "support@foodtruckclub.com"
+   }
+  },
+  {
+   "section": 6,
+   "name": "Moblz",
+   "region": "Mobile Vendor Directory & Hub",
+   "emails": [
+    "info@moblz.com"
+   ],
+   "note": "Manages food truck lot schedules and maintains the public \"Food Truck Associations\" directory.",
+   "idx": 103,
+   "verification": {
+    "idx": 103,
+    "name": "Moblz",
+    "website": "https://www.moblz.com/",
+    "website_ok": false,
+    "website_note": "Site behind Incapsula bot wall, could not read; company active (Cary NC). A search snippet of its Book-a-Truck page cites support@moblz.com (not seen directly)",
+    "emails": [
+     {
+      "email": "info@moblz.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "Outlook MX ok; site unreadable, address not found in search"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Domain mail works, address unconfirmed; support@moblz.com may be the published one",
+    "suggested_primary": "info@moblz.com"
+   }
+  },
+  {
+   "section": 6,
+   "name": "Roaming Hunger",
+   "region": "Global Food Truck Directory",
+   "emails": [
+    "vendors@roaminghunger.com",
+    "partnerships@roaminghunger.com"
+   ],
+   "note": "High-DA global food truck domain (DA 60+); runs a massive vendor resource blog.",
+   "idx": 104,
+   "verification": {
+    "idx": 104,
+    "name": "Roaming Hunger",
+    "website": "https://roaminghunger.com/",
+    "website_ok": true,
+    "website_note": "Active site; homepage shows hungry@roaminghunger.com; official help centre lists vendors@",
+    "emails": [
+     {
+      "email": "vendors@roaminghunger.com",
+      "domain_mx": true,
+      "found_on": "https://roaminghunger.helpscoutdocs.com/article/266-welcome-to-roaming-hunger",
+      "verdict": "verified",
+      "reason": "on Roaming Hunger's official help centre (Vendor Experience Team); Google MX"
+     },
+     {
+      "email": "partnerships@roaminghunger.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok; not found on site or in search"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "vendors@ published in official help docs",
+    "suggested_primary": "vendors@roaminghunger.com"
+   }
+  },
+  {
+   "section": 6,
+   "name": "FoodTruckr",
+   "region": "Food Truck Education & Podcast",
+   "emails": [
+    "team@foodtruckr.com"
+   ],
+   "note": "The largest educational blog and resource hub for new food truck owners worldwide; heavily monetizes via software affiliate links.",
+   "idx": 105,
+   "verification": {
+    "idx": 105,
+    "name": "FoodTruckr",
+    "website": "https://foodtruckr.com/",
+    "website_ok": true,
+    "website_note": "Site loads (contact page shows support@foodtruckr.com) but domain has no MX records",
+    "emails": [
+     {
+      "email": "team@foodtruckr.com",
+      "domain_mx": false,
+      "found_on": null,
+      "verdict": "dropped",
+      "reason": "foodtruckr.com has no MX record; address also not on site"
+     }
+    ],
+    "org_verdict": "dropped",
+    "org_reason": "Domain cannot receive mail (no MX); even the published support@ is undeliverable",
+    "suggested_primary": null
+   }
+  },
+  {
+   "section": 6,
+   "name": "Mobile Cuisine",
+   "region": "Food Truck Industry News",
+   "emails": [
+    "editor@mobile-cuisine.com"
+   ],
+   "note": "Dedicated trade publication covering food truck technology, regulations, and vendor tools.",
+   "idx": 106,
+   "verification": {
+    "idx": 106,
+    "name": "Mobile Cuisine",
+    "website": "https://mobile-cuisine.com/",
+    "website_ok": true,
+    "website_note": "Active site; contact page lists us@ and admin@; team page lists rmyrick@ (Richard Myrick, editor-in-chief)",
+    "emails": [
+     {
+      "email": "editor@mobile-cuisine.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok; site lists us@/admin@/rmyrick@ instead"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Listed address not published; contact page publishes us@mobile-cuisine.com",
+    "suggested_primary": "us@mobile-cuisine.com"
+   }
+  },
+  {
+   "section": 6,
+   "name": "Food Truck Empire",
+   "region": "Food Truck Podcast & Blog",
+   "emails": [
+    "brett@foodtruckempire.com"
+   ],
+   "note": "High-traffic blog and podcast exclusively for mobile food entrepreneurs.",
+   "idx": 107,
+   "verification": {
+    "idx": 107,
+    "name": "Food Truck Empire",
+    "website": "https://foodtruckempire.com/",
+    "website_ok": true,
+    "website_note": "Active site (Brett Lindenberg, founder); contact page shows 'support (at) foodtruckempire.com'",
+    "emails": [
+     {
+      "email": "brett@foodtruckempire.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "MX ok; not on site or in search; site publishes support (at) foodtruckempire.com"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Listed address not published; contact page publishes support@foodtruckempire.com",
+    "suggested_primary": "support@foodtruckempire.com"
+   }
+  },
+  {
+   "section": 6,
+   "name": "StreetFoodApp",
+   "region": "US & Canada Live Tracker",
+   "emails": [
+    "contact@streetfoodapp.com"
+   ],
+   "note": "Tracks thousands of trucks across North America (Vancouver, Toronto, Boston, etc.).",
+   "idx": 108,
+   "verification": {
+    "idx": 108,
+    "name": "StreetFoodApp",
+    "website": "https://streetfoodapp.com/",
+    "website_ok": true,
+    "website_note": "Active site; contact page lists info@streetfoodapp.com",
+    "emails": [
+     {
+      "email": "contact@streetfoodapp.com",
+      "domain_mx": true,
+      "found_on": null,
+      "verdict": "unverified",
+      "reason": "Google MX ok; site shows info@streetfoodapp.com instead"
+     }
+    ],
+    "org_verdict": "unverified",
+    "org_reason": "Listed address not published; contact page publishes info@streetfoodapp.com",
+    "suggested_primary": "info@streetfoodapp.com"
+   }
+  },
+  {
+   "section": 6,
+   "name": "Food Truck Finder USA",
+   "region": "US Multi-City Directory",
+   "emails": [
+    "info@foodtruckfinderusa.com"
+   ],
+   "note": "Directory of verified local food trucks across major US metros.",
+   "idx": 109,
+   "verification": {
+    "idx": 109,
+    "name": "Food Truck Finder USA",
+    "website": "https://foodtruckfinderusa.com/",
+    "website_ok": true,
+    "website_note": "Active JS app site (Food Truck Finder USA / Jacksonville); emails in its page bundle",
+    "emails": [
+     {
+      "email": "info@foodtruckfinderusa.com",
+      "domain_mx": true,
+      "found_on": "https://foodtruckfinderusa.com/",
+      "verdict": "verified",
+      "reason": "in the site's rendered app bundle (/assets/index-*.js); Google MX"
+     }
+    ],
+    "org_verdict": "verified",
+    "org_reason": "Address published on own site",
+    "suggested_primary": "info@foodtruckfinderusa.com"
+   }
+  }
+ ]
+}
