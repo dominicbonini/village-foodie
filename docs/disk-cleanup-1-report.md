@@ -2,7 +2,7 @@
 
 15 November 2026. Tooling only; no website or app code changed. No deploys. Nothing uploaded anywhere.
 
-**Status: steps 1–3 done and committed. Step 4 (resume android-1-1) is STOPPED pending one decision (§7).**
+**Status: steps 1–3 done and committed (`6f2fa100`). §7's decision was made on 16 November (option 1, plus the simulators) — see §10; step 4 resumed.**
 
 ## 1. Brief check
 
@@ -184,6 +184,19 @@ Free space before: **9.7–10 GB** (`df -h /`: 460 GB volume, 98% used on the Da
 
 - disk-cleanup-1: the guard, `guarded.sh`, `xcodebuild-scratch.sh`, `emulator-checks.sh`, the guard line in 80 scripts, `_lp2-frozen.cjs`'s prune, manual V16.26, and this report.
 - android-1-1's own uncommitted changes (Android project, packages, Capacitor config, the Access denied line, its re-pinned harnesses) were **left out** of this commit.
+
+## 10. Dominic's decision (16 November) and what was done
+
+Dominic chose option 1, plus two more items:
+- **`node_modules/.cache` deleted** (11.4 GB).
+- **Old Puppeteer Chrome builds deleted.** Only `mac_arm-148.0.7778.97` (Chrome and headless shell) remains, the version Puppeteer 24.43.1 uses.
+- **iOS simulators: 21 deleted.** Kept on iOS 27, the two used for iOS 1.1 testing:
+  - **iPhone 18 Pro** `B8ECFF24-3CB3-4D2A-818A-1271CCA5A379`;
+  - **iPad Pro 11-inch (M5)** `14D7476F-D851-40D2-9F38-6C29955ACE18`.
+  Both runtimes (iOS 26.5 and 27.0) kept. `CoreSimulator/Devices` is now 4.6 GB, down from 10 GB.
+- **Android: one AVD remains**, `Android_Phone` (Android 16, API 36), with one system image (android-36 google_apis).
+- **Free space: 76 GB** (`df -h /`). macOS had already released more purgeable space overnight; it read 71 GB before these deletions.
+- **android-1-1 resumed** with `scripts/android/emulator-checks.sh`, one temporary emulator at a time; see `docs/android-1-1-report.md`.
 
 ## Undo (only if Dominic asks)
 
