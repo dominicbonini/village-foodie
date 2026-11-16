@@ -1,0 +1,191 @@
+[
+ {
+  "idx": 16, "name": "APEFOODT (Asociación Peruana de Food Truck)",
+  "website": "https://apefoodt.com", "website_ok": true,
+  "website_note": "Loads; header 'ASOCIACION PERUANA DE FOOD TRUCK'. Homepage notes Ley 32524 (12 Dec 2025); blog posts 2018 and 2022; says registered with SUNARP in 2015.",
+  "emails": [
+   { "email": "presidente@apefoodt.com", "found_on": "https://apefoodt.com/index.php/contact/", "domain_mx": true, "verdict": "verified", "reason": "Published on the contact page; MX apefoodt.com (self-hosted)." }
+  ],
+  "channel": "email", "facebook_url": "https://www.facebook.com/apefoodt", "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2025-12", "last_seen_source": "https://apefoodt.com/",
+  "members_estimate": null, "org_verdict": "active",
+  "notes": "Own homepage was updated for Ley 32524 (Dec 2025); banner upload Feb 2026. WhatsApp Business 951 210 551 on the contact page; the list's '50+ members' is not published anywhere I saw."
+ },
+ {
+  "idx": 17, "name": "Asociación Mexicana de Food Trucks",
+  "website": null, "website_ok": false,
+  "website_note": "No website found; coverage is 2014-2016 press (Time Out México, Forbes MX, Expansión).",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2016-08-10", "last_seen_source": "https://expansion.mx/empresas/2016/08/10/axa-lanza-proteccion-para-food-trucks",
+  "members_estimate": "~150 CDMX trucks / 250 nationally (2014 claim, Expansión/Forbes MX)", "org_verdict": "inactive",
+  "notes": "Same organisation as idx 31 (founders Maricarmen Linares, Edgar Núñez, Bernardo Bukantz). Newest mention is an Aug 2016 Expansión article citing its growth figure; no Facebook/Instagram found."
+ },
+ {
+  "idx": 18, "name": "Food Truck Center Chile",
+  "website": "https://foodtruckcenter.cl", "website_ok": true,
+  "website_note": "Loads; a private Chilean food-truck services platform (academy, consultancy, event fleet coordination, marketplaces), not a municipal advisory group or association.",
+  "emails": [
+   { "email": "contacto@foodtruckcenter.cl", "found_on": "https://foodtruckcenter.cl/", "domain_mx": true, "verdict": "verified", "reason": "Published on the homepage; MX titan.email." }
+  ],
+  "channel": "email", "facebook_url": "https://www.facebook.com/share/14s7upC6cwZ/", "instagram_url": "https://www.instagram.com/foodtruck_center", "contact_form_url": "https://foodtruckcenter.cl/#contacto",
+  "last_seen_active": "2026-11", "last_seen_source": "https://foodtruckcenter.cl/",
+  "members_estimate": null, "org_verdict": "active",
+  "notes": "Date is from the site's media upload paths (newest 2026/11 logo, 2026/06 testimonials), not a dated post. It is a commercial operator/consultancy; WhatsApp +56 9 2087 9218."
+ },
+ {
+  "idx": 19, "name": "Hida Food Truck Association (飛騨フードトラック協会)",
+  "website": "https://hidafoodtruck.com", "website_ok": true,
+  "website_note": "Loads; association for food trucks in the Hida region of Gifu, with a member list and event news.",
+  "emails": [],
+  "channel": "contact_form", "facebook_url": null, "instagram_url": null, "contact_form_url": "https://hidafoodtruck.com/contact/",
+  "last_seen_active": "2026-10-20", "last_seen_source": "https://hidafoodtruck.com",
+  "members_estimate": "26 shops previewed in the homepage member list (full list behind 'see more')", "org_verdict": "active",
+  "notes": "Newest news item is 'キッチンカー秋マルシェ2026' dated 2026-10-20 (event 21-23 Nov 2026 at Wood Forum Hida, ~20 trucks a day). No email or social links published."
+ },
+ {
+  "idx": 20, "name": "Truckat (تركّات)",
+  "website": "https://truckatsa.com", "website_ok": true,
+  "website_note": "Loads; 'An authorized project in cooperation with the Riyadh Municipality' for organising food carts/trucks; app Truck@ by Abdulmohsin Alhokair Holding Group. Footer © 2024.",
+  "emails": [
+   { "email": "Yahala@truckatsa.com", "found_on": "https://truckatsa.com/en/", "domain_mx": true, "verdict": "verified", "reason": "Published on the homepage behind Cloudflare email obfuscation (decoded from the page HTML); MX outlook.com." },
+   { "email": "TechSupport@truckatsa.com", "found_on": "https://truckatsa.com/en/", "domain_mx": true, "verdict": "verified", "reason": "Same homepage, support address (Cloudflare-obfuscated); MX outlook.com." }
+  ],
+  "channel": "email", "facebook_url": null, "instagram_url": "https://www.instagram.com/truckatt/", "contact_form_url": "https://truckatsa.com/en/contact",
+  "last_seen_active": "2025-12-20", "last_seen_source": "https://apps.apple.com/sa/app/truck/id1623642256",
+  "members_estimate": null, "org_verdict": "active",
+  "notes": "App Store version 1.22.1 dated 20/12/2025 with a review from days ago. Yahala@ is the partnerships address; also on X and TikTok as @truckatt. The list's '100+' is not published."
+ },
+ {
+  "idx": 21, "name": "Turnup Food Truck SA",
+  "website": "https://www.turnupfoodtrucksa.co.za", "website_ok": true,
+  "website_note": "Loads; a single food truck business (smash burgers, Johannesburg/Pretoria plus a Durban page), not a booking platform or vendor network.",
+  "emails": [
+   { "email": "info@turnupfoodtrucksa.co.za", "found_on": "https://www.turnupfoodtrucksa.co.za/contact-us/", "domain_mx": true, "verdict": "verified", "reason": "Published on the contact page; MX tld-mx.com." }
+  ],
+  "channel": "email", "facebook_url": "https://www.facebook.com/turnupfoodtruck/", "instagram_url": "https://www.instagram.com/turnupfoodtrucksa/", "contact_form_url": null,
+  "last_seen_active": "2025-02", "last_seen_source": "https://www.turnupfoodtrucksa.co.za/",
+  "members_estimate": null, "org_verdict": "active",
+  "notes": "Newest dated item is a customer review from Feb 2025 (footer © 2025). It is one truck operator, not a network, so it is a weak partner fit; the list's '20+' is not supported."
+ },
+ {
+  "idx": 22, "name": "Asociación Argentina de Gastronomía Móvil (AsArGaM)",
+  "website": null, "website_ok": false,
+  "website_note": "No website found; only 2015-2016 press (Perfil, Forbes Argentina, Ámbito, Cronista).",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2016-12-07", "last_seen_source": "https://www.ambito.com/ambito-biz/food-trucks-un-negocio-ruedas-n3965154",
+  "members_estimate": "400+ operators in Argentina (association figure, Cronista; not a membership count)", "org_verdict": "inactive",
+  "notes": "Pushed the Nov 2016 law; Rodolfo Cámara named president/co-founder. No 2024+ evidence and no social accounts found."
+ },
+ {
+  "idx": 23, "name": "Asociación Argentina de Food Trucks",
+  "website": null, "website_ok": false,
+  "website_note": "No website found.",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2015-10-01", "last_seen_source": "https://www.elsol.com.ar/empresas/el-negocio-de-los-food-trucks/",
+  "members_estimate": "9 founding members (Infobae, Jan 2015)", "org_verdict": "inactive",
+  "notes": "The list's '14-10-2026 Perfil article' is wrong: that Perfil piece is dated 19-10-2014 (the 2026 date is the page header). Newest mention of Ernesto Lanusse as president is El Sol, 1 Oct 2015."
+ },
+ {
+  "idx": 24, "name": "Asociación Food Truck de la República Argentina (AFTRA)",
+  "website": null, "website_ok": false,
+  "website_note": "No website found.",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2020-01-30", "last_seen_source": "https://www.infogastronomica.com.ar/en-los-barrios-fracaso-el-plan-porteno-para-instalar-food-trucks/",
+  "members_estimate": null, "org_verdict": "inactive",
+  "notes": "Only source is a 30 Jan 2020 Infogastronómica article naming Luis Defelipe (Food Truck Argentina S.A.) as Aftra president; he quit his own truck after 4 months in 2018. No social pages found."
+ },
+ {
+  "idx": 25, "name": "Associação Brasiliense de Food Trucks",
+  "website": null, "website_ok": false,
+  "website_note": "No website found; mentioned in UnB/UniCEUB theses and Correio Braziliense.",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2023-01", "last_seen_source": "https://www.correiobraziliense.com.br/cidades-df/2023/01/amp/5062753-food-trucks-esperam-faturar-alto-com-reveillon-e-posse-de-lula.html",
+  "members_estimate": "63+ food trucks registered (UniCEUB paper, undated)", "org_verdict": "inactive",
+  "notes": "Newest dated mention is Correio Braziliense Jan 2023; a 2023 GDF carnival item names an 'Associação de Food Trucks do DF' (Marcelo Mazzaro), possibly the same group. The SEBRAE PDF (2024 upload) could not be opened; no Instagram found."
+ },
+ {
+  "idx": 26, "name": "Associação Paranaense de Food Trucks (APFT)",
+  "website": null, "website_ok": false,
+  "website_note": "No website found.",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2016-02-11", "last_seen_source": "https://www.tribunapr.com.br/noticias/parana/impasse-em-licitacao-deixa-donos-de-food-trucks-na-expectativa/",
+  "members_estimate": "48 associates (Tribuna PR, Feb 2016); 20 affiliates in an earlier report", "org_verdict": "inactive",
+  "notes": "Curitiba city news credits it with support on a 2017 decree (page blocked, date unconfirmed). No 2024+ evidence and no Instagram found."
+ },
+ {
+  "idx": 27, "name": "Associação de Food Trucks e Comida de Rua da Bahia",
+  "website": null, "website_ok": false,
+  "website_note": "No website found; also known as 'Food na Rua'.",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2015-12-09", "last_seen_source": "https://www.bahianoticias.com.br/noticia/182716-prefeito-assina-decreto-que-regulamenta-food-trucks-em-salvador",
+  "members_estimate": null, "org_verdict": "inactive",
+  "notes": "Helped draft Salvador's food truck decree (9 Dec 2015); president Gabriel Lobo de Souza, VP Alessandra Hattori (2015). No later evidence or social accounts found."
+ },
+ {
+  "idx": 28, "name": "Aso Food Trucks Bogotá",
+  "website": null, "website_ok": false,
+  "website_note": "No website found.",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2015-07-25", "last_seen_source": "https://www.larepublica.co/ocio/monte-un-food-truck-con-60-millones-y-ventas-diarias-desde-300-000-2281486",
+  "members_estimate": "28 of ~35 Bogotá trucks (La República, Jul 2015)", "org_verdict": "inactive",
+  "notes": "President Luis Fernando Tobián; ran the monthly Bogotá Food Truck Market at Parque de la 93 in 2015. No later mention or social pages found."
+ },
+ {
+  "idx": 29, "name": "Asofoodtruck (Cali)",
+  "website": null, "website_ok": false,
+  "website_note": "No website found.",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2017-01-13", "last_seen_source": "https://www.elpais.com.co/cali/la-moda-de-los-food-trucks-en-una-experiencia-de-comida-diferente.html",
+  "members_estimate": "~20 associated trucks of ~70 in Cali (El País, Jan 2017)", "org_verdict": "inactive",
+  "notes": "Only source is an El País Cali article from 13 Jan 2017 (later updated Apr 2023, no new association content). No social pages found."
+ },
+ {
+  "idx": 30, "name": "Asociación Ecuatoriana de Food Trucks (AEF)",
+  "website": null, "website_ok": false,
+  "website_note": "No website found.",
+  "emails": [],
+  "channel": "facebook", "facebook_url": "https://www.facebook.com/AEFT2016/", "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2017", "last_seen_source": "https://rraae.cedia.edu.ec/Record/PUCE_024490c9cdb6e09586c176391bdbac96",
+  "members_estimate": null, "org_verdict": "inactive",
+  "notes": "Facebook page from Peru Retail (2 Aug 2016); not confirmed current. Newest mentions are 2017 PUCE theses about the association."
+ },
+ {
+  "idx": 31, "name": "Asociación Mexicana de Food Trucks",
+  "website": null, "website_ok": false,
+  "website_note": "No website found; coverage is 2014-2016 press (Time Out México, Forbes MX, Expansión).",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2016-08-10", "last_seen_source": "https://expansion.mx/empresas/2016/08/10/axa-lanza-proteccion-para-food-trucks",
+  "members_estimate": "~150 CDMX trucks / 250 nationally (2014 claim, Expansión/Forbes MX)", "org_verdict": "inactive",
+  "notes": "Same organisation as idx 17 (founders Maricarmen Linares, Edgar Núñez, Bernardo Bukantz). Newest mention is an Aug 2016 Expansión article citing its growth figure; no Facebook/Instagram found."
+ },
+ {
+  "idx": 32, "name": "Food Trucks DF",
+  "website": null, "website_ok": false,
+  "website_note": "No website found.",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2019-10-23", "last_seen_source": "https://elceo.com/politica/morena-clave-para-la-regulacion-a-food-trucks-en-la-ciudad-de-mexico/",
+  "members_estimate": "80 members, ~200 vehicles (El CEO, Oct 2019)", "org_verdict": "inactive",
+  "notes": "President Fernando Reyes Lomelí, quoted Oct 2019 on regulation. No 2024+ evidence and no social pages found."
+ },
+ {
+  "idx": 33, "name": "Asociación Internacional de Foodtrucks y Franquicias Móviles",
+  "website": null, "website_ok": false,
+  "website_note": "No website found.",
+  "emails": [],
+  "channel": null, "facebook_url": null, "instagram_url": null, "contact_form_url": null,
+  "last_seen_active": "2016-06-28", "last_seen_source": "https://www.informabtl.com/los-food-trucks-quieren-formalizarse-ante-hacienda/",
+  "members_estimate": "~1,000 units (InformaBTL, Jun 2016)", "org_verdict": "inactive",
+  "notes": "AIFFM, founder Luis Elvira; Chilango (20 Apr 2016) reported the first HQ opening in Morelia. Facebook/Twitter are mentioned in 2016 but no handles found."
+ }
+]

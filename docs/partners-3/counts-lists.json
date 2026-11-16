@@ -1,0 +1,272 @@
+{
+ "PT": {
+  "email": 2,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "AT": {
+  "email": 0,
+  "social": 1,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 1,
+  "single": 0
+ },
+ "DK": {
+  "email": 3,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 1,
+  "single": 0
+ },
+ "NO": {
+  "email": 1,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "PL": {
+  "email": 1,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 1
+ },
+ "CZ": {
+  "email": 1,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 3,
+  "single": 0
+ },
+ "SK": {
+  "email": 0,
+  "social": 1,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "HU": {
+  "email": 1,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "RO": {
+  "email": 0,
+  "social": 1,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "GR": {
+  "email": 0,
+  "social": 2,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "SI": {
+  "email": 1,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "PE": {
+  "email": 1,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "MX": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 3,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "CL": {
+  "email": 1,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "JP": {
+  "email": 0,
+  "social": 1,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 1,
+  "single": 0
+ },
+ "SA": {
+  "email": 1,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "ZA": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 0,
+  "dropped": 0,
+  "software": 0,
+  "single": 1
+ },
+ "AR": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 3,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "BR": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 3,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "CO": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 2,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "EC": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 1,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "MY": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 1,
+  "inactive": 3,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "IN": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 1,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "ID": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 1,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "PH": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 1,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "AE": {
+  "email": 0,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 1,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ },
+ "FI": {
+  "email": 1,
+  "social": 0,
+  "unverified": 0,
+  "none": 0,
+  "inactive": 1,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ }
+}
