@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.26
+HatchGrab Engineering Reference Manual · V16.27
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.26**
+**Version 16.27**
 
 November 2026
 
@@ -81,6 +81,39 @@ emulator could not create its data partition and the script waited forever for a
   but are Dominic's call (disk-cleanup-1 report §5).
 
 # Changelog
+
+## V16.27 — 16 November 2026 — **ANDROID 1.1: CAPACITOR 8.6.2, R8 + MAPPING, EDGE-TO-EDGE WITHOUT THE DEPRECATED APIs**
+
+android-1-1 (`docs/android-1-1-report.md`). **Built, signed, not uploaded.** Dominic uploads to Play.
+
+- **The release:** versionName **1.1**, versionCode **2** (was 1). targetSdk **36**, compileSdk 36, minSdk 24.
+  - Play has required API 36 for app updates since 31 August 2026; the extension ran out on 1 November.
+  - The build is signed with the same upload key (O=HatchGrab Ltd, SHA-256 `AA:41:BE:A7…88:A9`).
+  - Permissions are unchanged: 13 `uses-permission`, location still removed.
+- **Capacitor:** `@capacitor/android` 8.4.1 → **8.6.2**, matching core / ios / cli. Plugin bumps:
+  - app 8.1.0 → 8.1.2, push-notifications 8.1.1 → 8.1.3, local-notifications 8.2.0 → 8.2.1, status-bar 8.0.2 → 8.0.4 (iOS only now).
+  - ⚠️ **local-notifications is held at 8.2.1:** 8.3 adds the `SCHEDULE_EXACT_ALARM` permission, and permissions are Dominic's decision.
+  - The Android changes from 8.4 to 8.6 need nothing in the project: 8.5 was iOS (UIScene), and 8.6 moved SystemBars' inset listener onto the decor view.
+- 🔴 **R8 is ON for release** (`minifyEnabled true`, `shrinkResources true`, `proguard-android-optimize.txt` + `proguard-rules.pro`). **This supersedes the "deferred, risky" decisions in §36 and V11.54.**
+  - The keep rules cover every Capacitor package, Cordova, each plugin's package (bluetooth-le, keep-awake, biometric, `@hatchgrab/net-printer`, the `com.capacitorjs.plugins.*` set), `com.hatchgrab.app`, and `@JavascriptInterface` methods. Line numbers are kept.
+  - **Proved from the mapping:** no class in those packages is renamed except R8's own synthetic lambdas. 84% of all classes are renamed. The AAB went from 6.1 MB to 3.5 MB.
+  - **The mapping is embedded in the AAB** (`BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map`), so Play reads it on upload. `android/app/build/outputs/mapping/release/mapping.txt` is the fallback.
+  - There are **no native debug symbols to produce.** The only `.so` is androidx DataStore's prebuilt, already stripped. `ndk.debugSymbolLevel 'SYMBOL_TABLE'` is set for any future native code.
+  - 🔴 **A NEW PLUGIN NEEDS A KEEP RULE.** Without one, it builds and passes review, then fails at its first call on a phone.
+- **Edge-to-edge (Play: "may not display for all users" + "uses deprecated APIs"):**
+  - `MainActivity` calls `EdgeToEdge.enable(this)` and owns all four insets: padding on the WebView's parent, the IME at the bottom when the keyboard is up.
+  - The window background is a small Drawable: the top band in the header's colour (navy; white on the KDS), the bottom band `#F8FAFC`.
+  - `plugins.SystemBars.insetsHandling = 'disable'`: one owner per inset (§ "Only ONE mechanism may own a safe-area inset").
+  - 🔴 **`@capacitor/status-bar` is EXCLUDED FROM ANDROID** (`android.includePlugins` in `capacitor.config.ts`). It was the only code calling `Window.setStatusBarColor` / `setNavigationBarColor`. ⚠️ **A new plugin must be added to that list or it is silently absent on Android.** iOS keeps status-bar.
+  - The deprecated calls still in the DEX are androidx's own compatibility paths (`EdgeToEdgeApi23/26/29`, `SplashScreen` Impl31), which never run on Android 15+.
+  - No web CSS changed: the website outside the app is untouched.
+- **Tested** on the minified signed release build, one temporary emulator at a time (`scripts/android/emulator-checks.sh`, V16.26):
+  - Android 14 / 15 / 16, phone and Pixel Tablet, against localhost: 88 passed, 0 failed (final runs).
+  - Covered: cold launch → login, background / foreground, the test truck's dashboard and Paramètres printing card, Carte & stock, `FLAG_KEEP_SCREEN_ON`, back never leaving the dashboard or reaching the landing page, three-button navigation, dark mode, tablet rotation, no crash (the crash check was added for the Android 14 phone re-run), and Terms → the phone's browser via the bare-host hand-off.
+  - The hand-off is tested on a local www host (`www.hatchgrab.127.0.0.1.nip.io`). On Android a `www.hatchgrab.com` link stays in the app unless the guard (app-fixes-1, not yet deployed) sends it to the bare host.
+  - Screenshots in `docs/android-1-1/`.
+  - **Not testable on an emulator:** Bluetooth / network printing, biometric unlock, push delivery. Check these on a phone from the internal testing track before production.
+- **Access denied:** the inert "← HatchGrab" line under "Back to log in" is removed (web and app). It ships with the next website deploy.
 
 ## V16.26 — 15 November 2026 — **DISK SPACE: THE GUARD, ONE EMULATOR AT A TIME, SCRATCH DERIVEDDATA**
 
@@ -4287,6 +4320,8 @@ appeared; three advisories deferred on purpose; and both stores now downstream o
   resolve classes by reflection, so without correct keep rules the app builds cleanly, passes review,
   and fails at runtime on one plugin call.** No deobfuscation file is correct because nothing is
   obfuscated. Native debug symbols and the two edge-to-edge items are recommended, not required. §36.
+  ⛔ **Superseded V16.27 (android-1-1):** R8 is on with keep rules, the mapping is embedded in the AAB, and edge-to-edge
+  is done without the deprecated APIs. See the V16.27 changelog.
 - 🔴 **WHAT BLOCKED SUBMISSION WAS THE LISTING, NEVER THE BINARY** — screenshots, the 1024×500 feature
   graphic, and the icon re-exported at 32-bit. **App access credentials are mandatory for any app behind
   a login**, because a reviewer who cannot sign in rejects on minimum functionality; **they point at a
@@ -23964,6 +23999,8 @@ navigation from `/app`.
 ⚠️ **`plugins.SystemBars` LOOKS Android-only and is NOT** — iOS reads `style` and `hidden` from the same
 block, though not `insetsHandling`.
 
+> ⛔ **Updated V16.27 (android-1-1):** SystemBars no longer pads anything on Android (`insetsHandling: 'disable'`). `MainActivity` calls `EdgeToEdge.enable` and pads all four insets itself, and its window background paints the top band in the header colour and the bottom band `#F8FAFC`. The KDS route check described above still decides the top colour.
+
 > ⚠️ **AND THIS RETIRES THE "BARE `BridgeActivity`" LINE ABOVE.** §36's *Android is not a port with
 > gaps* entry rests partly on `MainActivity` being four lines. **It is no longer** — it now owns the
 > window insets and the system-bar appearance. The wider point stands (two `getPlatform()` branches,
@@ -24033,7 +24070,7 @@ almost nothing of the developer's own code to obfuscate, so the percentage is me
 🔴 **AND ENABLING R8 MINIFICATION ON A CAPACITOR APP IS GENUINELY RISKY, NOT A CHECKBOX.** **Plugins
 resolve classes by reflection**, so without correct keep rules the app **builds cleanly, passes review,
 and fails at runtime on a specific plugin call.** ⚠️ **The failure is invisible in every pre-release
-signal.** **If it is ever done, it is deliberate work with device testing behind it.**
+signal.** **If it is ever done, it is deliberate work with device testing behind it.** ⛔ **Done V16.27 (android-1-1):** keep rules per plugin package, the mapping checked for renamed plugin classes (none), emulator-tested on the minified build; printing, biometrics and push still need the phone check.
 
 **2. No deobfuscation file.** ✅ **Correct, and not a gap** — **nothing is obfuscated, so there is no
 mapping to upload.** It is the same fact as item 1 seen from the other side.
