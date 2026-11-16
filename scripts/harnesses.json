@@ -409,7 +409,8 @@
         "_harness-tmp-paths.cjs",
         "harness-tmp-clean.cjs",
         "_named-admin-speed-1.cjs",
-        "_lp-trial-column-1.cjs"
+        "_lp-trial-column-1.cjs",
+        "_named-partners-2.cjs"
       ]
     },
     "fixture_generators": {
