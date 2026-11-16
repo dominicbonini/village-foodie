@@ -120,6 +120,10 @@ end $$;
 drop trigger if exists trucks_referred_code_immutable on public.trucks;
 create trigger trucks_referred_code_immutable before update of referred_partner_code_id on public.trucks
   for each row execute function public.trucks_referred_code_immutable();
+-- ⚠️ ADDED AFTER THIS FILE RAN (partners-2, 16 November 2026): the trigger function is revoked from public, anon and authenticated,
+-- as every function here is (scripts/migration-function-grants.cjs). On the live database the revoke was applied by
+-- 20261106_partners_2_revoke.sql; it stays here so this file is the complete definition.
+revoke all on function public.trucks_referred_code_immutable() from public, anon, authenticated;
 comment on column public.trucks.referred_partner_code_id is
   'The partner code this truck signed up with (partners-2). Set once at signup; a trigger refuses any later change.';
 
