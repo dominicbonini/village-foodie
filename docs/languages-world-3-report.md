@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -11,8 +11,8 @@
 | 3 | hi-IN Hindi | ✅ (lw-2) | — | | |
 | 4 | bn-BD Bengali | ✅ (lw-2) | — | | |
 | 5 | ur-PK Urdu | ✅ (lw-2) | — | | |
-| 6 | kk-KZ Kazakh | ✅ (lw-2) | — next (batch 3) | | |
-| 7 | uz-UZ Uzbek | ✅ (lw-2) | — | | |
+| 6 | kk-KZ Kazakh | ✅ (lw-2) | ✅ batch 3 — **needs native/legal check** | `_legal-translations.cjs kk-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | languages-world-3 batch 3 |
+| 7 | uz-UZ Uzbek | ✅ (lw-2) | — next (batch 4) | | |
 | 8 | az-AZ Azerbaijani | ✅ (lw-2) | — | | |
 | 9 | ka-GE Georgian | ✅ (lw-2) | — | | |
 | 10 | hy-AM Armenian | ✅ (lw-2) | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **2 of 23 languages done (6 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
+Legal pages: **3 of 23 languages done (9 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
 
 ## Batch order
 
@@ -112,6 +112,18 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 3: kk-KZ legal pages
+
+**Files:** [privacy-policy.md](../content/legal/kk-KZ/privacy-policy.md), [terms-and-conditions.md](../content/legal/kk-KZ/terms-and-conditions.md), [country-specific-terms.md](../content/legal/kk-KZ/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into Kazakh. No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs kk-KZ` 3/3 ✓. `legal-languages-1`: /kz/privacy, /kz/terms and /kz/country-terms render («2026 ж. 4 қараша», «2026 ж. 1 қараша»), then the harness stops with ENOENT at the next missing base (uz-UZ). **No screenshot**: the country has no row yet (see batch 2).
+
+**Translation choices:** Polite «сіз» forms as in the kk-KZ UI; titles match legalChrome («Құпиялылық саясаты», «Қызмет көрсету шарттары», «Елге қатысты шарттар»); date line `**Соңғы жаңарту:** {{LAST_UPDATED}}`. Pay at Hatch → «Фудтракта төлеу», the hatch → «терезе», kitchen screen → «ас үй экраны», VAT → ҚҚС. Law names: Kazakh rendering with the official name and year in brackets; same conventions as ru-KZ for untranslatable terms and verbatim names.
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -121,6 +133,7 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
   - `includedNoMark` and `feeNoMark` have no asterisk;
   - the card banner sentence ("…Prefer to take payment up front? Add online card payments any time…") and the asterisk footnote ("*0.99% on online card orders only") are included.
 - The site decides which countries show them: card countries do, monthly-billing-only countries don't.
+- **Also from trial-column-1 (commit d839ac46):** each incoming language needs `planTable.trial.length` ("{months, plural, one {# month} other {# months}}", with the plural forms taken from that base’s `comparison.cell.trial`) and `planTable.trial.ends` ("Ends {date}"). The handover file predates them too.
 - **`node scripts/pricing-copy-4.cjs` is part of every UI batch's checks** and must pass for that language before the commit.
 
 ## Open decisions carried from languages-world-2 (not needed yet)
@@ -130,4 +143,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 3 is the kk-KZ legal pages. Start it with "Continue languages-world-3: next batch".
+Batch 4 is the uz-UZ legal pages. Runs continue automatically (60-minute gaps, at most 5 batches a UK day).
