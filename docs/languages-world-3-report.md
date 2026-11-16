@@ -1,12 +1,12 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Run:** batch 1 of 25 (ru-KZ legal pages) · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Run:** batch 1 of 35 (ru-KZ legal pages) · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
 | # | Language | UI done | Legal done | Checks | Commit |
 |---|---|---|---|---|---|
-| 1 | ru-KZ Russian (Kazakhstan) | ✅ (languages-world-2) | ✅ batch 1 — **needs native/legal check** | `_legal-translations.cjs ru-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | languages-world-3 batch 1 |
+| 1 | ru-KZ Russian (Kazakhstan) | ✅ (languages-world-2) | ✅ batch 1 — **needs native/legal check** | `_legal-translations.cjs ru-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | 6ac91927 |
 | 2 | uk-UA Ukrainian | ✅ (lw-2) | — next (batch 2) | | |
 | 3 | hi-IN Hindi | ✅ (lw-2) | — | | |
 | 4 | bn-BD Bengali | ✅ (lw-2) | — | | |
@@ -45,7 +45,7 @@ Batches go smallest and most-used first. Each legal batch is about half the size
 | 15–34 | UI, then legal, for each of sq-AL, bs-BA, mk-MK, ca-AD, sw-TZ, si-LK, ta-LK, km-KH, lo-LA, am-ET (two batches per language) |
 | last | Store listings for the 14 languages still without them, then the **full sweep, once** |
 
-That is 34 batches plus the closing one. The run count in the header ("25") came from the first plan, which counted UI and legal together. The real count is in this table.
+That is 34 batches plus the closing one: 35 runs in all.
 
 When the UI batches for the 11 languages reach `translation-check`, it will flag the 5 pricing-copy-4 card-banner keys. `en-GB.start.json` in the handover kit does not have them, so each UI batch adds them from en-GB. The Swahili guard also needs languages-1's "no list" re-pin (handover kit note).
 
