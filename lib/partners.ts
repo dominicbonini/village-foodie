@@ -62,10 +62,17 @@ export interface Partner {
   sequence_stopped?: string | null
   auto_send?: boolean
   do_not_contact?: boolean
+  // ── partners-3 (20261107) ──
+  channel?: 'email' | 'contact_form' | 'facebook' | 'instagram' | 'whatsapp' | 'linkedin'
+  facebook_url?: string | null
+  instagram_url?: string | null
+  contact_form_url?: string | null
+  last_seen_active?: string | null
+  members_estimate?: string | null
 }
 
 /** Every column the routes select — one list, so a select and the type cannot drift. */
-export const PARTNER_COLUMNS = 'id, name, type, country_code, region, website, contact_name, contact_role, email, phone, linkedin_url, source, status, priority, next_follow_up_on, offered, outcome, notes, last_contacted_at, last_reply_at, created_at, updated_at, alternate_emails, language, timezone, verify_status, verify_note, verify_evidence, sequence_step, sequence_stopped, auto_send, do_not_contact'
+export const PARTNER_COLUMNS = 'id, name, type, country_code, region, website, contact_name, contact_role, email, phone, linkedin_url, source, status, priority, next_follow_up_on, offered, outcome, notes, last_contacted_at, last_reply_at, created_at, updated_at, alternate_emails, language, timezone, verify_status, verify_note, verify_evidence, sequence_step, sequence_stopped, auto_send, do_not_contact, channel, facebook_url, instagram_url, contact_form_url, last_seen_active, members_estimate'
 
 const TEXT_FIELDS = ['name', 'region', 'website', 'contact_name', 'contact_role', 'email', 'phone', 'linkedin_url', 'source', 'offered', 'outcome', 'notes'] as const
 const LONG_TEXT = new Set(['offered', 'outcome', 'notes'])

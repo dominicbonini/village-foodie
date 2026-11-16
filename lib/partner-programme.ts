@@ -9,6 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { CONTACT_KINDS, FOLLOW_UP_DAYS, type LadderKind } from '@/lib/outreach'
 import { planToday, dueDate, DEFAULT_WINDOW, DEFAULT_DAILY_CAP, SENDER_ZONE, type SendWindow, type PlannedSend } from '@/lib/partner-send-schedule'
 import { instantOfLocal, localDateOfInstant } from '@/lib/time-utils'
+import { offersFor } from '@/lib/partner-codes-server'
 
 // ── the rules (pure) ──────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -16,9 +17,13 @@ export interface ProgrammePartner {
   id: string; name: string; type: string; country_code: string | null; language: string | null; timezone: string | null
   email: string | null; status: string; verify_status: string | null; auto_send: boolean; do_not_contact: boolean
   sequence_step: string | null; sequence_stopped: string | null; contact_name: string | null
+  /** partners offer (16 November 2026): does the partner have a usable code (a deal and a commission)? Anything but true = no. */
+  has_offer?: boolean
+  /** partners-3: how it is reached without a verified email. */
+  channel?: string | null
 }
 export type CountryRule = 'allowed' | 'manual_only'
-export type Ineligible = 'no_email' | 'not_verified' | 'software_platform' | 'manual_only' | 'auto_off' | 'do_not_contact' | 'stopped' | 'status' | 'done'
+export type Ineligible = 'no_email' | 'not_verified' | 'software_platform' | 'manual_only' | 'auto_off' | 'do_not_contact' | 'stopped' | 'status' | 'done' | 'needs_offer'
 
 /** Statuses a sequence keeps running in: before a reply, a talk or a decision. */
 const RUNNING = new Set(['to_contact', 'contacted'])
@@ -34,6 +39,9 @@ export function ineligible(p: ProgrammePartner, rule: CountryRule | null): Ineli
   if (!p.auto_send) return 'auto_off'
   if (!RUNNING.has(p.status)) return 'status'
   if (nextStep(p) === null) return 'done'
+  // 🔴 partners offer (Dominic, 16 November 2026): NOTHING ABOUT THE OFFER IS DECIDED — a partner with no usable code (deal +
+  // commission, created by hand in its drawer) is NEVER queued or sent.
+  if (p.has_offer !== true) return 'needs_offer'
   return null
 }
 
@@ -59,7 +67,12 @@ export function templateSlugFor(p: Pick<ProgrammePartner, 'type' | 'language'>, 
 /** What the table's "Next send" column says. */
 export function nextSendLabel(p: ProgrammePartner, rule: CountryRule | null, queued: { scheduled_at: string; status: string } | null): string {
   const why = ineligible(p, rule)
+  const byHand = why === 'no_email' && !!p.channel && p.channel !== 'email'
+  // partners offer: anyone who could be contacted (automatically or by hand) but has no usable code shows "Needs offer".
+  if (p.has_offer !== true && (why === null || why === 'needs_offer' || why === 'manual_only' || why === 'not_verified' || why === 'auto_off' || byHand)) return 'Needs offer'
   if (why === 'manual_only') return 'You send'
+  // partners-3: no verified email — reached by hand through its channel (a contact form, a Facebook / Instagram DM, …).
+  if (byHand) return 'You send / DM'
   if (why === 'software_platform' || why === 'not_verified' || why === 'auto_off') return 'Manual only'
   if (why) return '—'
   if (!queued) return 'Next window'
@@ -113,12 +126,12 @@ export interface QueuePlan {
  * minutes apart. `write` stores it in outreach_send_queue (status planned; an approved, sent or cancelled row is never touched).
  */
 export async function planQueue(supabase: SupabaseClient, now: Date, opts: { write?: boolean; rand?: () => number } = {}): Promise<QueuePlan> {
-  const [settings, rules, sent, { data: partners, error }] = await Promise.all([
+  const [settings, rules, sent, { data: partners, error }, offers] = await Promise.all([
     readSchedule(supabase), readCountryRules(supabase), sentToday(supabase, now),
-    supabase.from('partner_orgs').select(PARTNER_FIELDS),
+    supabase.from('partner_orgs').select(PARTNER_FIELDS), offersFor(supabase, now),
   ])
   if (error) throw new Error(`[partner-programme] partners unreadable: ${error.message}`)
-  const list = (partners ?? []) as ProgrammePartner[]
+  const list = ((partners ?? []) as ProgrammePartner[]).map(p => ({ ...p, has_offer: offers.has(p.id) }))
   const eligible = list.filter(p => ineligible(p, p.country_code ? rules[p.country_code] ?? null : null) === null)
   // The last real email to each eligible partner (any source — a hand-sent one counts for the gap too).
   const lastSent = new Map<string, string>()

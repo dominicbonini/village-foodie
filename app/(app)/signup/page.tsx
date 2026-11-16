@@ -21,7 +21,7 @@ import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { BrandHomeLink } from '@/components/shared/BrandHomeLink'
 import { HOME_HREF } from '@/components/shared/FlowLogo'
 import { useLegalPath } from '@/lib/i18n/use-legal-path'
-import { useT } from '@/lib/i18n/use-t'
+import { useT, useAppLocale } from '@/lib/i18n/use-t'
 import PartnerCodeField from '@/components/PartnerCodeField'   // partners-2
 import { useTrialMonths } from '@/lib/trial-months'
 import '@/lib/i18n/catalog/auth'
@@ -34,6 +34,7 @@ function SignupForm() {
   // Language Phase 1c: the words are `auth.signup` / `auth.fields`. No truck exists yet; legal-languages-1 (1 November
   // 2026): the layout's <AuthLocale> provides the visitor's language (proxy.ts decides it), en-GB for an English visitor.
   const t = useT('auth.signup')
+  const locale = useAppLocale()   // partners offer: a code's plan name and price come back in this language
   // copy-truth-1 (2 November 2026): the trial's length, read from the plan data by the server layout (lib/trial-months.tsx).
   const trialMonths = useTrialMonths()
   const tField = useT('auth.fields')
@@ -127,6 +128,8 @@ function SignupForm() {
             placeholder: t('codePlaceholder'), apply: t('codeApply'), invalid: t('codeInvalid'), expired: t('codeExpired'),
             applied: (deal, partner) => t('codeApplied', { deal, partner }),
             extraMonths: months => t('dealExtraMonths', { months }), percentOff: (pct, months) => t('dealPercentOff', { pct, months }),
+            percentOffPlan: (pct, plan, months) => t('dealPercentOffPlan', { pct, plan, months }), fixedPrice: (plan, price, months) => t('dealFixedPrice', { plan, price, months }),
+            planOffer: (plan, months) => t('dealPlanOffer', { plan, months }), locale,
           }} />
 
           {/* The ONLY checkbox on the page, and it is not required. */}

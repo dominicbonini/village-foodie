@@ -281,6 +281,9 @@ export function supabaseBillingStore(db: SupabaseClient): BillingStore {
       // billing-3: and, with `clearPlanEnd`, the plan's end date once it has passed (an ended trial moving to the plan chosen for it).
       const { error } = await db.from('trucks').update({ plan: planKey, ...(opts?.clearPlanEnd ? { trial_expires_at: null } : {}) }).eq('id', truckId)
       fail(`set plan ${truckId}`, error)
+      // partners offer (16 November 2026, decision 1 = A): a partner code's price deal reaches the paid plan the truck has just moved
+      // onto. Best effort — it never throws, and a truck without such a code is one read and nothing else.
+      await (await import('@/lib/partner-codes-server')).applyPartnerPrice(db as unknown as Parameters<typeof import('@/lib/partner-codes-server').applyPartnerPrice>[0], truckId)
     },
 
     async charge(truckId, period, kind, ref) {

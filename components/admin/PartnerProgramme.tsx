@@ -5,18 +5,21 @@
 // actions visible, the same layout on a laptop and a desktop.
 import { useEffect, useMemo, useState } from 'react'
 import { STATUS_LABEL, STATUS_TONE, TYPE_LABEL, type Partner } from '@/lib/partners'
-import { dealTextEn } from '@/lib/partner-codes'
+import { dealTextEn, offerCodeFor } from '@/lib/partner-codes'
 import { nextSendLabel, type CountryRule, type ProgrammePartner } from '@/lib/partner-programme'
 import { FIELD_CLS, LABEL_CLS } from '@/components/admin/outreach-shared'
 
 export interface CodeRow {
-  id: string; code: string; partner_id: string; deal_type: 'extra_trial_months' | 'percent_off'; deal_value: number; deal_months: number | null
-  valid_until: string | null; max_uses: number | null; active: boolean; pct_year1: number; pct_year2: number; notes: string | null
+  id: string; code: string; partner_id: string; deal_type: 'extra_trial_months' | 'percent_off' | 'fixed_price'; deal_value: number; deal_months: number | null
+  deal_plan_key?: string | null; deal_currency?: string | null
+  valid_until: string | null; max_uses: number | null; active: boolean; pct_year1: number; pct_year2: number; notes: string | null; created_at?: string | null
 }
 export interface Overview {
   codes: CodeRow[]; uses: Record<string, number>; queue: { partner_id: string; step: string; scheduled_at: string; status: string }[]
   lastSent: Record<string, string>; rules: Record<string, CountryRule>; schedule: { approvalMode: boolean; dailyCap: number }
   sentToday: number; today: string
+  /** partners offer: the plans a percent-off / fixed-price code may name. */
+  paidPlans?: { key: string; name: string }[]
 }
 
 const BTN = 'text-xs font-semibold px-2.5 py-1.5 rounded-lg border whitespace-nowrap'
@@ -25,7 +28,12 @@ const post = async (body: Record<string, unknown>) => {
   return ((await r?.json().catch(() => null)) ?? { ok: false, refusal: 'The server could not be reached.' }) as Record<string, unknown>
 }
 const pct = (x: number) => `${Number.isInteger(Number(x)) ? Number(x) : Number(x).toFixed(1)}%`
-export const dealOf = (c: CodeRow) => dealTextEn({ dealType: c.deal_type, dealValue: c.deal_value, dealMonths: c.deal_months })
+const planLabel = (key: string) => key ? key.charAt(0).toUpperCase() + key.slice(1) : key
+export const dealOf = (c: CodeRow, plans?: { key: string; name: string }[]) => dealTextEn({ dealType: c.deal_type, dealValue: c.deal_value, dealMonths: c.deal_months,
+  dealPlanKey: c.deal_plan_key ?? null, dealCurrency: c.deal_currency ?? null }, k => plans?.find(p => p.key === k)?.name ?? planLabel(k))
+/** partners offer: the partner's offer — its newest usable code (lib/partner-codes.ts offerCodeFor). None = "Needs offer". */
+export const offerOf = (overview: Overview | null, partnerId: string) =>
+  overview ? offerCodeFor(overview.codes, partnerId, overview.uses, overview.today || new Date().toISOString().slice(0, 10)) : null
 export const commissionOf = (c: CodeRow) => (Number(c.pct_year2) > 0 ? `${pct(c.pct_year1)} / ${pct(c.pct_year2)}` : pct(c.pct_year1))
 const shortDay = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/London' })
 
@@ -36,15 +44,26 @@ export function VerifyMark({ v }: { v: Partner['verify_status'] }) {
   return <span className="text-slate-300">·</span>
 }
 
+// ── partners-3: the contact channel as a small icon / link in the Contact column (nothing else in the layout changes) ──
+const CHANNEL_ICON: Record<string, string> = { email: '✉', contact_form: '📝', facebook: 'f', instagram: '◎', whatsapp: '💬', linkedin: 'in' }
+export function ChannelLink({ p }: { p: Partner }) {
+  const ch = p.channel ?? 'email'
+  if (ch === 'email') return null
+  const url = ch === 'facebook' ? p.facebook_url : ch === 'instagram' ? p.instagram_url : ch === 'contact_form' ? p.contact_form_url : ch === 'linkedin' ? p.linkedin_url : null
+  const label = { contact_form: 'Contact form', facebook: 'Facebook', instagram: 'Instagram', whatsapp: 'WhatsApp', linkedin: 'LinkedIn' }[ch] ?? ch
+  const badge = <span className="inline-block min-w-[16px] text-center text-[10px] font-bold px-1 rounded bg-sky-50 text-sky-800 border border-sky-200" title={`${label} — you send / DM`} data-channel={ch}>{CHANNEL_ICON[ch] ?? '•'}</span>
+  return url ? <a href={url} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1 text-sky-800 underline">{badge}<span>{label}</span></a> : badge
+}
+
 // ── the table ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 export function PartnersTable({ rows, overview, selectedId, onOpen }: {
   rows: Partner[]; overview: Overview | null; selectedId: string | null; onOpen: (id: string) => void
 }) {
   const codeOf = useMemo(() => {
     const m = new Map<string, CodeRow>()
-    for (const c of overview?.codes ?? []) if (c.active && !m.has(c.partner_id)) m.set(c.partner_id, c)
+    for (const p of rows) { const c = offerOf(overview, p.id); if (c) m.set(p.id, c) }
     return m
-  }, [overview])
+  }, [overview, rows])
   const queueOf = useMemo(() => new Map((overview?.queue ?? []).map(q => [q.partner_id, q])), [overview])
   return (
     <div className="overflow-x-auto bg-white border border-slate-200 rounded-xl" data-partners-table>
@@ -60,7 +79,7 @@ export function PartnersTable({ rows, overview, selectedId, onOpen }: {
           {rows.map(p => {
             const code = codeOf.get(p.id) ?? null
             const rule = p.country_code ? overview?.rules[p.country_code] ?? null : null
-            const next = nextSendLabel(p as unknown as ProgrammePartner, rule, queueOf.get(p.id) ?? null)
+            const next = nextSendLabel({ ...(p as unknown as ProgrammePartner), has_offer: !!code }, rule, queueOf.get(p.id) ?? null)
             const last = overview?.lastSent[p.id]
             return (
               <tr key={p.id} onClick={() => onOpen(p.id)} data-partner-row
@@ -72,14 +91,14 @@ export function PartnersTable({ rows, overview, selectedId, onOpen }: {
                 <td className="px-2 py-1 whitespace-nowrap">{p.country_code ?? '—'}{rule === 'manual_only' && <span className="ml-1 text-[9px] font-bold text-violet-700" title="Cold email only by hand in this country">✋</span>}</td>
                 <td className="px-2 py-1 uppercase">{p.language ?? '—'}</td>
                 <td className="px-2 py-1 max-w-[230px]">
-                  <div className="truncate"><VerifyMark v={p.verify_status ?? null} /> {p.email ?? <span className="text-slate-400">no email</span>}</div>
+                  <div className="truncate"><VerifyMark v={p.verify_status ?? null} /> <ChannelLink p={p} /> {p.email ?? <span className="text-slate-400">{p.channel && p.channel !== 'email' ? '' : 'no email'}</span>}</div>
                   {p.contact_name && <div className="truncate text-[10px] text-slate-500">{p.contact_name}</div>}
                 </td>
                 <td className="px-2 py-1"><span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border ${STATUS_TONE[p.status]}`}>{STATUS_LABEL[p.status]}</span></td>
                 <td className="px-2 py-1 font-mono text-[11px]">{code?.code ?? '—'}</td>
-                <td className="px-2 py-1 whitespace-nowrap">{code ? dealOf(code) : '—'}</td>
+                <td className="px-2 py-1 whitespace-nowrap">{code ? dealOf(code, overview?.paidPlans) : '—'}</td>
                 <td className="px-2 py-1 whitespace-nowrap">{code ? commissionOf(code) : '—'}</td>
-                <td className={`px-2 py-1 whitespace-nowrap ${next === 'You send' ? 'text-violet-700 font-semibold' : next === 'Manual only' ? 'text-slate-500' : ''}`}>{next}</td>
+                <td className={`px-2 py-1 whitespace-nowrap ${next === 'You send' ? 'text-violet-700 font-semibold' : next === 'Needs offer' ? 'text-amber-700 font-semibold' : next === 'Manual only' ? 'text-slate-500' : ''}`}>{next}</td>
                 <td className="px-2 py-1 whitespace-nowrap text-slate-500">{last ? shortDay(last) : '—'}</td>
               </tr>
             )
@@ -91,8 +110,8 @@ export function PartnersTable({ rows, overview, selectedId, onOpen }: {
 }
 
 // ── a code card ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-export function CodeCard({ code, partnerName, uses, trucks, owedThisMonth }: {
-  code: CodeRow; partnerName: string; uses: number; trucks?: { id: string; name: string }[]; owedThisMonth?: string
+export function CodeCard({ code, partnerName, uses, trucks, owedThisMonth, plans }: {
+  code: CodeRow; partnerName: string; uses: number; trucks?: { id: string; name: string }[]; owedThisMonth?: string; plans?: { key: string; name: string }[]
 }) {
   return (
     <div className="border border-slate-200 rounded-xl p-3 bg-white text-[12px]" data-code-card>
@@ -102,7 +121,7 @@ export function CodeCard({ code, partnerName, uses, trucks, owedThisMonth }: {
       </div>
       <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
         <dt className="text-slate-500">Partner</dt><dd className="font-semibold">{partnerName}</dd>
-        <dt className="text-slate-500">Deal</dt><dd>{dealOf(code)}</dd>
+        <dt className="text-slate-500">Deal</dt><dd>{dealOf(code, plans)}</dd>
         <dt className="text-slate-500">Commission</dt><dd>{pct(code.pct_year1)} of plan fees in year 1{Number(code.pct_year2) > 0 ? `, ${pct(code.pct_year2)} in year 2` : ''}</dd>
         <dt className="text-slate-500">Valid</dt><dd>{code.valid_until ? `until ${code.valid_until}` : 'no end date'} · {uses} use{uses === 1 ? '' : 's'}{code.max_uses ? ` of ${code.max_uses}` : ''}</dd>
         <dt className="text-slate-500">Trucks</dt><dd>{trucks === undefined ? '…' : trucks.length ? trucks.map(t => t.name).join(', ') : 'none yet'}</dd>
@@ -112,47 +131,66 @@ export function CodeCard({ code, partnerName, uses, trucks, owedThisMonth }: {
   )
 }
 
-// ── the Codes panel: every code, and a new one ───────────────────────────────────────────────────────────────────────────
-export function CodesPanel({ overview, partners, onSaved }: { overview: Overview | null; partners: Partner[]; onSaved: () => void }) {
-  const [f, setF] = useState({ code: '', partner_id: '', deal_type: 'extra_trial_months', deal_value: '2', deal_months: '', valid_until: '', max_uses: '', pct_year1: '20', pct_year2: '10' })
-  const [msg, setMsg] = useState<string | null>(null)
+// ── the Codes panel: every code (partners offer, 16 November 2026: a code is created by hand in its partner's drawer) ─────────
+export function CodesPanel({ overview, partners }: { overview: Overview | null; partners: Partner[]; onSaved?: () => void }) {
   const name = (id: string) => partners.find(p => p.id === id)?.name ?? '—'
-  const save = async () => {
-    setMsg(null)
-    const j = await post({ action: 'code_save', fields: f })
-    if (j.ok !== true) { setMsg(String(j.refusal)); return }
-    setMsg(`Saved ${(j.code as CodeRow).code}.`); onSaved()
-  }
   return (
     <div className="space-y-3" data-codes-panel>
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-        {(overview?.codes ?? []).map(c => <CodeCard key={c.id} code={c} partnerName={name(c.partner_id)} uses={overview?.uses[c.id] ?? 0} />)}
+        {(overview?.codes ?? []).map(c => <CodeCard key={c.id} code={c} partnerName={name(c.partner_id)} uses={overview?.uses[c.id] ?? 0} plans={overview?.paidPlans} />)}
         {!(overview?.codes ?? []).length && <p className="text-sm text-slate-500">No codes yet.</p>}
       </div>
-      <div className="border border-slate-200 rounded-xl p-3 bg-slate-50">
-        <p className={LABEL_CLS}>New code</p>
-        <div className="mt-1 grid gap-2 grid-cols-2 lg:grid-cols-5">
-          <input className={FIELD_CLS} placeholder="Code, e.g. NCASS26" value={f.code} onChange={e => setF({ ...f, code: e.target.value })} />
-          <select className={FIELD_CLS} value={f.partner_id} onChange={e => setF({ ...f, partner_id: e.target.value })}>
-            <option value="">Partner…</option>
-            {partners.filter(p => p.verify_status !== 'dropped').map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+      <p className="text-[12px] text-slate-500">A code is created in its partner&apos;s drawer, with its deal and commission. A partner without one shows &ldquo;Needs offer&rdquo; and is never sent.</p>
+    </div>
+  )
+}
+
+// ── a new code, in the partner's drawer: every term chosen by hand — nothing is filled in ────────────────────────────────────
+const EMPTY_CODE = { code: '', deal_type: '', deal_value: '', deal_months: '', deal_plan_key: '', deal_currency: '', price: '', valid_until: '', max_uses: '', pct_year1: '', pct_year2: '' }
+export function CodeForm({ partner, overview, onSaved }: { partner: Partner; overview: Overview | null; onSaved: () => void }) {
+  const [f, setF] = useState(EMPTY_CODE)
+  const [msg, setMsg] = useState<string | null>(null)
+  const set = (k: keyof typeof EMPTY_CODE) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value })
+  const save = async () => {
+    setMsg(null)
+    const fixed = f.deal_type === 'fixed_price'
+    const deal_value = fixed ? (f.price.trim() ? String(Math.round(parseFloat(f.price.replace(',', '.')) * 100)) : '') : f.deal_value
+    const j = await post({ action: 'code_save', fields: { ...f, deal_value, partner_id: partner.id } })
+    if (j.ok !== true) { setMsg(String(j.refusal)); return }
+    setMsg(`Saved ${(j.code as CodeRow).code}.`); setF(EMPTY_CODE); onSaved()
+  }
+  const t = f.deal_type
+  return (
+    <div className="border border-slate-200 rounded-xl p-3 bg-slate-50" data-code-form>
+      <p className={LABEL_CLS}>New code for {partner.name}</p>
+      <div className="mt-1 grid gap-2 grid-cols-2 lg:grid-cols-4">
+        <input className={FIELD_CLS} placeholder="Code" aria-label="Code" value={f.code} onChange={set('code')} />
+        <select className={FIELD_CLS} aria-label="Deal" value={t} onChange={set('deal_type')}>
+          <option value="">Deal…</option>
+          <option value="extra_trial_months">Extra trial months</option>
+          <option value="percent_off">% off a plan for N months</option>
+          <option value="fixed_price">Fixed monthly price for N months</option>
+        </select>
+        {t === 'extra_trial_months' && <input className={FIELD_CLS} placeholder="Extra months" aria-label="Extra months" value={f.deal_value} onChange={set('deal_value')} />}
+        {t === 'percent_off' && <input className={FIELD_CLS} placeholder="% off" aria-label="Percent off" value={f.deal_value} onChange={set('deal_value')} />}
+        {t === 'fixed_price' && <input className={FIELD_CLS} placeholder="Price a month, e.g. 19.00" aria-label="Monthly price" value={f.price} onChange={set('price')} />}
+        {t === 'fixed_price' && <input className={FIELD_CLS} placeholder="Currency, e.g. EUR" aria-label="Currency" value={f.deal_currency} onChange={set('deal_currency')} />}
+        {(t === 'percent_off' || t === 'fixed_price') && (
+          <select className={FIELD_CLS} aria-label="Plan" value={f.deal_plan_key} onChange={set('deal_plan_key')}>
+            <option value="">Plan…</option>
+            {t === 'percent_off' && <option value="any">Any paid plan</option>}
+            {(overview?.paidPlans ?? []).map(p => <option key={p.key} value={p.key}>{p.name}</option>)}
           </select>
-          <select className={FIELD_CLS} value={f.deal_type} onChange={e => setF({ ...f, deal_type: e.target.value })}>
-            <option value="extra_trial_months">Extra trial months</option>
-            <option value="percent_off">% off for N months</option>
-          </select>
-          <input className={FIELD_CLS} placeholder={f.deal_type === 'percent_off' ? '% off' : 'Months'} value={f.deal_value} onChange={e => setF({ ...f, deal_value: e.target.value })} />
-          {f.deal_type === 'percent_off'
-            ? <input className={FIELD_CLS} placeholder="For N months" value={f.deal_months} onChange={e => setF({ ...f, deal_months: e.target.value })} />
-            : <span />}
-          <input className={FIELD_CLS} type="date" title="Valid until (optional)" value={f.valid_until} onChange={e => setF({ ...f, valid_until: e.target.value })} />
-          <input className={FIELD_CLS} placeholder="Max uses (optional)" value={f.max_uses} onChange={e => setF({ ...f, max_uses: e.target.value })} />
-          <input className={FIELD_CLS} placeholder="Commission yr 1 %" value={f.pct_year1} onChange={e => setF({ ...f, pct_year1: e.target.value })} />
-          <input className={FIELD_CLS} placeholder="Commission yr 2 %" value={f.pct_year2} onChange={e => setF({ ...f, pct_year2: e.target.value })} />
-          <button type="button" onClick={save} className={`${BTN} border-slate-800 bg-slate-800 text-white`}>Save code</button>
-        </div>
-        {msg && <p className="mt-1 text-[12px] text-slate-700">{msg}</p>}
+        )}
+        {(t === 'percent_off' || t === 'fixed_price') && <input className={FIELD_CLS} placeholder="For N months" aria-label="Months" value={f.deal_months} onChange={set('deal_months')} />}
+        <input className={FIELD_CLS} type="date" title="Valid until (optional)" aria-label="Valid until" value={f.valid_until} onChange={set('valid_until')} />
+        <input className={FIELD_CLS} placeholder="Max uses (optional)" aria-label="Max uses" value={f.max_uses} onChange={set('max_uses')} />
+        <input className={FIELD_CLS} placeholder="Commission yr 1 %" aria-label="Commission year 1" value={f.pct_year1} onChange={set('pct_year1')} />
+        <input className={FIELD_CLS} placeholder="Commission yr 2 %" aria-label="Commission year 2" value={f.pct_year2} onChange={set('pct_year2')} />
+        <button type="button" onClick={save} className={`${BTN} border-slate-800 bg-slate-800 text-white`}>Save code</button>
       </div>
+      <p className="mt-1 text-[11px] text-slate-500">A % off or fixed price starts when the truck moves onto that paid plan, and lasts N months from that day.</p>
+      {msg && <p className="mt-1 text-[12px] text-slate-700">{msg}</p>}
     </div>
   )
 }
@@ -271,7 +309,7 @@ export function ProgrammeBox({ partner, overview, onSave, onChanged }: {
     <div className="space-y-3" data-programme-box>
       <div className="border border-slate-200 rounded-xl p-3 bg-white text-[12px] grid gap-1 sm:grid-cols-2">
         <p><span className="text-slate-500">Contact:</span> <VerifyMark v={partner.verify_status ?? null} /> {partner.verify_status ?? 'not checked'}{partner.verify_evidence && <> · <a className="text-orange-700 underline" href={partner.verify_evidence} target="_blank" rel="noreferrer">evidence</a></>}</p>
-        <p><span className="text-slate-500">Sending:</span> {rule === 'manual_only' ? 'You send (manual-only country)' : partner.type === 'software_platform' ? 'Manual only (software platform)' : partner.verify_status !== 'verified' ? 'Manual only (not verified)' : partner.sequence_stopped ? `Stopped (${partner.sequence_stopped})` : `Automatic · last step ${partner.sequence_step ?? 'none'}`}</p>
+        <p><span className="text-slate-500">Sending:</span> {!offerOf(overview, partner.id) && partner.type !== 'software_platform' ? 'Needs offer (no usable code yet)' : rule === 'manual_only' ? 'You send (manual-only country)' : partner.type === 'software_platform' ? 'Manual only (software platform)' : partner.verify_status !== 'verified' ? 'Manual only (not verified)' : partner.sequence_stopped ? `Stopped (${partner.sequence_stopped})` : `Automatic · last step ${partner.sequence_step ?? 'none'}`}</p>
         {partner.alternate_emails && partner.alternate_emails.length > 0 && <p className="sm:col-span-2"><span className="text-slate-500">Also:</span> {partner.alternate_emails.join(', ')}</p>}
         {partner.verify_note && <p className="sm:col-span-2 text-slate-600">{partner.verify_note}</p>}
         <label className="flex items-center gap-1"><span className="text-slate-500">Language</span>
@@ -286,11 +324,12 @@ export function ProgrammeBox({ partner, overview, onSave, onChanged }: {
       <div className="grid gap-2 sm:grid-cols-2">
         {codes.map(c => {
           const l = ledger?.codes.find(x => x.codeId === c.id)
-          return <CodeCard key={c.id} code={c} partnerName={partner.name} uses={overview?.uses[c.id] ?? 0} trucks={l?.trucks}
+          return <CodeCard key={c.id} code={c} partnerName={partner.name} uses={overview?.uses[c.id] ?? 0} trucks={l?.trucks} plans={overview?.paidPlans}
             owedThisMonth={ledger ? (owed.length ? owed.map(m => money(m.owedMinor, m.currency)).join(' + ') : money(0, 'GBP')) : undefined} />
         })}
-        {!codes.length && <p className="text-[12px] text-slate-500">No code for this partner yet — add one under Codes.</p>}
+        {!codes.length && <p className="text-[12px] text-slate-500">No code for this partner yet, so it <b>Needs offer</b>: nothing is queued or sent until you create one below.</p>}
       </div>
+      <CodeForm partner={partner} overview={overview} onSaved={onChanged} />
       <div className="border border-slate-200 rounded-xl p-3 bg-white text-[12px]" data-ledger>
         <p className={LABEL_CLS}>Commission ledger</p>
         <table className="w-full mt-1">

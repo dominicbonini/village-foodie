@@ -26,6 +26,7 @@ import { loadAttachments } from '@/lib/outreach-attachment-store'
 import { sanitiseQuotedHtml } from '@/lib/outreach-quote-sanitise'
 import { partnerSendRefusal, partnerStoragePath, pathBelongsToPartner } from '@/lib/partners'
 import { sendPartnerEmail, doNotContactAddresses } from '@/lib/partner-send'   // partners-2: the send path, shared with the scheduler
+import { offersFor } from '@/lib/partner-codes-server'   // partners offer: no code, no email
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -158,6 +159,14 @@ export async function POST(req: NextRequest) {
         html: quotedHtml, text: r.text_body,
       },
     }
+  }
+
+  // ── partners offer (Dominic, 16 November 2026): a partner with no usable code (deal + commission) is NEVER sent to. A reply to
+  // the partner's own message and a test send still go (answering someone who wrote is not outreach). ─────────────────────────
+  if (!isTest && !parent) {
+    let offer = false
+    try { offer = (await offersFor(supabase, new Date(), [partner.id])).has(partner.id) } catch { return refuse('The partner’s codes could not be read, so nothing was sent.') }
+    if (!offer) return refuse('Needs offer: create this partner’s code (its deal and commission) in the drawer before emailing them.')
   }
 
   // ── THE SEND: refusals, the document, attachments, the row, SMTP, the Sent copy — lib/partner-send.ts (partners-2 moved it

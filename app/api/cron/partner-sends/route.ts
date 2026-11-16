@@ -19,8 +19,8 @@ import { readOutreachSettings } from '@/lib/outreach-settings-read'
 import { docFromTemplateText } from '@/lib/outreach-doc'
 import { readSchedule, sentToday, readCountryRules, ineligible, templateSlugFor, nextStep, type ProgrammePartner } from '@/lib/partner-programme'
 import { windowOn, SPACING_MIN, SENDER_ZONE } from '@/lib/partner-send-schedule'
-import { renderPartnerText, withPostalAddress, commissionText } from '@/lib/partner-template'
-import { dealTextEn } from '@/lib/partner-codes'
+import { renderPartnerText, withPostalAddress, offerValues } from '@/lib/partner-template'
+import { offersFor, planNamer } from '@/lib/partner-codes-server'   // partners offer: the partner's own code, in its language
 import { sendPartnerEmail } from '@/lib/partner-send'
 import { localDateOfInstant } from '@/lib/time-utils'
 
@@ -72,6 +72,9 @@ async function runOnce(now: Date, dryRun: boolean): Promise<Outcome & { dryRun: 
     .eq('id', row.partner_id).maybeSingle()
   const partner = p as ProgrammePartner | null
   if (!partner) return skip('partner gone')
+  // partners offer: the partner's offer = its newest usable code. None → "needs_offer", never sent.
+  const offer = (await offersFor(supabase, now, [partner.id])).get(partner.id) ?? null
+  partner.has_offer = !!offer
   const rules = await readCountryRules(supabase)
   const why = ineligible(partner, partner.country_code ? rules[partner.country_code] ?? null : null)
   if (why) return skip(`not eligible: ${why}`, { partner: partner.name })
@@ -82,16 +85,12 @@ async function runOnce(now: Date, dryRun: boolean): Promise<Outcome & { dryRun: 
   const slug = templateSlugFor(partner, nextStep(partner)!)
   const { data: tpl } = await supabase.from('outreach_templates').select('id, slug, subject, body, active').eq('slug', slug).maybeSingle()
   if (!tpl || !(tpl as { active: boolean }).active) return done({ action: 'none', reason: `no approved template "${slug}" yet`, partner: partner.name, step: row.step })
-  const { data: codes } = await supabase.from('partner_codes').select('code, deal_type, deal_value, deal_months, pct_year1, pct_year2, active')
-    .eq('partner_id', partner.id).eq('active', true).order('created_at').limit(1)
-  const code = (codes ?? [])[0] as { code: string; deal_type: 'extra_trial_months' | 'percent_off'; deal_value: number; deal_months: number | null; pct_year1: number; pct_year2: number } | undefined
-  if (!code) return skip('the partner has no active code', { partner: partner.name })
+  if (!offer) return skip('the partner has no active code', { partner: partner.name })
 
   const { data: postal } = await supabase.from('outreach_settings').select('value').eq('key', 'postal_address').maybeSingle()
   const values = {
-    contact_name: partner.contact_name || undefined, org: partner.name, code: code.code,
-    deal: dealTextEn({ dealType: code.deal_type, dealValue: code.deal_value, dealMonths: code.deal_months }),
-    commission: commissionText(Number(code.pct_year1), Number(code.pct_year2)),
+    contact_name: partner.contact_name || undefined, org: partner.name,
+    ...offerValues(offer, partner.language, partner.country_code, await planNamer(supabase, partner.language)),
   }
   const t = tpl as { subject: string | null; body: string }
   const subject = renderPartnerText(t.subject ?? '', values)

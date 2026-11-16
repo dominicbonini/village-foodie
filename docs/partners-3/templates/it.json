@@ -1,0 +1,123 @@
+{
+ "lang": "it",
+ "templates": {
+  "assoc": {
+   "1_first_contact": {
+    "subject": "Un'offerta di HatchGrab per i soci di {{org}}",
+    "body": "Buongiorno {{contact_name|a tutti}},\n\nGestisco HatchGrab, un'app per food truck e operatori dello street food: i clienti ordinano in anticipo e scelgono un orario di ritiro, e la cucina riceve ordini che riesce davvero a preparare.\n\nVorrei proporre ai soci di {{org}} un'offerta semplice: con il codice {{code}} ottengono {{deal}} al momento dell'iscrizione. Per ogni socio che passa a un piano a pagamento, {{org}} riceve una commissione: {{commission}}. Per {{org}} la partecipazione è gratuita. Da parte Sua non c'è nulla da gestire, oltre a condividere il codice.\n\nTutto ciò che fa l'app è su un'unica pagina: {{features_url}}\n\nPotrebbe essere utile per i Suoi soci? Basta una risposta di una riga.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "2_chase_1": {
+    "subject": "Re: Un'offerta di HatchGrab per i soci di {{org}}",
+    "body": "Buongiorno {{contact_name|a tutti}}, volevo solo verificare che questo messaggio sia arrivato alla persona giusta. L'offerta è sempre valida: con il codice {{code}} i soci di {{org}} ottengono {{deal}}, e {{org}} riceve una commissione ({{commission}}). Le invio volentieri un breve paragrafo da inserire in una newsletter.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "3_chase_2": {
+    "subject": "Re: Un'offerta di HatchGrab per i soci di {{org}}",
+    "body": "Buongiorno {{contact_name|a tutti}}, un ultimo promemoria e poi non insisto più. Se una pagina per i soci o una newsletter Le è più comoda di un'email, posso scrivere io il testo con il codice {{code}}, da usare così com'è.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "4_final_chase": {
+    "subject": "Re: Un'offerta di HatchGrab per i soci di {{org}}",
+    "body": "Buongiorno {{contact_name|a tutti}}, non La solleciterò più. Se un giorno Le fosse utile, il codice {{code}} ({{deal}}) resta valido per i soci di {{org}}. Basta rispondere e preparo tutto io. Grazie per l'attenzione.\n\n{{signature}}\n{{opt_out}}"
+   }
+  },
+  "dir": {
+   "1_first_contact": {
+    "subject": "Un'offerta per i lettori di {{org}}",
+    "body": "Buongiorno {{contact_name|a tutti}},\n\nGestisco HatchGrab: preordini e orari di ritiro per i food truck. Se elenca strumenti per gli operatori o ne scrive, vorrei offrire un codice ai Suoi lettori: con {{code}} ottengono {{deal}}, e {{org}} guadagna una commissione ({{commission}}) per ogni lettore che passa a un piano a pagamento.\n\nUn riepilogo in una pagina: {{features_url}}\n\nLe interesserebbe includerlo? Rispondo volentieri a qualsiasi domanda e posso inviarLe degli screenshot.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "2_chase_1": {
+    "subject": "Re: Un'offerta per i lettori di {{org}}",
+    "body": "Buongiorno {{contact_name|a tutti}}, volevo solo verificare che il messaggio fosse arrivato. Il codice {{code}} ({{deal}} per i Suoi lettori, {{commission}} per {{org}}) è pronto quando preferisce.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "3_chase_2": {
+    "subject": "Re: Un'offerta per i lettori di {{org}}",
+    "body": "Buongiorno {{contact_name|a tutti}}, se un breve testo o qualche screenshot Le rendessero più facile parlarne, posso mandarglieli. Nessun impegno, in ogni caso.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "4_final_chase": {
+    "subject": "Re: Un'offerta per i lettori di {{org}}",
+    "body": "Buongiorno {{contact_name|a tutti}}, questo è il mio ultimo messaggio. Il codice {{code}} resta valido, se un giorno Le servisse. Grazie per l'attenzione.\n\n{{signature}}\n{{opt_out}}"
+   }
+  }
+ },
+ "phrases": {
+  "contact_fallback": "a tutti",
+  "deal_extra_months": {
+   "one": "{n} mese in più gratis",
+   "other": "{n} mesi in più gratis"
+  },
+  "deal_percent_off_any": {
+   "one": "{pct}% di sconto per {months} mese",
+   "other": "{pct}% di sconto per {months} mesi"
+  },
+  "deal_percent_off_plan": {
+   "one": "{pct}% di sconto sul piano {plan} per {months} mese",
+   "other": "{pct}% di sconto sul piano {plan} per {months} mesi"
+  },
+  "deal_fixed_price": {
+   "one": "il piano {plan} a {price} al mese per {months} mese",
+   "other": "il piano {plan} a {price} al mese per {months} mesi"
+  },
+  "commission_two_years": "{y1}% delle quote di abbonamento nel primo anno e {y2}% nel secondo anno",
+  "commission_one_year": "{y1}% delle quote di abbonamento nel primo anno"
+ },
+ "back": {
+  "templates": {
+   "assoc": {
+    "1_first_contact": {
+     "subject": "An offer from HatchGrab for the members of {{org}}",
+     "body": "Good morning {{contact_name|to everyone}},\n\nI run HatchGrab, an app for food trucks and street food operators: customers order in advance and choose a pick-up time, and the kitchen receives orders that it really manages to prepare.\n\nI would like to propose a simple offer to the members of {{org}}: with the code {{code}} they get {{deal}} at the moment of signing up. For each member who moves to a paid plan, {{org}} receives a commission: {{commission}}. For {{org}} taking part is free. On your side there is nothing to manage, beyond sharing the code.\n\nEverything the app does is on a single page: {{features_url}}\n\nCould it be useful for your members? A one-line reply is enough.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "2_chase_1": {
+     "subject": "Re: An offer from HatchGrab for the members of {{org}}",
+     "body": "Good morning {{contact_name|to everyone}}, I just wanted to check that this message reached the right person. The offer is still valid: with the code {{code}} the members of {{org}} get {{deal}}, and {{org}} receives a commission ({{commission}}). I will gladly send you a short paragraph to put in a newsletter.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "3_chase_2": {
+     "subject": "Re: An offer from HatchGrab for the members of {{org}}",
+     "body": "Good morning {{contact_name|to everyone}}, one last reminder and then I will not insist any more. If a members' page or a newsletter is more convenient for you than an email, I can write the text myself with the code {{code}}, to use as it is.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "4_final_chase": {
+     "subject": "Re: An offer from HatchGrab for the members of {{org}}",
+     "body": "Good morning {{contact_name|to everyone}}, I will not chase you any more. If one day it were useful to you, the code {{code}} ({{deal}}) remains valid for the members of {{org}}. Just reply and I will set everything up myself. Thank you for your attention.\n\n{{signature}}\n{{opt_out}}"
+    }
+   },
+   "dir": {
+    "1_first_contact": {
+     "subject": "An offer for the readers of {{org}}",
+     "body": "Good morning {{contact_name|to everyone}},\n\nI run HatchGrab: pre-orders and pick-up times for food trucks. If you list tools for operators or write about them, I would like to offer a code to your readers: with {{code}} they get {{deal}}, and {{org}} earns a commission ({{commission}}) for each reader who moves to a paid plan.\n\nA summary in one page: {{features_url}}\n\nWould you be interested in including it? I gladly answer any question and I can send you some screenshots.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "2_chase_1": {
+     "subject": "Re: An offer for the readers of {{org}}",
+     "body": "Good morning {{contact_name|to everyone}}, I just wanted to check that the message had arrived. The code {{code}} ({{deal}} for your readers, {{commission}} for {{org}}) is ready whenever you prefer.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "3_chase_2": {
+     "subject": "Re: An offer for the readers of {{org}}",
+     "body": "Good morning {{contact_name|to everyone}}, if a short text or a few screenshots made it easier for you to talk about it, I can send them to you. No commitment, in any case.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "4_final_chase": {
+     "subject": "Re: An offer for the readers of {{org}}",
+     "body": "Good morning {{contact_name|to everyone}}, this is my last message. The code {{code}} remains valid, if one day you needed it. Thank you for your attention.\n\n{{signature}}\n{{opt_out}}"
+    }
+   }
+  },
+  "phrases": {
+   "contact_fallback": "to everyone",
+   "deal_extra_months": {
+    "one": "{n} more month free",
+    "other": "{n} more months free"
+   },
+   "deal_percent_off_any": {
+    "one": "{pct}% discount for {months} month",
+    "other": "{pct}% discount for {months} months"
+   },
+   "deal_percent_off_plan": {
+    "one": "{pct}% discount on the {plan} plan for {months} month",
+    "other": "{pct}% discount on the {plan} plan for {months} months"
+   },
+   "deal_fixed_price": {
+    "one": "the {plan} plan at {price} a month for {months} month",
+    "other": "the {plan} plan at {price} a month for {months} months"
+   },
+   "commission_two_years": "{y1}% of the subscription fees in the first year and {y2}% in the second year",
+   "commission_one_year": "{y1}% of the subscription fees in the first year"
+  }
+ }
+}

@@ -15,8 +15,10 @@ import { verifyAdmin } from '@/lib/auth/admin'
 import { dbDetail } from '@/lib/outreach-messages-table'
 import { planQueue, approveToday, readSchedule, readCountryRules, sentToday, stopSequence, templateSlugFor } from '@/lib/partner-programme'
 import { partnerLedger } from '@/lib/partner-commission'
-import { normaliseCode, DEAL_TYPES, dealTextEn } from '@/lib/partner-codes'
-import { renderPartnerText, withPostalAddress, commissionText } from '@/lib/partner-template'
+import { normaliseCode, DEAL_TYPES } from '@/lib/partner-codes'
+import { offersFor, planNamer } from '@/lib/partner-codes-server'
+import { readPlanCatalog } from '@/lib/plans-server'
+import { renderPartnerText, withPostalAddress, offerValues } from '@/lib/partner-template'
 import { planBulkAdd, PARTNER_COLUMNS } from '@/lib/partners'
 import { SENDER_ZONE } from '@/lib/partner-send-schedule'
 import { localDateOfInstant } from '@/lib/time-utils'
@@ -26,7 +28,7 @@ export const dynamic = 'force-dynamic'
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 const refuse = (message: string) => NextResponse.json({ ok: false, refusal: message })
-const CODE_COLS = 'id, code, partner_id, deal_type, deal_value, deal_months, valid_until, max_uses, active, pct_year1, pct_year2, basis, notes, created_at'
+const CODE_COLS = 'id, code, partner_id, deal_type, deal_value, deal_months, deal_plan_key, deal_currency, valid_until, max_uses, active, pct_year1, pct_year2, basis, notes, created_at'
 
 export async function GET(req: NextRequest) {
   if (!(await verifyAdmin(req))) return NextResponse.json({ error: 'Unauthorised' }, { status: 404 })
@@ -43,24 +45,25 @@ export async function GET(req: NextRequest) {
       const { data: stored } = await supabase.from('outreach_send_queue').select('id, partner_id, step, scheduled_at, status, skip_reason')
         .eq('send_day', plan.sendDay)
       const ids = [...new Set([...plan.planned.map(p => p.partnerId), ...((stored ?? []) as { partner_id: string }[]).map(s => s.partner_id)])]
-      const [{ data: partners }, { data: codes }, { data: postal }] = await Promise.all([
+      const [{ data: partners }, offers, { data: postal }] = await Promise.all([
         ids.length ? supabase.from('partner_orgs').select('id, name, type, language, country_code, contact_name, email, timezone').in('id', ids) : Promise.resolve({ data: [] }),
-        ids.length ? supabase.from('partner_codes').select(CODE_COLS).in('partner_id', ids).eq('active', true) : Promise.resolve({ data: [] }),
+        offersFor(supabase, now, ids),
         supabase.from('outreach_settings').select('value').eq('key', 'postal_address').maybeSingle(),
       ])
       const slugs = plan.planned.map(p => templateSlugFor((partners ?? []).find(x => x.id === p.partnerId) as { type: string; language: string | null }, p.step))
       const { data: templates } = slugs.length ? await supabase.from('outreach_templates').select('slug, subject, body, active').in('slug', slugs) : { data: [] }
+      const namers: Record<string, (key: string) => string> = {}
+      for (const l of new Set(((partners ?? []) as { language: string | null }[]).map(x => x.language || 'en'))) namers[l] = await planNamer(supabase, l)
       const items = plan.planned.map((p, i) => {
         const partner = (partners ?? []).find(x => x.id === p.partnerId) as Record<string, string | null>
-        const code = ((codes ?? []) as Record<string, unknown>[]).find(c => c.partner_id === p.partnerId)
+        const code = offers.get(p.partnerId)
         const tpl = ((templates ?? []) as { slug: string; subject: string | null; body: string; active: boolean }[]).find(t => t.slug === slugs[i] && t.active)
         let preview: { subject: string; body: string } | null = null, problem: string | null = null
         if (!tpl) problem = `No approved template yet (${slugs[i]})`
         else if (!code) problem = 'No active code for this partner'
         else {
-          const values = { contact_name: partner?.contact_name ?? undefined, org: partner?.name ?? undefined, code: String(code.code),
-            deal: dealTextEn({ dealType: code.deal_type as 'extra_trial_months' | 'percent_off', dealValue: Number(code.deal_value), dealMonths: code.deal_months as number | null }),
-            commission: commissionText(Number(code.pct_year1), Number(code.pct_year2)) }
+          const values = { contact_name: partner?.contact_name ?? undefined, org: partner?.name ?? undefined,
+            ...offerValues(code, partner?.language, partner?.country_code, namers[partner?.language || 'en'] ?? (k => k)) }
           const s = renderPartnerText(tpl.subject ?? '', values)
           const b = renderPartnerText(withPostalAddress(tpl.body, (postal?.value as { text?: string } | null)?.text ?? null, partner?.country_code ?? null), values)
           if (s.ok && b.ok) preview = { subject: s.text, body: b.text }
@@ -86,30 +89,47 @@ export async function GET(req: NextRequest) {
     for (const r of (reds ?? []) as { code_id: string }[]) uses[r.code_id] = (uses[r.code_id] ?? 0) + 1
     const lastSent: Record<string, string> = {}
     for (const m of (last ?? []) as { partner_id: string; message_date: string }[]) if (!lastSent[m.partner_id]) lastSent[m.partner_id] = m.message_date
-    return NextResponse.json({ ok: true, codes: codes ?? [], uses, queue: queue ?? [], lastSent, rules, schedule, sentToday: sent.count, today: day })
+    // partners offer: the plans a percent-off / fixed-price code may name (active, public, not a trial), for the drawer's code form.
+    const catalog = await readPlanCatalog(supabase as unknown as Parameters<typeof readPlanCatalog>[0])
+    const paidPlans = catalog.plans.filter(p => p.active && p.isPublic && !p.isTrial).sort((a, b) => a.sortOrder - b.sortOrder).map(p => ({ key: p.key, name: p.name }))
+    return NextResponse.json({ ok: true, codes: codes ?? [], uses, queue: queue ?? [], lastSent, rules, schedule, sentToday: sent.count, today: day, paidPlans })
   } catch (e) {
     return refuse(e instanceof Error ? e.message : String(e))
   }
 }
 
-/** A code's fields, checked. Returns the row to write or an error in words. */
-function codePatch(f: Record<string, unknown>): { ok: true; row: Record<string, unknown> } | { ok: false; error: string } {
+/**
+ * A code's fields, checked. Returns the row to write or an error in words. 🔴 partners offer (16 November 2026): NOTHING HAS A
+ * DEFAULT — the deal, its length, its plan and the commission for year 1 and year 2 must each be given (0 is a choice, empty is not).
+ * `paidPlans` are the plan keys a percent-off / fixed-price deal may name (active, public, not a trial).
+ */
+function codePatch(f: Record<string, unknown>, paidPlans: string[]): { ok: true; row: Record<string, unknown> } | { ok: false; error: string } {
   const code = normaliseCode(f.code)
   if (!/^[A-Z0-9-]{3,40}$/.test(code)) return { ok: false, error: 'A code is 3–40 letters, numbers or dashes.' }
   if (typeof f.partner_id !== 'string' || !f.partner_id) return { ok: false, error: 'Choose the partner.' }
   if (!(DEAL_TYPES as readonly string[]).includes(String(f.deal_type))) return { ok: false, error: 'Choose the deal.' }
-  const value = Number(f.deal_value), months = f.deal_months === null || f.deal_months === '' || f.deal_months === undefined ? null : Number(f.deal_months)
+  const blank = (v: unknown) => v === null || v === undefined || String(v).trim() === ''
+  const value = Number(f.deal_value), months = blank(f.deal_months) ? null : Number(f.deal_months)
   if (!Number.isInteger(value) || value <= 0) return { ok: false, error: 'The deal needs a whole number.' }
+  const plan = blank(f.deal_plan_key) || f.deal_plan_key === 'any' ? null : String(f.deal_plan_key)
+  const currency = blank(f.deal_currency) ? null : String(f.deal_currency).toUpperCase()
   if (f.deal_type === 'extra_trial_months' && value > 24) return { ok: false, error: 'At most 24 extra months.' }
-  if (f.deal_type === 'percent_off' && (value > 100 || !months || !Number.isInteger(months) || months <= 0)) return { ok: false, error: 'A percentage off needs 1–100% and a number of months.' }
+  if (f.deal_type !== 'extra_trial_months' && (!months || !Number.isInteger(months) || months <= 0 || months > 60)) return { ok: false, error: 'Say for how many months (1–60) the price lasts.' }
+  if (plan && !paidPlans.includes(plan)) return { ok: false, error: `${plan} is not an active paid plan.` }
+  if (f.deal_type === 'percent_off' && value > 100) return { ok: false, error: 'A percentage off is 1–100%.' }
+  if (f.deal_type === 'fixed_price' && !plan) return { ok: false, error: 'A fixed monthly price needs its plan.' }
+  if (f.deal_type === 'fixed_price' && !/^[A-Z]{3}$/.test(currency ?? '')) return { ok: false, error: 'A fixed monthly price needs its currency.' }
   const until = String(f.valid_until ?? '').trim()
   if (until && !/^\d{4}-\d{2}-\d{2}$/.test(until)) return { ok: false, error: 'Valid until is a date (YYYY-MM-DD).' }
-  const maxUses = f.max_uses === null || f.max_uses === '' || f.max_uses === undefined ? null : Number(f.max_uses)
+  const maxUses = blank(f.max_uses) ? null : Number(f.max_uses)
   if (maxUses !== null && (!Number.isInteger(maxUses) || maxUses <= 0)) return { ok: false, error: 'Max uses is a whole number, or empty for no limit.' }
-  const p1 = Number(f.pct_year1 ?? 0), p2 = Number(f.pct_year2 ?? 0)
+  if (blank(f.pct_year1) || blank(f.pct_year2)) return { ok: false, error: 'Set the commission for year 1 and year 2 (0 is allowed).' }
+  const p1 = Number(f.pct_year1), p2 = Number(f.pct_year2)
   if (!(p1 >= 0 && p1 <= 100 && p2 >= 0 && p2 <= 100)) return { ok: false, error: 'Commission is 0–100%.' }
+  const isTrialDeal = f.deal_type === 'extra_trial_months'
   return { ok: true, row: { code, partner_id: f.partner_id, deal_type: f.deal_type, deal_value: value,
-    deal_months: f.deal_type === 'percent_off' ? months : null, valid_until: until || null, max_uses: maxUses,
+    deal_months: isTrialDeal ? null : months, deal_plan_key: isTrialDeal ? null : plan, deal_currency: f.deal_type === 'fixed_price' ? currency : null,
+    valid_until: until || null, max_uses: maxUses,
     active: f.active !== false, pct_year1: p1, pct_year2: p2, notes: typeof f.notes === 'string' ? f.notes.slice(0, 2000) : null } }
 }
 
@@ -121,7 +141,8 @@ export async function POST(req: NextRequest) {
   const now = new Date()
   try {
     if (action === 'code_save') {
-      const v = codePatch((body.fields ?? {}) as Record<string, unknown>)
+      const catalog = await readPlanCatalog(supabase as unknown as Parameters<typeof readPlanCatalog>[0])
+      const v = codePatch((body.fields ?? {}) as Record<string, unknown>, catalog.plans.filter(p => p.active && p.isPublic && !p.isTrial).map(p => p.key))
       if (!v.ok) return refuse(v.error)
       const id = typeof body.id === 'string' ? body.id : null
       const q = id ? supabase.from('partner_codes').update({ ...v.row, updated_at: now.toISOString() }).eq('id', id) : supabase.from('partner_codes').insert(v.row)

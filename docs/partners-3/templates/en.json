@@ -1,0 +1,62 @@
+{
+ "lang": "en",
+ "templates": {
+  "assoc": {
+   "1_first_contact": {
+    "subject": "A member offer from HatchGrab for {{org}}",
+    "body": "Hi {{contact_name|there}},\n\nI run HatchGrab, an app for food trucks and street food traders: customers pre-order and pick a collection time, and the kitchen gets orders it can actually make.\n\nI'd like to give {{org}}'s members a simple offer: with the code {{code}} they get {{deal}} when they sign up. For {{org}}, there's {{commission}} for each member who moves on to a paid plan. It's free for {{org}} to take part. There's nothing to run on your side beyond sharing the code.\n\nEverything it does is on one page: {{features_url}}\n\nWould that be useful for your members? A one-line reply is plenty.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "2_chase_1": {
+    "subject": "Re: A member offer from HatchGrab for {{org}}",
+    "body": "Hi {{contact_name|there}}, just checking this reached the right person. The offer stands: code {{code}} gives {{org}} members {{deal}}, and {{org}} receives {{commission}}. Happy to send a short paragraph you could drop into a newsletter.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "3_chase_2": {
+    "subject": "Re: A member offer from HatchGrab for {{org}}",
+    "body": "Hi {{contact_name|there}}, one more nudge and then I'll leave it. If a members' page or newsletter suits you better than an email, I can write the copy with the code {{code}} for you to use as it is.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "4_final_chase": {
+    "subject": "Re: A member offer from HatchGrab for {{org}}",
+    "body": "Hi {{contact_name|there}}, I won't chase again. If it's ever useful, code {{code}} ({{deal}}) stays open for {{org}} members. Just reply and I'll set it up. Thanks for reading.\n\n{{signature}}\n{{opt_out}}"
+   }
+  },
+  "dir": {
+   "1_first_contact": {
+    "subject": "An offer for {{org}} readers",
+    "body": "Hi {{contact_name|there}},\n\nI run HatchGrab, pre-orders and collection times for food trucks. If you list or write about tools for vendors, I'd like to offer your readers a code: {{code}} gives them {{deal}}, and {{org}} earns {{commission}} on each one who moves to a paid plan.\n\nA one-page summary: {{features_url}}\n\nWould you be open to including it? I'm happy to answer questions or send screenshots.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "2_chase_1": {
+    "subject": "Re: An offer for {{org}} readers",
+    "body": "Hi {{contact_name|there}}, just checking this landed. The code {{code}} ({{deal}} for your readers, {{commission}} for {{org}}) is ready whenever suits you.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "3_chase_2": {
+    "subject": "Re: An offer for {{org}} readers",
+    "body": "Hi {{contact_name|there}}, if a short write-up or a few screenshots would make it easier to cover, I can send them over. No pressure either way.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "4_final_chase": {
+    "subject": "Re: An offer for {{org}} readers",
+    "body": "Hi {{contact_name|there}}, last note from me. The code {{code}} stays open if you ever want it. Thanks for reading.\n\n{{signature}}\n{{opt_out}}"
+   }
+  }
+ },
+ "phrases": {
+  "contact_fallback": "there",
+  "deal_extra_months": {
+   "one": "{n} extra month free",
+   "other": "{n} extra months free"
+  },
+  "deal_percent_off_any": {
+   "one": "{pct}% off for {months} month",
+   "other": "{pct}% off for {months} months"
+  },
+  "deal_percent_off_plan": {
+   "one": "{pct}% off {plan} for {months} month",
+   "other": "{pct}% off {plan} for {months} months"
+  },
+  "deal_fixed_price": {
+   "one": "{plan} at {price} a month for {months} month",
+   "other": "{plan} at {price} a month for {months} months"
+  },
+  "commission_two_years": "{y1}% of plan fees in year 1 and {y2}% in year 2",
+  "commission_one_year": "{y1}% of plan fees for the first year"
+ }
+}

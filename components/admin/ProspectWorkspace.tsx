@@ -223,7 +223,9 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
         })))
         setLeadLabels((d.leadTypeLabels ?? null) as Record<string, string> | null)
         setHasSequence(d.hasSequence !== false)
-        setTemplates(((d.templates ?? []) as Raw[]).map(t => ({
+        // partners offer (16 November 2026): the partner programme's templates (slug partner-…, merge fields {{org}} / {{code}}) are
+        // for partners only — the truck composer lists exactly what it listed before they existed.
+        setTemplates(((d.templates ?? []) as Raw[]).filter(t => !t.slug.startsWith('partner-')).map(t => ({
           id: t.slug, label: t.label, channel: t.channel,
           subject: t.subject ?? undefined, body: t.body,
           sortOrder: t.sort_order, active: t.active,

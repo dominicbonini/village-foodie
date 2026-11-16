@@ -1153,6 +1153,8 @@ export function DemoGetStarted({ token, slug, eventSlug = null, label, className
                     placeholder: t('promoPlaceholder'), apply: t('partnerCodeApply'), invalid: t('partnerCodeInvalid'), expired: t('partnerCodeExpired'),
                     applied: (deal, partner) => t('partnerCodeApplied', { deal, partner }),
                     extraMonths: months => t('partnerDealExtraMonths', { months }), percentOff: (pct, months) => t('partnerDealPercentOff', { pct, months }),
+                    percentOffPlan: (pct, plan, months) => t('partnerDealPercentOffPlan', { pct, plan, months }), fixedPrice: (plan, price, months) => t('partnerDealFixedPrice', { plan, price, months }),
+                    planOffer: (plan, months) => t('partnerDealPlanOffer', { plan, months }), locale: wordsLocale,
                   }} />
 
                   {/* Terms — must be ACTIVELY ticked (unticked by default); blocks submit via validateDetailsStep.

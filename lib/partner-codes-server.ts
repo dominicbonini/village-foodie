@@ -6,10 +6,15 @@
 //   recordRedemption — at signup: the code the operator used, and the deal as it stood. Best effort, never blocks signup.
 //   applyPartnerDeal — at the truck's creation (/api/setup create_truck): the deal through the EXISTING plan mechanisms, and
 //                     the truck's attribution (set once; the database refuses a change). Best effort, never fails the create.
+//   applyPartnerPrice — Dominic's decision 1 = A (16 November 2026): when a referred truck MOVES ONTO A PAID PLAN, a percent-off or
+//                     fixed-price deal becomes the existing promotional price (trucks.plan_price_override_*) from that day for N
+//                     months. Called after every plan write (lib/billing/store.ts setTruckPlan, Admin's plan change). Never throws.
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { codeState, extendedTrialEnd, normaliseCode, type PartnerCode, type CodeState } from '@/lib/partner-codes'
+import { codeState, extendedTrialEnd, normaliseCode, isPriceDeal, priceOverrideFor, offerCodeFor, type PartnerCode, type CodeState } from '@/lib/partner-codes'
+import { planByKey, planPriceFor } from '@/lib/plans'
+import { localDateOfInstant } from '@/lib/time-utils'
 
-const CODE_COLUMNS = 'id, code, partner_id, deal_type, deal_value, deal_months, valid_until, max_uses, active, pct_year1, pct_year2, basis, partner_orgs(name)'
+const CODE_COLUMNS = 'id, code, partner_id, deal_type, deal_value, deal_months, deal_plan_key, deal_currency, valid_until, max_uses, active, pct_year1, pct_year2, basis, partner_orgs(name)'
 
 type Row = Record<string, unknown>
 function mapCode(r: Row, uses: number): PartnerCode {
@@ -18,6 +23,7 @@ function mapCode(r: Row, uses: number): PartnerCode {
     id: String(r.id), code: String(r.code), partnerId: String(r.partner_id), partnerName: partner?.name ?? '',
     dealType: r.deal_type as PartnerCode['dealType'], dealValue: Number(r.deal_value),
     dealMonths: r.deal_months === null || r.deal_months === undefined ? null : Number(r.deal_months),
+    dealPlanKey: (r.deal_plan_key as string | null) ?? null, dealCurrency: (r.deal_currency as string | null) ?? null,
     validUntil: (r.valid_until as string | null) ?? null, maxUses: r.max_uses === null || r.max_uses === undefined ? null : Number(r.max_uses),
     uses, active: r.active === true, pctYear1: Number(r.pct_year1), pctYear2: Number(r.pct_year2), basis: 'plan_fees',
   }
@@ -49,6 +55,7 @@ export async function recordRedemption(supabase: SupabaseClient, operatorId: str
     if (state !== 'ok' || !code) return false
     const { error } = await supabase.from('partner_code_redemptions').insert({
       code_id: code.id, operator_id: operatorId, deal_type: code.dealType, deal_value: code.dealValue, deal_months: code.dealMonths,
+      deal_plan_key: code.dealPlanKey ?? null, deal_currency: code.dealCurrency ?? null,
     })
     if (error) { console.error(`[partner-codes] redemption not recorded for operator ${operatorId}: ${error.message}`); return false }
     return true
@@ -63,10 +70,9 @@ export type ApplyOutcome = 'none' | 'applied' | 'recorded_pending' | 'already' |
 /**
  * At the truck's creation: if the operator signed up with a code, apply its deal to the truck and attribute the truck to
  * the code. extra_trial_months → trucks.trial_expires_at moves on by that many months (Admin's "Extend trial" rule).
- * percent_off → ⛔ NOT APPLIED YET: the existing promotional price (plan_price_override_*) only applies while a truck is on
- * the plan it was given, and a new truck is on the free trial — so a discount set now would never reach a paid month. The
- * redemption is recorded with the deal and the truck is attributed; how the discount reaches the paid plan is Dominic's
- * decision (docs/partners-2-report.md §3.3). Never throws.
+ * percent_off / fixed_price → recorded and attributed here; the price itself is set when the truck moves onto a paid plan
+ * (applyPartnerPrice — decision 1 = A), because the promotional price only applies while a truck is on the plan it was given and
+ * a new truck is on the free trial. Never throws.
  */
 export async function applyPartnerDeal(supabase: SupabaseClient, operatorId: string, truck: { id: string },
   now = new Date()): Promise<ApplyOutcome> {
@@ -93,7 +99,7 @@ export async function applyPartnerDeal(supabase: SupabaseClient, operatorId: str
         outcome = 'recorded_pending'
       }
     } else {
-      applied.apply_note = 'percent_off: recorded, not applied — awaiting the decision on how it reaches the paid plan'
+      applied.apply_note = `${red.deal_type}: recorded — the price is set when the truck moves onto a paid plan`
       outcome = 'recorded_pending'
     }
     if (Object.keys(update).length) {
@@ -102,9 +108,103 @@ export async function applyPartnerDeal(supabase: SupabaseClient, operatorId: str
     }
     const { error: rErr } = await supabase.from('partner_code_redemptions').update(applied).eq('id', red.id as string)
     if (rErr) throw new Error(rErr.message)
+    if (red.deal_type !== 'extra_trial_months' && (await applyPartnerPrice(supabase, truck.id, now)) === 'applied') return 'applied'
     return outcome
   } catch (e) {
     console.error(`[partner-codes] deal not applied to truck ${truck.id} (operator ${operatorId}):`, e instanceof Error ? e.message : e)
     return 'failed'
   }
+}
+
+// The plan catalogue through this client — imported when needed, so modules that only name these helpers (the harnesses' bundles)
+// never load the server-only catalogue modules.
+async function catalogVia(supabase: SupabaseClient) {
+  const { readPlanCatalog } = await import('@/lib/plans-server')
+  return readPlanCatalog(supabase as unknown as Parameters<typeof readPlanCatalog>[0])
+}
+
+export type PriceOutcome = 'none' | 'applied' | 'pending' | 'already' | 'failed'
+
+/**
+ * Decision 1 = A: after a truck's plan is written, apply its partner code's price deal if it has one that is still waiting. The
+ * deal names a plan (or any paid plan); the price is the plan's monthly price in the truck's country, less the percentage, or the
+ * fixed price (same currency only), from the truck's local today for deal_months months — written as the EXISTING promotional
+ * price, so billing, Admin and the plan pills read it as they read a hand-set one. A promotional price already set by hand and
+ * still running is never overwritten (the redemption notes it and stays pending). Applied once. Never throws.
+ */
+export async function applyPartnerPrice(supabase: SupabaseClient, truckId: string, now = new Date()): Promise<PriceOutcome> {
+  try {
+    const { data: red, error } = await supabase.from('partner_code_redemptions')
+      .select('id, deal_type, deal_value, deal_months, deal_plan_key, deal_currency, price_applied_at').eq('truck_id', truckId).maybeSingle()
+    if (error) throw new Error(error.message)
+    if (!red || !isPriceDeal(String(red.deal_type))) return 'none'
+    if (red.price_applied_at) return 'already'
+    const { data: t, error: tErr } = await supabase.from('trucks')
+      .select('id, plan, country, currency, timezone, plan_price_override_minor, plan_price_override_until').eq('id', truckId).single()
+    if (tErr || !t) throw new Error(tErr?.message ?? 'truck not found')
+    const catalog = await catalogVia(supabase)
+    const plan = planByKey(catalog, t.plan as string)
+    if (!plan) return 'pending'
+    const today = localDateOfInstant(now, (t.timezone as string) || 'Europe/London')
+    const row = planPriceFor(catalog, plan.key, t.country as string)
+    const price = row ? { monthlyMinor: row.monthlyMinor, currency: String(t.currency ?? '') } : null
+    const deal = { dealType: red.deal_type as PartnerCode['dealType'], dealValue: Number(red.deal_value), dealMonths: red.deal_months as number | null,
+      dealPlanKey: red.deal_plan_key as string | null, dealCurrency: red.deal_currency as string | null }
+    const o = priceOverrideFor(deal, { key: plan.key, isTrial: plan.isTrial }, price, today)
+    const note = async (apply_note: string) => { await supabase.from('partner_code_redemptions').update({ apply_note }).eq('id', red.id as string) }
+    if (o.ok === false) { await note(`price pending (${today}): ${'reason' in o ? o.reason : ''}`); return 'pending' }
+    const handSet = typeof t.plan_price_override_minor === 'number' && (!t.plan_price_override_until || String(t.plan_price_override_until).slice(0, 10) >= today)
+    if (handSet) { await note(`price pending (${today}): a promotional price is already set on this truck — not overwritten`); return 'pending' }
+    const { error: uErr } = await supabase.from('trucks').update({ plan_price_override_minor: o.minor, plan_price_override_until: o.until,
+      plan_price_override_note: `Partner code deal (${deal.dealType}${deal.dealPlanKey ? ` on ${deal.dealPlanKey}` : ''}), ${deal.dealMonths} months from ${today}` }).eq('id', truckId)
+    if (uErr) throw new Error(uErr.message)
+    const { error: rErr } = await supabase.from('partner_code_redemptions').update({ price_applied_at: now.toISOString(), price_plan_key: plan.key,
+      override_minor: o.minor, override_until: o.until, apply_note: `price applied on ${plan.key} from ${today} to ${o.until}` }).eq('id', red.id as string)
+    if (rErr) throw new Error(rErr.message)
+    return 'applied'
+  } catch (e) {
+    console.error(`[partner-codes] price deal not applied to truck ${truckId}:`, e instanceof Error ? e.message : e)
+    return 'failed'
+  }
+}
+
+export const OFFER_CODE_COLUMNS = 'id, code, partner_id, deal_type, deal_value, deal_months, deal_plan_key, deal_currency, valid_until, max_uses, active, pct_year1, pct_year2, created_at'
+export interface OfferCode {
+  id: string; code: string; partner_id: string; deal_type: PartnerCode['dealType']; deal_value: number; deal_months: number | null
+  deal_plan_key: string | null; deal_currency: string | null; valid_until: string | null; max_uses: number | null; active: boolean
+  pct_year1: number; pct_year2: number; created_at: string | null
+}
+
+/**
+ * Each partner's OFFER (its newest usable code — lib/partner-codes.ts offerCodeFor), for the given partners (all when omitted).
+ * A partner missing from the map "Needs offer": it is never queued, sent by the scheduler, or emailed fresh from Admin.
+ * Throws on a failed read (a caller then sends nothing).
+ */
+export async function offersFor(supabase: SupabaseClient, now = new Date(), partnerIds?: string[]): Promise<Map<string, OfferCode>> {
+  let q = supabase.from('partner_codes').select(OFFER_CODE_COLUMNS).eq('active', true)
+  if (partnerIds) { if (!partnerIds.length) return new Map(); q = q.in('partner_id', partnerIds) }
+  const { data, error } = await q
+  if (error) throw new Error(`[partner-codes] the codes could not be read: ${error.message}`)
+  const codes = (data ?? []) as OfferCode[]
+  const uses: Record<string, number> = {}
+  if (codes.length) {
+    const { data: reds, error: rErr } = await supabase.from('partner_code_redemptions').select('code_id').in('code_id', codes.map(c => c.id))
+    if (rErr) throw new Error(`[partner-codes] the code uses could not be read: ${rErr.message}`)
+    for (const r of (reds ?? []) as { code_id: string }[]) uses[r.code_id] = (uses[r.code_id] ?? 0) + 1
+  }
+  const today = now.toISOString().slice(0, 10)
+  const out = new Map<string, OfferCode>()
+  for (const pid of new Set(codes.map(c => c.partner_id))) { const c = offerCodeFor(codes, pid, uses, today); if (c) out.set(pid, c) }
+  return out
+}
+
+/** The language an email is written in → the messages locale its plan names come from (lib/plan-names.ts). */
+const PLAN_NAME_LOCALE: Record<string, string> = { en: 'en-GB', fr: 'fr-FR', nl: 'nl-NL', de: 'de-DE', es: 'es-ES', it: 'it-IT', sv: 'sv-SE' }
+
+/** A plan key → its name in `lang` ("Pro" stays "Pro"; "unlimited" → "Illimité" in French), read from the plan table. */
+export async function planNamer(supabase: SupabaseClient, lang: string | null | undefined): Promise<(key: string) => string> {
+  const catalog = await catalogVia(supabase)
+  const { localizePlans } = await import('@/lib/plan-names')
+  const named = localizePlans(catalog, PLAN_NAME_LOCALE[(lang || 'en').toLowerCase()] ?? 'en-GB')
+  return key => named.plans.find(p => p.key === key)?.name ?? key
 }

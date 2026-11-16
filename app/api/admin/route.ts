@@ -5,6 +5,7 @@ import { verifyAdmin } from '@/lib/auth/admin'   // canonical admin check (share
 import { getPlanCatalog } from '@/lib/plans-server'
 import { isPlanKey, planByKey, planPriceFor, type PlanCatalog } from '@/lib/plans'
 import { adminPayload, adminDiscovery, adminDemoCleanup, AdminLoadError } from '@/lib/admin-payload'   // admin-speed-1
+import { applyPartnerPrice } from '@/lib/partner-codes-server'   // partners offer
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
@@ -121,5 +122,8 @@ export async function POST(req: NextRequest) {
 
   const { error } = await supabase.from('trucks').update(patch).eq('id', truckId)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  // partners offer (16 November 2026, decision 1 = A): a plan change applies a waiting partner-code price deal (never when this same
+  // change sets a promotional price by hand). Best effort, never fails the save.
+  if ('plan' in patch && !('plan_price_override_minor' in patch)) await applyPartnerPrice(supabase, truckId)
   return NextResponse.json({ ok: true })
 }

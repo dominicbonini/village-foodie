@@ -1,0 +1,123 @@
+{
+ "lang": "sv",
+ "templates": {
+  "assoc": {
+   "1_first_contact": {
+    "subject": "Ett medlemserbjudande från HatchGrab till {{org}}",
+    "body": "Hej {{contact_name|på er}},\n\nJag driver HatchGrab, en app för foodtrucks och streetfoodförsäljare: kunderna förbeställer och väljer en upphämtningstid, och köket får beställningar som det faktiskt hinner laga.\n\nJag skulle vilja ge medlemmarna i {{org}} ett enkelt erbjudande: med koden {{code}} får de {{deal}} när de registrerar sig. För varje medlem som går över till ett betalt abonnemang får {{org}} {{commission}}. Det är gratis för {{org}} att vara med. Det finns inget att sköta på er sida utöver att dela koden.\n\nAllt som appen gör finns på en sida: {{features_url}}\n\nSkulle det vara användbart för era medlemmar? Det räcker gott med ett svar på en rad.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "2_chase_1": {
+    "subject": "Re: Ett medlemserbjudande från HatchGrab till {{org}}",
+    "body": "Hej {{contact_name|på er}}, jag ville bara kolla att det här nådde rätt person. Erbjudandet gäller fortfarande: med koden {{code}} får medlemmarna i {{org}} {{deal}}, och {{org}} får {{commission}}. Jag skickar gärna ett kort stycke som du kan lägga in i ett nyhetsbrev.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "3_chase_2": {
+    "subject": "Re: Ett medlemserbjudande från HatchGrab till {{org}}",
+    "body": "Hej {{contact_name|på er}}, en sista påminnelse, sedan lämnar jag det. Om en medlemssida eller ett nyhetsbrev passar er bättre än ett mejl kan jag skriva texten med koden {{code}} åt dig, så att du kan använda den som den är.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "4_final_chase": {
+    "subject": "Re: Ett medlemserbjudande från HatchGrab till {{org}}",
+    "body": "Hej {{contact_name|på er}}, jag hör inte av mig igen. Om det någon gång blir aktuellt gäller koden {{code}} ({{deal}}) fortfarande för medlemmar i {{org}}. Svara bara, så ordnar jag det. Tack för att du läste.\n\n{{signature}}\n{{opt_out}}"
+   }
+  },
+  "dir": {
+   "1_first_contact": {
+    "subject": "Ett erbjudande för läsare av {{org}}",
+    "body": "Hej {{contact_name|på er}},\n\nJag driver HatchGrab: förbeställningar och upphämtningstider för foodtrucks. Om du listar eller skriver om verktyg för försäljare vill jag gärna erbjuda dina läsare en kod: {{code}} ger dem {{deal}}, och {{org}} tjänar {{commission}} på varje läsare som går över till ett betalt abonnemang.\n\nEn sammanfattning på en sida: {{features_url}}\n\nSkulle du vara öppen för att ta med det? Jag svarar gärna på frågor eller skickar skärmbilder.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "2_chase_1": {
+    "subject": "Re: Ett erbjudande för läsare av {{org}}",
+    "body": "Hej {{contact_name|på er}}, jag ville bara kolla att det här kom fram. Koden {{code}} ({{deal}} för dina läsare, {{commission}} för {{org}}) är redo när det passar dig.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "3_chase_2": {
+    "subject": "Re: Ett erbjudande för läsare av {{org}}",
+    "body": "Hej {{contact_name|på er}}, om en kort text eller några skärmbilder skulle göra det lättare att skriva om det kan jag skicka över dem. Ingen press åt något håll.\n\n{{signature}}\n{{opt_out}}"
+   },
+   "4_final_chase": {
+    "subject": "Re: Ett erbjudande för läsare av {{org}}",
+    "body": "Hej {{contact_name|på er}}, det här är mitt sista meddelande. Koden {{code}} gäller fortfarande om du någon gång vill använda den. Tack för att du läste.\n\n{{signature}}\n{{opt_out}}"
+   }
+  }
+ },
+ "phrases": {
+  "contact_fallback": "på er",
+  "deal_extra_months": {
+   "one": "{n} extra gratismånad",
+   "other": "{n} extra gratismånader"
+  },
+  "deal_percent_off_any": {
+   "one": "{pct} % rabatt i {months} månad",
+   "other": "{pct} % rabatt i {months} månader"
+  },
+  "deal_percent_off_plan": {
+   "one": "{pct} % rabatt på abonnemanget {plan} i {months} månad",
+   "other": "{pct} % rabatt på abonnemanget {plan} i {months} månader"
+  },
+  "deal_fixed_price": {
+   "one": "abonnemanget {plan} för {price} per månad i {months} månad",
+   "other": "abonnemanget {plan} för {price} per månad i {months} månader"
+  },
+  "commission_two_years": "{y1} % av abonnemangsavgifterna första året och {y2} % andra året",
+  "commission_one_year": "{y1} % av abonnemangsavgifterna under första året"
+ },
+ "back": {
+  "templates": {
+   "assoc": {
+    "1_first_contact": {
+     "subject": "A member offer from HatchGrab to {{org}}",
+     "body": "Hi {{contact_name|to you all}},\n\nI run HatchGrab, an app for food trucks and street food sellers: the customers pre-order and choose a collection time, and the kitchen gets orders that it actually has time to cook.\n\nI would like to give the members of {{org}} a simple offer: with the code {{code}} they get {{deal}} when they register. For each member who moves over to a paid subscription, {{org}} gets {{commission}}. It is free for {{org}} to take part. There is nothing to run on your side beyond sharing the code.\n\nEverything the app does is on one page: {{features_url}}\n\nWould it be useful for your members? A reply of one line is plenty.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "2_chase_1": {
+     "subject": "Re: A member offer from HatchGrab to {{org}}",
+     "body": "Hi {{contact_name|to you all}}, I just wanted to check that this reached the right person. The offer still applies: with the code {{code}} the members of {{org}} get {{deal}}, and {{org}} gets {{commission}}. I will gladly send a short paragraph that you can put into a newsletter.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "3_chase_2": {
+     "subject": "Re: A member offer from HatchGrab to {{org}}",
+     "body": "Hi {{contact_name|to you all}}, one last reminder, then I will leave it. If a members' page or a newsletter suits you better than an email, I can write the text with the code {{code}} for you, so that you can use it as it is.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "4_final_chase": {
+     "subject": "Re: A member offer from HatchGrab to {{org}}",
+     "body": "Hi {{contact_name|to you all}}, I will not get in touch again. If it ever becomes relevant, the code {{code}} ({{deal}}) still applies for members of {{org}}. Just reply, and I will arrange it. Thanks for reading.\n\n{{signature}}\n{{opt_out}}"
+    }
+   },
+   "dir": {
+    "1_first_contact": {
+     "subject": "An offer for readers of {{org}}",
+     "body": "Hi {{contact_name|to you all}},\n\nI run HatchGrab: pre-orders and collection times for food trucks. If you list or write about tools for sellers, I would like to offer your readers a code: {{code}} gives them {{deal}}, and {{org}} earns {{commission}} on each reader who moves over to a paid subscription.\n\nA summary on one page: {{features_url}}\n\nWould you be open to including it? I gladly answer questions or send screenshots.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "2_chase_1": {
+     "subject": "Re: An offer for readers of {{org}}",
+     "body": "Hi {{contact_name|to you all}}, I just wanted to check that this arrived. The code {{code}} ({{deal}} for your readers, {{commission}} for {{org}}) is ready when it suits you.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "3_chase_2": {
+     "subject": "Re: An offer for readers of {{org}}",
+     "body": "Hi {{contact_name|to you all}}, if a short text or a few screenshots would make it easier to write about it, I can send them over. No pressure in either direction.\n\n{{signature}}\n{{opt_out}}"
+    },
+    "4_final_chase": {
+     "subject": "Re: An offer for readers of {{org}}",
+     "body": "Hi {{contact_name|to you all}}, this is my last message. The code {{code}} still applies if you ever want to use it. Thanks for reading.\n\n{{signature}}\n{{opt_out}}"
+    }
+   }
+  },
+  "phrases": {
+   "contact_fallback": "to you all",
+   "deal_extra_months": {
+    "one": "{n} extra free month",
+    "other": "{n} extra free months"
+   },
+   "deal_percent_off_any": {
+    "one": "{pct}% discount for {months} month",
+    "other": "{pct}% discount for {months} months"
+   },
+   "deal_percent_off_plan": {
+    "one": "{pct}% discount on the {plan} subscription for {months} month",
+    "other": "{pct}% discount on the {plan} subscription for {months} months"
+   },
+   "deal_fixed_price": {
+    "one": "the {plan} subscription for {price} per month for {months} month",
+    "other": "the {plan} subscription for {price} per month for {months} months"
+   },
+   "commission_two_years": "{y1}% of the subscription fees the first year and {y2}% the second year",
+   "commission_one_year": "{y1}% of the subscription fees during the first year"
+  }
+ }
+}

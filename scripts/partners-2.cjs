@@ -67,6 +67,8 @@ async function load() {
       "export * as P from '@/lib/partner-programme'", "export * as CS from '@/lib/partner-codes-server'", "export * as T from '@/lib/partner-template'",
     ].join(';'), resolveDir: REPO, loader: 'ts' },
     bundle: true, write: false, platform: 'node', format: 'cjs', target: 'node20', alias: { '@': REPO }, logLevel: 'silent',
+    // partners offer: the server's catalogue modules come in with applyPartnerPrice; `server-only` is Next's marker, empty here.
+    plugins: [{ name: 'server-only', setup(b) { b.onResolve({ filter: /^server-only$/ }, () => ({ path: 'server-only', namespace: 'stub' })); b.onLoad({ filter: /.*/, namespace: 'stub' }, () => ({ contents: '', loader: 'js' })) } }],
   })
   const m = new Module(path.join(REPO, 'scripts/__partners-2-bundle.cjs'))
   m.paths = Module._nodeModulePaths(REPO)
@@ -129,9 +131,9 @@ async function load() {
     const db = fakeDb(base())
     await CS.recordRedemption(db, 'op-p', 'SAVE20')
     const o = await CS.applyPartnerDeal(db, 'op-p', { id: 'test-truck' })
-    t('a percent-off code: recorded and attributed, no price override written yet (awaiting Dominic\'s decision, §3.3)',
+    t('a percent-off code: recorded and attributed; no price yet — the truck is on its trial (decision 1 = A: the price starts on a paid plan)',
       o === 'recorded_pending' && db.tables.trucks[0].referred_partner_code_id === 'c2' && db.tables.trucks[0].plan_price_override_minor === undefined
-      && /awaiting the decision/.test(db.tables.partner_code_redemptions[0].apply_note))
+      && /price pending|moves onto a paid plan/.test(db.tables.partner_code_redemptions[0].apply_note), db.tables.partner_code_redemptions[0].apply_note)
   }
 
   head('4 · attribution is set once and never changed')
@@ -172,7 +174,7 @@ async function load() {
 
   head('6 · who is sent to automatically (only ✓, never manual-only, never software platforms)')
   const pp = (o = {}) => ({ id: 'x', name: 'X', type: 'association', country_code: 'GB', language: 'en', timezone: 'Europe/London', email: 'a@b.org', status: 'to_contact',
-    verify_status: 'verified', auto_send: true, do_not_contact: false, sequence_step: null, sequence_stopped: null, contact_name: null, ...o })
+    verify_status: 'verified', auto_send: true, do_not_contact: false, sequence_step: null, sequence_stopped: null, contact_name: null, has_offer: true, ...o })
   t('a verified UK association → eligible, first contact next', P.ineligible(pp(), 'allowed') === null && P.nextStep(pp()) === '1_first_contact')
   t('🔴 Germany / Canada (manual_only) → never queued, shows "You send"', P.ineligible(pp({ country_code: 'DE' }), 'manual_only') === 'manual_only' && P.nextSendLabel(pp({ country_code: 'CA' }), 'manual_only', null) === 'You send')
   t('a country with no rule is manual_only', P.ineligible(pp({ country_code: 'XX' }), null) === 'manual_only')
@@ -186,14 +188,17 @@ async function load() {
     const db = fakeDb({
       outreach_settings: [{ key: 'send_schedule', value: { approval_mode: true, daily_cap: 25 } }],
       outreach_country_rules: [{ country_code: 'GB', cold_email: 'allowed' }, { country_code: 'DE', cold_email: 'manual_only' }, { country_code: 'US', cold_email: 'allowed' }],
-      outreach_messages: [], outreach_send_queue: [],
-      partner_orgs: [pp({ id: 'gb', name: 'GB assoc' }), pp({ id: 'de', name: 'DE assoc', country_code: 'DE', timezone: 'Europe/Berlin' }),
+      outreach_messages: [], outreach_send_queue: [], partner_code_redemptions: [],
+      // partners offer: every partner here has its code (an offer) except "noOffer", which must never be planned.
+      partner_codes: ['gb', 'de', 'sw', 'uv', 'us'].map(id => ({ id: `code-${id}`, code: `C${id}`.toUpperCase(), partner_id: id, deal_type: 'extra_trial_months', deal_value: 1, deal_months: null,
+        deal_plan_key: null, deal_currency: null, valid_until: null, max_uses: null, active: true, pct_year1: 10, pct_year2: 0, created_at: '2026-11-16T10:00:00Z' })),
+      partner_orgs: [pp({ id: 'noOffer', name: 'No offer', has_offer: undefined }), pp({ id: 'gb', name: 'GB assoc' }), pp({ id: 'de', name: 'DE assoc', country_code: 'DE', timezone: 'Europe/Berlin' }),
         pp({ id: 'sw', name: 'Platform', type: 'software_platform', country_code: 'US' }), pp({ id: 'uv', name: 'Unverified', verify_status: 'unverified' }),
         pp({ id: 'us', name: 'US assoc', country_code: 'US', timezone: 'America/New_York' })],
     })
     const plan = await P.planQueue(db, new Date('2026-11-17T07:00:00Z'), { write: true, rand: () => 0 })
     const ids = plan.planned.map(p => p.partnerId).sort()
-    t('🔴 the day\'s plan holds only the eligible (GB, US) — never DE (manual_only), the platform or the unverified', JSON.stringify(ids) === '["gb","us"]', ids)
+    t('🔴 the day\'s plan holds only the eligible (GB, US) — never DE (manual_only), the platform, the unverified, or a partner with no code', JSON.stringify(ids) === '["gb","us"]', ids)
     t('…and it is written to outreach_send_queue as planned (approval mode ON: nothing goes until approved)', db.tables.outreach_send_queue.length === 2 && db.tables.outreach_send_queue.every(r => r.status === 'planned') && plan.approvalMode === true)
     const n = await P.approveToday(db, new Date('2026-11-17T07:30:00Z'))
     t('"Approve today\'s sends" approves today\'s planned rows', n === 2 && db.tables.outreach_send_queue.every(r => r.status === 'approved'))
@@ -223,6 +228,82 @@ async function load() {
   t('a merge field with no value is refused, never sent blank', T.renderPartnerText('Hi {{contact_name}}, {{org}}', { org: 'NCASS' }).ok === false)
   t('…unless the template gives a fallback: "Hi {{contact_name|there}}" → "Hi there"; a name wins over it',
     T.renderPartnerText('Hi {{contact_name|there}},', {}).text === 'Hi there,' && T.renderPartnerText('Hi {{contact_name|there}},', { contact_name: 'Demi' }).text === 'Hi Demi,')
+
+  head('9 · partners offer (Dominic, 16 November 2026): nothing defaulted; codes by hand; three deal kinds; "Needs offer"')
+  {
+    const mig = fs.readFileSync(path.join(REPO, 'supabase/migrations/20261108_partners_offer.sql'), 'utf8')
+    t('no default commission: pct_year1 / pct_year2 lose their defaults; deal kinds are extra_trial_months | percent_off | fixed_price',
+      /alter column pct_year1 drop default/.test(mig) && /alter column pct_year2 drop default/.test(mig) && /deal_type in \('extra_trial_months', 'percent_off', 'fixed_price'\)/.test(mig))
+    const route = fs.readFileSync(path.join(REPO, 'app/api/admin/partners/programme/route.ts'), 'utf8')
+    t('a code saved without its commission is refused (0 is a choice, empty is not); a fixed price needs its plan and currency',
+      /if \(blank\(f\.pct_year1\) \|\| blank\(f\.pct_year2\)\) return \{ ok: false/.test(route) && /A fixed monthly price needs its plan/.test(route) && /A fixed monthly price needs its currency/.test(route) && !/pct_year1 \?\? 0/.test(route))
+    const ui = fs.readFileSync(path.join(REPO, 'components/admin/PartnerProgramme.tsx'), 'utf8')
+    const empty = (ui.match(/const EMPTY_CODE = \{([^}]*)\}/) || [])[1] || ''
+    t('🔴 the drawer\'s new-code form starts EMPTY — no deal, no months, no commission filled in — and the Codes panel creates none',
+      empty && empty.split(',').every(kv => /:\s*''\s*$/.test(kv.trim())) && /<CodeForm partner=\{partner\}/.test(ui) && !/action: 'code_save', fields: f \}/.test(ui.slice(ui.indexOf('export function CodesPanel'), ui.indexOf('export function CodeForm'))), empty)
+    t('the three deals in words', C.dealTextEn(code({ dealType: 'percent_off', dealValue: 20, dealMonths: 6, dealPlanKey: 'pro' }), k => (k === 'pro' ? 'Pro' : k)) === '20% off Pro for 6 months'
+      && C.dealTextEn(code({ dealType: 'fixed_price', dealValue: 1900, dealMonths: 3, dealPlanKey: 'unlimited', dealCurrency: 'GBP' }), () => 'Unlimited') === 'Unlimited at £19 a month for 3 months'
+      && C.dealTextEn(code({ dealType: 'percent_off', dealValue: 10, dealMonths: 1 })) === '10% off for 1 month')
+    const pro = { key: 'pro', isTrial: false }, gbp = m => ({ monthlyMinor: m, currency: 'GBP' })
+    const po = (d, plan, price) => C.priceOverrideFor({ dealType: d[0], dealValue: d[1], dealMonths: d[2], dealPlanKey: d[3] ?? null, dealCurrency: d[4] ?? null }, plan, price, '2026-12-01')
+    const a = po(['percent_off', 20, 6, 'pro'], pro, gbp(2900))
+    t('decision A: 20% off Pro, moving onto Pro on 1 Dec → £23.20 a month until 31 May (N months from that day)', a.ok && a.minor === 2320 && a.until === '2027-05-31', a)
+    t('…"any paid plan" applies to the plan moved onto; a deal for Unlimited does not apply on Pro (it waits)', po(['percent_off', 20, 6, null], pro, gbp(2900)).ok && !po(['percent_off', 20, 6, 'unlimited'], pro, gbp(2900)).ok)
+    t('…never on a trial, never on a plan with no monthly price (Pay as you go)', !po(['percent_off', 20, 6, null], { key: 'trial', isTrial: true }, gbp(0)).ok && !po(['percent_off', 20, 6, null], { key: 'payg', isTrial: false }, gbp(0)).ok)
+    const f = po(['fixed_price', 1900, 3, 'pro', 'GBP'], pro, gbp(2900))
+    t('a fixed £19 on Pro for 3 months → £19.00 until 28 Feb; another currency, or a price not below the standard one, is refused',
+      f.ok && f.minor === 1900 && f.until === '2027-02-28' && !po(['fixed_price', 1900, 3, 'pro', 'EUR'], pro, gbp(2900)).ok && !po(['fixed_price', 2900, 3, 'pro', 'GBP'], pro, gbp(2900)).ok, f)
+    // applyPartnerPrice against a fake database with the real plan rows (16 November 2026).
+    const PLANS = [['payg', 'Pay as you go', 10, true, false, false, true], ['pro', 'Pro', 20, true, false, false, false], ['unlimited', 'Unlimited', 30, true, false, false, false], ['trial', 'Free trial', 40, false, true, true, false], ['demo', 'Demo', 50, false, false, false, false]]
+      .map(([key, name, sort_order, is_public, is_trial, is_signup_default, is_expiry_fallback]) => ({ key, name, description: name, sort_order, is_public, is_internal: !is_public, is_trial, is_signup_default, is_expiry_fallback, is_demo: key === 'demo', pay_at_hatch_allowed: true, active: true, included_vans: 1, trial_months: is_trial ? 3 : null, is_highlighted: key === 'pro', subtitle: null }))
+    const PRICES = [['payg', 0, 0, 99], ['pro', 2900, 400000, 99], ['unlimited', 6900, null, 0]].map(([plan_key, monthly_minor, included_online_minor, fee_bps]) => ({ plan_key, country_code: 'GB', monthly_minor, included_online_minor, fee_bps, extra_van_monthly_minor: monthly_minor, offered: true, is_trial_end: false }))
+    const world = (truck, red) => fakeDb({ plans: PLANS, plan_prices: PRICES, plan_features: [], trucks: [{ id: 'tt', plan: 'pro', country: 'GB', currency: 'GBP', timezone: 'Europe/London', ...truck }],
+      partner_code_redemptions: [{ id: 'r1', truck_id: 'tt', deal_type: 'percent_off', deal_value: 20, deal_months: 6, deal_plan_key: 'pro', deal_currency: null, price_applied_at: null, ...red }] })
+    const w = world({}, {})
+    const out = await CS.applyPartnerPrice(w, 'tt', new Date('2026-12-01T10:00:00Z'))
+    const tr = w.tables.trucks[0], rr = w.tables.partner_code_redemptions[0]
+    t('🔴 a TEST truck moved onto Pro gets the price through the EXISTING promotional price (plan_price_override_*), recorded once',
+      out === 'applied' && tr.plan_price_override_minor === 2320 && tr.plan_price_override_until === '2027-05-31' && rr.price_applied_at && rr.price_plan_key === 'pro', { out, tr, rr })
+    t('…a second plan change does not apply it again', (await CS.applyPartnerPrice(w, 'tt', new Date('2027-01-01T10:00:00Z'))) === 'already' && tr.plan_price_override_minor === 2320)
+    const h = world({ plan_price_override_minor: 1000, plan_price_override_until: null }, {})
+    t('…a promotional price already set by hand is never overwritten (the deal waits, noted)', (await CS.applyPartnerPrice(h, 'tt', new Date('2026-12-01T10:00:00Z'))) === 'pending' && h.tables.trucks[0].plan_price_override_minor === 1000 && /already set/.test(h.tables.partner_code_redemptions[0].apply_note))
+    const tw = world({ plan: 'trial' }, {})
+    t('…still on the trial → pending, nothing written', (await CS.applyPartnerPrice(tw, 'tt', new Date('2026-12-01T10:00:00Z'))) === 'pending' && tw.tables.trucks[0].plan_price_override_minor === undefined)
+    const store = fs.readFileSync(path.join(REPO, 'lib/billing/store.ts'), 'utf8'), admin = fs.readFileSync(path.join(REPO, 'app/api/admin/route.ts'), 'utf8')
+    t('the hook runs after every plan write: billing\'s setTruckPlan (upgrade, downgrade, trial end) and Admin\'s plan change',
+      /async setTruckPlan[\s\S]{0,900}applyPartnerPrice\(/.test(store) && /if \('plan' in patch && !\('plan_price_override_minor' in patch\)\) await applyPartnerPrice\(supabase, truckId\)/.test(admin))
+    const codes = [{ id: 'a', partner_id: 'p', active: true, valid_until: null, max_uses: null, created_at: '2026-11-01' }, { id: 'b', partner_id: 'p', active: true, valid_until: '2026-11-10', max_uses: null, created_at: '2026-11-12' },
+      { id: 'c', partner_id: 'p', active: true, valid_until: null, max_uses: 1, created_at: '2026-11-14' }, { id: 'd', partner_id: 'p', active: false, valid_until: null, max_uses: null, created_at: '2026-11-15' }]
+    t('the offer is the newest USABLE code — not an expired, used-up or switched-off one; none → no offer',
+      C.offerCodeFor(codes, 'p', { c: 1 }, '2026-11-16')?.id === 'a' && C.offerCodeFor(codes, 'p', {}, '2026-11-16')?.id === 'c' && C.offerCodeFor(codes, 'q', {}, '2026-11-16') === null)
+    t('🔴 no code → never queued ("needs_offer"), and Next send says "Needs offer" — for automatic, "You send" and DM partners alike',
+      P.ineligible(pp({ has_offer: false }), 'allowed') === 'needs_offer' && P.nextSendLabel(pp({ has_offer: false }), 'allowed', null) === 'Needs offer'
+      && P.nextSendLabel(pp({ has_offer: false, country_code: 'DE' }), 'manual_only', null) === 'Needs offer'
+      && P.nextSendLabel(pp({ has_offer: false, email: null, channel: 'facebook' }), 'allowed', null) === 'Needs offer'
+      && P.nextSendLabel(pp({ email: null, channel: 'facebook' }), 'allowed', null) === 'You send / DM' && P.nextSendLabel(pp(), 'allowed', null) === 'Next window')
+    const ms = fs.readFileSync(path.join(REPO, 'app/api/admin/partners/mail-send/route.ts'), 'utf8')
+    t('…and Admin\'s compose refuses a fresh email to a partner with no offer (a reply to their own message, or a test, still goes)',
+      /if \(!isTest && !parent\) \{[\s\S]{0,400}Needs offer:/.test(ms) && ms.indexOf('Needs offer:') < ms.indexOf('await sendPartnerEmail('))
+    t('the sender checks the offer before eligibility (has_offer from the partner\'s own codes)', /partner\.has_offer = !!offer/.test(cron) && cron.indexOf('partner.has_offer = !!offer') < cron.indexOf('const why = ineligible(partner'))
+    const v = T.offerValues({ deal_type: 'fixed_price', deal_value: 1900, deal_months: 6, deal_plan_key: 'unlimited', deal_currency: 'EUR', pct_year1: 12.5, pct_year2: 5, code: 'X' }, 'fr', 'FR', () => 'Illimité')
+    t('{{deal}} / {{commission}} come from the partner\'s own code, in its language; {{features_url}} is its country\'s page',
+      /Illimité/.test(v.deal) && /19\s€/.test(v.deal) && /12,5\u00a0%/.test(v.commission) && v.features_url === 'https://www.hatchgrab.com/fr/features'
+      && T.featuresUrlFor('GB') === 'https://www.hatchgrab.com/uk/features' && T.featuresUrlFor('US') === 'https://www.hatchgrab.com/us/features', v)
+    const tpl = fs.readFileSync(path.join(REPO, 'supabase/migrations/20261110_partner_templates.sql'), 'utf8')
+    const slugs = [...tpl.matchAll(/select '(partner-[a-z]+-[0-9a-z_]+-[a-z]{2})'/g)].map(m => m[1])
+    const want = []; for (const aud of ['association', 'directory']) for (const st of ['1_first_contact', '2_chase_1', '3_chase_2', '4_final_chase']) for (const l of ['en', 'fr', 'nl', 'de', 'es', 'it', 'sv']) want.push(P.templateSlugFor({ type: aud, language: l }, st))
+    t('a template exists for every audience × step × language the partners use (56)', slugs.length === 56 && want.every(w => slugs.includes(w)), { n: slugs.length })
+    const en = JSON.parse(fs.readFileSync(path.join(REPO, 'docs/partners-3/templates/en.json'), 'utf8')).templates
+    t('Dominic\'s three edits: {{features_url}} (no bare /features); "It\'s free for {{org}} to take part." after the code sentence; "Thanks for reading."',
+      /\{\{features_url\}\}/.test(en.assoc['1_first_contact'].body) && /\{\{features_url\}\}/.test(en.dir['1_first_contact'].body) && !/hatchgrab\.com\/features/.test(tpl)
+      && /for each member who moves on to a paid plan\. It's free for \{\{org\}\} to take part\./.test(en.assoc['1_first_contact'].body)
+      && /Thanks for reading\./.test(en.assoc['4_final_chase'].body) && !/Thanks for your time/.test(JSON.stringify(en)))
+    const pw = fs.readFileSync(path.join(REPO, 'components/admin/ProspectWorkspace.tsx'), 'utf8')
+    t('the truck composer lists no partner template', /\.filter\(t => !t\.slug\.startsWith\('partner-'\)\)/.test(pw))
+    const site = fs.readFileSync(path.join(REPO, 'supabase/migrations/20261109_partners_site_addresses.sql'), 'utf8')
+    t('the 13 site-published addresses become primary, the listed ones alternates — guarded, status and auto_send untouched',
+      (site.match(/^update public\.partner_orgs set email = /gm) || []).length === 13 && !/[^_]status =|auto_send =/.test(site))
+  }
 
   console.log(fail ? `\n🔴 ${fail} CHECK(S) FAILED (${pass} passed)` : `\n✅ all ${pass} passed`)
   process.exit(fail ? 1 : 0)
