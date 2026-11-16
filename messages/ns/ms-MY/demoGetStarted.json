@@ -86,6 +86,9 @@
   "partnerCodeExpired": "Kod itu telah tamat tempoh.",
   "partnerDealExtraMonths": "{months, plural, other {# bulan tambahan percuma}}",
   "partnerDealPercentOff": "diskaun {pct}% selama {months, plural, other {# bulan}}",
+  "partnerDealPercentOffPlan": "diskaun {pct}% untuk {plan} selama {months, plural, other {# bulan}}",
+  "partnerDealFixedPrice": "{plan} pada harga {price} sebulan selama {months, plural, other {# bulan}}",
+  "partnerDealPlanOffer": "harga istimewa untuk {plan} selama {months, plural, other {# bulan}}",
   "agreeTerms": "Saya bersetuju dengan <terms>Terma</terms> dan <privacy>Dasar Privasi</privacy>.",
   "freeMonth": "{months, plural, =0 {Percubaan percuma anda bermula apabila anda mencipta akaun.} other {# bulan pertama anda percuma, bermula apabila anda mencipta akaun.}}",
   "fieldError": {

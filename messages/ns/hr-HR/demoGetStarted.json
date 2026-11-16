@@ -86,6 +86,9 @@
   "partnerCodeExpired": "Taj je kod istekao.",
   "partnerDealExtraMonths": "{months, plural, one {# dodatni mjesec besplatno} few {# dodatna mjeseca besplatno} other {# dodatnih mjeseci besplatno}}",
   "partnerDealPercentOff": "{pct} % popusta tijekom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+  "partnerDealPercentOffPlan": "{pct} % popusta na {plan} tijekom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+  "partnerDealFixedPrice": "{plan} za {price} mjesečno tijekom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+  "partnerDealPlanOffer": "posebna cijena za {plan} tijekom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
   "agreeTerms": "Prihvaćam <terms>Uvjete</terms> i <privacy>Pravila privatnosti</privacy>.",
   "freeMonth": "{months, plural, =0 {Besplatno probno razdoblje počinje kad izradite račun.} one {Prvi # mjesec je besplatan, računajući od izrade računa.} few {Vaša prva # mjeseca su besplatna, računajući od izrade računa.} other {Vaših prvih # mjeseci je besplatno, računajući od izrade računa.}}",
   "fieldError": {

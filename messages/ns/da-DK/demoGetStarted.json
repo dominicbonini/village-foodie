@@ -86,6 +86,9 @@
   "partnerCodeExpired": "Koden er udløbet.",
   "partnerDealExtraMonths": "{months, plural, one {# ekstra måned gratis} other {# ekstra måneder gratis}}",
   "partnerDealPercentOff": "{pct} % rabat i {months, plural, one {# måned} other {# måneder}}",
+  "partnerDealPercentOffPlan": "{pct} % rabat på {plan} i {months, plural, one {# måned} other {# måneder}}",
+  "partnerDealFixedPrice": "{plan} til {price} om måneden i {months, plural, one {# måned} other {# måneder}}",
+  "partnerDealPlanOffer": "en særpris på {plan} i {months, plural, one {# måned} other {# måneder}}",
   "agreeTerms": "Jeg accepterer <terms>vilkårene</terms> og <privacy>privatlivspolitikken</privacy>.",
   "freeMonth": "{months, plural, =0 {Din gratis prøveperiode starter, når du opretter din konto.} one {Din første måned er gratis, regnet fra du opretter din konto.} other {Dine første # måneder er gratis, regnet fra du opretter din konto.}}",
   "fieldError": {

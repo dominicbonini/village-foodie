@@ -86,6 +86,9 @@
   "partnerCodeExpired": "यह कोड एक्सपायर हो गया है।",
   "partnerDealExtraMonths": "{months, plural, one {# महीना अतिरिक्त फ़्री} other {# महीने अतिरिक्त फ़्री}}",
   "partnerDealPercentOff": "{months, plural, one {# महीने} other {# महीने}} के लिए {pct}% की छूट",
+  "partnerDealPercentOffPlan": "{months, plural, one {# महीने} other {# महीने}} के लिए {plan} पर {pct}% की छूट",
+  "partnerDealFixedPrice": "{months, plural, one {# महीने} other {# महीने}} के लिए {plan} {price} प्रति माह में",
+  "partnerDealPlanOffer": "{months, plural, one {# महीने} other {# महीने}} के लिए {plan} पर विशेष कीमत",
   "agreeTerms": "मैं <terms>शर्तों</terms> और <privacy>प्राइवेसी पॉलिसी</privacy> से सहमत हूँ।",
   "freeMonth": "{months, plural, =0 {साइन अप करते ही आपका फ़्री ट्रायल शुरू हो जाता है।} one {आपका पहला महीना फ़्री है, साइन अप करने के दिन से।} other {आपके पहले # महीने फ़्री हैं, साइन अप करने के दिन से।}}",
   "fieldError": {

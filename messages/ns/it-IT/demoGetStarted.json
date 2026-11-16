@@ -86,6 +86,9 @@
   "partnerCodeExpired": "Questo codice è scaduto.",
   "partnerDealExtraMonths": "{months, plural, one {# mese extra gratis} many {# di mesi extra gratis} other {# mesi extra gratis}}",
   "partnerDealPercentOff": "{pct}% di sconto per {months, plural, one {# mese} many {# di mesi} other {# mesi}}",
+  "partnerDealPercentOffPlan": "{pct}% di sconto su {plan} per {months, plural, one {# mese} many {# di mesi} other {# mesi}}",
+  "partnerDealFixedPrice": "{plan} a {price} al mese per {months, plural, one {# mese} many {# di mesi} other {# mesi}}",
+  "partnerDealPlanOffer": "un prezzo speciale su {plan} per {months, plural, one {# mese} many {# di mesi} other {# mesi}}",
   "agreeTerms": "Accetto i <terms>Termini</terms> e l’<privacy>Informativa sulla privacy</privacy>.",
   "freeMonth": "{months, plural, =0 {La tua prova gratuita inizia quando crei il tuo account.} one {Il tuo primo mese è gratis, a partire da quando crei il tuo account.} many {I tuoi primi # di mesi sono gratis, a partire da quando crei il tuo account.} other {I tuoi primi # mesi sono gratis, a partire da quando crei il tuo account.}}",
   "fieldError": {

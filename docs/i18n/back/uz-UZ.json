@@ -5948,6 +5948,9 @@
  "auth.signup.codeExpired": "This code's term has ended.",
  "auth.signup.dealExtraMonths": "an additional # month(s) free",
  "auth.signup.dealPercentOff": "{pct}% discount during # month(s)",
+ "auth.signup.dealPercentOffPlan": "during {months} months, {pct}% discount on the {plan} plan",
+ "auth.signup.dealFixedPrice": "during {months} months, the {plan} plan {price} per month",
+ "auth.signup.dealPlanOffer": "during {months} months, special price on the {plan} plan",
  "auth.signup.partnerCodeLabel": "Partner code or promo code (optional)",
  "demoGetStarted.partnerCodeLabel": "Partner code or promo code (optional)",
  "demoGetStarted.partnerCodeApply": "Apply",
@@ -5955,5 +5958,8 @@
  "demoGetStarted.partnerCodeInvalid": "This code is invalid.",
  "demoGetStarted.partnerCodeExpired": "This code's term has ended.",
  "demoGetStarted.partnerDealExtraMonths": "an additional # month(s) free",
- "demoGetStarted.partnerDealPercentOff": "{pct}% discount during # month(s)"
+ "demoGetStarted.partnerDealPercentOff": "{pct}% discount during # month(s)",
+ "demoGetStarted.partnerDealPercentOffPlan": "during {months} months, {pct}% discount on the {plan} plan",
+ "demoGetStarted.partnerDealFixedPrice": "during {months} months, the {plan} plan {price} per month",
+ "demoGetStarted.partnerDealPlanOffer": "during {months} months, special price on the {plan} plan"
 }
