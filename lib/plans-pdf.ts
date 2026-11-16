@@ -37,8 +37,8 @@ import type { PlanCatalog } from '@/lib/plans'
 import { getPlanCatalog } from '@/lib/plans-server'
 import { localizePlans } from '@/lib/plan-names'   // languages-1: plan names in the locale's language
 import {
-  offerPlans, offerTrialMonths, offerFallback, baseBullets, addedFeatureBullets, moneyBullets, cheapestBands, singlePlanExtras,
-  tableGroups, tableCell, walkUpFree, type OfferPlan,
+  offerPlans, offerTrialMonths, offerFallback, baseBullets, addedFeatureBullets, moneyBullets, cheapestBands, singlePlanExtras, tableColumns,
+  tableGroups, tableCell, walkUpFree, type OfferPlan, type TableColumn,
 } from '@/lib/plan-offer'
 import { noteMarker, planTableNotes } from '@/lib/feature-table'
 // Language Phase 0: the document's words in the country's locale — its first message, the heading.
@@ -169,7 +169,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   // world-countries-1 (31 October 2026): ONE plan offered (Unlimited-only countries) — as the landing's pricing section: the banner
   // names its price, the card lists the base, what the plan adds and its money bullets, and there is no "cheapest" bar.
   const single = plans.length === 1 ? plans[0] : null
-  const fee = (p: OfferPlan) => show(pctLabel(p.feeBps / 100, s))
+  const fee = (p: Pick<OfferPlan, 'feeBps'>) => show(pctLabel(p.feeBps / 100, s))
   const whole = (minor: number) => show(formatWholeAmount(minor, money))
   const words = (f: string) => (tp.has(`added.${f}` as never) ? tp(`added.${f}` as never) : tPrompt(`features.${f}.name` as never))
   const soon = `<span class="soon-chip">${esc(tp('comingSoon'))}</span>`
@@ -217,19 +217,25 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
         : html(tp, 'bar.middle', { from: whole(band.fromMinor as number), to: whole(band.toMinor), plan: band.plan.plan.name })).join(' · ')}</div>`
 
   // ── THE TABLE — the /features table (components/pricing/PlanTable.tsx), as print HTML ──
+  // trial-column-1 (16 November 2026): ITS COLUMNS ARE THE TABLE'S — the free trial first, then the plans (lib/plan-offer.ts
+  // tableColumns), as /features and Manage › Billing print them (the cards and the "cheapest" bar above keep to the plans).
+  const tcols = tableColumns(catalog, s.countryCode)
   const hlKey = plans.find(p => p.highlighted)?.plan.key
-  const hl = (p: OfferPlan) => (p.plan.key === hlKey ? ' hl' : '')
-  const cols = plans.length + 1
+  const hl = (p: TableColumn) => (p.plan.key === hlKey ? ' hl' : '')
+  const cols = tcols.length + 1
   const none = `<span class="no">—</span>`
-  const heads = plans.map(p => `<th class="c${hl(p)}"><div class="th-plan">${esc(p.plan.name)}</div>${omit ? '' : `<div class="th-price">${esc(tt('perMonth', { price: show(formatAmount(p.monthlyMinor, money)) }))}</div>`}</th>`).join('')
-  const row = (label: string, cells: string[], marker?: string) => `<tr><td class="f"><span class="f-name">${esc(label)}${marker ? `<sup>${esc(marker)}</sup>` : ''}</span></td>${cells.map((c, i) => `<td class="c${hl(plans[i])}">${c}</td>`).join('')}</tr>`
+  // The trial's line is its length ("3 months" — not a price, so it shows under the omit mode too); a plan's is its price.
+  const heads = tcols.map(p => `<th class="c${hl(p)}"><div class="th-plan">${esc(p.plan.name)}</div>${p.trial
+    ? (p.trial.months ? `<div class="th-price">${esc(tt('trial.length', { months: p.trial.months }))}</div>` : '')
+    : omit ? '' : `<div class="th-price">${esc(tt('perMonth', { price: show(formatAmount(p.monthlyMinor, money)) }))}</div>`}</th>`).join('')
+  const row = (label: string, cells: string[], marker?: string) => `<tr><td class="f"><span class="f-name">${esc(label)}${marker ? `<sup>${esc(marker)}</sup>` : ''}</span></td>${cells.map((c, i) => `<td class="c${hl(tcols[i])}">${c}</td>`).join('')}</tr>`
   const grp = (label: string) => `<tr class="grp"><td colspan="${cols}">${esc(label)}</td></tr>`
   const pay = omit ? '' : grp(tt('group.pay'))
-    + row(tt('pay.included'), plans.map(p => p.shape === 'feeOnly' ? none : `<span class="val">${esc(p.includedMinor === null ? tt('cell.unlimited') : whole(p.includedMinor))}</span>`))
-    + row(tt(cardsOn ? 'pay.fee' : 'pay.feeNoMark'), plans.map(p => p.shape === 'noFee' ? `<span class="val">${esc(show(pctLabel(0, s)))}</span>`
+    + row(tt('pay.included'), tcols.map(p => p.shape === 'feeOnly' ? none : `<span class="val">${esc(p.includedMinor === null ? tt('cell.unlimited') : whole(p.includedMinor))}</span>`))
+    + row(tt(cardsOn ? 'pay.fee' : 'pay.feeNoMark'), tcols.map(p => p.shape === 'noFee' ? `<span class="val">${esc(show(pctLabel(0, s)))}</span>`
       : p.shape === 'included' ? html(tt, 'cell.feeAbove', { fee: fee(p), included: whole(p.includedMinor as number) }) : `<span class="val">${esc(fee(p))}</span>`))
-    + row(tt('pay.walkUp'), plans.map(p => walkUpFree(catalog, p) ? `<span class="val">${esc(tt('cell.free'))}</span>` : none))
-  const sections = tableGroups().map(g => grp(tt(`group.${g.group}` as never)) + g.rows.map(r => row(tRow(`row.${r.id}.name` as never), plans.map(p => {
+    + row(tt('pay.walkUp'), tcols.map(p => walkUpFree(catalog, p) ? `<span class="val">${esc(tt('cell.free'))}</span>` : none))
+  const sections = tableGroups().map(g => grp(tt(`group.${g.group}` as never)) + g.rows.map(r => row(tRow(`row.${r.id}.name` as never), tcols.map(p => {
     const c = tableCell(catalog, r, p)
     return c === 'off' ? none : c === 'soon' ? `<span class="soon">${esc(tt('cell.comingSoon'))}</span>` : `<span class="yes">${tick(locale)}</span>`
   }), r.note ? noteMarker(r.note) : undefined)).join('')).join('')
@@ -293,7 +299,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
      header and its cells cannot disagree. */
   th, td { vertical-align: top; padding: 5px 6px; }
   th.f, td.f { width: 40%; text-align: left; }   /* Stage B: the plan columns share the other 60% — one per public plan. */
-  th.c, td.c { width: ${(60 / Math.max(1, plans.length)).toFixed(2)}%; text-align: center; }
+  th.c, td.c { width: ${(60 / Math.max(1, tcols.length)).toFixed(2)}%; text-align: center; }
   thead th { border-bottom: 2px solid var(--navy); }
   /* 🔴 REPEAT THE HEADER ON EVERY PAGE. A comparison table whose plan columns are unlabelled after
      page 1 is unreadable, and this is the one thing print gets wrong by default. */

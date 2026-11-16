@@ -180,12 +180,15 @@ const withFourth = () => {
   const tbl = featGB.slice(featGB.indexOf('class="pt pt-features"'), featGB.indexOf('class="fn"'))
   const tt = text(tbl)
   const tblNames = text(tbl.replace(/<span class="pt-desc">.*?<\/span>/g, ''))   // the table without its descriptions
-  t('ONE table, columns = the public plans with "{price} / month"', count(featGB, 'class="pt pt-features"') === 1 && !featGB.includes('pt-card') && inOrder(tt, ['Pay as you go £0 / month', 'Pro £29 / month', 'Unlimited £69 / month']))
+  // ⚠️ RE-PINNED (trial-column-1, 16 November 2026; docs/trial-column-1-report.md): the free trial is the table's FIRST column
+  // ("Free trial · 3 months", lib/plan-offer.ts tableColumns), then the plans as before.
+  t('ONE table, columns = the free trial ("3 months"), then the public plans with "{price} / month"', count(featGB, 'class="pt pt-features"') === 1 && !featGB.includes('pt-card') && inOrder(tt, ['Free trial 3 months', 'Pay as you go £0 / month', 'Pro £29 / month', 'Unlimited £69 / month']))
   t('the highlighted column is Pro (the data flag)', /<div class="pt-col pt-hl" role="columnheader"><span class="pt-col-name">Pro</.test(tbl) && count(tbl, 'pt-col pt-hl') === 1)
   // Dominic, 20 October 2026: no "Pay at Hatch orders" money row and no "Online ordering — Pay at Hatch" feature row.
   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the fee row reads "HatchGrab fee on online orders*" (the word "card" dropped; asterisk kept).
   t('WHAT YOU PAY: included — / £4,000 / Unlimited; fee 0.99% / 0.99% above £4,000 / 0%; Walk-up Free ×3 (no Pay at Hatch row)',
-    tblNames.includes('What you pay Online orders included each month — £4,000 Unlimited HatchGrab fee on online orders* 0.99% 0.99% above £4,000 0% Walk-up orders Free Free Free Run your service') && !/Pay at Hatch/.test(tblNames), tblNames.slice(0, 400))
+    // ⚠️ RE-PINNED (trial-column-1): the trial's cells first — Unlimited, 0%, Free (it pays nothing: lib/billing/rules.ts planLevelAt).
+    tblNames.includes('What you pay Online orders included each month Unlimited — £4,000 Unlimited HatchGrab fee on online orders* 0% 0.99% 0.99% above £4,000 0% Walk-up orders Free Free Free Free Run your service') && !/Pay at Hatch/.test(tblNames), tblNames.slice(0, 400))
   t('three groups in order: Run your service, Online orders, Marketing & automation', inOrder(tt, ['Run your service', 'Online orders', 'Marketing & automation']))
   const rowsIn = count(tbl, 'role="rowheader"')
   // ⚠️ RE-PINNED (features-list-1, 4 November 2026): 34 feature rows (Advanced reporting off; three rows added).
@@ -208,10 +211,12 @@ const withFourth = () => {
   const rowOf = name => { let i = tbl.indexOf(`<span class="pt-name">${name}</span>`); if (i < 0) i = tbl.indexOf(`<span>${name}<sup class="pt-sup">`); return i < 0 ? '' : tbl.slice(i, tbl.indexOf('role="row"', i + 1)) }
   const cells = r => [...r.matchAll(/role="cell">(.*?)<\/div>/g)].map(m => (/pt-yes/.test(m[1]) ? '✓' : /pt-no/.test(m[1]) ? '—' : /pt-soon/.test(m[1]) ? 'soon' : m[1]))
   const pe = cells(rowOf('Private events')), et = cells(rowOf('Custom event types &amp; pricing'))
-  t('Private events: ✓ on every plan; Custom event types & pricing: — / ✓ / ✓ (separate rows)', JSON.stringify(pe) === '["✓","✓","✓"]' && JSON.stringify(et) === '["—","✓","✓"]', { pe, et })
-  t('Multi-staff logins row is there, ✓ ×3', JSON.stringify(cells(rowOf('Multi-user access'))) === '["✓","✓","✓"]' || /Multi/.test(tt), tt.match(/Multi[^✓]*/))
+  // ⚠️ RE-PINNED (trial-column-1): a cell for the trial first — every feature is on for it (no plan_features row switches one off).
+  t('Private events: ✓ on the trial and every plan; Custom event types & pricing: ✓ / — / ✓ / ✓ (separate rows)', JSON.stringify(pe) === '["✓","✓","✓","✓"]' && JSON.stringify(et) === '["✓","—","✓","✓"]', { pe, et })
+  t('Multi-staff logins row is there, ✓ ×4 (trial-column-1: the trial\'s too)', JSON.stringify(cells(rowOf('Multi-user access'))) === '["✓","✓","✓","✓"]' || /Multi/.test(tt), tt.match(/Multi[^✓]*/))
   t('WhatsApp auto-replies: — on payg, Coming soon/✓ on the rest; SMS / loyalty "Coming soon" everywhere (the existing states)',
-    cells(rowOf('WhatsApp auto-replies'))[0] === '—' && JSON.stringify(cells(rowOf('SMS order alerts'))) === '["soon","soon","soon"]', { wa: cells(rowOf('WhatsApp auto-replies')), sms: cells(rowOf('SMS order alerts')) })
+    // ⚠️ RE-PINNED (trial-column-1): the trial's cell first (on), so payg is the SECOND cell; SMS "Coming soon" in all four.
+    cells(rowOf('WhatsApp auto-replies'))[1] === '—' && cells(rowOf('WhatsApp auto-replies'))[0] !== '—' && JSON.stringify(cells(rowOf('SMS order alerts'))) === '["soon","soon","soon","soon"]', { wa: cells(rowOf('WhatsApp auto-replies')), sms: cells(rowOf('SMS order alerts')) })
   t('the same footnote as the landing', FOOTNOTE_GB.test(text(featGB)))
   // ── features-page-restore (20 October 2026): the old page's look and descriptions, on the new table ──
   {
@@ -320,7 +325,8 @@ const withFourth = () => {
       t(`${cc} Billing (${k}): the /features table, with ${name}'s column highlighted`, count(v, 'class="pt pt-card"') === 1 && new RegExp(`<div class="pt-col pt-hl" role="columnheader"><span class="pt-col-name">${name}<`).test(v) && count(v, 'pt-col pt-hl') === 1)
     }
     const tr = bill(`${cc}|billing|plan|trial`)
-    t(`${cc} Billing (trial): the table with no column highlighted (a trial is not a column)`, count(tr, 'class="pt pt-card"') === 1 && !tr.includes('pt-col pt-hl'))
+    // ⚠️ RE-PINNED (trial-column-1): a truck on its trial has the TRIAL'S column highlighted (it is a column now), and only that one.
+    t(`${cc} Billing (trial): the table with the trial's column highlighted, and no other`, count(tr, 'class="pt pt-card"') === 1 && /<div class="pt-col pt-hl pt-trial" role="columnheader"><span class="pt-col-name">Free trial</.test(tr) && count(tr, 'pt-col pt-hl') === 1)
     t(`${cc} Billing: prices in ${m}, the footnote under the table`, text(bill(`${cc}|billing|plan|pro`)).includes(`Pro ${m}29 / month`) && FOOTNOTE_ANY.test(text(bill(`${cc}|billing|plan|pro`))))
     t(`${cc} Billing (pricing-tidy): the two row disclosures under the card-fee footnote, with the row markers`, inOrder(text(bill(`${cc}|billing|plan|pro`)), ['* Plus', '1 Kitchen ticket printing needs a compatible Bluetooth or wired printer (not supplied).', '2 WhatsApp auto-replies need a WhatsApp Business account. Meta may charge for some messages; replies are generated automatically.'])
       && /<span>Kitchen ticket printing<sup class="pt-sup">1<\/sup><\/span>/.test(bill(`${cc}|billing|plan|pro`)) && /<span>WhatsApp auto-replies<sup class="pt-sup">2<\/sup><\/span>/.test(bill(`${cc}|billing|plan|pro`)))
@@ -364,7 +370,7 @@ const withFourth = () => {
     t('Pro included £4,000 → £3,000: everywhere', lg.includes('First £3,000 of online orders included') && text(fg).includes('0.99% above £3,000') && pd.includes('First £3,000') && bt.includes('£3,000'))
     // ⚠️ RE-PINNED (landing-mobile-tidy, 21 October 2026): /features has no trial callout any more — the landing banner and PDF carry it.
     t('the trial 3 → 2 months: landing banner and PDF (/features has no callout)', lg.includes('Your first 2 months are completely free') && !/months? free with every feature unlocked/.test(text(fg)) && pd.includes('Your first 2 months are completely free'))
-    t('a switch (payg private_events off): the card bullet goes, the table row reads —', !lg.slice(lg.indexOf('Everything to run a service'), lg.indexOf('See every feature')).includes('Private events') && /Private events — ✓|Private events —/.test(text(fg.replace(/<span class="pt-desc">.*?<\/span>/g, '')).replace(/\s+/g, ' ')))   // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): read without the row's description
+    t('a switch (payg private_events off): the card bullet goes, the table row reads —', !lg.slice(lg.indexOf('Everything to run a service'), lg.indexOf('See every feature')).includes('Private events') && /Private events ✓ — ✓/.test(text(fg.replace(/<span class="pt-desc">.*?<\/span>/g, '')).replace(/\s+/g, ' ')))   // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): read without the row's description. ⚠️ RE-PINNED (trial-column-1): the trial's ✓ first, then payg's —
     t('the cheapest bar re-solves (Pro £35 incl. £3,000 → Pro up to £6,400, not £8,000)', lg.includes('£2,900 – £6,400 → Pro Over £6,400 → Unlimited') && !lg.includes('£8,000'), lg.match(/Which plan is cheapest.{0,160}/))
 
     const f4 = withFourth()
@@ -374,7 +380,8 @@ const withFourth = () => {
     const b4 = kit.renderStatic(h(PT.PlanTable, { catalog: f4, settings: ctx.GB(), highlight: 'growth' }))
     const c4x = text(compareAt({ hasSystem: 'no', gmv: 9000 }, f4))
     t('a fourth public plan: a fourth card, in sort_order, with "Everything in Pro, plus"', inOrder(l4, ['Pro', 'Growth', 'Fixture subtitle', '£49 per truck / month', 'Everything in Pro, plus', 'Unlimited', 'Everything in Growth, plus']) && count(l4, 'Try free') === 4)
-    t('…a fourth column on /features, in the PDF and in Billing\'s table', inOrder(t4, ['Pro £29 / month', 'Growth £49 / month', 'Unlimited £69 / month']) && count(p4, '<div class="th-plan">') === 4 && count(b4, 'role="columnheader"') === 4)
+    // ⚠️ RE-PINNED (trial-column-1): the fourth PLAN is the fifth COLUMN — the free trial's comes first in the PDF and Billing's table.
+    t('…a fourth plan column on /features, in the PDF and in Billing\'s table (after the trial\'s)', inOrder(t4, ['Free trial 3 months', 'Pro £29 / month', 'Growth £49 / month', 'Unlimited £69 / month']) && count(p4, '<div class="th-plan">') === 5 && count(b4, 'role="columnheader"') === 5)
     t('…in the cheapest bar and the /compare choice', /→ Growth/.test(l4) && /We suggest Growth/.test(c4x), { bar: l4.match(/Which plan.{0,220}/), cmp: c4x.match(/We suggest.{0,60}/) })
   }
 

@@ -121,6 +121,10 @@ function featuresCheck(R) {
   // the named change (scripts/_lp-features-restore.cjs: R1 eyebrow "Compare" before the h1, R2 `pt pt-features` + the hidden
   // span + var(--cmp-col), R3 `.pt-name` + `.pt-desc` from featuresPage.detail, R4 the text ✓, R5 `.pt-val`, R6 the `.fn`
   // footnotes) of a Stage-B-shaped body — byte for byte; then Stage B's checks below run, unchanged, on that Stage B shape.
+  // ⚠️ RE-PINNED (trial-column-1, 16 November 2026): the table's free-trial column taken back out FIRST (scripts/_lp-trial-column-1.cjs
+  // tableBack — PRECISE: a problem, not a pass, when the column is not there exactly).
+  const TC1 = require('./_lp-trial-column-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+  if (TC1.LANDED) { try { r = TC1.tableBack(r) } catch (e) { return [e.message] } }
   if (FR().LANDED) { const pr = FR().proven(r); if (pr.problems) return pr.problems; r = pr.stageB }
   const o = inOrder(r, ['<h1>', '<p class="lede">', '<div class="pt pt-card"', '<p class="price-note">']); if (o) p.push(`F's /features: ${o} (h1 → lede → plan table → footnote)`)
   const t = planTableHead(r)

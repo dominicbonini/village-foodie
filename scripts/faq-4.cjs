@@ -204,9 +204,13 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
     // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the plan table's fee row put back first (scripts/_lp-pricing-copy-2.cjs asBefore —
     // "…on online orders*" was "…on online card orders*"; scripts/pricing-copy-2.cjs proves it).
     // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): the country list's markup put back first (scripts/_lp-world-countries-5.cjs asBefore).
-    const pc2 = require('./_lp-pricing-copy-2.cjs').asBefore(require('./_lp-world-countries-5.cjs').asBefore(r.html, { locale: seg === 'uk' ? 'en-GB' : 'de-DE' }), seg === 'uk' ? 'en-GB' : 'de-DE')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+    // ⚠️ RE-PINNED (trial-column-1, 16 November 2026): the plan table's free-trial column taken back out FIRST (the latest change;
+    // scripts/_lp-trial-column-1.cjs tableBack — PRECISE; scripts/trial-column-1.cjs proves the column).
+    const tc1 = require('./_lp-trial-column-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
+    const html0 = tc1.LANDED ? tc1.tableBack(r.html) : r.html
+    const pc2 = require('./_lp-pricing-copy-2.cjs').asBefore(require('./_lp-world-countries-5.cjs').asBefore(html0, { locale: seg === 'uk' ? 'en-GB' : 'de-DE' }), seg === 'uk' ? 'en-GB' : 'de-DE')   // eslint-disable-line @typescript-eslint/no-require-imports -- CommonJS harness module
     const asBefore = FL1.LANDED ? FL1.featuresRowsBack(noFaqLink(SCX(pc2)), seg === 'uk' ? 'en-GB' : 'de-DE') : noFaqLink(SCX(pc2))
-    if (want) t(`/${seg}/features: byte-identical to a97c2a58 through the shared frame (MarketingFrame), apart from the footer FAQ link${FL1.LANDED ? ' and features-list-1\'s rows' : ''}`, sha(asBefore) === want[`features:${seg}`]?.sha256, { now: sha(asBefore), head: want[`features:${seg}`] })
+    if (want) t(`/${seg}/features: byte-identical to a97c2a58 through the shared frame (MarketingFrame), apart from the footer FAQ link${FL1.LANDED ? ' and features-list-1\'s rows' : ''}${require('./_lp-trial-column-1.cjs').LANDED ? ' and trial-column-1\'s column' : ''}`, sha(asBefore) === want[`features:${seg}`]?.sha256, { now: sha(asBefore), head: want[`features:${seg}`] })
   }
   t('/features and /faq share one frame (components/landing/MarketingFrame.tsx), not a copy', /<MarketingFrame visitor=\{visitor\}>/.test(read('app/(public)/(site)/features/page.tsx')) && /<MarketingFrame visitor=\{visitor\}>/.test(read('app/(public)/(site)/faq/page.tsx')) && !/Archivo\(/.test(read('app/(public)/(site)/features/page.tsx')) && /<FaqDetails items=\{sec\.items\} className="faq-q" \/>/.test(read('app/(public)/(site)/faq/page.tsx')))
 

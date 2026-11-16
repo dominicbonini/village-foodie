@@ -14726,10 +14726,15 @@ function BillingTab({ truck, token }: { truck: Truck | null; token: string }) {
   const compareBlock = (
     <>
       {/* 🔴 STAGE B (docs/pricing-pages-report.md): THE SAME PLAN TABLE AS /features (components/pricing/PlanTable.tsx),
-          the truck's EFFECTIVE plan's column highlighted (none while on a trial — a trial is not a column), its amounts
-          under the plan card's mask. Its header pins to the top of the scrolling <main>. Then the landing's footnote. */}
+          the truck's EFFECTIVE plan's column highlighted, its amounts under the plan card's mask. Its header pins to the top of
+          the scrolling <main>. Then the landing's footnote.
+          trial-column-1 (16 November 2026): the table's first column is the free trial (lib/plan-offer.ts tableColumns). A truck on
+          its trial has that column highlighted (its effective plan IS the trial) and reading "Ends {date}" — the trial end date the
+          plan card states, in the short form so it fits the phone's narrow column. A trial not started (no end date) is highlighted
+          with its length. */}
       <div>
-        <PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx} />
+        <PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx}
+          trialEnds={onTrial && truck.trial_expires_at ? formatInstant(truck.trial_expires_at, billingTime, { day: 'numeric', month: 'short', year: 'numeric' }) : null} />
         {/* native-prices (22 October 2026): where the country's currency symbol is shared ("$", "kr"), the line naming it —
             once on this tab, opening the footnotes. GB, US and IE: no line. */}
         {billingCurrencyLine && <p className="text-xs text-slate-500 mt-3 px-1">{tPricing('currencyLine', billingCurrencyLine)}</p>}

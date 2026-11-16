@@ -51,5 +51,7 @@ export function countryPageAlternates(page: MarketingPage, code: string, alterna
  * for your accountant) and "Advanced reporting" taken off. The landing pages' copy is unchanged; only the sitemap reads this.
  * site-chrome-1 (5 November 2026): moved — the landing's offline line and /features' offline description put back as they were
  * before copy-truth-1 (Dominic's request), and every public page's header and footer made the landing's own.
+ * trial-column-1 (16 November 2026): moved for /features — the plan table's free-trial column. The landing pages' copy is
+ * unchanged; only the sitemap reads this.
  */
-export const MARKETING_COPY_UPDATED = '2026-11-05'
+export const MARKETING_COPY_UPDATED = '2026-11-16'

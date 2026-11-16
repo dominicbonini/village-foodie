@@ -2093,6 +2093,10 @@ function runWiringSuite(lib) {
        * scripts/billing-2.cjs §9 and language-phase-1d2's named change billing-2-token-prop. */
       "function BillingTab({ truck }: { truck: Truck | null }) {",
       "{activeTab === 'billing'   && <BillingTab   truck={truck} />}",
+      /* ⚠️ RE-PINNED (trial-column-1, 16 November 2026, docs/trial-column-1-report.md): Billing's plan table also takes the truck's trial
+       * end date (`trialEnds`, so the free-trial column reads "Ends {date}") — the one line became two; proved by scripts/trial-column-1.cjs
+       * and taken back exactly by scripts/_lp-trial-column-1.cjs undoCode. */
+      "<PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx} />",
       /* ⚠️ RE-PINNED (store-badges-1, 2 November 2026, docs/store-badges-1-report.md): the app-download card shows only where the
        * truck's country has an app (`(appsAvailable.ios || appsAvailable.android)` joined its condition), proved by
        * scripts/store-badges-1.cjs §5. */
@@ -3305,7 +3309,9 @@ function runWiringSuite(lib) {
      * as /features), and its footnotes by the pricing footnote. Every claim whose replacement lived in that matrix is
      * re-pointed to the line that does the job today; each still fails if that line goes. Rendered proof:
      * scripts/pricing-pages.cjs. */
-    const BILLING_TABLE_NOW = '<PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx} />'
+    // ⚠️ RE-PINNED (trial-column-1, 16 November 2026): the tag gained `trialEnds` on its next line, so its new form is the tag's opening
+    // up to `px={cardPx}` (the old one-line form is in the allowlist above, with its reason).
+    const BILLING_TABLE_NOW = '<PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx}'
     const STAGE_B_NOW = {
       '? (row.id === PAY_AT_HATCH_ROW ? true : row.max)': BILLING_TABLE_NOW,
       "import { planPrices, transactionRows, featureSections, footnotes, PRICE_FOOTNOTE_ID, PAY_AT_HATCH_ROW, PLAN_META, legacyVanBillingVariant, legacyBillingColumns, planPricesDecided, withPlaceholderPlanPrices, type LegacyBillingColumn } from '@/lib/legacy-pricing-display'":
@@ -3416,7 +3422,8 @@ function runWiringSuite(lib) {
       // EVERY amount while the truck's country is switched off (the US). So the same intent — an unpriced country shows no
       // price and cannot throw — is asserted on the lines that carry it now.
       if (!raw.includes('const cardPx = usePlanPriceMask()')
-        || !raw.includes('<PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx} />')
+        // ⚠️ RE-PINNED (trial-column-1, 16 November 2026): the tag continues with `trialEnds` on its next line — the mask is still px={cardPx}.
+        || !raw.includes('<PlanTable catalog={catalog} settings={countryRow} highlight={eff.plan.key} px={cardPx}')
         || !/return raw => priceText\(cs\?\.enabled \? policyMask\(raw\) : maskPriceFor\(raw, true\), cs\?\.locale \?\? null\)/.test(read('components/usePlanPriceLabel.ts'))
         || /pricesPublished|planPricesDecided/.test(raw)) {
         console.log('      ⛔ us-rehearsal-unpriced-billing IS CLAIMED ABOVE BUT BillingTab DOES NOT MASK ITS PLAN TABLE WITH cardPx (usePlanPriceMask)')

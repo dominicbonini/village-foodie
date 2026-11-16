@@ -312,6 +312,7 @@ if (RENDER) {
   const planTable = html => typeof html === 'string' && html.includes('<div class="pt pt-card" role="table"') && !html.includes(TABLE_START)
   // ⚠️ RE-PINNED (features-page-restore, 20 October 2026): /features' table is PlanTable's "features" variant — its named change.
   const FR = require('./_lp-features-restore.cjs')
+  const TC1 = require('./_lp-trial-column-1.cjs')   // eslint-disable-line @typescript-eslint/no-require-imports -- ⚠️ RE-PINNED (trial-column-1): see the /features check
 
   head('7 · RENDERED — Billing for every plan, with and without a promo override')
   for (const cc of ['GB', 'US']) {
@@ -464,8 +465,11 @@ if (RENDER) {
     // var(--cmp-col), `.pt-name` / `.pt-desc` from featuresPage.detail, the text ✓, `.pt-val`, the `.fn` footnotes) of a
     // Stage-B-shaped section, byte for byte — and that Stage B shape carries the one `pt pt-card` table, as before.
     if (/^features\|[A-Z]+\|html(-usOn|-cookieUS)?$/.test(k)) return [FR.LANDED ? '/features: only its content section differs (h1 / lede / callout / PlanTable / footnote), in features-page-restore\'s look (eyebrow, the "features" table with descriptions, the .fn footnotes)' : '/features: only its content section differs (h1 / lede / callout / PlanTable / footnote)',
-      (a, b) => !!cutSection(a, '<section', '</nav>') && cutSection(a, '<section', '</nav>') === cutSection(b, '<section', '</nav>')
-        && (FR.LANDED ? (pr => !pr.problems && planTable(pr.stageB))(FR.proven(a)) : planTable(a))]
+      // ⚠️ RE-PINNED (trial-column-1, 16 November 2026): the table's free-trial column taken back out first (scripts/_lp-trial-column-1.cjs
+      // tableBack, PRECISE), so features-page-restore's proof meets the table it was made against.
+      (a0, b) => { const a = TC1.LANDED ? TC1.tableBack(a0) : a0
+        return !!cutSection(a, '<section', '</nav>') && cutSection(a, '<section', '</nav>') === cutSection(b, '<section', '</nav>')
+        && (FR.LANDED ? (pr => !pr.problems && planTable(pr.stageB))(FR.proven(a)) : planTable(a)) }]
     if (/^features\|[A-Z]+\|meta(-usOn)?$/.test(k)) return ['/features metadata: only the description (THE one SEO change; title / canonical / hreflang / robots / og:url unchanged)',
       (a, b) => JSON.stringify(dropDescriptions(a)) === JSON.stringify(dropDescriptions(b))
         && descriptions(a).length === 3 && descriptions(a).every(d => d === NEW_DESC[/\|US\|/.test(k) ? 'en-US' : 'en-GB'])]
@@ -557,8 +561,9 @@ if (RENDER) {
   const CMP_DESC = 'Compare what your online orders cost you now with a year on HatchGrab — an estimate in a minute.'
   // ⚠️ RE-PINNED (copy-truth-1, 2 November 2026): MARKETING_COPY_UPDATED moved to 2026-11-02 for the offline line (scripts/_lp-copy-truth-1.cjs).
   // ⚠️ RE-PINNED (features-list-1, 4 November 2026): …and to 2026-11-04 for the /features table (scripts/_lp-features-list-1.cjs).
+  // ⚠️ RE-PINNED (trial-column-1, 16 November 2026): …and to 2026-11-16 for the table's free-trial column (scripts/_lp-trial-column-1.cjs).
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness modules (copy-truth-1, features-list-1)
-  const LEGAL_LASTMOD = '2026-10-19T00:00:00.000Z', COPY_LASTMOD = require('./_lp-site-chrome-1.cjs').COPY_LANDED ? require('./_lp-site-chrome-1.cjs').LASTMOD_NEW : require('./_lp-features-list-1.cjs').LANDED ? require('./_lp-features-list-1.cjs').LASTMOD_NEW : require('./_lp-copy-truth-1.cjs').LANDED ? require('./_lp-copy-truth-1.cjs').LASTMOD_NEW : '2026-10-20T00:00:00.000Z'
+  const LEGAL_LASTMOD = '2026-10-19T00:00:00.000Z', COPY_LASTMOD = require('./_lp-trial-column-1.cjs').LANDED ? require('./_lp-trial-column-1.cjs').LASTMOD_NEW : require('./_lp-site-chrome-1.cjs').COPY_LANDED ? require('./_lp-site-chrome-1.cjs').LASTMOD_NEW : require('./_lp-features-list-1.cjs').LANDED ? require('./_lp-features-list-1.cjs').LASTMOD_NEW : require('./_lp-copy-truth-1.cjs').LANDED ? require('./_lp-copy-truth-1.cjs').LASTMOD_NEW : '2026-10-20T00:00:00.000Z'
   // ⚠️ RE-PINNED (pricing-tidy, 20 October 2026): the Terms of Service were re-dated 20 October 2026 (§4 edited), so
   // /terms's lastmod is 2026-10-20; /privacy and /country-terms stay 2026-10-19.
   // ⚠️ RE-PINNED (ireland-3, 21 October 2026): the Country-specific terms gained the Ireland section and were re-dated

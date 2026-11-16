@@ -68,6 +68,7 @@ const tracked = (args) => execFileSync('git', args, { cwd: REPO, maxBuffer: 1 <<
 const CWV2_PROXY_BLOCK = /\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/
 const G2 = require('./_lp-gsc-index-2.cjs')
 const B1 = require('./_lp-billing-1.cjs')   // billing-1 (10 November 2026): its named edits, taken back exactly
+const TC1 = require('./_lp-trial-column-1.cjs')   // trial-column-1 (16 November 2026): its recorded code edits, taken back exactly
 const PC4 = require('./_lp-pricing-copy-4.cjs')   // pricing-copy-4 (12 November 2026): its recorded code edits, taken back exactly
 const CAP1 = require('./_named-capacity-one-source-1.cjs')   // capacity-one-source-1 (13 November 2026): its dashboard-action edits, taken back exactly
 const AF2 = require('./_named-app-fixes-2.cjs')   // app-fixes-2 (15 November 2026): its recorded edits, taken back exactly BEFORE app-fixes-1's
@@ -91,6 +92,11 @@ function changedSince(rev, paths, { cwv2 = false } = {}) {
     // recorded edits (the payment model in the two settings modules; Manage › Billing's footnote shown only in a card country) are put back
     // exactly FIRST (scripts/_lp-pricing-copy-4.cjs undoCode — null if one is not there exactly once, which leaves the file changed), so
     // billing-1's reverse patch then meets the text it was made against and every other byte is still compared.
+    // ⚠️ RE-PINNED (trial-column-1, 16 November 2026; docs/trial-column-1-report.md): against a revision from before trial-column-1, its
+    // recorded edits (the plan table's free-trial column: Manage › Billing's PlanTable line and its note, the table's styles, the copy
+    // date) are put back exactly FIRST (scripts/_lp-trial-column-1.cjs undoCode — null if one is not there exactly once, which leaves
+    // the file changed), so pricing-copy-4's undo and billing-1's reverse patch then meet the text they were made against.
+    if (cur && TC1.CODE_FILES.includes(f) && show(rev, 'scripts/_lp-trial-column-1.cjs') === null) { const u = TC1.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     if (cur && PC4.CODE_FILES.includes(f) && show(rev, 'scripts/_lp-pricing-copy-4.cjs') === null) { const u = PC4.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     if (cur && B1.LANDED && B1.FILES.includes(f) && show(rev, 'lib/billing/rules.ts') === null) { const b = B1.asBefore(f, Buffer.from(cur, 'latin1').toString('utf8')); cur = b === null ? null : Buffer.from(b, 'utf8').toString('latin1') }
     // ⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026; docs/capacity-one-source-1-report.md): against a revision from before

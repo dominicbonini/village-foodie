@@ -925,7 +925,7 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .pt-features .pt-head { position: sticky; top: var(--nav-h); z-index: 40; background: var(--wash); border-top: 0; border-bottom: 2px solid var(--head); border-radius: 0; }
 .hg-landing .pt-features .pt-col { padding: .5rem .1rem .7rem; border-bottom: 0; }
 .hg-landing .pt-features .pt-col-name { font-family: var(--display); font-weight: 800; color: var(--head); font-size: .85rem; letter-spacing: -.02em; line-height: 1.55; }
-.hg-landing .pt-features .pt-col-price { font-family: var(--display); font-weight: 800; color: var(--orange); font-size: .78rem; letter-spacing: -.02em; line-height: 1.55; margin-top: .1rem; white-space: nowrap; }
+.hg-landing .pt-features .pt-col-price { font-family: var(--display); font-weight: 800; color: var(--orange); font-size: .78rem; letter-spacing: -.02em; line-height: 1.55; margin-top: .1rem; }
 /* landing-mobile-tidy (Dominic, 21 October 2026): THE PRICES LINE UP even when one plan name wraps ("Pay as you go" takes two
    lines in a phone's narrow column). The header cells already stretch to the row's height; each is now a column with its
    price pushed to the bottom, so every price sits on the same line and the names keep their tops level. /features only —
@@ -933,8 +933,10 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .pt-features .pt-col { display: flex; flex-direction: column; }
 .hg-landing .pt-features .pt-col-price { margin-top: auto; padding-top: .1rem; }
 /* languages-1 (22 October 2026): another language's "{price} / month" can outgrow a phone's narrow plan column; on a
-   NON-English page the price may wrap (the bottom-aligned column above keeps the prices level). English: unchanged. */
-:root:not(:lang(en)) .hg-landing .pt-features .pt-col-price { white-space: normal; }
+   NON-English page the price may wrap (the bottom-aligned column above keeps the prices level).
+   trial-column-1 (16 November 2026): in EVERY language now — with the trial's column a phone's plan columns are narrower than
+   "£69 / month" (lib/plan-offer.ts tableColumns; PlanTable's --pt-cols), and a line that fits never wraps, so a wide column reads
+   exactly as before. (The `white-space: nowrap` English kept is removed from the rule above.) */
 @media(min-width:620px){
   .hg-landing .pt-features .pt-col-name { font-size: .95rem; }
   .hg-landing .pt-features .pt-col-price { font-size: .9rem; }
@@ -963,6 +965,25 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .pt-features .pt-val { font-size: .78rem; color: var(--ink); font-weight: 600; line-height: 1.3; display: inline-block; }
 .hg-landing .pt-features .pt-val .pt-b { font-weight: inherit; color: inherit; }
 @media(max-width:619px){ .hg-landing .pt-features .pt-val { font-size: .7rem; letter-spacing: -.01em; } }
+/* trial-column-1 (16 November 2026): a phone has four plan columns of ~64px with the free trial's (components/pricing/plan-table.css
+   has the same rule for Billing, with the reason): a single word wider than its column — "Próximamente", "Unlimited",
+   "Kostenlose" — is hyphenated in the page's language, or broken as a last resort, instead of running into the next column
+   and off the screen. A word that fits never breaks. The row names (.pt-label) keep their own rule. */
+@media(max-width:619px){
+  .hg-landing .pt-features .pt-col-name, .hg-landing .pt-features .pt-col-price, .hg-landing .pt-features .pt-cell { overflow-wrap: anywhere; }
+  /* names and cell values only — not the price / length line (see plan-table.css: WebKit hyphenated "3 måna-der"). */
+  .hg-landing .pt-features .pt-col-name, .hg-landing .pt-features .pt-cell { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 6 3 3; -webkit-hyphenate-limit-before: 3; -webkit-hyphenate-limit-after: 3; }
+}
+/* the row names: the name column is ~96px with four plan columns (it was ~130px), so in a language of long compounds
+   ("Bestellungen", "Onlinebeställningar") a name is hyphenated rather than broken bare by .pt-name's `overflow-wrap: break-word`.
+   NOT English: with the name column's 6.5rem floor (PlanTable --pt-cols) its longest words ("management", "dashboard") fit whole,
+   and WebKit hyphenates to fill a line ("dash-board", "pro-cessing"). The row's description (.pt-desc) is never hyphenated. */
+@media(max-width:619px){
+  :root:not(:lang(en)) .hg-landing .pt-features .pt-name { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 6 3 3; -webkit-hyphenate-limit-before: 3; -webkit-hyphenate-limit-after: 3; }
+}
+/* …and below 420px the header's plan names a step smaller (.85rem → .8rem) and the header cells lose their .1rem side padding, so
+   "Unlimited" and most names fit their ~63px whole. */
+@media(max-width:419px){ .hg-landing .pt-features .pt-col-name { font-size: .8rem; } .hg-landing .pt-features .pt-col { padding-inline: 0; } }
 /* FOOTNOTES: the old `.fn` block — the card-fee footnote (*) and the rows' ¹ ². */
 .hg-landing .features-page .fn { margin-top: 1.4rem; display: grid; gap: .3rem; }
 .hg-landing .features-page .fn p { font-size: .8rem; color: var(--ink-faint); }

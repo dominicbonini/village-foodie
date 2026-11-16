@@ -174,9 +174,12 @@ if (mode === 'capture' || mode === 'compare') {
   // in .foot-links now (scripts/compare-ux-1.cjs pins it). Only that block, and the one-line comment that replaced it, are set aside.
   // ⚠️ RE-PINNED (jp-nav-2, 9 November 2026): its Japanese-only nav rules are set aside exactly (scripts/_lp-jp-nav-1.cjs cssAsBefore).
   // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): its selector rules are set aside exactly (scripts/_lp-world-countries-5.cjs cssAsBefore).
+  // ⚠️ RE-PINNED (trial-column-1, 16 November 2026): its /features table rules (the price line's wrap — outside the ≤720px blocks — and
+  // the narrow columns' breaks) put back exactly FIRST (scripts/_lp-trial-column-1.cjs undoCode; unchanged if one is not there exactly once).
+  const TC1_CSS = c => { const m = require('./_lp-trial-column-1.cjs'); return (m.LANDED && m.undoCode('app/(public)/(site)/landing/landing.css', c)) || c }
   const FOOT_COL_BEFORE = /\/\* compare-de-1 \(24 October 2026\): the "Vergleich" column[\s\S]*?\.hg-landing \.foot-col a:hover \{ color: #fff; \}\n/
   const FOOT_COL_NOW = /\/\* compare-de-1's "Vergleich" column \(\.foot-col\) is gone: compare-ux-1[^\n]*\n/
-  t('🔴 desktop unchanged: every rule outside the ≤720px blocks is byte-identical to before (apart from compare-ux-1\'s removal of the .foot-col column)', FOOT_COL_BEFORE.test(cssBefore) && outside(require('./_lp-world-countries-5.cjs').cssAsBefore(require('./_lp-jp-nav-1.cjs').cssAsBefore(css)).replace(FOOT_COL_NOW, '')) === outside(cssBefore.replace(FOOT_COL_BEFORE, '')))
+  t('🔴 desktop unchanged: every rule outside the ≤720px blocks is byte-identical to before (apart from compare-ux-1\'s removal of the .foot-col column)', FOOT_COL_BEFORE.test(cssBefore) && outside(require('./_lp-world-countries-5.cjs').cssAsBefore(require('./_lp-jp-nav-1.cjs').cssAsBefore(TC1_CSS(css))).replace(FOOT_COL_NOW, '')) === outside(cssBefore.replace(FOOT_COL_BEFORE, '')))
   const markupNow = read('components/landing/LandingFooter.tsx'), markupBefore = git('show', `${BEFORE}:components/landing/LandingFooter.tsx`)
   // ⚠️ RE-PINNED (compare-ux-1, 8 November 2026): compare-ux-1 moved the comparison link from its own column into the row (its old slot kept
   // as {null}, so React's ids are unchanged; scripts/compare-ux-1.cjs pins that). The footer is pinned to be what it was here up to the
@@ -234,7 +237,8 @@ if (mode === 'capture' || mode === 'compare') {
   t('the language bases added since site-chrome-1 each carry the trial line and the add-van words', !newBaseMissing.length, newBaseMissing)   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026)
   t('the rendered landing and /features say it (en-GB)', (await R.PAGES.landing('uk')).includes('<p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p>')
     && (await R.PAGES.features('uk')).includes('If you lose signal, online ordering pauses so customers can’t place orders you won’t see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.'))
-  t('MARKETING_COPY_UPDATED moved to 2026-11-05 (35.aj-8)', /export const MARKETING_COPY_UPDATED = '2026-11-05'/.test(read('lib/marketing-meta.ts')))
+  // ⚠️ RE-PINNED (trial-column-1, 16 November 2026): a later copy change moves the date on again (35.ah-8) — on or after 2026-11-05.
+  t('MARKETING_COPY_UPDATED moved to 2026-11-05 or later (35.aj-8)', (/export const MARKETING_COPY_UPDATED = '(\d{4}-\d{2}-\d{2})'/.exec(read('lib/marketing-meta.ts')) || [])[1] >= '2026-11-05')
 
   // ══ 6 ══
   head('6 · group C untouched: every source file each one bundles is byte-identical to before (the offline keys aside)')

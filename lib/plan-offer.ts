@@ -60,6 +60,15 @@ export function offerTrialMonths(catalog: PlanCatalog): number | null {
   return activePlans(catalog).find(p => p.isTrial && p.trialMonths)?.trialMonths ?? null
 }
 
+/** trial-column-1: the trial PLAN the pages advertise, by the same rule as offerTrialMonths — the signup-default plan when it is an
+ *  active trial (what every new truck starts on, in every country: lib/provision-truck.ts), else the first active trial plan; null
+ *  when the catalogue has none. */
+export function offerTrialPlan(catalog: PlanCatalog): PlanRow | null {
+  const d = (() => { try { return signupDefaultPlan(catalog) } catch { return null } })()
+  if (d && d.isTrial && d.active) return d
+  return activePlans(catalog).find(p => p.isTrial) ?? null
+}
+
 /** The plan a truck moves to when its plan ends, and whether it has no monthly fee in the country.
  *  world-countries-1: the COUNTRY'S trial-end plan (lib/plans.ts expiryFallbackFor) — Unlimited where it is the only plan. */
 export function offerFallback(catalog: PlanCatalog, countryCode: string | null | undefined): { plan: PlanRow; free: boolean } {
@@ -192,8 +201,35 @@ export function cheapestBands(plans: OfferPlan[], currency: string): CheapestBan
 
 export type TableCell = 'on' | 'off' | 'soon'
 
+/**
+ * trial-column-1 (16 November 2026): ONE COLUMN OF THE PLAN TABLE — the free trial, or a public plan offered in the country.
+ * The money fields are what the column's "WHAT YOU PAY" rows read; `trial` is set only on the trial's column.
+ */
+export interface TableColumn extends Pick<OfferPlan, 'plan' | 'monthlyMinor' | 'includedMinor' | 'feeBps' | 'shape'> {
+  /** The trial's column: its length in months (null = the plan row names none). Absent on a plan's column. */
+  trial?: { months: number | null }
+}
+
+/**
+ * 🔴 THE TABLE'S COLUMNS: the FREE TRIAL FIRST (every new truck starts on it), then the public plans offered in the country
+ * (offerPlans, sort_order). /features, Manage › Billing and every other render of components/pricing/PlanTable.tsx read this.
+ *   • The trial is public.plans' trial row (offerTrialPlan). Its FEATURE cells are its own plan_features switches through
+ *     tableCell — exactly as every plan's — so a feature switched off for the trial shows "—" there.
+ *   • Its MONEY cells are the billing rule, not a price row (the trial has none in any country): while a truck is trialling it
+ *     pays no plan fee and no order is billed (lib/billing/rules.ts planLevelAt — `monthlyMinor: 0`, `price: null`; the order
+ *     pricer returns null "not billable" for a trialling level). So: nothing a month, every online order free of a HatchGrab fee
+ *     (the 'noFee' shape — "Unlimited", 0%), walk-up orders by its switch. scripts/trial-column-1.cjs holds the two together.
+ *   • No trial plan, or a country with no plan offered → no trial column (the table is exactly the plans').
+ */
+export function tableColumns(catalog: PlanCatalog, countryCode: string | null | undefined): TableColumn[] {
+  const plans: TableColumn[] = offerPlans(catalog, countryCode)
+  const trial = offerTrialPlan(catalog)
+  if (!trial || plans.length === 0) return plans
+  return [{ plan: trial, monthlyMinor: 0, includedMinor: null, feeBps: 0, shape: 'noFee', trial: { months: trial.trialMonths } }, ...plans]
+}
+
 /** A feature row's cell for a plan: "—" when the plan switches its feature off, "Coming soon" for an unbuilt product, else ✓. */
-export function tableCell(catalog: PlanCatalog, row: FeatureTableRow, plan: OfferPlan): TableCell {
+export function tableCell(catalog: PlanCatalog, row: FeatureTableRow, plan: Pick<OfferPlan, 'plan'>): TableCell {
   if (row.feature && !planAllowsFeature(catalog, plan.plan.key, row.feature)) return 'off'
   return row.comingSoon ? 'soon' : 'on'
 }
@@ -204,7 +240,7 @@ export function tableGroups(): { group: FeatureGroup; rows: FeatureTableRow[] }[
 }
 
 /** "WHAT YOU PAY": walk-up orders are "Free" while the plan has them (else "—"). */
-export const walkUpFree = (catalog: PlanCatalog, plan: OfferPlan): boolean => planAllowsFeature(catalog, plan.plan.key, 'walkup_orders')
+export const walkUpFree = (catalog: PlanCatalog, plan: Pick<OfferPlan, 'plan'>): boolean => planAllowsFeature(catalog, plan.plan.key, 'walkup_orders')
 
 /**
  * The plans after the first that ADD features (for the /features lede: "{plans} add {features}…"), and those features —

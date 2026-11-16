@@ -33,6 +33,22 @@
   .pt .pt-col-name { font-size: 13px; }
   .pt .pt-col-price { font-size: 11px; }
 }
+/* trial-column-1 (16 November 2026): with the free trial's column a phone has FOUR plan columns of ~63px (PlanTable's --pt-cols),
+   and many languages have a single word wider than that — "Próximamente", "Binnenkort", "Ubegrænset", "Unlimited" in the header.
+   Overflowing, they ran into the next column and, from the last one, off the screen (a sideways scroll). Below 480px a word
+   that does not fit is now HYPHENATED in the page's language (`hyphens: auto` reads <html lang>), or broken as a last resort
+   (`overflow-wrap: anywhere`); a word that fits never breaks. The header name is a size smaller and the "Coming soon" badge
+   tighter (letter-spacing, padding) so most words fit whole. scripts/trial-column-1.cjs --shots measures 28 languages. */
+@media (max-width: 479px) {
+  .pt .pt-col-name { font-size: 12px; }
+  .pt .pt-col-name, .pt .pt-col-price, .pt .pt-cell { overflow-wrap: anywhere; }
+  /* Hyphenation only where a WORD is the thing that does not fit (names, cell values) — never the price / length line, where
+     WebKit hyphenated words that fit their own line ("3 måna-der"); that line wraps at its spaces and slashes. ≥ 3 letters a side. */
+  .pt .pt-col-name, .pt .pt-cell { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 6 3 3; -webkit-hyphenate-limit-before: 3; -webkit-hyphenate-limit-after: 3; }
+  .pt .pt-cell { padding-inline: .15rem; font-size: 12px; }   /* "Unlimited" in bold then fits its column whole (13px hyphenated it) */
+  /* ⛔ NOT the row names: Billing's name column is the width it was before (~104px), so they wrap exactly as they did. */
+  .pt .pt-soon { letter-spacing: .03em; padding: .1rem .15rem; max-width: 100%; }
+}
 @media (min-width: 640px) {
   .pt.pt-card { font-size: 15px; }
   .pt .pt-label { padding-left: 1.25rem; }
@@ -42,3 +58,10 @@
   .pt .pt-group .pt-label { font-size: 12px; padding-left: 1.25rem; }
   .pt .pt-soon { font-size: 10px; padding: .15rem .4rem; }
 }
+/* trial-column-1: an amount on its own ("1 500 000 Ft") never takes the last-resort break — it would cut the digits ("1 500 00 / 0 Ft");
+   it breaks only at its chance between number and currency (PlanTable amountBreaks), and at worst overhangs its cell's padding. */
+.pt .pt-cell .pt-amt { overflow-wrap: normal; }
+/* trial-column-1: the "0.99% above £4,000" sentence — its amount carries a break chance between number and currency (PlanTable
+   amountBreaks). Never the last-resort break, which cut "HK$15,000" into "HK$15,00 / 0"; and its lines balanced, so a wrap never
+   leaves "kr" or "Ft" alone on a line. */
+.pt .pt-cell .pt-sentence { overflow-wrap: normal; text-wrap: balance; }

@@ -156,6 +156,10 @@ const NAMED = [
   // ⚠️ RE-PINNED (site-chrome-1, 5 November 2026): the sitemap's country-page lastmod moves to 2026-11-05 (PRECISE; scripts/_lp-site-chrome-1.cjs).
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
   ...require('./_lp-site-chrome-1.cjs').ITEMS.filter(P => !P.proveWith).map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
+  // ⚠️ RE-PINNED (trial-column-1, 16 November 2026): the sitemap's country-page lastmod moves on to 2026-11-16, after site-chrome-1's
+  // (PRECISE; scripts/_lp-trial-column-1.cjs).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (trial-column-1)
+  ...require('./_lp-trial-column-1.cjs').ITEMS.map(P => ({ id: P.id, what: P.what, applies: id => P.views(id), apply: (v, id) => P.apply(id, v) })),
   // ⚠️ RE-PINNED (gsc-index-2, 9 November 2026): the English legal pages' hreflang cluster, in their metadata and the sitemap — PRECISE
   // (scripts/_lp-gsc-index-2.cjs).
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (gsc-index-2)

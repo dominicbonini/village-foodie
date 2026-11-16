@@ -350,6 +350,10 @@ for (const e of require('./_lp-paperwork-1.cjs').ITEMS) NAMED.push({ id: e.id, w
 // and the legal pages' web chrome is the ONE shared header and footer (STRUCTURAL); one copy in scripts/_lp-site-chrome-1.cjs.
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (site-chrome-1)
 for (const e of require('./_lp-site-chrome-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v), ...(e.proveWith ? { proveWith: e.proveWith } : {}) })
+// ⚠️ RE-PINNED (trial-column-1, 16 November 2026): the country pages' sitemap lastmod moves on to 2026-11-16, after site-chrome-1's —
+// PRECISE (scripts/_lp-trial-column-1.cjs); its /features table change is taken back inside scripts/_lp-stage-b.cjs featuresCheck.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (trial-column-1)
+for (const e of require('./_lp-trial-column-1.cjs').ITEMS) NAMED.push({ id: e.id, what: e.what, views: e.views, apply: (id, v) => e.apply(id, v) })
 // ⚠️ RE-PINNED (gsc-index-2, 9 November 2026): the English legal pages' hreflang cluster, in their metadata and the sitemap — PRECISE,
 // after site-chrome-1's (scripts/_lp-gsc-index-2.cjs).
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- CommonJS harness module (gsc-index-2)
