@@ -68,6 +68,7 @@ const tracked = (args) => execFileSync('git', args, { cwd: REPO, maxBuffer: 1 <<
 const CWV2_PROXY_BLOCK = /\n  \/\/ ── cwv-2 \(6 November 2026[\s\S]*?\n  \}\n\n/
 const G2 = require('./_lp-gsc-index-2.cjs')
 const B1 = require('./_lp-billing-1.cjs')   // billing-1 (10 November 2026): its named edits, taken back exactly
+const P2 = require('./_named-partners-2.cjs')   // partners-2
 const TC1 = require('./_lp-trial-column-1.cjs')   // trial-column-1 (16 November 2026): its recorded code edits, taken back exactly
 const PC4 = require('./_lp-pricing-copy-4.cjs')   // pricing-copy-4 (12 November 2026): its recorded code edits, taken back exactly
 const CAP1 = require('./_named-capacity-one-source-1.cjs')   // capacity-one-source-1 (13 November 2026): its dashboard-action edits, taken back exactly
@@ -96,6 +97,11 @@ function changedSince(rev, paths, { cwv2 = false } = {}) {
     // recorded edits (the plan table's free-trial column: Manage › Billing's PlanTable line and its note, the table's styles, the copy
     // date) are put back exactly FIRST (scripts/_lp-trial-column-1.cjs undoCode — null if one is not there exactly once, which leaves
     // the file changed), so pricing-copy-4's undo and billing-1's reverse patch then meet the text they were made against.
+    // ⚠️ RE-PINNED (partners-2, 16 November 2026; docs/partners-2-report.md): against a revision from before partners-2, its recorded
+    // edits (proxy.ts's /api/signup/code meter, the signup route's redemption line, the signup page's and the demo's code field, the
+    // admin truck row's 🤝 badge) are put back exactly FIRST (scripts/_named-partners-2.cjs undoCode — null if one is not there exactly
+    // once, which leaves the file changed), so every older undo then meets the text it was made against.
+    if (cur && P2.CODE_FILES.includes(f) && show(rev, 'scripts/_named-partners-2.cjs') === null) { const u = P2.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     if (cur && TC1.CODE_FILES.includes(f) && show(rev, 'scripts/_lp-trial-column-1.cjs') === null) { const u = TC1.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     if (cur && PC4.CODE_FILES.includes(f) && show(rev, 'scripts/_lp-pricing-copy-4.cjs') === null) { const u = PC4.undoCode(f, Buffer.from(cur, 'latin1').toString('utf8')); if (u !== null) cur = Buffer.from(u, 'utf8').toString('latin1') }
     if (cur && B1.LANDED && B1.FILES.includes(f) && show(rev, 'lib/billing/rules.ts') === null) { const b = B1.asBefore(f, Buffer.from(cur, 'latin1').toString('utf8')); cur = b === null ? null : Buffer.from(b, 'utf8').toString('latin1') }

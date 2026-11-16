@@ -1147,8 +1147,13 @@ export function DemoGetStarted({ token, slug, eventSlug = null, label, className
                       swallowed Enter would be a trap on the last step of a signup. */}
                   {/* ⛔ UPDATED (partners-2, 16 November 2026): the signup page's field (components/PartnerCodeField.tsx) — a partner
                       code's deal shows on Apply and is applied when the truck is created; any other code behaves as above. Enter
-                      still submits, as before. Its words are auth.signup.* in the wizard's language. */}
-                  <PartnerCodeField value={promoCode} onChange={setPromoCode} locale={wizardLocale} inputId="demo-promo" onEnter={runSetup} compact />
+                      still submits, as before. Its words are demoGetStarted.partnerCode* (the signup page's texts, copied) in the wizard's language. */}
+                  <PartnerCodeField value={promoCode} onChange={setPromoCode} inputId="demo-promo" onEnter={runSetup} compact words={{
+                    label: t.rich('partnerCodeLabel', { optional: c => <span className="normal-case font-normal text-slate-400">{c}</span> }),
+                    placeholder: t('promoPlaceholder'), apply: t('partnerCodeApply'), invalid: t('partnerCodeInvalid'), expired: t('partnerCodeExpired'),
+                    applied: (deal, partner) => t('partnerCodeApplied', { deal, partner }),
+                    extraMonths: months => t('partnerDealExtraMonths', { months }), percentOff: (pct, months) => t('partnerDealPercentOff', { pct, months }),
+                  }} />
 
                   {/* Terms — must be ACTIVELY ticked (unticked by default); blocks submit via validateDetailsStep.
                       The acceptance itself is RECORDED server-side by /api/signup (operators.terms_accepted_at +

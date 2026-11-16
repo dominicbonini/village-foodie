@@ -1111,16 +1111,16 @@
 1c/api/US|save-email|noBrevo	code: P2-save-email-date-US
 1c/api/US|deletion|post|ok	code: P2-deletion-email-date+email-sender-1-hatchgrab-sender + words
 1c/api/US|deletion|post|okNoTrucks	code: P2-deletion-email-date+email-sender-1-hatchgrab-sender + words
-1c/auth/US|signup|empty	code: site-chrome-1-flow-logo + words
-1c/auth/US|signup|empty|demo	code: site-chrome-1-flow-logo + words
-1c/auth/US|signup|typing|noAt	code: site-chrome-1-flow-logo + words
-1c/auth/US|signup|typing|short	code: site-chrome-1-flow-logo + words
-1c/auth/US|signup|typing|ready	code: site-chrome-1-flow-logo + words
-1c/auth/US|signup|typing|marketing	code: site-chrome-1-flow-logo + words
-1c/auth/US|signup|typing|promo	code: site-chrome-1-flow-logo + words
-1c/auth/US|signup|busy	code: site-chrome-1-flow-logo + words
-1c/auth/US|signup|error	code: site-chrome-1-flow-logo + words
-1c/auth/US|signup|error|existing	code: site-chrome-1-flow-logo + words
+1c/auth/US|signup|empty	code: site-chrome-1-flow-logo+partners-2-code-field + words
+1c/auth/US|signup|empty|demo	code: site-chrome-1-flow-logo+partners-2-code-field + words
+1c/auth/US|signup|typing|noAt	code: site-chrome-1-flow-logo+partners-2-code-field + words
+1c/auth/US|signup|typing|short	code: site-chrome-1-flow-logo+partners-2-code-field + words
+1c/auth/US|signup|typing|ready	code: site-chrome-1-flow-logo+partners-2-code-field + words
+1c/auth/US|signup|typing|marketing	code: site-chrome-1-flow-logo+partners-2-code-field + words
+1c/auth/US|signup|typing|promo	code: site-chrome-1-flow-logo+partners-2-code-field + words
+1c/auth/US|signup|busy	code: site-chrome-1-flow-logo+partners-2-code-field + words
+1c/auth/US|signup|error	code: site-chrome-1-flow-logo+partners-2-code-field + words
+1c/auth/US|signup|error|existing	code: site-chrome-1-flow-logo+partners-2-code-field + words
 1c/auth/US|login|empty	code: site-chrome-1-flow-logo
 1c/auth/US|login|typing	code: site-chrome-1-flow-logo
 1c/auth/US|login|loading	code: site-chrome-1-flow-logo + words
@@ -1214,24 +1214,24 @@
 1c/demo/US|gs|confirm|sample|warning	words
 1c/demo/US|gs|confirm|sample|savedNoEmail	words
 1c/demo/US|gs|landing|upload|reopenAfterSave	words
-1c/demo/US|gs|details	words
-1c/demo/US|gs|details|noPhoneCopy	words
-1c/demo/US|gs|details|filled	words
-1c/demo/US|gs|details|emailEdit	words
-1c/demo/US|gs|details|showPassword	words
-1c/demo/US|gs|details|errors|all	words
-1c/demo/US|gs|details|errors|all|filled	words
-1c/demo/US|gs|details|errors|phoneInvalid	words
-1c/demo/US|gs|details|errors|phoneInvalid|filled	words
-1c/demo/US|gs|details|errors|terms	words
-1c/demo/US|gs|details|errors|terms|filled	words
-1c/demo/US|gs|details|existing	words
-1c/demo/US|gs|details|serverError	words
-1c/demo/US|gs|details|createAccount	words
-1c/demo/US|gs|details|unreachable	words
-1c/demo/US|gs|details|truckCreate	words
-1c/demo/US|gs|details|truckUnreachable	words
-1c/demo/US|gs|details|noToken	words
+1c/demo/US|gs|details	code: partners-2-code-field + words
+1c/demo/US|gs|details|noPhoneCopy	code: partners-2-code-field + words
+1c/demo/US|gs|details|filled	code: partners-2-code-field + words
+1c/demo/US|gs|details|emailEdit	code: partners-2-code-field + words
+1c/demo/US|gs|details|showPassword	code: partners-2-code-field + words
+1c/demo/US|gs|details|errors|all	code: partners-2-code-field + words
+1c/demo/US|gs|details|errors|all|filled	code: partners-2-code-field + words
+1c/demo/US|gs|details|errors|phoneInvalid	code: partners-2-code-field + words
+1c/demo/US|gs|details|errors|phoneInvalid|filled	code: partners-2-code-field + words
+1c/demo/US|gs|details|errors|terms	code: partners-2-code-field + words
+1c/demo/US|gs|details|errors|terms|filled	code: partners-2-code-field + words
+1c/demo/US|gs|details|existing	code: partners-2-code-field + words
+1c/demo/US|gs|details|serverError	code: partners-2-code-field + words
+1c/demo/US|gs|details|createAccount	code: partners-2-code-field + words
+1c/demo/US|gs|details|unreachable	code: partners-2-code-field + words
+1c/demo/US|gs|details|truckCreate	code: partners-2-code-field + words
+1c/demo/US|gs|details|truckUnreachable	code: partners-2-code-field + words
+1c/demo/US|gs|details|noToken	code: partners-2-code-field + words
 1c/demo/US|gs|progress|truckUnreachable	words
 1c/demo/US|gs|ready	words
 1c/demo/US|gs|ready|sample	words
@@ -1247,11 +1247,11 @@
 1c/demo/US|press|save|upload|saved	words
 1c/demo/US|press|save|upload|savedNoEmail	words
 1c/demo/US|press|save|upload|savedWarning	words
-1c/demo/US|press|wizard|truckFilled	words
-1c/demo/US|press|wizard|detailsEmpty	words
-1c/demo/US|press|wizard|detailsBadEmail	words
-1c/demo/US|press|wizard|detailsBadPhone	words
-1c/demo/US|press|wizard|detailsNoPhoneCopy	words
+1c/demo/US|press|wizard|truckFilled	code: partners-2-code-field + words
+1c/demo/US|press|wizard|detailsEmpty	code: partners-2-code-field + words
+1c/demo/US|press|wizard|detailsBadEmail	code: partners-2-code-field + words
+1c/demo/US|press|wizard|detailsBadPhone	code: partners-2-code-field + words
+1c/demo/US|press|wizard|detailsNoPhoneCopy	code: partners-2-code-field + words
 1c/demo/US|press|setup|truckUnreachable	words
 1c/demo/US|press|setup|truckRetry	words
 1c/demo/US|press|setup|ready	words

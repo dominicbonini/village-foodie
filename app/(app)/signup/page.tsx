@@ -122,7 +122,12 @@ function SignupForm() {
               ("✓ Code applied: 2 extra months free (NCASS)") and the deal is applied when the truck is created. Everything
               above still holds for every OTHER code: optional, never blocks, recorded as typed, honoured by hand. The field
               and its words are components/PartnerCodeField.tsx, shared with the demo's last step. */}
-          <PartnerCodeField value={promoCode} onChange={setPromoCode} inputId="signup-code" />
+          <PartnerCodeField value={promoCode} onChange={setPromoCode} inputId="signup-code" words={{
+            label: t.rich('partnerCodeLabel', { optional: c => <span className="normal-case font-normal text-slate-400">{c}</span> }),
+            placeholder: t('codePlaceholder'), apply: t('codeApply'), invalid: t('codeInvalid'), expired: t('codeExpired'),
+            applied: (deal, partner) => t('codeApplied', { deal, partner }),
+            extraMonths: months => t('dealExtraMonths', { months }), percentOff: (pct, months) => t('dealPercentOff', { pct, months }),
+          }} />
 
           {/* The ONLY checkbox on the page, and it is not required. */}
           <label className="flex items-start gap-2 cursor-pointer">

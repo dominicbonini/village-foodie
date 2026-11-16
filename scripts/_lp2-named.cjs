@@ -751,6 +751,17 @@ function ie1Visit(b, id) {
       views: id => /^(1b\/dashboard|smoke-dash)\/(GB|US)\|accessDenied(Server)?$/.test(id), proveWith: (exp, f) => AF2.proveAccessDenied(exp, f) })
 }
 
+// ⚠️ RE-PINNED (partners-2, 16 November 2026, docs/partners-2-report.md §3.2): the signup page's and the demo's code field becomes
+// "Partner or promo code (optional)" with an Apply button (components/PartnerCodeField.tsx). STRUCTURAL (scripts/_named-partners-2.cjs
+// proveCodeField): with the new field swapped for BEFORE's, the view is byte-identical; the input keeps its id, max 40, placeholder and
+// typed value; nothing is answered before Apply.
+{
+  const P2 = require('./_named-partners-2.cjs')
+  if (P2.LANDED) NAMED.push(
+    { id: 'partners-2-code-field', country: 'both', agent: 'partners-2 (16 Nov 2026)', what: 'the code field: "Partner or promo code" with Apply',
+      views: id => /^1c\/auth\/(GB|US)\|signup\|/.test(id) || /^1c\/demo\/(GB|US)\|(gs\|details(\||$)|press\|wizard\|)/.test(id), proveWith: (exp, f) => P2.proveCodeField(exp, f) })
+}
+
 function apply(id, before) {
   return applyNamed(NAMED, countryOf(id) === 'US', id, before)
 }
