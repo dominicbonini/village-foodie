@@ -415,15 +415,34 @@ export default function AdminPage() {
     }
   }
 
-  const load = async () => {
+  // ── admin-speed-1 (16 November 2026): ONE ROUND OF REQUESTS, NOT A CHAIN. The page used to ask check_admin, wait, then ask
+  // /api/admin + discovery, wait, then ask demo_cleanup. Now the main payload, discovery and demo_cleanup leave together: the
+  // main request IS the admin check (401 → "access denied"; every section re-checks admin on the server, so nothing leaks to
+  // a non-admin). `initial` = the first open of the page; a refresh after an edit passes nothing and behaves as before.
+  const load = async (opts: { initial?: boolean; headers?: Record<string, string> } = {}) => {
     setLoading(true)
     try {
-      const h = await nativeAuthHeader()
-      const [res, discRes] = await Promise.all([
-        fetch('/api/admin', { headers: h }),
-        fetch('/api/admin?section=discovery', { headers: h }),
-      ])
-      const data = await res.json()
+      const h = opts.headers ?? await nativeAuthHeader()
+      const mainP = fetch('/api/admin', { headers: h })
+      const discP = fetch('/api/admin?section=discovery', { headers: h })
+      // Best-effort: never let a missing cleanup log break the admin page. Applied whenever it lands.
+      fetch('/api/admin?section=demo_cleanup', { headers: h })
+        .then(r => r.json()).then(d => setCleanupRun(d.lastRun ?? null)).catch(() => setCleanupRun(null))
+      let res: Response
+      try { res = await mainP }
+      catch (e) {
+        // The first open used to treat an unreachable check_admin as "access denied"; it still does.
+        if (opts.initial) { setCheckingSession(false); setDenied(true); return }
+        throw e
+      }
+      if (opts.initial && res.status === 401) { setCheckingSession(false); setDenied(true); return }
+      if (opts.initial) {
+        // As before, the name in the header is asked for only once the visitor is known to be an admin.
+        fetch('/api/auth/me', { headers: h }).then(r => r.json()).then(me => {
+          setOperatorName(me.first_name || me.name || null)
+        }).catch(() => null)
+      }
+      const [data, discRes] = await Promise.all([res.json(), discP])
       if (!res.ok) throw new Error(data.error)
       setTrucks(data.trucks)
       setCountrySettings(data.countrySettings ?? {})
@@ -435,9 +454,6 @@ export default function AdminPage() {
           .filter(o => o.signup_promo_code)
           .map(o => [o.id, o.signup_promo_code as string])
       ))
-      // Best-effort: never let a missing cleanup log break the admin page.
-      fetch('/api/admin?section=demo_cleanup', { headers: h })
-        .then(r => r.json()).then(d => setCleanupRun(d.lastRun ?? null)).catch(() => setCleanupRun(null))
       if (discRes.ok) {
         const discData = await discRes.json()
         setDiscoveryTrucks(discData.discoveryTrucks || [])
@@ -448,20 +464,11 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    // Thread the native Bearer (if any) through check_admin + auth/me so the app can reach the console; on
-    // web nativeAuthHeader() is {} → same requests as before.
-    nativeAuthHeader().then(h =>
-      fetch('/api/admin?section=check_admin', { headers: h })
-        .then(r => r.json())
-        .then(d => {
-          if (d.isAdmin) {
-            load()
-            fetch('/api/auth/me', { headers: h }).then(r => r.json()).then(me => {
-              setOperatorName(me.first_name || me.name || null)
-            }).catch(() => null)
-          } else { setCheckingSession(false); setDenied(true) }
-        })
-    ).catch(() => { setCheckingSession(false); setDenied(true) })
+    // Thread the native Bearer (if any) through every request so the app can reach the console; on web nativeAuthHeader()
+    // is {} → the same requests as before. The first load doubles as the admin check (admin-speed-1).
+    nativeAuthHeader()
+      .then(h => load({ initial: true, headers: h }))
+      .catch(() => { setCheckingSession(false); setDenied(true) })
   }, [])
 
   const update = async (truckId: string, updates: Record<string, any>) => {

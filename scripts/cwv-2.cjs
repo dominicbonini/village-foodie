@@ -76,7 +76,11 @@ const AF1 = require('./_named-app-fixes-1.cjs')
 // Access denied's "Back to log in", the admin console's "Log out") are taken back first; a file it alone edited is excused only when
 // that gives exactly its text at app-fixes-2's base, and app-fixes-1's undo then runs on app-fixes-2's "before".
 const AF2 = require('./_named-app-fixes-2.cjs')
-const af2 = f => (AF2.EDITED_FILES.includes(f) ? AF2.undoFile(f, read(f)) : read(f))
+// ⚠️ RE-PINNED (admin-speed-1, 16 November 2026; scripts/_named-admin-speed-1.cjs undoCode): the admin page's load() and mount
+// effect (one round of requests) are put back first, exactly; anything else changed in the page still fails below.
+const AS1 = require('./_named-admin-speed-1.cjs')
+const as1 = f => AS1.undoCode(f, read(f))
+const af2 = f => { const s = as1(f); return s === null ? null : (AF2.EDITED_FILES.includes(f) ? AF2.undoFile(f, s) : s) }
 const notAf1 = f => {
   if (AF2.EDITED_FILES.includes(f) && !AF1.EDITED_FILES.includes(f)) { const u = af2(f); return !(u !== null && u === showAt(AF2.EDITS.base, f)) }
   if (!AF1.EDITED_FILES.includes(f)) return true

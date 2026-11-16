@@ -231,7 +231,8 @@
     "capacity-one-source-1.cjs",
     "app-fixes-1.cjs",
     "messages-keys-used.cjs",
-    "app-fixes-2.cjs"
+    "app-fixes-2.cjs",
+    "admin-speed-1.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -404,7 +405,8 @@
         "_disk-guard.cjs",
         "_harness-tmp.cjs",
         "_harness-tmp-paths.cjs",
-        "harness-tmp-clean.cjs"
+        "harness-tmp-clean.cjs",
+        "_named-admin-speed-1.cjs"
       ]
     },
     "fixture_generators": {

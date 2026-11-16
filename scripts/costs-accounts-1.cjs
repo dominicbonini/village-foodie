@@ -382,7 +382,10 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     // ⚠️ RE-PINNED (pricing-copy-4, 12 November 2026): the loader also embeds the country's payment model in its one read (and maps it);
     // exactly those edits are put back first (scripts/_lp-pricing-copy-4.cjs undoCode — null if any is not found once, which fails here).
     // ⚠️ RE-PINNED (world-countries-5, 12 November 2026): and before that, the menu currency's read (scripts/_lp-world-countries-5.cjs undoCode).
-    const csNow = (PC4.undoCode(PERF1_CS, WC5.undoCode(PERF1_CS, read(PERF1_CS))) ?? '').split('\n'), taken = csNow.filter(l => PERF1_LINES.includes(l))
+    // ⚠️ RE-PINNED (admin-speed-1, 16 November 2026): and before both, getCountrySettingsMany's one-query read
+    // (scripts/_named-admin-speed-1.cjs undoCode — null if it is not there exactly as made, which fails here).
+    const AS1 = require('./_named-admin-speed-1.cjs')
+    const csNow = (PC4.undoCode(PERF1_CS, WC5.undoCode(PERF1_CS, AS1.undoCode(PERF1_CS, read(PERF1_CS)) ?? '')) ?? '').split('\n'), taken = csNow.filter(l => PERF1_LINES.includes(l))
     t(`${PERF1_CS}: byte-identical to ${BEFORE} once perf-1's four lines (its marketing branch) are taken out`, taken.length === 4 && csNow.filter(l => !PERF1_LINES.includes(l)).join('\n') === gitShow(PERF1_CS))
     const block = s => s.slice(s.indexOf("  if (action === 'upsert_item') {"), s.indexOf("  if (action === 'delete_item') {"))
     t('the upsert_item handler is byte-identical (the cost never rides on the item)', block(read('app/api/manage/route.ts')) === block(gitShow('app/api/manage/route.ts')) && block(read('app/api/manage/route.ts')).length > 1000)

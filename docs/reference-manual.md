@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.29
+HatchGrab Engineering Reference Manual · V16.30
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.29**
+**Version 16.30**
 
 November 2026
 
@@ -234,6 +234,20 @@ live, but customer links only reach the phone's browser on Android after the dep
 8. Watch **Android vitals** for the first days; with the mapping, stack traces are readable.
 
 # Changelog
+
+## V16.30 — 16 November 2026 — **/admin OPENS IN ~0.6 s, NOT ~16 s**
+
+admin-speed-1 (`docs/admin-speed-1-report.md`). Not deployed.
+
+- **The cause:** GET `/api/admin` read every priced country's settings ONE BY ONE after everything else (208 sequential queries
+  since the 210-country rollout, 14.7 s of a 15.2 s cold request), and the page asked `check_admin` first and `demo_cleanup` last.
+- **The fix:** `lib/admin-payload.ts` reads trucks, operators and the plan catalogue in parallel, then every country in ONE query
+  (`getCountrySettingsMany(fatal, { bestEffort })`: marketing + truck countries still fatal, other priced countries still "—");
+  the page sends the main request (which is the admin check: 401 = access denied), discovery and demo_cleanup together;
+  discovery sends only the six fields the page reads.
+- **Same output:** the main and demo_cleanup payloads are byte-identical before and after (SHA-256); discovery is the same rows
+  minus `visibility` and `exclude_reason`, which the page never read. 🔴 `scripts/admin-speed-1.cjs` (swept) fails if a per-country
+  loop, one-query-per-country, sequential reads or the page's waterfall come back.
 
 ## V16.29 — 16 November 2026 — **HARNESS TEMP IS REMOVED ON EXIT; 90 GB CLEARED; PLUGIN BUILD OUTPUT UNTRACKED**
 

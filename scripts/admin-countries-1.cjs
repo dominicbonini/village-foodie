@@ -220,7 +220,17 @@ const ACTIVE_PUBLIC_PLANS = ['payg', 'pro', 'unlimited']   // public.plans where
   // the rows the ADMIN store hands the page (withAppFlags, a second select) and written only when the form carries them; a new
   // country starts with both off. The public loader (lib/country-settings.ts) and the countries route are still untouched.
   const FAQ1 = /faq-1|withAppFlags|APP_FLAGS|app flags|const by = new Map\(|const f = by\.get\(r\.countryCode\)|iosAppAvailable|androidAppAvailable|ios_app_available|android_app_available|import type \{ CountrySettings \} from '@\/lib\/country-settings-types'|if \(!rows\.length\) return rows|^[+-]\s+return rows\.map\(r => \{$|^[+-]\s+\}\)$|^-\s*return \{ \.\.\.v, name: name\.trim\(\), enabled: false, shortName: null, phoneExample: null \}$|^-\s*list: \(\) => listCountrySettings\(\),$|^-\s*return (data \? |rows\.length === 1 \? )?mapCountryRow\((data as unknown as Row|rows\[0\])\)( : null)?$/
-  const foreign = changed.filter(l => !WC1.test(l) && !FAQ1.test(l))
+  // ⚠️ RE-PINNED (admin-speed-1, 16 November 2026): getCountrySettingsMany now reads every code in ONE query, with a best-effort
+  // list (/api/admin's ~15-second per-country loop). It is not on the save path; exactly its own lines, old and new, are set aside.
+  const manyBlock = src => {
+    const i = src.indexOf('export async function getCountrySettingsMany')
+    if (i < 0) return []
+    const docStart = src.lastIndexOf('/**', i)
+    const end = src.indexOf('\n}\n', i)
+    return src.slice(docStart, end + 2).split('\n').map(l => l.trim()).filter(Boolean)
+  }
+  const AS1 = new Set([...manyBlock(read('lib/country-settings.ts')), ...manyBlock(execFileSync('git', ['show', 'HEAD:lib/country-settings.ts'], { cwd: REPO }).toString())])
+  const foreign = changed.filter(l => !WC1.test(l) && !FAQ1.test(l) && !AS1.has(l.slice(1).trim()))
   t('the save path changed only by world-countries-1\'s named items (a tolerant loader, the allergen-set list, the fee permission); the countries route untouched',
     foreign.length === 0 && !/app\/api\/admin\/countries\/route\.ts/.test(saveDiff), foreign.slice(0, 8))
 

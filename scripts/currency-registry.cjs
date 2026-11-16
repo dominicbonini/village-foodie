@@ -205,7 +205,11 @@ const THREE_DECIMAL = ['BHD', 'JOD', 'KWD', 'OMR', 'TND']
   for (const d of ['app', 'components', 'lib', 'messages']) walk(d)
   t('no app, component, lib or message file says "minor units" outside a comment', offenders.length === 0, offenders)
   const adminRoute = fs.readFileSync(path.join(REPO, 'app/api/admin/route.ts'), 'utf8')
-  t('/api/admin sends the settings of every country the plans table prices (Ireland has prices and no trucks)', /for \(const cc of new Set\(plans\.prices\.map\(p => p\.countryCode\)\)\)/.test(adminRoute))
+  // ⚠️ RE-PINNED (admin-speed-1, 16 November 2026): the one-by-one loop over priced countries (~15 s cold) became ONE query in
+  // lib/admin-payload.ts — every priced country is still sent (best effort), which scripts/admin-speed-1.cjs proves by running it.
+  const adminPayloadSrc = fs.readFileSync(path.join(REPO, 'lib/admin-payload.ts'), 'utf8')
+  t('/api/admin sends the settings of every country the plans table prices (Ireland has prices and no trucks)',
+    /adminPayload\(\)/.test(adminRoute) && /new Set\(plansRes\.plans\.prices\.map\(p => p\.countryCode\)\)/.test(adminPayloadSrc) && /\{ bestEffort: priced \}/.test(adminPayloadSrc))
   t('the order page\'s eftpos notice follows the registry (no currency code written in the page)', /currencyInfo\(truck\?\.money\?\.currency\)\?\.eftposNotice/.test(fs.readFileSync(path.join(REPO, 'app/(app)/trucks/[slug]/order/page.tsx'), 'utf8')))
 
   console.log(`\n${fail ? '🔴' : '✅'} currency-registry: ${pass} passed, ${fail} failed`)

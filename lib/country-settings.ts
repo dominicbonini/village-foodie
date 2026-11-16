@@ -243,11 +243,59 @@ export async function countrySettingsForTruck(truck: { country?: string | null }
   return getCountrySettings(code)
 }
 
-/** Several countries at once, keyed by code. Each one is as loud as getCountrySettings. */
-export async function getCountrySettingsMany(codes: Iterable<string>): Promise<Record<string, CountrySettings>> {
-  const unique = [...new Set([...codes].map(c => String(c).trim().toUpperCase()))]
-  const rows = await Promise.all(unique.map(c => getCountrySettings(c)))
-  return Object.fromEntries(rows.map(r => [r.countryCode, r]))
+/**
+ * Several countries at once, keyed by code, in ONE query for whatever the 60-second cache does not already hold
+ * (admin-speed-1, 16 November 2026: /api/admin read ~208 priced countries one by one, ~15 s on a cold instance).
+ *   • `codes` are FATAL, exactly as loud as getCountrySettings: a malformed code, a failed read, a missing row or an
+ *     unusable value throws.
+ *   • `opts.bestEffort` are read in the same query but never throw: one that cannot be read is left out (and logged), so a
+ *     table that only quotes it shows "—". A code in both lists is fatal.
+ * The result's keys come in order — `codes` first, then `bestEffort` — so callers that serialise it get a stable payload.
+ */
+export async function getCountrySettingsMany(codes: Iterable<string>, opts: { bestEffort?: Iterable<string> } = {}): Promise<Record<string, CountrySettings>> {
+  const norm = (c: string) => String(c ?? '').trim().toUpperCase()
+  const fatal = [...new Set([...codes].map(norm))]
+  for (const k of fatal) if (!/^[A-Z]{2}$/.test(k)) throw new Error(`[country-settings] "${k}" is not an ISO country code`)
+  const fatalSet = new Set(fatal)
+  const extra: string[] = []
+  for (const k of new Set([...(opts.bestEffort ?? [])].map(norm))) {
+    if (fatalSet.has(k)) continue
+    if (/^[A-Z]{2}$/.test(k)) extra.push(k)
+    else console.warn(`[country-settings] "${k}" is not an ISO country code — left out`)
+  }
+  const found = new Map<string, CountrySettings>()
+  const misses: string[] = []
+  for (const k of [...fatal, ...extra]) {
+    const hit = cache.get(k)
+    if (hit && Date.now() - hit.at < TTL_MS) found.set(k, hit.value)
+    else misses.push(k)
+  }
+  if (misses.length) {
+    // ⚠️ IMPORTED HERE, NOT AT THE TOP — see getCountrySettings.
+    const { supabase } = await import('@/lib/supabase')
+    const { data, error } = await selectWithFallback(cols => supabase.from('country_settings').select(cols).in('country_code', misses))
+    if (error) {
+      const missedFatal = misses.filter(k => fatalSet.has(k))
+      if (missedFatal.length) throw new Error(`[country-settings] could not read ${missedFatal.join(', ')}: ${error.message}`)
+      console.warn(`[country-settings] could not read ${misses.join(', ')} (best effort, left out): ${error.message}`)
+    }
+    for (const r of (data ?? []) as unknown as Row[]) {
+      const k = typeof r.country_code === 'string' ? r.country_code.toUpperCase() : ''
+      if (!misses.includes(k)) continue
+      try {
+        const value = mapCountryRow(r)
+        cache.set(k, { at: Date.now(), value })
+        found.set(k, value)
+      } catch (e) {
+        if (fatalSet.has(k)) throw e
+        console.warn(`[country-settings] ${k} unreadable (best effort, left out):`, e instanceof Error ? e.message : e)
+      }
+    }
+  }
+  for (const k of fatal) if (!found.has(k)) throw new Error(`[country-settings] no settings row for ${k} — refusing to fall back to another country's figures`)
+  const out: Record<string, CountrySettings> = {}
+  for (const k of [...fatal, ...extra]) { const v = found.get(k); if (v) out[v.countryCode] = v }
+  return out
 }
 
 /**
