@@ -6,7 +6,8 @@
 
 - **Garbled spans: none.** "gulftobayfta+1" is the `+1` plus-alias of the same Gmail address; it was dropped as a duplicate.
 - **Started after admin-speed-1 committed** (`5be09e44`).
-- **Messages:** touched only while `git status` showed no other session's changes in `messages/`. Committed straight away in their own commit (`f5640f13`). The languages-world-3 session was told about the new keys.
+- **Messages:** touched only while `git status` showed no other session's changes in `messages/`. Committed straight away in their own commits (`f5640f13`, then `2f3299b5`). The languages-world-3 session was told about the keys, including the correction.
+- **Your commit `9cc5edea` "free trial"** contained this workstream's code, screenshots and the first draft of this report. It also added `docs/partners-2/gemini-partner-list-2.md` and `docs/partners-2/claude-leads-2026-11-16.csv`. ⚠️ Those two new lists were **not** imported: they arrived after the brief. Say if they should go through the same verification and import.
 
 ### 🔴 Decision 1: how a percentage-off code reaches the paid plan (§3.3)
 
@@ -168,7 +169,11 @@ The English drafts are below. Say "templates approved", with any edits. I'll the
   - **Percent off:** see Decision 1.
   - **Attribution:** set once.
   - **Safety:** it never fails the truck's creation.
-- **Words.** The 7 keys are in en-GB and all 48 language bases (`f5640f13`): `codeLabel` reworded, plus `codeApply`, `codeApplied`, `codeInvalid`, `codeExpired`, `dealExtraMonths` (plural) and `dealPercentOff` (plural). Back-translations are in `docs/i18n/back/`, and translation-check is structural 0 in every base.
+- **Words.** In en-GB and all 48 language bases:
+  - **Signup keys:** `auth.signup.partnerCodeLabel` ("Partner or promo code (optional)"), `codeApply`, `codeApplied`, `codeInvalid`, `codeExpired`, `dealExtraMonths` (plural) and `dealPercentOff` (plural).
+  - **Demo keys:** the same seven texts as `demoGetStarted.partnerCode*` / `partnerDeal*`. The demo also renders on the customer order page and the kitchen screen, which mustn't load the whole `auth` namespace for seven strings (`messages-split` checks each page's namespaces). So the field takes its words from its caller.
+  - **No existing key reworded:** `auth.signup.codeLabel` was first reworded (`f5640f13`), then restored (`2f3299b5`), because the language-phase proofs require any reworded English key to be named. A new key does the job.
+  - Back-translations are in `docs/i18n/back/`. translation-check is structural 0 in every base, and messages-split passes 206/206.
   - **Native check suggested:** az, kk, mn, ka, ne, uz and hy.
   - **Choices the translator made**, also worth a native look: de "Einlösen" and hu "Beváltás" (Redeem) for Apply; "discount code" for promo in cs, sk, da, nb, sv, nl, et, fi, is and lt; es "colaborador" for partner; he "קוד הטבה".
 - **iOS (App Store 3.1.1 / 3.1.3).** Checked against `lib/commerce-policy.ts purchaseCtaAllowed()`. The field takes no payment, shows no price and has no link or instruction to buy: the same reasoning as the existing trial lines in `lib/settings-copy.ts`. **No gate is needed and none was added.** The screenshot `signup-app-valid-390-en-GB.png` is taken with the app's user agent.
@@ -284,18 +289,25 @@ Merge fields: `{{contact_name|there}}`, `{{org}}`, `{{code}}`, `{{deal}}`, `{{co
   - **stopping:** on reply, on bounce and on opt-out, and the shared suppression list;
   - **the sender's safety gates** and the dry run;
   - **the US postal line** and merge-field fallbacks.
-- **Also:**
-  - `partners-1.cjs` re-pinned: its checks now read the moved send path, with every condition the same.
-  - Typecheck clean.
-  - Lint clean on every new and changed file.
-- **The full sweep:** __SWEEP__
+- **Re-pins**, each naming exactly partners-2's change; everything else is still compared byte for byte:
+  - `partners-1.cjs`: its checks now read the moved send path, with every condition the same.
+  - `scripts/_named-partners-2.cjs`: an exact undo of partners-2's edits to `proxy.ts`, the signup route, the signup page, the demo and the admin truck row. It gives back the pre-partners-2 files byte for byte. It's wired into `_moved-paths.cjs changedSince` (which `loyalty-1` and `cwv-2` use) and `cwv-2`'s chains.
+  - The same file holds the code field's **structural proof**, wired into `_lp2-named.cjs` for the 1c signup views and the demo wizard's details and press views: with the new field swapped for the old one, each view is byte-identical, and the input keeps its id, max 40, placeholder and typed value.
+  - `migration-function-grants`: the new trigger function is revoked from public, anon and authenticated. Migration `20261106_partners_2_revoke.sql` was applied, and the line was added to `20261104` so that file is the complete definition.
+- **Also:** the typecheck is clean. Lint is clean on the new files. The 4 errors on the signup page (`<a href="/login">`) were already there before this work.
+- **The full sweep:** **226 run, 221 passed, 5 failed.** The 5 are the known missing translated legal files (paperwork-1, legal-languages-1, world-countries-3, contact-1, tidy-1). `partners-2` is 55/55. The temp report: nothing left behind.
+  - An earlier sweep (212 / 14) found 9 more; each was fixed or re-pinned as listed above.
 
 ## 8. Commits (this workstream's files only)
 
 - `f188bb2b`: migration `20261104_partners_2`.
 - `0718a044`: the import and its evidence.
-- `f5640f13`: the signup words, in their own commit.
-- Then the code, the harnesses and re-pins, the screenshots, the manual section and this report.
+- `f5640f13` and `2f3299b5`: the signup words, in their own commits.
+- `9cc5edea`: **your** "free trial" commit, which carried the code, screenshots and harnesses.
+- `20261106` (the revoke).
+- `0f01ca0e`: the field's words from the caller, and the re-pins.
+- `28f0002b`.
+- The manual section and this report's final version.
 
 ## Undo (only if Dominic asks)
 

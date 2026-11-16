@@ -288,6 +288,8 @@ live, but customer links only reach the phone's browser on Android after the dep
 
 **Proof:** `scripts/partners-2.cjs` (swept); `scripts/partners-2-import.cjs` (the import, from `docs/partners-2/verification.json`); `scripts/partners-2-screens.cjs`.
 
+**Re-pins:** `scripts/_named-partners-2.cjs` holds the exact undo of partners-2's edits (proxy, signup route and page, demo, admin row) and the code field's structural proof, for the byte-identity harnesses.
+
 # Changelog
 
 ## V16.31 — 16 November 2026 — **THE PARTNER PROGRAMME: VERIFIED IMPORT, CODES THAT APPLY A DEAL, COMMISSION, LOCAL-HOURS SENDING**
@@ -296,7 +298,7 @@ partners-2 (`docs/partners-2-report.md`). Not deployed; nothing sent; no templat
 
 - **Imported:** 110 organisations from the Gemini list, each verified on the web (45 ✓, 30 ?, 35 ✗). The fta.team "metro FTA" sites are one company: the hub is the contact.
 - **Built:** the "Partner programme" section above. Migrations `20261104_partners_2` and `20261105_partners_2_import`.
-- **Signup words:** in 49 languages (`f5640f13`).
+- **Signup words:** in 49 languages (`f5640f13`, `2f3299b5`). The new keys are `auth.signup.partnerCodeLabel` and the code words, and the same seven texts in `demoGetStarted.*`. The field takes its words from its caller, so the demo (also on the order page and the kitchen screen) never loads `auth`. No existing key was reworded.
 - **Open items 24–26:** the percent-off decision, template sign-off, and addresses to choose.
 
 ## V16.30 — 16 November 2026 — **/admin OPENS IN ~0.6 s, NOT ~16 s**
