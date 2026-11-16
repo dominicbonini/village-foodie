@@ -81,6 +81,9 @@ emulator could not create its data partition and the script waited forever for a
   `~/.cache/puppeteer` Chrome builds were cleared with Dominic's approval on 16 November; both regenerate, so clearing them
   again is fine when space is low. **Kept for checks:** the `Android_Phone` AVD (Android 16) and, on iOS 27, the iPhone 18 Pro
   and iPad Pro 11-inch (M5) simulators, with both iOS runtimes (26.5, 27.0).
+- ⚠️ **The biggest leak is `$TMPDIR`, not the repo** (V16.28, measured): the harnesses' temp folders (`dot-*`, `cmp-*`, `slot-*`,
+  `ran-*`, `wp-var-*`, `et-render-*` under `/private/var/folders/…/T`) are never removed, ~30–45 GB per full sweep (Open items 18).
+  The guard sees only free space, so it notices this late. Clearing those folders while no harness runs is safe.
 
 # Open items (V16.28, 16 November 2026) — THE ONLY CURRENT LIST
 
@@ -144,15 +147,21 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 16. **Wording decisions:** the terms' fee wording ("online card orders") against the site's "online orders" (pricing-copy-1 §3);
     whether `comparison.costs.cardFee` follows `offersOnlineCardPayments` (pricing-copy-4).
 17. **local-notifications 8.3** adds the `SCHEDULE_EXACT_ALARM` permission; held at 8.2.1 until Dominic decides (android-1-1).
+18. 🔴 **The harnesses leak their temp folders: a full sweep leaves ~30–45 GB in `$TMPDIR`** (manual-update-1 §2.3, measured
+    16 Nov: 90 GB, 14,465 folders, under `/private/var/folders/…/T`). Of the 109 scripts that `mkdtempSync`, 54 never remove
+    what they make; the big ones are each variant's copy of the tree (`dot-*`: `dot-overlap-labels.cjs`; `cmp-*`:
+    `compare-no-system.cjs` and the compare harnesses; `slot-*`, `ran-*`; `wp-var-*`: `weekly-post.cjs`; `et-render-*`:
+    `event-types-render.cjs`). Fix: one shared helper that removes its folder on exit (code change, not done yet). Until then,
+    clearing those folders when no harness is running is safe (Disk space rule).
 
 **Backlog (decided, not built — the tax backlog section near the end has the detail):**
-18. **VAT / tax-number capture** in signup and Manage › Settings (VIES for the EU). Needed before billing is switched on in any of
+19. **VAT / tax-number capture** in signup and Manage › Settings (VIES for the EU). Needed before billing is switched on in any of
     the 41 "VAT number required" countries.
-19. **Threshold logging:** each country's registration threshold and our running turnover there.
-20. **Sanctions name check at signup** (UK and US lists). Until it exists, 9 countries stay held: Haiti, Iraq, Lebanon, Libya,
+20. **Threshold logging:** each country's registration threshold and our running turnover there.
+21. **Sanctions name check at signup** (UK and US lists). Until it exists, 9 countries stay held: Haiti, Iraq, Lebanon, Libya,
     Mali, Myanmar, Palestine, South Sudan, Venezuela.
-21. **EU non-Union OSS registration** once there are paying EU customers.
-22. **Non-Latin ticket printing:** item 10.
+22. **EU non-Union OSS registration** once there are paying EU customers.
+23. **Non-Latin ticket printing:** item 10.
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -233,7 +242,8 @@ manual-update-1 (`docs/manual-update-1-report.md`). Documentation only.
   - the V11.54 / §36 "R8 deferred" reasoning (R8 is on since V16.27);
   - the "status-bar is one patch behind" note (8.0.4, iOS only).
 - **Disk space rule:** records the 16 Nov clean-up (`node_modules/.cache` and old Puppeteer Chromes cleared with approval) and
-  what is kept for checks.
+  what is kept for checks. Adds the measured `$TMPDIR` leak: the harnesses' temp folders, 90 GB, ~30–45 GB per full sweep
+  (Open items 18).
 
 ## V16.27 — 16 November 2026 — **ANDROID 1.1: CAPACITOR 8.6.2, R8 + MAPPING, EDGE-TO-EDGE WITHOUT THE DEPRECATED APIs**
 
