@@ -1,0 +1,12 @@
+{
+ "CL": {
+  "email": 1,
+  "social": 5,
+  "unverified": 0,
+  "none": 2,
+  "inactive": 4,
+  "dropped": 0,
+  "software": 0,
+  "single": 0
+ }
+}
