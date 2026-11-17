@@ -229,3 +229,8 @@
 - Pricing asterisks pass markRules (feeOnly none, feeOnlyCard "<b>{fee}*</b>", NoMark = minus asterisk, footnote "* … vetëm për porositë online me kartë"); card sentence "Preferoni ta merrni pagesën paraprakisht? Shtoni pagesat online me kartë kur të doni."
 - planTable.trial.ends "Përfundon më {date}"; pitch "vendi i shitjes"; Tester "Testues"; 0,99%.
 - Check: "{region} standarde", "karta të ZEE-së / SHBA-së / EBA-së"; TBC "Për t’u konfirmuar" (long); store badges "Shkarkoje nga App Store / Google Play" (official AL wording unconfirmed); "Me {brand}, …".
+
+## sq-AL consistency pass (languages-world-3, 17 Nov 2026) — fix.json, 24 corrections, check-fix 0
+- Post boxes (from DesignEditor.tsx / caption-template.ts): Place = "Vendndodhja" (weekly), Venue = "Emri i vendit" (single event), Area = "Qyteti".
+- Fleet list "Furgonët tuaj" / "+ Shto furgon" (replaces TERMS lines 57 and 104); business stays "food truck".
+- Check: "Furgonët tuaj" beside "Cilësimet e food truck-ut"; "Emri i vendit"; "Më udhëzo"; "Ekrani fiket".
