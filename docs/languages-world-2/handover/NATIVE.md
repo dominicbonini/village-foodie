@@ -337,3 +337,10 @@
 - 21-safe: "Локации со слика: # од {total}", "Потребно е обновување: # документ/документи", "Избрани: #".
 - Billing: "без месечен надомест", Post-pay charge "Надомест за накнадна наплата" (check), Overdue "Задоцнето", „Управување“ › „Фактурирање“; Unsubscribe "Откажи претплата" (check).
 - Documents translated (PAT "PAT тест (преносни електрични уреди)", public liability "Осигурување од одговорност кон трети лица"); caption "{truck} — {where}, {when}, {times}."; samples Струмица, Македонски Брод.
+
+## mk-MK part 08 (languages-world-3, 17 Nov 2026)
+- comparison.cell.trial = "{months, plural, one {# месец} other {# месеци}} бесплатно" (reuse for planTable.trial.length).
+- URL path kept English (comparison / food-truck-ordering-system) — confirm before go-live. breakdown.freeMonths "Првиот # месец / Првите # месеци".
+- German TSE/Germany figures as written; VAT "ДДВ"; reverse charge "механизмот за пренесување на даночната обврска (reverse charge)" — confirm.
+- cell.notApplicable "не важи за платформа за достава" (code: market = marketplace); "Не е истакнато"/"Не е наведено"/"Нема податок"; "Фиксен износ по нарачка"; "Комбо менија и сетови".
+- FOR CONSISTENCY: calculator/billing "по фуд трак месечно" vs bs-BA per van.
