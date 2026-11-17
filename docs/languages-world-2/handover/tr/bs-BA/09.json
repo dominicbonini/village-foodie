@@ -1,0 +1,723 @@
+{
+ "landing": {
+  "jsonLd": {
+   "subCategory": "Sistem za narudžbe za food truckove i mobilni ketering",
+   "description": "Narudžbe, narudžbe unaprijed i kuhinjski ekran za food truckove i mobilni ketering ({country}).",
+   "audience": "Vlasnici food truckova i firmi za mobilni ketering"
+  },
+  "hero": {
+   "title": "Sistem za narudžbe napravljen za <lean>food truckove.</lean>",
+   "subSmall": "Učitajte svoj meni, bez registracije.<br></br>Pogledajte demo koji radi za manje od 60 sekundi.",
+   "cta": "Učitaj moj meni →",
+   "ctaNote": "<lead>Učitajte fotografiju svog menija i pogledajte kako radi za manje od 60 sekundi.</lead><small>Bez registracije. Bez kartice.</small>"
+  },
+  "shots": {
+   "kitchenAlt": "Kuhinjski ekran (KDS) u HatchGrabu s listićima narudžbi poredanim redoslijedom pripreme",
+   "dashboardAlt": "Primanje narudžbe u HatchGrabu: meni lijevo, trenutna korpa i ukupan iznos desno",
+   "phoneAlt": "Naručivanje od food trucka putem HatchGraba: meni s fotografijama i cijenama i trenutni ukupan iznos korpe"
+  },
+  "trust": {
+   "freeMonth": "{months, plural, one {# početni mjesec potpuno besplatno, sve otključano} few {# početna mjeseca potpuno besplatno, sve otključano} other {# početnih mjeseci potpuno besplatno, sve otključano}}",
+   "noCard": "Kartica nije potrebna",
+   "cancel": "Otkažite bilo kada, bez ugovora"
+  },
+  "does": {
+   "eyebrow": "Šta radi",
+   "title": "Napravljen za food truckove, ne za restorane.",
+   "lede": "Većina sistema za narudžbe pretpostavlja stalnu adresu, pouzdan wi-fi i isto radno vrijeme svake sedmice. Vi ste svake sedmice na drugom mjestu, u drugo vrijeme, uz slab mobilni signal ili bez njega. HatchGrab je napravljen upravo za to.",
+   "slotsTitle": "Kupci biraju vrijeme preuzimanja",
+   "capacityTitle": "Postavite kapacitet kuhinje",
+   "capacityBody": "Odredite koliko možete pripremiti odjednom i koliko to traje. Kada se neko vrijeme preuzimanja popuni, kupci ga više ne mogu odabrati.",
+   "devicesTitle": "Radi na svakom uređaju",
+   "devicesBody": "Radi na telefonu u džepu vaše kecelje, tabletu na pultu, laptopu u vozilu — i na POS terminalu kojim već naplaćujete.",
+   "postsTitle": "Automatizujte objave na Facebooku i Instagramu",
+   "postsBody": "Učitajte dizajn koji već objavljujete na Facebooku ili Instagramu. Mi ćemo upisati vaše datume, lokacije i vremena, spremno za dijeljenje — svake sedmice ili svaki dan.",
+   "whatsappTitle": "Automatski odgovori na WhatsAppu",
+   "whatsappBody": "„Gdje ste večeras?“ „Koje deserte imate?“ Poruke na vašem WhatsAppu dobijaju odgovor dok vozite prema prodajnom mjestu ili stojite za roštiljem, na osnovu vašeg menija i rasporeda. Messenger i Instagram uskoro.",
+   "whatsappSoonTitle": "Automatski odgovori na WhatsAppu <soon>Uskoro</soon>",
+   "whatsappSoonBody": "„Gdje ste večeras?“ „Koje deserte imate?“ Uskoro će poruke na vašem WhatsAppu dobijati odgovor dok vozite prema prodajnom mjestu ili stojite za roštiljem. Slijede Messenger i Instagram.",
+   "offlineTitle": "Nema signala? Nastavite usluživati.",
+   "offlineBody": "Ako izgubite signal, online narudžbe se automatski pauziraju kako kupci ne bi slali narudžbe koje nećete vidjeti. Nastavite primati narudžbe u aplikaciji za iPhone, iPad i Android.",
+   "slotsBody": "Kupci naručuju unaprijed i biraju vrijeme preuzimanja. Manje redova, a hrana je spremna kada stignu."
+  },
+  "steps": {
+   "eyebrow": "Kako početi",
+   "title": "Postavite sve i počnite primati narudžbe za otprilike 15 minuta.",
+   "lede": "Treba srediti tri stvari — a za dvije je dovoljna fotografija.",
+   "menuTitle": "Napravite svoj meni",
+   "menuBody": "Fotografišite tablu s menijem ili zalijepite tekst. Artikli, cijene i dodaci prenose se sami. Vi samo provjerite da li je sve tačno.",
+   "scheduleTitle": "Dodajte svoj raspored",
+   "scheduleBody": "Imate ga na svojoj web stranici? Preuzet ćemo ga odatle i redovno ga ažurirati. Ako nemate, fotografišite i njega. Vi samo odobrite ono što pronađemo.",
+   "shareTitle": "Podijelite svoj link",
+   "shareBody": "Objavite ga na Facebooku, zalijepite QR kod na vozilo. Narudžbe stižu na vaš ekran redoslijedom kojim ih trebate pripremiti."
+  },
+  "testimonial": {
+   "quote": "HatchGrab nam je mnogo olakšao primanje narudžbi. Sve je organizovano, možemo pratiti zalihe i tačno znamo koliko nam je pizza ostalo za prodaju — a termini su fantastični za sela u kojima je gužva.",
+   "award": "Mobilna picerija godine",
+   "awardScope": "Regionalni pobjednik",
+   "business": "Pizzeria Gusto",
+   "byline": "Nadia & Bogdan — vlasnici"
+  },
+  "pricing": {
+   "eyebrow": "Cijene",
+   "title": "Počnite besplatno. Nadogradite kada vam zatreba.",
+   "switchHead": "Prelazite s druge platforme?",
+   "switchBody": "Pogledajte koliko biste za iste narudžbe plaćali uz HatchGrab. Traje otprilike minutu.",
+   "switchCta": "Uporedite koliko plaćate"
+  },
+  "faq": {
+   "title": "Često postavljana pitanja",
+   "metaTitle": "Često postavljana pitanja | HatchGrab",
+   "metaDescription": "Jasni odgovori za vlasnike food truckova o cijenama HatchGraba, postavljanju, primanju narudžbi i plaćanju karticom ili pri preuzimanju."
+  },
+  "final": {
+   "truckLabel": "Food truck",
+   "title": "Želite vidjeti koliko je postavljanje jednostavno?",
+   "lede": "Učitajte fotografiju ili snimak ekrana svog menija i za manje od 60 sekundi pretvorit ćemo ga u stranicu za narudžbe koja radi, da je isprobate. Vaši artikli, vaše cijene. Bez registracije, bez kartice, ništa se ne instalira. Pogledajte, pa odlučite.",
+   "cta": "Učitaj moj meni sada →"
+  },
+  "meta": {
+   "title": "Sistem za narudžbe za food truckove — HatchGrab {country}",
+   "description": "Primajte narudžbe i narudžbe unaprijed bez reda. Softver za narudžbe i kuhinjski ekran za food truckove i mobilni ketering ({country}) — nije kasa."
+  }
+ },
+ "landingNav": {
+  "homeLabel": "HatchGrab — početna",
+  "cta": "Učitaj moj meni →",
+  "ctaShort": "Učitaj meni",
+  "features": "Funkcije",
+  "pricing": "Cijene",
+  "logIn": "Prijavi se",
+  "country": {
+   "button": "Država: {name}. Promijeni državu",
+   "menu": "Država",
+   "title": "Odaberite svoju državu",
+   "subline": "Cijene, jezik i postavke mijenjaju se u skladu s tim.",
+   "regions": {
+    "europe": "Evropa",
+    "americas": "Amerika",
+    "asiaPacific": "Azija i Pacifik",
+    "middleEast": "Bliski istok",
+    "africa": "Afrika"
+   }
+  }
+ },
+ "landingFooter": {
+  "features": "Funkcije",
+  "pricing": "Cijene",
+  "faq": "Česta pitanja",
+  "privacy": "Privatnost",
+  "terms": "Uslovi",
+  "contact": "Kontakt",
+  "about": "O nama",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Od ljudi koji stoje iza platforme <b>Village Foodie</b>",
+  "badges": {
+   "appStoreLink": "Preuzmite HatchGrab na App Storeu",
+   "appStoreAlt": "Preuzmite na App Storeu",
+   "googlePlayLink": "Preuzmite HatchGrab na Google Playu",
+   "googlePlayAlt": "Nabavite na Google Playu"
+  }
+ },
+ "featuresPage": {
+  "eyebrow": "Poređenje",
+  "detail": {
+   "walkup_orders": "Primajte narudžbe na šalteru i upravljajte njima, uz plaćanje na vašem vlastitom POS terminalu.",
+   "kitchen_app": "Najpotpuniji način korištenja HatchGraba: kuhinjski ekran (KDS) uživo i jedini način da nastavite primati narudžbe kada izgubite signal.",
+   "multi_device_kitchen": "Koristite više ekrana — na pultu i u kuhinji — koji svi prikazuju iste narudžbe uživo.",
+   "multi_user_access": "Dajte osoblju vlastite prijave s odgovarajućim nivoom pristupa.",
+   "offline_protection": "Ako izgubite signal, online narudžbe se pauziraju kako kupci ne bi slali narudžbe koje nećete vidjeti. Aplikacija za iPhone, iPad i Android omogućava vam da primate narudžbe i offline; za web kontrolnu tablu potrebna je internet veza.",
+   "ticket_printing": "Štampajte listiće narudžbi na Bluetooth ili žičanom štampaču u kuhinji.",
+   "web_dashboard": "Vodite smjenu iz web pretraživača na bilo kojem telefonu, tabletu ili laptopu.",
+   "meal_deals_upsells": "Spojite artikle u kombo menije i nudite dodatke pri plaćanju kako biste povećali prosječnu narudžbu.",
+   "sold_out_toggle": "Jednim dodirom označite bilo koji artikal kao rasprodan — kupcima se odmah prikazuje zasivljen.",
+   "stock_countdown": "Postavite količinu zaliha koja se smanjuje kako stižu narudžbe, a artikal se zatim automatski označava kao rasprodan.",
+   "buzzer_tracking": "Dodijelite narudžbi broj pagera kada ga date kupcu, pa znate koji pager pripada kojoj narudžbi.",
+   "documents_reminders": "Čuvajte svoje certifikate na jednom mjestu, npr. za higijenu hrane, osiguranje i sigurnost plinskih instalacija. Podsjetit ćemo vas prije nego što nešto istekne, a jednim dodirom ih možete poslati organizatoru događaja ili pijace.",
+   "profit_per_event": "Unesite koliko vas košta svako jelo i pogledajte koliko ste zaista zaradili na svakom događaju, a ne samo promet.",
+   "accountant_reports": "Prodaja, porez i povrati novca za bilo koji mjesec, kvartal ili poresku godinu, spremni za preuzimanje za vašeg računovođu.",
+   "tap_to_pay": "Naplaćujte karticom na podržanom telefonu, pa vam ne treba poseban POS terminal.",
+   "customer_display": "Ekran koji kupci vide, s brojevima narudžbi i informacijom kada su spremne.",
+   "online_payments": "Naplatite karticom unaprijed kada kupci naručuju online, putem Stripea.",
+   "advance_preordering": "Omogućite kupcima da prije događaja naruče za neki budući datum ili vrijeme.",
+   "preorder_deadline": "Postavite rok za artikle koje treba naručiti unaprijed.",
+   "time_slot_selection": "Kupci biraju termin preuzimanja, pa se potražnja raspoređuje tokom cijele smjene.",
+   "kitchen_capacity": "Odredite koliko vaša kuhinja može pripremiti odjednom i koliko to traje. Kada se termin popuni, kupci ga više ne mogu odabrati.",
+   "auto_accept": "Online narudžbe prihvataju se automatski — ne morate potvrđivati svaku.",
+   "private_events": "Dodajte privatne događaje koji se ne prikazuju na mapi, s vlastitim privatnim linkom za narudžbe i QR kodom.",
+   "embed_schedule": "Prikažite svoje predstojeće datume na vlastitoj web stranici. Svaki datum vodi direktno na svoju stranicu za narudžbe.",
+   "qr_code": "QR kod za štampanje koji otvara vaš meni i stranicu za narudžbe.",
+   "branded_qr_code": "Dodajte svoj logo na QR kod.",
+   "discovery_map_listing": "Vaš food truck prikazuje se na javnoj HatchGrab mapi kako bi vas kupci u blizini mogli pronaći.",
+   "schedule_import": "Automatski popunjavamo vaš raspored — s vaše web stranice ili s fotografije koju već objavljujete na Facebooku. Vi samo pregledate i potvrdite.",
+   "event_types": "Kreirajte vlastite vrste događaja, s prilagođenim cijenama i postavkama za događaje i festivale.",
+   "social_media_posts": "Učitajte svoje dizajne — mi automatski dodajemo vaše datume, lokacije i vremena za svaku sedmicu i svaki događaj.",
+   "whatsapp_auto_replies": "Automatski odgovarajte na upite na WhatsAppu o vašem meniju i rasporedu.",
+   "messenger_instagram_replies": "Isto kao automatski odgovori na WhatsAppu, za upite na Messengeru i Instagramu.",
+   "sms_order_alerts": "Automatski pošaljite kupcima SMS kada je njihova narudžba spremna.",
+   "loyalty_stamp_cards": "Nagradite stalne kupce digitalnim karticama s pečatima — pečati se automatski skupljaju i iskorištavaju."
+  },
+  "metaTitle": "Poređenje paketa i funkcija — HatchGrab {country}"
+ },
+ "planTable": {
+  "h1": "Sve što vam treba za vođenje smjene, u svakom paketu.",
+  "lede": "Narudžbe, narudžbe unaprijed, kapacitet kuhinje i kuhinjski ekran (KDS) uključeni su u svaki paket.{hasUpgrades, select, yes { Uz {plans} dobijate i {features}, kao i niže naknade.} other {}}",
+  "perMonth": "{price} / mjesečno",
+  "trial": {
+   "length": "{months, plural, one {# mjesec} few {# mjeseca} other {# mjeseci}}",
+   "ends": "Ističe {date}"
+  },
+  "group": {
+   "pay": "Šta plaćate",
+   "run": "Vođenje smjene",
+   "online": "Online narudžbe",
+   "marketing": "Marketing i automatizacija"
+  },
+  "pay": {
+   "included": "Online narudžbe uključene svaki mjesec",
+   "fee": "HatchGrab naknada na online narudžbe*",
+   "feeNoMark": "HatchGrab naknada na online narudžbe",
+   "walkUp": "Narudžbe na licu mjesta"
+  },
+  "cell": {
+   "unlimited": "Neograničeno",
+   "free": "Besplatno",
+   "feeAbove": "<b>{fee}</b> iznad {included}",
+   "yes": "Uključeno",
+   "none": "Nije uključeno",
+   "comingSoon": "Uskoro"
+  },
+  "short": {
+   "whatsapp_replies": "WhatsApp",
+   "schedule_graphics": "društvene mreže",
+   "event_types": "prilagođene cijene za događaje"
+  },
+  "meta": {
+   "description": "Sve funkcije HatchGraba u svakom paketu, jedna uz drugu — {plans}, s naknadama i uključenim iznosima.{months, plural, =0 {} one { # početni mjesec uključuje sve.} few { # početna mjeseca uključuju sve.} other { # početnih mjeseci uključuje sve.}}"
+  },
+  "notes": {
+   "whatsapp": "Za automatske odgovore na WhatsAppu potreban je račun WhatsApp Business. Meta može naplaćivati neke poruke; odgovori se generišu automatski.",
+   "printing": "Za štampanje kuhinjskih listića potreban je kompatibilan Bluetooth ili žičani štampač (nije uključen)."
+  }
+ },
+ "pricing": {
+  "banner": {
+   "title": "{months, plural, one {# početni mjesec potpuno je besplatan — sve funkcije su otključane.} few {# početna mjeseca potpuno su besplatna — sve funkcije su otključane.} other {# početnih mjeseci potpuno je besplatno — sve funkcije su otključane.}}",
+   "body": "Uz {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s uslugom za obradu kartičnih plaćanja. Kada vaš probni period istekne, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { — bez mjesečne naknade —} other {}} osim ako ne odaberete neki paket. Bez kartice za početak, bez ugovora, otkažite bilo kada.",
+   "bodyCard": "Uz {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s uslugom za obradu kartičnih plaćanja. Želite naplatu unaprijed? Online plaćanje karticom možete dodati bilo kada. Kada vaš probni period istekne, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { — bez mjesečne naknade —} other {}} osim ako ne odaberete neki paket. Bez kartice za početak, bez ugovora, otkažite bilo kada.",
+   "bodyOnly": "Uz {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s uslugom za obradu kartičnih plaćanja. Kada vaš probni period istekne, paket <plan>{fallback}</plan> košta {price} mjesečno. Javit ćemo vam se prije toga radi postavljanja plaćanja. Bez kartice za početak, bez ugovora, otkažite bilo kada.",
+   "bodyOnlyCard": "Uz {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s uslugom za obradu kartičnih plaćanja. Želite naplatu unaprijed? Online plaćanje karticom možete dodati bilo kada. Kada vaš probni period istekne, paket <plan>{fallback}</plan> košta {price} mjesečno. Javit ćemo vam se prije toga radi postavljanja plaćanja. Bez kartice za početak, bez ugovora, otkažite bilo kada."
+  },
+  "card": {
+   "perTruckMonth": "po vozilu / mjesečno",
+   "mostTrucks": "Izbor većine",
+   "tryFree": "Isprobajte besplatno",
+   "seeEvery": "Pogledajte sve funkcije →",
+   "everything": "Sve za vođenje smjene",
+   "everythingIn": "Sve iz paketa {plan}, plus"
+  },
+  "fee": {
+   "feeOnly": "<b>{fee}</b> samo na online narudžbe. Narudžbe na licu mjesta uvijek su besplatne.",
+   "feeOnlyCard": "<b>{fee}*</b> samo na online narudžbe. Narudžbe na licu mjesta uvijek su besplatne.",
+   "included": "Svaki mjesec uključene su online narudžbe u iznosu do <b>{included}</b>, a zatim <b>{fee}*</b>. Narudžbe na licu mjesta uvijek su besplatne.",
+   "includedNoMark": "Svaki mjesec uključene su online narudžbe u iznosu do <b>{included}</b>, a zatim <b>{fee}</b>. Narudžbe na licu mjesta uvijek su besplatne.",
+   "noFee": "<b>Bez HatchGrab naknada</b> na online narudžbe, koliko god posla imali. Jedan predvidiv mjesečni trošak."
+  },
+  "base": {
+   "walkUp": "Narudžbe na licu mjesta i kuhinjski ekran (KDS)",
+   "online": "Online naručivanje",
+   "preorders": "Narudžbe unaprijed i vrijeme preuzimanja",
+   "capacity": "Upravljanje kapacitetom kuhinje",
+   "privateEvents": "Privatni događaji",
+   "printing": "Štampanje kuhinjskih listića",
+   "app": "Kuhinjska aplikacija za iPhone, iPad i Android"
+  },
+  "added": {
+   "whatsapp_replies": "Automatski odgovori na WhatsAppu",
+   "schedule_graphics": "Objave za društvene mreže — vaš raspored za Facebook i Instagram — spremne za objavu",
+   "event_types": "Prilagođene vrste događaja i cijene"
+  },
+  "money": {
+   "unlimitedOrders": "Neograničene online narudžbe, 0% HatchGrab naknade",
+   "samePrice": "Ista cijena i u vašem najprometnijem mjesecu"
+  },
+  "comingSoon": "Uskoro",
+  "bar": {
+   "title": "Koji je paket za mene najjeftiniji?",
+   "subtitle": "Vaše online narudžbe mjesečno",
+   "first": "Manje od {to} → <b>{plan}</b>",
+   "middle": "{from} – {to} → <b>{plan}</b>",
+   "last": "Više od {from} → <b>{plan}</b>",
+   "only": "Bilo koji obim → <b>{plan}</b>"
+  },
+  "footnote": "* Uz to, samo na online narudžbe plaćene karticom Stripe naplaćuje svoju naknadu za obradu kartica (trenutno — {country}: {cardFee}), koja se plaća Stripeu, a ne HatchGrabu. Narudžbe na licu mjesta naplaćujete vlastitim POS terminalom — HatchGrab naplaćuje 0%.",
+  "currencyLine": "Cijene u valuti {currency} ({code})"
+ },
+ "planFeatures": {
+  "row": {
+   "discovery_map_listing": {
+    "name": "Prikaz na javnoj mapi"
+   },
+   "web_dashboard": {
+    "name": "Univerzalna web kontrolna tabla"
+   },
+   "qr_code": {
+    "name": "QR kod"
+   },
+   "schedule_import": {
+    "name": "Automatski uvoz rasporeda"
+   },
+   "meal_deals_upsells": {
+    "name": "Kombo meniji i dodatna ponuda"
+   },
+   "walkup_orders": {
+    "name": "Obrada narudžbi na licu mjesta"
+   },
+   "sold_out_toggle": {
+    "name": "Trenutno označavanje rasprodanih artikala"
+   },
+   "kitchen_app": {
+    "name": "Kuhinjska aplikacija za iPhone, iPad i Android"
+   },
+   "offline_protection": {
+    "name": "Offline zaštita narudžbi"
+   },
+   "online_payments": {
+    "name": "Online plaćanja"
+   },
+   "advance_preordering": {
+    "name": "Narudžbe unaprijed za kasnije datume"
+   },
+   "preorder_deadline": {
+    "name": "Rok za narudžbe unaprijed"
+   },
+   "time_slot_selection": {
+    "name": "Odabir termina preuzimanja"
+   },
+   "kitchen_capacity": {
+    "name": "Upravljanje kapacitetom kuhinje"
+   },
+   "stock_countdown": {
+    "name": "Automatsko odbrojavanje zaliha"
+   },
+   "auto_accept": {
+    "name": "Automatsko prihvatanje online narudžbi"
+   },
+   "branded_qr_code": {
+    "name": "QR kod s logom"
+   },
+   "private_events": {
+    "name": "Privatni događaji"
+   },
+   "social_media_posts": {
+    "name": "Objave na društvenim mrežama"
+   },
+   "whatsapp_auto_replies": {
+    "name": "Automatski odgovori na WhatsAppu"
+   },
+   "messenger_instagram_replies": {
+    "name": "Automatski odgovori na Messengeru i Instagramu"
+   },
+   "tap_to_pay": {
+    "name": "Naplata na vašem telefonu"
+   },
+   "sms_order_alerts": {
+    "name": "SMS obavještenja o narudžbama"
+   },
+   "multi_device_kitchen": {
+    "name": "Sinhronizacija kuhinje na više uređaja"
+   },
+   "multi_user_access": {
+    "name": "Pristup za više korisnika"
+   },
+   "embed_schedule": {
+    "name": "Stranica s rasporedom na vašoj web stranici"
+   },
+   "event_types": {
+    "name": "Prilagođene vrste događaja i cijene"
+   },
+   "buzzer_tracking": {
+    "name": "Praćenje pagera"
+   },
+   "documents_reminders": {
+    "name": "Dokumenti i podsjetnici"
+   },
+   "profit_per_event": {
+    "name": "Dobit po događaju"
+   },
+   "accountant_reports": {
+    "name": "Izvještaji za vašeg računovođu"
+   },
+   "ticket_printing": {
+    "name": "Štampanje kuhinjskih listića"
+   },
+   "customer_display": {
+    "name": "Ekran za kupce"
+   },
+   "loyalty_stamp_cards": {
+    "name": "Digitalne kartice vjernosti s pečatima"
+   }
+  },
+  "cardRegionOnline": "standardne {region}",
+  "cardRegion": {
+   "UKcards": "britanske kartice",
+   "EEAcards": "kartice iz EEP-a",
+   "UScards": "američke kartice",
+   "Australiancards": "australske kartice",
+   "NewZealandcards": "novozelandske kartice",
+   "Canadiancards": "kanadske kartice",
+   "Swisscards": "švicarske kartice",
+   "Braziliancards": "brazilske kartice",
+   "Mexicancards": "meksičke kartice",
+   "Japanesecards": "japanske kartice",
+   "Singaporecards": "singapurske kartice",
+   "HongKongcards": "kartice iz Hong Konga",
+   "Malaysiancards": "malezijske kartice",
+   "Thaicards": "tajlandske kartice",
+   "UAEcards": "kartice iz UAE-a"
+  },
+  "perMonth": {
+   "mo": "{amount}/mj.",
+   "month": "{amount} mjesečno"
+  },
+  "priceWord": {
+   "free": "Besplatno",
+   "freeTrial": "Besplatni probni period",
+   "lifetime": "Doživotno",
+   "zeroPercent": "0%",
+   "payAtHatch": "Plaćanje pri preuzimanju",
+   "unlimited": "Neograničeno",
+   "none": "—",
+   "masked": "Naknadno"
+  },
+  "cell": {
+   "included": "Uključeno"
+  }
+ },
+ "planPrompt": {
+  "includedOn": "{many, select, yes {{feature} su dio paketa {plan}.} other {{feature} je dio paketa {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} nisu dio vašeg paketa.} other {{feature} nije dio vašeg paketa.}}",
+  "switchedOff": "{many, select, yes {Za vaš food truck isključene su funkcije: {feature}.} other {Za vaš food truck isključena je funkcija: {feature}.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Nadogradi →",
+  "features": {
+   "discovery_map": {
+    "name": "Prikaz na javnoj mapi",
+    "many": "no"
+   },
+   "web_dashboard": {
+    "name": "Web kontrolna tabla",
+    "many": "no"
+   },
+   "ipad_kds": {
+    "name": "Kuhinjska aplikacija",
+    "many": "no"
+   },
+   "qr_menu": {
+    "name": "Meni s QR kodom",
+    "many": "no"
+   },
+   "meal_deals": {
+    "name": "Kombo meniji",
+    "many": "yes"
+   },
+   "upsells": {
+    "name": "Dodatna ponuda",
+    "many": "no"
+   },
+   "walkup_orders": {
+    "name": "Narudžbe na licu mjesta",
+    "many": "yes"
+   },
+   "online_ordering_pay_at_hatch": {
+    "name": "Naručivanje uz plaćanje pri preuzimanju",
+    "many": "no"
+   },
+   "sold_out_toggle": {
+    "name": "Označavanje rasprodanih artikala",
+    "many": "no"
+   },
+   "stock_countdown": {
+    "name": "Odbrojavanje zaliha",
+    "many": "no"
+   },
+   "offline_protection": {
+    "name": "Offline zaštita narudžbi",
+    "many": "no"
+   },
+   "online_payments": {
+    "name": "Online plaćanja",
+    "many": "yes"
+   },
+   "advance_preordering": {
+    "name": "Naručivanje unaprijed za kasnije datume",
+    "many": "no"
+   },
+   "time_slot_selection": {
+    "name": "Termini preuzimanja za kupce",
+    "many": "yes"
+   },
+   "smart_batch_pacing": {
+    "name": "Upravljanje kapacitetom kuhinje",
+    "many": "no"
+   },
+   "auto_accept": {
+    "name": "Automatsko prihvatanje",
+    "many": "no"
+   },
+   "instagram_messenger_replies": {
+    "name": "Automatski odgovori na Messengeru i Instagramu",
+    "many": "yes"
+   },
+   "branded_qr_code": {
+    "name": "QR kodovi s logom",
+    "many": "yes"
+   },
+   "advanced_reporting": {
+    "name": "Napredno izvještavanje",
+    "many": "no"
+   },
+   "ticket_printing": {
+    "name": "Štampanje kuhinjskih listića",
+    "many": "no"
+   },
+   "multi_device_kds": {
+    "name": "Sinhronizacija kuhinje na više uređaja",
+    "many": "no"
+   },
+   "cook_screen": {
+    "name": "Kuharski ekran",
+    "many": "no"
+   },
+   "whatsapp_replies": {
+    "name": "Automatski odgovori na WhatsAppu",
+    "many": "yes"
+   },
+   "embed_schedule": {
+    "name": "Vaš raspored na vašoj web stranici",
+    "many": "no"
+   },
+   "schedule_graphics": {
+    "name": "Objave na društvenim mrežama",
+    "many": "yes"
+   },
+   "event_types": {
+    "name": "Prilagođene vrste događaja",
+    "many": "yes"
+   },
+   "private_events": {
+    "name": "Privatni događaji",
+    "many": "yes"
+   },
+   "paperwork": {
+    "name": "Dokumenti",
+    "many": "yes"
+   }
+  }
+ },
+ "faq": {
+  "phrases": {
+   "appsSentence": "Postoji i aplikacija za iPad i Android, koja nastavlja primati narudžbe na licu mjesta ako izgubite signal.",
+   "appsOffline": "Aplikacija za iPad i Android nastavlja primati narudžbe na licu mjesta bez signala i šalje ih kada ponovo budete online; za web kontrolnu tablu potrebna je internet veza.",
+   "webOffline": "Za prikaz novih narudžbi na web kontrolnoj tabli potrebna je internet veza."
+  }
+ },
+ "aboutPage": {
+  "meta": {
+   "title": "O nama — HatchGrab",
+   "description": "HatchGrab pravi praktičan softver za food truckove i mobilni ketering: online narudžbe, vrijeme preuzimanja i manje istih pitanja. Osnivač: Dominic Bonini."
+  },
+  "eyebrow": "O nama",
+  "title": "Napravljen prema tome kako food truckovi zaista rade",
+  "photoAlt": "{name}, osnivač HatchGraba",
+  "story": {
+   "start": "HatchGrab je nastao iz jednostavnog zapažanja: food truckovima trebaju bolji alati za vođenje posla.",
+   "villageFoodie": "Nakon što sam pokrenuo Village Foodie, online katalog koji ljudima pomaže da otkriju food truckove koji dolaze u njihovo mjesto, više sam vremena posvetio upoznavanju izazova s kojima se suočavaju mobilni ugostiteljski biznisi. Za razliku od klasičnih restorana, food truckovi se stalno kreću, rade na različitim lokacijama i uslužuju kupce u promjenjivim uslovima.",
+   "fixedAddress": "Ipak, velik dio softvera koji im je dostupan osmišljen je za firme sa stalnom adresom.",
+   "change": "HatchGrab je nastao da to promijeni.",
+   "build": "Pravimo praktičan softver namijenjen upravo food truckovima i mobilnom keteringu, koji im pomaže da primaju online narudžbe, upravljaju vremenima preuzimanja, održavaju neometan tok narudžbi i troše manje vremena na odgovaranje na ista pitanja.",
+   "focus": "Naš cilj je jednostavan: olakšati vođenje food trucka, uz alate osmišljene prema tome kako ovi biznisi zaista funkcionišu."
+  },
+  "signature": "<b>{name}</b><br></br>Osnivač, HatchGrab",
+  "company": "{company} · kompanija registrovana u Engleskoj i Velsu · broj kompanije {number} · sjedište: {address}",
+  "contact": "Kontaktirajte nas"
+ },
+ "legalChrome": {
+  "meta": {
+   "privacyTitle": "Politika privatnosti — HatchGrab",
+   "privacyDescription": "Kako HatchGrab Ltd prikuplja i koristi lične podatke.",
+   "termsTitle": "Uslovi korištenja — HatchGrab",
+   "termsDescription": "Uslovi korištenja HatchGraba.",
+   "countryTermsTitle": "Uslovi za pojedine države — HatchGrab",
+   "countryTermsDescription": "Dodatna pravila koja se na HatchGrab primjenjuju u nekim državama."
+  },
+  "homeLabel": "HatchGrab — početna",
+  "privacy": "Privatnost",
+  "terms": "Uslovi",
+  "countryTerms": "Uslovi za državu",
+  "contact": "Kontakt",
+  "lastUpdated": "Posljednje ažuriranje: {date}",
+  "questions": "Imate pitanja? <link>Javite nam se</link> — mi smo stvarni ljudi.",
+  "translationNote": "Ovo je prijevod. Ako se razlikuje od <link>verzije na engleskom jeziku</link>, mjerodavna je verzija na engleskom jeziku."
+ },
+ "truckPage": {
+  "meta": {
+   "fallbackTitle": "Food truck | Village Foodie",
+   "hgFallbackTitle": "Food truck",
+   "orderTitle": "{truck} — naručite online",
+   "orderDescription": "{truck}: naručite unaprijed i preuzmite narudžbu kod food trucka.",
+   "title": "{truck} | Village Foodie",
+   "logoAlt": "Logo: {truck}"
+  },
+  "shareTitle": "Raspored: {truck}",
+  "shareText": "Pogledajte gdje food truck {truck} staje sljedeći put! 🚚",
+  "linkCopied": "Link na profil je kopiran! 📋",
+  "facebookPage": "Facebook stranica",
+  "loadingMap": "Učitavanje mape…",
+  "view": {
+   "list": "Lista",
+   "map": "Mapa"
+  },
+  "ownThisTruck": "Vaš je ovaj food truck?",
+  "ownThisTruckTitle": "Vaš je ovaj food truck? Kliknite da ažurirate profil",
+  "actions": {
+   "menu": "Meni",
+   "call": "Pozovi",
+   "message": "Poruka",
+   "share": "Podijeli",
+   "order": "Naruči"
+  },
+  "loadingSchedule": "Učitavanje rasporeda…",
+  "loadError": {
+   "title": "Nije moguće učitati",
+   "body": "Trenutno ne možemo učitati raspored — to je obično kratkotrajan problem. Pokušajte ponovo.",
+   "retry": "Pokušaj ponovo"
+  },
+  "notFound": {
+   "title": "Food truck nije pronađen",
+   "body": "Nismo pronašli podatke o ovom food trucku. Možda su se preselili ili ažurirali profil.",
+   "cta": "Pogledaj sve food truckove"
+  },
+  "noEvents": {
+   "title": "Nema predstojećih događaja",
+   "body": "Možda nam nedostaju neki podaci o ovom food trucku. Jeste li vi vlasnik ili znate njihov raspored?",
+   "cta": "Pošaljite nam poruku da ga ažuriramo!"
+  },
+  "whereToFind": "Gdje nas možete naći",
+  "missingEvent": "<strong>Nedostaje li neki događaj?</strong> <br></br>Ako ste vlasnik ovog food trucka ili samo vjerni fan, pomozite nam da ova stranica bude tačna! <br></br><link>Kontaktirajte nas da dodamo podatke koji nedostaju.</link>",
+  "weeklySchedule": "Primajte sedmični raspored 🍕"
+ },
+ "contactPage": {
+  "meta": {
+   "title": "Podrška",
+   "description": "Potražite pomoć za HatchGrab. Pošaljite nam poruku i odgovorit ćemo vam e-mailom."
+  },
+  "logIn": "Prijavi se",
+  "eyebrow": "Podrška",
+  "title": "Kako vam možemo pomoći?",
+  "lede": "Nešto ne radi ili imate pitanje o svom računu? Možete nas kontaktirati na dva načina — u oba slučaja odgovorit ćemo vam e-mailom.",
+  "emailUs": "Pošaljite nam e-mail",
+  "formHeading": "Ili nam pošaljite poruku",
+  "form": {
+   "topicLabel": "O čemu se radi?",
+   "topics": {
+    "question": "Pitanje o HatchGrabu",
+    "account": "Pomoć s mojim računom",
+    "comparison": "Ispravka na stranici s poređenjem",
+    "other": "Nešto drugo"
+   },
+   "nameLabel": "Vaše ime",
+   "namePlaceholder": "Ime",
+   "emailLabel": "E-mail",
+   "businessLabel": "Naziv food trucka ili firme",
+   "optional": "(neobavezno)",
+   "businessPlaceholder": "npr. Roštilj na točkovima",
+   "messageLabel": "Vaša poruka",
+   "send": "Pošalji poruku",
+   "sending": "Slanje…",
+   "privacyLine": "Vaše podatke koristit ćemo samo da vam odgovorimo.",
+   "privacyLink": "Politika privatnosti",
+   "thanksTitle": "Hvala — vaša poruka je stigla.",
+   "thanksBody": "Odgovorit ćemo e-mailom na adresu koju ste naveli.",
+   "errors": {
+    "nameRequired": "Unesite svoje ime.",
+    "nameTooLong": "Ime je predugo (najviše znakova: {max, number}).",
+    "emailRequired": "Unesite svoju e-mail adresu.",
+    "emailInvalid": "Unesite ispravnu e-mail adresu.",
+    "emailTooLong": "E-mail adresa je preduga (najviše znakova: {max, number}).",
+    "businessRequired": "Unesite naziv food trucka ili firme kako bismo pronašli vaš račun.",
+    "businessTooLong": "Naziv food trucka ili firme je predug (najviše znakova: {max, number}).",
+    "messageTooShort": "Poruka je prekratka (najmanje znakova: {min, number}).",
+    "messageTooLong": "Poruka je preduga (najviše znakova: {max, number}).",
+    "topicInvalid": "Odaberite o čemu se radi u vašoj poruci.",
+    "rateLimited": "Već ste poslali nekoliko poruka — pokušajte ponovo kasnije ili nam pišite na {email}.",
+    "failed": "Došlo je do greške — pišite nam na {email}."
+   }
+  },
+  "privacy": "Privatnost",
+  "terms": "Uslovi",
+  "about": "O nama",
+  "copyright": "© {year} HatchGrab"
+ },
+ "siteFooter": {
+  "title": "Ne propustite nijedan zalogaj 🍕",
+  "body": "Primajte raspored food truckova u vašem mjestu e-mailom svake sedmice.",
+  "cta": "Primajte raspored",
+  "noSpam": "Bez spama (ali možda s pepperonijem). Odjavite se bilo kada.",
+  "heading": "Kontakt i usluge",
+  "hire": "Iznajmite food truck",
+  "general": "Opći upit",
+  "addBusiness": "Dodaj moju firmu",
+  "reportIssue": "Prijavi problem",
+  "directory": "Katalog food truckova",
+  "disclaimer": "Napomena: ponuđači mogu promijeniti raspored. Trudimo se, ali nismo odgovorni za otkazane food truckove ili rasprodane burgere. Najnovije informacije uvijek provjerite na društvenim mrežama ponuđača."
+ },
+ "errorPage": {
+  "notFoundTitle": "Stranica nije pronađena",
+  "notFoundBody": "Nismo pronašli tu stranicu. Možda je premještena ili je adresa pogrešno upisana.",
+  "home": "Idi na početnu stranicu",
+  "errorTitle": "Došlo je do greške",
+  "errorBody": "Izvinite — ova stranica se nije učitala. Pokušajte ponovo ili se vratite na početnu stranicu.",
+  "retry": "Pokušaj ponovo",
+  "backToDashboard": "Nazad na kontrolnu tablu",
+  "errorBodyDashboard": "Izvinite, ova stranica se nije učitala. Pokušajte ponovo ili se vratite na kontrolnu tablu.",
+  "sectionFailed": "Ovaj dio se nije učitao."
+ },
+ "embed": {
+  "metaDescription": "Gdje food truck {truck} radi sljedeći put.",
+  "orderFrom": "Naručite od food trucka {truck}",
+  "poweredBy": "Pokreće <b>HatchGrab</b>",
+  "loadFailed": "Trenutno nije moguće učitati raspored.",
+  "loading": "Učitavanje rasporeda…",
+  "empty": "Nema navedenih predstojećih događaja za food truck {truck}."
+ },
+ "planNames": {
+  "payg": {
+   "name": "Bez mjesečne pretplate",
+   "subtitle": "Sezonski i povremeni food truckovi",
+   "description": "Bez mjesečne naknade. Plaćate samo 0,99% na online narudžbe."
+  },
+  "pro": {
+   "subtitle": "Food truckovi s redovnim narudžbama unaprijed",
+   "description": "Sve, uključujući automatske odgovore na WhatsAppu i objave na društvenim mrežama, uz online narudžbe uključene svaki mjesec."
+  },
+  "unlimited": {
+   "name": "Neograničeno",
+   "subtitle": "Prometni food truckovi i festivali",
+   "description": "Sve, bez naknada na online narudžbe, koliko god posla imali."
+  },
+  "trial": {
+   "name": "Besplatni probni period",
+   "description": "Sve funkcije, besplatno, dok traje vaš probni period."
+  },
+  "demo": {
+   "name": "Demo",
+   "description": "Testno okruženje za potencijalne klijente — nikad javno."
+  },
+  "tester": {
+   "name": "Tester",
+   "description": "Tester prije lansiranja — potpuni pristup."
+  }
+ }
+}

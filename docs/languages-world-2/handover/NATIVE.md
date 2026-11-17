@@ -283,3 +283,8 @@
 - One-month forms without a number (compare.freeMonths, breakdown.freeMonths, faq.costTrial) read wrong at 21 — harmless (trials 1–6 months).
 - German TSE/till content and Germany figures kept as written; VAT "PDV"; reverse charge "po mehanizmu obrnutog obračuna (reverse charge)".
 - cell.notApplicable "ne odnosi se na tržište" (market = marketplace or stall?); not_listed "Nije istaknuto" vs "Nije navedeno"; slug poredjenje/sistem-za-narudzbe-food-truck — confirm before go-live.
+
+## bs-BA part 09 (languages-world-3, 17 Nov 2026)
+- markRules pass; card sentence "Želite naplatu unaprijed? Online plaćanje karticom možete dodati bilo kada."; footnote "… samo na online narudžbe plaćene karticom"; TBC "Naknadno"; trial.ends "Ističe {date}".
+- planPrompt.features.upsells.many = "no" ("Dodatna ponuda" is singular; de-DE does the same).
+- Check: "# početni mjesec / početna mjeseca / početnih mjeseci"; "isključena je funkcija: {feature}"; "Vels"; EEA = "EEP"; "Roštilj na točkovima", "Opći upit".
