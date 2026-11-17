@@ -122,3 +122,10 @@
 - ne-NP CONS: POS in takesCashHelp; Discard «खारेज गर्नुहोस्»; noun «लगइन» vs action «साइन इन»
 - fil-PH 02: hatch → «walk-in order»; «Puwedeng mag-off ang screen»; «NAKA-HOLD ANG CARD»; «HUWAG SINGILIN»; Cook view «Kusina»; fil 'one' covers 1,2,3,5… (rule 8!)
 - fil-PH 03: Dismiss «Isara»; «Mga uri ng event»; chip «Food truck para sa events»; samples «Kuya Jun’s Burgers»; «Appetizers»/«Main course»
+
+## fil-PH part 04 (languages-world-3, 17 Nov 2026)
+- Allergen labels: Contains / May contain / Free from = "Mayroon / Maaaring mayroon / Walang"; "Kitchen also handles" = "Ginagamit din sa kusina" — confirm on the allergen card.
+- errorsManage.wp_last_toggle: poster word CANCELLED = "NA-CANCEL" (part 07's poster must match); toggles "Location"/"Time" left English (must match part 06).
+- manageSchedule.card.dealsActive: `one` case added to {hidden,…} (English had only =0/other).
+- Samples localised: @buresmusicfest → @maginhawafoodfest; https://yourfoodtruck.ph/events. "Margherita" kept (Pizza example).
+- van (fleet vehicle) vs truck (business) kept distinct; "GST and PST" kept (tax names).
