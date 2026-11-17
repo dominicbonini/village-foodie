@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -8,8 +8,8 @@
 |---|---|---|---|---|---|
 | 1 | ru-KZ Russian (Kazakhstan) | ✅ (languages-world-2) | ✅ batch 1 — **needs native/legal check** | `_legal-translations.cjs ru-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | 6ac91927 |
 | 2 | uk-UA Ukrainian | ✅ (lw-2) | ✅ batch 2 — **needs native/legal check** | `_legal-translations.cjs uk-UA` 3/3 ✓; `legal-languages-1` /ua/privacy, /ua/terms, /ua/country-terms ✓ | daf550f8 |
-| 3 | hi-IN Hindi | ✅ (lw-2) | — next (batch 9) | | |
-| 4 | bn-BD Bengali | ✅ (lw-2) | — | | |
+| 3 | hi-IN Hindi | ✅ (lw-2) | ✅ batch 9 — **needs native/legal check** | `_legal-translations.cjs hi-IN` 3/3 ✓; `legal-languages-1` /in/privacy, /in/terms, /in/country-terms ✓ | languages-world-3 batch 9 |
+| 4 | bn-BD Bengali | ✅ (lw-2) | — next (batch 10) | | |
 | 5 | ur-PK Urdu | ✅ (lw-2) | — | | |
 | 6 | kk-KZ Kazakh | ✅ (lw-2) | ✅ batch 3 — **needs native/legal check** | `_legal-translations.cjs kk-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | b77e79df |
 | 7 | uz-UZ Uzbek | ✅ (lw-2) | ✅ batch 4 — **needs native/legal check** | `_legal-translations.cjs uz-UZ` 3/3 ✓; `legal-languages-1` /uz/privacy, /uz/terms, /uz/country-terms ✓ | 3c2fb908 |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **8 of 23 languages done (24 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
+Legal pages: **9 of 23 languages done (27 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
 
 ## Batch order
 
@@ -184,6 +184,18 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 9: hi-IN legal pages
+
+**Files:** [privacy-policy.md](../content/legal/hi-IN/privacy-policy.md), [terms-and-conditions.md](../content/legal/hi-IN/terms-and-conditions.md), [country-specific-terms.md](../content/legal/hi-IN/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into Hindi (Devanagari). No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs hi-IN` 3/3 ✓. `legal-languages-1`: /in/privacy, /in/terms and /in/country-terms render ("4 नवंबर 2026", "1 नवंबर 2026"), then the harness stops with ENOENT at the next missing base (bn-BD). **No screenshot**: India has no country row yet (see batch 2).
+
+**Translation choices:** The Hindi UI words are used throughout: Pay at Hatch = “पिकअप पर भुगतान”, food truck = फ़ूड ट्रक, operator = ऑपरेटर, hatch = ट्रक पर / काउंटर, walk-up orders = वॉक-इन ऑर्डर (as in the UI), kitchen screen = किचन डिस्प्ले (KDS), dashboard = डैशबोर्ड, collection = पिकअप, plan = प्लान, HatchGrab fee = HatchGrab शुल्क, free trial = फ़्री ट्रायल, and the demo checkbox is quoted exactly (“मुझे HatchGrab से कभी-कभी टिप्स और ख़बरें भेजें”). Polite आप, “…” quotes and । as the full stop, as the UI does; the date line uses the UI label “आख़िरी अपडेट:”. controller/processor = कंट्रोलर/प्रोसेसर, VAT = वैट (the UI’s own word; “वैट (VAT)” at first mention), GST stays GST, merchant of record = विक्रेता-रिकॉर्ड (merchant of record), reverse charge = रिवर्स चार्ज (reverse charge), tort = टॉर्ट. Local law names are in Hindi with the official name and year in brackets (e.g. उपभोक्ता अधिकार अधिनियम (Consumer Rights Act 2022)). The two in-text dates follow the page’s own date style (“1 अक्टूबर 2026 से”, “21 मार्च 2025 से लागू”). Fixes before commit: the liability list letters (a)–(f) changed to Devanagari (क)–(च); the Information Commissioner’s Office named in Hindi with the English in brackets; the Privacy Policy table’s “Apple and Google” row translated (Apple और Google), the processors still named verbatim.
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -203,4 +215,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 9 is the hi-IN legal pages. Runs continue automatically back to back, with no waits.
+Batch 10 is the bn-BD legal pages. Runs continue automatically back to back, with no waits.
