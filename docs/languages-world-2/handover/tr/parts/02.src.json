@@ -59,7 +59,7 @@
   "category_id_required": "Something went wrong — refresh the page and try again.",
   "unknown_action": "Unknown action",
   "something_went_wrong": "Something went wrong",
-  "sign_in_check_failed": "Could not check your sign-in right now",
+  "sign_in_check_failed": "Could not check your login right now",
   "device_id_required": "Something went wrong — refresh the page and try again.",
   "bad_request": "Bad request",
   "no_van_for_device": "This device isn’t set to a van yet, so wired printing isn’t available.",
@@ -77,7 +77,9 @@
   "slot_board_not_updated": "Order saved, but the kitchen capacity board could not be updated — check the slot before relying on it.",
   "created_payment_not_recorded": "Order created, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.",
   "payment_not_recorded": "Payment could not be recorded — the takings figure for this order may be wrong until it is repaired.",
-  "payment_not_reversed": "Payment could not be reversed"
+  "payment_not_reversed": "Payment could not be reversed",
+  "event_not_approved": "This event isn’t approved",
+  "event_not_open": "{status, select, closed {This event has finished. Restart it to take orders.} cancelled {This event was cancelled.} other {This event isn’t open.}}"
  },
  "kitchenModals": {
   "close": "Close",
@@ -145,7 +147,25 @@
   "picker": {
    "reconnect": "Reconnect to load",
    "selected": "Selected",
-   "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
+   "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}",
+   "orders": "{n, plural, =0 {No orders} one {{count} order} other {{count} orders}}",
+   "needsApproval": "Needs approval ({count})",
+   "approvedEvents": "Approved events",
+   "needsApprovalNote": "Customers can’t see these yet.",
+   "possibleDuplicateOf": "Possible duplicate of {other}, already approved"
+  },
+  "eventGate": {
+   "approveTitle": "Approve {event}?",
+   "overlapText": "{event} is a possible duplicate of {other} ({start}–{end}), which is already approved{n, plural, =0 {} one { and has {count} order} other { and has {count} orders}}.",
+   "keep": "Keep {other}",
+   "approveAnyway": "Approve {event} anyway",
+   "plainText": "{event} isn’t approved yet. Approve it to take orders? Customers will see it too.",
+   "approve": "Approve",
+   "startTitle": "Start this event?",
+   "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} order so far} other {{count} orders so far}}",
+   "switchTitle": "Switch to {event}?",
+   "switch": "Switch",
+   "dismissedText": "{event} is a possible duplicate of {other}, which is already approved. Approve it to take orders? Customers will see it too."
   }
  },
  "ticket": {
@@ -425,7 +445,8 @@
    "offline": "📴 No connection — {n, plural, one {{count} change saved on this device. It’ll be sent when you’re back online.} other {{count} changes saved on this device. They’ll be sent when you’re back online.}} Settings are locked.",
    "syncing": "Back online — sending {n, plural, one {{count} change} other {{count} changes}}…",
    "synced": "All changes sent.",
-   "stillQueued": "{n, plural, one {{count} change saved on this device. Still trying to send it.} other {{count} changes saved on this device. Still trying to send them.}}"
+   "stillQueued": "{n, plural, one {{count} change saved on this device. Still trying to send it.} other {{count} changes saved on this device. Still trying to send them.}}",
+   "notApproved": "{n, plural, one {{count} order is waiting} other {{count} orders are waiting}}: this event isn’t approved. Approve it to send."
   },
   "lock": {
    "locked": "HatchGrab is locked",
@@ -606,7 +627,7 @@
   "admin": "Admin",
   "privacy": "Privacy policy",
   "terms": "Terms",
-  "signOut": "Sign out",
+  "signOut": "Log out",
   "close": "Close"
  },
  "paymentActions": {

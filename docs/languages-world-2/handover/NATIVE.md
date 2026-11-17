@@ -158,3 +158,9 @@
 - compare.breakdown.freeMonths: "Month 1 / Months 1–#" → "Unang # buwan" in both branches (`one` covers 2, 3, 5…).
 - Germany-specific copy (till/TSE, Uber Eats rates in Germany, Lieferando) translated faithfully — does PH need it at all?
 - "Pence per order" → "Sentimo kada order"; "does not apply to a market" → "hindi applicable sa marketplace" (check meaning in code); excl./incl. VAT → VAT-exclusive / VAT-inclusive; comparison.meta.description "kapasidad ng kusina" (SEO) vs app "kitchen capacity".
+
+## fil-PH part 09 (languages-world-3, 17 Nov 2026)
+- Pricing asterisks mirror English (feeOnly none, feeOnlyCard "<b>{fee}*</b>", NoMark keys none, footnote "* "); card sentence only in bodyCard/bodyOnlyCard: "Mas gusto mo bang magpabayad nang maaga? Magdagdag ng online card payments kahit kailan."
+- Feature names English (Online payments, Private events, Upsells, Social media posts, Free trial, Unlimited); planPrompt.features.*.many stay "yes"/"no" (code selects on them).
+- Customer quotes use "kayo"; "busy villages" → "mga mataong lugar"; UK food hygiene certificate → generic "food safety" (maybe "sanitary permit"); "Mobile Pizzeria ng Taon"; TBC = "Kukumpirmahin pa" (long for a cell).
+- Footer: "Mga Tuntunin", "Patakaran sa Privacy", "Kontakin kami"; part 01's short "Privacy" kept.

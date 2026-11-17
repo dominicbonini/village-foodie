@@ -191,24 +191,35 @@
    "emailPlaceholder": "you@yourtruck.co.uk",
    "codeLabel": "Have a code? <optional>(optional)</optional>",
    "codePlaceholder": "Enter it here",
+   "codeApply": "Apply",
+   "codeApplied": "Code applied: {deal} ({partner})",
+   "codeInvalid": "That code isn't valid.",
+   "codeExpired": "That code has expired.",
+   "dealExtraMonths": "{months, plural, one {# extra month free} other {# extra months free}}",
+   "dealPercentOff": "{pct}% off for {months, plural, one {# month} other {# months}}",
+   "dealPercentOffPlan": "{pct}% off {plan} for {months, plural, one {# month} other {# months}}",
+   "dealFixedPrice": "{plan} at {price} a month for {months, plural, one {# month} other {# months}}",
+   "dealPlanOffer": "a special price on {plan} for {months, plural, one {# month} other {# months}}",
+   "partnerCodeLabel": "Partner or promo code <optional>(optional)</optional>",
    "marketing": "Email me occasional tips and product news. Nothing to do with your orders — you can stop any time.",
-   "signIn": "Sign in",
+   "signIn": "Log in",
    "submit": "Create my account",
    "submitting": "Creating your account…",
    "consent": "By creating an account you agree to our <terms>Terms</terms> and <privacy>Privacy Policy</privacy>. No card needed. Nothing goes public until you say so.",
-   "haveAccount": "Already have an account? Sign in",
+   "haveAccount": "Already have an account? Log in",
    "errorFallback": "Could not create your account.",
    "errorOffline": "Couldn’t reach us just now — please try again."
   },
   "login": {
-   "title": "Sign in to your kitchen",
+   "title": "Log in to your kitchen",
    "dashboardOf": "{brand} operator dashboard",
-   "resetSuccess": "Password updated successfully. Please sign in.",
-   "emailChanged": "Email address updated. Please sign in with your new email address.",
+   "resetSuccess": "Password updated. Please log in.",
+   "emailChanged": "Email address updated. Please log in with your new email address.",
    "errorFallback": "Incorrect email or password. Please try again.",
-   "submit": "Sign in",
-   "submitting": "Signing in…",
-   "forgot": "Forgot your password?"
+   "submit": "Log in",
+   "submitting": "Logging in…",
+   "forgot": "Forgot your password?",
+   "invalidLink": "That link has expired or isn’t valid."
   },
   "forgot": {
    "sentTitle": "Check your email",
@@ -217,7 +228,7 @@
    "subtitle": "Enter your email and we’ll send a reset link",
    "submit": "Send reset link",
    "sending": "Sending…",
-   "back": "Back to sign in"
+   "back": "Back to log in"
   },
   "reset": {
    "invalidTitle": "Invalid reset link",
@@ -234,7 +245,8 @@
    "confirmPassword": "Confirm password",
    "confirmPlaceholder": "Repeat your password",
    "submit": "Set password",
-   "saving": "Saving…"
+   "saving": "Saving…",
+   "sendNewLink": "Send a new link"
   },
   "verifyEmail": {
    "goToLogin": "Go to login",
@@ -253,9 +265,9 @@
    "successBody": "Your email has been changed to <b>{email}</b>. Signing you out…"
   },
   "sessionAlert": {
-   "title": "Your sign-in needs attention",
-   "body": "Everything on screen is still here. New changes may not save until you sign in again.",
-   "signIn": "Sign in again"
+   "title": "Your login needs attention",
+   "body": "Everything on screen is still here. New changes may not save until you log in again.",
+   "signIn": "Log in again"
   }
  },
  "emailSignup": {
@@ -285,7 +297,7 @@
   }
  },
  "errorsOnboarding": {
-  "not_signed_in": "Not signed in",
+  "not_signed_in": "Not logged in",
   "no_operator_record": "No operator record",
   "bad_request": "Bad request",
   "truck_name_missing": "Give your truck a name.",
@@ -299,7 +311,7 @@
   "password_too_short": "Password must be at least {min, plural, one {# character} other {# characters}}.",
   "signup_closed": "Sign-up isn’t open yet.",
   "too_many_attempts": "Too many attempts just now — please try again shortly.",
-  "account_exists": "There’s already an account with that email — sign in instead.",
+  "account_exists": "There’s already an account with that email — log in instead.",
   "account_create_failed": "Could not create the account.",
   "account_finish_failed": "Could not finish creating your account — please try again.",
   "unauthorised": "Unauthorised",
@@ -342,7 +354,7 @@
   "not_available": "Not available.",
   "demo_save_failed": "We couldn’t save that just now — please try again.",
   "deletion_view_owner_only": "Only the account owner can view this.",
-  "deletion_sign_in": "Sign in to request account deletion.",
+  "deletion_sign_in": "Log in to request account deletion.",
   "deletion_owner_only": "Only the account owner can request deletion.",
   "confirm_mismatch": "Type DELETE to confirm.",
   "partial_stamp": "Your deletion request was recorded, but we could not stop ordering on every truck. Contact support."
@@ -463,7 +475,7 @@
    "active": "in progress",
    "pending": "pending"
   },
-  "signIn": "Sign in",
+  "signIn": "Log in",
   "phone": "Phone",
   "onWhatsapp": "This number is on WhatsApp",
   "email": "Email",
@@ -475,6 +487,16 @@
   "showPassword": "Show password",
   "promoLabel": "Have a code? <opt>(optional)</opt>",
   "promoPlaceholder": "Enter it here",
+  "partnerCodeLabel": "Partner or promo code <optional>(optional)</optional>",
+  "partnerCodeApply": "Apply",
+  "partnerCodeApplied": "Code applied: {deal} ({partner})",
+  "partnerCodeInvalid": "That code isn't valid.",
+  "partnerCodeExpired": "That code has expired.",
+  "partnerDealExtraMonths": "{months, plural, one {# extra month free} other {# extra months free}}",
+  "partnerDealPercentOff": "{pct}% off for {months, plural, one {# month} other {# months}}",
+  "partnerDealPercentOffPlan": "{pct}% off {plan} for {months, plural, one {# month} other {# months}}",
+  "partnerDealFixedPrice": "{plan} at {price} a month for {months, plural, one {# month} other {# months}}",
+  "partnerDealPlanOffer": "a special price on {plan} for {months, plural, one {# month} other {# months}}",
   "agreeTerms": "I agree to the <terms>Terms</terms> and <privacy>Privacy Policy</privacy>.",
   "freeMonth": "{months, plural, =0 {Your free trial starts when you sign up.} one {Your first month is free, starting when you sign up.} other {Your first # months are free, starting when you sign up.}}",
   "fieldError": {
@@ -660,9 +682,9 @@
    "ambiguous": "Ambiguous — matches several dishes; pick the right one.",
    "assignTo": "Assign to dish…",
    "dismiss": "Dismiss",
-   "blanket": "The card says <b>{list}</b> may be present across <b>all</b> dishes. Add to every dish? (you’ll still confirm each) <muted>— off by default</muted>",
    "kitchenNotes": "Kitchen notes (saved to your allergen info)",
-   "matchSummary": "{n, plural, =0 {{matched} matched to a dish.} one {{matched} matched to a dish. {count} needs your assignment.} other {{matched} matched to a dish. {count} need your assignment.}}"
+   "matchSummary": "{n, plural, =0 {{matched} matched to a dish.} one {{matched} matched to a dish. {count} needs your assignment.} other {{matched} matched to a dish. {count} need your assignment.}}",
+   "blanketInfo": "Your card says {list} may be present in all dishes. We’ll add them to the allergens your kitchen handles. You can check them at the last step."
   },
   "savedCard": {
    "showLess": "Show less",
@@ -724,7 +746,8 @@
     "choose": "Choose how customers see allergen info",
     "card": "Add your allergen card",
     "cardOptional": "Add an allergen card (optional)",
-    "review": "Check & confirm each dish"
+    "review": "Check & confirm each dish",
+    "kitchen": "Last step: your kitchen"
    },
    "heading": {
     "import": "Allergens",
@@ -744,7 +767,17 @@
    "hint": {
     "skipDefers": "Skip defers — dishes you haven’t confirmed stay hidden from customers until their allergens are confirmed.",
     "importIncomplete": "Confirm every dish to continue — or “Skip allergen setup for now”."
-   }
+   },
+   "recipeOnly": "Only what’s in this dish’s recipe.",
+   "tooMany": "{count} allergens ticked. Is that really all in this dish’s recipe? Allergens used in other dishes don’t go here. You can add those at the last step."
+  },
+  "kitchen": {
+   "title": "Which allergens does your kitchen handle?",
+   "body": "We’ve ticked the ones already in your dishes. Tick any others you use in the truck, for example for specials.",
+   "legendDishes": "in your dishes",
+   "legendAdded": "added by you",
+   "customersSee": "Customers will see:",
+   "confirm": "I confirm the allergens for each dish are correct, and I’ll keep them up to date."
   }
  },
  "manageUpsells": {

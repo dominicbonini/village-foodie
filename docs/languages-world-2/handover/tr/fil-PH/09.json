@@ -1,0 +1,723 @@
+{
+ "landing": {
+  "jsonLd": {
+   "subCategory": "Ordering system para sa food truck at mobile catering",
+   "description": "Online ordering, pre-order at kitchen screen para sa mga food truck at mobile catering ({country}).",
+   "audience": "Mga may-ari ng food truck at mobile catering"
+  },
+  "hero": {
+   "title": "Ang ordering system na ginawa para sa <lean>mga food truck.</lean>",
+   "subSmall": "I-upload ang menu mo, hindi kailangang mag-sign up.<br></br>Makakita ng gumaganang demo sa loob ng 60 segundo.",
+   "cta": "I-upload ang menu ko →",
+   "ctaNote": "<lead>Mag-upload ng litrato ng menu mo at makita itong gumagana sa loob ng 60 segundo.</lead><small>Walang sign-up. Walang card.</small>"
+  },
+  "shots": {
+   "kitchenAlt": "Ang kitchen display (KDS) ng HatchGrab, na nagpapakita ng mga order ticket ayon sa pagkakasunod ng pagluluto",
+   "dashboardAlt": "Pagkuha ng order sa HatchGrab: ang menu sa kaliwa, ang basket at kabuuan sa kanan",
+   "phoneAlt": "Pag-order sa isang food truck gamit ang HatchGrab: ang menu na may mga litrato at presyo, at ang kabuuan ng basket"
+  },
+  "trust": {
+   "freeMonth": "{months, plural, one {Libreng-libre ang unang # buwan, bukas ang lahat ng feature} other {Libreng-libre ang unang # buwan, bukas ang lahat ng feature}}",
+   "noCard": "Hindi kailangan ng card",
+   "cancel": "Puwedeng i-cancel kahit kailan, walang kontrata"
+  },
+  "does": {
+   "eyebrow": "Ano ang ginagawa nito",
+   "title": "Ginawa para sa food truck, hindi para sa restaurant.",
+   "lede": "Karamihan sa mga ordering system ay umaasa sa permanenteng address, maayos na Wi-Fi at parehong oras bawat linggo. Ikaw, iba-iba ang lugar mo bawat linggo, iba-iba ang oras, at mahina o walang signal. Para diyan ginawa ang HatchGrab.",
+   "slotsTitle": "Pumipili ang customers ng oras ng pick-up",
+   "capacityTitle": "I-set ang kitchen capacity mo",
+   "capacityBody": "I-set kung gaano karami ang kaya mong lutuin nang sabay-sabay, at gaano ito katagal. Kapag puno na ang isang oras ng pick-up, hindi na ito mapipili ng customers.",
+   "devicesTitle": "Gumagana sa kahit anong device",
+   "devicesBody": "Gumagana sa phone sa apron mo, sa tablet sa counter, sa laptop sa van — at sa card reader na gamit mo na sa pagtanggap ng bayad.",
+   "postsTitle": "I-automate ang mga post mo sa Facebook at Instagram",
+   "postsBody": "I-upload ang design na pino-post mo na sa Facebook o Instagram. Kami na ang maglalagay ng mga petsa, lugar at oras mo, handa nang i-share — linggo-linggo o araw-araw.",
+   "whatsappTitle": "WhatsApp auto-replies",
+   "whatsappBody": "“Saan kayo mamayang gabi?” “Anong desserts ang meron kayo?” Nasasagot ang WhatsApp mo habang nagmamaneho ka papunta sa pwesto o nasa grill ka, gamit ang sarili mong menu at schedule. Malapit na ang Messenger at Instagram.",
+   "whatsappSoonTitle": "WhatsApp auto-replies <soon>Malapit na</soon>",
+   "whatsappSoonBody": "“Saan kayo mamayang gabi?” “Anong desserts ang meron kayo?” Malapit nang masagot ang WhatsApp mo habang nagmamaneho ka papunta sa pwesto o nasa grill ka. Susunod ang Messenger at Instagram.",
+   "offlineTitle": "Walang signal? Tuloy ang benta.",
+   "offlineBody": "Kapag nawalan ka ng signal, kusang napa-pause ang online ordering para hindi makapag-order ang customers ng mga order na hindi mo makikita. Tuloy ang pagtanggap mo ng order gamit ang app sa iPhone, iPad at Android.",
+   "slotsBody": "Nagpe-pre-order ang customers at pumipili ng oras ng pick-up. Mas kaunting pila, at handa na ang pagkain pagdating nila."
+  },
+  "steps": {
+   "eyebrow": "Pagsisimula",
+   "title": "Mag-set up at magsimulang tumanggap ng order sa loob ng mga 15 minuto.",
+   "lede": "Tatlong bagay ang aayusin — at litrato lang ang kailangan sa dalawa.",
+   "menuTitle": "Buuin ang menu mo",
+   "menuBody": "Kunan ng litrato ang menu board mo o i-paste ito. Kusang papasok ang mga item, presyo at extras. I-check mo lang kung tama.",
+   "scheduleTitle": "Idagdag ang schedule mo",
+   "scheduleBody": "Nasa website mo ba ito? Babasahin namin ito roon at pananatilihing updated. Kung wala, kunan din ito ng litrato. I-approve mo lang ang mahahanap nito.",
+   "shareTitle": "I-share ang link mo",
+   "shareBody": "I-post ito sa Facebook, idikit ang QR sa van. Papasok ang mga order sa screen mo, sa pagkakasunod na kailangan mong lutuin."
+  },
+  "testimonial": {
+   "quote": "Napakadali na ng pag-order dahil sa HatchGrab. Organisado ang lahat, nata-track namin ang stock at alam namin kung ilang pizza na lang ang natitirang ibebenta — at napakaganda ng time slots para sa mga mataong lugar.",
+   "award": "Mobile Pizzeria ng Taon",
+   "awardScope": "Panalo sa rehiyon",
+   "business": "Pizzeria Gusto",
+   "byline": "Nadia & Bogdan — mga may-ari"
+  },
+  "pricing": {
+   "eyebrow": "Presyo",
+   "title": "Magsimula nang libre. Mag-upgrade kapag kailangan mo na.",
+   "switchHead": "Lilipat mula sa ibang platform?",
+   "switchBody": "Tingnan kung magkano ang babayaran mo sa HatchGrab para sa parehong mga order. Mga isang minuto lang.",
+   "switchCta": "Ikumpara ang binabayaran mo"
+  },
+  "faq": {
+   "title": "Mga madalas itanong",
+   "metaTitle": "FAQ: mga madalas itanong | HatchGrab",
+   "metaDescription": "Diretsong sagot para sa mga food truck tungkol sa presyo ng HatchGrab, pag-set up, pagtanggap ng order at pagbabayad — basahin bago ka mag-sign up."
+  },
+  "final": {
+   "truckLabel": "Food truck",
+   "title": "Gusto mong makita kung gaano kadali ang setup?",
+   "lede": "Mag-upload ng litrato o screenshot ng menu mo at gagawin namin itong gumaganang ordering page na puwede mong subukan sa loob ng 60 segundo. Ang mga item mo, ang mga presyo mo. Walang sign-up, walang card, walang kailangang i-install. Tingnan mo muna, saka magdesisyon.",
+   "cta": "I-upload na ang menu ko →"
+  },
+  "meta": {
+   "title": "Food truck ordering system — HatchGrab {country}",
+   "description": "Tanggapin ang order at pre-order sa pwesto mo, walang pila. Ordering at kitchen screen para sa food truck at mobile catering ({country}) — hindi POS."
+  }
+ },
+ "landingNav": {
+  "homeLabel": "Home ng HatchGrab",
+  "cta": "I-upload ang menu ko →",
+  "ctaShort": "I-upload ang menu",
+  "features": "Features",
+  "pricing": "Presyo",
+  "logIn": "Mag-log in",
+  "country": {
+   "button": "Bansa: {name}. Palitan ang bansa",
+   "menu": "Bansa",
+   "title": "Piliin ang bansa mo",
+   "subline": "Magbabago ang mga presyo, wika at settings para tumugma.",
+   "regions": {
+    "europe": "Europa",
+    "americas": "Amerika",
+    "asiaPacific": "Asya-Pasipiko",
+    "middleEast": "Gitnang Silangan",
+    "africa": "Aprika"
+   }
+  }
+ },
+ "landingFooter": {
+  "features": "Features",
+  "pricing": "Presyo",
+  "faq": "FAQ",
+  "privacy": "Privacy",
+  "terms": "Mga Tuntunin",
+  "contact": "Kontakin kami",
+  "about": "Tungkol sa amin",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Mula sa mga gumawa ng <b>Village Foodie</b>",
+  "badges": {
+   "appStoreLink": "I-download ang HatchGrab sa App Store",
+   "appStoreAlt": "I-download sa App Store",
+   "googlePlayLink": "Kunin ang HatchGrab sa Google Play",
+   "googlePlayAlt": "Kunin ito sa Google Play"
+  }
+ },
+ "featuresPage": {
+  "eyebrow": "Ikumpara",
+  "detail": {
+   "walkup_orders": "Tumanggap at mag-manage ng mga order sa truck, na binabayaran sa sarili mong card reader.",
+   "kitchen_app": "Ang pinakakumpletong paraan ng paggamit ng HatchGrab: live na kitchen display (KDS), at ang tanging paraan para tuloy-tuloy ang pagtanggap ng order kapag nawalan ka ng signal.",
+   "multi_device_kitchen": "Gumamit ng ilang screen — sa front counter at sa kusina — na pare-parehong nagpapakita ng mga live na order.",
+   "multi_user_access": "Bigyan ang staff ng sarili nilang login na may tamang antas ng access.",
+   "offline_protection": "Kapag nawalan ka ng signal, napa-pause ang online ordering para hindi makapag-order ang customers ng mga order na hindi mo makikita. Sa app sa iPhone, iPad at Android, tuloy ang pagtanggap mo ng order kahit offline; kailangan ng connection ang web dashboard.",
+   "ticket_printing": "Mag-print ng order ticket sa Bluetooth o wired printer sa kusina.",
+   "web_dashboard": "Patakbuhin ang service mo mula sa browser ng kahit anong phone, tablet o laptop.",
+   "meal_deals_upsells": "Pagsamahin ang mga item sa combo meals at mag-alok ng add-ons sa checkout para tumaas ang average na order.",
+   "sold_out_toggle": "Markahang sold out ang kahit anong item sa isang tap — agad itong magiging gray para sa customers.",
+   "stock_countdown": "Mag-set ng bilang ng stock at bababa ito habang pumapasok ang mga order, tapos kusa itong magiging sold out.",
+   "buzzer_tracking": "Lagyan ng buzzer number ang order kapag nag-abot ka ng buzzer, para alam mo kung aling buzzer ang para sa aling order.",
+   "documents_reminders": "I-save ang mga certificate mo sa iisang lugar, gaya ng food safety, insurance at gas safety. Paaalalahanan ka namin bago mag-expire ang kahit ano, at maipapadala mo ang mga ito sa organizer ng event o market sa isang tap.",
+   "profit_per_event": "Ilagay ang cost ng bawat dish at makita kung magkano talaga ang kinita mo sa bawat event, hindi lang ang benta mo.",
+   "accountant_reports": "Benta, tax at refunds para sa kahit anong buwan, quarter o tax year, handang i-download para sa accountant mo.",
+   "tap_to_pay": "Tumanggap ng card payments sa supported na phone, kaya hindi mo na kailangan ng hiwalay na card reader.",
+   "customer_display": "Isang screen na nakikita ng customers, na nagpapakita ng mga order number at kung kailan ready na ang mga ito.",
+   "online_payments": "Pabayarin muna sa card ang customers kapag nag-order sila online, gamit ang Stripe.",
+   "advance_preordering": "Hayaang mag-order ang customers para sa susunod na petsa o oras bago ang event.",
+   "preorder_deadline": "Mag-set ng cut-off time para sa mga item na kailangang i-order nang maaga.",
+   "time_slot_selection": "Pumipili ang customers ng oras ng pick-up mula sa mga time slot, kaya nahahati ang dami ng order sa buong service mo.",
+   "kitchen_capacity": "I-set kung gaano karami ang kayang lutuin ng kusina mo nang sabay-sabay at gaano ito katagal. Kapag puno na ang isang slot, hindi na ito mapipili ng customers.",
+   "auto_accept": "Kusang tinatanggap ang online orders — hindi na kailangang kumpirmahin isa-isa.",
+   "private_events": "Magdagdag ng private events na hindi lumalabas sa mapa, na may sariling private ordering link at QR code.",
+   "embed_schedule": "Ipakita ang mga paparating mong petsa sa sarili mong website. Diretsong naka-link ang bawat isa sa order page nito.",
+   "qr_code": "QR code na puwedeng i-print, na nagbubukas ng menu at ordering page mo.",
+   "branded_qr_code": "Ilagay ang logo mo sa QR code mo.",
+   "discovery_map_listing": "Lumalabas ang truck mo sa public na mapa ng HatchGrab para mahanap ka ng customers na malapit sa iyo.",
+   "schedule_import": "Kusa naming pinupunan ang schedule mo — mula sa website mo, o sa litratong pino-post mo na sa Facebook. I-review at kumpirmahin mo lang.",
+   "event_types": "Gumawa ng sarili mong mga uri ng event, na may custom na presyo at settings para sa events at festivals.",
+   "social_media_posts": "I-upload ang mga design mo — kusa naming idinadagdag ang mga petsa, lugar at oras mo para sa bawat linggo at event.",
+   "whatsapp_auto_replies": "WhatsApp auto-reply sa mga tanong tungkol sa menu at schedule mo.",
+   "messenger_instagram_replies": "Gaya ng WhatsApp auto-replies, para sa mga tanong sa Messenger at Instagram.",
+   "sms_order_alerts": "Kusang mag-text sa customers kapag ready na ang order nila.",
+   "loyalty_stamp_cards": "Gantimpalaan ang mga suki mo ng digital stamp cards — kusang nakokolekta at nare-redeem."
+  },
+  "metaTitle": "Plans at features, magkatabi — HatchGrab {country}"
+ },
+ "planTable": {
+  "h1": "Lahat ng kailangan sa service mo, sa bawat plan.",
+  "lede": "Kasama sa bawat plan ang ordering, pre-order, capacity at kitchen display (KDS).{hasUpgrades, select, yes { May dagdag na {features} at mas mababang fees ang {plans}.} other {}}",
+  "perMonth": "{price} / buwan",
+  "trial": {
+   "length": "{months, plural, one {# buwan} other {# buwan}}",
+   "ends": "Matatapos sa {date}"
+  },
+  "group": {
+   "pay": "Ang babayaran mo",
+   "run": "Patakbuhin ang service mo",
+   "online": "Online orders",
+   "marketing": "Marketing at automation"
+  },
+  "pay": {
+   "included": "Online orders na kasama kada buwan",
+   "fee": "Fee ng HatchGrab sa online orders*",
+   "feeNoMark": "Fee ng HatchGrab sa online orders",
+   "walkUp": "Walk-in orders"
+  },
+  "cell": {
+   "unlimited": "Unlimited",
+   "free": "Libre",
+   "feeAbove": "<b>{fee}</b> kapag lampas {included}",
+   "yes": "Kasama",
+   "none": "Hindi kasama",
+   "comingSoon": "Malapit na"
+  },
+  "short": {
+   "whatsapp_replies": "WhatsApp",
+   "schedule_graphics": "social media",
+   "event_types": "custom na presyo sa events"
+  },
+  "meta": {
+   "description": "Lahat ng feature ng HatchGrab sa bawat plan, magkakatabi — {plans}, kasama ang fees at allowances.{months, plural, =0 {} one { Kasama ang lahat sa unang # buwan mo.} other { Kasama ang lahat sa unang # buwan mo.}}"
+  },
+  "notes": {
+   "whatsapp": "Kailangan ng WhatsApp Business account para sa WhatsApp auto-replies. Puwedeng maningil ang Meta sa ilang message; awtomatikong ginagawa ang mga sagot.",
+   "printing": "Kailangan ng compatible na Bluetooth o wired printer para sa pag-print ng kitchen ticket (hindi kasama)."
+  }
+ },
+ "pricing": {
+  "banner": {
+   "title": "{months, plural, one {Libreng-libre ang unang # buwan mo — bukas ang lahat ng feature.} other {Libreng-libre ang unang # buwan mo — bukas ang lahat ng feature.}}",
+   "body": "Gamit ang {brand}, nagpe-pre-order ang customers at nagbabayad pag-pick up nila, kaya puwede kang tumanggap ng online orders nang hindi nagko-connect ng kahit anong card processor. Pagkatapos ng trial mo, lilipat ka sa <plan>{fallback}</plan>{fallbackFree, select, yes { — walang monthly fee —} other {}} maliban kung pumili ka ng plan. Walang card para magsimula, walang kontrata, puwedeng i-cancel kahit kailan.",
+   "bodyCard": "Gamit ang {brand}, nagpe-pre-order ang customers at nagbabayad pag-pick up nila, kaya puwede kang tumanggap ng online orders nang hindi nagko-connect ng kahit anong card processor. Mas gusto mo bang magpabayad nang maaga? Magdagdag ng online card payments kahit kailan. Pagkatapos ng trial mo, lilipat ka sa <plan>{fallback}</plan>{fallbackFree, select, yes { — walang monthly fee —} other {}} maliban kung pumili ka ng plan. Walang card para magsimula, walang kontrata, puwedeng i-cancel kahit kailan.",
+   "bodyOnly": "Gamit ang {brand}, nagpe-pre-order ang customers at nagbabayad pag-pick up nila, kaya puwede kang tumanggap ng online orders nang hindi nagko-connect ng kahit anong card processor. Pagkatapos ng trial mo, {price} kada buwan ang <plan>{fallback}</plan>. Kokontakin ka namin bago iyon para i-set up ang bayad. Walang card para magsimula, walang kontrata, puwedeng i-cancel kahit kailan.",
+   "bodyOnlyCard": "Gamit ang {brand}, nagpe-pre-order ang customers at nagbabayad pag-pick up nila, kaya puwede kang tumanggap ng online orders nang hindi nagko-connect ng kahit anong card processor. Mas gusto mo bang magpabayad nang maaga? Magdagdag ng online card payments kahit kailan. Pagkatapos ng trial mo, {price} kada buwan ang <plan>{fallback}</plan>. Kokontakin ka namin bago iyon para i-set up ang bayad. Walang card para magsimula, walang kontrata, puwedeng i-cancel kahit kailan."
+  },
+  "card": {
+   "perTruckMonth": "kada truck / buwan",
+   "mostTrucks": "Pili ng karamihan",
+   "tryFree": "Subukan nang libre",
+   "seeEvery": "Tingnan ang lahat ng feature →",
+   "everything": "Lahat ng kailangan sa isang service",
+   "everythingIn": "Lahat ng nasa {plan}, at"
+  },
+  "fee": {
+   "feeOnly": "<b>{fee}</b> sa online orders lang. Laging libre ang walk-in orders.",
+   "feeOnlyCard": "<b>{fee}*</b> sa online orders lang. Laging libre ang walk-in orders.",
+   "included": "Kasama ang unang <b>{included}</b> ng online orders kada buwan, pagkatapos ay <b>{fee}*</b>. Laging libre ang walk-in orders.",
+   "includedNoMark": "Kasama ang unang <b>{included}</b> ng online orders kada buwan, pagkatapos ay <b>{fee}</b>. Laging libre ang walk-in orders.",
+   "noFee": "<b>Walang fees ng HatchGrab</b> sa online orders, gaano ka man ka-busy. Iisang tiyak na gastos kada buwan."
+  },
+  "base": {
+   "walkUp": "Walk-in orders at kitchen display (KDS)",
+   "online": "Online ordering",
+   "preorders": "Pre-order at oras ng pick-up",
+   "capacity": "Pag-manage ng kitchen capacity",
+   "privateEvents": "Private events",
+   "printing": "Pag-print ng kitchen ticket",
+   "app": "Kitchen app sa iPhone, iPad at Android"
+  },
+  "added": {
+   "whatsapp_replies": "WhatsApp auto-replies",
+   "schedule_graphics": "Social media posts — ang schedule mo sa Facebook at Instagram — handa nang i-post",
+   "event_types": "Custom na uri ng event at presyo"
+  },
+  "money": {
+   "unlimitedOrders": "Unlimited na online orders, 0% fee ng HatchGrab",
+   "samePrice": "Parehong presyo kahit sa pinaka-busy mong buwan"
+  },
+  "comingSoon": "Malapit na",
+  "bar": {
+   "title": "Aling plan ang pinakamura para sa akin?",
+   "subtitle": "Ang online orders mo kada buwan",
+   "first": "Mas mababa sa {to} → <b>{plan}</b>",
+   "middle": "{from} – {to} → <b>{plan}</b>",
+   "last": "Higit sa {from} → <b>{plan}</b>",
+   "only": "Kahit gaano karami → <b>{plan}</b>"
+  },
+  "footnote": "* Dagdag ang card processing ng Stripe sa online card orders lang (sa ngayon, {cardFee} sa {country}), na bayad sa Stripe, hindi sa HatchGrab. Sa walk-in orders, sarili mong card reader ang gamit — 0% ang singil ng HatchGrab.",
+  "currencyLine": "Mga presyo sa {currency} ({code})"
+ },
+ "planFeatures": {
+  "row": {
+   "discovery_map_listing": {
+    "name": "Listing sa discovery map"
+   },
+   "web_dashboard": {
+    "name": "Web dashboard para sa kahit anong device"
+   },
+   "qr_code": {
+    "name": "QR code"
+   },
+   "schedule_import": {
+    "name": "Automatic na pag-import ng schedule"
+   },
+   "meal_deals_upsells": {
+    "name": "Combo meals at upsells"
+   },
+   "walkup_orders": {
+    "name": "Pag-process ng walk-in order"
+   },
+   "sold_out_toggle": {
+    "name": "Instant na sold-out toggle"
+   },
+   "kitchen_app": {
+    "name": "Kitchen app sa iPhone, iPad at Android"
+   },
+   "offline_protection": {
+    "name": "Offline protection ng order"
+   },
+   "online_payments": {
+    "name": "Online payments"
+   },
+   "advance_preordering": {
+    "name": "Pre-order nang maaga"
+   },
+   "preorder_deadline": {
+    "name": "Deadline ng pre-order"
+   },
+   "time_slot_selection": {
+    "name": "Pagpili ng time slot ng customer"
+   },
+   "kitchen_capacity": {
+    "name": "Pag-manage ng kitchen capacity"
+   },
+   "stock_countdown": {
+    "name": "Automatic na stock countdown"
+   },
+   "auto_accept": {
+    "name": "Auto-accept ng online orders"
+   },
+   "branded_qr_code": {
+    "name": "QR code na may brand mo"
+   },
+   "private_events": {
+    "name": "Private events"
+   },
+   "social_media_posts": {
+    "name": "Social media posts"
+   },
+   "whatsapp_auto_replies": {
+    "name": "WhatsApp auto-replies"
+   },
+   "messenger_instagram_replies": {
+    "name": "Messenger at Instagram auto-replies"
+   },
+   "tap_to_pay": {
+    "name": "Tumanggap ng bayad sa phone mo"
+   },
+   "sms_order_alerts": {
+    "name": "SMS alert ng order"
+   },
+   "multi_device_kitchen": {
+    "name": "Kitchen sync sa maraming device"
+   },
+   "multi_user_access": {
+    "name": "Access para sa maraming user"
+   },
+   "embed_schedule": {
+    "name": "Schedule page sa sarili mong website"
+   },
+   "event_types": {
+    "name": "Custom na uri ng event at presyo"
+   },
+   "buzzer_tracking": {
+    "name": "Pag-track ng buzzer"
+   },
+   "documents_reminders": {
+    "name": "Mga dokumento at paalala"
+   },
+   "profit_per_event": {
+    "name": "Tubo kada event"
+   },
+   "accountant_reports": {
+    "name": "Reports para sa accountant mo"
+   },
+   "ticket_printing": {
+    "name": "Pag-print ng kitchen ticket"
+   },
+   "customer_display": {
+    "name": "Display na nakaharap sa customer"
+   },
+   "loyalty_stamp_cards": {
+    "name": "Digital loyalty stamp cards"
+   }
+  },
+  "cardRegionOnline": "standard na {region}",
+  "cardRegion": {
+   "UKcards": "cards mula sa UK",
+   "EEAcards": "cards mula sa EEA",
+   "UScards": "cards mula sa US",
+   "Australiancards": "cards mula sa Australia",
+   "NewZealandcards": "cards mula sa New Zealand",
+   "Canadiancards": "cards mula sa Canada",
+   "Swisscards": "cards mula sa Switzerland",
+   "Braziliancards": "cards mula sa Brazil",
+   "Mexicancards": "cards mula sa Mexico",
+   "Japanesecards": "cards mula sa Japan",
+   "Singaporecards": "cards mula sa Singapore",
+   "HongKongcards": "cards mula sa Hong Kong",
+   "Malaysiancards": "cards mula sa Malaysia",
+   "Thaicards": "cards mula sa Thailand",
+   "UAEcards": "cards mula sa UAE"
+  },
+  "perMonth": {
+   "mo": "{amount}/buwan",
+   "month": "{amount}/buwan"
+  },
+  "priceWord": {
+   "free": "Libre",
+   "freeTrial": "Free trial",
+   "lifetime": "Panghabambuhay",
+   "zeroPercent": "0%",
+   "payAtHatch": "Bayad sa Pick-up",
+   "unlimited": "Unlimited",
+   "none": "—",
+   "masked": "Kukumpirmahin pa"
+  },
+  "cell": {
+   "included": "Kasama"
+  }
+ },
+ "planPrompt": {
+  "includedOn": "{many, select, yes {Kasama ang {feature} sa {plan}.} other {Kasama ang {feature} sa {plan}.}}",
+  "notOnPlan": "{many, select, yes {Wala ang {feature} sa plan mo.} other {Wala ang {feature} sa plan mo.}}",
+  "switchedOff": "{many, select, yes {Naka-off ang {feature} para sa truck mo.} other {Naka-off ang {feature} para sa truck mo.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Mag-upgrade →",
+  "features": {
+   "discovery_map": {
+    "name": "Listing sa discovery map",
+    "many": "no"
+   },
+   "web_dashboard": {
+    "name": "Web dashboard",
+    "many": "no"
+   },
+   "ipad_kds": {
+    "name": "Kitchen app",
+    "many": "no"
+   },
+   "qr_menu": {
+    "name": "QR code menu",
+    "many": "no"
+   },
+   "meal_deals": {
+    "name": "Combo meals",
+    "many": "yes"
+   },
+   "upsells": {
+    "name": "Upsells",
+    "many": "yes"
+   },
+   "walkup_orders": {
+    "name": "Walk-in orders",
+    "many": "yes"
+   },
+   "online_ordering_pay_at_hatch": {
+    "name": "Ordering na may Bayad sa Pick-up",
+    "many": "no"
+   },
+   "sold_out_toggle": {
+    "name": "Sold-out toggle",
+    "many": "no"
+   },
+   "stock_countdown": {
+    "name": "Stock countdown",
+    "many": "no"
+   },
+   "offline_protection": {
+    "name": "Offline protection ng order",
+    "many": "no"
+   },
+   "online_payments": {
+    "name": "Online payments",
+    "many": "yes"
+   },
+   "advance_preordering": {
+    "name": "Pre-order nang maaga",
+    "many": "no"
+   },
+   "time_slot_selection": {
+    "name": "Time slots para sa customer",
+    "many": "yes"
+   },
+   "smart_batch_pacing": {
+    "name": "Pag-manage ng kitchen capacity",
+    "many": "no"
+   },
+   "auto_accept": {
+    "name": "Auto-accept",
+    "many": "no"
+   },
+   "instagram_messenger_replies": {
+    "name": "Messenger at Instagram auto-replies",
+    "many": "yes"
+   },
+   "branded_qr_code": {
+    "name": "Mga QR code na may brand mo",
+    "many": "yes"
+   },
+   "advanced_reporting": {
+    "name": "Advanced na reports",
+    "many": "no"
+   },
+   "ticket_printing": {
+    "name": "Pag-print ng kitchen ticket",
+    "many": "no"
+   },
+   "multi_device_kds": {
+    "name": "Kitchen sync sa maraming device",
+    "many": "no"
+   },
+   "cook_screen": {
+    "name": "Screen ng nagluluto",
+    "many": "no"
+   },
+   "whatsapp_replies": {
+    "name": "WhatsApp auto-replies",
+    "many": "yes"
+   },
+   "embed_schedule": {
+    "name": "Schedule mo sa sarili mong website",
+    "many": "no"
+   },
+   "schedule_graphics": {
+    "name": "Social media posts",
+    "many": "yes"
+   },
+   "event_types": {
+    "name": "Custom na uri ng event",
+    "many": "yes"
+   },
+   "private_events": {
+    "name": "Private events",
+    "many": "yes"
+   },
+   "paperwork": {
+    "name": "Mga dokumento",
+    "many": "yes"
+   }
+  }
+ },
+ "faq": {
+  "phrases": {
+   "appsSentence": "May app din para sa iPad at Android, na tuloy-tuloy na tumatanggap ng walk-in orders kahit mawalan ka ng signal.",
+   "appsOffline": "Tuloy ang pagtanggap ng walk-in orders sa app sa iPad at Android kahit walang signal, at ipinapadala ang mga ito pagbalik mo online; kailangan ng connection ang web dashboard.",
+   "webOffline": "Kailangan ng connection ang web dashboard para makita ang mga bagong order."
+  }
+ },
+ "aboutPage": {
+  "meta": {
+   "title": "Tungkol sa amin — HatchGrab",
+   "description": "Software ng HatchGrab para sa food truck at mobile catering: online order, oras ng pick-up, mas kaunting paulit-ulit na tanong. Itinatag ni Dominic Bonini."
+  },
+  "eyebrow": "Tungkol sa amin",
+  "title": "Ginawa ayon sa totoong takbo ng trabaho ng mga food truck",
+  "photoAlt": "{name}, founder ng HatchGrab",
+  "story": {
+   "start": "Nagsimula ang HatchGrab sa isang simpleng obserbasyon: kailangan ng mga food truck ng mas magagandang tools para patakbuhin ang negosyo nila.",
+   "villageFoodie": "Matapos kong gawin ang Village Foodie, isang directory na tumutulong sa mga tao na mahanap ang mga food truck na dumadayo sa lugar nila, mas pinag-aralan ko ang mga hamong hinaharap ng mga mobile food business. Hindi tulad ng mga tradisyonal na restaurant, laging gumagalaw ang mga food truck, nagtitinda sa iba’t ibang lugar at nagse-serve sa customers sa pabago-bagong kondisyon.",
+   "fixedAddress": "Pero karamihan sa software na available sa kanila ay ginawa para sa mga negosyong may permanenteng address.",
+   "change": "Ginawa ang HatchGrab para baguhin iyon.",
+   "build": "Gumagawa kami ng praktikal na software para mismo sa mga food truck at mobile caterer, para matulungan silang tumanggap ng online orders, mag-manage ng oras ng pick-up, panatilihing maayos ang daloy ng mga order at mabawasan ang oras na nauubos sa paulit-ulit na tanong.",
+   "focus": "Simple ang focus namin: gawing mas madali ang pagpapatakbo ng food truck, gamit ang tools na idinisenyo ayon sa totoong takbo ng mga negosyong ito."
+  },
+  "signature": "<b>{name}</b><br></br>Founder, HatchGrab",
+  "company": "{company} · registered sa England at Wales · company number {number} · registered office: {address}",
+  "contact": "Kontakin kami"
+ },
+ "legalChrome": {
+  "meta": {
+   "privacyTitle": "Patakaran sa Privacy — HatchGrab",
+   "privacyDescription": "Paano kinokolekta at ginagamit ng HatchGrab Ltd ang personal data.",
+   "termsTitle": "Mga Tuntunin ng Serbisyo — HatchGrab",
+   "termsDescription": "Ang mga tuntunin sa paggamit ng HatchGrab.",
+   "countryTermsTitle": "Mga tuntunin para sa bawat bansa — HatchGrab",
+   "countryTermsDescription": "Ang mga dagdag na patakarang naaangkop sa HatchGrab sa ilang bansa."
+  },
+  "homeLabel": "Home ng HatchGrab",
+  "privacy": "Privacy",
+  "terms": "Mga Tuntunin",
+  "countryTerms": "Mga tuntunin ng bansa",
+  "contact": "Kontakin kami",
+  "lastUpdated": "Huling na-update: {date}",
+  "questions": "May tanong? <link>Kontakin kami</link> — totoong tao kami.",
+  "translationNote": "Pagsasalin ito. Kung may pagkakaiba ito sa <link>English na bersyon</link>, ang English na bersyon ang masusunod."
+ },
+ "truckPage": {
+  "meta": {
+   "fallbackTitle": "Food Truck | Village Foodie",
+   "hgFallbackTitle": "Food truck",
+   "orderTitle": "Mag-order sa {truck}",
+   "orderDescription": "Mag-pre-order sa {truck} at i-pick up ang order mo sa mismong truck.",
+   "title": "{truck} | Village Foodie",
+   "logoAlt": "Logo ng {truck}"
+  },
+  "shareTitle": "Schedule ng {truck}",
+  "shareText": "Tingnan kung saan susunod na pupwesto ang {truck}! 🚚",
+  "linkCopied": "Nakopya na ang link ng profile! 📋",
+  "facebookPage": "Facebook Page",
+  "loadingMap": "Nilo-load ang mapa…",
+  "view": {
+   "list": "Listahan",
+   "map": "Mapa"
+  },
+  "ownThisTruck": "Ikaw ba ang may-ari ng truck na ito?",
+  "ownThisTruckTitle": "Ikaw ba ang may-ari ng truck na ito? I-click para i-update ang profile mo",
+  "actions": {
+   "menu": "Menu",
+   "call": "Tumawag",
+   "message": "Mag-message",
+   "share": "I-share",
+   "order": "Mag-order"
+  },
+  "loadingSchedule": "Nilo-load ang schedule…",
+  "loadError": {
+   "title": "Hindi ma-load",
+   "body": "Hindi namin ma-load ang schedule ngayon — kadalasan, saglit na aberya lang ito. Subukan ulit.",
+   "retry": "Subukan ulit"
+  },
+  "notFound": {
+   "title": "Hindi mahanap ang truck",
+   "body": "Wala kaming mahanap na detalye para sa food truck na ito. Baka lumipat sila o nag-update ng profile nila.",
+   "cta": "Tingnan ang lahat ng truck"
+  },
+  "noEvents": {
+   "title": "Walang paparating na event",
+   "body": "Baka may kulang kaming detalye para sa truck na ito. Ikaw ba ang may-ari, o alam mo ang schedule nila?",
+   "cta": "Mag-message sa amin para ma-update!"
+  },
+  "whereToFind": "Saan Kami Makikita",
+  "missingEvent": "<strong>May kulang ba kaming event?</strong> <br></br>Kung ikaw ang may-ari ng truck na ito o isang tapat na fan, tulungan kaming panatilihing tama ang page na ito! <br></br><link>Kontakin kami para idagdag ang kulang na detalye.</link>",
+  "weeklySchedule": "Kunin ang Lingguhang Schedule 🍕"
+ },
+ "contactPage": {
+  "meta": {
+   "title": "Tulong",
+   "description": "Humingi ng tulong tungkol sa HatchGrab. Magpadala ng message at sasagot kami sa iyo sa email."
+  },
+  "logIn": "Mag-log in",
+  "eyebrow": "Tulong",
+  "title": "Paano ka namin matutulungan?",
+  "lede": "May hindi gumagana, o may tanong tungkol sa account mo? May dalawang paraan para maabot kami — alinman doon, sasagot kami sa iyo sa email.",
+  "emailUs": "I-email kami",
+  "formHeading": "O magpadala ng message",
+  "form": {
+   "topicLabel": "Tungkol saan ito?",
+   "topics": {
+    "question": "Tanong tungkol sa HatchGrab",
+    "account": "Tulong sa account ko",
+    "comparison": "Pagtatama sa isang comparison page",
+    "other": "Iba pa"
+   },
+   "nameLabel": "Pangalan mo",
+   "namePlaceholder": "Pangalan",
+   "emailLabel": "Email",
+   "businessLabel": "Pangalan ng truck o negosyo",
+   "optional": "(opsyonal)",
+   "businessPlaceholder": "hal. Sisig Station",
+   "messageLabel": "Message mo",
+   "send": "Ipadala ang message",
+   "sending": "Ipinapadala…",
+   "privacyLine": "Gagamitin lang namin ang details mo para sumagot sa iyo.",
+   "privacyLink": "Patakaran sa Privacy",
+   "thanksTitle": "Salamat — natanggap na namin ang message mo.",
+   "thanksBody": "Sasagot kami sa email address na ibinigay mo.",
+   "errors": {
+    "nameRequired": "Ilagay ang pangalan mo.",
+    "nameTooLong": "Hanggang {max, number} character lang ang pangalan mo.",
+    "emailRequired": "Ilagay ang email address mo.",
+    "emailInvalid": "Maglagay ng valid na email address.",
+    "emailTooLong": "Gumamit ng email address na hanggang {max, number} character lang.",
+    "businessRequired": "Ilagay ang pangalan ng truck o negosyo mo, para mahanap namin ang account mo.",
+    "businessTooLong": "Hanggang {max, number} character lang ang pangalan ng truck o negosyo.",
+    "messageTooShort": "Sumulat ng hindi bababa sa {min, number} character.",
+    "messageTooLong": "Hanggang {max, number} character lang ang message mo.",
+    "topicInvalid": "Piliin kung tungkol saan ang message mo.",
+    "rateLimited": "Nakapagpadala ka na ng ilang message — subukan ulit mamaya, o i-email kami sa {email}.",
+    "failed": "Nagka-problema — i-email kami sa {email}."
+   }
+  },
+  "privacy": "Privacy",
+  "terms": "Mga Tuntunin",
+  "about": "Tungkol sa amin",
+  "copyright": "© {year} HatchGrab"
+ },
+ "siteFooter": {
+  "title": "Huwag palampasin ang kahit isang slice 🍕",
+  "body": "Matanggap ang food schedule ng lugar mo sa inbox mo linggo-linggo.",
+  "cta": "Kunin ang Schedule",
+  "noSpam": "Walang Spam (pero baka may Pepperoni). Puwedeng Mag-unsubscribe Kahit Kailan.",
+  "heading": "Kontakin Kami at Mga Serbisyo",
+  "hire": "Food Truck para sa Events",
+  "general": "Pangkalahatang Tanong",
+  "addBusiness": "Idagdag ang Negosyo Ko",
+  "reportIssue": "Mag-report ng Problema",
+  "directory": "Directory ng mga Truck",
+  "disclaimer": "Paalala: Puwedeng baguhin ng mga vendor ang schedule. Ginagawa namin ang aming makakaya, pero hindi kami responsable sa mga na-cancel na truck o sa mga burger na sold out na. Laging i-check ang social media ng vendor para sa mga last-minute na update."
+ },
+ "errorPage": {
+  "notFoundTitle": "Hindi mahanap ang page",
+  "notFoundBody": "Hindi namin mahanap ang page na iyan. Baka nailipat na ito, o baka mali ang pagkaka-type ng address.",
+  "home": "Pumunta sa home page",
+  "errorTitle": "Nagka-problema",
+  "errorBody": "Pasensya na — hindi nag-load ang page na ito. Subukan ulit, o bumalik sa home page.",
+  "retry": "Subukan ulit",
+  "backToDashboard": "Bumalik sa dashboard",
+  "errorBodyDashboard": "Pasensya na, hindi nag-load ang page na ito. Subukan ulit, o bumalik sa dashboard mo.",
+  "sectionFailed": "Hindi nag-load ang section na ito."
+ },
+ "embed": {
+  "metaDescription": "Kung saan susunod na magtitinda ang {truck}.",
+  "orderFrom": "Mag-order sa {truck}",
+  "poweredBy": "Pinapagana ng <b>HatchGrab</b>",
+  "loadFailed": "Hindi ma-load ang schedule ngayon.",
+  "loading": "Nilo-load ang schedule…",
+  "empty": "Walang nakalistang paparating na event para sa {truck}."
+ },
+ "planNames": {
+  "payg": {
+   "name": "Pay as you go",
+   "subtitle": "Para sa seasonal at part-time na nagtitinda",
+   "description": "Walang monthly fee. 0.99% lang ang babayaran mo sa online orders."
+  },
+  "pro": {
+   "subtitle": "Para sa mga truck na regular na tumatanggap ng pre-order",
+   "description": "Lahat ng feature, kasama ang WhatsApp auto-replies at social media posts, at may kasamang online orders kada buwan."
+  },
+  "unlimited": {
+   "name": "Unlimited",
+   "subtitle": "Para sa mga busy na truck at festivals",
+   "description": "Lahat ng feature, at walang fees sa online orders, gaano ka man ka-busy."
+  },
+  "trial": {
+   "name": "Free trial",
+   "description": "Lahat ng feature, libre, habang tumatakbo ang trial mo."
+  },
+  "demo": {
+   "name": "Demo",
+   "description": "Sandbox para sa prospect — hindi kailanman public."
+  },
+  "tester": {
+   "name": "Tester",
+   "description": "Tester bago ang launch — full access."
+  }
+ }
+}
