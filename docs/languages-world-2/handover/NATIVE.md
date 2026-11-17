@@ -177,3 +177,9 @@
 - kds.body + offline-reject e-mail now "van" as English; Yam = "Ube (yam)"; card machine/terminal → card reader; authorise → authorize.
 - auth.verifyEmail.successBody + staff sign-in line moved to log-out/log-in wording though the English still says sign in/out — check.
 - "customers" vs "mga customer" left mixed (natural Taglish).
+
+## sq-AL part 01 (languages-world-3, 17 Nov 2026)
+- Buzzer "pager"; Sold out "Mbaroi"/MBAROI (alt. "E shitur", "Jashtë stokut"); Assembly "Montimi"; batch "seri".
+- held, not charged = "e bllokuar, jo e tërhequr"; Order received "Porosia u regjistrua" (≠ "u konfirmua"); final button "Porosi me detyrim pagese" (Ligji 9902/2008).
+- ALLERGENS (check first): tree nuts "Fruta me lëvozhgë të fortë", nuts "Fruta me lëvozhgë", Dairy "Bulmet", abalone "Vesh deti (abalone)", yam "Jam (yam)", Halal "Hallall".
+- van = "furgon" (also dashboard.settings.assignTruck — fleet sense).
