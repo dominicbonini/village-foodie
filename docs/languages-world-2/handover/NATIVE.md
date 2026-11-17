@@ -318,3 +318,9 @@
 - Canva path "Share › Download (Сподели › Преземи)"; "4.000 знаци".
 - 21-safe: hiddenNotice.body generic, list.found "Пронајдени настани за вас: #", conflict.title "# можен конфликт", dealsActive `one` added.
 - Check: "празна подлога", "Кујната работи и со", "Започни обиколка", "Поставки за приказ", Open now "Во тек"; samples @letenfestival, vasiotfudtrak.mk/nastani.
+
+## mk-MK part 05 (languages-world-3, 17 Nov 2026)
+- Truck settings (vans) "Поставки за возила"; Truck details "Податоци за фуд тракот"; all fleet uses возило.
+- Posts: "неделна објава", "објава за еден настан", caption "опис", "шаблон", „Сиот текст“, „Главна“, Days off "Слободни денови"; Place/Times „Локација“/„Време“.
+- 21-safe: everyMinutes "Интервал од {count} минута/минути", withPrivate "· не се вклучени: # приватен настан"; ownPriceCount keeps {count}.
+- Check: "Тим → Мој профил", "Минатата даночна година", "{m} мин {s} с", "Доплати за додатоци", "Проѕирно".
