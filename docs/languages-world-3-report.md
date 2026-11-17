@@ -20,8 +20,8 @@
 | 12 | ne-NP Nepali | ✅ (lw-2) | ✅ batch 12 — **needs native/legal check** | `_legal-translations.cjs ne-NP` 3/3 ✓; `legal-languages-1` /np/privacy, /np/terms, /np/country-terms ✓ | 5f1b9944 |
 | 13 | fil-PH Filipino | 9 of 9 parts + consistency pass translated (handover kit, 579195f2) — **install waiting**: another session has uncommitted changes to messages/en-GB.json | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 579195f2 |
 | 14 | sq-AL Albanian | 9 of 9 parts + consistency pass translated (handover kit, 40b2cd16) — **install waiting** (same reason) | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 40b2cd16 |
-| 15 | bs-BA Bosnian | — | — | | |
-| 16 | mk-MK Macedonian | — | — | | |
+| 15 | bs-BA Bosnian | 9 of 9 parts + consistency pass translated (handover kit, 92d567c4) — **install waiting** (same reason) | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 92d567c4 |
+| 16 | mk-MK Macedonian | 9 of 9 parts + consistency pass translated (handover kit, d1214c77) — **install waiting** (same reason) | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | d1214c77 |
 | 17 | ca-AD Catalan (Andorra) | — | — | | |
 | 18 | sw-TZ Swahili | — | — | | |
 | 19 | si-LK Sinhala | — | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **12 of 23 languages done (36 of 69 pages).** UI: 12 of 23 installed; fil-PH and sq-AL translated, waiting to install (installing would commit Filipino/Albanian keys for English that is not committed yet, and regenerated files holding another session's work). bs-BA translation next.
+Legal pages: **12 of 23 languages done (36 of 69 pages).** UI: 12 of 23 installed; fil-PH, sq-AL, bs-BA and mk-MK translated, waiting to install (installing would commit Filipino/Albanian keys for English that is not committed yet, and regenerated files holding another session's work). Paused 17 Nov evening at Dominic's request after mk-MK; next: install the four once messages/en-GB.json is committed (top up any English changed since), then ca-AD.
 
 ## Batch order
 
