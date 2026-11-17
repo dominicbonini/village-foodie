@@ -1,0 +1,613 @@
+{
+ "postShare": {
+  "download": "Shkarko foton",
+  "copied": "U kopjua ✓",
+  "copyCaption": "Kopjo përshkrimin",
+  "share": "Ndaj",
+  "copiedStatus": "{kind, select, postText {Teksti i postimit u kopjua.} other {Përshkrimi u kopjua.}}",
+  "copyFailed": "Nuk u kopjua dot — përzgjidhni tekstin dhe kopjojeni vetë.",
+  "sharedStatus": "{kind, select, postText {Teksti i postimit u kopjua — ngjiteni te postimi juaj.} other {Përshkrimi u kopjua — ngjiteni te postimi juaj.}}",
+  "shareRefused": "{kind, select, postText {Ndarja u refuzua, ndaj fotoja u shkarkua. Teksti i postimit u kopjua.} other {Ndarja u refuzua, ndaj fotoja u shkarkua. Përshkrimi u kopjua.}}"
+ },
+ "posterWords": {
+  "heading": "Java nga {start} deri më {end}",
+  "daysOff": "Sot nuk punojmë",
+  "cancelled": "ANULUAR",
+  "placeSample": {
+   "nameTownBelow": "Pazari i Ri\nTiranë",
+   "nameTown": "Pazari i Ri, Tiranë",
+   "nameOnly": "Pazari i Ri"
+  },
+  "busyWeek": {
+   "venue1": "Sheshi Skënderbej",
+   "town1": "Tiranë",
+   "venue2": "Parku i qytetit dhe fusha sportive pranë Shëtitores",
+   "town2": "Durrës",
+   "venue3": "Tregu i fermerëve",
+   "town3": "Korçë",
+   "venue4": "Festival ushqimi rrugor",
+   "town4": "Vlorë",
+   "venue5": "Bari i lagjes",
+   "town5": "Shkodër",
+   "venue6": "Shëtitorja",
+   "town6": "Sarandë"
+  },
+  "poweredBy": "Mundësuar nga HatchGrab"
+ },
+ "captions": {
+  "labels": {
+   "weekDates": "Datat e javës",
+   "dayList": "Lista e ditëve",
+   "place": "Vendndodhja",
+   "venue": "Emri i vendit",
+   "area": "Qyteti",
+   "dayDate": "Dita dhe data",
+   "times": "Oraret",
+   "orderLink": "Lidhja për porosi",
+   "locationTag": "Etiketa e vendndodhjes"
+  },
+  "weekHeader": "{truck} — ku jemi këtë javë:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ANULUAR, na vjen keq",
+  "noDates": "Asnjë datë këtë javë — kontrolloni sërish së shpejti.",
+  "orderAhead": "Porositni paraprakisht: {url}",
+  "orderAheadTagged": "Porositni paraprakisht: {url} {tag}",
+  "eventLine": "{truck}: jemi te {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck}: jemi te {where} {when}.",
+  "cancelledSorry": "Na vjen keq — nuk do të mund të vijmë te {where} {when}.",
+  "cancelledApology": "Kërkojmë ndjesë të gjithëve që kishin planifikuar të vinin. Do të kthehemi së shpejti.",
+  "when": {
+   "today": "sot",
+   "tonight": "sonte",
+   "tomorrow": "nesër",
+   "dated": "më {date}"
+  }
+ },
+ "weeklyPostApi": {
+  "shortened": {
+   "heading": "Titulli nuk u përshtat dhe u shkurtua.",
+   "date": "Data nuk u përshtat dhe u shkurtua.",
+   "daysOff": "Teksti i ditëve pa punë nuk u përshtat dhe u shkurtua.",
+   "place": "Emri i vendit nuk u përshtat dhe u shkurtua.",
+   "time": "Ora nuk u përshtat dhe u shkurtua.",
+   "note": "Teksti juaj nuk u përshtat dhe u shkurtua.",
+   "venue": "Vendndodhja nuk u përshtat dhe u shkurtua.",
+   "area": "Qyteti nuk u përshtat dhe u shkurtua."
+  },
+  "fontFallback": "Një font që përdor ky dizajn ({id}) nuk u ngarkua dot — ato kuti shfaqen me Oswald.",
+  "wrongShapeBackground": "Fotoja e këtij vendi ka formë tjetër nga dizajni juaj, ndaj përdoret sfondi standard.",
+  "rowsFit": "Dita e fundit del {px}px poshtë fundit të imazhit — zvogëloni hapësirën mes rreshtave ose ngrini më lart rreshtin 1.",
+  "placeStatus": {
+   "ownBoth": "Foto dhe pozicione teksti të veta",
+   "wrongShape": "Formë tjetër — nuk përdoret derisa ta zëvendësoni",
+   "ownPicture": "Foto e vet, pozicione standarde",
+   "ownPositions": "Foto standarde, pozicione teksti të veta",
+   "none": "Ende pa foto — përdoret Standard"
+  },
+  "standardStatus": "Përdoret në të gjitha vendet e tjera",
+  "option": {
+   "oneOff": "Ngarko një foto vetëm për këtë postim",
+   "placePoster": "Posteri i vendit: {name}",
+   "standard": "Dizajni standard"
+  },
+  "previewLabel": {
+   "lastEvent": "Parapamja përdor eventin tuaj të fundit këtu",
+   "noEvents": "Ende pa evente këtu — parapamja shfaq eventin tuaj të radhës me emrin e këtij vendi"
+  },
+  "fontUsage": {
+   "weekly": "dizajni i postimit tuaj javor",
+   "event": "dizajni i postimit tuaj për një event",
+   "place": "dizajni juaj për vendin {place}",
+   "placeUnnamed": "dizajni juaj për një vend"
+  },
+  "face": {
+   "regular": "Normal",
+   "bold": "I trashë",
+   "italic": "Kursiv"
+  },
+  "picture": {
+   "legacy": "Posteri i eventit",
+   "fallback": "Foto",
+   "wrongShape": "Formë tjetër — nuk mund të përdoret si sfond i plotë"
+  },
+  "noPicture": {
+   "omit": "Lëre jashtë",
+   "blank": "Lër një hapësirë bosh",
+   "logo": "Shfaq logon tuaj"
+  },
+  "noPicturesAll": "{total, plural, one {Vendndodhja juaj ka imazh.} other {Të gjitha {total} vendndodhjet tuaja kanë imazh.}}",
+  "noPicturesSome": "{without, plural, one {{without} nga {total} vendndodhjet tuaja nuk ka ende imazh} other {{without} nga {total} vendndodhjet tuaja nuk kanë ende imazh}}",
+  "licenceTick": "Jam pronar i këtij fonti ose kam licencë për ta përdorur",
+  "fontUploadButton": "↑ Ngarko fontin tuaj"
+ },
+ "completionSettings": {
+  "paidStepTitle": "Prano porosi pa pagesë",
+  "completionTitle": "Përfundimi i një porosie të papaguar",
+  "completionHelp": "Çfarë ndodh kur një porosi e papaguar është gati për t’ia dhënë klientit.",
+  "pressesOne": "Një shtypje (“Shëno si të paguar dhe marrë”)",
+  "pressesOneHelp": "Më e përshtatshme kur paratë i merrni në çastin që jepni ushqimin. Keni një buton të vetëm, “Shëno si të paguar dhe marrë”, që regjistron pagesën dhe mbyll porosinë njëherësh.",
+  "pressesTwo": "Dy shtypje (“Shëno si të paguar” dhe “Marrë”)",
+  "pressesTwoHelp": "Më e përshtatshme kur pagesa dhe marrja ndodhin në çaste të ndryshme — klienti paguan në sportel, pastaj e merr porosinë kur është gati. Keni dy butona: fillimisht “Shëno si të paguar”, pastaj “Marrë” kur klienti merr ushqimin."
+ },
+ "outreach": {
+  "optOut": {
+   "missing": "Ky email nuk ka rreshtin e çregjistrimit, ndaj nuk mund të dërgohet. Përdorni “Insert opt-out” për ta shtuar.",
+   "notSetUp": "Nuk është vendosur asnjë fjali çregjistrimi, ndaj nuk mund të dërgohet asnjë email prezantues. Shtojeni te paneli “Signature” në skedën “Templates”.",
+   "notLoaded": "Fjalia e çregjistrimit nuk është ngarkuar ende, ndaj ky email nuk mund të dërgohet.",
+   "unreadable": "Fjalia e çregjistrimit nuk u lexua dot, ndaj nuk u dërgua asgjë."
+  },
+  "retry": {
+   "notRebuilt": "Ai mesazh nuk u rindërtua dot me rreshtin e kompanisë, ndaj nuk u dërgua asgjë."
+  }
+ },
+ "address": {
+  "label": {
+   "street": "Adresa",
+   "postcode": "Kodi postar",
+   "zip": "Kodi ZIP",
+   "eircode": "Eircode",
+   "postalCode": "Kodi postar",
+   "state": "Shteti federal",
+   "stateTerritory": "Shteti ose territori",
+   "province": "Provinca",
+   "county": "Qarku",
+   "prefecture": "Prefektura",
+   "emirate": "Emirati",
+   "region": "Rajoni",
+   "area": "Zona (fshat, qytezë ose qytet)",
+   "townOrArea": "Qyteti ose zona",
+   "city": "Qyteti",
+   "suburb": "Lagjja",
+   "townOrCity": "Qyteti"
+  },
+  "short": {
+   "area": "Zona",
+   "townOrArea": "Qyteti ose zona",
+   "city": "Qyteti",
+   "suburb": "Lagjja",
+   "townOrCity": "Qyteti"
+  },
+  "inSentence": {
+   "postcode": "kod postar",
+   "zip": "kod ZIP",
+   "eircode": "Eircode",
+   "postalCode": "kod postar"
+  },
+  "withArticle": {
+   "postcode": "një kod postar",
+   "zip": "një kod ZIP",
+   "eircode": "një Eircode",
+   "postalCode": "një kod postar"
+  },
+  "tradeLabel": {
+   "area": "Qyteti",
+   "townOrArea": "Qyteti ose zona",
+   "city": "Qyteti",
+   "suburb": "Lagjja",
+   "townOrCity": "Qyteti"
+  },
+  "basedIn": {
+   "area": "Qyteti ku keni bazën",
+   "townOrArea": "Qyteti ose zona ku keni bazën",
+   "city": "Qyteti ku keni bazën",
+   "suburb": "Lagjja ku keni bazën",
+   "townOrCity": "Qyteti ku keni bazën"
+  },
+  "example": "p.sh. {example}",
+  "customersSee": "Klientët shohin:",
+  "postalWarning": "Kjo nuk duket si {article} — për shembull {example}. Mund ta ruani gjithsesi.",
+  "regionChoose": "Zgjidhni…"
+ },
+ "demoLinkEmail": {
+  "subject": "Demoja juaj e HatchGrab — ja lidhja juaj",
+  "heading": "Demoja juaj është gati",
+  "intro": "Ja lidhja për demon që ndërtuam nga menuja juaj. Porositni prej saj si një nga klientët tuaj, pastaj shikoni si mbërrin porosia në ekranin tuaj të kuzhinës (KDS). Nuk nevojitet hyrje — thjesht prekni lidhjen.",
+  "button": "Hap demon time",
+  "deletion": "Kjo është një demo, ndaj nuk e mbajmë: do ta fshijmë, bashkë me menunë që ngarkuat, më {date}. Nëse e doni më gjatë, shtypni “Ruaj menunë time” në demo dhe do ta mbajmë për 14 ditë.",
+  "deletionSoon": "Kjo është një demo, ndaj nuk e mbajmë: do ta fshijmë, bashkë me menunë që ngarkuat, pas 24 orësh. Nëse e doni më gjatë, shtypni “Ruaj menunë time” në demo dhe do ta mbajmë për 14 ditë."
+ },
+ "demoWalk": {
+  "step1": "Hapi 1 nga 3 · Porositni si një nga klientët tuaj",
+  "paymentTitle": "Pagesa",
+  "paymentPanel": "Klienti juaj paguan këtu me kartë, Apple Pay ose Google Pay, ose zgjedh të paguajë në marrje. Në demo nuk tërhiqet asnjë shumë.",
+  "defaultName": "Andi",
+  "step2": "Hapi 2 nga 3",
+  "bubbleTitle": "Ky është ekrani juaj i kuzhinës (KDS)",
+  "bubbleArrived": "Porosia që sapo dërguat mbërriti këtu menjëherë, me orën e marrjes. Prekni Fillo gatimin.",
+  "bubbleReady": "Kur ushqimi të jetë gati, prekni Gati. Klienti juaj njoftohet menjëherë.",
+  "step3": "Hapi 3 nga 3 · u krye",
+  "told": "{name} sapo u njoftua që ushqimi është gati.",
+  "thatsIt": "Ky është HatchGrab: klientët porositin në telefon, ju e shihni porosinë këtu dhe ata e marrin pa pritur në radhë. Menuja juaj është tashmë gati.",
+  "startFree": "{months, plural, =0 {Fillo falas, ruaj menunë time} one {Fillo falas për # muaj, ruaj menunë time} other {Fillo falas për # muaj, ruaj menunë time}}",
+  "tryAnother": "Provo një porosi tjetër",
+  "barOrder": "Porosit si klient",
+  "barArrives": "Mbërrin në kuzhinën tuaj",
+  "barReady": "Shënoje gati",
+  "phoneLabel": "Telefoni i klientit tuaj",
+  "kitchenLabel": "Ekrani juaj i kuzhinës (KDS)",
+  "waitingTitle": "Në pritje të porosive",
+  "waitingBody": "Porositni diçka në telefon. Porosia shfaqet këtu sapo klienti juaj e dërgon.",
+  "startCooking": "Fillo gatimin",
+  "ready": "Gati",
+  "readyForCollection": "Gati për marrje",
+  "cooking": "Po gatuhet",
+  "readyBadge": "Gati",
+  "newBadge": "Porosi e re",
+  "orderNumber": "Porosia #{number}",
+  "collectAt": "Marrja në orën {time}",
+  "collectAsap": "Marrja sa më shpejt",
+  "phoneReadyTitle": "Porosia juaj është gati",
+  "phoneReadyBody": "Merreni te food truck-u.",
+  "bandTitle": "Ky është HatchGrab. Menuja juaj është tashmë gati.",
+  "bandStart": "Fillo falas, ruaj menunë time",
+  "orderAgain": "Porosit sërish",
+  "loading": "Po përgatitet demoja juaj…",
+  "goneTitle": "Kjo demo ka përfunduar",
+  "goneBody": "Demot fshihen pas një dite. Mund të ndërtoni një të re nga menuja juaj për më pak se një minutë.",
+  "goneButton": "Ndërto një demo të re",
+  "failed": "Nuk funksionoi — ju lutemi provoni sërish.",
+  "backToMenu": "Kthehu te menuja",
+  "formNote": "Kjo është një demo: askujt nuk i tërhiqet asnjë shumë dhe nuk dërgohet asgjë, ndaj nuk keni nevojë të jepni email.",
+  "namePlaceholder": "Andi"
+ },
+ "paperwork": {
+  "title": "Dokumentet",
+  "intro": "Mbajini certifikatat tuaja në një vend. Do t’ju kujtojmë përpara se të skadojë ndonjëra prej tyre dhe mund t’ia dërgoni të gjitha njëherësh një organizatori.",
+  "loading": "Po ngarkohen dokumentet tuaja…",
+  "loadFailed": "Dokumentet tuaja nuk u ngarkuan dot. Ju lutemi provoni sërish.",
+  "retry": "Provo sërish",
+  "counts": {
+   "expired": "{count, plural, one {# i skaduar} other {# të skaduar}}",
+   "dueSoon": "{count, plural, one {# skadon së shpejti} other {# skadojnë së shpejti}}",
+   "missing": "{count, plural, one {# mungon} other {# mungojnë}}",
+   "upToDate": "{count, plural, one {# në rregull} other {# në rregull}}"
+  },
+  "status": {
+   "upToDate": "Në rregull",
+   "dueSoon": "Skadon së shpejti",
+   "expired": "I skaduar",
+   "upload": "Ngarko"
+  },
+  "line": {
+   "expires": "Skadon më {date}",
+   "expiresIn": "Skadon më {date} · {days, plural, one {pas # dite} other {pas # ditësh}}",
+   "expiresToday": "Skadon sot",
+   "expired": "Skadoi më {date}",
+   "reviewBy": "Rishikim deri më {date}",
+   "reviewByIn": "Rishikim deri më {date} · {days, plural, one {pas # dite} other {pas # ditësh}}",
+   "reviewOverdue": "Rishikimi duhej bërë më {date}",
+   "noExpiry": "Pa afat skadimi",
+   "cover": "Mbulim: {amount}",
+   "notUploaded": "Ende pa ngarkuar"
+  },
+  "select": "Përzgjidh: {document}",
+  "add": "+ Shto një dokument",
+  "selected": "{count, plural, one {# i përzgjedhur} other {# të përzgjedhur}}",
+  "sendToOrganiser": "Dërgoja organizatorit",
+  "types": {
+   "food_registration": "Regjistrimi i biznesit ushqimor",
+   "hygiene_rating": "Vlerësimi i higjienës ushqimore",
+   "food_safety_plan": "Plani i sigurisë ushqimore (HACCP)",
+   "public_liability": "Sigurimi i përgjegjësisë civile ndaj palëve të treta",
+   "employers_liability": "Sigurimi i përgjegjësisë së punëdhënësit",
+   "gas_safety": "Certifikata e sigurisë së gazit",
+   "pat_test": "Testi PAT",
+   "fire_safety": "Mbrojtja nga zjarri",
+   "risk_assessment": "Vlerësimi i riskut",
+   "allergen_info": "Informacion për alergjenët",
+   "street_trading_licence": "Leja për tregtim ambulant",
+   "electrical_safety": "Testi i sigurisë elektrike",
+   "trading_licence": "Licenca e tregtimit"
+  },
+  "upload": {
+   "title": "Shto një dokument",
+   "intro": "Bëni një foto të tij, ose zgjidhni një foto ose skedar.",
+   "takePhoto": "Bëj një foto",
+   "chooseFile": "Zgjidh një foto ose skedar",
+   "accepted": "PDF, JPEG, PNG, HEIC ose WebP, deri në 20 MB.",
+   "uploading": "Po ngarkohet… {percent}%",
+   "reading": "Po lexohet dokumenti juaj…",
+   "tooBig": "Ky skedar është mbi 20 MB. Ju lutemi zgjidhni një më të vogël.",
+   "wrongType": "Ky lloj skedari nuk pranohet. Ju lutemi përdorni një skedar PDF, JPEG, PNG, HEIC ose WebP.",
+   "failed": "Ngarkimi nuk funksionoi. Ju lutemi provoni sërish.",
+   "cancel": "Anulo"
+  },
+  "check": {
+   "title": "Kontrolloni të dhënat",
+   "aiBanner": "Këto i lexuam nga dokumenti juaj. Ju lutemi kontrolloni që janë të sakta përpara se t’i ruani.",
+   "document": "Dokumenti",
+   "other": "Tjetër…",
+   "otherName": "Emri i dokumentit",
+   "issuer": "Lëshuar nga",
+   "issued": "Data e lëshimit",
+   "expires": "Data e skadimit",
+   "reviewBy": "Rishikim deri më",
+   "nameOnDocument": "Emri në dokument",
+   "cover": "Mbulimi i sigurimit",
+   "coverHint": "Opsionale. Shuma që mbulon polica.",
+   "currency": "Monedha",
+   "save": "Ruaj",
+   "saving": "Po ruhet…",
+   "cancel": "Anulo",
+   "saved": "U ruajt",
+   "footer": "Certifikata e mëparshme ruhet si histori. Skedarët tuaj janë privatë: vetëm ju dhe organizatorët të cilëve ua dërgoni mund t’i shohin.",
+   "needType": "Zgjidhni dokumentin ose shkruani emrin e tij.",
+   "badDates": "Data e skadimit nuk mund të jetë para datës së lëshimit."
+  },
+  "warnings": {
+   "notRead": "Nuk e lexuam dot këtë dokument. Ju lutemi plotësoni vetë të dhënat.",
+   "expired": "Ky dokument skadoi më {date}. Mund ta ruani gjithsesi, por organizatorët do të shohin që ka skaduar.",
+   "expiresSoon": "{days, plural, =0 {Skadon sot. Do t’ju kujtojmë çdo javë derisa të rinovohet.} one {Skadon pas # dite. Do t’ju kujtojmë 4 javë përpara, 1 javë përpara dhe në ditën e skadimit.} other {Skadon pas # ditësh. Do t’ju kujtojmë 4 javë përpara, 1 javë përpara dhe në ditën e skadimit.}}",
+   "nameMismatch": "Emri në dokument, “{name}”, nuk duket si emri i biznesit tuaj. Ju lutemi kontrolloni që është dokumenti i duhur."
+  },
+  "view": {
+   "close": "Mbyll",
+   "open": "Hap",
+   "download": "Shkarko",
+   "noPreview": "Ky skedar nuk mund të shfaqet këtu. Hapeni ose shkarkojeni.",
+   "details": "Të dhënat",
+   "edit": "Ndrysho të dhënat",
+   "renew": "Ngarko një version të ri",
+   "earlier": "Versionet e mëparshme",
+   "uploaded": "Ngarkuar më {date}",
+   "delete": "Fshi",
+   "deleteConfirm": "Të fshihet ky dokument dhe versionet e tij të mëparshme? Skedarët hiqen dhe dokumenti hiqet nga çdo lidhje që keni dërguar.",
+   "deleteYes": "Fshi",
+   "deleted": "Dokumenti u fshi",
+   "keep": "Mbaje"
+  },
+  "send": {
+   "title": "Dërgoja organizatorit",
+   "intro": "Organizatori merr një email me një lidhje për të parë ose shkarkuar gjithçka.",
+   "email": "Email-i i organizatorit",
+   "emailHint": "Deri në 5 adresa, të ndara me presje.",
+   "event": "Eventi (opsionale)",
+   "noEvent": "Pa event",
+   "documents": "Dokumentet",
+   "message": "Mesazhi (opsionale)",
+   "messagePlaceholder": "Përshëndetje, ja dokumentet tona për tregun.",
+   "until": "Lidhja funksionon deri më",
+   "untilAfterEvent": "{date} (dita pas eventit)",
+   "send": "Dërgo",
+   "sending": "Po dërgohet…",
+   "footer": "Nëse rinovoni një certifikatë, lidhja e organizatorit shfaq automatikisht të renë. Do ta shihni kur organizatori ta hapë.",
+   "sent": "U dërgua te: {emails}",
+   "cancel": "Anulo",
+   "emailNone": "Shkruani email-in e organizatorit.",
+   "emailInvalid": "“{email}” nuk është adresë email-i.",
+   "emailTooMany": "Mund të dërgoni deri në 5 adresa njëherësh.",
+   "noDocuments": "Zgjidhni të paktën një dokument.",
+   "untilRange": "Zgjidhni një datë nga nesër deri në 90 ditë nga sot."
+  },
+  "sent": {
+   "title": "Të dërguara",
+   "empty": "Ende nuk është dërguar asgjë.",
+   "to": "Për: {emails}",
+   "sentOn": "Dërguar më {date}",
+   "opened": "Hapur më {date} · {count, plural, one {# shikim} other {# shikime}}",
+   "notOpened": "Ende pa u hapur",
+   "until": "Funksionon deri më {date}",
+   "expiredOn": "Skadoi më {date}",
+   "off": "Çaktivizuar",
+   "turnOff": "Çaktivizo lidhjen",
+   "turnOffConfirm": "Të çaktivizohet kjo lidhje? Organizatori nuk do të mund ta hapë më.",
+   "turnedOff": "Lidhja u çaktivizua"
+  },
+  "page": {
+   "title": "Dokumente nga {truck}",
+   "intro": "{truck} ka ndarë me ju këto dokumente.",
+   "view": "Shiko",
+   "download": "Shkarko",
+   "downloadAll": "Shkarko të gjitha",
+   "until": "Kjo lidhje funksionon deri më {date}.",
+   "none": "Për momentin nuk ka dokumente në këtë lidhje.",
+   "expiredTitle": "Kjo lidhje ka skaduar",
+   "expiredBody": "Kjo lidhje ka skaduar. Kërkoni nga {truck} që ta dërgojë sërish.",
+   "expiredBodyUnknown": "Kjo lidhje ka skaduar. Ju lutemi kërkojini biznesit që e dërgoi ta dërgojë sërish.",
+   "sharedWith": "Ndarë përmes HatchGrab"
+  },
+  "email": {
+   "shareSubject": "{truck} ju ka dërguar dokumentet e veta",
+   "shareHeading": "Dokumente nga {truck}",
+   "shareIntro": "{truck} ka ndarë me ju këto dokumente.",
+   "event": "Për: {event}",
+   "shareButton": "Shiko dokumentet",
+   "shareUntil": "Lidhja funksionon deri më {date}. Nëse ka skaduar, kërkoni nga {truck} që ta dërgojë sërish.",
+   "shareReply": "Përgjigjuni këtij email-i për të kontaktuar: {truck}.",
+   "expires": "skadon më {date}",
+   "reviewBy": "rishikim deri më {date}",
+   "noExpiry": "pa afat skadimi",
+   "reminderSubject": "{count, plural, one {Një dokument duhet rinovuar} other {# dokumente duhen rinovuar}}",
+   "reminderHeading": "Dokumentet tuaja",
+   "reminderIntro": "Disa dokumente të food truck-ut {truck} duhen rinovuar:",
+   "reminderIn": "{document} skadon më {date} ({days, plural, one {pas # dite} other {pas # ditësh}})",
+   "reminderToday": "{document} skadon sot",
+   "reminderExpired": "{document} skadoi më {date}",
+   "reminderButton": "Hap Dokumentet",
+   "reminderFooter": "Ju kujtojmë 4 javë përpara, 1 javë përpara dhe në ditën e skadimit, pastaj çdo javë derisa të rinovohet."
+  }
+ },
+ "emailReview": {
+  "subject": "Si ishte porosia juaj nga {truck}?",
+  "heading": "Faleminderit që porositët nga {truck}",
+  "body": "{truck} do t’ju ishte mirënjohës për një vlerësim të sinqertë në Google. Zgjat vetëm një minutë dhe u ndihmon njerëzve të tjerë ta gjejnë.",
+  "button": "Lër një vlerësim në Google",
+  "linkText": "Lini një vlerësim në Google: {url}",
+  "from": "Ky email është nga {truck}, dërguar përmes HatchGrab sepse keni bërë një porosi aty.",
+  "unsubscribeLead": "Nuk dëshironi kërkesa për vlerësim nga {truck}?",
+  "unsubscribeLink": "Çregjistrohu",
+  "unsubscribeText": "Çregjistrohu: {url}",
+  "unsubscribed": {
+   "title": "U çregjistruat",
+   "body": "{truck} nuk do t’ju dërgojë më kërkesa për vlerësim.",
+   "invalid": "Kjo lidhje çregjistrimi nuk është e vlefshme."
+  }
+ },
+ "billing": {
+  "tab": {
+   "plan": {
+    "title": "Paketa juaj",
+    "trialPill": "Provë falas",
+    "change": "Ndrysho paketën",
+    "trialLine": "Prova juaj falas përfundon më {date}. Pas kësaj, paketa {plan} kushton {price} në muaj.",
+    "trialLineFree": "Prova juaj falas përfundon më {date}. Pas kësaj, kaloni te paketa {plan}, pa tarifë mujore.",
+    "proLine": "Përfshin porosi online deri në {allowance} në muaj. Më pas, {fee}.",
+    "paygLine": "{fee} për porositë online. Pa tarifë mujore.",
+    "unlimitedLine": "{price} në muaj. Pa tarifë për porositë online.",
+    "pendingLine": "Paketa {plan} fillon më {date}."
+   },
+   "payment": {
+    "title": "Mënyra e pagesës",
+    "none": "Ende nuk keni shtuar kartë. Shtoni një për të vazhduar të merrni porosi online pas provës.",
+    "add": "Shto kartë",
+    "pix": "Përdor Pix Automático",
+    "card": "{brand} që mbaron me {last4}",
+    "pixOnFile": "Pix Automático",
+    "pending": "Në pritje të konfirmimit.",
+    "change": "Ndrysho",
+    "lastFailed": "Pagesa e fundit dështoi",
+    "update": "Përditëso kartën",
+    "error": "Nuk e hapëm dot faqen e pagesës. Ju lutemi provoni sërish.",
+    "noneAfterTrial": "Nuk keni shtuar kartë. Shtoni një për të riaktivizuar porositë online."
+   },
+   "whatYouPay": {
+    "title": "Çfarë paguani",
+    "plan": "Paketa juaj, e tarifuar më 1 të muajit për muajin në vijim",
+    "fee": "Porositë online mbi {allowance} në muaj, të tarifuara më 1 të muajit për muajin e kaluar",
+    "feePayg": "Porositë online, të tarifuara më 1 të muajit për muajin e kaluar",
+    "walkUps": "Porositë në vend",
+    "free": "Falas",
+    "trialEnd": "Kur prova juaj përfundon më {date}, tarifojmë {amount} për pjesën e mbetur të muajit {month}. Pastaj {price} më {nextFirst}."
+   },
+   "next": {
+    "title": "Pagesa e radhës · {date}",
+    "plan": "Paketa {plan} për muajin {month}",
+    "fee": "{fee} për porositë online të muajit {month} mbi {allowance} (deri tani)",
+    "feePayg": "{fee} për porositë online të muajit {month} (deri tani)",
+    "vans": "Furgonë shtesë për muajin {month}",
+    "surcharge": "Tarifa e faturuar më pas për muajin {month}",
+    "carried": "Mbartur nga më parë",
+    "total": "Totali deri tani",
+    "walkUps": "Porositë në vend janë gjithmonë falas."
+   },
+   "preorders": {
+    "title": "Si i paguajnë klientët porositë paraprake",
+    "online": "Online, kur porositin",
+    "onlineHint": "Paratë shkojnë drejtpërdrejt në llogarinë tuaj Stripe.",
+    "atTruckHint": "Klientët paguajnë kur marrin porosinë. Tarifa jonë shtohet në faturën tuaj mujore.",
+    "saved": "U ruajt.",
+    "error": "Nuk e ruajtëm dot. Ju lutemi provoni sërish."
+   },
+   "invoices": {
+    "title": "Faturat",
+    "date": "Data",
+    "for": "Për",
+    "amount": "Shuma",
+    "status": "Statusi",
+    "forMonthly": "Paketa për {planMonth}, tarifat për {usageMonth}",
+    "forMonthlyPlan": "Paketa për {planMonth}",
+    "forTrialEnd": "Pjesa e mbetur e muajit {month}",
+    "forUpgrade": "Kalim te paketa {plan}",
+    "lateFee": "Tarifë për vonesë pagese",
+    "paid": "Paguar",
+    "unpaid": "E papaguar",
+    "overdue": "Me vonesë",
+    "download": "Shkarko",
+    "payNow": "Paguaj tani",
+    "none": "Ende nuk ka fatura."
+   },
+   "failed": {
+    "title": "Pagesa juaj prej {amount} nuk kaloi.",
+    "body": "Do të provojmë sërish. Përditësoni kartën deri më {date} që porositë online të mbeten aktive.",
+    "button": "Përditëso kartën"
+   },
+   "paused": {
+    "title": "Porositë online janë në pauzë",
+    "body": "Shuma {amount} është me vonesë. Paguani tani dhe porositë online riaktivizohen menjëherë.",
+    "warning": "Paguani deri më {date}, përndryshe llogaria juaj mund të pezullohet.",
+    "pay": "Paguaj {amount}",
+    "otherCard": "Përdor një kartë tjetër"
+   },
+   "loading": "Po ngarkohet faturimi…",
+   "loadError": "Nuk e ngarkuam dot faturimin tuaj. Ju lutemi provoni sërish."
+  },
+  "changePlan": {
+   "title": "Ndrysho paketën",
+   "current": "Jeni në paketën {plan}.",
+   "free": "Falas",
+   "perMonth": "{price} në muaj",
+   "paygLine": "{fee} për porositë online.",
+   "proLine": "Përfshihen porosi online deri në {allowance}. Më pas, {fee}.",
+   "unlimitedLine": "Pa tarifë për porositë online.",
+   "yourPlan": "Paketa juaj",
+   "startsNow": "Fillon tani.",
+   "chargeToday": "Sot do të tarifojmë {amount} për pjesën e mbetur të muajit {month}. Pastaj {price} më {nextFirst}.",
+   "startsLater": "Fillon më {nextFirst}. Deri atëherë mbeteni në paketën {plan}.",
+   "cancel": "Anulo",
+   "switchTo": "Kalo te paketa {plan}",
+   "error": "Nuk e ndryshuam dot paketën tuaj. Ju lutemi provoni sërish.",
+   "trialLine": "Jeni në provë falas. Zgjidhni paketën për kur të përfundojë prova më {date}.",
+   "startsAtTrialEnd": "Fillon kur përfundon prova juaj.",
+   "choose": "Zgjidh paketën {plan}"
+  },
+  "notices": {
+   "trialEndsSoon": "<b>Prova juaj falas përfundon më {date}.</b> Shtoni një kartë që porositë online të mbeten aktive.",
+   "trialEndsTomorrow": "<b>Prova juaj falas përfundon nesër.</b> Shtoni një kartë, përndryshe porositë online vihen në pauzë.",
+   "allSet": "<b>Gjithçka është gati.</b> Paketa {plan} fillon më {date}.",
+   "paymentFailed": "<b>Pagesa juaj nuk kaloi.</b> Përditësoni {method, select, payment_method {mënyrën e pagesës} other {kartën}} deri më {date} që porositë online të mbeten aktive.",
+   "paused": "<b>Porositë online janë në pauzë.</b> Paguani {amount} deri më {date}, përndryshe llogaria juaj mund të pezullohet.",
+   "addCard": "Shto kartë →",
+   "updateCard": "Përditëso {method, select, payment_method {mënyrën e pagesës} other {kartën}} →",
+   "payNow": "Paguaj tani →",
+   "dismiss": "Mbyll",
+   "trialEnded": "<b>Prova juaj falas ka përfunduar.</b> Shtoni një kartë për të riaktivizuar porositë online."
+  }
+ },
+ "emailBilling": {
+  "greeting": "{hasName, select, yes {Përshëndetje, {name},} other {Përshëndetje,}}",
+  "questions": "Keni pyetje? Thjesht na u përgjigjni.",
+  "signoff": "Ekipi i HatchGrab",
+  "buttonUpdate": "Përditëso {method, select, payment_method {mënyrën e pagesës} other {kartën}}",
+  "buttonPay": "Paguaj tani",
+  "buttonAddCard": "Shto kartë",
+  "suspended": "Nëse mbetet e papaguar, llogaria juaj mund të pezullohet.",
+  "failed": {
+   "subject": "Pagesa juaj për HatchGrab nuk kaloi",
+   "line1": "Sot nuk arritëm të tërheqim {amount} për {truck}. Do të provojmë sërish.",
+   "line2": "Ju lutemi përditësoni {method, select, payment_method {mënyrën e pagesës} other {kartën}} deri më {date} që porositë online të mbeten aktive."
+  },
+  "twoDays": {
+   "subject": "Edhe 2 ditë për të përditësuar {method, select, payment_method {mënyrën e pagesës} other {kartën}}",
+   "line1": "Shuma {amount} për {truck} është ende e papaguar. Përditësoni {method, select, payment_method {mënyrën e pagesës} other {kartën}} deri më {date}, përndryshe porositë online vihen në pauzë."
+  },
+  "oneDay": {
+   "subject": "Përditësoni {method, select, payment_method {mënyrën e pagesës} other {kartën}} deri nesër",
+   "line1": "Shuma {amount} për {truck} është ende e papaguar. Përditësoni {method, select, payment_method {mënyrën e pagesës} other {kartën}} deri nesër, përndryshe porositë online vihen në pauzë."
+  },
+  "lastDay": {
+   "subject": "Dita e fundit për të përditësuar {method, select, payment_method {mënyrën e pagesës} other {kartën}}",
+   "line1": "Sot është dita e fundit për të paguar {amount} për {truck}. Nëse mbetet e papaguar në mesnatë, porositë online vihen në pauzë derisa të paguani."
+  },
+  "paused": {
+   "subject": "Porositë online janë në pauzë",
+   "line1": "Porositë online për {truck} janë në pauzë sepse shuma {amount} është e papaguar. Paguani tani dhe ato riaktivizohen menjëherë.",
+   "line2": "Paguani deri më {date}, përndryshe llogaria juaj mund të pezullohet."
+  },
+  "trial7": {
+   "subject": "Prova juaj falas përfundon pas 7 ditësh",
+   "line1": "Prova juaj falas për {truck} përfundon më {date}.",
+   "line2": "Shtoni një kartë te Menaxhimi › Faturimi që porositë online të mbeten aktive.",
+   "plan": "Pas kësaj, paketa {plan} kushton {price} në muaj. Kur përfundon prova, tarifojmë {amount} për pjesën e mbetur të muajit {month}, pastaj {price} më {nextFirst}.",
+   "planFree": "Pas kësaj, kaloni te paketa {plan}, pa tarifë mujore.",
+   "fee": "Tarifa jonë prej {fee} për porositë online faturohet më 1 të muajit, për muajin e kaluar."
+  },
+  "trial1": {
+   "subject": "Prova juaj falas përfundon nesër",
+   "line1": "Prova juaj falas për {truck} përfundon nesër.",
+   "noCard": "Shtoni një kartë, përndryshe porositë online vihen në pauzë.",
+   "allSet": "Gjithçka është gati: paketa {plan} fillon më {date}.",
+   "charge": "Kur të përfundojë prova, do të tarifojmë {amount} për pjesën e mbetur të muajit {month}."
+  }
+ }
+}

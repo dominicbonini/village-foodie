@@ -212,3 +212,9 @@
 - Stripe live/test = "mjedisi real / mjedisi i provës"; padlock "dryni"; DNS record "regjistër (DNS)"; B / I / AA kept (maybe "T" for bold).
 - deleteAccount.whatAccounting still names UK law, as the English does — for Dominic: should Albanian trucks see it?
 - Samples: "sufllaqe pule", "Pazari i Ri", Tiranë, Elira / elira@shembull.al, +355 69 123 4567.
+
+## sq-AL part 07 (languages-world-3, 17 Nov 2026)
+- FOR CONSISTENCY: caption labels Place "Vendndodhja" vs Venue "Emri i vendit" (part 06 used "Vendndodhja" for both boxes).
+- Postcode "kod postar" (no case ending; stiff in "korrigjoni zonën ose {postal}"); State "Shteti federal" (≠ Country "Shteti"); caption "{truck}: jemi te {where} {when}, {times}."
+- "Post-pay charge" = "Tarifa e faturuar më pas" (unsure of meaning); certificates "Sigurimi i përgjegjësisë civile ndaj palëve të treta", "Leja për tregtim ambulant".
+- Samples: Tiranë, Durrës, Korçë, Vlorë, Shkodër, Sarandë, "Pazari i Ri"; Alex → Andi.
