@@ -1,0 +1,723 @@
+{
+ "landing": {
+  "jsonLd": {
+   "subCategory": "Sistem porosish për food truck dhe katering të lëvizshëm",
+   "description": "Porosi, porosi paraprake dhe ekran kuzhine për food truck dhe katering të lëvizshëm ({country}).",
+   "audience": "Biznese food truck dhe kateringu të lëvizshëm"
+  },
+  "hero": {
+   "title": "Sistemi i porosive, i ndërtuar për <lean>food truck-et.</lean>",
+   "subSmall": "Ngarkoni menunë, pa pasur nevojë për regjistrim.<br></br>Shikoni një demo funksionale për më pak se 60 sekonda.",
+   "cta": "Ngarko menunë time →",
+   "ctaNote": "<lead>Ngarkoni një foto të menusë dhe shikojeni në punë për më pak se 60 sekonda.</lead><small>Pa regjistrim. Pa kartë.</small>"
+  },
+  "shots": {
+   "kitchenAlt": "Ekrani i kuzhinës në HatchGrab, me tiketat e porosive sipas radhës së gatimit",
+   "dashboardAlt": "Marrja e një porosie në HatchGrab: menuja majtas, shporta dhe totali djathtas",
+   "phoneAlt": "Porosi nga një food truck në HatchGrab: menuja me foto dhe çmime, dhe totali i shportës"
+  },
+  "trust": {
+   "freeMonth": "{months, plural, one {Muaji i parë krejtësisht falas, me çdo funksion të zhbllokuar} other {# muajt e parë krejtësisht falas, me çdo funksion të zhbllokuar}}",
+   "noCard": "Nuk nevojitet kartë",
+   "cancel": "Anulojeni kur të doni, pa kontratë"
+  },
+  "does": {
+   "eyebrow": "Çfarë bën",
+   "title": "Ndërtuar për food truck-et, jo për restorantet.",
+   "lede": "Shumica e sistemeve të porosive supozojnë një adresë fikse, wifi të qëndrueshëm dhe të njëjtat orare çdo javë. Ju jeni në një vend të ri çdo javë, në orë të ndryshme, me sinjal celular të dobët ose pa sinjal fare. HatchGrab u ndërtua pikërisht për këtë.",
+   "slotsTitle": "Klientët zgjedhin orën e marrjes",
+   "capacityTitle": "Vendosni kapacitetin e kuzhinës",
+   "capacityBody": "Vendosni sa mund të gatuani njëherësh dhe sa kohë duhet. Kur një orë marrjeje mbushet, klientët nuk mund ta zgjedhin.",
+   "devicesTitle": "Funksionon në çdo pajisje",
+   "devicesBody": "Funksionon në telefonin në xhepin e përparëses, në tabletin në sportel, në laptopin në furgon — dhe në terminalin POS me të cilin merrni tashmë pagesat.",
+   "postsTitle": "Automatizoni postimet në Facebook dhe Instagram",
+   "postsBody": "Ngarkoni dizajnin që postoni tashmë në Facebook ose Instagram. Ne plotësojmë datat, vendet dhe oraret, gati për t’u ndarë — çdo javë ose çdo ditë.",
+   "whatsappTitle": "Përgjigje automatike në WhatsApp",
+   "whatsappBody": "“Ku jeni sonte?” “Çfarë ëmbëlsirash keni?” Mesazhet tuaja në WhatsApp marrin përgjigje ndërsa jeni rrugës për te vendi i shitjes ose te skara, me menunë dhe orarin tuaj. Messenger dhe Instagram vijnë së shpejti.",
+   "whatsappSoonTitle": "Përgjigje automatike në WhatsApp <soon>Së shpejti</soon>",
+   "whatsappSoonBody": "“Ku jeni sonte?” “Çfarë ëmbëlsirash keni?” Së shpejti mesazhet tuaja në WhatsApp do të marrin përgjigje ndërsa jeni rrugës për te vendi i shitjes ose te skara. Më pas vijnë Messenger dhe Instagram.",
+   "offlineTitle": "Pa sinjal? Vazhdoni të shërbeni.",
+   "offlineBody": "Nëse humbni sinjalin, porositë online vihen automatikisht në pauzë, që klientët të mos dërgojnë porosi që ju nuk do t’i shihni. Vazhdoni të merrni porosi me aplikacionin për iPhone, iPad dhe Android.",
+   "slotsBody": "Klientët porositin paraprakisht dhe zgjedhin orën e marrjes. Më pak radhë, dhe ushqimi është gati kur mbërrijnë."
+  },
+  "steps": {
+   "eyebrow": "Si të filloni",
+   "title": "Konfiguroni gjithçka dhe filloni të merrni porosi për rreth 15 minuta.",
+   "lede": "Tri gjëra për të rregulluar — dhe për dy prej tyre mjafton një foto.",
+   "menuTitle": "Ndërtoni menunë",
+   "menuBody": "Fotografoni tabelën e menusë ose ngjiteni tekstin. Artikujt, çmimet dhe shtesat kalojnë vetë. Ju vetëm kontrolloni që janë të sakta.",
+   "scheduleTitle": "Shtoni orarin",
+   "scheduleBody": "E keni në faqen tuaj të internetit? Do ta lexojmë që andej dhe do ta mbajmë të përditësuar. Nëse jo, fotografojeni edhe atë. Ju vetëm miratoni atë që gjen.",
+   "shareTitle": "Ndani lidhjen tuaj",
+   "shareBody": "Postojeni në Facebook, ngjitni kodin QR në furgon. Porositë mbërrijnë në ekranin tuaj, sipas radhës që duhet t’i gatuani."
+  },
+  "testimonial": {
+   "quote": "HatchGrab e ka bërë porositjen shumë më të lehtë. Gjithçka është e organizuar, e ndjekim stokun dhe e dimë saktësisht sa pica na kanë mbetur për të shitur — dhe intervalet kohore janë fantastike për fshatrat me shumë lëvizje.",
+   "award": "Picerria e lëvizshme e vitit",
+   "awardScope": "Fitues rajonal",
+   "business": "Pizzeria Gusto",
+   "byline": "Nadia & Bogdan — pronarët"
+  },
+  "pricing": {
+   "eyebrow": "Çmimet",
+   "title": "Filloni falas. Përmirësoni paketën kur t’ju duhet.",
+   "switchHead": "Po kaloni nga një platformë tjetër?",
+   "switchBody": "Shikoni sa do të paguanit me HatchGrab për të njëjtat porosi. Zgjat rreth një minutë.",
+   "switchCta": "Krahasoni sa paguani"
+  },
+  "faq": {
+   "title": "Pyetje të shpeshta",
+   "metaTitle": "Pyetje të shpeshta | HatchGrab",
+   "metaDescription": "Përgjigje të qarta për pronarët e food truck-eve: çmimet e HatchGrab, konfigurimi, marrja e porosive dhe pagesat me kartë ose në marrje."
+  },
+  "final": {
+   "truckLabel": "Food truck",
+   "title": "Doni të shihni sa i lehtë është konfigurimi?",
+   "lede": "Ngarkoni një foto ose një pamje ekrani të menusë dhe ne do ta kthejmë në një faqe porosish funksionale, për ta provuar për më pak se 60 sekonda. Artikujt tuaj, çmimet tuaja. Pa regjistrim, pa kartë, pa instaluar asgjë. Hidhini një sy, pastaj vendosni.",
+   "cta": "Ngarko menunë time tani →"
+  },
+  "meta": {
+   "title": "Sistem porosish për food truck — HatchGrab {country}",
+   "description": "Merrni porosi dhe porosi paraprake pa radhë. Program porosish dhe ekran kuzhine për food truck dhe katering të lëvizshëm ({country}) — jo sistem arke."
+  }
+ },
+ "landingNav": {
+  "homeLabel": "Faqja kryesore e HatchGrab",
+  "cta": "Ngarko menunë time →",
+  "ctaShort": "Ngarko menunë",
+  "features": "Funksionet",
+  "pricing": "Çmimet",
+  "logIn": "Hyr",
+  "country": {
+   "button": "Shteti: {name}. Ndrysho shtetin",
+   "menu": "Shteti",
+   "title": "Zgjidhni shtetin tuaj",
+   "subline": "Çmimet, gjuha dhe cilësimet përshtaten sipas tij.",
+   "regions": {
+    "europe": "Evropa",
+    "americas": "Amerikat",
+    "asiaPacific": "Azia dhe Paqësori",
+    "middleEast": "Lindja e Mesme",
+    "africa": "Afrika"
+   }
+  }
+ },
+ "landingFooter": {
+  "features": "Funksionet",
+  "pricing": "Çmimet",
+  "faq": "Pyetje të shpeshta",
+  "privacy": "Privatësia",
+  "terms": "Kushtet",
+  "contact": "Kontakti",
+  "about": "Rreth nesh",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Nga ekipi që qëndron pas <b>Village Foodie</b>",
+  "badges": {
+   "appStoreLink": "Shkarkoni HatchGrab nga App Store",
+   "appStoreAlt": "Shkarkoje nga App Store",
+   "googlePlayLink": "Merrni HatchGrab në Google Play",
+   "googlePlayAlt": "Shkarkoje nga Google Play"
+  }
+ },
+ "featuresPage": {
+  "eyebrow": "Krahaso",
+  "detail": {
+   "walkup_orders": "Merrni dhe menaxhoni porositë te food truck-u, me pagesë në terminalin tuaj POS.",
+   "kitchen_app": "Mënyra më e plotë për të përdorur HatchGrab: ekran kuzhine në kohë reale, si dhe e vetmja mënyrë për të vazhduar të merrni porosi kur humbni sinjalin.",
+   "multi_device_kitchen": "Përdorni disa ekrane — në sportel dhe në kuzhinë — që shfaqin të njëjtat porosi në kohë reale.",
+   "multi_user_access": "Jepini stafit hyrjet e veta, me nivelin e duhur të qasjes.",
+   "offline_protection": "Nëse humbni sinjalin, porositë online vihen në pauzë, që klientët të mos dërgojnë porosi që ju nuk do t’i shihni. Me aplikacionin për iPhone, iPad dhe Android vazhdoni të merrni porosi offline; paneli në web kërkon lidhje interneti.",
+   "ticket_printing": "Printoni tiketat e porosive në një printer Bluetooth ose me kabllo në kuzhinë.",
+   "web_dashboard": "Drejtoni shërbimin nga shfletuesi i çdo telefoni, tableti ose laptopi.",
+   "meal_deals_upsells": "Bashkoni artikujt në menu kombo dhe ofroni sugjerime për shtesa gjatë pagesës, që të rritet vlera mesatare e porosisë.",
+   "sold_out_toggle": "Shënoni çdo artikull si “Mbaroi” me një prekje — klientët e shohin menjëherë në gri.",
+   "stock_countdown": "Vendosni sasinë e stokut dhe ajo zbret me çdo porosi që vjen, pastaj artikulli shënohet automatikisht si “Mbaroi”.",
+   "buzzer_tracking": "Caktojini porosisë një numër pageri kur jepni pagerin, që të dini cili pager i përket cilës porosi.",
+   "documents_reminders": "Ruani certifikatat tuaja në një vend, si ato për higjienën ushqimore, sigurimin dhe sigurinë e gazit. Ju kujtojmë para se të skadojë diçka dhe mund t’ia dërgoni organizatorit të një eventi ose tregu me një prekje.",
+   "profit_per_event": "Shtoni sa ju kushton çdo pjatë dhe shikoni sa fituat realisht në çdo event, jo vetëm arkëtimet.",
+   "accountant_reports": "Shitjet, taksat dhe rimbursimet për çdo muaj, tremujor ose vit fiskal, gati për t’i shkarkuar për kontabilistin tuaj.",
+   "tap_to_pay": "Merrni pagesa me kartë në një telefon të mbështetur, pa pasur nevojë për terminal të veçantë POS.",
+   "customer_display": "Një ekran që e shohin klientët, me numrat e porosive dhe kur janë gati.",
+   "online_payments": "Merrni pagesën me kartë paraprakisht kur klientët porositin online, përmes Stripe.",
+   "advance_preordering": "Lejojini klientët të porositin për një datë ose orë të ardhshme, para eventit.",
+   "preorder_deadline": "Vendosni një afat për artikujt që duhen porositur me kohë.",
+   "time_slot_selection": "Klientët zgjedhin një interval kohor marrjeje, duke shpërndarë kërkesën gjatë gjithë shërbimit.",
+   "kitchen_capacity": "Vendosni sa mund të gatuajë kuzhina juaj njëherësh dhe sa kohë duhet. Kur një interval mbushet, klientët nuk mund ta zgjedhin.",
+   "auto_accept": "Porositë online pranohen automatikisht — pa pasur nevojë t’i konfirmoni një nga një.",
+   "private_events": "Shtoni evente private që nuk shfaqen në hartë, me lidhjen e tyre private për porosi dhe kodin e tyre QR.",
+   "embed_schedule": "Shfaqni datat tuaja të ardhshme në faqen tuaj të internetit. Secila të çon drejt e te faqja e vet e porosive.",
+   "qr_code": "Një kod QR për printim, që hap menunë dhe faqen tuaj të porosive.",
+   "branded_qr_code": "Shtoni logon tuaj te kodi QR.",
+   "discovery_map_listing": "Food truck-u juaj shfaqet në hartën publike të HatchGrab, që klientët aty pranë t’ju gjejnë.",
+   "schedule_import": "E plotësojmë orarin tuaj automatikisht — nga faqja juaj e internetit ose nga një foto që e postoni tashmë në Facebook. Ju vetëm e rishikoni dhe e konfirmoni.",
+   "event_types": "Krijoni llojet tuaja të eventeve, me çmime dhe cilësime të personalizuara për evente dhe festivale.",
+   "social_media_posts": "Ngarkoni dizajnet tuaja — ne shtojmë automatikisht datat, vendet dhe oraret për çdo javë dhe çdo event.",
+   "whatsapp_auto_replies": "Përgjigjuni automatikisht pyetjeve në WhatsApp për menunë dhe orarin tuaj.",
+   "messenger_instagram_replies": "Njësoj si përgjigjet automatike në WhatsApp, për pyetjet në Messenger dhe Instagram.",
+   "sms_order_alerts": "Njoftoni klientët automatikisht me SMS kur porosia e tyre është gati.",
+   "loyalty_stamp_cards": "Shpërbleni klientët e rregullt me karta digjitale me vula — që mblidhen dhe përdoren automatikisht."
+  },
+  "metaTitle": "Krahasimi i paketave dhe funksioneve — HatchGrab {country}"
+ },
+ "planTable": {
+  "h1": "Gjithçka për të drejtuar shërbimin tuaj, në çdo paketë.",
+  "lede": "Porositë, porositë paraprake, kapaciteti dhe ekrani i kuzhinës përfshihen në çdo paketë.{hasUpgrades, select, yes { Paketat {plans} shtojnë {features}, si dhe tarifa më të ulëta.} other {}}",
+  "perMonth": "{price} / muaj",
+  "trial": {
+   "length": "{months, plural, one {# muaj} other {# muaj}}",
+   "ends": "Përfundon më {date}"
+  },
+  "group": {
+   "pay": "Çfarë paguani",
+   "run": "Drejtimi i shërbimit",
+   "online": "Porositë online",
+   "marketing": "Marketing dhe automatizim"
+  },
+  "pay": {
+   "included": "Porosi online të përfshira çdo muaj",
+   "fee": "Tarifa e HatchGrab për porositë online*",
+   "feeNoMark": "Tarifa e HatchGrab për porositë online",
+   "walkUp": "Porositë në vend"
+  },
+  "cell": {
+   "unlimited": "Pa limit",
+   "free": "Falas",
+   "feeAbove": "<b>{fee}</b> mbi {included}",
+   "yes": "Përfshihet",
+   "none": "Nuk përfshihet",
+   "comingSoon": "Së shpejti"
+  },
+  "short": {
+   "whatsapp_replies": "WhatsApp",
+   "schedule_graphics": "rrjetet sociale",
+   "event_types": "çmime të personalizuara për eventet"
+  },
+  "meta": {
+   "description": "Çdo funksion i HatchGrab në çdo paketë, krah për krah — {plans}, me tarifat dhe sasitë e përfshira.{months, plural, =0 {} one { Muaji i parë përfshin gjithçka.} other { # muajt e parë përfshijnë gjithçka.}}"
+  },
+  "notes": {
+   "whatsapp": "Përgjigjet automatike në WhatsApp kërkojnë një llogari WhatsApp Business. Meta mund të tarifojë disa mesazhe; përgjigjet gjenerohen automatikisht.",
+   "printing": "Printimi i tiketave të kuzhinës kërkon një printer të përputhshëm Bluetooth ose me kabllo (nuk përfshihet)."
+  }
+ },
+ "pricing": {
+  "banner": {
+   "title": "{months, plural, one {Muaji juaj i parë është krejtësisht falas — me çdo funksion të zhbllokuar.} other {# muajt tuaj të parë janë krejtësisht falas — me çdo funksion të zhbllokuar.}}",
+   "body": "Me {brand}, klientët porositin paraprakisht dhe paguajnë kur marrin porosinë, kështu që mund të merrni porosi online pa lidhur fare një shërbim përpunimi kartash. Kur të përfundojë prova, kaloni te paketa <plan>{fallback}</plan>{fallbackFree, select, yes { — pa tarifë mujore —} other {}} nëse nuk zgjidhni një paketë. Pa kartë për të filluar, pa kontratë, anulojeni kur të doni.",
+   "bodyCard": "Me {brand}, klientët porositin paraprakisht dhe paguajnë kur marrin porosinë, kështu që mund të merrni porosi online pa lidhur fare një shërbim përpunimi kartash. Preferoni ta merrni pagesën paraprakisht? Shtoni pagesat online me kartë kur të doni. Kur të përfundojë prova, kaloni te paketa <plan>{fallback}</plan>{fallbackFree, select, yes { — pa tarifë mujore —} other {}} nëse nuk zgjidhni një paketë. Pa kartë për të filluar, pa kontratë, anulojeni kur të doni.",
+   "bodyOnly": "Me {brand}, klientët porositin paraprakisht dhe paguajnë kur marrin porosinë, kështu që mund të merrni porosi online pa lidhur fare një shërbim përpunimi kartash. Kur të përfundojë prova, paketa <plan>{fallback}</plan> kushton {price} në muaj. Do t’ju kontaktojmë më parë për të konfiguruar pagesën. Pa kartë për të filluar, pa kontratë, anulojeni kur të doni.",
+   "bodyOnlyCard": "Me {brand}, klientët porositin paraprakisht dhe paguajnë kur marrin porosinë, kështu që mund të merrni porosi online pa lidhur fare një shërbim përpunimi kartash. Preferoni ta merrni pagesën paraprakisht? Shtoni pagesat online me kartë kur të doni. Kur të përfundojë prova, paketa <plan>{fallback}</plan> kushton {price} në muaj. Do t’ju kontaktojmë më parë për të konfiguruar pagesën. Pa kartë për të filluar, pa kontratë, anulojeni kur të doni."
+  },
+  "card": {
+   "perTruckMonth": "për food truck / muaj",
+   "mostTrucks": "Zgjedhja e shumicës",
+   "tryFree": "Provo falas",
+   "seeEvery": "Shiko çdo funksion →",
+   "everything": "Gjithçka për të drejtuar një shërbim",
+   "everythingIn": "Gjithçka nga paketa {plan}, si dhe"
+  },
+  "fee": {
+   "feeOnly": "<b>{fee}</b> vetëm për porositë online. Porositë në vend janë gjithmonë falas.",
+   "feeOnlyCard": "<b>{fee}*</b> vetëm për porositë online. Porositë në vend janë gjithmonë falas.",
+   "included": "Çdo muaj përfshihen porositë online deri në <b>{included}</b>, pastaj <b>{fee}*</b>. Porositë në vend janë gjithmonë falas.",
+   "includedNoMark": "Çdo muaj përfshihen porositë online deri në <b>{included}</b>, pastaj <b>{fee}</b>. Porositë në vend janë gjithmonë falas.",
+   "noFee": "<b>Pa tarifa HatchGrab</b> për porositë online, sado të ngarkuar të jeni. Një kosto mujore e parashikueshme."
+  },
+  "base": {
+   "walkUp": "Porositë në vend dhe ekrani i kuzhinës",
+   "online": "Porositë online",
+   "preorders": "Porositë paraprake dhe oraret e marrjes",
+   "capacity": "Menaxhimi i kapacitetit të kuzhinës",
+   "privateEvents": "Evente private",
+   "printing": "Printimi i tiketave të kuzhinës",
+   "app": "Aplikacioni i kuzhinës për iPhone, iPad dhe Android"
+  },
+  "added": {
+   "whatsapp_replies": "Përgjigje automatike në WhatsApp",
+   "schedule_graphics": "Postime për rrjetet sociale — orari juaj për Facebook dhe Instagram — gati për t’u postuar",
+   "event_types": "Lloje eventesh dhe çmime të personalizuara"
+  },
+  "money": {
+   "unlimitedOrders": "Porosi online pa limit, 0% tarifë HatchGrab",
+   "samePrice": "I njëjti çmim edhe në muajin më të ngarkuar"
+  },
+  "comingSoon": "Së shpejti",
+  "bar": {
+   "title": "Cila paketë është më e lirë për mua?",
+   "subtitle": "Porositë tuaja online çdo muaj",
+   "first": "Nën {to} → <b>{plan}</b>",
+   "middle": "{from} – {to} → <b>{plan}</b>",
+   "last": "Mbi {from} → <b>{plan}</b>",
+   "only": "Çdo vëllim → <b>{plan}</b>"
+  },
+  "footnote": "* Shtohet tarifa e përpunimit të kartave nga Stripe, vetëm për porositë online me kartë (aktualisht {cardFee} — {country}), që paguhet te Stripe, jo te HatchGrab. Për porositë në vend përdorni terminalin tuaj POS — HatchGrab tarifon 0%.",
+  "currencyLine": "Çmimet janë në {currency} ({code})"
+ },
+ "planFeatures": {
+  "row": {
+   "discovery_map_listing": {
+    "name": "Shfaqja në hartën publike"
+   },
+   "web_dashboard": {
+    "name": "Panel universal në web"
+   },
+   "qr_code": {
+    "name": "Kod QR"
+   },
+   "schedule_import": {
+    "name": "Importim automatik i orarit"
+   },
+   "meal_deals_upsells": {
+    "name": "Menu kombo dhe sugjerime"
+   },
+   "walkup_orders": {
+    "name": "Përpunimi i porosive në vend"
+   },
+   "sold_out_toggle": {
+    "name": "Shënimi i menjëhershëm “Mbaroi”"
+   },
+   "kitchen_app": {
+    "name": "Aplikacioni i kuzhinës për iPhone, iPad dhe Android"
+   },
+   "offline_protection": {
+    "name": "Mbrojtja offline e porosive"
+   },
+   "online_payments": {
+    "name": "Pagesat online"
+   },
+   "advance_preordering": {
+    "name": "Porosi paraprake për data të ardhshme"
+   },
+   "preorder_deadline": {
+    "name": "Afati i porosisë paraprake"
+   },
+   "time_slot_selection": {
+    "name": "Zgjedhja e intervalit kohor nga klienti"
+   },
+   "kitchen_capacity": {
+    "name": "Menaxhimi i kapacitetit të kuzhinës"
+   },
+   "stock_countdown": {
+    "name": "Zbritja automatike e stokut"
+   },
+   "auto_accept": {
+    "name": "Pranimi automatik i porosive online"
+   },
+   "branded_qr_code": {
+    "name": "Kod QR me logon tuaj"
+   },
+   "private_events": {
+    "name": "Evente private"
+   },
+   "social_media_posts": {
+    "name": "Postime për rrjetet sociale"
+   },
+   "whatsapp_auto_replies": {
+    "name": "Përgjigje automatike në WhatsApp"
+   },
+   "messenger_instagram_replies": {
+    "name": "Përgjigje automatike në Messenger dhe Instagram"
+   },
+   "tap_to_pay": {
+    "name": "Merrni pagesa në telefonin tuaj"
+   },
+   "sms_order_alerts": {
+    "name": "Njoftime për porosinë me SMS"
+   },
+   "multi_device_kitchen": {
+    "name": "Sinkronizimi i kuzhinës në disa pajisje"
+   },
+   "multi_user_access": {
+    "name": "Qasje për disa përdorues"
+   },
+   "embed_schedule": {
+    "name": "Faqja e orarit në faqen tuaj të internetit"
+   },
+   "event_types": {
+    "name": "Lloje eventesh dhe çmime të personalizuara"
+   },
+   "buzzer_tracking": {
+    "name": "Gjurmimi i pagerëve"
+   },
+   "documents_reminders": {
+    "name": "Dokumente dhe kujtesa"
+   },
+   "profit_per_event": {
+    "name": "Fitimi për çdo event"
+   },
+   "accountant_reports": {
+    "name": "Raporte për kontabilistin tuaj"
+   },
+   "ticket_printing": {
+    "name": "Printimi i tiketave të kuzhinës"
+   },
+   "customer_display": {
+    "name": "Ekran për klientët"
+   },
+   "loyalty_stamp_cards": {
+    "name": "Karta digjitale besnikërie me vula"
+   }
+  },
+  "cardRegionOnline": "{region} standarde",
+  "cardRegion": {
+   "UKcards": "karta të Mbretërisë së Bashkuar",
+   "EEAcards": "karta të ZEE-së",
+   "UScards": "karta të SHBA-së",
+   "Australiancards": "karta australiane",
+   "NewZealandcards": "karta të Zelandës së Re",
+   "Canadiancards": "karta kanadeze",
+   "Swisscards": "karta zvicerane",
+   "Braziliancards": "karta braziliane",
+   "Mexicancards": "karta meksikane",
+   "Japanesecards": "karta japoneze",
+   "Singaporecards": "karta të Singaporit",
+   "HongKongcards": "karta të Hong Kongut",
+   "Malaysiancards": "karta malajziane",
+   "Thaicards": "karta tajlandeze",
+   "UAEcards": "karta të EBA-së"
+  },
+  "perMonth": {
+   "mo": "{amount}/muaj",
+   "month": "{amount}/muaj"
+  },
+  "priceWord": {
+   "free": "Falas",
+   "freeTrial": "Provë falas",
+   "lifetime": "Përgjithmonë",
+   "zeroPercent": "0%",
+   "payAtHatch": "Pagesë në marrje",
+   "unlimited": "Pa limit",
+   "none": "—",
+   "masked": "Për t’u konfirmuar"
+  },
+  "cell": {
+   "included": "Përfshihet"
+  }
+ },
+ "planPrompt": {
+  "includedOn": "{many, select, yes {{feature} përfshihen në paketën {plan}.} other {{feature} përfshihet në paketën {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} nuk janë në paketën tuaj.} other {{feature} nuk është në paketën tuaj.}}",
+  "switchedOff": "{many, select, yes {{feature} janë çaktivizuar për food truck-un tuaj.} other {{feature} është çaktivizuar për food truck-un tuaj.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Përmirëso →",
+  "features": {
+   "discovery_map": {
+    "name": "Shfaqja në hartën publike",
+    "many": "no"
+   },
+   "web_dashboard": {
+    "name": "Paneli në web",
+    "many": "no"
+   },
+   "ipad_kds": {
+    "name": "Aplikacioni i kuzhinës",
+    "many": "no"
+   },
+   "qr_menu": {
+    "name": "Menuja me kod QR",
+    "many": "no"
+   },
+   "meal_deals": {
+    "name": "Menutë kombo",
+    "many": "yes"
+   },
+   "upsells": {
+    "name": "Sugjerimet",
+    "many": "yes"
+   },
+   "walkup_orders": {
+    "name": "Porositë në vend",
+    "many": "yes"
+   },
+   "online_ordering_pay_at_hatch": {
+    "name": "Porositja me Pagesë në marrje",
+    "many": "no"
+   },
+   "sold_out_toggle": {
+    "name": "Butoni “Mbaroi”",
+    "many": "no"
+   },
+   "stock_countdown": {
+    "name": "Zbritja e stokut",
+    "many": "no"
+   },
+   "offline_protection": {
+    "name": "Mbrojtja offline e porosive",
+    "many": "no"
+   },
+   "online_payments": {
+    "name": "Pagesat online",
+    "many": "yes"
+   },
+   "advance_preordering": {
+    "name": "Porosia paraprake për data të ardhshme",
+    "many": "no"
+   },
+   "time_slot_selection": {
+    "name": "Intervalet kohore për klientët",
+    "many": "yes"
+   },
+   "smart_batch_pacing": {
+    "name": "Menaxhimi i kapacitetit të kuzhinës",
+    "many": "no"
+   },
+   "auto_accept": {
+    "name": "Pranimi automatik",
+    "many": "no"
+   },
+   "instagram_messenger_replies": {
+    "name": "Përgjigjet automatike në Messenger dhe Instagram",
+    "many": "yes"
+   },
+   "branded_qr_code": {
+    "name": "Kodet QR me logon tuaj",
+    "many": "yes"
+   },
+   "advanced_reporting": {
+    "name": "Raportimi i avancuar",
+    "many": "no"
+   },
+   "ticket_printing": {
+    "name": "Printimi i tiketave të kuzhinës",
+    "many": "no"
+   },
+   "multi_device_kds": {
+    "name": "Sinkronizimi i kuzhinës në disa pajisje",
+    "many": "no"
+   },
+   "cook_screen": {
+    "name": "Ekrani i gatimit",
+    "many": "no"
+   },
+   "whatsapp_replies": {
+    "name": "Përgjigjet automatike në WhatsApp",
+    "many": "yes"
+   },
+   "embed_schedule": {
+    "name": "Orari në faqen tuaj të internetit",
+    "many": "no"
+   },
+   "schedule_graphics": {
+    "name": "Postimet për rrjetet sociale",
+    "many": "yes"
+   },
+   "event_types": {
+    "name": "Llojet e personalizuara të eventeve",
+    "many": "yes"
+   },
+   "private_events": {
+    "name": "Eventet private",
+    "many": "yes"
+   },
+   "paperwork": {
+    "name": "Dokumentet",
+    "many": "yes"
+   }
+  }
+ },
+ "faq": {
+  "phrases": {
+   "appsSentence": "Ka edhe një aplikacion për iPad dhe Android, që vazhdon të marrë porosi në vend edhe kur humbni sinjalin.",
+   "appsOffline": "Aplikacioni për iPad dhe Android vazhdon të marrë porosi në vend pa sinjal dhe i dërgon kur të riktheheni online; paneli në web kërkon lidhje interneti.",
+   "webOffline": "Paneli në web kërkon lidhje interneti për të shfaqur porositë e reja."
+  }
+ },
+ "aboutPage": {
+  "meta": {
+   "title": "Rreth nesh — HatchGrab",
+   "description": "HatchGrab krijon program praktik për food truck dhe katering: porosi online, orë marrjeje dhe më pak pyetje të përsëritura. Themeluar nga Dominic Bonini."
+  },
+  "eyebrow": "Rreth nesh",
+  "title": "Ndërtuar sipas mënyrës si punojnë realisht food truck-et",
+  "photoAlt": "{name}, themeluesi i HatchGrab",
+  "story": {
+   "start": "HatchGrab nisi nga një vëzhgim i thjeshtë: food truck-et kanë nevojë për mjete më të mira për të drejtuar biznesin e tyre.",
+   "villageFoodie": "Pasi krijova Village Foodie, një listë që i ndihmon njerëzit të zbulojnë food truck-et që vijnë në zonën e tyre, kalova më shumë kohë duke mësuar për sfidat me të cilat përballen bizneset e lëvizshme të ushqimit. Ndryshe nga restorantet tradicionale, food truck-et lëvizin vazhdimisht, punojnë në vende të ndryshme dhe u shërbejnë klientëve në kushte që ndryshojnë.",
+   "fixedAddress": "Megjithatë, shumica e programeve që u ofrohen janë ndërtuar për biznese me adresë fikse.",
+   "change": "HatchGrab u krijua për ta ndryshuar këtë.",
+   "build": "Ne ndërtojmë program praktik posaçërisht për food truck-et dhe ofruesit e kateringut të lëvizshëm, që t’i ndihmojmë të marrin porosi online, të menaxhojnë oraret e marrjes, t’i mbajnë porositë të rrjedhshme dhe të humbin më pak kohë me pyetje të përsëritura.",
+   "focus": "Fokusi ynë është i thjeshtë: ta bëjmë më të lehtë drejtimin e një food truck-u, me mjete të ndërtuara sipas mënyrës si funksionojnë realisht këto biznese."
+  },
+  "signature": "<b>{name}</b><br></br>Themelues, HatchGrab",
+  "company": "{company} · regjistruar në Angli dhe Uells · numri i kompanisë {number} · selia e regjistruar: {address}",
+  "contact": "Na kontaktoni"
+ },
+ "legalChrome": {
+  "meta": {
+   "privacyTitle": "Politika e privatësisë — HatchGrab",
+   "privacyDescription": "Si i mbledh dhe i përdor HatchGrab Ltd të dhënat personale.",
+   "termsTitle": "Kushtet e shërbimit — HatchGrab",
+   "termsDescription": "Kushtet e përdorimit të HatchGrab.",
+   "countryTermsTitle": "Kushtet specifike sipas shtetit — HatchGrab",
+   "countryTermsDescription": "Rregullat shtesë që zbatohen për HatchGrab në disa shtete."
+  },
+  "homeLabel": "Faqja kryesore e HatchGrab",
+  "privacy": "Privatësia",
+  "terms": "Kushtet",
+  "countryTerms": "Kushtet sipas shtetit",
+  "contact": "Kontakti",
+  "lastUpdated": "Përditësuar së fundi më {date}",
+  "questions": "Keni pyetje? <link>Na shkruani</link> — jemi njerëz të vërtetë.",
+  "translationNote": "Ky është një përkthim. Nëse ndryshon nga <link>versioni në anglisht</link>, vlen versioni në anglisht."
+ },
+ "truckPage": {
+  "meta": {
+   "fallbackTitle": "Food truck | Village Foodie",
+   "hgFallbackTitle": "Food truck",
+   "orderTitle": "{truck} — porosit online",
+   "orderDescription": "{truck}: porositni paraprakisht dhe merreni porosinë te food truck-u.",
+   "title": "{truck} | Village Foodie",
+   "logoAlt": "Logo: {truck}"
+  },
+  "shareTitle": "Orari: {truck}",
+  "shareText": "Shikoni ku ndalon herën tjetër {truck}! 🚚",
+  "linkCopied": "Lidhja e profilit u kopjua! 📋",
+  "facebookPage": "Faqja në Facebook",
+  "loadingMap": "Po ngarkohet harta…",
+  "view": {
+   "list": "Listë",
+   "map": "Hartë"
+  },
+  "ownThisTruck": "Jeni pronari i këtij food truck-u?",
+  "ownThisTruckTitle": "Jeni pronari i këtij food truck-u? Klikoni për të përditësuar profilin tuaj",
+  "actions": {
+   "menu": "Menu",
+   "call": "Telefono",
+   "message": "Mesazh",
+   "share": "Ndaj",
+   "order": "Porosit"
+  },
+  "loadingSchedule": "Po ngarkohet orari…",
+  "loadError": {
+   "title": "Ngarkimi dështoi",
+   "body": "Nuk arritëm ta ngarkonim orarin tani — zakonisht është një problem i shkurtër. Ju lutemi provoni sërish.",
+   "retry": "Provo sërish"
+  },
+  "notFound": {
+   "title": "Food truck-u nuk u gjet",
+   "body": "Nuk gjetëm asnjë të dhënë për këtë food truck. Mund të jenë zhvendosur ose të kenë përditësuar profilin e tyre.",
+   "cta": "Shiko të gjitha food truck-et"
+  },
+  "noEvents": {
+   "title": "Nuk u gjet asnjë event i ardhshëm",
+   "body": "Mund të na mungojnë disa të dhëna për këtë food truck. Jeni pronari apo e dini orarin e tyre?",
+   "cta": "Na shkruani që ta përditësojmë!"
+  },
+  "whereToFind": "Ku të na gjeni",
+  "missingEvent": "<strong>Na mungon ndonjë event?</strong> <br></br>Nëse jeni pronari i këtij food truck-u ose thjesht një fans i përkushtuar, na ndihmoni ta mbajmë këtë faqe të saktë! <br></br><link>Na kontaktoni për të shtuar të dhënat që mungojnë.</link>",
+  "weeklySchedule": "Merr orarin javor 🍕"
+ },
+ "contactPage": {
+  "meta": {
+   "title": "Mbështetja",
+   "description": "Merrni ndihmë për HatchGrab. Na dërgoni një mesazh dhe do t’ju përgjigjemi me email."
+  },
+  "logIn": "Hyr",
+  "eyebrow": "Mbështetja",
+  "title": "Si mund t’ju ndihmojmë?",
+  "lede": "Diçka nuk funksionon, apo keni një pyetje për llogarinë tuaj? Dy mënyra për të na kontaktuar — në të dyja rastet do t’ju përgjigjemi me email.",
+  "emailUs": "Na shkruani me email",
+  "formHeading": "Ose na dërgoni një mesazh",
+  "form": {
+   "topicLabel": "Për çfarë bëhet fjalë?",
+   "topics": {
+    "question": "Një pyetje për HatchGrab",
+    "account": "Ndihmë me llogarinë time",
+    "comparison": "Një korrigjim për një faqe krahasimi",
+    "other": "Diçka tjetër"
+   },
+   "nameLabel": "Emri juaj",
+   "namePlaceholder": "Emri",
+   "emailLabel": "Email",
+   "businessLabel": "Emri i food truck-ut ose i biznesit",
+   "optional": "(opsionale)",
+   "businessPlaceholder": "p.sh. Kuzhina e Fshatit",
+   "messageLabel": "Mesazhi juaj",
+   "send": "Dërgo mesazhin",
+   "sending": "Po dërgohet…",
+   "privacyLine": "Të dhënat tuaja do t’i përdorim vetëm për t’ju përgjigjur.",
+   "privacyLink": "Politika e privatësisë",
+   "thanksTitle": "Faleminderit — mesazhi juaj mbërriti.",
+   "thanksBody": "Do t’ju përgjigjemi me email në adresën që na dhatë.",
+   "errors": {
+    "nameRequired": "Ju lutemi shkruani emrin tuaj.",
+    "nameTooLong": "Emri duhet të ketë jo më shumë se {max, number} karaktere.",
+    "emailRequired": "Ju lutemi shkruani adresën tuaj të email-it.",
+    "emailInvalid": "Ju lutemi shkruani një adresë email-i të vlefshme.",
+    "emailTooLong": "Ju lutemi përdorni një adresë email-i me jo më shumë se {max, number} karaktere.",
+    "businessRequired": "Ju lutemi shkruani emrin e food truck-ut ose të biznesit, që të gjejmë llogarinë tuaj.",
+    "businessTooLong": "Emri i food truck-ut ose i biznesit duhet të ketë jo më shumë se {max, number} karaktere.",
+    "messageTooShort": "Ju lutemi shkruani të paktën {min, number} karaktere.",
+    "messageTooLong": "Mesazhi duhet të ketë jo më shumë se {max, number} karaktere.",
+    "topicInvalid": "Ju lutemi zgjidhni temën e mesazhit tuaj.",
+    "rateLimited": "Keni dërguar tashmë disa mesazhe — ju lutemi provoni sërish më vonë ose na shkruani në {email}.",
+    "failed": "Ndodhi një gabim — ju lutemi na shkruani në {email}."
+   }
+  },
+  "privacy": "Privatësia",
+  "terms": "Kushtet",
+  "about": "Rreth nesh",
+  "copyright": "© {year} HatchGrab"
+ },
+ "siteFooter": {
+  "title": "Mos humbisni asnjë fetë 🍕",
+  "body": "Merrni çdo javë në email orarin e ushqimit në fshatin tuaj.",
+  "cta": "Merr orarin",
+  "noSpam": "Pa spam (por ndoshta me peperoni). Çregjistrohuni kur të doni.",
+  "heading": "Na kontaktoni dhe shërbimet",
+  "hire": "Food truck për evente",
+  "general": "Pyetje e përgjithshme",
+  "addBusiness": "Shto biznesin tim",
+  "reportIssue": "Raporto një problem",
+  "directory": "Lista e food truck-eve",
+  "disclaimer": "Shënim: Oraret mund të ndryshohen nga shitësit. Ne bëjmë më të mirën, por nuk mbajmë përgjegjësi për food truck-et që anulojnë ose për burgerat që mbarojnë. Kontrolloni gjithmonë rrjetet sociale të shitësit për përditësimet e minutës së fundit."
+ },
+ "errorPage": {
+  "notFoundTitle": "Faqja nuk u gjet",
+  "notFoundBody": "Nuk e gjetëm këtë faqe. Mund të jetë zhvendosur ose adresa mund të jetë shkruar gabim.",
+  "home": "Shko te faqja kryesore",
+  "errorTitle": "Ndodhi një gabim",
+  "errorBody": "Na vjen keq — kjo faqe nuk u ngarkua. Provoni sërish ose kthehuni te faqja kryesore.",
+  "retry": "Provo sërish",
+  "backToDashboard": "Kthehu te paneli",
+  "errorBodyDashboard": "Na vjen keq, kjo faqe nuk u ngarkua. Provoni sërish ose kthehuni te paneli juaj.",
+  "sectionFailed": "Ky seksion nuk u ngarkua."
+ },
+ "embed": {
+  "metaDescription": "Ku punon herën tjetër {truck}.",
+  "orderFrom": "Porosit nga {truck}",
+  "poweredBy": "Mundësuar nga <b>HatchGrab</b>",
+  "loadFailed": "Orari nuk u ngarkua dot tani.",
+  "loading": "Po ngarkohet orari…",
+  "empty": "{truck}: nuk ka evente të ardhshme të listuara."
+ },
+ "planNames": {
+  "payg": {
+   "name": "Pa abonim mujor",
+   "subtitle": "Për tregtarë sezonalë dhe me kohë të pjesshme",
+   "description": "Pa tarifë mujore. Paguani vetëm 0,99% për porositë online."
+  },
+  "pro": {
+   "subtitle": "Për food truck-et që marrin rregullisht porosi paraprake",
+   "description": "Gjithçka, përfshirë përgjigjet automatike në WhatsApp dhe postimet për rrjetet sociale, me porosi online të përfshira çdo muaj."
+  },
+  "unlimited": {
+   "name": "Pa limit",
+   "subtitle": "Për food truck-et me shumë punë dhe festivalet",
+   "description": "Gjithçka, pa tarifa për porositë online, sado të ngarkuar të jeni."
+  },
+  "trial": {
+   "name": "Provë falas",
+   "description": "Çdo funksion, falas, për sa kohë zgjat prova juaj."
+  },
+  "demo": {
+   "name": "Demo",
+   "description": "Mjedis prove për klientë të mundshëm — kurrë publik."
+  },
+  "tester": {
+   "name": "Testues",
+   "description": "Testues para nisjes — qasje e plotë."
+  }
+ }
+}

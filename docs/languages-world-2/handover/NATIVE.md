@@ -224,3 +224,8 @@
 - German TSE/till copy translated faithfully (a first draft localised it to Albanian fiscalisation; reverted — unverified legal claims). Germany figures (Uber Eats, Wolt, Lieferando) as written — does AL need them?
 - VAT "TVSH"; reverse charge "autongarkesë" (confirm); possessives on names via colon ("{names}: faqja e internetit nuk e thotë"); country placeholder in brackets.
 - cell.notApplicable "nuk aplikohet për një platformë tregu" (market = marketplace?); slug krahasim/sistem-porosish-food-truck.
+
+## sq-AL part 09 (languages-world-3, 17 Nov 2026)
+- Pricing asterisks pass markRules (feeOnly none, feeOnlyCard "<b>{fee}*</b>", NoMark = minus asterisk, footnote "* … vetëm për porositë online me kartë"); card sentence "Preferoni ta merrni pagesën paraprakisht? Shtoni pagesat online me kartë kur të doni."
+- planTable.trial.ends "Përfundon më {date}"; pitch "vendi i shitjes"; Tester "Testues"; 0,99%.
+- Check: "{region} standarde", "karta të ZEE-së / SHBA-së / EBA-së"; TBC "Për t’u konfirmuar" (long); store badges "Shkarkoje nga App Store / Google Play" (official AL wording unconfirmed); "Me {brand}, …".
