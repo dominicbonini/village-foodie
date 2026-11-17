@@ -247,3 +247,8 @@
 - 💷 → 💵 (KM) — other locales use 💶; confirm.
 - Ticket: DO NOT COLLECT "NE NAPLAĆUJTE", TO PAY "ZA NAPLATU"; operator Place order "Pošalji narudžbu" (≠ legal customer button).
 - `one`-for-21 rewrites: kds.screenOff.bodyVans, buzzer.allTaken "(ukupno: {count})", addOrder.catsClosed, fitMessage "Label: {n}"; check "{n} narudžbi bit će otkazano", "Provjereno: {orders}".
+
+## bs-BA part 03 (languages-world-3, 17 Nov 2026)
+- allergen card "lista alergena" (TERMS; "kartica" may read better); vans "vozilo"/"VOZILA"; Log in "Prijavi se"/"Prijavite se"; code keys "Partnerski ili promo kod".
+- 21-safe wording to check: "# mjesec besplatno, od trenutka registracije", "probni period od # mjeseca", "{unverified} od ukupno {total} jela", "Label: {count}".
+- New: Billing "Naplata", Upsells "Dodatna ponuda", Custom extras "Prilagođeni dodaci", Dietary "Ishrana", Pub chip "Kafić", Wraps "Tortilje", Coffee "Kahva"; samples "Mirzini burgeri", "Vjenčanje Amre i Harisa".

@@ -1,0 +1,1054 @@
+{
+ "alertsOperator": {
+  "hi": "Zdravo, {name},",
+  "limit80": {
+   "subject": "Iskoristili ste 80% ovomjesečnih odgovora na WhatsAppu",
+   "used": "Vaši automatski odgovori na WhatsAppu ovog mjeseca iskoristili su <b>{used} od {limit}</b>.",
+   "nothingStopped": "Ništa nije zaustavljeno. Kada dostignete {limit}, automatski odgovori pauziraju se dok se vaša mjesečna kvota ne obnovi, dana <b>{reset}</b> — kupci vam i dalje mogu pisati i i dalje ćete vidjeti sve što pošalju.",
+   "raise": "Mjesečno ograničenje možete povećati u postavkama kad god želite.",
+   "raiseLink": "Mjesečno ograničenje možete povećati u postavkama kad god želite:",
+   "button": "Otvori postavke"
+  },
+  "limit100": {
+   "subject": "Automatski odgovori na WhatsAppu pauzirani su do kraja mjeseca",
+   "usedAll": "Iskoristili ste svih {limit} automatskih odgovora na WhatsAppu za ovaj mjesec, pa su pauzirani.",
+   "stillReach": "<b>Kupci vam i dalje mogu pisati kao i obično i svaka poruka i dalje stiže do vas.</b> Zaustavljeno je samo slanje automatskog odgovora.",
+   "startAgain": "Ponovo će se uključiti dana <b>{reset}</b> ili odmah ako povećate mjesečno ograničenje u postavkama.",
+   "startAgainLink": "Ponovo će se uključiti dana {reset} ili odmah ako povećate mjesečno ograničenje u postavkama:",
+   "button": "Povećaj ograničenje"
+  },
+  "paymentBlocked": {
+   "subject": "WhatsApp treba način plaćanja da bi mogao slati poruke",
+   "stopped": "WhatsApp je zaustavio slanje vaših automatskih odgovora jer na vašem WhatsApp Business računu nema ispravnog načina plaćanja.",
+   "stillMessage": "<b>Kupci vam i dalje mogu pisati i i dalje ćete vidjeti sve što pošalju</b> — ali odgovori ne stižu do njih.",
+   "payDirect": "Ove poruke plaćate direktno WhatsAppu, pa se ovo rješava u WhatsApp Manageru, a ne u HatchGrabu. Tamo dodajte ili ažurirajte karticu i odgovori će se sami ponovo uključiti.",
+   "payDirectLink": "Ove poruke plaćate direktno WhatsAppu, pa se ovo rješava u WhatsApp Manageru, a ne u HatchGrabu. Tamo dodajte ili ažurirajte karticu i odgovori će se sami ponovo uključiti:",
+   "button": "Otvori WhatsApp Manager",
+   "settings": "Vaše postavke na HatchGrabu: <link>{url}</link>"
+  }
+ },
+ "setup": {
+  "steps": {
+   "based": "Gdje radite",
+   "identity": "Vaš food truck",
+   "menu": "Vaš meni",
+   "event": "Prvi događaj"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Postavljanje",
+  "loading": "Učitavanje",
+  "loadingCountries": "Učitavanje…",
+  "verify": {
+   "ok": "E-mail je potvrđen — hvala.",
+   "expired": "Taj link za potvrdu je istekao. Javite nam se i riješit ćemo to prije nego što krenete uživo.",
+   "invalid": "Taj link za potvrdu nije uspio. Javite nam se i riješit ćemo to prije nego što krenete uživo."
+  },
+  "identity": {
+   "heading": "Kako se zove vaš food truck?",
+   "intro": "Ovo je naziv koji kupci vide. Ništa nije javno dok ne odlučite da krenete uživo.",
+   "nameLabel": "Naziv food trucka",
+   "namePlaceholder": "Mirzini burgeri",
+   "phoneLabel": "Telefon",
+   "whatsappTick": "Ovaj broj je na WhatsAppu",
+   "phoneHelp": "Kupci ovo vide u potvrdi narudžbe kako bi mogli pitati nešto o narudžbi. Kvačica određuje hoće li pisati „Pozovite nas“ ili „Pišite nam na WhatsApp“. Oboje možete promijeniti u postavkama."
+  },
+  "phoneRequired": "Dodajte broj telefona — preko njega vas kontaktiraju i kupci i mi.",
+  "createFailed": "Nije bilo moguće napraviti vaš food truck.",
+  "unreachable": "Trenutno nas nije moguće dobiti — pokušajte ponovo.",
+  "back": "Nazad",
+  "creating": "Pravimo vaš food truck…",
+  "continue": "Nastavi"
+ },
+ "whereBased": {
+  "countriesFailed": "Nismo uspjeli učitati listu država. Pokušajte ponovo za trenutak."
+ },
+ "cuisinePicker": {
+  "choose": "Odaberite kuhinju…",
+  "other": "Ostalo…",
+  "otherPlaceholder": "Upišite svoju kuhinju",
+  "addAnother": "+ Odaberite još jednu",
+  "remove": "Ukloni: {label}",
+  "cuisine": {
+   "Asian": "Azijska",
+   "BBQ": "Roštilj",
+   "Bakery": "Pekara",
+   "Burgers": "Burgeri",
+   "Caribbean": "Karipska",
+   "Chicken": "Piletina",
+   "Chinese": "Kineska",
+   "Coffee": "Kahva",
+   "Desserts": "Deserti",
+   "FishChips": "Riba i pomfrit",
+   "Greek": "Grčka",
+   "HotDogs": "Hot dog",
+   "Indian": "Indijska",
+   "Italian": "Italijanska",
+   "JacketPotatoes": "Pečeni krompir",
+   "Kebab": "Kebab",
+   "Korean": "Korejska",
+   "Mexican": "Meksička",
+   "PieMash": "Pita i pire",
+   "Pizza": "Pizza",
+   "Seafood": "Plodovi mora",
+   "Tacos": "Tacos",
+   "Thai": "Tajlandska",
+   "Vegan": "Veganska",
+   "Wraps": "Tortilje"
+  }
+ },
+ "priceControls": {
+  "change": "{label} — promijeni",
+  "useRule": "{label} — koristi pravilo",
+  "typePrice": "{label} — upiši cijenu",
+  "backToRule": "Nazad na pravilo",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+ },
+ "goLive": {
+  "allergensUnanswered": {
+   "title": "Odaberite kako prikazujete informacije o alergenima",
+   "detail": "Dok ne odaberete, kupci ne vide nijedno vaše jelo — meni se štiti tako što skriva sve čiji alergeni nisu potvrđeni, a trenutno je to sve.",
+   "where": "Meni → Alergeni"
+  },
+  "allergensCardMissing": {
+   "title": "Dodajte listu alergena",
+   "detail": "Odabrali ste prikaz liste alergena, ali nijedna nije sačuvana — kupcima bi se reklo da su informacije o alergenima dostupne, a onda ne bi našli ništa.",
+   "where": "Meni → Alergeni"
+  },
+  "allergensItemsUnverified": {
+   "title": "{n, plural, one {Potvrdite alergene za {count} jelo} few {Potvrdite alergene za {count} jela} other {Potvrdite alergene za {count} jela}}",
+   "detail": "{n, plural, one {Skriveno od kupaca dok ne potvrdite alergene: {u, plural, one {{unverified} od ukupno {total} jela.} few {{unverified} od ukupno {total} jela.} other {{unverified} od ukupno {total} jela.}}} few {Skriveno od kupaca dok ne potvrdite alergene: {u, plural, one {{unverified} od ukupno {total} jela.} few {{unverified} od ukupno {total} jela.} other {{unverified} od ukupno {total} jela.}}} other {Skriveno od kupaca dok ne potvrdite alergene: {u, plural, one {{unverified} od ukupno {total} jela.} few {{unverified} od ukupno {total} jela.} other {{unverified} od ukupno {total} jela.}}}} Jelo prikazano bez potvrđenih alergena izgleda kao da „ne sadrži ništa“, pa ga meni radije skriva nego da rizikuje.",
+   "where": "Meni → Alergeni"
+  },
+  "noVan": {
+   "title": "Dodajte vozilo",
+   "detail": "Događaji se vode preko vozila — bez njega nema preko čega primati narudžbe.",
+   "where": "Postavke → Vaša vozila"
+  },
+  "kitchenCapacityUnset": {
+   "title": "Postavite kapacitet kuhinje",
+   "detail": "Kapacitet nije postavljen za: {vans}. Bez njega ćemo kupcima i dalje obećavati vremena preuzimanja koja vaša kuhinja nikako ne može ispoštovati.",
+   "where": "Meni → Kapacitet kuhinje",
+   "unnamedVan": "Vozilo bez naziva"
+  },
+  "noPrepBearingCategory": {
+   "title": "Recite nam koliko traje priprema vaše hrane",
+   "detail": "{categories, select, none {Još nemate kategorija u meniju, pa ne možemo izračunati koliko traje priprema narudžbe.} other {Nijedna vaša kategorija nema postavljeno vrijeme pripreme, pa nam svaka narudžba izgleda kao da je gotova istog trenutka. Kupcima bismo i dalje davali vremena preuzimanja koja vaša kuhinja ne može ispoštovati, a što više posla imate, to bi ta vremena bila kasnija.}}",
+   "where": "Meni → Kategorije → Postavke kuhinje"
+  },
+  "emailUnverified": {
+   "title": "Potvrdite svoju e-mail adresu",
+   "detail": "Na ovu adresu šaljemo obavještenja o narudžbama i podatke za vraćanje pristupa računu. Ako je pogrešna, saznat ćete to tek kada nešto već pođe po zlu.",
+   "where": "Potražite naš link za potvrdu u svom inboxu"
+  },
+  "emailUnknown": {
+   "title": "Status potvrde e-maila nije poznat",
+   "detail": "Provjera e-maila još nije povezana, pa se ovo ne može procijeniti. Namjerno blokira umjesto da tiho prođe.",
+   "where": "—"
+  }
+ },
+ "walkthrough": {
+  "intro": "U odjeljku „Upravljanje“ postavljate svoj food truck i pratite kako posluje. Na kontrolnoj tabli primate narudžbe i vodite svaki događaj dok traje.",
+  "ariaLabel": "Vodič kroz kontrolnu tablu",
+  "step": "{current} od {total}",
+  "skip": "Preskoči",
+  "back": "← Nazad",
+  "next": "Dalje →",
+  "done": "Gotovo",
+  "stops": {
+   "menu": {
+    "title": "Meni",
+    "body": "Vaša jela, cijene i alergeni. Sve što ovdje promijenite odmah je uživo."
+   },
+   "schedule": {
+    "title": "Raspored",
+    "body": "Gdje i kada radite. Dodajte događaj ovdje i kupci mogu naručivati za njega."
+   },
+   "build": {
+    "title": "Kombo meniji, dodaci i dodatna ponuda",
+    "body": "Kombo meniji, dodatna ponuda, prilagođavanja i kapacitet kuhinje nalaze se u odjeljku Meni — slobodno isprobajte."
+   },
+   "settings": {
+    "title": "Postavke",
+    "body": "Podaci o vašem food trucku i načini na koje kupci plaćaju."
+   },
+   "billing": {
+    "title": "Naplata",
+    "body": "Ovdje su vaš paket, naplata i informacije o funkcijama."
+   }
+  }
+ },
+ "auth": {
+  "fields": {
+   "email": "E-mail",
+   "password": "Lozinka",
+   "emailPlaceholder": "vi@primjer.ba",
+   "passwordHint": "Najmanje 8 znakova"
+  },
+  "signup": {
+   "title": "Napravite račun",
+   "subtitle": "{months, plural, =0 {Vaš besplatni probni period počinje kada se registrujete.} one {# mjesec besplatno, od trenutka registracije.} few {# mjeseca besplatno, od trenutka registracije.} other {# mjeseci besplatno, od trenutka registracije.}}",
+   "emailPlaceholder": "vi@vasfoodtruck.ba",
+   "codeLabel": "Imate kod? <optional>(neobavezno)</optional>",
+   "codePlaceholder": "Unesite ga ovdje",
+   "codeApply": "Primijeni",
+   "codeApplied": "Kod je primijenjen: {deal} ({partner})",
+   "codeInvalid": "Taj kod nije važeći.",
+   "codeExpired": "Taj kod je istekao.",
+   "dealExtraMonths": "{months, plural, one {# dodatni mjesec besplatno} few {# dodatna mjeseca besplatno} other {# dodatnih mjeseci besplatno}}",
+   "dealPercentOff": "{pct}% popusta tokom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+   "dealPercentOffPlan": "{pct}% popusta na paket {plan} tokom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+   "dealFixedPrice": "paket {plan} za {price} mjesečno tokom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+   "dealPlanOffer": "posebna cijena paketa {plan} tokom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+   "partnerCodeLabel": "Partnerski ili promo kod <optional>(neobavezno)</optional>",
+   "marketing": "Šaljite mi povremeno savjete i novosti o proizvodu. Nema veze s vašim narudžbama — možete se odjaviti bilo kada.",
+   "signIn": "Prijavi se",
+   "submit": "Napravi moj račun",
+   "submitting": "Pravimo vaš račun…",
+   "consent": "Pravljenjem računa prihvatate naše <terms>Uslove</terms> i <privacy>Politiku privatnosti</privacy>. Kartica nije potrebna. Ništa nije javno dok vi tako ne odlučite.",
+   "haveAccount": "Već imate račun? Prijavite se",
+   "errorFallback": "Nije bilo moguće napraviti vaš račun.",
+   "errorOffline": "Trenutno nas nije moguće dobiti — pokušajte ponovo."
+  },
+  "login": {
+   "title": "Prijavite se u svoju kuhinju",
+   "dashboardOf": "{brand} — kontrolna tabla za operatere",
+   "resetSuccess": "Lozinka je ažurirana. Prijavite se.",
+   "emailChanged": "E-mail adresa je ažurirana. Prijavite se novom e-mail adresom.",
+   "errorFallback": "Pogrešan e-mail ili lozinka. Pokušajte ponovo.",
+   "submit": "Prijavi se",
+   "submitting": "Prijavljivanje…",
+   "forgot": "Zaboravili ste lozinku?",
+   "invalidLink": "Taj link je istekao ili nije važeći."
+  },
+  "forgot": {
+   "sentTitle": "Provjerite e-mail",
+   "sentBody": "Ako postoji račun s tom e-mail adresom, uskoro ćete dobiti link za resetovanje lozinke. Ako ne stigne za nekoliko minuta, provjerite folder za neželjenu poštu.",
+   "title": "Resetujte lozinku",
+   "subtitle": "Unesite e-mail i poslat ćemo vam link za resetovanje",
+   "submit": "Pošalji link za resetovanje",
+   "sending": "Slanje…",
+   "back": "Nazad na prijavu"
+  },
+  "reset": {
+   "invalidTitle": "Nevažeći link za resetovanje",
+   "invalidBody": "Ovaj link nije važeći ili je istekao.",
+   "requestNew": "Zatražite novi link za resetovanje",
+   "mismatch": "Lozinke se ne podudaraju",
+   "tooShort": "Lozinka mora imati najmanje 8 znakova.",
+   "errorFallback": "Došlo je do greške. Pokušajte ponovo.",
+   "titleFirstLogin": "Postavite lozinku",
+   "titleReset": "Odaberite novu lozinku",
+   "subtitleFirstLogin": "Odaberite lozinku da zaštitite svoj račun",
+   "subtitleReset": "Nova lozinka mora imati najmanje 8 znakova",
+   "newPassword": "Nova lozinka",
+   "confirmPassword": "Potvrdite lozinku",
+   "confirmPlaceholder": "Ponovite lozinku",
+   "submit": "Postavi lozinku",
+   "saving": "Čuvanje…",
+   "sendNewLink": "Pošalji novi link"
+  },
+  "verifyEmail": {
+   "goToLogin": "Idi na prijavu",
+   "failedTitle": "Provjera nije uspjela",
+   "invalidTitle": "Nevažeći ili istekao link",
+   "invalidBody": "Ovaj link za provjeru nije važeći ili je već istekao.",
+   "verifiedTitle": "Već potvrđeno",
+   "verifiedBody": "Ova e-mail adresa je već potvrđena.",
+   "expiredTitle": "Link je istekao",
+   "expiredBody": "Ovaj link za provjeru je istekao. Zatražite novi u postavkama profila.",
+   "accountNotFound": "Račun nije pronađen. Obratite se podršci.",
+   "emailTaken": "Ova e-mail adresa već je povezana s drugim računom. Koristite drugu e-mail adresu.",
+   "updateFailed": "Ažuriranje e-maila nije uspjelo. Pokušajte ponovo.",
+   "loginUpdateFailed": "Ažuriranje podataka za prijavu nije uspjelo. Vaš e-mail nije promijenjen.",
+   "successTitle": "E-mail adresa je ažurirana",
+   "successBody": "Vaš e-mail je promijenjen u <b>{email}</b>. Odjavljujemo vas…"
+  },
+  "sessionAlert": {
+   "title": "Vaša prijava zahtijeva pažnju",
+   "body": "Sve na ekranu je i dalje tu. Nove izmjene možda se neće sačuvati dok se ponovo ne prijavite.",
+   "signIn": "Prijavi se ponovo"
+  }
+ },
+ "emailSignup": {
+  "greeting": "{hasName, select, yes {Zdravo, {name},} other {Zdravo,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Osnivač, HatchGrab",
+  "verify": {
+   "subject": "Potvrdite svoju e-mail adresu",
+   "thanks": "{hasTruck, select, yes {Hvala što ste postavili food truck {truck} na HatchGrabu.} other {Hvala što ste postavili svoj food truck na HatchGrabu.}}",
+   "button": "Potvrdi moju e-mail adresu",
+   "buttonText": "Potvrdi moju e-mail adresu: {url}",
+   "why": "S ovom adresom ćete se prijavljivati i na nju stižu obavještenja o narudžbama — zato je vrijedi potvrditi odmah.",
+   "next": "Čim bude potvrđena, poslat ću vam sve što vam treba za početak.",
+   "carryOn": "U međuvremenu možete nastaviti s postavljanjem.",
+   "stuck": "Zapeli ste negdje? Samo odgovorite na ovaj e-mail — na ove poruke odgovaram lično.",
+   "fallbackLink": "Ako dugme ne radi, zalijepite ovo u preglednik: {url}"
+  },
+  "welcome": {
+   "subject": "{hasName, select, yes {Dobro došli na HatchGrab, {name}} other {Dobro došli na HatchGrab}}",
+   "intro": "{hasTruck, select, yes {Zaista mi je drago što mogu poželjeti dobrodošlicu food trucku {truck} na HatchGrabu.} other {Zaista mi je drago što mogu poželjeti dobrodošlicu vašem food trucku na HatchGrabu.}}",
+   "trial": "{months, plural, one {Vaš besplatni probni period od # mjeseca je počeo — sve funkcije su otključane.} few {Vaš besplatni probni period od # mjeseca je počeo — sve funkcije su otključane.} other {Vaš besplatni probni period od # mjeseci je počeo — sve funkcije su otključane.}}",
+   "setup": "Ako to već niste uradili, postavljanje je jednostavno i traje petnaestak minuta.",
+   "button": "Otvori kontrolnu tablu",
+   "bookmark": "Vrijedi je sačuvati u oznakama. Radi na svakom uređaju.",
+   "stuck": "Samo odgovorite na ovaj e-mail ako negdje zapnete — na ove poruke odgovaram lično.",
+   "lookingForward": "{hasTruck, select, yes {Jedva čekam da vidim kako food truck {truck} radi.} other {Jedva čekam da vidim kako vaš food truck radi.}}"
+  }
+ },
+ "errorsOnboarding": {
+  "not_signed_in": "Niste prijavljeni",
+  "no_operator_record": "Nema zapisa o operateru",
+  "bad_request": "Neispravan zahtjev",
+  "truck_name_missing": "Dajte naziv svom food trucku.",
+  "contact_phone_required": "Kontakt broj telefona je obavezan.",
+  "phone_invalid": "{withName, select, yes {Unesite ispravan broj telefona za zemlju {name}} other {Unesite ispravan broj telefona}}{withExample, select, yes { (npr. {example})} other {}}.",
+  "truck_create_failed": "Nije bilo moguće napraviti vaš food truck.",
+  "unknown_step": "Nepoznat korak",
+  "unknown_action": "Nepoznata radnja",
+  "countries_unavailable": "Nismo uspjeli učitati listu država. Pokušajte ponovo za trenutak.",
+  "email_invalid": "Unesite ispravnu e-mail adresu.",
+  "password_too_short": "Lozinka mora imati najmanje {min, plural, one {# znak} few {# znaka} other {# znakova}}.",
+  "signup_closed": "Registracija još nije otvorena.",
+  "too_many_attempts": "Previše pokušaja u kratkom vremenu — pokušajte ponovo malo kasnije.",
+  "account_exists": "Već postoji račun s tim e-mailom — umjesto toga se prijavite.",
+  "account_create_failed": "Nije bilo moguće napraviti račun.",
+  "account_finish_failed": "Nije bilo moguće dovršiti pravljenje vašeg računa — pokušajte ponovo.",
+  "unauthorised": "Nemate ovlaštenje",
+  "unauthenticated": "Niste autentifikovani",
+  "change_id_required": "Došlo je do greške — osvježite stranicu i pokušajte ponovo.",
+  "operator_not_found": "Operater nije pronađen",
+  "cancel_change_failed": "Otkazivanje izmjene nije uspjelo",
+  "email_required": "E-mail je obavezan",
+  "email_already_current": "To je već vaš trenutni e-mail",
+  "email_already_registered": "Ovaj e-mail je već registrovan na HatchGrabu",
+  "change_request_failed": "Pravljenje zahtjeva za izmjenu nije uspjelo",
+  "verification_email_failed": "Slanje e-maila za provjeru nije uspjelo",
+  "verification_request_not_found": "Zahtjev za provjeru nije pronađen",
+  "email_already_verified": "E-mail je već potvrđen",
+  "email_send_failed": "Slanje e-maila nije uspjelo. Pokušajte ponovo.",
+  "reset_email_failed": "Slanje e-maila za resetovanje nije uspjelo",
+  "token_and_password_required": "Token i lozinka su obavezni",
+  "new_password_too_short": "Lozinka mora imati najmanje {min, plural, one {# znak} few {# znaka} other {# znakova}}.",
+  "reset_link_invalid": "Link za resetovanje nije važeći ili je istekao. Zatražite novi.",
+  "reset_link_used": "Ovaj link za resetovanje već je iskorišten. Zatražite novi.",
+  "reset_link_expired": "Ovaj link za resetovanje je istekao. Zatražite novi.",
+  "account_not_found": "Račun nije pronađen.",
+  "password_update_failed": "Ažuriranje lozinke nije uspjelo. Pokušajte ponovo.",
+  "no_fields_to_update": "Nema polja za ažuriranje",
+  "upload_unreadable": "Nismo mogli pročitati ono što ste učitali — pokušajte ponovo.",
+  "file_too_big": "Taj fajl je prevelik (najviše {mb} MB). Obična fotografija vašeg menija je sasvim dovoljna.",
+  "file_type_unsupported": "Ta vrsta fajla nije podržana — pošaljite fotografiju ili PDF svog menija.",
+  "text_too_long": "To je mnogo teksta — zalijepite samo meni.",
+  "menu_missing": "Dodajte fotografiju svog menija ili ga zalijepite.",
+  "demo_rate_limited": "Već ste napravili nekoliko demo verzija. Pokušajte ponovo malo kasnije ili nam se javite i pomoći ćemo vam.",
+  "demo_build_failed": "Došlo je do greške pri pravljenju vaše demo verzije. Pokušajte ponovo.",
+  "request_unreadable": "To nije bilo moguće pročitati.",
+  "email_not_valid": "To ne izgleda kao e-mail adresa.",
+  "try_again_shortly": "Pokušajte ponovo malo kasnije.",
+  "invalid_request_body": "Neispravan sadržaj zahtjeva",
+  "not_demo_session": "Ovo nije demo sesija",
+  "demo_not_found": "Demo nije pronađen",
+  "not_demo_truck": "Ovo nije demo food truck",
+  "new_service_failed": "Nije bilo moguće pokrenuti novu smjenu",
+  "not_available": "Nije dostupno.",
+  "demo_save_failed": "Trenutno to nismo mogli sačuvati — pokušajte ponovo.",
+  "deletion_view_owner_only": "Ovo može vidjeti samo vlasnik računa.",
+  "deletion_sign_in": "Prijavite se da biste zatražili brisanje računa.",
+  "deletion_owner_only": "Brisanje može zatražiti samo vlasnik računa.",
+  "confirm_mismatch": "Upišite DELETE za potvrdu.",
+  "partial_stamp": "Vaš zahtjev za brisanje je evidentiran, ali nismo uspjeli zaustaviti naručivanje na svim food truckovima. Obratite se podršci."
+ },
+ "emailAccount": {
+  "newEmail": {
+   "subject": "Potvrdite svoju novu e-mail adresu za HatchGrab",
+   "heading": "Potvrdite svoju e-mail adresu",
+   "button": "Potvrdi e-mail adresu"
+  },
+  "changeEmail": {
+   "requested": "Zatražili ste da e-mail adresu za HatchGrab promijenite u ovu adresu.",
+   "click": "Kliknite na dugme ispod da potvrdite. Ovaj link ističe za 24 sata.",
+   "ignore": "Ako niste zatražili ovu izmjenu, slobodno zanemarite ovaj e-mail.",
+   "stillActive": "Vaša trenutna e-mail adresa ostaje aktivna."
+  },
+  "resendVerification": {
+   "requested": "Zatražili ste da e-mail za HatchGrab promijenite u ovu adresu.",
+   "click": "Kliknite ispod da potvrdite. Ovaj link ističe za 24 sata.",
+   "ignore": "Ako ovo niste zatražili, zanemarite ovaj e-mail.",
+   "stillActive": "Vaš trenutni e-mail ostaje aktivan."
+  },
+  "passwordReset": {
+   "subject": "Resetujte lozinku za HatchGrab",
+   "heading": "Resetujte lozinku",
+   "requested": "Primili smo zahtjev za resetovanje lozinke za vaš račun na HatchGrabu.",
+   "click": "Kliknite na dugme ispod da odaberete novu lozinku. Ovaj link ističe za 1 sat.",
+   "button": "Resetuj lozinku",
+   "ignore": "Ako ovo niste zatražili, slobodno zanemarite ovaj e-mail.",
+   "unchanged": "Vaša lozinka se neće promijeniti dok ne kliknete na link iznad."
+  },
+  "deletionScheduled": {
+   "subject": "Vaš račun na HatchGrabu zakazan je za brisanje",
+   "received": "Primili smo zahtjev za brisanje ovog računa na HatchGrabu.",
+   "orderingStopped": "<b>Online naručivanje je odmah zaustavljeno</b> za: {trucks}.",
+   "noTrucks": "(nema food truckova)",
+   "readable": "Vaša kontrolna tabla ostaje\n    dostupna za čitanje još {days, plural, one {# dan} few {# dana} other {# dana}}.",
+   "scheduled": "Račun je zakazan za brisanje dana <b>{date}</b>.",
+   "cannotCancel": "<b>Ovo se ne može otkazati iz aplikacije.</b> Ako ovo niste bili vi ili ste se\n    predomislili, odgovorite na ovaj e-mail što prije.",
+   "kept": "Kada račun bude izbrisan, uklanjamo vaše lične podatke i podatke vaših kupaca. Zadržavamo\n    anonimne računovodstvene evidencije, koje smo zakonski obavezni čuvati."
+  }
+ },
+ "demoSaveEmail": {
+  "subject": "Vaša HatchGrab demo verzija — evo linka za povratak",
+  "heading": "Vaša demo verzija je sačuvana",
+  "intro": "Evo linka za povratak u demo verziju s vašim menijem. Prijava nije potrebna — samo ga dodirnite.",
+  "button": "Otvori moju demo verziju",
+  "freshDay": "Svaki put kada se vratite, postavit ćemo novi radni dan da imate s čim da se igrate.",
+  "deletion": "Ovo je demo verzija, pa je ne čuvamo zauvijek — nju i meni izbrisat ćemo\n                <b>{date}</b> (za {days, plural, one {# dan} few {# dana} other {# dana}}). Ako se registrujete prije\n                toga, vaš meni ide s vama.",
+  "notSent": "Sačuvano, ali trenutno nismo mogli poslati e-mail."
+ },
+ "demoGetStarted": {
+  "upload": {
+   "bannerButton": "Sačuvaj moj meni →",
+   "heading": "Postavite svoj food truck",
+   "sub": "Vaš meni se prenosi odmah.",
+   "privacy": "Ovo ćemo koristiti samo da postavimo vaš food truck i pošaljemo vam link za demo verziju — pogledajte našu <link>politiku privatnosti</link>."
+  },
+  "sample": {
+   "bannerButton": "Postavi moj food truck →",
+   "heading": "Postavite svoj food truck",
+   "sub": "Svoj meni učitat ćete u sljedećem koraku — traje minutu.",
+   "privacy": "Ovo ćemo koristiti samo da postavimo vaš food truck i pošaljemo vam link za demo verziju — pogledajte našu <link>politiku privatnosti</link>."
+  },
+  "saveOnly": {
+   "bannerButton": "Sačuvaj moj meni →",
+   "heading": "Sačuvajte svoju demo verziju",
+   "sub": "Čuvat ćemo je 14 dana i odmah vam poslati link na e-mail.",
+   "privacy": "Ovo ćemo koristiti samo da vam pošaljemo link za demo verziju — pogledajte našu <link>politiku privatnosti</link>."
+  },
+  "confirmationHeading": "Sve je spremno",
+  "postSaveButton": "Postavi moj food truck →",
+  "enterSetupButton": "Postavi moj food truck →",
+  "emailOnlyLink": "Samo mi pošaljite link na e-mail da se vratim u ovu demo verziju",
+  "sendLinkButton": "Pošalji mi link",
+  "savingButton": "Čuvanje…",
+  "continueButton": "Nastavi →",
+  "createAccountButton": "Napravi moj račun →",
+  "retryButton": "Pokušaj ponovo",
+  "backToDemoButton": "Nazad na demo verziju",
+  "savedStatus": "{hasDate, select, yes {✓ Sačuvano — čuva se do {date}} other {✓ Sačuvano}}",
+  "back": "Nazad",
+  "close": "Zatvori",
+  "truckStepHeading": "O vašem food trucku",
+  "detailsStepHeading": "Dovršite postavljanje",
+  "stepper": {
+   "details": "Vaši podaci",
+   "menu": "Meni",
+   "allergens": "Alergeni",
+   "kitchen": "Postavke kuhinje",
+   "schedule": "Raspored"
+  },
+  "confirmEmailed": "Poslali smo vam na e-mail link za povratak u ovu demo verziju — prijava nije potrebna.",
+  "confirmKeepUntil": "Čuvat ćemo je do <b>{date}</b>. Vaš meni ide s vama kada pravi food truck postavite do kraja.",
+  "loading": "Učitavanje…",
+  "firstName": "Ime",
+  "lastName": "Prezime",
+  "truckName": "Naziv food trucka",
+  "truckNamePlaceholder": "npr. Kuhinja s Baščaršije",
+  "cuisine": "Kuhinja",
+  "logoLabel": "Logo <opt>(neobavezno)</opt>",
+  "logoPreviewAlt": "Pregled logotipa",
+  "changeLogo": "Promijeni logo",
+  "removeLogo": "Ukloni",
+  "uploadLogo": "📷 Učitaj logo",
+  "readyTitle": "Vaš račun je spreman",
+  "readyBody": "Sada dovršimo postavljanje vašeg food trucka — meni, alergene i kuhinju.",
+  "hangTight": "Samo trenutak — sve postavljamo.",
+  "stage": {
+   "account": "Pravimo vaš račun",
+   "truck": "Postavljamo vaš food truck",
+   "menu": "Učitavamo vaš meni"
+  },
+  "stageState": {
+   "done": "gotovo",
+   "recognised": "već imate račun",
+   "failed": "nije uspjelo",
+   "active": "u toku",
+   "pending": "na čekanju"
+  },
+  "signIn": "Prijavi se",
+  "phone": "Telefon",
+  "onWhatsapp": "Ovaj broj je na WhatsAppu",
+  "email": "E-mail",
+  "emailPlaceholder": "vi@vasfoodtruck.ba",
+  "settingUpAs": "Postavljate kao <b>{email}</b> <change>promijeni</change>",
+  "password": "Lozinka",
+  "passwordPlaceholder": "Najmanje 8 znakova",
+  "hidePassword": "Sakrij lozinku",
+  "showPassword": "Prikaži lozinku",
+  "promoLabel": "Imate kod? <opt>(neobavezno)</opt>",
+  "promoPlaceholder": "Unesite ga ovdje",
+  "partnerCodeLabel": "Partnerski ili promo kod <optional>(neobavezno)</optional>",
+  "partnerCodeApply": "Primijeni",
+  "partnerCodeApplied": "Kod je primijenjen: {deal} ({partner})",
+  "partnerCodeInvalid": "Taj kod nije važeći.",
+  "partnerCodeExpired": "Taj kod je istekao.",
+  "partnerDealExtraMonths": "{months, plural, one {# dodatni mjesec besplatno} few {# dodatna mjeseca besplatno} other {# dodatnih mjeseci besplatno}}",
+  "partnerDealPercentOff": "{pct}% popusta tokom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+  "partnerDealPercentOffPlan": "{pct}% popusta na paket {plan} tokom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+  "partnerDealFixedPrice": "paket {plan} za {price} mjesečno tokom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+  "partnerDealPlanOffer": "posebna cijena paketa {plan} tokom {months, plural, one {# mjeseca} few {# mjeseca} other {# mjeseci}}",
+  "agreeTerms": "Prihvatam <terms>Uslove</terms> i <privacy>Politiku privatnosti</privacy>.",
+  "freeMonth": "{months, plural, =0 {Vaš besplatni probni period počinje kada se registrujete.} one {# mjesec besplatno, od trenutka registracije.} few {# mjeseca besplatno, od trenutka registracije.} other {# mjeseci besplatno, od trenutka registracije.}}",
+  "fieldError": {
+   "firstName": "Recite nam svoje ime.",
+   "lastName": "I svoje prezime.",
+   "truck": "Dajte naziv svom food trucku.",
+   "cuisine": "Recite nam šta kuhate.",
+   "phoneMissing": "Dodajte broj telefona — preko njega vas kontaktiraju i kupci i mi.",
+   "email": "Unesite ispravnu e-mail adresu.",
+   "password": "Lozinka mora imati najmanje 8 znakova.",
+   "terms": "Prihvatite uslove da biste nastavili."
+  },
+  "error": {
+   "saveFailed": "To nije bilo moguće sačuvati — pokušajte ponovo.",
+   "savedNoEmail": "Sačuvano — ali trenutno vam nismo mogli poslati link na e-mail.",
+   "unreachable": "Trenutno nas nije moguće dobiti — pokušajte ponovo.",
+   "createAccountFailed": "Nije bilo moguće napraviti vaš račun.",
+   "truckCreateFailed": "Vaš račun je spreman, ali nismo mogli napraviti vaš food truck. Pokušajte ponovo.",
+   "truckUnreachable": "Vaš račun je spreman, ali trenutno nismo mogli napraviti vaš food truck. Pokušajte ponovo.",
+   "truckNoToken": "Vaš food truck je postavljen, ali ga trenutno nismo mogli otvoriti. Pokušajte ponovo."
+  }
+ },
+ "demoUpload": {
+  "steps": {
+   "reading": "Čitamo vaš meni…",
+   "found": "Pronašli smo vaše artikle…",
+   "kitchen": "Postavljamo vašu kuhinju…",
+   "page": "Pravimo vašu stranicu za narudžbe…",
+   "almost": "Skoro gotovo…"
+  },
+  "templateSteps": {
+   "truck": "Pravimo vaš primjer food trucka…",
+   "menu": "Postavljamo meni…",
+   "kitchen": "Postavljamo kuhinju…",
+   "page": "Pravimo stranicu za narudžbe…",
+   "almost": "Skoro gotovo…"
+  },
+  "dialogLabel": "Učitajte svoj meni",
+  "heading": "✨ Učitajte svoj meni",
+  "failedHeading": "Nismo uspjeli pročitati taj meni",
+  "close": "Zatvori",
+  "intro": "Fotografija vaše table s menijem, snimak ekrana, PDF ili ga zalijepite kao tekst. Naša vještačka inteligencija ga pročita i za manje od 60 sekundi napravi vam stranicu za narudžbe koja radi — s vašim artiklima i vašim cijenama. Bez registracije, bez kartice.",
+  "failedIntro": "Ponekad je fotografija previše tamna, snimljena pod uglom ili je meni pisan rukom. To je naš posao, a ne vaša greška. Evo nekoliko mogućnosti:",
+  "usually": "Ovo obično traje manje od 60 sekundi.",
+  "slow": "Ovo traje duže nego obično — kod velikih menija se to dešava.",
+  "keepWaiting": "Nastavi čekati",
+  "sampleWhileYouWait": "Ili dok čekate razgledajte primjer menija",
+  "standIn": "Ovo <b>neće biti vaš meni</b> — to je zamjena da vidite kako sve funkcioniše.",
+  "seeSample": "Pogledaj primjer menija",
+  "tryAgain": "Pokušaj ponovo",
+  "tryPhotoAgain": "Pokušaj ponovo s ovom fotografijom",
+  "tryDifferent": "Pokušaj s drugom fotografijom",
+  "uploadAnother": "← Učitaj drugu fotografiju",
+  "orSample": "Ili razgledajte primjer menija",
+  "orBuild": "Ili ćemo ga napraviti mi umjesto vas",
+  "buildSent": "✓ Hvala — primili smo. Javit ćemo vam se e-mailom.",
+  "buildBody": "Ostavite e-mail i stvarna osoba unijet će vaš meni i poslati vam link.",
+  "emailPlaceholder": "vi@vasfoodtruck.ba",
+  "sending": "…",
+  "send": "Pošalji",
+  "noPhoto": "Nemate fotografiju menija pri ruci?",
+  "noPhotoBody": "Umjesto toga razgledajte primjer food trucka — svoj meni možete učitati bilo kada.",
+  "build": "Napravi moju demo verziju →",
+  "nothingPublished": "Ništa nije objavljeno — samo vi to vidite.",
+  "error": {
+   "somethingWrong": "Došlo je do greške. Pokušajte ponovo.",
+   "serverUnreachable": "Nismo mogli dobiti server. Provjerite vezu i pokušajte ponovo.",
+   "sendFailed": "To nije bilo moguće poslati — pokušajte ponovo."
+  },
+  "fields": {
+   "uploadLabel": "Učitajte fajl s menijem",
+   "dropHere": "Ovdje spustite svoj meni",
+   "dragOrTap": "Prevucite i spustite ili dodirnite da odaberete",
+   "fileTypes": "Slika ili PDF",
+   "or": "ili",
+   "pasteLabel": "Zalijepite tekst menija",
+   "pastePlaceholder": "Ovdje zalijepite svoj meni — nazive artikala, opise, cijene..."
+  },
+  "emailLabel": "Vaš e-mail",
+  "emailNote": "Poslat ćemo vam na e-mail link za vašu demo verziju i možda vas kontaktirati u vezi s postavljanjem HatchGraba. <link>Politika privatnosti</link>",
+  "marketing": "Šaljite mi povremeno savjete i novosti od HatchGraba",
+  "emailInvalid": "Unesite ispravnu e-mail adresu."
+ },
+ "provisionContent": {
+  "standardCategories": {
+   "starters": "Predjela",
+   "mains": "Glavna jela",
+   "burgers": "Burgeri",
+   "pizza": "Pizza",
+   "wrapsSandwiches": "Tortilje i sendviči",
+   "sides": "Prilozi",
+   "dipsSauces": "Dipovi i sosovi",
+   "desserts": "Deserti",
+   "drinks": "Pića",
+   "kidsMenu": "Dječiji meni",
+   "specials": "Posebna ponuda",
+   "other": "Ostalo"
+  },
+  "demoEventName": "Demo događaj",
+  "firstVanName": "Vozilo 1",
+  "demoCategories": {
+   "pizza": "Pizza",
+   "burgers": "Burgeri",
+   "mains": "Glavna jela",
+   "sides": "Prilozi",
+   "drinks": "Pića"
+  },
+  "demoTemplates": {
+   "pizza": {
+    "label": "🍕 Food truck s pizzom",
+    "items": {
+     "margherita": "Margherita",
+     "pepperoni": "Pepperoni",
+     "ndujaHoney": "Nduja i med",
+     "fourCheese": "Četiri sira",
+     "gardenVeg": "Povrtna",
+     "garlicBread": "Hljeb s bijelim lukom",
+     "rocketParmesan": "Rukola i parmezan",
+     "olives": "Masline",
+     "sanPellegrino": "San Pellegrino",
+     "coke": "Coca-Cola"
+    }
+   },
+   "burgers": {
+    "label": "🍔 Food truck s burgerima",
+    "items": {
+     "classicCheeseburger": "Klasični cheeseburger",
+     "doubleBacon": "Dupla slanina",
+     "buttermilkChicken": "Piletina u mlaćenici",
+     "halloumiStack": "Burger s halloumijem",
+     "smashBurger": "Smash burger",
+     "skinOnFries": "Pomfrit s korom",
+     "loadedCheeseFries": "Pomfrit sa sirom",
+     "onionRings": "Kolutići luka",
+     "craftLemonade": "Domaća limunada",
+     "coke": "Coca-Cola"
+    }
+   },
+   "curries": {
+    "label": "🍛 Food truck s karijem",
+    "items": {
+     "chickenTikkaMasala": "Piletina tikka masala",
+     "lambRoganJosh": "Janjetina rogan josh",
+     "chanaMasala": "Chana masala",
+     "butterChicken": "Piletina u sosu od maslaca",
+     "saagPaneer": "Saag paneer",
+     "pilauRice": "Riža pilav",
+     "garlicNaan": "Naan s bijelim lukom",
+     "onionBhaji": "Bhaji od luka",
+     "mangoLassi": "Lassi od manga",
+     "coke": "Coca-Cola"
+    }
+   }
+  }
+ },
+ "manageAllergens": {
+  "cardEditor": {
+   "title": "Vaša lista alergena",
+   "intro": "Kupci ovo vide <b>tačno onako kako napišete</b> — ništa se ne prepravlja. Upišite ili zalijepite tekst ispod, ili učitajte fotografiju/PDF i mi ćemo prenijeti tekst da ga provjerite.",
+   "empty": "Još nema liste alergena.",
+   "placeholder": "npr. Sva naša pohovana jela sadrže pšenicu i mlijeko. Friteza se dijeli s artiklima koji sadrže gluten i orašaste plodove. Dostupne su veganske opcije — pitajte osoblje.",
+   "reading": "Čitamo sliku…",
+   "upload": "📷 Učitaj sliku / PDF",
+   "uploadNote": "Tekst čitamo sa slike da biste ga mogli pregledati — slika se ne čuva."
+  },
+  "cardUpload": {
+   "dishFallback": "Jelo",
+   "question": "Imate li listu alergena za učitavanje?",
+   "perDish": "{detected, select, yes {Učitajte je i iskoristit ćemo je da napravimo alergene za vaša jela. Prepoznati alergeni bit će vidljivi na sljedećoj stranici, gdje potvrđujete svako jelo.} other {Učitajte je i iskoristit ćemo je da napravimo alergene za vaša jela.}}",
+   "cardOnly": "Učitajte listu alergena koju će kupci vidjeti.",
+   "yes": "Da",
+   "no": "Ne",
+   "noProblem": "Nema problema — nije vam potrebna. Nastavite dugmetom ispod.",
+   "analysing": "Analiziramo listu…",
+   "dropzone": "Prevucite i spustite ili dodirnite da odaberete",
+   "imageOrPdf": "Slika ili PDF",
+   "or": "ili",
+   "pastePlaceholder": "Ovdje zalijepite tekst liste alergena…",
+   "process": "Obradi listu",
+   "cardRead": "Lista je pročitana ✓",
+   "unmatchedHeading": "Ovo nije bilo moguće automatski povezati — dodijelite ili odbacite",
+   "quotedName": "„{name}“",
+   "ambiguous": "Nejasno — odgovara za više jela; odaberite pravo.",
+   "assignTo": "Dodijeli jelu…",
+   "dismiss": "Odbaci",
+   "kitchenNotes": "Napomene kuhinje (čuvaju se u vašim informacijama o alergenima)",
+   "matchSummary": "{n, plural, =0 {Povezano s jelom: {matched}.} one {Povezano s jelom: {matched}. Čeka vašu dodjelu: {count}.} few {Povezano s jelom: {matched}. Čeka vašu dodjelu: {count}.} other {Povezano s jelom: {matched}. Čeka vašu dodjelu: {count}.}}",
+   "blanketInfo": "Prema vašoj listi, ovi alergeni mogu biti prisutni u svim jelima: {list}. Dodat ćemo ih među alergene s kojima radi vaša kuhinja. Možete ih provjeriti u posljednjem koraku."
+  },
+  "savedCard": {
+   "showLess": "Prikaži manje",
+   "showMore": "Prikaži više",
+   "fileOnly": "Za ovaj food truck sačuvan je fajl liste, ali bez sažetka teksta. Otvorite original da ga pročitate.",
+   "viewOriginal": "Pogledaj originalnu listu"
+  },
+  "wizard": {
+   "toast": {
+    "readFailed": "Listu alergena nije bilo moguće pročitati — pokušajte ponovo",
+    "confirmed": "Potvrđeno: {name}",
+    "undo": "Poništi",
+    "saveFailed": "Čuvanje nije uspjelo — pokušajte ponovo",
+    "imageFailed": "Tu sliku nije bilo moguće pročitati — umjesto toga upišite ili zalijepite svoju listu",
+    "cardRead": "{n, plural, one {Lista je pročitana — povezano: {matched}, čeka dodjelu: {count}} few {Lista je pročitana — povezano: {matched}, čeka dodjelu: {count}} other {Lista je pročitana — povezano: {matched}, čeka dodjelu: {count}}}"
+   },
+   "genericWarn": {
+    "text": "Prepoznato je „{generic}“, ali to nije dovoljno precizno. Ako ovo jelo sadrži ove alergene ({family}), odaberite: {picks} — ili ih ostavite neoznačene ako ne sadrži.",
+    "andOr": "{a} i/ili {b}"
+   },
+   "badge": {
+    "justConfirmed": "✓ Potvrđeno",
+    "confirmed": "Potvrđeno",
+    "needsReview": "Potrebna provjera"
+   },
+   "confirm": {
+    "confirming": "Potvrđivanje…",
+    "confirmed": "Potvrđeno ✓",
+    "confirm": "Potvrdi",
+    "changed": "· izmijenjeno",
+    "changedTitle": "Izmijenjeno nakon posljednje potvrde — potvrdite ponovo"
+   },
+   "allergens": "Alergeni",
+   "dietary": "Ishrana",
+   "uncategorised": "Bez kategorije",
+   "review": {
+    "progress": "Potvrđeno: {confirmed} od {total}",
+    "allConfirmed": "✓ Sve je potvrđeno",
+    "list": "Lista",
+    "table": "Tabela",
+    "detected": "Prepoznato iz vašeg menija — <b>provjerite ovo</b>. Alergeni ostaju skriveni od kupaca dok ne potvrdite svako jelo.",
+    "viewOnly": "👁 Samo pregled — samo vlasnik može potvrditi ili mijenjati alergene.",
+    "emptyTitle": "Nema artikala u meniju",
+    "emptyBody": "Prvo dodajte artikle u meni, a zatim im ovdje postavite alergene.",
+    "dish": "Jelo",
+    "status": "Status"
+   },
+   "cardPanel": {
+    "reading": "Čitamo informacije o alergenima…",
+    "saved": "🛡️ Lista alergena je sačuvana",
+    "viewOriginal": "Pogledaj originalnu listu",
+    "replace": "Zamijeni listu",
+    "uploadHelp": "Učitajte svoju listu alergena (fotografiju/PDF) ili zalijepite informacije o alergenima — naša vještačka inteligencija ih sređuje za kupce.",
+    "add": "Dodaj listu alergena",
+    "viewOnly": "👁 Samo pregled — samo vlasnik može dodati listu alergena.",
+    "intro": "Kupci će ovu listu vidjeti kao referencu za alergene u meniju. U režimu samo s listom alergeni po jelu ostaju skriveni (podaci o vašim jelima se čuvaju, za slučaj da kasnije pređete na alergene po jelu)."
+   },
+   "subtitle": {
+    "choose": "Odaberite kako kupci vide informacije o alergenima",
+    "card": "Dodajte listu alergena",
+    "cardOptional": "Dodajte listu alergena (neobavezno)",
+    "review": "Provjerite i potvrdite svako jelo",
+    "kitchen": "Posljednji korak: vaša kuhinja"
+   },
+   "heading": {
+    "import": "Alergeni",
+    "standalone": "Postavljanje alergena"
+   },
+   "nav": {
+    "next": "Dalje →",
+    "back": "← Nazad",
+    "skip": "Preskoči za sada",
+    "saving": "Čuvanje…",
+    "done": "Gotovo",
+    "saveLater": "Sačuvaj i završi kasnije",
+    "close": "Zatvori",
+    "finish": "Završi",
+    "skipImport": "Preskoči postavljanje alergena za sada"
+   },
+   "hint": {
+    "skipDefers": "Preskakanje samo odgađa — jela koja niste potvrdili ostaju skrivena od kupaca dok im alergeni ne budu potvrđeni.",
+    "importIncomplete": "Potvrdite svako jelo da biste nastavili — ili odaberite „Preskoči postavljanje alergena za sada“."
+   },
+   "recipeOnly": "Samo ono što je u receptu ovog jela.",
+   "tooMany": "Označeno alergena: {count}. Je li zaista sve to u receptu ovog jela? Alergeni koji se koriste u drugim jelima ne idu ovdje. Njih možete dodati u posljednjem koraku."
+  },
+  "kitchen": {
+   "title": "S kojim alergenima radi vaša kuhinja?",
+   "body": "Označili smo one koji su već u vašim jelima. Označite i sve druge koje koristite u food trucku, npr. za posebnu ponudu.",
+   "legendDishes": "u vašim jelima",
+   "legendAdded": "dodali ste vi",
+   "customersSee": "Kupci će vidjeti:",
+   "confirm": "Potvrđujem da su alergeni za svako jelo tačni i da ću ih redovno ažurirati."
+  }
+ },
+ "manageUpsells": {
+  "heading": "Dodatna ponuda",
+  "intro": "Podstaknite kupce da dodaju još nešto. Kada neko naruči iz jedne kategorije, predložite artikle iz druge — piće uz pizzu, sos uz burger.",
+  "add": "+ Dodaj dodatnu ponudu",
+  "toast": {
+   "updated": "Pravilo dodatne ponude je ažurirano",
+   "added": "Pravilo dodatne ponude je dodano",
+   "removed": "Pravilo je uklonjeno"
+  },
+  "whenAdds": "Kada kupac doda…",
+  "suggestFrom": "Predloži artikle iz…",
+  "chooseCategory": "Odaberite kategoriju",
+  "cancel": "Otkaži",
+  "saveChanges": "Sačuvaj promjene",
+  "addRule": "Dodaj pravilo",
+  "empty": "Još nema pravila dodatne ponude.",
+  "confirmRemove": "Ukloniti pravilo dodatne ponude „{trigger} → {suggest}“?",
+  "upTo": "{n, plural, one {Predlaže se do {count} artikla} few {Predlaže se do {count} artikla} other {Predlaže se do {count} artikala}}"
+ },
+ "manageExtras": {
+  "toast": {
+   "groupCreated": "Grupa je napravljena",
+   "groupRenamed": "Grupa je preimenovana",
+   "groupDeleted": "Grupa je izbrisana",
+   "optionUpdated": "Opcija je ažurirana",
+   "optionAdded": "Opcija je dodana",
+   "optionRemoved": "Opcija je uklonjena"
+  },
+  "description": "Dodajte plaćene ili besplatne opcije koje kupci mogu odabrati pri naručivanju — npr. Dodatni sir +{price}, Bez luka {zero}",
+  "note": "Napravite grupu opcija i dodijelite je kategoriji menija. Svi artikli u toj kategoriji nudit će te opcije kada kupci naručuju.",
+  "addLabel": "+ Dodaj prilagođavanje",
+  "emptyTitle": "Još nema prilagođenih dodataka",
+  "optionCount": "{n, plural, one {{count} opcija} few {{count} opcije} other {{count} opcija}}",
+  "dishCount": "{n, plural, one {{count} jelo} few {{count} jela} other {{count} jela}}",
+  "rename": "Preimenuj",
+  "deleteGroup": "Izbriši grupu",
+  "required": "Obavezno",
+  "requiredHint": "(kupac mora odabrati)",
+  "selection": "Odabir:",
+  "chooseOne": "Odaberite jednu",
+  "chooseMultiple": "Odaberite više",
+  "maxChoices": "Najviše odabira",
+  "upTo": "Do {n}",
+  "unlimited": "Bez ograničenja",
+  "options": "Opcije",
+  "optionType": "{type, select, add {dodaj} remove {ukloni} other {{type}}}",
+  "soldOut": "Rasprodano",
+  "left": "Preostalo: {count}",
+  "priceAdd": "+{price}",
+  "priceRemove": "-{price}",
+  "free": "Besplatno",
+  "addOption": "+ Dodaj opciju",
+  "offeredOn": "Nudi se uz",
+  "editPerDish": "Uredi opcije po jelu",
+  "notOffered": "Još se ne nudi ni uz jedno jelo.",
+  "catPartial": "{name} ({n} od {m})",
+  "hiddenOptions": "* {dish}: skriveno — {options}",
+  "matrix": {
+   "title": "{group} — opcije po jelu",
+   "dish": "Jelo",
+   "include": "Uključi",
+   "removeAll": "Ukloni {group} iz cijele kategorije {category}",
+   "offerAll": "Ponudi {group} za cijelu kategoriju {category}",
+   "offerCount": "Nudi: {n} od {total}",
+   "offeredRemoveGroup": "Nudi se — kliknite da uklonite grupu s ovog jela",
+   "notOfferedAdd": "Ne nudi se — kliknite da dodate",
+   "addGroupFirst": "Prvo dodajte grupu ovom jelu",
+   "requiredNeedsOne": "Obavezna grupa mora imati barem jednu opciju za svako jelo",
+   "offeredRemove": "Nudi se — kliknite da uklonite",
+   "help": "Označite „Uključi“ da dodate grupu jelu, a zatim označite koje opcije prikazuje. Čuva se odmah."
+  },
+  "newGroup": {
+   "title": "Novi prilagođeni dodatak",
+   "name": "Naziv grupe",
+   "placeholder": "npr. Dodaci za pizzu"
+  },
+  "option": {
+   "editTitle": "Uredi opciju",
+   "newTitle": "Nova opcija",
+   "name": "Naziv opcije",
+   "placeholder": "npr. Dodatni sir",
+   "type": "Vrsta",
+   "add": "Dodaj",
+   "remove": "Ukloni",
+   "price": "Promjena cijene ({symbol})",
+   "priceHint": "0 = besplatno",
+   "soldOut": "Rasprodano",
+   "stock": "Količina na zalihi <opt>(neobavezno)</opt>",
+   "stockPlaceholder": "∞ bez praćenja",
+   "sharedPool": "Zajednička zaliha za sva jela koja koriste ovu opciju.",
+   "allergens": "Alergeni",
+   "dietary": "Ishrana",
+   "allergensHelp": "Alergeni same opcije (odvojeno od jela)"
+  },
+  "cancel": "Otkaži",
+  "save": "Sačuvaj",
+  "title": "Prilagođeni dodaci",
+  "confirmDeleteGroup": "Izbrisati „{name}“? Sve opcije bit će uklonjene, a grupa više neće biti dodijeljena nijednoj kategoriji.",
+  "emptyBody": "Napravite grupu kao što je „Dodaci za pizzu“ i dodajte opcije kao što je „Dodatni sir +{price}“",
+  "saving": "Čuvanje…",
+  "uncategorized": "Bez kategorije"
+ },
+ "manageDeals": {
+  "toast": {
+   "updated": "Kombo meni je ažuriran",
+   "created": "Kombo meni je napravljen",
+   "removed": "Kombo meni je uklonjen"
+  },
+  "confirmRemove": "Ukloniti ovaj kombo meni?",
+  "heading": "Kombo meniji",
+  "count": "{n, plural, one {{count} kombo meni postavljen} few {{count} kombo menija postavljena} other {{count} kombo menija postavljeno}}",
+  "newDeal": "+ Novi kombo meni",
+  "emptyTitle": "Još nema kombo menija",
+  "active": "Aktivan",
+  "off": "Isključen",
+  "autoApply": "Automatski",
+  "manual": "Ručno",
+  "hidden": "Trenutno skriven od kupaca — {warning}",
+  "edit": "Uredi",
+  "delete": "Izbriši",
+  "editTitle": "Uredi kombo meni",
+  "newTitle": "Novi kombo meni",
+  "name": "Naziv kombo menija",
+  "namePlaceholder": "npr. Kombo za ručak",
+  "description": "Opis",
+  "descriptionPlaceholder": "Bilo koja pizza + piće + dip",
+  "price": "Cijena kombo menija",
+  "originalPrice": "Originalna cijena",
+  "originalPlaceholder": "prazno = automatski",
+  "originalHint": "prazno = izračunaj iz artikala",
+  "slots": "Mjesta za artikle (kategorije potrebne za ovaj kombo meni)",
+  "slot": "Mjesto {n}",
+  "notUsed": "— Ne koristi se —",
+  "dealActive": "Kombo meni je aktivan",
+  "applyHeading": "Primjena na događaje",
+  "applyHelp": "Odaberite da li se ovaj kombo meni automatski primjenjuje na vaše događaje",
+  "applyAll": "Automatski primijeni na sve buduće događaje",
+  "applyAllHelp": "Ovaj kombo meni bit će aktivan na svakom novom događaju koji napravite. I dalje ga možete isključiti za pojedine događaje na kartici „Raspored“.",
+  "manualTitle": "Odaberi ručno za svaki događaj",
+  "applyAllNote": "Ovaj kombo meni bit će dodan novim događajima. Za postojeće događaje idite na karticu „Raspored“ da kombo menijima upravljate po događaju.",
+  "cancel": "Otkaži",
+  "save": "Sačuvaj kombo meni",
+  "emptyBody": "Napravite kombo meni, npr. „Kombo za ručak — bilo koja pizza + piće + dip za {price}“",
+  "manualHelp": "Ovaj kombo meni neće se pojaviti na događajima ako ga ne uključite na kartici „Raspored“.",
+  "saving": "Čuvanje…"
+ },
+ "eventTypes": {
+  "title": "Vrste događaja",
+  "newTypeButton": "+ Nova vrsta događaja",
+  "close": "Zatvori",
+  "loading": "Učitavanje…",
+  "missingTitle": "Vrste događaja još nisu uključene.",
+  "missingBody": "Ažuriranje baze podataka za ovu funkciju još nije primijenjeno. Ništa nije pokvareno — svaki događaj koristi vaše uobičajene postavke.",
+  "column": "Kolona",
+  "vanGone": "To vozilo više ne postoji.",
+  "typeGone": "Ta vrsta više ne postoji.",
+  "standard": "Standardni",
+  "standardHeading": "STANDARDNI",
+  "moreFor": "Više opcija: {name}",
+  "rename": "Preimenuj",
+  "moveLeft": "Pomjeri ulijevo",
+  "moveRight": "Pomjeri udesno",
+  "delete": "Izbriši",
+  "sections": {
+   "vans": "VOZILA",
+   "prices": "CIJENE",
+   "itemPrices": "CIJENE ARTIKALA",
+   "service": "USLUGA"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "Svakih {mins} min",
+  "noTypes": "Još nemate vrsta događaja, pa svaki događaj koristi vaše uobičajene postavke.",
+  "renameTitle": "Preimenujte ovu vrstu",
+  "name": "Naziv",
+  "cancel": "Otkaži",
+  "save": "Sačuvaj",
+  "copyVanOne": "Kopiraj postavke vozila 1",
+  "thisType": "ova vrsta",
+  "matchTitle": "Izjednačiti „{name}“ s vrstom Standardni?",
+  "matchKeeps": "Sve što ste promijenili na kontrolnoj tabli pojedinog događaja ostaje kako jeste, a cijene ove vrste se ne mijenjaju.",
+  "matchWillUse": "Koristit će: {summary}",
+  "deleteTitle": "Izbrisati „{name}“?",
+  "deleteBody": "{n, plural, =0 {Nijedan predstojeći događaj ne koristi „{name}“.} one {{count} predstojeći događaj koristi „{name}“. Vratit će se na vrstu Standardni.} few {{count} predstojeća događaja koriste „{name}“. Vratit će se na vrstu Standardni.} other {{count} predstojećih događaja koristi „{name}“. Vratit će se na vrstu Standardni.}} Sve što ste promijenili na pojedinom događaju ostaje kako jeste.",
+  "keep": "Zadrži",
+  "phone": {
+   "standardTag": "Standardni",
+   "defaultTag": "zadano",
+   "vanSetup": "Uobičajene postavke ovog vozila — koriste se na svakom događaju bez vrste.",
+   "standardSetup": "Vaše uobičajene postavke — koriste se na svakom događaju bez vrste.",
+   "cardSummary": "{upcoming, plural, one {{upcomingCount} predstojeći događaj} few {{upcomingCount} predstojeća događaja} other {{upcomingCount} predstojećih događaja}} · {changed, plural, =0 {još ništa nije promijenjeno} one {promijenjeno: {changedCount} od {total}} few {promijenjeno: {changedCount} od {total}} other {promijenjeno: {changedCount} od {total}}}",
+   "noMenuItems": "Još nema artikala u meniju — dodajte ih u Meni › Artikli."
+  },
+  "newType": {
+   "title": "Nova vrsta događaja",
+   "namePlaceholder": "npr. Školska priredba",
+   "help": "Dodirnite naziv ili upišite svoj. Počinje kao kopija vrste Standardni, a kasnije promjene vrste Standardni neće je mijenjati. Poslije možete promijeniti bilo šta.",
+   "create": "Napravi",
+   "chips": {
+    "festival": "Festival",
+    "pub": "Kafić",
+    "market": "Pijaca",
+    "privateHire": "Food truck za događaje"
+   }
+  },
+  "select": {
+   "label": "Vrsta događaja",
+   "usual": "Za ovo mjesto uobičajena je vrsta: {name}."
+  },
+  "summary": {
+   "normalSetup": "Vaše uobičajene postavke",
+   "sameAsStandard": "Isto kao Standardni",
+   "buzzersOn": "pageri uključeni",
+   "buzzersOff": "pageri isključeni",
+   "takeCashOn": "primanje gotovine uključeno",
+   "takeCashOff": "primanje gotovine isključeno",
+   "markReadyOn": "korak „spremno“ uključen",
+   "markReadyOff": "korak „spremno“ isključen",
+   "collectionEvery": "preuzimanje svakih {mins} min",
+   "offlineOff": "offline zaštita isključena",
+   "offlineKeepTaking": "offline: nastavi primati narudžbe",
+   "offlinePause": "offline: pauziraj naručivanje"
+  },
+  "errors": {
+   "somethingWentWrong": "Došlo je do greške",
+   "couldNotLoad": "Učitavanje nije uspjelo",
+   "couldNotSave": "Čuvanje nije uspjelo",
+   "noVans": "Ovaj food truck nema vozila koja se mogu mijenjati."
+  }
+ },
+ "privateEvents": {
+  "publicName": "Privatni događaj",
+  "chip": "Privatno",
+  "grid": {
+   "orderingSection": "NARUČIVANJE",
+   "linkRowLabel": "Primajte narudžbe putem privatnog linka i QR koda",
+   "columnTitle": "Ugrađena vrsta Privatno. Ne može se preimenovati, pomjeriti ni izbrisati."
+  },
+  "form": {
+   "help": "Na vašem rasporedu prikazuje se kao „Privatni događaj“, samo s datumom i vremenom — nikada s adresom, mapom ili na Village Foodie.",
+   "linkPromise": "Gosti naručuju putem privatnog linka i QR koda — dobit ćete ih nakon čuvanja.",
+   "nameLabel": "Naziv događaja",
+   "nameHelp": "Gosti ovo vide na vrhu stranice za narudžbe.",
+   "namePlaceholder": "Vjenčanje Amre i Harisa",
+   "previewNote": "Kako se prikazuje na vašem rasporedu — bez lokacije, grada ili poštanskog broja.",
+   "needsTimes": "Dodajte vrijeme početka i završetka — privatni događaj koji prima narudžbe putem linka mora ih imati."
+  },
+  "link": {
+   "button": "Link i QR",
+   "title": "Privatni link i QR kod",
+   "label": "Privatni link",
+   "copy": "Kopiraj",
+   "copied": "Kopirano",
+   "qrDownload": "Preuzmi QR kod",
+   "tableCards": "Štampaj kartice za stolove",
+   "newLink": "Napravi novi link",
+   "working": "Radimo na tome…",
+   "newLinkConfirm": "Napraviti novi link? Trenutni link odmah prestaje raditi, a prestat će raditi i svi QR kodovi koje ste već odštampali.",
+   "newLinkHelp": "Koristite ovo ako je link dospio tamo gdje ne bi trebao. Trenutni link odmah prestaje raditi, a prestaju raditi i odštampani QR kodovi.",
+   "newLinkFailed": "Nije bilo moguće napraviti novi link.",
+   "offNotice": "Naručivanje putem privatnog linka isključeno je za ovaj događaj, pa nema linka za dijeljenje. Događaj se i dalje prikazuje na vašem rasporedu kao „Privatni događaj“."
+  },
+  "cards": {
+   "printTitle": "{truck} — kartice za stolove",
+   "scan": "Skenirajte i naručite",
+   "blurb": "Naručite i platite na svom telefonu. Prozvat ćemo vas po imenu kada bude spremno.",
+   "footer": "Naručivanje putem HatchGraba"
+  },
+  "noSinglePost": "Privatni događaji nemaju zasebnu objavu — pojavljuju se na vašem sedmičnom posteru kao „Privatni događaj“.",
+  "confirmToPrivate": "Ovo skriva adresu i uklanja događaj s mape. Gosti će za naručivanje trebati privatni link.",
+  "confirmFromPrivate": "Ovo događaj čini javnim: prikazat će se njegova adresa i oznaka na mapi, a privatni link prestat će raditi."
+ }
+}
