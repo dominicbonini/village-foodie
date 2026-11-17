@@ -149,10 +149,11 @@
    "selected": "Napili",
    "status": "{tone, select, paused {⏸ Naka-pause} live {● Live} finished {● Tapos na} cancelled {Na-cancel} other {Hindi pa nagsisimula}}",
    "orders": "{n, plural, =0 {Walang order} one {{count} order} other {{count} order}}",
-   "needsApproval": "Kailangan ng approval ({count})",
-   "approvedEvents": "Mga approved na event",
-   "needsApprovalNote": "Hindi pa ito nakikita ng mga customer.",
-   "possibleDuplicateOf": "Posibleng duplicate ng {other}, na approved na"
+   "needsApproval": "Kailangan ng approval",
+   "approvalSummary": "{n, plural, one {{count} event ang kailangan ng approval} other {{count} event ang kailangan ng approval}}",
+   "approvalSummaryNote": "{n, plural, one {Hindi pa ito nakikita ng mga customer.} other {Hindi pa ito nakikita ng mga customer.}}",
+   "duplicateSameTime": "Posibleng duplicate · parehong oras",
+   "duplicateOverlaps": "Posibleng duplicate · nagsasapawan ang oras"
   },
   "eventGate": {
    "approveTitle": "I-approve ang {event}?",

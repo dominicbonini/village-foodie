@@ -149,10 +149,11 @@
    "selected": "Selected",
    "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}",
    "orders": "{n, plural, =0 {No orders} one {{count} order} other {{count} orders}}",
-   "needsApproval": "Needs approval ({count})",
-   "approvedEvents": "Approved events",
-   "needsApprovalNote": "Customers can’t see these yet.",
-   "possibleDuplicateOf": "Possible duplicate of {other}, already approved"
+   "needsApproval": "Needs approval",
+   "approvalSummary": "{n, plural, one {{count} event needs approval} other {{count} events need approval}}",
+   "approvalSummaryNote": "{n, plural, one {Customers can’t see it yet.} other {Customers can’t see them yet.}}",
+   "duplicateSameTime": "Possible duplicate · same time",
+   "duplicateOverlaps": "Possible duplicate · overlaps"
   },
   "eventGate": {
    "approveTitle": "Approve {event}?",

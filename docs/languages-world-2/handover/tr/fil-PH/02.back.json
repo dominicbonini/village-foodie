@@ -131,10 +131,7 @@
  "kitchenModals.picker.selected": "Selected",
  "kitchenModals.picker.status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started yet}}",
  "kitchenModals.picker.orders": "{n, plural, =0 {No orders} one {{count} order} other {{count} orders}}",
- "kitchenModals.picker.needsApproval": "Needs approval ({count})",
- "kitchenModals.picker.approvedEvents": "Approved events",
- "kitchenModals.picker.needsApprovalNote": "Customers cannot see these yet.",
- "kitchenModals.picker.possibleDuplicateOf": "Possible duplicate of {other}, which is already approved",
+ "kitchenModals.picker.needsApproval": "Needs approval",
  "kitchenModals.eventGate.approveTitle": "Approve {event}?",
  "kitchenModals.eventGate.overlapText": "{event} is possibly a duplicate of {other} ({start}–{end}), which is already approved{n, plural, =0 {} one { and has {count} order} other { and has {count} orders}}.",
  "kitchenModals.eventGate.keep": "Keep {other}",
@@ -722,5 +719,9 @@
  "emailOperator.newEvents.cta": "Review your schedule →",
  "emailOperator.newEvents.signoff": "— The HatchGrab team · hatchgrab.com",
  "emailOperator.newEvents.unknownVenue": "Unknown venue",
- "emailOperator.newEvents.text": "Hi,\n\nWe found {n, plural, one {{count} new event} other {{count} new events}} on your schedule that need your approval:\n\n{list}\n\nReview them at: {url}\n\nOnce you approve them, they will go live on the map.\n\n— The HatchGrab team"
+ "emailOperator.newEvents.text": "Hi,\n\nWe found {n, plural, one {{count} new event} other {{count} new events}} on your schedule that need your approval:\n\n{list}\n\nReview them at: {url}\n\nOnce you approve them, they will go live on the map.\n\n— The HatchGrab team",
+ "kitchenModals.picker.approvalSummary": "{n, plural, one {{count} event needs approval} other {{count} events need approval}}",
+ "kitchenModals.picker.approvalSummaryNote": "{n, plural, one {Customers can’t see it yet.} other {Customers can’t see it yet.}}",
+ "kitchenModals.picker.duplicateSameTime": "Possible duplicate · same time",
+ "kitchenModals.picker.duplicateOverlaps": "Possible duplicate · the times overlap"
 }

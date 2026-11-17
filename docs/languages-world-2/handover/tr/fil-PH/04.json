@@ -193,25 +193,6 @@
   },
   "saving": "Sine-save…"
  },
- "tradeArea": {
-  "country_missing": "Piliin ang bansa kung saan naka-base ang truck mo.",
-  "country_off": "Hindi pa puwedeng mag-sign up ang mga truck sa bansang iyan. Pumili ng ibang bansa.",
-  "zone_unknown": "Hindi namin inaalok ang time zone na iyan para sa bansang iyan. Pumili ng isa mula sa listahan.",
-  "town_missing": "Sabihin sa amin ang bayan o lungsod kung saan ka naka-base.",
-  "town_too_long": "Masyadong mahaba ang pangalan ng bayan — hanggang 120 character lang.",
-  "region_closed": "Hindi pa puwedeng mag-sign up ang mga truck na naka-base sa {region}{reason, select, language {: hindi pa available ang HatchGrab sa wikang {language}} taxLines {: inuuna muna naming idagdag ang hiwalay na GST at PST lines} other {}}. Kung sa ibang lugar naka-base ang truck mo, piliin ang bayan o lungsod na iyon.",
-  "region_blocked": "Pasensya na, hindi pa available ang HatchGrab sa rehiyon mo."
- },
- "manageApi": {
-  "vanFallback": "Van",
-  "eventsFeed": {
-   "today": "Ngayon · {date}",
-   "tomorrow": "Bukas · {date}"
-  },
-  "privacyNotSaved": "Live na ang event, pero hindi na-save ang privacy nito.",
-  "stockWarning": "Walang available na item sa “{category}”",
-  "uncategorised": "Walang category"
- },
  "manageMenuImport": {
   "cancel": "Kanselahin",
   "back": "← Bumalik",
@@ -632,7 +613,29 @@
   "paperwork_bad_details": "May mga detalyeng hindi tama. Paki-check ang mga ito at subukan ulit.",
   "paperwork_send_limit": "Marami kang naipadalang link sa maikling oras. Pakisubukan ulit pagkalipas ng isang oras.",
   "paperwork_send_failed": "Hindi maipadala ang email. Pakisubukan ulit.",
-  "cost_invalid": "Maglagay ng gastos na 0 o higit pa, o iwanang blangko ang box."
+  "cost_invalid": "Maglagay ng gastos na 0 o higit pa, o iwanang blangko ang box.",
+  "event_cannot_start": "{status, select, unconfirmed {Hindi masimulan ang event na ito (hindi pa approved).} open {Hindi masimulan ang event na ito (nagsimula na).} cancelled {Hindi masimulan ang event na ito (na-cancel).} other {Hindi masimulan ang event na ito ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Hindi matapos ang event na ito (hindi pa approved).} confirmed {Hindi matapos ang event na ito (hindi pa nagsisimula).} closed {Hindi matapos ang event na ito (tapos na).} cancelled {Hindi matapos ang event na ito (na-cancel).} other {Hindi matapos ang event na ito ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Hindi na kailangan ng approval ng event na ito (approved na).} open {Hindi na kailangan ng approval ng event na ito (nagsimula na).} closed {Hindi na kailangan ng approval ng event na ito (tapos na).} cancelled {Hindi na kailangan ng approval ng event na ito (na-cancel).} other {Hindi na kailangan ng approval ng event na ito ({status}).}}"
+ },
+ "tradeArea": {
+  "country_missing": "Piliin ang bansa kung saan naka-base ang truck mo.",
+  "country_off": "Hindi pa puwedeng mag-sign up ang mga truck sa bansang iyan. Pumili ng ibang bansa.",
+  "zone_unknown": "Hindi namin inaalok ang time zone na iyan para sa bansang iyan. Pumili ng isa mula sa listahan.",
+  "town_missing": "Sabihin sa amin ang bayan o lungsod kung saan ka naka-base.",
+  "town_too_long": "Masyadong mahaba ang pangalan ng bayan — hanggang 120 character lang.",
+  "region_closed": "Hindi pa puwedeng mag-sign up ang mga truck na naka-base sa {region}{reason, select, language {: hindi pa available ang HatchGrab sa wikang {language}} taxLines {: inuuna muna naming idagdag ang hiwalay na GST at PST lines} other {}}. Kung sa ibang lugar naka-base ang truck mo, piliin ang bayan o lungsod na iyon.",
+  "region_blocked": "Pasensya na, hindi pa available ang HatchGrab sa rehiyon mo."
+ },
+ "manageApi": {
+  "vanFallback": "Van",
+  "eventsFeed": {
+   "today": "Ngayon · {date}",
+   "tomorrow": "Bukas · {date}"
+  },
+  "privacyNotSaved": "Live na ang event, pero hindi na-save ang privacy nito.",
+  "stockWarning": "Walang available na item sa “{category}”",
+  "uncategorised": "Walang category"
  },
  "manageSchedule": {
   "status": {

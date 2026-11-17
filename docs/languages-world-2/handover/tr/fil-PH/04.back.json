@@ -690,5 +690,8 @@
  "manageScheduleEvent.time.time": "Time",
  "manageScheduleEvent.hiddenMatch": "{count, plural, one {# hidden place matches} other {# hidden places match}} · Show the hidden ones",
  "manageScheduleEvent.saving": "Saving…",
- "manageScheduleEvent.endsNextDay": "Ends the next day"
+ "manageScheduleEvent.endsNextDay": "Ends the next day",
+ "errorsManage.event_cannot_start": "{status, select, unconfirmed {This event can’t be started (not yet approved).} open {This event can’t be started (already started).} cancelled {This event can’t be started (cancelled).} other {This event can’t be started ({status}).}}",
+ "errorsManage.event_cannot_finish": "{status, select, unconfirmed {This event can’t be finished (not yet approved).} confirmed {This event can’t be finished (not yet started).} closed {This event can’t be finished (already finished).} cancelled {This event can’t be finished (cancelled).} other {This event can’t be finished ({status}).}}",
+ "errorsManage.event_cannot_dismiss": "{status, select, confirmed {This event no longer needs approval (already approved).} open {This event no longer needs approval (already started).} closed {This event no longer needs approval (already finished).} cancelled {This event no longer needs approval (cancelled).} other {This event no longer needs approval ({status}).}}"
 }

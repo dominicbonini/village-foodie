@@ -613,7 +613,10 @@
   "paperwork_bad_details": "Some of the details aren’t right. Please check them and try again.",
   "paperwork_send_limit": "You’ve sent a lot of links in a short time. Please try again in an hour.",
   "paperwork_send_failed": "The email couldn’t be sent. Please try again.",
-  "cost_invalid": "Enter a cost of 0 or more, or leave the box empty."
+  "cost_invalid": "Enter a cost of 0 or more, or leave the box empty.",
+  "event_cannot_start": "{status, select, unconfirmed {Can’t start this event (not approved).} open {Can’t start this event (already started).} cancelled {Can’t start this event (cancelled).} other {Can’t start this event ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Can’t finish this event (not approved).} confirmed {Can’t finish this event (not started).} closed {Can’t finish this event (already finished).} cancelled {Can’t finish this event (cancelled).} other {Can’t finish this event ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {This event no longer needs approval (already approved).} open {This event no longer needs approval (already started).} closed {This event no longer needs approval (already finished).} cancelled {This event no longer needs approval (cancelled).} other {This event no longer needs approval ({status}).}}"
  },
  "tradeArea": {
   "country_missing": "Choose the country your truck is based in.",
