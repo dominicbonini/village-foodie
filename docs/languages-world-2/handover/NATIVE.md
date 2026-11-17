@@ -136,3 +136,11 @@
 - Confirm: "Team → Profile ko" (My profile), "Mga day off" (Days off), "MALALAKING TITIK" (CAPITALS).
 - "Powered by HatchGrab" / qrPoweredBy kept English (poster brand line); manageSettings.sections.autoReplies "Auto-replies".
 - Sample tag @kapitolyonightmarket; phone field "Mobile number".
+
+## fil-PH part 06 (languages-world-3, 17 Nov 2026)
+- Design-editor box names (Date, Location, Venue, Area, Time, Rows) English, matching part 04; CANCELLED = NA-CANCEL.
+- FOR CONSISTENCY PASS: errorsManage.wp_last_toggle (part 04) says "Location o Time" for both post kinds; the single-event toggle is "Venue" (designEditor.settings.lastToggle other branch says "Venue o Time").
+- "auto-reply" without "WhatsApp" (card covers Instagram/Messenger too). Role labels Owner/Manager/Staff English; prose "may-ari".
+- Fleet "truck" where English says truck; "van" only where English says van.
+- Filipino CLDR `one` covers many numbers: both branches neutral text (allHaveImage, someWithout, ownStyleNote, approval, upcoming).
+- Samples: "Weekend Market sa Plaza", Kapitolyo, "May sisig ba kayo?", Maria, +63 917 123 4567, yourfoodtruck.ph. "Danger zone", "Payments" kept English.

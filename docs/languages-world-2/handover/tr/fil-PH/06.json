@@ -1,0 +1,944 @@
+{
+ "managePayments": {
+  "heading": "Payments",
+  "loading": "Chine-check ang Stripe account mo…",
+  "state": {
+   "not_connected": {
+    "title": "Hindi pa naka-set up",
+    "body": "Mga 10 minuto lang. Kakailanganin mo ang bank details at ID mo.",
+    "chip": "Wala pa"
+   },
+   "requirements": {
+    "title": "Kailangan ng Stripe ang details mo",
+    "body": "Hindi gagana ang card payments hangga’t wala sa Stripe ang business at bank details mo.",
+    "chip": "May kailangang gawin"
+   },
+   "pending": {
+    "title": "Connected — chine-check ng Stripe ang details mo",
+    "body": "Wala kang kailangang gawin. Sinusuri ng Stripe ang ipinadala mo, at mag-a-update ang page na ito kapag tapos na sila.",
+    "chip": "Chine-check"
+   },
+   "ready": {
+    "title": "Connected",
+    "body": "Connected ang Stripe account mo at puwede na itong tumanggap ng bayad.",
+    "chip": "Ready na"
+   },
+   "restricted": {
+    "title": "Naka-pause ang card payments",
+    "body": "Pinause ng Stripe ang card payments sa account mo hangga’t hindi naaayos ang isang bagay.",
+    "chip": "Naka-pause"
+   },
+   "unsupported": {
+    "title": "Hindi available ang card payments sa account na ito",
+    "body": "Hindi ma-enable ng Stripe ang card payments dito. Makipag-ugnayan sa amin at aayusin natin ito nang magkasama.",
+    "chip": "Hindi available"
+   }
+  },
+  "keyMismatch": {
+   "title": "Hindi magkatugma ang Stripe keys",
+   "body": "Ang <b>{server, select, live {live} other {test}}</b> na Stripe key ang gamit ng server ng site na ito, pero na-build ang browser gamit ang <b>{browser, select, live {live} other {test}}</b> na key. Papalya ang card payments sa mismong oras na magbabayad ang customer, kaya naka-block ang pag-set up ng Stripe hangga’t hindi nagtutugma ang dalawa.",
+   "fix": "Dapat naka-set ang dalawang key para sa iisang environment, at i-rebuild ang site pagkatapos — naka-bake in ang publishable key sa build time, at binabasa ang secret key sa bawat request."
+  },
+  "permission": {
+   "title": "Ang may-ari lang ng truck ang puwedeng mag-set up ng payments",
+   "body": "Ang taong may-ari ng bank account na tatanggap ng pera ang nagko-connect ng Stripe, kaya kailangang i-set up ito mula sa sarili niyang naka-log in na account. Walang problema sa truck na ito o sa HatchGrab."
+  },
+  "config": {
+   "keyMissingTitle": "Hindi pa naka-configure ang card payments",
+   "fetchTitle": "Hindi namin ma-check ang Stripe account ng truck na ito",
+   "keyMissing": "Hindi naka-set: {name} — hindi ma-load ang embedded components."
+  },
+  "errors": {
+   "requestFailed": "Hindi gumana ang request ({status})",
+   "unreachable": "Hindi maabot ang Stripe"
+  },
+  "online": {
+   "heading": "Online payments",
+   "body": "Nagbabayad ang customers gamit ang card kapag nag-order sila. Diretso sa sarili mong Stripe account ang pera — hindi namin ito hinahawakan kahit kailan.",
+   "feeLine": "Naniningil ang Stripe ng {fee} kada payment sa standard na {region}. Puwedeng mas mahal sa ibang card. Nakadepende sa plan mo ang sariling fee ng HatchGrab sa online orders — tingnan ang Billing.",
+   "testMode": "Test mode. Hindi pa puwedeng tumanggap ng totoong bayad."
+  },
+  "trialNote": "Hindi nito sisimulan ang subscription mo at hindi ka sisingilin ngayon. Ito ang paraan ng pagbabayad sa iyo ng customers mo — hiwalay ang plan mo.",
+  "admin": {
+   "title": "Tinitingnan bilang platform admin",
+   "body": "Hindi pa naka-set up ang online payments ng truck na ito. Ang may-ari lang ang puwedeng magsimula nito, mula sa sarili niyang naka-log in na account — walang kailangang pindutin dito."
+  },
+  "setUp": {
+   "button": "I-set up ang online payments",
+   "busy": "Sine-set up…"
+  },
+  "toast": {
+   "alreadySetUp": "Naka-set up na — tuloy tayo",
+   "addDetails": "Idagdag na ang details mo para sa Stripe",
+   "createFailed": "Hindi magawa ang account"
+  },
+  "onboarding": {
+   "restricted": "Stripe na ang bahala mula rito — magsa-sign in ka sa Stripe at ia-update ang details na kailangan nito.",
+   "firstRun": "Stripe na ang bahala mula rito — magsa-sign in ka sa Stripe, tapos ibibigay mo ang business at bank details mo."
+  },
+  "details": {
+   "title": "Ang Stripe details mo",
+   "body": "Palitan ang bank account kung saan ka binabayaran, o i-update ang business details at mga dokumento mo.",
+   "button": "Tingnan o i-edit"
+  },
+  "walkUp": {
+   "heading": "Walk-in payments",
+   "body": "Paano ka tumatanggap ng pera sa truck. Walang platform fee ang HatchGrab sa walk-in orders, alinman ang piliin mo.",
+   "ownTerminal": "Sarili mong card terminal",
+   "current": "Kasalukuyan",
+   "ownTerminalHelp": "Zettle, Square, o kung ano ang gamit mo na. Walang kailangang i-set up — ang sariling fees lang ng provider mo ang babayaran.",
+   "hatchgrab": "Sa pamamagitan ng HatchGrab",
+   "comingSoon": "Malapit na",
+   "hatchgrabHelp": "Ginagamit ang parehong Stripe connection ng online payments mo — card reader, o contactless diretso sa phone o tablet mo.",
+   "hatchgrabFees": "{fee} kada payment sa {region}, dagdag ang {surcharge} para sa contactless na tinanggap sa phone o tablet. Puwedeng mas mahal sa ibang card."
+  }
+ },
+ "manageCharges": {
+  "heading": "Tax, tips at fees",
+  "rate": {
+   "label": "Rate ng sales tax",
+   "hint": "Ang rate na sinisingil mo sa bawat order. Makikita ito ng customers na idinagdag sa checkout, sa resibo at sa tickets.",
+   "regionDefault": "Iwanang blangko para maningil ng {label} sa rate na {rate}%, ang rate sa prepared food sa {region}."
+  },
+  "included": {
+   "label": "Kasama na sa mga presyo mo: {label}",
+   "hint": "Kasama na sa mga presyo mo ang {label}. Sinasabi lang ng rate na ito kung magkano sa bawat presyo ang {label}, sa resibo at tickets — walang idinadagdag sa checkout.",
+   "default": "Iwanang blangko para gamitin ang {rate}%, ang rate ng {label} sa mainit na pagkaing take-out sa {country}."
+  },
+  "tips": {
+   "label": "Tips",
+   "hint": "Puwedeng mag-tip ang customers na nagbabayad online gamit ang card. Mapupunta lahat sa iyo.",
+   "choices": "Mga pagpipilian ng customers:",
+   "chip": "{rate}%",
+   "other": "Ibang halaga"
+  },
+  "fee": {
+   "label": "Online service fee",
+   "hint": "Sa online orders lang idinadagdag. Hindi kailanman sa mga order na babayaran sa truck o sa walk-in orders. Sa iyo ito.",
+   "pctAria": "Percentage ng service fee",
+   "fixedAria": "Fixed na halaga ng service fee",
+   "max": "Pinakamataas na puwede mong singilin: {max}",
+   "example": "Makikita ito ng customers bago sila magbayad, bilang isang linya: “{label} {amount}”.",
+   "hatchgrab": "Nagdadagdag ang HatchGrab ng service fee na {fee} sa online orders ng customers mo. Hindi ikaw ang nagbabayad nito at hindi mo ito mababago."
+  },
+  "saveFailed": "Hindi na-save — pakisubukan ulit."
+ },
+ "takingPayment": {
+  "heading": "Pagtanggap ng bayad",
+  "intro": "Paano nire-record ng team mo ang pera para sa bawat order.",
+  "paidStepHelp": "Nagdadagdag ng Kumpirmahin button kapag ikaw mismo ang nagdagdag ng order, para ma-place mo ito ngayon at tumanggap ng bayad mamaya. I-on ito kung tumatanggap ka ng order sa phone o advance orders.",
+  "paidStepNote": "Sa mga order na idinagdag mo lang ito may epekto. Hindi nito naaapektuhan ang online orders."
+ },
+ "designEditor": {
+  "item": {
+   "weekHeading": "Heading ng linggo",
+   "weekHeadingSample": "Linggo ng …",
+   "daysSample": "{first} hanggang {last}",
+   "date": "Date",
+   "place": "Location",
+   "venue": "Venue",
+   "area": "Area",
+   "time": "Time",
+   "rows": "Rows",
+   "rowsSample": "{px}px ang pagitan · {first} hanggang {last}",
+   "ownText": "Sarili mong text",
+   "noteTokenSample": "Ang note na tina-type mo kapag gumagawa ka ng post",
+   "nothingYet": "Wala pa",
+   "thisBox": "ang box na ito"
+  },
+  "sample": {
+   "venue": "Weekend Market sa Plaza",
+   "area": "Kapitolyo"
+  },
+  "bar": {
+   "previewWith": "I-preview gamit ang",
+   "undo": "I-undo",
+   "undoTitle": "I-undo (⌘Z)",
+   "redo": "I-redo",
+   "redoTitle": "I-redo (⇧⌘Z)",
+   "cancel": "Kanselahin",
+   "saving": "Sine-save…",
+   "save": "I-save ang design"
+  },
+  "grid": {
+   "eachRow": "Bawat row",
+   "placeOff": "Nasa larawan mo na ang pangalan ng lugar — hindi na ito idadagdag ng HatchGrab."
+  },
+  "background": {
+   "uploading": "Ina-upload…",
+   "replace": "Palitan ang larawan",
+   "shape": {
+    "square": "Square (1:1)",
+    "portrait45": "Portrait (4:5)",
+    "portrait916": "Portrait (9:16)",
+    "landscape169": "Landscape (16:9)",
+    "portrait": "Portrait",
+    "landscape": "Landscape"
+   }
+  },
+  "scope": {
+   "title": "Posisyon ng text",
+   "standard": "Kaparehong posisyon ng Standard",
+   "own": "Sariling posisyon para sa {place}",
+   "locked": "Galing sa Standard design mo ang mga posisyong ito. Piliin ang “Sariling posisyon para sa {place}” para ilipat ang mga ito dito lang."
+  },
+  "stage": {
+   "hint": "I-drag ang box para ilipat · i-drag ang kanto para i-resize",
+   "zoomOut": "Mag-zoom out",
+   "zoomIn": "Mag-zoom in"
+  },
+  "rows": {
+   "spacing": "Pagitan",
+   "daysRun": "Mula {first} hanggang {last} ang mga araw. Kinokopya pababa ang tatlong box ng Row 1 sa layong ito.",
+   "whichEvents": "Aling mga event",
+   "showCancelled": "Ipakita ang mga na-cancel na event",
+   "showCancelledHint": "Ang na-cancel na event ay nagpapakita ng lugar nito na may guhit at ng salitang NA-CANCEL. Kapag naka-off, mababasa ang araw bilang day off."
+  },
+  "days": {
+   "reorder": "Ayusin",
+   "move": "ilipat"
+  },
+  "picture": {
+   "picture": "Larawan",
+   "fill": "Punuin ang box",
+   "fit": "Ipagkasya sa loob",
+   "corners": "Mga kanto",
+   "square": "Square",
+   "rounded": "Bilugan",
+   "ifMissing": "Kung walang image ang isang location",
+   "noPicture": {
+    "omit": "Huwag isama",
+    "blank": "Mag-iwan ng blangkong espasyo",
+    "logo": "Ipakita ang logo mo"
+   },
+   "border": "Border",
+   "drawBorder": "Lagyan ng border",
+   "drawBorderHint": "Isang linya sa paligid ng larawan, sa sarili mong kulay.",
+   "borderWidth": "Kapal ng border",
+   "cornerRadius": "Kurba ng kanto",
+   "locationPictures": "Mga larawan ng location",
+   "addLocationPictures": "+ Magdagdag ng mga larawan ng location",
+   "allHaveImage": "{total, plural, =0 {Wala ka pang location.} one {May image na ang lahat ng location mo (#).} other {May image na ang lahat ng location mo (#).}}",
+   "someWithout": "{without, plural, one {Wala pang image} other {Wala pang image}}: {without} sa {total, plural, one {# location mo} other {# location mo}}"
+  },
+  "settings": {
+   "font": "Font",
+   "colour": "Kulay",
+   "textColour": "Kulay ng text",
+   "ownStyleNote": "{count, plural, one {May sariling style ang {names}, kaya hindi ito ginalaw.} other {May sariling style ang {names}, kaya hindi ito ginalaw.}}",
+   "matchAgain": "Itugma ulit",
+   "matchName": "Itugma sa {name}",
+   "lastToggle": "{kind, select, weekly {Panatilihing naka-on ang Location o Time. Ang na-cancel na event ay nagpapakita ng lugar nito na may guhit at ng salitang NA-CANCEL, kaya kapag parehong naka-off, walang magsasabing na-cancel ito.} other {Panatilihing naka-on ang Venue o Time. Ang na-cancel na event ay nagpapakita ng lugar nito na may guhit at ng salitang NA-CANCEL, kaya kapag parehong naka-off, walang magsasabing na-cancel ito.}}"
+  },
+  "letters": {
+   "boldGlyph": "B",
+   "italicGlyph": "I",
+   "capsGlyph": "AA",
+   "italicTitle": "{italic} — may totoong italic ang font na ito"
+  },
+  "align": {
+   "left": "Kaliwa",
+   "centre": "Gitna",
+   "right": "Kanan"
+  },
+  "effects": {
+   "outlineColour": "Kulay ng outline",
+   "bandColour": "Kulay ng band",
+   "bandDaysOff": "Band sa mga day off",
+   "bandCancelled": "Band kapag na-cancel ang event",
+   "bandDaysOffHint": "Ginagamit kapalit ng band sa itaas sa araw na walang pagtitinda.",
+   "bandCancelledHint": "Ginagamit kapalit ng band sa itaas kapag na-cancel ang event."
+  },
+  "more": {
+   "dayOwnLine": "Araw sa sariling linya",
+   "dayOwnLineHint": "Ang araw ng linggo sa itaas ng petsa. Petsa lang.",
+   "noEventDay": "Sa araw na walang event",
+   "wordsBeforePlaceholder": "hal. Hanapin kami sa",
+   "neverHyphenate": "Laging pinapaliit ang isang mahabang salita na walang space — hindi namin hinahati gamit ang hyphen ang pangalan ng lugar."
+  },
+  "bits": {
+   "less": "Mas kaunti",
+   "more": "Higit pa",
+   "chooseColourFor": "{label} — pumili ng kahit anong kulay",
+   "chooseColour": "Pumili ng kahit anong kulay"
+  }
+ },
+ "fontPicker": {
+  "tab": {
+   "all": "Lahat",
+   "bold": "Bold at matangkad",
+   "hand": "Sulat-kamay",
+   "classic": "Classic",
+   "clean": "Simple",
+   "own": "Sa iyo",
+   "ownCount": "Sa iyo ({count})"
+  },
+  "yoursTag": "· sa iyo",
+  "loadingFonts": "Nilo-load ang mga font…",
+  "search": "Maghanap sa {count, number} font",
+  "uploadButton": "↑ I-upload ang font mo",
+  "loadingLibrary": "Nilo-load ang font library…",
+  "tryAgain": "Subukan ulit",
+  "noOwn": "Wala ka pang na-upload na font. Gamitin ang “↑ I-upload ang font mo” button sa itaas.",
+  "recent": "Kamakailang ginamit",
+  "popular": "Sikat para sa mga poster",
+  "adding": "Idinadagdag…",
+  "noMatch": "Walang font na tumutugma sa “{query}”.",
+  "showing": "Ipinapakita ang {shown} sa {total, number} — mag-type pa para paliitin ang listahan.",
+  "couldNotAdd": "Hindi maidagdag ang font na iyan",
+  "tooBig": "Laki ng font na iyan: {size, number, ::.0 group-off}MB. 5MB ang limit.",
+  "woff": "Paki-upload ng TTF o OTF file — karaniwang mada-download mo ito kung saan mo binili ang font.",
+  "uploadIncomplete": "Hindi natapos ang upload",
+  "added": "Naidagdag ang “{name}” bilang {face} version nito.",
+  "face": {
+   "regular": "regular",
+   "bold": "bold",
+   "italic": "italic"
+  },
+  "licenceTick": "Ako ang may-ari ng font na ito o may license ako para gamitin ito",
+  "checking": "Chine-check ang font…",
+  "addFont": "Idagdag ang font",
+  "cancel": "Kanselahin",
+  "missingFaces": "Idagdag ang {faces} version ng “{name}” (opsyonal) — piliin ulit ang file.",
+  "somethingWrong": "Nagka-problema",
+  "faceLower": {
+   "regular": "regular",
+   "bold": "bold",
+   "italic": "italic"
+  },
+  "ownLicence": "Sarili mo",
+  "loadFailed": "Hindi ma-load ang mga font"
+ },
+ "weeklyPost": {
+  "error": {
+   "generic": "Nagka-problema",
+   "previewFailed": "Hindi magawa ang preview",
+   "loadFailed": "Hindi ma-load",
+   "tooBig": "Laki ng image na iyan: {size, number, ::.0 group-off}MB. 10MB ang limit.",
+   "wrongType": "Pumili ng PNG o JPG.",
+   "uploadIncomplete": "Hindi natapos ang upload",
+   "uploadFailed": "Pumalya ang upload",
+   "saveFailed": "Hindi ma-save",
+   "buildFailed": "Hindi mabuo ang post",
+   "copyFailed": "Hindi makopya — piliin ang text at kopyahin ito nang mano-mano."
+  },
+  "loading": "Nilo-load…",
+  "missingTable": {
+   "title": "Kailangan ng database update ang weekly post",
+   "body": "Hindi pa nagagawa ang design table. Kapag na-apply na ang migration, gagana na ang screen na ito."
+  },
+  "kind": {
+   "label": "Aling design",
+   "event": "Isang event",
+   "week": "Weekly"
+  },
+  "setup": {
+   "title": "I-set up ang weekly post mo",
+   "intro": "I-upload ang blank na version ng weekly schedule graphic na ginagawa mo na — parehong design, pero tinanggal ang sarili mong mga text box. Pupunuin ng HatchGrab ang linggo mula sa schedule mo.",
+   "canvaTitle": "Paano mag-export ng blank mula sa Canva",
+   "canvaStep1": "Buksan ang karaniwan mong weekly schedule design.",
+   "canvaStep2": "I-delete ang mga text box na may petsa, lugar at oras — iwan ang background at headings na gusto mong panatilihin.",
+   "canvaStep3": "Share › Download › PNG.",
+   "uploading": "Ina-upload…",
+   "upload": "I-upload ang blank image mo",
+   "uploadHint": "PNG o JPG, hanggang 10MB, hindi bababa sa {px}px sa maikling side.",
+   "phoneTip": "Mas maganda sa computer o iPad — maliit ang mga box para i-drag sa phone.",
+   "designName": "Design ng weekly post",
+   "backDesigns": "‹ Designs",
+   "back": "‹ Bumalik",
+   "pictureNote": "Ang larawan mo na walang petsa o lugar. Kami ang magdadagdag ng mga iyon.",
+   "saved": "Na-save ang design."
+  },
+  "week": {
+   "this": "Ngayong linggo",
+   "next": "Susunod na linggo"
+  },
+  "post": {
+   "title": "Ang weekly post mo",
+   "editDesign": "I-edit ang design",
+   "weekOf": "Linggo ng {date}",
+   "imageAlt": "Ang weekly post mo",
+   "building": "Binubuo ang post mo…",
+   "updating": "Ina-update…",
+   "eventsTitle": "Mga event ngayong linggo",
+   "noEvents": "Walang event ngayong linggo.",
+   "eventDateCancelled": "{date} · na-cancel",
+   "showCancelled": "Ipakita ang mga na-cancel na event",
+   "showPrivate": "Ipakita ang mga private event",
+   "privateHint": "Lumalabas ang mga ito bilang “Private event” kasama ang petsa at oras — hindi kailanman ang lugar.",
+   "noteTitle": "Note",
+   "notePlaceholder": "hal. Mag-pre-order para sa pick-up",
+   "noteHint": "Lumalabas sa caption, at sa note box kung naglagay ka nito.",
+   "captionTitle": "Caption para sa page mo",
+   "perEventTitle": "Post para sa bawat event",
+   "nothingToPost": "Walang ipo-post ngayong linggo.",
+   "textCopied": "Nakopya ang text.",
+   "copyText": "Kopyahin ang text",
+   "image": "Image",
+   "share": "I-share",
+   "noOrderLink": "Wala pang ordering link — i-set ang web address ng truck mo sa Settings."
+  }
+ },
+ "manageShell": {
+  "loading": "Nilo-load ang management console…",
+  "loadFailed": "Hindi ma-load",
+  "requestFailed": "Hindi nagawa",
+  "invalidToken": "Invalid o expired na token",
+  "loadFailedReason": "Hindi ma-load ang page na ito: {reason}",
+  "noCountrySettings": "Hindi ma-load ang country settings ng truck na ito. Paki-refresh.",
+  "noPlans": "Hindi ma-load ang plan ng truck na ito. Paki-refresh.",
+  "stale": "{hasTime, select, yes {Hindi ma-refresh. Ipinapakita ang na-save noong {time}. Nase-save pa rin ang mga binabago mo.} other {Hindi ma-refresh. Ipinapakita ang huling na-save. Nase-save pa rin ang mga binabago mo.}}",
+  "verify": {
+   "ok": "Nakumpirma na ang email — salamat.",
+   "expired": "Expired na ang confirmation link na iyan. Makipag-ugnayan sa amin at aayusin namin ito bago ka mag-go live.",
+   "invalid": "Hindi gumana ang confirmation link na iyan. Makipag-ugnayan sa amin at aayusin namin ito bago ka mag-go live."
+  },
+  "profile": {
+   "updated": "Na-update ang profile",
+   "saveFailed": "Hindi na-save",
+   "title": "I-edit ang profile",
+   "name": "Pangalan",
+   "namePlaceholder": "Pangalan mo",
+   "email": "Email",
+   "cancel": "Kanselahin",
+   "saving": "Sine-save…",
+   "save": "I-save"
+  },
+  "header": {
+   "subtitle": "Management console",
+   "ordersDashboard": "← Dashboard ng mga order"
+  },
+  "tabs": {
+   "menu": "Menu",
+   "schedule": "Schedule",
+   "paperwork": "Mga dokumento",
+   "social": "Social media",
+   "reports": "Reports",
+   "team": "Team",
+   "settings": "Settings",
+   "payments": "Payments",
+   "billing": "Billing",
+   "paymentsIcon": "💵",
+   "scheduleCount": "Schedule ({count})",
+   "stripeAttention": "Kailangan ng Stripe ang atensyon mo",
+   "allergensNotSet": "hindi pa naka-set ang allergens"
+  },
+  "menuSections": {
+   "label": "Mga section ng menu",
+   "items": "Mga item",
+   "capacity": "Kitchen capacity",
+   "extras": "Extras & upsells",
+   "deals": "Combo meals"
+  },
+  "socialSections": {
+   "label": "Mga section ng social media",
+   "create": "Gumawa ng post",
+   "designs": "Designs",
+   "locations": "Settings ng location"
+  },
+  "notices": {
+   "review": "I-review →",
+   "tour": "Gusto mo ba ng mabilisang tour ng dashboard mo?",
+   "showMeAround": "Ipakita mo sa akin",
+   "dismiss": "Isara",
+   "approval": "{count, plural, one {May nahanap kaming <b>{count}</b> event para sa iyo — i-review at i-approve bago mag-live.} other {May nahanap kaming <b>{count}</b> event para sa iyo — i-review at i-approve bago mag-live.}}",
+   "allergens": "<b>Hindi pa naka-set ang allergens</b> — hindi makikita ng customers ang info sa allergens hangga’t hindi mo ito vine-verify. I-review ang allergens ng bawat dish sa Menu tab.",
+   "domainLive": "Live na ang <link>{domain}</link>. Tingnan mo ito, tapos sabihin sa amin sa Settings kung tama ito.",
+   "stripe": "<b>May kailangan ang Stripe mula sa iyo</b> — puwedeng huminto ang card payments hangga’t hindi ito naaayos.",
+   "profileTitle": "Kumpletuhin ang profile mo",
+   "missing": "Kulang: {fields}.",
+   "goToSettings": "Pumunta sa Settings →",
+   "field": {
+    "truckName": "pangalan ng truck",
+    "cuisineType": "uri ng cuisine",
+    "contactEmail": "contact email",
+    "contactPhone": "contact phone"
+   }
+  },
+  "trialPopup": {
+   "title": "{months, select, none {Naka-free trial ka} other {Naka-free trial ka: {months} buwan}}",
+   "ends": "{hasDate, select, yes {Matatapos ang trial sa <hl>{date}</hl>} other {<hl>Malapit nang</hl> matapos ang trial}}",
+   "offer": "{hasMonths, select, yes {{months, plural, one {Libre ang lahat ng feature sa loob ng # buwan} other {Libre ang lahat ng feature sa loob ng # buwan}}} other {Libre ang lahat ng feature habang naka-trial ka}}",
+   "body": "{hasDate, select, yes {Hindi ka sisingilin ng kahit ano habang naka-trial ka, hanggang <b>{date}</b>. Magsisimula lang ang billing kapag pumili ka ng plan at inilagay mo ang payment details mo. Hanggang doon, walang kailangang i-cancel at walang babayaran. Pumili ng plan bago noon — kung hindi, malilipat ka sa {fallback} at hihinto ang ilang feature.} other {Hindi ka sisingilin ng kahit ano habang naka-trial ka. Magsisimula lang ang billing kapag pumili ka ng plan at inilagay mo ang payment details mo. Hanggang doon, walang kailangang i-cancel at walang babayaran. Pumili ng plan bago noon — kung hindi, malilipat ka sa {fallback} at hihinto ang ilang feature.}}",
+   "bodyPaidEnd": "{hasDate, select, yes {Hindi ka sisingilin ng kahit ano habang naka-trial ka, hanggang <b>{date}</b>. Pagkatapos ng trial mo, {price} kada buwan ang {fallback}. Kokontakin ka namin bago noon para i-set up ang payment.} other {Hindi ka sisingilin ng kahit ano habang naka-trial ka. Pagkatapos ng trial mo, {price} kada buwan ang {fallback}. Kokontakin ka namin bago noon para i-set up ang payment.}}",
+   "fees": "*May standard na card processing fees sa online orders",
+   "upgrade": "Mag-upgrade dito →"
+  }
+ },
+ "manageBilling": {
+  "perTruckMonth": "kada truck / buwan",
+  "transactionFees": "Transaction fees",
+  "comingSoon": "Malapit na",
+  "footnote2Masked": "Pinapatakbo ng Stripe Connect ang online payments. Hindi pa final ang platform at card processing fees at kukumpirmahin ang mga ito sa launch.",
+  "card": {
+   "title": "Billing at payments",
+   "managed": "HatchGrab ang nag-aasikaso ng billing",
+   "earlyAccess": "Habang early access pa, mano-mano naming sine-set up at ina-adjust ang mga plan.",
+   "planLine": "{trial, select, yes {{truck} · Plan: {plan} (trial)} other {{truck} · Plan: {plan}}}"
+  },
+  "currentPlan": "Kasalukuyang plan",
+  "plan": {
+   "included": "Kasama ang online orders na hanggang {amount} kada buwan.",
+   "includedUnlimited": "Kasama ang unlimited na online orders.",
+   "promo": "Espesyal na presyo.",
+   "promoUntil": "Espesyal na presyo hanggang {date}.",
+   "ended": "Natapos ang plan mo ({plan}) noong {date}. Nasa {now} ka na ngayon.",
+   "trialMonths": "Free trial: {months} buwan."
+  },
+  "trialEnds": "Matatapos ang trial sa {date}",
+  "yourTrialEnds": "Matatapos ang trial mo sa {date}",
+  "notStarted": {
+   "heading": "Hindi pa nagsisimula ang free trial mo"
+  },
+  "onTrial": "Nasa iyo ang lahat ng feature. Pumili ng plan bago matapos ang trial mo.",
+  "onTrialPaidEnd": "Nasa iyo ang lahat ng feature. Pagkatapos ng trial mo, {price} kada buwan ang {plan}. Kokontakin ka namin bago noon para i-set up ang payment.",
+  "onTrialNoCta": "Nasa iyo ang lahat ng feature.",
+  "noCharge": "🔒 Hindi ka sisingilin ng kahit ano habang naka-trial ka, hanggang {date}. Magsisimula lang ang billing kapag pumili ka ng plan at inilagay mo ang payment details mo. Hanggang doon, walang kailangang i-cancel at walang babayaran.",
+  "noChargePaidEnd": "🔒 Hindi ka sisingilin ng kahit ano habang naka-trial ka, hanggang {date}.",
+  "fees": "*May standard na card processing fees sa online orders",
+  "setUpPayment": "⏱ Pumili ng plan bago matapos ang trial mo",
+  "changeYourPlan": "Palitan ang plan mo",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+   "title": "Lumipat sa {plan}",
+   "tagline": "{price} — {description}",
+   "body": "Sine-set up pa namin ang automated billing. Para lumipat ngayon, mag-message ka lang sa amin at ise-set up ka namin sa loob ng 24 oras.",
+   "mailSubject": "Lumipat sa {plan} — {truck}",
+   "mailBody": "Hi, gusto kong ilipat ang {truck} sa plan na {plan} ({price}).",
+   "email": "Mag-email sa amin para lumipat",
+   "cancel": "Kanselahin"
+  }
+ },
+ "manageTeam": {
+  "toast": {
+   "verificationSent": "Naipadala ang verification email",
+   "emailChangeFailed": "Hindi napalitan ang email",
+   "profileUpdated": "Na-update ang profile",
+   "saveProfileFailed": "Hindi na-save ang profile",
+   "verificationResent": "Naipadala ulit ang verification email — i-check ang inbox mo",
+   "resendFailed": "Hindi naipadala ulit",
+   "emailChangeCancelled": "Na-cancel ang pagpalit ng email",
+   "cancelFailed": "Hindi ma-cancel",
+   "memberUpdated": "Na-update ang member",
+   "inviteSent": "Naipadala ang invite",
+   "memberRemoved": "Naalis ang member"
+  },
+  "confirmRemove": "Alisin ang team member na ito?",
+  "title": "Mga team member",
+  "intro": "Mag-invite ng staff para ma-access nila ang order screen at makatanggap ng order",
+  "inviteMember": "+ Mag-invite ng member",
+  "ownerName": "{you, select, yes {{name} (ikaw)} other {{name}}}",
+  "ownerLine": "Owner · Lahat ng van",
+  "edit": "I-edit",
+  "remove": "Alisin",
+  "awaiting": "⏳ Naghihintay ng verification",
+  "sentTo": "Naipadala ang verification sa <b>{email}</b>. I-check ang inbox mo.",
+  "sending": "Ipinapadala…",
+  "resend": "Ipadala ulit",
+  "cancelling": "Kina-cancel…",
+  "cancel": "Kanselahin",
+  "myProfile": "Profile ko",
+  "firstName": "Pangalan *",
+  "lastName": "Apelyido *",
+  "phone": "Mobile number",
+  "phonePlaceholder": "+63 917 123 4567",
+  "email": "Email",
+  "verifyNote": "Magpapadala kami ng verification link sa address na ito. Aktibo pa rin ang kasalukuyan mong email hangga’t hindi pa ito na-verify.",
+  "privacy": "Pribado ang personal details mo at hindi kailanman ipinapakita sa customers. Ginagamit ang mga ito para sa account management at billing verification.",
+  "saving": "Sine-save…",
+  "save": "I-save",
+  "memberLine": "{role, select, manager {Manager} other {Staff}} · {vans}{pending, select, yes { · Pending ang invite} other {}}",
+  "allTrucks": "Lahat ng truck",
+  "noMembers": "Wala pang team member",
+  "modal": {
+   "editTitle": "I-edit ang team member",
+   "inviteTitle": "Mag-invite ng team member",
+   "name": "Pangalan",
+   "namePlaceholder": "hal. Maria",
+   "email": "Email",
+   "emailPlaceholder": "maria@example.com",
+   "role": "Role",
+   "roleStaff": "Staff — Tumatanggap ng order at nagma-manage ng kusina",
+   "roleManager": "Manager — Buong access, kasama ang menu at settings",
+   "roleOwner": "Owner — Buong access, kasama ang team at billing",
+   "truckAccess": "Access sa truck",
+   "onlyTruck": "{van} <muted>(nag-iisang truck)</muted>",
+   "selectOne": "Pumili ng kahit isang truck",
+   "saveChanges": "I-save ang mga pagbabago",
+   "sendInvite": "Ipadala ang invite"
+  },
+  "inviteEmail": {
+   "subject": "Inimbitahan kang sumali sa team ng {truck} sa HatchGrab",
+   "greeting": "{hasName, select, yes {Hi {name},} other {Hi,}}",
+   "invited": "Inimbitahan ka ng {truck} na sumali sa team nila bilang {role, select, owner {Owner} manager {Manager} other {Staff member}} sa HatchGrab.",
+   "click": "I-click ang button sa ibaba para i-set ang password mo at makapagsimula. Mag-e-expire ang link na ito sa loob ng 7 araw.",
+   "button": "Tanggapin ang imbitasyon",
+   "ignore": "Kung hindi mo inaasahan ang imbitasyong ito, puwede mong balewalain ang email na ito."
+  }
+ },
+ "manageWhatsApp": {
+  "preview": {
+   "title": "Subukan bago mag-connect",
+   "intro": "Mag-type ng tanong na parang customer, at tingnan kung ano mismo ang matatanggap nilang sagot. Walang ipinapadala kahit kanino.",
+   "examples": {
+    "where": "Saan kayo ngayong gabi?",
+    "doYouDo": "May sisig ba kayo?",
+    "menu": "Ano ang nasa menu?"
+   },
+   "placeholder": "Anong dessert ang meron kayo?",
+   "send": "Ipadala",
+   "empty": "Dito lalabas ang reply mo",
+   "working": "Binubuo ang reply…",
+   "noReply": "Walang ipapadalang reply.",
+   "noReplyWhy": "Mukhang spam, booking request o walang kinalaman ang message na iyan, kaya hindi sasagot ang auto-reply.",
+   "footnote": "AI-generated ang mga reply at bahagyang nag-iiba bawat beses, at paminsan-minsan ay puwedeng mali.",
+   "failed": "Hindi makagawa ng preview ngayon.",
+   "unreachable": "Hindi maabot ang server. I-check ang connection mo at subukan ulit."
+  },
+  "setup": {
+   "button": {
+    "preparing": "Inihahanda…",
+    "unavailable": "Hindi available",
+    "waiting": "Hinihintay ang Facebook window…",
+    "finishing": "Tinatapos…",
+    "reconnect": "I-reconnect",
+    "setUp": "I-set up"
+   },
+   "startAgain": "Magsimula ulit",
+   "popupHint": "Hindi mo makita ang Facebook window? Baka na-block ito. I-allow ang pop-ups para sa hatchgrab.com, tapos pindutin ang Magsimula ulit."
+  },
+  "notice": {
+   "sdkUnavailable": "Hindi available ang WhatsApp setup sa environment na ito.",
+   "sdkBlocked": "Hindi ma-load ang login script ng Meta. Kadalasang dahilan ang ad blocker o tracking protection.",
+   "setupFailed": "Hindi natapos ang setup. Walang binago.",
+   "setupFinished": "Tapos na ang setup.",
+   "metaError": "May problemang na-report ang Meta habang nagse-setup. Walang binago. Subukan ulit, at kontakin kami kung paulit-ulit itong nangyayari.",
+   "closed": "Naisara ang setup bago ito natapos. Walang binago — pindutin ang I-set up para subukan ulit.",
+   "disconnectedUnreachable": "Disconnected na ang WhatsApp. Hindi namin maabot ang Meta para alisin ang access. Paki-alis ang HatchGrab sa WhatsApp Business → Settings → Account → Business Platform.",
+   "disconnected": "Disconnected na ang WhatsApp. Huminto na ang auto-replies.",
+   "close": "Isara"
+  },
+  "card": {
+   "title": "Auto-replies",
+   "description": "Awtomatikong sagutin ang mga tanong ng customers sa social media mo, gamit ang menu at schedule mo.",
+   "channels": "Mga channel",
+   "requiresAccount": "Kailangan ng WhatsApp Business account.",
+   "connected": "Connected",
+   "popupInstruction": "Magbubukas ang isang Facebook window para i-connect ang WhatsApp Business account mo. Kung walang lumabas, i-allow ang pop-ups para sa hatchgrab.com sa browser mo, tapos pindutin ulit ang I-set up.",
+   "switchedOff": "Naka-off ang WhatsApp auto-replies para sa truck mo.",
+   "expiring": "Kailangang i-renew agad ang WhatsApp connection mo. Pindutin ang I-reconnect para tuloy-tuloy ang auto-replies.",
+   "comingSoon": "Malapit na",
+   "instagram": "Auto-replies sa Instagram direct messages. Kakailanganin ng Instagram professional account.",
+   "messenger": "Auto-replies sa Facebook Messenger. Kakailanganin ng Facebook Page."
+  },
+  "blocked": {
+   "title": "Hindi naihahatid ang mga reply mo",
+   "body": "Ayaw ipadala ng WhatsApp ang automatic replies mo dahil sa problema sa billing ng WhatsApp Business account mo. Puwede ka pa ring i-message ng customers at makikita mo pa rin ang lahat ng ipinapadala nila — pero hindi sila nakakatanggap ng reply.",
+   "fix": "Direkta kang nagbabayad sa WhatsApp para sa mga message na ito, kaya sa WhatsApp Manager ito inaayos. <link>I-check ang payment method mo</link>"
+  },
+  "limit": {
+   "heading": "Auto-replies",
+   "label": "Limit kada buwan",
+   "option": "{n, number}",
+   "usage": "Nagamit: {used, number} sa {limit, number} · magre-reset sa {date}",
+   "perCustomer": "Hanggang {n} reply kada customer sa loob ng 24 oras, tapos isang message na nagsasabing ikaw mismo ang sasagot.",
+   "emailAt": "Humihinto ang replies kapag naabot ang limit mo. Mag-e-email kami sa iyo sa 80% at 100%.",
+   "saved": "Na-save ang limit ng reply kada buwan",
+   "saveFailed": "Hindi ma-save ang limit"
+  },
+  "billing": {
+   "heading": "Billing",
+   "paymentMethod": "Payment method",
+   "added": "Naidagdag ang payment method",
+   "missing": "Walang naidagdag na payment method",
+   "addInManager": "Idagdag sa WhatsApp Manager",
+   "summary": "Ang Meta, hindi ang HatchGrab, ang naniningil sa WhatsApp account mo para sa replies. Simula {from}, libre ang unang {free, number} kada buwan. Tama noong {checked}; tingnan ang <link>pricing ng Meta</link> para sa mga pagbabago.",
+   "howMetaCharges": "Paano naniningil ang Meta",
+   "chargesTitle": "Ang Meta ang naniningil para sa WhatsApp replies, hindi ang HatchGrab.",
+   "chargesBody": "Sinisingil ng Meta sa WhatsApp Business account mo ang bawat reply na ipinapadala ng HatchGrab para sa iyo. Simula {from}, may {free, number} libreng reply kada buwan bawat number mula sa Meta; pagkatapos noon, sinisingil ang bawat reply sa rate ng Meta. Hindi sinisingil ang replies na ikaw mismo ang nagpadala mula sa WhatsApp Business app. Ang Meta ang nagtatakda ng mga presyong ito at puwede nila itong baguhin. <link>Tingnan ang pricing ng Meta</link>",
+   "addPaymentInManager": "Magdagdag ng payment method sa WhatsApp Manager",
+   "aboveMissing": "Lampas sa {free, number} libreng reply ng Meta ang limit mo. Kung walang payment method, ihihinto ng Meta ang lahat ng reply kapag naubos na ang mga iyon.",
+   "aboveGeneral": "Lampas sa {free, number} libreng reply ng Meta ang limit mo. Kailangan ng payment method sa WhatsApp account mo para sa replies na lampas doon; kung wala, ihihinto ng Meta ang lahat ng reply kapag naubos na ang mga libre.",
+   "addPaymentMethod": "Magdagdag ng payment method"
+  },
+  "disconnect": {
+   "link": "I-disconnect ang WhatsApp",
+   "title": "I-disconnect ang WhatsApp?",
+   "body": "Agad na hihinto ang auto-replies at mawawalan ng access ang HatchGrab sa WhatsApp account mo. Gagana pa rin ang number mo sa WhatsApp Business app. Para tuluyang alisin ang HatchGrab, buksan din ang WhatsApp Business → Settings → Account → Business Platform.",
+   "cancel": "Kanselahin",
+   "confirm": "I-disconnect",
+   "working": "Dini-disconnect…",
+   "failed": "Hindi ma-disconnect"
+  },
+  "signup": {
+   "logged": "Na-log.",
+   "partial": "Na-link namin ang WhatsApp Business account mo pero hindi namin natapos ang connection. Walang mali sa side mo — pakikontak kami at tatapusin namin ito.",
+   "noNumber": "Naka-link ang WhatsApp Business account mo, pero walang phone number na bumalik. Pindutin ang I-reconnect at tapusin ang hakbang para sa number.",
+   "needsRegistering": "Naka-link ang account mo, pero kailangan muna naming i-register ang number na ito bago makapagsimula ang replies. Pakikontak ang support — naka-save ang setup mo, huwag na itong i-run ulit.",
+   "registerRefused": "Naka-link ang account mo pero ayaw i-register ng Meta ang number. Naka-save ang setup mo — pakikontak ang support sa halip na i-run ulit ito.",
+   "deliveryRefused": "Naka-link ang account mo pero ayaw i-on ng Meta ang message delivery. Naka-save ang setup mo — pakikontak ang support sa halip na i-run ulit ito.",
+   "numberTaken": "Naka-connect na ang WhatsApp number na iyan sa ibang HatchGrab account. Para sa isang truck lang puwedeng sumagot ang isang number. Kontakin ang support at ililipat namin ito.",
+   "saveIncomplete": "Malapit na — hindi namin natapos ang pag-save. Naka-save ang setup mo, pakikontak ang support sa halip na i-run ulit ito.",
+   "connected": "Connected na ang WhatsApp. Magsisimula nang sumagot ang auto-replies sa mga message sa number na ito."
+  }
+ },
+ "customDomain": {
+  "card": {
+   "title": "Idagdag ang schedule mo sa website mo",
+   "live": "Ipinapakita ng <addr>{address}</addr> ang schedule mo.",
+   "create": "Gagawa kami ng page sa <addr>{address}</addr> na nagpapakita ng schedule mo.",
+   "exampleDomain": "yourfoodtruck.ph",
+   "liveBadge": "Live",
+   "setUp": "I-set up",
+   "viewSetup": "Tingnan ang setup",
+   "continue": "Magpatuloy",
+   "justLive": "Gumagana na ang <b>{address}</b>. Tingnan mo ito, tapos sabihin sa amin sa ibaba kung tama ito."
+  },
+  "waiting": {
+   "title": "Hinihintay namin ang {address}",
+   "bodySince": "In-set up mo ito noong {date}. Karaniwang gumagana ang bagong web address sa loob ng ilang minuto, at paminsan-minsan ay inaabot ng hanggang 24 oras bago ito maabot ng lahat — wala kang kailangang gawin habang nangyayari iyon. Kung may ibang nagdadagdag ng linya para sa iyo, magandang i-check kung nagawa nila.",
+   "body": "Karaniwang gumagana ang bagong web address sa loob ng ilang minuto, at paminsan-minsan ay inaabot ng hanggang 24 oras bago ito maabot ng lahat — wala kang kailangang gawin habang nangyayari iyon. Kung may ibang nagdadagdag ng linya para sa iyo, magandang i-check kung nagawa nila."
+  },
+  "ready": {
+   "title": "Live na ang {address}",
+   "body": "Tingnan mo ito, tapos sabihin sa amin sa settings mo kung tama ito."
+  },
+  "confirm": {
+   "heading": "Tingnan mo, tapos sabihin sa amin kung tama",
+   "open": "Buksan ang <link>{address}</link>",
+   "checkTimes": "I-check kung tama ang mga petsa at oras.",
+   "yes": "Oo, mukhang tama",
+   "no": "Hindi, may problema",
+   "problemLine": "Sabihin sa amin kung ano ang nakikita mo at titingnan namin ito.",
+   "emailUs": "Mag-email sa amin",
+   "mailSubject": "Problema sa {address}",
+   "mailLiveSince": "Live simula {date}",
+   "mailSeeing": "Ang nakikita ko:"
+  },
+  "confirmed": {
+   "heading": "Salamat — naitala na namin iyan.",
+   "body": "Wala ka nang ibang kailangang gawin."
+  },
+  "turnOff": {
+   "link": "I-off ito",
+   "heading": "I-off ang sarili mong web address?",
+   "stops": "Hihinto ang paggana nito:",
+   "carriesOn": "Tuloy lang ito gaya ng dati, at dito dinadala ng QR code mo ang mga tao:",
+   "reAdd": "Kung ise-set up mo ulit ito mamaya, iwan ang linyang idinagdag mo sa web address company mo. Kung hindi, hilingin sa kanila na alisin ito.",
+   "cancel": "Panatilihing naka-on",
+   "confirm": "I-off ito",
+   "working": "Ino-off…",
+   "failed": "Hindi namin iyan ma-off ngayon. Walang nagbago — gumagana pa rin ang address mo. Subukan ulit maya-maya."
+  },
+  "wizard": {
+   "resumeFailedTitle": "Hindi namin ma-load ang setup mo.",
+   "resumeFailedBody": "Walang nagbago. Subukan ulit maya-maya.",
+   "close": "Isara",
+   "resuming": "Itinutuloy kung saan ka huminto…",
+   "genericError": "Nagka-problema",
+   "saveFailed": "Hindi ma-save"
+  },
+  "address": {
+   "intro": "Magkakaroon ng sariling web address ang schedule mo.",
+   "question": "Ano ang web address mo?",
+   "hint": "Ang ginagamit na ng mga tao para mahanap ka.",
+   "aria": "Ang sarili mong web address",
+   "willBe": "Magiging <addr>{address}</addr> ang address mo",
+   "example": "Halimbawa, <addr>{address}</addr>",
+   "noChange": "Hindi magbabago ang website mo — magdadagdag ka lang ng link sa bagong address.",
+   "notSetUp": "Hindi pa namin ito na-set up.",
+   "restricted": "Kailangang payagan kami ng nag-aasikaso ng web address mo na i-set up ang padlock — ang maliit na lock na nakikita ng customers sa tabi nito. Hangga’t hindi nila kami idinadagdag, hindi ito lalabas, kaya huminto muna kami para hindi ka maghintay nang walang nangyayari. Hilingin sa kanila na idagdag kami, tapos subukan ulit.",
+   "blocked": "Ganap na bina-block ngayon ng web address mo ang padlock. Kailangan itong payagan ng nag-aasikaso nito bago ito gumana. Hilingin sa kanila na baguhin iyon, tapos subukan ulit.",
+   "elsewhere": "May sumasagot na sa address na iyan. Ipadala ang message sa susunod na screen sa nag-aasikaso nito — alam nila ang gagawin.",
+   "provider": "Ang <b>{provider}</b> ang nag-aasikaso ng web address mo. Ipapakita namin sa iyo kung saan pupunta.",
+   "provisionFailed": "Hindi namin ma-set up ang address na iyan.",
+   "willNotWork": "Hindi gagana ang address na iyan.",
+   "couldNotBeSetUp": "Hindi ma-set up ang address na iyan.",
+   "couldNotSetUp": "Hindi ma-set up",
+   "checking": "Chine-check…",
+   "setting": "Sine-set up…",
+   "tryAgain": "Subukan ulit",
+   "setUpAddress": "I-set up ang address na ito",
+   "notNow": "Hindi muna"
+  },
+  "apex": {
+   "empty": "I-type ang address na gusto mong gamitin.",
+   "not_a_domain": "Mukhang hindi iyan web address.",
+   "unparseable": "Hindi namin iyan mabasa bilang web address. I-check ang spelling at subukan ulit.",
+   "apex": "Ang {host} ang buong address ng website mo. Kapag itinuro mo iyan sa amin, mapapalitan ng page na ito ang website mo. Maglagay na lang ng salita sa unahan nito — halimbawa, events.{host}.",
+   "too_deep": "Masyadong maraming bahagi ang address na iyan. Pinakamaganda ang tulad ng events.{domain}."
+  },
+  "record": {
+   "addAt": "Idagdag ito sa {provider}",
+   "open": "Buksan ang {provider}",
+   "guide": "Sariling gabay ng {provider} para dito",
+   "addAtSave": "Idagdag ito sa {provider}, at i-save.",
+   "addSomewhere": "Idagdag ito kung saan inaasikaso ang web address mo, at i-save.",
+   "hintChoose": "Piliin ito mula sa listahan.",
+   "hintWord": "Ang salitang ito lang, hindi ang buong address.",
+   "hintExact": "Kopyahin ito nang eksakto.",
+   "timing": "Karaniwang gumagana ito sa loob ng isang oras, pero puwedeng mas matagal. Hindi mo kailangang panatilihing bukas ang page na ito.",
+   "someoneElse": "Iba ang nag-aasikaso ng web address mo?",
+   "sentTo": "Naipadala sa {email}",
+   "emailPlaceholder": "ang email address nila",
+   "sending": "Ipinapadala…",
+   "send": "Ipadala ang details na ito",
+   "sendFailed": "Hindi maipadala"
+  },
+  "providers": {
+   "cloudflare": {
+    "open": "Buksan ang web address mo, tapos ang “DNS” at “Records”.",
+    "add": "Piliin ang “Add record”, tapos piliin ang “CNAME” bilang “Type”.",
+    "name": "Ilagay ang unang value sa ibaba sa “Name”.",
+    "value": "Ilagay ang pangalawang value sa ibaba sa “Target”.",
+    "proxy": "I-set ang “Proxy status” sa “DNS only” — dapat kulay gray ang cloud sa tabi nito, hindi orange.",
+    "save": "Iwan ang “TTL” sa “Auto” at piliin ang “Save”.",
+    "caveat": "Kung manatiling orange ang cloud, hindi kailanman lalabas ang padlock, at walang magsasabi kung bakit."
+   },
+   "godaddy": {
+    "open": "Buksan ang “Domain Portfolio” mo at piliin ang web address mo.",
+    "dns": "Sa “Domain Settings”, piliin ang “DNS”.",
+    "add": "Piliin ang “Add New Record”, tapos piliin ang “CNAME” sa “Type” menu.",
+    "name": "Ilagay ang unang value sa ibaba sa “Name”.",
+    "value": "Ilagay ang pangalawang value sa ibaba sa “Value”.",
+    "save": "Iwan ang “TTL” kung ano ito at piliin ang “Save”.",
+    "caveat": "Kung higit sa isa ang idinagdag mo nang sabay, “Save All Records” ang nakasulat sa button."
+   },
+   "123reg": {
+    "signIn": "Mag-sign in sa “123 Reg Control Panel” mo.",
+    "manage": "Sa tabi ng “Domains”, piliin ang “Manage All”, tapos piliin ang web address mo.",
+    "dns": "Piliin ang “DNS”, tapos ang “Add New Record”.",
+    "type": "Piliin ang “CNAME” sa listahan ng “Type”.",
+    "name": "Ilagay ang unang value sa ibaba sa “Name”.",
+    "value": "Ilagay ang pangalawang value sa ibaba sa “Value”, at lagyan ng tuldok ang dulo nito.",
+    "save": "Iwan ang “TTL” sa “Default” at i-click ang “Save”.",
+    "caveat": "Kailangan ng 123 Reg ng tuldok sa dulo ng pangalawang value, kung hindi ay hindi ito gagana."
+   },
+   "wix": {
+    "open": "Buksan ang “Domains”, tapos i-click ang “Domain Actions” icon sa tabi ng web address mo.",
+    "manage": "Piliin ang “Manage DNS Records”.",
+    "add": "Sa section na “CNAME (Aliases)”, i-click ang “+ Add Record”, tapos i-click ang “Got it”.",
+    "name": "Ilagay ang unang value sa ibaba sa “Host Name”.",
+    "value": "Ilagay ang pangalawang value sa ibaba sa “Value”.",
+    "save": "I-click ang “Save”, tapos i-click ang “Save Changes” sa pop-up.",
+    "caveat": "Kung nakaturo lang sa Wix ang web address mo at hindi doon naka-hold, hindi ito mababago ng Wix — ang may hawak nito ang dapat gumawa."
+   }
+  },
+  "instructionsEmail": {
+   "subject": "Isang record na idadagdag para sa schedule page ng {truckName}",
+   "hello": "Hello,",
+   "introAt": "Ilalagay namin ang live na schedule ng {truckName} sa {address}, at kailangan nitong magdagdag ng isang record sa domain namin sa {provider}.",
+   "introHolder": "Ilalagay namin ang live na schedule ng {truckName} sa {address}, at kailangan nitong magdagdag ng isang record sa domain namin, sa kung sino man ang may hawak ng domain namin.",
+   "stepsAt": "Sa {provider}:",
+   "guide": "Ang sarili nilang gabay: {url}",
+   "wholeChange": "Iyan lang ang buong pagbabago — walang ibang maaapektuhan sa website, at gagana pa rin ang ibang bahagi ng domain namin gaya ng dati. Karaniwang gumagana ito sa loob ng isang oras.",
+   "pointsAt": "Ipinapakita ng page na tinuturo nito kung saan kami susunod na magtitinda, at kusa itong nag-a-update.",
+   "replyTo": "Mag-reply sa {email} kung may tanong ka.",
+   "thanks": "Salamat,"
+  },
+  "liveEmail": {
+   "subject": "Gumagana na ang {address}",
+   "goodNews": "Magandang balita — gumagana na ang {address}.",
+   "body": "Nakikita na ang schedule mo sa sarili mong address. Tingnan mo ito at i-check kung tama: buksan ang {address}, siguraduhing sa iyo ang mga event at tama ang mga petsa.",
+   "confirm": "Kapag nagawa mo na, buksan ang settings mo sa HatchGrab at sabihin sa amin na tama ito. Walang nakadepende roon — para lang malaman namin na may taong nakakita na nito."
+  }
+ },
+ "deleteAccount": {
+  "dangerZone": "Danger zone",
+  "scheduled": "Naka-schedule nang i-delete ang account na ito",
+  "requested": "Ni-request noong <b>{requested}</b>. Nakatakda itong i-delete sa <b>{due}</b>.",
+  "orderingStopped": "Huminto na ang online ordering. Mababasa pa rin ang dashboard mo hanggang sa petsang iyon.",
+  "cannotCancelPending": "<b>Hindi mo ito mai-cancel nang mag-isa.</b> Para pigilan ito, mag-email sa <link>{email}</link> sa lalong madaling panahon.",
+  "title": "I-delete ang account mo",
+  "body": "Permanenteng isara ang HatchGrab account na ito at itigil ang pagtanggap ng online orders.",
+  "open": "I-delete ang account…",
+  "dialogTitle": "I-delete ang account mo?",
+  "stopsImmediately": "Agad na hihinto ang online ordering — hindi pagkalipas ng 30 araw. Hindi na makaka-order sa iyo ang customers sa sandaling kumpirmahin mo.",
+  "upcoming": "<b>May {count, plural, one {# paparating na order} other {# paparating na order}} ka.</b> Kailangan pa ring i-fulfill ang mga ito.",
+  "allTrucks": "<b>Kasama ang lahat ng truck sa account na ito ({count}):</b> {names}.",
+  "deletedAfter": "Ide-delete ang account mo pagkalipas ng <b>30 araw</b>. Mababasa pa rin ang dashboard mo sa panahong iyon.",
+  "cannotCancel": "Hindi mo ito mai-cancel nang mag-isa. Para pigilan ito, kailangan mong mag-email sa <link>{email}</link>.",
+  "whatHeading": "Ano ang ide-delete, at ano ang itatabi",
+  "whatPersonal": "Ide-delete ang personal details mo at ng team mo, at aalisin ang mga login.",
+  "whatCustomers": "Ide-delete sa mga order mo ang pangalan, email at phone number ng customers mo.",
+  "whatAccounting": "Ang anonymous na accounting records ay <b>itatabi nang anim na taon</b>, ayon sa hinihingi ng batas ng UK. Tingnan ang <link>privacy policy</link> namin.",
+  "copyFirst": "<b>Gusto mo munang makakuha ng kopya ng data mo?</b> Walang download sa app. May karapatan kang makakuha ng kopya — mag-email sa <link>{email}</link> <b>bago</b> ka magkumpirma, at ipapadala namin ito sa iyo.",
+  "typeToConfirm": "I-type ang <code>{name}</code> para kumpirmahin",
+  "typeAria": "I-type ang {name} para kumpirmahin ang pag-delete ng account",
+  "cancel": "Kanselahin — panatilihin ang account ko",
+  "requesting": "Nire-request…",
+  "confirm": "I-delete ang account ko",
+  "requestedToast": "Na-request ang pag-delete ng account. I-check ang email mo.",
+  "failed": "Hindi maipadala ang request"
+ },
+ "copyButton": {
+  "copy": "Kopyahin",
+  "copied": "Nakopya ✓",
+  "failed": "Hindi nakopya",
+  "aria": "{label} {thing}",
+  "announceCopied": "Nakopya: {thing}",
+  "announceCopiedValue": "Nakopya ang value",
+  "announceFailed": "Hindi makopya: {thing}. Piliin ang text at ikaw na ang kumopya.",
+  "announceFailedValue": "Hindi makopya ang value. Piliin ang text at ikaw na ang kumopya."
+ },
+ "eventPost": {
+  "loading": "Nilo-load…",
+  "uploading": "Ina-upload…",
+  "cancel": "Kanselahin",
+  "error": {
+   "somethingWrong": "Nagka-problema.",
+   "previewFailed": "Hindi magawa ang preview.",
+   "imageTooBig": "Laki ng image na iyan: {size}MB. 10MB ang limit.",
+   "pngOrJpg": "Pumili ng PNG o JPG.",
+   "uploadIncomplete": "Hindi natapos ang upload.",
+   "couldNotLoad": "Hindi ma-load.",
+   "uploadFailed": "Pumalya ang upload.",
+   "couldNotChange": "Hindi iyan mabago.",
+   "couldNotRemove": "Hindi maalis.",
+   "couldNotSave": "Hindi ma-save.",
+   "couldNotBuild": "Hindi mabuo ang larawan."
+  },
+  "setup": {
+   "stranded": "Gumagamit ng standard na posisyon ang mga larawang ito ng lugar at iba ang hugis nila, kaya hindi gagamitin ang mga ito hangga’t hindi mo pinapalitan: {places}.",
+   "pictureReplaced": "Napalitan ang larawan.",
+   "designSaved": "Na-save ang design.",
+   "firstTitle": "I-set up ang post mo para sa isang event",
+   "firstBody": "I-upload ang larawang ginagamit mo para sa isang event — ang artwork mo na walang petsa, lugar o oras. Idadagdag ng HatchGrab ang mga iyon para sa bawat event.",
+   "uploadYourPicture": "I-upload ang larawan mo",
+   "fileRule": "PNG o JPG, hanggang 10MB, hindi bababa sa {px}px sa maikling side.",
+   "thisPlaceFallback": "Ang lugar na ito",
+   "standard": "Standard",
+   "standardStatus": "Ginagamit sa lahat ng ibang lugar",
+   "pendingStatus": "Wala pang larawan — Standard ang gamit",
+   "phoneWarning": "Mas maganda sa computer o iPad — maliit ang mga box para i-drag sa phone.",
+   "designsHeading": "Designs",
+   "addPlaceDesignLink": "+ Magdagdag ng design para sa isang lugar",
+   "placeDesignName": "{name} · design ng event post",
+   "standardDesignName": "Design ng post para sa isang event",
+   "backToDesigns": "‹ Designs",
+   "back": "‹ Bumalik",
+   "pictureNote": "Ang larawan mo na walang petsa o lugar. Kami ang magdadagdag ng mga iyon.",
+   "thisPlaceHeading": "Ang lugar na ito",
+   "removeConfirm": "Alisin ang larawan at posisyon ng text ng lugar na ito ({name})? Gagamitin ng mga event doon ang Standard design mo.",
+   "remove": "Alisin",
+   "keep": "Panatilihin",
+   "removeLink": "Alisin ang design ng lugar na ito",
+   "noEvents": "Wala pang event — magdagdag ng isa at gagamitin ito ng preview.",
+   "pickerTitle": "Magdagdag ng design para sa isang lugar",
+   "pickerSearch": "Maghanap ng lugar",
+   "pickerNoPlaces": "Wala pang lugar.",
+   "pickerAllDone": "May design na ang bawat lugar."
+  },
+  "modal": {
+   "title": "Post para sa event na ito",
+   "close": "Isara",
+   "imageAlt": "Ang event post mo",
+   "building": "Binubuo…",
+   "imageHeading": "Image",
+   "standardNotPlace": "Larawan at posisyon ng text ng Standard — hindi ang sa lugar na ito ({place}).",
+   "replaceIt": "Palitan ito",
+   "noteHeading": "Note (para sa post na ito lang)",
+   "postTextHeading": "Text ng post"
+  }
+ }
+}
