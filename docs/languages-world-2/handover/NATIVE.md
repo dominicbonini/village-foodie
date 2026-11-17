@@ -241,3 +241,9 @@
 - ALLERGENS (check first): Tree nuts and Nuts both "Orašasti plodovi"; Gorušica (senf), Susam, Zob, Kozice, Rakovica, Rakovi (ljuskari), Rakovi i školjkaši, Jam (yam), "Petrovo uho (abalone)".
 - `one` branches show # (21 reads right); check everyMinutes "Na svaku {count} minutu", sold_out_* "Uklonili smo # artikal".
 - smjena (service), kontrolna tabla (dashboard), listić (ticket), "Pokreće HatchGrab", TBC "Naknadno" (planFeatures.priceWord.masked must match); sample "8 porcija ćevapa".
+
+## bs-BA part 02 (languages-world-3, 17 Nov 2026)
+- Settings "Your trucks" (lists vans) = "Postavke → Vaša vozila" — later parts must match. venue "lokacija"; wired "Žičano štampanje"; Schedule tab „Raspored“; takings "promet"; KDS views Kuharski / Puni; "DEMO REŽIM"; sign-off "— Vaš HatchGrab tim".
+- 💷 → 💵 (KM) — other locales use 💶; confirm.
+- Ticket: DO NOT COLLECT "NE NAPLAĆUJTE", TO PAY "ZA NAPLATU"; operator Place order "Pošalji narudžbu" (≠ legal customer button).
+- `one`-for-21 rewrites: kds.screenOff.bodyVans, buzzer.allTaken "(ukupno: {count})", addOrder.catsClosed, fitMessage "Label: {n}"; check "{n} narudžbi bit će otkazano", "Provjereno: {orders}".
