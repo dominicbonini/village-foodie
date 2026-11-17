@@ -218,3 +218,9 @@
 - Postcode "kod postar" (no case ending; stiff in "korrigjoni zonën ose {postal}"); State "Shteti federal" (≠ Country "Shteti"); caption "{truck}: jemi te {where} {when}, {times}."
 - "Post-pay charge" = "Tarifa e faturuar më pas" (unsure of meaning); certificates "Sigurimi i përgjegjësisë civile ndaj palëve të treta", "Leja për tregtim ambulant".
 - Samples: Tiranë, Durrës, Korçë, Vlorë, Shkodër, Sarandë, "Pazari i Ri"; Alex → Andi.
+
+## sq-AL part 08 (languages-world-3, 17 Nov 2026)
+- comparison.cell.trial = "{months, plural, one {# muaj} other {# muaj}} falas" (reuse for planTable.trial.length).
+- German TSE/till copy translated faithfully (a first draft localised it to Albanian fiscalisation; reverted — unverified legal claims). Germany figures (Uber Eats, Wolt, Lieferando) as written — does AL need them?
+- VAT "TVSH"; reverse charge "autongarkesë" (confirm); possessives on names via colon ("{names}: faqja e internetit nuk e thotë"); country placeholder in brackets.
+- cell.notApplicable "nuk aplikohet për një platformë tregu" (market = marketplace?); slug krahasim/sistem-porosish-food-truck.
