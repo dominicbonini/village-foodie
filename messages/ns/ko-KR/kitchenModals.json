@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, other {고객에게는 아직 보이지 않아요.}}",
     "duplicateSameTime": "중복 가능성 · 같은 시간",
     "duplicateOverlaps": "중복 가능성 · 시간 겹침",
-    "dayCount": "{n, plural, other {{count}건}}"
+    "dayCount": "{n, plural, other {{count}건}}",
+    "approved": "승인됨"
   },
   "eventGate": {
     "approveTitle": "{event}을(를) 승인할까요?",

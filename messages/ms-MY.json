@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, other {Pelanggan belum dapat melihatnya.}}",
       "duplicateSameTime": "Mungkin pendua · masa sama",
       "duplicateOverlaps": "Mungkin pendua · bertindih",
-      "dayCount": "{n, plural, other {{count} acara}}"
+      "dayCount": "{n, plural, other {{count} acara}}",
+      "approved": "Diluluskan"
     },
     "eventGate": {
       "approveTitle": "Luluskan {event}?",

@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Asiakkaat eivät vielä näe sitä.} other {Asiakkaat eivät vielä näe niitä.}}",
       "duplicateSameTime": "Mahdollinen kaksoiskappale · sama aika",
       "duplicateOverlaps": "Mahdollinen kaksoiskappale · päällekkäin",
-      "dayCount": "{n, plural, one {{count} tapahtuma} other {{count} tapahtumaa}}"
+      "dayCount": "{n, plural, one {{count} tapahtuma} other {{count} tapahtumaa}}",
+      "approved": "Hyväksytty"
     },
     "eventGate": {
       "approveTitle": "Hyväksytäänkö {event}?",

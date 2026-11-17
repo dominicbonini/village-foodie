@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Kliendid seda veel ei näe.} other {Kliendid neid veel ei näe.}}",
       "duplicateSameTime": "Võimalik duplikaat · sama aeg",
       "duplicateOverlaps": "Võimalik duplikaat · kattub",
-      "dayCount": "{n, plural, one {{count} üritus} other {{count} üritust}}"
+      "dayCount": "{n, plural, one {{count} üritus} other {{count} üritust}}",
+      "approved": "Kinnitatud"
     },
     "eventGate": {
       "approveTitle": "Kas kinnitada {event}?",

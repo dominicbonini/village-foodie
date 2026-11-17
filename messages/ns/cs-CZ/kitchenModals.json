@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, one {Zákazníci ji zatím nevidí.} few {Zákazníci je zatím nevidí.} many {Zákazníci je zatím nevidí.} other {Zákazníci je zatím nevidí.}}",
     "duplicateSameTime": "Možný duplikát · stejný čas",
     "duplicateOverlaps": "Možný duplikát · překrývá se",
-    "dayCount": "{n, plural, one {{count} akce} few {{count} akce} many {{count} akce} other {{count} akcí}}"
+    "dayCount": "{n, plural, one {{count} akce} few {{count} akce} many {{count} akce} other {{count} akcí}}",
+    "approved": "Schváleno"
   },
   "eventGate": {
     "approveTitle": "Schválit {event}?",

@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, other {顧客目前看不到。}}",
     "duplicateSameTime": "可能重複 · 時間相同",
     "duplicateOverlaps": "可能重複 · 時間重疊",
-    "dayCount": "{n, plural, other {{count} 個活動}}"
+    "dayCount": "{n, plural, other {{count} 個活動}}",
+    "approved": "已核准"
   },
   "eventGate": {
     "approveTitle": "核准{event}？",

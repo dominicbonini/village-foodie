@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, zero {Klienti tos vēl neredz.} one {Klienti to vēl neredz.} other {Klienti tos vēl neredz.}}",
       "duplicateSameTime": "Iespējams dublikāts · tas pats laiks",
       "duplicateOverlaps": "Iespējams dublikāts · pārklājas",
-      "dayCount": "{n, plural, zero {{count} pasākumu} one {{count} pasākums} other {{count} pasākumi}}"
+      "dayCount": "{n, plural, zero {{count} pasākumu} one {{count} pasākums} other {{count} pasākumi}}",
+      "approved": "Apstiprināts"
     },
     "eventGate": {
       "approveTitle": "Apstiprināt {event}?",

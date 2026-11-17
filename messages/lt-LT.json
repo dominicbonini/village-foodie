@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Klientai jo dar nemato.} few {Klientai jų dar nemato.} many {Klientai jų dar nemato.} other {Klientai jų dar nemato.}}",
       "duplicateSameTime": "Galimas dublikatas · tas pats laikas",
       "duplicateOverlaps": "Galimas dublikatas · persidengia",
-      "dayCount": "{n, plural, one {{count} renginys} few {{count} renginiai} many {{count} renginio} other {{count} renginių}}"
+      "dayCount": "{n, plural, one {{count} renginys} few {{count} renginiai} many {{count} renginio} other {{count} renginių}}",
+      "approved": "Patvirtinta"
     },
     "eventGate": {
       "approveTitle": "Patvirtinti {event}?",

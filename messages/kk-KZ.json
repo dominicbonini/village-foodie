@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Клиенттер оны әлі көрмейді.} other {Клиенттер оларды әлі көрмейді.}}",
       "duplicateSameTime": "Қайталануы мүмкін · уақыты бірдей",
       "duplicateOverlaps": "Қайталануы мүмкін · уақыты қиылысады",
-      "dayCount": "{n, plural, one {{count} іс-шара} other {{count} іс-шара}}"
+      "dayCount": "{n, plural, one {{count} іс-шара} other {{count} іс-шара}}",
+      "approved": "Мақұлданған"
     },
     "eventGate": {
       "approveTitle": "{event} мақұлдансын ба?",

@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, other {Khách hàng chưa thấy.}}",
     "duplicateSameTime": "Có thể trùng · cùng giờ",
     "duplicateOverlaps": "Có thể trùng · chồng giờ",
-    "dayCount": "{n, plural, other {{count} sự kiện}}"
+    "dayCount": "{n, plural, other {{count} sự kiện}}",
+    "approved": "Đã duyệt"
   },
   "eventGate": {
     "approveTitle": "Duyệt {event}?",

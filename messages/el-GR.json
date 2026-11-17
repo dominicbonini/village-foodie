@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Οι πελάτες δεν τη βλέπουν ακόμη.} other {Οι πελάτες δεν τις βλέπουν ακόμη.}}",
       "duplicateSameTime": "Πιθανό διπλότυπο · ίδια ώρα",
       "duplicateOverlaps": "Πιθανό διπλότυπο · επικάλυψη",
-      "dayCount": "{n, plural, one {{count} εκδήλωση} other {{count} εκδηλώσεις}}"
+      "dayCount": "{n, plural, one {{count} εκδήλωση} other {{count} εκδηλώσεις}}",
+      "approved": "Εγκεκριμένη"
     },
     "eventGate": {
       "approveTitle": "Έγκριση {event};",

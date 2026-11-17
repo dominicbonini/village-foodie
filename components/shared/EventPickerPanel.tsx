@@ -172,15 +172,24 @@ export function EventPickerPanel<T extends PickableEvent>({
       const status = eventStatusDisplay(e.status, false)
       const venue = fmtVenue(e.venue_name, e.town)
       const blocked = isEventBlocked?.(e) ?? false
+      /* events-overlap-8: an APPROVED card (confirmed, open or closed) carries a green "✓ Approved" badge to the left of its
+       * status badge; an unapproved one keeps the amber "Needs approval" badge alone. The badges are ONE group that never
+       * shrinks or breaks: the time keeps its size, and when the row is too narrow the whole group wraps onto its own line
+       * under the time (flex-wrap; the time takes the remaining width). */
       return (<>
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-bold text-slate-900 flex-1">{timeRange(e)}</p>
-          {offlineChip(blocked)}
-          {opts.unapproved ? needsBadge : (
-            <span className={`text-[10px] font-bold bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0 ${EVENT_STATUS_TEXT_ON_LIGHT[status.tone]}`}>
-              {t('picker.status', { tone: status.tone })}
-            </span>
-          )}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1" data-card-top>
+          <p className="text-sm font-bold text-slate-900 flex-1 whitespace-nowrap" data-card-time>{timeRange(e)}</p>
+          <div className="flex items-center gap-1 flex-shrink-0 whitespace-nowrap" data-card-badges>
+            {offlineChip(blocked)}
+            {opts.unapproved ? needsBadge : (<>
+              <span className="text-[10px] font-bold bg-green-50 text-green-800 border border-green-300 rounded px-1.5 py-0.5" data-approved-badge>
+                <span aria-hidden>✓ </span>{t('picker.approved')}
+              </span>
+              <span className={`text-[10px] font-bold bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 ${EVENT_STATUS_TEXT_ON_LIGHT[status.tone]}`}>
+                {t('picker.status', { tone: status.tone })}
+              </span>
+            </>)}
+          </div>
         </div>
         {venue && <p className="text-xs text-slate-500 mt-0.5">{venue}</p>}
         {count !== undefined && (opts.pillAlways || count > 0) && <div className="mt-1.5"><OrderPill n={count} label={t('picker.orders', { n: count, count: String(count) })} /></div>}

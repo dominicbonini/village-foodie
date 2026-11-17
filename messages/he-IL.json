@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {הלקוחות עדיין לא רואים אותו.} two {הלקוחות עדיין לא רואים אותם.} other {הלקוחות עדיין לא רואים אותם.}}",
       "duplicateSameTime": "כפילות אפשרית · אותה שעה",
       "duplicateOverlaps": "כפילות אפשרית · חפיפה",
-      "dayCount": "{n, plural, one {אירוע אחד ({count})} two {{count} אירועים} other {{count} אירועים}}"
+      "dayCount": "{n, plural, one {אירוע אחד ({count})} two {{count} אירועים} other {{count} אירועים}}",
+      "approved": "מאושר"
     },
     "eventGate": {
       "approveTitle": "לאשר את {event}?",

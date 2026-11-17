@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Kundene ser det ikke ennå.} other {Kundene ser dem ikke ennå.}}",
       "duplicateSameTime": "Mulig duplikat · samme tid",
       "duplicateOverlaps": "Mulig duplikat · overlapper",
-      "dayCount": "{n, plural, one {{count} arrangement} other {{count} arrangementer}}"
+      "dayCount": "{n, plural, one {{count} arrangement} other {{count} arrangementer}}",
+      "approved": "Godkjent"
     },
     "eventGate": {
       "approveTitle": "Godkjenne {event}?",

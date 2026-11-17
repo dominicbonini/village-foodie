@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Клиенты его пока не видят.} few {Клиенты их пока не видят.} many {Клиенты их пока не видят.} other {Клиенты их пока не видят.}}",
       "duplicateSameTime": "Возможный дубликат · то же время",
       "duplicateOverlaps": "Возможный дубликат · пересекается",
-      "dayCount": "{n, plural, one {{count} мероприятие} few {{count} мероприятия} many {{count} мероприятий} other {{count} мероприятия}}"
+      "dayCount": "{n, plural, one {{count} мероприятие} few {{count} мероприятия} many {{count} мероприятий} other {{count} мероприятия}}",
+      "approved": "Одобрено"
     },
     "eventGate": {
       "approveTitle": "Одобрить {event}?",

@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, other {ลูกค้ายังไม่เห็น}}",
     "duplicateSameTime": "อาจซ้ำ · เวลาเดียวกัน",
     "duplicateOverlaps": "อาจซ้ำ · เวลาทับซ้อน",
-    "dayCount": "{n, plural, other {{count} อีเวนต์}}"
+    "dayCount": "{n, plural, other {{count} อีเวนต์}}",
+    "approved": "อนุมัติแล้ว"
   },
   "eventGate": {
     "approveTitle": "อนุมัติ {event} ไหม",

@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, one {ग्राहक इसे अभी नहीं देख सकते।} other {ग्राहक इन्हें अभी नहीं देख सकते।}}",
     "duplicateSameTime": "संभावित डुप्लिकेट · वही समय",
     "duplicateOverlaps": "संभावित डुप्लिकेट · समय टकराता है",
-    "dayCount": "{n, plural, one {{count} इवेंट} other {{count} इवेंट}}"
+    "dayCount": "{n, plural, one {{count} इवेंट} other {{count} इवेंट}}",
+    "approved": "मंज़ूर"
   },
   "eventGate": {
     "approveTitle": "{event} को मंज़ूरी दें?",

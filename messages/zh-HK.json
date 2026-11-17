@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, other {客人暫時看不到。}}",
       "duplicateSameTime": "可能重複 · 時間相同",
       "duplicateOverlaps": "可能重複 · 時間重疊",
-      "dayCount": "{n, plural, other {{count} 個活動}}"
+      "dayCount": "{n, plural, other {{count} 個活動}}",
+      "approved": "已批准"
     },
     "eventGate": {
       "approveTitle": "批准{event}？",

@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, zero {لا يراها العملاء بعد.} one {لا يراها العملاء بعد.} two {لا يراها العملاء بعد.} few {لا يراها العملاء بعد.} many {لا يراها العملاء بعد.} other {لا يراها العملاء بعد.}}",
     "duplicateSameTime": "تكرار محتمل · نفس الوقت",
     "duplicateOverlaps": "تكرار محتمل · تداخل",
-    "dayCount": "{n, plural, zero {الفعاليات: {count}} one {فعالية واحدة ({count})} two {فعاليتان ({count})} few {{count} فعاليات} many {{count} فعالية} other {{count} فعالية}}"
+    "dayCount": "{n, plural, zero {الفعاليات: {count}} one {فعالية واحدة ({count})} two {فعاليتان ({count})} few {{count} فعاليات} many {{count} فعالية} other {{count} فعالية}}",
+    "approved": "موافق عليها"
   },
   "eventGate": {
     "approveTitle": "الموافقة على {event}؟",

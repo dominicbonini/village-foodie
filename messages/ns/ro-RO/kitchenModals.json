@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, one {Clienții nu îl văd încă.} few {Clienții nu le văd încă.} other {Clienții nu le văd încă.}}",
     "duplicateSameTime": "Posibil duplicat · aceeași oră",
     "duplicateOverlaps": "Posibil duplicat · se suprapune",
-    "dayCount": "{n, plural, one {{count} eveniment} few {{count} evenimente} other {{count} de evenimente}}"
+    "dayCount": "{n, plural, one {{count} eveniment} few {{count} evenimente} other {{count} de evenimente}}",
+    "approved": "Aprobat"
   },
   "eventGate": {
     "approveTitle": "Aprobați {event}?",

@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, one {Az ügyfelek még nem látják.} other {Az ügyfelek még nem látják őket.}}",
     "duplicateSameTime": "Lehetséges duplikátum · azonos idő",
     "duplicateOverlaps": "Lehetséges duplikátum · átfedés",
-    "dayCount": "{n, plural, one {{count} esemény} other {{count} esemény}}"
+    "dayCount": "{n, plural, one {{count} esemény} other {{count} esemény}}",
+    "approved": "Jóváhagyva"
   },
   "eventGate": {
     "approveTitle": "Jóváhagyod: {event}?",

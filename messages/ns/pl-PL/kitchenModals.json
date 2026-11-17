@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, one {Klienci jeszcze go nie widzą.} few {Klienci jeszcze ich nie widzą.} many {Klienci jeszcze ich nie widzą.} other {Klienci jeszcze ich nie widzą.}}",
     "duplicateSameTime": "Możliwy duplikat · ta sama godzina",
     "duplicateOverlaps": "Możliwy duplikat · nakłada się",
-    "dayCount": "{n, plural, one {{count} wydarzenie} few {{count} wydarzenia} many {{count} wydarzeń} other {{count} wydarzenia}}"
+    "dayCount": "{n, plural, one {{count} wydarzenie} few {{count} wydarzenia} many {{count} wydarzeń} other {{count} wydarzenia}}",
+    "approved": "Zatwierdzone"
   },
   "eventGate": {
     "approveTitle": "Zatwierdzić {event}?",

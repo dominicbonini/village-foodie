@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, one {Kupci ga još ne vide.} few {Kupci ih još ne vide.} other {Kupci ih još ne vide.}}",
     "duplicateSameTime": "Mogući duplikat · isto vrijeme",
     "duplicateOverlaps": "Mogući duplikat · preklapa se",
-    "dayCount": "{n, plural, one {{count} događaj} few {{count} događaja} other {{count} događaja}}"
+    "dayCount": "{n, plural, one {{count} događaj} few {{count} događaja} other {{count} događaja}}",
+    "approved": "Odobreno"
   },
   "eventGate": {
     "approveTitle": "Odobriti {event}?",

@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Mijozlar uni hali ko‘rmaydi.} other {Mijozlar ularni hali ko‘rmaydi.}}",
       "duplicateSameTime": "Takroriy bo‘lishi mumkin · bir xil vaqt",
       "duplicateOverlaps": "Takroriy bo‘lishi mumkin · vaqti ustma-ust",
-      "dayCount": "{n, plural, one {{count} ta tadbir} other {{count} ta tadbir}}"
+      "dayCount": "{n, plural, one {{count} ta tadbir} other {{count} ta tadbir}}",
+      "approved": "Tasdiqlangan"
     },
     "eventGate": {
       "approveTitle": "{event} tasdiqlansinmi?",

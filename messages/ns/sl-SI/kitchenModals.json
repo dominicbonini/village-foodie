@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, one {Kupci ga še ne vidijo.} two {Kupci jih še ne vidijo.} few {Kupci jih še ne vidijo.} other {Kupci jih še ne vidijo.}}",
     "duplicateSameTime": "Možen dvojnik · isti čas",
     "duplicateOverlaps": "Možen dvojnik · se prekriva",
-    "dayCount": "{n, plural, one {{count} dogodek} two {{count} dogodka} few {{count} dogodki} other {{count} dogodkov}}"
+    "dayCount": "{n, plural, one {{count} dogodek} two {{count} dogodka} few {{count} dogodki} other {{count} dogodkov}}",
+    "approved": "Odobreno"
   },
   "eventGate": {
     "approveTitle": "Odobrim {event}?",

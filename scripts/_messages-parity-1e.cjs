@@ -325,6 +325,8 @@ for (const k of ['kitchenModals.picker.approvalSummary', 'kitchenModals.picker.a
   'kitchenModals.picker.duplicateOverlaps']) NEW_WORDING[k] = 'events-overlap-5: the event list grouped by date, duplicates under their event'
 // ⚠️ RE-PINNED (events-overlap-6, 17 November 2026, docs/events-overlap-6-report.md): the date heading's event count.
 NEW_WORDING['kitchenModals.picker.dayCount'] = 'events-overlap-6: each date heading counts its events'
+// ⚠️ RE-PINNED (events-overlap-8, 17 November 2026, docs/events-overlap-8-report.md): the green badge on an approved event card.
+NEW_WORDING['kitchenModals.picker.approved'] = 'events-overlap-8: the "Approved" badge on approved event cards'
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

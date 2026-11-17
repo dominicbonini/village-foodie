@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, other {お客様にはまだ表示されていません。}}",
     "duplicateSameTime": "重複の可能性 · 同じ時間",
     "duplicateOverlaps": "重複の可能性 · 時間が重なる",
-    "dayCount": "{n, plural, other {{count}件}}"
+    "dayCount": "{n, plural, other {{count}件}}",
+    "approved": "承認済み"
   },
   "eventGate": {
     "approveTitle": "{event}を承認しますか？",

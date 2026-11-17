@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {গ্রাহকরা এটি এখনো দেখতে পান না।} other {গ্রাহকরা এগুলো এখনো দেখতে পান না।}}",
       "duplicateSameTime": "সম্ভাব্য ডুপ্লিকেট · একই সময়",
       "duplicateOverlaps": "সম্ভাব্য ডুপ্লিকেট · সময় মিলে যায়",
-      "dayCount": "{n, plural, one {{count}টি ইভেন্ট} other {{count}টি ইভেন্ট}}"
+      "dayCount": "{n, plural, one {{count}টি ইভেন্ট} other {{count}টি ইভেন্ট}}",
+      "approved": "অনুমোদিত"
     },
     "eventGate": {
       "approveTitle": "{event} অনুমোদন করবেন?",

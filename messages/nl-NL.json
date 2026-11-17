@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Klanten zien het nog niet.} other {Klanten zien ze nog niet.}}",
       "duplicateSameTime": "Mogelijk dubbel · zelfde tijd",
       "duplicateOverlaps": "Mogelijk dubbel · overlapt",
-      "dayCount": "{n, plural, one {{count} evenement} other {{count} evenementen}}"
+      "dayCount": "{n, plural, one {{count} evenement} other {{count} evenementen}}",
+      "approved": "Goedgekeurd"
     },
     "eventGate": {
       "approveTitle": "{event} goedkeuren?",

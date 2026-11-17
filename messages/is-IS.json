@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Viðskiptavinir sjá hann ekki enn.} other {Viðskiptavinir sjá þá ekki enn.}}",
       "duplicateSameTime": "Möguleg tvítekning · sami tími",
       "duplicateOverlaps": "Möguleg tvítekning · skarast",
-      "dayCount": "{n, plural, one {{count} viðburður} other {{count} viðburðir}}"
+      "dayCount": "{n, plural, one {{count} viðburður} other {{count} viðburðir}}",
+      "approved": "Samþykkt"
     },
     "eventGate": {
       "approveTitle": "Samþykkja {event}?",

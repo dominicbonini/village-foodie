@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Հաճախորդները այն դեռ չեն տեսնում։} other {Հաճախորդները դրանք դեռ չեն տեսնում։}}",
       "duplicateSameTime": "Հնարավոր կրկնօրինակ · նույն ժամը",
       "duplicateOverlaps": "Հնարավոր կրկնօրինակ · ժամերը համընկնում են",
-      "dayCount": "{n, plural, one {{count} միջոցառում} other {{count} միջոցառում}}"
+      "dayCount": "{n, plural, one {{count} միջոցառում} other {{count} միջոցառում}}",
+      "approved": "Հաստատված"
     },
     "eventGate": {
       "approveTitle": "Հաստատե՞լ {event}-ը",

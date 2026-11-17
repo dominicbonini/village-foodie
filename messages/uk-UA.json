@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Клієнти його поки не бачать.} few {Клієнти їх поки не бачать.} many {Клієнти їх поки не бачать.} other {Клієнти їх поки не бачать.}}",
       "duplicateSameTime": "Можливий дублікат · той самий час",
       "duplicateOverlaps": "Можливий дублікат · перетинається",
-      "dayCount": "{n, plural, one {{count} захід} few {{count} заходи} many {{count} заходів} other {{count} заходу}}"
+      "dayCount": "{n, plural, one {{count} захід} few {{count} заходи} many {{count} заходів} other {{count} заходу}}",
+      "approved": "Схвалено"
     },
     "eventGate": {
       "approveTitle": "Схвалити {event}?",

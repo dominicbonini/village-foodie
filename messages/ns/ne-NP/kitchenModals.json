@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, one {ग्राहकले यो अझै देख्दैनन्।} other {ग्राहकले यी अझै देख्दैनन्।}}",
     "duplicateSameTime": "सम्भावित दोहोरो · उही समय",
     "duplicateOverlaps": "सम्भावित दोहोरो · समय खप्टिन्छ",
-    "dayCount": "{n, plural, one {{count} कार्यक्रम} other {{count} कार्यक्रम}}"
+    "dayCount": "{n, plural, one {{count} कार्यक्रम} other {{count} कार्यक्रम}}",
+    "approved": "स्वीकृत"
   },
   "eventGate": {
     "approveTitle": "{event} स्वीकृत गर्ने?",

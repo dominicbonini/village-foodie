@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, one {Müştərilər onu hələ görmür.} other {Müştərilər onları hələ görmür.}}",
     "duplicateSameTime": "Ehtimal ki, təkrar · eyni vaxt",
     "duplicateOverlaps": "Ehtimal ki, təkrar · üst-üstə düşür",
-    "dayCount": "{n, plural, one {{count} tədbir} other {{count} tədbir}}"
+    "dayCount": "{n, plural, one {{count} tədbir} other {{count} tədbir}}",
+    "approved": "Təsdiqlənib"
   },
   "eventGate": {
     "approveTitle": "{event} təsdiqlənsin?",

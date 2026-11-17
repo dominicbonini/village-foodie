@@ -71,7 +71,8 @@
     "approvalSummaryNote": "{n, plural, one {گاہک اسے ابھی نہیں دیکھ سکتے۔} other {گاہک انہیں ابھی نہیں دیکھ سکتے۔}}",
     "duplicateSameTime": "ممکنہ ڈپلیکیٹ · وہی وقت",
     "duplicateOverlaps": "ممکنہ ڈپلیکیٹ · وقت ٹکراتا ہے",
-    "dayCount": "{n, plural, one {{count} ایونٹ} other {{count} ایونٹس}}"
+    "dayCount": "{n, plural, one {{count} ایونٹ} other {{count} ایونٹس}}",
+    "approved": "منظور شدہ"
   },
   "eventGate": {
     "approveTitle": "کیا {event} کو منظور کریں؟",

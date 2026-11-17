@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Müşteriler henüz göremiyor.} other {Müşteriler bunları henüz göremiyor.}}",
       "duplicateSameTime": "Olası kopya · aynı saat",
       "duplicateOverlaps": "Olası kopya · çakışıyor",
-      "dayCount": "{n, plural, one {{count} etkinlik} other {{count} etkinlik}}"
+      "dayCount": "{n, plural, one {{count} etkinlik} other {{count} etkinlik}}",
+      "approved": "Onaylandı"
     },
     "eventGate": {
       "approveTitle": "{event} onaylansın mı?",

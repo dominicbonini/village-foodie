@@ -1081,7 +1081,8 @@
       "approvalSummaryNote": "{n, plural, one {Үйлчлүүлэгчид үүнийг хараахан харахгүй.} other {Үйлчлүүлэгчид эдгээрийг хараахан харахгүй.}}",
       "duplicateSameTime": "Давхардал байж магадгүй · ижил цаг",
       "duplicateOverlaps": "Давхардал байж магадгүй · цаг давхцана",
-      "dayCount": "{n, plural, one {{count} арга хэмжээ} other {{count} арга хэмжээ}}"
+      "dayCount": "{n, plural, one {{count} арга хэмжээ} other {{count} арга хэмжээ}}",
+      "approved": "Батлагдсан"
     },
     "eventGate": {
       "approveTitle": "{event}-ийг батлах уу?",
