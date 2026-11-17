@@ -15,7 +15,7 @@
 | 7 | uz-UZ Uzbek | ✅ (lw-2) | ✅ batch 4 — **needs native/legal check** | `_legal-translations.cjs uz-UZ` 3/3 ✓; `legal-languages-1` /uz/privacy, /uz/terms, /uz/country-terms ✓ | 3c2fb908 |
 | 8 | az-AZ Azerbaijani | ✅ (lw-2) | ✅ batch 5 — **needs native/legal check** | `_legal-translations.cjs az-AZ` 3/3 ✓; `legal-languages-1` /az/privacy, /az/terms, /az/country-terms ✓ | 34efe2f6 |
 | 9 | ka-GE Georgian | ✅ (lw-2) | ✅ batch 6 — **needs native/legal check** | `_legal-translations.cjs ka-GE` 3/3 ✓; `legal-languages-1` /ge/privacy, /ge/terms, /ge/country-terms ✓ | 45bae559 |
-| 10 | hy-AM Armenian | ✅ (lw-2) | ✅ batch 7 — **needs native/legal check** | `_legal-translations.cjs hy-AM` 3/3 ✓; `legal-languages-1` /am/privacy, /am/terms, /am/country-terms ✓ | languages-world-3 batch 7 |
+| 10 | hy-AM Armenian | ✅ (lw-2) | ✅ batch 7 — **needs native/legal check** | `_legal-translations.cjs hy-AM` 3/3 ✓; `legal-languages-1` /am/privacy, /am/terms, /am/country-terms ✓ | 3f5c1a28 |
 | 11 | mn-MN Mongolian | ✅ (lw-2) | — next (batch 8) | | |
 | 12 | ne-NP Nepali | ✅ (lw-2) | — | | |
 | 13 | fil-PH Filipino | 3 of 9 parts (lw-2) | — | | |
