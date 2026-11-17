@@ -206,3 +206,9 @@
 - Prep-time Instant "Menjëherë"/"⚡ Menjëherë"; modifiers in reports "Shtesa/Shtesat"; Gross/Net "Shitjet bruto/neto"; "Dizajnet", "shabllon".
 - Check: "Te {symbol}1 më i afërt" (stiff); "Vitin e kaluar fiskal" (accusative preset label); post editor "Stil më vete", "BËJENI TË DALLOHET", "Errëso foton".
 - FOR CONSISTENCY: manageSettings.vans mixes "Food truck-et tuaj"/"+ Shto food truck" (TERMS) with "furgon" on van-level strings.
+
+## sq-AL part 06 (languages-world-3, 17 Nov 2026)
+- Place and Venue both "Vendndodhja"; Area "Qyteti"; Time "Ora" (lastToggle = part 04 wp_last_toggle). Team-screen fleet "furgon" ("Të gjithë furgonët").
+- Stripe live/test = "mjedisi real / mjedisi i provës"; padlock "dryni"; DNS record "regjistër (DNS)"; B / I / AA kept (maybe "T" for bold).
+- deleteAccount.whatAccounting still names UK law, as the English does — for Dominic: should Albanian trucks see it?
+- Samples: "sufllaqe pule", "Pazari i Ri", Tiranë, Elira / elira@shembull.al, +355 69 123 4567.
