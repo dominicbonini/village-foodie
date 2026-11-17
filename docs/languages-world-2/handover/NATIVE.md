@@ -170,3 +170,10 @@
 - "approved na" (adjective) / "Na-approve" (toast verb); deals "{pct}% off sa loob ng # buwan", "# dagdag na buwan na libre".
 - order.kitchenNote: dish = "pagkain", traces = "bakas (traces)" — allergen line, check first.
 - auth.verifyEmail.successBody still "Sina-sign out ka namin…" (English still says "Signing you out").
+
+## fil-PH consistency pass (languages-world-3, 17 Nov 2026) — fix.json, 103 corrections, check-fix 0
+- wp_last_toggle (no select): "Panatilihing naka-on ang Location o Time (sa post para sa isang event: Venue o Time)…".
+- Terms "Mga Tuntunin", Privacy Policy "Patakaran sa Privacy" (user menu, signup/demo consent, links), footer "Privacy", Contact "Kontakin kami".
+- kds.body + offline-reject e-mail now "van" as English; Yam = "Ube (yam)"; card machine/terminal → card reader; authorise → authorize.
+- auth.verifyEmail.successBody + staff sign-in line moved to log-out/log-in wording though the English still says sign in/out — check.
+- "customers" vs "mga customer" left mixed (natural Taglish).
