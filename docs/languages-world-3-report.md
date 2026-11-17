@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal), batch 12 (ne-NP legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -17,8 +17,8 @@
 | 9 | ka-GE Georgian | ✅ (lw-2) | ✅ batch 6 — **needs native/legal check** | `_legal-translations.cjs ka-GE` 3/3 ✓; `legal-languages-1` /ge/privacy, /ge/terms, /ge/country-terms ✓ | 45bae559 |
 | 10 | hy-AM Armenian | ✅ (lw-2) | ✅ batch 7 — **needs native/legal check** | `_legal-translations.cjs hy-AM` 3/3 ✓; `legal-languages-1` /am/privacy, /am/terms, /am/country-terms ✓ | 3f5c1a28 |
 | 11 | mn-MN Mongolian | ✅ (lw-2) | ✅ batch 8 — **needs native/legal check** | `_legal-translations.cjs mn-MN` 3/3 ✓; `legal-languages-1` /mn/privacy, /mn/terms, /mn/country-terms ✓ | 2c30808f |
-| 12 | ne-NP Nepali | ✅ (lw-2) | — next (batch 12) | | |
-| 13 | fil-PH Filipino | 3 of 9 parts (lw-2) | — | | |
+| 12 | ne-NP Nepali | ✅ (lw-2) | ✅ batch 12 — **needs native/legal check** | `_legal-translations.cjs ne-NP` 3/3 ✓; `legal-languages-1` /np/privacy, /np/terms, /np/country-terms ✓ | languages-world-3 batch 12 |
+| 13 | fil-PH Filipino | 3 of 9 parts (lw-2) — next (batch 13) | — | | |
 | 14 | sq-AL Albanian | — | — | | |
 | 15 | bs-BA Bosnian | — | — | | |
 | 16 | mk-MK Macedonian | — | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **11 of 23 languages done (33 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
+Legal pages: **12 of 23 languages done (36 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
 
 ## Batch order
 
@@ -220,6 +220,18 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 12: ne-NP legal pages
+
+**Files:** [privacy-policy.md](../content/legal/ne-NP/privacy-policy.md), [terms-and-conditions.md](../content/legal/ne-NP/terms-and-conditions.md), [country-specific-terms.md](../content/legal/ne-NP/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into Nepali (Devanagari). No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs ne-NP` 3/3 ✓ (first run, no fixes needed). `legal-languages-1`: /np/privacy, /np/terms and /np/country-terms render ("2026 नोभेम्बर 4", "2026 नोभेम्बर 1"). ne-NP was the last of the languages-world-2 bases, so there was no ENOENT this time: the harness ran to the end, **342 passed, 0 failed**. **No screenshot**: Nepal has no country row yet (see batch 2).
+
+**Translation choices:** The Nepali UI words are used throughout: Pay at Hatch = “ट्रकमै भुक्तानी”, food truck = फुड ट्रक, operator = सञ्चालक, customer = ग्राहक, hatch = ट्रक (the UI says “ट्रकमै” for “at the hatch”), walk-up orders = वाक-इन अर्डर (as in the UI), kitchen screen = किचेन डिस्प्ले, dashboard = ड्यासबोर्ड, collection = पिकअप, basket = कार्ट, postcode = पोस्टकोड, plan = प्लान, HatchGrab fee = HatchGrab शुल्क, free trial = निःशुल्क ट्रायल, refund = रिफन्ड, service fee = सेवा शुल्क, allergens = एलर्जी गराउने तत्त्व, AI = एआई, and the demo checkbox is quoted exactly (“मलाई HatchGrab बाट कहिलेकाहीँ सुझाव र समाचार पठाउनुहोस्”). Formal तपाईं, “…” quotes and । as the full stop, as the UI does; the date line uses the UI label “पछिल्लो अद्यावधिक:”. controller/processor = नियन्त्रक (controller)/प्रशोधक (processor), VAT = भ्याट (the UI’s own word), GST stays GST, TVA/IVA kept with (फ्रान्सेली भ्याट)/(मेक्सिकोको भ्याट) at first mention, merchant of record = विक्रेता (merchant of record), reverse charge = रिभर्स चार्ज (reverse charge), chargeback = चार्जब्याक (chargeback), tort = टर्ट (tort), white-label = ह्वाइट-लेबल (white-label), data intermediary = डेटा मध्यस्थ (data intermediary), data user/processor = डेटा प्रयोगकर्ता (data user)/डेटा प्रशोधक (data processor), tax invoice = कर बीजक (tax invoice), qualified invoice = योग्य बीजक (qualified invoice), Article = धारा, Regulation = विनियम, Standard = मापदण्ड. Local law names are in Nepali with the official name and year in brackets (e.g. उपभोक्ता अधिकार ऐन (Consumer Rights Act 2022)); law numbers keep their English form (विनियम (EU) No 1169/2011, Law No. 8,078 of 1990). ASCII digits only. The liability list letters (a)–(f) are Nepali (क)–(च). The two in-text dates follow the page’s own date style (“2026 अक्टोबर 1 देखि”, “2025 मार्च 21 देखि लागू”). The French CNIL name’s apostrophe is typographic (l’informatique). No ASCII apostrophes or quotes remain.
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -239,4 +251,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 12 is the ne-NP legal pages. Runs continue automatically back to back, with no waits.
+Batch 13 is the fil-PH UI (parts 04–09, consistency pass, install, LPROJ). Runs continue automatically back to back, with no waits.
