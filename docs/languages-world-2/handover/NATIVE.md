@@ -252,3 +252,9 @@
 - allergen card "lista alergena" (TERMS; "kartica" may read better); vans "vozilo"/"VOZILA"; Log in "Prijavi se"/"Prijavite se"; code keys "Partnerski ili promo kod".
 - 21-safe wording to check: "# mjesec besplatno, od trenutka registracije", "probni period od # mjeseca", "{unverified} od ukupno {total} jela", "Label: {count}".
 - New: Billing "Naplata", Upsells "Dodatna ponuda", Custom extras "Prilagođeni dodaci", Dietary "Ishrana", Pub chip "Kafić", Wraps "Tortilje", Coffee "Kahva"; samples "Mirzini burgeri", "Vjenčanje Amre i Harisa".
+
+## bs-BA part 04 (languages-world-3, 17 Nov 2026)
+- Post toggles Location „Lokacija“, Time „Vrijeme“; poster CANCELLED "OTKAZANO" (status "Otkazan"); WhatsApp Set up „Postavi“ (part 06 setUp must match).
+- saved place "mjesto"/"mjesta", venue "lokacija"; Open now "U toku" (alt. "Trenutno otvoreno"); Instant „Instant“; Free from "Ne sadrži"; "procenat".
+- 21-safe: conflict.title "# mogući sukob/…", cardRead "# stavka čeka…", dealsActive one/few added, "Broj znakova…: {length}"; feature_not_on_plan "Uključeno u paket {plan}: {feature}."
+- Samples: "Ćevapi u somunu", vasfoodtruck.ba/dogadaji, @ljetnifestival.
