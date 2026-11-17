@@ -191,24 +191,35 @@
    "emailPlaceholder": "you@yourfoodtruck.ph",
    "codeLabel": "May code ka? <optional>(opsyonal)</optional>",
    "codePlaceholder": "Ilagay dito",
+   "codeApply": "I-apply",
+   "codeApplied": "Na-apply ang code: {deal} ({partner})",
+   "codeInvalid": "Hindi valid ang code na iyan.",
+   "codeExpired": "Expired na ang code na iyan.",
+   "dealExtraMonths": "{months, plural, one {# dagdag na buwan na libre} other {# dagdag na buwan na libre}}",
+   "dealPercentOff": "{pct}% off sa loob ng {months, plural, one {# buwan} other {# buwan}}",
+   "dealPercentOffPlan": "{pct}% off sa {plan} sa loob ng {months, plural, one {# buwan} other {# buwan}}",
+   "dealFixedPrice": "{plan} sa halagang {price} kada buwan sa loob ng {months, plural, one {# buwan} other {# buwan}}",
+   "dealPlanOffer": "espesyal na presyo sa {plan} sa loob ng {months, plural, one {# buwan} other {# buwan}}",
+   "partnerCodeLabel": "Partner o promo code <optional>(opsyonal)</optional>",
    "marketing": "I-email ako paminsan-minsan ng tips at product news. Walang kinalaman sa mga order mo — puwede mong itigil kahit kailan.",
-   "signIn": "Mag-sign in",
+   "signIn": "Mag-log in",
    "submit": "Gawin ang account ko",
    "submitting": "Ginagawa ang account mo…",
    "consent": "Sa paggawa ng account, sumasang-ayon ka sa aming <terms>Terms</terms> at <privacy>Privacy Policy</privacy>. Hindi kailangan ng card. Walang magiging public hangga’t hindi mo sinasabi.",
-   "haveAccount": "May account ka na? Mag-sign in",
+   "haveAccount": "May account ka na? Mag-log in",
    "errorFallback": "Hindi namin magawa ang account mo.",
    "errorOffline": "Hindi makakonekta sa amin ngayon — pakisubukan ulit."
   },
   "login": {
-   "title": "Mag-sign in sa kusina mo",
+   "title": "Mag-log in sa kusina mo",
    "dashboardOf": "Operator dashboard ng {brand}",
-   "resetSuccess": "Na-update na ang password. Mag-sign in ka na.",
-   "emailChanged": "Na-update na ang email address. Mag-sign in gamit ang bago mong email address.",
+   "resetSuccess": "Na-update na ang password. Mag-log in ka na.",
+   "emailChanged": "Na-update na ang email address. Mag-log in gamit ang bago mong email address.",
    "errorFallback": "Mali ang email o password. Pakisubukan ulit.",
-   "submit": "Mag-sign in",
-   "submitting": "Nagsa-sign in…",
-   "forgot": "Nakalimutan ang password mo?"
+   "submit": "Mag-log in",
+   "submitting": "Nagla-log in…",
+   "forgot": "Nakalimutan ang password mo?",
+   "invalidLink": "Expired na o hindi valid ang link na iyan."
   },
   "forgot": {
    "sentTitle": "I-check ang email mo",
@@ -217,7 +228,7 @@
    "subtitle": "Ilagay ang email mo at padadalhan ka namin ng reset link",
    "submit": "Ipadala ang reset link",
    "sending": "Ipinapadala…",
-   "back": "Bumalik sa sign in"
+   "back": "Bumalik sa login"
   },
   "reset": {
    "invalidTitle": "Invalid ang reset link",
@@ -234,7 +245,8 @@
    "confirmPassword": "Kumpirmahin ang password",
    "confirmPlaceholder": "Ulitin ang password mo",
    "submit": "I-set ang password",
-   "saving": "Sine-save…"
+   "saving": "Sine-save…",
+   "sendNewLink": "Magpadala ng bagong link"
   },
   "verifyEmail": {
    "goToLogin": "Pumunta sa login",
@@ -253,9 +265,9 @@
    "successBody": "Napalitan na ng <b>{email}</b> ang email mo. Sina-sign out ka namin…"
   },
   "sessionAlert": {
-   "title": "Kailangang ayusin ang sign-in mo",
-   "body": "Nandito pa rin lahat ng nasa screen. Baka hindi ma-save ang mga bagong pagbabago hangga’t hindi ka nagsa-sign in ulit.",
-   "signIn": "Mag-sign in ulit"
+   "title": "Kailangang ayusin ang login mo",
+   "body": "Nandito pa rin lahat ng nasa screen. Baka hindi ma-save ang mga bagong pagbabago hangga’t hindi ka nagla-log in ulit.",
+   "signIn": "Mag-log in ulit"
   }
  },
  "emailSignup": {
@@ -285,7 +297,7 @@
   }
  },
  "errorsOnboarding": {
-  "not_signed_in": "Hindi naka-sign in",
+  "not_signed_in": "Hindi naka-log in",
   "no_operator_record": "Walang operator record",
   "bad_request": "Maling request",
   "truck_name_missing": "Bigyan ng pangalan ang truck mo.",
@@ -299,7 +311,7 @@
   "password_too_short": "Dapat hindi bababa sa {min, plural, one {# character} other {# character}} ang password.",
   "signup_closed": "Hindi pa bukas ang sign-up.",
   "too_many_attempts": "Masyadong maraming subok ngayon — pakisubukan ulit maya-maya.",
-  "account_exists": "May account na gamit ang email na iyan — mag-sign in na lang.",
+  "account_exists": "May account na gamit ang email na iyan — mag-log in na lang.",
   "account_create_failed": "Hindi magawa ang account.",
   "account_finish_failed": "Hindi natapos ang paggawa ng account mo — pakisubukan ulit.",
   "unauthorised": "Walang pahintulot",
@@ -342,7 +354,7 @@
   "not_available": "Hindi available.",
   "demo_save_failed": "Hindi namin iyan ma-save ngayon — pakisubukan ulit.",
   "deletion_view_owner_only": "Ang may-ari lang ng account ang puwedeng makakita nito.",
-  "deletion_sign_in": "Mag-sign in para mag-request ng pag-delete ng account.",
+  "deletion_sign_in": "Mag-log in para mag-request ng pag-delete ng account.",
   "deletion_owner_only": "Ang may-ari lang ng account ang puwedeng mag-request ng pag-delete.",
   "confirm_mismatch": "I-type ang DELETE para kumpirmahin.",
   "partial_stamp": "Na-record ang request mong i-delete ang account, pero hindi namin mapahinto ang ordering sa lahat ng truck. Makipag-ugnayan sa support."
@@ -463,7 +475,7 @@
    "active": "ginagawa",
    "pending": "naghihintay"
   },
-  "signIn": "Mag-sign in",
+  "signIn": "Mag-log in",
   "phone": "Mobile number",
   "onWhatsapp": "Naka-WhatsApp ang number na ito",
   "email": "Email",
@@ -475,6 +487,16 @@
   "showPassword": "Ipakita ang password",
   "promoLabel": "May code ka? <opt>(opsyonal)</opt>",
   "promoPlaceholder": "Ilagay dito",
+  "partnerCodeLabel": "Partner o promo code <optional>(opsyonal)</optional>",
+  "partnerCodeApply": "I-apply",
+  "partnerCodeApplied": "Na-apply ang code: {deal} ({partner})",
+  "partnerCodeInvalid": "Hindi valid ang code na iyan.",
+  "partnerCodeExpired": "Expired na ang code na iyan.",
+  "partnerDealExtraMonths": "{months, plural, one {# dagdag na buwan na libre} other {# dagdag na buwan na libre}}",
+  "partnerDealPercentOff": "{pct}% off sa loob ng {months, plural, one {# buwan} other {# buwan}}",
+  "partnerDealPercentOffPlan": "{pct}% off sa {plan} sa loob ng {months, plural, one {# buwan} other {# buwan}}",
+  "partnerDealFixedPrice": "{plan} sa halagang {price} kada buwan sa loob ng {months, plural, one {# buwan} other {# buwan}}",
+  "partnerDealPlanOffer": "espesyal na presyo sa {plan} sa loob ng {months, plural, one {# buwan} other {# buwan}}",
   "agreeTerms": "Sumasang-ayon ako sa <terms>Terms</terms> at <privacy>Privacy Policy</privacy>.",
   "freeMonth": "{months, plural, =0 {Magsisimula ang free trial mo pag nag-sign up ka.} one {Libre ang unang # buwan mo, simula pag nag-sign up ka.} other {Libre ang unang # buwan mo, simula pag nag-sign up ka.}}",
   "fieldError": {
@@ -660,9 +682,9 @@
    "ambiguous": "Malabo — tugma sa ilang dish; piliin ang tama.",
    "assignTo": "I-assign sa dish…",
    "dismiss": "Isara",
-   "blanket": "Sabi ng card, maaaring may <b>{list}</b> sa <b>lahat</b> ng dish. Idagdag sa bawat dish? (kukumpirmahin mo pa rin ang bawat isa) <muted>— naka-off by default</muted>",
    "kitchenNotes": "Kitchen notes (naka-save sa info sa allergens mo)",
-   "matchSummary": "{n, plural, =0 {Na-match sa dish: {matched}.} one {Na-match sa dish: {matched}. Kailangan mong i-assign: {count}.} other {Na-match sa dish: {matched}. Kailangan mong i-assign: {count}.}}"
+   "matchSummary": "{n, plural, =0 {Na-match sa dish: {matched}.} one {Na-match sa dish: {matched}. Kailangan mong i-assign: {count}.} other {Na-match sa dish: {matched}. Kailangan mong i-assign: {count}.}}",
+   "blanketInfo": "Sabi ng card mo, maaaring may {list} sa lahat ng dish. Idadagdag namin ang mga ito sa allergens na ginagamit sa kusina mo. Puwede mong i-check ang mga ito sa huling step."
   },
   "savedCard": {
    "showLess": "Ipakita nang mas kaunti",
@@ -724,7 +746,8 @@
     "choose": "Piliin kung paano makikita ng mga customer ang info sa allergens",
     "card": "Idagdag ang allergen card mo",
     "cardOptional": "Magdagdag ng allergen card (opsyonal)",
-    "review": "I-check at kumpirmahin ang bawat dish"
+    "review": "I-check at kumpirmahin ang bawat dish",
+    "kitchen": "Huling step: ang kusina mo"
    },
    "heading": {
     "import": "Allergens",
@@ -744,7 +767,17 @@
    "hint": {
     "skipDefers": "Ipinagpapaliban lang ng Laktawan — nakatago sa mga customer ang mga dish na hindi mo pa nakumpirma hangga’t hindi nakumpirma ang allergens nila.",
     "importIncomplete": "Kumpirmahin ang bawat dish para magpatuloy — o “Laktawan muna ang allergen setup”."
-   }
+   },
+   "recipeOnly": "Ang nasa recipe lang ng dish na ito.",
+   "tooMany": "Naka-tick na allergens: {count}. Talaga bang lahat ng iyan ay nasa recipe ng dish na ito? Hindi dito inilalagay ang allergens na ginagamit sa ibang dish. Puwede mong idagdag ang mga iyon sa huling step."
+  },
+  "kitchen": {
+   "title": "Aling allergens ang ginagamit sa kusina mo?",
+   "body": "Na-tick na namin ang mga nasa dish mo na. I-tick ang iba pang ginagamit mo sa truck, halimbawa para sa specials.",
+   "legendDishes": "nasa mga dish mo",
+   "legendAdded": "idinagdag mo",
+   "customersSee": "Makikita ng mga customer:",
+   "confirm": "Kinukumpirma kong tama ang allergens ng bawat dish, at pananatilihin kong updated ang mga ito."
   }
  },
  "manageUpsells": {

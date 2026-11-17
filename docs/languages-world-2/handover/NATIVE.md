@@ -164,3 +164,9 @@
 - Feature names English (Online payments, Private events, Upsells, Social media posts, Free trial, Unlimited); planPrompt.features.*.many stay "yes"/"no" (code selects on them).
 - Customer quotes use "kayo"; "busy villages" → "mga mataong lugar"; UK food hygiene certificate → generic "food safety" (maybe "sanitary permit"); "Mobile Pizzeria ng Taon"; TBC = "Kukumpirmahin pa" (long for a cell).
 - Footer: "Mga Tuntunin", "Patakaran sa Privacy", "Kontakin kami"; part 01's short "Privacy" kept.
+
+## fil-PH parts 01–03 delta (languages-world-3, 17 Nov 2026)
+- 55 added, 18 changed (17 = Sign in → Log in: Mag-log in / Mag-log out / Nagla-log in…; order.allergenSevere), 3 removed.
+- "approved na" (adjective) / "Na-approve" (toast verb); deals "{pct}% off sa loob ng # buwan", "# dagdag na buwan na libre".
+- order.kitchenNote: dish = "pagkain", traces = "bakas (traces)" — allergen line, check first.
+- auth.verifyEmail.successBody still "Sina-sign out ka namin…" (English still says "Signing you out").

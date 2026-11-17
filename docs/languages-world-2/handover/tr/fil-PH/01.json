@@ -149,9 +149,7 @@
   "allergenTitle": "Impormasyon sa allergens",
   "allergenNotProvided": "Walang ibinigay na info sa allergens — kumpirmahin nang diretso sa truck.",
   "allergenCard": "📎 Tingnan ang allergen card (PDF/image)",
-  "allergensUsed": "Mga allergen na ginagamit sa menu na ito",
-  "allergensSeeEach": "Tingnan ang bawat ulam para sa partikular na allergens nito.",
-  "allergenSevere": "Kung may malala kang allergy, kontakin nang diretso ang vendor bago mag-order.",
+  "allergenSevere": "Kung may food allergy ka, kontakin muna ang truck bago mag-order.",
   "orderConfirmed": "Kumpirmado na ang order!",
   "orderReceived": "Natanggap ang order!",
   "thanksReady": "Salamat! Natanggap namin ang order mo at malapit na itong maging ready.",
@@ -172,7 +170,9 @@
   "backTo": "Bumalik sa {truck}",
   "notePlaceholderCompact": "May request ka ba? hal. walang sibuyas",
   "noteHeading": "May request ka ba? <muted>— optional</muted>",
-  "notePlaceholder": "hal. walang sibuyas, extra crispy"
+  "notePlaceholder": "hal. walang sibuyas, extra crispy",
+  "kitchenHeading": "Allergens na ginagamit sa kusinang ito",
+  "kitchenNote": "Ipinapakita sa bawat pagkain ang allergens na nasa recipe nito. Hindi namin masisiguro na walang kahit kaunting bakas (traces) ng allergens ang anumang pagkain."
  },
  "plansPdf": {
   "title": "Plans at features",
@@ -221,7 +221,8 @@
    "noteSaved": "Na-save ang note",
    "pricesSaved": "Na-save ang mga presyo para sa event na ito",
    "pricesSaveFailed": "Hindi ma-save ang mga presyo",
-   "reconnectToLoad": "Mag-connect ulit para ma-load ang event na ito"
+   "reconnectToLoad": "Mag-connect ulit para ma-load ang event na ito",
+   "eventApproved": "Na-approve ang event"
   },
   "gate": {
    "invalidAccessLink": "Invalid ang access link",
@@ -336,7 +337,8 @@
    "manageEvent": "I-manage ang event",
    "noEvent": "Walang napiling event",
    "selectEvent": "Pumili ng event",
-   "status": "{tone, select, paused {⏸ Naka-pause} live {● Live} finished {● Tapos na} cancelled {Na-cancel} other {Hindi pa nagsisimula}}"
+   "status": "{tone, select, paused {⏸ Naka-pause} live {● Live} finished {● Tapos na} cancelled {Na-cancel} other {Hindi pa nagsisimula}}",
+   "approveToTakeOrders": "Mag-approve ng event para tumanggap ng order"
   },
   "orders": {
    "noEvent": "Walang napiling event — pumili ng event para makita ang mga order",

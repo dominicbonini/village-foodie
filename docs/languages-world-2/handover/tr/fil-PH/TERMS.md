@@ -132,3 +132,7 @@
 - Support (contact page) → Tulong (part 09, contactPage.eyebrow)
 - Plan subtitles: Seasonal & part-time traders → Para sa seasonal at part-time na nagtitinda; Busy trucks & festivals → Para sa mga busy na truck at festivals (part 09, planNames.*)
 - regulars (repeat customers) → mga suki (part 09, featuresPage.detail.loyalty_stamp_cards)
+- Log in / Log out / Logging in… / login (noun) → Mag-log in / Mag-log out / Nagla-log in… / login (replaces “Mag-sign in” where the English now says Log in) (parts 02–03 delta, auth.login.*, userMenu.signOut)
+- Approved (event) / Needs approval / Possible duplicate of {other} → approved na / Kailangan ng approval / Posibleng duplicate ng {other} (part 02 delta, kitchenModals.picker.*)
+- Partner or promo code / Apply / Code applied / {pct}% off for # months → Partner o promo code / I-apply / Na-apply ang code / {pct}% off sa loob ng # buwan (part 03 delta, auth.signup.*, demoGetStarted.partner*)
+- Allergens your kitchen handles → allergens na ginagamit sa kusina (mo / sa kusinang ito) (parts 01, 03 delta, order.kitchenHeading, manageAllergens.kitchen.*)

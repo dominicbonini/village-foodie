@@ -59,7 +59,7 @@
   "category_id_required": "Nagka-problema — i-refresh ang page at subukan ulit.",
   "unknown_action": "Hindi kilalang action",
   "something_went_wrong": "Nagka-problema",
-  "sign_in_check_failed": "Hindi ma-check ang sign-in mo ngayon",
+  "sign_in_check_failed": "Hindi ma-check ang login mo ngayon",
   "device_id_required": "Nagka-problema — i-refresh ang page at subukan ulit.",
   "bad_request": "Maling request",
   "no_van_for_device": "Hindi pa naka-set sa isang van ang device na ito, kaya hindi pa available ang wired printing.",
@@ -77,7 +77,9 @@
   "slot_board_not_updated": "Na-save ang order, pero hindi na-update ang kitchen capacity board — i-check ang slot bago umasa rito.",
   "created_payment_not_recorded": "Nagawa ang order, pero hindi na-save ang record ng bayad — baka mali ang benta para sa order na ito hangga’t hindi naaayos.",
   "payment_not_recorded": "Hindi ma-record ang bayad — baka mali ang benta para sa order na ito hangga’t hindi naaayos.",
-  "payment_not_reversed": "Hindi ma-reverse ang bayad"
+  "payment_not_reversed": "Hindi ma-reverse ang bayad",
+  "event_not_approved": "Hindi pa approved ang event na ito",
+  "event_not_open": "{status, select, closed {Tapos na ang event na ito. Simulan ulit ito para tumanggap ng order.} cancelled {Na-cancel ang event na ito.} other {Hindi bukas ang event na ito.}}"
  },
  "kitchenModals": {
   "close": "Isara",
@@ -145,7 +147,25 @@
   "picker": {
    "reconnect": "Mag-connect ulit para ma-load",
    "selected": "Napili",
-   "status": "{tone, select, paused {⏸ Naka-pause} live {● Live} finished {● Tapos na} cancelled {Na-cancel} other {Hindi pa nagsisimula}}"
+   "status": "{tone, select, paused {⏸ Naka-pause} live {● Live} finished {● Tapos na} cancelled {Na-cancel} other {Hindi pa nagsisimula}}",
+   "orders": "{n, plural, =0 {Walang order} one {{count} order} other {{count} order}}",
+   "needsApproval": "Kailangan ng approval ({count})",
+   "approvedEvents": "Mga approved na event",
+   "needsApprovalNote": "Hindi pa ito nakikita ng mga customer.",
+   "possibleDuplicateOf": "Posibleng duplicate ng {other}, na approved na"
+  },
+  "eventGate": {
+   "approveTitle": "I-approve ang {event}?",
+   "overlapText": "Ang {event} ay posibleng duplicate ng {other} ({start}–{end}), na approved na{n, plural, =0 {} one { at may {count} order} other { at may {count} order}}.",
+   "keep": "Panatilihin ang {other}",
+   "approveAnyway": "I-approve pa rin ang {event}",
+   "plainText": "Hindi pa approved ang {event}. I-approve ito para tumanggap ng order? Makikita rin ito ng mga customer.",
+   "approve": "I-approve",
+   "startTitle": "Simulan ang event na ito?",
+   "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} order hanggang ngayon} other {{count} order hanggang ngayon}}",
+   "switchTitle": "Lumipat sa {event}?",
+   "switch": "Lumipat",
+   "dismissedText": "Ang {event} ay posibleng duplicate ng {other}, na approved na. I-approve ito para tumanggap ng order? Makikita rin ito ng mga customer."
   }
  },
  "ticket": {
@@ -425,7 +445,8 @@
    "offline": "📴 Walang connection — {n, plural, one {{count} pagbabago ang naka-save sa device na ito. Ipapadala kapag online ka na ulit.} other {{count} pagbabago ang naka-save sa device na ito. Ipapadala kapag online ka na ulit.}} Naka-lock ang Settings.",
    "syncing": "Online na ulit — ipinapadala ang {n, plural, one {{count} pagbabago} other {{count} pagbabago}}…",
    "synced": "Naipadala na ang lahat ng pagbabago.",
-   "stillQueued": "{n, plural, one {{count} pagbabago ang naka-save sa device na ito. Sinusubukan pa ring ipadala.} other {{count} pagbabago ang naka-save sa device na ito. Sinusubukan pa ring ipadala.}}"
+   "stillQueued": "{n, plural, one {{count} pagbabago ang naka-save sa device na ito. Sinusubukan pa ring ipadala.} other {{count} pagbabago ang naka-save sa device na ito. Sinusubukan pa ring ipadala.}}",
+   "notApproved": "{n, plural, one {{count} order ang naghihintay} other {{count} order ang naghihintay}}: hindi pa approved ang event na ito. I-approve ito para maipadala."
   },
   "lock": {
    "locked": "Naka-lock ang HatchGrab",
@@ -606,7 +627,7 @@
   "admin": "Admin",
   "privacy": "Privacy policy",
   "terms": "Terms",
-  "signOut": "Mag-sign out",
+  "signOut": "Mag-log out",
   "close": "Isara"
  },
  "paymentActions": {
