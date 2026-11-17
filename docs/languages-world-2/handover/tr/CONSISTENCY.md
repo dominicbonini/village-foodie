@@ -1,6 +1,6 @@
 # Consistency pass for one merged language — brief (languages-world-2)
 
-Scratch `$S` = /private/tmp/claude-501/-Users-dominicbonini-dev-village-foodie/d3eb5486-6aff-402e-8e96-9240129b98fe/scratchpad
+Scratch `$S` = /Users/dominicbonini/dev/village-foodie/docs/languages-world-2/handover
 Repo READ-ONLY. Never open `.env*`, never run git/builds/split-messages.
 
 The language was translated in 9 parallel parts (`$S/tr/<locale>/NN.json` + `NN.back.json`) against

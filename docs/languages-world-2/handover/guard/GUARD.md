@@ -1,6 +1,6 @@
 # Allergen-guard word lists — brief (languages-world-2, 11 November 2026). FOOD SAFETY.
 
-Scratch `$S` = /private/tmp/claude-501/-Users-dominicbonini-dev-village-foodie/d3eb5486-6aff-402e-8e96-9240129b98fe/scratchpad
+Scratch `$S` = /Users/dominicbonini/dev/village-foodie/docs/languages-world-2/handover
 Repo READ-ONLY: /Users/dominicbonini/dev/village-foodie. Never edit/commit repo files; never open any `.env*` file.
 
 HatchGrab's WhatsApp auto-reply sends any allergen / food-safety question to a fixed safe reply (never to the AI) when the

@@ -92,7 +92,14 @@
    "button": "Country: {name}. Change country",
    "menu": "Country",
    "title": "Choose your country",
-   "subline": "Prices, language and settings change to match."
+   "subline": "Prices, language and settings change to match.",
+   "regions": {
+    "europe": "Europe",
+    "americas": "Americas",
+    "asiaPacific": "Asia Pacific",
+    "middleEast": "Middle East",
+    "africa": "Africa"
+   }
   }
  },
  "landingFooter": {
@@ -156,6 +163,10 @@
   "h1": "Everything to run your service, on every plan.",
   "lede": "Ordering, pre-orders, capacity and the kitchen screen are included on every plan.{hasUpgrades, select, yes { {plans} add {features}, and lower fees.} other {}}",
   "perMonth": "{price} / month",
+  "trial": {
+   "length": "{months, plural, one {# month} other {# months}}",
+   "ends": "Ends {date}"
+  },
   "group": {
    "pay": "What you pay",
    "run": "Run your service",
@@ -165,6 +176,7 @@
   "pay": {
    "included": "Online orders included each month",
    "fee": "HatchGrab fee on online orders*",
+   "feeNoMark": "HatchGrab fee on online orders",
    "walkUp": "Walk-up orders"
   },
   "cell": {
@@ -192,7 +204,9 @@
   "banner": {
    "title": "{months, plural, one {Your first month is completely free — every feature unlocked.} other {Your first # months are completely free — every feature unlocked.}}",
    "body": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
-   "bodyOnly": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
+   "bodyCard": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends you move to <plan>{fallback}</plan>{fallbackFree, select, yes { — no monthly fee —} other {}} unless you choose a plan. No card to start, no contract, cancel anytime.",
+   "bodyOnly": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime.",
+   "bodyOnlyCard": "With {brand}, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. When your trial ends, <plan>{fallback}</plan> is {price} a month. We’ll be in touch before then to set up payment. No card to start, no contract, cancel anytime."
   },
   "card": {
    "perTruckMonth": "per truck / month",
@@ -204,7 +218,9 @@
   },
   "fee": {
    "feeOnly": "<b>{fee}</b> on online orders only. Walk-up orders are always free.",
+   "feeOnlyCard": "<b>{fee}*</b> on online orders only. Walk-up orders are always free.",
    "included": "First <b>{included}</b> of online orders included each month, then <b>{fee}*</b>. Walk-up orders are always free.",
+   "includedNoMark": "First <b>{included}</b> of online orders included each month, then <b>{fee}</b>. Walk-up orders are always free.",
    "noFee": "<b>No HatchGrab fees</b> on online orders, however busy you get. One predictable monthly cost."
   },
   "base": {
@@ -663,7 +679,10 @@
   "home": "Go to the home page",
   "errorTitle": "Something went wrong",
   "errorBody": "Sorry — this page didn’t load. Try again, or go back to the home page.",
-  "retry": "Try again"
+  "retry": "Try again",
+  "backToDashboard": "Back to dashboard",
+  "errorBodyDashboard": "Sorry, this page didn’t load. Try again, or go back to your dashboard.",
+  "sectionFailed": "This section didn’t load."
  },
  "embed": {
   "metaDescription": "Where {truck} is trading next.",

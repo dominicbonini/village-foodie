@@ -1,0 +1,118 @@
+{
+ "note": "en-GB keys in parts 01-03 namespaces that changed after parts 01-03 were translated (split at d71bf0bd); translate into fix.json",
+ "added": {
+  "order.kitchenHeading": "Allergens handled in this kitchen",
+  "order.kitchenNote": "Each dish shows the allergens in its recipe. We can’t guarantee any dish is free from traces.",
+  "auth.signup.codeApply": "Apply",
+  "auth.signup.codeApplied": "Code applied: {deal} ({partner})",
+  "auth.signup.codeInvalid": "That code isn't valid.",
+  "auth.signup.codeExpired": "That code has expired.",
+  "auth.signup.dealExtraMonths": "{months, plural, one {# extra month free} other {# extra months free}}",
+  "auth.signup.dealPercentOff": "{pct}% off for {months, plural, one {# month} other {# months}}",
+  "auth.signup.dealPercentOffPlan": "{pct}% off {plan} for {months, plural, one {# month} other {# months}}",
+  "auth.signup.dealFixedPrice": "{plan} at {price} a month for {months, plural, one {# month} other {# months}}",
+  "auth.signup.dealPlanOffer": "a special price on {plan} for {months, plural, one {# month} other {# months}}",
+  "auth.signup.partnerCodeLabel": "Partner or promo code <optional>(optional)</optional>",
+  "auth.login.invalidLink": "That link has expired or isn’t valid.",
+  "auth.reset.sendNewLink": "Send a new link",
+  "demoGetStarted.partnerCodeLabel": "Partner or promo code <optional>(optional)</optional>",
+  "demoGetStarted.partnerCodeApply": "Apply",
+  "demoGetStarted.partnerCodeApplied": "Code applied: {deal} ({partner})",
+  "demoGetStarted.partnerCodeInvalid": "That code isn't valid.",
+  "demoGetStarted.partnerCodeExpired": "That code has expired.",
+  "demoGetStarted.partnerDealExtraMonths": "{months, plural, one {# extra month free} other {# extra months free}}",
+  "demoGetStarted.partnerDealPercentOff": "{pct}% off for {months, plural, one {# month} other {# months}}",
+  "demoGetStarted.partnerDealPercentOffPlan": "{pct}% off {plan} for {months, plural, one {# month} other {# months}}",
+  "demoGetStarted.partnerDealFixedPrice": "{plan} at {price} a month for {months, plural, one {# month} other {# months}}",
+  "demoGetStarted.partnerDealPlanOffer": "a special price on {plan} for {months, plural, one {# month} other {# months}}",
+  "manageAllergens.cardUpload.blanketInfo": "Your card says {list} may be present in all dishes. We’ll add them to the allergens your kitchen handles. You can check them at the last step.",
+  "manageAllergens.wizard.subtitle.kitchen": "Last step: your kitchen",
+  "manageAllergens.wizard.recipeOnly": "Only what’s in this dish’s recipe.",
+  "manageAllergens.wizard.tooMany": "{count} allergens ticked. Is that really all in this dish’s recipe? Allergens used in other dishes don’t go here. You can add those at the last step.",
+  "manageAllergens.kitchen.title": "Which allergens does your kitchen handle?",
+  "manageAllergens.kitchen.body": "We’ve ticked the ones already in your dishes. Tick any others you use in the truck, for example for specials.",
+  "manageAllergens.kitchen.legendDishes": "in your dishes",
+  "manageAllergens.kitchen.legendAdded": "added by you",
+  "manageAllergens.kitchen.customersSee": "Customers will see:",
+  "manageAllergens.kitchen.confirm": "I confirm the allergens for each dish are correct, and I’ll keep them up to date."
+ },
+ "changed": {
+  "order.allergenSevere": {
+   "was": "If you have a severe allergy, please contact the vendor directly before ordering.",
+   "now": "If you have a food allergy, please contact the truck before ordering."
+  },
+  "errorsKitchen.sign_in_check_failed": {
+   "was": "Could not check your sign-in right now",
+   "now": "Could not check your login right now"
+  },
+  "userMenu.signOut": {
+   "was": "Sign out",
+   "now": "Log out"
+  },
+  "auth.signup.signIn": {
+   "was": "Sign in",
+   "now": "Log in"
+  },
+  "auth.signup.haveAccount": {
+   "was": "Already have an account? Sign in",
+   "now": "Already have an account? Log in"
+  },
+  "auth.login.title": {
+   "was": "Sign in to your kitchen",
+   "now": "Log in to your kitchen"
+  },
+  "auth.login.resetSuccess": {
+   "was": "Password updated successfully. Please sign in.",
+   "now": "Password updated. Please log in."
+  },
+  "auth.login.emailChanged": {
+   "was": "Email address updated. Please sign in with your new email address.",
+   "now": "Email address updated. Please log in with your new email address."
+  },
+  "auth.login.submit": {
+   "was": "Sign in",
+   "now": "Log in"
+  },
+  "auth.login.submitting": {
+   "was": "Signing in…",
+   "now": "Logging in…"
+  },
+  "auth.forgot.back": {
+   "was": "Back to sign in",
+   "now": "Back to log in"
+  },
+  "auth.sessionAlert.title": {
+   "was": "Your sign-in needs attention",
+   "now": "Your login needs attention"
+  },
+  "auth.sessionAlert.body": {
+   "was": "Everything on screen is still here. New changes may not save until you sign in again.",
+   "now": "Everything on screen is still here. New changes may not save until you log in again."
+  },
+  "auth.sessionAlert.signIn": {
+   "was": "Sign in again",
+   "now": "Log in again"
+  },
+  "errorsOnboarding.not_signed_in": {
+   "was": "Not signed in",
+   "now": "Not logged in"
+  },
+  "errorsOnboarding.account_exists": {
+   "was": "There’s already an account with that email — sign in instead.",
+   "now": "There’s already an account with that email — log in instead."
+  },
+  "errorsOnboarding.deletion_sign_in": {
+   "was": "Sign in to request account deletion.",
+   "now": "Log in to request account deletion."
+  },
+  "demoGetStarted.signIn": {
+   "was": "Sign in",
+   "now": "Log in"
+  }
+ },
+ "removed": [
+  "order.allergensUsed",
+  "order.allergensSeeEach",
+  "manageAllergens.cardUpload.blanket"
+ ]
+}

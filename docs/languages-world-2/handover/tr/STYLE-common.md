@@ -3,7 +3,7 @@
 You translate ONE PART of HatchGrab's English UI file (en-GB, British English) into ONE language. Other agents translate
 the other parts of the same language in parallel against the same briefs; a consistency pass follows.
 
-Scratch root `$S` = /private/tmp/claude-501/-Users-dominicbonini-dev-village-foodie/d3eb5486-6aff-402e-8e96-9240129b98fe/scratchpad
+Scratch root `$S` = /Users/dominicbonini/dev/village-foodie/docs/languages-world-2/handover
 Repo (READ-ONLY for you): /Users/dominicbonini/dev/village-foodie. Never edit, add or commit any repo file. Never open any
 `.env*` file. Never run split-messages, git, builds or any repo script except the read-only ones named here.
 

@@ -70,7 +70,8 @@
    "stock": "Stock: {count}",
    "preorder": "Pre-order",
    "delete": "🗑 Delete category",
-   "prepHelp": "Set to Instant for items like drinks or dips. These won’t count toward kitchen capacity."
+   "prepHelp": "Set to Instant for items like drinks or dips. These won’t count toward kitchen capacity.",
+   "otherVans": "Van 1. Other vans: Kitchen capacity tab."
   },
   "uncategorized": {
    "title": "Uncategorized",
@@ -115,7 +116,9 @@
    "extract": "Extract with AI",
    "needReview": "{count, plural, one {# dish needs} other {# dishes need}} review — customers can’t see allergen info until confirmed",
    "reading": "Reading allergen information…",
-   "pastePlaceholder": "Paste your allergen information here…"
+   "pastePlaceholder": "Paste your allergen information here…",
+   "kitchenLine": "Kitchen also handles: {list}",
+   "kitchenEdit": "Edit"
   },
   "deleteItem": {
    "title": "Remove {name}?",
@@ -179,7 +182,9 @@
    "add": "Add item",
    "noGroups": "No option groups yet — create them in Extras & upsells.",
    "costToMake": "Cost to make",
-   "costHelp": "Optional. What one portion costs you in ingredients and packaging. Used only in your reports; customers never see it."
+   "costHelp": "Optional. What one portion costs you in ingredients and packaging. Used only in your reports; customers never see it.",
+   "recipeOnly": "Only what’s in this dish’s recipe.",
+   "tooMany": "{count} allergens ticked. Is that really all in this dish’s recipe? Allergens used elsewhere in your kitchen go in “Kitchen also handles” on the Menu tab."
   },
   "summary": "{categories, plural, one {# category} other {# categories}} · {items, plural, one {# item} other {# items}}",
   "confirmDelete": {
@@ -369,7 +374,7 @@
   },
   "discard": {
    "setupTitle": "Finish setting up later?",
-   "setupBody": "Your account and truck are saved — nothing is lost. You can add your menu any time: sign in and tap <b>Import menu</b> on your menu screen to pick up right here.",
+   "setupBody": "Your account and truck are saved — nothing is lost. You can add your menu any time: log in and tap <b>Import menu</b> on your menu screen to pick up right here.",
    "keepGoing": "Keep going",
    "finishLater": "Finish later",
    "title": "Discard this import?",
@@ -386,7 +391,7 @@
  "errorsManage": {
   "token_required": "Token required",
   "invalid_token": "Invalid token",
-  "sign_in_required": "Sign in required",
+  "sign_in_required": "Log in required",
   "no_truck_access": "You do not have access to this truck",
   "insufficient_permissions": "Insufficient permissions",
   "allergen_owner_only": "Only the owner can change allergen information",
@@ -616,7 +621,8 @@
   "zone_unknown": "That time zone isn’t one we offer for that country. Choose one from the list.",
   "town_missing": "Tell us the town or city you’re based in.",
   "town_too_long": "That town name is too long — 120 characters at most.",
-  "region_closed": "Trucks based in {region} can’t sign up yet{reason, select, language {: HatchGrab isn’t available in {language} yet} taxLines {: we’re adding separate GST and PST lines first} other {}}. If your truck is based somewhere else, choose that town or city."
+  "region_closed": "Trucks based in {region} can’t sign up yet{reason, select, language {: HatchGrab isn’t available in {language} yet} taxLines {: we’re adding separate GST and PST lines first} other {}}. If your truck is based somewhere else, choose that town or city.",
+  "region_blocked": "Sorry, HatchGrab isn’t available in your region yet."
  },
  "manageApi": {
   "vanFallback": "Van",

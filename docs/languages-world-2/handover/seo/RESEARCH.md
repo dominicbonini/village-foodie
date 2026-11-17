@@ -12,7 +12,7 @@ of trading locations. It is NOT a POS/till. Customers can pay online by card or 
 pay when you collect". TRAP: do NOT use the local words for "cash on delivery" / "pay the courier" — there is no delivery).
 Plans: "Pay as you go" (no monthly fee), "Pro" (stays "Pro" everywhere), "Unlimited", plus a "Free trial".
 
-Scratch `$S` = /private/tmp/claude-501/-Users-dominicbonini-dev-village-foodie/d3eb5486-6aff-402e-8e96-9240129b98fe/scratchpad
+Scratch `$S` = /Users/dominicbonini/dev/village-foodie/docs/languages-world-2/handover
 Repo (read-only for you): /Users/dominicbonini/dev/village-foodie. Do NOT edit any repo file. Never open any `.env*` file.
 Write ONLY into `$S/seo/` and `$S/tr/<locale>/`.
 
