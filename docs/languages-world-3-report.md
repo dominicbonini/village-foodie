@@ -179,4 +179,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 7 is the hy-AM legal pages. Runs continue automatically (60-minute gaps, at most 5 batches a UK day).
+Batch 7 is the hy-AM legal pages. Runs continue automatically back to back, with no waits.
