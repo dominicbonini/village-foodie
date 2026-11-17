@@ -288,3 +288,9 @@
 - markRules pass; card sentence "Želite naplatu unaprijed? Online plaćanje karticom možete dodati bilo kada."; footnote "… samo na online narudžbe plaćene karticom"; TBC "Naknadno"; trial.ends "Ističe {date}".
 - planPrompt.features.upsells.many = "no" ("Dodatna ponuda" is singular; de-DE does the same).
 - Check: "# početni mjesec / početna mjeseca / početnih mjeseci"; "isključena je funkcija: {feature}"; "Vels"; EEA = "EEP"; "Roštilj na točkovima", "Opći upit".
+
+## bs-BA consistency pass (languages-world-3, 17 Nov 2026) — fix.json, 51 corrections, check-fix 0
+- Code check (manage page): the "Truck settings" section holds only the vans list → "Postavke vozila"; business section "Truck details" = "Podaci o food trucku". (sq-AL fix.json corrected to match: "Cilësimet e furgonëve", kitchenCapacity.noVan.)
+- wp_box_* "okvir za područje" (Area is the town box); "plakat" everywhere; picker.dayCount / approved "Odobren" added.
+- Country "Država" (15 messages, was "Zemlja"); browser "web pretraživač"; Show me around "Započni obilazak"; compare.* fleet `one` "po vozilu".
+- Check: "Započni obilazak", "Država" vs "Zemlja", "Prikazuje se: {truck} — {van}".
