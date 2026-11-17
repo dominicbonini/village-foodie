@@ -18,8 +18,8 @@
 | 10 | hy-AM Armenian | ✅ (lw-2) | ✅ batch 7 — **needs native/legal check** | `_legal-translations.cjs hy-AM` 3/3 ✓; `legal-languages-1` /am/privacy, /am/terms, /am/country-terms ✓ | 3f5c1a28 |
 | 11 | mn-MN Mongolian | ✅ (lw-2) | ✅ batch 8 — **needs native/legal check** | `_legal-translations.cjs mn-MN` 3/3 ✓; `legal-languages-1` /mn/privacy, /mn/terms, /mn/country-terms ✓ | 2c30808f |
 | 12 | ne-NP Nepali | ✅ (lw-2) | ✅ batch 12 — **needs native/legal check** | `_legal-translations.cjs ne-NP` 3/3 ✓; `legal-languages-1` /np/privacy, /np/terms, /np/country-terms ✓ | 5f1b9944 |
-| 13 | fil-PH Filipino | 3 of 9 parts (lw-2) — next (batch 13) | — | | |
-| 14 | sq-AL Albanian | — | — | | |
+| 13 | fil-PH Filipino | 9 of 9 parts + consistency pass translated (handover kit, 579195f2) — **install waiting**: another session has uncommitted changes to messages/en-GB.json | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 579195f2 |
+| 14 | sq-AL Albanian | 9 of 9 parts + consistency pass translated (handover kit, 40b2cd16) — **install waiting** (same reason) | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 40b2cd16 |
 | 15 | bs-BA Bosnian | — | — | | |
 | 16 | mk-MK Macedonian | — | — | | |
 | 17 | ca-AD Catalan (Andorra) | — | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **12 of 23 languages done (36 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
+Legal pages: **12 of 23 languages done (36 of 69 pages).** UI: 12 of 23 installed; fil-PH and sq-AL translated, waiting to install (installing would commit Filipino/Albanian keys for English that is not committed yet, and regenerated files holding another session's work). bs-BA translation next.
 
 ## Batch order
 
