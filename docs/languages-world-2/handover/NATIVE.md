@@ -129,3 +129,10 @@
 - manageSchedule.card.dealsActive: `one` case added to {hidden,…} (English had only =0/other).
 - Samples localised: @buresmusicfest → @maginhawafoodfest; https://yourfoodtruck.ph/events. "Margherita" kept (Pizza example).
 - van (fleet vehicle) vs truck (business) kept distinct; "GST and PST" kept (tax names).
+
+## fil-PH part 05 (languages-world-3, 17 Nov 2026)
+- picture "larawan", photo "litrato", image "image"; social posts: "location" English, "place" = "lugar".
+- Reports: Profit "Tubo" (≠ "Kita" revenue), revenue/cost English, Walk-up channel "Walk-in", Pay at Hatch column "Bayad sa Pick-up"; CSV headers mostly English.
+- Confirm: "Team → Profile ko" (My profile), "Mga day off" (Days off), "MALALAKING TITIK" (CAPITALS).
+- "Powered by HatchGrab" / qrPoweredBy kept English (poster brand line); manageSettings.sections.autoReplies "Auto-replies".
+- Sample tag @kapitolyonightmarket; phone field "Mobile number".
