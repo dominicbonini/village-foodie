@@ -183,3 +183,9 @@
 - held, not charged = "e bllokuar, jo e tërhequr"; Order received "Porosia u regjistrua" (≠ "u konfirmua"); final button "Porosi me detyrim pagese" (Ligji 9902/2008).
 - ALLERGENS (check first): tree nuts "Fruta me lëvozhgë të fortë", nuts "Fruta me lëvozhgë", Dairy "Bulmet", abalone "Vesh deti (abalone)", yam "Jam (yam)", Halal "Hallall".
 - van = "furgon" (also dashboard.settings.assignTruck — fleet sense).
+
+## sq-AL part 02 (languages-world-3, 17 Nov 2026)
+- addOrder.placeOrder (staff panel) = "Regjistro porosinë" — legal wording "Porosi me detyrim pagese" kept for the customer button only.
+- card machine = "terminali (juaj) POS"; KDS "Payment & handover" = "Pagesa dhe marrja" (avoid "dorëzim" = delivery); KDS views "E plotë" / "Gatim".
+- 💷 → 💵 (lekë). Placeholders needing case endings avoided with a noun or colon ("Kategoria {cat}", "Mbaje: {other}").
+- "Rrjeti lokal (Local Network)" — iOS has no Albanian UI.
