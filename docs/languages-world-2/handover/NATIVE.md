@@ -270,3 +270,10 @@
 - someWithout: `one` shows the number via {without}, not # (English needs bare {without}).
 - "per truck / month" = "po vozilu / mjesečno" (billing per van); Team "All trucks" "Sva vozila"; region labels rely on hr-HR-style "britanske kartice"; deleteAccount "zakon Ujedinjenog Kraljevstva" as written.
 - Border "rub", text outline "obrub"; phone +387 61 123 456; samples "Veliki park"/Ilidža, "pizza sa sudžukom".
+
+## bs-BA part 07 (languages-world-3, 17 Nov 2026)
+- Matched: poster „OTKAZANO“; caption Place/Venue „Lokacija“, Area „Područje“, Times „Vrijeme“; „Spremno“, „Preuzeto“; "Dodatna vozila".
+- 21-safe: „# istekao/istekla/isteklo“, „# dokument treba obnoviti“, noPicturesSome „Lokacije koje još nemaju sliku: {without} od {total}“.
+- Billing lines need nominative month names („za {month}“, „ostatak mjeseca {month}“) — check how the app formats Bosnian dates.
+- Documents translated directly (no BiH permits): „Registracija poslovanja s hranom“, „Osiguranje od odgovornosti prema trećim licima“, „Dozvola za uličnu prodaju“, „Dozvola za trgovinu“; County „Grofovija“, Suburb „Naselje“.
+- Demo phone quotes the legal button „Naruči uz obavezu plaćanja“ (English: "presses Order"); outreach „e-mail za kontaktiranje“; Overdue „Rok istekao“. Samples: Ilidža, Butmir, Tuzla, Mostar, Visoko.
