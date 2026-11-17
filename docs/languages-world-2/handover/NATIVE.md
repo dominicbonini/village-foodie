@@ -324,3 +324,10 @@
 - Posts: "неделна објава", "објава за еден настан", caption "опис", "шаблон", „Сиот текст“, „Главна“, Days off "Слободни денови"; Place/Times „Локација“/„Време“.
 - 21-safe: everyMinutes "Интервал од {count} минута/минути", withPrivate "· не се вклучени: # приватен настан"; ownPriceCount keeps {count}.
 - Check: "Тим → Мој профил", "Минатата даночна година", "{m} мин {s} с", "Доплати за додатоци", "Проѕирно".
+
+## mk-MK part 06 (languages-world-3, 17 Nov 2026)
+- Boxes Place/Venue „Локација“, Area „Подрачје“, Time „Време“; lastToggle = part 04 wp_last_toggle; ОТКАЖАНО; Set up „Постави“.
+- FOR CONSISTENCY: "per truck / month" = "по фуд трак / месечно" — bs-BA treated billing as per van ("po vozilu"); check vanBilling and align.
+- B / I / AA kept Latin (Ж meaningless in mk); DNS panel labels English in „…“; phone +389 70 123 456; samples "Градски парк", Карпош, Марија.
+- 21-safe: "Пребарај фонтови ({count, number})", "({months} мес.)", "Без промена (имаат сопствен стил): {names}", allHaveImage/someWithout "Label: # од #".
+- Check: "Потребна е акција", "продукциски / тест клуч", "скокачки прозорци", "катанче", "Опасна зона"; WhatsApp menu path names unverified.
