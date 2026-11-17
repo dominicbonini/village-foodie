@@ -312,3 +312,9 @@
 - 21-safe: "# месец бесплатно, сметано од денот кога ќе се регистрирате", "пробен период од # месец", "{unverified} од вкупно {total}"; cardSummary {changed} got a `one` case.
 - New: Billing "Фактурирање", Upsells "Дополнителни предлози", Custom extras "Прилагодени додатоци", SERVICE "УСЛУЖУВАЊЕ", Dietary "Исхрана", Go live "објавување"; allergen card "листа на алергени"; AI "вештачка интелигенција".
 - Samples: "Бургери кај Цане", "Маалска кујна", "Свадбата на Марија и Стефан", "Кока-Кола".
+
+## mk-MK part 04 (languages-world-3, 17 Nov 2026)
+- Post toggles/boxes: Location (Place, Venue) „Локација“, Time „Време“, Area „Подрачје“; poster CANCELLED "ОТКАЖАНО"; WhatsApp Set up „Постави“.
+- Canva path "Share › Download (Сподели › Преземи)"; "4.000 знаци".
+- 21-safe: hiddenNotice.body generic, list.found "Пронајдени настани за вас: #", conflict.title "# можен конфликт", dealsActive `one` added.
+- Check: "празна подлога", "Кујната работи и со", "Започни обиколка", "Поставки за приказ", Open now "Во тек"; samples @letenfestival, vasiotfudtrak.mk/nastani.
