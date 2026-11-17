@@ -331,3 +331,9 @@
 - B / I / AA kept Latin (Ж meaningless in mk); DNS panel labels English in „…“; phone +389 70 123 456; samples "Градски парк", Карпош, Марија.
 - 21-safe: "Пребарај фонтови ({count, number})", "({months} мес.)", "Без промена (имаат сопствен стил): {names}", allHaveImage/someWithout "Label: # од #".
 - Check: "Потребна е акција", "продукциски / тест клуч", "скокачки прозорци", "катанче", "Опасна зона"; WhatsApp menu path names unverified.
+
+## mk-MK part 07 (languages-world-3, 17 Nov 2026)
+- Caption labels Place and Venue both "Локација" (identical in one list — consistency pass may split as sq-AL did: Venue = venue name); Area "Подрачје", Times "Време"; ОТКАЖАНО.
+- 21-safe: "Локации со слика: # од {total}", "Потребно е обновување: # документ/документи", "Избрани: #".
+- Billing: "без месечен надомест", Post-pay charge "Надомест за накнадна наплата" (check), Overdue "Задоцнето", „Управување“ › „Фактурирање“; Unsubscribe "Откажи претплата" (check).
+- Documents translated (PAT "PAT тест (преносни електрични уреди)", public liability "Осигурување од одговорност кон трети лица"); caption "{truck} — {where}, {when}, {times}."; samples Струмица, Македонски Брод.
