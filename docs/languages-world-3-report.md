@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -15,8 +15,8 @@
 | 7 | uz-UZ Uzbek | ✅ (lw-2) | ✅ batch 4 — **needs native/legal check** | `_legal-translations.cjs uz-UZ` 3/3 ✓; `legal-languages-1` /uz/privacy, /uz/terms, /uz/country-terms ✓ | 3c2fb908 |
 | 8 | az-AZ Azerbaijani | ✅ (lw-2) | ✅ batch 5 — **needs native/legal check** | `_legal-translations.cjs az-AZ` 3/3 ✓; `legal-languages-1` /az/privacy, /az/terms, /az/country-terms ✓ | 34efe2f6 |
 | 9 | ka-GE Georgian | ✅ (lw-2) | ✅ batch 6 — **needs native/legal check** | `_legal-translations.cjs ka-GE` 3/3 ✓; `legal-languages-1` /ge/privacy, /ge/terms, /ge/country-terms ✓ | 45bae559 |
-| 10 | hy-AM Armenian | ✅ (lw-2) | — next (batch 7) | | |
-| 11 | mn-MN Mongolian | ✅ (lw-2) | — | | |
+| 10 | hy-AM Armenian | ✅ (lw-2) | ✅ batch 7 — **needs native/legal check** | `_legal-translations.cjs hy-AM` 3/3 ✓; `legal-languages-1` /am/privacy, /am/terms, /am/country-terms ✓ | languages-world-3 batch 7 |
+| 11 | mn-MN Mongolian | ✅ (lw-2) | — next (batch 8) | | |
 | 12 | ne-NP Nepali | ✅ (lw-2) | — | | |
 | 13 | fil-PH Filipino | 3 of 9 parts (lw-2) | — | | |
 | 14 | sq-AL Albanian | — | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **6 of 23 languages done (18 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
+Legal pages: **7 of 23 languages done (21 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
 
 ## Batch order
 
@@ -160,6 +160,18 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 7: hy-AM legal pages
+
+**Files:** [privacy-policy.md](../content/legal/hy-AM/privacy-policy.md), [terms-and-conditions.md](../content/legal/hy-AM/terms-and-conditions.md), [country-specific-terms.md](../content/legal/hy-AM/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into Armenian. No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs hy-AM` 3/3 ✓. `legal-languages-1`: /am/privacy, /am/terms and /am/country-terms render ("4 նոյեմբերի, 2026 թ.", "1 նոյեմբերի, 2026 թ."), then the harness stops with ENOENT at the next missing base (mn-MN). **No screenshot**: Armenia has no country row yet (see batch 2).
+
+**Translation choices:** The Armenian UI words are used throughout: Pay at Hatch = «Վճարում վերցնելիս», food truck = ֆուդթրաք, hatch = պատուհան, walk-up orders = տեղում պատվերներ (as in the UI), kitchen screen = խոհանոցի էկրան, dashboard = վահանակ, and the demo checkbox is quoted exactly. Polite plural with lowercase «դուք/ձեր» mid-sentence, «» quotes, ։ full stop and ՝ for label–value pairs, as the UI does (the date line keeps the colon the checker needs: «Վերջին թարմացումը:»). controller/processor = վերահսկող/մշակող, VAT = ԱԱՀ, reverse charge = հակադարձ հարկում (reverse charge), tort = արտապայմանագրային վնաս (tort). Fixes before commit: an ASCII apostrophe in "Information Commissioner’s Office" made typographic; the Privacy Policy table header translated (Մատակարար).
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -179,4 +191,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 7 is the hy-AM legal pages. Runs continue automatically back to back, with no waits.
+Batch 8 is the mn-MN legal pages. Runs continue automatically back to back, with no waits.
