@@ -306,3 +306,9 @@
 - Staff Place order "Испрати нарачка" (≠ legal button); Take payment "Наплати"; card machine "POS терминал"; KDS views "Целосно"/"Готвач", Ready „Подготвена“, handover "Плаќање и предавање".
 - Ticket: "НЕ НАПЛАЌАЈТЕ", "ЗА НАПЛАТА", "РЕЗЕРВИРАНО НА КАРТИЧКА", "ПОДИГНУВАЊЕ"; 💷 → 💵 (denar) — confirm.
 - 21-safe rewrites: approvalSummaryNote, finish.dueAfter, buzzer.allTaken "(вкупно: {count})", catsClosed, kds.screenOff.bodyVans, localNotify.newOrders, fitMessage "Label: {n}". Check "Табла со нарачки", "Почетен екран", "Админ".
+
+## mk-MK part 03 (languages-world-3, 17 Nov 2026)
+- Code/deal keys identical in auth.signup and demoGetStarted; deals "… во траење од # месец/месеци"; Log in "Најави се".
+- 21-safe: "# месец бесплатно, сметано од денот кога ќе се регистрирате", "пробен период од # месец", "{unverified} од вкупно {total}"; cardSummary {changed} got a `one` case.
+- New: Billing "Фактурирање", Upsells "Дополнителни предлози", Custom extras "Прилагодени додатоци", SERVICE "УСЛУЖУВАЊЕ", Dietary "Исхрана", Go live "објавување"; allergen card "листа на алергени"; AI "вештачка интелигенција".
+- Samples: "Бургери кај Цане", "Маалска кујна", "Свадбата на Марија и Стефан", "Кока-Кола".
