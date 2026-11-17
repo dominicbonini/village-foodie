@@ -144,3 +144,10 @@
 - Fleet "truck" where English says truck; "van" only where English says van.
 - Filipino CLDR `one` covers many numbers: both branches neutral text (allHaveImage, someWithout, ownStyleNote, approval, upcoming).
 - Samples: "Weekend Market sa Plaza", Kapitolyo, "May sisig ba kayo?", Maria, +63 917 123 4567, yourfoodtruck.ph. "Danger zone", "Payments" kept English.
+
+## fil-PH part 07 (languages-world-3, 17 Nov 2026)
+- Poster: CANCELLED "NA-CANCEL"; "No trading today" = "Walang tinda ngayon".
+- Paperwork: Trading licence = "Business permit", Street trading licence = "Permit sa street vending" (PH equivalents, not literal — for Dominic to confirm). "Up to date" = "Valid", "Due soon" = "Malapit na ang due".
+- Address labels Suburb/County/Prefecture/Emirate/State English. Samples: Kapitolyo Night Market, Poblacion Weekend Market, Session Road Night Market; demo customer Alex → "Mika".
+- Billing e-mails: ka/mo, no "po", "Hi {name},"; Walk-up = "Walk-in orders"; "Mga extra van".
+- `one` plural covers many numbers: identical branches, a few read stiffly ("Napili: #").

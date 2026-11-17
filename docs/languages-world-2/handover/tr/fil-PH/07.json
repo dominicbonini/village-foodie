@@ -1,0 +1,613 @@
+{
+ "postShare": {
+  "download": "I-download ang larawan",
+  "copied": "Nakopya ✓",
+  "copyCaption": "Kopyahin ang caption",
+  "share": "I-share",
+  "copiedStatus": "{kind, select, postText {Nakopya ang text ng post.} other {Nakopya ang caption.}}",
+  "copyFailed": "Hindi makopya — i-select ang text at kopyahin ito nang mano-mano.",
+  "sharedStatus": "{kind, select, postText {Nakopya ang text ng post — i-paste ito sa post mo.} other {Nakopya ang caption — i-paste ito sa post mo.}}",
+  "shareRefused": "{kind, select, postText {Hindi pinayagan ang pag-share, kaya na-download ang larawan. Nakopya ang text ng post.} other {Hindi pinayagan ang pag-share, kaya na-download ang larawan. Nakopya ang caption.}}"
+ },
+ "posterWords": {
+  "heading": "Linggo ng {start} hanggang {end}",
+  "daysOff": "Walang tinda ngayon",
+  "cancelled": "NA-CANCEL",
+  "placeSample": {
+   "nameTownBelow": "Kapitolyo Night Market\nPasig",
+   "nameTown": "Kapitolyo Night Market, Pasig",
+   "nameOnly": "Kapitolyo Night Market"
+  },
+  "busyWeek": {
+   "venue1": "Poblacion Weekend Market",
+   "town1": "Makati",
+   "venue2": "Barangay San Isidro Covered Court at Multi-Purpose Sports Complex",
+   "town2": "Antipolo",
+   "venue3": "Town Plaza",
+   "town3": "Iloilo City",
+   "venue4": "Food Fest",
+   "town4": "Cebu City",
+   "venue5": "Session Road Night Market",
+   "town5": "Baguio",
+   "venue6": "Patio ng Simbahan",
+   "town6": "Davao City"
+  },
+  "poweredBy": "Powered by HatchGrab"
+ },
+ "captions": {
+  "labels": {
+   "weekDates": "Mga petsa ng linggo",
+   "dayList": "Listahan ng mga araw",
+   "place": "Lugar",
+   "venue": "Venue",
+   "area": "Area",
+   "dayDate": "Araw at petsa",
+   "times": "Mga oras",
+   "orderLink": "Order link",
+   "locationTag": "Location tag"
+  },
+  "weekHeader": "{truck} — nasaan kami ngayong linggo:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — NA-CANCEL, pasensya na",
+  "noDates": "Walang schedule ngayong linggo — abangan kami ulit.",
+  "orderAhead": "Mag-pre-order: {url}",
+  "orderAheadTagged": "Mag-pre-order: {url} {tag}",
+  "eventLine": "{truck} sa {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} sa {where} {when}.",
+  "cancelledSorry": "Pasensya na — hindi kami makakapunta sa {where} {when}.",
+  "cancelledApology": "Paumanhin sa lahat ng nagbabalak pumunta. Babalik kami agad.",
+  "when": {
+   "today": "ngayong araw",
+   "tonight": "mamayang gabi",
+   "tomorrow": "bukas",
+   "dated": "sa {date}"
+  }
+ },
+ "weeklyPostApi": {
+  "shortened": {
+   "heading": "Hindi nagkasya ang heading kaya pinaikli ito.",
+   "date": "Hindi nagkasya ang petsa kaya pinaikli ito.",
+   "daysOff": "Hindi nagkasya ang days-off text kaya pinaikli ito.",
+   "place": "Hindi nagkasya ang pangalan ng lugar kaya pinaikli ito.",
+   "time": "Hindi nagkasya ang oras kaya pinaikli ito.",
+   "note": "Hindi nagkasya ang sarili mong text kaya pinaikli ito.",
+   "venue": "Hindi nagkasya ang venue kaya pinaikli ito.",
+   "area": "Hindi nagkasya ang area kaya pinaikli ito."
+  },
+  "fontFallback": "Hindi ma-load ang isang font na ginagamit ng design na ito ({id}) — naka-Oswald ang mga box na iyon.",
+  "wrongShapeBackground": "Iba ang hugis ng litrato ng lugar na ito kumpara sa design mo, kaya standard na background ang ginamit.",
+  "rowsFit": "Nasa {px}px sa ibaba ng image ang huling araw — bawasan ang row spacing o itaas ang row 1.",
+  "placeStatus": {
+   "ownBoth": "Sariling litrato at text positions",
+   "wrongShape": "Iba ang hugis — hindi gagamitin hangga’t hindi napapalitan",
+   "ownPicture": "Sariling litrato, standard na positions",
+   "ownPositions": "Standard na litrato, sariling text positions",
+   "none": "Wala pang litrato — Standard ang gamit"
+  },
+  "standardStatus": "Ginagamit sa lahat ng ibang lugar",
+  "option": {
+   "oneOff": "Mag-upload ng isa para sa post na ito lang",
+   "placePoster": "Poster ng {name}",
+   "standard": "Standard na design"
+  },
+  "previewLabel": {
+   "lastEvent": "Ang huling event mo rito ang gamit ng preview",
+   "noEvents": "Wala pang event dito — ipinapakita ng preview ang susunod mong event na may pangalan ng lugar na ito"
+  },
+  "fontUsage": {
+   "weekly": "ang weekly post design mo",
+   "event": "ang design mo ng post para sa isang event",
+   "place": "ang design mo para sa {place}",
+   "placeUnnamed": "ang design mo para sa isang lugar"
+  },
+  "face": {
+   "regular": "Regular",
+   "bold": "Bold",
+   "italic": "Italic"
+  },
+  "picture": {
+   "legacy": "Event poster",
+   "fallback": "Litrato",
+   "wrongShape": "Iba ang hugis — hindi magagamit bilang buong background"
+  },
+  "noPicture": {
+   "omit": "Huwag isama",
+   "blank": "Mag-iwan ng blangkong espasyo",
+   "logo": "Ipakita ang logo mo"
+  },
+  "noPicturesAll": "{total, plural, one {May image na ang lahat ng location mo ({total}).} other {May image na ang lahat ng location mo ({total}).}}",
+  "noPicturesSome": "{without, plural, one {Wala pang image: {without} sa {total} location mo} other {Wala pang image: {without} sa {total} location mo}}",
+  "licenceTick": "Ako ang may-ari ng font na ito o may license ako para gamitin ito",
+  "fontUploadButton": "↑ I-upload ang font mo"
+ },
+ "completionSettings": {
+  "paidStepTitle": "Tumanggap ng order nang hindi pa bayad",
+  "completionTitle": "Pagkumpleto ng order na hindi pa bayad",
+  "completionHelp": "Ano ang mangyayari kapag ready nang iabot ang order na hindi pa bayad.",
+  "pressesOne": "Isang pindot (“Markahang bayad at na-pick up”)",
+  "pressesOneHelp": "Pinakamainam kung tinatanggap mo ang bayad habang iniaabot ang pagkain. Isang button lang ang makukuha mo, “Markahang bayad at na-pick up”, na sabay na nire-record ang bayad at tinatapos ang order.",
+  "pressesTwo": "Dalawang pindot (“Markahang bayad” at “Na-pick up”)",
+  "pressesTwoHelp": "Pinakamainam kung magkaibang oras ang pagbabayad at pag-abot — magbabayad muna ang customer sa truck, saka kukunin ang order kapag ready na. Dalawang button ang makukuha mo: “Markahang bayad” muna, saka “Na-pick up” kapag nakuha na nila ang pagkain."
+ },
+ "outreach": {
+  "optOut": {
+   "missing": "Walang opt-out line ang email na ito, kaya hindi ito maipapadala. Gamitin ang “Insert opt-out” para idagdag ito.",
+   "notSetUp": "Walang naka-set up na opt-out sentence, kaya walang outreach email na maipapadala. Magdagdag nito sa “Signature” panel ng “Templates” tab.",
+   "notLoaded": "Hindi pa na-load ang opt-out sentence, kaya hindi pa ito maipapadala.",
+   "unreadable": "Hindi mabasa ang opt-out sentence, kaya walang naipadala."
+  },
+  "retry": {
+   "notRebuilt": "Hindi ma-rebuild ang message na iyan kasama ang company line, kaya walang naipadala."
+  }
+ },
+ "address": {
+  "label": {
+   "street": "Address",
+   "postcode": "Postcode",
+   "zip": "ZIP code",
+   "eircode": "Eircode",
+   "postalCode": "Postal code",
+   "state": "State",
+   "stateTerritory": "State o territory",
+   "province": "Probinsya",
+   "county": "County",
+   "prefecture": "Prefecture",
+   "emirate": "Emirate",
+   "region": "Rehiyon",
+   "area": "Area (barangay, bayan o lungsod)",
+   "townOrArea": "Bayan o area",
+   "city": "Lungsod",
+   "suburb": "Suburb",
+   "townOrCity": "Bayan o lungsod"
+  },
+  "short": {
+   "area": "Area",
+   "townOrArea": "Bayan o area",
+   "city": "Lungsod",
+   "suburb": "Suburb",
+   "townOrCity": "Bayan o lungsod"
+  },
+  "inSentence": {
+   "postcode": "postcode",
+   "zip": "ZIP code",
+   "eircode": "Eircode",
+   "postalCode": "postal code"
+  },
+  "withArticle": {
+   "postcode": "valid na postcode",
+   "zip": "valid na ZIP code",
+   "eircode": "valid na Eircode",
+   "postalCode": "valid na postal code"
+  },
+  "tradeLabel": {
+   "area": "Bayan o lungsod",
+   "townOrArea": "Bayan o area",
+   "city": "Lungsod",
+   "suburb": "Suburb",
+   "townOrCity": "Bayan o lungsod"
+  },
+  "basedIn": {
+   "area": "Bayan o lungsod kung saan ka naka-base",
+   "townOrArea": "Bayan o area kung saan ka naka-base",
+   "city": "Lungsod kung saan ka naka-base",
+   "suburb": "Suburb kung saan ka naka-base",
+   "townOrCity": "Bayan o lungsod kung saan ka naka-base"
+  },
+  "example": "hal. {example}",
+  "customersSee": "Makikita ng mga customer:",
+  "postalWarning": "Mukhang hindi iyan {article} — halimbawa: {example}. Puwede mo pa rin itong i-save.",
+  "regionChoose": "Pumili…"
+ },
+ "demoLinkEmail": {
+  "subject": "Ang HatchGrab demo mo — narito ang link mo",
+  "heading": "Ready na ang demo mo",
+  "intro": "Narito ang link sa demo na ginawa namin mula sa menu mo. Mag-order dito na parang isa ka sa mga customer mo, tapos panoorin ang pagdating ng order sa iyong kitchen display (KDS). Walang login na kailangan — i-tap lang ito.",
+  "button": "Buksan ang demo ko",
+  "deletion": "Demo ito, kaya hindi namin ito itatago: ide-delete namin ito, kasama ang menu na in-upload mo, sa {date}. Kung gusto mo nang mas matagal, pindutin ang “I-save ang menu ko” sa demo at itatago namin ito nang 14 na araw.",
+  "deletionSoon": "Demo ito, kaya hindi namin ito itatago: ide-delete namin ito, kasama ang menu na in-upload mo, pagkalipas ng 24 na oras. Kung gusto mo nang mas matagal, pindutin ang “I-save ang menu ko” sa demo at itatago namin ito nang 14 na araw."
+ },
+ "demoWalk": {
+  "step1": "Step 1 ng 3 · Mag-order na parang isa ka sa mga customer mo",
+  "paymentTitle": "Bayad",
+  "paymentPanel": "Dito magbabayad ang customer mo gamit ang card, Apple Pay o Google Pay, o pipiliin niyang magbayad sa truck. Sa demo, walang sinisingil.",
+  "defaultName": "Mika",
+  "step2": "Step 2 ng 3",
+  "bubbleTitle": "Ito ang iyong kitchen display (KDS)",
+  "bubbleArrived": "Dumating agad dito ang order na kaka-place mo lang, kasama ang oras ng pick-up. I-tap ang Simulang lutuin.",
+  "bubbleReady": "Kapag ready na ang pagkain, i-tap ang Ready na. Sasabihan agad ang customer mo.",
+  "step3": "Step 3 ng 3 · tapos na",
+  "told": "Kasasabi lang kay {name} na ready na ang pagkain niya.",
+  "thatsIt": "Iyan ang HatchGrab: nag-o-order ang mga customer sa phone nila, nakikita mo ito rito, at kinukuha nila ang order nang hindi pumipila. Naka-set up na ang menu mo.",
+  "startFree": "{months, plural, =0 {Magsimula nang libre, i-save ang menu ko} one {Libre sa loob ng # buwan, i-save ang menu ko} other {Libre sa loob ng # buwan, i-save ang menu ko}}",
+  "tryAnother": "Sumubok ng ibang order",
+  "barOrder": "Mag-order na parang customer",
+  "barArrives": "Darating ito sa kusina mo",
+  "barReady": "Markahan itong ready",
+  "phoneLabel": "Phone ng customer mo",
+  "kitchenLabel": "Ang iyong kitchen display (KDS)",
+  "waitingTitle": "Naghihintay ng order",
+  "waitingBody": "Mag-order ng kahit ano sa phone. Lalabas ito rito sa sandaling pindutin ng customer mo ang I-place ang order.",
+  "startCooking": "Simulang lutuin",
+  "ready": "Ready na",
+  "readyForCollection": "Ready na para i-pick up",
+  "cooking": "Niluluto",
+  "readyBadge": "Ready na",
+  "newBadge": "Bagong order",
+  "orderNumber": "Order #{number}",
+  "collectAt": "I-pick up nang {time}",
+  "collectAsap": "I-pick up sa lalong madaling panahon",
+  "phoneReadyTitle": "Ready na ang order mo",
+  "phoneReadyBody": "Kunin ito sa truck.",
+  "bandTitle": "Iyan ang HatchGrab. Naka-set up na ang menu mo.",
+  "bandStart": "Magsimula nang libre, i-save ang menu ko",
+  "orderAgain": "Mag-order ulit",
+  "loading": "Sine-set up ang demo mo…",
+  "goneTitle": "Tapos na ang demo na ito",
+  "goneBody": "Dine-delete ang mga demo pagkalipas ng isang araw. Puwede kang gumawa ng bago mula sa menu mo sa loob ng wala pang isang minuto.",
+  "goneButton": "Gumawa ng bagong demo",
+  "failed": "Hindi gumana iyan — pakisubukan ulit.",
+  "backToMenu": "Bumalik sa menu",
+  "formNote": "Demo ito: walang sisingilin at walang ipapadala, kaya hindi mo kailangang magbigay ng email.",
+  "namePlaceholder": "Mika"
+ },
+ "paperwork": {
+  "title": "Mga dokumento",
+  "intro": "Itago ang mga certificate mo sa iisang lugar. Paaalalahanan ka namin bago mag-expire ang kahit ano, at maipapadala mo ang lahat ng ito sa isang organizer nang minsanan.",
+  "loading": "Nilo-load ang mga dokumento mo…",
+  "loadFailed": "Hindi ma-load ang mga dokumento mo. Pakisubukan ulit.",
+  "retry": "Subukan ulit",
+  "counts": {
+   "expired": "{count, plural, one {# expired} other {# expired}}",
+   "dueSoon": "{count, plural, one {# malapit na ang due} other {# malapit na ang due}}",
+   "missing": "{count, plural, one {# kulang} other {# kulang}}",
+   "upToDate": "{count, plural, one {# valid} other {# valid}}"
+  },
+  "status": {
+   "upToDate": "Valid",
+   "dueSoon": "Malapit na ang due",
+   "expired": "Expired",
+   "upload": "I-upload"
+  },
+  "line": {
+   "expires": "Mag-e-expire sa {date}",
+   "expiresIn": "Mag-e-expire sa {date} · {days, plural, one {sa loob ng # araw} other {sa loob ng # araw}}",
+   "expiresToday": "Mag-e-expire ngayong araw",
+   "expired": "Nag-expire noong {date}",
+   "reviewBy": "I-review bago ang {date}",
+   "reviewByIn": "I-review bago ang {date} · {days, plural, one {sa loob ng # araw} other {sa loob ng # araw}}",
+   "reviewOverdue": "Dapat na-review noong {date}",
+   "noExpiry": "Walang expiry",
+   "cover": "Cover: {amount}",
+   "notUploaded": "Hindi pa na-upload"
+  },
+  "select": "Piliin: {document}",
+  "add": "+ Magdagdag ng dokumento",
+  "selected": "{count, plural, one {Napili: #} other {Napili: #}}",
+  "sendToOrganiser": "Ipadala sa organizer",
+  "types": {
+   "food_registration": "Rehistro ng food business",
+   "hygiene_rating": "Food hygiene rating",
+   "food_safety_plan": "Food safety plan (HACCP)",
+   "public_liability": "Public liability insurance",
+   "employers_liability": "Employers’ liability insurance",
+   "gas_safety": "Gas safety certificate",
+   "pat_test": "PAT test",
+   "fire_safety": "Fire safety",
+   "risk_assessment": "Risk assessment",
+   "allergen_info": "Info sa allergens",
+   "street_trading_licence": "Permit sa street vending",
+   "electrical_safety": "Electrical safety test",
+   "trading_licence": "Business permit"
+  },
+  "upload": {
+   "title": "Magdagdag ng dokumento",
+   "intro": "Kunan ito ng litrato, o pumili ng litrato o file.",
+   "takePhoto": "Kumuha ng litrato",
+   "chooseFile": "Pumili ng litrato o file",
+   "accepted": "PDF, JPEG, PNG, HEIC o WebP, hanggang 20 MB.",
+   "uploading": "Ina-upload… {percent}%",
+   "reading": "Binabasa ang dokumento mo…",
+   "tooBig": "Lampas 20 MB ang file na iyan. Pumili ng mas maliit.",
+   "wrongType": "Hindi tinatanggap ang file type na iyan. Gumamit ng PDF, JPEG, PNG, HEIC o WebP file.",
+   "failed": "Hindi gumana ang upload. Pakisubukan ulit.",
+   "cancel": "Kanselahin"
+  },
+  "check": {
+   "title": "I-check ang mga detalye",
+   "aiBanner": "Binasa namin ito mula sa dokumento mo. Paki-check kung tama bago i-save.",
+   "document": "Dokumento",
+   "other": "Iba pa…",
+   "otherName": "Pangalan ng dokumento",
+   "issuer": "Inisyu ng",
+   "issued": "Petsa ng pag-isyu",
+   "expires": "Petsa ng expiry",
+   "reviewBy": "I-review bago ang",
+   "nameOnDocument": "Pangalan sa dokumento",
+   "cover": "Insurance cover",
+   "coverHint": "Opsyonal. Ang halagang sakop ng policy.",
+   "currency": "Currency",
+   "save": "I-save",
+   "saving": "Sine-save…",
+   "cancel": "Kanselahin",
+   "saved": "Na-save",
+   "footer": "Itinatago bilang history ang dating certificate. Private ang mga file mo: ikaw lang, at ang mga organizer na pinadalhan mo, ang makakakita sa mga ito.",
+   "needType": "Piliin ang dokumento, o pangalanan ito.",
+   "badDates": "Hindi puwedeng mas maaga ang expiry date kaysa sa petsa ng pag-isyu."
+  },
+  "warnings": {
+   "notRead": "Hindi namin mabasa ang dokumentong ito. Pakilagay mo na lang ang mga detalye.",
+   "expired": "Nag-expire ito noong {date}. Puwede mo pa rin itong i-save, pero makikita ng mga organizer na expired na ito.",
+   "expiresSoon": "{days, plural, =0 {Mag-e-expire ito ngayong araw. Paaalalahanan ka namin bawat linggo hanggang ma-renew ito.} one {Mag-e-expire ito sa loob ng # araw. Paaalalahanan ka namin 4 na linggo bago, 1 linggo bago at sa mismong araw.} other {Mag-e-expire ito sa loob ng # araw. Paaalalahanan ka namin 4 na linggo bago, 1 linggo bago at sa mismong araw.}}",
+   "nameMismatch": "Mukhang hindi pangalan ng business mo ang nakasulat dito: “{name}”. Paki-check kung tamang dokumento ito."
+  },
+  "view": {
+   "close": "Isara",
+   "open": "Buksan",
+   "download": "I-download",
+   "noPreview": "Hindi maipakita rito ang file na ito. Buksan o i-download na lang ito.",
+   "details": "Mga detalye",
+   "edit": "I-edit ang mga detalye",
+   "renew": "Mag-upload ng bagong version",
+   "earlier": "Mga naunang version",
+   "uploaded": "Na-upload noong {date}",
+   "delete": "I-delete",
+   "deleteConfirm": "I-delete ang dokumentong ito at ang mga naunang version nito? Aalisin ang mga file, at matatanggal ito sa anumang link na naipadala mo.",
+   "deleteYes": "I-delete",
+   "deleted": "Na-delete ang dokumento",
+   "keep": "Huwag i-delete"
+  },
+  "send": {
+   "title": "Ipadala sa organizer",
+   "intro": "Makakatanggap sila ng email na may link para makita o ma-download ang lahat.",
+   "email": "Email ng organizer",
+   "emailHint": "Hanggang 5 address, pinaghihiwalay ng comma.",
+   "event": "Event (opsyonal)",
+   "noEvent": "Walang event",
+   "documents": "Mga dokumento",
+   "message": "Message (opsyonal)",
+   "messagePlaceholder": "Hi, narito ang mga dokumento namin para sa weekend market.",
+   "until": "Gumagana ang link hanggang",
+   "untilAfterEvent": "{date} (ang araw pagkatapos ng event)",
+   "send": "Ipadala",
+   "sending": "Ipinapadala…",
+   "footer": "Kapag nag-renew ka ng certificate, kusang ipapakita ng link ng organizer ang bago. Makikita mo kapag binuksan nila ito.",
+   "sent": "Naipadala sa {emails}",
+   "cancel": "Kanselahin",
+   "emailNone": "Ilagay ang email ng organizer.",
+   "emailInvalid": "Hindi email address ang “{email}”.",
+   "emailTooMany": "Hanggang 5 address lang ang puwede mong padalhan nang sabay-sabay.",
+   "noDocuments": "Pumili ng kahit isang dokumento.",
+   "untilRange": "Pumili ng petsa mula bukas hanggang 90 araw mula ngayon."
+  },
+  "sent": {
+   "title": "Naipadala",
+   "empty": "Wala pang naipadala.",
+   "to": "Para sa: {emails}",
+   "sentOn": "Naipadala noong {date}",
+   "opened": "Binuksan noong {date} · {count, plural, one {# view} other {# view}}",
+   "notOpened": "Hindi pa nabubuksan",
+   "until": "Gumagana hanggang {date}",
+   "expiredOn": "Nag-expire noong {date}",
+   "off": "Naka-off",
+   "turnOff": "I-off ang link",
+   "turnOffConfirm": "I-off ang link na ito? Hindi na ito mabubuksan ng organizer.",
+   "turnedOff": "Na-off ang link"
+  },
+  "page": {
+   "title": "Mga dokumento mula sa {truck}",
+   "intro": "Ibinahagi sa iyo ng {truck} ang mga dokumentong ito.",
+   "view": "Tingnan",
+   "download": "I-download",
+   "downloadAll": "I-download lahat",
+   "until": "Gumagana ang link na ito hanggang {date}.",
+   "none": "Walang dokumento sa link na ito sa ngayon.",
+   "expiredTitle": "Nag-expire na ang link na ito",
+   "expiredBody": "Nag-expire na ang link na ito. Hilingin sa {truck} na ipadala ito ulit.",
+   "expiredBodyUnknown": "Nag-expire na ang link na ito. Pakihiling sa business na nagpadala nito na ipadala ito ulit.",
+   "sharedWith": "Ibinahagi gamit ang HatchGrab"
+  },
+  "email": {
+   "shareSubject": "Ipinadala sa iyo ng {truck} ang mga dokumento nila",
+   "shareHeading": "Mga dokumento mula sa {truck}",
+   "shareIntro": "Ibinahagi sa iyo ng {truck} ang mga dokumentong ito.",
+   "event": "Para sa: {event}",
+   "shareButton": "Tingnan ang mga dokumento",
+   "shareUntil": "Gumagana ang link hanggang {date}. Kung nag-expire na ito, hilingin sa {truck} na ipadala ito ulit.",
+   "shareReply": "Mag-reply sa email na ito para makontak ang {truck}.",
+   "expires": "mag-e-expire sa {date}",
+   "reviewBy": "i-review bago ang {date}",
+   "noExpiry": "walang expiry",
+   "reminderSubject": "{count, plural, one {Kailangang i-renew: # dokumento} other {Kailangang i-renew: # dokumento}}",
+   "reminderHeading": "Ang mga dokumento mo",
+   "reminderIntro": "May ilang dokumento ng {truck} na kailangang i-renew:",
+   "reminderIn": "Mag-e-expire ang {document} sa {date} ({days, plural, one {sa loob ng # araw} other {sa loob ng # araw}})",
+   "reminderToday": "Mag-e-expire ngayong araw ang {document}",
+   "reminderExpired": "Nag-expire ang {document} noong {date}",
+   "reminderButton": "Buksan ang Mga dokumento",
+   "reminderFooter": "Pinaaalalahanan ka namin 4 na linggo bago, 1 linggo bago at sa mismong araw, saka bawat linggo hanggang ma-renew ito."
+  }
+ },
+ "emailReview": {
+  "subject": "Kumusta ang order mo mula sa {truck}?",
+  "heading": "Salamat sa pag-order sa {truck}",
+  "body": "Malaking tulong sa {truck} ang isang tapat na review sa Google. Isang minuto lang ito, at nakakatulong ito sa ibang tao na mahanap sila.",
+  "button": "Mag-iwan ng review sa Google",
+  "linkText": "Mag-iwan ng review sa Google: {url}",
+  "from": "Galing sa {truck} ang email na ito, ipinadala gamit ang HatchGrab dahil nag-order ka sa kanila.",
+  "unsubscribeLead": "Ayaw mo na ng review request mula sa {truck}?",
+  "unsubscribeLink": "Mag-unsubscribe",
+  "unsubscribeText": "Mag-unsubscribe: {url}",
+  "unsubscribed": {
+   "title": "Naka-unsubscribe ka na",
+   "body": "Hindi ka na padadalhan ng {truck} ng review request.",
+   "invalid": "Hindi valid ang unsubscribe link na ito."
+  }
+ },
+ "billing": {
+  "tab": {
+   "plan": {
+    "title": "Ang plan mo",
+    "trialPill": "Free trial",
+    "change": "Palitan ang plan",
+    "trialLine": "Matatapos ang free trial mo sa {date}. Pagkatapos noon, {price} kada buwan ang {plan}.",
+    "trialLineFree": "Matatapos ang free trial mo sa {date}. Pagkatapos noon, nasa {plan} ka na, walang monthly fee.",
+    "proLine": "Kasama ang online orders na hanggang {allowance} kada buwan. Pagkatapos, {fee}.",
+    "paygLine": "{fee} sa online orders. Walang monthly fee.",
+    "unlimitedLine": "{price} kada buwan. Walang fee sa online orders.",
+    "pendingLine": "Magsisimula ang {plan} sa {date}."
+   },
+   "payment": {
+    "title": "Payment method",
+    "none": "Wala pang card na naidagdag. Magdagdag ng isa para patuloy kang makatanggap ng online orders pagkatapos ng trial mo.",
+    "add": "Magdagdag ng card",
+    "pix": "Gamitin ang Pix Automático",
+    "card": "{brand} na nagtatapos sa {last4}",
+    "pixOnFile": "Pix Automático",
+    "pending": "Naghihintay ng kumpirmasyon.",
+    "change": "Palitan",
+    "lastFailed": "Hindi pumasok ang huling bayad",
+    "update": "I-update ang card",
+    "error": "Hindi namin mabuksan ang payment page. Pakisubukan ulit.",
+    "noneAfterTrial": "Walang naidagdag na card. Magdagdag ng isa para ma-on ulit ang online ordering."
+   },
+   "whatYouPay": {
+    "title": "Ang binabayaran mo",
+    "plan": "Ang plan mo, sinisingil tuwing ika-1 para sa papasok na buwan",
+    "fee": "Online orders na lampas {allowance} kada buwan, sinisingil tuwing ika-1 para sa nakaraang buwan",
+    "feePayg": "Online orders, sinisingil tuwing ika-1 para sa nakaraang buwan",
+    "walkUps": "Walk-in orders",
+    "free": "Libre",
+    "trialEnd": "Kapag natapos ang trial mo sa {date}, sisingilin ka namin ng {amount} para sa natitirang bahagi ng {month}. Pagkatapos, {price} sa {nextFirst}."
+   },
+   "next": {
+    "title": "Susunod na bayad · {date}",
+    "plan": "{plan} para sa {month}",
+    "fee": "{fee} sa online orders ng {month} na lampas {allowance} (sa ngayon)",
+    "feePayg": "{fee} sa online orders ng {month} (sa ngayon)",
+    "vans": "Mga extra van para sa {month}",
+    "surcharge": "Post-pay charge para sa {month}",
+    "carried": "Dala mula sa nakaraan",
+    "total": "Kabuuan sa ngayon",
+    "walkUps": "Laging libre ang walk-in orders."
+   },
+   "preorders": {
+    "title": "Paano nagbabayad ang mga customer para sa pre-order",
+    "online": "Online, pagka-order nila",
+    "onlineHint": "Diretso sa Stripe account mo ang pera.",
+    "atTruckHint": "Magbabayad ang mga customer pag-pick up nila. Idinadagdag ang fee namin sa monthly charge mo.",
+    "saved": "Na-save.",
+    "error": "Hindi namin ma-save iyan. Pakisubukan ulit."
+   },
+   "invoices": {
+    "title": "Mga invoice",
+    "date": "Petsa",
+    "for": "Para sa",
+    "amount": "Halaga",
+    "status": "Status",
+    "forMonthly": "Plan ng {planMonth}, fees ng {usageMonth}",
+    "forMonthlyPlan": "Plan ng {planMonth}",
+    "forTrialEnd": "Natitirang bahagi ng {month}",
+    "forUpgrade": "Paglipat sa {plan}",
+    "lateFee": "Late payment fee",
+    "paid": "Bayad na",
+    "unpaid": "Hindi pa bayad",
+    "overdue": "Overdue",
+    "download": "I-download",
+    "payNow": "Magbayad ngayon",
+    "none": "Wala pang invoice."
+   },
+   "failed": {
+    "title": "Hindi pumasok ang bayad mo ({amount}).",
+    "body": "Susubukan namin ulit. I-update ang card mo bago ang {date} para manatiling naka-on ang online ordering.",
+    "button": "I-update ang card"
+   },
+   "paused": {
+    "title": "Naka-pause ang online ordering",
+    "body": "Overdue na ang {amount}. Magbayad ngayon at babalik agad ang online ordering.",
+    "warning": "Magbayad bago ang {date} o baka ma-suspend ang account mo.",
+    "pay": "Magbayad ng {amount}",
+    "otherCard": "Gumamit ng ibang card"
+   },
+   "loading": "Nilo-load ang billing…",
+   "loadError": "Hindi namin ma-load ang billing mo. Pakisubukan ulit."
+  },
+  "changePlan": {
+   "title": "Palitan ang plan",
+   "current": "Nasa {plan} ka.",
+   "free": "Libre",
+   "perMonth": "{price} kada buwan",
+   "paygLine": "{fee} sa online orders.",
+   "proLine": "Kasama ang online orders na hanggang {allowance}. Pagkatapos, {fee}.",
+   "unlimitedLine": "Walang fee sa online orders.",
+   "yourPlan": "Ang plan mo",
+   "startsNow": "Magsisimula ngayon.",
+   "chargeToday": "Sisingilin ka namin ng {amount} ngayon para sa natitirang bahagi ng {month}. Pagkatapos, {price} sa {nextFirst}.",
+   "startsLater": "Magsisimula sa {nextFirst}. Nasa {plan} ka hanggang noon.",
+   "cancel": "Kanselahin",
+   "switchTo": "Lumipat sa {plan}",
+   "error": "Hindi namin mapalitan ang plan mo. Pakisubukan ulit.",
+   "trialLine": "Naka-free trial ka. Piliin ang plan mo para sa pagtatapos nito sa {date}.",
+   "startsAtTrialEnd": "Magsisimula pagkatapos ng trial mo.",
+   "choose": "Piliin ang {plan}"
+  },
+  "notices": {
+   "trialEndsSoon": "<b>Matatapos ang free trial mo sa {date}.</b> Magdagdag ng card para manatiling naka-on ang online ordering.",
+   "trialEndsTomorrow": "<b>Matatapos bukas ang free trial mo.</b> Magdagdag ng card o mapo-pause ang online ordering.",
+   "allSet": "<b>Ayos na ang lahat.</b> Magsisimula ang {plan} sa {date}.",
+   "paymentFailed": "<b>Hindi pumasok ang bayad mo.</b> I-update ang {method, select, payment_method {payment method} other {card}} mo bago ang {date} para manatiling naka-on ang online ordering.",
+   "paused": "<b>Naka-pause ang online ordering.</b> Magbayad ng {amount} bago ang {date} o baka ma-suspend ang account mo.",
+   "addCard": "Magdagdag ng card →",
+   "updateCard": "I-update ang {method, select, payment_method {payment method} other {card}} →",
+   "payNow": "Magbayad ngayon →",
+   "dismiss": "Isara",
+   "trialEnded": "<b>Tapos na ang free trial mo.</b> Magdagdag ng card para ma-on ulit ang online ordering."
+  }
+ },
+ "emailBilling": {
+  "greeting": "{hasName, select, yes {Hi {name},} other {Hi,}}",
+  "questions": "May tanong? Mag-reply ka lang.",
+  "signoff": "Ang HatchGrab team",
+  "buttonUpdate": "I-update ang {method, select, payment_method {payment method} other {card}}",
+  "buttonPay": "Magbayad ngayon",
+  "buttonAddCard": "Magdagdag ng card",
+  "suspended": "Kung mananatili itong hindi bayad, baka ma-suspend ang account mo.",
+  "failed": {
+   "subject": "Hindi pumasok ang bayad mo sa HatchGrab",
+   "line1": "Hindi namin masingil ngayong araw ang {amount} para sa {truck}. Susubukan namin ulit.",
+   "line2": "Paki-update ang {method, select, payment_method {payment method} other {card}} mo bago ang {date} para manatiling naka-on ang online ordering."
+  },
+  "twoDays": {
+   "subject": "2 araw na lang para i-update ang {method, select, payment_method {payment method} other {card}} mo",
+   "line1": "Hindi pa bayad ang {amount} para sa {truck}. I-update ang {method, select, payment_method {payment method} other {card}} mo bago ang {date}, o mapo-pause ang online ordering."
+  },
+  "oneDay": {
+   "subject": "I-update ang {method, select, payment_method {payment method} other {card}} mo hanggang bukas",
+   "line1": "Hindi pa bayad ang {amount} para sa {truck}. I-update ang {method, select, payment_method {payment method} other {card}} mo hanggang bukas, o mapo-pause ang online ordering."
+  },
+  "lastDay": {
+   "subject": "Huling araw na para i-update ang {method, select, payment_method {payment method} other {card}} mo",
+   "line1": "Ngayon ang huling araw para bayaran ang {amount} para sa {truck}. Kung hindi pa ito bayad pagsapit ng hatinggabi, mapo-pause ang online ordering hanggang magbayad ka."
+  },
+  "paused": {
+   "subject": "Naka-pause ang online ordering",
+   "line1": "Naka-pause ang online ordering para sa {truck} dahil hindi pa bayad ang {amount}. Magbayad ngayon at babalik agad ito.",
+   "line2": "Magbayad bago ang {date} o baka ma-suspend ang account mo."
+  },
+  "trial7": {
+   "subject": "Matatapos ang free trial mo sa loob ng 7 araw",
+   "line1": "Matatapos sa {date} ang free trial mo para sa {truck}.",
+   "line2": "Magdagdag ng card sa Manage › Billing para manatiling naka-on ang online ordering.",
+   "plan": "Pagkatapos noon, {price} kada buwan ang {plan}. Kapag natapos ang trial mo, sisingilin ka namin ng {amount} para sa natitirang bahagi ng {month}, saka {price} sa {nextFirst}.",
+   "planFree": "Pagkatapos noon, nasa {plan} ka na, walang monthly fee.",
+   "fee": "Sinisingil tuwing ika-1 ang fee namin sa online orders ({fee}), para sa nakaraang buwan."
+  },
+  "trial1": {
+   "subject": "Matatapos bukas ang free trial mo",
+   "line1": "Matatapos bukas ang free trial mo para sa {truck}.",
+   "noCard": "Magdagdag ng card o mapo-pause ang online ordering.",
+   "allSet": "Ayos na ang lahat: magsisimula ang {plan} sa {date}.",
+   "charge": "Sisingilin ka namin ng {amount} para sa natitirang bahagi ng {month} kapag natapos ang trial mo."
+  }
+ }
+}
