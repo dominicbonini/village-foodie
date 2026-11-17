@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -10,14 +10,14 @@
 | 2 | uk-UA Ukrainian | ✅ (lw-2) | ✅ batch 2 — **needs native/legal check** | `_legal-translations.cjs uk-UA` 3/3 ✓; `legal-languages-1` /ua/privacy, /ua/terms, /ua/country-terms ✓ | daf550f8 |
 | 3 | hi-IN Hindi | ✅ (lw-2) | ✅ batch 9 — **needs native/legal check** | `_legal-translations.cjs hi-IN` 3/3 ✓; `legal-languages-1` /in/privacy, /in/terms, /in/country-terms ✓ | 290cd1ef |
 | 4 | bn-BD Bengali | ✅ (lw-2) | ✅ batch 10 — **needs native/legal check** | `_legal-translations.cjs bn-BD` 3/3 ✓; `legal-languages-1` /bd/privacy, /bd/terms, /bd/country-terms ✓ | 40e90e42 |
-| 5 | ur-PK Urdu | ✅ (lw-2) | — next (batch 11) | | |
+| 5 | ur-PK Urdu | ✅ (lw-2) | ✅ batch 11 — **needs native/legal check** | `_legal-translations.cjs ur-PK` 3/3 ✓; `legal-languages-1` /pk/privacy, /pk/terms, /pk/country-terms ✓ | languages-world-3 batch 11 |
 | 6 | kk-KZ Kazakh | ✅ (lw-2) | ✅ batch 3 — **needs native/legal check** | `_legal-translations.cjs kk-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | b77e79df |
 | 7 | uz-UZ Uzbek | ✅ (lw-2) | ✅ batch 4 — **needs native/legal check** | `_legal-translations.cjs uz-UZ` 3/3 ✓; `legal-languages-1` /uz/privacy, /uz/terms, /uz/country-terms ✓ | 3c2fb908 |
 | 8 | az-AZ Azerbaijani | ✅ (lw-2) | ✅ batch 5 — **needs native/legal check** | `_legal-translations.cjs az-AZ` 3/3 ✓; `legal-languages-1` /az/privacy, /az/terms, /az/country-terms ✓ | 34efe2f6 |
 | 9 | ka-GE Georgian | ✅ (lw-2) | ✅ batch 6 — **needs native/legal check** | `_legal-translations.cjs ka-GE` 3/3 ✓; `legal-languages-1` /ge/privacy, /ge/terms, /ge/country-terms ✓ | 45bae559 |
 | 10 | hy-AM Armenian | ✅ (lw-2) | ✅ batch 7 — **needs native/legal check** | `_legal-translations.cjs hy-AM` 3/3 ✓; `legal-languages-1` /am/privacy, /am/terms, /am/country-terms ✓ | 3f5c1a28 |
 | 11 | mn-MN Mongolian | ✅ (lw-2) | ✅ batch 8 — **needs native/legal check** | `_legal-translations.cjs mn-MN` 3/3 ✓; `legal-languages-1` /mn/privacy, /mn/terms, /mn/country-terms ✓ | 2c30808f |
-| 12 | ne-NP Nepali | ✅ (lw-2) | — | | |
+| 12 | ne-NP Nepali | ✅ (lw-2) | — next (batch 12) | | |
 | 13 | fil-PH Filipino | 3 of 9 parts (lw-2) | — | | |
 | 14 | sq-AL Albanian | — | — | | |
 | 15 | bs-BA Bosnian | — | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **10 of 23 languages done (30 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
+Legal pages: **11 of 23 languages done (33 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
 
 ## Batch order
 
@@ -208,6 +208,18 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 11: ur-PK legal pages
+
+**Files:** [privacy-policy.md](../content/legal/ur-PK/privacy-policy.md), [terms-and-conditions.md](../content/legal/ur-PK/terms-and-conditions.md), [country-specific-terms.md](../content/legal/ur-PK/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into Urdu (Arabic script, right to left). No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs ur-PK` 3/3 ✓. `legal-languages-1`: /pk/privacy, /pk/terms and /pk/country-terms render ("4 نومبر، 2026", "1 نومبر، 2026"), then the harness stops with ENOENT at the next missing base (ne-NP). **No screenshot**: Pakistan has no country row yet (see batch 2).
+
+**Translation choices:** The Urdu UI words are used throughout: Pay at Hatch = “ٹرک پر ادائیگی”, food truck = فوڈ ٹرک, operator = آپریٹر, customer = گاہک, hatch = ٹرک (the UI says “ٹرک پر” for “at the hatch”), walk-up orders = واک اِن آرڈرز (as in the UI), kitchen screen = کچن ڈسپلے, dashboard = ڈیش بورڈ, collection = پک اپ, basket = کارٹ, postcode = پوسٹ کوڈ, plan = پلان, HatchGrab fee = HatchGrab فیس, free trial = مفت ٹرائل, refund = ریفنڈ, allergens = الرجی والے اجزا, AI = اے آئی, and the demo checkbox is quoted exactly (“مجھے HatchGrab کی طرف سے کبھی کبھار مشورے اور خبریں بھیجیں”). Formal آپ, “…” quotes, ۔ as the full stop and ، as the comma, as the UI does; the date line uses the UI label “آخری اپ ڈیٹ:”. controller/processor = کنٹرولر/پروسیسر, VAT stays VAT (the UI’s own word: it writes “VAT” in Latin), GST stays GST, TVA/IVA kept with (فرانسیسی VAT)/(میکسیکو کا VAT) at first mention, merchant of record = مرچنٹ آف ریکارڈ (merchant of record), reverse charge = ریورس چارج (reverse charge), chargeback = چارج بیک (chargebacks), tort = ٹارٹ (tort), white-label = وائٹ لیبل (white-label), Article = دفعہ, Regulation = ضابطہ, Standard = معیار. Local law names are in Urdu with the official name and year in brackets (e.g. صارفین کے حقوق کا ایکٹ (Consumer Rights Act 2022)); law numbers keep their English form (ضابطہ (EU) No 1169/2011, Law No. 8,078 of 1990). Latin names, addresses, emails and web addresses stay in Latin inside the right-to-left text, as in ar-AE; ASCII digits only. The liability list letters (a)–(f) are Urdu (الف)، (ب)، (ج)، (د)، (ہ)، (و). The two in-text dates follow the page’s own date style, Urdu comma included (“1 اکتوبر، 2026 سے”, “21 مارچ، 2025 سے نافذ”). Fixes before commit: “AI” changed to the UI’s اے آئی; the in-text dates given the page’s comma; the French CNIL name’s apostrophe made typographic (l’informatique). No ASCII apostrophes or quotes remain.
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -227,4 +239,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 11 is the ur-PK legal pages. Runs continue automatically back to back, with no waits.
+Batch 12 is the ne-NP legal pages. Runs continue automatically back to back, with no waits.
