@@ -1,0 +1,1054 @@
+{
+ "alertsOperator": {
+  "hi": "Përshëndetje, {name},",
+  "limit80": {
+   "subject": "Keni përdorur 80% të përgjigjeve në WhatsApp për këtë muaj",
+   "used": "Përgjigjet tuaja automatike në WhatsApp kanë përdorur <b>{used} nga {limit}</b> për këtë muaj.",
+   "nothingStopped": "Asgjë nuk është ndalur. Kur të arrini {limit}, përgjigjet automatike vendosen në pauzë derisa kuota juaj të rinovohet më <b>{reset}</b> — klientët mund t’ju shkruajnë gjithsesi dhe ju do të shihni gjithçka që dërgojnë.",
+   "raise": "Kufirin mujor mund ta rritni te Cilësimet kur të doni.",
+   "raiseLink": "Kufirin mujor mund ta rritni te Cilësimet kur të doni:",
+   "button": "Hap Cilësimet"
+  },
+  "limit100": {
+   "subject": "Përgjigjet automatike në WhatsApp janë në pauzë për këtë muaj",
+   "usedAll": "Keni përdorur të gjitha përgjigjet automatike në WhatsApp të këtij muaji ({limit}), prandaj ato janë vendosur në pauzë.",
+   "stillReach": "<b>Klientët mund t’ju shkruajnë si zakonisht dhe çdo mesazh ju arrin.</b> E vetmja gjë që është ndalur është dërgimi i përgjigjes automatike.",
+   "startAgain": "Ato do të rifillojnë më <b>{reset}</b>, ose menjëherë nëse rritni kufirin mujor te Cilësimet.",
+   "startAgainLink": "Ato do të rifillojnë më {reset}, ose menjëherë nëse rritni kufirin mujor te Cilësimet:",
+   "button": "Rrit kufirin tim"
+  },
+  "paymentBlocked": {
+   "subject": "WhatsApp kërkon një mënyrë pagese para se të dërgojë mesazhe",
+   "stopped": "WhatsApp ka ndalur dërgimin e përgjigjeve tuaja automatike, sepse llogaria juaj WhatsApp Business nuk ka një mënyrë pagese që funksionon.",
+   "stillMessage": "<b>Klientët mund t’ju shkruajnë gjithsesi dhe ju do të shihni gjithçka që dërgojnë</b> — por përgjigjet nuk po u arrijnë atyre.",
+   "payDirect": "Për këto mesazhe paguani drejtpërdrejt te WhatsApp, prandaj problemi zgjidhet te WhatsApp Manager dhe jo te HatchGrab. Shtoni ose përditësoni një kartë atje dhe përgjigjet rifillojnë vetë.",
+   "payDirectLink": "Për këto mesazhe paguani drejtpërdrejt te WhatsApp, prandaj problemi zgjidhet te WhatsApp Manager dhe jo te HatchGrab. Shtoni ose përditësoni një kartë atje dhe përgjigjet rifillojnë vetë:",
+   "button": "Hap WhatsApp Manager",
+   "settings": "Cilësimet tuaja në HatchGrab: <link>{url}</link>"
+  }
+ },
+ "setup": {
+  "steps": {
+   "based": "Ku ndodheni",
+   "identity": "Food truck-u juaj",
+   "menu": "Menuja juaj",
+   "event": "Eventi i parë"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Konfigurimi",
+  "loading": "Po ngarkohet",
+  "loadingCountries": "Po ngarkohet…",
+  "verify": {
+   "ok": "Email-i u konfirmua — faleminderit.",
+   "expired": "Kjo lidhje konfirmimi ka skaduar. Na kontaktoni dhe do ta rregullojmë para publikimit.",
+   "invalid": "Kjo lidhje konfirmimi nuk funksionoi. Na kontaktoni dhe do ta rregullojmë para publikimit."
+  },
+  "identity": {
+   "heading": "Si quhet food truck-u juaj?",
+   "intro": "Ky është emri që shohin klientët. Asgjë nuk bëhet publike derisa të vendosni ta publikoni.",
+   "nameLabel": "Emri i food truck-ut",
+   "namePlaceholder": "Burgerat e Arbenit",
+   "phoneLabel": "Telefoni",
+   "whatsappTick": "Ky numër është në WhatsApp",
+   "phoneHelp": "Klientët e shohin këtë në konfirmimin e porosisë, që të mund të pyesin për një porosi. Shenja përcakton nëse aty shkruhet “Na telefononi” apo “Na shkruani në WhatsApp”. Të dyja mund t’i ndryshoni te Cilësimet."
+  },
+  "phoneRequired": "Shtoni një numër telefoni — e përdorim edhe ne, edhe klientët për t’ju kontaktuar.",
+  "createFailed": "Food truck-u juaj nuk u krijua.",
+  "unreachable": "Nuk arritëm të lidhemi tani — ju lutemi provoni sërish.",
+  "back": "Kthehu",
+  "creating": "Po krijohet food truck-u juaj…",
+  "continue": "Vazhdo"
+ },
+ "whereBased": {
+  "countriesFailed": "Nuk arritëm të ngarkojmë listën e shteteve. Provoni sërish pas pak."
+ },
+ "cuisinePicker": {
+  "choose": "Zgjidhni një kuzhinë…",
+  "other": "Tjetër…",
+  "otherPlaceholder": "Na tregoni kuzhinën tuaj",
+  "addAnother": "+ Zgjidh një tjetër",
+  "remove": "Hiq: {label}",
+  "cuisine": {
+   "Asian": "Aziatike",
+   "BBQ": "Skarë (BBQ)",
+   "Bakery": "Furrë buke",
+   "Burgers": "Burgera",
+   "Caribbean": "Karaibe",
+   "Chicken": "Pulë",
+   "Chinese": "Kineze",
+   "Coffee": "Kafe",
+   "Desserts": "Ëmbëlsira",
+   "FishChips": "Peshk me patate (Fish & Chips)",
+   "Greek": "Greke",
+   "HotDogs": "Hot dog",
+   "Indian": "Indiane",
+   "Italian": "Italiane",
+   "JacketPotatoes": "Patate të pjekura me lëkurë",
+   "Kebab": "Kebab",
+   "Korean": "Koreane",
+   "Mexican": "Meksikane",
+   "PieMash": "Pite me pure",
+   "Pizza": "Pica",
+   "Seafood": "Fruta deti",
+   "Tacos": "Tacos",
+   "Thai": "Tajlandeze",
+   "Vegan": "Vegane",
+   "Wraps": "Rrotulla (wrap)"
+  }
+ },
+ "priceControls": {
+  "change": "{label} — ndrysho",
+  "useRule": "{label} — përdor rregullin",
+  "typePrice": "{label} — shkruaj një çmim",
+  "backToRule": "Kthehu te rregulli",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+ },
+ "goLive": {
+  "allergensUnanswered": {
+   "title": "Zgjidhni si t’i shfaqni informacionet për alergjenët",
+   "detail": "Derisa të zgjidhni, klientët nuk shohin asnjë nga pjatat tuaja — menuja mbrohet duke fshehur çdo pjatë me alergjenë të pakonfirmuar, dhe tani për tani kjo vlen për të gjitha.",
+   "where": "Menu → Alergjenët"
+  },
+  "allergensCardMissing": {
+   "title": "Shtoni kartën e alergjenëve",
+   "detail": "Keni zgjedhur të shfaqni një kartë alergjenësh, por nuk është ruajtur asnjë — kështu klientëve do t’u thuhej se ka informacion për alergjenët dhe pastaj nuk do të gjenin asgjë.",
+   "where": "Menu → Alergjenët"
+  },
+  "allergensItemsUnverified": {
+   "title": "{n, plural, one {Konfirmoni alergjenët për {count} pjatë} other {Konfirmoni alergjenët për {count} pjata}}",
+   "detail": "{n, plural, one {Pjata juaj është e fshehur për klientët derisa të konfirmoni alergjenët e saj.} other {{u, plural, one {{unverified} nga {total} pjatat tuaja është e fshehur për klientët derisa të konfirmoni alergjenët e saj.} other {{unverified} nga {total} pjatat tuaja janë të fshehura për klientët derisa të konfirmoni alergjenët e tyre.}}}} Një pjatë e shfaqur pa alergjenë të konfirmuar lexohet si “nuk përmban asnjë”, prandaj menuja e fsheh në vend që ta rrezikojë.",
+   "where": "Menu → Alergjenët"
+  },
+  "noVan": {
+   "title": "Shtoni një furgon",
+   "detail": "Eventet zhvillohen me një furgon — pa të, nuk ka përmes çfarë të merren porositë.",
+   "where": "Cilësimet → Food truck-et tuaj"
+  },
+  "kitchenCapacityUnset": {
+   "title": "Caktoni kapacitetin e kuzhinës",
+   "detail": "Nuk është caktuar kapacitet për: {vans}. Pa të, ora e marrjes që u premtojmë klientëve do të jetë shpesh e paarritshme për kuzhinën tuaj.",
+   "where": "Menu → Kapaciteti i kuzhinës",
+   "unnamedVan": "Furgon pa emër"
+  },
+  "noPrepBearingCategory": {
+   "title": "Na tregoni sa kohë kërkon ushqimi juaj",
+   "detail": "{categories, select, none {Ende nuk keni kategori në menu, ndaj nuk kemi si të llogarisim sa zgjat një porosi.} other {Asnjë nga kategoritë tuaja nuk ka kohë gatimi të caktuar, ndaj çdo porosi na duket e menjëhershme. Ora e marrjes që do t’u jepnim klientëve do të ishte e paarritshme për kuzhinën tuaj, dhe sa më shumë punë të keni, aq më larg do të ishte.}}",
+   "where": "Menu → Kategoritë → Konfigurimi i kuzhinës"
+  },
+  "emailUnverified": {
+   "title": "Konfirmoni adresën tuaj të email-it",
+   "detail": "Njoftimet e porosive dhe rikuperimin e llogarisë i dërgojmë në këtë adresë. Nëse është e gabuar, e kuptoni kur diçka ka shkuar tashmë keq.",
+   "where": "Kontrolloni kutinë postare për lidhjen tonë të konfirmimit"
+  },
+  "emailUnknown": {
+   "title": "Statusi i konfirmimit të email-it është i panjohur",
+   "detail": "Verifikimi i email-it ende nuk është lidhur, ndaj ky kusht nuk mund të vlerësohet. Me qëllim bllokon, në vend që të kalojë në heshtje.",
+   "where": "—"
+  }
+ },
+ "walkthrough": {
+  "intro": "Te Menaxhimi konfiguroni food truck-un tuaj dhe shihni si po ecën. Te Paneli merrni porosi dhe drejtoni çdo event ndërsa zhvillohet.",
+  "ariaLabel": "Udhëzues i panelit",
+  "step": "{current} nga {total}",
+  "skip": "Kapërce",
+  "back": "← Kthehu",
+  "next": "Tjetër →",
+  "done": "U krye",
+  "stops": {
+   "menu": {
+    "title": "Menu",
+    "body": "Pjatat, çmimet dhe alergjenët tuaj. Çdo ndryshim që bëni këtu vlen menjëherë."
+   },
+   "schedule": {
+    "title": "Orari",
+    "body": "Ku dhe kur punoni. Shtoni një event këtu dhe klientët mund të porositin për të."
+   },
+   "build": {
+    "title": "Menu kombo, shtesa dhe sugjerime",
+    "body": "Menutë kombo, sugjerimet, personalizimet dhe kapaciteti i kuzhinës ndodhen te Menu — provojini lirisht."
+   },
+   "settings": {
+    "title": "Cilësimet",
+    "body": "Të dhënat e food truck-ut tuaj dhe mënyrat si paguajnë klientët."
+   },
+   "billing": {
+    "title": "Faturimi",
+    "body": "Këtu gjenden paketa juaj, faturimi dhe informacioni për funksionet."
+   }
+  }
+ },
+ "auth": {
+  "fields": {
+   "email": "Email",
+   "password": "Fjalëkalimi",
+   "emailPlaceholder": "ju@shembull.al",
+   "passwordHint": "Të paktën 8 karaktere"
+  },
+  "signup": {
+   "title": "Krijoni llogarinë tuaj",
+   "subtitle": "{months, plural, =0 {Prova juaj falas fillon kur regjistroheni.} one {Muaji juaj i parë është falas, duke filluar nga regjistrimi.} other {# muajt e parë janë falas, duke filluar nga regjistrimi.}}",
+   "emailPlaceholder": "ju@foodtruckuijuaj.al",
+   "codeLabel": "Keni një kod? <optional>(opsionale)</optional>",
+   "codePlaceholder": "Shkruajeni këtu",
+   "codeApply": "Apliko",
+   "codeApplied": "Kodi u aplikua: {deal} ({partner})",
+   "codeInvalid": "Ky kod nuk është i vlefshëm.",
+   "codeExpired": "Ky kod ka skaduar.",
+   "dealExtraMonths": "{months, plural, one {# muaj shtesë falas} other {# muaj shtesë falas}}",
+   "dealPercentOff": "{pct}% zbritje për {months, plural, one {# muaj} other {# muaj}}",
+   "dealPercentOffPlan": "{pct}% zbritje te paketa {plan} për {months, plural, one {# muaj} other {# muaj}}",
+   "dealFixedPrice": "paketa {plan} me {price} në muaj për {months, plural, one {# muaj} other {# muaj}}",
+   "dealPlanOffer": "çmim i veçantë te paketa {plan} për {months, plural, one {# muaj} other {# muaj}}",
+   "partnerCodeLabel": "Kod partneri ose promocional <optional>(opsionale)</optional>",
+   "marketing": "Më dërgoni herë pas here me email këshilla dhe lajme për produktin. S’ka lidhje me porositë tuaja — mund ta ndaloni kurdo.",
+   "signIn": "Hyr",
+   "submit": "Krijo llogarinë time",
+   "submitting": "Po krijohet llogaria juaj…",
+   "consent": "Duke krijuar një llogari, pranoni <terms>Kushtet</terms> dhe <privacy>Politikën e privatësisë</privacy>. Nuk nevojitet kartë. Asgjë nuk bëhet publike derisa ta vendosni ju.",
+   "haveAccount": "Keni tashmë një llogari? Hyni",
+   "errorFallback": "Llogaria juaj nuk u krijua.",
+   "errorOffline": "Nuk arritëm të lidhemi tani — ju lutemi provoni sërish."
+  },
+  "login": {
+   "title": "Hyni në kuzhinën tuaj",
+   "dashboardOf": "{brand} — paneli i operatorit",
+   "resetSuccess": "Fjalëkalimi u përditësua. Ju lutemi hyni.",
+   "emailChanged": "Adresa e email-it u përditësua. Ju lutemi hyni me adresën tuaj të re të email-it.",
+   "errorFallback": "Email-i ose fjalëkalimi është i pasaktë. Ju lutemi provoni sërish.",
+   "submit": "Hyr",
+   "submitting": "Po hyni…",
+   "forgot": "Keni harruar fjalëkalimin?",
+   "invalidLink": "Kjo lidhje ka skaduar ose nuk është e vlefshme."
+  },
+  "forgot": {
+   "sentTitle": "Kontrolloni email-in",
+   "sentBody": "Nëse ekziston një llogari me këtë adresë email-i, së shpejti do të merrni një lidhje rivendosjeje. Kontrolloni dosjen e postës së padëshiruar (spam) nëse nuk arrin brenda pak minutash.",
+   "title": "Rivendosni fjalëkalimin",
+   "subtitle": "Shkruani email-in tuaj dhe do t’ju dërgojmë një lidhje rivendosjeje",
+   "submit": "Dërgo lidhjen e rivendosjes",
+   "sending": "Po dërgohet…",
+   "back": "Kthehu te hyrja"
+  },
+  "reset": {
+   "invalidTitle": "Lidhje rivendosjeje e pavlefshme",
+   "invalidBody": "Kjo lidhje është e pavlefshme ose ka skaduar.",
+   "requestNew": "Kërko një lidhje të re rivendosjeje",
+   "mismatch": "Fjalëkalimet nuk përputhen",
+   "tooShort": "Fjalëkalimi duhet të ketë të paktën 8 karaktere.",
+   "errorFallback": "Ndodhi një gabim. Ju lutemi provoni sërish.",
+   "titleFirstLogin": "Vendosni fjalëkalimin",
+   "titleReset": "Zgjidhni një fjalëkalim të ri",
+   "subtitleFirstLogin": "Zgjidhni një fjalëkalim për të mbrojtur llogarinë tuaj",
+   "subtitleReset": "Fjalëkalimi i ri duhet të ketë të paktën 8 karaktere",
+   "newPassword": "Fjalëkalimi i ri",
+   "confirmPassword": "Konfirmo fjalëkalimin",
+   "confirmPlaceholder": "Përsëritni fjalëkalimin",
+   "submit": "Vendos fjalëkalimin",
+   "saving": "Po ruhet…",
+   "sendNewLink": "Dërgo një lidhje të re"
+  },
+  "verifyEmail": {
+   "goToLogin": "Shko te hyrja",
+   "failedTitle": "Verifikimi dështoi",
+   "invalidTitle": "Lidhje e pavlefshme ose e skaduar",
+   "invalidBody": "Kjo lidhje verifikimi është e pavlefshme ose ka skaduar tashmë.",
+   "verifiedTitle": "E verifikuar tashmë",
+   "verifiedBody": "Kjo adresë email-i është verifikuar tashmë.",
+   "expiredTitle": "Lidhja ka skaduar",
+   "expiredBody": "Kjo lidhje verifikimi ka skaduar. Kërkoni një të re nga cilësimet e profilit tuaj.",
+   "accountNotFound": "Llogaria nuk u gjet. Ju lutemi kontaktoni mbështetjen.",
+   "emailTaken": "Kjo adresë email-i është tashmë e lidhur me një llogari tjetër. Ju lutemi përdorni një adresë tjetër email-i.",
+   "updateFailed": "Përditësimi i email-it dështoi. Ju lutemi provoni sërish.",
+   "loginUpdateFailed": "Përditësimi i të dhënave të hyrjes dështoi. Email-i juaj nuk është ndryshuar.",
+   "successTitle": "Adresa e email-it u përditësua",
+   "successBody": "Email-i juaj u ndryshua në <b>{email}</b>. Po dilni nga llogaria…"
+  },
+  "sessionAlert": {
+   "title": "Hyrja juaj kërkon vëmendje",
+   "body": "Gjithçka në ekran është ende këtu. Ndryshimet e reja mund të mos ruhen derisa të hyni sërish.",
+   "signIn": "Hyr sërish"
+  }
+ },
+ "emailSignup": {
+  "greeting": "{hasName, select, yes {Përshëndetje, {name},} other {Përshëndetje,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Themelues, HatchGrab",
+  "verify": {
+   "subject": "Konfirmoni adresën tuaj të email-it",
+   "thanks": "{hasTruck, select, yes {Faleminderit që konfiguruat food truck-un {truck} në HatchGrab.} other {Faleminderit që konfiguruat food truck-un tuaj në HatchGrab.}}",
+   "button": "Konfirmo adresën time të email-it",
+   "buttonText": "Konfirmo adresën time të email-it: {url}",
+   "why": "Kjo është adresa me të cilën do të hyni dhe ku shkojnë njoftimet e porosive — ndaj ia vlen ta bëni tani.",
+   "next": "Sapo të konfirmohet, do t’ju dërgoj gjithçka që ju nevojitet për të filluar.",
+   "carryOn": "Ndërkohë mund të vazhdoni me konfigurimin.",
+   "stuck": "Keni ngecur diku? Thjesht përgjigjuni këtij email-i — këtyre u përgjigjem vetë.",
+   "fallbackLink": "Nëse butoni nuk funksionon, ngjitni këtë: {url}"
+  },
+  "welcome": {
+   "subject": "{hasName, select, yes {Mirë se vini në HatchGrab, {name}} other {Mirë se vini në HatchGrab}}",
+   "intro": "{hasTruck, select, yes {Më vjen vërtet mirë t’i uroj mirëseardhjen në HatchGrab food truck-ut {truck}.} other {Më vjen vërtet mirë t’i uroj mirëseardhjen në HatchGrab food truck-ut tuaj.}}",
+   "trial": "{months, plural, one {Prova juaj falas njëmujore ka filluar — me të gjitha funksionet të hapura.} other {Prova juaj falas prej # muajsh ka filluar — me të gjitha funksionet të hapura.}}",
+   "setup": "Nëse nuk e keni bërë ende, konfigurimi është i thjeshtë dhe zgjat rreth pesëmbëdhjetë minuta.",
+   "button": "Hap panelin",
+   "bookmark": "Ia vlen ta ruani si faqeshënues. Funksionon në çdo pajisje.",
+   "stuck": "Thjesht përgjigjuni këtij email-i nëse ngecni — këtyre u përgjigjem vetë.",
+   "lookingForward": "{hasTruck, select, yes {Mezi pres ta shoh në punë food truck-un {truck}.} other {Mezi pres ta shoh në punë food truck-un tuaj.}}"
+  }
+ },
+ "errorsOnboarding": {
+  "not_signed_in": "Nuk keni hyrë",
+  "no_operator_record": "Nuk ka regjistër operatori",
+  "bad_request": "Kërkesë e pavlefshme",
+  "truck_name_missing": "Jepini një emër food truck-ut tuaj.",
+  "contact_phone_required": "Nevojitet një numër telefoni kontakti.",
+  "phone_invalid": "{withName, select, yes {Shkruani një numër telefoni të vlefshëm — {name}} other {Shkruani një numër telefoni të vlefshëm}}{withExample, select, yes { (p.sh. {example})} other {}}.",
+  "truck_create_failed": "Food truck-u juaj nuk u krijua.",
+  "unknown_step": "Hap i panjohur",
+  "unknown_action": "Veprim i panjohur",
+  "countries_unavailable": "Nuk arritëm të ngarkojmë listën e shteteve. Provoni sërish pas pak.",
+  "email_invalid": "Shkruani një adresë email-i të vlefshme.",
+  "password_too_short": "Fjalëkalimi duhet të ketë të paktën {min, plural, one {# karakter} other {# karaktere}}.",
+  "signup_closed": "Regjistrimi nuk është hapur ende.",
+  "too_many_attempts": "Shumë përpjekje për momentin — ju lutemi provoni sërish pas pak.",
+  "account_exists": "Ekziston tashmë një llogari me këtë email — hyni në të.",
+  "account_create_failed": "Llogaria nuk u krijua.",
+  "account_finish_failed": "Krijimi i llogarisë suaj nuk përfundoi — ju lutemi provoni sërish.",
+  "unauthorised": "I paautorizuar",
+  "unauthenticated": "I paidentifikuar",
+  "change_id_required": "Ndodhi një gabim — rifreskoni faqen dhe provoni sërish.",
+  "operator_not_found": "Operatori nuk u gjet",
+  "cancel_change_failed": "Anulimi i ndryshimit dështoi",
+  "email_required": "Nevojitet email-i",
+  "email_already_current": "Ky është tashmë email-i juaj aktual",
+  "email_already_registered": "Ky email është regjistruar tashmë në HatchGrab",
+  "change_request_failed": "Krijimi i kërkesës për ndryshim dështoi",
+  "verification_email_failed": "Dërgimi i email-it të verifikimit dështoi",
+  "verification_request_not_found": "Kërkesa për verifikim nuk u gjet",
+  "email_already_verified": "Email-i është verifikuar tashmë",
+  "email_send_failed": "Dërgimi i email-it dështoi. Ju lutemi provoni sërish.",
+  "reset_email_failed": "Dërgimi i email-it të rivendosjes dështoi",
+  "token_and_password_required": "Nevojiten tokeni dhe fjalëkalimi",
+  "new_password_too_short": "Fjalëkalimi duhet të ketë të paktën {min, plural, one {# karakter} other {# karaktere}}.",
+  "reset_link_invalid": "Lidhje rivendosjeje e pavlefshme ose e skaduar. Ju lutemi kërkoni një të re.",
+  "reset_link_used": "Kjo lidhje rivendosjeje është përdorur tashmë. Ju lutemi kërkoni një të re.",
+  "reset_link_expired": "Kjo lidhje rivendosjeje ka skaduar. Ju lutemi kërkoni një të re.",
+  "account_not_found": "Llogaria nuk u gjet.",
+  "password_update_failed": "Përditësimi i fjalëkalimit dështoi. Ju lutemi provoni sërish.",
+  "no_fields_to_update": "Nuk ka fusha për t’u përditësuar",
+  "upload_unreadable": "Ngarkimi juaj nuk u lexua — ju lutemi provoni sërish.",
+  "file_too_big": "Ky skedar është shumë i madh (maks. {mb} MB). Një foto e zakonshme e menusë suaj mjafton.",
+  "file_type_unsupported": "Ky lloj skedari nuk mbështetet — dërgoni një foto ose një PDF të menusë suaj.",
+  "text_too_long": "Është shumë tekst — ju lutemi ngjitni vetëm menunë.",
+  "menu_missing": "Shtoni një foto të menusë suaj ose ngjiteni atë këtu.",
+  "demo_rate_limited": "Keni krijuar tashmë disa demo. Provoni sërish pas pak, ose na kontaktoni dhe do t’ju ndihmojmë.",
+  "demo_build_failed": "Ndodhi një gabim gjatë krijimit të demos suaj. Ju lutemi provoni sërish.",
+  "request_unreadable": "Nuk mundëm ta lexonim.",
+  "email_not_valid": "Kjo nuk duket si adresë email-i.",
+  "try_again_shortly": "Ju lutemi provoni sërish pas pak.",
+  "invalid_request_body": "Përmbajtje e pavlefshme e kërkesës",
+  "not_demo_session": "Nuk është seancë demo",
+  "demo_not_found": "Demoja nuk u gjet",
+  "not_demo_truck": "Nuk është food truck demo",
+  "new_service_failed": "Nuk mund të fillonte një shërbim i ri",
+  "not_available": "Nuk është i disponueshëm.",
+  "demo_save_failed": "Nuk arritëm ta ruanim tani — ju lutemi provoni sërish.",
+  "deletion_view_owner_only": "Vetëm pronari i llogarisë mund ta shohë këtë.",
+  "deletion_sign_in": "Hyni për të kërkuar fshirjen e llogarisë.",
+  "deletion_owner_only": "Vetëm pronari i llogarisë mund të kërkojë fshirjen.",
+  "confirm_mismatch": "Shkruani DELETE për ta konfirmuar.",
+  "partial_stamp": "Kërkesa juaj për fshirje u regjistrua, por nuk arritëm të ndalnim porositë në çdo food truck. Kontaktoni mbështetjen."
+ },
+ "emailAccount": {
+  "newEmail": {
+   "subject": "Verifikoni adresën tuaj të re të email-it në HatchGrab",
+   "heading": "Verifikoni adresën tuaj të email-it",
+   "button": "Verifiko adresën e email-it"
+  },
+  "changeEmail": {
+   "requested": "Keni kërkuar të ndryshoni adresën tuaj të email-it në HatchGrab me këtë adresë.",
+   "click": "Klikoni butonin më poshtë për ta verifikuar. Kjo lidhje skadon pas 24 orësh.",
+   "ignore": "Nëse nuk e keni kërkuar këtë ndryshim, mund ta injoroni pa problem këtë email.",
+   "stillActive": "Adresa juaj aktuale e email-it mbetet aktive."
+  },
+  "resendVerification": {
+   "requested": "Keni kërkuar të ndryshoni email-in tuaj në HatchGrab me këtë adresë.",
+   "click": "Klikoni më poshtë për ta verifikuar. Kjo lidhje skadon pas 24 orësh.",
+   "ignore": "Nëse nuk e keni kërkuar këtë, injorojeni këtë email.",
+   "stillActive": "Email-i juaj aktual mbetet aktiv."
+  },
+  "passwordReset": {
+   "subject": "Rivendosni fjalëkalimin tuaj në HatchGrab",
+   "heading": "Rivendosni fjalëkalimin",
+   "requested": "Morëm një kërkesë për rivendosjen e fjalëkalimit të llogarisë suaj në HatchGrab.",
+   "click": "Klikoni butonin më poshtë për të zgjedhur një fjalëkalim të ri. Kjo lidhje skadon pas 1 ore.",
+   "button": "Rivendos fjalëkalimin",
+   "ignore": "Nëse nuk e keni kërkuar këtë, mund ta injoroni pa problem këtë email.",
+   "unchanged": "Fjalëkalimi juaj nuk do të ndryshojë derisa të klikoni lidhjen më sipër."
+  },
+  "deletionScheduled": {
+   "subject": "Llogaria juaj në HatchGrab është planifikuar për fshirje",
+   "received": "Kemi marrë një kërkesë për fshirjen e kësaj llogarie në HatchGrab.",
+   "orderingStopped": "<b>Porositë online u ndalën menjëherë</b> për: {trucks}.",
+   "noTrucks": "(asnjë food truck)",
+   "readable": "Paneli juaj mbetet\n    i disponueshëm për lexim gjatë {days, plural, one {# ditës} other {# ditëve}} në vijim.",
+   "scheduled": "Llogaria është planifikuar të fshihet më <b>{date}</b>.",
+   "cannotCancel": "<b>Kjo nuk mund të anulohet nga brenda aplikacionit.</b> Nëse nuk ishit ju, ose keni\n    ndryshuar mendje, përgjigjuni këtij email-i sa më shpejt të jetë e mundur.",
+   "kept": "Kur llogaria fshihet, heqim të dhënat tuaja personale dhe të dhënat e klientëve tuaj. Ruajmë\n    regjistra kontabël anonimë, të cilët jemi të detyruar me ligj t’i mbajmë."
+  }
+ },
+ "demoSaveEmail": {
+  "subject": "Demoja juaj në HatchGrab — ja lidhja për t’u rikthyer",
+  "heading": "Demoja juaj u ruajt",
+  "intro": "Ja lidhja për t’u rikthyer te demoja me menunë tuaj. Nuk nevojitet hyrje — thjesht shtypeni.",
+  "button": "Hap demon time",
+  "freshDay": "Sa herë që ktheheni, do të përgatisim një ditë të re pune, që të keni diçka për të provuar.",
+  "deletion": "Kjo është një demo, ndaj nuk e mbajmë përgjithmonë — do ta fshijmë atë dhe menunë më\n                <b>{date}</b> ({days, plural, one {# ditë} other {# ditë}}). Nëse regjistroheni para\n                kësaj date, menuja vjen me ju.",
+  "notSent": "U ruajt, por nuk arritëm ta dërgonim email-in tani."
+ },
+ "demoGetStarted": {
+  "upload": {
+   "bannerButton": "Ruaj menunë time →",
+   "heading": "Konfiguroni food truck-un tuaj",
+   "sub": "Menuja juaj kalon drejtpërdrejt.",
+   "privacy": "Do ta përdorim vetëm për të konfiguruar food truck-un tuaj dhe për t’ju dërguar lidhjen e demos — shihni <link>politikën tonë të privatësisë</link>."
+  },
+  "sample": {
+   "bannerButton": "Konfiguro food truck-un tim →",
+   "heading": "Konfiguroni food truck-un tuaj",
+   "sub": "Më pas do të ngarkoni menunë tuaj — zgjat një minutë.",
+   "privacy": "Do ta përdorim vetëm për të konfiguruar food truck-un tuaj dhe për t’ju dërguar lidhjen e demos — shihni <link>politikën tonë të privatësisë</link>."
+  },
+  "saveOnly": {
+   "bannerButton": "Ruaj menunë time →",
+   "heading": "Ruani demon tuaj",
+   "sub": "Do ta mbajmë për 14 ditë dhe do t’ju dërgojmë menjëherë me email një lidhje për t’u rikthyer.",
+   "privacy": "Do ta përdorim vetëm për t’ju dërguar lidhjen e demos — shihni <link>politikën tonë të privatësisë</link>."
+  },
+  "confirmationHeading": "Gjithçka është gati",
+  "postSaveButton": "Konfiguro food truck-un tim →",
+  "enterSetupButton": "Konfiguro food truck-un tim →",
+  "emailOnlyLink": "Vetëm më dërgoni me email një lidhje për t’u rikthyer te kjo demo",
+  "sendLinkButton": "Më dërgo lidhjen",
+  "savingButton": "Po ruhet…",
+  "continueButton": "Vazhdo →",
+  "createAccountButton": "Krijo llogarinë time →",
+  "retryButton": "Provo sërish",
+  "backToDemoButton": "Kthehu te demoja",
+  "savedStatus": "{hasDate, select, yes {✓ U ruajt — mbahet deri më {date}} other {✓ U ruajt}}",
+  "back": "Kthehu",
+  "close": "Mbyll",
+  "truckStepHeading": "Rreth food truck-ut tuaj",
+  "detailsStepHeading": "Përfundoni konfigurimin",
+  "stepper": {
+   "details": "Të dhënat tuaja",
+   "menu": "Menu",
+   "allergens": "Alergjenët",
+   "kitchen": "Konfigurimi i kuzhinës",
+   "schedule": "Orari"
+  },
+  "confirmEmailed": "Ju dërguam me email një lidhje që ju kthen drejt e te kjo demo — pa nevojë për hyrje.",
+  "confirmKeepUntil": "Do ta mbajmë deri më <b>{date}</b>. Menuja juaj vjen me ju kur ta konfiguroni siç duhet.",
+  "loading": "Po ngarkohet…",
+  "firstName": "Emri",
+  "lastName": "Mbiemri",
+  "truckName": "Emri i food truck-ut",
+  "truckNamePlaceholder": "p.sh. Kuzhina e Fshatit",
+  "cuisine": "Kuzhina",
+  "logoLabel": "Logoja <opt>(opsionale)</opt>",
+  "logoPreviewAlt": "Pamje paraprake e logos",
+  "changeLogo": "Ndrysho logon",
+  "removeLogo": "Hiq",
+  "uploadLogo": "📷 Ngarko logon",
+  "readyTitle": "Llogaria juaj është gati",
+  "readyBody": "Tani le të përfundojmë konfigurimin e food truck-ut tuaj — menunë, alergjenët dhe kuzhinën.",
+  "hangTight": "Prisni pak — po konfigurojmë gjithçka.",
+  "stage": {
+   "account": "Po krijohet llogaria juaj",
+   "truck": "Po konfigurohet food truck-u juaj",
+   "menu": "Po ngarkohet menuja juaj"
+  },
+  "stageState": {
+   "done": "u krye",
+   "recognised": "keni tashmë një llogari",
+   "failed": "dështoi",
+   "active": "në proces",
+   "pending": "në pritje"
+  },
+  "signIn": "Hyr",
+  "phone": "Telefoni",
+  "onWhatsapp": "Ky numër është në WhatsApp",
+  "email": "Email",
+  "emailPlaceholder": "ju@foodtruckuijuaj.al",
+  "settingUpAs": "Po konfigurohet si <b>{email}</b> <change>ndrysho</change>",
+  "password": "Fjalëkalimi",
+  "passwordPlaceholder": "Të paktën 8 karaktere",
+  "hidePassword": "Fshih fjalëkalimin",
+  "showPassword": "Shfaq fjalëkalimin",
+  "promoLabel": "Keni një kod? <opt>(opsionale)</opt>",
+  "promoPlaceholder": "Shkruajeni këtu",
+  "partnerCodeLabel": "Kod partneri ose promocional <optional>(opsionale)</optional>",
+  "partnerCodeApply": "Apliko",
+  "partnerCodeApplied": "Kodi u aplikua: {deal} ({partner})",
+  "partnerCodeInvalid": "Ky kod nuk është i vlefshëm.",
+  "partnerCodeExpired": "Ky kod ka skaduar.",
+  "partnerDealExtraMonths": "{months, plural, one {# muaj shtesë falas} other {# muaj shtesë falas}}",
+  "partnerDealPercentOff": "{pct}% zbritje për {months, plural, one {# muaj} other {# muaj}}",
+  "partnerDealPercentOffPlan": "{pct}% zbritje te paketa {plan} për {months, plural, one {# muaj} other {# muaj}}",
+  "partnerDealFixedPrice": "paketa {plan} me {price} në muaj për {months, plural, one {# muaj} other {# muaj}}",
+  "partnerDealPlanOffer": "çmim i veçantë te paketa {plan} për {months, plural, one {# muaj} other {# muaj}}",
+  "agreeTerms": "Pranoj <terms>Kushtet</terms> dhe <privacy>Politikën e privatësisë</privacy>.",
+  "freeMonth": "{months, plural, =0 {Prova juaj falas fillon kur regjistroheni.} one {Muaji juaj i parë është falas, duke filluar nga regjistrimi.} other {# muajt e parë janë falas, duke filluar nga regjistrimi.}}",
+  "fieldError": {
+   "firstName": "Na tregoni emrin tuaj.",
+   "lastName": "Dhe mbiemrin tuaj.",
+   "truck": "Jepini një emër food truck-ut tuaj.",
+   "cuisine": "Na tregoni çfarë gatuani.",
+   "phoneMissing": "Shtoni një numër telefoni — e përdorim edhe ne, edhe klientët për t’ju kontaktuar.",
+   "email": "Shkruani një adresë email-i të vlefshme.",
+   "password": "Fjalëkalimi duhet të ketë të paktën 8 karaktere.",
+   "terms": "Ju lutemi pranoni kushtet për të vazhduar."
+  },
+  "error": {
+   "saveFailed": "Nuk u ruajt — provoni sërish.",
+   "savedNoEmail": "U ruajt — por nuk arritëm ta dërgonim lidhjen me email tani.",
+   "unreachable": "Nuk arritëm të lidhemi tani — provoni sërish.",
+   "createAccountFailed": "Llogaria juaj nuk u krijua.",
+   "truckCreateFailed": "Llogaria juaj është gati, por nuk arritëm të krijonim food truck-un tuaj. Provoni sërish.",
+   "truckUnreachable": "Llogaria juaj është gati, por nuk arritëm të krijonim food truck-un tuaj tani. Provoni sërish.",
+   "truckNoToken": "Food truck-u juaj është konfiguruar, por nuk arritëm ta hapnim tani. Provoni sërish."
+  }
+ },
+ "demoUpload": {
+  "steps": {
+   "reading": "Po lexohet menuja juaj…",
+   "found": "U gjetën artikujt tuaj…",
+   "kitchen": "Po konfigurohet kuzhina juaj…",
+   "page": "Po ndërtohet faqja juaj e porosive…",
+   "almost": "Pothuajse gati…"
+  },
+  "templateSteps": {
+   "truck": "Po ndërtohet food truck-u shembull…",
+   "menu": "Po konfigurohet menuja…",
+   "kitchen": "Po konfigurohet kuzhina…",
+   "page": "Po ndërtohet faqja e porosive…",
+   "almost": "Pothuajse gati…"
+  },
+  "dialogLabel": "Ngarkoni menunë tuaj",
+  "heading": "✨ Ngarkoni menunë tuaj",
+  "failedHeading": "Nuk arritëm ta lexonim atë menu",
+  "close": "Mbyll",
+  "intro": "Një foto e tabelës së menusë, një pamje ekrani, një PDF, ose ngjiteni si tekst. AI-ja jonë e lexon dhe ju ndërton një faqe porosish që funksionon — me artikujt dhe çmimet tuaja — për më pak se 60 sekonda. Pa regjistrim, pa kartë.",
+  "failedIntro": "Ndonjëherë një foto është shumë e errët, e pjerrët ose e shkruar me dorë. Kjo është punë jona, jo diçka që keni bërë gabim ju. Disa mënyra për të vazhduar:",
+  "usually": "Zakonisht kjo zgjat më pak se 60 sekonda.",
+  "slow": "Po zgjat më shumë se zakonisht — me menutë e mëdha ndodh ndonjëherë.",
+  "keepWaiting": "Vazhdo pritjen",
+  "sampleWhileYouWait": "Ose shikoni përreth me një menu shembull ndërsa prisni",
+  "standIn": "Kjo <b>nuk do të jetë menuja juaj</b> — është një menu zëvendësuese, që të shihni si funksionon.",
+  "seeSample": "Shih menunë shembull",
+  "tryAgain": "Provo sërish",
+  "tryPhotoAgain": "Provo sërish këtë foto",
+  "tryDifferent": "Provo një foto tjetër",
+  "uploadAnother": "← Ngarko një foto tjetër",
+  "orSample": "Ose shikoni përreth me një menu shembull",
+  "orBuild": "Ose do ta ndërtojmë ne për ju",
+  "buildSent": "✓ Faleminderit — e morëm. Do t’ju shkruajmë me email.",
+  "buildBody": "Lini email-in tuaj dhe një person i vërtetë do ta fusë menunë tuaj dhe do t’ju dërgojë lidhjen.",
+  "emailPlaceholder": "ju@foodtruckuijuaj.al",
+  "sending": "…",
+  "send": "Dërgo",
+  "noPhoto": "Nuk keni një foto të menusë në dorë?",
+  "noPhotoBody": "Shikoni përreth me një food truck shembull — mund ta ngarkoni menunë tuaj kurdo.",
+  "build": "Ndërto demon time →",
+  "nothingPublished": "Asgjë nuk është publikuar — vetëm ju mund ta shihni.",
+  "error": {
+   "somethingWrong": "Ndodhi një gabim. Ju lutemi provoni sërish.",
+   "serverUnreachable": "Nuk arritëm të lidheshim me serverin. Kontrolloni lidhjen dhe provoni sërish.",
+   "sendFailed": "Nuk u dërgua — provoni sërish."
+  },
+  "fields": {
+   "uploadLabel": "Ngarko skedarin e menusë",
+   "dropHere": "Lëshojeni menunë këtu",
+   "dragOrTap": "Tërhiqeni dhe lëshojeni ose shtypni për të zgjedhur",
+   "fileTypes": "Imazh ose PDF",
+   "or": "ose",
+   "pasteLabel": "Ngjit tekstin e menusë",
+   "pastePlaceholder": "Ngjitni menunë këtu — emrat e artikujve, përshkrimet, çmimet..."
+  },
+  "emailLabel": "Email-i juaj",
+  "emailNote": "Do t’ju dërgojmë me email një lidhje për demon tuaj dhe mund t’ju kontaktojmë për konfigurimin e HatchGrab. <link>Politika e privatësisë</link>",
+  "marketing": "Më dërgoni herë pas here këshilla dhe lajme nga HatchGrab",
+  "emailInvalid": "Ju lutemi shkruani një adresë email-i të vlefshme."
+ },
+ "provisionContent": {
+  "standardCategories": {
+   "starters": "Antipasta",
+   "mains": "Pjata kryesore",
+   "burgers": "Burgera",
+   "pizza": "Pica",
+   "wrapsSandwiches": "Rrotulla dhe sanduiçe",
+   "sides": "Garnitura",
+   "dipsSauces": "Salca",
+   "desserts": "Ëmbëlsira",
+   "drinks": "Pije",
+   "kidsMenu": "Menu për fëmijë",
+   "specials": "Specialitete",
+   "other": "Të tjera"
+  },
+  "demoEventName": "Event demo",
+  "firstVanName": "Furgoni 1",
+  "demoCategories": {
+   "pizza": "Pica",
+   "burgers": "Burgera",
+   "mains": "Pjata kryesore",
+   "sides": "Garnitura",
+   "drinks": "Pije"
+  },
+  "demoTemplates": {
+   "pizza": {
+    "label": "🍕 Food truck me pica",
+    "items": {
+     "margherita": "Margherita",
+     "pepperoni": "Pepperoni",
+     "ndujaHoney": "Nduja dhe mjaltë",
+     "fourCheese": "Katër djathëra",
+     "gardenVeg": "Me perime",
+     "garlicBread": "Bukë me hudhër",
+     "rocketParmesan": "Rukola dhe parmixhano",
+     "olives": "Ullinj",
+     "sanPellegrino": "San Pellegrino",
+     "coke": "Coca-Cola"
+    }
+   },
+   "burgers": {
+    "label": "🍔 Food truck me burgera",
+    "items": {
+     "classicCheeseburger": "Cheeseburger klasik",
+     "doubleBacon": "Burger dopio me proshutë",
+     "buttermilkChicken": "Pulë me dhallë",
+     "halloumiStack": "Burger me hallumi",
+     "smashBurger": "Smash burger",
+     "skinOnFries": "Patate të skuqura me lëkurë",
+     "loadedCheeseFries": "Patate të skuqura me djathë",
+     "onionRings": "Unaza qepe",
+     "craftLemonade": "Limonadë artizanale",
+     "coke": "Coca-Cola"
+    }
+   },
+   "curries": {
+    "label": "🍛 Food truck me kerri",
+    "items": {
+     "chickenTikkaMasala": "Pulë tikka masala",
+     "lambRoganJosh": "Rogan josh me qengj",
+     "chanaMasala": "Chana masala",
+     "butterChicken": "Pulë me gjalpë",
+     "saagPaneer": "Saag paneer",
+     "pilauRice": "Oriz pilaf",
+     "garlicNaan": "Naan me hudhër",
+     "onionBhaji": "Bhaji me qepë",
+     "mangoLassi": "Lassi me mango",
+     "coke": "Coca-Cola"
+    }
+   }
+  }
+ },
+ "manageAllergens": {
+  "cardEditor": {
+   "title": "Karta juaj e alergjenëve",
+   "intro": "Klientët e shohin këtë <b>pikërisht siç e shkruani</b> — asgjë nuk rishkruhet. Shkruajeni ose ngjiteni më poshtë, ose ngarkoni një foto/PDF dhe ne do ta lexojmë tekstin që ta kontrolloni.",
+   "empty": "Ende nuk ka kartë alergjenësh.",
+   "placeholder": "p.sh. Të gjitha pjatat tona me peshk dhe patate përmbajnë grurë dhe qumësht. Friteza përdoret edhe për artikuj që përmbajnë gluten dhe fruta me lëvozhgë. Ka opsione vegane — pyesni stafin.",
+   "reading": "Po lexohet imazhi…",
+   "upload": "📷 Ngarko imazh / PDF",
+   "uploadNote": "Ne e lexojmë tekstin nga imazhi juaj që ta rishikoni — imazhi nuk ruhet."
+  },
+  "cardUpload": {
+   "dishFallback": "Pjatë",
+   "question": "Keni një kartë alergjenësh për të ngarkuar?",
+   "perDish": "{detected, select, yes {Ngarkoni një dhe do ta përdorim për të ndërtuar alergjenët e pjatave tuaja. Alergjenët e gjetur do të shfaqen në faqen tjetër, ku konfirmoni çdo pjatë.} other {Ngarkoni një dhe do ta përdorim për të ndërtuar alergjenët e pjatave tuaja.}}",
+   "cardOnly": "Ngarkoni kartën e alergjenëve që do të shohin klientët.",
+   "yes": "Po",
+   "no": "Jo",
+   "noProblem": "S’ka problem — nuk ju nevojitet. Vazhdoni me butonin më poshtë.",
+   "analysing": "Po analizohet karta…",
+   "dropzone": "Tërhiqeni dhe lëshojeni ose shtypni për të zgjedhur",
+   "imageOrPdf": "Imazh ose PDF",
+   "or": "ose",
+   "pastePlaceholder": "Ngjitni këtu tekstin e kartës së alergjenëve…",
+   "process": "Përpuno kartën",
+   "cardRead": "Karta u lexua ✓",
+   "unmatchedHeading": "Këto nuk u përputhën automatikisht — caktojini te një pjatë ose mbyllini",
+   "quotedName": "“{name}”",
+   "ambiguous": "E paqartë — përputhet me disa pjata; zgjidhni të duhurën.",
+   "assignTo": "Cakto te pjata…",
+   "dismiss": "Mbyll",
+   "kitchenNotes": "Shënime të kuzhinës (ruhen te informacioni juaj për alergjenët)",
+   "matchSummary": "{n, plural, =0 {Të përputhura me një pjatë: {matched}.} one {Të përputhura me një pjatë: {matched}. {count} kërkon caktimin tuaj.} other {Të përputhura me një pjatë: {matched}. {count} kërkojnë caktimin tuaj.}}",
+   "blanketInfo": "Karta juaj thotë se në të gjitha pjatat mund të ketë: {list}. Do t’i shtojmë te alergjenët që përdor kuzhina juaj. Mund t’i kontrolloni në hapin e fundit."
+  },
+  "savedCard": {
+   "showLess": "Shfaq më pak",
+   "showMore": "Shfaq më shumë",
+   "fileOnly": "Për këtë food truck është ruajtur një skedar karte, por nuk është ruajtur tekst përmbledhës. Hapni origjinalin për ta lexuar.",
+   "viewOriginal": "Shih kartën origjinale"
+  },
+  "wizard": {
+   "toast": {
+    "readFailed": "Karta e alergjenëve nuk u lexua — provoni sërish",
+    "confirmed": "U konfirmua: {name}",
+    "undo": "Zhbëj",
+    "saveFailed": "Nuk u ruajt — ju lutemi provoni sërish",
+    "imageFailed": "Ky imazh nuk u lexua — shkruajeni ose ngjiteni kartën",
+    "cardRead": "{n, plural, one {Karta u lexua — të përputhura: {matched}, {count} kërkon caktim} other {Karta u lexua — të përputhura: {matched}, {count} kërkojnë caktim}}"
+   },
+   "genericWarn": {
+    "text": "U gjet “{generic}”, por nuk është specifik. Zgjidhni {picks} nëse kjo pjatë përmban {family} — ose lërini të pazgjedhur nëse nuk përmban.",
+    "andOr": "{a} dhe/ose {b}"
+   },
+   "badge": {
+    "justConfirmed": "✓ U konfirmua",
+    "confirmed": "Konfirmuar",
+    "needsReview": "Kërkon rishikim"
+   },
+   "confirm": {
+    "confirming": "Po konfirmohet…",
+    "confirmed": "Konfirmuar ✓",
+    "confirm": "Konfirmo",
+    "changed": "· ndryshuar",
+    "changedTitle": "Ndryshuar që nga konfirmimi i fundit — konfirmojeni sërish"
+   },
+   "allergens": "Alergjenët",
+   "dietary": "Dieta",
+   "uncategorised": "Pa kategori",
+   "review": {
+    "progress": "{confirmed} nga {total} të konfirmuara",
+    "allConfirmed": "✓ Të gjitha të konfirmuara",
+    "list": "Listë",
+    "table": "Tabelë",
+    "detected": "Gjetur nga menuja juaj — <b>kontrollojini</b>. Alergjenët mbeten të fshehur për klientët derisa të konfirmoni çdo pjatë.",
+    "viewOnly": "👁 Vetëm për shikim — vetëm pronari mund t’i konfirmojë ose t’i ndryshojë alergjenët.",
+    "emptyTitle": "Nuk ka artikuj në menu",
+    "emptyBody": "Shtoni fillimisht artikuj në menu, pastaj caktoni alergjenët e tyre këtu.",
+    "dish": "Pjata",
+    "status": "Statusi"
+   },
+   "cardPanel": {
+    "reading": "Po lexohet informacioni për alergjenët…",
+    "saved": "🛡️ Karta e alergjenëve u ruajt",
+    "viewOriginal": "Shih kartën origjinale",
+    "replace": "Zëvendëso kartën",
+    "uploadHelp": "Ngarkoni kartën e alergjenëve (foto/PDF) ose ngjitni informacionin për alergjenët — AI-ja jonë e strukturon për klientët.",
+    "add": "Shto kartën e alergjenëve",
+    "viewOnly": "👁 Vetëm për shikim — vetëm pronari mund ta shtojë kartën e alergjenëve.",
+    "intro": "Klientët do ta shohin këtë kartë si referencën e alergjenëve të menusë. Alergjenët për çdo pjatë mbeten të fshehur në modalitetin “vetëm kartë” (të dhënat e pjatave ruhen, në rast se më vonë kaloni te alergjenët për çdo pjatë)."
+   },
+   "subtitle": {
+    "choose": "Zgjidhni si t’i shohin klientët informacionet për alergjenët",
+    "card": "Shtoni kartën e alergjenëve",
+    "cardOptional": "Shtoni një kartë alergjenësh (opsionale)",
+    "review": "Kontrolloni dhe konfirmoni çdo pjatë",
+    "kitchen": "Hapi i fundit: kuzhina juaj"
+   },
+   "heading": {
+    "import": "Alergjenët",
+    "standalone": "Konfigurimi i alergjenëve"
+   },
+   "nav": {
+    "next": "Tjetër →",
+    "back": "← Kthehu",
+    "skip": "Kapërce tani për tani",
+    "saving": "Po ruhet…",
+    "done": "U krye",
+    "saveLater": "Ruaj dhe përfundo më vonë",
+    "close": "Mbyll",
+    "finish": "Përfundo",
+    "skipImport": "Kapërce konfigurimin e alergjenëve tani për tani"
+   },
+   "hint": {
+    "skipDefers": "Kapërcimi vetëm e shtyn — pjatat që nuk i keni konfirmuar mbeten të fshehura për klientët derisa të konfirmohen alergjenët e tyre.",
+    "importIncomplete": "Konfirmoni çdo pjatë për të vazhduar — ose “Kapërce konfigurimin e alergjenëve tani për tani”."
+   },
+   "recipeOnly": "Vetëm ato që janë në recetën e kësaj pjate.",
+   "tooMany": "Alergjenë të shënuar: {count}. A janë vërtet të gjithë në recetën e kësaj pjate? Alergjenët e përdorur në pjata të tjera nuk shkojnë këtu. Ato mund t’i shtoni në hapin e fundit."
+  },
+  "kitchen": {
+   "title": "Cilët alergjenë përdor kuzhina juaj?",
+   "body": "Kemi shënuar ata që janë tashmë në pjatat tuaja. Shënoni çdo tjetër që përdorni në food truck, për shembull për specialitetet.",
+   "legendDishes": "në pjatat tuaja",
+   "legendAdded": "shtuar nga ju",
+   "customersSee": "Klientët do të shohin:",
+   "confirm": "Konfirmoj se alergjenët për çdo pjatë janë të saktë dhe do t’i mbaj të përditësuar."
+  }
+ },
+ "manageUpsells": {
+  "heading": "Sugjerime",
+  "intro": "Nxitini klientët të shtojnë diçka më shumë. Kur dikush porosit nga një kategori, sugjeroni artikuj nga një tjetër — një pije me picën, një salcë me burgerin.",
+  "add": "+ Shto sugjerim",
+  "toast": {
+   "updated": "Rregulli i sugjerimit u përditësua",
+   "added": "Rregulli i sugjerimit u shtua",
+   "removed": "Rregulli u hoq"
+  },
+  "whenAdds": "Kur klienti shton…",
+  "suggestFrom": "Sugjero artikuj nga…",
+  "chooseCategory": "Zgjidh kategorinë",
+  "cancel": "Anulo",
+  "saveChanges": "Ruaj ndryshimet",
+  "addRule": "Shto rregullin",
+  "empty": "Ende nuk ka rregulla sugjerimi.",
+  "confirmRemove": "Të hiqet rregulli i sugjerimit “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Sugjerohet deri në {count} artikull} other {Sugjerohen deri në {count} artikuj}}"
+ },
+ "manageExtras": {
+  "toast": {
+   "groupCreated": "Grupi u krijua",
+   "groupRenamed": "Grupi u riemërtua",
+   "groupDeleted": "Grupi u fshi",
+   "optionUpdated": "Opsioni u përditësua",
+   "optionAdded": "Opsioni u shtua",
+   "optionRemoved": "Opsioni u hoq"
+  },
+  "description": "Shtoni opsione me pagesë ose falas që klientët mund t’i zgjedhin kur porositin — p.sh. Djathë shtesë +{price}, Pa qepë {zero}",
+  "note": "Krijoni një grup opsionesh dhe caktojeni te një kategori e menusë. Të gjithë artikujt e asaj kategorie do t’i ofrojnë këto opsione kur klientët porositin.",
+  "addLabel": "+ Shto personalizim",
+  "emptyTitle": "Ende nuk ka shtesa të personalizuara",
+  "optionCount": "{n, plural, one {{count} opsion} other {{count} opsione}}",
+  "dishCount": "{n, plural, one {{count} pjatë} other {{count} pjata}}",
+  "rename": "Riemërto",
+  "deleteGroup": "Fshi grupin",
+  "required": "E detyrueshme",
+  "requiredHint": "(klienti duhet të zgjedhë)",
+  "selection": "Zgjedhja:",
+  "chooseOne": "Zgjidh një",
+  "chooseMultiple": "Zgjidh disa",
+  "maxChoices": "Numri maksimal i zgjedhjeve",
+  "upTo": "Deri në {n}",
+  "unlimited": "Pa kufi",
+  "options": "Opsionet",
+  "optionType": "{type, select, add {shto} remove {hiq} other {{type}}}",
+  "soldOut": "Mbaroi",
+  "left": "Mbeten: {count}",
+  "priceAdd": "+{price}",
+  "priceRemove": "-{price}",
+  "free": "Falas",
+  "addOption": "+ Shto opsion",
+  "offeredOn": "Ofrohet te",
+  "editPerDish": "Ndrysho opsionet për çdo pjatë",
+  "notOffered": "Ende nuk ofrohet te asnjë pjatë.",
+  "catPartial": "{name} ({n} nga {m})",
+  "hiddenOptions": "* {dish}: {options} të fshehura",
+  "matrix": {
+   "title": "{group} — opsionet për çdo pjatë",
+   "dish": "Pjata",
+   "include": "Përfshi",
+   "removeAll": "Hiq {group} nga të gjitha: {category}",
+   "offerAll": "Ofro {group} te të gjitha: {category}",
+   "offerCount": "{n} nga {total} e ofrojnë",
+   "offeredRemoveGroup": "Ofrohet — klikoni për ta hequr grupin nga kjo pjatë",
+   "notOfferedAdd": "Nuk ofrohet — klikoni për ta shtuar",
+   "addGroupFirst": "Shtojeni fillimisht grupin te kjo pjatë",
+   "requiredNeedsOne": "Një grup i detyrueshëm ka nevojë për të paktën një opsion për çdo pjatë",
+   "offeredRemove": "Ofrohet — klikoni për ta hequr",
+   "help": "Shënoni “Përfshi” për ta shtuar grupin te një pjatë, pastaj shënoni cilat opsione shfaq. Ruhet menjëherë."
+  },
+  "newGroup": {
+   "title": "Shtesë e re e personalizuar",
+   "name": "Emri i grupit",
+   "placeholder": "p.sh. Shtesa për picën"
+  },
+  "option": {
+   "editTitle": "Ndrysho opsionin",
+   "newTitle": "Opsion i ri",
+   "name": "Emri i opsionit",
+   "placeholder": "p.sh. Djathë shtesë",
+   "type": "Lloji",
+   "add": "Shto",
+   "remove": "Hiq",
+   "price": "Ndryshimi i çmimit ({symbol})",
+   "priceHint": "0 = falas",
+   "soldOut": "Mbaroi",
+   "stock": "Sasia në stok <opt>(opsionale)</opt>",
+   "stockPlaceholder": "∞ pa ndjekje",
+   "sharedPool": "Sasi e përbashkët për të gjitha pjatat që përdorin këtë opsion.",
+   "allergens": "Alergjenët",
+   "dietary": "Dieta",
+   "allergensHelp": "Alergjenët e vetë këtij opsioni (të ndarë nga pjata)"
+  },
+  "cancel": "Anulo",
+  "save": "Ruaj",
+  "title": "Shtesa të personalizuara",
+  "confirmDeleteGroup": "Të fshihet “{name}”? Të gjitha opsionet do të hiqen dhe grupi do të hiqet nga të gjitha kategoritë.",
+  "emptyBody": "Krijoni një grup si “Shtesa për picën” dhe shtoni opsione si “Djathë shtesë +{price}”",
+  "saving": "Po ruhet…",
+  "uncategorized": "Pa kategori"
+ },
+ "manageDeals": {
+  "toast": {
+   "updated": "Menuja kombo u përditësua",
+   "created": "Menuja kombo u krijua",
+   "removed": "Menuja kombo u hoq"
+  },
+  "confirmRemove": "Të hiqet kjo menu kombo?",
+  "heading": "Menu kombo",
+  "count": "{n, plural, one {{count} menu kombo e konfiguruar} other {{count} menu kombo të konfiguruara}}",
+  "newDeal": "+ Menu kombo e re",
+  "emptyTitle": "Ende nuk ka menu kombo",
+  "active": "Aktive",
+  "off": "Joaktive",
+  "autoApply": "Aplikim automatik",
+  "manual": "Manuale",
+  "hidden": "Aktualisht e fshehur për klientët — {warning}",
+  "edit": "Ndrysho",
+  "delete": "Fshi",
+  "editTitle": "Ndrysho menunë kombo",
+  "newTitle": "Menu kombo e re",
+  "name": "Emri i menusë kombo",
+  "namePlaceholder": "p.sh. Menu kombo dreke",
+  "description": "Përshkrimi",
+  "descriptionPlaceholder": "Çdo pica + pije + salcë",
+  "price": "Çmimi i menusë kombo",
+  "originalPrice": "Çmimi origjinal",
+  "originalPlaceholder": "lëre bosh = automatik",
+  "originalHint": "bosh = llogaritet nga artikujt",
+  "slots": "Vendet për artikujt (kategoritë e kërkuara për këtë menu kombo)",
+  "slot": "Vendi {n}",
+  "notUsed": "— Nuk përdoret —",
+  "dealActive": "Menuja kombo aktive",
+  "applyHeading": "Apliko në evente",
+  "applyHelp": "Zgjidhni nëse kjo menu kombo aplikohet automatikisht në eventet tuaja",
+  "applyAll": "Apliko automatikisht në të gjitha eventet e ardhshme",
+  "applyAllHelp": "Kjo menu kombo do të jetë aktive në çdo event të ri që krijoni. Gjithsesi mund ta çaktivizoni për evente të caktuara te Orari.",
+  "manualTitle": "Zgjidh manualisht për çdo event",
+  "applyAllNote": "Kjo menu kombo do t’u shtohet eventeve të reja. Për eventet ekzistuese, shkoni te Orari për të menaxhuar menutë kombo për çdo event.",
+  "cancel": "Anulo",
+  "save": "Ruaj menunë kombo",
+  "emptyBody": "Krijoni një menu kombo si “Menu kombo dreke — çdo pica + pije + salcë për {price}”",
+  "manualHelp": "Kjo menu kombo nuk do të shfaqet në evente nëse nuk e aktivizoni te skeda Orari.",
+  "saving": "Po ruhet…"
+ },
+ "eventTypes": {
+  "title": "Llojet e eventeve",
+  "newTypeButton": "+ Lloj i ri eventi",
+  "close": "Mbyll",
+  "loading": "Po ngarkohet…",
+  "missingTitle": "Llojet e eventeve nuk janë aktivizuar ende.",
+  "missingBody": "Përditësimi i bazës së të dhënave për këtë funksion nuk është zbatuar. Asgjë nuk është prishur — çdo event po përdor konfigurimin tuaj të zakonshëm.",
+  "column": "Kolona",
+  "vanGone": "Ai furgon nuk ekziston më.",
+  "typeGone": "Ai lloj nuk ekziston më.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Më shumë për: {name}",
+  "rename": "Riemërto",
+  "moveLeft": "Lëviz majtas",
+  "moveRight": "Lëviz djathtas",
+  "delete": "Fshi",
+  "sections": {
+   "vans": "FURGONËT",
+   "prices": "ÇMIMET",
+   "itemPrices": "ÇMIMET E ARTIKUJVE",
+   "service": "SHËRBIMI"
+  },
+  "labelFor": "{label} për {name}",
+  "intervalEvery": "Çdo {mins} min",
+  "noTypes": "Ende nuk keni lloje eventesh, ndaj çdo event përdor konfigurimin tuaj të zakonshëm.",
+  "renameTitle": "Riemërtoni këtë lloj",
+  "name": "Emri",
+  "cancel": "Anulo",
+  "save": "Ruaj",
+  "copyVanOne": "Kopjo cilësimet e Furgonit 1",
+  "thisType": "ky lloj",
+  "matchTitle": "Ta barazojmë “{name}” me llojin Standard?",
+  "matchKeeps": "Çdo gjë që keni ndryshuar në panelin e një eventi të vetëm mbetet siç është, dhe çmimet e këtij lloji nuk ndryshojnë.",
+  "matchWillUse": "Do të përdorë: {summary}",
+  "deleteTitle": "Të fshihet “{name}”?",
+  "deleteBody": "{n, plural, =0 {Asnjë event i ardhshëm nuk përdor “{name}”.} one {{count} event i ardhshëm përdor “{name}”. Do të kthehet te Standard.} other {{count} evente të ardhshme përdorin “{name}”. Do të kthehen te Standard.}} Çdo gjë që keni ndryshuar në një event të vetëm mbetet siç është.",
+  "keep": "Mbaje",
+  "phone": {
+   "standardTag": "Standard",
+   "defaultTag": "i paracaktuar",
+   "vanSetup": "Konfigurimi i zakonshëm i këtij furgoni — përdoret në çdo event pa lloj.",
+   "standardSetup": "Konfigurimi juaj i zakonshëm — përdoret në çdo event pa lloj.",
+   "cardSummary": "{upcoming, plural, one {{upcomingCount} event i ardhshëm} other {{upcomingCount} evente të ardhshme}} · {changed, plural, =0 {ende asgjë e ndryshuar} one {{changedCount} nga {total} i ndryshuar} other {{changedCount} nga {total} të ndryshuara}}",
+   "noMenuItems": "Ende nuk ka artikuj në menu — shtojini te Menu › Artikujt."
+  },
+  "newType": {
+   "title": "Lloj i ri eventi",
+   "namePlaceholder": "p.sh. Festë shkolle",
+   "help": "Shtypni një emër ose shkruani tuajin. Fillon si kopje e llojit Standard, dhe ndryshimet e mëvonshme te Standard nuk e ndryshojnë. Pastaj ndryshoni çfarë të doni.",
+   "create": "Krijo",
+   "chips": {
+    "festival": "Festival",
+    "pub": "Bar",
+    "market": "Treg",
+    "privateHire": "Food truck për evente"
+   }
+  },
+  "select": {
+   "label": "Lloji i eventit",
+   "usual": "Zakonisht për këtë vend: {name}."
+  },
+  "summary": {
+   "normalSetup": "Konfigurimi juaj i zakonshëm",
+   "sameAsStandard": "Njësoj si Standard",
+   "buzzersOn": "pagerët aktivë",
+   "buzzersOff": "pagerët joaktivë",
+   "takeCashOn": "pranimi i keshit aktiv",
+   "takeCashOff": "pranimi i keshit joaktiv",
+   "markReadyOn": "hapi “shëno si gati” aktiv",
+   "markReadyOff": "hapi “shëno si gati” joaktiv",
+   "collectionEvery": "marrje çdo {mins} min",
+   "offlineOff": "mbrojtja offline joaktive",
+   "offlineKeepTaking": "offline: vazhdon marrja e porosive",
+   "offlinePause": "offline: porositë në pauzë"
+  },
+  "errors": {
+   "somethingWentWrong": "Ndodhi një gabim",
+   "couldNotLoad": "Nuk u ngarkua",
+   "couldNotSave": "Nuk u ruajt",
+   "noVans": "Ky food truck nuk ka furgonë për të ndryshuar."
+  }
+ },
+ "privateEvents": {
+  "publicName": "Event privat",
+  "chip": "Privat",
+  "grid": {
+   "orderingSection": "POROSITË",
+   "linkRowLabel": "Merr porosi me lidhje private dhe kod QR",
+   "columnTitle": "Lloji i integruar Privat. Nuk mund të riemërtohet, zhvendoset ose fshihet."
+  },
+  "form": {
+   "help": "Shfaqet në orarin tuaj si “Event privat” vetëm me datën dhe orët — kurrë adresa, harta ose Village Foodie.",
+   "linkPromise": "Të ftuarit porositin me një lidhje private dhe kod QR — do t’i merrni pasi të ruani.",
+   "nameLabel": "Emri i eventit",
+   "nameHelp": "Të ftuarit e shohin këtë në krye të faqes së porosive.",
+   "namePlaceholder": "Dasma e Elirës dhe Andit",
+   "previewNote": "Si shfaqet në orarin tuaj — pa vend, qytet ose kod postar.",
+   "needsTimes": "Shtoni orën e fillimit dhe të përfundimit — një event privat që merr porosi me lidhje ka nevojë për to."
+  },
+  "link": {
+   "button": "Lidhja dhe QR",
+   "title": "Lidhja private dhe kodi QR",
+   "label": "Lidhja private",
+   "copy": "Kopjo",
+   "copied": "U kopjua",
+   "qrDownload": "Shkarko QR",
+   "tableCards": "Printo kartat e tavolinave",
+   "newLink": "Krijo një lidhje të re",
+   "working": "Po punohet…",
+   "newLinkConfirm": "Të krijohet një lidhje e re? Lidhja aktuale ndalon së funksionuari menjëherë, dhe çdo kod QR që keni printuar tashmë do të ndalojë gjithashtu së funksionuari.",
+   "newLinkHelp": "Përdoreni këtë nëse lidhja ka përfunduar diku ku nuk duhej. Lidhja aktuale ndalon së funksionuari menjëherë, dhe kodet QR të printuara ndalojnë gjithashtu.",
+   "newLinkFailed": "Lidhja e re nuk u krijua.",
+   "offNotice": "Porositë me lidhje private janë çaktivizuar për këtë event, ndaj nuk ka lidhje për të ndarë. Eventi shfaqet gjithsesi në orarin tuaj si “Event privat”."
+  },
+  "cards": {
+   "printTitle": "{truck} — kartat e tavolinave",
+   "scan": "Skanoni për të porositur",
+   "blurb": "Porositni dhe paguani në telefon. Do t’ju thërrasim në emër kur porosia të jetë gati.",
+   "footer": "Porosi me HatchGrab"
+  },
+  "noSinglePost": "Eventet private nuk kanë postim më vete — ato shfaqen në posterin tuaj javor si “Event privat”.",
+  "confirmToPrivate": "Kjo e fsheh adresën dhe eventin nga harta. Të ftuarve do t’u duhet lidhja private për të porositur.",
+  "confirmFromPrivate": "Kjo e bën eventin publik: adresa dhe kunja e tij në hartë do të shfaqen, dhe lidhja private do të ndalojë së funksionuari."
+ }
+}

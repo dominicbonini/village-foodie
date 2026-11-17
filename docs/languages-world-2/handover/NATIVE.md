@@ -189,3 +189,9 @@
 - card machine = "terminali (juaj) POS"; KDS "Payment & handover" = "Pagesa dhe marrja" (avoid "dorëzim" = delivery); KDS views "E plotë" / "Gatim".
 - 💷 → 💵 (lekë). Placeholders needing case endings avoided with a noun or colon ("Kategoria {cat}", "Mbaje: {other}").
 - "Rrjeti lokal (Local Network)" — iOS has no Albanian UI.
+
+## sq-AL part 03 (languages-world-3, 17 Nov 2026)
+- Upsells "Sugjerime" ("+ Shto sugjerim"); custom extras "Shtesa të personalizuara"; deal slots "Vendi {n}"; Go live "publikoj" / "para publikimit".
+- cardUpload.dismiss "Mbyll" (TERMS) — "Shpërfill" may read better for an unmatched allergen row.
+- Cuisines: "Pite me pure", "Patate të pjekura me lëkurë", "Rrotulla (wrap)", "Furrë buke", "Skarë (BBQ)"; Private hire chip "Food truck për evente" (long); Pub "Bar".
+- Demo dish names kept as menus print them; Coke "Coca-Cola".
