@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -14,8 +14,8 @@
 | 6 | kk-KZ Kazakh | ✅ (lw-2) | ✅ batch 3 — **needs native/legal check** | `_legal-translations.cjs kk-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | b77e79df |
 | 7 | uz-UZ Uzbek | ✅ (lw-2) | ✅ batch 4 — **needs native/legal check** | `_legal-translations.cjs uz-UZ` 3/3 ✓; `legal-languages-1` /uz/privacy, /uz/terms, /uz/country-terms ✓ | 3c2fb908 |
 | 8 | az-AZ Azerbaijani | ✅ (lw-2) | ✅ batch 5 — **needs native/legal check** | `_legal-translations.cjs az-AZ` 3/3 ✓; `legal-languages-1` /az/privacy, /az/terms, /az/country-terms ✓ | 34efe2f6 |
-| 9 | ka-GE Georgian | ✅ (lw-2) | — next (batch 6) | | |
-| 10 | hy-AM Armenian | ✅ (lw-2) | — | | |
+| 9 | ka-GE Georgian | ✅ (lw-2) | ✅ batch 6 — **needs native/legal check** | `_legal-translations.cjs ka-GE` 3/3 ✓; `legal-languages-1` /ge/privacy, /ge/terms, /ge/country-terms ✓ | languages-world-3 batch 6 |
+| 10 | hy-AM Armenian | ✅ (lw-2) | — next (batch 7) | | |
 | 11 | mn-MN Mongolian | ✅ (lw-2) | — | | |
 | 12 | ne-NP Nepali | ✅ (lw-2) | — | | |
 | 13 | fil-PH Filipino | 3 of 9 parts (lw-2) | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **5 of 23 languages done (15 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
+Legal pages: **6 of 23 languages done (18 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
 
 ## Batch order
 
@@ -148,6 +148,18 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 6: ka-GE legal pages
+
+**Files:** [privacy-policy.md](../content/legal/ka-GE/privacy-policy.md), [terms-and-conditions.md](../content/legal/ka-GE/terms-and-conditions.md), [country-specific-terms.md](../content/legal/ka-GE/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into Georgian. No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs ka-GE` 3/3 ✓. `legal-languages-1`: /ge/privacy, /ge/terms and /ge/country-terms render ("4 ნოემბერი, 2026", "1 ნოემბერი, 2026"), then the harness stops with ENOENT at the next missing base (hy-AM). **No screenshot**: the country has no row yet (see batch 2).
+
+**Translation choices:** The Georgian UI words are used throughout: Pay at Hatch = „გადახდა ფუდტრაკთან“, food truck = ფუდტრაკი, hatch = სარკმელი (walk-up orders = orders taken on the spot, at the hatch), kitchen screen = სამზარეულოს ეკრანი, dashboard = შეკვეთების პანელი, and the demo checkbox is quoted exactly. controller/processor = დამმუშავებელი/უფლებამოსილი პირი (the terms Georgian data protection law uses), reverse charge = უკუდაბეგვრა (reverse charge), VAT = დღგ. Fixes before commit: an ASCII apostrophe in "Information Commissioner’s Office" made typographic, and an added "(SLA)" removed.
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -167,4 +179,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 6 is the ka-GE legal pages. Runs continue automatically (60-minute gaps, at most 5 batches a UK day).
+Batch 7 is the hy-AM legal pages. Runs continue automatically (60-minute gaps, at most 5 batches a UK day).
