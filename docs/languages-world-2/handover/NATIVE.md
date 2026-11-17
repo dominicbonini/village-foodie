@@ -151,3 +151,10 @@
 - Address labels Suburb/County/Prefecture/Emirate/State English. Samples: Kapitolyo Night Market, Poblacion Weekend Market, Session Road Night Market; demo customer Alex → "Mika".
 - Billing e-mails: ka/mo, no "po", "Hi {name},"; Walk-up = "Walk-in orders"; "Mga extra van".
 - `one` plural covers many numbers: identical branches, a few read stiffly ("Napili: #").
+
+## fil-PH part 08 (languages-world-3, 17 Nov 2026)
+- SEO strings used verbatim; slugs kept English (comparison / food-truck-ordering-system).
+- comparison.cell.trial = "{months, plural, one {# buwan} other {# buwan}} na libre" (reuse for planTable.trial.length).
+- compare.breakdown.freeMonths: "Month 1 / Months 1–#" → "Unang # buwan" in both branches (`one` covers 2, 3, 5…).
+- Germany-specific copy (till/TSE, Uber Eats rates in Germany, Lieferando) translated faithfully — does PH need it at all?
+- "Pence per order" → "Sentimo kada order"; "does not apply to a market" → "hindi applicable sa marketplace" (check meaning in code); excl./incl. VAT → VAT-exclusive / VAT-inclusive; comparison.meta.description "kapasidad ng kusina" (SEO) vs app "kitchen capacity".
