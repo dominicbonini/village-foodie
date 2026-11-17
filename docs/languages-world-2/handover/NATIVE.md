@@ -344,3 +344,8 @@
 - German TSE/Germany figures as written; VAT "ДДВ"; reverse charge "механизмот за пренесување на даночната обврска (reverse charge)" — confirm.
 - cell.notApplicable "не важи за платформа за достава" (code: market = marketplace); "Не е истакнато"/"Не е наведено"/"Нема податок"; "Фиксен износ по нарачка"; "Комбо менија и сетови".
 - FOR CONSISTENCY: calculator/billing "по фуд трак месечно" vs bs-BA per van.
+
+## mk-MK part 09 (languages-world-3, 17 Nov 2026)
+- markRules 0 failures; TBC "Ќе се потврди"; planTable.trial.length "{months, plural, one {# месец} other {# месеци}}"; UK company details kept.
+- planPrompt colon forms ("Пакетот {plan} вклучува: {feature}."); planTable.lede "Со {plans} добивате и: {features}, …"; mostTrucks "Избор на повеќето"; EEA "картички од ЕЕП".
+- "најмногу {max, number} знаци" outside a plural (wrong only for limits ending in 1).
