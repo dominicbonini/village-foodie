@@ -349,3 +349,10 @@
 - markRules 0 failures; TBC "Ќе се потврди"; planTable.trial.length "{months, plural, one {# месец} other {# месеци}}"; UK company details kept.
 - planPrompt colon forms ("Пакетот {plan} вклучува: {feature}."); planTable.lede "Со {plans} добивате и: {features}, …"; mostTrucks "Избор на повеќето"; EEA "картички од ЕЕП".
 - "најмногу {max, number} знаци" outside a plural (wrong only for limits ending in 1).
+
+## mk-MK consistency pass (languages-world-3, 17 Nov 2026) — fix.json, 26 corrections, check-fix 0
+- Billing "per truck" = per vehicle: "по возило / месечно" (12 messages: manageBilling/pricing perTruckMonth, compare.plan.*, compare.orders.*; "Колку возила имате?").
+- Post boxes split as sq-AL: Place „Локација“, Venue „Назив на локацијата“ (captions can show both); Area „Подрачје“, Time „Време“, ОТКАЖАНО.
+- Added picker.dayCount "{count} настан/настани", picker.approved "Одобрен"; Country "Држава"; "Место или град".
+- Check: "Назив на локацијата", "по возило / месечно", „Исто како ‚Сиот текст‘“, "фуд трак" (no usage evidence).
+- NOTE for sq-AL: its pricing "per truck" kept "food truck" (per business); billing is per vehicle — native check should consider "për furgon" as bs-BA/mk-MK did.
