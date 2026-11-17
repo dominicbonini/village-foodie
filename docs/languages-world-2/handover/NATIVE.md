@@ -277,3 +277,9 @@
 - Billing lines need nominative month names („za {month}“, „ostatak mjeseca {month}“) — check how the app formats Bosnian dates.
 - Documents translated directly (no BiH permits): „Registracija poslovanja s hranom“, „Osiguranje od odgovornosti prema trećim licima“, „Dozvola za uličnu prodaju“, „Dozvola za trgovinu“; County „Grofovija“, Suburb „Naselje“.
 - Demo phone quotes the legal button „Naruči uz obavezu plaćanja“ (English: "presses Order"); outreach „e-mail za kontaktiranje“; Overdue „Rok istekao“. Samples: Ilidža, Butmir, Tuzla, Mostar, Visoko.
+
+## bs-BA part 08 (languages-world-3, 17 Nov 2026)
+- comparison.cell.trial = "{months, plural, one {# mjesec} few {# mjeseca} other {# mjeseci}} besplatno" (reuse for planTable.trial.length).
+- One-month forms without a number (compare.freeMonths, breakdown.freeMonths, faq.costTrial) read wrong at 21 — harmless (trials 1–6 months).
+- German TSE/till content and Germany figures kept as written; VAT "PDV"; reverse charge "po mehanizmu obrnutog obračuna (reverse charge)".
+- cell.notApplicable "ne odnosi se na tržište" (market = marketplace or stall?); not_listed "Nije istaknuto" vs "Nije navedeno"; slug poredjenje/sistem-za-narudzbe-food-truck — confirm before go-live.
