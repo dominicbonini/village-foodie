@@ -1,0 +1,944 @@
+{
+ "managePayments": {
+  "heading": "Plaćanja",
+  "loading": "Provjeravamo vaš Stripe račun…",
+  "state": {
+   "not_connected": {
+    "title": "Nije postavljeno",
+    "body": "Traje oko 10 minuta. Trebat će vam podaci o bankovnom računu i lična karta.",
+    "chip": "Nije postavljeno"
+   },
+   "requirements": {
+    "title": "Stripeu trebaju vaši podaci",
+    "body": "Plaćanje karticom neće raditi dok Stripe ne dobije podatke o vašoj firmi i bankovnom računu.",
+    "chip": "Potrebna je radnja"
+   },
+   "pending": {
+    "title": "Povezano — Stripe provjerava vaše podatke",
+    "body": "Ne morate ništa raditi. Stripe pregleda ono što ste poslali, a ova stranica se ažurira kad završi.",
+    "chip": "Provjera"
+   },
+   "ready": {
+    "title": "Povezano",
+    "body": "Vaš Stripe račun je povezan i može primati plaćanja.",
+    "chip": "Spremno"
+   },
+   "restricted": {
+    "title": "Plaćanje karticom je pauzirano",
+    "body": "Stripe je pauzirao plaćanje karticom na vašem računu dok se nešto ne riješi.",
+    "chip": "Pauzirano"
+   },
+   "unsupported": {
+    "title": "Plaćanje karticom nije dostupno na ovom računu",
+    "body": "Stripe ovdje ne može omogućiti plaćanje karticom. Javite nam se i riješit ćemo to zajedno s vama.",
+    "chip": "Nedostupno"
+   }
+  },
+  "keyMismatch": {
+   "title": "Stripe ključevi se ne podudaraju",
+   "body": "Server ove stranice koristi <b>{server, select, live {produkcijski} other {testni}}</b> Stripe ključ, a preglednička verzija je napravljena s ključem koji je <b>{browser, select, live {produkcijski} other {testni}}</b>. Plaćanje karticom ne bi uspjelo u trenutku kada kupac pokuša platiti, pa je postavljanje Stripea blokirano dok se ključevi ne podudaraju.",
+   "fix": "Oba ključa moraju biti postavljena za isto okruženje, a stranica nakon toga ponovo izgrađena — javni (publishable) ključ se ugrađuje pri izgradnji, a tajni ključ se čita pri svakom zahtjevu."
+  },
+  "permission": {
+   "title": "Plaćanja može postaviti samo vlasnik food trucka",
+   "body": "Stripe povezuje osoba na čiji bankovni račun stiže novac, pa se mora postaviti s njenog vlastitog prijavljenog računa. Ništa nije u redu s ovim food truckom ni s HatchGrabom."
+  },
+  "config": {
+   "keyMissingTitle": "Plaćanje karticom još nije konfigurisano",
+   "fetchTitle": "Nismo mogli provjeriti Stripe račun ovog food trucka",
+   "keyMissing": "Nije postavljeno: {name} — ugrađene komponente se ne mogu učitati."
+  },
+  "errors": {
+   "requestFailed": "Zahtjev nije uspio ({status})",
+   "unreachable": "Nije moguće povezati se sa Stripeom"
+  },
+  "online": {
+   "heading": "Online plaćanja",
+   "body": "Kupci plaćaju karticom kada naručuju. Novac ide direktno na vaš vlastiti Stripe račun — mi ga nikada ne držimo.",
+   "feeLine": "Stripe naplaćuje {fee} po plaćanju za standardne {region}. Druge kartice mogu koštati više. Vlastita naknada HatchGraba na online narudžbe zavisi od vašeg paketa — pogledajte „Naplata“.",
+   "testMode": "Testni režim. Stvarna plaćanja još nije moguće primati."
+  },
+  "trialNote": "Postavljanje ovoga ne pokreće vašu pretplatu i danas vam ništa ne naplaćuje. Ovako vam kupci plaćaju — vaš paket je zasebna stvar.",
+  "admin": {
+   "title": "Pregled kao administrator platforme",
+   "body": "Ovaj food truck nije postavio online plaćanja. Može ih pokrenuti samo vlasnik, sa svog prijavljenog računa — ovdje nema šta pritisnuti."
+  },
+  "setUp": {
+   "button": "Postavi online plaćanja",
+   "busy": "Postavljanje…"
+  },
+  "toast": {
+   "alreadySetUp": "Već je postavljeno — nastavljamo",
+   "addDetails": "Sada dodajte svoje podatke za Stripe",
+   "createFailed": "Račun nije moguće kreirati"
+  },
+  "onboarding": {
+   "restricted": "Odavde preuzima Stripe — prijavit ćete se na Stripe i ažurirati podatke koji mu trebaju.",
+   "firstRun": "Odavde preuzima Stripe — prijavit ćete se na Stripe, a zatim unijeti podatke o firmi i bankovnom računu."
+  },
+  "details": {
+   "title": "Vaši Stripe podaci",
+   "body": "Promijenite bankovni račun na koji primate novac ili ažurirajte podatke i dokumente svoje firme.",
+   "button": "Pogledaj ili uredi"
+  },
+  "walkUp": {
+   "heading": "Plaćanja na licu mjesta",
+   "body": "Kako naplaćujete na šalteru. HatchGrab ne naplaćuje naknadu platforme za narudžbe na licu mjesta, šta god da odaberete.",
+   "ownTerminal": "Vaš vlastiti POS terminal",
+   "current": "Trenutno",
+   "ownTerminalHelp": "Zettle, Square ili šta god već koristite. Ništa ne treba postavljati — primjenjuju se samo naknade vašeg pružaoca usluge.",
+   "hatchgrab": "Preko HatchGraba",
+   "comingSoon": "Uskoro",
+   "hatchgrabHelp": "Koristi istu Stripe vezu kao vaša online plaćanja — POS terminal ili beskontaktno plaćanje direktno na vašem mobitelu ili tabletu.",
+   "hatchgrabFees": "{fee} po plaćanju za {region}, plus {surcharge} za beskontaktno plaćanje primljeno na mobitelu ili tabletu. Druge kartice mogu koštati više."
+  }
+ },
+ "manageCharges": {
+  "heading": "Porez, napojnice i naknade",
+  "rate": {
+   "label": "Stopa poreza na promet",
+   "hint": "Stopa koju obračunavate na svaku narudžbu. Kupci je vide dodanu pri plaćanju, na računima i na listićima.",
+   "regionDefault": "Ostavite prazno da se obračunava {label} po stopi od {rate}%, što je stopa za pripremljenu hranu ({region})."
+  },
+  "included": {
+   "label": "{label} u vašim cijenama",
+   "hint": "Vaše cijene već uključuju {label}. Ova stopa samo pokazuje koliki dio svake cijene čini {label}, na računima i listićima — pri plaćanju se ništa ne dodaje.",
+   "default": "Ostavite prazno da se koristi stopa od {rate}% ({label}) za toplu hranu za ponijeti ({country})."
+  },
+  "tips": {
+   "label": "Napojnice",
+   "hint": "Kupci koji plaćaju online karticom mogu dodati napojnicu. Sve ide vama.",
+   "choices": "Izbori koje kupci vide:",
+   "chip": "{rate}%",
+   "other": "Drugi iznos"
+  },
+  "fee": {
+   "label": "Naknada za online uslugu",
+   "hint": "Dodaje se samo na online narudžbe. Nikada na narudžbe s plaćanjem pri preuzimanju ni na narudžbe na licu mjesta. Zadržavate je vi.",
+   "pctAria": "Procenat naknade za uslugu",
+   "fixedAria": "Fiksni iznos naknade za uslugu",
+   "max": "Najviše što možete naplatiti: {max}",
+   "example": "Kupci je vide prije plaćanja, kao jedan red: „{label} {amount}“.",
+   "hatchgrab": "HatchGrab dodaje naknadu za uslugu od {fee} na online narudžbe vaših kupaca. Vi je ne plaćate i ne možete je promijeniti."
+  },
+  "saveFailed": "Nije sačuvano — pokušajte ponovo."
+ },
+ "takingPayment": {
+  "heading": "Naplata narudžbi",
+  "intro": "Kako vaš tim evidentira novac za svaku narudžbu.",
+  "paidStepHelp": "Dodaje dugme „Potvrdi“ kada sami dodate narudžbu, pa je možete poslati odmah, a naplatiti kasnije. Uključite ovo ako primate narudžbe telefonom ili unaprijed.",
+  "paidStepNote": "Ovo utiče samo na narudžbe koje vi dodate. Ne utiče na online narudžbe."
+ },
+ "designEditor": {
+  "item": {
+   "weekHeading": "Naslov sedmice",
+   "weekHeadingSample": "Sedmica od …",
+   "daysSample": "Od {first} do {last}",
+   "date": "Datum",
+   "place": "Lokacija",
+   "venue": "Lokacija",
+   "area": "Područje",
+   "time": "Vrijeme",
+   "rows": "Redovi",
+   "rowsSample": "Razmak {px}px · od {first} do {last}",
+   "ownText": "Vaš vlastiti tekst",
+   "noteTokenSample": "Napomena koju upišete kada pravite objavu",
+   "nothingYet": "Još ništa",
+   "thisBox": "ovaj okvir"
+  },
+  "sample": {
+   "venue": "Veliki park",
+   "area": "Ilidža"
+  },
+  "bar": {
+   "previewWith": "Pregled s",
+   "undo": "Poništi",
+   "undoTitle": "Poništi (⌘Z)",
+   "redo": "Ponovi",
+   "redoTitle": "Ponovi (⇧⌘Z)",
+   "cancel": "Otkaži",
+   "saving": "Čuvanje…",
+   "save": "Sačuvaj dizajn"
+  },
+  "grid": {
+   "eachRow": "Svaki red",
+   "placeOff": "Naziv lokacije je već na vašoj slici — HatchGrab ga neće dodati."
+  },
+  "background": {
+   "uploading": "Učitavanje…",
+   "replace": "Zamijeni sliku",
+   "shape": {
+    "square": "Kvadrat (1:1)",
+    "portrait45": "Uspravno (4:5)",
+    "portrait916": "Uspravno (9:16)",
+    "landscape169": "Položeno (16:9)",
+    "portrait": "Uspravno",
+    "landscape": "Položeno"
+   }
+  },
+  "scope": {
+   "title": "Položaji teksta",
+   "standard": "Isti položaji kao u standardnom dizajnu",
+   "own": "Vlastiti položaji za mjesto {place}",
+   "locked": "Ovi položaji dolaze iz vašeg standardnog dizajna. Odaberite „Vlastiti položaji za mjesto {place}“ da ih pomjerite samo ovdje."
+  },
+  "stage": {
+   "hint": "Prevucite okvir da ga pomjerite · prevucite ugao da promijenite veličinu",
+   "zoomOut": "Umanji",
+   "zoomIn": "Uvećaj"
+  },
+  "rows": {
+   "spacing": "Razmak",
+   "daysRun": "Dani idu od {first} do {last}. Tri okvira iz 1. reda kopiraju se prema dolje na ovom razmaku.",
+   "whichEvents": "Koji događaji",
+   "showCancelled": "Prikaži otkazane događaje",
+   "showCancelledHint": "Otkazani događaj prikazuje precrtano mjesto i riječ OTKAZANO. Kada je ovo isključeno, taj dan se prikazuje kao slobodan dan."
+  },
+  "days": {
+   "reorder": "Promijeni redoslijed",
+   "move": "pomjeri"
+  },
+  "picture": {
+   "picture": "Slika",
+   "fill": "Popuni okvir",
+   "fit": "Uklopi unutra",
+   "corners": "Uglovi",
+   "square": "Oštri",
+   "rounded": "Zaobljeni",
+   "ifMissing": "Ako lokacija nema sliku",
+   "noPicture": {
+    "omit": "Izostavi je",
+    "blank": "Ostavi prazan prostor",
+    "logo": "Prikaži svoj logo"
+   },
+   "border": "Rub",
+   "drawBorder": "Nacrtaj rub",
+   "drawBorderHint": "Linija oko slike, u boji po vašem izboru.",
+   "borderWidth": "Debljina ruba",
+   "cornerRadius": "Zaobljenost uglova",
+   "locationPictures": "Slike lokacija",
+   "addLocationPictures": "+ Dodaj slike lokacija",
+   "allHaveImage": "{total, plural, =0 {Još nemate nijednu lokaciju.} one {Sve vaše lokacije imaju sliku (ukupno: #).} few {Sve vaše lokacije imaju sliku (ukupno: #).} other {Sve vaše lokacije imaju sliku (ukupno: #).}}",
+   "someWithout": "{without} {without, plural, one {lokacija} few {lokacije} other {lokacija}} od ukupno {total, plural, one {#} few {#} other {#}} još {without, plural, one {nema} few {nemaju} other {nema}} sliku"
+  },
+  "settings": {
+   "font": "Font",
+   "colour": "Boja",
+   "textColour": "Boja teksta",
+   "ownStyleNote": "{count, plural, one {# okvir ima vlastiti stil, pa se ne mijenja: {names}.} few {# okvira imaju vlastiti stil, pa se ne mijenjaju: {names}.} other {# okvira ima vlastiti stil, pa se ne mijenja: {names}.}}",
+   "matchAgain": "Ponovo uskladi",
+   "matchName": "Uskladi s: {name}",
+   "lastToggle": "{kind, select, weekly {Ostavite uključeno barem „Lokacija“ ili „Vrijeme“. Otkazani događaj prikazuje precrtano mjesto i riječ OTKAZANO, pa kad bi oboje bilo isključeno, ništa ne bi pokazivalo da je otkazan.} other {Ostavite uključeno barem „Lokacija“ ili „Vrijeme“. Otkazani događaj prikazuje precrtano mjesto i riječ OTKAZANO, pa kad bi oboje bilo isključeno, ništa ne bi pokazivalo da je otkazan.}}"
+  },
+  "letters": {
+   "boldGlyph": "B",
+   "italicGlyph": "I",
+   "capsGlyph": "AA",
+   "italicTitle": "{italic} — ovaj font ima pravi kurziv"
+  },
+  "align": {
+   "left": "Lijevo",
+   "centre": "Centrirano",
+   "right": "Desno"
+  },
+  "effects": {
+   "outlineColour": "Boja obruba",
+   "bandColour": "Boja trake",
+   "bandDaysOff": "Traka na slobodne dane",
+   "bandCancelled": "Traka kada je događaj otkazan",
+   "bandDaysOffHint": "Koristi se umjesto gornje trake na dan kada ne radite.",
+   "bandCancelledHint": "Koristi se umjesto gornje trake kada je događaj otkazan."
+  },
+  "more": {
+   "dayOwnLine": "Dan u zasebnom redu",
+   "dayOwnLineHint": "Dan u sedmici iznad datuma. Samo uz datum.",
+   "noEventDay": "Na dan bez događaja",
+   "wordsBeforePlaceholder": "npr. Pronađite nas",
+   "neverHyphenate": "Jedna duga riječ bez razmaka uvijek se smanjuje — naziv mjesta nikada ne rastavljamo crticom."
+  },
+  "bits": {
+   "less": "Manje",
+   "more": "Više",
+   "chooseColourFor": "{label} — odaberite bilo koju boju",
+   "chooseColour": "Odaberite bilo koju boju"
+  }
+ },
+ "fontPicker": {
+  "tab": {
+   "all": "Svi",
+   "bold": "Debeli i visoki",
+   "hand": "Rukopisni",
+   "classic": "Klasični",
+   "clean": "Jednostavni",
+   "own": "Vaši",
+   "ownCount": "Vaši ({count})"
+  },
+  "yoursTag": "· vaš",
+  "loadingFonts": "Učitavanje fontova…",
+  "search": "Pretraži fontove (ukupno: {count, number})",
+  "uploadButton": "↑ Učitaj svoj font",
+  "loadingLibrary": "Učitavanje biblioteke fontova…",
+  "tryAgain": "Pokušaj ponovo",
+  "noOwn": "Još niste učitali nijedan font. Koristite dugme „↑ Učitaj svoj font“ iznad.",
+  "recent": "Nedavno korišteni",
+  "popular": "Popularni za plakate",
+  "adding": "Dodavanje…",
+  "noMatch": "Nijedan font ne odgovara upitu „{query}“.",
+  "showing": "Prikazano: {shown} od {total, number} — upišite više da suzite izbor.",
+  "couldNotAdd": "Taj font nije moguće dodati",
+  "tooBig": "Taj font ima {size, number, ::.0 group-off} MB. Ograničenje je 5 MB.",
+  "woff": "Učitajte TTF ili OTF fajl — obično ga možete preuzeti tamo gdje ste kupili font.",
+  "uploadIncomplete": "Učitavanje nije završeno",
+  "added": "Font „{name}“ je dodan ({face} verzija).",
+  "face": {
+   "regular": "obična",
+   "bold": "podebljana",
+   "italic": "kurzivna"
+  },
+  "licenceTick": "Vlasnik sam ovog fonta ili imam licencu za njegovo korištenje",
+  "checking": "Provjera fonta…",
+  "addFont": "Dodaj font",
+  "cancel": "Otkaži",
+  "missingFaces": "Dodajte i ovu verziju fonta „{name}“: {faces} (neobavezno) — ponovo odaberite fajl.",
+  "somethingWrong": "Došlo je do greške",
+  "faceLower": {
+   "regular": "obična",
+   "bold": "podebljana",
+   "italic": "kurzivna"
+  },
+  "ownLicence": "Vaš vlastiti",
+  "loadFailed": "Fontove nije moguće učitati"
+ },
+ "weeklyPost": {
+  "error": {
+   "generic": "Došlo je do greške",
+   "previewFailed": "Pregled nije moguće napraviti",
+   "loadFailed": "Nije moguće učitati",
+   "tooBig": "Ta slika ima {size, number, ::.0 group-off} MB. Ograničenje je 10 MB.",
+   "wrongType": "Odaberite PNG ili JPG.",
+   "uploadIncomplete": "Učitavanje nije završeno",
+   "uploadFailed": "Učitavanje nije uspjelo",
+   "saveFailed": "Čuvanje nije uspjelo",
+   "buildFailed": "Objavu nije moguće napraviti",
+   "copyFailed": "Kopiranje nije uspjelo — označite tekst i kopirajte ga ručno."
+  },
+  "loading": "Učitavanje…",
+  "missingTable": {
+   "title": "Sedmičnoj objavi treba ažuriranje baze podataka",
+   "body": "Tabela za dizajne još nije kreirana. Kada se primijeni migracija, ovaj ekran će raditi."
+  },
+  "kind": {
+   "label": "Koji dizajn",
+   "event": "Jedan događaj",
+   "week": "Sedmični"
+  },
+  "setup": {
+   "title": "Postavite svoju sedmičnu objavu",
+   "intro": "Učitajte praznu verziju grafike sedmičnog rasporeda koju već pravite — isti dizajn, samo bez vaših okvira s tekstom. HatchGrab popunjava sedmicu iz vašeg rasporeda.",
+   "canvaTitle": "Kako izvesti praznu podlogu iz Canve",
+   "canvaStep1": "Otvorite svoj uobičajeni dizajn sedmičnog rasporeda.",
+   "canvaStep2": "Izbrišite okvire s tekstom s datumima, mjestima i vremenima — ostavite pozadinu i naslove koje želite zadržati.",
+   "canvaStep3": "Dijeli (Share) › Preuzmi (Download) › PNG.",
+   "uploading": "Učitavanje…",
+   "upload": "Učitajte svoju praznu podlogu",
+   "uploadHint": "PNG ili JPG, do 10 MB, najmanje {px} px na kraćoj strani.",
+   "phoneTip": "Najbolje na računaru ili iPadu — okviri su mali za prevlačenje na mobitelu.",
+   "designName": "Dizajn sedmične objave",
+   "backDesigns": "‹ Dizajni",
+   "back": "‹ Nazad",
+   "pictureNote": "Vaša slika bez ikakvog datuma ili mjesta na njoj. To dodajemo mi.",
+   "saved": "Dizajn je sačuvan."
+  },
+  "week": {
+   "this": "Ova sedmica",
+   "next": "Sljedeća sedmica"
+  },
+  "post": {
+   "title": "Vaša sedmična objava",
+   "editDesign": "Uredi dizajn",
+   "weekOf": "Sedmica od {date}",
+   "imageAlt": "Vaša sedmična objava",
+   "building": "Pravimo vašu objavu…",
+   "updating": "Ažuriranje…",
+   "eventsTitle": "Događaji ove sedmice",
+   "noEvents": "Ove sedmice nema događaja.",
+   "eventDateCancelled": "{date} · otkazano",
+   "showCancelled": "Prikaži otkazane događaje",
+   "showPrivate": "Prikaži privatne događaje",
+   "privateHint": "Prikazuju se kao „Privatni događaj“ s datumom i vremenom — nikada s mjestom.",
+   "noteTitle": "Napomena",
+   "notePlaceholder": "npr. Naručite unaprijed i preuzmite",
+   "noteHint": "Prikazuje se u opisu i u okviru za napomenu, ako ste ga postavili.",
+   "captionTitle": "Opis za vašu stranicu",
+   "perEventTitle": "Objava za svaki događaj",
+   "nothingToPost": "Ove sedmice nema šta objaviti.",
+   "textCopied": "Tekst je kopiran.",
+   "copyText": "Kopiraj tekst",
+   "image": "Slika",
+   "share": "Podijeli",
+   "noOrderLink": "Još nema linka za narudžbe — postavite web adresu svog food trucka u Postavkama."
+  }
+ },
+ "manageShell": {
+  "loading": "Učitavanje konzole za upravljanje…",
+  "loadFailed": "Učitavanje nije uspjelo",
+  "requestFailed": "Nije uspjelo",
+  "invalidToken": "Token je nevažeći ili je istekao",
+  "loadFailedReason": "Ovu stranicu nije moguće učitati: {reason}",
+  "noCountrySettings": "Nismo mogli učitati postavke države za ovaj food truck. Osvježite stranicu.",
+  "noPlans": "Nismo mogli učitati paket ovog food trucka. Osvježite stranicu.",
+  "stale": "{hasTime, select, yes {Osvježavanje nije uspjelo. Prikazujemo ono što je sačuvano u {time}. Promjene koje napravite i dalje se čuvaju.} other {Osvježavanje nije uspjelo. Prikazujemo ono što je sačuvano. Promjene koje napravite i dalje se čuvaju.}}",
+  "verify": {
+   "ok": "E-mail je potvrđen — hvala.",
+   "expired": "Taj link za potvrdu je istekao. Javite nam se i riješit ćemo to prije nego što krenete uživo.",
+   "invalid": "Taj link za potvrdu nije uspio. Javite nam se i riješit ćemo to prije nego što krenete uživo."
+  },
+  "profile": {
+   "updated": "Profil je ažuriran",
+   "saveFailed": "Čuvanje nije uspjelo",
+   "title": "Uredi profil",
+   "name": "Ime",
+   "namePlaceholder": "Vaše ime",
+   "email": "E-mail",
+   "cancel": "Otkaži",
+   "saving": "Čuvanje…",
+   "save": "Sačuvaj"
+  },
+  "header": {
+   "subtitle": "Konzola za upravljanje",
+   "ordersDashboard": "← Kontrolna tabla narudžbi"
+  },
+  "tabs": {
+   "menu": "Meni",
+   "schedule": "Raspored",
+   "paperwork": "Dokumenti",
+   "social": "Društvene mreže",
+   "reports": "Izvještaji",
+   "team": "Tim",
+   "settings": "Postavke",
+   "payments": "Plaćanja",
+   "billing": "Naplata",
+   "paymentsIcon": "💵",
+   "scheduleCount": "Raspored ({count})",
+   "stripeAttention": "Stripe traži vašu pažnju",
+   "allergensNotSet": "alergeni nisu postavljeni"
+  },
+  "menuSections": {
+   "label": "Odjeljci menija",
+   "items": "Artikli",
+   "capacity": "Kapacitet kuhinje",
+   "extras": "Dodaci i dodatna ponuda",
+   "deals": "Kombo meniji"
+  },
+  "socialSections": {
+   "label": "Odjeljci društvenih mreža",
+   "create": "Napravi objavu",
+   "designs": "Dizajni",
+   "locations": "Postavke lokacija"
+  },
+  "notices": {
+   "review": "Pregledaj →",
+   "tour": "Želite li kratak obilazak kontrolne table?",
+   "showMeAround": "Pokaži mi",
+   "dismiss": "Odbaci",
+   "approval": "{count, plural, one {Pronašli smo <b>{count}</b> događaj za vas — pregledajte i odobrite prije objavljivanja.} few {Pronašli smo <b>{count}</b> događaja za vas — pregledajte i odobrite prije objavljivanja.} other {Pronašli smo <b>{count}</b> događaja za vas — pregledajte i odobrite prije objavljivanja.}}",
+   "allergens": "<b>Alergeni nisu postavljeni</b> — kupci ne vide informacije o alergenima dok ih ne provjerite. Pregledajte alergene svakog jela u odjeljku Meni.",
+   "domainLive": "<link>{domain}</link> je uživo. Pogledajte, a zatim nam u Postavkama potvrdite da je sve ispravno.",
+   "stripe": "<b>Stripeu nešto treba od vas</b> — plaćanje karticom može prestati dok se to ne riješi.",
+   "profileTitle": "Dopunite svoj profil",
+   "missing": "Nedostaje: {fields}.",
+   "goToSettings": "Idi u Postavke →",
+   "field": {
+    "truckName": "naziv food trucka",
+    "cuisineType": "vrsta kuhinje",
+    "contactEmail": "kontakt e-mail",
+    "contactPhone": "kontakt telefon"
+   }
+  },
+  "trialPopup": {
+   "title": "{months, select, none {Koristite besplatni probni period} other {Koristite besplatni probni period od {months} mj.}}",
+   "ends": "{hasDate, select, yes {Probni period ističe <hl>{date}</hl>} other {Probni period ističe <hl>uskoro</hl>}}",
+   "offer": "{hasMonths, select, yes {{months, plural, one {Sve funkcije besplatno tokom # mjeseca} few {Sve funkcije besplatno tokom # mjeseca} other {Sve funkcije besplatno tokom # mjeseci}}} other {Sve funkcije besplatno tokom probnog perioda}}",
+   "body": "{hasDate, select, yes {Tokom probnog perioda, koji traje do <b>{date}</b>, ništa vam se neće naplatiti. Naplata počinje tek kada odaberete paket i unesete podatke za plaćanje. Do tada nema šta otkazati niti platiti. Odaberite paket prije toga — ako to ne učinite, prelazite na paket {fallback} i neke funkcije će prestati raditi.} other {Dok koristite probni period, ništa vam se neće naplatiti. Naplata počinje tek kada odaberete paket i unesete podatke za plaćanje. Do tada nema šta otkazati niti platiti. Odaberite paket prije toga — ako to ne učinite, prelazite na paket {fallback} i neke funkcije će prestati raditi.}}",
+   "bodyPaidEnd": "{hasDate, select, yes {Tokom probnog perioda, koji traje do <b>{date}</b>, ništa vam se neće naplatiti. Kada probni period istekne, paket {fallback} košta {price} mjesečno. Javit ćemo vam se prije toga radi postavljanja plaćanja.} other {Dok koristite probni period, ništa vam se neće naplatiti. Kada probni period istekne, paket {fallback} košta {price} mjesečno. Javit ćemo vam se prije toga radi postavljanja plaćanja.}}",
+   "fees": "*Na online narudžbe primjenjuju se standardne naknade za obradu kartica",
+   "upgrade": "Nadogradite ovdje →"
+  }
+ },
+ "manageBilling": {
+  "perTruckMonth": "po vozilu / mjesečno",
+  "transactionFees": "Naknade za transakcije",
+  "comingSoon": "Uskoro",
+  "footnote2Masked": "Online plaćanja omogućava Stripe Connect. Naknade platforme i obrade kartica bit će potvrđene naknadno, pri pokretanju.",
+  "card": {
+   "title": "Naplata i plaćanja",
+   "managed": "Naplatom upravlja HatchGrab",
+   "earlyAccess": "Tokom ranog pristupa pakete postavljamo i prilagođavamo ručno.",
+   "planLine": "{trial, select, yes {{truck} · paket {plan} (probni period)} other {{truck} · paket {plan}}}"
+  },
+  "currentPlan": "Trenutni paket",
+  "plan": {
+   "included": "Uključuje online narudžbe u iznosu do {amount} mjesečno.",
+   "includedUnlimited": "Uključene su neograničene online narudžbe.",
+   "promo": "Posebna cijena.",
+   "promoUntil": "Posebna cijena do {date}.",
+   "ended": "Vaš paket {plan} istekao je {date}. Sada koristite paket {now}.",
+   "trialMonths": "Besplatni probni period od {months} mj."
+  },
+  "trialEnds": "Probni period ističe {date}",
+  "yourTrialEnds": "Vaš probni period ističe {date}",
+  "notStarted": {
+   "heading": "Vaš besplatni probni period još nije počeo"
+  },
+  "onTrial": "Imate sve funkcije. Odaberite paket prije nego što probni period istekne.",
+  "onTrialPaidEnd": "Imate sve funkcije. Kada probni period istekne, paket {plan} košta {price} mjesečno. Javit ćemo vam se prije toga radi postavljanja plaćanja.",
+  "onTrialNoCta": "Imate sve funkcije.",
+  "noCharge": "🔒 Tokom probnog perioda, koji traje do {date}, ništa vam se neće naplatiti. Naplata počinje tek kada odaberete paket i unesete podatke za plaćanje. Do tada nema šta otkazati niti platiti.",
+  "noChargePaidEnd": "🔒 Tokom probnog perioda, koji traje do {date}, ništa vam se neće naplatiti.",
+  "fees": "*Na online narudžbe primjenjuju se standardne naknade za obradu kartica",
+  "setUpPayment": "⏱ Odaberite paket prije nego što probni period istekne",
+  "changeYourPlan": "Promijenite paket",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+   "title": "Prelazak na paket {plan}",
+   "tagline": "{price} — {description}",
+   "body": "Postavljamo automatsku naplatu. Da odmah pređete, pošaljite nam poruku i sve ćemo vam postaviti u roku od 24 sata.",
+   "mailSubject": "Prelazak na paket {plan} — {truck}",
+   "mailBody": "Zdravo, molim da food truck {truck} prebacite na paket {plan} ({price}).",
+   "email": "Pošaljite nam e-mail za prelazak",
+   "cancel": "Otkaži"
+  }
+ },
+ "manageTeam": {
+  "toast": {
+   "verificationSent": "E-mail za potvrdu je poslan",
+   "emailChangeFailed": "Promjena e-maila nije uspjela",
+   "profileUpdated": "Profil je ažuriran",
+   "saveProfileFailed": "Čuvanje profila nije uspjelo",
+   "verificationResent": "E-mail za potvrdu je ponovo poslan — provjerite inbox",
+   "resendFailed": "Ponovno slanje nije uspjelo",
+   "emailChangeCancelled": "Promjena e-maila je otkazana",
+   "cancelFailed": "Otkazivanje nije uspjelo",
+   "memberUpdated": "Član je ažuriran",
+   "inviteSent": "Pozivnica je poslana",
+   "memberRemoved": "Član je uklonjen"
+  },
+  "confirmRemove": "Ukloniti ovog člana tima?",
+  "title": "Članovi tima",
+  "intro": "Pozovite osoblje da pristupa ekranu za narudžbe i prima narudžbe",
+  "inviteMember": "+ Pozovi člana",
+  "ownerName": "{you, select, yes {{name} (vi)} other {{name}}}",
+  "ownerLine": "Vlasnik · Sva vozila",
+  "edit": "Uredi",
+  "remove": "Ukloni",
+  "awaiting": "⏳ Čeka potvrdu",
+  "sentTo": "Potvrda je poslana na <b>{email}</b>. Provjerite inbox.",
+  "sending": "Slanje…",
+  "resend": "Pošalji ponovo",
+  "cancelling": "Otkazivanje…",
+  "cancel": "Otkaži",
+  "myProfile": "Moj profil",
+  "firstName": "Ime *",
+  "lastName": "Prezime *",
+  "phone": "Telefon",
+  "phonePlaceholder": "+387 61 123 456",
+  "email": "E-mail",
+  "verifyNote": "Link za potvrdu bit će poslan na ovu adresu. Vaš trenutni e-mail ostaje aktivan dok se nova adresa ne potvrdi.",
+  "privacy": "Vaši lični podaci su privatni i nikada se ne prikazuju kupcima. Koriste se za upravljanje računom i provjeru za naplatu.",
+  "saving": "Čuvanje…",
+  "save": "Sačuvaj",
+  "memberLine": "{role, select, manager {Menadžer} other {Osoblje}} · {vans}{pending, select, yes { · Pozivnica na čekanju} other {}}",
+  "allTrucks": "Sva vozila",
+  "noMembers": "Još nema članova tima",
+  "modal": {
+   "editTitle": "Uredi člana tima",
+   "inviteTitle": "Pozovi člana tima",
+   "name": "Ime",
+   "namePlaceholder": "npr. Amra",
+   "email": "E-mail",
+   "emailPlaceholder": "amra@email.com",
+   "role": "Uloga",
+   "roleStaff": "Osoblje — prima narudžbe i vodi kuhinju",
+   "roleManager": "Menadžer — puni pristup, uključujući meni i postavke",
+   "roleOwner": "Vlasnik — puni pristup, uključujući tim i naplatu",
+   "truckAccess": "Pristup vozilima",
+   "onlyTruck": "{van} <muted>(jedino vozilo)</muted>",
+   "selectOne": "Odaberite barem jedno vozilo",
+   "saveChanges": "Sačuvaj promjene",
+   "sendInvite": "Pošalji pozivnicu"
+  },
+  "inviteEmail": {
+   "subject": "Pozvani ste u tim food trucka {truck} na HatchGrabu",
+   "greeting": "{hasName, select, yes {Zdravo, {name},} other {Zdravo,}}",
+   "invited": "Food truck {truck} poziva vas da se pridružite njegovom timu na HatchGrabu kao {role, select, owner {vlasnik} manager {menadžer} other {član osoblja}}.",
+   "click": "Kliknite na dugme ispod da postavite lozinku i počnete. Ovaj link ističe za 7 dana.",
+   "button": "Prihvati pozivnicu",
+   "ignore": "Ako niste očekivali ovu pozivnicu, slobodno zanemarite ovaj e-mail."
+  }
+ },
+ "manageWhatsApp": {
+  "preview": {
+   "title": "Isprobajte prije povezivanja",
+   "intro": "Upišite pitanje kakvo bi postavio kupac i pogledajte tačno šta bi dobio kao odgovor. Ništa se nikome ne šalje.",
+   "examples": {
+    "where": "Gdje ste večeras?",
+    "doYouDo": "Imate li pizzu sa sudžukom?",
+    "menu": "Šta imate na meniju?"
+   },
+   "placeholder": "Koje deserte imate?",
+   "send": "Pošalji",
+   "empty": "Ovdje će se pojaviti vaš odgovor",
+   "working": "Pripremamo odgovor…",
+   "noReply": "Nikakav odgovor ne bi bio poslan.",
+   "noReplyWhy": "To izgleda kao neželjena poruka, zahtjev za rezervaciju ili nešto nepovezano, pa automatski odgovor ostaje tih.",
+   "footnote": "Odgovore generiše AI, svaki put se malo razlikuju i ponekad mogu biti pogrešni.",
+   "failed": "Pregled trenutno nije moguće napraviti.",
+   "unreachable": "Nije moguće povezati se sa serverom. Provjerite vezu i pokušajte ponovo."
+  },
+  "setup": {
+   "button": {
+    "preparing": "Priprema…",
+    "unavailable": "Nedostupno",
+    "waiting": "Čekamo Facebook prozor…",
+    "finishing": "Završavanje…",
+    "reconnect": "Ponovo poveži",
+    "setUp": "Postavi"
+   },
+   "startAgain": "Počni ispočetka",
+   "popupHint": "Ne vidite Facebook prozor? Možda je blokiran. Dozvolite skočne prozore za hatchgrab.com, a zatim pritisnite „Počni ispočetka“."
+  },
+  "notice": {
+   "sdkUnavailable": "Postavljanje WhatsAppa nije dostupno u ovom okruženju.",
+   "sdkBlocked": "Metina skripta za prijavu nije se mogla učitati. Uobičajeni uzrok je blokator oglasa ili zaštita od praćenja.",
+   "setupFailed": "Postavljanje nije moguće završiti. Ništa nije promijenjeno.",
+   "setupFinished": "Postavljanje je završeno.",
+   "metaError": "Meta je prijavila problem tokom postavljanja. Ništa nije promijenjeno. Pokušajte ponovo i javite nam se ako se ovo ponavlja.",
+   "closed": "Postavljanje je zatvoreno prije završetka. Ništa nije promijenjeno — pritisnite „Postavi“ da pokušate ponovo.",
+   "disconnectedUnreachable": "Veza s WhatsAppom je prekinuta. Nismo mogli kontaktirati Metu da uklonimo pristup. Uklonite HatchGrab u WhatsApp Business → Postavke (Settings) → Račun (Account) → Business Platform.",
+   "disconnected": "Veza s WhatsAppom je prekinuta. Automatski odgovori su zaustavljeni.",
+   "close": "Zatvori"
+  },
+  "card": {
+   "title": "Automatski odgovori",
+   "description": "Automatski odgovarajte na pitanja kupaca na društvenim mrežama, koristeći svoj meni i raspored.",
+   "channels": "Kanali",
+   "requiresAccount": "Potreban je WhatsApp Business račun.",
+   "connected": "Povezano",
+   "popupInstruction": "Otvorit će se Facebook prozor za povezivanje vašeg WhatsApp Business računa. Ako se ništa ne pojavi, dozvolite skočne prozore za hatchgrab.com u pregledniku, a zatim ponovo pritisnite „Postavi“.",
+   "switchedOff": "Automatski odgovori na WhatsAppu isključeni su za vaš food truck.",
+   "expiring": "Vašu WhatsApp vezu uskoro treba obnoviti. Pritisnite „Ponovo poveži“ da automatski odgovori nastave raditi.",
+   "comingSoon": "Uskoro",
+   "instagram": "Automatski odgovori na direktne poruke na Instagramu. Bit će potreban profesionalni Instagram račun.",
+   "messenger": "Automatski odgovori na Facebook Messengeru. Bit će potrebna Facebook stranica."
+  },
+  "blocked": {
+   "title": "Vaši odgovori se ne isporučuju",
+   "body": "WhatsApp odbija slati vaše automatske odgovore zbog problema s naplatom na vašem WhatsApp Business računu. Kupci vam i dalje mogu slati poruke i i dalje ćete vidjeti sve što pošalju — ali oni ne dobijaju odgovor.",
+   "fix": "Ove poruke plaćate direktno WhatsAppu, pa se ovo rješava u WhatsApp Manageru. <link>Provjerite način plaćanja</link>"
+  },
+  "limit": {
+   "heading": "Automatski odgovori",
+   "label": "Mjesečno ograničenje",
+   "option": "{n, number}",
+   "usage": "Iskorišteno: {used, number} od {limit, number} · ponovo počinje {date}",
+   "perCustomer": "Najviše odgovora po kupcu u 24 sata: {n}; nakon toga jedna poruka da ćete odgovoriti lično.",
+   "emailAt": "Odgovori se pauziraju kada dostignete ograničenje. Poslat ćemo vam e-mail na 80% i 100%.",
+   "saved": "Mjesečno ograničenje odgovora je sačuvano",
+   "saveFailed": "Ograničenje nije moguće sačuvati"
+  },
+  "billing": {
+   "heading": "Naplata",
+   "paymentMethod": "Način plaćanja",
+   "added": "Način plaćanja je dodan",
+   "missing": "Način plaćanja nije dodan",
+   "addInManager": "Dodajte u WhatsApp Manageru",
+   "summary": "Odgovore vašem WhatsApp računu naplaćuje Meta, a ne HatchGrab. Od {from} broj besplatnih odgovora mjesečno: {free, number}. Tačno na dan {checked}; za promjene provjerite <link>Metine cijene</link>.",
+   "howMetaCharges": "Kako Meta naplaćuje",
+   "chargesTitle": "Odgovore na WhatsAppu naplaćuje Meta, a ne HatchGrab.",
+   "chargesBody": "Svaki odgovor koji HatchGrab pošalje umjesto vas Meta naplaćuje vašem WhatsApp Business računu. Od {from} Meta mjesečno po broju telefona uključuje besplatne odgovore (broj: {free, number}); nakon toga se svaki odgovor naplaćuje po Metinoj cijeni. Odgovori koje sami pošaljete iz aplikacije WhatsApp Business ne naplaćuju se. Meta određuje ove cijene i može ih promijeniti. <link>Pogledajte Metine cijene</link>",
+   "addPaymentInManager": "Dodajte način plaćanja u WhatsApp Manageru",
+   "aboveMissing": "Vaše ograničenje je iznad Metinih besplatnih odgovora ({free, number}). Bez načina plaćanja Meta će zaustaviti sve odgovore kada se oni iskoriste.",
+   "aboveGeneral": "Vaše ograničenje je iznad Metinih besplatnih odgovora ({free, number}). Za odgovore iznad toga potreban je način plaćanja na vašem WhatsApp računu; bez njega Meta zaustavlja sve odgovore kada se besplatni iskoriste.",
+   "addPaymentMethod": "Dodaj način plaćanja"
+  },
+  "disconnect": {
+   "link": "Prekini vezu s WhatsAppom",
+   "title": "Prekinuti vezu s WhatsAppom?",
+   "body": "Automatski odgovori odmah prestaju, a HatchGrab gubi pristup vašem WhatsApp računu. Vaš broj i dalje radi u aplikaciji WhatsApp Business. Da potpuno uklonite HatchGrab, otvorite i WhatsApp Business → Postavke (Settings) → Račun (Account) → Business Platform.",
+   "cancel": "Otkaži",
+   "confirm": "Prekini vezu",
+   "working": "Prekidanje veze…",
+   "failed": "Prekidanje veze nije uspjelo"
+  },
+  "signup": {
+   "logged": "Zabilježeno.",
+   "partial": "Povezali smo vaš WhatsApp Business račun, ali nismo mogli dovršiti vezu. S vaše strane je sve u redu — javite nam se i mi ćemo to završiti.",
+   "noNumber": "Vaš WhatsApp Business račun je povezan, ali nije vraćen nijedan broj telefona. Pritisnite „Ponovo poveži“ i završite korak s brojem.",
+   "needsRegistering": "Vaš račun je povezan, ali ovaj broj moramo registrovati mi prije nego što odgovori mogu početi. Obratite se podršci — vaše postavljanje je sačuvano, ne pokrećite ga ponovo.",
+   "registerRefused": "Vaš račun je povezan, ali Meta nije htjela registrovati broj. Vaše postavljanje je sačuvano — obratite se podršci umjesto da ga ponovo pokrećete.",
+   "deliveryRefused": "Vaš račun je povezan, ali Meta nije htjela uključiti isporuku poruka. Vaše postavljanje je sačuvano — obratite se podršci umjesto da ga ponovo pokrećete.",
+   "numberTaken": "Taj WhatsApp broj je već povezan s drugim HatchGrab računom. Jedan broj može odgovarati samo za jedan food truck. Obratite se podršci i premjestit ćemo ga.",
+   "saveIncomplete": "Skoro je gotovo — nismo mogli završiti čuvanje. Vaše postavljanje je sačuvano; obratite se podršci umjesto da ga ponovo pokrećete.",
+   "connected": "WhatsApp je povezan. Automatski odgovori počet će odgovarati na poruke poslane na ovaj broj."
+  }
+ },
+ "customDomain": {
+  "card": {
+   "title": "Dodajte svoj raspored na svoju web stranicu",
+   "live": "<addr>{address}</addr> prikazuje vaš raspored.",
+   "create": "Napravit ćemo stranicu na adresi <addr>{address}</addr> koja prikazuje vaš raspored.",
+   "exampleDomain": "vasfoodtruck.ba",
+   "liveBadge": "Uživo",
+   "setUp": "Postavi",
+   "viewSetup": "Pogledaj postavke",
+   "continue": "Nastavi",
+   "justLive": "<b>{address}</b> radi. Pogledajte, a zatim nam ispod potvrdite da je sve ispravno."
+  },
+  "waiting": {
+   "title": "Čekamo adresu {address}",
+   "bodySince": "Ovo ste postavili {date}. Nove web adrese obično počnu raditi za nekoliko minuta, a ponekad treba i do 24 sata da postanu dostupne svima — dok se to dešava, ne morate ništa raditi. Ako je neko drugi dodavao red umjesto vas, vrijedi provjeriti je li to i uradio.",
+   "body": "Nove web adrese obično počnu raditi za nekoliko minuta, a ponekad treba i do 24 sata da postanu dostupne svima — dok se to dešava, ne morate ništa raditi. Ako je neko drugi dodavao red umjesto vas, vrijedi provjeriti je li to i uradio."
+  },
+  "ready": {
+   "title": "{address} je uživo",
+   "body": "Pogledajte, a zatim nam u postavkama potvrdite da je sve ispravno."
+  },
+  "confirm": {
+   "heading": "Pogledajte, a zatim nam potvrdite da je sve ispravno",
+   "open": "Otvori <link>{address}</link>",
+   "checkTimes": "Provjerite jesu li datumi i vremena ispravni.",
+   "yes": "Da, sve je ispravno",
+   "no": "Ne, postoji problem",
+   "problemLine": "Recite nam šta vidite i pogledat ćemo.",
+   "emailUs": "Pošaljite nam e-mail",
+   "mailSubject": "Problem s adresom {address}",
+   "mailLiveSince": "Uživo od {date}",
+   "mailSeeing": "Šta vidim:"
+  },
+  "confirmed": {
+   "heading": "Hvala — sve je zabilježeno.",
+   "body": "Ne morate više ništa raditi."
+  },
+  "turnOff": {
+   "link": "Isključi ovo",
+   "heading": "Isključiti vlastitu web adresu?",
+   "stops": "Ovo će prestati raditi:",
+   "carriesOn": "Ovo nastavlja raditi potpuno isto, i ovdje vaš QR kod šalje ljude:",
+   "reAdd": "Ako ćete ovo kasnije ponovo postavljati, ostavite red koji ste dodali kod firme koja vodi vašu web adresu. Ako nećete, zamolite ih da ga uklone.",
+   "cancel": "Ostavi uključeno",
+   "confirm": "Isključi",
+   "working": "Isključivanje…",
+   "failed": "Trenutno to nismo mogli isključiti. Ništa se nije promijenilo — vaša adresa i dalje radi. Pokušajte ponovo uskoro."
+  },
+  "wizard": {
+   "resumeFailedTitle": "Nismo mogli učitati vaše postavljanje.",
+   "resumeFailedBody": "Ništa se nije promijenilo. Pokušajte ponovo uskoro.",
+   "close": "Zatvori",
+   "resuming": "Nastavljamo tamo gdje ste stali…",
+   "genericError": "Došlo je do greške",
+   "saveFailed": "Čuvanje nije uspjelo"
+  },
+  "address": {
+   "intro": "Vaš raspored dobija vlastitu web adresu.",
+   "question": "Koja je vaša web adresa?",
+   "hint": "Ona koju ljudi već koriste da vas pronađu.",
+   "aria": "Vaša vlastita web adresa",
+   "willBe": "Vaša adresa bit će <addr>{address}</addr>",
+   "example": "Na primjer, <addr>{address}</addr>",
+   "noChange": "Vaša web stranica se ne mijenja — samo dodate link na novu adresu.",
+   "notSetUp": "Ovo nismo postavili.",
+   "restricted": "Onaj ko vodi vašu web adresu mora nam dozvoliti da postavimo lokot — malu bravu koju kupci vide pored adrese. Dok nas ne dodaju, lokot se neće pojaviti, pa smo radije stali nego da vas ostavimo da čekate. Zamolite ih da nas dodaju, a zatim pokušajte ponovo.",
+   "blocked": "Vaša web adresa trenutno potpuno blokira lokot. Onaj ko je vodi mora ga dozvoliti prije nego što ovo može raditi. Zamolite ih da to promijene, a zatim pokušajte ponovo.",
+   "elsewhere": "Na toj adresi već nešto odgovara. Poruku s idućeg ekrana pošaljite onome ko je vodi — znat će šta treba uraditi.",
+   "provider": "Vašu web adresu vodi: <b>{provider}</b>. Pokazat ćemo vam gdje trebate ići.",
+   "provisionFailed": "Tu adresu nismo mogli postaviti.",
+   "willNotWork": "Ta adresa neće raditi.",
+   "couldNotBeSetUp": "Tu adresu nije bilo moguće postaviti.",
+   "couldNotSetUp": "Postavljanje nije uspjelo",
+   "checking": "Provjera…",
+   "setting": "Postavljanje…",
+   "tryAgain": "Pokušaj ponovo",
+   "setUpAddress": "Postavi ovu adresu",
+   "notNow": "Ne sada"
+  },
+  "apex": {
+   "empty": "Upišite adresu koju želite koristiti.",
+   "not_a_domain": "To ne izgleda kao web adresa.",
+   "unparseable": "Nismo to mogli pročitati kao web adresu. Provjerite kako je napisano i pokušajte ponovo.",
+   "apex": "{host} je adresa cijele vaše web stranice. Ako je usmjerite na nas, vaša web stranica bit će zamijenjena ovom stranicom. Umjesto toga, ispred nje stavite riječ — na primjer dogadaji.{host}.",
+   "too_deep": "Ta adresa ima previše dijelova. Najbolje radi nešto poput dogadaji.{domain}."
+  },
+  "record": {
+   "addAt": "Dodajte ovo kod pružaoca usluge {provider}",
+   "open": "Otvori {provider}",
+   "guide": "Vodič pružaoca usluge {provider} za ovo",
+   "addAtSave": "Dodajte ovo kod pružaoca usluge {provider} i sačuvajte.",
+   "addSomewhere": "Dodajte ovo tamo gdje se vodi vaša web adresa i sačuvajte.",
+   "hintChoose": "Odaberite ovo s liste.",
+   "hintWord": "Samo ova riječ, ne cijela adresa.",
+   "hintExact": "Kopirajte ovo tačno.",
+   "timing": "Obično počne raditi u roku od sat vremena, iako može trajati i duže. Ne morate držati ovu stranicu otvorenom.",
+   "someoneElse": "Neko drugi vodi vašu web adresu?",
+   "sentTo": "Poslano na {email}",
+   "emailPlaceholder": "njihova e-mail adresa",
+   "sending": "Slanje…",
+   "send": "Pošalji ove podatke",
+   "sendFailed": "Slanje nije uspjelo"
+  },
+  "providers": {
+   "cloudflare": {
+    "open": "Otvorite svoju web adresu, zatim „DNS“ i „Records“.",
+    "add": "Odaberite „Add record“, a zatim kao „Type“ izaberite „CNAME“.",
+    "name": "Prvu vrijednost ispod unesite u „Name“.",
+    "value": "Drugu vrijednost ispod unesite u „Target“.",
+    "proxy": "Postavite „Proxy status“ na „DNS only“ — oblak pored mora biti siv, a ne narandžast.",
+    "save": "„TTL“ ostavite na „Auto“ i odaberite „Save“.",
+    "caveat": "Ako oblak ostane narandžast, lokot se nikada neće pojaviti i ništa vam neće reći zašto."
+   },
+   "godaddy": {
+    "open": "Otvorite „Domain Portfolio“ i odaberite svoju web adresu.",
+    "dns": "Na stranici „Domain Settings“ odaberite „DNS“.",
+    "add": "Odaberite „Add New Record“, a zatim iz menija „Type“ izaberite „CNAME“.",
+    "name": "Prvu vrijednost ispod unesite u „Name“.",
+    "value": "Drugu vrijednost ispod unesite u „Value“.",
+    "save": "„TTL“ ostavite kakav jeste i odaberite „Save“.",
+    "caveat": "Ako ste dodali više zapisa odjednom, dugme glasi „Save All Records“."
+   },
+   "123reg": {
+    "signIn": "Prijavite se na „123 Reg Control Panel“.",
+    "manage": "Pored „Domains“ odaberite „Manage All“, a zatim izaberite svoju web adresu.",
+    "dns": "Odaberite „DNS“, a zatim „Add New Record“.",
+    "type": "S liste „Type“ izaberite „CNAME“.",
+    "name": "Prvu vrijednost ispod unesite u „Name“.",
+    "value": "Drugu vrijednost ispod unesite u „Value“ i na njen kraj dodajte tačku.",
+    "save": "„TTL“ ostavite na „Default“ i kliknite „Save“.",
+    "caveat": "123 Reg traži tačku na kraju druge vrijednosti, inače neće raditi."
+   },
+   "wix": {
+    "open": "Otvorite „Domains“, a zatim kliknite ikonu „Domain Actions“ pored svoje web adrese.",
+    "manage": "Odaberite „Manage DNS Records“.",
+    "add": "U odjeljku „CNAME (Aliases)“ kliknite „+ Add Record“, a zatim „Got it“.",
+    "name": "Prvu vrijednost ispod unesite u „Host Name“.",
+    "value": "Drugu vrijednost ispod unesite u „Value“.",
+    "save": "Kliknite „Save“, a zatim u skočnom prozoru „Save Changes“.",
+    "caveat": "Ako vaša web adresa samo upućuje na Wix, a nije registrovana kod njega, Wix ne može napraviti ovu promjenu — mora je napraviti onaj kod koga je adresa registrovana."
+   }
+  },
+  "instructionsEmail": {
+   "subject": "Potrebno je dodati jedan zapis za stranicu s rasporedom food trucka {truckName}",
+   "hello": "Zdravo,",
+   "introAt": "Raspored food trucka {truckName} uživo stavljamo na {address}, a za to treba dodati jedan zapis našoj domeni kod pružaoca usluge {provider}.",
+   "introHolder": "Raspored food trucka {truckName} uživo stavljamo na {address}, a za to treba dodati jedan zapis našoj domeni kod onoga kod koga je naša domena registrovana.",
+   "stepsAt": "Kod pružaoca usluge {provider}:",
+   "guide": "Njihov vodič: {url}",
+   "wholeChange": "To je cijela promjena — ništa drugo na web stranici nije zahvaćeno, a ostatak naše domene nastavlja raditi potpuno kao i sada. Obično počne raditi u roku od sat vremena.",
+   "pointsAt": "Stranica na koju upućuje prikazuje gdje sljedeće radimo i sama se ažurira.",
+   "replyTo": "Ako imate pitanja, odgovorite na {email}.",
+   "thanks": "Hvala,"
+  },
+  "liveEmail": {
+   "subject": "{address} radi",
+   "goodNews": "Dobre vijesti — {address} radi.",
+   "body": "Vaš raspored se sada prikazuje na vašoj vlastitoj adresi. Pogledajte ga i provjerite je li ispravan: otvorite {address} i uvjerite se da su događaji vaši i da su datumi tačni.",
+   "confirm": "Kada to uradite, otvorite svoje postavke na HatchGrabu i potvrdite nam da je sve ispravno. Ništa ne zavisi od toga — samo ćemo znati da je neko to pogledao."
+  }
+ },
+ "deleteAccount": {
+  "dangerZone": "Opasna zona",
+  "scheduled": "Ovaj račun je zakazan za brisanje",
+  "requested": "Zatraženo <b>{requested}</b>. Brisanje je zakazano za <b>{due}</b>.",
+  "orderingStopped": "Online naručivanje je zaustavljeno. Vaša kontrolna tabla do tada ostaje dostupna za čitanje.",
+  "cannotCancelPending": "<b>Ovo ne možete sami otkazati.</b> Da to zaustavite, što prije pošaljite e-mail na <link>{email}</link>.",
+  "title": "Izbrišite svoj račun",
+  "body": "Trajno zatvorite ovaj HatchGrab račun i prestanite primati online narudžbe.",
+  "open": "Izbriši račun…",
+  "dialogTitle": "Izbrisati vaš račun?",
+  "stopsImmediately": "Online naručivanje prestaje odmah — ne za 30 dana. Kupci neće moći naručivati od vas čim potvrdite.",
+  "upcoming": "<b>{count, plural, one {Imate # predstojeću narudžbu} few {Imate # predstojeće narudžbe} other {Imate # predstojećih narudžbi}}.</b> I njih ćete i dalje morati izvršiti.",
+  "allTrucks": "<b>Uključena su sva vozila na ovom računu ({count}):</b> {names}.",
+  "deletedAfter": "Vaš račun bit će izbrisan nakon <b>30 dana</b>. Vaša kontrolna tabla za to vrijeme ostaje dostupna za čitanje.",
+  "cannotCancel": "Ovo ne možete sami otkazati. Da to zaustavite, morate poslati e-mail na <link>{email}</link>.",
+  "whatHeading": "Šta se briše, a šta se čuva",
+  "whatPersonal": "Vaši lični podaci i podaci vašeg tima se brišu, a vaši pristupni podaci uklanjaju.",
+  "whatCustomers": "Imena, e-mail adrese i brojevi telefona vaših kupaca brišu se iz vaših narudžbi.",
+  "whatAccounting": "Anonimni računovodstveni zapisi <b>čuvaju se šest godina</b>, kako to zahtijeva zakon Ujedinjenog Kraljevstva. Pogledajte našu <link>politiku privatnosti</link>.",
+  "copyFirst": "<b>Želite li prvo kopiju svojih podataka?</b> U aplikaciji nema preuzimanja. Imate pravo na kopiju — pošaljite e-mail na <link>{email}</link> <b>prije</b> nego što potvrdite i poslat ćemo vam je.",
+  "typeToConfirm": "Upišite <code>{name}</code> da potvrdite",
+  "typeAria": "Upišite {name} da potvrdite brisanje računa",
+  "cancel": "Otkaži — zadrži moj račun",
+  "requesting": "Slanje zahtjeva…",
+  "confirm": "Izbriši moj račun",
+  "requestedToast": "Brisanje računa je zatraženo. Provjerite e-mail.",
+  "failed": "Zahtjev nije moguće poslati"
+ },
+ "copyButton": {
+  "copy": "Kopiraj",
+  "copied": "Kopirano ✓",
+  "failed": "Kopiranje nije uspjelo",
+  "aria": "{label} {thing}",
+  "announceCopied": "Kopirano: {thing}",
+  "announceCopiedValue": "Vrijednost je kopirana",
+  "announceFailed": "Nije moguće kopirati: {thing}. Označite tekst i kopirajte ga sami.",
+  "announceFailedValue": "Vrijednost nije moguće kopirati. Označite tekst i kopirajte ga sami."
+ },
+ "eventPost": {
+  "loading": "Učitavanje…",
+  "uploading": "Učitavanje…",
+  "cancel": "Otkaži",
+  "error": {
+   "somethingWrong": "Došlo je do greške.",
+   "previewFailed": "Pregled nije moguće napraviti.",
+   "imageTooBig": "Ta slika ima {size} MB. Ograničenje je 10 MB.",
+   "pngOrJpg": "Odaberite PNG ili JPG.",
+   "uploadIncomplete": "Učitavanje nije završeno.",
+   "couldNotLoad": "Nije moguće učitati.",
+   "uploadFailed": "Učitavanje nije uspjelo.",
+   "couldNotChange": "To nije moguće promijeniti.",
+   "couldNotRemove": "Uklanjanje nije uspjelo.",
+   "couldNotSave": "Čuvanje nije uspjelo.",
+   "couldNotBuild": "Sliku nije moguće napraviti."
+  },
+  "setup": {
+   "stranded": "Ove slike mjesta koriste standardne položaje i imaju drugačiji oblik, pa se neće koristiti dok ih ne zamijenite: {places}.",
+   "pictureReplaced": "Slika je zamijenjena.",
+   "designSaved": "Dizajn je sačuvan.",
+   "firstTitle": "Postavite svoju objavu za jedan događaj",
+   "firstBody": "Učitajte sliku koju koristite za jedan događaj — svoju grafiku bez datuma, mjesta i vremena. HatchGrab to dodaje za svaki događaj.",
+   "uploadYourPicture": "Učitajte svoju sliku",
+   "fileRule": "PNG ili JPG, do 10 MB, najmanje {px} px na kraćoj strani.",
+   "thisPlaceFallback": "Ovo mjesto",
+   "standard": "Standardni dizajn",
+   "standardStatus": "Koristi se na svim ostalim mjestima",
+   "pendingStatus": "Još nema slike — koristi se standardni dizajn",
+   "phoneWarning": "Najbolje na računaru ili iPadu — okviri su mali za prevlačenje na mobitelu.",
+   "designsHeading": "Dizajni",
+   "addPlaceDesignLink": "+ Dodaj dizajn za mjesto",
+   "placeDesignName": "{name} · dizajn objave za događaj",
+   "standardDesignName": "Dizajn objave za jedan događaj",
+   "backToDesigns": "‹ Dizajni",
+   "back": "‹ Nazad",
+   "pictureNote": "Vaša slika bez ikakvog datuma ili mjesta na njoj. To dodajemo mi.",
+   "thisPlaceHeading": "Ovo mjesto",
+   "removeConfirm": "Ukloniti sliku i položaje teksta za mjesto {name}? Događaji tamo koristit će vaš standardni dizajn.",
+   "remove": "Ukloni",
+   "keep": "Zadrži",
+   "removeLink": "Ukloni dizajn ovog mjesta",
+   "noEvents": "Još nema događaja — dodajte jedan i pregled će ga koristiti.",
+   "pickerTitle": "Dodaj dizajn za mjesto",
+   "pickerSearch": "Pretraži mjesta",
+   "pickerNoPlaces": "Još nema mjesta.",
+   "pickerAllDone": "Svako mjesto već ima dizajn."
+  },
+  "modal": {
+   "title": "Objava za ovaj događaj",
+   "close": "Zatvori",
+   "imageAlt": "Vaša objava za događaj",
+   "building": "Pravljenje…",
+   "imageHeading": "Slika",
+   "standardNotPlace": "Slika i položaji teksta iz standardnog dizajna — ne iz dizajna za mjesto {place}.",
+   "replaceIt": "Zamijeni je",
+   "noteHeading": "Napomena (samo za ovu objavu)",
+   "postTextHeading": "Tekst objave"
+  }
+ }
+}

@@ -264,3 +264,9 @@
 - Cancel-cutoff dropdown options in accusative ("{count} minutu/minute/minuta", "sat/sata/sati") inside "najkasnije … prije".
 - Posts: "objava", "sedmična objava", "plakat" (part 04's word; part 03 had "poster"), „Sav tekst“, „Vlastiti stil“, "Šablon opisa".
 - Reports: modifier "Dodatak/Dodaci", walk-up "Na licu mjesta", Pay at Hatch "Plaćanje pri preuzimanju"; gender-neutral first person ("potvrđujem ih ručno").
+
+## bs-BA part 06 (languages-world-3, 17 Nov 2026)
+- Place (weekly) and Venue (single event) boxes both „Lokacija“ (matches wp_last_toggle); Area „Područje“; saved place "mjesto" in text.
+- someWithout: `one` shows the number via {without}, not # (English needs bare {without}).
+- "per truck / month" = "po vozilu / mjesečno" (billing per van); Team "All trucks" "Sva vozila"; region labels rely on hr-HR-style "britanske kartice"; deleteAccount "zakon Ujedinjenog Kraljevstva" as written.
+- Border "rub", text outline "obrub"; phone +387 61 123 456; samples "Veliki park"/Ilidža, "pizza sa sudžukom".
