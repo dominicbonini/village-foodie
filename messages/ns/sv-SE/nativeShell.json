@@ -40,7 +40,8 @@
     "offline": "📴 Ingen anslutning — {n, plural, one {{count} ändring sparad på den här enheten. Den skickas när du är online igen.} other {{count} ändringar sparade på den här enheten. De skickas när du är online igen.}} Inställningarna är låsta.",
     "syncing": "Online igen — skickar {n, plural, one {{count} ändring} other {{count} ändringar}}…",
     "synced": "Alla ändringar skickade.",
-    "stillQueued": "{n, plural, one {{count} ändring sparad på den här enheten. Försöker fortfarande skicka den.} other {{count} ändringar sparade på den här enheten. Försöker fortfarande skicka dem.}}"
+    "stillQueued": "{n, plural, one {{count} ändring sparad på den här enheten. Försöker fortfarande skicka den.} other {{count} ändringar sparade på den här enheten. Försöker fortfarande skicka dem.}}",
+    "notApproved": "{n, plural, one {{count} beställning väntar} other {{count} beställningar väntar}}: evenemanget är inte godkänt. Godkänn det för att skicka."
   },
   "lock": {
     "locked": "HatchGrab är låst",

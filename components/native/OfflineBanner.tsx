@@ -23,7 +23,7 @@
 import { useEffect, useRef, useState, useCallback, type ReactNode } from 'react'
 import { isNativeApp } from '@/lib/native/device'
 import { startReachability, onReachabilityChange } from '@/lib/native/reachability'
-import { countPendingOps } from '@/lib/native/outbox'
+import { countPendingOps, countBlockedOps } from '@/lib/native/outbox'
 import { drainOutbox } from '@/lib/native/orderGate'
 import { nameConflictOrders, type ConflictEntry } from '@/lib/native/useOutboxConflicts'
 import { useT, useAppLocale } from '@/lib/i18n/use-t'
@@ -44,6 +44,7 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
 }) {
   const [phase, setPhase] = useState<Phase>('online')
   const [queued, setQueued] = useState(0)        // ACTIONABLE pending ops (excludes conflicts)
+  const [blocked, setBlocked] = useState(0)      // events-overlap-2: of those, held back because their event is not approved
   const [lastSynced, setLastSynced] = useState(0)
   const [confirming, setConfirming] = useState(false)   // payment dismissal — the second, explicit step
   const t = useT('nativeShell')
@@ -58,6 +59,7 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
 
   const refreshCounts = useCallback(async () => {
     setQueued(await countPendingOps())
+    setBlocked(await countBlockedOps())
   }, [])
 
   const cancelRetry = useCallback(() => {
@@ -196,6 +198,14 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
     syncBanner = (
       <div className="w-full bg-green-600 text-white text-sm font-semibold px-4 py-2 text-center">
         {t('banner.synced')}
+      </div>
+    )
+  } else if (blocked > 0) {
+    // events-overlap-2: queued walk-ups the server holds back until their event is approved — said in words, so staff know
+    // what to do. They stay queued and are retried on every drain (lib/native/orderGate.ts).
+    syncBanner = (
+      <div className="w-full bg-amber-500 text-white text-sm font-semibold px-4 py-2 text-center" data-blocked-orders>
+        {t('banner.notApproved', { n: blocked, count: String(blocked) })}
       </div>
     )
   } else if (queued > 0) {

@@ -40,7 +40,8 @@
     "offline": "📴 Sem conexão — {n, plural, one {{count} alteração salva neste dispositivo. Ela será enviada quando você voltar a ficar online.} other {{count} alterações salvas neste dispositivo. Elas serão enviadas quando você voltar a ficar online.}} As configurações estão bloqueadas.",
     "syncing": "Online de novo — enviando {n, plural, one {{count} alteração} other {{count} alterações}}…",
     "synced": "Todas as alterações foram enviadas.",
-    "stillQueued": "{n, plural, one {{count} alteração salva neste dispositivo. Ainda tentando enviar.} other {{count} alterações salvas neste dispositivo. Ainda tentando enviar.}}"
+    "stillQueued": "{n, plural, one {{count} alteração salva neste dispositivo. Ainda tentando enviar.} other {{count} alterações salvas neste dispositivo. Ainda tentando enviar.}}",
+    "notApproved": "{n, plural, one {{count} pedido aguardando} many {{count} pedidos aguardando} other {{count} pedidos aguardando}}: este evento não está aprovado. Aprove para enviar."
   },
   "lock": {
     "locked": "O HatchGrab está bloqueado",

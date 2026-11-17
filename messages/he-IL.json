@@ -221,7 +221,8 @@
       "noteSaved": "ההערה נשמרה",
       "pricesSaved": "המחירים לאירוע הזה נשמרו",
       "pricesSaveFailed": "לא הצלחנו לשמור את המחירים",
-      "reconnectToLoad": "התחברו מחדש כדי לטעון את האירוע הזה"
+      "reconnectToLoad": "התחברו מחדש כדי לטעון את האירוע הזה",
+      "eventApproved": "האירוע אושר"
     },
     "gate": {
       "invalidAccessLink": "קישור גישה לא תקין",
@@ -336,7 +337,8 @@
       "manageEvent": "ניהול האירוע",
       "noEvent": "לא נבחר אירוע",
       "selectEvent": "בחירת אירוע",
-      "status": "{tone, select, paused {⏸ מושהה} live {● פעיל} finished {● הסתיים} cancelled {בוטל} other {לא התחיל}}"
+      "status": "{tone, select, paused {⏸ מושהה} live {● פעיל} finished {● הסתיים} cancelled {בוטל} other {לא התחיל}}",
+      "approveToTakeOrders": "אשרו אירוע כדי לקבל הזמנות"
     },
     "orders": {
       "noEvent": "לא נבחר אירוע — בחרו אירוע כדי לראות הזמנות",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "ההזמנה נשמרה, אבל לא ניתן היה לעדכן את לוח קיבולת המטבח — בדקו את חלון הזמן לפני שאתם סומכים עליו.",
     "created_payment_not_recorded": "ההזמנה נוצרה, אבל לא ניתן היה לשמור את רישום התשלום — סכום ההכנסות של ההזמנה עלול להיות שגוי עד שזה יתוקן.",
     "payment_not_recorded": "לא ניתן היה לרשום את התשלום — סכום ההכנסות של ההזמנה עלול להיות שגוי עד שזה יתוקן.",
-    "payment_not_reversed": "לא ניתן היה לבטל את התשלום"
+    "payment_not_reversed": "לא ניתן היה לבטל את התשלום",
+    "event_not_approved": "האירוע לא אושר",
+    "event_not_open": "{status, select, closed {האירוע הסתיים. הפעילו אותו מחדש כדי לקבל הזמנות.} cancelled {האירוע בוטל.} other {האירוע לא פתוח.}}"
   },
   "kitchenModals": {
     "close": "סגירה",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "התחברו מחדש כדי לטעון",
       "selected": "נבחר",
-      "status": "{tone, select, paused {⏸ מושהה} live {● פעיל} finished {● הסתיים} cancelled {בוטל} other {לא התחיל}}"
+      "status": "{tone, select, paused {⏸ מושהה} live {● פעיל} finished {● הסתיים} cancelled {בוטל} other {לא התחיל}}",
+      "orders": "{n, plural, =0 {אין הזמנות} one {הזמנה אחת ({count})} two {{count} הזמנות} other {{count} הזמנות}}",
+      "needsApproval": "ממתין לאישור",
+      "approvalSummary": "{n, plural, one {אירוע אחד ממתין לאישור ({count})} two {{count} אירועים ממתינים לאישור} other {{count} אירועים ממתינים לאישור}}",
+      "approvalSummaryNote": "{n, plural, one {הלקוחות עדיין לא רואים אותו.} two {הלקוחות עדיין לא רואים אותם.} other {הלקוחות עדיין לא רואים אותם.}}",
+      "duplicateSameTime": "כפילות אפשרית · אותה שעה",
+      "duplicateOverlaps": "כפילות אפשרית · חפיפה",
+      "dayCount": "{n, plural, one {אירוע אחד ({count})} two {{count} אירועים} other {{count} אירועים}}"
+    },
+    "eventGate": {
+      "approveTitle": "לאשר את {event}?",
+      "overlapText": "{event} הוא כנראה כפילות של {other} ({start}–{end}), שכבר אושר{n, plural, =0 {} one { ויש בו הזמנה אחת ({count})} two { ויש בו {count} הזמנות} other { ויש בו {count} הזמנות}}.",
+      "keep": "להשאיר את {other}",
+      "approveAnyway": "לאשר את {event} בכל זאת",
+      "plainText": "{event} עדיין לא אושר. לאשר כדי לקבל הזמנות? גם הלקוחות יראו אותו.",
+      "approve": "אישור",
+      "startTitle": "להתחיל את האירוע?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {הזמנה אחת עד עכשיו ({count})} two {{count} הזמנות עד עכשיו} other {{count} הזמנות עד עכשיו}}",
+      "switchTitle": "לעבור אל {event}?",
+      "switch": "מעבר",
+      "dismissedText": "{event} הוא כנראה כפילות של {other}, שכבר אושר. לאשר כדי לקבל הזמנות? גם הלקוחות יראו אותו."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 אין חיבור — {n, plural, one {שינוי אחד נשמר במכשיר הזה. הוא יישלח כשהחיבור יחזור.} two {שני שינויים נשמרו במכשיר הזה. הם יישלחו כשהחיבור יחזור.} other {{count} שינויים נשמרו במכשיר הזה. הם יישלחו כשהחיבור יחזור.}} ההגדרות נעולות.",
       "syncing": "החיבור חזר — שולחים {n, plural, one {שינוי אחד} two {שני שינויים} other {{count} שינויים}}…",
       "synced": "כל השינויים נשלחו.",
-      "stillQueued": "{n, plural, one {שינוי אחד נשמר במכשיר הזה. עדיין מנסים לשלוח אותו.} two {שני שינויים נשמרו במכשיר הזה. עדיין מנסים לשלוח אותם.} other {{count} שינויים נשמרו במכשיר הזה. עדיין מנסים לשלוח אותם.}}"
+      "stillQueued": "{n, plural, one {שינוי אחד נשמר במכשיר הזה. עדיין מנסים לשלוח אותו.} two {שני שינויים נשמרו במכשיר הזה. עדיין מנסים לשלוח אותם.} other {{count} שינויים נשמרו במכשיר הזה. עדיין מנסים לשלוח אותם.}}",
+      "notApproved": "{n, plural, one {הזמנה אחת ממתינה ({count})} two {{count} הזמנות ממתינות} other {{count} הזמנות ממתינות}}: האירוע לא אושר. אשרו אותו כדי לשלוח."
     },
     "lock": {
       "locked": "HatchGrab נעולה",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "חלק מהפרטים לא נכונים. בדקו אותם ונסו שוב.",
     "paperwork_send_limit": "שלחתם הרבה קישורים בזמן קצר. נסו שוב בעוד שעה.",
     "paperwork_send_failed": "לא הצלחנו לשלוח את האימייל. נסו שוב.",
-    "cost_invalid": "הזינו עלות של 0 או יותר, או השאירו את השדה ריק."
+    "cost_invalid": "הזינו עלות של 0 או יותר, או השאירו את השדה ריק.",
+    "event_cannot_start": "{status, select, unconfirmed {אי אפשר להתחיל את האירוע (לא אושר).} open {אי אפשר להתחיל את האירוע (כבר התחיל).} cancelled {אי אפשר להתחיל את האירוע (בוטל).} other {אי אפשר להתחיל את האירוע ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {אי אפשר לסיים את האירוע (לא אושר).} confirmed {אי אפשר לסיים את האירוע (לא התחיל).} closed {אי אפשר לסיים את האירוע (כבר הסתיים).} cancelled {אי אפשר לסיים את האירוע (בוטל).} other {אי אפשר לסיים את האירוע ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {האירוע כבר לא צריך אישור (כבר אושר).} open {האירוע כבר לא צריך אישור (כבר התחיל).} closed {האירוע כבר לא צריך אישור (כבר הסתיים).} cancelled {האירוע כבר לא צריך אישור (בוטל).} other {האירוע כבר לא צריך אישור ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "בחרו את המדינה שבה הפודטראק שלכם ממוקם.",

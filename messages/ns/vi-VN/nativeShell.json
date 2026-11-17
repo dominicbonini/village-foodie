@@ -40,7 +40,8 @@
     "offline": "📴 Mất kết nối — {n, plural, one {đã lưu {count} thay đổi trên thiết bị này. Thay đổi sẽ được gửi khi có mạng trở lại.} other {đã lưu {count} thay đổi trên thiết bị này. Các thay đổi sẽ được gửi khi có mạng trở lại.}} Cài đặt đang bị khóa.",
     "syncing": "Đã có mạng trở lại — đang gửi {n, plural, one {{count} thay đổi} other {{count} thay đổi}}…",
     "synced": "Đã gửi tất cả thay đổi.",
-    "stillQueued": "{n, plural, one {Đã lưu {count} thay đổi trên thiết bị này. Vẫn đang thử gửi.} other {Đã lưu {count} thay đổi trên thiết bị này. Vẫn đang thử gửi.}}"
+    "stillQueued": "{n, plural, one {Đã lưu {count} thay đổi trên thiết bị này. Vẫn đang thử gửi.} other {Đã lưu {count} thay đổi trên thiết bị này. Vẫn đang thử gửi.}}",
+    "notApproved": "{n, plural, other {{count} đơn đang chờ}}: sự kiện này chưa được duyệt. Hãy duyệt để gửi."
   },
   "lock": {
     "locked": "HatchGrab đang bị khóa",

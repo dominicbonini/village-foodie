@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Commande enregistrée, mais le tableau de capacité de la cuisine n’a pas pu être mis à jour — vérifiez le créneau avant de vous y fier.",
   "created_payment_not_recorded": "Commande créée, mais l’enregistrement du paiement n’a pas pu être sauvegardé — le montant encaissé pour cette commande peut être erroné jusqu’à sa correction.",
   "payment_not_recorded": "Le paiement n’a pas pu être enregistré — le montant encaissé pour cette commande peut être erroné jusqu’à sa correction.",
-  "payment_not_reversed": "Le paiement n’a pas pu être annulé"
+  "payment_not_reversed": "Le paiement n’a pas pu être annulé",
+  "event_not_approved": "Cet événement n’est pas approuvé",
+  "event_not_open": "{status, select, closed {Cet événement est terminé. Redémarrez-le pour prendre des commandes.} cancelled {Cet événement a été annulé.} other {Cet événement n’est pas ouvert.}}"
 }

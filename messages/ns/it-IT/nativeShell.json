@@ -40,7 +40,8 @@
     "offline": "📴 Nessuna connessione — {n, plural, one {{count} modifica salvata su questo dispositivo. Verrà inviata quando tornerai online.} other {{count} modifiche salvate su questo dispositivo. Verranno inviate quando tornerai online.}} Impostazioni bloccate.",
     "syncing": "Di nuovo online — invio di {n, plural, one {{count} modifica} other {{count} modifiche}}…",
     "synced": "Tutte le modifiche sono state inviate.",
-    "stillQueued": "{n, plural, one {{count} modifica salvata su questo dispositivo. Sto ancora provando a inviarla.} other {{count} modifiche salvate su questo dispositivo. Sto ancora provando a inviarle.}}"
+    "stillQueued": "{n, plural, one {{count} modifica salvata su questo dispositivo. Sto ancora provando a inviarla.} other {{count} modifiche salvate su questo dispositivo. Sto ancora provando a inviarle.}}",
+    "notApproved": "{n, plural, one {{count} ordine in attesa} many {{count} ordini in attesa} other {{count} ordini in attesa}}: questo evento non è approvato. Approvalo per inviare."
   },
   "lock": {
     "locked": "HatchGrab è bloccato",

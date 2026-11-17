@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Neki podaci nisu ispravni. Proverite ih i pokušajte ponovo.",
   "paperwork_send_limit": "Poslali ste mnogo linkova za kratko vreme. Pokušajte ponovo za sat vremena.",
   "paperwork_send_failed": "E-poruku nije moguće poslati. Pokušajte ponovo.",
-  "cost_invalid": "Unesite trošak od 0 ili više, ili ostavite polje prazno."
+  "cost_invalid": "Unesite trošak od 0 ili više, ili ostavite polje prazno.",
+  "event_cannot_start": "{status, select, unconfirmed {Događaj ne može da se pokrene (nije odobren).} open {Događaj ne može da se pokrene (već pokrenut).} cancelled {Događaj ne može da se pokrene (otkazan).} other {Događaj ne može da se pokrene ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Događaj ne može da se završi (nije odobren).} confirmed {Događaj ne može da se završi (nije pokrenut).} closed {Događaj ne može da se završi (već završen).} cancelled {Događaj ne može da se završi (otkazan).} other {Događaj ne može da se završi ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Ovom događaju više ne treba odobrenje (već odobren).} open {Ovom događaju više ne treba odobrenje (već pokrenut).} closed {Ovom događaju više ne treba odobrenje (već završen).} cancelled {Ovom događaju više ne treba odobrenje (otkazan).} other {Ovom događaju više ne treba odobrenje ({status}).}}"
 }

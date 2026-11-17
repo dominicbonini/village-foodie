@@ -221,7 +221,8 @@
       "noteSaved": "Märkus salvestatud",
       "pricesSaved": "Selle ürituse hinnad salvestatud",
       "pricesSaveFailed": "Hindu ei saanud salvestada",
-      "reconnectToLoad": "Selle ürituse laadimiseks loo uuesti ühendus"
+      "reconnectToLoad": "Selle ürituse laadimiseks loo uuesti ühendus",
+      "eventApproved": "Üritus kinnitatud"
     },
     "gate": {
       "invalidAccessLink": "Vigane juurdepääsulink",
@@ -336,7 +337,8 @@
       "manageEvent": "Halda üritust",
       "noEvent": "Üritust pole valitud",
       "selectEvent": "Vali üritus",
-      "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}"
+      "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}",
+      "approveToTakeOrders": "Kinnita üritus, et tellimusi vastu võtta"
     },
     "orders": {
       "noEvent": "Üritust pole valitud — tellimuste nägemiseks vali üritus",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Tellimus on salvestatud, kuid köögi võimsuse tabelit ei õnnestunud uuendada — kontrolli ajavahemikku, enne kui sellele tugined.",
     "created_payment_not_recorded": "Tellimus on loodud, kuid maksekirjet ei õnnestunud salvestada — selle tellimuse käive võib olla vale, kuni see parandatakse.",
     "payment_not_recorded": "Makset ei õnnestunud salvestada — selle tellimuse käive võib olla vale, kuni see parandatakse.",
-    "payment_not_reversed": "Makset ei õnnestunud tühistada"
+    "payment_not_reversed": "Makset ei õnnestunud tühistada",
+    "event_not_approved": "See üritus pole kinnitatud",
+    "event_not_open": "{status, select, closed {See üritus on lõppenud. Alusta seda uuesti, et tellimusi vastu võtta.} cancelled {See üritus on tühistatud.} other {See üritus pole avatud.}}"
   },
   "kitchenModals": {
     "close": "Sulge",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Laadimiseks ühenda uuesti",
       "selected": "Valitud",
-      "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}"
+      "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}",
+      "orders": "{n, plural, =0 {Tellimusi pole} one {{count} tellimus} other {{count} tellimust}}",
+      "needsApproval": "Vajab kinnitamist",
+      "approvalSummary": "{n, plural, one {{count} üritus vajab kinnitamist} other {{count} üritust vajab kinnitamist}}",
+      "approvalSummaryNote": "{n, plural, one {Kliendid seda veel ei näe.} other {Kliendid neid veel ei näe.}}",
+      "duplicateSameTime": "Võimalik duplikaat · sama aeg",
+      "duplicateOverlaps": "Võimalik duplikaat · kattub",
+      "dayCount": "{n, plural, one {{count} üritus} other {{count} üritust}}"
+    },
+    "eventGate": {
+      "approveTitle": "Kas kinnitada {event}?",
+      "overlapText": "{event} võib olla ürituse {other} ({start}–{end}) duplikaat, mis on juba kinnitatud{n, plural, =0 {} one { ja millel on {count} tellimus} other { ja millel on {count} tellimust}}.",
+      "keep": "Jäta {other}",
+      "approveAnyway": "Kinnita {event} siiski",
+      "plainText": "{event} pole veel kinnitatud. Kas kinnitada, et tellimusi vastu võtta? Kliendid näevad seda ka.",
+      "approve": "Kinnita",
+      "startTitle": "Kas alustada üritust?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {seni {count} tellimus} other {seni {count} tellimust}}",
+      "switchTitle": "Kas minna üle üritusele {event}?",
+      "switch": "Vaheta",
+      "dismissedText": "{event} võib olla ürituse {other} duplikaat, mis on juba kinnitatud. Kas kinnitada, et tellimusi vastu võtta? Kliendid näevad seda ka."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Ühendus puudub — {n, plural, one {{count} muudatus salvestati selles seadmes. See saadetakse, kui oled taas võrgus.} other {{count} muudatust salvestati selles seadmes. Need saadetakse, kui oled taas võrgus.}} Seaded on lukus.",
       "syncing": "Taas võrgus — saadan {n, plural, one {{count} muudatuse} other {{count} muudatust}}…",
       "synced": "Kõik muudatused saadetud.",
-      "stillQueued": "{n, plural, one {{count} muudatus on selles seadmes salvestatud. Proovin seda endiselt saata.} other {{count} muudatust on selles seadmes salvestatud. Proovin neid endiselt saata.}}"
+      "stillQueued": "{n, plural, one {{count} muudatus on selles seadmes salvestatud. Proovin seda endiselt saata.} other {{count} muudatust on selles seadmes salvestatud. Proovin neid endiselt saata.}}",
+      "notApproved": "{n, plural, one {{count} tellimus ootab} other {{count} tellimust ootab}}: see üritus pole kinnitatud. Kinnita see saatmiseks."
     },
     "lock": {
       "locked": "HatchGrab on lukus",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Mõned andmed pole õiged. Kontrolli neid ja proovi uuesti.",
     "paperwork_send_limit": "Oled lühikese aja jooksul saatnud palju linke. Proovi tunni aja pärast uuesti.",
     "paperwork_send_failed": "E-kirja ei saanud saata. Proovi uuesti.",
-    "cost_invalid": "Sisesta kulu 0 või rohkem või jäta väli tühjaks."
+    "cost_invalid": "Sisesta kulu 0 või rohkem või jäta väli tühjaks.",
+    "event_cannot_start": "{status, select, unconfirmed {Üritust ei saa alustada (pole kinnitatud).} open {Üritust ei saa alustada (juba alustatud).} cancelled {Üritust ei saa alustada (tühistatud).} other {Üritust ei saa alustada ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Üritust ei saa lõpetada (pole kinnitatud).} confirmed {Üritust ei saa lõpetada (pole alustatud).} closed {Üritust ei saa lõpetada (juba lõppenud).} cancelled {Üritust ei saa lõpetada (tühistatud).} other {Üritust ei saa lõpetada ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {See üritus ei vaja enam kinnitamist (juba kinnitatud).} open {See üritus ei vaja enam kinnitamist (juba alustatud).} closed {See üritus ei vaja enam kinnitamist (juba lõppenud).} cancelled {See üritus ei vaja enam kinnitamist (tühistatud).} other {See üritus ei vaja enam kinnitamist ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Vali riik, kus sinu toiduauto asub.",

@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Riconnettiti per caricare",
     "selected": "Selezionato",
-    "status": "{tone, select, paused {⏸ In pausa} live {● In corso} finished {● Terminato} cancelled {Annullato} other {Non iniziato}}"
+    "status": "{tone, select, paused {⏸ In pausa} live {● In corso} finished {● Terminato} cancelled {Annullato} other {Non iniziato}}",
+    "orders": "{n, plural, =0 {Nessun ordine} one {{count} ordine} many {{count} ordini} other {{count} ordini}}",
+    "needsApproval": "Da approvare",
+    "approvalSummary": "{n, plural, one {{count} evento da approvare} many {{count} eventi da approvare} other {{count} eventi da approvare}}",
+    "approvalSummaryNote": "{n, plural, one {I clienti non lo vedono ancora.} many {I clienti non li vedono ancora.} other {I clienti non li vedono ancora.}}",
+    "duplicateSameTime": "Possibile duplicato · stesso orario",
+    "duplicateOverlaps": "Possibile duplicato · si sovrappone",
+    "dayCount": "{n, plural, one {{count} evento} many {{count} eventi} other {{count} eventi}}"
+  },
+  "eventGate": {
+    "approveTitle": "Approvare {event}?",
+    "overlapText": "{event} potrebbe essere un duplicato di {other} ({start}–{end}), già approvato{n, plural, =0 {} one { e con {count} ordine} many { e con {count} ordini} other { e con {count} ordini}}.",
+    "keep": "Tieni {other}",
+    "approveAnyway": "Approva comunque {event}",
+    "plainText": "{event} non è ancora approvato. Approvarlo per ricevere ordini? Lo vedranno anche i clienti.",
+    "approve": "Approva",
+    "startTitle": "Avviare questo evento?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} ordine finora} many {{count} ordini finora} other {{count} ordini finora}}",
+    "switchTitle": "Passare a {event}?",
+    "switch": "Cambia",
+    "dismissedText": "{event} potrebbe essere un duplicato di {other}, già approvato. Approvarlo per ricevere ordini? Lo vedranno anche i clienti."
   }
 }

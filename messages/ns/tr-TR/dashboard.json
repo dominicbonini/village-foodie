@@ -36,7 +36,8 @@
     "noteSaved": "Not kaydedildi",
     "pricesSaved": "Bu etkinliğin fiyatları kaydedildi",
     "pricesSaveFailed": "Fiyatlar kaydedilemedi",
-    "reconnectToLoad": "Bu etkinliği yüklemek için yeniden bağlanın"
+    "reconnectToLoad": "Bu etkinliği yüklemek için yeniden bağlanın",
+    "eventApproved": "Etkinlik onaylandı"
   },
   "gate": {
     "invalidAccessLink": "Geçersiz erişim bağlantısı",
@@ -151,7 +152,8 @@
     "manageEvent": "Etkinliği yönet",
     "noEvent": "Etkinlik seçilmedi",
     "selectEvent": "Etkinlik seçin",
-    "status": "{tone, select, paused {⏸ Duraklatıldı} live {● Canlı} finished {● Bitti} cancelled {İptal edildi} other {Başlamadı}}"
+    "status": "{tone, select, paused {⏸ Duraklatıldı} live {● Canlı} finished {● Bitti} cancelled {İptal edildi} other {Başlamadı}}",
+    "approveToTakeOrders": "Sipariş almak için bir etkinliği onaylayın"
   },
   "orders": {
     "noEvent": "Etkinlik seçilmedi — siparişleri görmek için bir etkinlik seçin",

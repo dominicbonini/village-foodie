@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Một số thông tin chưa đúng. Vui lòng kiểm tra và thử lại.",
   "paperwork_send_limit": "Bạn đã gửi nhiều link trong thời gian ngắn. Vui lòng thử lại sau một giờ.",
   "paperwork_send_failed": "Không gửi được email. Vui lòng thử lại.",
-  "cost_invalid": "Nhập chi phí từ 0 trở lên, hoặc để trống ô này."
+  "cost_invalid": "Nhập chi phí từ 0 trở lên, hoặc để trống ô này.",
+  "event_cannot_start": "{status, select, unconfirmed {Không thể bắt đầu sự kiện này (chưa duyệt).} open {Không thể bắt đầu sự kiện này (đã bắt đầu).} cancelled {Không thể bắt đầu sự kiện này (đã hủy).} other {Không thể bắt đầu sự kiện này ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Không thể kết thúc sự kiện này (chưa duyệt).} confirmed {Không thể kết thúc sự kiện này (chưa bắt đầu).} closed {Không thể kết thúc sự kiện này (đã kết thúc).} cancelled {Không thể kết thúc sự kiện này (đã hủy).} other {Không thể kết thúc sự kiện này ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Sự kiện này không cần duyệt nữa (đã duyệt).} open {Sự kiện này không cần duyệt nữa (đã bắt đầu).} closed {Sự kiện này không cần duyệt nữa (đã kết thúc).} cancelled {Sự kiện này không cần duyệt nữa (đã hủy).} other {Sự kiện này không cần duyệt nữa ({status}).}}"
 }

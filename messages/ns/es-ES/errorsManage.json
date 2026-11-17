@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Algunos datos no son correctos. Revísalos e inténtalo de nuevo.",
   "paperwork_send_limit": "Has enviado muchos enlaces en poco tiempo. Vuelve a intentarlo dentro de una hora.",
   "paperwork_send_failed": "No se ha podido enviar el email. Inténtalo de nuevo.",
-  "cost_invalid": "Introduce un coste de 0 o más, o deja la casilla vacía."
+  "cost_invalid": "Introduce un coste de 0 o más, o deja la casilla vacía.",
+  "event_cannot_start": "{status, select, unconfirmed {No se puede iniciar este evento (no aprobado).} open {No se puede iniciar este evento (ya iniciado).} cancelled {No se puede iniciar este evento (cancelado).} other {No se puede iniciar este evento ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {No se puede terminar este evento (no aprobado).} confirmed {No se puede terminar este evento (no iniciado).} closed {No se puede terminar este evento (ya terminado).} cancelled {No se puede terminar este evento (cancelado).} other {No se puede terminar este evento ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Este evento ya no necesita aprobación (ya aprobado).} open {Este evento ya no necesita aprobación (ya iniciado).} closed {Este evento ya no necesita aprobación (ya terminado).} cancelled {Este evento ya no necesita aprobación (cancelado).} other {Este evento ya no necesita aprobación ({status}).}}"
 }

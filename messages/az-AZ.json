@@ -221,7 +221,8 @@
       "noteSaved": "Qeyd yadda saxlanıldı",
       "pricesSaved": "Bu tədbir üçün qiymətlər yadda saxlanıldı",
       "pricesSaveFailed": "Qiymətləri yadda saxlamaq alınmadı",
-      "reconnectToLoad": "Bu tədbiri yükləmək üçün yenidən qoşulun"
+      "reconnectToLoad": "Bu tədbiri yükləmək üçün yenidən qoşulun",
+      "eventApproved": "Tədbir təsdiqləndi"
     },
     "gate": {
       "invalidAccessLink": "Yanlış giriş linki",
@@ -336,7 +337,8 @@
       "manageEvent": "Tədbiri idarə et",
       "noEvent": "Tədbir seçilməyib",
       "selectEvent": "Tədbir seçin",
-      "status": "{tone, select, paused {⏸ Dayandırılıb} live {● Aktiv} finished {● Bitib} cancelled {Ləğv edilib} other {Başlamayıb}}"
+      "status": "{tone, select, paused {⏸ Dayandırılıb} live {● Aktiv} finished {● Bitib} cancelled {Ləğv edilib} other {Başlamayıb}}",
+      "approveToTakeOrders": "Sifariş qəbul etmək üçün tədbiri təsdiqləyin"
     },
     "orders": {
       "noEvent": "Tədbir seçilməyib — sifarişlərə baxmaq üçün tədbir seçin",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Sifariş yadda saxlanıldı, lakin mətbəx tutumu lövhəsini yeniləmək mümkün olmadı — ona etibar etməzdən əvvəl vaxt aralığını yoxlayın.",
     "created_payment_not_recorded": "Sifariş yaradıldı, lakin ödəniş qeydini yadda saxlamaq mümkün olmadı — düzəldilənə qədər bu sifariş üzrə gəlir məbləği səhv ola bilər.",
     "payment_not_recorded": "Ödənişi qeydə almaq mümkün olmadı — düzəldilənə qədər bu sifariş üzrə gəlir məbləği səhv ola bilər.",
-    "payment_not_reversed": "Ödənişi ləğv etmək mümkün olmadı"
+    "payment_not_reversed": "Ödənişi ləğv etmək mümkün olmadı",
+    "event_not_approved": "Bu tədbir təsdiqlənməyib",
+    "event_not_open": "{status, select, closed {Bu tədbir bitib. Sifariş qəbul etmək üçün yenidən başladın.} cancelled {Bu tədbir ləğv edilib.} other {Bu tədbir açıq deyil.}}"
   },
   "kitchenModals": {
     "close": "Bağla",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Yükləmək üçün yenidən qoşulun",
       "selected": "Seçilib",
-      "status": "{tone, select, paused {⏸ Dayandırılıb} live {● Aktiv} finished {● Bitib} cancelled {Ləğv edilib} other {Başlamayıb}}"
+      "status": "{tone, select, paused {⏸ Dayandırılıb} live {● Aktiv} finished {● Bitib} cancelled {Ləğv edilib} other {Başlamayıb}}",
+      "orders": "{n, plural, =0 {Sifariş yoxdur} one {{count} sifariş} other {{count} sifariş}}",
+      "needsApproval": "Təsdiq gözləyir",
+      "approvalSummary": "{n, plural, one {{count} tədbir təsdiq gözləyir} other {{count} tədbir təsdiq gözləyir}}",
+      "approvalSummaryNote": "{n, plural, one {Müştərilər onu hələ görmür.} other {Müştərilər onları hələ görmür.}}",
+      "duplicateSameTime": "Ehtimal ki, təkrar · eyni vaxt",
+      "duplicateOverlaps": "Ehtimal ki, təkrar · üst-üstə düşür",
+      "dayCount": "{n, plural, one {{count} tədbir} other {{count} tədbir}}"
+    },
+    "eventGate": {
+      "approveTitle": "{event} təsdiqlənsin?",
+      "overlapText": "{event} artıq təsdiqlənmiş {other} ({start}–{end}) tədbirinin təkrarı ola bilər{n, plural, =0 {} one { və onun {count} sifarişi var} other { və onun {count} sifarişi var}}.",
+      "keep": "{other} qalsın",
+      "approveAnyway": "Yenə də {event} təsdiqlə",
+      "plainText": "{event} hələ təsdiqlənməyib. Sifariş qəbul etmək üçün təsdiqlənsin? Müştərilər də görəcək.",
+      "approve": "Təsdiqlə",
+      "startTitle": "Bu tədbir başlasın?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {indiyədək {count} sifariş} other {indiyədək {count} sifariş}}",
+      "switchTitle": "{event} tədbirinə keçilsin?",
+      "switch": "Keç",
+      "dismissedText": "{event} artıq təsdiqlənmiş {other} tədbirinin təkrarı ola bilər. Sifariş qəbul etmək üçün təsdiqlənsin? Müştərilər də görəcək."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Bağlantı yoxdur — {n, plural, one {{count} dəyişiklik bu cihazda saxlanıldı. Yenidən onlayn olduqda göndəriləcək.} other {{count} dəyişiklik bu cihazda saxlanıldı. Yenidən onlayn olduqda göndəriləcək.}} Ayarlar kilidlənib.",
       "syncing": "Yenidən onlayn — {n, plural, one {{count} dəyişiklik göndərilir} other {{count} dəyişiklik göndərilir}}…",
       "synced": "Bütün dəyişikliklər göndərildi.",
-      "stillQueued": "{n, plural, one {{count} dəyişiklik bu cihazda saxlanıldı. Onu göndərməyə hələ də cəhd edilir.} other {{count} dəyişiklik bu cihazda saxlanıldı. Onları göndərməyə hələ də cəhd edilir.}}"
+      "stillQueued": "{n, plural, one {{count} dəyişiklik bu cihazda saxlanıldı. Onu göndərməyə hələ də cəhd edilir.} other {{count} dəyişiklik bu cihazda saxlanıldı. Onları göndərməyə hələ də cəhd edilir.}}",
+      "notApproved": "{n, plural, one {{count} sifariş gözləyir} other {{count} sifariş gözləyir}}: bu tədbir təsdiqlənməyib. Göndərmək üçün təsdiqləyin."
     },
     "lock": {
       "locked": "HatchGrab kilidlənib",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Bəzi məlumatlar düzgün deyil. Onları yoxlayıb yenidən cəhd edin.",
     "paperwork_send_limit": "Qısa müddətdə çox link göndərmisiniz. Bir saatdan sonra yenidən cəhd edin.",
     "paperwork_send_failed": "E-poçtu göndərmək mümkün olmadı. Yenidən cəhd edin.",
-    "cost_invalid": "0 və ya daha çox dəyər daxil edin, ya da xananı boş saxlayın."
+    "cost_invalid": "0 və ya daha çox dəyər daxil edin, ya da xananı boş saxlayın.",
+    "event_cannot_start": "{status, select, unconfirmed {Tədbiri başlatmaq olmur (təsdiqlənməyib).} open {Tədbiri başlatmaq olmur (artıq başlayıb).} cancelled {Tədbiri başlatmaq olmur (ləğv edilib).} other {Tədbiri başlatmaq olmur ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Tədbiri bitirmək olmur (təsdiqlənməyib).} confirmed {Tədbiri bitirmək olmur (başlamayıb).} closed {Tədbiri bitirmək olmur (artıq bitib).} cancelled {Tədbiri bitirmək olmur (ləğv edilib).} other {Tədbiri bitirmək olmur ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Bu tədbirə artıq təsdiq lazım deyil (artıq təsdiqlənib).} open {Bu tədbirə artıq təsdiq lazım deyil (artıq başlayıb).} closed {Bu tədbirə artıq təsdiq lazım deyil (artıq bitib).} cancelled {Bu tədbirə artıq təsdiq lazım deyil (ləğv edilib).} other {Bu tədbirə artıq təsdiq lazım deyil ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Food truck-ınızın yerləşdiyi ölkəni seçin.",

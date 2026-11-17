@@ -36,7 +36,8 @@
     "noteSaved": "Note saved",
     "pricesSaved": "Prices saved for this event",
     "pricesSaveFailed": "Couldn’t save the prices",
-    "reconnectToLoad": "Reconnect to load this event"
+    "reconnectToLoad": "Reconnect to load this event",
+    "eventApproved": "Event approved"
   },
   "gate": {
     "invalidAccessLink": "Invalid access link",
@@ -151,7 +152,8 @@
     "manageEvent": "Manage event",
     "noEvent": "No event selected",
     "selectEvent": "Select event",
-    "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
+    "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}",
+    "approveToTakeOrders": "Approve an event to take orders"
   },
   "orders": {
     "noEvent": "No event selected — select an event to view orders",

@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Comanda a fost salvată, dar panoul capacității bucătăriei nu a putut fi actualizat — verificați intervalul înainte de a vă baza pe el.",
   "created_payment_not_recorded": "Comanda a fost creată, dar înregistrarea plății nu a putut fi salvată — totalul încasărilor pentru această comandă poate fi greșit până la remediere.",
   "payment_not_recorded": "Plata nu a putut fi înregistrată — totalul încasărilor pentru această comandă poate fi greșit până la remediere.",
-  "payment_not_reversed": "Plata nu a putut fi anulată"
+  "payment_not_reversed": "Plata nu a putut fi anulată",
+  "event_not_approved": "Acest eveniment nu este aprobat",
+  "event_not_open": "{status, select, closed {Acest eveniment s-a încheiat. Reporniți-l ca să primiți comenzi.} cancelled {Acest eveniment a fost anulat.} other {Acest eveniment nu este deschis.}}"
 }

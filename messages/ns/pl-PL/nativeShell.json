@@ -40,7 +40,8 @@
     "offline": "📴 Brak połączenia — {n, plural, one {{count} zmiana zapisana na tym urządzeniu. Zostanie wysłana po powrocie online.} few {{count} zmiany zapisane na tym urządzeniu. Zostaną wysłane po powrocie online.} many {{count} zmian zapisanych na tym urządzeniu. Zostaną wysłane po powrocie online.} other {{count} zmiany zapisane na tym urządzeniu. Zostaną wysłane po powrocie online.}} Ustawienia są zablokowane.",
     "syncing": "Znowu online — wysyłanie: {n, plural, one {{count} zmiana} few {{count} zmiany} many {{count} zmian} other {{count} zmiany}}…",
     "synced": "Wszystkie zmiany wysłane.",
-    "stillQueued": "{n, plural, one {{count} zmiana zapisana na tym urządzeniu. Wciąż próbujemy ją wysłać.} few {{count} zmiany zapisane na tym urządzeniu. Wciąż próbujemy je wysłać.} many {{count} zmian zapisanych na tym urządzeniu. Wciąż próbujemy je wysłać.} other {{count} zmiany zapisane na tym urządzeniu. Wciąż próbujemy je wysłać.}}"
+    "stillQueued": "{n, plural, one {{count} zmiana zapisana na tym urządzeniu. Wciąż próbujemy ją wysłać.} few {{count} zmiany zapisane na tym urządzeniu. Wciąż próbujemy je wysłać.} many {{count} zmian zapisanych na tym urządzeniu. Wciąż próbujemy je wysłać.} other {{count} zmiany zapisane na tym urządzeniu. Wciąż próbujemy je wysłać.}}",
+    "notApproved": "{n, plural, one {{count} zamówienie czeka} few {{count} zamówienia czekają} many {{count} zamówień czeka} other {{count} zamówienia czeka}}: to wydarzenie nie jest zatwierdzone. Zatwierdź je, żeby wysłać."
   },
   "lock": {
     "locked": "HatchGrab jest zablokowany",

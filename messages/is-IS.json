@@ -221,7 +221,8 @@
       "noteSaved": "Athugasemd vistuð",
       "pricesSaved": "Verð vistuð fyrir þennan viðburð",
       "pricesSaveFailed": "Ekki tókst að vista verðin",
-      "reconnectToLoad": "Tengstu aftur til að hlaða þessum viðburði"
+      "reconnectToLoad": "Tengstu aftur til að hlaða þessum viðburði",
+      "eventApproved": "Viðburður samþykktur"
     },
     "gate": {
       "invalidAccessLink": "Ógildur aðgangstengill",
@@ -336,7 +337,8 @@
       "manageEvent": "Stjórna viðburði",
       "noEvent": "Enginn viðburður valinn",
       "selectEvent": "Velja viðburð",
-      "status": "{tone, select, paused {⏸ Hlé} live {● Í loftinu} finished {● Lokið} cancelled {Aflýst} other {Ekki hafinn}}"
+      "status": "{tone, select, paused {⏸ Hlé} live {● Í loftinu} finished {● Lokið} cancelled {Aflýst} other {Ekki hafinn}}",
+      "approveToTakeOrders": "Samþykktu viðburð til að taka við pöntunum"
     },
     "orders": {
       "noEvent": "Enginn viðburður valinn — veldu viðburð til að sjá pantanir",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Pöntun vistuð, en ekki tókst að uppfæra afkastatöflu eldhússins — athugaðu tímahólfið áður en þú treystir á það.",
     "created_payment_not_recorded": "Pöntun stofnuð, en ekki tókst að vista greiðslufærsluna — innkomutalan fyrir þessa pöntun gæti verið röng þar til þetta er lagað.",
     "payment_not_recorded": "Ekki tókst að skrá greiðsluna — innkomutalan fyrir þessa pöntun gæti verið röng þar til þetta er lagað.",
-    "payment_not_reversed": "Ekki tókst að bakfæra greiðsluna"
+    "payment_not_reversed": "Ekki tókst að bakfæra greiðsluna",
+    "event_not_approved": "Þessi viðburður er ekki samþykktur",
+    "event_not_open": "{status, select, closed {Þessum viðburði er lokið. Hefðu hann aftur til að taka við pöntunum.} cancelled {Þessum viðburði var aflýst.} other {Þessi viðburður er ekki opinn.}}"
   },
   "kitchenModals": {
     "close": "Loka",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Tengstu aftur til að hlaða",
       "selected": "Valið",
-      "status": "{tone, select, paused {⏸ Hlé} live {● Í loftinu} finished {● Lokið} cancelled {Aflýst} other {Ekki hafið}}"
+      "status": "{tone, select, paused {⏸ Hlé} live {● Í loftinu} finished {● Lokið} cancelled {Aflýst} other {Ekki hafið}}",
+      "orders": "{n, plural, =0 {Engar pantanir} one {{count} pöntun} other {{count} pantanir}}",
+      "needsApproval": "Þarf samþykki",
+      "approvalSummary": "{n, plural, one {{count} viðburður þarf samþykki} other {{count} viðburðir þurfa samþykki}}",
+      "approvalSummaryNote": "{n, plural, one {Viðskiptavinir sjá hann ekki enn.} other {Viðskiptavinir sjá þá ekki enn.}}",
+      "duplicateSameTime": "Möguleg tvítekning · sami tími",
+      "duplicateOverlaps": "Möguleg tvítekning · skarast",
+      "dayCount": "{n, plural, one {{count} viðburður} other {{count} viðburðir}}"
+    },
+    "eventGate": {
+      "approveTitle": "Samþykkja {event}?",
+      "overlapText": "{event} gæti verið tvítekning á {other} ({start}–{end}), sem er þegar samþykktur{n, plural, =0 {} one { og með {count} pöntun} other { og með {count} pantanir}}.",
+      "keep": "Halda {other}",
+      "approveAnyway": "Samþykkja {event} samt",
+      "plainText": "{event} er ekki samþykktur enn. Samþykkja hann til að taka við pöntunum? Viðskiptavinir sjá hann líka.",
+      "approve": "Samþykkja",
+      "startTitle": "Hefja þennan viðburð?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} pöntun hingað til} other {{count} pantanir hingað til}}",
+      "switchTitle": "Skipta yfir í {event}?",
+      "switch": "Skipta",
+      "dismissedText": "{event} gæti verið tvítekning á {other}, sem er þegar samþykktur. Samþykkja hann til að taka við pöntunum? Viðskiptavinir sjá hann líka."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Engin tenging — {n, plural, one {{count} breyting vistuð á þessu tæki. Hún verður send þegar nettengingin kemst aftur á.} other {{count} breytingar vistaðar á þessu tæki. Þær verða sendar þegar nettengingin kemst aftur á.}} Stillingar eru læstar.",
       "syncing": "Aftur á netinu — sendi {n, plural, one {{count} breytingu} other {{count} breytingar}}…",
       "synced": "Allar breytingar sendar.",
-      "stillQueued": "{n, plural, one {{count} breyting vistuð á þessu tæki. Reyni enn að senda hana.} other {{count} breytingar vistaðar á þessu tæki. Reyni enn að senda þær.}}"
+      "stillQueued": "{n, plural, one {{count} breyting vistuð á þessu tæki. Reyni enn að senda hana.} other {{count} breytingar vistaðar á þessu tæki. Reyni enn að senda þær.}}",
+      "notApproved": "{n, plural, one {{count} pöntun bíður} other {{count} pantanir bíða}}: þessi viðburður er ekki samþykktur. Samþykktu hann til að senda."
     },
     "lock": {
       "locked": "HatchGrab er læst",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Sumar upplýsingarnar eru ekki réttar. Athugaðu þær og reyndu aftur.",
     "paperwork_send_limit": "Þú hefur sent marga tengla á stuttum tíma. Reyndu aftur eftir klukkustund.",
     "paperwork_send_failed": "Ekki tókst að senda tölvupóstinn. Reyndu aftur.",
-    "cost_invalid": "Sláðu inn kostnað sem er 0 eða meira, eða skildu reitinn eftir auðan."
+    "cost_invalid": "Sláðu inn kostnað sem er 0 eða meira, eða skildu reitinn eftir auðan.",
+    "event_cannot_start": "{status, select, unconfirmed {Ekki er hægt að hefja viðburðinn (ekki samþykktur).} open {Ekki er hægt að hefja viðburðinn (þegar hafinn).} cancelled {Ekki er hægt að hefja viðburðinn (aflýst).} other {Ekki er hægt að hefja viðburðinn ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Ekki er hægt að ljúka viðburðinum (ekki samþykktur).} confirmed {Ekki er hægt að ljúka viðburðinum (ekki hafinn).} closed {Ekki er hægt að ljúka viðburðinum (þegar lokið).} cancelled {Ekki er hægt að ljúka viðburðinum (aflýst).} other {Ekki er hægt að ljúka viðburðinum ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Þessi viðburður þarf ekki lengur samþykki (þegar samþykktur).} open {Þessi viðburður þarf ekki lengur samþykki (þegar hafinn).} closed {Þessi viðburður þarf ekki lengur samþykki (þegar lokið).} cancelled {Þessi viðburður þarf ekki lengur samþykki (aflýst).} other {Þessi viðburður þarf ekki lengur samþykki ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Veldu landið þar sem vagninn þinn er staðsettur.",

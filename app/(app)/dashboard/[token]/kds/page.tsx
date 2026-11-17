@@ -17,6 +17,7 @@ import { EventPickerPanel } from '@/components/shared/EventPickerPanel'
 import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { EventFinishTimeModal } from '@/components/shared/EventFinishTimeModal'
 import { EventActionsModal } from '@/components/shared/EventActionsModal'
+import { StartEventDialog } from '@/components/shared/EventGateDialogs'   // events-overlap-2
 import { ExtraWaitModal } from '@/components/shared/ExtraWaitModal'
 import { RejectOrderModal } from '@/components/shared/RejectOrderModal'
 import { isDemoIdentifier } from '@/lib/demo'
@@ -447,6 +448,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   // us can always be found. This was `todayEvents`, filtered to today with a UTC date string: it could
   // not hold tomorrow's event, which is why a handoff alone would not have been enough.
   const [events, setEvents] = useState<TruckEvent[]>([])
+  // events-overlap-2: orders per event (not cancelled) for the Start question, and the never-started event it is asking about.
+  const [orderCounts, setOrderCounts] = useState<Record<string, number> | null>(null)
+  const [startFor, setStartFor] = useState<string | null>(null)
   // 🔴 SEEDED FROM THE URL AT MOUNT, so a KDS opened from the dashboard is scoped on its FIRST fetch.
   const [selectedEventId, setSelectedEventId] = useState<string | null>(seedEventId || null)
   // 🔴 THE LATCH THAT MAKES THIS "SEED ONCE, THEN HOLD". Set the first time an event is resolved and
@@ -779,7 +783,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       }
 
       try {
-        const eventsRes = await fetch(`/api/events/manage?token=${token}&upcoming=true`)
+        const eventsRes = await fetch(`/api/events/manage?token=${token}&upcoming=true&counts=1`)
         // 🔴 NEVER REPLACE GOOD EVENT STATE WITH DATA FROM A FAILED RESPONSE. A 429 or 500 returns valid
         // JSON without `.events`, and `?? []` turned that into an EMPTY candidate set — which blanked the
         // active event on a kitchen screen mid-service until the next successful poll. The dashboard has
@@ -791,6 +795,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         // The FULL upcoming list, unfiltered — see the candidate-set note on `events`.
         const fetched: TruckEvent[] = eventsData.events ?? []
         setEvents(fetched)
+        if (eventsData.order_counts && typeof eventsData.order_counts === 'object') setOrderCounts(eventsData.order_counts)
         // ⚠️ THE AUTO-OPEN LOOP IS THE ONE PLACE "TODAY" STILL MATTERS, AND IT MATTERS A LOT: the test is
         // `start_time <= currentTime`, a bare wall-clock string. Run against the unfiltered list it would
         // fire `action: 'open'` on TOMORROW's event the moment today's clock passed its start time. So the
@@ -1591,9 +1596,15 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   const showKdsToast = (msg: string) => { setKdsToast(msg); setTimeout(() => setKdsToast(null), 3500) }
 
   const openEvent = async (eventId: string) => {
-    // A future-dated event asks first, naming its date (Finding 3). Today's event starts as it always did.
+    // events-overlap-2: the FIRST start of an event asks once ("Start this event?", its day, times and orders so far) —
+    // the same question as the dashboard (components/shared/EventGateDialogs.tsx). Never again once opened_at is set.
     const ev = events.find(e => e.id === eventId)
+    if (ev && !ev.opened_at) { setStartFor(eventId); return }
+    // A future-dated event asks first, naming its date (Finding 3). Today's event starts as it always did.
     if (ev?.event_date && ev.event_date > getLocalDateInTz(kdsTz) && !window.confirm(t('event.startFutureConfirm', { date: formatShortDate(ev.event_date, kdsTime) }))) return
+    await doOpenEvent(eventId)
+  }
+  const doOpenEvent = async (eventId: string) => {
     try {
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'open', eventId, payload: {} }) })
       const data = await res.json()
@@ -1737,6 +1748,8 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
 
   // activeEvent + activeEventLive resolved once near the top (above the heartbeat effect).
   activeEventIdRef.current = activeEvent?.id ?? null // keep the ref current for the pause/wait callbacks
+  // events-overlap-2: the never-started event the Start question is asking about.
+  const startTarget = startFor ? events.find(e => e.id === startFor) ?? null : null
   const recentlyClosed = !!(activeEvent?.status === 'closed' && activeEvent.closed_at && Date.now() - new Date(activeEvent.closed_at).getTime() < 10 * 60 * 1000)
 
   const isPaused = pausedUntil ? new Date(pausedUntil) > new Date() : false
@@ -3064,6 +3077,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           🔴 AND `onPause` IS `undefined` IN DEMO, DELIBERATELY. EventActionsModal renders its pause row
           only when `onPause` is passed (`onPause && (…)`), so a demo gets RESUME and never PAUSE — the
           exact asymmetry the old header button had via `(!isDemo || isPaused)` on a single toggle. */}
+      {startTarget && (
+        <StartEventDialog event={startTarget} orders={orderCounts?.[startTarget.id] ?? 0} time={kdsTime}
+          onStart={() => { setStartFor(null); void doOpenEvent(startTarget.id) }} onCancel={() => setStartFor(null)} />
+      )}
       {showEventMenu && activeEvent && (!isDemo || isPaused) && (
         <EventActionsModal
           time={truck?.time}

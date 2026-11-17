@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Osa tiedoista ei ole oikein. Tarkista ne ja yritä uudelleen.",
   "paperwork_send_limit": "Olet lähettänyt paljon linkkejä lyhyessä ajassa. Yritä uudelleen tunnin päästä.",
   "paperwork_send_failed": "Sähköpostia ei voitu lähettää. Yritä uudelleen.",
-  "cost_invalid": "Anna kustannus, joka on 0 tai enemmän, tai jätä kenttä tyhjäksi."
+  "cost_invalid": "Anna kustannus, joka on 0 tai enemmän, tai jätä kenttä tyhjäksi.",
+  "event_cannot_start": "{status, select, unconfirmed {Tapahtumaa ei voi aloittaa (ei hyväksytty).} open {Tapahtumaa ei voi aloittaa (jo aloitettu).} cancelled {Tapahtumaa ei voi aloittaa (peruttu).} other {Tapahtumaa ei voi aloittaa ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Tapahtumaa ei voi päättää (ei hyväksytty).} confirmed {Tapahtumaa ei voi päättää (ei aloitettu).} closed {Tapahtumaa ei voi päättää (jo päättynyt).} cancelled {Tapahtumaa ei voi päättää (peruttu).} other {Tapahtumaa ei voi päättää ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Tapahtuma ei enää tarvitse hyväksyntää (jo hyväksytty).} open {Tapahtuma ei enää tarvitse hyväksyntää (jo aloitettu).} closed {Tapahtuma ei enää tarvitse hyväksyntää (jo päättynyt).} cancelled {Tapahtuma ei enää tarvitse hyväksyntää (peruttu).} other {Tapahtuma ei enää tarvitse hyväksyntää ({status}).}}"
 }

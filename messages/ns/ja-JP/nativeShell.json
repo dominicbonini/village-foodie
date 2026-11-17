@@ -40,7 +40,8 @@
     "offline": "📴 接続がありません。{n, plural, other {{count}件の変更をこのデバイスに保存しました。オンラインに戻ると送信されます。}}設定はロックされています。",
     "syncing": "オンラインに戻りました。{n, plural, other {{count}件の変更}}を送信中…",
     "synced": "すべての変更を送信しました。",
-    "stillQueued": "{n, plural, other {{count}件の変更をこのデバイスに保存しています。送信を再試行中です。}}"
+    "stillQueued": "{n, plural, other {{count}件の変更をこのデバイスに保存しています。送信を再試行中です。}}",
+    "notApproved": "{n, plural, other {{count}件の注文が待機中}}：この出店は承認されていません。承認すると送信されます。"
   },
   "lock": {
     "locked": "HatchGrabはロックされています",

@@ -36,7 +36,8 @@
     "noteSaved": "已儲存備註",
     "pricesSaved": "已為此活動儲存價錢",
     "pricesSaveFailed": "未能儲存價錢",
-    "reconnectToLoad": "請重新連線以載入此活動"
+    "reconnectToLoad": "請重新連線以載入此活動",
+    "eventApproved": "活動已批准"
   },
   "gate": {
     "invalidAccessLink": "存取連結無效",
@@ -151,7 +152,8 @@
     "manageEvent": "管理活動",
     "noEvent": "未選擇活動",
     "selectEvent": "選擇活動",
-    "status": "{tone, select, paused {⏸ 已暫停} live {● 進行中} finished {● 已結束} cancelled {已取消} other {未開始}}"
+    "status": "{tone, select, paused {⏸ 已暫停} live {● 進行中} finished {● 已結束} cancelled {已取消} other {未開始}}",
+    "approveToTakeOrders": "批准一個活動以接受訂單"
   },
   "orders": {
     "noEvent": "未選擇活動：請選擇活動以查看訂單",

@@ -36,7 +36,8 @@
     "noteSaved": "Piezīme saglabāta",
     "pricesSaved": "Cenas šim pasākumam saglabātas",
     "pricesSaveFailed": "Cenas neizdevās saglabāt",
-    "reconnectToLoad": "Atjaunojiet savienojumu, lai ielādētu šo pasākumu"
+    "reconnectToLoad": "Atjaunojiet savienojumu, lai ielādētu šo pasākumu",
+    "eventApproved": "Pasākums apstiprināts"
   },
   "gate": {
     "invalidAccessLink": "Nederīga piekļuves saite",
@@ -151,7 +152,8 @@
     "manageEvent": "Pārvaldīt pasākumu",
     "noEvent": "Pasākums nav izvēlēts",
     "selectEvent": "Izvēlēties pasākumu",
-    "status": "{tone, select, paused {⏸ Apturēts} live {● Notiek} finished {● Beidzies} cancelled {Atcelts} other {Nav sākts}}"
+    "status": "{tone, select, paused {⏸ Apturēts} live {● Notiek} finished {● Beidzies} cancelled {Atcelts} other {Nav sākts}}",
+    "approveToTakeOrders": "Apstipriniet pasākumu, lai pieņemtu pasūtījumus"
   },
   "orders": {
     "noEvent": "Pasākums nav izvēlēts — izvēlieties pasākumu, lai skatītu pasūtījumus",

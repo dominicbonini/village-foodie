@@ -221,7 +221,8 @@
       "noteSaved": "Izoh saqlandi",
       "pricesSaved": "Bu tadbir uchun narxlar saqlandi",
       "pricesSaveFailed": "Narxlarni saqlab boʻlmadi",
-      "reconnectToLoad": "Bu tadbirni yuklash uchun internetga qayta ulaning"
+      "reconnectToLoad": "Bu tadbirni yuklash uchun internetga qayta ulaning",
+      "eventApproved": "Tadbir tasdiqlandi"
     },
     "gate": {
       "invalidAccessLink": "Kirish havolasi notoʻgʻri",
@@ -336,7 +337,8 @@
       "manageEvent": "Tadbirni boshqarish",
       "noEvent": "Tadbir tanlanmagan",
       "selectEvent": "Tadbirni tanlash",
-      "status": "{tone, select, paused {⏸ Toʻxtatilgan} live {● Faol} finished {● Yakunlangan} cancelled {Bekor qilingan} other {Boshlanmagan}}"
+      "status": "{tone, select, paused {⏸ Toʻxtatilgan} live {● Faol} finished {● Yakunlangan} cancelled {Bekor qilingan} other {Boshlanmagan}}",
+      "approveToTakeOrders": "Buyurtma olish uchun tadbirni tasdiqlang"
     },
     "orders": {
       "noEvent": "Tadbir tanlanmagan — buyurtmalarni koʻrish uchun tadbirni tanlang",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Buyurtma saqlandi, lekin oshxona quvvati jadvalini yangilab boʻlmadi — unga tayanishdan oldin vaqt oraligʻini tekshiring.",
     "created_payment_not_recorded": "Buyurtma yaratildi, lekin toʻlov yozuvini saqlab boʻlmadi — tuzatilmaguncha bu buyurtma boʻyicha tushum notoʻgʻri koʻrsatilishi mumkin.",
     "payment_not_recorded": "Toʻlovni qayd etib boʻlmadi — tuzatilmaguncha bu buyurtma boʻyicha tushum notoʻgʻri koʻrsatilishi mumkin.",
-    "payment_not_reversed": "Toʻlovni bekor qilib boʻlmadi"
+    "payment_not_reversed": "Toʻlovni bekor qilib boʻlmadi",
+    "event_not_approved": "Bu tadbir tasdiqlanmagan",
+    "event_not_open": "{status, select, closed {Bu tadbir tugagan. Buyurtma olish uchun qayta boshlang.} cancelled {Bu tadbir bekor qilingan.} other {Bu tadbir ochiq emas.}}"
   },
   "kitchenModals": {
     "close": "Yopish",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Yuklash uchun qayta ulaning",
       "selected": "Tanlangan",
-      "status": "{tone, select, paused {⏸ Toʻxtatilgan} live {● Faol} finished {● Yakunlangan} cancelled {Bekor qilingan} other {Boshlanmagan}}"
+      "status": "{tone, select, paused {⏸ Toʻxtatilgan} live {● Faol} finished {● Yakunlangan} cancelled {Bekor qilingan} other {Boshlanmagan}}",
+      "orders": "{n, plural, =0 {Buyurtma yo‘q} one {{count} ta buyurtma} other {{count} ta buyurtma}}",
+      "needsApproval": "Tasdiq kutilmoqda",
+      "approvalSummary": "{n, plural, one {{count} ta tadbir tasdiq kutmoqda} other {{count} ta tadbir tasdiq kutmoqda}}",
+      "approvalSummaryNote": "{n, plural, one {Mijozlar uni hali ko‘rmaydi.} other {Mijozlar ularni hali ko‘rmaydi.}}",
+      "duplicateSameTime": "Takroriy bo‘lishi mumkin · bir xil vaqt",
+      "duplicateOverlaps": "Takroriy bo‘lishi mumkin · vaqti ustma-ust",
+      "dayCount": "{n, plural, one {{count} ta tadbir} other {{count} ta tadbir}}"
+    },
+    "eventGate": {
+      "approveTitle": "{event} tasdiqlansinmi?",
+      "overlapText": "{event} allaqachon tasdiqlangan {other} ({start}–{end}) tadbirining takroriy nusxasi bo‘lishi mumkin{n, plural, =0 {} one { va unda {count} ta buyurtma bor} other { va unda {count} ta buyurtma bor}}.",
+      "keep": "{other} qolsin",
+      "approveAnyway": "Baribir {event} tasdiqlash",
+      "plainText": "{event} hali tasdiqlanmagan. Buyurtma olish uchun tasdiqlaysizmi? Mijozlar ham ko‘radi.",
+      "approve": "Tasdiqlash",
+      "startTitle": "Bu tadbir boshlansinmi?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {hozircha {count} ta buyurtma} other {hozircha {count} ta buyurtma}}",
+      "switchTitle": "{event} tadbiriga o‘tilsinmi?",
+      "switch": "O‘tish",
+      "dismissedText": "{event} allaqachon tasdiqlangan {other} tadbirining takroriy nusxasi bo‘lishi mumkin. Buyurtma olish uchun tasdiqlaysizmi? Mijozlar ham ko‘radi."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Aloqa yoʻq — {n, plural, one {{count} ta oʻzgarish shu qurilmada saqlandi. Internet qaytganda yuboriladi.} other {{count} ta oʻzgarish shu qurilmada saqlandi. Internet qaytganda yuboriladi.}} Sozlamalar qulflangan.",
       "syncing": "Aloqa tiklandi — {n, plural, one {{count} ta oʻzgarish} other {{count} ta oʻzgarish}} yuborilmoqda…",
       "synced": "Barcha oʻzgarishlar yuborildi.",
-      "stillQueued": "{n, plural, one {{count} ta oʻzgarish shu qurilmada saqlandi. Hali ham yuborishga urinilmoqda.} other {{count} ta oʻzgarish shu qurilmada saqlandi. Hali ham yuborishga urinilmoqda.}}"
+      "stillQueued": "{n, plural, one {{count} ta oʻzgarish shu qurilmada saqlandi. Hali ham yuborishga urinilmoqda.} other {{count} ta oʻzgarish shu qurilmada saqlandi. Hali ham yuborishga urinilmoqda.}}",
+      "notApproved": "{n, plural, one {{count} ta buyurtma kutmoqda} other {{count} ta buyurtma kutmoqda}}: bu tadbir tasdiqlanmagan. Yuborish uchun tasdiqlang."
     },
     "lock": {
       "locked": "HatchGrab qulflangan",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Ayrim maʼlumotlar notoʻgʻri. Ularni tekshirib, qayta urinib koʻring.",
     "paperwork_send_limit": "Qisqa vaqt ichida juda koʻp havola yubordingiz. Bir soatdan soʻng qayta urinib koʻring.",
     "paperwork_send_failed": "Xatni yuborib boʻlmadi. Qayta urinib koʻring.",
-    "cost_invalid": "0 yoki undan katta xarajatni kiriting yoki maydonni boʻsh qoldiring."
+    "cost_invalid": "0 yoki undan katta xarajatni kiriting yoki maydonni boʻsh qoldiring.",
+    "event_cannot_start": "{status, select, unconfirmed {Tadbirni boshlab bo‘lmaydi (tasdiqlanmagan).} open {Tadbirni boshlab bo‘lmaydi (allaqachon boshlangan).} cancelled {Tadbirni boshlab bo‘lmaydi (bekor qilingan).} other {Tadbirni boshlab bo‘lmaydi ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Tadbirni tugatib bo‘lmaydi (tasdiqlanmagan).} confirmed {Tadbirni tugatib bo‘lmaydi (boshlanmagan).} closed {Tadbirni tugatib bo‘lmaydi (allaqachon tugagan).} cancelled {Tadbirni tugatib bo‘lmaydi (bekor qilingan).} other {Tadbirni tugatib bo‘lmaydi ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Bu tadbirga endi tasdiq kerak emas (allaqachon tasdiqlangan).} open {Bu tadbirga endi tasdiq kerak emas (allaqachon boshlangan).} closed {Bu tadbirga endi tasdiq kerak emas (allaqachon tugagan).} cancelled {Bu tadbirga endi tasdiq kerak emas (bekor qilingan).} other {Bu tadbirga endi tasdiq kerak emas ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Fudtrakingiz joylashgan mamlakatni tanlang.",

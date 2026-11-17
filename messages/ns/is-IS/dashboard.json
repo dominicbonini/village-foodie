@@ -36,7 +36,8 @@
     "noteSaved": "Athugasemd vistuð",
     "pricesSaved": "Verð vistuð fyrir þennan viðburð",
     "pricesSaveFailed": "Ekki tókst að vista verðin",
-    "reconnectToLoad": "Tengstu aftur til að hlaða þessum viðburði"
+    "reconnectToLoad": "Tengstu aftur til að hlaða þessum viðburði",
+    "eventApproved": "Viðburður samþykktur"
   },
   "gate": {
     "invalidAccessLink": "Ógildur aðgangstengill",
@@ -151,7 +152,8 @@
     "manageEvent": "Stjórna viðburði",
     "noEvent": "Enginn viðburður valinn",
     "selectEvent": "Velja viðburð",
-    "status": "{tone, select, paused {⏸ Hlé} live {● Í loftinu} finished {● Lokið} cancelled {Aflýst} other {Ekki hafinn}}"
+    "status": "{tone, select, paused {⏸ Hlé} live {● Í loftinu} finished {● Lokið} cancelled {Aflýst} other {Ekki hafinn}}",
+    "approveToTakeOrders": "Samþykktu viðburð til að taka við pöntunum"
   },
   "orders": {
     "noEvent": "Enginn viðburður valinn — veldu viðburð til að sjá pantanir",

@@ -221,7 +221,8 @@
       "noteSaved": "Anteckning sparad",
       "pricesSaved": "Priser sparade för det här evenemanget",
       "pricesSaveFailed": "Kunde inte spara priserna",
-      "reconnectToLoad": "Anslut igen för att ladda det här evenemanget"
+      "reconnectToLoad": "Anslut igen för att ladda det här evenemanget",
+      "eventApproved": "Evenemanget godkänt"
     },
     "gate": {
       "invalidAccessLink": "Ogiltig åtkomstlänk",
@@ -336,7 +337,8 @@
       "manageEvent": "Hantera evenemang",
       "noEvent": "Inget evenemang valt",
       "selectEvent": "Välj evenemang",
-      "status": "{tone, select, paused {⏸ Pausat} live {● Pågår} finished {● Avslutat} cancelled {Inställt} other {Ej startat}}"
+      "status": "{tone, select, paused {⏸ Pausat} live {● Pågår} finished {● Avslutat} cancelled {Inställt} other {Ej startat}}",
+      "approveToTakeOrders": "Godkänn ett evenemang för att ta emot beställningar"
     },
     "orders": {
       "noEvent": "Inget evenemang valt — välj ett evenemang för att se beställningar",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Beställningen sparades, men tavlan för kökskapacitet kunde inte uppdateras — kontrollera tidsluckan innan du litar på den.",
     "created_payment_not_recorded": "Beställningen är skapad, men betalningsposten kunde inte sparas — intäkterna för den här beställningen kan vara fel tills det har rättats.",
     "payment_not_recorded": "Betalningen kunde inte registreras — intäkterna för den här beställningen kan vara fel tills det har rättats.",
-    "payment_not_reversed": "Betalningen kunde inte återföras"
+    "payment_not_reversed": "Betalningen kunde inte återföras",
+    "event_not_approved": "Evenemanget är inte godkänt",
+    "event_not_open": "{status, select, closed {Evenemanget är avslutat. Starta om det för att ta emot beställningar.} cancelled {Evenemanget är inställt.} other {Evenemanget är inte öppet.}}"
   },
   "kitchenModals": {
     "close": "Stäng",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Återanslut för att ladda",
       "selected": "Valt",
-      "status": "{tone, select, paused {⏸ Pausat} live {● Pågår} finished {● Avslutat} cancelled {Inställt} other {Inte startat}}"
+      "status": "{tone, select, paused {⏸ Pausat} live {● Pågår} finished {● Avslutat} cancelled {Inställt} other {Inte startat}}",
+      "orders": "{n, plural, =0 {Inga beställningar} one {{count} beställning} other {{count} beställningar}}",
+      "needsApproval": "Behöver godkännas",
+      "approvalSummary": "{n, plural, one {{count} evenemang behöver godkännas} other {{count} evenemang behöver godkännas}}",
+      "approvalSummaryNote": "{n, plural, one {Kunderna ser det inte än.} other {Kunderna ser dem inte än.}}",
+      "duplicateSameTime": "Möjlig dubblett · samma tid",
+      "duplicateOverlaps": "Möjlig dubblett · överlappar",
+      "dayCount": "{n, plural, one {{count} evenemang} other {{count} evenemang}}"
+    },
+    "eventGate": {
+      "approveTitle": "Godkänna {event}?",
+      "overlapText": "{event} kan vara en dubblett av {other} ({start}–{end}), som redan är godkänt{n, plural, =0 {} one { och har {count} beställning} other { och har {count} beställningar}}.",
+      "keep": "Behåll {other}",
+      "approveAnyway": "Godkänn {event} ändå",
+      "plainText": "{event} är inte godkänt än. Godkänna det för att ta emot beställningar? Kunderna ser det också.",
+      "approve": "Godkänn",
+      "startTitle": "Starta evenemanget?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} beställning hittills} other {{count} beställningar hittills}}",
+      "switchTitle": "Byta till {event}?",
+      "switch": "Byt",
+      "dismissedText": "{event} kan vara en dubblett av {other}, som redan är godkänt. Godkänna det för att ta emot beställningar? Kunderna ser det också."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Ingen anslutning — {n, plural, one {{count} ändring sparad på den här enheten. Den skickas när du är online igen.} other {{count} ändringar sparade på den här enheten. De skickas när du är online igen.}} Inställningarna är låsta.",
       "syncing": "Online igen — skickar {n, plural, one {{count} ändring} other {{count} ändringar}}…",
       "synced": "Alla ändringar skickade.",
-      "stillQueued": "{n, plural, one {{count} ändring sparad på den här enheten. Försöker fortfarande skicka den.} other {{count} ändringar sparade på den här enheten. Försöker fortfarande skicka dem.}}"
+      "stillQueued": "{n, plural, one {{count} ändring sparad på den här enheten. Försöker fortfarande skicka den.} other {{count} ändringar sparade på den här enheten. Försöker fortfarande skicka dem.}}",
+      "notApproved": "{n, plural, one {{count} beställning väntar} other {{count} beställningar väntar}}: evenemanget är inte godkänt. Godkänn det för att skicka."
     },
     "lock": {
       "locked": "HatchGrab är låst",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Några av uppgifterna stämmer inte. Kontrollera dem och försök igen.",
     "paperwork_send_limit": "Du har skickat många länkar på kort tid. Försök igen om en timme.",
     "paperwork_send_failed": "Mejlet kunde inte skickas. Försök igen.",
-    "cost_invalid": "Ange en kostnad på 0 eller mer, eller lämna rutan tom."
+    "cost_invalid": "Ange en kostnad på 0 eller mer, eller lämna rutan tom.",
+    "event_cannot_start": "{status, select, unconfirmed {Det går inte att starta evenemanget (inte godkänt).} open {Det går inte att starta evenemanget (redan startat).} cancelled {Det går inte att starta evenemanget (inställt).} other {Det går inte att starta evenemanget ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Det går inte att avsluta evenemanget (inte godkänt).} confirmed {Det går inte att avsluta evenemanget (inte startat).} closed {Det går inte att avsluta evenemanget (redan avslutat).} cancelled {Det går inte att avsluta evenemanget (inställt).} other {Det går inte att avsluta evenemanget ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Evenemanget behöver inte längre godkännas (redan godkänt).} open {Evenemanget behöver inte längre godkännas (redan startat).} closed {Evenemanget behöver inte längre godkännas (redan avslutat).} cancelled {Evenemanget behöver inte längre godkännas (inställt).} other {Evenemanget behöver inte längre godkännas ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Välj landet där din foodtruck har sin bas.",

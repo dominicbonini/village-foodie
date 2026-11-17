@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "התחברו מחדש כדי לטעון",
     "selected": "נבחר",
-    "status": "{tone, select, paused {⏸ מושהה} live {● פעיל} finished {● הסתיים} cancelled {בוטל} other {לא התחיל}}"
+    "status": "{tone, select, paused {⏸ מושהה} live {● פעיל} finished {● הסתיים} cancelled {בוטל} other {לא התחיל}}",
+    "orders": "{n, plural, =0 {אין הזמנות} one {הזמנה אחת ({count})} two {{count} הזמנות} other {{count} הזמנות}}",
+    "needsApproval": "ממתין לאישור",
+    "approvalSummary": "{n, plural, one {אירוע אחד ממתין לאישור ({count})} two {{count} אירועים ממתינים לאישור} other {{count} אירועים ממתינים לאישור}}",
+    "approvalSummaryNote": "{n, plural, one {הלקוחות עדיין לא רואים אותו.} two {הלקוחות עדיין לא רואים אותם.} other {הלקוחות עדיין לא רואים אותם.}}",
+    "duplicateSameTime": "כפילות אפשרית · אותה שעה",
+    "duplicateOverlaps": "כפילות אפשרית · חפיפה",
+    "dayCount": "{n, plural, one {אירוע אחד ({count})} two {{count} אירועים} other {{count} אירועים}}"
+  },
+  "eventGate": {
+    "approveTitle": "לאשר את {event}?",
+    "overlapText": "{event} הוא כנראה כפילות של {other} ({start}–{end}), שכבר אושר{n, plural, =0 {} one { ויש בו הזמנה אחת ({count})} two { ויש בו {count} הזמנות} other { ויש בו {count} הזמנות}}.",
+    "keep": "להשאיר את {other}",
+    "approveAnyway": "לאשר את {event} בכל זאת",
+    "plainText": "{event} עדיין לא אושר. לאשר כדי לקבל הזמנות? גם הלקוחות יראו אותו.",
+    "approve": "אישור",
+    "startTitle": "להתחיל את האירוע?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {הזמנה אחת עד עכשיו ({count})} two {{count} הזמנות עד עכשיו} other {{count} הזמנות עד עכשיו}}",
+    "switchTitle": "לעבור אל {event}?",
+    "switch": "מעבר",
+    "dismissedText": "{event} הוא כנראה כפילות של {other}, שכבר אושר. לאשר כדי לקבל הזמנות? גם הלקוחות יראו אותו."
   }
 }

@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Atjaunojiet savienojumu, lai ielādētu",
     "selected": "Izvēlēts",
-    "status": "{tone, select, paused {⏸ Apturēts} live {● Norisinās} finished {● Pabeigts} cancelled {Atcelts} other {Nav sākts}}"
+    "status": "{tone, select, paused {⏸ Apturēts} live {● Norisinās} finished {● Pabeigts} cancelled {Atcelts} other {Nav sākts}}",
+    "orders": "{n, plural, =0 {Nav pasūtījumu} zero {{count} pasūtījumu} one {{count} pasūtījums} other {{count} pasūtījumi}}",
+    "needsApproval": "Jāapstiprina",
+    "approvalSummary": "{n, plural, zero {{count} pasākumu jāapstiprina} one {{count} pasākums jāapstiprina} other {{count} pasākumi jāapstiprina}}",
+    "approvalSummaryNote": "{n, plural, zero {Klienti tos vēl neredz.} one {Klienti to vēl neredz.} other {Klienti tos vēl neredz.}}",
+    "duplicateSameTime": "Iespējams dublikāts · tas pats laiks",
+    "duplicateOverlaps": "Iespējams dublikāts · pārklājas",
+    "dayCount": "{n, plural, zero {{count} pasākumu} one {{count} pasākums} other {{count} pasākumi}}"
+  },
+  "eventGate": {
+    "approveTitle": "Apstiprināt {event}?",
+    "overlapText": "{event} varētu būt pasākuma {other} ({start}–{end}) dublikāts, kas jau ir apstiprināts{n, plural, =0 {} zero { un tam ir {count} pasūtījumu} one { un tam ir {count} pasūtījums} other { un tam ir {count} pasūtījumi}}.",
+    "keep": "Paturēt {other}",
+    "approveAnyway": "Tomēr apstiprināt {event}",
+    "plainText": "{event} vēl nav apstiprināts. Apstiprināt, lai pieņemtu pasūtījumus? To redzēs arī klienti.",
+    "approve": "Apstiprināt",
+    "startTitle": "Sākt šo pasākumu?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, zero {līdz šim {count} pasūtījumu} one {līdz šim {count} pasūtījums} other {līdz šim {count} pasūtījumi}}",
+    "switchTitle": "Pārslēgties uz {event}?",
+    "switch": "Pārslēgt",
+    "dismissedText": "{event} varētu būt pasākuma {other} dublikāts, kas jau ir apstiprināts. Apstiprināt, lai pieņemtu pasūtījumus? To redzēs arī klienti."
   }
 }

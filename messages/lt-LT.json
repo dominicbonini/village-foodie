@@ -221,7 +221,8 @@
       "noteSaved": "Pastaba išsaugota",
       "pricesSaved": "Kainos šiam renginiui išsaugotos",
       "pricesSaveFailed": "Nepavyko išsaugoti kainų",
-      "reconnectToLoad": "Prisijunkite prie interneto, kad įkeltumėte šį renginį"
+      "reconnectToLoad": "Prisijunkite prie interneto, kad įkeltumėte šį renginį",
+      "eventApproved": "Renginys patvirtintas"
     },
     "gate": {
       "invalidAccessLink": "Netinkama prieigos nuoroda",
@@ -336,7 +337,8 @@
       "manageEvent": "Valdyti renginį",
       "noEvent": "Renginys nepasirinktas",
       "selectEvent": "Pasirinkti renginį",
-      "status": "{tone, select, paused {⏸ Sustabdyta} live {● Vyksta} finished {● Baigta} cancelled {Atšaukta} other {Nepradėta}}"
+      "status": "{tone, select, paused {⏸ Sustabdyta} live {● Vyksta} finished {● Baigta} cancelled {Atšaukta} other {Nepradėta}}",
+      "approveToTakeOrders": "Patvirtinkite renginį, kad galėtumėte priimti užsakymus"
     },
     "orders": {
       "noEvent": "Renginys nepasirinktas — pasirinkite renginį, kad matytumėte užsakymus",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Užsakymas išsaugotas, bet virtuvės pajėgumo lentos atnaujinti nepavyko – prieš ja remdamiesi patikrinkite laiko intervalą.",
     "created_payment_not_recorded": "Užsakymas sukurtas, bet mokėjimo įrašo išsaugoti nepavyko – kol tai nebus ištaisyta, šio užsakymo pajamų suma gali būti neteisinga.",
     "payment_not_recorded": "Nepavyko užregistruoti mokėjimo – kol tai nebus ištaisyta, šio užsakymo pajamų suma gali būti neteisinga.",
-    "payment_not_reversed": "Nepavyko atšaukti mokėjimo"
+    "payment_not_reversed": "Nepavyko atšaukti mokėjimo",
+    "event_not_approved": "Šis renginys nepatvirtintas",
+    "event_not_open": "{status, select, closed {Šis renginys baigėsi. Pradėkite jį iš naujo, kad priimtumėte užsakymus.} cancelled {Šis renginys atšauktas.} other {Šis renginys neatidarytas.}}"
   },
   "kitchenModals": {
     "close": "Uždaryti",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Prisijunkite iš naujo, kad įkeltumėte",
       "selected": "Pasirinkta",
-      "status": "{tone, select, paused {⏸ Pristabdytas} live {● Vyksta} finished {● Baigtas} cancelled {Atšauktas} other {Nepradėtas}}"
+      "status": "{tone, select, paused {⏸ Pristabdytas} live {● Vyksta} finished {● Baigtas} cancelled {Atšauktas} other {Nepradėtas}}",
+      "orders": "{n, plural, =0 {Užsakymų nėra} one {{count} užsakymas} few {{count} užsakymai} many {{count} užsakymo} other {{count} užsakymų}}",
+      "needsApproval": "Laukia patvirtinimo",
+      "approvalSummary": "{n, plural, one {{count} renginys laukia patvirtinimo} few {{count} renginiai laukia patvirtinimo} many {{count} renginio laukia patvirtinimo} other {{count} renginių laukia patvirtinimo}}",
+      "approvalSummaryNote": "{n, plural, one {Klientai jo dar nemato.} few {Klientai jų dar nemato.} many {Klientai jų dar nemato.} other {Klientai jų dar nemato.}}",
+      "duplicateSameTime": "Galimas dublikatas · tas pats laikas",
+      "duplicateOverlaps": "Galimas dublikatas · persidengia",
+      "dayCount": "{n, plural, one {{count} renginys} few {{count} renginiai} many {{count} renginio} other {{count} renginių}}"
+    },
+    "eventGate": {
+      "approveTitle": "Patvirtinti {event}?",
+      "overlapText": "{event} gali būti renginio {other} ({start}–{end}) dublikatas, kuris jau patvirtintas{n, plural, =0 {} one { ir turi {count} užsakymą} few { ir turi {count} užsakymus} many { ir turi {count} užsakymo} other { ir turi {count} užsakymų}}.",
+      "keep": "Palikti {other}",
+      "approveAnyway": "Vis tiek patvirtinti {event}",
+      "plainText": "{event} dar nepatvirtintas. Patvirtinti, kad galėtumėte priimti užsakymus? Jį matys ir klientai.",
+      "approve": "Patvirtinti",
+      "startTitle": "Pradėti šį renginį?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {kol kas {count} užsakymas} few {kol kas {count} užsakymai} many {kol kas {count} užsakymo} other {kol kas {count} užsakymų}}",
+      "switchTitle": "Perjungti į {event}?",
+      "switch": "Perjungti",
+      "dismissedText": "{event} gali būti renginio {other} dublikatas, kuris jau patvirtintas. Patvirtinti, kad galėtumėte priimti užsakymus? Jį matys ir klientai."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Nėra ryšio — {n, plural, one {{count} pakeitimas išsaugotas šiame įrenginyje. Jis bus išsiųstas, kai vėl prisijungsite.} few {{count} pakeitimai išsaugoti šiame įrenginyje. Jie bus išsiųsti, kai vėl prisijungsite.} many {{count} pakeitimų išsaugota šiame įrenginyje. Jie bus išsiųsti, kai vėl prisijungsite.} other {{count} pakeitimų išsaugota šiame įrenginyje. Jie bus išsiųsti, kai vėl prisijungsite.}} Nustatymai užrakinti.",
       "syncing": "Vėl prisijungta — siunčiama: {n, plural, one {{count} pakeitimas} few {{count} pakeitimai} many {{count} pakeitimų} other {{count} pakeitimų}}…",
       "synced": "Visi pakeitimai išsiųsti.",
-      "stillQueued": "{n, plural, one {{count} pakeitimas išsaugotas šiame įrenginyje. Vis dar bandoma jį išsiųsti.} few {{count} pakeitimai išsaugoti šiame įrenginyje. Vis dar bandoma juos išsiųsti.} many {{count} pakeitimų išsaugota šiame įrenginyje. Vis dar bandoma juos išsiųsti.} other {{count} pakeitimų išsaugota šiame įrenginyje. Vis dar bandoma juos išsiųsti.}}"
+      "stillQueued": "{n, plural, one {{count} pakeitimas išsaugotas šiame įrenginyje. Vis dar bandoma jį išsiųsti.} few {{count} pakeitimai išsaugoti šiame įrenginyje. Vis dar bandoma juos išsiųsti.} many {{count} pakeitimų išsaugota šiame įrenginyje. Vis dar bandoma juos išsiųsti.} other {{count} pakeitimų išsaugota šiame įrenginyje. Vis dar bandoma juos išsiųsti.}}",
+      "notApproved": "{n, plural, one {{count} užsakymas laukia} few {{count} užsakymai laukia} many {{count} užsakymo laukia} other {{count} užsakymų laukia}}: šis renginys nepatvirtintas. Patvirtinkite jį, kad išsiųstumėte."
     },
     "lock": {
       "locked": "HatchGrab užrakinta",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Kai kurie duomenys neteisingi. Patikrinkite juos ir bandykite dar kartą.",
     "paperwork_send_limit": "Per trumpą laiką išsiuntėte daug nuorodų. Bandykite dar kartą po valandos.",
     "paperwork_send_failed": "Nepavyko išsiųsti el. laiško. Bandykite dar kartą.",
-    "cost_invalid": "Įveskite 0 arba didesnę savikainą arba palikite laukelį tuščią."
+    "cost_invalid": "Įveskite 0 arba didesnę savikainą arba palikite laukelį tuščią.",
+    "event_cannot_start": "{status, select, unconfirmed {Renginio pradėti negalima (nepatvirtintas).} open {Renginio pradėti negalima (jau pradėtas).} cancelled {Renginio pradėti negalima (atšauktas).} other {Renginio pradėti negalima ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Renginio baigti negalima (nepatvirtintas).} confirmed {Renginio baigti negalima (nepradėtas).} closed {Renginio baigti negalima (jau baigėsi).} cancelled {Renginio baigti negalima (atšauktas).} other {Renginio baigti negalima ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Šiam renginiui patvirtinimo nebereikia (jau patvirtintas).} open {Šiam renginiui patvirtinimo nebereikia (jau pradėtas).} closed {Šiam renginiui patvirtinimo nebereikia (jau baigėsi).} cancelled {Šiam renginiui patvirtinimo nebereikia (atšauktas).} other {Šiam renginiui patvirtinimo nebereikia ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Pasirinkite šalį, kurioje įsikūręs jūsų food truck.",

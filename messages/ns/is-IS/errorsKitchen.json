@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Pöntun vistuð, en ekki tókst að uppfæra afkastatöflu eldhússins — athugaðu tímahólfið áður en þú treystir á það.",
   "created_payment_not_recorded": "Pöntun stofnuð, en ekki tókst að vista greiðslufærsluna — innkomutalan fyrir þessa pöntun gæti verið röng þar til þetta er lagað.",
   "payment_not_recorded": "Ekki tókst að skrá greiðsluna — innkomutalan fyrir þessa pöntun gæti verið röng þar til þetta er lagað.",
-  "payment_not_reversed": "Ekki tókst að bakfæra greiðsluna"
+  "payment_not_reversed": "Ekki tókst að bakfæra greiðsluna",
+  "event_not_approved": "Þessi viðburður er ekki samþykktur",
+  "event_not_open": "{status, select, closed {Þessum viðburði er lokið. Hefðu hann aftur til að taka við pöntunum.} cancelled {Þessum viðburði var aflýst.} other {Þessi viðburður er ekki opinn.}}"
 }

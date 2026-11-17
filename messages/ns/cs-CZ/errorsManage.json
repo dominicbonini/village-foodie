@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Některé údaje nejsou správně. Zkontrolujte je prosím a zkuste to znovu.",
   "paperwork_send_limit": "Za krátkou dobu jste poslali hodně odkazů. Zkuste to prosím znovu za hodinu.",
   "paperwork_send_failed": "E-mail se nepodařilo odeslat. Zkuste to prosím znovu.",
-  "cost_invalid": "Zadejte náklady 0 nebo více, nebo pole nechte prázdné."
+  "cost_invalid": "Zadejte náklady 0 nebo více, nebo pole nechte prázdné.",
+  "event_cannot_start": "{status, select, unconfirmed {Tuto akci nelze spustit (neschválená).} open {Tuto akci nelze spustit (už spuštěná).} cancelled {Tuto akci nelze spustit (zrušená).} other {Tuto akci nelze spustit ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Tuto akci nelze ukončit (neschválená).} confirmed {Tuto akci nelze ukončit (nespuštěná).} closed {Tuto akci nelze ukončit (už skončila).} cancelled {Tuto akci nelze ukončit (zrušená).} other {Tuto akci nelze ukončit ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Tato akce už schválení nepotřebuje (už schválená).} open {Tato akce už schválení nepotřebuje (už spuštěná).} closed {Tato akce už schválení nepotřebuje (už skončila).} cancelled {Tato akce už schválení nepotřebuje (zrušená).} other {Tato akce už schválení nepotřebuje ({status}).}}"
 }

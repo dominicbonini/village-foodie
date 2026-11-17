@@ -40,7 +40,8 @@
     "offline": "📴 Fără conexiune — {n, plural, one {{count} modificare salvată pe acest dispozitiv. Va fi trimisă când reveniți online.} few {{count} modificări salvate pe acest dispozitiv. Vor fi trimise când reveniți online.} other {{count} de modificări salvate pe acest dispozitiv. Vor fi trimise când reveniți online.}} Setările sunt blocate.",
     "syncing": "Din nou online — se trimit modificările: {n, plural, one {{count} modificare} few {{count} modificări} other {{count} de modificări}}…",
     "synced": "Toate modificările au fost trimise.",
-    "stillQueued": "{n, plural, one {{count} modificare salvată pe acest dispozitiv. Încercăm în continuare să o trimitem.} few {{count} modificări salvate pe acest dispozitiv. Încercăm în continuare să le trimitem.} other {{count} de modificări salvate pe acest dispozitiv. Încercăm în continuare să le trimitem.}}"
+    "stillQueued": "{n, plural, one {{count} modificare salvată pe acest dispozitiv. Încercăm în continuare să o trimitem.} few {{count} modificări salvate pe acest dispozitiv. Încercăm în continuare să le trimitem.} other {{count} de modificări salvate pe acest dispozitiv. Încercăm în continuare să le trimitem.}}",
+    "notApproved": "{n, plural, one {{count} comandă în așteptare} few {{count} comenzi în așteptare} other {{count} de comenzi în așteptare}}: acest eveniment nu este aprobat. Aprobați-l pentru trimitere."
   },
   "lock": {
     "locked": "HatchGrab este blocat",

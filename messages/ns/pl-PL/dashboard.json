@@ -36,7 +36,8 @@
     "noteSaved": "Zapisano notatkę",
     "pricesSaved": "Zapisano ceny dla tego wydarzenia",
     "pricesSaveFailed": "Nie udało się zapisać cen",
-    "reconnectToLoad": "Połącz się ponownie, aby wczytać to wydarzenie"
+    "reconnectToLoad": "Połącz się ponownie, aby wczytać to wydarzenie",
+    "eventApproved": "Wydarzenie zatwierdzone"
   },
   "gate": {
     "invalidAccessLink": "Nieprawidłowy link dostępu",
@@ -151,7 +152,8 @@
     "manageEvent": "Zarządzaj wydarzeniem",
     "noEvent": "Nie wybrano wydarzenia",
     "selectEvent": "Wybierz wydarzenie",
-    "status": "{tone, select, paused {⏸ Wstrzymane} live {● Na żywo} finished {● Zakończone} cancelled {Odwołane} other {Nierozpoczęte}}"
+    "status": "{tone, select, paused {⏸ Wstrzymane} live {● Na żywo} finished {● Zakończone} cancelled {Odwołane} other {Nierozpoczęte}}",
+    "approveToTakeOrders": "Zatwierdź wydarzenie, żeby przyjmować zamówienia"
   },
   "orders": {
     "noEvent": "Nie wybrano wydarzenia — wybierz wydarzenie, aby zobaczyć zamówienia",

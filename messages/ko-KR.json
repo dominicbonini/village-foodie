@@ -221,7 +221,8 @@
       "noteSaved": "메모가 저장되었어요",
       "pricesSaved": "이번 영업 일정의 가격이 저장되었어요",
       "pricesSaveFailed": "가격을 저장하지 못했어요",
-      "reconnectToLoad": "이 영업 일정을 불러오려면 다시 연결하세요"
+      "reconnectToLoad": "이 영업 일정을 불러오려면 다시 연결하세요",
+      "eventApproved": "영업 일정 승인됨"
     },
     "gate": {
       "invalidAccessLink": "유효하지 않은 접속 링크",
@@ -336,7 +337,8 @@
       "manageEvent": "영업 일정 관리",
       "noEvent": "선택된 영업 일정 없음",
       "selectEvent": "영업 일정 선택",
-      "status": "{tone, select, paused {⏸ 일시 중지} live {● 영업 중} finished {● 종료됨} cancelled {취소됨} other {시작 전}}"
+      "status": "{tone, select, paused {⏸ 일시 중지} live {● 영업 중} finished {● 종료됨} cancelled {취소됨} other {시작 전}}",
+      "approveToTakeOrders": "주문을 받으려면 영업 일정을 승인하세요"
     },
     "orders": {
       "noEvent": "선택된 영업 일정이 없어요 — 주문을 보려면 영업 일정을 선택하세요",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "주문은 저장되었지만 주방 처리 용량 현황판을 업데이트하지 못했습니다 — 이 시간대를 믿고 사용하기 전에 확인하세요.",
     "created_payment_not_recorded": "주문은 생성되었지만 결제 기록을 저장하지 못했습니다 — 복구될 때까지 이 주문의 매출 금액이 정확하지 않을 수 있습니다.",
     "payment_not_recorded": "결제를 기록하지 못했습니다 — 복구될 때까지 이 주문의 매출 금액이 정확하지 않을 수 있습니다.",
-    "payment_not_reversed": "결제를 취소하지 못했습니다"
+    "payment_not_reversed": "결제를 취소하지 못했습니다",
+    "event_not_approved": "이 영업 일정은 승인되지 않았어요",
+    "event_not_open": "{status, select, closed {이 영업은 끝났어요. 주문을 받으려면 다시 시작하세요.} cancelled {이 영업은 취소됐어요.} other {이 영업은 열려 있지 않아요.}}"
   },
   "kitchenModals": {
     "close": "닫기",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "다시 연결하여 불러오기",
       "selected": "선택됨",
-      "status": "{tone, select, paused {⏸ 일시 중지} live {● 영업 중} finished {● 종료됨} cancelled {취소됨} other {시작 전}}"
+      "status": "{tone, select, paused {⏸ 일시 중지} live {● 영업 중} finished {● 종료됨} cancelled {취소됨} other {시작 전}}",
+      "orders": "{n, plural, =0 {주문 없음} other {주문 {count}건}}",
+      "needsApproval": "승인 필요",
+      "approvalSummary": "{n, plural, other {승인이 필요한 영업 일정 {count}건}}",
+      "approvalSummaryNote": "{n, plural, other {고객에게는 아직 보이지 않아요.}}",
+      "duplicateSameTime": "중복 가능성 · 같은 시간",
+      "duplicateOverlaps": "중복 가능성 · 시간 겹침",
+      "dayCount": "{n, plural, other {{count}건}}"
+    },
+    "eventGate": {
+      "approveTitle": "{event}을(를) 승인할까요?",
+      "overlapText": "{event}은(는) 이미 승인된 {other}({start}–{end})과(와) 중복일 수 있어요{n, plural, =0 {} other {(주문 {count}건)}}.",
+      "keep": "{other} 유지",
+      "approveAnyway": "그래도 {event} 승인",
+      "plainText": "{event}은(는) 아직 승인되지 않았어요. 승인하고 주문을 받을까요? 고객에게도 표시돼요.",
+      "approve": "승인",
+      "startTitle": "이 영업을 시작할까요?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, other {지금까지 주문 {count}건}}",
+      "switchTitle": "{event}(으)로 바꿀까요?",
+      "switch": "바꾸기",
+      "dismissedText": "{event}은(는) 이미 승인된 {other}과(와) 중복일 수 있어요. 승인하고 주문을 받을까요? 고객에게도 표시돼요."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 연결 없음 — {n, plural, one {변경 사항 {count}건이 이 기기에 저장되었습니다. 다시 온라인이 되면 전송됩니다.} other {변경 사항 {count}건이 이 기기에 저장되었습니다. 다시 온라인이 되면 전송됩니다.}} 설정이 잠겨 있습니다.",
       "syncing": "다시 온라인 — {n, plural, one {변경 사항 {count}건} other {변경 사항 {count}건}} 전송 중…",
       "synced": "모든 변경 사항을 전송했습니다.",
-      "stillQueued": "{n, plural, one {변경 사항 {count}건이 이 기기에 저장되어 있습니다. 계속 전송을 시도하고 있습니다.} other {변경 사항 {count}건이 이 기기에 저장되어 있습니다. 계속 전송을 시도하고 있습니다.}}"
+      "stillQueued": "{n, plural, one {변경 사항 {count}건이 이 기기에 저장되어 있습니다. 계속 전송을 시도하고 있습니다.} other {변경 사항 {count}건이 이 기기에 저장되어 있습니다. 계속 전송을 시도하고 있습니다.}}",
+      "notApproved": "{n, plural, other {주문 {count}건 대기 중}}: 이 영업 일정은 승인되지 않았어요. 승인하면 전송돼요."
     },
     "lock": {
       "locked": "HatchGrab이 잠겨 있습니다",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "일부 정보가 올바르지 않습니다. 확인한 뒤 다시 시도해 주세요.",
     "paperwork_send_limit": "짧은 시간에 링크를 너무 많이 보냈습니다. 1시간 후 다시 시도해 주세요.",
     "paperwork_send_failed": "이메일을 보내지 못했습니다. 다시 시도해 주세요.",
-    "cost_invalid": "원가를 0 이상으로 입력하거나 칸을 비워 두세요."
+    "cost_invalid": "원가를 0 이상으로 입력하거나 칸을 비워 두세요.",
+    "event_cannot_start": "{status, select, unconfirmed {이 영업을 시작할 수 없어요 (미승인).} open {이 영업을 시작할 수 없어요 (이미 시작됨).} cancelled {이 영업을 시작할 수 없어요 (취소됨).} other {이 영업을 시작할 수 없어요 ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {이 영업을 끝낼 수 없어요 (미승인).} confirmed {이 영업을 끝낼 수 없어요 (시작 전).} closed {이 영업을 끝낼 수 없어요 (이미 종료됨).} cancelled {이 영업을 끝낼 수 없어요 (취소됨).} other {이 영업을 끝낼 수 없어요 ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {이 영업 일정은 더 이상 승인이 필요 없어요 (이미 승인됨).} open {이 영업 일정은 더 이상 승인이 필요 없어요 (이미 시작됨).} closed {이 영업 일정은 더 이상 승인이 필요 없어요 (이미 종료됨).} cancelled {이 영업 일정은 더 이상 승인이 필요 없어요 (취소됨).} other {이 영업 일정은 더 이상 승인이 필요 없어요 ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "푸드트럭이 있는 나라를 선택하세요.",

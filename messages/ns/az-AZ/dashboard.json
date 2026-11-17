@@ -36,7 +36,8 @@
     "noteSaved": "Qeyd yadda saxlanıldı",
     "pricesSaved": "Bu tədbir üçün qiymətlər yadda saxlanıldı",
     "pricesSaveFailed": "Qiymətləri yadda saxlamaq alınmadı",
-    "reconnectToLoad": "Bu tədbiri yükləmək üçün yenidən qoşulun"
+    "reconnectToLoad": "Bu tədbiri yükləmək üçün yenidən qoşulun",
+    "eventApproved": "Tədbir təsdiqləndi"
   },
   "gate": {
     "invalidAccessLink": "Yanlış giriş linki",
@@ -151,7 +152,8 @@
     "manageEvent": "Tədbiri idarə et",
     "noEvent": "Tədbir seçilməyib",
     "selectEvent": "Tədbir seçin",
-    "status": "{tone, select, paused {⏸ Dayandırılıb} live {● Aktiv} finished {● Bitib} cancelled {Ləğv edilib} other {Başlamayıb}}"
+    "status": "{tone, select, paused {⏸ Dayandırılıb} live {● Aktiv} finished {● Bitib} cancelled {Ləğv edilib} other {Başlamayıb}}",
+    "approveToTakeOrders": "Sifariş qəbul etmək üçün tədbiri təsdiqləyin"
   },
   "orders": {
     "noEvent": "Tədbir seçilməyib — sifarişlərə baxmaq üçün tədbir seçin",

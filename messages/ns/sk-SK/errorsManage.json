@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Niektoré údaje nie sú správne. Skontrolujte ich, prosím, a skúste to znova.",
   "paperwork_send_limit": "Za krátky čas ste poslali veľa odkazov. Skúste to, prosím, znova o hodinu.",
   "paperwork_send_failed": "E-mail sa nepodarilo odoslať. Skúste to, prosím, znova.",
-  "cost_invalid": "Zadajte náklady 0 alebo viac, alebo pole nechajte prázdne."
+  "cost_invalid": "Zadajte náklady 0 alebo viac, alebo pole nechajte prázdne.",
+  "event_cannot_start": "{status, select, unconfirmed {Túto akciu nemožno spustiť (neschválená).} open {Túto akciu nemožno spustiť (už spustená).} cancelled {Túto akciu nemožno spustiť (zrušená).} other {Túto akciu nemožno spustiť ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Túto akciu nemožno ukončiť (neschválená).} confirmed {Túto akciu nemožno ukončiť (nespustená).} closed {Túto akciu nemožno ukončiť (už skončila).} cancelled {Túto akciu nemožno ukončiť (zrušená).} other {Túto akciu nemožno ukončiť ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Táto akcia už nepotrebuje schválenie (už schválená).} open {Táto akcia už nepotrebuje schválenie (už spustená).} closed {Táto akcia už nepotrebuje schválenie (už skončila).} cancelled {Táto akcia už nepotrebuje schválenie (zrušená).} other {Táto akcia už nepotrebuje schválenie ({status}).}}"
 }

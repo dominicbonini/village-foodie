@@ -36,7 +36,8 @@
     "noteSaved": "Pastaba išsaugota",
     "pricesSaved": "Kainos šiam renginiui išsaugotos",
     "pricesSaveFailed": "Nepavyko išsaugoti kainų",
-    "reconnectToLoad": "Prisijunkite prie interneto, kad įkeltumėte šį renginį"
+    "reconnectToLoad": "Prisijunkite prie interneto, kad įkeltumėte šį renginį",
+    "eventApproved": "Renginys patvirtintas"
   },
   "gate": {
     "invalidAccessLink": "Netinkama prieigos nuoroda",
@@ -151,7 +152,8 @@
     "manageEvent": "Valdyti renginį",
     "noEvent": "Renginys nepasirinktas",
     "selectEvent": "Pasirinkti renginį",
-    "status": "{tone, select, paused {⏸ Sustabdyta} live {● Vyksta} finished {● Baigta} cancelled {Atšaukta} other {Nepradėta}}"
+    "status": "{tone, select, paused {⏸ Sustabdyta} live {● Vyksta} finished {● Baigta} cancelled {Atšaukta} other {Nepradėta}}",
+    "approveToTakeOrders": "Patvirtinkite renginį, kad galėtumėte priimti užsakymus"
   },
   "orders": {
     "noEvent": "Renginys nepasirinktas — pasirinkite renginį, kad matytumėte užsakymus",

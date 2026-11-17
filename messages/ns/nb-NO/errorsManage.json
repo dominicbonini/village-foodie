@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Noen av opplysningene stemmer ikke. Sjekk dem og prøv igjen.",
   "paperwork_send_limit": "Du har sendt mange lenker på kort tid. Prøv igjen om en time.",
   "paperwork_send_failed": "E-posten kunne ikke sendes. Prøv igjen.",
-  "cost_invalid": "Skriv inn en kostpris på 0 eller mer, eller la feltet stå tomt."
+  "cost_invalid": "Skriv inn en kostpris på 0 eller mer, eller la feltet stå tomt.",
+  "event_cannot_start": "{status, select, unconfirmed {Kan ikke starte arrangementet (ikke godkjent).} open {Kan ikke starte arrangementet (allerede startet).} cancelled {Kan ikke starte arrangementet (avlyst).} other {Kan ikke starte arrangementet ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Kan ikke avslutte arrangementet (ikke godkjent).} confirmed {Kan ikke avslutte arrangementet (ikke startet).} closed {Kan ikke avslutte arrangementet (allerede ferdig).} cancelled {Kan ikke avslutte arrangementet (avlyst).} other {Kan ikke avslutte arrangementet ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Arrangementet trenger ikke godkjenning lenger (allerede godkjent).} open {Arrangementet trenger ikke godkjenning lenger (allerede startet).} closed {Arrangementet trenger ikke godkjenning lenger (allerede ferdig).} cancelled {Arrangementet trenger ikke godkjenning lenger (avlyst).} other {Arrangementet trenger ikke godkjenning lenger ({status}).}}"
 }

@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Жүктеу үшін қайта қосылыңыз",
     "selected": "Таңдалды",
-    "status": "{tone, select, paused {⏸ Тоқтатылды} live {● Жүріп жатыр} finished {● Аяқталды} cancelled {Болдырылмады} other {Басталмады}}"
+    "status": "{tone, select, paused {⏸ Тоқтатылды} live {● Жүріп жатыр} finished {● Аяқталды} cancelled {Болдырылмады} other {Басталмады}}",
+    "orders": "{n, plural, =0 {Тапсырыс жоқ} one {{count} тапсырыс} other {{count} тапсырыс}}",
+    "needsApproval": "Мақұлдауды күтуде",
+    "approvalSummary": "{n, plural, one {{count} іс-шара мақұлдауды күтуде} other {{count} іс-шара мақұлдауды күтуде}}",
+    "approvalSummaryNote": "{n, plural, one {Клиенттер оны әлі көрмейді.} other {Клиенттер оларды әлі көрмейді.}}",
+    "duplicateSameTime": "Қайталануы мүмкін · уақыты бірдей",
+    "duplicateOverlaps": "Қайталануы мүмкін · уақыты қиылысады",
+    "dayCount": "{n, plural, one {{count} іс-шара} other {{count} іс-шара}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event} мақұлдансын ба?",
+    "overlapText": "{event} бұрыннан мақұлданған {other} ({start}–{end}) іс-шарасының қайталанған нұсқасы болуы мүмкін{n, plural, =0 {} one { және онда {count} тапсырыс бар} other { және онда {count} тапсырыс бар}}.",
+    "keep": "{other} қалсын",
+    "approveAnyway": "Бәрібір {event} мақұлдау",
+    "plainText": "{event} әлі мақұлданбаған. Тапсырыс қабылдау үшін мақұлдайсыз ба? Клиенттер де көреді.",
+    "approve": "Мақұлдау",
+    "startTitle": "Бұл іс-шараны бастау керек пе?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {әзірге {count} тапсырыс} other {әзірге {count} тапсырыс}}",
+    "switchTitle": "{event} іс-шарасына ауысу керек пе?",
+    "switch": "Ауысу",
+    "dismissedText": "{event} бұрыннан мақұлданған {other} іс-шарасының қайталанған нұсқасы болуы мүмкін. Тапсырыс қабылдау үшін мақұлдайсыз ба? Клиенттер де көреді."
   }
 }

@@ -36,7 +36,8 @@
     "noteSaved": "Muistiinpano tallennettu",
     "pricesSaved": "Hinnat tallennettu tälle tapahtumalle",
     "pricesSaveFailed": "Hintoja ei voitu tallentaa",
-    "reconnectToLoad": "Muodosta yhteys uudelleen ladataksesi tämän tapahtuman"
+    "reconnectToLoad": "Muodosta yhteys uudelleen ladataksesi tämän tapahtuman",
+    "eventApproved": "Tapahtuma hyväksytty"
   },
   "gate": {
     "invalidAccessLink": "Virheellinen käyttölinkki",
@@ -151,7 +152,8 @@
     "manageEvent": "Hallitse tapahtumaa",
     "noEvent": "Ei valittua tapahtumaa",
     "selectEvent": "Valitse tapahtuma",
-    "status": "{tone, select, paused {⏸ Keskeytetty} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei aloitettu}}"
+    "status": "{tone, select, paused {⏸ Keskeytetty} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei aloitettu}}",
+    "approveToTakeOrders": "Hyväksy tapahtuma, jotta voit ottaa tilauksia"
   },
   "orders": {
     "noEvent": "Ei valittua tapahtumaa — valitse tapahtuma nähdäksesi tilaukset",

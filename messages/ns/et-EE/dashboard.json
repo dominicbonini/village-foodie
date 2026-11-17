@@ -36,7 +36,8 @@
     "noteSaved": "Märkus salvestatud",
     "pricesSaved": "Selle ürituse hinnad salvestatud",
     "pricesSaveFailed": "Hindu ei saanud salvestada",
-    "reconnectToLoad": "Selle ürituse laadimiseks loo uuesti ühendus"
+    "reconnectToLoad": "Selle ürituse laadimiseks loo uuesti ühendus",
+    "eventApproved": "Üritus kinnitatud"
   },
   "gate": {
     "invalidAccessLink": "Vigane juurdepääsulink",
@@ -151,7 +152,8 @@
     "manageEvent": "Halda üritust",
     "noEvent": "Üritust pole valitud",
     "selectEvent": "Vali üritus",
-    "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}"
+    "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}",
+    "approveToTakeOrders": "Kinnita üritus, et tellimusi vastu võtta"
   },
   "orders": {
     "noEvent": "Üritust pole valitud — tellimuste nägemiseks vali üritus",

@@ -40,7 +40,8 @@
     "offline": "📴 Keine Verbindung – {n, plural, one {{count} Änderung auf diesem Gerät gespeichert. Sie wird gesendet, sobald Sie wieder online sind.} other {{count} Änderungen auf diesem Gerät gespeichert. Sie werden gesendet, sobald Sie wieder online sind.}} Einstellungen sind gesperrt.",
     "syncing": "Wieder online – {n, plural, one {{count} Änderung wird} other {{count} Änderungen werden}} gesendet…",
     "synced": "Alle Änderungen gesendet.",
-    "stillQueued": "{n, plural, one {{count} Änderung auf diesem Gerät gespeichert. Das Senden wird weiter versucht.} other {{count} Änderungen auf diesem Gerät gespeichert. Das Senden wird weiter versucht.}}"
+    "stillQueued": "{n, plural, one {{count} Änderung auf diesem Gerät gespeichert. Das Senden wird weiter versucht.} other {{count} Änderungen auf diesem Gerät gespeichert. Das Senden wird weiter versucht.}}",
+    "notApproved": "{n, plural, one {{count} Bestellung wartet} other {{count} Bestellungen warten}}: Dieses Event ist nicht freigegeben. Zum Senden freigeben."
   },
   "lock": {
     "locked": "HatchGrab ist gesperrt",

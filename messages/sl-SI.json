@@ -221,7 +221,8 @@
       "noteSaved": "Opomba shranjena",
       "pricesSaved": "Cene za ta dogodek shranjene",
       "pricesSaveFailed": "Cen ni bilo mogoče shraniti",
-      "reconnectToLoad": "Znova se povežite, da naložite ta dogodek"
+      "reconnectToLoad": "Znova se povežite, da naložite ta dogodek",
+      "eventApproved": "Dogodek odobren"
     },
     "gate": {
       "invalidAccessLink": "Neveljavna povezava za dostop",
@@ -336,7 +337,8 @@
       "manageEvent": "Upravljaj dogodek",
       "noEvent": "Ni izbranega dogodka",
       "selectEvent": "Izberite dogodek",
-      "status": "{tone, select, paused {⏸ Začasno ustavljeno} live {● V teku} finished {● Končano} cancelled {Preklicano} other {Ni začeto}}"
+      "status": "{tone, select, paused {⏸ Začasno ustavljeno} live {● V teku} finished {● Končano} cancelled {Preklicano} other {Ni začeto}}",
+      "approveToTakeOrders": "Odobrite dogodek za sprejemanje naročil"
     },
     "orders": {
       "noEvent": "Ni izbranega dogodka — za prikaz naročil izberite dogodek",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Naročilo je shranjeno, vendar pregleda zmogljivosti kuhinje ni bilo mogoče posodobiti – preden se zanesete nanj, preverite časovni termin.",
     "created_payment_not_recorded": "Naročilo je ustvarjeno, vendar zapisa o plačilu ni bilo mogoče shraniti – znesek prometa za to naročilo je lahko napačen, dokler se ne popravi.",
     "payment_not_recorded": "Plačila ni bilo mogoče zabeležiti – znesek prometa za to naročilo je lahko napačen, dokler se ne popravi.",
-    "payment_not_reversed": "Plačila ni bilo mogoče razveljaviti"
+    "payment_not_reversed": "Plačila ni bilo mogoče razveljaviti",
+    "event_not_approved": "Ta dogodek ni odobren",
+    "event_not_open": "{status, select, closed {Ta dogodek se je končal. Znova ga začnite za sprejemanje naročil.} cancelled {Ta dogodek je bil odpovedan.} other {Ta dogodek ni odprt.}}"
   },
   "kitchenModals": {
     "close": "Zapri",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Za nalaganje se znova poveži",
       "selected": "Izbrano",
-      "status": "{tone, select, paused {⏸ Ustavljeno} live {● V teku} finished {● Zaključeno} cancelled {Odpovedano} other {Ni začeto}}"
+      "status": "{tone, select, paused {⏸ Ustavljeno} live {● V teku} finished {● Zaključeno} cancelled {Odpovedano} other {Ni začeto}}",
+      "orders": "{n, plural, =0 {Ni naročil} one {{count} naročilo} two {{count} naročili} few {{count} naročila} other {{count} naročil}}",
+      "needsApproval": "Čaka na odobritev",
+      "approvalSummary": "{n, plural, one {{count} dogodek čaka na odobritev} two {{count} dogodka čakata na odobritev} few {{count} dogodki čakajo na odobritev} other {{count} dogodkov čaka na odobritev}}",
+      "approvalSummaryNote": "{n, plural, one {Kupci ga še ne vidijo.} two {Kupci jih še ne vidijo.} few {Kupci jih še ne vidijo.} other {Kupci jih še ne vidijo.}}",
+      "duplicateSameTime": "Možen dvojnik · isti čas",
+      "duplicateOverlaps": "Možen dvojnik · se prekriva",
+      "dayCount": "{n, plural, one {{count} dogodek} two {{count} dogodka} few {{count} dogodki} other {{count} dogodkov}}"
+    },
+    "eventGate": {
+      "approveTitle": "Odobrim {event}?",
+      "overlapText": "{event} je morda dvojnik dogodka {other} ({start}–{end}), ki je že odobren{n, plural, =0 {} one { in ima {count} naročilo} two { in ima {count} naročili} few { in ima {count} naročila} other { in ima {count} naročil}}.",
+      "keep": "Obdrži {other}",
+      "approveAnyway": "Vseeno odobri {event}",
+      "plainText": "{event} še ni odobren. Ga odobrite za sprejemanje naročil? Videli ga bodo tudi kupci.",
+      "approve": "Odobri",
+      "startTitle": "Začnem ta dogodek?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {doslej {count} naročilo} two {doslej {count} naročili} few {doslej {count} naročila} other {doslej {count} naročil}}",
+      "switchTitle": "Preklopim na {event}?",
+      "switch": "Preklopi",
+      "dismissedText": "{event} je morda dvojnik dogodka {other}, ki je že odobren. Ga odobrite za sprejemanje naročil? Videli ga bodo tudi kupci."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Ni povezave — {n, plural, one {{count} sprememba je shranjena v tej napravi. Poslana bo, ko boste spet povezani.} two {{count} spremembi sta shranjeni v tej napravi. Poslani bosta, ko boste spet povezani.} few {{count} spremembe so shranjene v tej napravi. Poslane bodo, ko boste spet povezani.} other {{count} sprememb je shranjenih v tej napravi. Poslane bodo, ko boste spet povezani.}} Nastavitve so zaklenjene.",
       "syncing": "Spet povezani — pošiljanje: {n, plural, one {{count} sprememba} two {{count} spremembi} few {{count} spremembe} other {{count} sprememb}}…",
       "synced": "Vse spremembe so poslane.",
-      "stillQueued": "{n, plural, one {{count} sprememba je shranjena v tej napravi. Še vedno jo poskušamo poslati.} two {{count} spremembi sta shranjeni v tej napravi. Še vedno ju poskušamo poslati.} few {{count} spremembe so shranjene v tej napravi. Še vedno jih poskušamo poslati.} other {{count} sprememb je shranjenih v tej napravi. Še vedno jih poskušamo poslati.}}"
+      "stillQueued": "{n, plural, one {{count} sprememba je shranjena v tej napravi. Še vedno jo poskušamo poslati.} two {{count} spremembi sta shranjeni v tej napravi. Še vedno ju poskušamo poslati.} few {{count} spremembe so shranjene v tej napravi. Še vedno jih poskušamo poslati.} other {{count} sprememb je shranjenih v tej napravi. Še vedno jih poskušamo poslati.}}",
+      "notApproved": "{n, plural, one {{count} naročilo čaka} two {{count} naročili čakata} few {{count} naročila čakajo} other {{count} naročil čaka}}: ta dogodek ni odobren. Odobrite ga za pošiljanje."
     },
     "lock": {
       "locked": "HatchGrab je zaklenjen",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Nekateri podatki niso pravilni. Preverite jih in poskusite znova.",
     "paperwork_send_limit": "V kratkem času ste poslali veliko povezav. Poskusite znova čez eno uro.",
     "paperwork_send_failed": "E-poštnega sporočila ni bilo mogoče poslati. Poskusite znova.",
-    "cost_invalid": "Vnesite strošek 0 ali več ali pustite polje prazno."
+    "cost_invalid": "Vnesite strošek 0 ali več ali pustite polje prazno.",
+    "event_cannot_start": "{status, select, unconfirmed {Dogodka ni mogoče začeti (ni odobren).} open {Dogodka ni mogoče začeti (že začet).} cancelled {Dogodka ni mogoče začeti (odpovedan).} other {Dogodka ni mogoče začeti ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Dogodka ni mogoče končati (ni odobren).} confirmed {Dogodka ni mogoče končati (ni začet).} closed {Dogodka ni mogoče končati (že končan).} cancelled {Dogodka ni mogoče končati (odpovedan).} other {Dogodka ni mogoče končati ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Ta dogodek ne potrebuje več odobritve (že odobren).} open {Ta dogodek ne potrebuje več odobritve (že začet).} closed {Ta dogodek ne potrebuje več odobritve (že končan).} cancelled {Ta dogodek ne potrebuje več odobritve (odpovedan).} other {Ta dogodek ne potrebuje več odobritve ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Izberite državo, v kateri ima vaš food truck sedež.",

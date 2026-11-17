@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "लोड गर्न फेरि जडान गर्नुहोस्",
     "selected": "छानिएको",
-    "status": "{tone, select, paused {⏸ रोकिएको} live {● लाइभ} finished {● सकियो} cancelled {रद्द} other {सुरु भएको छैन}}"
+    "status": "{tone, select, paused {⏸ रोकिएको} live {● लाइभ} finished {● सकियो} cancelled {रद्द} other {सुरु भएको छैन}}",
+    "orders": "{n, plural, =0 {कुनै अर्डर छैन} one {{count} अर्डर} other {{count} अर्डर}}",
+    "needsApproval": "स्वीकृति चाहिन्छ",
+    "approvalSummary": "{n, plural, one {{count} कार्यक्रमलाई स्वीकृति चाहिन्छ} other {{count} कार्यक्रमलाई स्वीकृति चाहिन्छ}}",
+    "approvalSummaryNote": "{n, plural, one {ग्राहकले यो अझै देख्दैनन्।} other {ग्राहकले यी अझै देख्दैनन्।}}",
+    "duplicateSameTime": "सम्भावित दोहोरो · उही समय",
+    "duplicateOverlaps": "सम्भावित दोहोरो · समय खप्टिन्छ",
+    "dayCount": "{n, plural, one {{count} कार्यक्रम} other {{count} कार्यक्रम}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event} स्वीकृत गर्ने?",
+    "overlapText": "{event} सायद {other} ({start}–{end}) को दोहोरो हो, जुन पहिले नै स्वीकृत छ{n, plural, =0 {} one { र त्यसमा {count} अर्डर छ} other { र त्यसमा {count} अर्डर छन्}}।",
+    "keep": "{other} राख्नुहोस्",
+    "approveAnyway": "जे भए पनि {event} स्वीकृत गर्नुहोस्",
+    "plainText": "{event} अझै स्वीकृत भएको छैन। अर्डर लिन स्वीकृत गर्ने? ग्राहकले पनि देख्नेछन्।",
+    "approve": "स्वीकृत गर्नुहोस्",
+    "startTitle": "यो कार्यक्रम सुरु गर्ने?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {अहिलेसम्म {count} अर्डर} other {अहिलेसम्म {count} अर्डर}}",
+    "switchTitle": "{event} मा जाने?",
+    "switch": "बदल्नुहोस्",
+    "dismissedText": "{event} सायद {other} को दोहोरो हो, जुन पहिले नै स्वीकृत छ। अर्डर लिन स्वीकृत गर्ने? ग्राहकले पनि देख्नेछन्।"
   }
 }

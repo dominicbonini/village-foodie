@@ -221,7 +221,8 @@
       "noteSaved": "Notiz gespeichert",
       "pricesSaved": "Preise für dieses Event gespeichert",
       "pricesSaveFailed": "Die Preise konnten nicht gespeichert werden",
-      "reconnectToLoad": "Stellen Sie die Verbindung wieder her, um dieses Event zu laden"
+      "reconnectToLoad": "Stellen Sie die Verbindung wieder her, um dieses Event zu laden",
+      "eventApproved": "Event freigegeben"
     },
     "gate": {
       "invalidAccessLink": "Ungültiger Zugangslink",
@@ -336,7 +337,8 @@
       "manageEvent": "Event verwalten",
       "noEvent": "Kein Event ausgewählt",
       "selectEvent": "Event auswählen",
-      "status": "{tone, select, paused {⏸ Pausiert} live {● Live} finished {● Beendet} cancelled {Abgesagt} other {Nicht gestartet}}"
+      "status": "{tone, select, paused {⏸ Pausiert} live {● Live} finished {● Beendet} cancelled {Abgesagt} other {Nicht gestartet}}",
+      "approveToTakeOrders": "Event freigeben, um Bestellungen anzunehmen"
     },
     "orders": {
       "noEvent": "Kein Event ausgewählt – wählen Sie ein Event, um Bestellungen zu sehen",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Bestellung gespeichert, aber die Übersicht der Küchenkapazität konnte nicht aktualisiert werden – prüfen Sie das Zeitfenster, bevor Sie sich darauf verlassen.",
     "created_payment_not_recorded": "Bestellung erstellt, aber der Zahlungseintrag konnte nicht gespeichert werden – der Umsatz für diese Bestellung ist möglicherweise falsch, bis das behoben ist.",
     "payment_not_recorded": "Die Zahlung konnte nicht erfasst werden – der Umsatz für diese Bestellung ist möglicherweise falsch, bis das behoben ist.",
-    "payment_not_reversed": "Die Zahlung konnte nicht rückgängig gemacht werden"
+    "payment_not_reversed": "Die Zahlung konnte nicht rückgängig gemacht werden",
+    "event_not_approved": "Dieses Event ist nicht freigegeben",
+    "event_not_open": "{status, select, closed {Dieses Event ist beendet. Neu starten, um Bestellungen anzunehmen.} cancelled {Dieses Event wurde abgesagt.} other {Dieses Event ist nicht geöffnet.}}"
   },
   "kitchenModals": {
     "close": "Schließen",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Zum Laden neu verbinden",
       "selected": "Ausgewählt",
-      "status": "{tone, select, paused {⏸ Pausiert} live {● Live} finished {● Beendet} cancelled {Abgesagt} other {Nicht gestartet}}"
+      "status": "{tone, select, paused {⏸ Pausiert} live {● Live} finished {● Beendet} cancelled {Abgesagt} other {Nicht gestartet}}",
+      "orders": "{n, plural, =0 {Keine Bestellungen} one {{count} Bestellung} other {{count} Bestellungen}}",
+      "needsApproval": "Freigabe nötig",
+      "approvalSummary": "{n, plural, one {{count} Event braucht Freigabe} other {{count} Events brauchen Freigabe}}",
+      "approvalSummaryNote": "{n, plural, one {Kunden sehen es noch nicht.} other {Kunden sehen sie noch nicht.}}",
+      "duplicateSameTime": "Mögliches Duplikat · gleiche Zeit",
+      "duplicateOverlaps": "Mögliches Duplikat · überschneidet sich",
+      "dayCount": "{n, plural, one {{count} Event} other {{count} Events}}"
+    },
+    "eventGate": {
+      "approveTitle": "{event} freigeben?",
+      "overlapText": "{event} ist möglicherweise ein Duplikat von {other} ({start}–{end}), das schon freigegeben ist{n, plural, =0 {} one { und {count} Bestellung hat} other { und {count} Bestellungen hat}}.",
+      "keep": "{other} behalten",
+      "approveAnyway": "{event} trotzdem freigeben",
+      "plainText": "{event} ist noch nicht freigegeben. Freigeben, um Bestellungen anzunehmen? Kunden sehen es dann auch.",
+      "approve": "Freigeben",
+      "startTitle": "Dieses Event starten?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {bisher {count} Bestellung} other {bisher {count} Bestellungen}}",
+      "switchTitle": "Zu {event} wechseln?",
+      "switch": "Wechseln",
+      "dismissedText": "{event} ist möglicherweise ein Duplikat von {other}, das schon freigegeben ist. Freigeben, um Bestellungen anzunehmen? Kunden sehen es dann auch."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Keine Verbindung – {n, plural, one {{count} Änderung auf diesem Gerät gespeichert. Sie wird gesendet, sobald Sie wieder online sind.} other {{count} Änderungen auf diesem Gerät gespeichert. Sie werden gesendet, sobald Sie wieder online sind.}} Einstellungen sind gesperrt.",
       "syncing": "Wieder online – {n, plural, one {{count} Änderung wird} other {{count} Änderungen werden}} gesendet…",
       "synced": "Alle Änderungen gesendet.",
-      "stillQueued": "{n, plural, one {{count} Änderung auf diesem Gerät gespeichert. Das Senden wird weiter versucht.} other {{count} Änderungen auf diesem Gerät gespeichert. Das Senden wird weiter versucht.}}"
+      "stillQueued": "{n, plural, one {{count} Änderung auf diesem Gerät gespeichert. Das Senden wird weiter versucht.} other {{count} Änderungen auf diesem Gerät gespeichert. Das Senden wird weiter versucht.}}",
+      "notApproved": "{n, plural, one {{count} Bestellung wartet} other {{count} Bestellungen warten}}: Dieses Event ist nicht freigegeben. Zum Senden freigeben."
     },
     "lock": {
       "locked": "HatchGrab ist gesperrt",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Einige Angaben sind nicht korrekt. Bitte prüfen Sie sie und versuchen Sie es erneut.",
     "paperwork_send_limit": "Sie haben in kurzer Zeit sehr viele Links gesendet. Bitte versuchen Sie es in einer Stunde erneut.",
     "paperwork_send_failed": "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
-    "cost_invalid": "Geben Sie Kosten von 0 oder mehr ein oder lassen Sie das Feld leer."
+    "cost_invalid": "Geben Sie Kosten von 0 oder mehr ein oder lassen Sie das Feld leer.",
+    "event_cannot_start": "{status, select, unconfirmed {Event kann nicht gestartet werden (nicht freigegeben).} open {Event kann nicht gestartet werden (schon gestartet).} cancelled {Event kann nicht gestartet werden (abgesagt).} other {Event kann nicht gestartet werden ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Event kann nicht beendet werden (nicht freigegeben).} confirmed {Event kann nicht beendet werden (nicht gestartet).} closed {Event kann nicht beendet werden (schon beendet).} cancelled {Event kann nicht beendet werden (abgesagt).} other {Event kann nicht beendet werden ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Dieses Event braucht keine Freigabe mehr (schon freigegeben).} open {Dieses Event braucht keine Freigabe mehr (schon gestartet).} closed {Dieses Event braucht keine Freigabe mehr (schon beendet).} cancelled {Dieses Event braucht keine Freigabe mehr (abgesagt).} other {Dieses Event braucht keine Freigabe mehr ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Wählen Sie das Land, in dem Ihr Foodtruck ansässig ist.",

@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Sambung semula untuk memuatkan",
     "selected": "Dipilih",
-    "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Tamat} cancelled {Dibatalkan} other {Belum bermula}}"
+    "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Tamat} cancelled {Dibatalkan} other {Belum bermula}}",
+    "orders": "{n, plural, =0 {Tiada pesanan} other {{count} pesanan}}",
+    "needsApproval": "Perlu kelulusan",
+    "approvalSummary": "{n, plural, other {{count} acara perlu kelulusan}}",
+    "approvalSummaryNote": "{n, plural, other {Pelanggan belum dapat melihatnya.}}",
+    "duplicateSameTime": "Mungkin pendua · masa sama",
+    "duplicateOverlaps": "Mungkin pendua · bertindih",
+    "dayCount": "{n, plural, other {{count} acara}}"
+  },
+  "eventGate": {
+    "approveTitle": "Luluskan {event}?",
+    "overlapText": "{event} mungkin pendua {other} ({start}–{end}), yang sudah diluluskan{n, plural, =0 {} other { dan ada {count} pesanan}}.",
+    "keep": "Kekalkan {other}",
+    "approveAnyway": "Luluskan {event} juga",
+    "plainText": "{event} belum diluluskan. Luluskan untuk menerima pesanan? Pelanggan juga akan melihatnya.",
+    "approve": "Luluskan",
+    "startTitle": "Mulakan acara ini?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, other {{count} pesanan setakat ini}}",
+    "switchTitle": "Tukar ke {event}?",
+    "switch": "Tukar",
+    "dismissedText": "{event} mungkin pendua {other}, yang sudah diluluskan. Luluskan untuk menerima pesanan? Pelanggan juga akan melihatnya."
   }
 }

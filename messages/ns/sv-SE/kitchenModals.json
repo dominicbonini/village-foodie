@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Återanslut för att ladda",
     "selected": "Valt",
-    "status": "{tone, select, paused {⏸ Pausat} live {● Pågår} finished {● Avslutat} cancelled {Inställt} other {Inte startat}}"
+    "status": "{tone, select, paused {⏸ Pausat} live {● Pågår} finished {● Avslutat} cancelled {Inställt} other {Inte startat}}",
+    "orders": "{n, plural, =0 {Inga beställningar} one {{count} beställning} other {{count} beställningar}}",
+    "needsApproval": "Behöver godkännas",
+    "approvalSummary": "{n, plural, one {{count} evenemang behöver godkännas} other {{count} evenemang behöver godkännas}}",
+    "approvalSummaryNote": "{n, plural, one {Kunderna ser det inte än.} other {Kunderna ser dem inte än.}}",
+    "duplicateSameTime": "Möjlig dubblett · samma tid",
+    "duplicateOverlaps": "Möjlig dubblett · överlappar",
+    "dayCount": "{n, plural, one {{count} evenemang} other {{count} evenemang}}"
+  },
+  "eventGate": {
+    "approveTitle": "Godkänna {event}?",
+    "overlapText": "{event} kan vara en dubblett av {other} ({start}–{end}), som redan är godkänt{n, plural, =0 {} one { och har {count} beställning} other { och har {count} beställningar}}.",
+    "keep": "Behåll {other}",
+    "approveAnyway": "Godkänn {event} ändå",
+    "plainText": "{event} är inte godkänt än. Godkänna det för att ta emot beställningar? Kunderna ser det också.",
+    "approve": "Godkänn",
+    "startTitle": "Starta evenemanget?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} beställning hittills} other {{count} beställningar hittills}}",
+    "switchTitle": "Byta till {event}?",
+    "switch": "Byt",
+    "dismissedText": "{event} kan vara en dubblett av {other}, som redan är godkänt. Godkänna det för att ta emot beställningar? Kunderna ser det också."
   }
 }

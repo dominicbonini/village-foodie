@@ -36,7 +36,8 @@
     "noteSaved": "Catatan disimpan",
     "pricesSaved": "Harga disimpan untuk acara ini",
     "pricesSaveFailed": "Harga tidak bisa disimpan",
-    "reconnectToLoad": "Sambungkan kembali untuk memuat acara ini"
+    "reconnectToLoad": "Sambungkan kembali untuk memuat acara ini",
+    "eventApproved": "Acara disetujui"
   },
   "gate": {
     "invalidAccessLink": "Link akses tidak valid",
@@ -151,7 +152,8 @@
     "manageEvent": "Kelola acara",
     "noEvent": "Belum ada acara dipilih",
     "selectEvent": "Pilih acara",
-    "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Selesai} cancelled {Dibatalkan} other {Belum dimulai}}"
+    "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Selesai} cancelled {Dibatalkan} other {Belum dimulai}}",
+    "approveToTakeOrders": "Setujui acara untuk menerima pesanan"
   },
   "orders": {
     "noEvent": "Belum ada acara dipilih — pilih acara untuk melihat pesanan",

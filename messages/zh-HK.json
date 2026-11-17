@@ -221,7 +221,8 @@
       "noteSaved": "已儲存備註",
       "pricesSaved": "已為此活動儲存價錢",
       "pricesSaveFailed": "未能儲存價錢",
-      "reconnectToLoad": "請重新連線以載入此活動"
+      "reconnectToLoad": "請重新連線以載入此活動",
+      "eventApproved": "活動已批准"
     },
     "gate": {
       "invalidAccessLink": "存取連結無效",
@@ -336,7 +337,8 @@
       "manageEvent": "管理活動",
       "noEvent": "未選擇活動",
       "selectEvent": "選擇活動",
-      "status": "{tone, select, paused {⏸ 已暫停} live {● 進行中} finished {● 已結束} cancelled {已取消} other {未開始}}"
+      "status": "{tone, select, paused {⏸ 已暫停} live {● 進行中} finished {● 已結束} cancelled {已取消} other {未開始}}",
+      "approveToTakeOrders": "批准一個活動以接受訂單"
     },
     "orders": {
       "noEvent": "未選擇活動：請選擇活動以查看訂單",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "訂單已儲存，但未能更新廚房容量表——依賴該時段前請先檢查。",
     "created_payment_not_recorded": "訂單已建立，但未能儲存付款記錄——修正前，此訂單的營業額數字可能有誤。",
     "payment_not_recorded": "未能記錄付款——修正前，此訂單的營業額數字可能有誤。",
-    "payment_not_reversed": "未能撤銷付款"
+    "payment_not_reversed": "未能撤銷付款",
+    "event_not_approved": "此活動尚未批准",
+    "event_not_open": "{status, select, closed {此活動已結束。重新開始以接受訂單。} cancelled {此活動已取消。} other {此活動未開放。}}"
   },
   "kitchenModals": {
     "close": "關閉",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "重新連接以載入",
       "selected": "已選取",
-      "status": "{tone, select, paused {⏸ 已暫停} live {● 進行中} finished {● 已結束} cancelled {已取消} other {未開始}}"
+      "status": "{tone, select, paused {⏸ 已暫停} live {● 進行中} finished {● 已結束} cancelled {已取消} other {未開始}}",
+      "orders": "{n, plural, =0 {沒有訂單} other {{count} 張訂單}}",
+      "needsApproval": "待批准",
+      "approvalSummary": "{n, plural, other {有 {count} 個活動待批准}}",
+      "approvalSummaryNote": "{n, plural, other {客人暫時看不到。}}",
+      "duplicateSameTime": "可能重複 · 時間相同",
+      "duplicateOverlaps": "可能重複 · 時間重疊",
+      "dayCount": "{n, plural, other {{count} 個活動}}"
+    },
+    "eventGate": {
+      "approveTitle": "批准{event}？",
+      "overlapText": "{event}可能與已批准的{other}（{start}–{end}）重複{n, plural, =0 {} other {，該活動已有 {count} 張訂單}}。",
+      "keep": "保留{other}",
+      "approveAnyway": "仍然批准{event}",
+      "plainText": "{event}尚未批准。要批准以接受訂單嗎？客人也會看到。",
+      "approve": "批准",
+      "startTitle": "開始這個活動？",
+      "startDetails": "{day} · {start}–{end} · {n, plural, other {目前有 {count} 張訂單}}",
+      "switchTitle": "切換到{event}？",
+      "switch": "切換",
+      "dismissedText": "{event}可能與已批准的{other}重複。要批准以接受訂單嗎？客人也會看到。"
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 沒有網絡連線：{n, plural, other {{count} 項更改已儲存在此裝置，恢復連線後會自動傳送。}}設定已鎖定。",
       "syncing": "已恢復連線，正在傳送 {n, plural, other {{count} 項更改}}…",
       "synced": "所有更改已傳送。",
-      "stillQueued": "{n, plural, other {{count} 項更改已儲存在此裝置，仍在嘗試傳送。}}"
+      "stillQueued": "{n, plural, other {{count} 項更改已儲存在此裝置，仍在嘗試傳送。}}",
+      "notApproved": "{n, plural, other {{count} 張訂單等待中}}：此活動尚未批准。批准後即會傳送。"
     },
     "lock": {
       "locked": "HatchGrab 已上鎖",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "部分資料不正確，請檢查後再試。",
     "paperwork_send_limit": "你在短時間內傳送了太多連結，請一小時後再試。",
     "paperwork_send_failed": "未能傳送電郵，請再試一次。",
-    "cost_invalid": "請輸入 0 或以上的成本，或者留空。"
+    "cost_invalid": "請輸入 0 或以上的成本，或者留空。",
+    "event_cannot_start": "{status, select, unconfirmed {無法開始此活動（未批准）。} open {無法開始此活動（已開始）。} cancelled {無法開始此活動（已取消）。} other {無法開始此活動（{status}）。}}",
+    "event_cannot_finish": "{status, select, unconfirmed {無法結束此活動（未批准）。} confirmed {無法結束此活動（未開始）。} closed {無法結束此活動（已結束）。} cancelled {無法結束此活動（已取消）。} other {無法結束此活動（{status}）。}}",
+    "event_cannot_dismiss": "{status, select, confirmed {此活動已不需要批准（已批准）。} open {此活動已不需要批准（已開始）。} closed {此活動已不需要批准（已結束）。} cancelled {此活動已不需要批准（已取消）。} other {此活動已不需要批准（{status}）。}}"
   },
   "tradeArea": {
     "country_missing": "請選擇你的美食車所在的國家。",

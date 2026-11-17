@@ -221,7 +221,8 @@
       "noteSaved": "Remarque enregistrée",
       "pricesSaved": "Prix enregistrés pour cet événement",
       "pricesSaveFailed": "Impossible d’enregistrer les prix",
-      "reconnectToLoad": "Reconnectez-vous pour charger cet événement"
+      "reconnectToLoad": "Reconnectez-vous pour charger cet événement",
+      "eventApproved": "Événement approuvé"
     },
     "gate": {
       "invalidAccessLink": "Lien d’accès non valide",
@@ -336,7 +337,8 @@
       "manageEvent": "Gérer l’événement",
       "noEvent": "Aucun événement sélectionné",
       "selectEvent": "Choisir un événement",
-      "status": "{tone, select, paused {⏸ En pause} live {● En cours} finished {● Terminé} cancelled {Annulé} other {Non démarré}}"
+      "status": "{tone, select, paused {⏸ En pause} live {● En cours} finished {● Terminé} cancelled {Annulé} other {Non démarré}}",
+      "approveToTakeOrders": "Approuvez un événement pour prendre des commandes"
     },
     "orders": {
       "noEvent": "Aucun événement sélectionné — sélectionnez un événement pour voir les commandes",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Commande enregistrée, mais le tableau de capacité de la cuisine n’a pas pu être mis à jour — vérifiez le créneau avant de vous y fier.",
     "created_payment_not_recorded": "Commande créée, mais l’enregistrement du paiement n’a pas pu être sauvegardé — le montant encaissé pour cette commande peut être erroné jusqu’à sa correction.",
     "payment_not_recorded": "Le paiement n’a pas pu être enregistré — le montant encaissé pour cette commande peut être erroné jusqu’à sa correction.",
-    "payment_not_reversed": "Le paiement n’a pas pu être annulé"
+    "payment_not_reversed": "Le paiement n’a pas pu être annulé",
+    "event_not_approved": "Cet événement n’est pas approuvé",
+    "event_not_open": "{status, select, closed {Cet événement est terminé. Redémarrez-le pour prendre des commandes.} cancelled {Cet événement a été annulé.} other {Cet événement n’est pas ouvert.}}"
   },
   "kitchenModals": {
     "close": "Fermer",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Reconnecter pour charger",
       "selected": "Sélectionné",
-      "status": "{tone, select, paused {⏸ En pause} live {● En cours} finished {● Terminé} cancelled {Annulé} other {Pas commencé}}"
+      "status": "{tone, select, paused {⏸ En pause} live {● En cours} finished {● Terminé} cancelled {Annulé} other {Pas commencé}}",
+      "orders": "{n, plural, =0 {Aucune commande} one {{count} commande} many {{count} commandes} other {{count} commandes}}",
+      "needsApproval": "À approuver",
+      "approvalSummary": "{n, plural, one {{count} événement à approuver} many {{count} événements à approuver} other {{count} événements à approuver}}",
+      "approvalSummaryNote": "{n, plural, one {Les clients ne le voient pas encore.} many {Les clients ne les voient pas encore.} other {Les clients ne les voient pas encore.}}",
+      "duplicateSameTime": "Doublon possible · même horaire",
+      "duplicateOverlaps": "Doublon possible · chevauchement",
+      "dayCount": "{n, plural, one {{count} événement} many {{count} événements} other {{count} événements}}"
+    },
+    "eventGate": {
+      "approveTitle": "Approuver {event} ?",
+      "overlapText": "{event} est peut-être un doublon de {other} ({start}–{end}), déjà approuvé{n, plural, =0 {} one { avec {count} commande} many { avec {count} commandes} other { avec {count} commandes}}.",
+      "keep": "Garder {other}",
+      "approveAnyway": "Approuver {event} quand même",
+      "plainText": "{event} n’est pas encore approuvé. L’approuver pour prendre des commandes ? Les clients le verront aussi.",
+      "approve": "Approuver",
+      "startTitle": "Démarrer cet événement ?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} commande pour l’instant} many {{count} commandes pour l’instant} other {{count} commandes pour l’instant}}",
+      "switchTitle": "Passer à {event} ?",
+      "switch": "Changer",
+      "dismissedText": "{event} est peut-être un doublon de {other}, déjà approuvé. L’approuver pour prendre des commandes ? Les clients le verront aussi."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Pas de connexion — {n, plural, one {{count} modification enregistrée sur cet appareil. Elle sera envoyée dès votre retour en ligne.} other {{count} modifications enregistrées sur cet appareil. Elles seront envoyées dès votre retour en ligne.}} Les paramètres sont verrouillés.",
       "syncing": "De retour en ligne — envoi de {n, plural, one {{count} modification} other {{count} modifications}}…",
       "synced": "Modifications envoyées.",
-      "stillQueued": "{n, plural, one {{count} modification enregistrée sur cet appareil. Nouvelle tentative d’envoi en cours.} other {{count} modifications enregistrées sur cet appareil. Nouvelle tentative d’envoi en cours.}}"
+      "stillQueued": "{n, plural, one {{count} modification enregistrée sur cet appareil. Nouvelle tentative d’envoi en cours.} other {{count} modifications enregistrées sur cet appareil. Nouvelle tentative d’envoi en cours.}}",
+      "notApproved": "{n, plural, one {{count} commande en attente} many {{count} commandes en attente} other {{count} commandes en attente}} : cet événement n’est pas approuvé. Approuvez-le pour l’envoi."
     },
     "lock": {
       "locked": "HatchGrab est verrouillé",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Certaines informations sont incorrectes. Veuillez les vérifier et réessayer.",
     "paperwork_send_limit": "Vous avez envoyé beaucoup de liens en peu de temps. Veuillez réessayer dans une heure.",
     "paperwork_send_failed": "L’e-mail n’a pas pu être envoyé. Veuillez réessayer.",
-    "cost_invalid": "Saisissez un coût de 0 ou plus, ou laissez la case vide."
+    "cost_invalid": "Saisissez un coût de 0 ou plus, ou laissez la case vide.",
+    "event_cannot_start": "{status, select, unconfirmed {Impossible de démarrer cet événement (non approuvé).} open {Impossible de démarrer cet événement (déjà démarré).} cancelled {Impossible de démarrer cet événement (annulé).} other {Impossible de démarrer cet événement ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Impossible de terminer cet événement (non approuvé).} confirmed {Impossible de terminer cet événement (pas démarré).} closed {Impossible de terminer cet événement (déjà terminé).} cancelled {Impossible de terminer cet événement (annulé).} other {Impossible de terminer cet événement ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Cet événement n’attend plus d’approbation (déjà approuvé).} open {Cet événement n’attend plus d’approbation (déjà démarré).} closed {Cet événement n’attend plus d’approbation (déjà terminé).} cancelled {Cet événement n’attend plus d’approbation (annulé).} other {Cet événement n’attend plus d’approbation ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Choisissez le pays où votre food truck est basé.",

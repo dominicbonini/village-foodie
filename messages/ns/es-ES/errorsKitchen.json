@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Pedido guardado, pero no se ha podido actualizar el panel de capacidad de cocina — comprueba la franja antes de fiarte de él.",
   "created_payment_not_recorded": "Pedido creado, pero no se ha podido guardar el registro del pago — el importe recaudado de este pedido puede ser incorrecto hasta que se corrija.",
   "payment_not_recorded": "No se ha podido registrar el pago — el importe recaudado de este pedido puede ser incorrecto hasta que se corrija.",
-  "payment_not_reversed": "No se ha podido revertir el pago"
+  "payment_not_reversed": "No se ha podido revertir el pago",
+  "event_not_approved": "Este evento no está aprobado",
+  "event_not_open": "{status, select, closed {Este evento ha terminado. Reinícialo para recibir pedidos.} cancelled {Este evento se ha cancelado.} other {Este evento no está abierto.}}"
 }

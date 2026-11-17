@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Bəzi məlumatlar düzgün deyil. Onları yoxlayıb yenidən cəhd edin.",
   "paperwork_send_limit": "Qısa müddətdə çox link göndərmisiniz. Bir saatdan sonra yenidən cəhd edin.",
   "paperwork_send_failed": "E-poçtu göndərmək mümkün olmadı. Yenidən cəhd edin.",
-  "cost_invalid": "0 və ya daha çox dəyər daxil edin, ya da xananı boş saxlayın."
+  "cost_invalid": "0 və ya daha çox dəyər daxil edin, ya da xananı boş saxlayın.",
+  "event_cannot_start": "{status, select, unconfirmed {Tədbiri başlatmaq olmur (təsdiqlənməyib).} open {Tədbiri başlatmaq olmur (artıq başlayıb).} cancelled {Tədbiri başlatmaq olmur (ləğv edilib).} other {Tədbiri başlatmaq olmur ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Tədbiri bitirmək olmur (təsdiqlənməyib).} confirmed {Tədbiri bitirmək olmur (başlamayıb).} closed {Tədbiri bitirmək olmur (artıq bitib).} cancelled {Tədbiri bitirmək olmur (ləğv edilib).} other {Tədbiri bitirmək olmur ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Bu tədbirə artıq təsdiq lazım deyil (artıq təsdiqlənib).} open {Bu tədbirə artıq təsdiq lazım deyil (artıq başlayıb).} closed {Bu tədbirə artıq təsdiq lazım deyil (artıq bitib).} cancelled {Bu tədbirə artıq təsdiq lazım deyil (ləğv edilib).} other {Bu tədbirə artıq təsdiq lazım deyil ({status}).}}"
 }

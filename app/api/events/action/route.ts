@@ -48,10 +48,28 @@ export async function POST(req: NextRequest) {
     NextResponse.json(manageErrorBody(await localeForTruck(truck), code, params, extra), { status })
 
   const now = new Date().toISOString()
+  /** events-overlap-2: a 409 naming the event's CURRENT status (read now, or given), so the screen can say why. */
+  const stateRefusal = async (code: 'event_cannot_start' | 'event_cannot_finish' | 'event_cannot_dismiss', known?: string) => {
+    let status = known
+    if (!status) {
+      const { data: cur } = await supabase.from('truck_events').select('status').eq('id', eventId).eq('truck_id', truck.id).maybeSingle()
+      if (!cur) return refuse('event_not_found', 404)
+      status = String(cur.status)
+    }
+    return refuse(code, 409, { status }, { status })
+  }
 
   // ── CONFIRM ──────────────────────────────────────────────
   if (action === 'confirm') {
-    const { auto_open, auto_close, venue_address, customer_note } = payload
+    const { venue_address, customer_note } = payload
+    let { auto_open, auto_close } = payload
+    // events-overlap-2: the dashboard's "Approve" does not hold the truck's Settings defaults, so it sends
+    // `truck_defaults: true` and the defaults are read here — the same `?? true` Manage's add-event uses.
+    if (payload?.truck_defaults === true && (typeof auto_open !== 'boolean' || typeof auto_close !== 'boolean')) {
+      const { data: d } = await supabase.from('trucks').select('default_auto_open, default_auto_close').eq('id', truck.id).maybeSingle()
+      if (typeof auto_open !== 'boolean') auto_open = d?.default_auto_open ?? true
+      if (typeof auto_close !== 'boolean') auto_close = d?.default_auto_close ?? true
+    }
 
     if (typeof auto_open !== 'boolean' || typeof auto_close !== 'boolean') {
       return refuse('auto_open_close_required', 400)
@@ -180,28 +198,62 @@ export async function POST(req: NextRequest) {
     if (!hasValidEventTimes(openEv?.start_time, openEv?.end_time)) {
       return refuse('event_needs_times', 400)
     }
-    const { error } = await supabase
+    const { data: opened, error } = await supabase
       .from('truck_events')
       .update({ status: 'open', opened_at: now })
       .eq('id', eventId)
       .eq('truck_id', truck.id)
       .in('status', ['confirmed', 'closed']) // can open a confirmed or reopen a closed event
+      .select('id')
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    // events-overlap-2: NOTHING MATCHED IS A REFUSAL, NOT AN "ok". This answered { ok: true } when the event was unconfirmed,
+    // already open or cancelled, so a screen showed "Event started" for a write that never happened (docs/events-overlap-1
+    // §3c). It now says what the event IS. 409 = the request was fine, the event's state does not allow it.
+    if (!opened?.length) return stateRefusal('event_cannot_start')
     return NextResponse.json({ ok: true })
   }
 
   // ── CLOSE ────────────────────────────────────────────────
   if (action === 'close') {
-    const { error } = await supabase
+    const { data: closed, error } = await supabase
       .from('truck_events')
       .update({ status: 'closed', closed_at: now })
       .eq('id', eventId)
       .eq('truck_id', truck.id)
       .eq('status', 'open') // can only close an open event
+      .select('id')
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    // events-overlap-2: as for OPEN — a close that changed nothing says why (not started, already finished, not approved…).
+    if (!closed?.length) return stateRefusal('event_cannot_finish')
     return NextResponse.json({ ok: true })
+  }
+
+  // ── DISMISS OVERLAP (events-overlap-2) ───────────────────
+  // "Keep {other}" on the dashboard's overlap dialog: the unapproved event stays unapproved and is never offered as a
+  // duplicate again, on any device. Only an unconfirmed event can be dismissed; the first dismissal's time is kept.
+  if (action === 'dismiss_overlap') {
+    if (!eventId) return refuse('event_id_required', 400)
+    const { data: row, error: readErr } = await supabase
+      .from('truck_events')
+      .select('id, status, overlap_dismissed_at')
+      .eq('id', eventId)
+      .eq('truck_id', truck.id)
+      .maybeSingle()
+    if (readErr) return NextResponse.json({ error: readErr.message }, { status: 500 })
+    if (!row) return refuse('event_not_found', 404)
+    if (row.overlap_dismissed_at) return NextResponse.json({ ok: true, overlap_dismissed_at: row.overlap_dismissed_at })
+    if (row.status !== 'unconfirmed') return stateRefusal('event_cannot_dismiss', row.status)
+    const { error } = await supabase
+      .from('truck_events')
+      .update({ overlap_dismissed_at: now })
+      .eq('id', eventId)
+      .eq('truck_id', truck.id)
+      .eq('status', 'unconfirmed')
+      .is('overlap_dismissed_at', null)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true, overlap_dismissed_at: now })
   }
 
   // ── UPDATE ───────────────────────────────────────────────

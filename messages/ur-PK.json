@@ -221,7 +221,8 @@
       "noteSaved": "نوٹ محفوظ ہو گیا",
       "pricesSaved": "اس ایونٹ کے لیے قیمتیں محفوظ ہو گئیں",
       "pricesSaveFailed": "قیمتیں محفوظ نہیں ہو سکیں",
-      "reconnectToLoad": "یہ ایونٹ لوڈ کرنے کے لیے دوبارہ کنیکٹ کریں"
+      "reconnectToLoad": "یہ ایونٹ لوڈ کرنے کے لیے دوبارہ کنیکٹ کریں",
+      "eventApproved": "ایونٹ منظور ہو گیا"
     },
     "gate": {
       "invalidAccessLink": "رسائی کا لنک درست نہیں",
@@ -336,7 +337,8 @@
       "manageEvent": "ایونٹ کا انتظام",
       "noEvent": "کوئی ایونٹ منتخب نہیں",
       "selectEvent": "ایونٹ منتخب کریں",
-      "status": "{tone, select, paused {⏸ رکا ہوا} live {● لائیو} finished {● ختم} cancelled {منسوخ} other {شروع نہیں ہوا}}"
+      "status": "{tone, select, paused {⏸ رکا ہوا} live {● لائیو} finished {● ختم} cancelled {منسوخ} other {شروع نہیں ہوا}}",
+      "approveToTakeOrders": "آرڈر لینے کے لیے کسی ایونٹ کو منظور کریں"
     },
     "orders": {
       "noEvent": "کوئی ایونٹ منتخب نہیں — آرڈرز دیکھنے کے لیے ایونٹ منتخب کریں",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "آرڈر محفوظ ہو گیا، لیکن کچن کی گنجائش کا بورڈ اپ ڈیٹ نہیں ہو سکا — اس پر بھروسہ کرنے سے پہلے سلاٹ چیک کریں۔",
     "created_payment_not_recorded": "آرڈر بن گیا، لیکن ادائیگی کا ریکارڈ محفوظ نہیں ہو سکا — درست ہونے تک اس آرڈر کی آمدنی کا حساب غلط ہو سکتا ہے۔",
     "payment_not_recorded": "ادائیگی درج نہیں ہو سکی — درست ہونے تک اس آرڈر کی آمدنی کا حساب غلط ہو سکتا ہے۔",
-    "payment_not_reversed": "ادائیگی واپس نہیں ہو سکی"
+    "payment_not_reversed": "ادائیگی واپس نہیں ہو سکی",
+    "event_not_approved": "یہ ایونٹ منظور نہیں ہوا",
+    "event_not_open": "{status, select, closed {یہ ایونٹ ختم ہو گیا ہے۔ آرڈر لینے کے لیے اسے دوبارہ شروع کریں۔} cancelled {یہ ایونٹ منسوخ ہو گیا ہے۔} other {یہ ایونٹ کھلا نہیں ہے۔}}"
   },
   "kitchenModals": {
     "close": "بند کریں",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "لوڈ کرنے کے لیے دوبارہ کنیکٹ کریں",
       "selected": "منتخب",
-      "status": "{tone, select, paused {⏸ رکا ہوا} live {● لائیو} finished {● ختم} cancelled {منسوخ} other {شروع نہیں ہوا}}"
+      "status": "{tone, select, paused {⏸ رکا ہوا} live {● لائیو} finished {● ختم} cancelled {منسوخ} other {شروع نہیں ہوا}}",
+      "orders": "{n, plural, =0 {کوئی آرڈر نہیں} one {{count} آرڈر} other {{count} آرڈر}}",
+      "needsApproval": "منظوری باقی",
+      "approvalSummary": "{n, plural, one {{count} ایونٹ کو منظوری درکار ہے} other {{count} ایونٹس کو منظوری درکار ہے}}",
+      "approvalSummaryNote": "{n, plural, one {گاہک اسے ابھی نہیں دیکھ سکتے۔} other {گاہک انہیں ابھی نہیں دیکھ سکتے۔}}",
+      "duplicateSameTime": "ممکنہ ڈپلیکیٹ · وہی وقت",
+      "duplicateOverlaps": "ممکنہ ڈپلیکیٹ · وقت ٹکراتا ہے",
+      "dayCount": "{n, plural, one {{count} ایونٹ} other {{count} ایونٹس}}"
+    },
+    "eventGate": {
+      "approveTitle": "کیا {event} کو منظور کریں؟",
+      "overlapText": "{event} شاید {other} ({start}–{end}) کا ڈپلیکیٹ ہے، جو پہلے سے منظور ہے{n, plural, =0 {} one { اور اس میں {count} آرڈر ہے} other { اور اس میں {count} آرڈر ہیں}}۔",
+      "keep": "{other} رکھیں",
+      "approveAnyway": "پھر بھی {event} منظور کریں",
+      "plainText": "{event} ابھی منظور نہیں ہوا۔ آرڈر لینے کے لیے منظور کریں؟ گاہک بھی اسے دیکھیں گے۔",
+      "approve": "منظور کریں",
+      "startTitle": "یہ ایونٹ شروع کریں؟",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {اب تک {count} آرڈر} other {اب تک {count} آرڈر}}",
+      "switchTitle": "{event} پر جائیں؟",
+      "switch": "بدلیں",
+      "dismissedText": "{event} شاید {other} کا ڈپلیکیٹ ہے، جو پہلے سے منظور ہے۔ آرڈر لینے کے لیے منظور کریں؟ گاہک بھی اسے دیکھیں گے۔"
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 کنکشن نہیں — {n, plural, one {{count} تبدیلی اس ڈیوائس پر محفوظ ہے۔ آن لائن ہوتے ہی یہ بھیج دی جائے گی۔} other {{count} تبدیلیاں اس ڈیوائس پر محفوظ ہیں۔ آن لائن ہوتے ہی یہ بھیج دی جائیں گی۔}} سیٹنگز لاک ہیں۔",
       "syncing": "دوبارہ آن لائن — {n, plural, one {{count} تبدیلی} other {{count} تبدیلیاں}} بھیجی جا رہی ہیں…",
       "synced": "تمام تبدیلیاں بھیج دی گئیں۔",
-      "stillQueued": "{n, plural, one {{count} تبدیلی اس ڈیوائس پر محفوظ ہے۔ اسے بھیجنے کی کوشش جاری ہے۔} other {{count} تبدیلیاں اس ڈیوائس پر محفوظ ہیں۔ انہیں بھیجنے کی کوشش جاری ہے۔}}"
+      "stillQueued": "{n, plural, one {{count} تبدیلی اس ڈیوائس پر محفوظ ہے۔ اسے بھیجنے کی کوشش جاری ہے۔} other {{count} تبدیلیاں اس ڈیوائس پر محفوظ ہیں۔ انہیں بھیجنے کی کوشش جاری ہے۔}}",
+      "notApproved": "{n, plural, one {{count} آرڈر انتظار میں ہے} other {{count} آرڈر انتظار میں ہیں}}: یہ ایونٹ منظور نہیں ہوا۔ بھیجنے کے لیے منظور کریں۔"
     },
     "lock": {
       "locked": "HatchGrab لاک ہے",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "کچھ تفصیلات درست نہیں۔ براہ کرم انہیں چیک کر کے دوبارہ کوشش کریں۔",
     "paperwork_send_limit": "آپ نے تھوڑے وقت میں بہت سے لنکس بھیجے ہیں۔ براہ کرم ایک گھنٹے بعد دوبارہ کوشش کریں۔",
     "paperwork_send_failed": "ای میل نہیں بھیجی جا سکی۔ براہ کرم دوبارہ کوشش کریں۔",
-    "cost_invalid": "0 یا اس سے زیادہ لاگت لکھیں، یا خانہ خالی چھوڑ دیں۔"
+    "cost_invalid": "0 یا اس سے زیادہ لاگت لکھیں، یا خانہ خالی چھوڑ دیں۔",
+    "event_cannot_start": "{status, select, unconfirmed {یہ ایونٹ شروع نہیں ہو سکتا (منظور نہیں)۔} open {یہ ایونٹ شروع نہیں ہو سکتا (پہلے سے شروع)۔} cancelled {یہ ایونٹ شروع نہیں ہو سکتا (منسوخ)۔} other {یہ ایونٹ شروع نہیں ہو سکتا ({status})۔}}",
+    "event_cannot_finish": "{status, select, unconfirmed {یہ ایونٹ ختم نہیں ہو سکتا (منظور نہیں)۔} confirmed {یہ ایونٹ ختم نہیں ہو سکتا (شروع نہیں ہوا)۔} closed {یہ ایونٹ ختم نہیں ہو سکتا (پہلے سے ختم)۔} cancelled {یہ ایونٹ ختم نہیں ہو سکتا (منسوخ)۔} other {یہ ایونٹ ختم نہیں ہو سکتا ({status})۔}}",
+    "event_cannot_dismiss": "{status, select, confirmed {اس ایونٹ کو اب منظوری کی ضرورت نہیں (پہلے سے منظور)۔} open {اس ایونٹ کو اب منظوری کی ضرورت نہیں (پہلے سے شروع)۔} closed {اس ایونٹ کو اب منظوری کی ضرورت نہیں (پہلے سے ختم)۔} cancelled {اس ایونٹ کو اب منظوری کی ضرورت نہیں (منسوخ)۔} other {اس ایونٹ کو اب منظوری کی ضرورت نہیں ({status})۔}}"
   },
   "tradeArea": {
     "country_missing": "وہ ملک چنیں جہاں آپ کا ٹرک قائم ہے۔",

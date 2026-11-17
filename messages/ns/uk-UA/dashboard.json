@@ -36,7 +36,8 @@
     "noteSaved": "Примітку збережено",
     "pricesSaved": "Ціни для цього заходу збережено",
     "pricesSaveFailed": "Не вдалося зберегти ціни",
-    "reconnectToLoad": "Відновіть з’єднання, щоб завантажити цей захід"
+    "reconnectToLoad": "Відновіть з’єднання, щоб завантажити цей захід",
+    "eventApproved": "Захід схвалено"
   },
   "gate": {
     "invalidAccessLink": "Недійсне посилання для доступу",
@@ -151,7 +152,8 @@
     "manageEvent": "Керувати заходом",
     "noEvent": "Захід не обрано",
     "selectEvent": "Обрати захід",
-    "status": "{tone, select, paused {⏸ Призупинено} live {● Наживо} finished {● Завершено} cancelled {Скасовано} other {Не розпочато}}"
+    "status": "{tone, select, paused {⏸ Призупинено} live {● Наживо} finished {● Завершено} cancelled {Скасовано} other {Не розпочато}}",
+    "approveToTakeOrders": "Схваліть захід, щоб приймати замовлення"
   },
   "orders": {
     "noEvent": "Захід не обрано — оберіть захід, щоб побачити замовлення",

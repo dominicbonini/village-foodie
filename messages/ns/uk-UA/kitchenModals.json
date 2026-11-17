@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Під’єднайтеся знову, щоб завантажити",
     "selected": "Вибрано",
-    "status": "{tone, select, paused {⏸ Призупинено} live {● Триває} finished {● Завершено} cancelled {Скасовано} other {Не розпочато}}"
+    "status": "{tone, select, paused {⏸ Призупинено} live {● Триває} finished {● Завершено} cancelled {Скасовано} other {Не розпочато}}",
+    "orders": "{n, plural, =0 {Немає замовлень} one {{count} замовлення} few {{count} замовлення} many {{count} замовлень} other {{count} замовлення}}",
+    "needsApproval": "Чекає схвалення",
+    "approvalSummary": "{n, plural, one {{count} захід чекає схвалення} few {{count} заходи чекають схвалення} many {{count} заходів чекають схвалення} other {{count} заходу чекають схвалення}}",
+    "approvalSummaryNote": "{n, plural, one {Клієнти його поки не бачать.} few {Клієнти їх поки не бачать.} many {Клієнти їх поки не бачать.} other {Клієнти їх поки не бачать.}}",
+    "duplicateSameTime": "Можливий дублікат · той самий час",
+    "duplicateOverlaps": "Можливий дублікат · перетинається",
+    "dayCount": "{n, plural, one {{count} захід} few {{count} заходи} many {{count} заходів} other {{count} заходу}}"
+  },
+  "eventGate": {
+    "approveTitle": "Схвалити {event}?",
+    "overlapText": "{event} — можливо, дублікат {other} ({start}–{end}), який уже схвалено{n, plural, =0 {} one { і має {count} замовлення} few { і має {count} замовлення} many { і має {count} замовлень} other { і має {count} замовлення}}.",
+    "keep": "Залишити {other}",
+    "approveAnyway": "Усе одно схвалити {event}",
+    "plainText": "{event} ще не схвалено. Схвалити, щоб приймати замовлення? Клієнти теж його побачать.",
+    "approve": "Схвалити",
+    "startTitle": "Розпочати цей захід?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {поки {count} замовлення} few {поки {count} замовлення} many {поки {count} замовлень} other {поки {count} замовлення}}",
+    "switchTitle": "Перейти на {event}?",
+    "switch": "Перейти",
+    "dismissedText": "{event} — можливо, дублікат {other}, який уже схвалено. Схвалити, щоб приймати замовлення? Клієнти теж його побачать."
   }
 }

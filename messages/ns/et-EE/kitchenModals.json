@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Laadimiseks ühenda uuesti",
     "selected": "Valitud",
-    "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}"
+    "status": "{tone, select, paused {⏸ Peatatud} live {● Käimas} finished {● Lõppenud} cancelled {Tühistatud} other {Pole alanud}}",
+    "orders": "{n, plural, =0 {Tellimusi pole} one {{count} tellimus} other {{count} tellimust}}",
+    "needsApproval": "Vajab kinnitamist",
+    "approvalSummary": "{n, plural, one {{count} üritus vajab kinnitamist} other {{count} üritust vajab kinnitamist}}",
+    "approvalSummaryNote": "{n, plural, one {Kliendid seda veel ei näe.} other {Kliendid neid veel ei näe.}}",
+    "duplicateSameTime": "Võimalik duplikaat · sama aeg",
+    "duplicateOverlaps": "Võimalik duplikaat · kattub",
+    "dayCount": "{n, plural, one {{count} üritus} other {{count} üritust}}"
+  },
+  "eventGate": {
+    "approveTitle": "Kas kinnitada {event}?",
+    "overlapText": "{event} võib olla ürituse {other} ({start}–{end}) duplikaat, mis on juba kinnitatud{n, plural, =0 {} one { ja millel on {count} tellimus} other { ja millel on {count} tellimust}}.",
+    "keep": "Jäta {other}",
+    "approveAnyway": "Kinnita {event} siiski",
+    "plainText": "{event} pole veel kinnitatud. Kas kinnitada, et tellimusi vastu võtta? Kliendid näevad seda ka.",
+    "approve": "Kinnita",
+    "startTitle": "Kas alustada üritust?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {seni {count} tellimus} other {seni {count} tellimust}}",
+    "switchTitle": "Kas minna üle üritusele {event}?",
+    "switch": "Vaheta",
+    "dismissedText": "{event} võib olla ürituse {other} duplikaat, mis on juba kinnitatud. Kas kinnitada, et tellimusi vastu võtta? Kliendid näevad seda ka."
   }
 }

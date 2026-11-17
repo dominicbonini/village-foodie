@@ -36,7 +36,8 @@
     "noteSaved": "Napomena je sačuvana",
     "pricesSaved": "Cene su sačuvane za ovaj događaj",
     "pricesSaveFailed": "Cene nisu sačuvane",
-    "reconnectToLoad": "Povežite se ponovo da biste učitali ovaj događaj"
+    "reconnectToLoad": "Povežite se ponovo da biste učitali ovaj događaj",
+    "eventApproved": "Događaj odobren"
   },
   "gate": {
     "invalidAccessLink": "Nevažeći link za pristup",
@@ -151,7 +152,8 @@
     "manageEvent": "Upravljaj događajem",
     "noEvent": "Nijedan događaj nije izabran",
     "selectEvent": "Izaberi događaj",
-    "status": "{tone, select, paused {⏸ Pauzirano} live {● U toku} finished {● Završeno} cancelled {Otkazano} other {Nije počelo}}"
+    "status": "{tone, select, paused {⏸ Pauzirano} live {● U toku} finished {● Završeno} cancelled {Otkazano} other {Nije počelo}}",
+    "approveToTakeOrders": "Odobrite događaj za primanje porudžbina"
   },
   "orders": {
     "noEvent": "Nijedan događaj nije izabran — izaberite događaj da biste videli porudžbine",

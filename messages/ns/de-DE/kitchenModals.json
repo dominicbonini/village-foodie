@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Zum Laden neu verbinden",
     "selected": "Ausgewählt",
-    "status": "{tone, select, paused {⏸ Pausiert} live {● Live} finished {● Beendet} cancelled {Abgesagt} other {Nicht gestartet}}"
+    "status": "{tone, select, paused {⏸ Pausiert} live {● Live} finished {● Beendet} cancelled {Abgesagt} other {Nicht gestartet}}",
+    "orders": "{n, plural, =0 {Keine Bestellungen} one {{count} Bestellung} other {{count} Bestellungen}}",
+    "needsApproval": "Freigabe nötig",
+    "approvalSummary": "{n, plural, one {{count} Event braucht Freigabe} other {{count} Events brauchen Freigabe}}",
+    "approvalSummaryNote": "{n, plural, one {Kunden sehen es noch nicht.} other {Kunden sehen sie noch nicht.}}",
+    "duplicateSameTime": "Mögliches Duplikat · gleiche Zeit",
+    "duplicateOverlaps": "Mögliches Duplikat · überschneidet sich",
+    "dayCount": "{n, plural, one {{count} Event} other {{count} Events}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event} freigeben?",
+    "overlapText": "{event} ist möglicherweise ein Duplikat von {other} ({start}–{end}), das schon freigegeben ist{n, plural, =0 {} one { und {count} Bestellung hat} other { und {count} Bestellungen hat}}.",
+    "keep": "{other} behalten",
+    "approveAnyway": "{event} trotzdem freigeben",
+    "plainText": "{event} ist noch nicht freigegeben. Freigeben, um Bestellungen anzunehmen? Kunden sehen es dann auch.",
+    "approve": "Freigeben",
+    "startTitle": "Dieses Event starten?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {bisher {count} Bestellung} other {bisher {count} Bestellungen}}",
+    "switchTitle": "Zu {event} wechseln?",
+    "switch": "Wechseln",
+    "dismissedText": "{event} ist möglicherweise ein Duplikat von {other}, das schon freigegeben ist. Freigeben, um Bestellungen anzunehmen? Kunden sehen es dann auch."
   }
 }

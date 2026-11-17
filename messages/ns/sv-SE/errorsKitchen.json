@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Beställningen sparades, men tavlan för kökskapacitet kunde inte uppdateras — kontrollera tidsluckan innan du litar på den.",
   "created_payment_not_recorded": "Beställningen är skapad, men betalningsposten kunde inte sparas — intäkterna för den här beställningen kan vara fel tills det har rättats.",
   "payment_not_recorded": "Betalningen kunde inte registreras — intäkterna för den här beställningen kan vara fel tills det har rättats.",
-  "payment_not_reversed": "Betalningen kunde inte återföras"
+  "payment_not_reversed": "Betalningen kunde inte återföras",
+  "event_not_approved": "Evenemanget är inte godkänt",
+  "event_not_open": "{status, select, closed {Evenemanget är avslutat. Starta om det för att ta emot beställningar.} cancelled {Evenemanget är inställt.} other {Evenemanget är inte öppet.}}"
 }

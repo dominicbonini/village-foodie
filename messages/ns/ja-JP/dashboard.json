@@ -36,7 +36,8 @@
     "noteSaved": "メモを保存しました",
     "pricesSaved": "この出店の価格を保存しました",
     "pricesSaveFailed": "価格を保存できませんでした",
-    "reconnectToLoad": "この出店を読み込むには再接続してください"
+    "reconnectToLoad": "この出店を読み込むには再接続してください",
+    "eventApproved": "出店を承認しました"
   },
   "gate": {
     "invalidAccessLink": "無効なアクセスリンクです",
@@ -151,7 +152,8 @@
     "manageEvent": "出店を管理",
     "noEvent": "出店が選択されていません",
     "selectEvent": "出店を選択",
-    "status": "{tone, select, paused {⏸ 一時停止中} live {● 営業中} finished {● 終了} cancelled {中止} other {未開始}}"
+    "status": "{tone, select, paused {⏸ 一時停止中} live {● 営業中} finished {● 終了} cancelled {中止} other {未開始}}",
+    "approveToTakeOrders": "注文を受けるには出店を承認してください"
   },
   "orders": {
     "noEvent": "出店が選択されていません。注文を表示するには出店を選択してください",

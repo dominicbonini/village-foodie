@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Certaines informations sont incorrectes. Veuillez les vérifier et réessayer.",
   "paperwork_send_limit": "Vous avez envoyé beaucoup de liens en peu de temps. Veuillez réessayer dans une heure.",
   "paperwork_send_failed": "L’e-mail n’a pas pu être envoyé. Veuillez réessayer.",
-  "cost_invalid": "Saisissez un coût de 0 ou plus, ou laissez la case vide."
+  "cost_invalid": "Saisissez un coût de 0 ou plus, ou laissez la case vide.",
+  "event_cannot_start": "{status, select, unconfirmed {Impossible de démarrer cet événement (non approuvé).} open {Impossible de démarrer cet événement (déjà démarré).} cancelled {Impossible de démarrer cet événement (annulé).} other {Impossible de démarrer cet événement ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Impossible de terminer cet événement (non approuvé).} confirmed {Impossible de terminer cet événement (pas démarré).} closed {Impossible de terminer cet événement (déjà terminé).} cancelled {Impossible de terminer cet événement (annulé).} other {Impossible de terminer cet événement ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Cet événement n’attend plus d’approbation (déjà approuvé).} open {Cet événement n’attend plus d’approbation (déjà démarré).} closed {Cet événement n’attend plus d’approbation (déjà terminé).} cancelled {Cet événement n’attend plus d’approbation (annulé).} other {Cet événement n’attend plus d’approbation ({status}).}}"
 }

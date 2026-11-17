@@ -22,10 +22,13 @@ import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcAddableRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
-import { formatTime, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz, instantOfLocal, clockOfInstantInTz, formatYmdShortMonth, formatSlot, formatInstantClock, addDaysYmd, timeSettingsOr } from '@/lib/time-utils'
+import { formatTime, getNowMinsInTz, getLocalDateInTz, instantOfLocal, clockOfInstantInTz, formatYmdShortMonth, formatSlot, formatInstantClock, addDaysYmd, timeSettingsOr } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel } from '@/lib/event-display'
 import { engineClock, crossesMidnight, eventEndMins, nowOnEvent } from '@/lib/event-window'
 import { EventPickerPanel } from '@/components/shared/EventPickerPanel'
+// events-overlap-2: the switch question, the list order and the "possible duplicate" rule.
+import { SwitchEventDialog } from '@/components/shared/EventGateDialogs'
+import { pickDefaultApprovedEvent } from '@/lib/event-default'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { gatedAction, seedProvisionalSeq } from '@/lib/native/orderGate'
 import { ORANGE_SOLID, ORANGE_OUTLINE } from '@/lib/ui-tokens'
@@ -92,6 +95,12 @@ type EventRecord = {
   venue_name?: string | null
   town?: string | null
   status?: string
+  /** events-overlap-2: what detectEventConflicts reads, and when "Keep {other}" was chosen. Optional — the panel's own
+   *  fallback list (fetched when no `events` prop is passed) carries them too. */
+  postcode?: string | null
+  van_id?: string | null
+  opened_at?: string | null
+  overlap_dismissed_at?: string | null
 }
 
 /** "Village Hall - Wickhambrook", but skip town if already in venue name */
@@ -140,6 +149,14 @@ interface AddOrderPanelProps {
   onEventPickerOpened?: () => void
   onEventChange?: (eventId: string) => void
   controlledEvent?: EventRecord | null
+  /** events-overlap-2: the dashboard's own event list (the one it polls) and its order counts. When passed, the picker
+   *  lists THESE — started, then approved, then "Needs approval" — with each row's order count and the "possible
+   *  duplicate" tag. Absent → the panel's own fetch, as before. */
+  events?: EventRecord[] | null
+  orderCounts?: Record<string, number> | null
+  /** events-overlap-2: an UNAPPROVED event was tapped in the picker, or the server refused a walk-up because its event
+   *  is not approved. The dashboard opens its approve dialog; the panel never selects an unapproved event itself. */
+  onRequestApprove?: (eventId: string) => void
   /** EVENT-SWITCH GATE (Option A): offline, only events whose data was loaded this session are switchable.
    *  isOffline false / isEventLoaded absent → no gating (online = every event switchable as today). */
   isOffline?: boolean
@@ -343,7 +360,7 @@ export function AddOrderPanel({
   categoryOrder, itemCategoryMap,
   showToast, onOrderPlaced, onOpenEvent,
   requestEventPickerOpen, onEventPickerOpened,
-  onEventChange, controlledEvent,
+  onEventChange, controlledEvent, events: eventsProp = null, orderCounts = null, onRequestApprove,
   isOffline = false, offlineCapacity = null, isEventLoaded,
   isActive = true,
   isDemo = false, onLockedEventAction,
@@ -474,6 +491,8 @@ export function AddOrderPanel({
     return ev?.event_date === getLocalDateInTz(eventTz) ? getNowMinsInTz(eventTz) : Number.NEGATIVE_INFINITY
   }, [ec, eventTz])
   const [showEventPicker, setShowEventPicker] = useState(false)
+  /** events-overlap-2: the event picked while the STARTED one is selected — waiting on "Switch to {event}?". */
+  const [switchTarget, setSwitchTarget] = useState<EventRecord | null>(null)
   const [upcomingEvents, setUpcomingEvents] = useState<EventRecord[]>([])
   // ── 🔴 liveEvent — THE FRESH VERSION OF WHICHEVER EVENT manualEvent NAMES (V9.6) ─────────────────
   // THE BUG THIS CLOSES: manualEvent is a PRIVATE COPY, seeded once by `useState(todayEvent)`. Its
@@ -864,6 +883,10 @@ export function AddOrderPanel({
           venue_name: ev.venue_name || null,
           town: ev.town || null,
           status: ev.status,
+          postcode: ev.postcode ?? null,
+          van_id: ev.van_id ?? null,
+          opened_at: ev.opened_at ?? null,
+          overlap_dismissed_at: ev.overlap_dismissed_at ?? null,
         }))
       // Set even when empty: a confirmed 200 with zero events is a legit empty.
       setUpcomingEvents(mapped)
@@ -1124,7 +1147,8 @@ export function AddOrderPanel({
     // never "the single today event" by UTC date, which could seat a stale-live event. The
     // dashboard's controlledEvent (activeEvent) remains the authoritative driver via the sync
     // effect above; this is only the no-controlledEvent cold-start default.
-    setManualEvent(pickDefaultEventByTime(upcomingEvents, eventTz))
+    // events-overlap-2: approved-only (lib/event-default.ts) — never an unconfirmed event, and nothing rather than a past one.
+    setManualEvent(pickDefaultApprovedEvent(upcomingEvents, eventTz))
   }, [upcomingEvents, eventTz])
 
   // An EVENT change (id/date/times) fetches immediately — a new grid must never wait on a throttle. The
@@ -1650,6 +1674,13 @@ setItemModal({ item, modGroups, editCartKey })
         return
       }
       const data = result.data ?? {}
+      // events-overlap-2: the event is not approved. Nothing was inserted; the basket stays. The dashboard opens its
+      // approve dialog for that event (app/api/dashboard/action/route.ts `event_not_approved`).
+      if (result.status === 409 && data?.code === 'event_not_approved') {
+        showToast(errorText(tErr, data, ''), 'error')
+        if (onRequestApprove && manualEvent?.id) onRequestApprove(String(data.event_id || manualEvent.id))
+        return
+      }
       // Lock contention past the budget (rare): server did NOT insert — keep the order, retry.
       if (result.status === 409 && data?.retry) {
         showToast(t('busyRetry'), 'error')
@@ -2572,6 +2603,26 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
     </button>
   ) : null
 
+  // ── events-overlap-2/-5: THE PICKER'S LIST. The dashboard's polled list when it passes one — the picker groups it by date
+  // and attaches each likely duplicate under its approved event (lib/event-default.ts buildEventListGroups) — else this
+  // panel's own fetch, listed flat exactly as before.
+  const pickerEvents: EventRecord[] = eventsProp ?? upcomingEvents
+  /** The picker's own select (unchanged from before events-overlap-2): reset the basket, refetch slots, tell the parent. */
+  const selectPickedEvent = (ev: EventRecord) => {
+    if (manualEvent && manualEvent.id !== ev.id) resetManual()
+    setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time, ev.id); setManualSlot(''); onEventChange?.(ev.id)
+  }
+
+  // ── events-overlap-2: ON A PHONE THE EVENT CARD BELOW IS `hidden sm:block`, so a phone showed NO event at all on this
+  // tab (docs/events-overlap-1-report.md §3c). One compact line, phones only (`sm:hidden`): the selected event's name and
+  // times. Tapping it opens the picker, like the card's Change button.
+  const phoneEventLine = manualEvent ? (
+    <button type="button" onClick={openEventPicker} data-phone-event-line
+      className="sm:hidden w-full text-left text-xs font-semibold text-slate-600 truncate mb-2">
+      📍 {fmtVenue(manualEvent.venue_name, manualEvent.town) || manualEvent.venue_name} · {formatTime(manualEvent.start_time, panelTime)}–{formatTime(manualEvent.end_time, panelTime)}
+    </button>
+  ) : null
+
   // status read via liveEvent — the dedicated status-sync effect is gone (see the note where it was).
   const eventBanner = liveEvent?.status !== 'open' ? (
     <div className="hidden sm:block mb-4">
@@ -2726,6 +2777,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
            escape. ⚠️ BOTH BRANCHES ARE `md:hidden`, so nothing at 768px and above can be affected. */
         <div className="md:hidden flex-1 min-h-0 min-w-0 flex flex-col">
           <div className="shrink-0 min-w-0">
+            {phoneEventLine}
             {eventBanner}
             {dealsButton}
           </div>
@@ -2742,6 +2794,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         </div>
       ) : (
         <div className="md:hidden flex-1 min-h-0 overflow-y-auto pb-24">
+          {phoneEventLine}
           {eventBanner}
           {dealsButton}
           {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">{t('loadingMenu')}</p>}
@@ -3021,10 +3074,18 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         time={truck.time}
         open={showEventPicker}
         isDemo={isDemo}
-        events={upcomingEvents}
+        events={pickerEvents}
         isSelected={ev => manualEvent?.id === ev.id}
         isEventBlocked={ev => isOffline && manualEvent?.id !== ev.id && !!isEventLoaded && !isEventLoaded(ev.id)}
-        onSelect={ev => { if (manualEvent && manualEvent.id !== ev.id) resetManual(); setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time, ev.id); setManualSlot(''); onEventChange?.(ev.id) }}
+        onSelect={ev => {
+          // events-overlap-2: an UNAPPROVED event is never selected here — the dashboard asks (approve / keep the other).
+          if (ev.status === 'unconfirmed' && onRequestApprove) { setShowEventPicker(false); onRequestApprove(ev.id); return }
+          // Leaving the STARTED event asks first; nothing started → no question.
+          if (manualEvent && manualEvent.id !== ev.id && liveEvent?.status === 'open') { setShowEventPicker(false); setSwitchTarget(ev); return }
+          selectPickedEvent(ev)
+        }}
+        groupByDate={!!eventsProp}
+        orderCount={orderCounts ? (ev => orderCounts[ev.id] ?? 0) : undefined}
         onClose={() => setShowEventPicker(false)}
         title={t('selectEvent')}
         closeLabel={t('done')}
@@ -3032,6 +3093,10 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
           ? <>{[0, 1, 2].map(i => <div key={i} className="h-[58px] rounded-xl bg-slate-100 animate-pulse" />)}</>
           : <p className="text-sm text-slate-400 text-center py-6">{t('noUpcomingEvents')}</p>}
       />
+      {switchTarget && (
+        <SwitchEventDialog event={switchTarget} onCancel={() => setSwitchTarget(null)}
+          onSwitch={() => { const ev = switchTarget; setSwitchTarget(null); selectPickedEvent(ev) }} />
+      )}
     </MoneyProvider>
   )
 }

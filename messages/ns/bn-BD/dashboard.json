@@ -36,7 +36,8 @@
     "noteSaved": "নোট সেভ হয়েছে",
     "pricesSaved": "এই ইভেন্টের দাম সেভ হয়েছে",
     "pricesSaveFailed": "দাম সেভ করা যায়নি",
-    "reconnectToLoad": "এই ইভেন্ট লোড করতে আবার ইন্টারনেটে সংযুক্ত হোন"
+    "reconnectToLoad": "এই ইভেন্ট লোড করতে আবার ইন্টারনেটে সংযুক্ত হোন",
+    "eventApproved": "ইভেন্ট অনুমোদিত"
   },
   "gate": {
     "invalidAccessLink": "অ্যাক্সেস লিংকটি সঠিক নয়",
@@ -151,7 +152,8 @@
     "manageEvent": "ইভেন্ট ম্যানেজ করুন",
     "noEvent": "কোনো ইভেন্ট বেছে নেওয়া হয়নি",
     "selectEvent": "ইভেন্ট বেছে নিন",
-    "status": "{tone, select, paused {⏸ সাময়িক বন্ধ} live {● লাইভ} finished {● সমাপ্ত} cancelled {বাতিল} other {শুরু হয়নি}}"
+    "status": "{tone, select, paused {⏸ সাময়িক বন্ধ} live {● লাইভ} finished {● সমাপ্ত} cancelled {বাতিল} other {শুরু হয়নি}}",
+    "approveToTakeOrders": "অর্ডার নিতে একটি ইভেন্ট অনুমোদন করুন"
   },
   "orders": {
     "noEvent": "কোনো ইভেন্ট বেছে নেওয়া হয়নি — অর্ডার দেখতে একটি ইভেন্ট বেছে নিন",

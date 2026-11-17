@@ -36,7 +36,8 @@
     "noteSaved": "Izoh saqlandi",
     "pricesSaved": "Bu tadbir uchun narxlar saqlandi",
     "pricesSaveFailed": "Narxlarni saqlab boʻlmadi",
-    "reconnectToLoad": "Bu tadbirni yuklash uchun internetga qayta ulaning"
+    "reconnectToLoad": "Bu tadbirni yuklash uchun internetga qayta ulaning",
+    "eventApproved": "Tadbir tasdiqlandi"
   },
   "gate": {
     "invalidAccessLink": "Kirish havolasi notoʻgʻri",
@@ -151,7 +152,8 @@
     "manageEvent": "Tadbirni boshqarish",
     "noEvent": "Tadbir tanlanmagan",
     "selectEvent": "Tadbirni tanlash",
-    "status": "{tone, select, paused {⏸ Toʻxtatilgan} live {● Faol} finished {● Yakunlangan} cancelled {Bekor qilingan} other {Boshlanmagan}}"
+    "status": "{tone, select, paused {⏸ Toʻxtatilgan} live {● Faol} finished {● Yakunlangan} cancelled {Bekor qilingan} other {Boshlanmagan}}",
+    "approveToTakeOrders": "Buyurtma olish uchun tadbirni tasdiqlang"
   },
   "orders": {
     "noEvent": "Tadbir tanlanmagan — buyurtmalarni koʻrish uchun tadbirni tanlang",

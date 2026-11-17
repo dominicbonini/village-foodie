@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Ayrim maʼlumotlar notoʻgʻri. Ularni tekshirib, qayta urinib koʻring.",
   "paperwork_send_limit": "Qisqa vaqt ichida juda koʻp havola yubordingiz. Bir soatdan soʻng qayta urinib koʻring.",
   "paperwork_send_failed": "Xatni yuborib boʻlmadi. Qayta urinib koʻring.",
-  "cost_invalid": "0 yoki undan katta xarajatni kiriting yoki maydonni boʻsh qoldiring."
+  "cost_invalid": "0 yoki undan katta xarajatni kiriting yoki maydonni boʻsh qoldiring.",
+  "event_cannot_start": "{status, select, unconfirmed {Tadbirni boshlab bo‘lmaydi (tasdiqlanmagan).} open {Tadbirni boshlab bo‘lmaydi (allaqachon boshlangan).} cancelled {Tadbirni boshlab bo‘lmaydi (bekor qilingan).} other {Tadbirni boshlab bo‘lmaydi ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Tadbirni tugatib bo‘lmaydi (tasdiqlanmagan).} confirmed {Tadbirni tugatib bo‘lmaydi (boshlanmagan).} closed {Tadbirni tugatib bo‘lmaydi (allaqachon tugagan).} cancelled {Tadbirni tugatib bo‘lmaydi (bekor qilingan).} other {Tadbirni tugatib bo‘lmaydi ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Bu tadbirga endi tasdiq kerak emas (allaqachon tasdiqlangan).} open {Bu tadbirga endi tasdiq kerak emas (allaqachon boshlangan).} closed {Bu tadbirga endi tasdiq kerak emas (allaqachon tugagan).} cancelled {Bu tadbirga endi tasdiq kerak emas (bekor qilingan).} other {Bu tadbirga endi tasdiq kerak emas ({status}).}}"
 }

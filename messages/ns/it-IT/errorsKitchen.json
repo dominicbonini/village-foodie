@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Ordine salvato, ma non è stato possibile aggiornare il riepilogo degli ordini massimi per fascia oraria: controlla la fascia oraria prima di farci affidamento.",
   "created_payment_not_recorded": "Ordine creato, ma non è stato possibile salvare la registrazione del pagamento: l’incasso di questo ordine potrebbe risultare errato finché non viene corretto.",
   "payment_not_recorded": "Non è stato possibile registrare il pagamento: l’incasso di questo ordine potrebbe risultare errato finché non viene corretto.",
-  "payment_not_reversed": "Non è stato possibile stornare il pagamento"
+  "payment_not_reversed": "Non è stato possibile stornare il pagamento",
+  "event_not_approved": "Questo evento non è approvato",
+  "event_not_open": "{status, select, closed {Questo evento è terminato. Riavvialo per ricevere ordini.} cancelled {Questo evento è stato annullato.} other {Questo evento non è aperto.}}"
 }

@@ -78,6 +78,10 @@ export interface OutboxOp {
   provisional_id: string // device-prefixed display number for offline creates (e.g. 'A13'); '' for status ops
   state: 'pending' | 'syncing' | 'conflict'
   last_error?: string    // last drain failure (HTTP status + server error, or thrown-fetch) — for the dev inspector
+  /** events-overlap-2: the server is holding this op back for a reason staff can fix — today only 'event_not_approved'
+   *  (a walk-up queued for an event nobody has approved, with no approved event overlapping it). The op stays PENDING
+   *  and is retried on every drain; the banner says why. Cleared by the next save in any other state. */
+  blocked?: 'event_not_approved'
 }
 
 /** uuid v4 — ALWAYS a valid RFC-4122 uuid. Used for BOTH the outbox op_id AND the order's order_key (a uuid
@@ -176,6 +180,11 @@ export async function countOps(): Promise<number> {
  *  countOps' key-only count). */
 export async function countPendingOps(): Promise<number> {
   return (await listOps()).filter(o => o.state !== 'conflict').length
+}
+
+/** events-overlap-2: pending ops the server is holding back because their event is not approved (see `blocked`). */
+export async function countBlockedOps(): Promise<number> {
+  return (await listOps()).filter(o => o.state !== 'conflict' && o.blocked === 'event_not_approved').length
 }
 
 /** Ops flagged 'conflict' (409 / gave-up after MAX_ATTEMPTS) — surfaced SEPARATELY for operator review. */

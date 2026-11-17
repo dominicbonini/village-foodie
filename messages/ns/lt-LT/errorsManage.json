@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Kai kurie duomenys neteisingi. Patikrinkite juos ir bandykite dar kartą.",
   "paperwork_send_limit": "Per trumpą laiką išsiuntėte daug nuorodų. Bandykite dar kartą po valandos.",
   "paperwork_send_failed": "Nepavyko išsiųsti el. laiško. Bandykite dar kartą.",
-  "cost_invalid": "Įveskite 0 arba didesnę savikainą arba palikite laukelį tuščią."
+  "cost_invalid": "Įveskite 0 arba didesnę savikainą arba palikite laukelį tuščią.",
+  "event_cannot_start": "{status, select, unconfirmed {Renginio pradėti negalima (nepatvirtintas).} open {Renginio pradėti negalima (jau pradėtas).} cancelled {Renginio pradėti negalima (atšauktas).} other {Renginio pradėti negalima ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Renginio baigti negalima (nepatvirtintas).} confirmed {Renginio baigti negalima (nepradėtas).} closed {Renginio baigti negalima (jau baigėsi).} cancelled {Renginio baigti negalima (atšauktas).} other {Renginio baigti negalima ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Šiam renginiui patvirtinimo nebereikia (jau patvirtintas).} open {Šiam renginiui patvirtinimo nebereikia (jau pradėtas).} closed {Šiam renginiui patvirtinimo nebereikia (jau baigėsi).} cancelled {Šiam renginiui patvirtinimo nebereikia (atšauktas).} other {Šiam renginiui patvirtinimo nebereikia ({status}).}}"
 }

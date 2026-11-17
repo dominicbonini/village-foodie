@@ -36,7 +36,8 @@
     "noteSaved": "नोट सेभ भयो",
     "pricesSaved": "यो कार्यक्रमका लागि मूल्यहरू सेभ भए",
     "pricesSaveFailed": "मूल्यहरू सेभ हुन सकेनन्",
-    "reconnectToLoad": "यो कार्यक्रम लोड गर्न फेरि जडान गर्नुहोस्"
+    "reconnectToLoad": "यो कार्यक्रम लोड गर्न फेरि जडान गर्नुहोस्",
+    "eventApproved": "कार्यक्रम स्वीकृत भयो"
   },
   "gate": {
     "invalidAccessLink": "अमान्य एक्सेस लिङ्क",
@@ -151,7 +152,8 @@
     "manageEvent": "कार्यक्रम व्यवस्थापन",
     "noEvent": "कुनै कार्यक्रम छानिएको छैन",
     "selectEvent": "कार्यक्रम छान्नुहोस्",
-    "status": "{tone, select, paused {⏸ रोकिएको} live {● लाइभ} finished {● सकियो} cancelled {रद्द} other {सुरु भएको छैन}}"
+    "status": "{tone, select, paused {⏸ रोकिएको} live {● लाइभ} finished {● सकियो} cancelled {रद्द} other {सुरु भएको छैन}}",
+    "approveToTakeOrders": "अर्डर लिन कुनै कार्यक्रम स्वीकृत गर्नुहोस्"
   },
   "orders": {
     "noEvent": "कुनै कार्यक्रम छानिएको छैन — अर्डर हेर्न कार्यक्रम छान्नुहोस्",

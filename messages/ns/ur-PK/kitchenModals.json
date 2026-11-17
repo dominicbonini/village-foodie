@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "لوڈ کرنے کے لیے دوبارہ کنیکٹ کریں",
     "selected": "منتخب",
-    "status": "{tone, select, paused {⏸ رکا ہوا} live {● لائیو} finished {● ختم} cancelled {منسوخ} other {شروع نہیں ہوا}}"
+    "status": "{tone, select, paused {⏸ رکا ہوا} live {● لائیو} finished {● ختم} cancelled {منسوخ} other {شروع نہیں ہوا}}",
+    "orders": "{n, plural, =0 {کوئی آرڈر نہیں} one {{count} آرڈر} other {{count} آرڈر}}",
+    "needsApproval": "منظوری باقی",
+    "approvalSummary": "{n, plural, one {{count} ایونٹ کو منظوری درکار ہے} other {{count} ایونٹس کو منظوری درکار ہے}}",
+    "approvalSummaryNote": "{n, plural, one {گاہک اسے ابھی نہیں دیکھ سکتے۔} other {گاہک انہیں ابھی نہیں دیکھ سکتے۔}}",
+    "duplicateSameTime": "ممکنہ ڈپلیکیٹ · وہی وقت",
+    "duplicateOverlaps": "ممکنہ ڈپلیکیٹ · وقت ٹکراتا ہے",
+    "dayCount": "{n, plural, one {{count} ایونٹ} other {{count} ایونٹس}}"
+  },
+  "eventGate": {
+    "approveTitle": "کیا {event} کو منظور کریں؟",
+    "overlapText": "{event} شاید {other} ({start}–{end}) کا ڈپلیکیٹ ہے، جو پہلے سے منظور ہے{n, plural, =0 {} one { اور اس میں {count} آرڈر ہے} other { اور اس میں {count} آرڈر ہیں}}۔",
+    "keep": "{other} رکھیں",
+    "approveAnyway": "پھر بھی {event} منظور کریں",
+    "plainText": "{event} ابھی منظور نہیں ہوا۔ آرڈر لینے کے لیے منظور کریں؟ گاہک بھی اسے دیکھیں گے۔",
+    "approve": "منظور کریں",
+    "startTitle": "یہ ایونٹ شروع کریں؟",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {اب تک {count} آرڈر} other {اب تک {count} آرڈر}}",
+    "switchTitle": "{event} پر جائیں؟",
+    "switch": "بدلیں",
+    "dismissedText": "{event} شاید {other} کا ڈپلیکیٹ ہے، جو پہلے سے منظور ہے۔ آرڈر لینے کے لیے منظور کریں؟ گاہک بھی اسے دیکھیں گے۔"
   }
 }

@@ -36,7 +36,8 @@
     "noteSaved": "Anteckning sparad",
     "pricesSaved": "Priser sparade för det här evenemanget",
     "pricesSaveFailed": "Kunde inte spara priserna",
-    "reconnectToLoad": "Anslut igen för att ladda det här evenemanget"
+    "reconnectToLoad": "Anslut igen för att ladda det här evenemanget",
+    "eventApproved": "Evenemanget godkänt"
   },
   "gate": {
     "invalidAccessLink": "Ogiltig åtkomstlänk",
@@ -151,7 +152,8 @@
     "manageEvent": "Hantera evenemang",
     "noEvent": "Inget evenemang valt",
     "selectEvent": "Välj evenemang",
-    "status": "{tone, select, paused {⏸ Pausat} live {● Pågår} finished {● Avslutat} cancelled {Inställt} other {Ej startat}}"
+    "status": "{tone, select, paused {⏸ Pausat} live {● Pågår} finished {● Avslutat} cancelled {Inställt} other {Ej startat}}",
+    "approveToTakeOrders": "Godkänn ett evenemang för att ta emot beställningar"
   },
   "orders": {
     "noEvent": "Inget evenemang valt — välj ett evenemang för att se beställningar",

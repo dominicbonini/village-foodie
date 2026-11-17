@@ -36,7 +36,8 @@
     "noteSaved": "Poznámka uložena",
     "pricesSaved": "Ceny pro tuto akci uloženy",
     "pricesSaveFailed": "Ceny se nepodařilo uložit",
-    "reconnectToLoad": "Pro načtení této akce se znovu připojte"
+    "reconnectToLoad": "Pro načtení této akce se znovu připojte",
+    "eventApproved": "Akce schválena"
   },
   "gate": {
     "invalidAccessLink": "Neplatný přístupový odkaz",
@@ -151,7 +152,8 @@
     "manageEvent": "Spravovat akci",
     "noEvent": "Není vybrána žádná akce",
     "selectEvent": "Vybrat akci",
-    "status": "{tone, select, paused {⏸ Pozastaveno} live {● Probíhá} finished {● Ukončeno} cancelled {Zrušeno} other {Nezahájeno}}"
+    "status": "{tone, select, paused {⏸ Pozastaveno} live {● Probíhá} finished {● Ukončeno} cancelled {Zrušeno} other {Nezahájeno}}",
+    "approveToTakeOrders": "Schvalte akci, abyste mohli přijímat objednávky"
   },
   "orders": {
     "noEvent": "Není vybrána žádná akce — pro zobrazení objednávek vyberte akci",

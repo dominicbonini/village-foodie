@@ -40,7 +40,8 @@
     "offline": "📴 Bez pripojenia — {n, plural, one {{count} zmena je uložená na tomto zariadení. Odošle sa, keď budete znova online.} few {{count} zmeny sú uložené na tomto zariadení. Odošlú sa, keď budete znova online.} other {{count} zmien je uložených na tomto zariadení. Odošlú sa, keď budete znova online.}} Nastavenia sú zamknuté.",
     "syncing": "Opäť online — {n, plural, one {odosiela sa {count} zmena} few {odosielajú sa {count} zmeny} other {odosiela sa {count} zmien}}…",
     "synced": "Všetky zmeny boli odoslané.",
-    "stillQueued": "{n, plural, one {{count} zmena je uložená na tomto zariadení. Stále sa ju pokúšame odoslať.} few {{count} zmeny sú uložené na tomto zariadení. Stále sa ich pokúšame odoslať.} other {{count} zmien je uložených na tomto zariadení. Stále sa ich pokúšame odoslať.}}"
+    "stillQueued": "{n, plural, one {{count} zmena je uložená na tomto zariadení. Stále sa ju pokúšame odoslať.} few {{count} zmeny sú uložené na tomto zariadení. Stále sa ich pokúšame odoslať.} other {{count} zmien je uložených na tomto zariadení. Stále sa ich pokúšame odoslať.}}",
+    "notApproved": "{n, plural, one {{count} objednávka čaká} few {{count} objednávky čakajú} many {{count} objednávky čaká} other {{count} objednávok čaká}}: táto akcia nie je schválená. Schváľte ju na odoslanie."
   },
   "lock": {
     "locked": "HatchGrab je zamknutý",

@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Sambungkan ulang untuk memuat",
     "selected": "Dipilih",
-    "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Selesai} cancelled {Dibatalkan} other {Belum dimulai}}"
+    "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Selesai} cancelled {Dibatalkan} other {Belum dimulai}}",
+    "orders": "{n, plural, =0 {Belum ada pesanan} other {{count} pesanan}}",
+    "needsApproval": "Perlu disetujui",
+    "approvalSummary": "{n, plural, other {{count} acara perlu disetujui}}",
+    "approvalSummaryNote": "{n, plural, other {Pelanggan belum bisa melihatnya.}}",
+    "duplicateSameTime": "Mungkin duplikat · waktu sama",
+    "duplicateOverlaps": "Mungkin duplikat · tumpang tindih",
+    "dayCount": "{n, plural, other {{count} acara}}"
+  },
+  "eventGate": {
+    "approveTitle": "Setujui {event}?",
+    "overlapText": "{event} mungkin duplikat {other} ({start}–{end}), yang sudah disetujui{n, plural, =0 {} other { dan punya {count} pesanan}}.",
+    "keep": "Pertahankan {other}",
+    "approveAnyway": "Tetap setujui {event}",
+    "plainText": "{event} belum disetujui. Setujui agar bisa menerima pesanan? Pelanggan juga akan melihatnya.",
+    "approve": "Setujui",
+    "startTitle": "Mulai acara ini?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, other {{count} pesanan sejauh ini}}",
+    "switchTitle": "Ganti ke {event}?",
+    "switch": "Ganti",
+    "dismissedText": "{event} mungkin duplikat {other}, yang sudah disetujui. Setujui agar bisa menerima pesanan? Pelanggan juga akan melihatnya."
   }
 }

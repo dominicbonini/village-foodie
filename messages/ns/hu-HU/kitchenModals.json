@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Újracsatlakozás",
     "selected": "Kiválasztva",
-    "status": "{tone, select, paused {⏸ Szünetel} live {● Élő} finished {● Befejezve} cancelled {Lemondva} other {Nem indult el}}"
+    "status": "{tone, select, paused {⏸ Szünetel} live {● Élő} finished {● Befejezve} cancelled {Lemondva} other {Nem indult el}}",
+    "orders": "{n, plural, =0 {Nincs rendelés} one {{count} rendelés} other {{count} rendelés}}",
+    "needsApproval": "Jóváhagyásra vár",
+    "approvalSummary": "{n, plural, one {{count} esemény jóváhagyásra vár} other {{count} esemény jóváhagyásra vár}}",
+    "approvalSummaryNote": "{n, plural, one {Az ügyfelek még nem látják.} other {Az ügyfelek még nem látják őket.}}",
+    "duplicateSameTime": "Lehetséges duplikátum · azonos idő",
+    "duplicateOverlaps": "Lehetséges duplikátum · átfedés",
+    "dayCount": "{n, plural, one {{count} esemény} other {{count} esemény}}"
+  },
+  "eventGate": {
+    "approveTitle": "Jóváhagyod: {event}?",
+    "overlapText": "{event} lehet, hogy {other} ({start}–{end}) duplikátuma, ami már jóvá van hagyva{n, plural, =0 {} one { és {count} rendelése van} other { és {count} rendelése van}}.",
+    "keep": "{other} megtartása",
+    "approveAnyway": "{event} jóváhagyása mégis",
+    "plainText": "{event} még nincs jóváhagyva. Jóváhagyod, hogy rendeléseket fogadj? Az ügyfelek is látni fogják.",
+    "approve": "Jóváhagyás",
+    "startTitle": "Elindítod ezt az eseményt?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {eddig {count} rendelés} other {eddig {count} rendelés}}",
+    "switchTitle": "Váltás erre: {event}?",
+    "switch": "Váltás",
+    "dismissedText": "{event} lehet, hogy {other} duplikátuma, ami már jóvá van hagyva. Jóváhagyod, hogy rendeléseket fogadj? Az ügyfelek is látni fogják."
   }
 }

@@ -40,7 +40,8 @@
     "offline": "📴 Engin tenging — {n, plural, one {{count} breyting vistuð á þessu tæki. Hún verður send þegar nettengingin kemst aftur á.} other {{count} breytingar vistaðar á þessu tæki. Þær verða sendar þegar nettengingin kemst aftur á.}} Stillingar eru læstar.",
     "syncing": "Aftur á netinu — sendi {n, plural, one {{count} breytingu} other {{count} breytingar}}…",
     "synced": "Allar breytingar sendar.",
-    "stillQueued": "{n, plural, one {{count} breyting vistuð á þessu tæki. Reyni enn að senda hana.} other {{count} breytingar vistaðar á þessu tæki. Reyni enn að senda þær.}}"
+    "stillQueued": "{n, plural, one {{count} breyting vistuð á þessu tæki. Reyni enn að senda hana.} other {{count} breytingar vistaðar á þessu tæki. Reyni enn að senda þær.}}",
+    "notApproved": "{n, plural, one {{count} pöntun bíður} other {{count} pantanir bíða}}: þessi viðburður er ekki samþykktur. Samþykktu hann til að senda."
   },
   "lock": {
     "locked": "HatchGrab er læst",

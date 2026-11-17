@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Ачаалахын тулд дахин холбогдоорой",
     "selected": "Сонгосон",
-    "status": "{tone, select, paused {⏸ Түр зогссон} live {● Явагдаж байна} finished {● Дууссан} cancelled {Цуцлагдсан} other {Эхлээгүй}}"
+    "status": "{tone, select, paused {⏸ Түр зогссон} live {● Явагдаж байна} finished {● Дууссан} cancelled {Цуцлагдсан} other {Эхлээгүй}}",
+    "orders": "{n, plural, =0 {Захиалга алга} one {{count} захиалга} other {{count} захиалга}}",
+    "needsApproval": "Батлах шаардлагатай",
+    "approvalSummary": "{n, plural, one {{count} арга хэмжээ батлах шаардлагатай} other {{count} арга хэмжээ батлах шаардлагатай}}",
+    "approvalSummaryNote": "{n, plural, one {Үйлчлүүлэгчид үүнийг хараахан харахгүй.} other {Үйлчлүүлэгчид эдгээрийг хараахан харахгүй.}}",
+    "duplicateSameTime": "Давхардал байж магадгүй · ижил цаг",
+    "duplicateOverlaps": "Давхардал байж магадгүй · цаг давхцана",
+    "dayCount": "{n, plural, one {{count} арга хэмжээ} other {{count} арга хэмжээ}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event}-ийг батлах уу?",
+    "overlapText": "{event} нь аль хэдийн батлагдсан {other} ({start}–{end})-ийн давхардал байж магадгүй{n, plural, =0 {} one {, тэнд {count} захиалга байгаа} other {, тэнд {count} захиалга байгаа}}.",
+    "keep": "{other}-ийг үлдээх",
+    "approveAnyway": "Ямар ч байсан {event}-ийг батлах",
+    "plainText": "{event} хараахан батлагдаагүй байна. Захиалга авахын тулд батлах уу? Үйлчлүүлэгчид ч харах болно.",
+    "approve": "Батлах",
+    "startTitle": "Энэ арга хэмжээг эхлүүлэх үү?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {одоогоор {count} захиалга} other {одоогоор {count} захиалга}}",
+    "switchTitle": "{event} руу шилжих үү?",
+    "switch": "Шилжих",
+    "dismissedText": "{event} нь аль хэдийн батлагдсан {other}-ийн давхардал байж магадгүй. Захиалга авахын тулд батлах уу? Үйлчлүүлэгчид ч харах болно."
   }
 }

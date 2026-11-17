@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Reconectați-vă pentru încărcare",
     "selected": "Selectat",
-    "status": "{tone, select, paused {⏸ Suspendat} live {● În desfășurare} finished {● Încheiat} cancelled {Anulat} other {Neînceput}}"
+    "status": "{tone, select, paused {⏸ Suspendat} live {● În desfășurare} finished {● Încheiat} cancelled {Anulat} other {Neînceput}}",
+    "orders": "{n, plural, =0 {Nicio comandă} one {{count} comandă} few {{count} comenzi} other {{count} de comenzi}}",
+    "needsApproval": "Necesită aprobare",
+    "approvalSummary": "{n, plural, one {{count} eveniment necesită aprobare} few {{count} evenimente necesită aprobare} other {{count} de evenimente necesită aprobare}}",
+    "approvalSummaryNote": "{n, plural, one {Clienții nu îl văd încă.} few {Clienții nu le văd încă.} other {Clienții nu le văd încă.}}",
+    "duplicateSameTime": "Posibil duplicat · aceeași oră",
+    "duplicateOverlaps": "Posibil duplicat · se suprapune",
+    "dayCount": "{n, plural, one {{count} eveniment} few {{count} evenimente} other {{count} de evenimente}}"
+  },
+  "eventGate": {
+    "approveTitle": "Aprobați {event}?",
+    "overlapText": "{event} poate fi un duplicat al {other} ({start}–{end}), care este deja aprobat{n, plural, =0 {} one { și are {count} comandă} few { și are {count} comenzi} other { și are {count} de comenzi}}.",
+    "keep": "Păstrați {other}",
+    "approveAnyway": "Aprobați totuși {event}",
+    "plainText": "{event} nu este încă aprobat. Îl aprobați ca să primiți comenzi? Îl vor vedea și clienții.",
+    "approve": "Aprobați",
+    "startTitle": "Porniți acest eveniment?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} comandă până acum} few {{count} comenzi până acum} other {{count} de comenzi până acum}}",
+    "switchTitle": "Treceți la {event}?",
+    "switch": "Schimbați",
+    "dismissedText": "{event} poate fi un duplicat al {other}, care este deja aprobat. Îl aprobați ca să primiți comenzi? Îl vor vedea și clienții."
   }
 }

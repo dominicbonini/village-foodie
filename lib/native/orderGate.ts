@@ -419,6 +419,16 @@ async function drainOnce(): Promise<DrainResult> {
       // Capture the server's rejection reason for the dev inspector (HTTP status + body error), THEN branch.
       const data = await res.json().catch(() => ({} as Record<string, unknown>))
       const last_error = `HTTP ${res.status}${(data as any)?.error ? ` — ${(data as any).error}` : ''}`
+      // 🔴 events-overlap-2: "KEEP IT QUEUED" IS ITS OWN ANSWER, CHECKED BEFORE THE 409 BRANCH. The walk-up route sends
+      // `keep_queued: true` (409 `event_not_approved`) for an order queued on an event nobody has approved, when no approved
+      // event overlaps it. Staff can fix that by approving the event, so the op stays PENDING — not a conflict, no attempt
+      // burned — and the drain CONTINUES to the next op (it is this op's problem, not the server's). The age bound still
+      // ends it in `conflict`, the red banner, never a deletion.
+      if ((data as { keep_queued?: unknown })?.keep_queued === true) {
+        if (tooOld) { await saveOp({ ...syncing, state: 'conflict', last_error }); conflicts++; continue }
+        await saveOp({ ...syncing, attempts: priorAttempts, state: 'pending', last_error, blocked: 'event_not_approved' })
+        continue
+      }
       if (res.status === 409) {
         // Genuine conflict (e.g. the order was cancelled online while advanced offline) → flag, don't overwrite.
         await saveOp({ ...syncing, state: 'conflict', last_error }); conflicts++

@@ -36,7 +36,8 @@
     "noteSaved": "ההערה נשמרה",
     "pricesSaved": "המחירים לאירוע הזה נשמרו",
     "pricesSaveFailed": "לא הצלחנו לשמור את המחירים",
-    "reconnectToLoad": "התחברו מחדש כדי לטעון את האירוע הזה"
+    "reconnectToLoad": "התחברו מחדש כדי לטעון את האירוע הזה",
+    "eventApproved": "האירוע אושר"
   },
   "gate": {
     "invalidAccessLink": "קישור גישה לא תקין",
@@ -151,7 +152,8 @@
     "manageEvent": "ניהול האירוע",
     "noEvent": "לא נבחר אירוע",
     "selectEvent": "בחירת אירוע",
-    "status": "{tone, select, paused {⏸ מושהה} live {● פעיל} finished {● הסתיים} cancelled {בוטל} other {לא התחיל}}"
+    "status": "{tone, select, paused {⏸ מושהה} live {● פעיל} finished {● הסתיים} cancelled {בוטל} other {לא התחיל}}",
+    "approveToTakeOrders": "אשרו אירוע כדי לקבל הזמנות"
   },
   "orders": {
     "noEvent": "לא נבחר אירוע — בחרו אירוע כדי לראות הזמנות",

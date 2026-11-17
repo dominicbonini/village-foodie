@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Néhány adat nem megfelelő. Kérjük, ellenőrizze őket, és próbálja újra.",
   "paperwork_send_limit": "Rövid idő alatt sok linket küldött. Kérjük, egy óra múlva próbálja újra.",
   "paperwork_send_failed": "Nem sikerült elküldeni az e-mailt. Kérjük, próbálja újra.",
-  "cost_invalid": "Adjon meg 0 vagy nagyobb költséget, vagy hagyja üresen a mezőt."
+  "cost_invalid": "Adjon meg 0 vagy nagyobb költséget, vagy hagyja üresen a mezőt.",
+  "event_cannot_start": "{status, select, unconfirmed {Az esemény nem indítható (nincs jóváhagyva).} open {Az esemény nem indítható (már elindult).} cancelled {Az esemény nem indítható (lemondva).} other {Az esemény nem indítható ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Az esemény nem zárható le (nincs jóváhagyva).} confirmed {Az esemény nem zárható le (nem indult el).} closed {Az esemény nem zárható le (már véget ért).} cancelled {Az esemény nem zárható le (lemondva).} other {Az esemény nem zárható le ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Ennek az eseménynek már nem kell jóváhagyás (már jóváhagyva).} open {Ennek az eseménynek már nem kell jóváhagyás (már elindult).} closed {Ennek az eseménynek már nem kell jóváhagyás (már véget ért).} cancelled {Ennek az eseménynek már nem kell jóváhagyás (lemondva).} other {Ennek az eseménynek már nem kell jóváhagyás ({status}).}}"
 }

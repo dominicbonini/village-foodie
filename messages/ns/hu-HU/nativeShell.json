@@ -40,7 +40,8 @@
     "offline": "📴 Nincs kapcsolat — {n, plural, one {{count} módosítás mentve ezen az eszközön. Elküldjük, amint újra online lesz.} other {{count} módosítás mentve ezen az eszközön. Elküldjük őket, amint újra online lesz.}} A beállítások zárolva vannak.",
     "syncing": "Újra online — {n, plural, one {{count} módosítás küldése} other {{count} módosítás küldése}}…",
     "synced": "Minden módosítás elküldve.",
-    "stillQueued": "{n, plural, one {{count} módosítás mentve ezen az eszközön. Még próbáljuk elküldeni.} other {{count} módosítás mentve ezen az eszközön. Még próbáljuk elküldeni őket.}}"
+    "stillQueued": "{n, plural, one {{count} módosítás mentve ezen az eszközön. Még próbáljuk elküldeni.} other {{count} módosítás mentve ezen az eszközön. Még próbáljuk elküldeni őket.}}",
+    "notApproved": "{n, plural, one {{count} rendelés vár} other {{count} rendelés vár}}: ez az esemény nincs jóváhagyva. Hagyd jóvá a küldéshez."
   },
   "lock": {
     "locked": "A HatchGrab zárolva van",

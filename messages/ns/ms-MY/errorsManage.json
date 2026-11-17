@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Sebahagian butiran tidak betul. Sila semak dan cuba lagi.",
   "paperwork_send_limit": "Anda telah menghantar banyak pautan dalam masa yang singkat. Sila cuba lagi dalam sejam.",
   "paperwork_send_failed": "E-mel tidak dapat dihantar. Sila cuba lagi.",
-  "cost_invalid": "Masukkan kos 0 atau lebih, atau biarkan kotak kosong."
+  "cost_invalid": "Masukkan kos 0 atau lebih, atau biarkan kotak kosong.",
+  "event_cannot_start": "{status, select, unconfirmed {Acara ini tidak boleh dimulakan (belum diluluskan).} open {Acara ini tidak boleh dimulakan (sudah bermula).} cancelled {Acara ini tidak boleh dimulakan (dibatalkan).} other {Acara ini tidak boleh dimulakan ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Acara ini tidak boleh ditamatkan (belum diluluskan).} confirmed {Acara ini tidak boleh ditamatkan (belum bermula).} closed {Acara ini tidak boleh ditamatkan (sudah tamat).} cancelled {Acara ini tidak boleh ditamatkan (dibatalkan).} other {Acara ini tidak boleh ditamatkan ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Acara ini tidak perlu kelulusan lagi (sudah diluluskan).} open {Acara ini tidak perlu kelulusan lagi (sudah bermula).} closed {Acara ini tidak perlu kelulusan lagi (sudah tamat).} cancelled {Acara ini tidak perlu kelulusan lagi (dibatalkan).} other {Acara ini tidak perlu kelulusan lagi ({status}).}}"
 }

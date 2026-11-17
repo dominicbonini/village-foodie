@@ -36,7 +36,8 @@
     "noteSaved": "Նշումը պահպանվել է",
     "pricesSaved": "Գները պահպանվել են այս միջոցառման համար",
     "pricesSaveFailed": "Չհաջողվեց պահպանել գները",
-    "reconnectToLoad": "Վերամիացեք՝ այս միջոցառումը բեռնելու համար"
+    "reconnectToLoad": "Վերամիացեք՝ այս միջոցառումը բեռնելու համար",
+    "eventApproved": "Միջոցառումը հաստատվեց"
   },
   "gate": {
     "invalidAccessLink": "Մուտքի անվավեր հղում",
@@ -151,7 +152,8 @@
     "manageEvent": "Կառավարել միջոցառումը",
     "noEvent": "Միջոցառում ընտրված չէ",
     "selectEvent": "Ընտրել միջոցառում",
-    "status": "{tone, select, paused {⏸ Դադարեցված} live {● Ընթացքում} finished {● Ավարտված} cancelled {Չեղարկված} other {Չսկսված}}"
+    "status": "{tone, select, paused {⏸ Դադարեցված} live {● Ընթացքում} finished {● Ավարտված} cancelled {Չեղարկված} other {Չսկսված}}",
+    "approveToTakeOrders": "Հաստատեք միջոցառումը՝ պատվերներ ընդունելու համար"
   },
   "orders": {
     "noEvent": "Միջոցառում ընտրված չէ — ընտրեք միջոցառում՝ պատվերները դիտելու համար",

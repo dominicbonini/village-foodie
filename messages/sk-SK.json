@@ -221,7 +221,8 @@
       "noteSaved": "Poznámka uložená",
       "pricesSaved": "Ceny pre túto akciu uložené",
       "pricesSaveFailed": "Ceny sa nepodarilo uložiť",
-      "reconnectToLoad": "Na načítanie tejto akcie sa znova pripojte"
+      "reconnectToLoad": "Na načítanie tejto akcie sa znova pripojte",
+      "eventApproved": "Akcia schválená"
     },
     "gate": {
       "invalidAccessLink": "Neplatný prístupový odkaz",
@@ -336,7 +337,8 @@
       "manageEvent": "Spravovať akciu",
       "noEvent": "Nie je vybraná žiadna akcia",
       "selectEvent": "Vybrať akciu",
-      "status": "{tone, select, paused {⏸ Pozastavená} live {● Prebieha} finished {● Ukončená} cancelled {Zrušená} other {Nezačatá}}"
+      "status": "{tone, select, paused {⏸ Pozastavená} live {● Prebieha} finished {● Ukončená} cancelled {Zrušená} other {Nezačatá}}",
+      "approveToTakeOrders": "Schváľte akciu, aby ste mohli prijímať objednávky"
     },
     "orders": {
       "noEvent": "Nie je vybraná žiadna akcia — vyberte akciu, aby ste videli objednávky",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Objednávka je uložená, ale tabuľu kapacity kuchyne sa nepodarilo aktualizovať — skôr než sa na ňu spoľahnete, skontrolujte časové okno.",
     "created_payment_not_recorded": "Objednávka je vytvorená, ale záznam o platbe sa nepodarilo uložiť — tržba za túto objednávku môže byť nesprávna, kým sa to neopraví.",
     "payment_not_recorded": "Platbu sa nepodarilo zaznamenať — tržba za túto objednávku môže byť nesprávna, kým sa to neopraví.",
-    "payment_not_reversed": "Platbu sa nepodarilo stornovať"
+    "payment_not_reversed": "Platbu sa nepodarilo stornovať",
+    "event_not_approved": "Táto akcia nie je schválená",
+    "event_not_open": "{status, select, closed {Táto akcia skončila. Spustite ju znova, aby ste mohli prijímať objednávky.} cancelled {Táto akcia bola zrušená.} other {Táto akcia nie je otvorená.}}"
   },
   "kitchenModals": {
     "close": "Zavrieť",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Pripojte sa znova a načítajte",
       "selected": "Vybraté",
-      "status": "{tone, select, paused {⏸ Pozastavená} live {● Prebieha} finished {● Ukončená} cancelled {Zrušená} other {Nezačatá}}"
+      "status": "{tone, select, paused {⏸ Pozastavená} live {● Prebieha} finished {● Ukončená} cancelled {Zrušená} other {Nezačatá}}",
+      "orders": "{n, plural, =0 {Žiadne objednávky} one {{count} objednávka} few {{count} objednávky} many {{count} objednávky} other {{count} objednávok}}",
+      "needsApproval": "Čaká na schválenie",
+      "approvalSummary": "{n, plural, one {{count} akcia čaká na schválenie} few {{count} akcie čakajú na schválenie} many {{count} akcie čaká na schválenie} other {{count} akcií čaká na schválenie}}",
+      "approvalSummaryNote": "{n, plural, one {Zákazníci ju zatiaľ nevidia.} few {Zákazníci ich zatiaľ nevidia.} many {Zákazníci ich zatiaľ nevidia.} other {Zákazníci ich zatiaľ nevidia.}}",
+      "duplicateSameTime": "Možný duplikát · rovnaký čas",
+      "duplicateOverlaps": "Možný duplikát · prekrýva sa",
+      "dayCount": "{n, plural, one {{count} akcia} few {{count} akcie} many {{count} akcie} other {{count} akcií}}"
+    },
+    "eventGate": {
+      "approveTitle": "Schváliť {event}?",
+      "overlapText": "{event} je možno duplikát akcie {other} ({start}–{end}), ktorá je už schválená{n, plural, =0 {} one { a má {count} objednávku} few { a má {count} objednávky} many { a má {count} objednávky} other { a má {count} objednávok}}.",
+      "keep": "Ponechať {other}",
+      "approveAnyway": "Napriek tomu schváliť {event}",
+      "plainText": "{event} ešte nie je schválená. Schváliť ju a prijímať objednávky? Uvidia ju aj zákazníci.",
+      "approve": "Schváliť",
+      "startTitle": "Spustiť túto akciu?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {zatiaľ {count} objednávka} few {zatiaľ {count} objednávky} many {zatiaľ {count} objednávky} other {zatiaľ {count} objednávok}}",
+      "switchTitle": "Prepnúť na {event}?",
+      "switch": "Prepnúť",
+      "dismissedText": "{event} je možno duplikát akcie {other}, ktorá je už schválená. Schváliť ju a prijímať objednávky? Uvidia ju aj zákazníci."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Bez pripojenia — {n, plural, one {{count} zmena je uložená na tomto zariadení. Odošle sa, keď budete znova online.} few {{count} zmeny sú uložené na tomto zariadení. Odošlú sa, keď budete znova online.} other {{count} zmien je uložených na tomto zariadení. Odošlú sa, keď budete znova online.}} Nastavenia sú zamknuté.",
       "syncing": "Opäť online — {n, plural, one {odosiela sa {count} zmena} few {odosielajú sa {count} zmeny} other {odosiela sa {count} zmien}}…",
       "synced": "Všetky zmeny boli odoslané.",
-      "stillQueued": "{n, plural, one {{count} zmena je uložená na tomto zariadení. Stále sa ju pokúšame odoslať.} few {{count} zmeny sú uložené na tomto zariadení. Stále sa ich pokúšame odoslať.} other {{count} zmien je uložených na tomto zariadení. Stále sa ich pokúšame odoslať.}}"
+      "stillQueued": "{n, plural, one {{count} zmena je uložená na tomto zariadení. Stále sa ju pokúšame odoslať.} few {{count} zmeny sú uložené na tomto zariadení. Stále sa ich pokúšame odoslať.} other {{count} zmien je uložených na tomto zariadení. Stále sa ich pokúšame odoslať.}}",
+      "notApproved": "{n, plural, one {{count} objednávka čaká} few {{count} objednávky čakajú} many {{count} objednávky čaká} other {{count} objednávok čaká}}: táto akcia nie je schválená. Schváľte ju na odoslanie."
     },
     "lock": {
       "locked": "HatchGrab je zamknutý",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Niektoré údaje nie sú správne. Skontrolujte ich, prosím, a skúste to znova.",
     "paperwork_send_limit": "Za krátky čas ste poslali veľa odkazov. Skúste to, prosím, znova o hodinu.",
     "paperwork_send_failed": "E-mail sa nepodarilo odoslať. Skúste to, prosím, znova.",
-    "cost_invalid": "Zadajte náklady 0 alebo viac, alebo pole nechajte prázdne."
+    "cost_invalid": "Zadajte náklady 0 alebo viac, alebo pole nechajte prázdne.",
+    "event_cannot_start": "{status, select, unconfirmed {Túto akciu nemožno spustiť (neschválená).} open {Túto akciu nemožno spustiť (už spustená).} cancelled {Túto akciu nemožno spustiť (zrušená).} other {Túto akciu nemožno spustiť ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Túto akciu nemožno ukončiť (neschválená).} confirmed {Túto akciu nemožno ukončiť (nespustená).} closed {Túto akciu nemožno ukončiť (už skončila).} cancelled {Túto akciu nemožno ukončiť (zrušená).} other {Túto akciu nemožno ukončiť ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Táto akcia už nepotrebuje schválenie (už schválená).} open {Táto akcia už nepotrebuje schválenie (už spustená).} closed {Táto akcia už nepotrebuje schválenie (už skončila).} cancelled {Táto akcia už nepotrebuje schválenie (zrušená).} other {Táto akcia už nepotrebuje schválenie ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Vyberte krajinu, v ktorej má váš food truck sídlo.",

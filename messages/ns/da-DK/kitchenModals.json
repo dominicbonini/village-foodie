@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Genforbind for at indlæse",
     "selected": "Valgt",
-    "status": "{tone, select, paused {⏸ På pause} live {● Live} finished {● Afsluttet} cancelled {Aflyst} other {Ikke startet}}"
+    "status": "{tone, select, paused {⏸ På pause} live {● Live} finished {● Afsluttet} cancelled {Aflyst} other {Ikke startet}}",
+    "orders": "{n, plural, =0 {Ingen bestillinger} one {{count} bestilling} other {{count} bestillinger}}",
+    "needsApproval": "Skal godkendes",
+    "approvalSummary": "{n, plural, one {{count} arrangement skal godkendes} other {{count} arrangementer skal godkendes}}",
+    "approvalSummaryNote": "{n, plural, one {Kunderne kan ikke se det endnu.} other {Kunderne kan ikke se dem endnu.}}",
+    "duplicateSameTime": "Mulig dublet · samme tid",
+    "duplicateOverlaps": "Mulig dublet · overlapper",
+    "dayCount": "{n, plural, one {{count} arrangement} other {{count} arrangementer}}"
+  },
+  "eventGate": {
+    "approveTitle": "Godkend {event}?",
+    "overlapText": "{event} er muligvis en dublet af {other} ({start}–{end}), som allerede er godkendt{n, plural, =0 {} one { og har {count} bestilling} other { og har {count} bestillinger}}.",
+    "keep": "Behold {other}",
+    "approveAnyway": "Godkend {event} alligevel",
+    "plainText": "{event} er ikke godkendt endnu. Godkend det for at tage imod bestillinger? Kunderne kan også se det.",
+    "approve": "Godkend",
+    "startTitle": "Start arrangementet?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} bestilling indtil nu} other {{count} bestillinger indtil nu}}",
+    "switchTitle": "Skift til {event}?",
+    "switch": "Skift",
+    "dismissedText": "{event} er muligvis en dublet af {other}, som allerede er godkendt. Godkend det for at tage imod bestillinger? Kunderne kan også se det."
   }
 }

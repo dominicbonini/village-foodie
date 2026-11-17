@@ -221,7 +221,8 @@
       "noteSaved": "Catatan disimpan",
       "pricesSaved": "Harga disimpan untuk acara ini",
       "pricesSaveFailed": "Harga tidak bisa disimpan",
-      "reconnectToLoad": "Sambungkan kembali untuk memuat acara ini"
+      "reconnectToLoad": "Sambungkan kembali untuk memuat acara ini",
+      "eventApproved": "Acara disetujui"
     },
     "gate": {
       "invalidAccessLink": "Link akses tidak valid",
@@ -336,7 +337,8 @@
       "manageEvent": "Kelola acara",
       "noEvent": "Belum ada acara dipilih",
       "selectEvent": "Pilih acara",
-      "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Selesai} cancelled {Dibatalkan} other {Belum dimulai}}"
+      "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Selesai} cancelled {Dibatalkan} other {Belum dimulai}}",
+      "approveToTakeOrders": "Setujui acara untuk menerima pesanan"
     },
     "orders": {
       "noEvent": "Belum ada acara dipilih — pilih acara untuk melihat pesanan",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Pesanan tersimpan, tetapi papan kapasitas dapur tidak dapat diperbarui — periksa slotnya sebelum mengandalkannya.",
     "created_payment_not_recorded": "Pesanan dibuat, tetapi catatan pembayarannya tidak dapat disimpan — angka pendapatan untuk pesanan ini mungkin salah sampai diperbaiki.",
     "payment_not_recorded": "Pembayaran tidak dapat dicatat — angka pendapatan untuk pesanan ini mungkin salah sampai diperbaiki.",
-    "payment_not_reversed": "Pembayaran tidak dapat dibatalkan"
+    "payment_not_reversed": "Pembayaran tidak dapat dibatalkan",
+    "event_not_approved": "Acara ini belum disetujui",
+    "event_not_open": "{status, select, closed {Acara ini sudah selesai. Mulai ulang untuk menerima pesanan.} cancelled {Acara ini dibatalkan.} other {Acara ini tidak dibuka.}}"
   },
   "kitchenModals": {
     "close": "Tutup",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Sambungkan ulang untuk memuat",
       "selected": "Dipilih",
-      "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Selesai} cancelled {Dibatalkan} other {Belum dimulai}}"
+      "status": "{tone, select, paused {⏸ Dijeda} live {● Berlangsung} finished {● Selesai} cancelled {Dibatalkan} other {Belum dimulai}}",
+      "orders": "{n, plural, =0 {Belum ada pesanan} other {{count} pesanan}}",
+      "needsApproval": "Perlu disetujui",
+      "approvalSummary": "{n, plural, other {{count} acara perlu disetujui}}",
+      "approvalSummaryNote": "{n, plural, other {Pelanggan belum bisa melihatnya.}}",
+      "duplicateSameTime": "Mungkin duplikat · waktu sama",
+      "duplicateOverlaps": "Mungkin duplikat · tumpang tindih",
+      "dayCount": "{n, plural, other {{count} acara}}"
+    },
+    "eventGate": {
+      "approveTitle": "Setujui {event}?",
+      "overlapText": "{event} mungkin duplikat {other} ({start}–{end}), yang sudah disetujui{n, plural, =0 {} other { dan punya {count} pesanan}}.",
+      "keep": "Pertahankan {other}",
+      "approveAnyway": "Tetap setujui {event}",
+      "plainText": "{event} belum disetujui. Setujui agar bisa menerima pesanan? Pelanggan juga akan melihatnya.",
+      "approve": "Setujui",
+      "startTitle": "Mulai acara ini?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, other {{count} pesanan sejauh ini}}",
+      "switchTitle": "Ganti ke {event}?",
+      "switch": "Ganti",
+      "dismissedText": "{event} mungkin duplikat {other}, yang sudah disetujui. Setujui agar bisa menerima pesanan? Pelanggan juga akan melihatnya."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Tidak ada koneksi — {n, plural, one {{count} perubahan disimpan di perangkat ini. Perubahan akan dikirim saat Anda online lagi.} other {{count} perubahan disimpan di perangkat ini. Perubahan akan dikirim saat Anda online lagi.}} Pengaturan dikunci.",
       "syncing": "Online lagi — mengirim {n, plural, one {{count} perubahan} other {{count} perubahan}}…",
       "synced": "Semua perubahan terkirim.",
-      "stillQueued": "{n, plural, one {{count} perubahan disimpan di perangkat ini. Masih mencoba mengirimnya.} other {{count} perubahan disimpan di perangkat ini. Masih mencoba mengirimnya.}}"
+      "stillQueued": "{n, plural, one {{count} perubahan disimpan di perangkat ini. Masih mencoba mengirimnya.} other {{count} perubahan disimpan di perangkat ini. Masih mencoba mengirimnya.}}",
+      "notApproved": "{n, plural, other {{count} pesanan menunggu}}: acara ini belum disetujui. Setujui untuk mengirim."
     },
     "lock": {
       "locked": "HatchGrab terkunci",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Beberapa detail tidak sesuai. Silakan periksa dan coba lagi.",
     "paperwork_send_limit": "Anda sudah mengirim banyak link dalam waktu singkat. Silakan coba lagi dalam satu jam.",
     "paperwork_send_failed": "Email tidak dapat dikirim. Silakan coba lagi.",
-    "cost_invalid": "Masukkan biaya 0 atau lebih, atau kosongkan kolomnya."
+    "cost_invalid": "Masukkan biaya 0 atau lebih, atau kosongkan kolomnya.",
+    "event_cannot_start": "{status, select, unconfirmed {Acara ini tidak bisa dimulai (belum disetujui).} open {Acara ini tidak bisa dimulai (sudah dimulai).} cancelled {Acara ini tidak bisa dimulai (dibatalkan).} other {Acara ini tidak bisa dimulai ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Acara ini tidak bisa diselesaikan (belum disetujui).} confirmed {Acara ini tidak bisa diselesaikan (belum dimulai).} closed {Acara ini tidak bisa diselesaikan (sudah selesai).} cancelled {Acara ini tidak bisa diselesaikan (dibatalkan).} other {Acara ini tidak bisa diselesaikan ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Acara ini tidak perlu disetujui lagi (sudah disetujui).} open {Acara ini tidak perlu disetujui lagi (sudah dimulai).} closed {Acara ini tidak perlu disetujui lagi (sudah selesai).} cancelled {Acara ini tidak perlu disetujui lagi (dibatalkan).} other {Acara ini tidak perlu disetujui lagi ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Pilih negara tempat truk Anda berbasis.",

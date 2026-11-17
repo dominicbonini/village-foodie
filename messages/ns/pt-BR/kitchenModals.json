@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Reconecte para carregar",
     "selected": "Selecionado",
-    "status": "{tone, select, paused {⏸ Pausado} live {● Em andamento} finished {● Encerrado} cancelled {Cancelado} other {Não iniciado}}"
+    "status": "{tone, select, paused {⏸ Pausado} live {● Em andamento} finished {● Encerrado} cancelled {Cancelado} other {Não iniciado}}",
+    "orders": "{n, plural, =0 {Nenhum pedido} one {{count} pedido} many {{count} pedidos} other {{count} pedidos}}",
+    "needsApproval": "Aguardando aprovação",
+    "approvalSummary": "{n, plural, one {{count} evento aguardando aprovação} many {{count} eventos aguardando aprovação} other {{count} eventos aguardando aprovação}}",
+    "approvalSummaryNote": "{n, plural, one {Os clientes ainda não veem este evento.} many {Os clientes ainda não veem estes eventos.} other {Os clientes ainda não veem estes eventos.}}",
+    "duplicateSameTime": "Possível duplicata · mesmo horário",
+    "duplicateOverlaps": "Possível duplicata · sobreposição",
+    "dayCount": "{n, plural, one {{count} evento} many {{count} eventos} other {{count} eventos}}"
+  },
+  "eventGate": {
+    "approveTitle": "Aprovar {event}?",
+    "overlapText": "{event} pode ser uma duplicata de {other} ({start}–{end}), que já está aprovado{n, plural, =0 {} one { e tem {count} pedido} many { e tem {count} pedidos} other { e tem {count} pedidos}}.",
+    "keep": "Manter {other}",
+    "approveAnyway": "Aprovar {event} mesmo assim",
+    "plainText": "{event} ainda não foi aprovado. Aprovar para receber pedidos? Os clientes também vão ver.",
+    "approve": "Aprovar",
+    "startTitle": "Iniciar este evento?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} pedido até agora} many {{count} pedidos até agora} other {{count} pedidos até agora}}",
+    "switchTitle": "Trocar para {event}?",
+    "switch": "Trocar",
+    "dismissedText": "{event} pode ser uma duplicata de {other}, que já está aprovado. Aprovar para receber pedidos? Os clientes também vão ver."
   }
 }

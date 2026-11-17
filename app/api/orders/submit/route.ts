@@ -370,39 +370,59 @@ export async function POST(req: NextRequest) {
     // trucks.paused_until anymore, and a stale pre-migration value would have falsely 423'd
     // every event truck-wide.)
 
-    // Pause guard — van level. Resolve the order's event by its eventId (event-scoped, like the
-    // customer menu) so the van pause is enforced for the ACTUAL event. The old date +
-    // .maybeSingle() lookup returned null on multi-event-same-date days (>1 row) and silently
-    // SKIPPED the entire van guard → manual/offline van pause not enforced → orders slipped
-    // through. Fall back to the date lookup only when no eventId was sent.
-    let pauseEvent: { van_id: string | null; status: string | null; paused_until: string | null; online_paused_until: string | null } | null = null
-    if (eventId) {
-      const { data } = await supabase
-        .from('truck_events')
-        .select('van_id, status, paused_until, online_paused_until')
-        .eq('id', eventId)
-        .eq('truck_id', resolvedTruckId)
-        .maybeSingle()
-      pauseEvent = data
-    } else {
-      const pauseCheckDate = eventDate ?? fallbackEventDate
-      const { data } = await supabase
-        .from('truck_events')
-        .select('van_id, status, paused_until, online_paused_until')
-        .eq('truck_id', resolvedTruckId)
-        .eq('event_date', pauseCheckDate)
-        .neq('status', 'cancelled')
-        .maybeSingle()
-      pauseEvent = data
+    // ══ 🔴 events-overlap-2 (Q3, 17 November 2026): ONE DECISION FOR WHICH EVENT THIS ORDER IS ON ══════════════════════
+    // Pause, pricing and the order row all read `resolvedEvent`. Before this, three separate lookups each answered the
+    // question (eventId, else `event_date` + `.maybeSingle()` — which returns NULL for two rows and so SKIPPED the status
+    // guard — else "the earliest by start_time", whatever its status). docs/events-overlap-1-report.md §5.
+    //   1. the event the customer ordered from (`eventId`), if it is this truck's and CONFIRMED or OPEN;
+    //   2. otherwise the date's confirmed/open events: the OPEN one (most orders if several), else the CONFIRMED one with
+    //      the most orders (ties: earliest start). Two events matching is never a reason to refuse;
+    //   3. never an unconfirmed, closed or cancelled event. Nothing confirmed/open matches → the EXISTING
+    //      `event_not_available` refusal (no new words, no screen change). In the last 120 days no order had a null event.
+    const resolveDate = eventDate ?? fallbackEventDate
+    const RESOLVE_COLS = 'id, status, start_time, end_time, venue_name, town, postcode, van_id, offline_no_autoaccept_until, paused_until, online_paused_until'
+    type ResolvedEvent = {
+      id: string; status: string; start_time: string | null; end_time: string | null
+      venue_name: string | null; town: string | null; postcode: string | null; van_id: string | null
+      offline_no_autoaccept_until?: string | null; paused_until: string | null; online_paused_until: string | null
     }
-
-    // Event status guard — block orders for unconfirmed events
-    if (pauseEvent?.status && !['confirmed', 'open'].includes(pauseEvent.status)) {
+    let resolvedEvent: ResolvedEvent | null = null
+    let namedStatus: string | null = null
+    if (eventId) {
+      const { data } = await supabase.from('truck_events').select(RESOLVE_COLS)
+        .eq('id', eventId).eq('truck_id', resolvedTruckId).maybeSingle()
+      const named = data as ResolvedEvent | null
+      namedStatus = named?.status ?? null
+      if (named && (named.status === 'confirmed' || named.status === 'open')) resolvedEvent = named
+    }
+    if (!resolvedEvent) {
+      const { data } = await supabase.from('truck_events').select(RESOLVE_COLS)
+        .eq('truck_id', resolvedTruckId).eq('event_date', resolveDate).in('status', ['open', 'confirmed'])
+      const candidates = (data ?? []) as ResolvedEvent[]
+      if (candidates.length === 1) resolvedEvent = candidates[0]
+      else if (candidates.length > 1) {
+        const counts: Record<string, number> = {}
+        await Promise.all(candidates.map(async c => {
+          const { count } = await supabase.from('orders').select('order_key', { count: 'exact', head: true })
+            .eq('truck_id', resolvedTruckId).eq('event_id', c.id).neq('status', 'cancelled')
+          counts[c.id] = count ?? 0
+        }))
+        const startOf = (c: ResolvedEvent) => String(c.start_time ?? '99:99')
+        resolvedEvent = [...candidates].sort((a, b) =>
+          (a.status === 'open' ? 0 : 1) - (b.status === 'open' ? 0 : 1)
+          || (counts[b.id] ?? 0) - (counts[a.id] ?? 0)
+          || startOf(a).localeCompare(startOf(b))
+          || a.id.localeCompare(b.id))[0]
+      }
+      if (resolvedEvent && eventId) console.warn(`[submit] event ${eventId} is ${namedStatus ?? 'not this truck\'s'} — order placed on ${resolvedEvent.status} event ${resolvedEvent.id} (${resolveDate})`)
+    }
+    if (!resolvedEvent) {
       return NextResponse.json(
-        customerErrorBody(locale, 'event_not_available', {}, { event_status: pauseEvent.status }),
+        customerErrorBody(locale, 'event_not_available', {}, { event_status: namedStatus ?? 'none' }),
         { status: 403 }
       )
     }
+    const pauseEvent = resolvedEvent
 
     // EVENT-scoped pause: read THIS event's own pause fields (truck/van pause no longer consulted).
     if (pauseEvent) {
@@ -566,24 +586,11 @@ export async function POST(req: NextRequest) {
     // ⚠️ WHERE NO CANDIDATE CHANGES A PRICE THE ORDER PROCEEDS AT MENU PRICES, which is every truck
     // today and is why this guard costs them nothing. In the last 90 days no order had a null
     // event_id at all.
-    const pricingEventDate = eventDate ?? fallbackEventDate
-    let pricingEventId: string | null = null
-    let pricingCandidates: string[] = []
-    if (eventId) {
-      const { data } = await supabase
-        .from('truck_events').select('id')
-        .eq('id', eventId).eq('truck_id', resolvedTruckId).neq('status', 'cancelled')
-        .maybeSingle()
-      pricingEventId = (data as { id: string } | null)?.id ?? null
-    }
-    if (!pricingEventId) {
-      const { data } = await supabase
-        .from('truck_events').select('id')
-        .eq('truck_id', resolvedTruckId).eq('event_date', pricingEventDate).neq('status', 'cancelled')
-      const ids = ((data as { id: string }[] | null) ?? []).map(r => r.id)
-      if (ids.length === 1) pricingEventId = ids[0]
-      else if (ids.length > 1) pricingCandidates = ids
-    }
+    // events-overlap-2 (Q3): priced against THE resolved event (above), so there is no ambiguous date left to refuse here —
+    // `pricingCandidates` stays empty and the refusal below is kept only as the guard it was, now unreachable.
+    const pricingEventDate = resolveDate
+    const pricingEventId: string | null = resolvedEvent.id
+    const pricingCandidates: string[] = []
     if (pricingCandidates.length > 0
       && await candidatesChangePrices(supabase, resolvedTruckId, pricingCandidates, truck.currency ?? null)) {
       console.error(
@@ -775,49 +782,14 @@ export async function POST(req: NextRequest) {
         }
       }
     }
-    // ⚠️ `offline_no_autoaccept_until` IS ADDED BY 20260818_offline_protection_mode.sql AND THIS IS A
-    // NAMED SELECT — PostgREST answers 42703 for a column it cannot see and fails the whole statement,
-    // which here means no event row and every order falling to the date fallback. MIGRATION FIRST.
-    // 🔴 IT COSTS NOTHING: this select already runs, and one more column on it is not a round trip.
-    const eventCols = 'id, start_time, end_time, venue_name, town, postcode, van_id, offline_no_autoaccept_until'
-    let eventRow: {
+    // ⚠️ `offline_no_autoaccept_until` (20260818_offline_protection_mode.sql) is on RESOLVE_COLS above — a NAMED select, so
+    // that migration must exist before this runs (it does).
+    // events-overlap-2 (Q3): the order's event is the one resolved above — never an unconfirmed, closed or cancelled one.
+    const eventRow: {
       id: string; start_time: string | null; end_time: string | null
       venue_name: string | null; town: string | null; postcode: string | null; van_id: string | null
       offline_no_autoaccept_until?: string | null
-    } | null = null
-    if (eventId) {
-      const { data } = await supabase
-        .from('truck_events')
-        .select(eventCols)
-        .eq('id', eventId)
-        .eq('truck_id', resolvedTruckId)
-        .neq('status', 'cancelled')
-        .maybeSingle()
-      eventRow = data
-    }
-    if (!eventRow) {
-      if (eventId) console.warn(`[submit] event_id ${eventId} not found for truck ${resolvedTruckId} — falling back to date`)
-      const { data } = await supabase
-        .from('truck_events')
-        .select(eventCols)
-        .eq('truck_id', resolvedTruckId)
-        .eq('event_date', orderEventDate)
-        .neq('status', 'cancelled')
-        .order('start_time', { ascending: true })
-        .limit(1)
-        .maybeSingle()
-      if (data && !eventId) {
-        // No event_id was sent — date fallback in use. Warn if the date is ambiguous.
-        const { count } = await supabase
-          .from('truck_events')
-          .select('id', { count: 'exact', head: true })
-          .eq('truck_id', resolvedTruckId)
-          .eq('event_date', orderEventDate)
-          .neq('status', 'cancelled')
-        if ((count ?? 0) > 1) console.warn(`[submit] no eventId sent and ${count} events on ${orderEventDate} for ${resolvedTruckId} — using earliest (${data.id})`)
-      }
-      eventRow = data
-    }
+    } | null = resolvedEvent
 
     // ── 🔴 TAX, TIP AND FEES (Phase 3) — ONE CALL, THE SAME ENGINE EVERY ORDER PATH USES ─────────────────
     // The rules are the server's (lib/order-charge-rules.ts: the truck's country and the truck — one rate per
@@ -967,7 +939,7 @@ export async function POST(req: NextRequest) {
     // shared count; this backstop covers manual sold-out + a stock-0 race. FAIL-OPEN (findSoldOutOption
     // returns null on its own error). Standalone-items + deal-slots, all selected options.
     {
-      const soldOut = await findSoldOutOption(supabase, resolvedTruckId, items, deals, eventId)
+      const soldOut = await findSoldOutOption(supabase, resolvedTruckId, items, deals, resolvedEvent.id)
       if (soldOut) {
         return NextResponse.json(customerErrorBody(locale, 'option_sold_out', { option: soldOut }, { optionStock: true }), { status: 409 })
       }

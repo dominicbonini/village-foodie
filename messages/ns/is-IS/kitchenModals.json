@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Tengstu aftur til að hlaða",
     "selected": "Valið",
-    "status": "{tone, select, paused {⏸ Hlé} live {● Í loftinu} finished {● Lokið} cancelled {Aflýst} other {Ekki hafið}}"
+    "status": "{tone, select, paused {⏸ Hlé} live {● Í loftinu} finished {● Lokið} cancelled {Aflýst} other {Ekki hafið}}",
+    "orders": "{n, plural, =0 {Engar pantanir} one {{count} pöntun} other {{count} pantanir}}",
+    "needsApproval": "Þarf samþykki",
+    "approvalSummary": "{n, plural, one {{count} viðburður þarf samþykki} other {{count} viðburðir þurfa samþykki}}",
+    "approvalSummaryNote": "{n, plural, one {Viðskiptavinir sjá hann ekki enn.} other {Viðskiptavinir sjá þá ekki enn.}}",
+    "duplicateSameTime": "Möguleg tvítekning · sami tími",
+    "duplicateOverlaps": "Möguleg tvítekning · skarast",
+    "dayCount": "{n, plural, one {{count} viðburður} other {{count} viðburðir}}"
+  },
+  "eventGate": {
+    "approveTitle": "Samþykkja {event}?",
+    "overlapText": "{event} gæti verið tvítekning á {other} ({start}–{end}), sem er þegar samþykktur{n, plural, =0 {} one { og með {count} pöntun} other { og með {count} pantanir}}.",
+    "keep": "Halda {other}",
+    "approveAnyway": "Samþykkja {event} samt",
+    "plainText": "{event} er ekki samþykktur enn. Samþykkja hann til að taka við pöntunum? Viðskiptavinir sjá hann líka.",
+    "approve": "Samþykkja",
+    "startTitle": "Hefja þennan viðburð?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} pöntun hingað til} other {{count} pantanir hingað til}}",
+    "switchTitle": "Skipta yfir í {event}?",
+    "switch": "Skipta",
+    "dismissedText": "{event} gæti verið tvítekning á {other}, sem er þegar samþykktur. Samþykkja hann til að taka við pöntunum? Viðskiptavinir sjá hann líka."
   }
 }

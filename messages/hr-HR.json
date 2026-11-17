@@ -221,7 +221,8 @@
       "noteSaved": "Napomena spremljena",
       "pricesSaved": "Cijene spremljene za ovaj događaj",
       "pricesSaveFailed": "Spremanje cijena nije uspjelo",
-      "reconnectToLoad": "Ponovno se povežite da biste učitali ovaj događaj"
+      "reconnectToLoad": "Ponovno se povežite da biste učitali ovaj događaj",
+      "eventApproved": "Događaj odobren"
     },
     "gate": {
       "invalidAccessLink": "Nevaljana poveznica za pristup",
@@ -336,7 +337,8 @@
       "manageEvent": "Upravljaj događajem",
       "noEvent": "Nije odabran događaj",
       "selectEvent": "Odaberi događaj",
-      "status": "{tone, select, paused {⏸ Pauziran} live {● Uživo} finished {● Završen} cancelled {Otkazan} other {Nije započeo}}"
+      "status": "{tone, select, paused {⏸ Pauziran} live {● Uživo} finished {● Završen} cancelled {Otkazan} other {Nije započeo}}",
+      "approveToTakeOrders": "Odobrite događaj za primanje narudžbi"
     },
     "orders": {
       "noEvent": "Nije odabran događaj — odaberite događaj za prikaz narudžbi",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Narudžba je spremljena, ali ploča kapaciteta kuhinje nije se mogla ažurirati — provjerite termin prije nego što se oslonite na nju.",
     "created_payment_not_recorded": "Narudžba je izrađena, ali zapis o plaćanju nije se mogao spremiti — iznos utrška za ovu narudžbu može biti netočan dok se to ne ispravi.",
     "payment_not_recorded": "Plaćanje se nije moglo zabilježiti — iznos utrška za ovu narudžbu može biti netočan dok se to ne ispravi.",
-    "payment_not_reversed": "Plaćanje se nije moglo poništiti"
+    "payment_not_reversed": "Plaćanje se nije moglo poništiti",
+    "event_not_approved": "Ovaj događaj nije odobren",
+    "event_not_open": "{status, select, closed {Ovaj je događaj završio. Pokrenite ga ponovno za primanje narudžbi.} cancelled {Ovaj je događaj otkazan.} other {Ovaj događaj nije otvoren.}}"
   },
   "kitchenModals": {
     "close": "Zatvori",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Ponovno se povežite za učitavanje",
       "selected": "Odabrano",
-      "status": "{tone, select, paused {⏸ Pauzirano} live {● Uživo} finished {● Završeno} cancelled {Otkazano} other {Nije počelo}}"
+      "status": "{tone, select, paused {⏸ Pauzirano} live {● Uživo} finished {● Završeno} cancelled {Otkazano} other {Nije počelo}}",
+      "orders": "{n, plural, =0 {Nema narudžbi} one {{count} narudžba} few {{count} narudžbe} other {{count} narudžbi}}",
+      "needsApproval": "Čeka odobrenje",
+      "approvalSummary": "{n, plural, one {{count} događaj čeka odobrenje} few {{count} događaja čekaju odobrenje} other {{count} događaja čeka odobrenje}}",
+      "approvalSummaryNote": "{n, plural, one {Kupci ga još ne vide.} few {Kupci ih još ne vide.} other {Kupci ih još ne vide.}}",
+      "duplicateSameTime": "Mogući duplikat · isto vrijeme",
+      "duplicateOverlaps": "Mogući duplikat · preklapa se",
+      "dayCount": "{n, plural, one {{count} događaj} few {{count} događaja} other {{count} događaja}}"
+    },
+    "eventGate": {
+      "approveTitle": "Odobriti {event}?",
+      "overlapText": "{event} je možda duplikat događaja {other} ({start}–{end}), koji je već odobren{n, plural, =0 {} one { i ima {count} narudžbu} few { i ima {count} narudžbe} other { i ima {count} narudžbi}}.",
+      "keep": "Zadrži {other}",
+      "approveAnyway": "Ipak odobri {event}",
+      "plainText": "{event} još nije odobren. Odobriti ga za primanje narudžbi? Vidjet će ga i kupci.",
+      "approve": "Odobri",
+      "startTitle": "Pokrenuti ovaj događaj?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {zasad {count} narudžba} few {zasad {count} narudžbe} other {zasad {count} narudžbi}}",
+      "switchTitle": "Prebaciti na {event}?",
+      "switch": "Prebaci",
+      "dismissedText": "{event} je možda duplikat događaja {other}, koji je već odobren. Odobriti ga za primanje narudžbi? Vidjet će ga i kupci."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Nema veze — {n, plural, one {{count} promjena spremljena je na ovom uređaju. Poslat će se kad ponovno budete online.} few {{count} promjene spremljene su na ovom uređaju. Poslat će se kad ponovno budete online.} other {{count} promjena spremljeno je na ovom uređaju. Poslat će se kad ponovno budete online.}} Postavke su zaključane.",
       "syncing": "Ponovno online — slanje: {n, plural, one {{count} promjena} few {{count} promjene} other {{count} promjena}}…",
       "synced": "Sve promjene su poslane.",
-      "stillQueued": "{n, plural, one {{count} promjena spremljena je na ovom uređaju. Još je pokušavamo poslati.} few {{count} promjene spremljene su na ovom uređaju. Još ih pokušavamo poslati.} other {{count} promjena spremljeno je na ovom uređaju. Još ih pokušavamo poslati.}}"
+      "stillQueued": "{n, plural, one {{count} promjena spremljena je na ovom uređaju. Još je pokušavamo poslati.} few {{count} promjene spremljene su na ovom uređaju. Još ih pokušavamo poslati.} other {{count} promjena spremljeno je na ovom uređaju. Još ih pokušavamo poslati.}}",
+      "notApproved": "{n, plural, one {{count} narudžba čeka} few {{count} narudžbe čekaju} other {{count} narudžbi čeka}}: ovaj događaj nije odobren. Odobrite ga za slanje."
     },
     "lock": {
       "locked": "HatchGrab je zaključan",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Neki podaci nisu ispravni. Provjerite ih i pokušajte ponovno.",
     "paperwork_send_limit": "U kratkom ste vremenu poslali mnogo poveznica. Pokušajte ponovno za sat vremena.",
     "paperwork_send_failed": "E-poruku nije bilo moguće poslati. Pokušajte ponovno.",
-    "cost_invalid": "Unesite trošak od 0 ili više ili ostavite polje prazno."
+    "cost_invalid": "Unesite trošak od 0 ili više ili ostavite polje prazno.",
+    "event_cannot_start": "{status, select, unconfirmed {Događaj se ne može pokrenuti (nije odobren).} open {Događaj se ne može pokrenuti (već pokrenut).} cancelled {Događaj se ne može pokrenuti (otkazan).} other {Događaj se ne može pokrenuti ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Događaj se ne može završiti (nije odobren).} confirmed {Događaj se ne može završiti (nije pokrenut).} closed {Događaj se ne može završiti (već završen).} cancelled {Događaj se ne može završiti (otkazan).} other {Događaj se ne može završiti ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Ovom događaju više ne treba odobrenje (već odobren).} open {Ovom događaju više ne treba odobrenje (već pokrenut).} closed {Ovom događaju više ne treba odobrenje (već završen).} cancelled {Ovom događaju više ne treba odobrenje (otkazan).} other {Ovom događaju više ne treba odobrenje ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Odaberite zemlju u kojoj je sjedište vašeg food trucka.",

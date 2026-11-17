@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Επανασύνδεση για φόρτωση",
     "selected": "Επιλεγμένη",
-    "status": "{tone, select, paused {⏸ Σε παύση} live {● Σε εξέλιξη} finished {● Ολοκληρώθηκε} cancelled {Ακυρώθηκε} other {Δεν ξεκίνησε}}"
+    "status": "{tone, select, paused {⏸ Σε παύση} live {● Σε εξέλιξη} finished {● Ολοκληρώθηκε} cancelled {Ακυρώθηκε} other {Δεν ξεκίνησε}}",
+    "orders": "{n, plural, =0 {Καμία παραγγελία} one {{count} παραγγελία} other {{count} παραγγελίες}}",
+    "needsApproval": "Χρειάζεται έγκριση",
+    "approvalSummary": "{n, plural, one {{count} εκδήλωση χρειάζεται έγκριση} other {{count} εκδηλώσεις χρειάζονται έγκριση}}",
+    "approvalSummaryNote": "{n, plural, one {Οι πελάτες δεν τη βλέπουν ακόμη.} other {Οι πελάτες δεν τις βλέπουν ακόμη.}}",
+    "duplicateSameTime": "Πιθανό διπλότυπο · ίδια ώρα",
+    "duplicateOverlaps": "Πιθανό διπλότυπο · επικάλυψη",
+    "dayCount": "{n, plural, one {{count} εκδήλωση} other {{count} εκδηλώσεις}}"
+  },
+  "eventGate": {
+    "approveTitle": "Έγκριση {event};",
+    "overlapText": "Η εκδήλωση {event} ίσως είναι διπλότυπο της εκδήλωσης {other} ({start}–{end}), που έχει ήδη εγκριθεί{n, plural, =0 {} one { και έχει {count} παραγγελία} other { και έχει {count} παραγγελίες}}.",
+    "keep": "Κράτησε {other}",
+    "approveAnyway": "Έγκριση {event} ούτως ή άλλως",
+    "plainText": "Η εκδήλωση {event} δεν έχει εγκριθεί ακόμη. Να εγκριθεί για να δέχεστε παραγγελίες; Θα τη βλέπουν και οι πελάτες.",
+    "approve": "Έγκριση",
+    "startTitle": "Έναρξη αυτής της εκδήλωσης;",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} παραγγελία μέχρι τώρα} other {{count} παραγγελίες μέχρι τώρα}}",
+    "switchTitle": "Αλλαγή σε {event};",
+    "switch": "Αλλαγή",
+    "dismissedText": "Η εκδήλωση {event} ίσως είναι διπλότυπο της εκδήλωσης {other}, που έχει ήδη εγκριθεί. Να εγκριθεί για να δέχεστε παραγγελίες; Θα τη βλέπουν και οι πελάτες."
   }
 }

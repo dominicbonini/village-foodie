@@ -40,7 +40,8 @@
     "offline": "📴 No connection — {n, plural, one {{count} change saved on this device. It’ll be sent when you’re back online.} other {{count} changes saved on this device. They’ll be sent when you’re back online.}} Settings are locked.",
     "syncing": "Back online — sending {n, plural, one {{count} change} other {{count} changes}}…",
     "synced": "All changes sent.",
-    "stillQueued": "{n, plural, one {{count} change saved on this device. Still trying to send it.} other {{count} changes saved on this device. Still trying to send them.}}"
+    "stillQueued": "{n, plural, one {{count} change saved on this device. Still trying to send it.} other {{count} changes saved on this device. Still trying to send them.}}",
+    "notApproved": "{n, plural, one {{count} order is waiting} other {{count} orders are waiting}}: this event isn’t approved. Approve it to send."
   },
   "lock": {
     "locked": "HatchGrab is locked",

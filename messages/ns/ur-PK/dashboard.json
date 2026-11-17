@@ -36,7 +36,8 @@
     "noteSaved": "نوٹ محفوظ ہو گیا",
     "pricesSaved": "اس ایونٹ کے لیے قیمتیں محفوظ ہو گئیں",
     "pricesSaveFailed": "قیمتیں محفوظ نہیں ہو سکیں",
-    "reconnectToLoad": "یہ ایونٹ لوڈ کرنے کے لیے دوبارہ کنیکٹ کریں"
+    "reconnectToLoad": "یہ ایونٹ لوڈ کرنے کے لیے دوبارہ کنیکٹ کریں",
+    "eventApproved": "ایونٹ منظور ہو گیا"
   },
   "gate": {
     "invalidAccessLink": "رسائی کا لنک درست نہیں",
@@ -151,7 +152,8 @@
     "manageEvent": "ایونٹ کا انتظام",
     "noEvent": "کوئی ایونٹ منتخب نہیں",
     "selectEvent": "ایونٹ منتخب کریں",
-    "status": "{tone, select, paused {⏸ رکا ہوا} live {● لائیو} finished {● ختم} cancelled {منسوخ} other {شروع نہیں ہوا}}"
+    "status": "{tone, select, paused {⏸ رکا ہوا} live {● لائیو} finished {● ختم} cancelled {منسوخ} other {شروع نہیں ہوا}}",
+    "approveToTakeOrders": "آرڈر لینے کے لیے کسی ایونٹ کو منظور کریں"
   },
   "orders": {
     "noEvent": "کوئی ایونٹ منتخب نہیں — آرڈرز دیکھنے کے لیے ایونٹ منتخب کریں",

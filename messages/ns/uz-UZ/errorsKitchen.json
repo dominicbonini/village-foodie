@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Buyurtma saqlandi, lekin oshxona quvvati jadvalini yangilab boʻlmadi — unga tayanishdan oldin vaqt oraligʻini tekshiring.",
   "created_payment_not_recorded": "Buyurtma yaratildi, lekin toʻlov yozuvini saqlab boʻlmadi — tuzatilmaguncha bu buyurtma boʻyicha tushum notoʻgʻri koʻrsatilishi mumkin.",
   "payment_not_recorded": "Toʻlovni qayd etib boʻlmadi — tuzatilmaguncha bu buyurtma boʻyicha tushum notoʻgʻri koʻrsatilishi mumkin.",
-  "payment_not_reversed": "Toʻlovni bekor qilib boʻlmadi"
+  "payment_not_reversed": "Toʻlovni bekor qilib boʻlmadi",
+  "event_not_approved": "Bu tadbir tasdiqlanmagan",
+  "event_not_open": "{status, select, closed {Bu tadbir tugagan. Buyurtma olish uchun qayta boshlang.} cancelled {Bu tadbir bekor qilingan.} other {Bu tadbir ochiq emas.}}"
 }

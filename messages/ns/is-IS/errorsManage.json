@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Sumar upplýsingarnar eru ekki réttar. Athugaðu þær og reyndu aftur.",
   "paperwork_send_limit": "Þú hefur sent marga tengla á stuttum tíma. Reyndu aftur eftir klukkustund.",
   "paperwork_send_failed": "Ekki tókst að senda tölvupóstinn. Reyndu aftur.",
-  "cost_invalid": "Sláðu inn kostnað sem er 0 eða meira, eða skildu reitinn eftir auðan."
+  "cost_invalid": "Sláðu inn kostnað sem er 0 eða meira, eða skildu reitinn eftir auðan.",
+  "event_cannot_start": "{status, select, unconfirmed {Ekki er hægt að hefja viðburðinn (ekki samþykktur).} open {Ekki er hægt að hefja viðburðinn (þegar hafinn).} cancelled {Ekki er hægt að hefja viðburðinn (aflýst).} other {Ekki er hægt að hefja viðburðinn ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Ekki er hægt að ljúka viðburðinum (ekki samþykktur).} confirmed {Ekki er hægt að ljúka viðburðinum (ekki hafinn).} closed {Ekki er hægt að ljúka viðburðinum (þegar lokið).} cancelled {Ekki er hægt að ljúka viðburðinum (aflýst).} other {Ekki er hægt að ljúka viðburðinum ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Þessi viðburður þarf ekki lengur samþykki (þegar samþykktur).} open {Þessi viðburður þarf ekki lengur samþykki (þegar hafinn).} closed {Þessi viðburður þarf ekki lengur samþykki (þegar lokið).} cancelled {Þessi viðburður þarf ekki lengur samþykki (aflýst).} other {Þessi viðburður þarf ekki lengur samþykki ({status}).}}"
 }

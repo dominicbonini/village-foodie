@@ -40,7 +40,8 @@
     "offline": "📴 Ingen tilkobling — {n, plural, one {{count} endring er lagret på denne enheten. Den sendes når du er tilkoblet igjen.} other {{count} endringer er lagret på denne enheten. De sendes når du er tilkoblet igjen.}} Innstillingene er låst.",
     "syncing": "Tilkoblet igjen — sender {n, plural, one {{count} endring} other {{count} endringer}}…",
     "synced": "Alle endringer er sendt.",
-    "stillQueued": "{n, plural, one {{count} endring er lagret på denne enheten. Prøver fortsatt å sende den.} other {{count} endringer er lagret på denne enheten. Prøver fortsatt å sende dem.}}"
+    "stillQueued": "{n, plural, one {{count} endring er lagret på denne enheten. Prøver fortsatt å sende den.} other {{count} endringer er lagret på denne enheten. Prøver fortsatt å sende dem.}}",
+    "notApproved": "{n, plural, one {{count} bestilling venter} other {{count} bestillinger venter}}: arrangementet er ikke godkjent. Godkjenn det for å sende."
   },
   "lock": {
     "locked": "HatchGrab er låst",

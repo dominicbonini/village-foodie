@@ -36,7 +36,8 @@
     "noteSaved": "Note gemt",
     "pricesSaved": "Priser gemt for dette arrangement",
     "pricesSaveFailed": "Kunne ikke gemme priserne",
-    "reconnectToLoad": "Opret forbindelse igen for at indlæse dette arrangement"
+    "reconnectToLoad": "Opret forbindelse igen for at indlæse dette arrangement",
+    "eventApproved": "Arrangement godkendt"
   },
   "gate": {
     "invalidAccessLink": "Ugyldigt adgangslink",
@@ -151,7 +152,8 @@
     "manageEvent": "Administrer arrangement",
     "noEvent": "Intet arrangement valgt",
     "selectEvent": "Vælg arrangement",
-    "status": "{tone, select, paused {⏸ På pause} live {● I gang} finished {● Afsluttet} cancelled {Aflyst} other {Ikke startet}}"
+    "status": "{tone, select, paused {⏸ På pause} live {● I gang} finished {● Afsluttet} cancelled {Aflyst} other {Ikke startet}}",
+    "approveToTakeOrders": "Godkend et arrangement for at tage imod bestillinger"
   },
   "orders": {
     "noEvent": "Intet arrangement valgt – vælg et arrangement for at se bestillinger",

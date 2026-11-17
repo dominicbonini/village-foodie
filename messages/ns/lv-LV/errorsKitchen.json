@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Pasūtījums saglabāts, bet virtuves jaudas tāfeli neizdevās atjaunināt — pārbaudiet laika logu, pirms uz to paļaujaties.",
   "created_payment_not_recorded": "Pasūtījums izveidots, bet maksājuma ierakstu neizdevās saglabāt — šī pasūtījuma ieņēmumu summa var būt nepareiza, līdz tas tiks izlabots.",
   "payment_not_recorded": "Maksājumu neizdevās reģistrēt — šī pasūtījuma ieņēmumu summa var būt nepareiza, līdz tas tiks izlabots.",
-  "payment_not_reversed": "Maksājumu neizdevās atcelt"
+  "payment_not_reversed": "Maksājumu neizdevās atcelt",
+  "event_not_approved": "Šis pasākums nav apstiprināts",
+  "event_not_open": "{status, select, closed {Šis pasākums ir beidzies. Atsāciet to, lai pieņemtu pasūtījumus.} cancelled {Šis pasākums ir atcelts.} other {Šis pasākums nav atvērts.}}"
 }

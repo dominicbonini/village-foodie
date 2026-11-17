@@ -221,7 +221,8 @@
       "noteSaved": "Zapisano notatkę",
       "pricesSaved": "Zapisano ceny dla tego wydarzenia",
       "pricesSaveFailed": "Nie udało się zapisać cen",
-      "reconnectToLoad": "Połącz się ponownie, aby wczytać to wydarzenie"
+      "reconnectToLoad": "Połącz się ponownie, aby wczytać to wydarzenie",
+      "eventApproved": "Wydarzenie zatwierdzone"
     },
     "gate": {
       "invalidAccessLink": "Nieprawidłowy link dostępu",
@@ -336,7 +337,8 @@
       "manageEvent": "Zarządzaj wydarzeniem",
       "noEvent": "Nie wybrano wydarzenia",
       "selectEvent": "Wybierz wydarzenie",
-      "status": "{tone, select, paused {⏸ Wstrzymane} live {● Na żywo} finished {● Zakończone} cancelled {Odwołane} other {Nierozpoczęte}}"
+      "status": "{tone, select, paused {⏸ Wstrzymane} live {● Na żywo} finished {● Zakończone} cancelled {Odwołane} other {Nierozpoczęte}}",
+      "approveToTakeOrders": "Zatwierdź wydarzenie, żeby przyjmować zamówienia"
     },
     "orders": {
       "noEvent": "Nie wybrano wydarzenia — wybierz wydarzenie, aby zobaczyć zamówienia",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Zamówienie zapisane, ale nie udało się zaktualizować tablicy wydajności kuchni — sprawdź przedział, zanim na nim polegasz.",
     "created_payment_not_recorded": "Zamówienie utworzone, ale nie udało się zapisać płatności — utarg z tego zamówienia może być błędny, dopóki nie zostanie to naprawione.",
     "payment_not_recorded": "Nie udało się zapisać płatności — utarg z tego zamówienia może być błędny, dopóki nie zostanie to naprawione.",
-    "payment_not_reversed": "Nie udało się cofnąć płatności"
+    "payment_not_reversed": "Nie udało się cofnąć płatności",
+    "event_not_approved": "To wydarzenie nie jest zatwierdzone",
+    "event_not_open": "{status, select, closed {To wydarzenie się zakończyło. Uruchom je ponownie, żeby przyjmować zamówienia.} cancelled {To wydarzenie zostało odwołane.} other {To wydarzenie nie jest otwarte.}}"
   },
   "kitchenModals": {
     "close": "Zamknij",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Połącz ponownie, aby wczytać",
       "selected": "Wybrane",
-      "status": "{tone, select, paused {⏸ Wstrzymane} live {● Na żywo} finished {● Zakończone} cancelled {Odwołane} other {Nierozpoczęte}}"
+      "status": "{tone, select, paused {⏸ Wstrzymane} live {● Na żywo} finished {● Zakończone} cancelled {Odwołane} other {Nierozpoczęte}}",
+      "orders": "{n, plural, =0 {Brak zamówień} one {{count} zamówienie} few {{count} zamówienia} many {{count} zamówień} other {{count} zamówienia}}",
+      "needsApproval": "Do zatwierdzenia",
+      "approvalSummary": "{n, plural, one {{count} wydarzenie wymaga zatwierdzenia} few {{count} wydarzenia wymagają zatwierdzenia} many {{count} wydarzeń wymaga zatwierdzenia} other {{count} wydarzenia wymaga zatwierdzenia}}",
+      "approvalSummaryNote": "{n, plural, one {Klienci jeszcze go nie widzą.} few {Klienci jeszcze ich nie widzą.} many {Klienci jeszcze ich nie widzą.} other {Klienci jeszcze ich nie widzą.}}",
+      "duplicateSameTime": "Możliwy duplikat · ta sama godzina",
+      "duplicateOverlaps": "Możliwy duplikat · nakłada się",
+      "dayCount": "{n, plural, one {{count} wydarzenie} few {{count} wydarzenia} many {{count} wydarzeń} other {{count} wydarzenia}}"
+    },
+    "eventGate": {
+      "approveTitle": "Zatwierdzić {event}?",
+      "overlapText": "{event} to możliwy duplikat {other} ({start}–{end}), które jest już zatwierdzone{n, plural, =0 {} one { i ma {count} zamówienie} few { i ma {count} zamówienia} many { i ma {count} zamówień} other { i ma {count} zamówienia}}.",
+      "keep": "Zostaw {other}",
+      "approveAnyway": "Mimo to zatwierdź {event}",
+      "plainText": "{event} nie jest jeszcze zatwierdzone. Zatwierdzić, żeby przyjmować zamówienia? Klienci też je zobaczą.",
+      "approve": "Zatwierdź",
+      "startTitle": "Rozpocząć to wydarzenie?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {dotąd {count} zamówienie} few {dotąd {count} zamówienia} many {dotąd {count} zamówień} other {dotąd {count} zamówienia}}",
+      "switchTitle": "Przełączyć na {event}?",
+      "switch": "Przełącz",
+      "dismissedText": "{event} to możliwy duplikat {other}, które jest już zatwierdzone. Zatwierdzić, żeby przyjmować zamówienia? Klienci też je zobaczą."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Brak połączenia — {n, plural, one {{count} zmiana zapisana na tym urządzeniu. Zostanie wysłana po powrocie online.} few {{count} zmiany zapisane na tym urządzeniu. Zostaną wysłane po powrocie online.} many {{count} zmian zapisanych na tym urządzeniu. Zostaną wysłane po powrocie online.} other {{count} zmiany zapisane na tym urządzeniu. Zostaną wysłane po powrocie online.}} Ustawienia są zablokowane.",
       "syncing": "Znowu online — wysyłanie: {n, plural, one {{count} zmiana} few {{count} zmiany} many {{count} zmian} other {{count} zmiany}}…",
       "synced": "Wszystkie zmiany wysłane.",
-      "stillQueued": "{n, plural, one {{count} zmiana zapisana na tym urządzeniu. Wciąż próbujemy ją wysłać.} few {{count} zmiany zapisane na tym urządzeniu. Wciąż próbujemy je wysłać.} many {{count} zmian zapisanych na tym urządzeniu. Wciąż próbujemy je wysłać.} other {{count} zmiany zapisane na tym urządzeniu. Wciąż próbujemy je wysłać.}}"
+      "stillQueued": "{n, plural, one {{count} zmiana zapisana na tym urządzeniu. Wciąż próbujemy ją wysłać.} few {{count} zmiany zapisane na tym urządzeniu. Wciąż próbujemy je wysłać.} many {{count} zmian zapisanych na tym urządzeniu. Wciąż próbujemy je wysłać.} other {{count} zmiany zapisane na tym urządzeniu. Wciąż próbujemy je wysłać.}}",
+      "notApproved": "{n, plural, one {{count} zamówienie czeka} few {{count} zamówienia czekają} many {{count} zamówień czeka} other {{count} zamówienia czeka}}: to wydarzenie nie jest zatwierdzone. Zatwierdź je, żeby wysłać."
     },
     "lock": {
       "locked": "HatchGrab jest zablokowany",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Niektóre dane są nieprawidłowe. Sprawdź je i spróbuj ponownie.",
     "paperwork_send_limit": "W krótkim czasie wysłano wiele linków. Spróbuj ponownie za godzinę.",
     "paperwork_send_failed": "Nie udało się wysłać e-maila. Spróbuj ponownie.",
-    "cost_invalid": "Wpisz koszt równy 0 lub wyższy albo zostaw pole puste."
+    "cost_invalid": "Wpisz koszt równy 0 lub wyższy albo zostaw pole puste.",
+    "event_cannot_start": "{status, select, unconfirmed {Nie można rozpocząć tego wydarzenia (niezatwierdzone).} open {Nie można rozpocząć tego wydarzenia (już rozpoczęte).} cancelled {Nie można rozpocząć tego wydarzenia (odwołane).} other {Nie można rozpocząć tego wydarzenia ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Nie można zakończyć tego wydarzenia (niezatwierdzone).} confirmed {Nie można zakończyć tego wydarzenia (nierozpoczęte).} closed {Nie można zakończyć tego wydarzenia (już zakończone).} cancelled {Nie można zakończyć tego wydarzenia (odwołane).} other {Nie można zakończyć tego wydarzenia ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {To wydarzenie nie wymaga już zatwierdzenia (już zatwierdzone).} open {To wydarzenie nie wymaga już zatwierdzenia (już rozpoczęte).} closed {To wydarzenie nie wymaga już zatwierdzenia (już zakończone).} cancelled {To wydarzenie nie wymaga już zatwierdzenia (odwołane).} other {To wydarzenie nie wymaga już zatwierdzenia ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Wybierz kraj, w którym stacjonuje twój food truck.",

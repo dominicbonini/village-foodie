@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Opnieuw verbinden om te laden",
     "selected": "Geselecteerd",
-    "status": "{tone, select, paused {⏸ Gepauzeerd} live {● Live} finished {● Afgelopen} cancelled {Geannuleerd} other {Niet gestart}}"
+    "status": "{tone, select, paused {⏸ Gepauzeerd} live {● Live} finished {● Afgelopen} cancelled {Geannuleerd} other {Niet gestart}}",
+    "orders": "{n, plural, =0 {Geen bestellingen} one {{count} bestelling} other {{count} bestellingen}}",
+    "needsApproval": "Goedkeuring nodig",
+    "approvalSummary": "{n, plural, one {{count} evenement moet worden goedgekeurd} other {{count} evenementen moeten worden goedgekeurd}}",
+    "approvalSummaryNote": "{n, plural, one {Klanten zien het nog niet.} other {Klanten zien ze nog niet.}}",
+    "duplicateSameTime": "Mogelijk dubbel · zelfde tijd",
+    "duplicateOverlaps": "Mogelijk dubbel · overlapt",
+    "dayCount": "{n, plural, one {{count} evenement} other {{count} evenementen}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event} goedkeuren?",
+    "overlapText": "{event} is mogelijk een dubbele van {other} ({start}–{end}), dat al is goedgekeurd{n, plural, =0 {} one { en {count} bestelling heeft} other { en {count} bestellingen heeft}}.",
+    "keep": "{other} houden",
+    "approveAnyway": "{event} toch goedkeuren",
+    "plainText": "{event} is nog niet goedgekeurd. Goedkeuren om bestellingen aan te nemen? Klanten zien het dan ook.",
+    "approve": "Goedkeuren",
+    "startTitle": "Dit evenement starten?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {tot nu toe {count} bestelling} other {tot nu toe {count} bestellingen}}",
+    "switchTitle": "Naar {event} wisselen?",
+    "switch": "Wisselen",
+    "dismissedText": "{event} is mogelijk een dubbele van {other}, dat al is goedgekeurd. Goedkeuren om bestellingen aan te nemen? Klanten zien het dan ook."
   }
 }

@@ -40,7 +40,8 @@
     "offline": "📴 Ingen forbindelse — {n, plural, one {{count} ændring gemt på denne enhed. Den sendes, når du er online igen.} other {{count} ændringer gemt på denne enhed. De sendes, når du er online igen.}} Indstillingerne er låst.",
     "syncing": "Online igen — sender {n, plural, one {{count} ændring} other {{count} ændringer}}…",
     "synced": "Alle ændringer er sendt.",
-    "stillQueued": "{n, plural, one {{count} ændring gemt på denne enhed. Prøver stadig at sende den.} other {{count} ændringer gemt på denne enhed. Prøver stadig at sende dem.}}"
+    "stillQueued": "{n, plural, one {{count} ændring gemt på denne enhed. Prøver stadig at sende den.} other {{count} ændringer gemt på denne enhed. Prøver stadig at sende dem.}}",
+    "notApproved": "{n, plural, one {{count} bestilling venter} other {{count} bestillinger venter}}: arrangementet er ikke godkendt. Godkend det for at sende."
   },
   "lock": {
     "locked": "HatchGrab er låst",

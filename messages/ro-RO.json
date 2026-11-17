@@ -221,7 +221,8 @@
       "noteSaved": "Notă salvată",
       "pricesSaved": "Prețuri salvate pentru acest eveniment",
       "pricesSaveFailed": "Prețurile nu au putut fi salvate",
-      "reconnectToLoad": "Reconectați-vă pentru a încărca acest eveniment"
+      "reconnectToLoad": "Reconectați-vă pentru a încărca acest eveniment",
+      "eventApproved": "Eveniment aprobat"
     },
     "gate": {
       "invalidAccessLink": "Link de acces invalid",
@@ -336,7 +337,8 @@
       "manageEvent": "Gestionare eveniment",
       "noEvent": "Niciun eveniment selectat",
       "selectEvent": "Selectați evenimentul",
-      "status": "{tone, select, paused {⏸ Suspendat} live {● Activ} finished {● Încheiat} cancelled {Anulat} other {Neînceput}}"
+      "status": "{tone, select, paused {⏸ Suspendat} live {● Activ} finished {● Încheiat} cancelled {Anulat} other {Neînceput}}",
+      "approveToTakeOrders": "Aprobați un eveniment ca să primiți comenzi"
     },
     "orders": {
       "noEvent": "Niciun eveniment selectat — selectați un eveniment pentru a vedea comenzile",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Comanda a fost salvată, dar panoul capacității bucătăriei nu a putut fi actualizat — verificați intervalul înainte de a vă baza pe el.",
     "created_payment_not_recorded": "Comanda a fost creată, dar înregistrarea plății nu a putut fi salvată — totalul încasărilor pentru această comandă poate fi greșit până la remediere.",
     "payment_not_recorded": "Plata nu a putut fi înregistrată — totalul încasărilor pentru această comandă poate fi greșit până la remediere.",
-    "payment_not_reversed": "Plata nu a putut fi anulată"
+    "payment_not_reversed": "Plata nu a putut fi anulată",
+    "event_not_approved": "Acest eveniment nu este aprobat",
+    "event_not_open": "{status, select, closed {Acest eveniment s-a încheiat. Reporniți-l ca să primiți comenzi.} cancelled {Acest eveniment a fost anulat.} other {Acest eveniment nu este deschis.}}"
   },
   "kitchenModals": {
     "close": "Închideți",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Reconectați-vă pentru încărcare",
       "selected": "Selectat",
-      "status": "{tone, select, paused {⏸ Suspendat} live {● În desfășurare} finished {● Încheiat} cancelled {Anulat} other {Neînceput}}"
+      "status": "{tone, select, paused {⏸ Suspendat} live {● În desfășurare} finished {● Încheiat} cancelled {Anulat} other {Neînceput}}",
+      "orders": "{n, plural, =0 {Nicio comandă} one {{count} comandă} few {{count} comenzi} other {{count} de comenzi}}",
+      "needsApproval": "Necesită aprobare",
+      "approvalSummary": "{n, plural, one {{count} eveniment necesită aprobare} few {{count} evenimente necesită aprobare} other {{count} de evenimente necesită aprobare}}",
+      "approvalSummaryNote": "{n, plural, one {Clienții nu îl văd încă.} few {Clienții nu le văd încă.} other {Clienții nu le văd încă.}}",
+      "duplicateSameTime": "Posibil duplicat · aceeași oră",
+      "duplicateOverlaps": "Posibil duplicat · se suprapune",
+      "dayCount": "{n, plural, one {{count} eveniment} few {{count} evenimente} other {{count} de evenimente}}"
+    },
+    "eventGate": {
+      "approveTitle": "Aprobați {event}?",
+      "overlapText": "{event} poate fi un duplicat al {other} ({start}–{end}), care este deja aprobat{n, plural, =0 {} one { și are {count} comandă} few { și are {count} comenzi} other { și are {count} de comenzi}}.",
+      "keep": "Păstrați {other}",
+      "approveAnyway": "Aprobați totuși {event}",
+      "plainText": "{event} nu este încă aprobat. Îl aprobați ca să primiți comenzi? Îl vor vedea și clienții.",
+      "approve": "Aprobați",
+      "startTitle": "Porniți acest eveniment?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} comandă până acum} few {{count} comenzi până acum} other {{count} de comenzi până acum}}",
+      "switchTitle": "Treceți la {event}?",
+      "switch": "Schimbați",
+      "dismissedText": "{event} poate fi un duplicat al {other}, care este deja aprobat. Îl aprobați ca să primiți comenzi? Îl vor vedea și clienții."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Fără conexiune — {n, plural, one {{count} modificare salvată pe acest dispozitiv. Va fi trimisă când reveniți online.} few {{count} modificări salvate pe acest dispozitiv. Vor fi trimise când reveniți online.} other {{count} de modificări salvate pe acest dispozitiv. Vor fi trimise când reveniți online.}} Setările sunt blocate.",
       "syncing": "Din nou online — se trimit modificările: {n, plural, one {{count} modificare} few {{count} modificări} other {{count} de modificări}}…",
       "synced": "Toate modificările au fost trimise.",
-      "stillQueued": "{n, plural, one {{count} modificare salvată pe acest dispozitiv. Încercăm în continuare să o trimitem.} few {{count} modificări salvate pe acest dispozitiv. Încercăm în continuare să le trimitem.} other {{count} de modificări salvate pe acest dispozitiv. Încercăm în continuare să le trimitem.}}"
+      "stillQueued": "{n, plural, one {{count} modificare salvată pe acest dispozitiv. Încercăm în continuare să o trimitem.} few {{count} modificări salvate pe acest dispozitiv. Încercăm în continuare să le trimitem.} other {{count} de modificări salvate pe acest dispozitiv. Încercăm în continuare să le trimitem.}}",
+      "notApproved": "{n, plural, one {{count} comandă în așteptare} few {{count} comenzi în așteptare} other {{count} de comenzi în așteptare}}: acest eveniment nu este aprobat. Aprobați-l pentru trimitere."
     },
     "lock": {
       "locked": "HatchGrab este blocat",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Unele detalii nu sunt corecte. Verificați-le și încercați din nou.",
     "paperwork_send_limit": "Ați trimis multe linkuri într-un timp scurt. Încercați din nou peste o oră.",
     "paperwork_send_failed": "E-mailul nu a putut fi trimis. Încercați din nou.",
-    "cost_invalid": "Introduceți un cost de 0 sau mai mult ori lăsați câmpul gol."
+    "cost_invalid": "Introduceți un cost de 0 sau mai mult ori lăsați câmpul gol.",
+    "event_cannot_start": "{status, select, unconfirmed {Evenimentul nu poate fi pornit (neaprobat).} open {Evenimentul nu poate fi pornit (deja pornit).} cancelled {Evenimentul nu poate fi pornit (anulat).} other {Evenimentul nu poate fi pornit ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Evenimentul nu poate fi încheiat (neaprobat).} confirmed {Evenimentul nu poate fi încheiat (nepornit).} closed {Evenimentul nu poate fi încheiat (deja încheiat).} cancelled {Evenimentul nu poate fi încheiat (anulat).} other {Evenimentul nu poate fi încheiat ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Acest eveniment nu mai are nevoie de aprobare (deja aprobat).} open {Acest eveniment nu mai are nevoie de aprobare (deja pornit).} closed {Acest eveniment nu mai are nevoie de aprobare (deja încheiat).} cancelled {Acest eveniment nu mai are nevoie de aprobare (anulat).} other {Acest eveniment nu mai are nevoie de aprobare ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Alegeți țara în care își are sediul food truck-ul dumneavoastră.",

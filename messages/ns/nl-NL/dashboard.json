@@ -36,7 +36,8 @@
     "noteSaved": "Notitie opgeslagen",
     "pricesSaved": "Prijzen opgeslagen voor dit evenement",
     "pricesSaveFailed": "Kon de prijzen niet opslaan",
-    "reconnectToLoad": "Maak opnieuw verbinding om dit evenement te laden"
+    "reconnectToLoad": "Maak opnieuw verbinding om dit evenement te laden",
+    "eventApproved": "Evenement goedgekeurd"
   },
   "gate": {
     "invalidAccessLink": "Ongeldige toegangslink",
@@ -151,7 +152,8 @@
     "manageEvent": "Evenement beheren",
     "noEvent": "Geen evenement gekozen",
     "selectEvent": "Kies evenement",
-    "status": "{tone, select, paused {⏸ Gepauzeerd} live {● Live} finished {● Afgelopen} cancelled {Geannuleerd} other {Niet gestart}}"
+    "status": "{tone, select, paused {⏸ Gepauzeerd} live {● Live} finished {● Afgelopen} cancelled {Geannuleerd} other {Niet gestart}}",
+    "approveToTakeOrders": "Keur een evenement goed om bestellingen aan te nemen"
   },
   "orders": {
     "noEvent": "Geen evenement gekozen — kies een evenement om bestellingen te zien",

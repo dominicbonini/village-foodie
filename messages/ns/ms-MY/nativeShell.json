@@ -40,7 +40,8 @@
     "offline": "📴 Tiada sambungan — {n, plural, one {{count} perubahan disimpan pada peranti ini. Ia akan dihantar apabila anda kembali dalam talian.} other {{count} perubahan disimpan pada peranti ini. Ia akan dihantar apabila anda kembali dalam talian.}} Tetapan dikunci.",
     "syncing": "Kembali dalam talian — menghantar {n, plural, one {{count} perubahan} other {{count} perubahan}}…",
     "synced": "Semua perubahan telah dihantar.",
-    "stillQueued": "{n, plural, one {{count} perubahan disimpan pada peranti ini. Masih cuba menghantarnya.} other {{count} perubahan disimpan pada peranti ini. Masih cuba menghantarnya.}}"
+    "stillQueued": "{n, plural, one {{count} perubahan disimpan pada peranti ini. Masih cuba menghantarnya.} other {{count} perubahan disimpan pada peranti ini. Masih cuba menghantarnya.}}",
+    "notApproved": "{n, plural, other {{count} pesanan menunggu}}: acara ini belum diluluskan. Luluskan untuk menghantar."
   },
   "lock": {
     "locked": "HatchGrab dikunci",

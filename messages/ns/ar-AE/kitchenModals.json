@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "إعادة الاتصال للتحميل",
     "selected": "محدد",
-    "status": "{tone, select, paused {⏸ متوقفة مؤقتًا} live {● مباشرة} finished {● انتهت} cancelled {ملغاة} other {لم تبدأ}}"
+    "status": "{tone, select, paused {⏸ متوقفة مؤقتًا} live {● مباشرة} finished {● انتهت} cancelled {ملغاة} other {لم تبدأ}}",
+    "orders": "{n, plural, =0 {لا توجد طلبات} zero {الطلبات: {count}} one {طلب واحد ({count})} two {طلبان ({count})} few {{count} طلبات} many {{count} طلبًا} other {{count} طلب}}",
+    "needsApproval": "بحاجة إلى موافقة",
+    "approvalSummary": "{n, plural, zero {فعاليات بحاجة إلى موافقة: {count}} one {فعالية واحدة بحاجة إلى موافقة ({count})} two {فعاليتان بحاجة إلى موافقة ({count})} few {{count} فعاليات بحاجة إلى موافقة} many {{count} فعالية بحاجة إلى موافقة} other {{count} فعالية بحاجة إلى موافقة}}",
+    "approvalSummaryNote": "{n, plural, zero {لا يراها العملاء بعد.} one {لا يراها العملاء بعد.} two {لا يراها العملاء بعد.} few {لا يراها العملاء بعد.} many {لا يراها العملاء بعد.} other {لا يراها العملاء بعد.}}",
+    "duplicateSameTime": "تكرار محتمل · نفس الوقت",
+    "duplicateOverlaps": "تكرار محتمل · تداخل",
+    "dayCount": "{n, plural, zero {الفعاليات: {count}} one {فعالية واحدة ({count})} two {فعاليتان ({count})} few {{count} فعاليات} many {{count} فعالية} other {{count} فعالية}}"
+  },
+  "eventGate": {
+    "approveTitle": "الموافقة على {event}؟",
+    "overlapText": "قد تكون {event} نسخة مكررة من {other} ({start}–{end})، وهي فعالية موافق عليها بالفعل{n, plural, =0 {} zero { وفيها طلبات: {count}} one { وفيها طلب واحد ({count})} two { وفيها طلبان ({count})} few { وفيها {count} طلبات} many { وفيها {count} طلبًا} other { وفيها {count} طلب}}.",
+    "keep": "الإبقاء على {other}",
+    "approveAnyway": "الموافقة على {event} على أي حال",
+    "plainText": "لم تتم الموافقة على {event} بعد. هل توافق عليها لاستقبال الطلبات؟ سيراها العملاء أيضًا.",
+    "approve": "موافقة",
+    "startTitle": "بدء هذه الفعالية؟",
+    "startDetails": "{day} · {start}–{end} · {n, plural, zero {الطلبات حتى الآن: {count}} one {طلب واحد حتى الآن ({count})} two {طلبان حتى الآن ({count})} few {{count} طلبات حتى الآن} many {{count} طلبًا حتى الآن} other {{count} طلب حتى الآن}}",
+    "switchTitle": "التبديل إلى {event}؟",
+    "switch": "تبديل",
+    "dismissedText": "قد تكون {event} نسخة مكررة من {other}، وهي فعالية موافق عليها بالفعل. هل توافق عليها لاستقبال الطلبات؟ سيراها العملاء أيضًا."
   }
 }

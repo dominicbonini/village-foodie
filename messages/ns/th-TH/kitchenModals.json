@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "เชื่อมต่อใหม่เพื่อโหลด",
     "selected": "เลือกแล้ว",
-    "status": "{tone, select, paused {⏸ หยุดชั่วคราว} live {● กำลังเปิดขาย} finished {● จบแล้ว} cancelled {ยกเลิกแล้ว} other {ยังไม่เริ่ม}}"
+    "status": "{tone, select, paused {⏸ หยุดชั่วคราว} live {● กำลังเปิดขาย} finished {● จบแล้ว} cancelled {ยกเลิกแล้ว} other {ยังไม่เริ่ม}}",
+    "orders": "{n, plural, =0 {ยังไม่มีออร์เดอร์} other {{count} ออร์เดอร์}}",
+    "needsApproval": "รออนุมัติ",
+    "approvalSummary": "{n, plural, other {{count} อีเวนต์รออนุมัติ}}",
+    "approvalSummaryNote": "{n, plural, other {ลูกค้ายังไม่เห็น}}",
+    "duplicateSameTime": "อาจซ้ำ · เวลาเดียวกัน",
+    "duplicateOverlaps": "อาจซ้ำ · เวลาทับซ้อน",
+    "dayCount": "{n, plural, other {{count} อีเวนต์}}"
+  },
+  "eventGate": {
+    "approveTitle": "อนุมัติ {event} ไหม",
+    "overlapText": "{event} อาจซ้ำกับ {other} ({start}–{end}) ซึ่งอนุมัติแล้ว{n, plural, =0 {} other { และมี {count} ออร์เดอร์}}",
+    "keep": "เก็บ {other}",
+    "approveAnyway": "อนุมัติ {event} ต่อไป",
+    "plainText": "{event} ยังไม่ได้อนุมัติ อนุมัติเพื่อรับออร์เดอร์ไหม ลูกค้าจะเห็นด้วย",
+    "approve": "อนุมัติ",
+    "startTitle": "เริ่มอีเวนต์นี้ไหม",
+    "startDetails": "{day} · {start}–{end} · {n, plural, other {ตอนนี้มี {count} ออร์เดอร์}}",
+    "switchTitle": "เปลี่ยนไปที่ {event} ไหม",
+    "switch": "เปลี่ยน",
+    "dismissedText": "{event} อาจซ้ำกับ {other} ซึ่งอนุมัติแล้ว อนุมัติเพื่อรับออร์เดอร์ไหม ลูกค้าจะเห็นด้วย"
   }
 }

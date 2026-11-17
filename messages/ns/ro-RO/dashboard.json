@@ -36,7 +36,8 @@
     "noteSaved": "Notă salvată",
     "pricesSaved": "Prețuri salvate pentru acest eveniment",
     "pricesSaveFailed": "Prețurile nu au putut fi salvate",
-    "reconnectToLoad": "Reconectați-vă pentru a încărca acest eveniment"
+    "reconnectToLoad": "Reconectați-vă pentru a încărca acest eveniment",
+    "eventApproved": "Eveniment aprobat"
   },
   "gate": {
     "invalidAccessLink": "Link de acces invalid",
@@ -151,7 +152,8 @@
     "manageEvent": "Gestionare eveniment",
     "noEvent": "Niciun eveniment selectat",
     "selectEvent": "Selectați evenimentul",
-    "status": "{tone, select, paused {⏸ Suspendat} live {● Activ} finished {● Încheiat} cancelled {Anulat} other {Neînceput}}"
+    "status": "{tone, select, paused {⏸ Suspendat} live {● Activ} finished {● Încheiat} cancelled {Anulat} other {Neînceput}}",
+    "approveToTakeOrders": "Aprobați un eveniment ca să primiți comenzi"
   },
   "orders": {
     "noEvent": "Niciun eveniment selectat — selectați un eveniment pentru a vedea comenzile",

@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Pedido salvo, mas não foi possível atualizar o quadro de capacidade da cozinha — confira o horário antes de confiar nele.",
   "created_payment_not_recorded": "Pedido criado, mas não foi possível salvar o registro do pagamento — o faturamento deste pedido pode ficar errado até ser corrigido.",
   "payment_not_recorded": "Não foi possível registrar o pagamento — o faturamento deste pedido pode ficar errado até ser corrigido.",
-  "payment_not_reversed": "Não foi possível estornar o pagamento"
+  "payment_not_reversed": "Não foi possível estornar o pagamento",
+  "event_not_approved": "Este evento não está aprovado",
+  "event_not_open": "{status, select, closed {Este evento terminou. Reinicie para receber pedidos.} cancelled {Este evento foi cancelado.} other {Este evento não está aberto.}}"
 }

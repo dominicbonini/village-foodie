@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Unele detalii nu sunt corecte. Verificați-le și încercați din nou.",
   "paperwork_send_limit": "Ați trimis multe linkuri într-un timp scurt. Încercați din nou peste o oră.",
   "paperwork_send_failed": "E-mailul nu a putut fi trimis. Încercați din nou.",
-  "cost_invalid": "Introduceți un cost de 0 sau mai mult ori lăsați câmpul gol."
+  "cost_invalid": "Introduceți un cost de 0 sau mai mult ori lăsați câmpul gol.",
+  "event_cannot_start": "{status, select, unconfirmed {Evenimentul nu poate fi pornit (neaprobat).} open {Evenimentul nu poate fi pornit (deja pornit).} cancelled {Evenimentul nu poate fi pornit (anulat).} other {Evenimentul nu poate fi pornit ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Evenimentul nu poate fi încheiat (neaprobat).} confirmed {Evenimentul nu poate fi încheiat (nepornit).} closed {Evenimentul nu poate fi încheiat (deja încheiat).} cancelled {Evenimentul nu poate fi încheiat (anulat).} other {Evenimentul nu poate fi încheiat ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Acest eveniment nu mai are nevoie de aprobare (deja aprobat).} open {Acest eveniment nu mai are nevoie de aprobare (deja pornit).} closed {Acest eveniment nu mai are nevoie de aprobare (deja încheiat).} cancelled {Acest eveniment nu mai are nevoie de aprobare (anulat).} other {Acest eveniment nu mai are nevoie de aprobare ({status}).}}"
 }

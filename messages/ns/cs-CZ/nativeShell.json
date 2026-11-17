@@ -40,7 +40,8 @@
     "offline": "📴 Bez připojení — {n, plural, one {{count} změna je uložena v tomto zařízení. Odešle se, až budete znovu online.} few {{count} změny jsou uloženy v tomto zařízení. Odešlou se, až budete znovu online.} other {{count} změn je uloženo v tomto zařízení. Odešlou se, až budete znovu online.}} Nastavení je uzamčeno.",
     "syncing": "Znovu online — {n, plural, one {odesílá se {count} změna} few {odesílají se {count} změny} other {odesílá se {count} změn}}…",
     "synced": "Všechny změny odeslány.",
-    "stillQueued": "{n, plural, one {{count} změna je uložena v tomto zařízení. Stále se ji snažíme odeslat.} few {{count} změny jsou uloženy v tomto zařízení. Stále se je snažíme odeslat.} other {{count} změn je uloženo v tomto zařízení. Stále se je snažíme odeslat.}}"
+    "stillQueued": "{n, plural, one {{count} změna je uložena v tomto zařízení. Stále se ji snažíme odeslat.} few {{count} změny jsou uloženy v tomto zařízení. Stále se je snažíme odeslat.} other {{count} změn je uloženo v tomto zařízení. Stále se je snažíme odeslat.}}",
+    "notApproved": "{n, plural, one {{count} objednávka čeká} few {{count} objednávky čekají} many {{count} objednávky čeká} other {{count} objednávek čeká}}: tato akce není schválená. Schvalte ji pro odeslání."
   },
   "lock": {
     "locked": "HatchGrab je uzamčen",

@@ -80,6 +80,9 @@ import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { RejectOrderModal } from '@/components/shared/RejectOrderModal'
 import { EventFinishTimeModal } from '@/components/shared/EventFinishTimeModal'
 import { EventActionsModal } from '@/components/shared/EventActionsModal'
+// events-overlap-2: approved-only default, the overlap rule, and the one-time approve / start questions.
+import { ApproveEventDialog, StartEventDialog } from '@/components/shared/EventGateDialogs'
+import { pickDashboardDefaultEvent, onlyUnapprovedToday, approvedOverlaps, overlapTarget } from '@/lib/event-default'
 import { ExtraWaitModal } from '@/components/shared/ExtraWaitModal'
 import { DeviceSetupGate } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
@@ -131,7 +134,7 @@ import { intervalExample } from '@/lib/slot-generation'
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { IsolatedSections, Section } from '@/components/shared/IsolatedSections'
 import { nativeAuthHeader } from '@/lib/native/session'
-import { formatTime, pickDefaultEventByTime, getLocalDateInTz, getNowMinsInTz, instantOfLocal, clockOfInstantInTz, formatInstantClock, formatSlot, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, formatLongDate, formatShortDate, localDateOfInstant } from '@/lib/time-utils'
+import { formatTime, getLocalDateInTz, getNowMinsInTz, instantOfLocal, clockOfInstantInTz, formatInstantClock, formatSlot, timeSettingsOr, LEGACY_UK_TIME_SETTINGS, formatLongDate, formatShortDate, localDateOfInstant } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_DARK } from '@/lib/event-display'
 // 17 October 2026: an event that runs past midnight — the one rule (docs/midnight-and-format-fixes-report.md).
 import { crossesMidnight, eventTimeMins, eventTimeDate, eventEndMins, eventEndInstant, eventDates, nowOnEvent, toEngineClock, upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
@@ -460,6 +463,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[todayEvents,setTodayEvents]=useState<TruckEvent[]>([])
   const[upcomingEvents,setUpcomingEvents]=useState<TruckEvent[]>([])
   const[selectedEventId,setSelectedEventId]=useState<string|null>(null)
+  // ── events-overlap-2 ──────────────────────────────────────────────────────────────────────────────────────────────
+  // orderCounts: { event id: orders, not cancelled } from /api/events/manage?counts=1, read with the event list.
+  // approveFor: the unapproved event whose approve question is open. startFor: the never-started event whose Start
+  // question is open. gateBusy: one of their writes is in flight.
+  const[orderCounts,setOrderCounts]=useState<Record<string,number>|null>(null)
+  const[approveFor,setApproveFor]=useState<string|null>(null)
+  const[startFor,setStartFor]=useState<string|null>(null)
+  const[gateBusy,setGateBusy]=useState(false)
   const[showEventMenu,setShowEventMenu]=useState(false)
   // Change-event-finish-time target. Non-null mounts the SHARED modal, which owns the picker/confirm
   // split internally — so there is no draft state on this screen to leak between opens.
@@ -1045,9 +1056,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // pickDefaultEventByTime. NEVER keys on status ('open'/'live') or a UTC "today" lookup, so
   // a stale-live (auto-close-failed) or different-date event can't hijack the slots/ASAP/
   // orders of the viewed event. resolvedEvent + stockEvent both read this one value.
+  // events-overlap-2: the fallback is APPROVED-ONLY (lib/event-default.ts), and a selection that names an UNAPPROVED event
+  // (a stale state or an event un-approved since) is not used — the board never runs on an event nobody approved.
+  const selectedRow=selectedEventId?(upcomingEvents.find(e=>e.id===selectedEventId)??null):null
   const selectedOrDefaultEvent:TruckEvent|null=selectedEventId
-    ?(upcomingEvents.find(e=>e.id===selectedEventId)??null)
-    :pickDefaultEventByTime(upcomingEvents,dashTz)
+    ?(selectedRow&&selectedRow.status!=='unconfirmed'?selectedRow:null)
+    :pickDashboardDefaultEvent(upcomingEvents,dashTz)
   // SINGLE live signal — same rule as the "● Live" indicator (activeEvent.status==='open'), the
   // customer page, TruckListCard, and the heartbeat-monitor: live = the resolved active event is
   // status==='open'. Derived from selectedOrDefaultEvent (the canonical resolution; activeEvent
@@ -1357,7 +1371,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setAuthenticated(true); authenticatedRef.current=true; rl429RetriesRef.current=0; setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin,selectedEventRef.current?.id??null)}
       try{
-        const eventsRes=await fetch(`/api/events/manage?token=${token}&upcoming=true`)
+        const eventsRes=await fetch(`/api/events/manage?token=${token}&upcoming=true&counts=1`)
         // Never replace good event state with data from a failed response (429/500
         // returns valid JSON without .events, which would silently wipe events)
         if(!eventsRes.ok){
@@ -1373,6 +1387,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           const fetched=(eventsData.events??[]).filter((e:TruckEvent)=>e.event_date===todayStr||(e.event_date<todayStr&&isUpcomingOrRunning(e,todayStr,loadNowMins)))
           setTodayEvents(fetched)
           setUpcomingEvents(eventsData.events??[])
+          if(eventsData.order_counts&&typeof eventsData.order_counts==='object') setOrderCounts(eventsData.order_counts)
           // SUCCESS ONLY — inside the `eventsRes.ok` branch, never in the warn-and-keep branch above.
           setEventsLoaded(true)
           const currentTime=clockOfInstantInTz(new Date(),loadTz)
@@ -1443,7 +1458,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useOfflineAlert(effectiveOfflineProtection)
 
   useEffect(()=>{
-    if(selectedEventId||!upcomingEvents.length) return
+    // events-overlap-2: a selection naming an UNAPPROVED event (stale, or un-approved since) counts as no selection.
+    const selectedUnapproved=!!selectedEventId&&upcomingEvents.some(e=>e.id===selectedEventId&&e.status==='unconfirmed')
+    if((selectedEventId&&!selectedUnapproved)||!upcomingEvents.length) return
     console.log('[auto-select] running, upcomingEvents:', upcomingEvents.length)
     // ── PRIORITY 0 — THE ?event= URL PARAM (V9.6) ─────────────────────────────────────────────────
     // WHY THIS EXISTS: selectedEventId was plain useState(null) with no persistence, so a reload threw
@@ -1464,32 +1481,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const fromUrl=urlEventParamRef.current
     if(fromUrl){
       urlEventParamRef.current=null
-      const owned=upcomingEvents.find(e=>e.id===fromUrl)
+      // events-overlap-2: a link to an UNAPPROVED event is not followed — it falls through to the approved-only default.
+      const owned=upcomingEvents.find(e=>e.id===fromUrl&&e.status!=='unconfirmed')
       if(owned){console.log('[auto-select] priority 0 url param:',owned.id);setSelectedEventId(owned.id);return}
       console.warn('[auto-select] ?event= names an event not belonging to this truck (or deleted/past/cancelled) — ignoring:',fromUrl)
     }
-    const now=new Date()
-    const todayStr=getLocalDateInTz(dashTz) // the TRUCK's date and clock (Phase 2B)
-    const at=(date:string,time:string)=>new Date(instantOfLocal(date,time,dashTz))
-    // Priority 1: currently open event (started, not ended)
-    // 🔴 AN EVENT THAT RUNS PAST MIDNIGHT touches today until it ends, and ends on the NEXT day (lib/event-window.ts):
-    // eventDates/eventEndInstant. For any other event both are exactly `event_date === today` and `at(date, end)`.
-    const openEvent=upcomingEvents.find(e=>{
-      if(!eventDates(e.event_date,e.start_time,e.end_time).includes(todayStr)||!e.start_time||!e.end_time) return false
-      return now>=at(e.event_date,e.start_time)&&now.getTime()<=(eventEndInstant(e.event_date,e.start_time,e.end_time,dashTz) as number)
-    })
-    if(openEvent){console.log('[auto-select] priority 1 open:',openEvent.id);setSelectedEventId(openEvent.id);return}
-    // Priority 2: upcoming event today (not started yet)
-    const upcomingToday=upcomingEvents.find(e=>{
-      if(e.event_date!==todayStr||!e.start_time) return false
-      return now<at(e.event_date,e.start_time)
-    })
-    if(upcomingToday){console.log('[auto-select] priority 2 today:',upcomingToday.id);setSelectedEventId(upcomingToday.id);return}
-    // Priority 3: next upcoming event (any date)
-    const nextEvent=[...upcomingEvents]
-      .filter(e=>e.start_time&&at(e.event_date,e.start_time!)>now)
-      .sort((a,b)=>at(a.event_date,a.start_time!).getTime()-at(b.event_date,b.start_time!).getTime())[0]
-    if(nextEvent){console.log('[auto-select] priority 3 next:',nextEvent.id,nextEvent.event_date);setSelectedEventId(nextEvent.id)}
+    // ── 🔴 events-overlap-2: PRIORITIES 1–3 WERE BY TIME ONLY, AND THAT IS HOW 13 NOVEMBER HAPPENED ───────────────────
+    // They picked "the event in progress / next today / next" with `find` over the list, whatever its status — so an
+    // unapproved scraped copy at the same times could be the default (docs/events-overlap-1-report.md §3b). Now ONE rule,
+    // lib/event-default.ts: a STARTED event that has not ended, else an APPROVED one current or next by time, else
+    // NOTHING — and nothing at all when today's only events are unapproved (the bar then says "Approve an event to take
+    // orders"). An unconfirmed event is never auto-selected; it is chosen only by approving it.
+    const pick=pickDashboardDefaultEvent(upcomingEvents,dashTz)
+    if(pick){console.log('[auto-select] approved default:',pick.id,pick.status);setSelectedEventId(pick.id)}
+    else if(selectedUnapproved) setSelectedEventId(null)
   },[upcomingEvents,selectedEventId,dashTz])
   // ── KEEP ?event= AND ?tab= IN STEP WITH THE VIEW (V9.6) ─────────────────────────────────────────
   // 🔴 ONE EFFECT WRITES BOTH PARAMS. Do NOT add a second replaceState effect for a future param.
@@ -2890,9 +2895,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // single choke point every caller (event-bar menu, AddOrderPanel) funnels through, so the guard belongs
     // here — before any fetch. The locked buttons open the explainer instead of calling this.
     if(isDemo)return
+    // ── events-overlap-2: START ASKS ONCE PER EVENT — "Start this event?" with its name, day, times and orders so far —
+    // and only while it has NEVER been started (`opened_at` is null; the server stamps it on every start). The question
+    // names the day, so it replaces the future-date confirm for a first start. A restart (opened_at set) asks nothing new.
+    const ev=upcomingEvents.find(e=>e.id===eventId)||todayEvents.find(e=>e.id===eventId)
+    if(ev&&!ev.opened_at){setStartFor(eventId);return}
     // A future-dated event asks first, naming its date (US dress rehearsal Finding 3). Today's starts as before.
-    const startDate=(upcomingEvents.find(e=>e.id===eventId)||todayEvents.find(e=>e.id===eventId))?.event_date
+    const startDate=ev?.event_date
     if(startDate&&startDate>getLocalDateInTz(dashTz)&&!window.confirm(tDash('startFutureConfirm',{date:formatShortDate(startDate,dashTime)})))return
+    await doOpenEvent(eventId)
+  }
+  const doOpenEvent=async(eventId:string)=>{
     const wasClosedEvent=upcomingEvents.find(e=>e.id===eventId)?.status==='closed'
     try{
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId,payload:{}})})
@@ -2904,6 +2917,56 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       fetchAllRef.current() // re-sync from the authoritative server read so status propagates immediately
     }catch(err:any){showToast(err.message||tDash('toast.failed'),'error')}
   }
+
+  // ── events-overlap-2: APPROVING FROM THE DASHBOARD ───────────────────────────────────────────────────────────────
+  // requestApprove — an unapproved event was tapped (picker) or a walk-up on it was refused. It opens ONE question:
+  //   the overlap question when the event overlaps an approved or started one and staff have not already chosen "Keep"
+  //   for it (overlap_dismissed_at, stored on the event, so once per event on any device); else the plain one.
+  const requestApprove=(eventId:string)=>{
+    if(isDemo)return
+    const ev=upcomingEvents.find(e=>e.id===eventId)
+    if(!ev)return
+    if(ev.status!=='unconfirmed'){setSelectedEventId(ev.id);return}
+    setApproveFor(eventId)
+  }
+  const approveTarget=approveFor?upcomingEvents.find(e=>e.id===approveFor)??null:null
+  // events-overlap-4: the overlapping event is named on BOTH questions — the first (Keep / Approve anyway) and, after "Keep",
+  // the plain Approve / Cancel one ("… is a possible duplicate of {other}, which is already approved …").
+  const approveOverlap=approveTarget
+    ?overlapTarget(approvedOverlaps(approveTarget,upcomingEvents),orderCounts)
+    :null
+  /** "Approve" / "Approve {event} anyway": the existing confirm action, with the truck's Settings defaults for auto open/close. */
+  const approveEvent=async(eventId:string)=>{
+    setGateBusy(true)
+    try{
+      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'confirm',eventId,payload:{truck_defaults:true}})})
+      const data=await res.json().catch(()=>({}))
+      if(!res.ok) throw new Error(errorText(tErrM,data,''))
+      setUpcomingEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'confirmed' as const,confirmed_at:new Date().toISOString()}:e))
+      setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'confirmed' as const}:e))
+      setApproveFor(null)
+      setSelectedEventId(eventId)
+      showToast(tDash('toast.eventApproved'))
+      fetchAllRef.current()
+    }catch(err){showToast((err instanceof Error&&err.message)||tDash('toast.failed'),'error')}
+    finally{setGateBusy(false)}
+  }
+  /** "Keep {other}": remembered on the event (any device), the unapproved event stays unapproved and unselected. */
+  const keepOtherEvent=async(eventId:string)=>{
+    setGateBusy(true)
+    try{
+      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'dismiss_overlap',eventId,payload:{}})})
+      const data=await res.json().catch(()=>({}))
+      if(!res.ok) throw new Error(errorText(tErrM,data,''))
+      const at=typeof data.overlap_dismissed_at==='string'?data.overlap_dismissed_at:new Date().toISOString()
+      setUpcomingEvents(prev=>prev.map(e=>e.id===eventId?{...e,overlap_dismissed_at:at}:e))
+      setApproveFor(null)
+    }catch(err){showToast((err instanceof Error&&err.message)||tDash('toast.failed'),'error')}
+    finally{setGateBusy(false)}
+  }
+  const startTarget=startFor?(upcomingEvents.find(e=>e.id===startFor)||todayEvents.find(e=>e.id===startFor)||null):null
+  /** True when today's only events are unapproved — the bar says "Approve an event to take orders" instead of "No event selected". */
+  const approveToTakeOrders=!selectedOrDefaultEvent&&onlyUnapprovedToday(upcomingEvents,dashTz)
 
   // ── CHANGE EVENT FINISH TIME ────────────────────────────────────────────────────────────────────
   // 🔴 THE SAME WRITE `extendEvent` MAKES, AND NOTHING MORE: one POST to /api/events/action with
@@ -4311,7 +4374,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </>
             ):(
               <>
-                <span className="text-slate-400 text-sm flex-1">{tDash('eventBar.noEvent')}</span>
+                <span className={`text-sm flex-1 ${approveToTakeOrders?'text-amber-300 font-semibold':'text-slate-400'}`} data-approve-to-take-orders={approveToTakeOrders?'':undefined}>{approveToTakeOrders?tDash('eventBar.approveToTakeOrders'):tDash('eventBar.noEvent')}</span>
                 <button onClick={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
                   className="text-xs text-slate-400 hover:text-white flex-shrink-0 px-2 py-1 rounded border border-slate-600 hover:border-slate-400 transition-colors">
                   {tDash('eventBar.selectEvent')}
@@ -4420,7 +4483,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
                 <div className="flex items-center gap-2">
                   <span className="text-amber-500">⚠️</span>
-                  <p className="text-sm font-medium text-amber-800">{tDash('orders.noEvent')}</p>
+                  <p className="text-sm font-medium text-amber-800">{approveToTakeOrders?tDash('eventBar.approveToTakeOrders'):tDash('orders.noEvent')}</p>
                 </div>
                 <button onClick={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
                   className="text-sm font-semibold text-amber-700 border border-amber-300 bg-white rounded-lg px-3 py-1.5 hover:bg-amber-50 whitespace-nowrap">
@@ -5005,6 +5068,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             requestEventPickerOpen={pendingOpenEventPicker}
             onEventPickerOpened={()=>setPendingOpenEventPicker(false)}
             controlledEvent={activeEvent}
+            events={upcomingEvents}
+            orderCounts={orderCounts}
+            onRequestApprove={requestApprove}
             isOffline={isOffline}
             buzzerCount={vanBuzzerCount}
             onSaveBuzzer={async(orderKey,buzzerNumber)=>{await saveBuzzer(orderKey,buzzerNumber)}}
@@ -6818,6 +6884,30 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           tab switch behind "Change event" are unchanged; only the MENU is shared.
           ⚠️ DEMO: Pause is withheld and Resume is not, exactly as before — `onPause` is omitted while
           `onResume` is passed, so recovery stays reachable and only the trap is removed. */}
+      {/* events-overlap-2: the one-time approve question (overlap or plain) and the one-time Start question. */}
+      {approveTarget&&approveTarget.status==='unconfirmed'&&(
+        <ApproveEventDialog
+          event={approveTarget}
+          overlap={approveOverlap}
+          overlapOrders={approveOverlap?(orderCounts?.[approveOverlap.id]??0):0}
+          dismissed={!!approveTarget.overlap_dismissed_at}
+          time={dashTime}
+          busy={gateBusy}
+          onKeep={()=>keepOtherEvent(approveTarget.id)}
+          onApprove={()=>approveEvent(approveTarget.id)}
+          onCancel={()=>setApproveFor(null)}
+        />
+      )}
+      {startTarget&&(
+        <StartEventDialog
+          event={startTarget}
+          orders={orderCounts?.[startTarget.id]??0}
+          time={dashTime}
+          busy={gateBusy}
+          onStart={async()=>{const id=startTarget.id;setStartFor(null);await doOpenEvent(id)}}
+          onCancel={()=>setStartFor(null)}
+        />
+      )}
       {showEventMenu&&activeEvent&&!isDemo&&(
         <EventActionsModal
           time={truck?.time}

@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Bestellung gespeichert, aber die Übersicht der Küchenkapazität konnte nicht aktualisiert werden – prüfen Sie das Zeitfenster, bevor Sie sich darauf verlassen.",
   "created_payment_not_recorded": "Bestellung erstellt, aber der Zahlungseintrag konnte nicht gespeichert werden – der Umsatz für diese Bestellung ist möglicherweise falsch, bis das behoben ist.",
   "payment_not_recorded": "Die Zahlung konnte nicht erfasst werden – der Umsatz für diese Bestellung ist möglicherweise falsch, bis das behoben ist.",
-  "payment_not_reversed": "Die Zahlung konnte nicht rückgängig gemacht werden"
+  "payment_not_reversed": "Die Zahlung konnte nicht rückgängig gemacht werden",
+  "event_not_approved": "Dieses Event ist nicht freigegeben",
+  "event_not_open": "{status, select, closed {Dieses Event ist beendet. Neu starten, um Bestellungen anzunehmen.} cancelled {Dieses Event wurde abgesagt.} other {Dieses Event ist nicht geöffnet.}}"
 }

@@ -67,5 +67,7 @@
   "slot_board_not_updated": "訂單已儲存，但無法更新廚房出餐量看板。依賴該時段前請先檢查。",
   "created_payment_not_recorded": "訂單已建立，但無法儲存付款記錄。在修正之前，這筆訂單的營業額數字可能有誤。",
   "payment_not_recorded": "無法記錄付款。在修正之前，這筆訂單的營業額數字可能有誤。",
-  "payment_not_reversed": "無法撤銷付款"
+  "payment_not_reversed": "無法撤銷付款",
+  "event_not_approved": "此活動尚未核准",
+  "event_not_open": "{status, select, closed {此活動已結束。重新開始以接受訂單。} cancelled {此活動已取消。} other {此活動未開放。}}"
 }

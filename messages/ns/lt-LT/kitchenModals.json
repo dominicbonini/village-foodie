@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Prisijunkite iš naujo, kad įkeltumėte",
     "selected": "Pasirinkta",
-    "status": "{tone, select, paused {⏸ Pristabdytas} live {● Vyksta} finished {● Baigtas} cancelled {Atšauktas} other {Nepradėtas}}"
+    "status": "{tone, select, paused {⏸ Pristabdytas} live {● Vyksta} finished {● Baigtas} cancelled {Atšauktas} other {Nepradėtas}}",
+    "orders": "{n, plural, =0 {Užsakymų nėra} one {{count} užsakymas} few {{count} užsakymai} many {{count} užsakymo} other {{count} užsakymų}}",
+    "needsApproval": "Laukia patvirtinimo",
+    "approvalSummary": "{n, plural, one {{count} renginys laukia patvirtinimo} few {{count} renginiai laukia patvirtinimo} many {{count} renginio laukia patvirtinimo} other {{count} renginių laukia patvirtinimo}}",
+    "approvalSummaryNote": "{n, plural, one {Klientai jo dar nemato.} few {Klientai jų dar nemato.} many {Klientai jų dar nemato.} other {Klientai jų dar nemato.}}",
+    "duplicateSameTime": "Galimas dublikatas · tas pats laikas",
+    "duplicateOverlaps": "Galimas dublikatas · persidengia",
+    "dayCount": "{n, plural, one {{count} renginys} few {{count} renginiai} many {{count} renginio} other {{count} renginių}}"
+  },
+  "eventGate": {
+    "approveTitle": "Patvirtinti {event}?",
+    "overlapText": "{event} gali būti renginio {other} ({start}–{end}) dublikatas, kuris jau patvirtintas{n, plural, =0 {} one { ir turi {count} užsakymą} few { ir turi {count} užsakymus} many { ir turi {count} užsakymo} other { ir turi {count} užsakymų}}.",
+    "keep": "Palikti {other}",
+    "approveAnyway": "Vis tiek patvirtinti {event}",
+    "plainText": "{event} dar nepatvirtintas. Patvirtinti, kad galėtumėte priimti užsakymus? Jį matys ir klientai.",
+    "approve": "Patvirtinti",
+    "startTitle": "Pradėti šį renginį?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {kol kas {count} užsakymas} few {kol kas {count} užsakymai} many {kol kas {count} užsakymo} other {kol kas {count} užsakymų}}",
+    "switchTitle": "Perjungti į {event}?",
+    "switch": "Perjungti",
+    "dismissedText": "{event} gali būti renginio {other} dublikatas, kuris jau patvirtintas. Patvirtinti, kad galėtumėte priimti užsakymus? Jį matys ir klientai."
   }
 }

@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Reconnect to load",
     "selected": "Selected",
-    "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
+    "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}",
+    "orders": "{n, plural, =0 {No orders} one {{count} order} other {{count} orders}}",
+    "needsApproval": "Needs approval",
+    "approvalSummary": "{n, plural, one {{count} event needs approval} other {{count} events need approval}}",
+    "approvalSummaryNote": "{n, plural, one {Customers can’t see it yet.} other {Customers can’t see them yet.}}",
+    "duplicateSameTime": "Possible duplicate · same time",
+    "duplicateOverlaps": "Possible duplicate · overlaps",
+    "dayCount": "{n, plural, one {{count} event} other {{count} events}}"
+  },
+  "eventGate": {
+    "approveTitle": "Approve {event}?",
+    "overlapText": "{event} is a possible duplicate of {other} ({start}–{end}), which is already approved{n, plural, =0 {} one { and has {count} order} other { and has {count} orders}}.",
+    "keep": "Keep {other}",
+    "approveAnyway": "Approve {event} anyway",
+    "plainText": "{event} isn’t approved yet. Approve it to take orders? Customers will see it too.",
+    "approve": "Approve",
+    "startTitle": "Start this event?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} order so far} other {{count} orders so far}}",
+    "switchTitle": "Switch to {event}?",
+    "switch": "Switch",
+    "dismissedText": "{event} is a possible duplicate of {other}, which is already approved. Approve it to take orders? Customers will see it too."
   }
 }

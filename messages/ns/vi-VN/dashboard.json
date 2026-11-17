@@ -36,7 +36,8 @@
     "noteSaved": "Đã lưu ghi chú",
     "pricesSaved": "Đã lưu giá cho sự kiện này",
     "pricesSaveFailed": "Không lưu được giá",
-    "reconnectToLoad": "Hãy kết nối lại để tải sự kiện này"
+    "reconnectToLoad": "Hãy kết nối lại để tải sự kiện này",
+    "eventApproved": "Đã duyệt sự kiện"
   },
   "gate": {
     "invalidAccessLink": "Link truy cập không hợp lệ",
@@ -151,7 +152,8 @@
     "manageEvent": "Quản lý sự kiện",
     "noEvent": "Chưa chọn sự kiện",
     "selectEvent": "Chọn sự kiện",
-    "status": "{tone, select, paused {⏸ Tạm dừng} live {● Đang diễn ra} finished {● Đã kết thúc} cancelled {Đã hủy} other {Chưa bắt đầu}}"
+    "status": "{tone, select, paused {⏸ Tạm dừng} live {● Đang diễn ra} finished {● Đã kết thúc} cancelled {Đã hủy} other {Chưa bắt đầu}}",
+    "approveToTakeOrders": "Duyệt một sự kiện để nhận đơn"
   },
   "orders": {
     "noEvent": "Chưa chọn sự kiện — hãy chọn sự kiện để xem đơn",

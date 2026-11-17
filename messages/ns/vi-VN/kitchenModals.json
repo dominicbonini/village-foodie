@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Kết nối lại để tải",
     "selected": "Đã chọn",
-    "status": "{tone, select, paused {⏸ Tạm dừng} live {● Đang diễn ra} finished {● Đã kết thúc} cancelled {Đã hủy} other {Chưa bắt đầu}}"
+    "status": "{tone, select, paused {⏸ Tạm dừng} live {● Đang diễn ra} finished {● Đã kết thúc} cancelled {Đã hủy} other {Chưa bắt đầu}}",
+    "orders": "{n, plural, =0 {Chưa có đơn} other {{count} đơn}}",
+    "needsApproval": "Cần duyệt",
+    "approvalSummary": "{n, plural, other {{count} sự kiện cần duyệt}}",
+    "approvalSummaryNote": "{n, plural, other {Khách hàng chưa thấy.}}",
+    "duplicateSameTime": "Có thể trùng · cùng giờ",
+    "duplicateOverlaps": "Có thể trùng · chồng giờ",
+    "dayCount": "{n, plural, other {{count} sự kiện}}"
+  },
+  "eventGate": {
+    "approveTitle": "Duyệt {event}?",
+    "overlapText": "{event} có thể trùng với {other} ({start}–{end}), đã được duyệt{n, plural, =0 {} other { và có {count} đơn}}.",
+    "keep": "Giữ {other}",
+    "approveAnyway": "Vẫn duyệt {event}",
+    "plainText": "{event} chưa được duyệt. Duyệt để nhận đơn? Khách hàng cũng sẽ thấy.",
+    "approve": "Duyệt",
+    "startTitle": "Bắt đầu sự kiện này?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, other {{count} đơn đến giờ}}",
+    "switchTitle": "Chuyển sang {event}?",
+    "switch": "Chuyển",
+    "dismissedText": "{event} có thể trùng với {other}, đã được duyệt. Duyệt để nhận đơn? Khách hàng cũng sẽ thấy."
   }
 }

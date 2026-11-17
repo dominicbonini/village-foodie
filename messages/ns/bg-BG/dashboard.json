@@ -36,7 +36,8 @@
     "noteSaved": "Бележката е запазена",
     "pricesSaved": "Цените за това събитие са запазени",
     "pricesSaveFailed": "Цените не можаха да бъдат запазени",
-    "reconnectToLoad": "Свържете се отново, за да заредите това събитие"
+    "reconnectToLoad": "Свържете се отново, за да заредите това събитие",
+    "eventApproved": "Събитието е одобрено"
   },
   "gate": {
     "invalidAccessLink": "Невалиден линк за достъп",
@@ -151,7 +152,8 @@
     "manageEvent": "Управление на събитието",
     "noEvent": "Няма избрано събитие",
     "selectEvent": "Изберете събитие",
-    "status": "{tone, select, paused {⏸ На пауза} live {● Активно} finished {● Приключило} cancelled {Отменено} other {Не е започнало}}"
+    "status": "{tone, select, paused {⏸ На пауза} live {● Активно} finished {● Приключило} cancelled {Отменено} other {Не е започнало}}",
+    "approveToTakeOrders": "Одобрете събитие, за да приемате поръчки"
   },
   "orders": {
     "noEvent": "Няма избрано събитие — изберете събитие, за да видите поръчките",

@@ -36,7 +36,8 @@
     "noteSaved": "บันทึกโน้ตแล้ว",
     "pricesSaved": "บันทึกราคาสำหรับอีเวนต์นี้แล้ว",
     "pricesSaveFailed": "บันทึกราคาไม่ได้",
-    "reconnectToLoad": "เชื่อมต่ออีกครั้งเพื่อโหลดอีเวนต์นี้"
+    "reconnectToLoad": "เชื่อมต่ออีกครั้งเพื่อโหลดอีเวนต์นี้",
+    "eventApproved": "อนุมัติอีเวนต์แล้ว"
   },
   "gate": {
     "invalidAccessLink": "ลิงก์เข้าใช้งานไม่ถูกต้อง",
@@ -151,7 +152,8 @@
     "manageEvent": "จัดการอีเวนต์",
     "noEvent": "ยังไม่ได้เลือกอีเวนต์",
     "selectEvent": "เลือกอีเวนต์",
-    "status": "{tone, select, paused {⏸ หยุดชั่วคราว} live {● กำลังเปิดขาย} finished {● จบแล้ว} cancelled {ยกเลิกแล้ว} other {ยังไม่เริ่ม}}"
+    "status": "{tone, select, paused {⏸ หยุดชั่วคราว} live {● กำลังเปิดขาย} finished {● จบแล้ว} cancelled {ยกเลิกแล้ว} other {ยังไม่เริ่ม}}",
+    "approveToTakeOrders": "อนุมัติอีเวนต์เพื่อรับออร์เดอร์"
   },
   "orders": {
     "noEvent": "ยังไม่ได้เลือกอีเวนต์ เลือกอีเวนต์เพื่อดูออเดอร์",

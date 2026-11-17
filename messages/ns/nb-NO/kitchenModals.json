@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Koble til på nytt for å laste inn",
     "selected": "Valgt",
-    "status": "{tone, select, paused {⏸ På pause} live {● Pågår} finished {● Avsluttet} cancelled {Avlyst} other {Ikke startet}}"
+    "status": "{tone, select, paused {⏸ På pause} live {● Pågår} finished {● Avsluttet} cancelled {Avlyst} other {Ikke startet}}",
+    "orders": "{n, plural, =0 {Ingen bestillinger} one {{count} bestilling} other {{count} bestillinger}}",
+    "needsApproval": "Må godkjennes",
+    "approvalSummary": "{n, plural, one {{count} arrangement må godkjennes} other {{count} arrangementer må godkjennes}}",
+    "approvalSummaryNote": "{n, plural, one {Kundene ser det ikke ennå.} other {Kundene ser dem ikke ennå.}}",
+    "duplicateSameTime": "Mulig duplikat · samme tid",
+    "duplicateOverlaps": "Mulig duplikat · overlapper",
+    "dayCount": "{n, plural, one {{count} arrangement} other {{count} arrangementer}}"
+  },
+  "eventGate": {
+    "approveTitle": "Godkjenne {event}?",
+    "overlapText": "{event} kan være et duplikat av {other} ({start}–{end}), som allerede er godkjent{n, plural, =0 {} one { og har {count} bestilling} other { og har {count} bestillinger}}.",
+    "keep": "Behold {other}",
+    "approveAnyway": "Godkjenn {event} likevel",
+    "plainText": "{event} er ikke godkjent ennå. Godkjenne det for å ta imot bestillinger? Kundene ser det også.",
+    "approve": "Godkjenn",
+    "startTitle": "Starte arrangementet?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} bestilling så langt} other {{count} bestillinger så langt}}",
+    "switchTitle": "Bytte til {event}?",
+    "switch": "Bytt",
+    "dismissedText": "{event} kan være et duplikat av {other}, som allerede er godkjent. Godkjenne det for å ta imot bestillinger? Kundene ser det også."
   }
 }

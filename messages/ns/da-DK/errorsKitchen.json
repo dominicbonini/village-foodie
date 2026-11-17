@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Bestillingen er gemt, men oversigten over køkkenkapacitet kunne ikke opdateres — tjek tidsrummet, før du stoler på den.",
   "created_payment_not_recorded": "Bestillingen er oprettet, men betalingen kunne ikke registreres — omsætningen for denne bestilling kan være forkert, indtil det er rettet.",
   "payment_not_recorded": "Betalingen kunne ikke registreres — omsætningen for denne bestilling kan være forkert, indtil det er rettet.",
-  "payment_not_reversed": "Betalingen kunne ikke tilbageføres"
+  "payment_not_reversed": "Betalingen kunne ikke tilbageføres",
+  "event_not_approved": "Arrangementet er ikke godkendt",
+  "event_not_open": "{status, select, closed {Arrangementet er slut. Genstart det for at tage imod bestillinger.} cancelled {Arrangementet er aflyst.} other {Arrangementet er ikke åbent.}}"
 }

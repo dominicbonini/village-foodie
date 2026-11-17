@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Za nalaganje se znova poveži",
     "selected": "Izbrano",
-    "status": "{tone, select, paused {⏸ Ustavljeno} live {● V teku} finished {● Zaključeno} cancelled {Odpovedano} other {Ni začeto}}"
+    "status": "{tone, select, paused {⏸ Ustavljeno} live {● V teku} finished {● Zaključeno} cancelled {Odpovedano} other {Ni začeto}}",
+    "orders": "{n, plural, =0 {Ni naročil} one {{count} naročilo} two {{count} naročili} few {{count} naročila} other {{count} naročil}}",
+    "needsApproval": "Čaka na odobritev",
+    "approvalSummary": "{n, plural, one {{count} dogodek čaka na odobritev} two {{count} dogodka čakata na odobritev} few {{count} dogodki čakajo na odobritev} other {{count} dogodkov čaka na odobritev}}",
+    "approvalSummaryNote": "{n, plural, one {Kupci ga še ne vidijo.} two {Kupci jih še ne vidijo.} few {Kupci jih še ne vidijo.} other {Kupci jih še ne vidijo.}}",
+    "duplicateSameTime": "Možen dvojnik · isti čas",
+    "duplicateOverlaps": "Možen dvojnik · se prekriva",
+    "dayCount": "{n, plural, one {{count} dogodek} two {{count} dogodka} few {{count} dogodki} other {{count} dogodkov}}"
+  },
+  "eventGate": {
+    "approveTitle": "Odobrim {event}?",
+    "overlapText": "{event} je morda dvojnik dogodka {other} ({start}–{end}), ki je že odobren{n, plural, =0 {} one { in ima {count} naročilo} two { in ima {count} naročili} few { in ima {count} naročila} other { in ima {count} naročil}}.",
+    "keep": "Obdrži {other}",
+    "approveAnyway": "Vseeno odobri {event}",
+    "plainText": "{event} še ni odobren. Ga odobrite za sprejemanje naročil? Videli ga bodo tudi kupci.",
+    "approve": "Odobri",
+    "startTitle": "Začnem ta dogodek?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {doslej {count} naročilo} two {doslej {count} naročili} few {doslej {count} naročila} other {doslej {count} naročil}}",
+    "switchTitle": "Preklopim na {event}?",
+    "switch": "Preklopi",
+    "dismissedText": "{event} je morda dvojnik dogodka {other}, ki je že odobren. Ga odobrite za sprejemanje naročil? Videli ga bodo tudi kupci."
   }
 }

@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Pripojte sa znova a načítajte",
     "selected": "Vybraté",
-    "status": "{tone, select, paused {⏸ Pozastavená} live {● Prebieha} finished {● Ukončená} cancelled {Zrušená} other {Nezačatá}}"
+    "status": "{tone, select, paused {⏸ Pozastavená} live {● Prebieha} finished {● Ukončená} cancelled {Zrušená} other {Nezačatá}}",
+    "orders": "{n, plural, =0 {Žiadne objednávky} one {{count} objednávka} few {{count} objednávky} many {{count} objednávky} other {{count} objednávok}}",
+    "needsApproval": "Čaká na schválenie",
+    "approvalSummary": "{n, plural, one {{count} akcia čaká na schválenie} few {{count} akcie čakajú na schválenie} many {{count} akcie čaká na schválenie} other {{count} akcií čaká na schválenie}}",
+    "approvalSummaryNote": "{n, plural, one {Zákazníci ju zatiaľ nevidia.} few {Zákazníci ich zatiaľ nevidia.} many {Zákazníci ich zatiaľ nevidia.} other {Zákazníci ich zatiaľ nevidia.}}",
+    "duplicateSameTime": "Možný duplikát · rovnaký čas",
+    "duplicateOverlaps": "Možný duplikát · prekrýva sa",
+    "dayCount": "{n, plural, one {{count} akcia} few {{count} akcie} many {{count} akcie} other {{count} akcií}}"
+  },
+  "eventGate": {
+    "approveTitle": "Schváliť {event}?",
+    "overlapText": "{event} je možno duplikát akcie {other} ({start}–{end}), ktorá je už schválená{n, plural, =0 {} one { a má {count} objednávku} few { a má {count} objednávky} many { a má {count} objednávky} other { a má {count} objednávok}}.",
+    "keep": "Ponechať {other}",
+    "approveAnyway": "Napriek tomu schváliť {event}",
+    "plainText": "{event} ešte nie je schválená. Schváliť ju a prijímať objednávky? Uvidia ju aj zákazníci.",
+    "approve": "Schváliť",
+    "startTitle": "Spustiť túto akciu?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {zatiaľ {count} objednávka} few {zatiaľ {count} objednávky} many {zatiaľ {count} objednávky} other {zatiaľ {count} objednávok}}",
+    "switchTitle": "Prepnúť na {event}?",
+    "switch": "Prepnúť",
+    "dismissedText": "{event} je možno duplikát akcie {other}, ktorá je už schválená. Schváliť ju a prijímať objednávky? Uvidia ju aj zákazníci."
   }
 }

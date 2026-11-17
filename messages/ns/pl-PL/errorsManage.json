@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Niektóre dane są nieprawidłowe. Sprawdź je i spróbuj ponownie.",
   "paperwork_send_limit": "W krótkim czasie wysłano wiele linków. Spróbuj ponownie za godzinę.",
   "paperwork_send_failed": "Nie udało się wysłać e-maila. Spróbuj ponownie.",
-  "cost_invalid": "Wpisz koszt równy 0 lub wyższy albo zostaw pole puste."
+  "cost_invalid": "Wpisz koszt równy 0 lub wyższy albo zostaw pole puste.",
+  "event_cannot_start": "{status, select, unconfirmed {Nie można rozpocząć tego wydarzenia (niezatwierdzone).} open {Nie można rozpocząć tego wydarzenia (już rozpoczęte).} cancelled {Nie można rozpocząć tego wydarzenia (odwołane).} other {Nie można rozpocząć tego wydarzenia ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Nie można zakończyć tego wydarzenia (niezatwierdzone).} confirmed {Nie można zakończyć tego wydarzenia (nierozpoczęte).} closed {Nie można zakończyć tego wydarzenia (już zakończone).} cancelled {Nie można zakończyć tego wydarzenia (odwołane).} other {Nie można zakończyć tego wydarzenia ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {To wydarzenie nie wymaga już zatwierdzenia (już zatwierdzone).} open {To wydarzenie nie wymaga już zatwierdzenia (już rozpoczęte).} closed {To wydarzenie nie wymaga już zatwierdzenia (już zakończone).} cancelled {To wydarzenie nie wymaga już zatwierdzenia (odwołane).} other {To wydarzenie nie wymaga już zatwierdzenia ({status}).}}"
 }

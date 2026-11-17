@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Einige Angaben sind nicht korrekt. Bitte prüfen Sie sie und versuchen Sie es erneut.",
   "paperwork_send_limit": "Sie haben in kurzer Zeit sehr viele Links gesendet. Bitte versuchen Sie es in einer Stunde erneut.",
   "paperwork_send_failed": "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
-  "cost_invalid": "Geben Sie Kosten von 0 oder mehr ein oder lassen Sie das Feld leer."
+  "cost_invalid": "Geben Sie Kosten von 0 oder mehr ein oder lassen Sie das Feld leer.",
+  "event_cannot_start": "{status, select, unconfirmed {Event kann nicht gestartet werden (nicht freigegeben).} open {Event kann nicht gestartet werden (schon gestartet).} cancelled {Event kann nicht gestartet werden (abgesagt).} other {Event kann nicht gestartet werden ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Event kann nicht beendet werden (nicht freigegeben).} confirmed {Event kann nicht beendet werden (nicht gestartet).} closed {Event kann nicht beendet werden (schon beendet).} cancelled {Event kann nicht beendet werden (abgesagt).} other {Event kann nicht beendet werden ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Dieses Event braucht keine Freigabe mehr (schon freigegeben).} open {Dieses Event braucht keine Freigabe mehr (schon gestartet).} closed {Dieses Event braucht keine Freigabe mehr (schon beendet).} cancelled {Dieses Event braucht keine Freigabe mehr (abgesagt).} other {Dieses Event braucht keine Freigabe mehr ({status}).}}"
 }

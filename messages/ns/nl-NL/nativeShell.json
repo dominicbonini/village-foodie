@@ -40,7 +40,8 @@
     "offline": "📴 Geen verbinding — {n, plural, one {{count} wijziging opgeslagen op dit apparaat. Die wordt verstuurd zodra je weer online bent.} other {{count} wijzigingen opgeslagen op dit apparaat. Die worden verstuurd zodra je weer online bent.}} Instellingen zijn vergrendeld.",
     "syncing": "Weer online — {n, plural, one {{count} wijziging} other {{count} wijzigingen}} versturen…",
     "synced": "Alle wijzigingen verstuurd.",
-    "stillQueued": "{n, plural, one {{count} wijziging opgeslagen op dit apparaat. We proberen die nog te versturen.} other {{count} wijzigingen opgeslagen op dit apparaat. We proberen ze nog te versturen.}}"
+    "stillQueued": "{n, plural, one {{count} wijziging opgeslagen op dit apparaat. We proberen die nog te versturen.} other {{count} wijzigingen opgeslagen op dit apparaat. We proberen ze nog te versturen.}}",
+    "notApproved": "{n, plural, one {{count} bestelling wacht} other {{count} bestellingen wachten}}: dit evenement is niet goedgekeurd. Keur het goed om te versturen."
   },
   "lock": {
     "locked": "HatchGrab is vergrendeld",

@@ -40,7 +40,8 @@
     "offline": "📴 Nema veze — {n, plural, one {{count} promjena spremljena je na ovom uređaju. Poslat će se kad ponovno budete online.} few {{count} promjene spremljene su na ovom uređaju. Poslat će se kad ponovno budete online.} other {{count} promjena spremljeno je na ovom uređaju. Poslat će se kad ponovno budete online.}} Postavke su zaključane.",
     "syncing": "Ponovno online — slanje: {n, plural, one {{count} promjena} few {{count} promjene} other {{count} promjena}}…",
     "synced": "Sve promjene su poslane.",
-    "stillQueued": "{n, plural, one {{count} promjena spremljena je na ovom uređaju. Još je pokušavamo poslati.} few {{count} promjene spremljene su na ovom uređaju. Još ih pokušavamo poslati.} other {{count} promjena spremljeno je na ovom uređaju. Još ih pokušavamo poslati.}}"
+    "stillQueued": "{n, plural, one {{count} promjena spremljena je na ovom uređaju. Još je pokušavamo poslati.} few {{count} promjene spremljene su na ovom uređaju. Još ih pokušavamo poslati.} other {{count} promjena spremljeno je na ovom uređaju. Još ih pokušavamo poslati.}}",
+    "notApproved": "{n, plural, one {{count} narudžba čeka} few {{count} narudžbe čekaju} other {{count} narudžbi čeka}}: ovaj događaj nije odobren. Odobrite ga za slanje."
   },
   "lock": {
     "locked": "HatchGrab je zaključan",

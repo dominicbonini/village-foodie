@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Pesanan tersimpan, tetapi papan kapasitas dapur tidak dapat diperbarui — periksa slotnya sebelum mengandalkannya.",
   "created_payment_not_recorded": "Pesanan dibuat, tetapi catatan pembayarannya tidak dapat disimpan — angka pendapatan untuk pesanan ini mungkin salah sampai diperbaiki.",
   "payment_not_recorded": "Pembayaran tidak dapat dicatat — angka pendapatan untuk pesanan ini mungkin salah sampai diperbaiki.",
-  "payment_not_reversed": "Pembayaran tidak dapat dibatalkan"
+  "payment_not_reversed": "Pembayaran tidak dapat dibatalkan",
+  "event_not_approved": "Acara ini belum disetujui",
+  "event_not_open": "{status, select, closed {Acara ini sudah selesai. Mulai ulang untuk menerima pesanan.} cancelled {Acara ini dibatalkan.} other {Acara ini tidak dibuka.}}"
 }

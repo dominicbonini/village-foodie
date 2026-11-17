@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Några av uppgifterna stämmer inte. Kontrollera dem och försök igen.",
   "paperwork_send_limit": "Du har skickat många länkar på kort tid. Försök igen om en timme.",
   "paperwork_send_failed": "Mejlet kunde inte skickas. Försök igen.",
-  "cost_invalid": "Ange en kostnad på 0 eller mer, eller lämna rutan tom."
+  "cost_invalid": "Ange en kostnad på 0 eller mer, eller lämna rutan tom.",
+  "event_cannot_start": "{status, select, unconfirmed {Det går inte att starta evenemanget (inte godkänt).} open {Det går inte att starta evenemanget (redan startat).} cancelled {Det går inte att starta evenemanget (inställt).} other {Det går inte att starta evenemanget ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Det går inte att avsluta evenemanget (inte godkänt).} confirmed {Det går inte att avsluta evenemanget (inte startat).} closed {Det går inte att avsluta evenemanget (redan avslutat).} cancelled {Det går inte att avsluta evenemanget (inställt).} other {Det går inte att avsluta evenemanget ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Evenemanget behöver inte längre godkännas (redan godkänt).} open {Evenemanget behöver inte längre godkännas (redan startat).} closed {Evenemanget behöver inte längre godkännas (redan avslutat).} cancelled {Evenemanget behöver inte längre godkännas (inställt).} other {Evenemanget behöver inte längre godkännas ({status}).}}"
 }

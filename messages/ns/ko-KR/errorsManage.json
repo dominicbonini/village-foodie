@@ -223,5 +223,8 @@
   "paperwork_bad_details": "일부 정보가 올바르지 않습니다. 확인한 뒤 다시 시도해 주세요.",
   "paperwork_send_limit": "짧은 시간에 링크를 너무 많이 보냈습니다. 1시간 후 다시 시도해 주세요.",
   "paperwork_send_failed": "이메일을 보내지 못했습니다. 다시 시도해 주세요.",
-  "cost_invalid": "원가를 0 이상으로 입력하거나 칸을 비워 두세요."
+  "cost_invalid": "원가를 0 이상으로 입력하거나 칸을 비워 두세요.",
+  "event_cannot_start": "{status, select, unconfirmed {이 영업을 시작할 수 없어요 (미승인).} open {이 영업을 시작할 수 없어요 (이미 시작됨).} cancelled {이 영업을 시작할 수 없어요 (취소됨).} other {이 영업을 시작할 수 없어요 ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {이 영업을 끝낼 수 없어요 (미승인).} confirmed {이 영업을 끝낼 수 없어요 (시작 전).} closed {이 영업을 끝낼 수 없어요 (이미 종료됨).} cancelled {이 영업을 끝낼 수 없어요 (취소됨).} other {이 영업을 끝낼 수 없어요 ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {이 영업 일정은 더 이상 승인이 필요 없어요 (이미 승인됨).} open {이 영업 일정은 더 이상 승인이 필요 없어요 (이미 시작됨).} closed {이 영업 일정은 더 이상 승인이 필요 없어요 (이미 종료됨).} cancelled {이 영업 일정은 더 이상 승인이 필요 없어요 (취소됨).} other {이 영업 일정은 더 이상 승인이 필요 없어요 ({status}).}}"
 }

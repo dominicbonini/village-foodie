@@ -40,7 +40,8 @@
     "offline": "📴 沒有網絡連線：{n, plural, other {{count} 項更改已儲存在此裝置，恢復連線後會自動傳送。}}設定已鎖定。",
     "syncing": "已恢復連線，正在傳送 {n, plural, other {{count} 項更改}}…",
     "synced": "所有更改已傳送。",
-    "stillQueued": "{n, plural, other {{count} 項更改已儲存在此裝置，仍在嘗試傳送。}}"
+    "stillQueued": "{n, plural, other {{count} 項更改已儲存在此裝置，仍在嘗試傳送。}}",
+    "notApproved": "{n, plural, other {{count} 張訂單等待中}}：此活動尚未批准。批准後即會傳送。"
   },
   "lock": {
     "locked": "HatchGrab 已上鎖",

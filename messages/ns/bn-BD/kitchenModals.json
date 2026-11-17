@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "লোড করতে আবার কানেক্ট করুন",
     "selected": "নির্বাচিত",
-    "status": "{tone, select, paused {⏸ সাময়িক বন্ধ} live {● লাইভ} finished {● সমাপ্ত} cancelled {বাতিল} other {শুরু হয়নি}}"
+    "status": "{tone, select, paused {⏸ সাময়িক বন্ধ} live {● লাইভ} finished {● সমাপ্ত} cancelled {বাতিল} other {শুরু হয়নি}}",
+    "orders": "{n, plural, =0 {কোনো অর্ডার নেই} one {{count}টি অর্ডার} other {{count}টি অর্ডার}}",
+    "needsApproval": "অনুমোদন দরকার",
+    "approvalSummary": "{n, plural, one {{count}টি ইভেন্টের অনুমোদন দরকার} other {{count}টি ইভেন্টের অনুমোদন দরকার}}",
+    "approvalSummaryNote": "{n, plural, one {গ্রাহকরা এটি এখনো দেখতে পান না।} other {গ্রাহকরা এগুলো এখনো দেখতে পান না।}}",
+    "duplicateSameTime": "সম্ভাব্য ডুপ্লিকেট · একই সময়",
+    "duplicateOverlaps": "সম্ভাব্য ডুপ্লিকেট · সময় মিলে যায়",
+    "dayCount": "{n, plural, one {{count}টি ইভেন্ট} other {{count}টি ইভেন্ট}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event} অনুমোদন করবেন?",
+    "overlapText": "{event} সম্ভবত {other} ({start}–{end})-এর ডুপ্লিকেট, যা আগেই অনুমোদিত{n, plural, =0 {} one { এবং তাতে {count}টি অর্ডার আছে} other { এবং তাতে {count}টি অর্ডার আছে}}।",
+    "keep": "{other} রাখুন",
+    "approveAnyway": "তবুও {event} অনুমোদন করুন",
+    "plainText": "{event} এখনো অনুমোদিত নয়। অর্ডার নিতে অনুমোদন করবেন? গ্রাহকরাও এটি দেখবেন।",
+    "approve": "অনুমোদন",
+    "startTitle": "এই ইভেন্ট শুরু করবেন?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {এখন পর্যন্ত {count}টি অর্ডার} other {এখন পর্যন্ত {count}টি অর্ডার}}",
+    "switchTitle": "{event}-এ যাবেন?",
+    "switch": "বদলান",
+    "dismissedText": "{event} সম্ভবত {other}-এর ডুপ্লিকেট, যা আগেই অনুমোদিত। অর্ডার নিতে অনুমোদন করবেন? গ্রাহকরাও এটি দেখবেন।"
   }
 }

@@ -40,7 +40,8 @@
     "offline": "📴 Ühendus puudub — {n, plural, one {{count} muudatus salvestati selles seadmes. See saadetakse, kui oled taas võrgus.} other {{count} muudatust salvestati selles seadmes. Need saadetakse, kui oled taas võrgus.}} Seaded on lukus.",
     "syncing": "Taas võrgus — saadan {n, plural, one {{count} muudatuse} other {{count} muudatust}}…",
     "synced": "Kõik muudatused saadetud.",
-    "stillQueued": "{n, plural, one {{count} muudatus on selles seadmes salvestatud. Proovin seda endiselt saata.} other {{count} muudatust on selles seadmes salvestatud. Proovin neid endiselt saata.}}"
+    "stillQueued": "{n, plural, one {{count} muudatus on selles seadmes salvestatud. Proovin seda endiselt saata.} other {{count} muudatust on selles seadmes salvestatud. Proovin neid endiselt saata.}}",
+    "notApproved": "{n, plural, one {{count} tellimus ootab} other {{count} tellimust ootab}}: see üritus pole kinnitatud. Kinnita see saatmiseks."
   },
   "lock": {
     "locked": "HatchGrab on lukus",

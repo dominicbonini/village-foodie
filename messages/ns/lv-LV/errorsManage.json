@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Daži dati nav pareizi. Lūdzu, pārbaudiet tos un mēģiniet vēlreiz.",
   "paperwork_send_limit": "Īsā laikā nosūtīts daudz saišu. Lūdzu, mēģiniet vēlreiz pēc stundas.",
   "paperwork_send_failed": "E-pastu neizdevās nosūtīt. Lūdzu, mēģiniet vēlreiz.",
-  "cost_invalid": "Ievadiet izmaksas 0 vai vairāk vai atstājiet lauku tukšu."
+  "cost_invalid": "Ievadiet izmaksas 0 vai vairāk vai atstājiet lauku tukšu.",
+  "event_cannot_start": "{status, select, unconfirmed {Pasākumu nevar sākt (nav apstiprināts).} open {Pasākumu nevar sākt (jau sākts).} cancelled {Pasākumu nevar sākt (atcelts).} other {Pasākumu nevar sākt ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Pasākumu nevar beigt (nav apstiprināts).} confirmed {Pasākumu nevar beigt (nav sākts).} closed {Pasākumu nevar beigt (jau beidzies).} cancelled {Pasākumu nevar beigt (atcelts).} other {Pasākumu nevar beigt ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Šim pasākumam vairs nav vajadzīgs apstiprinājums (jau apstiprināts).} open {Šim pasākumam vairs nav vajadzīgs apstiprinājums (jau sākts).} closed {Šim pasākumam vairs nav vajadzīgs apstiprinājums (jau beidzies).} cancelled {Šim pasākumam vairs nav vajadzīgs apstiprinājums (atcelts).} other {Šim pasākumam vairs nav vajadzīgs apstiprinājums ({status}).}}"
 }

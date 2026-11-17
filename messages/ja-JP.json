@@ -221,7 +221,8 @@
       "noteSaved": "メモを保存しました",
       "pricesSaved": "この出店の価格を保存しました",
       "pricesSaveFailed": "価格を保存できませんでした",
-      "reconnectToLoad": "この出店を読み込むには再接続してください"
+      "reconnectToLoad": "この出店を読み込むには再接続してください",
+      "eventApproved": "出店を承認しました"
     },
     "gate": {
       "invalidAccessLink": "無効なアクセスリンクです",
@@ -336,7 +337,8 @@
       "manageEvent": "出店を管理",
       "noEvent": "出店が選択されていません",
       "selectEvent": "出店を選択",
-      "status": "{tone, select, paused {⏸ 一時停止中} live {● 営業中} finished {● 終了} cancelled {中止} other {未開始}}"
+      "status": "{tone, select, paused {⏸ 一時停止中} live {● 営業中} finished {● 終了} cancelled {中止} other {未開始}}",
+      "approveToTakeOrders": "注文を受けるには出店を承認してください"
     },
     "orders": {
       "noEvent": "出店が選択されていません。注文を表示するには出店を選択してください",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "注文は保存されましたが、調理キャパシティ表を更新できませんでした。利用する前に時間枠を確認してください。",
     "created_payment_not_recorded": "注文は作成されましたが、支払い記録を保存できませんでした。修正されるまで、この注文の売上額が正しくない可能性があります。",
     "payment_not_recorded": "支払いを記録できませんでした。修正されるまで、この注文の売上額が正しくない可能性があります。",
-    "payment_not_reversed": "支払いを取り消せませんでした"
+    "payment_not_reversed": "支払いを取り消せませんでした",
+    "event_not_approved": "この出店は承認されていません",
+    "event_not_open": "{status, select, closed {この出店は終了しました。注文を受けるには再開してください。} cancelled {この出店はキャンセルされました。} other {この出店は開いていません。}}"
   },
   "kitchenModals": {
     "close": "閉じる",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "再接続して読み込む",
       "selected": "選択中",
-      "status": "{tone, select, paused {⏸ 一時停止中} live {● 営業中} finished {● 終了} cancelled {中止} other {未開始}}"
+      "status": "{tone, select, paused {⏸ 一時停止中} live {● 営業中} finished {● 終了} cancelled {中止} other {未開始}}",
+      "orders": "{n, plural, =0 {注文なし} other {注文{count}件}}",
+      "needsApproval": "承認待ち",
+      "approvalSummary": "{n, plural, other {承認待ちの出店が{count}件あります}}",
+      "approvalSummaryNote": "{n, plural, other {お客様にはまだ表示されていません。}}",
+      "duplicateSameTime": "重複の可能性 · 同じ時間",
+      "duplicateOverlaps": "重複の可能性 · 時間が重なる",
+      "dayCount": "{n, plural, other {{count}件}}"
+    },
+    "eventGate": {
+      "approveTitle": "{event}を承認しますか？",
+      "overlapText": "{event}は承認済みの{other}（{start}–{end}）と重複している可能性があります{n, plural, =0 {} other {（注文{count}件）}}。",
+      "keep": "{other}を残す",
+      "approveAnyway": "それでも{event}を承認",
+      "plainText": "{event}はまだ承認されていません。承認して注文を受け付けますか？お客様にも表示されます。",
+      "approve": "承認",
+      "startTitle": "この出店を開始しますか？",
+      "startDetails": "{day} · {start}–{end} · {n, plural, other {これまでの注文{count}件}}",
+      "switchTitle": "{event}に切り替えますか？",
+      "switch": "切り替え",
+      "dismissedText": "{event}は承認済みの{other}と重複している可能性があります。承認して注文を受け付けますか？お客様にも表示されます。"
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 接続がありません。{n, plural, other {{count}件の変更をこのデバイスに保存しました。オンラインに戻ると送信されます。}}設定はロックされています。",
       "syncing": "オンラインに戻りました。{n, plural, other {{count}件の変更}}を送信中…",
       "synced": "すべての変更を送信しました。",
-      "stillQueued": "{n, plural, other {{count}件の変更をこのデバイスに保存しています。送信を再試行中です。}}"
+      "stillQueued": "{n, plural, other {{count}件の変更をこのデバイスに保存しています。送信を再試行中です。}}",
+      "notApproved": "{n, plural, other {{count}件の注文が待機中}}：この出店は承認されていません。承認すると送信されます。"
     },
     "lock": {
       "locked": "HatchGrabはロックされています",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "入力内容に誤りがあります。確認してもう一度お試しください。",
     "paperwork_send_limit": "短時間に多くのリンクを送信しました。1時間後にもう一度お試しください。",
     "paperwork_send_failed": "メールを送信できませんでした。もう一度お試しください。",
-    "cost_invalid": "0以上の原価を入力するか、空欄のままにしてください。"
+    "cost_invalid": "0以上の原価を入力するか、空欄のままにしてください。",
+    "event_cannot_start": "{status, select, unconfirmed {この出店を開始できません（未承認）。} open {この出店を開始できません（開始済み）。} cancelled {この出店を開始できません（キャンセル済み）。} other {この出店を開始できません（{status}）。}}",
+    "event_cannot_finish": "{status, select, unconfirmed {この出店を終了できません（未承認）。} confirmed {この出店を終了できません（未開始）。} closed {この出店を終了できません（終了済み）。} cancelled {この出店を終了できません（キャンセル済み）。} other {この出店を終了できません（{status}）。}}",
+    "event_cannot_dismiss": "{status, select, confirmed {この出店はもう承認不要です（承認済み）。} open {この出店はもう承認不要です（開始済み）。} closed {この出店はもう承認不要です（終了済み）。} cancelled {この出店はもう承認不要です（キャンセル済み）。} other {この出店はもう承認不要です（{status}）。}}"
   },
   "tradeArea": {
     "country_missing": "キッチンカーの拠点がある国を選んでください。",

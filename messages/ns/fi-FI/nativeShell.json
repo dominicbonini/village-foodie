@@ -40,7 +40,8 @@
     "offline": "📴 Ei yhteyttä — {n, plural, one {{count} muutos tallennettu tälle laitteelle. Se lähetetään, kun yhteys palaa.} other {{count} muutosta tallennettu tälle laitteelle. Ne lähetetään, kun yhteys palaa.}} Asetukset on lukittu.",
     "syncing": "Yhteys palasi — lähetetään {n, plural, one {{count} muutos} other {{count} muutosta}}…",
     "synced": "Kaikki muutokset lähetetty.",
-    "stillQueued": "{n, plural, one {{count} muutos tallennettu tälle laitteelle. Sen lähettämistä yritetään yhä.} other {{count} muutosta tallennettu tälle laitteelle. Niiden lähettämistä yritetään yhä.}}"
+    "stillQueued": "{n, plural, one {{count} muutos tallennettu tälle laitteelle. Sen lähettämistä yritetään yhä.} other {{count} muutosta tallennettu tälle laitteelle. Niiden lähettämistä yritetään yhä.}}",
+    "notApproved": "{n, plural, one {{count} tilaus odottaa} other {{count} tilausta odottaa}}: tätä tapahtumaa ei ole hyväksytty. Hyväksy se lähettääksesi."
   },
   "lock": {
     "locked": "HatchGrab on lukittu",

@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Повторно свързване",
     "selected": "Избрано",
-    "status": "{tone, select, paused {⏸ На пауза} live {● Активно} finished {● Приключило} cancelled {Отменено} other {Не е започнало}}"
+    "status": "{tone, select, paused {⏸ На пауза} live {● Активно} finished {● Приключило} cancelled {Отменено} other {Не е започнало}}",
+    "orders": "{n, plural, =0 {Няма поръчки} one {{count} поръчка} other {{count} поръчки}}",
+    "needsApproval": "Чака одобрение",
+    "approvalSummary": "{n, plural, one {{count} събитие чака одобрение} other {{count} събития чакат одобрение}}",
+    "approvalSummaryNote": "{n, plural, one {Клиентите още не го виждат.} other {Клиентите още не ги виждат.}}",
+    "duplicateSameTime": "Възможен дубликат · същия час",
+    "duplicateOverlaps": "Възможен дубликат · припокрива се",
+    "dayCount": "{n, plural, one {{count} събитие} other {{count} събития}}"
+  },
+  "eventGate": {
+    "approveTitle": "Одобряване на {event}?",
+    "overlapText": "{event} може да е дубликат на {other} ({start}–{end}), което вече е одобрено{n, plural, =0 {} one { и има {count} поръчка} other { и има {count} поръчки}}.",
+    "keep": "Запазете {other}",
+    "approveAnyway": "Все пак одобрете {event}",
+    "plainText": "{event} още не е одобрено. Да го одобрите ли, за да приемате поръчки? Клиентите също ще го виждат.",
+    "approve": "Одобряване",
+    "startTitle": "Да започне ли това събитие?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} поръчка досега} other {{count} поръчки досега}}",
+    "switchTitle": "Превключване към {event}?",
+    "switch": "Превключване",
+    "dismissedText": "{event} може да е дубликат на {other}, което вече е одобрено. Да го одобрите ли, за да приемате поръчки? Клиентите също ще го виждат."
   }
 }

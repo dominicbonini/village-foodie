@@ -223,5 +223,8 @@
   "paperwork_bad_details": "部分資料不正確，請檢查後再試。",
   "paperwork_send_limit": "你在短時間內傳送了太多連結，請一小時後再試。",
   "paperwork_send_failed": "未能傳送電郵，請再試一次。",
-  "cost_invalid": "請輸入 0 或以上的成本，或者留空。"
+  "cost_invalid": "請輸入 0 或以上的成本，或者留空。",
+  "event_cannot_start": "{status, select, unconfirmed {無法開始此活動（未批准）。} open {無法開始此活動（已開始）。} cancelled {無法開始此活動（已取消）。} other {無法開始此活動（{status}）。}}",
+  "event_cannot_finish": "{status, select, unconfirmed {無法結束此活動（未批准）。} confirmed {無法結束此活動（未開始）。} closed {無法結束此活動（已結束）。} cancelled {無法結束此活動（已取消）。} other {無法結束此活動（{status}）。}}",
+  "event_cannot_dismiss": "{status, select, confirmed {此活動已不需要批准（已批准）。} open {此活動已不需要批准（已開始）。} closed {此活動已不需要批准（已結束）。} cancelled {此活動已不需要批准（已取消）。} other {此活動已不需要批准（{status}）。}}"
 }

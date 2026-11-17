@@ -67,5 +67,7 @@
   "slot_board_not_updated": "注文は保存されましたが、調理キャパシティ表を更新できませんでした。利用する前に時間枠を確認してください。",
   "created_payment_not_recorded": "注文は作成されましたが、支払い記録を保存できませんでした。修正されるまで、この注文の売上額が正しくない可能性があります。",
   "payment_not_recorded": "支払いを記録できませんでした。修正されるまで、この注文の売上額が正しくない可能性があります。",
-  "payment_not_reversed": "支払いを取り消せませんでした"
+  "payment_not_reversed": "支払いを取り消せませんでした",
+  "event_not_approved": "この出店は承認されていません",
+  "event_not_open": "{status, select, closed {この出店は終了しました。注文を受けるには再開してください。} cancelled {この出店はキャンセルされました。} other {この出店は開いていません。}}"
 }

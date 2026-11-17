@@ -221,7 +221,8 @@
       "noteSaved": "Piezīme saglabāta",
       "pricesSaved": "Cenas šim pasākumam saglabātas",
       "pricesSaveFailed": "Cenas neizdevās saglabāt",
-      "reconnectToLoad": "Atjaunojiet savienojumu, lai ielādētu šo pasākumu"
+      "reconnectToLoad": "Atjaunojiet savienojumu, lai ielādētu šo pasākumu",
+      "eventApproved": "Pasākums apstiprināts"
     },
     "gate": {
       "invalidAccessLink": "Nederīga piekļuves saite",
@@ -336,7 +337,8 @@
       "manageEvent": "Pārvaldīt pasākumu",
       "noEvent": "Pasākums nav izvēlēts",
       "selectEvent": "Izvēlēties pasākumu",
-      "status": "{tone, select, paused {⏸ Apturēts} live {● Notiek} finished {● Beidzies} cancelled {Atcelts} other {Nav sākts}}"
+      "status": "{tone, select, paused {⏸ Apturēts} live {● Notiek} finished {● Beidzies} cancelled {Atcelts} other {Nav sākts}}",
+      "approveToTakeOrders": "Apstipriniet pasākumu, lai pieņemtu pasūtījumus"
     },
     "orders": {
       "noEvent": "Pasākums nav izvēlēts — izvēlieties pasākumu, lai skatītu pasūtījumus",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Pasūtījums saglabāts, bet virtuves jaudas tāfeli neizdevās atjaunināt — pārbaudiet laika logu, pirms uz to paļaujaties.",
     "created_payment_not_recorded": "Pasūtījums izveidots, bet maksājuma ierakstu neizdevās saglabāt — šī pasūtījuma ieņēmumu summa var būt nepareiza, līdz tas tiks izlabots.",
     "payment_not_recorded": "Maksājumu neizdevās reģistrēt — šī pasūtījuma ieņēmumu summa var būt nepareiza, līdz tas tiks izlabots.",
-    "payment_not_reversed": "Maksājumu neizdevās atcelt"
+    "payment_not_reversed": "Maksājumu neizdevās atcelt",
+    "event_not_approved": "Šis pasākums nav apstiprināts",
+    "event_not_open": "{status, select, closed {Šis pasākums ir beidzies. Atsāciet to, lai pieņemtu pasūtījumus.} cancelled {Šis pasākums ir atcelts.} other {Šis pasākums nav atvērts.}}"
   },
   "kitchenModals": {
     "close": "Aizvērt",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Atjaunojiet savienojumu, lai ielādētu",
       "selected": "Izvēlēts",
-      "status": "{tone, select, paused {⏸ Apturēts} live {● Norisinās} finished {● Pabeigts} cancelled {Atcelts} other {Nav sākts}}"
+      "status": "{tone, select, paused {⏸ Apturēts} live {● Norisinās} finished {● Pabeigts} cancelled {Atcelts} other {Nav sākts}}",
+      "orders": "{n, plural, =0 {Nav pasūtījumu} zero {{count} pasūtījumu} one {{count} pasūtījums} other {{count} pasūtījumi}}",
+      "needsApproval": "Jāapstiprina",
+      "approvalSummary": "{n, plural, zero {{count} pasākumu jāapstiprina} one {{count} pasākums jāapstiprina} other {{count} pasākumi jāapstiprina}}",
+      "approvalSummaryNote": "{n, plural, zero {Klienti tos vēl neredz.} one {Klienti to vēl neredz.} other {Klienti tos vēl neredz.}}",
+      "duplicateSameTime": "Iespējams dublikāts · tas pats laiks",
+      "duplicateOverlaps": "Iespējams dublikāts · pārklājas",
+      "dayCount": "{n, plural, zero {{count} pasākumu} one {{count} pasākums} other {{count} pasākumi}}"
+    },
+    "eventGate": {
+      "approveTitle": "Apstiprināt {event}?",
+      "overlapText": "{event} varētu būt pasākuma {other} ({start}–{end}) dublikāts, kas jau ir apstiprināts{n, plural, =0 {} zero { un tam ir {count} pasūtījumu} one { un tam ir {count} pasūtījums} other { un tam ir {count} pasūtījumi}}.",
+      "keep": "Paturēt {other}",
+      "approveAnyway": "Tomēr apstiprināt {event}",
+      "plainText": "{event} vēl nav apstiprināts. Apstiprināt, lai pieņemtu pasūtījumus? To redzēs arī klienti.",
+      "approve": "Apstiprināt",
+      "startTitle": "Sākt šo pasākumu?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, zero {līdz šim {count} pasūtījumu} one {līdz šim {count} pasūtījums} other {līdz šim {count} pasūtījumi}}",
+      "switchTitle": "Pārslēgties uz {event}?",
+      "switch": "Pārslēgt",
+      "dismissedText": "{event} varētu būt pasākuma {other} dublikāts, kas jau ir apstiprināts. Apstiprināt, lai pieņemtu pasūtījumus? To redzēs arī klienti."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Nav savienojuma — {n, plural, zero {{count} izmaiņas saglabātas šajā ierīcē. Tās tiks nosūtītas, kad atkal būsiet tiešsaistē.} one {{count} izmaiņa saglabāta šajā ierīcē. Tā tiks nosūtīta, kad atkal būsiet tiešsaistē.} other {{count} izmaiņas saglabātas šajā ierīcē. Tās tiks nosūtītas, kad atkal būsiet tiešsaistē.}} Iestatījumi ir bloķēti.",
       "syncing": "Atkal tiešsaistē — sūta {n, plural, zero {{count} izmaiņas} one {{count} izmaiņu} other {{count} izmaiņas}}…",
       "synced": "Visas izmaiņas nosūtītas.",
-      "stillQueued": "{n, plural, zero {{count} izmaiņas saglabātas šajā ierīcē. Joprojām mēģina tās nosūtīt.} one {{count} izmaiņa saglabāta šajā ierīcē. Joprojām mēģina to nosūtīt.} other {{count} izmaiņas saglabātas šajā ierīcē. Joprojām mēģina tās nosūtīt.}}"
+      "stillQueued": "{n, plural, zero {{count} izmaiņas saglabātas šajā ierīcē. Joprojām mēģina tās nosūtīt.} one {{count} izmaiņa saglabāta šajā ierīcē. Joprojām mēģina to nosūtīt.} other {{count} izmaiņas saglabātas šajā ierīcē. Joprojām mēģina tās nosūtīt.}}",
+      "notApproved": "{n, plural, zero {{count} pasūtījumu gaida} one {{count} pasūtījums gaida} other {{count} pasūtījumi gaida}}: šis pasākums nav apstiprināts. Apstipriniet to, lai nosūtītu."
     },
     "lock": {
       "locked": "HatchGrab ir bloķēts",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Daži dati nav pareizi. Lūdzu, pārbaudiet tos un mēģiniet vēlreiz.",
     "paperwork_send_limit": "Īsā laikā nosūtīts daudz saišu. Lūdzu, mēģiniet vēlreiz pēc stundas.",
     "paperwork_send_failed": "E-pastu neizdevās nosūtīt. Lūdzu, mēģiniet vēlreiz.",
-    "cost_invalid": "Ievadiet izmaksas 0 vai vairāk vai atstājiet lauku tukšu."
+    "cost_invalid": "Ievadiet izmaksas 0 vai vairāk vai atstājiet lauku tukšu.",
+    "event_cannot_start": "{status, select, unconfirmed {Pasākumu nevar sākt (nav apstiprināts).} open {Pasākumu nevar sākt (jau sākts).} cancelled {Pasākumu nevar sākt (atcelts).} other {Pasākumu nevar sākt ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Pasākumu nevar beigt (nav apstiprināts).} confirmed {Pasākumu nevar beigt (nav sākts).} closed {Pasākumu nevar beigt (jau beidzies).} cancelled {Pasākumu nevar beigt (atcelts).} other {Pasākumu nevar beigt ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Šim pasākumam vairs nav vajadzīgs apstiprinājums (jau apstiprināts).} open {Šim pasākumam vairs nav vajadzīgs apstiprinājums (jau sākts).} closed {Šim pasākumam vairs nav vajadzīgs apstiprinājums (jau beidzies).} cancelled {Šim pasākumam vairs nav vajadzīgs apstiprinājums (atcelts).} other {Šim pasākumam vairs nav vajadzīgs apstiprinājums ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Izvēlieties valsti, kurā atrodas jūsu food truck.",

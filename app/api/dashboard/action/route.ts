@@ -5,7 +5,10 @@ import { supabase } from '@/lib/supabase'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, sendRefundEmail, cancellationPaymentSentence, notifyCustomer } from '@/lib/email'
 import { moneyFormatForOrder, moneyFormatForTruck } from '@/lib/money-server'
 import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
-import { getLocalDateInTz, getNowMinsInTz } from '@/lib/time-utils'
+import { getLocalDateInTz, getNowMinsInTz, addDaysYmd } from '@/lib/time-utils'
+// events-overlap-2: the walk-up approval gate and the offline-replay move onto the overlapping approved event.
+import { approvedOverlaps, overlapTarget } from '@/lib/event-default'
+import type { ConflictEvent } from '@/lib/event-conflicts'
 import { crossesMidnight, isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/event-window'
 import { formatMajor } from '@/lib/money-format'
 import { translatorFor } from '@/lib/i18n/translator'
@@ -1324,10 +1327,75 @@ export async function POST(req: NextRequest) {
       // scope for a future edit to reach for by accident, which is the whole failure mode this change
       // exists to close. (§4b's rule still holds and is now enforced by the engine: dealSavings is
       // notional and lands in orders.deal_savings; discount_amt means money actually deducted.)
-      const { customerName, customerPhone, customerEmail, slot, items, notes, event_date: passedEventDate, event_id: passedEventId } = manualOrder
+      const { customerName, customerPhone, customerEmail, slot, items, notes, event_date: rawPassedEventDate, event_id: rawPassedEventId } = manualOrder
       const deals = manualOrder.deals ?? null
       if (!items?.length && !deals?.length) {
         return NextResponse.json(await kErr('items_required'), { status: 400 })
+      }
+
+      // ══ 🔴 events-overlap-2: A WALK-UP GOES ONLY ON AN APPROVED EVENT (17 November 2026) ═══════════════════════════════
+      // This route used the panel's event id as sent and never read its status, so on 13 November Pizzeria Gusto's staff
+      // took 23 walk-ups on a scraped event nobody had approved, beside the live one (docs/events-overlap-1-report.md §5).
+      //   • CONFIRMED, OPEN and CLOSED events take walk-ups, as before (Q5 → B: a late customer after the finish is fine).
+      //   • LIVE request on an UNCONFIRMED event → 409 `event_not_approved`; the dashboard opens its approve dialog.
+      //   • LIVE request on a CANCELLED event → 409 `event_not_open` (the event's status in params).
+      //   • OFFLINE REPLAY (the outbox stamps `placed_offline: true` on every queued body, lib/native/orderGate.ts) — the
+      //     same rule; the food has usually been handed over already, so:
+      //       – an UNCONFIRMED event → moved onto the APPROVED or STARTED event it overlaps (the one with the most orders,
+      //         lib/event-default.ts overlapTarget) — its number then comes from that event's counter;
+      //       – nothing overlaps → 409 `event_not_approved` with `keep_queued: true`: the outbox keeps it PENDING (never
+      //         dropped, never a silent conflict) until the event is approved and the next drain retries it.
+      //       – a CANCELLED event → 409 `event_not_open` without keep_queued: the outbox flags it as a conflict (the red
+      //         banner, kept on the device) — a cancelled event will not come back, so retrying would never succeed;
+      //   • A read failure is a 503 `retryable`, so a queued order waits rather than being judged on no data.
+      // No event id at all (the date fallback below) is unchanged: it resolves at most ONE event, and that one is checked
+      // by the same rule after it resolves.
+      const isReplay = body?.placed_offline === true
+      let passedEventId: string | null = rawPassedEventId || null
+      let passedEventDate: string | null = rawPassedEventDate || null
+      let movedFromEventId: string | null = null
+      const approvalGate = async (eventId: string): Promise<NextResponse | null> => {
+        const { data: ev, error: evErr } = await supabase
+          .from('truck_events')
+          .select('id, status, event_date, start_time, end_time, venue_name, postcode, van_id')
+          .eq('id', eventId)
+          .eq('truck_id', truck.id)
+          .maybeSingle()
+        if (evErr) return NextResponse.json(await kErr('service_unavailable', {}, { retryable: true }), { status: 503, headers: { 'Retry-After': '10' } })
+        const status = String(ev?.status ?? 'missing')
+        if (status === 'confirmed' || status === 'open' || status === 'closed') return null
+        if (status === 'unconfirmed' && isReplay && ev) {
+          const { data: sameDays, error: sdErr } = await supabase
+            .from('truck_events')
+            .select('id, status, event_date, start_time, end_time, venue_name, postcode, van_id')
+            .eq('truck_id', truck.id)
+            .in('event_date', [addDaysYmd(ev.event_date, -1), ev.event_date, addDaysYmd(ev.event_date, 1)])
+            .in('status', ['confirmed', 'open'])
+          if (sdErr) return NextResponse.json(await kErr('service_unavailable', {}, { retryable: true }), { status: 503, headers: { 'Retry-After': '10' } })
+          const overlaps = approvedOverlaps(ev as ConflictEvent, (sameDays ?? []) as ConflictEvent[])
+          if (overlaps.length) {
+            const counts: Record<string, number> = {}
+            await Promise.all(overlaps.map(async o => {
+              const { count } = await supabase.from('orders').select('order_key', { count: 'exact', head: true })
+                .eq('truck_id', truck.id).eq('event_id', o.id).neq('status', 'cancelled')
+              counts[o.id] = count ?? 0
+            }))
+            const target = overlapTarget(overlaps, counts)!
+            console.warn(`[manual] offline replay for unapproved event ${eventId} moved to overlapping approved event ${target.id}`)
+            movedFromEventId = eventId
+            passedEventId = target.id
+            passedEventDate = target.event_date
+            return null
+          }
+        }
+        if (status === 'unconfirmed' || status === 'missing') {
+          return NextResponse.json(await kErr('event_not_approved', {}, { event_id: eventId, event_status: status, ...(isReplay ? { keep_queued: true } : {}) }), { status: 409 })
+        }
+        return NextResponse.json(await kErr('event_not_open', { status }, { event_id: eventId, event_status: status }), { status: 409 })
+      }
+      if (passedEventId) {
+        const refused = await approvalGate(passedEventId)
+        if (refused) return refused
       }
 
       // ── Required-modifier completeness guard (operator backstop; mirrors the §15 customer-submit
@@ -1459,6 +1527,12 @@ export async function POST(req: NextRequest) {
           orderEventId = dateEvents[0].id
         } else if ((dateEvents?.length ?? 0) > 1) {
           console.warn(`[manual] ${dateEvents!.length} events on ${eventDate} for truck ${truck.id} — leaving event_id null`)
+        }
+        // events-overlap-2: the one event the date resolved is held to the same rule as a named one.
+        if (orderEventId) {
+          const refused = await approvalGate(orderEventId)
+          if (refused) return refused
+          if (movedFromEventId) { orderEventId = passedEventId; if (passedEventDate) eventDate = passedEventDate }
         }
       }
       // Walk-up / manual orders ALWAYS confirm (Section 5): the operator is present and

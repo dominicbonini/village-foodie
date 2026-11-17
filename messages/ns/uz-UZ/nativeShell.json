@@ -40,7 +40,8 @@
     "offline": "📴 Aloqa yoʻq — {n, plural, one {{count} ta oʻzgarish shu qurilmada saqlandi. Internet qaytganda yuboriladi.} other {{count} ta oʻzgarish shu qurilmada saqlandi. Internet qaytganda yuboriladi.}} Sozlamalar qulflangan.",
     "syncing": "Aloqa tiklandi — {n, plural, one {{count} ta oʻzgarish} other {{count} ta oʻzgarish}} yuborilmoqda…",
     "synced": "Barcha oʻzgarishlar yuborildi.",
-    "stillQueued": "{n, plural, one {{count} ta oʻzgarish shu qurilmada saqlandi. Hali ham yuborishga urinilmoqda.} other {{count} ta oʻzgarish shu qurilmada saqlandi. Hali ham yuborishga urinilmoqda.}}"
+    "stillQueued": "{n, plural, one {{count} ta oʻzgarish shu qurilmada saqlandi. Hali ham yuborishga urinilmoqda.} other {{count} ta oʻzgarish shu qurilmada saqlandi. Hali ham yuborishga urinilmoqda.}}",
+    "notApproved": "{n, plural, one {{count} ta buyurtma kutmoqda} other {{count} ta buyurtma kutmoqda}}: bu tadbir tasdiqlanmagan. Yuborish uchun tasdiqlang."
   },
   "lock": {
     "locked": "HatchGrab qulflangan",

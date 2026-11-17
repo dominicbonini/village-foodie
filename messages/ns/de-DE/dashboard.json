@@ -36,7 +36,8 @@
     "noteSaved": "Notiz gespeichert",
     "pricesSaved": "Preise für dieses Event gespeichert",
     "pricesSaveFailed": "Die Preise konnten nicht gespeichert werden",
-    "reconnectToLoad": "Stellen Sie die Verbindung wieder her, um dieses Event zu laden"
+    "reconnectToLoad": "Stellen Sie die Verbindung wieder her, um dieses Event zu laden",
+    "eventApproved": "Event freigegeben"
   },
   "gate": {
     "invalidAccessLink": "Ungültiger Zugangslink",
@@ -151,7 +152,8 @@
     "manageEvent": "Event verwalten",
     "noEvent": "Kein Event ausgewählt",
     "selectEvent": "Event auswählen",
-    "status": "{tone, select, paused {⏸ Pausiert} live {● Live} finished {● Beendet} cancelled {Abgesagt} other {Nicht gestartet}}"
+    "status": "{tone, select, paused {⏸ Pausiert} live {● Live} finished {● Beendet} cancelled {Abgesagt} other {Nicht gestartet}}",
+    "approveToTakeOrders": "Event freigeben, um Bestellungen anzunehmen"
   },
   "orders": {
     "noEvent": "Kein Event ausgewählt – wählen Sie ein Event, um Bestellungen zu sehen",

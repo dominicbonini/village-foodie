@@ -36,7 +36,8 @@
     "noteSaved": "메모가 저장되었어요",
     "pricesSaved": "이번 영업 일정의 가격이 저장되었어요",
     "pricesSaveFailed": "가격을 저장하지 못했어요",
-    "reconnectToLoad": "이 영업 일정을 불러오려면 다시 연결하세요"
+    "reconnectToLoad": "이 영업 일정을 불러오려면 다시 연결하세요",
+    "eventApproved": "영업 일정 승인됨"
   },
   "gate": {
     "invalidAccessLink": "유효하지 않은 접속 링크",
@@ -151,7 +152,8 @@
     "manageEvent": "영업 일정 관리",
     "noEvent": "선택된 영업 일정 없음",
     "selectEvent": "영업 일정 선택",
-    "status": "{tone, select, paused {⏸ 일시 중지} live {● 영업 중} finished {● 종료됨} cancelled {취소됨} other {시작 전}}"
+    "status": "{tone, select, paused {⏸ 일시 중지} live {● 영업 중} finished {● 종료됨} cancelled {취소됨} other {시작 전}}",
+    "approveToTakeOrders": "주문을 받으려면 영업 일정을 승인하세요"
   },
   "orders": {
     "noEvent": "선택된 영업 일정이 없어요 — 주문을 보려면 영업 일정을 선택하세요",

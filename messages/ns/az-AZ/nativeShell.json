@@ -40,7 +40,8 @@
     "offline": "📴 Bağlantı yoxdur — {n, plural, one {{count} dəyişiklik bu cihazda saxlanıldı. Yenidən onlayn olduqda göndəriləcək.} other {{count} dəyişiklik bu cihazda saxlanıldı. Yenidən onlayn olduqda göndəriləcək.}} Ayarlar kilidlənib.",
     "syncing": "Yenidən onlayn — {n, plural, one {{count} dəyişiklik göndərilir} other {{count} dəyişiklik göndərilir}}…",
     "synced": "Bütün dəyişikliklər göndərildi.",
-    "stillQueued": "{n, plural, one {{count} dəyişiklik bu cihazda saxlanıldı. Onu göndərməyə hələ də cəhd edilir.} other {{count} dəyişiklik bu cihazda saxlanıldı. Onları göndərməyə hələ də cəhd edilir.}}"
+    "stillQueued": "{n, plural, one {{count} dəyişiklik bu cihazda saxlanıldı. Onu göndərməyə hələ də cəhd edilir.} other {{count} dəyişiklik bu cihazda saxlanıldı. Onları göndərməyə hələ də cəhd edilir.}}",
+    "notApproved": "{n, plural, one {{count} sifariş gözləyir} other {{count} sifariş gözləyir}}: bu tədbir təsdiqlənməyib. Göndərmək üçün təsdiqləyin."
   },
   "lock": {
     "locked": "HatchGrab kilidlənib",

@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Nogle af oplysningerne er ikke rigtige. Tjek dem, og prøv igen.",
   "paperwork_send_limit": "Du har sendt mange links på kort tid. Prøv igen om en time.",
   "paperwork_send_failed": "E-mailen kunne ikke sendes. Prøv igen.",
-  "cost_invalid": "Angiv en kostpris på 0 eller mere, eller lad feltet stå tomt."
+  "cost_invalid": "Angiv en kostpris på 0 eller mere, eller lad feltet stå tomt.",
+  "event_cannot_start": "{status, select, unconfirmed {Arrangementet kan ikke startes (ikke godkendt).} open {Arrangementet kan ikke startes (allerede startet).} cancelled {Arrangementet kan ikke startes (aflyst).} other {Arrangementet kan ikke startes ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Arrangementet kan ikke afsluttes (ikke godkendt).} confirmed {Arrangementet kan ikke afsluttes (ikke startet).} closed {Arrangementet kan ikke afsluttes (allerede slut).} cancelled {Arrangementet kan ikke afsluttes (aflyst).} other {Arrangementet kan ikke afsluttes ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Arrangementet skal ikke længere godkendes (allerede godkendt).} open {Arrangementet skal ikke længere godkendes (allerede startet).} closed {Arrangementet skal ikke længere godkendes (allerede slut).} cancelled {Arrangementet skal ikke længere godkendes (aflyst).} other {Arrangementet skal ikke længere godkendes ({status}).}}"
 }

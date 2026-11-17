@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Beberapa detail tidak sesuai. Silakan periksa dan coba lagi.",
   "paperwork_send_limit": "Anda sudah mengirim banyak link dalam waktu singkat. Silakan coba lagi dalam satu jam.",
   "paperwork_send_failed": "Email tidak dapat dikirim. Silakan coba lagi.",
-  "cost_invalid": "Masukkan biaya 0 atau lebih, atau kosongkan kolomnya."
+  "cost_invalid": "Masukkan biaya 0 atau lebih, atau kosongkan kolomnya.",
+  "event_cannot_start": "{status, select, unconfirmed {Acara ini tidak bisa dimulai (belum disetujui).} open {Acara ini tidak bisa dimulai (sudah dimulai).} cancelled {Acara ini tidak bisa dimulai (dibatalkan).} other {Acara ini tidak bisa dimulai ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Acara ini tidak bisa diselesaikan (belum disetujui).} confirmed {Acara ini tidak bisa diselesaikan (belum dimulai).} closed {Acara ini tidak bisa diselesaikan (sudah selesai).} cancelled {Acara ini tidak bisa diselesaikan (dibatalkan).} other {Acara ini tidak bisa diselesaikan ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Acara ini tidak perlu disetujui lagi (sudah disetujui).} open {Acara ini tidak perlu disetujui lagi (sudah dimulai).} closed {Acara ini tidak perlu disetujui lagi (sudah selesai).} cancelled {Acara ini tidak perlu disetujui lagi (dibatalkan).} other {Acara ini tidak perlu disetujui lagi ({status}).}}"
 }

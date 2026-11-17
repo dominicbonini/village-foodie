@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Bazı bilgiler doğru değil. Lütfen kontrol edip tekrar deneyin.",
   "paperwork_send_limit": "Kısa sürede çok sayıda bağlantı gönderdiniz. Lütfen bir saat sonra tekrar deneyin.",
   "paperwork_send_failed": "E-posta gönderilemedi. Lütfen tekrar deneyin.",
-  "cost_invalid": "0 veya daha yüksek bir maliyet girin ya da kutuyu boş bırakın."
+  "cost_invalid": "0 veya daha yüksek bir maliyet girin ya da kutuyu boş bırakın.",
+  "event_cannot_start": "{status, select, unconfirmed {Bu etkinlik başlatılamıyor (onaylanmadı).} open {Bu etkinlik başlatılamıyor (zaten başladı).} cancelled {Bu etkinlik başlatılamıyor (iptal edildi).} other {Bu etkinlik başlatılamıyor ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Bu etkinlik bitirilemiyor (onaylanmadı).} confirmed {Bu etkinlik bitirilemiyor (başlamadı).} closed {Bu etkinlik bitirilemiyor (zaten bitti).} cancelled {Bu etkinlik bitirilemiyor (iptal edildi).} other {Bu etkinlik bitirilemiyor ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {Bu etkinliğin artık onaya ihtiyacı yok (zaten onaylandı).} open {Bu etkinliğin artık onaya ihtiyacı yok (zaten başladı).} closed {Bu etkinliğin artık onaya ihtiyacı yok (zaten bitti).} cancelled {Bu etkinliğin artık onaya ihtiyacı yok (iptal edildi).} other {Bu etkinliğin artık onaya ihtiyacı yok ({status}).}}"
 }

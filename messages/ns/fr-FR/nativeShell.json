@@ -40,7 +40,8 @@
     "offline": "📴 Pas de connexion — {n, plural, one {{count} modification enregistrée sur cet appareil. Elle sera envoyée dès votre retour en ligne.} other {{count} modifications enregistrées sur cet appareil. Elles seront envoyées dès votre retour en ligne.}} Les paramètres sont verrouillés.",
     "syncing": "De retour en ligne — envoi de {n, plural, one {{count} modification} other {{count} modifications}}…",
     "synced": "Modifications envoyées.",
-    "stillQueued": "{n, plural, one {{count} modification enregistrée sur cet appareil. Nouvelle tentative d’envoi en cours.} other {{count} modifications enregistrées sur cet appareil. Nouvelle tentative d’envoi en cours.}}"
+    "stillQueued": "{n, plural, one {{count} modification enregistrée sur cet appareil. Nouvelle tentative d’envoi en cours.} other {{count} modifications enregistrées sur cet appareil. Nouvelle tentative d’envoi en cours.}}",
+    "notApproved": "{n, plural, one {{count} commande en attente} many {{count} commandes en attente} other {{count} commandes en attente}} : cet événement n’est pas approuvé. Approuvez-le pour l’envoi."
   },
   "lock": {
     "locked": "HatchGrab est verrouillé",

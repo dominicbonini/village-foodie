@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "लोड करने के लिए फिर से कनेक्ट करें",
     "selected": "चुना गया",
-    "status": "{tone, select, paused {⏸ रुका हुआ} live {● लाइव} finished {● ख़त्म} cancelled {रद्द} other {शुरू नहीं हुआ}}"
+    "status": "{tone, select, paused {⏸ रुका हुआ} live {● लाइव} finished {● ख़त्म} cancelled {रद्द} other {शुरू नहीं हुआ}}",
+    "orders": "{n, plural, =0 {कोई ऑर्डर नहीं} one {{count} ऑर्डर} other {{count} ऑर्डर}}",
+    "needsApproval": "मंज़ूरी बाकी",
+    "approvalSummary": "{n, plural, one {{count} इवेंट को मंज़ूरी चाहिए} other {{count} इवेंट को मंज़ूरी चाहिए}}",
+    "approvalSummaryNote": "{n, plural, one {ग्राहक इसे अभी नहीं देख सकते।} other {ग्राहक इन्हें अभी नहीं देख सकते।}}",
+    "duplicateSameTime": "संभावित डुप्लिकेट · वही समय",
+    "duplicateOverlaps": "संभावित डुप्लिकेट · समय टकराता है",
+    "dayCount": "{n, plural, one {{count} इवेंट} other {{count} इवेंट}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event} को मंज़ूरी दें?",
+    "overlapText": "{event} शायद {other} ({start}–{end}) का डुप्लिकेट है, जिसे पहले ही मंज़ूरी मिल चुकी है{n, plural, =0 {} one { और उसमें {count} ऑर्डर है} other { और उसमें {count} ऑर्डर हैं}}।",
+    "keep": "{other} रखें",
+    "approveAnyway": "फिर भी {event} को मंज़ूरी दें",
+    "plainText": "{event} को अभी मंज़ूरी नहीं मिली है। ऑर्डर लेने के लिए मंज़ूरी दें? ग्राहक भी इसे देखेंगे।",
+    "approve": "मंज़ूरी दें",
+    "startTitle": "यह इवेंट शुरू करें?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {अब तक {count} ऑर्डर} other {अब तक {count} ऑर्डर}}",
+    "switchTitle": "{event} पर जाएँ?",
+    "switch": "बदलें",
+    "dismissedText": "{event} शायद {other} का डुप्लिकेट है, जिसे पहले ही मंज़ूरी मिल चुकी है। ऑर्डर लेने के लिए मंज़ूरी दें? ग्राहक भी इसे देखेंगे।"
   }
 }

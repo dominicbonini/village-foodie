@@ -221,7 +221,8 @@
       "noteSaved": "Notitie opgeslagen",
       "pricesSaved": "Prijzen opgeslagen voor dit evenement",
       "pricesSaveFailed": "Kon de prijzen niet opslaan",
-      "reconnectToLoad": "Maak opnieuw verbinding om dit evenement te laden"
+      "reconnectToLoad": "Maak opnieuw verbinding om dit evenement te laden",
+      "eventApproved": "Evenement goedgekeurd"
     },
     "gate": {
       "invalidAccessLink": "Ongeldige toegangslink",
@@ -336,7 +337,8 @@
       "manageEvent": "Evenement beheren",
       "noEvent": "Geen evenement gekozen",
       "selectEvent": "Kies evenement",
-      "status": "{tone, select, paused {⏸ Gepauzeerd} live {● Live} finished {● Afgelopen} cancelled {Geannuleerd} other {Niet gestart}}"
+      "status": "{tone, select, paused {⏸ Gepauzeerd} live {● Live} finished {● Afgelopen} cancelled {Geannuleerd} other {Niet gestart}}",
+      "approveToTakeOrders": "Keur een evenement goed om bestellingen aan te nemen"
     },
     "orders": {
       "noEvent": "Geen evenement gekozen — kies een evenement om bestellingen te zien",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Bestelling opgeslagen, maar het overzicht van het maximaal aantal bestellingen per tijdslot kon niet worden bijgewerkt — controleer het tijdslot voordat je erop vertrouwt.",
     "created_payment_not_recorded": "Bestelling aangemaakt, maar de betaling kon niet worden geregistreerd — de omzet van deze bestelling kan onjuist zijn tot dit is hersteld.",
     "payment_not_recorded": "De betaling kon niet worden geregistreerd — de omzet van deze bestelling kan onjuist zijn tot dit is hersteld.",
-    "payment_not_reversed": "De betaling kon niet worden teruggedraaid"
+    "payment_not_reversed": "De betaling kon niet worden teruggedraaid",
+    "event_not_approved": "Dit evenement is niet goedgekeurd",
+    "event_not_open": "{status, select, closed {Dit evenement is afgelopen. Herstart het om bestellingen aan te nemen.} cancelled {Dit evenement is geannuleerd.} other {Dit evenement is niet open.}}"
   },
   "kitchenModals": {
     "close": "Sluiten",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Opnieuw verbinden om te laden",
       "selected": "Geselecteerd",
-      "status": "{tone, select, paused {⏸ Gepauzeerd} live {● Live} finished {● Afgelopen} cancelled {Geannuleerd} other {Niet gestart}}"
+      "status": "{tone, select, paused {⏸ Gepauzeerd} live {● Live} finished {● Afgelopen} cancelled {Geannuleerd} other {Niet gestart}}",
+      "orders": "{n, plural, =0 {Geen bestellingen} one {{count} bestelling} other {{count} bestellingen}}",
+      "needsApproval": "Goedkeuring nodig",
+      "approvalSummary": "{n, plural, one {{count} evenement moet worden goedgekeurd} other {{count} evenementen moeten worden goedgekeurd}}",
+      "approvalSummaryNote": "{n, plural, one {Klanten zien het nog niet.} other {Klanten zien ze nog niet.}}",
+      "duplicateSameTime": "Mogelijk dubbel · zelfde tijd",
+      "duplicateOverlaps": "Mogelijk dubbel · overlapt",
+      "dayCount": "{n, plural, one {{count} evenement} other {{count} evenementen}}"
+    },
+    "eventGate": {
+      "approveTitle": "{event} goedkeuren?",
+      "overlapText": "{event} is mogelijk een dubbele van {other} ({start}–{end}), dat al is goedgekeurd{n, plural, =0 {} one { en {count} bestelling heeft} other { en {count} bestellingen heeft}}.",
+      "keep": "{other} houden",
+      "approveAnyway": "{event} toch goedkeuren",
+      "plainText": "{event} is nog niet goedgekeurd. Goedkeuren om bestellingen aan te nemen? Klanten zien het dan ook.",
+      "approve": "Goedkeuren",
+      "startTitle": "Dit evenement starten?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {tot nu toe {count} bestelling} other {tot nu toe {count} bestellingen}}",
+      "switchTitle": "Naar {event} wisselen?",
+      "switch": "Wisselen",
+      "dismissedText": "{event} is mogelijk een dubbele van {other}, dat al is goedgekeurd. Goedkeuren om bestellingen aan te nemen? Klanten zien het dan ook."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Geen verbinding — {n, plural, one {{count} wijziging opgeslagen op dit apparaat. Die wordt verstuurd zodra je weer online bent.} other {{count} wijzigingen opgeslagen op dit apparaat. Die worden verstuurd zodra je weer online bent.}} Instellingen zijn vergrendeld.",
       "syncing": "Weer online — {n, plural, one {{count} wijziging} other {{count} wijzigingen}} versturen…",
       "synced": "Alle wijzigingen verstuurd.",
-      "stillQueued": "{n, plural, one {{count} wijziging opgeslagen op dit apparaat. We proberen die nog te versturen.} other {{count} wijzigingen opgeslagen op dit apparaat. We proberen ze nog te versturen.}}"
+      "stillQueued": "{n, plural, one {{count} wijziging opgeslagen op dit apparaat. We proberen die nog te versturen.} other {{count} wijzigingen opgeslagen op dit apparaat. We proberen ze nog te versturen.}}",
+      "notApproved": "{n, plural, one {{count} bestelling wacht} other {{count} bestellingen wachten}}: dit evenement is niet goedgekeurd. Keur het goed om te versturen."
     },
     "lock": {
       "locked": "HatchGrab is vergrendeld",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Sommige gegevens kloppen niet. Controleer ze en probeer het opnieuw.",
     "paperwork_send_limit": "Je hebt in korte tijd veel links verstuurd. Probeer het over een uur opnieuw.",
     "paperwork_send_failed": "De e-mail kon niet worden verstuurd. Probeer het opnieuw.",
-    "cost_invalid": "Vul een kostprijs van 0 of meer in, of laat het vak leeg."
+    "cost_invalid": "Vul een kostprijs van 0 of meer in, of laat het vak leeg.",
+    "event_cannot_start": "{status, select, unconfirmed {Kan dit evenement niet starten (niet goedgekeurd).} open {Kan dit evenement niet starten (al gestart).} cancelled {Kan dit evenement niet starten (geannuleerd).} other {Kan dit evenement niet starten ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Kan dit evenement niet beëindigen (niet goedgekeurd).} confirmed {Kan dit evenement niet beëindigen (niet gestart).} closed {Kan dit evenement niet beëindigen (al afgelopen).} cancelled {Kan dit evenement niet beëindigen (geannuleerd).} other {Kan dit evenement niet beëindigen ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Dit evenement hoeft niet meer goedgekeurd te worden (al goedgekeurd).} open {Dit evenement hoeft niet meer goedgekeurd te worden (al gestart).} closed {Dit evenement hoeft niet meer goedgekeurd te worden (al afgelopen).} cancelled {Dit evenement hoeft niet meer goedgekeurd te worden (geannuleerd).} other {Dit evenement hoeft niet meer goedgekeurd te worden ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Kies het land waar je foodtruck gevestigd is.",

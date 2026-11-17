@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Վերամիացեք՝ բեռնելու համար",
     "selected": "Ընտրված",
-    "status": "{tone, select, paused {⏸ Դադարեցված} live {● Ընթացքում} finished {● Ավարտված} cancelled {Չեղարկված} other {Չսկսված}}"
+    "status": "{tone, select, paused {⏸ Դադարեցված} live {● Ընթացքում} finished {● Ավարտված} cancelled {Չեղարկված} other {Չսկսված}}",
+    "orders": "{n, plural, =0 {Պատվերներ չկան} one {{count} պատվեր} other {{count} պատվեր}}",
+    "needsApproval": "Սպասում է հաստատման",
+    "approvalSummary": "{n, plural, one {{count} միջոցառում սպասում է հաստատման} other {{count} միջոցառում սպասում է հաստատման}}",
+    "approvalSummaryNote": "{n, plural, one {Հաճախորդները այն դեռ չեն տեսնում։} other {Հաճախորդները դրանք դեռ չեն տեսնում։}}",
+    "duplicateSameTime": "Հնարավոր կրկնօրինակ · նույն ժամը",
+    "duplicateOverlaps": "Հնարավոր կրկնօրինակ · ժամերը համընկնում են",
+    "dayCount": "{n, plural, one {{count} միջոցառում} other {{count} միջոցառում}}"
+  },
+  "eventGate": {
+    "approveTitle": "Հաստատե՞լ {event}-ը",
+    "overlapText": "{event}-ը հավանաբար արդեն հաստատված {other}-ի ({start}–{end}) կրկնօրինակն է{n, plural, =0 {} one {, որն ունի {count} պատվեր} other {, որն ունի {count} պատվեր}}։",
+    "keep": "Թողնել {other}-ը",
+    "approveAnyway": "Միևնույն է հաստատել {event}-ը",
+    "plainText": "{event}-ը դեռ հաստատված չէ։ Հաստատե՞լ՝ պատվերներ ընդունելու համար։ Հաճախորդներն էլ կտեսնեն այն։",
+    "approve": "Հաստատել",
+    "startTitle": "Սկսե՞լ այս միջոցառումը",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {առայժմ {count} պատվեր} other {առայժմ {count} պատվեր}}",
+    "switchTitle": "Անցնե՞լ {event}-ին",
+    "switch": "Անցնել",
+    "dismissedText": "{event}-ը հավանաբար արդեն հաստատված {other}-ի կրկնօրինակն է։ Հաստատե՞լ՝ պատվերներ ընդունելու համար։ Հաճախորդներն էլ կտեսնեն այն։"
   }
 }

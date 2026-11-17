@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Połącz ponownie, aby wczytać",
     "selected": "Wybrane",
-    "status": "{tone, select, paused {⏸ Wstrzymane} live {● Na żywo} finished {● Zakończone} cancelled {Odwołane} other {Nierozpoczęte}}"
+    "status": "{tone, select, paused {⏸ Wstrzymane} live {● Na żywo} finished {● Zakończone} cancelled {Odwołane} other {Nierozpoczęte}}",
+    "orders": "{n, plural, =0 {Brak zamówień} one {{count} zamówienie} few {{count} zamówienia} many {{count} zamówień} other {{count} zamówienia}}",
+    "needsApproval": "Do zatwierdzenia",
+    "approvalSummary": "{n, plural, one {{count} wydarzenie wymaga zatwierdzenia} few {{count} wydarzenia wymagają zatwierdzenia} many {{count} wydarzeń wymaga zatwierdzenia} other {{count} wydarzenia wymaga zatwierdzenia}}",
+    "approvalSummaryNote": "{n, plural, one {Klienci jeszcze go nie widzą.} few {Klienci jeszcze ich nie widzą.} many {Klienci jeszcze ich nie widzą.} other {Klienci jeszcze ich nie widzą.}}",
+    "duplicateSameTime": "Możliwy duplikat · ta sama godzina",
+    "duplicateOverlaps": "Możliwy duplikat · nakłada się",
+    "dayCount": "{n, plural, one {{count} wydarzenie} few {{count} wydarzenia} many {{count} wydarzeń} other {{count} wydarzenia}}"
+  },
+  "eventGate": {
+    "approveTitle": "Zatwierdzić {event}?",
+    "overlapText": "{event} to możliwy duplikat {other} ({start}–{end}), które jest już zatwierdzone{n, plural, =0 {} one { i ma {count} zamówienie} few { i ma {count} zamówienia} many { i ma {count} zamówień} other { i ma {count} zamówienia}}.",
+    "keep": "Zostaw {other}",
+    "approveAnyway": "Mimo to zatwierdź {event}",
+    "plainText": "{event} nie jest jeszcze zatwierdzone. Zatwierdzić, żeby przyjmować zamówienia? Klienci też je zobaczą.",
+    "approve": "Zatwierdź",
+    "startTitle": "Rozpocząć to wydarzenie?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {dotąd {count} zamówienie} few {dotąd {count} zamówienia} many {dotąd {count} zamówień} other {dotąd {count} zamówienia}}",
+    "switchTitle": "Przełączyć na {event}?",
+    "switch": "Przełącz",
+    "dismissedText": "{event} to możliwy duplikat {other}, które jest już zatwierdzone. Zatwierdzić, żeby przyjmować zamówienia? Klienci też je zobaczą."
   }
 }

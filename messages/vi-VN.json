@@ -221,7 +221,8 @@
       "noteSaved": "Đã lưu ghi chú",
       "pricesSaved": "Đã lưu giá cho sự kiện này",
       "pricesSaveFailed": "Không lưu được giá",
-      "reconnectToLoad": "Hãy kết nối lại để tải sự kiện này"
+      "reconnectToLoad": "Hãy kết nối lại để tải sự kiện này",
+      "eventApproved": "Đã duyệt sự kiện"
     },
     "gate": {
       "invalidAccessLink": "Link truy cập không hợp lệ",
@@ -336,7 +337,8 @@
       "manageEvent": "Quản lý sự kiện",
       "noEvent": "Chưa chọn sự kiện",
       "selectEvent": "Chọn sự kiện",
-      "status": "{tone, select, paused {⏸ Tạm dừng} live {● Đang diễn ra} finished {● Đã kết thúc} cancelled {Đã hủy} other {Chưa bắt đầu}}"
+      "status": "{tone, select, paused {⏸ Tạm dừng} live {● Đang diễn ra} finished {● Đã kết thúc} cancelled {Đã hủy} other {Chưa bắt đầu}}",
+      "approveToTakeOrders": "Duyệt một sự kiện để nhận đơn"
     },
     "orders": {
       "noEvent": "Chưa chọn sự kiện — hãy chọn sự kiện để xem đơn",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Đã lưu đơn nhưng không cập nhật được bảng công suất bếp — hãy kiểm tra khung giờ trước khi dựa vào nó.",
     "created_payment_not_recorded": "Đã tạo đơn nhưng không lưu được bản ghi thanh toán — doanh thu của đơn này có thể sai cho đến khi được sửa.",
     "payment_not_recorded": "Không ghi nhận được thanh toán — doanh thu của đơn này có thể sai cho đến khi được sửa.",
-    "payment_not_reversed": "Không hủy được thanh toán"
+    "payment_not_reversed": "Không hủy được thanh toán",
+    "event_not_approved": "Sự kiện này chưa được duyệt",
+    "event_not_open": "{status, select, closed {Sự kiện này đã kết thúc. Bắt đầu lại để nhận đơn.} cancelled {Sự kiện này đã bị hủy.} other {Sự kiện này chưa mở.}}"
   },
   "kitchenModals": {
     "close": "Đóng",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Kết nối lại để tải",
       "selected": "Đã chọn",
-      "status": "{tone, select, paused {⏸ Tạm dừng} live {● Đang diễn ra} finished {● Đã kết thúc} cancelled {Đã hủy} other {Chưa bắt đầu}}"
+      "status": "{tone, select, paused {⏸ Tạm dừng} live {● Đang diễn ra} finished {● Đã kết thúc} cancelled {Đã hủy} other {Chưa bắt đầu}}",
+      "orders": "{n, plural, =0 {Chưa có đơn} other {{count} đơn}}",
+      "needsApproval": "Cần duyệt",
+      "approvalSummary": "{n, plural, other {{count} sự kiện cần duyệt}}",
+      "approvalSummaryNote": "{n, plural, other {Khách hàng chưa thấy.}}",
+      "duplicateSameTime": "Có thể trùng · cùng giờ",
+      "duplicateOverlaps": "Có thể trùng · chồng giờ",
+      "dayCount": "{n, plural, other {{count} sự kiện}}"
+    },
+    "eventGate": {
+      "approveTitle": "Duyệt {event}?",
+      "overlapText": "{event} có thể trùng với {other} ({start}–{end}), đã được duyệt{n, plural, =0 {} other { và có {count} đơn}}.",
+      "keep": "Giữ {other}",
+      "approveAnyway": "Vẫn duyệt {event}",
+      "plainText": "{event} chưa được duyệt. Duyệt để nhận đơn? Khách hàng cũng sẽ thấy.",
+      "approve": "Duyệt",
+      "startTitle": "Bắt đầu sự kiện này?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, other {{count} đơn đến giờ}}",
+      "switchTitle": "Chuyển sang {event}?",
+      "switch": "Chuyển",
+      "dismissedText": "{event} có thể trùng với {other}, đã được duyệt. Duyệt để nhận đơn? Khách hàng cũng sẽ thấy."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Mất kết nối — {n, plural, one {đã lưu {count} thay đổi trên thiết bị này. Thay đổi sẽ được gửi khi có mạng trở lại.} other {đã lưu {count} thay đổi trên thiết bị này. Các thay đổi sẽ được gửi khi có mạng trở lại.}} Cài đặt đang bị khóa.",
       "syncing": "Đã có mạng trở lại — đang gửi {n, plural, one {{count} thay đổi} other {{count} thay đổi}}…",
       "synced": "Đã gửi tất cả thay đổi.",
-      "stillQueued": "{n, plural, one {Đã lưu {count} thay đổi trên thiết bị này. Vẫn đang thử gửi.} other {Đã lưu {count} thay đổi trên thiết bị này. Vẫn đang thử gửi.}}"
+      "stillQueued": "{n, plural, one {Đã lưu {count} thay đổi trên thiết bị này. Vẫn đang thử gửi.} other {Đã lưu {count} thay đổi trên thiết bị này. Vẫn đang thử gửi.}}",
+      "notApproved": "{n, plural, other {{count} đơn đang chờ}}: sự kiện này chưa được duyệt. Hãy duyệt để gửi."
     },
     "lock": {
       "locked": "HatchGrab đang bị khóa",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Một số thông tin chưa đúng. Vui lòng kiểm tra và thử lại.",
     "paperwork_send_limit": "Bạn đã gửi nhiều link trong thời gian ngắn. Vui lòng thử lại sau một giờ.",
     "paperwork_send_failed": "Không gửi được email. Vui lòng thử lại.",
-    "cost_invalid": "Nhập chi phí từ 0 trở lên, hoặc để trống ô này."
+    "cost_invalid": "Nhập chi phí từ 0 trở lên, hoặc để trống ô này.",
+    "event_cannot_start": "{status, select, unconfirmed {Không thể bắt đầu sự kiện này (chưa duyệt).} open {Không thể bắt đầu sự kiện này (đã bắt đầu).} cancelled {Không thể bắt đầu sự kiện này (đã hủy).} other {Không thể bắt đầu sự kiện này ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Không thể kết thúc sự kiện này (chưa duyệt).} confirmed {Không thể kết thúc sự kiện này (chưa bắt đầu).} closed {Không thể kết thúc sự kiện này (đã kết thúc).} cancelled {Không thể kết thúc sự kiện này (đã hủy).} other {Không thể kết thúc sự kiện này ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Sự kiện này không cần duyệt nữa (đã duyệt).} open {Sự kiện này không cần duyệt nữa (đã bắt đầu).} closed {Sự kiện này không cần duyệt nữa (đã kết thúc).} cancelled {Sự kiện này không cần duyệt nữa (đã hủy).} other {Sự kiện này không cần duyệt nữa ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Chọn quốc gia nơi food truck của bạn hoạt động.",

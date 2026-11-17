@@ -40,7 +40,8 @@
     "offline": "📴 Nėra ryšio — {n, plural, one {{count} pakeitimas išsaugotas šiame įrenginyje. Jis bus išsiųstas, kai vėl prisijungsite.} few {{count} pakeitimai išsaugoti šiame įrenginyje. Jie bus išsiųsti, kai vėl prisijungsite.} many {{count} pakeitimų išsaugota šiame įrenginyje. Jie bus išsiųsti, kai vėl prisijungsite.} other {{count} pakeitimų išsaugota šiame įrenginyje. Jie bus išsiųsti, kai vėl prisijungsite.}} Nustatymai užrakinti.",
     "syncing": "Vėl prisijungta — siunčiama: {n, plural, one {{count} pakeitimas} few {{count} pakeitimai} many {{count} pakeitimų} other {{count} pakeitimų}}…",
     "synced": "Visi pakeitimai išsiųsti.",
-    "stillQueued": "{n, plural, one {{count} pakeitimas išsaugotas šiame įrenginyje. Vis dar bandoma jį išsiųsti.} few {{count} pakeitimai išsaugoti šiame įrenginyje. Vis dar bandoma juos išsiųsti.} many {{count} pakeitimų išsaugota šiame įrenginyje. Vis dar bandoma juos išsiųsti.} other {{count} pakeitimų išsaugota šiame įrenginyje. Vis dar bandoma juos išsiųsti.}}"
+    "stillQueued": "{n, plural, one {{count} pakeitimas išsaugotas šiame įrenginyje. Vis dar bandoma jį išsiųsti.} few {{count} pakeitimai išsaugoti šiame įrenginyje. Vis dar bandoma juos išsiųsti.} many {{count} pakeitimų išsaugota šiame įrenginyje. Vis dar bandoma juos išsiųsti.} other {{count} pakeitimų išsaugota šiame įrenginyje. Vis dar bandoma juos išsiųsti.}}",
+    "notApproved": "{n, plural, one {{count} užsakymas laukia} few {{count} užsakymai laukia} many {{count} užsakymo laukia} other {{count} užsakymų laukia}}: šis renginys nepatvirtintas. Patvirtinkite jį, kad išsiųstumėte."
   },
   "lock": {
     "locked": "HatchGrab užrakinta",

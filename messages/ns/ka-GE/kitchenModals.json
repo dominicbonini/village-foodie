@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "ჩასატვირთად ხელახლა დაუკავშირდით",
     "selected": "არჩეულია",
-    "status": "{tone, select, paused {⏸ შეჩერებულია} live {● მიმდინარეობს} finished {● დასრულდა} cancelled {გაუქმდა} other {არ დაწყებულა}}"
+    "status": "{tone, select, paused {⏸ შეჩერებულია} live {● მიმდინარეობს} finished {● დასრულდა} cancelled {გაუქმდა} other {არ დაწყებულა}}",
+    "orders": "{n, plural, =0 {შეკვეთები არ არის} one {{count} შეკვეთა} other {{count} შეკვეთა}}",
+    "needsApproval": "ელოდება დამტკიცებას",
+    "approvalSummary": "{n, plural, one {{count} ღონისძიება ელოდება დამტკიცებას} other {{count} ღონისძიება ელოდება დამტკიცებას}}",
+    "approvalSummaryNote": "{n, plural, one {მომხმარებლები მას ჯერ ვერ ხედავენ.} other {მომხმარებლები მათ ჯერ ვერ ხედავენ.}}",
+    "duplicateSameTime": "შესაძლო დუბლიკატი · იგივე დრო",
+    "duplicateOverlaps": "შესაძლო დუბლიკატი · დრო ემთხვევა",
+    "dayCount": "{n, plural, one {{count} ღონისძიება} other {{count} ღონისძიება}}"
+  },
+  "eventGate": {
+    "approveTitle": "დავამტკიცოთ {event}?",
+    "overlapText": "{event} შესაძლოა იყოს უკვე დამტკიცებული {other}-ის ({start}–{end}) დუბლიკატი{n, plural, =0 {} one {, რომელსაც {count} შეკვეთა აქვს} other {, რომელსაც {count} შეკვეთა აქვს}}.",
+    "keep": "დარჩეს {other}",
+    "approveAnyway": "მაინც დამტკიცდეს {event}",
+    "plainText": "{event} ჯერ არ არის დამტკიცებული. დავამტკიცოთ შეკვეთების მისაღებად? მას მომხმარებლებიც დაინახავენ.",
+    "approve": "დამტკიცება",
+    "startTitle": "დავიწყოთ ეს ღონისძიება?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {ჯერჯერობით {count} შეკვეთა} other {ჯერჯერობით {count} შეკვეთა}}",
+    "switchTitle": "გადავიდეთ {event}-ზე?",
+    "switch": "გადასვლა",
+    "dismissedText": "{event} შესაძლოა იყოს უკვე დამტკიცებული {other}-ის დუბლიკატი. დავამტკიცოთ შეკვეთების მისაღებად? მას მომხმარებლებიც დაინახავენ."
   }
 }

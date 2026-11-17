@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Reconnecter pour charger",
     "selected": "Sélectionné",
-    "status": "{tone, select, paused {⏸ En pause} live {● En cours} finished {● Terminé} cancelled {Annulé} other {Pas commencé}}"
+    "status": "{tone, select, paused {⏸ En pause} live {● En cours} finished {● Terminé} cancelled {Annulé} other {Pas commencé}}",
+    "orders": "{n, plural, =0 {Aucune commande} one {{count} commande} many {{count} commandes} other {{count} commandes}}",
+    "needsApproval": "À approuver",
+    "approvalSummary": "{n, plural, one {{count} événement à approuver} many {{count} événements à approuver} other {{count} événements à approuver}}",
+    "approvalSummaryNote": "{n, plural, one {Les clients ne le voient pas encore.} many {Les clients ne les voient pas encore.} other {Les clients ne les voient pas encore.}}",
+    "duplicateSameTime": "Doublon possible · même horaire",
+    "duplicateOverlaps": "Doublon possible · chevauchement",
+    "dayCount": "{n, plural, one {{count} événement} many {{count} événements} other {{count} événements}}"
+  },
+  "eventGate": {
+    "approveTitle": "Approuver {event} ?",
+    "overlapText": "{event} est peut-être un doublon de {other} ({start}–{end}), déjà approuvé{n, plural, =0 {} one { avec {count} commande} many { avec {count} commandes} other { avec {count} commandes}}.",
+    "keep": "Garder {other}",
+    "approveAnyway": "Approuver {event} quand même",
+    "plainText": "{event} n’est pas encore approuvé. L’approuver pour prendre des commandes ? Les clients le verront aussi.",
+    "approve": "Approuver",
+    "startTitle": "Démarrer cet événement ?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} commande pour l’instant} many {{count} commandes pour l’instant} other {{count} commandes pour l’instant}}",
+    "switchTitle": "Passer à {event} ?",
+    "switch": "Changer",
+    "dismissedText": "{event} est peut-être un doublon de {other}, déjà approuvé. L’approuver pour prendre des commandes ? Les clients le verront aussi."
   }
 }

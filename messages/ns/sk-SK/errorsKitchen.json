@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Objednávka je uložená, ale tabuľu kapacity kuchyne sa nepodarilo aktualizovať — skôr než sa na ňu spoľahnete, skontrolujte časové okno.",
   "created_payment_not_recorded": "Objednávka je vytvorená, ale záznam o platbe sa nepodarilo uložiť — tržba za túto objednávku môže byť nesprávna, kým sa to neopraví.",
   "payment_not_recorded": "Platbu sa nepodarilo zaznamenať — tržba za túto objednávku môže byť nesprávna, kým sa to neopraví.",
-  "payment_not_reversed": "Platbu sa nepodarilo stornovať"
+  "payment_not_reversed": "Platbu sa nepodarilo stornovať",
+  "event_not_approved": "Táto akcia nie je schválená",
+  "event_not_open": "{status, select, closed {Táto akcia skončila. Spustite ju znova, aby ste mohli prijímať objednávky.} cancelled {Táto akcia bola zrušená.} other {Táto akcia nie je otvorená.}}"
 }

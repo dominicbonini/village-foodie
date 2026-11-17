@@ -67,5 +67,7 @@
   "slot_board_not_updated": "Tilaus on tallennettu, mutta keittiön kapasiteettitaulua ei voitu päivittää — tarkista aikaikkuna ennen kuin luotat siihen.",
   "created_payment_not_recorded": "Tilaus on luotu, mutta maksutietoa ei voitu tallentaa — tämän tilauksen myyntisumma voi olla väärin, kunnes se korjataan.",
   "payment_not_recorded": "Maksua ei voitu kirjata — tämän tilauksen myyntisumma voi olla väärin, kunnes se korjataan.",
-  "payment_not_reversed": "Maksua ei voitu peruuttaa"
+  "payment_not_reversed": "Maksua ei voitu peruuttaa",
+  "event_not_approved": "Tätä tapahtumaa ei ole hyväksytty",
+  "event_not_open": "{status, select, closed {Tapahtuma on päättynyt. Käynnistä se uudelleen ottaaksesi tilauksia.} cancelled {Tapahtuma on peruttu.} other {Tapahtuma ei ole auki.}}"
 }

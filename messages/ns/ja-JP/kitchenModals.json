@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "再接続して読み込む",
     "selected": "選択中",
-    "status": "{tone, select, paused {⏸ 一時停止中} live {● 営業中} finished {● 終了} cancelled {中止} other {未開始}}"
+    "status": "{tone, select, paused {⏸ 一時停止中} live {● 営業中} finished {● 終了} cancelled {中止} other {未開始}}",
+    "orders": "{n, plural, =0 {注文なし} other {注文{count}件}}",
+    "needsApproval": "承認待ち",
+    "approvalSummary": "{n, plural, other {承認待ちの出店が{count}件あります}}",
+    "approvalSummaryNote": "{n, plural, other {お客様にはまだ表示されていません。}}",
+    "duplicateSameTime": "重複の可能性 · 同じ時間",
+    "duplicateOverlaps": "重複の可能性 · 時間が重なる",
+    "dayCount": "{n, plural, other {{count}件}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event}を承認しますか？",
+    "overlapText": "{event}は承認済みの{other}（{start}–{end}）と重複している可能性があります{n, plural, =0 {} other {（注文{count}件）}}。",
+    "keep": "{other}を残す",
+    "approveAnyway": "それでも{event}を承認",
+    "plainText": "{event}はまだ承認されていません。承認して注文を受け付けますか？お客様にも表示されます。",
+    "approve": "承認",
+    "startTitle": "この出店を開始しますか？",
+    "startDetails": "{day} · {start}–{end} · {n, plural, other {これまでの注文{count}件}}",
+    "switchTitle": "{event}に切り替えますか？",
+    "switch": "切り替え",
+    "dismissedText": "{event}は承認済みの{other}と重複している可能性があります。承認して注文を受け付けますか？お客様にも表示されます。"
   }
 }

@@ -36,7 +36,8 @@
     "noteSaved": "Megjegyzés mentve",
     "pricesSaved": "Árak mentve ehhez az eseményhez",
     "pricesSaveFailed": "Nem sikerült menteni az árakat",
-    "reconnectToLoad": "Az esemény betöltéséhez csatlakozzon újra"
+    "reconnectToLoad": "Az esemény betöltéséhez csatlakozzon újra",
+    "eventApproved": "Esemény jóváhagyva"
   },
   "gate": {
     "invalidAccessLink": "Érvénytelen hozzáférési link",
@@ -151,7 +152,8 @@
     "manageEvent": "Esemény kezelése",
     "noEvent": "Nincs kiválasztott esemény",
     "selectEvent": "Esemény kiválasztása",
-    "status": "{tone, select, paused {⏸ Szünetel} live {● Élő} finished {● Befejezve} cancelled {Elmarad} other {Nem kezdődött el}}"
+    "status": "{tone, select, paused {⏸ Szünetel} live {● Élő} finished {● Befejezve} cancelled {Elmarad} other {Nem kezdődött el}}",
+    "approveToTakeOrders": "Hagyj jóvá egy eseményt a rendelések fogadásához"
   },
   "orders": {
     "noEvent": "Nincs kiválasztott esemény — a rendelések megtekintéséhez válasszon eseményt",

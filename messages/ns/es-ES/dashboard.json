@@ -36,7 +36,8 @@
     "noteSaved": "Nota guardada",
     "pricesSaved": "Precios guardados para este evento",
     "pricesSaveFailed": "No se han podido guardar los precios",
-    "reconnectToLoad": "Vuelve a conectarte para cargar este evento"
+    "reconnectToLoad": "Vuelve a conectarte para cargar este evento",
+    "eventApproved": "Evento aprobado"
   },
   "gate": {
     "invalidAccessLink": "Enlace de acceso no válido",
@@ -151,7 +152,8 @@
     "manageEvent": "Gestionar evento",
     "noEvent": "Ningún evento seleccionado",
     "selectEvent": "Seleccionar evento",
-    "status": "{tone, select, paused {⏸ En pausa} live {● En curso} finished {● Terminado} cancelled {Cancelado} other {Sin empezar}}"
+    "status": "{tone, select, paused {⏸ En pausa} live {● En curso} finished {● Terminado} cancelled {Cancelado} other {Sin empezar}}",
+    "approveToTakeOrders": "Aprueba un evento para recibir pedidos"
   },
   "orders": {
     "noEvent": "Ningún evento seleccionado: selecciona un evento para ver los pedidos",

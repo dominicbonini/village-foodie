@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "重新連線以載入",
     "selected": "已選取",
-    "status": "{tone, select, paused {⏸ 已暫停} live {● 營業中} finished {● 已結束} cancelled {已取消} other {尚未開始}}"
+    "status": "{tone, select, paused {⏸ 已暫停} live {● 營業中} finished {● 已結束} cancelled {已取消} other {尚未開始}}",
+    "orders": "{n, plural, =0 {沒有訂單} other {{count} 筆訂單}}",
+    "needsApproval": "待核准",
+    "approvalSummary": "{n, plural, other {有 {count} 個活動待核准}}",
+    "approvalSummaryNote": "{n, plural, other {顧客目前看不到。}}",
+    "duplicateSameTime": "可能重複 · 時間相同",
+    "duplicateOverlaps": "可能重複 · 時間重疊",
+    "dayCount": "{n, plural, other {{count} 個活動}}"
+  },
+  "eventGate": {
+    "approveTitle": "核准{event}？",
+    "overlapText": "{event}可能與已核准的{other}（{start}–{end}）重複{n, plural, =0 {} other {，該活動已有 {count} 筆訂單}}。",
+    "keep": "保留{other}",
+    "approveAnyway": "仍要核准{event}",
+    "plainText": "{event}尚未核准。要核准以接受訂單嗎？顧客也會看到。",
+    "approve": "核准",
+    "startTitle": "開始這個活動？",
+    "startDetails": "{day} · {start}–{end} · {n, plural, other {目前有 {count} 筆訂單}}",
+    "switchTitle": "切換到{event}？",
+    "switch": "切換",
+    "dismissedText": "{event}可能與已核准的{other}重複。要核准以接受訂單嗎？顧客也會看到。"
   }
 }

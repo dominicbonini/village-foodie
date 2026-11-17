@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Ponovno se povežite za učitavanje",
     "selected": "Odabrano",
-    "status": "{tone, select, paused {⏸ Pauzirano} live {● Uživo} finished {● Završeno} cancelled {Otkazano} other {Nije počelo}}"
+    "status": "{tone, select, paused {⏸ Pauzirano} live {● Uživo} finished {● Završeno} cancelled {Otkazano} other {Nije počelo}}",
+    "orders": "{n, plural, =0 {Nema narudžbi} one {{count} narudžba} few {{count} narudžbe} other {{count} narudžbi}}",
+    "needsApproval": "Čeka odobrenje",
+    "approvalSummary": "{n, plural, one {{count} događaj čeka odobrenje} few {{count} događaja čekaju odobrenje} other {{count} događaja čeka odobrenje}}",
+    "approvalSummaryNote": "{n, plural, one {Kupci ga još ne vide.} few {Kupci ih još ne vide.} other {Kupci ih još ne vide.}}",
+    "duplicateSameTime": "Mogući duplikat · isto vrijeme",
+    "duplicateOverlaps": "Mogući duplikat · preklapa se",
+    "dayCount": "{n, plural, one {{count} događaj} few {{count} događaja} other {{count} događaja}}"
+  },
+  "eventGate": {
+    "approveTitle": "Odobriti {event}?",
+    "overlapText": "{event} je možda duplikat događaja {other} ({start}–{end}), koji je već odobren{n, plural, =0 {} one { i ima {count} narudžbu} few { i ima {count} narudžbe} other { i ima {count} narudžbi}}.",
+    "keep": "Zadrži {other}",
+    "approveAnyway": "Ipak odobri {event}",
+    "plainText": "{event} još nije odobren. Odobriti ga za primanje narudžbi? Vidjet će ga i kupci.",
+    "approve": "Odobri",
+    "startTitle": "Pokrenuti ovaj događaj?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {zasad {count} narudžba} few {zasad {count} narudžbe} other {zasad {count} narudžbi}}",
+    "switchTitle": "Prebaciti na {event}?",
+    "switch": "Prebaci",
+    "dismissedText": "{event} je možda duplikat događaja {other}, koji je već odobren. Odobriti ga za primanje narudžbi? Vidjet će ga i kupci."
   }
 }

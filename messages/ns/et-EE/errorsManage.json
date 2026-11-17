@@ -223,5 +223,8 @@
   "paperwork_bad_details": "Mõned andmed pole õiged. Kontrolli neid ja proovi uuesti.",
   "paperwork_send_limit": "Oled lühikese aja jooksul saatnud palju linke. Proovi tunni aja pärast uuesti.",
   "paperwork_send_failed": "E-kirja ei saanud saata. Proovi uuesti.",
-  "cost_invalid": "Sisesta kulu 0 või rohkem või jäta väli tühjaks."
+  "cost_invalid": "Sisesta kulu 0 või rohkem või jäta väli tühjaks.",
+  "event_cannot_start": "{status, select, unconfirmed {Üritust ei saa alustada (pole kinnitatud).} open {Üritust ei saa alustada (juba alustatud).} cancelled {Üritust ei saa alustada (tühistatud).} other {Üritust ei saa alustada ({status}).}}",
+  "event_cannot_finish": "{status, select, unconfirmed {Üritust ei saa lõpetada (pole kinnitatud).} confirmed {Üritust ei saa lõpetada (pole alustatud).} closed {Üritust ei saa lõpetada (juba lõppenud).} cancelled {Üritust ei saa lõpetada (tühistatud).} other {Üritust ei saa lõpetada ({status}).}}",
+  "event_cannot_dismiss": "{status, select, confirmed {See üritus ei vaja enam kinnitamist (juba kinnitatud).} open {See üritus ei vaja enam kinnitamist (juba alustatud).} closed {See üritus ei vaja enam kinnitamist (juba lõppenud).} cancelled {See üritus ei vaja enam kinnitamist (tühistatud).} other {See üritus ei vaja enam kinnitamist ({status}).}}"
 }

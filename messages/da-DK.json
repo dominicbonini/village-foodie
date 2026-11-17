@@ -221,7 +221,8 @@
       "noteSaved": "Note gemt",
       "pricesSaved": "Priser gemt for dette arrangement",
       "pricesSaveFailed": "Kunne ikke gemme priserne",
-      "reconnectToLoad": "Opret forbindelse igen for at indlæse dette arrangement"
+      "reconnectToLoad": "Opret forbindelse igen for at indlæse dette arrangement",
+      "eventApproved": "Arrangement godkendt"
     },
     "gate": {
       "invalidAccessLink": "Ugyldigt adgangslink",
@@ -336,7 +337,8 @@
       "manageEvent": "Administrer arrangement",
       "noEvent": "Intet arrangement valgt",
       "selectEvent": "Vælg arrangement",
-      "status": "{tone, select, paused {⏸ På pause} live {● I gang} finished {● Afsluttet} cancelled {Aflyst} other {Ikke startet}}"
+      "status": "{tone, select, paused {⏸ På pause} live {● I gang} finished {● Afsluttet} cancelled {Aflyst} other {Ikke startet}}",
+      "approveToTakeOrders": "Godkend et arrangement for at tage imod bestillinger"
     },
     "orders": {
       "noEvent": "Intet arrangement valgt – vælg et arrangement for at se bestillinger",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Bestillingen er gemt, men oversigten over køkkenkapacitet kunne ikke opdateres — tjek tidsrummet, før du stoler på den.",
     "created_payment_not_recorded": "Bestillingen er oprettet, men betalingen kunne ikke registreres — omsætningen for denne bestilling kan være forkert, indtil det er rettet.",
     "payment_not_recorded": "Betalingen kunne ikke registreres — omsætningen for denne bestilling kan være forkert, indtil det er rettet.",
-    "payment_not_reversed": "Betalingen kunne ikke tilbageføres"
+    "payment_not_reversed": "Betalingen kunne ikke tilbageføres",
+    "event_not_approved": "Arrangementet er ikke godkendt",
+    "event_not_open": "{status, select, closed {Arrangementet er slut. Genstart det for at tage imod bestillinger.} cancelled {Arrangementet er aflyst.} other {Arrangementet er ikke åbent.}}"
   },
   "kitchenModals": {
     "close": "Luk",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Genforbind for at indlæse",
       "selected": "Valgt",
-      "status": "{tone, select, paused {⏸ På pause} live {● Live} finished {● Afsluttet} cancelled {Aflyst} other {Ikke startet}}"
+      "status": "{tone, select, paused {⏸ På pause} live {● Live} finished {● Afsluttet} cancelled {Aflyst} other {Ikke startet}}",
+      "orders": "{n, plural, =0 {Ingen bestillinger} one {{count} bestilling} other {{count} bestillinger}}",
+      "needsApproval": "Skal godkendes",
+      "approvalSummary": "{n, plural, one {{count} arrangement skal godkendes} other {{count} arrangementer skal godkendes}}",
+      "approvalSummaryNote": "{n, plural, one {Kunderne kan ikke se det endnu.} other {Kunderne kan ikke se dem endnu.}}",
+      "duplicateSameTime": "Mulig dublet · samme tid",
+      "duplicateOverlaps": "Mulig dublet · overlapper",
+      "dayCount": "{n, plural, one {{count} arrangement} other {{count} arrangementer}}"
+    },
+    "eventGate": {
+      "approveTitle": "Godkend {event}?",
+      "overlapText": "{event} er muligvis en dublet af {other} ({start}–{end}), som allerede er godkendt{n, plural, =0 {} one { og har {count} bestilling} other { og har {count} bestillinger}}.",
+      "keep": "Behold {other}",
+      "approveAnyway": "Godkend {event} alligevel",
+      "plainText": "{event} er ikke godkendt endnu. Godkend det for at tage imod bestillinger? Kunderne kan også se det.",
+      "approve": "Godkend",
+      "startTitle": "Start arrangementet?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} bestilling indtil nu} other {{count} bestillinger indtil nu}}",
+      "switchTitle": "Skift til {event}?",
+      "switch": "Skift",
+      "dismissedText": "{event} er muligvis en dublet af {other}, som allerede er godkendt. Godkend det for at tage imod bestillinger? Kunderne kan også se det."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Ingen forbindelse — {n, plural, one {{count} ændring gemt på denne enhed. Den sendes, når du er online igen.} other {{count} ændringer gemt på denne enhed. De sendes, når du er online igen.}} Indstillingerne er låst.",
       "syncing": "Online igen — sender {n, plural, one {{count} ændring} other {{count} ændringer}}…",
       "synced": "Alle ændringer er sendt.",
-      "stillQueued": "{n, plural, one {{count} ændring gemt på denne enhed. Prøver stadig at sende den.} other {{count} ændringer gemt på denne enhed. Prøver stadig at sende dem.}}"
+      "stillQueued": "{n, plural, one {{count} ændring gemt på denne enhed. Prøver stadig at sende den.} other {{count} ændringer gemt på denne enhed. Prøver stadig at sende dem.}}",
+      "notApproved": "{n, plural, one {{count} bestilling venter} other {{count} bestillinger venter}}: arrangementet er ikke godkendt. Godkend det for at sende."
     },
     "lock": {
       "locked": "HatchGrab er låst",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Nogle af oplysningerne er ikke rigtige. Tjek dem, og prøv igen.",
     "paperwork_send_limit": "Du har sendt mange links på kort tid. Prøv igen om en time.",
     "paperwork_send_failed": "E-mailen kunne ikke sendes. Prøv igen.",
-    "cost_invalid": "Angiv en kostpris på 0 eller mere, eller lad feltet stå tomt."
+    "cost_invalid": "Angiv en kostpris på 0 eller mere, eller lad feltet stå tomt.",
+    "event_cannot_start": "{status, select, unconfirmed {Arrangementet kan ikke startes (ikke godkendt).} open {Arrangementet kan ikke startes (allerede startet).} cancelled {Arrangementet kan ikke startes (aflyst).} other {Arrangementet kan ikke startes ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Arrangementet kan ikke afsluttes (ikke godkendt).} confirmed {Arrangementet kan ikke afsluttes (ikke startet).} closed {Arrangementet kan ikke afsluttes (allerede slut).} cancelled {Arrangementet kan ikke afsluttes (aflyst).} other {Arrangementet kan ikke afsluttes ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Arrangementet skal ikke længere godkendes (allerede godkendt).} open {Arrangementet skal ikke længere godkendes (allerede startet).} closed {Arrangementet skal ikke længere godkendes (allerede slut).} cancelled {Arrangementet skal ikke længere godkendes (aflyst).} other {Arrangementet skal ikke længere godkendes ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Vælg det land, din foodtruck har base i.",

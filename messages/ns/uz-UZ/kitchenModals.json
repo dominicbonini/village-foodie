@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Yuklash uchun qayta ulaning",
     "selected": "Tanlangan",
-    "status": "{tone, select, paused {⏸ Toʻxtatilgan} live {● Faol} finished {● Yakunlangan} cancelled {Bekor qilingan} other {Boshlanmagan}}"
+    "status": "{tone, select, paused {⏸ Toʻxtatilgan} live {● Faol} finished {● Yakunlangan} cancelled {Bekor qilingan} other {Boshlanmagan}}",
+    "orders": "{n, plural, =0 {Buyurtma yo‘q} one {{count} ta buyurtma} other {{count} ta buyurtma}}",
+    "needsApproval": "Tasdiq kutilmoqda",
+    "approvalSummary": "{n, plural, one {{count} ta tadbir tasdiq kutmoqda} other {{count} ta tadbir tasdiq kutmoqda}}",
+    "approvalSummaryNote": "{n, plural, one {Mijozlar uni hali ko‘rmaydi.} other {Mijozlar ularni hali ko‘rmaydi.}}",
+    "duplicateSameTime": "Takroriy bo‘lishi mumkin · bir xil vaqt",
+    "duplicateOverlaps": "Takroriy bo‘lishi mumkin · vaqti ustma-ust",
+    "dayCount": "{n, plural, one {{count} ta tadbir} other {{count} ta tadbir}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event} tasdiqlansinmi?",
+    "overlapText": "{event} allaqachon tasdiqlangan {other} ({start}–{end}) tadbirining takroriy nusxasi bo‘lishi mumkin{n, plural, =0 {} one { va unda {count} ta buyurtma bor} other { va unda {count} ta buyurtma bor}}.",
+    "keep": "{other} qolsin",
+    "approveAnyway": "Baribir {event} tasdiqlash",
+    "plainText": "{event} hali tasdiqlanmagan. Buyurtma olish uchun tasdiqlaysizmi? Mijozlar ham ko‘radi.",
+    "approve": "Tasdiqlash",
+    "startTitle": "Bu tadbir boshlansinmi?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {hozircha {count} ta buyurtma} other {hozircha {count} ta buyurtma}}",
+    "switchTitle": "{event} tadbiriga o‘tilsinmi?",
+    "switch": "O‘tish",
+    "dismissedText": "{event} allaqachon tasdiqlangan {other} tadbirining takroriy nusxasi bo‘lishi mumkin. Buyurtma olish uchun tasdiqlaysizmi? Mijozlar ham ko‘radi."
   }
 }

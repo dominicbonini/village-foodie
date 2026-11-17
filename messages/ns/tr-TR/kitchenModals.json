@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Yüklemek için yeniden bağlanın",
     "selected": "Seçili",
-    "status": "{tone, select, paused {⏸ Duraklatıldı} live {● Canlı} finished {● Bitti} cancelled {İptal edildi} other {Başlamadı}}"
+    "status": "{tone, select, paused {⏸ Duraklatıldı} live {● Canlı} finished {● Bitti} cancelled {İptal edildi} other {Başlamadı}}",
+    "orders": "{n, plural, =0 {Sipariş yok} one {{count} sipariş} other {{count} sipariş}}",
+    "needsApproval": "Onay bekliyor",
+    "approvalSummary": "{n, plural, one {{count} etkinlik onay bekliyor} other {{count} etkinlik onay bekliyor}}",
+    "approvalSummaryNote": "{n, plural, one {Müşteriler henüz göremiyor.} other {Müşteriler bunları henüz göremiyor.}}",
+    "duplicateSameTime": "Olası kopya · aynı saat",
+    "duplicateOverlaps": "Olası kopya · çakışıyor",
+    "dayCount": "{n, plural, one {{count} etkinlik} other {{count} etkinlik}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event} onaylansın mı?",
+    "overlapText": "{event}, zaten onaylanmış {other} ({start}–{end}) etkinliğinin olası bir kopyası{n, plural, =0 {} one { ({count} siparişi olan)} other { ({count} siparişi olan)}}.",
+    "keep": "{other} kalsın",
+    "approveAnyway": "Yine de {event} onayla",
+    "plainText": "{event} henüz onaylanmadı. Sipariş almak için onaylansın mı? Müşteriler de görecek.",
+    "approve": "Onayla",
+    "startTitle": "Bu etkinlik başlatılsın mı?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {şu ana kadar {count} sipariş} other {şu ana kadar {count} sipariş}}",
+    "switchTitle": "{event} etkinliğine geçilsin mi?",
+    "switch": "Geç",
+    "dismissedText": "{event}, zaten onaylanmış {other} etkinliğinin olası bir kopyası. Sipariş almak için onaylansın mı? Müşteriler de görecek."
   }
 }

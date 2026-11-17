@@ -305,6 +305,26 @@ for (const k of ['manageAllergens.wizard.recipeOnly', 'manageAllergens.wizard.to
 // contained-section notice. Their en-GB / fr-FR text is held by scripts/app-fixes-1.cjs §5.
 for (const k of ['auth.reset.logIn', 'auth.forgot.backToLogin', 'auth.reset.sendNewLink', 'auth.login.invalidLink', 'errorPage.backToDashboard',
   'errorPage.errorBodyDashboard', 'errorPage.sectionFailed']) NEW_WORDING[k] = 'app-fixes-1: the auth end states, the error page\'s way back, the section notice'
+// ⚠️ RE-PINNED (events-overlap-2, 17 November 2026, docs/events-overlap-2-report.md): NEW messages — the dashboard's one-time approve /
+// overlap / Start / switch questions, the event list's order count, "Needs approval" and "possible duplicate", the "Approve an event to
+// take orders" line, the offline banner for a walk-up waiting on approval, and the walk-up / start / finish / keep refusals.
+for (const k of ['kitchenModals.eventGate.approveTitle', 'kitchenModals.eventGate.overlapText', 'kitchenModals.eventGate.keep', 'kitchenModals.eventGate.approveAnyway',
+  'kitchenModals.eventGate.plainText', 'kitchenModals.eventGate.approve', 'kitchenModals.eventGate.startTitle', 'kitchenModals.eventGate.startDetails',
+  'kitchenModals.eventGate.switchTitle', 'kitchenModals.eventGate.switch', 'kitchenModals.picker.orders', 'kitchenModals.picker.needsApproval',
+  'dashboard.eventBar.approveToTakeOrders', 'dashboard.toast.eventApproved', 'nativeShell.banner.notApproved',
+  'errorsKitchen.event_not_approved', 'errorsKitchen.event_not_open', 'errorsManage.event_cannot_start', 'errorsManage.event_cannot_finish',
+  'errorsManage.event_cannot_dismiss']) NEW_WORDING[k] = 'events-overlap-2: the dashboard\'s approved-only event flow'
+// ⚠️ RE-PINNED (events-overlap-4, 17 November 2026, docs/events-overlap-4-report.md): the event picker's "Approved events" heading,
+// the "Needs approval (n)" band's second line, the "Possible duplicate of {other}" line (replacing addOrder.possibleDuplicate, removed),
+// and the approve question after "Keep". overlapText and picker.needsApproval were reworded in place (already named above).
+for (const k of ['kitchenModals.eventGate.dismissedText']) NEW_WORDING[k] = 'events-overlap-4: the event picker\'s wording and emphasis'
+// ⚠️ RE-PINNED (events-overlap-5, 17 November 2026, docs/events-overlap-5-report.md): the list grouped by date — the approval summary
+// (plural), the duplicate sub-row labels; picker.needsApproval is now the "Needs approval" badge. Removed with -4's band and line:
+// picker.approvedEvents, picker.needsApprovalNote, picker.possibleDuplicateOf.
+for (const k of ['kitchenModals.picker.approvalSummary', 'kitchenModals.picker.approvalSummaryNote', 'kitchenModals.picker.duplicateSameTime',
+  'kitchenModals.picker.duplicateOverlaps']) NEW_WORDING[k] = 'events-overlap-5: the event list grouped by date, duplicates under their event'
+// ⚠️ RE-PINNED (events-overlap-6, 17 November 2026, docs/events-overlap-6-report.md): the date heading's event count.
+NEW_WORDING['kitchenModals.picker.dayCount'] = 'events-overlap-6: each date heading counts its events'
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

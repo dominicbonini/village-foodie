@@ -367,6 +367,9 @@ export interface TruckEvent {
   start_time: string
   end_time: string
   status: 'unconfirmed' | 'confirmed' | 'open' | 'closed' | 'cancelled'
+  /** events-overlap-2 (20261117_truck_events_overlap_dismissed.sql): when staff chose "Keep {other}" for this unapproved
+   *  event on the overlap dialog. Absent before the migration. */
+  overlap_dismissed_at?: string | null
   auto_open: boolean
   auto_close: boolean
   opened_at: string | null

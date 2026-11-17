@@ -221,7 +221,8 @@
       "noteSaved": "Note saved",
       "pricesSaved": "Prices saved for this event",
       "pricesSaveFailed": "Couldn’t save the prices",
-      "reconnectToLoad": "Reconnect to load this event"
+      "reconnectToLoad": "Reconnect to load this event",
+      "eventApproved": "Event approved"
     },
     "gate": {
       "invalidAccessLink": "Invalid access link",
@@ -336,7 +337,8 @@
       "manageEvent": "Manage event",
       "noEvent": "No event selected",
       "selectEvent": "Select event",
-      "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
+      "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}",
+      "approveToTakeOrders": "Approve an event to take orders"
     },
     "orders": {
       "noEvent": "No event selected — select an event to view orders",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Order saved, but the kitchen capacity board could not be updated — check the slot before relying on it.",
     "created_payment_not_recorded": "Order created, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.",
     "payment_not_recorded": "Payment could not be recorded — the takings figure for this order may be wrong until it is repaired.",
-    "payment_not_reversed": "Payment could not be reversed"
+    "payment_not_reversed": "Payment could not be reversed",
+    "event_not_approved": "This event isn’t approved",
+    "event_not_open": "{status, select, closed {This event has finished. Restart it to take orders.} cancelled {This event was cancelled.} other {This event isn’t open.}}"
   },
   "kitchenModals": {
     "close": "Close",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Reconnect to load",
       "selected": "Selected",
-      "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}"
+      "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Cancelled} other {Not started}}",
+      "orders": "{n, plural, =0 {No orders} one {{count} order} other {{count} orders}}",
+      "needsApproval": "Needs approval",
+      "approvalSummary": "{n, plural, one {{count} event needs approval} other {{count} events need approval}}",
+      "approvalSummaryNote": "{n, plural, one {Customers can’t see it yet.} other {Customers can’t see them yet.}}",
+      "duplicateSameTime": "Possible duplicate · same time",
+      "duplicateOverlaps": "Possible duplicate · overlaps",
+      "dayCount": "{n, plural, one {{count} event} other {{count} events}}"
+    },
+    "eventGate": {
+      "approveTitle": "Approve {event}?",
+      "overlapText": "{event} is a possible duplicate of {other} ({start}–{end}), which is already approved{n, plural, =0 {} one { and has {count} order} other { and has {count} orders}}.",
+      "keep": "Keep {other}",
+      "approveAnyway": "Approve {event} anyway",
+      "plainText": "{event} isn’t approved yet. Approve it to take orders? Customers will see it too.",
+      "approve": "Approve",
+      "startTitle": "Start this event?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {{count} order so far} other {{count} orders so far}}",
+      "switchTitle": "Switch to {event}?",
+      "switch": "Switch",
+      "dismissedText": "{event} is a possible duplicate of {other}, which is already approved. Approve it to take orders? Customers will see it too."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 No connection — {n, plural, one {{count} change saved on this device. It’ll be sent when you’re back online.} other {{count} changes saved on this device. They’ll be sent when you’re back online.}} Settings are locked.",
       "syncing": "Back online — sending {n, plural, one {{count} change} other {{count} changes}}…",
       "synced": "All changes sent.",
-      "stillQueued": "{n, plural, one {{count} change saved on this device. Still trying to send it.} other {{count} changes saved on this device. Still trying to send them.}}"
+      "stillQueued": "{n, plural, one {{count} change saved on this device. Still trying to send it.} other {{count} changes saved on this device. Still trying to send them.}}",
+      "notApproved": "{n, plural, one {{count} order is waiting} other {{count} orders are waiting}}: this event isn’t approved. Approve it to send."
     },
     "lock": {
       "locked": "HatchGrab is locked",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Some of the details aren’t right. Please check them and try again.",
     "paperwork_send_limit": "You’ve sent a lot of links in a short time. Please try again in an hour.",
     "paperwork_send_failed": "The email couldn’t be sent. Please try again.",
-    "cost_invalid": "Enter a cost of 0 or more, or leave the box empty."
+    "cost_invalid": "Enter a cost of 0 or more, or leave the box empty.",
+    "event_cannot_start": "{status, select, unconfirmed {Can’t start this event (not approved).} open {Can’t start this event (already started).} cancelled {Can’t start this event (cancelled).} other {Can’t start this event ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Can’t finish this event (not approved).} confirmed {Can’t finish this event (not started).} closed {Can’t finish this event (already finished).} cancelled {Can’t finish this event (cancelled).} other {Can’t finish this event ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {This event no longer needs approval (already approved).} open {This event no longer needs approval (already started).} closed {This event no longer needs approval (already finished).} cancelled {This event no longer needs approval (cancelled).} other {This event no longer needs approval ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Choose the country your truck is based in.",

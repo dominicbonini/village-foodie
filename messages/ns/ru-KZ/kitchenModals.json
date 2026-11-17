@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Подключитесь, чтобы загрузить",
     "selected": "Выбрано",
-    "status": "{tone, select, paused {⏸ Приостановлено} live {● Идёт} finished {● Завершено} cancelled {Отменено} other {Не начато}}"
+    "status": "{tone, select, paused {⏸ Приостановлено} live {● Идёт} finished {● Завершено} cancelled {Отменено} other {Не начато}}",
+    "orders": "{n, plural, =0 {Нет заказов} one {{count} заказ} few {{count} заказа} many {{count} заказов} other {{count} заказа}}",
+    "needsApproval": "Ждёт одобрения",
+    "approvalSummary": "{n, plural, one {{count} мероприятие ждёт одобрения} few {{count} мероприятия ждут одобрения} many {{count} мероприятий ждут одобрения} other {{count} мероприятия ждут одобрения}}",
+    "approvalSummaryNote": "{n, plural, one {Клиенты его пока не видят.} few {Клиенты их пока не видят.} many {Клиенты их пока не видят.} other {Клиенты их пока не видят.}}",
+    "duplicateSameTime": "Возможный дубликат · то же время",
+    "duplicateOverlaps": "Возможный дубликат · пересекается",
+    "dayCount": "{n, plural, one {{count} мероприятие} few {{count} мероприятия} many {{count} мероприятий} other {{count} мероприятия}}"
+  },
+  "eventGate": {
+    "approveTitle": "Одобрить {event}?",
+    "overlapText": "{event} — возможно, дубликат {other} ({start}–{end}), которое уже одобрено{n, plural, =0 {} one { и в нём {count} заказ} few { и в нём {count} заказа} many { и в нём {count} заказов} other { и в нём {count} заказа}}.",
+    "keep": "Оставить {other}",
+    "approveAnyway": "Всё равно одобрить {event}",
+    "plainText": "{event} ещё не одобрено. Одобрить, чтобы принимать заказы? Клиенты тоже его увидят.",
+    "approve": "Одобрить",
+    "startTitle": "Начать это мероприятие?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {пока {count} заказ} few {пока {count} заказа} many {пока {count} заказов} other {пока {count} заказа}}",
+    "switchTitle": "Перейти на {event}?",
+    "switch": "Перейти",
+    "dismissedText": "{event} — возможно, дубликат {other}, которое уже одобрено. Одобрить, чтобы принимать заказы? Клиенты тоже его увидят."
   }
 }

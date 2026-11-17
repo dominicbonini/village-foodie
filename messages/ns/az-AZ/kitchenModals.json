@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Yükləmək üçün yenidən qoşulun",
     "selected": "Seçilib",
-    "status": "{tone, select, paused {⏸ Dayandırılıb} live {● Aktiv} finished {● Bitib} cancelled {Ləğv edilib} other {Başlamayıb}}"
+    "status": "{tone, select, paused {⏸ Dayandırılıb} live {● Aktiv} finished {● Bitib} cancelled {Ləğv edilib} other {Başlamayıb}}",
+    "orders": "{n, plural, =0 {Sifariş yoxdur} one {{count} sifariş} other {{count} sifariş}}",
+    "needsApproval": "Təsdiq gözləyir",
+    "approvalSummary": "{n, plural, one {{count} tədbir təsdiq gözləyir} other {{count} tədbir təsdiq gözləyir}}",
+    "approvalSummaryNote": "{n, plural, one {Müştərilər onu hələ görmür.} other {Müştərilər onları hələ görmür.}}",
+    "duplicateSameTime": "Ehtimal ki, təkrar · eyni vaxt",
+    "duplicateOverlaps": "Ehtimal ki, təkrar · üst-üstə düşür",
+    "dayCount": "{n, plural, one {{count} tədbir} other {{count} tədbir}}"
+  },
+  "eventGate": {
+    "approveTitle": "{event} təsdiqlənsin?",
+    "overlapText": "{event} artıq təsdiqlənmiş {other} ({start}–{end}) tədbirinin təkrarı ola bilər{n, plural, =0 {} one { və onun {count} sifarişi var} other { və onun {count} sifarişi var}}.",
+    "keep": "{other} qalsın",
+    "approveAnyway": "Yenə də {event} təsdiqlə",
+    "plainText": "{event} hələ təsdiqlənməyib. Sifariş qəbul etmək üçün təsdiqlənsin? Müştərilər də görəcək.",
+    "approve": "Təsdiqlə",
+    "startTitle": "Bu tədbir başlasın?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {indiyədək {count} sifariş} other {indiyədək {count} sifariş}}",
+    "switchTitle": "{event} tədbirinə keçilsin?",
+    "switch": "Keç",
+    "dismissedText": "{event} artıq təsdiqlənmiş {other} tədbirinin təkrarı ola bilər. Sifariş qəbul etmək üçün təsdiqlənsin? Müştərilər də görəcək."
   }
 }

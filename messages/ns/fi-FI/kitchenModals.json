@@ -64,6 +64,26 @@
   "picker": {
     "reconnect": "Lataa yhdistämällä uudelleen",
     "selected": "Valittu",
-    "status": "{tone, select, paused {⏸ Keskeytetty} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei aloitettu}}"
+    "status": "{tone, select, paused {⏸ Keskeytetty} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei aloitettu}}",
+    "orders": "{n, plural, =0 {Ei tilauksia} one {{count} tilaus} other {{count} tilausta}}",
+    "needsApproval": "Odottaa hyväksyntää",
+    "approvalSummary": "{n, plural, one {{count} tapahtuma odottaa hyväksyntää} other {{count} tapahtumaa odottaa hyväksyntää}}",
+    "approvalSummaryNote": "{n, plural, one {Asiakkaat eivät vielä näe sitä.} other {Asiakkaat eivät vielä näe niitä.}}",
+    "duplicateSameTime": "Mahdollinen kaksoiskappale · sama aika",
+    "duplicateOverlaps": "Mahdollinen kaksoiskappale · päällekkäin",
+    "dayCount": "{n, plural, one {{count} tapahtuma} other {{count} tapahtumaa}}"
+  },
+  "eventGate": {
+    "approveTitle": "Hyväksytäänkö {event}?",
+    "overlapText": "{event} voi olla kaksoiskappale tapahtumasta {other} ({start}–{end}), joka on jo hyväksytty{n, plural, =0 {} one { ja jolla on {count} tilaus} other { ja jolla on {count} tilausta}}.",
+    "keep": "Pidä {other}",
+    "approveAnyway": "Hyväksy {event} silti",
+    "plainText": "{event} ei ole vielä hyväksytty. Hyväksytäänkö, jotta voit ottaa tilauksia? Asiakkaat näkevät sen myös.",
+    "approve": "Hyväksy",
+    "startTitle": "Aloitetaanko tapahtuma?",
+    "startDetails": "{day} · {start}–{end} · {n, plural, one {tähän mennessä {count} tilaus} other {tähän mennessä {count} tilausta}}",
+    "switchTitle": "Vaihdetaanko tapahtumaan {event}?",
+    "switch": "Vaihda",
+    "dismissedText": "{event} voi olla kaksoiskappale tapahtumasta {other}, joka on jo hyväksytty. Hyväksytäänkö, jotta voit ottaa tilauksia? Asiakkaat näkevät sen myös."
   }
 }

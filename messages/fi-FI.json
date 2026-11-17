@@ -221,7 +221,8 @@
       "noteSaved": "Muistiinpano tallennettu",
       "pricesSaved": "Hinnat tallennettu tälle tapahtumalle",
       "pricesSaveFailed": "Hintoja ei voitu tallentaa",
-      "reconnectToLoad": "Muodosta yhteys uudelleen ladataksesi tämän tapahtuman"
+      "reconnectToLoad": "Muodosta yhteys uudelleen ladataksesi tämän tapahtuman",
+      "eventApproved": "Tapahtuma hyväksytty"
     },
     "gate": {
       "invalidAccessLink": "Virheellinen käyttölinkki",
@@ -336,7 +337,8 @@
       "manageEvent": "Hallitse tapahtumaa",
       "noEvent": "Ei valittua tapahtumaa",
       "selectEvent": "Valitse tapahtuma",
-      "status": "{tone, select, paused {⏸ Keskeytetty} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei aloitettu}}"
+      "status": "{tone, select, paused {⏸ Keskeytetty} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei aloitettu}}",
+      "approveToTakeOrders": "Hyväksy tapahtuma, jotta voit ottaa tilauksia"
     },
     "orders": {
       "noEvent": "Ei valittua tapahtumaa — valitse tapahtuma nähdäksesi tilaukset",
@@ -1002,7 +1004,9 @@
     "slot_board_not_updated": "Tilaus on tallennettu, mutta keittiön kapasiteettitaulua ei voitu päivittää — tarkista aikaikkuna ennen kuin luotat siihen.",
     "created_payment_not_recorded": "Tilaus on luotu, mutta maksutietoa ei voitu tallentaa — tämän tilauksen myyntisumma voi olla väärin, kunnes se korjataan.",
     "payment_not_recorded": "Maksua ei voitu kirjata — tämän tilauksen myyntisumma voi olla väärin, kunnes se korjataan.",
-    "payment_not_reversed": "Maksua ei voitu peruuttaa"
+    "payment_not_reversed": "Maksua ei voitu peruuttaa",
+    "event_not_approved": "Tätä tapahtumaa ei ole hyväksytty",
+    "event_not_open": "{status, select, closed {Tapahtuma on päättynyt. Käynnistä se uudelleen ottaaksesi tilauksia.} cancelled {Tapahtuma on peruttu.} other {Tapahtuma ei ole auki.}}"
   },
   "kitchenModals": {
     "close": "Sulje",
@@ -1070,7 +1074,27 @@
     "picker": {
       "reconnect": "Lataa yhdistämällä uudelleen",
       "selected": "Valittu",
-      "status": "{tone, select, paused {⏸ Keskeytetty} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei aloitettu}}"
+      "status": "{tone, select, paused {⏸ Keskeytetty} live {● Käynnissä} finished {● Päättynyt} cancelled {Peruttu} other {Ei aloitettu}}",
+      "orders": "{n, plural, =0 {Ei tilauksia} one {{count} tilaus} other {{count} tilausta}}",
+      "needsApproval": "Odottaa hyväksyntää",
+      "approvalSummary": "{n, plural, one {{count} tapahtuma odottaa hyväksyntää} other {{count} tapahtumaa odottaa hyväksyntää}}",
+      "approvalSummaryNote": "{n, plural, one {Asiakkaat eivät vielä näe sitä.} other {Asiakkaat eivät vielä näe niitä.}}",
+      "duplicateSameTime": "Mahdollinen kaksoiskappale · sama aika",
+      "duplicateOverlaps": "Mahdollinen kaksoiskappale · päällekkäin",
+      "dayCount": "{n, plural, one {{count} tapahtuma} other {{count} tapahtumaa}}"
+    },
+    "eventGate": {
+      "approveTitle": "Hyväksytäänkö {event}?",
+      "overlapText": "{event} voi olla kaksoiskappale tapahtumasta {other} ({start}–{end}), joka on jo hyväksytty{n, plural, =0 {} one { ja jolla on {count} tilaus} other { ja jolla on {count} tilausta}}.",
+      "keep": "Pidä {other}",
+      "approveAnyway": "Hyväksy {event} silti",
+      "plainText": "{event} ei ole vielä hyväksytty. Hyväksytäänkö, jotta voit ottaa tilauksia? Asiakkaat näkevät sen myös.",
+      "approve": "Hyväksy",
+      "startTitle": "Aloitetaanko tapahtuma?",
+      "startDetails": "{day} · {start}–{end} · {n, plural, one {tähän mennessä {count} tilaus} other {tähän mennessä {count} tilausta}}",
+      "switchTitle": "Vaihdetaanko tapahtumaan {event}?",
+      "switch": "Vaihda",
+      "dismissedText": "{event} voi olla kaksoiskappale tapahtumasta {other}, joka on jo hyväksytty. Hyväksytäänkö, jotta voit ottaa tilauksia? Asiakkaat näkevät sen myös."
     }
   },
   "ticket": {
@@ -1350,7 +1374,8 @@
       "offline": "📴 Ei yhteyttä — {n, plural, one {{count} muutos tallennettu tälle laitteelle. Se lähetetään, kun yhteys palaa.} other {{count} muutosta tallennettu tälle laitteelle. Ne lähetetään, kun yhteys palaa.}} Asetukset on lukittu.",
       "syncing": "Yhteys palasi — lähetetään {n, plural, one {{count} muutos} other {{count} muutosta}}…",
       "synced": "Kaikki muutokset lähetetty.",
-      "stillQueued": "{n, plural, one {{count} muutos tallennettu tälle laitteelle. Sen lähettämistä yritetään yhä.} other {{count} muutosta tallennettu tälle laitteelle. Niiden lähettämistä yritetään yhä.}}"
+      "stillQueued": "{n, plural, one {{count} muutos tallennettu tälle laitteelle. Sen lähettämistä yritetään yhä.} other {{count} muutosta tallennettu tälle laitteelle. Niiden lähettämistä yritetään yhä.}}",
+      "notApproved": "{n, plural, one {{count} tilaus odottaa} other {{count} tilausta odottaa}}: tätä tapahtumaa ei ole hyväksytty. Hyväksy se lähettääksesi."
     },
     "lock": {
       "locked": "HatchGrab on lukittu",
@@ -3409,7 +3434,10 @@
     "paperwork_bad_details": "Osa tiedoista ei ole oikein. Tarkista ne ja yritä uudelleen.",
     "paperwork_send_limit": "Olet lähettänyt paljon linkkejä lyhyessä ajassa. Yritä uudelleen tunnin päästä.",
     "paperwork_send_failed": "Sähköpostia ei voitu lähettää. Yritä uudelleen.",
-    "cost_invalid": "Anna kustannus, joka on 0 tai enemmän, tai jätä kenttä tyhjäksi."
+    "cost_invalid": "Anna kustannus, joka on 0 tai enemmän, tai jätä kenttä tyhjäksi.",
+    "event_cannot_start": "{status, select, unconfirmed {Tapahtumaa ei voi aloittaa (ei hyväksytty).} open {Tapahtumaa ei voi aloittaa (jo aloitettu).} cancelled {Tapahtumaa ei voi aloittaa (peruttu).} other {Tapahtumaa ei voi aloittaa ({status}).}}",
+    "event_cannot_finish": "{status, select, unconfirmed {Tapahtumaa ei voi päättää (ei hyväksytty).} confirmed {Tapahtumaa ei voi päättää (ei aloitettu).} closed {Tapahtumaa ei voi päättää (jo päättynyt).} cancelled {Tapahtumaa ei voi päättää (peruttu).} other {Tapahtumaa ei voi päättää ({status}).}}",
+    "event_cannot_dismiss": "{status, select, confirmed {Tapahtuma ei enää tarvitse hyväksyntää (jo hyväksytty).} open {Tapahtuma ei enää tarvitse hyväksyntää (jo aloitettu).} closed {Tapahtuma ei enää tarvitse hyväksyntää (jo päättynyt).} cancelled {Tapahtuma ei enää tarvitse hyväksyntää (peruttu).} other {Tapahtuma ei enää tarvitse hyväksyntää ({status}).}}"
   },
   "tradeArea": {
     "country_missing": "Valitse maa, jossa ruokarekkasi toimii.",

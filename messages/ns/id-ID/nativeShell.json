@@ -40,7 +40,8 @@
     "offline": "📴 Tidak ada koneksi — {n, plural, one {{count} perubahan disimpan di perangkat ini. Perubahan akan dikirim saat Anda online lagi.} other {{count} perubahan disimpan di perangkat ini. Perubahan akan dikirim saat Anda online lagi.}} Pengaturan dikunci.",
     "syncing": "Online lagi — mengirim {n, plural, one {{count} perubahan} other {{count} perubahan}}…",
     "synced": "Semua perubahan terkirim.",
-    "stillQueued": "{n, plural, one {{count} perubahan disimpan di perangkat ini. Masih mencoba mengirimnya.} other {{count} perubahan disimpan di perangkat ini. Masih mencoba mengirimnya.}}"
+    "stillQueued": "{n, plural, one {{count} perubahan disimpan di perangkat ini. Masih mencoba mengirimnya.} other {{count} perubahan disimpan di perangkat ini. Masih mencoba mengirimnya.}}",
+    "notApproved": "{n, plural, other {{count} pesanan menunggu}}: acara ini belum disetujui. Setujui untuk mengirim."
   },
   "lock": {
     "locked": "HatchGrab terkunci",
