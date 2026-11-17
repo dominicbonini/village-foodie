@@ -201,3 +201,8 @@
 - Fleet "truck" in schedule = "furgon" (TERMS); place "vend", location "vendndodhje"; "your country" = "vendin tuaj" in tax/fee errors (may read as "your place").
 - Free from "Nuk përmban"; Kitchen also handles "Kuzhina përdor gjithashtu"; caption "përshkrim"; tag "etiketë"; sample @festivalimuzikor.
 - FOR CONSISTENCY: prep-time "Instant" = "Menjëherë" — confirm it matches part 01's kitchen-settings option.
+
+## sq-AL part 05 (languages-world-3, 17 Nov 2026)
+- Prep-time Instant "Menjëherë"/"⚡ Menjëherë"; modifiers in reports "Shtesa/Shtesat"; Gross/Net "Shitjet bruto/neto"; "Dizajnet", "shabllon".
+- Check: "Te {symbol}1 më i afërt" (stiff); "Vitin e kaluar fiskal" (accusative preset label); post editor "Stil më vete", "BËJENI TË DALLOHET", "Errëso foton".
+- FOR CONSISTENCY: manageSettings.vans mixes "Food truck-et tuaj"/"+ Shto food truck" (TERMS) with "furgon" on van-level strings.
