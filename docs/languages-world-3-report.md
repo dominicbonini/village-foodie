@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -9,8 +9,8 @@
 | 1 | ru-KZ Russian (Kazakhstan) | ✅ (languages-world-2) | ✅ batch 1 — **needs native/legal check** | `_legal-translations.cjs ru-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | 6ac91927 |
 | 2 | uk-UA Ukrainian | ✅ (lw-2) | ✅ batch 2 — **needs native/legal check** | `_legal-translations.cjs uk-UA` 3/3 ✓; `legal-languages-1` /ua/privacy, /ua/terms, /ua/country-terms ✓ | daf550f8 |
 | 3 | hi-IN Hindi | ✅ (lw-2) | ✅ batch 9 — **needs native/legal check** | `_legal-translations.cjs hi-IN` 3/3 ✓; `legal-languages-1` /in/privacy, /in/terms, /in/country-terms ✓ | 290cd1ef |
-| 4 | bn-BD Bengali | ✅ (lw-2) | — next (batch 10) | | |
-| 5 | ur-PK Urdu | ✅ (lw-2) | — | | |
+| 4 | bn-BD Bengali | ✅ (lw-2) | ✅ batch 10 — **needs native/legal check** | `_legal-translations.cjs bn-BD` 3/3 ✓; `legal-languages-1` /bd/privacy, /bd/terms, /bd/country-terms ✓ | languages-world-3 batch 10 |
+| 5 | ur-PK Urdu | ✅ (lw-2) | — next (batch 11) | | |
 | 6 | kk-KZ Kazakh | ✅ (lw-2) | ✅ batch 3 — **needs native/legal check** | `_legal-translations.cjs kk-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | b77e79df |
 | 7 | uz-UZ Uzbek | ✅ (lw-2) | ✅ batch 4 — **needs native/legal check** | `_legal-translations.cjs uz-UZ` 3/3 ✓; `legal-languages-1` /uz/privacy, /uz/terms, /uz/country-terms ✓ | 3c2fb908 |
 | 8 | az-AZ Azerbaijani | ✅ (lw-2) | ✅ batch 5 — **needs native/legal check** | `_legal-translations.cjs az-AZ` 3/3 ✓; `legal-languages-1` /az/privacy, /az/terms, /az/country-terms ✓ | 34efe2f6 |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **9 of 23 languages done (27 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
+Legal pages: **10 of 23 languages done (30 of 69 pages).** UI: 12 of 23 done, fil-PH partly done.
 
 ## Batch order
 
@@ -196,6 +196,18 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 10: bn-BD legal pages
+
+**Files:** [privacy-policy.md](../content/legal/bn-BD/privacy-policy.md), [terms-and-conditions.md](../content/legal/bn-BD/terms-and-conditions.md), [country-specific-terms.md](../content/legal/bn-BD/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into Bengali (Bangla script). No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs bn-BD` 3/3 ✓. `legal-languages-1`: /bd/privacy, /bd/terms and /bd/country-terms render ("4 নভেম্বর, 2026", "1 নভেম্বর, 2026"), then the harness stops with ENOENT at the next missing base (ur-PK). **No screenshot**: Bangladesh has no country row yet (see batch 2).
+
+**Translation choices:** The Bengali UI words are used throughout: Pay at Hatch = “পিকআপে পেমেন্ট”, food truck = ফুড ট্রাক, operator = অপারেটর, hatch = কাউন্টার, walk-up orders = ওয়াক-ইন অর্ডার (as in the UI), kitchen screen = কিচেন ডিসপ্লে, dashboard = ড্যাশবোর্ড, collection = পিকআপ, basket = কার্ট, postcode = পোস্ট কোড, plan = প্ল্যান, HatchGrab fee = HatchGrab-এর ফি, free trial = ফ্রি ট্রায়াল, refund = রিফান্ড, and the demo checkbox is quoted exactly (“HatchGrab থেকে মাঝে মাঝে টিপস ও খবর পাঠান”). Formal আপনি, “…” quotes and । as the full stop, as the UI does; the date line uses the UI label “সর্বশেষ হালনাগাদ:”. controller/processor = কন্ট্রোলার/প্রসেসর, VAT = ভ্যাট (the UI’s own word), GST stays GST, TVA/IVA kept with (ফ্রান্সের ভ্যাট)/(মেক্সিকোর ভ্যাট) at first mention, merchant of record = মার্চেন্ট অব রেকর্ড (merchant of record), reverse charge = রিভার্স চার্জ (reverse charge), chargeback = চার্জব্যাক (chargeback), tort = টর্ট, Article = অনুচ্ছেদ. Local law names are in Bengali with the official name and year in brackets (e.g. ভোক্তা অধিকার আইন (Consumer Rights Act 2022)); law numbers keep their English form (প্রবিধান (EU) No 1169/2011, Law No. 8,078 of 1990). The two in-text dates follow the page’s own date style, comma included (“1 অক্টোবর, 2026 থেকে”, “21 মার্চ, 2025 থেকে কার্যকর”). Fixes before commit: the liability list letters (a)–(f) changed to Bengali (ক)–(চ); “Article”/“articles” and “Regulation”/“Standard” left in English in the first draft changed to অনুচ্ছেদ/ধারা and প্রবিধান/মান; the in-text dates given the page’s comma; the Privacy Policy table’s “Apple and Google” row translated (Apple ও Google), the processors still named verbatim.
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -215,4 +227,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 10 is the bn-BD legal pages. Runs continue automatically back to back, with no waits.
+Batch 11 is the ur-PK legal pages. Runs continue automatically back to back, with no waits.
