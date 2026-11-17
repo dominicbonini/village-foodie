@@ -234,3 +234,10 @@
 - Post boxes (from DesignEditor.tsx / caption-template.ts): Place = "Vendndodhja" (weekly), Venue = "Emri i vendit" (single event), Area = "Qyteti".
 - Fleet list "Furgonët tuaj" / "+ Shto furgon" (replaces TERMS lines 57 and 104); business stays "food truck".
 - Check: "Furgonët tuaj" beside "Cilësimet e food truck-ut"; "Emri i vendit"; "Më udhëzo"; "Ekrani fiket".
+
+## bs-BA part 01 (languages-world-3, 17 Nov 2026)
+- Meal deal "kombo meni" (pl. kombo meniji) instead of STYLE's "meni (kombo)" — deviation from the locked term, so it never reads as the plain menu.
+- van "vozilo" (≠ "food truck" business); legal order button "Naruči uz obavezu plaćanja".
+- ALLERGENS (check first): Tree nuts and Nuts both "Orašasti plodovi"; Gorušica (senf), Susam, Zob, Kozice, Rakovica, Rakovi (ljuskari), Rakovi i školjkaši, Jam (yam), "Petrovo uho (abalone)".
+- `one` branches show # (21 reads right); check everyMinutes "Na svaku {count} minutu", sold_out_* "Uklonili smo # artikal".
+- smjena (service), kontrolna tabla (dashboard), listić (ticket), "Pokreće HatchGrab", TBC "Naknadno" (planFeatures.priceWord.masked must match); sample "8 porcija ćevapa".
