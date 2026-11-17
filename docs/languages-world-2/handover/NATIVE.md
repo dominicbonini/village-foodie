@@ -195,3 +195,9 @@
 - cardUpload.dismiss "Mbyll" (TERMS) — "Shpërfill" may read better for an unmatched allergen row.
 - Cuisines: "Pite me pure", "Patate të pjekura me lëkurë", "Rrotulla (wrap)", "Furrë buke", "Skarë (BBQ)"; Private hire chip "Food truck për evente" (long); Pub "Bar".
 - Demo dish names kept as menus print them; Coke "Coca-Cola".
+
+## sq-AL part 04 (languages-world-3, 17 Nov 2026)
+- Post-design toggles: Location "Vendndodhja", Time "Ora"; boxes heading "titulli", date "data", town "qyteti", your own text "Teksti juaj"; poster CANCELLED "ANULUAR".
+- Fleet "truck" in schedule = "furgon" (TERMS); place "vend", location "vendndodhje"; "your country" = "vendin tuaj" in tax/fee errors (may read as "your place").
+- Free from "Nuk përmban"; Kitchen also handles "Kuzhina përdor gjithashtu"; caption "përshkrim"; tag "etiketë"; sample @festivalimuzikor.
+- FOR CONSISTENCY: prep-time "Instant" = "Menjëherë" — confirm it matches part 01's kitchen-settings option.
