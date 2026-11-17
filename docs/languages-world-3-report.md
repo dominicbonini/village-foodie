@@ -17,7 +17,7 @@
 | 9 | ka-GE Georgian | ✅ (lw-2) | ✅ batch 6 — **needs native/legal check** | `_legal-translations.cjs ka-GE` 3/3 ✓; `legal-languages-1` /ge/privacy, /ge/terms, /ge/country-terms ✓ | 45bae559 |
 | 10 | hy-AM Armenian | ✅ (lw-2) | ✅ batch 7 — **needs native/legal check** | `_legal-translations.cjs hy-AM` 3/3 ✓; `legal-languages-1` /am/privacy, /am/terms, /am/country-terms ✓ | 3f5c1a28 |
 | 11 | mn-MN Mongolian | ✅ (lw-2) | ✅ batch 8 — **needs native/legal check** | `_legal-translations.cjs mn-MN` 3/3 ✓; `legal-languages-1` /mn/privacy, /mn/terms, /mn/country-terms ✓ | 2c30808f |
-| 12 | ne-NP Nepali | ✅ (lw-2) | ✅ batch 12 — **needs native/legal check** | `_legal-translations.cjs ne-NP` 3/3 ✓; `legal-languages-1` /np/privacy, /np/terms, /np/country-terms ✓ | languages-world-3 batch 12 |
+| 12 | ne-NP Nepali | ✅ (lw-2) | ✅ batch 12 — **needs native/legal check** | `_legal-translations.cjs ne-NP` 3/3 ✓; `legal-languages-1` /np/privacy, /np/terms, /np/country-terms ✓ | 5f1b9944 |
 | 13 | fil-PH Filipino | 3 of 9 parts (lw-2) — next (batch 13) | — | | |
 | 14 | sq-AL Albanian | — | — | | |
 | 15 | bs-BA Bosnian | — | — | | |
