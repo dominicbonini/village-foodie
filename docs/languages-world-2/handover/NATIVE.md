@@ -294,3 +294,9 @@
 - wp_box_* "okvir za područje" (Area is the town box); "plakat" everywhere; picker.dayCount / approved "Odobren" added.
 - Country "Država" (15 messages, was "Zemlja"); browser "web pretraživač"; Show me around "Započni obilazak"; compare.* fleet `one` "po vozilu".
 - Check: "Započni obilazak", "Država" vs "Zemlja", "Prikazuje se: {truck} — {van}".
+
+## mk-MK part 01 (languages-world-3, 17 Nov 2026)
+- van "возило" ≠ business "фуд трак" (still no usage evidence for "фуд трак"); legal button "Нарачај со обврска за плаќање"; Collection times "Термини за подигнување".
+- TBC "Ќе се потврди" (planFeatures.priceWord.masked must match); пејџер, бакшиш, кошничка, "Што побрзо", "Во тек", "Овозможено од", поврат на пари / ВРАТЕНО.
+- ALLERGENS (check first): Рж, Фстак, Пињол, "Индиски орев (кашу)", "Ракообразни (ракови)", "Морски рак" (crab), "Ракчиња" (shrimp), Tree nuts + Nuts both "Јаткасти плодови", "Морско уво (abalone)", "Јам (yam)".
+- 21-safe: "Отстранивме # артикл/артикли", "Интервал од {count} минута/минути"; sold out "распродадено: {item}".
