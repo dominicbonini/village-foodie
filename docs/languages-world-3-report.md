@@ -10,7 +10,7 @@
 | 2 | uk-UA Ukrainian | ✅ (lw-2) | ✅ batch 2 — **needs native/legal check** | `_legal-translations.cjs uk-UA` 3/3 ✓; `legal-languages-1` /ua/privacy, /ua/terms, /ua/country-terms ✓ | daf550f8 |
 | 3 | hi-IN Hindi | ✅ (lw-2) | ✅ batch 9 — **needs native/legal check** | `_legal-translations.cjs hi-IN` 3/3 ✓; `legal-languages-1` /in/privacy, /in/terms, /in/country-terms ✓ | 290cd1ef |
 | 4 | bn-BD Bengali | ✅ (lw-2) | ✅ batch 10 — **needs native/legal check** | `_legal-translations.cjs bn-BD` 3/3 ✓; `legal-languages-1` /bd/privacy, /bd/terms, /bd/country-terms ✓ | 40e90e42 |
-| 5 | ur-PK Urdu | ✅ (lw-2) | ✅ batch 11 — **needs native/legal check** | `_legal-translations.cjs ur-PK` 3/3 ✓; `legal-languages-1` /pk/privacy, /pk/terms, /pk/country-terms ✓ | languages-world-3 batch 11 |
+| 5 | ur-PK Urdu | ✅ (lw-2) | ✅ batch 11 — **needs native/legal check** | `_legal-translations.cjs ur-PK` 3/3 ✓; `legal-languages-1` /pk/privacy, /pk/terms, /pk/country-terms ✓ | cd12ebbf |
 | 6 | kk-KZ Kazakh | ✅ (lw-2) | ✅ batch 3 — **needs native/legal check** | `_legal-translations.cjs kk-KZ` 3/3 ✓; `legal-languages-1` /kz/privacy, /kz/terms, /kz/country-terms ✓ | b77e79df |
 | 7 | uz-UZ Uzbek | ✅ (lw-2) | ✅ batch 4 — **needs native/legal check** | `_legal-translations.cjs uz-UZ` 3/3 ✓; `legal-languages-1` /uz/privacy, /uz/terms, /uz/country-terms ✓ | 3c2fb908 |
 | 8 | az-AZ Azerbaijani | ✅ (lw-2) | ✅ batch 5 — **needs native/legal check** | `_legal-translations.cjs az-AZ` 3/3 ✓; `legal-languages-1` /az/privacy, /az/terms, /az/country-terms ✓ | 34efe2f6 |
