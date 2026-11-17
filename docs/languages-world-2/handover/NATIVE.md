@@ -258,3 +258,9 @@
 - saved place "mjesto"/"mjesta", venue "lokacija"; Open now "U toku" (alt. "Trenutno otvoreno"); Instant „Instant“; Free from "Ne sadrži"; "procenat".
 - 21-safe: conflict.title "# mogući sukob/…", cardRead "# stavka čeka…", dealsActive one/few added, "Broj znakova…: {length}"; feature_not_on_plan "Uključeno u paket {plan}: {feature}."
 - Samples: "Ćevapi u somunu", vasfoodtruck.ba/dogadaji, @ljetnifestival.
+
+## bs-BA part 05 (languages-world-3, 17 Nov 2026)
+- FOR CONSISTENCY: "Truck settings" section = "Postavke vozila" here — the sq-AL pass found that section means the business, not the vans; check against the code.
+- Cancel-cutoff dropdown options in accusative ("{count} minutu/minute/minuta", "sat/sata/sati") inside "najkasnije … prije".
+- Posts: "objava", "sedmična objava", "plakat" (part 04's word; part 03 had "poster"), „Sav tekst“, „Vlastiti stil“, "Šablon opisa".
+- Reports: modifier "Dodatak/Dodaci", walk-up "Na licu mjesta", Pay at Hatch "Plaćanje pri preuzimanju"; gender-neutral first person ("potvrđujem ih ručno").
