@@ -300,3 +300,9 @@
 - TBC "Ќе се потврди" (planFeatures.priceWord.masked must match); пејџер, бакшиш, кошничка, "Што побрзо", "Во тек", "Овозможено од", поврат на пари / ВРАТЕНО.
 - ALLERGENS (check first): Рж, Фстак, Пињол, "Индиски орев (кашу)", "Ракообразни (ракови)", "Морски рак" (crab), "Ракчиња" (shrimp), Tree nuts + Nuts both "Јаткасти плодови", "Морско уво (abalone)", "Јам (yam)".
 - 21-safe: "Отстранивме # артикл/артикли", "Интервал од {count} минута/минути"; sold out "распродадено: {item}".
+
+## mk-MK part 02 (languages-world-3, 17 Nov 2026)
+- Settings "Your trucks" = "Поставки → Ваши возила" (Truck settings vans section must match); business "фуд трак".
+- Staff Place order "Испрати нарачка" (≠ legal button); Take payment "Наплати"; card machine "POS терминал"; KDS views "Целосно"/"Готвач", Ready „Подготвена“, handover "Плаќање и предавање".
+- Ticket: "НЕ НАПЛАЌАЈТЕ", "ЗА НАПЛАТА", "РЕЗЕРВИРАНО НА КАРТИЧКА", "ПОДИГНУВАЊЕ"; 💷 → 💵 (denar) — confirm.
+- 21-safe rewrites: approvalSummaryNote, finish.dueAfter, buzzer.allTaken "(вкупно: {count})", catsClosed, kds.screenOff.bodyVans, localNotify.newOrders, fitMessage "Label: {n}". Check "Табла со нарачки", "Почетен екран", "Админ".
