@@ -429,3 +429,8 @@
 
 ## sw-TZ part 03 (languages-world-3, 18 Nov 2026)
 - Agent stopped (usage limit) after joining; 03.json passes check-part but the agent's final review and TERMS additions may be incomplete — consistency pass should look at part 03 closely.
+
+## sw-TZ part 04 (languages-world-3, 18 Nov 2026)
+- Post boxes (from DesignEditor.tsx): Place "Mahali", Venue "Eneo", Area "Mji/Kijiji" (alt. "Mtaa"), Time "Muda", Date "Tarehe", Heading "Kichwa", box "kisanduku"; poster CANCELLED "LIMEGHAIRIWA"; wp_* errors "Mahali (au Eneo)".
+- Place uses class-16 agreement (mahali hapa, pamefichwa) — check. WhatsApp Set up quoted "Andaa" (part 06 must match).
+- Import "Ingiza"; @tamashalachakula; dealsActive `one` added.
