@@ -1,0 +1,21 @@
+{
+  "homeLabel": "HatchGrab — početna",
+  "cta": "Učitaj moj meni →",
+  "ctaShort": "Učitaj meni",
+  "features": "Funkcije",
+  "pricing": "Cijene",
+  "logIn": "Prijavi se",
+  "country": {
+    "button": "Država: {name}. Promijeni državu",
+    "menu": "Država",
+    "title": "Odaberite svoju državu",
+    "subline": "Cijene, jezik i postavke mijenjaju se u skladu s tim.",
+    "regions": {
+      "europe": "Evropa",
+      "americas": "Amerika",
+      "asiaPacific": "Azija i Pacifik",
+      "middleEast": "Bliski istok",
+      "africa": "Afrika"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "subject": "Vaša HatchGrab demo verzija — evo linka za povratak",
+  "heading": "Vaša demo verzija je sačuvana",
+  "intro": "Evo linka za povratak u demo verziju s vašim menijem. Prijava nije potrebna — samo ga dodirnite.",
+  "button": "Otvori moju demo verziju",
+  "freshDay": "Svaki put kada se vratite, postavit ćemo novi radni dan da imate s čim da se igrate.",
+  "deletion": "Ovo je demo verzija, pa je ne čuvamo zauvijek — nju i meni izbrisat ćemo\n                <b>{date}</b> (za {days, plural, one {# dan} few {# dana} other {# dana}}). Ako se registrujete prije\n                toga, vaš meni ide s vama.",
+  "notSent": "Sačuvano, ali trenutno nismo mogli poslati e-mail."
+}

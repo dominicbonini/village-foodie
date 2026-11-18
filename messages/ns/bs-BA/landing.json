@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistem za narudžbe za food truckove i mobilni ketering",
+    "description": "Narudžbe, narudžbe unaprijed i kuhinjski ekran za food truckove i mobilni ketering ({country}).",
+    "audience": "Vlasnici food truckova i firmi za mobilni ketering"
+  },
+  "hero": {
+    "title": "Sistem za narudžbe napravljen za <lean>food truckove.</lean>",
+    "subSmall": "Učitajte svoj meni, bez registracije.<br></br>Pogledajte demo koji radi za manje od 60 sekundi.",
+    "cta": "Učitaj moj meni →",
+    "ctaNote": "<lead>Učitajte fotografiju svog menija i pogledajte kako radi za manje od 60 sekundi.</lead><small>Bez registracije. Bez kartice.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Kuhinjski ekran (KDS) u HatchGrabu s listićima narudžbi poredanim redoslijedom pripreme",
+    "dashboardAlt": "Primanje narudžbe u HatchGrabu: meni lijevo, trenutna korpa i ukupan iznos desno",
+    "phoneAlt": "Naručivanje od food trucka putem HatchGraba: meni s fotografijama i cijenama i trenutni ukupan iznos korpe"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {# početni mjesec potpuno besplatno, sve otključano} few {# početna mjeseca potpuno besplatno, sve otključano} other {# početnih mjeseci potpuno besplatno, sve otključano}}",
+    "noCard": "Kartica nije potrebna",
+    "cancel": "Otkažite bilo kada, bez ugovora"
+  },
+  "does": {
+    "eyebrow": "Šta radi",
+    "title": "Napravljen za food truckove, ne za restorane.",
+    "lede": "Većina sistema za narudžbe pretpostavlja stalnu adresu, pouzdan wi-fi i isto radno vrijeme svake sedmice. Vi ste svake sedmice na drugom mjestu, u drugo vrijeme, uz slab mobilni signal ili bez njega. HatchGrab je napravljen upravo za to.",
+    "slotsTitle": "Kupci biraju vrijeme preuzimanja",
+    "capacityTitle": "Postavite kapacitet kuhinje",
+    "capacityBody": "Odredite koliko možete pripremiti odjednom i koliko to traje. Kada se neko vrijeme preuzimanja popuni, kupci ga više ne mogu odabrati.",
+    "devicesTitle": "Radi na svakom uređaju",
+    "devicesBody": "Radi na telefonu u džepu vaše kecelje, tabletu na pultu, laptopu u vozilu — i na POS terminalu kojim već naplaćujete.",
+    "postsTitle": "Automatizujte objave na Facebooku i Instagramu",
+    "postsBody": "Učitajte dizajn koji već objavljujete na Facebooku ili Instagramu. Mi ćemo upisati vaše datume, lokacije i vremena, spremno za dijeljenje — svake sedmice ili svaki dan.",
+    "whatsappTitle": "Automatski odgovori na WhatsAppu",
+    "whatsappBody": "„Gdje ste večeras?“ „Koje deserte imate?“ Poruke na vašem WhatsAppu dobijaju odgovor dok vozite prema prodajnom mjestu ili stojite za roštiljem, na osnovu vašeg menija i rasporeda. Messenger i Instagram uskoro.",
+    "whatsappSoonTitle": "Automatski odgovori na WhatsAppu <soon>Uskoro</soon>",
+    "whatsappSoonBody": "„Gdje ste večeras?“ „Koje deserte imate?“ Uskoro će poruke na vašem WhatsAppu dobijati odgovor dok vozite prema prodajnom mjestu ili stojite za roštiljem. Slijede Messenger i Instagram.",
+    "offlineTitle": "Nema signala? Nastavite usluživati.",
+    "offlineBody": "Ako izgubite signal, online narudžbe se automatski pauziraju kako kupci ne bi slali narudžbe koje nećete vidjeti. Nastavite primati narudžbe u aplikaciji za iPhone, iPad i Android.",
+    "slotsBody": "Kupci naručuju unaprijed i biraju vrijeme preuzimanja. Manje redova, a hrana je spremna kada stignu."
+  },
+  "steps": {
+    "eyebrow": "Kako početi",
+    "title": "Postavite sve i počnite primati narudžbe za otprilike 15 minuta.",
+    "lede": "Treba srediti tri stvari — a za dvije je dovoljna fotografija.",
+    "menuTitle": "Napravite svoj meni",
+    "menuBody": "Fotografišite tablu s menijem ili zalijepite tekst. Artikli, cijene i dodaci prenose se sami. Vi samo provjerite da li je sve tačno.",
+    "scheduleTitle": "Dodajte svoj raspored",
+    "scheduleBody": "Imate ga na svojoj web stranici? Preuzet ćemo ga odatle i redovno ga ažurirati. Ako nemate, fotografišite i njega. Vi samo odobrite ono što pronađemo.",
+    "shareTitle": "Podijelite svoj link",
+    "shareBody": "Objavite ga na Facebooku, zalijepite QR kod na vozilo. Narudžbe stižu na vaš ekran redoslijedom kojim ih trebate pripremiti."
+  },
+  "testimonial": {
+    "quote": "HatchGrab nam je mnogo olakšao primanje narudžbi. Sve je organizovano, možemo pratiti zalihe i tačno znamo koliko nam je pizza ostalo za prodaju — a termini su fantastični za sela u kojima je gužva.",
+    "award": "Mobilna picerija godine",
+    "awardScope": "Regionalni pobjednik",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — vlasnici"
+  },
+  "pricing": {
+    "eyebrow": "Cijene",
+    "title": "Počnite besplatno. Nadogradite kada vam zatreba.",
+    "switchHead": "Prelazite s druge platforme?",
+    "switchBody": "Pogledajte koliko biste za iste narudžbe plaćali uz HatchGrab. Traje otprilike minutu.",
+    "switchCta": "Uporedite koliko plaćate"
+  },
+  "faq": {
+    "title": "Često postavljana pitanja",
+    "metaTitle": "Često postavljana pitanja | HatchGrab",
+    "metaDescription": "Jasni odgovori za vlasnike food truckova o cijenama HatchGraba, postavljanju, primanju narudžbi i plaćanju karticom ili pri preuzimanju."
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Želite vidjeti koliko je postavljanje jednostavno?",
+    "lede": "Učitajte fotografiju ili snimak ekrana svog menija i za manje od 60 sekundi pretvorit ćemo ga u stranicu za narudžbe koja radi, da je isprobate. Vaši artikli, vaše cijene. Bez registracije, bez kartice, ništa se ne instalira. Pogledajte, pa odlučite.",
+    "cta": "Učitaj moj meni sada →"
+  },
+  "meta": {
+    "title": "Sistem za narudžbe za food truckove — HatchGrab {country}",
+    "description": "Primajte narudžbe i narudžbe unaprijed bez reda. Softver za narudžbe i kuhinjski ekran za food truckove i mobilni ketering ({country}) — nije kasa."
+  }
+}

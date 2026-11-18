@@ -1,0 +1,31 @@
+{
+  "intro": "U odjeljku „Upravljanje“ postavljate svoj food truck i pratite kako posluje. Na kontrolnoj tabli primate narudžbe i vodite svaki događaj dok traje.",
+  "ariaLabel": "Vodič kroz kontrolnu tablu",
+  "step": "{current} od {total}",
+  "skip": "Preskoči",
+  "back": "← Nazad",
+  "next": "Dalje →",
+  "done": "Gotovo",
+  "stops": {
+    "menu": {
+      "title": "Meni",
+      "body": "Vaša jela, cijene i alergeni. Sve što ovdje promijenite odmah je uživo."
+    },
+    "schedule": {
+      "title": "Raspored",
+      "body": "Gdje i kada radite. Dodajte događaj ovdje i kupci mogu naručivati za njega."
+    },
+    "build": {
+      "title": "Kombo meniji, dodaci i dodatna ponuda",
+      "body": "Kombo meniji, dodatna ponuda, prilagođavanja i kapacitet kuhinje nalaze se u odjeljku Meni — slobodno isprobajte."
+    },
+    "settings": {
+      "title": "Postavke",
+      "body": "Podaci o vašem food trucku i načini na koje kupci plaćaju."
+    },
+    "billing": {
+      "title": "Naplata",
+      "body": "Ovdje su vaš paket, naplata i informacije o funkcijama."
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Tokom smjene kontrolna tabla ili kuhinjski ekran (KDS) moraju biti uključeni i online.",
+  "explainerBody": "Ako se ekran isključi, uređaj izgubi internet ili pređete na drugu web stranicu, offline zaštita preuzima — ili pauzira naručivanje ili isključuje automatsko prihvatanje, šta god ste odabrali.",
+  "reminder": "⚠️ Tokom smjene držite kontrolnu tablu ili kuhinjski ekran (KDS) uključenim i online, inače offline zaštita može preuzeti.",
+  "enableConfirm": "Offline zaštita je uključena.\n\nDa narudžbe stižu bez prekida, ekran mora ostati uključen. Ako ovaj uređaj izgubi vezu, offline zaštita preuzima u režimu koji ste odabrali.\n\nProvjerite je li na ovom uređaju uključena opcija „Ekran uključen“.",
+  "disableConfirm": "Isključiti offline zaštitu za ovaj događaj?\n\nAko ovaj uređaj izgubi vezu, online narudžbe će i dalje stizati — kupci mogu poslati narudžbe koje ne vidite. Isključite je samo ako imate pouzdanu vezu.",
+  "cardDescription": "Određuje šta se događa s pristiglim narudžbama kada vaš uređaj izgubi vezu.",
+  "purpose": "Ako vaš uređaj izgubi vezu, ovo zaustavlja dolazak narudžbi dok ih ne možete vidjeti.",
+  "switchLabel": "Offline zaštita narudžbi",
+  "switchHelp": "Šta se događa kada ovo vozilo izgubi vezu.",
+  "modes": {
+    "pause": {
+      "label": "Pauziraj online naručivanje",
+      "help": "Kupci ne mogu naručivati dok ponovo ne budete online."
+    },
+    "no_auto_accept": {
+      "label": "Nastavi primati narudžbe, potvrđujem ih ručno",
+      "help": "Automatsko prihvatanje je isključeno, pa kupci i dalje mogu naručivati, ali ništa se ne potvrđuje automatski. Svaku narudžbu potvrđujete kada ponovo budete online — a sve što i dalje čeka automatski se odbija nakon vremena koje ste odabrali, a kupac o tome dobije e-mail."
+    }
+  },
+  "autoRejectLabel": "Odbij narudžbe koje čekaju duže od",
+  "autoRejectOption": "{n, plural, one {{count} min} few {{count} min} other {{count} min}}"
+}

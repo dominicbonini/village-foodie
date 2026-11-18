@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Potvrdite svoju novu e-mail adresu za HatchGrab",
+    "heading": "Potvrdite svoju e-mail adresu",
+    "button": "Potvrdi e-mail adresu"
+  },
+  "changeEmail": {
+    "requested": "Zatražili ste da e-mail adresu za HatchGrab promijenite u ovu adresu.",
+    "click": "Kliknite na dugme ispod da potvrdite. Ovaj link ističe za 24 sata.",
+    "ignore": "Ako niste zatražili ovu izmjenu, slobodno zanemarite ovaj e-mail.",
+    "stillActive": "Vaša trenutna e-mail adresa ostaje aktivna."
+  },
+  "resendVerification": {
+    "requested": "Zatražili ste da e-mail za HatchGrab promijenite u ovu adresu.",
+    "click": "Kliknite ispod da potvrdite. Ovaj link ističe za 24 sata.",
+    "ignore": "Ako ovo niste zatražili, zanemarite ovaj e-mail.",
+    "stillActive": "Vaš trenutni e-mail ostaje aktivan."
+  },
+  "passwordReset": {
+    "subject": "Resetujte lozinku za HatchGrab",
+    "heading": "Resetujte lozinku",
+    "requested": "Primili smo zahtjev za resetovanje lozinke za vaš račun na HatchGrabu.",
+    "click": "Kliknite na dugme ispod da odaberete novu lozinku. Ovaj link ističe za 1 sat.",
+    "button": "Resetuj lozinku",
+    "ignore": "Ako ovo niste zatražili, slobodno zanemarite ovaj e-mail.",
+    "unchanged": "Vaša lozinka se neće promijeniti dok ne kliknete na link iznad."
+  },
+  "deletionScheduled": {
+    "subject": "Vaš račun na HatchGrabu zakazan je za brisanje",
+    "received": "Primili smo zahtjev za brisanje ovog računa na HatchGrabu.",
+    "orderingStopped": "<b>Online naručivanje je odmah zaustavljeno</b> za: {trucks}.",
+    "noTrucks": "(nema food truckova)",
+    "readable": "Vaša kontrolna tabla ostaje\n    dostupna za čitanje još {days, plural, one {# dan} few {# dana} other {# dana}}.",
+    "scheduled": "Račun je zakazan za brisanje dana <b>{date}</b>.",
+    "cannotCancel": "<b>Ovo se ne može otkazati iz aplikacije.</b> Ako ovo niste bili vi ili ste se\n    predomislili, odgovorite na ovaj e-mail što prije.",
+    "kept": "Kada račun bude izbrisan, uklanjamo vaše lične podatke i podatke vaših kupaca. Zadržavamo\n    anonimne računovodstvene evidencije, koje smo zakonski obavezni čuvati."
+  }
+}

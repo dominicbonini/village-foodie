@@ -1,0 +1,17 @@
+{
+  "features": "Funkcije",
+  "pricing": "Cijene",
+  "faq": "Česta pitanja",
+  "privacy": "Privatnost",
+  "terms": "Uslovi",
+  "contact": "Kontakt",
+  "about": "O nama",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Od ljudi koji stoje iza platforme <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Preuzmite HatchGrab na App Storeu",
+    "appStoreAlt": "Preuzmite na App Storeu",
+    "googlePlayLink": "Preuzmite HatchGrab na Google Playu",
+    "googlePlayAlt": "Nabavite na Google Playu"
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for BOSNIAN, Latin script (bs-BA): alerg (alergija, alergičan), (ne)tolerancija, osjetljiv, celijakija, anafilaksa, bez <allergen> (bez glutena, bez laktoze, bez mlijeka, bez jaja, bez kikirikija, bez orašastih plodova, bez lješnjaka…), bezglutensk / bezlaktozn, ne sadrži / nema glutena, sigurno / pogodno / prikladno za, može sadržati, tragovi, (unakrsna) kontaminacija, ne smijem / ne mogu jesti. š č ć ž fold away on both sides; đ is kept, so it is not used in a stem. Bare bez is NOT a stem (bez luka is a preference), nor bare siguran (jeste li sigurni = are you sure). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "bs",
+  "normalise": "unicode",
+  "stems": [
+    "alerg",
+    "intoleran",
+    "netoleran",
+    "osjetljiv",
+    "osetljiv",
+    "celijak",
+    "anafilak",
+    "adrenalin",
+    "bez glutena",
+    "bezglutensk",
+    "bez laktoze",
+    "bezlaktozn",
+    "bez mlijeka",
+    "bez mleka",
+    "bez mliječn",
+    "bez mlečn",
+    "bez jaja",
+    "bez kikiriki",
+    "bez orašast",
+    "bez oraha",
+    "bez lješnjak",
+    "bez lješnik",
+    "bez badema",
+    "bez soje",
+    "bez susama",
+    "bez sezama",
+    "bez ribe",
+    "bez rakova",
+    "bez škampa",
+    "bez morskih plodova",
+    "bez plodova mora",
+    "bez školjki",
+    "bez sulfita",
+    "ne sadrži",
+    "nema glutena",
+    "nema laktoze",
+    "bezbjedn",
+    "bezbedn",
+    "siguran za",
+    "sigurna za",
+    "sigurno za",
+    "sigurni za",
+    "pogodan za",
+    "pogodna za",
+    "pogodno za",
+    "pogodni za",
+    "prikladn",
+    "može sadržati",
+    "mogu sadržati",
+    "može sadržavati",
+    "može da sadrži",
+    "tragov",
+    "kontaminacij",
+    "unakrsn",
+    "ne smijem jesti",
+    "ne smijem jest",
+    "ne mogu jesti",
+    "allerg",
+    "gluten free",
+    "glutenfree",
+    "lactose",
+    "celiac",
+    "coeliac",
+    "nut free",
+    "epipen",
+    "epi pen"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "gluten",
+        "pšenic",
+        "brašn",
+        "ječm",
+        "ječam",
+        "raž",
+        "zob"
+      ],
+      "crustaceans": [
+        "rakov",
+        "škamp",
+        "kozic",
+        "jastog",
+        "plodovi mora",
+        "morski plodovi"
+      ],
+      "eggs": [
+        "jaj",
+        "majonez"
+      ],
+      "fish": [
+        "riba",
+        "ribe",
+        "ribu",
+        "ribom"
+      ],
+      "peanuts": [
+        "kikiriki"
+      ],
+      "soy": [
+        "soja",
+        "soje",
+        "soju",
+        "tofu"
+      ],
+      "milk": [
+        "mlijek",
+        "mliječ",
+        "laktoz",
+        "sir ",
+        "sira",
+        "sirom",
+        "maslac",
+        "pavlak",
+        "kajmak"
+      ],
+      "tree nuts": [
+        "orašast",
+        "orah",
+        "orasi",
+        "lješnjak",
+        "badem",
+        "indijsk",
+        "pistać"
+      ],
+      "sulphites": [
+        "sulfit",
+        "sumpor-dioksid",
+        "sumpor dioksid"
+      ]
+    }
+  }
+}

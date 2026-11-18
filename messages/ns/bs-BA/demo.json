@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Nije dostupno u demo verziji",
+  "demoMode": "DEMO REŽIM",
+  "loopLands": "Upravo ovako stiže prava narudžba",
+  "showMe": "Pokaži mi",
+  "noCard": "{sub} Kartica nije potrebna.",
+  "notYet": "Još ne",
+  "cashAndCollected": "Gotovina i preuzeto",
+  "logoPlaceholder": "Vaš logo ovdje",
+  "welcomeTitle": "{sample, select, yes {Evo primjera demo verzije} other {Evo vaše demo verzije}}",
+  "welcomeIntro": "{sample, select, yes {Ovo je <b>primjer menija</b> da vidite kako sve funkcioniše — učitajte svoj kad god želite i prilagodite ga sebi.} other {Ovo je vaš meni i vaš vizuelni identitet, na pravoj tabli.}} Narudžbe koje su već na njoj samo su primjeri, da vidite kako izgleda smjena kada je gužva.",
+  "twoThings": "Dvije stvari koje možete isprobati:",
+  "hitButton": "Pritisnite <b>{button}</b> na narudžbi",
+  "scanQr": "Skenirajte <b>QR kod</b> — ili dodirnite link — i naručite kao kupac, pa pogledajte kako narudžba stiže",
+  "qrAlt": "QR kod za vašu stranicu za narudžbe kupaca",
+  "openHere": "Ili je otvorite na ovom uređaju",
+  "copyLink": "Kopiraj link",
+  "copyDescribedAs": "link za narudžbe",
+  "noLinkTitle": "Vaš link za narudžbe kupaca",
+  "noLinkBody": "Link vaše stranice za narudžbe nalazi se u meniju, gore desno.",
+  "asLive": "Tok naručivanja i rada kuhinje isti je kao u stvarnom radu.",
+  "startExploring": "Počnite istraživati",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {Počnite besplatno} one {Počnite besplatno na # mjesec} few {Počnite besplatno na # mjeseca} other {Počnite besplatno na # mjeseci}}",
+    "sub": "Vaš besplatni probni period počinje kada se registrujete."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Demo · ovo je vaš meni, onako kako će ga vidjeti vaši kupci. Ništa se ne naplaćuje i ne šalju se e-mailovi."
+}

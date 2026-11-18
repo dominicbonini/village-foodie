@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Dozvoli kupcima da otkažu narudžbe",
+    "sentence": "Kupci mogu otkazati najkasnije <select></select> prije vremena preuzimanja"
+  },
+  "autoAccept": {
+    "label": "Automatsko prihvatanje narudžbi",
+    "help": "Narudžbe se potvrđuju automatski. Ako je traženi termin popunjen, narudžba se pomjera na sljedeći slobodan termin. Potvrđuje se samo kada ima kapaciteta. Narudžbe s napomenama kupca (npr. alergija) i dalje morate potvrditi."
+  },
+  "orderReady": {
+    "label": "Korak „Narudžba spremna“",
+    "help": "Prikazuje dugme „Označi kao spremno“ na ekranu narudžbi. Kuhinjski ekrani (KDS) postavljaju se zasebno, na svakom uređaju. Kupci dobiju e-mail svaki put kada je narudžba označena kao spremna. Važi za sve događaje — i dalje ga možete uključiti ili isključiti za pojedinačni događaj na njegovoj kontrolnoj tabli."
+  },
+  "buzzers": {
+    "label": "Dijelite li pagere za preuzimanje?",
+    "help": "Zabilježite koji ste pager dali kojem kupcu, kako biste znali koga tražiti kada mu je hrana spremna.",
+    "countLabel": "Koliko pagera imate?"
+  }
+}

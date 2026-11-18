@@ -1,0 +1,11 @@
+{
+  "notFoundTitle": "Stranica nije pronađena",
+  "notFoundBody": "Nismo pronašli tu stranicu. Možda je premještena ili je adresa pogrešno upisana.",
+  "home": "Idi na početnu stranicu",
+  "errorTitle": "Došlo je do greške",
+  "errorBody": "Izvinite — ova stranica se nije učitala. Pokušajte ponovo ili se vratite na početnu stranicu.",
+  "retry": "Pokušaj ponovo",
+  "backToDashboard": "Nazad na kontrolnu tablu",
+  "errorBodyDashboard": "Izvinite, ova stranica se nije učitala. Pokušajte ponovo ili se vratite na kontrolnu tablu.",
+  "sectionFailed": "Ovaj dio se nije učitao."
+}

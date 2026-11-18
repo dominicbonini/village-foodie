@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Raspon datuma",
+    "event": "📍 Događaj",
+    "filterBy": "Filtriraj po",
+    "show": "Prikaži",
+    "range": "<from></from><sep>do</sep><until></until>",
+    "selectEvent": "Odaberite događaj…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Događaj",
+    "viewReport": "Prikaži izvještaj",
+    "loading": "Učitavanje…",
+    "orders": "📋 Narudžbe",
+    "items": "📦 Artikli",
+    "exportCsv": "⬇ Izvezi CSV"
+  },
+  "empty": {
+    "noOrders": "Za ovaj period nema narudžbi.",
+    "selectEvent": "Odaberite događaj iznad da vidite njegov izvještaj."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} narudžba} few {{count} narudžbe} other {{count} narudžbi}} · {total}"
+  },
+  "revenue": {
+    "title": "Pregled prihoda",
+    "deals": "Prihod od kombo menija",
+    "modifiers": "Doplate za dodatke",
+    "foodSales": "Prodaja hrane",
+    "total": "Ukupno",
+    "other": "Ostalo",
+    "tax": "Porez",
+    "tips": "Napojnice",
+    "serviceFees": "Naknade za uslugu",
+    "cardFees": "Naknade za karticu"
+  },
+  "itemsSold": {
+    "title": "Prodani artikli"
+  },
+  "dealsCard": {
+    "title": "Kombo meniji"
+  },
+  "custom": {
+    "title": "Prilagođavanja",
+    "paidModifiers": "Plaćeni dodaci",
+    "customerNotes": "Napomene kupaca",
+    "note": "„{note}“"
+  },
+  "table": {
+    "item": "Artikal",
+    "modifier": "Dodatak",
+    "qty": "Kol.",
+    "total": "Ukupno",
+    "date": "Datum",
+    "time": "Vrijeme",
+    "channel": "Kanal"
+  },
+  "breakdown": {
+    "orders": "Pregled narudžbi",
+    "items": "Pregled artikala"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Na licu mjesta"
+  },
+  "csv": {
+    "orderId": "ID narudžbe",
+    "date": "Datum",
+    "event": "Događaj",
+    "timePlaced": "Vrijeme narudžbe",
+    "collectionTime": "Vrijeme preuzimanja",
+    "customerName": "Ime kupca",
+    "orderType": "Vrsta narudžbe",
+    "items": "Artikli",
+    "deals": "Kombo meniji",
+    "modifiers": "Dodaci",
+    "notes": "Napomene",
+    "subtotal": "Međuzbir",
+    "tip": "Napojnica",
+    "serviceFee": "Naknada za uslugu",
+    "total": "Ukupno",
+    "itemName": "Naziv artikla",
+    "qty": "Količina",
+    "unitPrice": "Jedinična cijena",
+    "itemTotal": "Ukupno za artikal",
+    "orderTotal": "Ukupno za narudžbu",
+    "unknownEvent": "Nepoznat događaj",
+    "asap": "Što prije",
+    "unknownCustomer": "Nepoznato",
+    "customerOnline": "Kupac online",
+    "placedByTruck": "Dodao food truck"
+  },
+  "presets": {
+    "label": "Period",
+    "custom": "Prilagođeni datumi",
+    "thisMonth": "Ovaj mjesec",
+    "lastMonth": "Prošli mjesec",
+    "lastQuarter": "Prošli kvartal",
+    "lastTaxYear": "Prošla poreska godina"
+  },
+  "accounts": {
+    "title": "Za vašeg računovođu",
+    "help": "Prodaja se računa na dan događaja. Bruto je ono što su kupci platili. Neto je ono što ostane nakon povrata novca i poreza.",
+    "gross": "Bruto prodaja",
+    "refunds": "Povrati novca",
+    "net": "Neto prodaja",
+    "taxEstimated": "procijenjeno na osnovu vaše poreske stope",
+    "taxNone": "Za vaš food truck nije postavljena poreska stopa, pa se porez ovdje ne izračunava.",
+    "byChannel": "Bruto prodaja po kanalu",
+    "byPayment": "Bruto prodaja po načinu plaćanja",
+    "online": "Online",
+    "walkUp": "Na licu mjesta",
+    "cardOnline": "Kartica online",
+    "payAtTruck": "Plaćanje pri preuzimanju",
+    "cost": "Trošak prodanih jela",
+    "profit": "Dobit",
+    "coverage": "{total, plural, one {Trošak je postavljen za {withCost} od # prodanog jela} few {Trošak je postavljen za {withCost} od # prodana jela} other {Trošak je postavljen za {withCost} od # prodanih jela}}",
+    "partial": "Jela bez troška nisu uračunata u trošak, pa je ova dobit veća nego što stvarno jeste. Dodajte trošak svakom jelu u Meniju.",
+    "noCosts": "Nijedno jelo još nema trošak. Dodajte trošak svojim jelima u Meniju da vidite svoju dobit.",
+    "byEvent": "Po događaju",
+    "event": "Događaj",
+    "sales": "Neto prodaja",
+    "eventNoProfit": "Crtica znači da nema svako jelo prodano tamo postavljen trošak.",
+    "downloadOrders": "⬇ Narudžbe za vašeg računovođu",
+    "downloadEvents": "⬇ Događaji za vašeg računovođu",
+    "downloadHelp": "Dvije tabele: jedan red za svaku narudžbu i jedan red za svaki događaj. Otvaraju se u programima Excel, Numbers, Xero i QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Datum",
+      "time": "Vrijeme",
+      "orderNumber": "Broj narudžbe",
+      "event": "Događaj",
+      "channel": "Kanal",
+      "paymentMethod": "Način plaćanja",
+      "currency": "Valuta",
+      "gross": "Bruto",
+      "tax": "Porez",
+      "taxBasis": "Osnova za porez",
+      "net": "Neto",
+      "refunded": "Vraćeno",
+      "cost": "Trošak",
+      "profit": "Dobit",
+      "eventDate": "Datum događaja",
+      "orders": "Narudžbe",
+      "dishesSold": "Prodana jela",
+      "dishesWithCost": "Jela s troškom"
+    },
+    "taxBasis": {
+      "stored": "sačuvano uz narudžbu",
+      "estimated": "procijenjeno na osnovu vaše poreske stope",
+      "none": "poreska stopa nije postavljena"
+    }
+  }
+}

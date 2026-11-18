@@ -1,0 +1,17 @@
+{
+  "back": "← Nazad",
+  "title": "Primijeni kombo meni",
+  "save": "Uštedite {amount}",
+  "selectItems": "Odaberite artikle za svako mjesto",
+  "choose": "Odaberite: {category}…",
+  "inYourBasket": "── U vašoj korpi ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (u korpi){state, select, used { — već je u kombo meniju} taken { — odabrano na drugom mjestu} other {}}",
+  "addNew": "── Dodaj novo ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obavezno · odaberite jedno} required {Obavezno} other {Odaberite jedno}}{unmet, select, yes { (obavezno)} other {}}",
+  "notePlaceholder": "Dodajte napomenu, npr. bez luka (neobavezno)",
+  "backButton": "Nazad",
+  "cancel": "Otkaži",
+  "chooseRequired": "Odaberite obavezne opcije",
+  "apply": "Primijeni kombo meni · {amount}"
+}

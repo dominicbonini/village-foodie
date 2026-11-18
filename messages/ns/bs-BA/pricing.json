@@ -1,0 +1,53 @@
+{
+  "banner": {
+    "title": "{months, plural, one {# početni mjesec potpuno je besplatan — sve funkcije su otključane.} few {# početna mjeseca potpuno su besplatna — sve funkcije su otključane.} other {# početnih mjeseci potpuno je besplatno — sve funkcije su otključane.}}",
+    "body": "Uz {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s uslugom za obradu kartičnih plaćanja. Kada vaš probni period istekne, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { — bez mjesečne naknade —} other {}} osim ako ne odaberete neki paket. Bez kartice za početak, bez ugovora, otkažite bilo kada.",
+    "bodyCard": "Uz {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s uslugom za obradu kartičnih plaćanja. Želite naplatu unaprijed? Online plaćanje karticom možete dodati bilo kada. Kada vaš probni period istekne, prelazite na paket <plan>{fallback}</plan>{fallbackFree, select, yes { — bez mjesečne naknade —} other {}} osim ako ne odaberete neki paket. Bez kartice za početak, bez ugovora, otkažite bilo kada.",
+    "bodyOnly": "Uz {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s uslugom za obradu kartičnih plaćanja. Kada vaš probni period istekne, paket <plan>{fallback}</plan> košta {price} mjesečno. Javit ćemo vam se prije toga radi postavljanja plaćanja. Bez kartice za početak, bez ugovora, otkažite bilo kada.",
+    "bodyOnlyCard": "Uz {brand} kupci naručuju unaprijed i plaćaju pri preuzimanju, pa možete primati online narudžbe bez ikakvog povezivanja s uslugom za obradu kartičnih plaćanja. Želite naplatu unaprijed? Online plaćanje karticom možete dodati bilo kada. Kada vaš probni period istekne, paket <plan>{fallback}</plan> košta {price} mjesečno. Javit ćemo vam se prije toga radi postavljanja plaćanja. Bez kartice za početak, bez ugovora, otkažite bilo kada."
+  },
+  "card": {
+    "perTruckMonth": "po vozilu / mjesečno",
+    "mostTrucks": "Izbor većine",
+    "tryFree": "Isprobajte besplatno",
+    "seeEvery": "Pogledajte sve funkcije →",
+    "everything": "Sve za vođenje smjene",
+    "everythingIn": "Sve iz paketa {plan}, plus"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}</b> samo na online narudžbe. Narudžbe na licu mjesta uvijek su besplatne.",
+    "feeOnlyCard": "<b>{fee}*</b> samo na online narudžbe. Narudžbe na licu mjesta uvijek su besplatne.",
+    "included": "Svaki mjesec uključene su online narudžbe u iznosu do <b>{included}</b>, a zatim <b>{fee}*</b>. Narudžbe na licu mjesta uvijek su besplatne.",
+    "includedNoMark": "Svaki mjesec uključene su online narudžbe u iznosu do <b>{included}</b>, a zatim <b>{fee}</b>. Narudžbe na licu mjesta uvijek su besplatne.",
+    "noFee": "<b>Bez HatchGrab naknada</b> na online narudžbe, koliko god posla imali. Jedan predvidiv mjesečni trošak."
+  },
+  "base": {
+    "walkUp": "Narudžbe na licu mjesta i kuhinjski ekran (KDS)",
+    "online": "Online naručivanje",
+    "preorders": "Narudžbe unaprijed i vrijeme preuzimanja",
+    "capacity": "Upravljanje kapacitetom kuhinje",
+    "privateEvents": "Privatni događaji",
+    "printing": "Štampanje kuhinjskih listića",
+    "app": "Kuhinjska aplikacija za iPhone, iPad i Android"
+  },
+  "added": {
+    "whatsapp_replies": "Automatski odgovori na WhatsAppu",
+    "schedule_graphics": "Objave za društvene mreže — vaš raspored za Facebook i Instagram — spremne za objavu",
+    "event_types": "Prilagođene vrste događaja i cijene"
+  },
+  "money": {
+    "unlimitedOrders": "Neograničene online narudžbe, 0% HatchGrab naknade",
+    "samePrice": "Ista cijena i u vašem najprometnijem mjesecu"
+  },
+  "comingSoon": "Uskoro",
+  "bar": {
+    "title": "Koji je paket za mene najjeftiniji?",
+    "subtitle": "Vaše online narudžbe mjesečno",
+    "first": "Manje od {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Više od {from} → <b>{plan}</b>",
+    "only": "Bilo koji obim → <b>{plan}</b>"
+  },
+  "footnote": "* Uz to, samo na online narudžbe plaćene karticom Stripe naplaćuje svoju naknadu za obradu kartica (trenutno — {country}: {cardFee}), koja se plaća Stripeu, a ne HatchGrabu. Narudžbe na licu mjesta naplaćujete vlastitim POS terminalom — HatchGrab naplaćuje 0%.",
+  "currencyLine": "Cijene u valuti {currency} ({code})"
+}

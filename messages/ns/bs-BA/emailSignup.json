@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Zdravo, {name},} other {Zdravo,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Osnivač, HatchGrab",
+  "verify": {
+    "subject": "Potvrdite svoju e-mail adresu",
+    "thanks": "{hasTruck, select, yes {Hvala što ste postavili food truck {truck} na HatchGrabu.} other {Hvala što ste postavili svoj food truck na HatchGrabu.}}",
+    "button": "Potvrdi moju e-mail adresu",
+    "buttonText": "Potvrdi moju e-mail adresu: {url}",
+    "why": "S ovom adresom ćete se prijavljivati i na nju stižu obavještenja o narudžbama — zato je vrijedi potvrditi odmah.",
+    "next": "Čim bude potvrđena, poslat ću vam sve što vam treba za početak.",
+    "carryOn": "U međuvremenu možete nastaviti s postavljanjem.",
+    "stuck": "Zapeli ste negdje? Samo odgovorite na ovaj e-mail — na ove poruke odgovaram lično.",
+    "fallbackLink": "Ako dugme ne radi, zalijepite ovo u preglednik: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Dobro došli na HatchGrab, {name}} other {Dobro došli na HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Zaista mi je drago što mogu poželjeti dobrodošlicu food trucku {truck} na HatchGrabu.} other {Zaista mi je drago što mogu poželjeti dobrodošlicu vašem food trucku na HatchGrabu.}}",
+    "trial": "{months, plural, one {Vaš besplatni probni period od # mjeseca je počeo — sve funkcije su otključane.} few {Vaš besplatni probni period od # mjeseca je počeo — sve funkcije su otključane.} other {Vaš besplatni probni period od # mjeseci je počeo — sve funkcije su otključane.}}",
+    "setup": "Ako to već niste uradili, postavljanje je jednostavno i traje petnaestak minuta.",
+    "button": "Otvori kontrolnu tablu",
+    "bookmark": "Vrijedi je sačuvati u oznakama. Radi na svakom uređaju.",
+    "stuck": "Samo odgovorite na ovaj e-mail ako negdje zapnete — na ove poruke odgovaram lično.",
+    "lookingForward": "{hasTruck, select, yes {Jedva čekam da vidim kako food truck {truck} radi.} other {Jedva čekam da vidim kako vaš food truck radi.}}"
+  }
+}

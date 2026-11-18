@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Adresa",
+    "postcode": "Poštanski broj",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "Poštanski broj",
+    "state": "Savezna država",
+    "stateTerritory": "Savezna država ili teritorija",
+    "province": "Provincija",
+    "county": "Grofovija",
+    "prefecture": "Prefektura",
+    "emirate": "Emirat",
+    "region": "Regija",
+    "area": "Područje (selo, mjesto ili grad)",
+    "townOrArea": "Mjesto ili područje",
+    "city": "Grad",
+    "suburb": "Naselje",
+    "townOrCity": "Mjesto ili grad"
+  },
+  "short": {
+    "area": "Područje",
+    "townOrArea": "Mjesto ili područje",
+    "city": "Grad",
+    "suburb": "Naselje",
+    "townOrCity": "Mjesto ili grad"
+  },
+  "inSentence": {
+    "postcode": "poštanski broj",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "poštanski broj"
+  },
+  "withArticle": {
+    "postcode": "poštanski broj",
+    "zip": "ZIP kod",
+    "eircode": "Eircode",
+    "postalCode": "poštanski broj"
+  },
+  "tradeLabel": {
+    "area": "Mjesto ili grad",
+    "townOrArea": "Mjesto ili područje",
+    "city": "Grad",
+    "suburb": "Naselje",
+    "townOrCity": "Mjesto ili grad"
+  },
+  "basedIn": {
+    "area": "Mjesto ili grad u kojem ste smješteni",
+    "townOrArea": "Mjesto ili područje u kojem ste smješteni",
+    "city": "Grad u kojem ste smješteni",
+    "suburb": "Naselje u kojem ste smješteni",
+    "townOrCity": "Mjesto ili grad u kojem ste smješteni"
+  },
+  "example": "npr. {example}",
+  "customersSee": "Kupci vide:",
+  "postalWarning": "Ovo ne izgleda kao {article} — na primjer {example}. Ipak ga možete sačuvati.",
+  "regionChoose": "Odaberite…"
+}

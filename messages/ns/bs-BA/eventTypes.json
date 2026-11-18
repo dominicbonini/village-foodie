@@ -1,0 +1,83 @@
+{
+  "title": "Vrste događaja",
+  "newTypeButton": "+ Nova vrsta događaja",
+  "close": "Zatvori",
+  "loading": "Učitavanje…",
+  "missingTitle": "Vrste događaja još nisu uključene.",
+  "missingBody": "Ažuriranje baze podataka za ovu funkciju još nije primijenjeno. Ništa nije pokvareno — svaki događaj koristi vaše uobičajene postavke.",
+  "column": "Kolona",
+  "vanGone": "To vozilo više ne postoji.",
+  "typeGone": "Ta vrsta više ne postoji.",
+  "standard": "Standardni",
+  "standardHeading": "STANDARDNI",
+  "moreFor": "Više opcija: {name}",
+  "rename": "Preimenuj",
+  "moveLeft": "Pomjeri ulijevo",
+  "moveRight": "Pomjeri udesno",
+  "delete": "Izbriši",
+  "sections": {
+    "vans": "VOZILA",
+    "prices": "CIJENE",
+    "itemPrices": "CIJENE ARTIKALA",
+    "service": "USLUGA"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "Svakih {mins} min",
+  "noTypes": "Još nemate vrsta događaja, pa svaki događaj koristi vaše uobičajene postavke.",
+  "renameTitle": "Preimenujte ovu vrstu",
+  "name": "Naziv",
+  "cancel": "Otkaži",
+  "save": "Sačuvaj",
+  "copyVanOne": "Kopiraj postavke vozila 1",
+  "thisType": "ova vrsta",
+  "matchTitle": "Izjednačiti „{name}“ s vrstom Standardni?",
+  "matchKeeps": "Sve što ste promijenili na kontrolnoj tabli pojedinog događaja ostaje kako jeste, a cijene ove vrste se ne mijenjaju.",
+  "matchWillUse": "Koristit će: {summary}",
+  "deleteTitle": "Izbrisati „{name}“?",
+  "deleteBody": "{n, plural, =0 {Nijedan predstojeći događaj ne koristi „{name}“.} one {{count} predstojeći događaj koristi „{name}“. Vratit će se na vrstu Standardni.} few {{count} predstojeća događaja koriste „{name}“. Vratit će se na vrstu Standardni.} other {{count} predstojećih događaja koristi „{name}“. Vratit će se na vrstu Standardni.}} Sve što ste promijenili na pojedinom događaju ostaje kako jeste.",
+  "keep": "Zadrži",
+  "phone": {
+    "standardTag": "Standardni",
+    "defaultTag": "zadano",
+    "vanSetup": "Uobičajene postavke ovog vozila — koriste se na svakom događaju bez vrste.",
+    "standardSetup": "Vaše uobičajene postavke — koriste se na svakom događaju bez vrste.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} predstojeći događaj} few {{upcomingCount} predstojeća događaja} other {{upcomingCount} predstojećih događaja}} · {changed, plural, =0 {još ništa nije promijenjeno} one {promijenjeno: {changedCount} od {total}} few {promijenjeno: {changedCount} od {total}} other {promijenjeno: {changedCount} od {total}}}",
+    "noMenuItems": "Još nema artikala u meniju — dodajte ih u Meni › Artikli."
+  },
+  "newType": {
+    "title": "Nova vrsta događaja",
+    "namePlaceholder": "npr. Školska priredba",
+    "help": "Dodirnite naziv ili upišite svoj. Počinje kao kopija vrste Standardni, a kasnije promjene vrste Standardni neće je mijenjati. Poslije možete promijeniti bilo šta.",
+    "create": "Napravi",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Kafić",
+      "market": "Pijaca",
+      "privateHire": "Food truck za događaje"
+    }
+  },
+  "select": {
+    "label": "Vrsta događaja",
+    "usual": "Za ovo mjesto uobičajena je vrsta: {name}."
+  },
+  "summary": {
+    "normalSetup": "Vaše uobičajene postavke",
+    "sameAsStandard": "Isto kao Standardni",
+    "buzzersOn": "pageri uključeni",
+    "buzzersOff": "pageri isključeni",
+    "takeCashOn": "primanje gotovine uključeno",
+    "takeCashOff": "primanje gotovine isključeno",
+    "markReadyOn": "korak „spremno“ uključen",
+    "markReadyOff": "korak „spremno“ isključen",
+    "collectionEvery": "preuzimanje svakih {mins} min",
+    "offlineOff": "offline zaštita isključena",
+    "offlineKeepTaking": "offline: nastavi primati narudžbe",
+    "offlinePause": "offline: pauziraj naručivanje"
+  },
+  "errors": {
+    "somethingWentWrong": "Došlo je do greške",
+    "couldNotLoad": "Učitavanje nije uspjelo",
+    "couldNotSave": "Čuvanje nije uspjelo",
+    "noVans": "Ovaj food truck nema vozila koja se mogu mijenjati."
+  }
+}

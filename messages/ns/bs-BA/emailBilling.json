@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Zdravo, {name},} other {Zdravo,}}",
+  "questions": "Imate pitanja? Samo odgovorite na ovaj e-mail.",
+  "signoff": "Vaš HatchGrab tim",
+  "buttonUpdate": "Ažuriraj {method, select, payment_method {način plaćanja} other {karticu}}",
+  "buttonPay": "Plati sada",
+  "buttonAddCard": "Dodaj karticu",
+  "suspended": "Ako ostane neplaćeno, vaš račun može biti suspendovan.",
+  "failed": {
+    "subject": "Vaše plaćanje za HatchGrab nije prošlo",
+    "line1": "Danas nismo mogli naplatiti {amount} za food truck {truck}. Pokušat ćemo ponovo.",
+    "line2": "Ažurirajte {method, select, payment_method {način plaćanja} other {karticu}} do {date} kako bi online narudžbe ostale uključene."
+  },
+  "twoDays": {
+    "subject": "Još 2 dana da ažurirate {method, select, payment_method {način plaćanja} other {karticu}}",
+    "line1": "Iznos od {amount} za food truck {truck} još nije plaćen. Ažurirajte {method, select, payment_method {način plaćanja} other {karticu}} do {date} ili će online narudžbe biti pauzirane."
+  },
+  "oneDay": {
+    "subject": "Ažurirajte {method, select, payment_method {način plaćanja} other {karticu}} do sutra",
+    "line1": "Iznos od {amount} za food truck {truck} još nije plaćen. Ažurirajte {method, select, payment_method {način plaćanja} other {karticu}} do sutra ili će online narudžbe biti pauzirane."
+  },
+  "lastDay": {
+    "subject": "Posljednji dan da ažurirate {method, select, payment_method {način plaćanja} other {karticu}}",
+    "line1": "Danas je posljednji dan da platite {amount} za food truck {truck}. Ako do ponoći iznos ostane neplaćen, online narudžbe bit će pauzirane dok ne platite."
+  },
+  "paused": {
+    "subject": "Online narudžbe su pauzirane",
+    "line1": "Online narudžbe za food truck {truck} su pauzirane jer iznos od {amount} nije plaćen. Platite sada i odmah se ponovo uključuju.",
+    "line2": "Platite do {date} ili vaš račun može biti suspendovan."
+  },
+  "trial7": {
+    "subject": "Vaš besplatni probni period ističe za 7 dana",
+    "line1": "Vaš besplatni probni period za food truck {truck} ističe {date}.",
+    "line2": "Dodajte karticu u „Upravljanje › Naplata“ kako bi online narudžbe ostale uključene.",
+    "plan": "Nakon toga paket {plan} košta {price} mjesečno. Kada probni period istekne, naplatit ćemo {amount} za ostatak mjeseca {month}, a zatim {price} na dan {nextFirst}.",
+    "planFree": "Nakon toga prelazite na paket {plan}, bez mjesečne naknade.",
+    "fee": "Našu naknadu od {fee} na online narudžbe naplaćujemo 1. u mjesecu, za prethodni mjesec."
+  },
+  "trial1": {
+    "subject": "Vaš besplatni probni period ističe sutra",
+    "line1": "Vaš besplatni probni period za food truck {truck} ističe sutra.",
+    "noCard": "Dodajte karticu ili će online narudžbe biti pauzirane.",
+    "allSet": "Sve je spremno: paket {plan} počinje {date}.",
+    "charge": "Kada probni period istekne, naplatit ćemo {amount} za ostatak mjeseca {month}."
+  }
+}

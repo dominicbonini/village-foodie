@@ -1,0 +1,41 @@
+{
+  "h1": "Sve što vam treba za vođenje smjene, u svakom paketu.",
+  "lede": "Narudžbe, narudžbe unaprijed, kapacitet kuhinje i kuhinjski ekran (KDS) uključeni su u svaki paket.{hasUpgrades, select, yes { Uz {plans} dobijate i {features}, kao i niže naknade.} other {}}",
+  "perMonth": "{price} / mjesečno",
+  "trial": {
+    "length": "{months, plural, one {# mjesec} few {# mjeseca} other {# mjeseci}}",
+    "ends": "Ističe {date}"
+  },
+  "group": {
+    "pay": "Šta plaćate",
+    "run": "Vođenje smjene",
+    "online": "Online narudžbe",
+    "marketing": "Marketing i automatizacija"
+  },
+  "pay": {
+    "included": "Online narudžbe uključene svaki mjesec",
+    "fee": "HatchGrab naknada na online narudžbe*",
+    "feeNoMark": "HatchGrab naknada na online narudžbe",
+    "walkUp": "Narudžbe na licu mjesta"
+  },
+  "cell": {
+    "unlimited": "Neograničeno",
+    "free": "Besplatno",
+    "feeAbove": "<b>{fee}</b> iznad {included}",
+    "yes": "Uključeno",
+    "none": "Nije uključeno",
+    "comingSoon": "Uskoro"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "društvene mreže",
+    "event_types": "prilagođene cijene za događaje"
+  },
+  "meta": {
+    "description": "Sve funkcije HatchGraba u svakom paketu, jedna uz drugu — {plans}, s naknadama i uključenim iznosima.{months, plural, =0 {} one { # početni mjesec uključuje sve.} few { # početna mjeseca uključuju sve.} other { # početnih mjeseci uključuje sve.}}"
+  },
+  "notes": {
+    "whatsapp": "Za automatske odgovore na WhatsAppu potreban je račun WhatsApp Business. Meta može naplaćivati neke poruke; odgovori se generišu automatski.",
+    "printing": "Za štampanje kuhinjskih listića potreban je kompatibilan Bluetooth ili žičani štampač (nije uključen)."
+  }
+}

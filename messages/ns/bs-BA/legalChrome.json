@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "Politika privatnosti — HatchGrab",
+    "privacyDescription": "Kako HatchGrab Ltd prikuplja i koristi lične podatke.",
+    "termsTitle": "Uslovi korištenja — HatchGrab",
+    "termsDescription": "Uslovi korištenja HatchGraba.",
+    "countryTermsTitle": "Uslovi za pojedine države — HatchGrab",
+    "countryTermsDescription": "Dodatna pravila koja se na HatchGrab primjenjuju u nekim državama."
+  },
+  "homeLabel": "HatchGrab — početna",
+  "privacy": "Privatnost",
+  "terms": "Uslovi",
+  "countryTerms": "Uslovi za državu",
+  "contact": "Kontakt",
+  "lastUpdated": "Posljednje ažuriranje: {date}",
+  "questions": "Imate pitanja? <link>Javite nam se</link> — mi smo stvarni ljudi.",
+  "translationNote": "Ovo je prijevod. Ako se razlikuje od <link>verzije na engleskom jeziku</link>, mjerodavna je verzija na engleskom jeziku."
+}

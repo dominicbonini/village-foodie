@@ -1,0 +1,16 @@
+{
+  "subject": "Kako vam se svidjela narudžba od food trucka {truck}?",
+  "heading": "Hvala što ste naručili od food trucka {truck}",
+  "body": "Food truck {truck} bio bi zahvalan na iskrenoj recenziji na Googleu. Potrebna je samo minuta, a drugima pomaže da ga pronađu.",
+  "button": "Ostavite recenziju na Googleu",
+  "linkText": "Ostavite recenziju na Googleu: {url}",
+  "from": "Ovaj e-mail šalje food truck {truck} putem HatchGraba, jer ste naručili od njega.",
+  "unsubscribeLead": "Ne želite zahtjeve za recenziju od food trucka {truck}?",
+  "unsubscribeLink": "Odjavi se",
+  "unsubscribeText": "Odjava: {url}",
+  "unsubscribed": {
+    "title": "Odjavljeni ste",
+    "body": "Food truck {truck} vam više neće slati zahtjeve za recenziju.",
+    "invalid": "Ovaj link za odjavu nije važeći."
+  }
+}

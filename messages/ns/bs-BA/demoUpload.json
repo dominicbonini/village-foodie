@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Čitamo vaš meni…",
+    "found": "Pronašli smo vaše artikle…",
+    "kitchen": "Postavljamo vašu kuhinju…",
+    "page": "Pravimo vašu stranicu za narudžbe…",
+    "almost": "Skoro gotovo…"
+  },
+  "templateSteps": {
+    "truck": "Pravimo vaš primjer food trucka…",
+    "menu": "Postavljamo meni…",
+    "kitchen": "Postavljamo kuhinju…",
+    "page": "Pravimo stranicu za narudžbe…",
+    "almost": "Skoro gotovo…"
+  },
+  "dialogLabel": "Učitajte svoj meni",
+  "heading": "✨ Učitajte svoj meni",
+  "failedHeading": "Nismo uspjeli pročitati taj meni",
+  "close": "Zatvori",
+  "intro": "Fotografija vaše table s menijem, snimak ekrana, PDF ili ga zalijepite kao tekst. Naša vještačka inteligencija ga pročita i za manje od 60 sekundi napravi vam stranicu za narudžbe koja radi — s vašim artiklima i vašim cijenama. Bez registracije, bez kartice.",
+  "failedIntro": "Ponekad je fotografija previše tamna, snimljena pod uglom ili je meni pisan rukom. To je naš posao, a ne vaša greška. Evo nekoliko mogućnosti:",
+  "usually": "Ovo obično traje manje od 60 sekundi.",
+  "slow": "Ovo traje duže nego obično — kod velikih menija se to dešava.",
+  "keepWaiting": "Nastavi čekati",
+  "sampleWhileYouWait": "Ili dok čekate razgledajte primjer menija",
+  "standIn": "Ovo <b>neće biti vaš meni</b> — to je zamjena da vidite kako sve funkcioniše.",
+  "seeSample": "Pogledaj primjer menija",
+  "tryAgain": "Pokušaj ponovo",
+  "tryPhotoAgain": "Pokušaj ponovo s ovom fotografijom",
+  "tryDifferent": "Pokušaj s drugom fotografijom",
+  "uploadAnother": "← Učitaj drugu fotografiju",
+  "orSample": "Ili razgledajte primjer menija",
+  "orBuild": "Ili ćemo ga napraviti mi umjesto vas",
+  "buildSent": "✓ Hvala — primili smo. Javit ćemo vam se e-mailom.",
+  "buildBody": "Ostavite e-mail i stvarna osoba unijet će vaš meni i poslati vam link.",
+  "emailPlaceholder": "vi@vasfoodtruck.ba",
+  "sending": "…",
+  "send": "Pošalji",
+  "noPhoto": "Nemate fotografiju menija pri ruci?",
+  "noPhotoBody": "Umjesto toga razgledajte primjer food trucka — svoj meni možete učitati bilo kada.",
+  "build": "Napravi moju demo verziju →",
+  "nothingPublished": "Ništa nije objavljeno — samo vi to vidite.",
+  "error": {
+    "somethingWrong": "Došlo je do greške. Pokušajte ponovo.",
+    "serverUnreachable": "Nismo mogli dobiti server. Provjerite vezu i pokušajte ponovo.",
+    "sendFailed": "To nije bilo moguće poslati — pokušajte ponovo."
+  },
+  "fields": {
+    "uploadLabel": "Učitajte fajl s menijem",
+    "dropHere": "Ovdje spustite svoj meni",
+    "dragOrTap": "Prevucite i spustite ili dodirnite da odaberete",
+    "fileTypes": "Slika ili PDF",
+    "or": "ili",
+    "pasteLabel": "Zalijepite tekst menija",
+    "pastePlaceholder": "Ovdje zalijepite svoj meni — nazive artikala, opise, cijene..."
+  },
+  "emailLabel": "Vaš e-mail",
+  "emailNote": "Poslat ćemo vam na e-mail link za vašu demo verziju i možda vas kontaktirati u vezi s postavljanjem HatchGraba. <link>Politika privatnosti</link>",
+  "marketing": "Šaljite mi povremeno savjete i novosti od HatchGraba",
+  "emailInvalid": "Unesite ispravnu e-mail adresu."
+}

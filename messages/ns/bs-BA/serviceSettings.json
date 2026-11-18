@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Termini preuzimanja",
+    "takes_cash": "Primate li gotovinu?",
+    "offline_protection": "Offline zaštita narudžbi",
+    "buzzer_prompt": "Podsjeti me da dodam pager"
+  },
+  "typeFollowsVanTitle": "Prati uobičajenu postavku svakog vozila",
+  "sameSettingsAllVansLabel": "Iste postavke za sva vozila",
+  "sameSettingsAllVansHeader": "Sva vozila",
+  "sameSettingsConfirm": "Kopirati postavke vozila „Vozilo 1“ na sva vozila? Kopiraju se sve postavke tog vozila, isto kao opcija „Isto kao: Vozilo 1“ u Postavkama. Kapacitet kuhinje ima svoj prekidač.",
+  "eventTypesFooterStandard": "Standardni je vaše uobičajeno podešavanje. Ako ga promijenite ovdje, mijenja se i u Postavkama.",
+  "eventTypesFooterOneEvent": "Da promijenite postavku samo za jedan događaj, koristite kontrolnu tablu tog događaja.",
+  "eventTypesSubtitle": "Promjene se čuvaju automatski.",
+  "matchStandardLabel": "Uskladi sa Standardnim",
+  "matchStandardConfirm": "Vratiti sve postavke ove vrste na Standardni? Sve što ste ovdje promijenili bit će poništeno.",
+  "priceLabels": {
+    "price_change_on": "Promijeni cijene",
+    "price_mode": "Promjena cijene",
+    "price_amount": "Iznos",
+    "price_rounding": "Zaokruživanje",
+    "item_prices": "Cijene artikala"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Svaku cijenu postavljam ručno"
+  },
+  "priceRounding": {
+    "none": "Nema",
+    "nearest_1": "Na najbliži {symbol}1",
+    "up_1": "Uvijek zaokruži naviše"
+  },
+  "pricesStandardCell": "Cijene iz vašeg menija",
+  "pricesTruckWideTitle": "Vaše cijene su iste za sva vozila",
+  "pricesMenuCell": "Meni",
+  "pricesTypeOffCell": "Cijene iz menija",
+  "itemPricesShow": "Prikaži cijene",
+  "itemPricesHide": "Sakrij cijene",
+  "priceItemsHeading": "Postavite cijenu svakog artikla",
+  "priceItemsOpen": "Pogledajte ili promijenite cijenu svakog artikla ›",
+  "priceItemsClose": "Sakrij cijene artikala ⌃",
+  "ownPriceCount": "{n, plural, one {{count} artikal ima svoju cijenu} few {{count} artikla imaju svoju cijenu} other {{count} artikala ima svoju cijenu}}",
+  "priceTypeHint": "Pritisnite cijenu da upišete svoju.",
+  "pricesLiveNotice": "Ovaj događaj je uživo. Nove narudžbe koriste nove cijene. Već poslane narudžbe zadržavaju svoje.",
+  "placeTypeHelper": "„Dodaj događaj“ bira ovu vrstu kad god odaberete ovo mjesto.",
+  "postPictureStandardNote": "Objave za događaje ovdje koriste vaš standardni dizajn.",
+  "eventItemsCardDescription": "Cijene, ograničenja artikala i dostupnost samo za ovaj događaj. Promjene važe odmah.",
+  "eventPriceColumnLabel": "Cijena",
+  "eventPriceOwnNote": "{hasType, select, yes {{type}: {price} · ovaj događaj} other {meni: {price} · ovaj događaj}}",
+  "eventPriceEdit": "✎ Uredi cijene",
+  "eventPriceCancel": "Otkaži",
+  "eventPriceSave": "Sačuvaj cijene",
+  "eventPriceEditNote": "Uređujete cijene samo za ovaj događaj. Ograničenja artikala i dostupnost zaključani su dok ne sačuvate.",
+  "eventPriceLiveNote": "Uživo: nove narudžbe koriste nove cijene.",
+  "offlineWhenOfflineLabel": "Kada je offline"
+}

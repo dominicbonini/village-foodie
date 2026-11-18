@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Gdje food truck {truck} radi sljedeći put.",
+  "orderFrom": "Naručite od food trucka {truck}",
+  "poweredBy": "Pokreće <b>HatchGrab</b>",
+  "loadFailed": "Trenutno nije moguće učitati raspored.",
+  "loading": "Učitavanje rasporeda…",
+  "empty": "Nema navedenih predstojećih događaja za food truck {truck}."
+}

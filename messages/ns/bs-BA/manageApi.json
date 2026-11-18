@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Vozilo",
+  "eventsFeed": {
+    "today": "Danas · {date}",
+    "tomorrow": "Sutra · {date}"
+  },
+  "privacyNotSaved": "Događaj je uživo, ali njegovu postavku privatnosti nije bilo moguće sačuvati.",
+  "stockWarning": "Nema dostupnih artikala u kategoriji „{category}“",
+  "uncategorised": "Bez kategorije"
+}

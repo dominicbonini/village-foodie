@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Dodajte svoj raspored na svoju web stranicu",
+    "live": "<addr>{address}</addr> prikazuje vaš raspored.",
+    "create": "Napravit ćemo stranicu na adresi <addr>{address}</addr> koja prikazuje vaš raspored.",
+    "exampleDomain": "vasfoodtruck.ba",
+    "liveBadge": "Uživo",
+    "setUp": "Postavi",
+    "viewSetup": "Pogledaj postavke",
+    "continue": "Nastavi",
+    "justLive": "<b>{address}</b> radi. Pogledajte, a zatim nam ispod potvrdite da je sve ispravno."
+  },
+  "waiting": {
+    "title": "Čekamo adresu {address}",
+    "bodySince": "Ovo ste postavili {date}. Nove web adrese obično počnu raditi za nekoliko minuta, a ponekad treba i do 24 sata da postanu dostupne svima — dok se to dešava, ne morate ništa raditi. Ako je neko drugi dodavao red umjesto vas, vrijedi provjeriti je li to i uradio.",
+    "body": "Nove web adrese obično počnu raditi za nekoliko minuta, a ponekad treba i do 24 sata da postanu dostupne svima — dok se to dešava, ne morate ništa raditi. Ako je neko drugi dodavao red umjesto vas, vrijedi provjeriti je li to i uradio."
+  },
+  "ready": {
+    "title": "{address} je uživo",
+    "body": "Pogledajte, a zatim nam u postavkama potvrdite da je sve ispravno."
+  },
+  "confirm": {
+    "heading": "Pogledajte, a zatim nam potvrdite da je sve ispravno",
+    "open": "Otvori <link>{address}</link>",
+    "checkTimes": "Provjerite jesu li datumi i vremena ispravni.",
+    "yes": "Da, sve je ispravno",
+    "no": "Ne, postoji problem",
+    "problemLine": "Recite nam šta vidite i pogledat ćemo.",
+    "emailUs": "Pošaljite nam e-mail",
+    "mailSubject": "Problem s adresom {address}",
+    "mailLiveSince": "Uživo od {date}",
+    "mailSeeing": "Šta vidim:"
+  },
+  "confirmed": {
+    "heading": "Hvala — sve je zabilježeno.",
+    "body": "Ne morate više ništa raditi."
+  },
+  "turnOff": {
+    "link": "Isključi ovo",
+    "heading": "Isključiti vlastitu web adresu?",
+    "stops": "Ovo će prestati raditi:",
+    "carriesOn": "Ovo nastavlja raditi potpuno isto, i ovdje vaš QR kod šalje ljude:",
+    "reAdd": "Ako ćete ovo kasnije ponovo postavljati, ostavite red koji ste dodali kod firme koja vodi vašu web adresu. Ako nećete, zamolite ih da ga uklone.",
+    "cancel": "Ostavi uključeno",
+    "confirm": "Isključi",
+    "working": "Isključivanje…",
+    "failed": "Trenutno to nismo mogli isključiti. Ništa se nije promijenilo — vaša adresa i dalje radi. Pokušajte ponovo uskoro."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Nismo mogli učitati vaše postavljanje.",
+    "resumeFailedBody": "Ništa se nije promijenilo. Pokušajte ponovo uskoro.",
+    "close": "Zatvori",
+    "resuming": "Nastavljamo tamo gdje ste stali…",
+    "genericError": "Došlo je do greške",
+    "saveFailed": "Čuvanje nije uspjelo"
+  },
+  "address": {
+    "intro": "Vaš raspored dobija vlastitu web adresu.",
+    "question": "Koja je vaša web adresa?",
+    "hint": "Ona koju ljudi već koriste da vas pronađu.",
+    "aria": "Vaša vlastita web adresa",
+    "willBe": "Vaša adresa bit će <addr>{address}</addr>",
+    "example": "Na primjer, <addr>{address}</addr>",
+    "noChange": "Vaša web stranica se ne mijenja — samo dodate link na novu adresu.",
+    "notSetUp": "Ovo nismo postavili.",
+    "restricted": "Onaj ko vodi vašu web adresu mora nam dozvoliti da postavimo lokot — malu bravu koju kupci vide pored adrese. Dok nas ne dodaju, lokot se neće pojaviti, pa smo radije stali nego da vas ostavimo da čekate. Zamolite ih da nas dodaju, a zatim pokušajte ponovo.",
+    "blocked": "Vaša web adresa trenutno potpuno blokira lokot. Onaj ko je vodi mora ga dozvoliti prije nego što ovo može raditi. Zamolite ih da to promijene, a zatim pokušajte ponovo.",
+    "elsewhere": "Na toj adresi već nešto odgovara. Poruku s idućeg ekrana pošaljite onome ko je vodi — znat će šta treba uraditi.",
+    "provider": "Vašu web adresu vodi: <b>{provider}</b>. Pokazat ćemo vam gdje trebate ići.",
+    "provisionFailed": "Tu adresu nismo mogli postaviti.",
+    "willNotWork": "Ta adresa neće raditi.",
+    "couldNotBeSetUp": "Tu adresu nije bilo moguće postaviti.",
+    "couldNotSetUp": "Postavljanje nije uspjelo",
+    "checking": "Provjera…",
+    "setting": "Postavljanje…",
+    "tryAgain": "Pokušaj ponovo",
+    "setUpAddress": "Postavi ovu adresu",
+    "notNow": "Ne sada"
+  },
+  "apex": {
+    "empty": "Upišite adresu koju želite koristiti.",
+    "not_a_domain": "To ne izgleda kao web adresa.",
+    "unparseable": "Nismo to mogli pročitati kao web adresu. Provjerite kako je napisano i pokušajte ponovo.",
+    "apex": "{host} je adresa cijele vaše web stranice. Ako je usmjerite na nas, vaša web stranica bit će zamijenjena ovom stranicom. Umjesto toga, ispred nje stavite riječ — na primjer dogadaji.{host}.",
+    "too_deep": "Ta adresa ima previše dijelova. Najbolje radi nešto poput dogadaji.{domain}."
+  },
+  "record": {
+    "addAt": "Dodajte ovo kod pružaoca usluge {provider}",
+    "open": "Otvori {provider}",
+    "guide": "Vodič pružaoca usluge {provider} za ovo",
+    "addAtSave": "Dodajte ovo kod pružaoca usluge {provider} i sačuvajte.",
+    "addSomewhere": "Dodajte ovo tamo gdje se vodi vaša web adresa i sačuvajte.",
+    "hintChoose": "Odaberite ovo s liste.",
+    "hintWord": "Samo ova riječ, ne cijela adresa.",
+    "hintExact": "Kopirajte ovo tačno.",
+    "timing": "Obično počne raditi u roku od sat vremena, iako može trajati i duže. Ne morate držati ovu stranicu otvorenom.",
+    "someoneElse": "Neko drugi vodi vašu web adresu?",
+    "sentTo": "Poslano na {email}",
+    "emailPlaceholder": "njihova e-mail adresa",
+    "sending": "Slanje…",
+    "send": "Pošalji ove podatke",
+    "sendFailed": "Slanje nije uspjelo"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Otvorite svoju web adresu, zatim „DNS“ i „Records“.",
+      "add": "Odaberite „Add record“, a zatim kao „Type“ izaberite „CNAME“.",
+      "name": "Prvu vrijednost ispod unesite u „Name“.",
+      "value": "Drugu vrijednost ispod unesite u „Target“.",
+      "proxy": "Postavite „Proxy status“ na „DNS only“ — oblak pored mora biti siv, a ne narandžast.",
+      "save": "„TTL“ ostavite na „Auto“ i odaberite „Save“.",
+      "caveat": "Ako oblak ostane narandžast, lokot se nikada neće pojaviti i ništa vam neće reći zašto."
+    },
+    "godaddy": {
+      "open": "Otvorite „Domain Portfolio“ i odaberite svoju web adresu.",
+      "dns": "Na stranici „Domain Settings“ odaberite „DNS“.",
+      "add": "Odaberite „Add New Record“, a zatim iz menija „Type“ izaberite „CNAME“.",
+      "name": "Prvu vrijednost ispod unesite u „Name“.",
+      "value": "Drugu vrijednost ispod unesite u „Value“.",
+      "save": "„TTL“ ostavite kakav jeste i odaberite „Save“.",
+      "caveat": "Ako ste dodali više zapisa odjednom, dugme glasi „Save All Records“."
+    },
+    "123reg": {
+      "signIn": "Prijavite se na „123 Reg Control Panel“.",
+      "manage": "Pored „Domains“ odaberite „Manage All“, a zatim izaberite svoju web adresu.",
+      "dns": "Odaberite „DNS“, a zatim „Add New Record“.",
+      "type": "S liste „Type“ izaberite „CNAME“.",
+      "name": "Prvu vrijednost ispod unesite u „Name“.",
+      "value": "Drugu vrijednost ispod unesite u „Value“ i na njen kraj dodajte tačku.",
+      "save": "„TTL“ ostavite na „Default“ i kliknite „Save“.",
+      "caveat": "123 Reg traži tačku na kraju druge vrijednosti, inače neće raditi."
+    },
+    "wix": {
+      "open": "Otvorite „Domains“, a zatim kliknite ikonu „Domain Actions“ pored svoje web adrese.",
+      "manage": "Odaberite „Manage DNS Records“.",
+      "add": "U odjeljku „CNAME (Aliases)“ kliknite „+ Add Record“, a zatim „Got it“.",
+      "name": "Prvu vrijednost ispod unesite u „Host Name“.",
+      "value": "Drugu vrijednost ispod unesite u „Value“.",
+      "save": "Kliknite „Save“, a zatim u skočnom prozoru „Save Changes“.",
+      "caveat": "Ako vaša web adresa samo upućuje na Wix, a nije registrovana kod njega, Wix ne može napraviti ovu promjenu — mora je napraviti onaj kod koga je adresa registrovana."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Potrebno je dodati jedan zapis za stranicu s rasporedom food trucka {truckName}",
+    "hello": "Zdravo,",
+    "introAt": "Raspored food trucka {truckName} uživo stavljamo na {address}, a za to treba dodati jedan zapis našoj domeni kod pružaoca usluge {provider}.",
+    "introHolder": "Raspored food trucka {truckName} uživo stavljamo na {address}, a za to treba dodati jedan zapis našoj domeni kod onoga kod koga je naša domena registrovana.",
+    "stepsAt": "Kod pružaoca usluge {provider}:",
+    "guide": "Njihov vodič: {url}",
+    "wholeChange": "To je cijela promjena — ništa drugo na web stranici nije zahvaćeno, a ostatak naše domene nastavlja raditi potpuno kao i sada. Obično počne raditi u roku od sat vremena.",
+    "pointsAt": "Stranica na koju upućuje prikazuje gdje sljedeće radimo i sama se ažurira.",
+    "replyTo": "Ako imate pitanja, odgovorite na {email}.",
+    "thanks": "Hvala,"
+  },
+  "liveEmail": {
+    "subject": "{address} radi",
+    "goodNews": "Dobre vijesti — {address} radi.",
+    "body": "Vaš raspored se sada prikazuje na vašoj vlastitoj adresi. Pogledajte ga i provjerite je li ispravan: otvorite {address} i uvjerite se da su događaji vaši i da su datumi tačni.",
+    "confirm": "Kada to uradite, otvorite svoje postavke na HatchGrabu i potvrdite nam da je sve ispravno. Ništa ne zavisi od toga — samo ćemo znati da je neko to pogledao."
+  }
+}

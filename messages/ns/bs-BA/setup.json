@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Gdje radite",
+    "identity": "Vaš food truck",
+    "menu": "Vaš meni",
+    "event": "Prvi događaj"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Postavljanje",
+  "loading": "Učitavanje",
+  "loadingCountries": "Učitavanje…",
+  "verify": {
+    "ok": "E-mail je potvrđen — hvala.",
+    "expired": "Taj link za potvrdu je istekao. Javite nam se i riješit ćemo to prije nego što krenete uživo.",
+    "invalid": "Taj link za potvrdu nije uspio. Javite nam se i riješit ćemo to prije nego što krenete uživo."
+  },
+  "identity": {
+    "heading": "Kako se zove vaš food truck?",
+    "intro": "Ovo je naziv koji kupci vide. Ništa nije javno dok ne odlučite da krenete uživo.",
+    "nameLabel": "Naziv food trucka",
+    "namePlaceholder": "Mirzini burgeri",
+    "phoneLabel": "Telefon",
+    "whatsappTick": "Ovaj broj je na WhatsAppu",
+    "phoneHelp": "Kupci ovo vide u potvrdi narudžbe kako bi mogli pitati nešto o narudžbi. Kvačica određuje hoće li pisati „Pozovite nas“ ili „Pišite nam na WhatsApp“. Oboje možete promijeniti u postavkama."
+  },
+  "phoneRequired": "Dodajte broj telefona — preko njega vas kontaktiraju i kupci i mi.",
+  "createFailed": "Nije bilo moguće napraviti vaš food truck.",
+  "unreachable": "Trenutno nas nije moguće dobiti — pokušajte ponovo.",
+  "back": "Nazad",
+  "creating": "Pravimo vaš food truck…",
+  "continue": "Nastavi"
+}

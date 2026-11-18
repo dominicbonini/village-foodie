@@ -1,0 +1,42 @@
+{
+  "publicName": "Privatni događaj",
+  "chip": "Privatno",
+  "grid": {
+    "orderingSection": "NARUČIVANJE",
+    "linkRowLabel": "Primajte narudžbe putem privatnog linka i QR koda",
+    "columnTitle": "Ugrađena vrsta Privatno. Ne može se preimenovati, pomjeriti ni izbrisati."
+  },
+  "form": {
+    "help": "Na vašem rasporedu prikazuje se kao „Privatni događaj“, samo s datumom i vremenom — nikada s adresom, mapom ili na Village Foodie.",
+    "linkPromise": "Gosti naručuju putem privatnog linka i QR koda — dobit ćete ih nakon čuvanja.",
+    "nameLabel": "Naziv događaja",
+    "nameHelp": "Gosti ovo vide na vrhu stranice za narudžbe.",
+    "namePlaceholder": "Vjenčanje Amre i Harisa",
+    "previewNote": "Kako se prikazuje na vašem rasporedu — bez lokacije, grada ili poštanskog broja.",
+    "needsTimes": "Dodajte vrijeme početka i završetka — privatni događaj koji prima narudžbe putem linka mora ih imati."
+  },
+  "link": {
+    "button": "Link i QR",
+    "title": "Privatni link i QR kod",
+    "label": "Privatni link",
+    "copy": "Kopiraj",
+    "copied": "Kopirano",
+    "qrDownload": "Preuzmi QR kod",
+    "tableCards": "Štampaj kartice za stolove",
+    "newLink": "Napravi novi link",
+    "working": "Radimo na tome…",
+    "newLinkConfirm": "Napraviti novi link? Trenutni link odmah prestaje raditi, a prestat će raditi i svi QR kodovi koje ste već odštampali.",
+    "newLinkHelp": "Koristite ovo ako je link dospio tamo gdje ne bi trebao. Trenutni link odmah prestaje raditi, a prestaju raditi i odštampani QR kodovi.",
+    "newLinkFailed": "Nije bilo moguće napraviti novi link.",
+    "offNotice": "Naručivanje putem privatnog linka isključeno je za ovaj događaj, pa nema linka za dijeljenje. Događaj se i dalje prikazuje na vašem rasporedu kao „Privatni događaj“."
+  },
+  "cards": {
+    "printTitle": "{truck} — kartice za stolove",
+    "scan": "Skenirajte i naručite",
+    "blurb": "Naručite i platite na svom telefonu. Prozvat ćemo vas po imenu kada bude spremno.",
+    "footer": "Naručivanje putem HatchGraba"
+  },
+  "noSinglePost": "Privatni događaji nemaju zasebnu objavu — na vašem sedmičnom plakatu prikazuju se kao „Privatni događaj“.",
+  "confirmToPrivate": "Ovo skriva adresu i uklanja događaj s mape. Gosti će za naručivanje trebati privatni link.",
+  "confirmFromPrivate": "Ovo događaj čini javnim: prikazat će se njegova adresa i oznaka na mapi, a privatni link prestat će raditi."
+}

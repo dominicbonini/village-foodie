@@ -1,0 +1,19 @@
+{
+  "heading": "Dodatna ponuda",
+  "intro": "Podstaknite kupce da dodaju još nešto. Kada neko naruči iz jedne kategorije, predložite artikle iz druge — piće uz pizzu, sos uz burger.",
+  "add": "+ Dodaj dodatnu ponudu",
+  "toast": {
+    "updated": "Pravilo dodatne ponude je ažurirano",
+    "added": "Pravilo dodatne ponude je dodano",
+    "removed": "Pravilo je uklonjeno"
+  },
+  "whenAdds": "Kada kupac doda…",
+  "suggestFrom": "Predloži artikle iz…",
+  "chooseCategory": "Odaberite kategoriju",
+  "cancel": "Otkaži",
+  "saveChanges": "Sačuvaj promjene",
+  "addRule": "Dodaj pravilo",
+  "empty": "Još nema pravila dodatne ponude.",
+  "confirmRemove": "Ukloniti pravilo dodatne ponude „{trigger} → {suggest}“?",
+  "upTo": "{n, plural, one {Predlaže se do {count} artikla} few {Predlaže se do {count} artikla} other {Predlaže se do {count} artikala}}"
+}

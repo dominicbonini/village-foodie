@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "po vozilu / mjesečno",
+  "transactionFees": "Naknade za transakcije",
+  "comingSoon": "Uskoro",
+  "footnote2Masked": "Online plaćanja omogućava Stripe Connect. Naknade platforme i obrade kartica bit će potvrđene naknadno, pri pokretanju.",
+  "card": {
+    "title": "Naplata i plaćanja",
+    "managed": "Naplatom upravlja HatchGrab",
+    "earlyAccess": "Tokom ranog pristupa pakete postavljamo i prilagođavamo ručno.",
+    "planLine": "{trial, select, yes {{truck} · paket {plan} (probni period)} other {{truck} · paket {plan}}}"
+  },
+  "currentPlan": "Trenutni paket",
+  "plan": {
+    "included": "Uključuje online narudžbe u iznosu do {amount} mjesečno.",
+    "includedUnlimited": "Uključene su neograničene online narudžbe.",
+    "promo": "Posebna cijena.",
+    "promoUntil": "Posebna cijena do {date}.",
+    "ended": "Vaš paket {plan} istekao je {date}. Sada koristite paket {now}.",
+    "trialMonths": "Besplatni probni period od {months} mj."
+  },
+  "trialEnds": "Probni period ističe {date}",
+  "yourTrialEnds": "Vaš probni period ističe {date}",
+  "notStarted": {
+    "heading": "Vaš besplatni probni period još nije počeo"
+  },
+  "onTrial": "Imate sve funkcije. Odaberite paket prije nego što probni period istekne.",
+  "onTrialPaidEnd": "Imate sve funkcije. Kada probni period istekne, paket {plan} košta {price} mjesečno. Javit ćemo vam se prije toga radi postavljanja plaćanja.",
+  "onTrialNoCta": "Imate sve funkcije.",
+  "noCharge": "🔒 Tokom probnog perioda, koji traje do {date}, ništa vam se neće naplatiti. Naplata počinje tek kada odaberete paket i unesete podatke za plaćanje. Do tada nema šta otkazati niti platiti.",
+  "noChargePaidEnd": "🔒 Tokom probnog perioda, koji traje do {date}, ništa vam se neće naplatiti.",
+  "fees": "*Na online narudžbe primjenjuju se standardne naknade za obradu kartica",
+  "setUpPayment": "⏱ Odaberite paket prije nego što probni period istekne",
+  "changeYourPlan": "Promijenite paket",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Prelazak na paket {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Postavljamo automatsku naplatu. Da odmah pređete, pošaljite nam poruku i sve ćemo vam postaviti u roku od 24 sata.",
+    "mailSubject": "Prelazak na paket {plan} — {truck}",
+    "mailBody": "Zdravo, molim da food truck {truck} prebacite na paket {plan} ({price}).",
+    "email": "Pošaljite nam e-mail za prelazak",
+    "cancel": "Otkaži"
+  }
+}

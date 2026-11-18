@@ -1,0 +1,25 @@
+{
+  "heading": "Sedmica od {start} do {end}",
+  "daysOff": "Danas ne radimo",
+  "cancelled": "OTKAZANO",
+  "placeSample": {
+    "nameTownBelow": "Kafić Lipa\nIlidža",
+    "nameTown": "Kafić Lipa, Ilidža",
+    "nameOnly": "Kafić Lipa"
+  },
+  "busyWeek": {
+    "venue1": "Dom kulture Ilidža",
+    "town1": "Ilidža",
+    "venue2": "Sportsko-rekreacioni centar i igralište Butmir",
+    "town2": "Butmir",
+    "venue3": "Gradska pijaca",
+    "town3": "Tuzla",
+    "venue4": "Festival hrane",
+    "town4": "Mostar",
+    "venue5": "Kafana Jablan",
+    "town5": "Visoko",
+    "venue6": "Veliki park",
+    "town6": "Sarajevo"
+  },
+  "poweredBy": "Pokreće HatchGrab"
+}

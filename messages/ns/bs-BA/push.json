@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Nova narudžba za potvrdu",
+    "body": "Narudžba {number} — {truck}"
+  }
+}

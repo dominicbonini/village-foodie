@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Gdje radi vaš food truck?",
+  "stepIntro": "Ovo određuje vašu valutu, cijene, vremensku zonu i format broja telefona. Državu kasnije nije moguće promijeniti jer je vezana za vaša plaćanja karticom.",
+  "settingsHeading": "Gdje radite",
+  "countryLabel": "Država",
+  "countryGuessed": "Ovo smo pretpostavili na osnovu vaše lokacije. Promijenite ako nije tačno.",
+  "countryLocked": "Vašu državu nije moguće promijeniti",
+  "townLabel": "Mjesto ili grad",
+  "townQuestion": "Grad ili mjesto u kojem radite",
+  "timezoneLabel": "Vremenska zona",
+  "continueButton": "Nastavi",
+  "saveFailed": "Postavke nisu sačuvane — pokušajte ponovo."
+}

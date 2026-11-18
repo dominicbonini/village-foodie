@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "O nama — HatchGrab",
+    "description": "HatchGrab pravi praktičan softver za food truckove i mobilni ketering: online narudžbe, vrijeme preuzimanja i manje istih pitanja. Osnivač: Dominic Bonini."
+  },
+  "eyebrow": "O nama",
+  "title": "Napravljen prema tome kako food truckovi zaista rade",
+  "photoAlt": "{name}, osnivač HatchGraba",
+  "story": {
+    "start": "HatchGrab je nastao iz jednostavnog zapažanja: food truckovima trebaju bolji alati za vođenje posla.",
+    "villageFoodie": "Nakon što sam pokrenuo Village Foodie, online katalog koji ljudima pomaže da otkriju food truckove koji dolaze u njihovo mjesto, više sam vremena posvetio upoznavanju izazova s kojima se suočavaju mobilni ugostiteljski biznisi. Za razliku od klasičnih restorana, food truckovi se stalno kreću, rade na različitim lokacijama i uslužuju kupce u promjenjivim uslovima.",
+    "fixedAddress": "Ipak, velik dio softvera koji im je dostupan osmišljen je za firme sa stalnom adresom.",
+    "change": "HatchGrab je nastao da to promijeni.",
+    "build": "Pravimo praktičan softver namijenjen upravo food truckovima i mobilnom keteringu, koji im pomaže da primaju online narudžbe, upravljaju vremenima preuzimanja, održavaju neometan tok narudžbi i troše manje vremena na odgovaranje na ista pitanja.",
+    "focus": "Naš cilj je jednostavan: olakšati vođenje food trucka, uz alate osmišljene prema tome kako ovi biznisi zaista funkcionišu."
+  },
+  "signature": "<b>{name}</b><br></br>Osnivač, HatchGrab",
+  "company": "{company} · kompanija registrovana u Engleskoj i Velsu · broj kompanije {number} · sjedište: {address}",
+  "contact": "Kontaktirajte nas"
+}

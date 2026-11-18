@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Podrška",
+    "description": "Potražite pomoć za HatchGrab. Pošaljite nam poruku i odgovorit ćemo vam e-mailom."
+  },
+  "logIn": "Prijavi se",
+  "eyebrow": "Podrška",
+  "title": "Kako vam možemo pomoći?",
+  "lede": "Nešto ne radi ili imate pitanje o svom računu? Možete nas kontaktirati na dva načina — u oba slučaja odgovorit ćemo vam e-mailom.",
+  "emailUs": "Pošaljite nam e-mail",
+  "formHeading": "Ili nam pošaljite poruku",
+  "form": {
+    "topicLabel": "O čemu se radi?",
+    "topics": {
+      "question": "Pitanje o HatchGrabu",
+      "account": "Pomoć s mojim računom",
+      "comparison": "Ispravka na stranici s poređenjem",
+      "other": "Nešto drugo"
+    },
+    "nameLabel": "Vaše ime",
+    "namePlaceholder": "Ime",
+    "emailLabel": "E-mail",
+    "businessLabel": "Naziv food trucka ili firme",
+    "optional": "(neobavezno)",
+    "businessPlaceholder": "npr. Roštilj na točkovima",
+    "messageLabel": "Vaša poruka",
+    "send": "Pošalji poruku",
+    "sending": "Slanje…",
+    "privacyLine": "Vaše podatke koristit ćemo samo da vam odgovorimo.",
+    "privacyLink": "Politika privatnosti",
+    "thanksTitle": "Hvala — vaša poruka je stigla.",
+    "thanksBody": "Odgovorit ćemo e-mailom na adresu koju ste naveli.",
+    "errors": {
+      "nameRequired": "Unesite svoje ime.",
+      "nameTooLong": "Ime je predugo (najviše znakova: {max, number}).",
+      "emailRequired": "Unesite svoju e-mail adresu.",
+      "emailInvalid": "Unesite ispravnu e-mail adresu.",
+      "emailTooLong": "E-mail adresa je preduga (najviše znakova: {max, number}).",
+      "businessRequired": "Unesite naziv food trucka ili firme kako bismo pronašli vaš račun.",
+      "businessTooLong": "Naziv food trucka ili firme je predug (najviše znakova: {max, number}).",
+      "messageTooShort": "Poruka je prekratka (najmanje znakova: {min, number}).",
+      "messageTooLong": "Poruka je preduga (najviše znakova: {max, number}).",
+      "topicInvalid": "Odaberite o čemu se radi u vašoj poruci.",
+      "rateLimited": "Već ste poslali nekoliko poruka — pokušajte ponovo kasnije ili nam pišite na {email}.",
+      "failed": "Došlo je do greške — pišite nam na {email}."
+    }
+  },
+  "privacy": "Privatnost",
+  "terms": "Uslovi",
+  "about": "O nama",
+  "copyright": "© {year} HatchGrab"
+}

@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Predjela",
+    "mains": "Glavna jela",
+    "burgers": "Burgeri",
+    "pizza": "Pizza",
+    "wrapsSandwiches": "Tortilje i sendviči",
+    "sides": "Prilozi",
+    "dipsSauces": "Dipovi i sosovi",
+    "desserts": "Deserti",
+    "drinks": "Pića",
+    "kidsMenu": "Dječiji meni",
+    "specials": "Posebna ponuda",
+    "other": "Ostalo"
+  },
+  "demoEventName": "Demo događaj",
+  "firstVanName": "Vozilo 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burgeri",
+    "mains": "Glavna jela",
+    "sides": "Prilozi",
+    "drinks": "Pića"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck s pizzom",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja i med",
+        "fourCheese": "Četiri sira",
+        "gardenVeg": "Povrtna",
+        "garlicBread": "Hljeb s bijelim lukom",
+        "rocketParmesan": "Rukola i parmezan",
+        "olives": "Masline",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck s burgerima",
+      "items": {
+        "classicCheeseburger": "Klasični cheeseburger",
+        "doubleBacon": "Dupla slanina",
+        "buttermilkChicken": "Piletina u mlaćenici",
+        "halloumiStack": "Burger s halloumijem",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Pomfrit s korom",
+        "loadedCheeseFries": "Pomfrit sa sirom",
+        "onionRings": "Kolutići luka",
+        "craftLemonade": "Domaća limunada",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck s karijem",
+      "items": {
+        "chickenTikkaMasala": "Piletina tikka masala",
+        "lambRoganJosh": "Janjetina rogan josh",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Piletina u sosu od maslaca",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Riža pilav",
+        "garlicNaan": "Naan s bijelim lukom",
+        "onionBhaji": "Bhaji od luka",
+        "mangoLassi": "Lassi od manga",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}
