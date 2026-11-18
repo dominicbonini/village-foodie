@@ -497,3 +497,8 @@
 - Post boxes (from DesignEditor.tsx): Place “ස්ථානය”, Venue “ස්ථානයේ නම”, Area “ප්‍රදේශය”, Time “වේලාව”, Heading “ශීර්ෂය”, box කොටුව; poster CANCELLED “අවලංගුයි”; wp_last_toggle names both designs.
 - Check loanwords: font ෆොන්ට්, caption කැප්ෂන්; place ස්ථානය vs map location පිහිටීම; WhatsApp Set up “පිහිටුවන්න” (part 06 must match); support සහාය කණ්ඩායම; "Kitchen also handles" “කුස්සියේ මේවාද භාවිත කෙරේ”.
 - conflict.title `one` reads plural (right for 0); dealsActive `one` added; samples @nugegodafoodfest, yourfoodtruck.lk, චීස් කොත්තු.
+
+## ta-LK part 02 (languages-world-3, 18 Nov 2026)
+- van வாகனம்; "அமைப்புகள் → உங்கள் வாகனங்கள்"; Manage “நிர்வாகம்” vs Admin "நிர்வாகி".
+- Check: wired "கேபிள் இணைப்பு அச்சிடல்", takings "வருமானத் தொகை", handover கையளிப்பு, over capacity கொள்ளளவு மீறல், Schedule "அட்டவணை" (part 03 must reuse).
+- ticket.* in Tamil — thermal printer Tamil script support (same question as si-LK). DO NOT COLLECT "பணம் அறவிட வேண்டாம்"; 💷 → 💵; browser buttons "சரி / இரத்துச் செய்யவும்".
