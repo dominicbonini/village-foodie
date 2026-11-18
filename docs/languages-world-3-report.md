@@ -23,14 +23,14 @@
 | 15 | bs-BA Bosnian | ✅ installed 53d04eb9 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 16 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs bs-BA` 3/3 ✓; `legal-languages-1` /ba/privacy, /ba/terms, /ba/country-terms ✓ | 92d567c4 · legal fb7f2afc |
 | 16 | mk-MK Macedonian | ✅ installed 0e592f0c (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 17 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs mk-MK` 3/3 ✓; `legal-languages-1` /mk/privacy, /mk/terms, /mk/country-terms ✓ | d1214c77 · legal 2a0e6610 |
 | 17 | ca-AD Catalan (Andorra) | ✅ installed c417fa0b (9 parts + consistency; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 19 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs ca-AD` 3/3 ✓; `legal-languages-1` /ad/privacy, /ad/terms, /ad/country-terms ✓ | fb1c0a01 · legal dfb866ff |
-| 18 | sw-TZ Swahili | 3 of 9 parts translated (part 03 passes check-part; its agent was stopped before its final review) — **paused 18 Nov, usage limit** | — | | |
+| 18 | sw-TZ Swahili | ✅ installed 8fede02f (9 parts + consistency; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass — no-list language re-pinned to zu-ZA; iOS strings in step) — needs native check | — next | | |
 | 19 | si-LK Sinhala | — | — | | |
 | 20 | ta-LK Tamil (Sri Lanka) | — | — | | |
 | 21 | km-KH Khmer | — | — | | |
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **17 of 23 languages done (51 of 69 pages).** UI: 17 of 23 installed. Paused 18 Nov at Dominic\'s request (usage limit) during sw-TZ UI part 03; on "continue": sw-TZ parts 04–09, consistency, install, legal; then si-LK, ta-LK, km-KH, lo-LA, am-ET.
+Legal pages: **17 of 23 languages done (51 of 69 pages).** UI: 18 of 23 installed (sw-TZ on 18 Nov). In progress: sw-TZ legal, si-LK and ta-LK UI (up to 3 agents at a time, Dominic 18 Nov). Then km-KH, lo-LA, am-ET.
 
 ## Batch order
 
