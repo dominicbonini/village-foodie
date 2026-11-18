@@ -462,3 +462,10 @@
 - planPrompt colon form ("Kifurushi {plan} kinajumuisha: {feature}."); {truck} free of prefixes ("chakula cha {truck}", "kununua kutoka {truck}").
 - Check: Demo "Majaribio", Tester "Mjaribishaji", "Chaguo la wengi", "Kuorodheshwa kwenye ramani ya ugunduzi", "Skrini ya kuwaonyesha wateja", pitch "eneo lako la kuuzia".
 - FOR CONSISTENCY: Free "Bure" (07) vs "Bila malipo" (09); loyalty "Zawadi kwa wateja wa kudumu" (08) vs stamp cards; "Hamia {plan}" (07) vs "Hamia kifurushi {plan}" (06).
+
+## si-LK part 01 (languages-world-3, 18 Nov 2026)
+- Business "food truck" (Latin); fleet van වාහනය; Truck settings වාහන සැකසුම්; Truck details food truck විස්තර; Pay at truck ස්ථානයේදී ගෙවන්න (button/label), feature රැගෙන යන විට ගෙවීම; at the hatch "food truck එක ළඟදී".
+- event සිදුවීම (Facebook usage), Private event පුද්ගලික උත්සවය; sold out විකිණී අවසන්; buzzer බසරය; kitchen screen කුස්සියේ තිරය (KDS); TBC පසුව තහවුරු කෙරේ; meal deal සෙට් මෙනුව.
+- ALLERGENS (check first): yam කිරි අල (yam), celery සැලරි, crustaceans/shellfish descriptive කබොල සහිත…; 24 allergens carry English in brackets.
+- Glossary flags are false positives: translation-check's termRe doesn't treat Sinhala vowel signs as letters.
+- Placeholders reworded ("වේලාව: {time}"); `one` = `other` wording (reads right for 0/1); අනිවාර්ය without ZWJ; sample නිමාලි.
