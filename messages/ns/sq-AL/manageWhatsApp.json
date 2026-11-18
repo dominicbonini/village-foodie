@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Provojeni para se ta lidhni",
+    "intro": "Shkruani një pyetje siç do ta bënte një klient dhe shihni saktësisht çfarë do të merrte si përgjigje. Nuk i dërgohet asgjë askujt.",
+    "examples": {
+      "where": "Ku jeni sonte?",
+      "doYouDo": "A keni sufllaqe pule?",
+      "menu": "Çfarë ka në menu?"
+    },
+    "placeholder": "Çfarë ëmbëlsirash keni?",
+    "send": "Dërgo",
+    "empty": "Përgjigjja juaj do të shfaqet këtu",
+    "working": "Po përgatitet përgjigjja…",
+    "noReply": "Nuk do të dërgohej asnjë përgjigje.",
+    "noReplyWhy": "Kjo duket si spam, kërkesë për rezervim ose diçka pa lidhje, ndaj përgjigjja automatike nuk përgjigjet.",
+    "footnote": "Përgjigjet krijohen me AI, ndryshojnë pak çdo herë dhe herë pas here mund të jenë të gabuara.",
+    "failed": "Shikimi paraprak nuk u krijua dot tani.",
+    "unreachable": "Serveri nuk u arrit dot. Kontrolloni lidhjen dhe provoni sërish."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Po përgatitet…",
+      "unavailable": "Nuk disponohet",
+      "waiting": "Në pritje të dritares së Facebook…",
+      "finishing": "Po përfundon…",
+      "reconnect": "Rilidhu",
+      "setUp": "Konfiguro"
+    },
+    "startAgain": "Fillo sërish",
+    "popupHint": "Nuk e shihni dritaren e Facebook? Mund të jetë bllokuar. Lejoni dritaret pop-up për hatchgrab.com, pastaj shtypni Fillo sërish."
+  },
+  "notice": {
+    "sdkUnavailable": "Konfigurimi i WhatsApp nuk disponohet në këtë mjedis.",
+    "sdkBlocked": "Skripti i hyrjes së Meta nuk u ngarkua dot. Shkaku i zakonshëm është një bllokues reklamash ose mbrojtja nga gjurmimi.",
+    "setupFailed": "Konfigurimi nuk u përfundua dot. Nuk u ndryshua asgjë.",
+    "setupFinished": "Konfigurimi përfundoi.",
+    "metaError": "Meta raportoi një problem gjatë konfigurimit. Nuk u ndryshua asgjë. Provoni sërish dhe na kontaktoni nëse vazhdon të ndodhë.",
+    "closed": "Konfigurimi u mbyll para se të përfundonte. Nuk u ndryshua asgjë — shtypni Konfiguro për të provuar sërish.",
+    "disconnectedUnreachable": "WhatsApp u shkëput. Nuk arritëm të lidhemi me Meta për të hequr qasjen. Ju lutemi hiqni HatchGrab te WhatsApp Business → Cilësimet (Settings) → Llogaria (Account) → Business Platform.",
+    "disconnected": "WhatsApp u shkëput. Përgjigjet automatike janë ndalur.",
+    "close": "Mbyll"
+  },
+  "card": {
+    "title": "Përgjigjet automatike",
+    "description": "Përgjigjuni automatikisht pyetjeve të klientëve në rrjetet tuaja sociale, duke përdorur menunë dhe orarin tuaj.",
+    "channels": "Kanalet",
+    "requiresAccount": "Kërkon një llogari WhatsApp Business.",
+    "connected": "E lidhur",
+    "popupInstruction": "Do të hapet një dritare e Facebook për të lidhur llogarinë tuaj WhatsApp Business. Nëse nuk shfaqet asgjë, lejoni dritaret pop-up për hatchgrab.com në shfletues, pastaj shtypni sërish Konfiguro.",
+    "switchedOff": "Përgjigjet automatike në WhatsApp janë çaktivizuar për food truck-un tuaj.",
+    "expiring": "Lidhja juaj me WhatsApp duhet rinovuar së shpejti. Shtypni Rilidhu që përgjigjet automatike të vazhdojnë.",
+    "comingSoon": "Së shpejti",
+    "instagram": "Përgjigje automatike për mesazhet direkte në Instagram. Do të kërkojë një llogari profesionale Instagram.",
+    "messenger": "Përgjigje automatike në Facebook Messenger. Do të kërkojë një faqe Facebook."
+  },
+  "blocked": {
+    "title": "Përgjigjet tuaja nuk po dërgohen",
+    "body": "WhatsApp po refuzon të dërgojë përgjigjet tuaja automatike për shkak të një problemi faturimi në llogarinë tuaj WhatsApp Business. Klientët mund t’ju shkruajnë ende dhe ju do të shihni gjithçka që dërgojnë — por ata nuk po marrin përgjigje.",
+    "fix": "Këto mesazhe i paguani drejtpërdrejt te WhatsApp, ndaj kjo rregullohet te WhatsApp Manager. <link>Kontrolloni mënyrën e pagesës</link>"
+  },
+  "limit": {
+    "heading": "Përgjigjet automatike",
+    "label": "Kufiri mujor",
+    "option": "{n, number}",
+    "usage": "Përdorur {used, number} nga {limit, number} · rivendoset më {date}",
+    "perCustomer": "Deri në {n} përgjigje për klient brenda 24 orësh, pastaj një mesazh që thotë se do të përgjigjeni personalisht.",
+    "emailAt": "Përgjigjet ndalen kur arrini kufirin. Do t’ju njoftojmë me email në 80% dhe në 100%.",
+    "saved": "Kufiri mujor i përgjigjeve u ruajt",
+    "saveFailed": "Kufiri nuk u ruajt dot"
+  },
+  "billing": {
+    "heading": "Faturimi",
+    "paymentMethod": "Mënyra e pagesës",
+    "added": "Mënyra e pagesës është shtuar",
+    "missing": "Nuk është shtuar mënyrë pagese",
+    "addInManager": "Shtojeni te WhatsApp Manager",
+    "summary": "Përgjigjet ia faturon llogarisë suaj WhatsApp Meta, jo HatchGrab. Nga {from}, {free, number} përgjigjet e para në muaj janë falas. E saktë më {checked}; shihni <link>çmimet e Meta</link> për ndryshime.",
+    "howMetaCharges": "Si tarifon Meta",
+    "chargesTitle": "Përgjigjet në WhatsApp i tarifon Meta, jo HatchGrab.",
+    "chargesBody": "Çdo përgjigje që HatchGrab dërgon për ju faturohet nga Meta në llogarinë tuaj WhatsApp Business. Nga {from}, Meta përfshin {free, number} përgjigje falas në muaj për çdo numër; pas kësaj, çdo përgjigje tarifohet sipas tarifës së Meta. Përgjigjet që dërgoni vetë nga aplikacioni WhatsApp Business nuk tarifohen. Këto çmime i cakton Meta dhe mund t’i ndryshojë. <link>Shihni çmimet e Meta</link>",
+    "addPaymentInManager": "Shtoni një mënyrë pagese te WhatsApp Manager",
+    "aboveMissing": "Kufiri juaj është mbi {free, number} përgjigjet falas të Meta. Pa një mënyrë pagese, Meta do t’i ndalojë të gjitha përgjigjet sapo të përdoren ato.",
+    "aboveGeneral": "Kufiri juaj është mbi {free, number} përgjigjet falas të Meta. Përgjigjet përtej tyre kërkojnë një mënyrë pagese në llogarinë tuaj WhatsApp; pa të, Meta i ndalon të gjitha përgjigjet sapo të përdoren ato falas.",
+    "addPaymentMethod": "Shto një mënyrë pagese"
+  },
+  "disconnect": {
+    "link": "Shkëput WhatsApp",
+    "title": "Të shkëputet WhatsApp?",
+    "body": "Përgjigjet automatike ndalen menjëherë dhe HatchGrab humbet qasjen në llogarinë tuaj WhatsApp. Numri juaj vazhdon të funksionojë në aplikacionin WhatsApp Business. Për ta hequr plotësisht HatchGrab, hapni gjithashtu WhatsApp Business → Cilësimet (Settings) → Llogaria (Account) → Business Platform.",
+    "cancel": "Anulo",
+    "confirm": "Shkëput",
+    "working": "Po shkëputet…",
+    "failed": "Shkëputja nuk u krye"
+  },
+  "signup": {
+    "logged": "U shënua.",
+    "partial": "E lidhëm llogarinë tuaj WhatsApp Business, por nuk arritëm ta përfundojmë lidhjen. Nga ana juaj nuk ka asnjë problem — ju lutemi na kontaktoni dhe do ta përfundojmë ne.",
+    "noNumber": "Llogaria juaj WhatsApp Business është lidhur, por nuk u kthye asnjë numër telefoni. Shtypni Rilidhu dhe përfundoni hapin e numrit.",
+    "needsRegistering": "Llogaria juaj është lidhur, por ky numër duhet regjistruar nga ne para se të fillojnë përgjigjet. Ju lutemi kontaktoni mbështetjen — konfigurimi juaj është ruajtur, mos e kryeni sërish.",
+    "registerRefused": "Llogaria juaj është lidhur, por Meta nuk pranoi ta regjistrojë numrin. Konfigurimi juaj është ruajtur — ju lutemi kontaktoni mbështetjen në vend që ta kryeni sërish.",
+    "deliveryRefused": "Llogaria juaj është lidhur, por Meta nuk pranoi të aktivizojë dërgimin e mesazheve. Konfigurimi juaj është ruajtur — ju lutemi kontaktoni mbështetjen në vend që ta kryeni sërish.",
+    "numberTaken": "Ky numër WhatsApp është lidhur tashmë me një llogari tjetër HatchGrab. Një numër mund të përgjigjet vetëm për një food truck. Kontaktoni mbështetjen dhe do ta transferojmë.",
+    "saveIncomplete": "Pothuajse gati — nuk arritëm ta përfundojmë ruajtjen. Konfigurimi juaj është ruajtur, ju lutemi kontaktoni mbështetjen në vend që ta kryeni sërish.",
+    "connected": "WhatsApp u lidh. Përgjigjet automatike do të fillojnë t’u përgjigjen mesazheve në këtë numër."
+  }
+}

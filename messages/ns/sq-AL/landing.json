@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistem porosish për food truck dhe katering të lëvizshëm",
+    "description": "Porosi, porosi paraprake dhe ekran kuzhine për food truck dhe katering të lëvizshëm ({country}).",
+    "audience": "Biznese food truck dhe kateringu të lëvizshëm"
+  },
+  "hero": {
+    "title": "Sistemi i porosive, i ndërtuar për <lean>food truck-et.</lean>",
+    "subSmall": "Ngarkoni menunë, pa pasur nevojë për regjistrim.<br></br>Shikoni një demo funksionale për më pak se 60 sekonda.",
+    "cta": "Ngarko menunë time →",
+    "ctaNote": "<lead>Ngarkoni një foto të menusë dhe shikojeni në punë për më pak se 60 sekonda.</lead><small>Pa regjistrim. Pa kartë.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Ekrani i kuzhinës në HatchGrab, me tiketat e porosive sipas radhës së gatimit",
+    "dashboardAlt": "Marrja e një porosie në HatchGrab: menuja majtas, shporta dhe totali djathtas",
+    "phoneAlt": "Porosi nga një food truck në HatchGrab: menuja me foto dhe çmime, dhe totali i shportës"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Muaji i parë krejtësisht falas, me çdo funksion të zhbllokuar} other {# muajt e parë krejtësisht falas, me çdo funksion të zhbllokuar}}",
+    "noCard": "Nuk nevojitet kartë",
+    "cancel": "Anulojeni kur të doni, pa kontratë"
+  },
+  "does": {
+    "eyebrow": "Çfarë bën",
+    "title": "Ndërtuar për food truck-et, jo për restorantet.",
+    "lede": "Shumica e sistemeve të porosive supozojnë një adresë fikse, wifi të qëndrueshëm dhe të njëjtat orare çdo javë. Ju jeni në një vend të ri çdo javë, në orë të ndryshme, me sinjal celular të dobët ose pa sinjal fare. HatchGrab u ndërtua pikërisht për këtë.",
+    "slotsTitle": "Klientët zgjedhin orën e marrjes",
+    "capacityTitle": "Vendosni kapacitetin e kuzhinës",
+    "capacityBody": "Vendosni sa mund të gatuani njëherësh dhe sa kohë duhet. Kur një orë marrjeje mbushet, klientët nuk mund ta zgjedhin.",
+    "devicesTitle": "Funksionon në çdo pajisje",
+    "devicesBody": "Funksionon në telefonin në xhepin e përparëses, në tabletin në sportel, në laptopin në furgon — dhe në terminalin POS me të cilin merrni tashmë pagesat.",
+    "postsTitle": "Automatizoni postimet në Facebook dhe Instagram",
+    "postsBody": "Ngarkoni dizajnin që postoni tashmë në Facebook ose Instagram. Ne plotësojmë datat, vendet dhe oraret, gati për t’u ndarë — çdo javë ose çdo ditë.",
+    "whatsappTitle": "Përgjigje automatike në WhatsApp",
+    "whatsappBody": "“Ku jeni sonte?” “Çfarë ëmbëlsirash keni?” Mesazhet tuaja në WhatsApp marrin përgjigje ndërsa jeni rrugës për te vendi i shitjes ose te skara, me menunë dhe orarin tuaj. Messenger dhe Instagram vijnë së shpejti.",
+    "whatsappSoonTitle": "Përgjigje automatike në WhatsApp <soon>Së shpejti</soon>",
+    "whatsappSoonBody": "“Ku jeni sonte?” “Çfarë ëmbëlsirash keni?” Së shpejti mesazhet tuaja në WhatsApp do të marrin përgjigje ndërsa jeni rrugës për te vendi i shitjes ose te skara. Më pas vijnë Messenger dhe Instagram.",
+    "offlineTitle": "Pa sinjal? Vazhdoni të shërbeni.",
+    "offlineBody": "Nëse humbni sinjalin, porositë online vihen automatikisht në pauzë, që klientët të mos dërgojnë porosi që ju nuk do t’i shihni. Vazhdoni të merrni porosi me aplikacionin për iPhone, iPad dhe Android.",
+    "slotsBody": "Klientët porositin paraprakisht dhe zgjedhin orën e marrjes. Më pak radhë, dhe ushqimi është gati kur mbërrijnë."
+  },
+  "steps": {
+    "eyebrow": "Si të filloni",
+    "title": "Konfiguroni gjithçka dhe filloni të merrni porosi për rreth 15 minuta.",
+    "lede": "Tri gjëra për të rregulluar — dhe për dy prej tyre mjafton një foto.",
+    "menuTitle": "Ndërtoni menunë",
+    "menuBody": "Fotografoni tabelën e menusë ose ngjiteni tekstin. Artikujt, çmimet dhe shtesat kalojnë vetë. Ju vetëm kontrolloni që janë të sakta.",
+    "scheduleTitle": "Shtoni orarin",
+    "scheduleBody": "E keni në faqen tuaj të internetit? Do ta lexojmë që andej dhe do ta mbajmë të përditësuar. Nëse jo, fotografojeni edhe atë. Ju vetëm miratoni atë që gjen.",
+    "shareTitle": "Ndani lidhjen tuaj",
+    "shareBody": "Postojeni në Facebook, ngjitni kodin QR në furgon. Porositë mbërrijnë në ekranin tuaj, sipas radhës që duhet t’i gatuani."
+  },
+  "testimonial": {
+    "quote": "HatchGrab e ka bërë porositjen shumë më të lehtë. Gjithçka është e organizuar, e ndjekim stokun dhe e dimë saktësisht sa pica na kanë mbetur për të shitur — dhe intervalet kohore janë fantastike për fshatrat me shumë lëvizje.",
+    "award": "Picerria e lëvizshme e vitit",
+    "awardScope": "Fitues rajonal",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — pronarët"
+  },
+  "pricing": {
+    "eyebrow": "Çmimet",
+    "title": "Filloni falas. Përmirësoni paketën kur t’ju duhet.",
+    "switchHead": "Po kaloni nga një platformë tjetër?",
+    "switchBody": "Shikoni sa do të paguanit me HatchGrab për të njëjtat porosi. Zgjat rreth një minutë.",
+    "switchCta": "Krahasoni sa paguani"
+  },
+  "faq": {
+    "title": "Pyetje të shpeshta",
+    "metaTitle": "Pyetje të shpeshta | HatchGrab",
+    "metaDescription": "Përgjigje të qarta për pronarët e food truck-eve: çmimet e HatchGrab, konfigurimi, marrja e porosive dhe pagesat me kartë ose në marrje."
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Doni të shihni sa i lehtë është konfigurimi?",
+    "lede": "Ngarkoni një foto ose një pamje ekrani të menusë dhe ne do ta kthejmë në një faqe porosish funksionale, për ta provuar për më pak se 60 sekonda. Artikujt tuaj, çmimet tuaja. Pa regjistrim, pa kartë, pa instaluar asgjë. Hidhini një sy, pastaj vendosni.",
+    "cta": "Ngarko menunë time tani →"
+  },
+  "meta": {
+    "title": "Sistem porosish për food truck — HatchGrab {country}",
+    "description": "Merrni porosi dhe porosi paraprake pa radhë. Program porosish dhe ekran kuzhine për food truck dhe katering të lëvizshëm ({country}) — jo sistem arke."
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "publicName": "Event privat",
+  "chip": "Privat",
+  "grid": {
+    "orderingSection": "POROSITË",
+    "linkRowLabel": "Merr porosi me lidhje private dhe kod QR",
+    "columnTitle": "Lloji i integruar Privat. Nuk mund të riemërtohet, zhvendoset ose fshihet."
+  },
+  "form": {
+    "help": "Shfaqet në orarin tuaj si “Event privat” vetëm me datën dhe orët — kurrë adresa, harta ose Village Foodie.",
+    "linkPromise": "Të ftuarit porositin me një lidhje private dhe kod QR — do t’i merrni pasi të ruani.",
+    "nameLabel": "Emri i eventit",
+    "nameHelp": "Të ftuarit e shohin këtë në krye të faqes së porosive.",
+    "namePlaceholder": "Dasma e Elirës dhe Andit",
+    "previewNote": "Si shfaqet në orarin tuaj — pa vend, qytet ose kod postar.",
+    "needsTimes": "Shtoni orën e fillimit dhe të përfundimit — një event privat që merr porosi me lidhje ka nevojë për to."
+  },
+  "link": {
+    "button": "Lidhja dhe QR",
+    "title": "Lidhja private dhe kodi QR",
+    "label": "Lidhja private",
+    "copy": "Kopjo",
+    "copied": "U kopjua",
+    "qrDownload": "Shkarko QR",
+    "tableCards": "Printo kartat e tavolinave",
+    "newLink": "Krijo një lidhje të re",
+    "working": "Po punohet…",
+    "newLinkConfirm": "Të krijohet një lidhje e re? Lidhja aktuale ndalon së funksionuari menjëherë, dhe çdo kod QR që keni printuar tashmë do të ndalojë gjithashtu së funksionuari.",
+    "newLinkHelp": "Përdoreni këtë nëse lidhja ka përfunduar diku ku nuk duhej. Lidhja aktuale ndalon së funksionuari menjëherë, dhe kodet QR të printuara ndalojnë gjithashtu.",
+    "newLinkFailed": "Lidhja e re nuk u krijua.",
+    "offNotice": "Porositë me lidhje private janë çaktivizuar për këtë event, ndaj nuk ka lidhje për të ndarë. Eventi shfaqet gjithsesi në orarin tuaj si “Event privat”."
+  },
+  "cards": {
+    "printTitle": "{truck} — kartat e tavolinave",
+    "scan": "Skanoni për të porositur",
+    "blurb": "Porositni dhe paguani në telefon. Do t’ju thërrasim në emër kur porosia të jetë gati.",
+    "footer": "Porosi me HatchGrab"
+  },
+  "noSinglePost": "Eventet private nuk kanë postim më vete — ato shfaqen në posterin tuaj javor si “Event privat”.",
+  "confirmToPrivate": "Kjo e fsheh adresën dhe eventin nga harta. Të ftuarve do t’u duhet lidhja private për të porositur.",
+  "confirmFromPrivate": "Kjo e bën eventin publik: adresa dhe kunja e tij në hartë do të shfaqen, dhe lidhja private do të ndalojë së funksionuari."
+}

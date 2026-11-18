@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Krahasimi i kostove",
+  "title": "Krahasoni kostot e<br></br><accent>porosive online</accent>",
+  "system": {
+    "title": "A merrni porosi online tani?",
+    "yes": "Po, me një sistem tjetër",
+    "no": "Jo, ende jo"
+  },
+  "trucks": {
+    "title": "Sa food truck-e keni?",
+    "aria": "Numri i food truck-eve"
+  },
+  "plan": {
+    "yourChoice": "Zgjedhja juaj",
+    "weSuggest": "Ne ju sugjerojmë",
+    "summary": "{price} për food truck në muaj, me porosi online deri në {allowance} të përfshira{fleet, plural, one {} other { për secilin}}.",
+    "switchTo": "Kalo te paketa {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} për food truck në muaj, plus {pct} për porositë online.} other {Pa tarifë mujore — vetëm {pct} për porositë online.}}",
+    "summaryNoFee": "{price} për food truck në muaj, me porosi online pa kufi dhe pa asnjë tarifë nga HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Porosi online në muaj, për çdo food truck",
+    "count": "~{count, plural, one {# porosi} other {# porosi}}",
+    "captionNo": "Mjafton një vlerësim i përafërt — porosi paraprake dhe klientë që shmangin radhën, jo pagesat me kesh ose kartë në sportel.",
+    "captionYes": "Vetëm porositë e bëra përmes faqes suaj të porosive — jo pagesat me kesh ose kartë në sportel.",
+    "sliderAria": "Vlera mujore e porosive online për çdo food truck",
+    "overAllowance": "Porosi online deri në {allowance} të përfshira për çdo food truck. Për {excess} mbi këtë kufi tarifohet {pct} — <b>{over}</b> në muaj për secilin.",
+    "insideAllowance": "Brenda {allowance} të përfshira për porositë online — asgjë shtesë mbi paketën.",
+    "acrossFleet": "Gjithsej për {fleet, plural, one {# food truck} other {# food truck-e}}: <b>{amount}</b> në muaj.",
+    "titleNo": "Sa mendoni se do të shisnit online, në muaj, për çdo food truck?",
+    "feeOnly": "{pct} për çdo porosi online — <b>{over}</b> në muaj për çdo food truck.",
+    "noFee": "Porosi online pa kufi të përfshira — asgjë shtesë mbi paketën."
+  },
+  "fee": {
+    "title": "Sa paguani tani për çdo porosi?",
+    "pctLabel": "Përqindja",
+    "pctPlaceholder": "Norma juaj",
+    "pctAria": "Tarifa në përqindje",
+    "fixedLabel": "Plus për porosi",
+    "fixedPlaceholder": "Tarifa juaj",
+    "fixedAria": "Lekë për porosi",
+    "modeLabel": "Norma e tyre:",
+    "modeInclusive": "përfshin përpunimin e kartave",
+    "modeOnTop": "tarifohet shtesë",
+    "onTopNote": "Përpunimi i kartave ({fee}) tarifohet mbi këtë, ndaj në fakt paguani gjithsej <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Përpunimi i kartave ({fee}) është i përfshirë aty dhe do ta paguanit kudo. Tarifa që marrin ata vetë është <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Sa ditë në javë punoni?",
+    "help": "Evente, tregje, vendet ku qëndroni — çdo ditë që furgoni del në punë."
+  },
+  "jump": {
+    "cost": "Shihni sa kushton ↓",
+    "saving": "Shihni sa kurseni ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Porosi online, porosi paraprake dhe ekrani i kuzhinës për</lead><figure>{amount}</figure><unit>në ditë pune</unit>",
+    "basedOn": "Bazuar në {days, plural, one {# ditë} other {# ditë}} në javë · {monthly} në muaj{fleet, plural, one {} other { për furgon}}"
+  },
+  "coffee": "Më pak se një kafe.",
+  "freeMonths": "{n, plural, one {Dhe muaji i parë është falas, nga ne.} other {Dhe # muajt e parë janë falas, nga ne.}}",
+  "cta": {
+    "upload": "Ngarko menunë time →",
+    "uploadSave": "Ngarko menunë time dhe kurse {amount} →",
+    "ask": "Bëj një pyetje",
+    "noCard": "Nuk nevojitet kartë për konfigurimin"
+  },
+  "breakdown": {
+    "title": "Muaji juaj, në detaje",
+    "titleDearer": "Muaji juaj me HatchGrab",
+    "plan": "Paketa {plan}",
+    "over": "{pct} për {excess} mbi {allowance} të përfshira",
+    "inside": "Porositë online brenda {allowance} të përfshira",
+    "total": "HatchGrab çdo muaj",
+    "freeMonths": "{n, plural, one {Muaji 1} other {Muajt 1–#}}",
+    "freeAmount": "{amount} — falas nga ne",
+    "acrossFleet": "Për {fleet, plural, one {# furgon} other {# furgonë}}",
+    "perMonth": "{amount} në muaj",
+    "card": "Përpunimi i kartave — tarifa e Stripe prej {fee} për porosi, që i paguhet Stripe. Pothuajse të njëjtën shumë do ta paguanit edhe me një terminal POS në sportel.",
+    "provider": "Tarifa e vetë ofruesit tuaj aktual ({pct})",
+    "feeOnly": "{pct} për {excess} në porosi online",
+    "noFee": "Porosi online — pa kufi, pa tarifë HatchGrab"
+  },
+  "enterRate": "Shkruani sa paguani tani për të parë sa kurseni.",
+  "panel": {
+    "nowYear": "<label>Tani paguani</label><fig>{amount}<q> në vit</q></fig>",
+    "nowMonth": "<label>Tani paguani</label><fig>{amount}<q> në muaj</q></fig>",
+    "oursYear": "<label>Me HatchGrab</label><fig>{amount}<q> në vitin e parë</q></fig>",
+    "oursMonth": "<label>Me HatchGrab</label><fig>{amount}<q> në muaj</q></fig>",
+    "acrossFleet": "për {fleet, plural, one {# furgon} other {# furgonë}}"
+  },
+  "hero": {
+    "save": "<verb>Kurseni</verb><figure>{amount}</figure><sub><num>{pct}</num> më pak në vitin e parë</sub>",
+    "same": "<verb>Afërsisht njësoj</verb><figure>{amount}</figure><sub><num>{pct}</num> më shumë në vitin e parë</sub>",
+    "dearer": "<lead>Gjithçka që bën HatchGrab, për</lead><figure>{amount}</figure><unit>më shumë në javë</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} më shumë në muaj se tani} other {{amount} më shumë për furgon në muaj se tani}}"
+  },
+  "anchor": {
+    "liability": "Aq sa kushton një vit sigurim i përgjegjësisë ndaj palëve të treta.",
+    "weekendPitch": "Aq sa një vend për një fundjavë në një festival ushqimi.",
+    "festivalPitches": "Aq sa disa vende në festivale.",
+    "fryer": "Aq sa një friteze dhe një pllakë gatimi e re.",
+    "counter": "Aq sa rinovimi i plotë i sportelit tuaj të shërbimit.",
+    "vanDeposit": "Aq sa kapari për një furgon të dytë.",
+    "secondVan": "Aq sa një furgon i dytë në rrugë."
+  },
+  "year": {
+    "one": "Viti i parë",
+    "two": "Viti i dytë",
+    "save": "Kurseni {amount}<note>({pct} më pak)</note>",
+    "extra": "{amount} më shumë<note>({pct} më shumë)</note>",
+    "current": "Ofruesi aktual <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Vlerësime bazuar në shifrat që shkruani, duke supozuar një porosi mesatare prej {aov}. Përpunimi i kartave aplikohet me cilindo ofrues. Verifikoni përpara se të vendosni.",
+    "yes": "Vlerësime bazuar në shifrat që shkruani, duke supozuar një porosi mesatare prej {aov}. Përpunimi i kartave prej {fee} për porosi aplikohet me cilindo ofrues, ndaj është përjashtuar nga të dyja anët.",
+    "onTop": "Shifra totale në pyetjen {n} e përfshin atë — krahasimi jo, në asnjërën anë.",
+    "check": "Verifikoni normat e ofruesit tuaj aktual përpara se të vendosni."
+  },
+  "intro": "Zgjat rreth një minutë. Përdorni tashmë një sistem? Do ta krahasojmë. Ende jo? Do t’ju tregojmë saktësisht sa kushton.",
+  "twoYear": "Për dy vjet, kjo do të thotë <b>{amount}</b> të kursyera.",
+  "meta": {
+    "title": "Kalkulator kostosh — HatchGrab {country}",
+    "description": "Krahasoni sa ju kushtojnë sot porositë online me atë që do të paguanit për një vit me HatchGrab — një vlerësim brenda një minute."
+  }
+}

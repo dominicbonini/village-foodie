@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Anuluar",
+    "finished": "Përfunduar",
+    "unconfirmed": "Pa konfirmuar",
+    "confirmed": "Konfirmuar",
+    "open": "Hapur tani",
+    "closed": "Mbyllur"
+  },
+  "sections": {
+    "label": "Seksionet e orarit",
+    "events": "Eventet",
+    "eventTypes": "Llojet e eventeve"
+  },
+  "header": {
+    "title": "Orari",
+    "upcoming": "Në vijim: {count}",
+    "import": "✨ Importo orarin",
+    "importHint": "foto, PDF ose tekst",
+    "addEvent": "+ Shto event",
+    "scraperAuto": "Eventet gjenden automatikisht nga faqja juaj e internetit",
+    "changeInSettings": "Ndryshojeni te Cilësimet",
+    "scraperManual": "Orarin e menaxhoni vetë, me dorë"
+  },
+  "empty": {
+    "title": "Nuk ka evente në vijim",
+    "body": "Eventet e gjetura në rrjetet tuaja sociale dhe në kalendarin e rezervimeve do të shfaqen këtu që t’i konfirmoni"
+  },
+  "list": {
+    "openNow": "Hapur tani",
+    "needsApproval": "Kërkon miratimin tuaj",
+    "needsConfirmation": "Kërkon konfirmim",
+    "confirmed": "Konfirmuar",
+    "past": "Eventet e kaluara ({count})",
+    "found": "Gjetëm {count, plural, one {# event për ju — rishikojeni dhe miratojeni para se të publikohet.} other {# evente për ju — rishikojini dhe miratojini para se të publikohen.}}"
+  },
+  "card": {
+    "addName": "Shto një emër",
+    "timeNeeded": "⚠ Duhet ora",
+    "setTimeFirst": "Caktoni fillimisht orën",
+    "confirm": "Konfirmo",
+    "copy": "Kopjo",
+    "edit": "Ndrysho",
+    "makePost": "Krijo postim",
+    "cancel": "Anulo",
+    "approve": "Mirato",
+    "reject": "Refuzo",
+    "stock": "⚠️ Stoku",
+    "stockHidden": "I fshehur — {reason}",
+    "noDeals": "Asnjë menu kombo aktive",
+    "dealsActive": "{count, plural, one {# menu kombo aktive} other {# menu kombo aktive}} · {names}{hidden, plural, =0 {} one { · # e fshehur} other { · # të fshehura}}",
+    "approveNeedsTimes": "Miratimi është joaktiv derisa ky event të ketë orë fillimi dhe mbarimi — shtojini me Ndrysho."
+  },
+  "guessed": {
+    "title": "📍 E hamendësuam këtë vendndodhje",
+    "body": "Më shumë se një vend përputhej me <b>{venue}</b>, ndaj zgjodhëm më të përshtatshmin{hasTown, select, yes { në <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Kontrolloni që është vendi i duhur para se ta miratoni — nëse është gabim, përdorni <b>Ndrysho</b> për të korrigjuar zonën ose {postal}, përndryshe klientët do të dërgohen në vendin e gabuar.",
+    "thisVenue": "ky vend"
+  },
+  "noLocation": {
+    "title": "📍 Ende pa vendndodhje",
+    "body": "Nuk arritëm ta vendosim këtë vend në hartë, ndaj do të shfaqet në listë, por pa pikë në hartë. Shtoni {postal} me <b>Ndrysho</b> për ta vendosur në hartë."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Konflikt i mundshëm} other {Konflikte të mundshme}} — rishikojeni para {pending, select, yes {miratimit} other {konfirmimit}}",
+    "duplicate": "Ky duket i njëjti event që e keni tashmë.",
+    "review": "I njëjti vend dhe e njëjta datë, por orë tjetër — a është i njëjti event me orë të ndryshuar, apo një interval më vete? Rishikojeni para miratimit.",
+    "already": "Tashmë në orarin tuaj: <b>{venue}</b>{details} ({status, select, confirmed {konfirmuar} open {hapur} other {{status}}})",
+    "unnamedVenue": "Vend pa emër",
+    "ack": "Po, këto janë evente të ndryshme — {pending, select, yes {miratoje} other {konfirmoje}} gjithsesi",
+    "cancel": "Anulo",
+    "overlap": "Ora e këtij eventi mbivendoset me një event tjetër në të njëjtën ditë — një furgon nuk mund të jetë në dy vende njëkohësisht. Kontrollojeni para miratimit."
+  },
+  "toast": {
+    "loadFailed": "Ngarkimi i eventeve dështoi",
+    "linkFailed": "Lidhja nuk u ngarkua dot",
+    "placeTypeFailed": "Eventi u ruajt. Lloji i zakonshëm për vendin {place} nuk u ruajt — {reason}.",
+    "placeTypeFailedReason": "ruajtja nuk u krye",
+    "eventUpdated": "Eventi u përditësua",
+    "eventAdded": "Eventi u shtua",
+    "eventsSaved": "{count, plural, one {U ruajt # event} other {U ruajtën # evente}}",
+    "saveEventsFailed": "Ruajtja e eventeve dështoi",
+    "needsTime": "Shtoni orën e fillimit dhe të mbarimit para miratimit — ky event ka nevojë për orë që të publikohet.",
+    "addStartTime": "Shtoni orën e fillimit",
+    "addEndTime": "Shtoni orën e mbarimit",
+    "chooseTruckBefore": "Zgjidhni cili furgon punon në këtë event para miratimit.",
+    "chooseTruck": "Zgjidhni cili furgon punon në këtë event",
+    "eventConfirmed": "Eventi u konfirmua",
+    "eventRejected": "Eventi u refuzua",
+    "undo": "↩ Zhbëj",
+    "eventRestored": "Eventi u rikthye",
+    "restoreFailed": "Rikthimi dështoi",
+    "eventCancelled": "Eventi u anulua",
+    "eventCancelledOrders": "Eventi u anulua · {count, plural, one {# porosi u anulua} other {# porosi u anuluan}}",
+    "placeHidden": "Vendi u fsheh",
+    "placeShown": "Vendi shfaqet sërish",
+    "saveThatFailed": "Kjo nuk u ruajt dot."
+  },
+  "link": {
+    "label": "Lidhja private dhe kodi QR",
+    "close": "Mbyll"
+  }
+}

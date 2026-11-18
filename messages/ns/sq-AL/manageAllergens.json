@@ -1,0 +1,128 @@
+{
+  "cardEditor": {
+    "title": "Karta juaj e alergjenëve",
+    "intro": "Klientët e shohin këtë <b>pikërisht siç e shkruani</b> — asgjë nuk rishkruhet. Shkruajeni ose ngjiteni më poshtë, ose ngarkoni një foto/PDF dhe ne do ta lexojmë tekstin që ta kontrolloni.",
+    "empty": "Ende nuk ka kartë alergjenësh.",
+    "placeholder": "p.sh. Të gjitha pjatat tona me peshk dhe patate përmbajnë grurë dhe qumësht. Friteza përdoret edhe për artikuj që përmbajnë gluten dhe fruta me lëvozhgë. Ka opsione vegane — pyesni stafin.",
+    "reading": "Po lexohet imazhi…",
+    "upload": "📷 Ngarko imazh / PDF",
+    "uploadNote": "Ne e lexojmë tekstin nga imazhi juaj që ta rishikoni — imazhi nuk ruhet."
+  },
+  "cardUpload": {
+    "dishFallback": "Pjatë",
+    "question": "Keni një kartë alergjenësh për të ngarkuar?",
+    "perDish": "{detected, select, yes {Ngarkoni një dhe do ta përdorim për të ndërtuar alergjenët e pjatave tuaja. Alergjenët e gjetur do të shfaqen në faqen tjetër, ku konfirmoni çdo pjatë.} other {Ngarkoni një dhe do ta përdorim për të ndërtuar alergjenët e pjatave tuaja.}}",
+    "cardOnly": "Ngarkoni kartën e alergjenëve që do të shohin klientët.",
+    "yes": "Po",
+    "no": "Jo",
+    "noProblem": "S’ka problem — nuk ju nevojitet. Vazhdoni me butonin më poshtë.",
+    "analysing": "Po analizohet karta…",
+    "dropzone": "Tërhiqeni dhe lëshojeni ose shtypni për të zgjedhur",
+    "imageOrPdf": "Imazh ose PDF",
+    "or": "ose",
+    "pastePlaceholder": "Ngjitni këtu tekstin e kartës së alergjenëve…",
+    "process": "Përpuno kartën",
+    "cardRead": "Karta u lexua ✓",
+    "unmatchedHeading": "Këto nuk u përputhën automatikisht — caktojini te një pjatë ose mbyllini",
+    "quotedName": "“{name}”",
+    "ambiguous": "E paqartë — përputhet me disa pjata; zgjidhni të duhurën.",
+    "assignTo": "Cakto te pjata…",
+    "dismiss": "Mbyll",
+    "kitchenNotes": "Shënime të kuzhinës (ruhen te informacioni juaj për alergjenët)",
+    "matchSummary": "{n, plural, =0 {Të përputhura me një pjatë: {matched}.} one {Të përputhura me një pjatë: {matched}. {count} kërkon caktimin tuaj.} other {Të përputhura me një pjatë: {matched}. {count} kërkojnë caktimin tuaj.}}",
+    "blanketInfo": "Karta juaj thotë se në të gjitha pjatat mund të ketë: {list}. Do t’i shtojmë te alergjenët që përdor kuzhina juaj. Mund t’i kontrolloni në hapin e fundit."
+  },
+  "savedCard": {
+    "showLess": "Shfaq më pak",
+    "showMore": "Shfaq më shumë",
+    "fileOnly": "Për këtë food truck është ruajtur një skedar karte, por nuk është ruajtur tekst përmbledhës. Hapni origjinalin për ta lexuar.",
+    "viewOriginal": "Shih kartën origjinale"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Karta e alergjenëve nuk u lexua — provoni sërish",
+      "confirmed": "U konfirmua: {name}",
+      "undo": "Zhbëj",
+      "saveFailed": "Nuk u ruajt — ju lutemi provoni sërish",
+      "imageFailed": "Ky imazh nuk u lexua — shkruajeni ose ngjiteni kartën",
+      "cardRead": "{n, plural, one {Karta u lexua — të përputhura: {matched}, {count} kërkon caktim} other {Karta u lexua — të përputhura: {matched}, {count} kërkojnë caktim}}"
+    },
+    "genericWarn": {
+      "text": "U gjet “{generic}”, por nuk është specifik. Zgjidhni {picks} nëse kjo pjatë përmban {family} — ose lërini të pazgjedhur nëse nuk përmban.",
+      "andOr": "{a} dhe/ose {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ U konfirmua",
+      "confirmed": "Konfirmuar",
+      "needsReview": "Kërkon rishikim"
+    },
+    "confirm": {
+      "confirming": "Po konfirmohet…",
+      "confirmed": "Konfirmuar ✓",
+      "confirm": "Konfirmo",
+      "changed": "· ndryshuar",
+      "changedTitle": "Ndryshuar që nga konfirmimi i fundit — konfirmojeni sërish"
+    },
+    "allergens": "Alergjenët",
+    "dietary": "Dieta",
+    "uncategorised": "Pa kategori",
+    "review": {
+      "progress": "{confirmed} nga {total} të konfirmuara",
+      "allConfirmed": "✓ Të gjitha të konfirmuara",
+      "list": "Listë",
+      "table": "Tabelë",
+      "detected": "Gjetur nga menuja juaj — <b>kontrollojini</b>. Alergjenët mbeten të fshehur për klientët derisa të konfirmoni çdo pjatë.",
+      "viewOnly": "👁 Vetëm për shikim — vetëm pronari mund t’i konfirmojë ose t’i ndryshojë alergjenët.",
+      "emptyTitle": "Nuk ka artikuj në menu",
+      "emptyBody": "Shtoni fillimisht artikuj në menu, pastaj caktoni alergjenët e tyre këtu.",
+      "dish": "Pjata",
+      "status": "Statusi"
+    },
+    "cardPanel": {
+      "reading": "Po lexohet informacioni për alergjenët…",
+      "saved": "🛡️ Karta e alergjenëve u ruajt",
+      "viewOriginal": "Shih kartën origjinale",
+      "replace": "Zëvendëso kartën",
+      "uploadHelp": "Ngarkoni kartën e alergjenëve (foto/PDF) ose ngjitni informacionin për alergjenët — AI-ja jonë e strukturon për klientët.",
+      "add": "Shto kartën e alergjenëve",
+      "viewOnly": "👁 Vetëm për shikim — vetëm pronari mund ta shtojë kartën e alergjenëve.",
+      "intro": "Klientët do ta shohin këtë kartë si referencën e alergjenëve të menusë. Alergjenët për çdo pjatë mbeten të fshehur në modalitetin “vetëm kartë” (të dhënat e pjatave ruhen, në rast se më vonë kaloni te alergjenët për çdo pjatë)."
+    },
+    "subtitle": {
+      "choose": "Zgjidhni si t’i shohin klientët informacionet për alergjenët",
+      "card": "Shtoni kartën e alergjenëve",
+      "cardOptional": "Shtoni një kartë alergjenësh (opsionale)",
+      "review": "Kontrolloni dhe konfirmoni çdo pjatë",
+      "kitchen": "Hapi i fundit: kuzhina juaj"
+    },
+    "heading": {
+      "import": "Alergjenët",
+      "standalone": "Konfigurimi i alergjenëve"
+    },
+    "nav": {
+      "next": "Tjetër →",
+      "back": "← Kthehu",
+      "skip": "Kapërce tani për tani",
+      "saving": "Po ruhet…",
+      "done": "U krye",
+      "saveLater": "Ruaj dhe përfundo më vonë",
+      "close": "Mbyll",
+      "finish": "Përfundo",
+      "skipImport": "Kapërce konfigurimin e alergjenëve tani për tani"
+    },
+    "hint": {
+      "skipDefers": "Kapërcimi vetëm e shtyn — pjatat që nuk i keni konfirmuar mbeten të fshehura për klientët derisa të konfirmohen alergjenët e tyre.",
+      "importIncomplete": "Konfirmoni çdo pjatë për të vazhduar — ose “Kapërce konfigurimin e alergjenëve tani për tani”."
+    },
+    "recipeOnly": "Vetëm ato që janë në recetën e kësaj pjate.",
+    "tooMany": "Alergjenë të shënuar: {count}. A janë vërtet të gjithë në recetën e kësaj pjate? Alergjenët e përdorur në pjata të tjera nuk shkojnë këtu. Ato mund t’i shtoni në hapin e fundit."
+  },
+  "kitchen": {
+    "title": "Cilët alergjenë përdor kuzhina juaj?",
+    "body": "Kemi shënuar ata që janë tashmë në pjatat tuaja. Shënoni çdo tjetër që përdorni në food truck, për shembull për specialitetet.",
+    "legendDishes": "në pjatat tuaja",
+    "legendAdded": "shtuar nga ju",
+    "customersSee": "Klientët do të shohin:",
+    "confirm": "Konfirmoj se alergjenët për çdo pjatë janë të saktë dhe do t’i mbaj të përditësuar."
+  }
+}

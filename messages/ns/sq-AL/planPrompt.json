@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} përfshihen në paketën {plan}.} other {{feature} përfshihet në paketën {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} nuk janë në paketën tuaj.} other {{feature} nuk është në paketën tuaj.}}",
+  "switchedOff": "{many, select, yes {{feature} janë çaktivizuar për food truck-un tuaj.} other {{feature} është çaktivizuar për food truck-un tuaj.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Përmirëso →",
+  "features": {
+    "discovery_map": {
+      "name": "Shfaqja në hartën publike",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Paneli në web",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Aplikacioni i kuzhinës",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Menuja me kod QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Menutë kombo",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Sugjerimet",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Porositë në vend",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Porositja me Pagesë në marrje",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Butoni “Mbaroi”",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Zbritja e stokut",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Mbrojtja offline e porosive",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Pagesat online",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Porosia paraprake për data të ardhshme",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Intervalet kohore për klientët",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Menaxhimi i kapacitetit të kuzhinës",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Pranimi automatik",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Përgjigjet automatike në Messenger dhe Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Kodet QR me logon tuaj",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Raportimi i avancuar",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Printimi i tiketave të kuzhinës",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Sinkronizimi i kuzhinës në disa pajisje",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Ekrani i gatimit",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Përgjigjet automatike në WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Orari në faqen tuaj të internetit",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Postimet për rrjetet sociale",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Llojet e personalizuara të eventeve",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Eventet private",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Dokumentet",
+      "many": "yes"
+    }
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "cancel": "Anulo",
+  "back": "← Kthehu",
+  "backPlain": "Kthehu",
+  "next": "Vazhdo →",
+  "continue": "Vazhdo →",
+  "closeImport": "Mbyll importimin",
+  "tryAgain": "Provo sërish",
+  "catError": {
+    "empty": "Jepini kategorisë një emër.",
+    "tooLong": "Ky emër është shumë i gjatë.",
+    "clash": "Ekziston tashmë një kategori me emrin “{name}”."
+  },
+  "steps": {
+    "details": "Të dhënat tuaja",
+    "menu": "Menu",
+    "extras": "Shtesat",
+    "allergens": "Alergjenët",
+    "kitchen": "Konfigurimi i kuzhinës",
+    "schedule": "Orari",
+    "settings": "Cilësimet"
+  },
+  "toast": {
+    "demoGone": "Menuja juaj e demos nuk është më e disponueshme — ju lutemi ngarkojeni sërish për të vazhduar.",
+    "eventsSaveFailed": "Ruajtja e eventeve dështoi",
+    "cardReadFailed": "Karta e alergjenëve nuk u lexua dot — provoni sërish",
+    "imageReadFailed": "Ky imazh nuk u lexua dot — shkruani ose ngjitni kartën tuaj",
+    "commitFailedDetail": "Ruajtja e menusë nuk përfundoi: {error}. Disa artikuj mund të jenë ruajtur tashmë — kontrolloni menunë para se të provoni sërish.",
+    "commitFailed": "Ruajtja e menusë nuk përfundoi. Disa artikuj mund të jenë ruajtur tashmë — kontrolloni menunë para se të provoni sërish.",
+    "finishFailed": "Konfigurimi nuk u shënua dot si i përfunduar — mund të vazhdoni gjithsesi.",
+    "scheduleReadFailed": "Ky orar nuk u lexua dot — provoni një foto më të qartë ose shkruani vetë datat.",
+    "cardRead": "Karta u lexua — të përputhura: {matched} · {pending, plural, one {# kërkon caktimin tuaj} other {# kërkojnë caktimin tuaj}}"
+  },
+  "settingsReview": {
+    "anchorOrder": "Cilësimet → Cilësimet e porosive",
+    "anchorDisplay": "Cilësimet → Furgonët tuaj → Cilësimet e shfaqjes",
+    "mins15": "15 minuta",
+    "mins30": "30 minuta",
+    "mins60": "60 minuta",
+    "hours2": "2 orë",
+    "title": "Disa cilësime për të kontrolluar",
+    "loading": "Po ngarkohen cilësimet tuaja aktuale…",
+    "looksGood": "Duket mirë →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Kjo nuk u ruajt dot — mund ta ndryshoni te Cilësimet.",
+    "anchorContact": "Cilësimet → Të dhënat e kontaktit",
+    "intro": "Ju kemi konfiguruar me disa cilësime të zakonshme. Ia vlen një shikim i shpejtë — mund t’i ndryshoni më vonë te Cilësimet.",
+    "cancelAria": "Sa kohë para marrjes mund të anulojnë klientët"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Rishikojini para publikimit. Deri atëherë artikujt shënohen “alergjenët nuk janë caktuar”.",
+    "body": "Rishikojini te Cilësimet para publikimit. Deri atëherë artikujt shënohen “alergjenët nuk janë caktuar”.",
+    "title": "⚠ Alergjenët dhe dieta ende nuk janë caktuar"
+  },
+  "welcome": {
+    "title": "Mirë se vini në HatchGrab",
+    "yourTruck": "Food truck-u juaj",
+    "stop": "Mund të ndaleni dhe të ktheheni kur të doni.",
+    "body": "{name} është gati. Tani do të shtojmë menunë tuaj, pastaj eventin tuaj të parë.",
+    "go": "Fillojmë"
+  },
+  "offer": {
+    "title": "Të përdoret menuja nga demoja juaj?",
+    "use": "Përdor këtë menu",
+    "upload": "Ngarko një menu tjetër",
+    "body": "E ruajtëm menunë që ngarkuat — {count, plural, one {# artikull} other {# artikuj}}. Përdoreni si pikënisje ose ngarkoni një tjetër."
+  },
+  "checkMenu": {
+    "title": "Kontrolloni menunë tuaj",
+    "body": "Menunë nga demoja jua ruajtëm te food truck-u juaj, dhe ju e keni ndryshuar që atëherë — ndaj ndryshimet tuaja ruhen. Hidhini një sy më poshtë.",
+    "done": "Duket mirë"
+  },
+  "upload": {
+    "title": "Importoni menunë tuaj",
+    "body": "Ngarkoni një foto të tabelës së menusë, një pamje ekrani, një PDF, ose ngjitni menunë si tekst. AI-ja jonë e lexon dhe ndërton menunë tuaj digjitale — ju e rishikoni gjithçka para se të ruhet.",
+    "confirmCancel": "Të anulohet ky importim? Rishikimi juaj i kësaj menuje do të humbasë.",
+    "process": "Përpuno menunë",
+    "later": "Do ta bëj më vonë"
+  },
+  "processing": {
+    "title": "Po analizohet menuja juaj",
+    "body": "AI-ja po lexon dhe po i ndan artikujt tuaj në kategori…"
+  },
+  "review": {
+    "title": "Rishikoni menunë e importuar",
+    "editLaterSetup": "Emrat, çmimet, shtesat, alergjenët dhe informacioni dietik mund të ndryshohen të gjitha kur të doni më vonë.",
+    "editLater": "Emrat, çmimet, shtesat, alergjenët dhe informacioni dietik mund të ndryshohen të gjitha kur të doni te Cilësimet.",
+    "noPrice": "{count, plural, one {# artikull nuk kishte} other {# artikuj nuk kishin}} çmim që mund ta lexonim",
+    "renameCategoryAria": "Riemërto kategorinë {name}",
+    "renameAria": "Riemërto: {name}",
+    "renameTitle": "Riemërto kategorinë",
+    "deleteAria": "Fshi: {name}",
+    "deleteTitle": "Fshi kategorinë",
+    "lastCategory": "Menuja juaj ka nevojë për të paktën një kategori",
+    "countOf": "{kept} nga {total}",
+    "existing": "ekzistuese",
+    "deleteEmptyTitle": "Të fshihet “{name}”?",
+    "deleteEmptyBody": "Nuk ka artikuj, ndaj nuk humbet asgjë.",
+    "delete": "Fshi",
+    "moveTitle": "Ku të shkojnë {count, plural, one {# artikull} other {# artikuj}}?",
+    "moveBody": "Që të fshihet “{name}”, pjatat e saj duhet të zhvendosen diku — artikujt pa kategori nuk importohen.",
+    "moveAria": "Zhvendos artikujt nga {name} te",
+    "chooseCategory": "Zgjidhni një kategori…",
+    "moveDelete": "Zhvendos dhe fshi",
+    "itemName": "Emri i artikullit",
+    "free": "falas?",
+    "freeOn": "Falas ✕",
+    "nameFirst": "Emërtoni artikullin e ri para se të shtoni një tjetër",
+    "addItem": "+ Shto artikull",
+    "categoryName": "Emri i kategorisë",
+    "newCategoryAria": "Emri i kategorisë së re",
+    "addCategory": "+ Shto kategori",
+    "ready": "{count, plural, one {# artikull gati} other {# artikuj gati}} për t’u shtuar. Hiqni shenjën nga ata që nuk i doni.",
+    "noPriceBody": "Vendosni një çmim për secilin ose shënojeni falas — përndryshe do të publikohej me {zero}. Nuk mund të vazhdoni derisa t’i rregulloni.",
+    "incomplete": "Shkruani një emër për ta shtuar këtë artikull — rreshtat bosh nuk importohen."
+  },
+  "extras": {
+    "introSetup": "Disa pjata mund të konfigurohen si <b>një artikull i personalizueshëm</b> ose të mbahen si <b>pjata më vete</b>. Zgjidhni si të shfaqet secila. Mund ta ndryshoni më vonë.",
+    "intro": "Disa pjata mund të konfigurohen si <b>një artikull i personalizueshëm</b> ose të mbahen si <b>pjata më vete</b>. Zgjidhni si të shfaqet secila. Mund ta ndryshoni më vonë te Cilësimet.",
+    "none": "Nuk ka pjata për t’u grupuar — çdo artikull është pjatë më vete.",
+    "axisChoice": "· zgjedhje: {axis}",
+    "grouped": "Të grupuara · një artikull, zgjedh klienti",
+    "separate": "Artikuj të veçantë në menu"
+  },
+  "allergens": {
+    "title": "Alergjenët",
+    "detected": "Gjetëm alergjenë në menunë tuaj. Zgjidhni më poshtë si t’i shfaqni.",
+    "howShow": "Si doni t’ua shfaqni alergjenët klientëve?",
+    "skip": "Kapërce konfigurimin e alergjenëve për tani"
+  },
+  "kitchen": {
+    "title": "Konfigurimi i kuzhinës",
+    "intro": "Ndihmojini klientët të dinë sa duhet të presin — këto mund t’i ndryshoni gjithmonë më vonë.",
+    "howWorks": "Si funksionon kapaciteti i kuzhinës",
+    "allExist": "Të gjitha kategoritë ekzistojnë tashmë — nuk ka kohë për të caktuar.",
+    "totalHelp": "Caktoni një kapacitet total për të kufizuar sa artikuj merr përsipër kuzhina në çdo dritare. Lëreni ∞ për pa kufi.",
+    "saveAdd": "Ruaj dhe shto në menu"
+  },
+  "schedule": {
+    "title": "Shto orarin tim",
+    "intro": "Nëse orari juaj ndodhet në faqen tuaj të internetit, mund ta mbajmë të përditësuar automatikisht — ose shtojini vetë datat.",
+    "websiteTitle": "Orari im është në faqen time të internetit",
+    "urlPlaceholder": "https://foodtruckuijuaj.al/evente",
+    "checking": "Po kontrollohet…",
+    "verify": "Verifiko",
+    "checkingSite": "Po kontrollohet faqja juaj e internetit…",
+    "takesTime": "Kjo mund të zgjasë deri në 2 minuta — ju lutemi mbajeni të hapur.",
+    "canRead": "✓ Mund ta lexojmë orarin tuaj",
+    "ownSite": "Faqja juaj e internetit — jo një faqe Facebook ose Instagram.",
+    "photoTitle": "Ngarko një foto të orarit tim",
+    "dragChoose": "Tërhiqeni dhe lëshojeni ose shtypni për ta zgjedhur",
+    "imageOrPdf": "Imazh ose PDF",
+    "or": "ose",
+    "pastePlaceholder": "Ngjitni këtu datat tuaja…",
+    "read": "Lexo orarin",
+    "found": "{count, plural, one {U gjet # datë} other {U gjetën # data}} — do të shtohen në orarin tuaj.",
+    "dateTbc": "Data e pakonfirmuar",
+    "save": "Ruaj {count, plural, one {# datë} other {# data}}",
+    "manualDesc": "Shtojini më vonë te skeda Orari — tani nuk keni asgjë për të bërë.",
+    "manualBody": "Asnjë problem. Mund t’i shtoni dhe menaxhoni datat tuaja kurdo nga skeda Orari në llogarinë tuaj.",
+    "blockedDomain": "Ju lutemi përdorni adresën e faqes suaj të internetit — faqet e Facebook dhe Instagram nuk mund të lexohen automatikisht.",
+    "saveFailed": "E lexuam orarin tuaj, por nuk arritëm ta ruajmë tani — provoni sërish.",
+    "websiteDesc": "Do ta kontrollojmë rregullisht dhe do t’jua dërgojmë datat e reja për miratim.",
+    "keepChecking": "Do ta kontrollojmë vazhdimisht këtë faqe dhe do t’jua dërgojmë çdo datë të re për miratim.",
+    "photoDesc": "Bëni një foto ose ngjitni datat — ne i lexojmë që t’i kontrolloni ju.",
+    "noneFound": "Nuk gjetëm asnjë datë aty — provoni një foto më të qartë, ose shtoni vetë një datë.",
+    "manualTitle": "Do t’i shtoj vetë datat",
+    "trialNotStarted": "Shtimi i eventeve nuk e nis provën tuaj falas — më vonë zgjidhni ju se cili event e nis atë."
+  },
+  "done": {
+    "summary": "{items, plural, one {# artikull} other {# artikuj}} në {categories, plural, one {# kategori} other {# kategori}}.",
+    "imported": "Menuja u importua!",
+    "added": "Artikujt tuaj u shtuan në menu.",
+    "duplicates": "{count, plural, one {U anashkalua # dublikatë} other {U anashkaluan # dublikata}}",
+    "showMe": "Më udhëzo",
+    "remind": "Më kujto më vonë",
+    "allSet": "Gjithçka gati!",
+    "explore": "Do të eksploroj vetë"
+  },
+  "discard": {
+    "setupTitle": "Ta përfundoni konfigurimin më vonë?",
+    "setupBody": "Llogaria dhe food truck-u juaj janë ruajtur — nuk humbet asgjë. Mund ta shtoni menunë kurdo: hyni dhe shtypni <b>Importo menunë</b> në ekranin e menusë për të vazhduar pikërisht nga këtu.",
+    "keepGoing": "Vazhdo",
+    "finishLater": "Përfundoje më vonë",
+    "title": "Të hidhet poshtë ky importim?",
+    "keepEditing": "Vazhdo ndryshimet",
+    "discard": "Hidh poshtë",
+    "body": "Ndryshimet tuaja nuk do të ruhen — artikujt e importuar, kohët e përgatitjes dhe kapaciteti i kuzhinës nuk do të shtohen.",
+    "carriedBody": "Menuja juaj nga demoja është ruajtur te food truck-u juaj ashtu siç është. Mund ta ndryshoni kurdo në ekranin e menusë."
+  },
+  "allergenCardText": {
+    "contains": "Përmban: {list}",
+    "mayContain": "Mund të përmbajë: {list}"
+  }
+}

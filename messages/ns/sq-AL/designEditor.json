@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Titulli i javës",
+    "weekHeadingSample": "Java nga …",
+    "daysSample": "{first} – {last}",
+    "date": "Data",
+    "place": "Vendndodhja",
+    "venue": "Emri i vendit",
+    "area": "Qyteti",
+    "time": "Ora",
+    "rows": "Rreshtat",
+    "rowsSample": "{px}px hapësirë · {first} – {last}",
+    "ownText": "Teksti juaj",
+    "noteTokenSample": "Shënimi që shkruani kur krijoni postimin",
+    "nothingYet": "Ende asgjë",
+    "thisBox": "kjo kuti"
+  },
+  "sample": {
+    "venue": "Pazari i Ri",
+    "area": "Tiranë"
+  },
+  "bar": {
+    "previewWith": "Parapamje me",
+    "undo": "Zhbëj",
+    "undoTitle": "Zhbëj (⌘Z)",
+    "redo": "Ribëj",
+    "redoTitle": "Ribëj (⇧⌘Z)",
+    "cancel": "Anulo",
+    "saving": "Po ruhet…",
+    "save": "Ruaj dizajnin"
+  },
+  "grid": {
+    "eachRow": "Çdo rresht",
+    "placeOff": "Emri i vendit është në foton tuaj — HatchGrab nuk do ta shtojë."
+  },
+  "background": {
+    "uploading": "Po ngarkohet…",
+    "replace": "Zëvendëso foton",
+    "shape": {
+      "square": "Katror (1:1)",
+      "portrait45": "Vertikal (4:5)",
+      "portrait916": "Vertikal (9:16)",
+      "landscape169": "Horizontal (16:9)",
+      "portrait": "Vertikal",
+      "landscape": "Horizontal"
+    }
+  },
+  "scope": {
+    "title": "Pozicionet e tekstit",
+    "standard": "Të njëjtat pozicione si Standard",
+    "own": "Pozicione të veta për: {place}",
+    "locked": "Këto pozicione vijnë nga dizajni juaj Standard. Zgjidhni “Pozicione të veta për: {place}” për t’i lëvizur vetëm këtu."
+  },
+  "stage": {
+    "hint": "Tërhiqni një kuti për ta lëvizur · tërhiqni një cep për t’i ndryshuar madhësinë",
+    "zoomOut": "Zvogëlo",
+    "zoomIn": "Zmadho"
+  },
+  "rows": {
+    "spacing": "Hapësira",
+    "daysRun": "Ditët: {first} – {last}. Tri kutitë e rreshtit 1 kopjohen më poshtë me këtë largësi.",
+    "whichEvents": "Cilat evente",
+    "showCancelled": "Shfaq eventet e anuluara",
+    "showCancelledHint": "Një event i anuluar shfaq vendin e tij të hequr me vijë dhe fjalën ANULUAR. Kur është çaktivizuar, dita shfaqet si ditë pa punë."
+  },
+  "days": {
+    "reorder": "Rendit",
+    "move": "lëviz"
+  },
+  "picture": {
+    "picture": "Foto",
+    "fill": "Mbush kutinë",
+    "fit": "Përshtat brenda",
+    "corners": "Qoshet",
+    "square": "Katrore",
+    "rounded": "Të rrumbullakëta",
+    "ifMissing": "Nëse një vendndodhje nuk ka imazh",
+    "noPicture": {
+      "omit": "Lëre jashtë",
+      "blank": "Lër një hapësirë bosh",
+      "logo": "Shfaq logon tuaj"
+    },
+    "border": "Korniza",
+    "drawBorder": "Vizato një kornizë",
+    "drawBorderHint": "Një vijë rreth fotos, me ngjyrën tuaj.",
+    "borderWidth": "Trashësia e kornizës",
+    "cornerRadius": "Rrumbullakimi i qosheve",
+    "locationPictures": "Imazhet e vendndodhjeve",
+    "addLocationPictures": "+ Shto imazhe vendndodhjesh",
+    "allHaveImage": "{total, plural, =0 {Ende nuk keni asnjë vendndodhje.} one {Vendndodhja juaj ka imazh.} other {Të gjitha # vendndodhjet tuaja kanë imazh.}}",
+    "someWithout": "{without} nga {total, plural, one {# vendndodhja juaj} other {# vendndodhjet tuaja}} {without, plural, one {nuk ka} other {nuk kanë}} ende imazh"
+  },
+  "settings": {
+    "font": "Fonti",
+    "colour": "Ngjyra",
+    "textColour": "Ngjyra e tekstit",
+    "ownStyleNote": "{count, plural, one {{names} ka stilin e vet, ndaj nuk ndryshohet.} other {{names} kanë stilin e vet, ndaj nuk ndryshohen.}}",
+    "matchAgain": "Bëje sërish njësoj",
+    "matchName": "Njësoj si: {name}",
+    "lastToggle": "{kind, select, weekly {Mbani aktiv të paktën Vendndodhjen ose Orën. Një event i anuluar shfaq vendin e tij të hequr me vijë dhe fjalën ANULUAR, ndaj nëse të dyja janë joaktive nuk do të kishte asgjë që të tregonte se është anuluar.} other {Mbani aktiv të paktën Emrin e vendit ose Orën. Një event i anuluar shfaq vendin e tij të hequr me vijë dhe fjalën ANULUAR, ndaj nëse të dyja janë joaktive nuk do të kishte asgjë që të tregonte se është anuluar.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — ky font ka kursiv të vërtetë"
+  },
+  "align": {
+    "left": "Majtas",
+    "centre": "Në qendër",
+    "right": "Djathtas"
+  },
+  "effects": {
+    "outlineColour": "Ngjyra e konturit",
+    "bandColour": "Ngjyra e shiritit",
+    "bandDaysOff": "Shiriti në ditët pa punë",
+    "bandCancelled": "Shiriti kur eventi anulohet",
+    "bandDaysOffHint": "Përdoret në vend të shiritit më sipër në një ditë pa punë.",
+    "bandCancelledHint": "Përdoret në vend të shiritit më sipër kur eventi anulohet."
+  },
+  "more": {
+    "dayOwnLine": "Dita në rresht më vete",
+    "dayOwnLineHint": "Dita e javës mbi datën. Vetëm për kutinë e datës.",
+    "noEventDay": "Në një ditë pa event",
+    "wordsBeforePlaceholder": "p.sh. Na gjeni",
+    "neverHyphenate": "Një fjalë e gjatë pa hapësirë zvogëlohet gjithmonë — nuk e ndajmë kurrë me vizë emrin e një vendi."
+  },
+  "bits": {
+    "less": "Më pak",
+    "more": "Më shumë",
+    "chooseColourFor": "{label} — zgjidhni çfarëdo ngjyre",
+    "chooseColour": "Zgjidhni çfarëdo ngjyre"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "heading": "Pagesat",
+  "loading": "Po kontrollohet llogaria juaj Stripe…",
+  "state": {
+    "not_connected": {
+      "title": "Pa konfiguruar",
+      "body": "Zgjat rreth 10 minuta. Do t’ju duhen të dhënat bankare dhe një dokument identifikimi.",
+      "chip": "Pa konfiguruar"
+    },
+    "requirements": {
+      "title": "Stripe ka nevojë për të dhënat tuaja",
+      "body": "Pagesat me kartë nuk do të funksionojnë derisa Stripe të ketë të dhënat e biznesit dhe ato bankare.",
+      "chip": "Kërkohet veprim"
+    },
+    "pending": {
+      "title": "U lidh — Stripe po kontrollon të dhënat tuaja",
+      "body": "Nuk keni asgjë për të bërë. Stripe po shqyrton atë që dërguat dhe kjo faqe përditësohet kur të mbarojë.",
+      "chip": "Në kontroll"
+    },
+    "ready": {
+      "title": "E lidhur",
+      "body": "Llogaria juaj Stripe është e lidhur dhe mund të marrë pagesa.",
+      "chip": "Gati"
+    },
+    "restricted": {
+      "title": "Pagesat me kartë janë pezulluar",
+      "body": "Stripe i ka pezulluar pagesat me kartë në llogarinë tuaj derisa të zgjidhet një çështje.",
+      "chip": "Pezulluar"
+    },
+    "unsupported": {
+      "title": "Pagesat me kartë nuk disponohen në këtë llogari",
+      "body": "Stripe nuk mund t’i aktivizojë pagesat me kartë këtu. Na kontaktoni dhe do ta zgjidhim bashkë.",
+      "chip": "Nuk disponohet"
+    }
+  },
+  "keyMismatch": {
+    "title": "Çelësat Stripe nuk përputhen",
+    "body": "Serveri i kësaj faqeje po përdor çelësin Stripe për mjedisin <b>{server, select, live {real} other {e provës}}</b>, ndërsa shfletuesi është ndërtuar me çelësin për mjedisin <b>{browser, select, live {real} other {e provës}}</b>. Pagesat me kartë do të dështonin pikërisht kur një klient përpiqet të paguajë, ndaj konfigurimi i Stripe është bllokuar derisa të përputhen.",
+    "fix": "Të dy çelësat duhet të jenë për të njëjtin mjedis dhe faqja duhet të rindërtohet më pas — çelësi publik futet gjatë ndërtimit, ndërsa çelësi sekret lexohet në çdo kërkesë."
+  },
+  "permission": {
+    "title": "Vetëm pronari i food truck-ut mund të konfigurojë pagesat",
+    "body": "Stripe lidhet nga personi në llogarinë bankare të të cilit shkojnë paratë, ndaj duhet konfiguruar nga llogaria e tij, pasi të ketë hyrë. Nuk ka asnjë problem me këtë food truck ose me HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Pagesat me kartë nuk janë konfiguruar ende",
+    "fetchTitle": "Nuk arritëm të kontrollojmë llogarinë Stripe të këtij food truck-u",
+    "keyMissing": "{name} nuk është vendosur — komponentët e integruar nuk mund të ngarkohen."
+  },
+  "errors": {
+    "requestFailed": "Kërkesa dështoi ({status})",
+    "unreachable": "Nuk u lidhëm dot me Stripe"
+  },
+  "online": {
+    "heading": "Pagesat online",
+    "body": "Klientët paguajnë me kartë kur porositin. Paratë shkojnë drejtpërdrejt në llogarinë tuaj Stripe — ne nuk i mbajmë kurrë.",
+    "feeLine": "Stripe tarifon {fee} për pagesë për kartat standarde ({region}). Kartat e tjera mund të kushtojnë më shumë. Tarifa e vetë HatchGrab për porositë online varet nga paketa juaj — shihni skedën Faturimi.",
+    "testMode": "Modalitet prove. Ende nuk mund të merren pagesa reale."
+  },
+  "trialNote": "Ky konfigurim nuk e nis abonimin tuaj dhe nuk ju tarifon asgjë sot. Kështu ju paguajnë klientët — paketa juaj është më vete.",
+  "admin": {
+    "title": "Si administrator i platformës",
+    "body": "Ky food truck nuk ka konfiguruar pagesat online. Vetëm pronari mund ta nisë, nga llogaria e vet — këtu nuk ka asgjë për të shtypur."
+  },
+  "setUp": {
+    "button": "Konfiguro pagesat online",
+    "busy": "Po konfigurohet…"
+  },
+  "toast": {
+    "alreadySetUp": "Është konfiguruar tashmë — po vazhdojmë",
+    "addDetails": "Tani shtoni të dhënat tuaja për Stripe",
+    "createFailed": "Llogaria nuk u krijua dot"
+  },
+  "onboarding": {
+    "restricted": "Nga këtu vazhdon Stripe — do të hyni në Stripe dhe do të përditësoni të dhënat që i duhen.",
+    "firstRun": "Nga këtu vazhdon Stripe — do të hyni në Stripe, pastaj do të jepni të dhënat e biznesit dhe ato bankare."
+  },
+  "details": {
+    "title": "Të dhënat tuaja në Stripe",
+    "body": "Ndryshoni llogarinë bankare ku ju paguhen paratë, ose përditësoni të dhënat dhe dokumentet e biznesit.",
+    "button": "Shiko ose ndrysho"
+  },
+  "walkUp": {
+    "heading": "Pagesat në vend",
+    "body": "Si merrni pagesën te food truck-u. HatchGrab nuk merr asnjë tarifë platforme për porositë në vend, cilëndo mënyrë të zgjidhni.",
+    "ownTerminal": "Terminali juaj POS",
+    "current": "Në përdorim",
+    "ownTerminalHelp": "Zettle, Square ose çfarëdo që përdorni tashmë. Nuk ka asgjë për të konfiguruar — vlejnë vetëm tarifat e ofruesit tuaj.",
+    "hatchgrab": "Përmes HatchGrab",
+    "comingSoon": "Së shpejti",
+    "hatchgrabHelp": "Përdor të njëjtën lidhje Stripe si pagesat tuaja online — një terminal pagese me kartë (POS), ose pagesë pa kontakt direkt nga telefoni ose tableti juaj.",
+    "hatchgrabFees": "{fee} për pagesë ({region}), plus {surcharge} për pagesat pa kontakt të marra në telefon ose tablet. Kartat e tjera mund të kushtojnë më shumë."
+  }
+}

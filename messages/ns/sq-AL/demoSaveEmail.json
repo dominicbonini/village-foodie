@@ -1,0 +1,9 @@
+{
+  "subject": "Demoja juaj në HatchGrab — ja lidhja për t’u rikthyer",
+  "heading": "Demoja juaj u ruajt",
+  "intro": "Ja lidhja për t’u rikthyer te demoja me menunë tuaj. Nuk nevojitet hyrje — thjesht shtypeni.",
+  "button": "Hap demon time",
+  "freshDay": "Sa herë që ktheheni, do të përgatisim një ditë të re pune, që të keni diçka për të provuar.",
+  "deletion": "Kjo është një demo, ndaj nuk e mbajmë përgjithmonë — do ta fshijmë atë dhe menunë më\n                <b>{date}</b> ({days, plural, one {# ditë} other {# ditë}}). Nëse regjistroheni para\n                kësaj date, menuja vjen me ju.",
+  "notSent": "U ruajt, por nuk arritëm ta dërgonim email-in tani."
+}

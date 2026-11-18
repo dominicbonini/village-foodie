@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {E detyrueshme} other {Opsionale}}{limit, select, one { · Zgjidhni një} upTo { · Zgjidhni deri në {max}} other {}}",
+  "operator": "{required, select, yes {E detyrueshme} other {Opsionale}}{limit, select, one { · Klienti zgjedh një} upTo { · Klienti mund të zgjedhë deri në {max}} other {}}"
+}

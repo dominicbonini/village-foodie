@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Shfaq alergjenët te çdo pjatë",
+    "recommended": "Rekomandohet",
+    "perDishBody": "Rishikoni çdo pjatë dhe konfirmoni alergjenët e saj. Klientët shohin etiketat për çdo pjatë, si dhe një kartë përmbledhëse alergjenësh të krijuar prej tyre.",
+    "cardTitle": "Shfaq një kartë alergjenësh",
+    "cardBody": "Ngarkoni ose ngjisni një kartë të vetme alergjenësh (PDF, imazh ose tekst), që shfaqet ashtu siç është. Etiketat për çdo pjatë mbeten të fshehura."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "download": "Shkarko foton",
+  "copied": "U kopjua ✓",
+  "copyCaption": "Kopjo përshkrimin",
+  "share": "Ndaj",
+  "copiedStatus": "{kind, select, postText {Teksti i postimit u kopjua.} other {Përshkrimi u kopjua.}}",
+  "copyFailed": "Nuk u kopjua dot — përzgjidhni tekstin dhe kopjojeni vetë.",
+  "sharedStatus": "{kind, select, postText {Teksti i postimit u kopjua — ngjiteni te postimi juaj.} other {Përshkrimi u kopjua — ngjiteni te postimi juaj.}}",
+  "shareRefused": "{kind, select, postText {Ndarja u refuzua, ndaj fotoja u shkarkua. Teksti i postimit u kopjua.} other {Ndarja u refuzua, ndaj fotoja u shkarkua. Përshkrimi u kopjua.}}"
+}

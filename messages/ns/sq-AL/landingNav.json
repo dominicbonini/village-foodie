@@ -1,0 +1,21 @@
+{
+  "homeLabel": "Faqja kryesore e HatchGrab",
+  "cta": "Ngarko menunë time →",
+  "ctaShort": "Ngarko menunë",
+  "features": "Funksionet",
+  "pricing": "Çmimet",
+  "logIn": "Hyr",
+  "country": {
+    "button": "Shteti: {name}. Ndrysho shtetin",
+    "menu": "Shteti",
+    "title": "Zgjidhni shtetin tuaj",
+    "subline": "Çmimet, gjuha dhe cilësimet përshtaten sipas tij.",
+    "regions": {
+      "europe": "Evropa",
+      "americas": "Amerikat",
+      "asiaPacific": "Azia dhe Paqësori",
+      "middleEast": "Lindja e Mesme",
+      "africa": "Afrika"
+    }
+  }
+}

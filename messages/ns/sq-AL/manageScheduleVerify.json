@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Verifikimi përkohësisht nuk është i disponueshëm. Ju lutemi provoni sërish pas pak.",
+  "malformed": "Kjo nuk duket si adresë interneti. Provoni diçka si foodtruckuijuaj.al/evente",
+  "blocked": "Nuk arritëm të hyjmë në këtë faqe — mund të bllokojë kontrollet automatike. Provoni faqen ku listohet orari juaj, ose shtoni eventet me dorë.",
+  "unreachable": "Nuk arritëm ta hapim këtë faqe interneti. Mund të jetë jashtë funksionit ose adresa mund të jetë e gabuar.",
+  "no_content": "E hapëm këtë faqe, por nuk lexuam dot asgjë në të. Kontrolloni që të jetë e aksesueshme publikisht.",
+  "no_events": "Nuk gjetëm asnjë event të ardhshëm në këtë faqe. Sigurohuni që URL-ja të çojë drejtpërdrejt aty ku listohet orari juaj.",
+  "blockedDomain": "Ju lutemi përdorni URL-në e faqes suaj të internetit — faqet e Facebook dhe Instagram nuk mund të lexohen automatikisht."
+}

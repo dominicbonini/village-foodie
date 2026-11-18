@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Zgjidhni si t’i shfaqni informacionet për alergjenët",
+    "detail": "Derisa të zgjidhni, klientët nuk shohin asnjë nga pjatat tuaja — menuja mbrohet duke fshehur çdo pjatë me alergjenë të pakonfirmuar, dhe tani për tani kjo vlen për të gjitha.",
+    "where": "Menu → Alergjenët"
+  },
+  "allergensCardMissing": {
+    "title": "Shtoni kartën e alergjenëve",
+    "detail": "Keni zgjedhur të shfaqni një kartë alergjenësh, por nuk është ruajtur asnjë — kështu klientëve do t’u thuhej se ka informacion për alergjenët dhe pastaj nuk do të gjenin asgjë.",
+    "where": "Menu → Alergjenët"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Konfirmoni alergjenët për {count} pjatë} other {Konfirmoni alergjenët për {count} pjata}}",
+    "detail": "{n, plural, one {Pjata juaj është e fshehur për klientët derisa të konfirmoni alergjenët e saj.} other {{u, plural, one {{unverified} nga {total} pjatat tuaja është e fshehur për klientët derisa të konfirmoni alergjenët e saj.} other {{unverified} nga {total} pjatat tuaja janë të fshehura për klientët derisa të konfirmoni alergjenët e tyre.}}}} Një pjatë e shfaqur pa alergjenë të konfirmuar lexohet si “nuk përmban asnjë”, prandaj menuja e fsheh në vend që ta rrezikojë.",
+    "where": "Menu → Alergjenët"
+  },
+  "noVan": {
+    "title": "Shtoni një furgon",
+    "detail": "Eventet zhvillohen me një furgon — pa të, nuk ka përmes çfarë të merren porositë.",
+    "where": "Cilësimet → Furgonët tuaj"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Caktoni kapacitetin e kuzhinës",
+    "detail": "Nuk është caktuar kapacitet për: {vans}. Pa të, ora e marrjes që u premtojmë klientëve do të jetë shpesh e paarritshme për kuzhinën tuaj.",
+    "where": "Menu → Kapaciteti i kuzhinës",
+    "unnamedVan": "Furgon pa emër"
+  },
+  "noPrepBearingCategory": {
+    "title": "Na tregoni sa kohë kërkon ushqimi juaj",
+    "detail": "{categories, select, none {Ende nuk keni kategori në menu, ndaj nuk kemi si të llogarisim sa zgjat një porosi.} other {Asnjë nga kategoritë tuaja nuk ka kohë gatimi të caktuar, ndaj çdo porosi na duket e menjëhershme. Ora e marrjes që do t’u jepnim klientëve do të ishte e paarritshme për kuzhinën tuaj, dhe sa më shumë punë të keni, aq më larg do të ishte.}}",
+    "where": "Menu → Kategoritë → Konfigurimi i kuzhinës"
+  },
+  "emailUnverified": {
+    "title": "Konfirmoni adresën tuaj të email-it",
+    "detail": "Njoftimet e porosive dhe rikuperimin e llogarisë i dërgojmë në këtë adresë. Nëse është e gabuar, e kuptoni kur diçka ka shkuar tashmë keq.",
+    "where": "Kontrolloni kutinë postare për lidhjen tonë të konfirmimit"
+  },
+  "emailUnknown": {
+    "title": "Statusi i konfirmimit të email-it është i panjohur",
+    "detail": "Verifikimi i email-it ende nuk është lidhur, ndaj ky kusht nuk mund të vlerësohet. Me qëllim bllokon, në vend që të kalojë në heshtje.",
+    "where": "—"
+  }
+}

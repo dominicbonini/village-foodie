@@ -1,0 +1,86 @@
+{
+  "loading": "Po ngarkohet konsola e menaxhimit…",
+  "loadFailed": "Ngarkimi dështoi",
+  "requestFailed": "Dështoi",
+  "invalidToken": "Token i pavlefshëm ose i skaduar",
+  "loadFailedReason": "Kjo faqe nuk u ngarkua dot: {reason}",
+  "noCountrySettings": "Cilësimet e vendit për këtë food truck nuk u ngarkuan dot. Ju lutemi rifreskoni faqen.",
+  "noPlans": "Paketa e këtij food truck-u nuk u ngarkua dot. Ju lutemi rifreskoni faqen.",
+  "stale": "{hasTime, select, yes {Rifreskimi nuk u krye. Po shfaqet ajo që ishte ruajtur në orën {time}. Ndryshimet që bëni ruhen gjithsesi.} other {Rifreskimi nuk u krye. Po shfaqet ajo që ishte ruajtur. Ndryshimet që bëni ruhen gjithsesi.}}",
+  "verify": {
+    "ok": "Email-i u konfirmua — faleminderit.",
+    "expired": "Kjo lidhje konfirmimi ka skaduar. Na kontaktoni dhe do ta rregullojmë para publikimit.",
+    "invalid": "Kjo lidhje konfirmimi nuk funksionoi. Na kontaktoni dhe do ta rregullojmë para publikimit."
+  },
+  "profile": {
+    "updated": "Profili u përditësua",
+    "saveFailed": "Ruajtja dështoi",
+    "title": "Ndrysho profilin",
+    "name": "Emri",
+    "namePlaceholder": "Emri juaj",
+    "email": "Email",
+    "cancel": "Anulo",
+    "saving": "Po ruhet…",
+    "save": "Ruaj"
+  },
+  "header": {
+    "subtitle": "Konsola e menaxhimit",
+    "ordersDashboard": "← Paneli i porosive"
+  },
+  "tabs": {
+    "menu": "Menu",
+    "schedule": "Orari",
+    "paperwork": "Dokumentet",
+    "social": "Rrjetet sociale",
+    "reports": "Raportet",
+    "team": "Ekipi",
+    "settings": "Cilësimet",
+    "payments": "Pagesat",
+    "billing": "Faturimi",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Orari ({count})",
+    "stripeAttention": "Stripe kërkon vëmendjen tuaj",
+    "allergensNotSet": "alergjenët nuk janë caktuar"
+  },
+  "menuSections": {
+    "label": "Seksionet e menusë",
+    "items": "Artikujt",
+    "capacity": "Kapaciteti i kuzhinës",
+    "extras": "Shtesa dhe sugjerime",
+    "deals": "Menu kombo"
+  },
+  "socialSections": {
+    "label": "Seksionet e rrjeteve sociale",
+    "create": "Krijo një postim",
+    "designs": "Dizajnet",
+    "locations": "Cilësimet e vendndodhjeve"
+  },
+  "notices": {
+    "review": "Rishiko →",
+    "tour": "Doni një tur të shpejtë të panelit tuaj?",
+    "showMeAround": "Më udhëzo",
+    "dismiss": "Mbyll",
+    "approval": "{count, plural, one {Gjetëm <b>{count}</b> event për ju — rishikojeni dhe miratojeni para se të publikohet.} other {Gjetëm <b>{count}</b> evente për ju — rishikojini dhe miratojini para se të publikohen.}}",
+    "allergens": "<b>Alergjenët nuk janë caktuar</b> — klientët nuk mund të shohin informacionin për alergjenët derisa ta verifikoni. Rishikoni alergjenët e çdo pjate te skeda Menu.",
+    "domainLive": "<link>{domain}</link> funksionon tani. Hidhini një sy, pastaj na tregoni te Cilësimet se është në rregull.",
+    "stripe": "<b>Stripe ka nevojë për diçka nga ju</b> — pagesat me kartë mund të ndalen derisa të zgjidhet.",
+    "profileTitle": "Plotësoni profilin tuaj",
+    "missing": "Mungojnë: {fields}.",
+    "goToSettings": "Shko te Cilësimet →",
+    "field": {
+      "truckName": "emri i food truck-ut",
+      "cuisineType": "lloji i kuzhinës",
+      "contactEmail": "email-i i kontaktit",
+      "contactPhone": "telefoni i kontaktit"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Jeni në provë falas} other {Jeni në provë falas për {months} muaj}}",
+    "ends": "{hasDate, select, yes {Prova përfundon më <hl>{date}</hl>} other {Prova përfundon <hl>së shpejti</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Çdo funksion falas për # muaj} other {Çdo funksion falas për # muaj}}} other {Çdo funksion falas gjatë provës}}",
+    "body": "{hasDate, select, yes {Nuk do t’ju tarifohet asgjë gjatë provës, e cila zgjat deri më <b>{date}</b>. Faturimi fillon vetëm kur zgjidhni një paketë dhe vendosni të dhënat e pagesës. Deri atëherë nuk ka asgjë për të anuluar dhe asgjë për të paguar. Zgjidhni paketën para kësaj date — përndryshe do të kaloni te paketa {fallback} dhe disa funksione do të ndalojnë së punuari.} other {Nuk do t’ju tarifohet asgjë sa jeni në provë. Faturimi fillon vetëm kur zgjidhni një paketë dhe vendosni të dhënat e pagesës. Deri atëherë nuk ka asgjë për të anuluar dhe asgjë për të paguar. Zgjidhni paketën para se të përfundojë prova — përndryshe do të kaloni te paketa {fallback} dhe disa funksione do të ndalojnë së punuari.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Nuk do t’ju tarifohet asgjë gjatë provës, e cila zgjat deri më <b>{date}</b>. Kur të përfundojë prova, paketa {fallback} kushton {price} në muaj. Do t’ju kontaktojmë më parë për të konfiguruar pagesën.} other {Nuk do t’ju tarifohet asgjë sa jeni në provë. Kur të përfundojë prova, paketa {fallback} kushton {price} në muaj. Do t’ju kontaktojmë më parë për të konfiguruar pagesën.}}",
+    "fees": "*Për porositë online aplikohen tarifat standarde të përpunimit të kartave",
+    "upgrade": "Përmirëso paketën këtu →"
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Shtoni orarin tuaj në faqen tuaj të internetit",
+    "live": "<addr>{address}</addr> po shfaq orarin tuaj.",
+    "create": "Krijojmë një faqe te <addr>{address}</addr> që shfaq orarin tuaj.",
+    "exampleDomain": "foodtruckuijuaj.al",
+    "liveBadge": "Aktive",
+    "setUp": "Konfiguro",
+    "viewSetup": "Shiko konfigurimin",
+    "continue": "Vazhdo",
+    "justLive": "<b>{address}</b> funksionon. Hidhini një sy, pastaj na tregoni më poshtë se është në rregull."
+  },
+  "waiting": {
+    "title": "Po presim për {address}",
+    "bodySince": "E konfiguruat këtë më {date}. Adresat e reja të internetit zakonisht fillojnë të funksionojnë brenda pak minutash dhe herë pas here duan deri në 24 orë që të arrijnë te të gjithë — ndërkohë nuk keni nevojë të bëni asgjë. Nëse dikush tjetër po e shtonte rreshtin për ju, ia vlen të kontrolloni që e ka bërë.",
+    "body": "Adresat e reja të internetit zakonisht fillojnë të funksionojnë brenda pak minutash dhe herë pas here duan deri në 24 orë që të arrijnë te të gjithë — ndërkohë nuk keni nevojë të bëni asgjë. Nëse dikush tjetër po e shtonte rreshtin për ju, ia vlen të kontrolloni që e ka bërë."
+  },
+  "ready": {
+    "title": "{address} funksionon tani",
+    "body": "Hidhini një sy, pastaj na tregoni te cilësimet tuaja se është në rregull."
+  },
+  "confirm": {
+    "heading": "Hidhini një sy, pastaj na tregoni se është në rregull",
+    "open": "Hap <link>{address}</link>",
+    "checkTimes": "Kontrolloni që datat dhe oraret të jenë të sakta.",
+    "yes": "Po, duket në rregull",
+    "no": "Jo, ka një problem",
+    "problemLine": "Na tregoni çfarë shihni dhe do ta shqyrtojmë.",
+    "emailUs": "Na shkruani",
+    "mailSubject": "Problem me {address}",
+    "mailLiveSince": "Aktive që nga {date}",
+    "mailSeeing": "Çfarë po shoh:"
+  },
+  "confirmed": {
+    "heading": "Faleminderit — e shënuam.",
+    "body": "Nuk ka asgjë tjetër për të bërë."
+  },
+  "turnOff": {
+    "link": "Çaktivizoje",
+    "heading": "Të çaktivizohet adresa juaj e internetit?",
+    "stops": "Kjo do të ndalojë së funksionuari:",
+    "carriesOn": "Kjo vazhdon saktësisht siç është dhe është aty ku i dërgon njerëzit kodi juaj QR:",
+    "reAdd": "Nëse do ta konfiguroni sërish më vonë, lëreni rreshtin që shtuat te kompania e adresës suaj të internetit. Nëse jo, kërkojuni ta heqin.",
+    "cancel": "Mbaje aktive",
+    "confirm": "Çaktivizoje",
+    "working": "Po çaktivizohet…",
+    "failed": "Nuk arritëm ta çaktivizojmë tani. Nuk ka ndryshuar asgjë — adresa juaj funksionon ende. Provoni sërish së shpejti."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Nuk arritëm të ngarkojmë konfigurimin tuaj.",
+    "resumeFailedBody": "Nuk ka ndryshuar asgjë. Provoni sërish së shpejti.",
+    "close": "Mbyll",
+    "resuming": "Po vazhdojmë nga ku e latë…",
+    "genericError": "Ndodhi një gabim",
+    "saveFailed": "Nuk u ruajt dot"
+  },
+  "address": {
+    "intro": "Orari juaj merr adresën e vet të internetit.",
+    "question": "Cila është adresa juaj e internetit?",
+    "hint": "Ajo që njerëzit përdorin tashmë për t’ju gjetur.",
+    "aria": "Adresa juaj e internetit",
+    "willBe": "Adresa juaj do të jetë <addr>{address}</addr>",
+    "example": "Për shembull, <addr>{address}</addr>",
+    "noChange": "Faqja juaj e internetit nuk ndryshon — thjesht shtoni një lidhje drejt adresës së re.",
+    "notSetUp": "Nuk e kemi konfiguruar këtë.",
+    "restricted": "Kushdo që kujdeset për adresën tuaj të internetit duhet të na lejojë të konfigurojmë drynin — kyçin e vogël që klientët shohin pranë saj. Derisa të na shtojnë, ai nuk do të shfaqet, ndaj u ndalëm në vend që t’ju lëmë ta prisni. Kërkojuni të na shtojnë, pastaj provoni sërish.",
+    "blocked": "Adresa juaj e internetit aktualisht e bllokon plotësisht drynin. Kushdo që kujdeset për të duhet ta lejojë para se kjo të funksionojë. Kërkojuni ta ndryshojnë këtë, pastaj provoni sërish.",
+    "elsewhere": "Diçka përgjigjet tashmë në atë adresë. Dërgojani mesazhin në ekranin tjetër atij që kujdeset për të — do ta dijë çfarë të bëjë.",
+    "provider": "Adresën tuaj të internetit e menaxhon <b>{provider}</b>. Do t’ju tregojmë ku të shkoni.",
+    "provisionFailed": "Nuk arritëm ta konfigurojmë atë adresë.",
+    "willNotWork": "Ajo adresë nuk do të funksionojë.",
+    "couldNotBeSetUp": "Ajo adresë nuk u konfigurua dot.",
+    "couldNotSetUp": "Nuk u konfigurua dot",
+    "checking": "Po kontrollohet…",
+    "setting": "Po konfigurohet…",
+    "tryAgain": "Provo sërish",
+    "setUpAddress": "Konfiguro këtë adresë",
+    "notNow": "Jo tani"
+  },
+  "apex": {
+    "empty": "Shkruani adresën që dëshironi të përdorni.",
+    "not_a_domain": "Kjo nuk duket si adresë interneti.",
+    "unparseable": "Nuk arritëm ta lexojmë si adresë interneti. Kontrolloni drejtshkrimin dhe provoni sërish.",
+    "apex": "{host} është adresa e gjithë faqes suaj të internetit. Nëse e drejtoni te ne, faqja juaj zëvendësohet nga kjo faqe. Vendosni një fjalë përpara saj — për shembull evente.{host}.",
+    "too_deep": "Kjo adresë ka shumë pjesë. Diçka si evente.{domain} funksionon më mirë."
+  },
+  "record": {
+    "addAt": "Shtojeni këtë te {provider}",
+    "open": "Hap {provider}",
+    "guide": "Udhëzuesi i {provider} për këtë",
+    "addAtSave": "Shtojeni këtë te {provider} dhe ruajeni.",
+    "addSomewhere": "Shtojeni këtë aty ku menaxhohet adresa juaj e internetit dhe ruajeni.",
+    "hintChoose": "Zgjidheni këtë nga lista.",
+    "hintWord": "Vetëm këtë fjalë, jo të gjithë adresën.",
+    "hintExact": "Kopjojeni saktësisht.",
+    "timing": "Zakonisht fillon të funksionojë brenda një ore, edhe pse mund të zgjasë më shumë. Nuk keni nevojë ta mbani këtë faqe të hapur.",
+    "someoneElse": "Adresën tuaj të internetit e menaxhon dikush tjetër?",
+    "sentTo": "U dërgua te {email}",
+    "emailPlaceholder": "adresa e tyre e email-it",
+    "sending": "Po dërgohet…",
+    "send": "Dërgo këto të dhëna",
+    "sendFailed": "Nuk u dërgua dot"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Hapni adresën tuaj të internetit, pastaj “DNS” dhe “Records”.",
+      "add": "Zgjidhni “Add record”, pastaj zgjidhni “CNAME” te “Type”.",
+      "name": "Vendosni vlerën e parë më poshtë te “Name”.",
+      "value": "Vendosni vlerën e dytë më poshtë te “Target”.",
+      "proxy": "Vendosni “Proxy status” në “DNS only” — reja pranë tij duhet të jetë gri, jo portokalli.",
+      "save": "Lëreni “TTL” në “Auto” dhe zgjidhni “Save”.",
+      "caveat": "Nëse reja mbetet portokalli, dryni nuk do të shfaqet kurrë dhe asgjë nuk do t’ju tregojë pse."
+    },
+    "godaddy": {
+      "open": "Hapni “Domain Portfolio” dhe zgjidhni adresën tuaj të internetit.",
+      "dns": "Te “Domain Settings”, zgjidhni “DNS”.",
+      "add": "Zgjidhni “Add New Record”, pastaj zgjidhni “CNAME” nga menuja “Type”.",
+      "name": "Vendosni vlerën e parë më poshtë te “Name”.",
+      "value": "Vendosni vlerën e dytë më poshtë te “Value”.",
+      "save": "Lëreni “TTL” siç është dhe zgjidhni “Save”.",
+      "caveat": "Nëse keni shtuar më shumë se një njëherësh, butoni shkruan “Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Hyni në “123 Reg Control Panel”.",
+      "manage": "Pranë “Domains”, zgjidhni “Manage All”, pastaj zgjidhni adresën tuaj të internetit.",
+      "dns": "Zgjidhni “DNS”, pastaj “Add New Record”.",
+      "type": "Zgjidhni “CNAME” nga lista “Type”.",
+      "name": "Vendosni vlerën e parë më poshtë te “Name”.",
+      "value": "Vendosni vlerën e dytë më poshtë te “Value” dhe shtoni një pikë në fund të saj.",
+      "save": "Lëreni “TTL” në “Default” dhe klikoni “Save”.",
+      "caveat": "123 Reg kërkon një pikë në fund të vlerës së dytë, përndryshe nuk do të funksionojë."
+    },
+    "wix": {
+      "open": "Hapni “Domains”, pastaj klikoni ikonën “Domain Actions” pranë adresës suaj të internetit.",
+      "manage": "Zgjidhni “Manage DNS Records”.",
+      "add": "Te seksioni “CNAME (Aliases)”, klikoni “+ Add Record”, pastaj klikoni “Got it”.",
+      "name": "Vendosni vlerën e parë më poshtë te “Host Name”.",
+      "value": "Vendosni vlerën e dytë më poshtë te “Value”.",
+      "save": "Klikoni “Save”, pastaj klikoni “Save Changes” në dritaren që hapet.",
+      "caveat": "Nëse adresa juaj e internetit vetëm drejtohet te Wix dhe nuk mbahet atje, Wix nuk mund ta bëjë këtë ndryshim — duhet ta bëjë ai që e mban."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Një regjistër DNS për t’u shtuar — faqja e orarit: {truckName}",
+    "hello": "Përshëndetje,",
+    "introAt": "Po vendosim orarin e përditësuar të food truck-ut {truckName} në {address} dhe për këtë duhet shtuar një regjistër në domenin tonë te {provider}.",
+    "introHolder": "Po vendosim orarin e përditësuar të food truck-ut {truckName} në {address} dhe për këtë duhet shtuar një regjistër në domenin tonë nga ai që e mban domenin tonë.",
+    "stepsAt": "Te {provider}:",
+    "guide": "Udhëzuesi i tyre: {url}",
+    "wholeChange": "Ky është i gjithë ndryshimi — asgjë tjetër në faqen e internetit nuk preket dhe pjesa tjetër e domenit tonë vazhdon të funksionojë saktësisht si tani. Zakonisht fillon të funksionojë brenda një ore.",
+    "pointsAt": "Faqja te e cila drejton tregon ku do të punojmë herën tjetër dhe përditësohet vetë.",
+    "replyTo": "Përgjigjuni te {email} nëse keni pyetje.",
+    "thanks": "Faleminderit,"
+  },
+  "liveEmail": {
+    "subject": "{address} funksionon",
+    "goodNews": "Lajm i mirë — {address} funksionon.",
+    "body": "Orari juaj tani shfaqet në adresën tuaj. Hidhini një sy dhe kontrolloni që është në rregull: hapni {address}, sigurohuni që eventet janë tuajat dhe që datat duken të sakta.",
+    "confirm": "Pasi ta keni bërë, hapni cilësimet tuaja në HatchGrab dhe na tregoni se është në rregull. Nuk varet asgjë prej kësaj — thjesht na tregon se e ka parë një person."
+  }
+}

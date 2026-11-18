@@ -1,0 +1,83 @@
+{
+  "title": "Llojet e eventeve",
+  "newTypeButton": "+ Lloj i ri eventi",
+  "close": "Mbyll",
+  "loading": "Po ngarkohet…",
+  "missingTitle": "Llojet e eventeve nuk janë aktivizuar ende.",
+  "missingBody": "Përditësimi i bazës së të dhënave për këtë funksion nuk është zbatuar. Asgjë nuk është prishur — çdo event po përdor konfigurimin tuaj të zakonshëm.",
+  "column": "Kolona",
+  "vanGone": "Ai furgon nuk ekziston më.",
+  "typeGone": "Ai lloj nuk ekziston më.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Më shumë për: {name}",
+  "rename": "Riemërto",
+  "moveLeft": "Lëviz majtas",
+  "moveRight": "Lëviz djathtas",
+  "delete": "Fshi",
+  "sections": {
+    "vans": "FURGONËT",
+    "prices": "ÇMIMET",
+    "itemPrices": "ÇMIMET E ARTIKUJVE",
+    "service": "SHËRBIMI"
+  },
+  "labelFor": "{label} për {name}",
+  "intervalEvery": "Çdo {mins} min",
+  "noTypes": "Ende nuk keni lloje eventesh, ndaj çdo event përdor konfigurimin tuaj të zakonshëm.",
+  "renameTitle": "Riemërtoni këtë lloj",
+  "name": "Emri",
+  "cancel": "Anulo",
+  "save": "Ruaj",
+  "copyVanOne": "Kopjo cilësimet e Furgonit 1",
+  "thisType": "ky lloj",
+  "matchTitle": "Ta barazojmë “{name}” me llojin Standard?",
+  "matchKeeps": "Çdo gjë që keni ndryshuar në panelin e një eventi të vetëm mbetet siç është, dhe çmimet e këtij lloji nuk ndryshojnë.",
+  "matchWillUse": "Do të përdorë: {summary}",
+  "deleteTitle": "Të fshihet “{name}”?",
+  "deleteBody": "{n, plural, =0 {Asnjë event i ardhshëm nuk përdor “{name}”.} one {{count} event i ardhshëm përdor “{name}”. Do të kthehet te Standard.} other {{count} evente të ardhshme përdorin “{name}”. Do të kthehen te Standard.}} Çdo gjë që keni ndryshuar në një event të vetëm mbetet siç është.",
+  "keep": "Mbaje",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "i paracaktuar",
+    "vanSetup": "Konfigurimi i zakonshëm i këtij furgoni — përdoret në çdo event pa lloj.",
+    "standardSetup": "Konfigurimi juaj i zakonshëm — përdoret në çdo event pa lloj.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} event i ardhshëm} other {{upcomingCount} evente të ardhshme}} · {changed, plural, =0 {ende asgjë e ndryshuar} one {{changedCount} nga {total} i ndryshuar} other {{changedCount} nga {total} të ndryshuara}}",
+    "noMenuItems": "Ende nuk ka artikuj në menu — shtojini te Menu › Artikujt."
+  },
+  "newType": {
+    "title": "Lloj i ri eventi",
+    "namePlaceholder": "p.sh. Festë shkolle",
+    "help": "Shtypni një emër ose shkruani tuajin. Fillon si kopje e llojit Standard, dhe ndryshimet e mëvonshme te Standard nuk e ndryshojnë. Pastaj ndryshoni çfarë të doni.",
+    "create": "Krijo",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Bar",
+      "market": "Treg",
+      "privateHire": "Food truck për evente"
+    }
+  },
+  "select": {
+    "label": "Lloji i eventit",
+    "usual": "Zakonisht për këtë vend: {name}."
+  },
+  "summary": {
+    "normalSetup": "Konfigurimi juaj i zakonshëm",
+    "sameAsStandard": "Njësoj si Standard",
+    "buzzersOn": "pagerët aktivë",
+    "buzzersOff": "pagerët joaktivë",
+    "takeCashOn": "pranimi i keshit aktiv",
+    "takeCashOff": "pranimi i keshit joaktiv",
+    "markReadyOn": "hapi “shëno si gati” aktiv",
+    "markReadyOff": "hapi “shëno si gati” joaktiv",
+    "collectionEvery": "marrje çdo {mins} min",
+    "offlineOff": "mbrojtja offline joaktive",
+    "offlineKeepTaking": "offline: vazhdon marrja e porosive",
+    "offlinePause": "offline: porositë në pauzë"
+  },
+  "errors": {
+    "somethingWentWrong": "Ndodhi një gabim",
+    "couldNotLoad": "Nuk u ngarkua",
+    "couldNotSave": "Nuk u ruajt",
+    "noVans": "Ky food truck nuk ka furgonë për të ndryshuar."
+  }
+}

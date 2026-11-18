@@ -1,0 +1,28 @@
+{
+  "hi": "Përshëndetje, {name},",
+  "limit80": {
+    "subject": "Keni përdorur 80% të përgjigjeve në WhatsApp për këtë muaj",
+    "used": "Përgjigjet tuaja automatike në WhatsApp kanë përdorur <b>{used} nga {limit}</b> për këtë muaj.",
+    "nothingStopped": "Asgjë nuk është ndalur. Kur të arrini {limit}, përgjigjet automatike vendosen në pauzë derisa kuota juaj të rinovohet më <b>{reset}</b> — klientët mund t’ju shkruajnë gjithsesi dhe ju do të shihni gjithçka që dërgojnë.",
+    "raise": "Kufirin mujor mund ta rritni te Cilësimet kur të doni.",
+    "raiseLink": "Kufirin mujor mund ta rritni te Cilësimet kur të doni:",
+    "button": "Hap Cilësimet"
+  },
+  "limit100": {
+    "subject": "Përgjigjet automatike në WhatsApp janë në pauzë për këtë muaj",
+    "usedAll": "Keni përdorur të gjitha përgjigjet automatike në WhatsApp të këtij muaji ({limit}), prandaj ato janë vendosur në pauzë.",
+    "stillReach": "<b>Klientët mund t’ju shkruajnë si zakonisht dhe çdo mesazh ju arrin.</b> E vetmja gjë që është ndalur është dërgimi i përgjigjes automatike.",
+    "startAgain": "Ato do të rifillojnë më <b>{reset}</b>, ose menjëherë nëse rritni kufirin mujor te Cilësimet.",
+    "startAgainLink": "Ato do të rifillojnë më {reset}, ose menjëherë nëse rritni kufirin mujor te Cilësimet:",
+    "button": "Rrit kufirin tim"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp kërkon një mënyrë pagese para se të dërgojë mesazhe",
+    "stopped": "WhatsApp ka ndalur dërgimin e përgjigjeve tuaja automatike, sepse llogaria juaj WhatsApp Business nuk ka një mënyrë pagese që funksionon.",
+    "stillMessage": "<b>Klientët mund t’ju shkruajnë gjithsesi dhe ju do të shihni gjithçka që dërgojnë</b> — por përgjigjet nuk po u arrijnë atyre.",
+    "payDirect": "Për këto mesazhe paguani drejtpërdrejt te WhatsApp, prandaj problemi zgjidhet te WhatsApp Manager dhe jo te HatchGrab. Shtoni ose përditësoni një kartë atje dhe përgjigjet rifillojnë vetë.",
+    "payDirectLink": "Për këto mesazhe paguani drejtpërdrejt te WhatsApp, prandaj problemi zgjidhet te WhatsApp Manager dhe jo te HatchGrab. Shtoni ose përditësoni një kartë atje dhe përgjigjet rifillojnë vetë:",
+    "button": "Hap WhatsApp Manager",
+    "settings": "Cilësimet tuaja në HatchGrab: <link>{url}</link>"
+  }
+}

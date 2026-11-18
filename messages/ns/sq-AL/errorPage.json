@@ -1,0 +1,11 @@
+{
+  "notFoundTitle": "Faqja nuk u gjet",
+  "notFoundBody": "Nuk e gjetëm këtë faqe. Mund të jetë zhvendosur ose adresa mund të jetë shkruar gabim.",
+  "home": "Shko te faqja kryesore",
+  "errorTitle": "Ndodhi një gabim",
+  "errorBody": "Na vjen keq — kjo faqe nuk u ngarkua. Provoni sërish ose kthehuni te faqja kryesore.",
+  "retry": "Provo sërish",
+  "backToDashboard": "Kthehu te paneli",
+  "errorBodyDashboard": "Na vjen keq, kjo faqe nuk u ngarkua. Provoni sërish ose kthehuni te paneli juaj.",
+  "sectionFailed": "Ky seksion nuk u ngarkua."
+}

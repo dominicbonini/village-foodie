@@ -1,0 +1,31 @@
+{
+  "intro": "Te Menaxhimi konfiguroni food truck-un tuaj dhe shihni si po ecën. Te Paneli merrni porosi dhe drejtoni çdo event ndërsa zhvillohet.",
+  "ariaLabel": "Udhëzues i panelit",
+  "step": "{current} nga {total}",
+  "skip": "Kapërce",
+  "back": "← Kthehu",
+  "next": "Tjetër →",
+  "done": "U krye",
+  "stops": {
+    "menu": {
+      "title": "Menu",
+      "body": "Pjatat, çmimet dhe alergjenët tuaj. Çdo ndryshim që bëni këtu vlen menjëherë."
+    },
+    "schedule": {
+      "title": "Orari",
+      "body": "Ku dhe kur punoni. Shtoni një event këtu dhe klientët mund të porositin për të."
+    },
+    "build": {
+      "title": "Menu kombo, shtesa dhe sugjerime",
+      "body": "Menutë kombo, sugjerimet, personalizimet dhe kapaciteti i kuzhinës ndodhen te Menu — provojini lirisht."
+    },
+    "settings": {
+      "title": "Cilësimet",
+      "body": "Të dhënat e food truck-ut tuaj dhe mënyrat si paguajnë klientët."
+    },
+    "billing": {
+      "title": "Faturimi",
+      "body": "Këtu gjenden paketa juaj, faturimi dhe informacioni për funksionet."
+    }
+  }
+}

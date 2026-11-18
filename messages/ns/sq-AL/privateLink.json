@@ -1,0 +1,12 @@
+{
+  "guestLabel": "EVENT PRIVAT",
+  "truckFallback": "Food truck-u",
+  "noSlugTitle": "Ky food truck nuk është konfiguruar ende për porosi online.",
+  "orderingOffTitle": "Porositë online nuk janë aktivizuar",
+  "orderingOffBody": "Ky event nuk pranon porosi online. Ju lutemi porositni në vend, te food truck-u.",
+  "replacedTitle": "Kjo lidhje është zëvendësuar",
+  "replacedBody": "Kjo lidhje nuk funksionon më — {truck} e ka zëvendësuar. Kërkojini organizatorit lidhjen e re ose kodin e ri QR.",
+  "madePublicBody": "Kjo lidhje nuk funksionon më — {truck} e ka bërë këtë event publik. Mund të porositni nga faqja e tyre e zakonshme.",
+  "unknownTitle": "Kjo lidhje nuk funksionon",
+  "unknownBody": "Kjo lidhje nuk funksionon. Kontrollojeni me organizatorin ose skanoni sërish kodin QR."
+}

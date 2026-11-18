@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Ndodhi një gabim",
+    "previewFailed": "Parapamja nuk u krijua dot",
+    "loadFailed": "Nuk u ngarkua dot",
+    "tooBig": "Ky imazh është {size, number, ::.0 group-off} MB. Kufiri është 10 MB.",
+    "wrongType": "Ju lutemi zgjidhni një PNG ose JPG.",
+    "uploadIncomplete": "Ngarkimi nuk përfundoi",
+    "uploadFailed": "Ngarkimi dështoi",
+    "saveFailed": "Nuk u ruajt dot",
+    "buildFailed": "Postimi nuk u krijua dot",
+    "copyFailed": "Nuk u kopjua dot — përzgjidhni tekstin dhe kopjojeni vetë."
+  },
+  "loading": "Po ngarkohet…",
+  "missingTable": {
+    "title": "Postimi javor kërkon një përditësim të bazës së të dhënave",
+    "body": "Tabela e dizajnit nuk është krijuar ende. Pasi të aplikohet migrimi, ky ekran do të funksionojë."
+  },
+  "kind": {
+    "label": "Cili dizajn",
+    "event": "Një event",
+    "week": "Javor"
+  },
+  "setup": {
+    "title": "Konfiguroni postimin tuaj javor",
+    "intro": "Ngarkoni imazhin bazë të grafikës së orarit javor që përgatisni tashmë — të njëjtin dizajn, pa kutitë tuaja të tekstit. HatchGrab e plotëson javën nga orari juaj.",
+    "canvaTitle": "Si të eksportoni një imazh bazë nga Canva",
+    "canvaStep1": "Hapni dizajnin tuaj të zakonshëm të orarit javor.",
+    "canvaStep2": "Fshini kutitë e tekstit me datat, vendet dhe oraret — lini sfondin dhe titujt që doni të mbani.",
+    "canvaStep3": "Share › Download › PNG.",
+    "uploading": "Po ngarkohet…",
+    "upload": "Ngarko imazhin tuaj bazë",
+    "uploadHint": "PNG ose JPG, deri në 10 MB, të paktën {px}px në anën më të shkurtër.",
+    "phoneTip": "Më mirë në kompjuter ose iPad — kutitë janë të vogla për t’u tërhequr në telefon.",
+    "designName": "Dizajni i postimit javor",
+    "backDesigns": "‹ Dizajnet",
+    "back": "‹ Kthehu",
+    "pictureNote": "Fotoja juaj pa asnjë datë ose vend mbi të. Këto i shtojmë ne.",
+    "saved": "Dizajni u ruajt."
+  },
+  "week": {
+    "this": "Këtë javë",
+    "next": "Javën e ardhshme"
+  },
+  "post": {
+    "title": "Postimi juaj javor",
+    "editDesign": "Ndrysho dizajnin",
+    "weekOf": "Java nga {date}",
+    "imageAlt": "Postimi juaj javor",
+    "building": "Po krijohet postimi juaj…",
+    "updating": "Po përditësohet…",
+    "eventsTitle": "Eventet e kësaj jave",
+    "noEvents": "Asnjë event këtë javë.",
+    "eventDateCancelled": "{date} · anuluar",
+    "showCancelled": "Shfaq eventet e anuluara",
+    "showPrivate": "Shfaq eventet private",
+    "privateHint": "Shfaqen si “Event privat” me datën dhe oraret — kurrë me vendin.",
+    "noteTitle": "Shënim",
+    "notePlaceholder": "p.sh. Porositni paraprakisht për marrje",
+    "noteHint": "Shfaqet në përshkrim dhe në kutinë e shënimit, nëse keni vendosur një të tillë.",
+    "captionTitle": "Përshkrimi për faqen tuaj",
+    "perEventTitle": "Postim për çdo event",
+    "nothingToPost": "Asgjë për të postuar këtë javë.",
+    "textCopied": "Teksti u kopjua.",
+    "copyText": "Kopjo tekstin",
+    "image": "Imazhi",
+    "share": "Ndaj",
+    "noOrderLink": "Ende nuk ka lidhje për porosi — vendosni adresën e internetit të food truck-ut te Cilësimet."
+  }
+}

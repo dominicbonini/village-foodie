@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} interval kohor} other {{count} intervale kohore}} mbi kapacitet — rishikojini",
+  "batchOver": "{cat}: mbi serinë — {count} për {slot} ({per} për seri)",
+  "eventStartOver": "Mbi kapacitet në fillim të eventit — {n, plural, one {{count} artikull} other {{count} artikuj}} për {slot}",
+  "kitchenOver": "Kuzhina mbi kapacitet — {n, plural, one {{count} artikull po gatuhet} other {{count} artikuj po gatuhen}} për {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} artikull} other {{count} artikuj}}",
+  "placedAnyway": "Regjistruar gjithsesi: {list}",
+  "placedItem": "#{id} për {slot}",
+  "orphans": "{times} mbi kapacitet — nuk u gjet asnjë porosi së cilës t’i atribuohet",
+  "dismiss": "Mbyll",
+  "kitchenCapacity": "Kapaciteti i kuzhinës",
+  "overCapacity": "Mbi kapacitet",
+  "wakeUnsupported": "Kjo pajisje nuk mund ta mbajë ekranin të ndezur.",
+  "wakeInsecure": "Ekrani nuk mund të mbahet i ndezur nga kjo adresë.",
+  "wakeRetry": "Mbaje ekranin ndezur — shtypni për të provuar sërish",
+  "wakeAcquire": "Mbaje ekranin ndezur",
+  "degraded": {
+    "serverError": "Serveri nuk i ngarkoi dot porositë{hasStatus, select, yes { (gabim {status})} other {}}. Po shfaqen porositë nga ora {at}. Mund të mungojnë porosi të reja.",
+    "unreachable": "Serveri nuk mund të arrihet. Po shfaqen porositë nga ora {at}. Mund të mungojnë porosi të reja."
+  }
+}

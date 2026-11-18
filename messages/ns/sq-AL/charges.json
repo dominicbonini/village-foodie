@@ -1,0 +1,13 @@
+{
+  "subtotal": "Nëntotali",
+  "taxFallback": "Taksa",
+  "taxIncluded": "Përfshin {label}",
+  "serviceFeeCustomer": "Tarifa e shërbimit online",
+  "serviceFee": "Tarifa e shërbimit",
+  "cardFee": "Tarifa e kartës",
+  "tip": "Bakshishi",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Taksa, tarifa dhe bakshish} tax_tip {Taksa dhe bakshish} fees_tip {Tarifa dhe bakshish} fees {Tarifa} other {Taksa dhe tarifa}}"
+}

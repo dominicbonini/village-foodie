@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Po lexohet menuja juaj…",
+    "found": "U gjetën artikujt tuaj…",
+    "kitchen": "Po konfigurohet kuzhina juaj…",
+    "page": "Po ndërtohet faqja juaj e porosive…",
+    "almost": "Pothuajse gati…"
+  },
+  "templateSteps": {
+    "truck": "Po ndërtohet food truck-u shembull…",
+    "menu": "Po konfigurohet menuja…",
+    "kitchen": "Po konfigurohet kuzhina…",
+    "page": "Po ndërtohet faqja e porosive…",
+    "almost": "Pothuajse gati…"
+  },
+  "dialogLabel": "Ngarkoni menunë tuaj",
+  "heading": "✨ Ngarkoni menunë tuaj",
+  "failedHeading": "Nuk arritëm ta lexonim atë menu",
+  "close": "Mbyll",
+  "intro": "Një foto e tabelës së menusë, një pamje ekrani, një PDF, ose ngjiteni si tekst. AI-ja jonë e lexon dhe ju ndërton një faqe porosish që funksionon — me artikujt dhe çmimet tuaja — për më pak se 60 sekonda. Pa regjistrim, pa kartë.",
+  "failedIntro": "Ndonjëherë një foto është shumë e errët, e pjerrët ose e shkruar me dorë. Kjo është punë jona, jo diçka që keni bërë gabim ju. Disa mënyra për të vazhduar:",
+  "usually": "Zakonisht kjo zgjat më pak se 60 sekonda.",
+  "slow": "Po zgjat më shumë se zakonisht — me menutë e mëdha ndodh ndonjëherë.",
+  "keepWaiting": "Vazhdo pritjen",
+  "sampleWhileYouWait": "Ose shikoni përreth me një menu shembull ndërsa prisni",
+  "standIn": "Kjo <b>nuk do të jetë menuja juaj</b> — është një menu zëvendësuese, që të shihni si funksionon.",
+  "seeSample": "Shih menunë shembull",
+  "tryAgain": "Provo sërish",
+  "tryPhotoAgain": "Provo sërish këtë foto",
+  "tryDifferent": "Provo një foto tjetër",
+  "uploadAnother": "← Ngarko një foto tjetër",
+  "orSample": "Ose shikoni përreth me një menu shembull",
+  "orBuild": "Ose do ta ndërtojmë ne për ju",
+  "buildSent": "✓ Faleminderit — e morëm. Do t’ju shkruajmë me email.",
+  "buildBody": "Lini email-in tuaj dhe një person i vërtetë do ta fusë menunë tuaj dhe do t’ju dërgojë lidhjen.",
+  "emailPlaceholder": "ju@foodtruckuijuaj.al",
+  "sending": "…",
+  "send": "Dërgo",
+  "noPhoto": "Nuk keni një foto të menusë në dorë?",
+  "noPhotoBody": "Shikoni përreth me një food truck shembull — mund ta ngarkoni menunë tuaj kurdo.",
+  "build": "Ndërto demon time →",
+  "nothingPublished": "Asgjë nuk është publikuar — vetëm ju mund ta shihni.",
+  "error": {
+    "somethingWrong": "Ndodhi një gabim. Ju lutemi provoni sërish.",
+    "serverUnreachable": "Nuk arritëm të lidheshim me serverin. Kontrolloni lidhjen dhe provoni sërish.",
+    "sendFailed": "Nuk u dërgua — provoni sërish."
+  },
+  "fields": {
+    "uploadLabel": "Ngarko skedarin e menusë",
+    "dropHere": "Lëshojeni menunë këtu",
+    "dragOrTap": "Tërhiqeni dhe lëshojeni ose shtypni për të zgjedhur",
+    "fileTypes": "Imazh ose PDF",
+    "or": "ose",
+    "pasteLabel": "Ngjit tekstin e menusë",
+    "pastePlaceholder": "Ngjitni menunë këtu — emrat e artikujve, përshkrimet, çmimet..."
+  },
+  "emailLabel": "Email-i juaj",
+  "emailNote": "Do t’ju dërgojmë me email një lidhje për demon tuaj dhe mund t’ju kontaktojmë për konfigurimin e HatchGrab. <link>Politika e privatësisë</link>",
+  "marketing": "Më dërgoni herë pas here këshilla dhe lajme nga HatchGrab",
+  "emailInvalid": "Ju lutemi shkruani një adresë email-i të vlefshme."
+}

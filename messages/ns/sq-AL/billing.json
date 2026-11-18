@@ -1,0 +1,120 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Paketa juaj",
+      "trialPill": "Provë falas",
+      "change": "Ndrysho paketën",
+      "trialLine": "Prova juaj falas përfundon më {date}. Pas kësaj, paketa {plan} kushton {price} në muaj.",
+      "trialLineFree": "Prova juaj falas përfundon më {date}. Pas kësaj, kaloni te paketa {plan}, pa tarifë mujore.",
+      "proLine": "Përfshin porosi online deri në {allowance} në muaj. Më pas, {fee}.",
+      "paygLine": "{fee} për porositë online. Pa tarifë mujore.",
+      "unlimitedLine": "{price} në muaj. Pa tarifë për porositë online.",
+      "pendingLine": "Paketa {plan} fillon më {date}."
+    },
+    "payment": {
+      "title": "Mënyra e pagesës",
+      "none": "Ende nuk keni shtuar kartë. Shtoni një për të vazhduar të merrni porosi online pas provës.",
+      "add": "Shto kartë",
+      "pix": "Përdor Pix Automático",
+      "card": "{brand} që mbaron me {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Në pritje të konfirmimit.",
+      "change": "Ndrysho",
+      "lastFailed": "Pagesa e fundit dështoi",
+      "update": "Përditëso kartën",
+      "error": "Nuk e hapëm dot faqen e pagesës. Ju lutemi provoni sërish.",
+      "noneAfterTrial": "Nuk keni shtuar kartë. Shtoni një për të riaktivizuar porositë online."
+    },
+    "whatYouPay": {
+      "title": "Çfarë paguani",
+      "plan": "Paketa juaj, e tarifuar më 1 të muajit për muajin në vijim",
+      "fee": "Porositë online mbi {allowance} në muaj, të tarifuara më 1 të muajit për muajin e kaluar",
+      "feePayg": "Porositë online, të tarifuara më 1 të muajit për muajin e kaluar",
+      "walkUps": "Porositë në vend",
+      "free": "Falas",
+      "trialEnd": "Kur prova juaj përfundon më {date}, tarifojmë {amount} për pjesën e mbetur të muajit {month}. Pastaj {price} më {nextFirst}."
+    },
+    "next": {
+      "title": "Pagesa e radhës · {date}",
+      "plan": "Paketa {plan} për muajin {month}",
+      "fee": "{fee} për porositë online të muajit {month} mbi {allowance} (deri tani)",
+      "feePayg": "{fee} për porositë online të muajit {month} (deri tani)",
+      "vans": "Furgonë shtesë për muajin {month}",
+      "surcharge": "Tarifa e faturuar më pas për muajin {month}",
+      "carried": "Mbartur nga më parë",
+      "total": "Totali deri tani",
+      "walkUps": "Porositë në vend janë gjithmonë falas."
+    },
+    "preorders": {
+      "title": "Si i paguajnë klientët porositë paraprake",
+      "online": "Online, kur porositin",
+      "onlineHint": "Paratë shkojnë drejtpërdrejt në llogarinë tuaj Stripe.",
+      "atTruckHint": "Klientët paguajnë kur marrin porosinë. Tarifa jonë shtohet në faturën tuaj mujore.",
+      "saved": "U ruajt.",
+      "error": "Nuk e ruajtëm dot. Ju lutemi provoni sërish."
+    },
+    "invoices": {
+      "title": "Faturat",
+      "date": "Data",
+      "for": "Për",
+      "amount": "Shuma",
+      "status": "Statusi",
+      "forMonthly": "Paketa për {planMonth}, tarifat për {usageMonth}",
+      "forMonthlyPlan": "Paketa për {planMonth}",
+      "forTrialEnd": "Pjesa e mbetur e muajit {month}",
+      "forUpgrade": "Kalim te paketa {plan}",
+      "lateFee": "Tarifë për vonesë pagese",
+      "paid": "Paguar",
+      "unpaid": "E papaguar",
+      "overdue": "Me vonesë",
+      "download": "Shkarko",
+      "payNow": "Paguaj tani",
+      "none": "Ende nuk ka fatura."
+    },
+    "failed": {
+      "title": "Pagesa juaj prej {amount} nuk kaloi.",
+      "body": "Do të provojmë sërish. Përditësoni kartën deri më {date} që porositë online të mbeten aktive.",
+      "button": "Përditëso kartën"
+    },
+    "paused": {
+      "title": "Porositë online janë në pauzë",
+      "body": "Shuma {amount} është me vonesë. Paguani tani dhe porositë online riaktivizohen menjëherë.",
+      "warning": "Paguani deri më {date}, përndryshe llogaria juaj mund të pezullohet.",
+      "pay": "Paguaj {amount}",
+      "otherCard": "Përdor një kartë tjetër"
+    },
+    "loading": "Po ngarkohet faturimi…",
+    "loadError": "Nuk e ngarkuam dot faturimin tuaj. Ju lutemi provoni sërish."
+  },
+  "changePlan": {
+    "title": "Ndrysho paketën",
+    "current": "Jeni në paketën {plan}.",
+    "free": "Falas",
+    "perMonth": "{price} në muaj",
+    "paygLine": "{fee} për porositë online.",
+    "proLine": "Përfshihen porosi online deri në {allowance}. Më pas, {fee}.",
+    "unlimitedLine": "Pa tarifë për porositë online.",
+    "yourPlan": "Paketa juaj",
+    "startsNow": "Fillon tani.",
+    "chargeToday": "Sot do të tarifojmë {amount} për pjesën e mbetur të muajit {month}. Pastaj {price} më {nextFirst}.",
+    "startsLater": "Fillon më {nextFirst}. Deri atëherë mbeteni në paketën {plan}.",
+    "cancel": "Anulo",
+    "switchTo": "Kalo te paketa {plan}",
+    "error": "Nuk e ndryshuam dot paketën tuaj. Ju lutemi provoni sërish.",
+    "trialLine": "Jeni në provë falas. Zgjidhni paketën për kur të përfundojë prova më {date}.",
+    "startsAtTrialEnd": "Fillon kur përfundon prova juaj.",
+    "choose": "Zgjidh paketën {plan}"
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Prova juaj falas përfundon më {date}.</b> Shtoni një kartë që porositë online të mbeten aktive.",
+    "trialEndsTomorrow": "<b>Prova juaj falas përfundon nesër.</b> Shtoni një kartë, përndryshe porositë online vihen në pauzë.",
+    "allSet": "<b>Gjithçka është gati.</b> Paketa {plan} fillon më {date}.",
+    "paymentFailed": "<b>Pagesa juaj nuk kaloi.</b> Përditësoni {method, select, payment_method {mënyrën e pagesës} other {kartën}} deri më {date} që porositë online të mbeten aktive.",
+    "paused": "<b>Porositë online janë në pauzë.</b> Paguani {amount} deri më {date}, përndryshe llogaria juaj mund të pezullohet.",
+    "addCard": "Shto kartë →",
+    "updateCard": "Përditëso {method, select, payment_method {mënyrën e pagesës} other {kartën}} →",
+    "payNow": "Paguaj tani →",
+    "dismiss": "Mbyll",
+    "trialEnded": "<b>Prova juaj falas ka përfunduar.</b> Shtoni një kartë për të riaktivizuar porositë online."
+  }
+}

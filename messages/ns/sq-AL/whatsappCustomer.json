@@ -1,0 +1,15 @@
+{
+  "greeting": "Përshëndetje 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Menunë e plotë dhe informacionin për alergjenët i gjeni këtu: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Menunë tonë të plotë e gjeni këtu: {url} — {truck} {emoji}",
+  "otherCategory": "Të tjera",
+  "categoryFrom": "{category} nga {price}",
+  "listTwo": "{first} dhe {second}",
+  "listMany": "{init} dhe {last}",
+  "menuSummary": "{opener}Kemi {summary}. Shikoni menunë e plotë dhe porositni paraprakisht këtu: {url} — {truck} {emoji}",
+  "allergenCaveat": "Ju lutemi kontrolloni menunë e plotë për informacionin mbi alergjenët — kjo është një përgjigje automatike.",
+  "specificFallback": "{opener}Shikoni orarin tonë më të fundit këtu: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Faleminderit për të gjitha mesazhet! Këtu mund të përgjigjem vetëm disa herë në ditë.\n\nPër të porositur: {link}",
+  "capContact": "Për të na kontaktuar drejtpërdrejt: {number}"
+}

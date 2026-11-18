@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Ku e ka bazën food truck-u juaj?",
+  "stepIntro": "Kjo përcakton monedhën, çmimet, zonën kohore dhe formatin e telefonit. Shteti nuk mund të ndryshohet më vonë, sepse është i lidhur me pagesat tuaja me kartë.",
+  "settingsHeading": "Ku punoni",
+  "countryLabel": "Shteti",
+  "countryGuessed": "E hamendësuam nga vendndodhja juaj. Ndryshojeni nëse është gabim.",
+  "countryLocked": "Shteti juaj nuk mund të ndryshohet",
+  "townLabel": "Qyteti",
+  "townQuestion": "Qyteti ku keni bazën",
+  "timezoneLabel": "Zona kohore",
+  "continueButton": "Vazhdo",
+  "saveFailed": "Cilësimet nuk u ruajtën dot — ju lutemi provoni sërish."
+}

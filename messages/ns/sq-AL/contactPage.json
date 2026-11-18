@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Mbështetja",
+    "description": "Merrni ndihmë për HatchGrab. Na dërgoni një mesazh dhe do t’ju përgjigjemi me email."
+  },
+  "logIn": "Hyr",
+  "eyebrow": "Mbështetja",
+  "title": "Si mund t’ju ndihmojmë?",
+  "lede": "Diçka nuk funksionon, apo keni një pyetje për llogarinë tuaj? Dy mënyra për të na kontaktuar — në të dyja rastet do t’ju përgjigjemi me email.",
+  "emailUs": "Na shkruani me email",
+  "formHeading": "Ose na dërgoni një mesazh",
+  "form": {
+    "topicLabel": "Për çfarë bëhet fjalë?",
+    "topics": {
+      "question": "Një pyetje për HatchGrab",
+      "account": "Ndihmë me llogarinë time",
+      "comparison": "Një korrigjim për një faqe krahasimi",
+      "other": "Diçka tjetër"
+    },
+    "nameLabel": "Emri juaj",
+    "namePlaceholder": "Emri",
+    "emailLabel": "Email",
+    "businessLabel": "Emri i food truck-ut ose i biznesit",
+    "optional": "(opsionale)",
+    "businessPlaceholder": "p.sh. Kuzhina e Fshatit",
+    "messageLabel": "Mesazhi juaj",
+    "send": "Dërgo mesazhin",
+    "sending": "Po dërgohet…",
+    "privacyLine": "Të dhënat tuaja do t’i përdorim vetëm për t’ju përgjigjur.",
+    "privacyLink": "Politika e privatësisë",
+    "thanksTitle": "Faleminderit — mesazhi juaj mbërriti.",
+    "thanksBody": "Do t’ju përgjigjemi me email në adresën që na dhatë.",
+    "errors": {
+      "nameRequired": "Ju lutemi shkruani emrin tuaj.",
+      "nameTooLong": "Emri duhet të ketë jo më shumë se {max, number} karaktere.",
+      "emailRequired": "Ju lutemi shkruani adresën tuaj të email-it.",
+      "emailInvalid": "Ju lutemi shkruani një adresë email-i të vlefshme.",
+      "emailTooLong": "Ju lutemi përdorni një adresë email-i me jo më shumë se {max, number} karaktere.",
+      "businessRequired": "Ju lutemi shkruani emrin e food truck-ut ose të biznesit, që të gjejmë llogarinë tuaj.",
+      "businessTooLong": "Emri i food truck-ut ose i biznesit duhet të ketë jo më shumë se {max, number} karaktere.",
+      "messageTooShort": "Ju lutemi shkruani të paktën {min, number} karaktere.",
+      "messageTooLong": "Mesazhi duhet të ketë jo më shumë se {max, number} karaktere.",
+      "topicInvalid": "Ju lutemi zgjidhni temën e mesazhit tuaj.",
+      "rateLimited": "Keni dërguar tashmë disa mesazhe — ju lutemi provoni sërish më vonë ose na shkruani në {email}.",
+      "failed": "Ndodhi një gabim — ju lutemi na shkruani në {email}."
+    }
+  },
+  "privacy": "Privatësia",
+  "terms": "Kushtet",
+  "about": "Rreth nesh",
+  "copyright": "© {year} HatchGrab"
+}

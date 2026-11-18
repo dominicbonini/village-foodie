@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "Politika e privatësisë — HatchGrab",
+    "privacyDescription": "Si i mbledh dhe i përdor HatchGrab Ltd të dhënat personale.",
+    "termsTitle": "Kushtet e shërbimit — HatchGrab",
+    "termsDescription": "Kushtet e përdorimit të HatchGrab.",
+    "countryTermsTitle": "Kushtet specifike sipas shtetit — HatchGrab",
+    "countryTermsDescription": "Rregullat shtesë që zbatohen për HatchGrab në disa shtete."
+  },
+  "homeLabel": "Faqja kryesore e HatchGrab",
+  "privacy": "Privatësia",
+  "terms": "Kushtet",
+  "countryTerms": "Kushtet sipas shtetit",
+  "contact": "Kontakti",
+  "lastUpdated": "Përditësuar së fundi më {date}",
+  "questions": "Keni pyetje? <link>Na shkruani</link> — jemi njerëz të vërtetë.",
+  "translationNote": "Ky është një përkthim. Nëse ndryshon nga <link>versioni në anglisht</link>, vlen versioni në anglisht."
+}

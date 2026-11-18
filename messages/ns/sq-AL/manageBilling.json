@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "për food truck / muaj",
+  "transactionFees": "Tarifat e transaksioneve",
+  "comingSoon": "Së shpejti",
+  "footnote2Masked": "Pagesat online mundësohen nga Stripe Connect. Tarifat e platformës dhe të përpunimit të kartave janë ende për t’u konfirmuar dhe do të bëhen të ditura në nisje.",
+  "card": {
+    "title": "Faturimi dhe pagesat",
+    "managed": "Faturimin e menaxhon HatchGrab",
+    "earlyAccess": "Gjatë aksesit të hershëm i konfigurojmë dhe i rregullojmë paketat manualisht.",
+    "planLine": "{trial, select, yes {{truck} · paketa {plan} (provë)} other {{truck} · paketa {plan}}}"
+  },
+  "currentPlan": "Paketa aktuale",
+  "plan": {
+    "included": "Përfshin porosi online deri në {amount} në muaj.",
+    "includedUnlimited": "Përfshihen porosi online pa kufi.",
+    "promo": "Çmim special.",
+    "promoUntil": "Çmim special deri më {date}.",
+    "ended": "Paketa juaj {plan} përfundoi më {date}. Tani jeni në paketën {now}.",
+    "trialMonths": "Provë falas për {months} muaj."
+  },
+  "trialEnds": "Prova përfundon më {date}",
+  "yourTrialEnds": "Prova juaj përfundon më {date}",
+  "notStarted": {
+    "heading": "Prova juaj falas nuk ka filluar ende"
+  },
+  "onTrial": "Keni çdo funksion. Zgjidhni një paketë para se të përfundojë prova.",
+  "onTrialPaidEnd": "Keni çdo funksion. Kur të përfundojë prova, paketa {plan} kushton {price} në muaj. Do t’ju kontaktojmë më parë për të konfiguruar pagesën.",
+  "onTrialNoCta": "Keni çdo funksion.",
+  "noCharge": "🔒 Nuk do t’ju tarifohet asgjë gjatë provës, e cila zgjat deri më {date}. Faturimi fillon vetëm kur zgjidhni një paketë dhe vendosni të dhënat e pagesës. Deri atëherë nuk ka asgjë për të anuluar dhe asgjë për të paguar.",
+  "noChargePaidEnd": "🔒 Nuk do t’ju tarifohet asgjë gjatë provës, e cila zgjat deri më {date}.",
+  "fees": "*Për porositë online aplikohen tarifat standarde të përpunimit të kartave",
+  "setUpPayment": "⏱ Zgjidhni një paketë para se të përfundojë prova",
+  "changeYourPlan": "Ndrysho paketën",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Kalo te paketa {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Po konfigurojmë faturimin automatik. Për të kaluar tani, na shkruani një mesazh dhe do t’jua konfigurojmë brenda 24 orësh.",
+    "mailSubject": "Kalim te paketa {plan} — {truck}",
+    "mailBody": "Përshëndetje, dëshiroj ta kaloj food truck-un {truck} te paketa {plan} ({price}).",
+    "email": "Na shkruani për kalimin",
+    "cancel": "Anulo"
+  }
+}

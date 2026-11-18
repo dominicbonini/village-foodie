@@ -1,0 +1,9 @@
+{
+  "country_missing": "Zgjidhni vendin ku ka bazën food truck-u juaj.",
+  "country_off": "Food truck-et në atë vend nuk mund të regjistrohen ende. Zgjidhni një vend tjetër.",
+  "zone_unknown": "Kjo zonë orare nuk është ndër ato që ofrojmë për atë vend. Zgjidhni një nga lista.",
+  "town_missing": "Na tregoni qytetin ose qytezën ku keni bazën.",
+  "town_too_long": "Emri i qytetit është shumë i gjatë — maksimumi 120 karaktere.",
+  "region_closed": "Food truck-et me bazë në {region} nuk mund të regjistrohen ende{reason, select, language {: HatchGrab nuk është ende i disponueshëm në gjuhën {language}} taxLines {: fillimisht po shtojmë rreshta të veçantë për GST dhe PST} other {}}. Nëse food truck-u juaj ka bazën diku tjetër, zgjidhni atë qytet.",
+  "region_blocked": "Na vjen keq, HatchGrab nuk është ende i disponueshëm në rajonin tuaj."
+}

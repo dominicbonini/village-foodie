@@ -1,0 +1,137 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab përdor kamerën që të fotografoni tabelën e menusë, pjatat tuaja dhe dokumente të tjera dhe t’i ngarkoni drejtpërdrejt në llogarinë tuaj. Imazhet përdoren vetëm për ngarkimet që zgjidhni të bëni.",
+    "bluetoothUsage": "HatchGrab përdor Bluetooth-in për t’u lidhur me printerin e faturave në kuzhinën tuaj, që tiketat e porosive të printohen automatikisht. Nuk përdoret për asgjë tjetër.",
+    "localNetworkUsage": "HatchGrab lidhet me printerin e kuzhinës në rrjetin tuaj lokal, që tiketat e porosive të printohen automatikisht. Nuk përdoret për asgjë tjetër.",
+    "faceIdUsage": "Zhbllokoni HatchGrab me Face ID.",
+    "offlineTitle": "HatchGrab nuk mund të arrihet",
+    "offlineDetail": "Kontrolloni lidhjen.",
+    "retry": "Provo sërish"
+  },
+  "gate": {
+    "reverted": "Porosia #{id} u kthye pas",
+    "saved": "Porosia #{id} u ruajt",
+    "undo": "↩ Zhbëj",
+    "paymentNotRecorded": "⚠ Porosia #{id} — PAGESA NUK ËSHTË REGJISTRUAR. {collect, select, yes {Porosia përfundoi} other {Porosia u ruajt}}, por pagesa jo.",
+    "recordPayment": "Regjistro pagesën",
+    "paid": "Porosia #{id} u pagua",
+    "undonePayment": "U zhbë — pagesa u hoq",
+    "undoneCollected": "U zhbë — porosia nuk është marrë",
+    "collected": "Porosia #{id} {paidToo, select, yes {u pagua dhe u mor} other {u mor}}",
+    "ready": "Porosia #{id} është gati",
+    "readyBuzzer": "Porosia #{id} është gati · <pill></pill>",
+    "status": "Porosia #{id} {action, select, confirm {u konfirmua} reject {u refuzua} ready {është gati} collected {u mor} undo_collected {u rikthye} cancel {u anulua} other {u përditësua}}"
+  },
+  "conflicts": {
+    "more": "+{count} të tjera",
+    "notOnScreenPlus": "+{count} jo në këtë ekran",
+    "notOnScreen": "{n, plural, one {{count} porosi nuk është në këtë ekran} other {{count} porosi nuk janë në këtë ekran}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ PAGESA NUK ËSHTË REGJISTRUAR",
+    "paymentBody": "{orders} — shënuar si e paguar vetëm në këtë pajisje. Pagesa nuk ka kaluar.",
+    "paymentCheck": "Kontrolloni porosinë dhe merrni sërish pagesën nëse ende nuk është paguar.",
+    "dismiss": "Mbyll",
+    "confirmChecked": "Konfirmoni që e keni kontrolluar: {orders}",
+    "confirmHides": "Kjo e fsheh paralajmërimin. Regjistrimi mbetet në këtë pajisje në çdo rast.",
+    "notYet": "Jo ende",
+    "iveChecked": "E kontrollova: {orders}",
+    "statusBody": "⚠ {orders} — ky ndryshim nuk kaloi. Kontrolloni porosinë.",
+    "offline": "📴 Nuk ka lidhje — {n, plural, one {{count} ndryshim u ruajt në këtë pajisje. Do të dërgohet kur të ktheheni online.} other {{count} ndryshime u ruajtën në këtë pajisje. Do të dërgohen kur të ktheheni online.}} Cilësimet janë të kyçura.",
+    "syncing": "U kthyet online — po dërgohen {n, plural, one {{count} ndryshim} other {{count} ndryshime}}…",
+    "synced": "Të gjitha ndryshimet u dërguan.",
+    "stillQueued": "{n, plural, one {{count} ndryshim i ruajtur në këtë pajisje. Ende po përpiqemi ta dërgojmë.} other {{count} ndryshime të ruajtura në këtë pajisje. Ende po përpiqemi t’i dërgojmë.}}",
+    "notApproved": "{n, plural, one {{count} porosi është në pritje} other {{count} porosi janë në pritje}}: ky event nuk është miratuar. Miratojeni dhe dërgimi do të vazhdojë."
+  },
+  "lock": {
+    "locked": "HatchGrab është i kyçur",
+    "verifying": "Po verifikohet…",
+    "unlock": "Zhblloko",
+    "cantUseBiometric": "Nuk mund të përdorni Face / Touch ID?",
+    "enterPin": "Vendosni PIN-in rezervë",
+    "wrongPin": "PIN i gabuar — provoni sërish.",
+    "checking": "Po kontrollohet…",
+    "tryBiometric": "Provo me Face / Touch ID",
+    "forgot": "Keni harruar PIN-in? Do t’ju duhet ta riinstaloni aplikacionin."
+  },
+  "notify": {
+    "title": "🔔 Njoftimet",
+    "intro": "Sinjalizime në këtë pajisje. Aktivizojini për të zgjedhur cilat sinjalizime merrni.",
+    "refused": "Që ta aktivizoni këtë, njoftimet duhet të lejohen te Cilësimet e pajisjes suaj.",
+    "newOrder": "Sinjalizime për porosi të reja",
+    "newOrderHelp": "Njoftohuni kur një porosi klienti duhet konfirmuar.",
+    "offline": "Sinjalizime offline / pauze",
+    "offlineHelp": "Njoftohuni kur kjo pajisje del offline (dhe porositë vendosen në pauzë). <green>Funksionon edhe offline.</green>"
+  },
+  "van": {
+    "label": "Furgoni",
+    "loadRetry": "Nuk u ngarkua · Provo sërish",
+    "select": "Zgjidh…"
+  },
+  "deviceSave": {
+    "network": "Serveri nuk mund të arrihej — kontrolloni lidhjen dhe provoni sërish.",
+    "server": "Nuk u ruajt dot tani. Ju lutemi provoni sërish."
+  },
+  "setup": {
+    "fetchErrorTitle": "Konfigurimi i pajisjes nuk u ngarkua",
+    "fetchErrorBody": "Nuk mundëm të arrinim serverin për të konfiguruar <b>këtë pajisje</b>. Kontrolloni lidhjen dhe provoni sërish — porositë dhe cilësimet tuaja nuk preken.",
+    "retry": "Provo sërish",
+    "later": "Më vonë",
+    "noVanTitle": "Asnjë furgon aktiv",
+    "noVanBody": "Ky food truck ende nuk ka asnjë furgon aktiv. Aktivizoni një te <b>Cilësimet → Furgonët tuaj</b> dhe kjo pajisje do të konfigurohet automatikisht — nuk ka hapa të tjerë këtu.",
+    "goToVans": "Shko te Cilësimet → Furgonët tuaj",
+    "title": "Konfiguro këtë pajisje",
+    "body": "Konfigurim i njëhershëm për <b>këtë pajisje</b>: ekrani me të cilin hapet dhe furgoni me të cilin punon. Vlen vetëm për këtë pajisje — pajisjet e tjera konfigurohen veçmas dhe këto mund t’i ndryshoni më vonë nga menuja e profilit → “Kjo pajisje”.",
+    "whichScreen": "Me cilin ekran duhet të hapet kjo pajisje?",
+    "dashboard": "Paneli",
+    "kds": "KDS",
+    "whichVan": "Me cilin furgon punon kjo pajisje?",
+    "selectVan": "Zgjidh një furgon…",
+    "saving": "Po ruhet…",
+    "tryAgain": "Provo sërish",
+    "continue": "Vazhdo"
+  },
+  "device": {
+    "title": "Kjo pajisje",
+    "viewing": "Po shikoni: <b>{truck}</b>",
+    "viewingVan": "Po shikoni: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Vetëm kjo pajisje — pajisjet e tjera konfigurohen veçmas. (ID: {id}…)",
+    "truck": "Food truck",
+    "van": "Furgoni",
+    "defaultScreen": "Ekrani i paracaktuar",
+    "orderNotifications": "Njoftimet e porosive",
+    "patchFailed": "{setting, select, van {Furgoni nuk u ruajt.} defaultScreen {Ekrani i paracaktuar nuk u ruajt.} other {Njoftimet e porosive nuk u ruajtën.}} {reason}",
+    "requireBiometric": "Kërko gjurmë gishti ose njohje fytyre për ta hapur",
+    "pinTitle": "Vendosni një PIN rezervë (4–6 shifra)",
+    "pinHelp": "Mënyra juaj për të hyrë nëse gjurma e gishtit ose njohja e fytyrës nuk funksionon — është alternativa e vetme, ndaj mos e harroni (një PIN i harruar do të thotë riinstalim i aplikacionit). Funksionon edhe offline.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Konfirmo PIN-in",
+    "pinTooShort": "Përdorni të paktën 4 shifra.",
+    "pinMismatch": "PIN-et nuk përputhen.",
+    "setPin": "Vendos PIN-in dhe aktivizo",
+    "cancel": "Anulo",
+    "noBiometric": "Në këtë pajisje nuk është konfiguruar gjurmë gishti ose njohje fytyre — shtoni një te cilësimet e pajisjes. PIN-i juaj rezervë funksionon ende.",
+    "footer": "Këto cilësime vlejnë vetëm për këtë pajisje — pajisjet e tjera konfigurohen veçmas."
+  },
+  "appLock": {
+    "unlockReason": "Zhblloko HatchGrab",
+    "usePasscode": "Përdor kodin e kalimit",
+    "cancel": "Anulo",
+    "confirmEnable": "Konfirmoni për të aktivizuar kyçjen e aplikacionit"
+  },
+  "channel": {
+    "ordersName": "Porosi të reja",
+    "ordersDescription": "Sinjalizime kur një porosi duhet konfirmuar."
+  },
+  "localNotify": {
+    "newOrderTitle": "Porosi e re",
+    "orderReceived": "Porosia {number} u regjistrua",
+    "newOrders": "{n, plural, one {Keni një porosi të re} other {Keni {count} porosi të reja}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Porositë në pauzë",
+    "pausedBody": "Jeni offline — porositë e klientëve janë në pauzë.",
+    "offlineTitle": "Jeni offline",
+    "offlineBody": "Kjo pajisje ka humbur lidhjen."
+  }
+}

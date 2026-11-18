@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Pa abonim mujor",
+    "subtitle": "Për tregtarë sezonalë dhe me kohë të pjesshme",
+    "description": "Pa tarifë mujore. Paguani vetëm 0,99% për porositë online."
+  },
+  "pro": {
+    "subtitle": "Për food truck-et që marrin rregullisht porosi paraprake",
+    "description": "Gjithçka, përfshirë përgjigjet automatike në WhatsApp dhe postimet për rrjetet sociale, me porosi online të përfshira çdo muaj."
+  },
+  "unlimited": {
+    "name": "Pa limit",
+    "subtitle": "Për food truck-et me shumë punë dhe festivalet",
+    "description": "Gjithçka, pa tarifa për porositë online, sado të ngarkuar të jeni."
+  },
+  "trial": {
+    "name": "Provë falas",
+    "description": "Çdo funksion, falas, për sa kohë zgjat prova juaj."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Mjedis prove për klientë të mundshëm — kurrë publik."
+  },
+  "tester": {
+    "name": "Testues",
+    "description": "Testues para nisjes — qasje e plotë."
+  }
+}

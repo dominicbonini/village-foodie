@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Verifikoni adresën tuaj të re të email-it në HatchGrab",
+    "heading": "Verifikoni adresën tuaj të email-it",
+    "button": "Verifiko adresën e email-it"
+  },
+  "changeEmail": {
+    "requested": "Keni kërkuar të ndryshoni adresën tuaj të email-it në HatchGrab me këtë adresë.",
+    "click": "Klikoni butonin më poshtë për ta verifikuar. Kjo lidhje skadon pas 24 orësh.",
+    "ignore": "Nëse nuk e keni kërkuar këtë ndryshim, mund ta injoroni pa problem këtë email.",
+    "stillActive": "Adresa juaj aktuale e email-it mbetet aktive."
+  },
+  "resendVerification": {
+    "requested": "Keni kërkuar të ndryshoni email-in tuaj në HatchGrab me këtë adresë.",
+    "click": "Klikoni më poshtë për ta verifikuar. Kjo lidhje skadon pas 24 orësh.",
+    "ignore": "Nëse nuk e keni kërkuar këtë, injorojeni këtë email.",
+    "stillActive": "Email-i juaj aktual mbetet aktiv."
+  },
+  "passwordReset": {
+    "subject": "Rivendosni fjalëkalimin tuaj në HatchGrab",
+    "heading": "Rivendosni fjalëkalimin",
+    "requested": "Morëm një kërkesë për rivendosjen e fjalëkalimit të llogarisë suaj në HatchGrab.",
+    "click": "Klikoni butonin më poshtë për të zgjedhur një fjalëkalim të ri. Kjo lidhje skadon pas 1 ore.",
+    "button": "Rivendos fjalëkalimin",
+    "ignore": "Nëse nuk e keni kërkuar këtë, mund ta injoroni pa problem këtë email.",
+    "unchanged": "Fjalëkalimi juaj nuk do të ndryshojë derisa të klikoni lidhjen më sipër."
+  },
+  "deletionScheduled": {
+    "subject": "Llogaria juaj në HatchGrab është planifikuar për fshirje",
+    "received": "Kemi marrë një kërkesë për fshirjen e kësaj llogarie në HatchGrab.",
+    "orderingStopped": "<b>Porositë online u ndalën menjëherë</b> për: {trucks}.",
+    "noTrucks": "(asnjë food truck)",
+    "readable": "Paneli juaj mbetet\n    i disponueshëm për lexim gjatë {days, plural, one {# ditës} other {# ditëve}} në vijim.",
+    "scheduled": "Llogaria është planifikuar të fshihet më <b>{date}</b>.",
+    "cannotCancel": "<b>Kjo nuk mund të anulohet nga brenda aplikacionit.</b> Nëse nuk ishit ju, ose keni\n    ndryshuar mendje, përgjigjuni këtij email-i sa më shpejt të jetë e mundur.",
+    "kept": "Kur llogaria fshihet, heqim të dhënat tuaja personale dhe të dhënat e klientëve tuaj. Ruajmë\n    regjistra kontabël anonimë, të cilët jemi të detyruar me ligj t’i mbajmë."
+  }
+}

@@ -1,0 +1,400 @@
+{
+  "path": {
+    "section": "krahasim",
+    "slug": "sistem-porosish-food-truck"
+  },
+  "meta": {
+    "title": "Sisteme porosish për food truck 2026: funksione dhe çmime",
+    "description": "Krahasim i sistemeve të porosive për food truck: porosi paraprake me orë marrjeje, kapacitet kuzhine, orar javor, tarifa dhe kontrata — verifikuar.",
+    "about": "Sisteme porosish online për food truck"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Krahasimi",
+    "label": "Navigimi i faqes"
+  },
+  "h1": "Krahasimi i sistemeve të porosive për food truck 2026",
+  "byline": "Kontrolluar së fundi: {date} · Krijuar nga HatchGrab. Jemi një nga ofruesit e krahasuar (shihni <link>Si e bëmë krahasimin</link>).",
+  "table": {
+    "title": "Sistemet e porosive të krahasuara",
+    "caption": "Funksionet dhe kostot e sistemeve të porosive online për food truck ({country}), më {date}",
+    "note": "“Po” vetëm kur ofruesi e deklaron publikisht.",
+    "feature": "Funksioni",
+    "yes": "Po",
+    "no": "Jo",
+    "unknown": "Nuk deklarohet",
+    "fromPlan": "Nga paketa {plan}",
+    "appNotInCountry": "Nuk ofrohet ({country})",
+    "appFlagOff": "Po – ende e fshehur; shfaqet sapo të jetë në dyqanet e aplikacioneve",
+    "range": "{from} deri në {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "asnjë",
+    "morePending": "Më shumë ofrues do të shfaqen këtu sapo t’i kemi verifikuar të dhënat e tyre në faqen e tyre të internetit.",
+    "priceHidden": "Me kërkesë",
+    "feeAfter": "{fee} mbi {included} në muaj",
+    "legend": "✓ Po · ◐ Pjesërisht · ✗ Jo · Nuk figuron: nuk është në faqet e tyre të funksioneve ose çmimeve · —: faqja e tyre nuk e thotë · Nuk aplikohet: ky lloj shërbimi nuk e ka këtë funksion · ⓘ: shënimi, citimi dhe burimi",
+    "swipe": "Rrëshqitni anash për të parë çdo produkt →"
+  },
+  "costs": {
+    "title": "Sa kushton një sistem porosish për food truck?",
+    "ourPlan": "{plan}: {price} në muaj, {fee}",
+    "feeOnly": "{fee} për çdo porosi online",
+    "feeIncluded": "porosi online deri në {included} në muaj të përfshira, pastaj {fee}",
+    "feeNone": "pa tarifë HatchGrab për porositë online",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "{price} në muaj",
+    "perMonthYearly": "{price} në muaj, me faturim vjetor",
+    "vatExcl": "pa TVSH",
+    "vatIncl": "me TVSH",
+    "setup": "{price} njëherësh për konfigurimin",
+    "truckFee": "{fee} për porosi",
+    "customerFee": "{fee} për porosi, e paguar nga klienti",
+    "source": "Burimi",
+    "checked": "kontrolluar më {date}",
+    "cardFee": "Pagesat online me kartë me HatchGrab kanë edhe tarifat e Stripe: {cardFee} për çdo pagesë me kartë ({country}).",
+    "vat": "HatchGrab Ltd është kompani e Mbretërisë së Bashkuar dhe nuk është e regjistruar për TVSH ({country}), ndaj tarifave tona nuk u shtohet TVSH. Nëse jeni të regjistruar për TVSH, na jepni numrin tuaj të TVSH-së; atëherë TVSH-në për tarifat tona e llogaritni vetë, sipas mekanizmit të autongarkesës.",
+    "bundledFee": "{fee} për pagesë online, tarifa e kartës e përfshirë"
+  },
+  "fit": {
+    "title": "Cili sistem i përshtatet kujt?",
+    "ours": "HatchGrab ju përshtatet nëse …",
+    "oursBody": "punoni në vende që ndryshojnë, doni porosi paraprake me orë marrjeje, nuk doni që kuzhina juaj të mbingarkohet dhe nuk doni kontratë.",
+    "oursNot": "HatchGrab nuk ju përshtatet nëse …",
+    "oursNotBody": "klientët tuaj duhet të paguajnë me PayPal ose Klarna, ose doni një arkë të certifikuar me TSE nga një furnizues i vetëm.",
+    "appClause": "Ose nëse ju duhet aplikacioni i kuzhinës në iPad ose Android ({country}): atje ende nuk është në dyqanet e aplikacioneve.",
+    "tills": "Sisteme arke dhe terminale POS",
+    "marketplaces": "Platformat e dorëzimit",
+    "rival": "{name} ju përshtatet nëse …",
+    "tillsBody": "Sistemet e arkës marrin pagesën te food truck-u dhe plotësojnë kërkesën për TSE. Një sistem porosish punon krahas arkës; nuk e zëvendëson.",
+    "tillsBodyNamed": "Sistemet e arkës marrin pagesën te food truck-u dhe plotësojnë kërkesën për TSE. {names} {count, plural, one {është} other {janë}} gjithashtu në tabelën më sipër. Një sistem porosish punon krahas arkës; nuk e zëvendëson.",
+    "marketplacesBody": "Platformat e dorëzimit sjellin klientë të rinj, por marrin komision për çdo porosi. Uber Eats deklaron 14% për marrjen dhe 30% për dorëzimin me korrierët e Uber në Gjermani. Wolt thotë në faqen e vet të internetit se merr komision, por nuk jep norma. Nuk arritëm të verifikonim normat e Lieferando. Ai komision vlen edhe për klientët e rregullt që porosisin paraprakisht te ju."
+  },
+  "groups": {
+    "food_truck": "Sistem porosish për food truck",
+    "nearest_local": "Sistem porosish",
+    "pos": "Sistem arke"
+  },
+  "faq": {
+    "title": "Pyetje të shpeshta",
+    "whatQ": "Çfarë është një sistem porosish për food truck?",
+    "whatA": "Një sistem porosish merr porosi online përpara se klientët të arrijnë te food truck-u: ata zgjedhin pjatat dhe orën e marrjes, paguajnë online ose në marrje, dhe porosia shfaqet në kuzhinën tuaj. Një sistem arke ose terminal POS merr pagesën te food truck-u. Të dyja plotësojnë njëra-tjetrën.",
+    "costQ": "Sa kushton HatchGrab ({country})?",
+    "costA": "{plans}. Pagesat online me kartë kanë edhe tarifat e Stripe: {cardFee} për çdo pagesë me kartë.",
+    "termQ": "A ka afat minimal?",
+    "termA": "Jo. Nuk ka afat minimal dhe as periudhë njoftimi. Mund ta anuloni në çdo kohë; tarifa faturohet çdo muaj paraprakisht dhe qasja ju mbetet deri në fund të muajit që keni paguar.",
+    "locationsQ": "A funksionon me vende që ndryshojnë?",
+    "locationsA": "Po. Konfiguroni orarin tuaj javor me vendet dhe oraret, dhe klientët porosisin për vendin dhe ditën kur jeni atje.",
+    "capacityQ": "Si e parandalon sistemi mbingarkimin e kuzhinës sime?",
+    "capacityA": "Klientët shohin vetëm oraret e marrjes që kuzhina juaj mund t’i përballojë realisht. Sistemi llogarit nga koha e përgatitjes së çdo pjate dhe sa copë përgatitni njëherësh.",
+    "tseQ": "A më duhet ende një arkë me TSE?",
+    "tseA": "HatchGrab nuk është sistem arke dhe nuk ka TSE. Si t’i regjistroni porositë online në arkën tuaj është pyetje për këshilltarin tuaj tatimor.",
+    "paymentsQ": "Cilat mënyra pagese mbështet HatchGrab?",
+    "paymentsA": "Klientët paguajnë online me kartë, Apple Pay ose Google Pay, ose paguajnë në marrje te food truck-u. PayPal dhe Klarna nuk mbështeten për momentin.",
+    "costTrial": "{months, plural, one {Muaji i parë është} other {# muajt e parë janë}} falas, me çdo funksion."
+  },
+  "method": {
+    "title": "Si e bëmë krahasimin",
+    "checked": "Kontrolluar së fundi më {date}.",
+    "prices": "Çmimet tregohen ashtu si i deklaron ofruesi, me TVSH.",
+    "meaning": "“Po” do të thotë se ofruesi e deklaron publikisht funksionin. “Nuk deklarohet” do të thotë se nuk gjetëm asgjë për të në faqen e tyre të internetit — jo se funksioni mungon.",
+    "vendor": "HatchGrab e mban këtë faqe dhe është një nga ofruesit e krahasuar.",
+    "review": "Çmimet dhe funksionet kontrollohen automatikisht kundrejt faqes së internetit të çdo produkti; çdo pohim lidhet me burimin e vet.",
+    "corrections": "Gjetët një gabim? Na tregoni përmes <link>formularit të kontaktit</link>.",
+    "reportError": "<link>Raporto një gabim</link>",
+    "machine": "Për asistentët AI dhe zhvilluesit: kjo tabelë <md>si Markdown</md> · <json>si JSON</json>"
+  },
+  "cta": {
+    "title": "Provojeni falas për {months, plural, one {# muaj} other {# muaj}}",
+    "noCard": "Nuk nevojitet kartë krediti",
+    "cancel": "Mund ta anuloni çdo muaj",
+    "button": "Provo falas"
+  },
+  "admin": {
+    "status": "Skicë · noindex · jo në sitemap, llms.txt ose hreflang · lidhja në fund të faqes vetëm për adminët",
+    "statusLive": "Aktive · publike dhe e indeksueshme",
+    "viewAdmin": "Pamja e adminit",
+    "viewPublic": "Çfarë sheh publiku",
+    "pricingCheck": "Hap “Pricing check”",
+    "checklist": "Para publikimit",
+    "goLive": "Faqja publikohet te Admin › Countries.",
+    "check": {
+      "apps": "Flamujt për iPad dhe Android aktivë ({country})",
+      "placeholders": "Nuk ka mbetur asnjë vendmbajtës “[ … ]” në tekst",
+      "vat": "Teksti për TVSH-në është i pranishëm"
+    },
+    "unverified": "i paverifikuar · i fshehur për publikun",
+    "autoVerified": "verifikuar automatikisht",
+    "unchecked": "ende i pakontrolluar për çdo konkurrent të shfaqur · i fshehur për publikun",
+    "label": "Admin",
+    "notShown": "Jo në faqe (shfaqen më së shumti katër): {names}.",
+    "reasonHidden": "{name} (i fshehur)",
+    "reasonBeyond": "{name} (përtej të katërve)",
+    "reasonNoWebsite": "{name} (pa faqe interneti)",
+    "liveAuto": "Aktive përmes publikimit automatik",
+    "adminsOnly": "Vetëm për adminët — {reason}",
+    "whyFewer": "Konkurrentë që kalojnë kontrollet automatike: {n} nga {total}; duhen 2",
+    "whyAutoOff": "publikimi automatik është joaktiv për këtë shtet",
+    "shown": "{n, plural, one {# konkurrent i shfaqur} other {# konkurrentë të shfaqur}}",
+    "details": "Detaje"
+  },
+  "footer": {
+    "heading": "Krahasimi",
+    "link": "Krahasimi i sistemeve të porosive"
+  },
+  "featureGroups": {
+    "ordering": "Porositë",
+    "payments": "Pagesat",
+    "kitchen": "Kuzhina",
+    "marketing": "Marketingu",
+    "apps_hardware": "Aplikacionet dhe pajisjet",
+    "price_contract": "Çmimi dhe kontrata"
+  },
+  "cell": {
+    "yes": "Po",
+    "no": "Jo",
+    "partial": "Pjesërisht",
+    "unknown": "Nuk deklarohet",
+    "not_mentioned": "Faqja e tyre nuk e përmend",
+    "withNote": "{word}, {note}",
+    "soon": "së shpejti",
+    "fromPlan": "nga paketa {plan}",
+    "perCardPayment": "{fee} për pagesë me kartë",
+    "trial": "{months, plural, one {# muaj} other {# muaj}} falas",
+    "setupFee": "{price} njëherësh",
+    "perMonth": "{price} në muaj",
+    "notInCountry": "nuk ofrohet ({country})",
+    "flagOff": "ende e fshehur; shfaqet sapo të jetë në dyqanet e aplikacioneve",
+    "notApplicable": "nuk aplikohet për një platformë tregu",
+    "not_listed": "Nuk figuron",
+    "details": "Detaje",
+    "doesntApply": "Nuk aplikohet",
+    "doesntSay": "Nuk e thotë",
+    "none": "Asnjë"
+  },
+  "explained": {
+    "title": "Çfarë nënkuptojnë funksionet"
+  },
+  "costBlock": {
+    "title": "Sa paguan një food truck çdo muaj",
+    "sizes": "Shitje online në muaj",
+    "sizeSales": "{sales} në muaj",
+    "sizeOrders": "rreth {orders} porosi",
+    "lead": "Për një food truck me shitje online prej {sales} në muaj (rreth {orders} porosi). Çdo shirit është kostoja totale mujore: tarifa e vetë sistemit të porosive plus tarifat e kartave për këto porosi.",
+    "legendSoftware": "Tarifa e programit",
+    "legendCard": "Tarifat e kartave",
+    "software": "Tarifa e programit {amount} në muaj",
+    "card": "Tarifat e kartave {amount} në muaj",
+    "total": "{amount} në muaj me tarifat e kartave",
+    "share": "{pct} e shitjeve",
+    "assumed": "(norma nuk publikohet, e supozuar)",
+    "customerFee": "Plus {amount} në muaj të paguara nga klientët ({fee} për porosi) — jo në shirit",
+    "summaryCheapest": "{us}: tarifa e vet është {ours} në muaj, kundrejt {theirs} në muaj për konkurrentin më të lirë të shfaqur. Tarifat e kartave ({card} në muaj) aplikohen për çdo pagesë me kartë me cilindo sistem, ndaj diferenca që ka rëndësi është tarifa e programit.",
+    "summaryNotCheapest": "{us}: tarifa e vet është {ours} në muaj, më shumë se {theirs} në muaj për konkurrentin më të lirë të shfaqur ({rival}). Tarifat e kartave ({card} në muaj) aplikohen për çdo pagesë me kartë me cilindo sistem.",
+    "summaryAlone": "{us}: tarifa e vet është {ours} në muaj. Tarifat e kartave ({card} në muaj) aplikohen për çdo pagesë me kartë me cilindo sistem.",
+    "footOrder": "Porosia mesatare {order}: një vakt tipik prej {meal} × {multiplier} pjata për porosi ({source}).",
+    "footCard": "Tarifat e kartave llogariten me {rate} për pagesë me kartë: {source}.",
+    "footCardSource": "norma e Stripe ({country})",
+    "footAssumed": "{names} nuk {count, plural, one {publikon} other {publikojnë}} normë për kartat, ndaj supozohet norma jonë.",
+    "footChecked": "Çmimet u kontrolluan më {date}.",
+    "footCalculator": "Llogaritni shifrat tuaja në kalkulator.",
+    "noRivals": "Ende nuk ka asnjë konkurrent të verifikuar ({country}), ndaj nuk ka asgjë për të krahasuar."
+  },
+  "features": {
+    "preorder": {
+      "label": "Porosi paraprake me orë marrjeje të zgjedhur",
+      "explain": "Klientët porosisin paraprakisht dhe zgjedhin orën kur e marrin porosinë."
+    },
+    "capacity": {
+      "label": "Oraret e marrjes të kufizuara nga kapaciteti i kuzhinës",
+      "explain": "Klientët shohin vetëm oraret e marrjes që kuzhina mund t’i përballojë realisht."
+    },
+    "asap": {
+      "label": "Porosi për sa më shpejt",
+      "explain": "Klientët mund të porosisin pa zgjedhur orë dhe ta marrin porosinë sapo të jetë gati."
+    },
+    "ahead": {
+      "label": "Porosi paraprake për një ditë ose event të mëvonshëm",
+      "explain": "Klientët mund të porosisin sot për një treg ose event në një ditë tjetër."
+    },
+    "schedule": {
+      "label": "Orar javor me vende që ndryshojnë",
+      "explain": "Java e food truck-ut me vende dhe orare; klientët porosisin për vendin dhe ditën kur ai është atje."
+    },
+    "walkup": {
+      "label": "Porositë në vend në të njëjtin ekran me porositë online",
+      "explain": "Porositë e marra në sportel shkojnë në të njëjtën listë me porositë online."
+    },
+    "stock": {
+      "label": "“Mbaroi” dhe kufij stoku për çdo event",
+      "explain": "Shënoni pjatat si të mbaruara dhe caktoni sa copë nga secila mund të shiten në një event."
+    },
+    "notify": {
+      "label": "Klientët njoftohen kur porosia është gati",
+      "explain": "Si mësojnë klientët se porosia e tyre është gati: SMS, WhatsApp, email, njoftim push ose faqe e statusit të porosisë në kohë reale.",
+      "ours": "email kur hapi “porosia gati” është aktiv, dhe faqe e statusit të porosisë; pa SMS, WhatsApp ose push"
+    },
+    "allergens": {
+      "label": "Alergjenët në menu",
+      "explain": "Çdo pjatë u tregon klientëve alergjenët e saj përpara se të porosisin."
+    },
+    "menuphoto": {
+      "label": "Menu e konfiguruar nga një foto",
+      "explain": "Një foto ose PDF e menusë plotëson pjatat, që ju t’i kontrolloni."
+    },
+    "options": {
+      "label": "Opsione dhe shtesa për pjatat",
+      "explain": "Madhësi, salca dhe shtesa, përfshirë zgjedhjet që klienti duhet të bëjë."
+    },
+    "deals": {
+      "label": "Menu kombo dhe paketa artikujsh",
+      "explain": "Disa artikuj të shitur së bashku me një çmim."
+    },
+    "private": {
+      "label": "Evente private dhe rezervime",
+      "explain": "Porosi për një event privat përmes lidhjes së vet, dhe kërkesa për të rezervuar food truck-un.",
+      "ours": "evente private me lidhjen e tyre të porosive; pa kërkesa rezervimi"
+    },
+    "qr": {
+      "label": "Porosi nga tavolina / me kod QR në vend",
+      "explain": "Klientët skanojnë një kod te tavolina dhe porosia mbërrin me numrin e tavolinës.",
+      "ours": "një kod QR hap faqen e porosive; pa numra tavolinash"
+    },
+    "cards": {
+      "label": "Pagesa online me kartë, përfshirë Apple Pay dhe Google Pay",
+      "explain": "Klientët paguajnë online me kartë, Apple Pay ose Google Pay kur porosisin."
+    },
+    "payattruck": {
+      "label": "Pagesë në marrje",
+      "explain": "Klientët porosisin online dhe paguajnë kur e marrin porosinë."
+    },
+    "localpay": {
+      "label": "Mënyra pagese vendase (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Mënyrat e pagesës online të vetë vendit, përveç kartave.",
+      "ours": "vetëm karta"
+    },
+    "paypal": {
+      "label": "PayPal ose Klarna",
+      "explain": "Klientët mund të paguajnë me PayPal ose Klarna."
+    },
+    "custfee": {
+      "label": "Mundësi që klienti të paguajë tarifën e porosisë",
+      "explain": "Biznesi mund t’ia kalojë klientit një tarifë shërbimi."
+    },
+    "tips": {
+      "label": "Bakshishet",
+      "explain": "Klientët mund të shtojnë bakshish kur paguajnë online."
+    },
+    "paymethods": {
+      "label": "Mënyrat e pagesës që ofrohen",
+      "explain": "Si mund të paguajnë klientët, sipas deklarimit të ofruesit.",
+      "ours": "kartë, Apple Pay, Google Pay; pagesë në marrje"
+    },
+    "kds": {
+      "label": "Ekran kuzhine (KDS)",
+      "explain": "Porositë shfaqen në një ekran në kuzhinë, sipas radhës së përgatitjes."
+    },
+    "tickets": {
+      "label": "Tiketa kuzhine të printuara",
+      "explain": "Çdo porosi printohet në një printer faturash në food truck.",
+      "ours": "në aplikacionin për iPad dhe Android; printeri nuk ofrohet"
+    },
+    "buzzers": {
+      "label": "Pagerë",
+      "explain": "Klientët marrin një pager që i njofton kur porosia e tyre është gati.",
+      "ours": "numri i pagerit regjistrohet me çdo porosi; pagerët nuk ofrohen"
+    },
+    "offline": {
+      "label": "Funksionon edhe kur bie interneti",
+      "explain": "Porositë dhe ndryshimet e bëra pa lidhje ruhen dhe dërgohen sapo lidhja të kthehet.",
+      "ours": "në aplikacionin për iPad dhe Android; jo në panelin në web"
+    },
+    "vans": {
+      "label": "Disa furgonë ose food truck-e",
+      "explain": "Një llogari menaxhon më shumë se një food truck.",
+      "ours": "furgonë shtesë me një tarifë mujore shtesë"
+    },
+    "staff": {
+      "label": "Hyrje për stafin",
+      "explain": "Stafi hyn me llogarinë dhe rolin e vet."
+    },
+    "reports": {
+      "label": "Raportet e shitjeve",
+      "explain": "Totale, artikujt më të shitur dhe shitjet sipas eventit ose datës, me eksport në fletë llogaritëse."
+    },
+    "domain": {
+      "label": "Adresë interneti e vetë biznesit",
+      "explain": "Faqja e porosive në domenin e vetë biznesit."
+    },
+    "whatsapp": {
+      "label": "Përgjigje automatike në WhatsApp",
+      "explain": "Mesazhet e klientëve në WhatsApp marrin përgjigje automatikisht."
+    },
+    "social": {
+      "label": "Postime për rrjetet sociale nga orari juaj",
+      "explain": "Postime të gatshme që tregojnë ku ndodhet food truck-u këtë javë."
+    },
+    "igmsg": {
+      "label": "Përgjigje në Instagram dhe Messenger",
+      "explain": "Mesazhet në Instagram dhe Facebook Messenger marrin përgjigje automatikisht."
+    },
+    "discovery": {
+      "label": "Në një hartë publike të food truck-eve",
+      "explain": "Klientët e gjejnë food truck-un në një hartë publike të food truck-eve pranë tyre.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Program besnikërie",
+      "explain": "Klientët mbledhin shpërblime kur kthehen sërish."
+    },
+    "ipad": {
+      "label": "Aplikacion për iPad",
+      "explain": "Aplikacioni i food truck-ut për marrjen dhe menaxhimin e porosive në iPad."
+    },
+    "android": {
+      "label": "Aplikacion për Android",
+      "explain": "I njëjti aplikacion në tablet ose telefon Android."
+    },
+    "hardware": {
+      "label": "Pajisje të ofruara (tablet, printer)",
+      "explain": "Ofruesi jep tabletin ose printerin.",
+      "ours": "përdorni pajisjet tuaja"
+    },
+    "terminal": {
+      "label": "Terminal pagese me kartë (POS) për sportelin, i ofruar",
+      "explain": "Ofruesi jep një terminal pagese me kartë (POS) për pagesat te food truck-u."
+    },
+    "fiscal": {
+      "label": "Arkë e certifikuar për rregullat tatimore (TSE, EET, kassaregister…)",
+      "explain": "Një arkë e certifikuar sipas rregullave të vendit për regjistrimin e shitjeve."
+    },
+    "delivery": {
+      "label": "Dorëzim",
+      "explain": "Porositë dorëzohen në adresën e klientit.",
+      "ours": "vetëm marrje"
+    },
+    "monthly": {
+      "label": "Çmimi mujor",
+      "explain": "Sa paguan biznesi çdo muaj për programin."
+    },
+    "perorder": {
+      "label": "Tarifa për porosi online",
+      "explain": "Sa tarifon ofruesi për çdo porosi online, mbi çmimin mujor."
+    },
+    "cardfee": {
+      "label": "Tarifa e kartës",
+      "explain": "Tarifa e ofruesit të pagesave për çdo pagesë me kartë."
+    },
+    "term": {
+      "label": "Afati minimal i kontratës",
+      "explain": "Sa kohë është i lidhur biznesi përpara se të mund ta anulojë."
+    },
+    "setup": {
+      "label": "Tarifa e konfigurimit",
+      "explain": "Një pagesë e njëhershme për të filluar."
+    },
+    "trial": {
+      "label": "Provë falas",
+      "explain": "Kohë për ta përdorur sistemin falas përpara pagesës."
+    }
+  }
+}

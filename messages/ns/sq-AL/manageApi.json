@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Furgon",
+  "eventsFeed": {
+    "today": "Sot · {date}",
+    "tomorrow": "Nesër · {date}"
+  },
+  "privacyNotSaved": "Eventi është aktiv, por privatësia e tij nuk u ruajt dot.",
+  "stockWarning": "Nuk ka artikuj të disponueshëm në “{category}”",
+  "uncategorised": "Pa kategori"
+}

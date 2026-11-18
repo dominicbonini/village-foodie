@@ -1,0 +1,17 @@
+{
+  "features": "Funksionet",
+  "pricing": "Çmimet",
+  "faq": "Pyetje të shpeshta",
+  "privacy": "Privatësia",
+  "terms": "Kushtet",
+  "contact": "Kontakti",
+  "about": "Rreth nesh",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Nga ekipi që qëndron pas <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Shkarkoni HatchGrab nga App Store",
+    "appStoreAlt": "Shkarkoje nga App Store",
+    "googlePlayLink": "Merrni HatchGrab në Google Play",
+    "googlePlayAlt": "Shkarkoje nga Google Play"
+  }
+}

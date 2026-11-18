@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Datat e javës",
+    "dayList": "Lista e ditëve",
+    "place": "Vendndodhja",
+    "venue": "Emri i vendit",
+    "area": "Qyteti",
+    "dayDate": "Dita dhe data",
+    "times": "Oraret",
+    "orderLink": "Lidhja për porosi",
+    "locationTag": "Etiketa e vendndodhjes"
+  },
+  "weekHeader": "{truck} — ku jemi këtë javë:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ANULUAR, na vjen keq",
+  "noDates": "Asnjë datë këtë javë — kontrolloni sërish së shpejti.",
+  "orderAhead": "Porositni paraprakisht: {url}",
+  "orderAheadTagged": "Porositni paraprakisht: {url} {tag}",
+  "eventLine": "{truck}: jemi te {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck}: jemi te {where} {when}.",
+  "cancelledSorry": "Na vjen keq — nuk do të mund të vijmë te {where} {when}.",
+  "cancelledApology": "Kërkojmë ndjesë të gjithëve që kishin planifikuar të vinin. Do të kthehemi së shpejti.",
+  "when": {
+    "today": "sot",
+    "tonight": "sonte",
+    "tomorrow": "nesër",
+    "dated": "më {date}"
+  }
+}

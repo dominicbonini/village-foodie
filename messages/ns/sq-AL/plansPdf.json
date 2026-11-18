@@ -1,0 +1,9 @@
+{
+  "title": "Paketat dhe funksionet",
+  "generated": "Krijuar më {date}",
+  "allowanceHeading": "Porositë online të përfshira",
+  "smallPrint": "Shënime të rëndësishme",
+  "priceNoteMasked": "Çmimet e shënuara “TBC” (për t’u konfirmuar) nuk janë publikuar ende.",
+  "omitNote": "Çmimet qëllimisht nuk përfshihen në këtë dokument.",
+  "terms": "Shifrat janë kushtet e publikuara të paketave në datën e mësipërme dhe mund të ndryshojnë. Tarifat e përpunimit të kartave janë tarifa e vetë Stripe, jo e HatchGrab. Ky dokument është një përmbledhje, jo kontratë."
+}

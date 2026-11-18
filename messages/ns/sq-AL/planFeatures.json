@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Shfaqja në hartën publike"
+    },
+    "web_dashboard": {
+      "name": "Panel universal në web"
+    },
+    "qr_code": {
+      "name": "Kod QR"
+    },
+    "schedule_import": {
+      "name": "Importim automatik i orarit"
+    },
+    "meal_deals_upsells": {
+      "name": "Menu kombo dhe sugjerime"
+    },
+    "walkup_orders": {
+      "name": "Përpunimi i porosive në vend"
+    },
+    "sold_out_toggle": {
+      "name": "Shënimi i menjëhershëm “Mbaroi”"
+    },
+    "kitchen_app": {
+      "name": "Aplikacioni i kuzhinës për iPhone, iPad dhe Android"
+    },
+    "offline_protection": {
+      "name": "Mbrojtja offline e porosive"
+    },
+    "online_payments": {
+      "name": "Pagesat online"
+    },
+    "advance_preordering": {
+      "name": "Porosi paraprake për data të ardhshme"
+    },
+    "preorder_deadline": {
+      "name": "Afati i porosisë paraprake"
+    },
+    "time_slot_selection": {
+      "name": "Zgjedhja e intervalit kohor nga klienti"
+    },
+    "kitchen_capacity": {
+      "name": "Menaxhimi i kapacitetit të kuzhinës"
+    },
+    "stock_countdown": {
+      "name": "Zbritja automatike e stokut"
+    },
+    "auto_accept": {
+      "name": "Pranimi automatik i porosive online"
+    },
+    "branded_qr_code": {
+      "name": "Kod QR me logon tuaj"
+    },
+    "private_events": {
+      "name": "Evente private"
+    },
+    "social_media_posts": {
+      "name": "Postime për rrjetet sociale"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Përgjigje automatike në WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Përgjigje automatike në Messenger dhe Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Merrni pagesa në telefonin tuaj"
+    },
+    "sms_order_alerts": {
+      "name": "Njoftime për porosinë me SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Sinkronizimi i kuzhinës në disa pajisje"
+    },
+    "multi_user_access": {
+      "name": "Qasje për disa përdorues"
+    },
+    "embed_schedule": {
+      "name": "Faqja e orarit në faqen tuaj të internetit"
+    },
+    "event_types": {
+      "name": "Lloje eventesh dhe çmime të personalizuara"
+    },
+    "buzzer_tracking": {
+      "name": "Gjurmimi i pagerëve"
+    },
+    "documents_reminders": {
+      "name": "Dokumente dhe kujtesa"
+    },
+    "profit_per_event": {
+      "name": "Fitimi për çdo event"
+    },
+    "accountant_reports": {
+      "name": "Raporte për kontabilistin tuaj"
+    },
+    "ticket_printing": {
+      "name": "Printimi i tiketave të kuzhinës"
+    },
+    "customer_display": {
+      "name": "Ekran për klientët"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Karta digjitale besnikërie me vula"
+    }
+  },
+  "cardRegionOnline": "{region} standarde",
+  "cardRegion": {
+    "UKcards": "karta të Mbretërisë së Bashkuar",
+    "EEAcards": "karta të ZEE-së",
+    "UScards": "karta të SHBA-së",
+    "Australiancards": "karta australiane",
+    "NewZealandcards": "karta të Zelandës së Re",
+    "Canadiancards": "karta kanadeze",
+    "Swisscards": "karta zvicerane",
+    "Braziliancards": "karta braziliane",
+    "Mexicancards": "karta meksikane",
+    "Japanesecards": "karta japoneze",
+    "Singaporecards": "karta të Singaporit",
+    "HongKongcards": "karta të Hong Kongut",
+    "Malaysiancards": "karta malajziane",
+    "Thaicards": "karta tajlandeze",
+    "UAEcards": "karta të EBA-së"
+  },
+  "perMonth": {
+    "mo": "{amount}/muaj",
+    "month": "{amount}/muaj"
+  },
+  "priceWord": {
+    "free": "Falas",
+    "freeTrial": "Provë falas",
+    "lifetime": "Përgjithmonë",
+    "zeroPercent": "0%",
+    "payAtHatch": "Pagesë në marrje",
+    "unlimited": "Pa limit",
+    "none": "—",
+    "masked": "Për t’u konfirmuar"
+  },
+  "cell": {
+    "included": "Përfshihet"
+  }
+}

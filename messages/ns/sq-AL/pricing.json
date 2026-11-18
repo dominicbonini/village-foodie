@@ -1,0 +1,53 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Muaji juaj i parë është krejtësisht falas — me çdo funksion të zhbllokuar.} other {# muajt tuaj të parë janë krejtësisht falas — me çdo funksion të zhbllokuar.}}",
+    "body": "Me {brand}, klientët porositin paraprakisht dhe paguajnë kur marrin porosinë, kështu që mund të merrni porosi online pa lidhur fare një shërbim përpunimi kartash. Kur të përfundojë prova, kaloni te paketa <plan>{fallback}</plan>{fallbackFree, select, yes { — pa tarifë mujore —} other {}} nëse nuk zgjidhni një paketë. Pa kartë për të filluar, pa kontratë, anulojeni kur të doni.",
+    "bodyCard": "Me {brand}, klientët porositin paraprakisht dhe paguajnë kur marrin porosinë, kështu që mund të merrni porosi online pa lidhur fare një shërbim përpunimi kartash. Preferoni ta merrni pagesën paraprakisht? Shtoni pagesat online me kartë kur të doni. Kur të përfundojë prova, kaloni te paketa <plan>{fallback}</plan>{fallbackFree, select, yes { — pa tarifë mujore —} other {}} nëse nuk zgjidhni një paketë. Pa kartë për të filluar, pa kontratë, anulojeni kur të doni.",
+    "bodyOnly": "Me {brand}, klientët porositin paraprakisht dhe paguajnë kur marrin porosinë, kështu që mund të merrni porosi online pa lidhur fare një shërbim përpunimi kartash. Kur të përfundojë prova, paketa <plan>{fallback}</plan> kushton {price} në muaj. Do t’ju kontaktojmë më parë për të konfiguruar pagesën. Pa kartë për të filluar, pa kontratë, anulojeni kur të doni.",
+    "bodyOnlyCard": "Me {brand}, klientët porositin paraprakisht dhe paguajnë kur marrin porosinë, kështu që mund të merrni porosi online pa lidhur fare një shërbim përpunimi kartash. Preferoni ta merrni pagesën paraprakisht? Shtoni pagesat online me kartë kur të doni. Kur të përfundojë prova, paketa <plan>{fallback}</plan> kushton {price} në muaj. Do t’ju kontaktojmë më parë për të konfiguruar pagesën. Pa kartë për të filluar, pa kontratë, anulojeni kur të doni."
+  },
+  "card": {
+    "perTruckMonth": "për food truck / muaj",
+    "mostTrucks": "Zgjedhja e shumicës",
+    "tryFree": "Provo falas",
+    "seeEvery": "Shiko çdo funksion →",
+    "everything": "Gjithçka për të drejtuar një shërbim",
+    "everythingIn": "Gjithçka nga paketa {plan}, si dhe"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}</b> vetëm për porositë online. Porositë në vend janë gjithmonë falas.",
+    "feeOnlyCard": "<b>{fee}*</b> vetëm për porositë online. Porositë në vend janë gjithmonë falas.",
+    "included": "Çdo muaj përfshihen porositë online deri në <b>{included}</b>, pastaj <b>{fee}*</b>. Porositë në vend janë gjithmonë falas.",
+    "includedNoMark": "Çdo muaj përfshihen porositë online deri në <b>{included}</b>, pastaj <b>{fee}</b>. Porositë në vend janë gjithmonë falas.",
+    "noFee": "<b>Pa tarifa HatchGrab</b> për porositë online, sado të ngarkuar të jeni. Një kosto mujore e parashikueshme."
+  },
+  "base": {
+    "walkUp": "Porositë në vend dhe ekrani i kuzhinës",
+    "online": "Porositë online",
+    "preorders": "Porositë paraprake dhe oraret e marrjes",
+    "capacity": "Menaxhimi i kapacitetit të kuzhinës",
+    "privateEvents": "Evente private",
+    "printing": "Printimi i tiketave të kuzhinës",
+    "app": "Aplikacioni i kuzhinës për iPhone, iPad dhe Android"
+  },
+  "added": {
+    "whatsapp_replies": "Përgjigje automatike në WhatsApp",
+    "schedule_graphics": "Postime për rrjetet sociale — orari juaj për Facebook dhe Instagram — gati për t’u postuar",
+    "event_types": "Lloje eventesh dhe çmime të personalizuara"
+  },
+  "money": {
+    "unlimitedOrders": "Porosi online pa limit, 0% tarifë HatchGrab",
+    "samePrice": "I njëjti çmim edhe në muajin më të ngarkuar"
+  },
+  "comingSoon": "Së shpejti",
+  "bar": {
+    "title": "Cila paketë është më e lirë për mua?",
+    "subtitle": "Porositë tuaja online çdo muaj",
+    "first": "Nën {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Mbi {from} → <b>{plan}</b>",
+    "only": "Çdo vëllim → <b>{plan}</b>"
+  },
+  "footnote": "* Shtohet tarifa e përpunimit të kartave nga Stripe, vetëm për porositë online me kartë (aktualisht {cardFee} — {country}), që paguhet te Stripe, jo te HatchGrab. Për porositë në vend përdorni terminalin tuaj POS — HatchGrab tarifon 0%.",
+  "currencyLine": "Çmimet janë në {currency} ({code})"
+}

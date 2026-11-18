@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Pageri <b>{number}</b> është te <b>porosia #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Ta merrni për <b>{hasTarget, select, yes {porosinë #{targetId}} other {këtë porosi}}</b>?",
+  "cancel": "Anulo",
+  "take": "Merr pagerin {number}",
+  "titleBlocking": "Pager për porosinë #{id}?",
+  "title": "Zgjidh një pager",
+  "subtitle": "{hasTarget, select, yes {Porosia #{id}} other {Kjo porosi}}{hasCurrent, select, yes { · aktualisht pageri {current}} other {}}",
+  "allTaken": "{n, plural, one {Pageri është i zënë. Shtypeni për ta marrë nga një porosi tjetër.} other {Të gjithë pagerët ({count}) janë të zënë. Shtypni njërin për ta marrë nga një porosi tjetër.}}",
+  "thisOrder": "Kjo porosi",
+  "noBuzzer": "Pa pager",
+  "done": "U krye",
+  "lostTitle": "Porosia #{id} nuk ka pager",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}një porosi tjetër mori të njëjtin pager ndërsa ishit offline. Jepini klientit një pager tjetër.",
+  "dismiss": "Mbyll",
+  "assign": "Cakto"
+}

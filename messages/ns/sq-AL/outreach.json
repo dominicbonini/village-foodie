@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Ky email nuk ka rreshtin e çregjistrimit, ndaj nuk mund të dërgohet. Përdorni “Insert opt-out” për ta shtuar.",
+    "notSetUp": "Nuk është vendosur asnjë fjali çregjistrimi, ndaj nuk mund të dërgohet asnjë email prezantues. Shtojeni te paneli “Signature” në skedën “Templates”.",
+    "notLoaded": "Fjalia e çregjistrimit nuk është ngarkuar ende, ndaj ky email nuk mund të dërgohet.",
+    "unreadable": "Fjalia e çregjistrimit nuk u lexua dot, ndaj nuk u dërgua asgjë."
+  },
+  "retry": {
+    "notRebuilt": "Ai mesazh nuk u rindërtua dot me rreshtin e kompanisë, ndaj nuk u dërgua asgjë."
+  }
+}

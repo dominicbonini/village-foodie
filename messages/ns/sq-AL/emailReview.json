@@ -1,0 +1,16 @@
+{
+  "subject": "Si ishte porosia juaj nga {truck}?",
+  "heading": "Faleminderit që porositët nga {truck}",
+  "body": "{truck} do t’ju ishte mirënjohës për një vlerësim të sinqertë në Google. Zgjat vetëm një minutë dhe u ndihmon njerëzve të tjerë ta gjejnë.",
+  "button": "Lër një vlerësim në Google",
+  "linkText": "Lini një vlerësim në Google: {url}",
+  "from": "Ky email është nga {truck}, dërguar përmes HatchGrab sepse keni bërë një porosi aty.",
+  "unsubscribeLead": "Nuk dëshironi kërkesa për vlerësim nga {truck}?",
+  "unsubscribeLink": "Çregjistrohu",
+  "unsubscribeText": "Çregjistrohu: {url}",
+  "unsubscribed": {
+    "title": "U çregjistruat",
+    "body": "{truck} nuk do t’ju dërgojë më kërkesa për vlerësim.",
+    "invalid": "Kjo lidhje çregjistrimi nuk është e vlefshme."
+  }
+}

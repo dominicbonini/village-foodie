@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Antipasta",
+    "mains": "Pjata kryesore",
+    "burgers": "Burgera",
+    "pizza": "Pica",
+    "wrapsSandwiches": "Rrotulla dhe sanduiçe",
+    "sides": "Garnitura",
+    "dipsSauces": "Salca",
+    "desserts": "Ëmbëlsira",
+    "drinks": "Pije",
+    "kidsMenu": "Menu për fëmijë",
+    "specials": "Specialitete",
+    "other": "Të tjera"
+  },
+  "demoEventName": "Event demo",
+  "firstVanName": "Furgoni 1",
+  "demoCategories": {
+    "pizza": "Pica",
+    "burgers": "Burgera",
+    "mains": "Pjata kryesore",
+    "sides": "Garnitura",
+    "drinks": "Pije"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck me pica",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja dhe mjaltë",
+        "fourCheese": "Katër djathëra",
+        "gardenVeg": "Me perime",
+        "garlicBread": "Bukë me hudhër",
+        "rocketParmesan": "Rukola dhe parmixhano",
+        "olives": "Ullinj",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck me burgera",
+      "items": {
+        "classicCheeseburger": "Cheeseburger klasik",
+        "doubleBacon": "Burger dopio me proshutë",
+        "buttermilkChicken": "Pulë me dhallë",
+        "halloumiStack": "Burger me hallumi",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Patate të skuqura me lëkurë",
+        "loadedCheeseFries": "Patate të skuqura me djathë",
+        "onionRings": "Unaza qepe",
+        "craftLemonade": "Limonadë artizanale",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck me kerri",
+      "items": {
+        "chickenTikkaMasala": "Pulë tikka masala",
+        "lambRoganJosh": "Rogan josh me qengj",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Pulë me gjalpë",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Oriz pilaf",
+        "garlicNaan": "Naan me hudhër",
+        "onionBhaji": "Bhaji me qepë",
+        "mangoLassi": "Lassi me mango",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

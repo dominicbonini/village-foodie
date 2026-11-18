@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Prano porosi pa pagesë",
+  "completionTitle": "Përfundimi i një porosie të papaguar",
+  "completionHelp": "Çfarë ndodh kur një porosi e papaguar është gati për t’ia dhënë klientit.",
+  "pressesOne": "Një shtypje (“Shëno si të paguar dhe marrë”)",
+  "pressesOneHelp": "Më e përshtatshme kur paratë i merrni në çastin që jepni ushqimin. Keni një buton të vetëm, “Shëno si të paguar dhe marrë”, që regjistron pagesën dhe mbyll porosinë njëherësh.",
+  "pressesTwo": "Dy shtypje (“Shëno si të paguar” dhe “Marrë”)",
+  "pressesTwoHelp": "Më e përshtatshme kur pagesa dhe marrja ndodhin në çaste të ndryshme — klienti paguan në sportel, pastaj e merr porosinë kur është gati. Keni dy butona: fillimisht “Shëno si të paguar”, pastaj “Marrë” kur klienti merr ushqimin."
+}

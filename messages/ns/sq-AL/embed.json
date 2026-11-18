@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Ku punon herën tjetër {truck}.",
+  "orderFrom": "Porosit nga {truck}",
+  "poweredBy": "Mundësuar nga <b>HatchGrab</b>",
+  "loadFailed": "Orari nuk u ngarkua dot tani.",
+  "loading": "Po ngarkohet orari…",
+  "empty": "{truck}: nuk ka evente të ardhshme të listuara."
+}

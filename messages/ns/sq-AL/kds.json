@@ -1,0 +1,129 @@
+{
+  "docTitle": "Kuzhina — {truck}",
+  "loading": "Po ngarkohet kuzhina…",
+  "pin": {
+    "title": "Vendosni PIN-in",
+    "placeholder": "PIN",
+    "unlock": "Zhblloko",
+    "unreachable": "Serveri nuk mund të arrihet tani. PIN-i juaj është në rregull — provoni sërish pas pak.",
+    "incorrect": "PIN i gabuar",
+    "generic": "Ndodhi një gabim. Provoni sërish."
+  },
+  "error": {
+    "linkInvalid": "Kjo lidhje nuk është më e vlefshme.",
+    "couldNotLoad": "Porositë nuk u ngarkuan dot",
+    "truckNotFound": "Food truck-u nuk u gjet"
+  },
+  "degraded": {
+    "at": "⚠️ Serveri nuk mund të arrihet. Po shfaqen tiketat nga ora {time}. MUND TË MUNGOJNË POROSI TË REJA.",
+    "earlier": "⚠️ Serveri nuk mund të arrihet. Po shfaqen tiketat e mëparshme. MUND TË MUNGOJNË POROSI TË REJA."
+  },
+  "header": {
+    "dashboard": "Paneli",
+    "backTitle": "Kthehu te paneli",
+    "list": "Listë",
+    "grid": "Rrjetë",
+    "full": "E plotë",
+    "cook": "Gatim",
+    "fullTitle": "Karta të plota — me çmime dhe detaje pagese, siç i sheh sporteli.",
+    "cookTitle": "Karta për gatim — shkronja më të mëdha, të grupuara sipas kategorisë, pa çmime.",
+    "readyStep": "Hapi “Gati”",
+    "readyOnlyTitle": "Ky ekran vetëm i shënon porositë si gati, ndaj kjo nuk mund të çaktivizohet — është hapi i vetëm që kryen.",
+    "readyOnTitle": "Ky ekran i shënon porositë si gati. Shtypni që ta bëjë një ekran tjetër.",
+    "readyOffTitle": "Një ekran tjetër i shënon porositë si gati. Shtypni që ta bëjë ky ekran.",
+    "handover": "Pagesa dhe marrja",
+    "handoverOnlyTitle": "Ky ekran vetëm merr pagesën, ndaj kjo nuk mund të çaktivizohet — është hapi i vetëm që kryen.",
+    "handoverOnTitle": "Ky ekran merr pagesën dhe ua jep porosinë klientëve. Shtypni që ta bëjë një ekran tjetër.",
+    "handoverOffTitle": "Një ekran tjetër merr pagesën. Shtypni që ta bëjë ky ekran.",
+    "soundOn": "Tingulli i porosive të reja është aktiv — shtypni për ta çaktivizuar",
+    "soundOff": "Tingulli i porosive të reja është i çaktivizuar — shtypni për ta aktivizuar",
+    "screenOn": "Ekrani ndezur",
+    "screenOff": "Ekrani fiket",
+    "screenSettings": "Cilësimet e ekranit",
+    "manageEvent": "Menaxho eventin",
+    "manageEventTitle": "Menaxho eventin — fillojeni, vendoseni në pauzë, ndryshojeni ose përfundojeni",
+    "soundSettings": "Cilësimet e tingullit",
+    "soundSettingsTitle": "Cilët tinguj bien në këtë pajisje",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Cilësimet e pamjes",
+    "on": "Aktiv",
+    "off": "Joaktiv",
+    "newOrderSound": "Tingulli i porosisë së re",
+    "soundNeedsConfirming": "Vetëm porositë që duhen konfirmuar",
+    "soundAll": "Të gjitha porositë e reja",
+    "soundDue": "Tingull kur një porosi duhet vënë në gatim",
+    "soundDueHelp": "Bie kur një tiketë bëhet portokalli.",
+    "deviceSettings": "Cilësimet e pajisjes",
+    "sound": "Tingulli",
+    "close": "Mbyll"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Porositë nuk u ngarkuan për këtë event",
+    "mismatchBody": "Serveri u përgjigj me një event tjetër, ndaj nuk shfaqet asgjë, në vend të porosive të gabuara. Zgjidhni sërish eventin ose ringarkoni.",
+    "mismatchBodyAt": "Serveri u përgjigj me një event tjetër, ndaj nuk shfaqet asgjë, në vend të porosive të gabuara për {venue}. Zgjidhni sërish eventin ose ringarkoni.",
+    "paused": "⏸ Porositë në pauzë{reason, select, offline { (pajisja offline)} other {}} — klientët nuk mund të porositin",
+    "resume": "Rifillo",
+    "offline": "Nuk ka lidhje — po shfaqen porositë e fundit të njohura. Porositë online janë vendosur në pauzë për klientët.",
+    "queued": "{n, plural, one {{count} veprim në radhë} other {{count} veprime në radhë}}",
+    "extraWait": "⏱ Pritje shtesë aktive: +{mins} min",
+    "clear": "Hiq",
+    "toMake": "Për përgatitje",
+    "today": "Sot · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Fillo eventin",
+    "recentlyClosed": "Eventi përfundoi · {venue} — mbyllur në orën {time}",
+    "eventStatus": "{tone, select, paused {⏸ Në pauzë} live {● Aktiv} finished {● Përfunduar} cancelled {Anuluar} other {Pa filluar}}"
+  },
+  "board": {
+    "queueClear": "Radha është bosh",
+    "doneToday": "Përfunduar sot · {count}",
+    "paid": "✓ paguar",
+    "cardHeld": "e bllokuar në kartë",
+    "due": "Për t’u paguar: {amount}"
+  },
+  "screenOff": {
+    "title": "Të lejohet fikja e ekranit?",
+    "bodyVans": "{vans}: {n, plural, one {ka} other {kanë}} të aktivizuar zbulimin offline. Nëse ekrani fiket, pajisja mund të ndalojë dërgimin e sinjalit online dhe porositë e klientëve mund të vendosen në pauzë.",
+    "body": "Nëse ekrani fiket, pajisja mund të ndalojë dërgimin e sinjalit online.",
+    "keepHint": "Mbajeni ekranin të ndezur që porositë të mos ndërpriten.",
+    "keep": "Mbaje ekranin ndezur",
+    "allow": "Lejo fikjen e ekranit"
+  },
+  "event": {
+    "change": "Ndrysho eventin",
+    "cancel": "Anulo",
+    "waitActive": "⏱ +{mins} min aktive · Shtypni për ta hequr",
+    "addWait": "⏱ Shto pritje shtesë",
+    "endTitle": "Të përfundojë eventi?",
+    "endEarly": "Ky event është planifikuar të përfundojë në orën {time}. Nuk do të lejohen më porosi. Konfirmoni që ta përfundoni eventin?",
+    "endNow": "Ta përfundoni këtë event? Nuk do të merren më porosi.",
+    "yes": "Po",
+    "started": "Eventi filloi",
+    "startFutureConfirm": "Ky event është më {date}. Ta filloni tani?",
+    "finishTimeNow": "Ora e përfundimit tani: {time}",
+    "finished": "Eventi përfundoi",
+    "cancelled": "Eventi u anulua",
+    "noteSaved": "Shënimi u ruajt",
+    "pauseConfirm": "Të vendosen porositë në pauzë? Klientët do të shohin “Nuk pranohen porosi” derisa t’i rifilloni.",
+    "switchConfirm": "Të kalohet nga {from} te {to}?{n, plural, =0 {} one { {count} porosi në këtë ekran do të zëvendësohet.} other { {count} porosi në këtë ekran do të zëvendësohen.}} Shtypni eventin aktual për t’u kthyer."
+  },
+  "intro": {
+    "title": "Ky është ekrani i kuzhinës (KDS)",
+    "p1": "Është pamja e kuzhinierit — porositë që duhet të përgatitni, sipas radhës në të cilën duhen përgatitur. Ekrani pranë skarës shfaq këtë pamje, ndërsa sporteli përdor panelin e porosive.",
+    "p2": "Kartat lëvizin përpara sa herë i shtypni, kështu që kushdo që gatuan e di gjithmonë çfarë vjen më pas dhe askush nuk ka pse të bërtasë. Gjithçka këtu janë të dhënat tuaja demo — provojeni lirisht.",
+    "gotIt": "E kuptova"
+  },
+  "toast": {
+    "failed": "Dështoi",
+    "rejectFailed": "Refuzimi dështoi",
+    "buzzerSaved": "Pageri {n} u ruajt",
+    "buzzerRemoved": "Pageri {n} u hoq",
+    "buzzerRemovedNone": "Pageri u hoq",
+    "buzzerAssigned": "Pageri {n} u caktua",
+    "buzzerAssignedFrom": "Pageri {n} u caktua (u mor nga #{from})",
+    "buzzerRemoveFailed": "{had, select, no {{target, select, order {Pageri nuk u hoq dot nga porosia #{id}} other {Pageri nuk u hoq dot nga kjo porosi}}} other {{target, select, order {Pageri {n} nuk u hoq dot — është ende te porosia #{id}} other {Pageri {n} nuk u hoq dot — është ende te kjo porosi}}}}",
+    "buzzerAssignFailed": "{target, select, order {Pageri {n} nuk iu caktua dot porosisë #{id}} other {Pageri {n} nuk iu caktua dot kësaj porosie}} — {had, select, yes {ajo ka ende pagerin {prior}} other {ajo ende nuk ka pager}}"
+  }
+}

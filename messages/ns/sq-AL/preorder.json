@@ -1,0 +1,6 @@
+{
+  "closedPending": "Porositë paraprake u mbyllën. Në pritje të miratimit nga kuzhina.",
+  "deadline": "Porosi paraprake deri në orën {time}",
+  "deadlineOnDay": "Porosi paraprake deri në orën {time}, {day}",
+  "opens": "Porositë paraprake hapen: {day}"
+}

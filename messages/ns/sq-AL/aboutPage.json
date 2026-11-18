@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Rreth nesh — HatchGrab",
+    "description": "HatchGrab krijon program praktik për food truck dhe katering: porosi online, orë marrjeje dhe më pak pyetje të përsëritura. Themeluar nga Dominic Bonini."
+  },
+  "eyebrow": "Rreth nesh",
+  "title": "Ndërtuar sipas mënyrës si punojnë realisht food truck-et",
+  "photoAlt": "{name}, themeluesi i HatchGrab",
+  "story": {
+    "start": "HatchGrab nisi nga një vëzhgim i thjeshtë: food truck-et kanë nevojë për mjete më të mira për të drejtuar biznesin e tyre.",
+    "villageFoodie": "Pasi krijova Village Foodie, një listë që i ndihmon njerëzit të zbulojnë food truck-et që vijnë në zonën e tyre, kalova më shumë kohë duke mësuar për sfidat me të cilat përballen bizneset e lëvizshme të ushqimit. Ndryshe nga restorantet tradicionale, food truck-et lëvizin vazhdimisht, punojnë në vende të ndryshme dhe u shërbejnë klientëve në kushte që ndryshojnë.",
+    "fixedAddress": "Megjithatë, shumica e programeve që u ofrohen janë ndërtuar për biznese me adresë fikse.",
+    "change": "HatchGrab u krijua për ta ndryshuar këtë.",
+    "build": "Ne ndërtojmë program praktik posaçërisht për food truck-et dhe ofruesit e kateringut të lëvizshëm, që t’i ndihmojmë të marrin porosi online, të menaxhojnë oraret e marrjes, t’i mbajnë porositë të rrjedhshme dhe të humbin më pak kohë me pyetje të përsëritura.",
+    "focus": "Fokusi ynë është i thjeshtë: ta bëjmë më të lehtë drejtimin e një food truck-u, me mjete të ndërtuara sipas mënyrës si funksionojnë realisht këto biznese."
+  },
+  "signature": "<b>{name}</b><br></br>Themelues, HatchGrab",
+  "company": "{company} · regjistruar në Angli dhe Uells · numri i kompanisë {number} · selia e regjistruar: {address}",
+  "contact": "Na kontaktoni"
+}

@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Titulli nuk u përshtat dhe u shkurtua.",
+    "date": "Data nuk u përshtat dhe u shkurtua.",
+    "daysOff": "Teksti i ditëve pa punë nuk u përshtat dhe u shkurtua.",
+    "place": "Emri i vendit nuk u përshtat dhe u shkurtua.",
+    "time": "Ora nuk u përshtat dhe u shkurtua.",
+    "note": "Teksti juaj nuk u përshtat dhe u shkurtua.",
+    "venue": "Emri i vendit nuk u përshtat dhe u shkurtua.",
+    "area": "Qyteti nuk u përshtat dhe u shkurtua."
+  },
+  "fontFallback": "Një font që përdor ky dizajn ({id}) nuk u ngarkua dot — ato kuti shfaqen me Oswald.",
+  "wrongShapeBackground": "Fotoja e këtij vendi ka formë tjetër nga dizajni juaj, ndaj përdoret sfondi standard.",
+  "rowsFit": "Dita e fundit del {px}px poshtë fundit të imazhit — zvogëloni hapësirën mes rreshtave ose ngrini më lart rreshtin 1.",
+  "placeStatus": {
+    "ownBoth": "Foto dhe pozicione teksti të veta",
+    "wrongShape": "Formë tjetër — nuk përdoret derisa ta zëvendësoni",
+    "ownPicture": "Foto e vet, pozicione standarde",
+    "ownPositions": "Foto standarde, pozicione teksti të veta",
+    "none": "Ende pa foto — përdoret Standard"
+  },
+  "standardStatus": "Përdoret në të gjitha vendet e tjera",
+  "option": {
+    "oneOff": "Ngarko një foto vetëm për këtë postim",
+    "placePoster": "Posteri i vendit: {name}",
+    "standard": "Dizajni standard"
+  },
+  "previewLabel": {
+    "lastEvent": "Parapamja përdor eventin tuaj të fundit këtu",
+    "noEvents": "Ende pa evente këtu — parapamja shfaq eventin tuaj të radhës me emrin e këtij vendi"
+  },
+  "fontUsage": {
+    "weekly": "dizajni i postimit tuaj javor",
+    "event": "dizajni i postimit tuaj për një event",
+    "place": "dizajni juaj për vendin {place}",
+    "placeUnnamed": "dizajni juaj për një vend"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "I trashë",
+    "italic": "Kursiv"
+  },
+  "picture": {
+    "legacy": "Posteri i eventit",
+    "fallback": "Foto",
+    "wrongShape": "Formë tjetër — nuk mund të përdoret si sfond i plotë"
+  },
+  "noPicture": {
+    "omit": "Lëre jashtë",
+    "blank": "Lër një hapësirë bosh",
+    "logo": "Shfaq logon tuaj"
+  },
+  "noPicturesAll": "{total, plural, one {Vendndodhja juaj ka imazh.} other {Të gjitha {total} vendndodhjet tuaja kanë imazh.}}",
+  "noPicturesSome": "{without, plural, one {{without} nga {total} vendndodhjet tuaja nuk ka ende imazh} other {{without} nga {total} vendndodhjet tuaja nuk kanë ende imazh}}",
+  "licenceTick": "Jam pronar i këtij fonti ose kam licencë për ta përdorur",
+  "fontUploadButton": "↑ Ngarko fontin tuaj"
+}

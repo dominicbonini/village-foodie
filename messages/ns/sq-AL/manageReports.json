@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Periudha",
+    "event": "📍 Eventi",
+    "filterBy": "Filtro sipas",
+    "show": "Shfaq",
+    "range": "<from></from><sep>deri</sep><until></until>",
+    "selectEvent": "Zgjidhni një event…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Event",
+    "viewReport": "Shiko raportin",
+    "loading": "Po ngarkohet…",
+    "orders": "📋 Porositë",
+    "items": "📦 Artikujt",
+    "exportCsv": "⬇ Eksporto CSV"
+  },
+  "empty": {
+    "noOrders": "Nuk u gjet asnjë porosi për këtë periudhë.",
+    "selectEvent": "Zgjidhni një event më sipër për të parë raportin e tij."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} porosi} other {{count} porosi}} · {total}"
+  },
+  "revenue": {
+    "title": "Ndarja e të ardhurave",
+    "deals": "Të ardhurat nga menutë kombo",
+    "modifiers": "Të ardhurat nga shtesat",
+    "foodSales": "Shitjet e ushqimit",
+    "total": "Totali",
+    "other": "Të tjera",
+    "tax": "Taksa",
+    "tips": "Bakshishet",
+    "serviceFees": "Tarifat e shërbimit",
+    "cardFees": "Tarifat e kartës"
+  },
+  "itemsSold": {
+    "title": "Artikujt e shitur"
+  },
+  "dealsCard": {
+    "title": "Menutë kombo"
+  },
+  "custom": {
+    "title": "Personalizimet",
+    "paidModifiers": "Shtesat me pagesë",
+    "customerNotes": "Shënimet e klientëve",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Artikulli",
+    "modifier": "Shtesa",
+    "qty": "Sasia",
+    "total": "Totali",
+    "date": "Data",
+    "time": "Ora",
+    "channel": "Kanali"
+  },
+  "breakdown": {
+    "orders": "Ndarja sipas porosive",
+    "items": "Ndarja sipas artikujve"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Në vend"
+  },
+  "csv": {
+    "orderId": "ID e porosisë",
+    "date": "Data",
+    "event": "Eventi",
+    "timePlaced": "Ora e porosisë",
+    "collectionTime": "Ora e marrjes",
+    "customerName": "Emri i klientit",
+    "orderType": "Lloji i porosisë",
+    "items": "Artikujt",
+    "deals": "Menutë kombo",
+    "modifiers": "Shtesat",
+    "notes": "Shënimet",
+    "subtotal": "Nëntotali",
+    "tip": "Bakshishi",
+    "serviceFee": "Tarifa e shërbimit",
+    "total": "Totali",
+    "itemName": "Emri i artikullit",
+    "qty": "Sasia",
+    "unitPrice": "Çmimi për njësi",
+    "itemTotal": "Totali i artikullit",
+    "orderTotal": "Totali i porosisë",
+    "unknownEvent": "Event i panjohur",
+    "asap": "Sa më shpejt",
+    "unknownCustomer": "I panjohur",
+    "customerOnline": "Klient online",
+    "placedByTruck": "Regjistruar nga food truck-u"
+  },
+  "presets": {
+    "label": "Periudha",
+    "custom": "Data të zgjedhura",
+    "thisMonth": "Këtë muaj",
+    "lastMonth": "Muajin e kaluar",
+    "lastQuarter": "Tremujorin e kaluar",
+    "lastTaxYear": "Vitin e kaluar fiskal"
+  },
+  "accounts": {
+    "title": "Për kontabilistin tuaj",
+    "help": "Shitjet llogariten në ditën e eventit. Bruto është ajo që paguan klientët. Neto është ajo që mbetet pas rimbursimeve dhe taksës.",
+    "gross": "Shitjet bruto",
+    "refunds": "Rimbursimet",
+    "net": "Shitjet neto",
+    "taxEstimated": "vlerësuar nga norma juaj e taksës",
+    "taxNone": "Për food truck-un tuaj nuk është caktuar normë takse, ndaj këtu nuk llogaritet taksa.",
+    "byChannel": "Shitjet bruto sipas kanalit",
+    "byPayment": "Shitjet bruto sipas pagesës",
+    "online": "Online",
+    "walkUp": "Në vend",
+    "cardOnline": "Kartë online",
+    "payAtTruck": "Pagesë në marrje",
+    "cost": "Kostoja e pjatave të shitura",
+    "profit": "Fitimi",
+    "coverage": "{total, plural, one {Kosto e caktuar për {withCost} nga # pjatë e shitur} other {Kosto e caktuar për {withCost} nga # pjata të shitura}}",
+    "partial": "Pjatat pa kosto nuk përfshihen në kosto, ndaj ky fitim është më i lartë se në realitet. Shtoni koston e çdo pjate te Menu.",
+    "noCosts": "Ende asnjë pjatë nuk ka kosto. Shtoni koston e pjatave tuaja te Menu për të parë fitimin.",
+    "byEvent": "Sipas eventit",
+    "event": "Eventi",
+    "sales": "Shitjet neto",
+    "eventNoProfit": "Viza do të thotë që jo çdo pjatë e shitur atje ka kosto.",
+    "downloadOrders": "⬇ Porositë për kontabilistin",
+    "downloadEvents": "⬇ Eventet për kontabilistin",
+    "downloadHelp": "Dy skedarë tabelorë: një rresht për çdo porosi dhe një rresht për çdo event. Hapen në Excel, Numbers, Xero dhe QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Data",
+      "time": "Ora",
+      "orderNumber": "Numri i porosisë",
+      "event": "Eventi",
+      "channel": "Kanali",
+      "paymentMethod": "Mënyra e pagesës",
+      "currency": "Monedha",
+      "gross": "Bruto",
+      "tax": "Taksa",
+      "taxBasis": "Baza e taksës",
+      "net": "Neto",
+      "refunded": "Rimbursuar",
+      "cost": "Kostoja",
+      "profit": "Fitimi",
+      "eventDate": "Data e eventit",
+      "orders": "Porositë",
+      "dishesSold": "Pjata të shitura",
+      "dishesWithCost": "Pjata me kosto"
+    },
+    "taxBasis": {
+      "stored": "ruajtur me porosinë",
+      "estimated": "vlerësuar nga norma juaj e taksës",
+      "none": "pa normë takse"
+    }
+  }
+}

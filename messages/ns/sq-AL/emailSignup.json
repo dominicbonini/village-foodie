@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Përshëndetje, {name},} other {Përshëndetje,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Themelues, HatchGrab",
+  "verify": {
+    "subject": "Konfirmoni adresën tuaj të email-it",
+    "thanks": "{hasTruck, select, yes {Faleminderit që konfiguruat food truck-un {truck} në HatchGrab.} other {Faleminderit që konfiguruat food truck-un tuaj në HatchGrab.}}",
+    "button": "Konfirmo adresën time të email-it",
+    "buttonText": "Konfirmo adresën time të email-it: {url}",
+    "why": "Kjo është adresa me të cilën do të hyni dhe ku shkojnë njoftimet e porosive — ndaj ia vlen ta bëni tani.",
+    "next": "Sapo të konfirmohet, do t’ju dërgoj gjithçka që ju nevojitet për të filluar.",
+    "carryOn": "Ndërkohë mund të vazhdoni me konfigurimin.",
+    "stuck": "Keni ngecur diku? Thjesht përgjigjuni këtij email-i — këtyre u përgjigjem vetë.",
+    "fallbackLink": "Nëse butoni nuk funksionon, ngjitni këtë: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Mirë se vini në HatchGrab, {name}} other {Mirë se vini në HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Më vjen vërtet mirë t’i uroj mirëseardhjen në HatchGrab food truck-ut {truck}.} other {Më vjen vërtet mirë t’i uroj mirëseardhjen në HatchGrab food truck-ut tuaj.}}",
+    "trial": "{months, plural, one {Prova juaj falas njëmujore ka filluar — me të gjitha funksionet të hapura.} other {Prova juaj falas prej # muajsh ka filluar — me të gjitha funksionet të hapura.}}",
+    "setup": "Nëse nuk e keni bërë ende, konfigurimi është i thjeshtë dhe zgjat rreth pesëmbëdhjetë minuta.",
+    "button": "Hap panelin",
+    "bookmark": "Ia vlen ta ruani si faqeshënues. Funksionon në çdo pajisje.",
+    "stuck": "Thjesht përgjigjuni këtij email-i nëse ngecni — këtyre u përgjigjem vetë.",
+    "lookingForward": "{hasTruck, select, yes {Mezi pres ta shoh në punë food truck-un {truck}.} other {Mezi pres ta shoh në punë food truck-un tuaj.}}"
+  }
+}

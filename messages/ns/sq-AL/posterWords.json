@@ -1,0 +1,25 @@
+{
+  "heading": "Java nga {start} deri më {end}",
+  "daysOff": "Sot nuk punojmë",
+  "cancelled": "ANULUAR",
+  "placeSample": {
+    "nameTownBelow": "Pazari i Ri\nTiranë",
+    "nameTown": "Pazari i Ri, Tiranë",
+    "nameOnly": "Pazari i Ri"
+  },
+  "busyWeek": {
+    "venue1": "Sheshi Skënderbej",
+    "town1": "Tiranë",
+    "venue2": "Parku i qytetit dhe fusha sportive pranë Shëtitores",
+    "town2": "Durrës",
+    "venue3": "Tregu i fermerëve",
+    "town3": "Korçë",
+    "venue4": "Festival ushqimi rrugor",
+    "town4": "Vlorë",
+    "venue5": "Bari i lagjes",
+    "town5": "Shkodër",
+    "venue6": "Shëtitorja",
+    "town6": "Sarandë"
+  },
+  "poweredBy": "Mundësuar nga HatchGrab"
+}

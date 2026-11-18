@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Oraret e marrjes",
+    "takes_cash": "Pranoni kesh?",
+    "offline_protection": "Mbrojtja offline e porosive",
+    "buzzer_prompt": "Më kujto të shtoj një pager"
+  },
+  "typeFollowsVanTitle": "Ndjek cilësimin e zakonshëm të çdo furgoni",
+  "sameSettingsAllVansLabel": "Të njëjtat cilësime për të gjithë furgonët",
+  "sameSettingsAllVansHeader": "Të gjithë furgonët",
+  "sameSettingsConfirm": "Të kopjohen cilësimet e Furgonit 1 në çdo furgon? Kopjohen të gjitha cilësimet e furgonit nga Furgoni 1, ashtu si me “Njësoj si: Furgoni 1” te Cilësimet. Kapaciteti i kuzhinës ka çelësin e vet.",
+  "eventTypesFooterStandard": "Standard është konfigurimi juaj i zakonshëm. Nëse e ndryshoni këtu, ndryshon edhe te Cilësimet.",
+  "eventTypesFooterOneEvent": "Për të ndryshuar një cilësim vetëm për një event, përdorni panelin e atij eventi.",
+  "eventTypesSubtitle": "Ndryshimet ruhen ndërsa punoni.",
+  "matchStandardLabel": "Njësoj si Standard",
+  "matchStandardConfirm": "Të rikthehet çdo cilësim i këtij lloji te Standard? Gjithçka që keni ndryshuar këtu do të fshihet.",
+  "priceLabels": {
+    "price_change_on": "Ndrysho çmimet",
+    "price_mode": "Ndryshimi i çmimit",
+    "price_amount": "Shuma",
+    "price_rounding": "Rrumbullakimi",
+    "item_prices": "Çmimet e artikujve"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "I caktoj vetë çmimet një nga një"
+  },
+  "priceRounding": {
+    "none": "Aspak",
+    "nearest_1": "Te {symbol}1 më i afërt",
+    "up_1": "Rrumbullako gjithmonë lart"
+  },
+  "pricesStandardCell": "Çmimet e menusë suaj",
+  "pricesTruckWideTitle": "Çmimet tuaja janë të njëjta për çdo furgon",
+  "pricesMenuCell": "Menu",
+  "pricesTypeOffCell": "Çmimet e menusë",
+  "itemPricesShow": "Shfaq çmimet",
+  "itemPricesHide": "Fshih çmimet",
+  "priceItemsHeading": "Caktoni çmimin e çdo artikulli",
+  "priceItemsOpen": "Shihni ose ndryshoni çmimin e çdo artikulli ›",
+  "priceItemsClose": "Fshih çmimet e artikujve ⌃",
+  "ownPriceCount": "{n, plural, one {{count} artikull ka çmimin e vet} other {{count} artikuj kanë çmimin e vet}}",
+  "priceTypeHint": "Shtypni një çmim për të shkruar tuajin.",
+  "pricesLiveNotice": "Ky event është aktiv. Porositë e reja përdorin çmimet e reja. Porositë e regjistruara tashmë mbajnë çmimet e tyre.",
+  "placeTypeHelper": "“Shto event” e zgjedh këtë lloj sa herë që zgjidhni këtë vend.",
+  "postPictureStandardNote": "Postimet për eventet këtu përdorin dizajnin tuaj standard.",
+  "eventItemsCardDescription": "Çmimet, kufijtë e artikujve dhe disponueshmëria vetëm për këtë event. Ndryshimet hyjnë në fuqi menjëherë.",
+  "eventPriceColumnLabel": "Çmimi",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · ky event} other {menu {price} · ky event}}",
+  "eventPriceEdit": "✎ Ndrysho çmimet",
+  "eventPriceCancel": "Anulo",
+  "eventPriceSave": "Ruaj çmimet",
+  "eventPriceEditNote": "Po ndryshoni çmimet vetëm për këtë event. Kufijtë e artikujve dhe disponueshmëria janë të kyçura derisa të ruani.",
+  "eventPriceLiveNote": "Aktiv: porositë e reja përdorin çmimet e reja.",
+  "offlineWhenOfflineLabel": "Kur jeni offline"
+}

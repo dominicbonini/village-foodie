@@ -1,0 +1,8 @@
+{
+  "change": "{label} — ndrysho",
+  "useRule": "{label} — përdor rregullin",
+  "typePrice": "{label} — shkruaj një çmim",
+  "backToRule": "Kthehu te rregulli",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

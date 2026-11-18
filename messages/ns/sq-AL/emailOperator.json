@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Porosi e re #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "U regjistrua një porosi e re",
+    "from": "<b>Porosia #{id}</b> nga <b>{name}</b>",
+    "collection": "Marrja: {time}",
+    "asap": "Pa orë të caktuar — sa më shpejt",
+    "total": "Totali",
+    "notes": "<b>Shënime:</b> {notes}",
+    "autoConfirmed": "U konfirmua automatikisht — nuk nevojitet asnjë veprim.",
+    "confirmPrompt": "Hyni në panelin tuaj HatchGrab për ta konfirmuar ose refuzuar këtë porosi.",
+    "text": "Porosi e re #{id} nga {name}{withSlot, select, yes { për {slot}} other {}}{withVenue, select, yes { në {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Totali: {total}.{withNotes, select, yes { Shënime: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "U gjetën evente të reja për {truck} — ju lutemi rishikojini",
+    "hi": "Përshëndetje,",
+    "found": "Gjetëm <b>{n, plural, one {{count} event të ri} other {{count} evente të reja}}</b> në orarin tuaj. Para se t’u shfaqen klientëve, {n, plural, one {duhet ta miratoni} other {duhet t’i miratoni}}.",
+    "listHeading": "Eventet e gjetura:",
+    "approve": "Pasi t’i miratoni te skeda Orari, eventet do të shfaqen në hartë dhe faqja juaj e porosive do të jetë gati të marrë porosi paraprake.",
+    "cta": "Rishikoni orarin tuaj →",
+    "signoff": "— Ekipi i HatchGrab · hatchgrab.com",
+    "unknownVenue": "Vend i panjohur",
+    "text": "Përshëndetje,\n\nGjetëm në orarin tuaj {n, plural, one {{count} event të ri që kërkon miratimin tuaj} other {{count} evente të reja që kërkojnë miratimin tuaj}}:\n\n{list}\n\nRishikoni këtu: {url}\n\nPas miratimit, eventet do të shfaqen në hartë.\n\n— Ekipi i HatchGrab"
+  }
+}

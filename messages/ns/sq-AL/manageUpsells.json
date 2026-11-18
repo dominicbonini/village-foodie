@@ -1,0 +1,19 @@
+{
+  "heading": "Sugjerime",
+  "intro": "Nxitini klientët të shtojnë diçka më shumë. Kur dikush porosit nga një kategori, sugjeroni artikuj nga një tjetër — një pije me picën, një salcë me burgerin.",
+  "add": "+ Shto sugjerim",
+  "toast": {
+    "updated": "Rregulli i sugjerimit u përditësua",
+    "added": "Rregulli i sugjerimit u shtua",
+    "removed": "Rregulli u hoq"
+  },
+  "whenAdds": "Kur klienti shton…",
+  "suggestFrom": "Sugjero artikuj nga…",
+  "chooseCategory": "Zgjidh kategorinë",
+  "cancel": "Anulo",
+  "saveChanges": "Ruaj ndryshimet",
+  "addRule": "Shto rregullin",
+  "empty": "Ende nuk ka rregulla sugjerimi.",
+  "confirmRemove": "Të hiqet rregulli i sugjerimit “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Sugjerohet deri në {count} artikull} other {Sugjerohen deri në {count} artikuj}}"
+}

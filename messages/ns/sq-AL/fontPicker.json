@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Të gjitha",
+    "bold": "Të trasha dhe të larta",
+    "hand": "Të shkruara me dorë",
+    "classic": "Klasike",
+    "clean": "Të thjeshta",
+    "own": "Tuajat",
+    "ownCount": "Tuajat ({count})"
+  },
+  "yoursTag": "· i juaji",
+  "loadingFonts": "Po ngarkohen fontet…",
+  "search": "Kërko në {count, number} fonte",
+  "uploadButton": "↑ Ngarko fontin tuaj",
+  "loadingLibrary": "Po ngarkohet biblioteka e fonteve…",
+  "tryAgain": "Provo sërish",
+  "noOwn": "Ende nuk keni ngarkuar asnjë font. Përdorni butonin “↑ Ngarko fontin tuaj” më sipër.",
+  "recent": "Përdorur së fundi",
+  "popular": "Të njohura për postera",
+  "adding": "Po shtohet…",
+  "noMatch": "Asnjë font nuk përputhet me “{query}”.",
+  "showing": "Po shfaqen {shown} nga {total, number} — shkruani më shumë për t’i ngushtuar.",
+  "couldNotAdd": "Ky font nuk u shtua dot",
+  "tooBig": "Ky font është {size, number, ::.0 group-off} MB. Kufiri është 5 MB.",
+  "woff": "Ju lutemi ngarkoni një skedar TTF ose OTF — zakonisht mund ta shkarkoni aty ku e keni blerë fontin.",
+  "uploadIncomplete": "Ngarkimi nuk përfundoi",
+  "added": "“{name}” u shtua si versioni {face}.",
+  "face": {
+    "regular": "normal",
+    "bold": "i trashë",
+    "italic": "kursiv"
+  },
+  "licenceTick": "Jam pronar i këtij fonti ose kam licencë për ta përdorur",
+  "checking": "Po kontrollohet fonti…",
+  "addFont": "Shto fontin",
+  "cancel": "Anulo",
+  "missingFaces": "Shtoni versionin {faces} të “{name}” (opsionale) — zgjidhni sërish skedarin.",
+  "somethingWrong": "Ndodhi një gabim",
+  "faceLower": {
+    "regular": "normal",
+    "bold": "i trashë",
+    "italic": "kursiv"
+  },
+  "ownLicence": "I juaji",
+  "loadFailed": "Fontet nuk u ngarkuan dot"
+}

@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "{truck} — porosit online",
+    "orderDescription": "{truck}: porositni paraprakisht dhe merreni porosinë te food truck-u.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo: {truck}"
+  },
+  "shareTitle": "Orari: {truck}",
+  "shareText": "Shikoni ku ndalon herën tjetër {truck}! 🚚",
+  "linkCopied": "Lidhja e profilit u kopjua! 📋",
+  "facebookPage": "Faqja në Facebook",
+  "loadingMap": "Po ngarkohet harta…",
+  "view": {
+    "list": "Listë",
+    "map": "Hartë"
+  },
+  "ownThisTruck": "Jeni pronari i këtij food truck-u?",
+  "ownThisTruckTitle": "Jeni pronari i këtij food truck-u? Klikoni për të përditësuar profilin tuaj",
+  "actions": {
+    "menu": "Menu",
+    "call": "Telefono",
+    "message": "Mesazh",
+    "share": "Ndaj",
+    "order": "Porosit"
+  },
+  "loadingSchedule": "Po ngarkohet orari…",
+  "loadError": {
+    "title": "Ngarkimi dështoi",
+    "body": "Nuk arritëm ta ngarkonim orarin tani — zakonisht është një problem i shkurtër. Ju lutemi provoni sërish.",
+    "retry": "Provo sërish"
+  },
+  "notFound": {
+    "title": "Food truck-u nuk u gjet",
+    "body": "Nuk gjetëm asnjë të dhënë për këtë food truck. Mund të jenë zhvendosur ose të kenë përditësuar profilin e tyre.",
+    "cta": "Shiko të gjitha food truck-et"
+  },
+  "noEvents": {
+    "title": "Nuk u gjet asnjë event i ardhshëm",
+    "body": "Mund të na mungojnë disa të dhëna për këtë food truck. Jeni pronari apo e dini orarin e tyre?",
+    "cta": "Na shkruani që ta përditësojmë!"
+  },
+  "whereToFind": "Ku të na gjeni",
+  "missingEvent": "<strong>Na mungon ndonjë event?</strong> <br></br>Nëse jeni pronari i këtij food truck-u ose thjesht një fans i përkushtuar, na ndihmoni ta mbajmë këtë faqe të saktë! <br></br><link>Na kontaktoni për të shtuar të dhënat që mungojnë.</link>",
+  "weeklySchedule": "Merr orarin javor 🍕"
+}

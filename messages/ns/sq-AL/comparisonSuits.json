@@ -1,0 +1,102 @@
+{
+  "title": "Cili i përshtatet food truck-ut tuaj?",
+  "checked": "Kontrolluar më {date}",
+  "evidence": "Provat",
+  "adminPreview": "Parapamje për adminët — e paverifikuar",
+  "ours": {
+    "fromPlan": "{name} (nga paketa {plan})"
+  },
+  "q": {
+    "preorder": "Cili sistem porosish u lejon klientëve të mi të porosisin paraprakisht dhe të zgjedhin orën e marrjes?",
+    "capacity": "Food truck-u im mbingarkohet në orët e pikut — cili sistem i kufizon porositë për çdo interval kohor?",
+    "whatsapp": "Klientët më pyesin vazhdimisht ku ndodhem — cili sistem u përgjigjet në WhatsApp?",
+    "social": "Cili sistem i krijon postimet për vendet e mia javore, që të mos më duhet të dizajnoj grafika?",
+    "schedule": "Punoj në një vend tjetër pothuajse çdo ditë — cili sistem u tregon klientëve ku jam dhe merr porosi për atë ndalesë?",
+    "priceLow": "Punoj vetëm disa ditë në muaj — cili sistem kushton më pak?",
+    "priceHigh": "Bëj festivale dhe evente me shumë njerëz — cili sistem kushton më pak?",
+    "commission": "Nuk dua të paguaj komision për çdo porosi — sa tarifon secili produkt?",
+    "offline": "Çfarë ndodh me porositë online nëse më ikën sinjali?",
+    "strength": "Cili nga produktet e krahasuara ofron “{feature}”?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {u lejon} other {u lejojnë}} klientëve të porosisin paraprakisht dhe të zgjedhin orën e marrjes.",
+    "capacity": "{names} {count, plural, one {kufizon} other {kufizojnë}} sa porosi pranon çdo orë marrjeje, që kuzhina të mos mbingarkohet.",
+    "whatsapp": "{names} {count, plural, one {u përgjigjet} other {u përgjigjen}} automatikisht mesazheve të klientëve në WhatsApp.",
+    "social": "{names} {count, plural, one {krijon} other {krijojnë}} grafika gati për postim me vendet e javës.",
+    "schedule": "{names} {count, plural, one {u tregon} other {u tregojnë}} klientëve ku ndodhet food truck-u çdo ditë dhe {count, plural, one {merr} other {marrin}} porosi për atë ndalesë."
+  },
+  "feat": {
+    "preorder": "oraret e marrjes",
+    "capacity": "kufi porosish për çdo interval kohor",
+    "whatsapp": "përgjigje automatike në WhatsApp",
+    "social": "grafika të orarit javor",
+    "schedule": "orar me vende që ndryshojnë",
+    "offlinePause": "Porositë online vihen në pauzë kur bie sinjali"
+  },
+  "others": {
+    "noQuoted": "{names} nuk e {count, plural, one {ofron} other {ofrojnë}} këtë.",
+    "notListed": "{names} {count, plural, one {nuk përmend {feature} në faqen e vet të internetit} other {nuk përmendin {feature} në faqet e tyre të internetit}}.",
+    "doesntSay": "{count, plural, one {{names}: faqja e internetit nuk e thotë} other {{names}: faqet e internetit nuk e thonë}}.",
+    "noneLists": "Asnjë nga produktet e tjera të krahasuara nuk e përmend, ndaj {names} {count, plural, one {është zgjidhja më e përshtatshme} other {janë zgjidhjet më të përshtatshme}} midis produkteve të krahasuara."
+  },
+  "price": {
+    "lead": "Me {orders, number} porosi online në muaj, {names} {count, plural, one {ka} other {kanë}} koston mujore më të ulët të programit midis produkteve të krahasuara: {amount} në muaj{count, plural, one {} other { secili}}.",
+    "includes": "Kjo përfshin abonimin, tarifat që i ngarkohen food truck-ut për çdo porosi, çdo tarifë për porosi shtesë dhe çdo tarifë konfigurimi të shpërndarë në 12 muaj; tarifat e përpunimit të kartave nuk përfshihen.",
+    "flat": "{name} ({plan}, çmim fiks pa tarifë për porosi nga {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Sa tarifon secili produkt për një porosi: {parts}."
+  },
+  "offline": {
+    "ours": "{name} mund t’i vërë automatikisht në pauzë porositë online kur food truck-u mbetet pa sinjal, që klientët të mos bëjnë porosi që kuzhina nuk do t’i marrë.",
+    "noQuoted": "{names} nuk {count, plural, one {ofron} other {ofrojnë}} funksionim pa lidhje.",
+    "doesntSay": "{count, plural, one {{names}: faqja e internetit nuk thotë} other {{names}: faqet e internetit nuk thonë}} çfarë ndodh kur bie sinjali."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {thotë se ofron} other {thonë se ofrojnë}} “{feature}”; {us} jo.",
+    "answerSoon": "{names} {count, plural, one {thotë se ofron} other {thonë se ofrojnë}} “{feature}”; {us} ende jo."
+  },
+  "ev": {
+    "ours": {
+      "yes": "po, sipas paketave të publikuara nga {us}",
+      "no": "jo, sipas paketave të publikuara nga {us}"
+    },
+    "state": {
+      "yes": "thotë se e ofron",
+      "partial": "ofron një pjesë të tij",
+      "no_quoted": "thotë se nuk e ofron",
+      "no_unquoted": "jo (pa citim të ruajtur)",
+      "not_listed": "nuk figuron në faqen e vet të internetit",
+      "not_mentioned": "faqja e vet e internetit nuk e thotë",
+      "unknown": "e panjohur"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Citim: “{quote}”.",
+    "pages": "Faqet e kontrolluara: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (nuk u lexua dot)",
+    "page": {
+      "features": "faqja e funksioneve",
+      "pricing": "faqja e çmimeve",
+      "help": "qendra e ndihmës",
+      "other": "faqe tjetër"
+    },
+    "help": {
+      "fetched": "Qendra e ndihmës u lexua.",
+      "linked_not_fetched": "Ka një qendër ndihme që nuk u lexua.",
+      "none_found": "Nuk u gjet qendër ndihme."
+    },
+    "calc": {
+      "volume": "Llogaritur për {orders, number} porosi online në muaj me {order} për porosi ({revenue} shitje online).",
+      "line": "{name} ({plan}): abonimi {sub} + tarifa e konfigurimit e shpërndarë në 12 muaj {setup} + tarifat për porosi {fees} + porositë shtesë {over} = {total} në muaj.",
+      "excluded": "Tarifat e përpunimit të kartave dhe tarifat që paguajnë klientët nuk përfshihen për asnjë produkt.",
+      "date": "Llogaritur më {date} nga çmimet e kontrolluara në faqen e internetit të çdo ofruesi."
+    }
+  },
+  "method": {
+    "covers": "Përfshin deri në katër alternativa, të zgjedhura sipas rëndësisë për food truck-et dhe disponueshmërisë së informacionit publik të verifikueshëm — jo çdo produkt në treg.",
+    "notListed": "“Nuk figuron” do të thotë se kemi kontrolluar faqet e funksioneve dhe të çmimeve të produktit dhe funksioni nuk përmendet, për funksione që kompanitë zakonisht i reklamojnë. “Nuk e thotë” do të thotë se nuk është konfirmuar as po, as jo."
+  }
+}

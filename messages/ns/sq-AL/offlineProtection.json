@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Gjatë shërbimit duhet ta mbani panelin ose ekranin e kuzhinës (KDS) të ndezur dhe online.",
+  "explainerBody": "Nëse ekrani fiket, pajisja humbet internetin ose kaloni në një faqe tjetër interneti, ndërhyn mbrojtja offline — ose vendos në pauzë porositë, ose çaktivizon pranimin automatik, sipas zgjedhjes suaj.",
+  "reminder": "⚠️ Gjatë shërbimit mbajeni panelin ose ekranin e kuzhinës (KDS) të ndezur dhe online, përndryshe mund të ndërhyjë mbrojtja offline.",
+  "enableConfirm": "Mbrojtja offline u aktivizua.\n\nQë porositë të vazhdojnë të vijnë, ekrani duhet të qëndrojë i ndezur. Nëse kjo pajisje humbet lidhjen, mbrojtja offline ndërhyn sipas mënyrës që zgjodhët.\n\nSigurohuni që “Ekrani ndezur” të jetë aktiv në këtë pajisje.",
+  "disableConfirm": "Të çaktivizohet mbrojtja offline për këtë event?\n\nNëse kjo pajisje humbet lidhjen, porositë online do të vazhdojnë — klientët mund të bëjnë porosi që ju nuk i shihni. Çaktivizojeni vetëm nëse keni lidhje të qëndrueshme.",
+  "cardDescription": "Përcakton çfarë ndodh me porositë që vijnë kur pajisja juaj del offline.",
+  "purpose": "Nëse pajisja juaj humbet lidhjen, kjo ndalon ardhjen e porosive ndërkohë që nuk mund t’i shihni.",
+  "switchLabel": "Mbrojtja offline e porosive",
+  "switchHelp": "Çfarë ndodh kur ky furgon humbet lidhjen.",
+  "modes": {
+    "pause": {
+      "label": "Vendos në pauzë porositë online",
+      "help": "Klientët nuk mund të porositin derisa të jeni sërish online."
+    },
+    "no_auto_accept": {
+      "label": "Vazhdo të marrësh porosi, konfirmoji vetë",
+      "help": "Pranimi automatik çaktivizohet, ndaj klientët mund të porositin ende, por asgjë nuk konfirmohet automatikisht. Ju e konfirmoni secilën kur të jeni sërish online — dhe çdo porosi që është ende në pritje refuzohet automatikisht pas kohës që keni zgjedhur, dhe klienti njoftohet me email."
+    }
+  },
+  "autoRejectLabel": "Refuzo porositë që presin më shumë se",
+  "autoRejectOption": "{n, plural, one {{count} min.} other {{count} min.}}"
+}

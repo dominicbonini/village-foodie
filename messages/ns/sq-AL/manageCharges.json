@@ -1,0 +1,30 @@
+{
+  "heading": "Taksa, bakshishet dhe tarifat",
+  "rate": {
+    "label": "Norma e taksës së shitjes",
+    "hint": "Norma që aplikoni për çdo porosi. Klientët e shohin të shtuar në pagesë, në fatura dhe në tiketa.",
+    "regionDefault": "Lëreni bosh për të aplikuar {label} me {rate}%, normën për ushqimin e gatshëm ({region})."
+  },
+  "included": {
+    "label": "{label} në çmimet tuaja",
+    "hint": "Çmimet tuaja e përfshijnë tashmë {label}. Kjo normë tregon vetëm sa nga çdo çmim është {label}, në fatura dhe tiketa — në pagesë nuk shtohet asgjë.",
+    "default": "Lëreni bosh për të përdorur {rate}%, normën {label} për ushqimin e ngrohtë që shitet take away ({country})."
+  },
+  "tips": {
+    "label": "Bakshishet",
+    "hint": "Klientët që paguajnë online me kartë mund të shtojnë bakshish. I gjithë shkon te ju.",
+    "choices": "Opsionet që shohin klientët:",
+    "chip": "{rate}%",
+    "other": "Shumë tjetër"
+  },
+  "fee": {
+    "label": "Tarifa e shërbimit online",
+    "hint": "Shtohet vetëm te porositë online. Asnjëherë te porositë me pagesë në marrje ose te porositë në vend. E mbani ju.",
+    "pctAria": "Përqindja e tarifës së shërbimit",
+    "fixedAria": "Shuma fikse e tarifës së shërbimit",
+    "max": "Maksimumi që mund të aplikoni: {max}",
+    "example": "Klientët e shohin para se të paguajnë, si një rresht: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab shton një tarifë shërbimi prej {fee} te porositë online të klientëve tuaj. Ju nuk e paguani dhe nuk mund ta ndryshoni."
+  },
+  "saveFailed": "Nuk u ruajt dot — ju lutemi provoni sërish."
+}

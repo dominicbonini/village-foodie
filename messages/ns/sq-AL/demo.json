@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Nuk disponohet në demo",
+  "demoMode": "MODALITETI DEMO",
+  "loopLands": "Pikërisht kështu mbërrin një porosi e vërtetë",
+  "showMe": "Më trego",
+  "noCard": "{sub} Nuk nevojitet kartë.",
+  "notYet": "Jo ende",
+  "cashAndCollected": "Kesh dhe marrë",
+  "logoPlaceholder": "Logoja juaj këtu",
+  "welcomeTitle": "{sample, select, yes {Ja një demo shembull} other {Ja demoja juaj}}",
+  "welcomeIntro": "{sample, select, yes {Kjo është një <b>menu shembull</b> që të shihni si funksionon gjithçka — ngarkoni menunë tuaj kurdo për ta bërë tuajën.} other {Kjo është menuja dhe marka juaj, në një panel të vërtetë.}} Porositë që janë tashmë aty janë shembuj, që të shihni një shërbim me shumë punë.",
+  "twoThings": "Dy gjëra për të provuar:",
+  "hitButton": "Shtypni <b>{button}</b> te një porosi",
+  "scanQr": "Skanoni <b>kodin QR</b> — ose shtypni lidhjen — dhe porositni si klient, pastaj shikoni si mbërrin",
+  "qrAlt": "Kodi QR për faqen tuaj të porosive për klientët",
+  "openHere": "Ose hapeni në këtë pajisje",
+  "copyLink": "Kopjo lidhjen",
+  "copyDescribedAs": "lidhja e porosive",
+  "noLinkTitle": "Lidhja juaj e porosive për klientët",
+  "noLinkBody": "Lidhja e faqes suaj të porosive është te menuja, lart djathtas.",
+  "asLive": "Rrjedha e porosive dhe e kuzhinës është saktësisht si në punë reale.",
+  "startExploring": "Fillo eksplorimin",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {Fillo falas} one {Fillo falas për # muaj} other {Fillo falas për # muaj}}",
+    "sub": "Prova juaj falas fillon kur regjistroheni."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Demo · kjo është menuja juaj, ashtu siç do ta shohin klientët tuaj. Nuk tërhiqet asnjë pagesë dhe nuk dërgohet asnjë email."
+}

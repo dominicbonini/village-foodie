@@ -1,0 +1,17 @@
+{
+  "back": "← Kthehu",
+  "title": "Apliko një menu kombo",
+  "save": "Kurseni {amount}",
+  "selectItems": "Zgjidhni artikujt për çdo vend",
+  "choose": "Zgjidhni: {category}…",
+  "inYourBasket": "── Në shportën tuaj ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (në shportë){state, select, used { — tashmë në një menu kombo} taken { — e zgjedhur në një vend tjetër} other {}}",
+  "addNew": "── Shto të re ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {E detyrueshme · zgjidhni një} required {E detyrueshme} other {Zgjidhni një}}{unmet, select, yes { (e detyrueshme)} other {}}",
+  "notePlaceholder": "Shtoni një shënim, p.sh. pa qepë (opsionale)",
+  "backButton": "Kthehu",
+  "cancel": "Anulo",
+  "chooseRequired": "Zgjidhni opsionet e detyrueshme",
+  "apply": "Apliko menunë kombo · {amount}"
+}

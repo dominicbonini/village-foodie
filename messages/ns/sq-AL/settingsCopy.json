@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Lejo klientët të anulojnë porositë",
+    "sentence": "Klientët mund të anulojnë deri në <select></select> para orës së marrjes"
+  },
+  "autoAccept": {
+    "label": "Prano porositë automatikisht",
+    "help": "Porositë konfirmohen automatikisht. Nëse intervali i kërkuar është plot, porosia kalon në intervalin e parë të lirë. Konfirmohet vetëm kur ka kapacitet. Porositë me shënime nga klienti (p.sh. një alergji) duhet të konfirmohen gjithsesi."
+  },
+  "orderReady": {
+    "label": "Hapi “Porosia gati”",
+    "help": "Shfaq butonin “Shëno si gati” në ekranin e porosive. Ekranet e kuzhinës (KDS) cilësohen veçmas, në çdo pajisje. Klientët marrin një email sa herë që një porosi shënohet si gati. Vlen për të gjitha eventet — mund ta aktivizoni ose çaktivizoni gjithsesi për një event të vetëm nga paneli i tij."
+  },
+  "buzzers": {
+    "label": "A u jepni klientëve pagerë për marrjen e porosisë?",
+    "help": "Regjistroni cilin pager i dhatë secilit klient, që ta dini kë të kërkoni kur ushqimi i tij të jetë gati.",
+    "countLabel": "Sa pagerë keni?"
+  }
+}

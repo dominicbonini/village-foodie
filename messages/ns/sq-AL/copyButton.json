@@ -1,0 +1,10 @@
+{
+  "copy": "Kopjo",
+  "copied": "U kopjua ✓",
+  "failed": "Kopjimi dështoi",
+  "aria": "{label} {thing}",
+  "announceCopied": "U kopjua: {thing}",
+  "announceCopiedValue": "Vlera u kopjua",
+  "announceFailed": "Nuk u kopjua dot: {thing}. Përzgjidhni tekstin dhe kopjojeni vetë.",
+  "announceFailedValue": "Vlera nuk u kopjua dot. Përzgjidhni tekstin dhe kopjojeni vetë."
+}

@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Përshëndetje, {name},} other {Përshëndetje,}}",
+  "questions": "Keni pyetje? Thjesht na u përgjigjni.",
+  "signoff": "Ekipi i HatchGrab",
+  "buttonUpdate": "Përditëso {method, select, payment_method {mënyrën e pagesës} other {kartën}}",
+  "buttonPay": "Paguaj tani",
+  "buttonAddCard": "Shto kartë",
+  "suspended": "Nëse mbetet e papaguar, llogaria juaj mund të pezullohet.",
+  "failed": {
+    "subject": "Pagesa juaj për HatchGrab nuk kaloi",
+    "line1": "Sot nuk arritëm të tërheqim {amount} për {truck}. Do të provojmë sërish.",
+    "line2": "Ju lutemi përditësoni {method, select, payment_method {mënyrën e pagesës} other {kartën}} deri më {date} që porositë online të mbeten aktive."
+  },
+  "twoDays": {
+    "subject": "Edhe 2 ditë për të përditësuar {method, select, payment_method {mënyrën e pagesës} other {kartën}}",
+    "line1": "Shuma {amount} për {truck} është ende e papaguar. Përditësoni {method, select, payment_method {mënyrën e pagesës} other {kartën}} deri më {date}, përndryshe porositë online vihen në pauzë."
+  },
+  "oneDay": {
+    "subject": "Përditësoni {method, select, payment_method {mënyrën e pagesës} other {kartën}} deri nesër",
+    "line1": "Shuma {amount} për {truck} është ende e papaguar. Përditësoni {method, select, payment_method {mënyrën e pagesës} other {kartën}} deri nesër, përndryshe porositë online vihen në pauzë."
+  },
+  "lastDay": {
+    "subject": "Dita e fundit për të përditësuar {method, select, payment_method {mënyrën e pagesës} other {kartën}}",
+    "line1": "Sot është dita e fundit për të paguar {amount} për {truck}. Nëse mbetet e papaguar në mesnatë, porositë online vihen në pauzë derisa të paguani."
+  },
+  "paused": {
+    "subject": "Porositë online janë në pauzë",
+    "line1": "Porositë online për {truck} janë në pauzë sepse shuma {amount} është e papaguar. Paguani tani dhe ato riaktivizohen menjëherë.",
+    "line2": "Paguani deri më {date}, përndryshe llogaria juaj mund të pezullohet."
+  },
+  "trial7": {
+    "subject": "Prova juaj falas përfundon pas 7 ditësh",
+    "line1": "Prova juaj falas për {truck} përfundon më {date}.",
+    "line2": "Shtoni një kartë te Menaxhimi › Faturimi që porositë online të mbeten aktive.",
+    "plan": "Pas kësaj, paketa {plan} kushton {price} në muaj. Kur përfundon prova, tarifojmë {amount} për pjesën e mbetur të muajit {month}, pastaj {price} më {nextFirst}.",
+    "planFree": "Pas kësaj, kaloni te paketa {plan}, pa tarifë mujore.",
+    "fee": "Tarifa jonë prej {fee} për porositë online faturohet më 1 të muajit, për muajin e kaluar."
+  },
+  "trial1": {
+    "subject": "Prova juaj falas përfundon nesër",
+    "line1": "Prova juaj falas për {truck} përfundon nesër.",
+    "noCard": "Shtoni një kartë, përndryshe porositë online vihen në pauzë.",
+    "allSet": "Gjithçka është gati: paketa {plan} fillon më {date}.",
+    "charge": "Kur të përfundojë prova, do të tarifojmë {amount} për pjesën e mbetur të muajit {month}."
+  }
+}

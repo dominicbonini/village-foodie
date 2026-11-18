@@ -1,0 +1,41 @@
+{
+  "h1": "Gjithçka për të drejtuar shërbimin tuaj, në çdo paketë.",
+  "lede": "Porositë, porositë paraprake, kapaciteti dhe ekrani i kuzhinës përfshihen në çdo paketë.{hasUpgrades, select, yes { Paketat {plans} shtojnë {features}, si dhe tarifa më të ulëta.} other {}}",
+  "perMonth": "{price} / muaj",
+  "trial": {
+    "length": "{months, plural, one {# muaj} other {# muaj}}",
+    "ends": "Përfundon më {date}"
+  },
+  "group": {
+    "pay": "Çfarë paguani",
+    "run": "Drejtimi i shërbimit",
+    "online": "Porositë online",
+    "marketing": "Marketing dhe automatizim"
+  },
+  "pay": {
+    "included": "Porosi online të përfshira çdo muaj",
+    "fee": "Tarifa e HatchGrab për porositë online*",
+    "feeNoMark": "Tarifa e HatchGrab për porositë online",
+    "walkUp": "Porositë në vend"
+  },
+  "cell": {
+    "unlimited": "Pa limit",
+    "free": "Falas",
+    "feeAbove": "<b>{fee}</b> mbi {included}",
+    "yes": "Përfshihet",
+    "none": "Nuk përfshihet",
+    "comingSoon": "Së shpejti"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "rrjetet sociale",
+    "event_types": "çmime të personalizuara për eventet"
+  },
+  "meta": {
+    "description": "Çdo funksion i HatchGrab në çdo paketë, krah për krah — {plans}, me tarifat dhe sasitë e përfshira.{months, plural, =0 {} one { Muaji i parë përfshin gjithçka.} other { # muajt e parë përfshijnë gjithçka.}}"
+  },
+  "notes": {
+    "whatsapp": "Përgjigjet automatike në WhatsApp kërkojnë një llogari WhatsApp Business. Meta mund të tarifojë disa mesazhe; përgjigjet gjenerohen automatikisht.",
+    "printing": "Printimi i tiketave të kuzhinës kërkon një printer të përputhshëm Bluetooth ose me kabllo (nuk përfshihet)."
+  }
+}

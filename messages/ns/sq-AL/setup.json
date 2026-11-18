@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Ku ndodheni",
+    "identity": "Food truck-u juaj",
+    "menu": "Menuja juaj",
+    "event": "Eventi i parë"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Konfigurimi",
+  "loading": "Po ngarkohet",
+  "loadingCountries": "Po ngarkohet…",
+  "verify": {
+    "ok": "Email-i u konfirmua — faleminderit.",
+    "expired": "Kjo lidhje konfirmimi ka skaduar. Na kontaktoni dhe do ta rregullojmë para publikimit.",
+    "invalid": "Kjo lidhje konfirmimi nuk funksionoi. Na kontaktoni dhe do ta rregullojmë para publikimit."
+  },
+  "identity": {
+    "heading": "Si quhet food truck-u juaj?",
+    "intro": "Ky është emri që shohin klientët. Asgjë nuk bëhet publike derisa të vendosni ta publikoni.",
+    "nameLabel": "Emri i food truck-ut",
+    "namePlaceholder": "Burgerat e Arbenit",
+    "phoneLabel": "Telefoni",
+    "whatsappTick": "Ky numër është në WhatsApp",
+    "phoneHelp": "Klientët e shohin këtë në konfirmimin e porosisë, që të mund të pyesin për një porosi. Shenja përcakton nëse aty shkruhet “Na telefononi” apo “Na shkruani në WhatsApp”. Të dyja mund t’i ndryshoni te Cilësimet."
+  },
+  "phoneRequired": "Shtoni një numër telefoni — e përdorim edhe ne, edhe klientët për t’ju kontaktuar.",
+  "createFailed": "Food truck-u juaj nuk u krijua.",
+  "unreachable": "Nuk arritëm të lidhemi tani — ju lutemi provoni sërish.",
+  "back": "Kthehu",
+  "creating": "Po krijohet food truck-u juaj…",
+  "continue": "Vazhdo"
+}

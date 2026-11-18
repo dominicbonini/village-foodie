@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Adresa",
+    "postcode": "Kodi postar",
+    "zip": "Kodi ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Kodi postar",
+    "state": "Shteti federal",
+    "stateTerritory": "Shteti ose territori",
+    "province": "Provinca",
+    "county": "Qarku",
+    "prefecture": "Prefektura",
+    "emirate": "Emirati",
+    "region": "Rajoni",
+    "area": "Zona (fshat, qytezë ose qytet)",
+    "townOrArea": "Qyteti ose zona",
+    "city": "Qyteti",
+    "suburb": "Lagjja",
+    "townOrCity": "Qyteti"
+  },
+  "short": {
+    "area": "Zona",
+    "townOrArea": "Qyteti ose zona",
+    "city": "Qyteti",
+    "suburb": "Lagjja",
+    "townOrCity": "Qyteti"
+  },
+  "inSentence": {
+    "postcode": "kod postar",
+    "zip": "kod ZIP",
+    "eircode": "Eircode",
+    "postalCode": "kod postar"
+  },
+  "withArticle": {
+    "postcode": "një kod postar",
+    "zip": "një kod ZIP",
+    "eircode": "një Eircode",
+    "postalCode": "një kod postar"
+  },
+  "tradeLabel": {
+    "area": "Qyteti",
+    "townOrArea": "Qyteti ose zona",
+    "city": "Qyteti",
+    "suburb": "Lagjja",
+    "townOrCity": "Qyteti"
+  },
+  "basedIn": {
+    "area": "Qyteti ku keni bazën",
+    "townOrArea": "Qyteti ose zona ku keni bazën",
+    "city": "Qyteti ku keni bazën",
+    "suburb": "Lagjja ku keni bazën",
+    "townOrCity": "Qyteti ku keni bazën"
+  },
+  "example": "p.sh. {example}",
+  "customersSee": "Klientët shohin:",
+  "postalWarning": "Kjo nuk duket si {article} — për shembull {example}. Mund ta ruani gjithsesi.",
+  "regionChoose": "Zgjidhni…"
+}
