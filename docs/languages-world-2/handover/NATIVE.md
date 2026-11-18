@@ -380,3 +380,9 @@
 - Post boxes (from DesignEditor.tsx): Place «Lloc», Venue «Nom del lloc», Area «Zona», Time «Hora», box "quadre"; poster CANCELLED "CANCEL·LAT"; wp_last_toggle names «Lloc» (o «Nom del lloc») o «Hora».
 - WhatsApp button quoted «Configura» (later parts must match); Canva "Comparteix › Baixa" — confirm.
 - Check: "encarregats / personal", caption "text de la publicació", Free from "Sense", "A la cuina també es manipula"; samples elteufoodtruck.ad/esdeveniments, @festamajordelpoble.
+
+## ca-AD part 05 (languages-world-3, 18 Nov 2026)
+- Truck settings "Configuració dels vehicles"; Truck details "Dades del food truck"; Your trucks "Els teus vehicles"; vanBilling "# vehicle/vehicles".
+- Post row parts «Lloc» / «Hores» / «Dia i data»; import Venue «Lloc», Venue name «Nom del lloc»; «Pantalla encesa»; posts "publicació d’esdeveniment", "cartell", "Dissenys", «Tot el text», Main "Principal".
+- FOR CONSISTENCY: agent reported the section name as "Respostes automàticas" — correct Catalan is "automàtiques"; check and fix everywhere.
+- Check: "Per al teu gestor", "L’exercici fiscal passat", "Càlcul dels impostos", "Dies lliures", "Arrodoneix a {symbol}1", "o prem Supr"; hatch avoided ("Posa’l on atens els clients").
