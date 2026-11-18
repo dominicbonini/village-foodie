@@ -1,0 +1,944 @@
+{
+ "managePayments": {
+  "heading": "Pagaments",
+  "loading": "S’està comprovant el teu compte de Stripe…",
+  "state": {
+   "not_connected": {
+    "title": "Sense configurar",
+    "body": "Triga uns 10 minuts. Necessitaràs les dades bancàries i un document d’identitat.",
+    "chip": "Sense configurar"
+   },
+   "requirements": {
+    "title": "Stripe necessita les teves dades",
+    "body": "Els pagaments amb targeta no funcionaran fins que Stripe tingui les dades del teu negoci i les bancàries.",
+    "chip": "Cal actuar"
+   },
+   "pending": {
+    "title": "Connectat: Stripe està comprovant les teves dades",
+    "body": "No cal que facis res. Stripe està revisant el que has enviat, i aquesta pàgina s’actualitzarà quan acabi.",
+    "chip": "En revisió"
+   },
+   "ready": {
+    "title": "Connectat",
+    "body": "El teu compte de Stripe està connectat i pot acceptar pagaments.",
+    "chip": "A punt"
+   },
+   "restricted": {
+    "title": "Pagaments amb targeta en pausa",
+    "body": "Stripe ha posat en pausa els pagaments amb targeta del teu compte fins que es resolgui una qüestió pendent.",
+    "chip": "En pausa"
+   },
+   "unsupported": {
+    "title": "Aquest compte no admet pagaments amb targeta",
+    "body": "Stripe no pot activar els pagaments amb targeta en aquest compte. Contacta amb nosaltres i ho resoldrem plegats.",
+    "chip": "No disponible"
+   }
+  },
+  "keyMismatch": {
+   "title": "Les claus de Stripe no coincideixen",
+   "body": "El servidor d’aquest lloc web fa servir la clau de Stripe <b>{server, select, live {de producció} other {de prova}}</b>, mentre que el navegador es va compilar amb la clau <b>{browser, select, live {de producció} other {de prova}}</b>. Els pagaments amb targeta fallarien just quan un client intentés pagar, així que la configuració de Stripe queda bloquejada fins que coincideixin.",
+   "fix": "Totes dues claus s’han de definir per al mateix entorn, i després cal tornar a compilar el lloc web: la clau publicable s’incorpora durant la compilació i la clau secreta es llegeix a cada sol·licitud."
+  },
+  "permission": {
+   "title": "Només el titular del food truck pot configurar els pagaments",
+   "body": "Stripe el connecta la persona que rep els diners al seu compte bancari, així que s’ha de configurar des del seu propi compte, amb la sessió iniciada. No hi ha cap problema amb aquest food truck ni amb HatchGrab."
+  },
+  "config": {
+   "keyMissingTitle": "Els pagaments amb targeta encara no estan configurats",
+   "fetchTitle": "No hem pogut comprovar el compte de Stripe d’aquest food truck",
+   "keyMissing": "No s’ha definit {name}: els components integrats no es poden carregar."
+  },
+  "errors": {
+   "requestFailed": "La sol·licitud ha fallat ({status})",
+   "unreachable": "No s’ha pogut connectar amb Stripe"
+  },
+  "online": {
+   "heading": "Pagaments en línia",
+   "body": "Els clients paguen amb targeta quan fan la comanda. Els diners van directament al teu compte de Stripe: nosaltres no els retenim mai.",
+   "feeLine": "Stripe cobra {fee} per pagament amb {region} estàndard. Altres targetes poden costar més. La comissió de HatchGrab a les comandes en línia depèn del teu pla: consulta Facturació.",
+   "testMode": "Mode de prova. Encara no es poden cobrar pagaments reals."
+  },
+  "trialNote": "Configurar-ho no inicia la teva subscripció ni et cobra res avui. Així és com et paguen els clients; el teu pla és una cosa a part.",
+  "admin": {
+   "title": "Vista d’administrador de la plataforma",
+   "body": "Aquest food truck no ha configurat els pagaments en línia. Només el titular ho pot fer, des del seu propi compte amb la sessió iniciada: aquí no hi ha res a prémer."
+  },
+  "setUp": {
+   "button": "Configura els pagaments en línia",
+   "busy": "S’està configurant…"
+  },
+  "toast": {
+   "alreadySetUp": "Ja està configurat: continuem",
+   "addDetails": "Ara afegeix les teves dades per a Stripe",
+   "createFailed": "No s’ha pogut crear el compte"
+  },
+  "onboarding": {
+   "restricted": "A partir d’aquí se n’encarrega Stripe: iniciaràs la sessió a Stripe i actualitzaràs les dades que necessita.",
+   "firstRun": "A partir d’aquí se n’encarrega Stripe: iniciaràs la sessió a Stripe i hi introduiràs les dades del teu negoci i les bancàries."
+  },
+  "details": {
+   "title": "Les teves dades de Stripe",
+   "body": "Canvia el compte bancari on reps els pagaments o actualitza les dades i els documents del teu negoci.",
+   "button": "Mostra o edita"
+  },
+  "walkUp": {
+   "heading": "Pagaments presencials",
+   "body": "Com cobres al food truck. HatchGrab no cobra cap comissió de plataforma per les comandes presencials, triïs el que triïs.",
+   "ownTerminal": "El teu propi datàfon",
+   "current": "Actual",
+   "ownTerminalHelp": "Zettle, Square o el que ja facis servir. No cal configurar res: només s’apliquen les comissions del teu proveïdor.",
+   "hatchgrab": "A través de HatchGrab",
+   "comingSoon": "Aviat disponible",
+   "hatchgrabHelp": "Fa servir la mateixa connexió de Stripe que els pagaments en línia: un datàfon, o pagament sense contacte directament amb el mòbil o la tauleta.",
+   "hatchgrabFees": "{fee} per pagament amb {region}, més {surcharge} pels pagaments sense contacte cobrats amb un mòbil o una tauleta. Altres targetes poden costar més."
+  }
+ },
+ "manageCharges": {
+  "heading": "Impostos, propines i comissions",
+  "rate": {
+   "label": "Tipus de l’impost sobre les vendes",
+   "hint": "El tipus que apliques a cada comanda. Els clients el veuen afegit en pagar, als rebuts i als tiquets.",
+   "regionDefault": "Deixa-ho buit per aplicar {label} al {rate} %, el tipus del menjar preparat ({region})."
+  },
+  "included": {
+   "label": "{label} inclòs als teus preus",
+   "hint": "Els teus preus ja inclouen {label}. Aquest tipus només indica quina part de cada preu correspon a {label}, als rebuts i als tiquets: en pagar no s’hi afegeix res.",
+   "default": "Deixa-ho buit per fer servir el {rate} %, el tipus ({label}) del menjar calent per emportar ({country})."
+  },
+  "tips": {
+   "label": "Propines",
+   "hint": "Els clients que paguen en línia amb targeta poden afegir-hi una propina. És tota per a tu.",
+   "choices": "Opcions que veuen els clients:",
+   "chip": "{rate} %",
+   "other": "Un altre import"
+  },
+  "fee": {
+   "label": "Comissió de servei en línia",
+   "hint": "Només s’afegeix a les comandes en línia. Mai a les de «Paga en recollir» ni a les presencials. Te la quedes tu.",
+   "pctAria": "Percentatge de la comissió de servei",
+   "fixedAria": "Import fix de la comissió de servei",
+   "max": "Màxim que pots cobrar: {max}",
+   "example": "Els clients la veuen abans de pagar, en una sola línia: «{label} {amount}».",
+   "hatchgrab": "HatchGrab afegeix una comissió de servei de {fee} a les comandes en línia dels teus clients. No la pagues tu i no la pots canviar."
+  },
+  "saveFailed": "No s’ha pogut desar. Torna-ho a provar."
+ },
+ "takingPayment": {
+  "heading": "Cobrament",
+  "intro": "Com registra el teu equip els diners de cada comanda.",
+  "paidStepHelp": "Afegeix un botó «Confirma» quan afegeixes tu una comanda, perquè la puguis afegir ara i cobrar-la més tard. Activa-ho si acceptes comandes per telèfon o per endavant.",
+  "paidStepNote": "Això només afecta les comandes que afegeixes tu. No afecta les comandes en línia."
+ },
+ "designEditor": {
+  "item": {
+   "weekHeading": "Títol de la setmana",
+   "weekHeadingSample": "Setmana del …",
+   "daysSample": "De {first} a {last}",
+   "date": "Data",
+   "place": "Lloc",
+   "venue": "Nom del lloc",
+   "area": "Zona",
+   "time": "Hora",
+   "rows": "Files",
+   "rowsSample": "{px} px de separació · de {first} a {last}",
+   "ownText": "El teu text propi",
+   "noteTokenSample": "La nota que escrius quan crees la publicació",
+   "nothingYet": "Encara res",
+   "thisBox": "aquest quadre"
+  },
+  "sample": {
+   "venue": "Parc Central",
+   "area": "Escaldes-Engordany"
+  },
+  "bar": {
+   "previewWith": "Previsualitza amb",
+   "undo": "Desfés",
+   "undoTitle": "Desfés (⌘Z)",
+   "redo": "Refés",
+   "redoTitle": "Refés (⇧⌘Z)",
+   "cancel": "Cancel·la",
+   "saving": "S’està desant…",
+   "save": "Desa el disseny"
+  },
+  "grid": {
+   "eachRow": "Cada fila",
+   "placeOff": "El nom del lloc ja és a la teva imatge: HatchGrab no l’afegirà."
+  },
+  "background": {
+   "uploading": "S’està pujant…",
+   "replace": "Substitueix la imatge",
+   "shape": {
+    "square": "Quadrada (1:1)",
+    "portrait45": "Vertical (4:5)",
+    "portrait916": "Vertical (9:16)",
+    "landscape169": "Horitzontal (16:9)",
+    "portrait": "Vertical",
+    "landscape": "Horitzontal"
+   }
+  },
+  "scope": {
+   "title": "Posicions del text",
+   "standard": "Mateixes posicions que Estàndard",
+   "own": "Posicions pròpies per a {place}",
+   "locked": "Aquestes posicions venen del teu disseny Estàndard. Tria «Posicions pròpies per a {place}» per moure-les només aquí."
+  },
+  "stage": {
+   "hint": "Arrossega un quadre per moure’l · arrossega una cantonada per canviar-ne la mida",
+   "zoomOut": "Redueix",
+   "zoomIn": "Amplia"
+  },
+  "rows": {
+   "spacing": "Espaiat",
+   "daysRun": "Els dies van de {first} a {last}. Els tres quadres de la fila 1 es copien cap avall amb aquesta distància.",
+   "whichEvents": "Quins esdeveniments",
+   "showCancelled": "Mostra els esdeveniments cancel·lats",
+   "showCancelledHint": "Un esdeveniment cancel·lat mostra el lloc ratllat i la paraula CANCEL·LAT. Si ho desactives, el dia es mostra com a dia lliure."
+  },
+  "days": {
+   "reorder": "Reordena",
+   "move": "mou"
+  },
+  "picture": {
+   "picture": "Imatge",
+   "fill": "Omple el quadre",
+   "fit": "Encaixa-la a dins",
+   "corners": "Cantonades",
+   "square": "Rectes",
+   "rounded": "Arrodonides",
+   "ifMissing": "Si un lloc no té imatge",
+   "noPicture": {
+    "omit": "No hi posis res",
+    "blank": "Deixa un espai en blanc",
+    "logo": "Mostra el teu logotip"
+   },
+   "border": "Vora",
+   "drawBorder": "Dibuixa una vora",
+   "drawBorderHint": "Una línia al voltant de la imatge, del color que triïs.",
+   "borderWidth": "Gruix de la vora",
+   "cornerRadius": "Radi de les cantonades",
+   "locationPictures": "Imatges dels llocs",
+   "addLocationPictures": "+ Afegeix imatges dels llocs",
+   "allHaveImage": "{total, plural, =0 {Encara no tens cap lloc.} one {El teu lloc té imatge.} other {Tots els teus # llocs tenen imatge.}}",
+   "someWithout": "{without} dels teus {total, plural, one {# lloc} other {# llocs}} encara no {without, plural, one {té} other {tenen}} imatge"
+  },
+  "settings": {
+   "font": "Font",
+   "colour": "Color",
+   "textColour": "Color del text",
+   "ownStyleNote": "{count, plural, one {{names} té estil propi, així que no canvia.} other {{names} tenen estil propi, així que no canvien.}}",
+   "matchAgain": "Torna a igualar-ho",
+   "matchName": "Igual que {name}",
+   "lastToggle": "{kind, select, weekly {Mantén activat «Lloc» o «Hora». Un esdeveniment cancel·lat mostra el lloc ratllat i la paraula CANCEL·LAT, així que si tots dos estan desactivats no hi hauria res que indiqués que està cancel·lat.} other {Mantén activat «Nom del lloc» o «Hora». Un esdeveniment cancel·lat mostra el lloc ratllat i la paraula CANCEL·LAT, així que si tots dos estan desactivats no hi hauria res que indiqués que està cancel·lat.}}"
+  },
+  "letters": {
+   "boldGlyph": "N",
+   "italicGlyph": "C",
+   "capsGlyph": "AA",
+   "italicTitle": "{italic}: aquesta font té una cursiva de debò"
+  },
+  "align": {
+   "left": "Esquerra",
+   "centre": "Centre",
+   "right": "Dreta"
+  },
+  "effects": {
+   "outlineColour": "Color del contorn",
+   "bandColour": "Color de la franja",
+   "bandDaysOff": "Franja dels dies lliures",
+   "bandCancelled": "Franja quan l’esdeveniment està cancel·lat",
+   "bandDaysOffHint": "Substitueix la franja de dalt els dies sense activitat.",
+   "bandCancelledHint": "Substitueix la franja de dalt quan l’esdeveniment està cancel·lat."
+  },
+  "more": {
+   "dayOwnLine": "Dia en una línia a part",
+   "dayOwnLineHint": "El dia de la setmana a sobre de la data. Només per a la data.",
+   "noEventDay": "Els dies sense esdeveniment",
+   "wordsBeforePlaceholder": "p. ex. Ens trobaràs a",
+   "neverHyphenate": "Una paraula llarga sense cap espai sempre es redueix: mai no partim el nom d’un lloc amb guionet."
+  },
+  "bits": {
+   "less": "Menys",
+   "more": "Més",
+   "chooseColourFor": "{label}: tria qualsevol color",
+   "chooseColour": "Tria qualsevol color"
+  }
+ },
+ "fontPicker": {
+  "tab": {
+   "all": "Totes",
+   "bold": "Gruixudes i altes",
+   "hand": "Manuscrites",
+   "classic": "Clàssiques",
+   "clean": "Senzilles",
+   "own": "Les teves",
+   "ownCount": "Les teves ({count})"
+  },
+  "yoursTag": "· teva",
+  "loadingFonts": "S’estan carregant les fonts…",
+  "search": "Cerca entre {count, number} fonts",
+  "uploadButton": "↑ Puja la teva font",
+  "loadingLibrary": "S’està carregant la biblioteca de fonts…",
+  "tryAgain": "Torna-ho a provar",
+  "noOwn": "Encara no has pujat cap font. Fes servir el botó «↑ Puja la teva font» de dalt.",
+  "recent": "Usades recentment",
+  "popular": "Populars per a cartells",
+  "adding": "S’està afegint…",
+  "noMatch": "Cap font no coincideix amb «{query}».",
+  "showing": "Es mostren {shown} de {total, number}: escriu més per afinar la cerca.",
+  "couldNotAdd": "No s’ha pogut afegir aquesta font",
+  "tooBig": "Aquesta font ocupa {size, number, ::.0 group-off} MB. El límit és de 5 MB.",
+  "woff": "Puja un fitxer TTF o OTF: normalment en pots baixar un d’on vas comprar la font.",
+  "uploadIncomplete": "La pujada no s’ha completat",
+  "added": "S’ha afegit «{name}» com a versió {face}.",
+  "face": {
+   "regular": "normal",
+   "bold": "negreta",
+   "italic": "cursiva"
+  },
+  "licenceTick": "Soc el propietari d’aquesta font o tinc una llicència per fer-la servir",
+  "checking": "S’està comprovant la font…",
+  "addFont": "Afegeix la font",
+  "cancel": "Cancel·la",
+  "missingFaces": "Afegeix la versió {faces} de «{name}» (opcional): torna a triar el fitxer.",
+  "somethingWrong": "Alguna cosa ha fallat",
+  "faceLower": {
+   "regular": "normal",
+   "bold": "negreta",
+   "italic": "cursiva"
+  },
+  "ownLicence": "Pròpia",
+  "loadFailed": "No s’han pogut carregar les fonts"
+ },
+ "weeklyPost": {
+  "error": {
+   "generic": "Alguna cosa ha fallat",
+   "previewFailed": "No s’ha pogut generar la previsualització",
+   "loadFailed": "No s’ha pogut carregar",
+   "tooBig": "Aquesta imatge ocupa {size, number, ::.0 group-off} MB. El límit és de 10 MB.",
+   "wrongType": "Tria un fitxer PNG o JPG.",
+   "uploadIncomplete": "La pujada no s’ha completat",
+   "uploadFailed": "La pujada ha fallat",
+   "saveFailed": "No s’ha pogut desar",
+   "buildFailed": "No s’ha pogut crear la publicació",
+   "copyFailed": "No s’ha pogut copiar: selecciona el text i copia’l a mà."
+  },
+  "loading": "S’està carregant…",
+  "missingTable": {
+   "title": "La publicació setmanal necessita una actualització de la base de dades",
+   "body": "La taula dels dissenys encara no s’ha creat. Aquesta pantalla funcionarà quan s’hagi aplicat la migració."
+  },
+  "kind": {
+   "label": "Quin disseny",
+   "event": "Un sol esdeveniment",
+   "week": "Setmanal"
+  },
+  "setup": {
+   "title": "Configura la teva publicació setmanal",
+   "intro": "Puja la versió en blanc del gràfic del calendari setmanal que ja fas: el mateix disseny, sense els teus quadres de text. HatchGrab omple la setmana a partir del teu calendari.",
+   "canvaTitle": "Com exportar una imatge en blanc des de Canva",
+   "canvaStep1": "Obre el teu disseny habitual del calendari setmanal.",
+   "canvaStep2": "Suprimeix els quadres de text amb les dates, els llocs i les hores: deixa el fons i els títols que vulguis conservar.",
+   "canvaStep3": "Comparteix › Baixa › PNG.",
+   "uploading": "S’està pujant…",
+   "upload": "Puja la teva imatge en blanc",
+   "uploadHint": "PNG o JPG, fins a 10 MB, com a mínim {px} px al costat curt.",
+   "phoneTip": "Millor en un ordinador o un iPad: al mòbil els quadres són massa petits per arrossegar-los.",
+   "designName": "Disseny de la publicació setmanal",
+   "backDesigns": "‹ Dissenys",
+   "back": "‹ Enrere",
+   "pictureNote": "La teva imatge sense cap data ni lloc. Nosaltres els hi afegim.",
+   "saved": "Disseny desat."
+  },
+  "week": {
+   "this": "Aquesta setmana",
+   "next": "La setmana que ve"
+  },
+  "post": {
+   "title": "La teva publicació setmanal",
+   "editDesign": "Edita el disseny",
+   "weekOf": "Setmana: {date}",
+   "imageAlt": "La teva publicació setmanal",
+   "building": "S’està creant la publicació…",
+   "updating": "S’està actualitzant…",
+   "eventsTitle": "Esdeveniments d’aquesta setmana",
+   "noEvents": "Aquesta setmana no hi ha esdeveniments.",
+   "eventDateCancelled": "{date} · cancel·lat",
+   "showCancelled": "Mostra els esdeveniments cancel·lats",
+   "showPrivate": "Mostra els esdeveniments privats",
+   "privateHint": "Es mostren com a «Esdeveniment privat» amb la data i les hores, però mai el lloc.",
+   "noteTitle": "Nota",
+   "notePlaceholder": "p. ex. Fes la comanda anticipada i passa a recollir-la",
+   "noteHint": "Apareix al text de la publicació i al quadre de la nota, si n’has posat un.",
+   "captionTitle": "Text per a la teva pàgina",
+   "perEventTitle": "Publicació per a cada esdeveniment",
+   "nothingToPost": "Aquesta setmana no hi ha res per publicar.",
+   "textCopied": "Text copiat.",
+   "copyText": "Copia el text",
+   "image": "Imatge",
+   "share": "Comparteix",
+   "noOrderLink": "Encara no hi ha enllaç de comandes: configura l’adreça web del teu food truck a Configuració."
+  }
+ },
+ "manageShell": {
+  "loading": "S’està carregant la consola de gestió…",
+  "loadFailed": "No s’ha pogut carregar",
+  "requestFailed": "Error",
+  "invalidToken": "Codi d’accés no vàlid o caducat",
+  "loadFailedReason": "No s’ha pogut carregar aquesta pàgina: {reason}",
+  "noCountrySettings": "No s’ha pogut carregar la configuració del país d’aquest food truck. Actualitza la pàgina.",
+  "noPlans": "No s’ha pogut carregar el pla d’aquest food truck. Actualitza la pàgina.",
+  "stale": "{hasTime, select, yes {No s’ha pogut actualitzar. Es mostra el que s’havia desat a les {time}. Els canvis que facis es continuen desant.} other {No s’ha pogut actualitzar. Es mostra el que s’havia desat. Els canvis que facis es continuen desant.}}",
+  "verify": {
+   "ok": "Correu electrònic confirmat. Gràcies!",
+   "expired": "Aquest enllaç de confirmació ha caducat. Contacta amb nosaltres i ho resoldrem abans que comencis a funcionar.",
+   "invalid": "Aquest enllaç de confirmació no ha funcionat. Contacta amb nosaltres i ho resoldrem abans que comencis a funcionar."
+  },
+  "profile": {
+   "updated": "Perfil actualitzat",
+   "saveFailed": "No s’ha pogut desar",
+   "title": "Edita el perfil",
+   "name": "Nom",
+   "namePlaceholder": "El teu nom",
+   "email": "Correu electrònic",
+   "cancel": "Cancel·la",
+   "saving": "S’està desant…",
+   "save": "Desa"
+  },
+  "header": {
+   "subtitle": "Consola de gestió",
+   "ordersDashboard": "← Tauler de comandes"
+  },
+  "tabs": {
+   "menu": "Carta",
+   "schedule": "Calendari",
+   "paperwork": "Documents",
+   "social": "Xarxes socials",
+   "reports": "Informes",
+   "team": "Equip",
+   "settings": "Configuració",
+   "payments": "Pagaments",
+   "billing": "Facturació",
+   "paymentsIcon": "💶",
+   "scheduleCount": "Calendari ({count})",
+   "stripeAttention": "Stripe necessita la teva atenció",
+   "allergensNotSet": "al·lèrgens sense configurar"
+  },
+  "menuSections": {
+   "label": "Seccions de la carta",
+   "items": "Productes",
+   "capacity": "Capacitat de la cuina",
+   "extras": "Extres i suggeriments",
+   "deals": "Menús"
+  },
+  "socialSections": {
+   "label": "Seccions de xarxes socials",
+   "create": "Crea una publicació",
+   "designs": "Dissenys",
+   "locations": "Configuració dels llocs"
+  },
+  "notices": {
+   "review": "Revisa →",
+   "tour": "Vols fer una visita ràpida pel teu tauler?",
+   "showMeAround": "Ensenya-m’ho",
+   "dismiss": "Descarta",
+   "approval": "{count, plural, one {Hem trobat <b>{count}</b> esdeveniment per a tu: revisa’l i aprova’l abans que es publiqui.} other {Hem trobat <b>{count}</b> esdeveniments per a tu: revisa’ls i aprova’ls abans que es publiquin.}}",
+   "allergens": "<b>Al·lèrgens sense configurar</b>: els clients no poden veure la informació d’al·lèrgens fins que la verifiquis. Revisa els al·lèrgens de cada plat a la pestanya Carta.",
+   "domainLive": "<link>{domain}</link> ja funciona. Fes-hi un cop d’ull i després confirma’ns a Configuració que és correcte.",
+   "stripe": "<b>Stripe necessita alguna cosa de tu</b>: els pagaments amb targeta es poden aturar fins que es resolgui.",
+   "profileTitle": "Completa el teu perfil",
+   "missing": "Falta: {fields}.",
+   "goToSettings": "Ves a Configuració →",
+   "field": {
+    "truckName": "nom del food truck",
+    "cuisineType": "tipus de cuina",
+    "contactEmail": "correu electrònic de contacte",
+    "contactPhone": "telèfon de contacte"
+   }
+  },
+  "trialPopup": {
+   "title": "{months, select, none {Tens una prova gratuïta} other {Tens una prova gratuïta (mesos gratuïts: {months})}}",
+   "ends": "{hasDate, select, yes {La prova acaba el <hl>{date}</hl>} other {La prova acaba <hl>aviat</hl>}}",
+   "offer": "{hasMonths, select, yes {{months, plural, one {Totes les funcions gratis durant # mes} other {Totes les funcions gratis durant # mesos}}} other {Totes les funcions gratis durant la prova}}",
+   "body": "{hasDate, select, yes {No et cobrarem res durant la prova, que dura fins al <b>{date}</b>. La facturació només comença quan tries un pla i introdueixes les dades de pagament. Fins aleshores no hi ha res per cancel·lar ni res per pagar. Tria el pla abans d’aquesta data: si no ho fas, passaràs al pla {fallback} i algunes funcions deixaran de funcionar.} other {No et cobrarem res mentre siguis en període de prova. La facturació només comença quan tries un pla i introdueixes les dades de pagament. Fins aleshores no hi ha res per cancel·lar ni res per pagar. Tria el pla abans que acabi la prova: si no ho fas, passaràs al pla {fallback} i algunes funcions deixaran de funcionar.}}",
+   "bodyPaidEnd": "{hasDate, select, yes {No et cobrarem res durant la prova, que dura fins al <b>{date}</b>. Quan acabi la prova, el pla {fallback} costa {price} al mes. Abans d’aquesta data et contactarem per configurar el pagament.} other {No et cobrarem res mentre siguis en període de prova. Quan acabi la prova, el pla {fallback} costa {price} al mes. Abans no acabi et contactarem per configurar el pagament.}}",
+   "fees": "*S’apliquen les comissions estàndard de processament de targetes a les comandes en línia",
+   "upgrade": "Millora el pla aquí →"
+  }
+ },
+ "manageBilling": {
+  "perTruckMonth": "per vehicle / mes",
+  "transactionFees": "Comissions per transacció",
+  "comingSoon": "Aviat disponible",
+  "footnote2Masked": "Els pagaments en línia funcionen amb Stripe Connect. Les comissions de la plataforma i de processament de targetes estan per confirmar i es confirmaran en el llançament.",
+  "card": {
+   "title": "Facturació i pagaments",
+   "managed": "HatchGrab gestiona la facturació",
+   "earlyAccess": "Durant l’accés anticipat configurem i ajustem els plans manualment.",
+   "planLine": "{trial, select, yes {{truck} · pla {plan} (prova)} other {{truck} · pla {plan}}}"
+  },
+  "currentPlan": "Pla actual",
+  "plan": {
+   "included": "Inclou {amount} de comandes en línia al mes.",
+   "includedUnlimited": "Comandes en línia il·limitades incloses.",
+   "promo": "Preu especial.",
+   "promoUntil": "Preu especial fins al {date}.",
+   "ended": "El teu pla {plan} va acabar el {date}. Ara tens el pla {now}.",
+   "trialMonths": "Una prova gratuïta (mesos: {months})."
+  },
+  "trialEnds": "La prova acaba el {date}",
+  "yourTrialEnds": "La teva prova acaba el {date}",
+  "notStarted": {
+   "heading": "La teva prova gratuïta encara no ha començat"
+  },
+  "onTrial": "Tens totes les funcions. Tria un pla abans que acabi la prova.",
+  "onTrialPaidEnd": "Tens totes les funcions. Quan acabi la prova, el pla {plan} costa {price} al mes. Abans et contactarem per configurar el pagament.",
+  "onTrialNoCta": "Tens totes les funcions.",
+  "noCharge": "🔒 No et cobrarem res durant la prova, que dura fins al {date}. La facturació només comença quan tries un pla i introdueixes les dades de pagament. Fins aleshores no hi ha res per cancel·lar ni res per pagar.",
+  "noChargePaidEnd": "🔒 No et cobrarem res durant la prova, que dura fins al {date}.",
+  "fees": "*S’apliquen les comissions estàndard de processament de targetes a les comandes en línia",
+  "setUpPayment": "⏱ Tria un pla abans que acabi la prova",
+  "changeYourPlan": "Canvia de pla",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+   "title": "Canvia al pla {plan}",
+   "tagline": "{price} — {description}",
+   "body": "Estem configurant la facturació automàtica. Per canviar ara, envia’ns un missatge i t’ho deixarem tot a punt en 24 hores.",
+   "mailSubject": "Canvi al pla {plan} — {truck}",
+   "mailBody": "Hola, voldria canviar {truck} al pla {plan} ({price}).",
+   "email": "Envia’ns un correu per canviar",
+   "cancel": "Cancel·la"
+  }
+ },
+ "manageTeam": {
+  "toast": {
+   "verificationSent": "Correu de verificació enviat",
+   "emailChangeFailed": "No s’ha pogut canviar el correu electrònic",
+   "profileUpdated": "Perfil actualitzat",
+   "saveProfileFailed": "No s’ha pogut desar el perfil",
+   "verificationResent": "Correu de verificació reenviat: revisa la safata d’entrada",
+   "resendFailed": "No s’ha pogut reenviar",
+   "emailChangeCancelled": "S’ha cancel·lat el canvi de correu electrònic",
+   "cancelFailed": "No s’ha pogut cancel·lar",
+   "memberUpdated": "Membre actualitzat",
+   "inviteSent": "Invitació enviada",
+   "memberRemoved": "Membre eliminat"
+  },
+  "confirmRemove": "Vols eliminar aquest membre de l’equip?",
+  "title": "Membres de l’equip",
+  "intro": "Convida el personal perquè accedeixi a la pantalla de comandes i prengui comandes",
+  "inviteMember": "+ Convida un membre",
+  "ownerName": "{you, select, yes {{name} (tu)} other {{name}}}",
+  "ownerLine": "Titular · Tots els vehicles",
+  "edit": "Edita",
+  "remove": "Elimina",
+  "awaiting": "⏳ Pendent de verificació",
+  "sentTo": "Verificació enviada a <b>{email}</b>. Revisa la safata d’entrada.",
+  "sending": "S’està enviant…",
+  "resend": "Reenvia",
+  "cancelling": "S’està cancel·lant…",
+  "cancel": "Cancel·la",
+  "myProfile": "El meu perfil",
+  "firstName": "Nom *",
+  "lastName": "Cognoms *",
+  "phone": "Telèfon",
+  "phonePlaceholder": "+376 612 345",
+  "email": "Correu electrònic",
+  "verifyNote": "Enviarem un enllaç de verificació a aquesta adreça. El teu correu electrònic actual continua actiu fins que es verifiqui el nou.",
+  "privacy": "Les teves dades personals són privades i els clients no les veuen mai. Es fan servir per gestionar el compte i verificar la facturació.",
+  "saving": "S’està desant…",
+  "save": "Desa",
+  "memberLine": "{role, select, manager {Encarregat} other {Personal}} · {vans}{pending, select, yes { · Invitació pendent} other {}}",
+  "allTrucks": "Tots els vehicles",
+  "noMembers": "Encara no hi ha cap membre a l’equip",
+  "modal": {
+   "editTitle": "Edita el membre de l’equip",
+   "inviteTitle": "Convida un membre de l’equip",
+   "name": "Nom",
+   "namePlaceholder": "p. ex. Laia",
+   "email": "Correu electrònic",
+   "emailPlaceholder": "laia@exemple.com",
+   "role": "Rol",
+   "roleStaff": "Personal: pren comandes i gestiona la cuina",
+   "roleManager": "Encarregat: accés complet, inclosos la carta i la configuració",
+   "roleOwner": "Titular: accés complet, inclosos l’equip i la facturació",
+   "truckAccess": "Accés als vehicles",
+   "onlyTruck": "{van} <muted>(únic vehicle)</muted>",
+   "selectOne": "Selecciona com a mínim un vehicle",
+   "saveChanges": "Desa els canvis",
+   "sendInvite": "Envia la invitació"
+  },
+  "inviteEmail": {
+   "subject": "{truck} t’ha convidat a unir-te al seu equip a HatchGrab",
+   "greeting": "{hasName, select, yes {Hola, {name},} other {Hola,}}",
+   "invited": "{truck} t’ha convidat a unir-te al seu equip a HatchGrab com a {role, select, owner {titular} manager {encarregat} other {membre del personal}}.",
+   "click": "Fes clic al botó de sota per definir la contrasenya i començar. Aquest enllaç caduca d’aquí a 7 dies.",
+   "button": "Accepta la invitació",
+   "ignore": "Si no esperaves aquesta invitació, pots ignorar aquest correu sense cap problema."
+  }
+ },
+ "manageWhatsApp": {
+  "preview": {
+   "title": "Prova-ho abans de connectar-lo",
+   "intro": "Escriu una pregunta com la faria un client i mira exactament què rebria. No s’envia res a ningú.",
+   "examples": {
+    "where": "On sou aquesta nit?",
+    "doYouDo": "Feu pizza de pepperoni?",
+    "menu": "Què hi ha a la carta?"
+   },
+   "placeholder": "Quines postres teniu?",
+   "send": "Envia",
+   "empty": "La resposta apareixerà aquí",
+   "working": "S’està preparant la resposta…",
+   "noReply": "No s’enviaria cap resposta.",
+   "noReplyWhy": "Sembla correu brossa, una sol·licitud de reserva o alguna cosa que no hi té res a veure, així que la resposta automàtica no respon.",
+   "footnote": "Les respostes les genera la IA, varien una mica cada vegada i, de tant en tant, poden ser incorrectes.",
+   "failed": "Ara mateix no s’ha pogut generar cap previsualització.",
+   "unreachable": "No s’ha pogut connectar amb el servidor. Comprova la connexió i torna-ho a provar."
+  },
+  "setup": {
+   "button": {
+    "preparing": "S’està preparant…",
+    "unavailable": "No disponible",
+    "waiting": "S’està esperant la finestra de Facebook…",
+    "finishing": "S’està acabant…",
+    "reconnect": "Torna a connectar",
+    "setUp": "Configura"
+   },
+   "startAgain": "Torna a començar",
+   "popupHint": "No veus la finestra de Facebook? Pot ser que s’hagi bloquejat. Permet les finestres emergents per a hatchgrab.com i després prem «Torna a començar»."
+  },
+  "notice": {
+   "sdkUnavailable": "La configuració de WhatsApp no està disponible en aquest entorn.",
+   "sdkBlocked": "No s’ha pogut carregar l’script d’inici de sessió de Meta. Normalment la causa és un bloquejador d’anuncis o la protecció contra el seguiment.",
+   "setupFailed": "No s’ha pogut completar la configuració. No s’ha canviat res.",
+   "setupFinished": "Configuració acabada.",
+   "metaError": "Meta ha informat d’un problema durant la configuració. No s’ha canviat res. Torna-ho a provar i, si continua passant, contacta amb nosaltres.",
+   "closed": "La configuració s’ha tancat abans d’acabar. No s’ha canviat res: prem «Configura» per tornar-ho a provar.",
+   "disconnectedUnreachable": "WhatsApp s’ha desconnectat. No hem pogut connectar amb Meta per retirar l’accés. Elimina HatchGrab a WhatsApp Business → Configuració → Compte → Business Platform.",
+   "disconnected": "WhatsApp s’ha desconnectat. Les respostes automàtiques s’han aturat.",
+   "close": "Tanca"
+  },
+  "card": {
+   "title": "Respostes automàtiques",
+   "description": "Respon automàticament les preguntes dels clients a les teves xarxes socials, a partir de la teva carta i el teu calendari.",
+   "channels": "Canals",
+   "requiresAccount": "Cal un compte de WhatsApp Business.",
+   "connected": "Connectat",
+   "popupInstruction": "S’obrirà una finestra de Facebook per connectar el teu compte de WhatsApp Business. Si no apareix res, permet les finestres emergents per a hatchgrab.com al navegador i torna a prémer «Configura».",
+   "switchedOff": "Les respostes automàtiques de WhatsApp estan desactivades per al teu food truck.",
+   "expiring": "Aviat caldrà renovar la connexió de WhatsApp. Prem «Torna a connectar» perquè les respostes automàtiques continuïn funcionant.",
+   "comingSoon": "Aviat disponible",
+   "instagram": "Respostes automàtiques als missatges directes d’Instagram. Caldrà un compte professional d’Instagram.",
+   "messenger": "Respostes automàtiques a Facebook Messenger. Caldrà una pàgina de Facebook."
+  },
+  "blocked": {
+   "title": "Les teves respostes no s’estan lliurant",
+   "body": "WhatsApp no envia les teves respostes automàtiques per un problema de facturació al teu compte de WhatsApp Business. Els clients et poden continuar escrivint i continuaràs veient tot el que t’envien, però no reben cap resposta.",
+   "fix": "Aquests missatges els pagues directament a WhatsApp, així que es resol a WhatsApp Manager. <link>Comprova el mètode de pagament</link>"
+  },
+  "limit": {
+   "heading": "Respostes automàtiques",
+   "label": "Límit mensual",
+   "option": "{n, number}",
+   "usage": "{used, number} de {limit, number} utilitzades · es reinicia el {date}",
+   "perCustomer": "Màxim de respostes per client en 24 hores: {n}. Després, s’envia un missatge que diu que respondràs personalment.",
+   "emailAt": "Les respostes s’aturen quan arribes al límit. T’enviarem un correu quan arribis al 80 % i al 100 %.",
+   "saved": "S’ha desat el límit mensual de respostes",
+   "saveFailed": "No s’ha pogut desar el límit"
+  },
+  "billing": {
+   "heading": "Facturació",
+   "paymentMethod": "Mètode de pagament",
+   "added": "Mètode de pagament afegit",
+   "missing": "No s’ha afegit cap mètode de pagament",
+   "addInManager": "Afegeix-lo a WhatsApp Manager",
+   "summary": "Meta, i no HatchGrab, factura les respostes al teu compte de WhatsApp. A partir del {from}, les primeres {free, number} de cada mes són gratuïtes. Dades vigents a {checked}; consulta <link>els preus de Meta</link> per si hi ha canvis.",
+   "howMetaCharges": "Com cobra Meta",
+   "chargesTitle": "Les respostes de WhatsApp les cobra Meta, no HatchGrab.",
+   "chargesBody": "Meta factura al teu compte de WhatsApp Business cada resposta que HatchGrab envia per tu. A partir del {from}, Meta inclou {free, number} respostes gratuïtes al mes per número; després, cada resposta es cobra a la tarifa de Meta. Les respostes que envies tu mateix des de l’aplicació WhatsApp Business no es cobren. Meta fixa aquests preus i els pot canviar. <link>Consulta els preus de Meta</link>",
+   "addPaymentInManager": "Afegeix un mètode de pagament a WhatsApp Manager",
+   "aboveMissing": "El teu límit supera les {free, number} respostes gratuïtes de Meta. Sense un mètode de pagament, Meta aturarà totes les respostes quan s’hagin fet servir.",
+   "aboveGeneral": "El teu límit supera les {free, number} respostes gratuïtes de Meta. Per a les respostes que passin d’aquesta xifra cal un mètode de pagament al teu compte de WhatsApp; sense, Meta atura totes les respostes quan s’acaben les gratuïtes.",
+   "addPaymentMethod": "Afegeix un mètode de pagament"
+  },
+  "disconnect": {
+   "link": "Desconnecta WhatsApp",
+   "title": "Vols desconnectar WhatsApp?",
+   "body": "Les respostes automàtiques s’aturen immediatament i HatchGrab perd l’accés al teu compte de WhatsApp. El teu número continua funcionant a l’aplicació WhatsApp Business. Per eliminar HatchGrab del tot, obre també WhatsApp Business → Configuració → Compte → Business Platform.",
+   "cancel": "Cancel·la",
+   "confirm": "Desconnecta",
+   "working": "S’està desconnectant…",
+   "failed": "No s’ha pogut desconnectar"
+  },
+  "signup": {
+   "logged": "Registrat.",
+   "partial": "Hem vinculat el teu compte de WhatsApp Business, però no hem pogut completar la connexió. No és cap problema per part teva: contacta amb nosaltres i l’acabarem.",
+   "noNumber": "El teu compte de WhatsApp Business està vinculat, però no ha arribat cap número de telèfon. Prem «Torna a connectar» i acaba el pas del número.",
+   "needsRegistering": "El teu compte està vinculat, però hem de registrar aquest número abans que puguin començar les respostes. Contacta amb l’assistència: la configuració està desada, no la tornis a fer.",
+   "registerRefused": "El teu compte està vinculat, però Meta no ha volgut registrar el número. La configuració està desada: contacta amb l’assistència en lloc de tornar-la a fer.",
+   "deliveryRefused": "El teu compte està vinculat, però Meta no ha volgut activar el lliurament de missatges. La configuració està desada: contacta amb l’assistència en lloc de tornar-la a fer.",
+   "numberTaken": "Aquest número de WhatsApp ja està connectat a un altre compte de HatchGrab. Un número només pot respondre per a un sol food truck. Contacta amb l’assistència i el traspassarem.",
+   "saveIncomplete": "Gairebé hi som: no hem pogut acabar de desar. La configuració està desada; contacta amb l’assistència en lloc de tornar-la a fer.",
+   "connected": "WhatsApp està connectat. Les respostes automàtiques començaran a respondre els missatges que arribin a aquest número."
+  }
+ },
+ "customDomain": {
+  "card": {
+   "title": "Afegeix el teu calendari al teu web",
+   "live": "<addr>{address}</addr> mostra el teu calendari.",
+   "create": "Creem una pàgina a <addr>{address}</addr> que mostra el teu calendari.",
+   "exampleDomain": "elteufoodtruck.ad",
+   "liveBadge": "Activa",
+   "setUp": "Configura",
+   "viewSetup": "Mostra la configuració",
+   "continue": "Continua",
+   "justLive": "<b>{address}</b> ja funciona. Fes-hi un cop d’ull i després confirma’ns aquí sota que és correcte."
+  },
+  "waiting": {
+   "title": "Estem esperant que funcioni {address}",
+   "bodySince": "Ho vas configurar el {date}. Les adreces web noves normalment comencen a funcionar en pocs minuts i, de vegades, triguen fins a 24 hores a arribar a tothom: mentrestant no cal que facis res. Si algú altre havia d’afegir la línia per tu, val la pena comprovar que ho ha fet.",
+   "body": "Les adreces web noves normalment comencen a funcionar en pocs minuts i, de vegades, triguen fins a 24 hores a arribar a tothom: mentrestant no cal que facis res. Si algú altre havia d’afegir la línia per tu, val la pena comprovar que ho ha fet."
+  },
+  "ready": {
+   "title": "{address} ja funciona",
+   "body": "Fes-hi un cop d’ull i després confirma’ns a la configuració que és correcte."
+  },
+  "confirm": {
+   "heading": "Fes-hi un cop d’ull i confirma’ns que és correcte",
+   "open": "Obre <link>{address}</link>",
+   "checkTimes": "Comprova que les dates i les hores són correctes.",
+   "yes": "Sí, és correcte",
+   "no": "No, hi ha un problema",
+   "problemLine": "Explica’ns què hi veus i ho revisarem.",
+   "emailUs": "Envia’ns un correu",
+   "mailSubject": "Problema amb {address}",
+   "mailLiveSince": "Activa des del {date}",
+   "mailSeeing": "Què hi veig:"
+  },
+  "confirmed": {
+   "heading": "Gràcies: ho hem anotat.",
+   "body": "No cal fer res més."
+  },
+  "turnOff": {
+   "link": "Desactiva-ho",
+   "heading": "Vols desactivar la teva pròpia adreça web?",
+   "stops": "Això deixarà de funcionar:",
+   "carriesOn": "Això continua exactament igual, i és on el teu codi QR porta la gent:",
+   "reAdd": "Si la tornaràs a configurar més endavant, deixa la línia que vas afegir a l’empresa de la teva adreça web. Si no, demana’ls que l’eliminin.",
+   "cancel": "Mantén-la activada",
+   "confirm": "Desactiva-la",
+   "working": "S’està desactivant…",
+   "failed": "Ara mateix no ho hem pogut desactivar. No ha canviat res: la teva adreça continua funcionant. Torna-ho a provar d’aquí a una estona."
+  },
+  "wizard": {
+   "resumeFailedTitle": "No hem pogut carregar la teva configuració.",
+   "resumeFailedBody": "No ha canviat res. Torna-ho a provar d’aquí a una estona.",
+   "close": "Tanca",
+   "resuming": "Continuem on ho vas deixar…",
+   "genericError": "Alguna cosa ha fallat",
+   "saveFailed": "No s’ha pogut desar"
+  },
+  "address": {
+   "intro": "El teu calendari tindrà la seva pròpia adreça web.",
+   "question": "Quina és la teva adreça web?",
+   "hint": "La que la gent ja fa servir per trobar-te.",
+   "aria": "La teva pròpia adreça web",
+   "willBe": "La teva adreça serà <addr>{address}</addr>",
+   "example": "Per exemple, <addr>{address}</addr>",
+   "noChange": "El teu web no canvia: només hi afegeixes un enllaç a l’adreça nova.",
+   "notSetUp": "No ho hem configurat.",
+   "restricted": "Qui gestiona la teva adreça web ens ha de permetre configurar el cadenat, el petit cadenat que els clients veuen al costat de l’adreça. Fins que no ens hi afegeixin no apareixerà, així que ens hem aturat en lloc de deixar-te esperant. Demana’ls que ens hi afegeixin i torna-ho a provar.",
+   "blocked": "Ara mateix la teva adreça web bloqueja completament el cadenat. Qui la gestiona l’ha de permetre perquè això funcioni. Demana’ls que ho canviïn i torna-ho a provar.",
+   "elsewhere": "Aquesta adreça ja respon amb una altra cosa. Envia el missatge de la pantalla següent a qui la gestiona: sabrà què cal fer.",
+   "provider": "La teva adreça web la gestiona <b>{provider}</b>. T’ensenyarem on has d’anar.",
+   "provisionFailed": "No hem pogut configurar aquesta adreça.",
+   "willNotWork": "Aquesta adreça no funcionarà.",
+   "couldNotBeSetUp": "No s’ha pogut configurar aquesta adreça.",
+   "couldNotSetUp": "No s’ha pogut configurar",
+   "checking": "S’està comprovant…",
+   "setting": "S’està configurant…",
+   "tryAgain": "Torna-ho a provar",
+   "setUpAddress": "Configura aquesta adreça",
+   "notNow": "Ara no"
+  },
+  "apex": {
+   "empty": "Escriu l’adreça que vols fer servir.",
+   "not_a_domain": "No sembla una adreça web.",
+   "unparseable": "No hem pogut llegir-ho com a adreça web. Comprova com està escrit i torna-ho a provar.",
+   "apex": "{host} és l’adreça de tot el teu web. Si l’apuntes cap a nosaltres, aquesta pàgina substituirà el teu web. Posa-hi una paraula al davant, per exemple esdeveniments.{host}.",
+   "too_deep": "Aquesta adreça té massa parts. Funciona millor una cosa com esdeveniments.{domain}."
+  },
+  "record": {
+   "addAt": "Afegeix això a {provider}",
+   "open": "Obre {provider}",
+   "guide": "La guia de {provider} sobre això",
+   "addAtSave": "Afegeix això a {provider} i desa.",
+   "addSomewhere": "Afegeix això on es gestiona la teva adreça web i desa.",
+   "hintChoose": "Tria-ho de la llista.",
+   "hintWord": "Només aquesta paraula, no tota l’adreça.",
+   "hintExact": "Copia-ho exactament.",
+   "timing": "Normalment comença a funcionar en menys d’una hora, tot i que pot trigar més. No cal que mantinguis aquesta pàgina oberta.",
+   "someoneElse": "Algú altre gestiona la teva adreça web?",
+   "sentTo": "Enviat a {email}",
+   "emailPlaceholder": "la seva adreça de correu electrònic",
+   "sending": "S’està enviant…",
+   "send": "Envia aquestes dades",
+   "sendFailed": "No s’ha pogut enviar"
+  },
+  "providers": {
+   "cloudflare": {
+    "open": "Obre la teva adreça web i després «DNS» i «Records».",
+    "add": "Selecciona «Add record» i tria «CNAME» com a «Type».",
+    "name": "Posa el primer valor de sota a «Name».",
+    "value": "Posa el segon valor de sota a «Target».",
+    "proxy": "Posa «Proxy status» a «DNS only»: el núvol del costat ha de ser gris, no taronja.",
+    "save": "Deixa «TTL» a «Auto» i selecciona «Save».",
+    "caveat": "Si el núvol es queda taronja, el cadenat no apareixerà mai i res no t’indicarà per què."
+   },
+   "godaddy": {
+    "open": "Obre el teu «Domain Portfolio» i tria la teva adreça web.",
+    "dns": "A «Domain Settings», selecciona «DNS».",
+    "add": "Selecciona «Add New Record» i tria «CNAME» al menú «Type».",
+    "name": "Posa el primer valor de sota a «Name».",
+    "value": "Posa el segon valor de sota a «Value».",
+    "save": "Deixa «TTL» com està i selecciona «Save».",
+    "caveat": "Si n’has afegit més d’un alhora, el botó diu «Save All Records»."
+   },
+   "123reg": {
+    "signIn": "Inicia la sessió al teu «123 Reg Control Panel».",
+    "manage": "Al costat de «Domains», selecciona «Manage All» i tria la teva adreça web.",
+    "dns": "Selecciona «DNS» i després «Add New Record».",
+    "type": "Tria «CNAME» a la llista «Type».",
+    "name": "Posa el primer valor de sota a «Name».",
+    "value": "Posa el segon valor de sota a «Value» i afegeix-hi un punt al final.",
+    "save": "Deixa «TTL» a «Default» i fes clic a «Save».",
+    "caveat": "123 Reg necessita un punt al final del segon valor; si no, no funcionarà."
+   },
+   "wix": {
+    "open": "Obre «Domains» i fes clic a la icona «Domain Actions» al costat de la teva adreça web.",
+    "manage": "Tria «Manage DNS Records».",
+    "add": "A la secció «CNAME (Aliases)», fes clic a «+ Add Record» i després a «Got it».",
+    "name": "Posa el primer valor de sota a «Host Name».",
+    "value": "Posa el segon valor de sota a «Value».",
+    "save": "Fes clic a «Save» i després a «Save Changes» a la finestra emergent.",
+    "caveat": "Si la teva adreça web només apunta a Wix però no hi està registrada, Wix no pot fer aquest canvi: l’ha de fer qui la té registrada."
+   }
+  },
+  "instructionsEmail": {
+   "subject": "Un registre per afegir per a la pàgina del calendari ({truckName})",
+   "hello": "Hola,",
+   "introAt": "Posarem el calendari en directe del food truck {truckName} a {address}, i cal afegir un registre al nostre domini a {provider}.",
+   "introHolder": "Posarem el calendari en directe del food truck {truckName} a {address}, i cal afegir un registre al nostre domini allà on el tenim registrat.",
+   "stepsAt": "A {provider}:",
+   "guide": "La seva guia: {url}",
+   "wholeChange": "Aquest és tot el canvi: no afecta res més del web, i la resta del domini continua funcionant exactament com ara. Normalment comença a funcionar en menys d’una hora.",
+   "pointsAt": "La pàgina a la qual apunta mostra on serem la propera vegada i s’actualitza sola.",
+   "replyTo": "Si tens cap pregunta, respon a {email}.",
+   "thanks": "Gràcies,"
+  },
+  "liveEmail": {
+   "subject": "{address} ja funciona",
+   "goodNews": "Bones notícies: {address} ja funciona.",
+   "body": "El teu calendari ja es mostra a la teva pròpia adreça. Fes-hi un cop d’ull i comprova que és correcte: obre {address} i assegura’t que els esdeveniments són teus i que les dates són correctes.",
+   "confirm": "Quan ho hagis fet, obre la configuració a HatchGrab i confirma’ns que és correcte. No en depèn res: només ens serveix per saber que una persona ho ha vist."
+  }
+ },
+ "deleteAccount": {
+  "dangerZone": "Zona de perill",
+  "scheduled": "Aquest compte està programat per suprimir-se",
+  "requested": "Sol·licitat el <b>{requested}</b>. Se suprimirà el <b>{due}</b>.",
+  "orderingStopped": "Les comandes en línia s’han aturat. Fins aleshores, el teu tauler es pot continuar consultant.",
+  "cannotCancelPending": "<b>No ho pots cancel·lar tu mateix.</b> Per aturar-ho, envia un correu a <link>{email}</link> com més aviat millor.",
+  "title": "Suprimeix el compte",
+  "body": "Tanca definitivament aquest compte de HatchGrab i deixa d’acceptar comandes en línia.",
+  "open": "Suprimeix el compte…",
+  "dialogTitle": "Vols suprimir el compte?",
+  "stopsImmediately": "Les comandes en línia s’aturen immediatament, no d’aquí a 30 dies. Els clients no et podran fer comandes des del moment que confirmis.",
+  "upcoming": "<b>Tens {count, plural, one {# comanda pendent} other {# comandes pendents}}.</b> Caldrà preparar-ho tot igualment.",
+  "allTrucks": "<b>S’hi inclouen tots els {count} vehicles d’aquest compte:</b> {names}.",
+  "deletedAfter": "El teu compte se suprimirà al cap de <b>30 dies</b>. Durant aquest temps, el teu tauler es podrà continuar consultant.",
+  "cannotCancel": "No ho pots cancel·lar tu mateix. Per aturar-ho, has d’enviar un correu a <link>{email}</link>.",
+  "whatHeading": "Què se suprimeix i què es conserva",
+  "whatPersonal": "Se suprimeixen les teves dades personals i les del teu equip, i s’eliminen els vostres accessos.",
+  "whatCustomers": "Se suprimeixen de les teves comandes els noms, els correus electrònics i els telèfons dels teus clients.",
+  "whatAccounting": "Els registres comptables anònims <b>es conserven durant sis anys</b>, tal com exigeix la llei del Regne Unit. Consulta la nostra <link>política de privadesa</link>.",
+  "copyFirst": "<b>Vols una còpia de les teves dades abans?</b> L’aplicació no permet baixar-les. Tens dret a una còpia: envia un correu a <link>{email}</link> <b>abans</b> de confirmar i te l’enviarem.",
+  "typeToConfirm": "Escriu <code>{name}</code> per confirmar",
+  "typeAria": "Escriu {name} per confirmar la supressió del compte",
+  "cancel": "Cancel·la: mantén el meu compte",
+  "requesting": "S’està sol·licitant…",
+  "confirm": "Suprimeix el meu compte",
+  "requestedToast": "S’ha sol·licitat la supressió del compte. Revisa el correu electrònic.",
+  "failed": "No s’ha pogut enviar la sol·licitud"
+ },
+ "copyButton": {
+  "copy": "Copia",
+  "copied": "Copiat ✓",
+  "failed": "No s’ha pogut copiar",
+  "aria": "{label} {thing}",
+  "announceCopied": "S’ha copiat: {thing}",
+  "announceCopiedValue": "Valor copiat",
+  "announceFailed": "No s’ha pogut copiar: {thing}. Selecciona el text i copia’l tu mateix.",
+  "announceFailedValue": "No s’ha pogut copiar el valor. Selecciona el text i copia’l tu mateix."
+ },
+ "eventPost": {
+  "loading": "S’està carregant…",
+  "uploading": "S’està pujant…",
+  "cancel": "Cancel·la",
+  "error": {
+   "somethingWrong": "Alguna cosa ha fallat.",
+   "previewFailed": "No s’ha pogut generar la previsualització.",
+   "imageTooBig": "Aquesta imatge ocupa {size} MB. El límit és de 10 MB.",
+   "pngOrJpg": "Tria un fitxer PNG o JPG.",
+   "uploadIncomplete": "La pujada no s’ha completat.",
+   "couldNotLoad": "No s’ha pogut carregar.",
+   "uploadFailed": "La pujada ha fallat.",
+   "couldNotChange": "No s’ha pogut canviar.",
+   "couldNotRemove": "No s’ha pogut eliminar.",
+   "couldNotSave": "No s’ha pogut desar.",
+   "couldNotBuild": "No s’ha pogut crear la imatge."
+  },
+  "setup": {
+   "stranded": "Aquestes imatges de llocs fan servir les posicions estàndard i tenen una forma diferent, així que no es faran servir fins que les substitueixis: {places}.",
+   "pictureReplaced": "Imatge substituïda.",
+   "designSaved": "Disseny desat.",
+   "firstTitle": "Configura la teva publicació d’esdeveniment",
+   "firstBody": "Puja la imatge que fas servir per a un esdeveniment: el teu disseny sense data, lloc ni hora. HatchGrab els afegeix per a cada esdeveniment.",
+   "uploadYourPicture": "Puja la teva imatge",
+   "fileRule": "PNG o JPG, fins a 10 MB, com a mínim {px} px al costat curt.",
+   "thisPlaceFallback": "Aquest lloc",
+   "standard": "Estàndard",
+   "standardStatus": "Es fa servir a tots els altres llocs",
+   "pendingStatus": "Encara no hi ha imatge: es fa servir Estàndard",
+   "phoneWarning": "Millor en un ordinador o un iPad: al mòbil els quadres són massa petits per arrossegar-los.",
+   "designsHeading": "Dissenys",
+   "addPlaceDesignLink": "+ Afegeix un disseny per a un lloc",
+   "placeDesignName": "{name} · disseny de publicació d’esdeveniment",
+   "standardDesignName": "Disseny de publicació d’esdeveniment",
+   "backToDesigns": "‹ Dissenys",
+   "back": "‹ Enrere",
+   "pictureNote": "La teva imatge sense cap data ni lloc. Nosaltres els hi afegim.",
+   "thisPlaceHeading": "Aquest lloc",
+   "removeConfirm": "Vols eliminar la imatge i les posicions del text d’aquest lloc ({name})? Els esdeveniments d’allà faran servir el teu disseny Estàndard.",
+   "remove": "Elimina",
+   "keep": "Mantén",
+   "removeLink": "Elimina el disseny d’aquest lloc",
+   "noEvents": "Encara no hi ha esdeveniments: afegeix-ne un i la previsualització el farà servir.",
+   "pickerTitle": "Afegeix un disseny per a un lloc",
+   "pickerSearch": "Cerca llocs",
+   "pickerNoPlaces": "Encara no hi ha llocs.",
+   "pickerAllDone": "Tots els llocs ja tenen un disseny."
+  },
+  "modal": {
+   "title": "Publicació per a aquest esdeveniment",
+   "close": "Tanca",
+   "imageAlt": "La publicació del teu esdeveniment",
+   "building": "S’està creant…",
+   "imageHeading": "Imatge",
+   "standardNotPlace": "La imatge i les posicions del text d’Estàndard, no les del lloc ({place}).",
+   "replaceIt": "Substitueix-la",
+   "noteHeading": "Nota (només aquesta publicació)",
+   "postTextHeading": "Text de la publicació"
+  }
+ }
+}

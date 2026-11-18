@@ -386,3 +386,9 @@
 - Post row parts «Lloc» / «Hores» / «Dia i data»; import Venue «Lloc», Venue name «Nom del lloc»; «Pantalla encesa»; posts "publicació d’esdeveniment", "cartell", "Dissenys", «Tot el text», Main "Principal".
 - FOR CONSISTENCY: agent reported the section name as "Respostes automàticas" — correct Catalan is "automàtiques"; check and fix everywhere.
 - Check: "Per al teu gestor", "L’exercici fiscal passat", "Càlcul dels impostos", "Dies lliures", "Arrodoneix a {symbol}1", "o prem Supr"; hatch avoided ("Posa’l on atens els clients").
+
+## ca-AD part 06 (languages-world-3, 18 Nov 2026)
+- Boxes «Lloc» / «Nom del lloc» / «Zona» / «Hora», CANCEL·LAT; lastToggle = wp_last_toggle; WhatsApp «Configura»; billing "per vehicle / mes"; team/allTrucks "vehicle". ("automàticas" in part 05 notes was a report typo — files say "automàtiques".)
+- Bold/italic buttons N / C (negreta/cursiva) — confirm; month counts without plural "(mesos gratuïts: {months})"; "Setmana: {date}".
+- Check: Owner/Manager/Staff "Titular"/"Encarregat"/"Personal"; Live "Activa"; Coming soon "Aviat disponible"; Checking "En revisió"; "Tipus de l’impost sobre les vendes"; no article before {label} (IGI).
+- deleteAccount "la llei del Regne Unit" as written; phone +376 612 345; samples "Parc Central", Escaldes-Engordany.
