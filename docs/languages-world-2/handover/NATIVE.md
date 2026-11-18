@@ -451,3 +451,8 @@
 - Documents "Hati", renew "kuhuisha", Up to date "Iko hai" (not "halali" = halal), cover "Kinga ya bima: {amount}"; demo "majaribio"; Invoices "Ankara".
 - Address: Province/Region/Prefecture "Mkoa", Suburb "Kitongoji", "Mji au mtaa"; check "Jimbo au eneo la utawala", "Imarati".
 - Check: caption "{truck} kwenye {where} {when}", "Mahali {without} kati ya {total} pako bado hapana picha", "Ada ya malipo ya baadaye", "Hatuuzi leo"; Post text "Maandishi" vs caption "Maandishi ya chapisho". Samples Dar es Salaam (Msasani, Kariakoo…), Alex → Neema.
+
+## sw-TZ part 08 (languages-world-3, 18 Nov 2026)
+- comparison.cell.trial "{months, plural, one {mwezi #} other {miezi #}} bila malipo"; calculator "kwa gari" / "magari #"; slug ulinganisho/mfumo-wa-oda-food-truck.
+- German TSE/Germany figures and the UK VAT line kept; VAT "VAT"; reverse charge "utaratibu wa kujitoza mwenyewe (reverse charge)"; till "POS".
+- Check: names free-standing via hu-/passive ("{names} huwaruhusu…"); "bima ya dhima kwa umma", "Haijaelezwa", "Haisemi", "Haihusiki", "Zawadi kwa wateja wa kudumu", "upau", fixedAria "Kiasi kisichobadilika kwa kila oda".

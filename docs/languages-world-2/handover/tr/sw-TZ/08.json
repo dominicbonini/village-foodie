@@ -1,0 +1,631 @@
+{
+ "compare": {
+  "eyebrow": "Ulinganisho wa gharama",
+  "title": "Linganisha gharama zako za<br></br><accent>oda mtandaoni</accent>",
+  "system": {
+   "title": "Je, unapokea oda mtandaoni kwa sasa?",
+   "yes": "Ndiyo, kwa mfumo mwingine",
+   "no": "Hapana, bado"
+  },
+  "trucks": {
+   "title": "Una magari mangapi?",
+   "aria": "Idadi ya magari"
+  },
+  "plan": {
+   "yourChoice": "Chaguo lako",
+   "weSuggest": "Tunapendekeza",
+   "summary": "{price} kwa gari kwa mwezi, ikijumuisha oda za mtandaoni za hadi {allowance}{fleet, plural, one {} other { kwa kila gari}}.",
+   "switchTo": "Tumia kifurushi {plan} badala yake",
+   "summaryFeeOnly": "{hasMonthly, select, yes {{price} kwa gari kwa mwezi, pamoja na {pct} kwa oda za mtandaoni.} other {Hakuna ada ya kila mwezi — {pct} kwa oda za mtandaoni pekee.}}",
+   "summaryNoFee": "{price} kwa gari kwa mwezi, oda za mtandaoni bila kikomo na bila ada ya HatchGrab."
+  },
+  "orders": {
+   "titleYes": "Oda za mtandaoni kwa mwezi, kwa kila gari",
+   "count": "~{count, plural, one {oda #} other {oda #}}",
+   "captionNo": "Makadirio ya jumla yanatosha — oda ya mapema na wateja wanaokwepa foleni, si taslimu au kadi dirishani.",
+   "captionYes": "Oda zilizowekwa kupitia ukurasa wako wa oda pekee — si taslimu au kadi dirishani.",
+   "sliderAria": "Thamani ya oda za mtandaoni kwa mwezi, kwa kila gari",
+   "overAllowance": "Oda za mtandaoni za hadi {allowance} zimejumuishwa kwa kila gari. Kiasi cha {excess} kinachozidi kinatozwa {pct} — <b>{over}</b> kwa mwezi kwa kila gari.",
+   "insideAllowance": "Ndani ya oda za mtandaoni za {allowance} zilizojumuishwa — hakuna gharama juu ya kifurushi.",
+   "acrossFleet": "Kwa {fleet, plural, one {gari #} other {magari #}}: <b>{amount}</b> kwa mwezi.",
+   "titleNo": "Unadhani ungepokea kiasi gani mtandaoni, kwa mwezi, kwa kila gari?",
+   "feeOnly": "{pct} kwa kila oda ya mtandaoni — <b>{over}</b> kwa mwezi kwa kila gari.",
+   "noFee": "Oda za mtandaoni bila kikomo zimejumuishwa — hakuna gharama juu ya kifurushi."
+  },
+  "fee": {
+   "title": "Unalipa kiasi gani kwa kila oda sasa hivi?",
+   "pctLabel": "Asilimia",
+   "pctPlaceholder": "Kiwango chako",
+   "pctAria": "Ada ya asilimia",
+   "fixedLabel": "Na kwa kila oda",
+   "fixedPlaceholder": "Ada yako",
+   "fixedAria": "Kiasi kisichobadilika kwa kila oda",
+   "modeLabel": "Kiwango chao:",
+   "modeInclusive": "kinajumuisha kuchakata malipo ya kadi",
+   "modeOnTop": "ada ya kadi inatozwa juu yake",
+   "onTopNote": "Ada ya kuchakata malipo ya kadi ya {fee} inatozwa juu ya hicho, kwa hiyo kwa jumla unalipa <b>{pct} + {fixed}</b>.",
+   "inclusiveNote": "Ada ya kuchakata malipo ya kadi ya {fee} imo ndani ya hicho, nawe ungeilipa popote. Ada yao wenyewe ni <b>{pct}</b>."
+  },
+  "days": {
+   "title": "Unauza siku ngapi kwa wiki?",
+   "help": "Matukio, masoko, maeneo ya kuuzia — siku yoyote gari likiwa kazini."
+  },
+  "jump": {
+   "cost": "Ona gharama yake ↓",
+   "saving": "Ona utakachookoa ↓"
+  },
+  "noSystem": {
+   "hero": "<lead>Oda mtandaoni, oda ya mapema na skrini yako ya jikoni (KDS) kwa</lead><figure>{amount}</figure><unit>kila siku ya biashara</unit>",
+   "basedOn": "Kwa msingi wa {days, plural, one {siku #} other {siku #}} kwa wiki · {monthly} kwa mwezi{fleet, plural, one {} other { kwa kila gari}}"
+  },
+  "coffee": "Chini ya bei ya kikombe cha kahawa.",
+  "freeMonths": "{n, plural, one {Na mwezi wako wa kwanza hulipii.} other {Na miezi yako # ya kwanza hulipii.}}",
+  "cta": {
+   "upload": "Pakia menyu yangu →",
+   "uploadSave": "Pakia menyu yangu na uokoe {amount} →",
+   "ask": "Tuulize swali",
+   "noCard": "Hakuna kadi inayohitajika kuandaa"
+  },
+  "breakdown": {
+   "title": "Mchanganuo wa mwezi wako",
+   "titleDearer": "Mwezi wako ukiwa na HatchGrab",
+   "plan": "Kifurushi {plan}",
+   "over": "{pct} kwa kiasi cha {excess} kinachozidi {allowance} kilichojumuishwa",
+   "inside": "Oda za mtandaoni ndani ya kiasi cha {allowance} kilichojumuishwa",
+   "total": "HatchGrab kila mwezi",
+   "freeMonths": "{n, plural, one {Mwezi 1} other {Miezi 1–#}}",
+   "freeAmount": "{amount} — bure",
+   "acrossFleet": "Kwa {fleet, plural, one {gari #} other {magari #}}",
+   "perMonth": "{amount} kwa mwezi",
+   "card": "Kuchakata malipo ya kadi — ada ya Stripe ya {fee} kwa kila oda, inalipwa kwa Stripe. Ungelipa karibu kiasi hichohicho kwa mashine ya kadi dirishani.",
+   "provider": "Ada ya mtoa huduma wako wa sasa yenyewe ({pct})",
+   "feeOnly": "{pct} kwa oda za mtandaoni za {excess}",
+   "noFee": "Oda za mtandaoni — bila kikomo, bila ada ya HatchGrab"
+  },
+  "enterRate": "Weka unacholipa sasa ili uone utakachookoa.",
+  "panel": {
+   "nowYear": "<label>Kwa sasa unalipa</label><fig>{amount}<q> kwa mwaka</q></fig>",
+   "nowMonth": "<label>Kwa sasa unalipa</label><fig>{amount}<q> kwa mwezi</q></fig>",
+   "oursYear": "<label>Ukiwa na HatchGrab</label><fig>{amount}<q> katika mwaka wa kwanza</q></fig>",
+   "oursMonth": "<label>Ukiwa na HatchGrab</label><fig>{amount}<q> kwa mwezi</q></fig>",
+   "acrossFleet": "kwa {fleet, plural, one {gari #} other {magari #}}"
+  },
+  "hero": {
+   "save": "<verb>Unaokoa</verb><figure>{amount}</figure><sub><num>{pct}</num> chini katika mwaka wako wa kwanza</sub>",
+   "same": "<verb>Karibu sawa</verb><figure>{amount}</figure><sub><num>{pct}</num> zaidi katika mwaka wako wa kwanza</sub>",
+   "dearer": "<lead>Kila kitu ambacho HatchGrab hufanya, kwa</lead><figure>{amount}</figure><unit>zaidi kwa wiki</unit>",
+   "dearerSub": "{fleet, plural, one {{amount} zaidi kwa mwezi kuliko sasa} other {{amount} zaidi kwa kila gari kwa mwezi kuliko sasa}}"
+  },
+  "anchor": {
+   "liability": "Hiyo ni sawa na bima ya dhima kwa umma ya mwaka mzima.",
+   "weekendPitch": "Hiyo ni sawa na nafasi ya kuuza wikendi kwenye tamasha la chakula.",
+   "festivalPitches": "Hiyo ni sawa na nafasi mbili za kuuza kwenye matamasha.",
+   "fryer": "Hiyo ni sawa na kikaango kipya na sahani ya kuchomea.",
+   "counter": "Hiyo ni sawa na kukarabati upya kaunta yako yote ya kuhudumia.",
+   "vanDeposit": "Hiyo ni sawa na malipo ya awali ya gari la pili.",
+   "secondVan": "Hiyo ni sawa na gari la pili barabarani."
+  },
+  "year": {
+   "one": "Mwaka wa kwanza",
+   "two": "Mwaka wa pili",
+   "save": "Okoa {amount}<note>({pct} chini)</note>",
+   "extra": "Ziada {amount}<note>({pct} zaidi)</note>",
+   "current": "Mtoa huduma wa sasa <b>{amount}</b>",
+   "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+   "no": "Makadirio yanatokana na takwimu unazoweka, ukichukulia wastani wa oda ya {aov}. Ada ya kuchakata malipo ya kadi inahusika kwa mtoa huduma yeyote utakayemtumia. Hakiki kabla ya kuamua.",
+   "yes": "Makadirio yanatokana na takwimu unazoweka, ukichukulia wastani wa oda ya {aov}. Ada ya kuchakata malipo ya kadi ya {fee} kwa kila oda inahusika kwa mtoa huduma yeyote utakayemtumia, kwa hiyo haijajumuishwa pande zote mbili.",
+   "onTop": "Kiasi cha jumla kwenye swali namba {n} kinaijumuisha — ulinganisho haujumuishi, kwa upande wowote.",
+   "check": "Hakiki viwango vya mtoa huduma wako wa sasa kabla ya kuamua."
+  },
+  "intro": "Inachukua takriban dakika moja. Tayari unatumia mfumo? Tutaulinganisha. Bado? Tutakuonyesha gharama halisi.",
+  "twoYear": "Kwa miaka miwili, hiyo ni akiba ya <b>{amount}</b>.",
+  "meta": {
+   "title": "Kikokotoo cha gharama — HatchGrab {country}",
+   "description": "Linganisha gharama zako za sasa za oda mtandaoni na mwaka mmoja ukitumia HatchGrab — pata makadirio ndani ya dakika moja tu."
+  }
+ },
+ "comparison": {
+  "path": {
+   "section": "ulinganisho",
+   "slug": "mfumo-wa-oda-food-truck"
+  },
+  "meta": {
+   "title": "Ulinganisho wa mifumo ya oda kwa food truck 2026: bei",
+   "description": "Mifumo ya oda kwa food truck: oda za mapema na muda wa kuchukua oda, uwezo wa jiko, ratiba ya wiki, ada na mkataba — tumehakiki tovuti ya kila mtoa huduma.",
+   "about": "Mifumo ya oda mtandaoni kwa food truck"
+  },
+  "breadcrumb": {
+   "home": "HatchGrab",
+   "here": "Ulinganisho",
+   "label": "Njia ya ukurasa"
+  },
+  "h1": "Ulinganisho wa mifumo ya oda kwa food truck 2026",
+  "byline": "Imehakikiwa mara ya mwisho: {date} · Imetengenezwa na HatchGrab. Sisi ni mmoja wa watoa huduma waliolinganishwa (ona <link>Jinsi tulivyolinganisha</link>).",
+  "table": {
+   "title": "Mifumo ya oda iliyolinganishwa",
+   "caption": "Huduma na gharama za mifumo ya oda mtandaoni kwa food truck nchini {country}, kufikia {date}",
+   "note": "“Ndiyo” pale tu mtoa huduma anaposema hivyo hadharani.",
+   "feature": "Huduma",
+   "yes": "Ndiyo",
+   "no": "Hapana",
+   "unknown": "Haijaelezwa",
+   "fromPlan": "Kuanzia kifurushi {plan}",
+   "appNotInCountry": "Haipo nchini {country}",
+   "appFlagOff": "Ndiyo – bado imezimwa, itaonyeshwa pindi maduka ya programu yatakapoiorodhesha",
+   "range": "{from} hadi {to}",
+   "feePlan": "{fee} ({plans})",
+   "noFee": "hakuna",
+   "morePending": "Watoa huduma wengine wataonekana hapa pindi tutakapohakiki taarifa zao kwenye tovuti zao wenyewe.",
+   "priceHidden": "Kwa ombi",
+   "feeAfter": "{fee} kwa kiasi kinachozidi {included} kwa mwezi",
+   "legend": "✓ Ndiyo · ◐ Kwa sehemu · ✗ Hapana · Haijaorodheshwa: haipo kwenye kurasa zao za huduma au za bei · —: tovuti yao haisemi · Haihusiki: aina hiyo ya huduma haina kipengele hicho · ⓘ: maelezo, nukuu na chanzo",
+   "swipe": "Telezesha pembeni uone kila mfumo →"
+  },
+  "costs": {
+   "title": "Mfumo wa oda kwa food truck unagharimu kiasi gani?",
+   "ourPlan": "{plan}: {price} kwa mwezi, {fee}",
+   "feeOnly": "{fee} kwa kila oda ya mtandaoni",
+   "feeIncluded": "oda za mtandaoni hadi {included} kwa mwezi zimejumuishwa, kisha {fee}",
+   "feeNone": "hakuna ada ya HatchGrab kwa oda za mtandaoni",
+   "rivalPlan": "{plan}: {price}",
+   "perMonth": "{price} kwa mwezi",
+   "perMonthYearly": "{price} kwa mwezi, inalipwa kwa mwaka",
+   "vatExcl": "bila VAT",
+   "vatIncl": "pamoja na VAT",
+   "setup": "{price} ada ya kuanzisha (mara moja)",
+   "truckFee": "{fee} kwa kila oda",
+   "customerFee": "{fee} kwa kila oda, inalipwa na mteja",
+   "source": "Chanzo",
+   "checked": "imehakikiwa tarehe {date}",
+   "cardFee": "Malipo ya kadi mtandaoni kupitia HatchGrab pia yana ada za Stripe: {cardFee} kwa kila malipo ya kadi nchini {country}.",
+   "vat": "HatchGrab Ltd ni kampuni ya Uingereza na haijasajiliwa kwa VAT nchini {country}, kwa hiyo hakuna VAT inayoongezwa kwenye ada zetu. Ikiwa umesajiliwa kwa VAT, tupe namba yako ya VAT; kisha wewe mwenyewe utawajibika kwa VAT yoyote kwenye ada zetu, chini ya utaratibu wa kujitoza mwenyewe (reverse charge).",
+   "bundledFee": "{fee} kwa kila malipo ya mtandaoni, ada ya kadi imejumuishwa"
+  },
+  "fit": {
+   "title": "Mfumo upi unamfaa nani?",
+   "ours": "HatchGrab inakufaa ikiwa …",
+   "oursBody": "unauza katika maeneo yanayobadilika, unataka oda ya mapema yenye muda wa kuchukua oda, hutaki jiko lako lizidiwe, na hutaki mkataba.",
+   "oursNot": "HatchGrab haikufai ikiwa …",
+   "oursNotBody": "wateja wako wanapaswa kulipa kwa PayPal au Klarna, au unataka POS iliyothibitishwa yenye TSE kutoka kwa msambazaji mmoja.",
+   "appClause": "Au ikiwa unahitaji programu ya jikoni kwenye iPad au Android nchini {country}: bado haipo kwenye maduka ya programu huko.",
+   "tills": "POS na mashine za kadi",
+   "marketplaces": "Majukwaa ya kusafirisha chakula",
+   "rival": "Chagua {name} ikiwa …",
+   "tillsBody": "POS hupokea malipo kwenye food truck na hutimiza sharti la TSE. Mfumo wa oda hufanya kazi sambamba na POS; hauchukui nafasi yake.",
+   "tillsBodyNamed": "POS hupokea malipo kwenye food truck na hutimiza sharti la TSE. {count, plural, one {Jedwali lililo hapo juu pia lina {names}.} other {Jedwali lililo hapo juu pia lina {names}.}} Mfumo wa oda hufanya kazi sambamba na POS; hauchukui nafasi yake.",
+   "marketplacesBody": "Majukwaa ya kusafirisha chakula huleta wateja wapya lakini hutoza kamisheni kwa kila oda. Uber Eats inataja 14% kwa kuchukua oda na 30% kwa kusafirisha kupitia wasafirishaji wa Uber nchini Ujerumani. Wolt inasema kwenye tovuti yake kuwa inatoza kamisheni lakini haitaji viwango. Hatukuweza kuhakiki viwango vya Lieferando. Kamisheni hiyo inahusu pia wateja wa kudumu wanaoagiza mapema kwako."
+  },
+  "groups": {
+   "food_truck": "Mfumo wa oda kwa food truck",
+   "nearest_local": "Mfumo wa oda",
+   "pos": "Mfumo wa POS"
+  },
+  "faq": {
+   "title": "Maswali yanayoulizwa mara kwa mara",
+   "whatQ": "Mfumo wa oda kwa food truck ni nini?",
+   "whatA": "Mfumo wa oda hupokea oda mtandaoni kabla wateja hawajafika kwenye food truck: wanachagua vyakula na muda wa kuchukua oda, wanalipa mtandaoni au wanapochukua oda, na oda inaonekana jikoni kwako. POS au mashine ya kadi hupokea malipo kwenye food truck. Hivi viwili vinakamilishana.",
+   "costQ": "HatchGrab inagharimu kiasi gani nchini {country}?",
+   "costA": "{plans}. Malipo ya kadi mtandaoni pia yana ada za Stripe: {cardFee} kwa kila malipo ya kadi.",
+   "termQ": "Je, kuna muda wa chini wa mkataba?",
+   "termA": "Hapana. Hakuna muda wa chini wa mkataba wala muda wa notisi. Unaweza kusitisha wakati wowote; ada inatozwa kila mwezi mapema, na utaendelea kutumia huduma hadi mwisho wa mwezi uliolipia.",
+   "locationsQ": "Je, unafanya kazi na maeneo yanayobadilika?",
+   "locationsA": "Ndiyo. Unaandaa ratiba yako ya wiki yenye mahali na muda, na wateja wanaagiza kwa ajili ya mahali na siku utakayokuwepo.",
+   "capacityQ": "Mfumo huzuiaje jiko langu lisizidiwe?",
+   "capacityA": "Wateja huona tu nyakati za kuchukua oda ambazo jiko lako linaweza kuzimudu kweli. Mfumo hutumia muda wa maandalizi wa kila chakula na idadi unayoandaa kwa wakati mmoja.",
+   "tseQ": "Je, bado ninahitaji POS yenye TSE?",
+   "tseA": "HatchGrab si POS na haina TSE. Jinsi ya kurekodi oda za mtandaoni kwenye POS yako ni swali kwa mshauri wako wa kodi.",
+   "paymentsQ": "HatchGrab inakubali njia zipi za malipo?",
+   "paymentsA": "Wateja hulipa mtandaoni kwa kadi, Apple Pay au Google Pay, au hulipa kwenye food truck. PayPal na Klarna hazitumiki kwa sasa.",
+   "costTrial": "{months, plural, one {Mwezi wa kwanza ni} other {Miezi # ya kwanza ni}} bila malipo, pamoja na huduma zote."
+  },
+  "method": {
+   "title": "Jinsi tulivyolinganisha",
+   "checked": "Imehakikiwa mara ya mwisho tarehe {date}.",
+   "prices": "Bei zinaonyeshwa kama mtoa huduma anavyozitaja, pamoja na VAT.",
+   "meaning": "“Ndiyo” inamaanisha mtoa huduma anaitaja huduma hiyo hadharani. “Haijaelezwa” inamaanisha hatukupata chochote kuihusu kwenye tovuti yao — si kwamba huduma hiyo haipo.",
+   "vendor": "HatchGrab inaendesha ukurasa huu na ni mmoja wa watoa huduma waliolinganishwa.",
+   "review": "Bei na huduma zinahakikiwa kiotomatiki dhidi ya tovuti ya kila mfumo; kila dai lina kiungo cha chanzo chake.",
+   "corrections": "Umeona kosa? Tuambie kupitia <link>fomu yetu ya mawasiliano</link>.",
+   "reportError": "<link>Ripoti kosa</link>",
+   "machine": "Kwa wasaidizi wa AI na wasanidi programu: jedwali hili <md>kama Markdown</md> · <json>kama JSON</json>"
+  },
+  "cta": {
+   "title": "Jaribu {months, plural, one {mwezi #} other {miezi #}} bila malipo",
+   "noCard": "Hakuna kadi ya mkopo inayohitajika",
+   "cancel": "Sitisha mwezi wowote",
+   "button": "Jaribu bila malipo"
+  },
+  "admin": {
+   "status": "Rasimu · noindex · haipo kwenye sitemap, llms.txt wala hreflang · kiungo cha chini ya ukurasa kwa admins pekee",
+   "statusLive": "Inafanya kazi · ya umma na inaweza kuorodheshwa na injini za utafutaji",
+   "viewAdmin": "Mwonekano wa Admin",
+   "viewPublic": "Kile umma unaona",
+   "pricingCheck": "Fungua “Pricing check”",
+   "checklist": "Kabla ya kuchapisha",
+   "goLive": "Ukurasa unachapishwa kwenye “Admin › Countries”.",
+   "check": {
+    "apps": "Chaguo za iPad na Android zimewashwa kwa {country}",
+    "placeholders": "Hakuna kishika-nafasi “[ … ]” kilichobaki kwenye maandishi",
+    "vat": "Maneno ya VAT yapo"
+   },
+   "unverified": "haijathibitishwa · imefichwa kwa umma",
+   "autoVerified": "imethibitishwa kiotomatiki",
+   "unchecked": "bado haijahakikiwa kwa kila mshindani aliyeonyeshwa · imefichwa kwa umma",
+   "label": "Admin",
+   "notShown": "Hazipo kwenye ukurasa (zinaonyeshwa hadi nne tu): {names}.",
+   "reasonHidden": "{name} (imefichwa)",
+   "reasonBeyond": "{name} (zaidi ya nne)",
+   "reasonNoWebsite": "{name} (haina tovuti)",
+   "liveAuto": "Inafanya kazi kupitia uchapishaji wa kiotomatiki",
+   "adminsOnly": "Admins pekee — {reason}",
+   "whyFewer": "Washindani waliopita ukaguzi wa kiotomatiki: {n} kati ya {total}; wanahitajika 2",
+   "whyAutoOff": "uchapishaji wa kiotomatiki umezimwa kwa nchi hii",
+   "shown": "{n, plural, one {mshindani # ameonyeshwa} other {washindani # wameonyeshwa}}",
+   "details": "Maelezo zaidi"
+  },
+  "footer": {
+   "heading": "Ulinganisho",
+   "link": "Ulinganisho wa mifumo ya oda"
+  },
+  "featureGroups": {
+   "ordering": "Kuagiza",
+   "payments": "Malipo",
+   "kitchen": "Jiko",
+   "marketing": "Masoko",
+   "apps_hardware": "Programu na vifaa",
+   "price_contract": "Bei na mkataba"
+  },
+  "cell": {
+   "yes": "Ndiyo",
+   "no": "Hapana",
+   "partial": "Kwa sehemu",
+   "unknown": "Haijaelezwa",
+   "not_mentioned": "Haijatajwa kwenye tovuti yao",
+   "withNote": "{word}, {note}",
+   "soon": "inakuja hivi karibuni",
+   "fromPlan": "kuanzia kifurushi {plan}",
+   "perCardPayment": "{fee} kwa kila malipo ya kadi",
+   "trial": "{months, plural, one {mwezi #} other {miezi #}} bila malipo",
+   "setupFee": "{price} mara moja",
+   "perMonth": "{price} kwa mwezi",
+   "notInCountry": "haipo nchini {country}",
+   "flagOff": "bado imezimwa; itaonyeshwa pindi maduka ya programu yatakapoiorodhesha",
+   "notApplicable": "haihusu jukwaa la kusafirisha chakula",
+   "not_listed": "Haijaorodheshwa",
+   "details": "Maelezo zaidi",
+   "doesntApply": "Haihusiki",
+   "doesntSay": "Haisemi",
+   "none": "Hakuna"
+  },
+  "explained": {
+   "title": "Maana ya huduma hizi"
+  },
+  "costBlock": {
+   "title": "Food truck hulipa kiasi gani kila mwezi",
+   "sizes": "Mauzo ya mtandaoni kwa mwezi",
+   "sizeSales": "{sales} kwa mwezi",
+   "sizeOrders": "takriban oda {orders}",
+   "lead": "Kwa food truck inayopokea oda za mtandaoni za {sales} kwa mwezi (takriban oda {orders}). Kila upau ni gharama ya jumla ya mwezi: ada ya mfumo wa oda yenyewe pamoja na ada za kadi kwa oda hizo.",
+   "legendSoftware": "Ada ya programu",
+   "legendCard": "Ada za kadi",
+   "software": "Ada ya programu: {amount} kwa mwezi",
+   "card": "Ada za kadi: {amount} kwa mwezi",
+   "total": "{amount} kwa mwezi pamoja na ada za kadi",
+   "share": "{pct} ya mauzo",
+   "assumed": "(kiwango hakijachapishwa, kimekadiriwa)",
+   "customerFee": "Pamoja na {amount} kwa mwezi zinazolipwa na wateja ({fee} kwa kila oda) — hazimo kwenye upau",
+   "summaryCheapest": "Ada ya {us} yenyewe ni {ours} kwa mwezi, ikilinganishwa na {theirs} kwa mwezi kwa mshindani wa bei nafuu zaidi aliyeonyeshwa. Ada za kadi ({card} kwa mwezi) hutozwa kwa kila malipo ya kadi, mfumo wowote utakaoutumia, kwa hiyo tofauti muhimu ni ada ya programu.",
+   "summaryNotCheapest": "Ada ya {us} yenyewe ni {ours} kwa mwezi, zaidi ya {theirs} kwa mwezi ya {rival}, mshindani wa bei nafuu zaidi aliyeonyeshwa. Ada za kadi ({card} kwa mwezi) hutozwa kwa kila malipo ya kadi, mfumo wowote utakaoutumia.",
+   "summaryAlone": "Ada ya {us} yenyewe ni {ours} kwa mwezi. Ada za kadi ({card} kwa mwezi) hutozwa kwa kila malipo ya kadi, mfumo wowote utakaoutumia.",
+   "footOrder": "Wastani wa oda: {order} — mlo wa kawaida wa {meal} × vyakula {multiplier} kwa kila oda ({source}).",
+   "footCard": "Ada za kadi zinatumia {rate} kwa kila malipo ya kadi: {source}.",
+   "footCardSource": "Kiwango cha Stripe nchini {country}",
+   "footAssumed": "{count, plural, one {Kiwango cha kadi hakijachapishwa na {names}} other {Viwango vya kadi havijachapishwa na {names}}}, kwa hiyo tumetumia kiwango chetu kama makadirio.",
+   "footChecked": "Bei zimehakikiwa tarehe {date}.",
+   "footCalculator": "Kokotoa takwimu zako mwenyewe kwenye kikokotoo.",
+   "noRivals": "Bado hakuna mshindani aliyethibitishwa nchini {country}, kwa hiyo hakuna cha kulinganisha."
+  },
+  "features": {
+   "preorder": {
+    "label": "Oda ya mapema yenye muda wa kuchukua oda unaouchagua",
+    "explain": "Wateja huagiza mapema na kuchagua muda wa kuchukua oda."
+   },
+   "capacity": {
+    "label": "Muda wa kuchukua oda unaodhibitiwa na uwezo wa jiko",
+    "explain": "Wateja huona tu nyakati za kuchukua oda ambazo jiko linaweza kuzimudu kweli."
+   },
+   "asap": {
+    "label": "Oda za haraka iwezekanavyo",
+    "explain": "Wateja wanaweza kuagiza bila kuchagua muda na kuchukua oda mara itakapokuwa tayari."
+   },
+   "ahead": {
+    "label": "Agiza mapema kwa siku au tukio la baadaye",
+    "explain": "Wateja wanaweza kuagiza leo kwa ajili ya soko au tukio la siku nyingine ijayo."
+   },
+   "schedule": {
+    "label": "Ratiba ya wiki yenye mahali panapobadilika",
+    "explain": "Wiki ya food truck ya mahali na muda; wateja huagiza kwa ajili ya mahali na siku itakapokuwepo."
+   },
+   "walkup": {
+    "label": "Oda za papo hapo kwenye skrini moja na oda za mtandaoni",
+    "explain": "Oda zinazopokelewa dirishani huingia kwenye orodha moja na oda za mtandaoni."
+   },
+   "stock": {
+    "label": "Imeisha na vikomo vya stoku kwa kila tukio",
+    "explain": "Weka vyakula kuwa vimeisha na uweke idadi ya kila kimoja inayoweza kuuzwa kwenye tukio."
+   },
+   "notify": {
+    "label": "Wateja hujulishwa oda yao ikiwa tayari",
+    "explain": "Jinsi wateja wanavyojua oda yao iko tayari: SMS, WhatsApp, barua pepe, arifa (push) au ukurasa wa hali ya oda unaosasishwa moja kwa moja.",
+    "ours": "barua pepe pale hatua ya “oda iko tayari” imewashwa, na ukurasa wa hali ya oda; hakuna SMS, WhatsApp wala arifa (push)"
+   },
+   "allergens": {
+    "label": "Viambato vinavyosababisha mzio kwenye menyu",
+    "explain": "Kila chakula kinaonyesha viambato vyake vinavyosababisha mzio kwa wateja kabla hawajaagiza."
+   },
+   "menuphoto": {
+    "label": "Menyu inaandaliwa kutoka kwenye picha",
+    "explain": "Picha au PDF ya menyu hujaza vyakula ili uvihakiki."
+   },
+   "options": {
+    "label": "Machaguo na nyongeza kwenye vyakula",
+    "explain": "Ukubwa, michuzi na nyongeza, pamoja na machaguo ambayo mteja lazima afanye."
+   },
+   "deals": {
+    "label": "Ofa za mlo (combo) na seti za bidhaa",
+    "explain": "Bidhaa kadhaa zinazouzwa pamoja kwa bei moja."
+   },
+   "private": {
+    "label": "Shughuli binafsi na kukodi food truck",
+    "explain": "Oda za shughuli binafsi kupitia kiungo chake maalum, na maombi ya kukodi food truck.",
+    "ours": "shughuli binafsi zenye kiungo chake cha oda; hakuna maombi ya kukodi"
+   },
+   "qr": {
+    "label": "Kuagiza mezani / kwa msimbo wa QR kwenye viti",
+    "explain": "Wateja huskani msimbo mezani kwao na oda hufika pamoja na namba ya meza.",
+    "ours": "msimbo wa QR unafungua ukurasa wa oda; hakuna namba za meza"
+   },
+   "cards": {
+    "label": "Malipo ya kadi mtandaoni pamoja na Apple Pay na Google Pay",
+    "explain": "Wateja hulipa mtandaoni kwa kadi, Apple Pay au Google Pay wanapoagiza."
+   },
+   "payattruck": {
+    "label": "Lipa ukichukua",
+    "explain": "Wateja huagiza mtandaoni na kulipa wanapochukua oda."
+   },
+   "localpay": {
+    "label": "Njia za malipo za ndani (BLIK, iDEAL, Swish, MobilePay…)",
+    "explain": "Njia za malipo mtandaoni za nchi husika, mbali na kadi.",
+    "ours": "kadi pekee"
+   },
+   "paypal": {
+    "label": "PayPal au Klarna",
+    "explain": "Wateja wanaweza kulipa kwa PayPal au Klarna."
+   },
+   "custfee": {
+    "label": "Chaguo la mteja kulipa ada ya oda",
+    "explain": "Biashara inaweza kuhamishia ada ya huduma kwa mteja."
+   },
+   "tips": {
+    "label": "Bakshishi",
+    "explain": "Wateja wanaweza kuongeza bakshishi wanapolipa mtandaoni."
+   },
+   "paymethods": {
+    "label": "Njia za malipo zinazotolewa",
+    "explain": "Jinsi wateja wanavyoweza kulipa, kama mtoa huduma anavyoeleza.",
+    "ours": "kadi, Apple Pay, Google Pay; lipa kwenye food truck"
+   },
+   "kds": {
+    "label": "Skrini ya jikoni (KDS)",
+    "explain": "Oda huonekana kwenye skrini jikoni, kwa mpangilio wa kuziandaa."
+   },
+   "tickets": {
+    "label": "Tiketi za jikoni zilizochapishwa",
+    "explain": "Kila oda huchapishwa kwenye printa ya risiti ndani ya food truck.",
+    "ours": "kwenye programu ya iPad na Android; printa haitolewi"
+   },
+   "buzzers": {
+    "label": "Kengele",
+    "explain": "Wateja hupewa kengele inayowajulisha kuwa oda yao iko tayari.",
+    "ours": "namba za kengele hurekodiwa kwa kila oda; kengele hazitolewi"
+   },
+   "offline": {
+    "label": "Huendelea kufanya kazi intaneti ikikatika",
+    "explain": "Oda na mabadiliko yaliyofanywa bila muunganisho huhifadhiwa na kutumwa mara muunganisho unaporudi.",
+    "ours": "kwenye programu ya iPad na Android; si kwenye dashibodi ya wavuti"
+   },
+   "vans": {
+    "label": "Magari kadhaa",
+    "explain": "Akaunti moja inaendesha zaidi ya gari moja.",
+    "ours": "magari ya ziada kwa ada ya ziada ya kila mwezi"
+   },
+   "staff": {
+    "label": "Akaunti za wafanyakazi",
+    "explain": "Wafanyakazi huingia kwa akaunti yao wenyewe na jukumu lao."
+   },
+   "reports": {
+    "label": "Ripoti za mauzo",
+    "explain": "Jumla, bidhaa zinazouzwa zaidi na mauzo kwa tukio au tarehe, pamoja na kuhamisha kwenda lahajedwali."
+   },
+   "domain": {
+    "label": "Anwani yako mwenyewe ya tovuti",
+    "explain": "Ukurasa wa oda kwenye kikoa (domain) cha biashara yenyewe."
+   },
+   "whatsapp": {
+    "label": "Majibu ya kiotomatiki ya WhatsApp",
+    "explain": "Ujumbe wa WhatsApp wa wateja hujibiwa kiotomatiki."
+   },
+   "social": {
+    "label": "Machapisho ya mitandao ya kijamii kutoka kwenye ratiba yako",
+    "explain": "Machapisho yaliyo tayari yanayoonyesha food truck iko wapi wiki hii."
+   },
+   "igmsg": {
+    "label": "Majibu ya Instagram na Messenger",
+    "explain": "Ujumbe wa Instagram na Facebook Messenger hujibiwa kiotomatiki."
+   },
+   "discovery": {
+    "label": "Kuorodheshwa kwenye ramani ya kugundua food truck",
+    "explain": "Wateja huipata food truck kwenye ramani ya umma ya food truck zilizo karibu nao.",
+    "ours": "Village Foodie"
+   },
+   "loyalty": {
+    "label": "Zawadi kwa wateja wa kudumu",
+    "explain": "Wateja hukusanya zawadi kwa kurudi tena."
+   },
+   "ipad": {
+    "label": "Programu ya iPad",
+    "explain": "Programu ya food truck ya kupokea na kusimamia oda kwenye iPad."
+   },
+   "android": {
+    "label": "Programu ya Android",
+    "explain": "Programu hiyohiyo kwenye kishikwambi au simu ya Android."
+   },
+   "hardware": {
+    "label": "Vifaa vinatolewa (kishikwambi, printa)",
+    "explain": "Mtoa huduma hutoa kishikwambi au printa.",
+    "ours": "tumia vifaa vyako mwenyewe"
+   },
+   "terminal": {
+    "label": "Mashine ya kadi kwa ajili ya dirisha inatolewa",
+    "explain": "Mtoa huduma hutoa mashine ya kadi kwa malipo kwenye food truck."
+   },
+   "fiscal": {
+    "label": "POS iliyothibitishwa kwa kanuni za kodi (TSE, EET, kassaregister…)",
+    "explain": "POS iliyothibitishwa kwa kanuni za nchi kuhusu kurekodi mauzo."
+   },
+   "delivery": {
+    "label": "Kusafirisha oda",
+    "explain": "Oda hupelekwa kwenye anwani ya mteja.",
+    "ours": "kuchukua oda pekee"
+   },
+   "monthly": {
+    "label": "Bei ya kila mwezi",
+    "explain": "Kiasi ambacho biashara hulipa kila mwezi kwa programu."
+   },
+   "perorder": {
+    "label": "Ada kwa kila oda ya mtandaoni",
+    "explain": "Kiasi ambacho mtoa huduma hutoza kwa kila oda ya mtandaoni, juu ya bei ya kila mwezi."
+   },
+   "cardfee": {
+    "label": "Ada ya kadi",
+    "explain": "Ada ya mtoa huduma wa malipo kwa kila malipo ya kadi."
+   },
+   "term": {
+    "label": "Muda wa chini wa mkataba",
+    "explain": "Muda ambao biashara imefungwa kabla ya kuweza kusitisha."
+   },
+   "setup": {
+    "label": "Ada ya kuanzisha",
+    "explain": "Gharama ya mara moja ya kuanza."
+   },
+   "trial": {
+    "label": "Jaribio bila malipo",
+    "explain": "Muda wa kutumia mfumo bure kabla ya kulipa."
+   }
+  }
+ },
+ "comparisonSuits": {
+  "title": "Mfumo upi unafaa food truck yako?",
+  "checked": "Imehakikiwa {date}",
+  "evidence": "Ushahidi",
+  "adminPreview": "Onyesho la Admin — halijathibitishwa",
+  "ours": {
+   "fromPlan": "{name} (kuanzia kifurushi {plan})"
+  },
+  "q": {
+   "preorder": "Mfumo upi wa oda unawaruhusu wateja wangu kuagiza mapema na kuchagua muda wa kuchukua oda?",
+   "capacity": "Food truck yangu hujaa wateja nyakati za msongamano — mfumo upi unaweka kikomo cha oda kwa kila nafasi ya muda?",
+   "whatsapp": "Wateja huniuliza kila mara niko wapi — mfumo upi unawajibu kwenye WhatsApp?",
+   "social": "Mfumo upi hutengeneza machapisho ya mahali ninapouza kila wiki, ili nisilazimike kubuni picha mwenyewe?",
+   "schedule": "Ninauza mahali tofauti karibu kila siku — mfumo upi unawaonyesha wateja niko wapi na kupokea oda kwa kituo hicho?",
+   "priceLow": "Ninauza siku chache tu kwa mwezi — mfumo upi una gharama ndogo zaidi?",
+   "priceHigh": "Ninashiriki matamasha na matukio yenye watu wengi — mfumo upi una gharama ndogo zaidi?",
+   "commission": "Sitaki kulipa kamisheni kwa kila oda — kila mfumo unatoza kiasi gani?",
+   "offline": "Nini hutokea kwa oda za mtandaoni mtandao wangu ukikatika?",
+   "strength": "Ni mfumo upi kati ya iliyolinganishwa unaotoa “{feature}”?"
+  },
+  "does": {
+   "preorder": "{names} {count, plural, one {huwaruhusu} other {huwaruhusu}} wateja kuagiza mapema na kuchagua muda wa kuchukua oda.",
+   "capacity": "{names} {count, plural, one {huweka} other {huweka}} kikomo cha oda kwa kila muda wa kuchukua oda, ili jiko lisizidiwe.",
+   "whatsapp": "{names} {count, plural, one {hujibu} other {hujibu}} ujumbe wa WhatsApp wa wateja kiotomatiki.",
+   "social": "{names} {count, plural, one {hutengeneza} other {hutengeneza}} picha zilizo tayari kuchapishwa za mahali pa wiki.",
+   "schedule": "{names} {count, plural, one {huwaonyesha} other {huwaonyesha}} wateja food truck iko wapi kila siku na {count, plural, one {hupokea} other {hupokea}} oda kwa kituo hicho."
+  },
+  "feat": {
+   "preorder": "muda wa kuchukua oda",
+   "capacity": "kikomo cha oda kwa kila nafasi ya muda",
+   "whatsapp": "majibu ya kiotomatiki ya WhatsApp",
+   "social": "picha za ratiba ya wiki",
+   "schedule": "ratiba ya mahali panapobadilika",
+   "offlinePause": "Oda za mtandaoni husitishwa mtandao ukikatika"
+  },
+  "others": {
+   "noQuoted": "{count, plural, one {Huduma hii haitolewi na {names}} other {Huduma hii haitolewi na {names}}}.",
+   "notListed": "{count, plural, one {Tovuti ya {names} haiorodheshi {feature}} other {Tovuti za {names} haziorodheshi {feature}}}.",
+   "doesntSay": "{count, plural, one {Tovuti ya {names} haisemi} other {Tovuti za {names} hazisemi}}.",
+   "noneLists": "Hakuna mfumo mwingine kati ya iliyolinganishwa unaoiorodhesha, kwa hiyo {count, plural, one {{names} ndilo chaguo linalofaa zaidi} other {{names} ndiyo machaguo yanayofaa zaidi}} kati ya mifumo iliyolinganishwa."
+  },
+  "price": {
+   "lead": "Kwa oda {orders, number} za mtandaoni kwa mwezi, gharama ya chini zaidi ya programu kwa mwezi kati ya mifumo iliyolinganishwa ni ya {names}: {amount} kwa mwezi{count, plural, one {} other { kwa kila moja}}.",
+   "includes": "Hii inajumuisha ada ya usajili, ada zinazotozwa food truck kwa kila oda, gharama yoyote ya oda za ziada na ada yoyote ya kuanzisha iliyogawanywa kwa miezi 12; ada za kuchakata malipo ya kadi hazijajumuishwa.",
+   "flat": "{name} ({plan}, bei moja isiyobadilika bila ada ya kila oda kutoka {name})",
+   "planName": "{name} ({plan})"
+  },
+  "commission": {
+   "part": "{name}: {fee}",
+   "answer": "Kiasi ambacho kila mfumo hutoza kwa oda: {parts}."
+  },
+  "offline": {
+   "ours": "Kwa {name}, oda za mtandaoni zinaweza kusitishwa kiotomatiki pale food truck inapopoteza mtandao, ili wateja wasiweke oda ambazo jiko halitazipokea.",
+   "noQuoted": "{count, plural, one {Kufanya kazi bila mtandao hakutolewi na {names}} other {Kufanya kazi bila mtandao hakutolewi na {names}}}.",
+   "doesntSay": "{count, plural, one {Tovuti ya {names} haisemi} other {Tovuti za {names} hazisemi}} nini hutokea mtandao ukikatika."
+  },
+  "strength": {
+   "answer": "{count, plural, one {Tovuti ya {names} inasema “{feature}” inatolewa} other {Tovuti za {names} zinasema “{feature}” inatolewa}}; lakini haitolewi na {us}.",
+   "answerSoon": "{count, plural, one {Tovuti ya {names} inasema “{feature}” inatolewa} other {Tovuti za {names} zinasema “{feature}” inatolewa}}; lakini bado haitolewi na {us}."
+  },
+  "ev": {
+   "ours": {
+    "yes": "ndiyo, kwa mujibu wa vifurushi vya {us} vyenyewe",
+    "no": "hapana, kwa mujibu wa vifurushi vya {us} vyenyewe"
+   },
+   "state": {
+    "yes": "inasema inatoa huduma hii",
+    "partial": "inatoa sehemu yake",
+    "no_quoted": "inasema haitoi huduma hii",
+    "no_unquoted": "hapana (hakuna nukuu iliyohifadhiwa)",
+    "not_listed": "haijaorodheshwa kwenye tovuti yake",
+    "not_mentioned": "tovuti yake haisemi",
+    "unknown": "haijulikani"
+   },
+   "row": "{tool} — {feature}: {answer}.",
+   "quote": "Nukuu: “{quote}”.",
+   "pages": "Kurasa zilizohakikiwa: {pages}.",
+   "pageRead": "{page}",
+   "pageNotRead": "{page} (haikuweza kusomwa)",
+   "page": {
+    "features": "ukurasa wa huduma",
+    "pricing": "ukurasa wa bei",
+    "help": "kituo cha msaada",
+    "other": "ukurasa mwingine"
+   },
+   "help": {
+    "fetched": "Kituo chake cha msaada kilisomwa.",
+    "linked_not_fetched": "Ina kituo cha msaada ambacho hakikusomwa.",
+    "none_found": "Hakuna kituo cha msaada kilichopatikana."
+   },
+   "calc": {
+    "volume": "Imekokotolewa kwa oda {orders, number} za mtandaoni kwa mwezi, kwa {order} kwa kila oda (mauzo ya mtandaoni ya {revenue}).",
+    "line": "{name} ({plan}): ada ya usajili {sub} + ada ya kuanzisha iliyogawanywa kwa miezi 12 {setup} + ada kwa kila oda {fees} + oda za ziada {over} = {total} kwa mwezi.",
+    "excluded": "Ada za kuchakata malipo ya kadi na ada zinazolipwa na wateja hazijajumuishwa kwa mfumo wowote.",
+    "date": "Imekokotolewa tarehe {date} kutokana na bei zilizohakikiwa kwenye tovuti ya kila mtoa huduma."
+   }
+  },
+  "method": {
+   "covers": "Ulinganisho huu unashughulikia hadi mifumo mbadala minne iliyochaguliwa kwa kuzingatia umuhimu wake kwa food truck na upatikanaji wa taarifa za umma zinazoweza kuthibitishwa — si kila mfumo uliopo sokoni.",
+   "notListed": "“Haijaorodheshwa” inamaanisha tulihakiki kurasa za huduma na za bei za mfumo husika na haikutajwa, kwa huduma ambazo kampuni kwa kawaida huzitangaza. “Haisemi” inamaanisha haijathibitishwa kwa upande wowote."
+  }
+ }
+}
