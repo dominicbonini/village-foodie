@@ -356,3 +356,10 @@
 - Added picker.dayCount "{count} настан/настани", picker.approved "Одобрен"; Country "Држава"; "Место или град".
 - Check: "Назив на локацијата", "по возило / месечно", „Исто како ‚Сиот текст‘“, "фуд трак" (no usage evidence).
 - NOTE for sq-AL: its pricing "per truck" kept "food truck" (per business); billing is per vehicle — native check should consider "për furgon" as bs-BA/mk-MK did.
+
+## ca-AD part 01 (languages-world-3, 18 Nov 2026)
+- van "vehicle" ≠ business "food truck"; Pay at truck "Paga en recollir" (button) / "Pagament en recollir" (label); hatch "al food truck".
+- refund devolució / retornar / RETORNAT (avoid "contra reemborsament" = COD); buzzer "avisador"; ASAP "Com més aviat millor"; Mark ready «Marca com a preparada», status "A punt"; TBC "Per confirmar".
+- Stock "En queden {count}" / "Queden {count} {noun}" plural even for 1 (no plural form in the English) — confirm.
+- ALLERGENS (check first): Tramussos (lupin), Fruits de closca (tree nuts + nuts), Lactis, Nyam (yam), Orella de mar (abalone), Carn de boví; Kosher "Caixer (kosher)".
+- "del food truck {truck}" / "a {truck}" to avoid "d'{truck}".
