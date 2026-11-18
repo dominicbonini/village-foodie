@@ -786,6 +786,23 @@ function os1Expected(mk, beforeMk, D) {
   if (writes.length === hm.writes.length) return beforeMk
   return { ...beforeMk, edge: { ...beforeMk.edge, 'heartbeat-monitor': { ...hm, body: { ...hm.body, paused: writes.length }, writes } } }
 }
+// events-overlap-2's phone line, per screen: the event that screen shows (screensView: today's ev-1 12:00–23:59, the
+// tomorrow ev-2 11:30–14:00, the yesterday ev-0 17:00–21:00).
+const EO2_PHONE_LINE = {
+  'screens/dash|orders': '12:00–23:59', 'screens/dash|empty': '12:00–23:59', 'screens/add|today': '12:00–23:59',
+  'screens/dash|tomorrowSelected': '11:30–14:00', 'screens/add|tomorrow': '11:30–14:00', 'screens/add|yesterday': '17:00–21:00',
+}
+const EO2_LINE_RE = / 📍 The Green — Harnessville · (\d\d:\d\d–\d\d:\d\d)(?! 📅)/g
+/** The AFTER value (a JSON string) with the phone line taken out, or null when this leaf does not carry it exactly as named. */
+function eo2Strip(k, beforeJson, afterJson) {
+  const range = EO2_PHONE_LINE[k]
+  if (!range || typeof beforeJson !== 'string' || typeof afterJson !== 'string' || afterJson === '«undefined»') return null
+  const b = JSON.parse(beforeJson), a = JSON.parse(afterJson)
+  if (typeof a !== 'string' || typeof b !== 'string' || (b.match(EO2_LINE_RE) || []).length) return null
+  const hits = [...a.matchAll(EO2_LINE_RE)]
+  if (hits.length !== 1 || hits[0][1] !== range) return null
+  return JSON.stringify(a.replace(EO2_LINE_RE, ''))
+}
 function compare(before, after) {
   const fails = [], allowed = {}
   let total = 0
@@ -815,6 +832,15 @@ function compare(before, after) {
           if (n === 22 && un === was.split('\n').slice(0, n).join('\n')) continue
         }
       }
+      // ⚠️ RE-PINNED (events-create-3, 18 November 2026, docs/events-create-3-report.md) — NOT A TIME CHANGE, a layout one:
+      // events-overlap-2 (docs/events-overlap-2-report.md §3c) gave Add order — alone and inside the dashboard — one line,
+      // PHONES ONLY (`sm:hidden`, so it is in the tag-stripped text), naming the selected event: "📍 <venue> — <town> ·
+      // <start>–<end>". At every instant, on these six screens only, the AFTER value has that line taken out — found EXACTLY
+      // once, naming EXACTLY the event the screen shows (EO2_PHONE_LINE), and absent from BEFORE (the dashboard's own event
+      // bar line, followed by "📅", is not it and is never touched). What is left is then compared as before: byte for byte,
+      // or by the rule that names the leaf (C2 at after0030). The event SHOWN does not move — these screens set it.
+      const eo2 = eo2Strip(k, A[k], Bk)
+      if (eo2 !== null) { Bk = eo2; (allowed.EO2 ??= []).push(`${mk} ${k}`); if (A[k] === Bk) continue }
       const rule = ALLOWED.find(r => r.path.test(k))
       const v = Bk === undefined ? undefined : JSON.parse(Bk === '«undefined»' ? 'null' : Bk)
       if (!rule) { fails.push(`${mk} ${k}: moved and no allowance names it\n     before ${String(A[k]).slice(0, 300)}\n     after  ${String(B[k]).slice(0, 300)}`); continue }
@@ -982,6 +1008,54 @@ async function waStatsView() {
   return { fails, lines }
 }
 
+// ── THE APPROVED-ONLY DEFAULT (events-create-3) — fixtures on each instant's London days; expectations written out by hand.
+async function defaultPickView() {
+  const m = await kit.bundle('td-default', "export * as ED from '@/lib/event-default'\nexport { pickDefaultEventByTime } from '@/lib/time-utils'")
+  const fails = [], lines = []
+  const e = (id, day, start, end, status) => ({ id, day, start_time: start, end_time: end, status })
+  // Each set, then per instant: [old status-blind pick, new AddOrder default (pickDefaultApprovedEvent), new dashboard default].
+  const SETS = {
+    // a scraped, unapproved copy listed BEFORE the approved event at the same times (the 13 November case)
+    duplicate: [e('y', 'yesterday', '17:00', '21:00', 'closed'), e('dup', 'today', '17:00', '21:00', 'unconfirmed'), e('t', 'today', '17:00', '21:00', 'confirmed'),
+      e('tl', 'today', '22:00', '23:59', 'confirmed'), e('m', 'tomorrow', '11:30', '14:00', 'confirmed')],
+    // an event STARTED early (open) beats an approved one that is current or sooner
+    startedEarly: [e('t', 'today', '17:00', '21:00', 'confirmed'), e('o', 'today', '22:00', '23:59', 'open'), e('m', 'tomorrow', '11:30', '14:00', 'confirmed')],
+    // today has only an unapproved event: the dashboard selects nothing; Add order offers the next approved one
+    onlyUnapprovedToday: [e('dup', 'today', '17:00', '21:00', 'unconfirmed'), e('m', 'tomorrow', '11:30', '14:00', 'confirmed')],
+    // last night's event, started and running past midnight, until 02:00
+    overnight: [e('n', 'yesterday', '22:00', '02:00', 'open'), e('t', 'today', '17:00', '21:00', 'confirmed')],
+    // nothing approved at all
+    noneApproved: [e('dup', 'today', '17:00', '21:00', 'unconfirmed'), e('dup2', 'tomorrow', '11:30', '14:00', 'unconfirmed')],
+  }
+  const EXPECT = {
+    bstAfternoon: { duplicate: ['dup', 't', 't'], startedEarly: ['t', 'o', 'o'], onlyUnapprovedToday: ['dup', 'm', null], overnight: ['t', 't', 't'], noneApproved: ['dup', null, null] },
+    gmtAfternoon: { duplicate: ['dup', 't', 't'], startedEarly: ['t', 'o', 'o'], onlyUnapprovedToday: ['dup', 'm', null], overnight: ['t', 't', 't'], noneApproved: ['dup', null, null] },
+    // 23:30: last night's overnight event ended at 02:00 and today's at 21:00 — the old pick fell back to the most recent PAST
+    // event; the new rule offers nothing rather than a finished one.
+    late2330:     { duplicate: ['tl', 'tl', 'tl'], startedEarly: ['o', 'o', 'o'], onlyUnapprovedToday: ['m', 'm', null], overnight: ['t', null, null], noneApproved: ['dup2', null, null] },
+    after0030:    { duplicate: ['dup', 't', 't'], startedEarly: ['t', 'o', 'o'], onlyUnapprovedToday: ['dup', 'm', null], overnight: ['n', 'n', 'n'], noneApproved: ['dup', null, null] },
+  }
+  for (const [mk, iso] of Object.entries(MOMENTS)) {
+    kit.setNow(iso)
+    const D = londonDays(iso), nowMs = Date.parse(iso)
+    const row = []
+    for (const [name, set] of Object.entries(SETS)) {
+      const evs = set.map(x => ({ id: x.id, event_date: D[x.day], start_time: x.start_time, end_time: x.end_time, status: x.status }))
+      const got = [m.pickDefaultEventByTime(evs, LONDON)?.id ?? null, m.ED.pickDefaultApprovedEvent(evs, LONDON, nowMs)?.id ?? null, m.ED.pickDashboardDefaultEvent(evs, LONDON, nowMs)?.id ?? null]
+      const want = EXPECT[mk][name]
+      if (JSON.stringify(got) !== JSON.stringify(want)) fails.push(`${mk} DEF ${name}: old/addOrder/dashboard picks ${JSON.stringify(got)}, expected ${JSON.stringify(want)}`)
+      // the rule itself, whatever the fixture: a new pick is never unconfirmed, never closed, and an open live event wins
+      for (const id of got.slice(1)) {
+        const ev = id && evs.find(x => x.id === id)
+        if (ev && !['open', 'confirmed'].includes(ev.status)) fails.push(`${mk} DEF ${name}: the new default picked a ${ev.status} event (${id})`)
+      }
+      row.push(`${name} ${got[0] ?? '—'}→${got[2] ?? '—'}${got[1] !== got[2] ? ` (Add order ${got[1] ?? '—'})` : ''}`)
+    }
+    lines.push(`${mk}: ${row.join(' · ')}`)
+  }
+  return { fails, lines }
+}
+
 module.exports = { MOMENTS, londonDays, kit, GB_TRUCK, GB_SETTINGS_ROW, US_SETTINGS_ROW, GB_TS, helpersView, slotsView, ordersView, edgeView, eventsView, promptsView, emailsView, screensView, dashApiView, usView, cancelView, waStatsView, compare, ALLOWED, snapshot }
 
 if (require.main === module) {
@@ -996,6 +1070,7 @@ if (require.main === module) {
     console.log(`GB: ${c.total} leaves at 4 instants compared with the BEFORE snapshot (${BEFORE_FILE})`)
     console.log(`  allowed P   ${String((c.allowed.P || []).length).padStart(2)} leaf/leaves — legal-followups-privacy-link (customer email footers; order page under Place order / Back to)`)
     console.log(`  allowed IE1 ${String((c.allowed.IE1 || []).length).padStart(2)} leaf/leaves — ireland-1: the schedule-import prompt's OUTPUT LANGUAGE line (⚠️ RE-PINNED, 20 October 2026)`)
+    console.log(`  allowed EO2 ${String((c.allowed.EO2 || []).length).padStart(2)} leaf/leaves — events-overlap-2: Add order's phone line naming the event shown (⚠️ RE-PINNED, events-create-3)`)
     for (const r of ALLOWED) console.log(`  allowed ${r.id.padEnd(3)} ${String((c.allowed[r.id] || []).length).padStart(2)} leaf/leaves — ${r.site}${(c.allowed[r.id] || []).length ? '\n            ' + c.allowed[r.id].join('\n            ') : ''}`)
     // 2 · B1 — the dashboard API's "now": identical in GMT; in BST only `is_past` moves, and to London's clock
     const B1_MOMENTS = ['bstAfternoon', 'late2330', 'after0030'] // every instant in BST
@@ -1026,6 +1101,15 @@ if (require.main === module) {
     const was = await waStatsView()
     fails.push(...was.fails)
     console.log(`  allowed WAS Reports' WhatsApp stats days (app/api/manage get_report) — BST 00:00–01:00, and a day's final second:\n            ${was.lines.join('\n            ')}`)
+    // 2c · ⚠️ ADDED (events-create-3, 18 November 2026, docs/events-create-3-report.md): THE APPROVED-ONLY DEFAULT AT THE FOUR
+    // INSTANTS. events-overlap-2 replaced the dashboard's status-blind default (pickDefaultEventByTime, still in the helpers
+    // snapshot above, unchanged) with lib/event-default.ts: a STARTED event that has not ended, else an APPROVED one current
+    // or next, else nothing — never an unconfirmed one; and the dashboard selects NOTHING while today's only events are
+    // unapproved. The screens above set their event, so they never exercised it; this does, at every instant, on the truck's
+    // clock, beside the old pick — so a date-boundary slip in the new rule fails here.
+    const dflt = await defaultPickView()
+    fails.push(...dflt.fails)
+    console.log(`  checked DEF the approved-only default (lib/event-default.ts) at every instant — old pick → new pick:\n            ${dflt.lines.join('\n            ')}`)
     // 3 · US
     const us = await usView()
     fails.push(...us.fails)
