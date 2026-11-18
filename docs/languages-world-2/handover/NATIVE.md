@@ -392,3 +392,9 @@
 - Bold/italic buttons N / C (negreta/cursiva) — confirm; month counts without plural "(mesos gratuïts: {months})"; "Setmana: {date}".
 - Check: Owner/Manager/Staff "Titular"/"Encarregat"/"Personal"; Live "Activa"; Coming soon "Aviat disponible"; Checking "En revisió"; "Tipus de l’impost sobre les vendes"; no article before {label} (IGI).
 - deleteAccount "la llei del Regne Unit" as written; phone +376 612 345; samples "Parc Central", Escaldes-Engordany.
+
+## ca-AD part 07 (languages-world-3, 18 Nov 2026)
+- Captions «Lloc» / «Nom del lloc» / «Zona» / «Dia i data» / «Hores»; CANCEL·LAT; "Setmana del {start} al {end}"; No trading today "Avui no obrim" — confirm.
+- Documents translated: HACCP "Pla de seguretat alimentària (APPCC)", PAT "Revisió d’aparells elèctrics portàtils (PAT)", street trading "Llicència de venda ambulant".
+- {month} in brackets to avoid d’ elision ("la resta del mes ({month})"); "Documents del food truck {truck}".
+- Check: "# per pujar", both caption kinds "text de la publicació", "Compartit mitjançant HatchGrab", demo Laia, "Comença gratis durant # mes i conserva la meva carta".

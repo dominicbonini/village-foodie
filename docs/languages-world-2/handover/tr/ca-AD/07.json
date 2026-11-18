@@ -1,0 +1,613 @@
+{
+ "postShare": {
+  "download": "Baixa la imatge",
+  "copied": "Copiat ✓",
+  "copyCaption": "Copia el text",
+  "share": "Comparteix",
+  "copiedStatus": "{kind, select, postText {S’ha copiat el text de la publicació.} other {S’ha copiat el text.}}",
+  "copyFailed": "No s’ha pogut copiar: selecciona el text i copia’l a mà.",
+  "sharedStatus": "{kind, select, postText {S’ha copiat el text de la publicació: enganxa’l a la teva publicació.} other {S’ha copiat el text: enganxa’l a la teva publicació.}}",
+  "shareRefused": "{kind, select, postText {No s’ha permès compartir, així que s’ha baixat la imatge. S’ha copiat el text de la publicació.} other {No s’ha permès compartir, així que s’ha baixat la imatge. S’ha copiat el text.}}"
+ },
+ "posterWords": {
+  "heading": "Setmana del {start} al {end}",
+  "daysOff": "Avui no obrim",
+  "cancelled": "CANCEL·LAT",
+  "placeSample": {
+   "nameTownBelow": "Bar de la Plaça\nOrdino",
+   "nameTown": "Bar de la Plaça, Ordino",
+   "nameOnly": "Bar de la Plaça"
+  },
+  "busyWeek": {
+   "venue1": "Sala polivalent del poble",
+   "town1": "Ordino",
+   "venue2": "Complex esportiu municipal i zona de jocs del parc de la ribera",
+   "town2": "Sant Julià de Lòria",
+   "venue3": "Plaça del Poble",
+   "town3": "Andorra la Vella",
+   "venue4": "Fira gastronòmica",
+   "town4": "Escaldes-Engordany",
+   "venue5": "Bar del Poble",
+   "town5": "Canillo",
+   "venue6": "Plaça de l’Església",
+   "town6": "La Massana"
+  },
+  "poweredBy": "Amb la tecnologia de HatchGrab"
+ },
+ "captions": {
+  "labels": {
+   "weekDates": "Dates de la setmana",
+   "dayList": "Llista de dies",
+   "place": "Lloc",
+   "venue": "Nom del lloc",
+   "area": "Zona",
+   "dayDate": "Dia i data",
+   "times": "Hores",
+   "orderLink": "Enllaç de comandes",
+   "locationTag": "Etiqueta del lloc"
+  },
+  "weekHeader": "{truck} — on som aquesta setmana:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — CANCEL·LAT, ho sentim",
+  "noDates": "Aquesta setmana no hi ha dates: torna-hi a mirar aviat.",
+  "orderAhead": "Fes la comanda per endavant: {url}",
+  "orderAheadTagged": "Fes la comanda per endavant: {url} {tag}",
+  "eventLine": "{truck} serà a {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} serà a {where} {when}.",
+  "cancelledSorry": "Ho sentim: no podrem anar a {where} {when}.",
+  "cancelledApology": "Demanem disculpes a tots els qui pensàveu venir. Tornarem aviat.",
+  "when": {
+   "today": "avui",
+   "tonight": "aquesta nit",
+   "tomorrow": "demà",
+   "dated": "el {date}"
+  }
+ },
+ "weeklyPostApi": {
+  "shortened": {
+   "heading": "El títol no hi cabia i s’ha escurçat.",
+   "date": "La data no hi cabia i s’ha escurçat.",
+   "daysOff": "El text dels dies lliures no hi cabia i s’ha escurçat.",
+   "place": "El lloc no hi cabia i s’ha escurçat.",
+   "time": "L’hora no hi cabia i s’ha escurçat.",
+   "note": "El teu text no hi cabia i s’ha escurçat.",
+   "venue": "El nom del lloc no hi cabia i s’ha escurçat.",
+   "area": "La zona no hi cabia i s’ha escurçat."
+  },
+  "fontFallback": "No s’ha pogut carregar una font que fa servir aquest disseny ({id}): aquests quadres surten en Oswald.",
+  "wrongShapeBackground": "La imatge d’aquest lloc té una forma diferent de la del teu disseny, així que es fa servir el fons estàndard.",
+  "rowsFit": "L’últim dia queda {px} px per sota de la part inferior de la imatge: redueix l’espaiat de les files o puja la fila 1.",
+  "placeStatus": {
+   "ownBoth": "Imatge i posicions del text pròpies",
+   "wrongShape": "Forma diferent: no es farà servir fins que la substitueixis",
+   "ownPicture": "Imatge pròpia, posicions estàndard",
+   "ownPositions": "Imatge estàndard, posicions del text pròpies",
+   "none": "Encara no hi ha imatge: es fa servir Estàndard"
+  },
+  "standardStatus": "Es fa servir a tots els altres llocs",
+  "option": {
+   "oneOff": "Puja’n una només per a aquesta publicació",
+   "placePoster": "Cartell: {name}",
+   "standard": "Disseny estàndard"
+  },
+  "previewLabel": {
+   "lastEvent": "La previsualització fa servir el teu últim esdeveniment aquí",
+   "noEvents": "Encara no hi ha esdeveniments aquí: la previsualització mostra el teu proper esdeveniment amb el nom d’aquest lloc"
+  },
+  "fontUsage": {
+   "weekly": "el teu disseny de publicació setmanal",
+   "event": "el teu disseny de publicació d’esdeveniment",
+   "place": "el teu disseny per a {place}",
+   "placeUnnamed": "el teu disseny per a un lloc"
+  },
+  "face": {
+   "regular": "Normal",
+   "bold": "Negreta",
+   "italic": "Cursiva"
+  },
+  "picture": {
+   "legacy": "Cartell de l’esdeveniment",
+   "fallback": "Imatge",
+   "wrongShape": "Forma diferent: no es pot fer servir com a fons sencer"
+  },
+  "noPicture": {
+   "omit": "Omet-la",
+   "blank": "Deixa un espai en blanc",
+   "logo": "Mostra el teu logotip"
+  },
+  "noPicturesAll": "{total, plural, one {El teu lloc té una imatge.} other {Tots els teus {total} llocs tenen una imatge.}}",
+  "noPicturesSome": "{without, plural, one {{without} dels teus {total} llocs encara no té imatge} other {{without} dels teus {total} llocs encara no tenen imatge}}",
+  "licenceTick": "Soc el propietari d’aquesta font o tinc una llicència per fer-la servir",
+  "fontUploadButton": "↑ Puja la teva font"
+ },
+ "completionSettings": {
+  "paidStepTitle": "Accepta comandes sense pagament",
+  "completionTitle": "Com es completa una comanda no pagada",
+  "completionHelp": "Què passa quan una comanda no pagada està a punt per entregar.",
+  "pressesOne": "Un sol toc («Marca com a pagada i recollida»)",
+  "pressesOneHelp": "Ideal si cobres en el moment d’entregar el menjar. Tens un sol botó, «Marca com a pagada i recollida», que registra el pagament i tanca la comanda alhora.",
+  "pressesTwo": "Dos tocs («Marca com a pagada» i «Recollida»)",
+  "pressesTwoHelp": "Ideal si el pagament i l’entrega passen en moments diferents: algú paga al food truck i recull la comanda quan és a punt. Tens dos botons: primer «Marca com a pagada» i després «Recollida», quan s’emporten el menjar."
+ },
+ "outreach": {
+  "optOut": {
+   "missing": "Aquest correu no té cap línia de baixa, així que no es pot enviar. Fes servir «Insert opt-out» per afegir-la.",
+   "notSetUp": "No hi ha cap frase de baixa configurada, així que no es pot enviar cap correu de prospecció. Afegeix-ne una al panell «Signature» de la pestanya «Templates».",
+   "notLoaded": "La frase de baixa encara no s’ha carregat, així que no es pot enviar.",
+   "unreadable": "No s’ha pogut llegir la frase de baixa, així que no s’ha enviat res."
+  },
+  "retry": {
+   "notRebuilt": "No s’ha pogut refer aquest missatge amb la línia de l’empresa, així que no s’ha enviat res."
+  }
+ },
+ "address": {
+  "label": {
+   "street": "Adreça",
+   "postcode": "Codi postal",
+   "zip": "Codi postal (ZIP)",
+   "eircode": "Eircode",
+   "postalCode": "Codi postal",
+   "state": "Estat",
+   "stateTerritory": "Estat o territori",
+   "province": "Província",
+   "county": "Comtat",
+   "prefecture": "Prefectura",
+   "emirate": "Emirat",
+   "region": "Regió",
+   "area": "Zona (poble o ciutat)",
+   "townOrArea": "Població o zona",
+   "city": "Ciutat",
+   "suburb": "Barri",
+   "townOrCity": "Població o ciutat"
+  },
+  "short": {
+   "area": "Zona",
+   "townOrArea": "Població o zona",
+   "city": "Ciutat",
+   "suburb": "Barri",
+   "townOrCity": "Població o ciutat"
+  },
+  "inSentence": {
+   "postcode": "codi postal",
+   "zip": "codi postal (ZIP)",
+   "eircode": "Eircode",
+   "postalCode": "codi postal"
+  },
+  "withArticle": {
+   "postcode": "un codi postal",
+   "zip": "un codi postal (ZIP)",
+   "eircode": "un Eircode",
+   "postalCode": "un codi postal"
+  },
+  "tradeLabel": {
+   "area": "Població o ciutat",
+   "townOrArea": "Població o zona",
+   "city": "Ciutat",
+   "suburb": "Barri",
+   "townOrCity": "Població o ciutat"
+  },
+  "basedIn": {
+   "area": "Població o ciutat on tens la base",
+   "townOrArea": "Població o zona on tens la base",
+   "city": "Ciutat on tens la base",
+   "suburb": "Barri on tens la base",
+   "townOrCity": "Població o ciutat on tens la base"
+  },
+  "example": "p. ex. {example}",
+  "customersSee": "Els clients veuen:",
+  "postalWarning": "Això no sembla {article}: per exemple, {example}. Pots desar-lo igualment.",
+  "regionChoose": "Tria…"
+ },
+ "demoLinkEmail": {
+  "subject": "La teva demostració de HatchGrab: aquí tens l’enllaç",
+  "heading": "La teva demostració està a punt",
+  "intro": "Aquí tens l’enllaç a la demostració que hem creat a partir de la teva carta. Fes-hi una comanda com si fossis un dels teus clients i mira com arriba a la teva pantalla de cuina. No cal iniciar la sessió: només has de tocar l’enllaç.",
+  "button": "Obre la meva demostració",
+  "deletion": "Com que és una demostració, no la conservem: la suprimirem el {date}, juntament amb la carta que vas pujar. Si la vols més temps, prem «Desa la meva carta» a la demostració i la conservarem 14 dies.",
+  "deletionSoon": "Com que és una demostració, no la conservem: la suprimirem d’aquí a 24 hores, juntament amb la carta que vas pujar. Si la vols més temps, prem «Desa la meva carta» a la demostració i la conservarem 14 dies."
+ },
+ "demoWalk": {
+  "step1": "Pas 1 de 3 · Fes la comanda com un dels teus clients",
+  "paymentTitle": "Pagament",
+  "paymentPanel": "Aquí el teu client paga amb targeta, Apple Pay o Google Pay, o tria Paga en recollir. A la demostració no es cobra res.",
+  "defaultName": "Laia",
+  "step2": "Pas 2 de 3",
+  "bubbleTitle": "Aquesta és la teva pantalla de cuina",
+  "bubbleArrived": "La comanda que acabes de fer ha arribat aquí a l’instant, amb l’hora de recollida. Toca «Comença a preparar».",
+  "bubbleReady": "Quan el menjar estigui a punt, toca «A punt». El teu client rep l’avís a l’instant.",
+  "step3": "Pas 3 de 3 · fet",
+  "told": "Acabem d’avisar {name} que el menjar ja està a punt.",
+  "thatsIt": "Això és HatchGrab: els clients fan la comanda des del mòbil, tu la veus aquí i la recullen sense fer cua. La teva carta ja està configurada.",
+  "startFree": "{months, plural, =0 {Comença gratis i conserva la meva carta} one {Comença gratis durant # mes i conserva la meva carta} other {Comença gratis durant # mesos i conserva la meva carta}}",
+  "tryAnother": "Fes una altra comanda de prova",
+  "barOrder": "Fes la comanda com un client",
+  "barArrives": "Arriba a la teva cuina",
+  "barReady": "Marca-la com a preparada",
+  "phoneLabel": "El mòbil del teu client",
+  "kitchenLabel": "La teva pantalla de cuina",
+  "waitingTitle": "Esperant comandes",
+  "waitingBody": "Fes una comanda des del mòbil. Apareixerà aquí en el moment que el teu client premi «Fes la comanda».",
+  "startCooking": "Comença a preparar",
+  "ready": "A punt",
+  "readyForCollection": "A punt per recollir",
+  "cooking": "En preparació",
+  "readyBadge": "A punt",
+  "newBadge": "Comanda nova",
+  "orderNumber": "Comanda #{number}",
+  "collectAt": "Recollida a les {time}",
+  "collectAsap": "Recollida com més aviat millor",
+  "phoneReadyTitle": "La teva comanda està a punt",
+  "phoneReadyBody": "Recull-la al food truck.",
+  "bandTitle": "Això és HatchGrab. La teva carta ja està configurada.",
+  "bandStart": "Comença gratis i conserva la meva carta",
+  "orderAgain": "Torna a fer una comanda",
+  "loading": "S’està preparant la teva demostració…",
+  "goneTitle": "Aquesta demostració ha acabat",
+  "goneBody": "Les demostracions se suprimeixen al cap d’un dia. En pots crear una de nova a partir de la teva carta en menys d’un minut.",
+  "goneButton": "Crea una demostració nova",
+  "failed": "No ha funcionat. Torna-ho a provar.",
+  "backToMenu": "Torna a la carta",
+  "formNote": "Això és una demostració: no es cobra res a ningú i no s’envia res, així que no cal que hi posis cap correu electrònic.",
+  "namePlaceholder": "Laia"
+ },
+ "paperwork": {
+  "title": "Documents",
+  "intro": "Guarda tots els teus certificats en un sol lloc. T’avisarem abans que caduqui res i els podràs enviar a un organitzador d’una sola vegada.",
+  "loading": "S’estan carregant els teus documents…",
+  "loadFailed": "No s’han pogut carregar els teus documents. Torna-ho a provar.",
+  "retry": "Torna-ho a provar",
+  "counts": {
+   "expired": "{count, plural, one {# caducat} other {# caducats}}",
+   "dueSoon": "{count, plural, one {# caduca aviat} other {# caduquen aviat}}",
+   "missing": "{count, plural, one {# per pujar} other {# per pujar}}",
+   "upToDate": "{count, plural, one {# al dia} other {# al dia}}"
+  },
+  "status": {
+   "upToDate": "Al dia",
+   "dueSoon": "Caduca aviat",
+   "expired": "Caducat",
+   "upload": "Puja"
+  },
+  "line": {
+   "expires": "Caduca el {date}",
+   "expiresIn": "Caduca el {date} · {days, plural, one {d’aquí a # dia} other {d’aquí a # dies}}",
+   "expiresToday": "Caduca avui",
+   "expired": "Va caducar el {date}",
+   "reviewBy": "Revisió abans del {date}",
+   "reviewByIn": "Revisió abans del {date} · {days, plural, one {d’aquí a # dia} other {d’aquí a # dies}}",
+   "reviewOverdue": "La revisió tocava el {date}",
+   "noExpiry": "Sense caducitat",
+   "cover": "Cobertura: {amount}",
+   "notUploaded": "Encara no s’ha pujat"
+  },
+  "select": "Selecciona: {document}",
+  "add": "+ Afegeix un document",
+  "selected": "{count, plural, one {# seleccionat} other {# seleccionats}}",
+  "sendToOrganiser": "Envia a l’organitzador",
+  "types": {
+   "food_registration": "Registre d’empresa alimentària",
+   "hygiene_rating": "Qualificació d’higiene alimentària",
+   "food_safety_plan": "Pla de seguretat alimentària (APPCC)",
+   "public_liability": "Assegurança de responsabilitat civil",
+   "employers_liability": "Assegurança de responsabilitat civil patronal",
+   "gas_safety": "Certificat de seguretat del gas",
+   "pat_test": "Revisió d’aparells elèctrics portàtils (PAT)",
+   "fire_safety": "Seguretat contra incendis",
+   "risk_assessment": "Avaluació de riscos",
+   "allergen_info": "Informació sobre al·lèrgens",
+   "street_trading_licence": "Llicència de venda ambulant",
+   "electrical_safety": "Prova de seguretat elèctrica",
+   "trading_licence": "Llicència comercial"
+  },
+  "upload": {
+   "title": "Afegeix un document",
+   "intro": "Fes-ne una foto, o tria una foto o un fitxer.",
+   "takePhoto": "Fes una foto",
+   "chooseFile": "Tria una foto o un fitxer",
+   "accepted": "PDF, JPEG, PNG, HEIC o WebP, fins a 20 MB.",
+   "uploading": "S’està pujant… {percent} %",
+   "reading": "S’està llegint el teu document…",
+   "tooBig": "Aquest fitxer fa més de 20 MB. Tria’n un de més petit.",
+   "wrongType": "No s’accepta aquest tipus de fitxer. Fes servir un fitxer PDF, JPEG, PNG, HEIC o WebP.",
+   "failed": "No s’ha pogut pujar. Torna-ho a provar.",
+   "cancel": "Cancel·la"
+  },
+  "check": {
+   "title": "Comprova les dades",
+   "aiBanner": "Hem llegit aquestes dades del teu document. Comprova que siguin correctes abans de desar.",
+   "document": "Document",
+   "other": "Un altre…",
+   "otherName": "Nom del document",
+   "issuer": "Emès per",
+   "issued": "Data d’emissió",
+   "expires": "Data de caducitat",
+   "reviewBy": "Data de revisió",
+   "nameOnDocument": "Nom que consta al document",
+   "cover": "Cobertura de l’assegurança",
+   "coverHint": "Opcional. L’import que cobreix la pòlissa.",
+   "currency": "Moneda",
+   "save": "Desa",
+   "saving": "S’està desant…",
+   "cancel": "Cancel·la",
+   "saved": "Desat",
+   "footer": "El certificat anterior es guarda a l’historial. Els teus fitxers són privats: només els pots veure tu i els organitzadors a qui els enviïs.",
+   "needType": "Tria el document o escriu-ne el nom.",
+   "badDates": "La data de caducitat no pot ser anterior a la data d’emissió."
+  },
+  "warnings": {
+   "notRead": "No hem pogut llegir aquest document. Omple tu les dades.",
+   "expired": "Va caducar el {date}. El pots desar igualment, però els organitzadors veuran que ha caducat.",
+   "expiresSoon": "{days, plural, =0 {Caduca avui. T’ho recordarem cada setmana fins que el renovis.} one {Caduca d’aquí a # dia. T’ho recordarem 4 setmanes abans, 1 setmana abans i el mateix dia.} other {Caduca d’aquí a # dies. T’ho recordarem 4 setmanes abans, 1 setmana abans i el mateix dia.}}",
+   "nameMismatch": "El nom que hi consta, «{name}», no sembla el nom del teu negoci. Comprova que sigui el document correcte."
+  },
+  "view": {
+   "close": "Tanca",
+   "open": "Obre",
+   "download": "Baixa",
+   "noPreview": "Aquest fitxer no es pot mostrar aquí. Obre’l o baixa’l.",
+   "details": "Detalls",
+   "edit": "Edita les dades",
+   "renew": "Puja’n una versió nova",
+   "earlier": "Versions anteriors",
+   "uploaded": "Pujat el {date}",
+   "delete": "Suprimeix",
+   "deleteConfirm": "Vols suprimir aquest document i les seves versions anteriors? S’eliminaran els fitxers i desapareixerà de qualsevol enllaç que hagis enviat.",
+   "deleteYes": "Suprimeix",
+   "deleted": "S’ha suprimit el document",
+   "keep": "Mantén-lo"
+  },
+  "send": {
+   "title": "Envia a l’organitzador",
+   "intro": "Rebrà un correu electrònic amb un enllaç per veure-ho o baixar-ho tot.",
+   "email": "Correu electrònic de l’organitzador",
+   "emailHint": "Fins a 5 adreces, separades per comes.",
+   "event": "Esdeveniment (opcional)",
+   "noEvent": "Cap esdeveniment",
+   "documents": "Documents",
+   "message": "Missatge (opcional)",
+   "messagePlaceholder": "Hola, aquí teniu els nostres documents per al mercat.",
+   "until": "L’enllaç funciona fins al",
+   "untilAfterEvent": "{date} (l’endemà de l’esdeveniment)",
+   "send": "Envia",
+   "sending": "S’està enviant…",
+   "footer": "Si renoves un certificat, l’enllaç de l’organitzador mostra el nou automàticament. Veuràs quan l’obre.",
+   "sent": "Enviat a: {emails}",
+   "cancel": "Cancel·la",
+   "emailNone": "Escriu el correu electrònic de l’organitzador.",
+   "emailInvalid": "«{email}» no és una adreça de correu electrònic.",
+   "emailTooMany": "Pots enviar-ho a 5 adreces com a màxim alhora.",
+   "noDocuments": "Tria almenys un document.",
+   "untilRange": "Tria una data entre demà i d’aquí a 90 dies."
+  },
+  "sent": {
+   "title": "Enviats",
+   "empty": "Encara no s’ha enviat res.",
+   "to": "Per a: {emails}",
+   "sentOn": "Enviat el {date}",
+   "opened": "Obert el {date} · {count, plural, one {# visualització} other {# visualitzacions}}",
+   "notOpened": "Encara no s’ha obert",
+   "until": "Funciona fins al {date}",
+   "expiredOn": "Va caducar el {date}",
+   "off": "Desactivat",
+   "turnOff": "Desactiva l’enllaç",
+   "turnOffConfirm": "Vols desactivar aquest enllaç? L’organitzador ja no el podrà obrir.",
+   "turnedOff": "Enllaç desactivat"
+  },
+  "page": {
+   "title": "Documents del food truck {truck}",
+   "intro": "{truck} ha compartit aquests documents amb tu.",
+   "view": "Mostra",
+   "download": "Baixa",
+   "downloadAll": "Baixa-ho tot",
+   "until": "Aquest enllaç funciona fins al {date}.",
+   "none": "Ara mateix no hi ha cap document en aquest enllaç.",
+   "expiredTitle": "Aquest enllaç ha caducat",
+   "expiredBody": "Aquest enllaç ha caducat: demana a {truck} que te’l torni a enviar.",
+   "expiredBodyUnknown": "Aquest enllaç ha caducat. Demana al negoci que te l’ha enviat que te’l torni a enviar.",
+   "sharedWith": "Compartit mitjançant HatchGrab"
+  },
+  "email": {
+   "shareSubject": "{truck} t’ha enviat els seus documents",
+   "shareHeading": "Documents del food truck {truck}",
+   "shareIntro": "{truck} ha compartit aquests documents amb tu.",
+   "event": "Per a: {event}",
+   "shareButton": "Mostra els documents",
+   "shareUntil": "L’enllaç funciona fins al {date}. Si ha caducat, demana a {truck} que te’l torni a enviar.",
+   "shareReply": "Respon a aquest correu per contactar amb {truck}.",
+   "expires": "caduca el {date}",
+   "reviewBy": "revisió abans del {date}",
+   "noExpiry": "sense caducitat",
+   "reminderSubject": "{count, plural, one {Cal renovar un document} other {Cal renovar # documents}}",
+   "reminderHeading": "Els teus documents",
+   "reminderIntro": "Cal renovar alguns documents del food truck {truck}:",
+   "reminderIn": "{document} caduca el {date} ({days, plural, one {d’aquí a # dia} other {d’aquí a # dies}})",
+   "reminderToday": "{document} caduca avui",
+   "reminderExpired": "{document} va caducar el {date}",
+   "reminderButton": "Obre «Documents»",
+   "reminderFooter": "T’ho recordem 4 setmanes abans, 1 setmana abans i el mateix dia, i després cada setmana fins que el renovis."
+  }
+ },
+ "emailReview": {
+  "subject": "Què tal la teva comanda a {truck}?",
+  "heading": "Gràcies per fer la comanda a {truck}",
+  "body": "{truck} t’agrairia molt una ressenya sincera a Google. Només et costarà un minut i ajuda altres persones a trobar-lo.",
+  "button": "Deixa una ressenya a Google",
+  "linkText": "Deixa una ressenya a Google: {url}",
+  "from": "Aquest correu te l’envia {truck} a través de HatchGrab perquè hi vas fer una comanda.",
+  "unsubscribeLead": "No vols que {truck} et torni a demanar ressenyes?",
+  "unsubscribeLink": "Dona’t de baixa",
+  "unsubscribeText": "Dona’t de baixa: {url}",
+  "unsubscribed": {
+   "title": "T’has donat de baixa",
+   "body": "{truck} ja no et demanarà més ressenyes.",
+   "invalid": "Aquest enllaç de baixa no és vàlid."
+  }
+ },
+ "billing": {
+  "tab": {
+   "plan": {
+    "title": "El teu pla",
+    "trialPill": "Prova gratuïta",
+    "change": "Canvia de pla",
+    "trialLine": "La teva prova gratuïta acaba el {date}. Després, el pla {plan} costa {price} al mes.",
+    "trialLineFree": "La teva prova gratuïta acaba el {date}. Després passes al pla {plan}, sense quota mensual.",
+    "proLine": "Inclou {allowance} de comandes en línia al mes. Després, {fee}.",
+    "paygLine": "{fee} a les comandes en línia. Sense quota mensual.",
+    "unlimitedLine": "{price} al mes. Sense comissió a les comandes en línia.",
+    "pendingLine": "El pla {plan} comença el {date}."
+   },
+   "payment": {
+    "title": "Mètode de pagament",
+    "none": "Encara no has afegit cap targeta. Afegeix-ne una per continuar rebent comandes en línia després de la prova.",
+    "add": "Afegeix una targeta",
+    "pix": "Fes servir Pix Automático",
+    "card": "{brand} acabada en {last4}",
+    "pixOnFile": "Pix Automático",
+    "pending": "Pendent de confirmació.",
+    "change": "Canvia",
+    "lastFailed": "L’últim pagament ha fallat",
+    "update": "Actualitza la targeta",
+    "error": "No hem pogut obrir la pàgina de pagament. Torna-ho a provar.",
+    "noneAfterTrial": "No hi ha cap targeta. Afegeix-ne una per tornar a activar les comandes en línia."
+   },
+   "whatYouPay": {
+    "title": "Què pagues",
+    "plan": "El teu pla, cobrat el dia 1 pel mes que comença",
+    "fee": "Comandes en línia per sobre de {allowance} al mes, cobrades el dia 1 pel mes anterior",
+    "feePayg": "Comandes en línia, cobrades el dia 1 pel mes anterior",
+    "walkUps": "Comandes presencials",
+    "free": "Gratuït",
+    "trialEnd": "Quan acabi la teva prova, el {date}, et cobrarem {amount} per la resta del mes ({month}). Després, {price} el {nextFirst}."
+   },
+   "next": {
+    "title": "Proper pagament · {date}",
+    "plan": "Pla {plan} ({month})",
+    "fee": "{fee} sobre les comandes en línia per sobre de {allowance} ({month}, fins ara)",
+    "feePayg": "{fee} sobre les comandes en línia ({month}, fins ara)",
+    "vans": "Vehicles addicionals ({month})",
+    "surcharge": "Recàrrec per pagament posterior ({month})",
+    "carried": "Pendent de períodes anteriors",
+    "total": "Total fins ara",
+    "walkUps": "Les comandes presencials sempre són gratuïtes."
+   },
+   "preorders": {
+    "title": "Com paguen els clients les comandes anticipades",
+    "online": "En línia, quan fan la comanda",
+    "onlineHint": "Els diners van directament al teu compte de Stripe.",
+    "atTruckHint": "Els clients paguen quan recullen la comanda. La nostra comissió s’afegeix al teu càrrec mensual.",
+    "saved": "Desat.",
+    "error": "No ho hem pogut desar. Torna-ho a provar."
+   },
+   "invoices": {
+    "title": "Factures",
+    "date": "Data",
+    "for": "Concepte",
+    "amount": "Import",
+    "status": "Estat",
+    "forMonthly": "Pla: {planMonth} · comissions: {usageMonth}",
+    "forMonthlyPlan": "Pla: {planMonth}",
+    "forTrialEnd": "Resta del mes ({month})",
+    "forUpgrade": "Canvi al pla {plan}",
+    "lateFee": "Recàrrec per pagament endarrerit",
+    "paid": "Pagada",
+    "unpaid": "No pagada",
+    "overdue": "Vençuda",
+    "download": "Baixa",
+    "payNow": "Paga ara",
+    "none": "Encara no hi ha factures."
+   },
+   "failed": {
+    "title": "El teu pagament de {amount} no s’ha pogut fer.",
+    "body": "Ho tornarem a provar. Actualitza la targeta abans del {date} per mantenir actives les comandes en línia.",
+    "button": "Actualitza la targeta"
+   },
+   "paused": {
+    "title": "Les comandes en línia estan en pausa",
+    "body": "Tens un pagament vençut de {amount}. Paga ara i les comandes en línia es tornaran a activar a l’instant.",
+    "warning": "Paga abans del {date} o el teu compte es podria suspendre.",
+    "pay": "Paga {amount}",
+    "otherCard": "Fes servir una altra targeta"
+   },
+   "loading": "S’està carregant la facturació…",
+   "loadError": "No hem pogut carregar la facturació. Torna-ho a provar."
+  },
+  "changePlan": {
+   "title": "Canvia de pla",
+   "current": "Tens el pla {plan}.",
+   "free": "Gratuït",
+   "perMonth": "{price} al mes",
+   "paygLine": "{fee} a les comandes en línia.",
+   "proLine": "Inclou {allowance} de comandes en línia. Després, {fee}.",
+   "unlimitedLine": "Sense comissió a les comandes en línia.",
+   "yourPlan": "El teu pla",
+   "startsNow": "Comença ara.",
+   "chargeToday": "Avui et cobrarem {amount} per la resta del mes ({month}). Després, {price} el {nextFirst}.",
+   "startsLater": "Comença el {nextFirst}. Fins llavors mantens el pla {plan}.",
+   "cancel": "Cancel·la",
+   "switchTo": "Canvia al pla {plan}",
+   "error": "No hem pogut canviar el teu pla. Torna-ho a provar.",
+   "trialLine": "Tens una prova gratuïta. Tria el pla que vols per quan acabi, el {date}.",
+   "startsAtTrialEnd": "Comença quan acabi la prova.",
+   "choose": "Tria el pla {plan}"
+  },
+  "notices": {
+   "trialEndsSoon": "<b>La teva prova gratuïta acaba el {date}.</b> Afegeix una targeta per mantenir actives les comandes en línia.",
+   "trialEndsTomorrow": "<b>La teva prova gratuïta acaba demà.</b> Afegeix una targeta o les comandes en línia es posaran en pausa.",
+   "allSet": "<b>Ja està tot a punt.</b> El pla {plan} comença el {date}.",
+   "paymentFailed": "<b>El teu pagament no s’ha pogut fer.</b> Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} abans del {date} per mantenir actives les comandes en línia.",
+   "paused": "<b>Les comandes en línia estan en pausa.</b> Paga {amount} abans del {date} o el teu compte es podria suspendre.",
+   "addCard": "Afegeix una targeta →",
+   "updateCard": "Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} →",
+   "payNow": "Paga ara →",
+   "dismiss": "Descarta",
+   "trialEnded": "<b>La teva prova gratuïta ha acabat.</b> Afegeix una targeta per tornar a activar les comandes en línia."
+  }
+ },
+ "emailBilling": {
+  "greeting": "{hasName, select, yes {Hola, {name},} other {Hola,}}",
+  "questions": "Tens preguntes? Només cal que responguis.",
+  "signoff": "L’equip de HatchGrab",
+  "buttonUpdate": "Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}}",
+  "buttonPay": "Paga ara",
+  "buttonAddCard": "Afegeix una targeta",
+  "suspended": "Si continua sense pagar-se, el teu compte es podria suspendre.",
+  "failed": {
+   "subject": "El teu pagament a HatchGrab no s’ha pogut fer",
+   "line1": "Avui no hem pogut cobrar {amount} per al food truck {truck}. Ho tornarem a provar.",
+   "line2": "Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} abans del {date} per mantenir actives les comandes en línia."
+  },
+  "twoDays": {
+   "subject": "Queden 2 dies per actualitzar {method, select, payment_method {el mètode de pagament} other {la targeta}}",
+   "line1": "L’import de {amount} del food truck {truck} encara no s’ha pagat. Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} abans del {date} o les comandes en línia es posaran en pausa."
+  },
+  "oneDay": {
+   "subject": "Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} com a molt tard demà",
+   "line1": "L’import de {amount} del food truck {truck} encara no s’ha pagat. Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} com a molt tard demà o les comandes en línia es posaran en pausa."
+  },
+  "lastDay": {
+   "subject": "Últim dia per actualitzar {method, select, payment_method {el mètode de pagament} other {la targeta}}",
+   "line1": "Avui és l’últim dia per pagar {amount} del food truck {truck}. Si a mitjanit encara no s’ha pagat, les comandes en línia es posaran en pausa fins que paguis."
+  },
+  "paused": {
+   "subject": "Les comandes en línia estan en pausa",
+   "line1": "Les comandes en línia del food truck {truck} estan en pausa perquè hi ha {amount} sense pagar. Paga ara i es tornaran a activar a l’instant.",
+   "line2": "Paga abans del {date} o el teu compte es podria suspendre."
+  },
+  "trial7": {
+   "subject": "La teva prova gratuïta acaba d’aquí a 7 dies",
+   "line1": "La prova gratuïta del food truck {truck} acaba el {date}.",
+   "line2": "Afegeix una targeta a «Gestiona» › Facturació per mantenir actives les comandes en línia.",
+   "plan": "Després, el pla {plan} costa {price} al mes. Quan acabi la prova, et cobrarem {amount} per la resta del mes ({month}) i després {price} el {nextFirst}.",
+   "planFree": "Després passes al pla {plan}, sense quota mensual.",
+   "fee": "La nostra comissió a les comandes en línia ({fee}) es cobra el dia 1, pel mes anterior."
+  },
+  "trial1": {
+   "subject": "La teva prova gratuïta acaba demà",
+   "line1": "La prova gratuïta del food truck {truck} acaba demà.",
+   "noCard": "Afegeix una targeta o les comandes en línia es posaran en pausa.",
+   "allSet": "Ja està tot a punt: el pla {plan} comença el {date}.",
+   "charge": "Quan acabi la prova, et cobrarem {amount} per la resta del mes ({month})."
+  }
+ }
+}
