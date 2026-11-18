@@ -1,0 +1,1054 @@
+{
+ "alertsOperator": {
+  "hi": "Habari {name},",
+  "limit80": {
+   "subject": "Umetumia 80% ya majibu ya WhatsApp ya mwezi huu",
+   "used": "Majibu yako ya kiotomatiki ya WhatsApp yametumia <b>{used} kati ya {limit}</b> kwa mwezi huu.",
+   "nothingStopped": "Hakuna kilichosimama. Ukifikia {limit}, majibu ya kiotomatiki yanasitishwa hadi kiwango chako kitakapoanza upya tarehe <b>{reset}</b> — wateja bado wanaweza kukutumia ujumbe, na bado utaona kila wanachotuma.",
+   "raise": "Unaweza kuongeza kikomo chako cha mwezi kwenye Mipangilio wakati wowote.",
+   "raiseLink": "Unaweza kuongeza kikomo chako cha mwezi kwenye Mipangilio wakati wowote:",
+   "button": "Fungua Mipangilio"
+  },
+  "limit100": {
+   "subject": "Majibu ya kiotomatiki ya WhatsApp yamesitishwa kwa mwezi huu",
+   "usedAll": "Umetumia majibu yote {limit} ya kiotomatiki ya WhatsApp ya mwezi huu, kwa hiyo yamesitishwa.",
+   "stillReach": "<b>Wateja bado wanaweza kukutumia ujumbe kama kawaida, na kila ujumbe bado unakufikia.</b> Kitu pekee kilichosimama ni jibu la kiotomatiki kurudi kwao.",
+   "startAgain": "Yataanza tena tarehe <b>{reset}</b>, au mara moja ukiongeza kikomo chako cha mwezi kwenye Mipangilio.",
+   "startAgainLink": "Yataanza tena tarehe {reset}, au mara moja ukiongeza kikomo chako cha mwezi kwenye Mipangilio:",
+   "button": "Ongeza kikomo changu"
+  },
+  "paymentBlocked": {
+   "subject": "WhatsApp inahitaji njia ya malipo kabla ya kutuma",
+   "stopped": "WhatsApp imezuia majibu yako ya kiotomatiki yasitumwe kwa sababu hakuna njia ya malipo inayofanya kazi kwenye akaunti yako ya WhatsApp Business.",
+   "stillMessage": "<b>Wateja bado wanaweza kukutumia ujumbe, na bado utaona kila wanachotuma</b> — lakini majibu hayawafikii.",
+   "payDirect": "Unailipa WhatsApp moja kwa moja kwa jumbe hizi, kwa hiyo hili linarekebishwa kwenye WhatsApp Manager, si kwenye HatchGrab. Ongeza au sasisha kadi huko na majibu yataanza tena yenyewe.",
+   "payDirectLink": "Unailipa WhatsApp moja kwa moja kwa jumbe hizi, kwa hiyo hili linarekebishwa kwenye WhatsApp Manager, si kwenye HatchGrab. Ongeza au sasisha kadi huko na majibu yataanza tena yenyewe:",
+   "button": "Fungua WhatsApp Manager",
+   "settings": "Mipangilio yako ya HatchGrab: <link>{url}</link>"
+  }
+ },
+ "setup": {
+  "steps": {
+   "based": "Mahali ulipo",
+   "identity": "Food truck yako",
+   "menu": "Menyu yako",
+   "event": "Tukio la kwanza"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Kuweka mipangilio",
+  "loading": "Inapakia",
+  "loadingCountries": "Inapakia…",
+  "verify": {
+   "ok": "Barua pepe imethibitishwa — asante.",
+   "expired": "Kiungo hicho cha uthibitisho kimeisha muda wake. Wasiliana nasi na tutalishughulikia kabla hujazindua.",
+   "invalid": "Kiungo hicho cha uthibitisho hakikufanya kazi. Wasiliana nasi na tutalishughulikia kabla hujazindua."
+  },
+  "identity": {
+   "heading": "Food truck yako inaitwaje?",
+   "intro": "Hili ndilo jina wateja wanaloliona. Hakuna kinachoonekana hadharani hadi utakapoamua kuzindua.",
+   "nameLabel": "Jina la food truck",
+   "namePlaceholder": "Baga za Juma",
+   "phoneLabel": "Simu",
+   "whatsappTick": "Namba hii iko kwenye WhatsApp",
+   "phoneHelp": "Wateja wanaiona kwenye uthibitisho wa oda yao ili waweze kuuliza kuhusu oda. Alama ya tiki inaamua kama itasomeka “Tupigie simu” au “Tutumie ujumbe WhatsApp”. Unaweza kubadilisha vyote viwili kwenye Mipangilio."
+  },
+  "phoneRequired": "Ongeza namba ya simu — wateja na sisi tunaitumia kuwasiliana nawe.",
+  "createFailed": "Imeshindikana kuunda food truck yako.",
+  "unreachable": "Imeshindikana kutufikia sasa hivi — tafadhali jaribu tena.",
+  "back": "Rudi",
+  "creating": "Inaunda food truck yako…",
+  "continue": "Endelea"
+ },
+ "whereBased": {
+  "countriesFailed": "Hatukuweza kupakia orodha ya nchi. Jaribu tena baada ya muda mfupi."
+ },
+ "cuisinePicker": {
+  "choose": "Chagua aina ya vyakula…",
+  "other": "Nyingine…",
+  "otherPlaceholder": "Tuambie aina ya vyakula vyako",
+  "addAnother": "+ Chagua nyingine",
+  "remove": "Ondoa: {label}",
+  "cuisine": {
+   "Asian": "Vyakula vya Asia",
+   "BBQ": "Nyama choma (BBQ)",
+   "Bakery": "Mikate na keki",
+   "Burgers": "Baga",
+   "Caribbean": "Vyakula vya Karibiani",
+   "Chicken": "Kuku",
+   "Chinese": "Vyakula vya Kichina",
+   "Coffee": "Kahawa",
+   "Desserts": "Vitindamlo",
+   "FishChips": "Samaki na chipsi",
+   "Greek": "Vyakula vya Kigiriki",
+   "HotDogs": "Hot dog",
+   "Indian": "Vyakula vya Kihindi",
+   "Italian": "Vyakula vya Kiitaliano",
+   "JacketPotatoes": "Viazi vya kuoka",
+   "Kebab": "Kababu",
+   "Korean": "Vyakula vya Kikorea",
+   "Mexican": "Vyakula vya Kimeksiko",
+   "PieMash": "Pai na viazi vilivyopondwa",
+   "Pizza": "Piza",
+   "Seafood": "Vyakula vya baharini",
+   "Tacos": "Tako",
+   "Thai": "Vyakula vya Kithai",
+   "Vegan": "Bila bidhaa za wanyama",
+   "Wraps": "Chapati za kuviringisha"
+  }
+ },
+ "priceControls": {
+  "change": "{label} — badilisha",
+  "useRule": "{label} — tumia kanuni badala yake",
+  "typePrice": "{label} — andika bei",
+  "backToRule": "Rudi kwenye kanuni",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+ },
+ "goLive": {
+  "allergensUnanswered": {
+   "title": "Chagua jinsi unavyoonyesha taarifa za viambato vinavyosababisha mzio",
+   "detail": "Hadi utakapochagua, wateja hawaoni chakula chako chochote — menyu inajilinda kwa kuficha kila chakula chenye viambato vinavyosababisha mzio ambavyo havijathibitishwa, na kwa sasa hicho ni kila kitu.",
+   "where": "Menyu → Viambato vinavyosababisha mzio"
+  },
+  "allergensCardMissing": {
+   "title": "Ongeza kadi yako ya viambato vinavyosababisha mzio",
+   "detail": "Umechagua kuonyesha kadi ya viambato vinavyosababisha mzio, lakini hakuna iliyohifadhiwa — kwa hiyo wateja wangeambiwa taarifa za mzio zipo kisha wasikute chochote.",
+   "where": "Menyu → Viambato vinavyosababisha mzio"
+  },
+  "allergensItemsUnverified": {
+   "title": "{n, plural, one {Thibitisha viambato vinavyosababisha mzio kwenye chakula {count}} other {Thibitisha viambato vinavyosababisha mzio kwenye vyakula {count}}}",
+   "detail": "{n, plural, one {Chakula chako kimefichwa kwa wateja hadi uthibitishe viambato vinavyosababisha mzio vya chakula hicho.} other {{u, plural, one {Chakula {unverified} kati ya vyakula vyako {total} kimefichwa kwa wateja hadi uthibitishe viambato vinavyosababisha mzio vya chakula hicho.} other {Vyakula {unverified} kati ya vyakula vyako {total} vimefichwa kwa wateja hadi uthibitishe viambato vinavyosababisha mzio vya vyakula hivyo.}}}} Chakula kinachoonyeshwa bila viambato vilivyothibitishwa husomeka kama “hakina chochote”, kwa hiyo menyu inakificha badala ya kuhatarisha hilo.",
+   "where": "Menyu → Viambato vinavyosababisha mzio"
+  },
+  "noVan": {
+   "title": "Ongeza gari",
+   "detail": "Matukio yanaendeshwa kupitia gari — bila gari hakuna njia ya kupokea oda.",
+   "where": "Mipangilio → Magari yako"
+  },
+  "kitchenCapacityUnset": {
+   "title": "Weka uwezo wa jiko lako",
+   "detail": "Hakuna uwezo uliowekwa kwa magari haya: {vans}. Bila huo tutaendelea kuwaahidi wateja muda wa kuchukua oda ambao jiko lako haliwezi kuufikia.",
+   "where": "Menyu → Uwezo wa jiko",
+   "unnamedVan": "Gari lisilo na jina"
+  },
+  "noPrepBearingCategory": {
+   "title": "Tuambie chakula chako kinachukua muda gani",
+   "detail": "{categories, select, none {Bado huna kategoria za menyu, kwa hiyo hatuna njia ya kujua oda inachukua muda gani.} other {Hakuna kategoria yako yoyote yenye muda wa kupika uliowekwa, kwa hiyo kila oda inaonekana kwetu kuwa ya papo hapo. Tungeendelea kuwapa wateja muda wa kuchukua oda ambao jiko lako haliwezi kuufikia, na kadiri unavyozidi kuwa na shughuli nyingi ndivyo muda huo ungezidi kuwa mbali.}}",
+   "where": "Menyu → Kategoria → Mpangilio wa jiko"
+  },
+  "emailUnverified": {
+   "title": "Thibitisha barua pepe yako",
+   "detail": "Tunatuma arifa za oda na njia ya kurejesha akaunti kwenye barua pepe hii. Ikiwa si sahihi, utagundua wakati tayari kuna kitu kimeharibika.",
+   "where": "Angalia sanduku lako la barua pepe upate kiungo chetu cha uthibitisho"
+  },
+  "emailUnknown": {
+   "title": "Hali ya uthibitisho wa barua pepe haijulikani",
+   "detail": "Uthibitisho wa barua pepe bado haujaunganishwa, kwa hiyo hili haliwezi kutathminiwa. Kwa makusudi linazuia badala ya kupita kimyakimya.",
+   "where": "—"
+  }
+ },
+ "walkthrough": {
+  "intro": "“Simamia” ndipo unapoandaa food truck yako na kuona inavyoendelea. Dashibodi ndipo unapopokea oda na kuendesha kila tukio linapoendelea.",
+  "ariaLabel": "Maelekezo ya dashibodi",
+  "step": "{current} kati ya {total}",
+  "skip": "Ruka",
+  "back": "← Rudi",
+  "next": "Inayofuata →",
+  "done": "Nimemaliza",
+  "stops": {
+   "menu": {
+    "title": "Menyu",
+    "body": "Vyakula vyako, bei na viambato vinavyosababisha mzio. Ukibadilisha chochote hapa, kinaonekana mara moja."
+   },
+   "schedule": {
+    "title": "Ratiba",
+    "body": "Mahali na wakati unapouza. Ongeza tukio hapa na wateja wataweza kuagiza kwa ajili yake."
+   },
+   "build": {
+    "title": "Ofa za mlo, Nyongeza na mapendekezo ya ziada",
+    "body": "Ofa za mlo, mapendekezo ya ziada, nyongeza maalum na uwezo wa jiko lako viko chini ya Menyu — jaribu ujionee."
+   },
+   "settings": {
+    "title": "Mipangilio",
+    "body": "Taarifa za food truck yako na jinsi wateja wanavyolipa."
+   },
+   "billing": {
+    "title": "Bili",
+    "body": "Hapa ndipo zilipo taarifa za kifurushi chako, bili na huduma."
+   }
+  }
+ },
+ "auth": {
+  "fields": {
+   "email": "Barua pepe",
+   "password": "Nenosiri",
+   "emailPlaceholder": "wewe@mfano.com",
+   "passwordHint": "Angalau herufi 8"
+  },
+  "signup": {
+   "title": "Fungua akaunti yako",
+   "subtitle": "{months, plural, =0 {Jaribio lako bila malipo linaanza unapojisajili.} one {Mwezi wako wa kwanza ni bila malipo, kuanzia unapojisajili.} other {Miezi # ya kwanza ni bila malipo, kuanzia unapojisajili.}}",
+   "emailPlaceholder": "wewe@foodtruckyako.co.tz",
+   "codeLabel": "Una msimbo? <optional>(si lazima)</optional>",
+   "codePlaceholder": "Uandike hapa",
+   "codeApply": "Tumia",
+   "codeApplied": "Msimbo umetumika: {deal} ({partner})",
+   "codeInvalid": "Msimbo huo si sahihi.",
+   "codeExpired": "Msimbo huo umeisha muda wake.",
+   "dealExtraMonths": "{months, plural, one {mwezi # wa ziada bila malipo} other {miezi # ya ziada bila malipo}}",
+   "dealPercentOff": "punguzo la {pct}% kwa {months, plural, one {mwezi #} other {miezi #}}",
+   "dealPercentOffPlan": "punguzo la {pct}% kwenye kifurushi {plan} kwa {months, plural, one {mwezi #} other {miezi #}}",
+   "dealFixedPrice": "kifurushi {plan} kwa {price} kila mwezi kwa {months, plural, one {mwezi #} other {miezi #}}",
+   "dealPlanOffer": "bei maalum ya kifurushi {plan} kwa {months, plural, one {mwezi #} other {miezi #}}",
+   "partnerCodeLabel": "Msimbo wa mshirika au wa punguzo <optional>(si lazima)</optional>",
+   "marketing": "Nitumie kwa barua pepe vidokezo na habari za HatchGrab mara kwa mara. Haihusiani na oda zako — unaweza kusitisha wakati wowote.",
+   "signIn": "Ingia",
+   "submit": "Fungua akaunti yangu",
+   "submitting": "Inafungua akaunti yako…",
+   "consent": "Kwa kufungua akaunti unakubali <terms>Masharti</terms> yetu na <privacy>Sera ya Faragha</privacy>. Hakuna haja ya kadi. Hakuna kinachoonekana hadharani hadi utakaposema.",
+   "haveAccount": "Tayari una akaunti? Ingia",
+   "errorFallback": "Imeshindikana kufungua akaunti yako.",
+   "errorOffline": "Imeshindikana kutufikia sasa hivi — tafadhali jaribu tena."
+  },
+  "login": {
+   "title": "Ingia kwenye jiko lako",
+   "dashboardOf": "Dashibodi ya mwendeshaji — {brand}",
+   "resetSuccess": "Nenosiri limesasishwa. Tafadhali ingia.",
+   "emailChanged": "Barua pepe imesasishwa. Tafadhali ingia kwa barua pepe yako mpya.",
+   "errorFallback": "Barua pepe au nenosiri si sahihi. Tafadhali jaribu tena.",
+   "submit": "Ingia",
+   "submitting": "Inaingia…",
+   "forgot": "Umesahau nenosiri lako?",
+   "invalidLink": "Kiungo hicho kimeisha muda wake au si sahihi."
+  },
+  "forgot": {
+   "sentTitle": "Angalia barua pepe yako",
+   "sentBody": "Ikiwa kuna akaunti yenye barua pepe hiyo, utapokea kiungo cha kuweka upya nenosiri hivi punde. Angalia folda ya barua taka kama hakitafika ndani ya dakika chache.",
+   "title": "Weka upya nenosiri lako",
+   "subtitle": "Andika barua pepe yako na tutakutumia kiungo cha kuweka upya",
+   "submit": "Tuma kiungo cha kuweka upya",
+   "sending": "Inatuma…",
+   "back": "Rudi kwenye kuingia"
+  },
+  "reset": {
+   "invalidTitle": "Kiungo cha kuweka upya si sahihi",
+   "invalidBody": "Kiungo hiki si sahihi au kimeisha muda wake.",
+   "requestNew": "Omba kiungo kipya cha kuweka upya",
+   "mismatch": "Manenosiri hayalingani",
+   "tooShort": "Nenosiri lazima liwe na angalau herufi 8.",
+   "errorFallback": "Hitilafu imetokea. Tafadhali jaribu tena.",
+   "titleFirstLogin": "Weka nenosiri lako",
+   "titleReset": "Chagua nenosiri jipya",
+   "subtitleFirstLogin": "Chagua nenosiri ili kulinda akaunti yako",
+   "subtitleReset": "Nenosiri lako jipya lazima liwe na angalau herufi 8",
+   "newPassword": "Nenosiri jipya",
+   "confirmPassword": "Thibitisha nenosiri",
+   "confirmPlaceholder": "Rudia nenosiri lako",
+   "submit": "Weka nenosiri",
+   "saving": "Inahifadhi…",
+   "sendNewLink": "Tuma kiungo kipya"
+  },
+  "verifyEmail": {
+   "goToLogin": "Nenda kwenye kuingia",
+   "failedTitle": "Uthibitisho umeshindikana",
+   "invalidTitle": "Kiungo si sahihi au kimeisha muda wake",
+   "invalidBody": "Kiungo hiki cha uthibitisho si sahihi au tayari kimeisha muda wake.",
+   "verifiedTitle": "Tayari imethibitishwa",
+   "verifiedBody": "Barua pepe hii tayari imethibitishwa.",
+   "expiredTitle": "Kiungo kimeisha muda wake",
+   "expiredBody": "Kiungo hiki cha uthibitisho kimeisha muda wake. Omba kipya kwenye mipangilio ya wasifu wako.",
+   "accountNotFound": "Akaunti haikupatikana. Tafadhali wasiliana na timu ya usaidizi.",
+   "emailTaken": "Barua pepe hii tayari inatumika kwenye akaunti nyingine. Tafadhali tumia barua pepe tofauti.",
+   "updateFailed": "Imeshindikana kusasisha barua pepe. Tafadhali jaribu tena.",
+   "loginUpdateFailed": "Imeshindikana kusasisha taarifa za kuingia. Barua pepe yako haijabadilishwa.",
+   "successTitle": "Barua pepe imesasishwa",
+   "successBody": "Barua pepe yako imebadilishwa kuwa <b>{email}</b>. Tunakutoa kwenye akaunti…"
+  },
+  "sessionAlert": {
+   "title": "Kuingia kwako kunahitaji kushughulikiwa",
+   "body": "Kila kitu kwenye skrini bado kipo. Mabadiliko mapya huenda yasihifadhiwe hadi uingie tena.",
+   "signIn": "Ingia tena"
+  }
+ },
+ "emailSignup": {
+  "greeting": "{hasName, select, yes {Habari {name},} other {Habari yako,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Mwanzilishi, HatchGrab",
+  "verify": {
+   "subject": "Thibitisha barua pepe yako",
+   "thanks": "{hasTruck, select, yes {Asante kwa kusajili {truck} kwenye HatchGrab.} other {Asante kwa kusajili food truck yako kwenye HatchGrab.}}",
+   "button": "Thibitisha barua pepe yangu",
+   "buttonText": "Thibitisha barua pepe yangu: {url}",
+   "why": "Hii ndiyo barua pepe utakayotumia kuingia, na ndiko arifa za oda zinakotumwa — kwa hiyo ni vyema kufanya hivi sasa.",
+   "next": "Ikishathibitishwa nitakutumia kila kitu unachohitaji ili kuanza.",
+   "carryOn": "Wakati huo huo unaweza kuendelea kuweka mipangilio.",
+   "stuck": "Umekwama mahali popote? Jibu tu barua pepe hii — ninazijibu mwenyewe.",
+   "fallbackLink": "Kitufe kisipofanya kazi, bandika kiungo hiki: {url}"
+  },
+  "welcome": {
+   "subject": "{hasName, select, yes {Karibu HatchGrab, {name}} other {Karibu HatchGrab}}",
+   "intro": "{hasTruck, select, yes {Nina furaha kubwa kukukaribisha wewe na {truck} kwenye HatchGrab.} other {Nina furaha kubwa kukukaribisha wewe na food truck yako kwenye HatchGrab.}}",
+   "trial": "{months, plural, one {Jaribio lako bila malipo la mwezi mmoja limeanza — huduma zote zimefunguliwa.} other {Jaribio lako bila malipo la miezi # limeanza — huduma zote zimefunguliwa.}}",
+   "setup": "Kama bado hujafanya hivyo, kuweka mipangilio ni rahisi na huchukua takriban dakika kumi na tano.",
+   "button": "Fungua dashibodi yako",
+   "bookmark": "Inafaa kuiwekea alamisho. Inafanya kazi kwenye kifaa chochote.",
+   "stuck": "Jibu tu barua pepe hii ukikwama — ninazijibu mwenyewe.",
+   "lookingForward": "{hasTruck, select, yes {Natarajia kuona food truck {truck} ikiuza.} other {Natarajia kuona food truck yako ikiuza.}}"
+  }
+ },
+ "errorsOnboarding": {
+  "not_signed_in": "Hujaingia",
+  "no_operator_record": "Hakuna rekodi ya mwendeshaji",
+  "bad_request": "Ombi si sahihi",
+  "truck_name_missing": "Ipe food truck yako jina.",
+  "contact_phone_required": "Namba ya simu ya mawasiliano inahitajika.",
+  "phone_invalid": "{withName, select, yes {Weka namba sahihi ya simu ya {name}} other {Weka namba sahihi ya simu}}{withExample, select, yes { (mf. {example})} other {}}.",
+  "truck_create_failed": "Imeshindikana kuunda food truck yako.",
+  "unknown_step": "Hatua isiyojulikana",
+  "unknown_action": "Kitendo kisichojulikana",
+  "countries_unavailable": "Hatukuweza kupakia orodha ya nchi. Jaribu tena baada ya muda mfupi.",
+  "email_invalid": "Weka barua pepe sahihi.",
+  "password_too_short": "Nenosiri lazima liwe na angalau {min, plural, one {herufi #} other {herufi #}}.",
+  "signup_closed": "Usajili bado haujafunguliwa.",
+  "too_many_attempts": "Majaribio mengi mno kwa sasa — tafadhali jaribu tena baada ya muda mfupi.",
+  "account_exists": "Tayari kuna akaunti yenye barua pepe hiyo — ingia badala yake.",
+  "account_create_failed": "Imeshindikana kufungua akaunti.",
+  "account_finish_failed": "Imeshindikana kukamilisha kufungua akaunti yako — tafadhali jaribu tena.",
+  "unauthorised": "Huna ruhusa",
+  "unauthenticated": "Hujathibitishwa",
+  "change_id_required": "Hitilafu imetokea — onyesha upya ukurasa kisha ujaribu tena.",
+  "operator_not_found": "Mwendeshaji hakupatikana",
+  "cancel_change_failed": "Imeshindikana kughairi mabadiliko",
+  "email_required": "Barua pepe inahitajika",
+  "email_already_current": "Hiyo tayari ni barua pepe yako ya sasa",
+  "email_already_registered": "Barua pepe hii tayari imesajiliwa kwenye HatchGrab",
+  "change_request_failed": "Imeshindikana kutengeneza ombi la mabadiliko",
+  "verification_email_failed": "Imeshindikana kutuma barua pepe ya uthibitisho",
+  "verification_request_not_found": "Ombi la uthibitisho halikupatikana",
+  "email_already_verified": "Barua pepe tayari imethibitishwa",
+  "email_send_failed": "Imeshindikana kutuma barua pepe. Tafadhali jaribu tena.",
+  "reset_email_failed": "Imeshindikana kutuma barua pepe ya kuweka upya nenosiri",
+  "token_and_password_required": "Tokeni na nenosiri vinahitajika",
+  "new_password_too_short": "Nenosiri lazima liwe na angalau {min, plural, one {herufi #} other {herufi #}}.",
+  "reset_link_invalid": "Kiungo cha kuweka upya si sahihi au kimeisha muda wake. Tafadhali omba kipya.",
+  "reset_link_used": "Kiungo hiki cha kuweka upya tayari kimetumika. Tafadhali omba kipya.",
+  "reset_link_expired": "Kiungo hiki cha kuweka upya kimeisha muda wake. Tafadhali omba kipya.",
+  "account_not_found": "Akaunti haikupatikana.",
+  "password_update_failed": "Imeshindikana kusasisha nenosiri. Tafadhali jaribu tena.",
+  "no_fields_to_update": "Hakuna sehemu za kusasisha",
+  "upload_unreadable": "Hatukuweza kusoma faili ulilopakia — tafadhali jaribu tena.",
+  "file_too_big": "Faili hilo ni kubwa mno (kiwango cha juu {mb} MB). Picha ya kawaida ya menyu yako inatosha.",
+  "file_type_unsupported": "Aina hiyo ya faili haitumiki — tuma picha au PDF ya menyu yako.",
+  "text_too_long": "Hayo ni maandishi mengi mno — tafadhali bandika menyu tu.",
+  "menu_missing": "Ongeza picha ya menyu yako, au ibandike hapa.",
+  "demo_rate_limited": "Tayari umetengeneza majaribio kadhaa. Jaribu tena baada ya muda kidogo, au wasiliana nasi tukusaidie.",
+  "demo_build_failed": "Hitilafu imetokea wakati wa kutengeneza majaribio yako. Tafadhali jaribu tena.",
+  "request_unreadable": "Hatukuweza kusoma hilo.",
+  "email_not_valid": "Hiyo haionekani kuwa barua pepe.",
+  "try_again_shortly": "Tafadhali jaribu tena baada ya muda mfupi.",
+  "invalid_request_body": "Maudhui ya ombi si sahihi",
+  "not_demo_session": "Hiki si kipindi cha majaribio",
+  "demo_not_found": "Majaribio hayakupatikana",
+  "not_demo_truck": "Hii si food truck ya majaribio",
+  "new_service_failed": "Imeshindikana kuanza huduma mpya",
+  "not_available": "Haipatikani.",
+  "demo_save_failed": "Hatukuweza kuhifadhi hilo sasa hivi — tafadhali jaribu tena.",
+  "deletion_view_owner_only": "Mmiliki wa akaunti pekee ndiye anayeweza kuona hili.",
+  "deletion_sign_in": "Ingia ili kuomba akaunti ifutwe.",
+  "deletion_owner_only": "Mmiliki wa akaunti pekee ndiye anayeweza kuomba ifutwe.",
+  "confirm_mismatch": "Andika DELETE ili kuthibitisha.",
+  "partial_stamp": "Ombi lako la kufuta akaunti limerekodiwa, lakini hatukuweza kusitisha oda kwenye kila food truck. Wasiliana na timu ya usaidizi."
+ },
+ "emailAccount": {
+  "newEmail": {
+   "subject": "Thibitisha barua pepe yako mpya ya HatchGrab",
+   "heading": "Thibitisha barua pepe yako",
+   "button": "Thibitisha barua pepe"
+  },
+  "changeEmail": {
+   "requested": "Uliomba kubadilisha barua pepe yako ya HatchGrab kuwa hii.",
+   "click": "Bofya kitufe kilicho hapa chini ili kuthibitisha. Kiungo hiki kitaisha muda wake baada ya saa 24.",
+   "ignore": "Kama hukuomba mabadiliko haya, unaweza kupuuza barua pepe hii bila wasiwasi.",
+   "stillActive": "Barua pepe yako ya sasa bado inatumika."
+  },
+  "resendVerification": {
+   "requested": "Uliomba kubadilisha barua pepe yako ya HatchGrab kuwa hii.",
+   "click": "Bofya hapa chini ili kuthibitisha. Kiungo hiki kitaisha muda wake baada ya saa 24.",
+   "ignore": "Kama hukuomba hili, puuza barua pepe hii.",
+   "stillActive": "Barua pepe yako ya sasa bado inatumika."
+  },
+  "passwordReset": {
+   "subject": "Weka upya nenosiri lako la HatchGrab",
+   "heading": "Weka upya nenosiri lako",
+   "requested": "Tumepokea ombi la kuweka upya nenosiri la akaunti yako ya HatchGrab.",
+   "click": "Bofya kitufe kilicho hapa chini ili kuchagua nenosiri jipya. Kiungo hiki kitaisha muda wake baada ya saa 1.",
+   "button": "Weka upya nenosiri",
+   "ignore": "Kama hukuomba hili, unaweza kupuuza barua pepe hii bila wasiwasi.",
+   "unchanged": "Nenosiri lako halitabadilika hadi ubofye kiungo kilicho hapo juu."
+  },
+  "deletionScheduled": {
+   "subject": "Akaunti yako ya HatchGrab imepangwa kufutwa",
+   "received": "Tumepokea ombi la kufuta akaunti hii ya HatchGrab.",
+   "orderingStopped": "<b>Oda za mtandaoni zimesitishwa mara moja</b> kwa: {trucks}.",
+   "noTrucks": "(hakuna food truck)",
+   "readable": "Dashibodi yako itaendelea\n    kupatikana kwa kusomwa kwa {days, plural, one {siku # ijayo} other {siku # zijazo}}.",
+   "scheduled": "Akaunti imepangwa kufutwa tarehe <b>{date}</b>.",
+   "cannotCancel": "<b>Hili haliwezi kughairiwa ukiwa ndani ya programu.</b> Kama si wewe, au\n    umebadilisha nia, jibu barua pepe hii haraka iwezekanavyo.",
+   "kept": "Akaunti ikifutwa tunaondoa taarifa zako binafsi na taarifa za wateja wako. Tunabaki\n    na rekodi za kihasibu zisizo na majina, ambazo sheria inatulazimu kuzihifadhi."
+  }
+ },
+ "demoSaveEmail": {
+  "subject": "Majaribio yako ya HatchGrab — hiki hapa kiungo cha kurudi",
+  "heading": "Majaribio yako yamehifadhiwa",
+  "intro": "Hiki hapa kiungo cha kurudi kwenye majaribio yenye menyu yako. Hakuna haja ya kuingia — gusa tu.",
+  "button": "Fungua majaribio yangu",
+  "freshDay": "Kila unaporudi tutaandaa siku mpya ya mauzo ili uwe na kitu cha kujaribu.",
+  "deletion": "Haya ni majaribio, kwa hiyo hatuyahifadhi milele — tutayafuta pamoja na menyu\n                tarehe <b>{date}</b> (baada ya {days, plural, one {siku #} other {siku #}}). Ukijisajili kabla ya\n                hapo, menyu yako itahamia nawe.",
+  "notSent": "Imehifadhiwa, lakini hatukuweza kutuma barua pepe sasa hivi."
+ },
+ "demoGetStarted": {
+  "upload": {
+   "bannerButton": "Hifadhi menyu yangu →",
+   "heading": "Andaa food truck yako",
+   "sub": "Menyu yako inahamia moja kwa moja.",
+   "privacy": "Tutatumia hii tu kuandaa food truck yako na kukutumia kiungo cha majaribio yako — soma <link>sera yetu ya faragha</link>."
+  },
+  "sample": {
+   "bannerButton": "Andaa food truck yangu →",
+   "heading": "Andaa food truck yako",
+   "sub": "Hatua inayofuata utapakia menyu yako mwenyewe — inachukua dakika moja.",
+   "privacy": "Tutatumia hii tu kuandaa food truck yako na kukutumia kiungo cha majaribio yako — soma <link>sera yetu ya faragha</link>."
+  },
+  "saveOnly": {
+   "bannerButton": "Hifadhi menyu yangu →",
+   "heading": "Hifadhi majaribio yako",
+   "sub": "Tutayahifadhi kwa siku 14 na kukutumia kiungo kwa barua pepe mara moja.",
+   "privacy": "Tutatumia hii tu kukutumia kiungo cha majaribio yako — soma <link>sera yetu ya faragha</link>."
+  },
+  "confirmationHeading": "Kila kitu kiko tayari",
+  "postSaveButton": "Andaa food truck yangu →",
+  "enterSetupButton": "Andaa food truck yangu →",
+  "emailOnlyLink": "Nitumie tu kiungo kwa barua pepe ili nirudi kwenye majaribio haya",
+  "sendLinkButton": "Nitumie kiungo",
+  "savingButton": "Inahifadhi…",
+  "continueButton": "Endelea →",
+  "createAccountButton": "Fungua akaunti yangu →",
+  "retryButton": "Jaribu tena",
+  "backToDemoButton": "Rudi kwenye majaribio",
+  "savedStatus": "{hasDate, select, yes {✓ Imehifadhiwa — hadi {date}} other {✓ Imehifadhiwa}}",
+  "back": "Rudi",
+  "close": "Funga",
+  "truckStepHeading": "Kuhusu food truck yako",
+  "detailsStepHeading": "Kamilisha kuweka mipangilio",
+  "stepper": {
+   "details": "Taarifa zako",
+   "menu": "Menyu",
+   "allergens": "Taarifa za mzio",
+   "kitchen": "Mpangilio wa jiko",
+   "schedule": "Ratiba"
+  },
+  "confirmEmailed": "Tumekutumia barua pepe yenye kiungo cha kurudi moja kwa moja kwenye majaribio haya — hakuna haja ya kuingia.",
+  "confirmKeepUntil": "Tutayahifadhi hadi <b>{date}</b>. Menyu yako itahamia nawe utakapoweka mipangilio kamili.",
+  "loading": "Inapakia…",
+  "firstName": "Jina la kwanza",
+  "lastName": "Jina la ukoo",
+  "truckName": "Jina la food truck",
+  "truckNamePlaceholder": "mf. Jiko la Kijiji",
+  "cuisine": "Aina ya vyakula",
+  "logoLabel": "Nembo <opt>(si lazima)</opt>",
+  "logoPreviewAlt": "Muonekano wa nembo",
+  "changeLogo": "Badilisha nembo",
+  "removeLogo": "Ondoa",
+  "uploadLogo": "📷 Pakia nembo",
+  "readyTitle": "Akaunti yako iko tayari",
+  "readyBody": "Sasa tukamilishe kuandaa food truck yako — menyu yako, viambato vinavyosababisha mzio na jiko.",
+  "hangTight": "Subiri kidogo — tunaandaa kila kitu.",
+  "stage": {
+   "account": "Inafungua akaunti yako",
+   "truck": "Inaandaa food truck yako",
+   "menu": "Inapakia menyu yako"
+  },
+  "stageState": {
+   "done": "imekamilika",
+   "recognised": "tayari una akaunti",
+   "failed": "imeshindikana",
+   "active": "inaendelea",
+   "pending": "inasubiri"
+  },
+  "signIn": "Ingia",
+  "phone": "Simu",
+  "onWhatsapp": "Namba hii iko kwenye WhatsApp",
+  "email": "Barua pepe",
+  "emailPlaceholder": "wewe@foodtruckyako.co.tz",
+  "settingUpAs": "Unaweka mipangilio kama <b>{email}</b> <change>badilisha</change>",
+  "password": "Nenosiri",
+  "passwordPlaceholder": "Angalau herufi 8",
+  "hidePassword": "Ficha nenosiri",
+  "showPassword": "Onyesha nenosiri",
+  "promoLabel": "Una msimbo? <opt>(si lazima)</opt>",
+  "promoPlaceholder": "Uandike hapa",
+  "partnerCodeLabel": "Msimbo wa mshirika au wa punguzo <optional>(si lazima)</optional>",
+  "partnerCodeApply": "Tumia",
+  "partnerCodeApplied": "Msimbo umetumika: {deal} ({partner})",
+  "partnerCodeInvalid": "Msimbo huo si sahihi.",
+  "partnerCodeExpired": "Msimbo huo umeisha muda wake.",
+  "partnerDealExtraMonths": "{months, plural, one {mwezi # wa ziada bila malipo} other {miezi # ya ziada bila malipo}}",
+  "partnerDealPercentOff": "punguzo la {pct}% kwa {months, plural, one {mwezi #} other {miezi #}}",
+  "partnerDealPercentOffPlan": "punguzo la {pct}% kwenye kifurushi {plan} kwa {months, plural, one {mwezi #} other {miezi #}}",
+  "partnerDealFixedPrice": "kifurushi {plan} kwa {price} kila mwezi kwa {months, plural, one {mwezi #} other {miezi #}}",
+  "partnerDealPlanOffer": "bei maalum ya kifurushi {plan} kwa {months, plural, one {mwezi #} other {miezi #}}",
+  "agreeTerms": "Nakubali <terms>Masharti</terms> na <privacy>Sera ya Faragha</privacy>.",
+  "freeMonth": "{months, plural, =0 {Jaribio lako bila malipo linaanza unapojisajili.} one {Mwezi wako wa kwanza ni bila malipo, kuanzia unapojisajili.} other {Miezi # ya kwanza ni bila malipo, kuanzia unapojisajili.}}",
+  "fieldError": {
+   "firstName": "Tuambie jina lako la kwanza.",
+   "lastName": "Na jina lako la ukoo.",
+   "truck": "Ipe food truck yako jina.",
+   "cuisine": "Tuambie unapika nini.",
+   "phoneMissing": "Ongeza namba ya simu — wateja na sisi tunaitumia kuwasiliana nawe.",
+   "email": "Weka barua pepe sahihi.",
+   "password": "Nenosiri lazima liwe na angalau herufi 8.",
+   "terms": "Tafadhali kubali masharti ili kuendelea."
+  },
+  "error": {
+   "saveFailed": "Imeshindikana kuhifadhi — jaribu tena.",
+   "savedNoEmail": "Imehifadhiwa — lakini hatukuweza kutuma kiungo kwa barua pepe sasa hivi.",
+   "unreachable": "Imeshindikana kutufikia sasa hivi — jaribu tena.",
+   "createAccountFailed": "Imeshindikana kufungua akaunti yako.",
+   "truckCreateFailed": "Akaunti yako iko tayari, lakini hatukuweza kuunda food truck yako. Jaribu tena.",
+   "truckUnreachable": "Akaunti yako iko tayari, lakini hatukuweza kuunda food truck yako sasa hivi. Jaribu tena.",
+   "truckNoToken": "Food truck yako imeandaliwa, lakini hatukuweza kuifungua sasa hivi. Jaribu tena."
+  }
+ },
+ "demoUpload": {
+  "steps": {
+   "reading": "Inasoma menyu yako…",
+   "found": "Imepata bidhaa zako…",
+   "kitchen": "Inaandaa jiko lako…",
+   "page": "Inatengeneza ukurasa wako wa oda…",
+   "almost": "Karibu tayari…"
+  },
+  "templateSteps": {
+   "truck": "Inatengeneza food truck ya mfano…",
+   "menu": "Inaandaa menyu…",
+   "kitchen": "Inaandaa jiko…",
+   "page": "Inatengeneza ukurasa wa oda…",
+   "almost": "Karibu tayari…"
+  },
+  "dialogLabel": "Pakia menyu yako",
+  "heading": "✨ Pakia menyu yako",
+  "failedHeading": "Hatukuweza kusoma menyu hiyo",
+  "close": "Funga",
+  "intro": "Picha ya ubao wa menyu yako, picha ya skrini, PDF, au ibandike kama maandishi. AI yetu inaisoma na kukutengenezea ukurasa wa oda unaofanya kazi — bidhaa zako, bei zako — ndani ya sekunde 60. Bila kujisajili, bila kadi.",
+  "failedIntro": "Wakati mwingine picha huwa na giza sana, imepigwa kwa pembe, au imeandikwa kwa mkono. Hilo ni jukumu letu kulishughulikia, si kosa lako. Njia chache za kuendelea:",
+  "usually": "Kwa kawaida hii huchukua chini ya sekunde 60.",
+  "slow": "Hii inachukua muda mrefu kuliko kawaida — menyu kubwa wakati mwingine huchukua muda.",
+  "keepWaiting": "Endelea kusubiri",
+  "sampleWhileYouWait": "Au tazama menyu ya mfano wakati unasubiri",
+  "standIn": "Hii <b>haitakuwa menyu yako</b> — ni ya mfano tu ili uone inavyofanya kazi.",
+  "seeSample": "Tazama menyu ya mfano",
+  "tryAgain": "Jaribu tena",
+  "tryPhotoAgain": "Jaribu picha hii tena",
+  "tryDifferent": "Jaribu picha nyingine",
+  "uploadAnother": "← Pakia picha nyingine",
+  "orSample": "Au tazama menyu ya mfano",
+  "orBuild": "Au tutakutengenezea",
+  "buildSent": "✓ Asante — tumeipokea. Tutakutumia barua pepe.",
+  "buildBody": "Acha barua pepe yako na mtu halisi ataweka menyu yako na kukutumia kiungo.",
+  "emailPlaceholder": "wewe@foodtruckyako.co.tz",
+  "sending": "…",
+  "send": "Tuma",
+  "noPhoto": "Huna picha ya menyu karibu?",
+  "noPhotoBody": "Tazama food truck ya mfano badala yake — unaweza kupakia yako wakati wowote.",
+  "build": "Tengeneza majaribio yangu →",
+  "nothingPublished": "Hakuna kilichochapishwa — ni wewe tu unayeweza kukiona.",
+  "error": {
+   "somethingWrong": "Hitilafu imetokea. Tafadhali jaribu tena.",
+   "serverUnreachable": "Hatukuweza kufikia seva. Angalia muunganisho wako kisha ujaribu tena.",
+   "sendFailed": "Imeshindikana kutuma — jaribu tena."
+  },
+  "fields": {
+   "uploadLabel": "Pakia faili la menyu",
+   "dropHere": "Dondosha menyu yako hapa",
+   "dragOrTap": "Buruta na uachie au gusa ili kuchagua",
+   "fileTypes": "Picha au PDF",
+   "or": "au",
+   "pasteLabel": "Bandika maandishi ya menyu",
+   "pastePlaceholder": "Bandika menyu yako hapa — majina ya bidhaa, maelezo, bei..."
+  },
+  "emailLabel": "Barua pepe yako",
+  "emailNote": "Tutakutumia kiungo cha majaribio yako kwa barua pepe na huenda tukawasiliana nawe kuhusu kuanza kutumia HatchGrab. <link>Sera ya faragha</link>",
+  "marketing": "Nitumie vidokezo na habari kutoka HatchGrab mara kwa mara",
+  "emailInvalid": "Tafadhali weka barua pepe sahihi."
+ },
+ "provisionContent": {
+  "standardCategories": {
+   "starters": "Vitafunwa vya kuanzia",
+   "mains": "Milo mikuu",
+   "burgers": "Baga",
+   "pizza": "Piza",
+   "wrapsSandwiches": "Chapati za kuviringisha na sandwichi",
+   "sides": "Vyakula vya pembeni",
+   "dipsSauces": "Michuzi na sosi",
+   "desserts": "Vitindamlo",
+   "drinks": "Vinywaji",
+   "kidsMenu": "Menyu ya watoto",
+   "specials": "Vyakula maalum",
+   "other": "Vingine"
+  },
+  "demoEventName": "Tukio la majaribio",
+  "firstVanName": "Gari 1",
+  "demoCategories": {
+   "pizza": "Piza",
+   "burgers": "Baga",
+   "mains": "Milo mikuu",
+   "sides": "Vyakula vya pembeni",
+   "drinks": "Vinywaji"
+  },
+  "demoTemplates": {
+   "pizza": {
+    "label": "🍕 Food truck ya piza",
+    "items": {
+     "margherita": "Margherita",
+     "pepperoni": "Pepperoni",
+     "ndujaHoney": "Nduja na asali",
+     "fourCheese": "Jibini nne",
+     "gardenVeg": "Mboga za bustani",
+     "garlicBread": "Mkate wa kitunguu saumu",
+     "rocketParmesan": "Roketi na Parmesan",
+     "olives": "Zeituni",
+     "sanPellegrino": "San Pellegrino",
+     "coke": "Coke"
+    }
+   },
+   "burgers": {
+    "label": "🍔 Food truck ya baga",
+    "items": {
+     "classicCheeseburger": "Baga ya jibini ya kawaida",
+     "doubleBacon": "Baga ya bekoni maradufu",
+     "buttermilkChicken": "Kuku wa mtindi",
+     "halloumiStack": "Baga ya halloumi",
+     "smashBurger": "Baga iliyobanwa (smash)",
+     "skinOnFries": "Chipsi zenye maganda",
+     "loadedCheeseFries": "Chipsi zilizojaa jibini",
+     "onionRings": "Pete za kitunguu",
+     "craftLemonade": "Juisi ya limau maalum",
+     "coke": "Coke"
+    }
+   },
+   "curries": {
+    "label": "🍛 Food truck ya mchuzi",
+    "items": {
+     "chickenTikkaMasala": "Kuku tikka masala",
+     "lambRoganJosh": "Rogan josh ya kondoo",
+     "chanaMasala": "Chana masala",
+     "butterChicken": "Kuku wa siagi",
+     "saagPaneer": "Saag paneer",
+     "pilauRice": "Wali wa pilau",
+     "garlicNaan": "Naan ya kitunguu saumu",
+     "onionBhaji": "Bhajia za kitunguu",
+     "mangoLassi": "Lassi ya embe",
+     "coke": "Coke"
+    }
+   }
+  }
+ },
+ "manageAllergens": {
+  "cardEditor": {
+   "title": "Kadi yako ya viambato vinavyosababisha mzio",
+   "intro": "Wateja wanaiona hii <b>kama ulivyoiandika hasa</b> — hakuna kinachoandikwa upya. Andika au bandika hapa chini, au pakia picha/PDF nasi tutasoma maandishi ili uyakague.",
+   "empty": "Bado hakuna kadi ya viambato vinavyosababisha mzio.",
+   "placeholder": "mf. Samaki na chipsi zetu zote zina ngano na maziwa. Kikaango kinatumika pia kwa vyakula vyenye gluteni na kokwa. Kuna machaguo bila bidhaa za wanyama — uliza wahudumu.",
+   "reading": "Inasoma picha…",
+   "upload": "📷 Pakia picha / PDF",
+   "uploadNote": "Tunasoma maandishi kutoka kwenye picha yako ili uyakague — picha haihifadhiwi."
+  },
+  "cardUpload": {
+   "dishFallback": "Chakula",
+   "question": "Una kadi ya viambato vinavyosababisha mzio ya kupakia?",
+   "perDish": "{detected, select, yes {Ipakie nasi tutaitumia kuandaa viambato vinavyosababisha mzio vya vyakula vyako. Viambato vitakavyogunduliwa vitaonekana kwenye ukurasa unaofuata, ambapo utathibitisha kila chakula.} other {Ipakie nasi tutaitumia kuandaa viambato vinavyosababisha mzio vya vyakula vyako.}}",
+   "cardOnly": "Pakia kadi ya viambato vinavyosababisha mzio ambayo wateja wataiona.",
+   "yes": "Ndiyo",
+   "no": "Hapana",
+   "noProblem": "Hakuna shida — huhitaji kuwa nayo. Endelea kwa kitufe kilicho hapa chini.",
+   "analysing": "Inachambua kadi…",
+   "dropzone": "Buruta na uachie au gusa ili kuchagua",
+   "imageOrPdf": "Picha au PDF",
+   "or": "au",
+   "pastePlaceholder": "Bandika hapa maandishi ya kadi yako ya viambato vinavyosababisha mzio…",
+   "process": "Changanua kadi",
+   "cardRead": "Kadi imesomwa ✓",
+   "unmatchedHeading": "Hatukuweza kulinganisha hivi kiotomatiki — viunganishe na chakula au uvifiche",
+   "quotedName": "“{name}”",
+   "ambiguous": "Haiko wazi — inalingana na vyakula kadhaa; chagua kilicho sahihi.",
+   "assignTo": "Unganisha na chakula…",
+   "dismiss": "Ficha",
+   "kitchenNotes": "Maelezo ya jiko (yanahifadhiwa kwenye taarifa zako za viambato vinavyosababisha mzio)",
+   "matchSummary": "{n, plural, =0 {Vilivyolingana na chakula: {matched}.} one {Vilivyolingana na chakula: {matched}. Kinachohitaji uunganishe: {count}.} other {Vilivyolingana na chakula: {matched}. Vinavyohitaji uunganishe: {count}.}}",
+   "blanketInfo": "Kadi yako inasema viambato hivi huenda viko kwenye vyakula vyote: {list}. Tutaviongeza kwenye viambato vinavyosababisha mzio vinavyotumika jikoni kwako. Unaweza kuvikagua kwenye hatua ya mwisho."
+  },
+  "savedCard": {
+   "showLess": "Onyesha kidogo",
+   "showMore": "Onyesha zaidi",
+   "fileOnly": "Faili la kadi limehifadhiwa kwa food truck hii, lakini hakuna muhtasari wa maandishi uliohifadhiwa. Fungua faili asili ili ulisome.",
+   "viewOriginal": "Tazama kadi asili"
+  },
+  "wizard": {
+   "toast": {
+    "readFailed": "Imeshindikana kusoma kadi ya viambato vinavyosababisha mzio — jaribu tena",
+    "confirmed": "Imethibitishwa: {name}",
+    "undo": "Tendua",
+    "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena",
+    "imageFailed": "Imeshindikana kusoma picha hiyo — andika au bandika kadi yako badala yake",
+    "cardRead": "{n, plural, one {Kadi imesomwa — vilivyolingana: {matched}, kinachohitaji kuunganishwa: {count}} other {Kadi imesomwa — vilivyolingana: {matched}, vinavyohitaji kuunganishwa: {count}}}"
+   },
+   "genericWarn": {
+    "text": "Kiambato “{generic}” kimegunduliwa lakini si mahususi. Chagua {picks} kama chakula hiki kina {family} — au usichague chochote kama hakina.",
+    "andOr": "{a} na/au {b}"
+   },
+   "badge": {
+    "justConfirmed": "✓ Imethibitishwa",
+    "confirmed": "Imethibitishwa",
+    "needsReview": "Inahitaji kukaguliwa"
+   },
+   "confirm": {
+    "confirming": "Inathibitisha…",
+    "confirmed": "Imethibitishwa ✓",
+    "confirm": "Thibitisha",
+    "changed": "· imebadilishwa",
+    "changedTitle": "Imehaririwa tangu ulipothibitisha mara ya mwisho — thibitisha tena"
+   },
+   "allergens": "Viambato vinavyosababisha mzio",
+   "dietary": "Lishe",
+   "uncategorised": "Bila kategoria",
+   "review": {
+    "progress": "Vimethibitishwa: {confirmed} kati ya {total}",
+    "allConfirmed": "✓ Vyote vimethibitishwa",
+    "list": "Orodha",
+    "table": "Jedwali",
+    "detected": "Vimegunduliwa kutoka kwenye menyu yako — <b>vikague</b>. Viambato vinavyosababisha mzio vinabaki vimefichwa kwa wateja hadi uthibitishe kila chakula.",
+    "viewOnly": "👁 Kuangalia tu — mmiliki pekee ndiye anayeweza kuthibitisha au kubadilisha viambato vinavyosababisha mzio.",
+    "emptyTitle": "Hakuna bidhaa kwenye menyu",
+    "emptyBody": "Ongeza bidhaa kwenye menyu kwanza, kisha weka hapa viambato vinavyosababisha mzio vya bidhaa hizo.",
+    "dish": "Chakula",
+    "status": "Hali"
+   },
+   "cardPanel": {
+    "reading": "Inasoma taarifa za viambato vinavyosababisha mzio…",
+    "saved": "🛡️ Kadi ya viambato vinavyosababisha mzio imehifadhiwa",
+    "viewOriginal": "Tazama kadi asili",
+    "replace": "Badilisha kadi",
+    "uploadHelp": "Pakia kadi yako ya viambato vinavyosababisha mzio (picha/PDF) au bandika taarifa zako za mzio — AI yetu inazipanga kwa ajili ya wateja.",
+    "add": "Ongeza kadi ya viambato vinavyosababisha mzio",
+    "viewOnly": "👁 Kuangalia tu — mmiliki pekee ndiye anayeweza kuongeza kadi ya viambato vinavyosababisha mzio.",
+    "intro": "Wateja wataiona kadi hii kama rejea ya menyu kuhusu viambato vinavyosababisha mzio. Viambato vya kila chakula vinabaki vimefichwa katika hali ya kadi pekee (taarifa za vyakula vyako zinahifadhiwa endapo baadaye utahamia kwenye taarifa za kila chakula)."
+   },
+   "subtitle": {
+    "choose": "Chagua jinsi wateja wanavyoona taarifa za viambato vinavyosababisha mzio",
+    "card": "Ongeza kadi yako ya viambato vinavyosababisha mzio",
+    "cardOptional": "Ongeza kadi ya viambato vinavyosababisha mzio (si lazima)",
+    "review": "Kagua na uthibitishe kila chakula",
+    "kitchen": "Hatua ya mwisho: jiko lako"
+   },
+   "heading": {
+    "import": "Viambato vinavyosababisha mzio",
+    "standalone": "Kuweka viambato vinavyosababisha mzio"
+   },
+   "nav": {
+    "next": "Inayofuata →",
+    "back": "← Rudi",
+    "skip": "Ruka kwa sasa",
+    "saving": "Inahifadhi…",
+    "done": "Nimemaliza",
+    "saveLater": "Hifadhi na umalize baadaye",
+    "close": "Funga",
+    "finish": "Maliza",
+    "skipImport": "Ruka kuweka viambato vinavyosababisha mzio kwa sasa"
+   },
+   "hint": {
+    "skipDefers": "Kuruka kunaahirisha tu — vyakula ambavyo hujavithibitisha vinabaki vimefichwa kwa wateja hadi viambato vinavyosababisha mzio vya vyakula hivyo vithibitishwe.",
+    "importIncomplete": "Thibitisha kila chakula ili kuendelea — au “Ruka kuweka viambato vinavyosababisha mzio kwa sasa”."
+   },
+   "recipeOnly": "Vile tu vilivyomo kwenye mapishi ya chakula hiki.",
+   "tooMany": "Viambato vinavyosababisha mzio vilivyowekwa alama: {count}. Je, kweli vyote hivyo vimo kwenye mapishi ya chakula hiki? Viambato vinavyotumika kwenye vyakula vingine haviwekwi hapa. Unaweza kuviongeza kwenye hatua ya mwisho."
+  },
+  "kitchen": {
+   "title": "Ni vipi kati ya viambato vinavyosababisha mzio vinatumika jikoni kwako?",
+   "body": "Tumeweka alama kwenye vile vilivyomo tayari kwenye vyakula vyako. Weka alama kwenye vingine vyovyote unavyotumia kwenye food truck, kwa mfano kwa vyakula maalum.",
+   "legendDishes": "kwenye vyakula vyako",
+   "legendAdded": "umeviongeza wewe",
+   "customersSee": "Wateja wataona:",
+   "confirm": "Nathibitisha kwamba viambato vinavyosababisha mzio vya kila chakula ni sahihi, na nitaendelea kuvisasisha."
+  }
+ },
+ "manageUpsells": {
+  "heading": "Mapendekezo ya ziada",
+  "intro": "Wahimize wateja kuongeza kitu cha ziada. Mtu anapoagiza kutoka kategoria moja, pendekeza bidhaa kutoka nyingine — kinywaji pamoja na piza, sosi pamoja na baga.",
+  "add": "+ Ongeza pendekezo la ziada",
+  "toast": {
+   "updated": "Kanuni ya pendekezo imesasishwa",
+   "added": "Kanuni ya pendekezo imeongezwa",
+   "removed": "Kanuni imeondolewa"
+  },
+  "whenAdds": "Mteja anapoongeza…",
+  "suggestFrom": "Pendekeza bidhaa kutoka…",
+  "chooseCategory": "Chagua kategoria",
+  "cancel": "Ghairi",
+  "saveChanges": "Hifadhi mabadiliko",
+  "addRule": "Ongeza kanuni",
+  "empty": "Bado hakuna kanuni za mapendekezo ya ziada.",
+  "confirmRemove": "Ondoa kanuni ya pendekezo “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Inapendekeza hadi bidhaa {count}} other {Inapendekeza hadi bidhaa {count}}}"
+ },
+ "manageExtras": {
+  "toast": {
+   "groupCreated": "Kundi limetengenezwa",
+   "groupRenamed": "Jina la kundi limebadilishwa",
+   "groupDeleted": "Kundi limefutwa",
+   "optionUpdated": "Chaguo limesasishwa",
+   "optionAdded": "Chaguo limeongezwa",
+   "optionRemoved": "Chaguo limeondolewa"
+  },
+  "description": "Ongeza machaguo ya kulipia au ya bure ambayo wateja wanaweza kuchagua wanapoagiza — mf. Jibini zaidi +{price}, Bila kitunguu {zero}",
+  "note": "Tengeneza kundi la machaguo kisha uliweke kwenye kategoria ya menyu. Bidhaa zote za kategoria hiyo zitatoa machaguo hayo wateja wanapoagiza.",
+  "addLabel": "+ Ongeza nyongeza maalum",
+  "emptyTitle": "Bado hakuna nyongeza maalum",
+  "optionCount": "{n, plural, one {chaguo {count}} other {machaguo {count}}}",
+  "dishCount": "{n, plural, one {chakula {count}} other {vyakula {count}}}",
+  "rename": "Badilisha jina",
+  "deleteGroup": "Futa kundi",
+  "required": "Lazima",
+  "requiredHint": "(mteja lazima achague)",
+  "selection": "Uchaguzi:",
+  "chooseOne": "Chagua moja",
+  "chooseMultiple": "Chagua zaidi ya moja",
+  "maxChoices": "Idadi ya juu ya machaguo",
+  "upTo": "Hadi {n}",
+  "unlimited": "Bila kikomo",
+  "options": "Machaguo",
+  "optionType": "{type, select, add {ongeza} remove {ondoa} other {{type}}}",
+  "soldOut": "Imeisha",
+  "left": "Zimebaki {count}",
+  "priceAdd": "+{price}",
+  "priceRemove": "-{price}",
+  "free": "Bure",
+  "addOption": "+ Ongeza chaguo",
+  "offeredOn": "Inatolewa kwenye",
+  "editPerDish": "Hariri machaguo ya kila chakula",
+  "notOffered": "Bado haitolewi kwenye chakula chochote.",
+  "catPartial": "{name} ({n} kati ya {m})",
+  "hiddenOptions": "* {dish}: machaguo yaliyofichwa — {options}",
+  "matrix": {
+   "title": "{group} — machaguo ya kila chakula",
+   "dish": "Chakula",
+   "include": "Jumuisha",
+   "removeAll": "Ondoa {group} kwenye bidhaa zote za {category}",
+   "offerAll": "Toa {group} kwenye bidhaa zote za {category}",
+   "offerCount": "Vinavyotoa hili: {n} kati ya {total}",
+   "offeredRemoveGroup": "Inatolewa — bofya ili kuondoa kundi kwenye chakula hiki",
+   "notOfferedAdd": "Haitolewi — bofya ili kuongeza",
+   "addGroupFirst": "Ongeza kundi kwenye chakula hiki kwanza",
+   "requiredNeedsOne": "Kundi la lazima linahitaji angalau chaguo moja kwa kila chakula",
+   "offeredRemove": "Inatolewa — bofya ili kuondoa",
+   "help": "Weka alama kwenye “Jumuisha” ili kuongeza kundi kwenye chakula, kisha weka alama kwenye machaguo kitakayoonyesha. Inahifadhiwa papo hapo."
+  },
+  "newGroup": {
+   "title": "Nyongeza maalum mpya",
+   "name": "Jina la kundi",
+   "placeholder": "mf. Nyongeza za piza"
+  },
+  "option": {
+   "editTitle": "Hariri chaguo",
+   "newTitle": "Chaguo jipya",
+   "name": "Jina la chaguo",
+   "placeholder": "mf. Jibini zaidi",
+   "type": "Aina",
+   "add": "Ongeza",
+   "remove": "Ondoa",
+   "price": "Marekebisho ya bei ({symbol})",
+   "priceHint": "0 = bure",
+   "soldOut": "Imeisha",
+   "stock": "Idadi ya stoku <opt>(si lazima)</opt>",
+   "stockPlaceholder": "∞ haifuatiliwi",
+   "sharedPool": "Akiba ya pamoja kwa vyakula vyote vinavyotumia chaguo hili.",
+   "allergens": "Viambato vinavyosababisha mzio",
+   "dietary": "Lishe",
+   "allergensHelp": "Viambato vinavyosababisha mzio vya chaguo hili lenyewe (tofauti na vya chakula)"
+  },
+  "cancel": "Ghairi",
+  "save": "Hifadhi",
+  "title": "Nyongeza maalum",
+  "confirmDeleteGroup": "Futa “{name}”? Machaguo yote yataondolewa na kundi litaondolewa kwenye kategoria zote.",
+  "emptyBody": "Tengeneza kundi kama “Nyongeza za piza” kisha uongeze machaguo kama “Jibini zaidi +{price}”",
+  "saving": "Inahifadhi…",
+  "uncategorized": "Bila kategoria"
+ },
+ "manageDeals": {
+  "toast": {
+   "updated": "Ofa ya mlo imesasishwa",
+   "created": "Ofa ya mlo imetengenezwa",
+   "removed": "Ofa ya mlo imeondolewa"
+  },
+  "confirmRemove": "Ondoa ofa hii ya mlo?",
+  "heading": "Ofa za mlo",
+  "count": "{n, plural, one {ofa ya mlo {count} imewekwa} other {ofa za mlo {count} zimewekwa}}",
+  "newDeal": "+ Ofa mpya ya mlo",
+  "emptyTitle": "Bado hakuna ofa za mlo",
+  "active": "Inatumika",
+  "off": "Imezimwa",
+  "autoApply": "Inatumika kiotomatiki",
+  "manual": "Kwa mkono",
+  "hidden": "Kwa sasa imefichwa kwa wateja — {warning}",
+  "edit": "Hariri",
+  "delete": "Futa",
+  "editTitle": "Hariri ofa ya mlo",
+  "newTitle": "Ofa mpya ya mlo",
+  "name": "Jina la ofa ya mlo",
+  "namePlaceholder": "mf. Ofa ya mlo wa mchana",
+  "description": "Maelezo",
+  "descriptionPlaceholder": "Piza yoyote + kinywaji + mchuzi",
+  "price": "Bei ya ofa ya mlo",
+  "originalPrice": "Bei ya awali",
+  "originalPlaceholder": "acha wazi = kiotomatiki",
+  "originalHint": "wazi = kokotoa kutoka kwenye bidhaa",
+  "slots": "Sehemu za bidhaa (kategoria zinazohitajika kwa ofa hii ya mlo)",
+  "slot": "Sehemu {n}",
+  "notUsed": "— Haitumiki —",
+  "dealActive": "Ofa ya mlo inatumika",
+  "applyHeading": "Tumia kwenye matukio",
+  "applyHelp": "Chagua kama ofa hii ya mlo itatumika kiotomatiki kwenye matukio yako",
+  "applyAll": "Tumia kiotomatiki kwenye matukio yote yajayo",
+  "applyAllHelp": "Ofa hii ya mlo itatumika kwenye kila tukio jipya utakalotengeneza. Bado unaweza kuizima kwa matukio mahususi kwenye “Ratiba”.",
+  "manualTitle": "Chagua kwa mkono kwa kila tukio",
+  "applyAllNote": "Ofa hii ya mlo itaongezwa kwenye matukio mapya. Kwa matukio yaliyopo, nenda kwenye “Ratiba” ili kusimamia ofa za mlo za kila tukio.",
+  "cancel": "Ghairi",
+  "save": "Hifadhi ofa ya mlo",
+  "emptyBody": "Tengeneza ofa ya mlo kama “Ofa ya mlo wa mchana — piza yoyote + kinywaji + mchuzi kwa {price}”",
+  "manualHelp": "Ofa hii ya mlo haitaonekana kwenye matukio isipokuwa uiwashe kwenye kichupo cha “Ratiba”.",
+  "saving": "Inahifadhi…"
+ },
+ "eventTypes": {
+  "title": "Aina za matukio",
+  "newTypeButton": "+ Aina mpya ya tukio",
+  "close": "Funga",
+  "loading": "Inapakia…",
+  "missingTitle": "Aina za matukio bado hazijawashwa.",
+  "missingBody": "Sasisho la hifadhidata kwa huduma hii bado halijatekelezwa. Hakuna kilichoharibika — kila tukio linatumia mipangilio yako ya kawaida.",
+  "column": "Safu",
+  "vanGone": "Gari hilo halipo tena.",
+  "typeGone": "Aina hiyo haipo tena.",
+  "standard": "Kawaida",
+  "standardHeading": "KAWAIDA",
+  "moreFor": "Zaidi: {name}",
+  "rename": "Badilisha jina",
+  "moveLeft": "Sogeza kushoto",
+  "moveRight": "Sogeza kulia",
+  "delete": "Futa",
+  "sections": {
+   "vans": "MAGARI",
+   "prices": "BEI",
+   "itemPrices": "BEI ZA BIDHAA",
+   "service": "HUDUMA"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "Kila dak {mins}",
+  "noTypes": "Bado huna aina za matukio, kwa hiyo kila tukio linatumia mipangilio yako ya kawaida.",
+  "renameTitle": "Badilisha jina la aina hii",
+  "name": "Jina",
+  "cancel": "Ghairi",
+  "save": "Hifadhi",
+  "copyVanOne": "Nakili mipangilio ya Gari 1",
+  "thisType": "aina hii",
+  "matchTitle": "Fanya aina “{name}” ilingane na Kawaida?",
+  "matchKeeps": "Chochote ulichobadilisha kwenye dashibodi ya tukio moja kinabaki kama kilivyo, na bei za aina hii hazibadilishwi.",
+  "matchWillUse": "Itatumia: {summary}",
+  "deleteTitle": "Futa “{name}”?",
+  "deleteBody": "{n, plural, =0 {Hakuna tukio lijalo linalotumia “{name}”.} one {Tukio lijalo {count} linatumia “{name}”. Litarudi kwenye Kawaida.} other {Matukio yajayo {count} yanatumia “{name}”. Yatarudi kwenye Kawaida.}} Chochote ulichobadilisha kwenye tukio moja kinabaki kama kilivyo.",
+  "keep": "Ibakize",
+  "phone": {
+   "standardTag": "Kawaida",
+   "defaultTag": "chaguo-msingi",
+   "vanSetup": "Mipangilio ya kawaida ya gari hili — inatumika kwenye kila tukio lisilo na aina.",
+   "standardSetup": "Mipangilio yako ya kawaida — inatumika kwenye kila tukio lisilo na aina.",
+   "cardSummary": "{upcoming, plural, one {tukio lijalo {upcomingCount}} other {matukio yajayo {upcomingCount}}} · {changed, plural, =0 {hakuna kilichobadilishwa bado} one {imebadilishwa: {changedCount} kati ya {total}} other {imebadilishwa: {changedCount} kati ya {total}}}",
+   "noMenuItems": "Bado hakuna bidhaa kwenye menyu — ziongeze kwenye Menyu › Bidhaa."
+  },
+  "newType": {
+   "title": "Aina mpya ya tukio",
+   "namePlaceholder": "mf. Sherehe ya shule",
+   "help": "Gusa jina au andika lako. Inaanza kama nakala ya Kawaida, na ukibadilisha Kawaida baadaye haitabadilika. Badilisha chochote baadaye.",
+   "create": "Tengeneza",
+   "chips": {
+    "festival": "Tamasha",
+    "pub": "Baa",
+    "market": "Soko",
+    "privateHire": "Kukodi food truck kwa shughuli"
+   }
+  },
+  "select": {
+   "label": "Aina ya tukio",
+   "usual": "Aina ya kawaida kwa mahali hapa: {name}."
+  },
+  "summary": {
+   "normalSetup": "Mipangilio yako ya kawaida",
+   "sameAsStandard": "Sawa na Kawaida",
+   "buzzersOn": "kengele zimewashwa",
+   "buzzersOff": "kengele zimezimwa",
+   "takeCashOn": "kupokea taslimu kumewashwa",
+   "takeCashOff": "kupokea taslimu kumezimwa",
+   "markReadyOn": "hatua ya “Weka tayari” imewashwa",
+   "markReadyOff": "hatua ya “Weka tayari” imezimwa",
+   "collectionEvery": "kuchukua oda kila dak {mins}",
+   "offlineOff": "ulinzi wa nje ya mtandao umezimwa",
+   "offlineKeepTaking": "bila mtandao: endelea kupokea oda",
+   "offlinePause": "bila mtandao: sitisha oda"
+  },
+  "errors": {
+   "somethingWentWrong": "Hitilafu imetokea",
+   "couldNotLoad": "Imeshindikana kupakia",
+   "couldNotSave": "Imeshindikana kuhifadhi",
+   "noVans": "Food truck hii haina magari ya kubadilisha."
+  }
+ },
+ "privateEvents": {
+  "publicName": "Shughuli binafsi",
+  "chip": "Binafsi",
+  "grid": {
+   "orderingSection": "ODA",
+   "linkRowLabel": "Pokea oda kupitia kiungo binafsi na msimbo wa QR",
+   "columnTitle": "Aina ya Binafsi iliyojengwa ndani. Haiwezi kubadilishwa jina, kuhamishwa wala kufutwa."
+  },
+  "form": {
+   "help": "Inaonekana kwenye ratiba yako kama “Shughuli binafsi” ikiwa na tarehe na muda tu — kamwe si anwani, ramani wala Village Foodie.",
+   "linkPromise": "Wageni wanaagiza kupitia kiungo binafsi na msimbo wa QR — utavipata baada ya kuhifadhi.",
+   "nameLabel": "Jina la tukio",
+   "nameHelp": "Wageni wanaona hili juu ya ukurasa wa oda.",
+   "namePlaceholder": "Harusi ya Neema na Juma",
+   "previewNote": "Jinsi inavyoonekana kwenye ratiba yako — bila eneo, mji wala postikodi.",
+   "needsTimes": "Ongeza muda wa kuanza na wa kumaliza — shughuli binafsi inayopokea oda kupitia kiungo inavihitaji."
+  },
+  "link": {
+   "button": "Kiungo na QR",
+   "title": "Kiungo binafsi na msimbo wa QR",
+   "label": "Kiungo binafsi",
+   "copy": "Nakili",
+   "copied": "Imenakiliwa",
+   "qrDownload": "Pakua QR",
+   "tableCards": "Chapisha kadi za mezani",
+   "newLink": "Tengeneza kiungo kipya",
+   "working": "Inashughulikia…",
+   "newLinkConfirm": "Tengeneza kiungo kipya? Kiungo cha sasa kitaacha kufanya kazi mara moja, na misimbo ya QR uliyokwisha kuchapisha itaacha kufanya kazi pia.",
+   "newLinkHelp": "Tumia hii kama kiungo kimefika mahali kisipostahili. Kiungo cha sasa kinaacha kufanya kazi mara moja, na misimbo ya QR iliyochapishwa inaacha kufanya kazi pia.",
+   "newLinkFailed": "Imeshindikana kutengeneza kiungo kipya.",
+   "offNotice": "Kuagiza kupitia kiungo binafsi kumezimwa kwa tukio hili, kwa hiyo hakuna kiungo cha kushiriki. Tukio bado linaonekana kwenye ratiba yako kama “Shughuli binafsi”."
+  },
+  "cards": {
+   "printTitle": "{truck} — kadi za mezani",
+   "scan": "Changanua ili kuagiza",
+   "blurb": "Agiza na ulipe kwa simu yako. Tutakuita kwa jina oda ikiwa tayari.",
+   "footer": "Oda kupitia HatchGrab"
+  },
+  "noSinglePost": "Shughuli binafsi hazipati chapisho lake peke yake — zinaonekana kwenye bango lako la wiki kama “Shughuli binafsi”.",
+  "confirmToPrivate": "Hii inaficha anwani na tukio kwenye ramani. Wageni watahitaji kiungo binafsi ili kuagiza.",
+  "confirmFromPrivate": "Hii inafanya tukio liwe la umma: anwani yake na alama yake kwenye ramani vitaonekana, na kiungo binafsi kitaacha kufanya kazi."
+ }
+}

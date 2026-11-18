@@ -426,3 +426,6 @@
 - Card held "KIASI KIMEZUILIWA" (not "kadi imezuiliwa" = card blocked); placeholders after a noun ("Tukio {event} …", "Oda: {orders}").
 - FOR CONSISTENCY: reject dialog "Keep order" = "Usighairi oda" (TERMS) — "Usikatae oda" may fit better there.
 - "dak {mins}"; Done "Nimemaliza"; "Admin" English; 💷 → 💵.
+
+## sw-TZ part 03 (languages-world-3, 18 Nov 2026)
+- Agent stopped (usage limit) after joining; 03.json passes check-part but the agent's final review and TERMS additions may be incomplete — consistency pass should look at part 03 closely.
