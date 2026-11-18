@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Saklaw ng petsa",
+    "event": "📍 Event",
+    "filterBy": "I-filter ayon sa",
+    "show": "Ipakita",
+    "range": "<from></from><sep>hanggang</sep><until></until>",
+    "selectEvent": "Pumili ng event…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Event",
+    "viewReport": "Tingnan ang report",
+    "loading": "Nilo-load…",
+    "orders": "📋 Mga order",
+    "items": "📦 Mga item",
+    "exportCsv": "⬇ I-export ang CSV"
+  },
+  "empty": {
+    "noOrders": "Walang order na nahanap para sa panahong ito.",
+    "selectEvent": "Pumili ng event sa itaas para makita ang report nito."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} order} other {{count} order}} · {total}"
+  },
+  "revenue": {
+    "title": "Breakdown ng revenue",
+    "deals": "Revenue sa combo meals",
+    "modifiers": "Dagdag-bayad sa modifiers",
+    "foodSales": "Benta ng pagkain",
+    "total": "Total",
+    "other": "Iba pa",
+    "tax": "Tax",
+    "tips": "Tips",
+    "serviceFees": "Service fees",
+    "cardFees": "Card fees"
+  },
+  "itemsSold": {
+    "title": "Mga item na nabenta"
+  },
+  "dealsCard": {
+    "title": "Combo meals"
+  },
+  "custom": {
+    "title": "Customization",
+    "paidModifiers": "May bayad na modifiers",
+    "customerNotes": "Notes ng customer",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Item",
+    "modifier": "Modifier",
+    "qty": "Dami",
+    "total": "Total",
+    "date": "Petsa",
+    "time": "Oras",
+    "channel": "Channel"
+  },
+  "breakdown": {
+    "orders": "Breakdown ng order",
+    "items": "Breakdown ng item"
+  },
+  "channel": {
+    "online": "Online",
+    "walkUp": "Walk-in"
+  },
+  "csv": {
+    "orderId": "Order ID",
+    "date": "Petsa",
+    "event": "Event",
+    "timePlaced": "Oras ng pag-order",
+    "collectionTime": "Oras ng pick-up",
+    "customerName": "Pangalan ng customer",
+    "orderType": "Uri ng order",
+    "items": "Mga item",
+    "deals": "Combo meals",
+    "modifiers": "Modifiers",
+    "notes": "Notes",
+    "subtotal": "Subtotal",
+    "tip": "Tip",
+    "serviceFee": "Service fee",
+    "total": "Total",
+    "itemName": "Pangalan ng item",
+    "qty": "Dami",
+    "unitPrice": "Presyo bawat isa",
+    "itemTotal": "Kabuuan ng item",
+    "orderTotal": "Total ng order",
+    "unknownEvent": "Hindi kilalang event",
+    "asap": "ASAP",
+    "unknownCustomer": "Hindi kilala",
+    "customerOnline": "Customer online",
+    "placedByTruck": "Ni-place ng truck"
+  },
+  "presets": {
+    "label": "Panahon",
+    "custom": "Custom na petsa",
+    "thisMonth": "Ngayong buwan",
+    "lastMonth": "Nakaraang buwan",
+    "lastQuarter": "Nakaraang quarter",
+    "lastTaxYear": "Nakaraang tax year"
+  },
+  "accounts": {
+    "title": "Para sa accountant mo",
+    "help": "Binibilang ang benta sa araw ng event. Ang gross ay ang ibinayad ng customers. Ang net ay ang natitira pagkatapos ng refunds at tax.",
+    "gross": "Gross sales",
+    "refunds": "Mga refund",
+    "net": "Net sales",
+    "taxEstimated": "tantiya batay sa tax rate mo",
+    "taxNone": "Walang naka-set na tax rate para sa truck mo, kaya walang tax na kinukuwenta rito.",
+    "byChannel": "Gross sales ayon sa channel",
+    "byPayment": "Gross sales ayon sa bayad",
+    "online": "Online",
+    "walkUp": "Walk-in",
+    "cardOnline": "Card online",
+    "payAtTruck": "Bayad sa Pick-up",
+    "cost": "Cost ng mga nabentang dish",
+    "profit": "Tubo",
+    "coverage": "{total, plural, one {Naka-set ang cost para sa {withCost} sa # dish na nabenta} other {Naka-set ang cost para sa {withCost} sa # dish na nabenta}}",
+    "partial": "Hindi kasama sa cost ang mga dish na walang cost, kaya mas mataas ang tubong ito kaysa sa totoo. Maglagay ng cost sa bawat dish sa Menu.",
+    "noCosts": "Wala pang dish na may cost. Maglagay ng cost sa mga dish mo sa Menu para makita ang tubo mo.",
+    "byEvent": "Ayon sa event",
+    "event": "Event",
+    "sales": "Net sales",
+    "eventNoProfit": "Kapag may dash, ibig sabihin ay hindi lahat ng dish na nabenta roon ay may cost.",
+    "downloadOrders": "⬇ Mga order para sa accountant mo",
+    "downloadEvents": "⬇ Mga event para sa accountant mo",
+    "downloadHelp": "Dalawang spreadsheet file: isang row para sa bawat order, at isang row para sa bawat event. Nabubuksan ang mga ito sa Excel, Numbers, Xero at QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Petsa",
+      "time": "Oras",
+      "orderNumber": "Order number",
+      "event": "Event",
+      "channel": "Channel",
+      "paymentMethod": "Payment method",
+      "currency": "Currency",
+      "gross": "Gross",
+      "tax": "Tax",
+      "taxBasis": "Batayan ng tax",
+      "net": "Net",
+      "refunded": "Na-refund",
+      "cost": "Cost",
+      "profit": "Tubo",
+      "eventDate": "Petsa ng event",
+      "orders": "Mga order",
+      "dishesSold": "Mga dish na nabenta",
+      "dishesWithCost": "Mga dish na may cost"
+    },
+    "taxBasis": {
+      "stored": "naka-save kasama ng order",
+      "estimated": "tantiya batay sa tax rate mo",
+      "none": "walang naka-set na tax rate"
+    }
+  }
+}

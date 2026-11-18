@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Mga petsa ng linggo",
+    "dayList": "Listahan ng mga araw",
+    "place": "Lugar",
+    "venue": "Venue",
+    "area": "Area",
+    "dayDate": "Araw at petsa",
+    "times": "Mga oras",
+    "orderLink": "Order link",
+    "locationTag": "Location tag"
+  },
+  "weekHeader": "{truck} — nasaan kami ngayong linggo:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — NA-CANCEL, pasensya na",
+  "noDates": "Walang schedule ngayong linggo — abangan kami ulit.",
+  "orderAhead": "Mag-pre-order: {url}",
+  "orderAheadTagged": "Mag-pre-order: {url} {tag}",
+  "eventLine": "{truck} sa {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} sa {where} {when}.",
+  "cancelledSorry": "Pasensya na — hindi kami makakapunta sa {where} {when}.",
+  "cancelledApology": "Paumanhin sa lahat ng nagbabalak pumunta. Babalik kami agad.",
+  "when": {
+    "today": "ngayong araw",
+    "tonight": "mamayang gabi",
+    "tomorrow": "bukas",
+    "dated": "sa {date}"
+  }
+}

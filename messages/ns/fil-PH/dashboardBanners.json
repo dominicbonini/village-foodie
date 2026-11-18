@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} slot} other {{count} slot}} ang lampas sa capacity — i-review",
+  "batchOver": "{cat}: lampas sa batch — {count} para sa {slot} ({per} bawat batch)",
+  "eventStartOver": "Lampas sa capacity sa simula ng event — {n, plural, one {{count} item} other {{count} item}} para sa {slot}",
+  "kitchenOver": "Lampas sa capacity ang kusina — {n, plural, one {{count} item} other {{count} item}} na niluluto para sa {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} item} other {{count} item}}",
+  "placedAnyway": "Na-place pa rin: {list}",
+  "placedItem": "#{id} para sa {slot}",
+  "orphans": "{times}: lampas sa capacity — walang nahanap na order na pinagmulan nito",
+  "dismiss": "Isara",
+  "kitchenCapacity": "Kitchen capacity",
+  "overCapacity": "Lampas sa capacity",
+  "wakeUnsupported": "Hindi kayang panatilihing naka-on ng device na ito ang screen.",
+  "wakeInsecure": "Hindi mapapanatiling naka-on ang screen mula sa address na ito.",
+  "wakeRetry": "Panatilihing naka-on ang screen — i-tap para subukan ulit",
+  "wakeAcquire": "Panatilihing naka-on ang screen",
+  "degraded": {
+    "serverError": "Hindi ma-load ng server ang mga order{hasStatus, select, yes { (error {status})} other {}}. Ipinapakita ang mga order mula {at}. Baka may kulang na bagong order.",
+    "unreachable": "Hindi maabot ang server. Ipinapakita ang mga order mula {at}. Baka may kulang na bagong order."
+  }
+}

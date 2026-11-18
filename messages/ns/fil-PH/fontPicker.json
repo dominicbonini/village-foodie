@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Lahat",
+    "bold": "Bold at matangkad",
+    "hand": "Sulat-kamay",
+    "classic": "Classic",
+    "clean": "Simple",
+    "own": "Sa iyo",
+    "ownCount": "Sa iyo ({count})"
+  },
+  "yoursTag": "· sa iyo",
+  "loadingFonts": "Nilo-load ang mga font…",
+  "search": "Maghanap sa {count, number} font",
+  "uploadButton": "↑ I-upload ang font mo",
+  "loadingLibrary": "Nilo-load ang font library…",
+  "tryAgain": "Subukan ulit",
+  "noOwn": "Wala ka pang na-upload na font. Gamitin ang “↑ I-upload ang font mo” button sa itaas.",
+  "recent": "Kamakailang ginamit",
+  "popular": "Sikat para sa mga poster",
+  "adding": "Idinadagdag…",
+  "noMatch": "Walang font na tumutugma sa “{query}”.",
+  "showing": "Ipinapakita ang {shown} sa {total, number} — mag-type pa para paliitin ang listahan.",
+  "couldNotAdd": "Hindi maidagdag ang font na iyan",
+  "tooBig": "Laki ng font na iyan: {size, number, ::.0 group-off}MB. 5MB ang limit.",
+  "woff": "Paki-upload ng TTF o OTF file — karaniwang mada-download mo ito kung saan mo binili ang font.",
+  "uploadIncomplete": "Hindi natapos ang upload",
+  "added": "Naidagdag ang “{name}” bilang {face} version nito.",
+  "face": {
+    "regular": "regular",
+    "bold": "bold",
+    "italic": "italic"
+  },
+  "licenceTick": "Ako ang may-ari ng font na ito o may license ako para gamitin ito",
+  "checking": "Chine-check ang font…",
+  "addFont": "Idagdag ang font",
+  "cancel": "Kanselahin",
+  "missingFaces": "Idagdag ang {faces} version ng “{name}” (opsyonal) — piliin ulit ang file.",
+  "somethingWrong": "Nagka-problema",
+  "faceLower": {
+    "regular": "regular",
+    "bold": "bold",
+    "italic": "italic"
+  },
+  "ownLicence": "Sarili mo",
+  "loadFailed": "Hindi ma-load ang mga font"
+}

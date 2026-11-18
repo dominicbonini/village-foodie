@@ -1,0 +1,53 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Libreng-libre ang unang # buwan mo — bukas ang lahat ng feature.} other {Libreng-libre ang unang # buwan mo — bukas ang lahat ng feature.}}",
+    "body": "Gamit ang {brand}, nagpe-pre-order ang customers at nagbabayad pag-pick up nila, kaya puwede kang tumanggap ng online orders nang hindi nagko-connect ng kahit anong card processor. Pagkatapos ng trial mo, lilipat ka sa <plan>{fallback}</plan>{fallbackFree, select, yes { — walang monthly fee —} other {}} maliban kung pumili ka ng plan. Walang card para magsimula, walang kontrata, puwedeng i-cancel kahit kailan.",
+    "bodyCard": "Gamit ang {brand}, nagpe-pre-order ang customers at nagbabayad pag-pick up nila, kaya puwede kang tumanggap ng online orders nang hindi nagko-connect ng kahit anong card processor. Mas gusto mo bang magpabayad nang maaga? Magdagdag ng online card payments kahit kailan. Pagkatapos ng trial mo, lilipat ka sa <plan>{fallback}</plan>{fallbackFree, select, yes { — walang monthly fee —} other {}} maliban kung pumili ka ng plan. Walang card para magsimula, walang kontrata, puwedeng i-cancel kahit kailan.",
+    "bodyOnly": "Gamit ang {brand}, nagpe-pre-order ang customers at nagbabayad pag-pick up nila, kaya puwede kang tumanggap ng online orders nang hindi nagko-connect ng kahit anong card processor. Pagkatapos ng trial mo, {price} kada buwan ang <plan>{fallback}</plan>. Kokontakin ka namin bago iyon para i-set up ang bayad. Walang card para magsimula, walang kontrata, puwedeng i-cancel kahit kailan.",
+    "bodyOnlyCard": "Gamit ang {brand}, nagpe-pre-order ang customers at nagbabayad pag-pick up nila, kaya puwede kang tumanggap ng online orders nang hindi nagko-connect ng kahit anong card processor. Mas gusto mo bang magpabayad nang maaga? Magdagdag ng online card payments kahit kailan. Pagkatapos ng trial mo, {price} kada buwan ang <plan>{fallback}</plan>. Kokontakin ka namin bago iyon para i-set up ang bayad. Walang card para magsimula, walang kontrata, puwedeng i-cancel kahit kailan."
+  },
+  "card": {
+    "perTruckMonth": "kada truck / buwan",
+    "mostTrucks": "Pili ng karamihan",
+    "tryFree": "Subukan nang libre",
+    "seeEvery": "Tingnan ang lahat ng feature →",
+    "everything": "Lahat ng kailangan sa isang service",
+    "everythingIn": "Lahat ng nasa {plan}, at"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}</b> sa online orders lang. Laging libre ang walk-in orders.",
+    "feeOnlyCard": "<b>{fee}*</b> sa online orders lang. Laging libre ang walk-in orders.",
+    "included": "Kasama ang unang <b>{included}</b> ng online orders kada buwan, pagkatapos ay <b>{fee}*</b>. Laging libre ang walk-in orders.",
+    "includedNoMark": "Kasama ang unang <b>{included}</b> ng online orders kada buwan, pagkatapos ay <b>{fee}</b>. Laging libre ang walk-in orders.",
+    "noFee": "<b>Walang fees ng HatchGrab</b> sa online orders, gaano ka man ka-busy. Iisang tiyak na gastos kada buwan."
+  },
+  "base": {
+    "walkUp": "Walk-in orders at kitchen display (KDS)",
+    "online": "Online ordering",
+    "preorders": "Pre-order at oras ng pick-up",
+    "capacity": "Pag-manage ng kitchen capacity",
+    "privateEvents": "Private events",
+    "printing": "Pag-print ng kitchen ticket",
+    "app": "Kitchen app sa iPhone, iPad at Android"
+  },
+  "added": {
+    "whatsapp_replies": "WhatsApp auto-replies",
+    "schedule_graphics": "Social media posts — ang schedule mo sa Facebook at Instagram — handa nang i-post",
+    "event_types": "Custom na uri ng event at presyo"
+  },
+  "money": {
+    "unlimitedOrders": "Unlimited na online orders, 0% fee ng HatchGrab",
+    "samePrice": "Parehong presyo kahit sa pinaka-busy mong buwan"
+  },
+  "comingSoon": "Malapit na",
+  "bar": {
+    "title": "Aling plan ang pinakamura para sa akin?",
+    "subtitle": "Ang online orders mo kada buwan",
+    "first": "Mas mababa sa {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Higit sa {from} → <b>{plan}</b>",
+    "only": "Kahit gaano karami → <b>{plan}</b>"
+  },
+  "footnote": "* Dagdag ang card processing ng Stripe sa online card orders lang (sa ngayon, {cardFee} sa {country}), na bayad sa Stripe, hindi sa HatchGrab. Sa walk-in orders, sarili mong card reader ang gamit — 0% ang singil ng HatchGrab.",
+  "currencyLine": "Mga presyo sa {currency} ({code})"
+}

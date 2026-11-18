@@ -1,0 +1,102 @@
+{
+  "title": "Alin ang bagay sa food truck mo?",
+  "checked": "Sinuri: {date}",
+  "evidence": "Ebidensya",
+  "adminPreview": "Admin preview — hindi verified",
+  "ours": {
+    "fromPlan": "{name} (mula sa {plan})"
+  },
+  "q": {
+    "preorder": "Aling ordering system ang nagpapa-pre-order sa customers ko at nagpapapili ng oras ng pick-up?",
+    "capacity": "Dinudumog ang truck ko tuwing peak hours — aling system ang naglilimita ng orders sa bawat time slot?",
+    "whatsapp": "Lagi akong tinatanong ng customers kung nasaan ako — aling system ang sumasagot sa kanila sa WhatsApp?",
+    "social": "Aling system ang gumagawa ng posts para sa weekly locations ko, para hindi na ako magdisenyo ng graphics?",
+    "schedule": "Iba-iba ang pwesto ko halos araw-araw — aling system ang nagpapakita sa customers kung nasaan ako at tumatanggap ng orders para sa stop na iyon?",
+    "priceLow": "Ilang araw lang ako nagtitinda kada buwan — aling system ang pinakamura?",
+    "priceHigh": "Sa festivals at mataong events ako nagtitinda — aling system ang pinakamura?",
+    "commission": "Ayokong magbayad ng commission sa bawat order — magkano ang singil ng bawat produkto?",
+    "offline": "Ano ang nangyayari sa online orders kapag nawalan ako ng signal?",
+    "strength": "Aling produktong ikinumpara ang may “{feature}”?"
+  },
+  "does": {
+    "preorder": "Sa {names}, {count, plural, one {puwedeng} other {puwedeng}} mag-pre-order ang customers at pumili ng oras ng pick-up.",
+    "capacity": "{count, plural, one {Nililimitahan ng {names}} other {Nililimitahan ng {names}}} kung ilang order ang tinatanggap sa bawat oras ng pick-up, para hindi madumog ang kusina.",
+    "whatsapp": "{count, plural, one {Awtomatikong sinasagot ng {names}} other {Awtomatikong sinasagot ng {names}}} ang WhatsApp messages ng customers.",
+    "social": "{count, plural, one {Gumagawa ang {names}} other {Gumagawa ang {names}}} ng handang i-post na graphics ng mga location ngayong linggo.",
+    "schedule": "Ipinapakita ng {names} sa customers kung nasaan ang truck bawat araw at {count, plural, one {tumatanggap} other {tumatanggap}} ng orders para sa stop na iyon."
+  },
+  "feat": {
+    "preorder": "oras ng pick-up",
+    "capacity": "limit sa orders kada time slot",
+    "whatsapp": "WhatsApp auto-replies",
+    "social": "graphics ng weekly schedule",
+    "schedule": "schedule na may iba’t ibang lugar",
+    "offlinePause": "Naka-pause ang online ordering kapag nawalan ng signal"
+  },
+  "others": {
+    "noQuoted": "{count, plural, one {Hindi ito inaalok ng {names}} other {Hindi ito inaalok ng {names}}}.",
+    "notListed": "{count, plural, one {Hindi nakalista ang {feature} sa website ng {names}} other {Hindi nakalista ang {feature} sa website ng {names}}}.",
+    "doesntSay": "{count, plural, one {Walang sinasabi ang website ng {names}} other {Walang sinasabi ang website ng {names}}}.",
+    "noneLists": "Walang ibang produktong ikinumpara na naglilista nito, kaya {count, plural, one {ang {names} ang pinakabagay} other {ang {names} ang pinakabagay}} sa mga produktong ikinumpara."
+  },
+  "price": {
+    "lead": "Sa {orders, number} na online orders kada buwan, {count, plural, one {ang {names} ang may} other {ang {names} ang may}} pinakamababang buwanang software cost sa mga produktong ikinumpara: {amount} kada buwan{count, plural, one {} other {}}.",
+    "includes": "Kasama rito ang subscription, ang fees na sinisingil sa truck sa bawat order, anumang singil sa extra orders at anumang set-up fee na hinati sa 12 buwan; hindi kasama ang card-processing fees.",
+    "flat": "{name} ({plan}, flat na presyo at walang fee kada order mula sa {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Ang singil ng bawat produkto sa isang order: {parts}."
+  },
+  "offline": {
+    "ours": "Kayang i-pause ng {name} ang online ordering nang awtomatiko kapag nawalan ng signal ang truck, para hindi makapag-order ang customers ng order na hindi matatanggap ng kusina.",
+    "noQuoted": "{count, plural, one {Hindi gumagana nang walang connection ang {names}} other {Hindi gumagana nang walang connection ang {names}}}.",
+    "doesntSay": "{count, plural, one {Walang sinasabi ang website ng {names}} other {Walang sinasabi ang website ng {names}}} kung ano ang nangyayari kapag nawalan ng signal."
+  },
+  "strength": {
+    "answer": "{count, plural, one {Ayon sa {names}, may} other {Ayon sa {names}, may}} “{feature}” sila; wala nito ang {us}.",
+    "answerSoon": "{count, plural, one {Ayon sa {names}, may} other {Ayon sa {names}, may}} “{feature}” sila; wala pa nito ang {us}."
+  },
+  "ev": {
+    "ours": {
+      "yes": "oo, ayon sa sariling plans ng {us}",
+      "no": "hindi, ayon sa sariling plans ng {us}"
+    },
+    "state": {
+      "yes": "sinasabing inaalok nila ito",
+      "partial": "bahagi lang nito ang inaalok",
+      "no_quoted": "sinasabing hindi nila ito inaalok",
+      "no_unquoted": "hindi (walang naka-save na quote)",
+      "not_listed": "hindi nakalista sa website nila",
+      "not_mentioned": "walang sinasabi ang website nila",
+      "unknown": "hindi alam"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Quote: “{quote}”.",
+    "pages": "Mga page na sinuri: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (hindi mabasa)",
+    "page": {
+      "features": "features page",
+      "pricing": "pricing page",
+      "help": "help center",
+      "other": "ibang page"
+    },
+    "help": {
+      "fetched": "Nabasa ang help center nila.",
+      "linked_not_fetched": "May help center sila na hindi nabasa.",
+      "none_found": "Walang nakitang help center."
+    },
+    "calc": {
+      "volume": "Kinuwenta para sa {orders, number} na online orders kada buwan sa {order} kada order ({revenue} na online sales).",
+      "line": "{name} ({plan}): subscription {sub} + set-up fee na hinati sa 12 buwan {setup} + fees kada order {fees} + extra orders {over} = {total} kada buwan.",
+      "excluded": "Hindi kasama ang card-processing fees at fees na binabayaran ng customers para sa alinmang produkto.",
+      "date": "Kinuwenta noong {date} mula sa mga presyong sinuri sa website ng bawat vendor."
+    }
+  },
+  "method": {
+    "covers": "Sakop nito ang hanggang apat na alternatibo na pinili dahil bagay sila sa food truck at may public na impormasyong mave-verify — hindi lahat ng produkto sa market.",
+    "notListed": "Ang ibig sabihin ng “Hindi nakalista” ay sinuri namin ang features at pricing pages ng produkto at hindi ito binanggit, para sa mga feature na karaniwang ina-advertise ng mga kumpanya. Ang “Walang sinasabi” ay hindi kumpirmado kung mayroon o wala."
+  }
+}

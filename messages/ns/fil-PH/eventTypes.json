@@ -1,0 +1,83 @@
+{
+  "title": "Mga uri ng event",
+  "newTypeButton": "+ Bagong uri ng event",
+  "close": "Isara",
+  "loading": "Nilo-load…",
+  "missingTitle": "Hindi pa naka-on ang mga uri ng event.",
+  "missingBody": "Hindi pa na-apply ang database update para sa feature na ito. Walang sira — normal na setup mo ang gamit ng bawat event.",
+  "column": "Column",
+  "vanGone": "Wala na ang van na iyan.",
+  "typeGone": "Wala na ang uri na iyan.",
+  "standard": "Standard",
+  "standardHeading": "STANDARD",
+  "moreFor": "Iba pa para sa {name}",
+  "rename": "Palitan ang pangalan",
+  "moveLeft": "Ilipat pakaliwa",
+  "moveRight": "Ilipat pakanan",
+  "delete": "I-delete",
+  "sections": {
+    "vans": "MGA VAN",
+    "prices": "MGA PRESYO",
+    "itemPrices": "PRESYO NG ITEMS",
+    "service": "SERVICE"
+  },
+  "labelFor": "{label} para sa {name}",
+  "intervalEvery": "Tuwing {mins} min",
+  "noTypes": "Wala ka pang uri ng event, kaya normal na setup mo ang gamit ng bawat event.",
+  "renameTitle": "Palitan ang pangalan ng uri na ito",
+  "name": "Pangalan",
+  "cancel": "Kanselahin",
+  "save": "I-save",
+  "copyVanOne": "Kopyahin ang settings ng Van 1",
+  "thisType": "ang uring ito",
+  "matchTitle": "Itugma sa Standard ang “{name}”?",
+  "matchKeeps": "Hindi magbabago ang anumang binago mo sa dashboard ng isang event, at hindi babaguhin ang mga presyo ng uring ito.",
+  "matchWillUse": "Gagamitin nito: {summary}",
+  "deleteTitle": "I-delete ang “{name}”?",
+  "deleteBody": "{n, plural, =0 {Walang paparating na event na gumagamit ng “{name}”.} one {{count} paparating na event ang gumagamit ng “{name}”. Babalik ang mga ito sa Standard.} other {{count} paparating na event ang gumagamit ng “{name}”. Babalik ang mga ito sa Standard.}} Hindi magbabago ang anumang binago mo sa isang event.",
+  "keep": "Panatilihin",
+  "phone": {
+    "standardTag": "Standard",
+    "defaultTag": "default",
+    "vanSetup": "Ang karaniwang setup ng van na ito — ginagamit sa bawat event na walang uri.",
+    "standardSetup": "Ang karaniwang setup mo — ginagamit sa bawat event na walang uri.",
+    "cardSummary": "{upcoming, plural, one {Paparating na event: {upcomingCount}} other {Paparating na event: {upcomingCount}}} · {changed, plural, =0 {wala pang binago} one {binago: {changedCount} sa {total}} other {binago: {changedCount} sa {total}}}",
+    "noMenuItems": "Wala pang menu items — idagdag ang mga ito sa Menu › Mga item."
+  },
+  "newType": {
+    "title": "Bagong uri ng event",
+    "namePlaceholder": "hal. School fair",
+    "help": "Mag-tap ng pangalan o mag-type ng sarili mo. Magsisimula ito bilang kopya ng Standard, at hindi ito magbabago kapag binago mo ang Standard mamaya. Baguhin ang kahit ano pagkatapos.",
+    "create": "Gumawa",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Bar",
+      "market": "Night market",
+      "privateHire": "Food truck para sa events"
+    }
+  },
+  "select": {
+    "label": "Uri ng event",
+    "usual": "Karaniwan sa lugar na ito: {name}."
+  },
+  "summary": {
+    "normalSetup": "Ang normal na setup mo",
+    "sameAsStandard": "Kapareho ng Standard",
+    "buzzersOn": "naka-on ang buzzers",
+    "buzzersOff": "naka-off ang buzzers",
+    "takeCashOn": "tumatanggap ng cash",
+    "takeCashOff": "hindi tumatanggap ng cash",
+    "markReadyOn": "naka-on ang mark-ready step",
+    "markReadyOff": "naka-off ang mark-ready step",
+    "collectionEvery": "pick-up tuwing {mins} min",
+    "offlineOff": "naka-off ang offline protection",
+    "offlineKeepTaking": "offline: tuloy ang pagtanggap ng order",
+    "offlinePause": "offline: i-pause ang ordering"
+  },
+  "errors": {
+    "somethingWentWrong": "Nagka-problema",
+    "couldNotLoad": "Hindi ma-load",
+    "couldNotSave": "Hindi ma-save",
+    "noVans": "Walang van ang truck na ito na puwedeng baguhin."
+  }
+}

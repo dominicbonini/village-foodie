@@ -1,0 +1,28 @@
+{
+  "hi": "Hi {name},",
+  "limit80": {
+    "subject": "Nagamit mo na ang 80% ng WhatsApp replies mo ngayong buwan",
+    "used": "Nakagamit na ang automatic WhatsApp replies mo ng <b>{used} sa {limit}</b> ngayong buwan.",
+    "nothingStopped": "Walang tumigil. Pag umabot ka sa {limit}, magpa-pause ang automatic replies hanggang mag-reset ang allowance mo sa <b>{reset}</b> — puwede ka pa ring i-message ng mga customer, at makikita mo pa rin lahat ng ipapadala nila.",
+    "raise": "Puwede mong taasan ang monthly limit mo sa Settings kahit kailan.",
+    "raiseLink": "Puwede mong taasan ang monthly limit mo sa Settings kahit kailan:",
+    "button": "Buksan ang Settings"
+  },
+  "limit100": {
+    "subject": "Naka-pause ang WhatsApp auto-replies mo ngayong buwan",
+    "usedAll": "Nagamit mo na lahat ng {limit} automatic WhatsApp replies ngayong buwan, kaya naka-pause na ang mga ito.",
+    "stillReach": "<b>Puwede ka pa ring i-message ng mga customer gaya ng dati, at natatanggap mo pa rin ang bawat message.</b> Ang tumigil lang ay ang automatic reply na ipinapadala pabalik.",
+    "startAgain": "Babalik ang mga ito sa <b>{reset}</b>, o agad-agad kung tataasan mo ang monthly limit mo sa Settings.",
+    "startAgainLink": "Babalik ang mga ito sa {reset}, o agad-agad kung tataasan mo ang monthly limit mo sa Settings:",
+    "button": "Taasan ang limit ko"
+  },
+  "paymentBlocked": {
+    "subject": "Kailangan ng WhatsApp ng payment method bago ito makapagpadala",
+    "stopped": "Pinahinto ng WhatsApp ang pagpapadala ng automatic replies mo dahil walang gumaganang payment method sa WhatsApp Business account mo.",
+    "stillMessage": "<b>Puwede ka pa ring i-message ng mga customer, at makikita mo pa rin lahat ng ipapadala nila</b> — pero hindi umaabot sa kanila ang mga reply.",
+    "payDirect": "Direkta kang nagbabayad sa WhatsApp para sa mga message na ito, kaya sa WhatsApp Manager ito inaayos, hindi sa HatchGrab. Magdagdag o mag-update ng card doon at kusang babalik ang mga reply.",
+    "payDirectLink": "Direkta kang nagbabayad sa WhatsApp para sa mga message na ito, kaya sa WhatsApp Manager ito inaayos, hindi sa HatchGrab. Magdagdag o mag-update ng card doon at kusang babalik ang mga reply:",
+    "button": "Buksan ang WhatsApp Manager",
+    "settings": "Ang HatchGrab settings mo: <link>{url}</link>"
+  }
+}

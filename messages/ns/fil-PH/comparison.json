@@ -1,0 +1,400 @@
+{
+  "path": {
+    "section": "comparison",
+    "slug": "food-truck-ordering-system"
+  },
+  "meta": {
+    "title": "Food truck ordering system comparison 2026 at mga presyo",
+    "description": "Paghahambing ng food truck ordering system: pre-order na may oras ng pick-up, kapasidad ng kusina, schedule, fees at kontrata — sinuri sa site ng vendor.",
+    "about": "Mga online ordering system para sa food truck"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Ikumpara",
+    "label": "Breadcrumb"
+  },
+  "h1": "Food truck ordering system comparison 2026",
+  "byline": "Huling sinuri: {date} · Gawa ng HatchGrab. Isa kami sa mga vendor na ikinumpara (tingnan ang <link>Paano kami nagkumpara</link>).",
+  "table": {
+    "title": "Ang mga ordering system na ikinumpara",
+    "caption": "Mga feature at gastos ng online ordering system para sa food truck ({country}), noong {date}",
+    "note": "“Oo” lang kapag hayagang sinabi ito ng vendor.",
+    "feature": "Feature",
+    "yes": "Oo",
+    "no": "Hindi",
+    "unknown": "Hindi sinabi",
+    "fromPlan": "Mula sa {plan}",
+    "appNotInCountry": "Wala sa {country}",
+    "appFlagOff": "Oo – naka-off pa ang flag, ipapakita kapag nasa stores na",
+    "range": "{from} hanggang {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "wala",
+    "morePending": "Lalabas dito ang iba pang vendor kapag nasuri na namin ang details nila sa sarili nilang website.",
+    "priceHidden": "Kapag hiniling",
+    "feeAfter": "{fee} kapag lampas {included} kada buwan",
+    "legend": "✓ Oo · ◐ Bahagya · ✗ Hindi · Hindi nakalista: wala sa features o pricing pages nila · —: walang sinasabi ang website nila · Hindi applicable: walang ganitong feature ang ganoong uri ng serbisyo · ⓘ: ang note, quote at source",
+    "swipe": "I-swipe pagilid para makita ang lahat ng produkto →"
+  },
+  "costs": {
+    "title": "Magkano ang food truck ordering system?",
+    "ourPlan": "{plan}: {price} kada buwan, {fee}",
+    "feeOnly": "{fee} kada online order",
+    "feeIncluded": "kasama ang online orders na hanggang {included} kada buwan, pagkatapos ay {fee}",
+    "feeNone": "walang fee ng HatchGrab sa online orders",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "{price} kada buwan",
+    "perMonthYearly": "{price} kada buwan, sinisingil taon-taon",
+    "vatExcl": "VAT-exclusive",
+    "vatIncl": "VAT-inclusive",
+    "setup": "{price} na one-time setup",
+    "truckFee": "{fee} kada order",
+    "customerFee": "{fee} kada order, bayad ng customer",
+    "source": "Source",
+    "checked": "sinuri noong {date}",
+    "cardFee": "May Stripe fees din ang online card payments sa HatchGrab: {cardFee} kada card payment ({country}).",
+    "vat": "Ang HatchGrab Ltd ay UK company at hindi registered sa VAT sa {country}, kaya walang VAT na idinadagdag sa fees namin. Kung VAT-registered ka, ibigay sa amin ang VAT number mo; ikaw na ang magde-declare ng anumang VAT sa fees namin, sa ilalim ng reverse charge.",
+    "bundledFee": "{fee} kada online payment, kasama na ang card fee"
+  },
+  "fit": {
+    "title": "Aling system ang bagay sa sino?",
+    "ours": "Bagay sa iyo ang HatchGrab kung …",
+    "oursBody": "nagtitinda ka sa iba’t ibang lugar, gusto mo ng pre-order na may oras ng pick-up, ayaw mong ma-overload ang kusina mo, at ayaw mo ng kontrata.",
+    "oursNot": "Hindi bagay sa iyo ang HatchGrab kung …",
+    "oursNotBody": "gusto mong magbayad ang customers mo gamit ang PayPal o Klarna, o gusto mo ng certified POS na may TSE mula sa iisang supplier.",
+    "appClause": "O kung kailangan mo ang kitchen app sa iPad o Android sa {country}: wala pa ito sa stores doon.",
+    "tills": "POS at card reader",
+    "marketplaces": "Delivery platforms",
+    "rival": "Bagay ang {name} kung …",
+    "tillsBody": "Tumatanggap ng bayad sa truck ang POS at sakop nito ang TSE requirement. Kasabay ng POS gumagana ang ordering system; hindi nito pinapalitan ang POS.",
+    "tillsBodyNamed": "Tumatanggap ng bayad sa truck ang POS at sakop nito ang TSE requirement. {count, plural, one {Nasa table sa itaas din ang {names}.} other {Nasa table sa itaas din ang {names}.}} Kasabay ng POS gumagana ang ordering system; hindi nito pinapalitan ang POS.",
+    "marketplacesBody": "Nagdadala ng bagong customers ang delivery platforms pero may commission sila sa bawat order. Ayon sa Uber Eats, 14% para sa pick-up at 30% para sa delivery ng Uber couriers sa Germany. Sinasabi ng Wolt sa sarili nitong website na naniningil ito ng commission pero walang rates na binigay. Hindi namin ma-check ang rates ng Lieferando. May commission din iyan sa mga suki na nagpe-pre-order sa iyo."
+  },
+  "groups": {
+    "food_truck": "Food truck ordering system",
+    "nearest_local": "Ordering system",
+    "pos": "POS system"
+  },
+  "faq": {
+    "title": "Mga madalas itanong",
+    "whatQ": "Ano ang food truck ordering system?",
+    "whatA": "Tumatanggap ang ordering system ng order online bago pa makarating ang customers sa truck: pipili sila ng pagkain at oras ng pick-up, magbabayad online o sa pick-up, at lalabas ang order sa kusina mo. Ang POS o card reader naman ang tumatanggap ng bayad sa truck. Nagtutulungan ang dalawa.",
+    "costQ": "Magkano ang HatchGrab sa {country}?",
+    "costA": "{plans}. May Stripe fees din ang online card payments: {cardFee} kada card payment.",
+    "termQ": "May minimum term ba?",
+    "termA": "Wala. Walang minimum term at walang notice period. Puwede kang mag-cancel kahit kailan; sinisingil ang fee buwan-buwan nang advance, at may access ka hanggang matapos ang buwan na binayaran mo.",
+    "locationsQ": "Gumagana ba ito sa iba’t ibang lugar?",
+    "locationsA": "Oo. I-set up mo ang weekly schedule mo na may mga lugar at oras, at oorder ang customers para sa lugar at araw na naroon ka.",
+    "capacityQ": "Paano pinipigilan ng system na ma-overload ang kusina ko?",
+    "capacityA": "Mga oras ng pick-up lang na talagang kaya ng kusina mo ang nakikita ng customers. Batay ito sa prep time ng bawat pagkain at kung ilan ang sabay mong inihahanda.",
+    "tseQ": "Kailangan ko pa ba ng POS na may TSE?",
+    "tseA": "Hindi POS ang HatchGrab at wala itong TSE. Kung paano mo ire-record ang online orders sa POS mo, itanong iyan sa tax adviser mo.",
+    "paymentsQ": "Anong payment methods ang suportado ng HatchGrab?",
+    "paymentsA": "Nagbabayad ang customers online gamit ang card, Apple Pay o Google Pay, o magbabayad sa truck. Hindi pa suportado ang PayPal at Klarna sa ngayon.",
+    "costTrial": "Libre ang unang {months, plural, one {# buwan} other {# buwan}}, kasama ang lahat ng feature."
+  },
+  "method": {
+    "title": "Paano kami nagkumpara",
+    "checked": "Huling sinuri noong {date}.",
+    "prices": "Ipinapakita ang mga presyo ayon sa sinabi ng vendor, kasama ang VAT.",
+    "meaning": "Ang ibig sabihin ng “Oo” ay hayagang sinabi ng vendor ang feature. Ang “Hindi sinabi” ay wala kaming nakita tungkol dito sa website nila — hindi ibig sabihing wala ang feature.",
+    "vendor": "HatchGrab ang nagpapatakbo ng page na ito at isa ito sa mga vendor na ikinumpara.",
+    "review": "Awtomatikong chine-check ang mga presyo at feature laban sa sariling website ng bawat produkto; may link sa source ang bawat claim.",
+    "corrections": "May nakitang mali? Sabihin sa amin sa <link>contact form</link> namin.",
+    "reportError": "<link>Mag-report ng mali</link>",
+    "machine": "Para sa AI assistants at developers: ang table na ito <md>bilang Markdown</md> · <json>bilang JSON</json>"
+  },
+  "cta": {
+    "title": "Subukan nang libre sa {months, plural, one {# buwan} other {# buwan}}",
+    "noCard": "Hindi kailangan ng credit card",
+    "cancel": "Mag-cancel kada buwan",
+    "button": "Subukan nang libre"
+  },
+  "admin": {
+    "status": "Draft · noindex · wala sa sitemap, llms.txt o hreflang · footer link para sa admins lang",
+    "statusLive": "Live · public at naka-index",
+    "viewAdmin": "Admin view",
+    "viewPublic": "Ang nakikita ng publiko",
+    "pricingCheck": "Buksan ang Pricing check",
+    "checklist": "Bago mag-live",
+    "goLive": "Nagiging live ang page sa Admin › Countries.",
+    "check": {
+      "apps": "Naka-on ang iPad at Android flags para sa {country}",
+      "placeholders": "Walang natitirang “[ … ]” placeholder sa copy",
+      "vat": "May VAT wording"
+    },
+    "unverified": "hindi verified · nakatago sa publiko",
+    "autoVerified": "auto-verified",
+    "unchecked": "hindi pa nasusuri para sa bawat competitor na ipinapakita · nakatago sa publiko",
+    "label": "Admin",
+    "notShown": "Wala sa page (hanggang apat lang ang ipinapakita): {names}.",
+    "reasonHidden": "{name} (nakatago)",
+    "reasonBeyond": "{name} (lampas sa apat)",
+    "reasonNoWebsite": "{name} (walang website)",
+    "liveAuto": "Live sa auto-publish",
+    "adminsOnly": "Admins lang — {reason}",
+    "whyFewer": "Pumasa sa automatic checks: {n} sa {total} na competitor; 2 ang kailangan",
+    "whyAutoOff": "naka-off ang auto-publish para sa bansang ito",
+    "shown": "{n, plural, one {# competitor ang ipinapakita} other {# competitor ang ipinapakita}}",
+    "details": "Details"
+  },
+  "footer": {
+    "heading": "Ikumpara",
+    "link": "Paghahambing ng ordering system"
+  },
+  "featureGroups": {
+    "ordering": "Pag-order",
+    "payments": "Payments",
+    "kitchen": "Kusina",
+    "marketing": "Marketing",
+    "apps_hardware": "Apps at hardware",
+    "price_contract": "Presyo at kontrata"
+  },
+  "cell": {
+    "yes": "Oo",
+    "no": "Hindi",
+    "partial": "Bahagya",
+    "unknown": "Hindi sinabi",
+    "not_mentioned": "Hindi binanggit sa website nila",
+    "withNote": "{word}, {note}",
+    "soon": "malapit na",
+    "fromPlan": "mula sa {plan}",
+    "perCardPayment": "{fee} kada card payment",
+    "trial": "{months, plural, one {# buwan} other {# buwan}} na libre",
+    "setupFee": "{price} na one-time",
+    "perMonth": "{price} kada buwan",
+    "notInCountry": "wala sa {country}",
+    "flagOff": "naka-off pa ang flag; ipapakita kapag nasa stores na",
+    "notApplicable": "hindi applicable sa marketplace",
+    "not_listed": "Hindi nakalista",
+    "details": "Details",
+    "doesntApply": "Hindi applicable",
+    "doesntSay": "Walang sinasabi",
+    "none": "Wala"
+  },
+  "explained": {
+    "title": "Ano ang ibig sabihin ng mga feature"
+  },
+  "costBlock": {
+    "title": "Magkano ang binabayaran ng truck kada buwan",
+    "sizes": "Online sales kada buwan",
+    "sizeSales": "{sales} kada buwan",
+    "sizeOrders": "mga {orders} order",
+    "lead": "Para sa truck na may {sales} na online orders kada buwan (mga {orders} order). Ang bawat bar ay ang kabuuang gastos kada buwan: ang sariling fee ng ordering system dagdag ang card fees sa mga order na iyon.",
+    "legendSoftware": "Software fee",
+    "legendCard": "Card fees",
+    "software": "Software fee: {amount} kada buwan",
+    "card": "Card fees: {amount} kada buwan",
+    "total": "{amount} kada buwan kasama ang card fees",
+    "share": "{pct} ng sales",
+    "assumed": "(hindi naka-publish ang rate, tinantiya)",
+    "customerFee": "Dagdag na {amount} kada buwan na bayad ng customers ({fee} kada order) — wala sa bar",
+    "summaryCheapest": "Ang sariling fee ng {us} ay {ours} kada buwan, kumpara sa {theirs} kada buwan ng pinakamurang kakumpitensyang ipinapakita. Sinisingil ang card fees ({card} kada buwan) sa bawat card payment anuman ang system mo, kaya ang software fee ang talagang mahalagang pagkakaiba.",
+    "summaryNotCheapest": "Ang sariling fee ng {us} ay {ours} kada buwan, mas mataas sa {theirs} kada buwan ng {rival}, ang pinakamurang kakumpitensyang ipinapakita. Sinisingil ang card fees ({card} kada buwan) sa bawat card payment anuman ang system mo.",
+    "summaryAlone": "Ang sariling fee ng {us} ay {ours} kada buwan. Sinisingil ang card fees ({card} kada buwan) sa bawat card payment anuman ang system mo.",
+    "footOrder": "Average na order {order}: karaniwang meal na {meal} × {multiplier} pagkain kada order ({source}).",
+    "footCard": "Ang card fees ay gumagamit ng {rate} kada card payment: {source}.",
+    "footCardSource": "Rate ng Stripe para sa {country}",
+    "footAssumed": "{count, plural, one {Hindi nagpa-publish ng card rate ang {names}, kaya tinantiya namin ito.} other {Hindi nagpa-publish ng card rate ang {names}, kaya tinantiya namin ito.}}",
+    "footChecked": "Sinuri ang mga presyo noong {date}.",
+    "footCalculator": "Kuwentahin ang sarili mong numero sa calculator.",
+    "noRivals": "Wala pang kakumpitensyang verified sa {country}, kaya wala pang maikukumpara."
+  },
+  "features": {
+    "preorder": {
+      "label": "Pre-order na may piniling oras ng pick-up",
+      "explain": "Umo-order nang maaga ang customers at pinipili nila ang oras ng pick-up."
+    },
+    "capacity": {
+      "label": "Oras ng pick-up na limitado ng kitchen capacity",
+      "explain": "Mga oras ng pick-up lang na talagang kaya ng kusina ang nakikita ng customers."
+    },
+    "asap": {
+      "label": "Order para sa lalong madaling panahon",
+      "explain": "Puwedeng mag-order ang customers nang hindi pumipili ng oras at i-pick up ito pagka-ready."
+    },
+    "ahead": {
+      "label": "Mag-pre-order para sa ibang araw o event",
+      "explain": "Puwedeng mag-order ang customers ngayon para sa market o event sa susunod na araw."
+    },
+    "schedule": {
+      "label": "Weekly schedule na may iba’t ibang lugar",
+      "explain": "Ang mga lugar at oras ng truck sa buong linggo; oorder ang customers para sa lugar at araw na naroon ito."
+    },
+    "walkup": {
+      "label": "Walk-in orders sa parehong screen ng online orders",
+      "explain": "Napupunta sa parehong listahan ng online orders ang mga order na kinuha sa truck."
+    },
+    "stock": {
+      "label": "Sold out at stock limits kada event",
+      "explain": "Markahang sold out ang mga pagkain at i-set kung ilan ang puwedeng maibenta sa isang event."
+    },
+    "notify": {
+      "label": "Sinasabihan ang customers kapag ready na ang order",
+      "explain": "Paano nalalaman ng customers na ready na ang order nila: SMS, WhatsApp, email, push o live na order-status page.",
+      "ours": "email kapag naka-on ang order-ready step, at isang order-status page; walang SMS, WhatsApp o push"
+    },
+    "allergens": {
+      "label": "Allergens sa menu",
+      "explain": "Ipinapakita ng bawat pagkain ang allergens nito sa customers bago sila mag-order."
+    },
+    "menuphoto": {
+      "label": "Menu na na-set up mula sa litrato",
+      "explain": "Pinupunan ng litrato o PDF ng menu ang mga pagkain para i-check mo."
+    },
+    "options": {
+      "label": "Options at extras sa mga pagkain",
+      "explain": "Sizes, sauces at extras, kasama ang mga choices na kailangang piliin ng customer."
+    },
+    "deals": {
+      "label": "Combo meals at bundles",
+      "explain": "Ilang item na sabay ibinebenta sa iisang presyo."
+    },
+    "private": {
+      "label": "Private events at bookings",
+      "explain": "Mga order para sa private event sa sarili nitong link, at mga request para i-book ang truck.",
+      "ours": "private events na may sariling order link; walang booking requests"
+    },
+    "qr": {
+      "label": "Pag-order sa table / QR sa upuan",
+      "explain": "Ini-scan ng customers ang code sa table nila at dumarating ang order kasama ang table number.",
+      "ours": "binubuksan ng QR code ang order page; walang table numbers"
+    },
+    "cards": {
+      "label": "Online card payments kasama ang Apple Pay at Google Pay",
+      "explain": "Nagbabayad ang customers online gamit ang card, Apple Pay o Google Pay pag-order nila."
+    },
+    "payattruck": {
+      "label": "Magbayad sa truck",
+      "explain": "Umo-order online ang customers at nagbabayad pag-pick up nila."
+    },
+    "localpay": {
+      "label": "Local payment methods (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Ang sariling online payment methods ng bansa, bukod sa cards.",
+      "ours": "cards lang"
+    },
+    "paypal": {
+      "label": "PayPal o Klarna",
+      "explain": "Puwedeng magbayad ang customers gamit ang PayPal o Klarna."
+    },
+    "custfee": {
+      "label": "Option na ang customer ang magbayad ng order fee",
+      "explain": "Puwedeng ipasa ng negosyo sa customer ang service fee."
+    },
+    "tips": {
+      "label": "Tips",
+      "explain": "Puwedeng magdagdag ng tip ang customers kapag nagbayad online."
+    },
+    "paymethods": {
+      "label": "Mga payment method na inaalok",
+      "explain": "Paano puwedeng magbayad ang customers, ayon sa sinabi ng vendor.",
+      "ours": "card, Apple Pay, Google Pay; magbayad sa truck"
+    },
+    "kds": {
+      "label": "Kitchen display (KDS)",
+      "explain": "Lumalabas ang mga order sa screen sa kusina, ayon sa pagkakasunod ng paggawa."
+    },
+    "tickets": {
+      "label": "Naka-print na kitchen tickets",
+      "explain": "Nagpi-print ang bawat order sa receipt printer sa truck.",
+      "ours": "sa iPad at Android app; hindi kasama ang printer"
+    },
+    "buzzers": {
+      "label": "Buzzers",
+      "explain": "Binibigyan ang customers ng buzzer na nagsasabing ready na ang order nila.",
+      "ours": "naka-record ang buzzer number sa bawat order; hindi kasama ang buzzers"
+    },
+    "offline": {
+      "label": "Gumagana pa rin kapag nawalan ng internet",
+      "explain": "Itinatabi ang mga order at pagbabagong ginawa nang walang connection at ipinapadala kapag bumalik na ito.",
+      "ours": "sa iPad at Android app; wala sa web dashboard"
+    },
+    "vans": {
+      "label": "Maraming van o truck",
+      "explain": "Isang account na nagpapatakbo ng higit sa isang truck.",
+      "ours": "dagdag na van para sa dagdag na monthly fee"
+    },
+    "staff": {
+      "label": "Staff logins",
+      "explain": "Nagla-log in ang staff gamit ang sarili nilang login at role."
+    },
+    "reports": {
+      "label": "Sales reports",
+      "explain": "Totals, best sellers at sales kada event o petsa, may export sa spreadsheet."
+    },
+    "domain": {
+      "label": "Sariling web address",
+      "explain": "Ang ordering page sa sariling domain ng negosyo."
+    },
+    "whatsapp": {
+      "label": "WhatsApp auto-replies",
+      "explain": "Awtomatikong sinasagot ang WhatsApp messages ng customers."
+    },
+    "social": {
+      "label": "Social media posts mula sa schedule mo",
+      "explain": "Mga handang post na nagpapakita kung nasaan ang truck ngayong linggo."
+    },
+    "igmsg": {
+      "label": "Replies sa Instagram at Messenger",
+      "explain": "Awtomatikong sinasagot ang messages sa Instagram at Facebook Messenger."
+    },
+    "discovery": {
+      "label": "Nakalista sa food truck discovery map",
+      "explain": "Nahahanap ng customers ang truck sa public map ng mga food truck na malapit sa kanila.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Loyalty",
+      "explain": "Nakakakuha ng rewards ang customers sa pagbalik nila."
+    },
+    "ipad": {
+      "label": "iPad app",
+      "explain": "Ang app ng truck para tumanggap at mag-manage ng orders sa iPad."
+    },
+    "android": {
+      "label": "Android app",
+      "explain": "Ang parehong app sa Android tablet o phone."
+    },
+    "hardware": {
+      "label": "May kasamang hardware (tablet, printer)",
+      "explain": "Ang vendor ang nagbibigay ng tablet o printer.",
+      "ours": "gamitin ang sarili mo"
+    },
+    "terminal": {
+      "label": "May kasamang card reader para sa truck",
+      "explain": "Ang vendor ang nagbibigay ng card reader para sa bayad sa truck."
+    },
+    "fiscal": {
+      "label": "Certified POS para sa tax rules (TSE, EET, kassaregister…)",
+      "explain": "POS na certified para sa rules ng bansa sa pag-record ng sales."
+    },
+    "delivery": {
+      "label": "Delivery",
+      "explain": "Dine-deliver ang mga order sa address ng customer.",
+      "ours": "pick-up lang"
+    },
+    "monthly": {
+      "label": "Buwanang presyo",
+      "explain": "Ang binabayaran ng negosyo kada buwan para sa software."
+    },
+    "perorder": {
+      "label": "Fee kada online order",
+      "explain": "Ang sinisingil ng vendor sa bawat online order, dagdag sa buwanang presyo."
+    },
+    "cardfee": {
+      "label": "Card fee",
+      "explain": "Ang fee ng payment provider sa bawat card payment."
+    },
+    "term": {
+      "label": "Minimum na kontrata",
+      "explain": "Gaano katagal nakatali ang negosyo bago ito makapag-cancel."
+    },
+    "setup": {
+      "label": "Set-up fee",
+      "explain": "Isang beses na singil para makapagsimula."
+    },
+    "trial": {
+      "label": "Free trial",
+      "explain": "Panahon para magamit nang libre ang system bago magbayad."
+    }
+  }
+}

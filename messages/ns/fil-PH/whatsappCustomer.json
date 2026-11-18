@@ -1,0 +1,15 @@
+{
+  "greeting": "Hello! 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Makikita mo ang buong menu at info sa allergens namin dito: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Tingnan ang buong menu namin dito: {url} — {truck} {emoji}",
+  "otherCategory": "Iba pa",
+  "categoryFrom": "{category} mula {price}",
+  "listTwo": "{first} at {second}",
+  "listMany": "{init}, at {last}",
+  "menuSummary": "{opener}Meron kaming {summary}. Tingnan ang buong menu at mag-pre-order dito: {url} — {truck} {emoji}",
+  "allergenCaveat": "Pakitingnan ulit ang buong menu para sa info sa allergens — automated reply ito.",
+  "specificFallback": "{opener}Tingnan ang pinakabagong schedule namin dito: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Salamat sa lahat ng message mo! Ilang beses lang ako makakasagot dito bawat araw.\n\nPara mag-order: {link}",
+  "capContact": "Para direktang makausap kami: {number}"
+}

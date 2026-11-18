@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Piliin kung paano mo ipapakita ang info sa allergens",
+    "detail": "Hangga’t hindi ka pumipili, wala sa mga dish mo ang makikita ng mga customer — pinoprotektahan ng menu ang sarili nito sa pag-hide ng anumang dish na hindi pa kumpirmado ang allergens, at sa ngayon, lahat iyon.",
+    "where": "Menu → Allergens"
+  },
+  "allergensCardMissing": {
+    "title": "Idagdag ang allergen card mo",
+    "detail": "Pinili mong magpakita ng allergen card, pero walang naka-save — kaya sasabihan ang mga customer na may info sa allergens, tapos wala silang makikita.",
+    "where": "Menu → Allergens"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Kumpirmahin ang allergens ng {count} dish} other {Kumpirmahin ang allergens ng {count} dish}}",
+    "detail": "{n, plural, one {{u, plural, one {Nakatago sa mga customer ang {unverified} sa {total} dish mo hanggang makumpirma ang allergens.} other {Nakatago sa mga customer ang {unverified} sa {total} dish mo hanggang makumpirma ang allergens.}}} other {{u, plural, one {Nakatago sa mga customer ang {unverified} sa {total} dish mo hanggang makumpirma ang allergens.} other {Nakatago sa mga customer ang {unverified} sa {total} dish mo hanggang makumpirma ang allergens.}}}} Ang dish na ipinapakita nang walang kumpirmadong allergens ay mababasang “walang allergens”, kaya itinatago ito ng menu para hindi magkamali.",
+    "where": "Menu → Allergens"
+  },
+  "noVan": {
+    "title": "Magdagdag ng van",
+    "detail": "Tumatakbo ang mga event sa isang van — kung wala nito, walang daanan ang mga order.",
+    "where": "Settings → Mga truck mo"
+  },
+  "kitchenCapacityUnset": {
+    "title": "I-set ang kitchen capacity mo",
+    "detail": "Walang naka-set na capacity para sa: {vans}. Kung wala ito, patuloy kaming mangangako sa mga customer ng oras ng pick-up na hindi kayang abutin ng kusina mo.",
+    "where": "Menu → Kitchen capacity",
+    "unnamedVan": "Van na walang pangalan"
+  },
+  "noPrepBearingCategory": {
+    "title": "Sabihin sa amin kung gaano katagal lutuin ang pagkain mo",
+    "detail": "{categories, select, none {Wala ka pang menu category, kaya hindi namin makukuwenta kung gaano katagal ang isang order.} other {Walang naka-set na cooking time sa alinman sa mga category mo, kaya mukhang instant ang bawat order para sa amin. Patuloy kaming magbibigay sa mga customer ng oras ng pick-up na hindi kayang abutin ng kusina mo, at habang dumarami ang order, lalong lalayo ang mga oras na iyon.}}",
+    "where": "Menu → Mga category → Kitchen setup"
+  },
+  "emailUnverified": {
+    "title": "Kumpirmahin ang email address mo",
+    "detail": "Dito namin ipinapadala ang mga order notification at account recovery. Kung mali ito, malalaman mo lang kapag may nagka-problema na.",
+    "where": "Hanapin sa inbox mo ang confirmation link namin"
+  },
+  "emailUnknown": {
+    "title": "Hindi alam ang status ng email confirmation",
+    "detail": "Hindi pa naka-set up ang email verification, kaya hindi ito ma-check. Sinadya itong mag-block sa halip na tahimik na pumasa.",
+    "where": "—"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "download": "I-download ang larawan",
+  "copied": "Nakopya ✓",
+  "copyCaption": "Kopyahin ang caption",
+  "share": "I-share",
+  "copiedStatus": "{kind, select, postText {Nakopya ang text ng post.} other {Nakopya ang caption.}}",
+  "copyFailed": "Hindi makopya — piliin ang text at kopyahin ito nang mano-mano.",
+  "sharedStatus": "{kind, select, postText {Nakopya ang text ng post — i-paste ito sa post mo.} other {Nakopya ang caption — i-paste ito sa post mo.}}",
+  "shareRefused": "{kind, select, postText {Hindi pinayagan ang pag-share, kaya na-download ang larawan. Nakopya ang text ng post.} other {Hindi pinayagan ang pag-share, kaya na-download ang larawan. Nakopya ang caption.}}"
+}

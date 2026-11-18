@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Bagong order #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "May natanggap na bagong order",
+    "from": "<b>Order #{id}</b> mula kay <b>{name}</b>",
+    "collection": "Pick-up: {time}",
+    "asap": "Walang tiyak na oras — ASAP",
+    "total": "Total",
+    "notes": "<b>Notes:</b> {notes}",
+    "autoConfirmed": "Auto-confirmed — wala kang kailangang gawin.",
+    "confirmPrompt": "Mag-log in sa HatchGrab dashboard mo para kumpirmahin o i-reject ang order na ito.",
+    "text": "Bagong order #{id} mula kay {name}{withSlot, select, yes { para sa {slot}} other {}}{withVenue, select, yes { sa {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total: {total}.{withNotes, select, yes { Notes: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "May nahanap na bagong event para sa {truck} — pakitingnan",
+    "hi": "Hi,",
+    "found": "May nahanap kaming <b>{n, plural, one {{count} bagong event} other {{count} bagong event}}</b> sa schedule mo na kailangan ng approval mo bago makita ng mga customer.",
+    "listHeading": "Mga nahanap na event:",
+    "approve": "Kapag na-approve mo na ang mga ito sa Schedule tab mo, magiging live ang mga ito sa mapa at handa nang tumanggap ng pre-order ang ordering page mo.",
+    "cta": "I-review ang schedule mo →",
+    "signoff": "— Ang HatchGrab team · hatchgrab.com",
+    "unknownVenue": "Hindi kilalang venue",
+    "text": "Hi,\n\nMay nahanap kaming {n, plural, one {{count} bagong event} other {{count} bagong event}} sa schedule mo na kailangan ng approval mo:\n\n{list}\n\nI-review ang mga ito sa: {url}\n\nKapag na-approve mo na ang mga ito, magiging live ang mga ito sa mapa.\n\n— Ang HatchGrab team"
+  }
+}

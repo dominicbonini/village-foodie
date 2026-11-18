@@ -1,0 +1,12 @@
+{
+  "guestLabel": "PRIVATE EVENT",
+  "truckFallback": "Ang food truck",
+  "noSlugTitle": "Hindi pa naka-set up ang truck na ito para sa online ordering.",
+  "orderingOffTitle": "Hindi naka-on ang online ordering",
+  "orderingOffBody": "Hindi tumatanggap ng online order ang event na ito. Mag-order na lang sa truck.",
+  "replacedTitle": "Napalitan na ang link na ito",
+  "replacedBody": "Hindi na gumagana ang link na ito — pinalitan na ito ng {truck}. Hingin sa organizer ang bagong link o QR code.",
+  "madePublicBody": "Hindi na gumagana ang link na ito — ginawa nang public ng {truck} ang event na ito. Puwede kang mag-order sa normal nilang page.",
+  "unknownTitle": "Hindi gumagana ang link na ito",
+  "unknownBody": "Hindi gumagana ang link na ito. I-check ito sa organizer, o i-scan ulit ang QR code."
+}

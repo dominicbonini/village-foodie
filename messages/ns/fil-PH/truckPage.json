@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food Truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Mag-order sa {truck}",
+    "orderDescription": "Mag-pre-order sa {truck} at i-pick up ang order mo sa mismong truck.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logo ng {truck}"
+  },
+  "shareTitle": "Schedule ng {truck}",
+  "shareText": "Tingnan kung saan susunod na pupwesto ang {truck}! 🚚",
+  "linkCopied": "Nakopya na ang link ng profile! 📋",
+  "facebookPage": "Facebook Page",
+  "loadingMap": "Nilo-load ang mapa…",
+  "view": {
+    "list": "Listahan",
+    "map": "Mapa"
+  },
+  "ownThisTruck": "Ikaw ba ang may-ari ng truck na ito?",
+  "ownThisTruckTitle": "Ikaw ba ang may-ari ng truck na ito? I-click para i-update ang profile mo",
+  "actions": {
+    "menu": "Menu",
+    "call": "Tumawag",
+    "message": "Mag-message",
+    "share": "I-share",
+    "order": "Mag-order"
+  },
+  "loadingSchedule": "Nilo-load ang schedule…",
+  "loadError": {
+    "title": "Hindi ma-load",
+    "body": "Hindi namin ma-load ang schedule ngayon — kadalasan, saglit na aberya lang ito. Subukan ulit.",
+    "retry": "Subukan ulit"
+  },
+  "notFound": {
+    "title": "Hindi mahanap ang truck",
+    "body": "Wala kaming mahanap na detalye para sa food truck na ito. Baka lumipat sila o nag-update ng profile nila.",
+    "cta": "Tingnan ang lahat ng truck"
+  },
+  "noEvents": {
+    "title": "Walang paparating na event",
+    "body": "Baka may kulang kaming detalye para sa truck na ito. Ikaw ba ang may-ari, o alam mo ang schedule nila?",
+    "cta": "Mag-message sa amin para ma-update!"
+  },
+  "whereToFind": "Saan Kami Makikita",
+  "missingEvent": "<strong>May kulang ba kaming event?</strong> <br></br>Kung ikaw ang may-ari ng truck na ito o isang tapat na fan, tulungan kaming panatilihing tama ang page na ito! <br></br><link>Kontakin kami para idagdag ang kulang na detalye.</link>",
+  "weeklySchedule": "Kunin ang Lingguhang Schedule 🍕"
+}

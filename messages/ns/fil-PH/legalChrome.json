@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "Patakaran sa Privacy — HatchGrab",
+    "privacyDescription": "Paano kinokolekta at ginagamit ng HatchGrab Ltd ang personal data.",
+    "termsTitle": "Mga Tuntunin ng Serbisyo — HatchGrab",
+    "termsDescription": "Ang mga tuntunin sa paggamit ng HatchGrab.",
+    "countryTermsTitle": "Mga tuntunin para sa bawat bansa — HatchGrab",
+    "countryTermsDescription": "Ang mga dagdag na patakarang naaangkop sa HatchGrab sa ilang bansa."
+  },
+  "homeLabel": "Home ng HatchGrab",
+  "privacy": "Privacy",
+  "terms": "Mga Tuntunin",
+  "countryTerms": "Mga tuntunin ng bansa",
+  "contact": "Kontakin kami",
+  "lastUpdated": "Huling na-update: {date}",
+  "questions": "May tanong? <link>Kontakin kami</link> — totoong tao kami.",
+  "translationNote": "Pagsasalin ito. Kung may pagkakaiba ito sa <link>English na bersyon</link>, ang English na bersyon ang masusunod."
+}

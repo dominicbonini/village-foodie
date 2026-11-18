@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Walang opt-out line ang email na ito, kaya hindi ito maipapadala. Gamitin ang “Insert opt-out” para idagdag ito.",
+    "notSetUp": "Walang naka-set up na opt-out sentence, kaya walang outreach email na maipapadala. Magdagdag nito sa “Signature” panel ng “Templates” tab.",
+    "notLoaded": "Hindi pa na-load ang opt-out sentence, kaya hindi pa ito maipapadala.",
+    "unreadable": "Hindi mabasa ang opt-out sentence, kaya walang naipadala."
+  },
+  "retry": {
+    "notRebuilt": "Hindi ma-rebuild ang message na iyan kasama ang company line, kaya walang naipadala."
+  }
+}

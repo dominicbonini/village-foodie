@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "kada truck / buwan",
+  "transactionFees": "Transaction fees",
+  "comingSoon": "Malapit na",
+  "footnote2Masked": "Pinapatakbo ng Stripe Connect ang online payments. Hindi pa final ang platform at card processing fees at kukumpirmahin ang mga ito sa launch.",
+  "card": {
+    "title": "Billing at payments",
+    "managed": "HatchGrab ang nag-aasikaso ng billing",
+    "earlyAccess": "Habang early access pa, mano-mano naming sine-set up at ina-adjust ang mga plan.",
+    "planLine": "{trial, select, yes {{truck} · Plan: {plan} (trial)} other {{truck} · Plan: {plan}}}"
+  },
+  "currentPlan": "Kasalukuyang plan",
+  "plan": {
+    "included": "Kasama ang online orders na hanggang {amount} kada buwan.",
+    "includedUnlimited": "Kasama ang unlimited na online orders.",
+    "promo": "Espesyal na presyo.",
+    "promoUntil": "Espesyal na presyo hanggang {date}.",
+    "ended": "Natapos ang plan mo ({plan}) noong {date}. Nasa {now} ka na ngayon.",
+    "trialMonths": "Free trial: {months} buwan."
+  },
+  "trialEnds": "Matatapos ang trial sa {date}",
+  "yourTrialEnds": "Matatapos ang trial mo sa {date}",
+  "notStarted": {
+    "heading": "Hindi pa nagsisimula ang free trial mo"
+  },
+  "onTrial": "Nasa iyo ang lahat ng feature. Pumili ng plan bago matapos ang trial mo.",
+  "onTrialPaidEnd": "Nasa iyo ang lahat ng feature. Pagkatapos ng trial mo, {price} kada buwan ang {plan}. Kokontakin ka namin bago noon para i-set up ang payment.",
+  "onTrialNoCta": "Nasa iyo ang lahat ng feature.",
+  "noCharge": "🔒 Hindi ka sisingilin ng kahit ano habang naka-trial ka, hanggang {date}. Magsisimula lang ang billing kapag pumili ka ng plan at inilagay mo ang payment details mo. Hanggang doon, walang kailangang i-cancel at walang babayaran.",
+  "noChargePaidEnd": "🔒 Hindi ka sisingilin ng kahit ano habang naka-trial ka, hanggang {date}.",
+  "fees": "*May standard na card processing fees sa online orders",
+  "setUpPayment": "⏱ Pumili ng plan bago matapos ang trial mo",
+  "changeYourPlan": "Palitan ang plan mo",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Lumipat sa {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Sine-set up pa namin ang automated billing. Para lumipat ngayon, mag-message ka lang sa amin at ise-set up ka namin sa loob ng 24 oras.",
+    "mailSubject": "Lumipat sa {plan} — {truck}",
+    "mailBody": "Hi, gusto kong ilipat ang {truck} sa plan na {plan} ({price}).",
+    "email": "Mag-email sa amin para lumipat",
+    "cancel": "Kanselahin"
+  }
+}

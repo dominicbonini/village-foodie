@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Saan ka naka-base",
+    "identity": "Ang truck mo",
+    "menu": "Ang menu mo",
+    "event": "Unang event"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Sine-set up",
+  "loading": "Nilo-load",
+  "loadingCountries": "Nilo-load…",
+  "verify": {
+    "ok": "Nakumpirma na ang email — salamat.",
+    "expired": "Expired na ang confirmation link na iyan. Makipag-ugnayan sa amin at aayusin namin ito bago ka mag-go live.",
+    "invalid": "Hindi gumana ang confirmation link na iyan. Makipag-ugnayan sa amin at aayusin namin ito bago ka mag-go live."
+  },
+  "identity": {
+    "heading": "Ano ang pangalan ng truck mo?",
+    "intro": "Ito ang pangalang makikita ng mga customer. Walang magiging public hangga’t hindi ka nagdedesisyong mag-go live.",
+    "nameLabel": "Pangalan ng truck",
+    "namePlaceholder": "Kuya Jun’s Burgers",
+    "phoneLabel": "Mobile number",
+    "whatsappTick": "Naka-WhatsApp ang number na ito",
+    "phoneHelp": "Makikita ito ng mga customer sa order confirmation nila para makapagtanong sila tungkol sa order. Ang tick ang magdedesisyon kung “Tawagan kami” o “Mag-message sa amin sa WhatsApp” ang lalabas. Puwede mong palitan ang dalawa sa Settings."
+  },
+  "phoneRequired": "Maglagay ng mobile number — ginagamit ito ng mga customer at namin para ma-contact ka.",
+  "createFailed": "Hindi namin magawa ang truck mo.",
+  "unreachable": "Hindi makakonekta sa amin ngayon — pakisubukan ulit.",
+  "back": "Bumalik",
+  "creating": "Ginagawa ang truck mo…",
+  "continue": "Magpatuloy"
+}

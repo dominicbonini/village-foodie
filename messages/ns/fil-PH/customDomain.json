@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Idagdag ang schedule mo sa website mo",
+    "live": "Ipinapakita ng <addr>{address}</addr> ang schedule mo.",
+    "create": "Gagawa kami ng page sa <addr>{address}</addr> na nagpapakita ng schedule mo.",
+    "exampleDomain": "yourfoodtruck.ph",
+    "liveBadge": "Live",
+    "setUp": "I-set up",
+    "viewSetup": "Tingnan ang setup",
+    "continue": "Magpatuloy",
+    "justLive": "Gumagana na ang <b>{address}</b>. Tingnan mo ito, tapos sabihin sa amin sa ibaba kung tama ito."
+  },
+  "waiting": {
+    "title": "Hinihintay namin ang {address}",
+    "bodySince": "In-set up mo ito noong {date}. Karaniwang gumagana ang bagong web address sa loob ng ilang minuto, at paminsan-minsan ay inaabot ng hanggang 24 oras bago ito maabot ng lahat — wala kang kailangang gawin habang nangyayari iyon. Kung may ibang nagdadagdag ng linya para sa iyo, magandang i-check kung nagawa nila.",
+    "body": "Karaniwang gumagana ang bagong web address sa loob ng ilang minuto, at paminsan-minsan ay inaabot ng hanggang 24 oras bago ito maabot ng lahat — wala kang kailangang gawin habang nangyayari iyon. Kung may ibang nagdadagdag ng linya para sa iyo, magandang i-check kung nagawa nila."
+  },
+  "ready": {
+    "title": "Live na ang {address}",
+    "body": "Tingnan mo ito, tapos sabihin sa amin sa settings mo kung tama ito."
+  },
+  "confirm": {
+    "heading": "Tingnan mo, tapos sabihin sa amin kung tama",
+    "open": "Buksan ang <link>{address}</link>",
+    "checkTimes": "I-check kung tama ang mga petsa at oras.",
+    "yes": "Oo, mukhang tama",
+    "no": "Hindi, may problema",
+    "problemLine": "Sabihin sa amin kung ano ang nakikita mo at titingnan namin ito.",
+    "emailUs": "I-email kami",
+    "mailSubject": "Problema sa {address}",
+    "mailLiveSince": "Live simula {date}",
+    "mailSeeing": "Ang nakikita ko:"
+  },
+  "confirmed": {
+    "heading": "Salamat — naitala na namin iyan.",
+    "body": "Wala ka nang ibang kailangang gawin."
+  },
+  "turnOff": {
+    "link": "I-off ito",
+    "heading": "I-off ang sarili mong web address?",
+    "stops": "Hihinto ang paggana nito:",
+    "carriesOn": "Tuloy lang ito gaya ng dati, at dito dinadala ng QR code mo ang mga tao:",
+    "reAdd": "Kung ise-set up mo ulit ito mamaya, iwan ang linyang idinagdag mo sa web address company mo. Kung hindi, hilingin sa kanila na alisin ito.",
+    "cancel": "Panatilihing naka-on",
+    "confirm": "I-off ito",
+    "working": "Ino-off…",
+    "failed": "Hindi namin iyan ma-off ngayon. Walang nagbago — gumagana pa rin ang address mo. Subukan ulit maya-maya."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Hindi namin ma-load ang setup mo.",
+    "resumeFailedBody": "Walang nagbago. Subukan ulit maya-maya.",
+    "close": "Isara",
+    "resuming": "Itinutuloy kung saan ka huminto…",
+    "genericError": "Nagka-problema",
+    "saveFailed": "Hindi ma-save"
+  },
+  "address": {
+    "intro": "Magkakaroon ng sariling web address ang schedule mo.",
+    "question": "Ano ang web address mo?",
+    "hint": "Ang ginagamit na ng mga tao para mahanap ka.",
+    "aria": "Ang sarili mong web address",
+    "willBe": "Magiging <addr>{address}</addr> ang address mo",
+    "example": "Halimbawa, <addr>{address}</addr>",
+    "noChange": "Hindi magbabago ang website mo — magdadagdag ka lang ng link sa bagong address.",
+    "notSetUp": "Hindi pa namin ito na-set up.",
+    "restricted": "Kailangang payagan kami ng nag-aasikaso ng web address mo na i-set up ang padlock — ang maliit na lock na nakikita ng customers sa tabi nito. Hangga’t hindi nila kami idinadagdag, hindi ito lalabas, kaya huminto muna kami para hindi ka maghintay nang walang nangyayari. Hilingin sa kanila na idagdag kami, tapos subukan ulit.",
+    "blocked": "Ganap na bina-block ngayon ng web address mo ang padlock. Kailangan itong payagan ng nag-aasikaso nito bago ito gumana. Hilingin sa kanila na baguhin iyon, tapos subukan ulit.",
+    "elsewhere": "May sumasagot na sa address na iyan. Ipadala ang message sa susunod na screen sa nag-aasikaso nito — alam nila ang gagawin.",
+    "provider": "Ang <b>{provider}</b> ang nag-aasikaso ng web address mo. Ipapakita namin sa iyo kung saan pupunta.",
+    "provisionFailed": "Hindi namin ma-set up ang address na iyan.",
+    "willNotWork": "Hindi gagana ang address na iyan.",
+    "couldNotBeSetUp": "Hindi ma-set up ang address na iyan.",
+    "couldNotSetUp": "Hindi ma-set up",
+    "checking": "Chine-check…",
+    "setting": "Sine-set up…",
+    "tryAgain": "Subukan ulit",
+    "setUpAddress": "I-set up ang address na ito",
+    "notNow": "Hindi muna"
+  },
+  "apex": {
+    "empty": "I-type ang address na gusto mong gamitin.",
+    "not_a_domain": "Mukhang hindi iyan web address.",
+    "unparseable": "Hindi namin iyan mabasa bilang web address. I-check ang spelling at subukan ulit.",
+    "apex": "Ang {host} ang buong address ng website mo. Kapag itinuro mo iyan sa amin, mapapalitan ng page na ito ang website mo. Maglagay na lang ng salita sa unahan nito — halimbawa, events.{host}.",
+    "too_deep": "Masyadong maraming bahagi ang address na iyan. Pinakamaganda ang tulad ng events.{domain}."
+  },
+  "record": {
+    "addAt": "Idagdag ito sa {provider}",
+    "open": "Buksan ang {provider}",
+    "guide": "Sariling gabay ng {provider} para dito",
+    "addAtSave": "Idagdag ito sa {provider}, at i-save.",
+    "addSomewhere": "Idagdag ito kung saan inaasikaso ang web address mo, at i-save.",
+    "hintChoose": "Piliin ito mula sa listahan.",
+    "hintWord": "Ang salitang ito lang, hindi ang buong address.",
+    "hintExact": "Kopyahin ito nang eksakto.",
+    "timing": "Karaniwang gumagana ito sa loob ng isang oras, pero puwedeng mas matagal. Hindi mo kailangang panatilihing bukas ang page na ito.",
+    "someoneElse": "Iba ang nag-aasikaso ng web address mo?",
+    "sentTo": "Naipadala sa {email}",
+    "emailPlaceholder": "ang email address nila",
+    "sending": "Ipinapadala…",
+    "send": "Ipadala ang details na ito",
+    "sendFailed": "Hindi maipadala"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Buksan ang web address mo, tapos ang “DNS” at “Records”.",
+      "add": "Piliin ang “Add record”, tapos piliin ang “CNAME” bilang “Type”.",
+      "name": "Ilagay ang unang value sa ibaba sa “Name”.",
+      "value": "Ilagay ang pangalawang value sa ibaba sa “Target”.",
+      "proxy": "I-set ang “Proxy status” sa “DNS only” — dapat kulay gray ang cloud sa tabi nito, hindi orange.",
+      "save": "Iwan ang “TTL” sa “Auto” at piliin ang “Save”.",
+      "caveat": "Kung manatiling orange ang cloud, hindi kailanman lalabas ang padlock, at walang magsasabi kung bakit."
+    },
+    "godaddy": {
+      "open": "Buksan ang “Domain Portfolio” mo at piliin ang web address mo.",
+      "dns": "Sa “Domain Settings”, piliin ang “DNS”.",
+      "add": "Piliin ang “Add New Record”, tapos piliin ang “CNAME” sa “Type” menu.",
+      "name": "Ilagay ang unang value sa ibaba sa “Name”.",
+      "value": "Ilagay ang pangalawang value sa ibaba sa “Value”.",
+      "save": "Iwan ang “TTL” kung ano ito at piliin ang “Save”.",
+      "caveat": "Kung higit sa isa ang idinagdag mo nang sabay, “Save All Records” ang nakasulat sa button."
+    },
+    "123reg": {
+      "signIn": "Mag-sign in sa “123 Reg Control Panel” mo.",
+      "manage": "Sa tabi ng “Domains”, piliin ang “Manage All”, tapos piliin ang web address mo.",
+      "dns": "Piliin ang “DNS”, tapos ang “Add New Record”.",
+      "type": "Piliin ang “CNAME” sa listahan ng “Type”.",
+      "name": "Ilagay ang unang value sa ibaba sa “Name”.",
+      "value": "Ilagay ang pangalawang value sa ibaba sa “Value”, at lagyan ng tuldok ang dulo nito.",
+      "save": "Iwan ang “TTL” sa “Default” at i-click ang “Save”.",
+      "caveat": "Kailangan ng 123 Reg ng tuldok sa dulo ng pangalawang value, kung hindi ay hindi ito gagana."
+    },
+    "wix": {
+      "open": "Buksan ang “Domains”, tapos i-click ang “Domain Actions” icon sa tabi ng web address mo.",
+      "manage": "Piliin ang “Manage DNS Records”.",
+      "add": "Sa section na “CNAME (Aliases)”, i-click ang “+ Add Record”, tapos i-click ang “Got it”.",
+      "name": "Ilagay ang unang value sa ibaba sa “Host Name”.",
+      "value": "Ilagay ang pangalawang value sa ibaba sa “Value”.",
+      "save": "I-click ang “Save”, tapos i-click ang “Save Changes” sa pop-up.",
+      "caveat": "Kung nakaturo lang sa Wix ang web address mo at hindi doon naka-hold, hindi ito mababago ng Wix — ang may hawak nito ang dapat gumawa."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Isang record na idadagdag para sa schedule page ng {truckName}",
+    "hello": "Hello,",
+    "introAt": "Ilalagay namin ang live na schedule ng {truckName} sa {address}, at kailangan nitong magdagdag ng isang record sa domain namin sa {provider}.",
+    "introHolder": "Ilalagay namin ang live na schedule ng {truckName} sa {address}, at kailangan nitong magdagdag ng isang record sa domain namin, sa kung sino man ang may hawak ng domain namin.",
+    "stepsAt": "Sa {provider}:",
+    "guide": "Ang sarili nilang gabay: {url}",
+    "wholeChange": "Iyan lang ang buong pagbabago — walang ibang maaapektuhan sa website, at gagana pa rin ang ibang bahagi ng domain namin gaya ng dati. Karaniwang gumagana ito sa loob ng isang oras.",
+    "pointsAt": "Ipinapakita ng page na tinuturo nito kung saan kami susunod na magtitinda, at kusa itong nag-a-update.",
+    "replyTo": "Mag-reply sa {email} kung may tanong ka.",
+    "thanks": "Salamat,"
+  },
+  "liveEmail": {
+    "subject": "Gumagana na ang {address}",
+    "goodNews": "Magandang balita — gumagana na ang {address}.",
+    "body": "Nakikita na ang schedule mo sa sarili mong address. Tingnan mo ito at i-check kung tama: buksan ang {address}, siguraduhing sa iyo ang mga event at tama ang mga petsa.",
+    "confirm": "Kapag nagawa mo na, buksan ang settings mo sa HatchGrab at sabihin sa amin na tama ito. Walang nakadepende roon — para lang malaman namin na may taong nakakita na nito."
+  }
+}

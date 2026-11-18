@@ -1,0 +1,30 @@
+{
+  "heading": "Tax, tips at fees",
+  "rate": {
+    "label": "Rate ng sales tax",
+    "hint": "Ang rate na sinisingil mo sa bawat order. Makikita ito ng customers na idinagdag sa checkout, sa resibo at sa tickets.",
+    "regionDefault": "Iwanang blangko para maningil ng {label} sa rate na {rate}%, ang rate sa prepared food sa {region}."
+  },
+  "included": {
+    "label": "Kasama na sa mga presyo mo: {label}",
+    "hint": "Kasama na sa mga presyo mo ang {label}. Sinasabi lang ng rate na ito kung magkano sa bawat presyo ang {label}, sa resibo at tickets — walang idinadagdag sa checkout.",
+    "default": "Iwanang blangko para gamitin ang {rate}%, ang rate ng {label} sa mainit na pagkaing take-out sa {country}."
+  },
+  "tips": {
+    "label": "Tips",
+    "hint": "Puwedeng mag-tip ang customers na nagbabayad online gamit ang card. Mapupunta lahat sa iyo.",
+    "choices": "Mga pagpipilian ng customers:",
+    "chip": "{rate}%",
+    "other": "Ibang halaga"
+  },
+  "fee": {
+    "label": "Online service fee",
+    "hint": "Sa online orders lang idinadagdag. Hindi kailanman sa mga order na babayaran sa truck o sa walk-in orders. Sa iyo ito.",
+    "pctAria": "Percentage ng service fee",
+    "fixedAria": "Fixed na halaga ng service fee",
+    "max": "Pinakamataas na puwede mong singilin: {max}",
+    "example": "Makikita ito ng customers bago sila magbayad, bilang isang linya: “{label} {amount}”.",
+    "hatchgrab": "Nagdadagdag ang HatchGrab ng service fee na {fee} sa online orders ng customers mo. Hindi ikaw ang nagbabayad nito at hindi mo ito mababago."
+  },
+  "saveFailed": "Hindi na-save — pakisubukan ulit."
+}

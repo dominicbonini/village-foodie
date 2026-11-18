@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Tungkol sa amin — HatchGrab",
+    "description": "Software ng HatchGrab para sa food truck at mobile catering: online order, oras ng pick-up, mas kaunting paulit-ulit na tanong. Itinatag ni Dominic Bonini."
+  },
+  "eyebrow": "Tungkol sa amin",
+  "title": "Ginawa ayon sa totoong takbo ng trabaho ng mga food truck",
+  "photoAlt": "{name}, founder ng HatchGrab",
+  "story": {
+    "start": "Nagsimula ang HatchGrab sa isang simpleng obserbasyon: kailangan ng mga food truck ng mas magagandang tools para patakbuhin ang negosyo nila.",
+    "villageFoodie": "Matapos kong gawin ang Village Foodie, isang directory na tumutulong sa mga tao na mahanap ang mga food truck na dumadayo sa lugar nila, mas pinag-aralan ko ang mga hamong hinaharap ng mga mobile food business. Hindi tulad ng mga tradisyonal na restaurant, laging gumagalaw ang mga food truck, nagtitinda sa iba’t ibang lugar at nagse-serve sa customers sa pabago-bagong kondisyon.",
+    "fixedAddress": "Pero karamihan sa software na available sa kanila ay ginawa para sa mga negosyong may permanenteng address.",
+    "change": "Ginawa ang HatchGrab para baguhin iyon.",
+    "build": "Gumagawa kami ng praktikal na software para mismo sa mga food truck at mobile caterer, para matulungan silang tumanggap ng online orders, mag-manage ng oras ng pick-up, panatilihing maayos ang daloy ng mga order at mabawasan ang oras na nauubos sa paulit-ulit na tanong.",
+    "focus": "Simple ang focus namin: gawing mas madali ang pagpapatakbo ng food truck, gamit ang tools na idinisenyo ayon sa totoong takbo ng mga negosyong ito."
+  },
+  "signature": "<b>{name}</b><br></br>Founder, HatchGrab",
+  "company": "{company} · registered sa England at Wales · company number {number} · registered office: {address}",
+  "contact": "Kontakin kami"
+}

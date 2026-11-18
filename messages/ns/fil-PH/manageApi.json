@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Van",
+  "eventsFeed": {
+    "today": "Ngayon · {date}",
+    "tomorrow": "Bukas · {date}"
+  },
+  "privacyNotSaved": "Live na ang event, pero hindi na-save ang privacy nito.",
+  "stockWarning": "Walang available na item sa “{category}”",
+  "uncategorised": "Walang category"
+}

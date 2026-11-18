@@ -1,0 +1,42 @@
+{
+  "publicName": "Private event",
+  "chip": "Private",
+  "grid": {
+    "orderingSection": "ORDERING",
+    "linkRowLabel": "Tumanggap ng order gamit ang private link at QR code",
+    "columnTitle": "Ang built-in na Private type. Hindi ito puwedeng palitan ng pangalan, ilipat o i-delete."
+  },
+  "form": {
+    "help": "Lalabas sa schedule mo bilang “Private event” na may petsa at oras lang — hindi kailanman ang address, ang mapa o ang Village Foodie.",
+    "linkPromise": "Mag-o-order ang mga bisita gamit ang private link at QR code — makukuha mo ang mga ito pagka-save.",
+    "nameLabel": "Pangalan ng event",
+    "nameHelp": "Makikita ito ng mga bisita sa itaas ng order page.",
+    "namePlaceholder": "Kasal nina Maria at Paolo",
+    "previewNote": "Ganito ito lalabas sa schedule mo — walang venue, bayan o ZIP code.",
+    "needsTimes": "Maglagay ng start at end time — kailangan ang mga ito ng private event na tumatanggap ng order gamit ang link."
+  },
+  "link": {
+    "button": "Link at QR",
+    "title": "Private link at QR code",
+    "label": "Private link",
+    "copy": "Kopyahin",
+    "copied": "Nakopya",
+    "qrDownload": "I-download ang QR",
+    "tableCards": "I-print ang table cards",
+    "newLink": "Gumawa ng bagong link",
+    "working": "Ginagawa…",
+    "newLinkConfirm": "Gumawa ng bagong link? Titigil agad gumana ang kasalukuyang link, at titigil din ang anumang QR code na na-print mo na.",
+    "newLinkHelp": "Gamitin ito kung napunta ang link sa lugar na hindi dapat. Titigil agad gumana ang kasalukuyang link, at titigil din ang mga na-print na QR code.",
+    "newLinkFailed": "Hindi makagawa ng bagong link.",
+    "offNotice": "Naka-off ang ordering gamit ang private link para sa event na ito, kaya walang link na maibabahagi. Lalabas pa rin ang event sa schedule mo bilang “Private event”."
+  },
+  "cards": {
+    "printTitle": "{truck} — table cards",
+    "scan": "I-scan para mag-order",
+    "blurb": "Mag-order at magbayad sa phone mo. Tatawagin namin ang pangalan mo kapag ready na.",
+    "footer": "Ordering gamit ang HatchGrab"
+  },
+  "noSinglePost": "Walang sariling post ang mga private event — lumalabas ang mga ito sa weekly poster mo bilang “Private event”.",
+  "confirmToPrivate": "Itatago nito ang address at ang event sa mapa. Kailangan ng mga bisita ang private link para makapag-order.",
+  "confirmFromPrivate": "Gagawin nitong public ang event: lalabas ang address at map pin nito, at titigil gumana ang private link."
+}

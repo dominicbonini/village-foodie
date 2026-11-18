@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Paghahambing ng gastos",
+  "title": "Ikumpara ang gastos mo sa<br></br><accent>online ordering</accent>",
+  "system": {
+    "title": "Tumatanggap ka na ba ng online orders ngayon?",
+    "yes": "Oo, gamit ang ibang system",
+    "no": "Hindi pa"
+  },
+  "trucks": {
+    "title": "Ilang truck ang pinapatakbo mo?",
+    "aria": "Bilang ng truck"
+  },
+  "plan": {
+    "yourChoice": "Pinili mo",
+    "weSuggest": "Suggestion namin",
+    "summary": "{price} kada truck kada buwan, kasama ang online orders na hanggang {allowance}{fleet, plural, one { kada truck} other { kada truck}}.",
+    "switchTo": "Gamitin ang {plan} sa halip",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} kada truck kada buwan, dagdag ang {pct} sa online orders.} other {Walang monthly fee — {pct} lang sa online orders.}}",
+    "summaryNoFee": "{price} kada truck kada buwan, may unlimited na online orders at walang fee ng HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Online orders kada buwan, kada truck",
+    "count": "~{count, plural, one {# order} other {# order}}",
+    "captionNo": "Okay na ang tantiya — mga pre-order at mga ayaw pumila, hindi ang cash o card sa truck.",
+    "captionYes": "Mga order lang na dumaan sa ordering page mo — hindi ang cash o card sa truck.",
+    "sliderAria": "Halaga ng online orders kada buwan, kada truck",
+    "overAllowance": "Kasama ang online orders na hanggang {allowance} kada truck. Ang sobrang {excess} ay sinisingil ng {pct} — <b>{over}</b> kada buwan bawat truck.",
+    "insideAllowance": "Pasok sa {allowance} na kasamang online orders — walang dagdag sa plan.",
+    "acrossFleet": "Sa {fleet, plural, one {# truck} other {# truck}}: <b>{amount}</b> kada buwan.",
+    "titleNo": "Sa tingin mo, magkano ang kikitain mo online kada buwan, kada truck?",
+    "feeOnly": "{pct} sa bawat online order — <b>{over}</b> kada buwan kada truck.",
+    "noFee": "Kasama ang unlimited na online orders — walang dagdag sa plan."
+  },
+  "fee": {
+    "title": "Magkano ang binabayaran mo kada order ngayon?",
+    "pctLabel": "Porsyento",
+    "pctPlaceholder": "Rate mo",
+    "pctAria": "Fee na porsyento",
+    "fixedLabel": "Dagdag kada order",
+    "fixedPlaceholder": "Fee mo",
+    "fixedAria": "Sentimo kada order",
+    "modeLabel": "Ang rate nila:",
+    "modeInclusive": "kasama na ang card processing",
+    "modeOnTop": "may dagdag pang singil",
+    "onTopNote": "May dagdag pang card processing na {fee} sa ibabaw nito, kaya ang talagang binabayaran mo ay <b>{pct} + {fixed}</b> lahat-lahat.",
+    "inclusiveNote": "Kasama na riyan ang card processing na {fee}, na babayaran mo rin kahit saan. Ang sarili nilang fee ay <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Ilang araw kada linggo ka nagtitinda?",
+    "help": "Events, markets, pwesto — kahit anong araw na nasa labas ang van."
+  },
+  "jump": {
+    "cost": "Tingnan kung magkano ↓",
+    "saving": "Tingnan ang matitipid mo ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Online ordering, pre-order at kitchen display (KDS) mo sa halagang</lead><figure>{amount}</figure><unit>kada araw ng tinda</unit>",
+    "basedOn": "Batay sa {days, plural, one {# araw} other {# araw}} kada linggo · {monthly} kada buwan{fleet, plural, one { kada van} other { kada van}}"
+  },
+  "coffee": "Mas mura pa sa isang kape.",
+  "freeMonths": "{n, plural, one {At libre ang unang # buwan mo.} other {At libre ang unang # buwan mo.}}",
+  "cta": {
+    "upload": "I-upload ang menu ko →",
+    "uploadSave": "I-upload ang menu ko at makatipid ng {amount} →",
+    "ask": "Magtanong sa amin",
+    "noCard": "Hindi kailangan ng card para mag-set up"
+  },
+  "breakdown": {
+    "title": "Ang buwan mo, isa-isa",
+    "titleDearer": "Ang buwan mo sa HatchGrab",
+    "plan": "Plan: {plan}",
+    "over": "{pct} sa {excess} na lampas sa kasamang {allowance}",
+    "inside": "Online orders na pasok sa kasamang {allowance}",
+    "total": "HatchGrab kada buwan",
+    "freeMonths": "{n, plural, one {Unang # buwan} other {Unang # buwan}}",
+    "freeAmount": "{amount} — libre namin",
+    "acrossFleet": "Sa {fleet, plural, one {# van} other {# van}}",
+    "perMonth": "{amount} kada buwan",
+    "card": "Card processing — {fee} ng Stripe kada order, bayad sa Stripe. Halos ganito rin ang babayaran mo sa card reader sa truck.",
+    "provider": "Sariling fee ng provider mo ngayon ({pct})",
+    "feeOnly": "{pct} sa {excess} na online orders",
+    "noFee": "Online orders — unlimited, walang fee ng HatchGrab"
+  },
+  "enterRate": "Ilagay ang binabayaran mo ngayon para makita ang matitipid mo.",
+  "panel": {
+    "nowYear": "<label>Ngayon, nagbabayad ka ng</label><fig>{amount}<q> kada taon</q></fig>",
+    "nowMonth": "<label>Ngayon, nagbabayad ka ng</label><fig>{amount}<q> kada buwan</q></fig>",
+    "oursYear": "<label>Sa HatchGrab</label><fig>{amount}<q> sa unang taon</q></fig>",
+    "oursMonth": "<label>Sa HatchGrab</label><fig>{amount}<q> kada buwan</q></fig>",
+    "acrossFleet": "sa {fleet, plural, one {# van} other {# van}}"
+  },
+  "hero": {
+    "save": "<verb>Matitipid mo</verb><figure>{amount}</figure><sub><num>{pct}</num> na mas mura sa unang taon mo</sub>",
+    "same": "<verb>Halos pareho lang</verb><figure>{amount}</figure><sub><num>{pct}</num> na mas mahal sa unang taon mo</sub>",
+    "dearer": "<lead>Lahat ng ginagawa ng HatchGrab, sa dagdag na</lead><figure>{amount}</figure><unit>kada linggo</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} na dagdag kada van kada buwan kumpara ngayon} other {{amount} na dagdag kada van kada buwan kumpara ngayon}}"
+  },
+  "anchor": {
+    "liability": "Katumbas iyan ng isang taon ng public liability insurance.",
+    "weekendPitch": "Katumbas iyan ng isang weekend na pwesto sa food festival.",
+    "festivalPitches": "Katumbas iyan ng ilang pwesto sa festival.",
+    "fryer": "Katumbas iyan ng bagong fryer at griddle.",
+    "counter": "Katumbas iyan ng bagong ayos ng buong serving counter mo.",
+    "vanDeposit": "Katumbas iyan ng downpayment sa pangalawang van.",
+    "secondVan": "Katumbas iyan ng pangalawang van sa kalsada."
+  },
+  "year": {
+    "one": "Unang taon",
+    "two": "Ikalawang taon",
+    "save": "Makatipid ng {amount}<note>({pct} na mas mura)</note>",
+    "extra": "Dagdag na {amount}<note>({pct} na mas mahal)</note>",
+    "current": "Provider mo ngayon <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Mga tantiya batay sa mga numerong inilagay mo, kung ang average na order ay {aov}. May card processing anuman ang provider mo. I-check muna bago magdesisyon.",
+    "yes": "Mga tantiya batay sa mga numerong inilagay mo, kung ang average na order ay {aov}. May card processing na {fee} kada order anuman ang provider mo, kaya hindi ito isinama sa magkabilang panig.",
+    "onTop": "Kasama ito sa kabuuang halaga sa tanong {n} — pero hindi sa paghahambing, sa alinmang panig.",
+    "check": "I-check ang rates ng provider mo ngayon bago magdesisyon."
+  },
+  "intro": "Mga isang minuto lang. May system ka na? Ikukumpara namin ito. Wala pa? Ipapakita namin kung magkano talaga.",
+  "twoYear": "Sa loob ng dalawang taon, <b>{amount}</b> ang matitipid mo.",
+  "meta": {
+    "title": "Cost calculator — HatchGrab {country}",
+    "description": "Ikumpara ang ginagastos mo ngayon sa online orders sa isang taon gamit ang HatchGrab — makakakuha ka ng estimate sa loob ng isang minuto."
+  }
+}

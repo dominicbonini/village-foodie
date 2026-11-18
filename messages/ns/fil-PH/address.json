@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Address",
+    "postcode": "Postcode",
+    "zip": "ZIP code",
+    "eircode": "Eircode",
+    "postalCode": "Postal code",
+    "state": "State",
+    "stateTerritory": "State o territory",
+    "province": "Probinsya",
+    "county": "County",
+    "prefecture": "Prefecture",
+    "emirate": "Emirate",
+    "region": "Rehiyon",
+    "area": "Area (barangay, bayan o lungsod)",
+    "townOrArea": "Bayan o area",
+    "city": "Lungsod",
+    "suburb": "Suburb",
+    "townOrCity": "Bayan o lungsod"
+  },
+  "short": {
+    "area": "Area",
+    "townOrArea": "Bayan o area",
+    "city": "Lungsod",
+    "suburb": "Suburb",
+    "townOrCity": "Bayan o lungsod"
+  },
+  "inSentence": {
+    "postcode": "postcode",
+    "zip": "ZIP code",
+    "eircode": "Eircode",
+    "postalCode": "postal code"
+  },
+  "withArticle": {
+    "postcode": "valid na postcode",
+    "zip": "valid na ZIP code",
+    "eircode": "valid na Eircode",
+    "postalCode": "valid na postal code"
+  },
+  "tradeLabel": {
+    "area": "Bayan o lungsod",
+    "townOrArea": "Bayan o area",
+    "city": "Lungsod",
+    "suburb": "Suburb",
+    "townOrCity": "Bayan o lungsod"
+  },
+  "basedIn": {
+    "area": "Bayan o lungsod kung saan ka naka-base",
+    "townOrArea": "Bayan o area kung saan ka naka-base",
+    "city": "Lungsod kung saan ka naka-base",
+    "suburb": "Suburb kung saan ka naka-base",
+    "townOrCity": "Bayan o lungsod kung saan ka naka-base"
+  },
+  "example": "hal. {example}",
+  "customersSee": "Makikita ng mga customer:",
+  "postalWarning": "Mukhang hindi iyan {article} — halimbawa: {example}. Puwede mo pa rin itong i-save.",
+  "regionChoose": "Pumili…"
+}

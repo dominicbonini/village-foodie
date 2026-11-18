@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Saan naka-base ang truck mo?",
+  "stepIntro": "Dito naka-set ang currency, mga presyo, time zone at format ng phone number mo. Hindi na mababago ang bansa pagkatapos, dahil nakakabit ito sa card payments mo.",
+  "settingsHeading": "Kung saan ka nagtitinda",
+  "countryLabel": "Bansa",
+  "countryGuessed": "Hinulaan namin ito batay sa kinaroroonan mo. Palitan ito kung mali.",
+  "countryLocked": "Hindi na mababago ang bansa mo",
+  "townLabel": "Bayan o lungsod",
+  "townQuestion": "Bayan o lungsod kung saan ka naka-base",
+  "timezoneLabel": "Time zone",
+  "continueButton": "Magpatuloy",
+  "saveFailed": "Hindi ma-save ang settings — pakisubukan ulit."
+}

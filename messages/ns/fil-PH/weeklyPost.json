@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Nagka-problema",
+    "previewFailed": "Hindi magawa ang preview",
+    "loadFailed": "Hindi ma-load",
+    "tooBig": "Laki ng image na iyan: {size, number, ::.0 group-off}MB. 10MB ang limit.",
+    "wrongType": "Pumili ng PNG o JPG.",
+    "uploadIncomplete": "Hindi natapos ang upload",
+    "uploadFailed": "Pumalya ang upload",
+    "saveFailed": "Hindi ma-save",
+    "buildFailed": "Hindi mabuo ang post",
+    "copyFailed": "Hindi makopya — piliin ang text at kopyahin ito nang mano-mano."
+  },
+  "loading": "Nilo-load…",
+  "missingTable": {
+    "title": "Kailangan ng database update ang weekly post",
+    "body": "Hindi pa nagagawa ang design table. Kapag na-apply na ang migration, gagana na ang screen na ito."
+  },
+  "kind": {
+    "label": "Aling design",
+    "event": "Isang event",
+    "week": "Weekly"
+  },
+  "setup": {
+    "title": "I-set up ang weekly post mo",
+    "intro": "I-upload ang blank na version ng weekly schedule graphic na ginagawa mo na — parehong design, pero tinanggal ang sarili mong mga text box. Pupunuin ng HatchGrab ang linggo mula sa schedule mo.",
+    "canvaTitle": "Paano mag-export ng blank mula sa Canva",
+    "canvaStep1": "Buksan ang karaniwan mong weekly schedule design.",
+    "canvaStep2": "I-delete ang mga text box na may petsa, lugar at oras — iwan ang background at headings na gusto mong panatilihin.",
+    "canvaStep3": "Share › Download › PNG.",
+    "uploading": "Ina-upload…",
+    "upload": "I-upload ang blank image mo",
+    "uploadHint": "PNG o JPG, hanggang 10MB, hindi bababa sa {px}px sa maikling side.",
+    "phoneTip": "Mas maganda sa computer o iPad — maliit ang mga box para i-drag sa phone.",
+    "designName": "Design ng weekly post",
+    "backDesigns": "‹ Designs",
+    "back": "‹ Bumalik",
+    "pictureNote": "Ang larawan mo na walang petsa o lugar. Kami ang magdadagdag ng mga iyon.",
+    "saved": "Na-save ang design."
+  },
+  "week": {
+    "this": "Ngayong linggo",
+    "next": "Susunod na linggo"
+  },
+  "post": {
+    "title": "Ang weekly post mo",
+    "editDesign": "I-edit ang design",
+    "weekOf": "Linggo ng {date}",
+    "imageAlt": "Ang weekly post mo",
+    "building": "Binubuo ang post mo…",
+    "updating": "Ina-update…",
+    "eventsTitle": "Mga event ngayong linggo",
+    "noEvents": "Walang event ngayong linggo.",
+    "eventDateCancelled": "{date} · na-cancel",
+    "showCancelled": "Ipakita ang mga na-cancel na event",
+    "showPrivate": "Ipakita ang mga private event",
+    "privateHint": "Lumalabas ang mga ito bilang “Private event” kasama ang petsa at oras — hindi kailanman ang lugar.",
+    "noteTitle": "Note",
+    "notePlaceholder": "hal. Mag-pre-order para sa pick-up",
+    "noteHint": "Lumalabas sa caption, at sa note box kung naglagay ka nito.",
+    "captionTitle": "Caption para sa page mo",
+    "perEventTitle": "Post para sa bawat event",
+    "nothingToPost": "Walang ipo-post ngayong linggo.",
+    "textCopied": "Nakopya ang text.",
+    "copyText": "Kopyahin ang text",
+    "image": "Image",
+    "share": "I-share",
+    "noOrderLink": "Wala pang ordering link — i-set ang web address ng truck mo sa Settings."
+  }
+}

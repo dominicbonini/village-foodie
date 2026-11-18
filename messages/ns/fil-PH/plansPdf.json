@@ -1,0 +1,9 @@
+{
+  "title": "Plans at features",
+  "generated": "Ginawa noong {date}",
+  "allowanceHeading": "Allowance ng online order",
+  "smallPrint": "Fine print",
+  "priceNoteMasked": "Hindi pa naka-publish ang mga presyong may “Kukumpirmahin pa”.",
+  "omitNote": "Sinadyang hindi isinama ang mga presyo sa dokumentong ito.",
+  "terms": "Ang mga numero ay ang naka-publish na terms ng plan sa petsang nasa itaas at puwedeng magbago. Ang card processing fees ay sariling singil ng Stripe, hindi ng HatchGrab. Buod lang ang dokumentong ito, hindi kontrata."
+}

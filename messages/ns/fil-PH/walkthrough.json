@@ -1,0 +1,31 @@
+{
+  "intro": "Sa Manage mo sine-set up ang truck mo at tinitingnan kung kumusta ito. Sa Dashboard ka tumatanggap ng order at nagpapatakbo ng bawat event habang nangyayari ito.",
+  "ariaLabel": "Walkthrough ng Dashboard",
+  "step": "{current} sa {total}",
+  "skip": "Laktawan",
+  "back": "← Bumalik",
+  "next": "Susunod →",
+  "done": "Tapos na",
+  "stops": {
+    "menu": {
+      "title": "Menu",
+      "body": "Ang mga dish, presyo at allergens mo. Kapag may binago ka rito, live agad ito."
+    },
+    "schedule": {
+      "title": "Schedule",
+      "body": "Kung saan at kailan ka magtitinda. Magdagdag ng event dito at makaka-order na ang mga customer para dito."
+    },
+    "build": {
+      "title": "Combo meals at Extras & upsells",
+      "body": "Nasa ilalim ng Menu ang combo meals, upsells, customizations at kitchen capacity mo — subukan mo lang."
+    },
+    "settings": {
+      "title": "Settings",
+      "body": "Ang details ng truck mo at kung paano magbabayad ang mga customer."
+    },
+    "billing": {
+      "title": "Billing",
+      "body": "Dito makikita ang plan, billing at info tungkol sa features mo."
+    }
+  }
+}

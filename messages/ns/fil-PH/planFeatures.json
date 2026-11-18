@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Listing sa discovery map"
+    },
+    "web_dashboard": {
+      "name": "Web dashboard para sa kahit anong device"
+    },
+    "qr_code": {
+      "name": "QR code"
+    },
+    "schedule_import": {
+      "name": "Automatic na pag-import ng schedule"
+    },
+    "meal_deals_upsells": {
+      "name": "Combo meals at upsells"
+    },
+    "walkup_orders": {
+      "name": "Pag-process ng walk-in order"
+    },
+    "sold_out_toggle": {
+      "name": "Instant na sold-out toggle"
+    },
+    "kitchen_app": {
+      "name": "Kitchen app sa iPhone, iPad at Android"
+    },
+    "offline_protection": {
+      "name": "Offline protection ng order"
+    },
+    "online_payments": {
+      "name": "Online payments"
+    },
+    "advance_preordering": {
+      "name": "Pre-order nang maaga"
+    },
+    "preorder_deadline": {
+      "name": "Deadline ng pre-order"
+    },
+    "time_slot_selection": {
+      "name": "Pagpili ng time slot ng customer"
+    },
+    "kitchen_capacity": {
+      "name": "Pag-manage ng kitchen capacity"
+    },
+    "stock_countdown": {
+      "name": "Automatic na stock countdown"
+    },
+    "auto_accept": {
+      "name": "Auto-accept ng online orders"
+    },
+    "branded_qr_code": {
+      "name": "QR code na may brand mo"
+    },
+    "private_events": {
+      "name": "Private events"
+    },
+    "social_media_posts": {
+      "name": "Social media posts"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp auto-replies"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger at Instagram auto-replies"
+    },
+    "tap_to_pay": {
+      "name": "Tumanggap ng bayad sa phone mo"
+    },
+    "sms_order_alerts": {
+      "name": "SMS alert ng order"
+    },
+    "multi_device_kitchen": {
+      "name": "Kitchen sync sa maraming device"
+    },
+    "multi_user_access": {
+      "name": "Access para sa maraming user"
+    },
+    "embed_schedule": {
+      "name": "Schedule page sa sarili mong website"
+    },
+    "event_types": {
+      "name": "Custom na uri ng event at presyo"
+    },
+    "buzzer_tracking": {
+      "name": "Pag-track ng buzzer"
+    },
+    "documents_reminders": {
+      "name": "Mga dokumento at paalala"
+    },
+    "profit_per_event": {
+      "name": "Tubo kada event"
+    },
+    "accountant_reports": {
+      "name": "Reports para sa accountant mo"
+    },
+    "ticket_printing": {
+      "name": "Pag-print ng kitchen ticket"
+    },
+    "customer_display": {
+      "name": "Display na nakaharap sa customer"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Digital loyalty stamp cards"
+    }
+  },
+  "cardRegionOnline": "standard na {region}",
+  "cardRegion": {
+    "UKcards": "cards mula sa UK",
+    "EEAcards": "cards mula sa EEA",
+    "UScards": "cards mula sa US",
+    "Australiancards": "cards mula sa Australia",
+    "NewZealandcards": "cards mula sa New Zealand",
+    "Canadiancards": "cards mula sa Canada",
+    "Swisscards": "cards mula sa Switzerland",
+    "Braziliancards": "cards mula sa Brazil",
+    "Mexicancards": "cards mula sa Mexico",
+    "Japanesecards": "cards mula sa Japan",
+    "Singaporecards": "cards mula sa Singapore",
+    "HongKongcards": "cards mula sa Hong Kong",
+    "Malaysiancards": "cards mula sa Malaysia",
+    "Thaicards": "cards mula sa Thailand",
+    "UAEcards": "cards mula sa UAE"
+  },
+  "perMonth": {
+    "mo": "{amount}/buwan",
+    "month": "{amount}/buwan"
+  },
+  "priceWord": {
+    "free": "Libre",
+    "freeTrial": "Free trial",
+    "lifetime": "Panghabambuhay",
+    "zeroPercent": "0%",
+    "payAtHatch": "Bayad sa Pick-up",
+    "unlimited": "Unlimited",
+    "none": "—",
+    "masked": "Kukumpirmahin pa"
+  },
+  "cell": {
+    "included": "Kasama"
+  }
+}

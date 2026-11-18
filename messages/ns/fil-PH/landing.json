@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Ordering system para sa food truck at mobile catering",
+    "description": "Online ordering, pre-order at kitchen screen para sa mga food truck at mobile catering ({country}).",
+    "audience": "Mga may-ari ng food truck at mobile catering"
+  },
+  "hero": {
+    "title": "Ang ordering system na ginawa para sa <lean>mga food truck.</lean>",
+    "subSmall": "I-upload ang menu mo, hindi kailangang mag-sign up.<br></br>Makakita ng gumaganang demo sa loob ng 60 segundo.",
+    "cta": "I-upload ang menu ko →",
+    "ctaNote": "<lead>Mag-upload ng litrato ng menu mo at makita itong gumagana sa loob ng 60 segundo.</lead><small>Walang sign-up. Walang card.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Ang kitchen display (KDS) ng HatchGrab, na nagpapakita ng mga order ticket ayon sa pagkakasunod ng pagluluto",
+    "dashboardAlt": "Pagkuha ng order sa HatchGrab: ang menu sa kaliwa, ang basket at kabuuan sa kanan",
+    "phoneAlt": "Pag-order sa isang food truck gamit ang HatchGrab: ang menu na may mga litrato at presyo, at ang kabuuan ng basket"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Libreng-libre ang unang # buwan, bukas ang lahat ng feature} other {Libreng-libre ang unang # buwan, bukas ang lahat ng feature}}",
+    "noCard": "Hindi kailangan ng card",
+    "cancel": "Puwedeng i-cancel kahit kailan, walang kontrata"
+  },
+  "does": {
+    "eyebrow": "Ano ang ginagawa nito",
+    "title": "Ginawa para sa food truck, hindi para sa restaurant.",
+    "lede": "Karamihan sa mga ordering system ay umaasa sa permanenteng address, maayos na Wi-Fi at parehong oras bawat linggo. Ikaw, iba-iba ang lugar mo bawat linggo, iba-iba ang oras, at mahina o walang signal. Para diyan ginawa ang HatchGrab.",
+    "slotsTitle": "Pumipili ang customers ng oras ng pick-up",
+    "capacityTitle": "I-set ang kitchen capacity mo",
+    "capacityBody": "I-set kung gaano karami ang kaya mong lutuin nang sabay-sabay, at gaano ito katagal. Kapag puno na ang isang oras ng pick-up, hindi na ito mapipili ng customers.",
+    "devicesTitle": "Gumagana sa kahit anong device",
+    "devicesBody": "Gumagana sa phone sa apron mo, sa tablet sa counter, sa laptop sa van — at sa card reader na gamit mo na sa pagtanggap ng bayad.",
+    "postsTitle": "I-automate ang mga post mo sa Facebook at Instagram",
+    "postsBody": "I-upload ang design na pino-post mo na sa Facebook o Instagram. Kami na ang maglalagay ng mga petsa, lugar at oras mo, handa nang i-share — linggo-linggo o araw-araw.",
+    "whatsappTitle": "WhatsApp auto-replies",
+    "whatsappBody": "“Saan kayo mamayang gabi?” “Anong dessert ang meron kayo?” Nasasagot ang WhatsApp mo habang nagmamaneho ka papunta sa pwesto o nasa grill ka, gamit ang sarili mong menu at schedule. Malapit na ang Messenger at Instagram.",
+    "whatsappSoonTitle": "WhatsApp auto-replies <soon>Malapit na</soon>",
+    "whatsappSoonBody": "“Saan kayo mamayang gabi?” “Anong dessert ang meron kayo?” Malapit nang masagot ang WhatsApp mo habang nagmamaneho ka papunta sa pwesto o nasa grill ka. Susunod ang Messenger at Instagram.",
+    "offlineTitle": "Walang signal? Tuloy ang benta.",
+    "offlineBody": "Kapag nawalan ka ng signal, kusang napa-pause ang online ordering para hindi makapag-order ang customers ng mga order na hindi mo makikita. Tuloy ang pagtanggap mo ng order gamit ang app sa iPhone, iPad at Android.",
+    "slotsBody": "Nagpe-pre-order ang customers at pumipili ng oras ng pick-up. Mas kaunting pila, at handa na ang pagkain pagdating nila."
+  },
+  "steps": {
+    "eyebrow": "Pagsisimula",
+    "title": "Mag-set up at magsimulang tumanggap ng order sa loob ng mga 15 minuto.",
+    "lede": "Tatlong bagay ang aayusin — at litrato lang ang kailangan sa dalawa.",
+    "menuTitle": "Buuin ang menu mo",
+    "menuBody": "Kunan ng litrato ang menu board mo o i-paste ito. Kusang papasok ang mga item, presyo at extras. I-check mo lang kung tama.",
+    "scheduleTitle": "Idagdag ang schedule mo",
+    "scheduleBody": "Nasa website mo ba ito? Babasahin namin ito roon at pananatilihing updated. Kung wala, kunan din ito ng litrato. I-approve mo lang ang mahahanap nito.",
+    "shareTitle": "I-share ang link mo",
+    "shareBody": "I-post ito sa Facebook, idikit ang QR sa van. Papasok ang mga order sa screen mo, sa pagkakasunod na kailangan mong lutuin."
+  },
+  "testimonial": {
+    "quote": "Napakadali na ng pag-order dahil sa HatchGrab. Organisado ang lahat, nata-track namin ang stock at alam namin kung ilang pizza na lang ang natitirang ibebenta — at napakaganda ng time slots para sa mga mataong lugar.",
+    "award": "Mobile Pizzeria ng Taon",
+    "awardScope": "Panalo sa rehiyon",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — mga may-ari"
+  },
+  "pricing": {
+    "eyebrow": "Presyo",
+    "title": "Magsimula nang libre. Mag-upgrade kapag kailangan mo na.",
+    "switchHead": "Lilipat mula sa ibang platform?",
+    "switchBody": "Tingnan kung magkano ang babayaran mo sa HatchGrab para sa parehong mga order. Mga isang minuto lang.",
+    "switchCta": "Ikumpara ang binabayaran mo"
+  },
+  "faq": {
+    "title": "Mga madalas itanong",
+    "metaTitle": "FAQ: mga madalas itanong | HatchGrab",
+    "metaDescription": "Diretsong sagot para sa mga food truck tungkol sa presyo ng HatchGrab, pag-set up, pagtanggap ng order at pagbabayad — basahin bago ka mag-sign up."
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Gusto mong makita kung gaano kadali ang setup?",
+    "lede": "Mag-upload ng litrato o screenshot ng menu mo at gagawin namin itong gumaganang ordering page na puwede mong subukan sa loob ng 60 segundo. Ang mga item mo, ang mga presyo mo. Walang sign-up, walang card, walang kailangang i-install. Tingnan mo muna, saka magdesisyon.",
+    "cta": "I-upload na ang menu ko →"
+  },
+  "meta": {
+    "title": "Food truck ordering system — HatchGrab {country}",
+    "description": "Tanggapin ang order at pre-order sa pwesto mo, walang pila. Ordering at kitchen screen para sa food truck at mobile catering ({country}) — hindi POS."
+  }
+}

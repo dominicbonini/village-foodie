@@ -1,0 +1,19 @@
+{
+  "heading": "Upsells",
+  "intro": "Hikayatin ang mga customer na magdagdag ng extra. Kapag may nag-order mula sa isang category, mag-suggest ng items mula sa iba — drink kasama ng pizza, sauce kasama ng burger.",
+  "add": "+ Magdagdag ng upsell",
+  "toast": {
+    "updated": "Na-update ang upsell rule",
+    "added": "Naidagdag ang upsell rule",
+    "removed": "Naalis ang rule"
+  },
+  "whenAdds": "Kapag nagdagdag ang customer ng…",
+  "suggestFrom": "Mag-suggest ng items mula sa…",
+  "chooseCategory": "Pumili ng category",
+  "cancel": "Kanselahin",
+  "saveChanges": "I-save ang mga pagbabago",
+  "addRule": "Idagdag ang rule",
+  "empty": "Wala pang upsell rules.",
+  "confirmRemove": "Alisin ang upsell rule na “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Hanggang {count} item ang isa-suggest} other {Hanggang {count} item ang isa-suggest}}"
+}

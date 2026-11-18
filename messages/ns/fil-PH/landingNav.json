@@ -1,0 +1,21 @@
+{
+  "homeLabel": "Home ng HatchGrab",
+  "cta": "I-upload ang menu ko →",
+  "ctaShort": "I-upload ang menu",
+  "features": "Features",
+  "pricing": "Presyo",
+  "logIn": "Mag-log in",
+  "country": {
+    "button": "Bansa: {name}. Palitan ang bansa",
+    "menu": "Bansa",
+    "title": "Piliin ang bansa mo",
+    "subline": "Magbabago ang mga presyo, wika at settings para tumugma.",
+    "regions": {
+      "europe": "Europa",
+      "americas": "Amerika",
+      "asiaPacific": "Asya-Pasipiko",
+      "middleEast": "Gitnang Silangan",
+      "africa": "Aprika"
+    }
+  }
+}

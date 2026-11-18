@@ -1,0 +1,41 @@
+{
+  "h1": "Lahat ng kailangan sa service mo, sa bawat plan.",
+  "lede": "Kasama sa bawat plan ang ordering, pre-order, capacity at kitchen display (KDS).{hasUpgrades, select, yes { May dagdag na {features} at mas mababang fees ang {plans}.} other {}}",
+  "perMonth": "{price} / buwan",
+  "trial": {
+    "length": "{months, plural, one {# buwan} other {# buwan}}",
+    "ends": "Matatapos sa {date}"
+  },
+  "group": {
+    "pay": "Ang babayaran mo",
+    "run": "Patakbuhin ang service mo",
+    "online": "Online orders",
+    "marketing": "Marketing at automation"
+  },
+  "pay": {
+    "included": "Online orders na kasama kada buwan",
+    "fee": "Fee ng HatchGrab sa online orders*",
+    "feeNoMark": "Fee ng HatchGrab sa online orders",
+    "walkUp": "Walk-in orders"
+  },
+  "cell": {
+    "unlimited": "Unlimited",
+    "free": "Libre",
+    "feeAbove": "<b>{fee}</b> kapag lampas {included}",
+    "yes": "Kasama",
+    "none": "Hindi kasama",
+    "comingSoon": "Malapit na"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "social media",
+    "event_types": "custom na presyo sa events"
+  },
+  "meta": {
+    "description": "Lahat ng feature ng HatchGrab sa bawat plan, magkakatabi — {plans}, kasama ang fees at allowances.{months, plural, =0 {} one { Kasama ang lahat sa unang # buwan mo.} other { Kasama ang lahat sa unang # buwan mo.}}"
+  },
+  "notes": {
+    "whatsapp": "Kailangan ng WhatsApp Business account para sa WhatsApp auto-replies. Puwedeng maningil ang Meta sa ilang message; awtomatikong ginagawa ang mga sagot.",
+    "printing": "Kailangan ng compatible na Bluetooth o wired printer para sa pag-print ng kitchen ticket (hindi kasama)."
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "orderPending": {
+    "title": "Bagong order na ike-confirm",
+    "body": "Order {number} — {truck}"
+  }
+}

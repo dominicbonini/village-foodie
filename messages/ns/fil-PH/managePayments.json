@@ -1,0 +1,94 @@
+{
+  "heading": "Payments",
+  "loading": "Chine-check ang Stripe account mo…",
+  "state": {
+    "not_connected": {
+      "title": "Hindi pa naka-set up",
+      "body": "Mga 10 minuto lang. Kakailanganin mo ang bank details at ID mo.",
+      "chip": "Wala pa"
+    },
+    "requirements": {
+      "title": "Kailangan ng Stripe ang details mo",
+      "body": "Hindi gagana ang card payments hangga’t wala sa Stripe ang business at bank details mo.",
+      "chip": "May kailangang gawin"
+    },
+    "pending": {
+      "title": "Connected — chine-check ng Stripe ang details mo",
+      "body": "Wala kang kailangang gawin. Sinusuri ng Stripe ang ipinadala mo, at mag-a-update ang page na ito kapag tapos na sila.",
+      "chip": "Chine-check"
+    },
+    "ready": {
+      "title": "Connected",
+      "body": "Connected ang Stripe account mo at puwede na itong tumanggap ng bayad.",
+      "chip": "Ready na"
+    },
+    "restricted": {
+      "title": "Naka-pause ang card payments",
+      "body": "Pinause ng Stripe ang card payments sa account mo hangga’t hindi naaayos ang isang bagay.",
+      "chip": "Naka-pause"
+    },
+    "unsupported": {
+      "title": "Hindi available ang card payments sa account na ito",
+      "body": "Hindi ma-enable ng Stripe ang card payments dito. Makipag-ugnayan sa amin at aayusin natin ito nang magkasama.",
+      "chip": "Hindi available"
+    }
+  },
+  "keyMismatch": {
+    "title": "Hindi magkatugma ang Stripe keys",
+    "body": "Ang <b>{server, select, live {live} other {test}}</b> na Stripe key ang gamit ng server ng site na ito, pero na-build ang browser gamit ang <b>{browser, select, live {live} other {test}}</b> na key. Papalya ang card payments sa mismong oras na magbabayad ang customer, kaya naka-block ang pag-set up ng Stripe hangga’t hindi nagtutugma ang dalawa.",
+    "fix": "Dapat naka-set ang dalawang key para sa iisang environment, at i-rebuild ang site pagkatapos — naka-bake in ang publishable key sa build time, at binabasa ang secret key sa bawat request."
+  },
+  "permission": {
+    "title": "Ang may-ari lang ng truck ang puwedeng mag-set up ng payments",
+    "body": "Ang taong may-ari ng bank account na tatanggap ng pera ang nagko-connect ng Stripe, kaya kailangang i-set up ito mula sa sarili niyang naka-log in na account. Walang problema sa truck na ito o sa HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Hindi pa naka-configure ang card payments",
+    "fetchTitle": "Hindi namin ma-check ang Stripe account ng truck na ito",
+    "keyMissing": "Hindi naka-set: {name} — hindi ma-load ang embedded components."
+  },
+  "errors": {
+    "requestFailed": "Nag-fail ang request ({status})",
+    "unreachable": "Hindi maabot ang Stripe"
+  },
+  "online": {
+    "heading": "Online payments",
+    "body": "Nagbabayad ang customers gamit ang card kapag nag-order sila. Diretso sa sarili mong Stripe account ang pera — hindi namin ito hinahawakan kahit kailan.",
+    "feeLine": "Naniningil ang Stripe ng {fee} kada payment sa standard na {region}. Puwedeng mas mahal sa ibang card. Nakadepende sa plan mo ang sariling fee ng HatchGrab sa online orders — tingnan ang Billing.",
+    "testMode": "Test mode. Hindi pa puwedeng tumanggap ng totoong bayad."
+  },
+  "trialNote": "Hindi nito sisimulan ang subscription mo at hindi ka sisingilin ngayon. Ito ang paraan ng pagbabayad sa iyo ng customers mo — hiwalay ang plan mo.",
+  "admin": {
+    "title": "Tinitingnan bilang platform admin",
+    "body": "Hindi pa naka-set up ang online payments ng truck na ito. Ang may-ari lang ang puwedeng magsimula nito, mula sa sarili niyang naka-log in na account — walang kailangang pindutin dito."
+  },
+  "setUp": {
+    "button": "I-set up ang online payments",
+    "busy": "Sine-set up…"
+  },
+  "toast": {
+    "alreadySetUp": "Naka-set up na — tuloy tayo",
+    "addDetails": "Idagdag na ang details mo para sa Stripe",
+    "createFailed": "Hindi magawa ang account"
+  },
+  "onboarding": {
+    "restricted": "Stripe na ang bahala mula rito — magsa-sign in ka sa Stripe at ia-update ang details na kailangan nito.",
+    "firstRun": "Stripe na ang bahala mula rito — magsa-sign in ka sa Stripe, tapos ibibigay mo ang business at bank details mo."
+  },
+  "details": {
+    "title": "Ang Stripe details mo",
+    "body": "Palitan ang bank account kung saan ka binabayaran, o i-update ang business details at mga dokumento mo.",
+    "button": "Tingnan o i-edit"
+  },
+  "walkUp": {
+    "heading": "Walk-in payments",
+    "body": "Paano ka tumatanggap ng pera sa truck. Walang platform fee ang HatchGrab sa walk-in orders, alinman ang piliin mo.",
+    "ownTerminal": "Sarili mong card reader",
+    "current": "Kasalukuyan",
+    "ownTerminalHelp": "Zettle, Square, o kung ano ang gamit mo na. Walang kailangang i-set up — ang sariling fees lang ng provider mo ang babayaran.",
+    "hatchgrab": "Sa pamamagitan ng HatchGrab",
+    "comingSoon": "Malapit na",
+    "hatchgrabHelp": "Ginagamit ang parehong Stripe connection ng online payments mo — card reader, o contactless diretso sa phone o tablet mo.",
+    "hatchgrabFees": "{fee} kada payment sa {region}, dagdag ang {surcharge} para sa contactless na tinanggap sa phone o tablet. Puwedeng mas mahal sa ibang card."
+  }
+}

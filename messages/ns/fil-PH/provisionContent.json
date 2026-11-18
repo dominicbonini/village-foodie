@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Appetizers",
+    "mains": "Main course",
+    "burgers": "Burgers",
+    "pizza": "Pizza",
+    "wrapsSandwiches": "Wraps at Sandwiches",
+    "sides": "Sides",
+    "dipsSauces": "Dips at Sauces",
+    "desserts": "Desserts",
+    "drinks": "Drinks",
+    "kidsMenu": "Kids Menu",
+    "specials": "Specials",
+    "other": "Iba pa"
+  },
+  "demoEventName": "Demo event",
+  "firstVanName": "Van 1",
+  "demoCategories": {
+    "pizza": "Pizza",
+    "burgers": "Burgers",
+    "mains": "Main course",
+    "sides": "Sides",
+    "drinks": "Drinks"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Pizza truck",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja & Honey",
+        "fourCheese": "Four Cheese",
+        "gardenVeg": "Garden Veggie",
+        "garlicBread": "Garlic Bread",
+        "rocketParmesan": "Arugula & Parmesan",
+        "olives": "Olives",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coke"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Burger truck",
+      "items": {
+        "classicCheeseburger": "Classic Cheeseburger",
+        "doubleBacon": "Double Bacon",
+        "buttermilkChicken": "Buttermilk Chicken",
+        "halloumiStack": "Halloumi Stack",
+        "smashBurger": "Smash Burger",
+        "skinOnFries": "Skin-on Fries",
+        "loadedCheeseFries": "Loaded Cheese Fries",
+        "onionRings": "Onion Rings",
+        "craftLemonade": "Craft Lemonade",
+        "coke": "Coke"
+      }
+    },
+    "curries": {
+      "label": "🍛 Curry truck",
+      "items": {
+        "chickenTikkaMasala": "Chicken Tikka Masala",
+        "lambRoganJosh": "Lamb Rogan Josh",
+        "chanaMasala": "Chana Masala",
+        "butterChicken": "Butter Chicken",
+        "saagPaneer": "Saag Paneer",
+        "pilauRice": "Pilau Rice",
+        "garlicNaan": "Garlic Naan",
+        "onionBhaji": "Onion Bhaji",
+        "mangoLassi": "Mango Lassi",
+        "coke": "Coke"
+      }
+    }
+  }
+}

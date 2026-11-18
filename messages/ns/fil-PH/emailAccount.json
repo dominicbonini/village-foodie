@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "I-verify ang bago mong HatchGrab email address",
+    "heading": "I-verify ang email address mo",
+    "button": "I-verify ang email address"
+  },
+  "changeEmail": {
+    "requested": "Nag-request kang palitan ang HatchGrab email address mo ng address na ito.",
+    "click": "I-click ang button sa ibaba para mag-verify. Mag-e-expire ang link na ito sa loob ng 24 oras.",
+    "ignore": "Kung hindi ikaw ang nag-request ng pagbabagong ito, puwede mong balewalain ang email na ito.",
+    "stillActive": "Active pa rin ang kasalukuyang email address mo."
+  },
+  "resendVerification": {
+    "requested": "Nag-request kang palitan ang HatchGrab email mo ng address na ito.",
+    "click": "I-click sa ibaba para mag-verify. Mag-e-expire ang link na ito sa loob ng 24 oras.",
+    "ignore": "Kung hindi ikaw ang nag-request nito, balewalain ang email na ito.",
+    "stillActive": "Active pa rin ang kasalukuyang email mo."
+  },
+  "passwordReset": {
+    "subject": "I-reset ang HatchGrab password mo",
+    "heading": "I-reset ang password mo",
+    "requested": "May natanggap kaming request na i-reset ang password ng HatchGrab account mo.",
+    "click": "I-click ang button sa ibaba para pumili ng bagong password. Mag-e-expire ang link na ito sa loob ng 1 oras.",
+    "button": "I-reset ang password",
+    "ignore": "Kung hindi ikaw ang nag-request nito, puwede mong balewalain ang email na ito.",
+    "unchanged": "Hindi magbabago ang password mo hangga’t hindi mo kini-click ang link sa itaas."
+  },
+  "deletionScheduled": {
+    "subject": "Naka-schedule nang i-delete ang HatchGrab account mo",
+    "received": "May natanggap kaming request na i-delete ang HatchGrab account na ito.",
+    "orderingStopped": "<b>Huminto agad ang online ordering</b> sa: {trucks}.",
+    "noTrucks": "(walang truck)",
+    "readable": "Mababasa mo pa rin ang dashboard mo\n    sa susunod na {days, plural, one {# araw} other {# araw}}.",
+    "scheduled": "Naka-schedule ang pag-delete ng account sa <b>{date}</b>.",
+    "cannotCancel": "<b>Hindi ito puwedeng i-cancel sa loob ng app.</b> Kung hindi ikaw ito, o kung\n    nagbago ang isip mo, i-reply agad ang email na ito.",
+    "kept": "Kapag na-delete na ang account, buburahin namin ang personal details mo at ng mga customer mo. Itinatago namin ang\n    anonymous na accounting records, na legal na kailangan naming panatilihin."
+  }
+}

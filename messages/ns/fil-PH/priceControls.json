@@ -1,0 +1,8 @@
+{
+  "change": "{label} — palitan",
+  "useRule": "{label} — gamitin na lang ang rule",
+  "typePrice": "{label} — mag-type ng presyo",
+  "backToRule": "Bumalik sa rule",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

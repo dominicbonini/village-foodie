@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Kailangang naka-on at online ang dashboard o kitchen display (KDS) mo habang nagse-serve.",
+  "explainerBody": "Kapag nag-off ang screen, nawalan ng internet ang device, o lumipat ka sa ibang website, papalit ang offline protection — ipa-pause nito ang ordering o io-off ang auto-accept, depende sa pinili mo.",
+  "reminder": "⚠️ Panatilihing naka-on at online ang dashboard o kitchen display (KDS) mo habang nagse-serve, kung hindi ay baka pumalit ang offline protection.",
+  "enableConfirm": "Naka-on na ang offline protection.\n\nPara tuloy-tuloy ang mga order, dapat manatiling naka-on ang screen mo. Kapag nawalan ng connection ang device na ito, papalit ang offline protection sa mode na pinili mo.\n\nSiguraduhing naka-set sa “Naka-on ang screen” ang device na ito.",
+  "disableConfirm": "I-off ang offline protection para sa event na ito?\n\nKapag nawalan ng connection ang device na ito, tuloy pa rin ang mga online order — puwedeng mag-order ang customers nang hindi mo nakikita. I-off lang kung maaasahan ang connection mo.",
+  "cardDescription": "Ito ang nagdedesisyon kung ano ang mangyayari sa mga papasok na order kapag nag-offline ang device mo.",
+  "purpose": "Kapag nawalan ng connection ang device mo, pinipigilan nito ang pagpasok ng mga order habang hindi mo nakikita ang mga ito.",
+  "switchLabel": "Offline protection ng order",
+  "switchHelp": "Ano ang mangyayari kapag nawalan ng connection ang van na ito.",
+  "modes": {
+    "pause": {
+      "label": "I-pause ang online ordering",
+      "help": "Hindi makakapag-order ang customers hangga’t hindi ka ulit online."
+    },
+    "no_auto_accept": {
+      "label": "Tuloy ang order, ikaw ang magkukumpirma",
+      "help": "Naka-off ang auto-accept, kaya puwede pa ring mag-order ang customers pero walang kusang nakukumpirma. Kukumpirmahin mo ang bawat isa pagbalik mo online — at kusang ire-reject ang anumang naghihintay pa pagkalipas ng oras na pinili mo, at ie-email ang customer para malaman niya."
+    }
+  },
+  "autoRejectLabel": "I-reject ang mga order na naghihintay nang lampas sa",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

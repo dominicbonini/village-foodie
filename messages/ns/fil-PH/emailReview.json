@@ -1,0 +1,16 @@
+{
+  "subject": "Kumusta ang order mo mula sa {truck}?",
+  "heading": "Salamat sa pag-order sa {truck}",
+  "body": "Malaking tulong sa {truck} ang isang tapat na review sa Google. Isang minuto lang ito, at nakakatulong ito sa ibang tao na mahanap sila.",
+  "button": "Mag-iwan ng review sa Google",
+  "linkText": "Mag-iwan ng review sa Google: {url}",
+  "from": "Galing sa {truck} ang email na ito, ipinadala gamit ang HatchGrab dahil nag-order ka sa kanila.",
+  "unsubscribeLead": "Ayaw mo na ng review request mula sa {truck}?",
+  "unsubscribeLink": "Mag-unsubscribe",
+  "unsubscribeText": "Mag-unsubscribe: {url}",
+  "unsubscribed": {
+    "title": "Naka-unsubscribe ka na",
+    "body": "Hindi ka na padadalhan ng {truck} ng review request.",
+    "invalid": "Hindi valid ang unsubscribe link na ito."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "features": "Features",
+  "pricing": "Presyo",
+  "faq": "FAQ",
+  "privacy": "Privacy",
+  "terms": "Mga Tuntunin",
+  "contact": "Kontakin kami",
+  "about": "Tungkol sa amin",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Mula sa mga gumawa ng <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "I-download ang HatchGrab sa App Store",
+    "appStoreAlt": "I-download sa App Store",
+    "googlePlayLink": "Kunin ang HatchGrab sa Google Play",
+    "googlePlayAlt": "Kunin ito sa Google Play"
+  }
+}

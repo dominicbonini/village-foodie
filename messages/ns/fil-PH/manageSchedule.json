@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Na-cancel",
+    "finished": "Tapos na",
+    "unconfirmed": "Hindi pa kumpirmado",
+    "confirmed": "Kumpirmado",
+    "open": "Bukas ngayon",
+    "closed": "Sarado"
+  },
+  "sections": {
+    "label": "Mga section ng schedule",
+    "events": "Mga event",
+    "eventTypes": "Mga uri ng event"
+  },
+  "header": {
+    "title": "Schedule",
+    "upcoming": "Paparating: {count}",
+    "import": "✨ I-import ang schedule",
+    "importHint": "litrato, PDF o text",
+    "addEvent": "+ Magdagdag ng event",
+    "scraperAuto": "Awtomatikong naghahanap ng mga event sa website mo",
+    "changeInSettings": "Baguhin sa Settings",
+    "scraperManual": "Ikaw ang nagma-manage ng schedule mo nang manual"
+  },
+  "empty": {
+    "title": "Walang paparating na event",
+    "body": "Lalabas dito ang mga event na nakuha mula sa social media at booking calendar mo para makumpirma mo"
+  },
+  "list": {
+    "openNow": "Bukas ngayon",
+    "needsApproval": "Kailangan ng approval mo",
+    "needsConfirmation": "Kailangang kumpirmahin",
+    "confirmed": "Kumpirmado",
+    "past": "Mga nakaraang event ({count})",
+    "found": "May nahanap kami para sa iyo: {count, plural, one {# event — i-review at i-approve bago mag-live.} other {# event — i-review at i-approve bago mag-live.}}"
+  },
+  "card": {
+    "addName": "Magdagdag ng pangalan",
+    "timeNeeded": "⚠ Kailangan ng oras",
+    "setTimeFirst": "Mag-set muna ng oras",
+    "confirm": "Kumpirmahin",
+    "copy": "Kopyahin",
+    "edit": "I-edit",
+    "makePost": "Gumawa ng post",
+    "cancel": "I-cancel",
+    "approve": "I-approve",
+    "reject": "I-reject",
+    "stock": "⚠️ Stock",
+    "stockHidden": "Nakatago — {reason}",
+    "noDeals": "Walang active na combo meal",
+    "dealsActive": "Active: {count, plural, one {# combo meal} other {# combo meal}} · {names}{hidden, plural, =0 {} one { · # nakatago} other { · # nakatago}}",
+    "approveNeedsTimes": "Naka-off ang I-approve hangga’t walang start at end time ang event na ito — idagdag ang mga ito gamit ang I-edit."
+  },
+  "guessed": {
+    "title": "📍 Hinulaan namin ang location na ito",
+    "body": "Higit sa isang venue ang tumugma sa <b>{venue}</b>, kaya pinili namin ang pinakamalapit na tugma{hasTown, select, yes { sa <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. I-check kung ito ang tama bago i-approve — kung mali, gamitin ang <b>I-edit</b> para itama ang lugar o ang {postal}, dahil kung hindi ay mapupunta sa maling lugar ang mga customer.",
+    "thisVenue": "venue na ito"
+  },
+  "noLocation": {
+    "title": "📍 Wala pang location",
+    "body": "Hindi namin mailagay sa mapa ang venue na ito, kaya ililista ito pero walang map pin. Idagdag ang {postal} gamit ang <b>I-edit</b> para mailagay ito sa mapa."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Posibleng conflict} other {Posibleng conflict}} — i-review bago {pending, select, yes {i-approve} other {kumpirmahin}}",
+    "duplicate": "Mukhang pareho ito sa event na mayroon ka na.",
+    "review": "Parehong venue at petsa, magkaibang oras — ito ba ang parehong event na binago ang oras, o hiwalay na slot? I-review bago i-approve.",
+    "already": "Nasa schedule mo na: <b>{venue}</b>{details} ({status, select, confirmed {kumpirmado} open {bukas} other {{status}}})",
+    "unnamedVenue": "Venue na walang pangalan",
+    "ack": "Oo, magkaibang event ang mga ito — {pending, select, yes {i-approve} other {kumpirmahin}} pa rin",
+    "cancel": "Kanselahin",
+    "overlap": "Nag-o-overlap ang oras ng event na ito sa ibang event sa parehong araw — hindi puwedeng nasa dalawang lugar nang sabay ang isang van. I-check bago i-approve."
+  },
+  "toast": {
+    "loadFailed": "Hindi ma-load ang mga event",
+    "linkFailed": "Hindi ma-load ang link",
+    "placeTypeFailed": "Na-save ang event. Hindi na-save ang karaniwang uri para sa lugar na {place} — {reason}.",
+    "placeTypeFailedReason": "hindi natuloy ang pag-save",
+    "eventUpdated": "Na-update ang event",
+    "eventAdded": "Naidagdag ang event",
+    "eventsSaved": "{count, plural, one {# event ang na-save} other {# event ang na-save}}",
+    "saveEventsFailed": "Hindi na-save ang mga event",
+    "needsTime": "Magdagdag ng start at end time bago i-approve — kailangan ng oras ng event na ito para mag-live.",
+    "addStartTime": "Magdagdag ng start time",
+    "addEndTime": "Magdagdag ng end time",
+    "chooseTruckBefore": "Piliin kung aling truck ang magtatrabaho sa event na ito bago i-approve.",
+    "chooseTruck": "Piliin kung aling truck ang magtatrabaho sa event na ito",
+    "eventConfirmed": "Nakumpirma ang event",
+    "eventRejected": "Na-reject ang event",
+    "undo": "↩ I-undo",
+    "eventRestored": "Naibalik ang event",
+    "restoreFailed": "Hindi maibalik",
+    "eventCancelled": "Na-cancel ang event",
+    "eventCancelledOrders": "Na-cancel ang event · {count, plural, one {# order ang na-cancel} other {# order ang na-cancel}}",
+    "placeHidden": "Nakatago na ang lugar",
+    "placeShown": "Ipinapakita ulit ang lugar",
+    "saveThatFailed": "Hindi iyan ma-save."
+  },
+  "link": {
+    "label": "Private link at QR code",
+    "close": "Isara"
+  }
+}

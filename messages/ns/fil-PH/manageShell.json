@@ -1,0 +1,86 @@
+{
+  "loading": "Nilo-load ang management console…",
+  "loadFailed": "Hindi ma-load",
+  "requestFailed": "Nag-fail",
+  "invalidToken": "Invalid o expired na token",
+  "loadFailedReason": "Hindi ma-load ang page na ito: {reason}",
+  "noCountrySettings": "Hindi ma-load ang country settings ng truck na ito. Paki-refresh.",
+  "noPlans": "Hindi ma-load ang plan ng truck na ito. Paki-refresh.",
+  "stale": "{hasTime, select, yes {Hindi ma-refresh. Ipinapakita ang na-save noong {time}. Nase-save pa rin ang mga binabago mo.} other {Hindi ma-refresh. Ipinapakita ang huling na-save. Nase-save pa rin ang mga binabago mo.}}",
+  "verify": {
+    "ok": "Nakumpirma na ang email — salamat.",
+    "expired": "Expired na ang confirmation link na iyan. Makipag-ugnayan sa amin at aayusin namin ito bago ka mag-go live.",
+    "invalid": "Hindi gumana ang confirmation link na iyan. Makipag-ugnayan sa amin at aayusin namin ito bago ka mag-go live."
+  },
+  "profile": {
+    "updated": "Na-update ang profile",
+    "saveFailed": "Hindi na-save",
+    "title": "I-edit ang profile",
+    "name": "Pangalan",
+    "namePlaceholder": "Pangalan mo",
+    "email": "Email",
+    "cancel": "Kanselahin",
+    "saving": "Sine-save…",
+    "save": "I-save"
+  },
+  "header": {
+    "subtitle": "Management console",
+    "ordersDashboard": "← Dashboard ng mga order"
+  },
+  "tabs": {
+    "menu": "Menu",
+    "schedule": "Schedule",
+    "paperwork": "Mga dokumento",
+    "social": "Social media",
+    "reports": "Reports",
+    "team": "Team",
+    "settings": "Settings",
+    "payments": "Payments",
+    "billing": "Billing",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Schedule ({count})",
+    "stripeAttention": "Kailangan ng Stripe ang atensyon mo",
+    "allergensNotSet": "hindi pa naka-set ang allergens"
+  },
+  "menuSections": {
+    "label": "Mga section ng menu",
+    "items": "Mga item",
+    "capacity": "Kitchen capacity",
+    "extras": "Extras & upsells",
+    "deals": "Combo meals"
+  },
+  "socialSections": {
+    "label": "Mga section ng social media",
+    "create": "Gumawa ng post",
+    "designs": "Designs",
+    "locations": "Settings ng location"
+  },
+  "notices": {
+    "review": "I-review →",
+    "tour": "Gusto mo ba ng mabilisang tour ng dashboard mo?",
+    "showMeAround": "Ipakita mo sa akin",
+    "dismiss": "Isara",
+    "approval": "{count, plural, one {May nahanap kaming <b>{count}</b> event para sa iyo — i-review at i-approve bago mag-live.} other {May nahanap kaming <b>{count}</b> event para sa iyo — i-review at i-approve bago mag-live.}}",
+    "allergens": "<b>Hindi pa naka-set ang allergens</b> — hindi makikita ng customers ang info sa allergens hangga’t hindi mo ito vine-verify. I-review ang allergens ng bawat dish sa Menu tab.",
+    "domainLive": "Live na ang <link>{domain}</link>. Tingnan mo ito, tapos sabihin sa amin sa Settings kung tama ito.",
+    "stripe": "<b>May kailangan ang Stripe mula sa iyo</b> — puwedeng huminto ang card payments hangga’t hindi ito naaayos.",
+    "profileTitle": "Kumpletuhin ang profile mo",
+    "missing": "Kulang: {fields}.",
+    "goToSettings": "Pumunta sa Settings →",
+    "field": {
+      "truckName": "pangalan ng truck",
+      "cuisineType": "uri ng cuisine",
+      "contactEmail": "contact email",
+      "contactPhone": "contact phone"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Naka-free trial ka} other {Naka-free trial ka: {months} buwan}}",
+    "ends": "{hasDate, select, yes {Matatapos ang trial sa <hl>{date}</hl>} other {<hl>Malapit nang</hl> matapos ang trial}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Libre ang lahat ng feature sa loob ng # buwan} other {Libre ang lahat ng feature sa loob ng # buwan}}} other {Libre ang lahat ng feature habang naka-trial ka}}",
+    "body": "{hasDate, select, yes {Hindi ka sisingilin ng kahit ano habang naka-trial ka, hanggang <b>{date}</b>. Magsisimula lang ang billing kapag pumili ka ng plan at inilagay mo ang payment details mo. Hanggang doon, walang kailangang i-cancel at walang babayaran. Pumili ng plan bago noon — kung hindi, malilipat ka sa {fallback} at hihinto ang ilang feature.} other {Hindi ka sisingilin ng kahit ano habang naka-trial ka. Magsisimula lang ang billing kapag pumili ka ng plan at inilagay mo ang payment details mo. Hanggang doon, walang kailangang i-cancel at walang babayaran. Pumili ng plan bago noon — kung hindi, malilipat ka sa {fallback} at hihinto ang ilang feature.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Hindi ka sisingilin ng kahit ano habang naka-trial ka, hanggang <b>{date}</b>. Pagkatapos ng trial mo, {price} kada buwan ang {fallback}. Kokontakin ka namin bago noon para i-set up ang payment.} other {Hindi ka sisingilin ng kahit ano habang naka-trial ka. Pagkatapos ng trial mo, {price} kada buwan ang {fallback}. Kokontakin ka namin bago noon para i-set up ang payment.}}",
+    "fees": "*May standard na card processing fees sa online orders",
+    "upgrade": "Mag-upgrade dito →"
+  }
+}

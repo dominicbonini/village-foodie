@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {Maglagay ng valid na mobile number ({name})} other {Maglagay ng valid na mobile number}}{withExample, select, yes { (hal. {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {Maglagay ng valid na phone number ({name})} other {Maglagay ng valid na phone number}}{withExample, select, yes { (hal. {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {Maglagay ng valid na phone number ({name})} other {Maglagay ng valid na phone number}}{withExample, select, yes { (hal. {example})} other {}}."
+}

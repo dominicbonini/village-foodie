@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Nasa <b>order #{holderId}</b>{hasName, select, yes { ({name})} other {}} ang buzzer <b>{number}</b>. Kunin ito para sa <b>{hasTarget, select, yes {order #{targetId}} other {order na ito}}</b>?",
+  "cancel": "Kanselahin",
+  "take": "Kunin ang buzzer {number}",
+  "titleBlocking": "Buzzer para sa order #{id}?",
+  "title": "Pumili ng buzzer",
+  "subtitle": "{hasTarget, select, yes {Order #{id}} other {Ang order na ito}}{hasCurrent, select, yes { · kasalukuyang buzzer: {current}} other {}}",
+  "allTaken": "{n, plural, one {Gamit na ang lahat ng buzzer ({count}). I-tap ang isa para kunin ito mula sa ibang order.} other {Gamit na ang lahat ng buzzer ({count}). I-tap ang isa para kunin ito mula sa ibang order.}}",
+  "thisOrder": "Ang order na ito",
+  "noBuzzer": "Walang buzzer",
+  "done": "Tapos na",
+  "lostTitle": "Walang buzzer ang order #{id}",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}may ibang order na kumuha ng parehong buzzer habang offline ka. Bigyan sila ng ibang buzzer.",
+  "dismiss": "Isara",
+  "assign": "Ibigay"
+}

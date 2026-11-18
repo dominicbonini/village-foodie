@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {Kasama ang {feature} sa {plan}.} other {Kasama ang {feature} sa {plan}.}}",
+  "notOnPlan": "{many, select, yes {Wala ang {feature} sa plan mo.} other {Wala ang {feature} sa plan mo.}}",
+  "switchedOff": "{many, select, yes {Naka-off ang {feature} para sa truck mo.} other {Naka-off ang {feature} para sa truck mo.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Mag-upgrade →",
+  "features": {
+    "discovery_map": {
+      "name": "Listing sa discovery map",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Web dashboard",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Kitchen app",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR code menu",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Combo meals",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Upsells",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Walk-in orders",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Ordering na may Bayad sa Pick-up",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Sold-out toggle",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Stock countdown",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Offline protection ng order",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Online payments",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Pre-order nang maaga",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Time slots para sa customer",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Pag-manage ng kitchen capacity",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Auto-accept",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger at Instagram auto-replies",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Mga QR code na may brand mo",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Advanced na reports",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Pag-print ng kitchen ticket",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Kitchen sync sa maraming device",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Screen ng nagluluto",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp auto-replies",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Schedule mo sa sarili mong website",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Social media posts",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Custom na uri ng event",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Private events",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Mga dokumento",
+      "many": "yes"
+    }
+  }
+}

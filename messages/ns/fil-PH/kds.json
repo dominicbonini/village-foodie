@@ -1,0 +1,129 @@
+{
+  "docTitle": "Kitchen: {truck}",
+  "loading": "Nilo-load ang kitchen…",
+  "pin": {
+    "title": "Ilagay ang PIN",
+    "placeholder": "PIN",
+    "unlock": "I-unlock",
+    "unreachable": "Hindi maabot ang server ngayon. Walang problema sa PIN mo — subukan ulit maya-maya.",
+    "incorrect": "Mali ang PIN",
+    "generic": "Nagka-problema. Subukan ulit."
+  },
+  "error": {
+    "linkInvalid": "Hindi na valid ang link na ito.",
+    "couldNotLoad": "Hindi ma-load ang mga order",
+    "truckNotFound": "Hindi mahanap ang truck"
+  },
+  "degraded": {
+    "at": "⚠️ Hindi maabot ang server. Ipinapakita ang mga ticket mula {time}. BAKA MAY KULANG NA BAGONG ORDER.",
+    "earlier": "⚠️ Hindi maabot ang server. Ipinapakita ang mga ticket mula kanina. BAKA MAY KULANG NA BAGONG ORDER."
+  },
+  "header": {
+    "dashboard": "Dashboard",
+    "backTitle": "Bumalik sa dashboard",
+    "list": "Listahan",
+    "grid": "Grid",
+    "full": "Buo",
+    "cook": "Kusina",
+    "fullTitle": "Buong card — may presyo at details ng bayad, gaya ng nakikita sa counter.",
+    "cookTitle": "Card para sa kusina — mas malaking letra, naka-grupo ayon sa category, walang presyo.",
+    "readyStep": "Step na ready",
+    "readyOnlyTitle": "Nagma-mark lang ng ready ang screen na ito, kaya hindi ito puwedeng i-off — ito lang ang step na ginagawa nito.",
+    "readyOnTitle": "Ang screen na ito ang nagma-mark ng ready na order. I-tap para ibang screen ang gumawa nito.",
+    "readyOffTitle": "Ibang screen ang nagma-mark ng ready na order. I-tap para ang screen na ito ang gumawa nito.",
+    "handover": "Bayad at pag-abot",
+    "handoverOnlyTitle": "Tumatanggap lang ng bayad ang screen na ito, kaya hindi ito puwedeng i-off — ito lang ang step na ginagawa nito.",
+    "handoverOnTitle": "Ang screen na ito ang tumatanggap ng bayad at nag-aabot ng order. I-tap para ibang screen ang gumawa nito.",
+    "handoverOffTitle": "Ibang screen ang tumatanggap ng bayad. I-tap para ang screen na ito ang gumawa nito.",
+    "soundOn": "Naka-on ang tunog ng bagong order — i-tap para i-off",
+    "soundOff": "Naka-off ang tunog ng bagong order — i-tap para i-on",
+    "screenOn": "Naka-on ang screen",
+    "screenOff": "Puwedeng mag-off ang screen",
+    "screenSettings": "Settings ng screen",
+    "manageEvent": "I-manage ang event",
+    "manageEventTitle": "I-manage ang event — simulan, i-pause, palitan o tapusin ito",
+    "soundSettings": "Settings ng tunog",
+    "soundSettingsTitle": "Aling mga tunog ang tutunog sa device na ito",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Settings ng view",
+    "on": "On",
+    "off": "Off",
+    "newOrderSound": "Tunog ng bagong order",
+    "soundNeedsConfirming": "Mga order lang na kailangang kumpirmahin",
+    "soundAll": "Lahat ng bagong order",
+    "soundDue": "Tunog kapag oras nang lutuin ang order",
+    "soundDueHelp": "Tumutunog kapag naging amber ang ticket.",
+    "deviceSettings": "Settings ng device",
+    "sound": "Tunog",
+    "close": "Isara"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Hindi na-load ang mga order para sa event na ito",
+    "mismatchBody": "Ibang event ang isinagot ng server, kaya walang ipinapakita para hindi lumabas ang maling mga order. Piliin ulit ang event, o i-reload.",
+    "mismatchBodyAt": "Ibang event ang isinagot ng server, kaya walang ipinapakita para hindi lumabas ang maling mga order para sa {venue}. Piliin ulit ang event, o i-reload.",
+    "paused": "⏸ Naka-pause ang mga order{reason, select, offline { (offline ang device)} other {}} — hindi makakapag-order ang mga customer",
+    "resume": "Ituloy",
+    "offline": "Walang connection — ipinapakita ang huling alam na mga order. Na-pause ang online ordering para sa mga customer.",
+    "queued": "{n, plural, one {{count} action ang naka-queue} other {{count} action ang naka-queue}}",
+    "extraWait": "⏱ Active ang +{mins} min na extra wait",
+    "clear": "Alisin",
+    "toMake": "Gagawin",
+    "today": "Ngayon · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Simulan ang event",
+    "recentlyClosed": "Tapos na ang event · {venue}: natapos nang {time}",
+    "eventStatus": "{tone, select, paused {⏸ Naka-pause} live {● Live} finished {● Tapos na} cancelled {Na-cancel} other {Hindi pa nagsisimula}}"
+  },
+  "board": {
+    "queueClear": "Walang naka-queue",
+    "doneToday": "Tapos ngayong araw · {count}",
+    "paid": "✓ bayad na",
+    "cardHeld": "naka-hold ang card",
+    "due": "Babayaran: {amount}"
+  },
+  "screenOff": {
+    "title": "Payagang mag-off ang screen?",
+    "bodyVans": "{vans}: {n, plural, one {naka-on ang offline detection} other {naka-on ang offline detection}}. Kapag nag-off ang screen, baka tumigil ang device sa pagpapadala ng online signal nito at ma-pause ang pag-order ng mga customer.",
+    "body": "Kapag nag-off ang screen, baka tumigil ang device sa pagpapadala ng online signal nito.",
+    "keepHint": "Panatilihing naka-on ang screen para tuloy-tuloy ang ordering.",
+    "keep": "Panatilihing naka-on",
+    "allow": "Payagang mag-off"
+  },
+  "event": {
+    "change": "Palitan ang event",
+    "cancel": "Kanselahin",
+    "waitActive": "⏱ Active ang +{mins}m · I-tap para alisin",
+    "addWait": "⏱ Magdagdag ng extra wait",
+    "endTitle": "Tapusin ang event?",
+    "endEarly": "Hindi pa dapat matatapos ang event na ito hanggang {time}. Hindi na tatanggap ng order. Kumpirmahin ang pagtatapos ng event?",
+    "endNow": "Tapusin ang event na ito? Hindi na tatanggap ng order.",
+    "yes": "Oo",
+    "started": "Nagsimula na ang event",
+    "startFutureConfirm": "Ang event na ito ay sa {date}. Simulan na ngayon?",
+    "finishTimeNow": "Oras ng pagtatapos ngayon: {time}",
+    "finished": "Tapos na ang event",
+    "cancelled": "Na-cancel ang event",
+    "noteSaved": "Na-save ang note",
+    "pauseConfirm": "I-pause ang mga order? Makikita ng mga customer ang “Hindi tumatanggap ng order” hanggang ituloy mo.",
+    "switchConfirm": "Lumipat mula {from} papuntang {to}?{n, plural, =0 {} one { Mapapalitan ang {count} order sa screen na ito.} other { Mapapalitan ang {count} order sa screen na ito.}} I-tap ang kasalukuyang event para bumalik."
+  },
+  "intro": {
+    "title": "Ito ang kitchen display (KDS)",
+    "p1": "Ito ang view ng cook — ang mga order na kailangan mong gawin, sa pagkakasunod kung paano gagawin. Ito ang nasa screen sa tabi ng grill habang ang orders dashboard naman ang gamit sa counter.",
+    "p2": "Gumagalaw ang mga card habang tina-tap mo, kaya laging alam ng nagluluto kung ano ang susunod at walang kailangang sumigaw. Demo data mo ang lahat ng nandito — subukan mo lang.",
+    "gotIt": "Sige"
+  },
+  "toast": {
+    "failed": "Nag-fail",
+    "rejectFailed": "Hindi ma-reject",
+    "buzzerSaved": "Na-save ang buzzer {n}",
+    "buzzerRemoved": "Inalis ang buzzer {n}",
+    "buzzerRemovedNone": "Inalis ang buzzer",
+    "buzzerAssigned": "Naibigay ang buzzer {n}",
+    "buzzerAssignedFrom": "Naibigay ang buzzer {n} (kinuha mula sa #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Hindi maalis ang buzzer sa {target, select, order {order #{id}} other {order na ito}}} other {Hindi maalis ang buzzer {n} — nasa {target, select, order {order #{id}} other {order na ito}} pa rin ito}}",
+    "buzzerAssignFailed": "Hindi maibigay ang buzzer {n} sa {target, select, order {order #{id}} other {order na ito}} — {had, select, yes {nasa kanya pa rin ang buzzer {prior}} other {wala pa rin itong buzzer}}"
+  }
+}

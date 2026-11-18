@@ -1,0 +1,9 @@
+{
+  "country_missing": "Piliin ang bansa kung saan naka-base ang truck mo.",
+  "country_off": "Hindi pa puwedeng mag-sign up ang mga truck sa bansang iyan. Pumili ng ibang bansa.",
+  "zone_unknown": "Hindi namin inaalok ang time zone na iyan para sa bansang iyan. Pumili ng isa mula sa listahan.",
+  "town_missing": "Sabihin sa amin ang bayan o lungsod kung saan ka naka-base.",
+  "town_too_long": "Masyadong mahaba ang pangalan ng bayan — hanggang 120 character lang.",
+  "region_closed": "Hindi pa puwedeng mag-sign up ang mga truck na naka-base sa {region}{reason, select, language {: hindi pa available ang HatchGrab sa wikang {language}} taxLines {: inuuna muna naming idagdag ang hiwalay na GST at PST lines} other {}}. Kung sa ibang lugar naka-base ang truck mo, piliin ang bayan o lungsod na iyon.",
+  "region_blocked": "Pasensya na, hindi pa available ang HatchGrab sa rehiyon mo."
+}

@@ -1,0 +1,137 @@
+{
+  "binary": {
+    "cameraUsage": "Ginagamit ng HatchGrab ang camera para makunan mo ng litrato ang menu board mo, ang mga pagkain mo at iba pang dokumento at i-upload ang mga ito diretso sa account mo. Ginagamit lang ang mga larawan para sa mga upload na pinili mong gawin.",
+    "bluetoothUsage": "Ginagamit ng HatchGrab ang Bluetooth para kumonekta sa receipt printer ng kusina mo para awtomatikong ma-print ang mga order ticket. Hindi ito ginagamit sa iba pang bagay.",
+    "localNetworkUsage": "Kumokonekta ang HatchGrab sa printer ng kusina mo sa local network mo para awtomatikong ma-print ang mga order ticket. Hindi ito ginagamit sa iba pang bagay.",
+    "faceIdUsage": "I-unlock ang HatchGrab gamit ang Face ID.",
+    "offlineTitle": "Hindi maabot ang HatchGrab",
+    "offlineDetail": "I-check ang connection mo.",
+    "retry": "Subukan ulit"
+  },
+  "gate": {
+    "reverted": "Ibinalik ang order #{id}",
+    "saved": "Na-save ang order #{id}",
+    "undo": "↩ I-undo",
+    "paymentNotRecorded": "⚠ Order #{id} — HINDI NA-RECORD ANG BAYAD. {collect, select, yes {Natapos ang order} other {Na-save ang order}}; ang bayad, hindi.",
+    "recordPayment": "I-record ang bayad",
+    "paid": "Bayad na ang order #{id}",
+    "undonePayment": "Na-undo — inalis ang bayad",
+    "undoneCollected": "Na-undo — hindi pa na-pick up ang order",
+    "collected": "Order #{id}: {paidToo, select, yes {bayad na at na-pick up} other {na-pick up}}",
+    "ready": "Ready na ang order #{id}",
+    "readyBuzzer": "Ready na ang order #{id} · <pill></pill>",
+    "status": "Order #{id}: {action, select, confirm {kumpirmado} reject {na-reject} ready {ready na} collected {na-pick up} undo_collected {ibinalik} cancel {na-cancel} other {na-update}}"
+  },
+  "conflicts": {
+    "more": "+{count} pa",
+    "notOnScreenPlus": "+{count} wala sa screen na ito",
+    "notOnScreen": "{n, plural, one {{count} order na wala sa screen na ito} other {{count} order na wala sa screen na ito}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ HINDI NA-RECORD ANG BAYAD",
+    "paymentBody": "{orders} — minarkahang bayad sa device na ito lang. Hindi ito pumasok.",
+    "paymentCheck": "I-check ang order at tumanggap ulit ng bayad kung may utang pa.",
+    "dismiss": "Isara",
+    "confirmChecked": "Kumpirmahing na-check mo na: {orders}",
+    "confirmHides": "Itatago nito ang babala. Nananatili ang record sa device na ito kahit ano pa.",
+    "notYet": "Hindi pa",
+    "iveChecked": "Na-check ko na: {orders}",
+    "statusBody": "⚠ {orders} — hindi pumasok ang pagbabagong ito. I-check ang order.",
+    "offline": "📴 Walang connection — {n, plural, one {{count} pagbabago ang naka-save sa device na ito. Ipapadala kapag online ka na ulit.} other {{count} pagbabago ang naka-save sa device na ito. Ipapadala kapag online ka na ulit.}} Naka-lock ang Settings.",
+    "syncing": "Online na ulit — ipinapadala ang {n, plural, one {{count} pagbabago} other {{count} pagbabago}}…",
+    "synced": "Naipadala na ang lahat ng pagbabago.",
+    "stillQueued": "{n, plural, one {{count} pagbabago ang naka-save sa device na ito. Sinusubukan pa ring ipadala.} other {{count} pagbabago ang naka-save sa device na ito. Sinusubukan pa ring ipadala.}}",
+    "notApproved": "{n, plural, one {{count} order ang naghihintay} other {{count} order ang naghihintay}}: hindi pa approved ang event na ito. I-approve ito para maipadala."
+  },
+  "lock": {
+    "locked": "Naka-lock ang HatchGrab",
+    "verifying": "Vine-verify…",
+    "unlock": "I-unlock",
+    "cantUseBiometric": "Hindi magamit ang Face / Touch ID?",
+    "enterPin": "Ilagay ang backup PIN mo",
+    "wrongPin": "Mali ang PIN — subukan ulit.",
+    "checking": "Chine-check…",
+    "tryBiometric": "Subukan na lang ang Face / Touch ID",
+    "forgot": "Nakalimutan ang PIN mo? Kailangan mong i-reinstall ang app."
+  },
+  "notify": {
+    "title": "🔔 Notifications",
+    "intro": "Mga alert sa device na ito. I-on para mapili kung aling mga alert ang matatanggap mo.",
+    "refused": "Kailangang naka-enable ang notifications sa Settings ng device mo para ma-on ito.",
+    "newOrder": "Alert sa bagong order",
+    "newOrderHelp": "Ma-notify kapag may order ng customer na kailangang i-confirm.",
+    "offline": "Alert kapag offline / naka-pause",
+    "offlineHelp": "Ma-notify kapag nag-offline ang device na ito (at na-pause ang ordering). <green>Gumagana kahit offline.</green>"
+  },
+  "van": {
+    "label": "Van",
+    "loadRetry": "Hindi ma-load · Subukan ulit",
+    "select": "Pumili…"
+  },
+  "deviceSave": {
+    "network": "Hindi maabot ang server — i-check ang connection at subukan ulit.",
+    "server": "Hindi iyan ma-save ngayon. Pakisubukan ulit."
+  },
+  "setup": {
+    "fetchErrorTitle": "Hindi ma-load ang setup ng device",
+    "fetchErrorBody": "Hindi namin maabot ang server para i-set up ang <b>device na ito</b>. I-check ang connection at subukan ulit — hindi apektado ang mga order at settings mo.",
+    "retry": "Subukan ulit",
+    "later": "Mamaya na",
+    "noVanTitle": "Walang active na van",
+    "noVanBody": "Wala pang active na van ang truck na ito. Mag-activate ng isa sa <b>Settings → Mga truck mo</b>, at kusang mase-set up ang device na ito — wala nang ibang gagawin dito.",
+    "goToVans": "Pumunta sa Settings → Mga truck mo",
+    "title": "I-set up ang device na ito",
+    "body": "Isang beses na setup para sa <b>device na ito</b>: ang screen na unang bubukas at kung aling van ang pinapatakbo nito. Para sa device na ito lang — hiwalay na sine-set ang ibang device, at puwede mo itong palitan mamaya sa profile menu → “Ang device na ito”.",
+    "whichScreen": "Aling screen ang unang bubukas sa device na ito?",
+    "dashboard": "Dashboard",
+    "kds": "KDS",
+    "whichVan": "Aling van ang device na ito?",
+    "selectVan": "Pumili ng van…",
+    "saving": "Sine-save…",
+    "tryAgain": "Subukan ulit",
+    "continue": "Magpatuloy"
+  },
+  "device": {
+    "title": "Ang device na ito",
+    "viewing": "Tinitingnan mo: <b>{truck}</b>",
+    "viewingVan": "Tinitingnan mo: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Para sa device na ito lang — hiwalay na sine-set ang ibang device. (ID: {id}…)",
+    "truck": "Truck",
+    "van": "Van",
+    "defaultScreen": "Default na screen",
+    "orderNotifications": "Notifications ng order",
+    "patchFailed": "Hindi na-save: {setting, select, van {Van} defaultScreen {Default na screen} other {Notifications ng order}}. {reason}",
+    "requireBiometric": "Kailangan ng fingerprint o face unlock para mabuksan",
+    "pinTitle": "Mag-set ng backup PIN (4–6 na digit)",
+    "pinHelp": "Ito ang daan mo papasok kung ayaw gumana ng fingerprint o face unlock — ito lang ang fallback, kaya huwag itong kalimutan (kapag nakalimutan ang PIN, kailangang i-reinstall ang app). Gumagana kahit offline.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Kumpirmahin ang PIN",
+    "pinTooShort": "Gumamit ng hindi bababa sa 4 na digit.",
+    "pinMismatch": "Hindi magkatugma ang mga PIN.",
+    "setPin": "I-set ang PIN at i-enable",
+    "cancel": "Kanselahin",
+    "noBiometric": "Walang naka-set up na fingerprint o face unlock sa device na ito — magdagdag ng isa sa settings ng device mo. Gumagana pa rin ang backup PIN mo.",
+    "footer": "Para sa device na ito lang ang mga settings na ito — hiwalay na kino-configure ang ibang device."
+  },
+  "appLock": {
+    "unlockReason": "I-unlock ang HatchGrab",
+    "usePasscode": "Gamitin ang passcode",
+    "cancel": "Kanselahin",
+    "confirmEnable": "Kumpirmahin para i-enable ang app lock"
+  },
+  "channel": {
+    "ordersName": "Mga bagong order",
+    "ordersDescription": "Mga alert kapag may order na kailangang i-confirm."
+  },
+  "localNotify": {
+    "newOrderTitle": "Bagong order",
+    "orderReceived": "Natanggap ang order {number}",
+    "newOrders": "{n, plural, one {May bago kang order: {count}} other {May bago kang order: {count}}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Naka-pause ang ordering",
+    "pausedBody": "Offline ka — naka-pause ang pag-order ng mga customer.",
+    "offlineTitle": "Offline ka",
+    "offlineBody": "Nawalan ng connection ang device na ito."
+  }
+}

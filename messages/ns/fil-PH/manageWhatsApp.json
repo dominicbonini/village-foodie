@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Subukan bago mag-connect",
+    "intro": "Mag-type ng tanong na parang customer, at tingnan kung ano mismo ang matatanggap nilang sagot. Walang ipinapadala kahit kanino.",
+    "examples": {
+      "where": "Saan kayo mamayang gabi?",
+      "doYouDo": "May sisig ba kayo?",
+      "menu": "Ano ang nasa menu?"
+    },
+    "placeholder": "Anong dessert ang meron kayo?",
+    "send": "Ipadala",
+    "empty": "Dito lalabas ang reply mo",
+    "working": "Binubuo ang reply…",
+    "noReply": "Walang ipapadalang reply.",
+    "noReplyWhy": "Mukhang spam, booking request o walang kinalaman ang message na iyan, kaya hindi sasagot ang auto-reply.",
+    "footnote": "AI-generated ang mga reply at bahagyang nag-iiba bawat beses, at paminsan-minsan ay puwedeng mali.",
+    "failed": "Hindi makagawa ng preview ngayon.",
+    "unreachable": "Hindi maabot ang server. I-check ang connection mo at subukan ulit."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Inihahanda…",
+      "unavailable": "Hindi available",
+      "waiting": "Hinihintay ang Facebook window…",
+      "finishing": "Tinatapos…",
+      "reconnect": "I-reconnect",
+      "setUp": "I-set up"
+    },
+    "startAgain": "Magsimula ulit",
+    "popupHint": "Hindi mo makita ang Facebook window? Baka na-block ito. I-allow ang pop-ups para sa hatchgrab.com, tapos pindutin ang Magsimula ulit."
+  },
+  "notice": {
+    "sdkUnavailable": "Hindi available ang WhatsApp setup sa environment na ito.",
+    "sdkBlocked": "Hindi ma-load ang login script ng Meta. Kadalasang dahilan ang ad blocker o tracking protection.",
+    "setupFailed": "Hindi natapos ang setup. Walang binago.",
+    "setupFinished": "Tapos na ang setup.",
+    "metaError": "May problemang na-report ang Meta habang nagse-setup. Walang binago. Subukan ulit, at kontakin kami kung paulit-ulit itong nangyayari.",
+    "closed": "Naisara ang setup bago ito natapos. Walang binago — pindutin ang I-set up para subukan ulit.",
+    "disconnectedUnreachable": "Disconnected na ang WhatsApp. Hindi namin maabot ang Meta para alisin ang access. Paki-alis ang HatchGrab sa WhatsApp Business → Settings → Account → Business Platform.",
+    "disconnected": "Disconnected na ang WhatsApp. Huminto na ang auto-replies.",
+    "close": "Isara"
+  },
+  "card": {
+    "title": "Auto-replies",
+    "description": "Awtomatikong sagutin ang mga tanong ng customers sa social media mo, gamit ang menu at schedule mo.",
+    "channels": "Mga channel",
+    "requiresAccount": "Kailangan ng WhatsApp Business account.",
+    "connected": "Connected",
+    "popupInstruction": "Magbubukas ang isang Facebook window para i-connect ang WhatsApp Business account mo. Kung walang lumabas, i-allow ang pop-ups para sa hatchgrab.com sa browser mo, tapos pindutin ulit ang I-set up.",
+    "switchedOff": "Naka-off ang WhatsApp auto-replies para sa truck mo.",
+    "expiring": "Kailangang i-renew agad ang WhatsApp connection mo. Pindutin ang I-reconnect para tuloy-tuloy ang auto-replies.",
+    "comingSoon": "Malapit na",
+    "instagram": "Auto-replies sa Instagram direct messages. Kakailanganin ng Instagram professional account.",
+    "messenger": "Auto-replies sa Facebook Messenger. Kakailanganin ng Facebook Page."
+  },
+  "blocked": {
+    "title": "Hindi naihahatid ang mga reply mo",
+    "body": "Ayaw ipadala ng WhatsApp ang automatic replies mo dahil sa problema sa billing ng WhatsApp Business account mo. Puwede ka pa ring i-message ng customers at makikita mo pa rin ang lahat ng ipinapadala nila — pero hindi sila nakakatanggap ng reply.",
+    "fix": "Direkta kang nagbabayad sa WhatsApp para sa mga message na ito, kaya sa WhatsApp Manager ito inaayos. <link>I-check ang payment method mo</link>"
+  },
+  "limit": {
+    "heading": "Auto-replies",
+    "label": "Limit kada buwan",
+    "option": "{n, number}",
+    "usage": "Nagamit: {used, number} sa {limit, number} · magre-reset sa {date}",
+    "perCustomer": "Hanggang {n} reply kada customer sa loob ng 24 oras, tapos isang message na nagsasabing ikaw mismo ang sasagot.",
+    "emailAt": "Humihinto ang replies kapag naabot ang limit mo. Mag-e-email kami sa iyo sa 80% at 100%.",
+    "saved": "Na-save ang limit ng reply kada buwan",
+    "saveFailed": "Hindi ma-save ang limit"
+  },
+  "billing": {
+    "heading": "Billing",
+    "paymentMethod": "Payment method",
+    "added": "Naidagdag ang payment method",
+    "missing": "Walang naidagdag na payment method",
+    "addInManager": "Idagdag sa WhatsApp Manager",
+    "summary": "Ang Meta, hindi ang HatchGrab, ang naniningil sa WhatsApp account mo para sa replies. Simula {from}, libre ang unang {free, number} kada buwan. Tama noong {checked}; tingnan ang <link>pricing ng Meta</link> para sa mga pagbabago.",
+    "howMetaCharges": "Paano naniningil ang Meta",
+    "chargesTitle": "Ang Meta ang naniningil para sa WhatsApp replies, hindi ang HatchGrab.",
+    "chargesBody": "Sinisingil ng Meta sa WhatsApp Business account mo ang bawat reply na ipinapadala ng HatchGrab para sa iyo. Simula {from}, may {free, number} libreng reply kada buwan bawat number mula sa Meta; pagkatapos noon, sinisingil ang bawat reply sa rate ng Meta. Hindi sinisingil ang replies na ikaw mismo ang nagpadala mula sa WhatsApp Business app. Ang Meta ang nagtatakda ng mga presyong ito at puwede nila itong baguhin. <link>Tingnan ang pricing ng Meta</link>",
+    "addPaymentInManager": "Magdagdag ng payment method sa WhatsApp Manager",
+    "aboveMissing": "Lampas sa {free, number} libreng reply ng Meta ang limit mo. Kung walang payment method, ihihinto ng Meta ang lahat ng reply kapag naubos na ang mga iyon.",
+    "aboveGeneral": "Lampas sa {free, number} libreng reply ng Meta ang limit mo. Kailangan ng payment method sa WhatsApp account mo para sa replies na lampas doon; kung wala, ihihinto ng Meta ang lahat ng reply kapag naubos na ang mga libre.",
+    "addPaymentMethod": "Magdagdag ng payment method"
+  },
+  "disconnect": {
+    "link": "I-disconnect ang WhatsApp",
+    "title": "I-disconnect ang WhatsApp?",
+    "body": "Agad na hihinto ang auto-replies at mawawalan ng access ang HatchGrab sa WhatsApp account mo. Gagana pa rin ang number mo sa WhatsApp Business app. Para tuluyang alisin ang HatchGrab, buksan din ang WhatsApp Business → Settings → Account → Business Platform.",
+    "cancel": "Kanselahin",
+    "confirm": "I-disconnect",
+    "working": "Dini-disconnect…",
+    "failed": "Hindi ma-disconnect"
+  },
+  "signup": {
+    "logged": "Na-log.",
+    "partial": "Na-link namin ang WhatsApp Business account mo pero hindi namin natapos ang connection. Walang mali sa side mo — pakikontak kami at tatapusin namin ito.",
+    "noNumber": "Naka-link ang WhatsApp Business account mo, pero walang phone number na bumalik. Pindutin ang I-reconnect at tapusin ang hakbang para sa number.",
+    "needsRegistering": "Naka-link ang account mo, pero kailangan muna naming i-register ang number na ito bago makapagsimula ang replies. Pakikontak ang support — naka-save ang setup mo, huwag na itong i-run ulit.",
+    "registerRefused": "Naka-link ang account mo pero ayaw i-register ng Meta ang number. Naka-save ang setup mo — pakikontak ang support sa halip na i-run ulit ito.",
+    "deliveryRefused": "Naka-link ang account mo pero ayaw i-on ng Meta ang message delivery. Naka-save ang setup mo — pakikontak ang support sa halip na i-run ulit ito.",
+    "numberTaken": "Naka-connect na ang WhatsApp number na iyan sa ibang HatchGrab account. Para sa isang truck lang puwedeng sumagot ang isang number. Kontakin ang support at ililipat namin ito.",
+    "saveIncomplete": "Malapit na — hindi namin natapos ang pag-save. Naka-save ang setup mo, pakikontak ang support sa halip na i-run ulit ito.",
+    "connected": "Connected na ang WhatsApp. Magsisimula nang sumagot ang auto-replies sa mga message sa number na ito."
+  }
+}

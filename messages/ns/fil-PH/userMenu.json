@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Menu ng user",
+  "screenOn": "Naka-on ang screen",
+  "screenOff": "Puwedeng mag-off ang screen",
+  "newOrderSound": "Tunog ng bagong order",
+  "copied": "Nakopya",
+  "orderLink": "Order link",
+  "qrCode": "QR code",
+  "kitchenScreen": "Kitchen display (KDS)",
+  "thisDevice": "Ang device na ito",
+  "manage": "Manage",
+  "ordersDashboard": "Dashboard ng mga order",
+  "admin": "Admin",
+  "privacy": "Patakaran sa Privacy",
+  "terms": "Mga Tuntunin",
+  "signOut": "Mag-log out",
+  "close": "Isara"
+}

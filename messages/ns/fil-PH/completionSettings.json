@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Tumanggap ng order nang hindi pa bayad",
+  "completionTitle": "Pagkumpleto ng order na hindi pa bayad",
+  "completionHelp": "Ano ang mangyayari kapag ready nang iabot ang order na hindi pa bayad.",
+  "pressesOne": "Isang pindot (“Markahang bayad at na-pick up”)",
+  "pressesOneHelp": "Pinakamainam kung tinatanggap mo ang bayad habang iniaabot ang pagkain. Isang button lang ang makukuha mo, “Markahang bayad at na-pick up”, na sabay na nire-record ang bayad at tinatapos ang order.",
+  "pressesTwo": "Dalawang pindot (“Markahang bayad” at “Na-pick up”)",
+  "pressesTwoHelp": "Pinakamainam kung magkaibang oras ang pagbabayad at pag-abot — magbabayad muna ang customer sa truck, saka kukunin ang order kapag ready na. Dalawang button ang makukuha mo: “Markahang bayad” muna, saka “Na-pick up” kapag nakuha na nila ang pagkain."
+}

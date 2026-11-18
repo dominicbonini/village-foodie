@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Hi {name},} other {Hi,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Founder, HatchGrab",
+  "verify": {
+    "subject": "Kumpirmahin ang email address mo",
+    "thanks": "{hasTruck, select, yes {Salamat sa pag-set up ng {truck} sa HatchGrab.} other {Salamat sa pag-set up ng truck mo sa HatchGrab.}}",
+    "button": "Kumpirmahin ang email address ko",
+    "buttonText": "Kumpirmahin ang email address ko: {url}",
+    "why": "Ito ang address na gagamitin mo sa pag-log in, at dito pupunta ang mga order alert — kaya sulit itong gawin ngayon.",
+    "next": "Kapag nakumpirma na, ipapadala ko sa iyo lahat ng kailangan mo para makapagsimula.",
+    "carryOn": "Puwede mong ituloy ang pag-set up habang hinihintay ito.",
+    "stuck": "May problema? I-reply mo lang ito — ako mismo ang sumasagot sa mga ito.",
+    "fallbackLink": "Kung hindi gumana ang button, i-paste ito: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Welcome sa HatchGrab, {name}} other {Welcome sa HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Masaya akong i-welcome ang {truck} sa HatchGrab.} other {Masaya akong i-welcome ang truck mo sa HatchGrab.}}",
+    "trial": "{months, plural, one {Nagsimula na ang free trial mo (# buwan) — naka-unlock ang lahat ng feature.} other {Nagsimula na ang free trial mo (# buwan) — naka-unlock ang lahat ng feature.}}",
+    "setup": "Kung hindi mo pa nagagawa, madali lang ang pag-set up at mga labinlimang minuto lang ito.",
+    "button": "Buksan ang dashboard mo",
+    "bookmark": "Sulit i-bookmark. Gumagana ito sa kahit anong device.",
+    "stuck": "I-reply mo lang ito kung may problema ka — ako mismo ang sumasagot sa mga ito.",
+    "lookingForward": "{hasTruck, select, yes {Excited na akong makitang nagtitinda ang {truck}.} other {Excited na akong makitang nagtitinda ang truck mo.}}"
+  }
+}

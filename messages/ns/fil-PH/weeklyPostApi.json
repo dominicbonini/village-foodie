@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Hindi nagkasya ang heading kaya pinaikli ito.",
+    "date": "Hindi nagkasya ang petsa kaya pinaikli ito.",
+    "daysOff": "Hindi nagkasya ang days-off text kaya pinaikli ito.",
+    "place": "Hindi nagkasya ang pangalan ng lugar kaya pinaikli ito.",
+    "time": "Hindi nagkasya ang oras kaya pinaikli ito.",
+    "note": "Hindi nagkasya ang sarili mong text kaya pinaikli ito.",
+    "venue": "Hindi nagkasya ang venue kaya pinaikli ito.",
+    "area": "Hindi nagkasya ang area kaya pinaikli ito."
+  },
+  "fontFallback": "Hindi ma-load ang isang font na ginagamit ng design na ito ({id}) — naka-Oswald ang mga box na iyon.",
+  "wrongShapeBackground": "Iba ang hugis ng litrato ng lugar na ito kumpara sa design mo, kaya standard na background ang ginamit.",
+  "rowsFit": "Nasa {px}px sa ibaba ng image ang huling araw — bawasan ang row spacing o itaas ang row 1.",
+  "placeStatus": {
+    "ownBoth": "Sariling litrato at text positions",
+    "wrongShape": "Iba ang hugis — hindi gagamitin hangga’t hindi napapalitan",
+    "ownPicture": "Sariling litrato, standard na positions",
+    "ownPositions": "Standard na litrato, sariling text positions",
+    "none": "Wala pang larawan — Standard ang gamit"
+  },
+  "standardStatus": "Ginagamit sa lahat ng ibang lugar",
+  "option": {
+    "oneOff": "Mag-upload ng isa para sa post na ito lang",
+    "placePoster": "Poster ng {name}",
+    "standard": "Standard design"
+  },
+  "previewLabel": {
+    "lastEvent": "Ang huling event mo rito ang gamit ng preview",
+    "noEvents": "Wala pang event dito — ipinapakita ng preview ang susunod mong event na may pangalan ng lugar na ito"
+  },
+  "fontUsage": {
+    "weekly": "ang weekly post design mo",
+    "event": "ang design mo ng post para sa isang event",
+    "place": "ang design mo para sa {place}",
+    "placeUnnamed": "ang design mo para sa isang lugar"
+  },
+  "face": {
+    "regular": "Regular",
+    "bold": "Bold",
+    "italic": "Italic"
+  },
+  "picture": {
+    "legacy": "Event poster",
+    "fallback": "Larawan",
+    "wrongShape": "Iba ang hugis — hindi magagamit bilang buong background"
+  },
+  "noPicture": {
+    "omit": "Huwag isama",
+    "blank": "Mag-iwan ng blangkong espasyo",
+    "logo": "Ipakita ang logo mo"
+  },
+  "noPicturesAll": "{total, plural, one {May image na ang lahat ng location mo ({total}).} other {May image na ang lahat ng location mo ({total}).}}",
+  "noPicturesSome": "{without, plural, one {Wala pang image: {without} sa {total} location mo} other {Wala pang image: {without} sa {total} location mo}}",
+  "licenceTick": "Ako ang may-ari ng font na ito o may license ako para gamitin ito",
+  "fontUploadButton": "↑ I-upload ang font mo"
+}

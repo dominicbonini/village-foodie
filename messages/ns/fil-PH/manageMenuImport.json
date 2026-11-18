@@ -1,0 +1,195 @@
+{
+  "cancel": "Kanselahin",
+  "back": "← Bumalik",
+  "backPlain": "Bumalik",
+  "next": "Susunod →",
+  "continue": "Magpatuloy →",
+  "closeImport": "Isara ang import",
+  "tryAgain": "Subukan ulit",
+  "catError": {
+    "empty": "Bigyan ng pangalan ang category.",
+    "tooLong": "Masyadong mahaba ang pangalang iyan.",
+    "clash": "May category na na ang pangalan ay “{name}”."
+  },
+  "steps": {
+    "details": "Ang details mo",
+    "menu": "Menu",
+    "extras": "Extras",
+    "allergens": "Allergens",
+    "kitchen": "Kitchen setup",
+    "schedule": "Schedule",
+    "settings": "Settings"
+  },
+  "toast": {
+    "demoGone": "Hindi na available ang demo menu mo — paki-upload ulit para makapagpatuloy.",
+    "eventsSaveFailed": "Hindi na-save ang mga event",
+    "cardReadFailed": "Hindi mabasa ang allergen card — subukan ulit",
+    "imageReadFailed": "Hindi mabasa ang image na iyan — i-type o i-paste na lang ang card mo",
+    "commitFailedDetail": "Hindi natapos ang pag-save ng menu: {error}. Baka na-save na ang ilang item — i-check ang menu mo bago subukan ulit.",
+    "commitFailed": "Hindi natapos ang pag-save ng menu. Baka na-save na ang ilang item — i-check ang menu mo bago subukan ulit.",
+    "finishFailed": "Hindi ma-markahang tapos ang setup — puwede ka pa ring magpatuloy.",
+    "scheduleReadFailed": "Hindi mabasa ang schedule na iyan — subukan ang mas malinaw na litrato o i-type ang mga petsa mo.",
+    "cardRead": "Nabasa ang card — na-match: {matched}, {pending, plural, one {# ang kailangan mong i-assign} other {# ang kailangan mong i-assign}}"
+  },
+  "settingsReview": {
+    "anchorOrder": "Settings → Order settings",
+    "anchorDisplay": "Settings → Mga truck mo → Display settings",
+    "mins15": "15 minuto",
+    "mins30": "30 minuto",
+    "mins60": "60 minuto",
+    "hours2": "2 oras",
+    "title": "Ilang settings na dapat i-check",
+    "loading": "Nilo-load ang kasalukuyang settings mo…",
+    "looksGood": "Okay na →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Hindi iyan na-save — puwede mo itong baguhin sa Settings.",
+    "anchorContact": "Settings → Contact details",
+    "intro": "Nag-set kami ng ilang karaniwang settings para sa iyo. Sulit silipin — puwede mong baguhin ang alinman dito mamaya sa Settings.",
+    "cancelAria": "Gaano katagal bago ang pick-up puwedeng mag-cancel ang mga customer"
+  },
+  "allergensNotSet": {
+    "bodySetup": "I-review ang mga ito bago mag-go live. Naka-flag ang mga item bilang “hindi pa naka-set ang allergens” hangga’t hindi mo ito ginagawa.",
+    "body": "I-review ang mga ito sa Settings bago mag-go live. Naka-flag ang mga item bilang “hindi pa naka-set ang allergens” hangga’t hindi mo ito ginagawa.",
+    "title": "⚠ Hindi pa naka-set ang allergens at dietary"
+  },
+  "welcome": {
+    "title": "Welcome sa HatchGrab",
+    "yourTruck": "Ang truck mo",
+    "stop": "Puwede kang tumigil at bumalik kahit kailan.",
+    "body": "Naka-set up na ang {name}. Susunod, idadagdag natin ang menu mo, tapos ang una mong event.",
+    "go": "Tara na"
+  },
+  "offer": {
+    "title": "Gamitin ang menu mula sa demo mo?",
+    "use": "Gamitin ang menu na ito",
+    "upload": "Mag-upload ng ibang menu",
+    "body": "Na-save namin ang menu na in-upload mo — {count, plural, one {# item} other {# item}}. Gamitin ito bilang panimula, o mag-upload ng iba."
+  },
+  "checkMenu": {
+    "title": "I-check ang menu mo",
+    "body": "Na-save namin sa truck mo ang menu mula sa demo mo, at binago mo na ito mula noon — kaya naka-keep ang mga pagbabago mo. Silipin ito sa ibaba.",
+    "done": "Okay na"
+  },
+  "upload": {
+    "title": "I-import ang menu mo",
+    "body": "Mag-upload ng litrato ng menu board mo, screenshot, PDF, o i-paste ang menu mo bilang text. Babasahin ito ng AI namin at bubuuin ang digital menu mo — mare-review mo ang lahat bago ito ma-save.",
+    "confirmCancel": "I-cancel ang import na ito? Mabubura ang review mo sa menu na ito.",
+    "process": "I-process ang menu",
+    "later": "Mamaya ko na ito gagawin"
+  },
+  "processing": {
+    "title": "Ina-analyze ang menu mo",
+    "body": "Binabasa at kina-categorize ng AI ang mga item mo…"
+  },
+  "review": {
+    "title": "I-review ang na-import na menu",
+    "editLaterSetup": "Mae-edit mo kahit kailan mamaya ang mga pangalan, presyo, extras, allergens at dietary info.",
+    "editLater": "Mae-edit mo kahit kailan sa Settings ang mga pangalan, presyo, extras, allergens at dietary info.",
+    "noPrice": "{count, plural, one {# item ang walang presyong nabasa namin} other {# item ang walang presyong nabasa namin}}",
+    "renameCategoryAria": "Palitan ang pangalan ng category: {name}",
+    "renameAria": "Palitan ang pangalan: {name}",
+    "renameTitle": "Palitan ang pangalan ng category",
+    "deleteAria": "I-delete: {name}",
+    "deleteTitle": "I-delete ang category",
+    "lastCategory": "Kailangan ng menu mo ng kahit isang category",
+    "countOf": "{kept} sa {total}",
+    "existing": "dati na",
+    "deleteEmptyTitle": "I-delete ang “{name}”?",
+    "deleteEmptyBody": "Wala itong item, kaya walang mawawala.",
+    "delete": "I-delete",
+    "moveTitle": "Saan ililipat ang {count, plural, one {# item} other {# item}}?",
+    "moveBody": "Para ma-delete ang “{name}”, kailangang ilipat sa ibang lugar ang mga dish nito — hindi ini-import ang mga item na walang category.",
+    "moveAria": "Ilipat ang mga item mula sa {name} papunta sa",
+    "chooseCategory": "Pumili ng category…",
+    "moveDelete": "Ilipat at i-delete",
+    "itemName": "Pangalan ng item",
+    "free": "libre?",
+    "freeOn": "Libre ✕",
+    "nameFirst": "Pangalanan muna ang bagong item bago magdagdag ng iba",
+    "addItem": "+ Magdagdag ng item",
+    "categoryName": "Pangalan ng category",
+    "newCategoryAria": "Pangalan ng bagong category",
+    "addCategory": "+ Magdagdag ng category",
+    "ready": "{count, plural, one {# item ang handa nang idagdag} other {# item ang handa nang idagdag}}. I-uncheck ang anumang ayaw mo.",
+    "noPriceBody": "Lagyan ng presyo ang bawat isa, o markahang libre — kung hindi, magla-live ito sa halagang {zero}. Hindi ka makakapagpatuloy hangga’t hindi naaayos ang mga ito.",
+    "incomplete": "Maglagay ng pangalan para maidagdag ang item na ito — hindi ini-import ang mga blangkong row."
+  },
+  "extras": {
+    "introSetup": "Ang ilang dish ay puwedeng i-set up bilang <b>isang customizable na item</b> o panatilihing <b>hiwalay na mga dish</b>. Piliin kung paano lalabas ang bawat isa. Puwede mo itong baguhin mamaya.",
+    "intro": "Ang ilang dish ay puwedeng i-set up bilang <b>isang customizable na item</b> o panatilihing <b>hiwalay na mga dish</b>. Piliin kung paano lalabas ang bawat isa. Puwede mo itong baguhin mamaya sa Settings.",
+    "none": "Walang dish na puwedeng i-group — standalone dish ang bawat item.",
+    "axisChoice": "· pagpipilian: {axis}",
+    "grouped": "Naka-group · isang item, ang customer ang pipili",
+    "separate": "Hiwalay na menu items"
+  },
+  "allergens": {
+    "title": "Allergens",
+    "detected": "May na-detect kaming allergens mula sa menu mo. Piliin sa ibaba kung paano ipapakita ang mga ito.",
+    "howShow": "Paano mo gustong ipakita ang allergens sa mga customer?",
+    "skip": "Laktawan muna ang allergen setup"
+  },
+  "kitchen": {
+    "title": "Kitchen setup",
+    "intro": "Tulungan ang mga customer na malaman kung gaano katagal maghihintay — puwede mo itong baguhin kahit kailan.",
+    "howWorks": "Paano gumagana ang kitchen capacity",
+    "allExist": "Dati nang naroon ang lahat ng category — walang oras na ise-set.",
+    "totalHelp": "Mag-set ng total capacity para limitahan kung ilang item ang kaya ng kusina bawat window. Iwan sa ∞ para walang limit.",
+    "saveAdd": "I-save at idagdag sa menu"
+  },
+  "schedule": {
+    "title": "Idagdag ang schedule ko",
+    "intro": "Kung nasa website mo ang schedule mo, puwede namin itong i-update nang awtomatiko — o ikaw mismo ang magdagdag ng mga petsa mo.",
+    "websiteTitle": "Nasa website ko ang schedule ko",
+    "urlPlaceholder": "https://yourfoodtruck.ph/events",
+    "checking": "Chine-check…",
+    "verify": "I-verify",
+    "checkingSite": "Chine-check ang website mo…",
+    "takesTime": "Puwedeng umabot ito nang hanggang 2 minuto — huwag munang isara ito.",
+    "canRead": "✓ Nababasa namin ang schedule mo",
+    "ownSite": "Ang sarili mong website — hindi Facebook o Instagram page.",
+    "photoTitle": "Mag-upload ng litrato ng schedule ko",
+    "dragChoose": "I-drag and drop o i-tap para pumili",
+    "imageOrPdf": "Image o PDF",
+    "or": "o",
+    "pastePlaceholder": "I-paste dito ang mga petsa mo…",
+    "read": "Basahin ang schedule",
+    "found": "May nahanap na {count, plural, one {# petsa} other {# petsa}} — idadagdag ang mga ito sa schedule mo.",
+    "dateTbc": "Petsa: TBC",
+    "save": "I-save ang {count, plural, one {# petsa} other {# petsa}}",
+    "manualDesc": "Idagdag ang mga ito mamaya sa Schedule tab — wala kang kailangang gawin ngayon.",
+    "manualBody": "Walang problema. Puwede kang magdagdag at mag-manage ng mga petsa mo kahit kailan mula sa Schedule tab sa account mo.",
+    "blockedDomain": "Pakigamit ang URL ng website mo — hindi awtomatikong nababasa ang Facebook at Instagram pages.",
+    "saveFailed": "Nabasa namin ang schedule mo, pero hindi namin ito ma-save ngayon — subukan ulit.",
+    "websiteDesc": "Regular namin itong iche-check at ipapadala sa iyo ang mga bagong petsa para ma-approve mo.",
+    "keepChecking": "Patuloy naming iche-check ang page na ito at ipapadala sa iyo ang anumang bagong petsa para ma-approve mo.",
+    "photoDesc": "Kunan ng litrato o i-paste ang mga petsa mo — babasahin namin ang mga ito para ma-check mo.",
+    "noneFound": "Wala kaming nahanap na petsa diyan — subukan ang mas malinaw na litrato, o ikaw mismo ang magdagdag ng petsa.",
+    "manualTitle": "Ako na ang magdadagdag ng mga petsa ko",
+    "trialNotStarted": "Hindi nagsisimula ang Free trial mo kapag nagdagdag ka ng mga event — ikaw ang pipili mamaya kung aling event ang magsisimula nito."
+  },
+  "done": {
+    "summary": "{items, plural, one {# item} other {# item}} sa {categories, plural, one {# category} other {# category}}.",
+    "imported": "Na-import na ang menu!",
+    "added": "Naidagdag na sa menu ang mga item mo.",
+    "duplicates": "{count, plural, one {# duplicate ang nilaktawan} other {# duplicate ang nilaktawan}}",
+    "showMe": "Ipakita mo sa akin",
+    "remind": "Paalalahanan ako mamaya",
+    "allSet": "Ready ka na!",
+    "explore": "Ako na ang mag-e-explore"
+  },
+  "discard": {
+    "setupTitle": "Tapusin ang setup mamaya?",
+    "setupBody": "Naka-save ang account at truck mo — walang nawala. Puwede mong idagdag ang menu mo kahit kailan: mag-log in at i-tap ang <b>I-import ang menu</b> sa menu screen mo para ituloy mula rito.",
+    "keepGoing": "Ituloy",
+    "finishLater": "Tapusin mamaya",
+    "title": "I-discard ang import na ito?",
+    "keepEditing": "Ituloy ang pag-edit",
+    "discard": "I-discard",
+    "body": "Hindi mase-save ang mga pagbabago mo — hindi maidadagdag ang mga na-import na item, prep times at kitchen capacity.",
+    "carriedBody": "Naka-save sa truck mo ang menu mo mula sa demo, gaya ng dati. Puwede mo itong baguhin kahit kailan sa menu screen mo."
+  },
+  "allergenCardText": {
+    "contains": "Mayroon: {list}",
+    "mayContain": "Maaaring mayroon: {list}"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "copy": "Kopyahin",
+  "copied": "Nakopya ✓",
+  "failed": "Hindi nakopya",
+  "aria": "{label} {thing}",
+  "announceCopied": "Nakopya: {thing}",
+  "announceCopiedValue": "Nakopya ang value",
+  "announceFailed": "Hindi makopya: {thing}. Piliin ang text at ikaw na ang kumopya.",
+  "announceFailedValue": "Hindi makopya ang value. Piliin ang text at ikaw na ang kumopya."
+}

@@ -1,0 +1,17 @@
+{
+  "back": "← Bumalik",
+  "title": "Gumamit ng combo meal",
+  "save": "Makatipid ng {amount}",
+  "selectItems": "Pumili ng item para sa bawat slot",
+  "choose": "Pumili — {category}…",
+  "inYourBasket": "── Nasa basket mo ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (nasa basket){state, select, used { — nasa isang combo meal na} taken { — napili na sa ibang slot} other {}}",
+  "addNew": "── Magdagdag ng bago ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Required · pumili ng isa} required {Required} other {Pumili ng isa}}{unmet, select, yes { (required)} other {}}",
+  "notePlaceholder": "Magdagdag ng note, hal. walang sibuyas (optional)",
+  "backButton": "Bumalik",
+  "cancel": "Kanselahin",
+  "chooseRequired": "Piliin ang mga required na option",
+  "apply": "Gamitin ang combo meal · {amount}"
+}

@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Hindi available sa demo",
+  "demoMode": "DEMO MODE",
+  "loopLands": "Ganyan mismo pumapasok ang totoong order",
+  "showMe": "Ipakita",
+  "noCard": "{sub} Hindi kailangan ng card.",
+  "notYet": "Hindi pa",
+  "cashAndCollected": "Cash at na-pick up",
+  "logoPlaceholder": "Logo mo rito",
+  "welcomeTitle": "{sample, select, yes {Narito ang sample na demo} other {Narito ang demo mo}}",
+  "welcomeIntro": "{sample, select, yes {Ito ay <b>pansamantalang menu</b> para makita mo kung paano gumagana ang lahat — i-upload ang sarili mong menu anumang oras para gawin itong iyo.} other {Ito ang sarili mong menu at branding, sa totoong board.}} Mga halimbawa lang ang mga order na nandito na, para makita mo ang isang busy na service.",
+  "twoThings": "Dalawang bagay na susubukan:",
+  "hitButton": "Pindutin ang <b>{button}</b> sa isang order",
+  "scanQr": "I-scan ang <b>QR code</b> — o i-tap ang link — at mag-order bilang customer, tapos panoorin itong pumasok",
+  "qrAlt": "QR code papunta sa ordering page para sa customers mo",
+  "openHere": "O buksan ito sa device na ito",
+  "copyLink": "Kopyahin ang link",
+  "copyDescribedAs": "order link",
+  "noLinkTitle": "Ang order link mo para sa customers",
+  "noLinkBody": "Nasa menu sa kanang itaas ang link ng ordering page mo.",
+  "asLive": "Ang daloy ng ordering at kusina ay eksaktong gaya ng sa live.",
+  "startExploring": "Simulang mag-explore",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {Magsimula nang libre} one {Libre sa unang # buwan} other {Libre sa unang # buwan}}",
+    "sub": "Magsisimula ang Free trial mo pag-sign up mo."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Demo · ito ang menu mo, gaya ng makikita ng customers mo. Walang sisingilin at walang ipapadalang email."
+}

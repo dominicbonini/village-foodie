@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Heading ng linggo",
+    "weekHeadingSample": "Linggo ng …",
+    "daysSample": "{first} hanggang {last}",
+    "date": "Date",
+    "place": "Location",
+    "venue": "Venue",
+    "area": "Area",
+    "time": "Time",
+    "rows": "Rows",
+    "rowsSample": "{px}px ang pagitan · {first} hanggang {last}",
+    "ownText": "Sarili mong text",
+    "noteTokenSample": "Ang note na tina-type mo kapag gumagawa ka ng post",
+    "nothingYet": "Wala pa",
+    "thisBox": "ang box na ito"
+  },
+  "sample": {
+    "venue": "Weekend Market sa Plaza",
+    "area": "Kapitolyo"
+  },
+  "bar": {
+    "previewWith": "I-preview gamit ang",
+    "undo": "I-undo",
+    "undoTitle": "I-undo (⌘Z)",
+    "redo": "I-redo",
+    "redoTitle": "I-redo (⇧⌘Z)",
+    "cancel": "Kanselahin",
+    "saving": "Sine-save…",
+    "save": "I-save ang design"
+  },
+  "grid": {
+    "eachRow": "Bawat row",
+    "placeOff": "Nasa larawan mo na ang pangalan ng lugar — hindi na ito idadagdag ng HatchGrab."
+  },
+  "background": {
+    "uploading": "Ina-upload…",
+    "replace": "Palitan ang larawan",
+    "shape": {
+      "square": "Square (1:1)",
+      "portrait45": "Portrait (4:5)",
+      "portrait916": "Portrait (9:16)",
+      "landscape169": "Landscape (16:9)",
+      "portrait": "Portrait",
+      "landscape": "Landscape"
+    }
+  },
+  "scope": {
+    "title": "Posisyon ng text",
+    "standard": "Kaparehong posisyon ng Standard",
+    "own": "Sariling posisyon para sa {place}",
+    "locked": "Galing sa Standard design mo ang mga posisyong ito. Piliin ang “Sariling posisyon para sa {place}” para ilipat ang mga ito dito lang."
+  },
+  "stage": {
+    "hint": "I-drag ang box para ilipat · i-drag ang kanto para i-resize",
+    "zoomOut": "Mag-zoom out",
+    "zoomIn": "Mag-zoom in"
+  },
+  "rows": {
+    "spacing": "Pagitan",
+    "daysRun": "Mula {first} hanggang {last} ang mga araw. Kinokopya pababa ang tatlong box ng Row 1 sa layong ito.",
+    "whichEvents": "Aling mga event",
+    "showCancelled": "Ipakita ang mga na-cancel na event",
+    "showCancelledHint": "Ang na-cancel na event ay nagpapakita ng lugar nito na may guhit at ng salitang NA-CANCEL. Kapag naka-off, mababasa ang araw bilang day off."
+  },
+  "days": {
+    "reorder": "Ayusin",
+    "move": "ilipat"
+  },
+  "picture": {
+    "picture": "Larawan",
+    "fill": "Punuin ang box",
+    "fit": "Ipagkasya sa loob",
+    "corners": "Mga sulok",
+    "square": "Parisukat",
+    "rounded": "Pabilog ang sulok",
+    "ifMissing": "Kung walang image ang isang location",
+    "noPicture": {
+      "omit": "Huwag isama",
+      "blank": "Mag-iwan ng blangkong espasyo",
+      "logo": "Ipakita ang logo mo"
+    },
+    "border": "Border",
+    "drawBorder": "Lagyan ng border",
+    "drawBorderHint": "Isang linya sa paligid ng larawan, sa sarili mong kulay.",
+    "borderWidth": "Kapal ng border",
+    "cornerRadius": "Kurba ng sulok",
+    "locationPictures": "Mga larawan ng location",
+    "addLocationPictures": "+ Magdagdag ng mga larawan ng location",
+    "allHaveImage": "{total, plural, =0 {Wala ka pang location.} one {May image na ang lahat ng location mo (#).} other {May image na ang lahat ng location mo (#).}}",
+    "someWithout": "{without, plural, one {Wala pang image} other {Wala pang image}}: {without} sa {total, plural, one {# location mo} other {# location mo}}"
+  },
+  "settings": {
+    "font": "Font",
+    "colour": "Kulay",
+    "textColour": "Kulay ng text",
+    "ownStyleNote": "{count, plural, one {May sariling style ang {names}, kaya hindi ito ginalaw.} other {May sariling style ang {names}, kaya hindi ito ginalaw.}}",
+    "matchAgain": "Itugma ulit",
+    "matchName": "Itugma sa {name}",
+    "lastToggle": "{kind, select, weekly {Panatilihing naka-on ang Location o Time. Ang na-cancel na event ay nagpapakita ng lugar nito na may guhit at ng salitang NA-CANCEL, kaya kapag parehong naka-off, walang magsasabing na-cancel ito.} other {Panatilihing naka-on ang Venue o Time. Ang na-cancel na event ay nagpapakita ng lugar nito na may guhit at ng salitang NA-CANCEL, kaya kapag parehong naka-off, walang magsasabing na-cancel ito.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — may totoong italic ang font na ito"
+  },
+  "align": {
+    "left": "Kaliwa",
+    "centre": "Gitna",
+    "right": "Kanan"
+  },
+  "effects": {
+    "outlineColour": "Kulay ng outline",
+    "bandColour": "Kulay ng band",
+    "bandDaysOff": "Band sa mga day off",
+    "bandCancelled": "Band kapag na-cancel ang event",
+    "bandDaysOffHint": "Ginagamit kapalit ng band sa itaas sa araw na walang pagtitinda.",
+    "bandCancelledHint": "Ginagamit kapalit ng band sa itaas kapag na-cancel ang event."
+  },
+  "more": {
+    "dayOwnLine": "Araw sa sariling linya",
+    "dayOwnLineHint": "Ang araw ng linggo sa itaas ng petsa. Petsa lang.",
+    "noEventDay": "Sa araw na walang event",
+    "wordsBeforePlaceholder": "hal. Hanapin kami sa",
+    "neverHyphenate": "Laging pinapaliit ang isang mahabang salita na walang space — hindi namin hinahati gamit ang hyphen ang pangalan ng lugar."
+  },
+  "bits": {
+    "less": "Mas kaunti",
+    "more": "Higit pa",
+    "chooseColourFor": "{label} — pumili ng kahit anong kulay",
+    "chooseColour": "Pumili ng kahit anong kulay"
+  }
+}

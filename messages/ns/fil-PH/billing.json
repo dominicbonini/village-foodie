@@ -1,0 +1,120 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Ang plan mo",
+      "trialPill": "Free trial",
+      "change": "Palitan ang plan",
+      "trialLine": "Matatapos ang free trial mo sa {date}. Pagkatapos noon, {price} kada buwan ang {plan}.",
+      "trialLineFree": "Matatapos ang free trial mo sa {date}. Pagkatapos noon, nasa {plan} ka na, walang monthly fee.",
+      "proLine": "Kasama ang online orders na hanggang {allowance} kada buwan. Pagkatapos, {fee}.",
+      "paygLine": "{fee} sa online orders. Walang monthly fee.",
+      "unlimitedLine": "{price} kada buwan. Walang fee sa online orders.",
+      "pendingLine": "Magsisimula ang {plan} sa {date}."
+    },
+    "payment": {
+      "title": "Payment method",
+      "none": "Wala pang card na naidagdag. Magdagdag ng isa para patuloy kang makatanggap ng online orders pagkatapos ng trial mo.",
+      "add": "Magdagdag ng card",
+      "pix": "Gamitin ang Pix Automático",
+      "card": "{brand} na nagtatapos sa {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Naghihintay ng kumpirmasyon.",
+      "change": "Palitan",
+      "lastFailed": "Hindi pumasok ang huling bayad",
+      "update": "I-update ang card",
+      "error": "Hindi namin mabuksan ang payment page. Pakisubukan ulit.",
+      "noneAfterTrial": "Walang naidagdag na card. Magdagdag ng isa para ma-on ulit ang online ordering."
+    },
+    "whatYouPay": {
+      "title": "Ang binabayaran mo",
+      "plan": "Ang plan mo, sinisingil tuwing ika-1 para sa papasok na buwan",
+      "fee": "Online orders na lampas {allowance} kada buwan, sinisingil tuwing ika-1 para sa nakaraang buwan",
+      "feePayg": "Online orders, sinisingil tuwing ika-1 para sa nakaraang buwan",
+      "walkUps": "Walk-in orders",
+      "free": "Libre",
+      "trialEnd": "Kapag natapos ang trial mo sa {date}, sisingilin ka namin ng {amount} para sa natitirang bahagi ng {month}. Pagkatapos, {price} sa {nextFirst}."
+    },
+    "next": {
+      "title": "Susunod na bayad · {date}",
+      "plan": "{plan} para sa {month}",
+      "fee": "{fee} sa online orders ng {month} na lampas {allowance} (sa ngayon)",
+      "feePayg": "{fee} sa online orders ng {month} (sa ngayon)",
+      "vans": "Mga extra van para sa {month}",
+      "surcharge": "Post-pay charge para sa {month}",
+      "carried": "Dala mula sa nakaraan",
+      "total": "Kabuuan sa ngayon",
+      "walkUps": "Laging libre ang walk-in orders."
+    },
+    "preorders": {
+      "title": "Paano nagbabayad ang mga customer para sa pre-order",
+      "online": "Online, pagka-order nila",
+      "onlineHint": "Diretso sa Stripe account mo ang pera.",
+      "atTruckHint": "Magbabayad ang mga customer pag-pick up nila. Idinadagdag ang fee namin sa monthly charge mo.",
+      "saved": "Na-save.",
+      "error": "Hindi namin ma-save iyan. Pakisubukan ulit."
+    },
+    "invoices": {
+      "title": "Mga invoice",
+      "date": "Petsa",
+      "for": "Para sa",
+      "amount": "Halaga",
+      "status": "Status",
+      "forMonthly": "Plan ng {planMonth}, fees ng {usageMonth}",
+      "forMonthlyPlan": "Plan ng {planMonth}",
+      "forTrialEnd": "Natitirang bahagi ng {month}",
+      "forUpgrade": "Paglipat sa {plan}",
+      "lateFee": "Late payment fee",
+      "paid": "Bayad na",
+      "unpaid": "Hindi pa bayad",
+      "overdue": "Overdue",
+      "download": "I-download",
+      "payNow": "Magbayad ngayon",
+      "none": "Wala pang invoice."
+    },
+    "failed": {
+      "title": "Hindi pumasok ang bayad mo ({amount}).",
+      "body": "Susubukan namin ulit. I-update ang card mo bago ang {date} para manatiling naka-on ang online ordering.",
+      "button": "I-update ang card"
+    },
+    "paused": {
+      "title": "Naka-pause ang online ordering",
+      "body": "Overdue na ang {amount}. Magbayad ngayon at babalik agad ang online ordering.",
+      "warning": "Magbayad bago ang {date} o baka ma-suspend ang account mo.",
+      "pay": "Magbayad ng {amount}",
+      "otherCard": "Gumamit ng ibang card"
+    },
+    "loading": "Nilo-load ang billing…",
+    "loadError": "Hindi namin ma-load ang billing mo. Pakisubukan ulit."
+  },
+  "changePlan": {
+    "title": "Palitan ang plan",
+    "current": "Nasa {plan} ka.",
+    "free": "Libre",
+    "perMonth": "{price} kada buwan",
+    "paygLine": "{fee} sa online orders.",
+    "proLine": "Kasama ang online orders na hanggang {allowance}. Pagkatapos, {fee}.",
+    "unlimitedLine": "Walang fee sa online orders.",
+    "yourPlan": "Ang plan mo",
+    "startsNow": "Magsisimula ngayon.",
+    "chargeToday": "Sisingilin ka namin ng {amount} ngayon para sa natitirang bahagi ng {month}. Pagkatapos, {price} sa {nextFirst}.",
+    "startsLater": "Magsisimula sa {nextFirst}. Nasa {plan} ka hanggang noon.",
+    "cancel": "Kanselahin",
+    "switchTo": "Lumipat sa {plan}",
+    "error": "Hindi namin mapalitan ang plan mo. Pakisubukan ulit.",
+    "trialLine": "Naka-free trial ka. Piliin ang plan mo para sa pagtatapos nito sa {date}.",
+    "startsAtTrialEnd": "Magsisimula pagkatapos ng trial mo.",
+    "choose": "Piliin ang {plan}"
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Matatapos ang free trial mo sa {date}.</b> Magdagdag ng card para manatiling naka-on ang online ordering.",
+    "trialEndsTomorrow": "<b>Matatapos bukas ang free trial mo.</b> Magdagdag ng card o mapo-pause ang online ordering.",
+    "allSet": "<b>Ayos na ang lahat.</b> Magsisimula ang {plan} sa {date}.",
+    "paymentFailed": "<b>Hindi pumasok ang bayad mo.</b> I-update ang {method, select, payment_method {payment method} other {card}} mo bago ang {date} para manatiling naka-on ang online ordering.",
+    "paused": "<b>Naka-pause ang online ordering.</b> Magbayad ng {amount} bago ang {date} o baka ma-suspend ang account mo.",
+    "addCard": "Magdagdag ng card →",
+    "updateCard": "I-update ang {method, select, payment_method {payment method} other {card}} →",
+    "payNow": "Magbayad ngayon →",
+    "dismiss": "Isara",
+    "trialEnded": "<b>Tapos na ang free trial mo.</b> Magdagdag ng card para ma-on ulit ang online ordering."
+  }
+}

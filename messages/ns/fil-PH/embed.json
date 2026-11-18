@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Kung saan susunod na magtitinda ang {truck}.",
+  "orderFrom": "Mag-order sa {truck}",
+  "poweredBy": "Pinapagana ng <b>HatchGrab</b>",
+  "loadFailed": "Hindi ma-load ang schedule ngayon.",
+  "loading": "Nilo-load ang schedule…",
+  "empty": "Walang nakalistang paparating na event para sa {truck}."
+}

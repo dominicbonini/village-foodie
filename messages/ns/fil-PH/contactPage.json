@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Tulong",
+    "description": "Humingi ng tulong tungkol sa HatchGrab. Magpadala ng message at sasagot kami sa iyo sa email."
+  },
+  "logIn": "Mag-log in",
+  "eyebrow": "Tulong",
+  "title": "Paano ka namin matutulungan?",
+  "lede": "May hindi gumagana, o may tanong tungkol sa account mo? May dalawang paraan para maabot kami — alinman doon, sasagot kami sa iyo sa email.",
+  "emailUs": "I-email kami",
+  "formHeading": "O magpadala ng message",
+  "form": {
+    "topicLabel": "Tungkol saan ito?",
+    "topics": {
+      "question": "Tanong tungkol sa HatchGrab",
+      "account": "Tulong sa account ko",
+      "comparison": "Pagtatama sa isang comparison page",
+      "other": "Iba pa"
+    },
+    "nameLabel": "Pangalan mo",
+    "namePlaceholder": "Pangalan",
+    "emailLabel": "Email",
+    "businessLabel": "Pangalan ng truck o negosyo",
+    "optional": "(opsyonal)",
+    "businessPlaceholder": "hal. Sisig Station",
+    "messageLabel": "Message mo",
+    "send": "Ipadala ang message",
+    "sending": "Ipinapadala…",
+    "privacyLine": "Gagamitin lang namin ang details mo para sumagot sa iyo.",
+    "privacyLink": "Patakaran sa Privacy",
+    "thanksTitle": "Salamat — natanggap na namin ang message mo.",
+    "thanksBody": "Sasagot kami sa email address na ibinigay mo.",
+    "errors": {
+      "nameRequired": "Ilagay ang pangalan mo.",
+      "nameTooLong": "Hanggang {max, number} character lang ang pangalan mo.",
+      "emailRequired": "Ilagay ang email address mo.",
+      "emailInvalid": "Maglagay ng valid na email address.",
+      "emailTooLong": "Gumamit ng email address na hanggang {max, number} character lang.",
+      "businessRequired": "Ilagay ang pangalan ng truck o negosyo mo, para mahanap namin ang account mo.",
+      "businessTooLong": "Hanggang {max, number} character lang ang pangalan ng truck o negosyo.",
+      "messageTooShort": "Sumulat ng hindi bababa sa {min, number} character.",
+      "messageTooLong": "Hanggang {max, number} character lang ang message mo.",
+      "topicInvalid": "Piliin kung tungkol saan ang message mo.",
+      "rateLimited": "Nakapagpadala ka na ng ilang message — subukan ulit mamaya, o i-email kami sa {email}.",
+      "failed": "Nagka-problema — i-email kami sa {email}."
+    }
+  },
+  "privacy": "Privacy",
+  "terms": "Mga Tuntunin",
+  "about": "Tungkol sa amin",
+  "copyright": "© {year} HatchGrab"
+}

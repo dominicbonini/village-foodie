@@ -1,0 +1,13 @@
+{
+  "subtotal": "Subtotal",
+  "taxFallback": "Tax",
+  "taxIncluded": "Kasama ang {label}",
+  "serviceFeeCustomer": "Online service fee",
+  "serviceFee": "Service fee",
+  "cardFee": "Card fee",
+  "tip": "Tip",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Tax, fees at tip} tax_tip {Tax at tip} fees_tip {Fees at tip} fees {Fees} other {Tax at fees}}"
+}

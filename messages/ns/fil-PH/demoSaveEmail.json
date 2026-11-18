@@ -1,0 +1,9 @@
+{
+  "subject": "Ang HatchGrab demo mo — narito ang link pabalik",
+  "heading": "Naka-save na ang demo mo",
+  "intro": "Narito ang link pabalik sa demo na may menu mo. Hindi kailangan ng login — i-tap lang.",
+  "button": "Buksan ang demo ko",
+  "freshDay": "Tuwing babalik ka, magse-set up kami ng bagong araw ng pagtitinda para may mapaglaruan ka.",
+  "deletion": "Demo ito, kaya hindi namin ito itatago habambuhay — buburahin namin ito at ang menu sa\n                <b>{date}</b> ({days, plural, one {# araw} other {# araw}}). Kung mag-sign up ka bago\n                iyon, sasama sa iyo ang menu mo.",
+  "notSent": "Na-save, pero hindi namin maipadala ang email ngayon."
+}

@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Pay as you go",
+    "subtitle": "Para sa seasonal at part-time na nagtitinda",
+    "description": "Walang monthly fee. 0.99% lang ang babayaran mo sa online orders."
+  },
+  "pro": {
+    "subtitle": "Para sa mga truck na regular na tumatanggap ng pre-order",
+    "description": "Lahat ng feature, kasama ang WhatsApp auto-replies at social media posts, at may kasamang online orders kada buwan."
+  },
+  "unlimited": {
+    "name": "Unlimited",
+    "subtitle": "Para sa mga busy na truck at festivals",
+    "description": "Lahat ng feature, at walang fees sa online orders, gaano ka man ka-busy."
+  },
+  "trial": {
+    "name": "Free trial",
+    "description": "Lahat ng feature, libre, habang tumatakbo ang trial mo."
+  },
+  "demo": {
+    "name": "Demo",
+    "description": "Sandbox para sa prospect — hindi kailanman public."
+  },
+  "tester": {
+    "name": "Tester",
+    "description": "Tester bago ang launch — full access."
+  }
+}

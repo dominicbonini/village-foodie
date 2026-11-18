@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Ipakita ang allergens sa bawat dish",
+    "recommended": "Inirerekomenda",
+    "perDishBody": "I-review ang bawat dish at kumpirmahin ang allergens nito. Makikita ng customers ang tags sa bawat dish, pati ang buod na allergen card na kinuha mula sa mga ito.",
+    "cardTitle": "Magpakita ng allergen card",
+    "cardBody": "Mag-upload o mag-paste ng iisang allergen card (PDF, image o text), na ipapakita nang ganoon mismo. Nakatago ang tags sa bawat dish."
+  }
+}

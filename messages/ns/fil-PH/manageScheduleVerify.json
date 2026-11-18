@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Pansamantalang hindi available ang verification. Pakisubukan ulit maya-maya.",
+  "malformed": "Mukhang hindi web address iyan. Subukan ang tulad ng yourfoodtruck.ph/events",
+  "blocked": "Hindi namin ma-access ang site na ito — baka bina-block nito ang automated checks. Subukan ang page na naglilista ng schedule mo, o magdagdag ng mga event nang manual.",
+  "unreachable": "Hindi namin maabot ang website na ito. Baka down ito, o mali ang address.",
+  "no_content": "Naabot namin ang page na ito pero wala kaming mabasa rito. I-check kung public ito.",
+  "no_events": "Wala kaming nahanap na paparating na event sa page na ito. Siguraduhing diretsong tumuturo ang URL sa page kung saan nakalista ang schedule mo.",
+  "blockedDomain": "Pakigamit ang URL ng website mo — hindi awtomatikong nababasa ang Facebook at Instagram pages."
+}

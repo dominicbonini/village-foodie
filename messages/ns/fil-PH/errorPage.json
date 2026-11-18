@@ -1,0 +1,11 @@
+{
+  "notFoundTitle": "Hindi mahanap ang page",
+  "notFoundBody": "Hindi namin mahanap ang page na iyan. Baka nailipat na ito, o baka mali ang pagkaka-type ng address.",
+  "home": "Pumunta sa home page",
+  "errorTitle": "Nagka-problema",
+  "errorBody": "Pasensya na — hindi nag-load ang page na ito. Subukan ulit, o bumalik sa home page.",
+  "retry": "Subukan ulit",
+  "backToDashboard": "Bumalik sa dashboard",
+  "errorBodyDashboard": "Pasensya na, hindi nag-load ang page na ito. Subukan ulit, o bumalik sa dashboard mo.",
+  "sectionFailed": "Hindi nag-load ang section na ito."
+}

@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Mga oras ng pick-up",
+    "takes_cash": "Tumatanggap ka ba ng cash?",
+    "offline_protection": "Offline protection ng order",
+    "buzzer_prompt": "Paalalahanan akong magdagdag ng buzzer"
+  },
+  "typeFollowsVanTitle": "Sinusunod ang karaniwang setting ng bawat van",
+  "sameSettingsAllVansLabel": "Parehong settings para sa lahat ng van",
+  "sameSettingsAllVansHeader": "Lahat ng van",
+  "sameSettingsConfirm": "Kopyahin ang settings ng Van 1 sa bawat van? Kinokopya nito ang lahat ng van settings ng Van 1, gaya ng ‘Kapareho ng Van 1’ sa Settings. May sariling switch ang kitchen capacity.",
+  "eventTypesFooterStandard": "Standard ang karaniwang setup mo. Kapag binago mo ito rito, mababago rin ito sa Settings.",
+  "eventTypesFooterOneEvent": "Para baguhin ang setting ng isang event lang, gamitin ang dashboard ng event na iyon.",
+  "eventTypesSubtitle": "Nase-save ang mga pagbabago habang ginagawa mo.",
+  "matchStandardLabel": "Itugma sa Standard",
+  "matchStandardConfirm": "Ibalik sa Standard ang bawat setting ng uring ito? Mabubura ang anumang binago mo rito.",
+  "priceLabels": {
+    "price_change_on": "Baguhin ang mga presyo",
+    "price_mode": "Pagbabago ng presyo",
+    "price_amount": "Halaga",
+    "price_rounding": "Pag-round",
+    "item_prices": "Presyo ng items"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Ako ang magse-set ng bawat presyo"
+  },
+  "priceRounding": {
+    "none": "Wala",
+    "nearest_1": "Pinakamalapit na {symbol}1",
+    "up_1": "Laging i-round up"
+  },
+  "pricesStandardCell": "Mga presyo sa menu mo",
+  "pricesTruckWideTitle": "Pareho ang mga presyo mo para sa bawat van",
+  "pricesMenuCell": "Menu",
+  "pricesTypeOffCell": "Presyo sa menu",
+  "itemPricesShow": "Ipakita ang mga presyo",
+  "itemPricesHide": "Itago ang mga presyo",
+  "priceItemsHeading": "I-set ang presyo ng bawat item",
+  "priceItemsOpen": "Tingnan o baguhin ang presyo ng bawat item ›",
+  "priceItemsClose": "Itago ang presyo ng items ⌃",
+  "ownPriceCount": "{n, plural, one {{count} item ang may sariling presyo} other {{count} item ang may sariling presyo}}",
+  "priceTypeHint": "Pindutin ang presyo para mag-type ng sarili mong presyo.",
+  "pricesLiveNotice": "Live ang event na ito. Bagong presyo ang gamit ng mga bagong order. Mananatili ang presyo ng mga order na naka-place na.",
+  "placeTypeHelper": "Pinipili ng Magdagdag ng event ang uring ito tuwing pipiliin mo ang lugar na ito.",
+  "postPictureStandardNote": "Standard design mo ang gamit ng mga event post dito.",
+  "eventItemsCardDescription": "Mga presyo, limit ng items at availability para sa event na ito lang. Epektibo agad ang mga pagbabago.",
+  "eventPriceColumnLabel": "Presyo",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · event na ito} other {menu {price} · event na ito}}",
+  "eventPriceEdit": "✎ I-edit ang mga presyo",
+  "eventPriceCancel": "Kanselahin",
+  "eventPriceSave": "I-save ang mga presyo",
+  "eventPriceEditNote": "Ine-edit ang mga presyo para sa event na ito lang. Naka-lock ang limit ng items at availability hangga’t hindi mo sine-save.",
+  "eventPriceLiveNote": "Live: bagong presyo ang gamit ng mga bagong order.",
+  "offlineWhenOfflineLabel": "Kapag offline"
+}

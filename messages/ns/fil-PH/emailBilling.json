@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Hi {name},} other {Hi,}}",
+  "questions": "May tanong? Mag-reply ka lang.",
+  "signoff": "Ang HatchGrab team",
+  "buttonUpdate": "I-update ang {method, select, payment_method {payment method} other {card}}",
+  "buttonPay": "Magbayad ngayon",
+  "buttonAddCard": "Magdagdag ng card",
+  "suspended": "Kung mananatili itong hindi bayad, baka ma-suspend ang account mo.",
+  "failed": {
+    "subject": "Hindi pumasok ang bayad mo sa HatchGrab",
+    "line1": "Hindi namin masingil ngayong araw ang {amount} para sa {truck}. Susubukan namin ulit.",
+    "line2": "Paki-update ang {method, select, payment_method {payment method} other {card}} mo bago ang {date} para manatiling naka-on ang online ordering."
+  },
+  "twoDays": {
+    "subject": "2 araw na lang para i-update ang {method, select, payment_method {payment method} other {card}} mo",
+    "line1": "Hindi pa bayad ang {amount} para sa {truck}. I-update ang {method, select, payment_method {payment method} other {card}} mo bago ang {date}, o mapo-pause ang online ordering."
+  },
+  "oneDay": {
+    "subject": "I-update ang {method, select, payment_method {payment method} other {card}} mo hanggang bukas",
+    "line1": "Hindi pa bayad ang {amount} para sa {truck}. I-update ang {method, select, payment_method {payment method} other {card}} mo hanggang bukas, o mapo-pause ang online ordering."
+  },
+  "lastDay": {
+    "subject": "Huling araw na para i-update ang {method, select, payment_method {payment method} other {card}} mo",
+    "line1": "Ngayon ang huling araw para bayaran ang {amount} para sa {truck}. Kung hindi pa ito bayad pagsapit ng hatinggabi, mapo-pause ang online ordering hanggang magbayad ka."
+  },
+  "paused": {
+    "subject": "Naka-pause ang online ordering",
+    "line1": "Naka-pause ang online ordering para sa {truck} dahil hindi pa bayad ang {amount}. Magbayad ngayon at babalik agad ito.",
+    "line2": "Magbayad bago ang {date} o baka ma-suspend ang account mo."
+  },
+  "trial7": {
+    "subject": "Matatapos ang free trial mo sa loob ng 7 araw",
+    "line1": "Matatapos sa {date} ang free trial mo para sa {truck}.",
+    "line2": "Magdagdag ng card sa Manage › Billing para manatiling naka-on ang online ordering.",
+    "plan": "Pagkatapos noon, {price} kada buwan ang {plan}. Kapag natapos ang trial mo, sisingilin ka namin ng {amount} para sa natitirang bahagi ng {month}, saka {price} sa {nextFirst}.",
+    "planFree": "Pagkatapos noon, nasa {plan} ka na, walang monthly fee.",
+    "fee": "Sinisingil tuwing ika-1 ang fee namin sa online orders ({fee}), para sa nakaraang buwan."
+  },
+  "trial1": {
+    "subject": "Matatapos bukas ang free trial mo",
+    "line1": "Matatapos bukas ang free trial mo para sa {truck}.",
+    "noCard": "Magdagdag ng card o mapo-pause ang online ordering.",
+    "allSet": "Ayos na ang lahat: magsisimula ang {plan} sa {date}.",
+    "charge": "Sisingilin ka namin ng {amount} para sa natitirang bahagi ng {month} kapag natapos ang trial mo."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Payagan ang customers na mag-cancel ng order",
+    "sentence": "Puwedeng mag-cancel ang customers hanggang <select></select> bago ang oras ng pick-up nila"
+  },
+  "autoAccept": {
+    "label": "Auto-accept ng mga order",
+    "help": "Kusang nakukumpirma ang mga order. Kapag puno ang hiniling na slot, inililipat ang order sa susunod na available na slot. Nagkukumpirma lang kapag may capacity. Kailangan pa ring kumpirmahin ang mga order na may note ng customer (hal. allergy)."
+  },
+  "orderReady": {
+    "label": "Step na order-ready",
+    "help": "Magpakita ng button na “Markahang ready” sa orders screen. Hiwalay na naka-set ang mga kitchen display (KDS), sa bawat device. Ini-email ang customer tuwing minamarkahang ready ang isang order. Para sa lahat ng event — puwede mo pa rin itong i-on o i-off para sa isang event sa dashboard nito."
+  },
+  "buzzers": {
+    "label": "Nagbibigay ka ba ng buzzer para sa pick-up?",
+    "help": "I-record kung aling buzzer ang ibinigay mo sa bawat customer, para alam mo kung sino ang hahanapin kapag ready na ang pagkain nila.",
+    "countLabel": "Ilan ang buzzer mo?"
+  }
+}

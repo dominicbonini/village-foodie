@@ -1,0 +1,25 @@
+{
+  "heading": "Linggo ng {start} hanggang {end}",
+  "daysOff": "Walang tinda ngayon",
+  "cancelled": "NA-CANCEL",
+  "placeSample": {
+    "nameTownBelow": "Kapitolyo Night Market\nPasig",
+    "nameTown": "Kapitolyo Night Market, Pasig",
+    "nameOnly": "Kapitolyo Night Market"
+  },
+  "busyWeek": {
+    "venue1": "Poblacion Weekend Market",
+    "town1": "Makati",
+    "venue2": "Barangay San Isidro Covered Court at Multi-Purpose Sports Complex",
+    "town2": "Antipolo",
+    "venue3": "Town Plaza",
+    "town3": "Iloilo City",
+    "venue4": "Food Fest",
+    "town4": "Cebu City",
+    "venue5": "Session Road Night Market",
+    "town5": "Baguio",
+    "venue6": "Patio ng Simbahan",
+    "town6": "Davao City"
+  },
+  "poweredBy": "Powered by HatchGrab"
+}

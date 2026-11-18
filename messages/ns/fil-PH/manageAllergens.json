@@ -1,0 +1,128 @@
+{
+  "cardEditor": {
+    "title": "Ang allergen card mo",
+    "intro": "Makikita ito ng mga customer <b>nang eksakto kung paano mo ito isinulat</b> — walang binabago. Mag-type o mag-paste sa ibaba, o mag-upload ng litrato/PDF at babasahin namin ang text para ma-check mo.",
+    "empty": "Wala pang allergen card.",
+    "placeholder": "hal. May wheat at itlog ang lahat ng aming fried chicken. Iisa ang fryer na ginagamit sa mga item na may gluten at nuts. May vegan options — magtanong sa staff.",
+    "reading": "Binabasa ang image…",
+    "upload": "📷 I-upload ang image / PDF",
+    "uploadNote": "Binabasa namin ang text mula sa image mo para ma-review mo — hindi namin itinatago ang image."
+  },
+  "cardUpload": {
+    "dishFallback": "Dish",
+    "question": "May allergen card ka bang ia-upload?",
+    "perDish": "{detected, select, yes {Mag-upload ng isa at gagamitin namin ito para buuin ang allergens ng mga dish mo. Makikita ang mga na-detect na allergen sa susunod na page kung saan mo kukumpirmahin ang bawat dish.} other {Mag-upload ng isa at gagamitin namin ito para buuin ang allergens ng mga dish mo.}}",
+    "cardOnly": "I-upload ang allergen card na makikita ng mga customer.",
+    "yes": "Oo",
+    "no": "Hindi",
+    "noProblem": "Walang problema — hindi mo ito kailangan. Magpatuloy gamit ang button sa ibaba.",
+    "analysing": "Ina-analyze ang card…",
+    "dropzone": "I-drag and drop o i-tap para pumili",
+    "imageOrPdf": "Image o PDF",
+    "or": "o",
+    "pastePlaceholder": "I-paste dito ang text ng allergen card mo…",
+    "process": "I-process ang card",
+    "cardRead": "Nabasa na ang card ✓",
+    "unmatchedHeading": "Hindi ma-auto-match ang mga ito — i-assign o isara",
+    "quotedName": "“{name}”",
+    "ambiguous": "Malabo — tugma sa ilang dish; piliin ang tama.",
+    "assignTo": "I-assign sa dish…",
+    "dismiss": "Isara",
+    "kitchenNotes": "Kitchen notes (naka-save sa info sa allergens mo)",
+    "matchSummary": "{n, plural, =0 {Na-match sa dish: {matched}.} one {Na-match sa dish: {matched}. Kailangan mong i-assign: {count}.} other {Na-match sa dish: {matched}. Kailangan mong i-assign: {count}.}}",
+    "blanketInfo": "Sabi ng card mo, maaaring may {list} sa lahat ng dish. Idadagdag namin ang mga ito sa allergens na ginagamit sa kusina mo. Puwede mong i-check ang mga ito sa huling step."
+  },
+  "savedCard": {
+    "showLess": "Ipakita nang mas kaunti",
+    "showMore": "Ipakita pa",
+    "fileOnly": "May naka-save na card file para sa truck na ito, pero walang naka-store na summary text. Buksan ang original para mabasa ito.",
+    "viewOriginal": "Tingnan ang original na card"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Hindi mabasa ang allergen card — subukan ulit",
+      "confirmed": "Nakumpirma: {name}",
+      "undo": "I-undo",
+      "saveFailed": "Hindi na-save — pakisubukan ulit",
+      "imageFailed": "Hindi mabasa ang image na iyan — i-type o i-paste na lang ang card mo",
+      "cardRead": "{n, plural, one {Nabasa ang card — na-match: {matched}, kailangang i-assign: {count}} other {Nabasa ang card — na-match: {matched}, kailangang i-assign: {count}}}"
+    },
+    "genericWarn": {
+      "text": "Na-detect ang “{generic}” pero hindi ito specific. Piliin ang {picks} kung may {family} ang dish na ito — o huwag piliin kung wala.",
+      "andOr": "{a} at/o {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Nakumpirma",
+      "confirmed": "Kumpirmado",
+      "needsReview": "Kailangang i-review"
+    },
+    "confirm": {
+      "confirming": "Kinukumpirma…",
+      "confirmed": "Nakumpirma ✓",
+      "confirm": "Kumpirmahin",
+      "changed": "· binago",
+      "changedTitle": "Na-edit mula nang huli mong kumpirmahin — kumpirmahin ulit"
+    },
+    "allergens": "Allergens",
+    "dietary": "Dietary",
+    "uncategorised": "Walang category",
+    "review": {
+      "progress": "Nakumpirma: {confirmed} sa {total}",
+      "allConfirmed": "✓ Nakumpirma lahat",
+      "list": "Listahan",
+      "table": "Table",
+      "detected": "Na-detect mula sa menu mo — <b>i-check ang mga ito</b>. Nakatago sa mga customer ang allergens hangga’t hindi mo kinukumpirma ang bawat dish.",
+      "viewOnly": "👁 View only — ang may-ari lang ang puwedeng magkumpirma o magbago ng allergens.",
+      "emptyTitle": "Walang menu item",
+      "emptyBody": "Magdagdag muna ng menu items, tapos i-set dito ang allergens nila.",
+      "dish": "Dish",
+      "status": "Status"
+    },
+    "cardPanel": {
+      "reading": "Binabasa ang allergen information…",
+      "saved": "🛡️ Na-save ang allergen card",
+      "viewOriginal": "Tingnan ang original na card",
+      "replace": "Palitan ang card",
+      "uploadHelp": "I-upload ang allergen card mo (litrato/PDF) o i-paste ang info sa allergens — aayusin ito ng AI namin para sa mga customer.",
+      "add": "Magdagdag ng allergen card",
+      "viewOnly": "👁 View only — ang may-ari lang ang puwedeng magdagdag ng allergen card.",
+      "intro": "Makikita ng mga customer ang card na ito bilang allergen reference ng menu. Nakatago ang per-dish allergens sa card-only mode (itinatago ang data ng mga dish mo kung sakaling lumipat ka sa per-dish mamaya)."
+    },
+    "subtitle": {
+      "choose": "Piliin kung paano makikita ng mga customer ang info sa allergens",
+      "card": "Idagdag ang allergen card mo",
+      "cardOptional": "Magdagdag ng allergen card (opsyonal)",
+      "review": "I-check at kumpirmahin ang bawat dish",
+      "kitchen": "Huling step: ang kusina mo"
+    },
+    "heading": {
+      "import": "Allergens",
+      "standalone": "Allergen setup"
+    },
+    "nav": {
+      "next": "Susunod →",
+      "back": "← Bumalik",
+      "skip": "Laktawan muna",
+      "saving": "Sine-save…",
+      "done": "Tapos na",
+      "saveLater": "I-save at tapusin mamaya",
+      "close": "Isara",
+      "finish": "Tapusin",
+      "skipImport": "Laktawan muna ang allergen setup"
+    },
+    "hint": {
+      "skipDefers": "Ipinagpapaliban lang ng Laktawan — nakatago sa mga customer ang mga dish na hindi mo pa nakumpirma hangga’t hindi nakumpirma ang allergens nila.",
+      "importIncomplete": "Kumpirmahin ang bawat dish para magpatuloy — o “Laktawan muna ang allergen setup”."
+    },
+    "recipeOnly": "Ang nasa recipe lang ng dish na ito.",
+    "tooMany": "Naka-tick na allergens: {count}. Talaga bang lahat ng iyan ay nasa recipe ng dish na ito? Hindi dito inilalagay ang allergens na ginagamit sa ibang dish. Puwede mong idagdag ang mga iyon sa huling step."
+  },
+  "kitchen": {
+    "title": "Aling allergens ang ginagamit sa kusina mo?",
+    "body": "Na-tick na namin ang mga nasa dish mo na. I-tick ang iba pang ginagamit mo sa truck, halimbawa para sa specials.",
+    "legendDishes": "nasa mga dish mo",
+    "legendAdded": "idinagdag mo",
+    "customersSee": "Makikita ng mga customer:",
+    "confirm": "Kinukumpirma kong tama ang allergens ng bawat dish, at pananatilihin kong updated ang mga ito."
+  }
+}
