@@ -22,7 +22,7 @@
 | 14 | sq-AL Albanian | ✅ installed 1669f709 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 15 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs sq-AL` 3/3 ✓; `legal-languages-1` /al/privacy, /al/terms, /al/country-terms ✓ | 40b2cd16 · legal a269610e |
 | 15 | bs-BA Bosnian | ✅ installed 53d04eb9 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 16 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs bs-BA` 3/3 ✓; `legal-languages-1` /ba/privacy, /ba/terms, /ba/country-terms ✓ | 92d567c4 · legal fb7f2afc |
 | 16 | mk-MK Macedonian | ✅ installed 0e592f0c (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 17 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs mk-MK` 3/3 ✓; `legal-languages-1` /mk/privacy, /mk/terms, /mk/country-terms ✓ | d1214c77 · legal 2a0e6610 |
-| 17 | ca-AD Catalan (Andorra) | — | — | | |
+| 17 | ca-AD Catalan (Andorra) | ✅ installed c417fa0b (9 parts + consistency; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — next | | |
 | 18 | sw-TZ Swahili | — | — | | |
 | 19 | si-LK Sinhala | — | — | | |
 | 20 | ta-LK Tamil (Sri Lanka) | — | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **16 of 23 languages done (48 of 69 pages).** UI: 16 of 23 installed (fil-PH, sq-AL, bs-BA, mk-MK on 18 Nov). Next: ca-AD UI, then ca-AD legal onwards.
+Legal pages: **16 of 23 languages done (48 of 69 pages).** UI: 17 of 23 installed (fil-PH, sq-AL, bs-BA, mk-MK, ca-AD on 18 Nov). Next: ca-AD legal, then sw-TZ UI.
 
 ## Batch order
 
@@ -301,4 +301,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 18 is the ca-AD UI. Runs continue automatically back to back, with no waits.
+Batch 19 is the ca-AD legal pages, then sw-TZ UI (batch 18 was the ca-AD UI). Runs continue automatically back to back, with no waits.
