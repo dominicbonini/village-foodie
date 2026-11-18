@@ -325,4 +325,6 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
+**After the last batch (Dominic, 18 Nov):** full sweep → final report → **reference manual update** (docs/reference-manual.md, a languages-world-3 section).
+
 Batch 21 was the sw-TZ legal pages (batch 20 was the sw-TZ UI). Next: si-LK and ta-LK UI in progress, then km-KH, lo-LA, am-ET. Runs continue automatically back to back, with no waits.
