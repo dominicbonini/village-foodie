@@ -55,7 +55,7 @@ const COUNTRY_OF = { 'fr-FR': 'FR', 'de-DE': 'DE', 'es-ES': 'ES', 'it-IT': 'IT',
 // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the map above stops at the 28 bases it was written for; languages-world-1 added 8
 // more (LANGUAGE_BASES is read live), so COUNTRY_OF[id-ID] was undefined, the page got no segment and legalPlace 404'd. A base's country
 // is its locale's region — true of every entry above, and checked here so a base whose region is not its country fails loudly.
-for (const l of BASES) if (!COUNTRY_OF[l]) COUNTRY_OF[l] = l.slice(3)   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): see above
+for (const l of BASES) if (!COUNTRY_OF[l]) COUNTRY_OF[l] = l.split('-')[1]   // split, not slice(3): fil-PH has a three-letter language code (languages-world-3)   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): see above
 const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 'BE', 'nl-NL'], ['el-CY', 'CY', 'el-GR'], ['fr-LU', 'LU', 'fr-FR'], ['es-MX', 'MX', 'es-ES']]
 
 ;(async () => {
