@@ -434,3 +434,8 @@
 - Post boxes (from DesignEditor.tsx): Place "Mahali", Venue "Eneo", Area "Mji/Kijiji" (alt. "Mtaa"), Time "Muda", Date "Tarehe", Heading "Kichwa", box "kisanduku"; poster CANCELLED "LIMEGHAIRIWA"; wp_* errors "Mahali (au Eneo)".
 - Place uses class-16 agreement (mahali hapa, pamefichwa) — check. WhatsApp Set up quoted "Andaa" (part 06 must match).
 - Import "Ingiza"; @tamashalachakula; dealsActive `one` added.
+
+## sw-TZ part 05 (languages-world-3, 18 Nov 2026)
+- Settings names: Truck settings "Mipangilio ya gari", Truck details "Taarifa za food truck", "Magari yako", "+ Ongeza gari"; boxes Mahali / Eneo / Mji/Kijiji / Muda.
+- Grammar: chapisho class 5 (chapisho hili / lijalo), mahali class 16 (pamefichwa, penye picha); chips "Pote: {n}", "Palipofichwa: {n}".
+- Check: "Ukanda wa saa", "Ukadiriaji", "Mauzo ghafi / halisi", "Machaguo maalum", "Angavu", "Mlalo" (italic), "Vitangulizi / Vyakula vikuu", "Zuia / zuio"; report column payAtTruck "Lipa Unapochukua" vs label "Lipa ukichukua"; Screen On "Acha skrini iwake".
