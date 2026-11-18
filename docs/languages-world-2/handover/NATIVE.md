@@ -414,3 +414,9 @@
 ## ca-AD consistency pass (languages-world-3, 18 Nov 2026) — fix.json, 43 corrections, check-fix 0
 - Marketing van lines → "vehicle" ("al portàtil del vehicle", "enganxa el codi QR al vehicle"); deletion "supressió/suprimir" (7); «A punt»; «Fes-me una visita guiada»; "Límit de comandes anticipades"; “…” → «».
 - Check: the two "vehicle" marketing lines, «Fes-me una visita guiada», "supressió" in the deletion e-mail, long VAT labels; import screen Venue «Lloc» vs designer «Nom del lloc».
+
+## sw-TZ part 01 (languages-world-3, 18 Nov 2026)
+- Business "food truck" (passive voice around {truck}: "…itathibitishwa na {truck}"); fleet van "gari"/"magari"; Truck settings "Mipangilio ya gari"; Truck details "Taarifa za food truck".
+- Pay at truck "Lipa ukichukua"; kitchen screen "Skrini ya jikoni (KDS)"; buzzer "kengele"; sold out "Imeisha"; TBC "Itatangazwa".
+- Check: deal "ofa ya mlo", "Okoa {amount}", "bakshishi", "stoku", "Taslimu", "kishikwambi" (tablet), card hold "Kiasi kimezuiliwa kwenye kadi yako, hujatozwa", ASAP "⚡ Haraka iwezekanavyo" (long).
+- ALLERGENS (check first): Krasteshia (crustaceans), Moluska, Samakigamba (shellfish), Kokwa za miti (tree nuts), Lupini (lupin), Kiazi kikuu (yam), Kibua (mackerel); Vegetarian "Bila nyama wala samaki", Vegan "Bila bidhaa za wanyama".
