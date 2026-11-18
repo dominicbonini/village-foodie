@@ -404,3 +404,9 @@
 - FOR DOMINIC: VAT written out as "impost sobre el valor afegit" (STYLE: never "IVA" in AD copy; common brief: never IGI for VAT) — excl./incl. VAT labels ~3.8× English. Plain "IVA" would be shorter; one find-and-replace.
 - reverse charge "per inversió del subjecte passiu"; VAT number "número de registre"; German TSE/Germany figures as written; "per vehicle"; slug comparativa/sistema-de-comandes-food-truck.
 - Check: "Cèntims per comanda", cell.notApplicable "no s’aplica a una plataforma de repartiment", pitch "parada", "Menús i lots", "Sota demanda".
+
+## ca-AD part 09 (languages-world-3, 18 Nov 2026)
+- markRules 0; card sentence "Prefereixes cobrar per avançat?…" only in bodyCard/bodyOnlyCard; trial.length "{months, plural, one {# mes} other {# mesos}}"; TBC "Per confirmar"; "per vehicle / mes"; UK company line kept.
+- planPrompt `many` → "yes" for advance_preordering and advanced_reporting (plural Catalan nouns); gender-neutral prompt verbs.
+- Marketing "the van" (laptop in the van, QR on the van) = "food truck", not fleet "vehicle" — confirm.
+- Check: tester "Provador", lifetime "Vitalici", "El més triat", "Presència al mapa de descoberta", "Indicador d’esgotat instantani".

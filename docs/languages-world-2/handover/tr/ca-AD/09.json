@@ -1,0 +1,723 @@
+{
+ "landing": {
+  "jsonLd": {
+   "subCategory": "Sistema de comandes per a food trucks i càtering mòbil",
+   "description": "Comandes, comandes anticipades i pantalla de cuina per a food trucks i càtering mòbil ({country}).",
+   "audience": "Professionals dels food trucks i del càtering mòbil"
+  },
+  "hero": {
+   "title": "El sistema de comandes pensat per als <lean>food trucks.</lean>",
+   "subSmall": "Puja la teva carta, sense registrar-te.<br></br>Mira una demostració que funciona en menys de 60 segons.",
+   "cta": "Puja la meva carta →",
+   "ctaNote": "<lead>Puja una foto de la teva carta i mira-la funcionant en menys de 60 segons.</lead><small>Sense registre. Sense targeta.</small>"
+  },
+  "shots": {
+   "kitchenAlt": "La pantalla de cuina de HatchGrab, amb els tiquets de les comandes en ordre de preparació",
+   "dashboardAlt": "Prenent una comanda a HatchGrab: la carta a l’esquerra, i la cistella i el total a la dreta",
+   "phoneAlt": "Fent una comanda a un food truck amb HatchGrab: la carta amb fotos i preus, i el total de la cistella"
+  },
+  "trust": {
+   "freeMonth": "{months, plural, one {El primer mes, totalment gratuït i amb tot desbloquejat} other {Els primers # mesos, totalment gratuïts i amb tot desbloquejat}}",
+   "noCard": "No cal targeta",
+   "cancel": "Cancel·la quan vulguis, sense permanència"
+  },
+  "does": {
+   "eyebrow": "Què fa",
+   "title": "Pensat per als food trucks, no per als restaurants.",
+   "lede": "La majoria de sistemes de comandes donen per fet una adreça fixa, una wifi fiable i el mateix horari cada setmana. Tu canvies de lloc cada setmana, a hores diferents, amb poca cobertura mòbil o sense. HatchGrab s’ha creat per a això.",
+   "slotsTitle": "Els clients trien l’hora de recollida",
+   "capacityTitle": "Defineix la capacitat de la cuina",
+   "capacityBody": "Defineix quant pots cuinar alhora i quant hi trigues. Quan una hora de recollida és plena, els clients ja no la poden triar.",
+   "devicesTitle": "Funciona en qualsevol dispositiu",
+   "devicesBody": "Funciona al mòbil que portes al davantal, a la tauleta del taulell, al portàtil del food truck — i al datàfon amb què ja cobres.",
+   "postsTitle": "Automatitza les publicacions de Facebook i Instagram",
+   "postsBody": "Puja el disseny que ja publiques a Facebook o Instagram. Hi posem les dates, els llocs i les hores, a punt per compartir — cada setmana o cada dia.",
+   "whatsappTitle": "Respostes automàtiques de WhatsApp",
+   "whatsappBody": "«On sou aquesta nit?» «Quines postres teniu?» El teu WhatsApp respon mentre condueixes cap a la parada o ets a la planxa, amb la teva carta i el teu calendari. Messenger i Instagram, aviat disponibles.",
+   "whatsappSoonTitle": "Respostes automàtiques de WhatsApp <soon>Aviat disponible</soon>",
+   "whatsappSoonBody": "«On sou aquesta nit?» «Quines postres teniu?» Aviat el teu WhatsApp respondrà mentre condueixes cap a la parada o ets a la planxa. Després vindran Messenger i Instagram.",
+   "offlineTitle": "Sense cobertura? Continua servint.",
+   "offlineBody": "Si et quedes sense cobertura, les comandes en línia es posen en pausa automàticament perquè els clients no puguin fer comandes que no veuràs. Continua rebent comandes amb l’aplicació per a iPhone, iPad i Android.",
+   "slotsBody": "Els clients fan la comanda per endavant i trien l’hora de recollida. Menys cues, i el menjar a punt quan arriben."
+  },
+  "steps": {
+   "eyebrow": "Per començar",
+   "title": "Configura-ho i comença a rebre comandes en uns 15 minuts.",
+   "lede": "Tres coses per enllestir — i dues només necessiten una foto.",
+   "menuTitle": "Crea la teva carta",
+   "menuBody": "Fes una foto de la pissarra o enganxa’n el text. Els productes, els preus i els extres s’hi passen sols. Només has de comprovar que estan bé.",
+   "scheduleTitle": "Afegeix el teu calendari",
+   "scheduleBody": "El tens al teu web? El llegim d’allà i el mantenim al dia. Si no, fes-hi una foto també. Només has d’aprovar el que trobi.",
+   "shareTitle": "Comparteix el teu enllaç",
+   "shareBody": "Publica’l a Facebook, enganxa el codi QR al food truck. Les comandes arriben a la teva pantalla, en l’ordre en què les has de preparar."
+  },
+  "testimonial": {
+   "quote": "HatchGrab ens ha facilitat moltíssim les comandes. Ho tenim tot organitzat, podem controlar l’estoc i saber exactament quantes pizzes ens queden per vendre — i les franges horàries són fantàstiques per als pobles amb molt de moviment.",
+   "award": "Pizzeria mòbil de l’any",
+   "awardScope": "Guanyadors regionals",
+   "business": "Pizzeria Gusto",
+   "byline": "Nadia & Bogdan — propietaris"
+  },
+  "pricing": {
+   "eyebrow": "Preus",
+   "title": "Comença gratis. Millora el pla quan ho necessitis.",
+   "switchHead": "Vens d’una altra plataforma?",
+   "switchBody": "Mira què pagaries a HatchGrab per les mateixes comandes. Només cal un minut.",
+   "switchCta": "Compara el que pagues"
+  },
+  "faq": {
+   "title": "Preguntes freqüents",
+   "metaTitle": "Preguntes freqüents | HatchGrab",
+   "metaDescription": "Respostes clares per als food trucks sobre els preus de HatchGrab, la posada en marxa, com rebre comandes i els pagaments."
+  },
+  "final": {
+   "truckLabel": "Food truck",
+   "title": "Vols veure com n’és de fàcil, la configuració?",
+   "lede": "Puja una foto o una captura de pantalla de la teva carta i en farem una pàgina de comandes que funciona, perquè la puguis provar en menys de 60 segons. Els teus productes, els teus preus. Sense registre, sense targeta, res per instal·lar. Fes-hi un cop d’ull i després decideix.",
+   "cta": "Puja la meva carta ara →"
+  },
+  "meta": {
+   "title": "Sistema de comandes per a food trucks — HatchGrab {country}",
+   "description": "Rep comandes i comandes anticipades sense cues. Programari de comandes i pantalla de cuina per a food trucks i càtering mòbil ({country}). No és un TPV."
+  }
+ },
+ "landingNav": {
+  "homeLabel": "Inici de HatchGrab",
+  "cta": "Puja la meva carta →",
+  "ctaShort": "Puja la carta",
+  "features": "Funcions",
+  "pricing": "Preus",
+  "logIn": "Inicia la sessió",
+  "country": {
+   "button": "País: {name}. Canvia de país",
+   "menu": "País",
+   "title": "Tria el teu país",
+   "subline": "Els preus, l’idioma i la configuració s’hi adapten.",
+   "regions": {
+    "europe": "Europa",
+    "americas": "Amèrica",
+    "asiaPacific": "Àsia-Pacífic",
+    "middleEast": "Orient Mitjà",
+    "africa": "Àfrica"
+   }
+  }
+ },
+ "landingFooter": {
+  "features": "Funcions",
+  "pricing": "Preus",
+  "faq": "Preguntes freqüents",
+  "privacy": "Privadesa",
+  "terms": "Condicions",
+  "contact": "Contacte",
+  "about": "Qui som",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Dels creadors de <b>Village Foodie</b>",
+  "badges": {
+   "appStoreLink": "Baixa HatchGrab a l’App Store",
+   "appStoreAlt": "Disponible a l’App Store",
+   "googlePlayLink": "Aconsegueix HatchGrab a Google Play",
+   "googlePlayAlt": "Disponible a Google Play"
+  }
+ },
+ "featuresPage": {
+  "eyebrow": "Comparativa",
+  "detail": {
+   "walkup_orders": "Rep i gestiona les comandes presencials al food truck, cobrades amb el teu propi datàfon.",
+   "kitchen_app": "La manera més completa de fer servir HatchGrab: una pantalla de cuina en directe i l’única manera de continuar rebent comandes quan et quedes sense cobertura.",
+   "multi_device_kitchen": "Fes servir diverses pantalles — el taulell i la cuina — totes amb les mateixes comandes en directe.",
+   "multi_user_access": "Dona a cada membre del personal el seu propi accés, amb els permisos adequats.",
+   "offline_protection": "Si et quedes sense cobertura, les comandes en línia es posen en pausa perquè els clients no puguin fer comandes que no veuràs. L’aplicació per a iPhone, iPad i Android et permet continuar rebent comandes sense connexió; el tauler web necessita connexió.",
+   "ticket_printing": "Imprimeix els tiquets de les comandes en una impressora Bluetooth o per cable a la cuina.",
+   "web_dashboard": "Gestiona el servei des del navegador de qualsevol mòbil, tauleta o portàtil.",
+   "meal_deals_upsells": "Agrupa productes en menús i ofereix extres en el moment de pagar per augmentar l’import mitjà de les comandes.",
+   "sold_out_toggle": "Marca qualsevol producte com a esgotat amb un sol toc: els clients el veuen en gris a l’instant.",
+   "stock_countdown": "Defineix l’estoc i es va descomptant a mesura que entren comandes; quan s’acaba, el producte es marca com a esgotat automàticament.",
+   "buzzer_tracking": "Assigna un número d’avisador a la comanda quan en lliuris un, i així sabràs quin avisador correspon a cada comanda.",
+   "documents_reminders": "Desa els teus certificats en un sol lloc, com ara higiene alimentària, assegurança i seguretat del gas. T’avisem abans que caduqui res i els pots enviar a l’organitzador d’un esdeveniment o d’un mercat amb un sol toc.",
+   "profit_per_event": "Afegeix el que et costa cada plat i mira què has guanyat realment a cada esdeveniment, no només la recaptació.",
+   "accountant_reports": "Vendes, impostos i devolucions de qualsevol mes, trimestre o exercici fiscal, a punt per baixar-los per al teu gestor.",
+   "tap_to_pay": "Cobra amb targeta des d’un mòbil compatible, sense necessitat d’un datàfon a part.",
+   "customer_display": "Una pantalla visible per als clients que mostra els números de comanda i quan són a punt.",
+   "online_payments": "Cobra amb targeta per avançat quan els clients fan la comanda en línia, mitjançant Stripe.",
+   "advance_preordering": "Permet que els clients facin la comanda per a una data o una hora futures, abans de l’esdeveniment.",
+   "preorder_deadline": "Defineix una hora límit per als productes que s’han d’encarregar amb antelació.",
+   "time_slot_selection": "Els clients trien una franja horària de recollida i la demanda es reparteix al llarg del servei.",
+   "kitchen_capacity": "Defineix quant pot cuinar la cuina alhora i quant hi triga. Quan una franja és plena, els clients ja no la poden triar.",
+   "auto_accept": "Les comandes en línia s’accepten automàticament: no cal confirmar-les una per una.",
+   "private_events": "Afegeix esdeveniments privats que no surten al mapa, amb el seu propi enllaç privat de comandes i codi QR.",
+   "embed_schedule": "Mostra les teves properes dates al teu propi web. Cadascuna enllaça directament amb la seva pàgina de comandes.",
+   "qr_code": "Un codi QR imprimible que obre la teva carta i la pàgina de comandes.",
+   "branded_qr_code": "Afegeix el teu logotip al codi QR.",
+   "discovery_map_listing": "El teu food truck apareix al mapa públic de HatchGrab perquè els clients de la zona et puguin trobar.",
+   "schedule_import": "Omplim el teu calendari automàticament, a partir del teu web o d’una foto que ja publiques a Facebook. Només l’has de revisar i confirmar.",
+   "event_types": "Crea els teus propis tipus d’esdeveniment, amb preus i configuració personalitzats per a esdeveniments i festivals.",
+   "social_media_posts": "Puja els teus dissenys: hi afegim automàticament les dates, els llocs i les hores de cada setmana i de cada esdeveniment.",
+   "whatsapp_auto_replies": "Respon automàticament les consultes de WhatsApp sobre la teva carta i el teu calendari.",
+   "messenger_instagram_replies": "Com les respostes automàtiques de WhatsApp, per a les consultes de Messenger i Instagram.",
+   "sms_order_alerts": "Envia automàticament un SMS als clients quan la comanda és a punt.",
+   "loyalty_stamp_cards": "Premia els clients habituals amb targetes de segells digitals, que s’acumulen i es bescanvien automàticament."
+  },
+  "metaTitle": "Plans i funcions comparats — HatchGrab {country}"
+ },
+ "planTable": {
+  "h1": "Tot el que necessites per al teu servei, en tots els plans.",
+  "lede": "Les comandes, les comandes anticipades, la capacitat i la pantalla de cuina s’inclouen en tots els plans.{hasUpgrades, select, yes { {plans} hi afegeixen {features}, i comissions més baixes.} other {}}",
+  "perMonth": "{price} / mes",
+  "trial": {
+   "length": "{months, plural, one {# mes} other {# mesos}}",
+   "ends": "Acaba el {date}"
+  },
+  "group": {
+   "pay": "Què pagues",
+   "run": "Gestiona el servei",
+   "online": "Comandes en línia",
+   "marketing": "Màrqueting i automatització"
+  },
+  "pay": {
+   "included": "Comandes en línia incloses cada mes",
+   "fee": "Comissió de HatchGrab per les comandes en línia*",
+   "feeNoMark": "Comissió de HatchGrab per les comandes en línia",
+   "walkUp": "Comandes presencials"
+  },
+  "cell": {
+   "unlimited": "Sense límit",
+   "free": "Gratuït",
+   "feeAbove": "<b>{fee}</b> a partir de {included}",
+   "yes": "Inclòs",
+   "none": "No inclòs",
+   "comingSoon": "Aviat disponible"
+  },
+  "short": {
+   "whatsapp_replies": "WhatsApp",
+   "schedule_graphics": "xarxes socials",
+   "event_types": "preus personalitzats per esdeveniment"
+  },
+  "meta": {
+   "description": "Totes les funcions de HatchGrab en tots els plans, una al costat de l’altra — {plans}, amb comissions i comandes incloses.{months, plural, =0 {} one { El primer mes ho inclou tot.} other { Els primers # mesos ho inclouen tot.}}"
+  },
+  "notes": {
+   "whatsapp": "Les respostes automàtiques de WhatsApp requereixen un compte de WhatsApp Business. Meta pot cobrar alguns missatges; les respostes es generen automàticament.",
+   "printing": "La impressió de tiquets de cuina requereix una impressora Bluetooth o per cable compatible (no inclosa)."
+  }
+ },
+ "pricing": {
+  "banner": {
+   "title": "{months, plural, one {El primer mes és totalment gratuït — amb totes les funcions desbloquejades.} other {Els primers # mesos són totalment gratuïts — amb totes les funcions desbloquejades.}}",
+   "body": "Amb {brand}, els clients fan la comanda per endavant i paguen en recollir-la, així que pots rebre comandes en línia sense connectar cap processador de targetes. Quan acabi la prova, passaràs al pla <plan>{fallback}</plan>{fallbackFree, select, yes { — sense quota mensual —} other {}} si no tries cap altre pla. No cal targeta per començar, sense permanència, cancel·la quan vulguis.",
+   "bodyCard": "Amb {brand}, els clients fan la comanda per endavant i paguen en recollir-la, així que pots rebre comandes en línia sense connectar cap processador de targetes. Prefereixes cobrar per avançat? Afegeix els pagaments amb targeta en línia quan vulguis. Quan acabi la prova, passaràs al pla <plan>{fallback}</plan>{fallbackFree, select, yes { — sense quota mensual —} other {}} si no tries cap altre pla. No cal targeta per començar, sense permanència, cancel·la quan vulguis.",
+   "bodyOnly": "Amb {brand}, els clients fan la comanda per endavant i paguen en recollir-la, així que pots rebre comandes en línia sense connectar cap processador de targetes. Quan acabi la prova, el pla <plan>{fallback}</plan> costa {price} al mes. Abans ens posarem en contacte amb tu per configurar el pagament. No cal targeta per començar, sense permanència, cancel·la quan vulguis.",
+   "bodyOnlyCard": "Amb {brand}, els clients fan la comanda per endavant i paguen en recollir-la, així que pots rebre comandes en línia sense connectar cap processador de targetes. Prefereixes cobrar per avançat? Afegeix els pagaments amb targeta en línia quan vulguis. Quan acabi la prova, el pla <plan>{fallback}</plan> costa {price} al mes. Abans ens posarem en contacte amb tu per configurar el pagament. No cal targeta per començar, sense permanència, cancel·la quan vulguis."
+  },
+  "card": {
+   "perTruckMonth": "per vehicle / mes",
+   "mostTrucks": "El més triat",
+   "tryFree": "Prova-ho gratis",
+   "seeEvery": "Mostra totes les funcions →",
+   "everything": "Tot el que cal per a un servei",
+   "everythingIn": "Tot el del pla {plan}, i a més"
+  },
+  "fee": {
+   "feeOnly": "<b>{fee}</b> només per les comandes en línia. Les comandes presencials sempre són gratuïtes.",
+   "feeOnlyCard": "<b>{fee}*</b> només per les comandes en línia. Les comandes presencials sempre són gratuïtes.",
+   "included": "Inclou <b>{included}</b> de comandes en línia cada mes; després, <b>{fee}*</b>. Les comandes presencials sempre són gratuïtes.",
+   "includedNoMark": "Inclou <b>{included}</b> de comandes en línia cada mes; després, <b>{fee}</b>. Les comandes presencials sempre són gratuïtes.",
+   "noFee": "<b>Cap comissió de HatchGrab</b> per les comandes en línia, per molta feina que tinguis. Un cost mensual previsible."
+  },
+  "base": {
+   "walkUp": "Comandes presencials i pantalla de cuina",
+   "online": "Comandes en línia",
+   "preorders": "Comandes anticipades i hores de recollida",
+   "capacity": "Gestió de la capacitat de la cuina",
+   "privateEvents": "Esdeveniments privats",
+   "printing": "Impressió de tiquets de cuina",
+   "app": "Aplicació de cuina per a iPhone, iPad i Android"
+  },
+  "added": {
+   "whatsapp_replies": "Respostes automàtiques de WhatsApp",
+   "schedule_graphics": "Publicacions a les xarxes socials — el teu calendari a Facebook i Instagram — a punt per publicar",
+   "event_types": "Tipus d’esdeveniment i preus personalitzats"
+  },
+  "money": {
+   "unlimitedOrders": "Comandes en línia il·limitades, 0 % de comissió de HatchGrab",
+   "samePrice": "El mateix preu en el teu mes de més feina"
+  },
+  "comingSoon": "Aviat disponible",
+  "bar": {
+   "title": "Quin pla em surt més barat?",
+   "subtitle": "Les teves comandes en línia cada mes",
+   "first": "Menys de {to} → <b>{plan}</b>",
+   "middle": "{from} – {to} → <b>{plan}</b>",
+   "last": "Més de {from} → <b>{plan}</b>",
+   "only": "Qualsevol volum → <b>{plan}</b>"
+  },
+  "footnote": "* A més, el processament de targetes que cobra Stripe, només en les comandes en línia pagades amb targeta (actualment {cardFee} a {country}); es paga a Stripe, no a HatchGrab. Les comandes presencials fan servir el teu propi datàfon — HatchGrab hi cobra un 0 %.",
+  "currencyLine": "Preus en {currency} ({code})"
+ },
+ "planFeatures": {
+  "row": {
+   "discovery_map_listing": {
+    "name": "Presència al mapa de descoberta"
+   },
+   "web_dashboard": {
+    "name": "Tauler web universal"
+   },
+   "qr_code": {
+    "name": "Codi QR"
+   },
+   "schedule_import": {
+    "name": "Importació automàtica del calendari"
+   },
+   "meal_deals_upsells": {
+    "name": "Menús i suggeriments"
+   },
+   "walkup_orders": {
+    "name": "Gestió de comandes presencials"
+   },
+   "sold_out_toggle": {
+    "name": "Indicador d’esgotat instantani"
+   },
+   "kitchen_app": {
+    "name": "Aplicació de cuina per a iPhone, iPad i Android"
+   },
+   "offline_protection": {
+    "name": "Protecció de comandes sense connexió"
+   },
+   "online_payments": {
+    "name": "Pagaments en línia"
+   },
+   "advance_preordering": {
+    "name": "Comandes per a altres dies"
+   },
+   "preorder_deadline": {
+    "name": "Límit de comandes anticipades"
+   },
+   "time_slot_selection": {
+    "name": "Tria de franja horària per als clients"
+   },
+   "kitchen_capacity": {
+    "name": "Gestió de la capacitat de la cuina"
+   },
+   "stock_countdown": {
+    "name": "Compte enrere automàtic de l’estoc"
+   },
+   "auto_accept": {
+    "name": "Acceptació automàtica de comandes en línia"
+   },
+   "branded_qr_code": {
+    "name": "Codi QR amb el teu logotip"
+   },
+   "private_events": {
+    "name": "Esdeveniments privats"
+   },
+   "social_media_posts": {
+    "name": "Publicacions a les xarxes socials"
+   },
+   "whatsapp_auto_replies": {
+    "name": "Respostes automàtiques de WhatsApp"
+   },
+   "messenger_instagram_replies": {
+    "name": "Respostes automàtiques de Messenger i Instagram"
+   },
+   "tap_to_pay": {
+    "name": "Cobra amb el mòbil"
+   },
+   "sms_order_alerts": {
+    "name": "Avisos de comanda per SMS"
+   },
+   "multi_device_kitchen": {
+    "name": "Sincronització de la cuina en diversos dispositius"
+   },
+   "multi_user_access": {
+    "name": "Accés per a diversos usuaris"
+   },
+   "embed_schedule": {
+    "name": "Pàgina del calendari al teu propi web"
+   },
+   "event_types": {
+    "name": "Tipus d’esdeveniment i preus personalitzats"
+   },
+   "buzzer_tracking": {
+    "name": "Seguiment d’avisadors"
+   },
+   "documents_reminders": {
+    "name": "Documents i recordatoris"
+   },
+   "profit_per_event": {
+    "name": "Benefici per esdeveniment"
+   },
+   "accountant_reports": {
+    "name": "Informes per al teu gestor"
+   },
+   "ticket_printing": {
+    "name": "Impressió de tiquets de cuina"
+   },
+   "customer_display": {
+    "name": "Pantalla per als clients"
+   },
+   "loyalty_stamp_cards": {
+    "name": "Targetes de fidelització digitals amb segells"
+   }
+  },
+  "cardRegionOnline": "{region} estàndard",
+  "cardRegion": {
+   "UKcards": "targetes del Regne Unit",
+   "EEAcards": "targetes de l’EEE",
+   "UScards": "targetes dels EUA",
+   "Australiancards": "targetes australianes",
+   "NewZealandcards": "targetes de Nova Zelanda",
+   "Canadiancards": "targetes canadenques",
+   "Swisscards": "targetes suïsses",
+   "Braziliancards": "targetes brasileres",
+   "Mexicancards": "targetes mexicanes",
+   "Japanesecards": "targetes japoneses",
+   "Singaporecards": "targetes de Singapur",
+   "HongKongcards": "targetes de Hong Kong",
+   "Malaysiancards": "targetes malaisianes",
+   "Thaicards": "targetes tailandeses",
+   "UAEcards": "targetes dels EAU"
+  },
+  "perMonth": {
+   "mo": "{amount}/mes",
+   "month": "{amount} al mes"
+  },
+  "priceWord": {
+   "free": "Gratuït",
+   "freeTrial": "Prova gratuïta",
+   "lifetime": "Vitalici",
+   "zeroPercent": "0 %",
+   "payAtHatch": "Pagament en recollir",
+   "unlimited": "Il·limitat",
+   "none": "—",
+   "masked": "Per confirmar"
+  },
+  "cell": {
+   "included": "Inclòs"
+  }
+ },
+ "planPrompt": {
+  "includedOn": "{many, select, yes {{feature} s’inclouen al pla {plan}.} other {{feature} s’inclou al pla {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} no formen part del teu pla.} other {{feature} no forma part del teu pla.}}",
+  "switchedOff": "{many, select, yes {{feature} s’han desactivat per al teu food truck.} other {{feature} s’ha desactivat per al teu food truck.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Millora el pla →",
+  "features": {
+   "discovery_map": {
+    "name": "La presència al mapa de descoberta",
+    "many": "no"
+   },
+   "web_dashboard": {
+    "name": "El tauler web",
+    "many": "no"
+   },
+   "ipad_kds": {
+    "name": "L’aplicació de cuina",
+    "many": "no"
+   },
+   "qr_menu": {
+    "name": "La carta amb codi QR",
+    "many": "no"
+   },
+   "meal_deals": {
+    "name": "Els menús",
+    "many": "yes"
+   },
+   "upsells": {
+    "name": "Els suggeriments",
+    "many": "yes"
+   },
+   "walkup_orders": {
+    "name": "Les comandes presencials",
+    "many": "yes"
+   },
+   "online_ordering_pay_at_hatch": {
+    "name": "La recepció de comandes amb Pagament en recollir",
+    "many": "no"
+   },
+   "sold_out_toggle": {
+    "name": "L’indicador d’esgotat",
+    "many": "no"
+   },
+   "stock_countdown": {
+    "name": "El compte enrere de l’estoc",
+    "many": "no"
+   },
+   "offline_protection": {
+    "name": "La protecció de comandes sense connexió",
+    "many": "no"
+   },
+   "online_payments": {
+    "name": "Els pagaments en línia",
+    "many": "yes"
+   },
+   "advance_preordering": {
+    "name": "Les comandes per a altres dies",
+    "many": "yes"
+   },
+   "time_slot_selection": {
+    "name": "Les franges horàries per als clients",
+    "many": "yes"
+   },
+   "smart_batch_pacing": {
+    "name": "La gestió de la capacitat de la cuina",
+    "many": "no"
+   },
+   "auto_accept": {
+    "name": "L’acceptació automàtica",
+    "many": "no"
+   },
+   "instagram_messenger_replies": {
+    "name": "Les respostes automàtiques de Messenger i Instagram",
+    "many": "yes"
+   },
+   "branded_qr_code": {
+    "name": "Els codis QR amb el teu logotip",
+    "many": "yes"
+   },
+   "advanced_reporting": {
+    "name": "Els informes avançats",
+    "many": "yes"
+   },
+   "ticket_printing": {
+    "name": "La impressió de tiquets de cuina",
+    "many": "no"
+   },
+   "multi_device_kds": {
+    "name": "La sincronització de la cuina en diversos dispositius",
+    "many": "no"
+   },
+   "cook_screen": {
+    "name": "La pantalla del cuiner",
+    "many": "no"
+   },
+   "whatsapp_replies": {
+    "name": "Les respostes automàtiques de WhatsApp",
+    "many": "yes"
+   },
+   "embed_schedule": {
+    "name": "El teu calendari al teu propi web",
+    "many": "no"
+   },
+   "schedule_graphics": {
+    "name": "Les publicacions a les xarxes socials",
+    "many": "yes"
+   },
+   "event_types": {
+    "name": "Els tipus d’esdeveniment personalitzats",
+    "many": "yes"
+   },
+   "private_events": {
+    "name": "Els esdeveniments privats",
+    "many": "yes"
+   },
+   "paperwork": {
+    "name": "Els documents",
+    "many": "yes"
+   }
+  }
+ },
+ "faq": {
+  "phrases": {
+   "appsSentence": "També hi ha una aplicació per a iPad i Android, que continua rebent comandes presencials si et quedes sense cobertura.",
+   "appsOffline": "L’aplicació per a iPad i Android continua rebent comandes presencials sense cobertura i les envia quan tornes a tenir connexió; el tauler web necessita connexió.",
+   "webOffline": "El tauler web necessita connexió per mostrar les comandes noves."
+  }
+ },
+ "aboutPage": {
+  "meta": {
+   "title": "Qui som — HatchGrab",
+   "description": "HatchGrab crea programari per a food trucks i càtering mòbil: comandes en línia, hora de recollida i menys preguntes repetides. Fundat per Dominic Bonini."
+  },
+  "eyebrow": "Qui som",
+  "title": "Pensat per a la manera com treballen de debò els food trucks",
+  "photoAlt": "{name}, fundador de HatchGrab",
+  "story": {
+   "start": "HatchGrab va néixer d’una observació senzilla: els food trucks necessiten millors eines per gestionar el seu negoci.",
+   "villageFoodie": "Després de crear Village Foodie, un directori que ajuda la gent a descobrir els food trucks que visiten la seva zona, vaig dedicar més temps a conèixer els reptes dels negocis de menjar ambulant. A diferència dels restaurants tradicionals, els food trucks es mouen constantment, treballen en llocs diferents i serveixen els clients en condicions que canvien.",
+   "fixedAddress": "Tot i així, bona part del programari que tenen al seu abast està pensat per a negocis amb una adreça fixa.",
+   "change": "HatchGrab es va crear per canviar-ho.",
+   "build": "Creem programari pràctic pensat específicament per als food trucks i el càtering mòbil, que els ajuda a rebre comandes en línia, gestionar les hores de recollida, mantenir el ritme de les comandes i perdre menys temps responent preguntes repetitives.",
+   "focus": "El nostre objectiu és senzill: fer més fàcil portar un food truck, amb eines pensades per a la manera com funcionen de debò aquests negocis."
+  },
+  "signature": "<b>{name}</b><br></br>Fundador, HatchGrab",
+  "company": "{company} · registrada a Anglaterra i Gal·les · número d’empresa {number} · domicili social: {address}",
+  "contact": "Contacta’ns"
+ },
+ "legalChrome": {
+  "meta": {
+   "privacyTitle": "Política de privadesa — HatchGrab",
+   "privacyDescription": "Com HatchGrab Ltd recull i utilitza les dades personals.",
+   "termsTitle": "Condicions del servei — HatchGrab",
+   "termsDescription": "Les condicions d’ús de HatchGrab.",
+   "countryTermsTitle": "Condicions específiques per país — HatchGrab",
+   "countryTermsDescription": "Les normes addicionals que s’apliquen a HatchGrab en alguns països."
+  },
+  "homeLabel": "Inici de HatchGrab",
+  "privacy": "Privadesa",
+  "terms": "Condicions",
+  "countryTerms": "Condicions per país",
+  "contact": "Contacte",
+  "lastUpdated": "Última actualització: {date}",
+  "questions": "Tens preguntes? <link>Posa’t en contacte amb nosaltres</link> — som persones de debò.",
+  "translationNote": "Aquesta és una traducció. Si difereix de la <link>versió en anglès</link>, preval la versió en anglès."
+ },
+ "truckPage": {
+  "meta": {
+   "fallbackTitle": "Food truck | Village Foodie",
+   "hgFallbackTitle": "Food truck",
+   "orderTitle": "Fes la comanda a {truck}",
+   "orderDescription": "Fes la comanda per endavant a {truck} i recull-la al food truck.",
+   "title": "{truck} | Village Foodie",
+   "logoAlt": "Logotip: {truck}"
+  },
+  "shareTitle": "Calendari: {truck}",
+  "shareText": "Mira on serà {truck} properament! 🚚",
+  "linkCopied": "Enllaç del perfil copiat al porta-retalls! 📋",
+  "facebookPage": "Pàgina de Facebook",
+  "loadingMap": "S’està carregant el mapa…",
+  "view": {
+   "list": "Llista",
+   "map": "Mapa"
+  },
+  "ownThisTruck": "Aquest food truck és teu?",
+  "ownThisTruckTitle": "Aquest food truck és teu? Fes clic per actualitzar el perfil",
+  "actions": {
+   "menu": "Carta",
+   "call": "Truca",
+   "message": "Missatge",
+   "share": "Comparteix",
+   "order": "Fes la comanda"
+  },
+  "loadingSchedule": "S’està carregant el calendari…",
+  "loadError": {
+   "title": "No s’ha pogut carregar",
+   "body": "Ara mateix no hem pogut carregar el calendari; normalment és un problema momentani. Torna-ho a provar.",
+   "retry": "Torna-ho a provar"
+  },
+  "notFound": {
+   "title": "No s’ha trobat el food truck",
+   "body": "No hem trobat cap dada d’aquest food truck. Potser s’ha traslladat o ha actualitzat el perfil.",
+   "cta": "Mostra tots els food trucks"
+  },
+  "noEvents": {
+   "title": "No hi ha esdeveniments previstos",
+   "body": "Potser ens falten dades d’aquest food truck. Ets el propietari o en coneixes el calendari?",
+   "cta": "Escriu-nos perquè ho actualitzem!"
+  },
+  "whereToFind": "On ens trobaràs",
+  "missingEvent": "<strong>Ens falta algun esdeveniment?</strong> <br></br>Si ets el propietari d’aquest food truck o simplement n’ets un fan incondicional, ajuda’ns a mantenir aquesta pàgina al dia! <br></br><link>Contacta’ns per afegir les dades que falten.</link>",
+  "weeklySchedule": "Rep el calendari setmanal 🍕"
+ },
+ "contactPage": {
+  "meta": {
+   "title": "Assistència",
+   "description": "Obtén ajuda amb HatchGrab. Envia’ns un missatge i et respondrem per correu electrònic."
+  },
+  "logIn": "Inicia la sessió",
+  "eyebrow": "Assistència",
+  "title": "Com et podem ajudar?",
+  "lede": "Alguna cosa no funciona o tens una pregunta sobre el teu compte? Tens dues maneres de contactar-nos; en tots dos casos et respondrem per correu electrònic.",
+  "emailUs": "Envia’ns un correu",
+  "formHeading": "O envia’ns un missatge",
+  "form": {
+   "topicLabel": "De què es tracta?",
+   "topics": {
+    "question": "Una pregunta sobre HatchGrab",
+    "account": "Ajuda amb el meu compte",
+    "comparison": "Una correcció en una pàgina de comparativa",
+    "other": "Una altra cosa"
+   },
+   "nameLabel": "El teu nom",
+   "namePlaceholder": "Nom",
+   "emailLabel": "Correu electrònic",
+   "businessLabel": "Nom del food truck o del negoci",
+   "optional": "(opcional)",
+   "businessPlaceholder": "p. ex. La Cuina del Poble",
+   "messageLabel": "El teu missatge",
+   "send": "Envia el missatge",
+   "sending": "S’està enviant…",
+   "privacyLine": "Només farem servir les teves dades per respondre’t.",
+   "privacyLink": "Política de privadesa",
+   "thanksTitle": "Gràcies — hem rebut el teu missatge.",
+   "thanksBody": "Et respondrem per correu electrònic a l’adreça que ens has donat.",
+   "errors": {
+    "nameRequired": "Escriu el teu nom.",
+    "nameTooLong": "El nom pot tenir com a màxim {max, number} caràcters.",
+    "emailRequired": "Escriu la teva adreça de correu electrònic.",
+    "emailInvalid": "Escriu una adreça de correu electrònic vàlida.",
+    "emailTooLong": "Fes servir una adreça de correu electrònic de {max, number} caràcters com a màxim.",
+    "businessRequired": "Escriu el nom del teu food truck o negoci perquè puguem trobar el teu compte.",
+    "businessTooLong": "El nom del food truck o del negoci pot tenir com a màxim {max, number} caràcters.",
+    "messageTooShort": "Escriu almenys {min, number} caràcters.",
+    "messageTooLong": "El missatge pot tenir com a màxim {max, number} caràcters.",
+    "topicInvalid": "Tria de què tracta el teu missatge.",
+    "rateLimited": "Ja has enviat uns quants missatges — torna-ho a provar més tard o escriu-nos a {email}.",
+    "failed": "Alguna cosa ha fallat — escriu-nos a {email}."
+   }
+  },
+  "privacy": "Privadesa",
+  "terms": "Condicions",
+  "about": "Qui som",
+  "copyright": "© {year} HatchGrab"
+ },
+ "siteFooter": {
+  "title": "No et perdis cap porció 🍕",
+  "body": "Rep cada setmana a la teva safata d’entrada el calendari dels food trucks de la zona.",
+  "cta": "Rep el calendari",
+  "noSpam": "Res de correu brossa (potser una mica de pepperoni). Dona’t de baixa quan vulguis.",
+  "heading": "Contacte i serveis",
+  "hire": "Lloga un food truck",
+  "general": "Consulta general",
+  "addBusiness": "Afegeix el meu negoci",
+  "reportIssue": "Informa d’un problema",
+  "directory": "Directori de food trucks",
+  "disclaimer": "Avís: els venedors poden canviar els calendaris. Fem tot el que podem, però no som responsables dels food trucks que cancel·lin ni de les hamburgueses esgotades. Consulta sempre les xarxes socials del venedor per si hi ha canvis d’última hora."
+ },
+ "errorPage": {
+  "notFoundTitle": "No s’ha trobat la pàgina",
+  "notFoundBody": "No hem trobat aquesta pàgina. Potser s’ha mogut o l’adreça no és correcta.",
+  "home": "Ves a la pàgina d’inici",
+  "errorTitle": "Alguna cosa ha fallat",
+  "errorBody": "Ho sentim — aquesta pàgina no s’ha carregat. Torna-ho a provar o torna a la pàgina d’inici.",
+  "retry": "Torna-ho a provar",
+  "backToDashboard": "Torna al tauler",
+  "errorBodyDashboard": "Ho sentim, aquesta pàgina no s’ha carregat. Torna-ho a provar o torna al teu tauler.",
+  "sectionFailed": "Aquesta secció no s’ha carregat."
+ },
+ "embed": {
+  "metaDescription": "On serà {truck} properament.",
+  "orderFrom": "Fes la comanda a {truck}",
+  "poweredBy": "Amb la tecnologia de <b>HatchGrab</b>",
+  "loadFailed": "Ara mateix no s’ha pogut carregar el calendari.",
+  "loading": "S’està carregant el calendari…",
+  "empty": "No hi ha esdeveniments previstos per a {truck}."
+ },
+ "planNames": {
+  "payg": {
+   "name": "Sense quota mensual",
+   "subtitle": "Per a food trucks de temporada i a temps parcial",
+   "description": "Sense quota mensual. Només pagues un 0,99 % per les comandes en línia."
+  },
+  "pro": {
+   "subtitle": "Per a food trucks amb comandes anticipades habituals",
+   "description": "Tot, incloses les respostes automàtiques de WhatsApp i les publicacions a les xarxes socials, amb comandes en línia incloses cada mes."
+  },
+  "unlimited": {
+   "name": "Il·limitat",
+   "subtitle": "Per a food trucks amb molta feina i festivals",
+   "description": "Tot, sense comissions per les comandes en línia, per molta feina que tinguis."
+  },
+  "trial": {
+   "name": "Prova gratuïta",
+   "description": "Totes les funcions, gratis, mentre duri la prova."
+  },
+  "demo": {
+   "name": "Demostració",
+   "description": "Entorn de proves per a clients potencials — mai públic."
+  },
+  "tester": {
+   "name": "Provador",
+   "description": "Provador abans del llançament — accés complet."
+  }
+ }
+}
