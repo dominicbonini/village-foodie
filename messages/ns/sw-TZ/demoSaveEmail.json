@@ -1,0 +1,9 @@
+{
+  "subject": "Majaribio yako ya HatchGrab — hiki hapa kiungo cha kurudi",
+  "heading": "Majaribio yako yamehifadhiwa",
+  "intro": "Hiki hapa kiungo cha kurudi kwenye majaribio yenye menyu yako. Hakuna haja ya kuingia — gusa tu.",
+  "button": "Fungua majaribio yangu",
+  "freshDay": "Kila unaporudi tutaandaa siku mpya ya mauzo ili uwe na kitu cha kujaribu.",
+  "deletion": "Haya ni majaribio, kwa hiyo hatuyahifadhi milele — tutayafuta pamoja na menyu\n                tarehe <b>{date}</b> (baada ya {days, plural, one {siku #} other {siku #}}). Ukijisajili kabla ya\n                hapo, menyu yako itahamia nawe.",
+  "notSent": "Imehifadhiwa, lakini hatukuweza kutuma barua pepe sasa hivi."
+}

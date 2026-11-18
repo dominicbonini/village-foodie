@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Lazima} other {Si lazima}}{limit, select, one { · Chagua moja} upTo { · Chagua hadi {max}} other {}}",
+  "operator": "{required, select, yes {Lazima} other {Si lazima}}{limit, select, one { · Mteja anachagua moja} upTo { · Mteja anaweza kuchagua hadi {max}} other {}}"
+}

@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Jaribu kabla ya kuunganisha",
+    "intro": "Andika swali kama ambavyo mteja angeuliza, na uone jibu hasa ambalo angepata. Hakuna kinachotumwa kwa mtu yeyote.",
+    "examples": {
+      "where": "Uko wapi leo usiku?",
+      "doYouDo": "Una pizza ya pepperoni?",
+      "menu": "Kuna nini kwenye menyu?"
+    },
+    "placeholder": "Una vitindamlo gani?",
+    "send": "Tuma",
+    "empty": "Jibu lako litaonekana hapa",
+    "working": "Inaandaa jibu…",
+    "noReply": "Hakuna jibu ambalo lingetumwa.",
+    "noReplyWhy": "Ujumbe huo unaonekana kama barua taka, ombi la kuweka nafasi au jambo lisilohusika, kwa hiyo majibu ya kiotomatiki yanakaa kimya.",
+    "footnote": "Majibu yanatengenezwa na AI na hutofautiana kidogo kila mara, na mara chache yanaweza kuwa si sahihi.",
+    "failed": "Imeshindikana kutengeneza mwonekano wa awali sasa hivi.",
+    "unreachable": "Imeshindikana kufikia seva. Angalia muunganisho wako kisha ujaribu tena."
+  },
+  "setup": {
+    "button": {
+      "preparing": "Inaandaa…",
+      "unavailable": "Haipatikani",
+      "waiting": "Inasubiri dirisha la Facebook…",
+      "finishing": "Inakamilisha…",
+      "reconnect": "Unganisha upya",
+      "setUp": "Andaa"
+    },
+    "startAgain": "Anza upya",
+    "popupHint": "Huoni dirisha la Facebook? Huenda limezuiwa. Ruhusu madirisha ibukizi (pop-ups) kwa hatchgrab.com, kisha bonyeza “Anza upya”."
+  },
+  "notice": {
+    "sdkUnavailable": "Uandaaji wa WhatsApp haupatikani katika mazingira haya.",
+    "sdkBlocked": "Programu ndogo ya kuingia ya Meta haikuweza kupakia. Kwa kawaida chanzo ni kizuia matangazo au ulinzi dhidi ya ufuatiliaji.",
+    "setupFailed": "Uandaaji haukuweza kukamilika. Hakuna kilichobadilishwa.",
+    "setupFinished": "Uandaaji umekamilika.",
+    "metaError": "Meta imeripoti tatizo wakati wa uandaaji. Hakuna kilichobadilishwa. Jaribu tena, na wasiliana nasi likiendelea kutokea.",
+    "closed": "Uandaaji ulifungwa kabla haujakamilika. Hakuna kilichobadilishwa — bonyeza “Andaa” ili kujaribu tena.",
+    "disconnectedUnreachable": "WhatsApp imetenganishwa. Hatukuweza kufikia Meta ili kuondoa ruhusa. Tafadhali ondoa HatchGrab kwenye WhatsApp Business → Settings → Account → Business Platform.",
+    "disconnected": "WhatsApp imetenganishwa. Majibu ya kiotomatiki yamesimama.",
+    "close": "Funga"
+  },
+  "card": {
+    "title": "Majibu ya kiotomatiki",
+    "description": "Jibu maswali ya wateja kiotomatiki kwenye mitandao yako ya kijamii, kwa kutumia menyu na ratiba yako.",
+    "channels": "Njia za mawasiliano",
+    "requiresAccount": "Inahitaji akaunti ya WhatsApp Business.",
+    "connected": "Imeunganishwa",
+    "popupInstruction": "Dirisha la Facebook litafunguka ili kuunganisha akaunti yako ya WhatsApp Business. Kama hakuna kinachoonekana, ruhusu madirisha ibukizi (pop-ups) kwa hatchgrab.com kwenye kivinjari chako, kisha bonyeza “Andaa” tena.",
+    "switchedOff": "Majibu ya kiotomatiki ya WhatsApp yamezimwa kwa food truck yako.",
+    "expiring": "Muunganisho wako wa WhatsApp unahitaji kusasishwa hivi karibuni. Bonyeza “Unganisha upya” ili majibu ya kiotomatiki yaendelee kufanya kazi.",
+    "comingSoon": "Inakuja hivi karibuni",
+    "instagram": "Majibu ya kiotomatiki kwa ujumbe wa moja kwa moja wa Instagram. Itahitaji akaunti ya kitaalamu ya Instagram.",
+    "messenger": "Majibu ya kiotomatiki kwa Facebook Messenger. Itahitaji Ukurasa wa Facebook."
+  },
+  "blocked": {
+    "title": "Majibu yako hayawafikii wateja",
+    "body": "WhatsApp inakataa kutuma majibu yako ya kiotomatiki kwa sababu ya tatizo la bili kwenye akaunti yako ya WhatsApp Business. Wateja bado wanaweza kukutumia ujumbe na bado utaona kila wanachotuma — lakini hawapati jibu.",
+    "fix": "Unailipa WhatsApp moja kwa moja kwa ujumbe huu, kwa hiyo hili hurekebishwa kwenye WhatsApp Manager. <link>Angalia njia yako ya malipo</link>"
+  },
+  "limit": {
+    "heading": "Majibu ya kiotomatiki",
+    "label": "Kikomo cha kila mwezi",
+    "option": "{n, number}",
+    "usage": "Yametumika {used, number} kati ya {limit, number} · kikomo kinaanza upya {date}",
+    "perCustomer": "Hadi majibu {n} kwa kila mteja ndani ya saa 24, kisha ujumbe mmoja unaosema utajibu wewe mwenyewe.",
+    "emailAt": "Majibu husitishwa ukifikia kikomo chako. Tutakutumia barua pepe ukifikia 80% na 100%.",
+    "saved": "Kikomo cha majibu kwa mwezi kimehifadhiwa",
+    "saveFailed": "Imeshindikana kuhifadhi kikomo"
+  },
+  "billing": {
+    "heading": "Bili",
+    "paymentMethod": "Njia ya malipo",
+    "added": "Njia ya malipo imeongezwa",
+    "missing": "Hakuna njia ya malipo iliyoongezwa",
+    "addInManager": "Ongeza kwenye WhatsApp Manager",
+    "summary": "Meta, si HatchGrab, ndiyo inayotoza akaunti yako ya WhatsApp kwa majibu. Kuanzia {from}, majibu {free, number} ya kwanza kila mwezi ni bure. Ni sahihi kufikia {checked}; angalia <link>bei za Meta</link> kwa mabadiliko.",
+    "howMetaCharges": "Jinsi Meta inavyotoza",
+    "chargesTitle": "Meta ndiyo inayotoza kwa majibu ya WhatsApp, si HatchGrab.",
+    "chargesBody": "Kila jibu ambalo HatchGrab inatuma kwa niaba yako hutozwa na Meta kwenye akaunti yako ya WhatsApp Business. Kuanzia {from}, Meta inajumuisha majibu {free, number} bure kwa mwezi kwa kila namba; baada ya hapo, kila jibu hutozwa kwa bei ya Meta. Majibu unayotuma wewe mwenyewe kutoka kwenye programu ya WhatsApp Business hayatozwi. Meta ndiyo huweka bei hizi na inaweza kuzibadilisha. <link>Angalia bei za Meta</link>",
+    "addPaymentInManager": "Ongeza njia ya malipo kwenye WhatsApp Manager",
+    "aboveMissing": "Kikomo chako kiko juu ya majibu {free, number} ya bure ya Meta. Bila njia ya malipo, Meta itasimamisha majibu yote mara hayo yakishatumika.",
+    "aboveGeneral": "Kikomo chako kiko juu ya majibu {free, number} ya bure ya Meta. Majibu zaidi ya hayo yanahitaji njia ya malipo kwenye akaunti yako ya WhatsApp; bila hiyo, Meta husimamisha majibu yote mara yale ya bure yakishatumika.",
+    "addPaymentMethod": "Ongeza njia ya malipo"
+  },
+  "disconnect": {
+    "link": "Tenganisha WhatsApp",
+    "title": "Ungependa kutenganisha WhatsApp?",
+    "body": "Majibu ya kiotomatiki yanasimama mara moja na HatchGrab inapoteza ruhusa ya kufikia akaunti yako ya WhatsApp. Namba yako inaendelea kufanya kazi kwenye programu ya WhatsApp Business. Ili kuondoa HatchGrab kabisa, fungua pia WhatsApp Business → Settings → Account → Business Platform.",
+    "cancel": "Ghairi",
+    "confirm": "Tenganisha",
+    "working": "Inatenganisha…",
+    "failed": "Imeshindikana kutenganisha"
+  },
+  "signup": {
+    "logged": "Imerekodiwa.",
+    "partial": "Tumeunganisha akaunti yako ya WhatsApp Business lakini hatukuweza kukamilisha muunganisho. Hakuna tatizo upande wako — tafadhali wasiliana nasi na tutaukamilisha.",
+    "noNumber": "Akaunti yako ya WhatsApp Business imeunganishwa, lakini hakuna namba ya simu iliyorudi. Bonyeza “Unganisha upya” na ukamilishe hatua ya namba.",
+    "needsRegistering": "Akaunti yako imeunganishwa, lakini namba hii inahitaji kusajiliwa na sisi kabla majibu hayajaanza. Tafadhali wasiliana na timu ya usaidizi — uandaaji wako umehifadhiwa, usiurudie.",
+    "registerRefused": "Akaunti yako imeunganishwa lakini Meta haikukubali kusajili namba. Uandaaji wako umehifadhiwa — tafadhali wasiliana na timu ya usaidizi badala ya kuurudia.",
+    "deliveryRefused": "Akaunti yako imeunganishwa lakini Meta haikukubali kuwasha uwasilishaji wa ujumbe. Uandaaji wako umehifadhiwa — tafadhali wasiliana na timu ya usaidizi badala ya kuurudia.",
+    "numberTaken": "Namba hiyo ya WhatsApp tayari imeunganishwa na akaunti nyingine ya HatchGrab. Namba moja inaweza kujibu kwa niaba ya food truck moja tu. Wasiliana na timu ya usaidizi na tutaihamisha.",
+    "saveIncomplete": "Karibu tumemaliza — hatukuweza kukamilisha kuhifadhi. Uandaaji wako umehifadhiwa, tafadhali wasiliana na timu ya usaidizi badala ya kuurudia.",
+    "connected": "WhatsApp imeunganishwa. Majibu ya kiotomatiki yataanza kujibu ujumbe unaotumwa kwa namba hii."
+  }
+}

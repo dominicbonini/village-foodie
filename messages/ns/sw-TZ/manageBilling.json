@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "kwa gari / mwezi",
+  "transactionFees": "Ada za miamala",
+  "comingSoon": "Inakuja hivi karibuni",
+  "footnote2Masked": "Malipo mtandaoni yanaendeshwa na Stripe Connect. Ada za jukwaa na za kuchakata malipo ya kadi zitatangazwa na kuthibitishwa wakati wa uzinduzi.",
+  "card": {
+    "title": "Bili na malipo",
+    "managed": "Bili zinasimamiwa na HatchGrab",
+    "earlyAccess": "Katika kipindi hiki cha awali, tunaandaa na kurekebisha vifurushi sisi wenyewe.",
+    "planLine": "{trial, select, yes {{truck} · kifurushi {plan} (jaribio)} other {{truck} · kifurushi {plan}}}"
+  },
+  "currentPlan": "Kifurushi cha sasa",
+  "plan": {
+    "included": "Kinajumuisha oda za mtandaoni za hadi {amount} kwa mwezi.",
+    "includedUnlimited": "Oda za mtandaoni bila kikomo zimejumuishwa.",
+    "promo": "Bei maalum.",
+    "promoUntil": "Bei maalum hadi {date}.",
+    "ended": "Kifurushi chako {plan} kiliisha tarehe {date}. Sasa uko kwenye kifurushi {now}.",
+    "trialMonths": "Jaribio bila malipo la miezi {months}."
+  },
+  "trialEnds": "Jaribio linaisha {date}",
+  "yourTrialEnds": "Jaribio lako linaisha {date}",
+  "notStarted": {
+    "heading": "Jaribio lako bila malipo bado halijaanza"
+  },
+  "onTrial": "Una huduma zote. Chagua kifurushi kabla jaribio lako halijaisha.",
+  "onTrialPaidEnd": "Una huduma zote. Jaribio lako likiisha, kifurushi {plan} ni {price} kwa mwezi. Tutawasiliana nawe kabla ya hapo ili kuandaa malipo.",
+  "onTrialNoCta": "Una huduma zote.",
+  "noCharge": "🔒 Hutatozwa chochote katika kipindi chako cha jaribio, kinachoendelea hadi {date}. Utozaji huanza tu pale unapochagua kifurushi na kuweka taarifa zako za malipo. Hadi wakati huo hakuna cha kughairi wala cha kulipa.",
+  "noChargePaidEnd": "🔒 Hutatozwa chochote katika kipindi chako cha jaribio, kinachoendelea hadi {date}.",
+  "fees": "*Ada za kawaida za kuchakata malipo ya kadi zinatozwa kwenye oda za mtandaoni",
+  "setUpPayment": "⏱ Chagua kifurushi kabla jaribio lako halijaisha",
+  "changeYourPlan": "Badilisha kifurushi chako",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Hamia kifurushi {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Tunaandaa mfumo wa bili wa kiotomatiki. Ili kuhamia sasa, tutumie ujumbe na tutakuandalia ndani ya saa 24.",
+    "mailSubject": "Kuhamia kifurushi {plan} — {truck}",
+    "mailBody": "Habari, ningependa kuhamisha {truck} kwenda kifurushi {plan} ({price}).",
+    "email": "Tutumie barua pepe ili kuhamia",
+    "cancel": "Ghairi"
+  }
+}

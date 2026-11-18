@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Tarehe za wiki",
+    "dayList": "Orodha ya siku",
+    "place": "Mahali",
+    "venue": "Eneo",
+    "area": "Mji/Kijiji",
+    "dayDate": "Siku na tarehe",
+    "times": "Muda",
+    "orderLink": "Kiungo cha oda",
+    "locationTag": "Tagi ya mahali"
+  },
+  "weekHeader": "{truck} — mahali tutakapokuwa wiki hii:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — LIMEGHAIRIWA, samahani",
+  "noDates": "Hakuna tarehe wiki hii — rudi uangalie tena hivi karibuni.",
+  "orderAhead": "Agiza mapema: {url}",
+  "orderAheadTagged": "Agiza mapema: {url} {tag}",
+  "eventLine": "{truck} kwenye {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} kwenye {where} {when}.",
+  "cancelledSorry": "Samahani — hatutaweza kufika kwenye {where} {when}.",
+  "cancelledApology": "Tunaomba radhi kwa wote waliokuwa wamepanga kuja. Tutarudi hivi karibuni.",
+  "when": {
+    "today": "leo",
+    "tonight": "leo usiku",
+    "tomorrow": "kesho",
+    "dated": "tarehe {date}"
+  }
+}

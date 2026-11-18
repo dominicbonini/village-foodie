@@ -1,0 +1,13 @@
+{
+  "stepHeading": "Food truck yako iko wapi?",
+  "stepIntro": "Hii inaweka sarafu yako, bei, ukanda wa saa na muundo wa namba ya simu. Nchi haiwezi kubadilishwa baadaye, kwa sababu imeunganishwa na malipo yako ya kadi.",
+  "settingsHeading": "Mahali unapouza",
+  "countryLabel": "Nchi",
+  "countryGuessed": "Tumekisia hii kutokana na mahali ulipo. Ibadilishe ikiwa si sahihi.",
+  "countryLocked": "Nchi yako haiwezi kubadilishwa",
+  "townLabel": "Mji au jiji",
+  "townQuestion": "Mji au jiji ulipo",
+  "timezoneLabel": "Ukanda wa saa",
+  "continueButton": "Endelea",
+  "saveFailed": "Imeshindikana kuhifadhi mipangilio — tafadhali jaribu tena."
+}

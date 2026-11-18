@@ -1,0 +1,10 @@
+{
+  "download": "Pakua picha",
+  "copied": "Imenakiliwa ✓",
+  "copyCaption": "Nakili maandishi ya chapisho",
+  "share": "Shiriki",
+  "copiedStatus": "{kind, select, postText {Maandishi ya chapisho yamenakiliwa.} other {Maandishi ya chapisho yamenakiliwa.}}",
+  "copyFailed": "Imeshindikana kunakili — chagua maandishi kisha uyanakili mwenyewe.",
+  "sharedStatus": "{kind, select, postText {Maandishi ya chapisho yamenakiliwa — yabandike kwenye chapisho lako.} other {Maandishi ya chapisho yamenakiliwa — yabandike kwenye chapisho lako.}}",
+  "shareRefused": "{kind, select, postText {Kushiriki kumekataliwa, kwa hiyo picha imepakuliwa. Maandishi ya chapisho yamenakiliwa.} other {Kushiriki kumekataliwa, kwa hiyo picha imepakuliwa. Maandishi ya chapisho yamenakiliwa.}}"
+}

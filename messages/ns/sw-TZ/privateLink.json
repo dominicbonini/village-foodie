@@ -1,0 +1,12 @@
+{
+  "guestLabel": "SHUGHULI BINAFSI",
+  "truckFallback": "Food truck",
+  "noSlugTitle": "Food truck hii bado haijaandaliwa kwa kuagiza mtandaoni.",
+  "orderingOffTitle": "Kuagiza mtandaoni hakujawashwa",
+  "orderingOffBody": "Tukio hili halipokei oda mtandaoni. Tafadhali agiza kwenye food truck.",
+  "replacedTitle": "Kiungo hiki kimebadilishwa",
+  "replacedBody": "Kiungo hiki hakifanyi kazi tena — kimebadilishwa na {truck}. Muombe mratibu kiungo kipya au msimbo wa QR.",
+  "madePublicBody": "Kiungo hiki hakifanyi kazi tena — tukio hili limewekwa wazi kwa umma na {truck}. Unaweza kuagiza kupitia ukurasa wao wa kawaida.",
+  "unknownTitle": "Kiungo hiki hakifanyi kazi",
+  "unknownBody": "Kiungo hiki hakifanyi kazi. Kihakiki na mratibu, au skani msimbo wa QR tena."
+}

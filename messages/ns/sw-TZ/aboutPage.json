@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Kuhusu sisi — HatchGrab",
+    "description": "HatchGrab hutengeneza programu kwa food truck na catering: oda mtandaoni, muda wa kuchukua na maswali machache yanayojirudia. Mwanzilishi: Dominic Bonini."
+  },
+  "eyebrow": "Kuhusu sisi",
+  "title": "Imejengwa kulingana na jinsi food truck zinavyofanya kazi kweli",
+  "photoAlt": "{name}, mwanzilishi wa HatchGrab",
+  "story": {
+    "start": "HatchGrab ilianza kwa jambo moja rahisi nililoliona: food truck zinahitaji zana bora zaidi za kuendesha biashara zao.",
+    "villageFoodie": "Baada ya kuanzisha Village Foodie, orodha inayowasaidia watu kugundua food truck zinazotembelea maeneo yao, nilitumia muda zaidi kujifunza changamoto zinazozikabili biashara za chakula zinazotembea. Tofauti na migahawa ya kawaida, food truck huhama kila mara, zikifanya kazi katika maeneo tofauti na kuhudumia wateja katika mazingira yanayobadilika.",
+    "fixedAddress": "Hata hivyo, programu nyingi zinazopatikana kwao zimeundwa kwa ajili ya biashara zenye anwani moja ya kudumu.",
+    "change": "HatchGrab iliundwa ili kubadilisha hilo.",
+    "build": "Tunatengeneza programu za vitendo mahsusi kwa food truck na huduma za upishi zinazotembea, zikiwasaidia kupokea oda mtandaoni, kusimamia muda wa kuchukua oda, kuhakikisha oda zinaenda bila tatizo na kutumia muda mchache kujibu maswali yanayojirudia.",
+    "focus": "Lengo letu ni rahisi: kurahisisha uendeshaji wa food truck, kwa zana zilizoundwa kulingana na jinsi biashara hizi zinavyofanya kazi kweli."
+  },
+  "signature": "<b>{name}</b><br></br>Mwanzilishi, HatchGrab",
+  "company": "{company} · imesajiliwa England na Wales · namba ya kampuni {number} · ofisi iliyosajiliwa: {address}",
+  "contact": "Wasiliana nasi"
+}

@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Limeghairiwa",
+    "finished": "Limekwisha",
+    "unconfirmed": "Halijathibitishwa",
+    "confirmed": "Limethibitishwa",
+    "open": "Linaendelea sasa",
+    "closed": "Limefungwa"
+  },
+  "sections": {
+    "label": "Sehemu za ratiba",
+    "events": "Matukio",
+    "eventTypes": "Aina za matukio"
+  },
+  "header": {
+    "title": "Ratiba",
+    "upcoming": "Yajayo: {count}",
+    "import": "✨ Ingiza ratiba",
+    "importHint": "picha, PDF au maandishi",
+    "addEvent": "+ Ongeza tukio",
+    "scraperAuto": "Tunatafuta matukio kiotomatiki kwenye tovuti yako",
+    "changeInSettings": "Badilisha kwenye Mipangilio",
+    "scraperManual": "Unasimamia ratiba yako mwenyewe"
+  },
+  "empty": {
+    "title": "Hakuna matukio yajayo",
+    "body": "Matukio yanayopatikana kwenye mitandao yako ya kijamii na kalenda yako ya kuweka nafasi yataonekana hapa ili uyathibitishe"
+  },
+  "list": {
+    "openNow": "Yanaendelea sasa",
+    "needsApproval": "Yanahitaji idhini yako",
+    "needsConfirmation": "Yanahitaji kuthibitishwa",
+    "confirmed": "Yaliyothibitishwa",
+    "past": "Matukio yaliyopita ({count})",
+    "found": "Tumekupatia {count, plural, one {tukio # — likague na uliidhinishe kabla halijaonekana kwa wateja.} other {matukio # — yakague na uyaidhinishe kabla hayajaonekana kwa wateja.}}"
+  },
+  "card": {
+    "addName": "Ongeza jina",
+    "timeNeeded": "⚠ Muda unahitajika",
+    "setTimeFirst": "Weka muda kwanza",
+    "confirm": "Thibitisha",
+    "copy": "Nakili",
+    "edit": "Hariri",
+    "makePost": "Tengeneza chapisho",
+    "cancel": "Ghairi",
+    "approve": "Idhinisha",
+    "reject": "Kataa",
+    "stock": "⚠️ Stoku",
+    "stockHidden": "Imefichwa — {reason}",
+    "noDeals": "Hakuna ofa za mlo zinazotumika",
+    "dealsActive": "{count, plural, one {Ofa ya mlo # inatumika} other {Ofa za mlo # zinatumika}} · {names}{hidden, plural, =0 {} one { · # imefichwa} other { · # zimefichwa}}",
+    "approveNeedsTimes": "Kuidhinisha kumezimwa hadi tukio hili liwe na muda wa kuanza na wa kumaliza — uongeze kwa Hariri."
+  },
+  "guessed": {
+    "title": "📍 Tumekisia mahali hapa",
+    "body": "Eneo zaidi ya moja lililingana na <b>{venue}</b>, kwa hiyo tulichagua linalofaa zaidi{hasTown, select, yes { katika <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Hakikisha ni lenyewe kabla ya kuidhinisha — kama si sahihi, tumia <b>Hariri</b> kurekebisha mji/kijiji au {postal}, la sivyo wateja watapelekwa mahali pasipo sahihi.",
+    "thisVenue": "eneo hili"
+  },
+  "noLocation": {
+    "title": "📍 Bado haliko kwenye ramani",
+    "body": "Hatukuweza kuweka eneo hili kwenye ramani, kwa hiyo litaorodheshwa lakini halitaonyesha alama kwenye ramani. Ongeza {postal} kwa <b>Hariri</b> ili kuliweka kwenye ramani."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Huenda kuna mgongano} other {Huenda kuna migongano}} — kagua kabla ya {pending, select, yes {kuidhinisha} other {kuthibitisha}}",
+    "duplicate": "Hili linaonekana kuwa tukio lilelile ulilonalo tayari.",
+    "review": "Eneo na tarehe ni sawa, muda ni tofauti — je, hili ni tukio lilelile lenye muda uliohaririwa, au nafasi tofauti? Kagua kabla ya kuidhinisha.",
+    "already": "Tayari kwenye ratiba yako: <b>{venue}</b>{details} ({status, select, confirmed {limethibitishwa} open {linaendelea} other {{status}}})",
+    "unnamedVenue": "Eneo lisilo na jina",
+    "ack": "Ndiyo, haya ni matukio tofauti — {pending, select, yes {idhinisha} other {thibitisha}} hata hivyo",
+    "cancel": "Ghairi",
+    "overlap": "Muda wa tukio hili unagongana na tukio jingine siku hiyohiyo — gari moja haliwezi kuwa mahali pawili kwa wakati mmoja. Kagua kabla ya kuidhinisha."
+  },
+  "toast": {
+    "loadFailed": "Imeshindikana kupakia matukio",
+    "linkFailed": "Imeshindikana kupakia kiungo",
+    "placeTypeFailed": "Tukio limehifadhiwa. Aina ya kawaida ya {place} haikuhifadhiwa — {reason}.",
+    "placeTypeFailedReason": "uhifadhi haukufanikiwa",
+    "eventUpdated": "Tukio limesasishwa",
+    "eventAdded": "Tukio limeongezwa",
+    "eventsSaved": "{count, plural, one {Tukio # limehifadhiwa} other {Matukio # yamehifadhiwa}}",
+    "saveEventsFailed": "Imeshindikana kuhifadhi matukio",
+    "needsTime": "Ongeza muda wa kuanza na wa kumaliza kabla ya kuidhinisha — tukio hili linahitaji muda ili lianze kuonekana.",
+    "addStartTime": "Ongeza muda wa kuanza",
+    "addEndTime": "Ongeza muda wa kumaliza",
+    "chooseTruckBefore": "Chagua gari litakalofanya kazi kwenye tukio hili kabla ya kuidhinisha.",
+    "chooseTruck": "Chagua gari litakalofanya kazi kwenye tukio hili",
+    "eventConfirmed": "Tukio limethibitishwa",
+    "eventRejected": "Tukio limekataliwa",
+    "undo": "↩ Tendua",
+    "eventRestored": "Tukio limerejeshwa",
+    "restoreFailed": "Imeshindikana kurejesha",
+    "eventCancelled": "Tukio limeghairiwa",
+    "eventCancelledOrders": "Tukio limeghairiwa · {count, plural, one {oda # imeghairiwa} other {oda # zimeghairiwa}}",
+    "placeHidden": "Mahali pamefichwa",
+    "placeShown": "Mahali panaonekana tena",
+    "saveThatFailed": "Imeshindikana kuhifadhi hilo."
+  },
+  "link": {
+    "label": "Kiungo binafsi na msimbo wa QR",
+    "close": "Funga"
+  }
+}

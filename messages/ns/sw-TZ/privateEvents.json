@@ -1,0 +1,42 @@
+{
+  "publicName": "Shughuli binafsi",
+  "chip": "Binafsi",
+  "grid": {
+    "orderingSection": "ODA",
+    "linkRowLabel": "Pokea oda kupitia kiungo binafsi na msimbo wa QR",
+    "columnTitle": "Aina ya Binafsi iliyojengwa ndani. Haiwezi kubadilishwa jina, kuhamishwa wala kufutwa."
+  },
+  "form": {
+    "help": "Inaonekana kwenye ratiba yako kama “Shughuli binafsi” ikiwa na tarehe na muda tu — kamwe si anwani, ramani wala Village Foodie.",
+    "linkPromise": "Wageni wanaagiza kupitia kiungo binafsi na msimbo wa QR — utavipata baada ya kuhifadhi.",
+    "nameLabel": "Jina la tukio",
+    "nameHelp": "Wageni wanaona hili juu ya ukurasa wa oda.",
+    "namePlaceholder": "Harusi ya Neema na Juma",
+    "previewNote": "Jinsi inavyoonekana kwenye ratiba yako — bila eneo, mji wala postikodi.",
+    "needsTimes": "Ongeza muda wa kuanza na wa kumaliza — shughuli binafsi inayopokea oda kupitia kiungo inavihitaji."
+  },
+  "link": {
+    "button": "Kiungo na QR",
+    "title": "Kiungo binafsi na msimbo wa QR",
+    "label": "Kiungo binafsi",
+    "copy": "Nakili",
+    "copied": "Imenakiliwa",
+    "qrDownload": "Pakua QR",
+    "tableCards": "Chapisha kadi za mezani",
+    "newLink": "Tengeneza kiungo kipya",
+    "working": "Inashughulikia…",
+    "newLinkConfirm": "Tengeneza kiungo kipya? Kiungo cha sasa kitaacha kufanya kazi mara moja, na misimbo ya QR uliyokwisha kuchapisha itaacha kufanya kazi pia.",
+    "newLinkHelp": "Tumia hii kama kiungo kimefika mahali kisipostahili. Kiungo cha sasa kinaacha kufanya kazi mara moja, na misimbo ya QR iliyochapishwa inaacha kufanya kazi pia.",
+    "newLinkFailed": "Imeshindikana kutengeneza kiungo kipya.",
+    "offNotice": "Kuagiza kupitia kiungo binafsi kumezimwa kwa tukio hili, kwa hiyo hakuna kiungo cha kushiriki. Tukio bado linaonekana kwenye ratiba yako kama “Shughuli binafsi”."
+  },
+  "cards": {
+    "printTitle": "{truck} — kadi za mezani",
+    "scan": "Skani ili kuagiza",
+    "blurb": "Agiza na ulipe kwa simu yako. Tutakuita kwa jina oda ikiwa tayari.",
+    "footer": "Oda kupitia HatchGrab"
+  },
+  "noSinglePost": "Shughuli binafsi hazipati chapisho lake peke yake — zinaonekana kwenye bango lako la wiki kama “Shughuli binafsi”.",
+  "confirmToPrivate": "Hii inaficha anwani na tukio kwenye ramani. Wageni watahitaji kiungo binafsi ili kuagiza.",
+  "confirmFromPrivate": "Hii inafanya tukio liwe la umma: anwani yake na alama yake kwenye ramani vitaonekana, na kiungo binafsi kitaacha kufanya kazi."
+}

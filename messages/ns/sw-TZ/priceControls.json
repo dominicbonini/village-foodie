@@ -1,0 +1,8 @@
+{
+  "change": "{label} — badilisha",
+  "useRule": "{label} — tumia kanuni badala yake",
+  "typePrice": "{label} — andika bei",
+  "backToRule": "Rudi kwenye kanuni",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

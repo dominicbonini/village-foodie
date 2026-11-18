@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Thibitisha barua pepe yako mpya ya HatchGrab",
+    "heading": "Thibitisha barua pepe yako",
+    "button": "Thibitisha barua pepe"
+  },
+  "changeEmail": {
+    "requested": "Uliomba kubadilisha barua pepe yako ya HatchGrab kuwa hii.",
+    "click": "Bofya kitufe kilicho hapa chini ili kuthibitisha. Kiungo hiki kitaisha muda wake baada ya saa 24.",
+    "ignore": "Kama hukuomba mabadiliko haya, unaweza kupuuza barua pepe hii bila wasiwasi.",
+    "stillActive": "Barua pepe yako ya sasa bado inatumika."
+  },
+  "resendVerification": {
+    "requested": "Uliomba kubadilisha barua pepe yako ya HatchGrab kuwa hii.",
+    "click": "Bofya hapa chini ili kuthibitisha. Kiungo hiki kitaisha muda wake baada ya saa 24.",
+    "ignore": "Kama hukuomba hili, puuza barua pepe hii.",
+    "stillActive": "Barua pepe yako ya sasa bado inatumika."
+  },
+  "passwordReset": {
+    "subject": "Weka upya nenosiri lako la HatchGrab",
+    "heading": "Weka upya nenosiri lako",
+    "requested": "Tumepokea ombi la kuweka upya nenosiri la akaunti yako ya HatchGrab.",
+    "click": "Bofya kitufe kilicho hapa chini ili kuchagua nenosiri jipya. Kiungo hiki kitaisha muda wake baada ya saa 1.",
+    "button": "Weka upya nenosiri",
+    "ignore": "Kama hukuomba hili, unaweza kupuuza barua pepe hii bila wasiwasi.",
+    "unchanged": "Nenosiri lako halitabadilika hadi ubofye kiungo kilicho hapo juu."
+  },
+  "deletionScheduled": {
+    "subject": "Akaunti yako ya HatchGrab imepangwa kufutwa",
+    "received": "Tumepokea ombi la kufuta akaunti hii ya HatchGrab.",
+    "orderingStopped": "<b>Oda za mtandaoni zimesitishwa mara moja</b> kwa: {trucks}.",
+    "noTrucks": "(hakuna food truck)",
+    "readable": "Dashibodi yako itaendelea\n    kupatikana kwa kusomwa kwa {days, plural, one {siku # ijayo} other {siku # zijazo}}.",
+    "scheduled": "Akaunti imepangwa kufutwa tarehe <b>{date}</b>.",
+    "cannotCancel": "<b>Hili haliwezi kughairiwa ukiwa ndani ya programu.</b> Kama si wewe, au\n    umebadilisha nia, jibu barua pepe hii haraka iwezekanavyo.",
+    "kept": "Akaunti ikifutwa tunaondoa taarifa zako binafsi na taarifa za wateja wako. Tunabaki\n    na rekodi za kihasibu zisizo na majina, ambazo sheria inatulazimu kuzihifadhi."
+  }
+}

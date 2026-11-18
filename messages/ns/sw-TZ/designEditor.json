@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Kichwa cha wiki",
+    "weekHeadingSample": "Wiki inayoanza …",
+    "daysSample": "{first} hadi {last}",
+    "date": "Tarehe",
+    "place": "Mahali",
+    "venue": "Eneo",
+    "area": "Mji/Kijiji",
+    "time": "Muda",
+    "rows": "Mistari",
+    "rowsSample": "nafasi ya {px}px · {first} hadi {last}",
+    "ownText": "Maandishi yako mwenyewe",
+    "noteTokenSample": "Maelezo unayoandika unapotengeneza chapisho",
+    "nothingYet": "Bado hakuna kitu",
+    "thisBox": "kisanduku hiki"
+  },
+  "sample": {
+    "venue": "Bustani ya Jiji",
+    "area": "Bagamoyo"
+  },
+  "bar": {
+    "previewWith": "Onyesha mfano kwa",
+    "undo": "Tendua",
+    "undoTitle": "Tendua (⌘Z)",
+    "redo": "Rudia",
+    "redoTitle": "Rudia (⇧⌘Z)",
+    "cancel": "Ghairi",
+    "saving": "Inahifadhi…",
+    "save": "Hifadhi muundo"
+  },
+  "grid": {
+    "eachRow": "Kila mstari",
+    "placeOff": "Jina la mahali liko kwenye picha yako — HatchGrab haitaliongeza."
+  },
+  "background": {
+    "uploading": "Inapakia…",
+    "replace": "Badilisha picha",
+    "shape": {
+      "square": "Mraba (1:1)",
+      "portrait45": "Wima (4:5)",
+      "portrait916": "Wima (9:16)",
+      "landscape169": "Mlalo (16:9)",
+      "portrait": "Wima",
+      "landscape": "Mlalo"
+    }
+  },
+  "scope": {
+    "title": "Nafasi za maandishi",
+    "standard": "Nafasi sawa na muundo wa Kawaida",
+    "own": "Nafasi maalum kwa mahali: {place}",
+    "locked": "Nafasi hizi zinatoka kwenye muundo wako wa Kawaida. Chagua “Nafasi maalum kwa mahali: {place}” ili kuzihamisha hapa tu."
+  },
+  "stage": {
+    "hint": "Buruta kisanduku ili kukihamisha · buruta kona ili kubadilisha ukubwa",
+    "zoomOut": "Punguza ukuzaji",
+    "zoomIn": "Kuza"
+  },
+  "rows": {
+    "spacing": "Nafasi ya mistari",
+    "daysRun": "Siku ni kuanzia {first} hadi {last}. Visanduku vitatu vya mstari wa 1 vinanakiliwa kwenda chini kwa umbali huu.",
+    "whichEvents": "Matukio yapi",
+    "showCancelled": "Onyesha matukio yaliyoghairiwa",
+    "showCancelledHint": "Tukio lililoghairiwa huonyesha mahali pake pakiwa pamekatwa mstari pamoja na neno LIMEGHAIRIWA. Ikizimwa, siku hiyo inaonekana kama siku ya mapumziko."
+  },
+  "days": {
+    "reorder": "Panga upya",
+    "move": "hamisha"
+  },
+  "picture": {
+    "picture": "Picha",
+    "fill": "Jaza kisanduku",
+    "fit": "Toshea ndani",
+    "corners": "Kona",
+    "square": "Mraba",
+    "rounded": "Za mviringo",
+    "ifMissing": "Kama mahali hapana picha",
+    "noPicture": {
+      "omit": "Iache",
+      "blank": "Acha nafasi tupu",
+      "logo": "Onyesha nembo yako"
+    },
+    "border": "Mpaka",
+    "drawBorder": "Chora mpaka",
+    "drawBorderHint": "Mstari unaozunguka picha, kwa rangi yako mwenyewe.",
+    "borderWidth": "Unene wa mpaka",
+    "cornerRadius": "Mviringo wa kona",
+    "locationPictures": "Picha za mahali",
+    "addLocationPictures": "+ Ongeza picha za mahali",
+    "allHaveImage": "{total, plural, =0 {Bado huna mahali popote.} one {Mahali pako pana picha.} other {Mahali pako pote # pana picha.}}",
+    "someWithout": "Mahali {without} kati ya {total, plural, one {mahali # pako} other {mahali # pako}} bado {without, plural, one {hapana} other {hapana}} picha"
+  },
+  "settings": {
+    "font": "Fonti",
+    "colour": "Rangi",
+    "textColour": "Rangi ya maandishi",
+    "ownStyleNote": "{count, plural, one {Kisanduku hiki kina mtindo wake, kwa hiyo hakibadilishwi: {names}.} other {Visanduku hivi vina mtindo wake, kwa hiyo havibadilishwi: {names}.}}",
+    "matchAgain": "Linganisha tena",
+    "matchName": "Linganisha: {name}",
+    "lastToggle": "{kind, select, weekly {Acha kimoja kati ya “Mahali” na “Muda” kikiwa kimewashwa. Tukio lililoghairiwa huonyesha mahali pake pakiwa pamekatwa mstari pamoja na neno LIMEGHAIRIWA, kwa hiyo vyote viwili vikiwa vimezimwa hakutakuwa na chochote cha kuonyesha kuwa limeghairiwa.} other {Acha kimoja kati ya “Eneo” na “Muda” kikiwa kimewashwa. Tukio lililoghairiwa huonyesha mahali pake pakiwa pamekatwa mstari pamoja na neno LIMEGHAIRIWA, kwa hiyo vyote viwili vikiwa vimezimwa hakutakuwa na chochote cha kuonyesha kuwa limeghairiwa.}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — fonti hii ina italiki halisi"
+  },
+  "align": {
+    "left": "Kushoto",
+    "centre": "Katikati",
+    "right": "Kulia"
+  },
+  "effects": {
+    "outlineColour": "Rangi ya mstari wa nje",
+    "bandColour": "Rangi ya utepe",
+    "bandDaysOff": "Utepe siku za mapumziko",
+    "bandCancelled": "Utepe tukio likighairiwa",
+    "bandDaysOffHint": "Hutumika badala ya utepe ulio juu siku isiyo na biashara.",
+    "bandCancelledHint": "Hutumika badala ya utepe ulio juu tukio likighairiwa."
+  },
+  "more": {
+    "dayOwnLine": "Siku kwenye mstari wake",
+    "dayOwnLineHint": "Siku ya wiki juu ya tarehe. Kwa tarehe pekee.",
+    "noEventDay": "Siku isiyo na tukio",
+    "wordsBeforePlaceholder": "mf. Tutafute",
+    "neverHyphenate": "Neno moja refu lisilo na nafasi hupunguzwa ukubwa kila mara — kamwe hatuvunji jina la mahali kwa kistari."
+  },
+  "bits": {
+    "less": "Kidogo",
+    "more": "Zaidi",
+    "chooseColourFor": "{label} — chagua rangi yoyote",
+    "chooseColour": "Chagua rangi yoyote"
+  }
+}

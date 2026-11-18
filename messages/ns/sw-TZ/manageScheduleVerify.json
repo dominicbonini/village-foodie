@@ -1,0 +1,9 @@
+{
+  "launch_failed": "Uhakiki haupatikani kwa muda. Tafadhali jaribu tena baada ya muda mfupi.",
+  "malformed": "Hiyo haionekani kuwa anwani ya tovuti. Jaribu kitu kama foodtruckyako.co.tz/matukio",
+  "blocked": "Hatukuweza kufikia tovuti hii — huenda inazuia ukaguzi wa kiotomatiki. Jaribu ukurasa unaoorodhesha ratiba yako, au ongeza matukio mwenyewe.",
+  "unreachable": "Hatukuweza kufikia tovuti hii. Huenda haifanyi kazi kwa sasa, au anwani si sahihi.",
+  "no_content": "Tumefikia ukurasa huu lakini hatukuweza kusoma chochote juu yake. Hakikisha unafikiwa na umma.",
+  "no_events": "Hatukupata matukio yoyote yajayo kwenye ukurasa huu. Hakikisha URL inaelekeza moja kwa moja mahali ratiba yako ilipoorodheshwa.",
+  "blockedDomain": "Tafadhali tumia URL ya tovuti yako — kurasa za Facebook na Instagram haziwezi kusomwa kiotomatiki."
+}

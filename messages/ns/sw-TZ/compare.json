@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Ulinganisho wa gharama",
+  "title": "Linganisha gharama zako za<br></br><accent>oda mtandaoni</accent>",
+  "system": {
+    "title": "Je, unapokea oda mtandaoni kwa sasa?",
+    "yes": "Ndiyo, kwa mfumo mwingine",
+    "no": "Hapana, bado"
+  },
+  "trucks": {
+    "title": "Una magari mangapi?",
+    "aria": "Idadi ya magari"
+  },
+  "plan": {
+    "yourChoice": "Chaguo lako",
+    "weSuggest": "Tunapendekeza",
+    "summary": "{price} kwa gari kwa mwezi, ikijumuisha oda za mtandaoni za hadi {allowance}{fleet, plural, one {} other { kwa kila gari}}.",
+    "switchTo": "Tumia kifurushi {plan} badala yake",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} kwa gari kwa mwezi, pamoja na {pct} kwa oda za mtandaoni.} other {Hakuna ada ya kila mwezi — {pct} kwa oda za mtandaoni pekee.}}",
+    "summaryNoFee": "{price} kwa gari kwa mwezi, oda za mtandaoni bila kikomo na bila ada ya HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Oda za mtandaoni kwa mwezi, kwa kila gari",
+    "count": "~{count, plural, one {oda #} other {oda #}}",
+    "captionNo": "Makadirio ya jumla yanatosha — oda ya mapema na wateja wanaokwepa foleni, si taslimu au kadi dirishani.",
+    "captionYes": "Oda zilizowekwa kupitia ukurasa wako wa oda pekee — si taslimu au kadi dirishani.",
+    "sliderAria": "Thamani ya oda za mtandaoni kwa mwezi, kwa kila gari",
+    "overAllowance": "Oda za mtandaoni za hadi {allowance} zimejumuishwa kwa kila gari. Kiasi cha {excess} kinachozidi kinatozwa {pct} — <b>{over}</b> kwa mwezi kwa kila gari.",
+    "insideAllowance": "Ndani ya oda za mtandaoni za {allowance} zilizojumuishwa — hakuna gharama juu ya kifurushi.",
+    "acrossFleet": "Kwa {fleet, plural, one {gari #} other {magari #}}: <b>{amount}</b> kwa mwezi.",
+    "titleNo": "Unadhani ungepokea kiasi gani mtandaoni, kwa mwezi, kwa kila gari?",
+    "feeOnly": "{pct} kwa kila oda ya mtandaoni — <b>{over}</b> kwa mwezi kwa kila gari.",
+    "noFee": "Oda za mtandaoni bila kikomo zimejumuishwa — hakuna gharama juu ya kifurushi."
+  },
+  "fee": {
+    "title": "Unalipa kiasi gani kwa kila oda sasa hivi?",
+    "pctLabel": "Asilimia",
+    "pctPlaceholder": "Kiwango chako",
+    "pctAria": "Ada ya asilimia",
+    "fixedLabel": "Na kwa kila oda",
+    "fixedPlaceholder": "Ada yako",
+    "fixedAria": "Kiasi kisichobadilika kwa kila oda",
+    "modeLabel": "Kiwango chao:",
+    "modeInclusive": "kinajumuisha kuchakata malipo ya kadi",
+    "modeOnTop": "ada ya kadi inatozwa juu yake",
+    "onTopNote": "Ada ya kuchakata malipo ya kadi ya {fee} inatozwa juu ya hicho, kwa hiyo kwa jumla unalipa <b>{pct} + {fixed}</b>.",
+    "inclusiveNote": "Ada ya kuchakata malipo ya kadi ya {fee} imo ndani ya hicho, nawe ungeilipa popote. Ada yao wenyewe ni <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Unauza siku ngapi kwa wiki?",
+    "help": "Matukio, masoko, maeneo ya kuuzia — siku yoyote gari likiwa kazini."
+  },
+  "jump": {
+    "cost": "Ona gharama yake ↓",
+    "saving": "Ona utakachookoa ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Oda mtandaoni, oda ya mapema na skrini yako ya jikoni (KDS) kwa</lead><figure>{amount}</figure><unit>kila siku ya biashara</unit>",
+    "basedOn": "Kwa msingi wa {days, plural, one {siku #} other {siku #}} kwa wiki · {monthly} kwa mwezi{fleet, plural, one {} other { kwa kila gari}}"
+  },
+  "coffee": "Chini ya bei ya kikombe cha kahawa.",
+  "freeMonths": "{n, plural, one {Na mwezi wako wa kwanza hulipii.} other {Na miezi yako # ya kwanza hulipii.}}",
+  "cta": {
+    "upload": "Pakia menyu yangu →",
+    "uploadSave": "Pakia menyu yangu na uokoe {amount} →",
+    "ask": "Tuulize swali",
+    "noCard": "Hakuna kadi inayohitajika kuandaa"
+  },
+  "breakdown": {
+    "title": "Mchanganuo wa mwezi wako",
+    "titleDearer": "Mwezi wako ukiwa na HatchGrab",
+    "plan": "Kifurushi {plan}",
+    "over": "{pct} kwa kiasi cha {excess} kinachozidi {allowance} kilichojumuishwa",
+    "inside": "Oda za mtandaoni ndani ya kiasi cha {allowance} kilichojumuishwa",
+    "total": "HatchGrab kila mwezi",
+    "freeMonths": "{n, plural, one {Mwezi 1} other {Miezi 1–#}}",
+    "freeAmount": "{amount} — bure",
+    "acrossFleet": "Kwa {fleet, plural, one {gari #} other {magari #}}",
+    "perMonth": "{amount} kwa mwezi",
+    "card": "Kuchakata malipo ya kadi — ada ya Stripe ya {fee} kwa kila oda, inalipwa kwa Stripe. Ungelipa karibu kiasi hichohicho kwa mashine ya kadi dirishani.",
+    "provider": "Ada ya mtoa huduma wako wa sasa yenyewe ({pct})",
+    "feeOnly": "{pct} kwa oda za mtandaoni za {excess}",
+    "noFee": "Oda za mtandaoni — bila kikomo, bila ada ya HatchGrab"
+  },
+  "enterRate": "Weka unacholipa sasa ili uone utakachookoa.",
+  "panel": {
+    "nowYear": "<label>Kwa sasa unalipa</label><fig>{amount}<q> kwa mwaka</q></fig>",
+    "nowMonth": "<label>Kwa sasa unalipa</label><fig>{amount}<q> kwa mwezi</q></fig>",
+    "oursYear": "<label>Ukiwa na HatchGrab</label><fig>{amount}<q> katika mwaka wa kwanza</q></fig>",
+    "oursMonth": "<label>Ukiwa na HatchGrab</label><fig>{amount}<q> kwa mwezi</q></fig>",
+    "acrossFleet": "kwa {fleet, plural, one {gari #} other {magari #}}"
+  },
+  "hero": {
+    "save": "<verb>Unaokoa</verb><figure>{amount}</figure><sub><num>{pct}</num> chini katika mwaka wako wa kwanza</sub>",
+    "same": "<verb>Karibu sawa</verb><figure>{amount}</figure><sub><num>{pct}</num> zaidi katika mwaka wako wa kwanza</sub>",
+    "dearer": "<lead>Kila kitu ambacho HatchGrab hufanya, kwa</lead><figure>{amount}</figure><unit>zaidi kwa wiki</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} zaidi kwa mwezi kuliko sasa} other {{amount} zaidi kwa kila gari kwa mwezi kuliko sasa}}"
+  },
+  "anchor": {
+    "liability": "Hiyo ni sawa na bima ya dhima kwa umma ya mwaka mzima.",
+    "weekendPitch": "Hiyo ni sawa na nafasi ya kuuza wikendi kwenye tamasha la chakula.",
+    "festivalPitches": "Hiyo ni sawa na nafasi mbili za kuuza kwenye matamasha.",
+    "fryer": "Hiyo ni sawa na kikaango kipya na sahani ya kuchomea.",
+    "counter": "Hiyo ni sawa na kukarabati upya kaunta yako yote ya kuhudumia.",
+    "vanDeposit": "Hiyo ni sawa na malipo ya awali ya gari la pili.",
+    "secondVan": "Hiyo ni sawa na gari la pili barabarani."
+  },
+  "year": {
+    "one": "Mwaka wa kwanza",
+    "two": "Mwaka wa pili",
+    "save": "Okoa {amount}<note>({pct} chini)</note>",
+    "extra": "Ziada {amount}<note>({pct} zaidi)</note>",
+    "current": "Mtoa huduma wa sasa <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Makadirio yanatokana na takwimu unazoweka, ukichukulia wastani wa oda ya {aov}. Ada ya kuchakata malipo ya kadi inahusika kwa mtoa huduma yeyote utakayemtumia. Hakiki kabla ya kuamua.",
+    "yes": "Makadirio yanatokana na takwimu unazoweka, ukichukulia wastani wa oda ya {aov}. Ada ya kuchakata malipo ya kadi ya {fee} kwa kila oda inahusika kwa mtoa huduma yeyote utakayemtumia, kwa hiyo haijajumuishwa pande zote mbili.",
+    "onTop": "Kiasi cha jumla kwenye swali namba {n} kinaijumuisha — ulinganisho haujumuishi, kwa upande wowote.",
+    "check": "Hakiki viwango vya mtoa huduma wako wa sasa kabla ya kuamua."
+  },
+  "intro": "Inachukua takriban dakika moja. Tayari unatumia mfumo? Tutaulinganisha. Bado? Tutakuonyesha gharama halisi.",
+  "twoYear": "Kwa miaka miwili, hiyo ni akiba ya <b>{amount}</b>.",
+  "meta": {
+    "title": "Kikokotoo cha gharama — HatchGrab {country}",
+    "description": "Linganisha gharama zako za sasa za oda mtandaoni na mwaka mmoja ukitumia HatchGrab — pata makadirio ndani ya dakika moja tu."
+  }
+}

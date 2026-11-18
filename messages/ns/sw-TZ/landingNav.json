@@ -1,0 +1,21 @@
+{
+  "homeLabel": "Ukurasa wa mwanzo wa HatchGrab",
+  "cta": "Pakia menyu yangu →",
+  "ctaShort": "Pakia menyu",
+  "features": "Huduma",
+  "pricing": "Bei",
+  "logIn": "Ingia",
+  "country": {
+    "button": "Nchi: {name}. Badilisha nchi",
+    "menu": "Nchi",
+    "title": "Chagua nchi yako",
+    "subline": "Bei, lugha na mipangilio hubadilika ili kuendana nayo.",
+    "regions": {
+      "europe": "Ulaya",
+      "americas": "Amerika",
+      "asiaPacific": "Asia na Pasifiki",
+      "middleEast": "Mashariki ya Kati",
+      "africa": "Afrika"
+    }
+  }
+}

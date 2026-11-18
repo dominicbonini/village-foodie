@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Kuorodheshwa kwenye ramani ya ugunduzi"
+    },
+    "web_dashboard": {
+      "name": "Dashibodi ya wavuti kwa kifaa chochote"
+    },
+    "qr_code": {
+      "name": "Msimbo wa QR"
+    },
+    "schedule_import": {
+      "name": "Uingizaji wa ratiba kiotomatiki"
+    },
+    "meal_deals_upsells": {
+      "name": "Ofa za mlo (combo) na mapendekezo ya ziada"
+    },
+    "walkup_orders": {
+      "name": "Kushughulikia oda za papo hapo"
+    },
+    "sold_out_toggle": {
+      "name": "Kitufe cha “Imeisha” papo hapo"
+    },
+    "kitchen_app": {
+      "name": "Programu ya jikoni ya iPhone, iPad na Android"
+    },
+    "offline_protection": {
+      "name": "Ulinzi wa oda nje ya mtandao"
+    },
+    "online_payments": {
+      "name": "Malipo mtandaoni"
+    },
+    "advance_preordering": {
+      "name": "Oda ya mapema kwa tarehe zijazo"
+    },
+    "preorder_deadline": {
+      "name": "Muda wa mwisho wa oda ya mapema"
+    },
+    "time_slot_selection": {
+      "name": "Mteja kuchagua nafasi ya muda"
+    },
+    "kitchen_capacity": {
+      "name": "Usimamizi wa uwezo wa jiko"
+    },
+    "stock_countdown": {
+      "name": "Hesabu ya stoku inayopungua kiotomatiki"
+    },
+    "auto_accept": {
+      "name": "Kubali oda za mtandaoni kiotomatiki"
+    },
+    "branded_qr_code": {
+      "name": "Msimbo wa QR wenye nembo"
+    },
+    "private_events": {
+      "name": "Shughuli binafsi"
+    },
+    "social_media_posts": {
+      "name": "Machapisho ya mitandao ya kijamii"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Majibu ya kiotomatiki ya WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Majibu ya kiotomatiki ya Messenger na Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Pokea malipo kwenye simu yako"
+    },
+    "sms_order_alerts": {
+      "name": "Arifa za oda kwa SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Usawazishaji wa jiko kwenye vifaa vingi"
+    },
+    "multi_user_access": {
+      "name": "Ufikiaji wa watumiaji wengi"
+    },
+    "embed_schedule": {
+      "name": "Ukurasa wa ratiba kwenye tovuti yako mwenyewe"
+    },
+    "event_types": {
+      "name": "Aina maalum za matukio na bei"
+    },
+    "buzzer_tracking": {
+      "name": "Ufuatiliaji wa kengele"
+    },
+    "documents_reminders": {
+      "name": "Hati na vikumbusho"
+    },
+    "profit_per_event": {
+      "name": "Faida kwa kila tukio"
+    },
+    "accountant_reports": {
+      "name": "Ripoti kwa mhasibu wako"
+    },
+    "ticket_printing": {
+      "name": "Kuchapisha tiketi za jikoni"
+    },
+    "customer_display": {
+      "name": "Skrini ya kuwaonyesha wateja"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Kadi za stempu za kidijitali kwa wateja wa kudumu"
+    }
+  },
+  "cardRegionOnline": "{region} za kawaida",
+  "cardRegion": {
+    "UKcards": "kadi za Uingereza",
+    "EEAcards": "kadi za EEA",
+    "UScards": "kadi za Marekani",
+    "Australiancards": "kadi za Australia",
+    "NewZealandcards": "kadi za New Zealand",
+    "Canadiancards": "kadi za Kanada",
+    "Swisscards": "kadi za Uswisi",
+    "Braziliancards": "kadi za Brazil",
+    "Mexicancards": "kadi za Meksiko",
+    "Japanesecards": "kadi za Japani",
+    "Singaporecards": "kadi za Singapore",
+    "HongKongcards": "kadi za Hong Kong",
+    "Malaysiancards": "kadi za Malaysia",
+    "Thaicards": "kadi za Thailand",
+    "UAEcards": "kadi za UAE"
+  },
+  "perMonth": {
+    "mo": "{amount}/mwezi",
+    "month": "{amount} kwa mwezi"
+  },
+  "priceWord": {
+    "free": "Bila malipo",
+    "freeTrial": "Jaribio bila malipo",
+    "lifetime": "Maisha yote",
+    "zeroPercent": "0%",
+    "payAtHatch": "Lipa Unapochukua",
+    "unlimited": "Bila kikomo",
+    "none": "—",
+    "masked": "Itatangazwa"
+  },
+  "cell": {
+    "included": "Imejumuishwa"
+  }
+}

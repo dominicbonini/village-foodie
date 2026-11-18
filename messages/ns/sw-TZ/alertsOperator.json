@@ -1,0 +1,28 @@
+{
+  "hi": "Habari {name},",
+  "limit80": {
+    "subject": "Umetumia 80% ya majibu ya WhatsApp ya mwezi huu",
+    "used": "Majibu yako ya kiotomatiki ya WhatsApp yametumia <b>{used} kati ya {limit}</b> kwa mwezi huu.",
+    "nothingStopped": "Hakuna kilichosimama. Ukifikia {limit}, majibu ya kiotomatiki yanasitishwa hadi kiwango chako kitakapoanza upya tarehe <b>{reset}</b> — wateja bado wanaweza kukutumia ujumbe, na bado utaona kila wanachotuma.",
+    "raise": "Unaweza kuongeza kikomo chako cha mwezi kwenye Mipangilio wakati wowote.",
+    "raiseLink": "Unaweza kuongeza kikomo chako cha mwezi kwenye Mipangilio wakati wowote:",
+    "button": "Fungua Mipangilio"
+  },
+  "limit100": {
+    "subject": "Majibu ya kiotomatiki ya WhatsApp yamesitishwa kwa mwezi huu",
+    "usedAll": "Umetumia majibu yote {limit} ya kiotomatiki ya WhatsApp ya mwezi huu, kwa hiyo yamesitishwa.",
+    "stillReach": "<b>Wateja bado wanaweza kukutumia ujumbe kama kawaida, na kila ujumbe bado unakufikia.</b> Kitu pekee kilichosimama ni jibu la kiotomatiki kurudi kwao.",
+    "startAgain": "Yataanza tena tarehe <b>{reset}</b>, au mara moja ukiongeza kikomo chako cha mwezi kwenye Mipangilio.",
+    "startAgainLink": "Yataanza tena tarehe {reset}, au mara moja ukiongeza kikomo chako cha mwezi kwenye Mipangilio:",
+    "button": "Ongeza kikomo changu"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp inahitaji njia ya malipo kabla ya kutuma",
+    "stopped": "WhatsApp imezuia majibu yako ya kiotomatiki yasitumwe kwa sababu hakuna njia ya malipo inayofanya kazi kwenye akaunti yako ya WhatsApp Business.",
+    "stillMessage": "<b>Wateja bado wanaweza kukutumia ujumbe, na bado utaona kila wanachotuma</b> — lakini majibu hayawafikii.",
+    "payDirect": "Unailipa WhatsApp moja kwa moja kwa jumbe hizi, kwa hiyo hili linarekebishwa kwenye WhatsApp Manager, si kwenye HatchGrab. Ongeza au sasisha kadi huko na majibu yataanza tena yenyewe.",
+    "payDirectLink": "Unailipa WhatsApp moja kwa moja kwa jumbe hizi, kwa hiyo hili linarekebishwa kwenye WhatsApp Manager, si kwenye HatchGrab. Ongeza au sasisha kadi huko na majibu yataanza tena yenyewe:",
+    "button": "Fungua WhatsApp Manager",
+    "settings": "Mipangilio yako ya HatchGrab: <link>{url}</link>"
+  }
+}

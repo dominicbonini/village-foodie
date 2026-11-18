@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "Inasoma menyu yako…",
+    "found": "Imepata bidhaa zako…",
+    "kitchen": "Inaandaa jiko lako…",
+    "page": "Inatengeneza ukurasa wako wa oda…",
+    "almost": "Karibu tayari…"
+  },
+  "templateSteps": {
+    "truck": "Inatengeneza food truck ya mfano…",
+    "menu": "Inaandaa menyu…",
+    "kitchen": "Inaandaa jiko…",
+    "page": "Inatengeneza ukurasa wa oda…",
+    "almost": "Karibu tayari…"
+  },
+  "dialogLabel": "Pakia menyu yako",
+  "heading": "✨ Pakia menyu yako",
+  "failedHeading": "Hatukuweza kusoma menyu hiyo",
+  "close": "Funga",
+  "intro": "Picha ya ubao wa menyu yako, picha ya skrini, PDF, au ibandike kama maandishi. AI yetu inaisoma na kukutengenezea ukurasa wa oda unaofanya kazi — bidhaa zako, bei zako — ndani ya sekunde 60. Bila kujisajili, bila kadi.",
+  "failedIntro": "Wakati mwingine picha huwa na giza sana, imepigwa kwa pembe, au imeandikwa kwa mkono. Hilo ni jukumu letu kulishughulikia, si kosa lako. Njia chache za kuendelea:",
+  "usually": "Kwa kawaida hii huchukua chini ya sekunde 60.",
+  "slow": "Hii inachukua muda mrefu kuliko kawaida — menyu kubwa wakati mwingine huchukua muda.",
+  "keepWaiting": "Endelea kusubiri",
+  "sampleWhileYouWait": "Au tazama menyu ya mfano wakati unasubiri",
+  "standIn": "Hii <b>haitakuwa menyu yako</b> — ni ya mfano tu ili uone inavyofanya kazi.",
+  "seeSample": "Tazama menyu ya mfano",
+  "tryAgain": "Jaribu tena",
+  "tryPhotoAgain": "Jaribu picha hii tena",
+  "tryDifferent": "Jaribu picha nyingine",
+  "uploadAnother": "← Pakia picha nyingine",
+  "orSample": "Au tazama menyu ya mfano",
+  "orBuild": "Au tutakutengenezea",
+  "buildSent": "✓ Asante — tumeipokea. Tutakutumia barua pepe.",
+  "buildBody": "Acha barua pepe yako na mtu halisi ataweka menyu yako na kukutumia kiungo.",
+  "emailPlaceholder": "wewe@foodtruckyako.co.tz",
+  "sending": "…",
+  "send": "Tuma",
+  "noPhoto": "Huna picha ya menyu karibu?",
+  "noPhotoBody": "Tazama food truck ya mfano badala yake — unaweza kupakia yako wakati wowote.",
+  "build": "Tengeneza majaribio yangu →",
+  "nothingPublished": "Hakuna kilichochapishwa — ni wewe tu unayeweza kukiona.",
+  "error": {
+    "somethingWrong": "Hitilafu imetokea. Tafadhali jaribu tena.",
+    "serverUnreachable": "Hatukuweza kufikia seva. Angalia muunganisho wako kisha ujaribu tena.",
+    "sendFailed": "Imeshindikana kutuma — jaribu tena."
+  },
+  "fields": {
+    "uploadLabel": "Pakia faili la menyu",
+    "dropHere": "Achia menyu yako hapa",
+    "dragOrTap": "Buruta na uachie au gusa ili kuchagua",
+    "fileTypes": "Picha au PDF",
+    "or": "au",
+    "pasteLabel": "Bandika maandishi ya menyu",
+    "pastePlaceholder": "Bandika menyu yako hapa — majina ya bidhaa, maelezo, bei..."
+  },
+  "emailLabel": "Barua pepe yako",
+  "emailNote": "Tutakutumia kiungo cha majaribio yako kwa barua pepe na huenda tukawasiliana nawe kuhusu kuanza kutumia HatchGrab. <link>Sera ya Faragha</link>",
+  "marketing": "Nitumie vidokezo na habari kutoka HatchGrab mara kwa mara",
+  "emailInvalid": "Tafadhali weka barua pepe sahihi."
+}

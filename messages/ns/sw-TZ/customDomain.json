@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Weka ratiba yako kwenye tovuti yako",
+    "live": "Anwani <addr>{address}</addr> inaonyesha ratiba yako.",
+    "create": "Tunatengeneza ukurasa kwenye <addr>{address}</addr> unaoonyesha ratiba yako.",
+    "exampleDomain": "foodtruckyako.co.tz",
+    "liveBadge": "Inafanya kazi",
+    "setUp": "Andaa",
+    "viewSetup": "Angalia uandaaji",
+    "continue": "Endelea",
+    "justLive": "Anwani <b>{address}</b> inafanya kazi. Iangalie, kisha utuambie hapa chini kuwa iko sawa."
+  },
+  "waiting": {
+    "title": "Tunasubiri anwani {address}",
+    "bodySince": "Uliandaa hili tarehe {date}. Anwani mpya za tovuti kwa kawaida huanza kufanya kazi ndani ya dakika chache, na mara chache huchukua hadi saa 24 kuwafikia watu wote — hakuna unachohitaji kufanya wakati huo. Kama mtu mwingine alikuwa akikuongezea mstari huo, ni vyema kuhakikisha kuwa aliuongeza.",
+    "body": "Anwani mpya za tovuti kwa kawaida huanza kufanya kazi ndani ya dakika chache, na mara chache huchukua hadi saa 24 kuwafikia watu wote — hakuna unachohitaji kufanya wakati huo. Kama mtu mwingine alikuwa akikuongezea mstari huo, ni vyema kuhakikisha kuwa aliuongeza."
+  },
+  "ready": {
+    "title": "Anwani {address} inafanya kazi",
+    "body": "Iangalie, kisha utuambie kwenye mipangilio yako kuwa iko sawa."
+  },
+  "confirm": {
+    "heading": "Iangalie, kisha utuambie kuwa iko sawa",
+    "open": "Fungua <link>{address}</link>",
+    "checkTimes": "Hakikisha tarehe na muda vinaonekana sawa.",
+    "yes": "Ndiyo, inaonekana sawa",
+    "no": "Hapana, kuna tatizo",
+    "problemLine": "Tuambie unachokiona na tutakishughulikia.",
+    "emailUs": "Tutumie barua pepe",
+    "mailSubject": "Tatizo kwenye {address}",
+    "mailLiveSince": "Inafanya kazi tangu {date}",
+    "mailSeeing": "Ninachokiona:"
+  },
+  "confirmed": {
+    "heading": "Asante — tumelizingatia.",
+    "body": "Hakuna kingine cha kufanya."
+  },
+  "turnOff": {
+    "link": "Zima hili",
+    "heading": "Ungependa kuzima anwani yako mwenyewe ya tovuti?",
+    "stops": "Hii itaacha kufanya kazi:",
+    "carriesOn": "Hii inaendelea kama ilivyo kabisa, na ndiko msimbo wako wa QR unakowapeleka watu:",
+    "reAdd": "Kama utaiandaa tena baadaye, acha mstari uliouongeza kwenye kampuni ya anwani yako ya tovuti. Kama hutaiandaa, waombe wauondoe.",
+    "cancel": "Usiizime",
+    "confirm": "Izime",
+    "working": "Inazima…",
+    "failed": "Hatukuweza kuzima hilo sasa hivi. Hakuna kilichobadilika — anwani yako bado inafanya kazi. Jaribu tena baada ya muda mfupi."
+  },
+  "wizard": {
+    "resumeFailedTitle": "Hatukuweza kupakia uandaaji wako.",
+    "resumeFailedBody": "Hakuna kilichobadilika. Jaribu tena baada ya muda mfupi.",
+    "close": "Funga",
+    "resuming": "Tunaendelea ulipoishia…",
+    "genericError": "Hitilafu imetokea",
+    "saveFailed": "Imeshindikana kuhifadhi"
+  },
+  "address": {
+    "intro": "Ratiba yako inapata anwani yake ya tovuti.",
+    "question": "Anwani yako ya tovuti ni ipi?",
+    "hint": "Ile ambayo watu tayari wanaitumia kukupata.",
+    "aria": "Anwani yako mwenyewe ya tovuti",
+    "willBe": "Anwani yako itakuwa <addr>{address}</addr>",
+    "example": "Kwa mfano, <addr>{address}</addr>",
+    "noChange": "Tovuti yako haibadiliki — unaongeza tu kiungo cha anwani mpya.",
+    "notSetUp": "Hatujaandaa hili.",
+    "restricted": "Anayeshughulikia anwani yako ya tovuti lazima aturuhusu kuandaa kufuli — alama ndogo ya kufuli ambayo wateja wanaiona pembeni yake. Mpaka atakapotuongeza haitaonekana, kwa hiyo tumesimama badala ya kukuacha ukiisubiri. Mwombe atuongeze, kisha ujaribu tena.",
+    "blocked": "Anwani yako ya tovuti kwa sasa inazuia kufuli kabisa. Anayeishughulikia lazima airuhusu kabla hili halijaweza kufanya kazi. Mwombe abadilishe hilo, kisha ujaribu tena.",
+    "elsewhere": "Tayari kuna kitu kinachojibu kwenye anwani hiyo. Tuma ujumbe ulio kwenye skrini inayofuata kwa anayeishughulikia — atajua la kufanya.",
+    "provider": "Anwani yako ya tovuti inashughulikiwa na <b>{provider}</b>. Tutakuonyesha mahali pa kwenda.",
+    "provisionFailed": "Hatukuweza kuandaa anwani hiyo.",
+    "willNotWork": "Anwani hiyo haitafanya kazi.",
+    "couldNotBeSetUp": "Anwani hiyo haikuweza kuandaliwa.",
+    "couldNotSetUp": "Imeshindikana kuandaa",
+    "checking": "Inakagua…",
+    "setting": "Inaandaa…",
+    "tryAgain": "Jaribu tena",
+    "setUpAddress": "Andaa anwani hii",
+    "notNow": "Si sasa"
+  },
+  "apex": {
+    "empty": "Andika anwani ambayo ungependa kutumia.",
+    "not_a_domain": "Hiyo haionekani kama anwani ya tovuti.",
+    "unparseable": "Hatukuweza kusoma hiyo kama anwani ya tovuti. Kagua tahajia kisha ujaribu tena.",
+    "apex": "Anwani {host} ni anwani nzima ya tovuti yako. Ukiielekeza kwetu, tovuti yako itabadilishwa na ukurasa huu. Badala yake weka neno mbele yake — kwa mfano matukio.{host}.",
+    "too_deep": "Anwani hiyo ina sehemu nyingi mno. Kitu kama matukio.{domain} hufanya kazi vizuri zaidi."
+  },
+  "record": {
+    "addAt": "Ongeza hiki kwenye {provider}",
+    "open": "Fungua {provider}",
+    "guide": "Mwongozo wa {provider} kuhusu hili",
+    "addAtSave": "Ongeza hiki kwenye {provider}, kisha uhifadhi.",
+    "addSomewhere": "Ongeza hiki mahali anwani yako ya tovuti inaposhughulikiwa, kisha uhifadhi.",
+    "hintChoose": "Chagua hiki kwenye orodha.",
+    "hintWord": "Neno hili tu, si anwani nzima.",
+    "hintExact": "Nakili hiki kama kilivyo.",
+    "timing": "Kwa kawaida huanza kufanya kazi ndani ya saa moja, ingawa inaweza kuchukua muda zaidi. Huhitaji kuacha ukurasa huu wazi.",
+    "someoneElse": "Mtu mwingine anashughulikia anwani yako ya tovuti?",
+    "sentTo": "Imetumwa kwa {email}",
+    "emailPlaceholder": "anwani yake ya barua pepe",
+    "sending": "Inatuma…",
+    "send": "Tuma maelezo haya",
+    "sendFailed": "Imeshindikana kutuma"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Fungua anwani yako ya tovuti, kisha “DNS” na “Records”.",
+      "add": "Chagua “Add record”, kisha uchague “CNAME” kama “Type”.",
+      "name": "Weka thamani ya kwanza iliyo hapa chini kwenye “Name”.",
+      "value": "Weka thamani ya pili iliyo hapa chini kwenye “Target”.",
+      "proxy": "Weka “Proxy status” kuwa “DNS only” — wingu lililo pembeni yake lazima liwe la kijivu, si la rangi ya chungwa.",
+      "save": "Acha “TTL” kama “Auto” kisha uchague “Save”.",
+      "caveat": "Wingu likibaki la rangi ya chungwa, kufuli haitaonekana kamwe, na hakuna kitakachoeleza kwa nini."
+    },
+    "godaddy": {
+      "open": "Fungua “Domain Portfolio” yako kisha uchague anwani yako ya tovuti.",
+      "dns": "Kwenye “Domain Settings”, chagua “DNS”.",
+      "add": "Chagua “Add New Record”, kisha uchague “CNAME” kwenye menyu ya “Type”.",
+      "name": "Weka thamani ya kwanza iliyo hapa chini kwenye “Name”.",
+      "value": "Weka thamani ya pili iliyo hapa chini kwenye “Value”.",
+      "save": "Acha “TTL” kama ilivyo kisha uchague “Save”.",
+      "caveat": "Kama uliongeza zaidi ya moja kwa wakati mmoja, kitufe kinasema “Save All Records”."
+    },
+    "123reg": {
+      "signIn": "Ingia kwenye “123 Reg Control Panel” yako.",
+      "manage": "Pembeni ya “Domains”, chagua “Manage All”, kisha uchague anwani yako ya tovuti.",
+      "dns": "Chagua “DNS”, kisha “Add New Record”.",
+      "type": "Chagua “CNAME” kwenye orodha ya “Type”.",
+      "name": "Weka thamani ya kwanza iliyo hapa chini kwenye “Name”.",
+      "value": "Weka thamani ya pili iliyo hapa chini kwenye “Value”, na uongeze nukta mwishoni mwake.",
+      "save": "Acha “TTL” kama “Default” kisha ubonyeze “Save”.",
+      "caveat": "123 Reg inahitaji nukta mwishoni mwa thamani ya pili, la sivyo haitafanya kazi."
+    },
+    "wix": {
+      "open": "Fungua “Domains”, kisha ubonyeze aikoni ya “Domain Actions” iliyo pembeni ya anwani yako ya tovuti.",
+      "manage": "Chagua “Manage DNS Records”.",
+      "add": "Kwenye sehemu ya “CNAME (Aliases)”, bonyeza “+ Add Record”, kisha ubonyeze “Got it”.",
+      "name": "Weka thamani ya kwanza iliyo hapa chini kwenye “Host Name”.",
+      "value": "Weka thamani ya pili iliyo hapa chini kwenye “Value”.",
+      "save": "Bonyeza “Save”, kisha ubonyeze “Save Changes” kwenye dirisha ibukizi.",
+      "caveat": "Kama anwani yako ya tovuti inaelekezwa tu kwa Wix badala ya kuhifadhiwa huko, Wix haiwezi kufanya mabadiliko haya — anayeishikilia ndiye lazima ayafanye."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Rekodi moja ya kuongeza kwa ukurasa wa ratiba wa {truckName}",
+    "hello": "Habari,",
+    "introAt": "Tunaweka ratiba ya moja kwa moja ya {truckName} kwenye {address}, na inahitaji rekodi moja iongezwe kwenye kikoa (domain) chetu kwa {provider}.",
+    "introHolder": "Tunaweka ratiba ya moja kwa moja ya {truckName} kwenye {address}, na inahitaji rekodi moja iongezwe kwenye kikoa (domain) chetu kwa yeyote anayeshikilia kikoa chetu.",
+    "stepsAt": "Kwenye {provider}:",
+    "guide": "Mwongozo wao: {url}",
+    "wholeChange": "Hayo ndiyo mabadiliko yote — hakuna kingine kwenye tovuti kinachoathirika, na sehemu nyingine ya kikoa chetu inaendelea kufanya kazi kama ilivyo sasa. Kwa kawaida huanza kufanya kazi ndani ya saa moja.",
+    "pointsAt": "Ukurasa unaoelekezwa unaonyesha tutakapouza tena na hujisasisha wenyewe.",
+    "replyTo": "Jibu kwa {email} kama una maswali yoyote.",
+    "thanks": "Asante,"
+  },
+  "liveEmail": {
+    "subject": "Anwani {address} inafanya kazi",
+    "goodNews": "Habari njema — anwani {address} inafanya kazi.",
+    "body": "Ratiba yako sasa inaonekana kwenye anwani yako mwenyewe. Iangalie na uhakikishe iko sawa: fungua {address}, hakikisha matukio ni yako na tarehe zinaonekana sahihi.",
+    "confirm": "Ukishafanya hivyo, fungua mipangilio yako kwenye HatchGrab na utuambie kuwa iko sawa. Hakuna kinachotegemea hilo — inamaanisha tu kwamba tunajua mtu ameiona."
+  }
+}

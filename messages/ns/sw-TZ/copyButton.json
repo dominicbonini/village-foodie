@@ -1,0 +1,10 @@
+{
+  "copy": "Nakili",
+  "copied": "Imenakiliwa ✓",
+  "failed": "Imeshindikana kunakili",
+  "aria": "{label} {thing}",
+  "announceCopied": "Imenakiliwa: {thing}",
+  "announceCopiedValue": "Thamani imenakiliwa",
+  "announceFailed": "Imeshindikana kunakili: {thing}. Chagua maandishi kisha uyanakili wewe mwenyewe.",
+  "announceFailedValue": "Imeshindikana kunakili thamani. Chagua maandishi kisha uyanakili wewe mwenyewe."
+}

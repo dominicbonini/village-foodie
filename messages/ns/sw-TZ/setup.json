@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "Mahali ulipo",
+    "identity": "Food truck yako",
+    "menu": "Menyu yako",
+    "event": "Tukio la kwanza"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Kuweka mipangilio",
+  "loading": "Inapakia",
+  "loadingCountries": "Inapakia…",
+  "verify": {
+    "ok": "Barua pepe imethibitishwa — asante.",
+    "expired": "Kiungo hicho cha uthibitisho kimeisha muda wake. Wasiliana nasi na tutalishughulikia kabla hujazindua.",
+    "invalid": "Kiungo hicho cha uthibitisho hakikufanya kazi. Wasiliana nasi na tutalishughulikia kabla hujazindua."
+  },
+  "identity": {
+    "heading": "Food truck yako inaitwaje?",
+    "intro": "Hili ndilo jina wateja wanaloliona. Hakuna kinachoonekana hadharani hadi utakapoamua kuzindua.",
+    "nameLabel": "Jina la food truck",
+    "namePlaceholder": "Baga za Juma",
+    "phoneLabel": "Simu",
+    "whatsappTick": "Namba hii iko kwenye WhatsApp",
+    "phoneHelp": "Wateja wanaiona kwenye uthibitisho wa oda yao ili waweze kuuliza kuhusu oda. Alama ya tiki inaamua kama itasomeka “Tupigie simu” au “Tutumie ujumbe WhatsApp”. Unaweza kubadilisha vyote viwili kwenye Mipangilio."
+  },
+  "phoneRequired": "Ongeza namba ya simu — wateja na sisi tunaitumia kuwasiliana nawe.",
+  "createFailed": "Imeshindikana kuunda food truck yako.",
+  "unreachable": "Imeshindikana kutufikia sasa hivi — tafadhali jaribu tena.",
+  "back": "Rudi",
+  "creating": "Inaunda food truck yako…",
+  "continue": "Endelea"
+}

@@ -1,0 +1,29 @@
+{
+  "notAvailable": "Haipatikani kwenye majaribio",
+  "demoMode": "HALI YA MAJARIBIO",
+  "loopLands": "Hivyo ndivyo oda halisi inavyoingia",
+  "showMe": "Nionyeshe",
+  "noCard": "{sub} Hakuna kadi inayohitajika.",
+  "notYet": "Bado",
+  "cashAndCollected": "Taslimu na imechukuliwa",
+  "logoPlaceholder": "Nembo yako hapa",
+  "welcomeTitle": "{sample, select, yes {Haya ni majaribio ya mfano} other {Haya ni majaribio yako}}",
+  "welcomeIntro": "{sample, select, yes {Hii ni <b>menyu ya mfano</b> ili uone jinsi kila kitu kinavyofanya kazi — pakia yako mwenyewe wakati wowote ili iwe yako.} other {Hii ni menyu na chapa yako mwenyewe, kwenye ubao halisi.}} Oda zilizopo tayari ni mifano, ili uone huduma yenye shughuli nyingi.",
+  "twoThings": "Mambo mawili ya kujaribu:",
+  "hitButton": "Gusa <b>{button}</b> kwenye oda",
+  "scanQr": "Skani <b>msimbo wa QR</b> — au gusa kiungo — na uagize kama mteja, kisha uitazame ikiingia",
+  "qrAlt": "Msimbo wa QR wa ukurasa wako wa oda kwa wateja",
+  "openHere": "Au ufungue kwenye kifaa hiki",
+  "copyLink": "Nakili kiungo",
+  "copyDescribedAs": "kiungo cha oda",
+  "noLinkTitle": "Kiungo cha oda kwa wateja wako",
+  "noLinkBody": "Kiungo cha ukurasa wako wa oda kiko kwenye menyu, juu kulia.",
+  "asLive": "Mtiririko wa oda na jiko ni sawa kabisa na unavyofanya kazi halisi.",
+  "startExploring": "Anza kuchunguza",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {Anza bila malipo} one {Anza bila malipo kwa mwezi #} other {Anza bila malipo kwa miezi #}}",
+    "sub": "Jaribio lako bila malipo linaanza unapojisajili."
+  },
+  "cashIcon": "💵",
+  "walkBanner": "Majaribio · hii ni menyu yako, jinsi wateja wako watakavyoiona. Hakuna kinachotozwa na hakuna barua pepe zinazotumwa."
+}

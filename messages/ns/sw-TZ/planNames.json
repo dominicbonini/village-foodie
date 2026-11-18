@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Lipa kadri unavyotumia",
+    "subtitle": "Kwa wafanyabiashara wa msimu na wa muda",
+    "description": "Hakuna ada ya kila mwezi. Unalipa 0.99% tu kwa oda za mtandaoni."
+  },
+  "pro": {
+    "subtitle": "Kwa food truck zinazopokea oda za mapema mara kwa mara",
+    "description": "Huduma zote, pamoja na majibu ya kiotomatiki ya WhatsApp na machapisho ya mitandao ya kijamii, na oda za mtandaoni zilizojumuishwa kila mwezi."
+  },
+  "unlimited": {
+    "name": "Bila kikomo",
+    "subtitle": "Kwa food truck zenye shughuli nyingi na matamasha",
+    "description": "Huduma zote, bila ada kwa oda za mtandaoni, hata uwe na shughuli nyingi kiasi gani."
+  },
+  "trial": {
+    "name": "Jaribio bila malipo",
+    "description": "Huduma zote, bila malipo, katika kipindi chote cha jaribio lako."
+  },
+  "demo": {
+    "name": "Majaribio",
+    "description": "Mazingira ya majaribio kwa mteja mtarajiwa — hayaonekani hadharani kamwe."
+  },
+  "tester": {
+    "name": "Mjaribishaji",
+    "description": "Mjaribishaji kabla ya uzinduzi — ufikiaji kamili."
+  }
+}

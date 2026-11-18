@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Kengele <b>{number}</b> iko kwa <b>oda #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Ichukue kwa ajili ya <b>{hasTarget, select, yes {oda #{targetId}} other {oda hii}}</b>?",
+  "cancel": "Ghairi",
+  "take": "Chukua kengele {number}",
+  "titleBlocking": "Kengele ya oda #{id}?",
+  "title": "Chagua kengele",
+  "subtitle": "{hasTarget, select, yes {Oda #{id}} other {Oda hii}}{hasCurrent, select, yes { · kwa sasa kengele {current}} other {}}",
+  "allTaken": "{n, plural, one {Kengele imetolewa. Iguse ili kuichukua kutoka oda nyingine.} other {Kengele zote {count} zimetolewa. Gusa moja ili kuichukua kutoka oda nyingine.}}",
+  "thisOrder": "Oda hii",
+  "noBuzzer": "Bila kengele",
+  "done": "Nimemaliza",
+  "lostTitle": "Oda #{id} haina kengele",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}oda nyingine ilichukua kengele hiyo hiyo ulipokuwa nje ya mtandao. Mpe kengele nyingine.",
+  "dismiss": "Ficha",
+  "assign": "Weka"
+}

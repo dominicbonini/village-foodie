@@ -1,0 +1,17 @@
+{
+  "back": "← Rudi",
+  "title": "Tumia ofa ya mlo",
+  "save": "Okoa {amount}",
+  "selectItems": "Chagua bidhaa kwa kila sehemu",
+  "choose": "Chagua {category}…",
+  "inYourBasket": "── Kwenye kikapu chako ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (kwenye kikapu){state, select, used { — tayari iko kwenye ofa ya mlo} taken { — imechaguliwa kwenye sehemu nyingine} other {}}",
+  "addNew": "── Ongeza mpya ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Lazima · chagua moja} required {Lazima} other {Chagua moja}}{unmet, select, yes { (lazima)} other {}}",
+  "notePlaceholder": "Ongeza maelezo, mf. bila kitunguu (si lazima)",
+  "backButton": "Rudi",
+  "cancel": "Ghairi",
+  "chooseRequired": "Chagua machaguo ya lazima",
+  "apply": "Tumia ofa ya mlo · {amount}"
+}

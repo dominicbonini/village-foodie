@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Anwani",
+    "postcode": "Postikodi",
+    "zip": "Msimbo wa ZIP",
+    "eircode": "Eircode",
+    "postalCode": "Msimbo wa posta",
+    "state": "Jimbo",
+    "stateTerritory": "Jimbo au eneo la utawala",
+    "province": "Mkoa",
+    "county": "Kaunti",
+    "prefecture": "Mkoa",
+    "emirate": "Imarati",
+    "region": "Mkoa",
+    "area": "Mji/Kijiji (kijiji, mji au jiji)",
+    "townOrArea": "Mji au mtaa",
+    "city": "Jiji",
+    "suburb": "Kitongoji",
+    "townOrCity": "Mji au jiji"
+  },
+  "short": {
+    "area": "Mji/Kijiji",
+    "townOrArea": "Mji au mtaa",
+    "city": "Jiji",
+    "suburb": "Kitongoji",
+    "townOrCity": "Mji au jiji"
+  },
+  "inSentence": {
+    "postcode": "postikodi",
+    "zip": "msimbo wa ZIP",
+    "eircode": "Eircode",
+    "postalCode": "msimbo wa posta"
+  },
+  "withArticle": {
+    "postcode": "postikodi",
+    "zip": "msimbo wa ZIP",
+    "eircode": "Eircode",
+    "postalCode": "msimbo wa posta"
+  },
+  "tradeLabel": {
+    "area": "Mji au jiji",
+    "townOrArea": "Mji au mtaa",
+    "city": "Jiji",
+    "suburb": "Kitongoji",
+    "townOrCity": "Mji au jiji"
+  },
+  "basedIn": {
+    "area": "Mji au jiji ulipo",
+    "townOrArea": "Mji au mtaa ulipo",
+    "city": "Jiji ulipo",
+    "suburb": "Kitongoji ulipo",
+    "townOrCity": "Mji au jiji ulipo"
+  },
+  "example": "mf. {example}",
+  "customersSee": "Wateja wanaona:",
+  "postalWarning": "Hiyo haionekani kuwa {article} — kwa mfano {example}. Bado unaweza kuihifadhi.",
+  "regionChoose": "Chagua…"
+}

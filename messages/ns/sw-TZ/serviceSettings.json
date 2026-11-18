@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Muda wa kuchukua oda",
+    "takes_cash": "Je, unapokea taslimu?",
+    "offline_protection": "Ulinzi wa oda nje ya mtandao",
+    "buzzer_prompt": "Nikumbushe kuweka kengele"
+  },
+  "typeFollowsVanTitle": "Inafuata mpangilio wa kawaida wa kila gari",
+  "sameSettingsAllVansLabel": "Mipangilio sawa kwa magari yote",
+  "sameSettingsAllVansHeader": "Magari yote",
+  "sameSettingsConfirm": "Nakili mipangilio ya Gari 1 kwenye kila gari? Hii inanakili mipangilio yote ya gari ya Gari 1, sawa na ‘Sawa na Gari 1’ kwenye Mipangilio. Uwezo wa jiko una kitufe chake.",
+  "eventTypesFooterStandard": "“Kawaida” ndiyo mipangilio yako ya siku zote. Ukiibadilisha hapa, inabadilika pia kwenye Mipangilio.",
+  "eventTypesFooterOneEvent": "Ili kubadilisha mpangilio kwa tukio moja tu, tumia dashibodi ya tukio hilo.",
+  "eventTypesSubtitle": "Mabadiliko yanahifadhiwa unapoendelea.",
+  "matchStandardLabel": "Linganisha na Kawaida",
+  "matchStandardConfirm": "Rudisha kila mpangilio wa aina hii kwenye Kawaida? Chochote ulichobadilisha hapa kitafutwa.",
+  "priceLabels": {
+    "price_change_on": "Badilisha bei",
+    "price_mode": "Badiliko la bei",
+    "price_amount": "Kiasi",
+    "price_rounding": "Ukadiriaji",
+    "item_prices": "Bei za bidhaa"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Nitaweka kila bei mwenyewe"
+  },
+  "priceRounding": {
+    "none": "Hakuna",
+    "nearest_1": "Hadi {symbol}1 iliyo karibu",
+    "up_1": "Kadiria juu kila wakati"
+  },
+  "pricesStandardCell": "Bei za menyu yako",
+  "pricesTruckWideTitle": "Bei zako ni sawa kwa kila gari",
+  "pricesMenuCell": "Menyu",
+  "pricesTypeOffCell": "Bei za menyu",
+  "itemPricesShow": "Onyesha bei",
+  "itemPricesHide": "Ficha bei",
+  "priceItemsHeading": "Weka bei ya kila bidhaa",
+  "priceItemsOpen": "Ona au badilisha bei ya kila bidhaa ›",
+  "priceItemsClose": "Ficha bei za bidhaa ⌃",
+  "ownPriceCount": "{n, plural, one {Bidhaa {count} ina bei yake} other {Bidhaa {count} zina bei zake}}",
+  "priceTypeHint": "Bonyeza bei ili kuandika yako.",
+  "pricesLiveNotice": "Tukio hili linaendelea. Oda mpya zinatumia bei mpya. Oda zilizokwisha kuwekwa zinabaki na bei zake.",
+  "placeTypeHelper": "“Ongeza tukio” huchagua aina hii kila unapochagua mahali hapa.",
+  "postPictureStandardNote": "Machapisho ya matukio hapa yanatumia muundo wako wa kawaida.",
+  "eventItemsCardDescription": "Bei, vikomo vya bidhaa na upatikanaji kwa tukio hili pekee. Mabadiliko yanaanza kutumika mara moja.",
+  "eventPriceColumnLabel": "Bei",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · tukio hili} other {menyu {price} · tukio hili}}",
+  "eventPriceEdit": "✎ Hariri bei",
+  "eventPriceCancel": "Ghairi",
+  "eventPriceSave": "Hifadhi bei",
+  "eventPriceEditNote": "Unahariri bei kwa tukio hili pekee. Vikomo vya bidhaa na upatikanaji vimefungwa hadi utakapohifadhi.",
+  "eventPriceLiveNote": "Linaendelea: oda mpya zinatumia bei mpya.",
+  "offlineWhenOfflineLabel": "Ukiwa nje ya mtandao"
+}

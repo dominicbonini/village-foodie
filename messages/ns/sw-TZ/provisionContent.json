@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Vitangulizi",
+    "mains": "Vyakula vikuu",
+    "burgers": "Baga",
+    "pizza": "Piza",
+    "wrapsSandwiches": "Chapati za kuviringisha na sandwichi",
+    "sides": "Vyakula vya pembeni",
+    "dipsSauces": "Michuzi na sosi",
+    "desserts": "Vitindamlo",
+    "drinks": "Vinywaji",
+    "kidsMenu": "Menyu ya watoto",
+    "specials": "Vyakula maalum",
+    "other": "Vingine"
+  },
+  "demoEventName": "Tukio la majaribio",
+  "firstVanName": "Gari 1",
+  "demoCategories": {
+    "pizza": "Piza",
+    "burgers": "Baga",
+    "mains": "Vyakula vikuu",
+    "sides": "Vyakula vya pembeni",
+    "drinks": "Vinywaji"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck ya piza",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja na asali",
+        "fourCheese": "Jibini nne",
+        "gardenVeg": "Mboga za bustani",
+        "garlicBread": "Mkate wa kitunguu saumu",
+        "rocketParmesan": "Roketi na Parmesan",
+        "olives": "Zeituni",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coke"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck ya baga",
+      "items": {
+        "classicCheeseburger": "Baga ya jibini ya kawaida",
+        "doubleBacon": "Baga ya bekoni maradufu",
+        "buttermilkChicken": "Kuku wa mtindi",
+        "halloumiStack": "Baga ya halloumi",
+        "smashBurger": "Baga iliyobanwa (smash)",
+        "skinOnFries": "Chipsi zenye maganda",
+        "loadedCheeseFries": "Chipsi zilizojaa jibini",
+        "onionRings": "Pete za kitunguu",
+        "craftLemonade": "Juisi ya limau maalum",
+        "coke": "Coke"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck ya mchuzi",
+      "items": {
+        "chickenTikkaMasala": "Kuku tikka masala",
+        "lambRoganJosh": "Rogan josh ya kondoo",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Kuku wa siagi",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Wali wa pilau",
+        "garlicNaan": "Naan ya kitunguu saumu",
+        "onionBhaji": "Bhajia za kitunguu",
+        "mangoLassi": "Lassi ya embe",
+        "coke": "Coke"
+      }
+    }
+  }
+}

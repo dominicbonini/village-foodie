@@ -1,0 +1,16 @@
+{
+  "subject": "Oda yako kutoka {truck} ilikuwaje?",
+  "heading": "Asante kwa kuagiza kutoka {truck}",
+  "body": "Maoni yako ya kweli kwenye Google yangethaminiwa sana na {truck}. Inachukua dakika moja tu, na yanawasaidia watu wengine kuigundua food truck hii.",
+  "button": "Acha maoni kwenye Google",
+  "linkText": "Acha maoni kwenye Google: {url}",
+  "from": "Barua pepe hii ni kutoka {truck}, imetumwa kupitia HatchGrab kwa sababu uliagiza kutoka kwao.",
+  "unsubscribeLead": "Hutaki maombi ya maoni kutoka {truck}?",
+  "unsubscribeLink": "Jiondoe",
+  "unsubscribeText": "Jiondoe: {url}",
+  "unsubscribed": {
+    "title": "Umejiondoa",
+    "body": "Hutapokea tena maombi ya maoni kutoka {truck}.",
+    "invalid": "Kiungo hiki cha kujiondoa si sahihi."
+  }
+}

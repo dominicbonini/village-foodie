@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "Kichwa hakikutosha, kwa hiyo kimefupishwa.",
+    "date": "Tarehe haikutosha, kwa hiyo imefupishwa.",
+    "daysOff": "Maandishi ya siku za mapumziko hayakutosha, kwa hiyo yamefupishwa.",
+    "place": "Jina la mahali halikutosha, kwa hiyo limefupishwa.",
+    "time": "Muda haukutosha, kwa hiyo umefupishwa.",
+    "note": "Maandishi yako mwenyewe hayakutosha, kwa hiyo yamefupishwa.",
+    "venue": "Jina la eneo halikutosha, kwa hiyo limefupishwa.",
+    "area": "Jina la mji/kijiji halikutosha, kwa hiyo limefupishwa."
+  },
+  "fontFallback": "Fonti inayotumiwa na muundo huu ({id}) haikuweza kupakiwa — visanduku hivyo viko kwa Oswald.",
+  "wrongShapeBackground": "Picha ya mahali hapa ina umbo tofauti na muundo wako, kwa hiyo mandharinyuma ya kawaida inatumika.",
+  "rowsFit": "Siku ya mwisho iko {px}px chini ya sehemu ya chini ya picha — punguza nafasi kati ya mistari au sogeza mstari wa 1 juu.",
+  "placeStatus": {
+    "ownBoth": "Picha yake na nafasi za maandishi zake",
+    "wrongShape": "Umbo tofauti — haitumiki hadi ibadilishwe",
+    "ownPicture": "Picha yake, nafasi za kawaida",
+    "ownPositions": "Picha ya kawaida, nafasi za maandishi zake",
+    "none": "Bado hakuna picha — inatumia muundo wa kawaida"
+  },
+  "standardStatus": "Inatumika kwa mahali pengine pote",
+  "option": {
+    "oneOff": "Pakia picha kwa chapisho hili pekee",
+    "placePoster": "Bango la {name}",
+    "standard": "Muundo wa kawaida"
+  },
+  "previewLabel": {
+    "lastEvent": "Onyesho la awali linatumia tukio lako la mwisho hapa",
+    "noEvents": "Bado hakuna matukio hapa — onyesho la awali linaonyesha tukio lako lijalo kwa jina la mahali hapa"
+  },
+  "fontUsage": {
+    "weekly": "muundo wako wa chapisho la wiki",
+    "event": "muundo wako wa chapisho la tukio moja",
+    "place": "muundo wako wa mahali: {place}",
+    "placeUnnamed": "muundo wako wa mahali fulani"
+  },
+  "face": {
+    "regular": "Kawaida",
+    "bold": "Nzito",
+    "italic": "Mlalo"
+  },
+  "picture": {
+    "legacy": "Bango la tukio",
+    "fallback": "Picha",
+    "wrongShape": "Umbo tofauti — haiwezi kutumika kama mandharinyuma kamili"
+  },
+  "noPicture": {
+    "omit": "Iache nje",
+    "blank": "Acha nafasi tupu",
+    "logo": "Onyesha nembo yako"
+  },
+  "noPicturesAll": "{total, plural, one {Mahali pako pana picha.} other {Mahali pako pote {total} pana picha.}}",
+  "noPicturesSome": "{without, plural, one {Mahali {without} kati ya {total} pako bado hapana picha} other {Mahali {without} kati ya {total} pako bado hapana picha}}",
+  "licenceTick": "Ninamiliki fonti hii au nina leseni ya kuitumia",
+  "fontUploadButton": "↑ Pakia fonti yako"
+}

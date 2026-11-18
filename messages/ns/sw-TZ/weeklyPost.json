@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Hitilafu imetokea",
+    "previewFailed": "Mwonekano wa awali haukuweza kutengenezwa",
+    "loadFailed": "Imeshindikana kupakia",
+    "tooBig": "Picha hiyo ina ukubwa wa {size, number, ::.0 group-off}MB. Kikomo ni 10MB.",
+    "wrongType": "Tafadhali chagua PNG au JPG.",
+    "uploadIncomplete": "Upakiaji haukukamilika",
+    "uploadFailed": "Upakiaji umeshindikana",
+    "saveFailed": "Imeshindikana kuhifadhi",
+    "buildFailed": "Imeshindikana kutengeneza chapisho",
+    "copyFailed": "Imeshindikana kunakili — chagua maandishi kisha uyanakili wewe mwenyewe."
+  },
+  "loading": "Inapakia…",
+  "missingTable": {
+    "title": "Chapisho la wiki linahitaji kusasishwa kwa hifadhidata",
+    "body": "Jedwali la miundo bado halijatengenezwa. Uhamishaji wa hifadhidata ukishatekelezwa, skrini hii itafanya kazi."
+  },
+  "kind": {
+    "label": "Muundo upi",
+    "event": "Tukio moja",
+    "week": "Kila wiki"
+  },
+  "setup": {
+    "title": "Andaa chapisho lako la wiki",
+    "intro": "Pakia toleo tupu la picha ya ratiba ya wiki unayotengeneza tayari — muundo uleule, bila visanduku vyako vya maandishi. HatchGrab hujaza wiki kutoka kwenye ratiba yako.",
+    "canvaTitle": "Jinsi ya kuhamisha picha tupu kutoka Canva",
+    "canvaStep1": "Fungua muundo wako wa kawaida wa ratiba ya wiki.",
+    "canvaStep2": "Futa visanduku vya maandishi vyenye tarehe, mahali na muda — acha mandharinyuma na vichwa unavyotaka kubaki navyo.",
+    "canvaStep3": "Share › Download › PNG.",
+    "uploading": "Inapakia…",
+    "upload": "Pakia picha yako tupu",
+    "uploadHint": "PNG au JPG, hadi 10MB, angalau {px}px upande mfupi.",
+    "phoneTip": "Inafaa zaidi kwenye kompyuta au iPad — visanduku ni vidogo mno kuburuta kwenye simu.",
+    "designName": "Muundo wa chapisho la wiki",
+    "backDesigns": "‹ Miundo",
+    "back": "‹ Rudi",
+    "pictureNote": "Picha yako bila tarehe wala mahali juu yake. Sisi tunaviongeza.",
+    "saved": "Muundo umehifadhiwa."
+  },
+  "week": {
+    "this": "Wiki hii",
+    "next": "Wiki ijayo"
+  },
+  "post": {
+    "title": "Chapisho lako la wiki",
+    "editDesign": "Hariri muundo",
+    "weekOf": "wiki ya {date}",
+    "imageAlt": "Chapisho lako la wiki",
+    "building": "Inatengeneza chapisho lako…",
+    "updating": "Inasasisha…",
+    "eventsTitle": "Matukio ya wiki hii",
+    "noEvents": "Hakuna matukio wiki hii.",
+    "eventDateCancelled": "{date} · limeghairiwa",
+    "showCancelled": "Onyesha matukio yaliyoghairiwa",
+    "showPrivate": "Onyesha shughuli binafsi",
+    "privateHint": "Zinaonekana kama “Shughuli binafsi” pamoja na tarehe na muda — kamwe si mahali.",
+    "noteTitle": "Maelezo",
+    "notePlaceholder": "mf. Weka oda ya mapema kisha uichukue",
+    "noteHint": "Yanaonekana kwenye maandishi ya chapisho, na kwenye kisanduku cha maelezo kama uliweka kimoja.",
+    "captionTitle": "Maandishi ya chapisho kwa ukurasa wako",
+    "perEventTitle": "Chapisho kwa kila tukio",
+    "nothingToPost": "Hakuna cha kuchapisha wiki hii.",
+    "textCopied": "Maandishi yamenakiliwa.",
+    "copyText": "Nakili maandishi",
+    "image": "Picha",
+    "share": "Shiriki",
+    "noOrderLink": "Bado hakuna kiungo cha kuagiza — weka anwani ya tovuti ya food truck yako kwenye Mipangilio."
+  }
+}

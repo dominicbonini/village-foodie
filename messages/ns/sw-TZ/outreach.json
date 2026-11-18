@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Barua pepe hii haina mstari wa kujiondoa, kwa hiyo haiwezi kutumwa. Tumia “Insert opt-out” kuuongeza.",
+    "notSetUp": "Hakuna sentensi ya kujiondoa iliyoandaliwa, kwa hiyo hakuna barua pepe ya kutafuta wateja inayoweza kutumwa. Iongeze kwenye paneli ya “Signature” katika kichupo cha “Templates”.",
+    "notLoaded": "Sentensi ya kujiondoa bado haijapakiwa, kwa hiyo hii haiwezi kutumwa.",
+    "unreadable": "Sentensi ya kujiondoa haikuweza kusomwa, kwa hiyo hakuna kilichotumwa."
+  },
+  "retry": {
+    "notRebuilt": "Ujumbe huo haukuweza kutengenezwa upya pamoja na mstari wa kampuni, kwa hiyo hakuna kilichotumwa."
+  }
+}

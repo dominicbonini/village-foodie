@@ -1,0 +1,19 @@
+{
+  "heading": "Mapendekezo ya ziada",
+  "intro": "Wahimize wateja kuongeza kitu cha ziada. Mtu anapoagiza kutoka kategoria moja, pendekeza bidhaa kutoka nyingine — kinywaji pamoja na piza, sosi pamoja na baga.",
+  "add": "+ Ongeza pendekezo la ziada",
+  "toast": {
+    "updated": "Kanuni ya pendekezo imesasishwa",
+    "added": "Kanuni ya pendekezo imeongezwa",
+    "removed": "Kanuni imeondolewa"
+  },
+  "whenAdds": "Mteja anapoongeza…",
+  "suggestFrom": "Pendekeza bidhaa kutoka…",
+  "chooseCategory": "Chagua kategoria",
+  "cancel": "Ghairi",
+  "saveChanges": "Hifadhi mabadiliko",
+  "addRule": "Ongeza kanuni",
+  "empty": "Bado hakuna kanuni za mapendekezo ya ziada.",
+  "confirmRemove": "Ondoa kanuni ya pendekezo “{trigger} → {suggest}”?",
+  "upTo": "{n, plural, one {Inapendekeza hadi bidhaa {count}} other {Inapendekeza hadi bidhaa {count}}}"
+}

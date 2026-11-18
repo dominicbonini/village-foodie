@@ -1,0 +1,86 @@
+{
+  "loading": "Inapakia sehemu ya usimamizi…",
+  "loadFailed": "Imeshindikana kupakia",
+  "requestFailed": "Imeshindikana",
+  "invalidToken": "Tokeni si sahihi au imeisha muda wake",
+  "loadFailedReason": "Imeshindikana kupakia ukurasa huu: {reason}",
+  "noCountrySettings": "Imeshindikana kupakia mipangilio ya nchi ya food truck hii. Tafadhali pakia upya ukurasa.",
+  "noPlans": "Imeshindikana kupakia kifurushi cha food truck hii. Tafadhali pakia upya ukurasa.",
+  "stale": "{hasTime, select, yes {Imeshindikana kusasisha. Inaonyesha kilichohifadhiwa saa {time}. Mabadiliko unayofanya bado yanahifadhiwa.} other {Imeshindikana kusasisha. Inaonyesha kilichohifadhiwa. Mabadiliko unayofanya bado yanahifadhiwa.}}",
+  "verify": {
+    "ok": "Barua pepe imethibitishwa — asante.",
+    "expired": "Kiungo hicho cha uthibitisho kimeisha muda wake. Wasiliana nasi na tutalishughulikia kabla hujaanza rasmi.",
+    "invalid": "Kiungo hicho cha uthibitisho hakikufanya kazi. Wasiliana nasi na tutalishughulikia kabla hujaanza rasmi."
+  },
+  "profile": {
+    "updated": "Wasifu umesasishwa",
+    "saveFailed": "Imeshindikana kuhifadhi",
+    "title": "Hariri wasifu",
+    "name": "Jina",
+    "namePlaceholder": "Jina lako",
+    "email": "Barua pepe",
+    "cancel": "Ghairi",
+    "saving": "Inahifadhi…",
+    "save": "Hifadhi"
+  },
+  "header": {
+    "subtitle": "Usimamizi",
+    "ordersDashboard": "← Dashibodi ya oda"
+  },
+  "tabs": {
+    "menu": "Menyu",
+    "schedule": "Ratiba",
+    "paperwork": "Hati",
+    "social": "Mitandao ya kijamii",
+    "reports": "Ripoti",
+    "team": "Timu",
+    "settings": "Mipangilio",
+    "payments": "Malipo",
+    "billing": "Bili",
+    "paymentsIcon": "💵",
+    "scheduleCount": "Ratiba ({count})",
+    "stripeAttention": "Stripe inahitaji umakini wako",
+    "allergensNotSet": "viambato vinavyosababisha mzio havijawekwa"
+  },
+  "menuSections": {
+    "label": "Sehemu za menyu",
+    "items": "Bidhaa",
+    "capacity": "Uwezo wa jiko",
+    "extras": "Nyongeza na mapendekezo ya ziada",
+    "deals": "Ofa za mlo"
+  },
+  "socialSections": {
+    "label": "Sehemu za mitandao ya kijamii",
+    "create": "Tengeneza chapisho",
+    "designs": "Miundo",
+    "locations": "Mipangilio ya mahali"
+  },
+  "notices": {
+    "review": "Kagua →",
+    "tour": "Ungependa maelekezo mafupi ya dashibodi yako?",
+    "showMeAround": "Nionyeshe",
+    "dismiss": "Ficha",
+    "approval": "{count, plural, one {Tumekupatia tukio <b>{count}</b> — likague na uliidhinishe kabla halijaonekana kwa wateja.} other {Tumekupatia matukio <b>{count}</b> — yakague na uyaidhinishe kabla hayajaonekana kwa wateja.}}",
+    "allergens": "<b>Viambato vinavyosababisha mzio havijawekwa</b> — wateja hawawezi kuona taarifa za mzio hadi uzithibitishe. Kagua viambato vya kila chakula kwenye kichupo cha Menyu.",
+    "domainLive": "Anwani <link>{domain}</link> sasa inafanya kazi. Iangalie, kisha utuambie kwenye Mipangilio kuwa iko sawa.",
+    "stripe": "<b>Stripe inahitaji kitu kutoka kwako</b> — malipo kwa kadi yanaweza kusimama hadi hili litatuliwe.",
+    "profileTitle": "Kamilisha wasifu wako",
+    "missing": "Vinavyokosekana: {fields}.",
+    "goToSettings": "Nenda kwenye Mipangilio →",
+    "field": {
+      "truckName": "jina la food truck",
+      "cuisineType": "aina ya vyakula",
+      "contactEmail": "barua pepe ya mawasiliano",
+      "contactPhone": "simu ya mawasiliano"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Uko kwenye jaribio bila malipo} other {Uko kwenye jaribio bila malipo la miezi {months}}}",
+    "ends": "{hasDate, select, yes {Jaribio linaisha <hl>{date}</hl>} other {Jaribio linaisha <hl>hivi karibuni</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Huduma zote bila malipo kwa mwezi #} other {Huduma zote bila malipo kwa miezi #}}} other {Huduma zote bila malipo katika kipindi chako cha jaribio}}",
+    "body": "{hasDate, select, yes {Hutatozwa chochote katika kipindi chako cha jaribio, kinachoendelea hadi <b>{date}</b>. Utozaji huanza tu pale unapochagua kifurushi na kuweka taarifa zako za malipo. Hadi wakati huo hakuna cha kughairi wala cha kulipa. Chagua kifurushi chako kabla ya hapo — usipochagua, utahamishiwa kwenye kifurushi {fallback} na baadhi ya huduma zitaacha kufanya kazi.} other {Hutatozwa chochote ukiwa kwenye jaribio. Utozaji huanza tu pale unapochagua kifurushi na kuweka taarifa zako za malipo. Hadi wakati huo hakuna cha kughairi wala cha kulipa. Chagua kifurushi chako kabla ya hapo — usipochagua, utahamishiwa kwenye kifurushi {fallback} na baadhi ya huduma zitaacha kufanya kazi.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {Hutatozwa chochote katika kipindi chako cha jaribio, kinachoendelea hadi <b>{date}</b>. Jaribio lako likiisha, kifurushi {fallback} ni {price} kwa mwezi. Tutawasiliana nawe kabla ya hapo ili kuandaa malipo.} other {Hutatozwa chochote ukiwa kwenye jaribio. Jaribio lako likiisha, kifurushi {fallback} ni {price} kwa mwezi. Tutawasiliana nawe kabla ya hapo ili kuandaa malipo.}}",
+    "fees": "*Ada za kawaida za kuchakata malipo ya kadi zinatozwa kwenye oda za mtandaoni",
+    "upgrade": "Pandisha kifurushi hapa →"
+  }
+}

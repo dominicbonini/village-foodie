@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Zote",
+    "bold": "Nzito na ndefu",
+    "hand": "Mwandiko wa mkono",
+    "classic": "Za jadi",
+    "clean": "Safi",
+    "own": "Zako",
+    "ownCount": "Zako ({count})"
+  },
+  "yoursTag": "· yako",
+  "loadingFonts": "Inapakia fonti…",
+  "search": "Tafuta kati ya fonti {count, number}",
+  "uploadButton": "↑ Pakia fonti yako",
+  "loadingLibrary": "Inapakia maktaba ya fonti…",
+  "tryAgain": "Jaribu tena",
+  "noOwn": "Bado hujapakia fonti yoyote. Tumia kitufe cha “↑ Pakia fonti yako” kilicho juu.",
+  "recent": "Zilizotumika hivi karibuni",
+  "popular": "Maarufu kwa mabango",
+  "adding": "Inaongeza…",
+  "noMatch": "Hakuna fonti inayolingana na “{query}”.",
+  "showing": "Zinaonyeshwa {shown} kati ya {total, number} — andika zaidi ili kupunguza.",
+  "couldNotAdd": "Fonti hiyo haikuweza kuongezwa",
+  "tooBig": "Fonti hiyo ina ukubwa wa {size, number, ::.0 group-off}MB. Kikomo ni 5MB.",
+  "woff": "Tafadhali pakia faili la TTF au OTF — kwa kawaida unaweza kulipakua kutoka ulikonunua fonti.",
+  "uploadIncomplete": "Upakiaji haukukamilika",
+  "added": "Fonti “{name}” imeongezwa kama toleo la {face}.",
+  "face": {
+    "regular": "kawaida",
+    "bold": "herufi nzito",
+    "italic": "italiki"
+  },
+  "licenceTick": "Ninamiliki fonti hii au nina leseni ya kuitumia",
+  "checking": "Inakagua fonti…",
+  "addFont": "Ongeza fonti",
+  "cancel": "Ghairi",
+  "missingFaces": "Ongeza toleo la {faces} la fonti “{name}” (si lazima) — chagua faili tena.",
+  "somethingWrong": "Hitilafu imetokea",
+  "faceLower": {
+    "regular": "kawaida",
+    "bold": "herufi nzito",
+    "italic": "italiki"
+  },
+  "ownLicence": "Yako mwenyewe",
+  "loadFailed": "Imeshindikana kupakia fonti"
+}

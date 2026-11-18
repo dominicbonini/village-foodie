@@ -1,0 +1,17 @@
+{
+  "features": "Huduma",
+  "pricing": "Bei",
+  "faq": "Maswali",
+  "privacy": "Faragha",
+  "terms": "Masharti",
+  "contact": "Mawasiliano",
+  "about": "Kuhusu sisi",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Kutoka kwa watu walio nyuma ya <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Pakua HatchGrab kwenye App Store",
+    "appStoreAlt": "Pakua kwenye App Store",
+    "googlePlayLink": "Pata HatchGrab kwenye Google Play",
+    "googlePlayAlt": "Ipate kwenye Google Play"
+  }
+}

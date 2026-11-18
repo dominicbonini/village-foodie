@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {Nafasi ya muda {count} imezidi uwezo} other {Nafasi za muda {count} zimezidi uwezo}} — kagua",
+  "batchOver": "{cat}: imezidi awamu — {count} kwa {slot} ({per} kwa kila awamu)",
+  "eventStartOver": "Uwezo umezidi tukio linapoanza — {n, plural, one {bidhaa {count}} other {bidhaa {count}}} kwa {slot}",
+  "kitchenOver": "Uwezo wa jiko umezidi — {n, plural, one {bidhaa {count} inapikwa} other {bidhaa {count} zinapikwa}} kwa {slot}",
+  "orderItems": "#{id} — {n, plural, one {bidhaa {count}} other {bidhaa {count}}}",
+  "placedAnyway": "Zimewekwa hata hivyo: {list}",
+  "placedItem": "#{id} kwa {slot}",
+  "orphans": "{times} — uwezo umezidi, hakuna oda zilizopatikana za kuhusishwa nao",
+  "dismiss": "Ficha",
+  "kitchenCapacity": "Uwezo wa jiko",
+  "overCapacity": "Uwezo umezidi",
+  "wakeUnsupported": "Kifaa hiki hakiwezi kuacha skrini ikiwaka.",
+  "wakeInsecure": "Skrini haiwezi kuachwa ikiwaka kutoka anwani hii.",
+  "wakeRetry": "Acha skrini iwake — gusa ili kujaribu tena",
+  "wakeAcquire": "Acha skrini iwake",
+  "degraded": {
+    "serverError": "Seva haikuweza kupakia oda{hasStatus, select, yes { (hitilafu {status})} other {}}. Tunaonyesha oda za saa {at}. Huenda oda mpya hazionekani.",
+    "unreachable": "Hatuwezi kufikia seva. Tunaonyesha oda za saa {at}. Huenda oda mpya hazionekani."
+  }
+}

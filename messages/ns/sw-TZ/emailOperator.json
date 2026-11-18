@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Oda mpya #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Oda mpya imepokelewa",
+    "from": "<b>Oda #{id}</b> kutoka kwa <b>{name}</b>",
+    "collection": "Kuchukua oda: {time}",
+    "asap": "Hakuna muda maalum — Haraka iwezekanavyo",
+    "total": "Jumla",
+    "notes": "<b>Maelezo:</b> {notes}",
+    "autoConfirmed": "Imethibitishwa kiotomatiki — huhitaji kufanya chochote.",
+    "confirmPrompt": "Ingia kwenye dashibodi yako ya HatchGrab ili kuthibitisha au kukataa oda hii.",
+    "text": "Oda mpya #{id} kutoka kwa {name}{withSlot, select, yes { kwa {slot}} other {}}{withVenue, select, yes { kwenye {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Jumla: {total}.{withNotes, select, yes { Maelezo: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Matukio mapya yamepatikana kwa {truck} — tafadhali yakague",
+    "hi": "Habari yako,",
+    "found": "Tumepata <b>{n, plural, one {tukio jipya {count}} other {matukio mapya {count}}}</b> kwenye ratiba yako {n, plural, one {linalohitaji idhini yako kabla ya kuonekana kwa wateja} other {yanayohitaji idhini yako kabla ya kuonekana kwa wateja}}.",
+    "listHeading": "Matukio yaliyopatikana:",
+    "approve": "Ukishayaidhinisha kwenye kichupo cha “Ratiba”, yataonekana kwenye ramani na ukurasa wako wa oda utakuwa tayari kupokea oda ya mapema.",
+    "cta": "Kagua ratiba yako →",
+    "signoff": "— Timu ya HatchGrab · hatchgrab.com",
+    "unknownVenue": "Eneo lisilojulikana",
+    "text": "Habari yako,\n\nTumepata {n, plural, one {tukio jipya {count}} other {matukio mapya {count}}} kwenye ratiba yako {n, plural, one {linalohitaji idhini yako} other {yanayohitaji idhini yako}}:\n\n{list}\n\nYakague hapa: {url}\n\nUkishayaidhinisha, yataonekana kwenye ramani.\n\n— Timu ya HatchGrab"
+  }
+}

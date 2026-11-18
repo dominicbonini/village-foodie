@@ -1,0 +1,25 @@
+{
+  "heading": "Wiki ya {start} hadi {end}",
+  "daysOff": "Hatuuzi leo",
+  "cancelled": "LIMEGHAIRIWA",
+  "placeSample": {
+    "nameTownBelow": "Soko la Usiku\nMsasani",
+    "nameTown": "Soko la Usiku, Msasani",
+    "nameOnly": "Soko la Usiku"
+  },
+  "busyWeek": {
+    "venue1": "Ukumbi wa Jamii Mikocheni",
+    "town1": "Mikocheni",
+    "venue2": "Uwanja wa Michezo na Bustani ya Jamii ya Mbezi Beach",
+    "town2": "Mbezi Beach",
+    "venue3": "Soko Kuu",
+    "town3": "Kariakoo",
+    "venue4": "Tamasha la Chakula",
+    "town4": "Msasani",
+    "venue5": "Bustani ya Jiji",
+    "town5": "Upanga",
+    "venue6": "Uwanja wa Kanisa",
+    "town6": "Kinondoni"
+  },
+  "poweredBy": "Inaendeshwa na HatchGrab"
+}

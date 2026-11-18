@@ -1,0 +1,9 @@
+{
+  "country_missing": "Chagua nchi ambako food truck yako iko.",
+  "country_off": "Food truck katika nchi hiyo haziwezi kujisajili bado. Chagua nchi nyingine.",
+  "zone_unknown": "Ukanda huo wa saa si mojawapo tunayotoa kwa nchi hiyo. Chagua mmoja kwenye orodha.",
+  "town_missing": "Tuambie mji au jiji ulipo.",
+  "town_too_long": "Jina hilo la mji ni refu mno — herufi 120 kwa juu kabisa.",
+  "region_closed": "Food truck zilizo katika {region} haziwezi kujisajili bado{reason, select, language {: HatchGrab bado haipatikani kwa lugha ya {language}} taxLines {: kwanza tunaongeza mistari tofauti ya GST na PST} other {}}. Kama food truck yako iko mahali pengine, chagua mji au jiji hilo.",
+  "region_blocked": "Samahani, HatchGrab bado haipatikani katika eneo lako."
+}

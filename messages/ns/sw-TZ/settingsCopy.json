@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Ruhusu wateja kughairi oda",
+    "sentence": "Wateja wanaweza kughairi hadi <select></select> kabla ya muda wa kuchukua oda yao"
+  },
+  "autoAccept": {
+    "label": "Kubali oda kiotomatiki",
+    "help": "Oda zinathibitishwa kiotomatiki. Ikiwa nafasi ya muda iliyoombwa imejaa, oda inahamishiwa kwenye nafasi inayofuata iliyo wazi. Inathibitisha tu pale kuna uwezo. Oda zenye maelezo ya mteja (mf. mzio) bado zitahitaji kuthibitishwa."
+  },
+  "orderReady": {
+    "label": "Hatua ya oda kuwa tayari",
+    "help": "Onyesha kitufe cha “Weka tayari” kwenye skrini ya oda. Skrini ya jikoni (KDS) inawekwa kando, kwenye kila kifaa. Wateja wanatumiwa barua pepe kila oda inapowekwa kuwa tayari. Inahusu matukio yote — bado unaweza kuiwasha au kuizima kwa tukio moja kwenye dashibodi yake."
+  },
+  "buzzers": {
+    "label": "Je, unatoa kengele kwa ajili ya kuchukua oda?",
+    "help": "Rekodi kengele uliyompa kila mteja, ili ujue umtafute nani chakula chake kikiwa tayari.",
+    "countLabel": "Una kengele ngapi?"
+  }
+}

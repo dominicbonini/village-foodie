@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Msaada",
+    "description": "Pata msaada kuhusu HatchGrab. Tutumie ujumbe na tutakujibu kwa barua pepe."
+  },
+  "logIn": "Ingia",
+  "eyebrow": "Msaada",
+  "title": "Tunaweza kukusaidiaje?",
+  "lede": "Kuna kitu hakifanyi kazi, au una swali kuhusu akaunti yako? Kuna njia mbili za kutufikia — kwa njia yoyote ile tutakujibu kwa barua pepe.",
+  "emailUs": "Tutumie barua pepe",
+  "formHeading": "Au tutumie ujumbe",
+  "form": {
+    "topicLabel": "Ni kuhusu nini?",
+    "topics": {
+      "question": "Swali kuhusu HatchGrab",
+      "account": "Msaada kuhusu akaunti yangu",
+      "comparison": "Marekebisho kwenye ukurasa wa ulinganisho",
+      "other": "Kitu kingine"
+    },
+    "nameLabel": "Jina lako",
+    "namePlaceholder": "Jina",
+    "emailLabel": "Barua pepe",
+    "businessLabel": "Jina la food truck au biashara",
+    "optional": "(si lazima)",
+    "businessPlaceholder": "mf. Jiko la Pizza",
+    "messageLabel": "Ujumbe wako",
+    "send": "Tuma ujumbe",
+    "sending": "Inatuma…",
+    "privacyLine": "Tutatumia taarifa zako kukujibu tu.",
+    "privacyLink": "Sera ya Faragha",
+    "thanksTitle": "Asante — ujumbe wako umefika.",
+    "thanksBody": "Tutakujibu kwa barua pepe kwenye anwani uliyotoa.",
+    "errors": {
+      "nameRequired": "Tafadhali weka jina lako.",
+      "nameTooLong": "Tafadhali jina lako lisizidi herufi {max, number}.",
+      "emailRequired": "Tafadhali weka anwani yako ya barua pepe.",
+      "emailInvalid": "Tafadhali weka anwani sahihi ya barua pepe.",
+      "emailTooLong": "Tafadhali tumia anwani ya barua pepe isiyozidi herufi {max, number}.",
+      "businessRequired": "Tafadhali weka jina la food truck au biashara yako, ili tuweze kupata akaunti yako.",
+      "businessTooLong": "Tafadhali jina la food truck au biashara lisizidi herufi {max, number}.",
+      "messageTooShort": "Tafadhali andika angalau herufi {min, number}.",
+      "messageTooLong": "Tafadhali ujumbe wako usizidi herufi {max, number}.",
+      "topicInvalid": "Tafadhali chagua ujumbe wako unahusu nini.",
+      "rateLimited": "Tayari umetuma jumbe kadhaa — tafadhali jaribu tena baadaye, au tutumie barua pepe kwa {email}.",
+      "failed": "Hitilafu imetokea — tafadhali tutumie barua pepe kwa {email}."
+    }
+  },
+  "privacy": "Faragha",
+  "terms": "Masharti",
+  "about": "Kuhusu sisi",
+  "copyright": "© {year} HatchGrab"
+}

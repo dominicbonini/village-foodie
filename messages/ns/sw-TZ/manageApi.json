@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Gari",
+  "eventsFeed": {
+    "today": "Leo · {date}",
+    "tomorrow": "Kesho · {date}"
+  },
+  "privacyNotSaved": "Tukio linaendelea, lakini faragha yake haikuweza kuhifadhiwa.",
+  "stockWarning": "Hakuna bidhaa zinazopatikana kwenye “{category}”",
+  "uncategorised": "Bila kategoria"
+}

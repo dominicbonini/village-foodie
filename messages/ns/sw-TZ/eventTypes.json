@@ -1,0 +1,83 @@
+{
+  "title": "Aina za matukio",
+  "newTypeButton": "+ Aina mpya ya tukio",
+  "close": "Funga",
+  "loading": "Inapakia…",
+  "missingTitle": "Aina za matukio bado hazijawashwa.",
+  "missingBody": "Sasisho la hifadhidata kwa huduma hii bado halijatekelezwa. Hakuna kilichoharibika — kila tukio linatumia mipangilio yako ya kawaida.",
+  "column": "Safu",
+  "vanGone": "Gari hilo halipo tena.",
+  "typeGone": "Aina hiyo haipo tena.",
+  "standard": "Kawaida",
+  "standardHeading": "KAWAIDA",
+  "moreFor": "Zaidi: {name}",
+  "rename": "Badilisha jina",
+  "moveLeft": "Sogeza kushoto",
+  "moveRight": "Sogeza kulia",
+  "delete": "Futa",
+  "sections": {
+    "vans": "MAGARI",
+    "prices": "BEI",
+    "itemPrices": "BEI ZA BIDHAA",
+    "service": "HUDUMA"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "Kila dak {mins}",
+  "noTypes": "Bado huna aina za matukio, kwa hiyo kila tukio linatumia mipangilio yako ya kawaida.",
+  "renameTitle": "Badilisha jina la aina hii",
+  "name": "Jina",
+  "cancel": "Ghairi",
+  "save": "Hifadhi",
+  "copyVanOne": "Nakili mipangilio ya Gari 1",
+  "thisType": "aina hii",
+  "matchTitle": "Fanya aina “{name}” ilingane na Kawaida?",
+  "matchKeeps": "Chochote ulichobadilisha kwenye dashibodi ya tukio moja kinabaki kama kilivyo, na bei za aina hii hazibadilishwi.",
+  "matchWillUse": "Itatumia: {summary}",
+  "deleteTitle": "Futa “{name}”?",
+  "deleteBody": "{n, plural, =0 {Hakuna tukio lijalo linalotumia “{name}”.} one {Tukio lijalo {count} linatumia “{name}”. Litarudi kwenye Kawaida.} other {Matukio yajayo {count} yanatumia “{name}”. Yatarudi kwenye Kawaida.}} Chochote ulichobadilisha kwenye tukio moja kinabaki kama kilivyo.",
+  "keep": "Usiifute",
+  "phone": {
+    "standardTag": "Kawaida",
+    "defaultTag": "chaguo-msingi",
+    "vanSetup": "Mipangilio ya kawaida ya gari hili — inatumika kwenye kila tukio lisilo na aina.",
+    "standardSetup": "Mipangilio yako ya kawaida — inatumika kwenye kila tukio lisilo na aina.",
+    "cardSummary": "{upcoming, plural, one {tukio lijalo {upcomingCount}} other {matukio yajayo {upcomingCount}}} · {changed, plural, =0 {hakuna kilichobadilishwa bado} one {imebadilishwa: {changedCount} kati ya {total}} other {imebadilishwa: {changedCount} kati ya {total}}}",
+    "noMenuItems": "Bado hakuna bidhaa kwenye menyu — ziongeze kwenye Menyu › Bidhaa."
+  },
+  "newType": {
+    "title": "Aina mpya ya tukio",
+    "namePlaceholder": "mf. Sherehe ya shule",
+    "help": "Gusa jina au andika lako. Inaanza kama nakala ya Kawaida, na ukibadilisha Kawaida baadaye haitabadilika. Badilisha chochote baadaye.",
+    "create": "Tengeneza",
+    "chips": {
+      "festival": "Tamasha",
+      "pub": "Baa",
+      "market": "Soko",
+      "privateHire": "Kukodi food truck kwa shughuli"
+    }
+  },
+  "select": {
+    "label": "Aina ya tukio",
+    "usual": "Aina ya kawaida kwa mahali hapa: {name}."
+  },
+  "summary": {
+    "normalSetup": "Mipangilio yako ya kawaida",
+    "sameAsStandard": "Sawa na Kawaida",
+    "buzzersOn": "kengele zimewashwa",
+    "buzzersOff": "kengele zimezimwa",
+    "takeCashOn": "kupokea taslimu kumewashwa",
+    "takeCashOff": "kupokea taslimu kumezimwa",
+    "markReadyOn": "hatua ya “Weka tayari” imewashwa",
+    "markReadyOff": "hatua ya “Weka tayari” imezimwa",
+    "collectionEvery": "kuchukua oda kila dak {mins}",
+    "offlineOff": "ulinzi wa nje ya mtandao umezimwa",
+    "offlineKeepTaking": "bila mtandao: endelea kupokea oda",
+    "offlinePause": "bila mtandao: sitisha oda"
+  },
+  "errors": {
+    "somethingWentWrong": "Hitilafu imetokea",
+    "couldNotLoad": "Imeshindikana kupakia",
+    "couldNotSave": "Imeshindikana kuhifadhi",
+    "noVans": "Food truck hii haina magari ya kubadilisha."
+  }
+}

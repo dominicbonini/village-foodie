@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Lazima uache dashibodi yako au skrini ya jikoni (KDS) ikiwa imewashwa na mtandaoni wakati wa huduma.",
+  "explainerBody": "Skrini ikizimika, kifaa kikipoteza intaneti, au ukihamia tovuti nyingine, ulinzi wa nje ya mtandao unachukua nafasi — ama kwa kusitisha kuagiza au kwa kuzima kukubali oda kiotomatiki, kulingana na ulichochagua.",
+  "reminder": "⚠️ Acha dashibodi yako au skrini ya jikoni (KDS) ikiwa imewashwa na mtandaoni wakati wa huduma, la sivyo ulinzi wa nje ya mtandao unaweza kuchukua nafasi.",
+  "enableConfirm": "Ulinzi wa nje ya mtandao umewashwa.\n\nIli oda ziendelee kuingia, skrini yako lazima ibaki imewashwa. Kifaa hiki kikipoteza muunganisho, ulinzi wa nje ya mtandao unachukua nafasi kwa namna uliyochagua.\n\nHakikisha “Acha skrini iwake” imewashwa kwenye kifaa hiki.",
+  "disableConfirm": "Zima ulinzi wa nje ya mtandao kwa tukio hili?\n\nKifaa hiki kikipoteza muunganisho, oda za mtandaoni zitaendelea — wateja wanaweza kuweka oda ambazo huwezi kuziona. Zima tu ikiwa una muunganisho wa uhakika.",
+  "cardDescription": "Inaamua kinachotokea kwa oda zinazoingia kifaa chako kinapotoka mtandaoni.",
+  "purpose": "Kifaa chako kikipoteza muunganisho, hii inazuia oda kuingia wakati huwezi kuziona.",
+  "switchLabel": "Ulinzi wa oda nje ya mtandao",
+  "switchHelp": "Kinachotokea gari hili linapopoteza muunganisho.",
+  "modes": {
+    "pause": {
+      "label": "Sitisha kuagiza mtandaoni",
+      "help": "Wateja hawawezi kuagiza hadi utakaporudi mtandaoni."
+    },
+    "no_auto_accept": {
+      "label": "Endelea kupokea oda, uzithibitishe mwenyewe",
+      "help": "Kukubali oda kiotomatiki kunazimwa, kwa hiyo wateja bado wanaweza kuagiza lakini hakuna kinachothibitishwa kiotomatiki. Utathibitisha kila oda utakaporudi mtandaoni — na oda yoyote ambayo bado inasubiri inakataliwa kiotomatiki baada ya muda uliochagua, na mteja anatumiwa barua pepe kumjulisha."
+    }
+  },
+  "autoRejectLabel": "Kataa oda zinazosubiri zaidi ya",
+  "autoRejectOption": "{n, plural, one {dak {count}} other {dak {count}}}"
+}

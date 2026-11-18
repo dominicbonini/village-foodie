@@ -1,0 +1,15 @@
+{
+  "greeting": "Habari 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Unaweza kuona menyu yetu kamili na taarifa za viambato vinavyosababisha mzio hapa: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Unaweza kuangalia menyu yetu kamili hapa: {url} — {truck} {emoji}",
+  "otherCategory": "Nyingine",
+  "categoryFrom": "{category} kuanzia {price}",
+  "listTwo": "{first} na {second}",
+  "listMany": "{init} na {last}",
+  "menuSummary": "{opener}Tuna {summary}. Angalia menyu kamili na uagize mapema hapa: {url} — {truck} {emoji}",
+  "allergenCaveat": "Tafadhali hakikisha taarifa za viambato vinavyosababisha mzio kwenye menyu kamili — huu ni ujumbe wa majibu ya kiotomatiki.",
+  "specificFallback": "{opener}Angalia ratiba yetu ya karibuni hapa: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Asante kwa jumbe zako zote! Ninaweza kujibu mara chache tu kwa siku hapa.\n\nKuagiza: {link}",
+  "capContact": "Kuwasiliana nasi moja kwa moja: {number}"
+}

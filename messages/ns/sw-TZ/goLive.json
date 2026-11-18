@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Chagua jinsi unavyoonyesha taarifa za viambato vinavyosababisha mzio",
+    "detail": "Hadi utakapochagua, wateja hawaoni chakula chako chochote — menyu inajilinda kwa kuficha kila chakula chenye viambato vinavyosababisha mzio ambavyo havijathibitishwa, na kwa sasa hicho ni kila kitu.",
+    "where": "Menyu → Viambato vinavyosababisha mzio"
+  },
+  "allergensCardMissing": {
+    "title": "Ongeza kadi yako ya viambato vinavyosababisha mzio",
+    "detail": "Umechagua kuonyesha kadi ya viambato vinavyosababisha mzio, lakini hakuna iliyohifadhiwa — kwa hiyo wateja wangeambiwa taarifa za mzio zipo kisha wasikute chochote.",
+    "where": "Menyu → Viambato vinavyosababisha mzio"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Thibitisha viambato vinavyosababisha mzio kwenye chakula {count}} other {Thibitisha viambato vinavyosababisha mzio kwenye vyakula {count}}}",
+    "detail": "{n, plural, one {Chakula chako kimefichwa kwa wateja hadi uthibitishe viambato vinavyosababisha mzio vya chakula hicho.} other {{u, plural, one {Chakula {unverified} kati ya vyakula vyako {total} kimefichwa kwa wateja hadi uthibitishe viambato vinavyosababisha mzio vya chakula hicho.} other {Vyakula {unverified} kati ya vyakula vyako {total} vimefichwa kwa wateja hadi uthibitishe viambato vinavyosababisha mzio vya vyakula hivyo.}}}} Chakula kinachoonyeshwa bila viambato vilivyothibitishwa husomeka kama “hakina chochote”, kwa hiyo menyu inakificha badala ya kuhatarisha hilo.",
+    "where": "Menyu → Viambato vinavyosababisha mzio"
+  },
+  "noVan": {
+    "title": "Ongeza gari",
+    "detail": "Matukio yanaendeshwa kupitia gari — bila gari hakuna njia ya kupokea oda.",
+    "where": "Mipangilio → Magari yako"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Weka uwezo wa jiko lako",
+    "detail": "Hakuna uwezo uliowekwa kwa magari haya: {vans}. Bila huo tutaendelea kuwaahidi wateja muda wa kuchukua oda ambao jiko lako haliwezi kuufikia.",
+    "where": "Menyu → Uwezo wa jiko",
+    "unnamedVan": "Gari lisilo na jina"
+  },
+  "noPrepBearingCategory": {
+    "title": "Tuambie chakula chako kinachukua muda gani",
+    "detail": "{categories, select, none {Bado huna kategoria za menyu, kwa hiyo hatuna njia ya kujua oda inachukua muda gani.} other {Hakuna kategoria yako yoyote yenye muda wa kupika uliowekwa, kwa hiyo kila oda inaonekana kwetu kuwa ya papo hapo. Tungeendelea kuwapa wateja muda wa kuchukua oda ambao jiko lako haliwezi kuufikia, na kadiri unavyozidi kuwa na shughuli nyingi ndivyo muda huo ungezidi kuwa mbali.}}",
+    "where": "Menyu → Kategoria → Mpangilio wa jiko"
+  },
+  "emailUnverified": {
+    "title": "Thibitisha barua pepe yako",
+    "detail": "Tunatuma arifa za oda na njia ya kurejesha akaunti kwenye barua pepe hii. Ikiwa si sahihi, utagundua wakati tayari kuna kitu kimeharibika.",
+    "where": "Angalia kikasha chako cha barua pepe upate kiungo chetu cha uthibitisho"
+  },
+  "emailUnknown": {
+    "title": "Hali ya uthibitisho wa barua pepe haijulikani",
+    "detail": "Uthibitisho wa barua pepe bado haujaunganishwa, kwa hiyo hili haliwezi kutathminiwa. Kwa makusudi linazuia badala ya kupita kimyakimya.",
+    "where": "—"
+  }
+}

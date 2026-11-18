@@ -1,0 +1,9 @@
+{
+  "title": "Vifurushi na huduma",
+  "generated": "Imetengenezwa tarehe {date}",
+  "allowanceHeading": "Kiwango cha oda za mtandaoni kilichojumuishwa",
+  "smallPrint": "Masharti madogo",
+  "priceNoteMasked": "Bei zinazoonyeshwa kama “Itatangazwa” bado hazijachapishwa.",
+  "omitNote": "Bei hazijawekwa kwenye hati hii kwa makusudi.",
+  "terms": "Takwimu ni masharti ya vifurushi yaliyochapishwa kufikia tarehe iliyo hapo juu na yanaweza kubadilika. Ada za kuchakata malipo ya kadi ni gharama ya Stripe yenyewe, si ya HatchGrab. Hati hii ni muhtasari, si mkataba."
+}

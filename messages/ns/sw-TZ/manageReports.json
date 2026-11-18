@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Kipindi cha tarehe",
+    "event": "📍 Tukio",
+    "filterBy": "Chuja kwa",
+    "show": "Onyesha",
+    "range": "<from></from><sep>hadi</sep><until></until>",
+    "selectEvent": "Chagua tukio…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Tukio",
+    "viewReport": "Tazama ripoti",
+    "loading": "Inapakia…",
+    "orders": "📋 Oda",
+    "items": "📦 Bidhaa",
+    "exportCsv": "⬇ Hamisha CSV"
+  },
+  "empty": {
+    "noOrders": "Hakuna oda zilizopatikana kwa kipindi hiki.",
+    "selectEvent": "Chagua tukio hapo juu ili kutazama ripoti yake."
+  },
+  "summary": {
+    "totals": "{n, plural, one {oda {count}} other {oda {count}}} · {total}"
+  },
+  "revenue": {
+    "title": "Mchanganuo wa mapato",
+    "deals": "Mapato ya ofa za mlo",
+    "modifiers": "Malipo ya ziada ya machaguo",
+    "foodSales": "Mauzo ya chakula",
+    "total": "Jumla",
+    "other": "Mengineyo",
+    "tax": "Kodi",
+    "tips": "Bakshishi",
+    "serviceFees": "Ada za huduma",
+    "cardFees": "Ada za kadi"
+  },
+  "itemsSold": {
+    "title": "Bidhaa zilizouzwa"
+  },
+  "dealsCard": {
+    "title": "Ofa za mlo"
+  },
+  "custom": {
+    "title": "Machaguo maalum",
+    "paidModifiers": "Machaguo ya kulipia",
+    "customerNotes": "Maelezo ya wateja",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "Bidhaa",
+    "modifier": "Chaguo",
+    "qty": "Idadi",
+    "total": "Jumla",
+    "date": "Tarehe",
+    "time": "Muda",
+    "channel": "Njia"
+  },
+  "breakdown": {
+    "orders": "Mchanganuo wa oda",
+    "items": "Mchanganuo wa bidhaa"
+  },
+  "channel": {
+    "online": "Mtandaoni",
+    "walkUp": "Papo hapo"
+  },
+  "csv": {
+    "orderId": "Kitambulisho cha oda",
+    "date": "Tarehe",
+    "event": "Tukio",
+    "timePlaced": "Muda wa kuweka oda",
+    "collectionTime": "Muda wa kuchukua oda",
+    "customerName": "Jina la mteja",
+    "orderType": "Aina ya oda",
+    "items": "Bidhaa",
+    "deals": "Ofa za mlo",
+    "modifiers": "Machaguo",
+    "notes": "Maelezo",
+    "subtotal": "Jumla ndogo",
+    "tip": "Bakshishi",
+    "serviceFee": "Ada ya huduma",
+    "total": "Jumla",
+    "itemName": "Jina la bidhaa",
+    "qty": "Idadi",
+    "unitPrice": "Bei ya moja",
+    "itemTotal": "Jumla ya bidhaa",
+    "orderTotal": "Jumla ya oda",
+    "unknownEvent": "Tukio lisilojulikana",
+    "asap": "Haraka iwezekanavyo",
+    "unknownCustomer": "Hajulikani",
+    "customerOnline": "Mteja mtandaoni",
+    "placedByTruck": "Imewekwa na food truck"
+  },
+  "presets": {
+    "label": "Kipindi",
+    "custom": "Tarehe maalum",
+    "thisMonth": "Mwezi huu",
+    "lastMonth": "Mwezi uliopita",
+    "lastQuarter": "Robo mwaka iliyopita",
+    "lastTaxYear": "Mwaka wa kodi uliopita"
+  },
+  "accounts": {
+    "title": "Kwa ajili ya mhasibu wako",
+    "help": "Mauzo yanahesabiwa siku ya tukio. Mauzo ghafi ni kile wateja walicholipa. Mauzo halisi ni kinachobaki baada ya marejesho ya pesa na kodi.",
+    "gross": "Mauzo ghafi",
+    "refunds": "Marejesho ya pesa",
+    "net": "Mauzo halisi",
+    "taxEstimated": "imekadiriwa kutokana na kiwango chako cha kodi",
+    "taxNone": "Hakuna kiwango cha kodi kilichowekwa kwa food truck yako, kwa hiyo kodi haikokotolewi hapa.",
+    "byChannel": "Mauzo ghafi kwa njia ya oda",
+    "byPayment": "Mauzo ghafi kwa njia ya malipo",
+    "online": "Mtandaoni",
+    "walkUp": "Papo hapo",
+    "cardOnline": "Kadi mtandaoni",
+    "payAtTruck": "Lipa Unapochukua",
+    "cost": "Gharama ya vyakula vilivyouzwa",
+    "profit": "Faida",
+    "coverage": "{total, plural, one {Gharama imewekwa kwa {withCost} kati ya chakula # kilichouzwa} other {Gharama imewekwa kwa {withCost} kati ya vyakula # vilivyouzwa}}",
+    "partial": "Vyakula visivyo na gharama haviingizwi kwenye gharama, kwa hiyo faida hii ni kubwa kuliko ilivyo kweli. Ongeza gharama kwa kila chakula kwenye Menyu.",
+    "noCosts": "Bado hakuna chakula chenye gharama. Ongeza gharama kwa vyakula vyako kwenye Menyu ili kuona faida yako.",
+    "byEvent": "Kwa tukio",
+    "event": "Tukio",
+    "sales": "Mauzo halisi",
+    "eventNoProfit": "Kistari kinamaanisha kwamba si kila chakula kilichouzwa hapo kina gharama.",
+    "downloadOrders": "⬇ Oda kwa ajili ya mhasibu wako",
+    "downloadEvents": "⬇ Matukio kwa ajili ya mhasibu wako",
+    "downloadHelp": "Mafaili mawili ya lahajedwali: mstari mmoja kwa kila oda, na mstari mmoja kwa kila tukio. Yanafunguka kwenye Excel, Numbers, Xero na QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Tarehe",
+      "time": "Muda",
+      "orderNumber": "Namba ya oda",
+      "event": "Tukio",
+      "channel": "Njia",
+      "paymentMethod": "Njia ya malipo",
+      "currency": "Sarafu",
+      "gross": "Ghafi",
+      "tax": "Kodi",
+      "taxBasis": "Msingi wa kodi",
+      "net": "Halisi",
+      "refunded": "Imerejeshwa",
+      "cost": "Gharama",
+      "profit": "Faida",
+      "eventDate": "Tarehe ya tukio",
+      "orders": "Oda",
+      "dishesSold": "Vyakula vilivyouzwa",
+      "dishesWithCost": "Vyakula vyenye gharama"
+    },
+    "taxBasis": {
+      "stored": "imehifadhiwa pamoja na oda",
+      "estimated": "imekadiriwa kutokana na kiwango chako cha kodi",
+      "none": "hakuna kiwango cha kodi kilichowekwa"
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "tab": {
+    "plan": {
+      "title": "Kifurushi chako",
+      "trialPill": "Jaribio bila malipo",
+      "change": "Badilisha kifurushi",
+      "trialLine": "Jaribio lako bila malipo linaisha tarehe {date}. Baada ya hapo, kifurushi {plan} ni {price} kwa mwezi.",
+      "trialLineFree": "Jaribio lako bila malipo linaisha tarehe {date}. Baada ya hapo, utakuwa kwenye kifurushi {plan}, bila ada ya kila mwezi.",
+      "proLine": "Inajumuisha oda za mtandaoni zenye thamani ya {allowance} kwa mwezi. Kisha {fee}.",
+      "paygLine": "{fee} kwa oda za mtandaoni. Bila ada ya kila mwezi.",
+      "unlimitedLine": "{price} kwa mwezi. Hakuna ada kwa oda za mtandaoni.",
+      "pendingLine": "Kifurushi {plan} kinaanza tarehe {date}."
+    },
+    "payment": {
+      "title": "Njia ya malipo",
+      "none": "Bado hujaongeza kadi. Ongeza kadi ili uendelee kupokea oda za mtandaoni baada ya jaribio lako.",
+      "add": "Ongeza kadi",
+      "pix": "Tumia Pix Automático",
+      "card": "{brand} inayoishia {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Inasubiri uthibitisho.",
+      "change": "Badilisha",
+      "lastFailed": "Malipo ya mwisho hayakufanikiwa",
+      "update": "Sasisha kadi",
+      "error": "Hatukuweza kufungua ukurasa wa malipo. Tafadhali jaribu tena.",
+      "noneAfterTrial": "Hakuna kadi iliyoongezwa. Ongeza kadi ili kuwasha tena oda za mtandaoni."
+    },
+    "whatYouPay": {
+      "title": "Unacholipa",
+      "plan": "Kifurushi chako, kinatozwa tarehe 1 kwa mwezi unaofuata",
+      "fee": "Oda za mtandaoni zinazozidi {allowance} kwa mwezi, zinatozwa tarehe 1 kwa mwezi uliopita",
+      "feePayg": "Oda za mtandaoni, zinatozwa tarehe 1 kwa mwezi uliopita",
+      "walkUps": "Oda za papo hapo",
+      "free": "Bila malipo",
+      "trialEnd": "Jaribio lako likiisha tarehe {date}, tutatoza {amount} kwa sehemu iliyobaki ya {month}. Kisha {price} tarehe {nextFirst}."
+    },
+    "next": {
+      "title": "Malipo yajayo · {date}",
+      "plan": "Kifurushi {plan} kwa {month}",
+      "fee": "{fee} kwa oda za mtandaoni za {month} zinazozidi {allowance} (hadi sasa)",
+      "feePayg": "{fee} kwa oda za mtandaoni za {month} (hadi sasa)",
+      "vans": "Magari ya ziada kwa {month}",
+      "surcharge": "Ada ya malipo ya baadaye kwa {month}",
+      "carried": "Kiasi kilichohamishwa kutoka awali",
+      "total": "Jumla hadi sasa",
+      "walkUps": "Oda za papo hapo ni bila malipo kila wakati."
+    },
+    "preorders": {
+      "title": "Jinsi wateja wanavyolipia oda ya mapema",
+      "online": "Mtandaoni, wanapoagiza",
+      "onlineHint": "Pesa zinaingia moja kwa moja kwenye akaunti yako ya Stripe.",
+      "atTruckHint": "Wateja wanalipa wanapochukua oda. Ada yetu inaongezwa kwenye malipo yako ya kila mwezi.",
+      "saved": "Imehifadhiwa.",
+      "error": "Hatukuweza kuhifadhi hilo. Tafadhali jaribu tena."
+    },
+    "invoices": {
+      "title": "Ankara",
+      "date": "Tarehe",
+      "for": "Kwa ajili ya",
+      "amount": "Kiasi",
+      "status": "Hali",
+      "forMonthly": "Kifurushi cha {planMonth}, ada za {usageMonth}",
+      "forMonthlyPlan": "Kifurushi cha {planMonth}",
+      "forTrialEnd": "Sehemu iliyobaki ya {month}",
+      "forUpgrade": "Kuhamia kifurushi {plan}",
+      "lateFee": "Ada ya kuchelewa kulipa",
+      "paid": "Imelipwa",
+      "unpaid": "Haijalipwa",
+      "overdue": "Imepitiliza muda",
+      "download": "Pakua",
+      "payNow": "Lipa sasa",
+      "none": "Bado hakuna ankara."
+    },
+    "failed": {
+      "title": "Malipo yako ya {amount} hayakufanikiwa.",
+      "body": "Tutajaribu tena. Sasisha kadi yako kufikia tarehe {date} ili oda za mtandaoni ziendelee.",
+      "button": "Sasisha kadi"
+    },
+    "paused": {
+      "title": "Oda za mtandaoni zimesitishwa",
+      "body": "Kiasi cha {amount} kimepitiliza muda wa kulipwa. Lipa sasa na oda za mtandaoni zitarejea mara moja.",
+      "warning": "Lipa kufikia tarehe {date} la sivyo akaunti yako inaweza kusimamishwa.",
+      "pay": "Lipa {amount}",
+      "otherCard": "Tumia kadi nyingine"
+    },
+    "loading": "Inapakia bili…",
+    "loadError": "Hatukuweza kupakia bili yako. Tafadhali jaribu tena."
+  },
+  "changePlan": {
+    "title": "Badilisha kifurushi",
+    "current": "Uko kwenye kifurushi {plan}.",
+    "free": "Bila malipo",
+    "perMonth": "{price} kwa mwezi",
+    "paygLine": "{fee} kwa oda za mtandaoni.",
+    "proLine": "Oda za mtandaoni zenye thamani ya {allowance} zimejumuishwa. Kisha {fee}.",
+    "unlimitedLine": "Hakuna ada kwa oda za mtandaoni.",
+    "yourPlan": "Kifurushi chako",
+    "startsNow": "Kinaanza sasa.",
+    "chargeToday": "Tutatoza {amount} leo kwa sehemu iliyobaki ya {month}. Kisha {price} tarehe {nextFirst}.",
+    "startsLater": "Kinaanza tarehe {nextFirst}. Utaendelea na kifurushi {plan} hadi wakati huo.",
+    "cancel": "Ghairi",
+    "switchTo": "Hamia kifurushi {plan}",
+    "error": "Hatukuweza kubadilisha kifurushi chako. Tafadhali jaribu tena.",
+    "trialLine": "Uko kwenye jaribio bila malipo. Chagua kifurushi utakachotumia jaribio litakapoisha tarehe {date}.",
+    "startsAtTrialEnd": "Kinaanza jaribio lako litakapoisha.",
+    "choose": "Chagua kifurushi {plan}"
+  },
+  "notices": {
+    "trialEndsSoon": "<b>Jaribio lako bila malipo linaisha tarehe {date}.</b> Ongeza kadi ili oda za mtandaoni ziendelee.",
+    "trialEndsTomorrow": "<b>Jaribio lako bila malipo linaisha kesho.</b> Ongeza kadi la sivyo oda za mtandaoni zitasitishwa.",
+    "allSet": "<b>Kila kitu kiko tayari.</b> Kifurushi {plan} kinaanza tarehe {date}.",
+    "paymentFailed": "<b>Malipo yako hayakufanikiwa.</b> Sasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}} kufikia tarehe {date} ili oda za mtandaoni ziendelee.",
+    "paused": "<b>Oda za mtandaoni zimesitishwa.</b> Lipa {amount} kufikia tarehe {date} la sivyo akaunti yako inaweza kusimamishwa.",
+    "addCard": "Ongeza kadi →",
+    "updateCard": "Sasisha {method, select, payment_method {njia ya malipo} other {kadi}} →",
+    "payNow": "Lipa sasa →",
+    "dismiss": "Ficha",
+    "trialEnded": "<b>Jaribio lako bila malipo limekwisha.</b> Ongeza kadi ili kuwasha tena oda za mtandaoni."
+  }
+}

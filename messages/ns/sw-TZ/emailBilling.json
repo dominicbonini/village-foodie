@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Habari {name},} other {Habari yako,}}",
+  "questions": "Una maswali? Jibu tu barua pepe hii.",
+  "signoff": "Timu ya HatchGrab",
+  "buttonUpdate": "Sasisha {method, select, payment_method {njia ya malipo} other {kadi}}",
+  "buttonPay": "Lipa sasa",
+  "buttonAddCard": "Ongeza kadi",
+  "suspended": "Kiasi hiki kisipolipwa, akaunti yako inaweza kusimamishwa.",
+  "failed": {
+    "subject": "Malipo yako ya HatchGrab hayakufanikiwa",
+    "line1": "Hatukuweza kupokea {amount} kwa ajili ya {truck} leo. Tutajaribu tena.",
+    "line2": "Tafadhali sasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}} kufikia tarehe {date} ili oda za mtandaoni ziendelee."
+  },
+  "twoDays": {
+    "subject": "Zimebaki siku 2 kusasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}}",
+    "line1": "Kiasi cha {amount} kwa ajili ya {truck} bado hakijalipwa. Sasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}} kufikia tarehe {date}, la sivyo oda za mtandaoni zitasitishwa."
+  },
+  "oneDay": {
+    "subject": "Sasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}} kufikia kesho",
+    "line1": "Kiasi cha {amount} kwa ajili ya {truck} bado hakijalipwa. Sasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}} kufikia kesho, la sivyo oda za mtandaoni zitasitishwa."
+  },
+  "lastDay": {
+    "subject": "Siku ya mwisho kusasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}}",
+    "line1": "Leo ni siku ya mwisho kulipa {amount} kwa ajili ya {truck}. Kiasi hiki kikiwa bado hakijalipwa ifikapo saa sita usiku, oda za mtandaoni zitasitishwa hadi utakapolipa."
+  },
+  "paused": {
+    "subject": "Oda za mtandaoni zimesitishwa",
+    "line1": "Oda za mtandaoni za {truck} zimesitishwa kwa sababu kiasi cha {amount} hakijalipwa. Lipa sasa na zitarejea mara moja.",
+    "line2": "Lipa kufikia tarehe {date} la sivyo akaunti yako inaweza kusimamishwa."
+  },
+  "trial7": {
+    "subject": "Jaribio lako bila malipo linaisha baada ya siku 7",
+    "line1": "Jaribio bila malipo la {truck} linaisha tarehe {date}.",
+    "line2": "Ongeza kadi kwenye “Simamia” › Bili ili oda za mtandaoni ziendelee.",
+    "plan": "Baada ya hapo, kifurushi {plan} ni {price} kwa mwezi. Jaribio lako likiisha tutatoza {amount} kwa sehemu iliyobaki ya {month}, kisha {price} tarehe {nextFirst}.",
+    "planFree": "Baada ya hapo, utakuwa kwenye kifurushi {plan}, bila ada ya kila mwezi.",
+    "fee": "Ada yetu ya {fee} kwa oda za mtandaoni inatozwa tarehe 1, kwa mwezi uliopita."
+  },
+  "trial1": {
+    "subject": "Jaribio lako bila malipo linaisha kesho",
+    "line1": "Jaribio bila malipo la {truck} linaisha kesho.",
+    "noCard": "Ongeza kadi la sivyo oda za mtandaoni zitasitishwa.",
+    "allSet": "Kila kitu kiko tayari: kifurushi {plan} kinaanza tarehe {date}.",
+    "charge": "Tutatoza {amount} kwa sehemu iliyobaki ya {month} jaribio lako litakapoisha."
+  }
+}

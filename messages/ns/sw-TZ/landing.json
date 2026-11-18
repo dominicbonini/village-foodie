@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Mfumo wa oda kwa food truck na huduma za upishi zinazotembea",
+    "description": "Oda, oda za mapema na skrini ya jikoni kwa food truck na huduma za upishi zinazotembea nchini {country}.",
+    "audience": "Wamiliki wa food truck na wafanyabiashara wa huduma za upishi zinazotembea"
+  },
+  "hero": {
+    "title": "Mfumo wa oda uliotengenezwa kwa ajili ya <lean>food truck.</lean>",
+    "subSmall": "Pakia menyu yako, bila kujisajili.<br></br>Ona toleo la majaribio linalofanya kazi chini ya sekunde 60.",
+    "cta": "Pakia menyu yangu →",
+    "ctaNote": "<lead>Pakia picha ya menyu yako na uone inavyofanya kazi chini ya sekunde 60.</lead><small>Bila kujisajili. Bila kadi.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "Skrini ya jikoni (KDS) ya HatchGrab, ikionyesha tiketi za oda kwa mpangilio wa kupika",
+    "dashboardAlt": "Kupokea oda kwenye HatchGrab: menyu upande wa kushoto, kikapu na jumla inayoendelea upande wa kulia",
+    "phoneAlt": "Kuagiza kutoka food truck kwenye HatchGrab: menyu yenye picha na bei, na jumla ya kikapu inayoendelea"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {Mwezi wa kwanza bila malipo kabisa, huduma zote zimefunguliwa} other {Miezi # ya kwanza bila malipo kabisa, huduma zote zimefunguliwa}}",
+    "noCard": "Huhitaji kadi",
+    "cancel": "Ghairi wakati wowote, hakuna mkataba"
+  },
+  "does": {
+    "eyebrow": "Inachofanya",
+    "title": "Umetengenezwa kwa ajili ya food truck, si migahawa.",
+    "lede": "Mifumo mingi ya oda inadhani una anwani moja ya kudumu, wifi ya uhakika na saa zilezile kila wiki. Wewe uko mahali papya kila wiki, kwa nyakati tofauti, ukiwa na mtandao hafifu au bila mtandao kabisa. HatchGrab imetengenezwa kwa ajili ya hali hiyo.",
+    "slotsTitle": "Wateja wanachagua muda wa kuchukua oda",
+    "capacityTitle": "Weka uwezo wa jiko lako",
+    "capacityBody": "Weka kiasi unachoweza kupika kwa wakati mmoja, na muda unaochukua. Muda wa kuchukua oda ukijaa, wateja hawawezi kuuchagua.",
+    "devicesTitle": "Inafanya kazi kwenye kifaa chochote",
+    "devicesBody": "Inafanya kazi kwenye simu iliyo mfukoni mwa aproni yako, kishikwambi kilicho kaunta, kompyuta mpakato iliyo kwenye gari — na mashine ya kadi unayotumia tayari kupokea malipo.",
+    "postsTitle": "Weka machapisho yako ya Facebook na Instagram kiotomatiki",
+    "postsBody": "Pakia muundo unaochapisha tayari kwenye Facebook au Instagram. Tutajaza tarehe, mahali na muda wako, tayari kushiriki — kila wiki au kila siku.",
+    "whatsappTitle": "Majibu ya kiotomatiki ya WhatsApp",
+    "whatsappBody": "“Uko wapi leo usiku?” “Una vitindamlo gani?” WhatsApp yako inajibiwa ukiwa unaendesha gari kuelekea eneo lako la kuuzia au ukiwa kwenye jiko la kuchomea, kwa kutumia menyu na ratiba yako mwenyewe. Messenger na Instagram zinakuja hivi karibuni.",
+    "whatsappSoonTitle": "Majibu ya kiotomatiki ya WhatsApp <soon>Inakuja hivi karibuni</soon>",
+    "whatsappSoonBody": "“Uko wapi leo usiku?” “Una vitindamlo gani?” Hivi karibuni WhatsApp yako itajibiwa ukiwa unaendesha gari kuelekea eneo lako la kuuzia au ukiwa kwenye jiko la kuchomea. Messenger na Instagram zitafuata.",
+    "offlineTitle": "Hakuna mtandao? Endelea kuhudumia.",
+    "offlineBody": "Ukipoteza mtandao, oda za mtandaoni zinasitishwa kiotomatiki ili wateja wasiweke oda ambazo hutaziona. Endelea kupokea oda kwa programu ya iPhone, iPad na Android.",
+    "slotsBody": "Wateja huagiza mapema na kuchagua muda wa kuchukua oda. Foleni chache, na chakula kiko tayari wanapofika."
+  },
+  "steps": {
+    "eyebrow": "Kuanza",
+    "title": "Jiandae na uanze kupokea oda ndani ya takriban dakika 15.",
+    "lede": "Mambo matatu ya kukamilisha — na mawili kati yake yanahitaji picha tu.",
+    "menuTitle": "Tengeneza menyu yako",
+    "menuBody": "Piga picha ubao wako wa menyu au ubandike. Bidhaa, bei na nyongeza zote zinaingia zenyewe. Wewe unahakikisha tu kuwa ziko sahihi.",
+    "scheduleTitle": "Ongeza ratiba yako",
+    "scheduleBody": "Iko kwenye tovuti yako? Tutaisoma kutoka huko na kuisasisha kila wakati. Kama sivyo, ipige picha pia. Wewe unaidhinisha tu kile kinachopatikana.",
+    "shareTitle": "Shiriki kiungo chako",
+    "shareBody": "Kichapishe kwenye Facebook, bandika msimbo wa QR kwenye gari. Oda zinaingia kwenye skrini yako, kwa mpangilio unaohitaji kuzipika."
+  },
+  "testimonial": {
+    "quote": "HatchGrab imerahisisha sana upokeaji wa oda. Kila kitu kiko kwa mpangilio, tunaweza kufuatilia stoku na kujua hasa pizza ngapi zimebaki za kuuza — na nafasi za muda ni nzuri sana kwa vijiji vyenye shughuli nyingi.",
+    "award": "Pizzeria Inayotembea Bora ya Mwaka",
+    "awardScope": "Mshindi wa kanda",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — wamiliki"
+  },
+  "pricing": {
+    "eyebrow": "Bei",
+    "title": "Anza bila malipo. Pandisha kifurushi unapohitaji.",
+    "switchHead": "Unahamia kutoka mfumo mwingine?",
+    "switchBody": "Ona ungelipa kiasi gani kwenye HatchGrab kwa oda zilezile. Inachukua takriban dakika moja.",
+    "switchCta": "Linganisha unacholipa"
+  },
+  "faq": {
+    "title": "Maswali yanayoulizwa mara kwa mara",
+    "metaTitle": "Maswali yanayoulizwa mara kwa mara | HatchGrab",
+    "metaDescription": "Majibu ya moja kwa moja kwa wamiliki wa food truck kuhusu bei za HatchGrab, jinsi ya kuanza, kupokea oda na malipo — kabla hujajisajili."
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Ungependa kuona jinsi ilivyo rahisi kuanza?",
+    "lede": "Pakia picha au picha ya skrini ya menyu yako na tutaigeuza kuwa ukurasa wa oda unaofanya kazi ili uujaribu chini ya sekunde 60. Bidhaa zako, bei zako. Bila kujisajili, bila kadi, hakuna cha kusakinisha. Angalia, kisha uamue.",
+    "cta": "Pakia menyu yangu sasa →"
+  },
+  "meta": {
+    "title": "Mfumo wa oda mtandaoni kwa food truck — HatchGrab {country}",
+    "description": "Pokea oda na oda za mapema kwenye eneo lako bila foleni. Mfumo wa oda na skrini ya jikoni kwa food truck na catering nchini {country} — si POS."
+  }
+}

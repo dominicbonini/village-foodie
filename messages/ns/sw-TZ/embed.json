@@ -1,0 +1,8 @@
+{
+  "metaDescription": "Mahali pa kununua kutoka {truck} siku zijazo.",
+  "orderFrom": "Agiza kutoka {truck}",
+  "poweredBy": "Inaendeshwa na <b>HatchGrab</b>",
+  "loadFailed": "Imeshindikana kupakia ratiba kwa sasa.",
+  "loading": "Inapakia ratiba…",
+  "empty": "Hakuna matukio yajayo yaliyoorodheshwa kwa {truck}."
+}

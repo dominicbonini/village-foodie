@@ -1,0 +1,128 @@
+{
+  "cardEditor": {
+    "title": "Kadi yako ya viambato vinavyosababisha mzio",
+    "intro": "Wateja wanaiona hii <b>kama ulivyoiandika hasa</b> — hakuna kinachoandikwa upya. Andika au bandika hapa chini, au pakia picha/PDF nasi tutasoma maandishi ili uyakague.",
+    "empty": "Bado hakuna kadi ya viambato vinavyosababisha mzio.",
+    "placeholder": "mf. Samaki na chipsi zetu zote zina ngano na maziwa. Kikaango kinatumika pia kwa vyakula vyenye gluteni na kokwa. Kuna machaguo bila bidhaa za wanyama — uliza wahudumu.",
+    "reading": "Inasoma picha…",
+    "upload": "📷 Pakia picha / PDF",
+    "uploadNote": "Tunasoma maandishi kutoka kwenye picha yako ili uyakague — picha haihifadhiwi."
+  },
+  "cardUpload": {
+    "dishFallback": "Chakula",
+    "question": "Una kadi ya viambato vinavyosababisha mzio ya kupakia?",
+    "perDish": "{detected, select, yes {Ipakie nasi tutaitumia kuandaa viambato vinavyosababisha mzio vya vyakula vyako. Viambato vitakavyogunduliwa vitaonekana kwenye ukurasa unaofuata, ambapo utathibitisha kila chakula.} other {Ipakie nasi tutaitumia kuandaa viambato vinavyosababisha mzio vya vyakula vyako.}}",
+    "cardOnly": "Pakia kadi ya viambato vinavyosababisha mzio ambayo wateja wataiona.",
+    "yes": "Ndiyo",
+    "no": "Hapana",
+    "noProblem": "Hakuna shida — huhitaji kuwa nayo. Endelea kwa kitufe kilicho hapa chini.",
+    "analysing": "Inachambua kadi…",
+    "dropzone": "Buruta na uachie au gusa ili kuchagua",
+    "imageOrPdf": "Picha au PDF",
+    "or": "au",
+    "pastePlaceholder": "Bandika hapa maandishi ya kadi yako ya viambato vinavyosababisha mzio…",
+    "process": "Chakata kadi",
+    "cardRead": "Kadi imesomwa ✓",
+    "unmatchedHeading": "Hatukuweza kulinganisha hivi kiotomatiki — viunganishe na chakula au uvifiche",
+    "quotedName": "“{name}”",
+    "ambiguous": "Haiko wazi — inalingana na vyakula kadhaa; chagua kilicho sahihi.",
+    "assignTo": "Unganisha na chakula…",
+    "dismiss": "Ficha",
+    "kitchenNotes": "Maelezo ya jiko (yanahifadhiwa kwenye taarifa zako za viambato vinavyosababisha mzio)",
+    "matchSummary": "{n, plural, =0 {Vilivyolingana na chakula: {matched}.} one {Vilivyolingana na chakula: {matched}. Kinachohitaji uunganishe: {count}.} other {Vilivyolingana na chakula: {matched}. Vinavyohitaji uunganishe: {count}.}}",
+    "blanketInfo": "Kadi yako inasema viambato hivi huenda viko kwenye vyakula vyote: {list}. Tutaviongeza kwenye viambato vinavyosababisha mzio vinavyotumika jikoni kwako. Unaweza kuvikagua kwenye hatua ya mwisho."
+  },
+  "savedCard": {
+    "showLess": "Onyesha kidogo",
+    "showMore": "Onyesha zaidi",
+    "fileOnly": "Faili la kadi limehifadhiwa kwa food truck hii, lakini hakuna muhtasari wa maandishi uliohifadhiwa. Fungua faili asili ili ulisome.",
+    "viewOriginal": "Tazama kadi asili"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "Imeshindikana kusoma kadi ya viambato vinavyosababisha mzio — jaribu tena",
+      "confirmed": "Imethibitishwa: {name}",
+      "undo": "Tendua",
+      "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena",
+      "imageFailed": "Imeshindikana kusoma picha hiyo — andika au bandika kadi yako badala yake",
+      "cardRead": "{n, plural, one {Kadi imesomwa — vilivyolingana: {matched}, kinachohitaji kuunganishwa: {count}} other {Kadi imesomwa — vilivyolingana: {matched}, vinavyohitaji kuunganishwa: {count}}}"
+    },
+    "genericWarn": {
+      "text": "Kiambato “{generic}” kimegunduliwa lakini si mahususi. Chagua {picks} kama chakula hiki kina {family} — au usichague chochote kama hakina.",
+      "andOr": "{a} na/au {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Imethibitishwa",
+      "confirmed": "Imethibitishwa",
+      "needsReview": "Inahitaji kukaguliwa"
+    },
+    "confirm": {
+      "confirming": "Inathibitisha…",
+      "confirmed": "Imethibitishwa ✓",
+      "confirm": "Thibitisha",
+      "changed": "· imebadilishwa",
+      "changedTitle": "Imehaririwa tangu ulipothibitisha mara ya mwisho — thibitisha tena"
+    },
+    "allergens": "Viambato vinavyosababisha mzio",
+    "dietary": "Lishe",
+    "uncategorised": "Bila kategoria",
+    "review": {
+      "progress": "Vimethibitishwa: {confirmed} kati ya {total}",
+      "allConfirmed": "✓ Vyote vimethibitishwa",
+      "list": "Orodha",
+      "table": "Jedwali",
+      "detected": "Vimegunduliwa kutoka kwenye menyu yako — <b>vikague</b>. Viambato vinavyosababisha mzio vinabaki vimefichwa kwa wateja hadi uthibitishe kila chakula.",
+      "viewOnly": "👁 Kuangalia tu — mmiliki pekee ndiye anayeweza kuthibitisha au kubadilisha viambato vinavyosababisha mzio.",
+      "emptyTitle": "Hakuna bidhaa kwenye menyu",
+      "emptyBody": "Ongeza bidhaa kwenye menyu kwanza, kisha weka hapa viambato vinavyosababisha mzio vya bidhaa hizo.",
+      "dish": "Chakula",
+      "status": "Hali"
+    },
+    "cardPanel": {
+      "reading": "Inasoma taarifa za viambato vinavyosababisha mzio…",
+      "saved": "🛡️ Kadi ya viambato vinavyosababisha mzio imehifadhiwa",
+      "viewOriginal": "Tazama kadi asili",
+      "replace": "Badilisha kadi",
+      "uploadHelp": "Pakia kadi yako ya viambato vinavyosababisha mzio (picha/PDF) au bandika taarifa zako za mzio — AI yetu inazipanga kwa ajili ya wateja.",
+      "add": "Ongeza kadi ya viambato vinavyosababisha mzio",
+      "viewOnly": "👁 Kuangalia tu — mmiliki pekee ndiye anayeweza kuongeza kadi ya viambato vinavyosababisha mzio.",
+      "intro": "Wateja wataiona kadi hii kama rejea ya menyu kuhusu viambato vinavyosababisha mzio. Viambato vya kila chakula vinabaki vimefichwa katika hali ya kadi pekee (taarifa za vyakula vyako zinahifadhiwa endapo baadaye utahamia kwenye taarifa za kila chakula)."
+    },
+    "subtitle": {
+      "choose": "Chagua jinsi wateja wanavyoona taarifa za viambato vinavyosababisha mzio",
+      "card": "Ongeza kadi yako ya viambato vinavyosababisha mzio",
+      "cardOptional": "Ongeza kadi ya viambato vinavyosababisha mzio (si lazima)",
+      "review": "Kagua na uthibitishe kila chakula",
+      "kitchen": "Hatua ya mwisho: jiko lako"
+    },
+    "heading": {
+      "import": "Viambato vinavyosababisha mzio",
+      "standalone": "Kuweka viambato vinavyosababisha mzio"
+    },
+    "nav": {
+      "next": "Inayofuata →",
+      "back": "← Rudi",
+      "skip": "Ruka kwa sasa",
+      "saving": "Inahifadhi…",
+      "done": "Nimemaliza",
+      "saveLater": "Hifadhi na umalize baadaye",
+      "close": "Funga",
+      "finish": "Maliza",
+      "skipImport": "Ruka kuweka viambato vinavyosababisha mzio kwa sasa"
+    },
+    "hint": {
+      "skipDefers": "Kuruka kunaahirisha tu — vyakula ambavyo hujavithibitisha vinabaki vimefichwa kwa wateja hadi viambato vinavyosababisha mzio vya vyakula hivyo vithibitishwe.",
+      "importIncomplete": "Thibitisha kila chakula ili kuendelea — au “Ruka kuweka viambato vinavyosababisha mzio kwa sasa”."
+    },
+    "recipeOnly": "Vile tu vilivyomo kwenye mapishi ya chakula hiki.",
+    "tooMany": "Viambato vinavyosababisha mzio vilivyowekwa alama: {count}. Je, kweli vyote hivyo vimo kwenye mapishi ya chakula hiki? Viambato vinavyotumika kwenye vyakula vingine haviwekwi hapa. Unaweza kuviongeza kwenye hatua ya mwisho."
+  },
+  "kitchen": {
+    "title": "Ni vipi kati ya viambato vinavyosababisha mzio vinatumika jikoni kwako?",
+    "body": "Tumeweka alama kwenye vile vilivyomo tayari kwenye vyakula vyako. Weka alama kwenye vingine vyovyote unavyotumia kwenye food truck, kwa mfano kwa vyakula maalum.",
+    "legendDishes": "kwenye vyakula vyako",
+    "legendAdded": "umeviongeza wewe",
+    "customersSee": "Wateja wataona:",
+    "confirm": "Nathibitisha kwamba viambato vinavyosababisha mzio vya kila chakula ni sahihi, na nitaendelea kuvisasisha."
+  }
+}

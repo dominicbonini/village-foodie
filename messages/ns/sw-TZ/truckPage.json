@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Agiza kutoka {truck}",
+    "orderDescription": "Agiza mapema kutoka {truck} kisha uchukue oda yako kwenye food truck.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Nembo ya {truck}"
+  },
+  "shareTitle": "Ratiba ya {truck}",
+  "shareText": "Angalia mahali utakapopata chakula cha {truck} tena! 🚚",
+  "linkCopied": "Kiungo cha wasifu kimenakiliwa! 📋",
+  "facebookPage": "Ukurasa wa Facebook",
+  "loadingMap": "Inapakia ramani…",
+  "view": {
+    "list": "Orodha",
+    "map": "Ramani"
+  },
+  "ownThisTruck": "Unamiliki food truck hii?",
+  "ownThisTruckTitle": "Unamiliki food truck hii? Bofya ili kusasisha wasifu wako",
+  "actions": {
+    "menu": "Menyu",
+    "call": "Piga simu",
+    "message": "Ujumbe",
+    "share": "Shiriki",
+    "order": "Agiza"
+  },
+  "loadingSchedule": "Inapakia ratiba…",
+  "loadError": {
+    "title": "Imeshindikana kupakia",
+    "body": "Hatukuweza kupakia ratiba kwa sasa — kwa kawaida ni hitilafu ya muda mfupi. Tafadhali jaribu tena.",
+    "retry": "Jaribu tena"
+  },
+  "notFound": {
+    "title": "Food truck haikupatikana",
+    "body": "Hatukupata taarifa zozote za food truck hii. Huenda imehamia mahali pengine au imesasisha wasifu wake.",
+    "cta": "Tazama food truck zote"
+  },
+  "noEvents": {
+    "title": "Hakuna matukio yajayo yaliyopatikana",
+    "body": "Huenda tunakosa baadhi ya taarifa za food truck hii. Je, wewe ndiye mmiliki, au unaijua ratiba yake?",
+    "cta": "Tutumie ujumbe ili tusasishe!"
+  },
+  "whereToFind": "Mahali pa kutupata",
+  "missingEvent": "<strong>Je, tunakosa tukio?</strong> <br></br>Kama wewe ni mmiliki wa food truck hii au shabiki wake mkubwa, tusaidie kuuweka ukurasa huu sahihi! <br></br><link>Wasiliana nasi ili kuongeza taarifa zinazokosekana.</link>",
+  "weeklySchedule": "Pata ratiba ya kila wiki 🍕"
+}

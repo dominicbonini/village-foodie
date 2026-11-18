@@ -1,0 +1,11 @@
+{
+  "notFoundTitle": "Ukurasa haukupatikana",
+  "notFoundBody": "Hatukuweza kupata ukurasa huo. Huenda umehamishwa, au anwani imeandikwa vibaya.",
+  "home": "Nenda kwenye ukurasa wa mwanzo",
+  "errorTitle": "Hitilafu imetokea",
+  "errorBody": "Samahani — ukurasa huu haukupakia. Jaribu tena, au rudi kwenye ukurasa wa mwanzo.",
+  "retry": "Jaribu tena",
+  "backToDashboard": "Rudi kwenye dashibodi",
+  "errorBodyDashboard": "Samahani, ukurasa huu haukupakia. Jaribu tena, au rudi kwenye dashibodi yako.",
+  "sectionFailed": "Sehemu hii haikupakia."
+}

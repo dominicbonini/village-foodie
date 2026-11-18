@@ -1,0 +1,31 @@
+{
+  "intro": "“Simamia” ndipo unapoandaa food truck yako na kuona inavyoendelea. Dashibodi ndipo unapopokea oda na kuendesha kila tukio linapoendelea.",
+  "ariaLabel": "Maelekezo ya dashibodi",
+  "step": "{current} kati ya {total}",
+  "skip": "Ruka",
+  "back": "← Rudi",
+  "next": "Inayofuata →",
+  "done": "Nimemaliza",
+  "stops": {
+    "menu": {
+      "title": "Menyu",
+      "body": "Vyakula vyako, bei na viambato vinavyosababisha mzio. Ukibadilisha chochote hapa, kinaonekana mara moja."
+    },
+    "schedule": {
+      "title": "Ratiba",
+      "body": "Mahali na wakati unapouza. Ongeza tukio hapa na wateja wataweza kuagiza kwa ajili yake."
+    },
+    "build": {
+      "title": "Ofa za mlo na “Nyongeza na mapendekezo ya ziada”",
+      "body": "Ofa za mlo, mapendekezo ya ziada, nyongeza maalum na uwezo wa jiko lako viko chini ya Menyu — jaribu ujionee."
+    },
+    "settings": {
+      "title": "Mipangilio",
+      "body": "Taarifa za food truck yako na jinsi wateja wanavyolipa."
+    },
+    "billing": {
+      "title": "Bili",
+      "body": "Hapa ndipo zilipo taarifa za kifurushi chako, bili na huduma."
+    }
+  }
+}

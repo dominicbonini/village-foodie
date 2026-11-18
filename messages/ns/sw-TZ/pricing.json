@@ -1,0 +1,53 @@
+{
+  "banner": {
+    "title": "{months, plural, one {Mwezi wako wa kwanza ni bila malipo kabisa — huduma zote zimefunguliwa.} other {Miezi yako # ya kwanza ni bila malipo kabisa — huduma zote zimefunguliwa.}}",
+    "body": "Ukiwa na {brand}, wateja huagiza mapema na kulipa wanapochukua oda, hivyo unaweza kupokea oda za mtandaoni bila kuunganisha mfumo wowote wa kuchakata malipo ya kadi. Jaribio lako likiisha, utahamishiwa kwenye kifurushi <plan>{fallback}</plan>{fallbackFree, select, yes { — bila ada ya kila mwezi —} other {}} usipochagua kifurushi. Huhitaji kadi kuanza, hakuna mkataba, ghairi wakati wowote.",
+    "bodyCard": "Ukiwa na {brand}, wateja huagiza mapema na kulipa wanapochukua oda, hivyo unaweza kupokea oda za mtandaoni bila kuunganisha mfumo wowote wa kuchakata malipo ya kadi. Ungependa kupokea malipo mapema? Ongeza malipo ya kadi mtandaoni wakati wowote. Jaribio lako likiisha, utahamishiwa kwenye kifurushi <plan>{fallback}</plan>{fallbackFree, select, yes { — bila ada ya kila mwezi —} other {}} usipochagua kifurushi. Huhitaji kadi kuanza, hakuna mkataba, ghairi wakati wowote.",
+    "bodyOnly": "Ukiwa na {brand}, wateja huagiza mapema na kulipa wanapochukua oda, hivyo unaweza kupokea oda za mtandaoni bila kuunganisha mfumo wowote wa kuchakata malipo ya kadi. Jaribio lako likiisha, kifurushi <plan>{fallback}</plan> ni {price} kwa mwezi. Tutawasiliana nawe kabla ya hapo ili kuandaa malipo. Huhitaji kadi kuanza, hakuna mkataba, ghairi wakati wowote.",
+    "bodyOnlyCard": "Ukiwa na {brand}, wateja huagiza mapema na kulipa wanapochukua oda, hivyo unaweza kupokea oda za mtandaoni bila kuunganisha mfumo wowote wa kuchakata malipo ya kadi. Ungependa kupokea malipo mapema? Ongeza malipo ya kadi mtandaoni wakati wowote. Jaribio lako likiisha, kifurushi <plan>{fallback}</plan> ni {price} kwa mwezi. Tutawasiliana nawe kabla ya hapo ili kuandaa malipo. Huhitaji kadi kuanza, hakuna mkataba, ghairi wakati wowote."
+  },
+  "card": {
+    "perTruckMonth": "kwa gari / mwezi",
+    "mostTrucks": "Chaguo la wengi",
+    "tryFree": "Jaribu bila malipo",
+    "seeEvery": "Tazama huduma zote →",
+    "everything": "Kila kitu cha kuendesha huduma",
+    "everythingIn": "Kila kitu cha kifurushi {plan}, pamoja na"
+  },
+  "fee": {
+    "feeOnly": "<b>{fee}</b> kwa oda za mtandaoni pekee. Oda za papo hapo ni bila malipo kila wakati.",
+    "feeOnlyCard": "<b>{fee}*</b> kwa oda za mtandaoni pekee. Oda za papo hapo ni bila malipo kila wakati.",
+    "included": "Oda za mtandaoni za hadi <b>{included}</b> zimejumuishwa kila mwezi, kisha <b>{fee}*</b>. Oda za papo hapo ni bila malipo kila wakati.",
+    "includedNoMark": "Oda za mtandaoni za hadi <b>{included}</b> zimejumuishwa kila mwezi, kisha <b>{fee}</b>. Oda za papo hapo ni bila malipo kila wakati.",
+    "noFee": "<b>Hakuna ada za HatchGrab</b> kwa oda za mtandaoni, hata uwe na shughuli nyingi kiasi gani. Gharama moja ya kila mwezi inayotabirika."
+  },
+  "base": {
+    "walkUp": "Oda za papo hapo na skrini ya jikoni (KDS)",
+    "online": "Oda mtandaoni",
+    "preorders": "Oda ya mapema na muda wa kuchukua oda",
+    "capacity": "Usimamizi wa uwezo wa jiko",
+    "privateEvents": "Shughuli binafsi",
+    "printing": "Kuchapisha tiketi za jikoni",
+    "app": "Programu ya jikoni ya iPhone, iPad na Android"
+  },
+  "added": {
+    "whatsapp_replies": "Majibu ya kiotomatiki ya WhatsApp",
+    "schedule_graphics": "Machapisho ya mitandao ya kijamii — ratiba yako ya Facebook na Instagram — tayari kuchapishwa",
+    "event_types": "Aina maalum za matukio na bei"
+  },
+  "money": {
+    "unlimitedOrders": "Oda za mtandaoni bila kikomo, ada ya HatchGrab 0%",
+    "samePrice": "Bei ileile hata katika mwezi wako wenye shughuli nyingi zaidi"
+  },
+  "comingSoon": "Inakuja hivi karibuni",
+  "bar": {
+    "title": "Kifurushi kipi ni nafuu zaidi kwangu?",
+    "subtitle": "Oda zako za mtandaoni kila mwezi",
+    "first": "Chini ya {to} → <b>{plan}</b>",
+    "middle": "{from} – {to} → <b>{plan}</b>",
+    "last": "Zaidi ya {from} → <b>{plan}</b>",
+    "only": "Kiasi chochote → <b>{plan}</b>"
+  },
+  "footnote": "* Pamoja na ada ya Stripe ya kuchakata malipo ya kadi, kwa oda za mtandaoni zinazolipwa kwa kadi pekee (kwa sasa {cardFee} nchini {country}), inayolipwa kwa Stripe, si kwa HatchGrab. Oda za papo hapo hutumia mashine ya kadi (POS) yako mwenyewe — HatchGrab inatoza 0%.",
+  "currencyLine": "Bei kwa {currency} ({code})"
+}

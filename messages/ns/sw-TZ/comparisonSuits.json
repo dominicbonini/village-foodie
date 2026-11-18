@@ -1,0 +1,102 @@
+{
+  "title": "Mfumo upi unafaa food truck yako?",
+  "checked": "Imehakikiwa {date}",
+  "evidence": "Ushahidi",
+  "adminPreview": "Onyesho la Admin — halijathibitishwa",
+  "ours": {
+    "fromPlan": "{name} (kuanzia kifurushi {plan})"
+  },
+  "q": {
+    "preorder": "Mfumo upi wa oda unawaruhusu wateja wangu kuagiza mapema na kuchagua muda wa kuchukua oda?",
+    "capacity": "Food truck yangu hujaa wateja nyakati za msongamano — mfumo upi unaweka kikomo cha oda kwa kila nafasi ya muda?",
+    "whatsapp": "Wateja huniuliza kila mara niko wapi — mfumo upi unawajibu kwenye WhatsApp?",
+    "social": "Mfumo upi hutengeneza machapisho ya mahali ninapouza kila wiki, ili nisilazimike kubuni picha mwenyewe?",
+    "schedule": "Ninauza mahali tofauti karibu kila siku — mfumo upi unawaonyesha wateja niko wapi na kupokea oda kwa kituo hicho?",
+    "priceLow": "Ninauza siku chache tu kwa mwezi — mfumo upi una gharama ndogo zaidi?",
+    "priceHigh": "Ninashiriki matamasha na matukio yenye watu wengi — mfumo upi una gharama ndogo zaidi?",
+    "commission": "Sitaki kulipa kamisheni kwa kila oda — kila mfumo unatoza kiasi gani?",
+    "offline": "Nini hutokea kwa oda za mtandaoni mtandao wangu ukikatika?",
+    "strength": "Ni mfumo upi kati ya iliyolinganishwa unaotoa “{feature}”?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {huwaruhusu} other {huwaruhusu}} wateja kuagiza mapema na kuchagua muda wa kuchukua oda.",
+    "capacity": "{names} {count, plural, one {huweka} other {huweka}} kikomo cha oda kwa kila muda wa kuchukua oda, ili jiko lisizidiwe.",
+    "whatsapp": "{names} {count, plural, one {hujibu} other {hujibu}} ujumbe wa WhatsApp wa wateja kiotomatiki.",
+    "social": "{names} {count, plural, one {hutengeneza} other {hutengeneza}} picha zilizo tayari kuchapishwa za mahali pa wiki.",
+    "schedule": "{names} {count, plural, one {huwaonyesha} other {huwaonyesha}} wateja food truck iko wapi kila siku na {count, plural, one {hupokea} other {hupokea}} oda kwa kituo hicho."
+  },
+  "feat": {
+    "preorder": "muda wa kuchukua oda",
+    "capacity": "kikomo cha oda kwa kila nafasi ya muda",
+    "whatsapp": "majibu ya kiotomatiki ya WhatsApp",
+    "social": "picha za ratiba ya wiki",
+    "schedule": "ratiba ya mahali panapobadilika",
+    "offlinePause": "Oda za mtandaoni husitishwa mtandao ukikatika"
+  },
+  "others": {
+    "noQuoted": "{count, plural, one {Huduma hii haitolewi na {names}} other {Huduma hii haitolewi na {names}}}.",
+    "notListed": "{count, plural, one {Tovuti ya {names} haiorodheshi {feature}} other {Tovuti za {names} haziorodheshi {feature}}}.",
+    "doesntSay": "{count, plural, one {Tovuti ya {names} haisemi} other {Tovuti za {names} hazisemi}}.",
+    "noneLists": "Hakuna mfumo mwingine kati ya iliyolinganishwa unaoiorodhesha, kwa hiyo {count, plural, one {{names} ndilo chaguo linalofaa zaidi} other {{names} ndiyo machaguo yanayofaa zaidi}} kati ya mifumo iliyolinganishwa."
+  },
+  "price": {
+    "lead": "Kwa oda {orders, number} za mtandaoni kwa mwezi, gharama ya chini zaidi ya programu kwa mwezi kati ya mifumo iliyolinganishwa ni ya {names}: {amount} kwa mwezi{count, plural, one {} other { kwa kila moja}}.",
+    "includes": "Hii inajumuisha ada ya usajili, ada zinazotozwa food truck kwa kila oda, gharama yoyote ya oda za ziada na ada yoyote ya kuanzisha iliyogawanywa kwa miezi 12; ada za kuchakata malipo ya kadi hazijajumuishwa.",
+    "flat": "{name} ({plan}, bei moja isiyobadilika bila ada ya kila oda kutoka {name})",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "Kiasi ambacho kila mfumo hutoza kwa oda: {parts}."
+  },
+  "offline": {
+    "ours": "Kwa {name}, oda za mtandaoni zinaweza kusitishwa kiotomatiki pale food truck inapopoteza mtandao, ili wateja wasiweke oda ambazo jiko halitazipokea.",
+    "noQuoted": "{count, plural, one {Kufanya kazi bila mtandao hakutolewi na {names}} other {Kufanya kazi bila mtandao hakutolewi na {names}}}.",
+    "doesntSay": "{count, plural, one {Tovuti ya {names} haisemi} other {Tovuti za {names} hazisemi}} nini hutokea mtandao ukikatika."
+  },
+  "strength": {
+    "answer": "{count, plural, one {Tovuti ya {names} inasema “{feature}” inatolewa} other {Tovuti za {names} zinasema “{feature}” inatolewa}}; lakini haitolewi na {us}.",
+    "answerSoon": "{count, plural, one {Tovuti ya {names} inasema “{feature}” inatolewa} other {Tovuti za {names} zinasema “{feature}” inatolewa}}; lakini bado haitolewi na {us}."
+  },
+  "ev": {
+    "ours": {
+      "yes": "ndiyo, kwa mujibu wa vifurushi vya {us} vyenyewe",
+      "no": "hapana, kwa mujibu wa vifurushi vya {us} vyenyewe"
+    },
+    "state": {
+      "yes": "inasema inatoa huduma hii",
+      "partial": "inatoa sehemu yake",
+      "no_quoted": "inasema haitoi huduma hii",
+      "no_unquoted": "hapana (hakuna nukuu iliyohifadhiwa)",
+      "not_listed": "haijaorodheshwa kwenye tovuti yake",
+      "not_mentioned": "tovuti yake haisemi",
+      "unknown": "haijulikani"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Nukuu: “{quote}”.",
+    "pages": "Kurasa zilizohakikiwa: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (haikuweza kusomwa)",
+    "page": {
+      "features": "ukurasa wa huduma",
+      "pricing": "ukurasa wa bei",
+      "help": "kituo cha msaada",
+      "other": "ukurasa mwingine"
+    },
+    "help": {
+      "fetched": "Kituo chake cha msaada kilisomwa.",
+      "linked_not_fetched": "Ina kituo cha msaada ambacho hakikusomwa.",
+      "none_found": "Hakuna kituo cha msaada kilichopatikana."
+    },
+    "calc": {
+      "volume": "Imekokotolewa kwa oda {orders, number} za mtandaoni kwa mwezi, kwa {order} kwa kila oda (mauzo ya mtandaoni ya {revenue}).",
+      "line": "{name} ({plan}): ada ya usajili {sub} + ada ya kuanzisha iliyogawanywa kwa miezi 12 {setup} + ada kwa kila oda {fees} + oda za ziada {over} = {total} kwa mwezi.",
+      "excluded": "Ada za kuchakata malipo ya kadi na ada zinazolipwa na wateja hazijajumuishwa kwa mfumo wowote.",
+      "date": "Imekokotolewa tarehe {date} kutokana na bei zilizohakikiwa kwenye tovuti ya kila mtoa huduma."
+    }
+  },
+  "method": {
+    "covers": "Ulinganisho huu unashughulikia hadi mifumo mbadala minne iliyochaguliwa kwa kuzingatia umuhimu wake kwa food truck na upatikanaji wa taarifa za umma zinazoweza kuthibitishwa — si kila mfumo uliopo sokoni.",
+    "notListed": "“Haijaorodheshwa” inamaanisha tulihakiki kurasa za huduma na za bei za mfumo husika na haikutajwa, kwa huduma ambazo kampuni kwa kawaida huzitangaza. “Haisemi” inamaanisha haijathibitishwa kwa upande wowote."
+  }
+}

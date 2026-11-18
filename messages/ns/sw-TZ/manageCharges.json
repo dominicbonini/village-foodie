@@ -1,0 +1,30 @@
+{
+  "heading": "Kodi, bakshishi na ada",
+  "rate": {
+    "label": "Kiwango cha kodi ya mauzo",
+    "hint": "Kiwango unachotoza kwa kila oda. Wateja wanakiona kikiongezwa wakati wa kulipa, kwenye risiti na kwenye tiketi.",
+    "regionDefault": "Acha wazi ili kutoza {label} kwa {rate}%, kiwango cha chakula kilichoandaliwa katika {region}."
+  },
+  "included": {
+    "label": "Bei zako zinajumuisha {label}",
+    "hint": "Bei zako tayari zinajumuisha {label}. Kiwango hiki kinaonyesha tu ni kiasi gani cha kila bei ni {label}, kwenye risiti na tiketi — hakuna kinachoongezwa wakati wa kulipa.",
+    "default": "Acha wazi ili kutumia {rate}%, kiwango cha {label} kwa chakula cha moto kinachouzwa kama take away nchini {country}."
+  },
+  "tips": {
+    "label": "Bakshishi",
+    "hint": "Wateja wanaolipa mtandaoni kwa kadi wanaweza kuongeza bakshishi. Yote ni yako.",
+    "choices": "Machaguo wanayoona wateja:",
+    "chip": "{rate}%",
+    "other": "Kiasi kingine"
+  },
+  "fee": {
+    "label": "Ada ya huduma mtandaoni",
+    "hint": "Huongezwa kwenye oda za mtandaoni pekee. Kamwe haiongezwi kwenye oda za “Lipa ukichukua” wala oda za papo hapo. Ni yako.",
+    "pctAria": "Asilimia ya ada ya huduma",
+    "fixedAria": "Kiasi maalum cha ada ya huduma",
+    "max": "Kiwango cha juu unachoweza kutoza: {max}",
+    "example": "Wateja wanaiona kabla ya kulipa, kama mstari mmoja: “{label} {amount}”.",
+    "hatchgrab": "HatchGrab huongeza ada ya huduma ya {fee} kwenye oda za mtandaoni za wateja wako. Wewe huilipi na huwezi kuibadilisha."
+  },
+  "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena."
+}

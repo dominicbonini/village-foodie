@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Habari {name},} other {Habari yako,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Mwanzilishi, HatchGrab",
+  "verify": {
+    "subject": "Thibitisha barua pepe yako",
+    "thanks": "{hasTruck, select, yes {Asante kwa kusajili {truck} kwenye HatchGrab.} other {Asante kwa kusajili food truck yako kwenye HatchGrab.}}",
+    "button": "Thibitisha barua pepe yangu",
+    "buttonText": "Thibitisha barua pepe yangu: {url}",
+    "why": "Hii ndiyo barua pepe utakayotumia kuingia, na ndiko arifa za oda zinakotumwa — kwa hiyo ni vyema kufanya hivi sasa.",
+    "next": "Ikishathibitishwa nitakutumia kila kitu unachohitaji ili kuanza.",
+    "carryOn": "Wakati huo huo unaweza kuendelea kuweka mipangilio.",
+    "stuck": "Umekwama mahali popote? Jibu tu barua pepe hii — ninazijibu mwenyewe.",
+    "fallbackLink": "Kitufe kisipofanya kazi, bandika kiungo hiki: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Karibu HatchGrab, {name}} other {Karibu HatchGrab}}",
+    "intro": "{hasTruck, select, yes {Nina furaha kubwa kukukaribisha wewe na {truck} kwenye HatchGrab.} other {Nina furaha kubwa kukukaribisha wewe na food truck yako kwenye HatchGrab.}}",
+    "trial": "{months, plural, one {Jaribio lako bila malipo la mwezi mmoja limeanza — huduma zote zimefunguliwa.} other {Jaribio lako bila malipo la miezi # limeanza — huduma zote zimefunguliwa.}}",
+    "setup": "Kama bado hujafanya hivyo, kuweka mipangilio ni rahisi na huchukua takriban dakika kumi na tano.",
+    "button": "Fungua dashibodi yako",
+    "bookmark": "Inafaa kuiwekea alamisho. Inafanya kazi kwenye kifaa chochote.",
+    "stuck": "Jibu tu barua pepe hii ukikwama — ninazijibu mwenyewe.",
+    "lookingForward": "{hasTruck, select, yes {Natarajia kuona food truck {truck} ikiuza.} other {Natarajia kuona food truck yako ikiuza.}}"
+  }
+}

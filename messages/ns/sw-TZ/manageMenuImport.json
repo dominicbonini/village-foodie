@@ -1,0 +1,195 @@
+{
+  "cancel": "Ghairi",
+  "back": "← Rudi",
+  "backPlain": "Rudi",
+  "next": "Ifuatayo →",
+  "continue": "Endelea →",
+  "closeImport": "Funga uingizaji",
+  "tryAgain": "Jaribu tena",
+  "catError": {
+    "empty": "Ipe kategoria jina.",
+    "tooLong": "Jina hilo ni refu mno.",
+    "clash": "Tayari kuna kategoria inayoitwa “{name}”."
+  },
+  "steps": {
+    "details": "Taarifa zako",
+    "menu": "Menyu",
+    "extras": "Nyongeza",
+    "allergens": "Viambato vinavyosababisha mzio",
+    "kitchen": "Mpangilio wa jiko",
+    "schedule": "Ratiba",
+    "settings": "Mipangilio"
+  },
+  "toast": {
+    "demoGone": "Menyu yako ya majaribio haipatikani tena — tafadhali ipakie upya ili kuendelea.",
+    "eventsSaveFailed": "Imeshindikana kuhifadhi matukio",
+    "cardReadFailed": "Imeshindikana kusoma kadi ya viambato vinavyosababisha mzio — jaribu tena",
+    "imageReadFailed": "Imeshindikana kusoma picha hiyo — andika au bandika kadi yako badala yake",
+    "commitFailedDetail": "Imeshindikana kumaliza kuhifadhi menyu: {error}. Huenda baadhi ya bidhaa tayari zimehifadhiwa — kagua menyu yako kabla ya kujaribu tena.",
+    "commitFailed": "Imeshindikana kumaliza kuhifadhi menyu. Huenda baadhi ya bidhaa tayari zimehifadhiwa — kagua menyu yako kabla ya kujaribu tena.",
+    "finishFailed": "Imeshindikana kuweka kuwa mpangilio umekamilika — bado unaweza kuendelea.",
+    "scheduleReadFailed": "Imeshindikana kusoma ratiba hiyo — jaribu picha iliyo wazi zaidi au andika tarehe zako.",
+    "cardRead": "Kadi imesomwa — zilizolingana: {matched}; {pending, plural, one {# inahitaji} other {# zinahitaji}} upangaji wako"
+  },
+  "settingsReview": {
+    "anchorOrder": "Mipangilio → Mipangilio ya oda",
+    "anchorDisplay": "Mipangilio → Magari yako → Mipangilio ya skrini",
+    "mins15": "Dakika 15",
+    "mins30": "Dakika 30",
+    "mins60": "Dakika 60",
+    "hours2": "Saa 2",
+    "title": "Mipangilio michache ya kukagua",
+    "loading": "Inapakia mipangilio yako ya sasa…",
+    "looksGood": "Iko sawa →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "Imeshindikana kuhifadhi hilo — unaweza kulibadilisha kwenye Mipangilio.",
+    "anchorContact": "Mipangilio → Taarifa za mawasiliano",
+    "intro": "Tumekuwekea mipangilio ya kawaida. Inafaa uiangalie haraka — unaweza kubadilisha yoyote kati ya hii baadaye kwenye Mipangilio.",
+    "cancelAria": "Muda gani kabla ya kuchukua oda wateja wanaweza kughairi"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Vikague kabla ya kuanza kupokea oda. Hadi utakapofanya hivyo, bidhaa zitawekewa alama “viambato vinavyosababisha mzio havijawekwa”.",
+    "body": "Vikague kwenye Mipangilio kabla ya kuanza kupokea oda. Hadi utakapofanya hivyo, bidhaa zitawekewa alama “viambato vinavyosababisha mzio havijawekwa”.",
+    "title": "⚠ Viambato vinavyosababisha mzio na lishe bado havijawekwa"
+  },
+  "welcome": {
+    "title": "Karibu HatchGrab",
+    "yourTruck": "Food truck yako",
+    "stop": "Unaweza kusimama na kurudi wakati wowote.",
+    "body": "Food truck {name} imeandaliwa. Sasa tutaongeza menyu yako, kisha tukio lako la kwanza.",
+    "go": "Tuanze"
+  },
+  "offer": {
+    "title": "Utumie menyu kutoka kwenye majaribio yako?",
+    "use": "Tumia menyu hii",
+    "upload": "Pakia menyu nyingine",
+    "body": "Tumehifadhi menyu uliyopakia — {count, plural, one {bidhaa #} other {bidhaa #}}. Itumie kama mahali pa kuanzia, au pakia nyingine."
+  },
+  "checkMenu": {
+    "title": "Kagua menyu yako",
+    "body": "Tulihifadhi menyu kutoka kwenye majaribio yako kwenye food truck yako, na umeibadilisha tangu hapo — kwa hiyo mabadiliko yako yamebaki. Iangalie hapa chini.",
+    "done": "Iko sawa"
+  },
+  "upload": {
+    "title": "Ingiza menyu yako",
+    "body": "Pakia picha ya ubao wa menyu yako, picha ya skrini, PDF, au bandika menyu yako kama maandishi. AI yetu inaisoma na kutengeneza menyu yako ya kidijitali — unakagua kila kitu kabla haijahifadhiwa.",
+    "confirmCancel": "Ghairi uingizaji huu? Ukaguzi wako wa menyu hii utatupwa.",
+    "process": "Chakata menyu",
+    "later": "Nitafanya hivi baadaye"
+  },
+  "processing": {
+    "title": "Inachambua menyu yako",
+    "body": "AI inasoma bidhaa zako na kuzipanga kwenye kategoria…"
+  },
+  "review": {
+    "title": "Kagua menyu iliyoingizwa",
+    "editLaterSetup": "Majina, bei, nyongeza, viambato vinavyosababisha mzio na taarifa za lishe vyote vinaweza kuhaririwa wakati wowote baadaye.",
+    "editLater": "Majina, bei, nyongeza, viambato vinavyosababisha mzio na taarifa za lishe vyote vinaweza kuhaririwa wakati wowote kwenye Mipangilio.",
+    "noPrice": "{count, plural, one {Bidhaa # haikuwa na bei} other {Bidhaa # hazikuwa na bei}} tuliyoweza kusoma",
+    "renameCategoryAria": "Badilisha jina la kategoria: {name}",
+    "renameAria": "Badilisha jina: {name}",
+    "renameTitle": "Badilisha jina la kategoria",
+    "deleteAria": "Futa: {name}",
+    "deleteTitle": "Futa kategoria",
+    "lastCategory": "Menyu yako inahitaji angalau kategoria moja",
+    "countOf": "{kept} kati ya {total}",
+    "existing": "iliyopo",
+    "deleteEmptyTitle": "Futa “{name}”?",
+    "deleteEmptyBody": "Haina bidhaa, kwa hiyo hakuna kinachopotea.",
+    "delete": "Futa",
+    "moveTitle": "{count, plural, one {Bidhaa # iende wapi?} other {Bidhaa # ziende wapi?}}",
+    "moveBody": "Kufuta “{name}” kunahitaji mahali pa kuhamishia vyakula vyake — bidhaa zisizo na kategoria haziingizwi.",
+    "moveAria": "Hamisha bidhaa kutoka {name} kwenda",
+    "chooseCategory": "Chagua kategoria…",
+    "moveDelete": "Hamisha na ufute",
+    "itemName": "Jina la bidhaa",
+    "free": "bure?",
+    "freeOn": "Bure ✕",
+    "nameFirst": "Ipe bidhaa mpya jina kabla ya kuongeza nyingine",
+    "addItem": "+ Ongeza bidhaa",
+    "categoryName": "Jina la kategoria",
+    "newCategoryAria": "Jina la kategoria mpya",
+    "addCategory": "+ Ongeza kategoria",
+    "ready": "{count, plural, one {Bidhaa # iko tayari} other {Bidhaa # ziko tayari}} kuongezwa. Ondoa alama kwenye zozote usizotaka.",
+    "noPriceBody": "Weka bei kwa kila moja, au iweke kuwa bure — vinginevyo itaanza kuuzwa kwa {zero}. Huwezi kuendelea hadi haya yarekebishwe.",
+    "incomplete": "Weka jina ili kuongeza bidhaa hii — mistari mitupu haiingizwi."
+  },
+  "extras": {
+    "introSetup": "Baadhi ya vyakula vinaweza kuwekwa kama <b>bidhaa moja yenye machaguo</b> au kubaki kama <b>vyakula tofauti</b>. Chagua jinsi kila kimoja kinavyopaswa kuonekana. Unaweza kubadilisha hili baadaye.",
+    "intro": "Baadhi ya vyakula vinaweza kuwekwa kama <b>bidhaa moja yenye machaguo</b> au kubaki kama <b>vyakula tofauti</b>. Chagua jinsi kila kimoja kinavyopaswa kuonekana. Unaweza kubadilisha hili baadaye kwenye Mipangilio.",
+    "none": "Hakuna vyakula vinavyoweza kuunganishwa — kila bidhaa ni chakula kinachojitegemea.",
+    "axisChoice": "· chaguo la {axis}",
+    "grouped": "Vimeunganishwa · bidhaa moja, mteja anachagua",
+    "separate": "Bidhaa tofauti kwenye menyu"
+  },
+  "allergens": {
+    "title": "Viambato vinavyosababisha mzio",
+    "detected": "Tumegundua viambato vinavyosababisha mzio kwenye menyu yako. Chagua hapa chini jinsi ya kuvionyesha.",
+    "howShow": "Unataka kuwaonyeshaje wateja viambato vinavyosababisha mzio?",
+    "skip": "Ruka kuweka viambato vinavyosababisha mzio kwa sasa"
+  },
+  "kitchen": {
+    "title": "Mpangilio wa jiko",
+    "intro": "Wasaidie wateja kujua watasubiri kwa muda gani — unaweza kubadilisha haya baadaye wakati wowote.",
+    "howWorks": "Jinsi uwezo wa jiko unavyofanya kazi",
+    "allExist": "Kategoria zote tayari zipo — hakuna muda wa kuweka.",
+    "totalHelp": "Weka uwezo wa jumla ili kuweka kikomo cha bidhaa ambazo jiko linapokea kwa kila kipindi. Acha ∞ kwa kutokuwa na kikomo.",
+    "saveAdd": "Hifadhi na uongeze kwenye menyu"
+  },
+  "schedule": {
+    "title": "Ongeza ratiba yangu",
+    "intro": "Kama ratiba yako iko kwenye tovuti yako, tunaweza kuiweka sawa kiotomatiki — au ongeza tarehe zako mwenyewe.",
+    "websiteTitle": "Ratiba yangu iko kwenye tovuti yangu",
+    "urlPlaceholder": "https://foodtruckyako.co.tz/matukio",
+    "checking": "Inakagua…",
+    "verify": "Hakiki",
+    "checkingSite": "Inakagua tovuti yako…",
+    "takesTime": "Hii inaweza kuchukua hadi dakika 2 — tafadhali acha ukurasa huu wazi.",
+    "canRead": "✓ Tunaweza kusoma ratiba yako",
+    "ownSite": "Tovuti yako mwenyewe — si ukurasa wa Facebook au Instagram.",
+    "photoTitle": "Pakia picha ya ratiba yangu",
+    "dragChoose": "Buruta na uachie au gusa ili kuchagua",
+    "imageOrPdf": "Picha au PDF",
+    "or": "au",
+    "pastePlaceholder": "Bandika tarehe zako hapa…",
+    "read": "Soma ratiba",
+    "found": "{count, plural, one {Tarehe # imepatikana — itaongezwa} other {Tarehe # zimepatikana — zitaongezwa}} kwenye ratiba yako.",
+    "dateTbc": "Tarehe: Itatangazwa",
+    "save": "Hifadhi {count, plural, one {tarehe #} other {tarehe #}}",
+    "manualDesc": "Ziongeze baadaye kwenye kichupo cha Ratiba — hakuna cha kufanya sasa.",
+    "manualBody": "Hakuna shida. Unaweza kuongeza na kusimamia tarehe zako wakati wowote kutoka kwenye kichupo cha Ratiba kwenye akaunti yako.",
+    "blockedDomain": "Tafadhali tumia URL ya tovuti yako — kurasa za Facebook na Instagram haziwezi kusomwa kiotomatiki.",
+    "saveFailed": "Tumesoma ratiba yako, lakini hatukuweza kuihifadhi sasa hivi — jaribu tena.",
+    "websiteDesc": "Tutaikagua mara kwa mara na kukutumia tarehe mpya ili uziidhinishe.",
+    "keepChecking": "Tutaendelea kukagua ukurasa huu na kukutumia tarehe zozote mpya ili uziidhinishe.",
+    "photoDesc": "Piga picha au bandika tarehe zako — tutazisoma ili uzikague.",
+    "noneFound": "Hatukupata tarehe yoyote humo — jaribu picha iliyo wazi zaidi, au ongeza tarehe mwenyewe.",
+    "manualTitle": "Nitaongeza tarehe zangu mwenyewe",
+    "trialNotStarted": "Kuongeza matukio hakuanzishi jaribio lako bila malipo — utachagua baadaye ni tukio lipi litakaloanzisha."
+  },
+  "done": {
+    "summary": "{items, plural, one {Bidhaa #} other {Bidhaa #}} katika {categories, plural, one {kategoria #} other {kategoria #}}.",
+    "imported": "Menyu imeingizwa!",
+    "added": "Bidhaa zako zimeongezwa kwenye menyu.",
+    "duplicates": "{count, plural, one {Bidhaa # iliyojirudia imerukwa} other {Bidhaa # zilizojirudia zimerukwa}}",
+    "showMe": "Nionyeshe",
+    "remind": "Nikumbushe baadaye",
+    "allSet": "Kila kitu kiko tayari!",
+    "explore": "Nitajionea mwenyewe"
+  },
+  "discard": {
+    "setupTitle": "Umalize kuandaa baadaye?",
+    "setupBody": "Akaunti yako na food truck yako vimehifadhiwa — hakuna kilichopotea. Unaweza kuongeza menyu yako wakati wowote: ingia kisha uguse <b>Ingiza menyu</b> kwenye skrini ya menyu yako ili kuendelea kuanzia hapa.",
+    "keepGoing": "Endelea",
+    "finishLater": "Maliza baadaye",
+    "title": "Tupa uingizaji huu?",
+    "keepEditing": "Endelea kuhariri",
+    "discard": "Tupa",
+    "body": "Mabadiliko yako hayatahifadhiwa — bidhaa zilizoingizwa, muda wa maandalizi na uwezo wa jiko havitaongezwa.",
+    "carriedBody": "Menyu yako kutoka kwenye majaribio imehifadhiwa kwenye food truck yako kama ilivyo. Unaweza kuibadilisha wakati wowote kwenye skrini ya menyu yako."
+  },
+  "allergenCardText": {
+    "contains": "Ina: {list}",
+    "mayContain": "Huenda ina: {list}"
+  }
+}

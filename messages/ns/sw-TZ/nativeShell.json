@@ -1,0 +1,137 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab inatumia kamera ili uweze kupiga picha ubao wa menyu yako, vyakula vyako na nyaraka nyingine na kuzipakia moja kwa moja kwenye akaunti yako. Picha zinatumika tu kwa upakiaji unaochagua kufanya.",
+    "bluetoothUsage": "HatchGrab inatumia Bluetooth kuunganisha na printa ya risiti ya jikoni lako ili tiketi za oda zichapishwe kiotomatiki. Haitumiki kwa jambo jingine lolote.",
+    "localNetworkUsage": "HatchGrab inaunganisha na printa ya jikoni lako kwenye mtandao wako wa ndani ili tiketi za oda zichapishwe kiotomatiki. Haitumiki kwa jambo jingine lolote.",
+    "faceIdUsage": "Fungua HatchGrab kwa Face ID.",
+    "offlineTitle": "Hatuwezi kufikia HatchGrab",
+    "offlineDetail": "Angalia muunganisho wako.",
+    "retry": "Jaribu tena"
+  },
+  "gate": {
+    "reverted": "Oda #{id} imerudishwa ilivyokuwa",
+    "saved": "Oda #{id} imehifadhiwa",
+    "undo": "↩ Tendua",
+    "paymentNotRecorded": "⚠ Oda #{id} — MALIPO HAYAJAREKODIWA. {collect, select, yes {Oda imekamilika} other {Oda imehifadhiwa}}; pesa hazijarekodiwa.",
+    "recordPayment": "Rekodi malipo",
+    "paid": "Oda #{id} imelipwa",
+    "undonePayment": "Imetenduliwa — malipo yameondolewa",
+    "undoneCollected": "Imetenduliwa — oda haijachukuliwa",
+    "collected": "Oda #{id} {paidToo, select, yes {imelipwa na kuchukuliwa} other {imechukuliwa}}",
+    "ready": "Oda #{id} iko tayari",
+    "readyBuzzer": "Oda #{id} iko tayari · <pill></pill>",
+    "status": "Oda #{id} {action, select, confirm {imethibitishwa} reject {imekataliwa} ready {iko tayari} collected {imechukuliwa} undo_collected {imerudishwa} cancel {imeghairiwa} other {imesasishwa}}"
+  },
+  "conflicts": {
+    "more": "+{count} zaidi",
+    "notOnScreenPlus": "+{count} hazipo kwenye skrini hii",
+    "notOnScreen": "{n, plural, one {Oda {count} haipo kwenye skrini hii} other {Oda {count} hazipo kwenye skrini hii}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ MALIPO HAYAJAREKODIWA",
+    "paymentBody": "Oda: {orders} — alama ya kulipwa iliwekwa kwenye kifaa hiki pekee. Malipo hayajapita.",
+    "paymentCheck": "Angalia oda na upokee malipo tena kama bado yanadaiwa.",
+    "dismiss": "Ficha",
+    "confirmChecked": "Thibitisha kwamba umeangalia: {orders}",
+    "confirmHides": "Hii inaficha onyo. Rekodi inabaki kwenye kifaa hiki kwa vyovyote vile.",
+    "notYet": "Bado",
+    "iveChecked": "Nimeangalia: {orders}",
+    "statusBody": "⚠ Oda: {orders} — mabadiliko haya hayajapita. Angalia oda.",
+    "offline": "📴 Hakuna muunganisho — {n, plural, one {badiliko {count} limehifadhiwa kwenye kifaa hiki. Litatumwa utakaporudi mtandaoni.} other {mabadiliko {count} yamehifadhiwa kwenye kifaa hiki. Yatatumwa utakaporudi mtandaoni.}} Mipangilio imefungwa.",
+    "syncing": "Umerudi mtandaoni — inatuma {n, plural, one {badiliko {count}} other {mabadiliko {count}}}…",
+    "synced": "Mabadiliko yote yametumwa.",
+    "stillQueued": "{n, plural, one {Badiliko {count} limehifadhiwa kwenye kifaa hiki. Bado tunajaribu kulituma.} other {Mabadiliko {count} yamehifadhiwa kwenye kifaa hiki. Bado tunajaribu kuyatuma.}}",
+    "notApproved": "{n, plural, one {Oda {count} inasubiri} other {Oda {count} zinasubiri}}: tukio hili halijaidhinishwa. Liidhinishe ili kutuma."
+  },
+  "lock": {
+    "locked": "HatchGrab imefungwa",
+    "verifying": "Inathibitisha…",
+    "unlock": "Fungua",
+    "cantUseBiometric": "Huwezi kutumia Face / Touch ID?",
+    "enterPin": "Weka PIN yako ya akiba",
+    "wrongPin": "PIN si sahihi — jaribu tena.",
+    "checking": "Inakagua…",
+    "tryBiometric": "Jaribu Face / Touch ID badala yake",
+    "forgot": "Umesahau PIN yako? Utahitaji kusakinisha programu upya."
+  },
+  "notify": {
+    "title": "🔔 Arifa",
+    "intro": "Arifa kwenye kifaa hiki. Washa ili kuchagua arifa unazopokea.",
+    "refused": "Arifa zinahitaji kuruhusiwa kwenye Mipangilio ya kifaa chako ili kuwasha hii.",
+    "newOrder": "Arifa za oda mpya",
+    "newOrderHelp": "Pata arifa oda ya mteja inapohitaji kuthibitishwa.",
+    "offline": "Arifa za nje ya mtandao / kusitishwa",
+    "offlineHelp": "Pata arifa kifaa hiki kinapotoka mtandaoni (na kuagiza kunaposimama). <green>Inafanya kazi bila mtandao.</green>"
+  },
+  "van": {
+    "label": "Gari",
+    "loadRetry": "Imeshindikana kupakia · Jaribu tena",
+    "select": "Chagua…"
+  },
+  "deviceSave": {
+    "network": "Hatukuweza kufikia seva — angalia muunganisho kisha ujaribu tena.",
+    "server": "Hatukuweza kuhifadhi hilo sasa hivi. Tafadhali jaribu tena."
+  },
+  "setup": {
+    "fetchErrorTitle": "Imeshindikana kupakia mipangilio ya kifaa",
+    "fetchErrorBody": "Hatukuweza kufikia seva ili kuweka mipangilio ya <b>kifaa hiki</b>. Angalia muunganisho kisha ujaribu tena — oda na mipangilio yako haijaathirika.",
+    "retry": "Jaribu tena",
+    "later": "Baadaye",
+    "noVanTitle": "Hakuna gari linalotumika",
+    "noVanBody": "Food truck hii bado haina gari linalotumika. Wezesha moja kwenye <b>Mipangilio → Magari yako</b>, kisha kifaa hiki kitajiweka kiotomatiki — hakuna hatua zaidi hapa.",
+    "goToVans": "Nenda Mipangilio → Magari yako",
+    "title": "Weka mipangilio ya kifaa hiki",
+    "body": "Mipangilio ya mara moja kwa <b>kifaa hiki</b>: skrini itakayofunguka kwanza na gari ambalo kifaa kinahudumia. Inahusu kifaa hiki pekee — vifaa vingine vinawekwa kando, na unaweza kubadilisha haya baadaye kwenye menyu ya wasifu → “Kifaa hiki”.",
+    "whichScreen": "Kifaa hiki kifungue skrini ipi?",
+    "dashboard": "Dashibodi",
+    "kds": "Skrini ya jikoni (KDS)",
+    "whichVan": "Kifaa hiki ni cha gari lipi?",
+    "selectVan": "Chagua gari…",
+    "saving": "Inahifadhi…",
+    "tryAgain": "Jaribu tena",
+    "continue": "Endelea"
+  },
+  "device": {
+    "title": "Kifaa hiki",
+    "viewing": "Unaangalia: <b>{truck}</b>",
+    "viewingVan": "Unaangalia: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Kifaa hiki pekee — vifaa vingine vinawekwa kando. (Kitambulisho: {id}…)",
+    "truck": "Food truck",
+    "van": "Gari",
+    "defaultScreen": "Skrini ya kuanzia",
+    "orderNotifications": "Arifa za oda",
+    "patchFailed": "{setting, select, van {Gari} defaultScreen {Skrini ya kuanzia} other {Arifa za oda}} — haikuhifadhiwa. {reason}",
+    "requireBiometric": "Hitaji alama ya kidole au utambuzi wa uso ili kufungua",
+    "pinTitle": "Weka PIN ya akiba (tarakimu 4–6)",
+    "pinHelp": "Njia yako ya kuingia ikiwa alama ya kidole au utambuzi wa uso haufanyi kazi — ndiyo njia mbadala pekee, kwa hiyo usiisahau (ukisahau PIN itabidi usakinishe programu upya). Inafanya kazi bila mtandao.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Thibitisha PIN",
+    "pinTooShort": "Tumia angalau tarakimu 4.",
+    "pinMismatch": "PIN hazifanani.",
+    "setPin": "Weka PIN na uwashe",
+    "cancel": "Ghairi",
+    "noBiometric": "Hakuna alama ya kidole wala utambuzi wa uso uliowekwa kwenye kifaa hiki — ongeza mmojawapo kwenye mipangilio ya kifaa chako. PIN yako ya akiba bado inafanya kazi.",
+    "footer": "Mipangilio hii inahusu kifaa hiki pekee — vifaa vingine vinawekwa kando."
+  },
+  "appLock": {
+    "unlockReason": "Fungua HatchGrab",
+    "usePasscode": "Tumia nambari ya siri",
+    "cancel": "Ghairi",
+    "confirmEnable": "Thibitisha ili kuwasha kufuli ya programu"
+  },
+  "channel": {
+    "ordersName": "Oda mpya",
+    "ordersDescription": "Arifa oda inapohitaji kuthibitishwa."
+  },
+  "localNotify": {
+    "newOrderTitle": "Oda mpya",
+    "orderReceived": "Oda {number} imepokelewa",
+    "newOrders": "{n, plural, one {Una oda mpya} other {Una oda mpya {count}}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Kuagiza kumesitishwa",
+    "pausedBody": "Uko nje ya mtandao — kuagiza kwa wateja kumesitishwa.",
+    "offlineTitle": "Uko nje ya mtandao",
+    "offlineBody": "Kifaa hiki kimepoteza muunganisho."
+  }
+}

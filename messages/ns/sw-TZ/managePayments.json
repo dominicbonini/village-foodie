@@ -1,0 +1,94 @@
+{
+  "heading": "Malipo",
+  "loading": "Inakagua akaunti yako ya Stripe…",
+  "state": {
+    "not_connected": {
+      "title": "Haijaandaliwa",
+      "body": "Inachukua takriban dakika 10. Utahitaji taarifa za benki yako na kitambulisho.",
+      "chip": "Haijaandaliwa"
+    },
+    "requirements": {
+      "title": "Stripe inahitaji taarifa zako",
+      "body": "Malipo kwa kadi hayatafanya kazi hadi Stripe ipate taarifa za biashara yako na za benki yako.",
+      "chip": "Hatua inahitajika"
+    },
+    "pending": {
+      "title": "Imeunganishwa — Stripe inakagua taarifa zako",
+      "body": "Hakuna unachohitaji kufanya. Stripe inapitia taarifa ulizotuma, na ukurasa huu utasasishwa watakapomaliza.",
+      "chip": "Inakaguliwa"
+    },
+    "ready": {
+      "title": "Imeunganishwa",
+      "body": "Akaunti yako ya Stripe imeunganishwa na inaweza kupokea malipo.",
+      "chip": "Iko tayari"
+    },
+    "restricted": {
+      "title": "Malipo kwa kadi yamesitishwa",
+      "body": "Stripe imesitisha malipo kwa kadi kwenye akaunti yako hadi jambo fulani litatuliwe.",
+      "chip": "Imesitishwa"
+    },
+    "unsupported": {
+      "title": "Malipo kwa kadi hayapatikani kwenye akaunti hii",
+      "body": "Stripe haiwezi kuwezesha malipo kwa kadi hapa. Wasiliana nasi na tutalitatua pamoja nawe.",
+      "chip": "Haipatikani"
+    }
+  },
+  "keyMismatch": {
+    "title": "Funguo za Stripe hazilingani",
+    "body": "Seva ya tovuti hii inatumia ufunguo wa Stripe wa <b>{server, select, live {malipo halisi} other {majaribio}}</b>, ilhali kivinjari kilitengenezwa kwa ufunguo wa <b>{browser, select, live {malipo halisi} other {majaribio}}</b>. Malipo kwa kadi yangeshindikana pale mteja anapojaribu kulipa, kwa hiyo uandaaji wa Stripe umezuiwa hadi funguo hizo zilingane.",
+    "fix": "Funguo zote mbili lazima ziwekwe kwa mazingira yaleyale, kisha tovuti itengenezwe upya — ufunguo wa umma (publishable key) huwekwa ndani wakati tovuti inapotengenezwa, na ufunguo wa siri husomwa kila ombi linapofanyika."
+  },
+  "permission": {
+    "title": "Mmiliki wa food truck pekee ndiye anayeweza kuandaa malipo",
+    "body": "Stripe huunganishwa na mtu ambaye akaunti yake ya benki inapokea pesa, kwa hiyo lazima iandaliwe kutoka kwenye akaunti yake mwenyewe akiwa ameingia. Hakuna tatizo lolote kwenye food truck hii wala kwenye HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Malipo kwa kadi bado hayajaandaliwa",
+    "fetchTitle": "Hatukuweza kukagua akaunti ya Stripe ya food truck hii",
+    "keyMissing": "Kigezo hiki hakijawekwa: {name} — vipengele vilivyopachikwa haviwezi kupakia."
+  },
+  "errors": {
+    "requestFailed": "Ombi limeshindikana ({status})",
+    "unreachable": "Imeshindikana kufikia Stripe"
+  },
+  "online": {
+    "heading": "Malipo mtandaoni",
+    "body": "Wateja hulipa kwa kadi wanapoagiza. Pesa huenda moja kwa moja kwenye akaunti yako mwenyewe ya Stripe — sisi hatuzishikilii kamwe.",
+    "feeLine": "Stripe hutoza {fee} kwa kila malipo ya kawaida kwa {region}. Kadi nyingine zinaweza kugharimu zaidi. Ada ya HatchGrab yenyewe kwa oda za mtandaoni inategemea kifurushi chako — angalia “Bili”.",
+    "testMode": "Hali ya majaribio. Bado hakuna malipo halisi yanayoweza kupokelewa."
+  },
+  "trialNote": "Kuandaa hili hakuanzishi malipo ya kifurushi chako wala hakukutozi chochote leo. Ni njia ya wateja wako kukulipa — kifurushi chako ni jambo tofauti.",
+  "admin": {
+    "title": "Unaangalia kama msimamizi wa jukwaa",
+    "body": "Food truck hii haijaandaa malipo mtandaoni. Mmiliki pekee ndiye anayeweza kuyaanzisha, kutoka kwenye akaunti yake mwenyewe akiwa ameingia — hakuna cha kubonyeza hapa."
+  },
+  "setUp": {
+    "button": "Andaa malipo mtandaoni",
+    "busy": "Inaandaa…"
+  },
+  "toast": {
+    "alreadySetUp": "Tayari imeandaliwa — tunaendelea",
+    "addDetails": "Sasa ongeza taarifa zako kwa ajili ya Stripe",
+    "createFailed": "Imeshindikana kufungua akaunti"
+  },
+  "onboarding": {
+    "restricted": "Stripe itaendelea kuanzia hapa — utaingia kwenye Stripe na kusasisha taarifa inazohitaji.",
+    "firstRun": "Stripe itaendelea kuanzia hapa — utaingia kwenye Stripe, kisha utoe taarifa za biashara yako na za benki yako."
+  },
+  "details": {
+    "title": "Taarifa zako za Stripe",
+    "body": "Badilisha akaunti ya benki inayopokea malipo yako, au sasisha taarifa na nyaraka za biashara yako.",
+    "button": "Angalia au hariri"
+  },
+  "walkUp": {
+    "heading": "Malipo ya oda za papo hapo",
+    "body": "Jinsi unavyopokea pesa kwenye food truck. HatchGrab haitozi ada ya jukwaa kwa oda za papo hapo, njia yoyote utakayochagua.",
+    "ownTerminal": "Mashine yako mwenyewe ya kadi",
+    "current": "Inayotumika",
+    "ownTerminalHelp": "Zettle, Square, au mashine yoyote unayotumia tayari. Hakuna cha kuandaa — ada za mtoa huduma wako pekee ndizo zinazotozwa.",
+    "hatchgrab": "Kupitia HatchGrab",
+    "comingSoon": "Inakuja hivi karibuni",
+    "hatchgrabHelp": "Inatumia muunganisho uleule wa Stripe kama malipo yako ya mtandaoni — mashine ya kadi, au malipo ya kugusa (contactless) moja kwa moja kwenye simu yako au kishikwambi.",
+    "hatchgrabFees": "{fee} kwa kila malipo kwa {region}, pamoja na {surcharge} kwa malipo ya kugusa yanayopokelewa kwenye simu au kishikwambi. Kadi nyingine zinaweza kugharimu zaidi."
+  }
+}

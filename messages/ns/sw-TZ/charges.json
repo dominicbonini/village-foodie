@@ -1,0 +1,13 @@
+{
+  "subtotal": "Jumla ndogo",
+  "taxFallback": "Kodi",
+  "taxIncluded": "Inajumuisha {label}",
+  "serviceFeeCustomer": "Ada ya huduma mtandaoni",
+  "serviceFee": "Ada ya huduma",
+  "cardFee": "Ada ya kadi",
+  "tip": "Bakshishi",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Kodi, ada na bakshishi} tax_tip {Kodi na bakshishi} fees_tip {Ada na bakshishi} fees {Ada} other {Kodi na ada}}"
+}

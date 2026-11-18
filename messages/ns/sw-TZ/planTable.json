@@ -1,0 +1,41 @@
+{
+  "h1": "Kila kitu cha kuendesha huduma yako, kwenye kila kifurushi.",
+  "lede": "Oda, oda ya mapema, uwezo wa jiko na skrini ya jikoni (KDS) vimejumuishwa kwenye kila kifurushi.{hasUpgrades, select, yes { Ukiwa na {plans} unapata pia {features}, pamoja na ada za chini zaidi.} other {}}",
+  "perMonth": "{price} / mwezi",
+  "trial": {
+    "length": "{months, plural, one {mwezi #} other {miezi #}}",
+    "ends": "Inaisha {date}"
+  },
+  "group": {
+    "pay": "Unacholipa",
+    "run": "Endesha huduma yako",
+    "online": "Oda za mtandaoni",
+    "marketing": "Masoko na mifumo ya kiotomatiki"
+  },
+  "pay": {
+    "included": "Oda za mtandaoni zilizojumuishwa kila mwezi",
+    "fee": "Ada ya HatchGrab kwa oda za mtandaoni*",
+    "feeNoMark": "Ada ya HatchGrab kwa oda za mtandaoni",
+    "walkUp": "Oda za papo hapo"
+  },
+  "cell": {
+    "unlimited": "Bila kikomo",
+    "free": "Bila malipo",
+    "feeAbove": "<b>{fee}</b> zaidi ya {included}",
+    "yes": "Imejumuishwa",
+    "none": "Haijajumuishwa",
+    "comingSoon": "Inakuja hivi karibuni"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "mitandao ya kijamii",
+    "event_types": "bei maalum za matukio"
+  },
+  "meta": {
+    "description": "Kila huduma ya HatchGrab kwenye kila kifurushi, ubavu kwa ubavu — {plans}, pamoja na ada na viwango vilivyojumuishwa.{months, plural, =0 {} one { Mwezi wako wa kwanza unajumuisha kila kitu.} other { Miezi yako # ya kwanza inajumuisha kila kitu.}}"
+  },
+  "notes": {
+    "whatsapp": "Majibu ya kiotomatiki ya WhatsApp yanahitaji akaunti ya WhatsApp Business. Meta inaweza kutoza ada kwa baadhi ya jumbe; majibu yanatengenezwa kiotomatiki.",
+    "printing": "Kuchapisha tiketi za jikoni kunahitaji printa ya Bluetooth au ya waya inayooana (haitolewi na sisi)."
+  }
+}

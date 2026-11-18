@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {Kifurushi {plan} kinajumuisha: {feature}.} other {Kifurushi {plan} kinajumuisha: {feature}.}}",
+  "notOnPlan": "{many, select, yes {Kifurushi chako hakijumuishi: {feature}.} other {Kifurushi chako hakijumuishi: {feature}.}}",
+  "switchedOff": "{many, select, yes {Huduma hizi zimezimwa kwa food truck yako: {feature}.} other {Huduma hii imezimwa kwa food truck yako: {feature}.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Pandisha kifurushi →",
+  "features": {
+    "discovery_map": {
+      "name": "Kuorodheshwa kwenye ramani ya ugunduzi",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Dashibodi ya wavuti",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Programu ya jikoni",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Menyu ya msimbo wa QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Ofa za mlo",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Mapendekezo ya ziada",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Oda za papo hapo",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Oda mtandaoni kwa Lipa Unapochukua",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Kitufe cha “Imeisha”",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Hesabu ya stoku inayopungua",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Ulinzi wa oda nje ya mtandao",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Malipo mtandaoni",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Oda ya mapema kwa tarehe zijazo",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Nafasi za muda kwa wateja",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Usimamizi wa uwezo wa jiko",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Kukubali oda kiotomatiki",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Majibu ya kiotomatiki ya Messenger na Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Misimbo ya QR yenye nembo",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Ripoti za kina",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Kuchapisha tiketi za jikoni",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Usawazishaji wa jiko kwenye vifaa vingi",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Skrini ya mpishi",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Majibu ya kiotomatiki ya WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Ratiba yako kwenye tovuti yako mwenyewe",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Machapisho ya mitandao ya kijamii",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Aina maalum za matukio",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Shughuli binafsi",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Hati",
+      "many": "yes"
+    }
+  }
+}

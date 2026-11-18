@@ -1,0 +1,129 @@
+{
+  "docTitle": "Jiko — {truck}",
+  "loading": "Inapakia jiko…",
+  "pin": {
+    "title": "Weka PIN",
+    "placeholder": "PIN",
+    "unlock": "Fungua",
+    "unreachable": "Hatuwezi kufikia seva kwa sasa. PIN yako iko sawa — jaribu tena baada ya muda mfupi.",
+    "incorrect": "PIN si sahihi",
+    "generic": "Hitilafu imetokea. Jaribu tena."
+  },
+  "error": {
+    "linkInvalid": "Kiungo hiki hakifanyi kazi tena.",
+    "couldNotLoad": "Imeshindikana kupakia oda",
+    "truckNotFound": "Food truck haikupatikana"
+  },
+  "degraded": {
+    "at": "⚠️ Hatuwezi kufikia seva. Tunaonyesha tiketi za saa {time}. HUENDA ODA MPYA HAZIONEKANI.",
+    "earlier": "⚠️ Hatuwezi kufikia seva. Tunaonyesha tiketi za awali. HUENDA ODA MPYA HAZIONEKANI."
+  },
+  "header": {
+    "dashboard": "Dashibodi",
+    "backTitle": "Rudi kwenye dashibodi",
+    "list": "Orodha",
+    "grid": "Gridi",
+    "full": "Kamili",
+    "cook": "Mpishi",
+    "fullTitle": "Kadi kamili — bei na taarifa za malipo, kama anavyoziona mhudumu wa dirishani.",
+    "cookTitle": "Kadi za mpishi — maandishi makubwa, zimepangwa kwa kategoria, bila bei.",
+    "readyStep": "Hatua ya “Iko tayari”",
+    "readyOnlyTitle": "Skrini hii inaweka oda kuwa tayari pekee, kwa hiyo hii haiwezi kuzimwa — ndiyo hatua pekee inayofanya.",
+    "readyOnTitle": "Skrini hii inaweka oda kuwa tayari. Gusa ili skrini nyingine ifanye hivyo badala yake.",
+    "readyOffTitle": "Skrini nyingine inaweka oda kuwa tayari. Gusa ili hii ifanye hivyo.",
+    "handover": "Malipo na kukabidhi",
+    "handoverOnlyTitle": "Skrini hii inapokea malipo pekee, kwa hiyo hii haiwezi kuzimwa — ndiyo hatua pekee inayofanya.",
+    "handoverOnTitle": "Skrini hii inapokea malipo na kukabidhi oda. Gusa ili skrini nyingine ifanye hivyo badala yake.",
+    "handoverOffTitle": "Skrini nyingine inapokea malipo. Gusa ili hii ifanye hivyo.",
+    "soundOn": "Sauti ya oda mpya imewashwa — gusa ili kuizima",
+    "soundOff": "Sauti ya oda mpya imezimwa — gusa ili kuiwasha",
+    "screenOn": "Skrini inawaka",
+    "screenOff": "Skrini inaweza kuzima",
+    "screenSettings": "Mipangilio ya skrini",
+    "manageEvent": "Simamia tukio",
+    "manageEventTitle": "Simamia tukio — lianzishe, lisitishe, libadilishe au limalize",
+    "soundSettings": "Mipangilio ya sauti",
+    "soundSettingsTitle": "Sauti zipi zinalia kwenye kifaa hiki",
+    "cashIcon": "💵"
+  },
+  "panel": {
+    "viewSettings": "Mipangilio ya mwonekano",
+    "on": "Imewashwa",
+    "off": "Imezimwa",
+    "newOrderSound": "Sauti ya oda mpya",
+    "soundNeedsConfirming": "Oda zinazohitaji kuthibitishwa pekee",
+    "soundAll": "Oda zote mpya",
+    "soundDue": "Sauti oda inapofika wakati wa kupikwa",
+    "soundDueHelp": "Inalia tiketi inapobadilika kuwa rangi ya machungwa.",
+    "deviceSettings": "Mipangilio ya kifaa",
+    "sound": "Sauti",
+    "close": "Funga"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ Oda za tukio hili hazijapakiwa",
+    "mismatchBody": "Seva ilijibu kwa tukio tofauti, kwa hiyo hakuna kinachoonyeshwa badala ya kuonyesha oda zisizo sahihi. Chagua tukio tena, au pakia upya.",
+    "mismatchBodyAt": "Seva ilijibu kwa tukio tofauti, kwa hiyo hakuna kinachoonyeshwa badala ya kuonyesha oda zisizo sahihi za eneo: {venue}. Chagua tukio tena, au pakia upya.",
+    "paused": "⏸ Oda zimesitishwa{reason, select, offline { (kifaa kiko nje ya mtandao)} other {}} — wateja hawawezi kuagiza",
+    "resume": "Endelea",
+    "offline": "Hakuna muunganisho — tunaonyesha oda za mwisho zilizojulikana. Kuagiza mtandaoni kumesitishwa kwa wateja.",
+    "queued": "{n, plural, one {Kitendo {count} kinasubiri kutumwa} other {Vitendo {count} vinasubiri kutumwa}}",
+    "extraWait": "⏱ Muda wa ziada wa kusubiri unatumika: +dakika {mins}",
+    "clear": "Ondoa",
+    "toMake": "Za kuandaa",
+    "today": "Leo · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Anzisha tukio",
+    "recentlyClosed": "Tukio limekwisha · {venue} — lilimalizika saa {time}",
+    "eventStatus": "{tone, select, paused {⏸ Limesitishwa} live {● Linaendelea} finished {● Limekwisha} cancelled {Limeghairiwa} other {Halijaanza}}"
+  },
+  "board": {
+    "queueClear": "Hakuna oda zinazosubiri",
+    "doneToday": "Zilizokamilika leo · {count}",
+    "paid": "✓ imelipwa",
+    "cardHeld": "kiasi kimezuiliwa",
+    "due": "bado kulipa: {amount}"
+  },
+  "screenOff": {
+    "title": "Ruhusu skrini kuzima?",
+    "bodyVans": "Ugunduzi wa kukatika kwa mtandao umewashwa kwa {n, plural, one {gari} other {magari}}: {vans}. Skrini ikizima, kifaa kinaweza kuacha kutuma ishara yake ya kuwa mtandaoni na kuagiza kwa wateja kunaweza kusitishwa.",
+    "body": "Skrini ikizima, kifaa kinaweza kuacha kutuma ishara yake ya kuwa mtandaoni.",
+    "keepHint": "Acha skrini ikiwaka ili kuagiza kuendelee bila kukatizwa.",
+    "keep": "Acha skrini iwake",
+    "allow": "Ruhusu skrini kuzima"
+  },
+  "event": {
+    "change": "Badilisha tukio",
+    "cancel": "Ghairi",
+    "waitActive": "⏱ +dakika {mins} zinatumika · Gusa ili kuondoa",
+    "addWait": "⏱ Ongeza muda wa ziada wa kusubiri",
+    "endTitle": "Maliza tukio?",
+    "endEarly": "Tukio hili halijapangwa kumalizika hadi saa {time}. Hakuna oda zaidi zitakazoruhusiwa. Thibitisha kumaliza tukio?",
+    "endNow": "Maliza tukio hili? Hakuna oda zaidi zitakazopokelewa.",
+    "yes": "Ndiyo",
+    "started": "Tukio limeanza",
+    "startFutureConfirm": "Tukio hili ni tarehe {date}. Lianzishe sasa?",
+    "finishTimeNow": "Muda wa kumaliza sasa ni saa {time}",
+    "finished": "Tukio limekwisha",
+    "cancelled": "Tukio limeghairiwa",
+    "noteSaved": "Maelezo yamehifadhiwa",
+    "pauseConfirm": "Sitisha oda? Wateja wataona “Hatupokei oda” hadi utakapoendelea.",
+    "switchConfirm": "Hamia kutoka {from} kwenda {to}?{n, plural, =0 {} one { Oda {count} kwenye skrini hii itabadilishwa.} other { Oda {count} kwenye skrini hii zitabadilishwa.}} Gusa tukio la sasa ili kurudi."
+  },
+  "intro": {
+    "title": "Hii ni skrini ya jikoni (KDS)",
+    "p1": "Ni mwonekano wa mpishi — oda unazohitaji kuandaa, kwa mpangilio wa kuziandaa. Skrini iliyo karibu na jiko la kuchomea inaonyesha hii, huku wa dirishani wakitumia dashibodi ya oda.",
+    "p2": "Kadi zinasogea unapozigusa, kwa hiyo anayepika anajua kila wakati kinachofuata na hakuna anayehitaji kupiga kelele. Kila kitu hapa ni data yako ya majaribio — jaribu upendavyo.",
+    "gotIt": "Nimeelewa"
+  },
+  "toast": {
+    "failed": "Imeshindikana",
+    "rejectFailed": "Imeshindikana kukataa",
+    "buzzerSaved": "Kengele {n} imehifadhiwa",
+    "buzzerRemoved": "Kengele {n} imeondolewa",
+    "buzzerRemovedNone": "Kengele imeondolewa",
+    "buzzerAssigned": "Kengele {n} imewekwa",
+    "buzzerAssignedFrom": "Kengele {n} imewekwa (imechukuliwa kutoka #{from})",
+    "buzzerRemoveFailed": "{had, select, no {Imeshindikana kuondoa kengele kwenye {target, select, order {oda #{id}} other {oda hii}}} other {Imeshindikana kuondoa kengele {n} — bado iko kwenye {target, select, order {oda #{id}} other {oda hii}}}}",
+    "buzzerAssignFailed": "Imeshindikana kuweka kengele {n} kwenye {target, select, order {oda #{id}} other {oda hii}} — {had, select, yes {bado ina kengele {prior}} other {bado haina kengele}}"
+  }
+}
