@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal), batch 12 (ne-NP legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal), batch 12 (ne-NP legal), batch 14 (fil-PH legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -18,7 +18,7 @@
 | 10 | hy-AM Armenian | ✅ (lw-2) | ✅ batch 7 — **needs native/legal check** | `_legal-translations.cjs hy-AM` 3/3 ✓; `legal-languages-1` /am/privacy, /am/terms, /am/country-terms ✓ | 3f5c1a28 |
 | 11 | mn-MN Mongolian | ✅ (lw-2) | ✅ batch 8 — **needs native/legal check** | `_legal-translations.cjs mn-MN` 3/3 ✓; `legal-languages-1` /mn/privacy, /mn/terms, /mn/country-terms ✓ | 2c30808f |
 | 12 | ne-NP Nepali | ✅ (lw-2) | ✅ batch 12 — **needs native/legal check** | `_legal-translations.cjs ne-NP` 3/3 ✓; `legal-languages-1` /np/privacy, /np/terms, /np/country-terms ✓ | 5f1b9944 |
-| 13 | fil-PH Filipino | ✅ installed a39d2108 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — next (batch 14) | check-part 9/9 STRUCTURAL 0; check-fix 0 | 579195f2 |
+| 13 | fil-PH Filipino | ✅ installed a39d2108 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 14 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs fil-PH` 3/3 ✓; `legal-languages-1` /ph/privacy, /ph/terms, /ph/country-terms ✓ (run with the `slice(3)` fix, see batch 14) | 579195f2 · legal languages-world-3 batch 14 |
 | 14 | sq-AL Albanian | ✅ installed 1669f709 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 40b2cd16 |
 | 15 | bs-BA Bosnian | ✅ installed 53d04eb9 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 92d567c4 |
 | 16 | mk-MK Macedonian | ✅ installed 0e592f0c (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | d1214c77 |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **12 of 23 languages done (36 of 69 pages).** UI: 16 of 23 installed (fil-PH, sq-AL, bs-BA, mk-MK on 18 Nov). Next: fil-PH legal, then sq-AL/bs-BA/mk-MK legal, then ca-AD onwards.
+Legal pages: **13 of 23 languages done (39 of 69 pages).** UI: 16 of 23 installed (fil-PH, sq-AL, bs-BA, mk-MK on 18 Nov). Next: sq-AL/bs-BA/mk-MK legal, then ca-AD onwards.
 
 ## Batch order
 
@@ -232,6 +232,20 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 14: fil-PH legal pages
+
+**Files:** [privacy-policy.md](../content/legal/fil-PH/privacy-policy.md), [terms-and-conditions.md](../content/legal/fil-PH/terms-and-conditions.md), [country-specific-terms.md](../content/legal/fil-PH/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into Filipino (Tagalog). No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs fil-PH` 3/3 ✓ (first run, no fixes needed). `legal-languages-1`: /ph/privacy, /ph/terms and /ph/country-terms render ("Nobyembre 4, 2026", "Nobyembre 1, 2026"). The next ENOENT is sq-AL (`content/legal/sq-AL/privacy-policy.md`), as expected. **No screenshot**: the Philippines has no country row yet (see batch 2).
+
+⚠️ **Harness bug found, not fixed (needs a decision).** `scripts/legal-languages-1.cjs` line 58 finds a base's country with `l.slice(3)`, which assumes a two-letter language code. For `fil-PH` it gives `-PH`, so the committed harness fails "every language base's country has a URL segment" (`["fil-PH → -PH"]`) and then throws `notFound` at the first /ph page. The render above comes from a temporary copy with `l.split('-')[1]` instead, which was deleted after the run. With that fix, PH is correctly listed with the 24 bases that have no country row and redirects to English, and all three /ph pages pass. This run's scope was only `content/legal/fil-PH/` and this report, so the one-line fix is not committed. Every later run of `legal-languages-1` hits the same failure until it is.
+
+**Translation choices:** clear, formal-leaning Filipino with the UI’s own product words, in the UI’s friendly singular address (ka/mo/iyong, no po, no plural kayo/ninyo), so the pages match the app. Native reviewers should check this register choice for legal text. Pay at Hatch = “Bayad sa Pick-up”, at the hatch = “sa truck”, walk-up orders = walk-in order, kitchen screen = kitchen display (KDS), dashboard = dashboard, collection time = oras ng pick-up, food truck / operator ng food truck, basket, menu, plan, free trial, refund, HatchGrab fee = fee ng HatchGrab, VAT stays VAT (the UI’s word), and the demo checkbox is quoted exactly (“Padalhan ako paminsan-minsan ng tips at balita mula sa HatchGrab”). The date line uses the UI label “Huling na-update:”, and the page titles match legalChrome (“Patakaran sa Privacy”, “Mga Tuntunin ng Serbisyo”, “Mga tuntunin para sa bawat bansa”). Country names stay in English, as the UI writes them (Japan, Germany). Legal terms keep the English where Filipino legal writing uses it, with Filipino around it: controller/processor, data subject, lawful basis = legal na batayan (lawful basis), legitimate interests = lehitimong interes (legitimate interests), consent = pahintulot (consent), negligence = kapabayaan (negligence), tort kept as tort, indemnify = babayaran ng danyos (indemnify), severability, assignment and no waiver are Filipino with the English in brackets. merchant of record = opisyal na nagbebenta (merchant of record), white-label = ibenta bilang sarili mong brand (white-label), data intermediary = tagapamagitan sa data (data intermediary), data user/processor = gumagamit ng data (data user)/tagaproseso ng data (data processor), tax invoice = opisyal na resibo para sa buwis (tax invoice), qualified invoice = kwalipikadong invoice (qualified invoice), encargado and aviso de privacidad = processor (encargado) / abiso sa privacy (aviso de privacidad). reverse charge stays plain “reverse charge”, as the UI writes it (“sa ilalim ng reverse charge”). A bracketed copy would have repeated the same English words. chargeback stays chargeback. TVA/IVA are kept, with (VAT ng France)/(VAT ng Mexico) at first mention. Article = Artikulo, Regulation = Regulasyon, Standard = Pamantayan, Ordinance = Ordinansa, Decree = Dekreto. Local law names are in Filipino with the official name and year in brackets, e.g. Batas sa mga Karapatan ng Consumer (Consumer Rights Act 2022), Batas sa Privacy (Privacy Act 1988). Law numbers keep their English form (Regulasyon (EU) No 1169/2011, Law No. 8,078 of 1990, Federal Decree-Law No. 45 of 2021). The allergen names stay in English quotes (“milk”, “egg”…), and “Payer …”/“Commander et payer au retrait”, 特定商取引法 and 個人情報保護法 are verbatim. ASCII digits only, and number words stay words (anim na taon, walo, dalawampu). The list letters (a)–(f) stay Latin. The two in-text dates follow the page’s own date style (“Mula Oktubre 1, 2026”, “may bisa mula Marso 21, 2025”). In the processor table, “Apple and Google” is written “Apple at Google”, and both names stay verbatim. The CNIL name’s apostrophe is typographic (l’informatique). No ASCII apostrophes or quotes remain. The only English sentence fragments left are inside official names (Office of the Privacy Commissioner, Federal Law on the Protection of Personal Data Held by Private Parties, and so on).
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -251,4 +265,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 14 is the fil-PH legal pages, then sq-AL, bs-BA and mk-MK legal. Runs continue automatically back to back, with no waits.
+Batch 15 is the sq-AL legal pages, then bs-BA and mk-MK legal, then ca-AD UI. Its render step needs the `legal-languages-1` `slice(3)` fix (batch 14) or a temporary copy with it. Runs continue automatically back to back, with no waits.
