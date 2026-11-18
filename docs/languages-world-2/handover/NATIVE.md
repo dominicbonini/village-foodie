@@ -420,3 +420,9 @@
 - Pay at truck "Lipa ukichukua"; kitchen screen "Skrini ya jikoni (KDS)"; buzzer "kengele"; sold out "Imeisha"; TBC "Itatangazwa".
 - Check: deal "ofa ya mlo", "Okoa {amount}", "bakshishi", "stoku", "Taslimu", "kishikwambi" (tablet), card hold "Kiasi kimezuiliwa kwenye kadi yako, hujatozwa", ASAP "⚡ Haraka iwezekanavyo" (long).
 - ALLERGENS (check first): Krasteshia (crustaceans), Moluska, Samakigamba (shellfish), Kokwa za miti (tree nuts), Lupini (lupin), Kiazi kikuu (yam), Kibua (mackerel); Vegetarian "Bila nyama wala samaki", Vegan "Bila bidhaa za wanyama".
+
+## sw-TZ part 02 (languages-world-3, 18 Nov 2026)
+- venue "eneo" (Area must differ; Place suggested "Mahali"); postcode "Postikodi"; "Mipangilio → Magari yako".
+- Card held "KIASI KIMEZUILIWA" (not "kadi imezuiliwa" = card blocked); placeholders after a noun ("Tukio {event} …", "Oda: {orders}").
+- FOR CONSISTENCY: reject dialog "Keep order" = "Usighairi oda" (TERMS) — "Usikatae oda" may fit better there.
+- "dak {mins}"; Done "Nimemaliza"; "Admin" English; 💷 → 💵.
