@@ -18,10 +18,10 @@
 | 10 | hy-AM Armenian | ✅ (lw-2) | ✅ batch 7 — **needs native/legal check** | `_legal-translations.cjs hy-AM` 3/3 ✓; `legal-languages-1` /am/privacy, /am/terms, /am/country-terms ✓ | 3f5c1a28 |
 | 11 | mn-MN Mongolian | ✅ (lw-2) | ✅ batch 8 — **needs native/legal check** | `_legal-translations.cjs mn-MN` 3/3 ✓; `legal-languages-1` /mn/privacy, /mn/terms, /mn/country-terms ✓ | 2c30808f |
 | 12 | ne-NP Nepali | ✅ (lw-2) | ✅ batch 12 — **needs native/legal check** | `_legal-translations.cjs ne-NP` 3/3 ✓; `legal-languages-1` /np/privacy, /np/terms, /np/country-terms ✓ | 5f1b9944 |
-| 13 | fil-PH Filipino | 9 of 9 parts + consistency pass translated (handover kit, 579195f2) — **install waiting**: another session has uncommitted changes to messages/en-GB.json | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 579195f2 |
-| 14 | sq-AL Albanian | 9 of 9 parts + consistency pass translated (handover kit, 40b2cd16) — **install waiting** (same reason) | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 40b2cd16 |
-| 15 | bs-BA Bosnian | 9 of 9 parts + consistency pass translated (handover kit, 92d567c4) — **install waiting** (same reason) | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 92d567c4 |
-| 16 | mk-MK Macedonian | 9 of 9 parts + consistency pass translated (handover kit, d1214c77) — **install waiting** (same reason) | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | d1214c77 |
+| 13 | fil-PH Filipino | ✅ installed a39d2108 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — next (batch 14) | check-part 9/9 STRUCTURAL 0; check-fix 0 | 579195f2 |
+| 14 | sq-AL Albanian | ✅ installed 1669f709 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 40b2cd16 |
+| 15 | bs-BA Bosnian | ✅ installed 53d04eb9 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 92d567c4 |
+| 16 | mk-MK Macedonian | ✅ installed 0e592f0c (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | d1214c77 |
 | 17 | ca-AD Catalan (Andorra) | — | — | | |
 | 18 | sw-TZ Swahili | — | — | | |
 | 19 | si-LK Sinhala | — | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **12 of 23 languages done (36 of 69 pages).** UI: 12 of 23 installed; fil-PH, sq-AL, bs-BA and mk-MK translated, waiting to install (installing would commit Filipino/Albanian keys for English that is not committed yet, and regenerated files holding another session's work). Paused 17 Nov evening at Dominic's request after mk-MK; next: install the four once messages/en-GB.json is committed (top up any English changed since), then ca-AD.
+Legal pages: **12 of 23 languages done (36 of 69 pages).** UI: 16 of 23 installed (fil-PH, sq-AL, bs-BA, mk-MK on 18 Nov). Next: fil-PH legal, then sq-AL/bs-BA/mk-MK legal, then ca-AD onwards.
 
 ## Batch order
 
@@ -251,4 +251,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 13 is the fil-PH UI (parts 04–09, consistency pass, install, LPROJ). Runs continue automatically back to back, with no waits.
+Batch 14 is the fil-PH legal pages, then sq-AL, bs-BA and mk-MK legal. Runs continue automatically back to back, with no waits.nsistency pass, install, LPROJ). Runs continue automatically back to back, with no waits.
