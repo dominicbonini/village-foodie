@@ -475,3 +475,9 @@
 - Plan price Free "Bila malipo" (extras/menu items keep "Bure"); "Hamia/Chagua kifurushi {plan}"; loyalty "wateja wa kudumu"; "Sera ya Faragha"; post text "Maandishi ya chapisho"; QR "Skani".
 - Part 03 reviewed: Starters/Mains "Vitangulizi"/"Vyakula vikuu", "Achia menyu yako hapa", inbox "kikasha", "Mwonekano".
 - Check: private-hire chip "Kukodi food truck kwa shughuli" (long), "Skani" vs "Changanua", extras "Bure" vs plan "Bila malipo".
+
+## ta-LK part 01 (languages-world-3, 18 Nov 2026)
+- Sri Lankan Tamil: இரத்து (cancel), மீளளிப்பு (refund — do customers understand it?), அறவிடப்படவில்லை, திகதி, வழமையான, தெரிவு, மேலதிக, பற்றுச்சீட்டு, தொலைபேசி இலக்கம், செம்மஞ்சள்.
+- ALLERGENS (check first): peanut "கச்சான் (நிலக்கடலை)", cashew "கஜு (முந்திரி)", yam "வள்ளிக்கிழங்கு (yam)" (must not mean taro/sweet potato), mackerel "கானாங்கெளுத்தி (mackerel)", crustaceans "ஓட்டுமீன்கள் (crustaceans)", sulphites "சல்பைற்றுகள் (sulphites)".
+- tip அன்பளிப்பு (alt. டிப்ஸ்); buzzer அழைப்புக் கருவி (coined); service விற்பனை அமர்வு; Manage “நிர்வாகம்”; "{amount} செலுத்தவும்" without ரூ.; e.g. "உ-ம்:".
+- Truck settings "வாகன அமைப்புகள்", Truck details "food truck விவரங்கள்", poster CANCELLED இரத்துச் செய்யப்பட்டது, TBC “அறிவிக்கப்படும்”. Glossary flags = vowel-sign false positives.
