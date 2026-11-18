@@ -127,6 +127,9 @@ function markRules(m) {
   let restored = 0, current = 0
   for (const f of files2) {
     const loc = f.slice(0, -5)
+    // languages-world-3 (18 Nov 2026): a language created after this change's commit is not in it — it is checked by name in the
+    // languages-world-2 section below (LW2_TO_COME), not here.
+    if (!at(MSG_AFTER, `messages/${f}`)) continue
     const now = flat(at(MSG_AFTER, `messages/${f}`)); const was = at(MSG_BASE, `messages/${f}`); const before = was ? flat(was) : null
     const old = at(PC1_BASE, `messages/${f}`), oldF = old ? flat(old) : null
     const carries = NEW.some(([, k]) => now[k] !== undefined)
@@ -165,6 +168,7 @@ function markRules(m) {
   for (const f of fs.readdirSync(path.join(REPO, 'docs/i18n/back')).filter(x => /^[a-z]{2}-[A-Z]{2}\.json$/.test(x))) {
     const loc = f.slice(0, -5)
     const b = at(MSG_AFTER, `docs/i18n/back/${f}`), bb = at(MSG_BASE, `docs/i18n/back/${f}`), ob = at(PC1_BASE, `docs/i18n/back/${f}`)
+    if (!b) continue   // languages-world-3: created after this change's commit (checked by name below)
     if (!NEW.some(([, k]) => b[k] !== undefined)) continue
     if (bb) {
       const moved = Object.keys({ ...b, ...bb }).filter(k => b[k] !== bb[k])
@@ -177,7 +181,9 @@ function markRules(m) {
 
   head('2 · languages-world-2 — the 12 committed and the 11 still to come (each by name)')
   for (const loc of [...LW2_DONE, ...LW2_TO_COME]) {
-    const m = at(MSG_AFTER, `messages/${loc}.json`)
+    // languages-world-3 (18 Nov 2026): the 11 still to come are read from the working tree — they never exist at this change's commit,
+    // so reading them there skipped them for good.
+    const m = LW2_TO_COME.includes(loc) ? at('TREE', `messages/${loc}.json`) : at(MSG_AFTER, `messages/${loc}.json`)
     if (!m) { t(`${loc}: still to come — must be a committed language already`, LW2_TO_COME.includes(loc)); console.log(`  · ${loc}: not written yet — this check fails by name if it arrives without the asterisk and footnote rules`); continue }
     const fm = flat(m)
     const missing = NEW_KEYS.filter(k => typeof fm[k] !== 'string')
