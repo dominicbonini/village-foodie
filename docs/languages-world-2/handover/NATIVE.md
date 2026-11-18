@@ -375,3 +375,8 @@
 - Upsells "Suggeriments"; Custom extras "Extres personalitzats"; option types "afegeix"/"treu"; Private hire chip "Lloguer privat" (not the locked "food truck per a esdeveniments").
 - Kids Menu "Per als més petits" (menú = meal deal); Specials "Fora de carta"; table cards "targetons de taula"; weekly poster "cartell setmanal" — confirm.
 - Samples: Hamburgueses Cal Pere, La Cuina del Poble, tu@elteufoodtruck.ad.
+
+## ca-AD part 04 (languages-world-3, 18 Nov 2026)
+- Post boxes (from DesignEditor.tsx): Place «Lloc», Venue «Nom del lloc», Area «Zona», Time «Hora», box "quadre"; poster CANCELLED "CANCEL·LAT"; wp_last_toggle names «Lloc» (o «Nom del lloc») o «Hora».
+- WhatsApp button quoted «Configura» (later parts must match); Canva "Comparteix › Baixa" — confirm.
+- Check: "encarregats / personal", caption "text de la publicació", Free from "Sense", "A la cuina també es manipula"; samples elteufoodtruck.ad/esdeveniments, @festamajordelpoble.
