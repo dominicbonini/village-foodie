@@ -70,7 +70,7 @@
   "payment_not_reversed": "Hindi ma-reverse ang bayad",
   "event_not_approved": "Hindi pa approved ang event na ito",
   "event_not_open": "{status, select, closed {Tapos na ang event na ito. Simulan ulit ito para tumanggap ng order.} cancelled {Na-cancel ang event na ito.} other {Hindi bukas ang event na ito.}}",
-  "sign_in_to_create": "Mag-sign in bilang team member para gumawa ng event.",
+  "sign_in_to_create": "Mag-log in bilang team member para gumawa ng event.",
   "event_details_invalid": "{reason, select, name {Ilagay ang pangalan ng event} times {Ilagay ang start at end time} end {Dapat mas huli ang end time kaysa sa start time} van {Pumili ng van} date {Para sa araw na ito lang ang mga event na ginagawa rito} other {I-check ang details ng event}}",
   "event_overlaps": "Nagsasapawan ito sa isa pang event ngayong araw."
 }

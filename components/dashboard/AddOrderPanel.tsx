@@ -159,8 +159,8 @@ interface AddOrderPanelProps {
   /** events-overlap-2: an UNAPPROVED event was tapped in the picker, or the server refused a walk-up because its event
    *  is not approved. The dashboard opens its approve dialog; the panel never selects an unapproved event itself. */
   onRequestApprove?: (eventId: string) => void
-  /** events-create-2: "Create event now" — in the picker (top or bottom, per the dashboard) and beside "Select event" in
-   *  the no-event box. Absent → no create button (a demo). The label and disabled note come from the dashboard. */
+  /** events-create-2: "Create event now" — in the picker only (top or bottom, per the dashboard; events-create-4 took it
+   *  out of the no-event box). Absent → no create button (a demo). The label and disabled note come from the dashboard. */
   createEvent?: { position: 'top' | 'bottom'; label: string; disabled?: boolean; note?: string | null; onClick: () => void } | null
   /** EVENT-SWITCH GATE (Option A): offline, only events whose data was loaded this session are switchable.
    *  isOffline false / isEventLoaded absent → no gating (online = every event switchable as today). */
@@ -2621,10 +2621,10 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
   // ── events-overlap-2: ON A PHONE THE EVENT CARD BELOW IS `hidden sm:block`, so a phone showed NO event at all on this
   // tab (docs/events-overlap-1-report.md §3c). One compact line, phones only (`sm:hidden`): the selected event's name and
   // times. Tapping it opens the picker, like the card's Change button.
-  // events-create-2: the no-event box (Select event / Create event now), shared with the Orders tab.
+  // events-create-2: the no-event box, shared with the Orders tab. events-create-4: "Select event" only — "Create event
+  // now" is in the picker alone.
   const noEventBox = (
-    <NoEventBox message={t('noEventSelected')} selectLabel={t('selectEvent')} onSelect={openEventPicker}
-      createLabel={createEvent?.label} onCreate={createEvent?.onClick} createDisabled={!!createEvent?.disabled} createNote={createEvent?.note ?? null} />
+    <NoEventBox message={t('noEventSelected')} selectLabel={t('selectEvent')} onSelect={openEventPicker} />
   )
   const phoneEventLine = manualEvent ? (
     <button type="button" onClick={openEventPicker} data-phone-event-line

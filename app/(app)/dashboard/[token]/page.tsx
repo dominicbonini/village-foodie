@@ -2982,6 +2982,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Who: a signed-in member (the server refuses token-only callers; `userRole` is null for them, so the button is shown
   // disabled with the reason). Where (D6): at the TOP of the event list when nothing approved is on today, else the
   // bottom. Online only (D5). After creating: the event is added to the lists, SELECTED, and the toast says so.
+  // events-create-4 (18 November 2026): ONLY inside the Select event list — no longer in the dark event bar or the amber
+  // "no event" boxes on Orders and Add order, which show "Select event" only.
   const approvedOnToday=upcomingEvents.some(e=>(e.status==='confirmed'||e.status==='open')&&eventDates(e.event_date,e.start_time,e.end_time).includes(getLocalDateInTz(dashTz)))
   const canCreateEvent=!!userRole
   const createEventAction=isDemo?null:{
@@ -4429,14 +4431,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   className="text-xs text-slate-400 hover:text-white flex-shrink-0 px-2 py-1 rounded border border-slate-600 hover:border-slate-400 transition-colors">
                   {tDash('eventBar.selectEvent')}
                 </button>
-                {/* events-create-2: "Create event now" beside it from tablet width up — on a phone the amber box just below
-                    carries it (three items do not fit a 320px bar). Disabled with its reason as the tooltip; the box says it. */}
-                {createEventAction&&(
-                  <button onClick={createEventAction.onClick} disabled={createEventAction.disabled} title={createEventAction.note??undefined} data-create-event-bar
-                    className="hidden sm:inline-block text-xs font-semibold text-white bg-orange-600 hover:bg-orange-700 flex-shrink-0 px-2.5 py-1 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    {createEventAction.label}
-                  </button>
-                )}
               </>
             )}
           </div>
@@ -4538,15 +4532,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               // is EMPTY (that is why there is no active event), so it is a button that opens nothing.
               // `demoEndedCard` is null for an operator truck, so Gusto keeps the amber panel verbatim.
               demoEndedCard??(
-              // events-create-2: the shared box — "Select event" and "Create event now" (also in the "Approve an event to take orders" state).
+              // events-create-2: the shared box. events-create-4: "Select event" only — "Create event now" lives in the Select event list.
               <NoEventBox
                 message={approveToTakeOrders?tDash('eventBar.approveToTakeOrders'):tDash('orders.noEvent')}
                 selectLabel={tDash('eventBar.selectEvent')}
                 onSelect={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
-                createLabel={createEventAction?.label}
-                onCreate={createEventAction?.onClick}
-                createDisabled={!!createEventAction?.disabled}
-                createNote={createEventAction?.note??null}
               />
               )
             ):(
