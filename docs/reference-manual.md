@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.32
+HatchGrab Engineering Reference Manual · V16.33
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.32**
+**Version 16.33**
 
 November 2026
 
@@ -98,17 +98,24 @@ emulator could not create its data partition and the script waited forever for a
   - **Not covered:** the scrapers (`.js`), `.mjs` tools, and `scripts/screenshots/{anz,ie,us}-screens.cjs`, whose output folder
     defaults to temp (pass an output folder).
 
-# Open items (V16.28, 16 November 2026) — THE ONLY CURRENT LIST
+# Open items (V16.33, 18 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
 
 **Releases (in this order):**
-1. 🔴 **Deploy the website BEFORE releasing either app 1.1** (Dominic's order, 16 Nov). 22 local commits aren't pushed
+1. ~~🔴 **Deploy the website BEFORE releasing either app 1.1** (Dominic's order, 16 Nov). 22 local commits aren't pushed
    (origin/main = `43d563c5`, 13 Nov). They include allergen-kitchen-1, allergen-screens-1, capacity-one-source-1/-2,
    app-fixes-1/-2 (the Paramètres crash fix, "Log in", the in-app link guard, Access denied's "Back to log in"), gusto-move-1's
    record, and the web side of Capacitor 8.6.2 (`@capacitor/core`, in the website bundle). order-page-2 is already pushed; check it is
-   live after the deploy. The deploy also brings the bare-host hand-off, so customer links open the phone's browser on Android.
+   live after the deploy. The deploy also brings the bare-host hand-off, so customer links open the phone's browser on Android.~~
+   ⛔ **Done V16.33:** the 13 Nov batch was pushed (origin/main `c0192554`, 17 Nov) and deployed by Dominic.
+   🔴 **Deploy the website (V16.33 batch) BEFORE releasing either app 1.1.** 93 local commits since `c0192554` (observed
+   18 Nov): the events work, Create event now, the WhatsApp fix, dashboard sign-in groundwork, pricing-copy-4, legal-languages-1
+   and the languages-world-3 commits (83 of the 93). admin-speed-1, trial-column-1 and partners-2/3 are already in origin/main.
+   **First** check the Supabase session settings (see Dashboard sign-in). **After:** on test-truck check the default event, the
+   date-grouped list, Create event now and a walk-up; on the installed store apps check printing, keep-awake and an iPad walk-up;
+   watch (never test) Pizzeria Gusto's next service.
 2. **iOS 1.1:** archive build 4 (build 3 is already in App Store Connect), the TestFlight check on a real iPhone and iPad, then
    Submit for Review. Steps under "Releasing the 1.1 apps" below.
 3. **Android 1.1:** upload the AAB to internal testing, do the on-phone checks (printing, biometric unlock, push; R8 is the
@@ -134,13 +141,16 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
    - **kk, uz, az, ka, hy, mn, hi, bn, ur, ne:** the term lists in languages-world-2 §8 (e.g. ka Reports / Billing / account,
      ფუდტრაკი; hy Approve vs Confirm; hi «बिलिंग», «रई»).
    - **lv, hr, sl, hu, de:** the billing words (billing-2 §0.10, billing-3 §6). **sl:** plurals (pricing-copy-2 §2).
+   - **V16.33:** fil-PH's Philippine permit names for "Trading licence" / "Street trading licence"; ne-NP's log-in word; all four
+     new languages' legal pages (`docs/languages-world-2/handover/NATIVE.md`).
 7. **Le Roi du Churrasco fixes their allergens by hand:** their 11 dishes were confirmed with all 14 allergens ticked
    (demo-claim-2) and need the truck's own look. Not something an agent edits.
 8. **The country-specific terms sections** for the 47 languages-world-1 countries and the 167 new ones (a lawyer).
 
 **Investigations and defects:**
-9. 🔴 **gusto-move-1's root cause, NOT YET INVESTIGATED:** why the scraper created an unapproved "unconfirmed" event alongside
-   Pizzeria Gusto's live one on 13 Nov (23 orders went to the duplicate; moved by `20261102`). Read-only investigation first.
+9. ~~🔴 **gusto-move-1's root cause, NOT YET INVESTIGATED:** why the scraper created an unapproved "unconfirmed" event alongside
+   Pizzeria Gusto's live one on 13 Nov (23 orders went to the duplicate; moved by `20261102`). Read-only investigation first.~~
+   ✅ **Investigated and fixed V16.33** (events-overlap-1 to -8): see the Events section. Scraper suppression deliberately not done.
 10. 🔴 **Kitchen tickets print non-Latin scripts as "?"** (`lib/printing/ticket.ts` `encodeEscPos` sends ASCII and "£" only).
     Greek, Bulgarian, Japanese, Chinese, Thai, Arabic and Hebrew are live and affected; Latin scripts lose accents. Needs a raster
     ticket path or printer code pages (Dominic's decision) before more countries in those scripts switch on.
@@ -148,12 +158,19 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     up to W minutes early.
 12. **The five failing harnesses** (paperwork-1, legal-languages-1, world-countries-3, contact-1, tidy-1): translated legal files
     missing (e.g. `content/legal/ru-KZ/privacy-policy.md`). They close with languages-world-2's legal pages (item 14).
+    **Also failing, identically on HEAD (V16.33):** `billing-1`, `france-1`, `language-phase-1d2`, `costs-accounts-1`, `cwv-2` (1,
+    path freeze), `event-types-render` (measurement), `subtab-row` (fixture crash). A tidy-up prompt after the V16.33 deploy.
+    `app-fixes-2` now passes (55/0); `time-dates-parity` passes.
 13. 🔴 **Rotate `FCM_SERVICE_ACCOUNT_JSON` and `GOOGLE_SHEETS_CREDENTIALS`** (the standing secrets rule at the top). It is still
     recorded as open; Dominic confirms or strikes it.
 
 **Unfinished build work:**
-14. **Resume languages-world-2:** 11 languages (sq-AL, mk-MK, bs-BA, ca-AD, si-LK, ta-LK, km-KH, lo-LA, fil-PH, sw-TZ, am-ET),
-    the legal pages for all 23, 14 store listings, the 11 allergen-guard lists not yet installed, pricing-copy-4's 5 keys.
+14. ~~**Resume languages-world-2:** 11 languages (sq-AL, mk-MK, bs-BA, ca-AD, si-LK, ta-LK, km-KH, lo-LA, fil-PH, sw-TZ, am-ET),
+    the legal pages for all 23, 14 store listings, the 11 allergen-guard lists not yet installed, pricing-copy-4's 5 keys.~~
+    ⛔ **V16.33: now languages-world-3**, running slowly in the background (at most 5 batches a day, 60-minute gaps). Done:
+    fil-PH, sq-AL, bs-BA, mk-MK (UI installed + legal pages); ca-AD UI installed and its legal pages done (batch 19, progress table
+    observed 18 Nov). Left: sw-TZ, si-LK, ta-LK, km-KH, lo-LA, am-ET. Progress table at the top of
+    `docs/languages-world-3-report.md`.
 15. **Billing switch-on** (§89.1), in order, with the Stripe Dashboard hand steps: Pix (test, then live); customer emails OFF; the
     billing webhook with its event list and secret in Vercel; Checkout branding; Wise EUR/USD payout accounts. Plus 🔴 **lock the
     account 7 days after the pause** (billing-2 §1).
@@ -176,6 +193,20 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     `docs/partners-3-report.md` §0). Native-speaker read of fr nl de es it sv still advisable before the first real send.
 26. 🔴 **The offer is not decided: every partner shows "Needs offer".** Create each partner's code (deal + commission) by hand in
     its drawer. Nothing is queued or sent until then. (The 13 site addresses: ⛔ done V16.32, site address primary.)
+
+**Added V16.33 (events, dashboard sign-in, languages):**
+27. 🔴 **Dashboard sign-in, next steps** (rollout steps 2–8 in "Dashboard sign-in"). **Around 2 Dec:** read the `auth_shadow` counts.
+28. **Supabase session settings** (time-box, inactivity) must be OFF — check before the V16.33 deploy.
+29. **Decision: the comparison pages' Germany-only content** (Uber Eats DE rates, Lieferando, TSE) in non-German languages'
+    comparison pages. Recommendation: leave those sections out for countries without their own comparison check.
+30. **Decision: "per food truck" vs "per vehicle"** — sq-AL follows the English ("per food truck"); bs-BA and mk-MK say "per
+    vehicle". Recommendation: all languages follow the English; change the English first if "per vehicle" is wanted.
+31. **Delete-account screen names UK law** in every language: kept (HatchGrab Ltd is a UK company); the legal check may add local
+    wording.
+32. **`/api/menu` with two events on one date** (no `event_id`): which one a visitor gets is unspecified (existing; found in
+    events-create-1).
+33. **The KDS doesn't follow a newly created or switched event**; staff switch it (the toast says so). Improve later if it bites.
+34. **Walk-up-only events** (events-create-1 D3 b) — only if trucks ask.
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -293,7 +324,174 @@ live, but customer links only reach the phone's browser on Android after the dep
 
 **Re-pins:** `scripts/_named-partners-2.cjs` holds the exact undo of partners-2's edits (proxy, signup route and page, demo, admin row) and the code field's structural proof, for the byte-identity harnesses.
 
+# Events: approved only, duplicates and Create event now (V16.33)
+
+**Event statuses:** `unconfirmed` (needs approval) · `confirmed` (approved) · `open` (started / live) · `closed` (finished) ·
+`cancelled`. Customers only ever see `confirmed` and `open` (`/api/events`, `/api/menu`, embed, discovery, and since V16.33
+WhatsApp).
+
+### The dashboard's default event
+- Order: an `open` event current by time → a `confirmed` event current or next → **nothing**. **Never an unconfirmed event.**
+  `lib/time-utils.ts` `pickDefaultEventByTime` stays pure; the status-aware wrapper the dashboard uses is
+  `lib/event-default.ts` `pickDashboardDefaultEvent`. Every auto-open path also refuses unconfirmed events.
+- With nothing approved, the bar and the amber boxes show "No event selected" with **Select event** only. When today's only
+  events are unapproved they say "Approve an event to take orders" instead, still with **Select event** only.
+
+### The Select event list (`components/shared/EventPickerPanel.tsx`)
+- **Summary box** (only when something is unapproved): "⚠ {n} events need approval" / "Customers can't see them yet." (plurals).
+- **Grouped by date:** "TODAY · TUE 17 NOV", "TOMORROW · …", then dates; each heading shows "{n} events" on the right
+  (duplicates counted). Within a date, by start time. Cards show the time range as the main line, then the venue.
+- **Every event is its own card**, 8 px apart. Approved cards: green "✓ Approved" badge beside the status badge (Not started /
+  Live / Finished); on narrow phones the badges move under the time rather than shrinking.
+- **Order count** on every card: online + walk-up, cancelled excluded. Solid orange pill ("3 orders", "1 order"); grey
+  "No orders".
+- **Duplicates:** an unconfirmed event that overlaps an approved/started one (`lib/event-conflicts.ts` `detectEventConflicts`;
+  if several, the one with the most orders) is attached **under** it: indented ~22 px, amber border and background, joined by
+  an amber connector, labelled "↑ Possible duplicate · same time" (or "· overlaps"), with a solid amber "Needs approval" badge
+  instead of a status. An order pill only if it has orders.
+- **Unapproved with no approved overlap:** a normal card with a 4 px amber left edge and the "Needs approval" badge.
+- Approved events that overlap each other are simply listed side by side (staff approved both on purpose).
+- **"Create event now" lives ONLY here:** at the top when nothing approved is on today, otherwise at the bottom above Done.
+  Not in the event bar, the amber boxes or the Orders tab (Dominic, 18 Nov).
+- **Scrolling:** the title, summary and a top Create button stay fixed; the list scrolls; Done (and a bottom Create button)
+  stay fixed. Tested with 30+ events across 10+ dates, at 390 px and 320 px.
+
+### The questions (each asked at most once per event)
+- **Tapping an unapproved event that overlaps:** "Approve {event}?" / "{event} is a possible duplicate of {other}
+  ({start}–{end}), which is already approved and has {n} orders." (no order clause when 0) · **Keep {other}** (main) /
+  **Approve {event} anyway**. "Keep" sets `truck_events.overlap_dismissed_at`; the overlap question never shows again on any
+  device.
+- **After Keep:** "Approve {event}?" / "{event} is a possible duplicate of {other}, which is already approved. Approve it to
+  take orders? Customers will see it too." · Approve / Cancel.
+- **No overlap:** "{event} isn't approved yet. Approve it to take orders? Customers will see it too." · Approve / Cancel.
+- **Start (only if never started):** "Start this event?" / "{event}" / "{day} · {start}–{end} · {n} orders so far" ·
+  Start event / Cancel. Restarting a finished event asks nothing. After Start: business as usual, no prompts.
+- **Switching away from the started event:** "Switch to {event}?" · Switch / Cancel. No prompt when nothing is started.
+- **Phones:** one compact 📍 line with the selected event's name and times at the top of Add order (it was hidden).
+
+### Server rules
+- **Walk-ups** (`app/api/dashboard/action` 'manual'): allowed on `confirmed`, `open` and `closed` (late customers after Finish,
+  as before); refused on `unconfirmed` / `cancelled` with "This event isn't approved" (the dashboard opens the approve question).
+- **Offline replay:** an order queued for an unapproved event goes to the approved/started event overlapping it (most orders);
+  if none, it stays queued with "This event isn't approved". Nothing is dropped silently.
+- **`/api/events/action`:** 'open' and 'close' return an error naming the event's current status instead of a silent ok.
+- **Customer submit** (`app/api/orders/submit/route.ts`): uses the event the customer ordered from if `confirmed` / `open`; if
+  ambiguous, the `open` one, then the `confirmed` one with most orders; never `unconfirmed` / `cancelled`; refuses (existing
+  message) only when no approved event matches.
+- **WhatsApp** (`lib/whatsapp/upcoming-events.ts`): confirmed and open only; the `[UNCONFIRMED]` label is gone.
+
+### Create event now (`components/shared/CreateEventSheet.tsx`, action `create_event_now`)
+- **Who:** signed-in members of the truck only (owner, manager, staff, admin). Token-only callers are refused. Disabled with
+  "Log in as a team member to create an event." when not signed in, and "Connect to the internet to create an event." offline.
+- **Form:** "Where are you trading?" — up to six places from `truck_places` (favourites, then most recent) + "Somewhere else".
+  **Always visible and required:** Event name, Starts, Ends (prefilled: start = now rounded down to the quarter hour; end = the
+  place's last end if later, else start + 3 h). "Which van?" only on multi-van trucks, then required. "Add town or postcode"
+  optional, collapsed. Note: "Customers will see this event and can order online." Buttons: **Create and start** / Cancel.
+- **Stored:** status `open`, `confirmed_at` and `opened_at` = now, `auto_open` false, `auto_close` per the truck (default true),
+  `source = 'dashboard'`. A typed new venue also creates a Places row. Public with online ordering (no walk-up-only mode).
+- **Overlap on create:** approved/started → "Already trading at {other}?" / "{other} is on today, {start}–{end}." · **Use
+  {other}** / Create anyway. Unapproved → "Approve {event} instead?" / "{event} is waiting for approval, {start}–{end}." ·
+  **Approve {event}** / Create new event.
+- **After:** toast "Event created and started" + "Switch the kitchen screen to this event too." (the KDS chooses its event
+  once and doesn't follow). The event is selected.
+- **One create path:** `lib/events/create-event.ts` (place resolution, deal seeding, order-ready seeding, slot rebuild) is used by
+  Manage › Schedule too, with Manage's behaviour unchanged. The dead dashboard `update_event` insert branch was replaced.
+
+### Deliberately NOT done
+- **No scraper suppression** of duplicates (Dominic, 17 Nov: "marking as potential duplicate is enough for now").
+- **No walk-up-only events** (needs a column and ~6 customer reads; later if trucks ask).
+- **Offline create** (queueing the create and its orders) — later if needed.
+
+### Wording rule (restated)
+Staff-facing words say **"Log in"**, never "Sign in" (`scripts/app-fixes-2.cjs` enforces it). Nepali keeps its own log-in word,
+which matches its own log-in button.
+
+# Dashboard sign-in (V16.33)
+
+### Dominic's rule (18 Nov 2026)
+**Only signed-in team members may view the dashboard or change anything.** A signed-in device stays signed in until someone signs
+out; staff must never be signed out or asked to log in again mid-service (e.g. to refund). Face ID / Touch ID app lock is
+enough protection. Kitchen screens must be signed in too. Customers never sign in.
+
+### Where it stands (V16.33: groundwork only, nothing refused)
+- **Every staff write carries its sign-in:** `lib/native/staffFetch.ts` adds the session at send time (cookie on the web,
+  `nativeAuthHeader()` in the app); `lib/native/orderGate.ts` `post()` adds it at SEND time, so offline replays carry the session
+  current when they send. No session → sent as before.
+- **Log-only "would refuse" record:** `lib/auth/require-member.ts`
+  `requireMember(req, supabase, truck, action, { route, group, actor?, replay?, mode? })`, mode `'log'` everywhere (one
+  constant per group, `AUTH_MODE`). Each would-refuse write adds one `action_audit_log` row `action = 'auth_shadow:<action>'`
+  with truck, route, caller kind (member / admin / foreign operator / KDS / token-only / unresolved / demo) and client (web /
+  app / KDS). No token, PIN or customer data. Board reads without a member: at most one row per truck, caller kind and client
+  per hour, with the reads skipped since the last row counted in `reads_suppressed_before` (and `suppressed_since`). Exempt and
+  unlogged: `/api/heartbeat`, demo trucks.
+- **Sign out ends this device only** (`signOut({ scope: 'local' })`, `lib/native/signOut.ts`, `lib/native/session.ts`; the app
+  also removes its stored session if the server call fails). **Password reset signs out everywhere** (`scope: 'global'`).
+  **Email change** keeps its screens and words ("Signing you out…") but signs out only the confirming device.
+- **Sessions:** access token 1 h, refreshed automatically; nothing in the code signs a device out on a timer; a failed silent
+  refresh is retried before the "Your login needs attention" banner and its "Log in again" link; log-in links keep `next` so
+  staff return to the same page.
+- **Check before deploy:** the hosted Supabase project's session settings — time-boxed sessions and inactivity timeout must be
+  OFF, or devices are signed out on a schedule whatever the code does.
+
+### What the review found (dashboard-auth-1)
+- In the 60 days to 18 Nov, all 69 token-only dashboard writes were on 5 demo trucks; every real-truck write was signed in.
+  No real truck has a staff account (one has a manager); kitchens share the owner's sign-in.
+- Before V16.33 the app and `/kds/<kds_token>` sent no sign-in on any write; enforcing then would have refused their walk-ups and
+  dead-lettered queued offline orders after 5 tries.
+- **Risks still open (see Open items):** `refund`, `/api/event-types` writes, `/api/weekly-post` writes,
+  `/api/manage/whatsapp-signup` and the AI process routes work with the link alone; `/kds/<kds_token>` renders the full
+  dashboard token; a signed-in operator of another truck is refused reads but not writes; tokens and the PIN travel in URLs;
+  the offline queue stores token and PIN in plain text; the PIN compare isn't constant-time; the audit log covers only payment
+  actions.
+
+### Decisions (dashboard-auth-1 §6, adjusted by Dominic 18 Nov)
+D1 (iii) eventually — all writes and the board read need a member · D2 (i) — kitchen screens signed in like the dashboard; the
+KDS link must stop exposing the dashboard token · D3 (ii) — shadow rows in `action_audit_log` · D4 (ii) — board read needs a
+member · D5 (i) — a shared owner sign-in on kitchen devices is accepted for now · D6 (iii) — retire the PIN once enforced ·
+D7 (ii) — after "Reset dashboard link", the old token works 24 h for queued replays only.
+
+### Rollout (remaining steps)
+1. Deploy V16.33; leave ~2 weeks of real service. 2. Read the shadow counts (SQL in `docs/dashboard-auth-2-report.md`).
+3. Get kitchen screens signed in (warn the trucks the counts show); stop `/kds/<kds_token>` exposing the dashboard token.
+4. The offline queue treats `sign_in_required` as **held** (banner asks to log in), never failed. 5. Enforce group 1: event
+actions, `refund`, the Manage-level token routes. 6. After two clean weeks, group 2: orders, payments, stock, settings, and the
+board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings (owner only; needs a mockup first).
+
 # Changelog
+
+## V16.33 — 17–18 November 2026 — **EVENTS: APPROVED ONLY, DUPLICATES UNDER THEIR EVENT, CREATE EVENT NOW; EVERY STAFF WRITE CARRIES ITS SIGN-IN**
+
+The trigger: on 13 Nov Pizzeria Gusto had two events at once (the scraper's unapproved duplicate sat in "Needs approval" from
+9 to 13 Nov), and staff took walk-ups on the unapproved one. All committed locally, **not pushed** (origin/main = `c0192554`,
+17 Nov 09:18).
+
+- **events-overlap-1 (review):** root cause found (gusto-move-1's open item). The scraper's inbound-schedule step matches a
+  stop by venue only, never by time; `pickDefaultEventByTime` ignored status; the walk-up path (`manual`) and the offline replay
+  never checked status; `/api/events/action` 'open' / 'close' returned ok when nothing matched.
+- **events-overlap-2 to -6** (`cf8ff324` migration `truck_events.overlap_dismissed_at`, then `3ecdbb35`): the dashboard uses
+  approved events only; one-time approve/overlap and Start questions; server refusals; the Select event list grouped by date
+  with each duplicate attached under its approved event. Customer submit hardened (never attaches to an unconfirmed event).
+- **events-overlap-8** (`5a15ada8`): green "✓ Approved" badge beside the status on approved cards.
+- **events-create-1 (review) → -2** (`d3811624`): "Create event now" — signed-in members create an approved, started, public
+  event on the spot, through the same helper Manage uses.
+- **whatsapp-approved-only-1** (`1e398b2e`): WhatsApp auto-replies only mention confirmed and open events (4 unapproved future
+  events on 1 truck would have been quoted).
+- **events-create-3** (`53573efb`): `time-dates-parity` re-pinned (the phone 📍 line, "EO2"; the approved-only default checked
+  at every boundary moment, "DEF"); 0 failures.
+- **dashboard-auth-1 (review) → -2/-3** (`9198f4a0`): every dashboard / Add order / KDS write sends its sign-in (live and
+  offline replay); a log-only "would refuse" record (`auth_shadow:*`); Sign out ends only this device.
+- **events-create-4** (`e3c02790`): "Create event now" only inside the Select event list; the wording "Log in as a team member to
+  create an event." (the "Log in, never Sign in" rule; app-fixes-2 55/0).
+- **Test data:** 10 events / 13 orders on test-truck created for the click-through and deleted (exact ids, approved by Dominic).
+- **Languages (languages-world-3, background):** fil-PH, sq-AL, bs-BA, mk-MK UI installed and legal pages done; ca-AD UI
+  installed and, by 18 Nov, its legal pages done too (batch 19). Paused in the evening of 17 Nov at 85% weekly usage; resumed
+  18 Nov.
+- **Brand:** the light-background logo is `public/logos/hatchgrab-wordmark.svg` (supplied to the landing-page designer 18 Nov).
+- **Verified 18 November 2026 (read-only):** `git log` holds `cf8ff324`, `3ecdbb35`, `5a15ada8`, `d3811624`, `1e398b2e`,
+  `53573efb`, `9198f4a0`, `e3c02790`; origin/main is `c0192554` (17 Nov 09:18) with **93** local commits ahead (83 of them
+  languages-world-3); `lib/auth/require-member.ts`, `lib/native/staffFetch.ts`, `lib/events/create-event.ts`,
+  `components/shared/CreateEventSheet.tsx` and `components/shared/EventPickerPanel.tsx` exist;
+  `truck_events.overlap_dismissed_at` is `timestamp with time zone`, nullable (information_schema).
 
 ## V16.32 — 16 November 2026 — **THE PARTNER OFFER: NOTHING DEFAULTED, CODES BY HAND, DECISION A, TEMPLATES**
 
@@ -6827,6 +7025,7 @@ pattern.**
   a **UTC** date, and a status-keyed chain. **Nothing carried the event between them** — `openKDS`
   passed `van_id` and `van_name` and no event, **proving the handoff mechanism already existed and had
   simply never been used for events.** §11.
+  ⛔ **Superseded V16.33** — the dashboard defaults to approved events only and never to an unconfirmed one (`pickDashboardDefaultEvent`); see "Events: approved only, duplicates and Create event now".
 - 🔴 **THE TRAP, AND IT IS THE REASON THIS NEEDED CARE: the KDS did not auto-advance ONLY because it
   could not see tomorrow.** That was an accident, not a design — widening its candidate set to fix the
   divergence would have **removed the very thing producing the wanted behaviour.** 🔴 **THE SHAPE IS
@@ -9075,6 +9274,7 @@ Pre-trial polish-and-plumbing session. Establishes the shared operator header an
 - **Dashboard event bar** — a slim bar below the tabs (Orders and Add Order tabs only) showing venue, times, status, Change, and a ··· menu. Bi-directional event sync with the Add Order panel via controlledEvent / onEventChange.
 
 - **Auto-event selection on dashboard load** — the dashboard now auto-selects the best event (open today, else upcoming today, else next upcoming any date) once on load, never overriding a manual choice. activeEvent reads from the full upcomingEvents list, not just today.
+  ⛔ **Superseded V16.33** — the dashboard defaults to approved events only and never to an unconfirmed one (`pickDashboardDefaultEvent`); see "Events: approved only, duplicates and Create event now".
 
 - **Start Event / Restart Event wording** — replaced "Open for orders" / "Go live" throughout the dashboard, event bar, and ··· menu. Status labels are now ● Live / ⏸ Paused / ● Closed.
 
@@ -11259,6 +11459,7 @@ Tapping an item adds it immediately at base price — no popup. Tapping the same
 ## Event selection
 
 - The event selector lists all upcoming confirmed events. Auto-selects today's event if there is exactly one. Selecting a future event shows an amber warning. **With no event selected (V6):** an amber "No event selected" box; items can be added but Confirm is disabled. Basket persists across event changes.
+  ⛔ **Superseded V16.33** — the list shows every event grouped by date, unapproved ones marked "Needs approval"; see "Events: approved only, duplicates and Create event now".
 
 ### Event bar and in-panel event box (V5)
 
@@ -11267,6 +11468,7 @@ The active event is in the sticky event bar below the tabs. The Add Order panel 
 ### Auto-event selection on dashboard load (V5)
 
 Priority: (1) an event happening now today; (2) an upcoming event today; (3) the next upcoming event on any future date. Runs once, never overrides a manual selection. activeEvent resolves from the full upcomingEvents list.
+⛔ **Superseded V16.33** — the dashboard defaults to approved events only and never to an unconfirmed one (`pickDashboardDefaultEvent`); see "Events: approved only, duplicates and Create event now".
 
 ## Customer details and slot
 
@@ -12036,6 +12238,8 @@ and they disagreed about the question:
 | How it picks | time-based, via the shared `pickDefaultEventByTime` | status-keyed: `open` → `confirmed` → `[0]` |
 | Past a finished event | **advances to the next, any date** | **stays put** |
 | Selection persisted | yes — `?event=` in the URL | **nowhere** |
+
+⛔ **Superseded V16.33** — the dashboard defaults to approved events only and never to an unconfirmed one (`pickDashboardDefaultEvent`); see "Events: approved only, duplicates and Create event now".
 
 **Nothing carried the event between them.** `openKDS` passed `van_id` and `van_name` and **no event** —
 ⚠️ **which proves the handoff mechanism already existed and had simply never been used for events.** The
@@ -14919,7 +15123,7 @@ lib/whatsapp-classifier.ts routes inbound messages into: **SPECIFIC_QUERY** (sch
 
 ## Event lookup
 
-Queries truck_events for the truck (resolved by whatsapp_sender), confirmed/open/unconfirmed, from today forward. Be generous. Inject an explicit DATE REFERENCE mapping and label events (TODAY)/(TOMORROW)/(IN 2 DAYS). Include town.
+Queries truck_events for the truck (resolved by whatsapp_sender), confirmed/open/unconfirmed, from today forward. ⛔ **Superseded V16.33** — confirmed and open only; unconfirmed events are never read or quoted (`lib/whatsapp/upcoming-events.ts`). Be generous. Inject an explicit DATE REFERENCE mapping and label events (TODAY)/(TOMORROW)/(IN 2 DAYS). Include town.
 
 ## Interaction logging
 
@@ -26051,6 +26255,11 @@ All under `public/`. **Untracked as of end of session — see the deploy state b
 | `icons/icon-192.png`, `icon-512.png` | PWA, `purpose any` |
 | `icons/icon-512-maskable.png` | PWA, `purpose maskable`, bolt at 52% |
 | `icons/hatchgrab-icon.svg` | master icon |
+
+**Brand files (V16.33, checked 18 Nov):** light backgrounds — `logos/hatchgrab-wordmark.svg` (navy `#16314F` "HATCH", orange
+`#EF8B2C` "Grab"), PNG `logos/hatchgrab-logo.png` (640 × 141) and `@1x` (320 × 70); dark backgrounds —
+`logos/hatchgrab-wordmark-white.svg`, `hatchgrab-logo-white.png` and `@1x`. A 2400 px transparent PNG made from the SVG was sent
+to Dominic for the landing-page designer (18 Nov).
 
 **Aspect ratio 4.548:1**, `viewBox="21 39 1287 283"`. This is a TIGHT crop — ink fills 95.8% of the box. The first cut had 13.2% top / 6.8% bottom padding baked in at 3.971:1; that is why the logo looked low in its box and over-padded in headers. **Any hardcoded width/height pair must use 4.548:1.**
 
