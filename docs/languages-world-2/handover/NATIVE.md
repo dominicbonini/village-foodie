@@ -486,3 +486,9 @@
 - Printing: wired "කේබල් මගින් මුද්‍රණය", KOT "කුස්සියේ ටිකට්පත් (KOT) මුද්‍රණය"; ticket.* in Sinhala — check thermal printers print Sinhala script (same question as other non-Latin languages already shipped).
 - Order card "ඇණවුම් කාඩ්පත" (same word as payment card); Log in පිවිසෙන්න / Log out ඉවත් වන්න; browser confirm buttons named "හරි / අවලංගු කරන්න".
 - "for the hatch" → walk-up order; "as the hatch sees them" → "ඇණවුම් භාර දෙන කවුන්ටරයට පෙනෙන ලෙස"; 💷 → 💵; Admin "පරිපාලනය"; "සැකසුම් → ඔබේ වාහන".
+
+## si-LK part 03 (languages-world-3, 18 Nov 2026)
+- Log in පිවිසෙන්න; Terms නියමයන්; Server සර්වරය; dish කෑම; Upsells අමතර යෝජනා; Custom extras අභිරුචි අමතර; Billing බිල්පත්; Kitchen setup කුස්සියේ සැකසුම; Schedule කාලසටහන (set here first — check).
+- Code/deal keys identical; `one` = `other` with noun before number ("මාස #"); allergensItemsUnverified n=one generic; cardSummary `changed` got a `one` case.
+- Van 1 වාහනය 1; demo templates "… food truck"; demo dishes transliterated (allergen data matches); samples නිමල්ගේ බර්ගර්, ගමේ කුස්සිය, kottu.
+- Check: private-hire chip "පුද්ගලික උත්සව සඳහා food truck" (long); jacket potatoes / pie & mash descriptive.
