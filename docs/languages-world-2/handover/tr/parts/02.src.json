@@ -79,7 +79,10 @@
   "payment_not_recorded": "Payment could not be recorded — the takings figure for this order may be wrong until it is repaired.",
   "payment_not_reversed": "Payment could not be reversed",
   "event_not_approved": "This event isn’t approved",
-  "event_not_open": "{status, select, closed {This event has finished. Restart it to take orders.} cancelled {This event was cancelled.} other {This event isn’t open.}}"
+  "event_not_open": "{status, select, closed {This event has finished. Restart it to take orders.} cancelled {This event was cancelled.} other {This event isn’t open.}}",
+  "sign_in_to_create": "Sign in as a team member to create an event.",
+  "event_details_invalid": "{reason, select, name {Add an event name} times {Add a start and end time} end {The end time must be after the start} van {Choose a van} date {Events made here are for today only} other {Check the event details}}",
+  "event_overlaps": "This overlaps another event today."
  },
  "kitchenModals": {
   "close": "Close",
@@ -153,7 +156,9 @@
    "approvalSummary": "{n, plural, one {{count} event needs approval} other {{count} events need approval}}",
    "approvalSummaryNote": "{n, plural, one {Customers can’t see it yet.} other {Customers can’t see them yet.}}",
    "duplicateSameTime": "Possible duplicate · same time",
-   "duplicateOverlaps": "Possible duplicate · overlaps"
+   "duplicateOverlaps": "Possible duplicate · overlaps",
+   "dayCount": "{n, plural, one {{count} event} other {{count} events}}",
+   "approved": "Approved"
   },
   "eventGate": {
    "approveTitle": "Approve {event}?",
@@ -167,6 +172,32 @@
    "switchTitle": "Switch to {event}?",
    "switch": "Switch",
    "dismissedText": "{event} is a possible duplicate of {other}, which is already approved. Approve it to take orders? Customers will see it too."
+  },
+  "createEvent": {
+   "button": "Create event now",
+   "offline": "Connect to the internet to create an event.",
+   "title": "Create event now",
+   "where": "Where are you trading?",
+   "somewhereElse": "Somewhere else",
+   "nameLabel": "Event name",
+   "starts": "Starts",
+   "ends": "Ends",
+   "addTown": "Add town or postcode",
+   "town": "Town",
+   "postcode": "Postcode",
+   "van": "Which van?",
+   "note": "Customers will see this event and can order online.",
+   "create": "Create and start",
+   "overlapApprovedTitle": "Already trading at {other}?",
+   "overlapApprovedText": "{other} is on today, {start}–{end}.",
+   "useOther": "Use {other}",
+   "createAnyway": "Create anyway",
+   "overlapUnapprovedTitle": "Approve {event} instead?",
+   "overlapUnapprovedText": "{event} is waiting for approval, {start}–{end}.",
+   "approveOther": "Approve {event}",
+   "createNew": "Create new event",
+   "toast": "Event created and started",
+   "toastKds": "Switch the kitchen screen to this event too."
   }
  },
  "ticket": {
