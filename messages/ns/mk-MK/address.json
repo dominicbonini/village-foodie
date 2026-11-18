@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Адреса",
+    "postcode": "Поштенски број",
+    "zip": "ZIP код",
+    "eircode": "Eircode",
+    "postalCode": "Поштенски код",
+    "state": "Сојузна држава",
+    "stateTerritory": "Сојузна држава или територија",
+    "province": "Покраина",
+    "county": "Округ",
+    "prefecture": "Префектура",
+    "emirate": "Емират",
+    "region": "Регион",
+    "area": "Подрачје (село, место или град)",
+    "townOrArea": "Место или подрачје",
+    "city": "Град",
+    "suburb": "Населба",
+    "townOrCity": "Место или град"
+  },
+  "short": {
+    "area": "Подрачје",
+    "townOrArea": "Место или подрачје",
+    "city": "Град",
+    "suburb": "Населба",
+    "townOrCity": "Место или град"
+  },
+  "inSentence": {
+    "postcode": "поштенски број",
+    "zip": "ZIP код",
+    "eircode": "Eircode",
+    "postalCode": "поштенски код"
+  },
+  "withArticle": {
+    "postcode": "поштенски број",
+    "zip": "ZIP код",
+    "eircode": "Eircode",
+    "postalCode": "поштенски код"
+  },
+  "tradeLabel": {
+    "area": "Место или град",
+    "townOrArea": "Место или подрачје",
+    "city": "Град",
+    "suburb": "Населба",
+    "townOrCity": "Место или град"
+  },
+  "basedIn": {
+    "area": "Место или град каде што работите",
+    "townOrArea": "Место или подрачје каде што работите",
+    "city": "Град каде што работите",
+    "suburb": "Населба каде што работите",
+    "townOrCity": "Место или град каде што работите"
+  },
+  "example": "пр. {example}",
+  "customersSee": "Клиентите гледаат:",
+  "postalWarning": "Ова не изгледа како {article} — на пример {example}. Сепак можете да го зачувате.",
+  "regionChoose": "Изберете…"
+}

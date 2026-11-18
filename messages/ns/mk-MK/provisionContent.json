@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Предјадења",
+    "mains": "Главни јадења",
+    "burgers": "Бургери",
+    "pizza": "Пица",
+    "wrapsSandwiches": "Тортиљи и сендвичи",
+    "sides": "Прилози",
+    "dipsSauces": "Дипови и сосови",
+    "desserts": "Десерти",
+    "drinks": "Пијалаци",
+    "kidsMenu": "Детско мени",
+    "specials": "Специјалитети",
+    "other": "Друго"
+  },
+  "demoEventName": "Демо настан",
+  "firstVanName": "Возило 1",
+  "demoCategories": {
+    "pizza": "Пица",
+    "burgers": "Бургери",
+    "mains": "Главни јадења",
+    "sides": "Прилози",
+    "drinks": "Пијалаци"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Фуд трак со пица",
+      "items": {
+        "margherita": "Маргарита",
+        "pepperoni": "Пеперони",
+        "ndujaHoney": "Ндуја и мед",
+        "fourCheese": "Четири сирења",
+        "gardenVeg": "Зеленчукова",
+        "garlicBread": "Леб со лук",
+        "rocketParmesan": "Рукола и пармезан",
+        "olives": "Маслинки",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Кока-Кола"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Фуд трак со бургери",
+      "items": {
+        "classicCheeseburger": "Класичен чизбургер",
+        "doubleBacon": "Дупла сланина",
+        "buttermilkChicken": "Пилешко во матеница",
+        "halloumiStack": "Бургер со халуми",
+        "smashBurger": "Смеш бургер",
+        "skinOnFries": "Помфрит со лушпа",
+        "loadedCheeseFries": "Помфрит со сирење",
+        "onionRings": "Кромид колутки",
+        "craftLemonade": "Домашна лимонада",
+        "coke": "Кока-Кола"
+      }
+    },
+    "curries": {
+      "label": "🍛 Фуд трак со кари",
+      "items": {
+        "chickenTikkaMasala": "Пилешко тика масала",
+        "lambRoganJosh": "Јагнешко роган џош",
+        "chanaMasala": "Чана масала",
+        "butterChicken": "Пилешко со путер",
+        "saagPaneer": "Саг панир",
+        "pilauRice": "Пилав ориз",
+        "garlicNaan": "Нан со лук",
+        "onionBhaji": "Кромид баџи",
+        "mangoLassi": "Ласи со манго",
+        "coke": "Кока-Кола"
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Возило",
+  "eventsFeed": {
+    "today": "Денес · {date}",
+    "tomorrow": "Утре · {date}"
+  },
+  "privacyNotSaved": "Настанот е во тек, но неговата приватност не можеше да се зачува.",
+  "stockWarning": "Нема достапни артикли во „{category}“",
+  "uncategorised": "Без категорија"
+}

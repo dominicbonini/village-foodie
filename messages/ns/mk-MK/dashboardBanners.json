@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} термин е} other {{count} термини се}} над капацитетот — проверете",
+  "batchOver": "{cat}: над турата — {count} за {slot} ({per} по тура)",
+  "eventStartOver": "Над капацитетот на почетокот на настанот — {n, plural, one {{count} артикл} other {{count} артикли}} за {slot}",
+  "kitchenOver": "Кујната е над капацитетот — {n, plural, one {{count} артикл се готви} other {{count} артикли се готват}} за {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} артикл} other {{count} артикли}}",
+  "placedAnyway": "Сепак испратени: {list}",
+  "placedItem": "#{id} за {slot}",
+  "orphans": "{times}: над капацитетот — не се пронајдени нарачки на кои би се припишало",
+  "dismiss": "Отфрли",
+  "kitchenCapacity": "Капацитет на кујната",
+  "overCapacity": "Над капацитетот",
+  "wakeUnsupported": "Овој уред не може да го држи екранот вклучен.",
+  "wakeInsecure": "Екранот не може да се држи вклучен од оваа адреса.",
+  "wakeRetry": "Држи го екранот вклучен — допрете за нов обид",
+  "wakeAcquire": "Држи го екранот вклучен",
+  "degraded": {
+    "serverError": "Серверот не можеше да ги вчита нарачките{hasStatus, select, yes { (грешка {status})} other {}}. Се прикажуваат нарачките од {at}. Можеби недостасуваат нови нарачки.",
+    "unreachable": "Серверот е недостапен. Се прикажуваат нарачките од {at}. Можеби недостасуваат нови нарачки."
+  }
+}

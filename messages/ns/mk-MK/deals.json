@@ -1,0 +1,17 @@
+{
+  "back": "← Назад",
+  "title": "Примени комбо мени",
+  "save": "Заштедете {amount}",
+  "selectItems": "Изберете артикли за секоја позиција",
+  "choose": "Изберете: {category}…",
+  "inYourBasket": "── Во вашата кошничка ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (во кошничка){state, select, used { — веќе е во комбо мени} taken { — избрано на друга позиција} other {}}",
+  "addNew": "── Додај ново ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Задолжително · изберете едно} required {Задолжително} other {Изберете едно}}{unmet, select, yes { (задолжително)} other {}}",
+  "notePlaceholder": "Додајте напомена, пр. без кромид (незадолжително)",
+  "backButton": "Назад",
+  "cancel": "Откажи",
+  "chooseRequired": "Изберете ги задолжителните опции",
+  "apply": "Примени комбо мени · {amount}"
+}

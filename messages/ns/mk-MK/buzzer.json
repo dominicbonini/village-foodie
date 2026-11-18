@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "Пејџерот <b>{number}</b> е кај <b>нарачката #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Да се земе за <b>{hasTarget, select, yes {нарачката #{targetId}} other {оваа нарачка}}</b>?",
+  "cancel": "Откажи",
+  "take": "Земи го пејџерот {number}",
+  "titleBlocking": "Пејџер за нарачката #{id}?",
+  "title": "Изберете пејџер",
+  "subtitle": "{hasTarget, select, yes {Нарачка #{id}} other {Оваа нарачка}}{hasCurrent, select, yes { · моментален пејџер: {current}} other {}}",
+  "allTaken": "{n, plural, one {Сите пејџери се зафатени (вкупно: {count}). Допрете пејџер за да го земете од друга нарачка.} other {Сите пејџери се зафатени (вкупно: {count}). Допрете пејџер за да го земете од друга нарачка.}}",
+  "thisOrder": "Оваа нарачка",
+  "noBuzzer": "Без пејџер",
+  "done": "Готово",
+  "lostTitle": "Нарачката #{id} нема пејџер",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}друга нарачка го зеде истиот пејџер додека бевте офлајн. Дајте им друг.",
+  "dismiss": "Отфрли",
+  "assign": "Додели"
+}

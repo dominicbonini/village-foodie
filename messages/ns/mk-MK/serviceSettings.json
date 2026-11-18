@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Термини за подигнување",
+    "takes_cash": "Примате ли готовина?",
+    "offline_protection": "Офлајн заштита на нарачките",
+    "buzzer_prompt": "Потсети ме да додадам пејџер"
+  },
+  "typeFollowsVanTitle": "Ја следи вообичаената поставка на секое возило",
+  "sameSettingsAllVansLabel": "Исти поставки за сите возила",
+  "sameSettingsAllVansHeader": "Сите возила",
+  "sameSettingsConfirm": "Да се копираат поставките на Возило 1 на секое возило? Ова ги копира сите поставки на Возило 1, исто како „Исто како Возило 1“ во Поставки. Капацитетот на кујната има посебен прекинувач.",
+  "eventTypesFooterStandard": "„Стандарден“ е вашето вообичаено поставување. Ако го смените тука, се менува и во Поставки.",
+  "eventTypesFooterOneEvent": "За да смените поставка само за еден настан, користете ја контролната табла на тој настан.",
+  "eventTypesSubtitle": "Промените се зачувуваат веднаш.",
+  "matchStandardLabel": "Исто како „Стандарден“",
+  "matchStandardConfirm": "Да се вратат сите поставки на овој тип на „Стандарден“? Сè што сте смениле тука ќе се избрише.",
+  "priceLabels": {
+    "price_change_on": "Промени цени",
+    "price_mode": "Промена на цената",
+    "price_amount": "Износ",
+    "price_rounding": "Заокружување",
+    "item_prices": "Цени на артиклите"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Секоја цена ќе ја поставам рачно"
+  },
+  "priceRounding": {
+    "none": "Без",
+    "nearest_1": "На најблиските {symbol}1",
+    "up_1": "Секогаш заокружи нагоре"
+  },
+  "pricesStandardCell": "Цените од вашето мени",
+  "pricesTruckWideTitle": "Вашите цени се исти за секое возило",
+  "pricesMenuCell": "Мени",
+  "pricesTypeOffCell": "Цени од менито",
+  "itemPricesShow": "Прикажи цени",
+  "itemPricesHide": "Скриј цени",
+  "priceItemsHeading": "Поставете ја цената на секој артикл",
+  "priceItemsOpen": "Видете ја или сменете ја цената на секој артикл ›",
+  "priceItemsClose": "Скриј ги цените на артиклите ⌃",
+  "ownPriceCount": "{n, plural, one {{count} артикл има своја цена} other {{count} артикли имаат своја цена}}",
+  "priceTypeHint": "Притиснете цена за да внесете своја.",
+  "pricesLiveNotice": "Овој настан е во тек. Новите нарачки ги користат новите цени. Веќе испратените нарачки ги задржуваат своите.",
+  "placeTypeHelper": "„Додај настан“ го избира овој тип секогаш кога ќе го изберете ова место.",
+  "postPictureStandardNote": "Објавите за настани тука го користат вашиот стандарден дизајн.",
+  "eventItemsCardDescription": "Цени, ограничувања на артикли и достапност само за овој настан. Промените важат веднаш.",
+  "eventPriceColumnLabel": "Цена",
+  "eventPriceOwnNote": "{hasType, select, yes {{type}: {price} · овој настан} other {мени: {price} · овој настан}}",
+  "eventPriceEdit": "✎ Уреди цени",
+  "eventPriceCancel": "Откажи",
+  "eventPriceSave": "Зачувај цени",
+  "eventPriceEditNote": "Ги уредувате цените само за овој настан. Ограничувањата на артиклите и достапноста се заклучени додека не зачувате.",
+  "eventPriceLiveNote": "Во тек: новите нарачки ги користат новите цени.",
+  "offlineWhenOfflineLabel": "Кога сте офлајн"
+}

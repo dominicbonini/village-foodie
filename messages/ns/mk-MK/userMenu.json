@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Кориснички мени",
+  "screenOn": "Екран вклучен",
+  "screenOff": "Екран исклучен",
+  "newOrderSound": "Звук за нова нарачка",
+  "copied": "Копирано",
+  "orderLink": "Линк за нарачки",
+  "qrCode": "QR код",
+  "kitchenScreen": "Кујнски екран (KDS)",
+  "thisDevice": "Овој уред",
+  "manage": "Управување",
+  "ordersDashboard": "Табла со нарачки",
+  "admin": "Админ",
+  "privacy": "Политика за приватност",
+  "terms": "Услови",
+  "signOut": "Одјави се",
+  "close": "Затвори"
+}

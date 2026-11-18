@@ -1,0 +1,15 @@
+{
+  "greeting": "Здраво 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}Целото мени и информациите за алергени можете да ги видите тука: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}Целото мени можете да го погледнете тука: {url} — {truck} {emoji}",
+  "otherCategory": "Друго",
+  "categoryFrom": "{category} од {price}",
+  "listTwo": "{first} и {second}",
+  "listMany": "{init} и {last}",
+  "menuSummary": "{opener}Имаме {summary}. Погледнете го целото мени и нарачајте однапред тука: {url} — {truck} {emoji}",
+  "allergenCaveat": "Проверете го целото мени за информации за алергени — ова е автоматски одговор.",
+  "specificFallback": "{opener}Погледнете го нашиот најнов распоред тука: {url}\n\n{truck} {emoji}",
+  "capHandoff": "Ви благодариме за сите пораки! Тука можам да одговорам само неколку пати дневно.\n\nЗа нарачка: {link}",
+  "capContact": "За директен контакт: {number}"
+}

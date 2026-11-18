@@ -1,0 +1,17 @@
+{
+  "features": "Функции",
+  "pricing": "Цени",
+  "faq": "Чести прашања",
+  "privacy": "Приватност",
+  "terms": "Услови",
+  "contact": "Контакт",
+  "about": "За нас",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Од луѓето што стојат зад <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "Преземете го HatchGrab од App Store",
+    "appStoreAlt": "Преземете од App Store",
+    "googlePlayLink": "Преземете го HatchGrab од Google Play",
+    "googlePlayAlt": "Достапно на Google Play"
+  }
+}

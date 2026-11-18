@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {Пакетот {plan} вклучува: {feature}.} other {Пакетот {plan} вклучува: {feature}.}}",
+  "notOnPlan": "{many, select, yes {Вашиот пакет не вклучува: {feature}.} other {Вашиот пакет не вклучува: {feature}.}}",
+  "switchedOff": "{many, select, yes {Исклучено за вашиот фуд трак: {feature}.} other {Исклучено за вашиот фуд трак: {feature}.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Надгради →",
+  "features": {
+    "discovery_map": {
+      "name": "Приказ на мапата со фуд тракови",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "Веб контролна табла",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "Кујнска апликација",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "Мени со QR код",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Комбо менија",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Дополнителни предлози",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Нарачки на лице место",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "Нарачки со плаќање при подигнување",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "Означување „Распродадено“",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "Одбројување на залихата",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "Офлајн заштита на нарачките",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Онлајн плаќања",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Нарачки однапред за подоцнежен датум",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "Термини за клиентите",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "Управување со капацитетот на кујната",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "Автоматско прифаќање",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Автоматски одговори на Messenger и Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "QR кодови со ваше лого",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Напредни извештаи",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "Печатење кујнски листичиња",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "Синхронизација на кујната на повеќе уреди",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "Екран за готвачот",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Автоматски одговори на WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "Вашиот распоред на вашата веб-страница",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Објави на друштвените мрежи",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Сопствени типови настани",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Приватни настани",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Документи",
+      "many": "yes"
+    }
+  }
+}

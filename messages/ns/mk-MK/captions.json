@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Датуми на неделата",
+    "dayList": "Листа на денови",
+    "place": "Локација",
+    "venue": "Назив на локацијата",
+    "area": "Подрачје",
+    "dayDate": "Ден и датум",
+    "times": "Време",
+    "orderLink": "Линк за нарачки",
+    "locationTag": "Ознака на локацијата"
+  },
+  "weekHeader": "{truck} — каде сме оваа недела:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ОТКАЖАНО, извинете",
+  "noDates": "Нема датуми оваа недела — проверете повторно наскоро.",
+  "orderAhead": "Нарачајте однапред: {url}",
+  "orderAheadTagged": "Нарачајте однапред: {url} {tag}",
+  "eventLine": "{truck} — {where}, {when}, {times}.",
+  "eventLineNoTimes": "{truck} — {where}, {when}.",
+  "cancelledSorry": "Извинете — нема да можеме да дојдеме на локацијата {where} {when}.",
+  "cancelledApology": "Им се извинуваме на сите што планираа да дојдат. Наскоро ќе се вратиме.",
+  "when": {
+    "today": "денеска",
+    "tonight": "вечерва",
+    "tomorrow": "утре",
+    "dated": "на {date}"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Приказ на мапата со фуд тракови"
+    },
+    "web_dashboard": {
+      "name": "Универзална веб контролна табла"
+    },
+    "qr_code": {
+      "name": "QR код"
+    },
+    "schedule_import": {
+      "name": "Автоматски увоз на распоредот"
+    },
+    "meal_deals_upsells": {
+      "name": "Комбо менија и дополнителни предлози"
+    },
+    "walkup_orders": {
+      "name": "Обработка на нарачки на лице место"
+    },
+    "sold_out_toggle": {
+      "name": "Брзо означување „Распродадено“"
+    },
+    "kitchen_app": {
+      "name": "Кујнска апликација за iPhone, iPad и Android"
+    },
+    "offline_protection": {
+      "name": "Офлајн заштита на нарачките"
+    },
+    "online_payments": {
+      "name": "Онлајн плаќања"
+    },
+    "advance_preordering": {
+      "name": "Нарачки однапред за подоцнежен датум"
+    },
+    "preorder_deadline": {
+      "name": "Краен рок за нарачки однапред"
+    },
+    "time_slot_selection": {
+      "name": "Клиентите избираат термин"
+    },
+    "kitchen_capacity": {
+      "name": "Управување со капацитетот на кујната"
+    },
+    "stock_countdown": {
+      "name": "Автоматско одбројување на залихата"
+    },
+    "auto_accept": {
+      "name": "Автоматско прифаќање онлајн нарачки"
+    },
+    "branded_qr_code": {
+      "name": "QR код со ваше лого"
+    },
+    "private_events": {
+      "name": "Приватни настани"
+    },
+    "social_media_posts": {
+      "name": "Објави на друштвените мрежи"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Автоматски одговори на WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Автоматски одговори на Messenger и Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Наплата на вашиот телефон"
+    },
+    "sms_order_alerts": {
+      "name": "SMS известувања за нарачки"
+    },
+    "multi_device_kitchen": {
+      "name": "Синхронизација на кујната на повеќе уреди"
+    },
+    "multi_user_access": {
+      "name": "Пристап за повеќе корисници"
+    },
+    "embed_schedule": {
+      "name": "Страница со распоред на вашата веб-страница"
+    },
+    "event_types": {
+      "name": "Сопствени типови настани и цени"
+    },
+    "buzzer_tracking": {
+      "name": "Следење пејџери"
+    },
+    "documents_reminders": {
+      "name": "Документи и потсетници"
+    },
+    "profit_per_event": {
+      "name": "Добивка по настан"
+    },
+    "accountant_reports": {
+      "name": "Извештаи за вашиот сметководител"
+    },
+    "ticket_printing": {
+      "name": "Печатење кујнски листичиња"
+    },
+    "customer_display": {
+      "name": "Екран за клиентите"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Дигитални картички за лојалност со печати"
+    }
+  },
+  "cardRegionOnline": "стандардни {region}",
+  "cardRegion": {
+    "UKcards": "британски картички",
+    "EEAcards": "картички од ЕЕП",
+    "UScards": "американски картички",
+    "Australiancards": "австралиски картички",
+    "NewZealandcards": "новозеландски картички",
+    "Canadiancards": "канадски картички",
+    "Swisscards": "швајцарски картички",
+    "Braziliancards": "бразилски картички",
+    "Mexicancards": "мексикански картички",
+    "Japanesecards": "јапонски картички",
+    "Singaporecards": "сингапурски картички",
+    "HongKongcards": "картички од Хонг Конг",
+    "Malaysiancards": "малезиски картички",
+    "Thaicards": "тајландски картички",
+    "UAEcards": "картички од ОАЕ"
+  },
+  "perMonth": {
+    "mo": "{amount}/мес.",
+    "month": "{amount} месечно"
+  },
+  "priceWord": {
+    "free": "Бесплатно",
+    "freeTrial": "Бесплатен пробен период",
+    "lifetime": "Доживотно",
+    "zeroPercent": "0%",
+    "payAtHatch": "Плаќање при подигнување",
+    "unlimited": "Неограничено",
+    "none": "—",
+    "masked": "Ќе се потврди"
+  },
+  "cell": {
+    "included": "Вклучено"
+  }
+}

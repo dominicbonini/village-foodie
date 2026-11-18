@@ -1,0 +1,13 @@
+{
+  "subtotal": "Меѓузбир",
+  "taxFallback": "Данок",
+  "taxIncluded": "Вклучено: {label}",
+  "serviceFeeCustomer": "Надомест за онлајн услуга",
+  "serviceFee": "Надомест за услуга",
+  "cardFee": "Надомест за картичка",
+  "tip": "Бакшиш",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Данок, надоместоци и бакшиш} tax_tip {Данок и бакшиш} fees_tip {Надоместоци и бакшиш} fees {Надоместоци} other {Данок и надоместоци}}"
+}
