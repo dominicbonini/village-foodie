@@ -456,3 +456,9 @@
 - comparison.cell.trial "{months, plural, one {mwezi #} other {miezi #}} bila malipo"; calculator "kwa gari" / "magari #"; slug ulinganisho/mfumo-wa-oda-food-truck.
 - German TSE/Germany figures and the UK VAT line kept; VAT "VAT"; reverse charge "utaratibu wa kujitoza mwenyewe (reverse charge)"; till "POS".
 - Check: names free-standing via hu-/passive ("{names} huwaruhusu…"); "bima ya dhima kwa umma", "Haijaelezwa", "Haisemi", "Haihusiki", "Zawadi kwa wateja wa kudumu", "upau", fixedAria "Kiasi kisichobadilika kwa kila oda".
+
+## sw-TZ part 09 (languages-world-3, 18 Nov 2026)
+- markRules 0; footnote "… oda za mtandaoni zinazolipwa kwa kadi pekee"; trial.length "{months, plural, one {mwezi #} other {miezi #}}"; TBC "Itatangazwa".
+- planPrompt colon form ("Kifurushi {plan} kinajumuisha: {feature}."); {truck} free of prefixes ("chakula cha {truck}", "kununua kutoka {truck}").
+- Check: Demo "Majaribio", Tester "Mjaribishaji", "Chaguo la wengi", "Kuorodheshwa kwenye ramani ya ugunduzi", "Skrini ya kuwaonyesha wateja", pitch "eneo lako la kuuzia".
+- FOR CONSISTENCY: Free "Bure" (07) vs "Bila malipo" (09); loyalty "Zawadi kwa wateja wa kudumu" (08) vs stamp cards; "Hamia {plan}" (07) vs "Hamia kifurushi {plan}" (06).

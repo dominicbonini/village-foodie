@@ -1,0 +1,723 @@
+{
+ "landing": {
+  "jsonLd": {
+   "subCategory": "Mfumo wa oda kwa food truck na huduma za upishi zinazotembea",
+   "description": "Oda, oda za mapema na skrini ya jikoni kwa food truck na huduma za upishi zinazotembea nchini {country}.",
+   "audience": "Wamiliki wa food truck na wafanyabiashara wa huduma za upishi zinazotembea"
+  },
+  "hero": {
+   "title": "Mfumo wa oda uliotengenezwa kwa ajili ya <lean>food truck.</lean>",
+   "subSmall": "Pakia menyu yako, bila kujisajili.<br></br>Ona toleo la majaribio linalofanya kazi chini ya sekunde 60.",
+   "cta": "Pakia menyu yangu →",
+   "ctaNote": "<lead>Pakia picha ya menyu yako na uone inavyofanya kazi chini ya sekunde 60.</lead><small>Bila kujisajili. Bila kadi.</small>"
+  },
+  "shots": {
+   "kitchenAlt": "Skrini ya jikoni (KDS) ya HatchGrab, ikionyesha tiketi za oda kwa mpangilio wa kupika",
+   "dashboardAlt": "Kupokea oda kwenye HatchGrab: menyu upande wa kushoto, kikapu na jumla inayoendelea upande wa kulia",
+   "phoneAlt": "Kuagiza kutoka food truck kwenye HatchGrab: menyu yenye picha na bei, na jumla ya kikapu inayoendelea"
+  },
+  "trust": {
+   "freeMonth": "{months, plural, one {Mwezi wa kwanza bila malipo kabisa, huduma zote zimefunguliwa} other {Miezi # ya kwanza bila malipo kabisa, huduma zote zimefunguliwa}}",
+   "noCard": "Huhitaji kadi",
+   "cancel": "Ghairi wakati wowote, hakuna mkataba"
+  },
+  "does": {
+   "eyebrow": "Inachofanya",
+   "title": "Umetengenezwa kwa ajili ya food truck, si migahawa.",
+   "lede": "Mifumo mingi ya oda inadhani una anwani moja ya kudumu, wifi ya uhakika na saa zilezile kila wiki. Wewe uko mahali papya kila wiki, kwa nyakati tofauti, ukiwa na mtandao hafifu au bila mtandao kabisa. HatchGrab imetengenezwa kwa ajili ya hali hiyo.",
+   "slotsTitle": "Wateja wanachagua muda wa kuchukua oda",
+   "capacityTitle": "Weka uwezo wa jiko lako",
+   "capacityBody": "Weka kiasi unachoweza kupika kwa wakati mmoja, na muda unaochukua. Muda wa kuchukua oda ukijaa, wateja hawawezi kuuchagua.",
+   "devicesTitle": "Inafanya kazi kwenye kifaa chochote",
+   "devicesBody": "Inafanya kazi kwenye simu iliyo mfukoni mwa aproni yako, kishikwambi kilicho kaunta, kompyuta mpakato iliyo kwenye gari — na mashine ya kadi unayotumia tayari kupokea malipo.",
+   "postsTitle": "Weka machapisho yako ya Facebook na Instagram kiotomatiki",
+   "postsBody": "Pakia muundo unaochapisha tayari kwenye Facebook au Instagram. Tutajaza tarehe, mahali na muda wako, tayari kushiriki — kila wiki au kila siku.",
+   "whatsappTitle": "Majibu ya kiotomatiki ya WhatsApp",
+   "whatsappBody": "“Uko wapi leo usiku?” “Una vitindamlo gani?” WhatsApp yako inajibiwa ukiwa unaendesha gari kuelekea eneo lako la kuuzia au ukiwa kwenye jiko la kuchomea, kwa kutumia menyu na ratiba yako mwenyewe. Messenger na Instagram zinakuja hivi karibuni.",
+   "whatsappSoonTitle": "Majibu ya kiotomatiki ya WhatsApp <soon>Inakuja hivi karibuni</soon>",
+   "whatsappSoonBody": "“Uko wapi leo usiku?” “Una vitindamlo gani?” Hivi karibuni WhatsApp yako itajibiwa ukiwa unaendesha gari kuelekea eneo lako la kuuzia au ukiwa kwenye jiko la kuchomea. Messenger na Instagram zitafuata.",
+   "offlineTitle": "Hakuna mtandao? Endelea kuhudumia.",
+   "offlineBody": "Ukipoteza mtandao, oda za mtandaoni zinasitishwa kiotomatiki ili wateja wasiweke oda ambazo hutaziona. Endelea kupokea oda kwa programu ya iPhone, iPad na Android.",
+   "slotsBody": "Wateja huagiza mapema na kuchagua muda wa kuchukua oda. Foleni chache, na chakula kiko tayari wanapofika."
+  },
+  "steps": {
+   "eyebrow": "Kuanza",
+   "title": "Jiandae na uanze kupokea oda ndani ya takriban dakika 15.",
+   "lede": "Mambo matatu ya kukamilisha — na mawili kati yake yanahitaji picha tu.",
+   "menuTitle": "Tengeneza menyu yako",
+   "menuBody": "Piga picha ubao wako wa menyu au ubandike. Bidhaa, bei na nyongeza zote zinaingia zenyewe. Wewe unahakikisha tu kuwa ziko sahihi.",
+   "scheduleTitle": "Ongeza ratiba yako",
+   "scheduleBody": "Iko kwenye tovuti yako? Tutaisoma kutoka huko na kuisasisha kila wakati. Kama sivyo, ipige picha pia. Wewe unaidhinisha tu kile kinachopatikana.",
+   "shareTitle": "Shiriki kiungo chako",
+   "shareBody": "Kichapishe kwenye Facebook, bandika msimbo wa QR kwenye gari. Oda zinaingia kwenye skrini yako, kwa mpangilio unaohitaji kuzipika."
+  },
+  "testimonial": {
+   "quote": "HatchGrab imerahisisha sana upokeaji wa oda. Kila kitu kiko kwa mpangilio, tunaweza kufuatilia stoku na kujua hasa pizza ngapi zimebaki za kuuza — na nafasi za muda ni nzuri sana kwa vijiji vyenye shughuli nyingi.",
+   "award": "Pizzeria Inayotembea Bora ya Mwaka",
+   "awardScope": "Mshindi wa kanda",
+   "business": "Pizzeria Gusto",
+   "byline": "Nadia & Bogdan — wamiliki"
+  },
+  "pricing": {
+   "eyebrow": "Bei",
+   "title": "Anza bila malipo. Pandisha kifurushi unapohitaji.",
+   "switchHead": "Unahamia kutoka mfumo mwingine?",
+   "switchBody": "Ona ungelipa kiasi gani kwenye HatchGrab kwa oda zilezile. Inachukua takriban dakika moja.",
+   "switchCta": "Linganisha unacholipa"
+  },
+  "faq": {
+   "title": "Maswali yanayoulizwa mara kwa mara",
+   "metaTitle": "Maswali yanayoulizwa mara kwa mara | HatchGrab",
+   "metaDescription": "Majibu ya moja kwa moja kwa wamiliki wa food truck kuhusu bei za HatchGrab, jinsi ya kuanza, kupokea oda na malipo — kabla hujajisajili."
+  },
+  "final": {
+   "truckLabel": "Food truck",
+   "title": "Ungependa kuona jinsi ilivyo rahisi kuanza?",
+   "lede": "Pakia picha au picha ya skrini ya menyu yako na tutaigeuza kuwa ukurasa wa oda unaofanya kazi ili uujaribu chini ya sekunde 60. Bidhaa zako, bei zako. Bila kujisajili, bila kadi, hakuna cha kusakinisha. Angalia, kisha uamue.",
+   "cta": "Pakia menyu yangu sasa →"
+  },
+  "meta": {
+   "title": "Mfumo wa oda mtandaoni kwa food truck — HatchGrab {country}",
+   "description": "Pokea oda na oda za mapema kwenye eneo lako bila foleni. Mfumo wa oda na skrini ya jikoni kwa food truck na catering nchini {country} — si POS."
+  }
+ },
+ "landingNav": {
+  "homeLabel": "Ukurasa wa mwanzo wa HatchGrab",
+  "cta": "Pakia menyu yangu →",
+  "ctaShort": "Pakia menyu",
+  "features": "Huduma",
+  "pricing": "Bei",
+  "logIn": "Ingia",
+  "country": {
+   "button": "Nchi: {name}. Badilisha nchi",
+   "menu": "Nchi",
+   "title": "Chagua nchi yako",
+   "subline": "Bei, lugha na mipangilio hubadilika ili kuendana nayo.",
+   "regions": {
+    "europe": "Ulaya",
+    "americas": "Amerika",
+    "asiaPacific": "Asia na Pasifiki",
+    "middleEast": "Mashariki ya Kati",
+    "africa": "Afrika"
+   }
+  }
+ },
+ "landingFooter": {
+  "features": "Huduma",
+  "pricing": "Bei",
+  "faq": "Maswali",
+  "privacy": "Faragha",
+  "terms": "Masharti",
+  "contact": "Mawasiliano",
+  "about": "Kuhusu sisi",
+  "copyright": "© {year} HatchGrab",
+  "credit": "Kutoka kwa watu walio nyuma ya <b>Village Foodie</b>",
+  "badges": {
+   "appStoreLink": "Pakua HatchGrab kwenye App Store",
+   "appStoreAlt": "Pakua kwenye App Store",
+   "googlePlayLink": "Pata HatchGrab kwenye Google Play",
+   "googlePlayAlt": "Ipate kwenye Google Play"
+  }
+ },
+ "featuresPage": {
+  "eyebrow": "Linganisha",
+  "detail": {
+   "walkup_orders": "Pokea na usimamie oda kwenye food truck, zinazolipwa kwa mashine yako mwenyewe ya kadi.",
+   "kitchen_app": "Njia kamili zaidi ya kuendesha HatchGrab: skrini ya jikoni (KDS) ya moja kwa moja, pamoja na njia pekee ya kuendelea kupokea oda unapopoteza mtandao.",
+   "multi_device_kitchen": "Tumia skrini kadhaa — kaunta ya mbele na jikoni — zote zikionyesha oda zilezile kwa wakati halisi.",
+   "multi_user_access": "Wape wafanyakazi njia zao wenyewe za kuingia, zenye kiwango sahihi cha ufikiaji.",
+   "offline_protection": "Ukipoteza mtandao, oda za mtandaoni zinasitishwa ili wateja wasiweke oda ambazo hutaziona. Programu ya iPhone, iPad na Android inakuwezesha kuendelea kupokea oda bila mtandao; dashibodi ya wavuti inahitaji muunganisho.",
+   "ticket_printing": "Chapisha tiketi za oda kwenye printa ya Bluetooth au ya waya iliyo jikoni.",
+   "web_dashboard": "Endesha huduma yako kutoka kwenye kivinjari cha simu, kishikwambi au kompyuta mpakato yoyote.",
+   "meal_deals_upsells": "Unganisha bidhaa kuwa ofa za mlo (combo) na toa nyongeza wakati wa kulipa ili kuongeza wastani wa thamani ya oda.",
+   "sold_out_toggle": "Weka bidhaa yoyote kuwa imeisha kwa kugusa mara moja — inafifia kwa wateja papo hapo.",
+   "stock_countdown": "Weka idadi ya stoku na itapungua kadri oda zinavyoingia, kisha itaisha yenyewe.",
+   "buzzer_tracking": "Ipe oda namba ya kengele unapotoa kengele, ili ujue kengele ipi ni ya oda ipi.",
+   "documents_reminders": "Hifadhi vyeti vyako mahali pamoja, kama vya usafi wa chakula, bima na usalama wa gesi. Tunakukumbusha kabla chochote hakijaisha muda wake, na unaweza kuvituma kwa mratibu wa tukio au soko kwa kugusa mara moja.",
+   "profit_per_event": "Ongeza gharama ya kila mlo kwako na uone faida halisi uliyopata kwenye kila tukio, si mapato tu.",
+   "accountant_reports": "Mauzo, kodi na marejesho ya pesa kwa mwezi, robo mwaka au mwaka wa kodi wowote, tayari kupakuliwa kwa ajili ya mhasibu wako.",
+   "tap_to_pay": "Pokea malipo kwa kadi kwenye simu inayoungwa mkono, ili usihitaji mashine ya kadi tofauti.",
+   "customer_display": "Skrini ambayo wateja wanaweza kuiona, ikionyesha namba za oda na zinapokuwa tayari.",
+   "online_payments": "Pokea malipo kwa kadi mapema wateja wanapoagiza mtandaoni, kupitia Stripe.",
+   "advance_preordering": "Ruhusu wateja waagize kwa tarehe au muda ujao kabla ya tukio.",
+   "preorder_deadline": "Weka muda wa mwisho kwa bidhaa zinazohitaji taarifa mapema.",
+   "time_slot_selection": "Wateja wanachagua nafasi ya muda wa kuchukua oda, hivyo mahitaji yanagawanyika katika kipindi chote cha huduma yako.",
+   "kitchen_capacity": "Weka kiasi ambacho jiko lako linaweza kupika kwa wakati mmoja na muda unaochukua. Nafasi ya muda ikijaa, wateja hawawezi kuichagua.",
+   "auto_accept": "Oda za mtandaoni zinakubaliwa kiotomatiki — hakuna haja ya kuthibitisha kila moja.",
+   "private_events": "Ongeza shughuli binafsi zisizoonekana kwenye ramani, zenye kiungo chake binafsi cha oda na msimbo wa QR.",
+   "embed_schedule": "Onyesha tarehe zako zijazo kwenye tovuti yako mwenyewe. Kila moja inaelekeza moja kwa moja kwenye ukurasa wake wa oda.",
+   "qr_code": "Msimbo wa QR unaoweza kuchapishwa, unaofungua menyu na ukurasa wako wa oda.",
+   "branded_qr_code": "Weka nembo yako kwenye msimbo wako wa QR.",
+   "discovery_map_listing": "Food truck yako inaonekana kwenye ramani ya umma ya HatchGrab ili wateja walio karibu wakupate.",
+   "schedule_import": "Tunajaza ratiba yako kiotomatiki — kutoka kwenye tovuti yako, au picha unayochapisha tayari kwenye Facebook. Wewe unakagua na kuthibitisha tu.",
+   "event_types": "Tengeneza aina zako za matukio, zenye bei na mipangilio maalum kwa matukio na matamasha.",
+   "social_media_posts": "Pakia miundo yako — tunaongeza tarehe, mahali na muda wako kwa kila wiki na kila tukio kiotomatiki.",
+   "whatsapp_auto_replies": "Majibu ya kiotomatiki ya WhatsApp kwa maswali kuhusu menyu na ratiba yako.",
+   "messenger_instagram_replies": "Sawa na majibu ya kiotomatiki ya WhatsApp, kwa maswali ya Messenger na Instagram.",
+   "sms_order_alerts": "Tuma SMS kwa wateja kiotomatiki oda yao ikiwa tayari.",
+   "loyalty_stamp_cards": "Wazawadie wateja wanaorudi kwa kadi za stempu za kidijitali — zinakusanywa na kutumiwa kiotomatiki."
+  },
+  "metaTitle": "Linganisha vifurushi na huduma — HatchGrab {country}"
+ },
+ "planTable": {
+  "h1": "Kila kitu cha kuendesha huduma yako, kwenye kila kifurushi.",
+  "lede": "Oda, oda ya mapema, uwezo wa jiko na skrini ya jikoni (KDS) vimejumuishwa kwenye kila kifurushi.{hasUpgrades, select, yes { Ukiwa na {plans} unapata pia {features}, pamoja na ada za chini zaidi.} other {}}",
+  "perMonth": "{price} / mwezi",
+  "trial": {
+   "length": "{months, plural, one {mwezi #} other {miezi #}}",
+   "ends": "Inaisha {date}"
+  },
+  "group": {
+   "pay": "Unacholipa",
+   "run": "Endesha huduma yako",
+   "online": "Oda za mtandaoni",
+   "marketing": "Masoko na mifumo ya kiotomatiki"
+  },
+  "pay": {
+   "included": "Oda za mtandaoni zilizojumuishwa kila mwezi",
+   "fee": "Ada ya HatchGrab kwa oda za mtandaoni*",
+   "feeNoMark": "Ada ya HatchGrab kwa oda za mtandaoni",
+   "walkUp": "Oda za papo hapo"
+  },
+  "cell": {
+   "unlimited": "Bila kikomo",
+   "free": "Bila malipo",
+   "feeAbove": "<b>{fee}</b> zaidi ya {included}",
+   "yes": "Imejumuishwa",
+   "none": "Haijajumuishwa",
+   "comingSoon": "Inakuja hivi karibuni"
+  },
+  "short": {
+   "whatsapp_replies": "WhatsApp",
+   "schedule_graphics": "mitandao ya kijamii",
+   "event_types": "bei maalum za matukio"
+  },
+  "meta": {
+   "description": "Kila huduma ya HatchGrab kwenye kila kifurushi, ubavu kwa ubavu — {plans}, pamoja na ada na viwango vilivyojumuishwa.{months, plural, =0 {} one { Mwezi wako wa kwanza unajumuisha kila kitu.} other { Miezi yako # ya kwanza inajumuisha kila kitu.}}"
+  },
+  "notes": {
+   "whatsapp": "Majibu ya kiotomatiki ya WhatsApp yanahitaji akaunti ya WhatsApp Business. Meta inaweza kutoza ada kwa baadhi ya jumbe; majibu yanatengenezwa kiotomatiki.",
+   "printing": "Kuchapisha tiketi za jikoni kunahitaji printa ya Bluetooth au ya waya inayooana (haitolewi na sisi)."
+  }
+ },
+ "pricing": {
+  "banner": {
+   "title": "{months, plural, one {Mwezi wako wa kwanza ni bila malipo kabisa — huduma zote zimefunguliwa.} other {Miezi yako # ya kwanza ni bila malipo kabisa — huduma zote zimefunguliwa.}}",
+   "body": "Ukiwa na {brand}, wateja huagiza mapema na kulipa wanapochukua oda, hivyo unaweza kupokea oda za mtandaoni bila kuunganisha mfumo wowote wa kuchakata malipo ya kadi. Jaribio lako likiisha, utahamishiwa kwenye kifurushi <plan>{fallback}</plan>{fallbackFree, select, yes { — bila ada ya kila mwezi —} other {}} usipochagua kifurushi. Huhitaji kadi kuanza, hakuna mkataba, ghairi wakati wowote.",
+   "bodyCard": "Ukiwa na {brand}, wateja huagiza mapema na kulipa wanapochukua oda, hivyo unaweza kupokea oda za mtandaoni bila kuunganisha mfumo wowote wa kuchakata malipo ya kadi. Ungependa kupokea malipo mapema? Ongeza malipo ya kadi mtandaoni wakati wowote. Jaribio lako likiisha, utahamishiwa kwenye kifurushi <plan>{fallback}</plan>{fallbackFree, select, yes { — bila ada ya kila mwezi —} other {}} usipochagua kifurushi. Huhitaji kadi kuanza, hakuna mkataba, ghairi wakati wowote.",
+   "bodyOnly": "Ukiwa na {brand}, wateja huagiza mapema na kulipa wanapochukua oda, hivyo unaweza kupokea oda za mtandaoni bila kuunganisha mfumo wowote wa kuchakata malipo ya kadi. Jaribio lako likiisha, kifurushi <plan>{fallback}</plan> ni {price} kwa mwezi. Tutawasiliana nawe kabla ya hapo ili kuandaa malipo. Huhitaji kadi kuanza, hakuna mkataba, ghairi wakati wowote.",
+   "bodyOnlyCard": "Ukiwa na {brand}, wateja huagiza mapema na kulipa wanapochukua oda, hivyo unaweza kupokea oda za mtandaoni bila kuunganisha mfumo wowote wa kuchakata malipo ya kadi. Ungependa kupokea malipo mapema? Ongeza malipo ya kadi mtandaoni wakati wowote. Jaribio lako likiisha, kifurushi <plan>{fallback}</plan> ni {price} kwa mwezi. Tutawasiliana nawe kabla ya hapo ili kuandaa malipo. Huhitaji kadi kuanza, hakuna mkataba, ghairi wakati wowote."
+  },
+  "card": {
+   "perTruckMonth": "kwa gari / mwezi",
+   "mostTrucks": "Chaguo la wengi",
+   "tryFree": "Jaribu bila malipo",
+   "seeEvery": "Tazama huduma zote →",
+   "everything": "Kila kitu cha kuendesha huduma",
+   "everythingIn": "Kila kitu cha kifurushi {plan}, pamoja na"
+  },
+  "fee": {
+   "feeOnly": "<b>{fee}</b> kwa oda za mtandaoni pekee. Oda za papo hapo ni bila malipo kila wakati.",
+   "feeOnlyCard": "<b>{fee}*</b> kwa oda za mtandaoni pekee. Oda za papo hapo ni bila malipo kila wakati.",
+   "included": "Oda za mtandaoni za hadi <b>{included}</b> zimejumuishwa kila mwezi, kisha <b>{fee}*</b>. Oda za papo hapo ni bila malipo kila wakati.",
+   "includedNoMark": "Oda za mtandaoni za hadi <b>{included}</b> zimejumuishwa kila mwezi, kisha <b>{fee}</b>. Oda za papo hapo ni bila malipo kila wakati.",
+   "noFee": "<b>Hakuna ada za HatchGrab</b> kwa oda za mtandaoni, hata uwe na shughuli nyingi kiasi gani. Gharama moja ya kila mwezi inayotabirika."
+  },
+  "base": {
+   "walkUp": "Oda za papo hapo na skrini ya jikoni (KDS)",
+   "online": "Oda mtandaoni",
+   "preorders": "Oda ya mapema na muda wa kuchukua oda",
+   "capacity": "Usimamizi wa uwezo wa jiko",
+   "privateEvents": "Shughuli binafsi",
+   "printing": "Kuchapisha tiketi za jikoni",
+   "app": "Programu ya jikoni ya iPhone, iPad na Android"
+  },
+  "added": {
+   "whatsapp_replies": "Majibu ya kiotomatiki ya WhatsApp",
+   "schedule_graphics": "Machapisho ya mitandao ya kijamii — ratiba yako ya Facebook na Instagram — tayari kuchapishwa",
+   "event_types": "Aina maalum za matukio na bei"
+  },
+  "money": {
+   "unlimitedOrders": "Oda za mtandaoni bila kikomo, ada ya HatchGrab 0%",
+   "samePrice": "Bei ileile hata katika mwezi wako wenye shughuli nyingi zaidi"
+  },
+  "comingSoon": "Inakuja hivi karibuni",
+  "bar": {
+   "title": "Kifurushi kipi ni nafuu zaidi kwangu?",
+   "subtitle": "Oda zako za mtandaoni kila mwezi",
+   "first": "Chini ya {to} → <b>{plan}</b>",
+   "middle": "{from} – {to} → <b>{plan}</b>",
+   "last": "Zaidi ya {from} → <b>{plan}</b>",
+   "only": "Kiasi chochote → <b>{plan}</b>"
+  },
+  "footnote": "* Pamoja na ada ya Stripe ya kuchakata malipo ya kadi, kwa oda za mtandaoni zinazolipwa kwa kadi pekee (kwa sasa {cardFee} nchini {country}), inayolipwa kwa Stripe, si kwa HatchGrab. Oda za papo hapo hutumia mashine ya kadi (POS) yako mwenyewe — HatchGrab inatoza 0%.",
+  "currencyLine": "Bei kwa {currency} ({code})"
+ },
+ "planFeatures": {
+  "row": {
+   "discovery_map_listing": {
+    "name": "Kuorodheshwa kwenye ramani ya ugunduzi"
+   },
+   "web_dashboard": {
+    "name": "Dashibodi ya wavuti kwa kifaa chochote"
+   },
+   "qr_code": {
+    "name": "Msimbo wa QR"
+   },
+   "schedule_import": {
+    "name": "Uingizaji wa ratiba kiotomatiki"
+   },
+   "meal_deals_upsells": {
+    "name": "Ofa za mlo (combo) na mapendekezo ya ziada"
+   },
+   "walkup_orders": {
+    "name": "Kushughulikia oda za papo hapo"
+   },
+   "sold_out_toggle": {
+    "name": "Kitufe cha “Imeisha” papo hapo"
+   },
+   "kitchen_app": {
+    "name": "Programu ya jikoni ya iPhone, iPad na Android"
+   },
+   "offline_protection": {
+    "name": "Ulinzi wa oda nje ya mtandao"
+   },
+   "online_payments": {
+    "name": "Malipo mtandaoni"
+   },
+   "advance_preordering": {
+    "name": "Oda ya mapema kwa tarehe zijazo"
+   },
+   "preorder_deadline": {
+    "name": "Muda wa mwisho wa oda ya mapema"
+   },
+   "time_slot_selection": {
+    "name": "Mteja kuchagua nafasi ya muda"
+   },
+   "kitchen_capacity": {
+    "name": "Usimamizi wa uwezo wa jiko"
+   },
+   "stock_countdown": {
+    "name": "Hesabu ya stoku inayopungua kiotomatiki"
+   },
+   "auto_accept": {
+    "name": "Kubali oda za mtandaoni kiotomatiki"
+   },
+   "branded_qr_code": {
+    "name": "Msimbo wa QR wenye nembo"
+   },
+   "private_events": {
+    "name": "Shughuli binafsi"
+   },
+   "social_media_posts": {
+    "name": "Machapisho ya mitandao ya kijamii"
+   },
+   "whatsapp_auto_replies": {
+    "name": "Majibu ya kiotomatiki ya WhatsApp"
+   },
+   "messenger_instagram_replies": {
+    "name": "Majibu ya kiotomatiki ya Messenger na Instagram"
+   },
+   "tap_to_pay": {
+    "name": "Pokea malipo kwenye simu yako"
+   },
+   "sms_order_alerts": {
+    "name": "Arifa za oda kwa SMS"
+   },
+   "multi_device_kitchen": {
+    "name": "Usawazishaji wa jiko kwenye vifaa vingi"
+   },
+   "multi_user_access": {
+    "name": "Ufikiaji wa watumiaji wengi"
+   },
+   "embed_schedule": {
+    "name": "Ukurasa wa ratiba kwenye tovuti yako mwenyewe"
+   },
+   "event_types": {
+    "name": "Aina maalum za matukio na bei"
+   },
+   "buzzer_tracking": {
+    "name": "Ufuatiliaji wa kengele"
+   },
+   "documents_reminders": {
+    "name": "Hati na vikumbusho"
+   },
+   "profit_per_event": {
+    "name": "Faida kwa kila tukio"
+   },
+   "accountant_reports": {
+    "name": "Ripoti kwa mhasibu wako"
+   },
+   "ticket_printing": {
+    "name": "Kuchapisha tiketi za jikoni"
+   },
+   "customer_display": {
+    "name": "Skrini ya kuwaonyesha wateja"
+   },
+   "loyalty_stamp_cards": {
+    "name": "Kadi za stempu za uaminifu za kidijitali"
+   }
+  },
+  "cardRegionOnline": "{region} za kawaida",
+  "cardRegion": {
+   "UKcards": "kadi za Uingereza",
+   "EEAcards": "kadi za EEA",
+   "UScards": "kadi za Marekani",
+   "Australiancards": "kadi za Australia",
+   "NewZealandcards": "kadi za New Zealand",
+   "Canadiancards": "kadi za Kanada",
+   "Swisscards": "kadi za Uswisi",
+   "Braziliancards": "kadi za Brazil",
+   "Mexicancards": "kadi za Meksiko",
+   "Japanesecards": "kadi za Japani",
+   "Singaporecards": "kadi za Singapore",
+   "HongKongcards": "kadi za Hong Kong",
+   "Malaysiancards": "kadi za Malaysia",
+   "Thaicards": "kadi za Thailand",
+   "UAEcards": "kadi za UAE"
+  },
+  "perMonth": {
+   "mo": "{amount}/mwezi",
+   "month": "{amount} kwa mwezi"
+  },
+  "priceWord": {
+   "free": "Bila malipo",
+   "freeTrial": "Jaribio bila malipo",
+   "lifetime": "Maisha yote",
+   "zeroPercent": "0%",
+   "payAtHatch": "Lipa Unapochukua",
+   "unlimited": "Bila kikomo",
+   "none": "—",
+   "masked": "Itatangazwa"
+  },
+  "cell": {
+   "included": "Imejumuishwa"
+  }
+ },
+ "planPrompt": {
+  "includedOn": "{many, select, yes {Kifurushi {plan} kinajumuisha: {feature}.} other {Kifurushi {plan} kinajumuisha: {feature}.}}",
+  "notOnPlan": "{many, select, yes {Kifurushi chako hakijumuishi: {feature}.} other {Kifurushi chako hakijumuishi: {feature}.}}",
+  "switchedOff": "{many, select, yes {Huduma hizi zimezimwa kwa food truck yako: {feature}.} other {Huduma hii imezimwa kwa food truck yako: {feature}.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Pandisha kifurushi →",
+  "features": {
+   "discovery_map": {
+    "name": "Kuorodheshwa kwenye ramani ya ugunduzi",
+    "many": "no"
+   },
+   "web_dashboard": {
+    "name": "Dashibodi ya wavuti",
+    "many": "no"
+   },
+   "ipad_kds": {
+    "name": "Programu ya jikoni",
+    "many": "no"
+   },
+   "qr_menu": {
+    "name": "Menyu ya msimbo wa QR",
+    "many": "no"
+   },
+   "meal_deals": {
+    "name": "Ofa za mlo",
+    "many": "yes"
+   },
+   "upsells": {
+    "name": "Mapendekezo ya ziada",
+    "many": "yes"
+   },
+   "walkup_orders": {
+    "name": "Oda za papo hapo",
+    "many": "yes"
+   },
+   "online_ordering_pay_at_hatch": {
+    "name": "Oda mtandaoni kwa Lipa Unapochukua",
+    "many": "no"
+   },
+   "sold_out_toggle": {
+    "name": "Kitufe cha “Imeisha”",
+    "many": "no"
+   },
+   "stock_countdown": {
+    "name": "Hesabu ya stoku inayopungua",
+    "many": "no"
+   },
+   "offline_protection": {
+    "name": "Ulinzi wa oda nje ya mtandao",
+    "many": "no"
+   },
+   "online_payments": {
+    "name": "Malipo mtandaoni",
+    "many": "yes"
+   },
+   "advance_preordering": {
+    "name": "Oda ya mapema kwa tarehe zijazo",
+    "many": "no"
+   },
+   "time_slot_selection": {
+    "name": "Nafasi za muda kwa wateja",
+    "many": "yes"
+   },
+   "smart_batch_pacing": {
+    "name": "Usimamizi wa uwezo wa jiko",
+    "many": "no"
+   },
+   "auto_accept": {
+    "name": "Kukubali oda kiotomatiki",
+    "many": "no"
+   },
+   "instagram_messenger_replies": {
+    "name": "Majibu ya kiotomatiki ya Messenger na Instagram",
+    "many": "yes"
+   },
+   "branded_qr_code": {
+    "name": "Misimbo ya QR yenye nembo",
+    "many": "yes"
+   },
+   "advanced_reporting": {
+    "name": "Ripoti za kina",
+    "many": "no"
+   },
+   "ticket_printing": {
+    "name": "Kuchapisha tiketi za jikoni",
+    "many": "no"
+   },
+   "multi_device_kds": {
+    "name": "Usawazishaji wa jiko kwenye vifaa vingi",
+    "many": "no"
+   },
+   "cook_screen": {
+    "name": "Skrini ya mpishi",
+    "many": "no"
+   },
+   "whatsapp_replies": {
+    "name": "Majibu ya kiotomatiki ya WhatsApp",
+    "many": "yes"
+   },
+   "embed_schedule": {
+    "name": "Ratiba yako kwenye tovuti yako mwenyewe",
+    "many": "no"
+   },
+   "schedule_graphics": {
+    "name": "Machapisho ya mitandao ya kijamii",
+    "many": "yes"
+   },
+   "event_types": {
+    "name": "Aina maalum za matukio",
+    "many": "yes"
+   },
+   "private_events": {
+    "name": "Shughuli binafsi",
+    "many": "yes"
+   },
+   "paperwork": {
+    "name": "Hati",
+    "many": "yes"
+   }
+  }
+ },
+ "faq": {
+  "phrases": {
+   "appsSentence": "Pia kuna programu ya iPad na Android, inayoendelea kupokea oda za papo hapo hata ukipoteza mtandao.",
+   "appsOffline": "Programu ya iPad na Android inaendelea kupokea oda za papo hapo bila mtandao na kuzituma ukirudi mtandaoni; dashibodi ya wavuti inahitaji muunganisho.",
+   "webOffline": "Dashibodi ya wavuti inahitaji muunganisho ili kuonyesha oda mpya."
+  }
+ },
+ "aboutPage": {
+  "meta": {
+   "title": "Kuhusu sisi — HatchGrab",
+   "description": "HatchGrab hutengeneza programu kwa food truck na catering: oda mtandaoni, muda wa kuchukua na maswali machache yanayojirudia. Mwanzilishi: Dominic Bonini."
+  },
+  "eyebrow": "Kuhusu sisi",
+  "title": "Imejengwa kulingana na jinsi food truck zinavyofanya kazi kweli",
+  "photoAlt": "{name}, mwanzilishi wa HatchGrab",
+  "story": {
+   "start": "HatchGrab ilianza kwa jambo moja rahisi nililoliona: food truck zinahitaji zana bora zaidi za kuendesha biashara zao.",
+   "villageFoodie": "Baada ya kuanzisha Village Foodie, orodha inayowasaidia watu kugundua food truck zinazotembelea maeneo yao, nilitumia muda zaidi kujifunza changamoto zinazozikabili biashara za chakula zinazotembea. Tofauti na migahawa ya kawaida, food truck huhama kila mara, zikifanya kazi katika maeneo tofauti na kuhudumia wateja katika mazingira yanayobadilika.",
+   "fixedAddress": "Hata hivyo, programu nyingi zinazopatikana kwao zimeundwa kwa ajili ya biashara zenye anwani moja ya kudumu.",
+   "change": "HatchGrab iliundwa ili kubadilisha hilo.",
+   "build": "Tunatengeneza programu za vitendo mahsusi kwa food truck na huduma za upishi zinazotembea, zikiwasaidia kupokea oda mtandaoni, kusimamia muda wa kuchukua oda, kuhakikisha oda zinaenda bila tatizo na kutumia muda mchache kujibu maswali yanayojirudia.",
+   "focus": "Lengo letu ni rahisi: kurahisisha uendeshaji wa food truck, kwa zana zilizoundwa kulingana na jinsi biashara hizi zinavyofanya kazi kweli."
+  },
+  "signature": "<b>{name}</b><br></br>Mwanzilishi, HatchGrab",
+  "company": "{company} · imesajiliwa England na Wales · namba ya kampuni {number} · ofisi iliyosajiliwa: {address}",
+  "contact": "Wasiliana nasi"
+ },
+ "legalChrome": {
+  "meta": {
+   "privacyTitle": "Sera ya Faragha — HatchGrab",
+   "privacyDescription": "Jinsi HatchGrab Ltd inavyokusanya na kutumia taarifa binafsi.",
+   "termsTitle": "Masharti ya Huduma — HatchGrab",
+   "termsDescription": "Masharti ya kutumia HatchGrab.",
+   "countryTermsTitle": "Masharti ya nchi mahususi — HatchGrab",
+   "countryTermsDescription": "Kanuni za ziada zinazotumika kwa HatchGrab katika baadhi ya nchi."
+  },
+  "homeLabel": "Ukurasa wa mwanzo wa HatchGrab",
+  "privacy": "Faragha",
+  "terms": "Masharti",
+  "countryTerms": "Masharti ya nchi",
+  "contact": "Mawasiliano",
+  "lastUpdated": "Ilisasishwa mwisho: {date}",
+  "questions": "Una maswali? <link>Wasiliana nasi</link> — sisi ni watu halisi.",
+  "translationNote": "Hii ni tafsiri. Ikitofautiana na <link>toleo la Kiingereza</link>, toleo la Kiingereza ndilo litakalotumika."
+ },
+ "truckPage": {
+  "meta": {
+   "fallbackTitle": "Food truck | Village Foodie",
+   "hgFallbackTitle": "Food truck",
+   "orderTitle": "Agiza kutoka {truck}",
+   "orderDescription": "Agiza mapema kutoka {truck} kisha uchukue oda yako kwenye food truck.",
+   "title": "{truck} | Village Foodie",
+   "logoAlt": "Nembo ya {truck}"
+  },
+  "shareTitle": "Ratiba ya {truck}",
+  "shareText": "Angalia mahali utakapopata chakula cha {truck} tena! 🚚",
+  "linkCopied": "Kiungo cha wasifu kimenakiliwa! 📋",
+  "facebookPage": "Ukurasa wa Facebook",
+  "loadingMap": "Inapakia ramani…",
+  "view": {
+   "list": "Orodha",
+   "map": "Ramani"
+  },
+  "ownThisTruck": "Unamiliki food truck hii?",
+  "ownThisTruckTitle": "Unamiliki food truck hii? Bofya ili kusasisha wasifu wako",
+  "actions": {
+   "menu": "Menyu",
+   "call": "Piga simu",
+   "message": "Ujumbe",
+   "share": "Shiriki",
+   "order": "Agiza"
+  },
+  "loadingSchedule": "Inapakia ratiba…",
+  "loadError": {
+   "title": "Imeshindikana kupakia",
+   "body": "Hatukuweza kupakia ratiba kwa sasa — kwa kawaida ni hitilafu ya muda mfupi. Tafadhali jaribu tena.",
+   "retry": "Jaribu tena"
+  },
+  "notFound": {
+   "title": "Food truck haikupatikana",
+   "body": "Hatukupata taarifa zozote za food truck hii. Huenda imehamia mahali pengine au imesasisha wasifu wake.",
+   "cta": "Tazama food truck zote"
+  },
+  "noEvents": {
+   "title": "Hakuna matukio yajayo yaliyopatikana",
+   "body": "Huenda tunakosa baadhi ya taarifa za food truck hii. Je, wewe ndiye mmiliki, au unaijua ratiba yake?",
+   "cta": "Tutumie ujumbe ili tusasishe!"
+  },
+  "whereToFind": "Mahali pa kutupata",
+  "missingEvent": "<strong>Je, tunakosa tukio?</strong> <br></br>Kama wewe ni mmiliki wa food truck hii au shabiki wake mkubwa, tusaidie kuuweka ukurasa huu sahihi! <br></br><link>Wasiliana nasi ili kuongeza taarifa zinazokosekana.</link>",
+  "weeklySchedule": "Pata ratiba ya kila wiki 🍕"
+ },
+ "contactPage": {
+  "meta": {
+   "title": "Msaada",
+   "description": "Pata msaada kuhusu HatchGrab. Tutumie ujumbe na tutakujibu kwa barua pepe."
+  },
+  "logIn": "Ingia",
+  "eyebrow": "Msaada",
+  "title": "Tunaweza kukusaidiaje?",
+  "lede": "Kuna kitu hakifanyi kazi, au una swali kuhusu akaunti yako? Kuna njia mbili za kutufikia — kwa njia yoyote ile tutakujibu kwa barua pepe.",
+  "emailUs": "Tutumie barua pepe",
+  "formHeading": "Au tutumie ujumbe",
+  "form": {
+   "topicLabel": "Ni kuhusu nini?",
+   "topics": {
+    "question": "Swali kuhusu HatchGrab",
+    "account": "Msaada kuhusu akaunti yangu",
+    "comparison": "Marekebisho kwenye ukurasa wa ulinganisho",
+    "other": "Kitu kingine"
+   },
+   "nameLabel": "Jina lako",
+   "namePlaceholder": "Jina",
+   "emailLabel": "Barua pepe",
+   "businessLabel": "Jina la food truck au biashara",
+   "optional": "(si lazima)",
+   "businessPlaceholder": "mf. Jiko la Pizza",
+   "messageLabel": "Ujumbe wako",
+   "send": "Tuma ujumbe",
+   "sending": "Inatuma…",
+   "privacyLine": "Tutatumia taarifa zako kukujibu tu.",
+   "privacyLink": "Sera ya faragha",
+   "thanksTitle": "Asante — ujumbe wako umefika.",
+   "thanksBody": "Tutakujibu kwa barua pepe kwenye anwani uliyotoa.",
+   "errors": {
+    "nameRequired": "Tafadhali weka jina lako.",
+    "nameTooLong": "Tafadhali jina lako lisizidi herufi {max, number}.",
+    "emailRequired": "Tafadhali weka anwani yako ya barua pepe.",
+    "emailInvalid": "Tafadhali weka anwani sahihi ya barua pepe.",
+    "emailTooLong": "Tafadhali tumia anwani ya barua pepe isiyozidi herufi {max, number}.",
+    "businessRequired": "Tafadhali weka jina la food truck au biashara yako, ili tuweze kupata akaunti yako.",
+    "businessTooLong": "Tafadhali jina la food truck au biashara lisizidi herufi {max, number}.",
+    "messageTooShort": "Tafadhali andika angalau herufi {min, number}.",
+    "messageTooLong": "Tafadhali ujumbe wako usizidi herufi {max, number}.",
+    "topicInvalid": "Tafadhali chagua ujumbe wako unahusu nini.",
+    "rateLimited": "Tayari umetuma jumbe kadhaa — tafadhali jaribu tena baadaye, au tutumie barua pepe kwa {email}.",
+    "failed": "Hitilafu imetokea — tafadhali tutumie barua pepe kwa {email}."
+   }
+  },
+  "privacy": "Faragha",
+  "terms": "Masharti",
+  "about": "Kuhusu sisi",
+  "copyright": "© {year} HatchGrab"
+ },
+ "siteFooter": {
+  "title": "Usikose kipande hata kimoja 🍕",
+  "body": "Pokea ratiba ya chakula cha mtaani kwako kwenye kikasha chako kila wiki.",
+  "cta": "Pata ratiba",
+  "noSpam": "Hakuna barua taka (labda pepperoni tu). Jiondoe wakati wowote.",
+  "heading": "Wasiliana nasi na huduma",
+  "hire": "Kodi food truck",
+  "general": "Swali la jumla",
+  "addBusiness": "Ongeza biashara yangu",
+  "reportIssue": "Ripoti tatizo",
+  "directory": "Orodha ya food truck",
+  "disclaimer": "Tahadhari: Ratiba zinaweza kubadilishwa na wafanyabiashara. Tunajitahidi, lakini hatuwajibiki kwa food truck zilizoghairi au baga zilizoisha. Daima angalia mitandao ya kijamii ya mfanyabiashara kwa taarifa za dakika za mwisho."
+ },
+ "errorPage": {
+  "notFoundTitle": "Ukurasa haukupatikana",
+  "notFoundBody": "Hatukuweza kupata ukurasa huo. Huenda umehamishwa, au anwani imeandikwa vibaya.",
+  "home": "Nenda kwenye ukurasa wa mwanzo",
+  "errorTitle": "Hitilafu imetokea",
+  "errorBody": "Samahani — ukurasa huu haukupakia. Jaribu tena, au rudi kwenye ukurasa wa mwanzo.",
+  "retry": "Jaribu tena",
+  "backToDashboard": "Rudi kwenye dashibodi",
+  "errorBodyDashboard": "Samahani, ukurasa huu haukupakia. Jaribu tena, au rudi kwenye dashibodi yako.",
+  "sectionFailed": "Sehemu hii haikupakia."
+ },
+ "embed": {
+  "metaDescription": "Mahali pa kununua kutoka {truck} siku zijazo.",
+  "orderFrom": "Agiza kutoka {truck}",
+  "poweredBy": "Inaendeshwa na <b>HatchGrab</b>",
+  "loadFailed": "Imeshindikana kupakia ratiba kwa sasa.",
+  "loading": "Inapakia ratiba…",
+  "empty": "Hakuna matukio yajayo yaliyoorodheshwa kwa {truck}."
+ },
+ "planNames": {
+  "payg": {
+   "name": "Lipa kadri unavyotumia",
+   "subtitle": "Kwa wafanyabiashara wa msimu na wa muda",
+   "description": "Hakuna ada ya kila mwezi. Unalipa 0.99% tu kwa oda za mtandaoni."
+  },
+  "pro": {
+   "subtitle": "Kwa food truck zinazopokea oda za mapema mara kwa mara",
+   "description": "Huduma zote, pamoja na majibu ya kiotomatiki ya WhatsApp na machapisho ya mitandao ya kijamii, na oda za mtandaoni zilizojumuishwa kila mwezi."
+  },
+  "unlimited": {
+   "name": "Bila kikomo",
+   "subtitle": "Kwa food truck zenye shughuli nyingi na matamasha",
+   "description": "Huduma zote, bila ada kwa oda za mtandaoni, hata uwe na shughuli nyingi kiasi gani."
+  },
+  "trial": {
+   "name": "Jaribio bila malipo",
+   "description": "Huduma zote, bila malipo, katika kipindi chote cha jaribio lako."
+  },
+  "demo": {
+   "name": "Majaribio",
+   "description": "Mazingira ya majaribio kwa mteja mtarajiwa — hayaonekani hadharani kamwe."
+  },
+  "tester": {
+   "name": "Mjaribishaji",
+   "description": "Mjaribishaji kabla ya uzinduzi — ufikiaji kamili."
+  }
+ }
+}
