@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal), batch 12 (ne-NP legal), batch 14 (fil-PH legal), batch 15 (sq-AL legal), batch 16 (bs-BA legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal), batch 12 (ne-NP legal), batch 14 (fil-PH legal), batch 15 (sq-AL legal), batch 16 (bs-BA legal), batch 17 (mk-MK legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -21,7 +21,7 @@
 | 13 | fil-PH Filipino | ✅ installed a39d2108 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 14 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs fil-PH` 3/3 ✓; `legal-languages-1` /ph/privacy, /ph/terms, /ph/country-terms ✓ (run with the `slice(3)` fix, see batch 14) | 579195f2 · legal c144a1f0 |
 | 14 | sq-AL Albanian | ✅ installed 1669f709 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 15 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs sq-AL` 3/3 ✓; `legal-languages-1` /al/privacy, /al/terms, /al/country-terms ✓ | 40b2cd16 · legal a269610e |
 | 15 | bs-BA Bosnian | ✅ installed 53d04eb9 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 16 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs bs-BA` 3/3 ✓; `legal-languages-1` /ba/privacy, /ba/terms, /ba/country-terms ✓ | 92d567c4 · legal fb7f2afc |
-| 16 | mk-MK Macedonian | ✅ installed 0e592f0c (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | d1214c77 |
+| 16 | mk-MK Macedonian | ✅ installed 0e592f0c (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 17 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs mk-MK` 3/3 ✓; `legal-languages-1` /mk/privacy, /mk/terms, /mk/country-terms ✓ | d1214c77 · legal languages-world-3 batch 17 |
 | 17 | ca-AD Catalan (Andorra) | — | — | | |
 | 18 | sw-TZ Swahili | — | — | | |
 | 19 | si-LK Sinhala | — | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **15 of 23 languages done (45 of 69 pages).** UI: 16 of 23 installed (fil-PH, sq-AL, bs-BA, mk-MK on 18 Nov). Next: mk-MK legal, then ca-AD onwards.
+Legal pages: **16 of 23 languages done (48 of 69 pages).** UI: 16 of 23 installed (fil-PH, sq-AL, bs-BA, mk-MK on 18 Nov). Next: ca-AD UI, then ca-AD legal onwards.
 
 ## Batch order
 
@@ -270,6 +270,18 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 17: mk-MK legal pages
+
+**Files:** [privacy-policy.md](../content/legal/mk-MK/privacy-policy.md), [terms-and-conditions.md](../content/legal/mk-MK/terms-and-conditions.md), [country-specific-terms.md](../content/legal/mk-MK/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into standard Macedonian (Cyrillic script). No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs mk-MK` 3/3 ✓ (each file passed on its first check; before stamping, two typos and one gender agreement were fixed by reading, and “Apple and Google” in the processor table became “Apple и Google”). `legal-languages-1`: 366 passed, 0 failed; /mk/privacy, /mk/terms and /mk/country-terms render (“4 ноември 2026 г.”, “1 ноември 2026 г.”). There is no ENOENT left: every language base that exists now has its three legal files. **No screenshot**: North Macedonia has no country row yet (see batch 2).
+
+**Translation choices:** standard Macedonian, Cyrillic only (no Serbian or Bulgarian letters or words: нарачка, плаќање, подигнување; no й/ћ/ђ). The polite plural вие/ваш is written lower-case, with plural imperatives (“пишете”, “обратете се до нас”, “кажете ни”), following the mk-MK STYLE.md and TERMS.md. The product words are the UI’s own. Truck (the business) = фуд трак (фуд тракот, фуд тракови), operator = оператор на фуд трак. Pay at Hatch orders = нарачки со плаќање при подигнување (the UI’s “Плаќање при подигнување”; never испорака/достава). At the hatch = на шалтерот (as the UI’s order.walkUpOnly), walk-up orders = нарачки на лице место. Kitchen screen = кујнски екран, dashboard = контролна табла, collection time = време за подигнување, basket = кошничка, plan = пакет, free trial = бесплатен пробен период, no monthly fee = без месечен надомест, billing = фактурирање, refund = поврат на пари. Own card terminal = сопствен POS терминал за картички, card reader = читач на картички, VAT = ДДВ, reverse charge = според механизмот за пренесување на даночната обврска (reverse charge). The demo checkbox is quoted exactly („Испраќајте ми повремени совети и новости од HatchGrab“). The date line uses the legalChrome label (“Последно ажурирање:”), and the page titles match legalChrome (“Политика за приватност”, “Услови за користење”, “Услови по држава”). Country names are in Macedonian (Соединети Американски Држави, Ирска, Нов Зеланд, Европски економски простор и Швајцарија, Обединети Арапски Емирати, and the 28-row DPA table the same way). The addresses keep “United Kingdom”. Legal terms: controller/processor = контролор / обработувач, sub-processors = подобработувачи, lawful basis = правна основа, legitimate interests = легитимни интереси, consent = согласност, tort = деликт, indemnify = обештети, severability = делумна ништовност, governing law = меродавно право. Merchant of record = евидентиран продавач (merchant of record). Chargeback = оспорено плаќање (chargeback). White-label = да ја нудите под своја марка (white-label). Data intermediary = посредник за податоци (data intermediary). Data user/processor = корисник на податоци (data user) / обработувач на податоци (data processor). Tax invoice = даночна фактура (tax invoice), qualified invoice = квалификувана фактура (qualified invoice). Encargado = обработувач (encargado), aviso de privacidad = известување за приватност (aviso de privacidad), LGPD operator = оператор. TVA, IVA, GST, HST, PST, SST, ABN/ACN, NZBN, CNPJ/CPF, nota fiscal and CFDI stay as written. Article = член, Regulation = Регулатива, Standard = Стандард, Ordinance = Уредба, Decree = Уредба / декрет-закон (UAE). Local law names are in Macedonian with the official name and year in brackets, e.g. Законот за правата на потрошувачите (Consumer Rights Act 2022), Законот за приватност (Privacy Act 1988). Law numbers keep their English form (Регулативата (EU) No 1169/2011, Law No. 8,078 of 1990, Federal Decree-Law No. 45 of 2021). No Macedonian law is mentioned (North Macedonia is not in the EU; the EEA text is translated as written). The allergen names stay in English quotes („milk“, „egg“…). „Payer …“/„Commander et payer au retrait“, 特定商取引法 and 個人情報保護法 are verbatim. ASCII digits only, and number words stay words (шест години, осумте, дваесетте). The list letters (a)–(f) are Cyrillic in Macedonian alphabet order, (а) (б) (в) (г) (д) (ѓ), as Macedonian legal texts letter them (bg-BG and mn-MN use (е) for the sixth; Macedonian’s sixth letter is ѓ). The two in-text dates follow the page’s own date style (“Од 1 октомври 2026 г.”, “во сила од 21 март 2025 г.”). Quotation marks are Macedonian „…“. The only apostrophes are typographic, inside official names (Information Commissioner’s Office, l’informatique); no ASCII apostrophes or quotes remain. The only English left is inside official names in brackets (Office of the Privacy Commissioner, Federal Law on the Protection of Personal Data Held by Private Parties, and so on) and the EDPB menu path (About EDPB › Members).
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -289,4 +301,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 17 is the mk-MK legal pages, then ca-AD UI. Runs continue automatically back to back, with no waits.
+Batch 18 is the ca-AD UI. Runs continue automatically back to back, with no waits.
