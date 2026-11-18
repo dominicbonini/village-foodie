@@ -251,4 +251,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 14 is the fil-PH legal pages, then sq-AL, bs-BA and mk-MK legal. Runs continue automatically back to back, with no waits.nsistency pass, install, LPROJ). Runs continue automatically back to back, with no waits.
+Batch 14 is the fil-PH legal pages, then sq-AL, bs-BA and mk-MK legal. Runs continue automatically back to back, with no waits.
