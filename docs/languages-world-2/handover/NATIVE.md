@@ -481,3 +481,8 @@
 - ALLERGENS (check first): peanut "கச்சான் (நிலக்கடலை)", cashew "கஜு (முந்திரி)", yam "வள்ளிக்கிழங்கு (yam)" (must not mean taro/sweet potato), mackerel "கானாங்கெளுத்தி (mackerel)", crustaceans "ஓட்டுமீன்கள் (crustaceans)", sulphites "சல்பைற்றுகள் (sulphites)".
 - tip அன்பளிப்பு (alt. டிப்ஸ்); buzzer அழைப்புக் கருவி (coined); service விற்பனை அமர்வு; Manage “நிர்வாகம்”; "{amount} செலுத்தவும்" without ரூ.; e.g. "உ-ம்:".
 - Truck settings "வாகன அமைப்புகள்", Truck details "food truck விவரங்கள்", poster CANCELLED இரத்துச் செய்யப்பட்டது, TBC “அறிவிக்கப்படும்”. Glossary flags = vowel-sign false positives.
+
+## si-LK part 02 (languages-world-3, 18 Nov 2026)
+- Printing: wired "කේබල් මගින් මුද්‍රණය", KOT "කුස්සියේ ටිකට්පත් (KOT) මුද්‍රණය"; ticket.* in Sinhala — check thermal printers print Sinhala script (same question as other non-Latin languages already shipped).
+- Order card "ඇණවුම් කාඩ්පත" (same word as payment card); Log in පිවිසෙන්න / Log out ඉවත් වන්න; browser confirm buttons named "හරි / අවලංගු කරන්න".
+- "for the hatch" → walk-up order; "as the hatch sees them" → "ඇණවුම් භාර දෙන කවුන්ටරයට පෙනෙන ලෙස"; 💷 → 💵; Admin "පරිපාලනය"; "සැකසුම් → ඔබේ වාහන".
