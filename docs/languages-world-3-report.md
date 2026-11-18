@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal), batch 12 (ne-NP legal), batch 14 (fil-PH legal), batch 15 (sq-AL legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal), batch 12 (ne-NP legal), batch 14 (fil-PH legal), batch 15 (sq-AL legal), batch 16 (bs-BA legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -20,7 +20,7 @@
 | 12 | ne-NP Nepali | ✅ (lw-2) | ✅ batch 12 — **needs native/legal check** | `_legal-translations.cjs ne-NP` 3/3 ✓; `legal-languages-1` /np/privacy, /np/terms, /np/country-terms ✓ | 5f1b9944 |
 | 13 | fil-PH Filipino | ✅ installed a39d2108 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 14 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs fil-PH` 3/3 ✓; `legal-languages-1` /ph/privacy, /ph/terms, /ph/country-terms ✓ (run with the `slice(3)` fix, see batch 14) | 579195f2 · legal c144a1f0 |
 | 14 | sq-AL Albanian | ✅ installed 1669f709 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 15 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs sq-AL` 3/3 ✓; `legal-languages-1` /al/privacy, /al/terms, /al/country-terms ✓ | 40b2cd16 · legal a269610e |
-| 15 | bs-BA Bosnian | ✅ installed 53d04eb9 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | 92d567c4 |
+| 15 | bs-BA Bosnian | ✅ installed 53d04eb9 (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 16 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs bs-BA` 3/3 ✓; `legal-languages-1` /ba/privacy, /ba/terms, /ba/country-terms ✓ | 92d567c4 · legal languages-world-3 batch 16 |
 | 16 | mk-MK Macedonian | ✅ installed 0e592f0c (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | — | check-part 9/9 STRUCTURAL 0; check-fix 0 | d1214c77 |
 | 17 | ca-AD Catalan (Andorra) | — | — | | |
 | 18 | sw-TZ Swahili | — | — | | |
@@ -30,7 +30,7 @@
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **14 of 23 languages done (42 of 69 pages).** UI: 16 of 23 installed (fil-PH, sq-AL, bs-BA, mk-MK on 18 Nov). Next: bs-BA/mk-MK legal, then ca-AD onwards.
+Legal pages: **15 of 23 languages done (45 of 69 pages).** UI: 16 of 23 installed (fil-PH, sq-AL, bs-BA, mk-MK on 18 Nov). Next: mk-MK legal, then ca-AD onwards.
 
 ## Batch order
 
@@ -258,6 +258,18 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **Garbled spans:** none.
 
+## Batch 16: bs-BA legal pages
+
+**Files:** [privacy-policy.md](../content/legal/bs-BA/privacy-policy.md), [terms-and-conditions.md](../content/legal/bs-BA/terms-and-conditions.md), [country-specific-terms.md](../content/legal/bs-BA/country-specific-terms.md).
+
+🔴 **All three pages need a native/legal check.** These are faithful machine translations into standard Bosnian (Latin script, ijekavian). No native-speaking lawyer has reviewed them.
+
+**Checks:** `_legal-translations.cjs bs-BA` 3/3 ✓ (first run, no fixes needed). `legal-languages-1`: /ba/privacy, /ba/terms and /ba/country-terms render ("4. novembar 2026.", "1. novembar 2026."). The next ENOENT is mk-MK (`content/legal/mk-MK/privacy-policy.md`), as expected. **No screenshot**: Bosnia and Herzegovina has no country row yet (see batch 2).
+
+**Translation choices:** standard Bosnian, Latin script, ijekavian, with the UI’s own product words, in the UI’s polite plural address (vi/vaš, plural imperatives: “pišite”, “kontaktirajte nas”, “obratite nam se”), following the bs-BA STYLE.md and TERMS.md. Bosnian rather than Serbian or Croatian forms throughout (narudžba, vrijeme, mjesec, historija, ekran, obaveza, uslovi; no porudžbina, tjedan, zaslon, obveza, blagajna). Truck = food truck, inflected (food trucka, food trucku, food truckovi), operator = operater food trucka, Pay at Hatch = “Plaćanje pri preuzimanju” (never “pouzećem” / “pri dostavi”), at the hatch = “na šalteru” (as the UI’s order.walkUpOnly), walk-up orders = narudžbe na licu mjesta, kitchen screen = kuhinjski ekran (KDS), dashboard = kontrolna tabla, collection time = vrijeme preuzimanja, basket = korpa, plan = paket, free trial = besplatni probni period, refund = povrat novca, own card terminal = vlastiti POS terminal, card reader = čitač kartica, VAT = PDV, reverse charge = po mehanizmu obrnutog obračuna (reverse charge), and the demo checkbox is quoted exactly („Šaljite mi povremeno savjete i novosti od HatchGraba“). The date line uses the legalChrome label, “Posljednje ažuriranje:”, and the page titles match legalChrome (“Politika privatnosti”, “Uslovi korištenja”, “Uslovi za pojedine države”). Country names are in Bosnian (Sjedinjene Američke Države, Irska, Novi Zeland, Evropski ekonomski prostor i Švicarska, Ujedinjeni Arapski Emirati; the 28-row DPA table likewise), and the addresses keep “United Kingdom”. Legal terms: controller/processor = kontrolor / obrađivač, sub-processors = podobrađivači (sub-processors), lawful basis = pravni osnov, legitimate interests = legitimni interesi, consent = pristanak, negligence = nemar (negligence), tort = vanugovorna odgovornost (tort), indemnify = obeštetiti (indemnify), assignment/severability/no waiver = Bosnian with the English in brackets. merchant of record = prodavac koji odgovara za prodaju (merchant of record), chargeback = osporeno plaćanje (chargeback), white-label = prodavati pod vlastitim brendom (white-label), data intermediary = posrednik za podatke (data intermediary), data user/processor = korisnik podataka (data user)/obrađivač podataka (data processor), tax invoice = poreska faktura (tax invoice), qualified invoice = kvalifikovana faktura (qualified invoice), encargado and aviso de privacidad = vaš obrađivač (encargado) / obavještenje o privatnosti (aviso de privacidad), LGPD operator = operater (operador). TVA/IVA are kept, with (francuskim PDV-om)/(meksičkim PDV-om) at first mention; GST, HST, PST, SST, ABN/ACN, NZBN, CNPJ/CPF, nota fiscal, CFDI stay as written. Article = Član, Regulation = Uredba, Standard = Standard, Ordinance = Uredba, Decree = Uredba / dekret-zakon (UAE). Local law names are in Bosnian with the official name and year in brackets, e.g. Zakon o pravima potrošača (Consumer Rights Act 2022), Zakon o privatnosti (Privacy Act 1988). Law numbers keep their English form (Uredba (EU) No 1169/2011, Law No. 8,078 of 1990, Federal Decree-Law No. 45 of 2021). No Bosnian law is mentioned (Bosnia and Herzegovina is not in the EU; the EEA text is translated as written). The allergen names stay in English quotes („milk“, „egg“…), and „Payer …“/„Commander et payer au retrait“, 特定商取引法 and 個人情報保護法 are verbatim. ASCII digits only, and number words stay words (šest godina, osam, dvadeset). The list letters (a)–(f) stay Latin. The two in-text dates follow the page’s own date style, day-dot and year-dot, in the genitive the sentence needs (“Od 1. oktobra 2026.”, “na snazi od 21. marta 2025.”), as sr-RS does. In the processor table, “Apple and Google” is written “Apple i Google”, and both names stay verbatim. Quotation marks are Bosnian „…“; the only apostrophes are typographic, inside official names (Information Commissioner’s Office, l’informatique); no ASCII apostrophes or quotes remain. The only English sentence fragments left are inside official names in brackets (Office of the Privacy Commissioner, Federal Law on the Protection of Personal Data Held by Private Parties, and so on) and the EDPB menu path (About EDPB › Members).
+
+**Garbled spans:** none.
+
 ## The "9/12 fixed languages" rule (settled by Dominic, 16 November 2026)
 
 - The **12 languages-world-2 languages** (uk-UA, ru-KZ, kk-KZ, uz-UZ, az-AZ, ka-GE, hy-AM, mn-MN, hi-IN, bn-BD, ur-PK, ne-NP) keep their current card banner (pricing-copy-4, option b). They are **not changed**.
@@ -277,4 +289,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 ## Next
 
-Batch 16 is the bs-BA legal pages, then mk-MK legal, then ca-AD UI. Runs continue automatically back to back, with no waits.
+Batch 17 is the mk-MK legal pages, then ca-AD UI. Runs continue automatically back to back, with no waits.
