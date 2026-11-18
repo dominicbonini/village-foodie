@@ -48,6 +48,7 @@ import { useT, useAppLocale } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/addOrder'
 import { errorText } from '@/lib/i18n/customer-errors'
 import '@/lib/i18n/catalog/errorsKitchen'
+import { staffFetch } from '@/lib/native/staffFetch'   // dashboard-auth-2: staff calls carry the sign-in, read at send time
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -870,7 +871,7 @@ export function AddOrderPanel({
     if (!token) return
     setEventsLoading(true)
     try {
-      const res = await fetch(`/api/events/manage?token=${token}&upcoming=true`)
+      const res = await staffFetch(`/api/events/manage?token=${token}&upcoming=true`)
       if (!res.ok) return // S5: never setState from a failed fetch (e.g. 429)
       const data = await res.json()
       if (!Array.isArray(data.events)) return // malformed body — don't blank the list
@@ -1776,7 +1777,7 @@ setItemModal({ item, modGroups, editCartKey })
           const mi = truckMenu?.items.find(m => m.name === item.name)
           if (mi) categoryMap[item.name] = mi.category
         })
-        await fetch('/api/dashboard/action', {
+        await staffFetch('/api/dashboard/action', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token, pin, action: 'decrement_stock', items: manualItems, categoryMap }),

@@ -169,6 +169,8 @@ import '@/lib/i18n/catalog/kitchenCapacity'
 import '@/lib/i18n/catalog/offlineProtection'
 import '@/lib/i18n/catalog/serviceSettings'
 import { forgetRetiredDemoFlags } from '@/lib/demo-board-build'   // demo-2: clears the retired welcome / baseline names
+import { staffFetch } from '@/lib/native/staffFetch'   // dashboard-auth-2: staff calls carry the sign-in, read at send time
+import { loginHrefBackHere } from '@/lib/auth/login-href'   // dashboard-auth-2: "Access denied" → sign in, then back here
 
 /** The ONLY list of valid ?tab= values, shared by the tab bar and the URL validator — so a tab cannot be
  *  added to the UI without becoming linkable, or removed without ceasing to be. */
@@ -303,7 +305,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     menuReviewChecked.current=true
     ;(async()=>{
       try{
-        const res=await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'menu_review_state'})})
+        const res=await staffFetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'menu_review_state'})})
         const d=await res.json().catch(()=>null)
         if(res.ok&&(d?.state==='offer'||d?.state==='check'))router.replace(`/manage/${encodeURIComponent(token)}`)
       }catch{/* best-effort: stay on the board */}
@@ -1185,7 +1187,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // Write into THIS event's slice (keyed by the id the call was made with), never a flat replace —
     // so a stale response from a previously-selected event can't pollute the current slice.
     const key=eventId??'__none__'
-    fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
+    staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token,pin:currentPin,action:'get_stock',eventId:eventId??null})})
       .then(r=>r.json()).then(d=>{
         setItemStocksByEvent(prev=>({...prev,[key]:d.stocks??[]}))
@@ -1248,7 +1250,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // route resolves the right event even when it isn't today's first event.
       const sel=selectedEventRef.current
       if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
-      const res=await fetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader(),signal:ctrl.signal}); const data=await res.json()
+      const res=await staffFetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader(),signal:ctrl.signal}); const data=await res.json()
       // ── R2 — 🔴 THE ONE BRANCH OF FOUR THAT DID NOT CONSULT `authenticatedRef`. ─────────────────
       // The 429 branch below, the non-ok branch and the thrown-fetch catch ALL check it, and the
       // comment beside one of them states the intent: keep existing state, never blank a working board
@@ -1379,7 +1381,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setAuthenticated(true); authenticatedRef.current=true; rl429RetriesRef.current=0; setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin,selectedEventRef.current?.id??null)}
       try{
-        const eventsRes=await fetch(`/api/events/manage?token=${token}&upcoming=true&counts=1`)
+        const eventsRes=await staffFetch(`/api/events/manage?token=${token}&upcoming=true&counts=1`)
         // Never replace good event state with data from a failed response (429/500
         // returns valid JSON without .events, which would silently wipe events)
         if(!eventsRes.ok){
@@ -1402,7 +1404,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           // A running overnight event from yesterday (the only earlier-dated row in `fetched`) has started by definition.
           const stale=fetched.filter((e:TruckEvent)=>e.status==='confirmed'&&e.auto_open===true&&(e.event_date<todayStr||e.start_time<=currentTime))
           for(const ev of stale){
-            await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId:ev.id,payload:{}})})
+            await staffFetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId:ev.id,payload:{}})})
           }
           if(stale.length>0) setTodayEvents(prev=>prev.map(e=>stale.some((s:TruckEvent)=>s.id===e.id)?{...e,status:'open' as const,opened_at:new Date().toISOString()}:e))
         }
@@ -1719,7 +1721,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // chaining rather than by `await` (an effect callback cannot be async without changing its cleanup
     // contract). Same header, same request; only the sequencing differs from the other three sites.
     nativeAuthHeader()
-      .then(h=>fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...h},body:JSON.stringify({token,action:'get_vans'})}))
+      .then(h=>staffFetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...h},body:JSON.stringify({token,action:'get_vans'})}))
       .then(r=>r.json()).then(d=>{
         console.log('[VansFetch] result:',d.vans)
         setVans(d.vans||[])
@@ -2059,7 +2061,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const submitPin=async()=>{
     const p=new URLSearchParams({token,pin:pinInput})
     const sel=selectedEventRef.current; if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
-    const res=await fetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader()}); const data=await res.json()
+    const res=await staffFetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader()}); const data=await res.json()
     // ── 🔴 A FAILURE TO REACH THE DATA IS NOT AN INCORRECT PIN. ────────────────────────────────────
     // This was `if(!res.ok){setPinError('Incorrect PIN')}` — ANY non-ok status, including a timeout and
     // a 500. On 1 September an operator typing the CORRECT PIN was told it was wrong, and R1 alone would
@@ -2088,7 +2090,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // set_* action, then patch local truck state so the card reflects the change before the next 60s poll.
   const savePrintTriggerMode=async(m:'lead_time'|'on_confirmed')=>{
     try{
-      await fetch('/api/dashboard/action',{
+      await staffFetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'set_print_trigger_mode',value:m})
       })
@@ -2112,7 +2114,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // if the write fails, so the dot can never claim a layout the server did not accept.
     setTruck(t=>t?{...t,add_order_layout:value}:t)
     try{
-      const res=await fetch('/api/dashboard/action',{
+      const res=await staffFetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'set_add_order_layout',value})
       })
@@ -2128,7 +2130,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const saveAutoAccept=async(val:boolean)=>{
     setSavingAutoAccept(true)
     try{
-      await fetch('/api/dashboard/action',{
+      await staffFetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'set_auto_accept',value:val})
       })
@@ -2151,7 +2153,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const saveOnlinePaymentsPaused=async(paused:boolean)=>{
     setSavingOnlinePaymentsPause(true)
     try{
-      const res=await fetch('/api/dashboard/action',{
+      const res=await staffFetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'set_online_payments_paused',value:paused})
       })
@@ -2188,7 +2190,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!activeEvent)return
     setSavingIntervals(true)
     try{
-      const res=await fetch('/api/dashboard/action',{
+      const res=await staffFetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'set_collection_intervals_override',customer,operator,eventId:activeEvent.id})
       })
@@ -2248,7 +2250,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!activeEvent)return
     setSavingPaidStepOverride(true)
     try{
-      const res=await fetch('/api/dashboard/action',{
+      const res=await staffFetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'set_show_paid_step_override',value:val,eventId:activeEvent.id})
       })
@@ -2267,7 +2269,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!activeEvent)return
     setSavingCompletionOverride(true)
     try{
-      const res=await fetch('/api/dashboard/action',{
+      const res=await staffFetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'set_completion_presses_override',value:val,eventId:activeEvent.id})
       })
@@ -2286,7 +2288,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!activeEvent)return
     setSavingTakesCashOverride(true)
     try{
-      const res=await fetch('/api/dashboard/action',{
+      const res=await staffFetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'set_takes_cash_override',value:val,eventId:activeEvent.id})
       })
@@ -2308,7 +2310,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     markPending('effectiveBuzzerPrompt',val)   // guard: a reseed mid-write can't clobber the optimistic value
     setEffectiveBuzzerPrompt(val)
     try{
-      const res=await fetch('/api/dashboard/action',{
+      const res=await staffFetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'set_buzzer_prompt_override',value:val,eventId:activeEvent.id})
       })
@@ -2425,7 +2427,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const prev=eventOfflineModeOverride
     setEventOfflineModeOverride(mode)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:eventOfflineOverride,mode,eventId:activeEvent.id})})
+      const res=await staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:eventOfflineOverride,mode,eventId:activeEvent.id})})
       if(!res.ok)throw new Error('write failed')
     }catch{ setEventOfflineModeOverride(prev); showToast(tDash('toast.saveThatFailed'),'error') }
   }
@@ -2437,7 +2439,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const prev=eventAutoRejectOverride
     setEventAutoRejectOverride(mins)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:eventOfflineOverride,autoRejectMins:mins,eventId:activeEvent.id})})
+      const res=await staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:eventOfflineOverride,autoRejectMins:mins,eventId:activeEvent.id})})
       if(!res.ok)throw new Error('write failed')
     }catch{ setEventAutoRejectOverride(prev); showToast(tDash('toast.saveThatFailed'),'error') }
   }
@@ -2460,7 +2462,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const prev=eventOfflineOverride
     setEventOfflineOverride(value)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value,eventId:activeEvent.id})})
+      const res=await staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value,eventId:activeEvent.id})})
       if(!res.ok)throw new Error('write failed')
       // Disabling clears the offline pause server-side too → reflect it locally so the dashboard
       // un-pauses immediately (the customer catches up on its DB cycle).
@@ -2481,7 +2483,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setEventOrderReadyOverride(value)
     setEffectiveOrderReady(value)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_order_ready_override',value,eventId:activeEvent.id})})
+      const res=await staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_order_ready_override',value,eventId:activeEvent.id})})
       if(!res.ok)throw new Error('write failed')
       reseedRef.current() // re-resolve effectiveOrderReady (override ?? default); reads committed → releases guard
     }catch{
@@ -2495,14 +2497,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     markPending('kitchenCapacity',value); setKitchenCapacity(value) // optimistic + guard
     // Service-role write via /api/manage (same action the Manage page uses). The previous
     // anon supabaseBrowser.update on truck_vans was RLS-blocked and failed silently.
-    await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,kitchen_capacity:value})})
+    await staffFetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,kitchen_capacity:value})})
     reseedRef.current() // re-sync from the authoritative server read (reads committed → releases guard)
   }
 
   const saveCapacityWindow=async(value:number)=>{
     if(!activeEvent?.van_id)return
     markPending('capacityWindowMins',value); setCapacityWindowMins(value) // optimistic + guard
-    await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,capacity_window_mins:value})})
+    await staffFetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,capacity_window_mins:value})})
     reseedRef.current() // re-sync from the authoritative server read (reads committed → releases guard)
   }
 
@@ -2526,7 +2528,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Ensure vans are loaded before evaluating auto-pause
       let currentVans=vans
       if(currentVans.length===0&&truck?.id){
-        const res=await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'get_vans'})})
+        const res=await staffFetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'get_vans'})})
         const d=await res.json()
         currentVans=d.vans||[]
         setVans(currentVans)
@@ -2569,7 +2571,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setSavingCat(true)
     try{
       const prepSecs=editCatForm.prepMins*60+editCatForm.prepSecs30
-      await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
+      await staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'update_category',categoryId:editingCatId,
           name:editCatForm.name,prep_secs:prepSecs,batch_size:editCatForm.batch,allow_notes:editCatForm.allowNotes})})
       setEditingCatId(null);setEditCatForm(null)
@@ -2605,7 +2607,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // Optimistic, on the SELECTED event's menu — which /api/menu already resolves for this van.
     setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catId?{...c,[field]:value}:c)}:prev)
     try{
-      await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},
+      await staffFetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},
         body:JSON.stringify({token,action:'upsert_van_category',vanId,categoryId:catId,
           ...(field==='prep_secs'?{prep_secs:prepSecs}:{batch_size:batchSize})})})
       setCategoryConfigs(prev=>({...prev,[key]:{secs:prepSecs,batch:batchSize??1}}))
@@ -2622,7 +2624,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!catData)return
     setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catId?{...c,counts_toward_capacity:newVal}:c)}:prev)
     try{
-      await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},
+      await staffFetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},
         body:JSON.stringify({token,action:'upsert_van_category',vanId,categoryId:catId,counts_toward_capacity:newVal})})
     }catch{}
   }
@@ -2639,7 +2641,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       // `refund_context` suppresses the standalone refund email: a cancellation says what happened to
       // the money in its own sentence, and two emails for one event is worse than none.
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
+      const res=await staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'refund',order_key:orderKey,amount_minor:amountMinor,reason,note,refund_context:context??null})})
       const data=await res.json().catch(()=>({}))
       const refunded=orders.find(o=>o.order_key===orderKey)
@@ -2792,7 +2794,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!editingOrder)return; setActionLoading(`edit-${editingOrder.id}`)
     const sendItems=editItems.filter(i=>i.quantity>0)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'edit',order_key:editingOrder.order_key,editedOrder:{items:sendItems,deals:editDeals,slot:editSlot||null,notes:editNotes||null,customerName:editName,customerEmail:editEmail,customerPhone:editPhone,...(confirmTotal!==undefined?{confirmUnresolvedTotal:confirmTotal}:{})}})})
+      const res=await staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'edit',order_key:editingOrder.order_key,editedOrder:{items:sendItems,deals:editDeals,slot:editSlot||null,notes:editNotes||null,customerName:editName,customerEmail:editEmail,customerPhone:editPhone,...(confirmTotal!==undefined?{confirmUnresolvedTotal:confirmTotal}:{})}})})
       const data=await res.json()
       // 409 + needsPriceConfirm: NOTHING was saved. Show what could not be priced and wait for an
       // explicit confirm, tagged with the basket it was computed for.
@@ -2916,7 +2918,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const doOpenEvent=async(eventId:string)=>{
     const wasClosedEvent=upcomingEvents.find(e=>e.id===eventId)?.status==='closed'
     try{
-      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId,payload:{}})})
+      const res=await staffFetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId,payload:{}})})
       const data=await res.json(); if(!res.ok) throw new Error(errorText(tErrM,data,''))
       const opened=new Date().toISOString()
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:opened}:e))
@@ -2947,7 +2949,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const approveEvent=async(eventId:string)=>{
     setGateBusy(true)
     try{
-      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'confirm',eventId,payload:{truck_defaults:true}})})
+      const res=await staffFetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'confirm',eventId,payload:{truck_defaults:true}})})
       const data=await res.json().catch(()=>({}))
       if(!res.ok) throw new Error(errorText(tErrM,data,''))
       setUpcomingEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'confirmed' as const,confirmed_at:new Date().toISOString()}:e))
@@ -2963,7 +2965,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const keepOtherEvent=async(eventId:string)=>{
     setGateBusy(true)
     try{
-      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'dismiss_overlap',eventId,payload:{}})})
+      const res=await staffFetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'dismiss_overlap',eventId,payload:{}})})
       const data=await res.json().catch(()=>({}))
       if(!res.ok) throw new Error(errorText(tErrM,data,''))
       const at=typeof data.overlap_dismissed_at==='string'?data.overlap_dismissed_at:new Date().toISOString()
@@ -2993,7 +2995,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(isDemo||isOffline||!canCreateEvent)return
     setCreateOpen(true);setCreateLoading(true)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,pin,action:'create_event_places'})})
+      const res=await staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,pin,action:'create_event_places'})})
       const data=await res.json().catch(()=>({}))
       if(res.ok) setCreateData({places:Array.isArray(data.places)?data.places:[],vans:Array.isArray(data.vans)?data.vans:[],today:typeof data.today==='string'?data.today:null})
       else setCreateData({places:[],vans:[],today:null})
@@ -3001,7 +3003,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setCreateLoading(false)}
   }
   const submitCreateEvent=async(payload:Record<string,unknown>)=>{
-    const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,pin,action:'create_event_now',...payload})})
+    const res=await staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,pin,action:'create_event_now',...payload})})
     const body=await res.json().catch(()=>({}))
     if(res.ok&&body?.event?.id){
       const ev=body.event as TruckEvent
@@ -3027,7 +3029,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const applyFinishTime=async(eventId:string,newEnd:string)=>{
     setFinishTimeBusy(true)
     try{
-      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{end_time:newEnd}})})
+      const res=await staffFetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{end_time:newEnd}})})
       const data=await res.json(); if(!res.ok) throw new Error(errorText(tErrM,data,''))
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,end_time:newEnd}:e))
       showToast(tDash('toast.finishTimeNow',{time:newEnd}))
@@ -3066,7 +3068,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       // Flips the EVENT status to 'closed' only — existing orders are untouched and stay
       // fully visible/actionable; this just stops NEW customer orders.
-      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'close',eventId,payload:{}})})
+      const res=await staffFetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'close',eventId,payload:{}})})
       const data=await res.json(); if(!res.ok) throw new Error(errorText(tErrM,data,''))
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'closed' as const,closed_at:new Date().toISOString()}:e))
       setShowEventMenu(false); showToast(tDash('toast.eventFinished'))
@@ -3160,7 +3162,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setShowEventMenu(false)
     setEventCancelCount(0); setEventCancelTarget(ev)
     try{
-      const res=await fetch(`/api/events/affected-orders?eventId=${ev.id}&token=${token}`)
+      const res=await staffFetch(`/api/events/affected-orders?eventId=${ev.id}&token=${token}`)
       const data=await res.json()
       if(res.ok) setEventCancelCount(data.count??0)
     }catch{ /* silently fail - the gate still works, the count just stays hidden */ }
@@ -3171,7 +3173,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const doCancelEvent=async(eventId:string,cancellationReason:string,cancellationNote:string)=>{
     setEventCancelBusy(true)
     try{
-      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'cancel',eventId,payload:{cancellationReason,cancellationNote}})})
+      const res=await staffFetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'cancel',eventId,payload:{cancellationReason,cancellationNote}})})
       const data=await res.json(); if(!res.ok) throw new Error(errorText(tErrM,data,''))
       setTodayEvents(prev=>prev.filter(e=>e.id!==eventId))
       setSelectedEventId(null); setShowEventMenu(false); showToast(tDash('toast.eventCancelled'))
@@ -3182,7 +3184,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   const saveEventNote=async(eventId:string)=>{
     try{
-      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{customer_note:eventNoteInput}})})
+      const res=await staffFetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{customer_note:eventNoteInput}})})
       const data=await res.json(); if(!res.ok) throw new Error(errorText(tErrM,data,''))
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,customer_note:eventNoteInput||null}:e))
       setShowEventMenu(false); showToast(tDash('toast.noteSaved'))
@@ -3261,7 +3263,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[eventTypeList,setEventTypeList]=useState<{id:string;name:string;kind?:'custom'|'private'}[]>([])
   useEffect(()=>{let live=true
     void (async()=>{try{
-      const r=await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'load'})})
+      const r=await staffFetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'load'})})
       const j=await r.json().catch(()=>({}))
       /* ⚠️ A FAILURE LEAVES THE LIST EMPTY, which hides the row — the card and every other row still
        * work. A truck with no types is in exactly that state anyway. */
@@ -3292,7 +3294,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     ;(async()=>{
       if(!privateLinkFor){ if(live) setPrivateLinkData(null); return }
       try{
-        const r=await fetch('/api/manage',{
+        const r=await staffFetch('/api/manage',{
           method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({token,action:'private_link',id:privateLinkFor}),
         })
@@ -3335,7 +3337,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!activeEvent?.id||!eventIsPrivate){ if(live)setPrivateOrderUrl(null); return }
     void(async()=>{
       try{
-        const r=await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},
+        const r=await staffFetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({token,action:'private_link',id:activeEvent.id})})
         const j=await r.json().catch(()=>({}))
         if(!live)return
@@ -3385,7 +3387,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!activeEventId){none();return}
     void(async()=>{
       try{
-        const r=await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
+        const r=await staffFetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({token,action:'event_item_prices',eventId:activeEventId})})
         const j=await r.json().catch(()=>({}))
         if(!live)return
@@ -3449,7 +3451,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(Object.keys(prices).length===0){cancelPriceEdit();return}
     setPriceSaving(true)
     try{
-      await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
+      await staffFetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,action:'save_event_item_prices',eventId:activeEventId,prices})})
       showToast(tDashRef.current('toast.pricesSaved'))
     }catch{showToast(tDashRef.current('toast.pricesSaveFailed'),'error')}
@@ -3513,7 +3515,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!activeEvent)return
     setTypeBusy(true)
     try{
-      await fetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
+      await staffFetch('/api/event-types',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,action:'assign',eventId:activeEvent.id,typeId,clearOwn})})
       await fetchAll(pin,true)
       setPriceTick(t=>t+1)
@@ -3915,7 +3917,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // the access-denied screen above the board. The failure was a display decision, not data loss.
   // `error` is now only set for a never-authenticated session (R2) or an authoritative 401, so gating
   // on `!authenticated` renders the full-page error exactly when it is the truth and never otherwise.
-  if(error&&!authenticated){return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">{tDash('gate.accessDenied')}</p><p className="text-slate-500 text-sm">{error==='invalidAccessLink'?tDash('gate.invalidAccessLink'):error}</p>{/* app-fixes-2: a way forward — /login is the login page on the web AND in the app (docs/app-fixes-2-report.md §2). android-1-1: it is the ONLY way forward; the "← HatchGrab" line under it (a link home on the web, inert in the app) is gone. */}<div className="mt-5"><Link href="/login" data-gate-next="login" className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl">{tForgotGate('back')}</Link></div></div></div>}
+  if(error&&!authenticated){return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">{tDash('gate.accessDenied')}</p><p className="text-slate-500 text-sm">{error==='invalidAccessLink'?tDash('gate.invalidAccessLink'):error}</p>{/* app-fixes-2: a way forward — /login is the login page on the web AND in the app (docs/app-fixes-2-report.md §2). android-1-1: it is the ONLY way forward; the "← HatchGrab" line under it (a link home on the web, inert in the app) is gone. */}<div className="mt-5"><Link href={loginHrefBackHere()} data-gate-next="login" className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl">{tForgotGate('back')}</Link></div></div></div>}
   // 🔴 NOTHING LOADED AND NOTHING SAVED — SAY SO, AND SAY WHAT TO DO ABOUT IT.
   // Reached only when a first load failed AND this device has no truck snapshot. Deliberately NOT the
   // "Access denied" screen above: that one is a verdict on the credential and this is not — the link is
@@ -4091,13 +4093,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // 🔴 THE FETCH, THE OPTIMISTIC `markPending` PAIR AND THE `startedAt` STAMP ARE THE ORIGINALS, LIFTED
   // OUT OF THE <select>'s onChange UNCHANGED. They are extracted so the picker can call the SAME write
   // the select called; nothing about the body, the action name, the values or the pending keys moved.
-  const applyExtraWait=(m:number)=>{const startedAt=new Date().toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:m,eventId:activeEvent?.id})});markPending('extraWaitMins',m);markPending('extraWaitStartedAt',startedAt);setExtraWaitMins(m);setExtraWaitStartedAt(startedAt)}
+  const applyExtraWait=(m:number)=>{const startedAt=new Date().toISOString();staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:m,eventId:activeEvent?.id})});markPending('extraWaitMins',m);markPending('extraWaitStartedAt',startedAt);setExtraWaitMins(m);setExtraWaitStartedAt(startedAt)}
   // 🔴 `variant` DEFAULTS TO 'select', SO THE HEADER MOUNT IS UNCHANGED. Only the EventActionsModal
   // mount passes 'button' — the menu is the place a <select> among filled buttons looked wrong, and the
   // dashboard header was not part of that request. Both forms call `applyExtraWait`, so there is one
   // write with two openers, never two writes.
   const renderExtraWait=(cls:string,variant:'select'|'button'='select')=> (isDemo&&waitMinutes<=0)?null:waitMinutes>0?(
-    <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:0,eventId:activeEvent?.id})});markPending('extraWaitMins',0);markPending('extraWaitStartedAt',null);setExtraWaitMins(0);setExtraWaitStartedAt(null)}} className={`py-2.5 rounded-xl text-sm font-black bg-orange-100 text-orange-700 border border-orange-300 hover:bg-orange-200 ${cls}`}>
+    <button onClick={()=>{staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:0,eventId:activeEvent?.id})});markPending('extraWaitMins',0);markPending('extraWaitStartedAt',null);setExtraWaitMins(0);setExtraWaitStartedAt(null)}} className={`py-2.5 rounded-xl text-sm font-black bg-orange-100 text-orange-700 border border-orange-300 hover:bg-orange-200 ${cls}`}>
       ⏱ {tDash('extraWait.activeTapToClear',{mins:String(waitMinutes)})}
     </button>
   ):variant==='button'?(
@@ -4631,7 +4633,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 : <p className="text-red-700 font-black text-sm">⏸ {tDash('banner.paused',{indefinite:isIndefinite?'yes':'no',mins:String(minsLeft)})}</p>}
               {/* Prominent inline Resume — one tap, no hunting in the ··· menu. Clears BOTH paused_until
                   and online_paused_until on the active event (set_paused resume). */}
-              {pauseReason==='manual'&&<button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}} className="mt-2 w-full sm:w-auto bg-red-600 text-white font-black text-sm px-6 py-2.5 rounded-xl hover:bg-red-700 transition-colors">▶ {tDash('banner.resume')}</button>}
+              {pauseReason==='manual'&&<button onClick={()=>{staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}} className="mt-2 w-full sm:w-auto bg-red-600 text-white font-black text-sm px-6 py-2.5 rounded-xl hover:bg-red-700 transition-colors">▶ {tDash('banner.resume')}</button>}
               {offlineCase&&<button onClick={dismissOfflinePauseBlock} className="mt-2 text-red-600 text-xs font-bold underline">{tDash('banner.dismiss')}</button>}
             </div>})()}
             {waitMinutes>0&&!paused&&<div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-orange-700 font-black text-sm">⏱ {tDash('banner.extraWait',{mins:String(waitMinutes)})}</p></div>}
@@ -6455,9 +6457,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <p className="text-slate-500 text-sm text-center mb-4">{tDash('pause.body')}</p>
             <div className="space-y-2 mb-4">
               {[10,20,30].map(mins=>({label:tDash('pause.minutes',{n:mins,count:String(mins)}),mins})).map(({label,mins})=>(
-                <button key={mins} onClick={()=>{const until=new Date(Date.now()+mins*60000).toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});markPending('vanPausedUntil',until);setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-orange-50 border border-orange-200 text-orange-700 font-bold py-3 rounded-xl hover:bg-orange-100 text-sm">{label}</button>
+                <button key={mins} onClick={()=>{const until=new Date(Date.now()+mins*60000).toISOString();staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});markPending('vanPausedUntil',until);setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-orange-50 border border-orange-200 text-orange-700 font-bold py-3 rounded-xl hover:bg-orange-100 text-sm">{label}</button>
               ))}
-              <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});markPending('vanPausedUntil',until);setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">{tDash('pause.indefinite')}</button>
+              <button onClick={()=>{const until=new Date('2099-01-01').toISOString();staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});markPending('vanPausedUntil',until);setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">{tDash('pause.indefinite')}</button>
             </div>
             <button onClick={()=>setShowPauseModal(false)} className="w-full text-slate-400 text-sm font-bold py-2">{tDash('common.cancel')}</button>
           </div>
@@ -7000,7 +7002,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           onPrivateLink={eventIsPrivate?()=>{setShowEventMenu(false);setPrivateLinkFor(activeEvent.id)}:undefined}
           paused={paused}
           onPause={isDemo?undefined:()=>{setShowEventMenu(false);setShowPauseModal(true)}}
-          onResume={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
+          onResume={()=>{staffFetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
           extraWaitControl={renderExtraWait('w-full','button')}
           onChangeFinishTime={()=>{setShowEventMenu(false);setFinishTimeTarget({id:activeEvent.id,end_time:activeEvent.end_time??null,event_date:activeEvent.event_date??null,start_time:activeEvent.start_time??null})}}
           onFinishEvent={()=>finishEvent(activeEvent.id)}

@@ -47,6 +47,7 @@ import { featureRefusal } from '@/lib/plan-refusal'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/manageWhatsApp'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 // Node runtime: token-crypto uses node:crypto, which the edge runtime does not provide.
 export const runtime = 'nodejs'
@@ -143,6 +144,9 @@ export async function POST(req: NextRequest) {
     .eq('dashboard_token', token)
     .single()
   if (!truck) return fail(DEFAULT_LOCALE, 'unauthorised', 'invalid_token', 401)
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, 'whatsapp_signup', { route: '/api/manage/whatsapp-signup', group: 'group1' }); if (gate.refuse) return gate.refuse }
   const locale = await localeForTruck(truck)
 
   // ── 🔴 THE PREVIEW GATE. BEFORE ANY GRAPH CALL AND BEFORE ANY WRITE. ──────────────────────────────

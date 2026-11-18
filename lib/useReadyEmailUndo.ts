@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { ShowToast } from './useToasts'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/orderCard'
+import { staffFetch } from '@/lib/native/staffFetch'   // dashboard-auth-2: staff calls carry the sign-in, read at send time
 
 // Shared "mark ready" deferred-email + undo machinery (extracted verbatim from the dashboard). Owns the
 // per-order email timers, the 4s schedule, the undo (cancel email + revert status), and the
@@ -27,7 +28,7 @@ export function useReadyEmailUndo(opts: {
   // Fire the deferred customer "ready" email for one order. keepalive so it survives a near-simultaneous
   // navigation; the server guards on status==='ready' so a raced undo sends nothing.
   const sendReadyEmail = (orderKey: string) => {
-    fetch('/api/dashboard/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true, body: JSON.stringify({ token, pin, action: 'send_ready_email', order_key: orderKey }) }).catch(() => {})
+    staffFetch('/api/dashboard/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true, body: JSON.stringify({ token, pin, action: 'send_ready_email', order_key: orderKey }) }).catch(() => {})
   }
   // Schedule the ready email 4s out (the undo window). Per-order timer so multiple readies each fire at
   // their own 4s, independent of which toast is currently visible. Re-readying clears the prior timer.
@@ -42,7 +43,7 @@ export function useReadyEmailUndo(opts: {
   const undoReady = (orderKey: string, displayId: string | number) => {
     const t = pendingReadyEmails.current.get(orderKey); if (t) clearTimeout(t); pendingReadyEmails.current.delete(orderKey)
     onUndoRestore?.(orderKey)
-    fetch('/api/dashboard/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, pin, action: 'undo_ready', order_key: orderKey }) }).then(() => refetch()).catch(() => {})
+    staffFetch('/api/dashboard/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, pin, action: 'undo_ready', order_key: orderKey }) }).then(() => refetch()).catch(() => {})
     showToast(tCard('reverted', { id: String(displayId) }))
   }
   // FLUSH on tab-close / unmount: any still-pending ready email is sent IMMEDIATELY via sendBeacon (a

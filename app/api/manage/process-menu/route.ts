@@ -14,6 +14,7 @@ import { countrySettingsForTruck } from '@/lib/country-settings'
 import { manageErrorBody } from '@/lib/i18n/manage-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { localeForTruck } from '@/lib/i18n/server-locale'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -35,6 +36,9 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, 'process_menu', { route: '/api/manage/process-menu', group: 'group1' }); if (gate.refuse) return gate.refuse }
 
   try {
     // US readiness (D35): the prompt names the truck's country's allergen list (UK 14 / US 9).

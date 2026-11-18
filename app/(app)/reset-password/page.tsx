@@ -110,7 +110,8 @@ function ResetPasswordForm() {
       // Same forced-sign-out pattern as the email-change flow (Section 12): browser client + HARD
       // redirect, which properly clears the SSR cookie (plain client sign-out alone does not).
       const { createSupabaseBrowserClient } = await import('@/lib/supabase/client')
-      await createSupabaseBrowserClient().auth.signOut()
+      // dashboard-auth-3: a password reset still signs the account out EVERYWHERE — stated, not left to the default.
+      await createSupabaseBrowserClient().auth.signOut({ scope: 'global' })
       // app-fixes-1: a success screen with a "Log in" button (was a jump to /login?message=password_reset). The sign-out
       // above still runs first, and the button is a full page load, so the old session is gone either way.
       setDone(true)

@@ -13,6 +13,8 @@ import { isNativeApp } from './device'
 import { preferencesAuthStorage } from './preferencesStorage'
 
 let _client: SupabaseClient | null = null
+/** Where the app keeps its session (Preferences). */
+export const NATIVE_AUTH_STORAGE_KEY = 'hg-native-auth'
 
 export function getNativeSupabase(): SupabaseClient {
   if (!_client) {
@@ -21,7 +23,7 @@ export function getNativeSupabase(): SupabaseClient {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       // distinct storageKey so it never clashes with the web cookie client's keys; Preferences-backed
       // storage so the session survives WKWebView navigations + cold-kill (see file header).
-      { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'hg-native-auth', storage: preferencesAuthStorage } },
+      { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: NATIVE_AUTH_STORAGE_KEY, storage: preferencesAuthStorage } },
     )
   }
   return _client
@@ -52,5 +54,16 @@ export async function nativeAuthHeader(): Promise<Record<string, string>> {
 /** LOGOUT = clear the SESSION only. Does NOT touch van_devices — the device stays pinned to its
  *  truck/van/screen so the next person lands on the same device config. */
 export async function nativeSignOut(): Promise<void> {
-  try { await getNativeSupabase().auth.signOut() } catch {}
+  // 🔴 dashboard-auth-3 (18 November 2026): THIS DEVICE ONLY. `signOut()` with no options is scope 'global' — it ended every
+  // session of the account, so a kitchen iPad sharing the owner's login lost its session when the owner signed out on a phone.
+  // 'local' revokes only this device's session; every other device stays signed in.
+  // ⚠️ AND THE STORED SESSION IS ALWAYS CLEARED. auth-js keeps the session when the server call fails (offline, a 5xx) and
+  // returns an error instead of throwing; "Sign out" must still sign THIS device out, so the stored session (and its PKCE
+  // verifier) is removed by hand in that case. Face ID / Touch ID app lock is separate (lib/native/appLock.ts) and untouched.
+  let cleared = false
+  try { const { error } = await getNativeSupabase().auth.signOut({ scope: 'local' }); cleared = !error } catch {}
+  if (!cleared) {
+    try { await preferencesAuthStorage.removeItem(NATIVE_AUTH_STORAGE_KEY) } catch {}
+    try { await preferencesAuthStorage.removeItem(`${NATIVE_AUTH_STORAGE_KEY}-code-verifier`) } catch {}
+  }
 }

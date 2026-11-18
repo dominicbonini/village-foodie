@@ -63,6 +63,15 @@ import { releaseHoldForTerminalOrder } from '@/lib/payments/release-hold'
 // see the module header. Nothing else calls it yet; that is why it was extracted before there is.
 import { rejectOrder } from '@/lib/orders/reject-order'
 import { resolveActor, resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
+import { requireMember, type AuthGroup } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
+/** dashboard-auth-2: which enforcement group each action belongs to (docs/dashboard-auth-1-report.md §5). Reads are
+ *  throttled in the shadow log; an action not listed is group 2 (orders, payments, stock, service controls, settings). */
+const DASHBOARD_READ_ACTIONS = new Set(['get_item_overrides', 'get_stock', 'get_events', 'create_event_places'])
+const DASHBOARD_GROUP1_ACTIONS = new Set(['refund', 'update_event', 'create_event_now'])
+function dashboardActionGroup(action: unknown): AuthGroup {
+  const a = typeof action === 'string' ? action : ''
+  return DASHBOARD_READ_ACTIONS.has(a) ? 'read' : DASHBOARD_GROUP1_ACTIONS.has(a) ? 'group1' : 'group2'
+}
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { readEventType } from '@/lib/event-types/read'
 import { assignBuzzer } from '@/lib/buzzer'
@@ -316,6 +325,13 @@ export async function POST(req: NextRequest) {
     // null actor_id — so the log distinguishes "a shared token acted" from "we failed to ask".
     const actor = await resolveActorSafe(req, supabase, truck)
     const actorSource = resolveActorSource(req, body)
+    // ── dashboard-auth-2: THE MEMBER GATE, IN LOG MODE (lib/auth/require-member.ts) ─────────────────────────────────
+    // Records — after the response, never refusing — a write (or read) the planned "signed-in team members only" rule
+    // would refuse. Reuses `actor` above, so it adds no lookup. Flipping AUTH_MODE for a group makes this line refuse.
+    {
+      const gate = await requireMember(req, supabase, truck, action, { route: '/api/dashboard/action', group: dashboardActionGroup(action), actor, replay: actorSource === 'offline_replay' })
+      if (gate.refuse) return gate.refuse
+    }
 
     // ── Offline-replay conflict guard (Phase 1) ───────────────────────────────
     // A status op replayed from the offline outbox carries `expected_from` (the statuses it may apply FROM,

@@ -9,6 +9,7 @@ import { manageErrorBody } from '@/lib/i18n/manage-errors'
 import { DEFAULT_LOCALE, isEnglish } from '@/lib/i18n/locales'
 import { outputLanguageName } from '@/lib/ai-language'
 import { localeForTruck } from '@/lib/i18n/server-locale'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,6 +35,9 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, 'process_allergens', { route: '/api/manage/process-allergens', group: 'group1' }); if (gate.refuse) return gate.refuse }
 
   // 🔴 THE TRUCK'S COUNTRY'S ALLERGEN LIST (country_settings.allergen_set). The UK lines below are the
   // prompt's existing text, so a UK prompt is byte-identical; a US truck's names the 9 US major allergens.

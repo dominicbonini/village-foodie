@@ -17,6 +17,7 @@ import { useDocumentLocale } from '@/lib/i18n/use-t'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/auth'
 import { startSessionObserver, subscribeSessionAlert, type SessionAlert } from '@/lib/auth/session-observer'
+import { loginHrefBackHere } from '@/lib/auth/login-href'
 
 export function SessionAlertBanner() {
   const [alert, setAlert] = useState<SessionAlert>(null)
@@ -50,8 +51,9 @@ export function SessionAlertBanner() {
             {t('body')}
           </p>
         </div>
+        {/* dashboard-auth-2: back to THIS page after signing in (lib/auth/login-href.ts). Rendered only after mount. */}
         <a
-          href="/login"
+          href={loginHrefBackHere()}
           className="shrink-0 rounded-lg bg-amber-600 px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-amber-700"
         >
           {t('signIn')}

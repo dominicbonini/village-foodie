@@ -82,7 +82,10 @@ const AS1 = require('./_named-admin-speed-1.cjs')
 // ⚠️ RE-PINNED (partners-2, 16 November 2026; scripts/_named-partners-2.cjs undoCode): its admin-row badge and the signup page's code
 // field are put back exactly FIRST, then admin-speed-1's undo meets the text it was made against.
 const P2 = require('./_named-partners-2.cjs')
-const as1 = f => { const p = P2.undoCode(f, read(f)); return p === null ? null : AS1.undoCode(f, p) }
+// ⚠️ RE-PINNED (dashboard-auth-3, 18 November 2026; scripts/_named-dashboard-auth-3.cjs undoCode): the password reset's sign-out
+// states its scope ('global', as before) and the email change signs out only the confirming device ('local'). Put back first.
+const DA3 = require('./_named-dashboard-auth-3.cjs')
+const as1 = f => { const d = DA3.undoCode(f, read(f)); if (d === null) return null; const p = P2.undoCode(f, d); return p === null ? null : AS1.undoCode(f, p) }
 const af2 = f => { const s = as1(f); return s === null ? null : (AF2.EDITED_FILES.includes(f) ? AF2.undoFile(f, s) : s) }
 const notAf1 = f => {
   if (AF2.EDITED_FILES.includes(f) && !AF1.EDITED_FILES.includes(f)) { const u = af2(f); return !(u !== null && u === showAt(AF2.EDITS.base, f)) }
@@ -90,7 +93,12 @@ const notAf1 = f => {
   const pre = af2(f); if (pre === null) return true
   const u = AF1.undoFile(f, pre); return !(u !== null && u === showAt(AF1.EDITS.base, f))
 }
-const appChanged = MP.changedSince(BEFORE, ['app/(app)']).filter(notDc2).filter(notLonger).filter(notAf1)
+// dashboard-auth-3: a file only that brief edited passes when its edit put back gives the pre-move file exactly.
+const notDa3 = f => {
+  if (!DA3.EDITED_FILES.includes(f) || AF1.EDITED_FILES.includes(f) || AF2.EDITED_FILES.includes(f)) return true
+  const u = DA3.undoCode(f, read(f)); return !(u !== null && u === showAt(BEFORE, MP.beforePath(f)))
+}
+const appChanged = MP.changedSince(BEFORE, ['app/(app)']).filter(notDc2).filter(notLonger).filter(notAf1).filter(notDa3)
 t('🔴 every file under app/(app) is its pre-move self, byte for byte (the two import lines the move had to change, named in _moved-paths.cjs, aside)',
   appChanged.length === 0, appChanged)
 t('the moved root layout, its provider and its stylesheet are byte-identical to before', ['app/(app)/layout.tsx', 'app/(app)/providers.tsx', 'app/(app)/globals.css']

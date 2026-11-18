@@ -67,6 +67,7 @@ import '@/lib/i18n/catalog/kds'
 import { errorText } from '@/lib/i18n/customer-errors'
 import '@/lib/i18n/catalog/errorsKitchen'
 import '@/lib/i18n/catalog/errorsManage'
+import { staffFetch, setStaffClientMarker } from '@/lib/native/staffFetch'   // dashboard-auth-2: staff calls carry the sign-in, read at send time
 
 // View mode driven by ?view= query param
 // /kds           → window view (default, for the main iPad at the hatch)
@@ -99,6 +100,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   // `token` key at all, so the prop is what carries it there. On the dashboard route it is the source.
   const routeParams = useParams<{ token?: string }>()
   const token = tokenProp ?? routeParams?.token ?? ''
+  // dashboard-auth-2: a KDS opened from its own link (/kds/<kds_token> — the only entry that passes `token` as a prop)
+  // marks its calls so the shadow log can count kitchen screens running with nobody signed in. A label, not a
+  // credential. Set during render (idempotent) so it is in place before the first fetch effect runs.
+  setStaffClientMarker(tokenProp ? 'kds-link' : null)
   // DEMO MODE — same signal, same source as the dashboard and proxy.ts: the `demo-` token prefix
   // (lib/demo.ts). This route runs on the DASHBOARD token, so the check is identical here.
   // The KDS is demo-ABLE rather than blocked: placing a customer order and watching the ticket land on the
@@ -630,7 +635,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       // that set is not rejected — it falls through to `todayEvents[0]` and the orders query runs
       // against THAT event. See docs/kds-event-isolation-report.md.
       const requestedEventId = applyEventScope(params, selectedEventId)
-      const res = await fetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader(), signal: ctrl.signal })
+      const res = await staffFetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader(), signal: ctrl.signal })
       const data = await res.json()
 
       // ── R9 — 🔴 A 401 IS TERMINAL; EVERYTHING ELSE KEEPS THE BOARD. ─────────────────────────────
@@ -783,7 +788,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       }
 
       try {
-        const eventsRes = await fetch(`/api/events/manage?token=${token}&upcoming=true&counts=1`)
+        const eventsRes = await staffFetch(`/api/events/manage?token=${token}&upcoming=true&counts=1`)
         // 🔴 NEVER REPLACE GOOD EVENT STATE WITH DATA FROM A FAILED RESPONSE. A 429 or 500 returns valid
         // JSON without `.events`, and `?? []` turned that into an EMPTY candidate set — which blanked the
         // active event on a kitchen screen mid-service until the next successful poll. The dashboard has
@@ -813,7 +818,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           && e.status === 'confirmed' && e.auto_open === true
         )
         for (const ev of stale) {
-          await fetch('/api/events/action', {
+          await staffFetch('/api/events/action', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token, action: 'open', eventId: ev.id, payload: {} }),
@@ -1509,7 +1514,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     // applyPending tests `key in p` rather than truthiness.
     markPending('vanPausedUntil', paused_until)
     setPausedUntil(paused_until)
-    const res = await fetch('/api/dashboard/action', {
+    const res = await staffFetch('/api/dashboard/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, pin, action: 'set_paused', paused_until, eventId: activeEventIdRef.current }),
@@ -1527,7 +1532,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
 
   const handleSetWait = useCallback(async (mins: number) => {
     setExtraWaitMins(mins)
-    const res = await fetch('/api/dashboard/action', {
+    const res = await staffFetch('/api/dashboard/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, pin, action: 'set_extra_wait', minutes: mins, eventId: activeEventIdRef.current }),
@@ -1552,7 +1557,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     // re-auth case, where a board that has been running hands over its committed pair.
     // ⚠️ `van_id` IS STILL NOT SENT HERE and is NOT added by this task — it was not in scope. Reported.
     const requestedEventId = applyEventScope(params, selectedEventId)
-    const res = await fetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader() })
+    const res = await staffFetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader() })
     const data = await res.json()
     // 🔴 SAME RULE AS THE DASHBOARD'S submitPin — a failure to reach the data is not an incorrect PIN.
     // See the note there for why the 503 copy leads with reachability rather than with the PIN.
@@ -1606,7 +1611,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   }
   const doOpenEvent = async (eventId: string) => {
     try {
-      const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'open', eventId, payload: {} }) })
+      const res = await staffFetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'open', eventId, payload: {} }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); return }
       if (!res.ok) throw new Error(errorText(tErrM, data, ''))
@@ -1638,7 +1643,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   const applyFinishTime = async (eventId: string, newEnd: string) => {
     setFinishTimeBusy(true)
     try {
-      const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { end_time: newEnd } }) })
+      const res = await staffFetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { end_time: newEnd } }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setFinishTimeTarget(null); return }
       if (!res.ok) throw new Error(errorText(tErrM, data, ''))
@@ -1667,7 +1672,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     setFinishConfirm(null)
     try {
       // EVENT status → 'closed' only; existing orders stay visible/actionable on the KDS.
-      const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'close', eventId, payload: {} }) })
+      const res = await staffFetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'close', eventId, payload: {} }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
       if (!res.ok) throw new Error(errorText(tErrM, data, ''))
@@ -1688,7 +1693,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     setShowEventMenu(false)
     setEventCancelCount(0); setEventCancelTarget(ev)
     try {
-      const res = await fetch(`/api/events/affected-orders?eventId=${ev.id}&token=${token}`)
+      const res = await staffFetch(`/api/events/affected-orders?eventId=${ev.id}&token=${token}`)
       const data = await res.json()
       if (res.ok) setEventCancelCount(data.count ?? 0)
     } catch { /* silently fail - the gate still works, the count just stays hidden */ }
@@ -1700,7 +1705,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   const doCancelEvent = async (eventId: string, cancellationReason: string, cancellationNote: string) => {
     setEventCancelBusy(true)
     try {
-      const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'cancel', eventId, payload: { cancellationReason, cancellationNote } }) })
+      const res = await staffFetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'cancel', eventId, payload: { cancellationReason, cancellationNote } }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
       if (!res.ok) throw new Error(errorText(tErrM, data, ''))
@@ -1719,7 +1724,7 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
 
   const saveEventNote = async (eventId: string) => {
     try {
-      const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { customer_note: eventNoteInput } }) })
+      const res = await staffFetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { customer_note: eventNoteInput } }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
       if (!res.ok) throw new Error(errorText(tErrM, data, ''))

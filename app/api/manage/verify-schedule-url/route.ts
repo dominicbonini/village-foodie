@@ -8,6 +8,7 @@ import { truckTimeSettings } from '@/lib/truck-time'
 // en-GB (each is sent before the truck is known). `reason` is already a code ('blocked', 'unreachable', …) and is unchanged.
 import { manageErrorBody } from '@/lib/i18n/manage-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 // Vercel Pro limit is 60s. Puppeteer + Gemini can take 45-55s on slow sites.
 // If timeouts recur at scale, move to a background job (GitHub Actions / queue)
@@ -171,6 +172,9 @@ export async function POST(req: NextRequest) {
 
   const truck = await getTruck(token)
   if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'invalid_token'), { status: 401 })
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, 'verify_schedule_url', { route: '/api/manage/verify-schedule-url', group: 'group1' }); if (gate.refuse) return gate.refuse }
 
   let browser: any
   try {

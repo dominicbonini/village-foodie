@@ -50,7 +50,7 @@ export type DeviceConfigResult = ({ ok: true } & DeviceConfigData) | { ok: false
 /** Read this device's config + the truck's vans + single-van staff hint + the current truck (name). */
 export async function fetchDeviceConfig(token: string): Promise<DeviceConfigResult> {
   try {
-    const res = await fetch(`/api/native/bind-device?token=${encodeURIComponent(token)}&device_id=${encodeURIComponent(getDeviceId())}`)
+    const res = await (await import('./staffFetch')).staffFetch(`/api/native/bind-device?token=${encodeURIComponent(token)}&device_id=${encodeURIComponent(getDeviceId())}`)
     if (!res.ok) return { ok: false }
     const data = await res.json()
     return { ok: true, device: data.device ?? null, vans: data.vans ?? [], vanHint: data.vanHint ?? null, truck: data.truck ?? null }
@@ -96,7 +96,7 @@ export async function saveDeviceConfig(
     return { ok: false, ...r }
   }
   try {
-    const res = await fetch('/api/native/bind-device', {
+    const res = await (await import('./staffFetch')).staffFetch('/api/native/bind-device', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, device_id: getDeviceId(), platform: Capacitor?.getPlatform?.() ?? 'web', ...patch }),

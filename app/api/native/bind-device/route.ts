@@ -11,6 +11,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { kitchenErrorBody } from '@/lib/i18n/kitchen-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -48,6 +49,9 @@ export async function GET(req: NextRequest) {
   const deviceId = url.searchParams.get('device_id')
   const truck = await truckFromToken(token)
   if (!truck) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabaseAdmin, truck, 'device_binding', { route: '/api/native/bind-device', group: 'read' }); if (gate.refuse) return gate.refuse }
 
   const [{ data: device }, { data: vans }, vanHint] = await Promise.all([
     deviceId
@@ -84,6 +88,9 @@ export async function POST(req: NextRequest) {
   }
   const truck = await truckFromToken(token ?? null)
   if (!truck) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised', {}, { reason: 'unauthorised' satisfies BindDeviceReason }), { status: 401 })
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabaseAdmin, truck, 'bind_device', { route: '/api/native/bind-device', group: 'group2' }); if (gate.refuse) return gate.refuse }
   if (!device_id) return NextResponse.json(kitchenErrorBody(await localeForTruck(truck), 'device_id_required', {}, { reason: 'device_id_required' satisfies BindDeviceReason }), { status: 400 })
 
   // SECURITY GATE: van must belong to THIS truck. Reject a cross-truck van_id outright.

@@ -12,7 +12,11 @@ import { beginUserSignOut } from '@/lib/auth/session-observer'
  * via the passed router so the user stays inside the webview and lands on the app login (no hard reload to
  * the raw web page).
  *
- * WEB: byte-for-byte the old behaviour — cookie signOut + a hard window.location nav to /login.
+ * WEB: cookie signOut + a hard window.location nav to /login.
+ *
+ * 🔴 BOTH END THIS DEVICE'S SESSION ONLY (dashboard-auth-3, 18 November 2026): scope 'local'. The default ('global') ended
+ * every session of the account — on a truck that shares the owner's login, the kitchen iPad too. Every other device stays
+ * signed in. (A password reset still signs out everywhere: app/(app)/reset-password/page.tsx.)
  *
  * `router` only needs `.replace()`; typed structurally so callers can pass Next's useRouter() result
  * without importing its type.
@@ -32,6 +36,6 @@ export async function operatorSignOut(router: { replace: (href: string) => void 
     return
   }
   const supabase = createSupabaseBrowserClient()
-  await supabase.auth.signOut()
+  await supabase.auth.signOut({ scope: 'local' })
   window.location.href = '/login'
 }

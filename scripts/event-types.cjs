@@ -2671,7 +2671,12 @@ head('5b · THE MODAL AND THE CARD')
     // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026; scripts/_named-app-fixes-1.cjs undoFile): its recorded dashboard edits (the Carte &
     // stock columns, the Paramètres boundaries) are taken back exactly first, so every other line is still accounted for as before;
     // null (an edit not there exactly once) leaves the page as it is, and the accounting then fails.
-    const nowRaw = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
+    // ⚠️ RE-PINNED (dashboard-auth-2, 18 November 2026, docs/dashboard-auth-2-report.md): every staff call on the page goes through
+    // lib/native/staffFetch.ts (`fetch(` → `staffFetch(`, same arguments) and the "Access denied" link carries ?next= (`href="/login"`
+    // → `href={loginHrefBackHere()}`). Both are put back exactly before the lines are compared, and asserted in their new form
+    // (da2Moved, below); any other change still counts.
+    const da2Raw = fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8')
+    const nowRaw = da2Raw.replace(/\bstaffFetch\(/g, 'fetch(').replace('<Link href={loginHrefBackHere()} data-gate-next="login"', '<Link href="/login" data-gate-next="login"')
     const now = require('./_named-app-fixes-1.cjs').undoFile('app/(app)/dashboard/[token]/page.tsx', nowRaw) ?? nowRaw
     const strip = (src) => codeOf(src).split('\n').map(x => x.trim()).filter(Boolean)
     const left = new Map()
@@ -3092,6 +3097,9 @@ head('5b · THE MODAL AND THE CARD')
       && !now.includes("logoUrl={(demoBranded&&truck&&features.can('branded_qr_code')&&truck.qr_code_style==='branded')?(truck.logo||null):null}/>}")
       && !/hasFeature\(|canAccess\(/.test(codeOf(now))
     if (!plansGatesMoved) unexplained.push('(plans-data-model Stage A / A2: a gate line is not in its features.can(feature) form)')
+    const da2Moved = /^import \{ staffFetch \} from '@\/lib\/native\/staffFetch'/m.test(da2Raw) && /<Link href=\{loginHrefBackHere\(\)\} data-gate-next="login"/.test(da2Raw)
+      && !/(?<![A-Za-z_.])fetch\((['`])\/api\/(dashboard|events\/action|events\/manage|events\/affected-orders|event-types|printing|manage)\b/.test(da2Raw)
+    if (!da2Moved) unexplained.push('(dashboard-auth-2: a staff call is not through staffFetch, or the Access denied link lost ?next=)')
     if (!lp1d2Moved) unexplained.push('(Language Phase 1d Part 2: the completion rows are not read from `completionSettings` under their moved keys)')
     if (unexplained.length) {
       console.log('      UNEXPLAINED LOSSES: ' + unexplained.length)

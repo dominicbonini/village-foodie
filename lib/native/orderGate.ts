@@ -12,6 +12,8 @@
 import { Preferences } from '@capacitor/preferences'
 import { isNativeApp } from '@/lib/native/device'
 import { enqueue, listOps, removeOp, saveOp, deviceLetter, type OutboxKind } from '@/lib/native/outbox'
+// dashboard-auth-2: the caller's sign-in (and the kitchen-screen marker), read at SEND time — see post().
+import { staffAuthHeaders } from '@/lib/native/staffFetch'
 
 // ── 🔴 THE PROVISIONAL SEQUENCE IS PER EVENT, NOT PER DEVICE-LIFETIME. ─────────────────────────────
 // It used to be ONE lifelong key, `hg_prov_seq`, that `seedProvisionalSeq` only ever RAISED — so it never
@@ -266,9 +268,14 @@ const DRAIN_TIMEOUT_MS = 30_000
  *  Nothing about failure CLASSIFICATION changes: an abort is not a response, so it can never be read as a
  *  409 and can never dead-letter on its own. It only dead-letters via the pre-existing MAX_ATTEMPTS rule. */
 async function post(url: string, body: Record<string, unknown>, timeoutMs: number = DRAIN_TIMEOUT_MS): Promise<Response> {
+  // 🔴 dashboard-auth-2: THE SESSION IS READ HERE, AT SEND TIME — for a live send and for every replay — so a queued
+  // walk-up carries whoever is signed in when it finally goes, never a token saved with the op (none is: the op stores
+  // only url + body). No session → `{}` and the send is exactly what it was. Never throws; never waits more than
+  // AUTH_HEADER_BUDGET_MS (lib/native/staffFetch.ts).
+  const auth = await staffAuthHeaders()
   return fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...auth },
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(timeoutMs),
   })

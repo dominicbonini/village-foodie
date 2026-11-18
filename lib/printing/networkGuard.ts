@@ -10,6 +10,7 @@
 // route cannot be reached, and ONE pure decision function both usePrinting and the card call.
 import { Preferences } from '@capacitor/preferences'
 import type { PrinterMessage } from './printerText'
+import { staffFetch } from '@/lib/native/staffFetch'   // dashboard-auth-2: staff calls carry the sign-in, read at send time
 
 export type NetGuardState =
   | 'ok'        // this device holds the van (or just claimed it) — printing may run
@@ -86,7 +87,7 @@ export async function fetchNetPrinting(token: string, deviceId: string): Promise
   try {
     // NO `pin` PARAMETER, BY DESIGN — see NetPrintingRead. A PIN truck answers 401 + requiresPin, and
     // that is the thing we want to know; sending a guessed PIN could only turn the signal into noise.
-    const res = await fetch(`/api/printing?${q({ token, device_id: deviceId })}`, { cache: 'no-store' })
+    const res = await staffFetch(`/api/printing?${q({ token, device_id: deviceId })}`, { cache: 'no-store' })
     if (!res.ok) {
       if (res.status === 401) {
         const j = await res.json().catch(() => ({}))
@@ -106,7 +107,7 @@ export async function fetchNetPrinting(token: string, deviceId: string): Promise
 /** `error`: the route's own message (a string, shown as it came) or a code of ours (lib/printing/printerText.ts). */
 async function post(body: Record<string, unknown>): Promise<{ ok: boolean; error?: PrinterMessage }> {
   try {
-    const res = await fetch('/api/printing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    const res = await staffFetch('/api/printing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     const j = await res.json().catch(() => ({}))
     if (!res.ok) return { ok: false, error: j?.error ?? { code: 'requestFailed', status: String(res.status) } }
     return { ok: true }

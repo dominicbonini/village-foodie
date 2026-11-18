@@ -245,6 +245,22 @@ const minorOf = row => (row.total_minor != null ? row.total_minor : Math.round(N
 /** Strip the named difference from an AFTER capture, checking each instance on the way. */
 function stripNamed(name, r) {
   const c = JSON.parse(JSON.stringify(r))
+  // ⚠️ RE-PINNED (dashboard-auth-2, 18 November 2026, docs/dashboard-auth-2-report.md): these requests come with no sign-in, so the
+  // member gate (lib/auth/require-member.ts, LOG MODE) records each one as an `auth_shadow:<action>` row in action_audit_log. That
+  // row is taken out here, and only it — matched on its table AND its action prefix; every other write is compared as before.
+  // The in-memory database numbers new rows from ONE counter (scripts/_fake-pg.cjs, `<table>-new-<n>`), so each shadow insert also
+  // moves every later id up by one: those ids are put back by exactly the number of shadow inserts before them.
+  if (Array.isArray(c.writes)) {
+    const isShadow = w => w.table === 'action_audit_log' && String(w.row?.action ?? '').startsWith('auth_shadow:')
+    let seen = 0
+    const fix = v => (typeof v === 'string' && seen ? v.replace(/-new-(\d+)$/, (_, n) => `-new-${Number(n) - seen}`) : v)
+    c.writes = c.writes.flatMap(w => {
+      if (isShadow(w)) { if (w.op === 'insert' || w.op === 'upsert-insert') seen++; return [] }
+      const out = { ...w, id: fix(w.id) }
+      if (out.row && typeof out.row === 'object' && 'id' in out.row) out.row = { ...out.row, id: fix(out.row.id) }
+      return [out]
+    })
+  }
   for (const call of c.rpcs) {
     if (call.fn === 'place_order_atomic_v2') {
       call.fn = 'place_order_atomic'

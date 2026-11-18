@@ -12,7 +12,10 @@ import { FlowLogo } from '@/components/shared/FlowLogo'   // site-chrome-1: the 
 export default function VerifyEmailSuccess({ newEmail, locale }: { newEmail: string; locale?: AppLocale }) {
   useEffect(() => {
     const supabase = createSupabaseBrowserClient()
-    supabase.auth.signOut().then(() => {
+    // dashboard-auth-3 (18 November 2026): the same screens and words ("Signing you out…", then log in with the new
+    // address), but only THIS device's session ends (scope 'local'); every other device stays signed in, as Supabase leaves
+    // them after an email change. (Was the default, 'global', which signed the account out everywhere.)
+    supabase.auth.signOut({ scope: 'local' }).then(() => {
       window.location.href = '/login?message=email_changed'
     })
   }, [])

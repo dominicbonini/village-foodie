@@ -40,6 +40,7 @@ import type { PhoneCopy } from '@/lib/phone'
 import type { TruckMoney } from '@/lib/money-format'
 import { kitchenErrorBody } from '@/lib/i18n/kitchen-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 // ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
 // 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
@@ -201,6 +202,9 @@ export async function GET(req: NextRequest) {
   if (truck.dashboard_pin && truck.dashboard_pin !== pin) {
     return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'invalid_pin', {}, { requiresPin: true }), { status: 401 })
   }
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, 'board', { route: '/api/dashboard', group: 'read', actor }); if (gate.refuse) return gate.refuse }
 
   // Resolve the dashboard event context BEFORE reading orders, so the order lists
   // can be scoped to the selected event (V6.4: orders belong to an event, never a

@@ -18,6 +18,7 @@ import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/manageApi'
 import { readEventRegion } from '@/lib/event-region-read'
 import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -43,6 +44,9 @@ export async function POST(req: NextRequest) {
 
   const truck = await getTruck(token)
   if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'truck_not_found'), { status: 404 })
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, action, { route: '/api/events/action', group: 'group1' }); if (gate.refuse) return gate.refuse }
   /** A refusal of ours, in the truck's language (read only when one is sent). */
   const refuse = async (code: ManageErrorCode, status: number, params: ManageErrorParams = {}, extra?: Record<string, unknown>) =>
     NextResponse.json(manageErrorBody(await localeForTruck(truck), code, params, extra), { status })

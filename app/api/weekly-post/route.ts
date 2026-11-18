@@ -137,6 +137,7 @@ import { weekRange, defaultWeekChoice, todayInWeekTz, type WeekChoice } from '@/
 import { isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/event-window'
 import { getNowMinsInTz } from '@/lib/time-utils'
 import { eventPostText, shortDate } from '@/lib/weekly-post/caption'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 /** 🔴 THE RENDER IS THE SLOW PATH and it is ~40ms warm; 30s matches /api/manage and leaves room for a
  *  cold start that has to parse five font files. */
@@ -946,12 +947,18 @@ async function eventPostContext(
  * ⚠️ IT IS BEHIND THE SAME TOKEN AND THE SAME GATE AS EVERY ACTION IN THIS FILE, through the same two
  * functions — so there is no second way in and no second answer about who may ask.
  */
+/** dashboard-auth-2: the POST actions that only READ (the shadow log throttles them); every other action is a group-1 write. */
+const WEEKLY_POST_READS = new Set(['load', 'captions', 'event_load', 'font_catalogue', 'font_sample', 'font_usage', 'place_picture_list', 'social_overview', 'render', 'event_render', 'event_preview_entry'])
+
 export async function GET(req: NextRequest) {
   const url = new URL(req.url)
   const token = String(url.searchParams.get('token') ?? '')
   if (!token) return refuse(DEFAULT_LOCALE, 'token_required', 401)
   const truck = await getTruck(token)
   if (!truck) return refuse(DEFAULT_LOCALE, 'invalid_token', 401)
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, 'font_file', { route: '/api/weekly-post', group: 'read' }); if (gate.refuse) return gate.refuse }
   const locale = await localeForTruck(truck)
   const blocked = await gated(truck, locale)
   if (blocked) return blocked
@@ -1010,6 +1017,9 @@ export async function POST(req: NextRequest) {
   if (blocked) return blocked
 
   const action = String(body.action ?? '')
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, action, { route: '/api/weekly-post', group: WEEKLY_POST_READS.has(action) ? 'read' : 'group1' }); if (gate.refuse) return gate.refuse }
   /* ══ 🔴 §9 · ONE READ OF `showPrivate`, FOR EVERY ACTION THAT BUILDS A WEEK ══════════════════════
    * ⚠️ `=== true`, NOT TRUTHINESS. The flag arrives as JSON from a browser; `"false"`, `1` and `[]`
    * are all truthy strings or values a hand-made payload could send, and every one of them would put a

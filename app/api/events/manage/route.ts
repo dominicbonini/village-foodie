@@ -7,6 +7,7 @@ import { createClient } from '@supabase/supabase-js'
 // truck's language (en-GB before the truck is known). A database's or exception's message is passed on as it comes.
 import { manageErrorBody } from '@/lib/i18n/manage-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -27,6 +28,9 @@ export async function GET(req: NextRequest) {
     .single()
 
   if (!truck) return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'truck_not_found'), { status: 404 })
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, 'events_list', { route: '/api/events/manage', group: 'read' }); if (gate.refuse) return gate.refuse }
 
   let query = supabase
     .from('truck_events')

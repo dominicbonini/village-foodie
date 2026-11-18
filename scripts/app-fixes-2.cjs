@@ -115,7 +115,10 @@ head('§2 · "Access denied" has a way forward')
 {
   const dash = read('app/(app)/dashboard/[token]/page.tsx')
   const line = dash.split('\n').find(l => l.includes("tDash('gate.accessDenied')")) || ''
-  t('the Access denied screen has a "Back to log in" button to /login', /<Link href="\/login" data-gate-next="login"[^>]*>\{tForgotGate\('back'\)\}<\/Link>/.test(line))
+  // ⚠️ RE-PINNED (dashboard-auth-2, 18 November 2026): the button still goes to /login, now with ?next=<this page> so a re-login
+  // lands back on the board (lib/auth/login-href.ts loginHrefBackHere — a same-origin path built from window.location only).
+  t('the Access denied screen has a "Back to log in" button to /login', /<Link href=\{loginHrefBackHere\(\)\} data-gate-next="login"[^>]*>\{tForgotGate\('back'\)\}<\/Link>/.test(line)
+    && /return `\/login\?next=\$\{encodeURIComponent\(here\)\}`/.test(fs.readFileSync(path.join(__dirname, '..', 'lib/auth/login-href.ts'), 'utf8')))
   // ⚠️ RE-PINNED (android-1-1, 15 November 2026, docs/android-1-1-report.md §7): the "← HatchGrab" line under the button (a link home
   // on the web, an inert span in the app) was removed, so there is no isNativeApp() branch left on this screen to sit outside of.
   t('…shown on the web AND in the app (no platform branch on the screen), and it is the only way forward (android-1-1: the brand line is gone)',

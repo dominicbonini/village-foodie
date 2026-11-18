@@ -91,6 +91,7 @@ import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/errorsManage'
 import '@/lib/i18n/catalog/manageApi'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
@@ -346,6 +347,9 @@ async function vanOneServiceValues(
 /** The shape `vanOneServiceValues` fills — the service columns and nothing else. */
 type EventTypeServiceValues = Record<ServiceKey, boolean | number | string | null>
 
+/** dashboard-auth-2: the actions that only READ (the shadow log throttles them); every other action is a group-1 write. */
+const EVENT_TYPES_READS = new Set(['load', 'event_item_prices', 'usual_for_venue'])
+
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>
   try { body = await req.json() } catch { return NextResponse.json(manageErrorBody(DEFAULT_LOCALE, 'bad_request'), { status: 400 }) }
@@ -362,6 +366,9 @@ export async function POST(req: NextRequest) {
     NextResponse.json(manageErrorBody(await truckLocale(), code, params, extra), { status })
 
   const action = String(body.action ?? '')
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, action, { route: '/api/event-types', group: EVENT_TYPES_READS.has(action) ? 'read' : 'group1' }); if (gate.refuse) return gate.refuse }
   const planCatalog = await getPlanCatalog()
   const canWrite = allowed(truck, planCatalog)
   /** The refusal for a gated feature (lib/plan-refusal.ts) — worded by why it is off. */

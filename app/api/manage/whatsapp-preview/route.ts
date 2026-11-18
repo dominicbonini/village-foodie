@@ -36,6 +36,7 @@ import { fetchUpcomingTruckEvents } from '@/lib/whatsapp/upcoming-events'
 import { manageErrorBody, type ManageErrorCode, type ManageErrorParams } from '@/lib/i18n/manage-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 /** A refusal: the body this route always sent (`ok`, `kind`, `error`), then `code` and `params` last. */
 function refusal(locale: string, kind: string, code: ManageErrorCode, status: number, params: ManageErrorParams = {}, headers?: Record<string, string>) {
@@ -128,6 +129,9 @@ export async function POST(req: NextRequest) {
   if (!truck) {
     return refusal(DEFAULT_LOCALE, 'unauthorised', 'invalid_token', 401)
   }
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, truck, 'whatsapp_preview', { route: '/api/manage/whatsapp-preview', group: 'group1' }); if (gate.refuse) return gate.refuse }
   const locale = await localeForTruck(truck)
 
   const raw = typeof body.message === 'string' ? body.message : ''

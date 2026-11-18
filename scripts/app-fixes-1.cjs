@@ -45,7 +45,9 @@ head('§1 · every auth end state has a way forward')
   const api = read('app/api/auth/reset-password/route.ts')
   t('…and those are exactly the codes /api/auth/reset-password answers', ['reset_link_expired', 'reset_link_used', 'reset_link_invalid'].every(c => api.includes(`'${c}'`)))
   t('reset: success → a card with a "Log in" button to /login (no jump to /login?message=…)', /if \(done\) \{[\s\S]{0,500}<a href="\/login" data-auth-next="login"[^>]*>\{tLogin\('submit'\)\}/.test(reset) && !stripComments(reset).includes("window.location.href = '/login?message=password_reset'"))
-  t('reset: the sign-out before the success card still runs', /auth\.signOut\(\)\s*\n[\s\S]{0,300}setDone\(true\)/.test(reset))
+  // ⚠️ RE-PINNED (dashboard-auth-3, 18 November 2026): the sign-out now STATES its scope — 'global', everywhere, exactly what the
+  // default did — so a later change to "this device only" elsewhere can never reach the password reset by accident.
+  t('reset: the sign-out before the success card still runs', /auth\.signOut\(\{ scope: 'global' \}\)\s*\n[\s\S]{0,300}setDone\(true\)/.test(reset))
   t('first login: /app in the app, /dashboard on the web', reset.includes("router.push(isNativeApp() ? '/app' : '/dashboard')"))
   const login = read('app/(app)/login/page.tsx')
   t('login: /auth/callback\'s ?error=invalid_link now shows a sentence', /searchParams\.get\('error'\) === 'invalid_link'/.test(login) && /\{t\('invalidLink'\)\}/.test(login))

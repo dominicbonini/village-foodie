@@ -14,6 +14,7 @@ import { parseNetAddress } from '@/lib/printing/netAddress'
 import { kitchenErrorBody } from '@/lib/i18n/kitchen-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 
 // ── COPIED from app/api/dashboard/action/route.ts (verifyToken) — same rules, same outcomes ──────────
 //   'unavailable' → 503. We could not check.
@@ -72,6 +73,9 @@ export async function GET(req: NextRequest) {
   if (!token) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
   const auth = await verifyToken(token, pin || undefined)
   if (!auth.ok) return authFail(auth.reason)
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, auth.truck, 'printer_state', { route: '/api/printing', group: 'read' }); if (gate.refuse) return gate.refuse }
   if (!deviceId) return NextResponse.json(kitchenErrorBody(await localeForTruck(auth.truck), 'device_id_required'), { status: 400 })
   const { vanId, vanName } = await vanForDevice(auth.truck.id, deviceId)
   const truckName = (auth.truck as { name?: string | null }).name ?? null
@@ -87,6 +91,9 @@ export async function POST(req: NextRequest) {
   if (!token) return NextResponse.json(kitchenErrorBody(DEFAULT_LOCALE, 'unauthorised'), { status: 401 })
   const auth = await verifyToken(token, pin || undefined)
   if (!auth.ok) return authFail(auth.reason)
+  // dashboard-auth-2: the member gate, LOG MODE (lib/auth/require-member.ts) — records a caller the planned
+  // "signed-in team members only" rule would refuse; never refuses or delays while AUTH_MODE is 'log'.
+  { const gate = await requireMember(req, supabase, auth.truck, action, { route: '/api/printing', group: 'group2' }); if (gate.refuse) return gate.refuse }
   if (!deviceId || typeof deviceId !== 'string') return NextResponse.json(kitchenErrorBody(await localeForTruck(auth.truck), 'device_id_required'), { status: 400 })
   if (action !== 'claim' && action !== 'release' && action !== 'set_address') return NextResponse.json(kitchenErrorBody(await localeForTruck(auth.truck), 'unknown_action'), { status: 400 })
   const { vanId } = await vanForDevice(auth.truck.id, deviceId)
