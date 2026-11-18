@@ -492,3 +492,8 @@
 - Code/deal keys identical; `one` = `other` with noun before number ("මාස #"); allergensItemsUnverified n=one generic; cardSummary `changed` got a `one` case.
 - Van 1 වාහනය 1; demo templates "… food truck"; demo dishes transliterated (allergen data matches); samples නිමල්ගේ බර්ගර්, ගමේ කුස්සිය, kottu.
 - Check: private-hire chip "පුද්ගලික උත්සව සඳහා food truck" (long); jacket potatoes / pie & mash descriptive.
+
+## si-LK part 04 (languages-world-3, 18 Nov 2026)
+- Post boxes (from DesignEditor.tsx): Place “ස්ථානය”, Venue “ස්ථානයේ නම”, Area “ප්‍රදේශය”, Time “වේලාව”, Heading “ශීර්ෂය”, box කොටුව; poster CANCELLED “අවලංගුයි”; wp_last_toggle names both designs.
+- Check loanwords: font ෆොන්ට්, caption කැප්ෂන්; place ස්ථානය vs map location පිහිටීම; WhatsApp Set up “පිහිටුවන්න” (part 06 must match); support සහාය කණ්ඩායම; "Kitchen also handles" “කුස්සියේ මේවාද භාවිත කෙරේ”.
+- conflict.title `one` reads plural (right for 0); dealsActive `one` added; samples @nugegodafoodfest, yourfoodtruck.lk, චීස් කොත්තු.
