@@ -410,3 +410,7 @@
 - planPrompt `many` → "yes" for advance_preordering and advanced_reporting (plural Catalan nouns); gender-neutral prompt verbs.
 - Marketing "the van" (laptop in the van, QR on the van) = "food truck", not fleet "vehicle" — confirm.
 - Check: tester "Provador", lifetime "Vitalici", "El més triat", "Presència al mapa de descoberta", "Indicador d’esgotat instantani".
+
+## ca-AD consistency pass (languages-world-3, 18 Nov 2026) — fix.json, 43 corrections, check-fix 0
+- Marketing van lines → "vehicle" ("al portàtil del vehicle", "enganxa el codi QR al vehicle"); deletion "supressió/suprimir" (7); «A punt»; «Fes-me una visita guiada»; "Límit de comandes anticipades"; “…” → «».
+- Check: the two "vehicle" marketing lines, «Fes-me una visita guiada», "supressió" in the deletion e-mail, long VAT labels; import screen Venue «Lloc» vs designer «Nom del lloc».
