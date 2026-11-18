@@ -398,3 +398,9 @@
 - Documents translated: HACCP "Pla de seguretat alimentària (APPCC)", PAT "Revisió d’aparells elèctrics portàtils (PAT)", street trading "Llicència de venda ambulant".
 - {month} in brackets to avoid d’ elision ("la resta del mes ({month})"); "Documents del food truck {truck}".
 - Check: "# per pujar", both caption kinds "text de la publicació", "Compartit mitjançant HatchGrab", demo Laia, "Comença gratis durant # mes i conserva la meva carta".
+
+## ca-AD part 08 (languages-world-3, 18 Nov 2026)
+- comparison.cell.trial = "{months, plural, one {# mes gratuït} other {# mesos gratuïts}}" (planTable.trial.length reuses the plural).
+- FOR DOMINIC: VAT written out as "impost sobre el valor afegit" (STYLE: never "IVA" in AD copy; common brief: never IGI for VAT) — excl./incl. VAT labels ~3.8× English. Plain "IVA" would be shorter; one find-and-replace.
+- reverse charge "per inversió del subjecte passiu"; VAT number "número de registre"; German TSE/Germany figures as written; "per vehicle"; slug comparativa/sistema-de-comandes-food-truck.
+- Check: "Cèntims per comanda", cell.notApplicable "no s’aplica a una plataforma de repartiment", pitch "parada", "Menús i lots", "Sota demanda".
