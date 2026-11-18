@@ -97,8 +97,9 @@ function formatEventForPrompt(event: TruckEvent, todayStr: string, ts: TimeSetti
   const time = start && end ? `${start}–${end}${crossesMidnight(event.start_time, event.end_time) ? ' (ends after midnight, the next morning)' : ''}` : start || 'time TBC'
   // address-formats-1: the format's line (no state: the prompt's select has no region); with no format, the old join.
   const location = eventAddressLine({ venueName: event.venue_name, town: event.town, postcode: event.postcode }, addressFormat)
-  const confirmed = event.status === 'confirmed' || event.status === 'open'
-  return `- ${friendlyDate}${relativeLabel}: ${location} ${time} [${confirmed ? 'CONFIRMED' : 'UNCONFIRMED'}]`
+  // whatsapp-approved-only-1: every event here is confirmed or open (lib/whatsapp/upcoming-events.ts reads no other status),
+  // so the [UNCONFIRMED] branch is gone. The tag stays, so each line reads exactly as it did.
+  return `- ${friendlyDate}${relativeLabel}: ${location} ${time} [CONFIRMED]`
 }
 
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`

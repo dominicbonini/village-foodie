@@ -41,15 +41,18 @@ export interface UpcomingTruckEvent {
 }
 
 // ⚠️ THESE THREE ARE THE COPY-SENSITIVE PARTS AND ARE NAMED SO A DIFF SHOWS THEM.
-// The column list is what the classifier destructures; the status list is what "upcoming" means here
-// (note `unconfirmed` IS included -- the classifier labels it [UNCONFIRMED] rather than hiding it);
+// The column list is what the classifier destructures; the status list is what "upcoming" means here;
 // the limit is what bounds the prompt. Changing any of them changes what a customer is told.
+/* 🔴 APPROVED EVENTS ONLY (whatsapp-approved-only-1, 17 November 2026) — the same rule as /api/events
+ * (`.in('status', ['confirmed', 'open'])`). `unconfirmed` WAS in this list and the classifier tagged those
+ * rows [UNCONFIRMED]; the model quoted them anyway, so a scraped duplicate reached customers before anyone
+ * approved it. An unconfirmed row is now never read, and it never takes a place in the limit. */
 /* ⚠️ `id` JOINED THE LIST ON 20261014, AND IT IS NOT A COPY-SENSITIVE CHANGE. The classifier does not
  * destructure it; it is here solely so `redactPrivateRows` can ask which of these events are private.
  * Every other column, the status list and the limit are unchanged. */
 export const UPCOMING_EVENT_COLUMNS =
   'id, event_date, start_time, end_time, venue_name, town, postcode, status'
-export const UPCOMING_EVENT_STATUSES = ['confirmed', 'open', 'unconfirmed']
+export const UPCOMING_EVENT_STATUSES = ['confirmed', 'open']
 export const UPCOMING_EVENT_LIMIT = 10
 
 /**
