@@ -469,3 +469,9 @@
 - ALLERGENS (check first): yam කිරි අල (yam), celery සැලරි, crustaceans/shellfish descriptive කබොල සහිත…; 24 allergens carry English in brackets.
 - Glossary flags are false positives: translation-check's termRe doesn't treat Sinhala vowel signs as letters.
 - Placeholders reworded ("වේලාව: {time}"); `one` = `other` wording (reads right for 0/1); අනිවාර්ය without ZWJ; sample නිමාලි.
+
+## sw-TZ consistency pass (languages-world-3, 18 Nov 2026) — fix.json, 34 corrections, check-fix 0
+- Auto-replies section "Majibu ya kiotomatiki" ("ya WhatsApp" only where the English says WhatsApp); reject dialog Keep order "Usikatae oda" (RejectOrderModal), cancel modal "Usighairi oda".
+- Plan price Free "Bila malipo" (extras/menu items keep "Bure"); "Hamia/Chagua kifurushi {plan}"; loyalty "wateja wa kudumu"; "Sera ya Faragha"; post text "Maandishi ya chapisho"; QR "Skani".
+- Part 03 reviewed: Starters/Mains "Vitangulizi"/"Vyakula vikuu", "Achia menyu yako hapa", inbox "kikasha", "Mwonekano".
+- Check: private-hire chip "Kukodi food truck kwa shughuli" (long), "Skani" vs "Changanua", extras "Bure" vs plan "Bila malipo".
