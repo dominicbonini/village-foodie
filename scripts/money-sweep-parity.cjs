@@ -913,6 +913,16 @@ async function eventTypesView() {
     return a
   }
   const ak1New = k => k === 'prompts.extracted.may_contain' && A.get(k) === '[]'
+  // ⚠️ RE-PINNED (events-create-2, 17 November 2026, for events-overlap-2 — docs/events-overlap-2-report.md §3c): Add order gains,
+  // on PHONES only (`sm:hidden`, so present in the tag-stripped text), one line naming the selected event — "📍 The Green —
+  // Harnessville · 17:00–21:00" (this fixture's event; the US render's times in its own format). Taken out of the AFTER side
+  // exactly once on the Add order / dashboard text leaves; a second copy, or one anywhere else, still fails.
+  const EO2_LINE = new RegExp(` 📍 ${DASH_EVENT.venue_name} — ${DASH_EVENT.town} · \\d{1,2}:\\d{2}(?: [AP]M)?–\\d{1,2}:\\d{2}(?: [AP]M)?(?! 📅)`, 'g')   // not the dashboard event bar's own 📍 line (followed by 📅), which BEFORE has
+  const eo2 = (k, a) => {
+    if (typeof a !== 'string' || !/^(addOrder|dashboard)\.[^.]+\.text$/.test(k)) return a
+    const n = (a.match(EO2_LINE) || []).length
+    return n === 1 ? a.replace(EO2_LINE, '') : a
+  }
   const unPrivacy = (k, a) => {
     if (typeof a !== 'string' || !/^orderPage\.[^.]+\.text$/.test(k)) return a
     if (B.has(k) && /Privacy/.test(B.get(k))) { fail(`legal-followups-privacy-link: BEFORE ${k} already says "Privacy"`); return a }
@@ -962,7 +972,7 @@ async function eventTypesView() {
       : v.replace(/Jalapenos/g, 'Jalapeños').replace(/4a616c6170656e6f73/g, '4a616c6170653f6f73')
     for (const [k, v] of B) {
       if (!A.has(k)) fail(`${k} is missing now`)
-      else if (ak1(k, unPrivacy(k, d38(k, A.get(k)))) !== fix2(k, v)) fail(`${k} changed${excerpt(fix2(k, v), A.get(k))}`)
+      else if (eo2(k, ak1(k, unPrivacy(k, d38(k, A.get(k))))) !== fix2(k, v)) fail(`${k} changed${excerpt(fix2(k, v), A.get(k))}`)
     }
     console.log(`  named: ${FIX2.id} on ${FIX2_VIEWS.length} views (${FIX2_VIEWS.join(', ')}); ${FIX6.id} on ${FIX6.view}; us-polish-thousands-separators on every leaf with an amount ≥ 1,000 except the CSVs`)
     { const raw = [...A].filter(([k, v]) => /(^|\.)csv\./.test(k) && typeof v === 'string' && /£\d{4,}\.\d{2}/.test(v)).length
@@ -1017,7 +1027,7 @@ async function eventTypesView() {
   for (const [k, v] of B) {
     if (SKIP.has(k) || k.endsWith('.bytes')) continue
     if (!A.has(k)) { fail(`${k} is missing in the USD render`); continue }
-    if (asGb(ak1(k, unPrivacy(k, d38(k, A.get(k))))) !== usAllergens(k, fix2(k, v))) fail(`${k}: with "$" read as "£", the USD render is not the GB one${excerpt(usAllergens(k, fix2(k, v)), asGb(A.get(k)))}`)
+    if (asGb(eo2(k, ak1(k, unPrivacy(k, d38(k, A.get(k)))))) !== usAllergens(k, fix2(k, v))) fail(`${k}: with "$" read as "£", the USD render is not the GB one${excerpt(usAllergens(k, fix2(k, v)), asGb(A.get(k)))}`)
   }
   for (const [k, t] of Object.entries(snap.tickets)) {
     const gb = Buffer.from(grouped(`tickets.${k}.bytes`, before.tickets[k].bytes), 'hex'), us = Buffer.from(d38('tickets.' + k, t.bytes), 'hex')

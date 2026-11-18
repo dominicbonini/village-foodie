@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "支払いを記録できませんでした。修正されるまで、この注文の売上額が正しくない可能性があります。",
     "payment_not_reversed": "支払いを取り消せませんでした",
     "event_not_approved": "この出店は承認されていません",
-    "event_not_open": "{status, select, closed {この出店は終了しました。注文を受けるには再開してください。} cancelled {この出店はキャンセルされました。} other {この出店は開いていません。}}"
+    "event_not_open": "{status, select, closed {この出店は終了しました。注文を受けるには再開してください。} cancelled {この出店はキャンセルされました。} other {この出店は開いていません。}}",
+    "sign_in_to_create": "出店を作成するにはチームメンバーとしてログインしてください。",
+    "event_details_invalid": "{reason, select, name {出店名を入力してください} times {開始時刻と終了時刻を入力してください} end {終了時刻は開始より後にしてください} van {車両を選んでください} date {ここで作成する出店は本日分のみです} other {出店の内容を確認してください}}",
+    "event_overlaps": "本日の別の出店と時間が重なっています。"
   },
   "kitchenModals": {
     "close": "閉じる",
@@ -1096,6 +1099,32 @@
       "switchTitle": "{event}に切り替えますか？",
       "switch": "切り替え",
       "dismissedText": "{event}は承認済みの{other}と重複している可能性があります。承認して注文を受け付けますか？お客様にも表示されます。"
+    },
+    "createEvent": {
+      "button": "今すぐ出店を作成",
+      "offline": "出店を作成するにはインターネットに接続してください。",
+      "title": "今すぐ出店を作成",
+      "where": "どこで営業していますか？",
+      "somewhereElse": "その他の場所",
+      "nameLabel": "出店名",
+      "starts": "開始",
+      "ends": "終了",
+      "addTown": "市区町村または郵便番号を追加",
+      "town": "市区町村",
+      "postcode": "郵便番号",
+      "van": "どの車両ですか？",
+      "note": "お客様にこの出店が表示され、オンラインで注文できます。",
+      "create": "作成して開始",
+      "overlapApprovedTitle": "すでに{other}で営業中ですか？",
+      "overlapApprovedText": "{other}は本日{start}–{end}です。",
+      "useOther": "{other}を使う",
+      "createAnyway": "それでも作成",
+      "overlapUnapprovedTitle": "代わりに{event}を承認しますか？",
+      "overlapUnapprovedText": "{event}は承認待ちです（{start}–{end}）。",
+      "approveOther": "{event}を承認",
+      "createNew": "新しい出店を作成",
+      "toast": "出店を作成して開始しました",
+      "toastKds": "キッチン画面もこの出店に切り替えてください。"
     }
   },
   "ticket": {

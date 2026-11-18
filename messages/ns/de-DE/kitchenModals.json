@@ -86,5 +86,31 @@
     "switchTitle": "Zu {event} wechseln?",
     "switch": "Wechseln",
     "dismissedText": "{event} ist möglicherweise ein Duplikat von {other}, das schon freigegeben ist. Freigeben, um Bestellungen anzunehmen? Kunden sehen es dann auch."
+  },
+  "createEvent": {
+    "button": "Event jetzt erstellen",
+    "offline": "Mit dem Internet verbinden, um ein Event zu erstellen.",
+    "title": "Event jetzt erstellen",
+    "where": "Wo verkaufst du?",
+    "somewhereElse": "Woanders",
+    "nameLabel": "Name des Events",
+    "starts": "Beginn",
+    "ends": "Ende",
+    "addTown": "Ort oder Postleitzahl hinzufügen",
+    "town": "Ort",
+    "postcode": "Postleitzahl",
+    "van": "Welcher Wagen?",
+    "note": "Kunden sehen dieses Event und können online bestellen.",
+    "create": "Erstellen und starten",
+    "overlapApprovedTitle": "Schon bei {other}?",
+    "overlapApprovedText": "{other} ist heute, {start}–{end}.",
+    "useOther": "{other} nehmen",
+    "createAnyway": "Trotzdem erstellen",
+    "overlapUnapprovedTitle": "Stattdessen {event} freigeben?",
+    "overlapUnapprovedText": "{event} wartet auf Freigabe, {start}–{end}.",
+    "approveOther": "{event} freigeben",
+    "createNew": "Neues Event erstellen",
+    "toast": "Event erstellt und gestartet",
+    "toastKds": "Stell auch den Küchenbildschirm auf dieses Event um."
   }
 }

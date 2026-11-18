@@ -19,8 +19,9 @@ import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
 import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
+// events-create-2: the add-event insert, deals seeding and capacity refresh, shared with the dashboard's "Create event now"
+import { insertTruckEvent, seedEventDeals, refreshEventCapacity } from '@/lib/events/create-event'
 import { generateSlots } from '@/lib/slots'   // EXTRACTED from this file — now shared with the demo provisioner
-import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
 import { hasValidEventTimes, getLocalDateInTz, getNowMinsInTz, addDaysYmd, instantOfLocal } from '@/lib/time-utils'
 import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
 import { upcomingQueryFloor, isUpcomingOrRunning } from '@/lib/event-window'
@@ -117,8 +118,7 @@ import { loadChargeRules } from '@/lib/order-charge-rules'
 // the same module; a second normaliser here would make events stop finding their place with no error.
 import {
   normalisePlaceName, planPlaceSeed, nextEventAt, lastEventAt, tradedCountInLastYear,
-  groupEventsByPlace, seedWindowStart, mergeRefusal, mergePatch, resolvePlaceMerge, placesById,
-  placeForTypedName,
+  groupEventsByPlace, seedWindowStart, mergeRefusal, mergePatch,
   /* 🔴 `countsAsTraded` FOR THE PLACES TAB'S "used N times" (20261015) — the SAME predicate the
    * last-year count uses, so one place cannot be "used 9 times" by one rule and 7 by another. */
   /* ⛔ `countsAsUpcoming` WENT WITH `sg_place_events` (5 October 2026). It split that action's rows
@@ -181,71 +181,8 @@ async function resolveTruckAccess(req: NextRequest, truck: { id: string; operato
   return resolveTruckAccessWith(supabase, req, truck)
 }
 
-/**
- * The `truck_places` row an operator-created event should link to, or null.
- *
- * 🔴 THREE OUTCOMES, AND `null` IS A FIRST-CLASS ONE:
- *   1. they picked a place → verify it is this truck's, follow any merge, use it;
- *   2. they typed a venue name → upsert the place for that normalised name and use it;
- *   3. anything unexpected → null, and matching falls back to the venue anchor and the name.
- *
- * ⚠️ IT SWALLOWS ITS OWN ERRORS ON PURPOSE. This runs in the middle of adding an event. A place table
- * that is missing (the migration not applied yet), a permission problem or a race must cost the LINK,
- * never the event — `truck_place_id` is an optimisation of matching, not a requirement for it.
- * ⚠️ THE MERGE IS FOLLOWED HERE TOO, so a picked place that has since been merged stores its target
- * rather than a row that is no longer in the list.
- */
-async function resolveEventPlaceId(
-  truckId: string,
-  pickedPlaceId: string | null,
-  venueName: unknown,
-  town: unknown,
-): Promise<string | null> {
-  try {
-    if (pickedPlaceId) {
-      // ⚠️ SCOPED BY `truck_id`: a place id is a uuid a client supplies, and one truck must never be
-      // able to link its event to another truck's place.
-      const { data } = await supabase
-        .from('truck_places').select('id, merged_into_id').eq('truck_id', truckId)
-      const all = (data ?? []) as SgPlace[]
-      const picked = placesById(all).get(pickedPlaceId)
-      if (picked) return resolvePlaceMerge(picked, placesById(all)).id
-      // ⚠️ A LINK TO A PLACE THAT IS NO LONGER THIS TRUCK'S FALLS THROUGH TO THE NAME (12 October 2026),
-      // rather than linking nothing. "Duplicate" now carries the original's link, and the original's
-      // place may have gone since; the venue name still says where the copy is.
-    }
-    const name = String(venueName ?? '').trim()
-    const name_key = normalisePlaceName(name)
-    if (!name_key) return null
-    /* 🔴 AN EXISTING PLACE FIRST, "The" OR NO "The" (12 October 2026). "The Five Bells" beside a place
-     * called "Five Bells" used to create a second, empty place — see `placeForTypedName`. Only when
-     * nothing matches does the upsert below make a new one, exactly as before. */
-    {
-      const { data: existing } = await supabase
-        .from('truck_places').select('id, name_key, merged_into_id').eq('truck_id', truckId)
-      const rows = (existing ?? []) as (SgPlace & { name_key?: string | null })[]
-      const hit = placeForTypedName(name_key, rows)
-      if (hit) return resolvePlaceMerge(hit, placesById(rows)).id
-    }
-    /* 🔴 THE SAME IDEMPOTENT RULE AS THE SEEDER — `on conflict (truck_id, name_key) do nothing`, so
-     * two events added at the same moment for a new venue produce ONE place. `ignoreDuplicates` then a
-     * read-back: never `do update`, which would overwrite a name the operator had edited. */
-    await supabase.from('truck_places').upsert(
-      { truck_id: truckId, venue_id: null, name_key, name, area: String(town ?? '').trim() || null },
-      { onConflict: 'truck_id,name_key', ignoreDuplicates: true },
-    )
-    const { data: row } = await supabase
-      .from('truck_places').select('id, merged_into_id').eq('truck_id', truckId).eq('name_key', name_key).maybeSingle()
-    if (!row) return null
-    const place = row as SgPlace
-    if (!place.merged_into_id) return place.id
-    const { data: all } = await supabase.from('truck_places').select('id, merged_into_id').eq('truck_id', truckId)
-    return resolvePlaceMerge(place, placesById((all ?? []) as SgPlace[])).id
-  } catch (e) {
-    console.warn('[resolveEventPlaceId] no place linked:', e instanceof Error ? e.message : String(e))
-    return null
-  }
-}
+// events-create-2 (17 November 2026): `resolveEventPlaceId` moved, unchanged, to lib/events/create-event.ts — the dashboard's
+// "Create event now" links its events to places the same way.
 
 // ── Auth helper ───────────────────────────────────────────────
 async function getTruck(token: string) {
@@ -1226,57 +1163,17 @@ export async function POST(req: NextRequest) {
       if (!hasValidEventTimes(start_time, end_time)) {
         return await refuse('event_needs_times', 400)
       }
-      const now = new Date().toISOString()
-      const eventStatus = 'confirmed'
-      // FIX 3 (single-van auto-assign): if the operator didn't pick a van and the
-      // truck has exactly one active van, assign it so capacity etc. can resolve.
-      // Multi-van trucks leave van selection to the operator (van_id stays null).
-      const resolvedVanId = van_id ?? await getSoleActiveVanId(supabase, targetTruckId)
-      // Seed order_ready_override from the van's current default so the new event starts matching the
-      // Settings master switch (master-switch model).
-      const seededOrderReady = await getVanOrderReadyDefault(supabase, targetTruckId, resolvedVanId)
-      /* ══ 🔴 THE MERGE OF BOTH BRANCHES' INSERTS (October 2026) ══════════════════════════════════
-       * BOTH changes to this one statement survive, and they are independent of each other:
-       *   • `truck_place_id` (schedule-graphics) — the operator's picked place, or the place the typed
-       *     venue name belongs to. Every hand-made event carries its link, so the Places list is
-       *     complete without backfilling a row.
-       *   • `event_type_id` + the order-ready seed rule (event-types) — see below.
-       * ⚠️ NEITHER MAY FAIL THE SEND. Both resolvers fall back to `null`, which is the state of every
-       * event in the table today: no place link, no type, exactly today's behaviour.
-       * ⚠️ BOTH KEYS ARE NAMED UNCONDITIONALLY rather than spread in behind a ternary. Both columns are
-       * nullable with no default, so an explicit `null` and an omitted key are the same write — and a
-       * named literal is one the AST reader in the harness can SEE, which is what lets it prove this is
-       * the only insert that writes `truck_place_id` and that no update does. */
-      /* ── 🔴 THE ONE NEW THING THIS INSERT DOES ─────────────────────────────────────────────────
-       * `resolvedPlaceId` is the operator's picked place, or — when they typed a venue instead of
-       * picking — the place that venue name belongs to, created if it is new. So every event the
-       * operator creates by hand carries its link, which is what makes the Places list complete
-       * without ever backfilling an existing row.
-       * ⚠️ IT NEVER FAILS THE SEND. Every branch below falls back to `null`, which is the state of
-       * every event in the table today: matching then uses the venue anchor and the name, exactly as
-       * it did in stage 1. A place-lookup problem must not stop an operator adding an event.
-       * ⚠️ THE KEY IS NAMED UNCONDITIONALLY, `truck_place_id: resolvedPlaceId`, rather than spread in
-       * behind a ternary. The column is nullable with no default, so an explicit `null` and an omitted
-       * key are the same write — and a named literal is one the AST reader in the harness can SEE, which
-       * is what lets it prove this is the only insert that writes it and that no update does. */
-      const resolvedPlaceId = await resolveEventPlaceId(targetTruckId, pickedPlaceId, venue_name, town)
-      /* ── 🔴 THE EVENT TYPE, AND THE ONE REASON THE SEED IS SKIPPED ─────────────────────────────
-       * `event_type_id` is the whole of what a type does to an event: nothing is copied onto it.
-       *
-       * 🔴 WHEN A TYPE IS CHOSEN, order_ready_override IS NOT SEEDED. That column is the one per-event
-       * override that is seeded at creation AND bulk-written when the van default flips, so a seeded
-       * value would make the type's mark-ready setting permanently inert on this event — offered on
-       * the type screen and silently doing nothing. Leaving it NULL lets the type supply it, and the
-       * truck can still override it on the dashboard afterwards (which records 'truck' and wins).
-       * ⚠️ UNTYPED EVENTS ARE SEEDED EXACTLY AS BEFORE — same value, same column, same van lookup. The
-       * ternary is the whole difference, and it can only take the new branch when a type was picked.
-       * ⚠️ VALIDATED AGAINST THIS TRUCK'S OWN TYPES. An id from another truck, or one that does not
-       * exist, resolves to NULL rather than erroring: the event is still created, as Standard, which is
-       * what it would have been without the field. The foreign key would refuse a bad id anyway; this
-       * makes the refusal a silent fallback rather than a failed save of a real event. */
+      /* ══ events-create-2 (17 November 2026): THE INSERT LIVES IN lib/events/create-event.ts NOW ═══════════════════════
+       * The same statement, the same van auto-assign, order-ready seed and place link, moved so the dashboard's "Create
+       * event now" makes events exactly this way. Manage passes what it always wrote: status 'confirmed', source 'manual',
+       * auto open/close from the truck's settings, no opened_at. The event type is validated here, as before. */
       const typedEventTypeId = await resolveRequestedTypeId(targetTruckId, body.event_type_id)
-      const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: resolvedVanId ?? null, order_ready_override: typedEventTypeId ? null : seededOrderReady, order_ready_source: typedEventTypeId ? null : 'seed', event_type_id: typedEventTypeId, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null, auto_open: truck.default_auto_open ?? true, auto_close: truck.default_auto_close ?? true, truck_place_id: resolvedPlaceId }).select().single()
-      if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      const { data, error } = await insertTruckEvent(supabase, targetTruckId, {
+        venue_name, town, postcode, address, event_date, start_time, end_time, notes, latitude, longitude,
+        van_id: van_id ?? null, picked_place_id: pickedPlaceId, event_type_id: typedEventTypeId,
+        status: 'confirmed', source: 'manual', auto_open: truck.default_auto_open ?? true, auto_close: truck.default_auto_close ?? true,
+      })
+      if (error || !data) return NextResponse.json({ error: error?.message ?? 'insert failed' }, { status: 400 })
       savedEvent = data
 
       /* ══ 🔴 THE PRIVATE TICK, APPLIED AFTER THE INSERT (20261014) ═══════════════════════════════
@@ -1302,25 +1199,8 @@ export async function POST(req: NextRequest) {
         savedEvent = { ...(savedEvent as Record<string, unknown>), is_private: true, private_name: pr.name, private_token: pr.token }
       }
 
-      // Auto-create event_deals from current bundle defaults
-      const newEventId = data.id
-      const { data: bundles } = await supabase
-        .from('bundles_db')
-        .select('id, apply_to_new_events')
-        .eq('truck_id', targetTruckId)
-        .eq('is_available', true)
-
-      if (bundles && bundles.length > 0 && newEventId) {
-        const eventDeals = bundles.map((bundle: { id: string; apply_to_new_events: boolean }) => ({
-          event_id: newEventId,
-          bundle_id: bundle.id,
-          active: bundle.apply_to_new_events,
-          overridden: false,
-        }))
-        await supabase
-          .from('event_deals')
-          .upsert(eventDeals, { onConflict: 'event_id,bundle_id', ignoreDuplicates: true })
-      }
+      // Auto-create event_deals from current bundle defaults (lib/events/create-event.ts, unchanged)
+      await seedEventDeals(supabase, targetTruckId, data.id)
     }
 
     /* ── THE EVENT'S STATE (19 October 2026, US dress rehearsal Finding 6; lib/event-address.ts) ──────────
@@ -1347,37 +1227,8 @@ export async function POST(req: NextRequest) {
       else savedEvent = { ...savedEvent, suburb }
     }
 
-    // Write slot_capacity rows from van kitchen_capacity if a van is assigned
-    if (savedEvent?.van_id && start_time && end_time) {
-      const { data: van } = await supabase
-        .from('truck_vans')
-        .select('kitchen_capacity')
-        .eq('id', savedEvent.van_id as string)
-        .single()
-
-      if (van?.kitchen_capacity) {
-        const slots = generateSlots(start_time, end_time, 5)
-        const rows = slots.map((slot: string) => ({
-          truck_id: targetTruckId,
-          event_date,
-          slot,
-          max_orders: van.kitchen_capacity,
-        }))
-        await supabase
-          .from('slot_capacity')
-          .upsert(rows, { onConflict: 'truck_id,event_date,slot' })
-      }
-    }
-
-    // Gap 3: self-heal production_slot_usage whenever an event is created/confirmed,
-    // alongside the slot_capacity regen. Best-effort — never block the event save.
-    if (event_date) {
-      try {
-        await rebuildProductionSlotUsage(supabase, targetTruckId, event_date)
-      } catch (err) {
-        console.warn('[upsert_event] production_slot_usage rebuild failed (drift risk):', err)
-      }
-    }
+    // slot_capacity from the van, then the date's production_slot_usage — create AND edit, as before (lib/events/create-event.ts)
+    await refreshEventCapacity(supabase, targetTruckId, savedEvent as { van_id?: unknown } | null, event_date, start_time, end_time)
 
     return NextResponse.json({ event: savedEvent })
   }

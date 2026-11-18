@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "無法記錄付款。在修正之前，這筆訂單的營業額數字可能有誤。",
     "payment_not_reversed": "無法撤銷付款",
     "event_not_approved": "此活動尚未核准",
-    "event_not_open": "{status, select, closed {此活動已結束。重新開始以接受訂單。} cancelled {此活動已取消。} other {此活動未開放。}}"
+    "event_not_open": "{status, select, closed {此活動已結束。重新開始以接受訂單。} cancelled {此活動已取消。} other {此活動未開放。}}",
+    "sign_in_to_create": "請以團隊成員身分登入以建立活動。",
+    "event_details_invalid": "{reason, select, name {請輸入活動名稱} times {請輸入開始與結束時間} end {結束時間必須晚於開始} van {請選擇車輛} date {在這裡建立的活動僅限今天} other {請檢查活動資料}}",
+    "event_overlaps": "這與今天另一個活動時間重疊。"
   },
   "kitchenModals": {
     "close": "關閉",
@@ -1096,6 +1099,32 @@
       "switchTitle": "切換到{event}？",
       "switch": "切換",
       "dismissedText": "{event}可能與已核准的{other}重複。要核准以接受訂單嗎？顧客也會看到。"
+    },
+    "createEvent": {
+      "button": "立即建立活動",
+      "offline": "請連上網路以建立活動。",
+      "title": "立即建立活動",
+      "where": "你在哪裡營業？",
+      "somewhereElse": "其他地方",
+      "nameLabel": "活動名稱",
+      "starts": "開始",
+      "ends": "結束",
+      "addTown": "新增地區或郵遞區號",
+      "town": "地區",
+      "postcode": "郵遞區號",
+      "van": "哪一台車？",
+      "note": "顧客會看到這個活動，並可線上點餐。",
+      "create": "建立並開始",
+      "overlapApprovedTitle": "已經在{other}營業？",
+      "overlapApprovedText": "{other}今天{start}–{end}。",
+      "useOther": "使用{other}",
+      "createAnyway": "仍要建立",
+      "overlapUnapprovedTitle": "改為核准{event}？",
+      "overlapUnapprovedText": "{event}正在等待核准，{start}–{end}。",
+      "approveOther": "核准{event}",
+      "createNew": "建立新活動",
+      "toast": "已建立並開始活動",
+      "toastKds": "請將廚房畫面也切換到這個活動。"
     }
   },
   "ticket": {

@@ -69,5 +69,8 @@
   "payment_not_recorded": "Maksājumu neizdevās reģistrēt — šī pasūtījuma ieņēmumu summa var būt nepareiza, līdz tas tiks izlabots.",
   "payment_not_reversed": "Maksājumu neizdevās atcelt",
   "event_not_approved": "Šis pasākums nav apstiprināts",
-  "event_not_open": "{status, select, closed {Šis pasākums ir beidzies. Atsāciet to, lai pieņemtu pasūtījumus.} cancelled {Šis pasākums ir atcelts.} other {Šis pasākums nav atvērts.}}"
+  "event_not_open": "{status, select, closed {Šis pasākums ir beidzies. Atsāciet to, lai pieņemtu pasūtījumus.} cancelled {Šis pasākums ir atcelts.} other {Šis pasākums nav atvērts.}}",
+  "sign_in_to_create": "Piesakieties kā komandas loceklis, lai izveidotu pasākumu.",
+  "event_details_invalid": "{reason, select, name {Pievienojiet pasākuma nosaukumu} times {Pievienojiet sākuma un beigu laiku} end {Beigām jābūt pēc sākuma} van {Izvēlieties furgonu} date {Šeit izveidotie pasākumi ir tikai šodienai} other {Pārbaudiet pasākuma datus}}",
+  "event_overlaps": "Tas pārklājas ar citu šodienas pasākumu."
 }

@@ -86,5 +86,31 @@
     "switchTitle": "Skift til {event}?",
     "switch": "Skift",
     "dismissedText": "{event} er muligvis en dublet af {other}, som allerede er godkendt. Godkend det for at tage imod bestillinger? Kunderne kan også se det."
+  },
+  "createEvent": {
+    "button": "Opret arrangement nu",
+    "offline": "Opret forbindelse til internettet for at oprette et arrangement.",
+    "title": "Opret arrangement nu",
+    "where": "Hvor sælger du?",
+    "somewhereElse": "Et andet sted",
+    "nameLabel": "Arrangementets navn",
+    "starts": "Starter",
+    "ends": "Slutter",
+    "addTown": "Tilføj by eller postnummer",
+    "town": "By",
+    "postcode": "Postnummer",
+    "van": "Hvilken vogn?",
+    "note": "Kunderne kan se arrangementet og bestille online.",
+    "create": "Opret og start",
+    "overlapApprovedTitle": "Står du allerede ved {other}?",
+    "overlapApprovedText": "{other} er i dag, {start}–{end}.",
+    "useOther": "Brug {other}",
+    "createAnyway": "Opret alligevel",
+    "overlapUnapprovedTitle": "Godkend {event} i stedet?",
+    "overlapUnapprovedText": "{event} venter på godkendelse, {start}–{end}.",
+    "approveOther": "Godkend {event}",
+    "createNew": "Opret nyt arrangement",
+    "toast": "Arrangement oprettet og startet",
+    "toastKds": "Skift også køkkenskærmen til dette arrangement."
   }
 }

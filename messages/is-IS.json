@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Ekki tókst að skrá greiðsluna — innkomutalan fyrir þessa pöntun gæti verið röng þar til þetta er lagað.",
     "payment_not_reversed": "Ekki tókst að bakfæra greiðsluna",
     "event_not_approved": "Þessi viðburður er ekki samþykktur",
-    "event_not_open": "{status, select, closed {Þessum viðburði er lokið. Hefðu hann aftur til að taka við pöntunum.} cancelled {Þessum viðburði var aflýst.} other {Þessi viðburður er ekki opinn.}}"
+    "event_not_open": "{status, select, closed {Þessum viðburði er lokið. Hefðu hann aftur til að taka við pöntunum.} cancelled {Þessum viðburði var aflýst.} other {Þessi viðburður er ekki opinn.}}",
+    "sign_in_to_create": "Skráðu þig inn sem liðsmaður til að búa til viðburð.",
+    "event_details_invalid": "{reason, select, name {Bættu við heiti viðburðar} times {Bættu við upphafs- og lokatíma} end {Lokatími verður að vera eftir upphaf} van {Veldu bíl} date {Viðburðir búnir til hér gilda aðeins í dag} other {Athugaðu upplýsingar viðburðarins}}",
+    "event_overlaps": "Þetta skarast við annan viðburð í dag."
   },
   "kitchenModals": {
     "close": "Loka",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Skipta yfir í {event}?",
       "switch": "Skipta",
       "dismissedText": "{event} gæti verið tvítekning á {other}, sem er þegar samþykktur. Samþykkja hann til að taka við pöntunum? Viðskiptavinir sjá hann líka."
+    },
+    "createEvent": {
+      "button": "Búa til viðburð núna",
+      "offline": "Tengstu netinu til að búa til viðburð.",
+      "title": "Búa til viðburð núna",
+      "where": "Hvar ertu að selja?",
+      "somewhereElse": "Annars staðar",
+      "nameLabel": "Heiti viðburðar",
+      "starts": "Hefst",
+      "ends": "Lýkur",
+      "addTown": "Bæta við bæ eða póstnúmeri",
+      "town": "Bær",
+      "postcode": "Póstnúmer",
+      "van": "Hvaða bíll?",
+      "note": "Viðskiptavinir sjá viðburðinn og geta pantað á netinu.",
+      "create": "Búa til og hefja",
+      "overlapApprovedTitle": "Ertu þegar á {other}?",
+      "overlapApprovedText": "{other} er í dag, {start}–{end}.",
+      "useOther": "Nota {other}",
+      "createAnyway": "Búa samt til",
+      "overlapUnapprovedTitle": "Samþykkja {event} í staðinn?",
+      "overlapUnapprovedText": "{event} bíður samþykkis, {start}–{end}.",
+      "approveOther": "Samþykkja {event}",
+      "createNew": "Búa til nýjan viðburð",
+      "toast": "Viðburður búinn til og hafinn",
+      "toastKds": "Skiptu líka eldhússkjánum yfir á þennan viðburð."
     }
   },
   "ticket": {

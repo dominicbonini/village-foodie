@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "A fizetést nem sikerült rögzíteni — a rendelés bevételi adata a javításig hibás lehet.",
     "payment_not_reversed": "A fizetést nem sikerült visszavonni",
     "event_not_approved": "Ez az esemény nincs jóváhagyva",
-    "event_not_open": "{status, select, closed {Ez az esemény véget ért. Indítsd újra a rendelések fogadásához.} cancelled {Ezt az eseményt lemondták.} other {Ez az esemény nincs nyitva.}}"
+    "event_not_open": "{status, select, closed {Ez az esemény véget ért. Indítsd újra a rendelések fogadásához.} cancelled {Ezt az eseményt lemondták.} other {Ez az esemény nincs nyitva.}}",
+    "sign_in_to_create": "Jelentkezz be csapattagként az esemény létrehozásához.",
+    "event_details_invalid": "{reason, select, name {Add meg az esemény nevét} times {Add meg a kezdés és a befejezés idejét} end {A befejezésnek a kezdés után kell lennie} van {Válassz kocsit} date {Az itt létrehozott események csak a mai napra szólnak} other {Ellenőrizd az esemény adatait}}",
+    "event_overlaps": "Ez átfedésben van egy másik mai eseménnyel."
   },
   "kitchenModals": {
     "close": "Bezárás",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Váltás erre: {event}?",
       "switch": "Váltás",
       "dismissedText": "{event} lehet, hogy {other} duplikátuma, ami már jóvá van hagyva. Jóváhagyod, hogy rendeléseket fogadj? Az ügyfelek is látni fogják."
+    },
+    "createEvent": {
+      "button": "Esemény létrehozása most",
+      "offline": "Csatlakozz az internethez az esemény létrehozásához.",
+      "title": "Esemény létrehozása most",
+      "where": "Hol árulsz?",
+      "somewhereElse": "Máshol",
+      "nameLabel": "Esemény neve",
+      "starts": "Kezdés",
+      "ends": "Befejezés",
+      "addTown": "Település vagy irányítószám hozzáadása",
+      "town": "Település",
+      "postcode": "Irányítószám",
+      "van": "Melyik kocsi?",
+      "note": "Az ügyfelek látni fogják az eseményt, és online rendelhetnek.",
+      "create": "Létrehozás és indítás",
+      "overlapApprovedTitle": "Már itt vagy: {other}?",
+      "overlapApprovedText": "{other} ma van, {start}–{end}.",
+      "useOther": "{other} használata",
+      "createAnyway": "Létrehozás mégis",
+      "overlapUnapprovedTitle": "Inkább jóváhagyod: {event}?",
+      "overlapUnapprovedText": "{event} jóváhagyásra vár, {start}–{end}.",
+      "approveOther": "{event} jóváhagyása",
+      "createNew": "Új esemény létrehozása",
+      "toast": "Esemény létrehozva és elindítva",
+      "toastKds": "A konyhai képernyőt is állítsd erre az eseményre."
     }
   },
   "ticket": {

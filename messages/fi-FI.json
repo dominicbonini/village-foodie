@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Maksua ei voitu kirjata — tämän tilauksen myyntisumma voi olla väärin, kunnes se korjataan.",
     "payment_not_reversed": "Maksua ei voitu peruuttaa",
     "event_not_approved": "Tätä tapahtumaa ei ole hyväksytty",
-    "event_not_open": "{status, select, closed {Tapahtuma on päättynyt. Käynnistä se uudelleen ottaaksesi tilauksia.} cancelled {Tapahtuma on peruttu.} other {Tapahtuma ei ole auki.}}"
+    "event_not_open": "{status, select, closed {Tapahtuma on päättynyt. Käynnistä se uudelleen ottaaksesi tilauksia.} cancelled {Tapahtuma on peruttu.} other {Tapahtuma ei ole auki.}}",
+    "sign_in_to_create": "Kirjaudu tiimin jäsenenä luodaksesi tapahtuman.",
+    "event_details_invalid": "{reason, select, name {Lisää tapahtuman nimi} times {Lisää alkamis- ja päättymisaika} end {Päättymisajan on oltava alkamisen jälkeen} van {Valitse auto} date {Täällä luodut tapahtumat ovat vain tälle päivälle} other {Tarkista tapahtuman tiedot}}",
+    "event_overlaps": "Tämä menee päällekkäin toisen tämänpäiväisen tapahtuman kanssa."
   },
   "kitchenModals": {
     "close": "Sulje",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Vaihdetaanko tapahtumaan {event}?",
       "switch": "Vaihda",
       "dismissedText": "{event} voi olla kaksoiskappale tapahtumasta {other}, joka on jo hyväksytty. Hyväksytäänkö, jotta voit ottaa tilauksia? Asiakkaat näkevät sen myös."
+    },
+    "createEvent": {
+      "button": "Luo tapahtuma nyt",
+      "offline": "Yhdistä internetiin luodaksesi tapahtuman.",
+      "title": "Luo tapahtuma nyt",
+      "where": "Missä myyt?",
+      "somewhereElse": "Muualla",
+      "nameLabel": "Tapahtuman nimi",
+      "starts": "Alkaa",
+      "ends": "Päättyy",
+      "addTown": "Lisää paikkakunta tai postinumero",
+      "town": "Paikkakunta",
+      "postcode": "Postinumero",
+      "van": "Mikä auto?",
+      "note": "Asiakkaat näkevät tapahtuman ja voivat tilata verkossa.",
+      "create": "Luo ja aloita",
+      "overlapApprovedTitle": "Myytkö jo paikassa {other}?",
+      "overlapApprovedText": "{other} on tänään, {start}–{end}.",
+      "useOther": "Käytä: {other}",
+      "createAnyway": "Luo silti",
+      "overlapUnapprovedTitle": "Hyväksytäänkö sen sijaan {event}?",
+      "overlapUnapprovedText": "{event} odottaa hyväksyntää, {start}–{end}.",
+      "approveOther": "Hyväksy {event}",
+      "createNew": "Luo uusi tapahtuma",
+      "toast": "Tapahtuma luotu ja aloitettu",
+      "toastKds": "Vaihda myös keittiön näyttö tähän tapahtumaan."
     }
   },
   "ticket": {

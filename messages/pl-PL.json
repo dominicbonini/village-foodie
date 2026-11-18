@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Nie udało się zapisać płatności — utarg z tego zamówienia może być błędny, dopóki nie zostanie to naprawione.",
     "payment_not_reversed": "Nie udało się cofnąć płatności",
     "event_not_approved": "To wydarzenie nie jest zatwierdzone",
-    "event_not_open": "{status, select, closed {To wydarzenie się zakończyło. Uruchom je ponownie, żeby przyjmować zamówienia.} cancelled {To wydarzenie zostało odwołane.} other {To wydarzenie nie jest otwarte.}}"
+    "event_not_open": "{status, select, closed {To wydarzenie się zakończyło. Uruchom je ponownie, żeby przyjmować zamówienia.} cancelled {To wydarzenie zostało odwołane.} other {To wydarzenie nie jest otwarte.}}",
+    "sign_in_to_create": "Zaloguj się jako członek zespołu, aby utworzyć wydarzenie.",
+    "event_details_invalid": "{reason, select, name {Dodaj nazwę wydarzenia} times {Dodaj godzinę rozpoczęcia i zakończenia} end {Koniec musi być po rozpoczęciu} van {Wybierz food truck} date {Wydarzenia tworzone tutaj są tylko na dziś} other {Sprawdź dane wydarzenia}}",
+    "event_overlaps": "To nakłada się na inne dzisiejsze wydarzenie."
   },
   "kitchenModals": {
     "close": "Zamknij",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Przełączyć na {event}?",
       "switch": "Przełącz",
       "dismissedText": "{event} to możliwy duplikat {other}, które jest już zatwierdzone. Zatwierdzić, żeby przyjmować zamówienia? Klienci też je zobaczą."
+    },
+    "createEvent": {
+      "button": "Utwórz wydarzenie teraz",
+      "offline": "Połącz się z internetem, aby utworzyć wydarzenie.",
+      "title": "Utwórz wydarzenie teraz",
+      "where": "Gdzie sprzedajesz?",
+      "somewhereElse": "Gdzie indziej",
+      "nameLabel": "Nazwa wydarzenia",
+      "starts": "Początek",
+      "ends": "Koniec",
+      "addTown": "Dodaj miejscowość lub kod pocztowy",
+      "town": "Miejscowość",
+      "postcode": "Kod pocztowy",
+      "van": "Który food truck?",
+      "note": "Klienci zobaczą to wydarzenie i będą mogli zamawiać online.",
+      "create": "Utwórz i rozpocznij",
+      "overlapApprovedTitle": "Już sprzedajesz w: {other}?",
+      "overlapApprovedText": "{other} jest dziś, {start}–{end}.",
+      "useOther": "Użyj: {other}",
+      "createAnyway": "Utwórz mimo to",
+      "overlapUnapprovedTitle": "Zatwierdzić zamiast tego {event}?",
+      "overlapUnapprovedText": "{event} czeka na zatwierdzenie, {start}–{end}.",
+      "approveOther": "Zatwierdź {event}",
+      "createNew": "Utwórz nowe wydarzenie",
+      "toast": "Wydarzenie utworzone i rozpoczęte",
+      "toastKds": "Przełącz też ekran kuchni na to wydarzenie."
     }
   },
   "ticket": {

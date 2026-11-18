@@ -860,13 +860,18 @@ head('4 · THE SEEDED order_ready_override')
   // ── THE WRITERS ─────────────────────────────────────────────────────────────────────────────────
   /* 🔴 THE RESOLVER IS ONLY CORRECT IF THE WRITERS RECORD THE SOURCE. Read from the real source,
    * because a pure check on the resolver would pass with every writer still silent. */
+  /* ⚠️ RE-PINNED (events-create-2, 17 November 2026, docs/events-create-2-report.md): Manage's create statement moved
+   * VERBATIM into lib/events/create-event.ts (insertTruckEvent), which the dashboard's "Create event now" calls too; the
+   * dashboard's old draft insert (dead — no client sent it) is gone. So "Manage" below is the route PLUS that helper, and
+   * the dashboard's creation path is "calls insertTruckEvent, with no insert of its own". */
   const manage = fs.readFileSync(path.join(REPO, 'app/api/manage/route.ts'), 'utf8')
+    + '\n' + fs.readFileSync(path.join(REPO, 'lib/events/create-event.ts'), 'utf8')
   const dashAction = fs.readFileSync(path.join(REPO, 'app/api/dashboard/action/route.ts'), 'utf8')
   const inbound = fs.readFileSync(path.join(REPO, 'app/api/inbound-schedule/route.ts'), 'utf8')
 
   t('🔴 all three CREATION paths record ’seed’', (() => {
     return /order_ready_source: typedEventTypeId \? null : 'seed'/.test(manage)
-      && /order_ready_source: 'seed', source: 'manual'/.test(dashAction)
+      && /insertTruckEvent\(supabase, truck\.id,/.test(dashAction) && !/from\('truck_events'\)\.insert\(/.test(codeOf(dashAction))
       && /order_ready_source: 'seed',/.test(inbound)
   })())
   t('🔴 the Settings MASTER SWITCH records ’seed’ — it overwrites per-event choices by design',
@@ -2865,6 +2870,29 @@ head('5b · THE MODAL AND THE CARD')
       /^const showBrandedQr=hasFeature\(truck\.plan,'branded_qr_code'\)&&truck\.qr_code_style==='branded'$/,
       /^const canPrintTickets = canAccess\(truck\?\.plan \?\? 'starter', 'ticket_printing', truck\?\.feature_overrides \?\? \{\}, truck\?\.trial_expires_at \?\? null\)$/,
       /^logoUrl=\{\(demoBranded&&truck&&hasFeature\(truck\.plan,'branded_qr_code'\)&&truck\.qr_code_style==='branded'\)\?\(truck\.logo\|\|null\):null\}\/>\}$/,
+      /* ⚠️ RE-PINNED (events-create-2, 17 November 2026, docs/events-create-2-report.md): the auto-select effect's priority
+       * 0–3 lines (events-overlap-2, docs/events-overlap-2-report.md) became ONE approved-only rule, pickDashboardDefaultEvent
+       * in lib/event-default.ts (its eventEndInstant call moved there with it); the `?event=` param honours an approved event
+       * only; the selection reads `selectedRow`; the events read asks for counts. And the Orders tab's amber "No event
+       * selected" box (⚠️ span + Select event button) is the shared NoEventBox now, which adds "Create event now". Edits, not
+       * losses — each replacement is asserted below (eo2Moved). */
+      ...[
+        '?(upcomingEvents.find(e=>e.id===selectedEventId)??null)',
+        'const eventsRes=await fetch(`/api/events/manage?token=${token}&upcoming=true`)',
+        'if(selectedEventId||!upcomingEvents.length) return',
+        'const owned=upcomingEvents.find(e=>e.id===fromUrl)',
+        'const now=new Date()',
+        'const openEvent=upcomingEvents.find(e=>{',
+        "if(openEvent){console.log('[auto-select] priority 1 open:',openEvent.id);setSelectedEventId(openEvent.id);return}",
+        'const upcomingToday=upcomingEvents.find(e=>{',
+        "if(e.event_date!==todayStr||!e.start_time) return false",
+        "if(upcomingToday){console.log('[auto-select] priority 2 today:',upcomingToday.id);setSelectedEventId(upcomingToday.id);return}",
+        'const nextEvent=[...upcomingEvents]',
+        "if(nextEvent){console.log('[auto-select] priority 3 next:',nextEvent.id,nextEvent.event_date);setSelectedEventId(nextEvent.id)}",
+        '<span className="text-amber-500">⚠️</span>',
+        "<button onClick={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}",
+        '})',
+      ].map(x => new RegExp('^' + x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$')),
     ]
     t('⚠️ …and the Language Phase 1b replacements are present (the page reads `dashboard`; each enumerated line in its new form)', (() => {
       const pg = codeOf(fs.readFileSync(path.join(REPO, 'app/(app)/dashboard/[token]/page.tsx'), 'utf8'))
@@ -2920,7 +2948,9 @@ head('5b · THE MODAL AND THE CARD')
       const flat = pg.replace(/\s+/g, '')
       return !/localTodayIso|toTimeString\(\)|\.getHours\(\)|toLocaleTimeString\(/.test(pg)
         && /pruneStaleEventCache\(timeSettingsOr\(truck\.time,'dashboard'\)\.timeZone\)/.test(flat)
-        && /pickDefaultEventByTime\(upcomingEvents,dashTz\)/.test(flat)
+        // ⚠️ RE-PINNED (events-create-2, for events-overlap-2): the time-based default is pickDashboardDefaultEvent now —
+        // the same truck clock, approved events only (lib/event-default.ts).
+        && /pickDashboardDefaultEvent\(upcomingEvents,dashTz\)/.test(flat)
         // ⚠️ RE-PINNED (midnight events, 17 October 2026): getAsapSlot now also gets the event (its times place the slots).
         && /getAsapSlot\(slots,selectedOrDefaultEvent\?\.event_date,dashTz(,[^)]*)?\)/.test(flat)
         && /constnowMins=getNowMinsInTz\(dashTz\)/.test(flat)
@@ -3016,13 +3046,20 @@ head('5b · THE MODAL AND THE CARD')
     }
     const phase1bWordsMoved = (line) => { const f = p1bFragments(line); return f.length > 0 && f.every(x => P1B_PIECES.some(pc => pc.includes(x))) }
     const unexplained = gone.filter(l => !ALLOWED.some(re => re.test(l)) && !phase1bWordsMoved(l))
+    // events-overlap-2 / events-create-2 (ALLOWED above): each replacement present.
+    const eo2Moved = /pickDashboardDefaultEvent\(upcomingEvents,dashTz\)/.test(now) && now.includes('const selectedRow=selectedEventId?(upcomingEvents.find(e=>e.id===selectedEventId)??null):null')
+      && now.includes('&upcoming=true&counts=1`)') && now.includes("const owned=upcomingEvents.find(e=>e.id===fromUrl&&e.status!=='unconfirmed')")
+      && /<NoEventBox/.test(now) && now.includes("onSelect={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}")
+    if (!eo2Moved) unexplained.push('(events-overlap-2 / events-create-2: the approved-only auto-select or the NoEventBox is missing)')
     // Language Phase 2's three moves (ALLOWED above), each present in its new form.
     const lp2Moved = /tDash\('eventBar\.status',\s*\{\s*tone:\s*st\.tone\s*\}\)/.test(now) && /tDash\('orders\.status',\s*\{\s*status:\s*o\.status\s*\}\)/.test(now)
       /* ⚠️ RE-PINNED (Language Phase 1d): the capacity description and example moved on from `dashboard.settings.capacityDesc`
        * / `capacityExample` to the ONE shared pair `kitchenCapacity.desc` / `.example` (read here as tCap, and by Manage). */
       && /\{tCap\('desc'\)\}/.test(now) && /\{tCap\('example'\)\}/.test(now)
     // MIDNIGHT EVENTS: the thirteen replacements above, each present in its new form.
-    const midnightMoved = /upcomingQueryFloor\(/.test(now) && /isUpcomingOrRunning\(/.test(now) && /eventEndInstant\(/.test(now)
+    const midnightMoved = /upcomingQueryFloor\(/.test(now) && /isUpcomingOrRunning\(/.test(now)
+      // ⚠️ RE-PINNED (events-create-2): the auto-select's eventEndInstant moved with it into lib/event-default.ts.
+      && (/eventEndInstant\(/.test(now) || /eventEndInstant\(/.test(fs.readFileSync(path.join(REPO, 'lib/event-default.ts'), 'utf8')))
       && /nowOnEvent\(/.test(now) && /eventTimeMins\(/.test(now) && /toEngineClock\(/.test(now) && /eventDates\(/.test(now)
       && /formatSlot\(o\.slot,\s*dashTime\)/.test(now) && /start_time:\s*activeEvent\.start_time/.test(now)
     if (!midnightMoved) unexplained.push('(Midnight events: a replacement for one of the thirteen named lines is missing)')

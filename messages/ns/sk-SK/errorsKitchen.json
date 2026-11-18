@@ -69,5 +69,8 @@
   "payment_not_recorded": "Platbu sa nepodarilo zaznamenať — tržba za túto objednávku môže byť nesprávna, kým sa to neopraví.",
   "payment_not_reversed": "Platbu sa nepodarilo stornovať",
   "event_not_approved": "Táto akcia nie je schválená",
-  "event_not_open": "{status, select, closed {Táto akcia skončila. Spustite ju znova, aby ste mohli prijímať objednávky.} cancelled {Táto akcia bola zrušená.} other {Táto akcia nie je otvorená.}}"
+  "event_not_open": "{status, select, closed {Táto akcia skončila. Spustite ju znova, aby ste mohli prijímať objednávky.} cancelled {Táto akcia bola zrušená.} other {Táto akcia nie je otvorená.}}",
+  "sign_in_to_create": "Prihláste sa ako člen tímu, aby ste mohli vytvoriť akciu.",
+  "event_details_invalid": "{reason, select, name {Pridajte názov akcie} times {Pridajte čas začiatku a konca} end {Koniec musí byť po začiatku} van {Vyberte voz} date {Akcie vytvorené tu platia len pre dnešok} other {Skontrolujte údaje akcie}}",
+  "event_overlaps": "Prekrýva sa s inou dnešnou akciou."
 }

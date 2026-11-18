@@ -86,5 +86,31 @@
     "switchTitle": "Pārslēgties uz {event}?",
     "switch": "Pārslēgt",
     "dismissedText": "{event} varētu būt pasākuma {other} dublikāts, kas jau ir apstiprināts. Apstiprināt, lai pieņemtu pasūtījumus? To redzēs arī klienti."
+  },
+  "createEvent": {
+    "button": "Izveidot pasākumu tagad",
+    "offline": "Pievienojieties internetam, lai izveidotu pasākumu.",
+    "title": "Izveidot pasākumu tagad",
+    "where": "Kur jūs tirgojat?",
+    "somewhereElse": "Citur",
+    "nameLabel": "Pasākuma nosaukums",
+    "starts": "Sākas",
+    "ends": "Beidzas",
+    "addTown": "Pievienot apdzīvotu vietu vai pasta indeksu",
+    "town": "Apdzīvota vieta",
+    "postcode": "Pasta indekss",
+    "van": "Kurš furgons?",
+    "note": "Klienti redzēs šo pasākumu un varēs pasūtīt tiešsaistē.",
+    "create": "Izveidot un sākt",
+    "overlapApprovedTitle": "Jau tirgojat vietā {other}?",
+    "overlapApprovedText": "{other} ir šodien, {start}–{end}.",
+    "useOther": "Izmantot {other}",
+    "createAnyway": "Tomēr izveidot",
+    "overlapUnapprovedTitle": "Tā vietā apstiprināt {event}?",
+    "overlapUnapprovedText": "{event} gaida apstiprinājumu, {start}–{end}.",
+    "approveOther": "Apstiprināt {event}",
+    "createNew": "Izveidot jaunu pasākumu",
+    "toast": "Pasākums izveidots un sākts",
+    "toastKds": "Pārslēdziet arī virtuves ekrānu uz šo pasākumu."
   }
 }

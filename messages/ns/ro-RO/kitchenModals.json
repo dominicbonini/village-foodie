@@ -86,5 +86,31 @@
     "switchTitle": "Treceți la {event}?",
     "switch": "Schimbați",
     "dismissedText": "{event} poate fi un duplicat al {other}, care este deja aprobat. Îl aprobați ca să primiți comenzi? Îl vor vedea și clienții."
+  },
+  "createEvent": {
+    "button": "Creați eveniment acum",
+    "offline": "Conectați-vă la internet pentru a crea un eveniment.",
+    "title": "Creați eveniment acum",
+    "where": "Unde vindeți?",
+    "somewhereElse": "În altă parte",
+    "nameLabel": "Numele evenimentului",
+    "starts": "Începe",
+    "ends": "Se termină",
+    "addTown": "Adăugați localitatea sau codul poștal",
+    "town": "Localitate",
+    "postcode": "Cod poștal",
+    "van": "Ce vehicul?",
+    "note": "Clienții vor vedea acest eveniment și pot comanda online.",
+    "create": "Creați și porniți",
+    "overlapApprovedTitle": "Sunteți deja la {other}?",
+    "overlapApprovedText": "{other} este azi, {start}–{end}.",
+    "useOther": "Folosiți {other}",
+    "createAnyway": "Creați totuși",
+    "overlapUnapprovedTitle": "Aprobați {event} în schimb?",
+    "overlapUnapprovedText": "{event} așteaptă aprobare, {start}–{end}.",
+    "approveOther": "Aprobați {event}",
+    "createNew": "Creați eveniment nou",
+    "toast": "Eveniment creat și pornit",
+    "toastKds": "Treceți și ecranul bucătăriei pe acest eveniment."
   }
 }

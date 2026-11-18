@@ -86,5 +86,31 @@
     "switchTitle": "{event} پر جائیں؟",
     "switch": "بدلیں",
     "dismissedText": "{event} شاید {other} کا ڈپلیکیٹ ہے، جو پہلے سے منظور ہے۔ آرڈر لینے کے لیے منظور کریں؟ گاہک بھی اسے دیکھیں گے۔"
+  },
+  "createEvent": {
+    "button": "ابھی ایونٹ بنائیں",
+    "offline": "ایونٹ بنانے کے لیے انٹرنیٹ سے جڑیں۔",
+    "title": "ابھی ایونٹ بنائیں",
+    "where": "آپ کہاں بیچ رہے ہیں؟",
+    "somewhereElse": "کہیں اور",
+    "nameLabel": "ایونٹ کا نام",
+    "starts": "شروع",
+    "ends": "ختم",
+    "addTown": "شہر یا پوسٹ کوڈ شامل کریں",
+    "town": "شہر",
+    "postcode": "پوسٹ کوڈ",
+    "van": "کون سی وین؟",
+    "note": "گاہک یہ ایونٹ دیکھیں گے اور آن لائن آرڈر کر سکیں گے۔",
+    "create": "بنائیں اور شروع کریں",
+    "overlapApprovedTitle": "کیا آپ پہلے سے {other} پر ہیں؟",
+    "overlapApprovedText": "{other} آج ہے، {start}–{end}۔",
+    "useOther": "{other} استعمال کریں",
+    "createAnyway": "پھر بھی بنائیں",
+    "overlapUnapprovedTitle": "اس کے بجائے {event} منظور کریں؟",
+    "overlapUnapprovedText": "{event} منظوری کا منتظر ہے، {start}–{end}۔",
+    "approveOther": "{event} منظور کریں",
+    "createNew": "نیا ایونٹ بنائیں",
+    "toast": "ایونٹ بن گیا اور شروع ہو گیا",
+    "toastKds": "کچن اسکرین کو بھی اس ایونٹ پر کر دیں۔"
   }
 }

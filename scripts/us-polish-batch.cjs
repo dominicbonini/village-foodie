@@ -315,7 +315,12 @@ const J = x => JSON.stringify(x)
     const missing = SITES.filter(([f, use, tr]) => !read(f).includes(use) || !read(f).includes(tr)).map(([f]) => f)
     t(`every switched screen words its refusal from code + params, in its route's namespace (${SITES.length} files)`, missing.length === 0, missing.join(', '))
     const dash = read('app/(app)/dashboard/[token]/page.tsx'), kds = read('app/(app)/dashboard/[token]/kds/page.tsx')
-    t('dashboard: 5 event-menu throws use errorsManage; edit / busy / refund / intervals use errorsKitchen', (dash.match(/throw new Error\(errorText\(tErrM,data,''\)\)/g) || []).length === 5 && dash.includes("throw new Error(errorText(tErrK,data,''))") && dash.includes("errorText(tErrK,data,tDash('toast.editBusy'))") && dash.includes("message:errorText(tErrK,data,tDash('refund.failed'))") && dash.includes('msg=errorText(tErrK,await res.clone().json(),msg)'))
+    /* ⚠️ RE-PINNED (events-create-2, 17 November 2026, for events-overlap-2 — docs/events-overlap-2-report.md): 5 → 7. The two
+     * events-overlap questions call /api/events/action too — Approve (`approveEvent`, action 'confirm') and Keep
+     * (`keepOtherEvent`, 'dismiss_overlap') — and word their refusals the same way, from errorsManage. */
+    t('dashboard: 7 event-menu throws use errorsManage (5 + approve / keep); edit / busy / refund / intervals use errorsKitchen', (dash.match(/throw new Error\(errorText\(tErrM,data,''\)\)/g) || []).length === 7
+      && /const approveEvent=async\(eventId:string\)=>\{[\s\S]{0,400}?if\(!res\.ok\) throw new Error\(errorText\(tErrM,data,''\)\)/.test(dash)
+      && /const keepOtherEvent=async\(eventId:string\)=>\{[\s\S]{0,400}?if\(!res\.ok\) throw new Error\(errorText\(tErrM,data,''\)\)/.test(dash) && dash.includes("throw new Error(errorText(tErrK,data,''))") && dash.includes("errorText(tErrK,data,tDash('toast.editBusy'))") && dash.includes("message:errorText(tErrK,data,tDash('refund.failed'))") && dash.includes('msg=errorText(tErrK,await res.clone().json(),msg)'))
     t('KDS: 5 event-menu throws use errorsManage', (kds.match(/throw new Error\(errorText\(tErrM, data, ''\)\)/g) || []).length === 5)
     const left = ['app/(app)/signup/page.tsx', 'app/(app)/reset-password/page.tsx', 'app/(app)/setup/page.tsx', 'components/setup/WhereBasedStep.tsx', 'components/DemoGetStarted.tsx', 'components/landing/DemoUpload.tsx', 'app/(app)/dashboard/[token]/kds/page.tsx', 'lib/native/useGatedActionResult.tsx', 'components/dashboard/AddOrderPanel.tsx', 'components/dashboard/CustomDomainSetup.tsx']
       .filter(f => /(?:setError|setMessage|showToast|setRestartError)\([^)]*data\??\.error|throw new Error\(data\??\.error\)/.test(read(f)))

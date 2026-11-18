@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Toʻlovni qayd etib boʻlmadi — tuzatilmaguncha bu buyurtma boʻyicha tushum notoʻgʻri koʻrsatilishi mumkin.",
     "payment_not_reversed": "Toʻlovni bekor qilib boʻlmadi",
     "event_not_approved": "Bu tadbir tasdiqlanmagan",
-    "event_not_open": "{status, select, closed {Bu tadbir tugagan. Buyurtma olish uchun qayta boshlang.} cancelled {Bu tadbir bekor qilingan.} other {Bu tadbir ochiq emas.}}"
+    "event_not_open": "{status, select, closed {Bu tadbir tugagan. Buyurtma olish uchun qayta boshlang.} cancelled {Bu tadbir bekor qilingan.} other {Bu tadbir ochiq emas.}}",
+    "sign_in_to_create": "Tadbir yaratish uchun jamoa a’zosi sifatida kiring.",
+    "event_details_invalid": "{reason, select, name {Tadbir nomini kiriting} times {Boshlanish va tugash vaqtini kiriting} end {Tugash vaqti boshlanishdan keyin bo‘lishi kerak} van {Furgonni tanlang} date {Bu yerda yaratilgan tadbirlar faqat bugun uchun} other {Tadbir ma’lumotlarini tekshiring}}",
+    "event_overlaps": "Bu bugungi boshqa tadbir bilan vaqti ustma-ust tushadi."
   },
   "kitchenModals": {
     "close": "Yopish",
@@ -1096,6 +1099,32 @@
       "switchTitle": "{event} tadbiriga o‘tilsinmi?",
       "switch": "O‘tish",
       "dismissedText": "{event} allaqachon tasdiqlangan {other} tadbirining takroriy nusxasi bo‘lishi mumkin. Buyurtma olish uchun tasdiqlaysizmi? Mijozlar ham ko‘radi."
+    },
+    "createEvent": {
+      "button": "Tadbirni hozir yaratish",
+      "offline": "Tadbir yaratish uchun internetga ulaning.",
+      "title": "Tadbirni hozir yaratish",
+      "where": "Qayerda savdo qilyapsiz?",
+      "somewhereElse": "Boshqa joyda",
+      "nameLabel": "Tadbir nomi",
+      "starts": "Boshlanishi",
+      "ends": "Tugashi",
+      "addTown": "Shahar yoki pochta indeksini qo‘shish",
+      "town": "Shahar",
+      "postcode": "Pochta indeksi",
+      "van": "Qaysi furgon?",
+      "note": "Mijozlar bu tadbirni ko‘radi va onlayn buyurtma bera oladi.",
+      "create": "Yaratish va boshlash",
+      "overlapApprovedTitle": "Allaqachon {other} joyidamisiz?",
+      "overlapApprovedText": "{other} bugun, {start}–{end}.",
+      "useOther": "{other} ni tanlash",
+      "createAnyway": "Baribir yaratish",
+      "overlapUnapprovedTitle": "Buning o‘rniga {event} tasdiqlansinmi?",
+      "overlapUnapprovedText": "{event} tasdiq kutmoqda, {start}–{end}.",
+      "approveOther": "{event} ni tasdiqlash",
+      "createNew": "Yangi tadbir yaratish",
+      "toast": "Tadbir yaratildi va boshlandi",
+      "toastKds": "Oshxona ekranini ham shu tadbirga o‘tkazing."
     }
   },
   "ticket": {

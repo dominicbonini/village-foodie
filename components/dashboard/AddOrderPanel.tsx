@@ -28,6 +28,7 @@ import { engineClock, crossesMidnight, eventEndMins, nowOnEvent } from '@/lib/ev
 import { EventPickerPanel } from '@/components/shared/EventPickerPanel'
 // events-overlap-2: the switch question, the list order and the "possible duplicate" rule.
 import { SwitchEventDialog } from '@/components/shared/EventGateDialogs'
+import { NoEventBox } from '@/components/dashboard/NoEventBox'   // events-create-2
 import { pickDefaultApprovedEvent } from '@/lib/event-default'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { gatedAction, seedProvisionalSeq } from '@/lib/native/orderGate'
@@ -157,6 +158,9 @@ interface AddOrderPanelProps {
   /** events-overlap-2: an UNAPPROVED event was tapped in the picker, or the server refused a walk-up because its event
    *  is not approved. The dashboard opens its approve dialog; the panel never selects an unapproved event itself. */
   onRequestApprove?: (eventId: string) => void
+  /** events-create-2: "Create event now" — in the picker (top or bottom, per the dashboard) and beside "Select event" in
+   *  the no-event box. Absent → no create button (a demo). The label and disabled note come from the dashboard. */
+  createEvent?: { position: 'top' | 'bottom'; label: string; disabled?: boolean; note?: string | null; onClick: () => void } | null
   /** EVENT-SWITCH GATE (Option A): offline, only events whose data was loaded this session are switchable.
    *  isOffline false / isEventLoaded absent → no gating (online = every event switchable as today). */
   isOffline?: boolean
@@ -360,7 +364,7 @@ export function AddOrderPanel({
   categoryOrder, itemCategoryMap,
   showToast, onOrderPlaced, onOpenEvent,
   requestEventPickerOpen, onEventPickerOpened,
-  onEventChange, controlledEvent, events: eventsProp = null, orderCounts = null, onRequestApprove,
+  onEventChange, controlledEvent, events: eventsProp = null, orderCounts = null, onRequestApprove, createEvent = null,
   isOffline = false, offlineCapacity = null, isEventLoaded,
   isActive = true,
   isDemo = false, onLockedEventAction,
@@ -2616,12 +2620,20 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
   // ── events-overlap-2: ON A PHONE THE EVENT CARD BELOW IS `hidden sm:block`, so a phone showed NO event at all on this
   // tab (docs/events-overlap-1-report.md §3c). One compact line, phones only (`sm:hidden`): the selected event's name and
   // times. Tapping it opens the picker, like the card's Change button.
+  // events-create-2: the no-event box (Select event / Create event now), shared with the Orders tab.
+  const noEventBox = (
+    <NoEventBox message={t('noEventSelected')} selectLabel={t('selectEvent')} onSelect={openEventPicker}
+      createLabel={createEvent?.label} onCreate={createEvent?.onClick} createDisabled={!!createEvent?.disabled} createNote={createEvent?.note ?? null} />
+  )
   const phoneEventLine = manualEvent ? (
     <button type="button" onClick={openEventPicker} data-phone-event-line
       className="sm:hidden w-full text-left text-xs font-semibold text-slate-600 truncate mb-2">
       📍 {fmtVenue(manualEvent.venue_name, manualEvent.town) || manualEvent.venue_name} · {formatTime(manualEvent.start_time, panelTime)}–{formatTime(manualEvent.end_time, panelTime)}
     </button>
-  ) : null
+  ) : (
+    // events-create-2: a phone with NO event saw nothing here (the box below is `hidden sm:block`) — it now gets the box.
+    <div className="sm:hidden mb-3">{noEventBox}</div>
+  )
 
   // status read via liveEvent — the dedicated status-sync effect is gone (see the note where it was).
   const eventBanner = liveEvent?.status !== 'open' ? (
@@ -2659,18 +2671,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
             </button>
           )}
         </div>
-      ) : (
-        <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-          <div className="flex items-center gap-2">
-            <span className="text-amber-500">⚠️</span>
-            <p className="text-sm font-medium text-amber-800">{t('noEventSelected')}</p>
-          </div>
-          <button onClick={openEventPicker}
-            className="text-sm font-semibold text-amber-700 border border-amber-300 bg-white rounded-lg px-3 py-1.5 hover:bg-amber-50 whitespace-nowrap">
-            {t('selectEvent')}
-          </button>
-        </div>
-      )}
+      ) : noEventBox}
       {/* ── 🔴 THESE TWO PANELS CAME OUT OF THE PICKER MODAL, AND THAT IS AN IMPROVEMENT. ──────────────
           They describe the CHOSEN event — "orders will appear when the event opens", "today's event is
           not open yet" — but they lived inside the modal, so they were only ever visible while the
@@ -3086,6 +3087,7 @@ const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready
         }}
         groupByDate={!!eventsProp}
         orderCount={orderCounts ? (ev => orderCounts[ev.id] ?? 0) : undefined}
+        createAction={createEvent ? { ...createEvent, onClick: () => { setShowEventPicker(false); createEvent.onClick() } } : undefined}
         onClose={() => setShowEventPicker(false)}
         title={t('selectEvent')}
         closeLabel={t('done')}

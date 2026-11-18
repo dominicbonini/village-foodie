@@ -86,5 +86,31 @@
     "switchTitle": "Passare a {event}?",
     "switch": "Cambia",
     "dismissedText": "{event} potrebbe essere un duplicato di {other}, già approvato. Approvarlo per ricevere ordini? Lo vedranno anche i clienti."
+  },
+  "createEvent": {
+    "button": "Crea evento ora",
+    "offline": "Connettiti a internet per creare un evento.",
+    "title": "Crea evento ora",
+    "where": "Dove stai vendendo?",
+    "somewhereElse": "Altrove",
+    "nameLabel": "Nome dell’evento",
+    "starts": "Inizio",
+    "ends": "Fine",
+    "addTown": "Aggiungi città o CAP",
+    "town": "Città",
+    "postcode": "CAP",
+    "van": "Quale furgone?",
+    "note": "I clienti vedranno questo evento e potranno ordinare online.",
+    "create": "Crea e avvia",
+    "overlapApprovedTitle": "Sei già a {other}?",
+    "overlapApprovedText": "{other} è oggi, {start}–{end}.",
+    "useOther": "Usa {other}",
+    "createAnyway": "Crea comunque",
+    "overlapUnapprovedTitle": "Approvare {event} invece?",
+    "overlapUnapprovedText": "{event} è in attesa di approvazione, {start}–{end}.",
+    "approveOther": "Approva {event}",
+    "createNew": "Crea nuovo evento",
+    "toast": "Evento creato e avviato",
+    "toastKds": "Passa anche lo schermo cucina a questo evento."
   }
 }

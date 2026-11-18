@@ -69,5 +69,8 @@
   "payment_not_recorded": "Payment could not be recorded — the takings figure for this order may be wrong until it is repaired.",
   "payment_not_reversed": "Payment could not be reversed",
   "event_not_approved": "This event isn’t approved",
-  "event_not_open": "{status, select, closed {This event has finished. Restart it to take orders.} cancelled {This event was cancelled.} other {This event isn’t open.}}"
+  "event_not_open": "{status, select, closed {This event has finished. Restart it to take orders.} cancelled {This event was cancelled.} other {This event isn’t open.}}",
+  "sign_in_to_create": "Sign in as a team member to create an event.",
+  "event_details_invalid": "{reason, select, name {Add an event name} times {Add a start and end time} end {The end time must be after the start} van {Choose a van} date {Events made here are for today only} other {Check the event details}}",
+  "event_overlaps": "This overlaps another event today."
 }

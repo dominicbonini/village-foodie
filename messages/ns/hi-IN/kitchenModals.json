@@ -86,5 +86,31 @@
     "switchTitle": "{event} पर जाएँ?",
     "switch": "बदलें",
     "dismissedText": "{event} शायद {other} का डुप्लिकेट है, जिसे पहले ही मंज़ूरी मिल चुकी है। ऑर्डर लेने के लिए मंज़ूरी दें? ग्राहक भी इसे देखेंगे।"
+  },
+  "createEvent": {
+    "button": "अभी इवेंट बनाएँ",
+    "offline": "इवेंट बनाने के लिए इंटरनेट से कनेक्ट करें।",
+    "title": "अभी इवेंट बनाएँ",
+    "where": "आप कहाँ बेच रहे हैं?",
+    "somewhereElse": "कहीं और",
+    "nameLabel": "इवेंट का नाम",
+    "starts": "शुरू",
+    "ends": "खत्म",
+    "addTown": "शहर या पिन कोड जोड़ें",
+    "town": "शहर",
+    "postcode": "पिन कोड",
+    "van": "कौन-सी वैन?",
+    "note": "ग्राहक यह इवेंट देखेंगे और ऑनलाइन ऑर्डर कर सकेंगे।",
+    "create": "बनाएँ और शुरू करें",
+    "overlapApprovedTitle": "क्या आप पहले से {other} पर हैं?",
+    "overlapApprovedText": "{other} आज है, {start}–{end}।",
+    "useOther": "{other} इस्तेमाल करें",
+    "createAnyway": "फिर भी बनाएँ",
+    "overlapUnapprovedTitle": "इसके बजाय {event} को मंज़ूरी दें?",
+    "overlapUnapprovedText": "{event} मंज़ूरी का इंतज़ार कर रहा है, {start}–{end}।",
+    "approveOther": "{event} को मंज़ूरी दें",
+    "createNew": "नया इवेंट बनाएँ",
+    "toast": "इवेंट बन गया और शुरू हो गया",
+    "toastKds": "किचन स्क्रीन को भी इस इवेंट पर कर दें।"
   }
 }

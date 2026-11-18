@@ -69,5 +69,8 @@
   "payment_not_recorded": "Platbu se nepodařilo zaznamenat — údaj o tržbě za tuto objednávku může být až do opravy chybný.",
   "payment_not_reversed": "Platbu se nepodařilo stornovat",
   "event_not_approved": "Tato akce není schválená",
-  "event_not_open": "{status, select, closed {Tato akce skončila. Spusťte ji znovu, abyste mohli přijímat objednávky.} cancelled {Tato akce byla zrušena.} other {Tato akce není otevřená.}}"
+  "event_not_open": "{status, select, closed {Tato akce skončila. Spusťte ji znovu, abyste mohli přijímat objednávky.} cancelled {Tato akce byla zrušena.} other {Tato akce není otevřená.}}",
+  "sign_in_to_create": "Přihlaste se jako člen týmu, abyste mohli vytvořit akci.",
+  "event_details_invalid": "{reason, select, name {Přidejte název akce} times {Přidejte čas začátku a konce} end {Konec musí být po začátku} van {Vyberte vůz} date {Akce vytvořené zde platí jen pro dnešek} other {Zkontrolujte údaje akce}}",
+  "event_overlaps": "Překrývá se s jinou dnešní akcí."
 }

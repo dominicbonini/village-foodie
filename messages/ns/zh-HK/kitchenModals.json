@@ -86,5 +86,31 @@
     "switchTitle": "切換到{event}？",
     "switch": "切換",
     "dismissedText": "{event}可能與已批准的{other}重複。要批准以接受訂單嗎？客人也會看到。"
+  },
+  "createEvent": {
+    "button": "立即建立活動",
+    "offline": "請連接互聯網以建立活動。",
+    "title": "立即建立活動",
+    "where": "你在哪裡營業？",
+    "somewhereElse": "其他地方",
+    "nameLabel": "活動名稱",
+    "starts": "開始",
+    "ends": "結束",
+    "addTown": "加入地區或郵編",
+    "town": "地區",
+    "postcode": "郵編",
+    "van": "哪部車？",
+    "note": "客人會看到這個活動，並可在網上落單。",
+    "create": "建立並開始",
+    "overlapApprovedTitle": "已經在{other}營業？",
+    "overlapApprovedText": "{other}今日{start}–{end}。",
+    "useOther": "使用{other}",
+    "createAnyway": "仍然建立",
+    "overlapUnapprovedTitle": "改為批准{event}？",
+    "overlapUnapprovedText": "{event}正等待批准，{start}–{end}。",
+    "approveOther": "批准{event}",
+    "createNew": "建立新活動",
+    "toast": "已建立並開始活動",
+    "toastKds": "請把廚房畫面也切換到這個活動。"
   }
 }

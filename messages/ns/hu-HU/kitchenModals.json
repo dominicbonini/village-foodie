@@ -86,5 +86,31 @@
     "switchTitle": "Váltás erre: {event}?",
     "switch": "Váltás",
     "dismissedText": "{event} lehet, hogy {other} duplikátuma, ami már jóvá van hagyva. Jóváhagyod, hogy rendeléseket fogadj? Az ügyfelek is látni fogják."
+  },
+  "createEvent": {
+    "button": "Esemény létrehozása most",
+    "offline": "Csatlakozz az internethez az esemény létrehozásához.",
+    "title": "Esemény létrehozása most",
+    "where": "Hol árulsz?",
+    "somewhereElse": "Máshol",
+    "nameLabel": "Esemény neve",
+    "starts": "Kezdés",
+    "ends": "Befejezés",
+    "addTown": "Település vagy irányítószám hozzáadása",
+    "town": "Település",
+    "postcode": "Irányítószám",
+    "van": "Melyik kocsi?",
+    "note": "Az ügyfelek látni fogják az eseményt, és online rendelhetnek.",
+    "create": "Létrehozás és indítás",
+    "overlapApprovedTitle": "Már itt vagy: {other}?",
+    "overlapApprovedText": "{other} ma van, {start}–{end}.",
+    "useOther": "{other} használata",
+    "createAnyway": "Létrehozás mégis",
+    "overlapUnapprovedTitle": "Inkább jóváhagyod: {event}?",
+    "overlapUnapprovedText": "{event} jóváhagyásra vár, {start}–{end}.",
+    "approveOther": "{event} jóváhagyása",
+    "createNew": "Új esemény létrehozása",
+    "toast": "Esemény létrehozva és elindítva",
+    "toastKds": "A konyhai képernyőt is állítsd erre az eseményre."
   }
 }

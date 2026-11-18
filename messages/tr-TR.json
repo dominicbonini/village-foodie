@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Ödeme kaydedilemedi — bu siparişin hasılat tutarı düzeltilene kadar yanlış olabilir.",
     "payment_not_reversed": "Ödeme geri alınamadı",
     "event_not_approved": "Bu etkinlik onaylanmadı",
-    "event_not_open": "{status, select, closed {Bu etkinlik bitti. Sipariş almak için yeniden başlatın.} cancelled {Bu etkinlik iptal edildi.} other {Bu etkinlik açık değil.}}"
+    "event_not_open": "{status, select, closed {Bu etkinlik bitti. Sipariş almak için yeniden başlatın.} cancelled {Bu etkinlik iptal edildi.} other {Bu etkinlik açık değil.}}",
+    "sign_in_to_create": "Etkinlik oluşturmak için ekip üyesi olarak giriş yapın.",
+    "event_details_invalid": "{reason, select, name {Etkinlik adı ekleyin} times {Başlangıç ve bitiş saati ekleyin} end {Bitiş saati başlangıçtan sonra olmalı} van {Bir araç seçin} date {Burada oluşturulan etkinlikler yalnızca bugün içindir} other {Etkinlik bilgilerini kontrol edin}}",
+    "event_overlaps": "Bu, bugünkü başka bir etkinlikle çakışıyor."
   },
   "kitchenModals": {
     "close": "Kapat",
@@ -1096,6 +1099,32 @@
       "switchTitle": "{event} etkinliğine geçilsin mi?",
       "switch": "Geç",
       "dismissedText": "{event}, zaten onaylanmış {other} etkinliğinin olası bir kopyası. Sipariş almak için onaylansın mı? Müşteriler de görecek."
+    },
+    "createEvent": {
+      "button": "Şimdi etkinlik oluştur",
+      "offline": "Etkinlik oluşturmak için internete bağlanın.",
+      "title": "Şimdi etkinlik oluştur",
+      "where": "Nerede satış yapıyorsunuz?",
+      "somewhereElse": "Başka bir yer",
+      "nameLabel": "Etkinlik adı",
+      "starts": "Başlangıç",
+      "ends": "Bitiş",
+      "addTown": "Şehir veya posta kodu ekle",
+      "town": "Şehir",
+      "postcode": "Posta kodu",
+      "van": "Hangi araç?",
+      "note": "Müşteriler bu etkinliği görecek ve çevrimiçi sipariş verebilecek.",
+      "create": "Oluştur ve başlat",
+      "overlapApprovedTitle": "Zaten {other} konumunda mısınız?",
+      "overlapApprovedText": "{other} bugün, {start}–{end}.",
+      "useOther": "{other} kullan",
+      "createAnyway": "Yine de oluştur",
+      "overlapUnapprovedTitle": "Bunun yerine {event} onaylansın mı?",
+      "overlapUnapprovedText": "{event} onay bekliyor, {start}–{end}.",
+      "approveOther": "{event} onayla",
+      "createNew": "Yeni etkinlik oluştur",
+      "toast": "Etkinlik oluşturuldu ve başlatıldı",
+      "toastKds": "Mutfak ekranını da bu etkinliğe geçirin."
     }
   },
   "ticket": {

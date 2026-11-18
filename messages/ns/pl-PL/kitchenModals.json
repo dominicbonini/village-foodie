@@ -86,5 +86,31 @@
     "switchTitle": "Przełączyć na {event}?",
     "switch": "Przełącz",
     "dismissedText": "{event} to możliwy duplikat {other}, które jest już zatwierdzone. Zatwierdzić, żeby przyjmować zamówienia? Klienci też je zobaczą."
+  },
+  "createEvent": {
+    "button": "Utwórz wydarzenie teraz",
+    "offline": "Połącz się z internetem, aby utworzyć wydarzenie.",
+    "title": "Utwórz wydarzenie teraz",
+    "where": "Gdzie sprzedajesz?",
+    "somewhereElse": "Gdzie indziej",
+    "nameLabel": "Nazwa wydarzenia",
+    "starts": "Początek",
+    "ends": "Koniec",
+    "addTown": "Dodaj miejscowość lub kod pocztowy",
+    "town": "Miejscowość",
+    "postcode": "Kod pocztowy",
+    "van": "Który food truck?",
+    "note": "Klienci zobaczą to wydarzenie i będą mogli zamawiać online.",
+    "create": "Utwórz i rozpocznij",
+    "overlapApprovedTitle": "Już sprzedajesz w: {other}?",
+    "overlapApprovedText": "{other} jest dziś, {start}–{end}.",
+    "useOther": "Użyj: {other}",
+    "createAnyway": "Utwórz mimo to",
+    "overlapUnapprovedTitle": "Zatwierdzić zamiast tego {event}?",
+    "overlapUnapprovedText": "{event} czeka na zatwierdzenie, {start}–{end}.",
+    "approveOther": "Zatwierdź {event}",
+    "createNew": "Utwórz nowe wydarzenie",
+    "toast": "Wydarzenie utworzone i rozpoczęte",
+    "toastKds": "Przełącz też ekran kuchni na to wydarzenie."
   }
 }

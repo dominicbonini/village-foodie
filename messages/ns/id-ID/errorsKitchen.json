@@ -69,5 +69,8 @@
   "payment_not_recorded": "Pembayaran tidak dapat dicatat — angka pendapatan untuk pesanan ini mungkin salah sampai diperbaiki.",
   "payment_not_reversed": "Pembayaran tidak dapat dibatalkan",
   "event_not_approved": "Acara ini belum disetujui",
-  "event_not_open": "{status, select, closed {Acara ini sudah selesai. Mulai ulang untuk menerima pesanan.} cancelled {Acara ini dibatalkan.} other {Acara ini tidak dibuka.}}"
+  "event_not_open": "{status, select, closed {Acara ini sudah selesai. Mulai ulang untuk menerima pesanan.} cancelled {Acara ini dibatalkan.} other {Acara ini tidak dibuka.}}",
+  "sign_in_to_create": "Masuk sebagai anggota tim untuk membuat acara.",
+  "event_details_invalid": "{reason, select, name {Tambahkan nama acara} times {Tambahkan jam mulai dan selesai} end {Jam selesai harus setelah mulai} van {Pilih van} date {Acara yang dibuat di sini hanya untuk hari ini} other {Periksa detail acara}}",
+  "event_overlaps": "Ini bertumpang tindih dengan acara lain hari ini."
 }

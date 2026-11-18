@@ -86,5 +86,31 @@
     "switchTitle": "{event} etkinliğine geçilsin mi?",
     "switch": "Geç",
     "dismissedText": "{event}, zaten onaylanmış {other} etkinliğinin olası bir kopyası. Sipariş almak için onaylansın mı? Müşteriler de görecek."
+  },
+  "createEvent": {
+    "button": "Şimdi etkinlik oluştur",
+    "offline": "Etkinlik oluşturmak için internete bağlanın.",
+    "title": "Şimdi etkinlik oluştur",
+    "where": "Nerede satış yapıyorsunuz?",
+    "somewhereElse": "Başka bir yer",
+    "nameLabel": "Etkinlik adı",
+    "starts": "Başlangıç",
+    "ends": "Bitiş",
+    "addTown": "Şehir veya posta kodu ekle",
+    "town": "Şehir",
+    "postcode": "Posta kodu",
+    "van": "Hangi araç?",
+    "note": "Müşteriler bu etkinliği görecek ve çevrimiçi sipariş verebilecek.",
+    "create": "Oluştur ve başlat",
+    "overlapApprovedTitle": "Zaten {other} konumunda mısınız?",
+    "overlapApprovedText": "{other} bugün, {start}–{end}.",
+    "useOther": "{other} kullan",
+    "createAnyway": "Yine de oluştur",
+    "overlapUnapprovedTitle": "Bunun yerine {event} onaylansın mı?",
+    "overlapUnapprovedText": "{event} onay bekliyor, {start}–{end}.",
+    "approveOther": "{event} onayla",
+    "createNew": "Yeni etkinlik oluştur",
+    "toast": "Etkinlik oluşturuldu ve başlatıldı",
+    "toastKds": "Mutfak ekranını da bu etkinliğe geçirin."
   }
 }

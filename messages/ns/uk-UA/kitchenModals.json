@@ -86,5 +86,31 @@
     "switchTitle": "Перейти на {event}?",
     "switch": "Перейти",
     "dismissedText": "{event} — можливо, дублікат {other}, який уже схвалено. Схвалити, щоб приймати замовлення? Клієнти теж його побачать."
+  },
+  "createEvent": {
+    "button": "Створити захід зараз",
+    "offline": "Підключіться до інтернету, щоб створити захід.",
+    "title": "Створити захід зараз",
+    "where": "Де ви торгуєте?",
+    "somewhereElse": "Деінде",
+    "nameLabel": "Назва заходу",
+    "starts": "Початок",
+    "ends": "Кінець",
+    "addTown": "Додати місто або індекс",
+    "town": "Місто",
+    "postcode": "Індекс",
+    "van": "Який фургон?",
+    "note": "Клієнти бачитимуть цей захід і зможуть замовляти онлайн.",
+    "create": "Створити й розпочати",
+    "overlapApprovedTitle": "Ви вже на місці: {other}?",
+    "overlapApprovedText": "{other} — сьогодні, {start}–{end}.",
+    "useOther": "Вибрати {other}",
+    "createAnyway": "Усе одно створити",
+    "overlapUnapprovedTitle": "Схвалити натомість {event}?",
+    "overlapUnapprovedText": "{event} чекає схвалення, {start}–{end}.",
+    "approveOther": "Схвалити {event}",
+    "createNew": "Створити новий захід",
+    "toast": "Захід створено й розпочато",
+    "toastKds": "Перемкніть і кухонний екран на цей захід."
   }
 }

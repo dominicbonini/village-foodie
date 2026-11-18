@@ -86,5 +86,31 @@
     "switchTitle": "Kas minna üle üritusele {event}?",
     "switch": "Vaheta",
     "dismissedText": "{event} võib olla ürituse {other} duplikaat, mis on juba kinnitatud. Kas kinnitada, et tellimusi vastu võtta? Kliendid näevad seda ka."
+  },
+  "createEvent": {
+    "button": "Loo üritus kohe",
+    "offline": "Ürituse loomiseks ühenda internetiga.",
+    "title": "Loo üritus kohe",
+    "where": "Kus sa müüd?",
+    "somewhereElse": "Kusagil mujal",
+    "nameLabel": "Ürituse nimi",
+    "starts": "Algab",
+    "ends": "Lõpeb",
+    "addTown": "Lisa asula või postiindeks",
+    "town": "Asula",
+    "postcode": "Postiindeks",
+    "van": "Milline auto?",
+    "note": "Kliendid näevad üritust ja saavad veebis tellida.",
+    "create": "Loo ja alusta",
+    "overlapApprovedTitle": "Kas müüd juba kohas {other}?",
+    "overlapApprovedText": "{other} on täna, {start}–{end}.",
+    "useOther": "Kasuta: {other}",
+    "createAnyway": "Loo siiski",
+    "overlapUnapprovedTitle": "Kas kinnitada hoopis {event}?",
+    "overlapUnapprovedText": "{event} ootab kinnitamist, {start}–{end}.",
+    "approveOther": "Kinnita {event}",
+    "createNew": "Loo uus üritus",
+    "toast": "Üritus loodud ja alustatud",
+    "toastKds": "Lülita ka köögiekraan sellele üritusele."
   }
 }

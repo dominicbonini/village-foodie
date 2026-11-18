@@ -69,5 +69,8 @@
   "payment_not_recorded": "Não foi possível registar o pagamento — o valor faturado desta encomenda pode estar errado até ser corrigido.",
   "payment_not_reversed": "Não foi possível anular o pagamento",
   "event_not_approved": "Este evento não está aprovado",
-  "event_not_open": "{status, select, closed {Este evento terminou. Reinicie-o para receber pedidos.} cancelled {Este evento foi cancelado.} other {Este evento não está aberto.}}"
+  "event_not_open": "{status, select, closed {Este evento terminou. Reinicie-o para receber pedidos.} cancelled {Este evento foi cancelado.} other {Este evento não está aberto.}}",
+  "sign_in_to_create": "Inicie sessão como membro da equipa para criar um evento.",
+  "event_details_invalid": "{reason, select, name {Adicione um nome para o evento} times {Adicione uma hora de início e de fim} end {A hora de fim tem de ser depois do início} van {Escolha uma carrinha} date {Os eventos criados aqui são só para hoje} other {Verifique os dados do evento}}",
+  "event_overlaps": "Sobrepõe-se a outro evento de hoje."
 }

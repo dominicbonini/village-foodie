@@ -86,5 +86,31 @@
     "switchTitle": "Skipta yfir í {event}?",
     "switch": "Skipta",
     "dismissedText": "{event} gæti verið tvítekning á {other}, sem er þegar samþykktur. Samþykkja hann til að taka við pöntunum? Viðskiptavinir sjá hann líka."
+  },
+  "createEvent": {
+    "button": "Búa til viðburð núna",
+    "offline": "Tengstu netinu til að búa til viðburð.",
+    "title": "Búa til viðburð núna",
+    "where": "Hvar ertu að selja?",
+    "somewhereElse": "Annars staðar",
+    "nameLabel": "Heiti viðburðar",
+    "starts": "Hefst",
+    "ends": "Lýkur",
+    "addTown": "Bæta við bæ eða póstnúmeri",
+    "town": "Bær",
+    "postcode": "Póstnúmer",
+    "van": "Hvaða bíll?",
+    "note": "Viðskiptavinir sjá viðburðinn og geta pantað á netinu.",
+    "create": "Búa til og hefja",
+    "overlapApprovedTitle": "Ertu þegar á {other}?",
+    "overlapApprovedText": "{other} er í dag, {start}–{end}.",
+    "useOther": "Nota {other}",
+    "createAnyway": "Búa samt til",
+    "overlapUnapprovedTitle": "Samþykkja {event} í staðinn?",
+    "overlapUnapprovedText": "{event} bíður samþykkis, {start}–{end}.",
+    "approveOther": "Samþykkja {event}",
+    "createNew": "Búa til nýjan viðburð",
+    "toast": "Viðburður búinn til og hafinn",
+    "toastKds": "Skiptu líka eldhússkjánum yfir á þennan viðburð."
   }
 }

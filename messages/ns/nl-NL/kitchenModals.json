@@ -86,5 +86,31 @@
     "switchTitle": "Naar {event} wisselen?",
     "switch": "Wisselen",
     "dismissedText": "{event} is mogelijk een dubbele van {other}, dat al is goedgekeurd. Goedkeuren om bestellingen aan te nemen? Klanten zien het dan ook."
+  },
+  "createEvent": {
+    "button": "Nu evenement maken",
+    "offline": "Maak verbinding met internet om een evenement te maken.",
+    "title": "Nu evenement maken",
+    "where": "Waar sta je?",
+    "somewhereElse": "Ergens anders",
+    "nameLabel": "Naam van het evenement",
+    "starts": "Begint",
+    "ends": "Eindigt",
+    "addTown": "Plaats of postcode toevoegen",
+    "town": "Plaats",
+    "postcode": "Postcode",
+    "van": "Welke wagen?",
+    "note": "Klanten zien dit evenement en kunnen online bestellen.",
+    "create": "Maken en starten",
+    "overlapApprovedTitle": "Sta je al bij {other}?",
+    "overlapApprovedText": "{other} is vandaag, {start}–{end}.",
+    "useOther": "{other} gebruiken",
+    "createAnyway": "Toch maken",
+    "overlapUnapprovedTitle": "{event} in plaats daarvan goedkeuren?",
+    "overlapUnapprovedText": "{event} wacht op goedkeuring, {start}–{end}.",
+    "approveOther": "{event} goedkeuren",
+    "createNew": "Nieuw evenement maken",
+    "toast": "Evenement gemaakt en gestart",
+    "toastKds": "Zet het keukenscherm ook op dit evenement."
   }
 }

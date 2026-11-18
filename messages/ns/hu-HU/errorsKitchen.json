@@ -69,5 +69,8 @@
   "payment_not_recorded": "A fizetést nem sikerült rögzíteni — a rendelés bevételi adata a javításig hibás lehet.",
   "payment_not_reversed": "A fizetést nem sikerült visszavonni",
   "event_not_approved": "Ez az esemény nincs jóváhagyva",
-  "event_not_open": "{status, select, closed {Ez az esemény véget ért. Indítsd újra a rendelések fogadásához.} cancelled {Ezt az eseményt lemondták.} other {Ez az esemény nincs nyitva.}}"
+  "event_not_open": "{status, select, closed {Ez az esemény véget ért. Indítsd újra a rendelések fogadásához.} cancelled {Ezt az eseményt lemondták.} other {Ez az esemény nincs nyitva.}}",
+  "sign_in_to_create": "Jelentkezz be csapattagként az esemény létrehozásához.",
+  "event_details_invalid": "{reason, select, name {Add meg az esemény nevét} times {Add meg a kezdés és a befejezés idejét} end {A befejezésnek a kezdés után kell lennie} van {Válassz kocsit} date {Az itt létrehozott események csak a mai napra szólnak} other {Ellenőrizd az esemény adatait}}",
+  "event_overlaps": "Ez átfedésben van egy másik mai eseménnyel."
 }

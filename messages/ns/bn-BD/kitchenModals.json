@@ -86,5 +86,31 @@
     "switchTitle": "{event}-এ যাবেন?",
     "switch": "বদলান",
     "dismissedText": "{event} সম্ভবত {other}-এর ডুপ্লিকেট, যা আগেই অনুমোদিত। অর্ডার নিতে অনুমোদন করবেন? গ্রাহকরাও এটি দেখবেন।"
+  },
+  "createEvent": {
+    "button": "এখনই ইভেন্ট তৈরি করুন",
+    "offline": "ইভেন্ট তৈরি করতে ইন্টারনেটে যুক্ত হন।",
+    "title": "এখনই ইভেন্ট তৈরি করুন",
+    "where": "আপনি কোথায় বিক্রি করছেন?",
+    "somewhereElse": "অন্য কোথাও",
+    "nameLabel": "ইভেন্টের নাম",
+    "starts": "শুরু",
+    "ends": "শেষ",
+    "addTown": "শহর বা পোস্টকোড যোগ করুন",
+    "town": "শহর",
+    "postcode": "পোস্টকোড",
+    "van": "কোন ভ্যান?",
+    "note": "গ্রাহকরা এই ইভেন্টটি দেখবেন এবং অনলাইনে অর্ডার করতে পারবেন।",
+    "create": "তৈরি করুন ও শুরু করুন",
+    "overlapApprovedTitle": "আপনি কি ইতিমধ্যে {other}-এ আছেন?",
+    "overlapApprovedText": "{other} আজ, {start}–{end}।",
+    "useOther": "{other} ব্যবহার করুন",
+    "createAnyway": "তবুও তৈরি করুন",
+    "overlapUnapprovedTitle": "এর বদলে {event} অনুমোদন করবেন?",
+    "overlapUnapprovedText": "{event} অনুমোদনের অপেক্ষায়, {start}–{end}।",
+    "approveOther": "{event} অনুমোদন করুন",
+    "createNew": "নতুন ইভেন্ট তৈরি করুন",
+    "toast": "ইভেন্ট তৈরি ও শুরু হয়েছে",
+    "toastKds": "রান্নাঘরের স্ক্রিনও এই ইভেন্টে বদলে দিন।"
   }
 }

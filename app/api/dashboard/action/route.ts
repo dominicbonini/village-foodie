@@ -7,9 +7,11 @@ import { moneyFormatForOrder, moneyFormatForTruck } from '@/lib/money-server'
 import { truckTimeZone, truckTimeSettings } from '@/lib/truck-time'
 import { getLocalDateInTz, getNowMinsInTz, addDaysYmd } from '@/lib/time-utils'
 // events-overlap-2: the walk-up approval gate and the offline-replay move onto the overlapping approved event.
-import { approvedOverlaps, overlapTarget } from '@/lib/event-default'
+import { approvedOverlaps, overlapTarget, timesOverlap } from '@/lib/event-default'
+// events-create-2: "Create event now" makes events exactly as Manage does.
+import { insertTruckEvent, seedEventDeals, refreshEventCapacity } from '@/lib/events/create-event'
 import type { ConflictEvent } from '@/lib/event-conflicts'
-import { crossesMidnight, isUpcomingOrRunning, upcomingQueryFloor } from '@/lib/event-window'
+import { crossesMidnight, isUpcomingOrRunning, upcomingQueryFloor, clockMins } from '@/lib/event-window'
 import { formatMajor } from '@/lib/money-format'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/errorsKitchen'
@@ -25,7 +27,7 @@ import { resolveEmailPaymentState, resolveEmailPayment } from '@/lib/payments/em
 // Same resolver the CARD HELD chip reads, so the button and the guard cannot disagree.
 import { hasHeldAuthorisation } from '@/lib/payments/held-authorisation'
 import { isDemoIdentifier } from '@/lib/demo'
-import { getVanOrderReadyDefault } from '@/lib/van-utils'
+// events-create-2: the order-ready seed for new events is in lib/events/create-event.ts (the draft insert here is gone)
 import { hasValidEventTimes } from '@/lib/time-utils'
 import {
   addOrderToProductionSlot,
@@ -60,7 +62,7 @@ import { releaseHoldForTerminalOrder } from '@/lib/payments/release-hold'
 // 🔴 THE REJECT PATH, EXTRACTED. It releases a card hold, so it must have exactly one implementation —
 // see the module header. Nothing else calls it yet; that is why it was extracted before there is.
 import { rejectOrder } from '@/lib/orders/reject-order'
-import { resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
+import { resolveActor, resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { readEventType } from '@/lib/event-types/read'
 import { assignBuzzer } from '@/lib/buzzer'
@@ -1285,9 +1287,8 @@ export async function POST(req: NextRequest) {
 
     // ── UPDATE EVENT TIMES ────────────────────────────────────────────────────
     if (action === 'update_event') {
-      const { event_id, start_time, end_time, event_date } = body
-      // The truck's today (Phase 2B; the UTC date was yesterday from 00:00 to 01:00 BST).
-      const date = event_date || getLocalDateInTz(await truckTimeZone(truck))
+      // events-create-2: `event_date` and the truck's-today default it fed (Phase 2B) served only the draft insert removed below.
+      const { event_id, start_time, end_time } = body
       if (event_id) {
         // LIVE-TIME GATE: never leave a LIVE event (confirmed/open) timeless. A draft may still be cleared.
         const { data: cur } = await supabase.from('truck_events').select('status').eq('id', event_id).eq('truck_id', truck.id).single()
@@ -1300,20 +1301,131 @@ export async function POST(req: NextRequest) {
           .eq('id', event_id)
           .eq('truck_id', truck.id)
       } else {
-        // INSERT creates an UNCONFIRMED draft (truck_events.status defaults to 'unconfirmed') → null times
-        // allowed here; it can't go LIVE without passing the confirm/open time gate (events/action). So no
-        // block on draft creation (drafts stay null-OK by design).
-        // Seed order_ready_override from the van's current default (master-switch model — new events
-        // start matching the Settings default).
-        const seededOrderReady = await getVanOrderReadyDefault(supabase, truck.id)
-        await supabase.from('truck_events')
-          /* ⚠️ `order_ready_source: 'seed'` — the value is unchanged; this only records that a creation
-           * path wrote it rather than the truck choosing it for this event. `event_type_id` is left
-           * NULL here on purpose: a dashboard draft has no venue and no place yet, so there is nothing
-           * to look a usual type up by. */
-          .insert({ truck_id: truck.id, event_date: date, start_time, end_time, order_ready_override: seededOrderReady, order_ready_source: 'seed', source: 'manual' })
+        // events-create-2 (D11, 17 November 2026): THE DRAFT INSERT THAT STOOD HERE IS GONE. It had no caller anywhere,
+        // and it could not have worked — it set no `venue_name`, which is NOT NULL with no default. Events are made from
+        // the dashboard by `create_event_now` below; an update without an event id is now refused.
+        return NextResponse.json(await kErr('event_id_required'), { status: 400 })
       }
       return NextResponse.json({ success: true })
+    }
+
+    // ══ events-create-2: "CREATE EVENT NOW" — the places list for the sheet (a READ) ═══════════════════════════════════
+    // Up to six of the truck's places (favourites first, then most recently traded), each with its last times, plus the
+    // active vans and whether this caller may create (a signed-in member — see create_event_now). Nothing is written.
+    if (action === 'create_event_places') {
+      const tz = await truckTimeZone(truck)
+      const today = getLocalDateInTz(tz)
+      const [{ data: placeRows, error: pErr }, { data: vanRows, error: vErr }] = await Promise.all([
+        supabase.from('truck_places').select('id, name, area, postcode, address, is_favourite, is_hidden, merged_into_id, created_at').eq('truck_id', truck.id),
+        supabase.from('truck_vans').select('id, name, active, created_at').eq('truck_id', truck.id).eq('active', true).order('created_at', { ascending: true }),
+      ])
+      if (pErr || vErr) return NextResponse.json(await kErr('service_unavailable', {}, { retryable: true }), { status: 503 })
+      const places = ((placeRows ?? []) as { id: string; name: string; area: string | null; postcode: string | null; address: string | null; is_favourite: boolean | null; is_hidden: boolean | null; merged_into_id: string | null; created_at: string | null }[])
+        .filter(p => !p.is_hidden && !p.merged_into_id)
+      const last = new Map<string, { date: string; start: string | null; end: string | null }>()
+      if (places.length) {
+        const { data: evs } = await supabase.from('truck_events')
+          .select('truck_place_id, event_date, start_time, end_time')
+          .eq('truck_id', truck.id).in('truck_place_id', places.map(p => p.id))
+          .in('status', ['confirmed', 'open', 'closed']).lte('event_date', today)
+          .order('event_date', { ascending: false }).limit(1000)
+        for (const e of (evs ?? []) as { truck_place_id: string; event_date: string; start_time: string | null; end_time: string | null }[]) {
+          if (!last.has(e.truck_place_id)) last.set(e.truck_place_id, { date: e.event_date, start: e.start_time, end: e.end_time })
+        }
+      }
+      const ranked = places
+        .map(p => ({ id: p.id, name: p.name, area: p.area, postcode: p.postcode, address: p.address, is_favourite: !!p.is_favourite,
+          last_date: last.get(p.id)?.date ?? null, last_start: last.get(p.id)?.start ?? null, last_end: last.get(p.id)?.end ?? null }))
+        .sort((a, b) => Number(b.is_favourite) - Number(a.is_favourite)
+          || String(b.last_date ?? '').localeCompare(String(a.last_date ?? ''))
+          || a.name.localeCompare(b.name))
+        .slice(0, 6)
+      const actor = await resolveActorSafe(req, supabase, truck)
+      return NextResponse.json({ ok: true, today, places: ranked, vans: (vanRows ?? []).map(v => ({ id: v.id, name: v.name })),
+        can_create: !!actor.userRole && !actor.foreignOperator })
+    }
+
+    // ══ events-create-2: "CREATE EVENT NOW" ════════════════════════════════════════════════════════════════════════════
+    // Staff trading with no approved event make one on the spot: approved, STARTED and (by the client) selected, so the
+    // next walk-up lands on it. Made by the same code as Manage › Schedule (lib/events/create-event.ts).
+    //   • WHO (D1): a SIGNED-IN member of this truck — owner, manager, staff or admin (lib/audit/actor.ts). The token and
+    //     PIN alone are refused: a leaked dashboard link must not publish events.
+    //   • WHAT IS CHECKED: a name; start and end, end after start (same day); the truck's today; on a truck with more than
+    //     one active van, a van of this truck. Any failure → 400 `event_details_invalid` with the reason.
+    //   • OVERLAP (D4): an approved/started event at an overlapping time → 409 `event_overlaps` { kind: 'approved', … },
+    //     else an unapproved one → { kind: 'unapproved', … }. The client asks; `confirm_overlap: true` creates anyway.
+    //   • STORED (D2/D10): status 'open', confirmed_at and opened_at now, source 'dashboard', auto_open false (it is already
+    //     open), auto_close from the truck's setting (default true). Public like any event (D3).
+    if (action === 'create_event_now') {
+      let actor
+      try { actor = await resolveActor(req, supabase, truck) }
+      catch { return NextResponse.json(await kErr('service_unavailable', {}, { retryable: true }), { status: 503 }) }
+      if (!actor.userRole || actor.foreignOperator) return NextResponse.json(await kErr('sign_in_to_create'), { status: 403 })
+
+      const tz = await truckTimeZone(truck)
+      const today = getLocalDateInTz(tz)
+      const bad = async (reason: 'name' | 'times' | 'end' | 'van' | 'date') =>
+        NextResponse.json(await kErr('event_details_invalid', { reason }, { reason }), { status: 400 })
+      const name = typeof body.venue_name === 'string' ? body.venue_name.trim().slice(0, 120) : ''
+      if (!name) return bad('name')
+      const start = typeof body.start_time === 'string' ? body.start_time.trim() : ''
+      const end = typeof body.end_time === 'string' ? body.end_time.trim() : ''
+      // Two readable times with the end at or before the start say so ("…after the start"), not "add the times".
+      const startM = start ? clockMins(start) : null, endM = end ? clockMins(end) : null
+      if (startM != null && endM != null && endM <= startM) return bad('end')
+      if (!hasValidEventTimes(start, end)) return bad('times')
+      if (body.event_date !== undefined && body.event_date !== today) return bad('date')
+      const { data: vans, error: vansErr } = await supabase.from('truck_vans').select('id').eq('truck_id', truck.id).eq('active', true)
+      if (vansErr) return NextResponse.json(await kErr('service_unavailable', {}, { retryable: true }), { status: 503 })
+      const vanIds = (vans ?? []).map(v => String(v.id))
+      const asked = typeof body.van_id === 'string' && body.van_id ? body.van_id : null
+      let vanId: string | null = null
+      if (vanIds.length > 1) { if (!asked || !vanIds.includes(asked)) return bad('van'); vanId = asked }
+      else if (vanIds.length === 1) { if (asked && asked !== vanIds[0]) return bad('van'); vanId = vanIds[0] }
+      const opt = (v: unknown, max: number) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, max) : null)
+      const town = opt(body.town, 120), postcode = opt(body.postcode, 20)
+      const pickedPlaceId = typeof body.truck_place_id === 'string' && body.truck_place_id ? body.truck_place_id : null
+
+      if (body.confirm_overlap !== true) {
+        const { data: near, error: nearErr } = await supabase.from('truck_events')
+          .select('id, status, event_date, start_time, end_time, venue_name, postcode, van_id')
+          .eq('truck_id', truck.id).in('event_date', [addDaysYmd(today, -1), today, addDaysYmd(today, 1)]).neq('status', 'cancelled')
+        if (nearErr) return NextResponse.json(await kErr('service_unavailable', {}, { retryable: true }), { status: 503 })
+        const rows = (near ?? []) as ConflictEvent[]
+        const candidate: ConflictEvent = { id: '__new__', status: 'unconfirmed', event_date: today, start_time: start, end_time: end, venue_name: name, postcode, van_id: vanId }
+        const approved = approvedOverlaps(candidate, rows)
+        let overlap: { kind: 'approved' | 'unapproved'; id: string; name: string; start: string | null; end: string | null } | null = null
+        if (approved.length) {
+          const counts: Record<string, number> = {}
+          await Promise.all(approved.map(async o => {
+            const { count } = await supabase.from('orders').select('order_key', { count: 'exact', head: true }).eq('truck_id', truck.id).eq('event_id', o.id).neq('status', 'cancelled')
+            counts[o.id] = count ?? 0
+          }))
+          const t = overlapTarget(approved, counts)!
+          overlap = { kind: 'approved', id: t.id, name: String(t.venue_name ?? ''), start: t.start_time, end: t.end_time }
+        } else {
+          const pending = rows.filter(r => r.status === 'unconfirmed' && timesOverlap(candidate, r))
+            .sort((a, b) => (clockMins(a.start_time) ?? 0) - (clockMins(b.start_time) ?? 0))
+          if (pending[0]) overlap = { kind: 'unapproved', id: pending[0].id, name: String(pending[0].venue_name ?? ''), start: pending[0].start_time, end: pending[0].end_time }
+        }
+        if (overlap) return NextResponse.json(await kErr('event_overlaps', {}, { overlap }), { status: 409 })
+      }
+
+      const now = new Date().toISOString()
+      const { data: created, error: insErr } = await insertTruckEvent(supabase, truck.id, {
+        venue_name: name, town, postcode, address: null, event_date: today, start_time: start, end_time: end, notes: null,
+        // No type is named: the helper stores Standard (null), and the order-ready seed applies as for an untyped Manage event.
+        van_id: vanId, picked_place_id: pickedPlaceId,
+        status: 'open', source: 'dashboard', auto_open: false, auto_close: truck.default_auto_close ?? true, opened_at: now,
+      }, now)
+      if (insErr || !created) {
+        console.error('[create_event_now] insert failed:', insErr?.message)
+        return NextResponse.json(await kErr('save_failed'), { status: 500 })
+      }
+      await seedEventDeals(supabase, truck.id, created.id)
+      await refreshEventCapacity(supabase, truck.id, created as { van_id?: unknown }, today, start, end)
+      console.log(`[create_event_now] ${truck.id}: event ${String(created.id)} by ${actor.actorKind}:${actor.actorLabel ?? actor.actorId ?? '?'}`)
+      return NextResponse.json({ ok: true, event: created })
     }
 
     // ── MANUAL ORDER ──────────────────────────────────────────────────────────

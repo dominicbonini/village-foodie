@@ -69,5 +69,8 @@
   "payment_not_recorded": "Không ghi nhận được thanh toán — doanh thu của đơn này có thể sai cho đến khi được sửa.",
   "payment_not_reversed": "Không hủy được thanh toán",
   "event_not_approved": "Sự kiện này chưa được duyệt",
-  "event_not_open": "{status, select, closed {Sự kiện này đã kết thúc. Bắt đầu lại để nhận đơn.} cancelled {Sự kiện này đã bị hủy.} other {Sự kiện này chưa mở.}}"
+  "event_not_open": "{status, select, closed {Sự kiện này đã kết thúc. Bắt đầu lại để nhận đơn.} cancelled {Sự kiện này đã bị hủy.} other {Sự kiện này chưa mở.}}",
+  "sign_in_to_create": "Đăng nhập với tư cách thành viên nhóm để tạo sự kiện.",
+  "event_details_invalid": "{reason, select, name {Thêm tên sự kiện} times {Thêm giờ bắt đầu và kết thúc} end {Giờ kết thúc phải sau giờ bắt đầu} van {Chọn xe} date {Sự kiện tạo ở đây chỉ dành cho hôm nay} other {Kiểm tra thông tin sự kiện}}",
+  "event_overlaps": "Sự kiện này trùng giờ với một sự kiện khác hôm nay."
 }

@@ -86,5 +86,31 @@
     "switchTitle": "Perjungti į {event}?",
     "switch": "Perjungti",
     "dismissedText": "{event} gali būti renginio {other} dublikatas, kuris jau patvirtintas. Patvirtinti, kad galėtumėte priimti užsakymus? Jį matys ir klientai."
+  },
+  "createEvent": {
+    "button": "Sukurti renginį dabar",
+    "offline": "Prisijunkite prie interneto, kad sukurtumėte renginį.",
+    "title": "Sukurti renginį dabar",
+    "where": "Kur prekiaujate?",
+    "somewhereElse": "Kitur",
+    "nameLabel": "Renginio pavadinimas",
+    "starts": "Pradžia",
+    "ends": "Pabaiga",
+    "addTown": "Pridėti vietovę arba pašto kodą",
+    "town": "Vietovė",
+    "postcode": "Pašto kodas",
+    "van": "Kuris furgonas?",
+    "note": "Klientai matys šį renginį ir galės užsisakyti internetu.",
+    "create": "Sukurti ir pradėti",
+    "overlapApprovedTitle": "Jau prekiaujate vietoje {other}?",
+    "overlapApprovedText": "{other} vyksta šiandien, {start}–{end}.",
+    "useOther": "Naudoti {other}",
+    "createAnyway": "Vis tiek sukurti",
+    "overlapUnapprovedTitle": "Verčiau patvirtinti {event}?",
+    "overlapUnapprovedText": "{event} laukia patvirtinimo, {start}–{end}.",
+    "approveOther": "Patvirtinti {event}",
+    "createNew": "Sukurti naują renginį",
+    "toast": "Renginys sukurtas ir pradėtas",
+    "toastKds": "Perjunkite ir virtuvės ekraną į šį renginį."
   }
 }

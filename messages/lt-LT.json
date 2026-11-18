@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Nepavyko užregistruoti mokėjimo – kol tai nebus ištaisyta, šio užsakymo pajamų suma gali būti neteisinga.",
     "payment_not_reversed": "Nepavyko atšaukti mokėjimo",
     "event_not_approved": "Šis renginys nepatvirtintas",
-    "event_not_open": "{status, select, closed {Šis renginys baigėsi. Pradėkite jį iš naujo, kad priimtumėte užsakymus.} cancelled {Šis renginys atšauktas.} other {Šis renginys neatidarytas.}}"
+    "event_not_open": "{status, select, closed {Šis renginys baigėsi. Pradėkite jį iš naujo, kad priimtumėte užsakymus.} cancelled {Šis renginys atšauktas.} other {Šis renginys neatidarytas.}}",
+    "sign_in_to_create": "Prisijunkite kaip komandos narys, kad sukurtumėte renginį.",
+    "event_details_invalid": "{reason, select, name {Pridėkite renginio pavadinimą} times {Pridėkite pradžios ir pabaigos laiką} end {Pabaiga turi būti po pradžios} van {Pasirinkite furgoną} date {Čia sukurti renginiai galioja tik šiandien} other {Patikrinkite renginio duomenis}}",
+    "event_overlaps": "Tai persidengia su kitu šiandienos renginiu."
   },
   "kitchenModals": {
     "close": "Uždaryti",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Perjungti į {event}?",
       "switch": "Perjungti",
       "dismissedText": "{event} gali būti renginio {other} dublikatas, kuris jau patvirtintas. Patvirtinti, kad galėtumėte priimti užsakymus? Jį matys ir klientai."
+    },
+    "createEvent": {
+      "button": "Sukurti renginį dabar",
+      "offline": "Prisijunkite prie interneto, kad sukurtumėte renginį.",
+      "title": "Sukurti renginį dabar",
+      "where": "Kur prekiaujate?",
+      "somewhereElse": "Kitur",
+      "nameLabel": "Renginio pavadinimas",
+      "starts": "Pradžia",
+      "ends": "Pabaiga",
+      "addTown": "Pridėti vietovę arba pašto kodą",
+      "town": "Vietovė",
+      "postcode": "Pašto kodas",
+      "van": "Kuris furgonas?",
+      "note": "Klientai matys šį renginį ir galės užsisakyti internetu.",
+      "create": "Sukurti ir pradėti",
+      "overlapApprovedTitle": "Jau prekiaujate vietoje {other}?",
+      "overlapApprovedText": "{other} vyksta šiandien, {start}–{end}.",
+      "useOther": "Naudoti {other}",
+      "createAnyway": "Vis tiek sukurti",
+      "overlapUnapprovedTitle": "Verčiau patvirtinti {event}?",
+      "overlapUnapprovedText": "{event} laukia patvirtinimo, {start}–{end}.",
+      "approveOther": "Patvirtinti {event}",
+      "createNew": "Sukurti naują renginį",
+      "toast": "Renginys sukurtas ir pradėtas",
+      "toastKds": "Perjunkite ir virtuvės ekraną į šį renginį."
     }
   },
   "ticket": {

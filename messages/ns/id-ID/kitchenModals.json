@@ -86,5 +86,31 @@
     "switchTitle": "Ganti ke {event}?",
     "switch": "Ganti",
     "dismissedText": "{event} mungkin duplikat {other}, yang sudah disetujui. Setujui agar bisa menerima pesanan? Pelanggan juga akan melihatnya."
+  },
+  "createEvent": {
+    "button": "Buat acara sekarang",
+    "offline": "Sambungkan ke internet untuk membuat acara.",
+    "title": "Buat acara sekarang",
+    "where": "Di mana Anda berjualan?",
+    "somewhereElse": "Tempat lain",
+    "nameLabel": "Nama acara",
+    "starts": "Mulai",
+    "ends": "Selesai",
+    "addTown": "Tambah kota atau kode pos",
+    "town": "Kota",
+    "postcode": "Kode pos",
+    "van": "Van yang mana?",
+    "note": "Pelanggan akan melihat acara ini dan bisa memesan online.",
+    "create": "Buat dan mulai",
+    "overlapApprovedTitle": "Sudah berjualan di {other}?",
+    "overlapApprovedText": "{other} hari ini, {start}–{end}.",
+    "useOther": "Pakai {other}",
+    "createAnyway": "Tetap buat",
+    "overlapUnapprovedTitle": "Setujui {event} saja?",
+    "overlapUnapprovedText": "{event} menunggu persetujuan, {start}–{end}.",
+    "approveOther": "Setujui {event}",
+    "createNew": "Buat acara baru",
+    "toast": "Acara dibuat dan dimulai",
+    "toastKds": "Ganti juga layar dapur ke acara ini."
   }
 }

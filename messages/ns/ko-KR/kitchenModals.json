@@ -86,5 +86,31 @@
     "switchTitle": "{event}(으)로 바꿀까요?",
     "switch": "바꾸기",
     "dismissedText": "{event}은(는) 이미 승인된 {other}과(와) 중복일 수 있어요. 승인하고 주문을 받을까요? 고객에게도 표시돼요."
+  },
+  "createEvent": {
+    "button": "지금 영업 일정 만들기",
+    "offline": "영업 일정을 만들려면 인터넷에 연결하세요.",
+    "title": "지금 영업 일정 만들기",
+    "where": "어디에서 영업하나요?",
+    "somewhereElse": "다른 곳",
+    "nameLabel": "영업 일정 이름",
+    "starts": "시작",
+    "ends": "종료",
+    "addTown": "지역 또는 우편번호 추가",
+    "town": "지역",
+    "postcode": "우편번호",
+    "van": "어느 차량인가요?",
+    "note": "고객이 이 영업 일정을 보고 온라인으로 주문할 수 있어요.",
+    "create": "만들고 시작",
+    "overlapApprovedTitle": "이미 {other}에서 영업 중인가요?",
+    "overlapApprovedText": "{other}은(는) 오늘 {start}–{end}이에요.",
+    "useOther": "{other} 사용",
+    "createAnyway": "그래도 만들기",
+    "overlapUnapprovedTitle": "대신 {event}을(를) 승인할까요?",
+    "overlapUnapprovedText": "{event}이(가) 승인을 기다리고 있어요({start}–{end}).",
+    "approveOther": "{event} 승인",
+    "createNew": "새 영업 일정 만들기",
+    "toast": "영업 일정을 만들고 시작했어요",
+    "toastKds": "주방 화면도 이 영업 일정으로 바꿔 주세요."
   }
 }

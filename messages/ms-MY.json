@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Pembayaran tidak dapat direkodkan — angka kutipan jualan untuk pesanan ini mungkin salah sehingga ia dibaiki.",
     "payment_not_reversed": "Pembayaran tidak dapat dibatalkan",
     "event_not_approved": "Acara ini belum diluluskan",
-    "event_not_open": "{status, select, closed {Acara ini sudah tamat. Mulakan semula untuk menerima pesanan.} cancelled {Acara ini telah dibatalkan.} other {Acara ini tidak dibuka.}}"
+    "event_not_open": "{status, select, closed {Acara ini sudah tamat. Mulakan semula untuk menerima pesanan.} cancelled {Acara ini telah dibatalkan.} other {Acara ini tidak dibuka.}}",
+    "sign_in_to_create": "Log masuk sebagai ahli pasukan untuk mencipta acara.",
+    "event_details_invalid": "{reason, select, name {Tambah nama acara} times {Tambah masa mula dan tamat} end {Masa tamat mesti selepas mula} van {Pilih van} date {Acara yang dicipta di sini untuk hari ini sahaja} other {Semak butiran acara}}",
+    "event_overlaps": "Ini bertindih dengan acara lain hari ini."
   },
   "kitchenModals": {
     "close": "Tutup",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Tukar ke {event}?",
       "switch": "Tukar",
       "dismissedText": "{event} mungkin pendua {other}, yang sudah diluluskan. Luluskan untuk menerima pesanan? Pelanggan juga akan melihatnya."
+    },
+    "createEvent": {
+      "button": "Cipta acara sekarang",
+      "offline": "Sambung ke internet untuk mencipta acara.",
+      "title": "Cipta acara sekarang",
+      "where": "Di mana anda berniaga?",
+      "somewhereElse": "Tempat lain",
+      "nameLabel": "Nama acara",
+      "starts": "Mula",
+      "ends": "Tamat",
+      "addTown": "Tambah bandar atau poskod",
+      "town": "Bandar",
+      "postcode": "Poskod",
+      "van": "Van yang mana?",
+      "note": "Pelanggan akan melihat acara ini dan boleh memesan dalam talian.",
+      "create": "Cipta dan mulakan",
+      "overlapApprovedTitle": "Sudah berniaga di {other}?",
+      "overlapApprovedText": "{other} hari ini, {start}–{end}.",
+      "useOther": "Guna {other}",
+      "createAnyway": "Cipta juga",
+      "overlapUnapprovedTitle": "Luluskan {event} sahaja?",
+      "overlapUnapprovedText": "{event} menunggu kelulusan, {start}–{end}.",
+      "approveOther": "Luluskan {event}",
+      "createNew": "Cipta acara baharu",
+      "toast": "Acara dicipta dan dimulakan",
+      "toastKds": "Tukar juga skrin dapur ke acara ini."
     }
   },
   "ticket": {

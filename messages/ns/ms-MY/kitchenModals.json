@@ -86,5 +86,31 @@
     "switchTitle": "Tukar ke {event}?",
     "switch": "Tukar",
     "dismissedText": "{event} mungkin pendua {other}, yang sudah diluluskan. Luluskan untuk menerima pesanan? Pelanggan juga akan melihatnya."
+  },
+  "createEvent": {
+    "button": "Cipta acara sekarang",
+    "offline": "Sambung ke internet untuk mencipta acara.",
+    "title": "Cipta acara sekarang",
+    "where": "Di mana anda berniaga?",
+    "somewhereElse": "Tempat lain",
+    "nameLabel": "Nama acara",
+    "starts": "Mula",
+    "ends": "Tamat",
+    "addTown": "Tambah bandar atau poskod",
+    "town": "Bandar",
+    "postcode": "Poskod",
+    "van": "Van yang mana?",
+    "note": "Pelanggan akan melihat acara ini dan boleh memesan dalam talian.",
+    "create": "Cipta dan mulakan",
+    "overlapApprovedTitle": "Sudah berniaga di {other}?",
+    "overlapApprovedText": "{other} hari ini, {start}–{end}.",
+    "useOther": "Guna {other}",
+    "createAnyway": "Cipta juga",
+    "overlapUnapprovedTitle": "Luluskan {event} sahaja?",
+    "overlapUnapprovedText": "{event} menunggu kelulusan, {start}–{end}.",
+    "approveOther": "Luluskan {event}",
+    "createNew": "Cipta acara baharu",
+    "toast": "Acara dicipta dan dimulakan",
+    "toastKds": "Tukar juga skrin dapur ke acara ini."
   }
 }

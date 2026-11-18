@@ -90,6 +90,10 @@ export interface EventPickerPanelProps<T extends PickableEvent> {
    *  `orderCount`  — the row's orders, as a pill: solid orange "3 orders" / "1 order", light grey "No orders". */
   groupByDate?: boolean
   orderCount?: (event: T) => number | undefined
+  /** events-create-2: the "+ Create event now" button (the dashboard only). At the TOP — fixed under the title and the
+   *  approval summary — when nothing approved is on today, otherwise at the BOTTOM beside Done. Disabled (offline, or
+   *  not a signed-in member) with its reason in words. */
+  createAction?: { position: 'top' | 'bottom'; label: string; disabled?: boolean; note?: string | null; onClick: () => void }
 }
 
 /** A pill for the row's orders: solid orange when there are any, light grey "No orders" otherwise. */
@@ -103,10 +107,20 @@ function OrderPill({ n, label }: { n: number; label: string }) {
 
 export function EventPickerPanel<T extends PickableEvent>({
   open, isDemo, events, isSelected, onSelect, onClose, title, closeLabel, isEventBlocked, emptyState, time,
-  groupByDate = false, orderCount,
+  groupByDate = false, orderCount, createAction,
 }: EventPickerPanelProps<T>) {
   const t = useT('kitchenModals')
   if (!open || isDemo) return null
+  const pendingN = events.filter(e => e.status === 'unconfirmed').length
+  const createButton = createAction ? (
+    <div data-create-event-action={createAction.position}>
+      <button onClick={createAction.onClick} disabled={createAction.disabled} data-create-event-button
+        className="w-full rounded-xl border-2 border-dashed border-orange-300 text-orange-700 font-bold text-sm py-2.5 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed">
+        <span aria-hidden>+ </span>{createAction.label}
+      </button>
+      {createAction.disabled && createAction.note && <p className="text-xs text-slate-500 mt-1">{createAction.note}</p>}
+    </div>
+  ) : null
 
   /* ── the KDS's flat list (and the dashboard's before events-overlap-5): one card per event, date · time ── */
   const flatRow = (event: T) => {
@@ -153,7 +167,6 @@ export function EventPickerPanel<T extends PickableEvent>({
   /* ── events-overlap-5: the dashboard's grouped list ───────────────────────────────────────────────────────────── */
   const grouped = () => {
     const days = buildEventListGroups(events as unknown as (T & ListEvent)[], countsOf(events, orderCount))
-    const pendingN = events.filter(e => e.status === 'unconfirmed').length
     const s = timeSettingsOr(time, 'event picker')
     const today = getLocalDateInTz(s.timeZone)
     const tomorrow = addDaysYmd(today, 1)
@@ -232,12 +245,6 @@ export function EventPickerPanel<T extends PickableEvent>({
       )
     }
     return (<>
-      {pendingN > 0 && (
-        <div className="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2" data-approval-summary>
-          <p className="text-sm font-bold text-amber-900"><span aria-hidden>⚠ </span>{t('picker.approvalSummary', { n: pendingN, count: String(pendingN) })}</p>
-          <p className="text-xs text-amber-800">{t('picker.approvalSummaryNote', { n: pendingN })}</p>
-        </div>
-      )}
       {days.map(day => {
         // the day's events, duplicates included
         const n = day.items.reduce((sum, it) => sum + 1 + it.duplicates.length, 0)
@@ -274,11 +281,26 @@ export function EventPickerPanel<T extends PickableEvent>({
           </button>
         </div>
 
-        <div className="flex flex-col gap-2 flex-1 min-h-0 overflow-y-auto px-5">
+        {/* events-create-2: FIXED above the scrolling list — the approval summary and, when it belongs at the top, the
+            create button. Only the list between them and the footer scrolls; the card never exceeds 85dvh. */}
+        {(groupByDate && pendingN > 0) || createAction?.position === 'top' ? (
+          <div className="px-5 pb-2 shrink-0 flex flex-col gap-2" data-picker-fixed-top>
+            {groupByDate && pendingN > 0 && (
+              <div className="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2" data-approval-summary>
+                <p className="text-sm font-bold text-amber-900"><span aria-hidden>⚠ </span>{t('picker.approvalSummary', { n: pendingN, count: String(pendingN) })}</p>
+                <p className="text-xs text-amber-800">{t('picker.approvalSummaryNote', { n: pendingN })}</p>
+              </div>
+            )}
+            {createAction?.position === 'top' && createButton}
+          </div>
+        ) : null}
+
+        <div className="flex flex-col gap-2 flex-1 min-h-0 overflow-y-auto px-5" data-picker-scroll>
           {events.length === 0 ? emptyState : groupByDate ? grouped() : events.map(flatRow)}
         </div>
 
         <div className="px-5 pb-5 shrink-0">
+          {createAction?.position === 'bottom' && <div className="pt-3">{createButton}</div>}
           <button
             onClick={onClose}
             className="mt-3 w-full text-sm text-slate-400 hover:text-slate-600 py-2"

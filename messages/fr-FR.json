@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Le paiement n’a pas pu être enregistré — le montant encaissé pour cette commande peut être erroné jusqu’à sa correction.",
     "payment_not_reversed": "Le paiement n’a pas pu être annulé",
     "event_not_approved": "Cet événement n’est pas approuvé",
-    "event_not_open": "{status, select, closed {Cet événement est terminé. Redémarrez-le pour prendre des commandes.} cancelled {Cet événement a été annulé.} other {Cet événement n’est pas ouvert.}}"
+    "event_not_open": "{status, select, closed {Cet événement est terminé. Redémarrez-le pour prendre des commandes.} cancelled {Cet événement a été annulé.} other {Cet événement n’est pas ouvert.}}",
+    "sign_in_to_create": "Connectez-vous en tant que membre de l’équipe pour créer un événement.",
+    "event_details_invalid": "{reason, select, name {Ajoutez un nom d’événement} times {Ajoutez une heure de début et de fin} end {L’heure de fin doit être après le début} van {Choisissez un camion} date {Les événements créés ici sont pour aujourd’hui uniquement} other {Vérifiez les détails de l’événement}}",
+    "event_overlaps": "Cet événement en chevauche un autre aujourd’hui."
   },
   "kitchenModals": {
     "close": "Fermer",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Passer à {event} ?",
       "switch": "Changer",
       "dismissedText": "{event} est peut-être un doublon de {other}, déjà approuvé. L’approuver pour prendre des commandes ? Les clients le verront aussi."
+    },
+    "createEvent": {
+      "button": "Créer un événement maintenant",
+      "offline": "Connectez-vous à Internet pour créer un événement.",
+      "title": "Créer un événement maintenant",
+      "where": "Où êtes-vous installé ?",
+      "somewhereElse": "Ailleurs",
+      "nameLabel": "Nom de l’événement",
+      "starts": "Début",
+      "ends": "Fin",
+      "addTown": "Ajouter la ville ou le code postal",
+      "town": "Ville",
+      "postcode": "Code postal",
+      "van": "Quel camion ?",
+      "note": "Les clients verront cet événement et pourront commander en ligne.",
+      "create": "Créer et démarrer",
+      "overlapApprovedTitle": "Déjà installé à {other} ?",
+      "overlapApprovedText": "{other} a lieu aujourd’hui, {start}–{end}.",
+      "useOther": "Utiliser {other}",
+      "createAnyway": "Créer quand même",
+      "overlapUnapprovedTitle": "Approuver {event} plutôt ?",
+      "overlapUnapprovedText": "{event} attend une approbation, {start}–{end}.",
+      "approveOther": "Approuver {event}",
+      "createNew": "Créer un nouvel événement",
+      "toast": "Événement créé et démarré",
+      "toastKds": "Passez aussi l’écran cuisine sur cet événement."
     }
   },
   "ticket": {

@@ -86,5 +86,31 @@
     "switchTitle": "Přepnout na {event}?",
     "switch": "Přepnout",
     "dismissedText": "{event} je možná duplikát akce {other}, která je už schválená. Schválit ji a přijímat objednávky? Uvidí ji i zákazníci."
+  },
+  "createEvent": {
+    "button": "Vytvořit akci teď",
+    "offline": "Připojte se k internetu a vytvořte akci.",
+    "title": "Vytvořit akci teď",
+    "where": "Kde prodáváte?",
+    "somewhereElse": "Jinde",
+    "nameLabel": "Název akce",
+    "starts": "Začátek",
+    "ends": "Konec",
+    "addTown": "Přidat obec nebo PSČ",
+    "town": "Obec",
+    "postcode": "PSČ",
+    "van": "Který vůz?",
+    "note": "Zákazníci akci uvidí a mohou objednávat online.",
+    "create": "Vytvořit a spustit",
+    "overlapApprovedTitle": "Už prodáváte na místě {other}?",
+    "overlapApprovedText": "{other} je dnes, {start}–{end}.",
+    "useOther": "Použít {other}",
+    "createAnyway": "Přesto vytvořit",
+    "overlapUnapprovedTitle": "Schválit místo toho {event}?",
+    "overlapUnapprovedText": "{event} čeká na schválení, {start}–{end}.",
+    "approveOther": "Schválit {event}",
+    "createNew": "Vytvořit novou akci",
+    "toast": "Akce vytvořena a spuštěna",
+    "toastKds": "Přepněte na tuto akci i obrazovku kuchyně."
   }
 }

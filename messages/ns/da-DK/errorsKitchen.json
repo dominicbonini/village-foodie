@@ -69,5 +69,8 @@
   "payment_not_recorded": "Betalingen kunne ikke registreres — omsætningen for denne bestilling kan være forkert, indtil det er rettet.",
   "payment_not_reversed": "Betalingen kunne ikke tilbageføres",
   "event_not_approved": "Arrangementet er ikke godkendt",
-  "event_not_open": "{status, select, closed {Arrangementet er slut. Genstart det for at tage imod bestillinger.} cancelled {Arrangementet er aflyst.} other {Arrangementet er ikke åbent.}}"
+  "event_not_open": "{status, select, closed {Arrangementet er slut. Genstart det for at tage imod bestillinger.} cancelled {Arrangementet er aflyst.} other {Arrangementet er ikke åbent.}}",
+  "sign_in_to_create": "Log ind som teammedlem for at oprette et arrangement.",
+  "event_details_invalid": "{reason, select, name {Tilføj et navn til arrangementet} times {Tilføj start- og sluttid} end {Sluttiden skal være efter starten} van {Vælg en vogn} date {Arrangementer oprettet her gælder kun i dag} other {Tjek oplysningerne}}",
+  "event_overlaps": "Det overlapper et andet arrangement i dag."
 }

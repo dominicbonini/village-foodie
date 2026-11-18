@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Betalningen kunde inte registreras — intäkterna för den här beställningen kan vara fel tills det har rättats.",
     "payment_not_reversed": "Betalningen kunde inte återföras",
     "event_not_approved": "Evenemanget är inte godkänt",
-    "event_not_open": "{status, select, closed {Evenemanget är avslutat. Starta om det för att ta emot beställningar.} cancelled {Evenemanget är inställt.} other {Evenemanget är inte öppet.}}"
+    "event_not_open": "{status, select, closed {Evenemanget är avslutat. Starta om det för att ta emot beställningar.} cancelled {Evenemanget är inställt.} other {Evenemanget är inte öppet.}}",
+    "sign_in_to_create": "Logga in som teammedlem för att skapa ett evenemang.",
+    "event_details_invalid": "{reason, select, name {Lägg till ett namn på evenemanget} times {Lägg till start- och sluttid} end {Sluttiden måste vara efter starttiden} van {Välj en vagn} date {Evenemang som skapas här gäller bara i dag} other {Kontrollera uppgifterna}}",
+    "event_overlaps": "Det överlappar ett annat evenemang i dag."
   },
   "kitchenModals": {
     "close": "Stäng",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Byta till {event}?",
       "switch": "Byt",
       "dismissedText": "{event} kan vara en dubblett av {other}, som redan är godkänt. Godkänna det för att ta emot beställningar? Kunderna ser det också."
+    },
+    "createEvent": {
+      "button": "Skapa evenemang nu",
+      "offline": "Anslut till internet för att skapa ett evenemang.",
+      "title": "Skapa evenemang nu",
+      "where": "Var säljer du?",
+      "somewhereElse": "Någon annanstans",
+      "nameLabel": "Evenemangets namn",
+      "starts": "Börjar",
+      "ends": "Slutar",
+      "addTown": "Lägg till ort eller postnummer",
+      "town": "Ort",
+      "postcode": "Postnummer",
+      "van": "Vilken vagn?",
+      "note": "Kunderna ser evenemanget och kan beställa online.",
+      "create": "Skapa och starta",
+      "overlapApprovedTitle": "Står du redan vid {other}?",
+      "overlapApprovedText": "{other} är i dag, {start}–{end}.",
+      "useOther": "Använd {other}",
+      "createAnyway": "Skapa ändå",
+      "overlapUnapprovedTitle": "Godkänna {event} i stället?",
+      "overlapUnapprovedText": "{event} väntar på godkännande, {start}–{end}.",
+      "approveOther": "Godkänn {event}",
+      "createNew": "Skapa nytt evenemang",
+      "toast": "Evenemanget skapat och startat",
+      "toastKds": "Byt köksskärmen till det här evenemanget också."
     }
   },
   "ticket": {

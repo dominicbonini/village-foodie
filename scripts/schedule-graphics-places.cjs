@@ -153,6 +153,10 @@ function withGbRichAndPlurals(chunk, tr) {
 
 const LIB = 'lib/schedule-graphics/places.ts'
 const ROUTE = 'app/api/manage/route.ts'
+/* ⚠️ RE-PINNED (events-create-2, 17 November 2026, docs/events-create-2-report.md): Manage's add-event INSERT and
+ * resolveEventPlaceId moved VERBATIM into this shared helper, which Manage and the dashboard's "Create event now" both
+ * call. The checks on that statement and that function read it here; every other check still reads ROUTE. */
+const CREATE = 'lib/events/create-event.ts'
 const MIGRATION1 = 'supabase/migrations/20261003_truck_places.sql'
 const MIGRATION2 = 'supabase/migrations/20261004_schedule_places_stage2.sql'
 const PLACES_UI = 'components/manage/SchedulePlaces.tsx'
@@ -805,6 +809,7 @@ function runWiringSuite(lib) {
   const SQL1 = read(MIGRATION1)
   const SQL2 = read(MIGRATION2)
   const R = stripComments(read(ROUTE))
+  const C = stripComments(read(CREATE))
   // ⚠️ RE-PINNED (Language Phase 1d): the Places screen and the Manage page read their words with `useT(ns)` now,
   // so the two sources every check below reads are taken with those calls RESOLVED to the en-GB words as moved
   // (`withGbWords`, top of file). Code is untouched by it — only `x('key')` calls of a declared translator are
@@ -827,7 +832,7 @@ function runWiringSuite(lib) {
   const placeWrites = writes.filter(n => n.col === 'truck_place_id')
 
   t('🔴 EXACTLY ONE WRITE PATH NAMES `truck_place_id`, and it is an INSERT',
-    placeWrites.length === 1 && placeWrites[0].method === 'insert' && placeWrites[0].file === ROUTE)
+    placeWrites.length === 1 && placeWrites[0].method === 'insert' && placeWrites[0].file === CREATE)
   for (const w of placeWrites) console.log(`      · ${w.method} ${w.file}:${w.line}`)
   t('🔴 NO `update` OR `upsert` ANYWHERE NAMES IT — an edit cannot move an event\'s place',
     writes.filter(n => n.col === 'truck_place_id' && n.method !== 'insert').length === 0)
@@ -909,7 +914,7 @@ function runWiringSuite(lib) {
       }
       return [...src.slice(open + 1, end).matchAll(/(?:^|,)\s*([a-z_]+)\s*:/g)].map(m => m[1])
     }
-    const now = keysOf(R)
+    const now = keysOf(C)
     let before = null
     try {
       before = keysOf(stripComments(require('child_process')
@@ -929,7 +934,10 @@ function runWiringSuite(lib) {
      * VALUE changed (it is skipped when a type is chosen), which section 1 proves on its own. */
     const SG_KEYS = ['truck_place_id']
     const ET_KEYS = ['order_ready_source', 'event_type_id']
-    const expected = [...SG_KEYS, ...ET_KEYS].sort()
+    /* ⚠️ RE-PINNED (events-create-2): the statement moved to lib/events/create-event.ts and gained `opened_at` — null from
+     * Manage (the column is nullable with no default, so the same write), the start time from the dashboard's create. */
+    const EC2_KEYS = ['opened_at']
+    const expected = [...SG_KEYS, ...ET_KEYS, ...EC2_KEYS].sort()
     return gone.length === 0 && added.slice().sort().join(',') === expected.join(',')
   })())
   /* ⚠️ …AND THE TWO EVENT-TYPES KEYS ARE THAT BRANCH'S OWN, not something the merge invented. Read
@@ -1278,15 +1286,16 @@ function runWiringSuite(lib) {
   t('🔴 `handleCopyEvent` carries the original event\'s `truck_place_id`',
     /const handleCopyEvent = [\s\S]{0,4000}?truck_place_id: \(event as \{ truck_place_id\?: string \| null \}\)\.truck_place_id \?\? null,/.test(P))
   {
-    const R = read('app/api/manage/route.ts')
-    const fn = R.slice(R.indexOf('async function resolveEventPlaceId('), R.indexOf('// ── Auth helper'))
+    // ⚠️ RE-PINNED (events-create-2): resolveEventPlaceId lives in lib/events/create-event.ts, with its own places import.
+    const R = read(CREATE)
+    const fn = R.slice(R.indexOf('async function resolveEventPlaceId('), R.indexOf('export interface NewEventFields'))
     t('🔴 a typed venue name looks for an existing place ("The" or no "The") BEFORE the upsert can make one',
       /placeForTypedName\(name_key, rows\)/.test(fn) && fn.indexOf('placeForTypedName(') < fn.indexOf(".upsert(")
       // ⚠️ RE-PINNED (Language Phase 1d): the route's import block grew by the 1d i18n imports and their header
       // (~1,000 characters), pushing the places import past 8,000. The window is the import block, now 9,000.
       // ⚠️ RE-PINNED (languages-1): the import block grew again (plan names, the private-events and errorsManage catalogs,
       // ~200 characters), pushing the places import just past 9,000. The window is the import block, now 10,000.
-      && /from '@\/lib\/schedule-graphics\/places'/.test(R.slice(0, 10000)) && /\n  placeForTypedName,\n/.test(R.slice(0, 10000)))
+      && /^import \{[^}]*\bplaceForTypedName\b[^}]*\} from '@\/lib\/schedule-graphics\/places'$/m.test(R))
     t('⚠️ a copied link to a place that is gone falls through to the name instead of linking nothing',
       /if \(picked\) return resolvePlaceMerge\(picked, placesById\(all\)\)\.id/.test(fn) && !/if \(!picked\) return null/.test(fn))
   }
@@ -1328,7 +1337,10 @@ function runWiringSuite(lib) {
     return hits.length === 1 && hits[0] === LIB
   })())
   t('🔴 the route imports the merge rules rather than re-implementing them',
-    /mergeRefusal, mergePatch, resolvePlaceMerge, placesById/.test(R)
+    /* ⚠️ RE-PINNED (events-create-2): resolvePlaceMerge / placesById served only resolveEventPlaceId, which moved to
+     * lib/events/create-event.ts with its import of them — so the route imports the merge pair, the helper the other two. */
+    /mergeRefusal, mergePatch,/.test(R)
+    && /^import \{[^}]*\bresolvePlaceMerge, placesById\b[^}]*\} from '@\/lib\/schedule-graphics\/places'$/m.test(C)
     // ⚠️ RE-PINNED (Language Phase 1d Part 2): the route still CALLS the shared rule with the same arguments; it now
     // branches on its answer (`if (mergeRefusal({…}))`) and words the refusal as a code picked by the same ids, instead
     // of keeping the sentence in `const refusal` (rule 7). The shared module still decides; nothing is re-implemented.
@@ -4389,11 +4401,12 @@ function runVariants() {
         "      'customer_note', 'auto_open', 'auto_close', 'notes', 'truck_place_id'", 'W14'),
       s => !/'truck_place_id'/.test(stripComments(s))],
     ['W15 🔴 the insert stops naming the place at all — nothing is ever linked',
-      changed(read(ROUTE), 'auto_close: truck.default_auto_close ?? true, truck_place_id: resolvedPlaceId }',
-        'auto_close: truck.default_auto_close ?? true }', 'W15'),
+      // ⚠️ RE-PINNED (events-create-2): the insert is in CREATE now.
+      changed(read(CREATE), 'auto_close: f.auto_close, truck_place_id: resolvedPlaceId, opened_at:',
+        'auto_close: f.auto_close, opened_at:', 'W15'),
       s => /truck_place_id: resolvedPlaceId/.test(stripComments(s))],
     ['W16 🔴 a place-lookup failure takes the SEND down with it',
-      changed(read(ROUTE), "  } catch (e) {\n    console.warn('[resolveEventPlaceId] no place linked:'",
+      changed(read(CREATE), "  } catch (e) {\n    console.warn('[resolveEventPlaceId] no place linked:'",
         "  } catch (e) {\n    throw e\n    console.warn('[resolveEventPlaceId] no place linked:'", 'W16'),
       s => !/\n    throw e\n/.test(stripComments(s).slice(stripComments(s).indexOf('resolveEventPlaceId')))],
 

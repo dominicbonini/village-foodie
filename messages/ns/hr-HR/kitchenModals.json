@@ -86,5 +86,31 @@
     "switchTitle": "Prebaciti na {event}?",
     "switch": "Prebaci",
     "dismissedText": "{event} je možda duplikat događaja {other}, koji je već odobren. Odobriti ga za primanje narudžbi? Vidjet će ga i kupci."
+  },
+  "createEvent": {
+    "button": "Izradi događaj sada",
+    "offline": "Spojite se na internet da biste izradili događaj.",
+    "title": "Izradi događaj sada",
+    "where": "Gdje prodajete?",
+    "somewhereElse": "Negdje drugdje",
+    "nameLabel": "Naziv događaja",
+    "starts": "Početak",
+    "ends": "Kraj",
+    "addTown": "Dodaj mjesto ili poštanski broj",
+    "town": "Mjesto",
+    "postcode": "Poštanski broj",
+    "van": "Koje vozilo?",
+    "note": "Kupci će vidjeti ovaj događaj i moći naručiti online.",
+    "create": "Izradi i pokreni",
+    "overlapApprovedTitle": "Već prodajete na lokaciji {other}?",
+    "overlapApprovedText": "{other} je danas, {start}–{end}.",
+    "useOther": "Koristi {other}",
+    "createAnyway": "Ipak izradi",
+    "overlapUnapprovedTitle": "Umjesto toga odobriti {event}?",
+    "overlapUnapprovedText": "{event} čeka odobrenje, {start}–{end}.",
+    "approveOther": "Odobri {event}",
+    "createNew": "Izradi novi događaj",
+    "toast": "Događaj izrađen i pokrenut",
+    "toastKds": "Prebacite i kuhinjski zaslon na ovaj događaj."
   }
 }

@@ -86,5 +86,31 @@
     "switchTitle": "לעבור אל {event}?",
     "switch": "מעבר",
     "dismissedText": "{event} הוא כנראה כפילות של {other}, שכבר אושר. לאשר כדי לקבל הזמנות? גם הלקוחות יראו אותו."
+  },
+  "createEvent": {
+    "button": "ליצור אירוע עכשיו",
+    "offline": "יש להתחבר לאינטרנט כדי ליצור אירוע.",
+    "title": "ליצור אירוע עכשיו",
+    "where": "איפה אתם מוכרים?",
+    "somewhereElse": "במקום אחר",
+    "nameLabel": "שם האירוע",
+    "starts": "מתחיל",
+    "ends": "מסתיים",
+    "addTown": "הוספת עיר או מיקוד",
+    "town": "עיר",
+    "postcode": "מיקוד",
+    "van": "איזה רכב?",
+    "note": "הלקוחות יראו את האירוע ויוכלו להזמין אונליין.",
+    "create": "ליצור ולהתחיל",
+    "overlapApprovedTitle": "כבר מוכרים ב־{other}?",
+    "overlapApprovedText": "{other} היום, {start}–{end}.",
+    "useOther": "להשתמש ב־{other}",
+    "createAnyway": "ליצור בכל זאת",
+    "overlapUnapprovedTitle": "לאשר את {event} במקום?",
+    "overlapUnapprovedText": "{event} ממתין לאישור, {start}–{end}.",
+    "approveOther": "לאשר את {event}",
+    "createNew": "ליצור אירוע חדש",
+    "toast": "האירוע נוצר והתחיל",
+    "toastKds": "העבירו גם את מסך המטבח לאירוע הזה."
   }
 }

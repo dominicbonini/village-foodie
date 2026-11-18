@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Maksājumu neizdevās reģistrēt — šī pasūtījuma ieņēmumu summa var būt nepareiza, līdz tas tiks izlabots.",
     "payment_not_reversed": "Maksājumu neizdevās atcelt",
     "event_not_approved": "Šis pasākums nav apstiprināts",
-    "event_not_open": "{status, select, closed {Šis pasākums ir beidzies. Atsāciet to, lai pieņemtu pasūtījumus.} cancelled {Šis pasākums ir atcelts.} other {Šis pasākums nav atvērts.}}"
+    "event_not_open": "{status, select, closed {Šis pasākums ir beidzies. Atsāciet to, lai pieņemtu pasūtījumus.} cancelled {Šis pasākums ir atcelts.} other {Šis pasākums nav atvērts.}}",
+    "sign_in_to_create": "Piesakieties kā komandas loceklis, lai izveidotu pasākumu.",
+    "event_details_invalid": "{reason, select, name {Pievienojiet pasākuma nosaukumu} times {Pievienojiet sākuma un beigu laiku} end {Beigām jābūt pēc sākuma} van {Izvēlieties furgonu} date {Šeit izveidotie pasākumi ir tikai šodienai} other {Pārbaudiet pasākuma datus}}",
+    "event_overlaps": "Tas pārklājas ar citu šodienas pasākumu."
   },
   "kitchenModals": {
     "close": "Aizvērt",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Pārslēgties uz {event}?",
       "switch": "Pārslēgt",
       "dismissedText": "{event} varētu būt pasākuma {other} dublikāts, kas jau ir apstiprināts. Apstiprināt, lai pieņemtu pasūtījumus? To redzēs arī klienti."
+    },
+    "createEvent": {
+      "button": "Izveidot pasākumu tagad",
+      "offline": "Pievienojieties internetam, lai izveidotu pasākumu.",
+      "title": "Izveidot pasākumu tagad",
+      "where": "Kur jūs tirgojat?",
+      "somewhereElse": "Citur",
+      "nameLabel": "Pasākuma nosaukums",
+      "starts": "Sākas",
+      "ends": "Beidzas",
+      "addTown": "Pievienot apdzīvotu vietu vai pasta indeksu",
+      "town": "Apdzīvota vieta",
+      "postcode": "Pasta indekss",
+      "van": "Kurš furgons?",
+      "note": "Klienti redzēs šo pasākumu un varēs pasūtīt tiešsaistē.",
+      "create": "Izveidot un sākt",
+      "overlapApprovedTitle": "Jau tirgojat vietā {other}?",
+      "overlapApprovedText": "{other} ir šodien, {start}–{end}.",
+      "useOther": "Izmantot {other}",
+      "createAnyway": "Tomēr izveidot",
+      "overlapUnapprovedTitle": "Tā vietā apstiprināt {event}?",
+      "overlapUnapprovedText": "{event} gaida apstiprinājumu, {start}–{end}.",
+      "approveOther": "Apstiprināt {event}",
+      "createNew": "Izveidot jaunu pasākumu",
+      "toast": "Pasākums izveidots un sākts",
+      "toastKds": "Pārslēdziet arī virtuves ekrānu uz šo pasākumu."
     }
   },
   "ticket": {

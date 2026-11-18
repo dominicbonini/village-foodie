@@ -327,6 +327,14 @@ for (const k of ['kitchenModals.picker.approvalSummary', 'kitchenModals.picker.a
 NEW_WORDING['kitchenModals.picker.dayCount'] = 'events-overlap-6: each date heading counts its events'
 // ⚠️ RE-PINNED (events-overlap-8, 17 November 2026, docs/events-overlap-8-report.md): the green badge on an approved event card.
 NEW_WORDING['kitchenModals.picker.approved'] = 'events-overlap-8: the "Approved" badge on approved event cards'
+// ⚠️ RE-PINNED (events-create-2, 17 November 2026, docs/events-create-2-report.md): "Create event now" on the dashboard — the
+// create sheet, its two overlap questions, the toast, and three refusals (token-only callers, bad details, an overlap).
+{
+  const flatKeys = (o, p = '') => Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? flatKeys(v, `${p}${k}.`) : [`${p}${k}`]))
+  const enGB = JSON.parse(fs.readFileSync(path.join(REPO, 'messages/en-GB.json'), 'utf8'))
+  for (const k of [...flatKeys(enGB.kitchenModals.createEvent || {}, 'kitchenModals.createEvent.'), 'errorsKitchen.sign_in_to_create',
+    'errorsKitchen.event_details_invalid', 'errorsKitchen.event_overlaps']) NEW_WORDING[k] = 'events-create-2: "Create event now" on the dashboard'
+}
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

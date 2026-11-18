@@ -86,5 +86,31 @@
     "switchTitle": "التبديل إلى {event}؟",
     "switch": "تبديل",
     "dismissedText": "قد تكون {event} نسخة مكررة من {other}، وهي فعالية موافق عليها بالفعل. هل توافق عليها لاستقبال الطلبات؟ سيراها العملاء أيضًا."
+  },
+  "createEvent": {
+    "button": "إنشاء فعالية الآن",
+    "offline": "اتصل بالإنترنت لإنشاء فعالية.",
+    "title": "إنشاء فعالية الآن",
+    "where": "أين تبيع؟",
+    "somewhereElse": "مكان آخر",
+    "nameLabel": "اسم الفعالية",
+    "starts": "تبدأ",
+    "ends": "تنتهي",
+    "addTown": "إضافة المدينة أو الرمز البريدي",
+    "town": "المدينة",
+    "postcode": "الرمز البريدي",
+    "van": "أي شاحنة؟",
+    "note": "سيرى العملاء هذه الفعالية ويمكنهم الطلب عبر الإنترنت.",
+    "create": "إنشاء وبدء",
+    "overlapApprovedTitle": "هل تبيع بالفعل في {other}؟",
+    "overlapApprovedText": "{other} اليوم، {start}–{end}.",
+    "useOther": "استخدام {other}",
+    "createAnyway": "إنشاء على أي حال",
+    "overlapUnapprovedTitle": "الموافقة على {event} بدلًا من ذلك؟",
+    "overlapUnapprovedText": "{event} بانتظار الموافقة، {start}–{end}.",
+    "approveOther": "الموافقة على {event}",
+    "createNew": "إنشاء فعالية جديدة",
+    "toast": "تم إنشاء الفعالية وبدؤها",
+    "toastKds": "حوّل شاشة المطبخ أيضًا إلى هذه الفعالية."
   }
 }

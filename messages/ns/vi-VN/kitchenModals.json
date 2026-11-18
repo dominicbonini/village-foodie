@@ -86,5 +86,31 @@
     "switchTitle": "Chuyển sang {event}?",
     "switch": "Chuyển",
     "dismissedText": "{event} có thể trùng với {other}, đã được duyệt. Duyệt để nhận đơn? Khách hàng cũng sẽ thấy."
+  },
+  "createEvent": {
+    "button": "Tạo sự kiện ngay",
+    "offline": "Kết nối internet để tạo sự kiện.",
+    "title": "Tạo sự kiện ngay",
+    "where": "Bạn đang bán ở đâu?",
+    "somewhereElse": "Nơi khác",
+    "nameLabel": "Tên sự kiện",
+    "starts": "Bắt đầu",
+    "ends": "Kết thúc",
+    "addTown": "Thêm thành phố hoặc mã bưu chính",
+    "town": "Thành phố",
+    "postcode": "Mã bưu chính",
+    "van": "Xe nào?",
+    "note": "Khách hàng sẽ thấy sự kiện này và có thể đặt trực tuyến.",
+    "create": "Tạo và bắt đầu",
+    "overlapApprovedTitle": "Đã bán ở {other}?",
+    "overlapApprovedText": "{other} diễn ra hôm nay, {start}–{end}.",
+    "useOther": "Dùng {other}",
+    "createAnyway": "Vẫn tạo",
+    "overlapUnapprovedTitle": "Duyệt {event} thay vào đó?",
+    "overlapUnapprovedText": "{event} đang chờ duyệt, {start}–{end}.",
+    "approveOther": "Duyệt {event}",
+    "createNew": "Tạo sự kiện mới",
+    "toast": "Đã tạo và bắt đầu sự kiện",
+    "toastKds": "Hãy chuyển cả màn hình bếp sang sự kiện này."
   }
 }

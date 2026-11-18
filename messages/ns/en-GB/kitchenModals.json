@@ -86,5 +86,31 @@
     "switchTitle": "Switch to {event}?",
     "switch": "Switch",
     "dismissedText": "{event} is a possible duplicate of {other}, which is already approved. Approve it to take orders? Customers will see it too."
+  },
+  "createEvent": {
+    "button": "Create event now",
+    "offline": "Connect to the internet to create an event.",
+    "title": "Create event now",
+    "where": "Where are you trading?",
+    "somewhereElse": "Somewhere else",
+    "nameLabel": "Event name",
+    "starts": "Starts",
+    "ends": "Ends",
+    "addTown": "Add town or postcode",
+    "town": "Town",
+    "postcode": "Postcode",
+    "van": "Which van?",
+    "note": "Customers will see this event and can order online.",
+    "create": "Create and start",
+    "overlapApprovedTitle": "Already trading at {other}?",
+    "overlapApprovedText": "{other} is on today, {start}–{end}.",
+    "useOther": "Use {other}",
+    "createAnyway": "Create anyway",
+    "overlapUnapprovedTitle": "Approve {event} instead?",
+    "overlapUnapprovedText": "{event} is waiting for approval, {start}–{end}.",
+    "approveOther": "Approve {event}",
+    "createNew": "Create new event",
+    "toast": "Event created and started",
+    "toastKds": "Switch the kitchen screen to this event too."
   }
 }

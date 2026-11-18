@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Plata nu a putut fi înregistrată — totalul încasărilor pentru această comandă poate fi greșit până la remediere.",
     "payment_not_reversed": "Plata nu a putut fi anulată",
     "event_not_approved": "Acest eveniment nu este aprobat",
-    "event_not_open": "{status, select, closed {Acest eveniment s-a încheiat. Reporniți-l ca să primiți comenzi.} cancelled {Acest eveniment a fost anulat.} other {Acest eveniment nu este deschis.}}"
+    "event_not_open": "{status, select, closed {Acest eveniment s-a încheiat. Reporniți-l ca să primiți comenzi.} cancelled {Acest eveniment a fost anulat.} other {Acest eveniment nu este deschis.}}",
+    "sign_in_to_create": "Autentificați-vă ca membru al echipei pentru a crea un eveniment.",
+    "event_details_invalid": "{reason, select, name {Adăugați un nume pentru eveniment} times {Adăugați ora de început și de sfârșit} end {Ora de sfârșit trebuie să fie după început} van {Alegeți un vehicul} date {Evenimentele create aici sunt doar pentru azi} other {Verificați detaliile evenimentului}}",
+    "event_overlaps": "Se suprapune cu alt eveniment de azi."
   },
   "kitchenModals": {
     "close": "Închideți",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Treceți la {event}?",
       "switch": "Schimbați",
       "dismissedText": "{event} poate fi un duplicat al {other}, care este deja aprobat. Îl aprobați ca să primiți comenzi? Îl vor vedea și clienții."
+    },
+    "createEvent": {
+      "button": "Creați eveniment acum",
+      "offline": "Conectați-vă la internet pentru a crea un eveniment.",
+      "title": "Creați eveniment acum",
+      "where": "Unde vindeți?",
+      "somewhereElse": "În altă parte",
+      "nameLabel": "Numele evenimentului",
+      "starts": "Începe",
+      "ends": "Se termină",
+      "addTown": "Adăugați localitatea sau codul poștal",
+      "town": "Localitate",
+      "postcode": "Cod poștal",
+      "van": "Ce vehicul?",
+      "note": "Clienții vor vedea acest eveniment și pot comanda online.",
+      "create": "Creați și porniți",
+      "overlapApprovedTitle": "Sunteți deja la {other}?",
+      "overlapApprovedText": "{other} este azi, {start}–{end}.",
+      "useOther": "Folosiți {other}",
+      "createAnyway": "Creați totuși",
+      "overlapUnapprovedTitle": "Aprobați {event} în schimb?",
+      "overlapUnapprovedText": "{event} așteaptă aprobare, {start}–{end}.",
+      "approveOther": "Aprobați {event}",
+      "createNew": "Creați eveniment nou",
+      "toast": "Eveniment creat și pornit",
+      "toastKds": "Treceți și ecranul bucătăriei pe acest eveniment."
     }
   },
   "ticket": {

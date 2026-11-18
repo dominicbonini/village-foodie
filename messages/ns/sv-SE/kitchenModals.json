@@ -86,5 +86,31 @@
     "switchTitle": "Byta till {event}?",
     "switch": "Byt",
     "dismissedText": "{event} kan vara en dubblett av {other}, som redan är godkänt. Godkänna det för att ta emot beställningar? Kunderna ser det också."
+  },
+  "createEvent": {
+    "button": "Skapa evenemang nu",
+    "offline": "Anslut till internet för att skapa ett evenemang.",
+    "title": "Skapa evenemang nu",
+    "where": "Var säljer du?",
+    "somewhereElse": "Någon annanstans",
+    "nameLabel": "Evenemangets namn",
+    "starts": "Börjar",
+    "ends": "Slutar",
+    "addTown": "Lägg till ort eller postnummer",
+    "town": "Ort",
+    "postcode": "Postnummer",
+    "van": "Vilken vagn?",
+    "note": "Kunderna ser evenemanget och kan beställa online.",
+    "create": "Skapa och starta",
+    "overlapApprovedTitle": "Står du redan vid {other}?",
+    "overlapApprovedText": "{other} är i dag, {start}–{end}.",
+    "useOther": "Använd {other}",
+    "createAnyway": "Skapa ändå",
+    "overlapUnapprovedTitle": "Godkänna {event} i stället?",
+    "overlapUnapprovedText": "{event} väntar på godkännande, {start}–{end}.",
+    "approveOther": "Godkänn {event}",
+    "createNew": "Skapa nytt evenemang",
+    "toast": "Evenemanget skapat och startat",
+    "toastKds": "Byt köksskärmen till det här evenemanget också."
   }
 }

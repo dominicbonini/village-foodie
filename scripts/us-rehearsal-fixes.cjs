@@ -188,8 +188,12 @@ const cardBefore = () => {
     const kds = read('app/(app)/dashboard/[token]/kds/page.tsx'), dash = read('app/(app)/dashboard/[token]/page.tsx')
     t('the KDS banner says "Today" only when event_date is the truck\'s today', /activeEvent\.event_date === getLocalDateInTz\(kdsTz\)\s*\? t\('banner\.today'/.test(kds) && kds.includes("t('banner.onDate', { date: formatShortDate(activeEvent.event_date, kdsTime)"))
     t('both openEvent paths confirm only for a date after the truck\'s today, before any request',
-      /ev\.event_date > getLocalDateInTz\(kdsTz\) && !window\.confirm\(t\('event\.startFutureConfirm'[\s\S]{0,200}\)\)\) return\n    try \{/.test(kds)
-      && /startDate>getLocalDateInTz\(dashTz\)&&!window\.confirm\(tDash\('startFutureConfirm'[\s\S]{0,120}\)\)\)return\n    const wasClosedEvent/.test(dash))
+      /* ⚠️ RE-PINNED (events-create-2, 17 November 2026, for events-overlap-2): openEvent now asks (a first start opens the
+       * one-time "Start this event?" question; a restart on a later date still confirms) and THEN calls doOpenEvent, which
+       * makes the request — so "before any request" is: the confirm returns, else the next statement is doOpenEvent, whose
+       * body is the old one. */
+      /ev\.event_date > getLocalDateInTz\(kdsTz\) && !window\.confirm\(t\('event\.startFutureConfirm'[\s\S]{0,200}\)\)\) return\n    await doOpenEvent\(eventId\)\n  \}\n  const doOpenEvent = async \(eventId: string\) => \{\n    try \{/.test(kds)
+      && /startDate>getLocalDateInTz\(dashTz\)&&!window\.confirm\(tDash\('startFutureConfirm'[\s\S]{0,120}\)\)\)return\n    await doOpenEvent\(eventId\)\n  \}\n  const doOpenEvent=async\(eventId:string\)=>\{\n    const wasClosedEvent/.test(dash))
   }
 
   // ════════════════════════════════════════════════════════════════════════════════════════════════════

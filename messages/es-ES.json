@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "No se ha podido registrar el pago — el importe recaudado de este pedido puede ser incorrecto hasta que se corrija.",
     "payment_not_reversed": "No se ha podido revertir el pago",
     "event_not_approved": "Este evento no está aprobado",
-    "event_not_open": "{status, select, closed {Este evento ha terminado. Reinícialo para recibir pedidos.} cancelled {Este evento se ha cancelado.} other {Este evento no está abierto.}}"
+    "event_not_open": "{status, select, closed {Este evento ha terminado. Reinícialo para recibir pedidos.} cancelled {Este evento se ha cancelado.} other {Este evento no está abierto.}}",
+    "sign_in_to_create": "Inicia sesión como miembro del equipo para crear un evento.",
+    "event_details_invalid": "{reason, select, name {Añade un nombre para el evento} times {Añade una hora de inicio y de fin} end {La hora de fin debe ser posterior al inicio} van {Elige una furgoneta} date {Los eventos creados aquí son solo para hoy} other {Revisa los datos del evento}}",
+    "event_overlaps": "Se solapa con otro evento de hoy."
   },
   "kitchenModals": {
     "close": "Cerrar",
@@ -1096,6 +1099,32 @@
       "switchTitle": "¿Cambiar a {event}?",
       "switch": "Cambiar",
       "dismissedText": "{event} puede ser un duplicado de {other}, que ya está aprobado. ¿Aprobarlo para recibir pedidos? Los clientes también lo verán."
+    },
+    "createEvent": {
+      "button": "Crear evento ahora",
+      "offline": "Conéctate a internet para crear un evento.",
+      "title": "Crear evento ahora",
+      "where": "¿Dónde estás vendiendo?",
+      "somewhereElse": "En otro sitio",
+      "nameLabel": "Nombre del evento",
+      "starts": "Empieza",
+      "ends": "Termina",
+      "addTown": "Añadir localidad o código postal",
+      "town": "Localidad",
+      "postcode": "Código postal",
+      "van": "¿Qué furgoneta?",
+      "note": "Los clientes verán este evento y podrán pedir en línea.",
+      "create": "Crear y empezar",
+      "overlapApprovedTitle": "¿Ya estás en {other}?",
+      "overlapApprovedText": "{other} es hoy, {start}–{end}.",
+      "useOther": "Usar {other}",
+      "createAnyway": "Crear de todos modos",
+      "overlapUnapprovedTitle": "¿Aprobar {event} en su lugar?",
+      "overlapUnapprovedText": "{event} está pendiente de aprobar, {start}–{end}.",
+      "approveOther": "Aprobar {event}",
+      "createNew": "Crear evento nuevo",
+      "toast": "Evento creado e iniciado",
+      "toastKds": "Cambia también la pantalla de cocina a este evento."
     }
   },
   "ticket": {

@@ -69,5 +69,8 @@
   "payment_not_recorded": "Ödənişi qeydə almaq mümkün olmadı — düzəldilənə qədər bu sifariş üzrə gəlir məbləği səhv ola bilər.",
   "payment_not_reversed": "Ödənişi ləğv etmək mümkün olmadı",
   "event_not_approved": "Bu tədbir təsdiqlənməyib",
-  "event_not_open": "{status, select, closed {Bu tədbir bitib. Sifariş qəbul etmək üçün yenidən başladın.} cancelled {Bu tədbir ləğv edilib.} other {Bu tədbir açıq deyil.}}"
+  "event_not_open": "{status, select, closed {Bu tədbir bitib. Sifariş qəbul etmək üçün yenidən başladın.} cancelled {Bu tədbir ləğv edilib.} other {Bu tədbir açıq deyil.}}",
+  "sign_in_to_create": "Tədbir yaratmaq üçün komanda üzvü kimi daxil olun.",
+  "event_details_invalid": "{reason, select, name {Tədbirin adını əlavə edin} times {Başlama və bitmə vaxtını əlavə edin} end {Bitmə vaxtı başlamadan sonra olmalıdır} van {Furqon seçin} date {Burada yaradılan tədbirlər yalnız bu gün üçündür} other {Tədbirin məlumatlarını yoxlayın}}",
+  "event_overlaps": "Bu, bu günkü başqa tədbirlə üst-üstə düşür."
 }

@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Ödənişi qeydə almaq mümkün olmadı — düzəldilənə qədər bu sifariş üzrə gəlir məbləği səhv ola bilər.",
     "payment_not_reversed": "Ödənişi ləğv etmək mümkün olmadı",
     "event_not_approved": "Bu tədbir təsdiqlənməyib",
-    "event_not_open": "{status, select, closed {Bu tədbir bitib. Sifariş qəbul etmək üçün yenidən başladın.} cancelled {Bu tədbir ləğv edilib.} other {Bu tədbir açıq deyil.}}"
+    "event_not_open": "{status, select, closed {Bu tədbir bitib. Sifariş qəbul etmək üçün yenidən başladın.} cancelled {Bu tədbir ləğv edilib.} other {Bu tədbir açıq deyil.}}",
+    "sign_in_to_create": "Tədbir yaratmaq üçün komanda üzvü kimi daxil olun.",
+    "event_details_invalid": "{reason, select, name {Tədbirin adını əlavə edin} times {Başlama və bitmə vaxtını əlavə edin} end {Bitmə vaxtı başlamadan sonra olmalıdır} van {Furqon seçin} date {Burada yaradılan tədbirlər yalnız bu gün üçündür} other {Tədbirin məlumatlarını yoxlayın}}",
+    "event_overlaps": "Bu, bu günkü başqa tədbirlə üst-üstə düşür."
   },
   "kitchenModals": {
     "close": "Bağla",
@@ -1096,6 +1099,32 @@
       "switchTitle": "{event} tədbirinə keçilsin?",
       "switch": "Keç",
       "dismissedText": "{event} artıq təsdiqlənmiş {other} tədbirinin təkrarı ola bilər. Sifariş qəbul etmək üçün təsdiqlənsin? Müştərilər də görəcək."
+    },
+    "createEvent": {
+      "button": "İndi tədbir yarat",
+      "offline": "Tədbir yaratmaq üçün internetə qoşulun.",
+      "title": "İndi tədbir yarat",
+      "where": "Harada satış edirsiniz?",
+      "somewhereElse": "Başqa yerdə",
+      "nameLabel": "Tədbirin adı",
+      "starts": "Başlayır",
+      "ends": "Bitir",
+      "addTown": "Şəhər və ya poçt indeksi əlavə et",
+      "town": "Şəhər",
+      "postcode": "Poçt indeksi",
+      "van": "Hansı furqon?",
+      "note": "Müştərilər bu tədbiri görəcək və onlayn sifariş verə biləcək.",
+      "create": "Yarat və başlat",
+      "overlapApprovedTitle": "Artıq {other} ünvanındasınız?",
+      "overlapApprovedText": "{other} bu gündür, {start}–{end}.",
+      "useOther": "{other} seç",
+      "createAnyway": "Yenə də yarat",
+      "overlapUnapprovedTitle": "Bunun əvəzinə {event} təsdiqlənsin?",
+      "overlapUnapprovedText": "{event} təsdiq gözləyir, {start}–{end}.",
+      "approveOther": "{event} təsdiqlə",
+      "createNew": "Yeni tədbir yarat",
+      "toast": "Tədbir yaradıldı və başladı",
+      "toastKds": "Mətbəx ekranını da bu tədbirə keçirin."
     }
   },
   "ticket": {

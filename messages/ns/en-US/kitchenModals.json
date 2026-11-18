@@ -11,5 +11,9 @@
   },
   "picker": {
     "status": "{tone, select, paused {⏸ Paused} live {● Live} finished {● Finished} cancelled {Canceled} other {Not started}}"
+  },
+  "createEvent": {
+    "addTown": "Add town or ZIP code",
+    "postcode": "ZIP code"
   }
 }

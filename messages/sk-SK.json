@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Platbu sa nepodarilo zaznamenať — tržba za túto objednávku môže byť nesprávna, kým sa to neopraví.",
     "payment_not_reversed": "Platbu sa nepodarilo stornovať",
     "event_not_approved": "Táto akcia nie je schválená",
-    "event_not_open": "{status, select, closed {Táto akcia skončila. Spustite ju znova, aby ste mohli prijímať objednávky.} cancelled {Táto akcia bola zrušená.} other {Táto akcia nie je otvorená.}}"
+    "event_not_open": "{status, select, closed {Táto akcia skončila. Spustite ju znova, aby ste mohli prijímať objednávky.} cancelled {Táto akcia bola zrušená.} other {Táto akcia nie je otvorená.}}",
+    "sign_in_to_create": "Prihláste sa ako člen tímu, aby ste mohli vytvoriť akciu.",
+    "event_details_invalid": "{reason, select, name {Pridajte názov akcie} times {Pridajte čas začiatku a konca} end {Koniec musí byť po začiatku} van {Vyberte voz} date {Akcie vytvorené tu platia len pre dnešok} other {Skontrolujte údaje akcie}}",
+    "event_overlaps": "Prekrýva sa s inou dnešnou akciou."
   },
   "kitchenModals": {
     "close": "Zavrieť",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Prepnúť na {event}?",
       "switch": "Prepnúť",
       "dismissedText": "{event} je možno duplikát akcie {other}, ktorá je už schválená. Schváliť ju a prijímať objednávky? Uvidia ju aj zákazníci."
+    },
+    "createEvent": {
+      "button": "Vytvoriť akciu teraz",
+      "offline": "Pripojte sa na internet a vytvorte akciu.",
+      "title": "Vytvoriť akciu teraz",
+      "where": "Kde predávate?",
+      "somewhereElse": "Inde",
+      "nameLabel": "Názov akcie",
+      "starts": "Začiatok",
+      "ends": "Koniec",
+      "addTown": "Pridať obec alebo PSČ",
+      "town": "Obec",
+      "postcode": "PSČ",
+      "van": "Ktorý voz?",
+      "note": "Zákazníci akciu uvidia a môžu objednávať online.",
+      "create": "Vytvoriť a spustiť",
+      "overlapApprovedTitle": "Už predávate na mieste {other}?",
+      "overlapApprovedText": "{other} je dnes, {start}–{end}.",
+      "useOther": "Použiť {other}",
+      "createAnyway": "Napriek tomu vytvoriť",
+      "overlapUnapprovedTitle": "Schváliť namiesto toho {event}?",
+      "overlapUnapprovedText": "{event} čaká na schválenie, {start}–{end}.",
+      "approveOther": "Schváliť {event}",
+      "createNew": "Vytvoriť novú akciu",
+      "toast": "Akcia vytvorená a spustená",
+      "toastKds": "Prepnite na túto akciu aj obrazovku kuchyne."
     }
   },
   "ticket": {

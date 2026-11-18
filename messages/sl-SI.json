@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Plačila ni bilo mogoče zabeležiti – znesek prometa za to naročilo je lahko napačen, dokler se ne popravi.",
     "payment_not_reversed": "Plačila ni bilo mogoče razveljaviti",
     "event_not_approved": "Ta dogodek ni odobren",
-    "event_not_open": "{status, select, closed {Ta dogodek se je končal. Znova ga začnite za sprejemanje naročil.} cancelled {Ta dogodek je bil odpovedan.} other {Ta dogodek ni odprt.}}"
+    "event_not_open": "{status, select, closed {Ta dogodek se je končal. Znova ga začnite za sprejemanje naročil.} cancelled {Ta dogodek je bil odpovedan.} other {Ta dogodek ni odprt.}}",
+    "sign_in_to_create": "Prijavite se kot član ekipe, da ustvarite dogodek.",
+    "event_details_invalid": "{reason, select, name {Dodajte ime dogodka} times {Dodajte čas začetka in konca} end {Konec mora biti po začetku} van {Izberite vozilo} date {Dogodki, ustvarjeni tukaj, veljajo samo za danes} other {Preverite podatke dogodka}}",
+    "event_overlaps": "Prekriva se z drugim današnjim dogodkom."
   },
   "kitchenModals": {
     "close": "Zapri",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Preklopim na {event}?",
       "switch": "Preklopi",
       "dismissedText": "{event} je morda dvojnik dogodka {other}, ki je že odobren. Ga odobrite za sprejemanje naročil? Videli ga bodo tudi kupci."
+    },
+    "createEvent": {
+      "button": "Ustvari dogodek zdaj",
+      "offline": "Povežite se z internetom, da ustvarite dogodek.",
+      "title": "Ustvari dogodek zdaj",
+      "where": "Kje prodajate?",
+      "somewhereElse": "Drugje",
+      "nameLabel": "Ime dogodka",
+      "starts": "Začetek",
+      "ends": "Konec",
+      "addTown": "Dodaj kraj ali poštno številko",
+      "town": "Kraj",
+      "postcode": "Poštna številka",
+      "van": "Katero vozilo?",
+      "note": "Kupci bodo videli ta dogodek in lahko naročali na spletu.",
+      "create": "Ustvari in začni",
+      "overlapApprovedTitle": "Že prodajate na lokaciji {other}?",
+      "overlapApprovedText": "{other} je danes, {start}–{end}.",
+      "useOther": "Uporabi {other}",
+      "createAnyway": "Vseeno ustvari",
+      "overlapUnapprovedTitle": "Namesto tega odobriti {event}?",
+      "overlapUnapprovedText": "{event} čaka na odobritev, {start}–{end}.",
+      "approveOther": "Odobri {event}",
+      "createNew": "Ustvari nov dogodek",
+      "toast": "Dogodek ustvarjen in začet",
+      "toastKds": "Tudi kuhinjski zaslon preklopite na ta dogodek."
     }
   },
   "ticket": {

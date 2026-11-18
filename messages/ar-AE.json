@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "تعذّر تسجيل الدفعة — قد يكون رقم الإيرادات لهذا الطلب غير صحيح حتى يتم إصلاحه.",
     "payment_not_reversed": "تعذّر إلغاء الدفعة",
     "event_not_approved": "لم تتم الموافقة على هذه الفعالية",
-    "event_not_open": "{status, select, closed {انتهت هذه الفعالية. أعد بدءها لاستقبال الطلبات.} cancelled {أُلغيت هذه الفعالية.} other {هذه الفعالية غير مفتوحة.}}"
+    "event_not_open": "{status, select, closed {انتهت هذه الفعالية. أعد بدءها لاستقبال الطلبات.} cancelled {أُلغيت هذه الفعالية.} other {هذه الفعالية غير مفتوحة.}}",
+    "sign_in_to_create": "سجّل الدخول كعضو في الفريق لإنشاء فعالية.",
+    "event_details_invalid": "{reason, select, name {أضف اسمًا للفعالية} times {أضف وقت البدء والانتهاء} end {يجب أن يكون وقت الانتهاء بعد البدء} van {اختر شاحنة} date {الفعاليات المنشأة هنا لليوم فقط} other {تحقق من تفاصيل الفعالية}}",
+    "event_overlaps": "هذه الفعالية تتداخل مع فعالية أخرى اليوم."
   },
   "kitchenModals": {
     "close": "إغلاق",
@@ -1096,6 +1099,32 @@
       "switchTitle": "التبديل إلى {event}؟",
       "switch": "تبديل",
       "dismissedText": "قد تكون {event} نسخة مكررة من {other}، وهي فعالية موافق عليها بالفعل. هل توافق عليها لاستقبال الطلبات؟ سيراها العملاء أيضًا."
+    },
+    "createEvent": {
+      "button": "إنشاء فعالية الآن",
+      "offline": "اتصل بالإنترنت لإنشاء فعالية.",
+      "title": "إنشاء فعالية الآن",
+      "where": "أين تبيع؟",
+      "somewhereElse": "مكان آخر",
+      "nameLabel": "اسم الفعالية",
+      "starts": "تبدأ",
+      "ends": "تنتهي",
+      "addTown": "إضافة المدينة أو الرمز البريدي",
+      "town": "المدينة",
+      "postcode": "الرمز البريدي",
+      "van": "أي شاحنة؟",
+      "note": "سيرى العملاء هذه الفعالية ويمكنهم الطلب عبر الإنترنت.",
+      "create": "إنشاء وبدء",
+      "overlapApprovedTitle": "هل تبيع بالفعل في {other}؟",
+      "overlapApprovedText": "{other} اليوم، {start}–{end}.",
+      "useOther": "استخدام {other}",
+      "createAnyway": "إنشاء على أي حال",
+      "overlapUnapprovedTitle": "الموافقة على {event} بدلًا من ذلك؟",
+      "overlapUnapprovedText": "{event} بانتظار الموافقة، {start}–{end}.",
+      "approveOther": "الموافقة على {event}",
+      "createNew": "إنشاء فعالية جديدة",
+      "toast": "تم إنشاء الفعالية وبدؤها",
+      "toastKds": "حوّل شاشة المطبخ أيضًا إلى هذه الفعالية."
     }
   },
   "ticket": {

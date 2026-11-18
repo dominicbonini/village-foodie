@@ -82,6 +82,9 @@ import { EventFinishTimeModal } from '@/components/shared/EventFinishTimeModal'
 import { EventActionsModal } from '@/components/shared/EventActionsModal'
 // events-overlap-2: approved-only default, the overlap rule, and the one-time approve / start questions.
 import { ApproveEventDialog, StartEventDialog } from '@/components/shared/EventGateDialogs'
+import { CreateEventSheet, type CreatePlace, type CreateVan } from '@/components/shared/CreateEventSheet'   // events-create-2
+import { NoEventBox } from '@/components/dashboard/NoEventBox'   // events-create-2
+import '@/lib/i18n/catalog/kitchenModals'
 import { pickDashboardDefaultEvent, onlyUnapprovedToday, approvedOverlaps, overlapTarget } from '@/lib/event-default'
 import { ExtraWaitModal } from '@/components/shared/ExtraWaitModal'
 import { DeviceSetupGate } from '@/components/native/OperatorDeviceConfig'
@@ -316,6 +319,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useTruckLocale(dashTime.locale)   // Language Phase 0: the truck's country's locale for this screen's words
   // Language Phase 1b: every word on this screen is a message in `dashboard` (messages/en-GB.json).
   const tDash=useT('dashboard')
+  const tKm=useT('kitchenModals')   // events-create-2: the create sheet's words live with the other event questions
   const tForgotGate=useT('auth.forgot')   // app-fixes-2: the Access denied screen's "Back to log in"
   // languages-1: the private-event words in the truck's language (they were lib/private-events/copy.ts's en-GB exports).
   const tPrivEv=useT('privateEvents')
@@ -471,6 +475,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[approveFor,setApproveFor]=useState<string|null>(null)
   const[startFor,setStartFor]=useState<string|null>(null)
   const[gateBusy,setGateBusy]=useState(false)
+  // events-create-2: "Create event now" — the sheet, and its places / vans / today from create_event_places.
+  const[createOpen,setCreateOpen]=useState(false)
+  const[createData,setCreateData]=useState<{places:CreatePlace[];vans:CreateVan[];today:string|null}|null>(null)
+  const[createLoading,setCreateLoading]=useState(false)
   const[showEventMenu,setShowEventMenu]=useState(false)
   // Change-event-finish-time target. Non-null mounts the SHARED modal, which owns the picker/confirm
   // split internally — so there is no draft state on this screen to leak between opens.
@@ -2968,6 +2976,46 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   /** True when today's only events are unapproved — the bar says "Approve an event to take orders" instead of "No event selected". */
   const approveToTakeOrders=!selectedOrDefaultEvent&&onlyUnapprovedToday(upcomingEvents,dashTz)
 
+  // ── events-create-2: "CREATE EVENT NOW" ─────────────────────────────────────────────────────────────────────────
+  // Who: a signed-in member (the server refuses token-only callers; `userRole` is null for them, so the button is shown
+  // disabled with the reason). Where (D6): at the TOP of the event list when nothing approved is on today, else the
+  // bottom. Online only (D5). After creating: the event is added to the lists, SELECTED, and the toast says so.
+  const approvedOnToday=upcomingEvents.some(e=>(e.status==='confirmed'||e.status==='open')&&eventDates(e.event_date,e.start_time,e.end_time).includes(getLocalDateInTz(dashTz)))
+  const canCreateEvent=!!userRole
+  const createEventAction=isDemo?null:{
+    position:(approvedOnToday?'bottom':'top') as 'top'|'bottom',
+    label:tKm('createEvent.button'),
+    disabled:isOffline||!canCreateEvent,
+    note:isOffline?tKm('createEvent.offline'):!canCreateEvent?tErrK('sign_in_to_create'):null,
+    onClick:()=>openCreateEvent(),
+  }
+  const openCreateEvent=async()=>{
+    if(isDemo||isOffline||!canCreateEvent)return
+    setCreateOpen(true);setCreateLoading(true)
+    try{
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,pin,action:'create_event_places'})})
+      const data=await res.json().catch(()=>({}))
+      if(res.ok) setCreateData({places:Array.isArray(data.places)?data.places:[],vans:Array.isArray(data.vans)?data.vans:[],today:typeof data.today==='string'?data.today:null})
+      else setCreateData({places:[],vans:[],today:null})
+    }catch{setCreateData({places:[],vans:[],today:null})}
+    finally{setCreateLoading(false)}
+  }
+  const submitCreateEvent=async(payload:Record<string,unknown>)=>{
+    const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,pin,action:'create_event_now',...payload})})
+    const body=await res.json().catch(()=>({}))
+    if(res.ok&&body?.event?.id){
+      const ev=body.event as TruckEvent
+      setUpcomingEvents(prev=>prev.some(e=>e.id===ev.id)?prev:[...prev,ev])
+      setTodayEvents(prev=>prev.some(e=>e.id===ev.id)?prev:[...prev,ev])
+      setOrderCounts(prev=>({...(prev??{}),[ev.id]:0}))
+      setSelectedEventId(ev.id)
+      setCreateOpen(false)
+      showToast(`${tKm('createEvent.toast')}\n${tKm('createEvent.toastKds')}`,'success',{duration:7000})
+      fetchAllRef.current()
+    }
+    return {status:res.status,body}
+  }
+
   // ── CHANGE EVENT FINISH TIME ────────────────────────────────────────────────────────────────────
   // 🔴 THE SAME WRITE `extendEvent` MAKES, AND NOTHING MORE: one POST to /api/events/action with
   // action:'update' and a payload of exactly `{ end_time }`. That handler's allow-list is
@@ -4379,6 +4427,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   className="text-xs text-slate-400 hover:text-white flex-shrink-0 px-2 py-1 rounded border border-slate-600 hover:border-slate-400 transition-colors">
                   {tDash('eventBar.selectEvent')}
                 </button>
+                {/* events-create-2: "Create event now" beside it from tablet width up — on a phone the amber box just below
+                    carries it (three items do not fit a 320px bar). Disabled with its reason as the tooltip; the box says it. */}
+                {createEventAction&&(
+                  <button onClick={createEventAction.onClick} disabled={createEventAction.disabled} title={createEventAction.note??undefined} data-create-event-bar
+                    className="hidden sm:inline-block text-xs font-semibold text-white bg-orange-600 hover:bg-orange-700 flex-shrink-0 px-2.5 py-1 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    {createEventAction.label}
+                  </button>
+                )}
               </>
             )}
           </div>
@@ -4480,16 +4536,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               // is EMPTY (that is why there is no active event), so it is a button that opens nothing.
               // `demoEndedCard` is null for an operator truck, so Gusto keeps the amber panel verbatim.
               demoEndedCard??(
-              <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-500">⚠️</span>
-                  <p className="text-sm font-medium text-amber-800">{approveToTakeOrders?tDash('eventBar.approveToTakeOrders'):tDash('orders.noEvent')}</p>
-                </div>
-                <button onClick={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
-                  className="text-sm font-semibold text-amber-700 border border-amber-300 bg-white rounded-lg px-3 py-1.5 hover:bg-amber-50 whitespace-nowrap">
-                  {tDash('eventBar.selectEvent')}
-                </button>
-              </div>
+              // events-create-2: the shared box — "Select event" and "Create event now" (also in the "Approve an event to take orders" state).
+              <NoEventBox
+                message={approveToTakeOrders?tDash('eventBar.approveToTakeOrders'):tDash('orders.noEvent')}
+                selectLabel={tDash('eventBar.selectEvent')}
+                onSelect={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
+                createLabel={createEventAction?.label}
+                onCreate={createEventAction?.onClick}
+                createDisabled={!!createEventAction?.disabled}
+                createNote={createEventAction?.note??null}
+              />
               )
             ):(
               <>
@@ -5071,6 +5127,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             events={upcomingEvents}
             orderCounts={orderCounts}
             onRequestApprove={requestApprove}
+            createEvent={createEventAction}
             isOffline={isOffline}
             buzzerCount={vanBuzzerCount}
             onSaveBuzzer={async(orderKey,buzzerNumber)=>{await saveBuzzer(orderKey,buzzerNumber)}}
@@ -6885,6 +6942,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           ⚠️ DEMO: Pause is withheld and Resume is not, exactly as before — `onPause` is omitted while
           `onResume` is passed, so recovery stays reachable and only the trap is removed. */}
       {/* events-overlap-2: the one-time approve question (overlap or plain) and the one-time Start question. */}
+      {/* events-create-2: "Create event now" — mounted only while open, so every opening starts from a fresh form. */}
+      {createOpen&&(
+        <CreateEventSheet
+          open
+          time={dashTime}
+          places={createData?.places??[]}
+          vans={createData?.vans??[]}
+          today={createData?.today??null}
+          loading={createLoading}
+          isOffline={isOffline}
+          onSubmit={submitCreateEvent}
+          onClose={()=>setCreateOpen(false)}
+          onUseExisting={(id)=>{setCreateOpen(false);setSelectedEventId(id)}}
+          onApproveExisting={(id)=>{setCreateOpen(false);void approveEvent(id)}}
+        />
+      )}
       {approveTarget&&approveTarget.status==='unconfirmed'&&(
         <ApproveEventDialog
           event={approveTarget}

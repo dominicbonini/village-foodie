@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "ادائیگی درج نہیں ہو سکی — درست ہونے تک اس آرڈر کی آمدنی کا حساب غلط ہو سکتا ہے۔",
     "payment_not_reversed": "ادائیگی واپس نہیں ہو سکی",
     "event_not_approved": "یہ ایونٹ منظور نہیں ہوا",
-    "event_not_open": "{status, select, closed {یہ ایونٹ ختم ہو گیا ہے۔ آرڈر لینے کے لیے اسے دوبارہ شروع کریں۔} cancelled {یہ ایونٹ منسوخ ہو گیا ہے۔} other {یہ ایونٹ کھلا نہیں ہے۔}}"
+    "event_not_open": "{status, select, closed {یہ ایونٹ ختم ہو گیا ہے۔ آرڈر لینے کے لیے اسے دوبارہ شروع کریں۔} cancelled {یہ ایونٹ منسوخ ہو گیا ہے۔} other {یہ ایونٹ کھلا نہیں ہے۔}}",
+    "sign_in_to_create": "ایونٹ بنانے کے لیے ٹیم ممبر کے طور پر سائن ان کریں۔",
+    "event_details_invalid": "{reason, select, name {ایونٹ کا نام شامل کریں} times {شروع اور ختم ہونے کا وقت شامل کریں} end {ختم ہونے کا وقت شروع کے بعد ہونا چاہیے} van {وین منتخب کریں} date {یہاں بنائے گئے ایونٹ صرف آج کے لیے ہیں} other {ایونٹ کی تفصیلات چیک کریں}}",
+    "event_overlaps": "یہ آج کے کسی اور ایونٹ سے ٹکراتا ہے۔"
   },
   "kitchenModals": {
     "close": "بند کریں",
@@ -1096,6 +1099,32 @@
       "switchTitle": "{event} پر جائیں؟",
       "switch": "بدلیں",
       "dismissedText": "{event} شاید {other} کا ڈپلیکیٹ ہے، جو پہلے سے منظور ہے۔ آرڈر لینے کے لیے منظور کریں؟ گاہک بھی اسے دیکھیں گے۔"
+    },
+    "createEvent": {
+      "button": "ابھی ایونٹ بنائیں",
+      "offline": "ایونٹ بنانے کے لیے انٹرنیٹ سے جڑیں۔",
+      "title": "ابھی ایونٹ بنائیں",
+      "where": "آپ کہاں بیچ رہے ہیں؟",
+      "somewhereElse": "کہیں اور",
+      "nameLabel": "ایونٹ کا نام",
+      "starts": "شروع",
+      "ends": "ختم",
+      "addTown": "شہر یا پوسٹ کوڈ شامل کریں",
+      "town": "شہر",
+      "postcode": "پوسٹ کوڈ",
+      "van": "کون سی وین؟",
+      "note": "گاہک یہ ایونٹ دیکھیں گے اور آن لائن آرڈر کر سکیں گے۔",
+      "create": "بنائیں اور شروع کریں",
+      "overlapApprovedTitle": "کیا آپ پہلے سے {other} پر ہیں؟",
+      "overlapApprovedText": "{other} آج ہے، {start}–{end}۔",
+      "useOther": "{other} استعمال کریں",
+      "createAnyway": "پھر بھی بنائیں",
+      "overlapUnapprovedTitle": "اس کے بجائے {event} منظور کریں؟",
+      "overlapUnapprovedText": "{event} منظوری کا منتظر ہے، {start}–{end}۔",
+      "approveOther": "{event} منظور کریں",
+      "createNew": "نیا ایونٹ بنائیں",
+      "toast": "ایونٹ بن گیا اور شروع ہو گیا",
+      "toastKds": "کچن اسکرین کو بھی اس ایونٹ پر کر دیں۔"
     }
   },
   "ticket": {

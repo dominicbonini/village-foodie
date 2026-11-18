@@ -1006,7 +1006,10 @@
     "payment_not_recorded": "Platbu se nepodařilo zaznamenat — údaj o tržbě za tuto objednávku může být až do opravy chybný.",
     "payment_not_reversed": "Platbu se nepodařilo stornovat",
     "event_not_approved": "Tato akce není schválená",
-    "event_not_open": "{status, select, closed {Tato akce skončila. Spusťte ji znovu, abyste mohli přijímat objednávky.} cancelled {Tato akce byla zrušena.} other {Tato akce není otevřená.}}"
+    "event_not_open": "{status, select, closed {Tato akce skončila. Spusťte ji znovu, abyste mohli přijímat objednávky.} cancelled {Tato akce byla zrušena.} other {Tato akce není otevřená.}}",
+    "sign_in_to_create": "Přihlaste se jako člen týmu, abyste mohli vytvořit akci.",
+    "event_details_invalid": "{reason, select, name {Přidejte název akce} times {Přidejte čas začátku a konce} end {Konec musí být po začátku} van {Vyberte vůz} date {Akce vytvořené zde platí jen pro dnešek} other {Zkontrolujte údaje akce}}",
+    "event_overlaps": "Překrývá se s jinou dnešní akcí."
   },
   "kitchenModals": {
     "close": "Zavřít",
@@ -1096,6 +1099,32 @@
       "switchTitle": "Přepnout na {event}?",
       "switch": "Přepnout",
       "dismissedText": "{event} je možná duplikát akce {other}, která je už schválená. Schválit ji a přijímat objednávky? Uvidí ji i zákazníci."
+    },
+    "createEvent": {
+      "button": "Vytvořit akci teď",
+      "offline": "Připojte se k internetu a vytvořte akci.",
+      "title": "Vytvořit akci teď",
+      "where": "Kde prodáváte?",
+      "somewhereElse": "Jinde",
+      "nameLabel": "Název akce",
+      "starts": "Začátek",
+      "ends": "Konec",
+      "addTown": "Přidat obec nebo PSČ",
+      "town": "Obec",
+      "postcode": "PSČ",
+      "van": "Který vůz?",
+      "note": "Zákazníci akci uvidí a mohou objednávat online.",
+      "create": "Vytvořit a spustit",
+      "overlapApprovedTitle": "Už prodáváte na místě {other}?",
+      "overlapApprovedText": "{other} je dnes, {start}–{end}.",
+      "useOther": "Použít {other}",
+      "createAnyway": "Přesto vytvořit",
+      "overlapUnapprovedTitle": "Schválit místo toho {event}?",
+      "overlapUnapprovedText": "{event} čeká na schválení, {start}–{end}.",
+      "approveOther": "Schválit {event}",
+      "createNew": "Vytvořit novou akci",
+      "toast": "Akce vytvořena a spuštěna",
+      "toastKds": "Přepněte na tuto akci i obrazovku kuchyně."
     }
   },
   "ticket": {

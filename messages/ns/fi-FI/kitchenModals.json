@@ -86,5 +86,31 @@
     "switchTitle": "Vaihdetaanko tapahtumaan {event}?",
     "switch": "Vaihda",
     "dismissedText": "{event} voi olla kaksoiskappale tapahtumasta {other}, joka on jo hyväksytty. Hyväksytäänkö, jotta voit ottaa tilauksia? Asiakkaat näkevät sen myös."
+  },
+  "createEvent": {
+    "button": "Luo tapahtuma nyt",
+    "offline": "Yhdistä internetiin luodaksesi tapahtuman.",
+    "title": "Luo tapahtuma nyt",
+    "where": "Missä myyt?",
+    "somewhereElse": "Muualla",
+    "nameLabel": "Tapahtuman nimi",
+    "starts": "Alkaa",
+    "ends": "Päättyy",
+    "addTown": "Lisää paikkakunta tai postinumero",
+    "town": "Paikkakunta",
+    "postcode": "Postinumero",
+    "van": "Mikä auto?",
+    "note": "Asiakkaat näkevät tapahtuman ja voivat tilata verkossa.",
+    "create": "Luo ja aloita",
+    "overlapApprovedTitle": "Myytkö jo paikassa {other}?",
+    "overlapApprovedText": "{other} on tänään, {start}–{end}.",
+    "useOther": "Käytä: {other}",
+    "createAnyway": "Luo silti",
+    "overlapUnapprovedTitle": "Hyväksytäänkö sen sijaan {event}?",
+    "overlapUnapprovedText": "{event} odottaa hyväksyntää, {start}–{end}.",
+    "approveOther": "Hyväksy {event}",
+    "createNew": "Luo uusi tapahtuma",
+    "toast": "Tapahtuma luotu ja aloitettu",
+    "toastKds": "Vaihda myös keittiön näyttö tähän tapahtumaan."
   }
 }

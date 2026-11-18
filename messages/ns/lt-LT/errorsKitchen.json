@@ -69,5 +69,8 @@
   "payment_not_recorded": "Nepavyko užregistruoti mokėjimo – kol tai nebus ištaisyta, šio užsakymo pajamų suma gali būti neteisinga.",
   "payment_not_reversed": "Nepavyko atšaukti mokėjimo",
   "event_not_approved": "Šis renginys nepatvirtintas",
-  "event_not_open": "{status, select, closed {Šis renginys baigėsi. Pradėkite jį iš naujo, kad priimtumėte užsakymus.} cancelled {Šis renginys atšauktas.} other {Šis renginys neatidarytas.}}"
+  "event_not_open": "{status, select, closed {Šis renginys baigėsi. Pradėkite jį iš naujo, kad priimtumėte užsakymus.} cancelled {Šis renginys atšauktas.} other {Šis renginys neatidarytas.}}",
+  "sign_in_to_create": "Prisijunkite kaip komandos narys, kad sukurtumėte renginį.",
+  "event_details_invalid": "{reason, select, name {Pridėkite renginio pavadinimą} times {Pridėkite pradžios ir pabaigos laiką} end {Pabaiga turi būti po pradžios} van {Pasirinkite furgoną} date {Čia sukurti renginiai galioja tik šiandien} other {Patikrinkite renginio duomenis}}",
+  "event_overlaps": "Tai persidengia su kitu šiandienos renginiu."
 }

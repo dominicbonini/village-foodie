@@ -86,5 +86,31 @@
     "switchTitle": "{event}に切り替えますか？",
     "switch": "切り替え",
     "dismissedText": "{event}は承認済みの{other}と重複している可能性があります。承認して注文を受け付けますか？お客様にも表示されます。"
+  },
+  "createEvent": {
+    "button": "今すぐ出店を作成",
+    "offline": "出店を作成するにはインターネットに接続してください。",
+    "title": "今すぐ出店を作成",
+    "where": "どこで営業していますか？",
+    "somewhereElse": "その他の場所",
+    "nameLabel": "出店名",
+    "starts": "開始",
+    "ends": "終了",
+    "addTown": "市区町村または郵便番号を追加",
+    "town": "市区町村",
+    "postcode": "郵便番号",
+    "van": "どの車両ですか？",
+    "note": "お客様にこの出店が表示され、オンラインで注文できます。",
+    "create": "作成して開始",
+    "overlapApprovedTitle": "すでに{other}で営業中ですか？",
+    "overlapApprovedText": "{other}は本日{start}–{end}です。",
+    "useOther": "{other}を使う",
+    "createAnyway": "それでも作成",
+    "overlapUnapprovedTitle": "代わりに{event}を承認しますか？",
+    "overlapUnapprovedText": "{event}は承認待ちです（{start}–{end}）。",
+    "approveOther": "{event}を承認",
+    "createNew": "新しい出店を作成",
+    "toast": "出店を作成して開始しました",
+    "toastKds": "キッチン画面もこの出店に切り替えてください。"
   }
 }

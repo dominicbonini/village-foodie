@@ -69,5 +69,8 @@
   "payment_not_recorded": "Maksua ei voitu kirjata — tämän tilauksen myyntisumma voi olla väärin, kunnes se korjataan.",
   "payment_not_reversed": "Maksua ei voitu peruuttaa",
   "event_not_approved": "Tätä tapahtumaa ei ole hyväksytty",
-  "event_not_open": "{status, select, closed {Tapahtuma on päättynyt. Käynnistä se uudelleen ottaaksesi tilauksia.} cancelled {Tapahtuma on peruttu.} other {Tapahtuma ei ole auki.}}"
+  "event_not_open": "{status, select, closed {Tapahtuma on päättynyt. Käynnistä se uudelleen ottaaksesi tilauksia.} cancelled {Tapahtuma on peruttu.} other {Tapahtuma ei ole auki.}}",
+  "sign_in_to_create": "Kirjaudu tiimin jäsenenä luodaksesi tapahtuman.",
+  "event_details_invalid": "{reason, select, name {Lisää tapahtuman nimi} times {Lisää alkamis- ja päättymisaika} end {Päättymisajan on oltava alkamisen jälkeen} van {Valitse auto} date {Täällä luodut tapahtumat ovat vain tälle päivälle} other {Tarkista tapahtuman tiedot}}",
+  "event_overlaps": "Tämä menee päällekkäin toisen tämänpäiväisen tapahtuman kanssa."
 }
