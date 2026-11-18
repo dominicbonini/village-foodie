@@ -1,0 +1,944 @@
+{
+ "managePayments": {
+  "heading": "Malipo",
+  "loading": "Inakagua akaunti yako ya Stripe…",
+  "state": {
+   "not_connected": {
+    "title": "Haijaandaliwa",
+    "body": "Inachukua takriban dakika 10. Utahitaji taarifa za benki yako na kitambulisho.",
+    "chip": "Haijaandaliwa"
+   },
+   "requirements": {
+    "title": "Stripe inahitaji taarifa zako",
+    "body": "Malipo kwa kadi hayatafanya kazi hadi Stripe ipate taarifa za biashara yako na za benki yako.",
+    "chip": "Hatua inahitajika"
+   },
+   "pending": {
+    "title": "Imeunganishwa — Stripe inakagua taarifa zako",
+    "body": "Hakuna unachohitaji kufanya. Stripe inapitia taarifa ulizotuma, na ukurasa huu utasasishwa watakapomaliza.",
+    "chip": "Inakaguliwa"
+   },
+   "ready": {
+    "title": "Imeunganishwa",
+    "body": "Akaunti yako ya Stripe imeunganishwa na inaweza kupokea malipo.",
+    "chip": "Iko tayari"
+   },
+   "restricted": {
+    "title": "Malipo kwa kadi yamesitishwa",
+    "body": "Stripe imesitisha malipo kwa kadi kwenye akaunti yako hadi jambo fulani litatuliwe.",
+    "chip": "Imesitishwa"
+   },
+   "unsupported": {
+    "title": "Malipo kwa kadi hayapatikani kwenye akaunti hii",
+    "body": "Stripe haiwezi kuwezesha malipo kwa kadi hapa. Wasiliana nasi na tutalitatua pamoja nawe.",
+    "chip": "Haipatikani"
+   }
+  },
+  "keyMismatch": {
+   "title": "Funguo za Stripe hazilingani",
+   "body": "Seva ya tovuti hii inatumia ufunguo wa Stripe wa <b>{server, select, live {malipo halisi} other {majaribio}}</b>, ilhali kivinjari kilitengenezwa kwa ufunguo wa <b>{browser, select, live {malipo halisi} other {majaribio}}</b>. Malipo kwa kadi yangeshindikana pale mteja anapojaribu kulipa, kwa hiyo uandaaji wa Stripe umezuiwa hadi funguo hizo zilingane.",
+   "fix": "Funguo zote mbili lazima ziwekwe kwa mazingira yaleyale, kisha tovuti itengenezwe upya — ufunguo wa umma (publishable key) huwekwa ndani wakati tovuti inapotengenezwa, na ufunguo wa siri husomwa kila ombi linapofanyika."
+  },
+  "permission": {
+   "title": "Mmiliki wa food truck pekee ndiye anayeweza kuandaa malipo",
+   "body": "Stripe huunganishwa na mtu ambaye akaunti yake ya benki inapokea pesa, kwa hiyo lazima iandaliwe kutoka kwenye akaunti yake mwenyewe akiwa ameingia. Hakuna tatizo lolote kwenye food truck hii wala kwenye HatchGrab."
+  },
+  "config": {
+   "keyMissingTitle": "Malipo kwa kadi bado hayajaandaliwa",
+   "fetchTitle": "Hatukuweza kukagua akaunti ya Stripe ya food truck hii",
+   "keyMissing": "Kigezo hiki hakijawekwa: {name} — vipengele vilivyopachikwa haviwezi kupakia."
+  },
+  "errors": {
+   "requestFailed": "Ombi limeshindikana ({status})",
+   "unreachable": "Imeshindikana kufikia Stripe"
+  },
+  "online": {
+   "heading": "Malipo mtandaoni",
+   "body": "Wateja hulipa kwa kadi wanapoagiza. Pesa huenda moja kwa moja kwenye akaunti yako mwenyewe ya Stripe — sisi hatuzishikilii kamwe.",
+   "feeLine": "Stripe hutoza {fee} kwa kila malipo ya kawaida kwa {region}. Kadi nyingine zinaweza kugharimu zaidi. Ada ya HatchGrab yenyewe kwa oda za mtandaoni inategemea kifurushi chako — angalia “Bili”.",
+   "testMode": "Hali ya majaribio. Bado hakuna malipo halisi yanayoweza kupokelewa."
+  },
+  "trialNote": "Kuandaa hili hakuanzishi malipo ya kifurushi chako wala hakukutozi chochote leo. Ni njia ya wateja wako kukulipa — kifurushi chako ni jambo tofauti.",
+  "admin": {
+   "title": "Unaangalia kama msimamizi wa jukwaa",
+   "body": "Food truck hii haijaandaa malipo mtandaoni. Mmiliki pekee ndiye anayeweza kuyaanzisha, kutoka kwenye akaunti yake mwenyewe akiwa ameingia — hakuna cha kubonyeza hapa."
+  },
+  "setUp": {
+   "button": "Andaa malipo mtandaoni",
+   "busy": "Inaandaa…"
+  },
+  "toast": {
+   "alreadySetUp": "Tayari imeandaliwa — tunaendelea",
+   "addDetails": "Sasa ongeza taarifa zako kwa ajili ya Stripe",
+   "createFailed": "Imeshindikana kufungua akaunti"
+  },
+  "onboarding": {
+   "restricted": "Stripe itaendelea kuanzia hapa — utaingia kwenye Stripe na kusasisha taarifa inazohitaji.",
+   "firstRun": "Stripe itaendelea kuanzia hapa — utaingia kwenye Stripe, kisha utoe taarifa za biashara yako na za benki yako."
+  },
+  "details": {
+   "title": "Taarifa zako za Stripe",
+   "body": "Badilisha akaunti ya benki inayopokea malipo yako, au sasisha taarifa na nyaraka za biashara yako.",
+   "button": "Angalia au hariri"
+  },
+  "walkUp": {
+   "heading": "Malipo ya oda za papo hapo",
+   "body": "Jinsi unavyopokea pesa kwenye food truck. HatchGrab haitozi ada ya jukwaa kwa oda za papo hapo, njia yoyote utakayochagua.",
+   "ownTerminal": "Mashine yako mwenyewe ya kadi",
+   "current": "Inayotumika",
+   "ownTerminalHelp": "Zettle, Square, au mashine yoyote unayotumia tayari. Hakuna cha kuandaa — ada za mtoa huduma wako pekee ndizo zinazotozwa.",
+   "hatchgrab": "Kupitia HatchGrab",
+   "comingSoon": "Inakuja hivi karibuni",
+   "hatchgrabHelp": "Inatumia muunganisho uleule wa Stripe kama malipo yako ya mtandaoni — mashine ya kadi, au malipo ya kugusa (contactless) moja kwa moja kwenye simu yako au kishikwambi.",
+   "hatchgrabFees": "{fee} kwa kila malipo kwa {region}, pamoja na {surcharge} kwa malipo ya kugusa yanayopokelewa kwenye simu au kishikwambi. Kadi nyingine zinaweza kugharimu zaidi."
+  }
+ },
+ "manageCharges": {
+  "heading": "Kodi, bakshishi na ada",
+  "rate": {
+   "label": "Kiwango cha kodi ya mauzo",
+   "hint": "Kiwango unachotoza kwa kila oda. Wateja wanakiona kikiongezwa wakati wa kulipa, kwenye risiti na kwenye tiketi.",
+   "regionDefault": "Acha wazi ili kutoza {label} kwa {rate}%, kiwango cha chakula kilichoandaliwa katika {region}."
+  },
+  "included": {
+   "label": "Bei zako zinajumuisha {label}",
+   "hint": "Bei zako tayari zinajumuisha {label}. Kiwango hiki kinaonyesha tu ni kiasi gani cha kila bei ni {label}, kwenye risiti na tiketi — hakuna kinachoongezwa wakati wa kulipa.",
+   "default": "Acha wazi ili kutumia {rate}%, kiwango cha {label} kwa chakula cha moto kinachouzwa kama take away nchini {country}."
+  },
+  "tips": {
+   "label": "Bakshishi",
+   "hint": "Wateja wanaolipa mtandaoni kwa kadi wanaweza kuongeza bakshishi. Yote ni yako.",
+   "choices": "Machaguo wanayoona wateja:",
+   "chip": "{rate}%",
+   "other": "Kiasi kingine"
+  },
+  "fee": {
+   "label": "Ada ya huduma mtandaoni",
+   "hint": "Huongezwa kwenye oda za mtandaoni pekee. Kamwe haiongezwi kwenye oda za “Lipa ukichukua” wala oda za papo hapo. Ni yako.",
+   "pctAria": "Asilimia ya ada ya huduma",
+   "fixedAria": "Kiasi maalum cha ada ya huduma",
+   "max": "Kiwango cha juu unachoweza kutoza: {max}",
+   "example": "Wateja wanaiona kabla ya kulipa, kama mstari mmoja: “{label} {amount}”.",
+   "hatchgrab": "HatchGrab huongeza ada ya huduma ya {fee} kwenye oda za mtandaoni za wateja wako. Wewe huilipi na huwezi kuibadilisha."
+  },
+  "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena."
+ },
+ "takingPayment": {
+  "heading": "Kupokea malipo",
+  "intro": "Jinsi timu yako inavyorekodi pesa kwa kila oda.",
+  "paidStepHelp": "Huongeza kitufe cha “Thibitisha” unapoongeza oda wewe mwenyewe, ili uweze kuiweka sasa na kupokea malipo baadaye. Washa hii kama unapokea oda kwa simu au oda za mapema.",
+  "paidStepNote": "Hii inahusu oda unazoongeza wewe tu. Haiathiri oda za mtandaoni."
+ },
+ "designEditor": {
+  "item": {
+   "weekHeading": "Kichwa cha wiki",
+   "weekHeadingSample": "Wiki inayoanza …",
+   "daysSample": "{first} hadi {last}",
+   "date": "Tarehe",
+   "place": "Mahali",
+   "venue": "Eneo",
+   "area": "Mji/Kijiji",
+   "time": "Muda",
+   "rows": "Mistari",
+   "rowsSample": "nafasi ya {px}px · {first} hadi {last}",
+   "ownText": "Maandishi yako mwenyewe",
+   "noteTokenSample": "Maelezo unayoandika unapotengeneza chapisho",
+   "nothingYet": "Bado hakuna kitu",
+   "thisBox": "kisanduku hiki"
+  },
+  "sample": {
+   "venue": "Bustani ya Jiji",
+   "area": "Bagamoyo"
+  },
+  "bar": {
+   "previewWith": "Onyesha mfano kwa",
+   "undo": "Tendua",
+   "undoTitle": "Tendua (⌘Z)",
+   "redo": "Rudia",
+   "redoTitle": "Rudia (⇧⌘Z)",
+   "cancel": "Ghairi",
+   "saving": "Inahifadhi…",
+   "save": "Hifadhi muundo"
+  },
+  "grid": {
+   "eachRow": "Kila mstari",
+   "placeOff": "Jina la mahali liko kwenye picha yako — HatchGrab haitaliongeza."
+  },
+  "background": {
+   "uploading": "Inapakia…",
+   "replace": "Badilisha picha",
+   "shape": {
+    "square": "Mraba (1:1)",
+    "portrait45": "Wima (4:5)",
+    "portrait916": "Wima (9:16)",
+    "landscape169": "Mlalo (16:9)",
+    "portrait": "Wima",
+    "landscape": "Mlalo"
+   }
+  },
+  "scope": {
+   "title": "Nafasi za maandishi",
+   "standard": "Nafasi sawa na muundo wa Kawaida",
+   "own": "Nafasi maalum kwa mahali: {place}",
+   "locked": "Nafasi hizi zinatoka kwenye muundo wako wa Kawaida. Chagua “Nafasi maalum kwa mahali: {place}” ili kuzihamisha hapa tu."
+  },
+  "stage": {
+   "hint": "Buruta kisanduku ili kukihamisha · buruta kona ili kubadilisha ukubwa",
+   "zoomOut": "Punguza ukuzaji",
+   "zoomIn": "Kuza"
+  },
+  "rows": {
+   "spacing": "Nafasi ya mistari",
+   "daysRun": "Siku ni kuanzia {first} hadi {last}. Visanduku vitatu vya mstari wa 1 vinanakiliwa kwenda chini kwa umbali huu.",
+   "whichEvents": "Matukio yapi",
+   "showCancelled": "Onyesha matukio yaliyoghairiwa",
+   "showCancelledHint": "Tukio lililoghairiwa huonyesha mahali pake pakiwa pamekatwa mstari pamoja na neno LIMEGHAIRIWA. Ikizimwa, siku hiyo inaonekana kama siku ya mapumziko."
+  },
+  "days": {
+   "reorder": "Panga upya",
+   "move": "hamisha"
+  },
+  "picture": {
+   "picture": "Picha",
+   "fill": "Jaza kisanduku",
+   "fit": "Toshea ndani",
+   "corners": "Kona",
+   "square": "Mraba",
+   "rounded": "Za mviringo",
+   "ifMissing": "Kama mahali hapana picha",
+   "noPicture": {
+    "omit": "Iache",
+    "blank": "Acha nafasi tupu",
+    "logo": "Onyesha nembo yako"
+   },
+   "border": "Mpaka",
+   "drawBorder": "Chora mpaka",
+   "drawBorderHint": "Mstari unaozunguka picha, kwa rangi yako mwenyewe.",
+   "borderWidth": "Unene wa mpaka",
+   "cornerRadius": "Mviringo wa kona",
+   "locationPictures": "Picha za mahali",
+   "addLocationPictures": "+ Ongeza picha za mahali",
+   "allHaveImage": "{total, plural, =0 {Bado huna mahali popote.} one {Mahali pako pana picha.} other {Mahali pako pote # pana picha.}}",
+   "someWithout": "Mahali {without} kati ya {total, plural, one {mahali # pako} other {mahali # pako}} bado {without, plural, one {hapana} other {hapana}} picha"
+  },
+  "settings": {
+   "font": "Fonti",
+   "colour": "Rangi",
+   "textColour": "Rangi ya maandishi",
+   "ownStyleNote": "{count, plural, one {Kisanduku hiki kina mtindo wake, kwa hiyo hakibadilishwi: {names}.} other {Visanduku hivi vina mtindo wake, kwa hiyo havibadilishwi: {names}.}}",
+   "matchAgain": "Linganisha tena",
+   "matchName": "Linganisha: {name}",
+   "lastToggle": "{kind, select, weekly {Acha kimoja kati ya “Mahali” na “Muda” kikiwa kimewashwa. Tukio lililoghairiwa huonyesha mahali pake pakiwa pamekatwa mstari pamoja na neno LIMEGHAIRIWA, kwa hiyo vyote viwili vikiwa vimezimwa hakutakuwa na chochote cha kuonyesha kuwa limeghairiwa.} other {Acha kimoja kati ya “Eneo” na “Muda” kikiwa kimewashwa. Tukio lililoghairiwa huonyesha mahali pake pakiwa pamekatwa mstari pamoja na neno LIMEGHAIRIWA, kwa hiyo vyote viwili vikiwa vimezimwa hakutakuwa na chochote cha kuonyesha kuwa limeghairiwa.}}"
+  },
+  "letters": {
+   "boldGlyph": "B",
+   "italicGlyph": "I",
+   "capsGlyph": "AA",
+   "italicTitle": "{italic} — fonti hii ina italiki halisi"
+  },
+  "align": {
+   "left": "Kushoto",
+   "centre": "Katikati",
+   "right": "Kulia"
+  },
+  "effects": {
+   "outlineColour": "Rangi ya mstari wa nje",
+   "bandColour": "Rangi ya utepe",
+   "bandDaysOff": "Utepe siku za mapumziko",
+   "bandCancelled": "Utepe tukio likighairiwa",
+   "bandDaysOffHint": "Hutumika badala ya utepe ulio juu siku isiyo na biashara.",
+   "bandCancelledHint": "Hutumika badala ya utepe ulio juu tukio likighairiwa."
+  },
+  "more": {
+   "dayOwnLine": "Siku kwenye mstari wake",
+   "dayOwnLineHint": "Siku ya wiki juu ya tarehe. Kwa tarehe pekee.",
+   "noEventDay": "Siku isiyo na tukio",
+   "wordsBeforePlaceholder": "mf. Tutafute",
+   "neverHyphenate": "Neno moja refu lisilo na nafasi hupunguzwa ukubwa kila mara — kamwe hatuvunji jina la mahali kwa kistari."
+  },
+  "bits": {
+   "less": "Kidogo",
+   "more": "Zaidi",
+   "chooseColourFor": "{label} — chagua rangi yoyote",
+   "chooseColour": "Chagua rangi yoyote"
+  }
+ },
+ "fontPicker": {
+  "tab": {
+   "all": "Zote",
+   "bold": "Nzito na ndefu",
+   "hand": "Mwandiko wa mkono",
+   "classic": "Za jadi",
+   "clean": "Safi",
+   "own": "Zako",
+   "ownCount": "Zako ({count})"
+  },
+  "yoursTag": "· yako",
+  "loadingFonts": "Inapakia fonti…",
+  "search": "Tafuta kati ya fonti {count, number}",
+  "uploadButton": "↑ Pakia fonti yako",
+  "loadingLibrary": "Inapakia maktaba ya fonti…",
+  "tryAgain": "Jaribu tena",
+  "noOwn": "Bado hujapakia fonti yoyote. Tumia kitufe cha “↑ Pakia fonti yako” kilicho juu.",
+  "recent": "Zilizotumika hivi karibuni",
+  "popular": "Maarufu kwa mabango",
+  "adding": "Inaongeza…",
+  "noMatch": "Hakuna fonti inayolingana na “{query}”.",
+  "showing": "Zinaonyeshwa {shown} kati ya {total, number} — andika zaidi ili kupunguza.",
+  "couldNotAdd": "Fonti hiyo haikuweza kuongezwa",
+  "tooBig": "Fonti hiyo ina ukubwa wa {size, number, ::.0 group-off}MB. Kikomo ni 5MB.",
+  "woff": "Tafadhali pakia faili la TTF au OTF — kwa kawaida unaweza kulipakua kutoka ulikonunua fonti.",
+  "uploadIncomplete": "Upakiaji haukukamilika",
+  "added": "Fonti “{name}” imeongezwa kama toleo la {face}.",
+  "face": {
+   "regular": "kawaida",
+   "bold": "herufi nzito",
+   "italic": "italiki"
+  },
+  "licenceTick": "Ninamiliki fonti hii au nina leseni ya kuitumia",
+  "checking": "Inakagua fonti…",
+  "addFont": "Ongeza fonti",
+  "cancel": "Ghairi",
+  "missingFaces": "Ongeza toleo la {faces} la fonti “{name}” (si lazima) — chagua faili tena.",
+  "somethingWrong": "Hitilafu imetokea",
+  "faceLower": {
+   "regular": "kawaida",
+   "bold": "herufi nzito",
+   "italic": "italiki"
+  },
+  "ownLicence": "Yako mwenyewe",
+  "loadFailed": "Imeshindikana kupakia fonti"
+ },
+ "weeklyPost": {
+  "error": {
+   "generic": "Hitilafu imetokea",
+   "previewFailed": "Mwonekano wa awali haukuweza kutengenezwa",
+   "loadFailed": "Imeshindikana kupakia",
+   "tooBig": "Picha hiyo ina ukubwa wa {size, number, ::.0 group-off}MB. Kikomo ni 10MB.",
+   "wrongType": "Tafadhali chagua PNG au JPG.",
+   "uploadIncomplete": "Upakiaji haukukamilika",
+   "uploadFailed": "Upakiaji umeshindikana",
+   "saveFailed": "Imeshindikana kuhifadhi",
+   "buildFailed": "Imeshindikana kutengeneza chapisho",
+   "copyFailed": "Imeshindikana kunakili — chagua maandishi kisha uyanakili wewe mwenyewe."
+  },
+  "loading": "Inapakia…",
+  "missingTable": {
+   "title": "Chapisho la wiki linahitaji kusasishwa kwa hifadhidata",
+   "body": "Jedwali la miundo bado halijatengenezwa. Uhamishaji wa hifadhidata ukishatekelezwa, skrini hii itafanya kazi."
+  },
+  "kind": {
+   "label": "Muundo upi",
+   "event": "Tukio moja",
+   "week": "Kila wiki"
+  },
+  "setup": {
+   "title": "Andaa chapisho lako la wiki",
+   "intro": "Pakia toleo tupu la picha ya ratiba ya wiki unayotengeneza tayari — muundo uleule, bila visanduku vyako vya maandishi. HatchGrab hujaza wiki kutoka kwenye ratiba yako.",
+   "canvaTitle": "Jinsi ya kuhamisha picha tupu kutoka Canva",
+   "canvaStep1": "Fungua muundo wako wa kawaida wa ratiba ya wiki.",
+   "canvaStep2": "Futa visanduku vya maandishi vyenye tarehe, mahali na muda — acha mandharinyuma na vichwa unavyotaka kubaki navyo.",
+   "canvaStep3": "Share › Download › PNG.",
+   "uploading": "Inapakia…",
+   "upload": "Pakia picha yako tupu",
+   "uploadHint": "PNG au JPG, hadi 10MB, angalau {px}px upande mfupi.",
+   "phoneTip": "Inafaa zaidi kwenye kompyuta au iPad — visanduku ni vidogo mno kuburuta kwenye simu.",
+   "designName": "Muundo wa chapisho la wiki",
+   "backDesigns": "‹ Miundo",
+   "back": "‹ Rudi",
+   "pictureNote": "Picha yako bila tarehe wala mahali juu yake. Sisi tunaviongeza.",
+   "saved": "Muundo umehifadhiwa."
+  },
+  "week": {
+   "this": "Wiki hii",
+   "next": "Wiki ijayo"
+  },
+  "post": {
+   "title": "Chapisho lako la wiki",
+   "editDesign": "Hariri muundo",
+   "weekOf": "wiki ya {date}",
+   "imageAlt": "Chapisho lako la wiki",
+   "building": "Inatengeneza chapisho lako…",
+   "updating": "Inasasisha…",
+   "eventsTitle": "Matukio ya wiki hii",
+   "noEvents": "Hakuna matukio wiki hii.",
+   "eventDateCancelled": "{date} · limeghairiwa",
+   "showCancelled": "Onyesha matukio yaliyoghairiwa",
+   "showPrivate": "Onyesha shughuli binafsi",
+   "privateHint": "Zinaonekana kama “Shughuli binafsi” pamoja na tarehe na muda — kamwe si mahali.",
+   "noteTitle": "Maelezo",
+   "notePlaceholder": "mf. Weka oda ya mapema kisha uichukue",
+   "noteHint": "Yanaonekana kwenye maandishi ya chapisho, na kwenye kisanduku cha maelezo kama uliweka kimoja.",
+   "captionTitle": "Maandishi ya chapisho kwa ukurasa wako",
+   "perEventTitle": "Chapisho kwa kila tukio",
+   "nothingToPost": "Hakuna cha kuchapisha wiki hii.",
+   "textCopied": "Maandishi yamenakiliwa.",
+   "copyText": "Nakili maandishi",
+   "image": "Picha",
+   "share": "Shiriki",
+   "noOrderLink": "Bado hakuna kiungo cha kuagiza — weka anwani ya tovuti ya food truck yako kwenye Mipangilio."
+  }
+ },
+ "manageShell": {
+  "loading": "Inapakia sehemu ya usimamizi…",
+  "loadFailed": "Imeshindikana kupakia",
+  "requestFailed": "Imeshindikana",
+  "invalidToken": "Tokeni si sahihi au imeisha muda wake",
+  "loadFailedReason": "Imeshindikana kupakia ukurasa huu: {reason}",
+  "noCountrySettings": "Imeshindikana kupakia mipangilio ya nchi ya food truck hii. Tafadhali pakia upya ukurasa.",
+  "noPlans": "Imeshindikana kupakia kifurushi cha food truck hii. Tafadhali pakia upya ukurasa.",
+  "stale": "{hasTime, select, yes {Imeshindikana kusasisha. Inaonyesha kilichohifadhiwa saa {time}. Mabadiliko unayofanya bado yanahifadhiwa.} other {Imeshindikana kusasisha. Inaonyesha kilichohifadhiwa. Mabadiliko unayofanya bado yanahifadhiwa.}}",
+  "verify": {
+   "ok": "Barua pepe imethibitishwa — asante.",
+   "expired": "Kiungo hicho cha uthibitisho kimeisha muda wake. Wasiliana nasi na tutalishughulikia kabla hujaanza rasmi.",
+   "invalid": "Kiungo hicho cha uthibitisho hakikufanya kazi. Wasiliana nasi na tutalishughulikia kabla hujaanza rasmi."
+  },
+  "profile": {
+   "updated": "Wasifu umesasishwa",
+   "saveFailed": "Imeshindikana kuhifadhi",
+   "title": "Hariri wasifu",
+   "name": "Jina",
+   "namePlaceholder": "Jina lako",
+   "email": "Barua pepe",
+   "cancel": "Ghairi",
+   "saving": "Inahifadhi…",
+   "save": "Hifadhi"
+  },
+  "header": {
+   "subtitle": "Usimamizi",
+   "ordersDashboard": "← Dashibodi ya oda"
+  },
+  "tabs": {
+   "menu": "Menyu",
+   "schedule": "Ratiba",
+   "paperwork": "Hati",
+   "social": "Mitandao ya kijamii",
+   "reports": "Ripoti",
+   "team": "Timu",
+   "settings": "Mipangilio",
+   "payments": "Malipo",
+   "billing": "Bili",
+   "paymentsIcon": "💵",
+   "scheduleCount": "Ratiba ({count})",
+   "stripeAttention": "Stripe inahitaji umakini wako",
+   "allergensNotSet": "viambato vinavyosababisha mzio havijawekwa"
+  },
+  "menuSections": {
+   "label": "Sehemu za menyu",
+   "items": "Bidhaa",
+   "capacity": "Uwezo wa jiko",
+   "extras": "Nyongeza na mapendekezo ya ziada",
+   "deals": "Ofa za mlo"
+  },
+  "socialSections": {
+   "label": "Sehemu za mitandao ya kijamii",
+   "create": "Tengeneza chapisho",
+   "designs": "Miundo",
+   "locations": "Mipangilio ya mahali"
+  },
+  "notices": {
+   "review": "Kagua →",
+   "tour": "Ungependa maelekezo mafupi ya dashibodi yako?",
+   "showMeAround": "Nionyeshe",
+   "dismiss": "Ficha",
+   "approval": "{count, plural, one {Tumekupatia tukio <b>{count}</b> — likague na uliidhinishe kabla halijaonekana kwa wateja.} other {Tumekupatia matukio <b>{count}</b> — yakague na uyaidhinishe kabla hayajaonekana kwa wateja.}}",
+   "allergens": "<b>Viambato vinavyosababisha mzio havijawekwa</b> — wateja hawawezi kuona taarifa za mzio hadi uzithibitishe. Kagua viambato vya kila chakula kwenye kichupo cha Menyu.",
+   "domainLive": "Anwani <link>{domain}</link> sasa inafanya kazi. Iangalie, kisha utuambie kwenye Mipangilio kuwa iko sawa.",
+   "stripe": "<b>Stripe inahitaji kitu kutoka kwako</b> — malipo kwa kadi yanaweza kusimama hadi hili litatuliwe.",
+   "profileTitle": "Kamilisha wasifu wako",
+   "missing": "Vinavyokosekana: {fields}.",
+   "goToSettings": "Nenda kwenye Mipangilio →",
+   "field": {
+    "truckName": "jina la food truck",
+    "cuisineType": "aina ya vyakula",
+    "contactEmail": "barua pepe ya mawasiliano",
+    "contactPhone": "simu ya mawasiliano"
+   }
+  },
+  "trialPopup": {
+   "title": "{months, select, none {Uko kwenye jaribio bila malipo} other {Uko kwenye jaribio bila malipo la miezi {months}}}",
+   "ends": "{hasDate, select, yes {Jaribio linaisha <hl>{date}</hl>} other {Jaribio linaisha <hl>hivi karibuni</hl>}}",
+   "offer": "{hasMonths, select, yes {{months, plural, one {Huduma zote bila malipo kwa mwezi #} other {Huduma zote bila malipo kwa miezi #}}} other {Huduma zote bila malipo katika kipindi chako cha jaribio}}",
+   "body": "{hasDate, select, yes {Hutatozwa chochote katika kipindi chako cha jaribio, kinachoendelea hadi <b>{date}</b>. Utozaji huanza tu pale unapochagua kifurushi na kuweka taarifa zako za malipo. Hadi wakati huo hakuna cha kughairi wala cha kulipa. Chagua kifurushi chako kabla ya hapo — usipochagua, utahamishiwa kwenye kifurushi {fallback} na baadhi ya huduma zitaacha kufanya kazi.} other {Hutatozwa chochote ukiwa kwenye jaribio. Utozaji huanza tu pale unapochagua kifurushi na kuweka taarifa zako za malipo. Hadi wakati huo hakuna cha kughairi wala cha kulipa. Chagua kifurushi chako kabla ya hapo — usipochagua, utahamishiwa kwenye kifurushi {fallback} na baadhi ya huduma zitaacha kufanya kazi.}}",
+   "bodyPaidEnd": "{hasDate, select, yes {Hutatozwa chochote katika kipindi chako cha jaribio, kinachoendelea hadi <b>{date}</b>. Jaribio lako likiisha, kifurushi {fallback} ni {price} kwa mwezi. Tutawasiliana nawe kabla ya hapo ili kuandaa malipo.} other {Hutatozwa chochote ukiwa kwenye jaribio. Jaribio lako likiisha, kifurushi {fallback} ni {price} kwa mwezi. Tutawasiliana nawe kabla ya hapo ili kuandaa malipo.}}",
+   "fees": "*Ada za kawaida za kuchakata malipo ya kadi zinatozwa kwenye oda za mtandaoni",
+   "upgrade": "Pandisha kifurushi hapa →"
+  }
+ },
+ "manageBilling": {
+  "perTruckMonth": "kwa gari / mwezi",
+  "transactionFees": "Ada za miamala",
+  "comingSoon": "Inakuja hivi karibuni",
+  "footnote2Masked": "Malipo mtandaoni yanaendeshwa na Stripe Connect. Ada za jukwaa na za kuchakata malipo ya kadi zitatangazwa na kuthibitishwa wakati wa uzinduzi.",
+  "card": {
+   "title": "Bili na malipo",
+   "managed": "Bili zinasimamiwa na HatchGrab",
+   "earlyAccess": "Katika kipindi hiki cha awali, tunaandaa na kurekebisha vifurushi sisi wenyewe.",
+   "planLine": "{trial, select, yes {{truck} · kifurushi {plan} (jaribio)} other {{truck} · kifurushi {plan}}}"
+  },
+  "currentPlan": "Kifurushi cha sasa",
+  "plan": {
+   "included": "Kinajumuisha oda za mtandaoni za hadi {amount} kwa mwezi.",
+   "includedUnlimited": "Oda za mtandaoni bila kikomo zimejumuishwa.",
+   "promo": "Bei maalum.",
+   "promoUntil": "Bei maalum hadi {date}.",
+   "ended": "Kifurushi chako {plan} kiliisha {date}. Sasa uko kwenye kifurushi {now}.",
+   "trialMonths": "Jaribio bila malipo la miezi {months}."
+  },
+  "trialEnds": "Jaribio linaisha {date}",
+  "yourTrialEnds": "Jaribio lako linaisha {date}",
+  "notStarted": {
+   "heading": "Jaribio lako bila malipo bado halijaanza"
+  },
+  "onTrial": "Una huduma zote. Chagua kifurushi kabla jaribio lako halijaisha.",
+  "onTrialPaidEnd": "Una huduma zote. Jaribio lako likiisha, kifurushi {plan} ni {price} kwa mwezi. Tutawasiliana nawe kabla ya hapo ili kuandaa malipo.",
+  "onTrialNoCta": "Una huduma zote.",
+  "noCharge": "🔒 Hutatozwa chochote katika kipindi chako cha jaribio, kinachoendelea hadi {date}. Utozaji huanza tu pale unapochagua kifurushi na kuweka taarifa zako za malipo. Hadi wakati huo hakuna cha kughairi wala cha kulipa.",
+  "noChargePaidEnd": "🔒 Hutatozwa chochote katika kipindi chako cha jaribio, kinachoendelea hadi {date}.",
+  "fees": "*Ada za kawaida za kuchakata malipo ya kadi zinatozwa kwenye oda za mtandaoni",
+  "setUpPayment": "⏱ Chagua kifurushi kabla jaribio lako halijaisha",
+  "changeYourPlan": "Badilisha kifurushi chako",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+   "title": "Hamia kifurushi {plan}",
+   "tagline": "{price} — {description}",
+   "body": "Tunaandaa mfumo wa bili wa kiotomatiki. Ili kuhamia sasa, tutumie ujumbe na tutakuandalia ndani ya saa 24.",
+   "mailSubject": "Kuhamia kifurushi {plan} — {truck}",
+   "mailBody": "Habari, ningependa kuhamisha {truck} kwenda kifurushi {plan} ({price}).",
+   "email": "Tutumie barua pepe ili kuhamia",
+   "cancel": "Ghairi"
+  }
+ },
+ "manageTeam": {
+  "toast": {
+   "verificationSent": "Barua pepe ya uthibitisho imetumwa",
+   "emailChangeFailed": "Imeshindikana kubadilisha barua pepe",
+   "profileUpdated": "Wasifu umesasishwa",
+   "saveProfileFailed": "Imeshindikana kuhifadhi wasifu",
+   "verificationResent": "Barua pepe ya uthibitisho imetumwa tena — angalia kikasha chako",
+   "resendFailed": "Imeshindikana kutuma tena",
+   "emailChangeCancelled": "Ubadilishaji wa barua pepe umeghairiwa",
+   "cancelFailed": "Imeshindikana kughairi",
+   "memberUpdated": "Mwanatimu amesasishwa",
+   "inviteSent": "Mwaliko umetumwa",
+   "memberRemoved": "Mwanatimu ameondolewa"
+  },
+  "confirmRemove": "Ungependa kumwondoa mwanatimu huyu?",
+  "title": "Wanatimu",
+  "intro": "Alika wafanyakazi wafikie skrini ya oda na kupokea oda",
+  "inviteMember": "+ Alika mwanatimu",
+  "ownerName": "{you, select, yes {{name} (wewe)} other {{name}}}",
+  "ownerLine": "Mmiliki · Magari yote",
+  "edit": "Hariri",
+  "remove": "Ondoa",
+  "awaiting": "⏳ Inasubiri uthibitisho",
+  "sentTo": "Uthibitisho umetumwa kwa <b>{email}</b>. Angalia kikasha chako.",
+  "sending": "Inatuma…",
+  "resend": "Tuma tena",
+  "cancelling": "Inaghairi…",
+  "cancel": "Ghairi",
+  "myProfile": "Wasifu wangu",
+  "firstName": "Jina la kwanza *",
+  "lastName": "Jina la mwisho *",
+  "phone": "Simu",
+  "phonePlaceholder": "+255 712 345 678",
+  "email": "Barua pepe",
+  "verifyNote": "Kiungo cha uthibitisho kitatumwa kwa anwani hii. Barua pepe yako ya sasa itaendelea kutumika hadi anwani mpya ithibitishwe.",
+  "privacy": "Taarifa zako binafsi ni za siri na hazionyeshwi kwa wateja kamwe. Zinatumika kwa usimamizi wa akaunti na uthibitisho wa bili.",
+  "saving": "Inahifadhi…",
+  "save": "Hifadhi",
+  "memberLine": "{role, select, manager {Meneja} other {Mfanyakazi}} · {vans}{pending, select, yes { · Mwaliko unasubiri} other {}}",
+  "allTrucks": "Magari yote",
+  "noMembers": "Bado hakuna wanatimu",
+  "modal": {
+   "editTitle": "Hariri mwanatimu",
+   "inviteTitle": "Alika mwanatimu",
+   "name": "Jina",
+   "namePlaceholder": "mf. Neema",
+   "email": "Barua pepe",
+   "emailPlaceholder": "neema@email.com",
+   "role": "Jukumu",
+   "roleStaff": "Mfanyakazi — Kupokea oda na kusimamia jiko",
+   "roleManager": "Meneja — Ufikiaji kamili ikiwemo menyu na mipangilio",
+   "roleOwner": "Mmiliki — Ufikiaji kamili ikiwemo timu na bili",
+   "truckAccess": "Ufikiaji wa magari",
+   "onlyTruck": "{van} <muted>(gari pekee)</muted>",
+   "selectOne": "Chagua angalau gari moja",
+   "saveChanges": "Hifadhi mabadiliko",
+   "sendInvite": "Tuma mwaliko"
+  },
+  "inviteEmail": {
+   "subject": "Umealikwa kujiunga na timu ya {truck} kwenye HatchGrab",
+   "greeting": "{hasName, select, yes {Habari {name},} other {Habari yako,}}",
+   "invited": "Umealikwa na {truck} kujiunga na timu yao kama {role, select, owner {Mmiliki} manager {Meneja} other {Mfanyakazi}} kwenye HatchGrab.",
+   "click": "Bonyeza kitufe kilicho hapa chini ili kuweka nenosiri lako na kuanza. Kiungo hiki kitaisha muda wake baada ya siku 7.",
+   "button": "Kubali mwaliko",
+   "ignore": "Kama hukutarajia mwaliko huu, unaweza kupuuza barua pepe hii bila wasiwasi."
+  }
+ },
+ "manageWhatsApp": {
+  "preview": {
+   "title": "Jaribu kabla ya kuunganisha",
+   "intro": "Andika swali kama ambavyo mteja angeuliza, na uone jibu hasa ambalo angepata. Hakuna kinachotumwa kwa mtu yeyote.",
+   "examples": {
+    "where": "Uko wapi leo usiku?",
+    "doYouDo": "Una pizza ya pepperoni?",
+    "menu": "Kuna nini kwenye menyu?"
+   },
+   "placeholder": "Una vitindamlo gani?",
+   "send": "Tuma",
+   "empty": "Jibu lako litaonekana hapa",
+   "working": "Inaandaa jibu…",
+   "noReply": "Hakuna jibu ambalo lingetumwa.",
+   "noReplyWhy": "Ujumbe huo unaonekana kama barua taka, ombi la kuweka nafasi au jambo lisilohusika, kwa hiyo majibu ya kiotomatiki yanakaa kimya.",
+   "footnote": "Majibu yanatengenezwa na AI na hutofautiana kidogo kila mara, na mara chache yanaweza kuwa si sahihi.",
+   "failed": "Imeshindikana kutengeneza mwonekano wa awali sasa hivi.",
+   "unreachable": "Imeshindikana kufikia seva. Angalia muunganisho wako kisha ujaribu tena."
+  },
+  "setup": {
+   "button": {
+    "preparing": "Inaandaa…",
+    "unavailable": "Haipatikani",
+    "waiting": "Inasubiri dirisha la Facebook…",
+    "finishing": "Inakamilisha…",
+    "reconnect": "Unganisha upya",
+    "setUp": "Andaa"
+   },
+   "startAgain": "Anza upya",
+   "popupHint": "Huoni dirisha la Facebook? Huenda limezuiwa. Ruhusu madirisha ibukizi (pop-ups) kwa hatchgrab.com, kisha bonyeza “Anza upya”."
+  },
+  "notice": {
+   "sdkUnavailable": "Uandaaji wa WhatsApp haupatikani katika mazingira haya.",
+   "sdkBlocked": "Programu ndogo ya kuingia ya Meta haikuweza kupakia. Kwa kawaida chanzo ni kizuia matangazo au ulinzi dhidi ya ufuatiliaji.",
+   "setupFailed": "Uandaaji haukuweza kukamilika. Hakuna kilichobadilishwa.",
+   "setupFinished": "Uandaaji umekamilika.",
+   "metaError": "Meta imeripoti tatizo wakati wa uandaaji. Hakuna kilichobadilishwa. Jaribu tena, na wasiliana nasi likiendelea kutokea.",
+   "closed": "Uandaaji ulifungwa kabla haujakamilika. Hakuna kilichobadilishwa — bonyeza “Andaa” ili kujaribu tena.",
+   "disconnectedUnreachable": "WhatsApp imetenganishwa. Hatukuweza kufikia Meta ili kuondoa ruhusa. Tafadhali ondoa HatchGrab kwenye WhatsApp Business → Settings → Account → Business Platform.",
+   "disconnected": "WhatsApp imetenganishwa. Majibu ya kiotomatiki yamesimama.",
+   "close": "Funga"
+  },
+  "card": {
+   "title": "Majibu ya kiotomatiki",
+   "description": "Jibu maswali ya wateja kiotomatiki kwenye mitandao yako ya kijamii, kwa kutumia menyu na ratiba yako.",
+   "channels": "Njia za mawasiliano",
+   "requiresAccount": "Inahitaji akaunti ya WhatsApp Business.",
+   "connected": "Imeunganishwa",
+   "popupInstruction": "Dirisha la Facebook litafunguka ili kuunganisha akaunti yako ya WhatsApp Business. Kama hakuna kinachoonekana, ruhusu madirisha ibukizi (pop-ups) kwa hatchgrab.com kwenye kivinjari chako, kisha bonyeza “Andaa” tena.",
+   "switchedOff": "Majibu ya kiotomatiki ya WhatsApp yamezimwa kwa food truck yako.",
+   "expiring": "Muunganisho wako wa WhatsApp unahitaji kusasishwa hivi karibuni. Bonyeza “Unganisha upya” ili majibu ya kiotomatiki yaendelee kufanya kazi.",
+   "comingSoon": "Inakuja hivi karibuni",
+   "instagram": "Majibu ya kiotomatiki kwa ujumbe wa moja kwa moja wa Instagram. Itahitaji akaunti ya kitaalamu ya Instagram.",
+   "messenger": "Majibu ya kiotomatiki kwa Facebook Messenger. Itahitaji Ukurasa wa Facebook."
+  },
+  "blocked": {
+   "title": "Majibu yako hayawafikii wateja",
+   "body": "WhatsApp inakataa kutuma majibu yako ya kiotomatiki kwa sababu ya tatizo la bili kwenye akaunti yako ya WhatsApp Business. Wateja bado wanaweza kukutumia ujumbe na bado utaona kila wanachotuma — lakini hawapati jibu.",
+   "fix": "Unailipa WhatsApp moja kwa moja kwa ujumbe huu, kwa hiyo hili hurekebishwa kwenye WhatsApp Manager. <link>Angalia njia yako ya malipo</link>"
+  },
+  "limit": {
+   "heading": "Majibu ya kiotomatiki",
+   "label": "Kikomo cha kila mwezi",
+   "option": "{n, number}",
+   "usage": "Yametumika {used, number} kati ya {limit, number} · kikomo kinaanza upya {date}",
+   "perCustomer": "Hadi majibu {n} kwa kila mteja ndani ya saa 24, kisha ujumbe mmoja unaosema utajibu wewe mwenyewe.",
+   "emailAt": "Majibu husitishwa ukifikia kikomo chako. Tutakutumia barua pepe ukifikia 80% na 100%.",
+   "saved": "Kikomo cha majibu kwa mwezi kimehifadhiwa",
+   "saveFailed": "Imeshindikana kuhifadhi kikomo"
+  },
+  "billing": {
+   "heading": "Bili",
+   "paymentMethod": "Njia ya malipo",
+   "added": "Njia ya malipo imeongezwa",
+   "missing": "Hakuna njia ya malipo iliyoongezwa",
+   "addInManager": "Ongeza kwenye WhatsApp Manager",
+   "summary": "Meta, si HatchGrab, ndiyo inayotoza akaunti yako ya WhatsApp kwa majibu. Kuanzia {from}, majibu {free, number} ya kwanza kila mwezi ni bure. Ni sahihi kufikia {checked}; angalia <link>bei za Meta</link> kwa mabadiliko.",
+   "howMetaCharges": "Jinsi Meta inavyotoza",
+   "chargesTitle": "Meta ndiyo inayotoza kwa majibu ya WhatsApp, si HatchGrab.",
+   "chargesBody": "Kila jibu ambalo HatchGrab inatuma kwa niaba yako hutozwa na Meta kwenye akaunti yako ya WhatsApp Business. Kuanzia {from}, Meta inajumuisha majibu {free, number} bure kwa mwezi kwa kila namba; baada ya hapo, kila jibu hutozwa kwa bei ya Meta. Majibu unayotuma wewe mwenyewe kutoka kwenye programu ya WhatsApp Business hayatozwi. Meta ndiyo huweka bei hizi na inaweza kuzibadilisha. <link>Angalia bei za Meta</link>",
+   "addPaymentInManager": "Ongeza njia ya malipo kwenye WhatsApp Manager",
+   "aboveMissing": "Kikomo chako kiko juu ya majibu {free, number} ya bure ya Meta. Bila njia ya malipo, Meta itasimamisha majibu yote mara hayo yakishatumika.",
+   "aboveGeneral": "Kikomo chako kiko juu ya majibu {free, number} ya bure ya Meta. Majibu zaidi ya hayo yanahitaji njia ya malipo kwenye akaunti yako ya WhatsApp; bila hiyo, Meta husimamisha majibu yote mara yale ya bure yakishatumika.",
+   "addPaymentMethod": "Ongeza njia ya malipo"
+  },
+  "disconnect": {
+   "link": "Tenganisha WhatsApp",
+   "title": "Ungependa kutenganisha WhatsApp?",
+   "body": "Majibu ya kiotomatiki yanasimama mara moja na HatchGrab inapoteza ruhusa ya kufikia akaunti yako ya WhatsApp. Namba yako inaendelea kufanya kazi kwenye programu ya WhatsApp Business. Ili kuondoa HatchGrab kabisa, fungua pia WhatsApp Business → Settings → Account → Business Platform.",
+   "cancel": "Ghairi",
+   "confirm": "Tenganisha",
+   "working": "Inatenganisha…",
+   "failed": "Imeshindikana kutenganisha"
+  },
+  "signup": {
+   "logged": "Imerekodiwa.",
+   "partial": "Tumeunganisha akaunti yako ya WhatsApp Business lakini hatukuweza kukamilisha muunganisho. Hakuna tatizo upande wako — tafadhali wasiliana nasi na tutaukamilisha.",
+   "noNumber": "Akaunti yako ya WhatsApp Business imeunganishwa, lakini hakuna namba ya simu iliyorudi. Bonyeza “Unganisha upya” na ukamilishe hatua ya namba.",
+   "needsRegistering": "Akaunti yako imeunganishwa, lakini namba hii inahitaji kusajiliwa na sisi kabla majibu hayajaanza. Tafadhali wasiliana na timu ya usaidizi — uandaaji wako umehifadhiwa, usiurudie.",
+   "registerRefused": "Akaunti yako imeunganishwa lakini Meta haikukubali kusajili namba. Uandaaji wako umehifadhiwa — tafadhali wasiliana na timu ya usaidizi badala ya kuurudia.",
+   "deliveryRefused": "Akaunti yako imeunganishwa lakini Meta haikukubali kuwasha uwasilishaji wa ujumbe. Uandaaji wako umehifadhiwa — tafadhali wasiliana na timu ya usaidizi badala ya kuurudia.",
+   "numberTaken": "Namba hiyo ya WhatsApp tayari imeunganishwa na akaunti nyingine ya HatchGrab. Namba moja inaweza kujibu kwa niaba ya food truck moja tu. Wasiliana na timu ya usaidizi na tutaihamisha.",
+   "saveIncomplete": "Karibu tumemaliza — hatukuweza kukamilisha kuhifadhi. Uandaaji wako umehifadhiwa, tafadhali wasiliana na timu ya usaidizi badala ya kuurudia.",
+   "connected": "WhatsApp imeunganishwa. Majibu ya kiotomatiki yataanza kujibu ujumbe unaotumwa kwa namba hii."
+  }
+ },
+ "copyButton": {
+  "copy": "Nakili",
+  "copied": "Imenakiliwa ✓",
+  "failed": "Imeshindikana kunakili",
+  "aria": "{label} {thing}",
+  "announceCopied": "Imenakiliwa: {thing}",
+  "announceCopiedValue": "Thamani imenakiliwa",
+  "announceFailed": "Imeshindikana kunakili: {thing}. Chagua maandishi kisha uyanakili wewe mwenyewe.",
+  "announceFailedValue": "Imeshindikana kunakili thamani. Chagua maandishi kisha uyanakili wewe mwenyewe."
+ },
+ "eventPost": {
+  "loading": "Inapakia…",
+  "uploading": "Inapakia…",
+  "cancel": "Ghairi",
+  "error": {
+   "somethingWrong": "Hitilafu imetokea.",
+   "previewFailed": "Mwonekano wa awali haukuweza kutengenezwa.",
+   "imageTooBig": "Picha hiyo ina ukubwa wa {size}MB. Kikomo ni 10MB.",
+   "pngOrJpg": "Tafadhali chagua PNG au JPG.",
+   "uploadIncomplete": "Upakiaji haukukamilika.",
+   "couldNotLoad": "Imeshindikana kupakia.",
+   "uploadFailed": "Upakiaji umeshindikana.",
+   "couldNotChange": "Imeshindikana kubadilisha hilo.",
+   "couldNotRemove": "Imeshindikana kuondoa.",
+   "couldNotSave": "Imeshindikana kuhifadhi.",
+   "couldNotBuild": "Imeshindikana kutengeneza picha."
+  },
+  "setup": {
+   "stranded": "Picha hizi za mahali zinatumia nafasi za kawaida za maandishi na zina umbo tofauti, kwa hiyo hazitatumika hadi uzibadilishe: {places}.",
+   "pictureReplaced": "Picha imebadilishwa.",
+   "designSaved": "Muundo umehifadhiwa.",
+   "firstTitle": "Andaa chapisho lako la tukio moja",
+   "firstBody": "Pakia picha unayotumia kwa tukio moja — mchoro wako bila tarehe, mahali wala muda juu yake. HatchGrab huviongeza kwa kila tukio.",
+   "uploadYourPicture": "Pakia picha yako",
+   "fileRule": "PNG au JPG, hadi 10MB, angalau {px}px upande mfupi.",
+   "thisPlaceFallback": "Mahali hapa",
+   "standard": "Kawaida",
+   "standardStatus": "Hutumika kila mahali pengine",
+   "pendingStatus": "Bado hakuna picha — inatumia Kawaida",
+   "phoneWarning": "Inafaa zaidi kwenye kompyuta au iPad — visanduku ni vidogo mno kuburuta kwenye simu.",
+   "designsHeading": "Miundo",
+   "addPlaceDesignLink": "+ Ongeza muundo wa mahali",
+   "placeDesignName": "{name} · muundo wa chapisho la tukio",
+   "standardDesignName": "Muundo wa chapisho la tukio moja",
+   "backToDesigns": "‹ Miundo",
+   "back": "‹ Rudi",
+   "pictureNote": "Picha yako bila tarehe wala mahali juu yake. Sisi tunaviongeza.",
+   "thisPlaceHeading": "Mahali hapa",
+   "removeConfirm": "Ungependa kuondoa picha na nafasi za maandishi za mahali hapa: {name}? Matukio ya hapo yatatumia muundo wako wa Kawaida.",
+   "remove": "Ondoa",
+   "keep": "Usiondoe",
+   "removeLink": "Ondoa muundo wa mahali hapa",
+   "noEvents": "Bado hakuna matukio — ongeza moja na mwonekano wa awali utalitumia.",
+   "pickerTitle": "Ongeza muundo wa mahali",
+   "pickerSearch": "Tafuta mahali",
+   "pickerNoPlaces": "Bado hakuna mahali.",
+   "pickerAllDone": "Kila mahali tayari pana muundo."
+  },
+  "modal": {
+   "title": "Chapisho la tukio hili",
+   "close": "Funga",
+   "imageAlt": "Chapisho lako la tukio",
+   "building": "Inatengeneza…",
+   "imageHeading": "Picha",
+   "standardNotPlace": "Picha ya Kawaida na nafasi za maandishi za Kawaida — si za mahali hapa: {place}.",
+   "replaceIt": "Ibadilishe",
+   "noteHeading": "Maelezo (kwa chapisho hili tu)",
+   "postTextHeading": "Maandishi ya chapisho"
+  }
+ },
+ "customDomain": {
+  "card": {
+   "title": "Weka ratiba yako kwenye tovuti yako",
+   "live": "Anwani <addr>{address}</addr> inaonyesha ratiba yako.",
+   "create": "Tunatengeneza ukurasa kwenye <addr>{address}</addr> unaoonyesha ratiba yako.",
+   "exampleDomain": "foodtruckyako.co.tz",
+   "liveBadge": "Inafanya kazi",
+   "setUp": "Andaa",
+   "viewSetup": "Angalia uandaaji",
+   "continue": "Endelea",
+   "justLive": "Anwani <b>{address}</b> inafanya kazi. Iangalie, kisha utuambie hapa chini kuwa iko sawa."
+  },
+  "waiting": {
+   "title": "Tunasubiri anwani {address}",
+   "bodySince": "Uliandaa hili tarehe {date}. Anwani mpya za tovuti kwa kawaida huanza kufanya kazi ndani ya dakika chache, na mara chache huchukua hadi saa 24 kuwafikia watu wote — hakuna unachohitaji kufanya wakati huo. Kama mtu mwingine alikuwa akikuongezea mstari huo, ni vyema kuhakikisha kuwa aliuongeza.",
+   "body": "Anwani mpya za tovuti kwa kawaida huanza kufanya kazi ndani ya dakika chache, na mara chache huchukua hadi saa 24 kuwafikia watu wote — hakuna unachohitaji kufanya wakati huo. Kama mtu mwingine alikuwa akikuongezea mstari huo, ni vyema kuhakikisha kuwa aliuongeza."
+  },
+  "ready": {
+   "title": "Anwani {address} inafanya kazi",
+   "body": "Iangalie, kisha utuambie kwenye mipangilio yako kuwa iko sawa."
+  },
+  "confirm": {
+   "heading": "Iangalie, kisha utuambie kuwa iko sawa",
+   "open": "Fungua <link>{address}</link>",
+   "checkTimes": "Hakikisha tarehe na muda vinaonekana sawa.",
+   "yes": "Ndiyo, inaonekana sawa",
+   "no": "Hapana, kuna tatizo",
+   "problemLine": "Tuambie unachokiona na tutakishughulikia.",
+   "emailUs": "Tutumie barua pepe",
+   "mailSubject": "Tatizo kwenye {address}",
+   "mailLiveSince": "Inafanya kazi tangu {date}",
+   "mailSeeing": "Ninachokiona:"
+  },
+  "confirmed": {
+   "heading": "Asante — tumelizingatia.",
+   "body": "Hakuna kingine cha kufanya."
+  },
+  "turnOff": {
+   "link": "Zima hili",
+   "heading": "Ungependa kuzima anwani yako mwenyewe ya tovuti?",
+   "stops": "Hii itaacha kufanya kazi:",
+   "carriesOn": "Hii inaendelea kama ilivyo kabisa, na ndiko msimbo wako wa QR unakowapeleka watu:",
+   "reAdd": "Kama utaiandaa tena baadaye, acha mstari uliouongeza kwenye kampuni ya anwani yako ya tovuti. Kama hutaiandaa, waombe wauondoe.",
+   "cancel": "Usiizime",
+   "confirm": "Izime",
+   "working": "Inazima…",
+   "failed": "Hatukuweza kuzima hilo sasa hivi. Hakuna kilichobadilika — anwani yako bado inafanya kazi. Jaribu tena baada ya muda mfupi."
+  },
+  "wizard": {
+   "resumeFailedTitle": "Hatukuweza kupakia uandaaji wako.",
+   "resumeFailedBody": "Hakuna kilichobadilika. Jaribu tena baada ya muda mfupi.",
+   "close": "Funga",
+   "resuming": "Tunaendelea ulipoishia…",
+   "genericError": "Hitilafu imetokea",
+   "saveFailed": "Imeshindikana kuhifadhi"
+  },
+  "address": {
+   "intro": "Ratiba yako inapata anwani yake ya tovuti.",
+   "question": "Anwani yako ya tovuti ni ipi?",
+   "hint": "Ile ambayo watu tayari wanaitumia kukupata.",
+   "aria": "Anwani yako mwenyewe ya tovuti",
+   "willBe": "Anwani yako itakuwa <addr>{address}</addr>",
+   "example": "Kwa mfano, <addr>{address}</addr>",
+   "noChange": "Tovuti yako haibadiliki — unaongeza tu kiungo cha anwani mpya.",
+   "notSetUp": "Hatujaandaa hili.",
+   "restricted": "Anayeshughulikia anwani yako ya tovuti lazima aturuhusu kuandaa kufuli — alama ndogo ya kufuli ambayo wateja wanaiona pembeni yake. Mpaka atakapotuongeza haitaonekana, kwa hiyo tumesimama badala ya kukuacha ukiisubiri. Mwombe atuongeze, kisha ujaribu tena.",
+   "blocked": "Anwani yako ya tovuti kwa sasa inazuia kufuli kabisa. Anayeishughulikia lazima airuhusu kabla hili halijaweza kufanya kazi. Mwombe abadilishe hilo, kisha ujaribu tena.",
+   "elsewhere": "Tayari kuna kitu kinachojibu kwenye anwani hiyo. Tuma ujumbe ulio kwenye skrini inayofuata kwa anayeishughulikia — atajua la kufanya.",
+   "provider": "Anwani yako ya tovuti inashughulikiwa na <b>{provider}</b>. Tutakuonyesha mahali pa kwenda.",
+   "provisionFailed": "Hatukuweza kuandaa anwani hiyo.",
+   "willNotWork": "Anwani hiyo haitafanya kazi.",
+   "couldNotBeSetUp": "Anwani hiyo haikuweza kuandaliwa.",
+   "couldNotSetUp": "Imeshindikana kuandaa",
+   "checking": "Inakagua…",
+   "setting": "Inaandaa…",
+   "tryAgain": "Jaribu tena",
+   "setUpAddress": "Andaa anwani hii",
+   "notNow": "Si sasa"
+  },
+  "apex": {
+   "empty": "Andika anwani ambayo ungependa kutumia.",
+   "not_a_domain": "Hiyo haionekani kama anwani ya tovuti.",
+   "unparseable": "Hatukuweza kusoma hiyo kama anwani ya tovuti. Kagua tahajia kisha ujaribu tena.",
+   "apex": "Anwani {host} ni anwani nzima ya tovuti yako. Ukiielekeza kwetu, tovuti yako itabadilishwa na ukurasa huu. Badala yake weka neno mbele yake — kwa mfano matukio.{host}.",
+   "too_deep": "Anwani hiyo ina sehemu nyingi mno. Kitu kama matukio.{domain} hufanya kazi vizuri zaidi."
+  },
+  "record": {
+   "addAt": "Ongeza hiki kwenye {provider}",
+   "open": "Fungua {provider}",
+   "guide": "Mwongozo wa {provider} kuhusu hili",
+   "addAtSave": "Ongeza hiki kwenye {provider}, kisha uhifadhi.",
+   "addSomewhere": "Ongeza hiki mahali anwani yako ya tovuti inaposhughulikiwa, kisha uhifadhi.",
+   "hintChoose": "Chagua hiki kwenye orodha.",
+   "hintWord": "Neno hili tu, si anwani nzima.",
+   "hintExact": "Nakili hiki kama kilivyo.",
+   "timing": "Kwa kawaida huanza kufanya kazi ndani ya saa moja, ingawa inaweza kuchukua muda zaidi. Huhitaji kuacha ukurasa huu wazi.",
+   "someoneElse": "Mtu mwingine anashughulikia anwani yako ya tovuti?",
+   "sentTo": "Imetumwa kwa {email}",
+   "emailPlaceholder": "anwani yake ya barua pepe",
+   "sending": "Inatuma…",
+   "send": "Tuma maelezo haya",
+   "sendFailed": "Imeshindikana kutuma"
+  },
+  "providers": {
+   "cloudflare": {
+    "open": "Fungua anwani yako ya tovuti, kisha “DNS” na “Records”.",
+    "add": "Chagua “Add record”, kisha uchague “CNAME” kama “Type”.",
+    "name": "Weka thamani ya kwanza iliyo hapa chini kwenye “Name”.",
+    "value": "Weka thamani ya pili iliyo hapa chini kwenye “Target”.",
+    "proxy": "Weka “Proxy status” kuwa “DNS only” — wingu lililo pembeni yake lazima liwe la kijivu, si la rangi ya chungwa.",
+    "save": "Acha “TTL” kama “Auto” kisha uchague “Save”.",
+    "caveat": "Wingu likibaki la rangi ya chungwa, kufuli haitaonekana kamwe, na hakuna kitakachoeleza kwa nini."
+   },
+   "godaddy": {
+    "open": "Fungua “Domain Portfolio” yako kisha uchague anwani yako ya tovuti.",
+    "dns": "Kwenye “Domain Settings”, chagua “DNS”.",
+    "add": "Chagua “Add New Record”, kisha uchague “CNAME” kwenye menyu ya “Type”.",
+    "name": "Weka thamani ya kwanza iliyo hapa chini kwenye “Name”.",
+    "value": "Weka thamani ya pili iliyo hapa chini kwenye “Value”.",
+    "save": "Acha “TTL” kama ilivyo kisha uchague “Save”.",
+    "caveat": "Kama uliongeza zaidi ya moja kwa wakati mmoja, kitufe kinasema “Save All Records”."
+   },
+   "123reg": {
+    "signIn": "Ingia kwenye “123 Reg Control Panel” yako.",
+    "manage": "Pembeni ya “Domains”, chagua “Manage All”, kisha uchague anwani yako ya tovuti.",
+    "dns": "Chagua “DNS”, kisha “Add New Record”.",
+    "type": "Chagua “CNAME” kwenye orodha ya “Type”.",
+    "name": "Weka thamani ya kwanza iliyo hapa chini kwenye “Name”.",
+    "value": "Weka thamani ya pili iliyo hapa chini kwenye “Value”, na uongeze nukta mwishoni mwake.",
+    "save": "Acha “TTL” kama “Default” kisha ubonyeze “Save”.",
+    "caveat": "123 Reg inahitaji nukta mwishoni mwa thamani ya pili, la sivyo haitafanya kazi."
+   },
+   "wix": {
+    "open": "Fungua “Domains”, kisha ubonyeze aikoni ya “Domain Actions” iliyo pembeni ya anwani yako ya tovuti.",
+    "manage": "Chagua “Manage DNS Records”.",
+    "add": "Kwenye sehemu ya “CNAME (Aliases)”, bonyeza “+ Add Record”, kisha ubonyeze “Got it”.",
+    "name": "Weka thamani ya kwanza iliyo hapa chini kwenye “Host Name”.",
+    "value": "Weka thamani ya pili iliyo hapa chini kwenye “Value”.",
+    "save": "Bonyeza “Save”, kisha ubonyeze “Save Changes” kwenye dirisha ibukizi.",
+    "caveat": "Kama anwani yako ya tovuti inaelekezwa tu kwa Wix badala ya kuhifadhiwa huko, Wix haiwezi kufanya mabadiliko haya — anayeishikilia ndiye lazima ayafanye."
+   }
+  },
+  "instructionsEmail": {
+   "subject": "Rekodi moja ya kuongeza kwa ukurasa wa ratiba wa {truckName}",
+   "hello": "Habari,",
+   "introAt": "Tunaweka ratiba ya moja kwa moja ya {truckName} kwenye {address}, na inahitaji rekodi moja iongezwe kwenye kikoa (domain) chetu kwa {provider}.",
+   "introHolder": "Tunaweka ratiba ya moja kwa moja ya {truckName} kwenye {address}, na inahitaji rekodi moja iongezwe kwenye kikoa (domain) chetu kwa yeyote anayeshikilia kikoa chetu.",
+   "stepsAt": "Kwenye {provider}:",
+   "guide": "Mwongozo wao: {url}",
+   "wholeChange": "Hayo ndiyo mabadiliko yote — hakuna kingine kwenye tovuti kinachoathirika, na sehemu nyingine ya kikoa chetu inaendelea kufanya kazi kama ilivyo sasa. Kwa kawaida huanza kufanya kazi ndani ya saa moja.",
+   "pointsAt": "Ukurasa unaoelekezwa unaonyesha tutakapouza tena na hujisasisha wenyewe.",
+   "replyTo": "Jibu kwa {email} kama una maswali yoyote.",
+   "thanks": "Asante,"
+  },
+  "liveEmail": {
+   "subject": "Anwani {address} inafanya kazi",
+   "goodNews": "Habari njema — anwani {address} inafanya kazi.",
+   "body": "Ratiba yako sasa inaonekana kwenye anwani yako mwenyewe. Iangalie na uhakikishe iko sawa: fungua {address}, hakikisha matukio ni yako na tarehe zinaonekana sahihi.",
+   "confirm": "Ukishafanya hivyo, fungua mipangilio yako kwenye HatchGrab na utuambie kuwa iko sawa. Hakuna kinachotegemea hilo — inamaanisha tu kwamba tunajua mtu ameiona."
+  }
+ },
+ "deleteAccount": {
+  "dangerZone": "Sehemu ya hatari",
+  "scheduled": "Akaunti hii imepangwa kufutwa",
+  "requested": "Iliombwa tarehe <b>{requested}</b>. Imepangwa kufutwa tarehe <b>{due}</b>.",
+  "orderingStopped": "Kuagiza mtandaoni kumesimamishwa. Dashibodi yako inaendelea kupatikana kwa kusoma hadi wakati huo.",
+  "cannotCancelPending": "<b>Huwezi kughairi hili wewe mwenyewe.</b> Ili kulizuia, tuma barua pepe kwa <link>{email}</link> haraka iwezekanavyo.",
+  "title": "Futa akaunti yako",
+  "body": "Funga kabisa akaunti hii ya HatchGrab na uache kupokea oda za mtandaoni.",
+  "open": "Futa akaunti…",
+  "dialogTitle": "Ungependa kufuta akaunti yako?",
+  "stopsImmediately": "Kuagiza mtandaoni kunasimama mara moja — si baada ya siku 30. Wateja hawataweza kuagiza kutoka kwako mara tu utakapothibitisha.",
+  "upcoming": "<b>Una {count, plural, one {oda # inayokuja} other {oda # zinazokuja}}.</b> Bado utahitaji kuhudumia oda hizo.",
+  "allTrucks": "<b>Food truck zote {count} za akaunti hii zimejumuishwa:</b> {names}.",
+  "deletedAfter": "Akaunti yako itafutwa baada ya <b>siku 30</b>. Dashibodi yako inaendelea kupatikana kwa kusoma katika kipindi hicho.",
+  "cannotCancel": "Huwezi kughairi hili wewe mwenyewe. Ili kulizuia, lazima utume barua pepe kwa <link>{email}</link>.",
+  "whatHeading": "Kinachofutwa, na kinachobaki",
+  "whatPersonal": "Taarifa zako binafsi na za timu yako zinafutwa, na taarifa zenu za kuingia zinaondolewa.",
+  "whatCustomers": "Majina, barua pepe na namba za simu za wateja wako zinafutwa kwenye oda zako.",
+  "whatAccounting": "Kumbukumbu za hesabu zisizo na majina <b>zinahifadhiwa kwa miaka sita</b>, kama sheria ya Uingereza inavyotaka. Angalia <link>sera yetu ya faragha</link>.",
+  "copyFirst": "<b>Ungependa nakala ya data yako kwanza?</b> Hakuna upakuaji ndani ya programu. Una haki ya kupata nakala — tuma barua pepe kwa <link>{email}</link> <b>kabla</b> hujathibitisha, nasi tutakutumia.",
+  "typeToConfirm": "Andika <code>{name}</code> ili kuthibitisha",
+  "typeAria": "Andika {name} ili kuthibitisha kufuta akaunti",
+  "cancel": "Ghairi — usifute akaunti yangu",
+  "requesting": "Inatuma ombi…",
+  "confirm": "Futa akaunti yangu",
+  "requestedToast": "Ombi la kufuta akaunti limepokelewa. Angalia barua pepe yako.",
+  "failed": "Imeshindikana kuwasilisha ombi"
+ }
+}

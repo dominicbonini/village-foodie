@@ -439,3 +439,9 @@
 - Settings names: Truck settings "Mipangilio ya gari", Truck details "Taarifa za food truck", "Magari yako", "+ Ongeza gari"; boxes Mahali / Eneo / Mji/Kijiji / Muda.
 - Grammar: chapisho class 5 (chapisho hili / lijalo), mahali class 16 (pamefichwa, penye picha); chips "Pote: {n}", "Palipofichwa: {n}".
 - Check: "Ukanda wa saa", "Ukadiriaji", "Mauzo ghafi / halisi", "Machaguo maalum", "Angavu", "Mlalo" (italic), "Vitangulizi / Vyakula vikuu", "Zuia / zuio"; report column payAtTruck "Lipa Unapochukua" vs label "Lipa ukichukua"; Screen On "Acha skrini iwake".
+
+## sw-TZ part 06 (languages-world-3, 18 Nov 2026)
+- Boxes Mahali / Eneo / Mji/Kijiji / Muda, LIMEGHAIRIWA; lastToggle names one box per branch; WhatsApp "Andaa"; billing "kwa gari / mwezi"; fleet "Magari yote".
+- FOR CONSISTENCY: auto-replies card "Majibu ya kiotomatiki" vs part 05 section "Majibu ya kiotomatiki ya WhatsApp".
+- Check: "miezi {months}" in a select (1 → "miezi 1"); deleteAccount.upcoming "oda hizo" plural for 1; someWithout/allHaveImage place plural.
+- Words: live key "malipo halisi", contactless "malipo ya kugusa", padlock "kufuli", "kikoa (domain)", "Sehemu ya hatari", "Za jadi", "utepe"; tabs Bili / Hati / Malipo; 💷 → 💵; phone +255 712 345 678; Bagamoyo.
