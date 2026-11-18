@@ -369,3 +369,9 @@
 - venue "lloc"; Settings "Your trucks" = "Els teus vehicles" (Truck settings vans section must use "vehicle"); operator Place order "Afegeix la comanda" (≠ customer "Fes la comanda"); "comanda presencial".
 - KDS: cards "fitxes", toggles Completa / Cuina, «A punt», handover "Cobrament i entrega"; 💷 → 💶; takings "recaptació"; card machine "datàfon".
 - No "de/d’/al" before name placeholders ("Mantén: {other}", "client: {name}"); "Admin" English.
+
+## ca-AD part 03 (languages-world-3, 18 Nov 2026)
+- Fleet "vehicle" (Settings → Els teus vehicles); Log in "Inicia la sessió"; code/deal keys identical in auth.signup and demoGetStarted; partner code "Codi de soci o promocional"; deals "de descompte".
+- Upsells "Suggeriments"; Custom extras "Extres personalitzats"; option types "afegeix"/"treu"; Private hire chip "Lloguer privat" (not the locked "food truck per a esdeveniments").
+- Kids Menu "Per als més petits" (menú = meal deal); Specials "Fora de carta"; table cards "targetons de taula"; weekly poster "cartell setmanal" — confirm.
+- Samples: Hamburgueses Cal Pere, La Cuina del Poble, tu@elteufoodtruck.ad.

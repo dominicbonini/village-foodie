@@ -1,0 +1,1054 @@
+{
+ "alertsOperator": {
+  "hi": "Hola, {name},",
+  "limit80": {
+   "subject": "Has fet servir el 80 % de les respostes de WhatsApp d’aquest mes",
+   "used": "Les respostes automàtiques de WhatsApp n’han fet servir <b>{used} de {limit}</b> aquest mes.",
+   "nothingStopped": "No s’ha aturat res. Quan arribis a {limit}, les respostes automàtiques es posaran en pausa fins que el límit es restableixi el <b>{reset}</b>; els clients et poden continuar escrivint i continuaràs veient tot el que t’envien.",
+   "raise": "Pots augmentar el límit mensual a Configuració quan vulguis.",
+   "raiseLink": "Pots augmentar el límit mensual a Configuració quan vulguis:",
+   "button": "Obre Configuració"
+  },
+  "limit100": {
+   "subject": "Les respostes automàtiques de WhatsApp s’han posat en pausa aquest mes",
+   "usedAll": "Has fet servir les {limit} respostes automàtiques de WhatsApp d’aquest mes, així que s’han posat en pausa.",
+   "stillReach": "<b>Els clients et poden continuar escrivint com sempre i tots els missatges et continuen arribant.</b> L’únic que s’ha aturat és l’enviament de la resposta automàtica.",
+   "startAgain": "Es reactivaran el <b>{reset}</b>, o de seguida si augmentes el límit mensual a Configuració.",
+   "startAgainLink": "Es reactivaran el {reset}, o de seguida si augmentes el límit mensual a Configuració:",
+   "button": "Augmenta el límit"
+  },
+  "paymentBlocked": {
+   "subject": "WhatsApp necessita un mètode de pagament per poder enviar",
+   "stopped": "WhatsApp ha aturat l’enviament de les teves respostes automàtiques perquè el teu compte de WhatsApp Business no té cap mètode de pagament que funcioni.",
+   "stillMessage": "<b>Els clients et poden continuar escrivint i continuaràs veient tot el que t’envien</b>, però les respostes no els arriben.",
+   "payDirect": "Aquests missatges els pagues directament a WhatsApp, així que això es resol a WhatsApp Manager i no a HatchGrab. Afegeix-hi o actualitza-hi una targeta i les respostes es reactivaran soles.",
+   "payDirectLink": "Aquests missatges els pagues directament a WhatsApp, així que això es resol a WhatsApp Manager i no a HatchGrab. Afegeix-hi o actualitza-hi una targeta i les respostes es reactivaran soles:",
+   "button": "Obre WhatsApp Manager",
+   "settings": "La teva configuració de HatchGrab: <link>{url}</link>"
+  }
+ },
+ "setup": {
+  "steps": {
+   "based": "On ets",
+   "identity": "El teu food truck",
+   "menu": "La teva carta",
+   "event": "Primer esdeveniment"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Configuració inicial",
+  "loading": "S’està carregant",
+  "loadingCountries": "S’està carregant…",
+  "verify": {
+   "ok": "Correu electrònic confirmat. Gràcies!",
+   "expired": "Aquest enllaç de confirmació ha caducat. Posa’t en contacte amb nosaltres i ho resoldrem abans que comencis.",
+   "invalid": "Aquest enllaç de confirmació no ha funcionat. Posa’t en contacte amb nosaltres i ho resoldrem abans que comencis."
+  },
+  "identity": {
+   "heading": "Com es diu el teu food truck?",
+   "intro": "Aquest és el nom que veuen els clients. No es publica res fins que decideixis començar.",
+   "nameLabel": "Nom del food truck",
+   "namePlaceholder": "Hamburgueses Cal Pere",
+   "phoneLabel": "Telèfon",
+   "whatsappTick": "Aquest número té WhatsApp",
+   "phoneHelp": "Els clients el veuen a la confirmació de la comanda per poder fer-te preguntes sobre una comanda. La casella decideix si hi diu «Truca’ns» o «Escriu-nos per WhatsApp». Pots canviar totes dues coses a Configuració."
+  },
+  "phoneRequired": "Afegeix un número de telèfon: el fem servir tant els clients com nosaltres per contactar amb tu.",
+  "createFailed": "No s’ha pogut crear el teu food truck.",
+  "unreachable": "Ara mateix no hem pogut connectar. Torna-ho a provar.",
+  "back": "Enrere",
+  "creating": "S’està creant el teu food truck…",
+  "continue": "Continua"
+ },
+ "whereBased": {
+  "countriesFailed": "No hem pogut carregar la llista de països. Torna-ho a provar d’aquí a un moment."
+ },
+ "cuisinePicker": {
+  "choose": "Tria un tipus de cuina…",
+  "other": "Una altra…",
+  "otherPlaceholder": "Digues-nos quin tipus de cuina fas",
+  "addAnother": "+ Tria’n una altra",
+  "remove": "Elimina: {label}",
+  "cuisine": {
+   "Asian": "Asiàtica",
+   "BBQ": "Barbacoa",
+   "Bakery": "Forn i pastisseria",
+   "Burgers": "Hamburgueses",
+   "Caribbean": "Caribenya",
+   "Chicken": "Pollastre",
+   "Chinese": "Xinesa",
+   "Coffee": "Cafè",
+   "Desserts": "Postres",
+   "FishChips": "Peix fregit amb patates",
+   "Greek": "Grega",
+   "HotDogs": "Frankfurts",
+   "Indian": "Índia",
+   "Italian": "Italiana",
+   "JacketPotatoes": "Patates al forn farcides",
+   "Kebab": "Kebab",
+   "Korean": "Coreana",
+   "Mexican": "Mexicana",
+   "PieMash": "Pastís de carn amb puré",
+   "Pizza": "Pizza",
+   "Seafood": "Peix i marisc",
+   "Tacos": "Tacos",
+   "Thai": "Tailandesa",
+   "Vegan": "Vegana",
+   "Wraps": "Wraps"
+  }
+ },
+ "priceControls": {
+  "change": "{label}: canvia",
+  "useRule": "{label}: fes servir la regla",
+  "typePrice": "{label}: escriu un preu",
+  "backToRule": "Torna a la regla",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+ },
+ "goLive": {
+  "allergensUnanswered": {
+   "title": "Tria com mostres la informació d’al·lèrgens",
+   "detail": "Fins que no triïs, els clients no veuen cap dels teus plats: la carta es protegeix amagant tot el que no té els al·lèrgens confirmats, i ara mateix això és tot.",
+   "where": "Carta → Al·lèrgens"
+  },
+  "allergensCardMissing": {
+   "title": "Afegeix la teva fitxa d’al·lèrgens",
+   "detail": "Has triat mostrar una fitxa d’al·lèrgens, però no n’hi ha cap de desada; els clients veurien que hi ha informació d’al·lèrgens disponible i després no trobarien res.",
+   "where": "Carta → Al·lèrgens"
+  },
+  "allergensItemsUnverified": {
+   "title": "{n, plural, one {Confirma els al·lèrgens de {count} plat} other {Confirma els al·lèrgens de {count} plats}}",
+   "detail": "{n, plural, one {El teu plat queda amagat als clients fins que en confirmis els al·lèrgens.} other {{u, plural, one {{unverified} dels teus {total} plats queda amagat als clients fins que en confirmis els al·lèrgens.} other {{unverified} dels teus {total} plats queden amagats als clients fins que en confirmis els al·lèrgens.}}}} Un plat que es mostra sense al·lèrgens confirmats es llegeix com «no en conté cap», així que la carta l’amaga per no córrer aquest risc.",
+   "where": "Carta → Al·lèrgens"
+  },
+  "noVan": {
+   "title": "Afegeix un vehicle",
+   "detail": "Els esdeveniments funcionen amb un vehicle: sense cap vehicle no hi ha per on rebre comandes.",
+   "where": "Configuració → Els teus vehicles"
+  },
+  "kitchenCapacityUnset": {
+   "title": "Defineix la capacitat de la cuina",
+   "detail": "No hi ha cap capacitat definida per a: {vans}. Sense això, continuarem prometent als clients hores de recollida que la teva cuina no pot complir de cap manera.",
+   "where": "Carta → Capacitat de la cuina",
+   "unnamedVan": "Vehicle sense nom"
+  },
+  "noPrepBearingCategory": {
+   "title": "Digues-nos quant triga el teu menjar",
+   "detail": "{categories, select, none {Encara no tens cap categoria a la carta, així que no tenim manera de calcular quant triga una comanda.} other {Cap de les teves categories no té temps de cocció definit, així que per a nosaltres totes les comandes semblen immediates. Continuaríem donant als clients hores de recollida que la teva cuina no pot complir, i com més feina tinguis, més s’allunyarien.}}",
+   "where": "Carta → Categories → Configuració de la cuina"
+  },
+  "emailUnverified": {
+   "title": "Confirma la teva adreça de correu electrònic",
+   "detail": "Enviem els avisos de comandes i la recuperació del compte a aquesta adreça. Si és incorrecta, te n’adones quan alguna cosa ja ha fallat.",
+   "where": "Busca el nostre enllaç de confirmació a la safata d’entrada"
+  },
+  "emailUnknown": {
+   "title": "Estat de confirmació del correu electrònic desconegut",
+   "detail": "La verificació del correu electrònic encara no està connectada, així que això no es pot avaluar. Bloqueja expressament en lloc de donar-ho per bo sense avisar.",
+   "where": "—"
+  }
+ },
+ "walkthrough": {
+  "intro": "«Gestiona» és on configures el teu food truck i veus com va. El tauler és on reps les comandes i portes cada esdeveniment mentre passa.",
+  "ariaLabel": "Visita guiada del tauler",
+  "step": "{current} de {total}",
+  "skip": "Omet",
+  "back": "← Enrere",
+  "next": "Següent →",
+  "done": "Fet",
+  "stops": {
+   "menu": {
+    "title": "Carta",
+    "body": "Els teus plats, preus i al·lèrgens. Qualsevol canvi que hi facis es publica a l’instant."
+   },
+   "schedule": {
+    "title": "Calendari",
+    "body": "On i quan treballes. Afegeix-hi un esdeveniment i els clients ja hi podran fer comandes."
+   },
+   "build": {
+    "title": "Menús · Extres i suggeriments",
+    "body": "Els menús, els suggeriments, les personalitzacions i la capacitat de la cuina són a «Carta»: prova-ho tot sense por."
+   },
+   "settings": {
+    "title": "Configuració",
+    "body": "Les dades del teu food truck i com paguen els clients."
+   },
+   "billing": {
+    "title": "Facturació",
+    "body": "On trobes el teu pla, la facturació i la informació de les funcions."
+   }
+  }
+ },
+ "auth": {
+  "fields": {
+   "email": "Correu electrònic",
+   "password": "Contrasenya",
+   "emailPlaceholder": "tu@exemple.com",
+   "passwordHint": "Com a mínim 8 caràcters"
+  },
+  "signup": {
+   "title": "Crea el teu compte",
+   "subtitle": "{months, plural, =0 {La prova gratuïta comença quan et registres.} one {El primer mes és gratuït i comença quan et registres.} other {Els primers # mesos són gratuïts i comencen quan et registres.}}",
+   "emailPlaceholder": "tu@elteufoodtruck.ad",
+   "codeLabel": "Tens un codi? <optional>(opcional)</optional>",
+   "codePlaceholder": "Escriu-lo aquí",
+   "codeApply": "Aplica",
+   "codeApplied": "Codi aplicat: {deal} ({partner})",
+   "codeInvalid": "Aquest codi no és vàlid.",
+   "codeExpired": "Aquest codi ha caducat.",
+   "dealExtraMonths": "{months, plural, one {# mes addicional gratuït} other {# mesos addicionals gratuïts}}",
+   "dealPercentOff": "{pct} % de descompte durant {months, plural, one {# mes} other {# mesos}}",
+   "dealPercentOffPlan": "{pct} % de descompte al pla {plan} durant {months, plural, one {# mes} other {# mesos}}",
+   "dealFixedPrice": "{plan} per {price} al mes durant {months, plural, one {# mes} other {# mesos}}",
+   "dealPlanOffer": "un preu especial al pla {plan} durant {months, plural, one {# mes} other {# mesos}}",
+   "partnerCodeLabel": "Codi de soci o promocional <optional>(opcional)</optional>",
+   "marketing": "Envia’m de tant en tant consells i novetats del producte per correu electrònic. No té res a veure amb les teves comandes i ho pots aturar quan vulguis.",
+   "signIn": "Inicia la sessió",
+   "submit": "Crea el meu compte",
+   "submitting": "S’està creant el teu compte…",
+   "consent": "En crear un compte acceptes les nostres <terms>Condicions</terms> i la <privacy>Política de privadesa</privacy>. No cal cap targeta. No es publica res fins que tu ho diguis.",
+   "haveAccount": "Ja tens un compte? Inicia la sessió",
+   "errorFallback": "No s’ha pogut crear el teu compte.",
+   "errorOffline": "Ara mateix no hem pogut connectar. Torna-ho a provar."
+  },
+  "login": {
+   "title": "Inicia la sessió a la teva cuina",
+   "dashboardOf": "Tauler de l’operador de {brand}",
+   "resetSuccess": "Contrasenya actualitzada. Inicia la sessió.",
+   "emailChanged": "Adreça de correu electrònic actualitzada. Inicia la sessió amb la nova adreça.",
+   "errorFallback": "El correu electrònic o la contrasenya no són correctes. Torna-ho a provar.",
+   "submit": "Inicia la sessió",
+   "submitting": "S’està iniciant la sessió…",
+   "forgot": "Has oblidat la contrasenya?",
+   "invalidLink": "Aquest enllaç ha caducat o no és vàlid."
+  },
+  "forgot": {
+   "sentTitle": "Revisa el correu electrònic",
+   "sentBody": "Si hi ha un compte amb aquesta adreça de correu electrònic, d’aquí a poc rebràs un enllaç per restablir la contrasenya. Si no t’arriba en uns minuts, mira a la carpeta de correu brossa.",
+   "title": "Restableix la contrasenya",
+   "subtitle": "Escriu el teu correu electrònic i t’enviarem un enllaç per restablir-la",
+   "submit": "Envia l’enllaç",
+   "sending": "S’està enviant…",
+   "back": "Torna a l’inici de sessió"
+  },
+  "reset": {
+   "invalidTitle": "L’enllaç per restablir no és vàlid",
+   "invalidBody": "Aquest enllaç no és vàlid o ha caducat.",
+   "requestNew": "Demana un enllaç nou",
+   "mismatch": "Les contrasenyes no coincideixen",
+   "tooShort": "La contrasenya ha de tenir com a mínim 8 caràcters.",
+   "errorFallback": "Alguna cosa ha fallat. Torna-ho a provar.",
+   "titleFirstLogin": "Defineix la contrasenya",
+   "titleReset": "Tria una contrasenya nova",
+   "subtitleFirstLogin": "Tria una contrasenya per protegir el teu compte",
+   "subtitleReset": "La contrasenya nova ha de tenir com a mínim 8 caràcters",
+   "newPassword": "Contrasenya nova",
+   "confirmPassword": "Confirma la contrasenya",
+   "confirmPlaceholder": "Repeteix la contrasenya",
+   "submit": "Desa la contrasenya",
+   "saving": "S’està desant…",
+   "sendNewLink": "Envia un enllaç nou"
+  },
+  "verifyEmail": {
+   "goToLogin": "Ves a l’inici de sessió",
+   "failedTitle": "La verificació ha fallat",
+   "invalidTitle": "Enllaç no vàlid o caducat",
+   "invalidBody": "Aquest enllaç de verificació no és vàlid o ja ha caducat.",
+   "verifiedTitle": "Ja està verificada",
+   "verifiedBody": "Aquesta adreça de correu electrònic ja està verificada.",
+   "expiredTitle": "L’enllaç ha caducat",
+   "expiredBody": "Aquest enllaç de verificació ha caducat. Demana’n un de nou a la configuració del perfil.",
+   "accountNotFound": "No s’ha trobat el compte. Contacta amb l’assistència.",
+   "emailTaken": "Aquesta adreça de correu electrònic ja està associada a un altre compte. Fes servir una altra adreça.",
+   "updateFailed": "No s’ha pogut actualitzar el correu electrònic. Torna-ho a provar.",
+   "loginUpdateFailed": "No s’han pogut actualitzar les dades d’inici de sessió. El teu correu electrònic no ha canviat.",
+   "successTitle": "Adreça de correu electrònic actualitzada",
+   "successBody": "El teu correu electrònic ara és <b>{email}</b>. S’està tancant la sessió…"
+  },
+  "sessionAlert": {
+   "title": "La sessió necessita atenció",
+   "body": "Tot el que hi ha a la pantalla continua aquí. Pot ser que els canvis nous no es desin fins que tornis a iniciar la sessió.",
+   "signIn": "Torna a iniciar la sessió"
+  }
+ },
+ "emailSignup": {
+  "greeting": "{hasName, select, yes {Hola, {name},} other {Hola,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Fundador de HatchGrab",
+  "verify": {
+   "subject": "Confirma la teva adreça de correu electrònic",
+   "thanks": "{hasTruck, select, yes {Gràcies per configurar {truck} a HatchGrab.} other {Gràcies per configurar el teu food truck a HatchGrab.}}",
+   "button": "Confirma la meva adreça",
+   "buttonText": "Confirma la meva adreça: {url}",
+   "why": "És l’adreça amb què iniciaràs la sessió i on arribaran els avisos de comandes, així que val la pena fer-ho ara.",
+   "next": "Quan estigui confirmada, t’enviaré tot el que necessites per començar.",
+   "carryOn": "Mentrestant, pots continuar amb la configuració.",
+   "stuck": "T’has encallat en alguna cosa? Respon a aquest correu: els contesto jo mateix.",
+   "fallbackLink": "Si el botó no funciona, enganxa això al navegador: {url}"
+  },
+  "welcome": {
+   "subject": "{hasName, select, yes {Et donem la benvinguda a HatchGrab, {name}} other {Et donem la benvinguda a HatchGrab}}",
+   "intro": "{hasTruck, select, yes {M’alegra molt donar la benvinguda a {truck} a HatchGrab.} other {M’alegra molt donar la benvinguda al teu food truck a HatchGrab.}}",
+   "trial": "{months, plural, one {Ha començat la teva prova gratuïta d’un mes, amb totes les funcions desbloquejades.} other {Ha començat la teva prova gratuïta de # mesos, amb totes les funcions desbloquejades.}}",
+   "setup": "Si encara no ho has fet, la configuració és senzilla i porta uns quinze minuts.",
+   "button": "Obre el teu tauler",
+   "bookmark": "Val la pena desar-lo a les adreces d’interès. Funciona en qualsevol dispositiu.",
+   "stuck": "Si t’encalles, respon a aquest correu: els contesto jo mateix.",
+   "lookingForward": "{hasTruck, select, yes {Tinc moltes ganes de veure {truck} en marxa.} other {Tinc moltes ganes de veure el teu food truck en marxa.}}"
+  }
+ },
+ "errorsOnboarding": {
+  "not_signed_in": "No has iniciat la sessió",
+  "no_operator_record": "No hi ha cap registre d’operador",
+  "bad_request": "Sol·licitud incorrecta",
+  "truck_name_missing": "Posa un nom al teu food truck.",
+  "contact_phone_required": "Cal un telèfon de contacte.",
+  "phone_invalid": "{withName, select, yes {Introdueix un número de telèfon vàlid ({name})} other {Introdueix un número de telèfon vàlid}}{withExample, select, yes { (p. ex. {example})} other {}}.",
+  "truck_create_failed": "No s’ha pogut crear el teu food truck.",
+  "unknown_step": "Pas desconegut",
+  "unknown_action": "Acció desconeguda",
+  "countries_unavailable": "No hem pogut carregar la llista de països. Torna-ho a provar d’aquí a un moment.",
+  "email_invalid": "Introdueix una adreça de correu electrònic vàlida.",
+  "password_too_short": "La contrasenya ha de tenir com a mínim {min, plural, one {# caràcter} other {# caràcters}}.",
+  "signup_closed": "El registre encara no està obert.",
+  "too_many_attempts": "Massa intents en poc temps. Torna-ho a provar d’aquí a una estona.",
+  "account_exists": "Ja hi ha un compte amb aquest correu electrònic: inicia la sessió.",
+  "account_create_failed": "No s’ha pogut crear el compte.",
+  "account_finish_failed": "No s’ha pogut acabar de crear el teu compte. Torna-ho a provar.",
+  "unauthorised": "No autoritzat",
+  "unauthenticated": "No autenticat",
+  "change_id_required": "Alguna cosa ha fallat. Actualitza la pàgina i torna-ho a provar.",
+  "operator_not_found": "No s’ha trobat l’operador",
+  "cancel_change_failed": "No s’ha pogut cancel·lar el canvi",
+  "email_required": "Cal el correu electrònic",
+  "email_already_current": "Aquest ja és el teu correu electrònic actual",
+  "email_already_registered": "Aquest correu electrònic ja està registrat a HatchGrab",
+  "change_request_failed": "No s’ha pogut crear la sol·licitud de canvi",
+  "verification_email_failed": "No s’ha pogut enviar el correu de verificació",
+  "verification_request_not_found": "No s’ha trobat la sol·licitud de verificació",
+  "email_already_verified": "El correu electrònic ja està verificat",
+  "email_send_failed": "No s’ha pogut enviar el correu electrònic. Torna-ho a provar.",
+  "reset_email_failed": "No s’ha pogut enviar el correu per restablir la contrasenya",
+  "token_and_password_required": "Calen el testimoni (token) i la contrasenya",
+  "new_password_too_short": "La contrasenya ha de tenir com a mínim {min, plural, one {# caràcter} other {# caràcters}}.",
+  "reset_link_invalid": "L’enllaç per restablir no és vàlid o ha caducat. Demana’n un de nou.",
+  "reset_link_used": "Aquest enllaç per restablir ja s’ha fet servir. Demana’n un de nou.",
+  "reset_link_expired": "Aquest enllaç per restablir ha caducat. Demana’n un de nou.",
+  "account_not_found": "No s’ha trobat el compte.",
+  "password_update_failed": "No s’ha pogut actualitzar la contrasenya. Torna-ho a provar.",
+  "no_fields_to_update": "No hi ha cap camp per actualitzar",
+  "upload_unreadable": "No hem pogut llegir el fitxer que has pujat. Torna-ho a provar.",
+  "file_too_big": "Aquest fitxer és massa gran (màx. {mb} MB). Una foto normal de la carta ja va bé.",
+  "file_type_unsupported": "Aquest tipus de fitxer no és compatible: envia una foto o un PDF de la carta.",
+  "text_too_long": "És molt de text: enganxa-hi només la carta.",
+  "menu_missing": "Afegeix una foto de la carta o enganxa-la.",
+  "demo_rate_limited": "Ja has creat unes quantes demostracions. Torna-ho a provar d’aquí a una estona o posa’t en contacte amb nosaltres i t’ajudarem.",
+  "demo_build_failed": "Alguna cosa ha fallat en crear la demostració. Torna-ho a provar.",
+  "request_unreadable": "No ho hem pogut llegir.",
+  "email_not_valid": "Això no sembla una adreça de correu electrònic.",
+  "try_again_shortly": "Torna-ho a provar d’aquí a una estona.",
+  "invalid_request_body": "El cos de la sol·licitud no és vàlid",
+  "not_demo_session": "No és una sessió de demostració",
+  "demo_not_found": "No s’ha trobat la demostració",
+  "not_demo_truck": "No és un food truck de demostració",
+  "new_service_failed": "No s’ha pogut començar un servei nou",
+  "not_available": "No disponible.",
+  "demo_save_failed": "Ara mateix no ho hem pogut desar. Torna-ho a provar.",
+  "deletion_view_owner_only": "Només el titular del compte pot veure això.",
+  "deletion_sign_in": "Inicia la sessió per sol·licitar l’eliminació del compte.",
+  "deletion_owner_only": "Només el titular del compte pot sol·licitar-ne l’eliminació.",
+  "confirm_mismatch": "Escriu DELETE per confirmar-ho.",
+  "partial_stamp": "S’ha registrat la teva sol·licitud d’eliminació, però no hem pogut aturar les comandes a tots els food trucks. Contacta amb l’assistència."
+ },
+ "emailAccount": {
+  "newEmail": {
+   "subject": "Verifica la teva nova adreça de correu electrònic de HatchGrab",
+   "heading": "Verifica la teva adreça de correu electrònic",
+   "button": "Verifica l’adreça"
+  },
+  "changeEmail": {
+   "requested": "Has sol·licitat canviar la teva adreça de correu electrònic de HatchGrab per aquesta.",
+   "click": "Fes clic al botó de sota per verificar-la. Aquest enllaç caduca d’aquí a 24 hores.",
+   "ignore": "Si no has sol·licitat aquest canvi, pots ignorar aquest correu sense problema.",
+   "stillActive": "La teva adreça de correu electrònic actual continua activa."
+  },
+  "resendVerification": {
+   "requested": "Has sol·licitat canviar el teu correu electrònic de HatchGrab per aquesta adreça.",
+   "click": "Fes clic a sota per verificar-la. Aquest enllaç caduca d’aquí a 24 hores.",
+   "ignore": "Si no ho has sol·licitat, ignora aquest correu.",
+   "stillActive": "El teu correu electrònic actual continua actiu."
+  },
+  "passwordReset": {
+   "subject": "Restableix la contrasenya de HatchGrab",
+   "heading": "Restableix la contrasenya",
+   "requested": "Hem rebut una sol·licitud per restablir la contrasenya del teu compte de HatchGrab.",
+   "click": "Fes clic al botó de sota per triar una contrasenya nova. Aquest enllaç caduca d’aquí a 1 hora.",
+   "button": "Restableix la contrasenya",
+   "ignore": "Si no ho has sol·licitat, pots ignorar aquest correu sense problema.",
+   "unchanged": "La contrasenya no canviarà fins que no facis clic a l’enllaç de dalt."
+  },
+  "deletionScheduled": {
+   "subject": "L’eliminació del teu compte de HatchGrab està programada",
+   "received": "Hem rebut una sol·licitud per eliminar aquest compte de HatchGrab.",
+   "orderingStopped": "<b>Les comandes en línia s’han aturat immediatament</b> a: {trucks}.",
+   "noTrucks": "(cap food truck)",
+   "readable": "El teu tauler es podrà\n    continuar consultant durant {days, plural, one {# dia} other {# dies}} més.",
+   "scheduled": "L’eliminació del compte està programada per al <b>{date}</b>.",
+   "cannotCancel": "<b>Això no es pot cancel·lar des de l’aplicació.</b> Si no has estat tu, o si has\n    canviat d’opinió, respon a aquest correu com més aviat millor.",
+   "kept": "Quan s’elimini el compte, esborrarem les teves dades personals i les dels teus clients. Conservem\n    registres comptables anònims, que la llei ens obliga a guardar."
+  }
+ },
+ "demoSaveEmail": {
+  "subject": "La teva demostració de HatchGrab: aquí tens l’enllaç per tornar-hi",
+  "heading": "La teva demostració s’ha desat",
+  "intro": "Aquí tens l’enllaç per tornar a la demostració amb la teva carta. No cal iniciar la sessió: només has de tocar-lo.",
+  "button": "Obre la meva demostració",
+  "freshDay": "Cada vegada que hi tornis, prepararem una jornada nova perquè tinguis amb què jugar.",
+  "deletion": "Com que és una demostració, no la guardem per sempre: l’eliminarem juntament amb la carta el\n                <b>{date}</b> (d’aquí a {days, plural, one {# dia} other {# dies}}). Si et registres abans\n                d’aquesta data, la carta ve amb tu.",
+  "notSent": "S’ha desat, però ara mateix no hem pogut enviar el correu electrònic."
+ },
+ "demoGetStarted": {
+  "upload": {
+   "bannerButton": "Desa la meva carta →",
+   "heading": "Configura el teu food truck",
+   "sub": "La teva carta passa directament al compte.",
+   "privacy": "Només ho farem servir per configurar el teu food truck i enviar-te l’enllaç de la demostració: consulta la nostra <link>política de privadesa</link>."
+  },
+  "sample": {
+   "bannerButton": "Configura el meu food truck →",
+   "heading": "Configura el teu food truck",
+   "sub": "Després pujaràs la teva carta: és qüestió d’un minut.",
+   "privacy": "Només ho farem servir per configurar el teu food truck i enviar-te l’enllaç de la demostració: consulta la nostra <link>política de privadesa</link>."
+  },
+  "saveOnly": {
+   "bannerButton": "Desa la meva carta →",
+   "heading": "Desa la teva demostració",
+   "sub": "La guardarem 14 dies i t’enviarem un enllaç per correu electrònic per tornar-hi.",
+   "privacy": "Només ho farem servir per enviar-te l’enllaç de la demostració: consulta la nostra <link>política de privadesa</link>."
+  },
+  "confirmationHeading": "Tot a punt",
+  "postSaveButton": "Configura el meu food truck →",
+  "enterSetupButton": "Configura el meu food truck →",
+  "emailOnlyLink": "Només envia’m un enllaç per tornar a aquesta demostració",
+  "sendLinkButton": "Envia’m l’enllaç",
+  "savingButton": "S’està desant…",
+  "continueButton": "Continua →",
+  "createAccountButton": "Crea el meu compte →",
+  "retryButton": "Torna-ho a provar",
+  "backToDemoButton": "Torna a la demostració",
+  "savedStatus": "{hasDate, select, yes {✓ Desat: es guarda fins al {date}} other {✓ Desat}}",
+  "back": "Enrere",
+  "close": "Tanca",
+  "truckStepHeading": "Sobre el teu food truck",
+  "detailsStepHeading": "Acaba la configuració",
+  "stepper": {
+   "details": "Les teves dades",
+   "menu": "Carta",
+   "allergens": "Al·lèrgens",
+   "kitchen": "Configuració de la cuina",
+   "schedule": "Calendari"
+  },
+  "confirmEmailed": "T’hem enviat per correu electrònic un enllaç per tornar directament a aquesta demostració. No cal iniciar la sessió.",
+  "confirmKeepUntil": "La guardarem fins al <b>{date}</b>. Quan configuris el compte de debò, la teva carta vindrà amb tu.",
+  "loading": "S’està carregant…",
+  "firstName": "Nom",
+  "lastName": "Cognoms",
+  "truckName": "Nom del food truck",
+  "truckNamePlaceholder": "p. ex. La Cuina del Poble",
+  "cuisine": "Tipus de cuina",
+  "logoLabel": "Logotip <opt>(opcional)</opt>",
+  "logoPreviewAlt": "Previsualització del logotip",
+  "changeLogo": "Canvia el logotip",
+  "removeLogo": "Elimina",
+  "uploadLogo": "📷 Puja el logotip",
+  "readyTitle": "El teu compte ja està a punt",
+  "readyBody": "Ara acabem de configurar el teu food truck: la carta, els al·lèrgens i la cuina.",
+  "hangTight": "Un moment: ho estem preparant tot.",
+  "stage": {
+   "account": "S’està creant el teu compte",
+   "truck": "S’està configurant el teu food truck",
+   "menu": "S’està carregant la teva carta"
+  },
+  "stageState": {
+   "done": "fet",
+   "recognised": "ja tens un compte",
+   "failed": "ha fallat",
+   "active": "en curs",
+   "pending": "pendent"
+  },
+  "signIn": "Inicia la sessió",
+  "phone": "Telèfon",
+  "onWhatsapp": "Aquest número té WhatsApp",
+  "email": "Correu electrònic",
+  "emailPlaceholder": "tu@elteufoodtruck.ad",
+  "settingUpAs": "Configuració amb <b>{email}</b> <change>canvia</change>",
+  "password": "Contrasenya",
+  "passwordPlaceholder": "Com a mínim 8 caràcters",
+  "hidePassword": "Amaga la contrasenya",
+  "showPassword": "Mostra la contrasenya",
+  "promoLabel": "Tens un codi? <opt>(opcional)</opt>",
+  "promoPlaceholder": "Escriu-lo aquí",
+  "partnerCodeLabel": "Codi de soci o promocional <optional>(opcional)</optional>",
+  "partnerCodeApply": "Aplica",
+  "partnerCodeApplied": "Codi aplicat: {deal} ({partner})",
+  "partnerCodeInvalid": "Aquest codi no és vàlid.",
+  "partnerCodeExpired": "Aquest codi ha caducat.",
+  "partnerDealExtraMonths": "{months, plural, one {# mes addicional gratuït} other {# mesos addicionals gratuïts}}",
+  "partnerDealPercentOff": "{pct} % de descompte durant {months, plural, one {# mes} other {# mesos}}",
+  "partnerDealPercentOffPlan": "{pct} % de descompte al pla {plan} durant {months, plural, one {# mes} other {# mesos}}",
+  "partnerDealFixedPrice": "{plan} per {price} al mes durant {months, plural, one {# mes} other {# mesos}}",
+  "partnerDealPlanOffer": "un preu especial al pla {plan} durant {months, plural, one {# mes} other {# mesos}}",
+  "agreeTerms": "Accepto les <terms>Condicions</terms> i la <privacy>Política de privadesa</privacy>.",
+  "freeMonth": "{months, plural, =0 {La prova gratuïta comença quan et registres.} one {El primer mes és gratuït i comença quan et registres.} other {Els primers # mesos són gratuïts i comencen quan et registres.}}",
+  "fieldError": {
+   "firstName": "Digues-nos el teu nom.",
+   "lastName": "I els teus cognoms.",
+   "truck": "Posa un nom al teu food truck.",
+   "cuisine": "Digues-nos què cuines.",
+   "phoneMissing": "Afegeix un número de telèfon: el fem servir tant els clients com nosaltres per contactar amb tu.",
+   "email": "Introdueix una adreça de correu electrònic vàlida.",
+   "password": "La contrasenya ha de tenir com a mínim 8 caràcters.",
+   "terms": "Accepta les condicions per continuar."
+  },
+  "error": {
+   "saveFailed": "No s’ha pogut desar. Torna-ho a provar.",
+   "savedNoEmail": "S’ha desat, però ara mateix no hem pogut enviar l’enllaç per correu electrònic.",
+   "unreachable": "Ara mateix no hem pogut connectar. Torna-ho a provar.",
+   "createAccountFailed": "No s’ha pogut crear el teu compte.",
+   "truckCreateFailed": "El teu compte ja està a punt, però no hem pogut crear el teu food truck. Torna-ho a provar.",
+   "truckUnreachable": "El teu compte ja està a punt, però ara mateix no hem pogut crear el teu food truck. Torna-ho a provar.",
+   "truckNoToken": "El teu food truck ja està configurat, però ara mateix no l’hem pogut obrir. Torna-ho a provar."
+  }
+ },
+ "demoUpload": {
+  "steps": {
+   "reading": "S’està llegint la teva carta…",
+   "found": "Hem trobat els teus productes…",
+   "kitchen": "S’està configurant la teva cuina…",
+   "page": "S’està creant la teva pàgina de comandes…",
+   "almost": "Gairebé a punt…"
+  },
+  "templateSteps": {
+   "truck": "S’està creant el food truck de mostra…",
+   "menu": "S’està configurant la carta…",
+   "kitchen": "S’està configurant la cuina…",
+   "page": "S’està creant la pàgina de comandes…",
+   "almost": "Gairebé a punt…"
+  },
+  "dialogLabel": "Puja la teva carta",
+  "heading": "✨ Puja la teva carta",
+  "failedHeading": "No hem pogut llegir aquesta carta",
+  "close": "Tanca",
+  "intro": "Una foto de la pissarra, una captura de pantalla, un PDF o enganxa-la com a text. La nostra IA la llegeix i et crea una pàgina de comandes que funciona, amb els teus productes i els teus preus, en menys de 60 segons. Sense registre i sense targeta.",
+  "failedIntro": "De vegades una foto és massa fosca, massa inclinada o està escrita a mà. Això ens toca resoldre-ho a nosaltres; no has fet res malament. Pots provar algunes coses:",
+  "usually": "Normalment triga menys de 60 segons.",
+  "slow": "Està trigant més del normal; amb les cartes grans passa de vegades.",
+  "keepWaiting": "Continua esperant",
+  "sampleWhileYouWait": "O fes un cop d’ull amb una carta de mostra mentre esperes",
+  "standIn": "Aquesta <b>no serà la teva carta</b>: és un exemple perquè vegis com funciona.",
+  "seeSample": "Mostra la carta de mostra",
+  "tryAgain": "Torna-ho a provar",
+  "tryPhotoAgain": "Torna a provar aquesta foto",
+  "tryDifferent": "Prova una altra foto",
+  "uploadAnother": "← Puja una altra foto",
+  "orSample": "O fes un cop d’ull amb una carta de mostra",
+  "orBuild": "O te la preparem nosaltres",
+  "buildSent": "✓ Gràcies, ja la tenim. T’escriurem per correu electrònic.",
+  "buildBody": "Deixa’ns el teu correu electrònic i una persona de debò hi posarà la teva carta i t’enviarà l’enllaç.",
+  "emailPlaceholder": "tu@elteufoodtruck.ad",
+  "sending": "…",
+  "send": "Envia",
+  "noPhoto": "No tens cap foto de la carta a mà?",
+  "noPhotoBody": "Fes un cop d’ull amb un food truck de mostra: pots pujar la teva carta quan vulguis.",
+  "build": "Crea la meva demostració →",
+  "nothingPublished": "No es publica res: només ho pots veure tu.",
+  "error": {
+   "somethingWrong": "Alguna cosa ha fallat. Torna-ho a provar.",
+   "serverUnreachable": "No hem pogut connectar amb el servidor. Comprova la connexió i torna-ho a provar.",
+   "sendFailed": "No s’ha pogut enviar. Torna-ho a provar."
+  },
+  "fields": {
+   "uploadLabel": "Puja el fitxer de la carta",
+   "dropHere": "Deixa anar la carta aquí",
+   "dragOrTap": "Arrossega i deixa anar, o toca per triar",
+   "fileTypes": "Imatge o PDF",
+   "or": "o",
+   "pasteLabel": "Enganxa el text de la carta",
+   "pastePlaceholder": "Enganxa aquí la teva carta: noms dels productes, descripcions, preus..."
+  },
+  "emailLabel": "El teu correu electrònic",
+  "emailNote": "T’enviarem per correu electrònic un enllaç a la demostració i és possible que contactem amb tu per configurar HatchGrab. <link>Política de privadesa</link>",
+  "marketing": "Envia’m de tant en tant consells i novetats de HatchGrab",
+  "emailInvalid": "Introdueix una adreça de correu electrònic vàlida."
+ },
+ "provisionContent": {
+  "standardCategories": {
+   "starters": "Entrants",
+   "mains": "Plats principals",
+   "burgers": "Hamburgueses",
+   "pizza": "Pizzes",
+   "wrapsSandwiches": "Wraps i entrepans",
+   "sides": "Acompanyaments",
+   "dipsSauces": "Salses",
+   "desserts": "Postres",
+   "drinks": "Begudes",
+   "kidsMenu": "Per als més petits",
+   "specials": "Fora de carta",
+   "other": "Altres"
+  },
+  "demoEventName": "Esdeveniment de demostració",
+  "firstVanName": "Vehicle 1",
+  "demoCategories": {
+   "pizza": "Pizzes",
+   "burgers": "Hamburgueses",
+   "mains": "Plats principals",
+   "sides": "Acompanyaments",
+   "drinks": "Begudes"
+  },
+  "demoTemplates": {
+   "pizza": {
+    "label": "🍕 Food truck de pizzes",
+    "items": {
+     "margherita": "Margherita",
+     "pepperoni": "Pepperoni",
+     "ndujaHoney": "Nduja i mel",
+     "fourCheese": "Quatre formatges",
+     "gardenVeg": "Verdures de l’hort",
+     "garlicBread": "Pa d’all",
+     "rocketParmesan": "Ruca i parmesà",
+     "olives": "Olives",
+     "sanPellegrino": "San Pellegrino",
+     "coke": "Coca-Cola"
+    }
+   },
+   "burgers": {
+    "label": "🍔 Food truck d’hamburgueses",
+    "items": {
+     "classicCheeseburger": "Hamburguesa clàssica amb formatge",
+     "doubleBacon": "Doble bacó",
+     "buttermilkChicken": "Pollastre marinat en sèrum de llet",
+     "halloumiStack": "Torre d’halloumi",
+     "smashBurger": "Smash burger",
+     "skinOnFries": "Patates fregides amb pell",
+     "loadedCheeseFries": "Patates amb formatge fos",
+     "onionRings": "Anelles de ceba",
+     "craftLemonade": "Llimonada artesana",
+     "coke": "Coca-Cola"
+    }
+   },
+   "curries": {
+    "label": "🍛 Food truck de curris",
+    "items": {
+     "chickenTikkaMasala": "Pollastre tikka masala",
+     "lambRoganJosh": "Rogan josh de xai",
+     "chanaMasala": "Chana masala",
+     "butterChicken": "Pollastre a la mantega",
+     "saagPaneer": "Saag paneer",
+     "pilauRice": "Arròs pilau",
+     "garlicNaan": "Naan d’all",
+     "onionBhaji": "Bhaji de ceba",
+     "mangoLassi": "Lassi de mango",
+     "coke": "Coca-Cola"
+    }
+   }
+  }
+ },
+ "manageAllergens": {
+  "cardEditor": {
+   "title": "La teva fitxa d’al·lèrgens",
+   "intro": "Els clients la veuen <b>exactament tal com l’escrius</b>: no es reescriu res. Escriu o enganxa el text a sota, o puja una foto o un PDF i en llegirem el text perquè el revisis.",
+   "empty": "Encara no hi ha cap fitxa d’al·lèrgens.",
+   "placeholder": "p. ex. Tots els nostres fregits contenen blat i llet. La fregidora es comparteix amb productes que contenen gluten i fruits de closca. Tenim opcions veganes: pregunta al personal.",
+   "reading": "S’està llegint la imatge…",
+   "upload": "📷 Puja una imatge o un PDF",
+   "uploadNote": "Llegim el text de la imatge perquè el puguis revisar; la imatge no es desa."
+  },
+  "cardUpload": {
+   "dishFallback": "Plat",
+   "question": "Tens una fitxa d’al·lèrgens per pujar?",
+   "perDish": "{detected, select, yes {Puja-la i la farem servir per preparar els al·lèrgens dels teus plats. Veuràs els al·lèrgens detectats a la pàgina següent, on confirmaràs cada plat.} other {Puja-la i la farem servir per preparar els al·lèrgens dels teus plats.}}",
+   "cardOnly": "Puja la fitxa d’al·lèrgens que veuran els clients.",
+   "yes": "Sí",
+   "no": "No",
+   "noProblem": "Cap problema: no et cal. Continua amb el botó de sota.",
+   "analysing": "S’està analitzant la fitxa…",
+   "dropzone": "Arrossega i deixa anar, o toca per triar",
+   "imageOrPdf": "Imatge o PDF",
+   "or": "o",
+   "pastePlaceholder": "Enganxa aquí el text de la fitxa d’al·lèrgens…",
+   "process": "Processa la fitxa",
+   "cardRead": "Fitxa llegida ✓",
+   "unmatchedHeading": "No hem pogut relacionar aquests automàticament: assigna’ls o descarta’ls",
+   "quotedName": "«{name}»",
+   "ambiguous": "Ambigu: coincideix amb diversos plats; tria el correcte.",
+   "assignTo": "Assigna a un plat…",
+   "dismiss": "Descarta",
+   "kitchenNotes": "Notes de cuina (es desen a la teva informació d’al·lèrgens)",
+   "matchSummary": "{n, plural, =0 {Relacionats amb un plat: {matched}.} one {Relacionats amb un plat: {matched}. {count} s’ha d’assignar.} other {Relacionats amb un plat: {matched}. {count} s’han d’assignar.}}",
+   "blanketInfo": "La teva fitxa diu que pot haver-hi aquests al·lèrgens a tots els plats: {list}. Els afegirem als al·lèrgens que es manipulen a la teva cuina. Els podràs revisar a l’últim pas."
+  },
+  "savedCard": {
+   "showLess": "Mostra’n menys",
+   "showMore": "Mostra’n més",
+   "fileOnly": "Hi ha un fitxer de fitxa desat per a aquest food truck, però no se’n va desar cap text de resum. Obre l’original per llegir-lo.",
+   "viewOriginal": "Mostra la fitxa original"
+  },
+  "wizard": {
+   "toast": {
+    "readFailed": "No s’ha pogut llegir la fitxa d’al·lèrgens. Torna-ho a provar",
+    "confirmed": "Confirmat: {name}",
+    "undo": "Desfés",
+    "saveFailed": "No s’ha pogut desar. Torna-ho a provar",
+    "imageFailed": "No s’ha pogut llegir la imatge: escriu o enganxa la fitxa",
+    "cardRead": "{n, plural, one {Fitxa llegida: {matched} relacionats, {count} per assignar} other {Fitxa llegida: {matched} relacionats, {count} per assignar}}"
+   },
+   "genericWarn": {
+    "text": "S’ha detectat «{generic}», però no és prou concret. Tria {picks} si aquest plat conté {family}, o deixa’ls sense marcar si no en conté.",
+    "andOr": "{a} i/o {b}"
+   },
+   "badge": {
+    "justConfirmed": "✓ Confirmat",
+    "confirmed": "Confirmat",
+    "needsReview": "Cal revisar-lo"
+   },
+   "confirm": {
+    "confirming": "S’està confirmant…",
+    "confirmed": "Confirmat ✓",
+    "confirm": "Confirma",
+    "changed": "· modificat",
+    "changedTitle": "S’ha editat des de l’última confirmació: torna’l a confirmar"
+   },
+   "allergens": "Al·lèrgens",
+   "dietary": "Dieta",
+   "uncategorised": "Sense categoria",
+   "review": {
+    "progress": "Confirmats: {confirmed} de {total}",
+    "allConfirmed": "✓ Tots confirmats",
+    "list": "Llista",
+    "table": "Taula",
+    "detected": "Detectats a partir de la teva carta: <b>revisa’ls</b>. Els al·lèrgens queden amagats als clients fins que confirmis cada plat.",
+    "viewOnly": "👁 Només lectura: només el titular pot confirmar o canviar els al·lèrgens.",
+    "emptyTitle": "No hi ha cap producte a la carta",
+    "emptyBody": "Primer afegeix productes a la carta i després defineix-ne aquí els al·lèrgens.",
+    "dish": "Plat",
+    "status": "Estat"
+   },
+   "cardPanel": {
+    "reading": "S’està llegint la informació d’al·lèrgens…",
+    "saved": "🛡️ Fitxa d’al·lèrgens desada",
+    "viewOriginal": "Mostra la fitxa original",
+    "replace": "Substitueix la fitxa",
+    "uploadHelp": "Puja la teva fitxa d’al·lèrgens (foto o PDF) o enganxa la informació d’al·lèrgens: la nostra IA l’ordena per als clients.",
+    "add": "Afegeix la fitxa d’al·lèrgens",
+    "viewOnly": "👁 Només lectura: només el titular pot afegir la fitxa d’al·lèrgens.",
+    "intro": "Els clients veuran aquesta fitxa com a referència d’al·lèrgens de la carta. En el mode només fitxa, els al·lèrgens per plat queden amagats (les dades dels plats es conserven per si més endavant canvies al mode per plat)."
+   },
+   "subtitle": {
+    "choose": "Tria com veuen els clients la informació d’al·lèrgens",
+    "card": "Afegeix la teva fitxa d’al·lèrgens",
+    "cardOptional": "Afegeix una fitxa d’al·lèrgens (opcional)",
+    "review": "Revisa i confirma cada plat",
+    "kitchen": "Últim pas: la teva cuina"
+   },
+   "heading": {
+    "import": "Al·lèrgens",
+    "standalone": "Configuració dels al·lèrgens"
+   },
+   "nav": {
+    "next": "Següent →",
+    "back": "← Enrere",
+    "skip": "Omet per ara",
+    "saving": "S’està desant…",
+    "done": "Fet",
+    "saveLater": "Desa i acaba més tard",
+    "close": "Tanca",
+    "finish": "Acaba",
+    "skipImport": "Omet per ara la configuració dels al·lèrgens"
+   },
+   "hint": {
+    "skipDefers": "Ometre-ho només ho ajorna: els plats que no hagis confirmat queden amagats als clients fins que se’n confirmin els al·lèrgens.",
+    "importIncomplete": "Confirma tots els plats per continuar, o tria «Omet per ara la configuració dels al·lèrgens»."
+   },
+   "recipeOnly": "Només el que hi ha a la recepta d’aquest plat.",
+   "tooMany": "Al·lèrgens marcats: {count}. De debò que tots són a la recepta d’aquest plat? Els al·lèrgens que es fan servir en altres plats no van aquí. Els pots afegir a l’últim pas."
+  },
+  "kitchen": {
+   "title": "Quins al·lèrgens es manipulen a la teva cuina?",
+   "body": "Hem marcat els que ja hi ha als teus plats. Marca qualsevol altre que facis servir al food truck, per exemple per als plats fora de carta.",
+   "legendDishes": "als teus plats",
+   "legendAdded": "afegits per tu",
+   "customersSee": "Els clients veuran:",
+   "confirm": "Confirmo que els al·lèrgens de cada plat són correctes i els mantindré actualitzats."
+  }
+ },
+ "manageUpsells": {
+  "heading": "Suggeriments",
+  "intro": "Anima els clients a afegir alguna cosa més. Quan algú demana d’una categoria, suggereix-li productes d’una altra: una beguda amb una pizza, una salsa amb una hamburguesa.",
+  "add": "+ Afegeix un suggeriment",
+  "toast": {
+   "updated": "Regla de suggeriment actualitzada",
+   "added": "Regla de suggeriment afegida",
+   "removed": "Regla eliminada"
+  },
+  "whenAdds": "Quan el client afegeix…",
+  "suggestFrom": "Suggereix productes de…",
+  "chooseCategory": "Tria una categoria",
+  "cancel": "Cancel·la",
+  "saveChanges": "Desa els canvis",
+  "addRule": "Afegeix la regla",
+  "empty": "Encara no hi ha cap regla de suggeriment.",
+  "confirmRemove": "Vols eliminar la regla de suggeriment «{trigger} → {suggest}»?",
+  "upTo": "{n, plural, one {Fins a {count} producte suggerit} other {Fins a {count} productes suggerits}}"
+ },
+ "manageExtras": {
+  "toast": {
+   "groupCreated": "Grup creat",
+   "groupRenamed": "Grup reanomenat",
+   "groupDeleted": "Grup suprimit",
+   "optionUpdated": "Opció actualitzada",
+   "optionAdded": "Opció afegida",
+   "optionRemoved": "Opció eliminada"
+  },
+  "description": "Afegeix opcions de pagament o gratuïtes que els clients poden triar en fer la comanda; p. ex. Formatge extra +{price}, Sense ceba {zero}",
+  "note": "Crea un grup d’opcions i assigna’l a una categoria de la carta. Tots els productes d’aquesta categoria oferiran aquestes opcions quan els clients facin la comanda.",
+  "addLabel": "+ Afegeix una personalització",
+  "emptyTitle": "Encara no hi ha cap extra personalitzat",
+  "optionCount": "{n, plural, one {{count} opció} other {{count} opcions}}",
+  "dishCount": "{n, plural, one {{count} plat} other {{count} plats}}",
+  "rename": "Canvia el nom",
+  "deleteGroup": "Suprimeix el grup",
+  "required": "Obligatori",
+  "requiredHint": "(el client ha de triar)",
+  "selection": "Selecció:",
+  "chooseOne": "Tria’n una",
+  "chooseMultiple": "Tria’n diverses",
+  "maxChoices": "Màxim d’opcions",
+  "upTo": "Fins a {n}",
+  "unlimited": "Sense límit",
+  "options": "Opcions",
+  "optionType": "{type, select, add {afegeix} remove {treu} other {{type}}}",
+  "soldOut": "Esgotat",
+  "left": "En queden {count}",
+  "priceAdd": "+{price}",
+  "priceRemove": "-{price}",
+  "free": "Gratuït",
+  "addOption": "+ Afegeix una opció",
+  "offeredOn": "S’ofereix a",
+  "editPerDish": "Edita les opcions per plat",
+  "notOffered": "Encara no s’ofereix en cap plat.",
+  "catPartial": "{name} ({n} de {m})",
+  "hiddenOptions": "* {dish}: s’amaguen {options}",
+  "matrix": {
+   "title": "{group}: opcions per plat",
+   "dish": "Plat",
+   "include": "Inclou",
+   "removeAll": "Treu {group} de tota la categoria {category}",
+   "offerAll": "Ofereix {group} a tota la categoria {category}",
+   "offerCount": "Ho ofereixen {n} de {total}",
+   "offeredRemoveGroup": "S’ofereix: fes clic per treure el grup d’aquest plat",
+   "notOfferedAdd": "No s’ofereix: fes clic per afegir-lo",
+   "addGroupFirst": "Primer afegeix el grup a aquest plat",
+   "requiredNeedsOne": "Un grup obligatori necessita com a mínim una opció per a cada plat",
+   "offeredRemove": "S’ofereix: fes clic per treure-la",
+   "help": "Marca «Inclou» per afegir el grup a un plat i després marca quines opcions mostra. Es desa a l’instant."
+  },
+  "newGroup": {
+   "title": "Extra personalitzat nou",
+   "name": "Nom del grup",
+   "placeholder": "p. ex. Extres de pizza"
+  },
+  "option": {
+   "editTitle": "Edita l’opció",
+   "newTitle": "Opció nova",
+   "name": "Nom de l’opció",
+   "placeholder": "p. ex. Formatge extra",
+   "type": "Tipus",
+   "add": "Afegeix",
+   "remove": "Treu",
+   "price": "Ajust de preu ({symbol})",
+   "priceHint": "0 = gratuït",
+   "soldOut": "Esgotat",
+   "stock": "Estoc <opt>(opcional)</opt>",
+   "stockPlaceholder": "∞ sense control",
+   "sharedPool": "Estoc compartit entre tots els plats que fan servir aquesta opció.",
+   "allergens": "Al·lèrgens",
+   "dietary": "Dieta",
+   "allergensHelp": "Els al·lèrgens propis d’aquesta opció (a banda dels del plat)"
+  },
+  "cancel": "Cancel·la",
+  "save": "Desa",
+  "title": "Extres personalitzats",
+  "confirmDeleteGroup": "Vols suprimir «{name}»? S’eliminaran totes les opcions i es desassignarà de totes les categories.",
+  "emptyBody": "Crea un grup com «Extres de pizza» i afegeix-hi opcions com «Formatge extra +{price}»",
+  "saving": "S’està desant…",
+  "uncategorized": "Sense categoria"
+ },
+ "manageDeals": {
+  "toast": {
+   "updated": "Menú actualitzat",
+   "created": "Menú creat",
+   "removed": "Menú eliminat"
+  },
+  "confirmRemove": "Vols eliminar aquest menú?",
+  "heading": "Menús",
+  "count": "{n, plural, one {{count} menú configurat} other {{count} menús configurats}}",
+  "newDeal": "+ Menú nou",
+  "emptyTitle": "Encara no hi ha cap menú",
+  "active": "Actiu",
+  "off": "Desactivat",
+  "autoApply": "Automàtic",
+  "manual": "Manual",
+  "hidden": "Ara mateix està amagat als clients: {warning}",
+  "edit": "Edita",
+  "delete": "Suprimeix",
+  "editTitle": "Edita el menú",
+  "newTitle": "Menú nou",
+  "name": "Nom del menú",
+  "namePlaceholder": "p. ex. Menú de migdia",
+  "description": "Descripció",
+  "descriptionPlaceholder": "Qualsevol pizza + beguda + salsa",
+  "price": "Preu del menú",
+  "originalPrice": "Preu original",
+  "originalPlaceholder": "en blanc = automàtic",
+  "originalHint": "en blanc = es calcula a partir dels productes",
+  "slots": "Apartats (categories necessàries per a aquest menú)",
+  "slot": "Apartat {n}",
+  "notUsed": "— No s’utilitza —",
+  "dealActive": "Menú actiu",
+  "applyHeading": "Aplica’l als esdeveniments",
+  "applyHelp": "Tria si aquest menú s’aplica automàticament als teus esdeveniments",
+  "applyAll": "Aplica’l automàticament a tots els esdeveniments futurs",
+  "applyAllHelp": "Aquest menú estarà actiu en cada esdeveniment nou que creïs. El pots continuar desactivant per a esdeveniments concrets a «Calendari».",
+  "manualTitle": "Tria’l manualment per a cada esdeveniment",
+  "applyAllNote": "Aquest menú s’afegirà als esdeveniments nous. Per als esdeveniments que ja existeixen, ves a «Calendari» per gestionar els menús de cada esdeveniment.",
+  "cancel": "Cancel·la",
+  "save": "Desa el menú",
+  "emptyBody": "Crea un menú com «Menú de migdia: qualsevol pizza + beguda + salsa per {price}»",
+  "manualHelp": "Aquest menú no apareixerà als esdeveniments si no l’actives a la pestanya «Calendari».",
+  "saving": "S’està desant…"
+ },
+ "eventTypes": {
+  "title": "Tipus d’esdeveniment",
+  "newTypeButton": "+ Tipus d’esdeveniment nou",
+  "close": "Tanca",
+  "loading": "S’està carregant…",
+  "missingTitle": "Els tipus d’esdeveniment encara no estan activats.",
+  "missingBody": "L’actualització de la base de dades per a aquesta funció encara no s’ha aplicat. No hi ha res espatllat: tots els esdeveniments fan servir la teva configuració habitual.",
+  "column": "Columna",
+  "vanGone": "Aquest vehicle ja no existeix.",
+  "typeGone": "Aquest tipus ja no existeix.",
+  "standard": "Estàndard",
+  "standardHeading": "ESTÀNDARD",
+  "moreFor": "Més opcions: {name}",
+  "rename": "Canvia el nom",
+  "moveLeft": "Mou a l’esquerra",
+  "moveRight": "Mou a la dreta",
+  "delete": "Suprimeix",
+  "sections": {
+   "vans": "VEHICLES",
+   "prices": "PREUS",
+   "itemPrices": "PREUS DELS PRODUCTES",
+   "service": "SERVEI"
+  },
+  "labelFor": "{label}: {name}",
+  "intervalEvery": "Cada {mins} min",
+  "noTypes": "Encara no tens cap tipus d’esdeveniment, així que tots els esdeveniments fan servir la teva configuració habitual.",
+  "renameTitle": "Canvia el nom d’aquest tipus",
+  "name": "Nom",
+  "cancel": "Cancel·la",
+  "save": "Desa",
+  "copyVanOne": "Copia la configuració del Vehicle 1",
+  "thisType": "aquest tipus",
+  "matchTitle": "Vols igualar «{name}» a Estàndard?",
+  "matchKeeps": "El que hagis canviat al tauler d’un esdeveniment concret es manté tal com està, i els preus d’aquest tipus no canvien.",
+  "matchWillUse": "Farà servir: {summary}",
+  "deleteTitle": "Vols suprimir «{name}»?",
+  "deleteBody": "{n, plural, =0 {Cap esdeveniment proper fa servir «{name}».} one {{count} esdeveniment proper fa servir «{name}». Tornarà a Estàndard.} other {{count} esdeveniments propers fan servir «{name}». Tornaran a Estàndard.}} El que hagis canviat en un esdeveniment concret es manté tal com està.",
+  "keep": "Mantén",
+  "phone": {
+   "standardTag": "Estàndard",
+   "defaultTag": "predeterminat",
+   "vanSetup": "La configuració habitual d’aquest vehicle: s’aplica a tots els esdeveniments sense tipus.",
+   "standardSetup": "La teva configuració habitual: s’aplica a tots els esdeveniments sense tipus.",
+   "cardSummary": "{upcoming, plural, one {{upcomingCount} esdeveniment proper} other {{upcomingCount} esdeveniments propers}} · {changed, plural, =0 {encara no s’ha canviat res} one {{changedCount} de {total} canviat} other {{changedCount} de {total} canviats}}",
+   "noMenuItems": "Encara no hi ha productes a la carta: afegeix-los a Carta › Productes."
+  },
+  "newType": {
+   "title": "Tipus d’esdeveniment nou",
+   "namePlaceholder": "p. ex. Festa de l’escola",
+   "help": "Toca un nom o escriu-ne un. Comença com una còpia d’Estàndard, i si després canvies Estàndard, aquest no canviarà. Després pots canviar el que vulguis.",
+   "create": "Crea",
+   "chips": {
+    "festival": "Festival",
+    "pub": "Bar",
+    "market": "Mercat",
+    "privateHire": "Lloguer privat"
+   }
+  },
+  "select": {
+   "label": "Tipus d’esdeveniment",
+   "usual": "{name} és l’habitual en aquest lloc."
+  },
+  "summary": {
+   "normalSetup": "La teva configuració habitual",
+   "sameAsStandard": "Igual que Estàndard",
+   "buzzersOn": "avisadors activats",
+   "buzzersOff": "avisadors desactivats",
+   "takeCashOn": "cobrament en efectiu activat",
+   "takeCashOff": "cobrament en efectiu desactivat",
+   "markReadyOn": "pas «A punt» activat",
+   "markReadyOff": "pas «A punt» desactivat",
+   "collectionEvery": "recollida cada {mins} min",
+   "offlineOff": "protecció sense connexió desactivada",
+   "offlineKeepTaking": "sense connexió: continua rebent comandes",
+   "offlinePause": "sense connexió: posa en pausa les comandes"
+  },
+  "errors": {
+   "somethingWentWrong": "Alguna cosa ha fallat",
+   "couldNotLoad": "No s’ha pogut carregar",
+   "couldNotSave": "No s’ha pogut desar",
+   "noVans": "Aquest food truck no té cap vehicle per canviar."
+  }
+ },
+ "privateEvents": {
+  "publicName": "Esdeveniment privat",
+  "chip": "Privat",
+  "grid": {
+   "orderingSection": "COMANDES",
+   "linkRowLabel": "Rep comandes amb enllaç privat i codi QR",
+   "columnTitle": "El tipus Privat integrat. No se’n pot canviar el nom, moure ni suprimir."
+  },
+  "form": {
+   "help": "Surt al teu calendari com a «Esdeveniment privat» només amb la data i les hores: mai l’adreça, el mapa ni Village Foodie.",
+   "linkPromise": "Els convidats fan la comanda amb un enllaç privat i un codi QR; els tindràs quan ho desis.",
+   "nameLabel": "Nom de l’esdeveniment",
+   "nameHelp": "Els convidats el veuen a dalt de la pàgina de comandes.",
+   "namePlaceholder": "Casament de la Laia i en Marc",
+   "previewNote": "Com surt al teu calendari: sense lloc, població ni codi postal.",
+   "needsTimes": "Afegeix una hora d’inici i una de final: un esdeveniment privat que rep comandes per enllaç les necessita."
+  },
+  "link": {
+   "button": "Enllaç i QR",
+   "title": "Enllaç privat i codi QR",
+   "label": "Enllaç privat",
+   "copy": "Copia",
+   "copied": "Copiat",
+   "qrDownload": "Baixa el QR",
+   "tableCards": "Imprimeix targetons de taula",
+   "newLink": "Crea un enllaç nou",
+   "working": "S’està processant…",
+   "newLinkConfirm": "Vols crear un enllaç nou? L’enllaç actual deixarà de funcionar immediatament, i els codis QR que ja hagis imprès també deixaran de funcionar.",
+   "newLinkHelp": "Fes-ho servir si l’enllaç ha arribat on no havia d’arribar. L’enllaç actual deixa de funcionar immediatament, i els codis QR impresos també.",
+   "newLinkFailed": "No s’ha pogut crear un enllaç nou.",
+   "offNotice": "Les comandes per enllaç privat estan desactivades per a aquest esdeveniment, així que no hi ha cap enllaç per compartir. L’esdeveniment continua sortint al teu calendari com a «Esdeveniment privat»."
+  },
+  "cards": {
+   "printTitle": "{truck}: targetons de taula",
+   "scan": "Escaneja per fer la comanda",
+   "blurb": "Fes la comanda i paga des del mòbil. Et cridarem pel nom quan estigui a punt.",
+   "footer": "Comandes amb HatchGrab"
+  },
+  "noSinglePost": "Els esdeveniments privats no tenen publicació pròpia: surten al teu cartell setmanal com a «Esdeveniment privat».",
+  "confirmToPrivate": "Això amaga l’adreça i treu l’esdeveniment del mapa. Els convidats necessitaran l’enllaç privat per fer la comanda.",
+  "confirmFromPrivate": "Això fa públic l’esdeveniment: se’n mostraran l’adreça i el marcador al mapa, i l’enllaç privat deixarà de funcionar."
+ }
+}
