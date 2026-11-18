@@ -1,0 +1,82 @@
+{
+  "jsonLd": {
+    "subCategory": "Sistema de comandes per a food trucks i càtering mòbil",
+    "description": "Comandes, comandes anticipades i pantalla de cuina per a food trucks i càtering mòbil ({country}).",
+    "audience": "Professionals dels food trucks i del càtering mòbil"
+  },
+  "hero": {
+    "title": "El sistema de comandes pensat per als <lean>food trucks.</lean>",
+    "subSmall": "Puja la teva carta, sense registrar-te.<br></br>Mira una demostració que funciona en menys de 60 segons.",
+    "cta": "Puja la meva carta →",
+    "ctaNote": "<lead>Puja una foto de la teva carta i mira-la funcionant en menys de 60 segons.</lead><small>Sense registre. Sense targeta.</small>"
+  },
+  "shots": {
+    "kitchenAlt": "La pantalla de cuina de HatchGrab, amb els tiquets de les comandes en ordre de preparació",
+    "dashboardAlt": "Prenent una comanda a HatchGrab: la carta a l’esquerra, i la cistella i el total a la dreta",
+    "phoneAlt": "Fent una comanda a un food truck amb HatchGrab: la carta amb fotos i preus, i el total de la cistella"
+  },
+  "trust": {
+    "freeMonth": "{months, plural, one {El primer mes, totalment gratuït i amb tot desbloquejat} other {Els primers # mesos, totalment gratuïts i amb tot desbloquejat}}",
+    "noCard": "No cal targeta",
+    "cancel": "Cancel·la quan vulguis, sense permanència"
+  },
+  "does": {
+    "eyebrow": "Què fa",
+    "title": "Pensat per als food trucks, no per als restaurants.",
+    "lede": "La majoria de sistemes de comandes donen per fet una adreça fixa, una wifi fiable i el mateix horari cada setmana. Tu canvies de lloc cada setmana, a hores diferents, amb poca cobertura mòbil o sense. HatchGrab s’ha creat per a això.",
+    "slotsTitle": "Els clients trien l’hora de recollida",
+    "capacityTitle": "Defineix la capacitat de la cuina",
+    "capacityBody": "Defineix quant pots cuinar alhora i quant hi trigues. Quan una hora de recollida és plena, els clients ja no la poden triar.",
+    "devicesTitle": "Funciona en qualsevol dispositiu",
+    "devicesBody": "Funciona al mòbil que portes al davantal, a la tauleta del taulell, al portàtil del vehicle — i al datàfon amb què ja cobres.",
+    "postsTitle": "Automatitza les publicacions de Facebook i Instagram",
+    "postsBody": "Puja el disseny que ja publiques a Facebook o Instagram. Hi posem les dates, els llocs i les hores, a punt per compartir — cada setmana o cada dia.",
+    "whatsappTitle": "Respostes automàtiques de WhatsApp",
+    "whatsappBody": "«On sou aquesta nit?» «Quines postres teniu?» El teu WhatsApp respon mentre condueixes cap a la parada o ets a la planxa, amb la teva carta i el teu calendari. Messenger i Instagram, aviat disponibles.",
+    "whatsappSoonTitle": "Respostes automàtiques de WhatsApp <soon>Aviat disponible</soon>",
+    "whatsappSoonBody": "«On sou aquesta nit?» «Quines postres teniu?» Aviat el teu WhatsApp respondrà mentre condueixes cap a la parada o ets a la planxa. Després vindran Messenger i Instagram.",
+    "offlineTitle": "Sense cobertura? Continua servint.",
+    "offlineBody": "Si et quedes sense cobertura, les comandes en línia es posen en pausa automàticament perquè els clients no puguin fer comandes que no veuràs. Continua rebent comandes amb l’aplicació per a iPhone, iPad i Android.",
+    "slotsBody": "Els clients fan la comanda per endavant i trien l’hora de recollida. Menys cues, i el menjar a punt quan arriben."
+  },
+  "steps": {
+    "eyebrow": "Per començar",
+    "title": "Configura-ho i comença a rebre comandes en uns 15 minuts.",
+    "lede": "Tres coses per enllestir — i dues només necessiten una foto.",
+    "menuTitle": "Crea la teva carta",
+    "menuBody": "Fes una foto de la pissarra o enganxa’n el text. Els productes, els preus i els extres s’hi passen sols. Només has de comprovar que estan bé.",
+    "scheduleTitle": "Afegeix el teu calendari",
+    "scheduleBody": "El tens al teu web? El llegim d’allà i el mantenim al dia. Si no, fes-hi una foto també. Només has d’aprovar el que trobi.",
+    "shareTitle": "Comparteix el teu enllaç",
+    "shareBody": "Publica’l a Facebook, enganxa el codi QR al vehicle. Les comandes arriben a la teva pantalla, en l’ordre en què les has de preparar."
+  },
+  "testimonial": {
+    "quote": "HatchGrab ens ha facilitat moltíssim les comandes. Ho tenim tot organitzat, podem controlar l’estoc i saber exactament quantes pizzes ens queden per vendre — i les franges horàries són fantàstiques per als pobles amb molt de moviment.",
+    "award": "Pizzeria mòbil de l’any",
+    "awardScope": "Guanyadors regionals",
+    "business": "Pizzeria Gusto",
+    "byline": "Nadia & Bogdan — propietaris"
+  },
+  "pricing": {
+    "eyebrow": "Preus",
+    "title": "Comença gratis. Millora el pla quan ho necessitis.",
+    "switchHead": "Vens d’una altra plataforma?",
+    "switchBody": "Mira què pagaries a HatchGrab per les mateixes comandes. Només cal un minut.",
+    "switchCta": "Compara el que pagues"
+  },
+  "faq": {
+    "title": "Preguntes freqüents",
+    "metaTitle": "Preguntes freqüents | HatchGrab",
+    "metaDescription": "Respostes clares per als food trucks sobre els preus de HatchGrab, la posada en marxa, com rebre comandes i els pagaments."
+  },
+  "final": {
+    "truckLabel": "Food truck",
+    "title": "Vols veure com n’és de fàcil, la configuració?",
+    "lede": "Puja una foto o una captura de pantalla de la teva carta i en farem una pàgina de comandes que funciona, perquè la puguis provar en menys de 60 segons. Els teus productes, els teus preus. Sense registre, sense targeta, res per instal·lar. Fes-hi un cop d’ull i després decideix.",
+    "cta": "Puja la meva carta ara →"
+  },
+  "meta": {
+    "title": "Sistema de comandes per a food trucks — HatchGrab {country}",
+    "description": "Rep comandes i comandes anticipades sense cues. Programari de comandes i pantalla de cuina per a food trucks i càtering mòbil ({country}). No és un TPV."
+  }
+}

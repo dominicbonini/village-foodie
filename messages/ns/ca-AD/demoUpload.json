@@ -1,0 +1,61 @@
+{
+  "steps": {
+    "reading": "S’està llegint la teva carta…",
+    "found": "Hem trobat els teus productes…",
+    "kitchen": "S’està configurant la teva cuina…",
+    "page": "S’està creant la teva pàgina de comandes…",
+    "almost": "Gairebé a punt…"
+  },
+  "templateSteps": {
+    "truck": "S’està creant el food truck de mostra…",
+    "menu": "S’està configurant la carta…",
+    "kitchen": "S’està configurant la cuina…",
+    "page": "S’està creant la pàgina de comandes…",
+    "almost": "Gairebé a punt…"
+  },
+  "dialogLabel": "Puja la teva carta",
+  "heading": "✨ Puja la teva carta",
+  "failedHeading": "No hem pogut llegir aquesta carta",
+  "close": "Tanca",
+  "intro": "Una foto de la pissarra, una captura de pantalla, un PDF o enganxa-la com a text. La nostra IA la llegeix i et crea una pàgina de comandes que funciona, amb els teus productes i els teus preus, en menys de 60 segons. Sense registre i sense targeta.",
+  "failedIntro": "De vegades una foto és massa fosca, massa inclinada o està escrita a mà. Això ens toca resoldre-ho a nosaltres; no has fet res malament. Pots provar algunes coses:",
+  "usually": "Normalment triga menys de 60 segons.",
+  "slow": "Està trigant més del normal; amb les cartes grans passa de vegades.",
+  "keepWaiting": "Continua esperant",
+  "sampleWhileYouWait": "O fes un cop d’ull amb una carta de mostra mentre esperes",
+  "standIn": "Aquesta <b>no serà la teva carta</b>: és un exemple perquè vegis com funciona.",
+  "seeSample": "Mostra la carta de mostra",
+  "tryAgain": "Torna-ho a provar",
+  "tryPhotoAgain": "Torna a provar aquesta foto",
+  "tryDifferent": "Prova una altra foto",
+  "uploadAnother": "← Puja una altra foto",
+  "orSample": "O fes un cop d’ull amb una carta de mostra",
+  "orBuild": "O te la preparem nosaltres",
+  "buildSent": "✓ Gràcies, ja la tenim. T’escriurem per correu electrònic.",
+  "buildBody": "Deixa’ns el teu correu electrònic i una persona de debò hi posarà la teva carta i t’enviarà l’enllaç.",
+  "emailPlaceholder": "tu@elteufoodtruck.ad",
+  "sending": "…",
+  "send": "Envia",
+  "noPhoto": "No tens cap foto de la carta a mà?",
+  "noPhotoBody": "Fes un cop d’ull amb un food truck de mostra: pots pujar la teva carta quan vulguis.",
+  "build": "Crea la meva demostració →",
+  "nothingPublished": "No es publica res: només ho pots veure tu.",
+  "error": {
+    "somethingWrong": "Alguna cosa ha fallat. Torna-ho a provar.",
+    "serverUnreachable": "No hem pogut connectar amb el servidor. Comprova la connexió i torna-ho a provar.",
+    "sendFailed": "No s’ha pogut enviar. Torna-ho a provar."
+  },
+  "fields": {
+    "uploadLabel": "Puja el fitxer de la carta",
+    "dropHere": "Deixa anar la carta aquí",
+    "dragOrTap": "Arrossega i deixa anar, o toca per triar",
+    "fileTypes": "Imatge o PDF",
+    "or": "o",
+    "pasteLabel": "Enganxa el text de la carta",
+    "pastePlaceholder": "Enganxa aquí la teva carta: noms dels productes, descripcions, preus..."
+  },
+  "emailLabel": "El teu correu electrònic",
+  "emailNote": "T’enviarem per correu electrònic un enllaç a la demostració i és possible que contactem amb tu per configurar HatchGrab. <link>Política de privadesa</link>",
+  "marketing": "Envia’m de tant en tant consells i novetats de HatchGrab",
+  "emailInvalid": "Introdueix una adreça de correu electrònic vàlida."
+}

@@ -1,0 +1,21 @@
+{
+  "homeLabel": "Inici de HatchGrab",
+  "cta": "Puja la meva carta →",
+  "ctaShort": "Puja la carta",
+  "features": "Funcions",
+  "pricing": "Preus",
+  "logIn": "Inicia la sessió",
+  "country": {
+    "button": "País: {name}. Canvia de país",
+    "menu": "País",
+    "title": "Tria el teu país",
+    "subline": "Els preus, l’idioma i la configuració s’hi adapten.",
+    "regions": {
+      "europe": "Europa",
+      "americas": "Amèrica",
+      "asiaPacific": "Àsia-Pacífic",
+      "middleEast": "Orient Mitjà",
+      "africa": "Àfrica"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "heading": "Impostos, propines i comissions",
+  "rate": {
+    "label": "Tipus de l’impost sobre les vendes",
+    "hint": "El tipus que apliques a cada comanda. Els clients el veuen afegit en pagar, als rebuts i als tiquets.",
+    "regionDefault": "Deixa-ho buit per aplicar {label} al {rate} %, el tipus del menjar preparat ({region})."
+  },
+  "included": {
+    "label": "{label} inclòs als teus preus",
+    "hint": "Els teus preus ja inclouen {label}. Aquest tipus només indica quina part de cada preu correspon a {label}, als rebuts i als tiquets: en pagar no s’hi afegeix res.",
+    "default": "Deixa-ho buit per fer servir el {rate} %, el tipus ({label}) del menjar calent per emportar ({country})."
+  },
+  "tips": {
+    "label": "Propines",
+    "hint": "Els clients que paguen en línia amb targeta poden afegir-hi una propina. És tota per a tu.",
+    "choices": "Opcions que veuen els clients:",
+    "chip": "{rate} %",
+    "other": "Un altre import"
+  },
+  "fee": {
+    "label": "Comissió de servei en línia",
+    "hint": "Només s’afegeix a les comandes en línia. Mai a les de «Paga en recollir» ni a les presencials. Te la quedes tu.",
+    "pctAria": "Percentatge de la comissió de servei",
+    "fixedAria": "Import fix de la comissió de servei",
+    "max": "Màxim que pots cobrar: {max}",
+    "example": "Els clients la veuen abans de pagar, en una sola línia: «{label} {amount}».",
+    "hatchgrab": "HatchGrab afegeix una comissió de servei de {fee} a les comandes en línia dels teus clients. No la pagues tu i no la pots canviar."
+  },
+  "saveFailed": "No s’ha pogut desar. Torna-ho a provar."
+}

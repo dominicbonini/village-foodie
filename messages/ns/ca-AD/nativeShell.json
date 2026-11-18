@@ -1,0 +1,137 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab fa servir la càmera perquè puguis fotografiar la pissarra de la carta, els teus plats i altres documents i pujar-los directament al teu compte. Les imatges només es fan servir per a les pujades que tu decideixis fer.",
+    "bluetoothUsage": "HatchGrab fa servir el Bluetooth per connectar-se a la impressora de tiquets de la cuina i imprimir automàticament els tiquets de les comandes. No es fa servir per a res més.",
+    "localNetworkUsage": "HatchGrab es connecta a la impressora de la cuina a través de la xarxa local per imprimir automàticament els tiquets de les comandes. No es fa servir per a res més.",
+    "faceIdUsage": "Desbloqueja HatchGrab amb Face ID.",
+    "offlineTitle": "No es pot connectar amb HatchGrab",
+    "offlineDetail": "Comprova la connexió.",
+    "retry": "Torna-ho a provar"
+  },
+  "gate": {
+    "reverted": "S’ha desfet el canvi de la comanda #{id}",
+    "saved": "Comanda #{id} desada",
+    "undo": "↩ Desfés",
+    "paymentNotRecorded": "⚠ Comanda #{id}: PAGAMENT NO REGISTRAT. {collect, select, yes {La comanda s’ha completat} other {La comanda s’ha desat}}, però el pagament no.",
+    "recordPayment": "Registra el pagament",
+    "paid": "Comanda #{id} pagada",
+    "undonePayment": "Desfet: s’ha eliminat el pagament",
+    "undoneCollected": "Desfet: la comanda no s’ha recollit",
+    "collected": "Comanda #{id} {paidToo, select, yes {pagada i recollida} other {recollida}}",
+    "ready": "Comanda #{id} a punt",
+    "readyBuzzer": "Comanda #{id} a punt · <pill></pill>",
+    "status": "Comanda #{id} {action, select, confirm {confirmada} reject {rebutjada} ready {a punt} collected {recollida} undo_collected {restaurada} cancel {cancel·lada} other {actualitzada}}"
+  },
+  "conflicts": {
+    "more": "+{count} més",
+    "notOnScreenPlus": "+{count} fora d’aquesta pantalla",
+    "notOnScreen": "{n, plural, one {{count} comanda fora d’aquesta pantalla} other {{count} comandes fora d’aquesta pantalla}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ PAGAMENT NO REGISTRAT",
+    "paymentBody": "{orders}: s’ha marcat com a pagat només en aquest dispositiu. No s’ha registrat.",
+    "paymentCheck": "Revisa la comanda i torna a cobrar si encara s’ha de pagar.",
+    "dismiss": "Descarta",
+    "confirmChecked": "Confirma que has revisat: {orders}",
+    "confirmHides": "Això amaga l’avís. El registre es manté en aquest dispositiu igualment.",
+    "notYet": "Encara no",
+    "iveChecked": "Ja he revisat: {orders}",
+    "statusBody": "⚠ {orders}: aquest canvi no s’ha aplicat. Revisa la comanda.",
+    "offline": "📴 Sense connexió: {n, plural, one {{count} canvi desat en aquest dispositiu. S’enviarà quan tornis a tenir connexió.} other {{count} canvis desats en aquest dispositiu. S’enviaran quan tornis a tenir connexió.}} La configuració està bloquejada.",
+    "syncing": "Torna a haver-hi connexió: s’està enviant {n, plural, one {{count} canvi} other {{count} canvis}}…",
+    "synced": "S’han enviat tots els canvis.",
+    "stillQueued": "{n, plural, one {{count} canvi desat en aquest dispositiu. Encara s’està intentant enviar.} other {{count} canvis desats en aquest dispositiu. Encara s’estan intentant enviar.}}",
+    "notApproved": "{n, plural, one {{count} comanda en espera} other {{count} comandes en espera}}: aquest esdeveniment no està aprovat. Aprova’l per enviar-les."
+  },
+  "lock": {
+    "locked": "HatchGrab està bloquejat",
+    "verifying": "S’està verificant…",
+    "unlock": "Desbloqueja",
+    "cantUseBiometric": "No pots fer servir Face ID / Touch ID?",
+    "enterPin": "Introdueix el PIN de reserva",
+    "wrongPin": "PIN incorrecte: torna-ho a provar.",
+    "checking": "S’està comprovant…",
+    "tryBiometric": "Prova amb Face ID / Touch ID",
+    "forgot": "Has oblidat el PIN? Hauràs de tornar a instal·lar l’aplicació."
+  },
+  "notify": {
+    "title": "🔔 Notificacions",
+    "intro": "Avisos en aquest dispositiu. Activa’ls per triar quins avisos reps.",
+    "refused": "Per activar-ho, cal permetre les notificacions a la configuració del dispositiu.",
+    "newOrder": "Avisos de comandes noves",
+    "newOrderHelp": "Rep un avís quan s’hagi de confirmar la comanda d’un client.",
+    "offline": "Avisos de desconnexió / pausa",
+    "offlineHelp": "Rep un avís quan aquest dispositiu es quedi sense connexió (i les comandes es posin en pausa). <green>Funciona sense connexió.</green>"
+  },
+  "van": {
+    "label": "Vehicle",
+    "loadRetry": "No s’ha carregat · Torna-ho a provar",
+    "select": "Selecciona…"
+  },
+  "deviceSave": {
+    "network": "No s’ha pogut connectar amb el servidor: comprova la connexió i torna-ho a provar.",
+    "server": "Ara mateix no s’ha pogut desar. Torna-ho a provar."
+  },
+  "setup": {
+    "fetchErrorTitle": "No s’ha pogut carregar la configuració del dispositiu",
+    "fetchErrorBody": "No hem pogut connectar amb el servidor per configurar <b>aquest dispositiu</b>. Comprova la connexió i torna-ho a provar: les teves comandes i la configuració no s’han vist afectades.",
+    "retry": "Torna-ho a provar",
+    "later": "Més tard",
+    "noVanTitle": "Cap vehicle actiu",
+    "noVanBody": "Aquest food truck encara no té cap vehicle actiu. Activa’n un a <b>Configuració → Els teus vehicles</b> i aquest dispositiu es configurarà automàticament: no cal fer res més aquí.",
+    "goToVans": "Ves a Configuració → Els teus vehicles",
+    "title": "Configura aquest dispositiu",
+    "body": "Configuració única per a <b>aquest dispositiu</b>: la pantalla que obre en començar i quin vehicle porta. Només s’aplica a aquest dispositiu (els altres dispositius es configuren per separat) i ho pots canviar més endavant des del menú del perfil → «Aquest dispositiu».",
+    "whichScreen": "Quina pantalla ha d’obrir aquest dispositiu?",
+    "dashboard": "Tauler",
+    "kds": "Pantalla de cuina (KDS)",
+    "whichVan": "Quin vehicle és aquest dispositiu?",
+    "selectVan": "Selecciona un vehicle…",
+    "saving": "S’està desant…",
+    "tryAgain": "Torna-ho a provar",
+    "continue": "Continua"
+  },
+  "device": {
+    "title": "Aquest dispositiu",
+    "viewing": "Estàs veient: <b>{truck}</b>",
+    "viewingVan": "Estàs veient: <b>{truck}</b> — <b>{van}</b>",
+    "only": "Només aquest dispositiu: els altres es configuren per separat. (ID: {id}…)",
+    "truck": "Food truck",
+    "van": "Vehicle",
+    "defaultScreen": "Pantalla predeterminada",
+    "orderNotifications": "Notificacions de comandes",
+    "patchFailed": "{setting, select, van {Vehicle} defaultScreen {Pantalla predeterminada} other {Notificacions de comandes}}: no s’ha desat. {reason}",
+    "requireBiometric": "Demana l’empremta o el reconeixement facial per obrir",
+    "pinTitle": "Defineix un PIN de reserva (4–6 xifres)",
+    "pinHelp": "És la teva manera d’entrar si l’empremta o el reconeixement facial no funcionen: és l’única alternativa, així que no l’oblidis (si l’oblides, hauràs de tornar a instal·lar l’aplicació). Funciona sense connexió.",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "Confirma el PIN",
+    "pinTooShort": "Fes servir almenys 4 xifres.",
+    "pinMismatch": "Els PIN no coincideixen.",
+    "setPin": "Defineix el PIN i activa",
+    "cancel": "Cancel·la",
+    "noBiometric": "Aquest dispositiu no té configurada l’empremta ni el reconeixement facial: afegeix-los a la configuració del dispositiu. El PIN de reserva continua funcionant.",
+    "footer": "Aquesta configuració només s’aplica a aquest dispositiu: els altres dispositius es configuren per separat."
+  },
+  "appLock": {
+    "unlockReason": "Desbloqueja HatchGrab",
+    "usePasscode": "Fes servir el codi",
+    "cancel": "Cancel·la",
+    "confirmEnable": "Confirma per activar el bloqueig de l’aplicació"
+  },
+  "channel": {
+    "ordersName": "Comandes noves",
+    "ordersDescription": "Avisos quan s’ha de confirmar una comanda."
+  },
+  "localNotify": {
+    "newOrderTitle": "Comanda nova",
+    "orderReceived": "Comanda {number} rebuda",
+    "newOrders": "{n, plural, one {Tens una comanda nova} other {Tens {count} comandes noves}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "Comandes en pausa",
+    "pausedBody": "No tens connexió: les comandes dels clients estan en pausa.",
+    "offlineTitle": "No tens connexió",
+    "offlineBody": "Aquest dispositiu s’ha quedat sense connexió."
+  }
+}

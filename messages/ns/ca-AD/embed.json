@@ -1,0 +1,8 @@
+{
+  "metaDescription": "On serà {truck} properament.",
+  "orderFrom": "Fes la comanda a {truck}",
+  "poweredBy": "Amb la tecnologia de <b>HatchGrab</b>",
+  "loadFailed": "Ara mateix no s’ha pogut carregar el calendari.",
+  "loading": "S’està carregant el calendari…",
+  "empty": "No hi ha esdeveniments previstos per a {truck}."
+}

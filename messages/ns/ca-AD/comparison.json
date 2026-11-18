@@ -1,0 +1,400 @@
+{
+  "path": {
+    "section": "comparativa",
+    "slug": "sistema-de-comandes-food-truck"
+  },
+  "meta": {
+    "title": "Sistemes de comandes per a food trucks: comparativa 2026",
+    "description": "Sistemes de comandes per a food trucks: hora de recollida, capacitat de cuina, calendari setmanal, comissions i permanència, comprovats a cada proveïdor.",
+    "about": "Sistemes de comandes en línia per a food trucks"
+  },
+  "breadcrumb": {
+    "home": "HatchGrab",
+    "here": "Comparativa",
+    "label": "Ruta de navegació"
+  },
+  "h1": "Comparativa de sistemes de comandes per a food trucks 2026",
+  "byline": "Última comprovació: {date} · Fet per HatchGrab. Som un dels proveïdors comparats (consulta <link>Com hem fet la comparació</link>).",
+  "table": {
+    "title": "Els sistemes de comandes comparats",
+    "caption": "Funcions i costos dels sistemes de comandes en línia per a food trucks ({country}), a data de {date}",
+    "note": "«Sí» només quan el proveïdor ho diu públicament.",
+    "feature": "Funció",
+    "yes": "Sí",
+    "no": "No",
+    "unknown": "No s’indica",
+    "fromPlan": "Des del pla {plan}",
+    "appNotInCountry": "No disponible ({country})",
+    "appFlagOff": "Sí – encara desactivat; es mostrarà quan les botigues d’aplicacions l’incloguin",
+    "range": "De {from} a {to}",
+    "feePlan": "{fee} ({plans})",
+    "noFee": "cap",
+    "morePending": "Aquí apareixeran més proveïdors quan haguem comprovat les seves dades al seu propi web.",
+    "priceHidden": "Sota demanda",
+    "feeAfter": "{fee} per sobre de {included} al mes",
+    "legend": "✓ Sí · ◐ En part · ✗ No · No hi apareix: no surt a les seves pàgines de funcions ni de preus · —: el seu web no ho diu · No s’aplica: aquest tipus de servei no té la funció · ⓘ: la nota, la cita i la font",
+    "swipe": "Llisca cap al costat per veure tots els productes →"
+  },
+  "costs": {
+    "title": "Quant costa un sistema de comandes per a food trucks?",
+    "ourPlan": "{plan}: {price} al mes, {fee}",
+    "feeOnly": "{fee} per comanda en línia",
+    "feeIncluded": "comandes en línia incloses fins a {included} al mes; després, {fee}",
+    "feeNone": "sense comissió de HatchGrab sobre les comandes en línia",
+    "rivalPlan": "{plan}: {price}",
+    "perMonth": "{price} al mes",
+    "perMonthYearly": "{price} al mes, facturat anualment",
+    "vatExcl": "sense impost sobre el valor afegit",
+    "vatIncl": "impost sobre el valor afegit inclòs",
+    "setup": "{price} d’alta (pagament únic)",
+    "truckFee": "{fee} per comanda",
+    "customerFee": "{fee} per comanda, que paga el client",
+    "source": "Font",
+    "checked": "comprovat el {date}",
+    "cardFee": "Els pagaments amb targeta en línia amb HatchGrab també comporten les comissions que cobra Stripe: {cardFee} per pagament amb targeta ({country}).",
+    "vat": "HatchGrab Ltd és una empresa del Regne Unit i no està registrada a efectes de l’impost sobre el valor afegit a {country}, així que no s’afegeix aquest impost a les nostres tarifes. Si hi estàs registrat, dona’ns el teu número de registre; aleshores ets tu qui declara l’impost que correspongui sobre les nostres tarifes, per inversió del subjecte passiu.",
+    "bundledFee": "{fee} per pagament en línia, comissió per targeta inclosa"
+  },
+  "fit": {
+    "title": "Quin sistema s’adapta a cada cas?",
+    "ours": "HatchGrab t’encaixa si …",
+    "oursBody": "vens en llocs que canvien, vols comandes anticipades amb hora de recollida, no vols que la cuina se’t col·lapsi i no vols cap contracte de permanència.",
+    "oursNot": "HatchGrab no t’encaixa si …",
+    "oursNotBody": "els teus clients han de pagar amb PayPal o Klarna, o vols un TPV certificat amb TSE d’un sol proveïdor.",
+    "appClause": "O si necessites l’aplicació de cuina per a iPad o Android a {country}: encara no és a les botigues d’aplicacions d’allà.",
+    "tills": "TPV i datàfons",
+    "marketplaces": "Plataformes de repartiment",
+    "rival": "{name} encaixa si …",
+    "tillsBody": "Els TPV cobren al food truck i compleixen el requisit de la TSE. Un sistema de comandes funciona al costat d’un TPV; no el substitueix.",
+    "tillsBodyNamed": "Els TPV cobren al food truck i compleixen el requisit de la TSE. {names} també {count, plural, one {és} other {són}} a la taula de dalt. Un sistema de comandes funciona al costat d’un TPV; no el substitueix.",
+    "marketplacesBody": "Les plataformes de repartiment porten clients nous, però cobren comissió per cada comanda. Uber Eats indica un 14 % per a la recollida i un 30 % per al repartiment amb repartidors d’Uber a Alemanya. Wolt diu al seu web que cobra comissió, però no en dona les tarifes. No hem pogut comprovar les tarifes de Lieferando. Aquesta comissió també s’aplica als clients habituals que et fan comandes anticipades."
+  },
+  "groups": {
+    "food_truck": "Sistema de comandes per a food trucks",
+    "nearest_local": "Sistema de comandes",
+    "pos": "Sistema de TPV"
+  },
+  "faq": {
+    "title": "Preguntes freqüents",
+    "whatQ": "Què és un sistema de comandes per a food trucks?",
+    "whatA": "Un sistema de comandes rep comandes en línia abans que els clients arribin al food truck: trien els plats i una hora de recollida, paguen en línia o en recollir, i la comanda apareix a la teva cuina. Un TPV o un datàfon cobra al food truck. Tots dos es complementen.",
+    "costQ": "Quant costa HatchGrab a {country}?",
+    "costA": "{plans}. Els pagaments amb targeta en línia també comporten les comissions que cobra Stripe: {cardFee} per pagament amb targeta.",
+    "termQ": "Hi ha permanència mínima?",
+    "termA": "No. No hi ha permanència mínima ni termini de preavís. Pots cancel·lar quan vulguis; la quota es factura mensualment per avançat i mantens l’accés fins al final del mes que has pagat.",
+    "locationsQ": "Funciona amb llocs que canvien?",
+    "locationsA": "Sí. Configures el teu calendari setmanal amb llocs i horaris, i els clients fan la comanda per al lloc i el dia en què hi ets.",
+    "capacityQ": "Com evita el sistema que la cuina se’m col·lapsi?",
+    "capacityA": "Els clients només veuen les hores de recollida que la teva cuina pot complir de debò. El sistema es basa en el temps de preparació de cada plat i en quants en prepares alhora.",
+    "tseQ": "Encara necessito un TPV amb TSE?",
+    "tseA": "HatchGrab no és un TPV i no té TSE. Com registres les comandes en línia al teu TPV és una qüestió per al teu assessor fiscal.",
+    "paymentsQ": "Quins mètodes de pagament admet HatchGrab?",
+    "paymentsA": "Els clients paguen en línia amb targeta, Apple Pay o Google Pay, o paguen en recollir al food truck. Ara mateix no s’admeten PayPal ni Klarna.",
+    "costTrial": "{months, plural, one {El primer mes és gratuït} other {Els primers # mesos són gratuïts}}, amb totes les funcions."
+  },
+  "method": {
+    "title": "Com hem fet la comparació",
+    "checked": "Última comprovació: {date}.",
+    "prices": "Els preus es mostren tal com els indica el proveïdor, amb l’impost sobre el valor afegit inclòs.",
+    "meaning": "«Sí» vol dir que el proveïdor indica la funció públicament. «No s’indica» vol dir que no n’hem trobat res al seu web — no que la funció no hi sigui.",
+    "vendor": "HatchGrab gestiona aquesta pàgina i és un dels proveïdors comparats.",
+    "review": "Els preus i les funcions es comproven automàticament amb el web de cada producte; cada afirmació enllaça a la seva font.",
+    "corrections": "Has trobat un error? Explica’ns-ho a través del nostre <link>formulari de contacte</link>.",
+    "reportError": "<link>Informa d’un error</link>",
+    "machine": "Per a assistents d’IA i desenvolupadors: aquesta taula <md>en Markdown</md> · <json>en JSON</json>"
+  },
+  "cta": {
+    "title": "Prova-ho gratis {months, plural, one {# mes} other {# mesos}}",
+    "noCard": "No cal targeta de crèdit",
+    "cancel": "Cancel·lació mensual",
+    "button": "Prova-ho gratis"
+  },
+  "admin": {
+    "status": "Esborrany · noindex · fora del sitemap, llms.txt i hreflang · enllaç al peu només per als admins",
+    "statusLive": "Publicada · pública i indexable",
+    "viewAdmin": "Vista d’Admin",
+    "viewPublic": "El que veu el públic",
+    "pricingCheck": "Obre el «Pricing check»",
+    "checklist": "Abans de publicar",
+    "goLive": "La pàgina es publica a «Admin › Countries».",
+    "check": {
+      "apps": "Opcions d’iPad i Android activades per a {country}",
+      "placeholders": "No queda cap marcador «[ … ]» al text",
+      "vat": "Hi ha la menció de l’impost sobre el valor afegit"
+    },
+    "unverified": "sense verificar · amagat al públic",
+    "autoVerified": "verificat automàticament",
+    "unchecked": "encara no comprovat per a tots els competidors mostrats · amagat al públic",
+    "label": "Admin",
+    "notShown": "No surten a la pàgina (se’n mostren quatre com a màxim): {names}.",
+    "reasonHidden": "{name} (amagat)",
+    "reasonBeyond": "{name} (més enllà dels quatre)",
+    "reasonNoWebsite": "{name} (sense web)",
+    "liveAuto": "Publicada amb publicació automàtica",
+    "adminsOnly": "Només admins — {reason}",
+    "whyFewer": "{n} de {total} competidors superen les comprovacions automàtiques; en calen 2",
+    "whyAutoOff": "la publicació automàtica està desactivada per a aquest país",
+    "shown": "{n, plural, one {# competidor mostrat} other {# competidors mostrats}}",
+    "details": "Detalls"
+  },
+  "footer": {
+    "heading": "Comparativa",
+    "link": "Comparativa de sistemes de comandes"
+  },
+  "featureGroups": {
+    "ordering": "Comandes",
+    "payments": "Pagaments",
+    "kitchen": "Cuina",
+    "marketing": "Màrqueting",
+    "apps_hardware": "Aplicacions i maquinari",
+    "price_contract": "Preu i contracte"
+  },
+  "cell": {
+    "yes": "Sí",
+    "no": "No",
+    "partial": "En part",
+    "unknown": "No s’indica",
+    "not_mentioned": "El seu web no ho esmenta",
+    "withNote": "{word}, {note}",
+    "soon": "aviat disponible",
+    "fromPlan": "des del pla {plan}",
+    "perCardPayment": "{fee} per pagament amb targeta",
+    "trial": "{months, plural, one {# mes gratuït} other {# mesos gratuïts}}",
+    "setupFee": "{price} (pagament únic)",
+    "perMonth": "{price} al mes",
+    "notInCountry": "no disponible ({country})",
+    "flagOff": "encara desactivat; es mostrarà quan les botigues d’aplicacions l’incloguin",
+    "notApplicable": "no s’aplica a una plataforma de repartiment",
+    "not_listed": "No hi apareix",
+    "details": "Detalls",
+    "doesntApply": "No s’aplica",
+    "doesntSay": "No ho diu",
+    "none": "Cap"
+  },
+  "explained": {
+    "title": "Què vol dir cada funció"
+  },
+  "costBlock": {
+    "title": "Què paga un food truck cada mes",
+    "sizes": "Vendes en línia al mes",
+    "sizeSales": "{sales} al mes",
+    "sizeOrders": "unes {orders} comandes",
+    "lead": "Per a un food truck que fa {sales} en comandes en línia al mes (unes {orders} comandes). Cada barra és el cost mensual total: la quota pròpia del sistema de comandes més les comissions per targeta d’aquestes comandes.",
+    "legendSoftware": "Quota del programari",
+    "legendCard": "Comissions per targeta",
+    "software": "Quota del programari: {amount} al mes",
+    "card": "Comissions per targeta: {amount} al mes",
+    "total": "{amount} al mes, comissions per targeta incloses",
+    "share": "{pct} de les vendes",
+    "assumed": "(tarifa no publicada, suposada)",
+    "customerFee": "A més, {amount} al mes que paguen els clients ({fee} per comanda) — no inclòs a la barra",
+    "summaryCheapest": "Quota pròpia de {us}: {ours} al mes; el rival més barat que es mostra: {theirs} al mes. Les comissions per targeta ({card} al mes) es cobren en cada pagament amb targeta sigui quin sigui el sistema, així que la diferència que compta és la quota del programari.",
+    "summaryNotCheapest": "Quota pròpia de {us}: {ours} al mes, més que el rival més barat que es mostra, {rival} ({theirs} al mes). Les comissions per targeta ({card} al mes) es cobren en cada pagament amb targeta sigui quin sigui el sistema.",
+    "summaryAlone": "Quota pròpia de {us}: {ours} al mes. Les comissions per targeta ({card} al mes) es cobren en cada pagament amb targeta sigui quin sigui el sistema.",
+    "footOrder": "Comanda mitjana: {order} — un àpat típic ({meal}) × {multiplier} plats per comanda ({source}).",
+    "footCard": "Les comissions per targeta es calculen amb {rate} per pagament amb targeta: {source}.",
+    "footCardSource": "tarifa que aplica Stripe a {country}",
+    "footAssumed": "{names} {count, plural, one {no publica} other {no publiquen}} cap tarifa de targeta, així que se suposa la nostra.",
+    "footChecked": "Preus comprovats el {date}.",
+    "footCalculator": "Calcula les teves xifres a la calculadora.",
+    "noRivals": "Encara no hi ha cap rival verificat a {country}, així que no hi ha res per comparar."
+  },
+  "features": {
+    "preorder": {
+      "label": "Comandes anticipades amb hora de recollida triada",
+      "explain": "Els clients fan la comanda per endavant i trien l’hora de recollida."
+    },
+    "capacity": {
+      "label": "Hores de recollida limitades per la capacitat de la cuina",
+      "explain": "Els clients només veuen les hores de recollida que la cuina pot complir de debò."
+    },
+    "asap": {
+      "label": "Comandes per a com més aviat millor",
+      "explain": "Els clients poden fer la comanda sense triar hora i recollir-la tan aviat com estigui a punt."
+    },
+    "ahead": {
+      "label": "Comandes per endavant per a un altre dia o esdeveniment",
+      "explain": "Els clients poden fer avui la comanda per a un mercat o un esdeveniment d’un altre dia."
+    },
+    "schedule": {
+      "label": "Calendari setmanal amb llocs que canvien",
+      "explain": "La setmana del food truck, amb llocs i horaris; els clients fan la comanda per al lloc i el dia en què hi és."
+    },
+    "walkup": {
+      "label": "Comandes presencials a la mateixa pantalla que les comandes en línia",
+      "explain": "Les comandes que es prenen al food truck entren a la mateixa llista que les comandes en línia."
+    },
+    "stock": {
+      "label": "Esgotats i límits d’estoc per esdeveniment",
+      "explain": "Marca plats com a esgotats i defineix quants se’n poden vendre de cadascun en un esdeveniment."
+    },
+    "notify": {
+      "label": "Avís als clients quan la comanda és a punt",
+      "explain": "Com s’assabenten els clients que la comanda és a punt: SMS, WhatsApp, correu electrònic, notificació push o una pàgina d’estat de la comanda en directe.",
+      "ours": "correu electrònic quan el pas «A punt» està activat, i una pàgina d’estat de la comanda; sense SMS, WhatsApp ni notificacions push"
+    },
+    "allergens": {
+      "label": "Al·lèrgens a la carta",
+      "explain": "Cada plat mostra els seus al·lèrgens als clients abans que facin la comanda."
+    },
+    "menuphoto": {
+      "label": "Carta configurada a partir d’una foto",
+      "explain": "Una foto o un PDF de la carta omple els plats perquè els revisis."
+    },
+    "options": {
+      "label": "Opcions i extres als plats",
+      "explain": "Mides, salses i extres, incloses les opcions que el client ha de triar."
+    },
+    "deals": {
+      "label": "Menús i lots",
+      "explain": "Diversos productes que es venen junts a un sol preu."
+    },
+    "private": {
+      "label": "Esdeveniments privats i reserves",
+      "explain": "Comandes per a un esdeveniment privat amb el seu propi enllaç, i sol·licituds per reservar el food truck.",
+      "ours": "esdeveniments privats amb el seu propi enllaç de comandes; sense sol·licituds de reserva"
+    },
+    "qr": {
+      "label": "Comandes des de la taula amb codi QR",
+      "explain": "Els clients escanegen un codi a la taula i la comanda arriba amb el número de taula.",
+      "ours": "un codi QR obre la pàgina de comandes; sense números de taula"
+    },
+    "cards": {
+      "label": "Pagaments amb targeta en línia, amb Apple Pay i Google Pay",
+      "explain": "Els clients paguen en línia amb targeta, Apple Pay o Google Pay quan fan la comanda."
+    },
+    "payattruck": {
+      "label": "Pagament en recollir",
+      "explain": "Els clients fan la comanda en línia i paguen quan la recullen."
+    },
+    "localpay": {
+      "label": "Mètodes de pagament locals (BLIK, iDEAL, Swish, MobilePay…)",
+      "explain": "Els mètodes de pagament en línia propis del país, a més de les targetes.",
+      "ours": "només targetes"
+    },
+    "paypal": {
+      "label": "PayPal o Klarna",
+      "explain": "Els clients poden pagar amb PayPal o Klarna."
+    },
+    "custfee": {
+      "label": "Opció perquè el client pagui la comissió de la comanda",
+      "explain": "El negoci pot repercutir una comissió de servei al client."
+    },
+    "tips": {
+      "label": "Propines",
+      "explain": "Els clients poden afegir una propina quan paguen en línia."
+    },
+    "paymethods": {
+      "label": "Mètodes de pagament disponibles",
+      "explain": "Com poden pagar els clients, segons indica el proveïdor.",
+      "ours": "targeta, Apple Pay, Google Pay; pagament en recollir"
+    },
+    "kds": {
+      "label": "Pantalla de cuina (KDS)",
+      "explain": "Les comandes apareixen en una pantalla a la cuina, en l’ordre en què s’han de preparar."
+    },
+    "tickets": {
+      "label": "Tiquets de cuina impresos",
+      "explain": "Cada comanda s’imprimeix en una impressora de tiquets al food truck.",
+      "ours": "a l’aplicació per a iPad i Android; impressora no inclosa"
+    },
+    "buzzers": {
+      "label": "Avisadors",
+      "explain": "Els clients reben un avisador que els indica quan la comanda és a punt.",
+      "ours": "número d’avisador registrat a cada comanda; avisadors no inclosos"
+    },
+    "offline": {
+      "label": "Continua funcionant si cau internet",
+      "explain": "Les comandes i els canvis fets sense connexió es desen i s’envien quan torna la connexió.",
+      "ours": "a l’aplicació per a iPad i Android; no al tauler web"
+    },
+    "vans": {
+      "label": "Diversos vehicles o food trucks",
+      "explain": "Un sol compte gestiona més d’un vehicle.",
+      "ours": "vehicles addicionals per una quota mensual afegida"
+    },
+    "staff": {
+      "label": "Accessos per al personal",
+      "explain": "El personal inicia la sessió amb el seu propi usuari i rol."
+    },
+    "reports": {
+      "label": "Informes de vendes",
+      "explain": "Totals, productes més venuts i vendes per esdeveniment o data, amb exportació a full de càlcul."
+    },
+    "domain": {
+      "label": "Adreça web pròpia",
+      "explain": "La pàgina de comandes al domini propi del negoci."
+    },
+    "whatsapp": {
+      "label": "Respostes automàtiques de WhatsApp",
+      "explain": "Els missatges de WhatsApp dels clients es responen automàticament."
+    },
+    "social": {
+      "label": "Publicacions a les xarxes socials a partir del teu calendari",
+      "explain": "Publicacions a punt que mostren on és el food truck aquesta setmana."
+    },
+    "igmsg": {
+      "label": "Respostes a Instagram i Messenger",
+      "explain": "Els missatges d’Instagram i de Facebook Messenger es responen automàticament."
+    },
+    "discovery": {
+      "label": "Present en un mapa per descobrir food trucks",
+      "explain": "Els clients troben el food truck en un mapa públic de food trucks propers.",
+      "ours": "Village Foodie"
+    },
+    "loyalty": {
+      "label": "Fidelització",
+      "explain": "Els clients acumulen recompenses per tornar."
+    },
+    "ipad": {
+      "label": "Aplicació per a iPad",
+      "explain": "L’aplicació del food truck per rebre i gestionar comandes en un iPad."
+    },
+    "android": {
+      "label": "Aplicació per a Android",
+      "explain": "La mateixa aplicació en una tauleta o un mòbil Android."
+    },
+    "hardware": {
+      "label": "Maquinari inclòs (tauleta, impressora)",
+      "explain": "El proveïdor proporciona la tauleta o la impressora.",
+      "ours": "fes servir el teu"
+    },
+    "terminal": {
+      "label": "Datàfon inclòs per cobrar al food truck",
+      "explain": "El proveïdor proporciona un datàfon per als pagaments al food truck."
+    },
+    "fiscal": {
+      "label": "TPV certificat per a la normativa fiscal (TSE, EET, kassaregister…)",
+      "explain": "Un TPV certificat segons les normes del país per registrar les vendes."
+    },
+    "delivery": {
+      "label": "Repartiment a domicili",
+      "explain": "Comandes lliurades a l’adreça del client.",
+      "ours": "només recollida"
+    },
+    "monthly": {
+      "label": "Preu mensual",
+      "explain": "El que paga el negoci cada mes pel programari."
+    },
+    "perorder": {
+      "label": "Comissió per comanda en línia",
+      "explain": "El que cobra el proveïdor per cada comanda en línia, a més del preu mensual."
+    },
+    "cardfee": {
+      "label": "Comissió per targeta",
+      "explain": "La comissió del proveïdor de pagaments per cada pagament amb targeta."
+    },
+    "term": {
+      "label": "Permanència mínima",
+      "explain": "Quant de temps queda lligat el negoci abans de poder cancel·lar."
+    },
+    "setup": {
+      "label": "Quota d’alta",
+      "explain": "Un càrrec únic per començar."
+    },
+    "trial": {
+      "label": "Prova gratuïta",
+      "explain": "Temps per fer servir el sistema gratis abans de pagar."
+    }
+  }
+}

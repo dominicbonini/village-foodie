@@ -1,0 +1,8 @@
+{
+  "subject": "La teva demostració de HatchGrab: aquí tens l’enllaç",
+  "heading": "La teva demostració està a punt",
+  "intro": "Aquí tens l’enllaç a la demostració que hem creat a partir de la teva carta. Fes-hi una comanda com si fossis un dels teus clients i mira com arriba a la teva pantalla de cuina. No cal iniciar la sessió: només has de tocar l’enllaç.",
+  "button": "Obre la meva demostració",
+  "deletion": "Com que és una demostració, no la conservem: la suprimirem el {date}, juntament amb la carta que vas pujar. Si la vols més temps, prem «Desa la meva carta» a la demostració i la conservarem 14 dies.",
+  "deletionSoon": "Com que és una demostració, no la conservem: la suprimirem d’aquí a 24 hores, juntament amb la carta que vas pujar. Si la vols més temps, prem «Desa la meva carta» a la demostració i la conservarem 14 dies."
+}

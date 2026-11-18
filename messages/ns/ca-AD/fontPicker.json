@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "Totes",
+    "bold": "Gruixudes i altes",
+    "hand": "Manuscrites",
+    "classic": "Clàssiques",
+    "clean": "Senzilles",
+    "own": "Les teves",
+    "ownCount": "Les teves ({count})"
+  },
+  "yoursTag": "· teva",
+  "loadingFonts": "S’estan carregant les fonts…",
+  "search": "Cerca entre {count, number} fonts",
+  "uploadButton": "↑ Puja la teva font",
+  "loadingLibrary": "S’està carregant la biblioteca de fonts…",
+  "tryAgain": "Torna-ho a provar",
+  "noOwn": "Encara no has pujat cap font. Fes servir el botó «↑ Puja la teva font» de dalt.",
+  "recent": "Usades recentment",
+  "popular": "Populars per a cartells",
+  "adding": "S’està afegint…",
+  "noMatch": "Cap font no coincideix amb «{query}».",
+  "showing": "Es mostren {shown} de {total, number}: escriu més per afinar la cerca.",
+  "couldNotAdd": "No s’ha pogut afegir aquesta font",
+  "tooBig": "Aquesta font ocupa {size, number, ::.0 group-off} MB. El límit és de 5 MB.",
+  "woff": "Puja un fitxer TTF o OTF: normalment en pots baixar un d’on vas comprar la font.",
+  "uploadIncomplete": "La pujada no s’ha completat",
+  "added": "S’ha afegit «{name}» com a versió {face}.",
+  "face": {
+    "regular": "normal",
+    "bold": "negreta",
+    "italic": "cursiva"
+  },
+  "licenceTick": "Soc el propietari d’aquesta font o tinc una llicència per fer-la servir",
+  "checking": "S’està comprovant la font…",
+  "addFont": "Afegeix la font",
+  "cancel": "Cancel·la",
+  "missingFaces": "Afegeix la versió {faces} de «{name}» (opcional): torna a triar el fitxer.",
+  "somethingWrong": "Alguna cosa ha fallat",
+  "faceLower": {
+    "regular": "normal",
+    "bold": "negreta",
+    "italic": "cursiva"
+  },
+  "ownLicence": "Pròpia",
+  "loadFailed": "No s’han pogut carregar les fonts"
+}

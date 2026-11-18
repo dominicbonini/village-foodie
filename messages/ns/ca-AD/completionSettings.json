@@ -1,0 +1,9 @@
+{
+  "paidStepTitle": "Accepta comandes sense pagament",
+  "completionTitle": "Com es completa una comanda no pagada",
+  "completionHelp": "Què passa quan una comanda no pagada està a punt per entregar.",
+  "pressesOne": "Un sol toc («Marca com a pagada i recollida»)",
+  "pressesOneHelp": "Ideal si cobres en el moment d’entregar el menjar. Tens un sol botó, «Marca com a pagada i recollida», que registra el pagament i tanca la comanda alhora.",
+  "pressesTwo": "Dos tocs («Marca com a pagada» i «Recollida»)",
+  "pressesTwoHelp": "Ideal si el pagament i l’entrega passen en moments diferents: algú paga al food truck i recull la comanda quan és a punt. Tens dos botons: primer «Marca com a pagada» i després «Recollida», quan s’emporten el menjar."
+}

@@ -1,0 +1,13 @@
+{
+  "stepHeading": "On té la base el teu food truck?",
+  "stepIntro": "Això defineix la moneda, els preus, la zona horària i el format del telèfon. El país no es pot canviar més endavant, perquè va lligat als teus pagaments amb targeta.",
+  "settingsHeading": "On treballes",
+  "countryLabel": "País",
+  "countryGuessed": "L’hem deduït d’on ets. Canvia’l si no és correcte.",
+  "countryLocked": "El teu país no es pot canviar",
+  "townLabel": "Població o ciutat",
+  "townQuestion": "Població o ciutat on tens la base",
+  "timezoneLabel": "Zona horària",
+  "continueButton": "Continua",
+  "saveFailed": "No s’ha pogut desar la configuració. Torna-ho a provar."
+}

@@ -1,0 +1,83 @@
+{
+  "title": "Tipus d’esdeveniment",
+  "newTypeButton": "+ Tipus d’esdeveniment nou",
+  "close": "Tanca",
+  "loading": "S’està carregant…",
+  "missingTitle": "Els tipus d’esdeveniment encara no estan activats.",
+  "missingBody": "L’actualització de la base de dades per a aquesta funció encara no s’ha aplicat. No hi ha res espatllat: tots els esdeveniments fan servir la teva configuració habitual.",
+  "column": "Columna",
+  "vanGone": "Aquest vehicle ja no existeix.",
+  "typeGone": "Aquest tipus ja no existeix.",
+  "standard": "Estàndard",
+  "standardHeading": "ESTÀNDARD",
+  "moreFor": "Més opcions: {name}",
+  "rename": "Canvia el nom",
+  "moveLeft": "Mou a l’esquerra",
+  "moveRight": "Mou a la dreta",
+  "delete": "Suprimeix",
+  "sections": {
+    "vans": "VEHICLES",
+    "prices": "PREUS",
+    "itemPrices": "PREUS DELS PRODUCTES",
+    "service": "SERVEI"
+  },
+  "labelFor": "{label}: {name}",
+  "intervalEvery": "Cada {mins} min",
+  "noTypes": "Encara no tens cap tipus d’esdeveniment, així que tots els esdeveniments fan servir la teva configuració habitual.",
+  "renameTitle": "Canvia el nom d’aquest tipus",
+  "name": "Nom",
+  "cancel": "Cancel·la",
+  "save": "Desa",
+  "copyVanOne": "Copia la configuració del Vehicle 1",
+  "thisType": "aquest tipus",
+  "matchTitle": "Vols igualar «{name}» a Estàndard?",
+  "matchKeeps": "El que hagis canviat al tauler d’un esdeveniment concret es manté tal com està, i els preus d’aquest tipus no canvien.",
+  "matchWillUse": "Farà servir: {summary}",
+  "deleteTitle": "Vols suprimir «{name}»?",
+  "deleteBody": "{n, plural, =0 {Cap esdeveniment proper fa servir «{name}».} one {{count} esdeveniment proper fa servir «{name}». Tornarà a Estàndard.} other {{count} esdeveniments propers fan servir «{name}». Tornaran a Estàndard.}} El que hagis canviat en un esdeveniment concret es manté tal com està.",
+  "keep": "Mantén",
+  "phone": {
+    "standardTag": "Estàndard",
+    "defaultTag": "predeterminat",
+    "vanSetup": "La configuració habitual d’aquest vehicle: s’aplica a tots els esdeveniments sense tipus.",
+    "standardSetup": "La teva configuració habitual: s’aplica a tots els esdeveniments sense tipus.",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} esdeveniment proper} other {{upcomingCount} esdeveniments propers}} · {changed, plural, =0 {encara no s’ha canviat res} one {{changedCount} de {total} canviat} other {{changedCount} de {total} canviats}}",
+    "noMenuItems": "Encara no hi ha productes a la carta: afegeix-los a Carta › Productes."
+  },
+  "newType": {
+    "title": "Tipus d’esdeveniment nou",
+    "namePlaceholder": "p. ex. Festa de l’escola",
+    "help": "Toca un nom o escriu-ne un. Comença com una còpia d’Estàndard, i si després canvies Estàndard, aquest no canviarà. Després pots canviar el que vulguis.",
+    "create": "Crea",
+    "chips": {
+      "festival": "Festival",
+      "pub": "Bar",
+      "market": "Mercat",
+      "privateHire": "Lloguer privat"
+    }
+  },
+  "select": {
+    "label": "Tipus d’esdeveniment",
+    "usual": "{name} és l’habitual en aquest lloc."
+  },
+  "summary": {
+    "normalSetup": "La teva configuració habitual",
+    "sameAsStandard": "Igual que Estàndard",
+    "buzzersOn": "avisadors activats",
+    "buzzersOff": "avisadors desactivats",
+    "takeCashOn": "cobrament en efectiu activat",
+    "takeCashOff": "cobrament en efectiu desactivat",
+    "markReadyOn": "pas «A punt» activat",
+    "markReadyOff": "pas «A punt» desactivat",
+    "collectionEvery": "recollida cada {mins} min",
+    "offlineOff": "protecció sense connexió desactivada",
+    "offlineKeepTaking": "sense connexió: continua rebent comandes",
+    "offlinePause": "sense connexió: posa en pausa les comandes"
+  },
+  "errors": {
+    "somethingWentWrong": "Alguna cosa ha fallat",
+    "couldNotLoad": "No s’ha pogut carregar",
+    "couldNotSave": "No s’ha pogut desar",
+    "noVans": "Aquest food truck no té cap vehicle per canviar."
+  }
+}

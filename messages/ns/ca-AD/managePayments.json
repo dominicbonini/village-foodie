@@ -1,0 +1,94 @@
+{
+  "heading": "Pagaments",
+  "loading": "S’està comprovant el teu compte de Stripe…",
+  "state": {
+    "not_connected": {
+      "title": "Sense configurar",
+      "body": "Triga uns 10 minuts. Necessitaràs les dades bancàries i un document d’identitat.",
+      "chip": "Sense configurar"
+    },
+    "requirements": {
+      "title": "Stripe necessita les teves dades",
+      "body": "Els pagaments amb targeta no funcionaran fins que Stripe tingui les dades del teu negoci i les bancàries.",
+      "chip": "Cal actuar"
+    },
+    "pending": {
+      "title": "Connectat: Stripe està comprovant les teves dades",
+      "body": "No cal que facis res. Stripe està revisant el que has enviat, i aquesta pàgina s’actualitzarà quan acabi.",
+      "chip": "En revisió"
+    },
+    "ready": {
+      "title": "Connectat",
+      "body": "El teu compte de Stripe està connectat i pot acceptar pagaments.",
+      "chip": "A punt"
+    },
+    "restricted": {
+      "title": "Pagaments amb targeta en pausa",
+      "body": "Stripe ha posat en pausa els pagaments amb targeta del teu compte fins que es resolgui una qüestió pendent.",
+      "chip": "En pausa"
+    },
+    "unsupported": {
+      "title": "Aquest compte no admet pagaments amb targeta",
+      "body": "Stripe no pot activar els pagaments amb targeta en aquest compte. Contacta amb nosaltres i ho resoldrem plegats.",
+      "chip": "No disponible"
+    }
+  },
+  "keyMismatch": {
+    "title": "Les claus de Stripe no coincideixen",
+    "body": "El servidor d’aquest lloc web fa servir la clau de Stripe <b>{server, select, live {de producció} other {de prova}}</b>, mentre que el navegador es va compilar amb la clau <b>{browser, select, live {de producció} other {de prova}}</b>. Els pagaments amb targeta fallarien just quan un client intentés pagar, així que la configuració de Stripe queda bloquejada fins que coincideixin.",
+    "fix": "Totes dues claus s’han de definir per al mateix entorn, i després cal tornar a compilar el lloc web: la clau publicable s’incorpora durant la compilació i la clau secreta es llegeix a cada sol·licitud."
+  },
+  "permission": {
+    "title": "Només el titular del food truck pot configurar els pagaments",
+    "body": "Stripe el connecta la persona que rep els diners al seu compte bancari, així que s’ha de configurar des del seu propi compte, amb la sessió iniciada. No hi ha cap problema amb aquest food truck ni amb HatchGrab."
+  },
+  "config": {
+    "keyMissingTitle": "Els pagaments amb targeta encara no estan configurats",
+    "fetchTitle": "No hem pogut comprovar el compte de Stripe d’aquest food truck",
+    "keyMissing": "No s’ha definit {name}: els components integrats no es poden carregar."
+  },
+  "errors": {
+    "requestFailed": "La sol·licitud ha fallat ({status})",
+    "unreachable": "No s’ha pogut connectar amb Stripe"
+  },
+  "online": {
+    "heading": "Pagaments en línia",
+    "body": "Els clients paguen amb targeta quan fan la comanda. Els diners van directament al teu compte de Stripe: nosaltres no els retenim mai.",
+    "feeLine": "Stripe cobra {fee} per pagament amb {region} estàndard. Altres targetes poden costar més. La comissió de HatchGrab a les comandes en línia depèn del teu pla: consulta Facturació.",
+    "testMode": "Mode de prova. Encara no es poden cobrar pagaments reals."
+  },
+  "trialNote": "Configurar-ho no inicia la teva subscripció ni et cobra res avui. Així és com et paguen els clients; el teu pla és una cosa a part.",
+  "admin": {
+    "title": "Vista d’administrador de la plataforma",
+    "body": "Aquest food truck no ha configurat els pagaments en línia. Només el titular ho pot fer, des del seu propi compte amb la sessió iniciada: aquí no hi ha res a prémer."
+  },
+  "setUp": {
+    "button": "Configura els pagaments en línia",
+    "busy": "S’està configurant…"
+  },
+  "toast": {
+    "alreadySetUp": "Ja està configurat: continuem",
+    "addDetails": "Ara afegeix les teves dades per a Stripe",
+    "createFailed": "No s’ha pogut crear el compte"
+  },
+  "onboarding": {
+    "restricted": "A partir d’aquí se n’encarrega Stripe: iniciaràs la sessió a Stripe i actualitzaràs les dades que necessita.",
+    "firstRun": "A partir d’aquí se n’encarrega Stripe: iniciaràs la sessió a Stripe i hi introduiràs les dades del teu negoci i les bancàries."
+  },
+  "details": {
+    "title": "Les teves dades de Stripe",
+    "body": "Canvia el compte bancari on reps els pagaments o actualitza les dades i els documents del teu negoci.",
+    "button": "Mostra o edita"
+  },
+  "walkUp": {
+    "heading": "Pagaments presencials",
+    "body": "Com cobres al food truck. HatchGrab no cobra cap comissió de plataforma per les comandes presencials, triïs el que triïs.",
+    "ownTerminal": "El teu propi datàfon",
+    "current": "Actual",
+    "ownTerminalHelp": "Zettle, Square o el que ja facis servir. No cal configurar res: només s’apliquen les comissions del teu proveïdor.",
+    "hatchgrab": "A través de HatchGrab",
+    "comingSoon": "Aviat disponible",
+    "hatchgrabHelp": "Fa servir la mateixa connexió de Stripe que els pagaments en línia: un datàfon, o pagament sense contacte directament amb el mòbil o la tauleta.",
+    "hatchgrabFees": "{fee} per pagament amb {region}, més {surcharge} pels pagaments sense contacte cobrats amb un mòbil o una tauleta. Altres targetes poden costar més."
+  }
+}

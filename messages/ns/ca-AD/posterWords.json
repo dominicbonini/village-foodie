@@ -1,0 +1,25 @@
+{
+  "heading": "Setmana del {start} al {end}",
+  "daysOff": "Avui no obrim",
+  "cancelled": "CANCEL·LAT",
+  "placeSample": {
+    "nameTownBelow": "Bar de la Plaça\nOrdino",
+    "nameTown": "Bar de la Plaça, Ordino",
+    "nameOnly": "Bar de la Plaça"
+  },
+  "busyWeek": {
+    "venue1": "Sala polivalent del poble",
+    "town1": "Ordino",
+    "venue2": "Complex esportiu municipal i zona de jocs del parc de la ribera",
+    "town2": "Sant Julià de Lòria",
+    "venue3": "Plaça del Poble",
+    "town3": "Andorra la Vella",
+    "venue4": "Fira gastronòmica",
+    "town4": "Escaldes-Engordany",
+    "venue5": "Bar del Poble",
+    "town5": "Canillo",
+    "venue6": "Plaça de l’Església",
+    "town6": "La Massana"
+  },
+  "poweredBy": "Amb la tecnologia de HatchGrab"
+}

@@ -1,0 +1,11 @@
+{
+  "notFoundTitle": "No s’ha trobat la pàgina",
+  "notFoundBody": "No hem trobat aquesta pàgina. Potser s’ha mogut o l’adreça no és correcta.",
+  "home": "Ves a la pàgina d’inici",
+  "errorTitle": "Alguna cosa ha fallat",
+  "errorBody": "Ho sentim — aquesta pàgina no s’ha carregat. Torna-ho a provar o torna a la pàgina d’inici.",
+  "retry": "Torna-ho a provar",
+  "backToDashboard": "Torna al tauler",
+  "errorBodyDashboard": "Ho sentim, aquesta pàgina no s’ha carregat. Torna-ho a provar o torna al teu tauler.",
+  "sectionFailed": "Aquesta secció no s’ha carregat."
+}

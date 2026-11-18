@@ -1,0 +1,28 @@
+{
+  "hi": "Hola, {name},",
+  "limit80": {
+    "subject": "Has fet servir el 80 % de les respostes de WhatsApp d’aquest mes",
+    "used": "Les respostes automàtiques de WhatsApp n’han fet servir <b>{used} de {limit}</b> aquest mes.",
+    "nothingStopped": "No s’ha aturat res. Quan arribis a {limit}, les respostes automàtiques es posaran en pausa fins que el límit es restableixi el <b>{reset}</b>; els clients et poden continuar escrivint i continuaràs veient tot el que t’envien.",
+    "raise": "Pots augmentar el límit mensual a Configuració quan vulguis.",
+    "raiseLink": "Pots augmentar el límit mensual a Configuració quan vulguis:",
+    "button": "Obre Configuració"
+  },
+  "limit100": {
+    "subject": "Les respostes automàtiques de WhatsApp s’han posat en pausa aquest mes",
+    "usedAll": "Has fet servir les {limit} respostes automàtiques de WhatsApp d’aquest mes, així que s’han posat en pausa.",
+    "stillReach": "<b>Els clients et poden continuar escrivint com sempre i tots els missatges et continuen arribant.</b> L’únic que s’ha aturat és l’enviament de la resposta automàtica.",
+    "startAgain": "Es reactivaran el <b>{reset}</b>, o de seguida si augmentes el límit mensual a Configuració.",
+    "startAgainLink": "Es reactivaran el {reset}, o de seguida si augmentes el límit mensual a Configuració:",
+    "button": "Augmenta el límit"
+  },
+  "paymentBlocked": {
+    "subject": "WhatsApp necessita un mètode de pagament per poder enviar",
+    "stopped": "WhatsApp ha aturat l’enviament de les teves respostes automàtiques perquè el teu compte de WhatsApp Business no té cap mètode de pagament que funcioni.",
+    "stillMessage": "<b>Els clients et poden continuar escrivint i continuaràs veient tot el que t’envien</b>, però les respostes no els arriben.",
+    "payDirect": "Aquests missatges els pagues directament a WhatsApp, així que això es resol a WhatsApp Manager i no a HatchGrab. Afegeix-hi o actualitza-hi una targeta i les respostes es reactivaran soles.",
+    "payDirectLink": "Aquests missatges els pagues directament a WhatsApp, així que això es resol a WhatsApp Manager i no a HatchGrab. Afegeix-hi o actualitza-hi una targeta i les respostes es reactivaran soles:",
+    "button": "Obre WhatsApp Manager",
+    "settings": "La teva configuració de HatchGrab: <link>{url}</link>"
+  }
+}

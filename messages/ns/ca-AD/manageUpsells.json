@@ -1,0 +1,19 @@
+{
+  "heading": "Suggeriments",
+  "intro": "Anima els clients a afegir alguna cosa més. Quan algú demana d’una categoria, suggereix-li productes d’una altra: una beguda amb una pizza, una salsa amb una hamburguesa.",
+  "add": "+ Afegeix un suggeriment",
+  "toast": {
+    "updated": "Regla de suggeriment actualitzada",
+    "added": "Regla de suggeriment afegida",
+    "removed": "Regla eliminada"
+  },
+  "whenAdds": "Quan el client afegeix…",
+  "suggestFrom": "Suggereix productes de…",
+  "chooseCategory": "Tria una categoria",
+  "cancel": "Cancel·la",
+  "saveChanges": "Desa els canvis",
+  "addRule": "Afegeix la regla",
+  "empty": "Encara no hi ha cap regla de suggeriment.",
+  "confirmRemove": "Vols eliminar la regla de suggeriment «{trigger} → {suggest}»?",
+  "upTo": "{n, plural, one {Fins a {count} producte suggerit} other {Fins a {count} productes suggerits}}"
+}

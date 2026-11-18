@@ -1,0 +1,127 @@
+{
+  "eyebrow": "Comparativa de costos",
+  "title": "Compara el que et costen<br></br><accent>les comandes en línia</accent>",
+  "system": {
+    "title": "Ara reps comandes en línia?",
+    "yes": "Sí, amb un altre sistema",
+    "no": "No, encara no"
+  },
+  "trucks": {
+    "title": "Quants vehicles tens?",
+    "aria": "Nombre de vehicles"
+  },
+  "plan": {
+    "yourChoice": "La teva elecció",
+    "weSuggest": "Et recomanem",
+    "summary": "{price} per vehicle al mes, amb comandes en línia incloses fins a {allowance}{fleet, plural, one {} other { a cada vehicle}}.",
+    "switchTo": "Tria el pla {plan}",
+    "summaryFeeOnly": "{hasMonthly, select, yes {{price} per vehicle al mes, més un {pct} de les comandes en línia.} other {Sense quota mensual — només un {pct} de les comandes en línia.}}",
+    "summaryNoFee": "{price} per vehicle al mes, amb comandes en línia il·limitades i sense cap comissió de HatchGrab."
+  },
+  "orders": {
+    "titleYes": "Comandes en línia al mes, per vehicle",
+    "count": "~{count, plural, one {# comanda} other {# comandes}}",
+    "captionNo": "Un càlcul aproximat ja va bé — comandes anticipades i clients que s’estalvien la cua, no l’efectiu ni la targeta al food truck.",
+    "captionYes": "Només les comandes fetes a la teva pàgina de comandes — no l’efectiu ni la targeta al food truck.",
+    "sliderAria": "Valor mensual de les comandes en línia per vehicle",
+    "overAllowance": "Comandes en línia incloses fins a {allowance} per vehicle. La part que supera aquest límit ({excess}) es cobra a un {pct} — <b>{over}</b> al mes per vehicle.",
+    "insideAllowance": "Dins del límit inclòs de comandes en línia ({allowance}) — res a sumar al pla.",
+    "acrossFleet": "Per a {fleet, plural, one {# vehicle} other {# vehicles}}: <b>{amount}</b> al mes.",
+    "titleNo": "Quant creus que vendries en línia, al mes i per vehicle?",
+    "feeOnly": "Un {pct} de cada comanda en línia — <b>{over}</b> al mes per vehicle.",
+    "noFee": "Comandes en línia il·limitades incloses — res a sumar al pla."
+  },
+  "fee": {
+    "title": "Quant pagues ara per comanda?",
+    "pctLabel": "Percentatge",
+    "pctPlaceholder": "La teva tarifa",
+    "pctAria": "Comissió percentual",
+    "fixedLabel": "Més, per comanda",
+    "fixedPlaceholder": "Import fix",
+    "fixedAria": "Cèntims per comanda",
+    "modeLabel": "La seva tarifa:",
+    "modeInclusive": "inclou el processament de targetes",
+    "modeOnTop": "es cobra a part",
+    "onTopNote": "El processament de targetes ({fee}) es cobra a part, així que en realitat pagues <b>{pct} + {fixed}</b> en total.",
+    "inclusiveNote": "El processament de targetes ({fee}) ja hi és inclòs, i el pagaries amb qualsevol proveïdor. La seva comissió pròpia: <b>{pct}</b>."
+  },
+  "days": {
+    "title": "Quants dies a la setmana surts a vendre?",
+    "help": "Esdeveniments, mercats, parades — qualsevol dia que el vehicle surt."
+  },
+  "jump": {
+    "cost": "Mira quant costa ↓",
+    "saving": "Mira quant estalvies ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>Comandes en línia, comandes anticipades i la teva pantalla de cuina per</lead><figure>{amount}</figure><unit>cada dia de venda</unit>",
+    "basedOn": "Calculat amb {days, plural, one {# dia} other {# dies}} a la setmana · {monthly} al mes{fleet, plural, one {} other { per vehicle}}"
+  },
+  "coffee": "Menys que un cafè.",
+  "freeMonths": "{n, plural, one {I el primer mes va a càrrec nostre.} other {I els primers # mesos van a càrrec nostre.}}",
+  "cta": {
+    "upload": "Puja la meva carta →",
+    "uploadSave": "Puja la meva carta i estalvia {amount} →",
+    "ask": "Fes-nos una pregunta",
+    "noCard": "No cal targeta per configurar-ho"
+  },
+  "breakdown": {
+    "title": "El teu mes, desglossat",
+    "titleDearer": "El teu mes amb HatchGrab",
+    "plan": "Pla {plan}",
+    "over": "{pct} sobre l’excés ({excess}) per sobre del límit inclòs ({allowance})",
+    "inside": "Comandes en línia dins del límit inclòs ({allowance})",
+    "total": "HatchGrab cada mes",
+    "freeMonths": "{n, plural, one {Mes 1} other {Mesos 1–#}}",
+    "freeAmount": "{amount} — a càrrec nostre",
+    "acrossFleet": "Per a {fleet, plural, one {# vehicle} other {# vehicles}}",
+    "perMonth": "{amount} al mes",
+    "card": "Processament de targetes — {fee} per comanda, que es paga a Stripe. Amb un datàfon al food truck pagaries pràcticament el mateix.",
+    "provider": "Comissió pròpia del teu proveïdor actual ({pct})",
+    "feeOnly": "{pct} sobre {excess} en comandes en línia",
+    "noFee": "Comandes en línia — il·limitades, sense comissió de HatchGrab"
+  },
+  "enterRate": "Introdueix el que pagues ara per veure quant estalvies.",
+  "panel": {
+    "nowYear": "<label>Ara pagues</label><fig>{amount}<q> l’any</q></fig>",
+    "nowMonth": "<label>Ara pagues</label><fig>{amount}<q> al mes</q></fig>",
+    "oursYear": "<label>Amb HatchGrab</label><fig>{amount}<q> el primer any</q></fig>",
+    "oursMonth": "<label>Amb HatchGrab</label><fig>{amount}<q> al mes</q></fig>",
+    "acrossFleet": "per a {fleet, plural, one {# vehicle} other {# vehicles}}"
+  },
+  "hero": {
+    "save": "<verb>Estalvies</verb><figure>{amount}</figure><sub><num>{pct}</num> menys el primer any</sub>",
+    "same": "<verb>Gairebé el mateix</verb><figure>{amount}</figure><sub><num>{pct}</num> més el primer any</sub>",
+    "dearer": "<lead>Tot el que fa HatchGrab, per</lead><figure>{amount}</figure><unit>més a la setmana</unit>",
+    "dearerSub": "{fleet, plural, one {{amount} més al mes que ara} other {{amount} més per vehicle al mes que ara}}"
+  },
+  "anchor": {
+    "liability": "Equival a un any d’assegurança de responsabilitat civil.",
+    "weekendPitch": "Equival a una parada de cap de setmana en una fira gastronòmica.",
+    "festivalPitches": "Equival a un parell de parades en festivals.",
+    "fryer": "Equival a una fregidora i una planxa noves.",
+    "counter": "Equival a renovar del tot el taulell on atens els clients.",
+    "vanDeposit": "Equival a l’entrada d’un segon vehicle.",
+    "secondVan": "Equival a tenir un segon vehicle a la carretera."
+  },
+  "year": {
+    "one": "Primer any",
+    "two": "Segon any",
+    "save": "Estalvies {amount}<note>({pct} menys)</note>",
+    "extra": "{amount} més<note>({pct} més)</note>",
+    "current": "Proveïdor actual <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "Estimacions basades en les xifres que introdueixes, amb una comanda mitjana de {aov}. El processament de targetes s’aplica sigui quin sigui el proveïdor. Comprova-ho abans de decidir.",
+    "yes": "Estimacions basades en les xifres que introdueixes, amb una comanda mitjana de {aov}. El processament de targetes ({fee} per comanda) s’aplica sigui quin sigui el proveïdor, així que no es compta a cap de les dues bandes.",
+    "onTop": "La xifra total de la pregunta {n} l’inclou — la comparació no, a cap de les dues bandes.",
+    "check": "Comprova les tarifes del teu proveïdor actual abans de decidir."
+  },
+  "intro": "Només cal un minut. Ja fas servir un sistema? El compararem. Encara no? Et mostrarem exactament quant costa.",
+  "twoYear": "En dos anys, estalvies <b>{amount}</b>.",
+  "meta": {
+    "title": "Calculadora de costos — HatchGrab {country}",
+    "description": "Compara el que et costen ara les comandes en línia amb el que pagaries durant un any a HatchGrab: una estimació en un minut."
+  }
+}

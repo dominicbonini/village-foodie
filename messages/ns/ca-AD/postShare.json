@@ -1,0 +1,10 @@
+{
+  "download": "Baixa la imatge",
+  "copied": "Copiat ✓",
+  "copyCaption": "Copia el text",
+  "share": "Comparteix",
+  "copiedStatus": "{kind, select, postText {S’ha copiat el text de la publicació.} other {S’ha copiat el text.}}",
+  "copyFailed": "No s’ha pogut copiar: selecciona el text i copia’l a mà.",
+  "sharedStatus": "{kind, select, postText {S’ha copiat el text de la publicació: enganxa’l a la teva publicació.} other {S’ha copiat el text: enganxa’l a la teva publicació.}}",
+  "shareRefused": "{kind, select, postText {No s’ha permès compartir, així que s’ha baixat la imatge. S’ha copiat el text de la publicació.} other {No s’ha permès compartir, així que s’ha baixat la imatge. S’ha copiat el text.}}"
+}

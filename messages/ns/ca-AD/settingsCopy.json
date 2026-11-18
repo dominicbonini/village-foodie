@@ -1,0 +1,19 @@
+{
+  "allowCancellation": {
+    "label": "Permet que els clients cancel·lin les comandes",
+    "sentence": "Els clients poden cancel·lar fins a <select></select> abans de l’hora de recollida"
+  },
+  "autoAccept": {
+    "label": "Acceptació automàtica de comandes",
+    "help": "Les comandes es confirmen automàticament. Si la franja demanada és plena, la comanda passa a la propera franja disponible. Només es confirma quan hi ha capacitat. Les comandes amb notes del client (p. ex. una al·lèrgia) s’hauran de confirmar igualment."
+  },
+  "orderReady": {
+    "label": "Pas «A punt»",
+    "help": "Mostra un botó «Marca com a preparada» a la pantalla de comandes. Les pantalles de cuina es configuren a part, a cada dispositiu. Els clients reben un correu electrònic cada vegada que una comanda es marca com a preparada. S’aplica a tots els esdeveniments: pots activar-ho o desactivar-ho per a un sol esdeveniment des del seu tauler."
+  },
+  "buzzers": {
+    "label": "Dones avisadors per a la recollida?",
+    "help": "Anota quin avisador has donat a cada client, per saber a qui has de buscar quan el menjar estigui a punt.",
+    "countLabel": "Quants avisadors tens?"
+  }
+}

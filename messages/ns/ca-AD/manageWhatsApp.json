@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "Prova-ho abans de connectar-lo",
+    "intro": "Escriu una pregunta com la faria un client i mira exactament què rebria. No s’envia res a ningú.",
+    "examples": {
+      "where": "On sou aquesta nit?",
+      "doYouDo": "Feu pizza de pepperoni?",
+      "menu": "Què hi ha a la carta?"
+    },
+    "placeholder": "Quines postres teniu?",
+    "send": "Envia",
+    "empty": "La resposta apareixerà aquí",
+    "working": "S’està preparant la resposta…",
+    "noReply": "No s’enviaria cap resposta.",
+    "noReplyWhy": "Sembla correu brossa, una sol·licitud de reserva o alguna cosa que no hi té res a veure, així que la resposta automàtica no respon.",
+    "footnote": "Les respostes les genera la IA, varien una mica cada vegada i, de tant en tant, poden ser incorrectes.",
+    "failed": "Ara mateix no s’ha pogut generar cap previsualització.",
+    "unreachable": "No s’ha pogut connectar amb el servidor. Comprova la connexió i torna-ho a provar."
+  },
+  "setup": {
+    "button": {
+      "preparing": "S’està preparant…",
+      "unavailable": "No disponible",
+      "waiting": "S’està esperant la finestra de Facebook…",
+      "finishing": "S’està acabant…",
+      "reconnect": "Torna a connectar",
+      "setUp": "Configura"
+    },
+    "startAgain": "Torna a començar",
+    "popupHint": "No veus la finestra de Facebook? Pot ser que s’hagi bloquejat. Permet les finestres emergents per a hatchgrab.com i després prem «Torna a començar»."
+  },
+  "notice": {
+    "sdkUnavailable": "La configuració de WhatsApp no està disponible en aquest entorn.",
+    "sdkBlocked": "No s’ha pogut carregar l’script d’inici de sessió de Meta. Normalment la causa és un bloquejador d’anuncis o la protecció contra el seguiment.",
+    "setupFailed": "No s’ha pogut completar la configuració. No s’ha canviat res.",
+    "setupFinished": "Configuració acabada.",
+    "metaError": "Meta ha informat d’un problema durant la configuració. No s’ha canviat res. Torna-ho a provar i, si continua passant, contacta amb nosaltres.",
+    "closed": "La configuració s’ha tancat abans d’acabar. No s’ha canviat res: prem «Configura» per tornar-ho a provar.",
+    "disconnectedUnreachable": "WhatsApp s’ha desconnectat. No hem pogut connectar amb Meta per retirar l’accés. Elimina HatchGrab a WhatsApp Business → Configuració → Compte → Business Platform.",
+    "disconnected": "WhatsApp s’ha desconnectat. Les respostes automàtiques s’han aturat.",
+    "close": "Tanca"
+  },
+  "card": {
+    "title": "Respostes automàtiques",
+    "description": "Respon automàticament les preguntes dels clients a les teves xarxes socials, a partir de la teva carta i el teu calendari.",
+    "channels": "Canals",
+    "requiresAccount": "Cal un compte de WhatsApp Business.",
+    "connected": "Connectat",
+    "popupInstruction": "S’obrirà una finestra de Facebook per connectar el teu compte de WhatsApp Business. Si no apareix res, permet les finestres emergents per a hatchgrab.com al navegador i torna a prémer «Configura».",
+    "switchedOff": "Les respostes automàtiques de WhatsApp estan desactivades per al teu food truck.",
+    "expiring": "Aviat caldrà renovar la connexió de WhatsApp. Prem «Torna a connectar» perquè les respostes automàtiques continuïn funcionant.",
+    "comingSoon": "Aviat disponible",
+    "instagram": "Respostes automàtiques als missatges directes d’Instagram. Caldrà un compte professional d’Instagram.",
+    "messenger": "Respostes automàtiques a Facebook Messenger. Caldrà una pàgina de Facebook."
+  },
+  "blocked": {
+    "title": "Les teves respostes no s’estan lliurant",
+    "body": "WhatsApp no envia les teves respostes automàtiques per un problema de facturació al teu compte de WhatsApp Business. Els clients et poden continuar escrivint i continuaràs veient tot el que t’envien, però no reben cap resposta.",
+    "fix": "Aquests missatges els pagues directament a WhatsApp, així que es resol a WhatsApp Manager. <link>Comprova el mètode de pagament</link>"
+  },
+  "limit": {
+    "heading": "Respostes automàtiques",
+    "label": "Límit mensual",
+    "option": "{n, number}",
+    "usage": "{used, number} de {limit, number} utilitzades · es reinicia el {date}",
+    "perCustomer": "Màxim de respostes per client en 24 hores: {n}. Després, s’envia un missatge que diu que respondràs personalment.",
+    "emailAt": "Les respostes s’aturen quan arribes al límit. T’enviarem un correu quan arribis al 80 % i al 100 %.",
+    "saved": "S’ha desat el límit mensual de respostes",
+    "saveFailed": "No s’ha pogut desar el límit"
+  },
+  "billing": {
+    "heading": "Facturació",
+    "paymentMethod": "Mètode de pagament",
+    "added": "Mètode de pagament afegit",
+    "missing": "No s’ha afegit cap mètode de pagament",
+    "addInManager": "Afegeix-lo a WhatsApp Manager",
+    "summary": "Meta, i no HatchGrab, factura les respostes al teu compte de WhatsApp. A partir del {from}, les primeres {free, number} de cada mes són gratuïtes. Dades vigents a {checked}; consulta <link>els preus de Meta</link> per si hi ha canvis.",
+    "howMetaCharges": "Com cobra Meta",
+    "chargesTitle": "Les respostes de WhatsApp les cobra Meta, no HatchGrab.",
+    "chargesBody": "Meta factura al teu compte de WhatsApp Business cada resposta que HatchGrab envia per tu. A partir del {from}, Meta inclou {free, number} respostes gratuïtes al mes per número; després, cada resposta es cobra a la tarifa de Meta. Les respostes que envies tu mateix des de l’aplicació WhatsApp Business no es cobren. Meta fixa aquests preus i els pot canviar. <link>Consulta els preus de Meta</link>",
+    "addPaymentInManager": "Afegeix un mètode de pagament a WhatsApp Manager",
+    "aboveMissing": "El teu límit supera les {free, number} respostes gratuïtes de Meta. Sense un mètode de pagament, Meta aturarà totes les respostes quan s’hagin fet servir.",
+    "aboveGeneral": "El teu límit supera les {free, number} respostes gratuïtes de Meta. Per a les respostes que passin d’aquesta xifra cal un mètode de pagament al teu compte de WhatsApp; sense, Meta atura totes les respostes quan s’acaben les gratuïtes.",
+    "addPaymentMethod": "Afegeix un mètode de pagament"
+  },
+  "disconnect": {
+    "link": "Desconnecta WhatsApp",
+    "title": "Vols desconnectar WhatsApp?",
+    "body": "Les respostes automàtiques s’aturen immediatament i HatchGrab perd l’accés al teu compte de WhatsApp. El teu número continua funcionant a l’aplicació WhatsApp Business. Per eliminar HatchGrab del tot, obre també WhatsApp Business → Configuració → Compte → Business Platform.",
+    "cancel": "Cancel·la",
+    "confirm": "Desconnecta",
+    "working": "S’està desconnectant…",
+    "failed": "No s’ha pogut desconnectar"
+  },
+  "signup": {
+    "logged": "Registrat.",
+    "partial": "Hem vinculat el teu compte de WhatsApp Business, però no hem pogut completar la connexió. No és cap problema per part teva: contacta amb nosaltres i l’acabarem.",
+    "noNumber": "El teu compte de WhatsApp Business està vinculat, però no ha arribat cap número de telèfon. Prem «Torna a connectar» i acaba el pas del número.",
+    "needsRegistering": "El teu compte està vinculat, però hem de registrar aquest número abans que puguin començar les respostes. Contacta amb l’assistència: la configuració està desada, no la tornis a fer.",
+    "registerRefused": "El teu compte està vinculat, però Meta no ha volgut registrar el número. La configuració està desada: contacta amb l’assistència en lloc de tornar-la a fer.",
+    "deliveryRefused": "El teu compte està vinculat, però Meta no ha volgut activar el lliurament de missatges. La configuració està desada: contacta amb l’assistència en lloc de tornar-la a fer.",
+    "numberTaken": "Aquest número de WhatsApp ja està connectat a un altre compte de HatchGrab. Un número només pot respondre per a un sol food truck. Contacta amb l’assistència i el traspassarem.",
+    "saveIncomplete": "Gairebé hi som: no hem pogut acabar de desar. La configuració està desada; contacta amb l’assistència en lloc de tornar-la a fer.",
+    "connected": "WhatsApp està connectat. Les respostes automàtiques començaran a respondre els missatges que arribin a aquest número."
+  }
+}

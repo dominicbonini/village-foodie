@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "Títol de la setmana",
+    "weekHeadingSample": "Setmana del …",
+    "daysSample": "De {first} a {last}",
+    "date": "Data",
+    "place": "Lloc",
+    "venue": "Nom del lloc",
+    "area": "Zona",
+    "time": "Hora",
+    "rows": "Files",
+    "rowsSample": "{px} px de separació · de {first} a {last}",
+    "ownText": "El teu text propi",
+    "noteTokenSample": "La nota que escrius quan crees la publicació",
+    "nothingYet": "Encara res",
+    "thisBox": "aquest quadre"
+  },
+  "sample": {
+    "venue": "Parc Central",
+    "area": "Escaldes-Engordany"
+  },
+  "bar": {
+    "previewWith": "Previsualitza amb",
+    "undo": "Desfés",
+    "undoTitle": "Desfés (⌘Z)",
+    "redo": "Refés",
+    "redoTitle": "Refés (⇧⌘Z)",
+    "cancel": "Cancel·la",
+    "saving": "S’està desant…",
+    "save": "Desa el disseny"
+  },
+  "grid": {
+    "eachRow": "Cada fila",
+    "placeOff": "El nom del lloc ja és a la teva imatge: HatchGrab no l’afegirà."
+  },
+  "background": {
+    "uploading": "S’està pujant…",
+    "replace": "Substitueix la imatge",
+    "shape": {
+      "square": "Quadrada (1:1)",
+      "portrait45": "Vertical (4:5)",
+      "portrait916": "Vertical (9:16)",
+      "landscape169": "Horitzontal (16:9)",
+      "portrait": "Vertical",
+      "landscape": "Horitzontal"
+    }
+  },
+  "scope": {
+    "title": "Posicions del text",
+    "standard": "Mateixes posicions que Estàndard",
+    "own": "Posicions pròpies per a {place}",
+    "locked": "Aquestes posicions venen del teu disseny Estàndard. Tria «Posicions pròpies per a {place}» per moure-les només aquí."
+  },
+  "stage": {
+    "hint": "Arrossega un quadre per moure’l · arrossega una cantonada per canviar-ne la mida",
+    "zoomOut": "Redueix",
+    "zoomIn": "Amplia"
+  },
+  "rows": {
+    "spacing": "Espaiat",
+    "daysRun": "Els dies van de {first} a {last}. Els tres quadres de la fila 1 es copien cap avall amb aquesta distància.",
+    "whichEvents": "Quins esdeveniments",
+    "showCancelled": "Mostra els esdeveniments cancel·lats",
+    "showCancelledHint": "Un esdeveniment cancel·lat mostra el lloc ratllat i la paraula CANCEL·LAT. Si ho desactives, el dia es mostra com a dia lliure."
+  },
+  "days": {
+    "reorder": "Reordena",
+    "move": "mou"
+  },
+  "picture": {
+    "picture": "Imatge",
+    "fill": "Omple el quadre",
+    "fit": "Encaixa-la a dins",
+    "corners": "Cantonades",
+    "square": "Rectes",
+    "rounded": "Arrodonides",
+    "ifMissing": "Si un lloc no té imatge",
+    "noPicture": {
+      "omit": "No hi posis res",
+      "blank": "Deixa un espai en blanc",
+      "logo": "Mostra el teu logotip"
+    },
+    "border": "Vora",
+    "drawBorder": "Dibuixa una vora",
+    "drawBorderHint": "Una línia al voltant de la imatge, del color que triïs.",
+    "borderWidth": "Gruix de la vora",
+    "cornerRadius": "Radi de les cantonades",
+    "locationPictures": "Imatges dels llocs",
+    "addLocationPictures": "+ Afegeix imatges dels llocs",
+    "allHaveImage": "{total, plural, =0 {Encara no tens cap lloc.} one {El teu lloc té imatge.} other {Tots els teus # llocs tenen imatge.}}",
+    "someWithout": "{without} dels teus {total, plural, one {# lloc} other {# llocs}} encara no {without, plural, one {té} other {tenen}} imatge"
+  },
+  "settings": {
+    "font": "Font",
+    "colour": "Color",
+    "textColour": "Color del text",
+    "ownStyleNote": "{count, plural, one {{names} té estil propi, així que no canvia.} other {{names} tenen estil propi, així que no canvien.}}",
+    "matchAgain": "Torna a igualar-ho",
+    "matchName": "Igual que {name}",
+    "lastToggle": "{kind, select, weekly {Mantén activat «Lloc» o «Hora». Un esdeveniment cancel·lat mostra el lloc ratllat i la paraula CANCEL·LAT, així que si tots dos estan desactivats no hi hauria res que indiqués que està cancel·lat.} other {Mantén activat «Nom del lloc» o «Hora». Un esdeveniment cancel·lat mostra el lloc ratllat i la paraula CANCEL·LAT, així que si tots dos estan desactivats no hi hauria res que indiqués que està cancel·lat.}}"
+  },
+  "letters": {
+    "boldGlyph": "N",
+    "italicGlyph": "C",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic}: aquesta font té una cursiva de debò"
+  },
+  "align": {
+    "left": "Esquerra",
+    "centre": "Centre",
+    "right": "Dreta"
+  },
+  "effects": {
+    "outlineColour": "Color del contorn",
+    "bandColour": "Color de la franja",
+    "bandDaysOff": "Franja dels dies lliures",
+    "bandCancelled": "Franja quan l’esdeveniment està cancel·lat",
+    "bandDaysOffHint": "Substitueix la franja de dalt els dies sense activitat.",
+    "bandCancelledHint": "Substitueix la franja de dalt quan l’esdeveniment està cancel·lat."
+  },
+  "more": {
+    "dayOwnLine": "Dia en una línia a part",
+    "dayOwnLineHint": "El dia de la setmana a sobre de la data. Només per a la data.",
+    "noEventDay": "Els dies sense esdeveniment",
+    "wordsBeforePlaceholder": "p. ex. Ens trobaràs a",
+    "neverHyphenate": "Una paraula llarga sense cap espai sempre es redueix: mai no partim el nom d’un lloc amb guionet."
+  },
+  "bits": {
+    "less": "Menys",
+    "more": "Més",
+    "chooseColourFor": "{label}: tria qualsevol color",
+    "chooseColour": "Tria qualsevol color"
+  }
+}

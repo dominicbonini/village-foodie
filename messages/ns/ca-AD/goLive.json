@@ -1,0 +1,43 @@
+{
+  "allergensUnanswered": {
+    "title": "Tria com mostres la informació d’al·lèrgens",
+    "detail": "Fins que no triïs, els clients no veuen cap dels teus plats: la carta es protegeix amagant tot el que no té els al·lèrgens confirmats, i ara mateix això és tot.",
+    "where": "Carta → Al·lèrgens"
+  },
+  "allergensCardMissing": {
+    "title": "Afegeix la teva fitxa d’al·lèrgens",
+    "detail": "Has triat mostrar una fitxa d’al·lèrgens, però no n’hi ha cap de desada; els clients veurien que hi ha informació d’al·lèrgens disponible i després no trobarien res.",
+    "where": "Carta → Al·lèrgens"
+  },
+  "allergensItemsUnverified": {
+    "title": "{n, plural, one {Confirma els al·lèrgens de {count} plat} other {Confirma els al·lèrgens de {count} plats}}",
+    "detail": "{n, plural, one {El teu plat queda amagat als clients fins que en confirmis els al·lèrgens.} other {{u, plural, one {{unverified} dels teus {total} plats queda amagat als clients fins que en confirmis els al·lèrgens.} other {{unverified} dels teus {total} plats queden amagats als clients fins que en confirmis els al·lèrgens.}}}} Un plat que es mostra sense al·lèrgens confirmats es llegeix com «no en conté cap», així que la carta l’amaga per no córrer aquest risc.",
+    "where": "Carta → Al·lèrgens"
+  },
+  "noVan": {
+    "title": "Afegeix un vehicle",
+    "detail": "Els esdeveniments funcionen amb un vehicle: sense cap vehicle no hi ha per on rebre comandes.",
+    "where": "Configuració → Els teus vehicles"
+  },
+  "kitchenCapacityUnset": {
+    "title": "Defineix la capacitat de la cuina",
+    "detail": "No hi ha cap capacitat definida per a: {vans}. Sense això, continuarem prometent als clients hores de recollida que la teva cuina no pot complir de cap manera.",
+    "where": "Carta → Capacitat de la cuina",
+    "unnamedVan": "Vehicle sense nom"
+  },
+  "noPrepBearingCategory": {
+    "title": "Digues-nos quant triga el teu menjar",
+    "detail": "{categories, select, none {Encara no tens cap categoria a la carta, així que no tenim manera de calcular quant triga una comanda.} other {Cap de les teves categories no té temps de cocció definit, així que per a nosaltres totes les comandes semblen immediates. Continuaríem donant als clients hores de recollida que la teva cuina no pot complir, i com més feina tinguis, més s’allunyarien.}}",
+    "where": "Carta → Categories → Configuració de la cuina"
+  },
+  "emailUnverified": {
+    "title": "Confirma la teva adreça de correu electrònic",
+    "detail": "Enviem els avisos de comandes i la recuperació del compte a aquesta adreça. Si és incorrecta, te n’adones quan alguna cosa ja ha fallat.",
+    "where": "Busca el nostre enllaç de confirmació a la safata d’entrada"
+  },
+  "emailUnknown": {
+    "title": "Estat de confirmació del correu electrònic desconegut",
+    "detail": "La verificació del correu electrònic encara no està connectada, així que això no es pot avaluar. Bloqueja expressament en lloc de donar-ho per bo sense avisar.",
+    "where": "—"
+  }
+}

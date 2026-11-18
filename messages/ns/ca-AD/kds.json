@@ -1,0 +1,129 @@
+{
+  "docTitle": "Cuina · {truck}",
+  "loading": "S’està carregant la cuina…",
+  "pin": {
+    "title": "Introdueix el PIN",
+    "placeholder": "PIN",
+    "unlock": "Desbloqueja",
+    "unreachable": "Ara mateix no es pot connectar amb el servidor. El teu PIN és correcte: torna-ho a provar d’aquí a un moment.",
+    "incorrect": "PIN incorrecte",
+    "generic": "Alguna cosa ha fallat. Torna-ho a provar."
+  },
+  "error": {
+    "linkInvalid": "Aquest enllaç ja no és vàlid.",
+    "couldNotLoad": "No s’han pogut carregar les comandes",
+    "truckNotFound": "No s’ha trobat el food truck"
+  },
+  "degraded": {
+    "at": "⚠️ No es pot connectar amb el servidor. Es mostren els tiquets de les {time}. POT SER QUE FALTIN COMANDES NOVES.",
+    "earlier": "⚠️ No es pot connectar amb el servidor. Es mostren tiquets d’abans. POT SER QUE FALTIN COMANDES NOVES."
+  },
+  "header": {
+    "dashboard": "Tauler",
+    "backTitle": "Torna al tauler",
+    "list": "Llista",
+    "grid": "Quadrícula",
+    "full": "Completa",
+    "cook": "Cuina",
+    "fullTitle": "Fitxes completes: preus i detalls del pagament, tal com les veu qui atén al taulell.",
+    "cookTitle": "Fitxes de cuina: lletra més gran, agrupades per categoria, sense preus.",
+    "readyStep": "Pas «A punt»",
+    "readyOnlyTitle": "Aquesta pantalla només marca les comandes com a preparades, així que no es pot desactivar: és l’únic pas que fa.",
+    "readyOnTitle": "Aquesta pantalla marca les comandes com a preparades. Toca perquè ho faci una altra pantalla.",
+    "readyOffTitle": "Una altra pantalla marca les comandes com a preparades. Toca perquè ho faci aquesta.",
+    "handover": "Cobrament i entrega",
+    "handoverOnlyTitle": "Aquesta pantalla només cobra, així que no es pot desactivar: és l’únic pas que fa.",
+    "handoverOnTitle": "Aquesta pantalla cobra i entrega les comandes. Toca perquè ho faci una altra pantalla.",
+    "handoverOffTitle": "Una altra pantalla cobra. Toca perquè ho faci aquesta.",
+    "soundOn": "El so de comanda nova està activat: toca per desactivar-lo",
+    "soundOff": "El so de comanda nova està desactivat: toca per activar-lo",
+    "screenOn": "Pantalla encesa",
+    "screenOff": "Pantalla apagada",
+    "screenSettings": "Configuració de la pantalla",
+    "manageEvent": "Gestiona l’esdeveniment",
+    "manageEventTitle": "Gestiona l’esdeveniment: inicia’l, posa’l en pausa, canvia’l o acaba’l",
+    "soundSettings": "Configuració del so",
+    "soundSettingsTitle": "Quins sons sonen en aquest dispositiu",
+    "cashIcon": "💶"
+  },
+  "panel": {
+    "viewSettings": "Configuració de la vista",
+    "on": "Activat",
+    "off": "Desactivat",
+    "newOrderSound": "So de comanda nova",
+    "soundNeedsConfirming": "Només les comandes que cal confirmar",
+    "soundAll": "Totes les comandes noves",
+    "soundDue": "So quan s’ha de començar a cuinar una comanda",
+    "soundDueHelp": "Sona quan un tiquet es posa de color ambre.",
+    "deviceSettings": "Configuració del dispositiu",
+    "sound": "So",
+    "close": "Tanca"
+  },
+  "banner": {
+    "mismatchTitle": "⚠️ No s’han carregat les comandes d’aquest esdeveniment",
+    "mismatchBody": "El servidor ha respost amb un altre esdeveniment, així que no es mostra res en lloc de mostrar comandes equivocades. Torna a triar l’esdeveniment o torna a carregar la pàgina.",
+    "mismatchBodyAt": "El servidor ha respost amb un altre esdeveniment, així que no es mostra res en lloc de mostrar comandes equivocades ({venue}). Torna a triar l’esdeveniment o torna a carregar la pàgina.",
+    "paused": "⏸ Comandes en pausa{reason, select, offline { (dispositiu sense connexió)} other {}}: els clients no poden fer comandes",
+    "resume": "Reprèn",
+    "offline": "Sense connexió: es mostren les últimes comandes conegudes. S’han posat en pausa les comandes en línia dels clients.",
+    "queued": "{n, plural, one {{count} acció a la cua} other {{count} accions a la cua}}",
+    "extraWait": "⏱ Temps d’espera addicional actiu: +{mins} min",
+    "clear": "Treu-lo",
+    "toMake": "Per preparar",
+    "today": "Avui · {range}",
+    "onDate": "{date} · {range}",
+    "startEvent": "Inicia l’esdeveniment",
+    "recentlyClosed": "Esdeveniment acabat · {venue}: va acabar a les {time}",
+    "eventStatus": "{tone, select, paused {⏸ En pausa} live {● En curs} finished {● Acabat} cancelled {Cancel·lat} other {No iniciat}}"
+  },
+  "board": {
+    "queueClear": "Cua buida",
+    "doneToday": "Fetes avui · {count}",
+    "paid": "✓ pagat",
+    "cardHeld": "import retingut",
+    "due": "Per pagar: {amount}"
+  },
+  "screenOff": {
+    "title": "Vols permetre que la pantalla s’apagui?",
+    "bodyVans": "{n, plural, one {Aquest vehicle té} other {Aquests vehicles tenen}} activada la detecció de desconnexió: {vans}. Si la pantalla s’apaga, pot ser que el dispositiu deixi d’enviar el senyal de connexió i que es posin en pausa les comandes dels clients.",
+    "body": "Si la pantalla s’apaga, pot ser que el dispositiu deixi d’enviar el senyal de connexió.",
+    "keepHint": "Mantén la pantalla encesa perquè les comandes no s’interrompin.",
+    "keep": "Mantén la pantalla encesa",
+    "allow": "Permet que s’apagui"
+  },
+  "event": {
+    "change": "Canvia d’esdeveniment",
+    "cancel": "Cancel·la",
+    "waitActive": "⏱ +{mins} min actius · Toca per treure’ls",
+    "addWait": "⏱ Afegeix temps d’espera",
+    "endTitle": "Vols acabar l’esdeveniment?",
+    "endEarly": "Aquest esdeveniment no està previst que acabi fins a les {time}. No s’acceptaran més comandes. Confirmes que vols acabar l’esdeveniment?",
+    "endNow": "Vols acabar aquest esdeveniment? No s’acceptaran més comandes.",
+    "yes": "Sí",
+    "started": "Esdeveniment iniciat",
+    "startFutureConfirm": "Aquest esdeveniment és el {date}. Vols iniciar-lo ara?",
+    "finishTimeNow": "Nova hora de final: {time}",
+    "finished": "Esdeveniment acabat",
+    "cancelled": "Esdeveniment cancel·lat",
+    "noteSaved": "Nota desada",
+    "pauseConfirm": "Vols posar en pausa les comandes? Els clients veuran «No s’accepten comandes» fins que les reprenguis.",
+    "switchConfirm": "Vols canviar d’esdeveniment ({from} → {to})?{n, plural, =0 {} one { Se substituirà {count} comanda d’aquesta pantalla.} other { Se substituiran {count} comandes d’aquesta pantalla.}} Toca l’esdeveniment actual per tornar-hi."
+  },
+  "intro": {
+    "title": "Aquesta és la pantalla de cuina",
+    "p1": "És la vista de qui cuina: les comandes que has de preparar, en l’ordre en què les has de fer. La pantalla del costat de la planxa mostra això mentre al taulell es fa servir el tauler de comandes.",
+    "p2": "Les fitxes avancen a mesura que les toques, així que qui cuina sempre sap què ve després i ningú no ha de cridar. Tot el que hi ha aquí són dades de demostració: prova-ho tant com vulguis.",
+    "gotIt": "Entesos"
+  },
+  "toast": {
+    "failed": "Error",
+    "rejectFailed": "No s’ha pogut rebutjar",
+    "buzzerSaved": "Avisador {n} desat",
+    "buzzerRemoved": "Avisador {n} eliminat",
+    "buzzerRemovedNone": "Avisador retirat",
+    "buzzerAssigned": "Avisador {n} assignat",
+    "buzzerAssignedFrom": "Avisador {n} assignat (tret de la #{from})",
+    "buzzerRemoveFailed": "{had, select, no {No s’ha pogut treure l’avisador {target, select, order {de la comanda #{id}} other {d’aquesta comanda}}} other {No s’ha pogut treure l’avisador {n}: encara és {target, select, order {a la comanda #{id}} other {en aquesta comanda}}}}",
+    "buzzerAssignFailed": "No s’ha pogut donar l’avisador {n} {target, select, order {a la comanda #{id}} other {a aquesta comanda}}: {had, select, yes {encara té l’avisador {prior}} other {encara no té cap avisador}}"
+  }
+}

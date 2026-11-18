@@ -1,0 +1,9 @@
+{
+  "title": "Plans i funcions",
+  "generated": "Generat el {date}",
+  "allowanceHeading": "Comandes en línia incloses",
+  "smallPrint": "Lletra petita",
+  "priceNoteMasked": "Els preus que apareixen com a «Per confirmar» encara no s’han publicat.",
+  "omitNote": "En aquest document no s’hi inclouen els preus expressament.",
+  "terms": "Les xifres són les condicions publicades dels plans a la data indicada i poden canviar. Les comissions de processament de targetes les cobra Stripe, no HatchGrab. Aquest document és un resum, no un contracte."
+}

@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 Interval de dates",
+    "event": "📍 Esdeveniment",
+    "filterBy": "Filtra per",
+    "show": "Mostra",
+    "range": "<from></from><sep>a</sep><until></until>",
+    "selectEvent": "Tria un esdeveniment…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "Esdeveniment",
+    "viewReport": "Mostra l’informe",
+    "loading": "S’està carregant…",
+    "orders": "📋 Comandes",
+    "items": "📦 Productes",
+    "exportCsv": "⬇ Exporta en CSV"
+  },
+  "empty": {
+    "noOrders": "No s’ha trobat cap comanda en aquest període.",
+    "selectEvent": "Tria un esdeveniment a dalt per veure’n l’informe."
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} comanda} other {{count} comandes}} · {total}"
+  },
+  "revenue": {
+    "title": "Desglossament dels ingressos",
+    "deals": "Ingressos dels menús",
+    "modifiers": "Suplements dels modificadors",
+    "foodSales": "Vendes de menjar",
+    "total": "Total",
+    "other": "Altres",
+    "tax": "Impostos",
+    "tips": "Propines",
+    "serviceFees": "Comissions de servei",
+    "cardFees": "Comissions per targeta"
+  },
+  "itemsSold": {
+    "title": "Productes venuts"
+  },
+  "dealsCard": {
+    "title": "Menús"
+  },
+  "custom": {
+    "title": "Personalitzacions",
+    "paidModifiers": "Modificadors de pagament",
+    "customerNotes": "Notes dels clients",
+    "note": "«{note}»"
+  },
+  "table": {
+    "item": "Producte",
+    "modifier": "Modificador",
+    "qty": "Quant.",
+    "total": "Total",
+    "date": "Data",
+    "time": "Hora",
+    "channel": "Canal"
+  },
+  "breakdown": {
+    "orders": "Desglossament per comanda",
+    "items": "Desglossament per producte"
+  },
+  "channel": {
+    "online": "En línia",
+    "walkUp": "Presencial"
+  },
+  "csv": {
+    "orderId": "ID de la comanda",
+    "date": "Data",
+    "event": "Esdeveniment",
+    "timePlaced": "Hora de la comanda",
+    "collectionTime": "Hora de recollida",
+    "customerName": "Nom del client",
+    "orderType": "Tipus de comanda",
+    "items": "Productes",
+    "deals": "Menús",
+    "modifiers": "Modificadors",
+    "notes": "Notes",
+    "subtotal": "Subtotal",
+    "tip": "Propina",
+    "serviceFee": "Comissió de servei",
+    "total": "Total",
+    "itemName": "Nom del producte",
+    "qty": "Quantitat",
+    "unitPrice": "Preu unitari",
+    "itemTotal": "Total del producte",
+    "orderTotal": "Total de la comanda",
+    "unknownEvent": "Esdeveniment desconegut",
+    "asap": "Com més aviat millor",
+    "unknownCustomer": "Desconegut",
+    "customerOnline": "Client en línia",
+    "placedByTruck": "Afegida pel food truck"
+  },
+  "presets": {
+    "label": "Període",
+    "custom": "Dates personalitzades",
+    "thisMonth": "Aquest mes",
+    "lastMonth": "El mes passat",
+    "lastQuarter": "El trimestre passat",
+    "lastTaxYear": "L’exercici fiscal passat"
+  },
+  "accounts": {
+    "title": "Per al teu gestor",
+    "help": "Les vendes compten el dia de l’esdeveniment. El brut és el que han pagat els clients. El net és el que queda després de les devolucions i els impostos.",
+    "gross": "Vendes brutes",
+    "refunds": "Devolucions",
+    "net": "Vendes netes",
+    "taxEstimated": "estimat a partir del teu tipus impositiu",
+    "taxNone": "El teu food truck no té cap tipus impositiu configurat, així que aquí no es calculen impostos.",
+    "byChannel": "Vendes brutes per canal",
+    "byPayment": "Vendes brutes per forma de pagament",
+    "online": "En línia",
+    "walkUp": "Presencial",
+    "cardOnline": "Targeta en línia",
+    "payAtTruck": "Pagament en recollir",
+    "cost": "Cost dels plats venuts",
+    "profit": "Benefici",
+    "coverage": "{total, plural, one {Cost configurat per a {withCost} de # plat venut} other {Cost configurat per a {withCost} de # plats venuts}}",
+    "partial": "Els plats sense cost no s’inclouen al cost, així que aquest benefici és més alt del real. Afegeix un cost a cada plat a Carta.",
+    "noCosts": "Encara no hi ha cap plat amb cost. Afegeix un cost als teus plats a Carta per veure el benefici.",
+    "byEvent": "Per esdeveniment",
+    "event": "Esdeveniment",
+    "sales": "Vendes netes",
+    "eventNoProfit": "Un guió vol dir que no tots els plats venuts allà tenen cost.",
+    "downloadOrders": "⬇ Comandes per al teu gestor",
+    "downloadEvents": "⬇ Esdeveniments per al teu gestor",
+    "downloadHelp": "Dos fitxers de full de càlcul: una fila per cada comanda i una fila per cada esdeveniment. S’obren amb Excel, Numbers, Xero i QuickBooks."
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "Data",
+      "time": "Hora",
+      "orderNumber": "Número de comanda",
+      "event": "Esdeveniment",
+      "channel": "Canal",
+      "paymentMethod": "Mètode de pagament",
+      "currency": "Moneda",
+      "gross": "Brut",
+      "tax": "Impostos",
+      "taxBasis": "Càlcul dels impostos",
+      "net": "Net",
+      "refunded": "Retornat",
+      "cost": "Cost",
+      "profit": "Benefici",
+      "eventDate": "Data de l’esdeveniment",
+      "orders": "Comandes",
+      "dishesSold": "Plats venuts",
+      "dishesWithCost": "Plats amb cost"
+    },
+    "taxBasis": {
+      "stored": "desat amb la comanda",
+      "estimated": "estimat a partir del teu tipus impositiu",
+      "none": "sense tipus impositiu configurat"
+    }
+  }
+}

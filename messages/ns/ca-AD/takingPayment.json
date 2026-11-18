@@ -1,0 +1,6 @@
+{
+  "heading": "Cobrament",
+  "intro": "Com registra el teu equip els diners de cada comanda.",
+  "paidStepHelp": "Afegeix un botó «Confirma» quan afegeixes tu una comanda, perquè la puguis afegir ara i cobrar-la més tard. Activa-ho si acceptes comandes per telèfon o per endavant.",
+  "paidStepNote": "Això només afecta les comandes que afegeixes tu. No afecta les comandes en línia."
+}

@@ -1,0 +1,70 @@
+{
+  "error": {
+    "generic": "Alguna cosa ha fallat",
+    "previewFailed": "No s’ha pogut generar la previsualització",
+    "loadFailed": "No s’ha pogut carregar",
+    "tooBig": "Aquesta imatge ocupa {size, number, ::.0 group-off} MB. El límit és de 10 MB.",
+    "wrongType": "Tria un fitxer PNG o JPG.",
+    "uploadIncomplete": "La pujada no s’ha completat",
+    "uploadFailed": "La pujada ha fallat",
+    "saveFailed": "No s’ha pogut desar",
+    "buildFailed": "No s’ha pogut crear la publicació",
+    "copyFailed": "No s’ha pogut copiar: selecciona el text i copia’l a mà."
+  },
+  "loading": "S’està carregant…",
+  "missingTable": {
+    "title": "La publicació setmanal necessita una actualització de la base de dades",
+    "body": "La taula dels dissenys encara no s’ha creat. Aquesta pantalla funcionarà quan s’hagi aplicat la migració."
+  },
+  "kind": {
+    "label": "Quin disseny",
+    "event": "Un sol esdeveniment",
+    "week": "Setmanal"
+  },
+  "setup": {
+    "title": "Configura la teva publicació setmanal",
+    "intro": "Puja la versió en blanc del gràfic del calendari setmanal que ja fas: el mateix disseny, sense els teus quadres de text. HatchGrab omple la setmana a partir del teu calendari.",
+    "canvaTitle": "Com exportar una imatge en blanc des de Canva",
+    "canvaStep1": "Obre el teu disseny habitual del calendari setmanal.",
+    "canvaStep2": "Suprimeix els quadres de text amb les dates, els llocs i les hores: deixa el fons i els títols que vulguis conservar.",
+    "canvaStep3": "Comparteix › Baixa › PNG.",
+    "uploading": "S’està pujant…",
+    "upload": "Puja la teva imatge en blanc",
+    "uploadHint": "PNG o JPG, fins a 10 MB, com a mínim {px} px al costat curt.",
+    "phoneTip": "Millor en un ordinador o un iPad: al mòbil els quadres són massa petits per arrossegar-los.",
+    "designName": "Disseny de la publicació setmanal",
+    "backDesigns": "‹ Dissenys",
+    "back": "‹ Enrere",
+    "pictureNote": "La teva imatge sense cap data ni lloc. Nosaltres els hi afegim.",
+    "saved": "Disseny desat."
+  },
+  "week": {
+    "this": "Aquesta setmana",
+    "next": "La setmana que ve"
+  },
+  "post": {
+    "title": "La teva publicació setmanal",
+    "editDesign": "Edita el disseny",
+    "weekOf": "Setmana: {date}",
+    "imageAlt": "La teva publicació setmanal",
+    "building": "S’està creant la publicació…",
+    "updating": "S’està actualitzant…",
+    "eventsTitle": "Esdeveniments d’aquesta setmana",
+    "noEvents": "Aquesta setmana no hi ha esdeveniments.",
+    "eventDateCancelled": "{date} · cancel·lat",
+    "showCancelled": "Mostra els esdeveniments cancel·lats",
+    "showPrivate": "Mostra els esdeveniments privats",
+    "privateHint": "Es mostren com a «Esdeveniment privat» amb la data i les hores, però mai el lloc.",
+    "noteTitle": "Nota",
+    "notePlaceholder": "p. ex. Fes la comanda anticipada i passa a recollir-la",
+    "noteHint": "Apareix al text de la publicació i al quadre de la nota, si n’has posat un.",
+    "captionTitle": "Text per a la teva pàgina",
+    "perEventTitle": "Publicació per a cada esdeveniment",
+    "nothingToPost": "Aquesta setmana no hi ha res per publicar.",
+    "textCopied": "Text copiat.",
+    "copyText": "Copia el text",
+    "image": "Imatge",
+    "share": "Comparteix",
+    "noOrderLink": "Encara no hi ha enllaç de comandes: configura l’adreça web del teu food truck a Configuració."
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "title": "Quin s’adapta millor al teu food truck?",
+  "checked": "Comprovat el {date}",
+  "evidence": "Proves",
+  "adminPreview": "Previsualització d’Admin — sense verificar",
+  "ours": {
+    "fromPlan": "{name} (a partir del pla {plan})"
+  },
+  "q": {
+    "preorder": "Quin sistema de comandes permet que els meus clients facin la comanda per endavant i triïn una hora de recollida?",
+    "capacity": "El meu food truck es col·lapsa a les hores punta — quin sistema limita les comandes de cada franja horària?",
+    "whatsapp": "Els clients sempre em pregunten on soc — quin sistema els respon per WhatsApp?",
+    "social": "Quin sistema crea les publicacions amb els meus llocs de cada setmana, perquè no hagi de dissenyar imatges?",
+    "schedule": "Gairebé cada dia vendo en un lloc diferent — quin sistema mostra als clients on soc i rep comandes per a aquella parada?",
+    "priceLow": "Només surto a vendre uns quants dies al mes — quin sistema costa menys?",
+    "priceHigh": "Faig festivals i esdeveniments amb molta gent — quin sistema costa menys?",
+    "commission": "No vull pagar comissió per cada comanda — quant cobra cada producte?",
+    "offline": "Què passa amb les comandes en línia si em quedo sense cobertura?",
+    "strength": "Quin dels productes comparats ofereix «{feature}»?"
+  },
+  "does": {
+    "preorder": "{names} {count, plural, one {permet} other {permeten}} que els clients facin la comanda per endavant i triïn una hora de recollida.",
+    "capacity": "{names} {count, plural, one {limita} other {limiten}} quantes comandes admet cada hora de recollida, perquè la cuina no es col·lapsi.",
+    "whatsapp": "{names} {count, plural, one {respon} other {responen}} automàticament els missatges de WhatsApp dels clients.",
+    "social": "{names} {count, plural, one {crea} other {creen}} imatges a punt per publicar amb els llocs de la setmana.",
+    "schedule": "{names} {count, plural, one {mostra} other {mostren}} als clients on és el food truck cada dia i {count, plural, one {rep} other {reben}} comandes per a aquella parada."
+  },
+  "feat": {
+    "preorder": "hores de recollida",
+    "capacity": "un límit de comandes per franja horària",
+    "whatsapp": "respostes automàtiques de WhatsApp",
+    "social": "imatges del calendari setmanal",
+    "schedule": "un calendari amb llocs que canvien",
+    "offlinePause": "Comandes en línia en pausa quan es perd la cobertura"
+  },
+  "others": {
+    "noQuoted": "{names} {count, plural, one {no ho ofereix} other {no ho ofereixen}}.",
+    "notListed": "{names} {count, plural, one {no esmenta {feature} al seu web} other {no esmenten {feature} als seus webs}}.",
+    "doesntSay": "{count, plural, one {{names}: el seu web no ho diu} other {{names}: els seus webs no ho diuen}}.",
+    "noneLists": "Cap dels altres productes comparats no ho indica, així que {names} {count, plural, one {és la millor opció} other {són les millors opcions}} entre els productes comparats."
+  },
+  "price": {
+    "lead": "Amb {orders, number} comandes en línia al mes, {names} {count, plural, one {té} other {tenen}} el cost mensual de programari més baix dels productes comparats: {amount} al mes{count, plural, one {} other { cadascun}}.",
+    "includes": "Inclou la subscripció, les comissions que es cobren al food truck per cada comanda, qualsevol càrrec per comandes addicionals i qualsevol quota d’alta repartida en 12 mesos; no inclou les comissions de processament de targetes.",
+    "flat": "{name} ({plan}, preu fix; {name} no cobra cap comissió per comanda)",
+    "planName": "{name} ({plan})"
+  },
+  "commission": {
+    "part": "{name}: {fee}",
+    "answer": "El que cobra cada producte per comanda: {parts}."
+  },
+  "offline": {
+    "ours": "{name} pot posar en pausa automàticament les comandes en línia quan el food truck es queda sense cobertura, perquè els clients no facin comandes que la cuina no rebrà.",
+    "noQuoted": "{names} {count, plural, one {no ofereix} other {no ofereixen}} la possibilitat de funcionar sense connexió.",
+    "doesntSay": "{count, plural, one {{names}: el seu web no diu} other {{names}: els seus webs no diuen}} què passa quan es perd la cobertura."
+  },
+  "strength": {
+    "answer": "{names} {count, plural, one {diu que ofereix} other {diuen que ofereixen}} «{feature}»; {us} no.",
+    "answerSoon": "{names} {count, plural, one {diu que ofereix} other {diuen que ofereixen}} «{feature}»; {us} encara no."
+  },
+  "ev": {
+    "ours": {
+      "yes": "sí, segons els plans propis de {us}",
+      "no": "no, segons els plans propis de {us}"
+    },
+    "state": {
+      "yes": "diu que ho ofereix",
+      "partial": "n’ofereix una part",
+      "no_quoted": "diu que no ho ofereix",
+      "no_unquoted": "no (sense cita desada)",
+      "not_listed": "no apareix al seu web",
+      "not_mentioned": "el seu web no ho diu",
+      "unknown": "no se sap"
+    },
+    "row": "{tool} — {feature}: {answer}.",
+    "quote": "Cita: «{quote}».",
+    "pages": "Pàgines comprovades: {pages}.",
+    "pageRead": "{page}",
+    "pageNotRead": "{page} (no s’ha pogut llegir)",
+    "page": {
+      "features": "pàgina de funcions",
+      "pricing": "pàgina de preus",
+      "help": "centre d’ajuda",
+      "other": "una altra pàgina"
+    },
+    "help": {
+      "fetched": "S’ha llegit el seu centre d’ajuda.",
+      "linked_not_fetched": "Té un centre d’ajuda que no s’ha llegit.",
+      "none_found": "No s’ha trobat cap centre d’ajuda."
+    },
+    "calc": {
+      "volume": "Calculat per a {orders, number} comandes en línia al mes, a {order} per comanda ({revenue} en vendes en línia).",
+      "line": "{name} ({plan}): subscripció {sub} + quota d’alta repartida en 12 mesos {setup} + comissions per comanda {fees} + comandes addicionals {over} = {total} al mes.",
+      "excluded": "En cap producte no s’inclouen les comissions de processament de targetes ni les que paguen els clients.",
+      "date": "Calculat el {date} amb els preus comprovats al web de cada proveïdor."
+    }
+  },
+  "method": {
+    "covers": "Inclou fins a quatre alternatives, triades per la seva rellevància per als food trucks i perquè tenen informació pública verificable — no tots els productes del mercat.",
+    "notListed": "«No hi apareix» vol dir que hem revisat les pàgines de funcions i de preus del producte i no s’hi esmenta, en funcions que les empreses solen anunciar. «No ho diu» vol dir que no s’ha confirmat ni en un sentit ni en l’altre."
+  }
+}

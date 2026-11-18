@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "title": "Qui som — HatchGrab",
+    "description": "HatchGrab crea programari per a food trucks i càtering mòbil: comandes en línia, hora de recollida i menys preguntes repetides. Fundat per Dominic Bonini."
+  },
+  "eyebrow": "Qui som",
+  "title": "Pensat per a la manera com treballen de debò els food trucks",
+  "photoAlt": "{name}, fundador de HatchGrab",
+  "story": {
+    "start": "HatchGrab va néixer d’una observació senzilla: els food trucks necessiten millors eines per gestionar el seu negoci.",
+    "villageFoodie": "Després de crear Village Foodie, un directori que ajuda la gent a descobrir els food trucks que visiten la seva zona, vaig dedicar més temps a conèixer els reptes dels negocis de menjar ambulant. A diferència dels restaurants tradicionals, els food trucks es mouen constantment, treballen en llocs diferents i serveixen els clients en condicions que canvien.",
+    "fixedAddress": "Tot i així, bona part del programari que tenen al seu abast està pensat per a negocis amb una adreça fixa.",
+    "change": "HatchGrab es va crear per canviar-ho.",
+    "build": "Creem programari pràctic pensat específicament per als food trucks i el càtering mòbil, que els ajuda a rebre comandes en línia, gestionar les hores de recollida, mantenir el ritme de les comandes i perdre menys temps responent preguntes repetitives.",
+    "focus": "El nostre objectiu és senzill: fer més fàcil portar un food truck, amb eines pensades per a la manera com funcionen de debò aquests negocis."
+  },
+  "signature": "<b>{name}</b><br></br>Fundador, HatchGrab",
+  "company": "{company} · registrada a Anglaterra i Gal·les · número d’empresa {number} · domicili social: {address}",
+  "contact": "Contacta’ns"
+}

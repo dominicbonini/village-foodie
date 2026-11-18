@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "Adreça",
+    "postcode": "Codi postal",
+    "zip": "Codi postal (ZIP)",
+    "eircode": "Eircode",
+    "postalCode": "Codi postal",
+    "state": "Estat",
+    "stateTerritory": "Estat o territori",
+    "province": "Província",
+    "county": "Comtat",
+    "prefecture": "Prefectura",
+    "emirate": "Emirat",
+    "region": "Regió",
+    "area": "Zona (poble o ciutat)",
+    "townOrArea": "Població o zona",
+    "city": "Ciutat",
+    "suburb": "Barri",
+    "townOrCity": "Població o ciutat"
+  },
+  "short": {
+    "area": "Zona",
+    "townOrArea": "Població o zona",
+    "city": "Ciutat",
+    "suburb": "Barri",
+    "townOrCity": "Població o ciutat"
+  },
+  "inSentence": {
+    "postcode": "codi postal",
+    "zip": "codi postal (ZIP)",
+    "eircode": "Eircode",
+    "postalCode": "codi postal"
+  },
+  "withArticle": {
+    "postcode": "un codi postal",
+    "zip": "un codi postal (ZIP)",
+    "eircode": "un Eircode",
+    "postalCode": "un codi postal"
+  },
+  "tradeLabel": {
+    "area": "Població o ciutat",
+    "townOrArea": "Població o zona",
+    "city": "Ciutat",
+    "suburb": "Barri",
+    "townOrCity": "Població o ciutat"
+  },
+  "basedIn": {
+    "area": "Població o ciutat on tens la base",
+    "townOrArea": "Població o zona on tens la base",
+    "city": "Ciutat on tens la base",
+    "suburb": "Barri on tens la base",
+    "townOrCity": "Població o ciutat on tens la base"
+  },
+  "example": "p. ex. {example}",
+  "customersSee": "Els clients veuen:",
+  "postalWarning": "Això no sembla {article}: per exemple, {example}. Pots desar-lo igualment.",
+  "regionChoose": "Tria…"
+}

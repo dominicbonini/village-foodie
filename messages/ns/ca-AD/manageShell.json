@@ -1,0 +1,86 @@
+{
+  "loading": "S’està carregant la consola de gestió…",
+  "loadFailed": "No s’ha pogut carregar",
+  "requestFailed": "Error",
+  "invalidToken": "Codi d’accés no vàlid o caducat",
+  "loadFailedReason": "No s’ha pogut carregar aquesta pàgina: {reason}",
+  "noCountrySettings": "No s’ha pogut carregar la configuració del país d’aquest food truck. Actualitza la pàgina.",
+  "noPlans": "No s’ha pogut carregar el pla d’aquest food truck. Actualitza la pàgina.",
+  "stale": "{hasTime, select, yes {No s’ha pogut actualitzar. Es mostra el que s’havia desat a les {time}. Els canvis que facis es continuen desant.} other {No s’ha pogut actualitzar. Es mostra el que s’havia desat. Els canvis que facis es continuen desant.}}",
+  "verify": {
+    "ok": "Correu electrònic confirmat. Gràcies!",
+    "expired": "Aquest enllaç de confirmació ha caducat. Posa’t en contacte amb nosaltres i ho resoldrem abans que comencis.",
+    "invalid": "Aquest enllaç de confirmació no ha funcionat. Posa’t en contacte amb nosaltres i ho resoldrem abans que comencis."
+  },
+  "profile": {
+    "updated": "Perfil actualitzat",
+    "saveFailed": "No s’ha pogut desar",
+    "title": "Edita el perfil",
+    "name": "Nom",
+    "namePlaceholder": "El teu nom",
+    "email": "Correu electrònic",
+    "cancel": "Cancel·la",
+    "saving": "S’està desant…",
+    "save": "Desa"
+  },
+  "header": {
+    "subtitle": "Consola de gestió",
+    "ordersDashboard": "← Tauler de comandes"
+  },
+  "tabs": {
+    "menu": "Carta",
+    "schedule": "Calendari",
+    "paperwork": "Documents",
+    "social": "Xarxes socials",
+    "reports": "Informes",
+    "team": "Equip",
+    "settings": "Configuració",
+    "payments": "Pagaments",
+    "billing": "Facturació",
+    "paymentsIcon": "💶",
+    "scheduleCount": "Calendari ({count})",
+    "stripeAttention": "Stripe necessita la teva atenció",
+    "allergensNotSet": "al·lèrgens sense configurar"
+  },
+  "menuSections": {
+    "label": "Seccions de la carta",
+    "items": "Productes",
+    "capacity": "Capacitat de la cuina",
+    "extras": "Extres i suggeriments",
+    "deals": "Menús"
+  },
+  "socialSections": {
+    "label": "Seccions de xarxes socials",
+    "create": "Crea una publicació",
+    "designs": "Dissenys",
+    "locations": "Configuració dels llocs"
+  },
+  "notices": {
+    "review": "Revisa →",
+    "tour": "Vols fer una visita ràpida pel teu tauler?",
+    "showMeAround": "Fes-me una visita guiada",
+    "dismiss": "Descarta",
+    "approval": "{count, plural, one {Hem trobat <b>{count}</b> esdeveniment per a tu: revisa’l i aprova’l abans que es publiqui.} other {Hem trobat <b>{count}</b> esdeveniments per a tu: revisa’ls i aprova’ls abans que es publiquin.}}",
+    "allergens": "<b>Al·lèrgens sense configurar</b>: els clients no poden veure la informació d’al·lèrgens fins que la verifiquis. Revisa els al·lèrgens de cada plat a la pestanya Carta.",
+    "domainLive": "<link>{domain}</link> ja funciona. Fes-hi un cop d’ull i després confirma’ns a Configuració que és correcte.",
+    "stripe": "<b>Stripe necessita alguna cosa de tu</b>: els pagaments amb targeta es poden aturar fins que es resolgui.",
+    "profileTitle": "Completa el teu perfil",
+    "missing": "Falta: {fields}.",
+    "goToSettings": "Ves a Configuració →",
+    "field": {
+      "truckName": "nom del food truck",
+      "cuisineType": "tipus de cuina",
+      "contactEmail": "correu electrònic de contacte",
+      "contactPhone": "telèfon de contacte"
+    }
+  },
+  "trialPopup": {
+    "title": "{months, select, none {Tens una prova gratuïta} other {Tens una prova gratuïta (mesos gratuïts: {months})}}",
+    "ends": "{hasDate, select, yes {La prova acaba el <hl>{date}</hl>} other {La prova acaba <hl>aviat</hl>}}",
+    "offer": "{hasMonths, select, yes {{months, plural, one {Totes les funcions gratis durant # mes} other {Totes les funcions gratis durant # mesos}}} other {Totes les funcions gratis durant la prova}}",
+    "body": "{hasDate, select, yes {No et cobrarem res durant la prova, que dura fins al <b>{date}</b>. La facturació només comença quan tries un pla i introdueixes les dades de pagament. Fins aleshores no hi ha res per cancel·lar ni res per pagar. Tria el pla abans d’aquesta data: si no ho fas, passaràs al pla {fallback} i algunes funcions deixaran de funcionar.} other {No et cobrarem res mentre siguis en període de prova. La facturació només comença quan tries un pla i introdueixes les dades de pagament. Fins aleshores no hi ha res per cancel·lar ni res per pagar. Tria el pla abans que acabi la prova: si no ho fas, passaràs al pla {fallback} i algunes funcions deixaran de funcionar.}}",
+    "bodyPaidEnd": "{hasDate, select, yes {No et cobrarem res durant la prova, que dura fins al <b>{date}</b>. Quan acabi la prova, el pla {fallback} costa {price} al mes. Abans d’aquesta data et contactarem per configurar el pagament.} other {No et cobrarem res mentre siguis en període de prova. Quan acabi la prova, el pla {fallback} costa {price} al mes. Abans no acabi et contactarem per configurar el pagament.}}",
+    "fees": "*S’apliquen les comissions estàndard de processament de targetes a les comandes en línia",
+    "upgrade": "Millora el pla aquí →"
+  }
+}

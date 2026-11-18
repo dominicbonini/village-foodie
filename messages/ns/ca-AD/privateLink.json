@@ -1,0 +1,12 @@
+{
+  "guestLabel": "ESDEVENIMENT PRIVAT",
+  "truckFallback": "El food truck",
+  "noSlugTitle": "Aquest food truck encara no està configurat per a les comandes en línia.",
+  "orderingOffTitle": "Les comandes en línia no estan activades",
+  "orderingOffBody": "Aquest esdeveniment no accepta comandes en línia. Fes la comanda directament al food truck.",
+  "replacedTitle": "Aquest enllaç s’ha substituït",
+  "replacedBody": "Aquest enllaç ja no funciona: {truck} l’ha substituït. Demana a l’organitzador l’enllaç o el codi QR nou.",
+  "madePublicBody": "Aquest enllaç ja no funciona: {truck} ha fet públic aquest esdeveniment. Pots fer la comanda des de la seva pàgina habitual.",
+  "unknownTitle": "Aquest enllaç no funciona",
+  "unknownBody": "Aquest enllaç no funciona. Comprova’l amb l’organitzador o torna a escanejar el codi QR."
+}

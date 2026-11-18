@@ -1,0 +1,9 @@
+{
+  "subject": "La teva demostració de HatchGrab: aquí tens l’enllaç per tornar-hi",
+  "heading": "La teva demostració s’ha desat",
+  "intro": "Aquí tens l’enllaç per tornar a la demostració amb la teva carta. No cal iniciar la sessió: només has de tocar-lo.",
+  "button": "Obre la meva demostració",
+  "freshDay": "Cada vegada que hi tornis, prepararem una jornada nova perquè tinguis amb què jugar.",
+  "deletion": "Com que és una demostració, no la guardem per sempre: l’eliminarem juntament amb la carta el\n                <b>{date}</b> (d’aquí a {days, plural, one {# dia} other {# dies}}). Si et registres abans\n                d’aquesta data, la carta ve amb tu.",
+  "notSent": "S’ha desat, però ara mateix no hem pogut enviar el correu electrònic."
+}

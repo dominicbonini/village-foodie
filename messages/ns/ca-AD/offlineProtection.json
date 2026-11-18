@@ -1,0 +1,23 @@
+{
+  "explainerLead": "Durant el servei has de mantenir el tauler o la pantalla de cuina encesos i amb connexió.",
+  "explainerBody": "Si la pantalla s’apaga, el dispositiu perd internet o canvies a un altre lloc web, s’activa la protecció sense connexió: posa en pausa les comandes o desactiva l’acceptació automàtica, segons el que hagis triat.",
+  "reminder": "⚠️ Durant el servei, mantén el tauler o la pantalla de cuina encesos i amb connexió, o s’activarà la protecció sense connexió.",
+  "enableConfirm": "S’ha activat la protecció sense connexió.\n\nPerquè les comandes continuïn arribant, la pantalla ha d’estar encesa. Si aquest dispositiu perd la connexió, s’activa la protecció sense connexió en el mode que has triat.\n\nAssegura’t que «Pantalla encesa» estigui activat en aquest dispositiu.",
+  "disableConfirm": "Vols desactivar la protecció sense connexió per a aquest esdeveniment?\n\nSi aquest dispositiu perd la connexió, les comandes en línia continuaran arribant: els clients podrien fer comandes que no veuràs. Desactiva-la només si tens una connexió fiable.",
+  "cardDescription": "Decideix què passa amb les comandes que arriben quan el dispositiu es queda sense connexió.",
+  "purpose": "Si el dispositiu perd la connexió, això impedeix que arribin comandes mentre no les pots veure.",
+  "switchLabel": "Protecció de comandes sense connexió",
+  "switchHelp": "Què passa quan aquest vehicle perd la connexió.",
+  "modes": {
+    "pause": {
+      "label": "Posa en pausa les comandes en línia",
+      "help": "Els clients no poden fer comandes fins que tornis a tenir connexió."
+    },
+    "no_auto_accept": {
+      "label": "Continua rebent comandes i confirma-les tu",
+      "help": "L’acceptació automàtica es desactiva: els clients poden continuar fent comandes, però no es confirma res automàticament. Les confirmaràs una per una quan tornis a tenir connexió, i les que encara estiguin pendents es rebutjaran automàticament passat el temps que hagis triat, i s’enviarà un correu electrònic al client per avisar-lo."
+    }
+  },
+  "autoRejectLabel": "Rebutja les comandes que esperin més de",
+  "autoRejectOption": "{n, plural, one {{count} min} other {{count} min}}"
+}

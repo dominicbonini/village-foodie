@@ -1,0 +1,9 @@
+{
+  "launch_failed": "La verificació no està disponible temporalment. Torna-ho a provar d’aquí a un moment.",
+  "malformed": "No sembla una adreça web. Prova alguna cosa com elteufoodtruck.ad/esdeveniments",
+  "blocked": "No hem pogut accedir a aquest lloc web: potser bloqueja les comprovacions automàtiques. Prova la pàgina on hi ha el teu calendari, o afegeix els esdeveniments manualment.",
+  "unreachable": "No hem pogut connectar amb aquest lloc web. Potser no funciona, o l’adreça és incorrecta.",
+  "no_content": "Hem arribat a aquesta pàgina, però no hi hem pogut llegir res. Comprova que sigui accessible públicament.",
+  "no_events": "No hem trobat cap esdeveniment proper en aquesta pàgina. Assegura’t que l’adreça porti directament on hi ha el teu calendari.",
+  "blockedDomain": "Fes servir l’adreça del teu lloc web: les pàgines de Facebook i Instagram no es poden llegir automàticament."
+}

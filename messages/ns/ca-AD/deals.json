@@ -1,0 +1,17 @@
+{
+  "back": "← Enrere",
+  "title": "Aplica un menú",
+  "save": "Estalvia {amount}",
+  "selectItems": "Tria els productes de cada apartat",
+  "choose": "Tria: {category}…",
+  "inYourBasket": "── A la teva cistella ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (a la cistella){state, select, used { — ja és en un menú} taken { — triat en un altre apartat} other {}}",
+  "addNew": "── Afegeix-ne un de nou ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {Obligatori · tria’n un} required {Obligatori} other {Tria’n un}}{unmet, select, yes { (obligatori)} other {}}",
+  "notePlaceholder": "Afegeix una nota, p. ex. sense ceba (opcional)",
+  "backButton": "Enrere",
+  "cancel": "Cancel·la",
+  "chooseRequired": "Tria les opcions obligatòries",
+  "apply": "Aplica el menú · {amount}"
+}

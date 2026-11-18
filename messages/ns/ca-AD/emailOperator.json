@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "Comanda nova #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "Has rebut una comanda nova",
+    "from": "<b>Comanda #{id}</b> · client: <b>{name}</b>",
+    "collection": "Recollida: {time}",
+    "asap": "Sense hora concreta: com més aviat millor",
+    "total": "Total",
+    "notes": "<b>Notes:</b> {notes}",
+    "autoConfirmed": "Confirmada automàticament: no cal fer res.",
+    "confirmPrompt": "Inicia la sessió al teu tauler de HatchGrab per confirmar o rebutjar aquesta comanda.",
+    "text": "Comanda nova #{id} · client: {name}{withSlot, select, yes { · per a les {slot}} other {}}{withVenue, select, yes { · lloc: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} Total: {total}.{withNotes, select, yes { Notes: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "Nous esdeveniments trobats per a {truck}: revisa’ls",
+    "hi": "Hola,",
+    "found": "Hem trobat <b>{n, plural, one {{count} esdeveniment nou} other {{count} esdeveniments nous}}</b> al teu calendari que has d’aprovar abans que els clients els puguin veure.",
+    "listHeading": "Esdeveniments trobats:",
+    "approve": "Quan els aprovis a la pestanya «Calendari», es publicaran al mapa i la teva pàgina de comandes estarà a punt per rebre comandes anticipades.",
+    "cta": "Revisa el teu calendari →",
+    "signoff": "— L’equip de HatchGrab · hatchgrab.com",
+    "unknownVenue": "Lloc desconegut",
+    "text": "Hola,\n\nHem trobat {n, plural, one {{count} esdeveniment nou} other {{count} esdeveniments nous}} al teu calendari que has d’aprovar:\n\n{list}\n\nRevisa’ls aquí: {url}\n\nQuan els aprovis, es publicaran al mapa.\n\n— L’equip de HatchGrab"
+  }
+}

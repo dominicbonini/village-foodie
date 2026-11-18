@@ -1,0 +1,31 @@
+{
+  "intro": "«Gestiona» és on configures el teu food truck i veus com va. El tauler és on reps les comandes i portes cada esdeveniment mentre passa.",
+  "ariaLabel": "Visita guiada del tauler",
+  "step": "{current} de {total}",
+  "skip": "Omet",
+  "back": "← Enrere",
+  "next": "Següent →",
+  "done": "Fet",
+  "stops": {
+    "menu": {
+      "title": "Carta",
+      "body": "Els teus plats, preus i al·lèrgens. Qualsevol canvi que hi facis es publica a l’instant."
+    },
+    "schedule": {
+      "title": "Calendari",
+      "body": "On i quan treballes. Afegeix-hi un esdeveniment i els clients ja hi podran fer comandes."
+    },
+    "build": {
+      "title": "Menús · Extres i suggeriments",
+      "body": "Els menús, els suggeriments, les personalitzacions i la capacitat de la cuina són a «Carta»: prova-ho tot sense por."
+    },
+    "settings": {
+      "title": "Configuració",
+      "body": "Les dades del teu food truck i com paguen els clients."
+    },
+    "billing": {
+      "title": "Facturació",
+      "body": "On trobes el teu pla, la facturació i la informació de les funcions."
+    }
+  }
+}

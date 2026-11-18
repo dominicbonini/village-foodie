@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} s’inclouen al pla {plan}.} other {{feature} s’inclou al pla {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} no formen part del teu pla.} other {{feature} no forma part del teu pla.}}",
+  "switchedOff": "{many, select, yes {{feature} s’han desactivat per al teu food truck.} other {{feature} s’ha desactivat per al teu food truck.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "Millora el pla →",
+  "features": {
+    "discovery_map": {
+      "name": "La presència al mapa de descoberta",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "El tauler web",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "L’aplicació de cuina",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "La carta amb codi QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "Els menús",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "Els suggeriments",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "Les comandes presencials",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "La recepció de comandes amb Pagament en recollir",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "L’indicador d’esgotat",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "El compte enrere de l’estoc",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "La protecció de comandes sense connexió",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "Els pagaments en línia",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "Les comandes per a altres dies",
+      "many": "yes"
+    },
+    "time_slot_selection": {
+      "name": "Les franges horàries per als clients",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "La gestió de la capacitat de la cuina",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "L’acceptació automàtica",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Les respostes automàtiques de Messenger i Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "Els codis QR amb el teu logotip",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "Els informes avançats",
+      "many": "yes"
+    },
+    "ticket_printing": {
+      "name": "La impressió de tiquets de cuina",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "La sincronització de la cuina en diversos dispositius",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "La pantalla del cuiner",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "Les respostes automàtiques de WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "El teu calendari al teu propi web",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "Les publicacions a les xarxes socials",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "Els tipus d’esdeveniment personalitzats",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "Els esdeveniments privats",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "Els documents",
+      "many": "yes"
+    }
+  }
+}

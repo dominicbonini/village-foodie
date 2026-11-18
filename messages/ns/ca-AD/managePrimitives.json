@@ -1,0 +1,9 @@
+{
+  "allergenMode": {
+    "perDishTitle": "Mostra els al·lèrgens a cada plat",
+    "recommended": "Recomanat",
+    "perDishBody": "Revisa cada plat i confirma’n els al·lèrgens. Els clients veuen les etiquetes de cada plat i una fitxa resum d’al·lèrgens feta a partir d’aquestes etiquetes.",
+    "cardTitle": "Mostra una fitxa d’al·lèrgens",
+    "cardBody": "Puja o enganxa una sola fitxa d’al·lèrgens (PDF, imatge o text), que es mostra tal com és. Les etiquetes de cada plat queden amagades."
+  }
+}

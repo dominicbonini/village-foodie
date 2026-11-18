@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "per vehicle / mes",
+  "transactionFees": "Comissions per transacció",
+  "comingSoon": "Aviat disponible",
+  "footnote2Masked": "Els pagaments en línia funcionen amb Stripe Connect. Les comissions de la plataforma i de processament de targetes estan per confirmar i es confirmaran en el llançament.",
+  "card": {
+    "title": "Facturació i pagaments",
+    "managed": "HatchGrab gestiona la facturació",
+    "earlyAccess": "Durant l’accés anticipat configurem i ajustem els plans manualment.",
+    "planLine": "{trial, select, yes {{truck} · pla {plan} (prova)} other {{truck} · pla {plan}}}"
+  },
+  "currentPlan": "Pla actual",
+  "plan": {
+    "included": "Inclou {amount} de comandes en línia al mes.",
+    "includedUnlimited": "Comandes en línia il·limitades incloses.",
+    "promo": "Preu especial.",
+    "promoUntil": "Preu especial fins al {date}.",
+    "ended": "El teu pla {plan} va acabar el {date}. Ara tens el pla {now}.",
+    "trialMonths": "Una prova gratuïta (mesos: {months})."
+  },
+  "trialEnds": "La prova acaba el {date}",
+  "yourTrialEnds": "La teva prova acaba el {date}",
+  "notStarted": {
+    "heading": "La teva prova gratuïta encara no ha començat"
+  },
+  "onTrial": "Tens totes les funcions. Tria un pla abans que acabi la prova.",
+  "onTrialPaidEnd": "Tens totes les funcions. Quan acabi la prova, el pla {plan} costa {price} al mes. Abans et contactarem per configurar el pagament.",
+  "onTrialNoCta": "Tens totes les funcions.",
+  "noCharge": "🔒 No et cobrarem res durant la prova, que dura fins al {date}. La facturació només comença quan tries un pla i introdueixes les dades de pagament. Fins aleshores no hi ha res per cancel·lar ni res per pagar.",
+  "noChargePaidEnd": "🔒 No et cobrarem res durant la prova, que dura fins al {date}.",
+  "fees": "*S’apliquen les comissions estàndard de processament de targetes a les comandes en línia",
+  "setUpPayment": "⏱ Tria un pla abans que acabi la prova",
+  "changeYourPlan": "Canvia de pla",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "Canvia al pla {plan}",
+    "tagline": "{price} — {description}",
+    "body": "Estem configurant la facturació automàtica. Per canviar ara, envia’ns un missatge i t’ho deixarem tot a punt en 24 hores.",
+    "mailSubject": "Canvi al pla {plan} — {truck}",
+    "mailBody": "Hola, voldria canviar {truck} al pla {plan} ({price}).",
+    "email": "Envia’ns un correu per canviar",
+    "cancel": "Cancel·la"
+  }
+}

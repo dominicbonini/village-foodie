@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {Hola, {name},} other {Hola,}}",
+  "questions": "Tens preguntes? Només cal que responguis.",
+  "signoff": "L’equip de HatchGrab",
+  "buttonUpdate": "Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}}",
+  "buttonPay": "Paga ara",
+  "buttonAddCard": "Afegeix una targeta",
+  "suspended": "Si continua sense pagar-se, el teu compte es podria suspendre.",
+  "failed": {
+    "subject": "El teu pagament a HatchGrab no s’ha pogut fer",
+    "line1": "Avui no hem pogut cobrar {amount} per al food truck {truck}. Ho tornarem a provar.",
+    "line2": "Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} abans del {date} per mantenir actives les comandes en línia."
+  },
+  "twoDays": {
+    "subject": "Queden 2 dies per actualitzar {method, select, payment_method {el mètode de pagament} other {la targeta}}",
+    "line1": "L’import de {amount} del food truck {truck} encara no s’ha pagat. Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} abans del {date} o les comandes en línia es posaran en pausa."
+  },
+  "oneDay": {
+    "subject": "Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} com a molt tard demà",
+    "line1": "L’import de {amount} del food truck {truck} encara no s’ha pagat. Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} com a molt tard demà o les comandes en línia es posaran en pausa."
+  },
+  "lastDay": {
+    "subject": "Últim dia per actualitzar {method, select, payment_method {el mètode de pagament} other {la targeta}}",
+    "line1": "Avui és l’últim dia per pagar {amount} del food truck {truck}. Si a mitjanit encara no s’ha pagat, les comandes en línia es posaran en pausa fins que paguis."
+  },
+  "paused": {
+    "subject": "Les comandes en línia estan en pausa",
+    "line1": "Les comandes en línia del food truck {truck} estan en pausa perquè hi ha {amount} sense pagar. Paga ara i es tornaran a activar a l’instant.",
+    "line2": "Paga abans del {date} o el teu compte es podria suspendre."
+  },
+  "trial7": {
+    "subject": "La teva prova gratuïta acaba d’aquí a 7 dies",
+    "line1": "La prova gratuïta del food truck {truck} acaba el {date}.",
+    "line2": "Afegeix una targeta a «Gestiona» › Facturació per mantenir actives les comandes en línia.",
+    "plan": "Després, el pla {plan} costa {price} al mes. Quan acabi la prova, et cobrarem {amount} per la resta del mes ({month}) i després {price} el {nextFirst}.",
+    "planFree": "Després passes al pla {plan}, sense quota mensual.",
+    "fee": "La nostra comissió a les comandes en línia ({fee}) es cobra el dia 1, pel mes anterior."
+  },
+  "trial1": {
+    "subject": "La teva prova gratuïta acaba demà",
+    "line1": "La prova gratuïta del food truck {truck} acaba demà.",
+    "noCard": "Afegeix una targeta o les comandes en línia es posaran en pausa.",
+    "allSet": "Ja està tot a punt: el pla {plan} comença el {date}.",
+    "charge": "Quan acabi la prova, et cobrarem {amount} per la resta del mes ({month})."
+  }
+}

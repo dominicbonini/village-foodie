@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {Hola, {name},} other {Hola,}}",
+  "signoffName": "Dominic",
+  "signoffRole": "Fundador de HatchGrab",
+  "verify": {
+    "subject": "Confirma la teva adreça de correu electrònic",
+    "thanks": "{hasTruck, select, yes {Gràcies per configurar {truck} a HatchGrab.} other {Gràcies per configurar el teu food truck a HatchGrab.}}",
+    "button": "Confirma la meva adreça",
+    "buttonText": "Confirma la meva adreça: {url}",
+    "why": "És l’adreça amb què iniciaràs la sessió i on arribaran els avisos de comandes, així que val la pena fer-ho ara.",
+    "next": "Quan estigui confirmada, t’enviaré tot el que necessites per començar.",
+    "carryOn": "Mentrestant, pots continuar amb la configuració.",
+    "stuck": "T’has encallat en alguna cosa? Respon a aquest correu: els contesto jo mateix.",
+    "fallbackLink": "Si el botó no funciona, enganxa això al navegador: {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {Et donem la benvinguda a HatchGrab, {name}} other {Et donem la benvinguda a HatchGrab}}",
+    "intro": "{hasTruck, select, yes {M’alegra molt donar la benvinguda a {truck} a HatchGrab.} other {M’alegra molt donar la benvinguda al teu food truck a HatchGrab.}}",
+    "trial": "{months, plural, one {Ha començat la teva prova gratuïta d’un mes, amb totes les funcions desbloquejades.} other {Ha començat la teva prova gratuïta de # mesos, amb totes les funcions desbloquejades.}}",
+    "setup": "Si encara no ho has fet, la configuració és senzilla i porta uns quinze minuts.",
+    "button": "Obre el teu tauler",
+    "bookmark": "Val la pena desar-lo a les adreces d’interès. Funciona en qualsevol dispositiu.",
+    "stuck": "Si t’encalles, respon a aquest correu: els contesto jo mateix.",
+    "lookingForward": "{hasTruck, select, yes {Tinc moltes ganes de veure {truck} en marxa.} other {Tinc moltes ganes de veure el teu food truck en marxa.}}"
+  }
+}

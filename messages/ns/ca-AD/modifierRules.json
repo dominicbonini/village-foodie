@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {Obligatori} other {Opcional}}{limit, select, one { · Tria’n un} upTo { · Tria’n fins a {max}} other {}}",
+  "operator": "{required, select, yes {Obligatori} other {Opcional}}{limit, select, one { · El client en tria un} upTo { · El client en pot triar fins a {max}} other {}}"
+}

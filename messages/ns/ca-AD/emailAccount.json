@@ -1,0 +1,38 @@
+{
+  "newEmail": {
+    "subject": "Verifica la teva nova adreça de correu electrònic de HatchGrab",
+    "heading": "Verifica la teva adreça de correu electrònic",
+    "button": "Verifica l’adreça"
+  },
+  "changeEmail": {
+    "requested": "Has sol·licitat canviar la teva adreça de correu electrònic de HatchGrab per aquesta.",
+    "click": "Fes clic al botó de sota per verificar-la. Aquest enllaç caduca d’aquí a 24 hores.",
+    "ignore": "Si no has sol·licitat aquest canvi, pots ignorar aquest correu sense problema.",
+    "stillActive": "La teva adreça de correu electrònic actual continua activa."
+  },
+  "resendVerification": {
+    "requested": "Has sol·licitat canviar el teu correu electrònic de HatchGrab per aquesta adreça.",
+    "click": "Fes clic a sota per verificar-la. Aquest enllaç caduca d’aquí a 24 hores.",
+    "ignore": "Si no ho has sol·licitat, ignora aquest correu.",
+    "stillActive": "El teu correu electrònic actual continua actiu."
+  },
+  "passwordReset": {
+    "subject": "Restableix la contrasenya de HatchGrab",
+    "heading": "Restableix la contrasenya",
+    "requested": "Hem rebut una sol·licitud per restablir la contrasenya del teu compte de HatchGrab.",
+    "click": "Fes clic al botó de sota per triar una contrasenya nova. Aquest enllaç caduca d’aquí a 1 hora.",
+    "button": "Restableix la contrasenya",
+    "ignore": "Si no ho has sol·licitat, pots ignorar aquest correu sense problema.",
+    "unchanged": "La contrasenya no canviarà fins que no facis clic a l’enllaç de dalt."
+  },
+  "deletionScheduled": {
+    "subject": "La supressió del teu compte de HatchGrab està programada",
+    "received": "Hem rebut una sol·licitud per suprimir aquest compte de HatchGrab.",
+    "orderingStopped": "<b>Les comandes en línia s’han aturat immediatament</b> a: {trucks}.",
+    "noTrucks": "(cap food truck)",
+    "readable": "El teu tauler es podrà\n    continuar consultant durant {days, plural, one {# dia} other {# dies}} més.",
+    "scheduled": "La supressió del compte està programada per al <b>{date}</b>.",
+    "cannotCancel": "<b>Això no es pot cancel·lar des de l’aplicació.</b> Si no has estat tu, o si has\n    canviat d’opinió, respon a aquest correu com més aviat millor.",
+    "kept": "Quan se suprimeixi el compte, esborrarem les teves dades personals i les dels teus clients. Conservem\n    registres comptables anònims, que la llei ens obliga a guardar."
+  }
+}

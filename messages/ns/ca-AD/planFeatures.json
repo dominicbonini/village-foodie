@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "Presència al mapa de descoberta"
+    },
+    "web_dashboard": {
+      "name": "Tauler web universal"
+    },
+    "qr_code": {
+      "name": "Codi QR"
+    },
+    "schedule_import": {
+      "name": "Importació automàtica del calendari"
+    },
+    "meal_deals_upsells": {
+      "name": "Menús i suggeriments"
+    },
+    "walkup_orders": {
+      "name": "Gestió de comandes presencials"
+    },
+    "sold_out_toggle": {
+      "name": "Indicador d’esgotat instantani"
+    },
+    "kitchen_app": {
+      "name": "Aplicació de cuina per a iPhone, iPad i Android"
+    },
+    "offline_protection": {
+      "name": "Protecció de comandes sense connexió"
+    },
+    "online_payments": {
+      "name": "Pagaments en línia"
+    },
+    "advance_preordering": {
+      "name": "Comandes per a altres dies"
+    },
+    "preorder_deadline": {
+      "name": "Límit de comandes anticipades"
+    },
+    "time_slot_selection": {
+      "name": "Tria de franja horària per als clients"
+    },
+    "kitchen_capacity": {
+      "name": "Gestió de la capacitat de la cuina"
+    },
+    "stock_countdown": {
+      "name": "Compte enrere automàtic de l’estoc"
+    },
+    "auto_accept": {
+      "name": "Acceptació automàtica de comandes en línia"
+    },
+    "branded_qr_code": {
+      "name": "Codi QR amb el teu logotip"
+    },
+    "private_events": {
+      "name": "Esdeveniments privats"
+    },
+    "social_media_posts": {
+      "name": "Publicacions a les xarxes socials"
+    },
+    "whatsapp_auto_replies": {
+      "name": "Respostes automàtiques de WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "Respostes automàtiques de Messenger i Instagram"
+    },
+    "tap_to_pay": {
+      "name": "Cobra amb el mòbil"
+    },
+    "sms_order_alerts": {
+      "name": "Avisos de comanda per SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "Sincronització de la cuina en diversos dispositius"
+    },
+    "multi_user_access": {
+      "name": "Accés per a diversos usuaris"
+    },
+    "embed_schedule": {
+      "name": "Pàgina del calendari al teu propi web"
+    },
+    "event_types": {
+      "name": "Tipus d’esdeveniment i preus personalitzats"
+    },
+    "buzzer_tracking": {
+      "name": "Seguiment d’avisadors"
+    },
+    "documents_reminders": {
+      "name": "Documents i recordatoris"
+    },
+    "profit_per_event": {
+      "name": "Benefici per esdeveniment"
+    },
+    "accountant_reports": {
+      "name": "Informes per al teu gestor"
+    },
+    "ticket_printing": {
+      "name": "Impressió de tiquets de cuina"
+    },
+    "customer_display": {
+      "name": "Pantalla per als clients"
+    },
+    "loyalty_stamp_cards": {
+      "name": "Targetes de fidelització digitals amb segells"
+    }
+  },
+  "cardRegionOnline": "{region} estàndard",
+  "cardRegion": {
+    "UKcards": "targetes del Regne Unit",
+    "EEAcards": "targetes de l’EEE",
+    "UScards": "targetes dels EUA",
+    "Australiancards": "targetes australianes",
+    "NewZealandcards": "targetes de Nova Zelanda",
+    "Canadiancards": "targetes canadenques",
+    "Swisscards": "targetes suïsses",
+    "Braziliancards": "targetes brasileres",
+    "Mexicancards": "targetes mexicanes",
+    "Japanesecards": "targetes japoneses",
+    "Singaporecards": "targetes de Singapur",
+    "HongKongcards": "targetes de Hong Kong",
+    "Malaysiancards": "targetes malaisianes",
+    "Thaicards": "targetes tailandeses",
+    "UAEcards": "targetes dels EAU"
+  },
+  "perMonth": {
+    "mo": "{amount}/mes",
+    "month": "{amount} al mes"
+  },
+  "priceWord": {
+    "free": "Gratuït",
+    "freeTrial": "Prova gratuïta",
+    "lifetime": "Vitalici",
+    "zeroPercent": "0 %",
+    "payAtHatch": "Pagament en recollir",
+    "unlimited": "Il·limitat",
+    "none": "—",
+    "masked": "Per confirmar"
+  },
+  "cell": {
+    "included": "Inclòs"
+  }
+}

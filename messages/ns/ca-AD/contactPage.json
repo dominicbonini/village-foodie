@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Assistència",
+    "description": "Obtén ajuda amb HatchGrab. Envia’ns un missatge i et respondrem per correu electrònic."
+  },
+  "logIn": "Inicia la sessió",
+  "eyebrow": "Assistència",
+  "title": "Com et podem ajudar?",
+  "lede": "Alguna cosa no funciona o tens una pregunta sobre el teu compte? Tens dues maneres de contactar-nos; en tots dos casos et respondrem per correu electrònic.",
+  "emailUs": "Envia’ns un correu",
+  "formHeading": "O envia’ns un missatge",
+  "form": {
+    "topicLabel": "De què es tracta?",
+    "topics": {
+      "question": "Una pregunta sobre HatchGrab",
+      "account": "Ajuda amb el meu compte",
+      "comparison": "Una correcció en una pàgina de comparativa",
+      "other": "Una altra cosa"
+    },
+    "nameLabel": "El teu nom",
+    "namePlaceholder": "Nom",
+    "emailLabel": "Correu electrònic",
+    "businessLabel": "Nom del food truck o del negoci",
+    "optional": "(opcional)",
+    "businessPlaceholder": "p. ex. La Cuina del Poble",
+    "messageLabel": "El teu missatge",
+    "send": "Envia el missatge",
+    "sending": "S’està enviant…",
+    "privacyLine": "Només farem servir les teves dades per respondre’t.",
+    "privacyLink": "Política de privadesa",
+    "thanksTitle": "Gràcies — hem rebut el teu missatge.",
+    "thanksBody": "Et respondrem per correu electrònic a l’adreça que ens has donat.",
+    "errors": {
+      "nameRequired": "Escriu el teu nom.",
+      "nameTooLong": "El nom pot tenir com a màxim {max, number} caràcters.",
+      "emailRequired": "Escriu la teva adreça de correu electrònic.",
+      "emailInvalid": "Escriu una adreça de correu electrònic vàlida.",
+      "emailTooLong": "Fes servir una adreça de correu electrònic de {max, number} caràcters com a màxim.",
+      "businessRequired": "Escriu el nom del teu food truck o negoci perquè puguem trobar el teu compte.",
+      "businessTooLong": "El nom del food truck o del negoci pot tenir com a màxim {max, number} caràcters.",
+      "messageTooShort": "Escriu almenys {min, number} caràcters.",
+      "messageTooLong": "El missatge pot tenir com a màxim {max, number} caràcters.",
+      "topicInvalid": "Tria de què tracta el teu missatge.",
+      "rateLimited": "Ja has enviat uns quants missatges — torna-ho a provar més tard o escriu-nos a {email}.",
+      "failed": "Alguna cosa ha fallat — escriu-nos a {email}."
+    }
+  },
+  "privacy": "Privadesa",
+  "terms": "Condicions",
+  "about": "Qui som",
+  "copyright": "© {year} HatchGrab"
+}

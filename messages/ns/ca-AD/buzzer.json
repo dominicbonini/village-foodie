@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "L’avisador <b>{number}</b> el té la <b>comanda #{holderId}</b>{hasName, select, yes { ({name})} other {}}. Vols passar-lo a <b>{hasTarget, select, yes {la comanda #{targetId}} other {aquesta comanda}}</b>?",
+  "cancel": "Cancel·la",
+  "take": "Agafa l’avisador {number}",
+  "titleBlocking": "Avisador per a la comanda #{id}?",
+  "title": "Tria un avisador",
+  "subtitle": "{hasTarget, select, yes {Comanda #{id}} other {Aquesta comanda}}{hasCurrent, select, yes { · ara té l’avisador {current}} other {}}",
+  "allTaken": "{n, plural, one {L’avisador està en ús. Toca’l per agafar-lo d’una altra comanda.} other {Els {count} avisadors estan en ús. Toca’n un per agafar-lo d’una altra comanda.}}",
+  "thisOrder": "Aquesta comanda",
+  "noBuzzer": "Sense avisador",
+  "done": "Fet",
+  "lostTitle": "La comanda #{id} no té avisador",
+  "lostBody": "{hasName, select, yes {{name}: } other {}}una altra comanda s’ha quedat el mateix avisador mentre no tenies connexió. Dona-li’n un altre.",
+  "dismiss": "Descarta",
+  "assign": "Assigna"
+}

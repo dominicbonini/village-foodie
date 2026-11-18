@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "Dates de la setmana",
+    "dayList": "Llista de dies",
+    "place": "Lloc",
+    "venue": "Nom del lloc",
+    "area": "Zona",
+    "dayDate": "Dia i data",
+    "times": "Hores",
+    "orderLink": "Enllaç de comandes",
+    "locationTag": "Etiqueta del lloc"
+  },
+  "weekHeader": "{truck} — on som aquesta setmana:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — CANCEL·LAT, ho sentim",
+  "noDates": "Aquesta setmana no hi ha dates: torna-hi a mirar aviat.",
+  "orderAhead": "Fes la comanda per endavant: {url}",
+  "orderAheadTagged": "Fes la comanda per endavant: {url} {tag}",
+  "eventLine": "{truck} serà a {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} serà a {where} {when}.",
+  "cancelledSorry": "Ho sentim: no podrem anar a {where} {when}.",
+  "cancelledApology": "Demanem disculpes a tots els qui pensàveu venir. Tornarem aviat.",
+  "when": {
+    "today": "avui",
+    "tonight": "aquesta nit",
+    "tomorrow": "demà",
+    "dated": "el {date}"
+  }
+}

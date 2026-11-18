@@ -1,0 +1,120 @@
+{
+  "tab": {
+    "plan": {
+      "title": "El teu pla",
+      "trialPill": "Prova gratuïta",
+      "change": "Canvia de pla",
+      "trialLine": "La teva prova gratuïta acaba el {date}. Després, el pla {plan} costa {price} al mes.",
+      "trialLineFree": "La teva prova gratuïta acaba el {date}. Després passes al pla {plan}, sense quota mensual.",
+      "proLine": "Inclou {allowance} de comandes en línia al mes. Després, {fee}.",
+      "paygLine": "{fee} a les comandes en línia. Sense quota mensual.",
+      "unlimitedLine": "{price} al mes. Sense comissió a les comandes en línia.",
+      "pendingLine": "El pla {plan} comença el {date}."
+    },
+    "payment": {
+      "title": "Mètode de pagament",
+      "none": "Encara no has afegit cap targeta. Afegeix-ne una per continuar rebent comandes en línia després de la prova.",
+      "add": "Afegeix una targeta",
+      "pix": "Fes servir Pix Automático",
+      "card": "{brand} acabada en {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "Pendent de confirmació.",
+      "change": "Canvia",
+      "lastFailed": "L’últim pagament ha fallat",
+      "update": "Actualitza la targeta",
+      "error": "No hem pogut obrir la pàgina de pagament. Torna-ho a provar.",
+      "noneAfterTrial": "No hi ha cap targeta. Afegeix-ne una per tornar a activar les comandes en línia."
+    },
+    "whatYouPay": {
+      "title": "Què pagues",
+      "plan": "El teu pla, cobrat el dia 1 pel mes que comença",
+      "fee": "Comandes en línia per sobre de {allowance} al mes, cobrades el dia 1 pel mes anterior",
+      "feePayg": "Comandes en línia, cobrades el dia 1 pel mes anterior",
+      "walkUps": "Comandes presencials",
+      "free": "Gratuït",
+      "trialEnd": "Quan acabi la teva prova, el {date}, et cobrarem {amount} per la resta del mes ({month}). Després, {price} el {nextFirst}."
+    },
+    "next": {
+      "title": "Proper pagament · {date}",
+      "plan": "Pla {plan} ({month})",
+      "fee": "{fee} sobre les comandes en línia per sobre de {allowance} ({month}, fins ara)",
+      "feePayg": "{fee} sobre les comandes en línia ({month}, fins ara)",
+      "vans": "Vehicles addicionals ({month})",
+      "surcharge": "Recàrrec per pagament posterior ({month})",
+      "carried": "Pendent de períodes anteriors",
+      "total": "Total fins ara",
+      "walkUps": "Les comandes presencials sempre són gratuïtes."
+    },
+    "preorders": {
+      "title": "Com paguen els clients les comandes anticipades",
+      "online": "En línia, quan fan la comanda",
+      "onlineHint": "Els diners van directament al teu compte de Stripe.",
+      "atTruckHint": "Els clients paguen quan recullen la comanda. La nostra comissió s’afegeix al teu càrrec mensual.",
+      "saved": "Desat.",
+      "error": "No ho hem pogut desar. Torna-ho a provar."
+    },
+    "invoices": {
+      "title": "Factures",
+      "date": "Data",
+      "for": "Concepte",
+      "amount": "Import",
+      "status": "Estat",
+      "forMonthly": "Pla: {planMonth} · comissions: {usageMonth}",
+      "forMonthlyPlan": "Pla: {planMonth}",
+      "forTrialEnd": "Resta del mes ({month})",
+      "forUpgrade": "Canvi al pla {plan}",
+      "lateFee": "Recàrrec per pagament endarrerit",
+      "paid": "Pagada",
+      "unpaid": "No pagada",
+      "overdue": "Vençuda",
+      "download": "Baixa",
+      "payNow": "Paga ara",
+      "none": "Encara no hi ha factures."
+    },
+    "failed": {
+      "title": "El teu pagament de {amount} no s’ha pogut fer.",
+      "body": "Ho tornarem a provar. Actualitza la targeta abans del {date} per mantenir actives les comandes en línia.",
+      "button": "Actualitza la targeta"
+    },
+    "paused": {
+      "title": "Les comandes en línia estan en pausa",
+      "body": "Tens un pagament vençut de {amount}. Paga ara i les comandes en línia es tornaran a activar a l’instant.",
+      "warning": "Paga abans del {date} o el teu compte es podria suspendre.",
+      "pay": "Paga {amount}",
+      "otherCard": "Fes servir una altra targeta"
+    },
+    "loading": "S’està carregant la facturació…",
+    "loadError": "No hem pogut carregar la facturació. Torna-ho a provar."
+  },
+  "changePlan": {
+    "title": "Canvia de pla",
+    "current": "Tens el pla {plan}.",
+    "free": "Gratuït",
+    "perMonth": "{price} al mes",
+    "paygLine": "{fee} a les comandes en línia.",
+    "proLine": "Inclou {allowance} de comandes en línia. Després, {fee}.",
+    "unlimitedLine": "Sense comissió a les comandes en línia.",
+    "yourPlan": "El teu pla",
+    "startsNow": "Comença ara.",
+    "chargeToday": "Avui et cobrarem {amount} per la resta del mes ({month}). Després, {price} el {nextFirst}.",
+    "startsLater": "Comença el {nextFirst}. Fins llavors mantens el pla {plan}.",
+    "cancel": "Cancel·la",
+    "switchTo": "Canvia al pla {plan}",
+    "error": "No hem pogut canviar el teu pla. Torna-ho a provar.",
+    "trialLine": "Tens una prova gratuïta. Tria el pla que vols per quan acabi, el {date}.",
+    "startsAtTrialEnd": "Comença quan acabi la prova.",
+    "choose": "Tria el pla {plan}"
+  },
+  "notices": {
+    "trialEndsSoon": "<b>La teva prova gratuïta acaba el {date}.</b> Afegeix una targeta per mantenir actives les comandes en línia.",
+    "trialEndsTomorrow": "<b>La teva prova gratuïta acaba demà.</b> Afegeix una targeta o les comandes en línia es posaran en pausa.",
+    "allSet": "<b>Ja està tot a punt.</b> El pla {plan} comença el {date}.",
+    "paymentFailed": "<b>El teu pagament no s’ha pogut fer.</b> Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} abans del {date} per mantenir actives les comandes en línia.",
+    "paused": "<b>Les comandes en línia estan en pausa.</b> Paga {amount} abans del {date} o el teu compte es podria suspendre.",
+    "addCard": "Afegeix una targeta →",
+    "updateCard": "Actualitza {method, select, payment_method {el mètode de pagament} other {la targeta}} →",
+    "payNow": "Paga ara →",
+    "dismiss": "Descarta",
+    "trialEnded": "<b>La teva prova gratuïta ha acabat.</b> Afegeix una targeta per tornar a activar les comandes en línia."
+  }
+}

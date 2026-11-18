@@ -1,0 +1,128 @@
+{
+  "cardEditor": {
+    "title": "La teva fitxa d’al·lèrgens",
+    "intro": "Els clients la veuen <b>exactament tal com l’escrius</b>: no es reescriu res. Escriu o enganxa el text a sota, o puja una foto o un PDF i en llegirem el text perquè el revisis.",
+    "empty": "Encara no hi ha cap fitxa d’al·lèrgens.",
+    "placeholder": "p. ex. Tots els nostres fregits contenen blat i llet. La fregidora es comparteix amb productes que contenen gluten i fruits de closca. Tenim opcions veganes: pregunta al personal.",
+    "reading": "S’està llegint la imatge…",
+    "upload": "📷 Puja una imatge o un PDF",
+    "uploadNote": "Llegim el text de la imatge perquè el puguis revisar; la imatge no es desa."
+  },
+  "cardUpload": {
+    "dishFallback": "Plat",
+    "question": "Tens una fitxa d’al·lèrgens per pujar?",
+    "perDish": "{detected, select, yes {Puja-la i la farem servir per preparar els al·lèrgens dels teus plats. Veuràs els al·lèrgens detectats a la pàgina següent, on confirmaràs cada plat.} other {Puja-la i la farem servir per preparar els al·lèrgens dels teus plats.}}",
+    "cardOnly": "Puja la fitxa d’al·lèrgens que veuran els clients.",
+    "yes": "Sí",
+    "no": "No",
+    "noProblem": "Cap problema: no et cal. Continua amb el botó de sota.",
+    "analysing": "S’està analitzant la fitxa…",
+    "dropzone": "Arrossega i deixa anar, o toca per triar",
+    "imageOrPdf": "Imatge o PDF",
+    "or": "o",
+    "pastePlaceholder": "Enganxa aquí el text de la fitxa d’al·lèrgens…",
+    "process": "Processa la fitxa",
+    "cardRead": "Fitxa llegida ✓",
+    "unmatchedHeading": "No hem pogut relacionar aquests automàticament: assigna’ls o descarta’ls",
+    "quotedName": "«{name}»",
+    "ambiguous": "Ambigu: coincideix amb diversos plats; tria el correcte.",
+    "assignTo": "Assigna a un plat…",
+    "dismiss": "Descarta",
+    "kitchenNotes": "Notes de cuina (es desen a la teva informació d’al·lèrgens)",
+    "matchSummary": "{n, plural, =0 {Relacionats amb un plat: {matched}.} one {Relacionats amb un plat: {matched}. {count} s’ha d’assignar.} other {Relacionats amb un plat: {matched}. {count} s’han d’assignar.}}",
+    "blanketInfo": "La teva fitxa diu que pot haver-hi aquests al·lèrgens a tots els plats: {list}. Els afegirem als al·lèrgens que es manipulen a la teva cuina. Els podràs revisar a l’últim pas."
+  },
+  "savedCard": {
+    "showLess": "Mostra’n menys",
+    "showMore": "Mostra’n més",
+    "fileOnly": "Hi ha un fitxer de fitxa desat per a aquest food truck, però no se’n va desar cap text de resum. Obre l’original per llegir-lo.",
+    "viewOriginal": "Mostra la fitxa original"
+  },
+  "wizard": {
+    "toast": {
+      "readFailed": "No s’ha pogut llegir la fitxa d’al·lèrgens. Torna-ho a provar",
+      "confirmed": "Confirmat: {name}",
+      "undo": "Desfés",
+      "saveFailed": "No s’ha pogut desar. Torna-ho a provar",
+      "imageFailed": "No s’ha pogut llegir la imatge: escriu o enganxa la fitxa",
+      "cardRead": "{n, plural, one {Fitxa llegida: {matched} relacionats, {count} per assignar} other {Fitxa llegida: {matched} relacionats, {count} per assignar}}"
+    },
+    "genericWarn": {
+      "text": "S’ha detectat «{generic}», però no és prou concret. Tria {picks} si aquest plat conté {family}, o deixa’ls sense marcar si no en conté.",
+      "andOr": "{a} i/o {b}"
+    },
+    "badge": {
+      "justConfirmed": "✓ Confirmat",
+      "confirmed": "Confirmat",
+      "needsReview": "Cal revisar-lo"
+    },
+    "confirm": {
+      "confirming": "S’està confirmant…",
+      "confirmed": "Confirmat ✓",
+      "confirm": "Confirma",
+      "changed": "· modificat",
+      "changedTitle": "S’ha editat des de l’última confirmació: torna’l a confirmar"
+    },
+    "allergens": "Al·lèrgens",
+    "dietary": "Dieta",
+    "uncategorised": "Sense categoria",
+    "review": {
+      "progress": "Confirmats: {confirmed} de {total}",
+      "allConfirmed": "✓ Tots confirmats",
+      "list": "Llista",
+      "table": "Taula",
+      "detected": "Detectats a partir de la teva carta: <b>revisa’ls</b>. Els al·lèrgens queden amagats als clients fins que confirmis cada plat.",
+      "viewOnly": "👁 Només lectura: només el titular pot confirmar o canviar els al·lèrgens.",
+      "emptyTitle": "No hi ha cap producte a la carta",
+      "emptyBody": "Primer afegeix productes a la carta i després defineix-ne aquí els al·lèrgens.",
+      "dish": "Plat",
+      "status": "Estat"
+    },
+    "cardPanel": {
+      "reading": "S’està llegint la informació d’al·lèrgens…",
+      "saved": "🛡️ Fitxa d’al·lèrgens desada",
+      "viewOriginal": "Mostra la fitxa original",
+      "replace": "Substitueix la fitxa",
+      "uploadHelp": "Puja la teva fitxa d’al·lèrgens (foto o PDF) o enganxa la informació d’al·lèrgens: la nostra IA l’ordena per als clients.",
+      "add": "Afegeix la fitxa d’al·lèrgens",
+      "viewOnly": "👁 Només lectura: només el titular pot afegir la fitxa d’al·lèrgens.",
+      "intro": "Els clients veuran aquesta fitxa com a referència d’al·lèrgens de la carta. En el mode només fitxa, els al·lèrgens per plat queden amagats (les dades dels plats es conserven per si més endavant canvies al mode per plat)."
+    },
+    "subtitle": {
+      "choose": "Tria com veuen els clients la informació d’al·lèrgens",
+      "card": "Afegeix la teva fitxa d’al·lèrgens",
+      "cardOptional": "Afegeix una fitxa d’al·lèrgens (opcional)",
+      "review": "Revisa i confirma cada plat",
+      "kitchen": "Últim pas: la teva cuina"
+    },
+    "heading": {
+      "import": "Al·lèrgens",
+      "standalone": "Configuració dels al·lèrgens"
+    },
+    "nav": {
+      "next": "Següent →",
+      "back": "← Enrere",
+      "skip": "Omet per ara",
+      "saving": "S’està desant…",
+      "done": "Fet",
+      "saveLater": "Desa i acaba més tard",
+      "close": "Tanca",
+      "finish": "Acaba",
+      "skipImport": "Omet per ara la configuració dels al·lèrgens"
+    },
+    "hint": {
+      "skipDefers": "Ometre-ho només ho ajorna: els plats que no hagis confirmat queden amagats als clients fins que se’n confirmin els al·lèrgens.",
+      "importIncomplete": "Confirma tots els plats per continuar, o tria «Omet per ara la configuració dels al·lèrgens»."
+    },
+    "recipeOnly": "Només el que hi ha a la recepta d’aquest plat.",
+    "tooMany": "Al·lèrgens marcats: {count}. De debò que tots són a la recepta d’aquest plat? Els al·lèrgens que es fan servir en altres plats no van aquí. Els pots afegir a l’últim pas."
+  },
+  "kitchen": {
+    "title": "Quins al·lèrgens es manipulen a la teva cuina?",
+    "body": "Hem marcat els que ja hi ha als teus plats. Marca qualsevol altre que facis servir al food truck, per exemple per als plats fora de carta.",
+    "legendDishes": "als teus plats",
+    "legendAdded": "afegits per tu",
+    "customersSee": "Els clients veuran:",
+    "confirm": "Confirmo que els al·lèrgens de cada plat són correctes i els mantindré actualitzats."
+  }
+}

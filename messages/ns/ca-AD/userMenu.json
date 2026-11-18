@@ -1,0 +1,18 @@
+{
+  "menuLabel": "Menú d’usuari",
+  "screenOn": "Pantalla encesa",
+  "screenOff": "Pantalla apagada",
+  "newOrderSound": "So de comanda nova",
+  "copied": "Copiat",
+  "orderLink": "Enllaç de comandes",
+  "qrCode": "Codi QR",
+  "kitchenScreen": "Pantalla de cuina (KDS)",
+  "thisDevice": "Aquest dispositiu",
+  "manage": "Gestiona",
+  "ordersDashboard": "Tauler de comandes",
+  "admin": "Admin",
+  "privacy": "Política de privadesa",
+  "terms": "Condicions",
+  "signOut": "Tanca la sessió",
+  "close": "Tanca"
+}

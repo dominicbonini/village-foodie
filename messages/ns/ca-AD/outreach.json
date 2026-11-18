@@ -1,0 +1,11 @@
+{
+  "optOut": {
+    "missing": "Aquest correu no té cap línia de baixa, així que no es pot enviar. Fes servir «Insert opt-out» per afegir-la.",
+    "notSetUp": "No hi ha cap frase de baixa configurada, així que no es pot enviar cap correu de prospecció. Afegeix-ne una al panell «Signature» de la pestanya «Templates».",
+    "notLoaded": "La frase de baixa encara no s’ha carregat, així que no es pot enviar.",
+    "unreadable": "No s’ha pogut llegir la frase de baixa, així que no s’ha enviat res."
+  },
+  "retry": {
+    "notRebuilt": "No s’ha pogut refer aquest missatge amb la línia de l’empresa, així que no s’ha enviat res."
+  }
+}

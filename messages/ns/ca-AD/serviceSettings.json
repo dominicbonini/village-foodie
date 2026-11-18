@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "Hores de recollida",
+    "takes_cash": "Acceptes efectiu?",
+    "offline_protection": "Protecció de comandes sense connexió",
+    "buzzer_prompt": "Recorda’m que afegeixi un avisador"
+  },
+  "typeFollowsVanTitle": "Segueix la configuració habitual de cada vehicle",
+  "sameSettingsAllVansLabel": "Mateixa configuració per a tots els vehicles",
+  "sameSettingsAllVansHeader": "Tots els vehicles",
+  "sameSettingsConfirm": "Vols copiar la configuració del Vehicle 1 a tots els vehicles? Es copia tota la configuració de vehicle del Vehicle 1, igual que l’opció «Igual que Vehicle 1» de Configuració. La capacitat de la cuina té el seu propi interruptor.",
+  "eventTypesFooterStandard": "Estàndard és la teva configuració habitual. Si la canvies aquí, també canvia a Configuració.",
+  "eventTypesFooterOneEvent": "Per canviar una opció només per a un esdeveniment, fes servir el tauler d’aquell esdeveniment.",
+  "eventTypesSubtitle": "Els canvis es desen sobre la marxa.",
+  "matchStandardLabel": "Igual que Estàndard",
+  "matchStandardConfirm": "Vols tornar totes les opcions d’aquest tipus a Estàndard? S’esborrarà tot el que hagis canviat aquí.",
+  "priceLabels": {
+    "price_change_on": "Canvia els preus",
+    "price_mode": "Canvi de preu",
+    "price_amount": "Import",
+    "price_rounding": "Arrodoniment",
+    "item_prices": "Preus dels productes"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "Posaré cada preu jo mateix"
+  },
+  "priceRounding": {
+    "none": "Cap",
+    "nearest_1": "Arrodoneix a {symbol}1",
+    "up_1": "Arrodoneix sempre a l’alça"
+  },
+  "pricesStandardCell": "Els preus de la teva carta",
+  "pricesTruckWideTitle": "Els teus preus són els mateixos per a tots els vehicles",
+  "pricesMenuCell": "Carta",
+  "pricesTypeOffCell": "Preus de la carta",
+  "itemPricesShow": "Mostra els preus",
+  "itemPricesHide": "Amaga els preus",
+  "priceItemsHeading": "Posa el preu de cada producte",
+  "priceItemsOpen": "Mostra o canvia el preu de cada producte ›",
+  "priceItemsClose": "Amaga els preus dels productes ⌃",
+  "ownPriceCount": "{n, plural, one {{count} producte té preu propi} other {{count} productes tenen preu propi}}",
+  "priceTypeHint": "Toca un preu per escriure’n un de teu.",
+  "pricesLiveNotice": "Aquest esdeveniment està en curs. Les comandes noves fan servir els preus nous. Les comandes ja fetes mantenen els seus.",
+  "placeTypeHelper": "«Afegeix un esdeveniment» tria aquest tipus sempre que triïs aquest lloc.",
+  "postPictureStandardNote": "Les publicacions dels esdeveniments d’aquí fan servir el teu disseny estàndard.",
+  "eventItemsCardDescription": "Preus, límits de productes i disponibilitat només per a aquest esdeveniment. Els canvis s’apliquen immediatament.",
+  "eventPriceColumnLabel": "Preu",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · aquest esdeveniment} other {carta {price} · aquest esdeveniment}}",
+  "eventPriceEdit": "✎ Edita els preus",
+  "eventPriceCancel": "Cancel·la",
+  "eventPriceSave": "Desa els preus",
+  "eventPriceEditNote": "Estàs editant els preus només per a aquest esdeveniment. Els límits de productes i la disponibilitat queden bloquejats fins que desis.",
+  "eventPriceLiveNote": "En curs: les comandes noves fan servir els preus nous.",
+  "offlineWhenOfflineLabel": "Si no hi ha connexió"
+}

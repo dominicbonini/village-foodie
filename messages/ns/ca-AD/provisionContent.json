@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "Entrants",
+    "mains": "Plats principals",
+    "burgers": "Hamburgueses",
+    "pizza": "Pizzes",
+    "wrapsSandwiches": "Wraps i entrepans",
+    "sides": "Acompanyaments",
+    "dipsSauces": "Salses",
+    "desserts": "Postres",
+    "drinks": "Begudes",
+    "kidsMenu": "Per als més petits",
+    "specials": "Fora de carta",
+    "other": "Altres"
+  },
+  "demoEventName": "Esdeveniment de demostració",
+  "firstVanName": "Vehicle 1",
+  "demoCategories": {
+    "pizza": "Pizzes",
+    "burgers": "Hamburgueses",
+    "mains": "Plats principals",
+    "sides": "Acompanyaments",
+    "drinks": "Begudes"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food truck de pizzes",
+      "items": {
+        "margherita": "Margherita",
+        "pepperoni": "Pepperoni",
+        "ndujaHoney": "Nduja i mel",
+        "fourCheese": "Quatre formatges",
+        "gardenVeg": "Verdures de l’hort",
+        "garlicBread": "Pa d’all",
+        "rocketParmesan": "Ruca i parmesà",
+        "olives": "Olives",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "Coca-Cola"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food truck d’hamburgueses",
+      "items": {
+        "classicCheeseburger": "Hamburguesa clàssica amb formatge",
+        "doubleBacon": "Doble bacó",
+        "buttermilkChicken": "Pollastre marinat en sèrum de llet",
+        "halloumiStack": "Torre d’halloumi",
+        "smashBurger": "Smash burger",
+        "skinOnFries": "Patates fregides amb pell",
+        "loadedCheeseFries": "Patates amb formatge fos",
+        "onionRings": "Anelles de ceba",
+        "craftLemonade": "Llimonada artesana",
+        "coke": "Coca-Cola"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food truck de curris",
+      "items": {
+        "chickenTikkaMasala": "Pollastre tikka masala",
+        "lambRoganJosh": "Rogan josh de xai",
+        "chanaMasala": "Chana masala",
+        "butterChicken": "Pollastre a la mantega",
+        "saagPaneer": "Saag paneer",
+        "pilauRice": "Arròs pilau",
+        "garlicNaan": "Naan d’all",
+        "onionBhaji": "Bhaji de ceba",
+        "mangoLassi": "Lassi de mango",
+        "coke": "Coca-Cola"
+      }
+    }
+  }
+}

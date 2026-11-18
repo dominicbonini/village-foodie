@@ -1,0 +1,10 @@
+{
+  "vanFallback": "Vehicle",
+  "eventsFeed": {
+    "today": "Avui · {date}",
+    "tomorrow": "Demà · {date}"
+  },
+  "privacyNotSaved": "L’esdeveniment està en curs, però no se n’ha pogut desar la privadesa.",
+  "stockWarning": "No hi ha productes disponibles a «{category}»",
+  "uncategorised": "Sense categoria"
+}

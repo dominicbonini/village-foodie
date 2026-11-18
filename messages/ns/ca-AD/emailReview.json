@@ -1,0 +1,16 @@
+{
+  "subject": "Què tal la teva comanda a {truck}?",
+  "heading": "Gràcies per fer la comanda a {truck}",
+  "body": "{truck} t’agrairia molt una ressenya sincera a Google. Només et costarà un minut i ajuda altres persones a trobar-lo.",
+  "button": "Deixa una ressenya a Google",
+  "linkText": "Deixa una ressenya a Google: {url}",
+  "from": "Aquest correu te l’envia {truck} a través de HatchGrab perquè hi vas fer una comanda.",
+  "unsubscribeLead": "No vols que {truck} et torni a demanar ressenyes?",
+  "unsubscribeLink": "Dona’t de baixa",
+  "unsubscribeText": "Dona’t de baixa: {url}",
+  "unsubscribed": {
+    "title": "T’has donat de baixa",
+    "body": "{truck} ja no et demanarà més ressenyes.",
+    "invalid": "Aquest enllaç de baixa no és vàlid."
+  }
+}

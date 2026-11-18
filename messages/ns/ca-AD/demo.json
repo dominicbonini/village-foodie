@@ -1,0 +1,29 @@
+{
+  "notAvailable": "No disponible a la demostració",
+  "demoMode": "MODE DEMOSTRACIÓ",
+  "loopLands": "Així és exactament com arriba una comanda real",
+  "showMe": "Ensenya-m’ho",
+  "noCard": "{sub} No cal targeta.",
+  "notYet": "Encara no",
+  "cashAndCollected": "Efectiu i recollida",
+  "logoPlaceholder": "El teu logotip aquí",
+  "welcomeTitle": "{sample, select, yes {Aquí tens una demostració d’exemple} other {Aquí tens la teva demostració}}",
+  "welcomeIntro": "{sample, select, yes {És una <b>carta provisional</b> perquè vegis com funciona tot: puja la teva quan vulguis per fer-la teva.} other {És la teva carta i la teva imatge de marca, en un tauler real.}} Les comandes que ja hi ha són exemples, perquè vegis un servei amb molta feina.",
+  "twoThings": "Dues coses per provar:",
+  "hitButton": "Toca <b>{button}</b> en una comanda",
+  "scanQr": "Escaneja el <b>codi QR</b> (o toca l’enllaç), fes una comanda com si fossis un client i mira com arriba",
+  "qrAlt": "Codi QR de la teva pàgina de comandes per als clients",
+  "openHere": "O obre-la en aquest dispositiu",
+  "copyLink": "Copia l’enllaç",
+  "copyDescribedAs": "enllaç de comandes",
+  "noLinkTitle": "L’enllaç de comandes per als teus clients",
+  "noLinkBody": "L’enllaç de la teva pàgina de comandes és al menú de dalt a la dreta.",
+  "asLive": "El flux de comandes i de cuina és exactament igual que en un servei real.",
+  "startExploring": "Comença a explorar",
+  "signupOffer": {
+    "heading": "{months, plural, =0 {Comença gratis} one {Comença gratis durant # mes} other {Comença gratis durant # mesos}}",
+    "sub": "La prova gratuïta comença quan et registres."
+  },
+  "cashIcon": "💶",
+  "walkBanner": "Demostració · aquesta és la teva carta, tal com la veuran els teus clients. No es cobra res i no s’envia cap correu electrònic."
+}

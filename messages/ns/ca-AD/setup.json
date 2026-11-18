@@ -1,0 +1,32 @@
+{
+  "steps": {
+    "based": "On ets",
+    "identity": "El teu food truck",
+    "menu": "La teva carta",
+    "event": "Primer esdeveniment"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "Configuració inicial",
+  "loading": "S’està carregant",
+  "loadingCountries": "S’està carregant…",
+  "verify": {
+    "ok": "Correu electrònic confirmat. Gràcies!",
+    "expired": "Aquest enllaç de confirmació ha caducat. Posa’t en contacte amb nosaltres i ho resoldrem abans que comencis.",
+    "invalid": "Aquest enllaç de confirmació no ha funcionat. Posa’t en contacte amb nosaltres i ho resoldrem abans que comencis."
+  },
+  "identity": {
+    "heading": "Com es diu el teu food truck?",
+    "intro": "Aquest és el nom que veuen els clients. No es publica res fins que decideixis començar.",
+    "nameLabel": "Nom del food truck",
+    "namePlaceholder": "Hamburgueses Cal Pere",
+    "phoneLabel": "Telèfon",
+    "whatsappTick": "Aquest número té WhatsApp",
+    "phoneHelp": "Els clients el veuen a la confirmació de la comanda per poder fer-te preguntes sobre una comanda. La casella decideix si hi diu «Truca’ns» o «Escriu-nos per WhatsApp». Pots canviar totes dues coses a Configuració."
+  },
+  "phoneRequired": "Afegeix un número de telèfon: el fem servir tant els clients com nosaltres per contactar amb tu.",
+  "createFailed": "No s’ha pogut crear el teu food truck.",
+  "unreachable": "Ara mateix no hem pogut connectar. Torna-ho a provar.",
+  "back": "Enrere",
+  "creating": "S’està creant el teu food truck…",
+  "continue": "Continua"
+}

@@ -1,0 +1,161 @@
+{
+  "card": {
+    "title": "Afegeix el teu calendari al teu web",
+    "live": "<addr>{address}</addr> mostra el teu calendari.",
+    "create": "Creem una pàgina a <addr>{address}</addr> que mostra el teu calendari.",
+    "exampleDomain": "elteufoodtruck.ad",
+    "liveBadge": "Activa",
+    "setUp": "Configura",
+    "viewSetup": "Mostra la configuració",
+    "continue": "Continua",
+    "justLive": "<b>{address}</b> ja funciona. Fes-hi un cop d’ull i després confirma’ns aquí sota que és correcte."
+  },
+  "waiting": {
+    "title": "Estem esperant que funcioni {address}",
+    "bodySince": "Ho vas configurar el {date}. Les adreces web noves normalment comencen a funcionar en pocs minuts i, de vegades, triguen fins a 24 hores a arribar a tothom: mentrestant no cal que facis res. Si algú altre havia d’afegir la línia per tu, val la pena comprovar que ho ha fet.",
+    "body": "Les adreces web noves normalment comencen a funcionar en pocs minuts i, de vegades, triguen fins a 24 hores a arribar a tothom: mentrestant no cal que facis res. Si algú altre havia d’afegir la línia per tu, val la pena comprovar que ho ha fet."
+  },
+  "ready": {
+    "title": "{address} ja funciona",
+    "body": "Fes-hi un cop d’ull i després confirma’ns a la configuració que és correcte."
+  },
+  "confirm": {
+    "heading": "Fes-hi un cop d’ull i confirma’ns que és correcte",
+    "open": "Obre <link>{address}</link>",
+    "checkTimes": "Comprova que les dates i les hores són correctes.",
+    "yes": "Sí, és correcte",
+    "no": "No, hi ha un problema",
+    "problemLine": "Explica’ns què hi veus i ho revisarem.",
+    "emailUs": "Envia’ns un correu",
+    "mailSubject": "Problema amb {address}",
+    "mailLiveSince": "Activa des del {date}",
+    "mailSeeing": "Què hi veig:"
+  },
+  "confirmed": {
+    "heading": "Gràcies: ho hem anotat.",
+    "body": "No cal fer res més."
+  },
+  "turnOff": {
+    "link": "Desactiva-ho",
+    "heading": "Vols desactivar la teva pròpia adreça web?",
+    "stops": "Això deixarà de funcionar:",
+    "carriesOn": "Això continua exactament igual, i és on el teu codi QR porta la gent:",
+    "reAdd": "Si la tornaràs a configurar més endavant, deixa la línia que vas afegir a l’empresa de la teva adreça web. Si no, demana’ls que l’eliminin.",
+    "cancel": "Mantén-la activada",
+    "confirm": "Desactiva-la",
+    "working": "S’està desactivant…",
+    "failed": "Ara mateix no ho hem pogut desactivar. No ha canviat res: la teva adreça continua funcionant. Torna-ho a provar d’aquí a una estona."
+  },
+  "wizard": {
+    "resumeFailedTitle": "No hem pogut carregar la teva configuració.",
+    "resumeFailedBody": "No ha canviat res. Torna-ho a provar d’aquí a una estona.",
+    "close": "Tanca",
+    "resuming": "Continuem on ho vas deixar…",
+    "genericError": "Alguna cosa ha fallat",
+    "saveFailed": "No s’ha pogut desar"
+  },
+  "address": {
+    "intro": "El teu calendari tindrà la seva pròpia adreça web.",
+    "question": "Quina és la teva adreça web?",
+    "hint": "La que la gent ja fa servir per trobar-te.",
+    "aria": "La teva pròpia adreça web",
+    "willBe": "La teva adreça serà <addr>{address}</addr>",
+    "example": "Per exemple, <addr>{address}</addr>",
+    "noChange": "El teu web no canvia: només hi afegeixes un enllaç a l’adreça nova.",
+    "notSetUp": "No ho hem configurat.",
+    "restricted": "Qui gestiona la teva adreça web ens ha de permetre configurar el cadenat, el petit cadenat que els clients veuen al costat de l’adreça. Fins que no ens hi afegeixin no apareixerà, així que ens hem aturat en lloc de deixar-te esperant. Demana’ls que ens hi afegeixin i torna-ho a provar.",
+    "blocked": "Ara mateix la teva adreça web bloqueja completament el cadenat. Qui la gestiona l’ha de permetre perquè això funcioni. Demana’ls que ho canviïn i torna-ho a provar.",
+    "elsewhere": "Aquesta adreça ja respon amb una altra cosa. Envia el missatge de la pantalla següent a qui la gestiona: sabrà què cal fer.",
+    "provider": "La teva adreça web la gestiona <b>{provider}</b>. T’ensenyarem on has d’anar.",
+    "provisionFailed": "No hem pogut configurar aquesta adreça.",
+    "willNotWork": "Aquesta adreça no funcionarà.",
+    "couldNotBeSetUp": "No s’ha pogut configurar aquesta adreça.",
+    "couldNotSetUp": "No s’ha pogut configurar",
+    "checking": "S’està comprovant…",
+    "setting": "S’està configurant…",
+    "tryAgain": "Torna-ho a provar",
+    "setUpAddress": "Configura aquesta adreça",
+    "notNow": "Ara no"
+  },
+  "apex": {
+    "empty": "Escriu l’adreça que vols fer servir.",
+    "not_a_domain": "No sembla una adreça web.",
+    "unparseable": "No hem pogut llegir-ho com a adreça web. Comprova com està escrit i torna-ho a provar.",
+    "apex": "{host} és l’adreça de tot el teu web. Si l’apuntes cap a nosaltres, aquesta pàgina substituirà el teu web. Posa-hi una paraula al davant, per exemple esdeveniments.{host}.",
+    "too_deep": "Aquesta adreça té massa parts. Funciona millor una cosa com esdeveniments.{domain}."
+  },
+  "record": {
+    "addAt": "Afegeix això a {provider}",
+    "open": "Obre {provider}",
+    "guide": "La guia de {provider} sobre això",
+    "addAtSave": "Afegeix això a {provider} i desa.",
+    "addSomewhere": "Afegeix això on es gestiona la teva adreça web i desa.",
+    "hintChoose": "Tria-ho de la llista.",
+    "hintWord": "Només aquesta paraula, no tota l’adreça.",
+    "hintExact": "Copia-ho exactament.",
+    "timing": "Normalment comença a funcionar en menys d’una hora, tot i que pot trigar més. No cal que mantinguis aquesta pàgina oberta.",
+    "someoneElse": "Algú altre gestiona la teva adreça web?",
+    "sentTo": "Enviat a {email}",
+    "emailPlaceholder": "la seva adreça de correu electrònic",
+    "sending": "S’està enviant…",
+    "send": "Envia aquestes dades",
+    "sendFailed": "No s’ha pogut enviar"
+  },
+  "providers": {
+    "cloudflare": {
+      "open": "Obre la teva adreça web i després «DNS» i «Records».",
+      "add": "Selecciona «Add record» i tria «CNAME» com a «Type».",
+      "name": "Posa el primer valor de sota a «Name».",
+      "value": "Posa el segon valor de sota a «Target».",
+      "proxy": "Posa «Proxy status» a «DNS only»: el núvol del costat ha de ser gris, no taronja.",
+      "save": "Deixa «TTL» a «Auto» i selecciona «Save».",
+      "caveat": "Si el núvol es queda taronja, el cadenat no apareixerà mai i res no t’indicarà per què."
+    },
+    "godaddy": {
+      "open": "Obre el teu «Domain Portfolio» i tria la teva adreça web.",
+      "dns": "A «Domain Settings», selecciona «DNS».",
+      "add": "Selecciona «Add New Record» i tria «CNAME» al menú «Type».",
+      "name": "Posa el primer valor de sota a «Name».",
+      "value": "Posa el segon valor de sota a «Value».",
+      "save": "Deixa «TTL» com està i selecciona «Save».",
+      "caveat": "Si n’has afegit més d’un alhora, el botó diu «Save All Records»."
+    },
+    "123reg": {
+      "signIn": "Inicia la sessió al teu «123 Reg Control Panel».",
+      "manage": "Al costat de «Domains», selecciona «Manage All» i tria la teva adreça web.",
+      "dns": "Selecciona «DNS» i després «Add New Record».",
+      "type": "Tria «CNAME» a la llista «Type».",
+      "name": "Posa el primer valor de sota a «Name».",
+      "value": "Posa el segon valor de sota a «Value» i afegeix-hi un punt al final.",
+      "save": "Deixa «TTL» a «Default» i fes clic a «Save».",
+      "caveat": "123 Reg necessita un punt al final del segon valor; si no, no funcionarà."
+    },
+    "wix": {
+      "open": "Obre «Domains» i fes clic a la icona «Domain Actions» al costat de la teva adreça web.",
+      "manage": "Tria «Manage DNS Records».",
+      "add": "A la secció «CNAME (Aliases)», fes clic a «+ Add Record» i després a «Got it».",
+      "name": "Posa el primer valor de sota a «Host Name».",
+      "value": "Posa el segon valor de sota a «Value».",
+      "save": "Fes clic a «Save» i després a «Save Changes» a la finestra emergent.",
+      "caveat": "Si la teva adreça web només apunta a Wix però no hi està registrada, Wix no pot fer aquest canvi: l’ha de fer qui la té registrada."
+    }
+  },
+  "instructionsEmail": {
+    "subject": "Un registre per afegir per a la pàgina del calendari ({truckName})",
+    "hello": "Hola,",
+    "introAt": "Posarem el calendari en directe del food truck {truckName} a {address}, i cal afegir un registre al nostre domini a {provider}.",
+    "introHolder": "Posarem el calendari en directe del food truck {truckName} a {address}, i cal afegir un registre al nostre domini allà on el tenim registrat.",
+    "stepsAt": "A {provider}:",
+    "guide": "La seva guia: {url}",
+    "wholeChange": "Aquest és tot el canvi: no afecta res més del web, i la resta del domini continua funcionant exactament com ara. Normalment comença a funcionar en menys d’una hora.",
+    "pointsAt": "La pàgina a la qual apunta mostra on serem la propera vegada i s’actualitza sola.",
+    "replyTo": "Si tens cap pregunta, respon a {email}.",
+    "thanks": "Gràcies,"
+  },
+  "liveEmail": {
+    "subject": "{address} ja funciona",
+    "goodNews": "Bones notícies: {address} ja funciona.",
+    "body": "El teu calendari ja es mostra a la teva pròpia adreça. Fes-hi un cop d’ull i comprova que és correcte: obre {address} i assegura’t que els esdeveniments són teus i que les dates són correctes.",
+    "confirm": "Quan ho hagis fet, obre la configuració a HatchGrab i confirma’ns que és correcte. No en depèn res: només ens serveix per saber que una persona ho ha vist."
+  }
+}

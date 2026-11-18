@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "Cancel·lat",
+    "finished": "Acabat",
+    "unconfirmed": "Sense confirmar",
+    "confirmed": "Confirmat",
+    "open": "Obert ara",
+    "closed": "Tancat"
+  },
+  "sections": {
+    "label": "Seccions del calendari",
+    "events": "Esdeveniments",
+    "eventTypes": "Tipus d’esdeveniment"
+  },
+  "header": {
+    "title": "Calendari",
+    "upcoming": "Propers: {count}",
+    "import": "✨ Importa el calendari",
+    "importHint": "foto, PDF o text",
+    "addEvent": "+ Afegeix un esdeveniment",
+    "scraperAuto": "Cerquem automàticament els esdeveniments al teu lloc web",
+    "changeInSettings": "Canvia-ho a Configuració",
+    "scraperManual": "Gestiones el calendari manualment"
+  },
+  "empty": {
+    "title": "No hi ha propers esdeveniments",
+    "body": "Els esdeveniments que trobem a les teves xarxes socials i al teu calendari de reserves apareixeran aquí perquè els confirmis"
+  },
+  "list": {
+    "openNow": "Obert ara",
+    "needsApproval": "Cal que l’aprovis",
+    "needsConfirmation": "Cal confirmar-lo",
+    "confirmed": "Confirmats",
+    "past": "Esdeveniments passats ({count})",
+    "found": "Hem trobat {count, plural, one {# esdeveniment per a tu — revisa’l i aprova’l abans que es publiqui.} other {# esdeveniments per a tu — revisa’ls i aprova’ls abans que es publiquin.}}"
+  },
+  "card": {
+    "addName": "Afegeix un nom",
+    "timeNeeded": "⚠ Cal una hora",
+    "setTimeFirst": "Primer posa una hora",
+    "confirm": "Confirma",
+    "copy": "Copia",
+    "edit": "Edita",
+    "makePost": "Crea una publicació",
+    "cancel": "Cancel·la",
+    "approve": "Aprova",
+    "reject": "Rebutja",
+    "stock": "⚠️ Estoc",
+    "stockHidden": "Amagat: {reason}",
+    "noDeals": "Cap menú actiu",
+    "dealsActive": "{count, plural, one {# menú actiu} other {# menús actius}} · {names}{hidden, plural, =0 {} one { · # amagat} other { · # amagats}}",
+    "approveNeedsTimes": "No es pot aprovar fins que aquest esdeveniment no tingui una hora d’inici i una de final: afegeix-les amb Edita."
+  },
+  "guessed": {
+    "title": "📍 Hem deduït aquest lloc",
+    "body": "Hi ha més d’un lloc que coincideix amb <b>{venue}</b>, així que hem triat el més probable{hasTown, select, yes { a <b>{town}</b>} other {}}{hasPostcode, select, yes { ({postcode})} other {}}. Comprova que sigui el correcte abans d’aprovar-lo: si no ho és, fes servir <b>Edita</b> per corregir la zona o {postal}; altrament, els clients aniran a un lloc equivocat.",
+    "thisVenue": "aquest lloc"
+  },
+  "noLocation": {
+    "title": "📍 Encara no hi ha ubicació",
+    "body": "No hem pogut situar aquest lloc al mapa, així que apareixerà a la llista però sense marcador al mapa. Afegeix {postal} amb <b>Edita</b> per posar-lo al mapa."
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {Possible conflicte} other {Possibles conflictes}} — revisa-ho abans {pending, select, yes {d’aprovar} other {de confirmar}}",
+    "duplicate": "Sembla el mateix esdeveniment que ja tens.",
+    "review": "Mateix lloc i mateixa data, però una hora diferent: és el mateix esdeveniment amb l’hora canviada o una franja a part? Revisa-ho abans d’aprovar.",
+    "already": "Ja és al teu calendari: <b>{venue}</b>{details} ({status, select, confirmed {confirmat} open {obert} other {{status}}})",
+    "unnamedVenue": "Lloc sense nom",
+    "ack": "Sí, són esdeveniments diferents: {pending, select, yes {aprova’l} other {confirma’l}} igualment",
+    "cancel": "Cancel·la",
+    "overlap": "L’horari d’aquest esdeveniment se solapa amb un altre esdeveniment del mateix dia: un sol vehicle no pot ser a dos llocs alhora. Revisa-ho abans d’aprovar."
+  },
+  "toast": {
+    "loadFailed": "No s’han pogut carregar els esdeveniments",
+    "linkFailed": "No s’ha pogut carregar l’enllaç",
+    "placeTypeFailed": "S’ha desat l’esdeveniment, però no el tipus habitual del lloc {place}: {reason}.",
+    "placeTypeFailedReason": "no s’ha pogut desar",
+    "eventUpdated": "Esdeveniment actualitzat",
+    "eventAdded": "Esdeveniment afegit",
+    "eventsSaved": "{count, plural, one {# esdeveniment desat} other {# esdeveniments desats}}",
+    "saveEventsFailed": "No s’han pogut desar els esdeveniments",
+    "needsTime": "Afegeix una hora d’inici i una de final abans d’aprovar-lo: aquest esdeveniment necessita una hora per publicar-se.",
+    "addStartTime": "Afegeix una hora d’inici",
+    "addEndTime": "Afegeix una hora de final",
+    "chooseTruckBefore": "Tria quin vehicle treballa en aquest esdeveniment abans d’aprovar-lo.",
+    "chooseTruck": "Tria quin vehicle treballa en aquest esdeveniment",
+    "eventConfirmed": "Esdeveniment confirmat",
+    "eventRejected": "Esdeveniment rebutjat",
+    "undo": "↩ Desfés",
+    "eventRestored": "Esdeveniment restaurat",
+    "restoreFailed": "No s’ha pogut restaurar",
+    "eventCancelled": "Esdeveniment cancel·lat",
+    "eventCancelledOrders": "Esdeveniment cancel·lat · {count, plural, one {# comanda cancel·lada} other {# comandes cancel·lades}}",
+    "placeHidden": "Lloc amagat",
+    "placeShown": "Lloc visible de nou",
+    "saveThatFailed": "No s’ha pogut desar."
+  },
+  "link": {
+    "label": "Enllaç privat i codi QR",
+    "close": "Tanca"
+  }
+}

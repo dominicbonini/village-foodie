@@ -1,0 +1,195 @@
+{
+  "cancel": "Cancel·la",
+  "back": "← Enrere",
+  "backPlain": "Enrere",
+  "next": "Següent →",
+  "continue": "Continua →",
+  "closeImport": "Tanca la importació",
+  "tryAgain": "Torna-ho a provar",
+  "catError": {
+    "empty": "Posa un nom a la categoria.",
+    "tooLong": "Aquest nom és massa llarg.",
+    "clash": "Ja hi ha una categoria que es diu «{name}»."
+  },
+  "steps": {
+    "details": "Les teves dades",
+    "menu": "Carta",
+    "extras": "Extres",
+    "allergens": "Al·lèrgens",
+    "kitchen": "Configuració de la cuina",
+    "schedule": "Calendari",
+    "settings": "Configuració"
+  },
+  "toast": {
+    "demoGone": "La carta de la teva demostració ja no està disponible: torna-la a pujar per continuar.",
+    "eventsSaveFailed": "No s’han pogut desar els esdeveniments",
+    "cardReadFailed": "No s’ha pogut llegir la fitxa d’al·lèrgens: torna-ho a provar",
+    "imageReadFailed": "No s’ha pogut llegir aquesta imatge: escriu o enganxa la fitxa",
+    "commitFailedDetail": "No s’ha pogut acabar de desar la carta: {error}. És possible que alguns productes ja s’hagin desat: revisa la carta abans de tornar-ho a provar.",
+    "commitFailed": "No s’ha pogut acabar de desar la carta. És possible que alguns productes ja s’hagin desat: revisa la carta abans de tornar-ho a provar.",
+    "finishFailed": "No s’ha pogut marcar la configuració com a acabada, però pots continuar.",
+    "scheduleReadFailed": "No s’ha pogut llegir aquest calendari: prova amb una foto més clara o escriu les dates.",
+    "cardRead": "Fitxa llegida — coincidents: {matched}; {pending, plural, one {# està pendent que l’assignis} other {# estan pendents que els assignis}}"
+  },
+  "settingsReview": {
+    "anchorOrder": "Configuració → Configuració de les comandes",
+    "anchorDisplay": "Configuració → Els teus vehicles → Configuració de la pantalla",
+    "mins15": "15 minuts",
+    "mins30": "30 minuts",
+    "mins60": "60 minuts",
+    "hours2": "2 hores",
+    "title": "Unes quantes opcions per revisar",
+    "loading": "S’està carregant la teva configuració actual…",
+    "looksGood": "Tot correcte →",
+    "secondaryAria": "{label} — {secondary}",
+    "saveFailed": "No s’ha pogut desar: ho pots canviar a Configuració.",
+    "anchorContact": "Configuració → Dades de contacte",
+    "intro": "T’hem posat unes opcions habituals. Val la pena fer-hi un cop d’ull: les pots canviar totes més endavant a Configuració.",
+    "cancelAria": "Quant temps abans de la recollida poden cancel·lar els clients"
+  },
+  "allergensNotSet": {
+    "bodySetup": "Revisa’ls abans de començar. Fins aleshores, els productes porten la marca «al·lèrgens sense configurar».",
+    "body": "Revisa’ls a Configuració abans de començar. Fins aleshores, els productes porten la marca «al·lèrgens sense configurar».",
+    "title": "⚠ Encara no has configurat els al·lèrgens ni la dieta"
+  },
+  "welcome": {
+    "title": "Et donem la benvinguda a HatchGrab",
+    "yourTruck": "El teu food truck",
+    "stop": "Pots parar i tornar-hi quan vulguis.",
+    "body": "Ja hem configurat {name}. Ara afegirem la teva carta i després el teu primer esdeveniment.",
+    "go": "Som-hi"
+  },
+  "offer": {
+    "title": "Vols fer servir la carta de la teva demostració?",
+    "use": "Fes servir aquesta carta",
+    "upload": "Puja una altra carta",
+    "body": "Hem desat la carta que vas pujar: {count, plural, one {# producte} other {# productes}}. Fes-la servir com a punt de partida o puja’n una altra."
+  },
+  "checkMenu": {
+    "title": "Revisa la teva carta",
+    "body": "Hem desat la carta de la teva demostració al teu food truck i des d’aleshores l’has modificada, així que conservem els teus canvis. Fes-hi un cop d’ull a continuació.",
+    "done": "Tot correcte"
+  },
+  "upload": {
+    "title": "Importa la teva carta",
+    "body": "Puja una foto de la pissarra, una captura de pantalla, un PDF o enganxa la carta com a text. La nostra IA la llegeix i crea la teva carta digital; ho revises tot abans de desar-ho.",
+    "confirmCancel": "Vols cancel·lar aquesta importació? Es descartarà la revisió que has fet d’aquesta carta.",
+    "process": "Processa la carta",
+    "later": "Ho faré més tard"
+  },
+  "processing": {
+    "title": "S’està analitzant la teva carta",
+    "body": "La IA està llegint i classificant els teus productes…"
+  },
+  "review": {
+    "title": "Revisa la carta importada",
+    "editLaterSetup": "Els noms, els preus, els extres, els al·lèrgens i la informació de dieta es poden editar més endavant quan vulguis.",
+    "editLater": "Els noms, els preus, els extres, els al·lèrgens i la informació de dieta es poden editar quan vulguis a Configuració.",
+    "noPrice": "{count, plural, one {# producte no tenia cap preu llegible} other {# productes no tenien cap preu llegible}}",
+    "renameCategoryAria": "Canvia el nom de la categoria: {name}",
+    "renameAria": "Canvia el nom: {name}",
+    "renameTitle": "Canvia el nom de la categoria",
+    "deleteAria": "Suprimeix: {name}",
+    "deleteTitle": "Suprimeix la categoria",
+    "lastCategory": "La teva carta necessita com a mínim una categoria",
+    "countOf": "{kept} de {total}",
+    "existing": "existent",
+    "deleteEmptyTitle": "Vols suprimir «{name}»?",
+    "deleteEmptyBody": "No té cap producte, així que no es perd res.",
+    "delete": "Suprimeix",
+    "moveTitle": "On vols moure {count, plural, one {# producte} other {# productes}}?",
+    "moveBody": "Per suprimir «{name}» cal moure’n els plats a algun lloc: els productes sense categoria no s’importen.",
+    "moveAria": "Mou els productes de la categoria {name} a",
+    "chooseCategory": "Tria una categoria…",
+    "moveDelete": "Mou i suprimeix",
+    "itemName": "Nom del producte",
+    "free": "gratuït?",
+    "freeOn": "Gratuït ✕",
+    "nameFirst": "Posa nom al producte nou abans d’afegir-ne un altre",
+    "addItem": "+ Afegeix un producte",
+    "categoryName": "Nom de la categoria",
+    "newCategoryAria": "Nom de la categoria nova",
+    "addCategory": "+ Afegeix una categoria",
+    "ready": "{count, plural, one {# producte a punt per afegir} other {# productes a punt per afegir}}. Desmarca els que no vulguis.",
+    "noPriceBody": "Posa un preu a cadascun o marca’l com a gratuït; si no, es publicaria a {zero}. No pots continuar fins que no ho resolguis.",
+    "incomplete": "Escriu un nom per afegir aquest producte: les files buides no s’importen."
+  },
+  "extras": {
+    "introSetup": "Alguns plats es poden configurar com a <b>un sol producte personalitzable</b> o mantenir com a <b>plats separats</b>. Tria com ha d’aparèixer cadascun. Ho pots canviar més endavant.",
+    "intro": "Alguns plats es poden configurar com a <b>un sol producte personalitzable</b> o mantenir com a <b>plats separats</b>. Tria com ha d’aparèixer cadascun. Ho pots canviar més endavant a Configuració.",
+    "none": "No hi ha plats per agrupar: cada producte és un plat independent.",
+    "axisChoice": "· opció: {axis}",
+    "grouped": "Agrupat · un producte, el client tria",
+    "separate": "Productes separats a la carta"
+  },
+  "allergens": {
+    "title": "Al·lèrgens",
+    "detected": "Hem detectat al·lèrgens a la teva carta. Tria com els vols mostrar a continuació.",
+    "howShow": "Com vols mostrar els al·lèrgens als clients?",
+    "skip": "Omet ara la configuració d’al·lèrgens"
+  },
+  "kitchen": {
+    "title": "Configuració de la cuina",
+    "intro": "Ajuda els clients a saber quant hauran d’esperar; ho pots canviar sempre que vulguis.",
+    "howWorks": "Com funciona la capacitat de la cuina",
+    "allExist": "Totes les categories ja existeixen: no hi ha temps per configurar.",
+    "totalHelp": "Configura una capacitat total per limitar quants productes accepta la cuina en cada franja. Deixa-ho a ∞ per no posar-hi límit.",
+    "saveAdd": "Desa i afegeix a la carta"
+  },
+  "schedule": {
+    "title": "Afegeix el meu calendari",
+    "intro": "Si el teu calendari és al teu lloc web, el podem mantenir al dia automàticament; si no, afegeix tu mateix les dates.",
+    "websiteTitle": "El meu calendari és al meu lloc web",
+    "urlPlaceholder": "https://elteufoodtruck.ad/esdeveniments",
+    "checking": "S’està comprovant…",
+    "verify": "Verifica",
+    "checkingSite": "S’està comprovant el teu lloc web…",
+    "takesTime": "Pot trigar fins a 2 minuts: no tanquis aquesta pantalla.",
+    "canRead": "✓ Podem llegir el teu calendari",
+    "ownSite": "El teu propi lloc web, no una pàgina de Facebook o Instagram.",
+    "photoTitle": "Puja una foto del meu calendari",
+    "dragChoose": "Arrossega i deixa anar, o toca per triar",
+    "imageOrPdf": "Imatge o PDF",
+    "or": "o",
+    "pastePlaceholder": "Enganxa aquí les teves dates…",
+    "read": "Llegeix el calendari",
+    "found": "{count, plural, one {S’ha trobat # data} other {S’han trobat # dates}}: s’afegiran al teu calendari.",
+    "dateTbc": "Data per confirmar",
+    "save": "Desa {count, plural, one {# data} other {# dates}}",
+    "manualDesc": "Afegeix-les més endavant a la pestanya «Calendari»: ara no cal fer res.",
+    "manualBody": "Cap problema. Pots afegir i gestionar les teves dates quan vulguis des de la pestanya «Calendari» del teu compte.",
+    "blockedDomain": "Fes servir l’adreça del teu lloc web: les pàgines de Facebook i Instagram no es poden llegir automàticament.",
+    "saveFailed": "Hem llegit el teu calendari, però ara mateix no l’hem pogut desar: torna-ho a provar.",
+    "websiteDesc": "El revisarem sovint i t’enviarem les dates noves perquè les aprovis.",
+    "keepChecking": "Continuarem revisant aquesta pàgina i t’enviarem les dates noves perquè les aprovis.",
+    "photoDesc": "Fes una foto o enganxa les teves dates: les llegirem perquè les revisis.",
+    "noneFound": "No hi hem trobat cap data: prova amb una foto més clara o afegeix tu mateix una data.",
+    "manualTitle": "Afegiré jo mateix les dates",
+    "trialNotStarted": "Afegir esdeveniments no inicia la prova gratuïta: més endavant triaràs quin esdeveniment la inicia."
+  },
+  "done": {
+    "summary": "{items, plural, one {# producte} other {# productes}} en {categories, plural, one {# categoria} other {# categories}}.",
+    "imported": "Carta importada!",
+    "added": "Els teus productes s’han afegit a la carta.",
+    "duplicates": "{count, plural, one {# duplicat omès} other {# duplicats omesos}}",
+    "showMe": "Fes-me una visita guiada",
+    "remind": "Recorda-m’ho més tard",
+    "allSet": "Ja està tot a punt!",
+    "explore": "Ho exploraré jo mateix"
+  },
+  "discard": {
+    "setupTitle": "Vols acabar la configuració més tard?",
+    "setupBody": "El teu compte i el teu food truck estan desats: no es perd res. Pots afegir la carta quan vulguis: inicia la sessió i toca <b>Importa la carta</b> a la pantalla de la carta per continuar just aquí.",
+    "keepGoing": "Continua",
+    "finishLater": "Acaba-ho més tard",
+    "title": "Vols descartar aquesta importació?",
+    "keepEditing": "Continua editant",
+    "discard": "Descarta",
+    "body": "Els canvis no es desaran: no s’afegiran els productes importats, els temps de preparació ni la capacitat de la cuina.",
+    "carriedBody": "La carta de la demostració queda desada al teu food truck tal com està. La pots canviar quan vulguis a la pantalla de la carta."
+  },
+  "allergenCardText": {
+    "contains": "Conté: {list}",
+    "mayContain": "Pot contenir: {list}"
+  }
+}

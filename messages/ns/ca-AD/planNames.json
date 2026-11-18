@@ -1,0 +1,28 @@
+{
+  "payg": {
+    "name": "Sense quota mensual",
+    "subtitle": "Per a food trucks de temporada i a temps parcial",
+    "description": "Sense quota mensual. Només pagues un 0,99 % per les comandes en línia."
+  },
+  "pro": {
+    "subtitle": "Per a food trucks amb comandes anticipades habituals",
+    "description": "Tot, incloses les respostes automàtiques de WhatsApp i les publicacions a les xarxes socials, amb comandes en línia incloses cada mes."
+  },
+  "unlimited": {
+    "name": "Il·limitat",
+    "subtitle": "Per a food trucks amb molta feina i festivals",
+    "description": "Tot, sense comissions per les comandes en línia, per molta feina que tinguis."
+  },
+  "trial": {
+    "name": "Prova gratuïta",
+    "description": "Totes les funcions, gratis, mentre duri la prova."
+  },
+  "demo": {
+    "name": "Demostració",
+    "description": "Entorn de proves per a clients potencials — mai públic."
+  },
+  "tester": {
+    "name": "Provador",
+    "description": "Provador abans del llançament — accés complet."
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "shortened": {
+    "heading": "El títol no hi cabia i s’ha escurçat.",
+    "date": "La data no hi cabia i s’ha escurçat.",
+    "daysOff": "El text dels dies lliures no hi cabia i s’ha escurçat.",
+    "place": "El lloc no hi cabia i s’ha escurçat.",
+    "time": "L’hora no hi cabia i s’ha escurçat.",
+    "note": "El teu text no hi cabia i s’ha escurçat.",
+    "venue": "El nom del lloc no hi cabia i s’ha escurçat.",
+    "area": "La zona no hi cabia i s’ha escurçat."
+  },
+  "fontFallback": "No s’ha pogut carregar una font que fa servir aquest disseny ({id}): aquests quadres surten en Oswald.",
+  "wrongShapeBackground": "La imatge d’aquest lloc té una forma diferent de la del teu disseny, així que es fa servir el fons estàndard.",
+  "rowsFit": "L’últim dia queda {px} px per sota de la part inferior de la imatge: redueix l’espaiat de les files o puja la fila 1.",
+  "placeStatus": {
+    "ownBoth": "Imatge i posicions del text pròpies",
+    "wrongShape": "Forma diferent: no es farà servir fins que la substitueixis",
+    "ownPicture": "Imatge pròpia, posicions estàndard",
+    "ownPositions": "Imatge estàndard, posicions del text pròpies",
+    "none": "Encara no hi ha imatge: es fa servir Estàndard"
+  },
+  "standardStatus": "Es fa servir a tots els altres llocs",
+  "option": {
+    "oneOff": "Puja’n una només per a aquesta publicació",
+    "placePoster": "Cartell: {name}",
+    "standard": "Disseny estàndard"
+  },
+  "previewLabel": {
+    "lastEvent": "La previsualització fa servir el teu últim esdeveniment aquí",
+    "noEvents": "Encara no hi ha esdeveniments aquí: la previsualització mostra el teu proper esdeveniment amb el nom d’aquest lloc"
+  },
+  "fontUsage": {
+    "weekly": "el teu disseny de publicació setmanal",
+    "event": "el teu disseny de publicació d’esdeveniment",
+    "place": "el teu disseny per a {place}",
+    "placeUnnamed": "el teu disseny per a un lloc"
+  },
+  "face": {
+    "regular": "Normal",
+    "bold": "Negreta",
+    "italic": "Cursiva"
+  },
+  "picture": {
+    "legacy": "Cartell de l’esdeveniment",
+    "fallback": "Imatge",
+    "wrongShape": "Forma diferent: no es pot fer servir com a fons sencer"
+  },
+  "noPicture": {
+    "omit": "Omet-la",
+    "blank": "Deixa un espai en blanc",
+    "logo": "Mostra el teu logotip"
+  },
+  "noPicturesAll": "{total, plural, one {El teu lloc té una imatge.} other {Tots els teus {total} llocs tenen una imatge.}}",
+  "noPicturesSome": "{without, plural, one {{without} dels teus {total} llocs encara no té imatge} other {{without} dels teus {total} llocs encara no tenen imatge}}",
+  "licenceTick": "Soc el propietari d’aquesta font o tinc una llicència per fer-la servir",
+  "fontUploadButton": "↑ Puja la teva font"
+}

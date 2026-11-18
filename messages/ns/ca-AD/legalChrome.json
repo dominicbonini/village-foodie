@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "Política de privadesa — HatchGrab",
+    "privacyDescription": "Com HatchGrab Ltd recull i utilitza les dades personals.",
+    "termsTitle": "Condicions del servei — HatchGrab",
+    "termsDescription": "Les condicions d’ús de HatchGrab.",
+    "countryTermsTitle": "Condicions específiques per país — HatchGrab",
+    "countryTermsDescription": "Les normes addicionals que s’apliquen a HatchGrab en alguns països."
+  },
+  "homeLabel": "Inici de HatchGrab",
+  "privacy": "Privadesa",
+  "terms": "Condicions",
+  "countryTerms": "Condicions per país",
+  "contact": "Contacte",
+  "lastUpdated": "Última actualització: {date}",
+  "questions": "Tens preguntes? <link>Posa’t en contacte amb nosaltres</link> — som persones de debò.",
+  "translationNote": "Aquesta és una traducció. Si difereix de la <link>versió en anglès</link>, preval la versió en anglès."
+}

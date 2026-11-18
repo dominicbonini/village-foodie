@@ -1,0 +1,13 @@
+{
+  "subtotal": "Subtotal",
+  "taxFallback": "Impostos",
+  "taxIncluded": "Inclou {label}",
+  "serviceFeeCustomer": "Comissió de servei en línia",
+  "serviceFee": "Comissió de servei",
+  "cardFee": "Comissió per targeta",
+  "tip": "Propina",
+  "rate": "{rate} %",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {Impostos, comissions i propina} tax_tip {Impostos i propina} fees_tip {Comissions i propina} fees {Comissions} other {Impostos i comissions}}"
+}

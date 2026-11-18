@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "Fes la comanda a {truck}",
+    "orderDescription": "Fes la comanda per endavant a {truck} i recull-la al food truck.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "Logotip: {truck}"
+  },
+  "shareTitle": "Calendari: {truck}",
+  "shareText": "Mira on serà {truck} properament! 🚚",
+  "linkCopied": "Enllaç del perfil copiat al porta-retalls! 📋",
+  "facebookPage": "Pàgina de Facebook",
+  "loadingMap": "S’està carregant el mapa…",
+  "view": {
+    "list": "Llista",
+    "map": "Mapa"
+  },
+  "ownThisTruck": "Aquest food truck és teu?",
+  "ownThisTruckTitle": "Aquest food truck és teu? Fes clic per actualitzar el perfil",
+  "actions": {
+    "menu": "Carta",
+    "call": "Truca",
+    "message": "Missatge",
+    "share": "Comparteix",
+    "order": "Fes la comanda"
+  },
+  "loadingSchedule": "S’està carregant el calendari…",
+  "loadError": {
+    "title": "No s’ha pogut carregar",
+    "body": "Ara mateix no hem pogut carregar el calendari; normalment és un problema momentani. Torna-ho a provar.",
+    "retry": "Torna-ho a provar"
+  },
+  "notFound": {
+    "title": "No s’ha trobat el food truck",
+    "body": "No hem trobat cap dada d’aquest food truck. Potser s’ha traslladat o ha actualitzat el perfil.",
+    "cta": "Mostra tots els food trucks"
+  },
+  "noEvents": {
+    "title": "No hi ha esdeveniments previstos",
+    "body": "Potser ens falten dades d’aquest food truck. Ets el propietari o en coneixes el calendari?",
+    "cta": "Escriu-nos perquè ho actualitzem!"
+  },
+  "whereToFind": "On ens trobaràs",
+  "missingEvent": "<strong>Ens falta algun esdeveniment?</strong> <br></br>Si ets el propietari d’aquest food truck o simplement n’ets un fan incondicional, ajuda’ns a mantenir aquesta pàgina al dia! <br></br><link>Contacta’ns per afegir les dades que falten.</link>",
+  "weeklySchedule": "Rep el calendari setmanal 🍕"
+}

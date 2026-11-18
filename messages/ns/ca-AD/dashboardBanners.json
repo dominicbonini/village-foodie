@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} franja supera la capacitat} other {{count} franges superen la capacitat}}: revisa-ho",
+  "batchOver": "{cat}: tanda superada — {count} per a les {slot} ({per} per tanda)",
+  "eventStartOver": "Capacitat superada a l’inici de l’esdeveniment: {n, plural, one {{count} producte} other {{count} productes}} per a les {slot}",
+  "kitchenOver": "Capacitat de la cuina superada: {n, plural, one {{count} producte} other {{count} productes}} en preparació per a les {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} producte} other {{count} productes}}",
+  "placedAnyway": "Fetes igualment: {list}",
+  "placedItem": "#{id} per a les {slot}",
+  "orphans": "Capacitat superada: {times}. No s’ha trobat cap comanda a què atribuir-ho",
+  "dismiss": "Descarta",
+  "kitchenCapacity": "Capacitat de la cuina",
+  "overCapacity": "Capacitat superada",
+  "wakeUnsupported": "Aquest dispositiu no pot mantenir la pantalla encesa.",
+  "wakeInsecure": "Des d’aquesta adreça no es pot mantenir la pantalla encesa.",
+  "wakeRetry": "Mantén la pantalla encesa: toca per tornar-ho a provar",
+  "wakeAcquire": "Mantén la pantalla encesa",
+  "degraded": {
+    "serverError": "El servidor no ha pogut carregar les comandes{hasStatus, select, yes { (error {status})} other {}}. Es mostren les comandes de les {at}. Pot ser que faltin comandes noves.",
+    "unreachable": "No es pot connectar amb el servidor. Es mostren les comandes de les {at}. Pot ser que faltin comandes noves."
+  }
+}

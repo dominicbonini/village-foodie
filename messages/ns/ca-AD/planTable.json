@@ -1,0 +1,41 @@
+{
+  "h1": "Tot el que necessites per al teu servei, en tots els plans.",
+  "lede": "Les comandes, les comandes anticipades, la capacitat i la pantalla de cuina s’inclouen en tots els plans.{hasUpgrades, select, yes { {plans} hi afegeixen {features}, i comissions més baixes.} other {}}",
+  "perMonth": "{price} / mes",
+  "trial": {
+    "length": "{months, plural, one {# mes} other {# mesos}}",
+    "ends": "Acaba el {date}"
+  },
+  "group": {
+    "pay": "Què pagues",
+    "run": "Gestiona el servei",
+    "online": "Comandes en línia",
+    "marketing": "Màrqueting i automatització"
+  },
+  "pay": {
+    "included": "Comandes en línia incloses cada mes",
+    "fee": "Comissió de HatchGrab per les comandes en línia*",
+    "feeNoMark": "Comissió de HatchGrab per les comandes en línia",
+    "walkUp": "Comandes presencials"
+  },
+  "cell": {
+    "unlimited": "Sense límit",
+    "free": "Gratuït",
+    "feeAbove": "<b>{fee}</b> a partir de {included}",
+    "yes": "Inclòs",
+    "none": "No inclòs",
+    "comingSoon": "Aviat disponible"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "xarxes socials",
+    "event_types": "preus personalitzats per esdeveniment"
+  },
+  "meta": {
+    "description": "Totes les funcions de HatchGrab en tots els plans, una al costat de l’altra — {plans}, amb comissions i comandes incloses.{months, plural, =0 {} one { El primer mes ho inclou tot.} other { Els primers # mesos ho inclouen tot.}}"
+  },
+  "notes": {
+    "whatsapp": "Les respostes automàtiques de WhatsApp requereixen un compte de WhatsApp Business. Meta pot cobrar alguns missatges; les respostes es generen automàticament.",
+    "printing": "La impressió de tiquets de cuina requereix una impressora Bluetooth o per cable compatible (no inclosa)."
+  }
+}

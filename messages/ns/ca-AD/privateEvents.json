@@ -1,0 +1,42 @@
+{
+  "publicName": "Esdeveniment privat",
+  "chip": "Privat",
+  "grid": {
+    "orderingSection": "COMANDES",
+    "linkRowLabel": "Rep comandes amb enllaç privat i codi QR",
+    "columnTitle": "El tipus Privat integrat. No se’n pot canviar el nom, moure ni suprimir."
+  },
+  "form": {
+    "help": "Surt al teu calendari com a «Esdeveniment privat» només amb la data i les hores: mai l’adreça, el mapa ni Village Foodie.",
+    "linkPromise": "Els convidats fan la comanda amb un enllaç privat i un codi QR; els tindràs quan ho desis.",
+    "nameLabel": "Nom de l’esdeveniment",
+    "nameHelp": "Els convidats el veuen a dalt de la pàgina de comandes.",
+    "namePlaceholder": "Casament de la Laia i en Marc",
+    "previewNote": "Com surt al teu calendari: sense lloc, població ni codi postal.",
+    "needsTimes": "Afegeix una hora d’inici i una de final: un esdeveniment privat que rep comandes per enllaç les necessita."
+  },
+  "link": {
+    "button": "Enllaç i QR",
+    "title": "Enllaç privat i codi QR",
+    "label": "Enllaç privat",
+    "copy": "Copia",
+    "copied": "Copiat",
+    "qrDownload": "Baixa el QR",
+    "tableCards": "Imprimeix targetons de taula",
+    "newLink": "Crea un enllaç nou",
+    "working": "S’està processant…",
+    "newLinkConfirm": "Vols crear un enllaç nou? L’enllaç actual deixarà de funcionar immediatament, i els codis QR que ja hagis imprès també deixaran de funcionar.",
+    "newLinkHelp": "Fes-ho servir si l’enllaç ha arribat on no havia d’arribar. L’enllaç actual deixa de funcionar immediatament, i els codis QR impresos també.",
+    "newLinkFailed": "No s’ha pogut crear un enllaç nou.",
+    "offNotice": "Les comandes per enllaç privat estan desactivades per a aquest esdeveniment, així que no hi ha cap enllaç per compartir. L’esdeveniment continua sortint al teu calendari com a «Esdeveniment privat»."
+  },
+  "cards": {
+    "printTitle": "{truck}: targetons de taula",
+    "scan": "Escaneja per fer la comanda",
+    "blurb": "Fes la comanda i paga des del mòbil. Et cridarem pel nom quan estigui a punt.",
+    "footer": "Comandes amb HatchGrab"
+  },
+  "noSinglePost": "Els esdeveniments privats no tenen publicació pròpia: surten al teu cartell setmanal com a «Esdeveniment privat».",
+  "confirmToPrivate": "Això amaga l’adreça i treu l’esdeveniment del mapa. Els convidats necessitaran l’enllaç privat per fer la comanda.",
+  "confirmFromPrivate": "Això fa públic l’esdeveniment: se’n mostraran l’adreça i el marcador al mapa, i l’enllaç privat deixarà de funcionar."
+}
