@@ -445,3 +445,9 @@
 - FOR CONSISTENCY: auto-replies card "Majibu ya kiotomatiki" vs part 05 section "Majibu ya kiotomatiki ya WhatsApp".
 - Check: "miezi {months}" in a select (1 → "miezi 1"); deleteAccount.upcoming "oda hizo" plural for 1; someWithout/allHaveImage place plural.
 - Words: live key "malipo halisi", contactless "malipo ya kugusa", padlock "kufuli", "kikoa (domain)", "Sehemu ya hatari", "Za jadi", "utepe"; tabs Bili / Hati / Malipo; 💷 → 💵; phone +255 712 345 678; Bagamoyo.
+
+## sw-TZ part 07 (languages-world-3, 18 Nov 2026)
+- Captions Mahali / Eneo / Mji/Kijiji / Muda; cancelled line "— LIMEGHAIRIWA, samahani"; documents translated ("Leseni ya biashara ya mtaani", "Bima ya dhima kwa umma", "Ukaguzi wa vifaa vya umeme (PAT)").
+- Documents "Hati", renew "kuhuisha", Up to date "Iko hai" (not "halali" = halal), cover "Kinga ya bima: {amount}"; demo "majaribio"; Invoices "Ankara".
+- Address: Province/Region/Prefecture "Mkoa", Suburb "Kitongoji", "Mji au mtaa"; check "Jimbo au eneo la utawala", "Imarati".
+- Check: caption "{truck} kwenye {where} {when}", "Mahali {without} kati ya {total} pako bado hapana picha", "Ada ya malipo ya baadaye", "Hatuuzi leo"; Post text "Maandishi" vs caption "Maandishi ya chapisho". Samples Dar es Salaam (Msasani, Kariakoo…), Alex → Neema.

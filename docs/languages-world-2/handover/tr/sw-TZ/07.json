@@ -1,0 +1,613 @@
+{
+ "postShare": {
+  "download": "Pakua picha",
+  "copied": "Imenakiliwa ✓",
+  "copyCaption": "Nakili maandishi ya chapisho",
+  "share": "Shiriki",
+  "copiedStatus": "{kind, select, postText {Maandishi yamenakiliwa.} other {Maandishi ya chapisho yamenakiliwa.}}",
+  "copyFailed": "Imeshindikana kunakili — chagua maandishi kisha uyanakili mwenyewe.",
+  "sharedStatus": "{kind, select, postText {Maandishi yamenakiliwa — yabandike kwenye chapisho lako.} other {Maandishi ya chapisho yamenakiliwa — yabandike kwenye chapisho lako.}}",
+  "shareRefused": "{kind, select, postText {Kushiriki kumekataliwa, kwa hiyo picha imepakuliwa. Maandishi yamenakiliwa.} other {Kushiriki kumekataliwa, kwa hiyo picha imepakuliwa. Maandishi ya chapisho yamenakiliwa.}}"
+ },
+ "posterWords": {
+  "heading": "Wiki ya {start} hadi {end}",
+  "daysOff": "Hatuuzi leo",
+  "cancelled": "LIMEGHAIRIWA",
+  "placeSample": {
+   "nameTownBelow": "Soko la Usiku\nMsasani",
+   "nameTown": "Soko la Usiku, Msasani",
+   "nameOnly": "Soko la Usiku"
+  },
+  "busyWeek": {
+   "venue1": "Ukumbi wa Jamii Mikocheni",
+   "town1": "Mikocheni",
+   "venue2": "Uwanja wa Michezo na Bustani ya Jamii ya Mbezi Beach",
+   "town2": "Mbezi Beach",
+   "venue3": "Soko Kuu",
+   "town3": "Kariakoo",
+   "venue4": "Tamasha la Chakula",
+   "town4": "Msasani",
+   "venue5": "Bustani ya Jiji",
+   "town5": "Upanga",
+   "venue6": "Uwanja wa Kanisa",
+   "town6": "Kinondoni"
+  },
+  "poweredBy": "Inaendeshwa na HatchGrab"
+ },
+ "captions": {
+  "labels": {
+   "weekDates": "Tarehe za wiki",
+   "dayList": "Orodha ya siku",
+   "place": "Mahali",
+   "venue": "Eneo",
+   "area": "Mji/Kijiji",
+   "dayDate": "Siku na tarehe",
+   "times": "Muda",
+   "orderLink": "Kiungo cha oda",
+   "locationTag": "Tagi ya mahali"
+  },
+  "weekHeader": "{truck} — mahali tutakapokuwa wiki hii:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — LIMEGHAIRIWA, samahani",
+  "noDates": "Hakuna tarehe wiki hii — rudi uangalie tena hivi karibuni.",
+  "orderAhead": "Agiza mapema: {url}",
+  "orderAheadTagged": "Agiza mapema: {url} {tag}",
+  "eventLine": "{truck} kwenye {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} kwenye {where} {when}.",
+  "cancelledSorry": "Samahani — hatutaweza kufika kwenye {where} {when}.",
+  "cancelledApology": "Tunaomba radhi kwa wote waliokuwa wamepanga kuja. Tutarudi hivi karibuni.",
+  "when": {
+   "today": "leo",
+   "tonight": "leo usiku",
+   "tomorrow": "kesho",
+   "dated": "tarehe {date}"
+  }
+ },
+ "weeklyPostApi": {
+  "shortened": {
+   "heading": "Kichwa hakikutosha, kwa hiyo kimefupishwa.",
+   "date": "Tarehe haikutosha, kwa hiyo imefupishwa.",
+   "daysOff": "Maandishi ya siku za mapumziko hayakutosha, kwa hiyo yamefupishwa.",
+   "place": "Jina la mahali halikutosha, kwa hiyo limefupishwa.",
+   "time": "Muda haukutosha, kwa hiyo umefupishwa.",
+   "note": "Maandishi yako mwenyewe hayakutosha, kwa hiyo yamefupishwa.",
+   "venue": "Jina la eneo halikutosha, kwa hiyo limefupishwa.",
+   "area": "Jina la mji/kijiji halikutosha, kwa hiyo limefupishwa."
+  },
+  "fontFallback": "Fonti inayotumiwa na muundo huu ({id}) haikuweza kupakiwa — visanduku hivyo viko kwa Oswald.",
+  "wrongShapeBackground": "Picha ya mahali hapa ina umbo tofauti na muundo wako, kwa hiyo mandharinyuma ya kawaida inatumika.",
+  "rowsFit": "Siku ya mwisho iko {px}px chini ya sehemu ya chini ya picha — punguza nafasi kati ya mistari au sogeza mstari wa 1 juu.",
+  "placeStatus": {
+   "ownBoth": "Picha yake na nafasi za maandishi zake",
+   "wrongShape": "Umbo tofauti — haitumiki hadi ibadilishwe",
+   "ownPicture": "Picha yake, nafasi za kawaida",
+   "ownPositions": "Picha ya kawaida, nafasi za maandishi zake",
+   "none": "Bado hakuna picha — inatumia muundo wa kawaida"
+  },
+  "standardStatus": "Inatumika kwa mahali pengine pote",
+  "option": {
+   "oneOff": "Pakia picha kwa chapisho hili pekee",
+   "placePoster": "Bango la {name}",
+   "standard": "Muundo wa kawaida"
+  },
+  "previewLabel": {
+   "lastEvent": "Onyesho la awali linatumia tukio lako la mwisho hapa",
+   "noEvents": "Bado hakuna matukio hapa — onyesho la awali linaonyesha tukio lako lijalo kwa jina la mahali hapa"
+  },
+  "fontUsage": {
+   "weekly": "muundo wako wa chapisho la wiki",
+   "event": "muundo wako wa chapisho la tukio moja",
+   "place": "muundo wako wa mahali: {place}",
+   "placeUnnamed": "muundo wako wa mahali fulani"
+  },
+  "face": {
+   "regular": "Kawaida",
+   "bold": "Nzito",
+   "italic": "Mlalo"
+  },
+  "picture": {
+   "legacy": "Bango la tukio",
+   "fallback": "Picha",
+   "wrongShape": "Umbo tofauti — haiwezi kutumika kama mandharinyuma kamili"
+  },
+  "noPicture": {
+   "omit": "Iache nje",
+   "blank": "Acha nafasi tupu",
+   "logo": "Onyesha nembo yako"
+  },
+  "noPicturesAll": "{total, plural, one {Mahali pako pana picha.} other {Mahali pako pote {total} pana picha.}}",
+  "noPicturesSome": "{without, plural, one {Mahali {without} kati ya {total} pako bado hapana picha} other {Mahali {without} kati ya {total} pako bado hapana picha}}",
+  "licenceTick": "Ninamiliki fonti hii au nina leseni ya kuitumia",
+  "fontUploadButton": "↑ Pakia fonti yako"
+ },
+ "completionSettings": {
+  "paidStepTitle": "Pokea oda ambazo hazijalipiwa",
+  "completionTitle": "Kukamilisha oda ambayo haijalipiwa",
+  "completionHelp": "Kinachotokea oda ambayo haijalipiwa ikiwa tayari kukabidhiwa.",
+  "pressesOne": "Kubonyeza mara moja (“Weka imelipwa na imechukuliwa”)",
+  "pressesOneHelp": "Bora unapopokea pesa wakati unakabidhi chakula. Unapata kitufe kimoja, “Weka imelipwa na imechukuliwa”, kinachorekodi malipo na kuondoa oda kwa pamoja.",
+  "pressesTwo": "Kubonyeza mara mbili (“Weka imelipwa” na “Imechukuliwa”)",
+  "pressesTwoHelp": "Bora malipo na kukabidhi oda vinapofanyika nyakati tofauti — mtu analipa kwenye food truck, kisha anachukua oda ikiwa tayari. Unapata vitufe viwili: kwanza “Weka imelipwa”, kisha “Imechukuliwa” anapochukua chakula."
+ },
+ "outreach": {
+  "optOut": {
+   "missing": "Barua pepe hii haina mstari wa kujiondoa, kwa hiyo haiwezi kutumwa. Tumia “Insert opt-out” kuuongeza.",
+   "notSetUp": "Hakuna sentensi ya kujiondoa iliyoandaliwa, kwa hiyo hakuna barua pepe ya kutafuta wateja inayoweza kutumwa. Iongeze kwenye paneli ya “Signature” katika kichupo cha “Templates”.",
+   "notLoaded": "Sentensi ya kujiondoa bado haijapakiwa, kwa hiyo hii haiwezi kutumwa.",
+   "unreadable": "Sentensi ya kujiondoa haikuweza kusomwa, kwa hiyo hakuna kilichotumwa."
+  },
+  "retry": {
+   "notRebuilt": "Ujumbe huo haukuweza kutengenezwa upya pamoja na mstari wa kampuni, kwa hiyo hakuna kilichotumwa."
+  }
+ },
+ "address": {
+  "label": {
+   "street": "Anwani",
+   "postcode": "Postikodi",
+   "zip": "Msimbo wa ZIP",
+   "eircode": "Eircode",
+   "postalCode": "Msimbo wa posta",
+   "state": "Jimbo",
+   "stateTerritory": "Jimbo au eneo la utawala",
+   "province": "Mkoa",
+   "county": "Kaunti",
+   "prefecture": "Mkoa",
+   "emirate": "Imarati",
+   "region": "Mkoa",
+   "area": "Mji/Kijiji (kijiji, mji au jiji)",
+   "townOrArea": "Mji au mtaa",
+   "city": "Jiji",
+   "suburb": "Kitongoji",
+   "townOrCity": "Mji au jiji"
+  },
+  "short": {
+   "area": "Mji/Kijiji",
+   "townOrArea": "Mji au mtaa",
+   "city": "Jiji",
+   "suburb": "Kitongoji",
+   "townOrCity": "Mji au jiji"
+  },
+  "inSentence": {
+   "postcode": "postikodi",
+   "zip": "msimbo wa ZIP",
+   "eircode": "Eircode",
+   "postalCode": "msimbo wa posta"
+  },
+  "withArticle": {
+   "postcode": "postikodi",
+   "zip": "msimbo wa ZIP",
+   "eircode": "Eircode",
+   "postalCode": "msimbo wa posta"
+  },
+  "tradeLabel": {
+   "area": "Mji au jiji",
+   "townOrArea": "Mji au mtaa",
+   "city": "Jiji",
+   "suburb": "Kitongoji",
+   "townOrCity": "Mji au jiji"
+  },
+  "basedIn": {
+   "area": "Mji au jiji ulipo",
+   "townOrArea": "Mji au mtaa ulipo",
+   "city": "Jiji ulipo",
+   "suburb": "Kitongoji ulipo",
+   "townOrCity": "Mji au jiji ulipo"
+  },
+  "example": "mf. {example}",
+  "customersSee": "Wateja wanaona:",
+  "postalWarning": "Hiyo haionekani kuwa {article} — kwa mfano {example}. Bado unaweza kuihifadhi.",
+  "regionChoose": "Chagua…"
+ },
+ "demoLinkEmail": {
+  "subject": "Majaribio yako ya HatchGrab — hiki ndicho kiungo chako",
+  "heading": "Majaribio yako yameandaliwa",
+  "intro": "Hiki ndicho kiungo cha majaribio tuliyotengeneza kutoka kwenye menyu yako. Agiza kupitia kiungo hiki kama mmoja wa wateja wako, kisha uone oda ikifika kwenye skrini yako ya jikoni (KDS). Huhitaji kuingia — kigusa tu.",
+  "button": "Fungua majaribio yangu",
+  "deletion": "Haya ni majaribio, kwa hiyo hatuyahifadhi: tutayafuta, pamoja na menyu uliyopakia, tarehe {date}. Ukitaka muda zaidi, bonyeza “Hifadhi menyu yangu” kwenye majaribio na tutayahifadhi kwa siku 14.",
+  "deletionSoon": "Haya ni majaribio, kwa hiyo hatuyahifadhi: tutayafuta, pamoja na menyu uliyopakia, baada ya saa 24. Ukitaka muda zaidi, bonyeza “Hifadhi menyu yangu” kwenye majaribio na tutayahifadhi kwa siku 14."
+ },
+ "demoWalk": {
+  "step1": "Hatua 1 kati ya 3 · Agiza kama mmoja wa wateja wako",
+  "paymentTitle": "Malipo",
+  "paymentPanel": "Mteja wako analipa hapa kwa kadi, Apple Pay au Google Pay, au anachagua kulipa kwenye food truck. Kwenye majaribio, hakuna kinachotozwa.",
+  "defaultName": "Neema",
+  "step2": "Hatua 2 kati ya 3",
+  "bubbleTitle": "Hii ni skrini yako ya jikoni (KDS)",
+  "bubbleArrived": "Oda uliyoweka hivi punde imefika hapa papo hapo, pamoja na muda wa kuchukua oda. Gusa “Anza kupika”.",
+  "bubbleReady": "Chakula kikiwa tayari, gusa “Iko tayari”. Mteja wako anaarifiwa mara moja.",
+  "step3": "Hatua 3 kati ya 3 · imekamilika",
+  "told": "{name} ameambiwa hivi punde kwamba chakula chake kiko tayari.",
+  "thatsIt": "Hiyo ndiyo HatchGrab: wateja wanaagiza kwa simu zao, unaona oda hapa, nao wanaichukua bila kupanga foleni. Menyu yako tayari imeandaliwa.",
+  "startFree": "{months, plural, =0 {Anza bila malipo, hifadhi menyu yangu} one {Anza bila malipo kwa mwezi #, hifadhi menyu yangu} other {Anza bila malipo kwa miezi #, hifadhi menyu yangu}}",
+  "tryAnother": "Jaribu oda nyingine",
+  "barOrder": "Agiza kama mteja",
+  "barArrives": "Inafika jikoni kwako",
+  "barReady": "Iweke tayari",
+  "phoneLabel": "Simu ya mteja wako",
+  "kitchenLabel": "Skrini yako ya jikoni (KDS)",
+  "waitingTitle": "Inasubiri oda",
+  "waitingBody": "Agiza kitu kwenye simu. Kinaonekana hapa mara tu mteja wako anapobonyeza “Weka oda”.",
+  "startCooking": "Anza kupika",
+  "ready": "Iko tayari",
+  "readyForCollection": "Iko tayari kuchukuliwa",
+  "cooking": "Inapikwa",
+  "readyBadge": "Iko tayari",
+  "newBadge": "Oda mpya",
+  "orderNumber": "Oda #{number}",
+  "collectAt": "Chukua saa {time}",
+  "collectAsap": "Chukua haraka iwezekanavyo",
+  "phoneReadyTitle": "Oda yako iko tayari",
+  "phoneReadyBody": "Ichukue kwenye food truck.",
+  "bandTitle": "Hiyo ndiyo HatchGrab. Menyu yako tayari imeandaliwa.",
+  "bandStart": "Anza bila malipo, hifadhi menyu yangu",
+  "orderAgain": "Agiza tena",
+  "loading": "Inaandaa majaribio yako…",
+  "goneTitle": "Majaribio haya yamekwisha",
+  "goneBody": "Majaribio hufutwa baada ya siku moja. Unaweza kutengeneza mapya kutoka kwenye menyu yako kwa chini ya dakika moja.",
+  "goneButton": "Tengeneza majaribio mapya",
+  "failed": "Hiyo haikufanikiwa — tafadhali jaribu tena.",
+  "backToMenu": "Rudi kwenye menyu",
+  "formNote": "Haya ni majaribio: hakuna anayetozwa na hakuna kinachotumwa, kwa hiyo huhitaji kuweka barua pepe.",
+  "namePlaceholder": "Neema"
+ },
+ "paperwork": {
+  "title": "Hati",
+  "intro": "Weka vyeti vyako mahali pamoja. Tutakukumbusha kabla muda wa chochote haujaisha, na unaweza kuvituma kwa mratibu kwa mara moja.",
+  "loading": "Inapakia hati zako…",
+  "loadFailed": "Hati zako hazikuweza kupakiwa. Tafadhali jaribu tena.",
+  "retry": "Jaribu tena",
+  "counts": {
+   "expired": "{count, plural, one {hati # imeisha muda} other {hati # zimeisha muda}}",
+   "dueSoon": "{count, plural, one {hati # inakaribia kuisha} other {hati # zinakaribia kuisha}}",
+   "missing": "{count, plural, one {hati # haipo} other {hati # hazipo}}",
+   "upToDate": "{count, plural, one {hati # iko hai} other {hati # ziko hai}}"
+  },
+  "status": {
+   "upToDate": "Iko hai",
+   "dueSoon": "Inakaribia kuisha",
+   "expired": "Imeisha muda",
+   "upload": "Pakia"
+  },
+  "line": {
+   "expires": "Inaisha tarehe {date}",
+   "expiresIn": "Inaisha tarehe {date} · {days, plural, one {baada ya siku #} other {baada ya siku #}}",
+   "expiresToday": "Inaisha leo",
+   "expired": "Iliisha tarehe {date}",
+   "reviewBy": "Ihakiki kufikia {date}",
+   "reviewByIn": "Ihakiki kufikia {date} · {days, plural, one {baada ya siku #} other {baada ya siku #}}",
+   "reviewOverdue": "Uhakiki ulitakiwa tarehe {date}",
+   "noExpiry": "Haina tarehe ya kuisha",
+   "cover": "Kinga ya bima: {amount}",
+   "notUploaded": "Bado haijapakiwa"
+  },
+  "select": "Chagua hati: {document}",
+  "add": "+ Ongeza hati",
+  "selected": "{count, plural, one {hati # imechaguliwa} other {hati # zimechaguliwa}}",
+  "sendToOrganiser": "Tuma kwa mratibu",
+  "types": {
+   "food_registration": "Usajili wa biashara ya chakula",
+   "hygiene_rating": "Daraja la usafi wa chakula",
+   "food_safety_plan": "Mpango wa usalama wa chakula (HACCP)",
+   "public_liability": "Bima ya dhima kwa umma",
+   "employers_liability": "Bima ya dhima ya mwajiri",
+   "gas_safety": "Cheti cha usalama wa gesi",
+   "pat_test": "Ukaguzi wa vifaa vya umeme (PAT)",
+   "fire_safety": "Usalama dhidi ya moto",
+   "risk_assessment": "Tathmini ya hatari",
+   "allergen_info": "Taarifa za viambato vinavyosababisha mzio",
+   "street_trading_licence": "Leseni ya biashara ya mtaani",
+   "electrical_safety": "Kipimo cha usalama wa umeme",
+   "trading_licence": "Leseni ya biashara"
+  },
+  "upload": {
+   "title": "Ongeza hati",
+   "intro": "Ipige picha, au chagua picha au faili.",
+   "takePhoto": "Piga picha",
+   "chooseFile": "Chagua picha au faili",
+   "accepted": "PDF, JPEG, PNG, HEIC au WebP, hadi 20 MB.",
+   "uploading": "Inapakia… {percent}%",
+   "reading": "Inasoma hati yako…",
+   "tooBig": "Faili hilo linazidi 20 MB. Tafadhali chagua faili dogo zaidi.",
+   "wrongType": "Aina hiyo ya faili haikubaliwi. Tafadhali tumia faili la PDF, JPEG, PNG, HEIC au WebP.",
+   "failed": "Upakiaji haukufanikiwa. Tafadhali jaribu tena.",
+   "cancel": "Ghairi"
+  },
+  "check": {
+   "title": "Hakiki taarifa",
+   "aiBanner": "Tumesoma taarifa hizi kutoka kwenye hati yako. Tafadhali hakikisha ni sahihi kabla ya kuhifadhi.",
+   "document": "Hati",
+   "other": "Nyingine…",
+   "otherName": "Jina la hati",
+   "issuer": "Imetolewa na",
+   "issued": "Tarehe ya kutolewa",
+   "expires": "Tarehe ya kuisha",
+   "reviewBy": "Ihakiki kufikia",
+   "nameOnDocument": "Jina lililo kwenye hati",
+   "cover": "Kinga ya bima",
+   "coverHint": "Si lazima. Kiasi ambacho bima inalipia.",
+   "currency": "Sarafu",
+   "save": "Hifadhi",
+   "saving": "Inahifadhi…",
+   "cancel": "Ghairi",
+   "saved": "Imehifadhiwa",
+   "footer": "Cheti cha awali kinahifadhiwa kama historia. Mafaili yako ni ya faragha: yanaonekana kwako tu na kwa waratibu unaowatumia.",
+   "needType": "Chagua hati, au iandikie jina.",
+   "badDates": "Tarehe ya kuisha haiwezi kuwa kabla ya tarehe ya kutolewa."
+  },
+  "warnings": {
+   "notRead": "Hatukuweza kusoma hati hii. Tafadhali jaza taarifa wewe mwenyewe.",
+   "expired": "Muda wa hati hii uliisha tarehe {date}. Bado unaweza kuihifadhi, lakini waratibu wataona kwamba muda wake umeisha.",
+   "expiresSoon": "{days, plural, =0 {Hati hii inaisha leo. Tutakukumbusha kila wiki hadi itakapohuishwa.} one {Hati hii inaisha baada ya siku #. Tutakukumbusha wiki 4 kabla, wiki 1 kabla na siku yenyewe.} other {Hati hii inaisha baada ya siku #. Tutakukumbusha wiki 4 kabla, wiki 1 kabla na siku yenyewe.}}",
+   "nameMismatch": "Jina lililo juu yake, “{name}”, halionekani kuwa jina la biashara yako. Tafadhali hakikisha ni hati sahihi."
+  },
+  "view": {
+   "close": "Funga",
+   "open": "Fungua",
+   "download": "Pakua",
+   "noPreview": "Faili hili haliwezi kuonyeshwa hapa. Lifungue au ulipakue badala yake.",
+   "details": "Taarifa",
+   "edit": "Hariri taarifa",
+   "renew": "Pakia toleo jipya",
+   "earlier": "Matoleo ya awali",
+   "uploaded": "Ilipakiwa tarehe {date}",
+   "delete": "Futa",
+   "deleteConfirm": "Futa hati hii na matoleo yake ya awali? Mafaili yanaondolewa, na hati inaondoka kwenye kiungo chochote ulichotuma.",
+   "deleteYes": "Futa",
+   "deleted": "Hati imefutwa",
+   "keep": "Usiifute"
+  },
+  "send": {
+   "title": "Tuma kwa mratibu",
+   "intro": "Atapokea barua pepe yenye kiungo cha kuangalia au kupakua kila kitu.",
+   "email": "Barua pepe ya mratibu",
+   "emailHint": "Hadi anwani 5, zikitenganishwa kwa koma.",
+   "event": "Tukio (si lazima)",
+   "noEvent": "Hakuna tukio",
+   "documents": "Hati",
+   "message": "Ujumbe (si lazima)",
+   "messagePlaceholder": "Habari, hizi ni hati zetu kwa ajili ya soko.",
+   "until": "Kiungo kinafanya kazi hadi",
+   "untilAfterEvent": "{date} (siku moja baada ya tukio)",
+   "send": "Tuma",
+   "sending": "Inatuma…",
+   "footer": "Ukihuisha cheti, kiungo cha mratibu kinaonyesha kipya kiotomatiki. Utaona akikifungua.",
+   "sent": "Imetumwa kwa {emails}",
+   "cancel": "Ghairi",
+   "emailNone": "Weka barua pepe ya mratibu.",
+   "emailInvalid": "“{email}” si anwani ya barua pepe.",
+   "emailTooMany": "Unaweza kutuma kwa hadi anwani 5 kwa mara moja.",
+   "noDocuments": "Chagua angalau hati moja.",
+   "untilRange": "Chagua tarehe kuanzia kesho hadi siku 90 kuanzia leo."
+  },
+  "sent": {
+   "title": "Zilizotumwa",
+   "empty": "Bado hakuna kilichotumwa.",
+   "to": "Kwa {emails}",
+   "sentOn": "Ilitumwa tarehe {date}",
+   "opened": "Ilifunguliwa tarehe {date} · {count, plural, one {imeangaliwa mara #} other {imeangaliwa mara #}}",
+   "notOpened": "Bado haijafunguliwa",
+   "until": "Inafanya kazi hadi {date}",
+   "expiredOn": "Iliisha muda tarehe {date}",
+   "off": "Imezimwa",
+   "turnOff": "Zima kiungo",
+   "turnOffConfirm": "Zima kiungo hiki? Mratibu hataweza kukifungua tena.",
+   "turnedOff": "Kiungo kimezimwa"
+  },
+  "page": {
+   "title": "Hati kutoka {truck}",
+   "intro": "Hati hizi zimeshirikiwa nawe na {truck}.",
+   "view": "Angalia",
+   "download": "Pakua",
+   "downloadAll": "Pakua zote",
+   "until": "Kiungo hiki kinafanya kazi hadi {date}.",
+   "none": "Kwa sasa hakuna hati kwenye kiungo hiki.",
+   "expiredTitle": "Muda wa kiungo hiki umeisha",
+   "expiredBody": "Muda wa kiungo hiki umeisha — wasiliana na {truck} ili kitumwe tena.",
+   "expiredBodyUnknown": "Muda wa kiungo hiki umeisha. Tafadhali omba biashara iliyokituma ikitume tena.",
+   "sharedWith": "Imeshirikiwa kupitia HatchGrab"
+  },
+  "email": {
+   "shareSubject": "Umetumiwa hati na {truck}",
+   "shareHeading": "Hati kutoka {truck}",
+   "shareIntro": "Hati hizi zimeshirikiwa nawe na {truck}.",
+   "event": "Kwa ajili ya: {event}",
+   "shareButton": "Angalia hati",
+   "shareUntil": "Kiungo kinafanya kazi hadi {date}. Kikiwa kimeisha muda, wasiliana na {truck} ili kitumwe tena.",
+   "shareReply": "Jibu barua pepe hii ili kuwasiliana na {truck}.",
+   "expires": "inaisha tarehe {date}",
+   "reviewBy": "ihakiki kufikia {date}",
+   "noExpiry": "haina tarehe ya kuisha",
+   "reminderSubject": "{count, plural, one {Hati moja inahitaji kuhuishwa} other {Hati # zinahitaji kuhuishwa}}",
+   "reminderHeading": "Hati zako",
+   "reminderIntro": "Baadhi ya hati za {truck} zinahitaji kuhuishwa:",
+   "reminderIn": "{document}: inaisha tarehe {date} ({days, plural, one {baada ya siku #} other {baada ya siku #}})",
+   "reminderToday": "{document}: inaisha leo",
+   "reminderExpired": "{document}: iliisha tarehe {date}",
+   "reminderButton": "Fungua Hati",
+   "reminderFooter": "Tunakukumbusha wiki 4 kabla, wiki 1 kabla na siku yenyewe, kisha kila wiki hadi itakapohuishwa."
+  }
+ },
+ "emailReview": {
+  "subject": "Oda yako kutoka {truck} ilikuwaje?",
+  "heading": "Asante kwa kuagiza kutoka {truck}",
+  "body": "Maoni yako ya kweli kwenye Google yangethaminiwa sana na {truck}. Inachukua dakika moja tu, na yanawasaidia watu wengine kuigundua food truck hii.",
+  "button": "Acha maoni kwenye Google",
+  "linkText": "Acha maoni kwenye Google: {url}",
+  "from": "Barua pepe hii ni kutoka {truck}, imetumwa kupitia HatchGrab kwa sababu uliagiza kutoka kwao.",
+  "unsubscribeLead": "Hutaki maombi ya maoni kutoka {truck}?",
+  "unsubscribeLink": "Jiondoe",
+  "unsubscribeText": "Jiondoe: {url}",
+  "unsubscribed": {
+   "title": "Umejiondoa",
+   "body": "Hutapokea tena maombi ya maoni kutoka {truck}.",
+   "invalid": "Kiungo hiki cha kujiondoa si sahihi."
+  }
+ },
+ "billing": {
+  "tab": {
+   "plan": {
+    "title": "Kifurushi chako",
+    "trialPill": "Jaribio bila malipo",
+    "change": "Badilisha kifurushi",
+    "trialLine": "Jaribio lako bila malipo linaisha tarehe {date}. Baada ya hapo, kifurushi {plan} ni {price} kwa mwezi.",
+    "trialLineFree": "Jaribio lako bila malipo linaisha tarehe {date}. Baada ya hapo, utakuwa kwenye kifurushi {plan}, bila ada ya kila mwezi.",
+    "proLine": "Inajumuisha oda za mtandaoni zenye thamani ya {allowance} kwa mwezi. Kisha {fee}.",
+    "paygLine": "{fee} kwa oda za mtandaoni. Bila ada ya kila mwezi.",
+    "unlimitedLine": "{price} kwa mwezi. Hakuna ada kwa oda za mtandaoni.",
+    "pendingLine": "Kifurushi {plan} kinaanza tarehe {date}."
+   },
+   "payment": {
+    "title": "Njia ya malipo",
+    "none": "Bado hujaongeza kadi. Ongeza kadi ili uendelee kupokea oda za mtandaoni baada ya jaribio lako.",
+    "add": "Ongeza kadi",
+    "pix": "Tumia Pix Automático",
+    "card": "{brand} inayoishia {last4}",
+    "pixOnFile": "Pix Automático",
+    "pending": "Inasubiri uthibitisho.",
+    "change": "Badilisha",
+    "lastFailed": "Malipo ya mwisho hayakufanikiwa",
+    "update": "Sasisha kadi",
+    "error": "Hatukuweza kufungua ukurasa wa malipo. Tafadhali jaribu tena.",
+    "noneAfterTrial": "Hakuna kadi iliyoongezwa. Ongeza kadi ili kuwasha tena oda za mtandaoni."
+   },
+   "whatYouPay": {
+    "title": "Unacholipa",
+    "plan": "Kifurushi chako, kinatozwa tarehe 1 kwa mwezi unaofuata",
+    "fee": "Oda za mtandaoni zinazozidi {allowance} kwa mwezi, zinatozwa tarehe 1 kwa mwezi uliopita",
+    "feePayg": "Oda za mtandaoni, zinatozwa tarehe 1 kwa mwezi uliopita",
+    "walkUps": "Oda za papo hapo",
+    "free": "Bure",
+    "trialEnd": "Jaribio lako likiisha tarehe {date}, tutatoza {amount} kwa sehemu iliyobaki ya {month}. Kisha {price} tarehe {nextFirst}."
+   },
+   "next": {
+    "title": "Malipo yajayo · {date}",
+    "plan": "Kifurushi {plan} kwa {month}",
+    "fee": "{fee} kwa oda za mtandaoni za {month} zinazozidi {allowance} (hadi sasa)",
+    "feePayg": "{fee} kwa oda za mtandaoni za {month} (hadi sasa)",
+    "vans": "Magari ya ziada kwa {month}",
+    "surcharge": "Ada ya malipo ya baadaye kwa {month}",
+    "carried": "Kiasi kilichohamishwa kutoka awali",
+    "total": "Jumla hadi sasa",
+    "walkUps": "Oda za papo hapo hazitozwi ada kamwe."
+   },
+   "preorders": {
+    "title": "Jinsi wateja wanavyolipia oda ya mapema",
+    "online": "Mtandaoni, wanapoagiza",
+    "onlineHint": "Pesa zinaingia moja kwa moja kwenye akaunti yako ya Stripe.",
+    "atTruckHint": "Wateja wanalipa wanapochukua oda. Ada yetu inaongezwa kwenye malipo yako ya kila mwezi.",
+    "saved": "Imehifadhiwa.",
+    "error": "Hatukuweza kuhifadhi hilo. Tafadhali jaribu tena."
+   },
+   "invoices": {
+    "title": "Ankara",
+    "date": "Tarehe",
+    "for": "Kwa ajili ya",
+    "amount": "Kiasi",
+    "status": "Hali",
+    "forMonthly": "Kifurushi cha {planMonth}, ada za {usageMonth}",
+    "forMonthlyPlan": "Kifurushi cha {planMonth}",
+    "forTrialEnd": "Sehemu iliyobaki ya {month}",
+    "forUpgrade": "Kuhamia kifurushi {plan}",
+    "lateFee": "Ada ya kuchelewa kulipa",
+    "paid": "Imelipwa",
+    "unpaid": "Haijalipwa",
+    "overdue": "Imepitiliza muda",
+    "download": "Pakua",
+    "payNow": "Lipa sasa",
+    "none": "Bado hakuna ankara."
+   },
+   "failed": {
+    "title": "Malipo yako ya {amount} hayakufanikiwa.",
+    "body": "Tutajaribu tena. Sasisha kadi yako kufikia tarehe {date} ili oda za mtandaoni ziendelee.",
+    "button": "Sasisha kadi"
+   },
+   "paused": {
+    "title": "Oda za mtandaoni zimesitishwa",
+    "body": "Kiasi cha {amount} kimepitiliza muda wa kulipwa. Lipa sasa na oda za mtandaoni zitarejea mara moja.",
+    "warning": "Lipa kufikia tarehe {date} la sivyo akaunti yako inaweza kusimamishwa.",
+    "pay": "Lipa {amount}",
+    "otherCard": "Tumia kadi nyingine"
+   },
+   "loading": "Inapakia bili…",
+   "loadError": "Hatukuweza kupakia bili yako. Tafadhali jaribu tena."
+  },
+  "changePlan": {
+   "title": "Badilisha kifurushi",
+   "current": "Uko kwenye kifurushi {plan}.",
+   "free": "Bure",
+   "perMonth": "{price} kwa mwezi",
+   "paygLine": "{fee} kwa oda za mtandaoni.",
+   "proLine": "Oda za mtandaoni zenye thamani ya {allowance} zimejumuishwa. Kisha {fee}.",
+   "unlimitedLine": "Hakuna ada kwa oda za mtandaoni.",
+   "yourPlan": "Kifurushi chako",
+   "startsNow": "Kinaanza sasa.",
+   "chargeToday": "Tutatoza {amount} leo kwa sehemu iliyobaki ya {month}. Kisha {price} tarehe {nextFirst}.",
+   "startsLater": "Kinaanza tarehe {nextFirst}. Utaendelea na kifurushi {plan} hadi wakati huo.",
+   "cancel": "Ghairi",
+   "switchTo": "Hamia {plan}",
+   "error": "Hatukuweza kubadilisha kifurushi chako. Tafadhali jaribu tena.",
+   "trialLine": "Uko kwenye jaribio bila malipo. Chagua kifurushi utakachotumia jaribio litakapoisha tarehe {date}.",
+   "startsAtTrialEnd": "Kinaanza jaribio lako litakapoisha.",
+   "choose": "Chagua {plan}"
+  },
+  "notices": {
+   "trialEndsSoon": "<b>Jaribio lako bila malipo linaisha tarehe {date}.</b> Ongeza kadi ili oda za mtandaoni ziendelee.",
+   "trialEndsTomorrow": "<b>Jaribio lako bila malipo linaisha kesho.</b> Ongeza kadi la sivyo oda za mtandaoni zitasitishwa.",
+   "allSet": "<b>Kila kitu kiko tayari.</b> Kifurushi {plan} kinaanza tarehe {date}.",
+   "paymentFailed": "<b>Malipo yako hayakufanikiwa.</b> Sasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}} kufikia tarehe {date} ili oda za mtandaoni ziendelee.",
+   "paused": "<b>Oda za mtandaoni zimesitishwa.</b> Lipa {amount} kufikia tarehe {date} la sivyo akaunti yako inaweza kusimamishwa.",
+   "addCard": "Ongeza kadi →",
+   "updateCard": "Sasisha {method, select, payment_method {njia ya malipo} other {kadi}} →",
+   "payNow": "Lipa sasa →",
+   "dismiss": "Ficha",
+   "trialEnded": "<b>Jaribio lako bila malipo limekwisha.</b> Ongeza kadi ili kuwasha tena oda za mtandaoni."
+  }
+ },
+ "emailBilling": {
+  "greeting": "{hasName, select, yes {Habari {name},} other {Habari yako,}}",
+  "questions": "Una maswali? Jibu tu barua pepe hii.",
+  "signoff": "Timu ya HatchGrab",
+  "buttonUpdate": "Sasisha {method, select, payment_method {njia ya malipo} other {kadi}}",
+  "buttonPay": "Lipa sasa",
+  "buttonAddCard": "Ongeza kadi",
+  "suspended": "Kiasi hiki kisipolipwa, akaunti yako inaweza kusimamishwa.",
+  "failed": {
+   "subject": "Malipo yako ya HatchGrab hayakufanikiwa",
+   "line1": "Hatukuweza kupokea {amount} kwa ajili ya {truck} leo. Tutajaribu tena.",
+   "line2": "Tafadhali sasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}} kufikia tarehe {date} ili oda za mtandaoni ziendelee."
+  },
+  "twoDays": {
+   "subject": "Zimebaki siku 2 kusasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}}",
+   "line1": "Kiasi cha {amount} kwa ajili ya {truck} bado hakijalipwa. Sasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}} kufikia tarehe {date}, la sivyo oda za mtandaoni zitasitishwa."
+  },
+  "oneDay": {
+   "subject": "Sasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}} kufikia kesho",
+   "line1": "Kiasi cha {amount} kwa ajili ya {truck} bado hakijalipwa. Sasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}} kufikia kesho, la sivyo oda za mtandaoni zitasitishwa."
+  },
+  "lastDay": {
+   "subject": "Siku ya mwisho kusasisha {method, select, payment_method {njia yako ya malipo} other {kadi yako}}",
+   "line1": "Leo ni siku ya mwisho kulipa {amount} kwa ajili ya {truck}. Kiasi hiki kikiwa bado hakijalipwa ifikapo saa sita usiku, oda za mtandaoni zitasitishwa hadi utakapolipa."
+  },
+  "paused": {
+   "subject": "Oda za mtandaoni zimesitishwa",
+   "line1": "Oda za mtandaoni za {truck} zimesitishwa kwa sababu kiasi cha {amount} hakijalipwa. Lipa sasa na zitarejea mara moja.",
+   "line2": "Lipa kufikia tarehe {date} la sivyo akaunti yako inaweza kusimamishwa."
+  },
+  "trial7": {
+   "subject": "Jaribio lako bila malipo linaisha baada ya siku 7",
+   "line1": "Jaribio bila malipo la {truck} linaisha tarehe {date}.",
+   "line2": "Ongeza kadi kwenye “Simamia” › Bili ili oda za mtandaoni ziendelee.",
+   "plan": "Baada ya hapo, kifurushi {plan} ni {price} kwa mwezi. Jaribio lako likiisha tutatoza {amount} kwa sehemu iliyobaki ya {month}, kisha {price} tarehe {nextFirst}.",
+   "planFree": "Baada ya hapo, utakuwa kwenye kifurushi {plan}, bila ada ya kila mwezi.",
+   "fee": "Ada yetu ya {fee} kwa oda za mtandaoni inatozwa tarehe 1, kwa mwezi uliopita."
+  },
+  "trial1": {
+   "subject": "Jaribio lako bila malipo linaisha kesho",
+   "line1": "Jaribio bila malipo la {truck} linaisha kesho.",
+   "noCard": "Ongeza kadi la sivyo oda za mtandaoni zitasitishwa.",
+   "allSet": "Kila kitu kiko tayari: kifurushi {plan} kinaanza tarehe {date}.",
+   "charge": "Tutatoza {amount} kwa sehemu iliyobaki ya {month} jaribio lako litakapoisha."
+  }
+ }
+}
