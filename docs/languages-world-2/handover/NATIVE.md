@@ -363,3 +363,9 @@
 - Stock "En queden {count}" / "Queden {count} {noun}" plural even for 1 (no plural form in the English) — confirm.
 - ALLERGENS (check first): Tramussos (lupin), Fruits de closca (tree nuts + nuts), Lactis, Nyam (yam), Orella de mar (abalone), Carn de boví; Kosher "Caixer (kosher)".
 - "del food truck {truck}" / "a {truck}" to avoid "d'{truck}".
+
+## ca-AD part 02 (languages-world-3, 18 Nov 2026)
+- Ticket: CARD HELD "IMPORT RETINGUT", DO NOT COLLECT "NO COBRIS" — confirm clear on a thermal ticket.
+- venue "lloc"; Settings "Your trucks" = "Els teus vehicles" (Truck settings vans section must use "vehicle"); operator Place order "Afegeix la comanda" (≠ customer "Fes la comanda"); "comanda presencial".
+- KDS: cards "fitxes", toggles Completa / Cuina, «A punt», handover "Cobrament i entrega"; 💷 → 💶; takings "recaptació"; card machine "datàfon".
+- No "de/d’/al" before name placeholders ("Mantén: {other}", "client: {name}"); "Admin" English.
