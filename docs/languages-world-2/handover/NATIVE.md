@@ -502,3 +502,7 @@
 - van வாகனம்; "அமைப்புகள் → உங்கள் வாகனங்கள்"; Manage “நிர்வாகம்” vs Admin "நிர்வாகி".
 - Check: wired "கேபிள் இணைப்பு அச்சிடல்", takings "வருமானத் தொகை", handover கையளிப்பு, over capacity கொள்ளளவு மீறல், Schedule "அட்டவணை" (part 03 must reuse).
 - ticket.* in Tamil — thermal printer Tamil script support (same question as si-LK). DO NOT COLLECT "பணம் அறவிட வேண்டாம்"; 💷 → 💵; browser buttons "சரி / இரத்துச் செய்யவும்".
+
+## si-LK part 05 (languages-world-3, 18 Nov 2026)
+- Truck settings වාහන සැකසුම්, Truck details food truck විස්තර, "ඔබේ වාහන / + වාහනයක් එක් කරන්න"; row parts ස්ථානය / වේලාවන්; report Pay at Hatch ස්ථානයේදී ගෙවන්න; Team → My profile "කණ්ඩායම → මගේ පැතිකඩ".
+- Check: capacity times "විනාඩි {m} තත්පර {s}" (narrow cells), Town or city නගරය, Gross/Net දළ / ශුද්ධ, Bold/Italic/CAPITALS තද / ඇල / කැපිටල් අකුරු, date-range "සිට"; settingsCopy.orderReady.help plural "කුස්සියේ තිර (KDS)".
