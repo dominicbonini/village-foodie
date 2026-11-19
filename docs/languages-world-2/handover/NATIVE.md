@@ -518,3 +518,9 @@
 - Check: padlock “අගුල් ලකුණ (padlock)”, DNS record “වාර්තාව (record)”, domain “ඩොමේනය”, {provider} as “{provider} සේවාවේ” (no suffix on placeholder), sales tax rate “විකුණුම් බදු අනුපාතය”, contactless “ස්පර්ශ රහිත”, management console “කළමනාකරණ කොන්සෝලය”. B / I / AA buttons kept Latin.
 - Localised: phone placeholder “+94 77 123 4567”; samples සතිපොළ / නුගේගොඩ instead of The Kings Arms / Lavenham; WhatsApp test question “ඔබ ළඟ චීස් කොත්තු තියෙනවද?”; 💷 icon changed to 💵 (Dominic may prefer the original emoji).
 - WhatsApp Business path and Canva steps left in English (those apps show English). UK-law sentence in account deletion unchanged. Plural `one` = `other` wording (covers 0 and 1). Glossary flags (14) are vowel-sign false positives. Long chips: “ක්‍රියාමාර්ගයක් අවශ්‍යයි”, “ස්ථානයේදී ඇණවුම් සඳහා ගෙවීම්”.
+
+## si-LK part 07 (languages-world-3, 19 Nov 2026)
+- Matches earlier parts: poster CANCELLED “අවලංගුයි”; caption chips Place “ස්ථානය”, Venue “ස්ථානයේ නම”, Area “ප්‍රදේශය”, Times “වේලාවන්”; extra vans “අමතර වාහන”; walk-up ස්ථානයේදී ඇණවුම්; Manage › Billing “කළමනාකරණය › බිල්පත්”; button names match part 02.
+- Check: invoice ඉන්වොයිසිය, Documents ලේඛන, Up to date “වලංගුයි”, review සමාලෝචනය, unsubscribe “දායකත්වයෙන් ඉවත් වන්න”, outreach email “ප්‍රචාරක ඊමේල්”, poster days-off “අද වෙළඳාම් නැත”, poster heading “සතිය: {start} සිට {end} දක්වා”.
+- No placeholder suffixes ("{truck} වෙත", "{date} දින"); "{plan} starts on {date}" → “{date} දින ආරම්භ වන පැකේජය: {plan}”. Plural one = other wording; noPicturesAll one reworded to read for 0.
+- Paperwork names translated literally (PAT test “PAT පරීක්ෂණය (විදුලි උපකරණ)”); prefecture/state both “ප්‍රාන්තය”; town/city “නගරය”. Samples localised (සතිපොළ / නුගේගොඩ, Sri Lankan towns, Alex → නිමාලි). English kept: Oswald, Eircode, HACCP, Pix Automático, file types, admin labels.
