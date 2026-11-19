@@ -236,7 +236,8 @@ export function tableCell(catalog: PlanCatalog, row: FeatureTableRow, plan: Pick
 
 /** plans-everywhere-1 (19 November 2026): rows that describe ONLINE CARD PAYMENTS — left out where trucks can't take them
  *  (lib/country-settings-types.ts offersOnlineCardPayments false: billed_at_truck, or no country_billing row). */
-export const CARD_ONLY_ROWS: readonly string[] = ['online_payments']
+// plans-everywhere-2: + 'tap_to_pay' ("Take payment on your phone", Stripe in person) — no Stripe for trucks where they can't take cards.
+export const CARD_ONLY_ROWS: readonly string[] = ['online_payments', 'tap_to_pay']
 
 /** The table's feature rows, by group, in order. `cards: false` (a country without online card payments) leaves out the card-only
  *  rows; absent or true, every row, exactly as before. */

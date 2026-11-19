@@ -53,7 +53,7 @@
   "footnote": "* Plus les frais de carte Stripe sur les commandes en ligne payées par carte (tarif actuel {country} : {cardFee}), payés à Stripe et non à HatchGrab. Les commandes au comptoir passent par votre propre TPE : HatchGrab prend 0 %.",
   "currencyLine": "Prix en {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Comment vous nous payez ici :</b> vos clients vous paient au moment du retrait. Une fois par mois, nous débitons votre carte pour votre offre et nos frais sur les précommandes du mois précédent. Les commandes au comptoir sont toujours gratuites.",
-    "online": "<b>Comment vous nous payez ici :</b> vos clients peuvent payer en ligne ou au moment du retrait. Une fois par mois, nous débitons votre carte pour votre offre et nos frais sur les précommandes du mois précédent. Les commandes au comptoir sont toujours gratuites."
+    "atTruck": "<b>Comment vous nous payez ici :</b> vos clients vous paient au moment du retrait. Une fois par mois, nous débitons votre carte pour votre offre et nos frais sur les précommandes du mois précédent. Les commandes au comptoir sont toujours gratuites. Une carte enregistrée vous sera nécessaire à la fin de votre essai gratuit.",
+    "online": "<b>Comment vous nous payez ici :</b> vos clients peuvent payer en ligne ou au moment du retrait. Une fois par mois, nous débitons votre carte pour votre offre et nos frais sur les précommandes du mois précédent. Les commandes au comptoir sont toujours gratuites. Une carte enregistrée vous sera nécessaire à la fin de votre essai gratuit."
   }
 }

@@ -11,6 +11,11 @@
 const EDITS = require('./fixtures/plans-everywhere-1-code-edits.json')
 
 function undoCode(file, src) {
+  // ⚠️ RE-PINNED (plans-everywhere-2, 19 November 2026): that round's later edits are taken back first, exactly
+  // (scripts/_named-plans-everywhere-2.cjs), so this round's pairs find the text they were recorded against.
+  const pe2 = require('./_named-plans-everywhere-2.cjs').undoCode(file, src)
+  if (pe2 === null) return null
+  src = pe2
   const pairs = EDITS[file]
   if (!pairs) return src
   let out = src

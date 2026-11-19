@@ -17,7 +17,7 @@ import { regionNameIn } from '@/lib/region-name'
 import { offerPlans, offerTrialMonths, offerFallback } from '@/lib/plan-offer'
 import { planByKey, planPriceFor, planAllowsFeature, type PlanCatalog } from '@/lib/plans'
 import { localizePlans } from '@/lib/plan-names'
-import { planMoneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'
+import { planMoneyFormatOf, offersOnlineCardPayments, type CountrySettings } from '@/lib/country-settings-types'
 import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import { priceText } from '@/lib/price-text'
@@ -53,8 +53,16 @@ export function tokensIn(text: string): string[] {
   return [...new Set([...String(text ?? '').matchAll(TOKEN)].map(m => m[1]))]
 }
 
-/** Is a show_in value well formed? 'all' | 'apps' | 'plan:<plan key>' — the database CHECK holds the same rule. */
-export const isShowIn = (v: unknown): v is string => typeof v === 'string' && (v === 'all' || v === 'apps' || /^plan:[a-z][a-z0-9_]*$/.test(v))
+/** plans-everywhere-2 (19 November 2026): the two payment show_in values. 'card_payments' = trucks there take online card payments
+ *  (country_billing.payment_model fee_from_payment or billed_online — lib/country-settings-types.ts offersOnlineCardPayments);
+ *  'pay_at_truck' = its exact opposite (billed_at_truck; a country with no country_billing row counts as monthly billing only). */
+export const SHOW_IN_CARD_PAYMENTS = 'card_payments'
+export const SHOW_IN_PAY_AT_TRUCK = 'pay_at_truck'
+
+/** Is a show_in value well formed? 'all' | 'apps' | 'card_payments' | 'pay_at_truck' | 'plan:<plan key>' — the database CHECK holds
+ *  the same rule. */
+export const isShowIn = (v: unknown): v is string => typeof v === 'string'
+  && (v === 'all' || v === 'apps' || v === SHOW_IN_CARD_PAYMENTS || v === SHOW_IN_PAY_AT_TRUCK || /^plan:[a-z][a-z0-9_]*$/.test(v))
 
 /** The language the words of a preview are in until faq-2: the country's own when it is English, else en-GB. */
 export const previewLocaleOf = (s: Pick<CountrySettings, 'locale'>): string => (isEnglish(s.locale) ? s.locale : DEFAULT_LOCALE)
@@ -147,10 +155,13 @@ export function tokenValue(token: string, world: FaqWorld, country: FaqCountry, 
   }
 }
 
-/** Does the question appear in this country at all? 'apps' = the apps are in its stores; 'plan:K' = K is offered there. */
+/** Does the question appear in this country at all? 'apps' = the apps are in its stores; 'card_payments' / 'pay_at_truck' = trucks
+ *  there do / don't take online card payments (data: the country's payment model); 'plan:K' = K is offered there. */
 export function shownIn(showIn: string, country: FaqCountry, world: FaqWorld): boolean {
   if (showIn === 'all') return true
   if (showIn === 'apps') return country.apps
+  if (showIn === SHOW_IN_CARD_PAYMENTS) return offersOnlineCardPayments(country.settings)
+  if (showIn === SHOW_IN_PAY_AT_TRUCK) return !offersOnlineCardPayments(country.settings)
   if (showIn.startsWith('plan:')) return offerPlans(world.catalog, country.settings.countryCode).some(p => p.plan.key === showIn.slice(5))
   return false
 }

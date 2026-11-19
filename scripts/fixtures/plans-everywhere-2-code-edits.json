@@ -1,0 +1,60 @@
+{
+ "lib/plans-pdf.ts": [
+  [
+   "  .cards { display: flex; gap: 8px; margin-bottom: 8px; break-inside: avoid; }\n  .mnote { border: 1px solid #F3D3AE; background: #FFF7EE; border-radius: 6px; padding: 7px 9px; margin: 0 0 10px; color: #1A2233; }   /* plans-everywhere-2: like .banner */\n  .mnote b { color: var(--navy); }\n  .card { flex: 1; min-width: 0; border: 1px solid #D8E2EC; border-radius: 6px; padding: 8px 9px; position: relative; }\n",
+   "  .cards { display: flex; gap: 8px; margin-bottom: 8px; break-inside: avoid; }\n  .mnote { margin: 0 0 8px; color: #4A5568; }\n  .card { flex: 1; min-width: 0; border: 1px solid #D8E2EC; border-radius: 6px; padding: 8px 9px; position: relative; }\n"
+  ]
+ ],
+ "lib/plan-offer.ts": [
+  [
+   " *  (lib/country-settings-types.ts offersOnlineCardPayments false: billed_at_truck, or no country_billing row). */\n// plans-everywhere-2: + 'tap_to_pay' (\"Take payment on your phone\", Stripe in person) — no Stripe for trucks where they can't take cards.\nexport const CARD_ONLY_ROWS: readonly string[] = ['online_payments', 'tap_to_pay']\n\n",
+   " *  (lib/country-settings-types.ts offersOnlineCardPayments false: billed_at_truck, or no country_billing row). */\nexport const CARD_ONLY_ROWS: readonly string[] = ['online_payments']\n\n"
+  ]
+ ],
+ "components/pricing/PricingSection.tsx": [
+  [
+   "      </div>\n      {/* plans-everywhere-2: a box like the trial banner (landing.css .monthly-note), not small print. */}\n      {monthlyNote && <div className=\"monthly-note\">{t.rich(monthlyNote === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b })}</div>}\n\n",
+   "      </div>\n      {monthlyNote && <p className=\"price-note monthly-note\">{t.rich(monthlyNote === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b })}</p>}\n\n"
+  ]
+ ],
+ "app/(public)/(site)/features/page.tsx": [
+  [
+   "                pricing-copy-4: the footnote only in a card country (offersOnlineCardPayments); the table's asterisk follows the same rule. */}\n            {/* plans-everywhere-1/-2: where our fee is billed monthly and an offered plan charges one, the \"How you pay us here\" note\n                (the landing's own words, lib/country-settings-types.ts monthlyFeeBilling) — the landing's box, under the table. */}\n            {monthlyFeeBilling(settings) && plans.some(p => p.shape !== 'noFee') && (\n              <div className=\"monthly-note\">{tPricing.rich(monthlyFeeBilling(settings) === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b: (c: ReactNode) => <b>{c}</b> })}</div>\n            )}\n            <div className=\"fn\">\n",
+   "                pricing-copy-4: the footnote only in a card country (offersOnlineCardPayments); the table's asterisk follows the same rule. */}\n            <div className=\"fn\">\n"
+  ],
+  [
+   "            <div className=\"fn\">\n              {offersOnlineCardPayments(settings) && <p>{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>}\n",
+   "            <div className=\"fn\">\n              {/* plans-everywhere-1: where our fee is billed monthly and an offered plan charges one, the \"How you pay us here\" note\n                  (the landing's own words, lib/country-settings-types.ts monthlyFeeBilling). */}\n              {monthlyFeeBilling(settings) && plans.some(p => p.shape !== 'noFee') && (\n                <p>{tPricing.rich(monthlyFeeBilling(settings) === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b: (c: ReactNode) => <b>{c}</b> })}</p>\n              )}\n              {offersOnlineCardPayments(settings) && <p>{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>}\n"
+  ]
+ ],
+ "app/(public)/(site)/landing/landing.css": [
+  [
+   ".hg-landing .trial-banner u { text-underline-offset: 2px; font-weight: 600; color: var(--head); }\n/* plans-everywhere-2 (19 November 2026): the \"How you pay us here\" note where our fee is billed monthly — a box like the trial banner\n   (its wash, border and corners), normal-size text, the lead-in bold. Under the cards on the landing; under the table on /features. */\n.hg-landing .monthly-note { background: var(--orange-wash); border: 1px solid var(--orange-line); border-radius: 12px; padding: 1rem 1.3rem;\n                           margin-top: 1.6rem; text-align: center; font-size: .92rem; line-height: 1.55; color: var(--ink); }\n.hg-landing .monthly-note b { font-weight: 700; color: var(--head); }\n.hg-landing .plans { display: grid; gap: 1.15rem; grid-template-columns: 1fr; align-items: stretch; }\n",
+   ".hg-landing .trial-banner u { text-underline-offset: 2px; font-weight: 600; color: var(--head); }\n.hg-landing .plans { display: grid; gap: 1.15rem; grid-template-columns: 1fr; align-items: stretch; }\n"
+  ]
+ ],
+ "lib/faq/live-values.ts": [
+  [
+   "import { localizePlans } from '@/lib/plan-names'\nimport { planMoneyFormatOf, offersOnlineCardPayments, type CountrySettings } from '@/lib/country-settings-types'\nimport { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'\n",
+   "import { localizePlans } from '@/lib/plan-names'\nimport { planMoneyFormatOf, type CountrySettings } from '@/lib/country-settings-types'\nimport { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'\n"
+  ],
+  [
+   "\n/** plans-everywhere-2 (19 November 2026): the two payment show_in values. 'card_payments' = trucks there take online card payments\n *  (country_billing.payment_model fee_from_payment or billed_online — lib/country-settings-types.ts offersOnlineCardPayments);\n *  'pay_at_truck' = its exact opposite (billed_at_truck; a country with no country_billing row counts as monthly billing only). */\nexport const SHOW_IN_CARD_PAYMENTS = 'card_payments'\nexport const SHOW_IN_PAY_AT_TRUCK = 'pay_at_truck'\n\n/** Is a show_in value well formed? 'all' | 'apps' | 'card_payments' | 'pay_at_truck' | 'plan:<plan key>' — the database CHECK holds\n *  the same rule. */\nexport const isShowIn = (v: unknown): v is string => typeof v === 'string'\n  && (v === 'all' || v === 'apps' || v === SHOW_IN_CARD_PAYMENTS || v === SHOW_IN_PAY_AT_TRUCK || /^plan:[a-z][a-z0-9_]*$/.test(v))\n\n",
+   "\n/** Is a show_in value well formed? 'all' | 'apps' | 'plan:<plan key>' — the database CHECK holds the same rule. */\nexport const isShowIn = (v: unknown): v is string => typeof v === 'string' && (v === 'all' || v === 'apps' || /^plan:[a-z][a-z0-9_]*$/.test(v))\n\n"
+  ],
+  [
+   "\n/** Does the question appear in this country at all? 'apps' = the apps are in its stores; 'card_payments' / 'pay_at_truck' = trucks\n *  there do / don't take online card payments (data: the country's payment model); 'plan:K' = K is offered there. */\nexport function shownIn(showIn: string, country: FaqCountry, world: FaqWorld): boolean {\n",
+   "\n/** Does the question appear in this country at all? 'apps' = the apps are in its stores; 'plan:K' = K is offered there. */\nexport function shownIn(showIn: string, country: FaqCountry, world: FaqWorld): boolean {\n"
+  ],
+  [
+   "  if (showIn === 'apps') return country.apps\n  if (showIn === SHOW_IN_CARD_PAYMENTS) return offersOnlineCardPayments(country.settings)\n  if (showIn === SHOW_IN_PAY_AT_TRUCK) return !offersOnlineCardPayments(country.settings)\n  if (showIn.startsWith('plan:')) return offerPlans(world.catalog, country.settings.countryCode).some(p => p.plan.key === showIn.slice(5))\n",
+   "  if (showIn === 'apps') return country.apps\n  if (showIn.startsWith('plan:')) return offerPlans(world.catalog, country.settings.countryCode).some(p => p.plan.key === showIn.slice(5))\n"
+  ]
+ ],
+ "lib/faq/check.ts": [
+  [
+   "    .sort((a, b) => a.sortOrder - b.sortOrder)\n  // plans-everywhere-2: the two payment choices, after the apps one.\n  return [['all', 'All countries'], ['apps', 'Where the iPad and Android apps are in the stores'],\n    ['card_payments', 'Where trucks take online card payments'], ['pay_at_truck', 'Where customers pay at the truck (no online card payments)'],\n    ...plans.map(p => [`plan:${p.key}`, `Where ${p.name} is offered`] as [string, string])]\n}\n",
+   "    .sort((a, b) => a.sortOrder - b.sortOrder)\n  return [['all', 'All countries'], ['apps', 'Where the iPad and Android apps are in the stores'], ...plans.map(p => [`plan:${p.key}`, `Where ${p.name} is offered`] as [string, string])]\n}\n"
+  ]
+ ]
+}

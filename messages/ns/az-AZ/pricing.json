@@ -53,7 +53,7 @@
   "footnote": "* Üstəgəl onlayn kart sifarişlərində Stripe kart emalı haqqı (hazırda {cardFee}; ölkə: {country}); bu haqq HatchGrab-a deyil, Stripe-a ödənilir. Yerində sifarişlər öz POS-terminalınızla qəbul olunur — HatchGrab 0% tutur.",
   "currencyLine": "Qiymətlər: {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Bizə burada necə ödəyirsiniz:</b> Müştərilər sifarişi götürərkən sizə ödəyir. Ayda bir dəfə kartınızdan planınızın haqqını və keçən ayın əvvəlcədən sifarişlərinə görə haqqımızı tuturuq. Yerində sifarişlər həmişə pulsuzdur.",
-    "online": "<b>Bizə burada necə ödəyirsiniz:</b> Müştərilər onlayn və ya sifarişi götürərkən ödəyə bilər. Ayda bir dəfə kartınızdan planınızın haqqını və keçən ayın əvvəlcədən sifarişlərinə görə haqqımızı tuturuq. Yerində sifarişlər həmişə pulsuzdur."
+    "atTruck": "<b>Bizə burada necə ödəyirsiniz:</b> Müştərilər sifarişi götürərkən sizə ödəyir. Ayda bir dəfə kartınızdan planınızın haqqını və keçən ayın əvvəlcədən sifarişlərinə görə haqqımızı tuturuq. Yerində sifarişlər həmişə pulsuzdur. Pulsuz sınaq müddətiniz bitəndə hesabınızda kart olmalıdır.",
+    "online": "<b>Bizə burada necə ödəyirsiniz:</b> Müştərilər onlayn və ya sifarişi götürərkən ödəyə bilər. Ayda bir dəfə kartınızdan planınızın haqqını və keçən ayın əvvəlcədən sifarişlərinə görə haqqımızı tuturuq. Yerində sifarişlər həmişə pulsuzdur. Pulsuz sınaq müddətiniz bitəndə hesabınızda kart olmalıdır."
   }
 }

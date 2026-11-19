@@ -6304,8 +6304,8 @@
     "footnote": "* Ditambah biaya pemrosesan kartu Stripe untuk pesanan online dengan kartu (saat ini {cardFee} di {country}), dibayarkan ke Stripe, bukan ke HatchGrab. Pesanan langsung di tempat memakai mesin EDC Anda sendiri — HatchGrab mengenakan 0%.",
     "currencyLine": "Harga dalam {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Cara Anda membayar kami di sini:</b> Pelanggan membayar Anda saat mengambil pesanan. Sebulan sekali kami menagih kartu Anda untuk paket Anda dan biaya kami atas pre-order bulan lalu. Pesanan langsung di tempat selalu gratis.",
-      "online": "<b>Cara Anda membayar kami di sini:</b> Pelanggan dapat membayar online atau saat mengambil pesanan. Sebulan sekali kami menagih kartu Anda untuk paket Anda dan biaya kami atas pre-order bulan lalu. Pesanan langsung di tempat selalu gratis."
+      "atTruck": "<b>Cara Anda membayar kami di sini:</b> Pelanggan membayar Anda saat mengambil pesanan. Sebulan sekali kami menagih kartu Anda untuk paket Anda dan biaya kami atas pre-order bulan lalu. Pesanan langsung di tempat selalu gratis. Anda perlu menambahkan kartu saat masa coba gratis berakhir.",
+      "online": "<b>Cara Anda membayar kami di sini:</b> Pelanggan dapat membayar online atau saat mengambil pesanan. Sebulan sekali kami menagih kartu Anda untuk paket Anda dan biaya kami atas pre-order bulan lalu. Pesanan langsung di tempat selalu gratis. Anda perlu menambahkan kartu saat masa coba gratis berakhir."
     }
   },
   "planTable": {

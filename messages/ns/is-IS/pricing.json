@@ -53,7 +53,7 @@
   "footnote": "* Auk kortagjalda Stripe af netpöntunum greiddum með korti (sem stendur {cardFee} — {country}), sem greiðast til Stripe, ekki HatchGrab. Pantanir á staðnum fara í gegnum þinn eigin posa — HatchGrab tekur 0%.",
   "currencyLine": "Gjaldmiðill: {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Svona greiðir þú okkur hér:</b> Viðskiptavinir greiða þér þegar þeir sækja. Einu sinni í mánuði skuldfærum við kortið þitt fyrir áskriftinni og gjaldinu okkar af forpöntunum síðasta mánaðar. Pantanir á staðnum eru alltaf ókeypis.",
-    "online": "<b>Svona greiðir þú okkur hér:</b> Viðskiptavinir geta greitt á netinu eða þegar þeir sækja. Einu sinni í mánuði skuldfærum við kortið þitt fyrir áskriftinni og gjaldinu okkar af forpöntunum síðasta mánaðar. Pantanir á staðnum eru alltaf ókeypis."
+    "atTruck": "<b>Svona greiðir þú okkur hér:</b> Viðskiptavinir greiða þér þegar þeir sækja. Einu sinni í mánuði skuldfærum við kortið þitt fyrir áskriftinni og gjaldinu okkar af forpöntunum síðasta mánaðar. Pantanir á staðnum eru alltaf ókeypis. Þú þarft að hafa kort skráð þegar ókeypis prufunni lýkur.",
+    "online": "<b>Svona greiðir þú okkur hér:</b> Viðskiptavinir geta greitt á netinu eða þegar þeir sækja. Einu sinni í mánuði skuldfærum við kortið þitt fyrir áskriftinni og gjaldinu okkar af forpöntunum síðasta mánaðar. Pantanir á staðnum eru alltaf ókeypis. Þú þarft að hafa kort skráð þegar ókeypis prufunni lýkur."
   }
 }

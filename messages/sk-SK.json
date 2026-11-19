@@ -6304,8 +6304,8 @@
     "footnote": "* K tomu poplatok Stripe za spracovanie platieb kartou pri online objednávkach (aktuálne {country}: {cardFee}), ktorý platíte spoločnosti Stripe, nie HatchGrab. Objednávky na mieste prechádzajú cez váš vlastný platobný terminál — HatchGrab si účtuje 0 %.",
     "currencyLine": "Ceny v mene {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Ako nám tu platíte:</b> Zákazníci vám platia pri vyzdvihnutí. Raz mesačne vám z karty strhneme platbu za tarif a náš poplatok z predobjednávok za minulý mesiac. Objednávky na mieste sú vždy zadarmo.",
-      "online": "<b>Ako nám tu platíte:</b> Zákazníci môžu platiť online alebo pri vyzdvihnutí. Raz mesačne vám z karty strhneme platbu za tarif a náš poplatok z predobjednávok za minulý mesiac. Objednávky na mieste sú vždy zadarmo."
+      "atTruck": "<b>Ako nám tu platíte:</b> Zákazníci vám platia pri vyzdvihnutí. Raz mesačne vám z karty strhneme platbu za tarif a náš poplatok z predobjednávok za minulý mesiac. Objednávky na mieste sú vždy zadarmo. Po skončení bezplatného skúšobného obdobia budete potrebovať pridanú kartu.",
+      "online": "<b>Ako nám tu platíte:</b> Zákazníci môžu platiť online alebo pri vyzdvihnutí. Raz mesačne vám z karty strhneme platbu za tarif a náš poplatok z predobjednávok za minulý mesiac. Objednávky na mieste sú vždy zadarmo. Po skončení bezplatného skúšobného obdobia budete potrebovať pridanú kartu."
     }
   },
   "planTable": {

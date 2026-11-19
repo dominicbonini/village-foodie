@@ -53,7 +53,7 @@
   "footnote": "* Poleg tega Stripe pri spletnih naročilih, plačanih s kartico, zaračuna obdelavo kartičnih plačil (trenutna tarifa – {country}: {cardFee}), ki jo plačate podjetju Stripe, ne HatchGrab. Za naročila na mestu uporabljate svoj plačilni terminal — HatchGrab zaračuna 0 %.",
   "currencyLine": "Cene: {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Kako nam plačate tukaj:</b> Stranke vam plačajo ob prevzemu. Enkrat mesečno z vaše kartice bremenimo vaš paket in našo provizijo za prednaročila iz prejšnjega meseca. Naročila na mestu so vedno brezplačna.",
-    "online": "<b>Kako nam plačate tukaj:</b> Stranke lahko plačajo prek spleta ali ob prevzemu. Enkrat mesečno z vaše kartice bremenimo vaš paket in našo provizijo za prednaročila iz prejšnjega meseca. Naročila na mestu so vedno brezplačna."
+    "atTruck": "<b>Kako nam plačate tukaj:</b> Stranke vam plačajo ob prevzemu. Enkrat mesečno z vaše kartice bremenimo vaš paket in našo provizijo za prednaročila iz prejšnjega meseca. Naročila na mestu so vedno brezplačna. Ko se brezplačno preizkusno obdobje konča, boste potrebovali dodano kartico.",
+    "online": "<b>Kako nam plačate tukaj:</b> Stranke lahko plačajo prek spleta ali ob prevzemu. Enkrat mesečno z vaše kartice bremenimo vaš paket in našo provizijo za prednaročila iz prejšnjega meseca. Naročila na mestu so vedno brezplačna. Ko se brezplačno preizkusno obdobje konča, boste potrebovali dodano kartico."
   }
 }

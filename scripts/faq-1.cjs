@@ -326,7 +326,21 @@ async function identityViews(tag) {
         && JSON.stringify(faq.map(m => m[2])) === JSON.stringify(['fa000002-0000-4000-8000-000000000001', 'fa000002-0000-4000-8000-000000000002', 'fa000002-0000-4000-8000-000000000005'])
         && faq.every(m => /^answer_en\s+= '(?:[^']|'')*',\s*updated_at = now\(\),\s*updated_by = 'pricing-copy-2'$/.test(m[1].trim()))
     }
-    const touchingFaq = later.filter(f => /\bfaq_(items|sections|translations)\b/.test(fs.readFileSync(path.join(MIG, f), 'utf8').replace(/--.*$/gm, '')) && !PC2(f))
+    // ⚠️ RE-PINNED (plans-everywhere-2, 19 November 2026, docs/plans-everywhere-2-report.md): 20261119_plans_everywhere_2_faq.sql
+    // widens faq_items_show_in_chk with 'card_payments' / 'pay_at_truck', moves exactly …0002 / …0006 / …0007 / …0011 to
+    // 'card_payments' and inserts exactly four 'pay_at_truck' questions (…1002 / …1006 / …1007 / …1011). Named precisely: no
+    // faq_sections or faq_translations write (outside its comments), and any other FAQ write in a later migration still fails.
+    const PE2 = f => {
+      if (f !== '20261119_plans_everywhere_2_faq.sql') return false
+      const sql = fs.readFileSync(path.join(MIG, f), 'utf8').replace(/--.*$/gm, '')
+      const ids = n => ['02', '06', '07', '11'].map(x => `fa000002-0000-4000-8000-00000000${n}${x}`)
+      return !/faq_(sections|translations)/.test(sql)
+        && /check \(show_in = 'all' or show_in = 'apps' or show_in = 'card_payments' or show_in = 'pay_at_truck' or show_in ~ '\^plan:\[a-z\]\[a-z0-9_\]\*\$'\)/.test(sql)
+        && /update public\.faq_items set show_in = 'card_payments'/.test(sql) && ids('00').every(id => sql.includes(`'${id}'`))
+        && (sql.match(/insert into public\.faq_items/g) || []).length === 1 && ids('10').every(id => sql.includes(`'${id}'`))
+        && (sql.match(/'pay_at_truck', 'published'/g) || []).length === 1
+    }
+    const touchingFaq = later.filter(f => /\bfaq_(items|sections|translations)\b/.test(fs.readFileSync(path.join(MIG, f), 'utf8').replace(/--.*$/gm, '')) && !PC2(f) && !PE2(f))
     t('the faq-1 migration number is unique; 20261058 … 20261064 follow it in order, and no later migration touches the FAQ tables', fs.readdirSync(MIG).filter(f => f.startsWith('20261056')).length === 1
       && JSON.stringify(after.slice(0, KNOWN.length)) === JSON.stringify(KNOWN) && !touchingFaq.length, { after, touchingFaq })
   }

@@ -53,7 +53,7 @@
   "footnote": "* Bundan tashqari, onlayn karta buyurtmalari uchun Stripe karta toʻlovlarini qayta ishlash haqi (hozirda {cardFee}, mamlakat: {country}) — u HatchGrab emas, Stripe kompaniyasiga toʻlanadi. Oyna oldida berilgan buyurtmalarda oʻz toʻlov terminalingizdan foydalanasiz — HatchGrab 0% oladi.",
   "currencyLine": "Narxlar: {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Bu yerda bizga qanday toʻlaysiz:</b> Mijozlar sizga buyurtmani olib ketayotganda toʻlaydi. Oyiga bir marta kartangizdan tarifingiz narxini va oʻtgan oydagi oldindan buyurtmalar uchun komissiyamizni yechib olamiz. Oyna oldida berilgan buyurtmalar har doim bepul.",
-    "online": "<b>Bu yerda bizga qanday toʻlaysiz:</b> Mijozlar onlayn yoki buyurtmani olib ketayotganda toʻlashi mumkin. Oyiga bir marta kartangizdan tarifingiz narxini va oʻtgan oydagi oldindan buyurtmalar uchun komissiyamizni yechib olamiz. Oyna oldida berilgan buyurtmalar har doim bepul."
+    "atTruck": "<b>Bu yerda bizga qanday toʻlaysiz:</b> Mijozlar sizga buyurtmani olib ketayotganda toʻlaydi. Oyiga bir marta kartangizdan tarifingiz narxini va oʻtgan oydagi oldindan buyurtmalar uchun komissiyamizni yechib olamiz. Oyna oldida berilgan buyurtmalar har doim bepul. Bepul sinov muddati tugaganda sizga qoʻshilgan karta kerak boʻladi.",
+    "online": "<b>Bu yerda bizga qanday toʻlaysiz:</b> Mijozlar onlayn yoki buyurtmani olib ketayotganda toʻlashi mumkin. Oyiga bir marta kartangizdan tarifingiz narxini va oʻtgan oydagi oldindan buyurtmalar uchun komissiyamizni yechib olamiz. Oyna oldida berilgan buyurtmalar har doim bepul. Bepul sinov muddati tugaganda sizga qoʻshilgan karta kerak boʻladi."
   }
 }

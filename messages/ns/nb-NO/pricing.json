@@ -53,7 +53,7 @@
   "footnote": "* I tillegg kommer Stripes kortgebyr på nettbestillinger betalt med kort (for tiden {cardFee} i {country}), som betales til Stripe, ikke HatchGrab. Bestillinger ved bilen bruker din egen betalingsterminal — HatchGrab tar 0 %.",
   "currencyLine": "Valuta: {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Slik betaler du oss her:</b> Kundene betaler deg når de henter. Én gang i måneden belaster vi kortet ditt for planen din og gebyret vårt på forrige måneds forhåndsbestillinger. Bestillinger ved bilen er alltid gratis.",
-    "online": "<b>Slik betaler du oss her:</b> Kundene kan betale på nett eller når de henter. Én gang i måneden belaster vi kortet ditt for planen din og gebyret vårt på forrige måneds forhåndsbestillinger. Bestillinger ved bilen er alltid gratis."
+    "atTruck": "<b>Slik betaler du oss her:</b> Kundene betaler deg når de henter. Én gang i måneden belaster vi kortet ditt for planen din og gebyret vårt på forrige måneds forhåndsbestillinger. Bestillinger ved bilen er alltid gratis. Du må ha et kort registrert når den gratis prøveperioden er over.",
+    "online": "<b>Slik betaler du oss her:</b> Kundene kan betale på nett eller når de henter. Én gang i måneden belaster vi kortet ditt for planen din og gebyret vårt på forrige måneds forhåndsbestillinger. Bestillinger ved bilen er alltid gratis. Du må ha et kort registrert når den gratis prøveperioden er over."
   }
 }

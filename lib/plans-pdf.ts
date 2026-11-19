@@ -337,7 +337,8 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   .banner b { display: block; font-size: 12px; color: var(--navy); margin-bottom: 2px; }
   .banner span { color: #44566B; }
   .cards { display: flex; gap: 8px; margin-bottom: 8px; break-inside: avoid; }
-  .mnote { margin: 0 0 8px; color: #4A5568; }
+  .mnote { border: 1px solid #F3D3AE; background: #FFF7EE; border-radius: 6px; padding: 7px 9px; margin: 0 0 10px; color: #1A2233; }   /* plans-everywhere-2: like .banner */
+  .mnote b { color: var(--navy); }
   .card { flex: 1; min-width: 0; border: 1px solid #D8E2EC; border-radius: 6px; padding: 8px 9px; position: relative; }
   .card.hl { border: 2px solid var(--orange); }
   .tag { position: absolute; top: -7px; left: 9px; background: var(--orange); color: #fff; font-size: 7px; font-weight: 700;

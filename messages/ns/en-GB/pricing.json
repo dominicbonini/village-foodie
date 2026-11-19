@@ -53,7 +53,7 @@
   "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in the {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%.",
   "currencyLine": "Prices in {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>How you pay us here:</b> customers pay you at the truck. Once a month we charge your card for your plan and our fee on last month’s pre-orders. Walk-up orders are always free.",
-    "online": "<b>How you pay us here:</b> customers can pay online or at the truck. Once a month we charge your card for your plan and our fee on last month’s pre-orders. Walk-up orders are always free."
+    "atTruck": "<b>How you pay us here:</b> customers pay you at the truck. Once a month we charge your card for your plan and our fee on last month’s pre-orders. Walk-up orders are always free. You’ll need a card on file when your free trial ends.",
+    "online": "<b>How you pay us here:</b> customers can pay online or at the truck. Once a month we charge your card for your plan and our fee on last month’s pre-orders. Walk-up orders are always free. You’ll need a card on file when your free trial ends."
   }
 }

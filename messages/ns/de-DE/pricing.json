@@ -53,7 +53,7 @@
   "footnote": "* Zzgl. Stripe-Gebühren für die Kartenabwicklung bei Online-Bestellungen mit Kartenzahlung (aktuell, {country}: {cardFee}), die an Stripe gehen, nicht an HatchGrab. Bestellungen vor Ort laufen über Ihr eigenes Kartenlesegerät – HatchGrab berechnet 0 %.",
   "currencyLine": "Preise in {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>So bezahlen Sie uns hier:</b> Ihre Kunden bezahlen bei Ihnen bei der Abholung. Einmal im Monat belasten wir Ihre Karte mit Ihrem Tarif und unserer Gebühr auf die Vorbestellungen des Vormonats. Bestellungen vor Ort sind immer gebührenfrei.",
-    "online": "<b>So bezahlen Sie uns hier:</b> Ihre Kunden können online oder bei der Abholung bezahlen. Einmal im Monat belasten wir Ihre Karte mit Ihrem Tarif und unserer Gebühr auf die Vorbestellungen des Vormonats. Bestellungen vor Ort sind immer gebührenfrei."
+    "atTruck": "<b>So bezahlen Sie uns hier:</b> Ihre Kunden bezahlen bei Ihnen bei der Abholung. Einmal im Monat belasten wir Ihre Karte mit Ihrem Tarif und unserer Gebühr auf die Vorbestellungen des Vormonats. Bestellungen vor Ort sind immer gebührenfrei. Wenn Ihre kostenlose Testphase endet, benötigen Sie eine hinterlegte Karte.",
+    "online": "<b>So bezahlen Sie uns hier:</b> Ihre Kunden können online oder bei der Abholung bezahlen. Einmal im Monat belasten wir Ihre Karte mit Ihrem Tarif und unserer Gebühr auf die Vorbestellungen des Vormonats. Bestellungen vor Ort sind immer gebührenfrei. Wenn Ihre kostenlose Testphase endet, benötigen Sie eine hinterlegte Karte."
   }
 }

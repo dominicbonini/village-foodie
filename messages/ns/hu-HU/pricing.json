@@ -53,7 +53,7 @@
   "footnote": "* Ehhez jön a Stripe kártyás feldolgozási díja az online kártyás rendeléseknél (jelenlegi díj, {country}: {cardFee}), amelyet a Stripe-nak fizet, nem a HatchGrabnek. A helyszíni rendelésekhez a saját kártyaterminálját használja — ezekre a HatchGrab 0%-ot számít fel.",
   "currencyLine": "Pénznem: {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Így fizet nekünk itt:</b> A vásárlók átvételkor fizetnek Önnek. Havonta egyszer megterheljük a kártyáját a csomagja díjával és az előző havi előrendelések után járó díjunkkal. A helyszíni rendelések mindig díjmentesek.",
-    "online": "<b>Így fizet nekünk itt:</b> A vásárlók fizethetnek online vagy átvételkor. Havonta egyszer megterheljük a kártyáját a csomagja díjával és az előző havi előrendelések után járó díjunkkal. A helyszíni rendelések mindig díjmentesek."
+    "atTruck": "<b>Így fizet nekünk itt:</b> A vásárlók átvételkor fizetnek Önnek. Havonta egyszer megterheljük a kártyáját a csomagja díjával és az előző havi előrendelések után járó díjunkkal. A helyszíni rendelések mindig díjmentesek. Az ingyenes próbaidőszak végén szüksége lesz egy megadott kártyára.",
+    "online": "<b>Így fizet nekünk itt:</b> A vásárlók fizethetnek online vagy átvételkor. Havonta egyszer megterheljük a kártyáját a csomagja díjával és az előző havi előrendelések után járó díjunkkal. A helyszíni rendelések mindig díjmentesek. Az ingyenes próbaidőszak végén szüksége lesz egy megadott kártyára."
   }
 }

@@ -6276,8 +6276,8 @@
     "footnote": "* Mais a taxa de processamento de cartão da Stripe nos pedidos online com cartão ({country}: atualmente {cardFee}), paga à Stripe, não ao HatchGrab. Pedidos no balcão usam sua própria maquininha — o HatchGrab cobra 0%.",
     "currencyLine": "Preços em {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Como você nos paga aqui:</b> os clientes pagam você na retirada. Uma vez por mês, cobramos no seu cartão o seu plano e a nossa taxa sobre os pedidos antecipados do mês anterior. Pedidos no balcão são sempre grátis.",
-      "online": "<b>Como você nos paga aqui:</b> os clientes podem pagar online ou na retirada. Uma vez por mês, cobramos no seu cartão o seu plano e a nossa taxa sobre os pedidos antecipados do mês anterior. Pedidos no balcão são sempre grátis."
+      "atTruck": "<b>Como você nos paga aqui:</b> os clientes pagam você na retirada. Uma vez por mês, cobramos no seu cartão o seu plano e a nossa taxa sobre os pedidos antecipados do mês anterior. Pedidos no balcão são sempre grátis. Quando o seu teste grátis terminar, você vai precisar de um cartão cadastrado.",
+      "online": "<b>Como você nos paga aqui:</b> os clientes podem pagar online ou na retirada. Uma vez por mês, cobramos no seu cartão o seu plano e a nossa taxa sobre os pedidos antecipados do mês anterior. Pedidos no balcão são sempre grátis. Quando o seu teste grátis terminar, você vai precisar de um cartão cadastrado."
     }
   },
   "planTable": {

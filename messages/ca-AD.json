@@ -6304,8 +6304,8 @@
     "footnote": "* A més, el processament de targetes que cobra Stripe, només en les comandes en línia pagades amb targeta (actualment {cardFee} a {country}); es paga a Stripe, no a HatchGrab. Les comandes presencials fan servir el teu propi datàfon — HatchGrab hi cobra un 0 %.",
     "currencyLine": "Preus en {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Com ens pagues aquí:</b> els clients et paguen quan recullen la comanda. Un cop al mes carreguem a la teva targeta el pla i la nostra comissió per les comandes anticipades del mes anterior. Les comandes presencials sempre són gratuïtes.",
-      "online": "<b>Com ens pagues aquí:</b> els clients poden pagar en línia o quan recullen la comanda. Un cop al mes carreguem a la teva targeta el pla i la nostra comissió per les comandes anticipades del mes anterior. Les comandes presencials sempre són gratuïtes."
+      "atTruck": "<b>Com ens pagues aquí:</b> els clients et paguen quan recullen la comanda. Un cop al mes carreguem a la teva targeta el pla i la nostra comissió per les comandes anticipades del mes anterior. Les comandes presencials sempre són gratuïtes. Quan s’acabi la prova gratuïta, hauràs de tenir una targeta afegida.",
+      "online": "<b>Com ens pagues aquí:</b> els clients poden pagar en línia o quan recullen la comanda. Un cop al mes carreguem a la teva targeta el pla i la nostra comissió per les comandes anticipades del mes anterior. Les comandes presencials sempre són gratuïtes. Quan s’acabi la prova gratuïta, hauràs de tenir una targeta afegida."
     }
   },
   "planTable": {

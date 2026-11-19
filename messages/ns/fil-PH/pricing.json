@@ -53,7 +53,7 @@
   "footnote": "* Dagdag ang card processing ng Stripe sa online card orders lang (sa ngayon, {cardFee} sa {country}), na bayad sa Stripe, hindi sa HatchGrab. Sa walk-in orders, sarili mong card reader ang gamit — 0% ang singil ng HatchGrab.",
   "currencyLine": "Mga presyo sa {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Paano ka magbabayad sa amin dito:</b> Magbabayad sa iyo ang mga customer pag-pick up nila. Isang beses kada buwan, sisingilin namin ang card mo para sa plan mo at sa fee namin sa mga pre-order noong nakaraang buwan. Laging libre ang walk-in orders.",
-    "online": "<b>Paano ka magbabayad sa amin dito:</b> Puwedeng magbayad ang mga customer online o pag-pick up nila. Isang beses kada buwan, sisingilin namin ang card mo para sa plan mo at sa fee namin sa mga pre-order noong nakaraang buwan. Laging libre ang walk-in orders."
+    "atTruck": "<b>Paano ka magbabayad sa amin dito:</b> Magbabayad sa iyo ang mga customer pag-pick up nila. Isang beses kada buwan, sisingilin namin ang card mo para sa plan mo at sa fee namin sa mga pre-order noong nakaraang buwan. Laging libre ang walk-in orders. Kailangan mo ng naka-save na card pagkatapos ng libreng trial mo.",
+    "online": "<b>Paano ka magbabayad sa amin dito:</b> Puwedeng magbayad ang mga customer online o pag-pick up nila. Isang beses kada buwan, sisingilin namin ang card mo para sa plan mo at sa fee namin sa mga pre-order noong nakaraang buwan. Laging libre ang walk-in orders. Kailangan mo ng naka-save na card pagkatapos ng libreng trial mo."
   }
 }

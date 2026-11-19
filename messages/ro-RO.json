@@ -6304,8 +6304,8 @@
     "footnote": "* Plus taxele Stripe de procesare a cardurilor pentru comenzile online plătite cu cardul (în prezent, {country}: {cardFee}), plătite către Stripe, nu către HatchGrab. Comenzile la fața locului folosesc propriul dumneavoastră terminal de plată — HatchGrab percepe 0%.",
     "currencyLine": "Prețuri în {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Cum ne plătiți aici:</b> clienții vă plătesc la ridicarea comenzii. O dată pe lună vă debităm cardul pentru abonament și pentru taxa noastră pe precomenzile din luna anterioară. Comenzile la fața locului sunt mereu gratuite.",
-      "online": "<b>Cum ne plătiți aici:</b> clienții pot plăti online sau la ridicarea comenzii. O dată pe lună vă debităm cardul pentru abonament și pentru taxa noastră pe precomenzile din luna anterioară. Comenzile la fața locului sunt mereu gratuite."
+      "atTruck": "<b>Cum ne plătiți aici:</b> clienții vă plătesc la ridicarea comenzii. O dată pe lună vă debităm cardul pentru abonament și pentru taxa noastră pe precomenzile din luna anterioară. Comenzile la fața locului sunt mereu gratuite. La finalul perioadei de probă gratuite veți avea nevoie de un card adăugat.",
+      "online": "<b>Cum ne plătiți aici:</b> clienții pot plăti online sau la ridicarea comenzii. O dată pe lună vă debităm cardul pentru abonament și pentru taxa noastră pe precomenzile din luna anterioară. Comenzile la fața locului sunt mereu gratuite. La finalul perioadei de probă gratuite veți avea nevoie de un card adăugat."
     }
   },
   "planTable": {

@@ -6304,8 +6304,8 @@
     "footnote": "* Acrescem as taxas de processamento de cartões da Stripe nas encomendas online pagas com cartão (tarifa atual — {country}: {cardFee}), pagas à Stripe e não à HatchGrab. As encomendas ao balcão usam o seu próprio terminal de pagamento — a HatchGrab cobra 0 %.",
     "currencyLine": "Preços em {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Como nos paga aqui:</b> os clientes pagam-lhe ao levantar. Uma vez por mês, cobramos no seu cartão o seu plano e a nossa taxa sobre as encomendas antecipadas do mês anterior. As encomendas ao balcão são sempre grátis.",
-      "online": "<b>Como nos paga aqui:</b> os clientes podem pagar online ou ao levantar. Uma vez por mês, cobramos no seu cartão o seu plano e a nossa taxa sobre as encomendas antecipadas do mês anterior. As encomendas ao balcão são sempre grátis."
+      "atTruck": "<b>Como nos paga aqui:</b> os clientes pagam-lhe ao levantar. Uma vez por mês, cobramos no seu cartão o seu plano e a nossa taxa sobre as encomendas antecipadas do mês anterior. As encomendas ao balcão são sempre grátis. Quando o seu teste grátis terminar, vai precisar de um cartão registado.",
+      "online": "<b>Como nos paga aqui:</b> os clientes podem pagar online ou ao levantar. Uma vez por mês, cobramos no seu cartão o seu plano e a nossa taxa sobre as encomendas antecipadas do mês anterior. As encomendas ao balcão são sempre grátis. Quando o seu teste grátis terminar, vai precisar de um cartão registado."
     }
   },
   "planTable": {

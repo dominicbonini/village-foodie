@@ -104,7 +104,10 @@ export function singlePlanLabel(world: FaqWorld): string {
 export function showInChoices(world: FaqWorld): [string, string][] {
   const plans = [...new Map(world.countries.flatMap(c => offerPlans(world.catalog, c.settings.countryCode)).map(p => [p.plan.key, p.plan])).values()]
     .sort((a, b) => a.sortOrder - b.sortOrder)
-  return [['all', 'All countries'], ['apps', 'Where the iPad and Android apps are in the stores'], ...plans.map(p => [`plan:${p.key}`, `Where ${p.name} is offered`] as [string, string])]
+  // plans-everywhere-2: the two payment choices, after the apps one.
+  return [['all', 'All countries'], ['apps', 'Where the iPad and Android apps are in the stores'],
+    ['card_payments', 'Where trucks take online card payments'], ['pay_at_truck', 'Where customers pay at the truck (no online card payments)'],
+    ...plans.map(p => [`plan:${p.key}`, `Where ${p.name} is offered`] as [string, string])]
 }
 
 /** How many switched-on countries a question appears in, and in which it reads the single-plan answer. */

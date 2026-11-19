@@ -6304,8 +6304,8 @@
     "footnote": "* Shtohet tarifa e përpunimit të kartave nga Stripe, vetëm për porositë online me kartë (aktualisht {cardFee} — {country}), që paguhet te Stripe, jo te HatchGrab. Për porositë në vend përdorni terminalin tuaj POS — HatchGrab tarifon 0%.",
     "currencyLine": "Çmimet janë në {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Si na paguani këtu:</b> Klientët ju paguajnë kur marrin porosinë. Një herë në muaj ju tarifojmë kartën për planin tuaj dhe për tarifën tonë mbi porositë paraprake të muajit të kaluar. Porositë në vend janë gjithmonë falas.",
-      "online": "<b>Si na paguani këtu:</b> Klientët mund të paguajnë online ose kur marrin porosinë. Një herë në muaj ju tarifojmë kartën për planin tuaj dhe për tarifën tonë mbi porositë paraprake të muajit të kaluar. Porositë në vend janë gjithmonë falas."
+      "atTruck": "<b>Si na paguani këtu:</b> Klientët ju paguajnë kur marrin porosinë. Një herë në muaj ju tarifojmë kartën për planin tuaj dhe për tarifën tonë mbi porositë paraprake të muajit të kaluar. Porositë në vend janë gjithmonë falas. Kur të përfundojë prova juaj falas, do t’ju duhet një kartë e shtuar.",
+      "online": "<b>Si na paguani këtu:</b> Klientët mund të paguajnë online ose kur marrin porosinë. Një herë në muaj ju tarifojmë kartën për planin tuaj dhe për tarifën tonë mbi porositë paraprake të muajit të kaluar. Porositë në vend janë gjithmonë falas. Kur të përfundojë prova juaj falas, do t’ju duhet një kartë e shtuar."
     }
   },
   "planTable": {

@@ -6304,8 +6304,8 @@
     "footnote": "* Hertil kommer Stripes kortgebyr på onlinebestillinger betalt med kort (aktuel sats – {country}: {cardFee}), som betales til Stripe, ikke til HatchGrab. Bestillinger ved vognen går gennem din egen kortterminal — HatchGrab tager 0 %.",
     "currencyLine": "Valuta: {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Sådan betaler du os her:</b> Kunderne betaler dig, når de henter. Én gang om måneden trækker vi betaling for din plan og vores gebyr på sidste måneds forudbestillinger på dit kort. Bestillinger ved vognen er altid gratis.",
-      "online": "<b>Sådan betaler du os her:</b> Kunderne kan betale online eller når de henter. Én gang om måneden trækker vi betaling for din plan og vores gebyr på sidste måneds forudbestillinger på dit kort. Bestillinger ved vognen er altid gratis."
+      "atTruck": "<b>Sådan betaler du os her:</b> Kunderne betaler dig, når de henter. Én gang om måneden trækker vi betaling for din plan og vores gebyr på sidste måneds forudbestillinger på dit kort. Bestillinger ved vognen er altid gratis. Du skal have et kort tilknyttet, når din gratis prøveperiode slutter.",
+      "online": "<b>Sådan betaler du os her:</b> Kunderne kan betale online eller når de henter. Én gang om måneden trækker vi betaling for din plan og vores gebyr på sidste måneds forudbestillinger på dit kort. Bestillinger ved vognen er altid gratis. Du skal have et kort tilknyttet, når din gratis prøveperiode slutter."
     }
   },
   "planTable": {

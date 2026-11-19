@@ -6304,8 +6304,8 @@
     "footnote": "* Lisäksi Stripen korttimaksujen käsittelykulut kortilla maksetuista verkkotilauksista (tällä hetkellä {country}: {cardFee}), jotka maksetaan Stripelle, ei HatchGrabille. Tilaukset paikan päällä maksetaan omalla maksupäätteelläsi — HatchGrab veloittaa 0 %.",
     "currencyLine": "Hinnat: {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Näin maksat meille täällä:</b> Asiakkaat maksavat sinulle noutaessaan. Kerran kuussa veloitamme kortiltasi pakettisi hinnan ja maksumme edellisen kuun ennakkotilauksista. Tilaukset paikan päällä ovat aina maksuttomia.",
-      "online": "<b>Näin maksat meille täällä:</b> Asiakkaat voivat maksaa verkossa tai noutaessaan. Kerran kuussa veloitamme kortiltasi pakettisi hinnan ja maksumme edellisen kuun ennakkotilauksista. Tilaukset paikan päällä ovat aina maksuttomia."
+      "atTruck": "<b>Näin maksat meille täällä:</b> Asiakkaat maksavat sinulle noutaessaan. Kerran kuussa veloitamme kortiltasi pakettisi hinnan ja maksumme edellisen kuun ennakkotilauksista. Tilaukset paikan päällä ovat aina maksuttomia. Kun ilmainen kokeilujaksosi päättyy, tarvitset lisätyn kortin.",
+      "online": "<b>Näin maksat meille täällä:</b> Asiakkaat voivat maksaa verkossa tai noutaessaan. Kerran kuussa veloitamme kortiltasi pakettisi hinnan ja maksumme edellisen kuun ennakkotilauksista. Tilaukset paikan päällä ovat aina maksuttomia. Kun ilmainen kokeilujaksosi päättyy, tarvitset lisätyn kortin."
     }
   },
   "planTable": {

@@ -53,7 +53,7 @@
   "footnote": "* Papildus jāmaksā Stripe karšu maksājumu apstrādes maksa par tiešsaistes pasūtījumiem ar karti (pašlaik {country}: {cardFee}), ko maksājat Stripe, nevis HatchGrab. Pasūtījumiem uz vietas tiek izmantots jūsu maksājumu terminālis — HatchGrab komisija ir 0%.",
   "currencyLine": "Cenas norādītas valūtā: {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Kā jūs mums šeit maksājat:</b> Klienti jums maksā, kad saņem pasūtījumu. Reizi mēnesī mēs no jūsu kartes ieturam maksu par plānu un mūsu komisiju par iepriekšējā mēneša iepriekšējiem pasūtījumiem. Pasūtījumi uz vietas vienmēr ir bez maksas.",
-    "online": "<b>Kā jūs mums šeit maksājat:</b> Klienti var maksāt tiešsaistē vai saņemot pasūtījumu. Reizi mēnesī mēs no jūsu kartes ieturam maksu par plānu un mūsu komisiju par iepriekšējā mēneša iepriekšējiem pasūtījumiem. Pasūtījumi uz vietas vienmēr ir bez maksas."
+    "atTruck": "<b>Kā jūs mums šeit maksājat:</b> Klienti jums maksā, kad saņem pasūtījumu. Reizi mēnesī mēs no jūsu kartes ieturam maksu par plānu un mūsu komisiju par iepriekšējā mēneša iepriekšējiem pasūtījumiem. Pasūtījumi uz vietas vienmēr ir bez maksas. Kad beigsies bezmaksas izmēģinājuma periods, jums būs nepieciešama pievienota karte.",
+    "online": "<b>Kā jūs mums šeit maksājat:</b> Klienti var maksāt tiešsaistē vai saņemot pasūtījumu. Reizi mēnesī mēs no jūsu kartes ieturam maksu par plānu un mūsu komisiju par iepriekšējā mēneša iepriekšējiem pasūtījumiem. Pasūtījumi uz vietas vienmēr ir bez maksas. Kad beigsies bezmaksas izmēģinājuma periods, jums būs nepieciešama pievienota karte."
   }
 }

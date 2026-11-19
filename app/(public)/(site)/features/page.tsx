@@ -190,12 +190,12 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
               variant="features" details={details} />
             {/* The card-fee footnote (*) and the rows' disclosures (¹ ², pricing-tidy), in the old table's footnote style.
                 pricing-copy-4: the footnote only in a card country (offersOnlineCardPayments); the table's asterisk follows the same rule. */}
+            {/* plans-everywhere-1/-2: where our fee is billed monthly and an offered plan charges one, the "How you pay us here" note
+                (the landing's own words, lib/country-settings-types.ts monthlyFeeBilling) — the landing's box, under the table. */}
+            {monthlyFeeBilling(settings) && plans.some(p => p.shape !== 'noFee') && (
+              <div className="monthly-note">{tPricing.rich(monthlyFeeBilling(settings) === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b: (c: ReactNode) => <b>{c}</b> })}</div>
+            )}
             <div className="fn">
-              {/* plans-everywhere-1: where our fee is billed monthly and an offered plan charges one, the "How you pay us here" note
-                  (the landing's own words, lib/country-settings-types.ts monthlyFeeBilling). */}
-              {monthlyFeeBilling(settings) && plans.some(p => p.shape !== 'noFee') && (
-                <p>{tPricing.rich(monthlyFeeBilling(settings) === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b: (c: ReactNode) => <b>{c}</b> })}</p>
-              )}
               {offersOnlineCardPayments(settings) && <p>{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>}
               {planTableNotes(settings.locale).map(n => <p key={n.marker}><sup>{n.marker}</sup> {n.text}</p>)}
             </div>

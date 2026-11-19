@@ -53,7 +53,7 @@
   "footnote": "* Lisaks Stripe’i kaardimaksetasu veebis kaardiga makstud tellimustelt (praegu {country}: {cardFee}), mis makstakse Stripe’ile, mitte HatchGrabile. Tellimused kohapeal kasutavad sinu enda makseterminali — HatchGrab võtab 0%.",
   "currencyLine": "Hinnad: {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Kuidas sa meile siin maksad:</b> Kliendid maksavad sulle kättesaamisel. Kord kuus võtame sinu kaardilt tasu paketi eest ja meie tasu eelmise kuu ettetellimustelt. Tellimused kohapeal on alati tasuta.",
-    "online": "<b>Kuidas sa meile siin maksad:</b> Kliendid saavad maksta veebis või kättesaamisel. Kord kuus võtame sinu kaardilt tasu paketi eest ja meie tasu eelmise kuu ettetellimustelt. Tellimused kohapeal on alati tasuta."
+    "atTruck": "<b>Kuidas sa meile siin maksad:</b> Kliendid maksavad sulle kättesaamisel. Kord kuus võtame sinu kaardilt tasu paketi eest ja meie tasu eelmise kuu ettetellimustelt. Tellimused kohapeal on alati tasuta. Kui sinu tasuta prooviperiood lõpeb, on sul vaja lisatud kaarti.",
+    "online": "<b>Kuidas sa meile siin maksad:</b> Kliendid saavad maksta veebis või kättesaamisel. Kord kuus võtame sinu kaardilt tasu paketi eest ja meie tasu eelmise kuu ettetellimustelt. Tellimused kohapeal on alati tasuta. Kui sinu tasuta prooviperiood lõpeb, on sul vaja lisatud kaarti."
   }
 }

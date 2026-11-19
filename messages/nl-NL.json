@@ -6304,8 +6304,8 @@
     "footnote": "* Plus de kaarttransactiekosten van Stripe op online kaartbestellingen (nu {country}: {cardFee}), te betalen aan Stripe, niet aan HatchGrab. Bestellingen aan de truck lopen via je eigen pinapparaat — HatchGrab rekent 0%.",
     "currencyLine": "Prijzen in {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Zo betaal je ons hier:</b> Klanten betalen jou bij het afhalen. Eén keer per maand schrijven we je abonnement en onze kosten op de voorbestellingen van vorige maand af van je kaart. Bestellingen aan de truck zijn altijd gratis.",
-      "online": "<b>Zo betaal je ons hier:</b> Klanten kunnen online of bij het afhalen betalen. Eén keer per maand schrijven we je abonnement en onze kosten op de voorbestellingen van vorige maand af van je kaart. Bestellingen aan de truck zijn altijd gratis."
+      "atTruck": "<b>Zo betaal je ons hier:</b> Klanten betalen jou bij het afhalen. Eén keer per maand schrijven we je abonnement en onze kosten op de voorbestellingen van vorige maand af van je kaart. Bestellingen aan de truck zijn altijd gratis. Als je gratis proefperiode afloopt, heb je een gekoppelde kaart nodig.",
+      "online": "<b>Zo betaal je ons hier:</b> Klanten kunnen online of bij het afhalen betalen. Eén keer per maand schrijven we je abonnement en onze kosten op de voorbestellingen van vorige maand af van je kaart. Bestellingen aan de truck zijn altijd gratis. Als je gratis proefperiode afloopt, heb je een gekoppelde kaart nodig."
     }
   },
   "planTable": {

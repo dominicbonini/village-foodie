@@ -6304,8 +6304,8 @@
     "footnote": "* Online kartlı siparişlerde buna ek olarak Stripe’ın kart işlem ücreti uygulanır ({country}: şu anda {cardFee}); bu ücret HatchGrab’e değil, Stripe’a ödenir. Yerinde siparişlerde kendi POS cihazınızı kullanırsınız — HatchGrab %0 alır.",
     "currencyLine": "Fiyatlar: {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Bize burada nasıl ödersiniz:</b> Müşteriler size teslim alırken öder. Ayda bir kez kartınızdan planınızın ücretini ve geçen ayın ön siparişlerine ait ücretimizi tahsil ederiz. Yerinde siparişler her zaman ücretsiz.",
-      "online": "<b>Bize burada nasıl ödersiniz:</b> Müşteriler online veya teslim alırken ödeyebilir. Ayda bir kez kartınızdan planınızın ücretini ve geçen ayın ön siparişlerine ait ücretimizi tahsil ederiz. Yerinde siparişler her zaman ücretsiz."
+      "atTruck": "<b>Bize burada nasıl ödersiniz:</b> Müşteriler size teslim alırken öder. Ayda bir kez kartınızdan planınızın ücretini ve geçen ayın ön siparişlerine ait ücretimizi tahsil ederiz. Yerinde siparişler her zaman ücretsiz. Ücretsiz denemeniz bittiğinde kayıtlı bir kartınız olması gerekir.",
+      "online": "<b>Bize burada nasıl ödersiniz:</b> Müşteriler online veya teslim alırken ödeyebilir. Ayda bir kez kartınızdan planınızın ücretini ve geçen ayın ön siparişlerine ait ücretimizi tahsil ederiz. Yerinde siparişler her zaman ücretsiz. Ücretsiz denemeniz bittiğinde kayıtlı bir kartınız olması gerekir."
     }
   },
   "planTable": {

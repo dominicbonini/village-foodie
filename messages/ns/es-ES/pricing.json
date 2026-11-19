@@ -53,7 +53,7 @@
   "footnote": "* Más la comisión de Stripe por procesar tarjetas en los pedidos online pagados con tarjeta (tarifa actual, {country}: {cardFee}), que se paga a Stripe, no a HatchGrab. Los pedidos en ventanilla se cobran con tu propio datáfono — HatchGrab cobra 0 %.",
   "currencyLine": "Precios en {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Cómo nos pagas aquí:</b> los clientes te pagan al recoger. Una vez al mes cobramos en tu tarjeta tu plan y nuestra comisión por los pedidos anticipados del mes anterior. Los pedidos en ventanilla siempre son gratis.",
-    "online": "<b>Cómo nos pagas aquí:</b> los clientes pueden pagar online o al recoger. Una vez al mes cobramos en tu tarjeta tu plan y nuestra comisión por los pedidos anticipados del mes anterior. Los pedidos en ventanilla siempre son gratis."
+    "atTruck": "<b>Cómo nos pagas aquí:</b> los clientes te pagan al recoger. Una vez al mes cobramos en tu tarjeta tu plan y nuestra comisión por los pedidos anticipados del mes anterior. Los pedidos en ventanilla siempre son gratis. Cuando termine tu prueba gratuita, necesitarás tener una tarjeta añadida.",
+    "online": "<b>Cómo nos pagas aquí:</b> los clientes pueden pagar online o al recoger. Una vez al mes cobramos en tu tarjeta tu plan y nuestra comisión por los pedidos anticipados del mes anterior. Los pedidos en ventanilla siempre son gratis. Cuando termine tu prueba gratuita, necesitarás tener una tarjeta añadida."
   }
 }

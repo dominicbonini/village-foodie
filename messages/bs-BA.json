@@ -6304,8 +6304,8 @@
     "footnote": "* Uz to, samo na online narudžbe plaćene karticom Stripe naplaćuje svoju naknadu za obradu kartica (trenutno — {country}: {cardFee}), koja se plaća Stripeu, a ne HatchGrabu. Narudžbe na licu mjesta naplaćujete vlastitim POS terminalom — HatchGrab naplaćuje 0%.",
     "currencyLine": "Cijene u valuti {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Kako nam ovdje plaćate:</b> Kupci vam plaćaju pri preuzimanju. Jednom mjesečno naplaćujemo s vaše kartice vaš paket i našu naknadu na narudžbe unaprijed iz prošlog mjeseca. Narudžbe na licu mjesta uvijek su besplatne.",
-      "online": "<b>Kako nam ovdje plaćate:</b> Kupci mogu platiti online ili pri preuzimanju. Jednom mjesečno naplaćujemo s vaše kartice vaš paket i našu naknadu na narudžbe unaprijed iz prošlog mjeseca. Narudžbe na licu mjesta uvijek su besplatne."
+      "atTruck": "<b>Kako nam ovdje plaćate:</b> Kupci vam plaćaju pri preuzimanju. Jednom mjesečno naplaćujemo s vaše kartice vaš paket i našu naknadu na narudžbe unaprijed iz prošlog mjeseca. Narudžbe na licu mjesta uvijek su besplatne. Kada vam istekne besplatni probni period, trebat će vam dodana kartica.",
+      "online": "<b>Kako nam ovdje plaćate:</b> Kupci mogu platiti online ili pri preuzimanju. Jednom mjesečno naplaćujemo s vaše kartice vaš paket i našu naknadu na narudžbe unaprijed iz prošlog mjeseca. Narudžbe na licu mjesta uvijek su besplatne. Kada vam istekne besplatni probni period, trebat će vam dodana kartica."
     }
   },
   "planTable": {

@@ -6276,8 +6276,8 @@
     "footnote": "* Ditambah caj pemprosesan kad Stripe untuk pesanan kad dalam talian (kini {cardFee} di {country}), dibayar kepada Stripe, bukan HatchGrab. Pesanan walk-in menggunakan terminal kad anda sendiri — HatchGrab mengenakan 0%.",
     "currencyLine": "Harga dalam {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Cara anda membayar kami di sini:</b> Pelanggan membayar anda semasa mengambil pesanan. Sebulan sekali kami mengecaj kad anda untuk pelan anda dan yuran kami atas pra-pesanan bulan lepas. Pesanan walk-in sentiasa percuma.",
-      "online": "<b>Cara anda membayar kami di sini:</b> Pelanggan boleh membayar dalam talian atau semasa mengambil pesanan. Sebulan sekali kami mengecaj kad anda untuk pelan anda dan yuran kami atas pra-pesanan bulan lepas. Pesanan walk-in sentiasa percuma."
+      "atTruck": "<b>Cara anda membayar kami di sini:</b> Pelanggan membayar anda semasa mengambil pesanan. Sebulan sekali kami mengecaj kad anda untuk pelan anda dan yuran kami atas pra-pesanan bulan lepas. Pesanan walk-in sentiasa percuma. Anda perlu menambah kad apabila percubaan percuma anda tamat.",
+      "online": "<b>Cara anda membayar kami di sini:</b> Pelanggan boleh membayar dalam talian atau semasa mengambil pesanan. Sebulan sekali kami mengecaj kad anda untuk pelan anda dan yuran kami atas pra-pesanan bulan lepas. Pesanan walk-in sentiasa percuma. Anda perlu menambah kad apabila percubaan percuma anda tamat."
     }
   },
   "planTable": {

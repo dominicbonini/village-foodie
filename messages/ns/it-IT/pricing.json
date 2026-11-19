@@ -53,7 +53,7 @@
   "footnote": "* Più le commissioni di Stripe sugli ordini online pagati con carta (tariffa attuale, {country}: {cardFee}), pagate a Stripe e non a HatchGrab. Gli ordini al banco passano dal tuo POS — HatchGrab trattiene lo 0%.",
   "currencyLine": "Prezzi in {currency} ({code})",
   "monthlyNote": {
-    "atTruck": "<b>Come ci paghi qui:</b> i clienti ti pagano al ritiro. Una volta al mese addebitiamo sulla tua carta il piano e la nostra commissione sui preordini del mese precedente. Gli ordini al banco sono sempre gratuiti.",
-    "online": "<b>Come ci paghi qui:</b> i clienti possono pagare online o al ritiro. Una volta al mese addebitiamo sulla tua carta il piano e la nostra commissione sui preordini del mese precedente. Gli ordini al banco sono sempre gratuiti."
+    "atTruck": "<b>Come ci paghi qui:</b> i clienti ti pagano al ritiro. Una volta al mese addebitiamo sulla tua carta il piano e la nostra commissione sui preordini del mese precedente. Gli ordini al banco sono sempre gratuiti. Al termine della prova gratuita ti servirà una carta registrata.",
+    "online": "<b>Come ci paghi qui:</b> i clienti possono pagare online o al ritiro. Una volta al mese addebitiamo sulla tua carta il piano e la nostra commissione sui preordini del mese precedente. Gli ordini al banco sono sempre gratuiti. Al termine della prova gratuita ti servirà una carta registrata."
   }
 }

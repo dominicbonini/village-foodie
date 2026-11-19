@@ -6304,8 +6304,8 @@
     "footnote": "* Pamoja na ada ya Stripe ya kuchakata malipo ya kadi, kwa oda za mtandaoni zinazolipwa kwa kadi pekee (kwa sasa {cardFee} nchini {country}), inayolipwa kwa Stripe, si kwa HatchGrab. Oda za papo hapo hutumia mashine ya kadi (POS) yako mwenyewe — HatchGrab inatoza 0%.",
     "currencyLine": "Bei kwa {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Jinsi unavyotulipa hapa:</b> Wateja wanakulipa wanapochukua oda. Mara moja kwa mwezi tunatoza kadi yako kwa ajili ya mpango wako na ada yetu ya oda za mapema za mwezi uliopita. Oda za papo hapo ni bila malipo kila wakati.",
-      "online": "<b>Jinsi unavyotulipa hapa:</b> Wateja wanaweza kulipa mtandaoni au wanapochukua oda. Mara moja kwa mwezi tunatoza kadi yako kwa ajili ya mpango wako na ada yetu ya oda za mapema za mwezi uliopita. Oda za papo hapo ni bila malipo kila wakati."
+      "atTruck": "<b>Jinsi unavyotulipa hapa:</b> Wateja wanakulipa wanapochukua oda. Mara moja kwa mwezi tunatoza kadi yako kwa ajili ya mpango wako na ada yetu ya oda za mapema za mwezi uliopita. Oda za papo hapo ni bila malipo kila wakati. Utahitaji kadi iliyosajiliwa jaribio lako la bila malipo litakapoisha.",
+      "online": "<b>Jinsi unavyotulipa hapa:</b> Wateja wanaweza kulipa mtandaoni au wanapochukua oda. Mara moja kwa mwezi tunatoza kadi yako kwa ajili ya mpango wako na ada yetu ya oda za mapema za mwezi uliopita. Oda za papo hapo ni bila malipo kila wakati. Utahitaji kadi iliyosajiliwa jaribio lako la bila malipo litakapoisha."
     }
   },
   "planTable": {

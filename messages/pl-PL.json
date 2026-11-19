@@ -6304,8 +6304,8 @@
     "footnote": "* Do tego opłata Stripe za obsługę kart przy zamówieniach online opłaconych kartą (obecna stawka, {country}: {cardFee}), płacona firmie Stripe, nie HatchGrab. Zamówienia na miejscu obsługujesz własnym terminalem płatniczym — HatchGrab pobiera 0%.",
     "currencyLine": "Ceny w walucie: {currency} ({code})",
     "monthlyNote": {
-      "atTruck": "<b>Jak nam tu płacisz:</b> Klienci płacą Ci przy odbiorze. Raz w miesiącu obciążamy Twoją kartę opłatą za plan i naszą prowizją od zamówień z wyprzedzeniem z poprzedniego miesiąca. Zamówienia na miejscu są zawsze bez opłat.",
-      "online": "<b>Jak nam tu płacisz:</b> Klienci mogą zapłacić online lub przy odbiorze. Raz w miesiącu obciążamy Twoją kartę opłatą za plan i naszą prowizją od zamówień z wyprzedzeniem z poprzedniego miesiąca. Zamówienia na miejscu są zawsze bez opłat."
+      "atTruck": "<b>Jak nam tu płacisz:</b> Klienci płacą Ci przy odbiorze. Raz w miesiącu obciążamy Twoją kartę opłatą za plan i naszą prowizją od zamówień z wyprzedzeniem z poprzedniego miesiąca. Zamówienia na miejscu są zawsze bez opłat. Po zakończeniu bezpłatnego okresu próbnego potrzebna będzie dodana karta.",
+      "online": "<b>Jak nam tu płacisz:</b> Klienci mogą zapłacić online lub przy odbiorze. Raz w miesiącu obciążamy Twoją kartę opłatą za plan i naszą prowizją od zamówień z wyprzedzeniem z poprzedniego miesiąca. Zamówienia na miejscu są zawsze bez opłat. Po zakończeniu bezpłatnego okresu próbnego potrzebna będzie dodana karta."
     }
   },
   "planTable": {

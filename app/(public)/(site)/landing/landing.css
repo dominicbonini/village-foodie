@@ -708,6 +708,11 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .trial-banner span { font-size: .92rem; color: var(--ink); }
 /* Stage B: the fallback plan's name in the banner body (<u>). The banner's size is the pre-Stage-B one (Dominic, 20 October 2026). */
 .hg-landing .trial-banner u { text-underline-offset: 2px; font-weight: 600; color: var(--head); }
+/* plans-everywhere-2 (19 November 2026): the "How you pay us here" note where our fee is billed monthly — a box like the trial banner
+   (its wash, border and corners), normal-size text, the lead-in bold. Under the cards on the landing; under the table on /features. */
+.hg-landing .monthly-note { background: var(--orange-wash); border: 1px solid var(--orange-line); border-radius: 12px; padding: 1rem 1.3rem;
+                           margin-top: 1.6rem; text-align: center; font-size: .92rem; line-height: 1.55; color: var(--ink); }
+.hg-landing .monthly-note b { font-weight: 700; color: var(--head); }
 .hg-landing .plans { display: grid; gap: 1.15rem; grid-template-columns: 1fr; align-items: stretch; }
 @media(min-width:880px){ .hg-landing .plans { grid-template-columns: repeat(3,1fr); } }
 /* world-countries-1 (31 October 2026): ONE plan (Unlimited-only countries) — the same card, centred, one column as wide as one of

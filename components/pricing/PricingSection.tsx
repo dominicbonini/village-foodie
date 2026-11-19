@@ -150,7 +150,8 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
           )
         })}
       </div>
-      {monthlyNote && <p className="price-note monthly-note">{t.rich(monthlyNote === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b })}</p>}
+      {/* plans-everywhere-2: a box like the trial banner (landing.css .monthly-note), not small print. */}
+      {monthlyNote && <div className="monthly-note">{t.rich(monthlyNote === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b })}</div>}
 
       {bands.length > 0 && !single && (
         <div className="cheap-bar">
