@@ -16,7 +16,8 @@
     "included": "毎月込みのオンライン注文",
     "fee": "オンライン注文にかかるHatchGrabの手数料*",
     "feeNoMark": "オンライン注文にかかるHatchGrabの手数料",
-    "walkUp": "店頭注文"
+    "walkUp": "店頭注文",
+    "feeMonthly": "事前注文にかかるHatchGrabの手数料（毎月請求）{mark}"
   },
   "cell": {
     "unlimited": "無制限",

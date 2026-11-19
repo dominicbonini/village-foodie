@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> samo za online narudžbe. Narudžbe na licu mjesta uvijek su besplatne.",
     "included": "Svaki mjesec uključeno je prvih <b>{included}</b> u online narudžbama, a zatim <b>{fee}*</b>. Narudžbe na licu mjesta uvijek su besplatne.",
     "includedNoMark": "Svaki mjesec uključeno je prvih <b>{included}</b> u online narudžbama, a zatim <b>{fee}</b>. Narudžbe na licu mjesta uvijek su besplatne.",
-    "noFee": "<b>Bez HatchGrab naknada</b> za online narudžbe, koliko god posla imali. Jedan predvidiv mjesečni trošak."
+    "noFee": "<b>Bez HatchGrab naknada</b> za online narudžbe, koliko god posla imali. Jedan predvidiv mjesečni trošak.",
+    "feeOnlyMonthly": "<b>{fee}</b> za prednarudžbe, naplaćuje se mjesečno",
+    "includedMonthly": "Svaki mjesec uključeno je prvih <b>{included}</b> u prednarudžbama. Zatim <b>{fee}</b>, naplaćuje se mjesečno"
   },
   "base": {
     "walkUp": "Narudžbe na licu mjesta i kuhinjski zaslon",
@@ -49,5 +51,9 @@
     "only": "Bilo koji obujam → <b>{plan}</b>"
   },
   "footnote": "* Uz to se za online narudžbe plaćene karticom naplaćuje Stripeova naknada za obradu kartičnih plaćanja (trenutačno — {country}: {cardFee}), koja se plaća Stripeu, a ne HatchGrabu. Narudžbe na licu mjesta naplaćujete vlastitim POS uređajem — HatchGrab naplaćuje 0 %.",
-  "currencyLine": "Cijene u valuti {currency} ({code})"
+  "currencyLine": "Cijene u valuti {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Kako nam ovdje plaćate:</b> Kupci vam plaćaju pri preuzimanju. Jednom mjesečno s vaše kartice naplaćujemo vaš paket i našu naknadu za prednarudžbe iz prošlog mjeseca. Narudžbe na licu mjesta uvijek su besplatne.",
+    "online": "<b>Kako nam ovdje plaćate:</b> Kupci mogu platiti online ili pri preuzimanju. Jednom mjesečno s vaše kartice naplaćujemo vaš paket i našu naknadu za prednarudžbe iz prošlog mjeseca. Narudžbe na licu mjesta uvijek su besplatne."
+  }
 }

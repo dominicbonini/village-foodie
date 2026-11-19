@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> vetëm për porositë online. Porositë në vend janë gjithmonë falas.",
       "included": "Çdo muaj përfshihen porositë online deri në <b>{included}</b>, pastaj <b>{fee}*</b>. Porositë në vend janë gjithmonë falas.",
       "includedNoMark": "Çdo muaj përfshihen porositë online deri në <b>{included}</b>, pastaj <b>{fee}</b>. Porositë në vend janë gjithmonë falas.",
-      "noFee": "<b>Pa tarifa HatchGrab</b> për porositë online, sado të ngarkuar të jeni. Një kosto mujore e parashikueshme."
+      "noFee": "<b>Pa tarifa HatchGrab</b> për porositë online, sado të ngarkuar të jeni. Një kosto mujore e parashikueshme.",
+      "feeOnlyMonthly": "<b>{fee}</b> për porositë paraprake, faturohet çdo muaj",
+      "includedMonthly": "Çdo muaj përfshihen porositë paraprake deri në <b>{included}</b>. Pastaj <b>{fee}</b>, faturohet çdo muaj"
     },
     "base": {
       "walkUp": "Porositë në vend dhe ekrani i kuzhinës",
@@ -6300,7 +6302,11 @@
       "only": "Çdo vëllim → <b>{plan}</b>"
     },
     "footnote": "* Shtohet tarifa e përpunimit të kartave nga Stripe, vetëm për porositë online me kartë (aktualisht {cardFee} — {country}), që paguhet te Stripe, jo te HatchGrab. Për porositë në vend përdorni terminalin tuaj POS — HatchGrab tarifon 0%.",
-    "currencyLine": "Çmimet janë në {currency} ({code})"
+    "currencyLine": "Çmimet janë në {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Si na paguani këtu:</b> Klientët ju paguajnë kur marrin porosinë. Një herë në muaj ju tarifojmë kartën për planin tuaj dhe për tarifën tonë mbi porositë paraprake të muajit të kaluar. Porositë në vend janë gjithmonë falas.",
+      "online": "<b>Si na paguani këtu:</b> Klientët mund të paguajnë online ose kur marrin porosinë. Një herë në muaj ju tarifojmë kartën për planin tuaj dhe për tarifën tonë mbi porositë paraprake të muajit të kaluar. Porositë në vend janë gjithmonë falas."
+    }
   },
   "planTable": {
     "h1": "Gjithçka për të drejtuar shërbimin tuaj, në çdo paketë.",
@@ -6320,7 +6326,8 @@
       "included": "Porosi online të përfshira çdo muaj",
       "fee": "Tarifa e HatchGrab për porositë online*",
       "feeNoMark": "Tarifa e HatchGrab për porositë online",
-      "walkUp": "Porositë në vend"
+      "walkUp": "Porositë në vend",
+      "feeMonthly": "Tarifa e HatchGrab për porositë paraprake, faturohet çdo muaj{mark}"
     },
     "cell": {
       "unlimited": "Pa limit",

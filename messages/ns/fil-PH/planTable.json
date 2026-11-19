@@ -16,7 +16,8 @@
     "included": "Online orders na kasama kada buwan",
     "fee": "Fee ng HatchGrab sa online orders*",
     "feeNoMark": "Fee ng HatchGrab sa online orders",
-    "walkUp": "Walk-in orders"
+    "walkUp": "Walk-in orders",
+    "feeMonthly": "Fee ng HatchGrab sa mga pre-order, sinisingil buwan-buwan{mark}"
   },
   "cell": {
     "unlimited": "Unlimited",

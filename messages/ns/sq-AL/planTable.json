@@ -16,7 +16,8 @@
     "included": "Porosi online të përfshira çdo muaj",
     "fee": "Tarifa e HatchGrab për porositë online*",
     "feeNoMark": "Tarifa e HatchGrab për porositë online",
-    "walkUp": "Porositë në vend"
+    "walkUp": "Porositë në vend",
+    "feeMonthly": "Tarifa e HatchGrab për porositë paraprake, faturohet çdo muaj{mark}"
   },
   "cell": {
     "unlimited": "Pa limit",

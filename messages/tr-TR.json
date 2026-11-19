@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "Yalnızca online siparişlerde <b>{fee}*</b>. Yerinde siparişler her zaman ücretsiz.",
       "included": "Her ay ilk <b>{included}</b> tutarındaki online siparişler dahil, sonrasında <b>{fee}*</b>. Yerinde siparişler her zaman ücretsiz.",
       "includedNoMark": "Her ay ilk <b>{included}</b> tutarındaki online siparişler dahil, sonrasında <b>{fee}</b>. Yerinde siparişler her zaman ücretsiz.",
-      "noFee": "Ne kadar yoğun olursanız olun, online siparişlerde <b>HatchGrab ücreti yok</b>. Tek, öngörülebilir bir aylık maliyet."
+      "noFee": "Ne kadar yoğun olursanız olun, online siparişlerde <b>HatchGrab ücreti yok</b>. Tek, öngörülebilir bir aylık maliyet.",
+      "feeOnlyMonthly": "Ön siparişlerde <b>{fee}</b>, aylık faturalandırılır",
+      "includedMonthly": "Her ay ilk <b>{included}</b> tutarındaki ön siparişler dahil. Sonrasında <b>{fee}</b>, aylık faturalandırılır"
     },
     "base": {
       "walkUp": "Yerinde siparişler ve mutfak ekranı",
@@ -6300,7 +6302,11 @@
       "only": "Her hacimde → <b>{plan}</b>"
     },
     "footnote": "* Online kartlı siparişlerde buna ek olarak Stripe’ın kart işlem ücreti uygulanır ({country}: şu anda {cardFee}); bu ücret HatchGrab’e değil, Stripe’a ödenir. Yerinde siparişlerde kendi POS cihazınızı kullanırsınız — HatchGrab %0 alır.",
-    "currencyLine": "Fiyatlar: {currency} ({code})"
+    "currencyLine": "Fiyatlar: {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Bize burada nasıl ödersiniz:</b> Müşteriler size teslim alırken öder. Ayda bir kez kartınızdan planınızın ücretini ve geçen ayın ön siparişlerine ait ücretimizi tahsil ederiz. Yerinde siparişler her zaman ücretsiz.",
+      "online": "<b>Bize burada nasıl ödersiniz:</b> Müşteriler online veya teslim alırken ödeyebilir. Ayda bir kez kartınızdan planınızın ücretini ve geçen ayın ön siparişlerine ait ücretimizi tahsil ederiz. Yerinde siparişler her zaman ücretsiz."
+    }
   },
   "planTable": {
     "h1": "Servisinizi yürütmek için gereken her şey, her pakette.",
@@ -6320,7 +6326,8 @@
       "included": "Her ay dahil olan online siparişler",
       "fee": "Online siparişlerde HatchGrab ücreti*",
       "feeNoMark": "Online siparişlerde HatchGrab ücreti",
-      "walkUp": "Yerinde siparişler"
+      "walkUp": "Yerinde siparişler",
+      "feeMonthly": "Ön siparişlerde HatchGrab ücreti, aylık faturalandırılır{mark}"
     },
     "cell": {
       "unlimited": "Sınırsız",

@@ -16,7 +16,8 @@
     "included": "Online orders included each month",
     "fee": "HatchGrab fee on online orders*",
     "feeNoMark": "HatchGrab fee on online orders",
-    "walkUp": "Walk-up orders"
+    "walkUp": "Walk-up orders",
+    "feeMonthly": "HatchGrab fee on pre-orders, billed monthly{mark}"
   },
   "cell": {
     "unlimited": "Unlimited",

@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> tikai par tiešsaistes pasūtījumiem. Pasūtījumi uz vietas vienmēr ir bez maksas.",
     "included": "Katru mēnesī iekļauti pirmie <b>{included}</b> tiešsaistes pasūtījumu, pēc tam <b>{fee}*</b>. Pasūtījumi uz vietas vienmēr ir bez maksas.",
     "includedNoMark": "Katru mēnesī iekļauti pirmie <b>{included}</b> tiešsaistes pasūtījumu, pēc tam <b>{fee}</b>. Pasūtījumi uz vietas vienmēr ir bez maksas.",
-    "noFee": "<b>Bez HatchGrab komisijas</b> par tiešsaistes pasūtījumiem, lai cik daudz darba jums būtu. Viena paredzama ikmēneša maksa."
+    "noFee": "<b>Bez HatchGrab komisijas</b> par tiešsaistes pasūtījumiem, lai cik daudz darba jums būtu. Viena paredzama ikmēneša maksa.",
+    "feeOnlyMonthly": "<b>{fee}</b> par iepriekšējiem pasūtījumiem, rēķins reizi mēnesī",
+    "includedMonthly": "Katru mēnesi iekļauti pirmie <b>{included}</b> iepriekšējo pasūtījumu. Pēc tam <b>{fee}</b>, rēķins reizi mēnesī"
   },
   "base": {
     "walkUp": "Pasūtījumi uz vietas un virtuves ekrāns",
@@ -49,5 +51,9 @@
     "only": "Jebkurš apjoms → <b>{plan}</b>"
   },
   "footnote": "* Papildus jāmaksā Stripe karšu maksājumu apstrādes maksa par tiešsaistes pasūtījumiem ar karti (pašlaik {country}: {cardFee}), ko maksājat Stripe, nevis HatchGrab. Pasūtījumiem uz vietas tiek izmantots jūsu maksājumu terminālis — HatchGrab komisija ir 0%.",
-  "currencyLine": "Cenas norādītas valūtā: {currency} ({code})"
+  "currencyLine": "Cenas norādītas valūtā: {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Kā jūs mums šeit maksājat:</b> Klienti jums maksā, kad saņem pasūtījumu. Reizi mēnesī mēs no jūsu kartes ieturam maksu par plānu un mūsu komisiju par iepriekšējā mēneša iepriekšējiem pasūtījumiem. Pasūtījumi uz vietas vienmēr ir bez maksas.",
+    "online": "<b>Kā jūs mums šeit maksājat:</b> Klienti var maksāt tiešsaistē vai saņemot pasūtījumu. Reizi mēnesī mēs no jūsu kartes ieturam maksu par plānu un mūsu komisiju par iepriekšējā mēneša iepriekšējiem pasūtījumiem. Pasūtījumi uz vietas vienmēr ir bez maksas."
+  }
 }

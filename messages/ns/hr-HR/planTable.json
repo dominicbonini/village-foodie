@@ -16,7 +16,8 @@
     "included": "Online narudžbe uključene svaki mjesec",
     "fee": "HatchGrab naknada za online narudžbe*",
     "feeNoMark": "HatchGrab naknada za online narudžbe",
-    "walkUp": "Narudžbe na licu mjesta"
+    "walkUp": "Narudžbe na licu mjesta",
+    "feeMonthly": "HatchGrab naknada za prednarudžbe, naplaćuje se mjesečno{mark}"
   },
   "cell": {
     "unlimited": "Neograničeno",

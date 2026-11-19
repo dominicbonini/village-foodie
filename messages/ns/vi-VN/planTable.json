@@ -16,7 +16,8 @@
     "included": "Giá trị đơn online đã gồm mỗi tháng",
     "fee": "Phí HatchGrab trên đơn online*",
     "feeNoMark": "Phí HatchGrab trên đơn online",
-    "walkUp": "Đơn mua tại chỗ"
+    "walkUp": "Đơn mua tại chỗ",
+    "feeMonthly": "Phí HatchGrab trên đơn đặt trước, tính phí hằng tháng{mark}"
   },
   "cell": {
     "unlimited": "Không giới hạn",

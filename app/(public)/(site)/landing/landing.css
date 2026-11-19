@@ -841,6 +841,9 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   .hg-landing #pricing .trial-banner { order: 4; margin-top: 2rem; margin-bottom: 0; }
   .hg-landing #pricing .switch-block { order: 5; }
   .hg-landing #pricing .price-note { order: 6; }
+  /* plans-everywhere-1: the "How you pay us here" note stays straight under the cards (same order as the cards; DOM order puts it
+     after them), not with the footnote at the end. */
+  .hg-landing #pricing .monthly-note { order: 2; }
   .hg-landing .cheap-bar { flex-direction: column; gap: .35rem; }
   /* landing-mobile-tidy (21 October 2026): ALL THREE CARDS CARRY PRO'S BORDER ON A PHONE (Pro keeps its badge and its orange
      button, so it still stands out); the cheapest box's bands stack, one per line. */

@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> vain verkkotilauksista. Tilaukset paikan päällä ovat aina maksuttomia.",
       "included": "Joka kuukausi hintaan sisältyy verkkotilauksia <b>{included}</b> edestä, sen jälkeen <b>{fee}*</b>. Tilaukset paikan päällä ovat aina maksuttomia.",
       "includedNoMark": "Joka kuukausi hintaan sisältyy verkkotilauksia <b>{included}</b> edestä, sen jälkeen <b>{fee}</b>. Tilaukset paikan päällä ovat aina maksuttomia.",
-      "noFee": "<b>Ei HatchGrabin maksuja</b> verkkotilauksista, olipa kiirettä kuinka paljon tahansa. Yksi ennustettava kuukausihinta."
+      "noFee": "<b>Ei HatchGrabin maksuja</b> verkkotilauksista, olipa kiirettä kuinka paljon tahansa. Yksi ennustettava kuukausihinta.",
+      "feeOnlyMonthly": "<b>{fee}</b> ennakkotilauksista, laskutetaan kuukausittain",
+      "includedMonthly": "Joka kuukausi hintaan sisältyy ennakkotilauksia <b>{included}</b> edestä. Sen jälkeen <b>{fee}</b>, laskutetaan kuukausittain"
     },
     "base": {
       "walkUp": "Tilaukset paikan päällä ja keittiönäyttö",
@@ -6300,7 +6302,11 @@
       "only": "Mikä tahansa määrä → <b>{plan}</b>"
     },
     "footnote": "* Lisäksi Stripen korttimaksujen käsittelykulut kortilla maksetuista verkkotilauksista (tällä hetkellä {country}: {cardFee}), jotka maksetaan Stripelle, ei HatchGrabille. Tilaukset paikan päällä maksetaan omalla maksupäätteelläsi — HatchGrab veloittaa 0 %.",
-    "currencyLine": "Hinnat: {currency} ({code})"
+    "currencyLine": "Hinnat: {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Näin maksat meille täällä:</b> Asiakkaat maksavat sinulle noutaessaan. Kerran kuussa veloitamme kortiltasi pakettisi hinnan ja maksumme edellisen kuun ennakkotilauksista. Tilaukset paikan päällä ovat aina maksuttomia.",
+      "online": "<b>Näin maksat meille täällä:</b> Asiakkaat voivat maksaa verkossa tai noutaessaan. Kerran kuussa veloitamme kortiltasi pakettisi hinnan ja maksumme edellisen kuun ennakkotilauksista. Tilaukset paikan päällä ovat aina maksuttomia."
+    }
   },
   "planTable": {
     "h1": "Kaikki myyntivuoron pyörittämiseen kaikissa paketeissa.",
@@ -6320,7 +6326,8 @@
       "included": "Kuukausittain sisältyvät verkkotilaukset",
       "fee": "HatchGrabin maksu verkkotilauksista*",
       "feeNoMark": "HatchGrabin maksu verkkotilauksista",
-      "walkUp": "Tilaukset paikan päällä"
+      "walkUp": "Tilaukset paikan päällä",
+      "feeMonthly": "HatchGrabin maksu ennakkotilauksista, laskutetaan kuukausittain{mark}"
     },
     "cell": {
       "unlimited": "Rajaton",

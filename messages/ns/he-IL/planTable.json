@@ -16,7 +16,8 @@
     "included": "הזמנות אונליין כלולות בכל חודש",
     "fee": "עמלת HatchGrab על הזמנות אונליין*",
     "feeNoMark": "עמלת HatchGrab על הזמנות אונליין",
-    "walkUp": "הזמנות במקום"
+    "walkUp": "הזמנות במקום",
+    "feeMonthly": "עמלת HatchGrab על הזמנות מראש, בחיוב חודשי{mark}"
   },
   "cell": {
     "unlimited": "ללא הגבלה",

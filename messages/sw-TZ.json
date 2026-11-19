@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> kwa oda za mtandaoni pekee. Oda za papo hapo ni bila malipo kila wakati.",
       "included": "Oda za mtandaoni za hadi <b>{included}</b> zimejumuishwa kila mwezi, kisha <b>{fee}*</b>. Oda za papo hapo ni bila malipo kila wakati.",
       "includedNoMark": "Oda za mtandaoni za hadi <b>{included}</b> zimejumuishwa kila mwezi, kisha <b>{fee}</b>. Oda za papo hapo ni bila malipo kila wakati.",
-      "noFee": "<b>Hakuna ada za HatchGrab</b> kwa oda za mtandaoni, hata uwe na shughuli nyingi kiasi gani. Gharama moja ya kila mwezi inayotabirika."
+      "noFee": "<b>Hakuna ada za HatchGrab</b> kwa oda za mtandaoni, hata uwe na shughuli nyingi kiasi gani. Gharama moja ya kila mwezi inayotabirika.",
+      "feeOnlyMonthly": "<b>{fee}</b> kwa oda za mapema, hutozwa kila mwezi",
+      "includedMonthly": "Oda za mapema za hadi <b>{included}</b> zimejumuishwa kila mwezi. Kisha <b>{fee}</b>, hutozwa kila mwezi"
     },
     "base": {
       "walkUp": "Oda za papo hapo na skrini ya jikoni (KDS)",
@@ -6300,7 +6302,11 @@
       "only": "Kiasi chochote → <b>{plan}</b>"
     },
     "footnote": "* Pamoja na ada ya Stripe ya kuchakata malipo ya kadi, kwa oda za mtandaoni zinazolipwa kwa kadi pekee (kwa sasa {cardFee} nchini {country}), inayolipwa kwa Stripe, si kwa HatchGrab. Oda za papo hapo hutumia mashine ya kadi (POS) yako mwenyewe — HatchGrab inatoza 0%.",
-    "currencyLine": "Bei kwa {currency} ({code})"
+    "currencyLine": "Bei kwa {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Jinsi unavyotulipa hapa:</b> Wateja wanakulipa wanapochukua oda. Mara moja kwa mwezi tunatoza kadi yako kwa ajili ya mpango wako na ada yetu ya oda za mapema za mwezi uliopita. Oda za papo hapo ni bila malipo kila wakati.",
+      "online": "<b>Jinsi unavyotulipa hapa:</b> Wateja wanaweza kulipa mtandaoni au wanapochukua oda. Mara moja kwa mwezi tunatoza kadi yako kwa ajili ya mpango wako na ada yetu ya oda za mapema za mwezi uliopita. Oda za papo hapo ni bila malipo kila wakati."
+    }
   },
   "planTable": {
     "h1": "Kila kitu cha kuendesha huduma yako, kwenye kila kifurushi.",
@@ -6320,7 +6326,8 @@
       "included": "Oda za mtandaoni zilizojumuishwa kila mwezi",
       "fee": "Ada ya HatchGrab kwa oda za mtandaoni*",
       "feeNoMark": "Ada ya HatchGrab kwa oda za mtandaoni",
-      "walkUp": "Oda za papo hapo"
+      "walkUp": "Oda za papo hapo",
+      "feeMonthly": "Ada ya HatchGrab kwa oda za mapema, hutozwa kila mwezi{mark}"
     },
     "cell": {
       "unlimited": "Bila kikomo",

@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> alleen op online bestellingen. Bestellingen aan de truck zijn altijd gratis.",
       "included": "Eerste <b>{included}</b> aan online bestellingen per maand inbegrepen, daarna <b>{fee}*</b>. Bestellingen aan de truck zijn altijd gratis.",
       "includedNoMark": "Eerste <b>{included}</b> aan online bestellingen per maand inbegrepen, daarna <b>{fee}</b>. Bestellingen aan de truck zijn altijd gratis.",
-      "noFee": "<b>Geen HatchGrab-kosten</b> op online bestellingen, hoe druk je het ook krijgt. Eén voorspelbaar maandbedrag."
+      "noFee": "<b>Geen HatchGrab-kosten</b> op online bestellingen, hoe druk je het ook krijgt. Eén voorspelbaar maandbedrag.",
+      "feeOnlyMonthly": "<b>{fee}</b> op voorbestellingen, maandelijks gefactureerd",
+      "includedMonthly": "Eerste <b>{included}</b> aan voorbestellingen per maand inbegrepen. Daarna <b>{fee}</b>, maandelijks gefactureerd"
     },
     "base": {
       "walkUp": "Bestellingen aan de truck & keukenscherm",
@@ -6300,7 +6302,11 @@
       "only": "Elk volume → <b>{plan}</b>"
     },
     "footnote": "* Plus de kaarttransactiekosten van Stripe op online kaartbestellingen (nu {country}: {cardFee}), te betalen aan Stripe, niet aan HatchGrab. Bestellingen aan de truck lopen via je eigen pinapparaat — HatchGrab rekent 0%.",
-    "currencyLine": "Prijzen in {currency} ({code})"
+    "currencyLine": "Prijzen in {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Zo betaal je ons hier:</b> Klanten betalen jou bij het afhalen. Eén keer per maand schrijven we je abonnement en onze kosten op de voorbestellingen van vorige maand af van je kaart. Bestellingen aan de truck zijn altijd gratis.",
+      "online": "<b>Zo betaal je ons hier:</b> Klanten kunnen online of bij het afhalen betalen. Eén keer per maand schrijven we je abonnement en onze kosten op de voorbestellingen van vorige maand af van je kaart. Bestellingen aan de truck zijn altijd gratis."
+    }
   },
   "planTable": {
     "h1": "Alles om je service te draaien, in elk abonnement.",
@@ -6320,7 +6326,8 @@
       "included": "Online bestellingen per maand inbegrepen",
       "fee": "HatchGrab-kosten op online bestellingen*",
       "feeNoMark": "HatchGrab-kosten op online bestellingen",
-      "walkUp": "Bestellingen aan de truck"
+      "walkUp": "Bestellingen aan de truck",
+      "feeMonthly": "HatchGrab-kosten op voorbestellingen, maandelijks gefactureerd{mark}"
     },
     "cell": {
       "unlimited": "Onbeperkt",

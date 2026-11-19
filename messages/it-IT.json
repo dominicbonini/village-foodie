@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> solo sugli ordini online. Gli ordini al banco sono sempre gratuiti.",
       "included": "I primi <b>{included}</b> di ordini online sono inclusi ogni mese, poi <b>{fee}*</b>. Gli ordini al banco sono sempre gratuiti.",
       "includedNoMark": "I primi <b>{included}</b> di ordini online sono inclusi ogni mese, poi <b>{fee}</b>. Gli ordini al banco sono sempre gratuiti.",
-      "noFee": "<b>Nessuna commissione HatchGrab</b> sugli ordini online, anche nei periodi di punta. Un costo mensile fisso e prevedibile."
+      "noFee": "<b>Nessuna commissione HatchGrab</b> sugli ordini online, anche nei periodi di punta. Un costo mensile fisso e prevedibile.",
+      "feeOnlyMonthly": "<b>{fee}</b> sui preordini, addebitato ogni mese",
+      "includedMonthly": "I primi <b>{included}</b> di preordini sono inclusi ogni mese. Poi <b>{fee}</b>, addebitato ogni mese"
     },
     "base": {
       "walkUp": "Ordini al banco e monitor cucina",
@@ -6300,7 +6302,11 @@
       "only": "Qualsiasi volume → <b>{plan}</b>"
     },
     "footnote": "* Più le commissioni di Stripe sugli ordini online pagati con carta (tariffa attuale, {country}: {cardFee}), pagate a Stripe e non a HatchGrab. Gli ordini al banco passano dal tuo POS — HatchGrab trattiene lo 0%.",
-    "currencyLine": "Prezzi in {currency} ({code})"
+    "currencyLine": "Prezzi in {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Come ci paghi qui:</b> i clienti ti pagano al ritiro. Una volta al mese addebitiamo sulla tua carta il piano e la nostra commissione sui preordini del mese precedente. Gli ordini al banco sono sempre gratuiti.",
+      "online": "<b>Come ci paghi qui:</b> i clienti possono pagare online o al ritiro. Una volta al mese addebitiamo sulla tua carta il piano e la nostra commissione sui preordini del mese precedente. Gli ordini al banco sono sempre gratuiti."
+    }
   },
   "planTable": {
     "h1": "Tutto per gestire il tuo servizio, in ogni piano.",
@@ -6320,7 +6326,8 @@
       "included": "Ordini online inclusi ogni mese",
       "fee": "Commissione HatchGrab sugli ordini online*",
       "feeNoMark": "Commissione HatchGrab sugli ordini online",
-      "walkUp": "Ordini al banco"
+      "walkUp": "Ordini al banco",
+      "feeMonthly": "Commissione HatchGrab sui preordini, addebitata ogni mese{mark}"
     },
     "cell": {
       "unlimited": "Illimitati",

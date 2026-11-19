@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> només per les comandes en línia. Les comandes presencials sempre són gratuïtes.",
     "included": "Inclou <b>{included}</b> de comandes en línia cada mes; després, <b>{fee}*</b>. Les comandes presencials sempre són gratuïtes.",
     "includedNoMark": "Inclou <b>{included}</b> de comandes en línia cada mes; després, <b>{fee}</b>. Les comandes presencials sempre són gratuïtes.",
-    "noFee": "<b>Cap comissió de HatchGrab</b> per les comandes en línia, per molta feina que tinguis. Un cost mensual previsible."
+    "noFee": "<b>Cap comissió de HatchGrab</b> per les comandes en línia, per molta feina que tinguis. Un cost mensual previsible.",
+    "feeOnlyMonthly": "<b>{fee}</b> per les comandes anticipades, amb cobrament mensual",
+    "includedMonthly": "Inclou <b>{included}</b> de comandes anticipades cada mes. Després, <b>{fee}</b>, amb cobrament mensual"
   },
   "base": {
     "walkUp": "Comandes presencials i pantalla de cuina",
@@ -49,5 +51,9 @@
     "only": "Qualsevol volum → <b>{plan}</b>"
   },
   "footnote": "* A més, el processament de targetes que cobra Stripe, només en les comandes en línia pagades amb targeta (actualment {cardFee} a {country}); es paga a Stripe, no a HatchGrab. Les comandes presencials fan servir el teu propi datàfon — HatchGrab hi cobra un 0 %.",
-  "currencyLine": "Preus en {currency} ({code})"
+  "currencyLine": "Preus en {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Com ens pagues aquí:</b> els clients et paguen quan recullen la comanda. Un cop al mes carreguem a la teva targeta el pla i la nostra comissió per les comandes anticipades del mes anterior. Les comandes presencials sempre són gratuïtes.",
+    "online": "<b>Com ens pagues aquí:</b> els clients poden pagar en línia o quan recullen la comanda. Un cop al mes carreguem a la teva targeta el pla i la nostra comissió per les comandes anticipades del mes anterior. Les comandes presencials sempre són gratuïtes."
+  }
 }

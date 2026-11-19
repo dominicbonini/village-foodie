@@ -16,7 +16,8 @@
     "included": "Onlinebestillinger inkluderet hver måned",
     "fee": "HatchGrab-gebyr på onlinebestillinger*",
     "feeNoMark": "HatchGrab-gebyr på onlinebestillinger",
-    "walkUp": "Bestillinger ved vognen"
+    "walkUp": "Bestillinger ved vognen",
+    "feeMonthly": "HatchGrab-gebyr på forudbestillinger, faktureres månedligt{mark}"
   },
   "cell": {
     "unlimited": "Ubegrænset",

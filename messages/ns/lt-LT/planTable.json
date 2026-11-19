@@ -16,7 +16,8 @@
     "included": "Kas mėnesį įtraukti užsakymai internetu",
     "fee": "HatchGrab komisiniai už užsakymus internetu*",
     "feeNoMark": "HatchGrab komisiniai už užsakymus internetu",
-    "walkUp": "Užsakymai vietoje"
+    "walkUp": "Užsakymai vietoje",
+    "feeMonthly": "HatchGrab komisiniai už išankstinius užsakymus, apmokestinama kas mėnesį{mark}"
   },
   "cell": {
     "unlimited": "Neribota",

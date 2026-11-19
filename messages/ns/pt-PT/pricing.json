@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> apenas nas encomendas online. As encomendas ao balcão são sempre grátis.",
     "included": "Os primeiros <b>{included}</b> em encomendas online estão incluídos todos os meses; depois, <b>{fee}*</b>. As encomendas ao balcão são sempre grátis.",
     "includedNoMark": "Os primeiros <b>{included}</b> em encomendas online estão incluídos todos os meses; depois, <b>{fee}</b>. As encomendas ao balcão são sempre grátis.",
-    "noFee": "<b>Sem taxas HatchGrab</b> nas encomendas online, por mais movimento que tenha. Um custo mensal previsível."
+    "noFee": "<b>Sem taxas HatchGrab</b> nas encomendas online, por mais movimento que tenha. Um custo mensal previsível.",
+    "feeOnlyMonthly": "<b>{fee}</b> nas encomendas antecipadas, cobrada mensalmente",
+    "includedMonthly": "Os primeiros <b>{included}</b> em encomendas antecipadas estão incluídos todos os meses. Depois, <b>{fee}</b>, cobrada mensalmente"
   },
   "base": {
     "walkUp": "Encomendas ao balcão e ecrã da cozinha",
@@ -49,5 +51,9 @@
     "only": "Qualquer volume → <b>{plan}</b>"
   },
   "footnote": "* Acrescem as taxas de processamento de cartões da Stripe nas encomendas online pagas com cartão (tarifa atual — {country}: {cardFee}), pagas à Stripe e não à HatchGrab. As encomendas ao balcão usam o seu próprio terminal de pagamento — a HatchGrab cobra 0 %.",
-  "currencyLine": "Preços em {currency} ({code})"
+  "currencyLine": "Preços em {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Como nos paga aqui:</b> os clientes pagam-lhe ao levantar. Uma vez por mês, cobramos no seu cartão o seu plano e a nossa taxa sobre as encomendas antecipadas do mês anterior. As encomendas ao balcão são sempre grátis.",
+    "online": "<b>Como nos paga aqui:</b> os clientes podem pagar online ou ao levantar. Uma vez por mês, cobramos no seu cartão o seu plano e a nossa taxa sobre as encomendas antecipadas do mês anterior. As encomendas ao balcão são sempre grátis."
+  }
 }

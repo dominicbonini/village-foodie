@@ -16,7 +16,8 @@
     "included": "Iga kuu hinnas sisalduvad veebitellimused",
     "fee": "HatchGrabi tasu veebitellimustelt*",
     "feeNoMark": "HatchGrabi tasu veebitellimustelt",
-    "walkUp": "Tellimused kohapeal"
+    "walkUp": "Tellimused kohapeal",
+    "feeMonthly": "HatchGrabi tasu ettetellimustelt, arveldatakse kord kuus{mark}"
   },
   "cell": {
     "unlimited": "Piiramatu",

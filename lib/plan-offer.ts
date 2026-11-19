@@ -234,9 +234,14 @@ export function tableCell(catalog: PlanCatalog, row: FeatureTableRow, plan: Pick
   return row.comingSoon ? 'soon' : 'on'
 }
 
-/** The table's feature rows, by group, in order. */
-export function tableGroups(): { group: FeatureGroup; rows: FeatureTableRow[] }[] {
-  return FEATURE_GROUPS.map(group => ({ group, rows: FEATURE_TABLE.filter(r => r.group === group) }))
+/** plans-everywhere-1 (19 November 2026): rows that describe ONLINE CARD PAYMENTS — left out where trucks can't take them
+ *  (lib/country-settings-types.ts offersOnlineCardPayments false: billed_at_truck, or no country_billing row). */
+export const CARD_ONLY_ROWS: readonly string[] = ['online_payments']
+
+/** The table's feature rows, by group, in order. `cards: false` (a country without online card payments) leaves out the card-only
+ *  rows; absent or true, every row, exactly as before. */
+export function tableGroups(opts: { cards?: boolean } = {}): { group: FeatureGroup; rows: FeatureTableRow[] }[] {
+  return FEATURE_GROUPS.map(group => ({ group, rows: FEATURE_TABLE.filter(r => r.group === group && (opts.cards !== false || !CARD_ONLY_ROWS.includes(r.id))) }))
 }
 
 /** "WHAT YOU PAY": walk-up orders are "Free" while the plan has them (else "—"). */

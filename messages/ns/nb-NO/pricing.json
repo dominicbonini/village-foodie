@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> bare på nettbestillinger. Bestillinger ved bilen er alltid gratis.",
     "included": "Nettbestillinger for de første <b>{included}</b> er inkludert hver måned, deretter <b>{fee}*</b>. Bestillinger ved bilen er alltid gratis.",
     "includedNoMark": "Nettbestillinger for de første <b>{included}</b> er inkludert hver måned, deretter <b>{fee}</b>. Bestillinger ved bilen er alltid gratis.",
-    "noFee": "<b>Ingen HatchGrab-gebyrer</b> på nettbestillinger, uansett hvor travelt du har det. Én forutsigbar månedskostnad."
+    "noFee": "<b>Ingen HatchGrab-gebyrer</b> på nettbestillinger, uansett hvor travelt du har det. Én forutsigbar månedskostnad.",
+    "feeOnlyMonthly": "<b>{fee}</b> på forhåndsbestillinger, faktureres månedlig",
+    "includedMonthly": "Forhåndsbestillinger for de første <b>{included}</b> er inkludert hver måned. Deretter <b>{fee}</b>, faktureres månedlig"
   },
   "base": {
     "walkUp": "Bestillinger ved bilen og kjøkkenskjerm",
@@ -49,5 +51,9 @@
     "only": "Uansett volum → <b>{plan}</b>"
   },
   "footnote": "* I tillegg kommer Stripes kortgebyr på nettbestillinger betalt med kort (for tiden {cardFee} i {country}), som betales til Stripe, ikke HatchGrab. Bestillinger ved bilen bruker din egen betalingsterminal — HatchGrab tar 0 %.",
-  "currencyLine": "Valuta: {currency} ({code})"
+  "currencyLine": "Valuta: {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Slik betaler du oss her:</b> Kundene betaler deg når de henter. Én gang i måneden belaster vi kortet ditt for planen din og gebyret vårt på forrige måneds forhåndsbestillinger. Bestillinger ved bilen er alltid gratis.",
+    "online": "<b>Slik betaler du oss her:</b> Kundene kan betale på nett eller når de henter. Én gang i måneden belaster vi kortet ditt for planen din og gebyret vårt på forrige måneds forhåndsbestillinger. Bestillinger ved bilen er alltid gratis."
+  }
 }

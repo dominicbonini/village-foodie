@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> len pri online objednávkach. Objednávky na mieste sú vždy zadarmo.",
       "included": "Online objednávky do <b>{included}</b> mesačne sú v cene, potom <b>{fee}*</b>. Objednávky na mieste sú vždy zadarmo.",
       "includedNoMark": "Online objednávky do <b>{included}</b> mesačne sú v cene, potom <b>{fee}</b>. Objednávky na mieste sú vždy zadarmo.",
-      "noFee": "<b>Žiadne poplatky HatchGrab</b> za online objednávky, nech máte akokoľvek veľa práce. Jeden predvídateľný mesačný náklad."
+      "noFee": "<b>Žiadne poplatky HatchGrab</b> za online objednávky, nech máte akokoľvek veľa práce. Jeden predvídateľný mesačný náklad.",
+      "feeOnlyMonthly": "<b>{fee}</b> pri predobjednávkach, účtované mesačne",
+      "includedMonthly": "Predobjednávky do <b>{included}</b> mesačne sú v cene. Potom <b>{fee}</b>, účtované mesačne"
     },
     "base": {
       "walkUp": "Objednávky na mieste a kuchynská obrazovka",
@@ -6300,7 +6302,11 @@
       "only": "Akýkoľvek objem → <b>{plan}</b>"
     },
     "footnote": "* K tomu poplatok Stripe za spracovanie platieb kartou pri online objednávkach (aktuálne {country}: {cardFee}), ktorý platíte spoločnosti Stripe, nie HatchGrab. Objednávky na mieste prechádzajú cez váš vlastný platobný terminál — HatchGrab si účtuje 0 %.",
-    "currencyLine": "Ceny v mene {currency} ({code})"
+    "currencyLine": "Ceny v mene {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Ako nám tu platíte:</b> Zákazníci vám platia pri vyzdvihnutí. Raz mesačne vám z karty strhneme platbu za tarif a náš poplatok z predobjednávok za minulý mesiac. Objednávky na mieste sú vždy zadarmo.",
+      "online": "<b>Ako nám tu platíte:</b> Zákazníci môžu platiť online alebo pri vyzdvihnutí. Raz mesačne vám z karty strhneme platbu za tarif a náš poplatok z predobjednávok za minulý mesiac. Objednávky na mieste sú vždy zadarmo."
+    }
   },
   "planTable": {
     "h1": "Všetko, čo potrebujete na prevádzku, v každom pláne.",
@@ -6320,7 +6326,8 @@
       "included": "Online objednávky v cene každý mesiac",
       "fee": "Poplatok HatchGrab za online objednávky*",
       "feeNoMark": "Poplatok HatchGrab za online objednávky",
-      "walkUp": "Objednávky na mieste"
+      "walkUp": "Objednávky na mieste",
+      "feeMonthly": "Poplatok HatchGrab za predobjednávky, účtované mesačne{mark}"
     },
     "cell": {
       "unlimited": "Neobmedzené",

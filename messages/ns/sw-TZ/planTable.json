@@ -16,7 +16,8 @@
     "included": "Oda za mtandaoni zilizojumuishwa kila mwezi",
     "fee": "Ada ya HatchGrab kwa oda za mtandaoni*",
     "feeNoMark": "Ada ya HatchGrab kwa oda za mtandaoni",
-    "walkUp": "Oda za papo hapo"
+    "walkUp": "Oda za papo hapo",
+    "feeMonthly": "Ada ya HatchGrab kwa oda za mapema, hutozwa kila mwezi{mark}"
   },
   "cell": {
     "unlimited": "Bila kikomo",

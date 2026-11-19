@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> tik už užsakymus internetu. Užsakymai vietoje visada nemokami.",
       "included": "Užsakymams internetu iki <b>{included}</b> per mėnesį komisiniai netaikomi, viršijus – <b>{fee}*</b>. Užsakymai vietoje visada nemokami.",
       "includedNoMark": "Užsakymams internetu iki <b>{included}</b> per mėnesį komisiniai netaikomi, viršijus – <b>{fee}</b>. Užsakymai vietoje visada nemokami.",
-      "noFee": "<b>Jokių HatchGrab komisinių</b> už užsakymus internetu, kad ir kiek jų būtų. Viena nuspėjama mėnesio kaina."
+      "noFee": "<b>Jokių HatchGrab komisinių</b> už užsakymus internetu, kad ir kiek jų būtų. Viena nuspėjama mėnesio kaina.",
+      "feeOnlyMonthly": "<b>{fee}</b> už išankstinius užsakymus, apmokestinama kas mėnesį",
+      "includedMonthly": "Išankstiniams užsakymams iki <b>{included}</b> per mėnesį komisiniai netaikomi. Viršijus – <b>{fee}</b>, apmokestinama kas mėnesį"
     },
     "base": {
       "walkUp": "Užsakymai vietoje ir virtuvės ekranas",
@@ -6300,7 +6302,11 @@
       "only": "Bet kokia apimtis → <b>{plan}</b>"
     },
     "footnote": "* Plius Stripe kortelių mokėjimų apdorojimo mokestis už užsakymus internetu, apmokėtus kortele (šiuo metu – {country}: {cardFee}), mokamas Stripe, o ne HatchGrab. Užsakymams vietoje naudojate savo mokėjimo terminalą – HatchGrab ima 0 %.",
-    "currencyLine": "Kainos nurodytos valiuta: {currency} ({code})"
+    "currencyLine": "Kainos nurodytos valiuta: {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Kaip mums čia mokate:</b> Klientai jums sumoka atsiimdami užsakymą. Kartą per mėnesį nuskaičiuojame iš jūsų kortelės plano kainą ir mūsų komisinius už praėjusio mėnesio išankstinius užsakymus. Užsakymai vietoje visada nemokami.",
+      "online": "<b>Kaip mums čia mokate:</b> Klientai gali sumokėti internetu arba atsiimdami užsakymą. Kartą per mėnesį nuskaičiuojame iš jūsų kortelės plano kainą ir mūsų komisinius už praėjusio mėnesio išankstinius užsakymus. Užsakymai vietoje visada nemokami."
+    }
   },
   "planTable": {
     "h1": "Viskas, ko reikia aptarnavimui, – kiekviename plane.",
@@ -6320,7 +6326,8 @@
       "included": "Kas mėnesį įtraukti užsakymai internetu",
       "fee": "HatchGrab komisiniai už užsakymus internetu*",
       "feeNoMark": "HatchGrab komisiniai už užsakymus internetu",
-      "walkUp": "Užsakymai vietoje"
+      "walkUp": "Užsakymai vietoje",
+      "feeMonthly": "HatchGrab komisiniai už išankstinius užsakymus, apmokestinama kas mėnesį{mark}"
     },
     "cell": {
       "unlimited": "Neribota",

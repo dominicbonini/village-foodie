@@ -16,7 +16,8 @@
     "included": "Pedidos online incluídos por mês",
     "fee": "Taxa do HatchGrab em pedidos online*",
     "feeNoMark": "Taxa do HatchGrab em pedidos online",
-    "walkUp": "Pedidos no balcão"
+    "walkUp": "Pedidos no balcão",
+    "feeMonthly": "Taxa do HatchGrab em pedidos antecipados, cobrada mensalmente{mark}"
   },
   "cell": {
     "unlimited": "Ilimitado",

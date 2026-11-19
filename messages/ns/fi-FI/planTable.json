@@ -16,7 +16,8 @@
     "included": "Kuukausittain sisältyvät verkkotilaukset",
     "fee": "HatchGrabin maksu verkkotilauksista*",
     "feeNoMark": "HatchGrabin maksu verkkotilauksista",
-    "walkUp": "Tilaukset paikan päällä"
+    "walkUp": "Tilaukset paikan päällä",
+    "feeMonthly": "HatchGrabin maksu ennakkotilauksista, laskutetaan kuukausittain{mark}"
   },
   "cell": {
     "unlimited": "Rajaton",

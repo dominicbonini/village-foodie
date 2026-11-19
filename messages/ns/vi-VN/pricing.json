@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> chỉ tính trên đơn online. Đơn mua tại chỗ luôn miễn phí.",
     "included": "Mỗi tháng đã gồm <b>{included}</b> giá trị đơn online đầu tiên, sau đó tính <b>{fee}*</b>. Đơn mua tại chỗ luôn miễn phí.",
     "includedNoMark": "Mỗi tháng đã gồm <b>{included}</b> giá trị đơn online đầu tiên, sau đó tính <b>{fee}</b>. Đơn mua tại chỗ luôn miễn phí.",
-    "noFee": "<b>Không mất phí HatchGrab</b> trên đơn online, dù bạn bán đắt hàng đến đâu. Một khoản phí cố định mỗi tháng, dễ dự tính."
+    "noFee": "<b>Không mất phí HatchGrab</b> trên đơn online, dù bạn bán đắt hàng đến đâu. Một khoản phí cố định mỗi tháng, dễ dự tính.",
+    "feeOnlyMonthly": "<b>{fee}</b> trên đơn đặt trước, tính phí hằng tháng",
+    "includedMonthly": "Mỗi tháng đã gồm <b>{included}</b> giá trị đơn đặt trước đầu tiên. Sau đó <b>{fee}</b>, tính phí hằng tháng"
   },
   "base": {
     "walkUp": "Đơn mua tại chỗ & màn hình bếp (KDS)",
@@ -49,5 +51,9 @@
     "only": "Mọi mức → <b>{plan}</b>"
   },
   "footnote": "* Cộng phí xử lý thẻ của Stripe trên đơn online thanh toán bằng thẻ (hiện là {cardFee} tại {country}), trả cho Stripe, không phải HatchGrab. Đơn mua tại chỗ dùng máy POS của chính bạn — HatchGrab thu 0%.",
-  "currencyLine": "Giá tính bằng {currency} ({code})"
+  "currencyLine": "Giá tính bằng {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Cách bạn trả tiền cho chúng tôi tại đây:</b> Khách trả tiền cho bạn khi nhận món. Mỗi tháng một lần, chúng tôi trừ vào thẻ của bạn tiền gói và phí của chúng tôi trên các đơn đặt trước của tháng trước. Đơn mua tại chỗ luôn miễn phí.",
+    "online": "<b>Cách bạn trả tiền cho chúng tôi tại đây:</b> Khách có thể thanh toán online hoặc khi nhận món. Mỗi tháng một lần, chúng tôi trừ vào thẻ của bạn tiền gói và phí của chúng tôi trên các đơn đặt trước của tháng trước. Đơn mua tại chỗ luôn miễn phí."
+  }
 }

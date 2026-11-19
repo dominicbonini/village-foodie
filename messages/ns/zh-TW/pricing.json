@@ -19,7 +19,9 @@
     "feeOnlyCard": "僅線上訂單收取 <b>{fee}*</b>。現場點餐永遠免費。",
     "included": "每月前 <b>{included}</b> 的線上訂單已包含在內，之後收取 <b>{fee}*</b>。現場點餐永遠免費。",
     "includedNoMark": "每月前 <b>{included}</b> 的線上訂單已包含在內，之後收取 <b>{fee}</b>。現場點餐永遠免費。",
-    "noFee": "線上訂單<b>不收 HatchGrab 手續費</b>，再忙都一樣。每月固定費用，預算好掌握。"
+    "noFee": "線上訂單<b>不收 HatchGrab 手續費</b>，再忙都一樣。每月固定費用，預算好掌握。",
+    "feeOnlyMonthly": "預約點餐收取 <b>{fee}</b>，按月計費",
+    "includedMonthly": "每月前 <b>{included}</b> 的預約點餐已包含在內。之後收取 <b>{fee}</b>，按月計費"
   },
   "base": {
     "walkUp": "現場點餐與廚房顯示系統（KDS）",
@@ -49,5 +51,9 @@
     "only": "任何訂單量 → <b>{plan}</b>"
   },
   "footnote": "* 線上刷卡訂單另需支付 Stripe 的刷卡手續費（目前在{country}為 {cardFee}），這筆費用付給 Stripe，而非 HatchGrab。現場點餐使用你自己的刷卡機，HatchGrab 收取 0%。",
-  "currencyLine": "價格幣別：{currency}（{code}）"
+  "currencyLine": "價格幣別：{currency}（{code}）",
+  "monthlyNote": {
+    "atTruck": "<b>你在這裡如何付款給我們：</b>顧客於取餐時付款給你。我們每月一次從你的信用卡收取方案費用，以及上個月預約點餐的手續費。現場點餐永遠免費。",
+    "online": "<b>你在這裡如何付款給我們：</b>顧客可線上付款或於取餐時付款。我們每月一次從你的信用卡收取方案費用，以及上個月預約點餐的手續費。現場點餐永遠免費。"
+  }
 }

@@ -16,7 +16,8 @@
     "included": "Online παραγγελίες που περιλαμβάνονται κάθε μήνα",
     "fee": "Προμήθεια HatchGrab στις online παραγγελίες*",
     "feeNoMark": "Προμήθεια HatchGrab στις online παραγγελίες",
-    "walkUp": "Παραγγελίες επί τόπου"
+    "walkUp": "Παραγγελίες επί τόπου",
+    "feeMonthly": "Προμήθεια HatchGrab στις προπαραγγελίες, με μηνιαία χρέωση{mark}"
   },
   "cell": {
     "unlimited": "Χωρίς όριο",

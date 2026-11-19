@@ -226,7 +226,14 @@ function markRules(m) {
       if (seg !== 'br') {
         const F = await kit.quietAsync(() => R.page('features', seg, rows))
         const fh = F.html ?? ''
-        const row = esc(M[cards ? 'planTable.pay.fee' : 'planTable.pay.feeNoMark'])
+        // ⚠️ RE-PINNED (plans-everywhere-1, 19 November 2026, docs/plans-everywhere-1-report.md): where our fee is BILLED MONTHLY
+        // (billed_online / billed_at_truck) and a plan charges one, the row reads planTable.pay.feeMonthly ("HatchGrab fee on pre-orders,
+        // billed monthly"), with the same asterisk rule ({mark} = "*" in a card country). Read from the working tree: the key is newer
+        // than this change's commit. fee_from_payment, no row and the fixture without the field are exactly as before.
+        const monthlyRow = model === 'billed_online' || model === 'billed_at_truck'
+        const row = monthlyRow
+          ? esc(flat(at('TREE', `messages/${loc}.json`))['planTable.pay.feeMonthly'].replace('{mark}', cards ? '*' : ''))
+          : esc(M[cards ? 'planTable.pay.fee' : 'planTable.pay.feeNoMark'])
         t(`/${seg}/features ${label}: the plan table's fee row ${cards ? 'with' : 'without'} its asterisk, ${cards ? 'and' : 'no'} footnote`, fh.includes(`>${row}<`) && fh.includes(footStart) === cards && (cards || !fh.includes(`>${esc(M['planTable.pay.fee'])}<`)), { row })
       }
       const pdf = await R.pdf(rows, cc)

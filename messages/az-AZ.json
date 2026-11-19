@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "Yalnız onlayn sifarişlərdən <b>{fee}*</b>. Yerində sifarişlər həmişə pulsuzdur.",
       "included": "Hər ay onlayn sifarişlərin ilk <b>{included}</b> məbləği daxildir, sonra <b>{fee}*</b>. Yerində sifarişlər həmişə pulsuzdur.",
       "includedNoMark": "Hər ay onlayn sifarişlərin ilk <b>{included}</b> məbləği daxildir, sonra <b>{fee}</b>. Yerində sifarişlər həmişə pulsuzdur.",
-      "noFee": "Nə qədər məşğul olsanız da, onlayn sifarişlərdə <b>HatchGrab haqqı yoxdur</b>. Hər ay eyni, əvvəlcədən bilinən xərc."
+      "noFee": "Nə qədər məşğul olsanız da, onlayn sifarişlərdə <b>HatchGrab haqqı yoxdur</b>. Hər ay eyni, əvvəlcədən bilinən xərc.",
+      "feeOnlyMonthly": "Əvvəlcədən sifarişlərdən <b>{fee}</b>, aylıq hesablanır",
+      "includedMonthly": "Hər ay əvvəlcədən sifarişlərin ilk <b>{included}</b> məbləği daxildir. Sonra <b>{fee}</b>, aylıq hesablanır"
     },
     "base": {
       "walkUp": "Yerində sifarişlər və mətbəx ekranı",
@@ -6300,7 +6302,11 @@
       "only": "İstənilən həcm → <b>{plan}</b>"
     },
     "footnote": "* Üstəgəl onlayn kart sifarişlərində Stripe kart emalı haqqı (hazırda {cardFee}; ölkə: {country}); bu haqq HatchGrab-a deyil, Stripe-a ödənilir. Yerində sifarişlər öz POS-terminalınızla qəbul olunur — HatchGrab 0% tutur.",
-    "currencyLine": "Qiymətlər: {currency} ({code})"
+    "currencyLine": "Qiymətlər: {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Bizə burada necə ödəyirsiniz:</b> Müştərilər sifarişi götürərkən sizə ödəyir. Ayda bir dəfə kartınızdan planınızın haqqını və keçən ayın əvvəlcədən sifarişlərinə görə haqqımızı tuturuq. Yerində sifarişlər həmişə pulsuzdur.",
+      "online": "<b>Bizə burada necə ödəyirsiniz:</b> Müştərilər onlayn və ya sifarişi götürərkən ödəyə bilər. Ayda bir dəfə kartınızdan planınızın haqqını və keçən ayın əvvəlcədən sifarişlərinə görə haqqımızı tuturuq. Yerində sifarişlər həmişə pulsuzdur."
+    }
   },
   "planTable": {
     "h1": "Xidmətinizi idarə etmək üçün hər şey — hər planda.",
@@ -6320,7 +6326,8 @@
       "included": "Hər ay daxil olan onlayn sifarişlər",
       "fee": "Onlayn sifarişlərdə HatchGrab haqqı*",
       "feeNoMark": "Onlayn sifarişlərdə HatchGrab haqqı",
-      "walkUp": "Yerində sifarişlər"
+      "walkUp": "Yerində sifarişlər",
+      "feeMonthly": "Əvvəlcədən sifarişlərdə HatchGrab haqqı, aylıq hesablanır{mark}"
     },
     "cell": {
       "unlimited": "Limitsiz",

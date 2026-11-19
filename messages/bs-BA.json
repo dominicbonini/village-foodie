@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> samo na online narudžbe. Narudžbe na licu mjesta uvijek su besplatne.",
       "included": "Svaki mjesec uključene su online narudžbe u iznosu do <b>{included}</b>, a zatim <b>{fee}*</b>. Narudžbe na licu mjesta uvijek su besplatne.",
       "includedNoMark": "Svaki mjesec uključene su online narudžbe u iznosu do <b>{included}</b>, a zatim <b>{fee}</b>. Narudžbe na licu mjesta uvijek su besplatne.",
-      "noFee": "<b>Bez HatchGrab naknada</b> na online narudžbe, koliko god posla imali. Jedan predvidiv mjesečni trošak."
+      "noFee": "<b>Bez HatchGrab naknada</b> na online narudžbe, koliko god posla imali. Jedan predvidiv mjesečni trošak.",
+      "feeOnlyMonthly": "<b>{fee}</b> na narudžbe unaprijed, naplaćuje se mjesečno",
+      "includedMonthly": "Svaki mjesec uključene su narudžbe unaprijed u iznosu do <b>{included}</b>. Zatim <b>{fee}</b>, naplaćuje se mjesečno"
     },
     "base": {
       "walkUp": "Narudžbe na licu mjesta i kuhinjski ekran (KDS)",
@@ -6300,7 +6302,11 @@
       "only": "Bilo koji obim → <b>{plan}</b>"
     },
     "footnote": "* Uz to, samo na online narudžbe plaćene karticom Stripe naplaćuje svoju naknadu za obradu kartica (trenutno — {country}: {cardFee}), koja se plaća Stripeu, a ne HatchGrabu. Narudžbe na licu mjesta naplaćujete vlastitim POS terminalom — HatchGrab naplaćuje 0%.",
-    "currencyLine": "Cijene u valuti {currency} ({code})"
+    "currencyLine": "Cijene u valuti {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Kako nam ovdje plaćate:</b> Kupci vam plaćaju pri preuzimanju. Jednom mjesečno naplaćujemo s vaše kartice vaš paket i našu naknadu na narudžbe unaprijed iz prošlog mjeseca. Narudžbe na licu mjesta uvijek su besplatne.",
+      "online": "<b>Kako nam ovdje plaćate:</b> Kupci mogu platiti online ili pri preuzimanju. Jednom mjesečno naplaćujemo s vaše kartice vaš paket i našu naknadu na narudžbe unaprijed iz prošlog mjeseca. Narudžbe na licu mjesta uvijek su besplatne."
+    }
   },
   "planTable": {
     "h1": "Sve što vam treba za vođenje smjene, u svakom paketu.",
@@ -6320,7 +6326,8 @@
       "included": "Online narudžbe uključene svaki mjesec",
       "fee": "HatchGrab naknada na online narudžbe*",
       "feeNoMark": "HatchGrab naknada na online narudžbe",
-      "walkUp": "Narudžbe na licu mjesta"
+      "walkUp": "Narudžbe na licu mjesta",
+      "feeMonthly": "HatchGrab naknada na narudžbe unaprijed, naplaćuje se mjesečno{mark}"
     },
     "cell": {
       "unlimited": "Neograničeno",

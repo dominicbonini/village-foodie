@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> sa online orders lang. Laging libre ang walk-in orders.",
     "included": "Kasama ang unang <b>{included}</b> ng online orders kada buwan, pagkatapos ay <b>{fee}*</b>. Laging libre ang walk-in orders.",
     "includedNoMark": "Kasama ang unang <b>{included}</b> ng online orders kada buwan, pagkatapos ay <b>{fee}</b>. Laging libre ang walk-in orders.",
-    "noFee": "<b>Walang fees ng HatchGrab</b> sa online orders, gaano ka man ka-busy. Iisang tiyak na gastos kada buwan."
+    "noFee": "<b>Walang fees ng HatchGrab</b> sa online orders, gaano ka man ka-busy. Iisang tiyak na gastos kada buwan.",
+    "feeOnlyMonthly": "<b>{fee}</b> sa mga pre-order, sinisingil buwan-buwan",
+    "includedMonthly": "Kasama ang unang <b>{included}</b> ng mga pre-order kada buwan. Pagkatapos ay <b>{fee}</b>, sinisingil buwan-buwan"
   },
   "base": {
     "walkUp": "Walk-in orders at kitchen display (KDS)",
@@ -49,5 +51,9 @@
     "only": "Kahit gaano karami → <b>{plan}</b>"
   },
   "footnote": "* Dagdag ang card processing ng Stripe sa online card orders lang (sa ngayon, {cardFee} sa {country}), na bayad sa Stripe, hindi sa HatchGrab. Sa walk-in orders, sarili mong card reader ang gamit — 0% ang singil ng HatchGrab.",
-  "currencyLine": "Mga presyo sa {currency} ({code})"
+  "currencyLine": "Mga presyo sa {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Paano ka magbabayad sa amin dito:</b> Magbabayad sa iyo ang mga customer pag-pick up nila. Isang beses kada buwan, sisingilin namin ang card mo para sa plan mo at sa fee namin sa mga pre-order noong nakaraang buwan. Laging libre ang walk-in orders.",
+    "online": "<b>Paano ka magbabayad sa amin dito:</b> Puwedeng magbayad ang mga customer online o pag-pick up nila. Isang beses kada buwan, sisingilin namin ang card mo para sa plan mo at sa fee namin sa mga pre-order noong nakaraang buwan. Laging libre ang walk-in orders."
+  }
 }

@@ -16,7 +16,8 @@
     "included": "Zamówienia online w cenie (miesięcznie)",
     "fee": "Prowizja HatchGrab od zamówień online*",
     "feeNoMark": "Prowizja HatchGrab od zamówień online",
-    "walkUp": "Zamówienia na miejscu"
+    "walkUp": "Zamówienia na miejscu",
+    "feeMonthly": "Prowizja HatchGrab od zamówień z wyprzedzeniem, rozliczana co miesiąc{mark}"
   },
   "cell": {
     "unlimited": "Bez limitu",

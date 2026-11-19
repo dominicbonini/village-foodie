@@ -6242,7 +6242,9 @@
       "feeOnlyCard": "<b>{fee}*</b> untuk pesanan dalam talian sahaja. Pesanan walk-in sentiasa percuma.",
       "included": "<b>{included}</b> pertama pesanan dalam talian termasuk setiap bulan, kemudian <b>{fee}*</b>. Pesanan walk-in sentiasa percuma.",
       "includedNoMark": "<b>{included}</b> pertama pesanan dalam talian termasuk setiap bulan, kemudian <b>{fee}</b>. Pesanan walk-in sentiasa percuma.",
-      "noFee": "<b>Tiada yuran HatchGrab</b> untuk pesanan dalam talian, walau sesibuk mana pun anda. Satu kos bulanan yang boleh dijangka."
+      "noFee": "<b>Tiada yuran HatchGrab</b> untuk pesanan dalam talian, walau sesibuk mana pun anda. Satu kos bulanan yang boleh dijangka.",
+      "feeOnlyMonthly": "<b>{fee}</b> untuk pra-pesanan, dicaj setiap bulan",
+      "includedMonthly": "<b>{included}</b> pertama pra-pesanan termasuk setiap bulan. Kemudian <b>{fee}</b>, dicaj setiap bulan"
     },
     "base": {
       "walkUp": "Pesanan walk-in & skrin dapur",
@@ -6272,7 +6274,11 @@
       "only": "Sebarang jumlah → <b>{plan}</b>"
     },
     "footnote": "* Ditambah caj pemprosesan kad Stripe untuk pesanan kad dalam talian (kini {cardFee} di {country}), dibayar kepada Stripe, bukan HatchGrab. Pesanan walk-in menggunakan terminal kad anda sendiri — HatchGrab mengenakan 0%.",
-    "currencyLine": "Harga dalam {currency} ({code})"
+    "currencyLine": "Harga dalam {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Cara anda membayar kami di sini:</b> Pelanggan membayar anda semasa mengambil pesanan. Sebulan sekali kami mengecaj kad anda untuk pelan anda dan yuran kami atas pra-pesanan bulan lepas. Pesanan walk-in sentiasa percuma.",
+      "online": "<b>Cara anda membayar kami di sini:</b> Pelanggan boleh membayar dalam talian atau semasa mengambil pesanan. Sebulan sekali kami mengecaj kad anda untuk pelan anda dan yuran kami atas pra-pesanan bulan lepas. Pesanan walk-in sentiasa percuma."
+    }
   },
   "planTable": {
     "h1": "Semua yang diperlukan untuk menjalankan perkhidmatan anda, dalam setiap pelan.",
@@ -6292,7 +6298,8 @@
       "included": "Pesanan dalam talian yang termasuk setiap bulan",
       "fee": "Yuran HatchGrab untuk pesanan dalam talian*",
       "feeNoMark": "Yuran HatchGrab untuk pesanan dalam talian",
-      "walkUp": "Pesanan walk-in"
+      "walkUp": "Pesanan walk-in",
+      "feeMonthly": "Yuran HatchGrab untuk pra-pesanan, dicaj setiap bulan{mark}"
     },
     "cell": {
       "unlimited": "Tanpa had",

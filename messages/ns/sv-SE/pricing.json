@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> bara på onlinebeställningar. Beställningar på plats är alltid gratis.",
     "included": "De första <b>{included}</b> i onlinebeställningar ingår varje månad, därefter <b>{fee}*</b>. Beställningar på plats är alltid gratis.",
     "includedNoMark": "De första <b>{included}</b> i onlinebeställningar ingår varje månad, därefter <b>{fee}</b>. Beställningar på plats är alltid gratis.",
-    "noFee": "<b>Inga avgifter till HatchGrab</b> på onlinebeställningar, hur mycket du än har att göra. En förutsägbar månadskostnad."
+    "noFee": "<b>Inga avgifter till HatchGrab</b> på onlinebeställningar, hur mycket du än har att göra. En förutsägbar månadskostnad.",
+    "feeOnlyMonthly": "<b>{fee}</b> på förbeställningar, faktureras månadsvis",
+    "includedMonthly": "De första <b>{included}</b> i förbeställningar ingår varje månad. Därefter <b>{fee}</b>, faktureras månadsvis"
   },
   "base": {
     "walkUp": "Beställningar på plats och köksskärm",
@@ -49,5 +51,9 @@
     "only": "Oavsett volym → <b>{plan}</b>"
   },
   "footnote": "* Tillkommer Stripes kortavgift på onlinebeställningar med kort (just nu {country}: {cardFee}), som betalas till Stripe, inte till HatchGrab. Beställningar på plats betalas med din egen kortläsare – HatchGrab tar 0 %.",
-  "currencyLine": "Valuta: {currency} ({code})"
+  "currencyLine": "Valuta: {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Så betalar du oss här:</b> Kunderna betalar dig när de hämtar. En gång i månaden debiterar vi ditt kort för din plan och vår avgift på förra månadens förbeställningar. Beställningar på plats är alltid gratis.",
+    "online": "<b>Så betalar du oss här:</b> Kunderna kan betala online eller när de hämtar. En gång i månaden debiterar vi ditt kort för din plan och vår avgift på förra månadens förbeställningar. Beställningar på plats är alltid gratis."
+  }
 }

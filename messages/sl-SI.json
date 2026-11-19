@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> le pri spletnih naročilih. Naročila na mestu so vedno brezplačna.",
       "included": "Spletna naročila v vrednosti do <b>{included}</b> so vsak mesec vključena, nad tem <b>{fee}*</b>. Naročila na mestu so vedno brezplačna.",
       "includedNoMark": "Spletna naročila v vrednosti do <b>{included}</b> so vsak mesec vključena, nad tem <b>{fee}</b>. Naročila na mestu so vedno brezplačna.",
-      "noFee": "<b>Brez provizije HatchGrab</b> za spletna naročila, ne glede na obseg. En predvidljiv mesečni strošek."
+      "noFee": "<b>Brez provizije HatchGrab</b> za spletna naročila, ne glede na obseg. En predvidljiv mesečni strošek.",
+      "feeOnlyMonthly": "<b>{fee}</b> pri prednaročilih, obračunano mesečno",
+      "includedMonthly": "Prednaročila v vrednosti do <b>{included}</b> so vsak mesec vključena. Nad tem <b>{fee}</b>, obračunano mesečno"
     },
     "base": {
       "walkUp": "Naročila na mestu in kuhinjski zaslon",
@@ -6300,7 +6302,11 @@
       "only": "Kakršen koli obseg → <b>{plan}</b>"
     },
     "footnote": "* Poleg tega Stripe pri spletnih naročilih, plačanih s kartico, zaračuna obdelavo kartičnih plačil (trenutna tarifa – {country}: {cardFee}), ki jo plačate podjetju Stripe, ne HatchGrab. Za naročila na mestu uporabljate svoj plačilni terminal — HatchGrab zaračuna 0 %.",
-    "currencyLine": "Cene: {currency} ({code})"
+    "currencyLine": "Cene: {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Kako nam plačate tukaj:</b> Stranke vam plačajo ob prevzemu. Enkrat mesečno z vaše kartice bremenimo vaš paket in našo provizijo za prednaročila iz prejšnjega meseca. Naročila na mestu so vedno brezplačna.",
+      "online": "<b>Kako nam plačate tukaj:</b> Stranke lahko plačajo prek spleta ali ob prevzemu. Enkrat mesečno z vaše kartice bremenimo vaš paket in našo provizijo za prednaročila iz prejšnjega meseca. Naročila na mestu so vedno brezplačna."
+    }
   },
   "planTable": {
     "h1": "Vse za vodenje prodaje — v vsakem paketu.",
@@ -6320,7 +6326,8 @@
       "included": "Spletna naročila, vključena vsak mesec",
       "fee": "Provizija HatchGrab za spletna naročila*",
       "feeNoMark": "Provizija HatchGrab za spletna naročila",
-      "walkUp": "Naročila na mestu"
+      "walkUp": "Naročila na mestu",
+      "feeMonthly": "Provizija HatchGrab za prednaročila, obračunana mesečno{mark}"
     },
     "cell": {
       "unlimited": "Neomejeno",

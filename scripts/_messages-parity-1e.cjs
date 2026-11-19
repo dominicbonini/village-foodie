@@ -335,6 +335,11 @@ NEW_WORDING['kitchenModals.picker.approved'] = 'events-overlap-8: the "Approved"
   for (const k of [...flatKeys(enGB.kitchenModals.createEvent || {}, 'kitchenModals.createEvent.'), 'errorsKitchen.sign_in_to_create',
     'errorsKitchen.event_details_invalid', 'errorsKitchen.event_overlaps']) NEW_WORDING[k] = 'events-create-2: "Create event now" on the dashboard'
 }
+// ⚠️ RE-PINNED (plans-everywhere-1, 19 November 2026, docs/plans-everywhere-1-report.md): the post-pay plan wording where our fee is
+// billed monthly (country_billing billed_at_truck / billed_online) — Pay as you go's and Pro's fee lines, the plan table's fee row and
+// the "How you pay us here" note.
+for (const k of ['pricing.fee.feeOnlyMonthly', 'pricing.fee.includedMonthly', 'pricing.monthlyNote.atTruck', 'pricing.monthlyNote.online',
+  'planTable.pay.feeMonthly']) NEW_WORDING[k] = 'plans-everywhere-1: post-pay plan wording in monthly-billed countries'
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

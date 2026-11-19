@@ -6243,7 +6243,9 @@
       "feeOnlyCard": "<b>{fee}*</b> on online orders only. Walk-up orders are always free.",
       "included": "First <b>{included}</b> of online orders included each month, then <b>{fee}*</b>. Walk-up orders are always free.",
       "includedNoMark": "First <b>{included}</b> of online orders included each month, then <b>{fee}</b>. Walk-up orders are always free.",
-      "noFee": "<b>No HatchGrab fees</b> on online orders, however busy you get. One predictable monthly cost."
+      "noFee": "<b>No HatchGrab fees</b> on online orders, however busy you get. One predictable monthly cost.",
+      "feeOnlyMonthly": "<b>{fee}</b> on pre-orders, billed monthly",
+      "includedMonthly": "First <b>{included}</b> of pre-orders included each month. Then <b>{fee}</b>, billed monthly"
     },
     "base": {
       "walkUp": "Walk-up orders & kitchen screen",
@@ -6273,7 +6275,11 @@
       "only": "Any volume → <b>{plan}</b>"
     },
     "footnote": "* Plus Stripe’s card processing on online card orders (currently {cardFee} in the {country}), paid to Stripe, not HatchGrab. Walk-up orders use your own card reader — HatchGrab charges 0%.",
-    "currencyLine": "Prices in {currency} ({code})"
+    "currencyLine": "Prices in {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>How you pay us here:</b> customers pay you at the truck. Once a month we charge your card for your plan and our fee on last month’s pre-orders. Walk-up orders are always free.",
+      "online": "<b>How you pay us here:</b> customers can pay online or at the truck. Once a month we charge your card for your plan and our fee on last month’s pre-orders. Walk-up orders are always free."
+    }
   },
   "planTable": {
     "h1": "Everything to run your service, on every plan.",
@@ -6293,7 +6299,8 @@
       "included": "Online orders included each month",
       "fee": "HatchGrab fee on online orders*",
       "feeNoMark": "HatchGrab fee on online orders",
-      "walkUp": "Walk-up orders"
+      "walkUp": "Walk-up orders",
+      "feeMonthly": "HatchGrab fee on pre-orders, billed monthly{mark}"
     },
     "cell": {
       "unlimited": "Unlimited",

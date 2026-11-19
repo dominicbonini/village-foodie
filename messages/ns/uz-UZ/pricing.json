@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> faqat onlayn buyurtmalar uchun. Oyna oldida berilgan buyurtmalar har doim bepul.",
     "included": "Har oy onlayn buyurtmalarning dastlabki <b>{included}</b> qismi kiritilgan, keyin <b>{fee}*</b>. Oyna oldida berilgan buyurtmalar har doim bepul.",
     "includedNoMark": "Har oy onlayn buyurtmalarning dastlabki <b>{included}</b> qismi kiritilgan, keyin <b>{fee}</b>. Oyna oldida berilgan buyurtmalar har doim bepul.",
-    "noFee": "Onlayn buyurtmalar uchun <b>HatchGrab komissiyasi yoʻq</b>, qanchalik band boʻlmang. Bitta oldindan maʼlum oylik toʻlov."
+    "noFee": "Onlayn buyurtmalar uchun <b>HatchGrab komissiyasi yoʻq</b>, qanchalik band boʻlmang. Bitta oldindan maʼlum oylik toʻlov.",
+    "feeOnlyMonthly": "Oldindan buyurtmalar uchun <b>{fee}</b>, har oy hisoblanadi",
+    "includedMonthly": "Har oy oldindan buyurtmalarning dastlabki <b>{included}</b> qismi kiritilgan. Keyin <b>{fee}</b>, har oy hisoblanadi"
   },
   "base": {
     "walkUp": "Oyna oldida berilgan buyurtmalar va oshxona ekrani (KDS)",
@@ -49,5 +51,9 @@
     "only": "Istalgan hajm → <b>{plan}</b>"
   },
   "footnote": "* Bundan tashqari, onlayn karta buyurtmalari uchun Stripe karta toʻlovlarini qayta ishlash haqi (hozirda {cardFee}, mamlakat: {country}) — u HatchGrab emas, Stripe kompaniyasiga toʻlanadi. Oyna oldida berilgan buyurtmalarda oʻz toʻlov terminalingizdan foydalanasiz — HatchGrab 0% oladi.",
-  "currencyLine": "Narxlar: {currency} ({code})"
+  "currencyLine": "Narxlar: {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Bu yerda bizga qanday toʻlaysiz:</b> Mijozlar sizga buyurtmani olib ketayotganda toʻlaydi. Oyiga bir marta kartangizdan tarifingiz narxini va oʻtgan oydagi oldindan buyurtmalar uchun komissiyamizni yechib olamiz. Oyna oldida berilgan buyurtmalar har doim bepul.",
+    "online": "<b>Bu yerda bizga qanday toʻlaysiz:</b> Mijozlar onlayn yoki buyurtmani olib ketayotganda toʻlashi mumkin. Oyiga bir marta kartangizdan tarifingiz narxini va oʻtgan oydagi oldindan buyurtmalar uchun komissiyamizni yechib olamiz. Oyna oldida berilgan buyurtmalar har doim bepul."
+  }
 }

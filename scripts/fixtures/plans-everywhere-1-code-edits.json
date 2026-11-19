@@ -1,0 +1,100 @@
+{
+ "lib/plans-pdf.ts": [
+  [
+   "import type { CountrySettings } from '@/lib/country-settings-types'\nimport { planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments, monthlyFeeBilling } from '@/lib/country-settings-types'\nimport { getCountrySettings } from '@/lib/country-settings'\n",
+   "import type { CountrySettings } from '@/lib/country-settings-types'\nimport { planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments } from '@/lib/country-settings-types'\nimport { getCountrySettings } from '@/lib/country-settings'\n"
+  ],
+  [
+   "  const cardsOn = offersOnlineCardPayments(s)\n  // plans-everywhere-1 (19 November 2026): where our fee is billed monthly (lib/country-settings-types.ts monthlyFeeBilling), the\n  // landing's post-pay wording — the two fee lines, the table's fee row and the \"How you pay us here\" note under the cards (only\n  // while an offered plan charges a fee). The asterisk follows cardsOn, as everywhere.\n  const monthly = monthlyFeeBilling(s)\n  const monthlyOn = !!monthly && plans.some(p => p.shape !== 'noFee')\n  const markedFee = (p: Pick<OfferPlan, 'feeBps'>) => fee(p) + (cardsOn ? '*' : '')\n\n",
+   "  const cardsOn = offersOnlineCardPayments(s)\n\n"
+  ],
+  [
+   "  // ── THE CARDS — one per public plan, the landing's content ──\n  const feeSentence = (p: OfferPlan) => monthly && p.shape === 'feeOnly' ? html(tp, 'fee.feeOnlyMonthly', { fee: markedFee(p) })\n    : monthly && p.shape === 'included' ? html(tp, 'fee.includedMonthly', { included: whole(p.includedMinor as number), fee: markedFee(p) })\n    : p.shape === 'feeOnly' ? html(tp, cardsOn ? 'fee.feeOnlyCard' : 'fee.feeOnly', { fee: fee(p) })\n    : p.shape === 'included' ? html(tp, cardsOn ? 'fee.included' : 'fee.includedNoMark', { included: whole(p.includedMinor as number), fee: fee(p) })\n",
+   "  // ── THE CARDS — one per public plan, the landing's content ──\n  const feeSentence = (p: OfferPlan) => p.shape === 'feeOnly' ? html(tp, cardsOn ? 'fee.feeOnlyCard' : 'fee.feeOnly', { fee: fee(p) })\n    : p.shape === 'included' ? html(tp, cardsOn ? 'fee.included' : 'fee.includedNoMark', { included: whole(p.includedMinor as number), fee: fee(p) })\n"
+  ],
+  [
+   "  }).join('')}</div>`\n\n  // plans-everywhere-1: the \"How you pay us here\" note, straight under the cards.\n  const monthlyNote = monthlyOn && !omit ? `<p class=\"mnote\">${html(tp, monthly === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', {})}</p>` : ''\n\n",
+   "  }).join('')}</div>`\n\n"
+  ],
+  [
+   "    + row(tt('pay.included'), tcols.map(p => p.shape === 'feeOnly' ? none : `<span class=\"val\">${esc(p.includedMinor === null ? tt('cell.unlimited') : whole(p.includedMinor))}</span>`))\n    + row(monthlyOn ? tt('pay.feeMonthly', { mark: cardsOn ? '*' : '' }) : tt(cardsOn ? 'pay.fee' : 'pay.feeNoMark'), tcols.map(p => p.shape === 'noFee' ? `<span class=\"val\">${esc(show(pctLabel(0, s)))}</span>`\n      : p.shape === 'included' ? html(tt, 'cell.feeAbove', { fee: fee(p), included: whole(p.includedMinor as number) }) : `<span class=\"val\">${esc(fee(p))}</span>`))\n",
+   "    + row(tt('pay.included'), tcols.map(p => p.shape === 'feeOnly' ? none : `<span class=\"val\">${esc(p.includedMinor === null ? tt('cell.unlimited') : whole(p.includedMinor))}</span>`))\n    + row(tt(cardsOn ? 'pay.fee' : 'pay.feeNoMark'), tcols.map(p => p.shape === 'noFee' ? `<span class=\"val\">${esc(show(pctLabel(0, s)))}</span>`\n      : p.shape === 'included' ? html(tt, 'cell.feeAbove', { fee: fee(p), included: whole(p.includedMinor as number) }) : `<span class=\"val\">${esc(fee(p))}</span>`))\n"
+  ],
+  [
+   "    + row(tt('pay.walkUp'), tcols.map(p => walkUpFree(catalog, p) ? `<span class=\"val\">${esc(tt('cell.free'))}</span>` : none))\n  const sections = tableGroups({ cards: cardsOn }).map(g => grp(tt(`group.${g.group}` as never)) + g.rows.map(r => row(tRow(`row.${r.id}.name` as never), tcols.map(p => {\n    const c = tableCell(catalog, r, p)\n",
+   "    + row(tt('pay.walkUp'), tcols.map(p => walkUpFree(catalog, p) ? `<span class=\"val\">${esc(tt('cell.free'))}</span>` : none))\n  const sections = tableGroups().map(g => grp(tt(`group.${g.group}` as never)) + g.rows.map(r => row(tRow(`row.${r.id}.name` as never), tcols.map(p => {\n    const c = tableCell(catalog, r, p)\n"
+  ],
+  [
+   "  .cards { display: flex; gap: 8px; margin-bottom: 8px; break-inside: avoid; }\n  .mnote { margin: 0 0 8px; color: #4A5568; }\n  .card { flex: 1; min-width: 0; border: 1px solid #D8E2EC; border-radius: 6px; padding: 8px 9px; position: relative; }\n",
+   "  .cards { display: flex; gap: 8px; margin-bottom: 8px; break-inside: avoid; }\n  .card { flex: 1; min-width: 0; border: 1px solid #D8E2EC; border-radius: 6px; padding: 8px 9px; position: relative; }\n"
+  ],
+  [
+   "    </div>\n    ${banner}${cards}${monthlyNote}${bar}\n    <table>\n",
+   "    </div>\n    ${banner}${cards}${bar}\n    <table>\n"
+  ]
+ ],
+ "components/pricing/PlanTable.tsx": [
+  [
+   "import type { CountrySettings } from '@/lib/country-settings-types'\nimport { planMoneyFormatOf, offersOnlineCardPayments, monthlyFeeBilling } from '@/lib/country-settings-types'\nimport { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'\n",
+   "import type { CountrySettings } from '@/lib/country-settings-types'\nimport { planMoneyFormatOf, offersOnlineCardPayments } from '@/lib/country-settings-types'\nimport { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'\n"
+  ],
+  [
+   "        ))} />\n        {/* pricing-copy-4: the asterisk points at the card-fee footnote, which only a card country shows (offersOnlineCardPayments).\n            plans-everywhere-1: where our fee is billed monthly (monthlyFeeBilling) and a column charges one, the row reads \"HatchGrab fee\n            on pre-orders, billed monthly\", with the same asterisk rule. */}\n        <Row label={name(monthlyFeeBilling(settings) && plans.some(p => p.shape !== 'noFee')\n          ? t('pay.feeMonthly', { mark: offersOnlineCardPayments(settings) ? '*' : '' })\n          : t(offersOnlineCardPayments(settings) ? 'pay.fee' : 'pay.feeNoMark'))} cells={plans.map(p => val(\n          p.shape === 'noFee' ? b(pctLabel(0, settings))\n",
+   "        ))} />\n        {/* pricing-copy-4: the asterisk points at the card-fee footnote, which only a card country shows (offersOnlineCardPayments). */}\n        <Row label={name(t(offersOnlineCardPayments(settings) ? 'pay.fee' : 'pay.feeNoMark'))} cells={plans.map(p => val(\n          p.shape === 'noFee' ? b(pctLabel(0, settings))\n"
+  ],
+  [
+   "\n      {/* plans-everywhere-1: no card-only row (\"Online payments\") where trucks can't take online card payments. */}\n      {tableGroups({ cards: offersOnlineCardPayments(settings) }).map(g => (\n        <div key={g.group} className=\"pt-rowgroup\" role=\"rowgroup\">\n",
+   "\n      {tableGroups().map(g => (\n        <div key={g.group} className=\"pt-rowgroup\" role=\"rowgroup\">\n"
+  ]
+ ],
+ "lib/plan-offer.ts": [
+  [
+   "\n/** plans-everywhere-1 (19 November 2026): rows that describe ONLINE CARD PAYMENTS — left out where trucks can't take them\n *  (lib/country-settings-types.ts offersOnlineCardPayments false: billed_at_truck, or no country_billing row). */\nexport const CARD_ONLY_ROWS: readonly string[] = ['online_payments']\n\n/** The table's feature rows, by group, in order. `cards: false` (a country without online card payments) leaves out the card-only\n *  rows; absent or true, every row, exactly as before. */\nexport function tableGroups(opts: { cards?: boolean } = {}): { group: FeatureGroup; rows: FeatureTableRow[] }[] {\n  return FEATURE_GROUPS.map(group => ({ group, rows: FEATURE_TABLE.filter(r => r.group === group && (opts.cards !== false || !CARD_ONLY_ROWS.includes(r.id))) }))\n}\n",
+   "\n/** The table's feature rows, by group, in order. */\nexport function tableGroups(): { group: FeatureGroup; rows: FeatureTableRow[] }[] {\n  return FEATURE_GROUPS.map(group => ({ group, rows: FEATURE_TABLE.filter(r => r.group === group) }))\n}\n"
+  ]
+ ],
+ "components/pricing/PricingSection.tsx": [
+  [
+   "import type { CountrySettings } from '@/lib/country-settings-types'\nimport { planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments, monthlyFeeBilling } from '@/lib/country-settings-types'\nimport { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'\n",
+   "import type { CountrySettings } from '@/lib/country-settings-types'\nimport { planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments } from '@/lib/country-settings-types'\nimport { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'\n"
+  ],
+  [
+   "  const cards = offersOnlineCardPayments(settings)\n  // plans-everywhere-1 (19 November 2026, Dominic): WHERE OUR FEE IS BILLED MONTHLY (country_billing.payment_model billed_at_truck or\n  // billed_online — lib/country-settings-types.ts monthlyFeeBilling), Pay as you go reads \"{fee} on pre-orders, billed monthly\", Pro\n  // \"…Then {fee}, billed monthly\", and a \"How you pay us here\" note sits under the cards. The fee keeps its asterisk only where the\n  // card-fee footnote shows (a card country: billed_online). Every other country renders exactly as before.\n  // ⚠️ The note names \"our fee on last month's pre-orders\", so it shows only while an offered plan HAS a fee — a country that offers\n  // Unlimited alone (0%) keeps the page it has today until its other plans go on sale (plan_prices.offered).\n  const monthly = monthlyFeeBilling(settings)\n  const monthlyNote = monthly && plans.some(p => p.shape !== 'noFee') ? monthly : null\n  const markedFee = (p: OfferPlan) => fee(p) + (cards ? '*' : '')\n\n",
+   "  const cards = offersOnlineCardPayments(settings)\n\n"
+  ],
+  [
+   "  const feeSentence = (p: OfferPlan) => {\n    if (monthly && p.shape === 'feeOnly') return t.rich('fee.feeOnlyMonthly', { fee: markedFee(p), b })\n    if (monthly && p.shape === 'included') return t.rich('fee.includedMonthly', { included: whole(p.includedMinor as number), fee: markedFee(p), b })\n    if (p.shape === 'feeOnly') return t.rich(cards ? 'fee.feeOnlyCard' : 'fee.feeOnly', { fee: fee(p), b })\n",
+   "  const feeSentence = (p: OfferPlan) => {\n    if (p.shape === 'feeOnly') return t.rich(cards ? 'fee.feeOnlyCard' : 'fee.feeOnly', { fee: fee(p), b })\n"
+  ],
+  [
+   "      </div>\n      {monthlyNote && <p className=\"price-note monthly-note\">{t.rich(monthlyNote === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b })}</p>}\n\n",
+   "      </div>\n\n"
+  ]
+ ],
+ "app/(public)/(site)/features/page.tsx": [
+  [
+   "import type { Metadata } from 'next'\nimport type { ReactNode } from 'react'\nimport { headers } from 'next/headers'\n",
+   "import type { Metadata } from 'next'\nimport { headers } from 'next/headers'\n"
+  ],
+  [
+   "import { cardFeeOnlineLabel } from '@/lib/card-fees'\nimport { currencyLineOf, offersOnlineCardPayments, monthlyFeeBilling } from '@/lib/country-settings-types'\nimport { translatorFor } from '@/lib/i18n/translator'\n",
+   "import { cardFeeOnlineLabel } from '@/lib/card-fees'\nimport { currencyLineOf, offersOnlineCardPayments } from '@/lib/country-settings-types'\nimport { translatorFor } from '@/lib/i18n/translator'\n"
+  ],
+  [
+   "            <div className=\"fn\">\n              {/* plans-everywhere-1: where our fee is billed monthly and an offered plan charges one, the \"How you pay us here\" note\n                  (the landing's own words, lib/country-settings-types.ts monthlyFeeBilling). */}\n              {monthlyFeeBilling(settings) && plans.some(p => p.shape !== 'noFee') && (\n                <p>{tPricing.rich(monthlyFeeBilling(settings) === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b: (c: ReactNode) => <b>{c}</b> })}</p>\n              )}\n              {offersOnlineCardPayments(settings) && <p>{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>}\n",
+   "            <div className=\"fn\">\n              {offersOnlineCardPayments(settings) && <p>{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>}\n"
+  ]
+ ],
+ "app/(public)/(site)/landing/landing.css": [
+  [
+   "  .hg-landing #pricing .price-note { order: 6; }\n  /* plans-everywhere-1: the \"How you pay us here\" note stays straight under the cards (same order as the cards; DOM order puts it\n     after them), not with the footnote at the end. */\n  .hg-landing #pricing .monthly-note { order: 2; }\n  .hg-landing .cheap-bar { flex-direction: column; gap: .35rem; }\n",
+   "  .hg-landing #pricing .price-note { order: 6; }\n  .hg-landing .cheap-bar { flex-direction: column; gap: .35rem; }\n"
+  ]
+ ],
+ "lib/country-settings-types.ts": [
+  [
+   "/**\n * plans-everywhere-1 (19 November 2026, Dominic; docs/plans-everywhere-1-report.md): 🔴 THE ONE ANSWER TO \"IS OUR FEE BILLED MONTHLY\n * HERE?\" — 'at_truck' when the country's country_billing.payment_model is 'billed_at_truck', 'online' when it is 'billed_online', else\n * null (a 'fee_from_payment' country, a country with NO country_billing row, or a settings object the loader did not build). Only\n * those two models get the post-pay plan wording: Pay as you go's \"{fee} on pre-orders, billed monthly\", Pro's \"Then {fee}, billed\n * monthly\", the plan table's \"HatchGrab fee on pre-orders, billed monthly\" and the \"How you pay us here\" note — on the landing's pricing\n * section, /features and the plans PDF (Manage › Billing shares the table). Data, never a list of countries.\n */\nexport type MonthlyFeeBilling = 'at_truck' | 'online'\nexport function monthlyFeeBilling(s: Pick<CountrySettings, 'paymentModel'>): MonthlyFeeBilling | null {\n  if (s.paymentModel === 'billed_at_truck') return 'at_truck'\n  if (s.paymentModel === 'billed_online') return 'online'\n  return null\n}\n\n/**\n * world-countries-1 (31 October 2026): 🔴 THE ONE ANSWER TO \"IS THE PLATFORM FEE ON IN THIS COUNTRY?\" — switched on AND allowed.\n",
+   "/**\n * world-countries-1 (31 October 2026): 🔴 THE ONE ANSWER TO \"IS THE PLATFORM FEE ON IN THIS COUNTRY?\" — switched on AND allowed.\n"
+  ]
+ ]
+}

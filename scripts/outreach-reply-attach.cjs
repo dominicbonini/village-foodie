@@ -464,7 +464,9 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
     // buildPlansPdfHtml(settings, catalog) lays out the plan catalogue through lib/plan-offer (offerPlans, the one plan
     // table's tableGroups / tableCell), and generatePlansPdf reads the live catalogue (getPlanCatalog) — never a copy.
     check(/export function buildPlansPdfHtml\(s: CountrySettings, catalog: PlanCatalog\)/.test(LIB)
-      && /offerPlans\(catalog, s\.countryCode\)/.test(LIB) && /tableGroups\(\)/.test(LIB) && /tableCell\(/.test(LIB)
+      // ⚠️ RE-PINNED (plans-everywhere-1, 19 November 2026): tableGroups may be given `{ cards: cardsOn }` (the card-only "Online
+      // payments" row left out where trucks can't take online card payments) — still the plan data, never a copy.
+      && /offerPlans\(catalog, s\.countryCode\)/.test(LIB) && /tableGroups\((\{ cards: [^}]*\})?\)/.test(LIB) && /tableCell\(/.test(LIB)
       // ⚠️ RE-PINNED (languages-1, 22 October 2026): the catalogue's plan names are worded in the country's language first
       // (lib/plan-names.ts localizePlans — the same catalogue for every English country).
       && /const catalog = (localizePlans\()?await getPlanCatalog\(\)(, settings\.locale\))?/.test(LIB) && /buildPlansPdfHtml\(settings, catalog\)/.test(LIB),

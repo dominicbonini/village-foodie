@@ -16,7 +16,8 @@
     "included": "ہر ماہ شامل آن لائن آرڈرز",
     "fee": "آن لائن آرڈرز پر HatchGrab فیس*",
     "feeNoMark": "آن لائن آرڈرز پر HatchGrab فیس",
-    "walkUp": "واک اِن آرڈرز"
+    "walkUp": "واک اِن آرڈرز",
+    "feeMonthly": "پری آرڈرز پر HatchGrab فیس، ماہانہ بل کیا جاتا ہے{mark}"
   },
   "cell": {
     "unlimited": "لامحدود",

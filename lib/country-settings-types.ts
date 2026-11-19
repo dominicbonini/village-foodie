@@ -136,6 +136,21 @@ export function offersOnlineCardPayments(s: Pick<CountrySettings, 'paymentModel'
 }
 
 /**
+ * plans-everywhere-1 (19 November 2026, Dominic; docs/plans-everywhere-1-report.md): 🔴 THE ONE ANSWER TO "IS OUR FEE BILLED MONTHLY
+ * HERE?" — 'at_truck' when the country's country_billing.payment_model is 'billed_at_truck', 'online' when it is 'billed_online', else
+ * null (a 'fee_from_payment' country, a country with NO country_billing row, or a settings object the loader did not build). Only
+ * those two models get the post-pay plan wording: Pay as you go's "{fee} on pre-orders, billed monthly", Pro's "Then {fee}, billed
+ * monthly", the plan table's "HatchGrab fee on pre-orders, billed monthly" and the "How you pay us here" note — on the landing's pricing
+ * section, /features and the plans PDF (Manage › Billing shares the table). Data, never a list of countries.
+ */
+export type MonthlyFeeBilling = 'at_truck' | 'online'
+export function monthlyFeeBilling(s: Pick<CountrySettings, 'paymentModel'>): MonthlyFeeBilling | null {
+  if (s.paymentModel === 'billed_at_truck') return 'at_truck'
+  if (s.paymentModel === 'billed_online') return 'online'
+  return null
+}
+
+/**
  * world-countries-1 (31 October 2026): 🔴 THE ONE ANSWER TO "IS THE PLATFORM FEE ON IN THIS COUNTRY?" — switched on AND allowed.
  * Every path that would compute, store or send a platform (application) fee asks this, never `platformFeeEnabled` alone
  * (lib/order-charge-rules.ts today; the capture path when the fee lands — scripts/world-countries-1.cjs fails if any file sends

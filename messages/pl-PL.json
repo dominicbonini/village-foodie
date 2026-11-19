@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> tylko od zamówień online. Zamówienia na miejscu są zawsze bez opłat.",
       "included": "Zamówienia online do kwoty <b>{included}</b> miesięcznie w cenie, powyżej — <b>{fee}*</b>. Zamówienia na miejscu są zawsze bez opłat.",
       "includedNoMark": "Zamówienia online do kwoty <b>{included}</b> miesięcznie w cenie, powyżej — <b>{fee}</b>. Zamówienia na miejscu są zawsze bez opłat.",
-      "noFee": "<b>Bez prowizji HatchGrab</b> od zamówień online, niezależnie od tego, ile masz ruchu. Jeden przewidywalny koszt miesięczny."
+      "noFee": "<b>Bez prowizji HatchGrab</b> od zamówień online, niezależnie od tego, ile masz ruchu. Jeden przewidywalny koszt miesięczny.",
+      "feeOnlyMonthly": "<b>{fee}</b> od zamówień z wyprzedzeniem, rozliczane co miesiąc",
+      "includedMonthly": "Zamówienia z wyprzedzeniem do kwoty <b>{included}</b> miesięcznie w cenie. Powyżej — <b>{fee}</b>, rozliczane co miesiąc"
     },
     "base": {
       "walkUp": "Zamówienia na miejscu i ekran kuchenny",
@@ -6300,7 +6302,11 @@
       "only": "Dowolny poziom → <b>{plan}</b>"
     },
     "footnote": "* Do tego opłata Stripe za obsługę kart przy zamówieniach online opłaconych kartą (obecna stawka, {country}: {cardFee}), płacona firmie Stripe, nie HatchGrab. Zamówienia na miejscu obsługujesz własnym terminalem płatniczym — HatchGrab pobiera 0%.",
-    "currencyLine": "Ceny w walucie: {currency} ({code})"
+    "currencyLine": "Ceny w walucie: {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Jak nam tu płacisz:</b> Klienci płacą Ci przy odbiorze. Raz w miesiącu obciążamy Twoją kartę opłatą za plan i naszą prowizją od zamówień z wyprzedzeniem z poprzedniego miesiąca. Zamówienia na miejscu są zawsze bez opłat.",
+      "online": "<b>Jak nam tu płacisz:</b> Klienci mogą zapłacić online lub przy odbiorze. Raz w miesiącu obciążamy Twoją kartę opłatą za plan i naszą prowizją od zamówień z wyprzedzeniem z poprzedniego miesiąca. Zamówienia na miejscu są zawsze bez opłat."
+    }
   },
   "planTable": {
     "h1": "Wszystko, czego potrzebujesz do obsługi, w każdym planie.",
@@ -6320,7 +6326,8 @@
       "included": "Zamówienia online w cenie (miesięcznie)",
       "fee": "Prowizja HatchGrab od zamówień online*",
       "feeNoMark": "Prowizja HatchGrab od zamówień online",
-      "walkUp": "Zamówienia na miejscu"
+      "walkUp": "Zamówienia na miejscu",
+      "feeMonthly": "Prowizja HatchGrab od zamówień z wyprzedzeniem, rozliczana co miesiąc{mark}"
     },
     "cell": {
       "unlimited": "Bez limitu",

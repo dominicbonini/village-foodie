@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> kun på onlinebestillinger. Bestillinger ved vognen er altid gratis.",
       "included": "De første <b>{included}</b> i onlinebestillinger er inkluderet hver måned, derefter <b>{fee}*</b>. Bestillinger ved vognen er altid gratis.",
       "includedNoMark": "De første <b>{included}</b> i onlinebestillinger er inkluderet hver måned, derefter <b>{fee}</b>. Bestillinger ved vognen er altid gratis.",
-      "noFee": "<b>Ingen HatchGrab-gebyrer</b> på onlinebestillinger, uanset hvor travlt du har. Én fast månedlig udgift."
+      "noFee": "<b>Ingen HatchGrab-gebyrer</b> på onlinebestillinger, uanset hvor travlt du har. Én fast månedlig udgift.",
+      "feeOnlyMonthly": "<b>{fee}</b> på forudbestillinger, faktureres månedligt",
+      "includedMonthly": "De første <b>{included}</b> i forudbestillinger er inkluderet hver måned. Derefter <b>{fee}</b>, faktureres månedligt"
     },
     "base": {
       "walkUp": "Bestillinger ved vognen og køkkenskærm",
@@ -6300,7 +6302,11 @@
       "only": "Uanset mængde → <b>{plan}</b>"
     },
     "footnote": "* Hertil kommer Stripes kortgebyr på onlinebestillinger betalt med kort (aktuel sats – {country}: {cardFee}), som betales til Stripe, ikke til HatchGrab. Bestillinger ved vognen går gennem din egen kortterminal — HatchGrab tager 0 %.",
-    "currencyLine": "Valuta: {currency} ({code})"
+    "currencyLine": "Valuta: {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Sådan betaler du os her:</b> Kunderne betaler dig, når de henter. Én gang om måneden trækker vi betaling for din plan og vores gebyr på sidste måneds forudbestillinger på dit kort. Bestillinger ved vognen er altid gratis.",
+      "online": "<b>Sådan betaler du os her:</b> Kunderne kan betale online eller når de henter. Én gang om måneden trækker vi betaling for din plan og vores gebyr på sidste måneds forudbestillinger på dit kort. Bestillinger ved vognen er altid gratis."
+    }
   },
   "planTable": {
     "h1": "Alt til at køre din service — i alle abonnementer.",
@@ -6320,7 +6326,8 @@
       "included": "Onlinebestillinger inkluderet hver måned",
       "fee": "HatchGrab-gebyr på onlinebestillinger*",
       "feeNoMark": "HatchGrab-gebyr på onlinebestillinger",
-      "walkUp": "Bestillinger ved vognen"
+      "walkUp": "Bestillinger ved vognen",
+      "feeMonthly": "HatchGrab-gebyr på forudbestillinger, faktureres månedligt{mark}"
     },
     "cell": {
       "unlimited": "Ubegrænset",

@@ -23,7 +23,7 @@
 // through lib/plan-offer.ts — the module the landing and /features read); every word from the `pricing` / `planTable`
 // messages. ⛔ NO PLAN KEY, NAME OR NUMBER IS WRITTEN HERE. The frozen display copy it used to read is deleted.
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments } from '@/lib/country-settings-types'
+import { planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments, monthlyFeeBilling } from '@/lib/country-settings-types'
 import { getCountrySettings } from '@/lib/country-settings'
 import { HATCHGRAB_NAVY_HEX, HATCHGRAB_ORANGE_HEX, HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
 import { readFileSync } from 'node:fs'
@@ -177,6 +177,12 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   // pricing-copy-4 (docs/pricing-copy-4-report.md): a card country's wording (the banner's card sentence, the asterisks, the card-fee
   // footnote) or a monthly-billing-only country's — the landing's own rule (lib/country-settings-types.ts offersOnlineCardPayments).
   const cardsOn = offersOnlineCardPayments(s)
+  // plans-everywhere-1 (19 November 2026): where our fee is billed monthly (lib/country-settings-types.ts monthlyFeeBilling), the
+  // landing's post-pay wording — the two fee lines, the table's fee row and the "How you pay us here" note under the cards (only
+  // while an offered plan charges a fee). The asterisk follows cardsOn, as everywhere.
+  const monthly = monthlyFeeBilling(s)
+  const monthlyOn = !!monthly && plans.some(p => p.shape !== 'noFee')
+  const markedFee = (p: Pick<OfferPlan, 'feeBps'>) => fee(p) + (cardsOn ? '*' : '')
 
   // ── THE TRIAL BANNER ──
   const banner = months === null ? '' : `
@@ -186,7 +192,9 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
         : html(tp, cardsOn ? 'banner.bodyCard' : 'banner.body', { brand: priceText(PRICE_WORD.payAtHatch, locale), fallback: fallback.plan.name, fallbackFree: fallback.free ? 'yes' : 'no' })}</span></div>`
 
   // ── THE CARDS — one per public plan, the landing's content ──
-  const feeSentence = (p: OfferPlan) => p.shape === 'feeOnly' ? html(tp, cardsOn ? 'fee.feeOnlyCard' : 'fee.feeOnly', { fee: fee(p) })
+  const feeSentence = (p: OfferPlan) => monthly && p.shape === 'feeOnly' ? html(tp, 'fee.feeOnlyMonthly', { fee: markedFee(p) })
+    : monthly && p.shape === 'included' ? html(tp, 'fee.includedMonthly', { included: whole(p.includedMinor as number), fee: markedFee(p) })
+    : p.shape === 'feeOnly' ? html(tp, cardsOn ? 'fee.feeOnlyCard' : 'fee.feeOnly', { fee: fee(p) })
     : p.shape === 'included' ? html(tp, cardsOn ? 'fee.included' : 'fee.includedNoMark', { included: whole(p.includedMinor as number), fee: fee(p) })
       : html(tp, 'fee.noFee')
   const cards = `<div class="cards">${plans.map((p, i) => {
@@ -207,6 +215,9 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
       <ul>${items.join('')}</ul>
     </div>`
   }).join('')}</div>`
+
+  // plans-everywhere-1: the "How you pay us here" note, straight under the cards.
+  const monthlyNote = monthlyOn && !omit ? `<p class="mnote">${html(tp, monthly === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', {})}</p>` : ''
 
   // ── WHICH PLAN IS CHEAPEST ──
   // landing-mobile-tidy (21 October 2026): the bands no longer say "of online orders a month"; the heading's small line does.
@@ -232,10 +243,10 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   const grp = (label: string) => `<tr class="grp"><td colspan="${cols}">${esc(label)}</td></tr>`
   const pay = omit ? '' : grp(tt('group.pay'))
     + row(tt('pay.included'), tcols.map(p => p.shape === 'feeOnly' ? none : `<span class="val">${esc(p.includedMinor === null ? tt('cell.unlimited') : whole(p.includedMinor))}</span>`))
-    + row(tt(cardsOn ? 'pay.fee' : 'pay.feeNoMark'), tcols.map(p => p.shape === 'noFee' ? `<span class="val">${esc(show(pctLabel(0, s)))}</span>`
+    + row(monthlyOn ? tt('pay.feeMonthly', { mark: cardsOn ? '*' : '' }) : tt(cardsOn ? 'pay.fee' : 'pay.feeNoMark'), tcols.map(p => p.shape === 'noFee' ? `<span class="val">${esc(show(pctLabel(0, s)))}</span>`
       : p.shape === 'included' ? html(tt, 'cell.feeAbove', { fee: fee(p), included: whole(p.includedMinor as number) }) : `<span class="val">${esc(fee(p))}</span>`))
     + row(tt('pay.walkUp'), tcols.map(p => walkUpFree(catalog, p) ? `<span class="val">${esc(tt('cell.free'))}</span>` : none))
-  const sections = tableGroups().map(g => grp(tt(`group.${g.group}` as never)) + g.rows.map(r => row(tRow(`row.${r.id}.name` as never), tcols.map(p => {
+  const sections = tableGroups({ cards: cardsOn }).map(g => grp(tt(`group.${g.group}` as never)) + g.rows.map(r => row(tRow(`row.${r.id}.name` as never), tcols.map(p => {
     const c = tableCell(catalog, r, p)
     return c === 'off' ? none : c === 'soon' ? `<span class="soon">${esc(tt('cell.comingSoon'))}</span>` : `<span class="yes">${tick(locale)}</span>`
   }), r.note ? noteMarker(r.note) : undefined)).join('')).join('')
@@ -326,6 +337,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
   .banner b { display: block; font-size: 12px; color: var(--navy); margin-bottom: 2px; }
   .banner span { color: #44566B; }
   .cards { display: flex; gap: 8px; margin-bottom: 8px; break-inside: avoid; }
+  .mnote { margin: 0 0 8px; color: #4A5568; }
   .card { flex: 1; min-width: 0; border: 1px solid #D8E2EC; border-radius: 6px; padding: 8px 9px; position: relative; }
   .card.hl { border: 2px solid var(--orange); }
   .tag { position: absolute; top: -7px; left: 9px; background: var(--orange); color: #fff; font-size: 7px; font-weight: 700;
@@ -353,7 +365,7 @@ export function buildPlansPdfHtml(s: CountrySettings, catalog: PlanCatalog): str
       <h1>${esc(translatorFor(s.locale, 'plansPdf')('title'))}</h1>
       <span class="gen">${esc(t('generated', { date: new Date().toISOString().slice(0, 10) }))}</span>
     </div>
-    ${banner}${cards}${bar}
+    ${banner}${cards}${monthlyNote}${bar}
     <table>
       <thead><tr><th class="f"></th>${heads}</tr></thead>
       <tbody>${pay}${sections}</tbody>

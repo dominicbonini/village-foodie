@@ -16,7 +16,8 @@
     "included": "Comandes en línia incloses cada mes",
     "fee": "Comissió de HatchGrab per les comandes en línia*",
     "feeNoMark": "Comissió de HatchGrab per les comandes en línia",
-    "walkUp": "Comandes presencials"
+    "walkUp": "Comandes presencials",
+    "feeMonthly": "Comissió de HatchGrab per les comandes anticipades, amb cobrament mensual{mark}"
   },
   "cell": {
     "unlimited": "Sense límit",

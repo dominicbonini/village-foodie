@@ -9,7 +9,7 @@
 // Server-rendered (no hooks): the landing page passes the translators. `cta` is the page's own "Try free" control.
 import { Fragment, type ReactNode } from 'react'
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments } from '@/lib/country-settings-types'
+import { planMoneyFormatOf, currencyLineOf, offersOnlineCardPayments, monthlyFeeBilling } from '@/lib/country-settings-types'
 import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
 import type { PlanCatalog } from '@/lib/plans'
@@ -63,8 +63,19 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
   // without that sentence, no asterisk anywhere and no footnote. A language with no card sentence of its own carries its current
   // banner in the card keys too (languages-world-2's bases), so a card country in that language shows the current text.
   const cards = offersOnlineCardPayments(settings)
+  // plans-everywhere-1 (19 November 2026, Dominic): WHERE OUR FEE IS BILLED MONTHLY (country_billing.payment_model billed_at_truck or
+  // billed_online — lib/country-settings-types.ts monthlyFeeBilling), Pay as you go reads "{fee} on pre-orders, billed monthly", Pro
+  // "…Then {fee}, billed monthly", and a "How you pay us here" note sits under the cards. The fee keeps its asterisk only where the
+  // card-fee footnote shows (a card country: billed_online). Every other country renders exactly as before.
+  // ⚠️ The note names "our fee on last month's pre-orders", so it shows only while an offered plan HAS a fee — a country that offers
+  // Unlimited alone (0%) keeps the page it has today until its other plans go on sale (plan_prices.offered).
+  const monthly = monthlyFeeBilling(settings)
+  const monthlyNote = monthly && plans.some(p => p.shape !== 'noFee') ? monthly : null
+  const markedFee = (p: OfferPlan) => fee(p) + (cards ? '*' : '')
 
   const feeSentence = (p: OfferPlan) => {
+    if (monthly && p.shape === 'feeOnly') return t.rich('fee.feeOnlyMonthly', { fee: markedFee(p), b })
+    if (monthly && p.shape === 'included') return t.rich('fee.includedMonthly', { included: whole(p.includedMinor as number), fee: markedFee(p), b })
     if (p.shape === 'feeOnly') return t.rich(cards ? 'fee.feeOnlyCard' : 'fee.feeOnly', { fee: fee(p), b })
     if (p.shape === 'included') return t.rich(cards ? 'fee.included' : 'fee.includedNoMark', { included: whole(p.includedMinor as number), fee: fee(p), b })
     return t.rich('fee.noFee', { b })
@@ -139,6 +150,7 @@ export function PricingSection({ catalog, settings, t, tPrompt, brand, featuresH
           )
         })}
       </div>
+      {monthlyNote && <p className="price-note monthly-note">{t.rich(monthlyNote === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b })}</p>}
 
       {bands.length > 0 && !single && (
         <div className="cheap-bar">

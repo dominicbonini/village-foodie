@@ -30,6 +30,7 @@
 // "what's included on each plan" is exactly what an operator types into a search box. Removing it from
 // the landing and NOT indexing it here would have made a public page private by accident.
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
@@ -44,7 +45,7 @@ import { getPlanCatalog } from '@/lib/plans-server'
 import { localizePlans } from '@/lib/plan-names'
 import { offerPlans, offerTrialMonths, upgradeSummary } from '@/lib/plan-offer'
 import { cardFeeOnlineLabel } from '@/lib/card-fees'
-import { currencyLineOf, offersOnlineCardPayments } from '@/lib/country-settings-types'
+import { currencyLineOf, offersOnlineCardPayments, monthlyFeeBilling } from '@/lib/country-settings-types'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/planTable'
 import '@/lib/i18n/catalog/pricing'
@@ -190,6 +191,11 @@ export default async function FeaturesPage({ params, searchParams }: { params?: 
             {/* The card-fee footnote (*) and the rows' disclosures (¹ ², pricing-tidy), in the old table's footnote style.
                 pricing-copy-4: the footnote only in a card country (offersOnlineCardPayments); the table's asterisk follows the same rule. */}
             <div className="fn">
+              {/* plans-everywhere-1: where our fee is billed monthly and an offered plan charges one, the "How you pay us here" note
+                  (the landing's own words, lib/country-settings-types.ts monthlyFeeBilling). */}
+              {monthlyFeeBilling(settings) && plans.some(p => p.shape !== 'noFee') && (
+                <p>{tPricing.rich(monthlyFeeBilling(settings) === 'online' ? 'monthlyNote.online' : 'monthlyNote.atTruck', { b: (c: ReactNode) => <b>{c}</b> })}</p>
+              )}
               {offersOnlineCardPayments(settings) && <p>{tPricing('footnote', { cardFee: cardFeeOnlineLabel(settings), country: settings.shortName ?? settings.name })}</p>}
               {planTableNotes(settings.locale).map(n => <p key={n.marker}><sup>{n.marker}</sup> {n.text}</p>)}
             </div>

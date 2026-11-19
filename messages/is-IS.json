@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> eingöngu af netpöntunum. Pantanir á staðnum eru alltaf ókeypis.",
       "included": "Netpantanir upp að <b>{included}</b> innifaldar á mánuði, síðan <b>{fee}*</b>. Pantanir á staðnum eru alltaf ókeypis.",
       "includedNoMark": "Netpantanir upp að <b>{included}</b> innifaldar á mánuði, síðan <b>{fee}</b>. Pantanir á staðnum eru alltaf ókeypis.",
-      "noFee": "<b>Engin HatchGrab-gjöld</b> af netpöntunum, sama hve mikið er að gera. Einn fyrirsjáanlegur mánaðarkostnaður."
+      "noFee": "<b>Engin HatchGrab-gjöld</b> af netpöntunum, sama hve mikið er að gera. Einn fyrirsjáanlegur mánaðarkostnaður.",
+      "feeOnlyMonthly": "<b>{fee}</b> af forpöntunum, innheimt mánaðarlega",
+      "includedMonthly": "Forpantanir upp að <b>{included}</b> innifaldar á mánuði. Síðan <b>{fee}</b>, innheimt mánaðarlega"
     },
     "base": {
       "walkUp": "Pantanir á staðnum og eldhússkjár",
@@ -6300,7 +6302,11 @@
       "only": "Hvaða magn sem er → <b>{plan}</b>"
     },
     "footnote": "* Auk kortagjalda Stripe af netpöntunum greiddum með korti (sem stendur {cardFee} — {country}), sem greiðast til Stripe, ekki HatchGrab. Pantanir á staðnum fara í gegnum þinn eigin posa — HatchGrab tekur 0%.",
-    "currencyLine": "Gjaldmiðill: {currency} ({code})"
+    "currencyLine": "Gjaldmiðill: {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Svona greiðir þú okkur hér:</b> Viðskiptavinir greiða þér þegar þeir sækja. Einu sinni í mánuði skuldfærum við kortið þitt fyrir áskriftinni og gjaldinu okkar af forpöntunum síðasta mánaðar. Pantanir á staðnum eru alltaf ókeypis.",
+      "online": "<b>Svona greiðir þú okkur hér:</b> Viðskiptavinir geta greitt á netinu eða þegar þeir sækja. Einu sinni í mánuði skuldfærum við kortið þitt fyrir áskriftinni og gjaldinu okkar af forpöntunum síðasta mánaðar. Pantanir á staðnum eru alltaf ókeypis."
+    }
   },
   "planTable": {
     "h1": "Allt sem þarf til að reka afgreiðsluna, í öllum áskriftarleiðum.",
@@ -6320,7 +6326,8 @@
       "included": "Netpantanir innifaldar á mánuði",
       "fee": "HatchGrab-gjald af netpöntunum*",
       "feeNoMark": "HatchGrab-gjald af netpöntunum",
-      "walkUp": "Pantanir á staðnum"
+      "walkUp": "Pantanir á staðnum",
+      "feeMonthly": "HatchGrab-gjald af forpöntunum, innheimt mánaðarlega{mark}"
     },
     "cell": {
       "unlimited": "Ótakmarkað",

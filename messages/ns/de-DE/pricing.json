@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> nur auf Online-Bestellungen. Bestellungen vor Ort sind immer gebührenfrei.",
     "included": "Online-Bestellungen im Wert von <b>{included}</b> pro Monat inklusive, danach <b>{fee}*</b>. Bestellungen vor Ort sind immer gebührenfrei.",
     "includedNoMark": "Online-Bestellungen im Wert von <b>{included}</b> pro Monat inklusive, danach <b>{fee}</b>. Bestellungen vor Ort sind immer gebührenfrei.",
-    "noFee": "<b>Keine HatchGrab-Gebühren</b> auf Online-Bestellungen, egal wie viel los ist. Feste, planbare Monatskosten."
+    "noFee": "<b>Keine HatchGrab-Gebühren</b> auf Online-Bestellungen, egal wie viel los ist. Feste, planbare Monatskosten.",
+    "feeOnlyMonthly": "<b>{fee}</b> auf Vorbestellungen, monatlich abgerechnet",
+    "includedMonthly": "Vorbestellungen im Wert von <b>{included}</b> pro Monat inklusive. Danach <b>{fee}</b>, monatlich abgerechnet"
   },
   "base": {
     "walkUp": "Bestellungen vor Ort & Küchenmonitor",
@@ -49,5 +51,9 @@
     "only": "Beliebiges Volumen → <b>{plan}</b>"
   },
   "footnote": "* Zzgl. Stripe-Gebühren für die Kartenabwicklung bei Online-Bestellungen mit Kartenzahlung (aktuell, {country}: {cardFee}), die an Stripe gehen, nicht an HatchGrab. Bestellungen vor Ort laufen über Ihr eigenes Kartenlesegerät – HatchGrab berechnet 0 %.",
-  "currencyLine": "Preise in {currency} ({code})"
+  "currencyLine": "Preise in {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>So bezahlen Sie uns hier:</b> Ihre Kunden bezahlen bei Ihnen bei der Abholung. Einmal im Monat belasten wir Ihre Karte mit Ihrem Tarif und unserer Gebühr auf die Vorbestellungen des Vormonats. Bestellungen vor Ort sind immer gebührenfrei.",
+    "online": "<b>So bezahlen Sie uns hier:</b> Ihre Kunden können online oder bei der Abholung bezahlen. Einmal im Monat belasten wir Ihre Karte mit Ihrem Tarif und unserer Gebühr auf die Vorbestellungen des Vormonats. Bestellungen vor Ort sind immer gebührenfrei."
+  }
 }

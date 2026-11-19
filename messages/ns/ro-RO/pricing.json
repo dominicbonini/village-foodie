@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> doar pentru comenzile online. Comenzile la fața locului sunt mereu gratuite.",
     "included": "Comenzi online în valoare de <b>{included}</b> incluse în fiecare lună, apoi <b>{fee}*</b>. Comenzile la fața locului sunt mereu gratuite.",
     "includedNoMark": "Comenzi online în valoare de <b>{included}</b> incluse în fiecare lună, apoi <b>{fee}</b>. Comenzile la fața locului sunt mereu gratuite.",
-    "noFee": "<b>Fără taxe HatchGrab</b> pentru comenzile online, oricât de aglomerat ar fi. Un cost lunar previzibil."
+    "noFee": "<b>Fără taxe HatchGrab</b> pentru comenzile online, oricât de aglomerat ar fi. Un cost lunar previzibil.",
+    "feeOnlyMonthly": "<b>{fee}</b> pentru precomenzi, facturat lunar",
+    "includedMonthly": "Precomenzi în valoare de <b>{included}</b> incluse în fiecare lună. Apoi <b>{fee}</b>, facturat lunar"
   },
   "base": {
     "walkUp": "Comenzi la fața locului și ecran de bucătărie",
@@ -49,5 +51,9 @@
     "only": "Orice volum → <b>{plan}</b>"
   },
   "footnote": "* Plus taxele Stripe de procesare a cardurilor pentru comenzile online plătite cu cardul (în prezent, {country}: {cardFee}), plătite către Stripe, nu către HatchGrab. Comenzile la fața locului folosesc propriul dumneavoastră terminal de plată — HatchGrab percepe 0%.",
-  "currencyLine": "Prețuri în {currency} ({code})"
+  "currencyLine": "Prețuri în {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Cum ne plătiți aici:</b> clienții vă plătesc la ridicarea comenzii. O dată pe lună vă debităm cardul pentru abonament și pentru taxa noastră pe precomenzile din luna anterioară. Comenzile la fața locului sunt mereu gratuite.",
+    "online": "<b>Cum ne plătiți aici:</b> clienții pot plăti online sau la ridicarea comenzii. O dată pe lună vă debităm cardul pentru abonament și pentru taxa noastră pe precomenzile din luna anterioară. Comenzile la fața locului sunt mereu gratuite."
+  }
 }

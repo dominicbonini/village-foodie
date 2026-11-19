@@ -178,8 +178,11 @@ head('3 · one source, and nobody re-sorts it on the way to a screen')
   ]
   for (const f of RENDERERS) {
     const code = codeOf(read(f))
+    // ⚠️ RE-PINNED (plans-everywhere-1, 19 November 2026, docs/plans-everywhere-1-report.md): tableGroups may be given
+    // `{ cards: <offersOnlineCardPayments> }`, which leaves out the card-only "Online payments" row where trucks can't take online card
+    // payments. Still the one ordered list, still every renderer — only that call's argument is new.
     t(`🔴 ${f} renders tableGroups() rows with tableCell from lib/plan-offer`,
-      /from '@\/lib\/plan-offer'/.test(code) && /tableGroups\(\)\.map\(/.test(code) && /g\.rows\.map\(/.test(code) && /tableCell\(catalog, r, p\)/.test(code))
+      /from '@\/lib\/plan-offer'/.test(code) && /tableGroups\((\{ cards: [^}]*\})?\)\.map\(/.test(code) && /g\.rows\.map\(/.test(code) && /tableCell\(catalog, r, p\)/.test(code))
     t(`⚠️ …and draws all three cell states (${f})`, /=== 'off'/.test(code) && /=== 'soon'/.test(code) && /cell\.comingSoon/.test(code))
   }
   t('🔴 /features and Manage › Billing render THE SAME component (<PlanTable …>)',
@@ -192,8 +195,10 @@ head('3 · one source, and nobody re-sorts it on the way to a screen')
     const src = codeOf(read(f))
     t(`⛔ …and does not re-sort the rows (${f})`, !/FEATURE_TABLE[\s\S]{0,200}?\.sort\(/.test(src) && !/\.rows[\s\S]{0,80}?\.sort\(/.test(src))
   }
+  // ⚠️ RE-PINNED (plans-everywhere-1, 19 November 2026): the filter may also leave out the card-only rows (CARD_ONLY_ROWS) where trucks
+  // can't take online card payments — still a FILTER of FEATURE_TABLE by group, so the order is untouched.
   t('⚠️ tableGroups filters FEATURE_TABLE by group and does not reorder',
-    /return FEATURE_GROUPS\.map\(group => \(\{ group, rows: FEATURE_TABLE\.filter\(r => r\.group === group\) \}\)\)/.test(read('lib/plan-offer.ts')))
+    /return FEATURE_GROUPS\.map\(group => \(\{ group, rows: FEATURE_TABLE\.filter\(r => r\.group === group( && \(opts\.cards !== false \|\| !CARD_ONLY_ROWS\.includes\(r\.id\)\))?\) \}\)\)/.test(read('lib/plan-offer.ts')))
 }
 
 // ── SUMMARY ───────────────────────────────────────────────────────────────────────────────────────

@@ -16,7 +16,8 @@
     "included": "Ordini online inclusi ogni mese",
     "fee": "Commissione HatchGrab sugli ordini online*",
     "feeNoMark": "Commissione HatchGrab sugli ordini online",
-    "walkUp": "Ordini al banco"
+    "walkUp": "Ordini al banco",
+    "feeMonthly": "Commissione HatchGrab sui preordini, addebitata ogni mese{mark}"
   },
   "cell": {
     "unlimited": "Illimitati",

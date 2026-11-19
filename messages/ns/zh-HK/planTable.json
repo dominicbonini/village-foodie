@@ -16,7 +16,8 @@
     "included": "每月包含的網上訂單",
     "fee": "網上訂單的 HatchGrab 收費*",
     "feeNoMark": "網上訂單的 HatchGrab 收費",
-    "walkUp": "現場訂單"
+    "walkUp": "現場訂單",
+    "feeMonthly": "預先落單的 HatchGrab 收費，按月收費{mark}"
   },
   "cell": {
     "unlimited": "無上限",

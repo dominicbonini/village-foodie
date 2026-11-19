@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> hanya untuk pesanan online. Pesanan langsung di tempat selalu gratis.",
     "included": "<b>{included}</b> pertama dari pesanan online sudah termasuk setiap bulan, setelah itu <b>{fee}*</b>. Pesanan langsung di tempat selalu gratis.",
     "includedNoMark": "<b>{included}</b> pertama dari pesanan online sudah termasuk setiap bulan, setelah itu <b>{fee}</b>. Pesanan langsung di tempat selalu gratis.",
-    "noFee": "<b>Tanpa biaya HatchGrab</b> untuk pesanan online, seramai apa pun usaha Anda. Satu biaya bulanan yang pasti."
+    "noFee": "<b>Tanpa biaya HatchGrab</b> untuk pesanan online, seramai apa pun usaha Anda. Satu biaya bulanan yang pasti.",
+    "feeOnlyMonthly": "<b>{fee}</b> untuk pre-order, ditagih bulanan",
+    "includedMonthly": "<b>{included}</b> pertama dari pre-order sudah termasuk setiap bulan. Setelah itu <b>{fee}</b>, ditagih bulanan"
   },
   "base": {
     "walkUp": "Pesanan langsung di tempat & layar dapur (KDS)",
@@ -49,5 +51,9 @@
     "only": "Berapa pun jumlahnya → <b>{plan}</b>"
   },
   "footnote": "* Ditambah biaya pemrosesan kartu Stripe untuk pesanan online dengan kartu (saat ini {cardFee} di {country}), dibayarkan ke Stripe, bukan ke HatchGrab. Pesanan langsung di tempat memakai mesin EDC Anda sendiri — HatchGrab mengenakan 0%.",
-  "currencyLine": "Harga dalam {currency} ({code})"
+  "currencyLine": "Harga dalam {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Cara Anda membayar kami di sini:</b> Pelanggan membayar Anda saat mengambil pesanan. Sebulan sekali kami menagih kartu Anda untuk paket Anda dan biaya kami atas pre-order bulan lalu. Pesanan langsung di tempat selalu gratis.",
+    "online": "<b>Cara Anda membayar kami di sini:</b> Pelanggan dapat membayar online atau saat mengambil pesanan. Sebulan sekali kami menagih kartu Anda untuk paket Anda dan biaya kami atas pre-order bulan lalu. Pesanan langsung di tempat selalu gratis."
+  }
 }

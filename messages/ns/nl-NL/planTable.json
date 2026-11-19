@@ -16,7 +16,8 @@
     "included": "Online bestellingen per maand inbegrepen",
     "fee": "HatchGrab-kosten op online bestellingen*",
     "feeNoMark": "HatchGrab-kosten op online bestellingen",
-    "walkUp": "Bestellingen aan de truck"
+    "walkUp": "Bestellingen aan de truck",
+    "feeMonthly": "HatchGrab-kosten op voorbestellingen, maandelijks gefactureerd{mark}"
   },
   "cell": {
     "unlimited": "Onbeperkt",

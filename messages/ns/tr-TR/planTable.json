@@ -16,7 +16,8 @@
     "included": "Her ay dahil olan online siparişler",
     "fee": "Online siparişlerde HatchGrab ücreti*",
     "feeNoMark": "Online siparişlerde HatchGrab ücreti",
-    "walkUp": "Yerinde siparişler"
+    "walkUp": "Yerinde siparişler",
+    "feeMonthly": "Ön siparişlerde HatchGrab ücreti, aylık faturalandırılır{mark}"
   },
   "cell": {
     "unlimited": "Sınırsız",

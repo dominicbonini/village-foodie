@@ -15,7 +15,7 @@
 // Manage › Billing — renders exactly as before.
 import type { CSSProperties, ReactNode } from 'react'
 import type { CountrySettings } from '@/lib/country-settings-types'
-import { planMoneyFormatOf, offersOnlineCardPayments } from '@/lib/country-settings-types'
+import { planMoneyFormatOf, offersOnlineCardPayments, monthlyFeeBilling } from '@/lib/country-settings-types'
 import { formatAmount, formatWholeAmount, pctLabel } from '@/lib/money-format'
 import type { PlanCatalog } from '@/lib/plans'
 import { tableColumns, tableGroups, tableCell, walkUpFree, type TableColumn } from '@/lib/plan-offer'
@@ -158,8 +158,12 @@ export function PlanTable({ catalog, settings, highlight, px = v => v, stickyTop
         <Row label={name(t('pay.included'))} cells={plans.map(p => (
           p.shape === 'feeOnly' ? none : p.includedMinor === null ? val(b(t('cell.unlimited'))) : val(<b className="pt-b pt-amt">{amountBreaks(whole(p.includedMinor))}</b>)
         ))} />
-        {/* pricing-copy-4: the asterisk points at the card-fee footnote, which only a card country shows (offersOnlineCardPayments). */}
-        <Row label={name(t(offersOnlineCardPayments(settings) ? 'pay.fee' : 'pay.feeNoMark'))} cells={plans.map(p => val(
+        {/* pricing-copy-4: the asterisk points at the card-fee footnote, which only a card country shows (offersOnlineCardPayments).
+            plans-everywhere-1: where our fee is billed monthly (monthlyFeeBilling) and a column charges one, the row reads "HatchGrab fee
+            on pre-orders, billed monthly", with the same asterisk rule. */}
+        <Row label={name(monthlyFeeBilling(settings) && plans.some(p => p.shape !== 'noFee')
+          ? t('pay.feeMonthly', { mark: offersOnlineCardPayments(settings) ? '*' : '' })
+          : t(offersOnlineCardPayments(settings) ? 'pay.fee' : 'pay.feeNoMark'))} cells={plans.map(p => val(
           p.shape === 'noFee' ? b(pctLabel(0, settings))
             : p.shape === 'included' ? <span className="pt-sentence">{t.rich('cell.feeAbove', { fee: fee(p), included: amountBreaks(whole(p.includedMinor as number)), b })}</span>
               : b(fee(p))
@@ -167,7 +171,8 @@ export function PlanTable({ catalog, settings, highlight, px = v => v, stickyTop
         <Row label={name(t('pay.walkUp'))} cells={plans.map(p => (walkUpFree(catalog, p) ? val(b(t('cell.free'))) : none))} />
       </div>
 
-      {tableGroups().map(g => (
+      {/* plans-everywhere-1: no card-only row ("Online payments") where trucks can't take online card payments. */}
+      {tableGroups({ cards: offersOnlineCardPayments(settings) }).map(g => (
         <div key={g.group} className="pt-rowgroup" role="rowgroup">
           <Group label={t(`group.${g.group}` as never)} />
           {g.rows.map(r => (

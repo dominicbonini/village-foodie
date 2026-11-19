@@ -16,7 +16,8 @@
     "included": "हरेक महिना समावेश अनलाइन अर्डर",
     "fee": "अनलाइन अर्डरमा HatchGrab शुल्क*",
     "feeNoMark": "अनलाइन अर्डरमा HatchGrab शुल्क",
-    "walkUp": "वाक-इन अर्डर"
+    "walkUp": "वाक-इन अर्डर",
+    "feeMonthly": "प्रि-अर्डरमा HatchGrab शुल्क, मासिक बिल गरिन्छ{mark}"
   },
   "cell": {
     "unlimited": "अनलिमिटेड",

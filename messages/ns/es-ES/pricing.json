@@ -19,7 +19,9 @@
     "feeOnlyCard": "<b>{fee}*</b> solo en pedidos online. Los pedidos en ventanilla siempre son gratis.",
     "included": "Los primeros <b>{included}</b> en pedidos online, incluidos cada mes; después, <b>{fee}*</b>. Los pedidos en ventanilla siempre son gratis.",
     "includedNoMark": "Los primeros <b>{included}</b> en pedidos online, incluidos cada mes; después, <b>{fee}</b>. Los pedidos en ventanilla siempre son gratis.",
-    "noFee": "<b>Sin comisiones de HatchGrab</b> en los pedidos online, por mucho trabajo que tengas. Un coste mensual fijo y previsible."
+    "noFee": "<b>Sin comisiones de HatchGrab</b> en los pedidos online, por mucho trabajo que tengas. Un coste mensual fijo y previsible.",
+    "feeOnlyMonthly": "<b>{fee}</b> en pedidos anticipados, con cobro mensual",
+    "includedMonthly": "Los primeros <b>{included}</b> en pedidos anticipados, incluidos cada mes. Después, <b>{fee}</b>, con cobro mensual"
   },
   "base": {
     "walkUp": "Pedidos en ventanilla y pantalla de cocina",
@@ -49,5 +51,9 @@
     "only": "Cualquier volumen → <b>{plan}</b>"
   },
   "footnote": "* Más la comisión de Stripe por procesar tarjetas en los pedidos online pagados con tarjeta (tarifa actual, {country}: {cardFee}), que se paga a Stripe, no a HatchGrab. Los pedidos en ventanilla se cobran con tu propio datáfono — HatchGrab cobra 0 %.",
-  "currencyLine": "Precios en {currency} ({code})"
+  "currencyLine": "Precios en {currency} ({code})",
+  "monthlyNote": {
+    "atTruck": "<b>Cómo nos pagas aquí:</b> los clientes te pagan al recoger. Una vez al mes cobramos en tu tarjeta tu plan y nuestra comisión por los pedidos anticipados del mes anterior. Los pedidos en ventanilla siempre son gratis.",
+    "online": "<b>Cómo nos pagas aquí:</b> los clientes pueden pagar online o al recoger. Una vez al mes cobramos en tu tarjeta tu plan y nuestra comisión por los pedidos anticipados del mes anterior. Los pedidos en ventanilla siempre son gratis."
+  }
 }

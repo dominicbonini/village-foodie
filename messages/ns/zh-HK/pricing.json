@@ -19,7 +19,9 @@
     "feeOnlyCard": "只限網上訂單收取 <b>{fee}*</b>。現場訂單一律免費。",
     "included": "每月首 <b>{included}</b> 網上訂單已包含在內，其後收取 <b>{fee}*</b>。現場訂單一律免費。",
     "includedNoMark": "每月首 <b>{included}</b> 網上訂單已包含在內，其後收取 <b>{fee}</b>。現場訂單一律免費。",
-    "noFee": "無論生意多忙，網上訂單都<b>不收 HatchGrab 費用</b>。每月固定一筆費用，清楚易計。"
+    "noFee": "無論生意多忙，網上訂單都<b>不收 HatchGrab 費用</b>。每月固定一筆費用，清楚易計。",
+    "feeOnlyMonthly": "預先落單收取 <b>{fee}</b>，按月收費",
+    "includedMonthly": "每月首 <b>{included}</b> 預先落單已包含在內。其後收取 <b>{fee}</b>，按月收費"
   },
   "base": {
     "walkUp": "現場訂單及廚房顯示屏",
@@ -49,5 +51,9 @@
     "only": "任何數量 → <b>{plan}</b>"
   },
   "footnote": "* 網上信用卡訂單另需支付 Stripe 的信用卡手續費（{country}目前為 {cardFee}），費用付予 Stripe，並非 HatchGrab。現場訂單使用你自己的信用卡機，HatchGrab 收費 0%。",
-  "currencyLine": "價錢以{currency}（{code}）計算"
+  "currencyLine": "價錢以{currency}（{code}）計算",
+  "monthlyNote": {
+    "atTruck": "<b>你在這裡如何付款給我們：</b>顧客取餐時向你付款。我們每月一次從你的信用卡收取你的計劃費用，以及上月預先落單的手續費。現場訂單一律免費。",
+    "online": "<b>你在這裡如何付款給我們：</b>顧客可於網上或取餐時付款。我們每月一次從你的信用卡收取你的計劃費用，以及上月預先落單的手續費。現場訂單一律免費。"
+  }
 }

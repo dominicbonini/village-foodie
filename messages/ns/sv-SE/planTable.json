@@ -16,7 +16,8 @@
     "included": "Onlinebeställningar som ingår per månad",
     "fee": "HatchGrabs avgift på onlinebeställningar*",
     "feeNoMark": "HatchGrabs avgift på onlinebeställningar",
-    "walkUp": "Beställningar på plats"
+    "walkUp": "Beställningar på plats",
+    "feeMonthly": "HatchGrabs avgift på förbeställningar, faktureras månadsvis{mark}"
   },
   "cell": {
     "unlimited": "Obegränsat",

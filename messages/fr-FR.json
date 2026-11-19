@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> uniquement sur les commandes en ligne. Les commandes au comptoir sont toujours gratuites.",
       "included": "Les <b>{included}</b> premiers de commandes en ligne sont inclus chaque mois, puis <b>{fee}*</b>. Les commandes au comptoir sont toujours gratuites.",
       "includedNoMark": "Les <b>{included}</b> premiers de commandes en ligne sont inclus chaque mois, puis <b>{fee}</b>. Les commandes au comptoir sont toujours gratuites.",
-      "noFee": "<b>Aucuns frais HatchGrab</b> sur les commandes en ligne, même aux périodes les plus chargées. Un coût mensuel prévisible."
+      "noFee": "<b>Aucuns frais HatchGrab</b> sur les commandes en ligne, même aux périodes les plus chargées. Un coût mensuel prévisible.",
+      "feeOnlyMonthly": "<b>{fee}</b> sur les précommandes, facturés chaque mois",
+      "includedMonthly": "Les <b>{included}</b> premiers de précommandes sont inclus chaque mois. Ensuite <b>{fee}</b>, facturés chaque mois"
     },
     "base": {
       "walkUp": "Commandes au comptoir et écran cuisine",
@@ -6300,7 +6302,11 @@
       "only": "Quel que soit le volume → <b>{plan}</b>"
     },
     "footnote": "* Plus les frais de carte Stripe sur les commandes en ligne payées par carte (tarif actuel {country} : {cardFee}), payés à Stripe et non à HatchGrab. Les commandes au comptoir passent par votre propre TPE : HatchGrab prend 0 %.",
-    "currencyLine": "Prix en {currency} ({code})"
+    "currencyLine": "Prix en {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Comment vous nous payez ici :</b> vos clients vous paient au moment du retrait. Une fois par mois, nous débitons votre carte pour votre offre et nos frais sur les précommandes du mois précédent. Les commandes au comptoir sont toujours gratuites.",
+      "online": "<b>Comment vous nous payez ici :</b> vos clients peuvent payer en ligne ou au moment du retrait. Une fois par mois, nous débitons votre carte pour votre offre et nos frais sur les précommandes du mois précédent. Les commandes au comptoir sont toujours gratuites."
+    }
   },
   "planTable": {
     "h1": "Tout pour gérer votre service, dans chaque offre.",
@@ -6320,7 +6326,8 @@
       "included": "Commandes en ligne incluses chaque mois",
       "fee": "Frais HatchGrab sur les commandes en ligne*",
       "feeNoMark": "Frais HatchGrab sur les commandes en ligne",
-      "walkUp": "Commandes au comptoir"
+      "walkUp": "Commandes au comptoir",
+      "feeMonthly": "Frais HatchGrab sur les précommandes, facturés chaque mois{mark}"
     },
     "cell": {
       "unlimited": "Illimité",

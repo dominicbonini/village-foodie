@@ -24,7 +24,12 @@ const CODE_FILES = Object.keys(CODE_EDITS)
 /** The file's text with trial-column-1's edits put back; null when one is not there exactly once (the caller leaves it changed). */
 function undoCode(file, text) {
   if (!CODE_EDITS[file]) return text
-  let out = text
+  // ⚠️ RE-PINNED (plans-everywhere-1, 19 November 2026, docs/plans-everywhere-1-report.md): that round's later edits (the post-pay
+  // plan wording, the card-only row) are taken back first — exactly, by scripts/_named-plans-everywhere-1.cjs — so this module's
+  // recorded edits find their anchors as they were. Any other change still returns null.
+  const pe1 = require('./_named-plans-everywhere-1.cjs').undoCode(file, text)
+  if (pe1 === null) return null
+  let out = pe1
   for (const [now, before] of CODE_EDITS[file]) { if (out.split(now).length !== 2) return null; out = out.split(now).join(before) }
   return out
 }

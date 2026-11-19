@@ -6270,7 +6270,9 @@
       "feeOnlyCard": "<b>{fee}*</b> ainult veebitellimustelt. Tellimused kohapeal on alati tasuta.",
       "included": "Iga kuu on esimesed <b>{included}</b> veebitellimuste käibest hinnas, seejärel <b>{fee}*</b>. Tellimused kohapeal on alati tasuta.",
       "includedNoMark": "Iga kuu on esimesed <b>{included}</b> veebitellimuste käibest hinnas, seejärel <b>{fee}</b>. Tellimused kohapeal on alati tasuta.",
-      "noFee": "<b>HatchGrabi tasusid pole</b> veebitellimustelt, ükskõik kui palju sul tegemist on. Üks etteaimatav igakuine kulu."
+      "noFee": "<b>HatchGrabi tasusid pole</b> veebitellimustelt, ükskõik kui palju sul tegemist on. Üks etteaimatav igakuine kulu.",
+      "feeOnlyMonthly": "<b>{fee}</b> ettetellimustelt, arveldatakse kord kuus",
+      "includedMonthly": "Iga kuu on esimesed <b>{included}</b> ettetellimuste käibest hinnas. Seejärel <b>{fee}</b>, arveldatakse kord kuus"
     },
     "base": {
       "walkUp": "Tellimused kohapeal ja köögiekraan",
@@ -6300,7 +6302,11 @@
       "only": "Mis tahes maht → <b>{plan}</b>"
     },
     "footnote": "* Lisaks Stripe’i kaardimaksetasu veebis kaardiga makstud tellimustelt (praegu {country}: {cardFee}), mis makstakse Stripe’ile, mitte HatchGrabile. Tellimused kohapeal kasutavad sinu enda makseterminali — HatchGrab võtab 0%.",
-    "currencyLine": "Hinnad: {currency} ({code})"
+    "currencyLine": "Hinnad: {currency} ({code})",
+    "monthlyNote": {
+      "atTruck": "<b>Kuidas sa meile siin maksad:</b> Kliendid maksavad sulle kättesaamisel. Kord kuus võtame sinu kaardilt tasu paketi eest ja meie tasu eelmise kuu ettetellimustelt. Tellimused kohapeal on alati tasuta.",
+      "online": "<b>Kuidas sa meile siin maksad:</b> Kliendid saavad maksta veebis või kättesaamisel. Kord kuus võtame sinu kaardilt tasu paketi eest ja meie tasu eelmise kuu ettetellimustelt. Tellimused kohapeal on alati tasuta."
+    }
   },
   "planTable": {
     "h1": "Kõik vahetuse läbiviimiseks vajalik — igas paketis.",
@@ -6320,7 +6326,8 @@
       "included": "Iga kuu hinnas sisalduvad veebitellimused",
       "fee": "HatchGrabi tasu veebitellimustelt*",
       "feeNoMark": "HatchGrabi tasu veebitellimustelt",
-      "walkUp": "Tellimused kohapeal"
+      "walkUp": "Tellimused kohapeal",
+      "feeMonthly": "HatchGrabi tasu ettetellimustelt, arveldatakse kord kuus{mark}"
     },
     "cell": {
       "unlimited": "Piiramatu",
