@@ -47,13 +47,27 @@ export interface Job extends Source {
   full: boolean
 }
 
-/** The work for one question or section, or null when every row is fresh. */
-export function jobFor(source: Source, rows: FaqTranslationRow[]): Job | null {
+/**
+ * plans-everywhere-4 (19 November 2026, Dominic): THE LOCALES WORTH TRANSLATING — those a switched-on country uses
+ * (country_settings.locale where enabled, read by the run), plus the parent base of any such model variant (the variant is decided
+ * against its parent's text). An installed locale no enabled country uses (fil-PH, hi-IN, ur-PK, ta-LK, en-PH, en-BB, fr-CI, vi-VN on
+ * 19 Nov) is skipped, and picks up by itself the day a country is switched to it. Undefined → every locale, as before.
+ */
+export function translatableLocales(enabledLocales: readonly string[]): Set<string> {
+  const out = new Set(enabledLocales)
+  for (const l of enabledLocales) { const p = parentOf(l); if (p && p !== DEFAULT_LOCALE && MODEL_VARIANTS.includes(l)) out.add(p) }
+  return out
+}
+
+/** The work for one question or section, or null when every row is fresh. `only` (plans-everywhere-4): translate into these locales
+ *  only (translatableLocales); absent, every base and variant as before. Rows in other locales are left as they are. */
+export function jobFor(source: Source, rows: FaqTranslationRow[], only?: ReadonlySet<string>): Job | null {
   const mine = rows.filter(r => (source.kind === 'item' ? r.itemId : r.sectionId) === source.id)
   const by = new Map(mine.map(r => [r.locale, r]))
   const full = mine.length === 0 || mine.some(r => r.sourceHash !== source.hash)
-  const bases = TRANSLATED_BASES.filter(l => !isFresh(by.get(l), source.hash))
-  const variants = full ? [...MODEL_VARIANTS] : MODEL_VARIANTS.filter(l => by.has(l) && !isFresh(by.get(l), source.hash))
+  const wanted = (l: string) => !only || only.has(l)
+  const bases = TRANSLATED_BASES.filter(l => wanted(l) && !isFresh(by.get(l), source.hash))
+  const variants = (full ? [...MODEL_VARIANTS] : MODEL_VARIANTS.filter(l => by.has(l) && !isFresh(by.get(l), source.hash))).filter(wanted)
   // A derived variant is redone with its parent; on its own only when its row is stale or failed.
   const derivedStale = Object.keys(DERIVED).some(l => by.has(l) && !isFresh(by.get(l), source.hash))
   const locales = [...bases, ...variants]

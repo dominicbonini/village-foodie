@@ -340,7 +340,18 @@ async function identityViews(tag) {
         && (sql.match(/insert into public\.faq_items/g) || []).length === 1 && ids('10').every(id => sql.includes(`'${id}'`))
         && (sql.match(/'pay_at_truck', 'published'/g) || []).length === 1
     }
-    const touchingFaq = later.filter(f => /\bfaq_(items|sections|translations)\b/.test(fs.readFileSync(path.join(MIG, f), 'utf8').replace(/--.*$/gm, '')) && !PC2(f) && !PE2(f))
+    // ⚠️ RE-PINNED (plans-everywhere-4, 19 November 2026, docs/plans-everywhere-4-report.md): 20261119_faq_translations_locale_3letter.sql
+    // only re-creates faq_translations_locale_check to accept a two- or three-letter language code (fil-PH). Named precisely: no other
+    // statement on an FAQ table, no row written.
+    const PE4 = f => {
+      if (f !== '20261119_faq_translations_locale_3letter.sql') return false
+      const sql = fs.readFileSync(path.join(MIG, f), 'utf8').replace(/--.*$/gm, '')
+      const faqLines = sql.split('\n').filter(l => /\bfaq_(items|sections|translations)\b/.test(l))
+      return faqLines.length === 2 && /drop constraint if exists faq_translations_locale_check;/.test(faqLines[0])
+        && /add constraint faq_translations_locale_check check \(locale ~ '\^\[a-z\]\{2,3\}-\[A-Z\]\{2\}\$'\);/.test(faqLines[1])
+        && !/\b(insert|update|delete)\b/i.test(sql)
+    }
+    const touchingFaq = later.filter(f => /\bfaq_(items|sections|translations)\b/.test(fs.readFileSync(path.join(MIG, f), 'utf8').replace(/--.*$/gm, '')) && !PC2(f) && !PE2(f) && !PE4(f))
     t('the faq-1 migration number is unique; 20261058 … 20261064 follow it in order, and no later migration touches the FAQ tables', fs.readdirSync(MIG).filter(f => f.startsWith('20261056')).length === 1
       && JSON.stringify(after.slice(0, KNOWN.length)) === JSON.stringify(KNOWN) && !touchingFaq.length, { after, touchingFaq })
   }

@@ -118,12 +118,15 @@ async function main() {
     let anthropic: Anthropic | null = null
     deps = {
       read: async () => {
-        const [items, sections, translations] = await Promise.all([
+        const [items, sections, translations, countries] = await Promise.all([
           q('faq_items', 'id, section_id, question_en, answer_en, answer_single_plan_en, status'),
           q('faq_sections', 'id, title_en'),
           q('faq_translations', 'item_id, section_id, locale, question, answer, answer_single_plan, title, source_hash, model, translated_at, status, reason'),
+          q('country_settings', 'locale, enabled'),
         ])
-        return { ...sourcesOf(items, sections), translations: translations.map(translationOf) }
+        // plans-everywhere-4: only the locales switched-on countries use are translated (lib/faq/translation.ts translatableLocales).
+        const enabledLocales = [...new Set(countries.filter(c => c.enabled === true && typeof c.locale === 'string').map(c => c.locale as string))]
+        return { ...sourcesOf(items, sections), translations: translations.map(translationOf), enabledLocales }
       },
       contextOf: contextFactory(catalog),
       // faq-translate-fix: the checker's conversation (lib/faq/translator.ts modelCall), priced from the settings read below.
@@ -138,13 +141,11 @@ async function main() {
         return anthropic.beta.messages.stream(params as never, opts?.signal ? { signal: opts.signal } : undefined).finalMessage() as never
       }, deps.prices!)(req),
       write: dryRun ? undefined : async (rows: WriteRow[]) => {
-        // Replace this question's (or section's) rows for these locales: delete, then insert (the key is generated).
-        const first = rows[0]
-        const key = first.item_id ? 'item_id' : 'section_id'
-        const del = await db.from('faq_translations').delete().eq(key, (first.item_id ?? first.section_id) as string).in('locale', rows.map(r => r.locale))
-        if (del.error) throw new Error(`replace translations: ${del.error.message}`)
-        const ins = await db.from('faq_translations').insert(rows)
-        if (ins.error) throw new Error(`write translations: ${ins.error.message}`)
+        // plans-everywhere-4: REPLACE IN ONE STATEMENT, never delete first. An upsert on the primary key (source_id, locale) replaces
+        // each row in place, so a failed write changes nothing and a language never ends up with fewer answers. (Before: delete these
+        // locales' rows, then insert — a refused insert left them deleted.)
+        const up = await db.from('faq_translations').upsert(rows, { onConflict: 'source_id,locale' })
+        if (up.error) throw new Error(`write translations: ${up.error.message}`)
       },
       remove: dryRun ? undefined : async (kind, id, locales) => {
         const r = await db.from('faq_translations').delete().eq(kind === 'item' ? 'item_id' : 'section_id', id).in('locale', locales)

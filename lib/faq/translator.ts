@@ -22,7 +22,7 @@
 // refusal fallback the checker uses for this model family. Same model, same output shape: a field that does not apply is "" on the
 // wire (a strict schema has no optional property) and reads as null in rowsFromReply, as before. Every rejection check is unchanged.
 // A 400 invalid_request_error fails the same way every time: the run stops at the first, with one line (isInvalidRequest).
-import { jobFor, itemProblem, titleProblem, eszett, parentOf, DERIVED, MODEL_VARIANTS, TRANSLATED_BASES, type FaqTranslationRow, type Job, type Rules } from '@/lib/faq/translation'
+import { jobFor, translatableLocales, itemProblem, titleProblem, eszett, parentOf, DERIVED, MODEL_VARIANTS, TRANSLATED_BASES, type FaqTranslationRow, type Job, type Rules } from '@/lib/faq/translation'
 import { costOf, type Prices, type Usage } from '@/lib/competitor-check/core'
 import { converse, type CheckerDeps } from '@/lib/competitor-check/checker'
 
@@ -44,7 +44,9 @@ export interface ModelRequest { system: [rules: string, localeWords: string]; us
 export interface ModelReply { translations: Record<string, unknown>[]; usage: Usage | null; stopReason?: string | null; usd?: number }
 
 export interface TranslatorDeps {
-  read(): Promise<{ items: SourceItem[]; sections: SourceSection[]; translations: FaqTranslationRow[] }>
+  /** plans-everywhere-4: `enabledLocales` — country_settings.locale of every switched-on country, read at run time; the run translates
+   *  only into those (lib/faq/translation.ts translatableLocales). Absent (a fixture) → every locale, as before. */
+  read(): Promise<{ items: SourceItem[]; sections: SourceSection[]; translations: FaqTranslationRow[]; enabledLocales?: string[] }>
   contextOf(locale: string): LocaleContext
   /** Absent in a dry run. */
   call?(req: ModelRequest): Promise<ModelReply>
@@ -119,7 +121,8 @@ export function validateTranslations(input: unknown): { ok: true; value: Record<
   list.forEach((e, i) => {
     if (!e || typeof e !== 'object' || Array.isArray(e)) { errors.push(`translations[${i}] must be an object.`); return }
     const r = e as Record<string, unknown>
-    if (typeof r.locale !== 'string' || !/^[a-z]{2}-[A-Z]{2}$/.test(r.locale)) { errors.push(`translations[${i}].locale must be a locale such as "de-DE".`); return }
+    // plans-everywhere-4: a two- or three-letter language code (fil-PH), as faq_translations_locale_check now accepts.
+    if (typeof r.locale !== 'string' || !/^[a-z]{2,3}-[A-Z]{2}$/.test(r.locale)) { errors.push(`translations[${i}].locale must be a locale such as "de-DE".`); return }
     const bad = ENTRY_KEYS.filter(k => k !== 'locale' && r[k] !== undefined && typeof r[k] !== 'string')
     if (bad.length) { errors.push(`translations[${i}]: ${bad.join(', ')} must be text ("" when it does not apply).`); return }
     value.push(Object.fromEntries(ENTRY_KEYS.filter(k => r[k] !== undefined).map(k => [k, r[k]])))
@@ -221,13 +224,15 @@ export async function runTranslator(deps: TranslatorDeps, opts: TranslatorOption
   const model = opts.model ?? TRANSLATOR_MODEL
   const report: TranslatorReport = { jobs: 0, done: 0, skippedForCap: 0, ok: 0, failed: 0, removed: 0, usd: 0, changedLocales: [], okLocales: [], lines: [] }
   const log = (s: string) => { report.lines.push(s); deps.log(s) }
-  const { items, sections, translations } = await deps.read()
+  const { items, sections, translations, enabledLocales } = await deps.read()
+  const only = enabledLocales ? translatableLocales(enabledLocales) : undefined
   const published = items.filter(i => i.status === 'published')
   const usedSections = sections.filter(s => published.some(i => i.sectionId === s.id))
   const work: { job: Job; english: SourceItem | SourceSection }[] = []
   // faq-translate-fix: questions first, then the section titles — so `limit` 1 is one question into one language (a full run does both).
-  for (const i of published) { const j = jobFor({ kind: 'item', id: i.id, hash: i.hash }, translations); if (j) work.push({ job: j, english: i }) }
-  for (const s of usedSections) { const j = jobFor({ kind: 'section', id: s.id, hash: s.hash }, translations); if (j) work.push({ job: j, english: s }) }
+  for (const i of published) { const j = jobFor({ kind: 'item', id: i.id, hash: i.hash }, translations, only); if (j) work.push({ job: j, english: i }) }
+  for (const s of usedSections) { const j = jobFor({ kind: 'section', id: s.id, hash: s.hash }, translations, only); if (j) work.push({ job: j, english: s }) }
+  if (only) log(`Translating only into the ${only.size} locales switched-on countries use (country_settings); unused installed locales are skipped.`)
   report.jobs = work.length
   if (!work.length) { log(`Nothing to translate: ${published.length} published questions and ${usedSections.length} sections, every translation up to date. No model call.`); return report }
   log(`${work.length} to translate (${work.filter(w => w.job.kind === 'section').length} section titles, ${work.filter(w => w.job.kind === 'item').length} questions) into up to ${TRANSLATED_BASES.length} languages and ${MODEL_VARIANTS.length} variants · cap $${opts.maxUsd.toFixed(2)}${opts.dryRun ? ' · DRY RUN: no model call, nothing written' : ''}`)
