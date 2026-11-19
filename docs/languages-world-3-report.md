@@ -25,12 +25,12 @@
 | 17 | ca-AD Catalan (Andorra) | ✅ installed c417fa0b (9 parts + consistency; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 19 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs ca-AD` 3/3 ✓; `legal-languages-1` /ad/privacy, /ad/terms, /ad/country-terms ✓ | fb1c0a01 · legal dfb866ff |
 | 18 | sw-TZ Swahili | ✅ installed 8fede02f (9 parts + consistency; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass — no-list language re-pinned to zu-ZA; iOS strings in step) — needs native check | ✅ batch 21 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs sw-TZ` 3/3 ✓; `legal-languages-1` /tz/privacy, /tz/terms, /tz/country-terms ✓ | 8fede02f · legal 7ffa86cd |
 | 19 | si-LK Sinhala | ✅ installed d87b958b (9 parts + consistency; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass; iOS strings in step) — needs native check | ✅ batch 23 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs si-LK` 3/3 ✓; `legal-languages-1` /lk/privacy, /lk/terms, /lk/country-terms ✓ | d87b958b · legal 74be3dcd |
-| 20 | ta-LK Tamil (Sri Lanka) | — | — | | |
+| 20 | ta-LK Tamil (Sri Lanka) | ✅ installed 1984c3e1 (9 parts + consistency; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass; iOS strings in step) — needs native check | — next | | |
 | 21 | km-KH Khmer | — | — | | |
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **19 of 23 languages done (57 of 69 pages).** UI: 19 of 23 installed (si-LK on 19 Nov). In progress: ta-LK UI (2 agents at a time, Dominic 18 Nov). Then ta-LK legal, then km-KH, lo-LA, am-ET.
+Legal pages: **19 of 23 languages done (57 of 69 pages).** UI: 20 of 23 installed (ta-LK on 19 Nov). In progress: ta-LK legal. Then paused (Dominic, 19 Nov): km-KH, lo-LA, am-ET remain.
 
 ## Batch order
 
