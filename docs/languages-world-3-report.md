@@ -24,13 +24,13 @@
 | 16 | mk-MK Macedonian | ✅ installed 0e592f0c (9 parts + consistency + top-up of 29 keys; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 17 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs mk-MK` 3/3 ✓; `legal-languages-1` /mk/privacy, /mk/terms, /mk/country-terms ✓ | d1214c77 · legal 2a0e6610 |
 | 17 | ca-AD Catalan (Andorra) | ✅ installed c417fa0b (9 parts + consistency; translation-check structural 0, pricing-copy-4 and messages-keys-used pass, iOS strings in step) — needs native check | ✅ batch 19 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs ca-AD` 3/3 ✓; `legal-languages-1` /ad/privacy, /ad/terms, /ad/country-terms ✓ | fb1c0a01 · legal dfb866ff |
 | 18 | sw-TZ Swahili | ✅ installed 8fede02f (9 parts + consistency; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass — no-list language re-pinned to zu-ZA; iOS strings in step) — needs native check | ✅ batch 21 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs sw-TZ` 3/3 ✓; `legal-languages-1` /tz/privacy, /tz/terms, /tz/country-terms ✓ | 8fede02f · legal 7ffa86cd |
-| 19 | si-LK Sinhala | — | — | | |
+| 19 | si-LK Sinhala | ✅ installed d87b958b (9 parts + consistency; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass; iOS strings in step) — needs native check | — next | | |
 | 20 | ta-LK Tamil (Sri Lanka) | — | — | | |
 | 21 | km-KH Khmer | — | — | | |
 | 22 | lo-LA Lao | — | — | | |
 | 23 | am-ET Amharic | — | — | | |
 
-Legal pages: **18 of 23 languages done (54 of 69 pages).** UI: 18 of 23 installed (sw-TZ on 18 Nov). In progress: si-LK and ta-LK UI (up to 3 agents at a time, Dominic 18 Nov). Then km-KH, lo-LA, am-ET.
+Legal pages: **18 of 23 languages done (54 of 69 pages).** UI: 19 of 23 installed (si-LK on 19 Nov). In progress: si-LK legal, ta-LK UI (2 agents at a time, Dominic 18 Nov). Then km-KH, lo-LA, am-ET.
 
 ## Batch order
 
