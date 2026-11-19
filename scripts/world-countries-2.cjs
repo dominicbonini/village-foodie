@@ -41,7 +41,11 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
 ;(async () => {
   // ══ 1 · F2 ════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('1 · F2 THE TERMS — true in every country, naming no plan or price; the eight country sections; the dates')
-  const terms = read('content/legal/terms-and-conditions.md'), country = read('content/legal/country-specific-terms.md'), legal = read('lib/legal.ts')
+  // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md): the Terms' post-pay wording and its date / TERMS_VERSION are
+  // taken back exactly first (scripts/_named-terms-postpay-1.cjs), so these checks still prove the Terms as world-countries-2 left them.
+  // (The post-pay Terms name the Pay as you go plan on purpose — Dominic's approved wording, superseding the V16.2 "names no plan" rule.)
+  const TPU = (f, s) => require('./_named-terms-postpay-1.cjs').undoCode(f, s)
+  const terms = TPU('content/legal/terms-and-conditions.md', read('content/legal/terms-and-conditions.md')), country = read('content/legal/country-specific-terms.md'), legal = TPU('lib/legal.ts', read('lib/legal.ts'))
   const s4 = terms.slice(terms.indexOf('## 4.'), terms.indexOf('\n## 5.'))
   t('Terms: no sentence promises "our plan with no monthly fee", "the plan with no monthly fee" or that "one plan has no monthly fee"', !/(our|the) plan with no monthly fee|One plan has no monthly fee/i.test(terms))
   t('Terms §4: a finished trial, a cancellation and a failed payment move to "the plan shown for your country on our pricing page" (and a payment 7 days late to "that plan")', (s4.match(/the plan shown for your country on our pricing page/g) || []).length === 3 && s4.includes('of its due date, your account moves to that plan.'))

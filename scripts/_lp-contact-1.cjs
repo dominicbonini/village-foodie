@@ -39,6 +39,7 @@ const LEGAL_TS_EDITS = [
 /** True on a tree with contact-1 (lib/legal.ts's Terms version 2026-11-02 or later). */
 const LANDED = (() => { try { const m = /TERMS_VERSION\s*=\s*'(\d{4}-\d{2}-\d{2})'/.exec(require('fs').readFileSync(require('path').join(__dirname, '..', 'lib/legal.ts'), 'utf8')); return !!m && m[1] >= TERMS_VERSION_NEW } catch { return false } })()
 function asBefore(file, text) {
+  text = require('./_named-terms-postpay-1.cjs').asBefore(file, text)   // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026): newest change first, idempotent
   if (!LANDED) return text
   if (file === 'content/legal/privacy-policy.md') return privacyAsBefore(text)   // tidy-1's change first, inside it
   if (file === 'lib/legal.ts') text = require('./_lp-tidy-1.cjs').asBefore(file, text)   // ⚠️ RE-PINNED (tidy-1): newest first

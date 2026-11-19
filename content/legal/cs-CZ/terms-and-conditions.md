@@ -1,4 +1,4 @@
-<!-- translation-of: terms-and-conditions.md sha256:c3a3b03defd1d840a6ccf2fb25c4f8650914ba7a34738ceb2fdbd961190def91 -->
+<!-- translation-of: terms-and-conditions.md sha256:be9cdf1a752bb31e547cea16e0cc35527b94d079dcdae38bde46f83d3474ca75 -->
 # Podmínky služby
 
 **Poslední aktualizace:** {{LAST_UPDATED}}
@@ -64,21 +64,23 @@ Pokud jsou vaše informace o alergenech nebo surovinách nesprávné, neúplné 
 
 **Žádný závazek, zrušení kdykoli.** Neexistuje žádná minimální doba trvání ani výpovědní lhůta. Nikdy nejste vázáni.
 
-- **Tarify.** Naše tarify, jejich měsíční ceny, hodnota online objednávek, kterou každý z nich zahrnuje, a poplatek, který každý z nich účtuje, jsou uvedeny na našem webu a v aplikaci. Které tarify nabízíme, závisí na vaší zemi, a ve většině zemí je jeden z nich bez měsíčního poplatku. Ceny jsou ve vaší místní měně. Nejsme registrováni k DPH, takže k našim poplatkům se DPH nepřipočítává. Pokud se na vás vztahuje jiná místní daň, sdělíme vám to dříve, než bude připočtena.
-- **Bezplatné zkušební období.** Nové účty začínají bezplatným zkušebním obdobím se všemi funkcemi odemčenými. Jeho délka je uvedena na našem webu a v aplikaci při registraci. K zahájení nepotřebujete kartu. Na konci zkušebního období přejde váš účet na tarif uvedený pro vaši zemi v našem ceníku, pokud jste si nezvolili jiný tarif. Ve většině zemí je tento tarif bez měsíčního poplatku. Před koncem zkušebního období vám to připomeneme v aplikaci.
-- **Placeno předem a nevratné.** Měsíční poplatky za tarif se účtují na měsíc dopředu. **Již zaplacené poplatky jsou nevratné**, a to i v případě, že zrušíte službu v průběhu měsíce nebo ji přestanete používat. To je protihodnota za to, že neexistuje žádný závazek ani minimální doba trvání. Nic zde nemá vliv na práva, která vám ze zákona nelze odepřít.
-- **Zrušení.** Službu můžete kdykoli zrušit tím, že nás kontaktujete, nebo přímo ve službě. Zrušení zastaví další platbu; nevrací peníze za probíhající měsíc. Plný přístup si ponecháte až do konce zaplaceného období, poté přejdete na tarif uvedený pro vaši zemi v našem ceníku, který je ve většině zemí bez měsíčního poplatku.
-- **Poplatky HatchGrab z online objednávek placených kartou.** V závislosti na vašem tarifu účtujeme stanovené procento z hodnoty online objednávek, které vaši zákazníci zaplatí kartou — z celé hodnoty, z hodnoty nad částku, kterou váš tarif každý měsíc zahrnuje, nebo vůbec. **Z objednávek s platbou při vyzvednutí ani z objednávek na místě neúčtujeme žádný poplatek.**
+- **Tarify.** Naše tarify, jejich měsíční ceny, hodnota online objednávek, kterou každý z nich zahrnuje, a poplatek, který každý z nich účtuje, jsou uvedeny na našem webu a v aplikaci. V každé zemi máme tarif „Bez měsíčního poplatku“, který nemá žádný měsíční poplatek a ve kterém platíte pouze náš poplatek z předobjednávek. Ceny jsou ve vaší místní měně. Nejsme registrováni k DPH, takže k našim poplatkům se DPH nepřipočítává. Pokud se na vás vztahuje jiná místní daň, sdělíme vám to dříve, než bude připočtena.
+- **Bezplatné zkušební období.** Nové účty začínají bezplatným zkušebním obdobím se všemi funkcemi odemčenými. Jeho délka je uvedena na našem webu a v aplikaci při registraci. K zahájení nepotřebujete kartu. Na konci zkušebního období přejde váš účet na tarif **Bez měsíčního poplatku**, který nemá žádný měsíční poplatek, pokud jste si nezvolili jiný tarif. V tarifu „Bez měsíčního poplatku“ platíte pouze náš poplatek z předobjednávek. Před koncem zkušebního období vám to připomeneme v aplikaci.
+- **Kdy účtujeme.** Měsíční poplatky za tarif se účtují předem, vždy 1. dne v měsíci. Pokud si na konci bezplatného zkušebního období zvolíte placený tarif, naúčtujeme vám zbytek daného měsíce v den, kdy zkušební období skončí. Pokud přejdete na vyšší tarif, naúčtujeme vám rozdíl za zbytek měsíce okamžitě. Přechod na nižší tarif nabývá účinnosti 1. dne následujícího měsíce. **Již zaplacené poplatky jsou nevratné**, a to i v případě, že zrušíte službu v průběhu měsíce nebo ji přestanete používat. To je protihodnota za to, že neexistuje žádný závazek ani minimální doba trvání. Nic zde nemá vliv na práva, která vám ze zákona nelze odepřít.
+- **Jak vybíráme náš poplatek z předobjednávek.** Tam, kde to vaše země umožňuje, si náš poplatek strhneme z každé online platby kartou v okamžiku, kdy je objednávka zaplacena. Všude jinde, včetně všech zemí, kde vaši zákazníci platí při vyzvednutí, sečteme náš poplatek z předobjednávek za minulý měsíc a 1. dne v měsíci jej stáhneme z vaší karty spolu s poplatkem za tarif na nadcházející měsíc. Co platí pro vás, najdete v ceníku pro vaši zemi. Pokud je měsíční částka nižší než minimum ve vaší zemi, převedeme ji k úhradě na další 1. den v měsíci.
+- **Váš způsob platby.** Pokud vám účtujeme měsíčně, musíte mít na konci bezplatného zkušebního období uloženou kartu (nebo Pix Automático v Brazílii) a opravňujete nás, abychom z ní výše uvedené částky automaticky strhávali. Bez uloženého způsobu platby se online objednávky pozastaví, dokud jej nepřidáte.
+- **Zrušení.** Službu můžete kdykoli zrušit tím, že nás kontaktujete, nebo přímo ve službě. Zrušení zastaví další platbu; nevrací peníze za probíhající měsíc. Plný přístup si ponecháte až do konce zaplaceného období, poté přejdete na tarif „Bez měsíčního poplatku“, který nemá žádný měsíční poplatek.
+- **Poplatky HatchGrab z předobjednávek.** V závislosti na vašem tarifu účtujeme stanovené procento z hodnoty jídla v každé předobjednávce zadané přes HatchGrab, ať ji zákazník zaplatí online, nebo při vyzvednutí: z celé hodnoty, z hodnoty nad částku, kterou váš tarif každý měsíc zahrnuje, nebo vůbec. Poplatek se nevztahuje na daně, spropitné, servisní poplatky ani příplatky ani na zrušené nebo odmítnuté objednávky. Pokud vrátíte platbu kartou, náš poplatek se poměrně sníží. **Z objednávek na místě neúčtujeme žádný poplatek.**
 - **Zpracování karet.** Poplatky za zpracování karet u online objednávek placených kartou účtuje náš poskytovatel plateb (Stripe), platí se jemu, nikoli nám, a jsou oddělené od našich poplatků. Objednávky na místě se přijímají na vašem vlastním platebním terminálu, podle vaší vlastní smlouvy s jeho poskytovatelem.
-- **Změny cen.** Můžeme změnit své ceny, poplatky nebo to, co tarif zahrnuje. Než se vás změna dotkne, oznámíme vám ji nejméně 30 dnů předem a vy můžete před její účinností změnit tarif nebo službu zrušit.
+- **Změny cen a účtování.** Můžeme změnit své ceny, své poplatky, to, co tarif zahrnuje, nebo způsob, jakým ve vaší zemi vybíráme náš poplatek. Než se vás změna dotkne, oznámíme vám ji **nejméně 30 dnů předem** a vy můžete před její účinností změnit tarif nebo službu zrušit.
 
 ### Pokud platba neproběhne
 
-**Pokud platba selže nebo není provedena, přejde váš účet na tarif uvedený pro vaši zemi v našem ceníku, který je ve většině zemí bez měsíčního poplatku.** Přístup vám nezablokujeme.
+**Pokud platba selže, zkusíme ji provést znovu a pošleme vám e-mail.** Na zaplacení máte zbytek daného dne a **dalších 5 celých dnů**. Pokud ani poté nebude zaplaceno, **online objednávky se o půlnoci (podle vašeho místního času) pozastaví, dokud nebude částka uhrazena.**
 
-- Pokud platba není provedena do **7 dnů** od data splatnosti, přejde váš účet na tento tarif. Ponecháte si svůj účet, jídelní lístek, objednávky i údaje a můžete dál přijímat objednávky a používat kuchyňskou obrazovku a přehled. Přijdete o funkce, které tento tarif nezahrnuje, a uplatní se poplatek tohoto tarifu z online objednávek placených kartou, pokud nějaký má.
-- Uhrazením dlužné částky se váš tarif obnoví.
-- Přechod na jiný tarif vám nezakládá nárok na vrácení již zaplacených poplatků a nadále odpovídáte za částky splatné do tohoto data.
+- Váš účet, jídelní lístek, objednávky i údaje zůstávají beze změny.
+- Uhrazením dlužné částky (na obrazovce Fakturace nebo aktualizací karty) se online objednávky znovu zapnou.
+- Pozastavení vám nezakládá nárok na vrácení již zaplacených poplatků a nadále odpovídáte za splatné částky.
 
 ⚠️ **Počítejte s tím.** Některé funkce, na kterých vaše služba závisí, jsou k dispozici pouze v placených tarifech. Jako fakturační kontakt ve svém účtu mějte adresu, kterou kontrolujete, a udržujte údaje o své kartě aktuální.
 
@@ -91,7 +93,7 @@ Pokud váš tarif zahrnuje platby kartou, používáme Stripe Connect. To se tý
 🔴 **Peníze vašich zákazníků jdou přímo vám.** Platby se připisují na váš vlastní účet Stripe vedený na vaše jméno. Vaše tržby nikdy nedržíme, nepřijímáme ani nekontrolujeme a nejsme obchodníkem odpovědným za vaše prodeje (merchant of record) — tím jste vy.
 
 - Budete muset dokončit registraci a ověření totožnosti u Stripe a uzavíráte se Stripe přímo jeho vlastní smlouvu. Nejsme její smluvní stranou.
-- **Účtujeme pouze poplatek platformy sjednaný pro váš tarif**, stržený v okamžiku transakce. Vše ostatní je vaše.
+- **Účtujeme pouze poplatek sjednaný pro váš tarif**, stržený v okamžiku transakce tam, kde to vaše země umožňuje, a jinak účtovaný měsíčně, jak je popsáno v oddílu 4. Vše ostatní je vaše.
 - **Poplatky Stripe za zpracování karet jsou oddělené** a účtuje je Stripe, nikoli my. Jejich aktuální sazby se zobrazují při registraci.
 - **Refundace, zpětná zúčtování (chargebacky) a spory jsou vaše**, ať byla platba přijata online, nebo osobně. Rozhodujete, kdy zákazníkovi vrátíte peníze, a nesete náklady každého zpětného zúčtování a každého poplatku, který za něj Stripe účtuje. Refundace ani zpětná zúčtování vaším jménem nefinancujeme a poplatek platformy u refundované nebo zpětně zúčtované transakce nevracíme, pokud písemně neuvedeme jinak.
 - Načasování výplat, blokace a rezervy stanovuje Stripe podle vaší smlouvy s ním. Nemůžeme je uvolnit, urychlit ani přepsat.

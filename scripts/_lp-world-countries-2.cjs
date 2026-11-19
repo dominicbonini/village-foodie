@@ -108,6 +108,7 @@ const LEGAL_TS_EDITS = [
  *  older bytes (each still proves "its old self", now as "its old self + exactly world-countries-2's named change"). Throws
  *  when the named change is not there exactly; any other file is returned as it is. */
 function asBefore(file, text) {
+  text = require('./_named-terms-postpay-1.cjs').asBefore(file, text)   // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026): newest change first, idempotent
   // ⚠️ RE-PINNED (world-countries-3, 1 November 2026): three later sentences (Mexico's authority, Terms §3's section number,
   // Canada's French line — scripts/_lp-world-countries-3.cjs) are taken back first, exactly, so "before world-countries-2" is
   // still every other byte of HEAD's text.

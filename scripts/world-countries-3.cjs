@@ -50,7 +50,8 @@ const placeOf = (file, start) => {
 
 ;(async () => {
   head('1 · ENGLISH — exactly the three named sentences')
-  const country = read('content/legal/country-specific-terms.md'), terms = read('content/legal/terms-and-conditions.md')
+  // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md): the Terms read through terms-postpay-1's exact undo.
+  const country = read('content/legal/country-specific-terms.md'), terms = require('./_named-terms-postpay-1.cjs').undoCode('content/legal/terms-and-conditions.md', read('content/legal/terms-and-conditions.md'))
   for (const [file, before, after] of W3.EDITS) {
     const s = read(file)
     t(`${file}: "${after.slice(0, 70)}…" once, the old words gone`, s.split(after).length === 2 && !s.includes(before))
@@ -87,7 +88,9 @@ const placeOf = (file, start) => {
     if (!m.includes(SEC) || !/21/.test(m) || !m.includes('2025')) bad.push(`${b} Mexico: ${m.slice(0, 120)}`)
     if (!/(?<!\d)10(?!\d)/.test(s3) || /(?<!\d)9(?!\d)/.test(s3)) bad.push(`${b} Terms §3: ${s3}`)
     void q
-    for (const [file, s] of [['country-specific-terms.md', c], ['terms-and-conditions.md', tt]]) { const p = L.compare(file, s); if (p.length) bad.push(`${b}/${file}: ${p[0]}`) }
+    // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md): fil-PH, hi-IN, ur-PK, ta-LK and vi-VN (no enabled country uses
+    // them) keep their Terms on the English before 19 Nov 2026 — their Terms §3 is still checked above, their stamp is not.
+    for (const [file, s] of [['country-specific-terms.md', c], ['terms-and-conditions.md', tt]]) { if (file === 'terms-and-conditions.md' && ['fil-PH', 'hi-IN', 'ur-PK', 'ta-LK', 'vi-VN'].includes(b)) continue; const p = L.compare(file, s); if (p.length) bad.push(`${b}/${file}: ${p[0]}`) }
   }
   t('every translation: Mexico names the Secretaría (in Spanish, as written) with the date\'s day and year; Terms §3 points at 10; both files stamped with today\'s English and the same structure', bad.length === 0, bad.slice(0, 6))
 

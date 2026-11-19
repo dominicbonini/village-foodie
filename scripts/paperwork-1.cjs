@@ -456,7 +456,7 @@ const { fakeSupabase, MIGRATION, TYPE_ROWS, BYTES, STUBS } = require('./_paperwo
     const pp = read('content/legal/privacy-policy.md')
     t('the English privacy paragraph is there, in section 3, naming Google’s Gemini and expiring links', /\*\*Compliance documents\.\*\* If you keep your certificates[^\n]*Google's Gemini service, the same one that reads menus[^\n]*through links that expire, and we keep them until you delete them or close your account\./.test(pp)
       && pp.indexOf('**Compliance documents.**') > pp.indexOf('## 3.') && pp.indexOf('**Compliance documents.**') < pp.indexOf('## 4.'))
-    t('PRIVACY_UPDATED moved with it (4 November 2026, the document\'s own line) and TERMS_VERSION with it', /PRIVACY_UPDATED = '4 November 2026'/.test(read('lib/legal.ts')) && /\*\*Last updated:\*\* 4 November 2026/.test(pp) && /TERMS_VERSION = '2026-11-04'/.test(read('lib/legal.ts')))
+    t('PRIVACY_UPDATED moved with it (4 November 2026, the document\'s own line) and TERMS_VERSION with it', /PRIVACY_UPDATED = '4 November 2026'/.test(read('lib/legal.ts')) && /\*\*Last updated:\*\* 4 November 2026/.test(pp) && /TERMS_VERSION = '2026-11-04'/.test(require('./_named-terms-postpay-1.cjs').undoCode('lib/legal.ts', read('lib/legal.ts')))   /* ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md):TERMS_VERSION read through terms-postpay-1's undo */)
     const LT = require('./_legal-translations.cjs')
     const drift = BASES.map(l => [l, LT.compare('privacy-policy.md', read(`content/legal/${l}/privacy-policy.md`))]).filter(([, p]) => p.length)
     t(`the drift check: all ${BASES.length} translations re-stamped against the new English and structurally equal`, !drift.length, drift.map(([l, p]) => `${l}: ${p[0]}`))

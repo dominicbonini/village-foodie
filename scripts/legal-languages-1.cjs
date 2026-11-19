@@ -61,8 +61,17 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
 ;(async () => {
   // ══ 1 · DRIFT ═════════════════════════════════════════════════════════════════════════════════════════════════════
   head(`1 · DRIFT — every language base (${BASES.length}) × the three documents, against the English`)
+  // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md): the post-pay Terms were translated ONLY into the
+  // languages an enabled country uses (Dominic). These five language bases are installed but used by no enabled country on that day, so
+  // their terms-and-conditions.md still translates the English before 19 Nov 2026 (no page serves them). Named, file by file; every other
+  // base × document must still match today's English. When one of these is used by a country again, translate it and drop it here.
+  const NOT_RETRANSLATED = { 'terms-and-conditions.md': ['fil-PH', 'hi-IN', 'ur-PK', 'ta-LK', 'vi-VN'] }
   for (const locale of BASES) for (const file of L.DOCS) {
     const p = L.translationPath(locale, file)
+    if ((NOT_RETRANSLATED[file] || []).includes(locale)) {
+      t(`${locale}/${file}: left on the English before 19 Nov 2026 (no enabled country uses ${locale}; terms-postpay-1)`, fs.existsSync(p) && /^<!-- translation-of: terms-and-conditions\.md sha256:/.test(fs.readFileSync(p, 'utf8')))
+      continue
+    }
     const probs = fs.existsSync(p) ? L.compare(file, fs.readFileSync(p, 'utf8')) : ['missing']
     t(`${locale}/${file}: stamped with today's English, same structure, numbers, links, addresses and processors`, probs.length === 0, probs.slice(0, 4))
   }
@@ -89,7 +98,9 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   const W3 = require('./_lp-world-countries-3.cjs')
   t('content/legal/terms-and-conditions.md is HEAD\'s + world-countries-2\'s §4 edits (+ world-countries-3\'s §3 section number), nothing else', W3.asBefore('content/legal/terms-and-conditions.md', read('content/legal/terms-and-conditions.md')) === W2.applyTerms(atHead('content/legal/terms-and-conditions.md')))
   t('content/legal/country-specific-terms.md is HEAD\'s + world-countries-2\'s eight sections and date, nothing else', W2.asBefore('content/legal/country-specific-terms.md', read('content/legal/country-specific-terms.md')) === atHead('content/legal/country-specific-terms.md'))
-  const legal = read('lib/legal.ts'), legalHead = atHead('lib/legal.ts')
+  // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md): TERMS_UPDATED / TERMS_VERSION's later move (the post-pay Terms)
+  // is taken back exactly first (scripts/_named-terms-postpay-1.cjs).
+  const legal = require('./_named-terms-postpay-1.cjs').undoCode('lib/legal.ts', read('lib/legal.ts')), legalHead = atHead('lib/legal.ts')
   // ⚠️ RE-PINNED (contact-1): PRIVACY_UPDATED 31 October → 2 November 2026 and TERMS_VERSION '2026-11-01' → '2026-11-02', by name.
   // ⚠️ RE-PINNED (tidy-1, 3 November 2026): …then 2 → 3 November 2026 and '2026-11-02' → '2026-11-03' (scripts/_lp-tidy-1.cjs), by name.
   const T1L = require('./_lp-tidy-1.cjs')

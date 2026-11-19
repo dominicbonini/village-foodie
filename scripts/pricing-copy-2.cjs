@@ -161,7 +161,9 @@ function migration() {
   const terms = 'content/legal/terms-and-conditions.md'
   const touched = [...new Set(git(['log', '--format=%H', '--grep=^pricing-copy-2:']).trim().split('\n').filter(Boolean).flatMap(c => git(['show', '--name-only', '--format=', c]).trim().split('\n')))]
   t('no pricing-copy-2 commit touches content/legal/', !touched.some(f => f.startsWith('content/legal/')), touched.filter(f => f.startsWith('content/legal/')))
-  t('the terms still say "HatchGrab fees on online card orders" (they wait for the billing terms)', read(terms).includes('**HatchGrab fees on online card orders.**'))
+  // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md): the billing terms this check was waiting for are written: the
+  // Terms now say "HatchGrab fees on pre-orders" (every pre-order, paid online or at the truck), and the old heading is gone.
+  t('the terms say "HatchGrab fees on pre-orders" (the billing terms, terms-postpay-1) and no longer "online card orders"', read(terms).includes('**HatchGrab fees on pre-orders.**') && !read(terms).includes('**HatchGrab fees on online card orders.**'))
 
   console.log(`\n${fail ? '🔴' : '✅'} pricing-copy-2: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)

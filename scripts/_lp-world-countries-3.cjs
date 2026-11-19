@@ -33,6 +33,7 @@ const count = (s, x) => s.split(x).length - 1
 /** Today's text of a file world-countries-3 changed, back to its bytes before it; throws when a named change is not there exactly
  *  once (or its old words are still there). Any other file is returned as it is. */
 function asBefore(file, text) {
+  text = require('./_named-terms-postpay-1.cjs').asBefore(file, text)   // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026): newest change first, idempotent
   let s = text
   for (const [f, before, after] of EDITS) {
     if (f !== file) continue

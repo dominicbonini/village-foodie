@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** 1 November 2026
+**Last updated:** 19 November 2026
 
 These terms govern your use of HatchGrab. Please read them — by creating an account or using the service you agree to them.
 
@@ -63,21 +63,23 @@ If your allergen or ingredient information is wrong, incomplete or out of date, 
 
 **No contract, cancel anytime.** There is no minimum term and no notice period. You are never tied in.
 
-- **Plans.** Our plans, their monthly prices, the online order value each includes and the fee each charges are shown on our website and in the app. Which plans we offer depends on your country, and in most countries one of them has no monthly fee. Prices are in your local currency. We are not registered for VAT, so no VAT is added to our fees. Where another local tax applies to you, we will tell you before it is added.
-- **Free trial.** New accounts start with a free trial with every feature unlocked. Its length is shown on our website and in the app when you sign up. You do not need a card to start. At the end of the trial your account moves to the plan shown for your country on our pricing page, unless you have chosen another plan. In most countries that plan has no monthly fee. We will remind you in the app before your trial ends.
-- **Paid in advance, and non-refundable.** Monthly plan fees are billed one month in advance. **Fees already paid are non-refundable**, including if you cancel part-way through a month or stop using the service. This is the trade for there being no contract and no minimum term. Nothing here affects rights you have that cannot lawfully be excluded.
-- **Cancellation.** You can cancel at any time by contacting us or from within the service. Cancellation stops the next payment; it does not refund the month you are in. You keep full access until the end of the period you have paid for, then move to the plan shown for your country on our pricing page, which in most countries has no monthly fee.
-- **HatchGrab fees on online card orders.** Depending on your plan, we charge a stated percentage of the value of online orders your customers pay for by card — on all of it, on the value above the amount your plan includes each month, or not at all. **We charge no fee on Pay at Hatch orders or on walk-up orders.**
+- **Plans.** Our plans, their monthly prices, the online order value each includes and the fee each charges are shown on our website and in the app. Every country has a plan with no monthly fee, Pay as you go, where you pay only our fee on pre-orders. Prices are in your local currency. We are not registered for VAT, so no VAT is added to our fees. Where another local tax applies to you, we will tell you before it is added.
+- **Free trial.** New accounts start with a free trial with every feature unlocked. Its length is shown on our website and in the app when you sign up. You do not need a card to start. At the end of the trial your account moves to **Pay as you go**, which has no monthly fee, unless you have chosen another plan. On Pay as you go you pay only our fee on pre-orders. We will remind you in the app before your trial ends.
+- **When we charge.** Monthly plan fees are charged in advance, on the 1st of each month. If you choose a paid plan when your free trial ends, we charge the rest of that month on the day it ends. If you upgrade, we charge the difference for the rest of the month straight away. A downgrade takes effect on the 1st of the next month. **Fees already paid are non-refundable**, including if you cancel part-way through a month or stop using the service. This is the trade for there being no contract and no minimum term. Nothing here affects rights you have that cannot lawfully be excluded.
+- **How we collect our fee on pre-orders.** Where your country allows it, we take our fee from each online card payment when the order is paid. Everywhere else, including every country where your customers pay at the truck, we add up our fee on last month's pre-orders and charge it to your card on the 1st, together with your plan fee for the coming month. The pricing page for your country says which applies. If a monthly charge is below your country's minimum, we carry it over to the next 1st.
+- **Your payment method.** Where we charge you monthly, you need a card on file (or Pix Automático in Brazil) when your free trial ends, and you authorise us to charge it automatically for the amounts above. Without one, online ordering pauses until you add one.
+- **Cancellation.** You can cancel at any time by contacting us or from within the service. Cancellation stops the next payment; it does not refund the month you are in. You keep full access until the end of the period you have paid for, then move to Pay as you go, which has no monthly fee.
+- **HatchGrab fees on pre-orders.** Depending on your plan, we charge a stated percentage of the food value of every pre-order placed through HatchGrab, whether your customer pays online or at the truck: on all of it, on the value above the amount your plan includes each month, or not at all. The fee doesn't apply to tax, tips, service fees or surcharges, or to cancelled or rejected orders. If you refund a card payment, our fee goes down in proportion. **We charge no fee on walk-up orders.**
 - **Card processing.** Card processing fees on online card orders are charged by our payment provider (Stripe), are paid to them and not to us, and are separate from our fees. Walk-up orders are taken on your own card reader, under your own agreement with its provider.
-- **Price changes.** We may change our prices, fees or what a plan includes. We will give you at least 30 days' notice before a change affects you, and you may change plan or cancel before it takes effect.
+- **Changes to prices and billing.** We may change our prices, our fees, what a plan includes, or how we collect our fee in your country. We will give you **at least 30 days' notice** before a change affects you, and you may change plan or cancel before it takes effect.
 
 ### If payment is not made
 
-**If a payment fails or is not made, your account moves to the plan shown for your country on our pricing page, which in most countries has no monthly fee.** We do not lock you out.
+**If a payment fails, we retry it and email you.** You have the rest of that day and **5 more full days** to pay. If it is still unpaid after that, **online ordering pauses at midnight (your local time) until the amount is paid.**
 
-- If a payment is not made within **7 days** of its due date, your account moves to that plan. You keep your account, your menu, your orders and your data, and you can carry on taking orders and using the kitchen screen and dashboard. You lose any features that plan does not include, and that plan's fee on online card orders applies, if it has one.
-- Paying the outstanding amount restores your plan.
-- Moving plan does not entitle you to a refund of fees already paid, and you remain liable for amounts due up to that date.
+- Your account, your menu, your orders and your data stay as they are.
+- Paying the outstanding amount (from the Billing screen, or by updating your card) turns online ordering back on.
+- A pause does not entitle you to a refund of fees already paid, and you remain liable for amounts due.
 
 ⚠️ **Plan for this.** Some features your service depends on are only on paid plans. Keep the billing contact on your account an address you check, and keep your card details current.
 
@@ -90,7 +92,7 @@ Where your plan includes card payments, we use Stripe Connect. This covers both 
 🔴 **Your customers' money goes directly to you.** Payments are settled into your own Stripe account under your own name. We never hold, receive or control your takings, and we are not the merchant of record for your sales — you are.
 
 - You will need to complete Stripe's onboarding and identity checks, and you enter into Stripe's own agreement with them directly. We are not a party to it.
-- **We take only the platform fee agreed for your plan**, deducted at the point of the transaction. Everything else is yours.
+- **We take only the fee agreed for your plan**, deducted at the point of the transaction where your country allows it, and otherwise charged monthly as described in section 4. Everything else is yours.
 - **Stripe's card processing fees are separate** and are charged by Stripe, not by us. Their current rates are shown during onboarding.
 - **Refunds, chargebacks and disputes are yours**, whether the payment was taken online or in person. You decide when to refund a customer, and you carry the cost of any chargeback and any fee Stripe charges for it. We do not fund refunds or chargebacks on your behalf, and we do not refund our platform fee on a refunded or charged-back transaction unless we say otherwise in writing.
 - Payout timing, holds and reserves are set by Stripe under your agreement with them. We cannot release, accelerate or override them.
