@@ -506,3 +506,9 @@
 ## si-LK part 05 (languages-world-3, 18 Nov 2026)
 - Truck settings වාහන සැකසුම්, Truck details food truck විස්තර, "ඔබේ වාහන / + වාහනයක් එක් කරන්න"; row parts ස්ථානය / වේලාවන්; report Pay at Hatch ස්ථානයේදී ගෙවන්න; Team → My profile "කණ්ඩායම → මගේ පැතිකඩ".
 - Check: capacity times "විනාඩි {m} තත්පර {s}" (narrow cells), Town or city නගරය, Gross/Net දළ / ශුද්ධ, Bold/Italic/CAPITALS තද / ඇල / කැපිටල් අකුරු, date-range "සිට"; settingsCopy.orderReady.help plural "කුස්සියේ තිර (KDS)".
+
+## ta-LK part 03 (languages-world-3, 19 Nov 2026)
+- Schedule “அட்டவணை”; list/table view toggle “அட்டவணை வடிவம்” (kept distinct). Van வாகனம் (“வாகனம் 1”, “அமைப்புகள் → உங்கள் வாகனங்கள்”). Standard “சாதாரணம்”; deals செட் மெனு. Log in “உள்நுழைக”; auth.signup + demoGetStarted.partner* code/deal keys consistent.
+- New terms to check: Billing “சந்தாக் கட்டணம்”, Upsells “மேலதிகப் பரிந்துரைகள்”, Custom extras “தனிப்பயன் மேலதிகங்கள்”, Go live “பொதுவில் வெளியிடுதல்”, Pub chip “மதுபானசாலை”, Poster “சுவரொட்டி”.
+- Allergen card example localised to kottu (wheat, egg; shared pan with gluten and nuts), using part 01's allergen names. Demo dishes mostly transliterated; check lamb “செம்மறி ஆட்டிறைச்சி”, jacket potatoes, pie & mash, craft lemonade. Sample names “ராஜாவின் கொத்து”, “கிராமத்துச் சமையலறை”, “பிரியா & அருணின் திருமணம்”.
+- Kept in English: WhatsApp Manager, Dominic, DELETE (typed confirm word), San Pellegrino; “spam”/“screenshot” in brackets after the Tamil. Glossary flags (53) are vowel-sign false positives. eventTypes.phone.cardSummary `changed` gained a `one` case.
