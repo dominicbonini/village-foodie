@@ -1,0 +1,122 @@
+Features
+Pricing
+Log in
+Upload my menu →
+Frequently asked questions
+
+PRICING
+
+How much does HatchGrab cost?
+
+Each plan is per truck per month: Pay as you go £0, Pro £29 and Unlimited £69. Pay as you go charges 0.99% on online orders. Pro includes your first £4,000 of online orders each month, then charges 0.99%. Unlimited has no HatchGrab fee on your orders. Walk-up orders never carry a HatchGrab fee.
+
+What do I pay on each order?
+
+Nothing on walk-up orders, and nothing at all on Unlimited. On online orders, Pay as you go charges 0.99%, and Pro charges 0.99% once you pass £4,000 in a month. Online card payments also carry the card processing fee, currently 1.5% + 20p, which goes to Stripe, not to us.
+
+Is there a free trial, and what happens when it ends?
+
+Yes. Your first 3 months are free with every feature unlocked, and you don’t need a card to start. When the trial ends you move to Pay as you go (£0 a month). If you’d like a different plan, email us and we’ll switch you.
+
+Is there a contract? Can I cancel anytime?
+
+There’s no contract and no minimum term. You can close your account at any time from your settings, or by emailing us.
+
+What if I only trade part of the year?
+
+Pay as you go is £0 a month, so in the months you’re not trading you pay nothing. You only pay 0.99% on online orders when you take them.
+
+GETTING STARTED
+
+How long does it take to set up?
+
+Upload a photo of your menu and see it working in under 60 seconds. When you’re ready, sign up to start your 3-month free trial, check your menu, add where and when you’re trading, and connect Stripe so customers can pay online. We then switch your ordering page on.
+
+Do I need an iPad, card reader or special equipment?
+
+No. HatchGrab runs in the web browser on any phone, tablet or laptop. We recommend a tablet for the best experience, but it works on a phone too. You don’t need a card reader: customers can pay for pre-orders online by card, and for walk-up orders you keep using the card machine you already have. There’s also an iPad and Android app, which keeps taking walk-up orders if you lose signal.
+
+Do my customers need to download an app?
+
+No. Customers order from a web page on their phone, from your link or QR code. There’s nothing to download and no account to create: they just give their name and email.
+
+Can I try HatchGrab before signing up?
+
+Yes. Upload a photo of your menu and HatchGrab builds a working demo from it: you place an order as a customer and watch it arrive on the kitchen screen. You only need an email address, and no card.
+
+ORDERS AND PAYMENTS
+
+How do I get paid for online orders?
+
+Card payments go straight into your own Stripe account, and Stripe pays them out to your bank on its usual schedule for your country. HatchGrab never holds your money.
+
+Can I control how many orders I receive at once?
+
+Yes. You tell HatchGrab how much you can cook at once and how long it takes, and once a collection time is full, customers can’t choose it. You can also pause online orders for an event at any time.
+
+Do online and walk-up orders appear on the same screen?
+
+Yes. Pre-orders, online orders and the orders you take at the window all show on one kitchen screen.
+
+What happens if I lose my internet connection?
+
+Switch on offline protection and online ordering pauses automatically when you lose signal, so customers can’t place orders you won’t see. The iPad and Android app keeps taking walk-up orders without signal and sends them when you’re back online; the web dashboard needs a connection.
+
+How do customers know their order is ready?
+
+Customers choose their collection time when they order, so they know when to come. They also get an email confirming their order. If you switch on the order-ready step, they’re emailed again when you mark the order ready. You can also use your own buzzers, and HatchGrab records each order’s buzzer number, or call out the name on the ticket.
+
+Can I show allergen information?
+
+Yes. A setup guide walks you through the allergens in each dish, using your country’s allergen list, and customers see them when they order. Where the law allows, you can show one allergen card for the whole menu instead.
+
+Can I change my menu or mark items as sold out?
+
+Yes. You can change your menu at any time in Manage › Menu. During service, mark an item sold out in one tap from your dashboard’s stock list, and customers can’t order it. You can also set a stock limit for an event, and the item sells out by itself when it runs out.
+
+Can customers order ahead for a later day or an event?
+
+Yes. Each of your upcoming stops has its own ordering link on your schedule page, and customers can order once you’ve confirmed the stop, picking a collection time. For items that need notice, you choose when pre-orders open (when the stop is confirmed, a set number of days before, or on the day) and an order-by deadline.
+
+REACHING CUSTOMERS
+
+How do customers find out where I’m trading?
+
+Your schedule page shows where and when you’re trading, with ordering for each stop. You can share its link, or put it on a web address you own.
+
+Can HatchGrab automatically reply to customers’ WhatsApp messages?
+
+Yes, on Pro and Unlimited. It auto-replies to questions like “Where are you tonight?” using your own menu and schedule. You connect your own WhatsApp Business number in your settings, and Meta may charge for some messages.
+
+Can HatchGrab help me create social media posts?
+
+Yes, on Pro and Unlimited. It fills your own design with your stops, for the week or a single event, ready for you to download. You post it yourself: nothing is posted automatically.
+
+Can I run more than one food truck or van?
+
+Yes. You can add vans to your truck yourself in your settings. Each van beyond those your plan includes is £0 a month on Pay as you go, £29 on Pro and £69 on Unlimited. Each van has its own capacity, collection times and offline settings; your menu and payments are shared.
+
+ABOUT HATCHGRAB
+
+How is HatchGrab different from a till like Square?
+
+HatchGrab is ordering and kitchen-screen software, not a till. It takes pre-orders, online orders and walk-up orders and shows them on your kitchen screen, and it works alongside the card machine you already use.
+
+Do I own my customers’ data?
+
+You control it. For your customers’ details, you’re the controller and HatchGrab is the processor: we use them only to run your ordering, never for our own marketing, and we don’t sell them or share them with other trucks. You can export your orders, with customers’ names, as a spreadsheet from Reports.
+
+What help can I get if something goes wrong?
+
+Email us at hello@hatchgrab.com, or send us a message from our support page, and we’ll reply by email.
+
+Features
+Pricing
+FAQ
+Privacy
+Terms
+About
+Contact
+GB
+© 2026 HatchGrab
+From the people behind Village Foodie
