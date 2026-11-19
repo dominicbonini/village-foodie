@@ -35,7 +35,7 @@ const LPROJ = {
   // Russian, the only Russian file; uz and bs are Latin, their CLDR default script).
   'ru-KZ': ['ru'], 'uk-UA': ['uk'], 'kk-KZ': ['kk'], 'uz-UZ': ['uz'], 'az-AZ': ['az'], 'ka-GE': ['ka'], 'hy-AM': ['hy'], 'mn-MN': ['mn'], 'hi-IN': ['hi'], 'bn-BD': ['bn'], 'ur-PK': ['ur'], 'ne-NP': ['ne'],
   // languages-world-3 (18 November 2026): the rest of languages-world-2's bases, each added as it is merged.
-  'fil-PH': ['fil'], 'sq-AL': ['sq'], 'bs-BA': ['bs'], 'mk-MK': ['mk'], 'ca-AD': ['ca'], 'sw-TZ': ['sw'], 'si-LK': ['si'],
+  'fil-PH': ['fil'], 'sq-AL': ['sq'], 'bs-BA': ['bs'], 'mk-MK': ['mk'], 'ca-AD': ['ca'], 'sw-TZ': ['sw'], 'si-LK': ['si'], 'ta-LK': ['ta'],
 }
 const PLIST_KEYS = { NSCameraUsageDescription: 'cameraUsage', NSBluetoothAlwaysUsageDescription: 'bluetoothUsage', NSLocalNetworkUsageDescription: 'localNetworkUsage', NSFaceIDUsageDescription: 'faceIdUsage' }
 const SWIFT_KEYS = ['offlineTitle', 'offlineDetail', 'retry']

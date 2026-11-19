@@ -1,0 +1,17 @@
+{
+  "features": "அம்சங்கள்",
+  "pricing": "விலைகள்",
+  "faq": "கேள்வி-பதில்",
+  "privacy": "தனியுரிமை",
+  "terms": "நிபந்தனைகள்",
+  "contact": "தொடர்பு",
+  "about": "எங்களைப் பற்றி",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b> உருவாக்கியவர்களிடமிருந்து",
+  "badges": {
+    "appStoreLink": "App Store தளத்தில் HatchGrab பதிவிறக்கவும்",
+    "appStoreAlt": "App Store தளத்தில் பதிவிறக்கவும்",
+    "googlePlayLink": "Google Play தளத்தில் HatchGrab பெறவும்",
+    "googlePlayAlt": "Google Play தளத்தில் பெறவும்"
+  }
+}

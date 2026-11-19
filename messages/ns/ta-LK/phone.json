@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {சரியான {name} கைத்தொலைபேசி இலக்கத்தை உள்ளிடுங்கள்} other {சரியான கைத்தொலைபேசி இலக்கத்தை உள்ளிடுங்கள்}}{withExample, select, yes { (உ-ம்: {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {சரியான {name} தொலைபேசி இலக்கத்தை உள்ளிடுங்கள்} other {சரியான தொலைபேசி இலக்கத்தை உள்ளிடுங்கள்}}{withExample, select, yes { (உ-ம்: {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {சரியான {name} தொலைபேசி இலக்கத்தை உள்ளிடவும்} other {சரியான தொலைபேசி இலக்கத்தை உள்ளிடவும்}}{withExample, select, yes { (உ-ம்: {example})} other {}}."
+}

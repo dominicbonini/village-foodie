@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "வாரத் திகதிகள்",
+    "dayList": "நாட்களின் பட்டியல்",
+    "place": "இடம்",
+    "venue": "இடத்தின் பெயர்",
+    "area": "பிரதேசம்",
+    "dayDate": "நாளும் திகதியும்",
+    "times": "நேரம்",
+    "orderLink": "ஆர்டர் இணைப்பு",
+    "locationTag": "இருப்பிட டேக்"
+  },
+  "weekHeader": "{truck} — இந்த வாரம் நாங்கள் இருக்கும் இடங்கள்:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — இரத்துச் செய்யப்பட்டது, மன்னிக்கவும்",
+  "noDates": "இந்த வாரம் திகதிகள் எதுவும் இல்லை — விரைவில் மீண்டும் பாருங்கள்.",
+  "orderAhead": "முன்கூட்டியே ஆர்டர் செய்யுங்கள்: {url}",
+  "orderAheadTagged": "முன்கூட்டியே ஆர்டர் செய்யுங்கள்: {url} {tag}",
+  "eventLine": "{truck} — {when} {where} இடத்தில், {times}.",
+  "eventLineNoTimes": "{truck} — {when} {where} இடத்தில்.",
+  "cancelledSorry": "மன்னிக்கவும் — {when} {where} இடத்துக்கு எங்களால் வர முடியாது.",
+  "cancelledApology": "வர எண்ணியிருந்த அனைவரிடமும் மன்னிப்புக் கோருகிறோம். விரைவில் மீண்டும் வருவோம்.",
+  "when": {
+    "today": "இன்று",
+    "tonight": "இன்றிரவு",
+    "tomorrow": "நாளை",
+    "dated": "{date} அன்று"
+  }
+}

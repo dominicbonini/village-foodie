@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature}: {plan} திட்டத்தில் உள்ளடங்கும்.} other {{feature}: {plan} திட்டத்தில் உள்ளடங்கும்.}}",
+  "notOnPlan": "{many, select, yes {{feature}: உங்கள் திட்டத்தில் இல்லை.} other {{feature}: உங்கள் திட்டத்தில் இல்லை.}}",
+  "switchedOff": "{many, select, yes {{feature}: உங்கள் food truck கணக்கில் நிறுத்தப்பட்டுள்ளன.} other {{feature}: உங்கள் food truck கணக்கில் நிறுத்தப்பட்டுள்ளது.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "மேம்படுத்தவும் →",
+  "features": {
+    "discovery_map": {
+      "name": "கண்டறியும் வரைபடத்தில் பட்டியலிடல்",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "இணையக் கட்டுப்பாட்டுப் பலகை",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "சமையலறைச் செயலி",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR குறியீட்டு மெனு",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "செட் மெனுக்கள்",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "மேலதிகப் பரிந்துரைகள்",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "நேரடி ஆர்டர்கள்",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "“எடுக்க வரும்போது செலுத்துதல்” ஆர்டர்கள்",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "விற்றுத் தீர்ந்ததாகக் குறிக்கும் ஆளி",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "தானாகக் குறையும் இருப்பு எண்ணிக்கை",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "ஒஃப்லைன் ஆர்டர் பாதுகாப்பு",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "ஒன்லைன் கொடுப்பனவுகள்",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "எதிர்வரும் திகதிகளுக்கான முன்கூட்டிய ஆர்டர்கள்",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "வாடிக்கையாளர் நேர ஒதுக்கீடுகள்",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "சமையலறைக் கொள்ளளவு முகாமைத்துவம்",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "தானியங்கி ஏற்பு",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger & Instagram தானியங்கிப் பதில்கள்",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "இலச்சினையுடன் கூடிய QR குறியீடுகள்",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "மேம்பட்ட அறிக்கைகள்",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "சமையலறை டிக்கெட் அச்சிடல்",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "பல சாதனச் சமையலறை ஒத்திசைவு",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "சமையல் திரை",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp தானியங்கிப் பதில்கள்",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "உங்கள் சொந்த இணையத்தளத்தில் உங்கள் அட்டவணை",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "சமூக ஊடகப் பதிவுகள்",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "தனிப்பயன் நிகழ்வு வகைகள்",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "தனியார் நிகழ்வுகள்",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "ஆவணங்கள்",
+      "many": "yes"
+    }
+  }
+}

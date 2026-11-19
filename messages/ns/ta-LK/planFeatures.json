@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "கண்டறியும் வரைபடத்தில் பட்டியலிடல்"
+    },
+    "web_dashboard": {
+      "name": "எந்தச் சாதனத்திலும் இணையக் கட்டுப்பாட்டுப் பலகை"
+    },
+    "qr_code": {
+      "name": "QR குறியீடு"
+    },
+    "schedule_import": {
+      "name": "தானியங்கி அட்டவணை இறக்குமதி"
+    },
+    "meal_deals_upsells": {
+      "name": "செட் மெனுக்கள் & மேலதிகப் பரிந்துரைகள்"
+    },
+    "walkup_orders": {
+      "name": "நேரடி ஆர்டர் செயலாக்கம்"
+    },
+    "sold_out_toggle": {
+      "name": "ஒரே தட்டலில் விற்றுத் தீர்ந்ததாகக் குறித்தல்"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad, Android சமையலறைச் செயலி"
+    },
+    "offline_protection": {
+      "name": "ஒஃப்லைன் ஆர்டர் பாதுகாப்பு"
+    },
+    "online_payments": {
+      "name": "ஒன்லைன் கொடுப்பனவுகள்"
+    },
+    "advance_preordering": {
+      "name": "எதிர்வரும் திகதிகளுக்கான முன்கூட்டிய ஆர்டர்கள்"
+    },
+    "preorder_deadline": {
+      "name": "முன்கூட்டிய ஆர்டர் இறுதி நேரம்"
+    },
+    "time_slot_selection": {
+      "name": "வாடிக்கையாளர் நேர ஒதுக்கீட்டுத் தெரிவு"
+    },
+    "kitchen_capacity": {
+      "name": "சமையலறைக் கொள்ளளவு முகாமைத்துவம்"
+    },
+    "stock_countdown": {
+      "name": "தானாகக் குறையும் இருப்பு எண்ணிக்கை"
+    },
+    "auto_accept": {
+      "name": "ஒன்லைன் ஆர்டர்களைத் தானாக ஏற்றல்"
+    },
+    "branded_qr_code": {
+      "name": "இலச்சினையுடன் கூடிய QR குறியீடு"
+    },
+    "private_events": {
+      "name": "தனியார் நிகழ்வுகள்"
+    },
+    "social_media_posts": {
+      "name": "சமூக ஊடகப் பதிவுகள்"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp தானியங்கிப் பதில்கள்"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger & Instagram தானியங்கிப் பதில்கள்"
+    },
+    "tap_to_pay": {
+      "name": "உங்கள் கைத்தொலைபேசியில் கொடுப்பனவு பெறுதல்"
+    },
+    "sms_order_alerts": {
+      "name": "SMS ஆர்டர் அறிவிப்புகள்"
+    },
+    "multi_device_kitchen": {
+      "name": "பல சாதனச் சமையலறை ஒத்திசைவு"
+    },
+    "multi_user_access": {
+      "name": "பல பயனர் அணுகல்"
+    },
+    "embed_schedule": {
+      "name": "உங்கள் சொந்த இணையத்தளத்தில் அட்டவணைப் பக்கம்"
+    },
+    "event_types": {
+      "name": "தனிப்பயன் நிகழ்வு வகைகளும் விலைகளும்"
+    },
+    "buzzer_tracking": {
+      "name": "அழைப்புக் கருவி கண்காணிப்பு"
+    },
+    "documents_reminders": {
+      "name": "ஆவணங்களும் நினைவூட்டல்களும்"
+    },
+    "profit_per_event": {
+      "name": "ஒவ்வொரு நிகழ்வுக்குமான இலாபம்"
+    },
+    "accountant_reports": {
+      "name": "உங்கள் கணக்காளருக்கான அறிக்கைகள்"
+    },
+    "ticket_printing": {
+      "name": "சமையலறை டிக்கெட் அச்சிடல்"
+    },
+    "customer_display": {
+      "name": "வாடிக்கையாளர்களுக்கான காட்சித் திரை"
+    },
+    "loyalty_stamp_cards": {
+      "name": "டிஜிட்டல் விசுவாச முத்திரை அட்டைகள்"
+    }
+  },
+  "cardRegionOnline": "சாதாரண {region}",
+  "cardRegion": {
+    "UKcards": "ஐக்கிய இராச்சிய அட்டைகள்",
+    "EEAcards": "EEA அட்டைகள்",
+    "UScards": "அமெரிக்க அட்டைகள்",
+    "Australiancards": "அவுஸ்திரேலிய அட்டைகள்",
+    "NewZealandcards": "நியூசிலாந்து அட்டைகள்",
+    "Canadiancards": "கனேடிய அட்டைகள்",
+    "Swisscards": "சுவிஸ் அட்டைகள்",
+    "Braziliancards": "பிரேசில் அட்டைகள்",
+    "Mexicancards": "மெக்சிகோ அட்டைகள்",
+    "Japanesecards": "ஜப்பானிய அட்டைகள்",
+    "Singaporecards": "சிங்கப்பூர் அட்டைகள்",
+    "HongKongcards": "ஹொங்கொங் அட்டைகள்",
+    "Malaysiancards": "மலேசிய அட்டைகள்",
+    "Thaicards": "தாய்லாந்து அட்டைகள்",
+    "UAEcards": "ஐக்கிய அரபு அமீரக அட்டைகள்"
+  },
+  "perMonth": {
+    "mo": "{amount}/மாதம்",
+    "month": "மாதத்துக்கு {amount}"
+  },
+  "priceWord": {
+    "free": "இலவசம்",
+    "freeTrial": "இலவச சோதனைக் காலம்",
+    "lifetime": "வாழ்நாள் முழுவதும்",
+    "zeroPercent": "0%",
+    "payAtHatch": "எடுக்க வரும்போது செலுத்துதல்",
+    "unlimited": "வரம்பு இல்லை",
+    "none": "—",
+    "masked": "அறிவிக்கப்படும்"
+  },
+  "cell": {
+    "included": "உள்ளடங்கும்"
+  }
+}

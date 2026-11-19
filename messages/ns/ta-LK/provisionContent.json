@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "ஆரம்ப உணவுகள்",
+    "mains": "பிரதான உணவுகள்",
+    "burgers": "பர்கர்கள்",
+    "pizza": "பீட்சா",
+    "wrapsSandwiches": "ரேப் & சாண்ட்விச்",
+    "sides": "பக்க உணவுகள்",
+    "dipsSauces": "டிப் & சோஸ்கள்",
+    "desserts": "இனிப்புகள்",
+    "drinks": "பானங்கள்",
+    "kidsMenu": "சிறுவர் மெனு",
+    "specials": "சிறப்பு உணவுகள்",
+    "other": "ஏனையவை"
+  },
+  "demoEventName": "டெமோ நிகழ்வு",
+  "firstVanName": "வாகனம் 1",
+  "demoCategories": {
+    "pizza": "பீட்சா",
+    "burgers": "பர்கர்கள்",
+    "mains": "பிரதான உணவுகள்",
+    "sides": "பக்க உணவுகள்",
+    "drinks": "பானங்கள்"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 பீட்சா food truck",
+      "items": {
+        "margherita": "மார்கரிட்டா",
+        "pepperoni": "பெப்பரோனி",
+        "ndujaHoney": "ந்டூயா & தேன்",
+        "fourCheese": "நான்கு சீஸ்",
+        "gardenVeg": "தோட்டக் காய்கறி",
+        "garlicBread": "பூண்டுப் பாண்",
+        "rocketParmesan": "ரொக்கெட் இலை & பார்மேசன்",
+        "olives": "ஒலிவ்",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "கோக்"
+      }
+    },
+    "burgers": {
+      "label": "🍔 பர்கர் food truck",
+      "items": {
+        "classicCheeseburger": "கிளாசிக் சீஸ்பர்கர்",
+        "doubleBacon": "டபிள் பேக்கன்",
+        "buttermilkChicken": "மோரில் ஊறிய கோழி",
+        "halloumiStack": "ஹலூமி அடுக்கு",
+        "smashBurger": "ஸ்மாஷ் பர்கர்",
+        "skinOnFries": "தோலுடன் பொரித்த சிப்ஸ்",
+        "loadedCheeseFries": "சீஸ் நிறைந்த சிப்ஸ்",
+        "onionRings": "வெங்காய வளையங்கள்",
+        "craftLemonade": "வீட்டுமுறை எலுமிச்சைப் பானம்",
+        "coke": "கோக்"
+      }
+    },
+    "curries": {
+      "label": "🍛 கறி food truck",
+      "items": {
+        "chickenTikkaMasala": "சிக்கன் டிக்கா மசாலா",
+        "lambRoganJosh": "செம்மறி ஆட்டிறைச்சி ரோகன் ஜோஷ்",
+        "chanaMasala": "கடலை மசாலா",
+        "butterChicken": "பட்டர் சிக்கன்",
+        "saagPaneer": "கீரை பனீர்",
+        "pilauRice": "புலாவ் சோறு",
+        "garlicNaan": "பூண்டு நான்",
+        "onionBhaji": "வெங்காய பஜ்ஜி",
+        "mangoLassi": "மாம்பழ லஸ்ஸி",
+        "coke": "கோக்"
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "தனியுரிமைக் கொள்கை — HatchGrab",
+    "privacyDescription": "HatchGrab Ltd தனிப்பட்ட தரவுகளை எவ்வாறு சேகரித்துப் பயன்படுத்துகிறது.",
+    "termsTitle": "சேவை நிபந்தனைகள் — HatchGrab",
+    "termsDescription": "HatchGrab பயன்படுத்துவதற்கான நிபந்தனைகள்.",
+    "countryTermsTitle": "நாடு சார்ந்த நிபந்தனைகள் — HatchGrab",
+    "countryTermsDescription": "சில நாடுகளில் HatchGrab சேவைக்குப் பொருந்தும் மேலதிக விதிகள்."
+  },
+  "homeLabel": "HatchGrab முகப்பு",
+  "privacy": "தனியுரிமை",
+  "terms": "நிபந்தனைகள்",
+  "countryTerms": "நாட்டு நிபந்தனைகள்",
+  "contact": "தொடர்பு",
+  "lastUpdated": "கடைசியாகப் புதுப்பிக்கப்பட்டது: {date}",
+  "questions": "கேள்விகள் உள்ளனவா? <link>எங்களைத் தொடர்புகொள்ளுங்கள்</link> — நாங்கள் உண்மையான மனிதர்கள்.",
+  "translationNote": "இது ஒரு மொழிபெயர்ப்பு. இது <link>ஆங்கிலப் பதிப்பிலிருந்து</link> வேறுபட்டால், ஆங்கிலப் பதிப்பே செல்லுபடியாகும்."
+}

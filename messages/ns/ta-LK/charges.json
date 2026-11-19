@@ -1,0 +1,13 @@
+{
+  "subtotal": "உப மொத்தம்",
+  "taxFallback": "வரி",
+  "taxIncluded": "உள்ளடங்கியது: {label}",
+  "serviceFeeCustomer": "ஒன்லைன் சேவைக் கட்டணம்",
+  "serviceFee": "சேவைக் கட்டணம்",
+  "cardFee": "அட்டைக் கட்டணம்",
+  "tip": "அன்பளிப்பு",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {வரி, கட்டணங்கள் & அன்பளிப்பு} tax_tip {வரி & அன்பளிப்பு} fees_tip {கட்டணங்கள் & அன்பளிப்பு} fees {கட்டணங்கள்} other {வரி & கட்டணங்கள்}}"
+}

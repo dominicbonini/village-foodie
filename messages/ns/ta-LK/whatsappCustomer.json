@@ -1,0 +1,15 @@
+{
+  "greeting": "வணக்கம் 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}எங்கள் முழு மெனுவையும் ஒவ்வாமைப் பொருட்கள் பற்றிய தகவலையும் இங்கே பார்க்கலாம்: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}எங்கள் முழு மெனுவை இங்கே பார்க்கலாம்: {url} — {truck} {emoji}",
+  "otherCategory": "ஏனையவை",
+  "categoryFrom": "{category} — {price} முதல்",
+  "listTwo": "{first} மற்றும் {second}",
+  "listMany": "{init} மற்றும் {last}",
+  "menuSummary": "{opener}எங்களிடம் உள்ளவை: {summary}. முழு மெனுவைப் பார்த்து, இங்கே முன்கூட்டியே ஆர்டர் செய்யுங்கள்: {url} — {truck} {emoji}",
+  "allergenCaveat": "ஒவ்வாமைப் பொருட்கள் பற்றிய தகவலுக்கு முழு மெனுவை மீண்டும் சரிபாருங்கள் — இது ஒரு தானியங்கிப் பதில்.",
+  "specificFallback": "{opener}எங்கள் புதிய அட்டவணையை இங்கே பாருங்கள்: {url}\n\n{truck} {emoji}",
+  "capHandoff": "உங்கள் எல்லாச் செய்திகளுக்கும் நன்றி! இங்கே ஒரு நாளில் சில முறை மட்டுமே என்னால் பதிலளிக்க முடியும்.\n\nஆர்டர் செய்ய: {link}",
+  "capContact": "எங்களை நேரடியாகத் தொடர்புகொள்ள: {number}"
+}
