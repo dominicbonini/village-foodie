@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food truck | Village Foodie",
+    "hgFallbackTitle": "Food truck",
+    "orderTitle": "{truck} — ඔන්ලයින් ඇණවුම",
+    "orderDescription": "{truck} — කලින්ම ඇණවුම් කර, food truck එක ළඟින්ම ලබා ගන්න.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "{truck} — ලාංඡනය"
+  },
+  "shareTitle": "{truck} — කාලසටහන",
+  "shareText": "{truck} ඊළඟට පැමිණෙන්නේ කොහේදැයි බලන්න! 🚚",
+  "linkCopied": "පැතිකඩ සබැඳිය පිටපත් කළා! 📋",
+  "facebookPage": "Facebook පිටුව",
+  "loadingMap": "සිතියම පූරණය වෙමින්…",
+  "view": {
+    "list": "ලැයිස්තුව",
+    "map": "සිතියම"
+  },
+  "ownThisTruck": "මෙම food truck එකේ හිමිකරු ඔබද?",
+  "ownThisTruckTitle": "මෙම food truck එකේ හිමිකරු ඔබද? ඔබේ පැතිකඩ යාවත්කාලීන කිරීමට ඔබන්න",
+  "actions": {
+    "menu": "මෙනුව",
+    "call": "අමතන්න",
+    "message": "පණිවිඩය",
+    "share": "බෙදා ගන්න",
+    "order": "ඇණවුම් කරන්න"
+  },
+  "loadingSchedule": "කාලසටහන පූරණය වෙමින්…",
+  "loadError": {
+    "title": "පූරණය කළ නොහැකි විය",
+    "body": "අපට මේ මොහොතේ කාලසටහන පූරණය කළ නොහැකි විය — මෙය සාමාන්‍යයෙන් කෙටි බාධාවකි. කරුණාකර නැවත උත්සාහ කරන්න.",
+    "retry": "නැවත උත්සාහ කරන්න"
+  },
+  "notFound": {
+    "title": "food truck එක හමු නොවීය",
+    "body": "මෙම food truck එක ගැන කිසිදු විස්තරයක් අපට සොයා ගත නොහැකි විය. ඔවුන් වෙනත් තැනකට ගොස් හෝ තම පැතිකඩ යාවත්කාලීන කර තිබිය හැක.",
+    "cta": "සියලු food truck බලන්න"
+  },
+  "noEvents": {
+    "title": "ඉදිරි සිදුවීම් හමු නොවීය",
+    "body": "මෙම food truck එක ගැන සමහර විස්තර අප ළඟ නැතිව ඇති. ඔබ හිමිකරුද, නැතහොත් ඔවුන්ගේ කාලසටහන ඔබ දන්නවාද?",
+    "cta": "යාවත්කාලීන කිරීමට අපට පණිවිඩයක් එවන්න!"
+  },
+  "whereToFind": "අපව සොයා ගත හැකි තැන්",
+  "missingEvent": "<strong>අපට සිදුවීමක් මඟ හැරී තිබේද?</strong> <br></br>ඔබ මෙම food truck එකේ හිමිකරු හෝ කැපවූ රසිකයෙක් නම්, මෙම පිටුව නිවැරදිව තබා ගැනීමට අපට උදව් කරන්න! <br></br><link>නැති විස්තර එක් කිරීමට අප හා සම්බන්ධ වන්න.</link>",
+  "weeklySchedule": "සතිපතා කාලසටහන ලබා ගන්න 🍕"
+}

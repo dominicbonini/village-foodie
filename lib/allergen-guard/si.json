@@ -1,0 +1,134 @@
+{
+  "$comment": "languages-world-2 (11 November 2026): the WhatsApp allergen guard’s trigger words for SINHALA (si-LK): ඇලර්ජි, අසාත්මිකතාව / ආසාත්මික, නොඉවසීම, දිරවන්නේ නැහැ, සීලියැක්, ග්ලූටන් රහිත / ෆ්‍රී, <allergen> නැති / නැද්ද / නැහැ, අඩංගු නැති / නැද්ද, අඩංගු විය හැකි, දාන්න එපා, කන්න බැහැ / බැරි, ආරක්ෂිත, සඳහා සුදුසු, (හරස්) දූෂණය, ලැක්ටෝස් — plus Singlish (gluten nathi). Vowel signs, al-lakuna and anusvara are stripped on both sides, and the ZWJ of rakaransaya/yansaya becomes a space, so ෆ්‍රී is listed with and without it. Every stem is checked by its skeleton: bare දිරව (→ the skeleton of දරුවා, child) is NOT a stem, nor කිරි නැති / නැතුව (→ the skeleton of කර නැතුව, without doing), nor bare අඩංගු (what does it contain = a presence question). OPTION B, as every other language: absence / safety words only, NOT the bare allergen names (a presence question may reach the AI, which answers only from the tags and gets the caveat). Matched with the Unicode normaliser. caveatWords: a tagged label of the codex allergen set (stored in English, lower case) → the words a reply may use for it (matched on the raw lower-cased reply, so written as the AI writes them). The country has no allergen set of its own yet, so caveatWords are for 'codex' (as MX, SG, HK, MY, TH and AE).",
+  "language": "si",
+  "normalise": "unicode",
+  "stems": [
+    "allerg",
+    "alerg",
+    "alerj",
+    "allerj",
+    "elerg",
+    "intoleran",
+    "celiac",
+    "coeliac",
+    "gluten free",
+    "glutenfree",
+    "dairy free",
+    "nut free",
+    "egg free",
+    "eggless",
+    "lactose",
+    "epipen",
+    "epi pen",
+    "anaphyla",
+    "cross contamina",
+    "may contain",
+    "traces of",
+    "free from",
+    "safe for",
+    "sensitive to",
+    "ඇලර්ජ",
+    "සාත්මික",
+    "නොඉවසීම",
+    "දිරවන්න",
+    "සීලියැක්",
+    "ලැක්ටෝස්",
+    "ග්ලූටන් රහිත",
+    "ග්ලූටන් ෆ්‍රී",
+    "ග්ලූටන් ෆ්රී",
+    "කිරි රහිත",
+    "කිරි නිෂ්පාදන නැති",
+    "ලැක්ටෝස් රහිත",
+    "ග්ලූටන් නැති",
+    "ග්ලූටන් නැද්ද",
+    "ග්ලූටන් නැහැ",
+    "බිත්තර නැති",
+    "බිත්තර නැද්ද",
+    "බිත්තර නැහැ",
+    "කජු නැති",
+    "කජු නැද්ද",
+    "කජු නැහැ",
+    "ඉස්සෝ නැති",
+    "ඉස්සෝ නැද්ද",
+    "ඉස්සෝ නැහැ",
+    "මාළු නැති",
+    "මාළු නැද්ද",
+    "මාළු නැහැ",
+    "ඇට වර්ග නැති",
+    "ඇට වර්ග නැද්ද",
+    "ඇට වර්ග නැහැ",
+    "අඩංගු නැ",
+    "අඩංගු විය හැක",
+    "අඩංගු වෙන්න පුළුවන්",
+    "දාන්න එපා",
+    "දාන්නෙපා",
+    "කන්න බැහැ",
+    "කන්න බැරි",
+    "ආරක්ෂිත",
+    "සුරක්ෂිත",
+    "සඳහා සුදුසු",
+    "දූෂණ",
+    "gluten nathi",
+    "kiri nathi",
+    "biththara nathi",
+    "bittara nathi",
+    "kaju nathi",
+    "kanna baha",
+    "kanna bari",
+    "danna epa"
+  ],
+  "tokens": [],
+  "caveatWords": {
+    "codex": {
+      "gluten": [
+        "ග්ලූටන්",
+        "තිරිඟු",
+        "පාන් පිටි",
+        "බාර්ලි"
+      ],
+      "crustaceans": [
+        "ඉස්සෝ",
+        "ඉස්සන්",
+        "කකුළු",
+        "පොකිරිස්සෝ",
+        "මුහුදු ආහාර"
+      ],
+      "eggs": [
+        "බිත්තර",
+        "මයොනීස්"
+      ],
+      "fish": [
+        "මාළු",
+        "කරවල",
+        "ටූනා"
+      ],
+      "peanuts": [
+        "රටකජු"
+      ],
+      "soy": [
+        "සෝයා",
+        "ටෝෆු"
+      ],
+      "milk": [
+        "කිරි",
+        "ලැක්ටෝස්",
+        "චීස්",
+        "බටර්",
+        "ගිතෙල්",
+        "ක්‍රීම්",
+        "යෝගට්",
+        "මුදවාපු"
+      ],
+      "tree nuts": [
+        "කජු",
+        "ආමන්ඩ්",
+        "වෝල්නට්",
+        "ඇට වර්ග",
+        "පිස්තා"
+      ],
+      "sulphites": [
+        "සල්ෆයිට්"
+      ]
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "ආරම්භක කෑම",
+    "mains": "ප්‍රධාන කෑම",
+    "burgers": "බර්ගර්",
+    "pizza": "පීසා",
+    "wrapsSandwiches": "රැප්ස් සහ සැන්ඩ්විච්",
+    "sides": "අතුරු කෑම",
+    "dipsSauces": "ඩිප් සහ සෝස්",
+    "desserts": "අතුරුපස",
+    "drinks": "බීම",
+    "kidsMenu": "ළමා මෙනුව",
+    "specials": "විශේෂ කෑම",
+    "other": "වෙනත්"
+  },
+  "demoEventName": "ඩෙමෝ සිදුවීම",
+  "firstVanName": "වාහනය 1",
+  "demoCategories": {
+    "pizza": "පීසා",
+    "burgers": "බර්ගර්",
+    "mains": "ප්‍රධාන කෑම",
+    "sides": "අතුරු කෑම",
+    "drinks": "බීම"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 පීසා food truck",
+      "items": {
+        "margherita": "මාගරිටා",
+        "pepperoni": "පෙපරෝනි",
+        "ndujaHoney": "එන්ඩුයා සහ මී පැණි",
+        "fourCheese": "චීස් හතර",
+        "gardenVeg": "ගෙවතු එළවළු",
+        "garlicBread": "සුදුළූණු පාන්",
+        "rocketParmesan": "රොකට් සහ පාමසාන්",
+        "olives": "ඔලිව්",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "කෝක්"
+      }
+    },
+    "burgers": {
+      "label": "🍔 බර්ගර් food truck",
+      "items": {
+        "classicCheeseburger": "සම්භාව්‍ය චීස් බර්ගර්",
+        "doubleBacon": "ඩබල් බේකන්",
+        "buttermilkChicken": "බටර්මිල්ක් චිකන්",
+        "halloumiStack": "හලූමි ස්ටැක්",
+        "smashBurger": "ස්මෑෂ් බර්ගර්",
+        "skinOnFries": "පොත්ත සහිත අර්තාපල් චිප්ස්",
+        "loadedCheeseFries": "චීස් පිරවූ අර්තාපල් චිප්ස්",
+        "onionRings": "ලූනු වළලු",
+        "craftLemonade": "ගෙදර හැදූ ලෙමනේඩ්",
+        "coke": "කෝක්"
+      }
+    },
+    "curries": {
+      "label": "🍛 කරි food truck",
+      "items": {
+        "chickenTikkaMasala": "චිකන් ටික්කා මසාලා",
+        "lambRoganJosh": "බැටළු මස් රෝගන් ජොෂ්",
+        "chanaMasala": "චනා මසාලා",
+        "butterChicken": "බටර් චිකන්",
+        "saagPaneer": "සාග් පනීර්",
+        "pilauRice": "පිලාවු බත්",
+        "garlicNaan": "සුදුළූණු නාන්",
+        "onionBhaji": "ලූනු බජ්ජි",
+        "mangoLassi": "අඹ ලස්සි",
+        "coke": "කෝක්"
+      }
+    }
+  }
+}

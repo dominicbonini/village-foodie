@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {අනිවාර්යයි} other {අත්‍යවශ්‍ය නැත}}{limit, select, one { · එකක් තෝරන්න} upTo { · {max} දක්වා තෝරන්න} other {}}",
+  "operator": "{required, select, yes {අනිවාර්යයි} other {අත්‍යවශ්‍ය නැත}}{limit, select, one { · පාරිභෝගිකයා එකක් තෝරයි} upTo { · පාරිභෝගිකයාට {max} දක්වා තෝරා ගත හැක} other {}}"
+}

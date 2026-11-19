@@ -1,0 +1,17 @@
+{
+  "back": "← ආපසු",
+  "title": "සෙට් මෙනුවක් යොදන්න",
+  "save": "{amount} ඉතිරියි",
+  "selectItems": "එක් එක් කොටස සඳහා අයිතම තෝරන්න",
+  "choose": "{category} තෝරන්න…",
+  "inYourBasket": "── ඔබේ කූඩයේ ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (කූඩයේ){state, select, used { — දැනටමත් සෙට් මෙනුවක ඇත} taken { — වෙනත් කොටසක තෝරා ඇත} other {}}",
+  "addNew": "── අලුතින් එක් කරන්න ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {අනිවාර්යයි · එකක් තෝරන්න} required {අනිවාර්යයි} other {එකක් තෝරන්න}}{unmet, select, yes { (අනිවාර්යයි)} other {}}",
+  "notePlaceholder": "සටහනක් එක් කරන්න, උදා: ලූනු නැතිව (අත්‍යවශ්‍ය නැත)",
+  "backButton": "ආපසු",
+  "cancel": "අවලංගු කරන්න",
+  "chooseRequired": "අනිවාර්ය විකල්ප තෝරන්න",
+  "apply": "සෙට් මෙනුව යොදන්න · {amount}"
+}

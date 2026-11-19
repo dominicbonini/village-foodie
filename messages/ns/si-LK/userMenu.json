@@ -1,0 +1,18 @@
+{
+  "menuLabel": "පරිශීලක මෙනුව",
+  "screenOn": "තිරය දැල්වී ඇත",
+  "screenOff": "තිරය නිවී ඇත",
+  "newOrderSound": "නව ඇණවුම් ශබ්දය",
+  "copied": "පිටපත් කළා",
+  "orderLink": "ඇණවුම් සබැඳිය",
+  "qrCode": "QR කේතය",
+  "kitchenScreen": "කුස්සියේ තිරය (KDS)",
+  "thisDevice": "මෙම උපාංගය",
+  "manage": "කළමනාකරණය",
+  "ordersDashboard": "ඇණවුම් පාලන පුවරුව",
+  "admin": "පරිපාලනය",
+  "privacy": "පෞද්ගලිකත්ව ප්‍රතිපත්තිය",
+  "terms": "නියමයන්",
+  "signOut": "ඉවත් වන්න",
+  "close": "වසන්න"
+}

@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {ධාරිතාව ඉක්මවූ කාල පරාස: {count}} other {ධාරිතාව ඉක්මවූ කාල පරාස: {count}}} — පරීක්ෂා කරන්න",
+  "batchOver": "{cat} — වාරයට වඩා වැඩියි: {slot} සඳහා {count} (එක් වාරයකට {per})",
+  "eventStartOver": "සිදුවීම ආරම්භයේදී ධාරිතාව ඉක්මවා ඇත — {slot} සඳහා {n, plural, one {අයිතම {count}} other {අයිතම {count}}}",
+  "kitchenOver": "කුස්සියේ ධාරිතාව ඉක්මවා ඇත — {slot} සඳහා පිසින {n, plural, one {අයිතම {count}} other {අයිතම {count}}}",
+  "orderItems": "#{id} — {n, plural, one {අයිතම {count}} other {අයිතම {count}}}",
+  "placedAnyway": "කෙසේ වෙතත් ඇතුළත් කළ ඇණවුම්: {list}",
+  "placedItem": "#{id} — {slot} සඳහා",
+  "orphans": "{times} — ධාරිතාව ඉක්මවා ඇත, එයට අදාළ ඇණවුම් හමු නොවීය",
+  "dismiss": "සඟවන්න",
+  "kitchenCapacity": "කුස්සියේ ධාරිතාව",
+  "overCapacity": "ධාරිතාව ඉක්මවා ඇත",
+  "wakeUnsupported": "මෙම උපාංගයට තිරය දැල්වී තබා ගත නොහැක.",
+  "wakeInsecure": "මෙම ලිපිනයෙන් තිරය දැල්වී තබා ගත නොහැක.",
+  "wakeRetry": "තිරය දැල්වී තබන්න — නැවත උත්සාහ කිරීමට ඔබන්න",
+  "wakeAcquire": "තිරය දැල්වී තබන්න",
+  "degraded": {
+    "serverError": "සර්වරයට ඇණවුම් පූරණය කළ නොහැකි විය{hasStatus, select, yes { (දෝෂය {status})} other {}}. පෙන්වන්නේ {at} වන විට තිබූ ඇණවුම්. නව ඇණවුම් මඟ හැරී තිබිය හැක.",
+    "unreachable": "සර්වරය වෙත ළඟා විය නොහැක. පෙන්වන්නේ {at} වන විට තිබූ ඇණවුම්. නව ඇණවුම් මඟ හැරී තිබිය හැක."
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} — {plan} පැකේජයේ ඇතුළත් වේ.} other {{feature} — {plan} පැකේජයේ ඇතුළත් වේ.}}",
+  "notOnPlan": "{many, select, yes {{feature} — ඔබේ පැකේජයේ නැත.} other {{feature} — ඔබේ පැකේජයේ නැත.}}",
+  "switchedOff": "{many, select, yes {ඔබේ food truck එක සඳහා අක්‍රිය කර ඇත: {feature}.} other {ඔබේ food truck එක සඳහා අක්‍රිය කර ඇත: {feature}.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "උසස් කරන්න →",
+  "features": {
+    "discovery_map": {
+      "name": "සොයා ගැනීමේ සිතියමේ ලැයිස්තුගත වීම",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "වෙබ් පාලන පුවරුව",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "කුස්සියේ ඇප් එක",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "QR කේත මෙනුව",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "සෙට් මෙනු",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "අමතර යෝජනා",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "ස්ථානයේදී ඇණවුම්",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "රැගෙන යන විට ගෙවීම සහිත ඇණවුම්",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "විකිණී අවසන් ලෙස සලකුණු කිරීම",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "ස්වයංක්‍රීයව අඩු වන තොග ගණන",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "ඔෆ්ලයින් ඇණවුම් ආරක්ෂාව",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "ඔන්ලයින් ගෙවීම්",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "කල්තියා පූර්ව ඇණවුම්",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "පාරිභෝගික කාල පරාස",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "කුස්සියේ ධාරිතාව කළමනාකරණය",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "ස්වයංක්‍රීයව භාර ගැනීම",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "Messenger සහ Instagram ස්වයංක්‍රීය පිළිතුරු",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "ලාංඡනය සහිත QR කේත",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "උසස් වාර්තා",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "කුස්සියේ ටිකට්පත් (KOT) මුද්‍රණය",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "උපාංග කිහිපයක කුස්සිය සමමුහුර්ත කිරීම",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "පිසීමේ තිරය",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "WhatsApp ස්වයංක්‍රීය පිළිතුරු",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "ඔබේම වෙබ් අඩවියේ ඔබේ කාලසටහන",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "සමාජ මාධ්‍ය පළ කිරීම්",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "අභිරුචි සිදුවීම් වර්ග",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "පුද්ගලික උත්සව",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "ලේඛන",
+      "many": "yes"
+    }
+  }
+}

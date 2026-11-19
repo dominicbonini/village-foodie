@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "සොයා ගැනීමේ සිතියමේ ලැයිස්තුගත වීම"
+    },
+    "web_dashboard": {
+      "name": "ඕනෑම උපාංගයක වෙබ් පාලන පුවරුව"
+    },
+    "qr_code": {
+      "name": "QR කේතය"
+    },
+    "schedule_import": {
+      "name": "ස්වයංක්‍රීය කාලසටහන් ආයාත කිරීම"
+    },
+    "meal_deals_upsells": {
+      "name": "සෙට් මෙනු සහ අමතර යෝජනා"
+    },
+    "walkup_orders": {
+      "name": "ස්ථානයේදී ඇණවුම් කළමනාකරණය"
+    },
+    "sold_out_toggle": {
+      "name": "ක්ෂණිකව විකිණී අවසන් ලෙස සලකුණු කිරීම"
+    },
+    "kitchen_app": {
+      "name": "iPhone, iPad සහ Android කුස්සියේ ඇප් එක"
+    },
+    "offline_protection": {
+      "name": "ඔෆ්ලයින් ඇණවුම් ආරක්ෂාව"
+    },
+    "online_payments": {
+      "name": "ඔන්ලයින් ගෙවීම්"
+    },
+    "advance_preordering": {
+      "name": "කල්තියා පූර්ව ඇණවුම්"
+    },
+    "preorder_deadline": {
+      "name": "පූර්ව ඇණවුම් අවසන් වේලාව"
+    },
+    "time_slot_selection": {
+      "name": "පාරිභෝගිකයන් කාල පරාසය තේරීම"
+    },
+    "kitchen_capacity": {
+      "name": "කුස්සියේ ධාරිතාව කළමනාකරණය"
+    },
+    "stock_countdown": {
+      "name": "ස්වයංක්‍රීයව අඩු වන තොග ගණන"
+    },
+    "auto_accept": {
+      "name": "ඔන්ලයින් ඇණවුම් ස්වයංක්‍රීයව භාර ගැනීම"
+    },
+    "branded_qr_code": {
+      "name": "ලාංඡනය සහිත QR කේතය"
+    },
+    "private_events": {
+      "name": "පුද්ගලික උත්සව"
+    },
+    "social_media_posts": {
+      "name": "සමාජ මාධ්‍ය පළ කිරීම්"
+    },
+    "whatsapp_auto_replies": {
+      "name": "WhatsApp ස්වයංක්‍රීය පිළිතුරු"
+    },
+    "messenger_instagram_replies": {
+      "name": "Messenger සහ Instagram ස්වයංක්‍රීය පිළිතුරු"
+    },
+    "tap_to_pay": {
+      "name": "ඔබේ දුරකථනයෙන් ගෙවීම් ලබා ගන්න"
+    },
+    "sms_order_alerts": {
+      "name": "SMS ඇණවුම් ඇඟවීම්"
+    },
+    "multi_device_kitchen": {
+      "name": "උපාංග කිහිපයක කුස්සිය සමමුහුර්ත කිරීම"
+    },
+    "multi_user_access": {
+      "name": "පරිශීලකයන් කිහිප දෙනෙකුට ප්‍රවේශය"
+    },
+    "embed_schedule": {
+      "name": "ඔබේම වෙබ් අඩවියේ කාලසටහන් පිටුව"
+    },
+    "event_types": {
+      "name": "අභිරුචි සිදුවීම් වර්ග සහ මිල ගණන්"
+    },
+    "buzzer_tracking": {
+      "name": "බසර නිරීක්ෂණය"
+    },
+    "documents_reminders": {
+      "name": "ලේඛන සහ සිහිකැඳවීම්"
+    },
+    "profit_per_event": {
+      "name": "සිදුවීමකට ලාභය"
+    },
+    "accountant_reports": {
+      "name": "ඔබේ ගණකාධිකාරී සඳහා වාර්තා"
+    },
+    "ticket_printing": {
+      "name": "කුස්සියේ ටිකට්පත් (KOT) මුද්‍රණය"
+    },
+    "customer_display": {
+      "name": "පාරිභෝගිකයන්ට පෙනෙන තිරය"
+    },
+    "loyalty_stamp_cards": {
+      "name": "ඩිජිටල් ලෝයල්ටි ස්ටෑම්ප් කාඩ්පත්"
+    }
+  },
+  "cardRegionOnline": "සාමාන්‍ය {region}",
+  "cardRegion": {
+    "UKcards": "එක්සත් රාජධානියේ කාඩ්පත්",
+    "EEAcards": "EEA කාඩ්පත්",
+    "UScards": "ඇමරිකානු කාඩ්පත්",
+    "Australiancards": "ඕස්ට්‍රේලියානු කාඩ්පත්",
+    "NewZealandcards": "නවසීලන්ත කාඩ්පත්",
+    "Canadiancards": "කැනේඩියානු කාඩ්පත්",
+    "Swisscards": "ස්විස් කාඩ්පත්",
+    "Braziliancards": "බ්‍රසීල කාඩ්පත්",
+    "Mexicancards": "මෙක්සිකානු කාඩ්පත්",
+    "Japanesecards": "ජපන් කාඩ්පත්",
+    "Singaporecards": "සිංගප්පූරු කාඩ්පත්",
+    "HongKongcards": "හොංකොං කාඩ්පත්",
+    "Malaysiancards": "මැලේසියානු කාඩ්පත්",
+    "Thaicards": "තායි කාඩ්පත්",
+    "UAEcards": "UAE කාඩ්පත්"
+  },
+  "perMonth": {
+    "mo": "{amount}/මස",
+    "month": "මසකට {amount}"
+  },
+  "priceWord": {
+    "free": "නොමිලේ",
+    "freeTrial": "නොමිලේ අත්හදා බැලීම",
+    "lifetime": "ජීවිත කාලය පුරා",
+    "zeroPercent": "0%",
+    "payAtHatch": "රැගෙන යන විට ගෙවීම",
+    "unlimited": "අසීමිත",
+    "none": "—",
+    "masked": "පසුව තහවුරු කෙරේ"
+  },
+  "cell": {
+    "included": "ඇතුළත්"
+  }
+}

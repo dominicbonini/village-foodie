@@ -67,6 +67,7 @@ import bs from './allergen-guard/bs.json'   // languages-world-2
 import mk from './allergen-guard/mk.json'   // languages-world-2
 import ca from './allergen-guard/ca.json'   // languages-world-2
 import sw from './allergen-guard/sw.json'   // languages-world-2
+import si from './allergen-guard/si.json'   // languages-world-2
 
 export interface GuardWords {
   language: string
@@ -87,7 +88,7 @@ export const GUARD_WORDS: Record<string, GuardWords> = { en: en as GuardWords, f
   es: es as GuardWords, it: it as GuardWords, pt: pt as GuardWords, nl: nl as GuardWords, sv: sv as GuardWords, da: da as GuardWords, nb: nb as GuardWords,
   pl: pl as GuardWords, cs: cs as GuardWords, sk: sk as GuardWords, hu: hu as GuardWords, ro: ro as GuardWords, hr: hr as GuardWords, sl: sl as GuardWords, fi: fi as GuardWords, et: et as GuardWords, lv: lv as GuardWords, lt: lt as GuardWords, el: el as GuardWords, bg: bg as GuardWords,
   ms: ms as GuardWords, ja: ja as GuardWords, zh: zh as GuardWords, th: th as GuardWords, ar: ar as GuardWords,
-  tr: tr as GuardWords, ko: ko as GuardWords, id: id as GuardWords, vi: vi as GuardWords, he: he as GuardWords, is: is as GuardWords, sr: sr as GuardWords, ru: ru as GuardWords, uk: uk as GuardWords, kk: kk as GuardWords, uz: uz as GuardWords, az: az as GuardWords, ka: ka as GuardWords, hy: hy as GuardWords, mn: mn as GuardWords, hi: hi as GuardWords, bn: bn as GuardWords, ur: ur as GuardWords, ne: ne as GuardWords, fil: fil as GuardWords, sq: sq as GuardWords, bs: bs as GuardWords, mk: mk as GuardWords, ca: ca as GuardWords, sw: sw as GuardWords }
+  tr: tr as GuardWords, ko: ko as GuardWords, id: id as GuardWords, vi: vi as GuardWords, he: he as GuardWords, is: is as GuardWords, sr: sr as GuardWords, ru: ru as GuardWords, uk: uk as GuardWords, kk: kk as GuardWords, uz: uz as GuardWords, az: az as GuardWords, ka: ka as GuardWords, hy: hy as GuardWords, mn: mn as GuardWords, hi: hi as GuardWords, bn: bn as GuardWords, ur: ur as GuardWords, ne: ne as GuardWords, fil: fil as GuardWords, sq: sq as GuardWords, bs: bs as GuardWords, mk: mk as GuardWords, ca: ca as GuardWords, sw: sw as GuardWords, si: si as GuardWords }
 
 const asciiNorm = (s: string) => ` ${s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `
 const unicodeNorm = (s: string) => ` ${s.normalize('NFKD').replace(/\p{M}+/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim()} `

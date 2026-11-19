@@ -1,0 +1,10 @@
+{
+  "vanFallback": "වාහනය",
+  "eventsFeed": {
+    "today": "අද · {date}",
+    "tomorrow": "හෙට · {date}"
+  },
+  "privacyNotSaved": "සිදුවීම සජීවීයි, නමුත් එහි පෞද්ගලිකත්ව සැකසුම සුරැකිය නොහැකි විය.",
+  "stockWarning": "“{category}” තුළ ලබා ගත හැකි අයිතම නැත",
+  "uncategorised": "කාණ්ඩ නොකළ"
+}

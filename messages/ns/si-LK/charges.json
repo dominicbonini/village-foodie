@@ -1,0 +1,13 @@
+{
+  "subtotal": "උප එකතුව",
+  "taxFallback": "බද්ද",
+  "taxIncluded": "ඇතුළත්: {label}",
+  "serviceFeeCustomer": "ඔන්ලයින් සේවා ගාස්තුව",
+  "serviceFee": "සේවා ගාස්තුව",
+  "cardFee": "කාඩ්පත් ගාස්තුව",
+  "tip": "ටිප්",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {බදු, ගාස්තු සහ ටිප්} tax_tip {බදු සහ ටිප්} fees_tip {ගාස්තු සහ ටිප්} fees {ගාස්තු} other {බදු සහ ගාස්තු}}"
+}

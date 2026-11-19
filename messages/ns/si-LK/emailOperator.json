@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "නව ඇණවුම #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "නව ඇණවුමක් ලැබුණා",
+    "from": "<b>ඇණවුම #{id}</b> — <b>{name}</b> වෙතින්",
+    "collection": "ලබා ගැනීම: {time}",
+    "asap": "නිශ්චිත වේලාවක් නැත — හැකි ඉක්මනින්",
+    "total": "මුළු එකතුව",
+    "notes": "<b>සටහන්:</b> {notes}",
+    "autoConfirmed": "ස්වයංක්‍රීයව තහවුරු කළා — කිසිදු ක්‍රියාමාර්ගයක් අවශ්‍ය නැත.",
+    "confirmPrompt": "මෙම ඇණවුම තහවුරු කිරීමට හෝ ප්‍රතික්ෂේප කිරීමට ඔබේ HatchGrab පාලන පුවරුවට පිවිසෙන්න.",
+    "text": "නව ඇණවුම #{id} — {name} වෙතින්{withSlot, select, yes { · වේලාව: {slot}} other {}}{withVenue, select, yes { · ස්ථානය: {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} මුළු එකතුව: {total}.{withNotes, select, yes { සටහන්: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "නව සිදුවීම් හමු විය ({truck}) — කරුණාකර පරීක්ෂා කරන්න",
+    "hi": "ආයුබෝවන්,",
+    "found": "පාරිභෝගිකයන්ට පෙන්වීමට පෙර ඔබේ අනුමැතිය අවශ්‍ය <b>{n, plural, one {නව සිදුවීම් {count}} other {නව සිදුවීම් {count}}}</b> ඔබේ කාලසටහනේ අපට හමු විය.",
+    "listHeading": "හමු වූ සිදුවීම්:",
+    "approve": "ඔබේ “කාලසටහන” ටැබය තුළ ඔබ ඒවා අනුමත කළ පසු, ඒවා සිතියමේ සජීවී වන අතර ඔබේ ඇණවුම් පිටුව පූර්ව ඇණවුම් භාර ගැනීමට සූදානම් වේ.",
+    "cta": "ඔබේ කාලසටහන පරීක්ෂා කරන්න →",
+    "signoff": "— HatchGrab කණ්ඩායම · hatchgrab.com",
+    "unknownVenue": "නොදන්නා ස්ථානයක්",
+    "text": "ආයුබෝවන්,\n\nඔබේ අනුමැතිය අවශ්‍ය {n, plural, one {නව සිදුවීම් {count}} other {නව සිදුවීම් {count}}} ඔබේ කාලසටහනේ අපට හමු විය:\n\n{list}\n\nඒවා මෙතැනින් පරීක්ෂා කරන්න: {url}\n\nඔබ ඒවා අනුමත කළ පසු ඒවා සිතියමේ සජීවී වේ.\n\n— HatchGrab කණ්ඩායම"
+  }
+}

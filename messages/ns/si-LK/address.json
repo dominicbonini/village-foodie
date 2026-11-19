@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "ලිපිනය",
+    "postcode": "තැපැල් කේතය",
+    "zip": "ZIP කේතය",
+    "eircode": "Eircode",
+    "postalCode": "තැපැල් කේතය",
+    "state": "ප්‍රාන්තය",
+    "stateTerritory": "ප්‍රාන්තය හෝ භූමි ප්‍රදේශය",
+    "province": "පළාත",
+    "county": "කවුන්ටිය",
+    "prefecture": "ප්‍රාන්තය",
+    "emirate": "එමීර් රාජ්‍යය",
+    "region": "කලාපය",
+    "area": "ප්‍රදේශය (ගම, නගරය හෝ මහ නගරය)",
+    "townOrArea": "නගරය හෝ ප්‍රදේශය",
+    "city": "නගරය",
+    "suburb": "උප නගරය",
+    "townOrCity": "නගරය"
+  },
+  "short": {
+    "area": "ප්‍රදේශය",
+    "townOrArea": "නගරය හෝ ප්‍රදේශය",
+    "city": "නගරය",
+    "suburb": "උප නගරය",
+    "townOrCity": "නගරය"
+  },
+  "inSentence": {
+    "postcode": "තැපැල් කේතය",
+    "zip": "ZIP කේතය",
+    "eircode": "Eircode",
+    "postalCode": "තැපැල් කේතය"
+  },
+  "withArticle": {
+    "postcode": "තැපැල් කේතයක්",
+    "zip": "ZIP කේතයක්",
+    "eircode": "Eircode එකක්",
+    "postalCode": "තැපැල් කේතයක්"
+  },
+  "tradeLabel": {
+    "area": "නගරය",
+    "townOrArea": "නගරය හෝ ප්‍රදේශය",
+    "city": "නගරය",
+    "suburb": "උප නගරය",
+    "townOrCity": "නගරය"
+  },
+  "basedIn": {
+    "area": "ඔබේ ව්‍යාපාරය පිහිටි නගරය",
+    "townOrArea": "ඔබේ ව්‍යාපාරය පිහිටි නගරය හෝ ප්‍රදේශය",
+    "city": "ඔබේ ව්‍යාපාරය පිහිටි නගරය",
+    "suburb": "ඔබේ ව්‍යාපාරය පිහිටි උප නගරය",
+    "townOrCity": "ඔබේ ව්‍යාපාරය පිහිටි නගරය"
+  },
+  "example": "උදා: {example}",
+  "customersSee": "පාරිභෝගිකයන්ට පෙනෙන්නේ:",
+  "postalWarning": "මෙය {article} ලෙස නොපෙනේ — උදාහරණයක් ලෙස {example}. ඔබට තවමත් එය සුරැකිය හැක.",
+  "regionChoose": "තෝරන්න…"
+}

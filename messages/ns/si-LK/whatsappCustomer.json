@@ -1,0 +1,15 @@
+{
+  "greeting": "ආයුබෝවන් 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}අපගේ සම්පූර්ණ මෙනුව සහ ඇලර්ජි කාරක තොරතුරු මෙතැනින් බලන්න: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}අපගේ සම්පූර්ණ මෙනුව මෙතැනින් බලන්න: {url} — {truck} {emoji}",
+  "otherCategory": "වෙනත්",
+  "categoryFrom": "{category} — {price} සිට",
+  "listTwo": "{first} සහ {second}",
+  "listMany": "{init} සහ {last}",
+  "menuSummary": "{opener}අප සතුව ඇත: {summary}. සම්පූර්ණ මෙනුව බලා කලින්ම ඇණවුම් කරන්න මෙතැනින්: {url} — {truck} {emoji}",
+  "allergenCaveat": "ඇලර්ජි කාරක තොරතුරු සඳහා කරුණාකර සම්පූර්ණ මෙනුව නැවත පරීක්ෂා කරන්න — මෙය ස්වයංක්‍රීය පිළිතුරකි.",
+  "specificFallback": "{opener}අපගේ නවතම කාලසටහන මෙතැනින් බලන්න: {url}\n\n{truck} {emoji}",
+  "capHandoff": "ඔබේ සියලු පණිවිඩවලට ස්තූතියි! මට මෙහි දිනකට පිළිතුරු දිය හැක්කේ කිහිප වතාවක් පමණි.\n\nඇණවුම් කිරීමට: {link}",
+  "capContact": "අප හා සෘජුවම සම්බන්ධ වීමට: {number}"
+}

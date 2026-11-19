@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "බසරය <b>{number}</b> දැනට ඇත්තේ <b>ඇණවුම #{holderId}</b>{hasName, select, yes { ({name})} other {}} සමඟයි. එය <b>{hasTarget, select, yes {ඇණවුම #{targetId}} other {මෙම ඇණවුම}}</b> සඳහා ගන්නද?",
+  "cancel": "අවලංගු කරන්න",
+  "take": "බසරය {number} ගන්න",
+  "titleBlocking": "ඇණවුම #{id} සඳහා බසරයක්ද?",
+  "title": "බසරයක් තෝරන්න",
+  "subtitle": "{hasTarget, select, yes {ඇණවුම #{id}} other {මෙම ඇණවුම}}{hasCurrent, select, yes { · දැනට බසරය {current}} other {}}",
+  "allTaken": "{n, plural, one {සියලු බසර භාවිතයේ ඇත (බසර {count}). වෙනත් ඇණවුමකින් ගැනීමට එකක් ඔබන්න.} other {සියලු බසර භාවිතයේ ඇත (බසර {count}). වෙනත් ඇණවුමකින් ගැනීමට එකක් ඔබන්න.}}",
+  "thisOrder": "මෙම ඇණවුම",
+  "noBuzzer": "බසරයක් නැත",
+  "done": "අවසන්",
+  "lostTitle": "ඇණවුම #{id} සඳහා බසරයක් නැත",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}ඔබ ඔෆ්ලයින්ව සිටියදී වෙනත් ඇණවුමක් එම බසරයම ලබා ගත්තා. ඔවුන්ට වෙනත් බසරයක් දෙන්න.",
+  "dismiss": "සඟවන්න",
+  "assign": "පවරන්න"
+}

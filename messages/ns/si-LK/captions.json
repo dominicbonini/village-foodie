@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "සතියේ දින පරාසය",
+    "dayList": "දින ලැයිස්තුව",
+    "place": "ස්ථානය",
+    "venue": "ස්ථානයේ නම",
+    "area": "ප්‍රදේශය",
+    "dayDate": "දවස සහ දිනය",
+    "times": "වේලාවන්",
+    "orderLink": "ඇණවුම් සබැඳිය",
+    "locationTag": "ස්ථාන ටැග් එක"
+  },
+  "weekHeader": "{truck} — මෙම සතියේ අපි සිටින තැන්:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — අවලංගුයි, කණගාටුයි",
+  "noDates": "මෙම සතියේ දින නැත — ඉක්මනින් නැවත බලන්න.",
+  "orderAhead": "කලින්ම ඇණවුම් කරන්න: {url}",
+  "orderAheadTagged": "කලින්ම ඇණවුම් කරන්න: {url} {tag}",
+  "eventLine": "{truck} {when} {times} {where} වෙත පැමිණේ.",
+  "eventLineNoTimes": "{truck} {when} {where} වෙත පැමිණේ.",
+  "cancelledSorry": "කණගාටුයි — {when} {where} වෙත පැමිණීමට අපට නොහැක.",
+  "cancelledApology": "පැමිණීමට සැලසුම් කළ සැමගෙන් අපි සමාව අයදිමු. අපි ඉක්මනින් නැවත එන්නෙමු.",
+  "when": {
+    "today": "අද",
+    "tonight": "අද රාත්‍රියේ",
+    "tomorrow": "හෙට",
+    "dated": "{date} දින"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "පෞද්ගලිකත්ව ප්‍රතිපත්තිය — HatchGrab",
+    "privacyDescription": "HatchGrab Ltd පුද්ගලික දත්ත එකතු කර භාවිත කරන ආකාරය.",
+    "termsTitle": "සේවා නියමයන් — HatchGrab",
+    "termsDescription": "HatchGrab භාවිත කිරීමේ නියමයන්.",
+    "countryTermsTitle": "රටට විශේෂිත නියමයන් — HatchGrab",
+    "countryTermsDescription": "සමහර රටවල HatchGrab සඳහා අදාළ වන අමතර නීති."
+  },
+  "homeLabel": "HatchGrab මුල් පිටුව",
+  "privacy": "පෞද්ගලිකත්වය",
+  "terms": "නියමයන්",
+  "countryTerms": "රටේ නියමයන්",
+  "contact": "සම්බන්ධ වන්න",
+  "lastUpdated": "අවසන් වරට යාවත්කාලීන කළ දිනය: {date}",
+  "questions": "ප්‍රශ්න තිබේද? <link>අප හා සම්බන්ධ වන්න</link> — අපි සැබෑ මිනිසුන්.",
+  "translationNote": "මෙය පරිවර්තනයකි. එය <link>ඉංග්‍රීසි අනුවාදයෙන්</link> වෙනස් නම්, ඉංග්‍රීසි අනුවාදය අදාළ වේ."
+}

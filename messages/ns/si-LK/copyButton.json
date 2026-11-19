@@ -1,0 +1,10 @@
+{
+  "copy": "පිටපත් කරන්න",
+  "copied": "පිටපත් කළා ✓",
+  "failed": "පිටපත් කිරීම අසාර්ථකයි",
+  "aria": "{label} {thing}",
+  "announceCopied": "පිටපත් කළා: {thing}",
+  "announceCopiedValue": "අගය පිටපත් කළා",
+  "announceFailed": "පිටපත් කළ නොහැකි විය: {thing}. ලියවිල්ල තෝරා ඔබම පිටපත් කරන්න.",
+  "announceFailedValue": "අගය පිටපත් කළ නොහැකි විය. ලියවිල්ල තෝරා ඔබම පිටපත් කරන්න."
+}

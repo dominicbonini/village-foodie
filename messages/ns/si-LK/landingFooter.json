@@ -1,0 +1,17 @@
+{
+  "features": "විශේෂාංග",
+  "pricing": "මිල ගණන්",
+  "faq": "නිතර අසන ප්‍රශ්න",
+  "privacy": "පෞද්ගලිකත්වය",
+  "terms": "නියමයන්",
+  "contact": "සම්බන්ධ වන්න",
+  "about": "අප ගැන",
+  "copyright": "© {year} HatchGrab",
+  "credit": "<b>Village Foodie</b> පිටුපස සිටින අයගෙන්",
+  "badges": {
+    "appStoreLink": "App Store වෙතින් HatchGrab බාගන්න",
+    "appStoreAlt": "App Store වෙතින් බාගන්න",
+    "googlePlayLink": "Google Play වෙතින් HatchGrab ලබා ගන්න",
+    "googlePlayAlt": "Google Play වෙතින් ලබා ගන්න"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "change": "{label} — වෙනස් කරන්න",
+  "useRule": "{label} — ඒ වෙනුවට නීතිය භාවිත කරන්න",
+  "typePrice": "{label} — මිලක් ටයිප් කරන්න",
+  "backToRule": "නීතියට ආපසු",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

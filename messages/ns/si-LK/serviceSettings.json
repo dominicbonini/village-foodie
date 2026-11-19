@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "ලබා ගන්නා වේලාවන්",
+    "takes_cash": "ඔබ මුදල් භාර ගන්නවාද?",
+    "offline_protection": "ඔෆ්ලයින් ඇණවුම් ආරක්ෂාව",
+    "buzzer_prompt": "බසරයක් එක් කිරීමට මට මතක් කරන්න"
+  },
+  "typeFollowsVanTitle": "එක් එක් වාහනයේ සුපුරුදු සැකසුම අනුගමනය කරයි",
+  "sameSettingsAllVansLabel": "සියලු වාහන සඳහා එකම සැකසුම්",
+  "sameSettingsAllVansHeader": "සියලු වාහන",
+  "sameSettingsConfirm": "වාහනය 1 හි සැකසුම් සෑම වාහනයකටම පිටපත් කරන්නද? සැකසුම් තුළ ඇති ‘වාහනය 1 හා සමානයි’ මෙන්ම, මෙය වාහනය 1 හි සියලු වාහන සැකසුම් පිටපත් කරයි. කුස්සියේ ධාරිතාවට තමන්ගේම ස්විචයක් ඇත.",
+  "eventTypesFooterStandard": "“සාමාන්‍ය” යනු ඔබේ සුපුරුදු සැකසුමයි. එය මෙහි වෙනස් කිරීමෙන් සැකසුම් තුළද එය වෙනස් වේ.",
+  "eventTypesFooterOneEvent": "එක් සිදුවීමකට පමණක් සැකසුමක් වෙනස් කිරීමට, එම සිදුවීමේ පාලන පුවරුව භාවිත කරන්න.",
+  "eventTypesSubtitle": "වෙනස්කම් ඔබ කරන විටම සුරැකේ.",
+  "matchStandardLabel": "“සාමාන්‍ය” හා ගළපන්න",
+  "matchStandardConfirm": "මෙම වර්ගයේ සෑම සැකසුමක්ම නැවත “සාමාන්‍ය” ලෙස සකසන්නද? ඔබ මෙහි වෙනස් කළ ඕනෑම දෙයක් ඉවත් වේ.",
+  "priceLabels": {
+    "price_change_on": "මිල වෙනස් කරන්න",
+    "price_mode": "මිල වෙනස් කිරීම",
+    "price_amount": "මුදල",
+    "price_rounding": "වටයීම",
+    "item_prices": "අයිතම මිල"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "සෑම මිලක්ම මම විසින්ම සකසමි"
+  },
+  "priceRounding": {
+    "none": "නැත",
+    "nearest_1": "ආසන්නතම {symbol}1 දක්වා",
+    "up_1": "සැමවිටම ඉහළට වටයන්න"
+  },
+  "pricesStandardCell": "ඔබේ මෙනු මිල",
+  "pricesTruckWideTitle": "ඔබේ මිල සෑම වාහනයකටම සමානයි",
+  "pricesMenuCell": "මෙනුව",
+  "pricesTypeOffCell": "මෙනු මිල",
+  "itemPricesShow": "මිල පෙන්වන්න",
+  "itemPricesHide": "මිල සඟවන්න",
+  "priceItemsHeading": "එක් එක් අයිතමයේ මිල සකසන්න",
+  "priceItemsOpen": "එක් එක් අයිතමයේ මිල බලන්න හෝ වෙනස් කරන්න ›",
+  "priceItemsClose": "අයිතම මිල සඟවන්න ⌃",
+  "ownPriceCount": "{n, plural, one {තමන්ගේම මිලක් ඇති අයිතම: {count}} other {තමන්ගේම මිලක් ඇති අයිතම: {count}}}",
+  "priceTypeHint": "ඔබේම මිලක් ටයිප් කිරීමට මිලක් ඔබන්න.",
+  "pricesLiveNotice": "මෙම සිදුවීම සජීවීයි. නව ඇණවුම් නව මිල භාවිත කරයි. දැනටමත් කළ ඇණවුම් ඒවායේ මිල තබා ගනී.",
+  "placeTypeHelper": "ඔබ මෙම ස්ථානය තෝරන සෑම විටම “සිදුවීමක් එක් කරන්න” මෙම වර්ගය තෝරයි.",
+  "postPictureStandardNote": "මෙහි සිදුවීම් පළ කිරීම් ඔබේ සාමාන්‍ය සැලසුම භාවිත කරයි.",
+  "eventItemsCardDescription": "මෙම සිදුවීමට පමණක් අදාළ මිල, අයිතම සීමා සහ ලබා ගත හැකි බව. වෙනස්කම් වහාම ක්‍රියාත්මක වේ.",
+  "eventPriceColumnLabel": "මිල",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · මෙම සිදුවීම} other {මෙනුව {price} · මෙම සිදුවීම}}",
+  "eventPriceEdit": "✎ මිල වෙනස් කරන්න",
+  "eventPriceCancel": "අවලංගු කරන්න",
+  "eventPriceSave": "මිල සුරකින්න",
+  "eventPriceEditNote": "මෙම සිදුවීමට පමණක් මිල වෙනස් කරමින්. ඔබ සුරකින තුරු අයිතම සීමා සහ ලබා ගත හැකි බව අගුළු දමා ඇත.",
+  "eventPriceLiveNote": "සජීවී: නව ඇණවුම් නව මිල භාවිත කරයි.",
+  "offlineWhenOfflineLabel": "ඔෆ්ලයින් වූ විට"
+}
