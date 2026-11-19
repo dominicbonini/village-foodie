@@ -539,3 +539,9 @@
 - Settings: Truck settings “வாகன அமைப்புகள்” (vans), Truck details “food truck விவரங்கள்”, Team → My profile “குழு → எனது சுயவிவரம்”; Place/Venue/Area/Time and Location இருப்பிடம் as part 04. Pay at hatch (reports) “நேரில் செலுத்தவும்”.
 - Check: Weekly post “வாராந்தப் பதிவு” vs poster “வாராந்த சுவரொட்டி”; single event post “தனி நிகழ்வுப் பதிவு”; template “வார்ப்புரு”; Main image “பிரதான”; picture space “படப் பகுதி”; All text “எல்லா உரையும்”; tick “குறியிடுங்கள்”; switch “ஆளி”; Menu icon “மெனு சின்னம்”; gross/net “மொத்த / நிகர விற்பனை”; channel “விற்பனை வழி”; spreadsheet “விரிதாள்”; till “பணப்பெட்டி”.
 - CAPITALS → “பெரிய எழுத்துகள் (ABC)”; horizontal/vertical “கிடையாக / நிலைக்குத்தாக”; Sri Lankan Tamil bread “பாண்”, vegetables “மரக்கறிகள்”; words-before “From” → “ஆரம்பம்:”. Report date range reads “<from> முதல் <until>” without closing “வரை” — check on the page. Placeholder case endings avoided with dash/colon.
+
+## si-LK part 09 (languages-world-3, 19 Nov 2026)
+- markRules 0 failures (09.json and 09.back.json); planNames added (payg back ends "only pay 0.99% on online orders."). planTable.trial.length = part 08 plural without “නොමිලේ” (English has no "free"); first month free “පළමු මාස # … නොමිලේ”.
+- Payg banner repeats “no monthly fee” (plan name + bracket), as ja does; matches part 07 trialLineFree. Price bar “{to} නොඉක්මවා” / “{from} ඉක්මවා”; currency line “මුදල් ඒකකය: {currency} ({code})”.
+- Check: loyalty stamp cards “ඩිජිටල් ලෝයල්ටි ස්ටෑම්ප් කාඩ්පත්”, Tester “පරීක්ෂක”, seasonal traders “සෘතුමය සහ අර්ධකාලීන වෙළෙන්දන්”, award “වසරේ හොඳම ජංගම පීසා අවන්හල”, vendor “වෙළෙන්දා”, apron “ඇප්‍රනය”; WhatsApp customer quotes use ඔබ. landing.jsonLd.description keeps the STYLE SEO string (no “(KDS)”).
+- Consistent: වාහනයකට / මසකට, Pay at hatch “රැගෙන යන විට ගෙවීම”, walk-up ස්ථානයේදී ඇණවුම්, deals සෙට් මෙනු, KOT “කුස්සියේ ටිකට්පත් (KOT)”, Demo ඩෙමෝ. UK company line and testimonial names unchanged; contact sample “නිමල්ගේ බර්ගර්”.
