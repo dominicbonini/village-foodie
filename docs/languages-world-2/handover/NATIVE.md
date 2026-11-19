@@ -572,3 +572,9 @@
 - Matches: per truck “ஒரு வாகனத்துக்கு / மாதத்துக்கு”, TBC “அறிவிக்கப்படும்”, Pay at the truck “எடுக்க வரும்போது செலுத்துதல்”, walk-up நேரடி ஆர்டர்கள், deals செட் மெனு, Demo டெமோ; SEO strings verbatim.
 - Check: management “முகாமைத்துவம்”, “{included} பெறுமதியான” ({included} of orders), Most trucks badge “பெரும்பாலானோரின் தெரிவு”, Tester “சோதனையாளர்”, stamp cards “விசுவாச முத்திரை அட்டைகள்”, cook screen “சமையல் திரை”, directory “கோப்பகம்”, FAQ footer “கேள்வி-பதில்”, Support “உதவி”, award “ஆண்டின் சிறந்த நடமாடும் பீட்சா உணவகம்”, laptop மடிக்கணினி, apron ஏப்ரன், wifi வைஃபை. Pricing banner fallback “— மாதாந்தக் கட்டணம் எதுவும் இல்லாமல் —” (avoids repeating payg name) — check on the page.
 - “{brand} தளத்தில்”, “App Store தளத்தில்” (no suffix on Latin words). UK company line, testimonial names and Stripe/Meta fee statements unchanged; contact sample “ராஜாவின் கொத்து”.
+
+## ta-LK consistency pass (languages-world-3, 19 Nov 2026) — fix.json, 41 corrections, check-fix 0
+- deleteAccount.allTrucks lists businesses → “எல்லா food truck வணிகங்களும்”; billing, team truck access and the vans section keep வாகனம்.
+- errorsManage.wp_box_* heading box “வாரத் தலைப்பு” (= designEditor.item.weekHeading); wp_last_toggle and private-event own-post messages say weekly post “வாராந்தப் பதிவு”; “சுவரொட்டி” only for posters. removedLink gained “(KDS)”; kitchen-screen panel wording = Dashboard settings.
+- Pay at the truck: button/option/status/report row “நேரில் செலுத்தவும்”, feature name “எடுக்க வரும்போது செலுத்துதல்”. ~25 same-label unifications (“ஏனையவை”, “முதற் பெயர் / குடும்பப் பெயர்”, “நிலைக்குத்து”, “ஆளி”…); endings after Latin words/numbers removed.
+- Check: features “முகாமைத்துவம்” vs Manage/console “நிர்வாகம்”; private-hire chip “தனியார் நிகழ்வுகளுக்கு food truck” (long); “HatchGrab உடன்” / “Meta உடன்”; invoice line “இதற்கு மாற்றம்: {plan}”; schedule import Venue “இடம்” next to Venue name “இடத்தின் பெயர்”.
