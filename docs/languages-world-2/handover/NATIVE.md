@@ -640,3 +640,13 @@
 - Invoices section inside Billing (វិក្កយបត្រ) = បញ្ជីវិក្កយបត្រ. Suspended ព្យួរ vs paused ordering ផ្អាក. Post-pay charge ថ្លៃបង់ក្រោយ. You're all set អ្វីៗត្រូវបានរៀបចំរួចហើយ (avoids Ready រួចរាល់).
 - Address words: Suburb សង្កាត់; Region and Area both តំបន់; County ខោនធី; Emirate អេមីរ៉ាត. Unsubscribe ឈប់ទទួល.
 - Paperwork names translated, not swapped; insurance and PAT names descriptive — native check.
+
+## km-KH part 08 (languages-world-3, 22 Nov 2026)
+- check-part: 431 keys / 431; STRUCTURAL 0; back missing 0 (English left 47 · glossary 7 · drift 62 · length 14). No ZWSP, no Khmer digits.
+- English left: Food Truck; PayPal, Klarna, Uber Eats, Wolt; Markdown, JSON; "(reverse charge)" after the Khmer; admin noindex/sitemap/llms.txt/hreflang, “Pricing check”, Admin › Countries; URL section and slug (as th-TH, ja-JP, ta-LK, si-LK).
+- Glossary 7: KDS/WhatsApp combining-mark false alarms; 2 "Commission-free" hits are sentences about paying commission; comparison.meta.description = STYLE.md SEO string word for word.
+- Calculator/billing "truck" (fleet) = ឡាន ("ក្នុងមួយឡាន ក្នុងមួយខែ", "ឡាន # គ្រឿង"); truck loses signal / printer in the truck = ឡាន; business = Food Truck. "Pence per order" = fixed fee ថ្លៃថេរ.
+- Till ប្រព័ន្ធ POS; German TSE, Uber Eats 14%/30% Germany, Wolt/Lieferando, UK VAT sentence kept as English; VAT in Latin; reverse charge យន្តការគិតពន្ធបញ្ច្រាស.
+- Comparison: vendor/provider អ្នកផ្តល់សេវា; competitor គូប្រជែង; Yes មាន / No គ្មាន / Not stated មិនបានបញ្ជាក់ / Not listed មិនបានរាយបញ្ជី / Doesn't say មិនបាននិយាយ / Doesn't apply មិនពាក់ព័ន្ធ; cell.notApplicable read as "a marketplace" វេទិកាលក់. comparison.cell.trial = `{months, plural, one {# ខែ} other {# ខែ}} ឥតគិតថ្លៃ` (part 09 reuses).
+- Native check: loyalty រង្វាន់អតិថិជនស្មោះត្រង់ (avoids កម្មវិធី); signal សញ្ញាអ៊ីនធឺណិត; griddle បន្ទះអាំង; pitch កន្លែងលក់; food festival មហោស្រពម្ហូប; "on us" យើងជូនឥតគិតថ្លៃ; "Yes." answer បាន។ (not បាទ/ចាស).
+- Pay at the truck: feature row បង់ពេលទៅយក, sentences បង់ប្រាក់នៅ Food Truck.
