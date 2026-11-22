@@ -685,3 +685,11 @@
 - Accept the order ຢືນຢັນອໍເດີ້ (= Confirm); "for the hatch" in add-order ເປັນອໍເດີ້ໜ້າຮ້ານ (walk-up). cashIcon 💷 → 💵 (as km-KH).
 - Plurals: one = other everywhere (Lao only selects other).
 - Native check: takings ຍອດຂາຍ; restored ກູ້ຄືນແລ້ວ; Syncing… ກຳລັງສົ່ງຂໍ້ມູນ…; samples ລົດພ່ວງ (trailer), ເຕັ້ນສີສົ້ມ (orange tent).
+
+## lo-LA part 03 (languages-world-3, 22 Nov 2026)
+- check-part: 834 keys / 834; STRUCTURAL 0; back missing 0. No Thai script, no ZWSP, no Lao digits, no old ຫລ/ຫນ/ຫມ.
+- English left 44: Food Truck; WhatsApp Manager (Meta); "Dominic" sign-off; DELETE (app/api/account/request-deletion/route.ts checks it verbatim). Length 8: Log in ເຂົ້າສູ່ລະບົບ, Billing ການຮຽກເກັບເງິນ, ອາຫານເມັກຊິກັນ.
+- Plurals: one = other, incl. nested plural in goLive.allergensItemsUnverified.detail; =0 branches kept.
+- auth.signup code/deal = demoGetStarted.partnerCode*/partnerDeal*/promoPlaceholder/freeMonth (script-checked). Schedule ກຳນົດການ (sentences ແຖບ “ກຳນົດການ”); Your trucks (vans) ລົດຂອງທ່ານ; Deals ຊຸດອາຫານ; ຫຼຸດ only for partner/promo % off.
+- New: go live ເປີດໃຊ້ງານ; Billing ການຮຽກເກັບເງິນ; upsell ການຂາຍເພີ່ມ; customisation ການປັບແຕ່ງ; Dietary ອາຫານສະເພາະ; Finish ຈົບຂັ້ນຕອນ (≠ Done ສຳເລັດ); allergen-card Yes/No ມີ / ບໍ່ມີ; Pub chip ຮ້ານເບຍ.
+- Native check: dish names ຊາກປານີ (saag paneer), ຊີ້ນແກະໂຣແກນໂຈສ, ຈານາມາຊາລາ, ໄສ້ກອກເຜັດ (nduja), ໝາກກອກ (olives; also hog plum). Samples ເບີເກີບຸນມີ, ຄົວບ້ານອານຸ, wedding ບຸນມີ ແລະ ແກ້ວ; allergen-card example "ເຂົ້າຈີ່ປາເຕ… ເຂົ້າສາລີ ແລະ ໄຂ່" replaces fish & chips — NOTE English lists wheat and MILK; consistency pass to restore milk. Spam folder ໂຟນເດີສະແປມ; promo code ລະຫັດໂປຣໂມຊັນ; partner ພາດເນີ.
