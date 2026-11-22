@@ -762,3 +762,12 @@
 - One spelling each: መልዕክት, መሣሪያ, አኃዝ, ማኅበራዊ. No affix glued to a placeholder (apposition or ፦).
 - Plural one branches show # (read for 0). dashboard.tabs.orders gained a one branch (English has =0 and other; checker requires one).
 - Suggested for part 04: Place ቦታ, Venue የዝግጅት ቦታ, Area አካባቢ, Time ሰዓት, Date ቀን.
+
+## am-ET part 02 (languages-world-3, 22 Nov 2026)
+- check-part: 754 keys / 754; STRUCTURAL 0; back missing 0. Glossary 3 fixed (collection-time minutes "የመውሰጃ ሰዓት ከመድረሱ በፊት…").
+- English left 8: Bluetooth, Face / Touch ID, iOS "Settings" / "Local Network" (device labels, mostly in brackets: "በቅንብሮች (Settings)", “Local Network”). Length 5: Deals ጥምር ምግቦች (ኮምቦ), KDS option የኩሽና ማሳያ (KDS), Terms የአገልግሎት ውሎች, Mark paid እንደተከፈለ ምልክት ያድርጉ.
+- Reused: van ተሽከርካሪ (Settings → Your trucks = የእርስዎ ተሽከርካሪዎች); business የምግብ መኪና; dismiss ይቅር vs status ተሰርዟል; Done ተጠናቋል vs Ready ዝግጁ; buzzer የጥሪ መሣሪያ; tip ጉርሻ; Live በሂደት ላይ; Venue የዝግጅት ቦታ.
+- Order-card Cancel cancels the order (OrderCard.tsx) → ይሰርዙ, not ይቅር. Schedule tab “የሥራ ፕሮግራም” (= part 01 customer schedule). Reject ውድቅ ያድርጉ. Admin አስተዳዳሪ.
+- Native check: Postcode field → ክፍለ ከተማ ወይም ወረዳ (Ethiopia has no postcodes, per STYLE.md — substitution); picker Done ተጠናቋል (maybe ጨርሻለሁ); DO NOT COLLECT (next to CARD HELD) ክፍያ አይቀበሉ; NEW ORDERS MAY BE MISSING prefixed "ትኩረት፦" (no capitals in Fidel); "for the hatch" በቦታው ለሚሰጥ ትዕዛዝ.
+- 💷 cash icon kept as English — consistency pass: other non-£ languages (km-KH, lo-LA, si-LK, hi-IN…) use 💵.
+- No affix glued to placeholders (apposition "(አድራሻ፦ {address})", "ከዝግጅቱ {from} ወደ ዝግጅቱ {to}"); every one branch shows #.
