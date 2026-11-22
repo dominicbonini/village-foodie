@@ -631,3 +631,12 @@
 - Native check: management console ផ្នែកគ្រប់គ្រង; Stripe key សោ (live/test ពិតប្រាកដ/សាកល្បង); padlock រូបសោ; DNS record កំណត់ត្រា; domain ដែន; poster band ឆ្នូត; pop-up ផ្ទាំងលោត; Payments tab ការបង់ប្រាក់ (icon 💷 → 💵).
 - Formal លោកអ្នក in invite and "your address is live" e-mails; e-mail to the web-address provider opens ជម្រាបសួរ.
 - Samples: The Kings Arms → ផ្សាររាត្រីមាត់ទន្លេ, Lavenham → ទួលទំពូង, Sarah → សុភា (sophea@example.com), pepperoni → នំបុ័ងសាច់អាំង (as part 01 — native check), yourfoodtruck.com.kh. UK law kept in deleteAccount.whatAccounting. 123 Reg "full stop" = ASCII dot សញ្ញាចុច (.), not ។.
+
+## km-KH part 07 (languages-world-3, 22 Nov 2026)
+- check-part: 483 keys / 483; STRUCTURAL 0; back missing 0 (English left 16 · glossary 3 · drift 61 · length 17). No ZWSP, no Khmer digits.
+- English left: Food Truck; Oswald; admin-only "Insert opt-out" / "Templates" / "Signature" quoted, "(opt-out)" after ឈប់ទទួល; Eircode; HACCP; JPEG/HEIC/WebP; Pix Automático; "(prefecture)" after ខេត្ត (≠ Province ខេត្ត). Glossary 3 = KDS combining-mark false alarm.
+- Matched: Place/Venue/Area/Time, CANCELLED, sample places ផ្សាររាត្រីមាត់ទន្លេ / ទួលទំពូង, Extra vans ឡាន, Pay at the truck “បង់ពេលទៅយក”, Mark paid & collected សម្គាល់ថាបានបង់ និងបានទៅយក, Save my menu “រក្សាទុកម៉ឺនុយរបស់ខ្ញុំ” (part 03). Operator e-mails លោកអ្នក; customer review e-mail អ្នក.
+- Expired document ផុតសុពលភាព / renew បន្តសុពលភាព; expired link ផុតកំណត់. "by {date}" = ត្រឹម {date} (inclusive) — native check.
+- Invoices section inside Billing (វិក្កយបត្រ) = បញ្ជីវិក្កយបត្រ. Suspended ព្យួរ vs paused ordering ផ្អាក. Post-pay charge ថ្លៃបង់ក្រោយ. You're all set អ្វីៗត្រូវបានរៀបចំរួចហើយ (avoids Ready រួចរាល់).
+- Address words: Suburb សង្កាត់; Region and Area both តំបន់; County ខោនធី; Emirate អេមីរ៉ាត. Unsubscribe ឈប់ទទួល.
+- Paperwork names translated, not swapped; insurance and PAT names descriptive — native check.
