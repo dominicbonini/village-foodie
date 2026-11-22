@@ -1,0 +1,17 @@
+{
+  "back": "← ກັບຄືນ",
+  "title": "ເລືອກຊຸດອາຫານ",
+  "save": "ປະຢັດ {amount}",
+  "selectItems": "ເລືອກລາຍການສຳລັບແຕ່ລະຊ່ອງ",
+  "choose": "ເລືອກ {category}…",
+  "inYourBasket": "── ໃນກະຕ່າຂອງທ່ານ ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (ໃນກະຕ່າ){state, select, used { — ຢູ່ໃນຊຸດອາຫານແລ້ວ} taken { — ເລືອກໃນຊ່ອງອື່ນແລ້ວ} other {}}",
+  "addNew": "── ເພີ່ມໃໝ່ ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {ຈຳເປັນ · ເລືອກໜຶ່ງຢ່າງ} required {ຈຳເປັນ} other {ເລືອກໜຶ່ງຢ່າງ}}{unmet, select, yes { (ຈຳເປັນ)} other {}}",
+  "notePlaceholder": "ເພີ່ມໝາຍເຫດ ເຊັ່ນ: ບໍ່ໃສ່ຜັກບົ່ວ (ບໍ່ບັງຄັບ)",
+  "backButton": "ກັບຄືນ",
+  "cancel": "ຍົກເລີກ",
+  "chooseRequired": "ເລືອກຕົວເລືອກທີ່ຈຳເປັນ",
+  "apply": "ໃຊ້ຊຸດອາຫານ · {amount}"
+}

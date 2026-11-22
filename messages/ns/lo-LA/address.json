@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "ທີ່ຢູ່",
+    "postcode": "ລະຫັດໄປສະນີ",
+    "zip": "ລະຫັດ ZIP",
+    "eircode": "Eircode",
+    "postalCode": "ລະຫັດໄປສະນີ",
+    "state": "ລັດ",
+    "stateTerritory": "ລັດ ຫຼື ດິນແດນ",
+    "province": "ແຂວງ",
+    "county": "ເຂດປົກຄອງ",
+    "prefecture": "ແຂວງ",
+    "emirate": "ເອມີເຣດ",
+    "region": "ເຂດ",
+    "area": "ເຂດ (ບ້ານ, ເມືອງ ຫຼື ນະຄອນ)",
+    "townOrArea": "ເມືອງ ຫຼື ເຂດ",
+    "city": "ນະຄອນ",
+    "suburb": "ເຂດຊານເມືອງ",
+    "townOrCity": "ເມືອງ ຫຼື ນະຄອນ"
+  },
+  "short": {
+    "area": "ເຂດ",
+    "townOrArea": "ເມືອງ ຫຼື ເຂດ",
+    "city": "ນະຄອນ",
+    "suburb": "ເຂດຊານເມືອງ",
+    "townOrCity": "ເມືອງ ຫຼື ນະຄອນ"
+  },
+  "inSentence": {
+    "postcode": "ລະຫັດໄປສະນີ",
+    "zip": "ລະຫັດ ZIP",
+    "eircode": "Eircode",
+    "postalCode": "ລະຫັດໄປສະນີ"
+  },
+  "withArticle": {
+    "postcode": "ລະຫັດໄປສະນີ",
+    "zip": "ລະຫັດ ZIP",
+    "eircode": "Eircode",
+    "postalCode": "ລະຫັດໄປສະນີ"
+  },
+  "tradeLabel": {
+    "area": "ເມືອງ ຫຼື ນະຄອນ",
+    "townOrArea": "ເມືອງ ຫຼື ເຂດ",
+    "city": "ນະຄອນ",
+    "suburb": "ເຂດຊານເມືອງ",
+    "townOrCity": "ເມືອງ ຫຼື ນະຄອນ"
+  },
+  "basedIn": {
+    "area": "ເມືອງ ຫຼື ນະຄອນທີ່ທ່ານຕັ້ງຢູ່",
+    "townOrArea": "ເມືອງ ຫຼື ເຂດທີ່ທ່ານຕັ້ງຢູ່",
+    "city": "ນະຄອນທີ່ທ່ານຕັ້ງຢູ່",
+    "suburb": "ເຂດຊານເມືອງທີ່ທ່ານຕັ້ງຢູ່",
+    "townOrCity": "ເມືອງ ຫຼື ນະຄອນທີ່ທ່ານຕັ້ງຢູ່"
+  },
+  "example": "ເຊັ່ນ: {example}",
+  "customersSee": "ລູກຄ້າຈະເຫັນ:",
+  "postalWarning": "ອັນນີ້ເບິ່ງບໍ່ຄືກັບ {article} — ຕົວຢ່າງ: {example}. ທ່ານຍັງບັນທຶກໄດ້.",
+  "regionChoose": "ເລືອກ…"
+}

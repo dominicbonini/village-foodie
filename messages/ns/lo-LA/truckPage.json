@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "Food Truck | Village Foodie",
+    "hgFallbackTitle": "Food Truck",
+    "orderTitle": "ສັ່ງອາຫານຈາກ {truck}",
+    "orderDescription": "ສັ່ງລ່ວງໜ້າຈາກ {truck} ແລ້ວໄປຮັບເອງທີ່ລົດ.",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "ໂລໂກ້ {truck}"
+  },
+  "shareTitle": "ກຳນົດການ: {truck}",
+  "shareText": "ມາເບິ່ງວ່າ {truck} ຈະໄປຕັ້ງຂາຍຢູ່ໃສຕໍ່ໄປ! 🚚",
+  "linkCopied": "ສຳເນົາລິ້ງໂປຣໄຟລ໌ແລ້ວ! 📋",
+  "facebookPage": "ເພຈ Facebook",
+  "loadingMap": "ກຳລັງໂຫຼດແຜນທີ່…",
+  "view": {
+    "list": "ລາຍການ",
+    "map": "ແຜນທີ່"
+  },
+  "ownThisTruck": "ເປັນເຈົ້າຂອງ Food Truck ນີ້ບໍ່?",
+  "ownThisTruckTitle": "ເປັນເຈົ້າຂອງ Food Truck ນີ້ບໍ່? ກົດເພື່ອອັບເດດໂປຣໄຟລ໌ຂອງທ່ານ",
+  "actions": {
+    "menu": "ເມນູ",
+    "call": "ໂທ",
+    "message": "ສົ່ງຂໍ້ຄວາມ",
+    "share": "ແບ່ງປັນ",
+    "order": "ສັ່ງ"
+  },
+  "loadingSchedule": "ກຳລັງໂຫຼດກຳນົດການ…",
+  "loadError": {
+    "title": "ໂຫຼດບໍ່ສຳເລັດ",
+    "body": "ພວກເຮົາບໍ່ສາມາດໂຫຼດກຳນົດການໄດ້ໃນຕອນນີ້ — ປົກກະຕິແມ່ນຂັດຂ້ອງພຽງຊົ່ວຄາວ. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ.",
+    "retry": "ລອງໃໝ່"
+  },
+  "notFound": {
+    "title": "ບໍ່ພົບ Food Truck",
+    "body": "ພວກເຮົາບໍ່ພົບຂໍ້ມູນໃດໆຂອງ Food Truck ນີ້. ເຂົາເຈົ້າອາດຈະຍ້າຍ ຫຼື ອັບເດດໂປຣໄຟລ໌ແລ້ວ.",
+    "cta": "ເບິ່ງ Food Truck ທັງໝົດ"
+  },
+  "noEvents": {
+    "title": "ບໍ່ພົບງານທີ່ຈະມາເຖິງ",
+    "body": "ພວກເຮົາອາດຈະຂາດຂໍ້ມູນບາງຢ່າງຂອງ Food Truck ນີ້. ທ່ານເປັນເຈົ້າຂອງ ຫຼື ຮູ້ກຳນົດການຂອງເຂົາເຈົ້າບໍ່?",
+    "cta": "ສົ່ງຂໍ້ຄວາມຫາພວກເຮົາເພື່ອອັບເດດ!"
+  },
+  "whereToFind": "ຊອກຫາພວກເຮົາໄດ້ທີ່ໃສ",
+  "missingEvent": "<strong>ພວກເຮົາຂາດງານໃດໄປບໍ່?</strong> <br></br>ຖ້າທ່ານເປັນເຈົ້າຂອງ Food Truck ນີ້ ຫຼື ເປັນແຟນຕົວຈິງ ກະລຸນາຊ່ວຍພວກເຮົາໃຫ້ໜ້ານີ້ຖືກຕ້ອງ! <br></br><link>ຕິດຕໍ່ພວກເຮົາເພື່ອເພີ່ມຂໍ້ມູນທີ່ຂາດ.</link>",
+  "weeklySchedule": "ຮັບກຳນົດການປະຈຳອາທິດ 🍕"
+}

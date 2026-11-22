@@ -1,0 +1,10 @@
+{
+  "copy": "ສຳເນົາ",
+  "copied": "ສຳເນົາແລ້ວ ✓",
+  "failed": "ສຳເນົາບໍ່ສຳເລັດ",
+  "aria": "{label} {thing}",
+  "announceCopied": "ສຳເນົາແລ້ວ: {thing}",
+  "announceCopiedValue": "ສຳເນົາຄ່າແລ້ວ",
+  "announceFailed": "ບໍ່ສາມາດສຳເນົາ {thing} ໄດ້. ກະລຸນາເລືອກຂໍ້ຄວາມ ແລ້ວສຳເນົາເອງ.",
+  "announceFailedValue": "ບໍ່ສາມາດສຳເນົາຄ່ານີ້ໄດ້. ກະລຸນາເລືອກຂໍ້ຄວາມ ແລ້ວສຳເນົາເອງ."
+}

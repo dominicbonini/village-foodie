@@ -1,0 +1,10 @@
+{
+  "vanFallback": "ລົດ",
+  "eventsFeed": {
+    "today": "ມື້ນີ້ · {date}",
+    "tomorrow": "ມື້ອື່ນ · {date}"
+  },
+  "privacyNotSaved": "ງານກຳລັງເປີດແລ້ວ ແຕ່ບໍ່ສາມາດບັນທຶກຄວາມເປັນສ່ວນຕົວຂອງງານໄດ້.",
+  "stockWarning": "ບໍ່ມີລາຍການທີ່ມີຂາຍໃນ “{category}”",
+  "uncategorised": "ບໍ່ມີໝວດໝູ່"
+}

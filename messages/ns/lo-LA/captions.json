@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "ວັນທີຂອງອາທິດ",
+    "dayList": "ລາຍຊື່ມື້",
+    "place": "ສະຖານທີ່",
+    "venue": "ບ່ອນຈັດງານ",
+    "area": "ເຂດ",
+    "dayDate": "ມື້ ແລະ ວັນທີ",
+    "times": "ເວລາ",
+    "orderLink": "ລິ້ງສັ່ງອາຫານ",
+    "locationTag": "ແທັກສະຖານທີ່"
+  },
+  "weekHeader": "{truck} — ອາທິດນີ້ພວກເຮົາຢູ່ໃສແດ່:",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ຍົກເລີກແລ້ວ, ຂໍອະໄພ",
+  "noDates": "ອາທິດນີ້ບໍ່ມີວັນອອກຂາຍ — ກະລຸນາກັບມາເບິ່ງອີກໃນໄວໆນີ້.",
+  "orderAhead": "ສັ່ງລ່ວງໜ້າ: {url}",
+  "orderAheadTagged": "ສັ່ງລ່ວງໜ້າ: {url} {tag}",
+  "eventLine": "{truck} ຢູ່ທີ່ {where} {when}, {times}.",
+  "eventLineNoTimes": "{truck} ຢູ່ທີ່ {where} {when}.",
+  "cancelledSorry": "ຂໍອະໄພ — ພວກເຮົາບໍ່ສາມາດໄປ {where} {when} ໄດ້.",
+  "cancelledApology": "ຂໍອະໄພທຸກທ່ານທີ່ວາງແຜນຈະມາ. ພວກເຮົາຈະກັບມາໃນໄວໆນີ້.",
+  "when": {
+    "today": "ມື້ນີ້",
+    "tonight": "ຄືນນີ້",
+    "tomorrow": "ມື້ອື່ນ",
+    "dated": "ໃນ {date}"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "ຂອງກິນຫຼິ້ນ",
+    "mains": "ອາຫານຫຼັກ",
+    "burgers": "ເບີເກີ",
+    "pizza": "ພິດຊ່າ",
+    "wrapsSandwiches": "ແຣັບ ແລະ ແຊນວິດ",
+    "sides": "ເຄື່ອງຄຽງ",
+    "dipsSauces": "ນ້ຳຈິ້ມ ແລະ ຊອດ",
+    "desserts": "ຂອງຫວານ",
+    "drinks": "ເຄື່ອງດື່ມ",
+    "kidsMenu": "ເມນູເດັກ",
+    "specials": "ເມນູພິເສດ",
+    "other": "ອື່ນໆ"
+  },
+  "demoEventName": "ງານເດໂມ",
+  "firstVanName": "ລົດ 1",
+  "demoCategories": {
+    "pizza": "ພິດຊ່າ",
+    "burgers": "ເບີເກີ",
+    "mains": "ອາຫານຫຼັກ",
+    "sides": "ເຄື່ອງຄຽງ",
+    "drinks": "ເຄື່ອງດື່ມ"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food Truck ພິດຊ່າ",
+      "items": {
+        "margherita": "ພິດຊ່າມາກາຣິຕາ",
+        "pepperoni": "ພິດຊ່າເປບເປີໂຣນີ",
+        "ndujaHoney": "ໄສ້ກອກເຜັດ ແລະ ນ້ຳເຜິ້ງ",
+        "fourCheese": "ຊີສສີ່ຊະນິດ",
+        "gardenVeg": "ຜັກສົດ",
+        "garlicBread": "ເຂົ້າຈີ່ກະທຽມ",
+        "rocketParmesan": "ຜັກຣັອກເກັດ ແລະ ຊີສພາເມຊານ",
+        "olives": "ໝາກກອກ",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "ໂຄ້ກ"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food Truck ເບີເກີ",
+      "items": {
+        "classicCheeseburger": "ຊີສເບີເກີຄລາສສິກ",
+        "doubleBacon": "ເບີເກີເບຄອນຄູ່",
+        "buttermilkChicken": "ເບີເກີໄກ່ທອດ",
+        "halloumiStack": "ເບີເກີຊີສຮາລູມີ",
+        "smashBurger": "ສແມັສເບີເກີ",
+        "skinOnFries": "ມັນຝຣັ່ງທອດທັງເປືອກ",
+        "loadedCheeseFries": "ມັນຝຣັ່ງທອດລາດຊີສ",
+        "onionRings": "ຜັກບົ່ວທອດແບບວົງ",
+        "craftLemonade": "ນ້ຳໝາກນາວເຮັດເອງ",
+        "coke": "ໂຄ້ກ"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food Truck ແກງກະຫຼີ່",
+      "items": {
+        "chickenTikkaMasala": "ໄກ່ຕິກກາມາຊາລາ",
+        "lambRoganJosh": "ຊີ້ນແກະໂຣແກນໂຈສ",
+        "chanaMasala": "ຈານາມາຊາລາ",
+        "butterChicken": "ແກງໄກ່ເນີຍ",
+        "saagPaneer": "ຊາກປານີ",
+        "pilauRice": "ເຂົ້າປີລາວ",
+        "garlicNaan": "ນານກະທຽມ",
+        "onionBhaji": "ບາຈີຜັກບົ່ວ",
+        "mangoLassi": "ລັສຊີໝາກມ່ວງ",
+        "coke": "ໂຄ້ກ"
+      }
+    }
+  }
+}

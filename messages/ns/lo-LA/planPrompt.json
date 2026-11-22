@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} ມີໃນແພັກເກັດ {plan}.} other {{feature} ມີໃນແພັກເກັດ {plan}.}}",
+  "notOnPlan": "{many, select, yes {{feature} ບໍ່ມີໃນແພັກເກັດຂອງທ່ານ.} other {{feature} ບໍ່ມີໃນແພັກເກັດຂອງທ່ານ.}}",
+  "switchedOff": "{many, select, yes {{feature} ຖືກປິດໄວ້ສຳລັບ Food Truck ຂອງທ່ານ.} other {{feature} ຖືກປິດໄວ້ສຳລັບ Food Truck ຂອງທ່ານ.}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "ອັບເກຣດ →",
+  "features": {
+    "discovery_map": {
+      "name": "ລາຍຊື່ໃນແຜນທີ່ຄົ້ນຫາ",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "ແຜງຄວບຄຸມເວັບ",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "ແອັບຄົວ",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "ເມນູລະຫັດ QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "ຊຸດອາຫານ",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "ການຂາຍເພີ່ມ",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "ອໍເດີ້ໜ້າຮ້ານ",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "ການສັ່ງອາຫານແບບຈ່າຍເງິນຕອນໄປຮັບ",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "ປຸ່ມໝາຍວ່າໝົດແລ້ວ",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "ການນັບສະຕັອກຖອຍຫຼັງ",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "ການປ້ອງກັນອໍເດີ້ເມື່ອບໍ່ມີອິນເຕີເນັດ",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "ການຈ່າຍເງິນອອນລາຍ",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "ການສັ່ງລ່ວງໜ້າສຳລັບມື້ຂ້າງໜ້າ",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "ຊ່ວງເວລາໄປຮັບສຳລັບລູກຄ້າ",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "ການຈັດການກຳລັງຜະລິດຂອງຄົວ",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "ຮັບອໍເດີ້ອັດຕະໂນມັດ",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "ຕອບກັບອັດຕະໂນມັດທາງ Messenger ແລະ Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "ລະຫັດ QR ພ້ອມໂລໂກ້ຂອງທ່ານ",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "ລາຍງານຂັ້ນສູງ",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "ການພິມໃບອໍເດີ້ຄົວ",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "ຊິງຄ໌ຄົວໃນຫຼາຍອຸປະກອນ",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "ໜ້າຈໍຜູ້ແຕ່ງອາຫານ",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "ຕອບກັບອັດຕະໂນມັດທາງ WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "ກຳນົດການຂອງທ່ານໃນເວັບໄຊຂອງທ່ານເອງ",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "ໂພສໂຊຊຽວມີເດຍ",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "ປະເພດງານທີ່ກຳນົດເອງ",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "ງານສ່ວນຕົວ",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "ເອກະສານ",
+      "many": "yes"
+    }
+  }
+}

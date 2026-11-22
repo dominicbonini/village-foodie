@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "ອໍເດີ້ໃໝ່ #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "ໄດ້ຮັບອໍເດີ້ໃໝ່",
+    "from": "<b>ອໍເດີ້ #{id}</b> ຈາກ <b>{name}</b>",
+    "collection": "ເວລາໄປຮັບ: {time}",
+    "asap": "ບໍ່ໄດ້ກຳນົດເວລາ — ໄວທີ່ສຸດ",
+    "total": "ລວມທັງໝົດ",
+    "notes": "<b>ໝາຍເຫດ:</b> {notes}",
+    "autoConfirmed": "ຢືນຢັນອັດຕະໂນມັດແລ້ວ — ບໍ່ຕ້ອງເຮັດຫຍັງ.",
+    "confirmPrompt": "ກະລຸນາເຂົ້າສູ່ລະບົບແຜງຄວບຄຸມ HatchGrab ຂອງທ່ານ ເພື່ອຢືນຢັນ ຫຼື ປະຕິເສດອໍເດີ້ນີ້.",
+    "text": "ອໍເດີ້ໃໝ່ #{id} ຈາກ {name}{withSlot, select, yes { ສຳລັບ {slot}} other {}}{withVenue, select, yes { ທີ່ {venue}} other {}}.{withCharges, select, yes { {charges}.} other {}} ລວມທັງໝົດ {total}.{withNotes, select, yes { ໝາຍເຫດ: {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "ພົບງານໃໝ່ສຳລັບ {truck} — ກະລຸນາກວດເບິ່ງ",
+    "hi": "ສະບາຍດີ,",
+    "found": "ພວກເຮົາພົບ <b>{n, plural, one {{count} ງານໃໝ່} other {{count} ງານໃໝ່}}</b> ໃນກຳນົດການຂອງທ່ານ ທີ່ຕ້ອງໄດ້ຮັບການອະນຸມັດຈາກທ່ານກ່ອນຈະສະແດງໃຫ້ລູກຄ້າເຫັນ.",
+    "listHeading": "ງານທີ່ພົບ:",
+    "approve": "ເມື່ອທ່ານອະນຸມັດໃນແຖບ “ກຳນົດການ” ແລ້ວ ງານຈະສະແດງເທິງແຜນທີ່ ແລະ ໜ້າສັ່ງອາຫານຂອງທ່ານຈະພ້ອມຮັບການສັ່ງລ່ວງໜ້າ.",
+    "cta": "ກວດກຳນົດການຂອງທ່ານ →",
+    "signoff": "— ທີມງານ HatchGrab · hatchgrab.com",
+    "unknownVenue": "ບໍ່ຮູ້ບ່ອນຈັດງານ",
+    "text": "ສະບາຍດີ,\n\nພວກເຮົາພົບ {n, plural, one {{count} ງານໃໝ່} other {{count} ງານໃໝ່}} ໃນກຳນົດການຂອງທ່ານ ທີ່ຕ້ອງໄດ້ຮັບການອະນຸມັດຈາກທ່ານ:\n\n{list}\n\nກວດເບິ່ງໄດ້ທີ່: {url}\n\nເມື່ອທ່ານອະນຸມັດແລ້ວ ງານຈະສະແດງເທິງແຜນທີ່.\n\n— ທີມງານ HatchGrab"
+  }
+}

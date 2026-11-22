@@ -1,0 +1,13 @@
+{
+  "subtotal": "ຍອດລວມຍ່ອຍ",
+  "taxFallback": "ພາສີ",
+  "taxIncluded": "ລວມ {label} ແລ້ວ",
+  "serviceFeeCustomer": "ຄ່າບໍລິການອອນລາຍ",
+  "serviceFee": "ຄ່າບໍລິການ",
+  "cardFee": "ຄ່າທຳນຽມບັດ",
+  "tip": "ເງິນທິບ",
+  "rate": "{rate}%",
+  "line": "{label}: {amount}",
+  "lineWithRate": "{label} {rate}: {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {ພາສີ ຄ່າທຳນຽມ ແລະ ເງິນທິບ} tax_tip {ພາສີ ແລະ ເງິນທິບ} fees_tip {ຄ່າທຳນຽມ ແລະ ເງິນທິບ} fees {ຄ່າທຳນຽມ} other {ພາສີ ແລະ ຄ່າທຳນຽມ}}"
+}

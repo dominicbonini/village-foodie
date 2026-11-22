@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "ເຄື່ອງເອີ້ນຄິວ <b>{number}</b> ຢູ່ກັບ<b>ອໍເດີ້ #{holderId}</b>{hasName, select, yes { ({name})} other {}}. ເອົາມາໃຫ້<b>{hasTarget, select, yes {ອໍເດີ້ #{targetId}} other {ອໍເດີ້ນີ້}}</b> ບໍ່?",
+  "cancel": "ຍົກເລີກ",
+  "take": "ເອົາເຄື່ອງເອີ້ນຄິວ {number}",
+  "titleBlocking": "ມອບເຄື່ອງເອີ້ນຄິວໃຫ້ອໍເດີ້ #{id} ບໍ່?",
+  "title": "ເລືອກເຄື່ອງເອີ້ນຄິວ",
+  "subtitle": "{hasTarget, select, yes {ອໍເດີ້ #{id}} other {ອໍເດີ້ນີ້}}{hasCurrent, select, yes { · ຕອນນີ້ແມ່ນເຄື່ອງເອີ້ນຄິວ {current}} other {}}",
+  "allTaken": "{n, plural, one {ເຄື່ອງເອີ້ນຄິວທັງໝົດ {count} ເຄື່ອງຖືກໃຊ້ຢູ່. ກົດເຄື່ອງໃດໜຶ່ງເພື່ອເອົາມາຈາກອໍເດີ້ອື່ນ.} other {ເຄື່ອງເອີ້ນຄິວທັງໝົດ {count} ເຄື່ອງຖືກໃຊ້ຢູ່. ກົດເຄື່ອງໃດໜຶ່ງເພື່ອເອົາມາຈາກອໍເດີ້ອື່ນ.}}",
+  "thisOrder": "ອໍເດີ້ນີ້",
+  "noBuzzer": "ບໍ່ມີເຄື່ອງເອີ້ນຄິວ",
+  "done": "ສຳເລັດ",
+  "lostTitle": "ອໍເດີ້ #{id} ບໍ່ມີເຄື່ອງເອີ້ນຄິວ",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}ມີອໍເດີ້ອື່ນເອົາເຄື່ອງເອີ້ນຄິວດຽວກັນໄປ ໃນຂະນະທີ່ທ່ານບໍ່ມີອິນເຕີເນັດ. ກະລຸນາມອບເຄື່ອງອື່ນໃຫ້ລູກຄ້າ.",
+  "dismiss": "ປິດ",
+  "assign": "ມອບ"
+}

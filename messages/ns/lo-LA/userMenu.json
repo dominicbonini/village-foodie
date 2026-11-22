@@ -1,0 +1,18 @@
+{
+  "menuLabel": "ເມນູຜູ້ໃຊ້",
+  "screenOn": "ໜ້າຈໍເປີດ",
+  "screenOff": "ໜ້າຈໍປິດ",
+  "newOrderSound": "ສຽງອໍເດີ້ໃໝ່",
+  "copied": "ສຳເນົາແລ້ວ",
+  "orderLink": "ລິ້ງສັ່ງອາຫານ",
+  "qrCode": "ລະຫັດ QR",
+  "kitchenScreen": "ໜ້າຈໍຄົວ (KDS)",
+  "thisDevice": "ອຸປະກອນນີ້",
+  "manage": "ຈັດການ",
+  "ordersDashboard": "ແຜງຄວບຄຸມອໍເດີ້",
+  "admin": "ຜູ້ດູແລລະບົບ",
+  "privacy": "ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ",
+  "terms": "ເງື່ອນໄຂການໃຊ້ງານ",
+  "signOut": "ອອກຈາກລະບົບ",
+  "close": "ປິດ"
+}

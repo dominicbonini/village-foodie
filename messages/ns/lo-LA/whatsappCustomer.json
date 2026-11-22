@@ -1,0 +1,15 @@
+{
+  "greeting": "ສະບາຍດີ 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}ທ່ານສາມາດເບິ່ງເມນູທັງໝົດ ແລະ ຂໍ້ມູນສານກໍ່ພູມແພ້ໄດ້ທີ່ນີ້: {url} — {truck} {emoji}",
+  "menuFallback": "{opener}ທ່ານສາມາດເບິ່ງເມນູທັງໝົດຂອງພວກເຮົາໄດ້ທີ່ນີ້: {url} — {truck} {emoji}",
+  "otherCategory": "ອື່ນໆ",
+  "categoryFrom": "{category} ເລີ່ມຕົ້ນ {price}",
+  "listTwo": "{first} ແລະ {second}",
+  "listMany": "{init} ແລະ {last}",
+  "menuSummary": "{opener}ພວກເຮົາມີ {summary}. ເບິ່ງເມນູທັງໝົດ ແລະ ສັ່ງລ່ວງໜ້າໄດ້ທີ່ນີ້: {url} — {truck} {emoji}",
+  "allergenCaveat": "ກະລຸນາກວດເບິ່ງຂໍ້ມູນສານກໍ່ພູມແພ້ໃນເມນູທັງໝົດອີກຄັ້ງ — ນີ້ແມ່ນການຕອບກັບອັດຕະໂນມັດ.",
+  "specificFallback": "{opener}ເບິ່ງກຳນົດການລ່າສຸດຂອງພວກເຮົາໄດ້ທີ່ນີ້: {url}\n\n{truck} {emoji}",
+  "capHandoff": "ຂອບໃຈສຳລັບທຸກຂໍ້ຄວາມ! ຢູ່ບ່ອນນີ້ຂ້ອຍຕອບໄດ້ພຽງບໍ່ເທົ່າໃດຄັ້ງຕໍ່ມື້.\n\nສັ່ງອາຫານ: {link}",
+  "capContact": "ຕິດຕໍ່ພວກເຮົາໂດຍກົງ: {number}"
+}

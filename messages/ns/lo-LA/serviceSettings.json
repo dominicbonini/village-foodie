@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "ເວລາໄປຮັບ",
+    "takes_cash": "ທ່ານຮັບເງິນສົດບໍ່?",
+    "offline_protection": "ການປ້ອງກັນອໍເດີ້ເມື່ອບໍ່ມີອິນເຕີເນັດ",
+    "buzzer_prompt": "ເຕືອນຂ້ອຍໃຫ້ມອບເຄື່ອງເອີ້ນຄິວ"
+  },
+  "typeFollowsVanTitle": "ໃຊ້ຕາມການຕັ້ງຄ່າປົກກະຕິຂອງແຕ່ລະລົດ",
+  "sameSettingsAllVansLabel": "ການຕັ້ງຄ່າດຽວກັນສຳລັບທຸກລົດ",
+  "sameSettingsAllVansHeader": "ລົດທັງໝົດ",
+  "sameSettingsConfirm": "ສຳເນົາການຕັ້ງຄ່າຂອງລົດ 1 ໄປໃຫ້ທຸກລົດບໍ່? ການນີ້ຈະສຳເນົາການຕັ້ງຄ່າລົດທັງໝົດຂອງລົດ 1 ຄືກັບ “ຄືກັບລົດ 1” ໃນ ການຕັ້ງຄ່າ. ກຳລັງຜະລິດຂອງຄົວມີສະວິດແຍກຕ່າງຫາກ.",
+  "eventTypesFooterStandard": "ມາດຕະຖານ ແມ່ນການຕັ້ງຄ່າປົກກະຕິຂອງທ່ານ. ການປ່ຽນຢູ່ນີ້ຈະປ່ຽນໃນ ການຕັ້ງຄ່າ ນຳ.",
+  "eventTypesFooterOneEvent": "ຖ້າຕ້ອງການປ່ຽນການຕັ້ງຄ່າສຳລັບງານດຽວ ກະລຸນາໃຊ້ແຜງຄວບຄຸມຂອງງານນັ້ນ.",
+  "eventTypesSubtitle": "ການປ່ຽນແປງຈະບັນທຶກທັນທີ.",
+  "matchStandardLabel": "ໃຫ້ຄືກັບມາດຕະຖານ",
+  "matchStandardConfirm": "ປ່ຽນທຸກການຕັ້ງຄ່າຂອງປະເພດນີ້ກັບໄປເປັນມາດຕະຖານບໍ່? ສິ່ງທີ່ທ່ານປ່ຽນຢູ່ນີ້ຈະຖືກລຶບອອກ.",
+  "priceLabels": {
+    "price_change_on": "ປ່ຽນລາຄາ",
+    "price_mode": "ການປ່ຽນລາຄາ",
+    "price_amount": "ຈຳນວນ",
+    "price_rounding": "ການປັດເສດ",
+    "item_prices": "ລາຄາລາຍການ"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "ຕັ້ງແຕ່ລະລາຄາເອງ"
+  },
+  "priceRounding": {
+    "none": "ບໍ່ປັດ",
+    "nearest_1": "ປັດໃຫ້ໃກ້ {symbol}1 ທີ່ສຸດ",
+    "up_1": "ປັດຂຶ້ນສະເໝີ"
+  },
+  "pricesStandardCell": "ລາຄາເມນູຂອງທ່ານ",
+  "pricesTruckWideTitle": "ລາຄາຂອງທ່ານຄືກັນສຳລັບທຸກລົດ",
+  "pricesMenuCell": "ເມນູ",
+  "pricesTypeOffCell": "ລາຄາເມນູ",
+  "itemPricesShow": "ສະແດງລາຄາ",
+  "itemPricesHide": "ເຊື່ອງລາຄາ",
+  "priceItemsHeading": "ຕັ້ງລາຄາຂອງແຕ່ລະລາຍການ",
+  "priceItemsOpen": "ເບິ່ງ ຫຼື ປ່ຽນລາຄາຂອງແຕ່ລະລາຍການ ›",
+  "priceItemsClose": "ເຊື່ອງລາຄາລາຍການ ⌃",
+  "ownPriceCount": "{n, plural, one {{count} ລາຍການມີລາຄາຂອງຕົນເອງ} other {{count} ລາຍການມີລາຄາຂອງຕົນເອງ}}",
+  "priceTypeHint": "ກົດທີ່ລາຄາເພື່ອພິມລາຄາຂອງທ່ານເອງ.",
+  "pricesLiveNotice": "ງານນີ້ກຳລັງເປີດ. ອໍເດີ້ໃໝ່ຈະໃຊ້ລາຄາໃໝ່. ອໍເດີ້ທີ່ສັ່ງແລ້ວຈະໃຊ້ລາຄາເດີມ.",
+  "placeTypeHelper": "“ເພີ່ມງານ” ຈະເລືອກປະເພດນີ້ໃຫ້ທຸກຄັ້ງທີ່ທ່ານເລືອກສະຖານທີ່ນີ້.",
+  "postPictureStandardNote": "ໂພສງານຢູ່ສະຖານທີ່ນີ້ໃຊ້ການອອກແບບມາດຕະຖານຂອງທ່ານ.",
+  "eventItemsCardDescription": "ລາຄາ, ຂີດຈຳກັດລາຍການ ແລະ ການມີຂາຍ ສຳລັບງານນີ້ເທົ່ານັ້ນ. ການປ່ຽນແປງມີຜົນທັນທີ.",
+  "eventPriceColumnLabel": "ລາຄາ",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · ງານນີ້} other {ເມນູ {price} · ງານນີ້}}",
+  "eventPriceEdit": "✎ ແກ້ໄຂລາຄາ",
+  "eventPriceCancel": "ຍົກເລີກ",
+  "eventPriceSave": "ບັນທຶກລາຄາ",
+  "eventPriceEditNote": "ກຳລັງແກ້ໄຂລາຄາສຳລັບງານນີ້ເທົ່ານັ້ນ. ຂີດຈຳກັດລາຍການ ແລະ ການມີຂາຍຈະຖືກລັອກໄວ້ຈົນກວ່າທ່ານຈະບັນທຶກ.",
+  "eventPriceLiveNote": "ກຳລັງເປີດ: ອໍເດີ້ໃໝ່ໃຊ້ລາຄາໃໝ່.",
+  "offlineWhenOfflineLabel": "ເມື່ອບໍ່ມີອິນເຕີເນັດ"
+}

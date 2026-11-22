@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "ເກີນກຳລັງຜະລິດ: {n, plural, one {{count} ຊ່ວງເວລາ} other {{count} ຊ່ວງເວລາ}} — ກະລຸນາກວດ",
+  "batchOver": "{cat} ເກີນຮອບ — {count} ສຳລັບ {slot} ({per} ຕໍ່ຮອບ)",
+  "eventStartOver": "ເກີນກຳລັງຜະລິດຕອນເລີ່ມງານ — {n, plural, one {{count} ລາຍການ} other {{count} ລາຍການ}} ສຳລັບ {slot}",
+  "kitchenOver": "ຄົວເກີນກຳລັງຜະລິດ — ກຳລັງແຕ່ງ {n, plural, one {{count} ລາຍການ} other {{count} ລາຍການ}} ສຳລັບ {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} ລາຍການ} other {{count} ລາຍການ}}",
+  "placedAnyway": "ສັ່ງແລ້ວເຖິງວ່າເກີນ: {list}",
+  "placedItem": "#{id} ສຳລັບ {slot}",
+  "orphans": "{times} ເກີນກຳລັງຜະລິດ — ບໍ່ພົບອໍເດີ້ທີ່ເປັນສາເຫດ",
+  "dismiss": "ປິດ",
+  "kitchenCapacity": "ກຳລັງຜະລິດຂອງຄົວ",
+  "overCapacity": "ເກີນກຳລັງຜະລິດ",
+  "wakeUnsupported": "ອຸປະກອນນີ້ບໍ່ສາມາດເປີດໜ້າຈໍຄ້າງໄວ້ໄດ້.",
+  "wakeInsecure": "ບໍ່ສາມາດເປີດໜ້າຈໍຄ້າງໄວ້ຈາກທີ່ຢູ່ນີ້ໄດ້.",
+  "wakeRetry": "ເປີດໜ້າຈໍຄ້າງໄວ້ — ກົດເພື່ອລອງໃໝ່",
+  "wakeAcquire": "ເປີດໜ້າຈໍຄ້າງໄວ້",
+  "degraded": {
+    "serverError": "ເຊີບເວີບໍ່ສາມາດໂຫຼດອໍເດີ້ໄດ້{hasStatus, select, yes { (ຂໍ້ຜິດພາດ {status})} other {}}. ກຳລັງສະແດງອໍເດີ້ຈາກເວລາ {at}. ອໍເດີ້ໃໝ່ອາດຂາດຫາຍໄປ.",
+    "unreachable": "ບໍ່ສາມາດເຊື່ອມຕໍ່ເຊີບເວີໄດ້. ກຳລັງສະແດງອໍເດີ້ຈາກເວລາ {at}. ອໍເດີ້ໃໝ່ອາດຂາດຫາຍໄປ."
+  }
+}

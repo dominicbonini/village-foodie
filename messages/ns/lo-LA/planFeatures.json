@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "ລາຍຊື່ໃນແຜນທີ່ຄົ້ນຫາ"
+    },
+    "web_dashboard": {
+      "name": "ແຜງຄວບຄຸມເວັບທີ່ໃຊ້ໄດ້ທຸກອຸປະກອນ"
+    },
+    "qr_code": {
+      "name": "ລະຫັດ QR"
+    },
+    "schedule_import": {
+      "name": "ນຳເຂົ້າກຳນົດການອັດຕະໂນມັດ"
+    },
+    "meal_deals_upsells": {
+      "name": "ຊຸດອາຫານ ແລະ ການຂາຍເພີ່ມ"
+    },
+    "walkup_orders": {
+      "name": "ການຈັດການອໍເດີ້ໜ້າຮ້ານ"
+    },
+    "sold_out_toggle": {
+      "name": "ປຸ່ມໝາຍວ່າໝົດແລ້ວທັນທີ"
+    },
+    "kitchen_app": {
+      "name": "ແອັບຄົວສຳລັບ iPhone, iPad ແລະ Android"
+    },
+    "offline_protection": {
+      "name": "ການປ້ອງກັນອໍເດີ້ເມື່ອບໍ່ມີອິນເຕີເນັດ"
+    },
+    "online_payments": {
+      "name": "ການຈ່າຍເງິນອອນລາຍ"
+    },
+    "advance_preordering": {
+      "name": "ການສັ່ງລ່ວງໜ້າສຳລັບມື້ຂ້າງໜ້າ"
+    },
+    "preorder_deadline": {
+      "name": "ເວລາປິດການສັ່ງລ່ວງໜ້າ"
+    },
+    "time_slot_selection": {
+      "name": "ລູກຄ້າເລືອກຊ່ວງເວລາໄປຮັບ"
+    },
+    "kitchen_capacity": {
+      "name": "ການຈັດການກຳລັງຜະລິດຂອງຄົວ"
+    },
+    "stock_countdown": {
+      "name": "ການນັບສະຕັອກຖອຍຫຼັງອັດຕະໂນມັດ"
+    },
+    "auto_accept": {
+      "name": "ຮັບອໍເດີ້ອອນລາຍອັດຕະໂນມັດ"
+    },
+    "branded_qr_code": {
+      "name": "ລະຫັດ QR ພ້ອມໂລໂກ້ຂອງທ່ານ"
+    },
+    "private_events": {
+      "name": "ງານສ່ວນຕົວ"
+    },
+    "social_media_posts": {
+      "name": "ໂພສໂຊຊຽວມີເດຍ"
+    },
+    "whatsapp_auto_replies": {
+      "name": "ຕອບກັບອັດຕະໂນມັດທາງ WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "ຕອບກັບອັດຕະໂນມັດທາງ Messenger ແລະ Instagram"
+    },
+    "tap_to_pay": {
+      "name": "ຮັບເງິນດ້ວຍໂທລະສັບຂອງທ່ານ"
+    },
+    "sms_order_alerts": {
+      "name": "ແຈ້ງເຕືອນອໍເດີ້ທາງ SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "ຊິງຄ໌ຄົວໃນຫຼາຍອຸປະກອນ"
+    },
+    "multi_user_access": {
+      "name": "ການເຂົ້າໃຊ້ຫຼາຍຜູ້ໃຊ້"
+    },
+    "embed_schedule": {
+      "name": "ໜ້າກຳນົດການໃນເວັບໄຊຂອງທ່ານເອງ"
+    },
+    "event_types": {
+      "name": "ປະເພດງານ ແລະ ລາຄາທີ່ກຳນົດເອງ"
+    },
+    "buzzer_tracking": {
+      "name": "ການຕິດຕາມເຄື່ອງເອີ້ນຄິວ"
+    },
+    "documents_reminders": {
+      "name": "ເອກະສານ ແລະ ການແຈ້ງເຕືອນ"
+    },
+    "profit_per_event": {
+      "name": "ກຳໄລຕໍ່ງານ"
+    },
+    "accountant_reports": {
+      "name": "ລາຍງານສຳລັບນັກບັນຊີຂອງທ່ານ"
+    },
+    "ticket_printing": {
+      "name": "ການພິມໃບອໍເດີ້ຄົວ"
+    },
+    "customer_display": {
+      "name": "ໜ້າຈໍສະແດງຜົນສຳລັບລູກຄ້າ"
+    },
+    "loyalty_stamp_cards": {
+      "name": "ບັດສະສົມແຕ້ມດິຈິຕອນ"
+    }
+  },
+  "cardRegionOnline": "{region} ມາດຕະຖານ",
+  "cardRegion": {
+    "UKcards": "ບັດ UK",
+    "EEAcards": "ບັດ EEA",
+    "UScards": "ບັດສະຫະລັດ",
+    "Australiancards": "ບັດອົດສະຕຣາລີ",
+    "NewZealandcards": "ບັດນິວຊີແລນ",
+    "Canadiancards": "ບັດການາດາ",
+    "Swisscards": "ບັດສະວິດ",
+    "Braziliancards": "ບັດບຣາຊິນ",
+    "Mexicancards": "ບັດເມັກຊິໂກ",
+    "Japanesecards": "ບັດຍີ່ປຸ່ນ",
+    "Singaporecards": "ບັດສິງກະໂປ",
+    "HongKongcards": "ບັດຮົງກົງ",
+    "Malaysiancards": "ບັດມາເລເຊຍ",
+    "Thaicards": "ບັດໄທ",
+    "UAEcards": "ບັດ UAE"
+  },
+  "perMonth": {
+    "mo": "{amount}/ເດືອນ",
+    "month": "{amount}/ເດືອນ"
+  },
+  "priceWord": {
+    "free": "ຟຣີ",
+    "freeTrial": "ທົດລອງໃຊ້ຟຣີ",
+    "lifetime": "ຕະຫຼອດຊີບ",
+    "zeroPercent": "0%",
+    "payAtHatch": "ຈ່າຍທີ່ລົດ",
+    "unlimited": "ບໍ່ຈຳກັດ",
+    "none": "—",
+    "masked": "ລໍຖ້າຢືນຢັນ"
+  },
+  "cell": {
+    "included": "ລວມຢູ່"
+  }
+}

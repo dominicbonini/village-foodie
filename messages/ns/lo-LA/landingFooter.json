@@ -1,0 +1,17 @@
+{
+  "features": "ຄຸນສົມບັດ",
+  "pricing": "ລາຄາ",
+  "faq": "ຄຳຖາມທີ່ພົບເລື້ອຍ",
+  "privacy": "ຄວາມເປັນສ່ວນຕົວ",
+  "terms": "ເງື່ອນໄຂການໃຊ້ງານ",
+  "contact": "ຕິດຕໍ່",
+  "about": "ກ່ຽວກັບພວກເຮົາ",
+  "copyright": "© {year} HatchGrab",
+  "credit": "ຈາກທີມງານຜູ້ສ້າງ <b>Village Foodie</b>",
+  "badges": {
+    "appStoreLink": "ດາວໂຫຼດ HatchGrab ໃນ App Store",
+    "appStoreAlt": "ດາວໂຫຼດໃນ App Store",
+    "googlePlayLink": "ຮັບ HatchGrab ໃນ Google Play",
+    "googlePlayAlt": "ມີໃຫ້ດາວໂຫຼດໃນ Google Play"
+  }
+}

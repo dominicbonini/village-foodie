@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {ຈຳເປັນ} other {ບໍ່ບັງຄັບ}}{limit, select, one { · ເລືອກໜຶ່ງຢ່າງ} upTo { · ເລືອກໄດ້ສູງສຸດ {max}} other {}}",
+  "operator": "{required, select, yes {ຈຳເປັນ} other {ບໍ່ບັງຄັບ}}{limit, select, one { · ລູກຄ້າເລືອກໜຶ່ງຢ່າງ} upTo { · ລູກຄ້າເລືອກໄດ້ສູງສຸດ {max}} other {}}"
+}

@@ -1,0 +1,8 @@
+{
+  "change": "{label} — ປ່ຽນ",
+  "useRule": "{label} — ໃຊ້ກົດເກນແທນ",
+  "typePrice": "{label} — ພິມລາຄາ",
+  "backToRule": "ກັບໄປໃຊ້ກົດເກນ",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}
