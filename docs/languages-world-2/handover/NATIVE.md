@@ -622,3 +622,12 @@
 - Reports: walk-up នៅនឹងកន្លែង; channel ប្រភព; Gross/Net ដុល/សុទ្ធ; Pay at Hatch row បង់ពេលទៅយក; Last tax year ឆ្នាំពន្ធមុន.
 - Samples: yourfoodtruck.com.kh, @phnompenhfoodfest, new van ឡាន 2, ឡានមហោស្រព.
 - Native check: till = ប្រព័ន្ធ POS; CAPITALS toggle អក្សរធំ (Khmer has no capitals); prep-time វិនាទី / នាទី in full; Analysing… កំពុងវិភាគ…; excluded from imports មិនរាប់បញ្ចូល.
+
+## km-KH part 06 (languages-world-3, 22 Nov 2026)
+- check-part: 722 keys / 722; STRUCTURAL 0; back missing 0 (English left 58 · glossary 10 · drift 59 · length 34 · numbers 1). No ZWSP, no Khmer digits.
+- English left: Food Truck; Zettle, Square, Stripe Connect, Canva, WhatsApp Manager; Canva "Share › Download" (as part 04); WhatsApp Business path "Settings → Account → Business Platform" (as vi-VN); Cloudflare/GoDaddy/123 Reg/Wix button and field names in quotes (as th-TH/vi-VN); events.{host}; short English in brackets (publishable, rebuild, contactless, early access, spam, pop-up, professional, Facebook Page, domain).
+- Glossary 10: 8 combining-mark false alarms; 2 Instagram/Messenger lines use plain ការឆ្លើយតបស្វ័យប្រវត្តិ (not "via WhatsApp"). Numbers 1: UK phone placeholder → +855 12 345 678.
+- Vans: All trucks / Truck access / per truck / month / delete-screen trucks list = ឡាន. lastToggle word-for-word = errorsManage.wp_last_toggle. Standard design ស្តង់ដារ (event type ធម្មតា). Cancel deletion request លុបចោល.
+- Native check: management console ផ្នែកគ្រប់គ្រង; Stripe key សោ (live/test ពិតប្រាកដ/សាកល្បង); padlock រូបសោ; DNS record កំណត់ត្រា; domain ដែន; poster band ឆ្នូត; pop-up ផ្ទាំងលោត; Payments tab ការបង់ប្រាក់ (icon 💷 → 💵).
+- Formal លោកអ្នក in invite and "your address is live" e-mails; e-mail to the web-address provider opens ជម្រាបសួរ.
+- Samples: The Kings Arms → ផ្សាររាត្រីមាត់ទន្លេ, Lavenham → ទួលទំពូង, Sarah → សុភា (sophea@example.com), pepperoni → នំបុ័ងសាច់អាំង (as part 01 — native check), yourfoodtruck.com.kh. UK law kept in deleteAccount.whatAccounting. 123 Reg "full stop" = ASCII dot សញ្ញាចុច (.), not ។.
