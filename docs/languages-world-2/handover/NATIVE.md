@@ -717,3 +717,12 @@
 - designEditor.settings.lastToggle quotes Place/Venue/Area/Time and CANCELLED exactly as errorsManage. paymentsIcon 💷 → 💵. UK law stays UK.
 - Native check: padlock ຮູບແມ່ກະແຈ; contactless ການແຕະຈ່າຍ; Sales tax rate ອັດຕາພາສີການຂາຍ; Management console ລະບົບຈັດການ; Danger zone ເຂດອັນຕະລາຍ; Bold & tall tab ໜາ ແລະ ສູງ; week heading sample "ອາທິດເລີ່ມວັນທີ …"; blank image ຮູບເປົ່າ (part 04 ຮູບພື້ນຫວ່າງ — consistency pass picks one); designEditor.picture.someWithout plural wording.
 - Samples: venue ຕະຫຼາດກາງຄືນ / area ຈັນທະບູລີ; pepperoni → ເຂົ້າຈີ່ປາເຕ; team member ສົມພອນ (somphone@example.com).
+
+## lo-LA part 07 (languages-world-3, 22 Nov 2026)
+- check-part: 483 keys / 483; STRUCTURAL 0; back missing 0. No Thai script, no ZWSP, no old ຫລ/ຫນ/ຫມ, no Lao digits, no "hatch".
+- English left 11: Oswald; Eircode, HACCP, PAT in brackets; JPEG/HEIC/WebP; Pix Automático; admin-only “Insert opt-out” / “Signature” / “Templates”. Glossary 3 = vowel-mark false alarms (KDS). Drift 60: poster sample places localised (The Kings Arms → ຮ້ານເບຍຮິມຂອງ; towns ສີສັດຕະນາກ, ຈັນທະບູລີ, ທ່າແຂກ, ປາກເຊ, ຫຼວງພະບາງ, ວັງວຽງ, ສະຫວັນນະເຂດ).
+- Kept: CANCELLED ຍົກເລີກແລ້ວ; Place/Venue/Area/Time; Mark paid & collected as part 02; Extra vans ລົດເພີ່ມ; Pay at the truck “ຈ່າຍທີ່ລົດ”; walk-up ອໍເດີ້ໜ້າຮ້ານ; Billing ການຮຽກເກັບເງິນ; one = other, =0 kept.
+- Native check — documents: Up to date ຍັງໃຊ້ໄດ້; Due soon ໃກ້ຮອດກຳນົດ; Missing ຍັງຂາດ; renew ຕໍ່ອາຍຸ; Public liability ປະກັນໄພຄວາມຮັບຜິດຊອບຕໍ່ບຸກຄົນທີສາມ; PAT test ການທົດສອບອຸປະກອນໄຟຟ້າ (PAT); Fire safety ຄວາມປອດໄພດ້ານອັກຄີໄພ (translated, not swapped).
+- Billing: invoice ໃບແຈ້ງໜີ້; Overdue ກາຍກຳນົດ; Late payment fee ຄ່າປັບຈ່າຍຊ້າ; suspended ຖືກລະງັບ; Post-pay charge ຄ່າທຳນຽມແບບຈ່າຍພາຍຫຼັງ. opt-out/Unsubscribe ຍົກເລີກການຮັບ; review ຣີວິວ.
+- Address: County ເຂດປົກຄອງ; Prefecture ຈັງຫວັດ; Suburb ເຂດຊານເມືອງ; Region and Area both ເຂດ. Card/payment-method select joined without spaces (ອັບເດດ{method…}ຂອງທ່ານ).
+- Demo customer ມະນີ; “Save my menu” quoted “ບັນທຶກເມນູຂອງຂ້ອຍ” — consistency pass to match the button.
