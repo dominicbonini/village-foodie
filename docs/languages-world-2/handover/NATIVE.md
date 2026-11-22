@@ -827,3 +827,12 @@
 - Substitutions: "Less than a coffee" ከአንድ ስኒ ቡና ያነሰ; "Pence per order" ቋሚ ክፍያ (በሳንቲም); signal (የሞባይል) ኔትወርክ; pitch የመሸጫ ቦታ; fryer and griddle የዘይት መጥበሻና ጠፍጣፋ የብረት ምጣድ.
 - Native check: Feature ባህሪ; Vendor አቅራቢ; Rival ተወዳዳሪ; Calculator ማስሊያ; Breadcrumb የገጽ ዱካ; Delivery platforms የምግብ ማድረሻ መድረኮች; Feature flag ማብሪያ; published-page Live badge በሥራ ላይ (as custom-domain badge, not event በሂደት ላይ).
 - No affix on placeholders/quoted names (የ“አልቋል” fixed); one branches show #; verb agreement inside plural branches (ያስችላል / ያስችላሉ).
+
+## am-ET part 09 (languages-world-3, 22 Nov 2026)
+- check-part: 453 keys / 439 (14 planNames extra); STRUCTURAL 0; back missing 0. markRules 0 failures (function copied to a scratch script; footnote says online card orders, no added "only" — English doesn't say it).
+- planTable.trial.length `{months, plural, one {# ወር} other {# ወራት}}` (no free word); priceWord.masked ይረጋገጣል; priceWord.payAtHatch ሲወስዱ ይክፈሉ.
+- Glossary 2: Messenger/Instagram auto-reply names without WhatsApp (as part 06). English left 2: Nadia & Bogdan, Dominic Bonini. Length 6: footer Terms የአገልግሎት ውሎች ×3, FAQ footer label, EEA / UAE card regions.
+- SEO strings reworded so the literal የምግብ መኪና appears: hero.title / does.title "…ን ታሳቢ አድርጎ የተሠራ" (built with food trucks in mind); meta, jsonLd, about reordered "ለተንቀሳቃሽ … አገልግሎቶችና የምግብ መኪናዎች"; "(KDS)" added to jsonLd.description; meta description 146 characters.
+- Ranges without affixes on placeholders: Under {to} "እስከ {to}"; Over {from} "{from} እና ከዚያ በላይ"; "{fee} above {included}" "{included} ካለፈ በኋላ <b>{fee}</b>". planPrompt "{plan} ፓኬጅ {feature} ያካትታል።" both select branches. Banner opens "{brand}፦ …"; no-monthly-fee select text in brackets.
+- Native check: Features አገልግሎቶች; Discovery map በግኝት ካርታ; customer/cook screens ስክሪን; Most trucks badge ብዙዎች የሚመርጡት; Tester ሞካሪ; Lifetime ዕድሜ ልክ; apron ሽርጥ; grill ምድጃ; customer quotes plural-you ናችሁ / አላችሁ.
+- Substitutions: "Pizza Kitchen" → የአበበ በርገር; Pepperoni joke → sambusa; wifi → Wi-Fi; "registered in England and Wales" kept in Amharic words.
