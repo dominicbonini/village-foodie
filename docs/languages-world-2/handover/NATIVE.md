@@ -596,3 +596,10 @@
 - Done button រួចហើយ vs Ready status រួចរាល់. cashIcon 💷 → 💵 (USD/riel, as en-US/th-TH/vi-VN).
 - Operator e-mails formal លោកអ្នក (សួស្តីលោកអ្នក,); customer e-mails សួស្តីអ្នក,. Schedule tab = ផ្ទាំងកាលវិភាគ.
 - Native check: amber ticket ពណ៌ទឹកក្រូច, trailer រ៉ឺម៉ក, Admin អ្នកគ្រប់គ្រងប្រព័ន្ធ, add for the hatch សម្រាប់ការកុម្ម៉ង់នៅនឹងកន្លែង, oversell លក់លើសស្តុក.
+
+## km-KH part 03 (languages-world-3, 22 Nov 2026)
+- check-part: 834 keys / 834; STRUCTURAL 0; back missing 0. No ZWSP, no Khmer digits.
+- English left 46: Food Truck (STYLE), WhatsApp Manager (Meta product), Dominic (founder), San Pellegrino (brand), DELETE (typed confirmation; th/vi keep it too). Glossary 1 = combining-mark false alarm (alertsOperator.limit100.subject has ការឆ្លើយតបស្វ័យប្រវត្តិតាម WhatsApp). Drift 75 / length 44 cosmetic.
+- Matched: van ឡាន / Van 1 = ឡាន 1, business Food Truck, events ព្រឹត្តិការណ៍ (ពិធី only private events/private hire), Standard ធម្មតា, meal deals ឈុតម្ហូប (+ "(Combo)" in heading), allergens សារធាតុអាឡែកហ្ស៊ី, Log in ចូលគណនី, Schedule tab label កាលវិភាគ (ផ្ទាំងកាលវិភាគ = "the Schedule tab" in sentences). auth.signup code/deal = demoGetStarted.partnerCode*/partnerDeal* (script-checked).
+- New: Go live ដាក់ឲ្យដំណើរការ; upsells ការលក់បន្ថែម; custom extras គ្រឿងបន្ថែមតាមចិត្ត; customisations ជម្រើសតាមចិត្ត; Billing វិក្កយបត្រ; Kitchen setup ការរៀបចំផ្ទះបាយ; weekly poster ផ្ទាំងប្រកាសប្រចាំសប្តាហ៍; private-hire chip ជួល Food Truck សម្រាប់ពិធី (long for a chip).
+- Samples localised: Bob’s Burgers → បឺហ្គឺរសុខា, The Village Kitchen → ផ្ទះបាយភូមិ, wedding សុភា និងវិសាល, school fete ពិធីបុណ្យសាលារៀន, fish & chips → ម្ហូបបំពង (allergens wheat + milk kept). Phonetic dish names; BBQ សាច់អាំង, Coke កូកា; AI in Latin.
