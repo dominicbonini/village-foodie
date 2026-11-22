@@ -578,3 +578,12 @@
 - errorsManage.wp_box_* heading box “வாரத் தலைப்பு” (= designEditor.item.weekHeading); wp_last_toggle and private-event own-post messages say weekly post “வாராந்தப் பதிவு”; “சுவரொட்டி” only for posters. removedLink gained “(KDS)”; kitchen-screen panel wording = Dashboard settings.
 - Pay at the truck: button/option/status/report row “நேரில் செலுத்தவும்”, feature name “எடுக்க வரும்போது செலுத்துதல்”. ~25 same-label unifications (“ஏனையவை”, “முதற் பெயர் / குடும்பப் பெயர்”, “நிலைக்குத்து”, “ஆளி”…); endings after Latin words/numbers removed.
 - Check: features “முகாமைத்துவம்” vs Manage/console “நிர்வாகம்”; private-hire chip “தனியார் நிகழ்வுகளுக்கு food truck” (long); “HatchGrab உடன்” / “Meta உடன்”; invoice line “இதற்கு மாற்றம்: {plan}”; schedule import Venue “இடம்” next to Venue name “இடத்தின் பெயர்”.
+
+## km-KH part 01 (languages-world-3, 22 Nov 2026)
+- check-part: 805 keys / 805; STRUCTURAL 0; back missing 0. No zero-width spaces, no Khmer digits.
+- Flags left on purpose: English 79 (Food Truck kept in Latin per STYLE; eftpos brand; "slug" glossed; Vegan; English in brackets after allergens with no exact Khmer word); glossary 4 (KDS keys — checker can't match Khmer combining marks; text has "អេក្រង់ផ្ទះបាយ (KDS)"); length 72 (combining marks inflate counts); drift 138 (back-translation wording).
+- Event word: ព្រឹត្តិការណ៍ for ordinary trading events; ពិធី only in ពិធីឯកជន (private event) — STYLE's research note limits ពិធី to private events (reads "ceremony"). Native check.
+- Van = ឡាន; business = Food Truck. "Truck settings" (vans) = ការកំណត់ឡាន; "Truck details" (business) = ព័ត៌មាន Food Truck; at the truck = នៅ Food Truck.
+- Pay at the truck = បង់ពេលទៅយក; Tip = ទឹកតែ; Buzzer = ឧបករណ៍រោទ៍ (uncertain); kitchen ticket = បង្កាន់ដៃ; TBC = មិនទាន់កំណត់; Cancel button = បោះបង់; cancelled / poster CANCELLED = បានលុបចោល.
+- Allergens transliterated/descriptive with English in brackets: celery ស៊ែលរី, mustard ម៉ូស្តាត, molluscs សត្វទន់, crustaceans សត្វសំបករឹង, yam ដំឡូងយ៉ាម, mackerel ត្រីម៉ាកឃឺរែល, chestnut គ្រាប់ចេស្ណាត់ — native check.
+- Place/Venue/Area/Time suggested only (កន្លែង / ទីតាំង / តំបន់ / ម៉ោង) for part 04 to confirm.
