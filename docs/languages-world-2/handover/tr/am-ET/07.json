@@ -1,0 +1,613 @@
+{
+ "postShare": {
+  "download": "ምስሉን ያውርዱ",
+  "copied": "ተቀድቷል ✓",
+  "copyCaption": "መግለጫ ጽሑፉን ይቅዱ",
+  "share": "ያጋሩ",
+  "copiedStatus": "{kind, select, postText {የልጥፉ ጽሑፍ ተቀድቷል።} other {መግለጫ ጽሑፉ ተቀድቷል።}}",
+  "copyFailed": "መቅዳት አልተቻለም — ጽሑፉን መርጠው ራስዎ ይቅዱት።",
+  "sharedStatus": "{kind, select, postText {የልጥፉ ጽሑፍ ተቀድቷል — በልጥፍዎ ውስጥ ይለጥፉት።} other {መግለጫ ጽሑፉ ተቀድቷል — በልጥፍዎ ውስጥ ይለጥፉት።}}",
+  "shareRefused": "{kind, select, postText {ማጋራት ስላልተፈቀደ ምስሉ ወርዷል። የልጥፉ ጽሑፍ ተቀድቷል።} other {ማጋራት ስላልተፈቀደ ምስሉ ወርዷል። መግለጫ ጽሑፉ ተቀድቷል።}}"
+ },
+ "posterWords": {
+  "heading": "የሚጀምርበት ሳምንት፦ {start} እስከ {end}",
+  "daysOff": "ዛሬ ሽያጭ የለም",
+  "cancelled": "ተሰርዟል",
+  "placeSample": {
+   "nameTownBelow": "የቅዳሜ ገበያ\nቦሌ",
+   "nameTown": "የቅዳሜ ገበያ፣ ቦሌ",
+   "nameOnly": "የቅዳሜ ገበያ"
+  },
+  "busyWeek": {
+   "venue1": "የቦሌ ማኅበረሰብ አዳራሽ",
+   "town1": "ቦሌ",
+   "venue2": "የመገናኛ የመዝናኛ ማዕከልና የስፖርት ሜዳ",
+   "town2": "መገናኛ",
+   "venue3": "የገበያ አደባባይ",
+   "town3": "ፒያሳ",
+   "venue4": "የምግብ ፌስቲቫል",
+   "town4": "አዳማ",
+   "venue5": "የሰፈር ካፌ",
+   "town5": "ሳርቤት",
+   "venue6": "የቤተ ክርስቲያን አደባባይ",
+   "town6": "ካዛንቺስ"
+  },
+  "poweredBy": "ቴክኖሎጂ፦ HatchGrab"
+ },
+ "captions": {
+  "labels": {
+   "weekDates": "የሳምንቱ ቀኖች",
+   "dayList": "የቀናት ዝርዝር",
+   "place": "ቦታ",
+   "venue": "የዝግጅት ቦታ",
+   "area": "አካባቢ",
+   "dayDate": "ዕለትና ቀን",
+   "times": "ሰዓት",
+   "orderLink": "የትዕዛዝ ሊንክ",
+   "locationTag": "የቦታ ታግ"
+  },
+  "weekHeader": "{truck} — በዚህ ሳምንት የምንገኝባቸው ቦታዎች፦",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ተሰርዟል፣ ይቅርታ",
+  "noDates": "በዚህ ሳምንት ምንም ቀን የለም — በቅርቡ ተመልሰው ይመልከቱ።",
+  "orderAhead": "አስቀድመው ይዘዙ፦ {url}",
+  "orderAheadTagged": "አስቀድመው ይዘዙ፦ {url} {tag}",
+  "eventLine": "{truck} {when} ይጠብቅዎታል — ቦታ፦ {where}፣ ሰዓት፦ {times}።",
+  "eventLineNoTimes": "{truck} {when} ይጠብቅዎታል — ቦታ፦ {where}።",
+  "cancelledSorry": "ይቅርታ — {when} መገኘት አንችልም (ቦታ፦ {where})።",
+  "cancelledApology": "ለመምጣት ላሰባችሁ ሁሉ ይቅርታ እንጠይቃለን። በቅርቡ እንመለሳለን።",
+  "when": {
+   "today": "ዛሬ",
+   "tonight": "ዛሬ ማታ",
+   "tomorrow": "ነገ",
+   "dated": "{date} ላይ"
+  }
+ },
+ "weeklyPostApi": {
+  "shortened": {
+   "heading": "ርዕሱ ስላልገጠመ አጠር ተደርጓል።",
+   "date": "ቀኑ ስላልገጠመ አጠር ተደርጓል።",
+   "daysOff": "የዕረፍት ቀናት ጽሑፉ ስላልገጠመ አጠር ተደርጓል።",
+   "place": "የቦታው ስም ስላልገጠመ አጠር ተደርጓል።",
+   "time": "ሰዓቱ ስላልገጠመ አጠር ተደርጓል።",
+   "note": "የራስዎ ጽሑፍ ስላልገጠመ አጠር ተደርጓል።",
+   "venue": "የዝግጅት ቦታው ስላልገጠመ አጠር ተደርጓል።",
+   "area": "አካባቢው ስላልገጠመ አጠር ተደርጓል።"
+  },
+  "fontFallback": "ይህ ዲዛይን የሚጠቀመው አንድ ፎንት ({id}) ሊጫን አልቻለም — እነዚያ ሳጥኖች በOswald ይታያሉ።",
+  "wrongShapeBackground": "የዚህ ቦታ ምስል ቅርጽ ከዲዛይንዎ የተለየ ስለሆነ መደበኛው ጀርባ ጥቅም ላይ ይውላል።",
+  "rowsFit": "የመጨረሻው ቀን ከምስሉ ግርጌ {px}px በታች ይወድቃል — የረድፎቹን ክፍተት ይቀንሱ ወይም የመጀመሪያውን ረድፍ (ረድፍ 1) ወደ ላይ ያንቀሳቅሱ።",
+  "placeStatus": {
+   "ownBoth": "የራሱ ምስልና የጽሑፍ አቀማመጦች",
+   "wrongShape": "የተለየ ቅርጽ — እስኪተካ ድረስ ጥቅም ላይ አይውልም",
+   "ownPicture": "የራሱ ምስል፣ መደበኛ አቀማመጦች",
+   "ownPositions": "መደበኛ ምስል፣ የራሱ የጽሑፍ አቀማመጦች",
+   "none": "እስካሁን ምስል የለም — መደበኛውን በመጠቀም ላይ"
+  },
+  "standardStatus": "በሌሎቹ ቦታዎች ሁሉ ጥቅም ላይ ይውላል",
+  "option": {
+   "oneOff": "ለዚህ ልጥፍ ብቻ አንድ ምስል ይስቀሉ",
+   "placePoster": "የቦታው ፖስተር፦ {name}",
+   "standard": "መደበኛ ዲዛይን"
+  },
+  "previewLabel": {
+   "lastEvent": "ቅድመ-እይታው እዚህ ያደረጉትን የመጨረሻ ዝግጅት ይጠቀማል",
+   "noEvents": "እዚህ እስካሁን ዝግጅት የለም — ቅድመ-እይታው ቀጣዩን ዝግጅትዎን ከዚህ ቦታ ስም ጋር ያሳያል"
+  },
+  "fontUsage": {
+   "weekly": "የሳምንታዊ ልጥፍዎ ዲዛይን",
+   "event": "የአንድ ዝግጅት ልጥፍዎ ዲዛይን",
+   "place": "የቦታ ዲዛይንዎ ({place})",
+   "placeUnnamed": "ለአንድ ቦታ ያለዎት ዲዛይን"
+  },
+  "face": {
+   "regular": "መደበኛ",
+   "bold": "ደማቅ",
+   "italic": "ሰያፍ"
+  },
+  "picture": {
+   "legacy": "የዝግጅት ፖስተር",
+   "fallback": "ምስል",
+   "wrongShape": "የተለየ ቅርጽ — እንደ ሙሉ ጀርባ መጠቀም አይቻልም"
+  },
+  "noPicture": {
+   "omit": "አያካትቱት",
+   "blank": "ባዶ ቦታ ይተዉ",
+   "logo": "አርማዎን ያሳዩ"
+  },
+  "noPicturesAll": "{total, plural, one {{total} ቦታዎ ምስል አለው።} other {ሁሉም {total} ቦታዎችዎ ምስል አላቸው።}}",
+  "noPicturesSome": "{without, plural, one {ካሉዎት {total} ቦታዎች መካከል {without} ገና ምስል የለውም} other {ካሉዎት {total} ቦታዎች መካከል {without} ገና ምስል የላቸውም}}",
+  "licenceTick": "ይህ ፎንት የእኔ ነው ወይም ለመጠቀም ፈቃድ አለኝ",
+  "fontUploadButton": "↑ ፎንትዎን ይስቀሉ"
+ },
+ "completionSettings": {
+  "paidStepTitle": "ያለ ክፍያ ትዕዛዝ ይቀበሉ",
+  "completionTitle": "ያልተከፈለ ትዕዛዝን ማጠናቀቅ",
+  "completionHelp": "ያልተከፈለ ትዕዛዝ ለማስረከብ ዝግጁ ሲሆን ምን እንደሚሆን።",
+  "pressesOne": "አንድ ጊዜ መጫን (“ተከፍሎ እንደተወሰደ ምልክት ያድርጉ”)",
+  "pressesOneHelp": "ምግቡን ሲያስረክቡ ገንዘቡን የሚቀበሉ ከሆነ ይህ ይሻላል። አንድ አዝራር ብቻ ያገኛሉ — “ተከፍሎ እንደተወሰደ ምልክት ያድርጉ” — ክፍያውን ይመዘግባል፤ ትዕዛዙንም በአንድ ጊዜ ያጸዳል።",
+  "pressesTwo": "ሁለት ጊዜ መጫን (“እንደተከፈለ ምልክት ያድርጉ” እና “ተወስዷል”)",
+  "pressesTwoHelp": "ክፍያና ማስረከብ በተለያየ ጊዜ የሚሆኑ ከሆነ ይህ ይሻላል — አንድ ሰው መኪናው ጋ ይከፍላል፣ ከዚያም ትዕዛዙ ዝግጁ ሲሆን ይወስዳል። ሁለት አዝራሮች ያገኛሉ፦ መጀመሪያ “እንደተከፈለ ምልክት ያድርጉ”፣ ከዚያም ምግቡን ሲወስዱ “ተወስዷል”።"
+ },
+ "outreach": {
+  "optOut": {
+   "missing": "ይህ ኢሜይል የመርጦ መውጫ መስመር የለውም፤ ስለዚህ መላክ አይቻልም። ለማከል “Insert opt-out” የሚለውን ይጠቀሙ።",
+   "notSetUp": "ምንም የመርጦ መውጫ ዓረፍተ ነገር አልተዋቀረም፤ ስለዚህ ምንም የማስተዋወቂያ ኢሜይል መላክ አይቻልም። “Templates” በሚለው ትር ውስጥ ባለው “Signature” ፓነል ላይ አንድ ያክሉ።",
+   "notLoaded": "የመርጦ መውጫ ዓረፍተ ነገሩ ገና አልተጫነም፤ ስለዚህ ይህን መላክ አይቻልም።",
+   "unreadable": "የመርጦ መውጫ ዓረፍተ ነገሩን ማንበብ አልተቻለም፤ ስለዚህ ምንም አልተላከም።"
+  },
+  "retry": {
+   "notRebuilt": "ያንን መልዕክት ከኩባንያው መረጃ መስመር ጋር እንደገና መገንባት አልተቻለም፤ ስለዚህ ምንም አልተላከም።"
+  }
+ },
+ "address": {
+  "label": {
+   "street": "አድራሻ",
+   "postcode": "ፖስትኮድ",
+   "zip": "ZIP ኮድ",
+   "eircode": "Eircode",
+   "postalCode": "የፖስታ ኮድ",
+   "state": "ግዛት",
+   "stateTerritory": "ግዛት ወይም ቴሪቶሪ",
+   "province": "ክፍለ ሀገር",
+   "county": "ካውንቲ",
+   "prefecture": "ፕሪፌክቸር",
+   "emirate": "ኤምሬት",
+   "region": "ክልል",
+   "area": "አካባቢ (መንደር ወይም ከተማ)",
+   "townOrArea": "ከተማ ወይም አካባቢ",
+   "city": "ከተማ",
+   "suburb": "ሰፈር",
+   "townOrCity": "ከተማ"
+  },
+  "short": {
+   "area": "አካባቢ",
+   "townOrArea": "ከተማ ወይም አካባቢ",
+   "city": "ከተማ",
+   "suburb": "ሰፈር",
+   "townOrCity": "ከተማ"
+  },
+  "inSentence": {
+   "postcode": "ፖስትኮድ",
+   "zip": "ZIP ኮድ",
+   "eircode": "Eircode",
+   "postalCode": "የፖስታ ኮድ"
+  },
+  "withArticle": {
+   "postcode": "ፖስትኮድ",
+   "zip": "ZIP ኮድ",
+   "eircode": "Eircode",
+   "postalCode": "የፖስታ ኮድ"
+  },
+  "tradeLabel": {
+   "area": "ከተማ",
+   "townOrArea": "ከተማ ወይም አካባቢ",
+   "city": "ከተማ",
+   "suburb": "ሰፈር",
+   "townOrCity": "ከተማ"
+  },
+  "basedIn": {
+   "area": "የሚገኙበት ከተማ",
+   "townOrArea": "የሚገኙበት ከተማ ወይም አካባቢ",
+   "city": "የሚገኙበት ከተማ",
+   "suburb": "የሚገኙበት ሰፈር",
+   "townOrCity": "የሚገኙበት ከተማ"
+  },
+  "example": "ለምሳሌ፦ {example}",
+  "customersSee": "ደንበኞች የሚያዩት፦",
+  "postalWarning": "ይህ ትክክለኛ {article} አይመስልም — ለምሳሌ፦ {example}። ቢሆንም ማስቀመጥ ይችላሉ።",
+  "regionChoose": "ይምረጡ…"
+ },
+ "demoLinkEmail": {
+  "subject": "የHatchGrab ዲሞዎ — ሊንክዎ ይኸውና",
+  "heading": "ዲሞዎ ዝግጁ ነው",
+  "intro": "ከሜኑዎ የሠራነው ዲሞ ሊንክ ይኸውና። እንደ አንድ ደንበኛዎ ከዲሞው ይዘዙ፤ ከዚያም ትዕዛዙ በእርስዎ የኩሽና ማሳያ (KDS) ላይ ሲደርስ ይመልከቱ። መግባት አያስፈልግም — ሊንኩን ብቻ ይንኩ።",
+  "button": "ዲሞውን ይክፈቱ",
+  "deletion": "ይህ ዲሞ ስለሆነ አናስቀምጠውም፦ ዲሞውንና የሰቀሉትን ሜኑ {date} ላይ እንሰርዛለን። ረዘም ላለ ጊዜ እንዲቆይ ከፈለጉ፣ በዲሞው ውስጥ “ሜኑዬ ይቀመጥ” የሚለውን ይጫኑ፤ ለ14 ቀናት እናቆየዋለን።",
+  "deletionSoon": "ይህ ዲሞ ስለሆነ አናስቀምጠውም፦ ዲሞውንና የሰቀሉትን ሜኑ ከ24 ሰዓት በኋላ እንሰርዛለን። ረዘም ላለ ጊዜ እንዲቆይ ከፈለጉ፣ በዲሞው ውስጥ “ሜኑዬ ይቀመጥ” የሚለውን ይጫኑ፤ ለ14 ቀናት እናቆየዋለን።"
+ },
+ "demoWalk": {
+  "step1": "ደረጃ 1 ከ3 · እንደ አንድ ደንበኛዎ ይዘዙ",
+  "paymentTitle": "ክፍያ",
+  "paymentPanel": "ደንበኛዎ እዚህ በካርድ፣ በApple Pay ወይም በGoogle Pay ይከፍላሉ፤ ወይም “ሲወስዱ ይክፈሉ” የሚለውን ይመርጣሉ። በዲሞው ውስጥ ምንም ክፍያ አይቀነስም።",
+  "defaultName": "ማርታ",
+  "step2": "ደረጃ 2 ከ3",
+  "bubbleTitle": "ይህ የእርስዎ የኩሽና ማሳያ (KDS) ነው",
+  "bubbleArrived": "አሁን ያስገቡት ትዕዛዝ ወዲያውኑ እዚህ ደርሷል፤ የመውሰጃ ሰዓትም አብሮ ይታያል። “ማብሰል ይጀምሩ” የሚለውን ይንኩ።",
+  "bubbleReady": "ምግቡ ዝግጁ ሲሆን “ዝግጁ” የሚለውን ይንኩ። ደንበኛዎ ወዲያውኑ ይነገራቸዋል።",
+  "step3": "ደረጃ 3 ከ3 · ተጠናቋል",
+  "told": "ደንበኛው ({name}) ምግባቸው ዝግጁ መሆኑ አሁን ተነግሯቸዋል።",
+  "thatsIt": "HatchGrab ይህ ነው፦ ደንበኞች በስልካቸው ያዝዛሉ፣ እርስዎ እዚህ ያዩታል፣ እነሱም ሰልፍ ሳይጠብቁ ይወስዳሉ። ሜኑዎ አስቀድሞ ተዋቅሯል።",
+  "startFree": "{months, plural, =0 {በነፃ ይጀምሩ፣ ሜኑዬ ይቀመጥ} one {በነፃ ይጀምሩ (# ወር)፣ ሜኑዬ ይቀመጥ} other {በነፃ ይጀምሩ (# ወራት)፣ ሜኑዬ ይቀመጥ}}",
+  "tryAnother": "ሌላ ትዕዛዝ ይሞክሩ",
+  "barOrder": "እንደ ደንበኛ ይዘዙ",
+  "barArrives": "ወደ ኩሽናዎ ይደርሳል",
+  "barReady": "ዝግጁ ምልክት ያድርጉ",
+  "phoneLabel": "የደንበኛዎ ስልክ",
+  "kitchenLabel": "የእርስዎ የኩሽና ማሳያ (KDS)",
+  "waitingTitle": "ትዕዛዞችን በመጠባበቅ ላይ",
+  "waitingBody": "በስልኩ ላይ የሆነ ነገር ይዘዙ። ደንበኛዎ “ይዘዙ” የሚለውን እንደጫኑ እዚህ ይታያል።",
+  "startCooking": "ማብሰል ይጀምሩ",
+  "ready": "ዝግጁ",
+  "readyForCollection": "ለመውሰድ ዝግጁ",
+  "cooking": "በማብሰል ላይ",
+  "readyBadge": "ዝግጁ",
+  "newBadge": "አዲስ ትዕዛዝ",
+  "orderNumber": "ትዕዛዝ #{number}",
+  "collectAt": "የመውሰጃ ሰዓት፦ {time}",
+  "collectAsap": "በተቻለ ፍጥነት ይውሰዱ",
+  "phoneReadyTitle": "ትዕዛዝዎ ዝግጁ ነው",
+  "phoneReadyBody": "መኪናው ጋ ይውሰዱት።",
+  "bandTitle": "HatchGrab ይህ ነው። ሜኑዎ አስቀድሞ ተዋቅሯል።",
+  "bandStart": "በነፃ ይጀምሩ፣ ሜኑዬ ይቀመጥ",
+  "orderAgain": "እንደገና ይዘዙ",
+  "loading": "ዲሞዎን በማዋቀር ላይ…",
+  "goneTitle": "ይህ ዲሞ አብቅቷል",
+  "goneBody": "ዲሞዎች ከአንድ ቀን በኋላ ይሰረዛሉ። ከሜኑዎ አዲስ ዲሞ ከአንድ ደቂቃ ባነሰ ጊዜ ውስጥ መሥራት ይችላሉ።",
+  "goneButton": "አዲስ ዲሞ ይሥሩ",
+  "failed": "አልተሳካም — እባክዎ እንደገና ይሞክሩ።",
+  "backToMenu": "ወደ ሜኑው ይመለሱ",
+  "formNote": "ይህ ዲሞ ነው፦ ማንም አይከፍልም፣ ምንም ነገር አይላክም፤ ስለዚህ ኢሜይል መስጠት አያስፈልግዎትም።",
+  "namePlaceholder": "ማርታ"
+ },
+ "paperwork": {
+  "title": "ሰነዶች",
+  "intro": "የምስክር ወረቀቶችዎን በአንድ ቦታ ያስቀምጡ። ማንኛውም ሰነድ ጊዜው ከማለፉ በፊት እናስታውስዎታለን፤ ሁሉንም በአንድ ጊዜ ለአዘጋጅ መላክም ይችላሉ።",
+  "loading": "ሰነዶችዎን በመጫን ላይ…",
+  "loadFailed": "ሰነዶችዎን መጫን አልተቻለም። እባክዎ እንደገና ይሞክሩ።",
+  "retry": "እንደገና ይሞክሩ",
+  "counts": {
+   "expired": "{count, plural, one {ጊዜው ያለፈበት፦ #} other {ጊዜያቸው ያለፈባቸው፦ #}}",
+   "dueSoon": "{count, plural, one {በቅርቡ የሚያበቃ፦ #} other {በቅርቡ የሚያበቁ፦ #}}",
+   "missing": "{count, plural, one {የጎደለ፦ #} other {የጎደሉ፦ #}}",
+   "upToDate": "{count, plural, one {ጊዜው ያላለፈ፦ #} other {ጊዜያቸው ያላለፈ፦ #}}"
+  },
+  "status": {
+   "upToDate": "ጊዜው ያላለፈ",
+   "dueSoon": "በቅርቡ ያበቃል",
+   "expired": "ጊዜው አልፏል",
+   "upload": "ይስቀሉ"
+  },
+  "line": {
+   "expires": "የሚያበቃው፦ {date}",
+   "expiresIn": "የሚያበቃው፦ {date} · {days, plural, one {# ቀን ውስጥ} other {# ቀናት ውስጥ}}",
+   "expiresToday": "ዛሬ ያበቃል",
+   "expired": "ጊዜው ያለፈው፦ {date}",
+   "reviewBy": "መገምገም ያለበት፦ እስከ {date} ድረስ",
+   "reviewByIn": "መገምገም ያለበት፦ እስከ {date} ድረስ · {days, plural, one {# ቀን ውስጥ} other {# ቀናት ውስጥ}}",
+   "reviewOverdue": "መገምገም የነበረበት ቀን፦ {date}",
+   "noExpiry": "የማብቂያ ቀን የለውም",
+   "cover": "ሽፋን፦ {amount}",
+   "notUploaded": "ገና አልተሰቀለም"
+  },
+  "select": "ይምረጡ፦ {document}",
+  "add": "+ ሰነድ ያክሉ",
+  "selected": "{count, plural, one {የተመረጠ፦ #} other {የተመረጡ፦ #}}",
+  "sendToOrganiser": "ለአዘጋጁ ይላኩ",
+  "types": {
+   "food_registration": "የምግብ ንግድ ምዝገባ",
+   "hygiene_rating": "የምግብ ንጽሕና ደረጃ",
+   "food_safety_plan": "የምግብ ደህንነት ዕቅድ (HACCP)",
+   "public_liability": "የሕዝብ ተጠያቂነት ኢንሹራንስ",
+   "employers_liability": "የአሠሪ ተጠያቂነት ኢንሹራንስ",
+   "gas_safety": "የጋዝ ደህንነት የምስክር ወረቀት",
+   "pat_test": "የኤሌክትሪክ መሣሪያዎች ፍተሻ (PAT)",
+   "fire_safety": "የእሳት ደህንነት",
+   "risk_assessment": "የአደጋ ስጋት ግምገማ",
+   "allergen_info": "ስለ አለርጂ የሚያስከትሉ ንጥረ ነገሮች መረጃ",
+   "street_trading_licence": "የጎዳና ንግድ ፈቃድ",
+   "electrical_safety": "የኤሌክትሪክ ደህንነት ፍተሻ",
+   "trading_licence": "የንግድ ፈቃድ"
+  },
+  "upload": {
+   "title": "ሰነድ ያክሉ",
+   "intro": "የሰነዱን ፎቶ ያንሱ፣ ወይም ፎቶ ወይም ፋይል ይምረጡ።",
+   "takePhoto": "ፎቶ ያንሱ",
+   "chooseFile": "ፎቶ ወይም ፋይል ይምረጡ",
+   "accepted": "PDF፣ JPEG፣ PNG፣ HEIC ወይም WebP፣ እስከ 20 MB።",
+   "uploading": "በመስቀል ላይ… {percent}%",
+   "reading": "ሰነድዎን በማንበብ ላይ…",
+   "tooBig": "ፋይሉ ከ20 MB በላይ ነው። እባክዎ ትንሽ ፋይል ይምረጡ።",
+   "wrongType": "ይህ የፋይል ዓይነት ተቀባይነት የለውም። እባክዎ PDF፣ JPEG፣ PNG፣ HEIC ወይም WebP ፋይል ይጠቀሙ።",
+   "failed": "መስቀሉ አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+   "cancel": "ይቅር"
+  },
+  "check": {
+   "title": "ዝርዝሮቹን ያረጋግጡ",
+   "aiBanner": "ይህን ከሰነድዎ ላይ አንብበናል። ከማስቀመጥዎ በፊት እባክዎ ትክክል መሆኑን ያረጋግጡ።",
+   "document": "ሰነድ",
+   "other": "ሌላ…",
+   "otherName": "የሰነዱ ስም",
+   "issuer": "የሰጠው አካል",
+   "issued": "የተሰጠበት ቀን",
+   "expires": "የሚያበቃበት ቀን",
+   "reviewBy": "የሚገመገምበት ቀን",
+   "nameOnDocument": "በሰነዱ ላይ ያለው ስም",
+   "cover": "የኢንሹራንስ ሽፋን",
+   "coverHint": "አማራጭ። ፖሊሲው የሚሸፍነው መጠን።",
+   "currency": "የገንዘብ ዓይነት",
+   "save": "ያስቀምጡ",
+   "saving": "በማስቀመጥ ላይ…",
+   "cancel": "ይቅር",
+   "saved": "ተቀምጧል",
+   "footer": "የቀድሞው የምስክር ወረቀት እንደ ታሪክ ይቀመጣል። ፋይሎችዎ የግል ናቸው፦ ሊያዩዋቸው የሚችሉት እርስዎና የላኩላቸው አዘጋጆች ብቻ ናቸው።",
+   "needType": "ሰነዱን ይምረጡ ወይም ስም ይስጡት።",
+   "badDates": "የሚያበቃበት ቀን ከተሰጠበት ቀን በፊት ሊሆን አይችልም።"
+  },
+  "warnings": {
+   "notRead": "ይህን ሰነድ ማንበብ አልቻልንም። እባክዎ ዝርዝሮቹን ራስዎ ይሙሉ።",
+   "expired": "የዚህ ሰነድ ጊዜ {date} ላይ አልፏል። አሁንም ማስቀመጥ ይችላሉ፤ ነገር ግን አዘጋጆች ጊዜው ማለፉን ያያሉ።",
+   "expiresSoon": "{days, plural, =0 {ይህ ሰነድ ዛሬ ያበቃል። እስኪታደስ ድረስ በየሳምንቱ እናስታውስዎታለን።} one {ይህ ሰነድ # ቀን ውስጥ ያበቃል። 4 ሳምንት ሲቀረው፣ 1 ሳምንት ሲቀረው እና በዕለቱ እናስታውስዎታለን።} other {ይህ ሰነድ # ቀናት ውስጥ ያበቃል። 4 ሳምንት ሲቀረው፣ 1 ሳምንት ሲቀረው እና በዕለቱ እናስታውስዎታለን።}}",
+   "nameMismatch": "በሰነዱ ላይ ያለው ስም (“{name}”) የምግብ መኪናዎ ስም አይመስልም። እባክዎ ትክክለኛው ሰነድ መሆኑን ያረጋግጡ።"
+  },
+  "view": {
+   "close": "ይዝጉ",
+   "open": "ይክፈቱ",
+   "download": "ያውርዱ",
+   "noPreview": "ይህን ፋይል እዚህ ማሳየት አይቻልም። በምትኩ ይክፈቱት ወይም ያውርዱት።",
+   "details": "ዝርዝሮች",
+   "edit": "ዝርዝሮቹን ያስተካክሉ",
+   "renew": "አዲስ ስሪት ይስቀሉ",
+   "earlier": "የቀድሞ ስሪቶች",
+   "uploaded": "የተሰቀለው፦ {date}",
+   "delete": "ይሰርዙ",
+   "deleteConfirm": "ይህ ሰነድና የቀድሞ ስሪቶቹ ይሰረዙ? ፋይሎቹ ይወገዳሉ፤ ከላኩት ማንኛውም ሊንክም ይወጣል።",
+   "deleteYes": "ይሰርዙ",
+   "deleted": "ሰነዱ ተሰርዟል",
+   "keep": "ይቆይ"
+  },
+  "send": {
+   "title": "ለአዘጋጁ ይላኩ",
+   "intro": "ሁሉንም ለማየት ወይም ለማውረድ የሚያስችል ሊንክ ያለው ኢሜይል ይደርሳቸዋል።",
+   "email": "የአዘጋጁ ኢሜይል",
+   "emailHint": "እስከ 5 አድራሻዎች፣ በኮማ (,) ተለያይተው።",
+   "event": "ዝግጅት (አማራጭ)",
+   "noEvent": "ዝግጅት የለም",
+   "documents": "ሰነዶች",
+   "message": "መልዕክት (አማራጭ)",
+   "messagePlaceholder": "ሰላም፣ ለገበያው የሚያስፈልጉ ሰነዶቻችን እነሆ።",
+   "until": "ሊንኩ የሚሠራው እስከ",
+   "untilAfterEvent": "{date} (ከዝግጅቱ ማግስት)",
+   "send": "ይላኩ",
+   "sending": "በመላክ ላይ…",
+   "footer": "የምስክር ወረቀት ካደሱ፣ የአዘጋጁ ሊንክ አዲሱን በራስ-ሰር ያሳያል። ሊንኩን ሲከፍቱት ያያሉ።",
+   "sent": "ተልኳል፦ {emails}",
+   "cancel": "ይቅር",
+   "emailNone": "የአዘጋጁን ኢሜይል ያስገቡ።",
+   "emailInvalid": "“{email}” የኢሜይል አድራሻ አይደለም።",
+   "emailTooMany": "በአንድ ጊዜ እስከ 5 አድራሻዎች መላክ ይችላሉ።",
+   "noDocuments": "ቢያንስ አንድ ሰነድ ይምረጡ።",
+   "untilRange": "ከነገ ጀምሮ እስከ 90 ቀናት ድረስ ያለ ቀን ይምረጡ።"
+  },
+  "sent": {
+   "title": "የተላኩ",
+   "empty": "እስካሁን ምንም አልተላከም።",
+   "to": "ተቀባይ፦ {emails}",
+   "sentOn": "የተላከው፦ {date}",
+   "opened": "የተከፈተው፦ {date} · {count, plural, one {# እይታ} other {# እይታዎች}}",
+   "notOpened": "ገና አልተከፈተም",
+   "until": "የሚሠራው፦ እስከ {date} ድረስ",
+   "expiredOn": "ጊዜው ያለፈው፦ {date}",
+   "off": "ተሰናክሏል",
+   "turnOff": "ሊንኩን ያሰናክሉ",
+   "turnOffConfirm": "ይህ ሊንክ ይሰናከል? አዘጋጁ ከእንግዲህ ሊከፍተው አይችልም።",
+   "turnedOff": "ሊንኩ ተሰናክሏል"
+  },
+  "page": {
+   "title": "ሰነዶች፦ {truck}",
+   "intro": "{truck} እነዚህን ሰነዶች ለእርስዎ አጋርቷል።",
+   "view": "ይመልከቱ",
+   "download": "ያውርዱ",
+   "downloadAll": "ሁሉንም ያውርዱ",
+   "until": "ይህ ሊንክ የሚሠራው እስከ {date} ድረስ ነው።",
+   "none": "በአሁኑ ጊዜ በዚህ ሊንክ ላይ ምንም ሰነድ የለም።",
+   "expiredTitle": "የዚህ ሊንክ ጊዜ አልፏል",
+   "expiredBody": "የዚህ ሊንክ ጊዜ አልፏል፤ እንደገና እንዲልኩት ይጠይቁ፦ {truck}።",
+   "expiredBodyUnknown": "የዚህ ሊንክ ጊዜ አልፏል። እባክዎ የላከውን የምግብ መኪና እንደገና እንዲልከው ይጠይቁ።",
+   "sharedWith": "በHatchGrab የተጋራ"
+  },
+  "email": {
+   "shareSubject": "{truck} ሰነዶቹን ልኮልዎታል",
+   "shareHeading": "ሰነዶች፦ {truck}",
+   "shareIntro": "{truck} እነዚህን ሰነዶች ለእርስዎ አጋርቷል።",
+   "event": "ዝግጅት፦ {event}",
+   "shareButton": "ሰነዶቹን ይመልከቱ",
+   "shareUntil": "ሊንኩ የሚሠራው እስከ {date} ድረስ ነው። ጊዜው ካለፈ፣ እንደገና እንዲልኩት ይጠይቁ፦ {truck}።",
+   "shareReply": "የምግብ መኪናውን ({truck}) ለማነጋገር ለዚህ ኢሜይል ምላሽ ይስጡ።",
+   "expires": "የሚያበቃው፦ {date}",
+   "reviewBy": "መገምገም ያለበት፦ እስከ {date} ድረስ",
+   "noExpiry": "የማብቂያ ቀን የለውም",
+   "reminderSubject": "{count, plural, one {# ሰነድ መታደስ አለበት} other {# ሰነዶች መታደስ አለባቸው}}",
+   "reminderHeading": "ሰነዶችዎ",
+   "reminderIntro": "የምግብ መኪናው {truck} አንዳንድ ሰነዶች መታደስ አለባቸው፦",
+   "reminderIn": "{document} — {date} ላይ ያበቃል ({days, plural, one {# ቀን ውስጥ} other {# ቀናት ውስጥ}})",
+   "reminderToday": "{document} — ዛሬ ያበቃል",
+   "reminderExpired": "{document} — ጊዜው {date} ላይ አልፏል",
+   "reminderButton": "“ሰነዶች” ይክፈቱ",
+   "reminderFooter": "4 ሳምንት ሲቀረው፣ 1 ሳምንት ሲቀረው እና በዕለቱ እናስታውስዎታለን፤ ከዚያም እስኪታደስ ድረስ በየሳምንቱ።"
+  }
+ },
+ "emailReview": {
+  "subject": "{truck} — ትዕዛዝዎ እንዴት ነበር?",
+  "heading": "ስላዘዙ እናመሰግናለን — {truck}",
+  "body": "{truck} በGoogle ላይ ሐቀኛ ግምገማ ቢሰጡ ደስ ይለዋል። አንድ ደቂቃ ብቻ ይወስዳል፤ ሌሎች ሰዎችም የምግብ መኪናውን እንዲያገኙት ይረዳል።",
+  "button": "በGoogle ላይ ግምገማ ይስጡ",
+  "linkText": "በGoogle ላይ ግምገማ ይስጡ፦ {url}",
+  "from": "ይህ ኢሜይል ከምግብ መኪናው {truck} የተላከ ነው፤ ከእነሱ ስላዘዙ በHatchGrab በኩል ደርሶዎታል።",
+  "unsubscribeLead": "የምግብ መኪናው {truck} የግምገማ ጥያቄዎችን እንዲልክልዎ አይፈልጉም?",
+  "unsubscribeLink": "ምዝገባ ያቋርጡ",
+  "unsubscribeText": "ምዝገባ ያቋርጡ፦ {url}",
+  "unsubscribed": {
+   "title": "ምዝገባዎ ተቋርጧል",
+   "body": "የምግብ መኪናው {truck} ከእንግዲህ የግምገማ ጥያቄዎችን አይልክልዎትም።",
+   "invalid": "ይህ የምዝገባ ማቋረጫ ሊንክ ትክክል አይደለም።"
+  }
+ },
+ "billing": {
+  "tab": {
+   "plan": {
+    "title": "ፓኬጅዎ",
+    "trialPill": "ነፃ ሙከራ",
+    "change": "ፓኬጅ ይቀይሩ",
+    "trialLine": "ነፃ ሙከራዎ {date} ላይ ያበቃል። ከዚያ በኋላ {plan} በወር {price} ነው።",
+    "trialLineFree": "ነፃ ሙከራዎ {date} ላይ ያበቃል። ከዚያ በኋላ ፓኬጅዎ {plan} ይሆናል፤ ወርሃዊ ክፍያ የለውም።",
+    "proLine": "በወር እስከ {allowance} የሚደርስ የኦንላይን ትዕዛዝ ያካትታል። ከዚያ በላይ፦ {fee}።",
+    "paygLine": "በኦንላይን ትዕዛዞች ላይ፦ {fee}። ወርሃዊ ክፍያ የለም።",
+    "unlimitedLine": "በወር {price}። በኦንላይን ትዕዛዞች ላይ ክፍያ የለም።",
+    "pendingLine": "{plan} የሚጀምረው {date} ላይ ነው።"
+   },
+   "payment": {
+    "title": "የክፍያ ዘዴ",
+    "none": "እስካሁን ካርድ አልታከለም። ከሙከራዎ በኋላ የኦንላይን ትዕዛዞችን መቀበል ለመቀጠል ካርድ ያክሉ።",
+    "add": "ካርድ ያክሉ",
+    "pix": "Pix Automático ይጠቀሙ",
+    "card": "{brand} — መጨረሻው {last4}",
+    "pixOnFile": "Pix Automático",
+    "pending": "ማረጋገጫ በመጠባበቅ ላይ።",
+    "change": "ይቀይሩ",
+    "lastFailed": "የመጨረሻው ክፍያ አልተሳካም",
+    "update": "ካርዱን ያዘምኑ",
+    "error": "የክፍያ ገጹን መክፈት አልቻልንም። እባክዎ እንደገና ይሞክሩ።",
+    "noneAfterTrial": "ካርድ አልታከለም። የኦንላይን ትዕዛዝን መልሰው ለማብራት ካርድ ያክሉ።"
+   },
+   "whatYouPay": {
+    "title": "የሚከፍሉት",
+    "plan": "ፓኬጅዎ — በየወሩ 1ኛ ቀን ለሚመጣው ወር ይከፈላል",
+    "fee": "ከተካተተው መጠን (በወር {allowance}) በላይ የሆኑ የኦንላይን ትዕዛዞች — በየወሩ 1ኛ ቀን ላለፈው ወር ይከፈላል",
+    "feePayg": "የኦንላይን ትዕዛዞች — በየወሩ 1ኛ ቀን ላለፈው ወር ይከፈላል",
+    "walkUps": "በቦታው የሚሰጥ ትዕዛዝ",
+    "free": "ነፃ",
+    "trialEnd": "ሙከራዎ {date} ላይ ሲያበቃ፣ ለወሩ ቀሪ ቀናት ({month}) {amount} እናስከፍላለን። ከዚያም {nextFirst} ላይ {price}።"
+   },
+   "next": {
+    "title": "ቀጣይ ክፍያ · {date}",
+    "plan": "{plan} — ወር፦ {month}",
+    "fee": "{fee} — ከተካተተው መጠን ({allowance}) በላይ ለሆኑ የኦንላይን ትዕዛዞች (ወር፦ {month}፤ እስካሁን)",
+    "feePayg": "{fee} — ለኦንላይን ትዕዛዞች (ወር፦ {month}፤ እስካሁን)",
+    "vans": "ተጨማሪ ተሽከርካሪዎች (ወር፦ {month})",
+    "surcharge": "ሲወስዱ ለሚከፈሉ ትዕዛዞች የሚታከል ክፍያ (ወር፦ {month})",
+    "carried": "ካለፈው የተላለፈ",
+    "total": "እስካሁን ያለው ጠቅላላ ድምር",
+    "walkUps": "በቦታው የሚሰጥ ትዕዛዝ ሁልጊዜ ነፃ ነው።"
+   },
+   "preorders": {
+    "title": "ደንበኞች ለቅድመ-ትዕዛዝ እንዴት እንደሚከፍሉ",
+    "online": "ኦንላይን፣ ሲያዝዙ",
+    "onlineHint": "ገንዘቡ በቀጥታ ወደ Stripe አካውንትዎ ይገባል።",
+    "atTruckHint": "ደንበኞች የሚከፍሉት ምግባቸውን ሲወስዱ ነው። የእኛ ክፍያ በወርሃዊ ሂሳብዎ ላይ ይታከላል።",
+    "saved": "ተቀምጧል።",
+    "error": "ያንን ማስቀመጥ አልቻልንም። እባክዎ እንደገና ይሞክሩ።"
+   },
+   "invoices": {
+    "title": "የሂሳብ መጠየቂያዎች",
+    "date": "ቀን",
+    "for": "መግለጫ",
+    "amount": "መጠን",
+    "status": "ሁኔታ",
+    "forMonthly": "ፓኬጅ (ወር፦ {planMonth})፣ የአገልግሎት ክፍያዎች (ወር፦ {usageMonth})",
+    "forMonthlyPlan": "ፓኬጅ (ወር፦ {planMonth})",
+    "forTrialEnd": "የወሩ ቀሪ ቀናት ({month})",
+    "forUpgrade": "ወደ {plan} መቀየር",
+    "lateFee": "የዘገየ ክፍያ ቅጣት",
+    "paid": "ተከፍሏል",
+    "unpaid": "ያልተከፈለ",
+    "overdue": "ጊዜው ያለፈበት",
+    "download": "ያውርዱ",
+    "payNow": "አሁን ይክፈሉ",
+    "none": "እስካሁን ምንም የሂሳብ መጠየቂያ የለም።"
+   },
+   "failed": {
+    "title": "ክፍያዎ ({amount}) አልተሳካም።",
+    "body": "እንደገና እንሞክራለን። የኦንላይን ትዕዛዝ እንዲቀጥል እስከ {date} ድረስ ካርድዎን ያዘምኑ።",
+    "button": "ካርዱን ያዘምኑ"
+   },
+   "paused": {
+    "title": "የኦንላይን ትዕዛዝ ለጊዜው ቆሟል",
+    "body": "የሚከፈለው {amount} ጊዜው አልፏል። አሁን ይክፈሉ፤ የኦንላይን ትዕዛዝ ወዲያውኑ መልሶ ይበራል።",
+    "warning": "እስከ {date} ድረስ ይክፈሉ፤ አለበለዚያ አካውንትዎ ሊታገድ ይችላል።",
+    "pay": "{amount} ይክፈሉ",
+    "otherCard": "ሌላ ካርድ ይጠቀሙ"
+   },
+   "loading": "የሂሳብ አከፋፈል መረጃን በመጫን ላይ…",
+   "loadError": "የሂሳብ አከፋፈል መረጃዎን መጫን አልቻልንም። እባክዎ እንደገና ይሞክሩ።"
+  },
+  "changePlan": {
+   "title": "ፓኬጅ ይቀይሩ",
+   "current": "አሁን ያሉበት ፓኬጅ፦ {plan}።",
+   "free": "ነፃ",
+   "perMonth": "በወር {price}",
+   "paygLine": "በኦንላይን ትዕዛዞች ላይ፦ {fee}።",
+   "proLine": "እስከ {allowance} የሚደርስ የኦንላይን ትዕዛዝ ተካቷል። ከዚያ በላይ፦ {fee}።",
+   "unlimitedLine": "በኦንላይን ትዕዛዞች ላይ ክፍያ የለም።",
+   "yourPlan": "ፓኬጅዎ",
+   "startsNow": "አሁን ይጀምራል።",
+   "chargeToday": "ለወሩ ቀሪ ቀናት ({month}) ዛሬ {amount} እናስከፍላለን። ከዚያም {nextFirst} ላይ {price}።",
+   "startsLater": "{nextFirst} ላይ ይጀምራል። እስከዚያ ድረስ ፓኬጅዎ {plan} ሆኖ ይቆያል።",
+   "cancel": "ይቅር",
+   "switchTo": "ወደ {plan} ይቀይሩ",
+   "error": "ፓኬጅዎን መቀየር አልቻልንም። እባክዎ እንደገና ይሞክሩ።",
+   "trialLine": "ነፃ ሙከራ ላይ ነዎት። ሙከራው {date} ላይ ሲያበቃ የሚጠቀሙበትን ፓኬጅ ይምረጡ።",
+   "startsAtTrialEnd": "ሙከራዎ ሲያበቃ ይጀምራል።",
+   "choose": "{plan} ይምረጡ"
+  },
+  "notices": {
+   "trialEndsSoon": "<b>ነፃ ሙከራዎ {date} ላይ ያበቃል።</b> የኦንላይን ትዕዛዝ እንዲቀጥል ካርድ ያክሉ።",
+   "trialEndsTomorrow": "<b>ነፃ ሙከራዎ ነገ ያበቃል።</b> ካርድ ያክሉ፤ አለበለዚያ የኦንላይን ትዕዛዝ ለጊዜው ይቆማል።",
+   "allSet": "<b>ሁሉም ነገር ዝግጁ ነው።</b> {plan} {date} ላይ ይጀምራል።",
+   "paymentFailed": "<b>ክፍያዎ አልተሳካም።</b> የኦንላይን ትዕዛዝ እንዲቀጥል እስከ {date} ድረስ {method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ያዘምኑ።",
+   "paused": "<b>የኦንላይን ትዕዛዝ ለጊዜው ቆሟል።</b> እስከ {date} ድረስ {amount} ይክፈሉ፤ አለበለዚያ አካውንትዎ ሊታገድ ይችላል።",
+   "addCard": "ካርድ ያክሉ →",
+   "updateCard": "{method, select, payment_method {የክፍያ ዘዴዎን ያዘምኑ} other {ካርድዎን ያዘምኑ}} →",
+   "payNow": "አሁን ይክፈሉ →",
+   "dismiss": "ይዝጉ",
+   "trialEnded": "<b>ነፃ ሙከራዎ አብቅቷል።</b> የኦንላይን ትዕዛዝን መልሰው ለማብራት ካርድ ያክሉ።"
+  }
+ },
+ "emailBilling": {
+  "greeting": "{hasName, select, yes {ሰላም {name}፣} other {ሰላም፣}}",
+  "questions": "ጥያቄ አለዎት? ለዚህ ኢሜይል ምላሽ ብቻ ይስጡ።",
+  "signoff": "የHatchGrab ቡድን",
+  "buttonUpdate": "{method, select, payment_method {የክፍያ ዘዴዎን ያዘምኑ} other {ካርድዎን ያዘምኑ}}",
+  "buttonPay": "አሁን ይክፈሉ",
+  "buttonAddCard": "ካርድ ያክሉ",
+  "suspended": "ሳይከፈል ከቀረ አካውንትዎ ሊታገድ ይችላል።",
+  "failed": {
+   "subject": "የHatchGrab ክፍያዎ አልተሳካም",
+   "line1": "ዛሬ {amount} መቀበል አልቻልንም (የምግብ መኪና፦ {truck})። እንደገና እንሞክራለን።",
+   "line2": "የኦንላይን ትዕዛዝ እንዲቀጥል እባክዎ እስከ {date} ድረስ {method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ያዘምኑ።"
+  },
+  "twoDays": {
+   "subject": "{method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ለማዘመን 2 ቀናት ቀርተዋል",
+   "line1": "{amount} (የምግብ መኪና፦ {truck}) አሁንም አልተከፈለም። እስከ {date} ድረስ {method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ያዘምኑ፤ አለበለዚያ የኦንላይን ትዕዛዝ ለጊዜው ይቆማል።"
+  },
+  "oneDay": {
+   "subject": "እስከ ነገ ድረስ {method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ያዘምኑ",
+   "line1": "{amount} (የምግብ መኪና፦ {truck}) አሁንም አልተከፈለም። እስከ ነገ ድረስ {method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ያዘምኑ፤ አለበለዚያ የኦንላይን ትዕዛዝ ለጊዜው ይቆማል።"
+  },
+  "lastDay": {
+   "subject": "{method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ለማዘመን የመጨረሻው ቀን",
+   "line1": "{amount} (የምግብ መኪና፦ {truck}) የሚከፈልበት የመጨረሻው ቀን ዛሬ ነው። እኩለ ሌሊት ላይ አሁንም ካልተከፈለ፣ እስኪከፍሉ ድረስ የኦንላይን ትዕዛዝ ለጊዜው ይቆማል።"
+  },
+  "paused": {
+   "subject": "የኦንላይን ትዕዛዝ ለጊዜው ቆሟል",
+   "line1": "{amount} ስላልተከፈለ የምግብ መኪናው {truck} የኦንላይን ትዕዛዝ ለጊዜው ቆሟል። አሁን ይክፈሉ፤ ወዲያውኑ መልሶ ይበራል።",
+   "line2": "እስከ {date} ድረስ ይክፈሉ፤ አለበለዚያ አካውንትዎ ሊታገድ ይችላል።"
+  },
+  "trial7": {
+   "subject": "ነፃ ሙከራዎ 7 ቀናት ውስጥ ያበቃል",
+   "line1": "የምግብ መኪናው {truck} ነፃ ሙከራ {date} ላይ ያበቃል።",
+   "line2": "የኦንላይን ትዕዛዝ እንዲቀጥል በአስተዳደር › የሂሳብ አከፋፈል ውስጥ ካርድ ያክሉ።",
+   "plan": "ከዚያ በኋላ {plan} በወር {price} ነው። ሙከራዎ ሲያበቃ ለወሩ ቀሪ ቀናት ({month}) {amount} እናስከፍላለን፤ ከዚያም {nextFirst} ላይ {price}።",
+   "planFree": "ከዚያ በኋላ ፓኬጅዎ {plan} ይሆናል፤ ወርሃዊ ክፍያ የለውም።",
+   "fee": "በኦንላይን ትዕዛዞች ላይ የምናስከፍለው ክፍያ ({fee}) በየወሩ 1ኛ ቀን ላለፈው ወር ይከፈላል።"
+  },
+  "trial1": {
+   "subject": "ነፃ ሙከራዎ ነገ ያበቃል",
+   "line1": "የምግብ መኪናው {truck} ነፃ ሙከራ ነገ ያበቃል።",
+   "noCard": "ካርድ ያክሉ፤ አለበለዚያ የኦንላይን ትዕዛዝ ለጊዜው ይቆማል።",
+   "allSet": "ሁሉም ነገር ዝግጁ ነው፦ {plan} {date} ላይ ይጀምራል።",
+   "charge": "ሙከራዎ ሲያበቃ ለወሩ ቀሪ ቀናት ({month}) {amount} እናስከፍላለን።"
+  }
+ }
+}

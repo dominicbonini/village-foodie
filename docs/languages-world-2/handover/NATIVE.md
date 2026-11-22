@@ -807,3 +807,13 @@
 - No affix on placeholders or quoted UI names (“ሜኑ” በሚለው ትር ውስጥ; “ቦታ” ወይም “ሰዓት” — ከሁለቱ አንዱን…). Part 04 errorsManage.wp_last_toggle has ከ“ቦታ” — consistency pass to fix.
 - Team-screen Cancel (stops pending e-mail change) ይሰርዙ; dialog Cancel ይቅር; Delete my account አካውንቱን ይሰርዙ.
 - Samples: The Kings Arms / Lavenham → የቅዳሜ ገበያ / ቦሌ; team member ሜሮን (meron@example.com); yourfoodtruck.et. "As UK law requires" kept. one branches show #/{count}; someWithout restructured with {total} first.
+
+## am-ET part 07 (languages-world-3, 22 Nov 2026)
+- check-part: 483 keys / 483; STRUCTURAL 0; back missing 0; no glossary or numbers flags.
+- English left 10: admin-only “Insert opt-out” / “Templates” / “Signature”; Eircode ×3; Pix Automático ×2; HACCP; JPEG/HEIC/WebP. Length 1: PAT test የኤሌክትሪክ መሣሪያዎች ፍተሻ (PAT). Drift 65 wording + local places.
+- Save my menu “ሜኑዬ ይቀመጥ” (first person) — "Start free, keep my menu" በነፃ ይጀምሩ፣ ሜኑዬ ይቀመጥ mixes polite command + first person; native check.
+- Invoices የሂሳብ መጠየቂያዎች (ደረሰኝ = receipt). Post-pay charge (billing.tab.next.surcharge "Post-pay charge for {month}") written as ሲወስዱ ለሚከፈሉ ትዕዛዞች የሚታከል ክፍያ ("charge added for orders paid on collection") — that reads the charge as tied to pay-on-collection orders; the English is the monthly post-pay bill (our fee on pre-orders, billed afterwards) — consistency pass to make it neutral. Unsubscribe ምዝገባ ያቋርጡ; Turn off link ሊንኩን ያሰናክሉ.
+- Documents: certificate የምስክር ወረቀት; insurance ኢንሹራንስ (not መድን); Up to date ጊዜው ያላለፈ; spellings ደህንነት, ንጽሕና; types translated, not swapped.
+- Address labels literal per country scheme: Postcode ፖስትኮድ, Postal code የፖስታ ኮድ, State ግዛት, Province ክፍለ ሀገር, Suburb ሰፈር, Town or city / City ከተማ (part 02's own field is ክፍለ ከተማ ወይም ወረዳ — consistency pass decides).
+- Reused: CANCELLED ተሰርዟል; Place/Venue/Area/Time; Powered by; "Week commencing" የሚጀምርበት ሳምንት፦ (awkward before "{start} እስከ {end}"); demo kitchen screen የኩሽና ማሳያ (KDS).
+- Samples: The Kings Arms / Lavenham → የቅዳሜ ገበያ / ቦሌ; Suffolk venues → Bole, Megenagna, Piassa, Adama, Sarbet, Kazanchis; demo customer Alex → ማርታ. one shows #; apposition "(የምግብ መኪና፦ {truck})", "ለወሩ ቀሪ ቀናት ({month})".
