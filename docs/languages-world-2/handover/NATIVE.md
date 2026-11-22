@@ -666,3 +666,13 @@
 - Reason មូលហេតុ; Payment method មធ្យោបាយបង់ប្រាក់; Log in ចូលគណនី (auth.login.title, new-order operator e-mail); prefecture plain ខេត្ត; More tab ច្រើនទៀត (not បន្ថែម); Days off ថ្ងៃឈប់; Branded QR setting = plan feature name. ~31 same-label pairs unified.
 - Check: "Show me around" ណែនាំខ្ញុំ; amber ticket ពណ៌ទឹកក្រូច; auth.login.title "ចូលគណនីផ្ទះបាយរបស់អ្នក"; prefecture as ខេត្ត; Auto-replies heading without "តាម WhatsApp"; pending-email-change Cancel stays បោះបង់ (shared key).
 - Install (22 Nov): en-GB gained 5 keys after the parts were split (plans-everywhere-1/2, 19 Nov): pricing.fee.feeOnlyMonthly, pricing.fee.includedMonthly, pricing.monthlyNote.atTruck / .online, planTable.pay.feeMonthly. Translated into fix.json from the part 09 pricing wording (pre-orders ការកុម្ម៉ង់ទុកជាមុន, billed monthly គិតប្រាក់ប្រចាំខែ, card on file "កាតដែលបានរក្សាទុកក្នុងគណនី", at the truck នៅ Food Truck). Native check.
+
+## lo-LA part 01 (languages-world-3, 22 Nov 2026)
+- check-part: 805 keys / 805; STRUCTURAL 0; back missing 0. No Thai script, no ZWSP, no old ຫລ/ຫນ/ຫມ, no Lao digits.
+- English left 56: Food Truck (STYLE), eftpos (AU notice brand), "(slug)", English in brackets after allergens with no exact everyday Lao word. Glossary 4 = "ໜ້າຈໍຄົວ (KDS)" present; Lao vowel marks defeat the checker's pattern.
+- Business Food Truck; fleet van ລົດ; Truck settings (vans) ການຕັ້ງຄ່າລົດ; Truck details (business) ຂໍ້ມູນ Food Truck; at the hatch ທີ່ລົດ.
+- Pay at Hatch: option ຈ່າຍທີ່ລົດ; feature ຈ່າຍເງິນຕອນໄປຮັບ. Place order ສັ່ງເລີຍ; order ອໍເດີ້.
+- Event ງານ; poster CANCELLED ຍົກເລີກແລ້ວ; Cancel button ຍົກເລີກ, cancelled status ຍົກເລີກແລ້ວ; Done ສຳເລັດ vs Ready ພ້ອມແລ້ວ; buzzer ເຄື່ອງເອີ້ນຄິວ; TBC ລໍຖ້າຢືນຢັນ.
+- Suggested for part 04: Place ສະຖານທີ່, Venue ບ່ອນຈັດງານ, Area ເຂດ, Time ເວລາ.
+- Native check: allergens ມັນຢາມ (yam), ໝາກທໍ້ (peach), ປາທູ (mackerel), ຫອຍເປົ໋າຮື້ (abalone), ໝາກເກົາລັດ (chestnut), ຜັກຂຶ້ນສ່າຍ (celery); nut names mostly phonetic; molluscs ສັດຈຳພວກຫອຍ ແລະ ປາມຶກ. Card "held, not charged" ກັນວົງເງິນ. Event ງານ (also "work") vs loan ອີເວັ້ນ. Undo ຍ້ອນກັບ; Dashboard ແຜງຄວບຄຸມ; offline ບໍ່ມີອິນເຕີເນັດ; Vegan ວີແກນ (not ອາຫານເຈ).
+- Samples: customer ມະນີ (manee@email.com); Pepperoni → ເຂົ້າຈີ່ປາເຕ. Every plural one = other.
