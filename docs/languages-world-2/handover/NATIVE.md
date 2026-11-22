@@ -726,3 +726,12 @@
 - Billing: invoice ໃບແຈ້ງໜີ້; Overdue ກາຍກຳນົດ; Late payment fee ຄ່າປັບຈ່າຍຊ້າ; suspended ຖືກລະງັບ; Post-pay charge ຄ່າທຳນຽມແບບຈ່າຍພາຍຫຼັງ. opt-out/Unsubscribe ຍົກເລີກການຮັບ; review ຣີວິວ.
 - Address: County ເຂດປົກຄອງ; Prefecture ຈັງຫວັດ; Suburb ເຂດຊານເມືອງ; Region and Area both ເຂດ. Card/payment-method select joined without spaces (ອັບເດດ{method…}ຂອງທ່ານ).
 - Demo customer ມະນີ; “Save my menu” quoted “ບັນທຶກເມນູຂອງຂ້ອຍ” — consistency pass to match the button.
+
+## lo-LA part 08 (languages-world-3, 22 Nov 2026)
+- check-part: 431 keys / 431; STRUCTURAL 0; back missing 0. No Thai script, no ZWSP, no Lao digits, no old ຫລ/ຫນ/ຫມ, no "hatch".
+- English left 35: Food Truck; PayPal, Klarna, Uber Eats, Wolt, BLIK, iDEAL, Swish, MobilePay, Markdown, JSON; URL section/slug "comparison" / "food-truck-ordering-system" (as km-KH, ja-JP); admin-only noindex/sitemap/llms.txt/hreflang/“Pricing check”/Admin › Countries; "(reverse charge)" in brackets.
+- Glossary 5: 2 KDS vowel-mark false alarms; comparison.fit.marketplacesBody "Pre-order" as verb ສັ່ງລ່ວງໜ້າ; 2 "Commission-free" hits on sentences about paying commission. Length 7: buzzer ເຄື່ອງເອີ້ນຄິວ, Admin ຜູ້ດູແລລະບົບ, ຕັ້ງແຕ່ແພັກເກັດ {plan}, staff logins / loyalty labels. Drift 77: calculator fleet "truck" ລົດ ("ຕໍ່ລົດ ຕໍ່ເດືອນ", "# ຄັນ"). SEO strings from STYLE.md verbatim.
+- Pay at the truck feature row used ຈ່າຍທີ່ລົດ — consistency pass to check against the feature name ຈ່າຍເງິນຕອນໄປຮັບ. Till ລະບົບ POS. German TSE/EET, Uber Eats 14%/30% Germany, Wolt/Lieferando, UK company/VAT sentence kept as English; reverse charge ກົນໄກການຄິດໄລ່ພາສີແບບປີ້ນກັບ.
+- Comparison: vendor ຜູ້ໃຫ້ບໍລິການ; competitor ຄູ່ແຂ່ງ; Yes ມີ / No ບໍ່ມີ / Partly ບາງສ່ວນ / Not stated ບໍ່ໄດ້ລະບຸ / Not listed ບໍ່ໄດ້ລົງໄວ້ / Doesn't say ບໍ່ໄດ້ບອກ / Doesn't apply ບໍ່ກ່ຽວຂ້ອງ.
+- Native check: pitch ຈຸດຂາຍ; griddle ເຕົາປີ້ງແຜ່ນ; signal ສັນຍານ; push notification ການແຈ້ງເຕືອນໃນໂທລະສັບ; loyalty ລາງວັນລູກຄ້າປະຈຳ; set-up fee ຄ່າຕິດຕັ້ງ; "on us" ພວກເຮົາໃຫ້ຟຣີ; breadcrumb ເສັ້ນທາງນຳທາງ; bundles ຊຸດລວມລາຍການ (vs meal deal ຊຸດອາຫານ); SEO description ending "ແຕ່ລະລາຍ".
+- Plurals one = other; price.lead drops English " each" (both branches empty); compare.plan.summary says "for each van" in every branch.
