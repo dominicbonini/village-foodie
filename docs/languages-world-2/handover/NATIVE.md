@@ -613,3 +613,12 @@
 - Import នាំចូល (≠ upload ផ្ទុក…ឡើង); sub-category ប្រភេទរង; caption អត្ថបទភ្ជាប់; time zone ល្វែងម៉ោង; WhatsApp Set up “រៀបចំ”; database migration ការធ្វើបច្ចុប្បន្នភាពមូលដ្ឋានទិន្នន័យ; Manager អ្នកគ្រប់គ្រង (Admin អ្នកគ្រប់គ្រងប្រព័ន្ធ).
 - Truck at an event = ឡាន; "Your truck" (business) = Food Truck. Event-card Cancel (cancels the event) = លុបចោល; dialog Cancel = បោះបង់; Discard = បោះចោល.
 - Samples: ភីហ្សាសាច់មាន់, ប៉េងប៉ោះ ឈីស សាច់មាន់, @phnompenhfoodfest, https://yourfoodtruck.com.kh/events. Canada GST/PST lines kept as the English.
+
+## km-KH part 05 (languages-world-3, 22 Nov 2026)
+- check-part: 840 keys / 840; STRUCTURAL 0; back missing 0 (English left 17 · glossary 5 · drift 74 · length 50). No ZWSP, no Khmer digits.
+- English left: Food Truck, Excel/Numbers/Xero/QuickBooks, font Oswald, key "Delete", sample yourfoodtruck.com.kh/events. Glossary 5 = KDS combining-mark false alarm (4) + Auto-replies label (holds ការឆ្លើយតបស្វ័យប្រវត្តិតាម WhatsApp).
+- Settings: Truck settings ការកំណត់ឡាន; Truck details ព័ត៌មាន Food Truck; vans section/van billing ឡាន (ឡានរបស់អ្នក, + បន្ថែមឡាន); "your truck setting"/"Your truck" = Food Truck. Match Standard ធ្វើឲ្យដូចប្រភេទធម្មតា.
+- Social: weekly post ការបង្ហោះប្រចាំសប្តាហ៍ (vs weekly poster ផ្ទាំងប្រកាសប្រចាំសប្តាហ៍ — native check they stay distinct); single event post ការបង្ហោះព្រឹត្តិការណ៍តែមួយ; Your poster (canvas) ផ្ទាំងប្រកាស; Location កន្លែង (= Place).
+- Reports: walk-up នៅនឹងកន្លែង; channel ប្រភព; Gross/Net ដុល/សុទ្ធ; Pay at Hatch row បង់ពេលទៅយក; Last tax year ឆ្នាំពន្ធមុន.
+- Samples: yourfoodtruck.com.kh, @phnompenhfoodfest, new van ឡាន 2, ឡានមហោស្រព.
+- Native check: till = ប្រព័ន្ធ POS; CAPITALS toggle អក្សរធំ (Khmer has no capitals); prep-time វិនាទី / នាទី in full; Analysing… កំពុងវិភាគ…; excluded from imports មិនរាប់បញ្ចូល.
