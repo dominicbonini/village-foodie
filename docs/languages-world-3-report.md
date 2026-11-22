@@ -1,6 +1,6 @@
 # languages-world-3: resuming the language rollout, one batch per run
 
-**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal), batch 12 (ne-NP legal), batch 14 (fil-PH legal), batch 15 (sq-AL legal), batch 16 (bs-BA legal), batch 17 (mk-MK legal), batch 18 (ca-AD UI), batch 19 (ca-AD legal), batch 20 (sw-TZ UI), batch 21 (sw-TZ legal), batch 22 (si-LK UI), batch 23 (si-LK legal), batch 24 (ta-LK UI), batch 25 (ta-LK legal), batch 26 (km-KH UI), batch 27 (km-KH legal), batch 28 (lo-LA UI), batch 29 (lo-LA legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
+**Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal), batch 12 (ne-NP legal), batch 14 (fil-PH legal), batch 15 (sq-AL legal), batch 16 (bs-BA legal), batch 17 (mk-MK legal), batch 18 (ca-AD UI), batch 19 (ca-AD legal), batch 20 (sw-TZ UI), batch 21 (sw-TZ legal), batch 22 (si-LK UI), batch 23 (si-LK legal), batch 24 (ta-LK UI), batch 25 (ta-LK legal), batch 26 (km-KH UI), batch 27 (km-KH legal), batch 28 (lo-LA UI), batch 29 (lo-LA legal), batch 30 (am-ET UI) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
 ## Progress
 
@@ -28,9 +28,9 @@
 | 20 | ta-LK Tamil (Sri Lanka) | ✅ installed 1984c3e1 (9 parts + consistency; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass; iOS strings in step) — needs native check | ✅ batch 25 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs ta-LK` 3/3 ✓; `legal-languages-1` /lk/privacy, /lk/terms, /lk/country-terms ✓ | 1984c3e1 · legal 6ca2aa29 |
 | 21 | km-KH Khmer | ✅ installed 26b63538 (9 parts + consistency; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass; iOS strings in step; the 5 post-pay pricing keys en-GB gained on 19 Nov added in fix.json) — needs native check | ✅ batch 27 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs km-KH` 3/3 ✓; `legal-languages-1` /kh/privacy, /kh/terms, /kh/country-terms ✓ | 26b63538 · legal 6943d41d |
 | 22 | lo-LA Lao | ✅ installed ac36ef75 (9 parts + consistency incl. the 5 post-pay pricing keys; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass; iOS strings in step) — needs native check | ✅ batch 29 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs lo-LA` 3/3 ✓; `legal-languages-1` /la/privacy, /la/terms, /la/country-terms ✓ | ac36ef75 · legal 3e2e4286 |
-| 23 | am-ET Amharic | — | — | | |
+| 23 | am-ET Amharic | ✅ installed 910ce207 (9 parts + consistency incl. the 5 post-pay pricing keys; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass; iOS strings in step) — needs native check | — next | | |
 
-Legal pages: **22 of 23 languages done (66 of 69 pages).** UI: 22 of 23 installed (lo-LA on 22 Nov). Resumed by Dominic on 22 Nov, one agent at a time: am-ET UI next, then am-ET legal.
+Legal pages: **22 of 23 languages done (66 of 69 pages).** UI: **23 of 23 installed** (am-ET on 22 Nov). am-ET legal next, then store listings, full sweep, final report, reference manual update.
 
 ## Batch order
 
