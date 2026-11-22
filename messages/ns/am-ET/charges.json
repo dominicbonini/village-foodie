@@ -1,0 +1,13 @@
+{
+  "subtotal": "ንዑስ ድምር",
+  "taxFallback": "ታክስ",
+  "taxIncluded": "ያካትታል፦ {label}",
+  "serviceFeeCustomer": "የኦንላይን አገልግሎት ክፍያ",
+  "serviceFee": "የአገልግሎት ክፍያ",
+  "cardFee": "የካርድ አገልግሎት ክፍያ",
+  "tip": "ጉርሻ",
+  "rate": "{rate}%",
+  "line": "{label}፦ {amount}",
+  "lineWithRate": "{label} {rate}፦ {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {ታክስ፣ የአገልግሎት ክፍያዎች እና ጉርሻ} tax_tip {ታክስ እና ጉርሻ} fees_tip {የአገልግሎት ክፍያዎች እና ጉርሻ} fees {የአገልግሎት ክፍያዎች} other {ታክስ እና የአገልግሎት ክፍያዎች}}"
+}

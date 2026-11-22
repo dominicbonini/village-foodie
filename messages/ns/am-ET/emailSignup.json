@@ -1,0 +1,26 @@
+{
+  "greeting": "{hasName, select, yes {ሰላም {name}፣} other {ሰላም፣}}",
+  "signoffName": "Dominic",
+  "signoffRole": "መሥራች፣ HatchGrab",
+  "verify": {
+    "subject": "የኢሜይል አድራሻዎን ያረጋግጡ",
+    "thanks": "{hasTruck, select, yes {የምግብ መኪናዎን ({truck}) በHatchGrab ላይ ስላዋቀሩ እናመሰግናለን።} other {የምግብ መኪናዎን በHatchGrab ላይ ስላዋቀሩ እናመሰግናለን።}}",
+    "button": "የኢሜይል አድራሻውን ያረጋግጡ",
+    "buttonText": "የኢሜይል አድራሻውን ያረጋግጡ፦ {url}",
+    "why": "የሚገቡት በዚህ አድራሻ ነው፤ የትዕዛዝ ማሳወቂያዎችም የሚላኩት ወደዚሁ ነው — ስለዚህ አሁኑኑ ቢያደርጉት ይመረጣል።",
+    "next": "ከተረጋገጠ በኋላ ለመጀመር የሚያስፈልግዎትን ሁሉ እልክልዎታለሁ።",
+    "carryOn": "እስከዚያው ማዋቀርዎን መቀጠል ይችላሉ።",
+    "stuck": "የሆነ ነገር ላይ ተቸግረዋል? ለዚህ ኢሜይል መልስ ብቻ ይስጡ — እነዚህን የምመልሰው እኔ ራሴ ነኝ።",
+    "fallbackLink": "ቁልፉ ካልሠራ ይህን ይለጥፉ፦ {url}"
+  },
+  "welcome": {
+    "subject": "{hasName, select, yes {እንኳን ወደ HatchGrab በደህና መጡ፣ {name}} other {እንኳን ወደ HatchGrab በደህና መጡ}}",
+    "intro": "{hasTruck, select, yes {የምግብ መኪናዎን ({truck}) ወደ HatchGrab ስቀበል በጣም ደስ ብሎኛል።} other {የምግብ መኪናዎን ወደ HatchGrab ስቀበል በጣም ደስ ብሎኛል።}}",
+    "trial": "{months, plural, one {# ወር የሚቆይ ነፃ ሙከራዎ ተጀምሯል — ሁሉም አገልግሎቶች ተከፍተዋል።} other {# ወራት የሚቆይ ነፃ ሙከራዎ ተጀምሯል — ሁሉም አገልግሎቶች ተከፍተዋል።}}",
+    "setup": "እስካሁን ካላደረጉት፣ ማዋቀሩ ቀላል ነው፤ አሥራ አምስት ደቂቃ ያህል ይወስዳል።",
+    "button": "ዳሽቦርድዎን ይክፈቱ",
+    "bookmark": "ዕልባት ቢያደርጉት ይጠቅማል። በማንኛውም መሣሪያ ላይ ይሠራል።",
+    "stuck": "ከተቸገሩ ለዚህ ኢሜይል መልስ ብቻ ይስጡ — እነዚህን የምመልሰው እኔ ራሴ ነኝ።",
+    "lookingForward": "{hasTruck, select, yes {የምግብ መኪናዎ ({truck}) ሲሸጥ ለማየት በጉጉት እጠብቃለሁ።} other {የምግብ መኪናዎ ሲሸጥ ለማየት በጉጉት እጠብቃለሁ።}}"
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "eyebrow": "የወጪ ንጽጽር",
+  "title": "የኦንላይን<br></br><accent>የትዕዛዝ ወጪዎን</accent> ያወዳድሩ",
+  "system": {
+    "title": "አሁን የኦንላይን ትዕዛዝ ይቀበላሉ?",
+    "yes": "አዎ፣ በሌላ ስርዓት",
+    "no": "የለም፣ ገና አልጀመርኩም"
+  },
+  "trucks": {
+    "title": "ስንት ተሽከርካሪዎች አሉዎት?",
+    "aria": "የተሽከርካሪዎች ብዛት"
+  },
+  "plan": {
+    "yourChoice": "የእርስዎ ምርጫ",
+    "weSuggest": "እንመክራለን",
+    "summary": "ለአንድ ተሽከርካሪ በወር {price}፤ {fleet, plural, one {} other {ለእያንዳንዳቸው }}እስከ {allowance} የሚደርስ የኦንላይን ትዕዛዝ ተካቷል።",
+    "switchTo": "በምትኩ {plan} ፓኬጅ ይጠቀሙ",
+    "summaryFeeOnly": "{hasMonthly, select, yes {ለአንድ ተሽከርካሪ በወር {price}፣ በተጨማሪም በኦንላይን ትዕዛዞች ላይ {pct}።} other {ወርሃዊ ክፍያ የለም — በኦንላይን ትዕዛዞች ላይ {pct} ብቻ።}}",
+    "summaryNoFee": "ለአንድ ተሽከርካሪ በወር {price}፤ ያልተገደበ የኦንላይን ትዕዛዝ፣ የHatchGrab ክፍያም የለም።"
+  },
+  "orders": {
+    "titleYes": "በወር የኦንላይን ትዕዛዞች፣ ለአንድ ተሽከርካሪ",
+    "count": "~{count, plural, one {# ትዕዛዝ} other {# ትዕዛዞች}}",
+    "captionNo": "ግምታዊ አኃዝ በቂ ነው — ቅድመ-ትዕዛዝና ሰልፍ ሳይጠብቁ የሚያዝዙ ደንበኞች እንጂ መኪናው ጋ በጥሬ ገንዘብ ወይም በካርድ የሚከፈለው አይቆጠርም።",
+    "captionYes": "በትዕዛዝ ገጽዎ በኩል የገቡ ትዕዛዞች ብቻ — መኪናው ጋ በጥሬ ገንዘብ ወይም በካርድ የሚከፈለው አይቆጠርም።",
+    "sliderAria": "ለአንድ ተሽከርካሪ ወርሃዊ የኦንላይን ትዕዛዝ ዋጋ",
+    "overAllowance": "ለአንድ ተሽከርካሪ እስከ {allowance} የሚደርስ የኦንላይን ትዕዛዝ ተካቷል። ከዚያ በላይ ያለው {excess} የሚከፈልበት መጠን፦ {pct} — ለእያንዳንዱ በወር <b>{over}</b>።",
+    "insideAllowance": "በተካተተው የኦንላይን ትዕዛዝ መጠን ({allowance}) ውስጥ ነው — ከፓኬጁ ዋጋ በላይ ምንም አይጨመርም።",
+    "acrossFleet": "በአጠቃላይ ({fleet, plural, one {# ተሽከርካሪ} other {# ተሽከርካሪዎች}})፦ በወር <b>{amount}</b>።",
+    "titleNo": "ለአንድ ተሽከርካሪ በወር በኦንላይን ምን ያህል የሚሸጡ ይመስልዎታል?",
+    "feeOnly": "በእያንዳንዱ የኦንላይን ትዕዛዝ ላይ {pct} — ለአንድ ተሽከርካሪ በወር <b>{over}</b>።",
+    "noFee": "ያልተገደበ የኦንላይን ትዕዛዝ ተካቷል — ከፓኬጁ ዋጋ በላይ ምንም አይጨመርም።"
+  },
+  "fee": {
+    "title": "አሁን ለአንድ ትዕዛዝ ምን ያህል ይከፍላሉ?",
+    "pctLabel": "መቶኛ",
+    "pctPlaceholder": "የእርስዎ መጠን",
+    "pctAria": "የመቶኛ ክፍያ",
+    "fixedLabel": "በተጨማሪ ለአንድ ትዕዛዝ",
+    "fixedPlaceholder": "የእርስዎ ክፍያ",
+    "fixedAria": "ለአንድ ትዕዛዝ ቋሚ ክፍያ (በሳንቲም)",
+    "modeLabel": "የእነሱ መጠን፦",
+    "modeInclusive": "የካርድ ክፍያ ማስኬጃን ያካትታል",
+    "modeOnTop": "በተጨማሪ ይከፈላል",
+    "onTopNote": "የካርድ ክፍያ ማስኬጃ ({fee}) በዚያ ላይ ተጨምሮ ይከፈላል፤ ስለዚህ በአጠቃላይ የሚከፍሉት <b>{pct} + {fixed}</b> ነው።",
+    "inclusiveNote": "የካርድ ክፍያ ማስኬጃ ({fee}) በዚያ ውስጥ ተካቷል፤ ይህን በየትኛውም ቦታ ይከፍሉታል። የእነሱ የራሳቸው ክፍያ <b>{pct}</b> ነው።"
+  },
+  "days": {
+    "title": "በሳምንት ስንት ቀን ይሸጣሉ?",
+    "help": "ዝግጅቶች፣ ገበያዎች፣ የመሸጫ ቦታዎች — ተሽከርካሪው የሚወጣበት ማንኛውም ቀን።"
+  },
+  "jump": {
+    "cost": "ወጪውን ይመልከቱ ↓",
+    "saving": "የሚቆጥቡትን ይመልከቱ ↓"
+  },
+  "noSystem": {
+    "hero": "<lead>የኦንላይን ትዕዛዝ፣ ቅድመ-ትዕዛዝ እና የእርስዎ የኩሽና ማሳያ (KDS)</lead><figure>{amount}</figure><unit>ለአንድ የሽያጭ ቀን</unit>",
+    "basedOn": "በሳምንት {days, plural, one {# ቀን} other {# ቀናት}} ላይ የተመሠረተ · በወር {monthly}{fleet, plural, one {} other { ለእያንዳንዱ ተሽከርካሪ}}"
+  },
+  "coffee": "ከአንድ ስኒ ቡና ያነሰ።",
+  "freeMonths": "{n, plural, one {በተጨማሪም የመጀመሪያው # ወር ነፃ ነው።} other {በተጨማሪም የመጀመሪያዎቹ # ወራት ነፃ ናቸው።}}",
+  "cta": {
+    "upload": "ሜኑዎን ይስቀሉ →",
+    "uploadSave": "ሜኑዎን ይስቀሉና {amount} ይቆጥቡ →",
+    "ask": "ጥያቄ ይጠይቁን",
+    "noCard": "ለማዋቀር ካርድ አያስፈልግም"
+  },
+  "breakdown": {
+    "title": "የወርዎ ወጪ በዝርዝር",
+    "titleDearer": "የወርዎ ወጪ በHatchGrab",
+    "plan": "{plan} ፓኬጅ",
+    "over": "ከተካተተው {allowance} በላይ ባለው {excess} ላይ፦ {pct}",
+    "inside": "በተካተተው {allowance} ውስጥ ያሉ የኦንላይን ትዕዛዞች",
+    "total": "የHatchGrab ወርሃዊ ክፍያ",
+    "freeMonths": "{n, plural, one {ወር #} other {ወራት 1–#}}",
+    "freeAmount": "{amount} — ነፃ",
+    "acrossFleet": "በአጠቃላይ ({fleet, plural, one {# ተሽከርካሪ} other {# ተሽከርካሪዎች}})",
+    "perMonth": "በወር {amount}",
+    "card": "የካርድ ክፍያ ማስኬጃ — የStripe {fee} ለአንድ ትዕዛዝ፣ ለStripe የሚከፈል። መኪናው ጋ ባለ የካርድ ማሽንም ተመሳሳይ ያህል ይከፍሉ ነበር።",
+    "provider": "የአሁኑ አቅራቢዎ የራሱ ክፍያ ({pct})",
+    "feeOnly": "በኦንላይን ትዕዛዞች ({excess}) ላይ፦ {pct}",
+    "noFee": "የኦንላይን ትዕዛዞች — ያልተገደበ፣ የHatchGrab ክፍያ የለም"
+  },
+  "enterRate": "የሚቆጥቡትን ለማየት አሁን የሚከፍሉትን ያስገቡ።",
+  "panel": {
+    "nowYear": "<label>አሁን የሚከፍሉት</label><fig>{amount}<q> በዓመት</q></fig>",
+    "nowMonth": "<label>አሁን የሚከፍሉት</label><fig>{amount}<q> በወር</q></fig>",
+    "oursYear": "<label>በHatchGrab</label><fig>{amount}<q> በመጀመሪያው ዓመት</q></fig>",
+    "oursMonth": "<label>በHatchGrab</label><fig>{amount}<q> በወር</q></fig>",
+    "acrossFleet": "በአጠቃላይ ({fleet, plural, one {# ተሽከርካሪ} other {# ተሽከርካሪዎች}})"
+  },
+  "hero": {
+    "save": "<verb>የሚቆጥቡት</verb><figure>{amount}</figure><sub>በመጀመሪያው ዓመትዎ <num>{pct}</num> ያነሰ</sub>",
+    "same": "<verb>ተመሳሳይ ያህል ነው</verb><figure>{amount}</figure><sub>በመጀመሪያው ዓመትዎ <num>{pct}</num> የበለጠ</sub>",
+    "dearer": "<lead>HatchGrab የሚሰጠውን ሁሉ ያገኛሉ፦</lead><figure>{amount}</figure><unit>በሳምንት ተጨማሪ</unit>",
+    "dearerSub": "{fleet, plural, one {ከአሁኑ በወር {amount} የበለጠ} other {ከአሁኑ ለእያንዳንዱ ተሽከርካሪ በወር {amount} የበለጠ}}"
+  },
+  "anchor": {
+    "liability": "ይህ የአንድ ዓመት የሕዝብ ተጠያቂነት ኢንሹራንስ ሽፋን ነው።",
+    "weekendPitch": "ይህ በምግብ ፌስቲቫል ላይ የአንድ ቅዳሜና እሁድ የመሸጫ ቦታ ዋጋ ነው።",
+    "festivalPitches": "ይህ የሁለት ያህል የፌስቲቫል የመሸጫ ቦታዎች ዋጋ ነው።",
+    "fryer": "ይህ የአዲስ የዘይት መጥበሻና ጠፍጣፋ የብረት ምጣድ ዋጋ ነው።",
+    "counter": "ይህ የምግብ ማቅረቢያ ቆጣሪዎን ሙሉ በሙሉ ለማደስ ይበቃል።",
+    "vanDeposit": "ይህ ለሁለተኛ ተሽከርካሪ ቅድመ ክፍያ ነው።",
+    "secondVan": "ይህ ሁለተኛ ተሽከርካሪ መንገድ ላይ ለማውጣት ይበቃል።"
+  },
+  "year": {
+    "one": "የመጀመሪያው ዓመት",
+    "two": "ሁለተኛው ዓመት",
+    "save": "{amount} ይቆጥባሉ<note>({pct} ያነሰ)</note>",
+    "extra": "ተጨማሪ {amount}<note>({pct} የበለጠ)</note>",
+    "current": "የአሁኑ አቅራቢ <b>{amount}</b>",
+    "ours": "HatchGrab <b>{amount}</b>"
+  },
+  "smallPrint": {
+    "no": "ግምቶቹ እርስዎ በሚያስገቡት አኃዝ ላይ የተመሠረቱ ሲሆኑ አማካይ ትዕዛዝ {aov} እንደሆነ ይገምታሉ። የትኛውንም አቅራቢ ቢጠቀሙ የካርድ ክፍያ ማስኬጃ ይኖራል። ከመወሰንዎ በፊት ያረጋግጡ።",
+    "yes": "ግምቶቹ እርስዎ በሚያስገቡት አኃዝ ላይ የተመሠረቱ ሲሆኑ አማካይ ትዕዛዝ {aov} እንደሆነ ይገምታሉ። ለአንድ ትዕዛዝ የካርድ ክፍያ ማስኬጃ ({fee}) የትኛውንም አቅራቢ ቢጠቀሙ ስለሚኖር ከሁለቱም ወገን አልተካተተም።",
+    "onTop": "ጥያቄ {n} ላይ ያለው አጠቃላይ አኃዝ ይህን ያካትታል — ንጽጽሩ ግን በሁለቱም ወገን አያካትተውም።",
+    "check": "ከመወሰንዎ በፊት የአሁኑን አቅራቢዎን ዋጋዎች ያረጋግጡ።"
+  },
+  "intro": "አንድ ደቂቃ ያህል ይወስዳል። አሁን ስርዓት ይጠቀማሉ? እናወዳድረዋለን። ገና አልጀመሩም? ምን ያህል እንደሚያስወጣ በትክክል እናሳይዎታለን።",
+  "twoYear": "በሁለት ዓመት ውስጥ <b>{amount}</b> ይቆጥባሉ።",
+  "meta": {
+    "title": "የወጪ ማስሊያ — HatchGrab {country}",
+    "description": "ዛሬ ለኦንላይን ትዕዛዞች የሚያወጡትን ወጪ (ኮሚሽንና ወርሃዊ ክፍያዎች) በHatchGrab ለአንድ ዓመት ከሚያወጡት ወጪ ጋር ያወዳድሩ — ልዩነቱን በአንድ ደቂቃ ውስጥ ይመልከቱ፤ ግምታዊ ስሌት ነው።"
+  }
+}

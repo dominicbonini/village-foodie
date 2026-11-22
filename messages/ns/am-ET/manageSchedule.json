@@ -1,0 +1,102 @@
+{
+  "status": {
+    "cancelled": "ተሰርዟል",
+    "finished": "ተጠናቋል",
+    "unconfirmed": "ያልተረጋገጠ",
+    "confirmed": "ተረጋግጧል",
+    "open": "አሁን ክፍት ነው",
+    "closed": "ዝግ"
+  },
+  "sections": {
+    "label": "የሥራ ፕሮግራም ክፍሎች",
+    "events": "ዝግጅቶች",
+    "eventTypes": "የዝግጅት ዓይነቶች"
+  },
+  "header": {
+    "title": "የሥራ ፕሮግራም",
+    "upcoming": "መጪ ዝግጅቶች፦ {count}",
+    "import": "✨ የሥራ ፕሮግራም ያስገቡ",
+    "importHint": "ፎቶ፣ PDF ወይም ጽሑፍ",
+    "addEvent": "+ ዝግጅት ያክሉ",
+    "scraperAuto": "ዝግጅቶችን ከድረ-ገጽዎ በራስ-ሰር በማግኘት ላይ",
+    "changeInSettings": "በቅንብሮች ውስጥ ይቀይሩ",
+    "scraperManual": "የሥራ ፕሮግራምዎን በእጅ እያስተዳደሩ ነው"
+  },
+  "empty": {
+    "title": "ምንም መጪ ዝግጅት የለም",
+    "body": "ከማኅበራዊ ሚዲያዎና ከቦታ ማስያዣ ቀን መቁጠሪያዎ የተገኙ ዝግጅቶች እንዲያረጋግጡ እዚህ ይታያሉ"
+  },
+  "list": {
+    "openNow": "አሁን ክፍት",
+    "needsApproval": "የእርስዎን ማጽደቅ ይፈልጋል",
+    "needsConfirmation": "ማረጋገጫ ያስፈልገዋል",
+    "confirmed": "የተረጋገጡ",
+    "past": "ያለፉ ዝግጅቶች ({count})",
+    "found": "{count, plural, one {# ዝግጅት አግኝተንልዎታል — በሥራ ላይ ከመዋሉ በፊት ይገምግሙና ያጽድቁ።} other {# ዝግጅቶች አግኝተንልዎታል — በሥራ ላይ ከመዋላቸው በፊት ይገምግሙና ያጽድቁ።}}"
+  },
+  "card": {
+    "addName": "ስም ያክሉ",
+    "timeNeeded": "⚠ ሰዓት ያስፈልጋል",
+    "setTimeFirst": "መጀመሪያ ሰዓት ያስቀምጡ",
+    "confirm": "ያረጋግጡ",
+    "copy": "ይቅዱ",
+    "edit": "ያስተካክሉ",
+    "makePost": "ልጥፍ ይፍጠሩ",
+    "cancel": "ይሰርዙ",
+    "approve": "ያጽድቁ",
+    "reject": "ውድቅ ያድርጉ",
+    "stock": "⚠️ ክምችት",
+    "stockHidden": "ተደብቋል — {reason}",
+    "noDeals": "ምንም ንቁ ጥምር ምግብ (ኮምቦ) የለም",
+    "dealsActive": "{count, plural, one {# ጥምር ምግብ ንቁ ነው} other {# ጥምር ምግቦች ንቁ ናቸው}} · {names}{hidden, plural, =0 {} one { · # ተደብቋል} other { · # ተደብቀዋል}}",
+    "approveNeedsTimes": "ይህ ዝግጅት የመጀመሪያና የማብቂያ ሰዓት እስኪኖረው ድረስ “ያጽድቁ” አይሠራም — “ያስተካክሉ” የሚለውን ተጠቅመው ያክሏቸው።"
+  },
+  "guessed": {
+    "title": "📍 ይህን ቦታ ገምተናል",
+    "body": "ከአንድ በላይ የዝግጅት ቦታ ከዚህ ጋር ተዛምዷል፦ <b>{venue}</b>፤ ስለዚህ በጣም የሚቀርበውን መርጠናል{hasTown, select, yes { (ከተማ፦ <b>{town}</b>)} other {}}{hasPostcode, select, yes { ({postcode})} other {}}። ከማጽደቅዎ በፊት ትክክለኛው መሆኑን ያረጋግጡ — የተሳሳተ ከሆነ አካባቢውን ወይም {postal} ለማስተካከል <b>ያስተካክሉ</b> የሚለውን ይጠቀሙ፤ አለበለዚያ ደንበኞች ወደ ተሳሳተ ቦታ ይላካሉ።",
+    "thisVenue": "ይህ የዝግጅት ቦታ"
+  },
+  "noLocation": {
+    "title": "📍 እስካሁን ቦታ የለም",
+    "body": "ይህን የዝግጅት ቦታ በካርታው ላይ ማግኘት አልቻልንም፤ ስለዚህ በዝርዝሩ ውስጥ ይታያል ነገር ግን የካርታ ምልክት አይኖረውም። በካርታው ላይ ለማስቀመጥ <b>ያስተካክሉ</b> የሚለውን ተጠቅመው {postal} ያክሉ።"
+  },
+  "conflict": {
+    "title": "⚠️ {count, plural, one {ሊኖር የሚችል ግጭት} other {ሊኖሩ የሚችሉ ግጭቶች}} — {pending, select, yes {ከማጽደቅዎ} other {ከማረጋገጥዎ}} በፊት ይገምግሙ",
+    "duplicate": "ይህ አስቀድሞ ያለዎት ያው ዝግጅት ይመስላል።",
+    "review": "ተመሳሳይ የዝግጅት ቦታና ቀን፣ የተለየ ሰዓት — ይህ ሰዓቱ የተስተካከለ ያው ዝግጅት ነው ወይስ የተለየ ክፍለ ጊዜ? ከማጽደቅዎ በፊት ይገምግሙ።",
+    "already": "አስቀድሞ በሥራ ፕሮግራምዎ ላይ አለ፦ <b>{venue}</b>{details} ({status, select, confirmed {ተረጋግጧል} open {ክፍት} other {{status}}})",
+    "unnamedVenue": "ስም የሌለው የዝግጅት ቦታ",
+    "ack": "አዎ፣ እነዚህ የተለያዩ ዝግጅቶች ናቸው — ቢሆንም {pending, select, yes {ያጽድቁ} other {ያረጋግጡ}}",
+    "cancel": "ይቅር",
+    "overlap": "የዚህ ዝግጅት ሰዓት በዚያው ቀን ካለ ሌላ ዝግጅት ጋር ይደራረባል — አንድ ተሽከርካሪ በአንድ ጊዜ ሁለት ቦታ ሊሆን አይችልም። ከማጽደቅዎ በፊት ይፈትሹ።"
+  },
+  "toast": {
+    "loadFailed": "ዝግጅቶቹን መጫን አልተሳካም",
+    "linkFailed": "ሊንኩን መጫን አልተቻለም",
+    "placeTypeFailed": "ዝግጅቱ ተቀምጧል። የቦታው ({place}) የተለመደ ዓይነት ግን አልተቀመጠም — {reason}።",
+    "placeTypeFailedReason": "ማስቀመጡ አልተሳካም",
+    "eventUpdated": "ዝግጅቱ ተዘምኗል",
+    "eventAdded": "ዝግጅቱ ተጨምሯል",
+    "eventsSaved": "{count, plural, one {# ዝግጅት ተቀምጧል} other {# ዝግጅቶች ተቀምጠዋል}}",
+    "saveEventsFailed": "ዝግጅቶቹን ማስቀመጥ አልተሳካም",
+    "needsTime": "ከማጽደቅዎ በፊት የመጀመሪያና የማብቂያ ሰዓት ያክሉ — ይህ ዝግጅት በሥራ ላይ እንዲውል ሰዓት ያስፈልገዋል።",
+    "addStartTime": "የመጀመሪያ ሰዓት ያክሉ",
+    "addEndTime": "የማብቂያ ሰዓት ያክሉ",
+    "chooseTruckBefore": "ከማጽደቅዎ በፊት በዚህ ዝግጅት ላይ የሚሠራውን ተሽከርካሪ ይምረጡ።",
+    "chooseTruck": "በዚህ ዝግጅት ላይ የሚሠራውን ተሽከርካሪ ይምረጡ",
+    "eventConfirmed": "ዝግጅቱ ተረጋግጧል",
+    "eventRejected": "ዝግጅቱ ውድቅ ተደርጓል",
+    "undo": "↩ ይቀልብሱ",
+    "eventRestored": "ዝግጅቱ ተመልሷል",
+    "restoreFailed": "መመለስ አልተሳካም",
+    "eventCancelled": "ዝግጅቱ ተሰርዟል",
+    "eventCancelledOrders": "ዝግጅቱ ተሰርዟል · {count, plural, one {# ትዕዛዝ ተሰርዟል} other {# ትዕዛዞች ተሰርዘዋል}}",
+    "placeHidden": "ቦታው ተደብቋል",
+    "placeShown": "ቦታው እንደገና ይታያል",
+    "saveThatFailed": "ያንን ማስቀመጥ አልተቻለም።"
+  },
+  "link": {
+    "label": "የግል ሊንክ እና QR ኮድ",
+    "close": "ይዝጉ"
+  }
+}

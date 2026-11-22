@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "fallbackTitle": "የምግብ መኪና | Village Foodie",
+    "hgFallbackTitle": "የምግብ መኪና",
+    "orderTitle": "{truck} — በኦንላይን ይዘዙ",
+    "orderDescription": "አስቀድመው ይዘዙ፤ ትዕዛዝዎን ከምግብ መኪናው ይውሰዱ — {truck}።",
+    "title": "{truck} | Village Foodie",
+    "logoAlt": "አርማ፦ {truck}"
+  },
+  "shareTitle": "የሥራ ፕሮግራም፦ {truck}",
+  "shareText": "{truck} ቀጥሎ የት እንደሚገኝ ይመልከቱ! 🚚",
+  "linkCopied": "የመገለጫ ሊንኩ ተቀድቷል! 📋",
+  "facebookPage": "የFacebook ገጽ",
+  "loadingMap": "ካርታው በመጫን ላይ…",
+  "view": {
+    "list": "ዝርዝር",
+    "map": "ካርታ"
+  },
+  "ownThisTruck": "የዚህ የምግብ መኪና ባለቤት ነዎት?",
+  "ownThisTruckTitle": "የዚህ የምግብ መኪና ባለቤት ነዎት? መገለጫዎን ለማዘመን ይጫኑ",
+  "actions": {
+    "menu": "ሜኑ",
+    "call": "ይደውሉ",
+    "message": "መልዕክት",
+    "share": "ያጋሩ",
+    "order": "ይዘዙ"
+  },
+  "loadingSchedule": "የሥራ ፕሮግራሙ በመጫን ላይ…",
+  "loadError": {
+    "title": "መጫን አልተቻለም",
+    "body": "የሥራ ፕሮግራሙን አሁን መጫን አልቻልንም — ብዙውን ጊዜ ይህ አጭር መስተጓጎል ነው። እባክዎ እንደገና ይሞክሩ።",
+    "retry": "እንደገና ይሞክሩ"
+  },
+  "notFound": {
+    "title": "የምግብ መኪናው አልተገኘም",
+    "body": "ስለዚህ የምግብ መኪና ምንም ዝርዝር ማግኘት አልቻልንም። ቦታ ቀይረው ወይም መገለጫቸውን አዘምነው ሊሆን ይችላል።",
+    "cta": "ሁሉንም የምግብ መኪናዎች ይመልከቱ"
+  },
+  "noEvents": {
+    "title": "መጪ ዝግጅቶች አልተገኙም",
+    "body": "ስለዚህ የምግብ መኪና አንዳንድ ዝርዝሮች ሊጎድሉን ይችላሉ። ባለቤቱ ነዎት፣ ወይስ የሥራ ፕሮግራማቸውን ያውቃሉ?",
+    "cta": "እንድናዘምነው መልዕክት ይላኩልን!"
+  },
+  "whereToFind": "የት እንገኛለን",
+  "missingEvent": "<strong>ዝግጅት ጎድሎብናል?</strong> <br></br>የዚህ የምግብ መኪና ባለቤት ወይም ታማኝ አድናቂ ከሆኑ፣ ይህ ገጽ ትክክለኛ እንዲሆን ይርዱን! <br></br><link>የጎደሉ ዝርዝሮችን ለማከል ያግኙን።</link>",
+  "weeklySchedule": "ሳምንታዊ የሥራ ፕሮግራም ያግኙ 🍕"
+}

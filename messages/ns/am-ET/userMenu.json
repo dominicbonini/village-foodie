@@ -1,0 +1,18 @@
+{
+  "menuLabel": "የተጠቃሚ ሜኑ",
+  "screenOn": "ስክሪኑ በርቷል",
+  "screenOff": "ስክሪኑ ጠፍቷል",
+  "newOrderSound": "የአዲስ ትዕዛዝ ድምፅ",
+  "copied": "ተቀድቷል",
+  "orderLink": "የትዕዛዝ ሊንክ",
+  "qrCode": "QR ኮድ",
+  "kitchenScreen": "የኩሽና ማሳያ (KDS)",
+  "thisDevice": "ይህ መሣሪያ",
+  "manage": "አስተዳደር",
+  "ordersDashboard": "የትዕዛዞች ዳሽቦርድ",
+  "admin": "አስተዳዳሪ",
+  "privacy": "የግላዊነት ፖሊሲ",
+  "terms": "የአገልግሎት ውሎች",
+  "signOut": "ይውጡ",
+  "close": "ይዝጉ"
+}

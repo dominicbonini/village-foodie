@@ -1,0 +1,10 @@
+{
+  "download": "ምስሉን ያውርዱ",
+  "copied": "ተቀድቷል ✓",
+  "copyCaption": "መግለጫ ጽሑፉን ይቅዱ",
+  "share": "ያጋሩ",
+  "copiedStatus": "{kind, select, postText {የልጥፉ ጽሑፍ ተቀድቷል።} other {መግለጫ ጽሑፉ ተቀድቷል።}}",
+  "copyFailed": "መቅዳት አልተቻለም — ጽሑፉን መርጠው በእጅ ይቅዱት።",
+  "sharedStatus": "{kind, select, postText {የልጥፉ ጽሑፍ ተቀድቷል — በልጥፍዎ ውስጥ ይለጥፉት።} other {መግለጫ ጽሑፉ ተቀድቷል — በልጥፍዎ ውስጥ ይለጥፉት።}}",
+  "shareRefused": "{kind, select, postText {ማጋራት ስላልተፈቀደ ምስሉ ወርዷል። የልጥፉ ጽሑፍ ተቀድቷል።} other {ማጋራት ስላልተፈቀደ ምስሉ ወርዷል። መግለጫ ጽሑፉ ተቀድቷል።}}"
+}

@@ -1,0 +1,42 @@
+{
+  "h1": "የሽያጭ ጊዜዎን ለማካሄድ የሚያስፈልግዎ ሁሉ፣ በሁሉም ፓኬጆች።",
+  "lede": "ትዕዛዝ፣ ቅድመ-ትዕዛዝ፣ የኩሽና አቅም እና የኩሽና ማሳያ (KDS) በሁሉም ፓኬጆች ውስጥ ተካተዋል።{hasUpgrades, select, yes { {plans} ደግሞ {features} እና ዝቅተኛ ክፍያዎችን ይጨምራሉ።} other {}}",
+  "perMonth": "{price} / በወር",
+  "trial": {
+    "length": "{months, plural, one {# ወር} other {# ወራት}}",
+    "ends": "የሚያበቃው፦ {date}"
+  },
+  "group": {
+    "pay": "የሚከፍሉት",
+    "run": "የሽያጭ ጊዜዎን ያካሂዱ",
+    "online": "የኦንላይን ትዕዛዞች",
+    "marketing": "ማስተዋወቅና ራስ-ሰር አሠራር"
+  },
+  "pay": {
+    "included": "በየወሩ የተካተተ የኦንላይን ትዕዛዝ",
+    "fee": "በኦንላይን ትዕዛዞች ላይ የHatchGrab ክፍያ*",
+    "feeNoMark": "በኦንላይን ትዕዛዞች ላይ የHatchGrab ክፍያ",
+    "walkUp": "በቦታው የሚሰጥ ትዕዛዝ",
+    "feeMonthly": "በቅድመ-ትዕዛዞች ላይ የHatchGrab ክፍያ፣ በየወሩ የሚከፈል{mark}"
+  },
+  "cell": {
+    "unlimited": "ያልተገደበ",
+    "free": "ነፃ",
+    "feeAbove": "{included} ካለፈ በኋላ <b>{fee}</b>",
+    "yes": "ተካቷል",
+    "none": "አልተካተተም",
+    "comingSoon": "በቅርቡ ይመጣል"
+  },
+  "short": {
+    "whatsapp_replies": "WhatsApp",
+    "schedule_graphics": "ማኅበራዊ ሚዲያ",
+    "event_types": "ብጁ የዝግጅት ዋጋ"
+  },
+  "meta": {
+    "description": "እያንዳንዱ የHatchGrab አገልግሎት በሁሉም ፓኬጆች፣ ጎን ለጎን — {plans}፣ ከክፍያዎችና ከተካተቱ መጠኖች ጋር።{months, plural, =0 {} one { የመጀመሪያው # ወር ሁሉንም ያካትታል።} other { የመጀመሪያዎቹ # ወራት ሁሉንም ያካትታሉ።}}"
+  },
+  "notes": {
+    "whatsapp": "የWhatsApp ራስ-ሰር ምላሽ የWhatsApp Business አካውንት ያስፈልገዋል። Meta ለአንዳንድ መልዕክቶች ሊያስከፍል ይችላል፤ ምላሾቹ በራስ-ሰር ይፈጠራሉ።",
+    "printing": "የኩሽና የትዕዛዝ ወረቀት ማተም ተስማሚ የBluetooth ወይም በገመድ የሚገናኝ ማተሚያ ያስፈልገዋል (ከእኛ አይቀርብም)።"
+  }
+}

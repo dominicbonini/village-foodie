@@ -1,0 +1,4 @@
+{
+  "customer": "{required, select, yes {ግዴታ} other {አማራጭ}}{limit, select, one { · አንዱን ይምረጡ} upTo { · እስከ {max} ይምረጡ} other {}}",
+  "operator": "{required, select, yes {ግዴታ} other {አማራጭ}}{limit, select, one { · ደንበኛው አንዱን ይመርጣል} upTo { · ደንበኛው እስከ {max} መምረጥ ይችላል} other {}}"
+}

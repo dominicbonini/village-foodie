@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{plan} ፓኬጅ {feature} ያካትታል።} other {{plan} ፓኬጅ {feature} ያካትታል።}}",
+  "notOnPlan": "{many, select, yes {ፓኬጅዎ {feature} አያካትትም።} other {ፓኬጅዎ {feature} አያካትትም።}}",
+  "switchedOff": "{many, select, yes {ለምግብ መኪናዎ ጠፍቷል፦ {feature}።} other {ለምግብ መኪናዎ ጠፍቷል፦ {feature}።}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "ያሳድጉ →",
+  "features": {
+    "discovery_map": {
+      "name": "በግኝት ካርታ ላይ መዘርዘር",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "የድረ-ገጽ ዳሽቦርዱ",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "የኩሽና መተግበሪያው",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "የQR ኮድ ሜኑ",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "ጥምር ምግቦች (ኮምቦ)",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "የሽያጭ ጥቆማዎች",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "በቦታው የሚሰጥ ትዕዛዝ",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "“ሲወስዱ ክፍያ” ትዕዛዝ",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "“አልቋል” የማድረጊያ ማብሪያው",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "የክምችት ቆጠራ",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "ከመስመር ውጭ የትዕዛዝ ጥበቃ",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "የኦንላይን ክፍያዎች",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "ለወደፊት ቀን ቅድመ-ትዕዛዝ",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "የደንበኞች የሰዓት ክፍለ ጊዜዎች",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "የኩሽና አቅም አስተዳደር",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "በራስ-ሰር መቀበል",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "የMessenger እና የInstagram ራስ-ሰር ምላሽ",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "አርማ ያላቸው QR ኮዶች",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "የላቀ ሪፖርት",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "የኩሽና የትዕዛዝ ወረቀት ማተም",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "በብዙ መሣሪያዎች ላይ የኩሽና ማመሳሰል",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "የማብሰያ ስክሪኑ",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "የWhatsApp ራስ-ሰር ምላሽ",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "የሥራ ፕሮግራምዎ በራስዎ ድረ-ገጽ ላይ",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "የማኅበራዊ ሚዲያ ልጥፎች",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "ብጁ የዝግጅት ዓይነቶች",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "የግል ዝግጅት",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "ሰነዶች",
+      "many": "yes"
+    }
+  }
+}

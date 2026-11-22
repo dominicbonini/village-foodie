@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "ድጋፍ",
+    "description": "ስለ HatchGrab እገዛ ያግኙ። መልዕክት ይላኩልን፤ በኢሜይል እንመልስልዎታለን።"
+  },
+  "logIn": "ይግቡ",
+  "eyebrow": "ድጋፍ",
+  "title": "እንዴት ልንረዳዎ እንችላለን?",
+  "lede": "የሆነ ነገር አይሠራም፣ ወይስ ስለ አካውንትዎ ጥያቄ አለዎት? እኛን የሚያገኙባቸው ሁለት መንገዶች አሉ — በየትኛውም መንገድ በኢሜይል እንመልስልዎታለን።",
+  "emailUs": "ኢሜይል ይላኩልን",
+  "formHeading": "ወይም መልዕክት ይላኩልን",
+  "form": {
+    "topicLabel": "ስለ ምንድን ነው?",
+    "topics": {
+      "question": "ስለ HatchGrab ጥያቄ",
+      "account": "በአካውንቴ ላይ እገዛ",
+      "comparison": "በንጽጽር ገጽ ላይ እርማት",
+      "other": "ሌላ ነገር"
+    },
+    "nameLabel": "ስምዎ",
+    "namePlaceholder": "ስም",
+    "emailLabel": "ኢሜይል",
+    "businessLabel": "የምግብ መኪናው ወይም የንግዱ ስም",
+    "optional": "(አማራጭ)",
+    "businessPlaceholder": "ለምሳሌ፦ የአበበ በርገር",
+    "messageLabel": "መልዕክትዎ",
+    "send": "መልዕክት ይላኩ",
+    "sending": "በመላክ ላይ…",
+    "privacyLine": "ዝርዝሮችዎን የምንጠቀመው እርስዎን ለመመለስ ብቻ ነው።",
+    "privacyLink": "የግላዊነት ፖሊሲ",
+    "thanksTitle": "እናመሰግናለን — መልዕክትዎ ደርሶናል።",
+    "thanksBody": "በሰጡን አድራሻ በኢሜይል እንመልስልዎታለን።",
+    "errors": {
+      "nameRequired": "እባክዎ ስምዎን ያስገቡ።",
+      "nameTooLong": "እባክዎ ስምዎ ቢበዛ {max, number} ቁምፊዎች ይሁን።",
+      "emailRequired": "እባክዎ የኢሜይል አድራሻዎን ያስገቡ።",
+      "emailInvalid": "እባክዎ ትክክለኛ የኢሜይል አድራሻ ያስገቡ።",
+      "emailTooLong": "እባክዎ ቢበዛ {max, number} ቁምፊዎች ያሉት የኢሜይል አድራሻ ይጠቀሙ።",
+      "businessRequired": "አካውንትዎን እንድናገኝ እባክዎ የምግብ መኪናዎን ወይም የንግድዎን ስም ያስገቡ።",
+      "businessTooLong": "እባክዎ የምግብ መኪናው ወይም የንግዱ ስም ቢበዛ {max, number} ቁምፊዎች ይሁን።",
+      "messageTooShort": "እባክዎ ቢያንስ {min, number} ቁምፊዎች ይጻፉ።",
+      "messageTooLong": "እባክዎ መልዕክትዎ ቢበዛ {max, number} ቁምፊዎች ይሁን።",
+      "topicInvalid": "እባክዎ መልዕክትዎ ስለ ምን እንደሆነ ይምረጡ።",
+      "rateLimited": "አስቀድመው ጥቂት መልዕክቶችን ልከዋል — እባክዎ ቆይተው እንደገና ይሞክሩ፣ ወይም ኢሜይል ይላኩልን፦ {email}።",
+      "failed": "የሆነ ችግር ተፈጥሯል — እባክዎ ኢሜይል ይላኩልን፦ {email}።"
+    }
+  },
+  "privacy": "ግላዊነት",
+  "terms": "የአገልግሎት ውሎች",
+  "about": "ስለ እኛ",
+  "copyright": "© {year} HatchGrab"
+}

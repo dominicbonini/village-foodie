@@ -1,0 +1,21 @@
+{
+  "homeLabel": "የHatchGrab መነሻ ገጽ",
+  "cta": "ሜኑዎን ይስቀሉ →",
+  "ctaShort": "ሜኑ ይስቀሉ",
+  "features": "አገልግሎቶች",
+  "pricing": "ዋጋ",
+  "logIn": "ይግቡ",
+  "country": {
+    "button": "አገር፦ {name}። አገር ይቀይሩ",
+    "menu": "አገር",
+    "title": "አገርዎን ይምረጡ",
+    "subline": "ዋጋዎች፣ ቋንቋና ቅንብሮች በዚያው መሠረት ይቀየራሉ።",
+    "regions": {
+      "europe": "አውሮፓ",
+      "americas": "ሰሜንና ደቡብ አሜሪካ",
+      "asiaPacific": "እስያ ፓሲፊክ",
+      "middleEast": "መካከለኛው ምሥራቅ",
+      "africa": "አፍሪካ"
+    }
+  }
+}

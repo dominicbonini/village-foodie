@@ -1,0 +1,46 @@
+{
+  "tab": {
+    "all": "ሁሉም",
+    "bold": "ደማቅና ረጃጅም",
+    "hand": "በእጅ የተጻፉ",
+    "classic": "ክላሲክ",
+    "clean": "ቀላልና ንጹሕ",
+    "own": "የእርስዎ",
+    "ownCount": "የእርስዎ ({count})"
+  },
+  "yoursTag": "· የእርስዎ",
+  "loadingFonts": "ፎንቶችን በመጫን ላይ…",
+  "search": "{count, number} ፎንቶችን ይፈልጉ",
+  "uploadButton": "↑ ፎንትዎን ይስቀሉ",
+  "loadingLibrary": "የፎንት ስብስቡን በመጫን ላይ…",
+  "tryAgain": "እንደገና ይሞክሩ",
+  "noOwn": "እስካሁን ፎንት አልሰቀሉም። ከላይ ያለውን “↑ ፎንትዎን ይስቀሉ” የሚለውን ቁልፍ ይጠቀሙ።",
+  "recent": "በቅርቡ የተጠቀሙባቸው",
+  "popular": "ለፖስተሮች ተወዳጅ",
+  "adding": "በማከል ላይ…",
+  "noMatch": "ምንም ፎንት አይዛመድም፦ “{query}”።",
+  "showing": "የሚታዩት፦ {shown} / {total, number} — ለማጥበብ ተጨማሪ ይጻፉ።",
+  "couldNotAdd": "ያ ፎንት ሊታከል አልቻለም",
+  "tooBig": "የፎንቱ መጠን፦ {size, number, ::.0 group-off}MB። ገደቡ 5MB ነው።",
+  "woff": "እባክዎ TTF ወይም OTF ፋይል ይስቀሉ — ብዙውን ጊዜ ፎንቱን ከገዙበት ቦታ ማውረድ ይችላሉ።",
+  "uploadIncomplete": "መስቀሉ አልተጠናቀቀም",
+  "added": "“{name}” ታክሏል (ስሪት፦ {face})።",
+  "face": {
+    "regular": "መደበኛ",
+    "bold": "ደማቅ",
+    "italic": "ሰያፍ"
+  },
+  "licenceTick": "ይህ ፎንት የእኔ ነው ወይም ለመጠቀም ፈቃድ አለኝ",
+  "checking": "ፎንቱን በማረጋገጥ ላይ…",
+  "addFont": "ፎንት ያክሉ",
+  "cancel": "ይቅር",
+  "missingFaces": "የዚህን ፎንት {faces} ስሪት ያክሉ፦ “{name}” (አማራጭ) — ፋይሉን እንደገና ይምረጡ።",
+  "somethingWrong": "የሆነ ችግር ተፈጥሯል",
+  "faceLower": {
+    "regular": "መደበኛ",
+    "bold": "ደማቅ",
+    "italic": "ሰያፍ"
+  },
+  "ownLicence": "የራስዎ",
+  "loadFailed": "ፎንቶችን መጫን አልተቻለም"
+}

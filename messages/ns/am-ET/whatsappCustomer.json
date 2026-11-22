@@ -1,0 +1,15 @@
+{
+  "greeting": "ሰላም 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}ሙሉ ሜኑያችንን እና ስለ አለርጂ የሚያስከትሉ ንጥረ ነገሮች መረጃ እዚህ ማየት ይችላሉ፦ {url} — {truck} {emoji}",
+  "menuFallback": "{opener}ሙሉ ሜኑያችንን እዚህ ማየት ይችላሉ፦ {url} — {truck} {emoji}",
+  "otherCategory": "ሌላ",
+  "categoryFrom": "{category}፦ መነሻ ዋጋ {price}",
+  "listTwo": "{first} እና {second}",
+  "listMany": "{init} እና {last}",
+  "menuSummary": "{opener}ያሉን፦ {summary}። ሙሉ ሜኑውን ይመልከቱና አስቀድመው ይዘዙ፦ {url} — {truck} {emoji}",
+  "allergenCaveat": "እባክዎ ስለ አለርጂ የሚያስከትሉ ንጥረ ነገሮች መረጃውን በሙሉ ሜኑው ላይ እንደገና ያረጋግጡ — ይህ ራስ-ሰር ምላሽ ነው።",
+  "specificFallback": "{opener}የቅርብ ጊዜ የሥራ ፕሮግራማችንን እዚህ ይመልከቱ፦ {url}\n\n{truck} {emoji}",
+  "capHandoff": "ስለ መልዕክቶችዎ ሁሉ እናመሰግናለን! እዚህ በቀን ጥቂት ጊዜ ብቻ ነው መመለስ የምችለው።\n\nለማዘዝ፦ {link}",
+  "capContact": "በቀጥታ ለማግኘት፦ {number}"
+}

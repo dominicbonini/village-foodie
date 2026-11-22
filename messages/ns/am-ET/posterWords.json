@@ -1,0 +1,25 @@
+{
+  "heading": "ሳምንት፦ {start} እስከ {end}",
+  "daysOff": "ዛሬ ሽያጭ የለም",
+  "cancelled": "ተሰርዟል",
+  "placeSample": {
+    "nameTownBelow": "የቅዳሜ ገበያ\nቦሌ",
+    "nameTown": "የቅዳሜ ገበያ፣ ቦሌ",
+    "nameOnly": "የቅዳሜ ገበያ"
+  },
+  "busyWeek": {
+    "venue1": "የቦሌ ማኅበረሰብ አዳራሽ",
+    "town1": "ቦሌ",
+    "venue2": "የመገናኛ የመዝናኛ ማዕከልና የስፖርት ሜዳ",
+    "town2": "መገናኛ",
+    "venue3": "የገበያ አደባባይ",
+    "town3": "ፒያሳ",
+    "venue4": "የምግብ ፌስቲቫል",
+    "town4": "አዳማ",
+    "venue5": "የሰፈር ካፌ",
+    "town5": "ሳርቤት",
+    "venue6": "የቤተ ክርስቲያን አደባባይ",
+    "town6": "ካዛንቺስ"
+  },
+  "poweredBy": "ቴክኖሎጂ፦ HatchGrab"
+}

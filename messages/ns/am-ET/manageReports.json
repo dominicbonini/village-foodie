@@ -1,0 +1,154 @@
+{
+  "filter": {
+    "dateRange": "📅 የቀን ክልል",
+    "event": "📍 ዝግጅት",
+    "filterBy": "በዚህ ያጣሩ",
+    "show": "ያሳዩ",
+    "range": "<from></from><sep>እስከ</sep><until></until>",
+    "selectEvent": "ዝግጅት ይምረጡ…",
+    "eventOption": "{venue} · {date}",
+    "unnamedEvent": "ዝግጅት",
+    "viewReport": "ሪፖርቱን ይመልከቱ",
+    "loading": "በመጫን ላይ…",
+    "orders": "📋 ትዕዛዞች",
+    "items": "📦 ንጥሎች",
+    "exportCsv": "⬇ CSV ያውርዱ"
+  },
+  "empty": {
+    "noOrders": "ለዚህ ጊዜ ምንም ትዕዛዝ አልተገኘም።",
+    "selectEvent": "ሪፖርቱን ለማየት ከላይ ዝግጅት ይምረጡ።"
+  },
+  "summary": {
+    "totals": "{n, plural, one {{count} ትዕዛዝ} other {{count} ትዕዛዞች}} · {total}"
+  },
+  "revenue": {
+    "title": "የገቢ ዝርዝር",
+    "deals": "የጥምር ምግብ (ኮምቦ) ገቢ",
+    "modifiers": "የአማራጮች ተጨማሪ ክፍያ",
+    "foodSales": "የምግብ ሽያጭ",
+    "total": "ጠቅላላ ድምር",
+    "other": "ሌላ",
+    "tax": "ታክስ",
+    "tips": "ጉርሻዎች",
+    "serviceFees": "የአገልግሎት ክፍያዎች",
+    "cardFees": "የካርድ አገልግሎት ክፍያዎች"
+  },
+  "itemsSold": {
+    "title": "የተሸጡ ንጥሎች"
+  },
+  "dealsCard": {
+    "title": "ጥምር ምግቦች (ኮምቦ)"
+  },
+  "custom": {
+    "title": "ብጁ አማራጮች",
+    "paidModifiers": "የሚከፈልባቸው አማራጮች",
+    "customerNotes": "የደንበኞች ማስታወሻዎች",
+    "note": "“{note}”"
+  },
+  "table": {
+    "item": "ንጥል",
+    "modifier": "አማራጭ",
+    "qty": "ብዛት",
+    "total": "ጠቅላላ ድምር",
+    "date": "ቀን",
+    "time": "ሰዓት",
+    "channel": "የሽያጭ መንገድ"
+  },
+  "breakdown": {
+    "orders": "የትዕዛዞች ዝርዝር",
+    "items": "የንጥሎች ዝርዝር"
+  },
+  "channel": {
+    "online": "ኦንላይን",
+    "walkUp": "በቦታው የሚሰጥ ትዕዛዝ"
+  },
+  "csv": {
+    "orderId": "የትዕዛዝ መለያ ቁጥር",
+    "date": "ቀን",
+    "event": "ዝግጅት",
+    "timePlaced": "የገባበት ሰዓት",
+    "collectionTime": "የመውሰጃ ሰዓት",
+    "customerName": "የደንበኛ ስም",
+    "orderType": "የትዕዛዝ ዓይነት",
+    "items": "ንጥሎች",
+    "deals": "ጥምር ምግቦች (ኮምቦ)",
+    "modifiers": "አማራጮች",
+    "notes": "ማስታወሻዎች",
+    "subtotal": "ንዑስ ድምር",
+    "tip": "ጉርሻ",
+    "serviceFee": "የአገልግሎት ክፍያ",
+    "total": "ጠቅላላ ድምር",
+    "itemName": "የንጥል ስም",
+    "qty": "ብዛት",
+    "unitPrice": "የአንዱ ዋጋ",
+    "itemTotal": "የንጥሉ ጠቅላላ ድምር",
+    "orderTotal": "የትዕዛዙ ጠቅላላ ድምር",
+    "unknownEvent": "ያልታወቀ ዝግጅት",
+    "asap": "በተቻለ ፍጥነት",
+    "unknownCustomer": "ያልታወቀ",
+    "customerOnline": "ደንበኛ በኦንላይን",
+    "placedByTruck": "በምግብ መኪናው የገባ"
+  },
+  "presets": {
+    "label": "ጊዜ",
+    "custom": "የራስዎ ቀኖች",
+    "thisMonth": "በዚህ ወር",
+    "lastMonth": "ባለፈው ወር",
+    "lastQuarter": "ባለፈው ሩብ ዓመት",
+    "lastTaxYear": "ባለፈው የግብር ዓመት"
+  },
+  "accounts": {
+    "title": "ለሂሳብ ባለሙያዎ",
+    "help": "ሽያጮች የሚቆጠሩት በዝግጅቱ ቀን ነው። ጠቅላላ ማለት ደንበኞች የከፈሉት ነው። የተጣራ ማለት ተመላሽ ገንዘብና ታክስ ከተቀነሰ በኋላ የሚቀረው ነው።",
+    "gross": "ጠቅላላ ሽያጭ",
+    "refunds": "ተመላሽ ገንዘብ",
+    "net": "የተጣራ ሽያጭ",
+    "taxEstimated": "ከታክስ መጠንዎ የተገመተ",
+    "taxNone": "ለምግብ መኪናዎ ምንም የታክስ መጠን አልተቀመጠም፤ ስለዚህ እዚህ ምንም ታክስ አይሰላም።",
+    "byChannel": "ጠቅላላ ሽያጭ በሽያጭ መንገድ",
+    "byPayment": "ጠቅላላ ሽያጭ በክፍያ ዓይነት",
+    "online": "ኦንላይን",
+    "walkUp": "በቦታው የሚሰጥ ትዕዛዝ",
+    "cardOnline": "በኦንላይን በካርድ",
+    "payAtTruck": "ሲወስዱ ይክፈሉ",
+    "cost": "የተሸጡ ምግቦች ወጪ",
+    "profit": "ትርፍ",
+    "coverage": "{total, plural, one {ከተሸጠው # ምግብ ውስጥ ወጪ የተቀመጠላቸው፦ {withCost}} other {ከተሸጡት # ምግቦች ውስጥ ወጪ የተቀመጠላቸው፦ {withCost}}}",
+    "partial": "ወጪ ያልተቀመጠላቸው ምግቦች ከወጪው ውስጥ አልተካተቱም፤ ስለዚህ ይህ ትርፍ ከእውነተኛው ከፍ ያለ ነው። በሜኑ ውስጥ ለእያንዳንዱ ምግብ ወጪ ያክሉ።",
+    "noCosts": "እስካሁን ምንም ምግብ ወጪ የለውም። ትርፍዎን ለማየት በሜኑ ውስጥ ለምግቦችዎ ወጪ ያክሉ።",
+    "byEvent": "በዝግጅት",
+    "event": "ዝግጅት",
+    "sales": "የተጣራ ሽያጭ",
+    "eventNoProfit": "ሰረዝ (—) ማለት እዚያ የተሸጡት ሁሉም ምግቦች ወጪ የላቸውም ማለት ነው።",
+    "downloadOrders": "⬇ ትዕዛዞች ለሂሳብ ባለሙያዎ",
+    "downloadEvents": "⬇ ዝግጅቶች ለሂሳብ ባለሙያዎ",
+    "downloadHelp": "ሁለት የተመን ሉህ ፋይሎች፦ አንዱ ለእያንዳንዱ ትዕዛዝ አንድ ረድፍ፣ ሌላው ለእያንዳንዱ ዝግጅት አንድ ረድፍ ያለው። በExcel፣ በNumbers፣ በXero እና በQuickBooks ይከፈታሉ።"
+  },
+  "accountsCsv": {
+    "header": {
+      "date": "ቀን",
+      "time": "ሰዓት",
+      "orderNumber": "የትዕዛዝ ቁጥር",
+      "event": "ዝግጅት",
+      "channel": "የሽያጭ መንገድ",
+      "paymentMethod": "የክፍያ ዘዴ",
+      "currency": "ገንዘብ",
+      "gross": "ጠቅላላ",
+      "tax": "ታክስ",
+      "taxBasis": "የታክስ መሠረት",
+      "net": "የተጣራ",
+      "refunded": "ተመላሽ የተደረገ",
+      "cost": "ወጪ",
+      "profit": "ትርፍ",
+      "eventDate": "የዝግጅቱ ቀን",
+      "orders": "ትዕዛዞች",
+      "dishesSold": "የተሸጡ ምግቦች",
+      "dishesWithCost": "ወጪ ያላቸው ምግቦች"
+    },
+    "taxBasis": {
+      "stored": "ከትዕዛዙ ጋር የተቀመጠ",
+      "estimated": "ከታክስ መጠንዎ የተገመተ",
+      "none": "የታክስ መጠን አልተቀመጠም"
+    }
+  }
+}

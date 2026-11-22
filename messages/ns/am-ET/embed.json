@@ -1,0 +1,8 @@
+{
+  "metaDescription": "{truck} ቀጥሎ የሚሸጥበት ቦታ።",
+  "orderFrom": "{truck} — ይዘዙ",
+  "poweredBy": "ቴክኖሎጂ፦ <b>HatchGrab</b>",
+  "loadFailed": "የሥራ ፕሮግራሙን አሁን መጫን አልተቻለም።",
+  "loading": "የሥራ ፕሮግራሙ በመጫን ላይ…",
+  "empty": "መጪ ዝግጅቶች አልተዘረዘሩም (የምግብ መኪና፦ {truck})።"
+}

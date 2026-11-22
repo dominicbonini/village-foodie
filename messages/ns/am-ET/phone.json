@@ -1,0 +1,5 @@
+{
+  "invalidMobile": "{withName, select, yes {እባክዎ ትክክለኛ የሞባይል ቁጥር ያስገቡ ({name})} other {እባክዎ ትክክለኛ የሞባይል ቁጥር ያስገቡ}}{withExample, select, yes { (ለምሳሌ፦ {example})} other {}}",
+  "invalidPhone": "{withName, select, yes {እባክዎ ትክክለኛ ስልክ ቁጥር ያስገቡ ({name})} other {እባክዎ ትክክለኛ ስልክ ቁጥር ያስገቡ}}{withExample, select, yes { (ለምሳሌ፦ {example})} other {}}",
+  "invalidPhoneNumber": "{withName, select, yes {ትክክለኛ ስልክ ቁጥር ያስገቡ ({name})} other {ትክክለኛ ስልክ ቁጥር ያስገቡ}}{withExample, select, yes { (ለምሳሌ፦ {example})} other {}}።"
+}

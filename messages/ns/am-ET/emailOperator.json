@@ -1,0 +1,25 @@
+{
+  "newOrder": {
+    "subject": "አዲስ ትዕዛዝ #{id} — {name}{withSlot, select, yes { · {slot}} other {}}",
+    "heading": "አዲስ ትዕዛዝ ደርሷል",
+    "from": "<b>ትዕዛዝ #{id}</b> · ደንበኛ፦ <b>{name}</b>",
+    "collection": "የመውሰጃ ሰዓት፦ {time}",
+    "asap": "የተወሰነ ሰዓት የለም — በተቻለ ፍጥነት",
+    "total": "ጠቅላላ ድምር",
+    "notes": "<b>ማስታወሻዎች፦</b> {notes}",
+    "autoConfirmed": "በራስ-ሰር ተረጋግጧል — ምንም እርምጃ አያስፈልግም።",
+    "confirmPrompt": "ይህን ትዕዛዝ ለማረጋገጥ ወይም ውድቅ ለማድረግ ወደ HatchGrab ዳሽቦርድዎ ይግቡ።",
+    "text": "አዲስ ትዕዛዝ #{id} · ደንበኛ፦ {name}{withSlot, select, yes { · የመውሰጃ ሰዓት፦ {slot}} other {}}{withVenue, select, yes { · የዝግጅት ቦታ፦ {venue}} other {}}።{withCharges, select, yes { {charges}።} other {}} ጠቅላላ ድምር፦ {total}።{withNotes, select, yes { ማስታወሻዎች፦ {notes}} other {}}"
+  },
+  "newEvents": {
+    "subject": "የምግብ መኪና፦ {truck} — አዲስ ዝግጅቶች ተገኝተዋል፤ እባክዎ ይገምግሙ",
+    "hi": "ሰላም፣",
+    "found": "በሥራ ፕሮግራምዎ ላይ ለደንበኞች ከመታየታቸው በፊት የእርስዎን ማጽደቅ የሚጠብቁ <b>{n, plural, one {{count} አዲስ ዝግጅት} other {{count} አዲስ ዝግጅቶች}}</b> አግኝተናል።",
+    "listHeading": "የተገኙ ዝግጅቶች፦",
+    "approve": "“የሥራ ፕሮግራም” በሚለው ትር ውስጥ ካጸደቋቸው በኋላ በካርታው ላይ ይታያሉ፤ የትዕዛዝ ገጽዎም ቅድመ-ትዕዛዞችን ለመቀበል ዝግጁ ይሆናል።",
+    "cta": "የሥራ ፕሮግራምዎን ይገምግሙ →",
+    "signoff": "— የHatchGrab ቡድን · hatchgrab.com",
+    "unknownVenue": "ያልታወቀ የዝግጅት ቦታ",
+    "text": "ሰላም፣\n\nበሥራ ፕሮግራምዎ ላይ የእርስዎን ማጽደቅ የሚጠብቁ {n, plural, one {{count} አዲስ ዝግጅት} other {{count} አዲስ ዝግጅቶች}} አግኝተናል፦\n\n{list}\n\nእዚህ ይገምግሟቸው፦ {url}\n\nካጸደቋቸው በኋላ በካርታው ላይ ይታያሉ።\n\n— የHatchGrab ቡድን"
+  }
+}

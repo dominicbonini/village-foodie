@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "የሳምንቱ ቀኖች",
+    "dayList": "የቀናት ዝርዝር",
+    "place": "ቦታ",
+    "venue": "የዝግጅት ቦታ",
+    "area": "አካባቢ",
+    "dayDate": "ዕለትና ቀን",
+    "times": "ሰዓት",
+    "orderLink": "የትዕዛዝ ሊንክ",
+    "locationTag": "የቦታ ታግ"
+  },
+  "weekHeader": "{truck} — በዚህ ሳምንት የምንገኝባቸው ቦታዎች፦",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — ተሰርዟል፣ ይቅርታ",
+  "noDates": "በዚህ ሳምንት ምንም ቀን የለም — በቅርቡ ተመልሰው ይመልከቱ።",
+  "orderAhead": "አስቀድመው ይዘዙ፦ {url}",
+  "orderAheadTagged": "አስቀድመው ይዘዙ፦ {url} {tag}",
+  "eventLine": "{truck} {when} ይጠብቅዎታል — ቦታ፦ {where}፣ ሰዓት፦ {times}።",
+  "eventLineNoTimes": "{truck} {when} ይጠብቅዎታል — ቦታ፦ {where}።",
+  "cancelledSorry": "ይቅርታ — {when} መገኘት አንችልም (ቦታ፦ {where})።",
+  "cancelledApology": "ለመምጣት ላሰባችሁ ሁሉ ይቅርታ እንጠይቃለን። በቅርቡ እንመለሳለን።",
+  "when": {
+    "today": "ዛሬ",
+    "tonight": "ዛሬ ማታ",
+    "tomorrow": "ነገ",
+    "dated": "{date} ላይ"
+  }
+}

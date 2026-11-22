@@ -1,0 +1,17 @@
+{
+  "features": "አገልግሎቶች",
+  "pricing": "ዋጋ",
+  "faq": "ተደጋጋሚ ጥያቄዎች",
+  "privacy": "ግላዊነት",
+  "terms": "የአገልግሎት ውሎች",
+  "contact": "ያግኙን",
+  "about": "ስለ እኛ",
+  "copyright": "© {year} HatchGrab",
+  "credit": "ከ<b>Village Foodie</b> ፈጣሪዎች",
+  "badges": {
+    "appStoreLink": "HatchGrab — ከApp Store ያውርዱ",
+    "appStoreAlt": "ከApp Store ያውርዱ",
+    "googlePlayLink": "HatchGrab — ከGoogle Play ያግኙ",
+    "googlePlayAlt": "ከGoogle Play ያግኙ"
+  }
+}

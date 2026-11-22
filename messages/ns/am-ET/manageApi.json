@@ -1,0 +1,10 @@
+{
+  "vanFallback": "ተሽከርካሪ",
+  "eventsFeed": {
+    "today": "ዛሬ · {date}",
+    "tomorrow": "ነገ · {date}"
+  },
+  "privacyNotSaved": "ዝግጅቱ በሥራ ላይ ነው፤ ነገር ግን የግላዊነት ቅንብሩ ሊቀመጥ አልቻለም።",
+  "stockWarning": "የሚገኙ ንጥሎች የሉም፦ “{category}”",
+  "uncategorised": "ምድብ ያልተሰጣቸው"
+}

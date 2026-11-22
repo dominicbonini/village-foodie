@@ -1,0 +1,16 @@
+{
+  "takeConfirm": "የጥሪ መሣሪያ <b>{number}</b> <b>ትዕዛዝ #{holderId}</b>{hasName, select, yes { ({name})} other {}} ጋ ነው። <b>{hasTarget, select, yes {ለትዕዛዝ #{targetId}} other {ለዚህ ትዕዛዝ}}</b> ይወሰድ?",
+  "cancel": "ይቅር",
+  "take": "የጥሪ መሣሪያ {number} ይውሰዱ",
+  "titleBlocking": "ለትዕዛዝ #{id} የጥሪ መሣሪያ ይሰጥ?",
+  "title": "የጥሪ መሣሪያ ይምረጡ",
+  "subtitle": "{hasTarget, select, yes {ትዕዛዝ #{id}} other {ይህ ትዕዛዝ}}{hasCurrent, select, yes { · አሁን ያለው የጥሪ መሣሪያ፦ {current}} other {}}",
+  "allTaken": "{n, plural, one {ያለው {count} የጥሪ መሣሪያ ተሰጥቷል። ከሌላ ትዕዛዝ ለመውሰድ ይንኩት።} other {ሁሉም {count} የጥሪ መሣሪያዎች ተሰጥተዋል። ከሌላ ትዕዛዝ ለመውሰድ አንዱን ይንኩ።}}",
+  "thisOrder": "ይህ ትዕዛዝ",
+  "noBuzzer": "የጥሪ መሣሪያ የለም",
+  "done": "ተጠናቋል",
+  "lostTitle": "ትዕዛዝ #{id} የጥሪ መሣሪያ የለውም",
+  "lostBody": "{hasName, select, yes {{name} — } other {}}ከመስመር ውጭ በነበሩበት ጊዜ ሌላ ትዕዛዝ ያንኑ የጥሪ መሣሪያ ወስዷል። ሌላ የጥሪ መሣሪያ ይስጧቸው።",
+  "dismiss": "ይዝጉ",
+  "assign": "ይመድቡ"
+}

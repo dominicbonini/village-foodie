@@ -1,0 +1,16 @@
+{
+  "subject": "{truck} — ትዕዛዝዎ እንዴት ነበር?",
+  "heading": "ስላዘዙ እናመሰግናለን — {truck}",
+  "body": "{truck} በGoogle ላይ ሐቀኛ ግምገማ ቢሰጡ ደስ ይለዋል። አንድ ደቂቃ ብቻ ይወስዳል፤ ሌሎች ሰዎችም የምግብ መኪናውን እንዲያገኙት ይረዳል።",
+  "button": "በGoogle ላይ ግምገማ ይስጡ",
+  "linkText": "በGoogle ላይ ግምገማ ይስጡ፦ {url}",
+  "from": "ይህ ኢሜይል ከምግብ መኪናው {truck} የተላከ ነው፤ ከእነሱ ስላዘዙ በHatchGrab በኩል ደርሶዎታል።",
+  "unsubscribeLead": "የምግብ መኪናው {truck} የግምገማ ጥያቄዎችን እንዲልክልዎ አይፈልጉም?",
+  "unsubscribeLink": "ምዝገባ ያቋርጡ",
+  "unsubscribeText": "ምዝገባ ያቋርጡ፦ {url}",
+  "unsubscribed": {
+    "title": "ምዝገባዎ ተቋርጧል",
+    "body": "የምግብ መኪናው {truck} ከእንግዲህ የግምገማ ጥያቄዎችን አይልክልዎትም።",
+    "invalid": "ይህ የምዝገባ ማቋረጫ ሊንክ ትክክል አይደለም።"
+  }
+}

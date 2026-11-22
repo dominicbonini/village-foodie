@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "መክሰሶች",
+    "mains": "ዋና ምግቦች",
+    "burgers": "በርገሮች",
+    "pizza": "ፒዛ",
+    "wrapsSandwiches": "ራፖችና ሳንድዊቾች",
+    "sides": "ተጨማሪ ምግቦች",
+    "dipsSauces": "መጥመቂያዎችና ሶሶች",
+    "desserts": "ጣፋጮች",
+    "drinks": "መጠጦች",
+    "kidsMenu": "የልጆች ሜኑ",
+    "specials": "ልዩ ምግቦች",
+    "other": "ሌሎች"
+  },
+  "demoEventName": "የዲሞ ዝግጅት",
+  "firstVanName": "ተሽከርካሪ 1",
+  "demoCategories": {
+    "pizza": "ፒዛ",
+    "burgers": "በርገሮች",
+    "mains": "ዋና ምግቦች",
+    "sides": "ተጨማሪ ምግቦች",
+    "drinks": "መጠጦች"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 የፒዛ ምግብ መኪና",
+      "items": {
+        "margherita": "ማርጋሪታ",
+        "pepperoni": "ፔፐሮኒ",
+        "ndujaHoney": "ንዱጃ እና ማር",
+        "fourCheese": "አራት ዓይነት አይብ",
+        "gardenVeg": "የአትክልት ፒዛ",
+        "garlicBread": "የነጭ ሽንኩርት ዳቦ",
+        "rocketParmesan": "አሩጉላና ፓርሜዛን",
+        "olives": "የወይራ ፍሬ",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "ኮካ ኮላ"
+      }
+    },
+    "burgers": {
+      "label": "🍔 የበርገር ምግብ መኪና",
+      "items": {
+        "classicCheeseburger": "ክላሲክ ቺዝበርገር",
+        "doubleBacon": "ደብል ቤከን",
+        "buttermilkChicken": "በቅቤ ወተት የተጠበሰ ዶሮ",
+        "halloumiStack": "የሃሎሚ አይብ በርገር",
+        "smashBurger": "ስማሽ በርገር",
+        "skinOnFries": "ከልጣጩ ጋር የተጠበሰ ድንች",
+        "loadedCheeseFries": "አይብ የበዛበት ቺፕስ",
+        "onionRings": "የሽንኩርት ቀለበቶች",
+        "craftLemonade": "በቤት የተሠራ ሎሚናት",
+        "coke": "ኮካ ኮላ"
+      }
+    },
+    "curries": {
+      "label": "🍛 የካሪ ምግብ መኪና",
+      "items": {
+        "chickenTikkaMasala": "ቺክን ቲካ ማሳላ",
+        "lambRoganJosh": "የበግ ሮጋን ጆሽ",
+        "chanaMasala": "ቻና ማሳላ",
+        "butterChicken": "በቅቤ የበሰለ ዶሮ",
+        "saagPaneer": "ሳግ ፓኒር",
+        "pilauRice": "ፒላው ሩዝ",
+        "garlicNaan": "የነጭ ሽንኩርት ናን",
+        "onionBhaji": "የሽንኩርት ባጂ",
+        "mangoLassi": "የማንጎ ላሲ",
+        "coke": "ኮካ ኮላ"
+      }
+    }
+  }
+}

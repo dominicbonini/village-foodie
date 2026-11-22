@@ -1,0 +1,8 @@
+{
+  "change": "{label} — ይቀይሩ",
+  "useRule": "{label} — በምትኩ ደንቡን ይጠቀሙ",
+  "typePrice": "{label} — ዋጋ ይጻፉ",
+  "backToRule": "ወደ ደንቡ ይመለሱ",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

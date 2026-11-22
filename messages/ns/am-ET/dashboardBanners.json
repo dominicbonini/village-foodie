@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {{count} ክፍለ ጊዜ ከአቅም በላይ ሆኗል} other {{count} ክፍለ ጊዜዎች ከአቅም በላይ ሆነዋል}} — ይገምግሙ",
+  "batchOver": "{cat} — ከዙር አቅም በላይ፦ {count} (ክፍለ ጊዜ፦ {slot}፤ በአንድ ዙር {per})",
+  "eventStartOver": "በዝግጅቱ መጀመሪያ ላይ ከአቅም በላይ — {n, plural, one {{count} ንጥል} other {{count} ንጥሎች}} (ክፍለ ጊዜ፦ {slot})",
+  "kitchenOver": "ኩሽናው ከአቅም በላይ ነው — {n, plural, one {{count} ንጥል} other {{count} ንጥሎች}} በማብሰል ላይ (ክፍለ ጊዜ፦ {slot})",
+  "orderItems": "#{id} — {n, plural, one {{count} ንጥል} other {{count} ንጥሎች}}",
+  "placedAnyway": "ቢሆንም የገቡ፦ {list}",
+  "placedItem": "#{id} — {slot}",
+  "orphans": "{times} — ከአቅም በላይ፤ የሚያያዝበት ትዕዛዝ አልተገኘም",
+  "dismiss": "ይዝጉ",
+  "kitchenCapacity": "የኩሽና አቅም",
+  "overCapacity": "ከአቅም በላይ",
+  "wakeUnsupported": "ይህ መሣሪያ ስክሪኑን በርቶ ማቆየት አይችልም።",
+  "wakeInsecure": "ከዚህ አድራሻ ስክሪኑን በርቶ ማቆየት አይቻልም።",
+  "wakeRetry": "ስክሪኑ በርቶ ይቆይ — እንደገና ለመሞከር ይንኩ",
+  "wakeAcquire": "ስክሪኑ በርቶ ይቆይ",
+  "degraded": {
+    "serverError": "ሰርቨሩ ትዕዛዞችን መጫን አልቻለም{hasStatus, select, yes { (ስህተት {status})} other {}}። የሚታዩት {at} ላይ የነበሩ ትዕዛዞች ናቸው። አዲስ ትዕዛዞች ላይታዩ ይችላሉ።",
+    "unreachable": "ሰርቨሩን ማግኘት አልተቻለም። የሚታዩት {at} ላይ የነበሩ ትዕዛዞች ናቸው። አዲስ ትዕዛዞች ላይታዩ ይችላሉ።"
+  }
+}

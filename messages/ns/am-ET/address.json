@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "አድራሻ",
+    "postcode": "ፖስትኮድ",
+    "zip": "ZIP ኮድ",
+    "eircode": "Eircode",
+    "postalCode": "የፖስታ ኮድ",
+    "state": "ግዛት",
+    "stateTerritory": "ግዛት ወይም ቴሪቶሪ",
+    "province": "ክፍለ ሀገር",
+    "county": "ካውንቲ",
+    "prefecture": "ፕሪፌክቸር",
+    "emirate": "ኤምሬት",
+    "region": "ክልል",
+    "area": "አካባቢ (መንደር ወይም ከተማ)",
+    "townOrArea": "ከተማ ወይም አካባቢ",
+    "city": "ከተማ",
+    "suburb": "ሰፈር",
+    "townOrCity": "ከተማ"
+  },
+  "short": {
+    "area": "አካባቢ",
+    "townOrArea": "ከተማ ወይም አካባቢ",
+    "city": "ከተማ",
+    "suburb": "ሰፈር",
+    "townOrCity": "ከተማ"
+  },
+  "inSentence": {
+    "postcode": "ፖስትኮድ",
+    "zip": "ZIP ኮድ",
+    "eircode": "Eircode",
+    "postalCode": "የፖስታ ኮድ"
+  },
+  "withArticle": {
+    "postcode": "ፖስትኮድ",
+    "zip": "ZIP ኮድ",
+    "eircode": "Eircode",
+    "postalCode": "የፖስታ ኮድ"
+  },
+  "tradeLabel": {
+    "area": "ከተማ",
+    "townOrArea": "ከተማ ወይም አካባቢ",
+    "city": "ከተማ",
+    "suburb": "ሰፈር",
+    "townOrCity": "ከተማ"
+  },
+  "basedIn": {
+    "area": "የሚገኙበት ከተማ",
+    "townOrArea": "የሚገኙበት ከተማ ወይም አካባቢ",
+    "city": "የሚገኙበት ከተማ",
+    "suburb": "የሚገኙበት ሰፈር",
+    "townOrCity": "የሚገኙበት ከተማ"
+  },
+  "example": "ለምሳሌ፦ {example}",
+  "customersSee": "ደንበኞች የሚያዩት፦",
+  "postalWarning": "ይህ ትክክለኛ {article} አይመስልም — ለምሳሌ፦ {example}። ቢሆንም ማስቀመጥ ይችላሉ።",
+  "regionChoose": "ይምረጡ…"
+}

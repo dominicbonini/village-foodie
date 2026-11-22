@@ -1,0 +1,120 @@
+{
+  "tab": {
+    "plan": {
+      "title": "ፓኬጅዎ",
+      "trialPill": "ነፃ ሙከራ",
+      "change": "ፓኬጅ ይቀይሩ",
+      "trialLine": "ነፃ ሙከራዎ {date} ላይ ያበቃል። ከዚያ በኋላ {plan} በወር {price} ነው።",
+      "trialLineFree": "ነፃ ሙከራዎ {date} ላይ ያበቃል። ከዚያ በኋላ ፓኬጅዎ {plan} ይሆናል፤ ወርሃዊ ክፍያ የለውም።",
+      "proLine": "በወር እስከ {allowance} የሚደርስ የኦንላይን ትዕዛዝ ያካትታል። ከዚያ በላይ፦ {fee}።",
+      "paygLine": "በኦንላይን ትዕዛዞች ላይ፦ {fee}። ወርሃዊ ክፍያ የለም።",
+      "unlimitedLine": "በወር {price}። በኦንላይን ትዕዛዞች ላይ ክፍያ የለም።",
+      "pendingLine": "{plan} የሚጀምረው {date} ላይ ነው።"
+    },
+    "payment": {
+      "title": "የክፍያ ዘዴ",
+      "none": "እስካሁን ካርድ አልታከለም። ከሙከራዎ በኋላ የኦንላይን ትዕዛዞችን መቀበል ለመቀጠል ካርድ ያክሉ።",
+      "add": "ካርድ ያክሉ",
+      "pix": "Pix Automático ይጠቀሙ",
+      "card": "{brand} — መጨረሻው {last4}",
+      "pixOnFile": "Pix Automático",
+      "pending": "ማረጋገጫ በመጠባበቅ ላይ።",
+      "change": "ይቀይሩ",
+      "lastFailed": "የመጨረሻው ክፍያ አልተሳካም",
+      "update": "ካርዱን ያዘምኑ",
+      "error": "የክፍያ ገጹን መክፈት አልቻልንም። እባክዎ እንደገና ይሞክሩ።",
+      "noneAfterTrial": "ካርድ አልታከለም። የኦንላይን ትዕዛዝን መልሰው ለማብራት ካርድ ያክሉ።"
+    },
+    "whatYouPay": {
+      "title": "የሚከፍሉት",
+      "plan": "ፓኬጅዎ — በየወሩ 1ኛ ቀን ለሚመጣው ወር ይከፈላል",
+      "fee": "ከተካተተው መጠን (በወር {allowance}) በላይ የሆኑ የኦንላይን ትዕዛዞች — በየወሩ 1ኛ ቀን ላለፈው ወር ይከፈላል",
+      "feePayg": "የኦንላይን ትዕዛዞች — በየወሩ 1ኛ ቀን ላለፈው ወር ይከፈላል",
+      "walkUps": "በቦታው የሚሰጥ ትዕዛዝ",
+      "free": "ነፃ",
+      "trialEnd": "ሙከራዎ {date} ላይ ሲያበቃ፣ ለወሩ ቀሪ ቀናት ({month}) {amount} እናስከፍላለን። ከዚያም {nextFirst} ላይ {price}።"
+    },
+    "next": {
+      "title": "ቀጣይ ክፍያ · {date}",
+      "plan": "{plan} — ወር፦ {month}",
+      "fee": "{fee} — ከተካተተው መጠን ({allowance}) በላይ ለሆኑ የኦንላይን ትዕዛዞች (ወር፦ {month}፤ እስካሁን)",
+      "feePayg": "{fee} — ለኦንላይን ትዕዛዞች (ወር፦ {month}፤ እስካሁን)",
+      "vans": "ተጨማሪ ተሽከርካሪዎች (ወር፦ {month})",
+      "surcharge": "የድኅረ-ክፍያ ሂሳብ (ወር፦ {month})",
+      "carried": "ካለፈው የተላለፈ",
+      "total": "እስካሁን ያለው ጠቅላላ ድምር",
+      "walkUps": "በቦታው የሚሰጥ ትዕዛዝ ሁልጊዜ ነፃ ነው።"
+    },
+    "preorders": {
+      "title": "ደንበኞች ለቅድመ-ትዕዛዝ እንዴት እንደሚከፍሉ",
+      "online": "ኦንላይን፣ ሲያዝዙ",
+      "onlineHint": "ገንዘቡ በቀጥታ ወደ Stripe አካውንትዎ ይገባል።",
+      "atTruckHint": "ደንበኞች የሚከፍሉት ምግባቸውን ሲወስዱ ነው። የእኛ ክፍያ በወርሃዊ ሂሳብዎ ላይ ይታከላል።",
+      "saved": "ተቀምጧል።",
+      "error": "ያንን ማስቀመጥ አልቻልንም። እባክዎ እንደገና ይሞክሩ።"
+    },
+    "invoices": {
+      "title": "የሂሳብ መጠየቂያዎች",
+      "date": "ቀን",
+      "for": "መግለጫ",
+      "amount": "መጠን",
+      "status": "ሁኔታ",
+      "forMonthly": "ፓኬጅ (ወር፦ {planMonth})፣ የአገልግሎት ክፍያዎች (ወር፦ {usageMonth})",
+      "forMonthlyPlan": "ፓኬጅ (ወር፦ {planMonth})",
+      "forTrialEnd": "የወሩ ቀሪ ቀናት ({month})",
+      "forUpgrade": "ወደ {plan} መቀየር",
+      "lateFee": "የዘገየ ክፍያ ቅጣት",
+      "paid": "ተከፍሏል",
+      "unpaid": "ያልተከፈለ",
+      "overdue": "ጊዜው ያለፈበት",
+      "download": "ያውርዱ",
+      "payNow": "አሁን ይክፈሉ",
+      "none": "እስካሁን ምንም የሂሳብ መጠየቂያ የለም።"
+    },
+    "failed": {
+      "title": "ክፍያዎ ({amount}) አልተሳካም።",
+      "body": "እንደገና እንሞክራለን። የኦንላይን ትዕዛዝ እንዲቀጥል እስከ {date} ድረስ ካርድዎን ያዘምኑ።",
+      "button": "ካርዱን ያዘምኑ"
+    },
+    "paused": {
+      "title": "የኦንላይን ትዕዛዝ ለጊዜው ቆሟል",
+      "body": "የሚከፈለው {amount} ጊዜው አልፏል። አሁን ይክፈሉ፤ የኦንላይን ትዕዛዝ ወዲያውኑ መልሶ ይበራል።",
+      "warning": "እስከ {date} ድረስ ይክፈሉ፤ አለበለዚያ አካውንትዎ ሊታገድ ይችላል።",
+      "pay": "{amount} ይክፈሉ",
+      "otherCard": "ሌላ ካርድ ይጠቀሙ"
+    },
+    "loading": "የሂሳብ አከፋፈል መረጃን በመጫን ላይ…",
+    "loadError": "የሂሳብ አከፋፈል መረጃዎን መጫን አልቻልንም። እባክዎ እንደገና ይሞክሩ።"
+  },
+  "changePlan": {
+    "title": "ፓኬጅ ይቀይሩ",
+    "current": "አሁን ያሉበት ፓኬጅ፦ {plan}።",
+    "free": "ነፃ",
+    "perMonth": "በወር {price}",
+    "paygLine": "በኦንላይን ትዕዛዞች ላይ፦ {fee}።",
+    "proLine": "እስከ {allowance} የሚደርስ የኦንላይን ትዕዛዝ ተካቷል። ከዚያ በላይ፦ {fee}።",
+    "unlimitedLine": "በኦንላይን ትዕዛዞች ላይ ክፍያ የለም።",
+    "yourPlan": "ፓኬጅዎ",
+    "startsNow": "አሁን ይጀምራል።",
+    "chargeToday": "ለወሩ ቀሪ ቀናት ({month}) ዛሬ {amount} እናስከፍላለን። ከዚያም {nextFirst} ላይ {price}።",
+    "startsLater": "{nextFirst} ላይ ይጀምራል። እስከዚያ ድረስ ፓኬጅዎ {plan} ሆኖ ይቆያል።",
+    "cancel": "ይቅር",
+    "switchTo": "ወደ {plan} ይቀይሩ",
+    "error": "ፓኬጅዎን መቀየር አልቻልንም። እባክዎ እንደገና ይሞክሩ።",
+    "trialLine": "ነፃ ሙከራ ላይ ነዎት። ሙከራው {date} ላይ ሲያበቃ የሚጠቀሙበትን ፓኬጅ ይምረጡ።",
+    "startsAtTrialEnd": "ሙከራዎ ሲያበቃ ይጀምራል።",
+    "choose": "{plan} ይምረጡ"
+  },
+  "notices": {
+    "trialEndsSoon": "<b>ነፃ ሙከራዎ {date} ላይ ያበቃል።</b> የኦንላይን ትዕዛዝ እንዲቀጥል ካርድ ያክሉ።",
+    "trialEndsTomorrow": "<b>ነፃ ሙከራዎ ነገ ያበቃል።</b> ካርድ ያክሉ፤ አለበለዚያ የኦንላይን ትዕዛዝ ለጊዜው ይቆማል።",
+    "allSet": "<b>ሁሉም ነገር ዝግጁ ነው።</b> {plan} {date} ላይ ይጀምራል።",
+    "paymentFailed": "<b>ክፍያዎ አልተሳካም።</b> የኦንላይን ትዕዛዝ እንዲቀጥል እስከ {date} ድረስ {method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ያዘምኑ።",
+    "paused": "<b>የኦንላይን ትዕዛዝ ለጊዜው ቆሟል።</b> እስከ {date} ድረስ {amount} ይክፈሉ፤ አለበለዚያ አካውንትዎ ሊታገድ ይችላል።",
+    "addCard": "ካርድ ያክሉ →",
+    "updateCard": "{method, select, payment_method {የክፍያ ዘዴዎን ያዘምኑ} other {ካርድዎን ያዘምኑ}} →",
+    "payNow": "አሁን ይክፈሉ →",
+    "dismiss": "ይዝጉ",
+    "trialEnded": "<b>ነፃ ሙከራዎ አብቅቷል።</b> የኦንላይን ትዕዛዝን መልሰው ለማብራት ካርድ ያክሉ።"
+  }
+}

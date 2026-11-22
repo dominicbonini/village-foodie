@@ -1,0 +1,83 @@
+{
+  "title": "የዝግጅት ዓይነቶች",
+  "newTypeButton": "+ አዲስ የዝግጅት ዓይነት",
+  "close": "ይዝጉ",
+  "loading": "በመጫን ላይ…",
+  "missingTitle": "የዝግጅት ዓይነቶች ገና አልበሩም።",
+  "missingBody": "የዚህ አገልግሎት የዳታቤዝ ማሻሻያ ገና አልተተገበረም። ምንም ነገር አልተበላሸም — እያንዳንዱ ዝግጅት መደበኛ ማዋቀርዎን እየተጠቀመ ነው።",
+  "column": "ዓምድ",
+  "vanGone": "ያ ተሽከርካሪ ከእንግዲህ የለም።",
+  "typeGone": "ያ ዓይነት ከእንግዲህ የለም።",
+  "standard": "መደበኛ",
+  "standardHeading": "መደበኛ",
+  "moreFor": "ተጨማሪ አማራጮች፦ {name}",
+  "rename": "ስም ይቀይሩ",
+  "moveLeft": "ወደ ግራ ያንቀሳቅሱ",
+  "moveRight": "ወደ ቀኝ ያንቀሳቅሱ",
+  "delete": "ይሰርዙ",
+  "sections": {
+    "vans": "ተሽከርካሪዎች",
+    "prices": "ዋጋዎች",
+    "itemPrices": "የንጥሎች ዋጋ",
+    "service": "አገልግሎት"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "በእያንዳንዱ {mins} ደቂቃ",
+  "noTypes": "እስካሁን ምንም የዝግጅት ዓይነቶች የሉዎትም፤ ስለዚህ እያንዳንዱ ዝግጅት መደበኛ ማዋቀርዎን ይጠቀማል።",
+  "renameTitle": "የዚህን ዓይነት ስም ይቀይሩ",
+  "name": "ስም",
+  "cancel": "ይቅር",
+  "save": "ያስቀምጡ",
+  "copyVanOne": "የተሽከርካሪ 1 ቅንብሮችን ይቅዱ",
+  "thisType": "ይህ ዓይነት",
+  "matchTitle": "“{name}” ከመደበኛው ጋር ይመሳሰል?",
+  "matchKeeps": "በአንድ ዝግጅት ዳሽቦርድ ላይ የቀየሩት ማንኛውም ነገር እንዳለ ይቆያል፤ የዚህ ዓይነት ዋጋዎችም አይቀየሩም።",
+  "matchWillUse": "የሚጠቀመው፦ {summary}",
+  "deleteTitle": "“{name}” ይሰረዝ?",
+  "deleteBody": "{n, plural, =0 {“{name}” የሚጠቀም መጪ ዝግጅት የለም።} one {{count} መጪ ዝግጅት “{name}” ይጠቀማል። ወደ መደበኛ ይመለሳል።} other {{count} መጪ ዝግጅቶች “{name}” ይጠቀማሉ። ወደ መደበኛ ይመለሳሉ።}} በአንድ ዝግጅት ላይ የቀየሩት ማንኛውም ነገር እንዳለ ይቆያል።",
+  "keep": "ይቆይ",
+  "phone": {
+    "standardTag": "መደበኛ",
+    "defaultTag": "ነባሪ",
+    "vanSetup": "የዚህ ተሽከርካሪ የተለመደ ማዋቀር — ዓይነት በሌለው እያንዳንዱ ዝግጅት ላይ ይውላል።",
+    "standardSetup": "የእርስዎ የተለመደ ማዋቀር — ዓይነት በሌለው እያንዳንዱ ዝግጅት ላይ ይውላል።",
+    "cardSummary": "{upcoming, plural, one {{upcomingCount} መጪ ዝግጅት} other {{upcomingCount} መጪ ዝግጅቶች}} · {changed, plural, =0 {እስካሁን ምንም አልተቀየረም} one {{changedCount} / {total} ተቀይሯል} other {{changedCount} / {total} ተቀይረዋል}}",
+    "noMenuItems": "እስካሁን የሜኑ ንጥሎች የሉም — በሜኑ › ንጥሎች ውስጥ ያክሏቸው።"
+  },
+  "newType": {
+    "title": "አዲስ የዝግጅት ዓይነት",
+    "namePlaceholder": "ለምሳሌ፦ የትምህርት ቤት በዓል",
+    "help": "ስም ይንኩ ወይም የራስዎን ይጻፉ። የሚጀምረው የመደበኛው ቅጂ ሆኖ ነው፤ በኋላ መደበኛውን መቀየር ይህን አይቀይረውም። ከዚያ በኋላ ማንኛውንም ነገር ይቀይሩ።",
+    "create": "ይፍጠሩ",
+    "chips": {
+      "festival": "ፌስቲቫል",
+      "pub": "መጠጥ ቤት",
+      "market": "ገበያ",
+      "privateHire": "የምግብ መኪና ለዝግጅት መከራየት"
+    }
+  },
+  "select": {
+    "label": "የዝግጅት ዓይነት",
+    "usual": "ለዚህ ቦታ የተለመደው፦ {name}።"
+  },
+  "summary": {
+    "normalSetup": "የእርስዎ መደበኛ ማዋቀር",
+    "sameAsStandard": "ከመደበኛው ጋር ተመሳሳይ",
+    "buzzersOn": "የጥሪ መሣሪያዎች በርተዋል",
+    "buzzersOff": "የጥሪ መሣሪያዎች ጠፍተዋል",
+    "takeCashOn": "ጥሬ ገንዘብ መቀበል በርቷል",
+    "takeCashOff": "ጥሬ ገንዘብ መቀበል ጠፍቷል",
+    "markReadyOn": "“ዝግጁ ምልክት ያድርጉ” ደረጃ በርቷል",
+    "markReadyOff": "“ዝግጁ ምልክት ያድርጉ” ደረጃ ጠፍቷል",
+    "collectionEvery": "መውሰድ በእያንዳንዱ {mins} ደቂቃ",
+    "offlineOff": "ከመስመር ውጭ ጥበቃ ጠፍቷል",
+    "offlineKeepTaking": "ከመስመር ውጭ፦ ትዕዛዝ መቀበል ይቀጥላል",
+    "offlinePause": "ከመስመር ውጭ፦ ትዕዛዝ መቀበል ለጊዜው ይቆማል"
+  },
+  "errors": {
+    "somethingWentWrong": "የሆነ ችግር ተፈጥሯል",
+    "couldNotLoad": "መጫን አልተቻለም",
+    "couldNotSave": "ማስቀመጥ አልተቻለም",
+    "noVans": "ይህ የምግብ መኪና የሚቀየሩ ተሽከርካሪዎች የሉትም።"
+  }
+}

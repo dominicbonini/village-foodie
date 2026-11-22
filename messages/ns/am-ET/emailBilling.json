@@ -1,0 +1,46 @@
+{
+  "greeting": "{hasName, select, yes {ሰላም {name}፣} other {ሰላም፣}}",
+  "questions": "ጥያቄ አለዎት? ለዚህ ኢሜይል ምላሽ ብቻ ይስጡ።",
+  "signoff": "የHatchGrab ቡድን",
+  "buttonUpdate": "{method, select, payment_method {የክፍያ ዘዴዎን ያዘምኑ} other {ካርድዎን ያዘምኑ}}",
+  "buttonPay": "አሁን ይክፈሉ",
+  "buttonAddCard": "ካርድ ያክሉ",
+  "suspended": "ሳይከፈል ከቀረ አካውንትዎ ሊታገድ ይችላል።",
+  "failed": {
+    "subject": "የHatchGrab ክፍያዎ አልተሳካም",
+    "line1": "ዛሬ {amount} መቀበል አልቻልንም (የምግብ መኪና፦ {truck})። እንደገና እንሞክራለን።",
+    "line2": "የኦንላይን ትዕዛዝ እንዲቀጥል እባክዎ እስከ {date} ድረስ {method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ያዘምኑ።"
+  },
+  "twoDays": {
+    "subject": "{method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ለማዘመን 2 ቀናት ቀርተዋል",
+    "line1": "{amount} (የምግብ መኪና፦ {truck}) አሁንም አልተከፈለም። እስከ {date} ድረስ {method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ያዘምኑ፤ አለበለዚያ የኦንላይን ትዕዛዝ ለጊዜው ይቆማል።"
+  },
+  "oneDay": {
+    "subject": "እስከ ነገ ድረስ {method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ያዘምኑ",
+    "line1": "{amount} (የምግብ መኪና፦ {truck}) አሁንም አልተከፈለም። እስከ ነገ ድረስ {method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ያዘምኑ፤ አለበለዚያ የኦንላይን ትዕዛዝ ለጊዜው ይቆማል።"
+  },
+  "lastDay": {
+    "subject": "{method, select, payment_method {የክፍያ ዘዴዎን} other {ካርድዎን}} ለማዘመን የመጨረሻው ቀን",
+    "line1": "{amount} (የምግብ መኪና፦ {truck}) የሚከፈልበት የመጨረሻው ቀን ዛሬ ነው። እኩለ ሌሊት ላይ አሁንም ካልተከፈለ፣ እስኪከፍሉ ድረስ የኦንላይን ትዕዛዝ ለጊዜው ይቆማል።"
+  },
+  "paused": {
+    "subject": "የኦንላይን ትዕዛዝ ለጊዜው ቆሟል",
+    "line1": "{amount} ስላልተከፈለ የምግብ መኪናው {truck} የኦንላይን ትዕዛዝ ለጊዜው ቆሟል። አሁን ይክፈሉ፤ ወዲያውኑ መልሶ ይበራል።",
+    "line2": "እስከ {date} ድረስ ይክፈሉ፤ አለበለዚያ አካውንትዎ ሊታገድ ይችላል።"
+  },
+  "trial7": {
+    "subject": "ነፃ ሙከራዎ 7 ቀናት ውስጥ ያበቃል",
+    "line1": "የምግብ መኪናው {truck} ነፃ ሙከራ {date} ላይ ያበቃል።",
+    "line2": "የኦንላይን ትዕዛዝ እንዲቀጥል በአስተዳደር › የሂሳብ አከፋፈል ውስጥ ካርድ ያክሉ።",
+    "plan": "ከዚያ በኋላ {plan} በወር {price} ነው። ሙከራዎ ሲያበቃ ለወሩ ቀሪ ቀናት ({month}) {amount} እናስከፍላለን፤ ከዚያም {nextFirst} ላይ {price}።",
+    "planFree": "ከዚያ በኋላ ፓኬጅዎ {plan} ይሆናል፤ ወርሃዊ ክፍያ የለውም።",
+    "fee": "በኦንላይን ትዕዛዞች ላይ የምናስከፍለው ክፍያ ({fee}) በየወሩ 1ኛ ቀን ላለፈው ወር ይከፈላል።"
+  },
+  "trial1": {
+    "subject": "ነፃ ሙከራዎ ነገ ያበቃል",
+    "line1": "የምግብ መኪናው {truck} ነፃ ሙከራ ነገ ያበቃል።",
+    "noCard": "ካርድ ያክሉ፤ አለበለዚያ የኦንላይን ትዕዛዝ ለጊዜው ይቆማል።",
+    "allSet": "ሁሉም ነገር ዝግጁ ነው፦ {plan} {date} ላይ ይጀምራል።",
+    "charge": "ሙከራዎ ሲያበቃ ለወሩ ቀሪ ቀናት ({month}) {amount} እናስከፍላለን።"
+  }
+}

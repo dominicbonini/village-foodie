@@ -1,0 +1,10 @@
+{
+  "copy": "ይቅዱ",
+  "copied": "ተቀድቷል ✓",
+  "failed": "መቅዳት አልተሳካም",
+  "aria": "{label} {thing}",
+  "announceCopied": "ተቀድቷል፦ {thing}",
+  "announceCopiedValue": "እሴቱ ተቀድቷል",
+  "announceFailed": "መቅዳት አልተቻለም፦ {thing}። ጽሑፉን መርጠው ራስዎ ይቅዱት።",
+  "announceFailedValue": "እሴቱን መቅዳት አልተቻለም። ጽሑፉን መርጠው ራስዎ ይቅዱት።"
+}

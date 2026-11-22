@@ -1,0 +1,134 @@
+{
+  "item": {
+    "weekHeading": "የሳምንቱ ርዕስ",
+    "weekHeadingSample": "ሳምንቱ የሚጀምረው፦ …",
+    "daysSample": "{first} እስከ {last}",
+    "date": "ቀን",
+    "place": "ቦታ",
+    "venue": "የዝግጅት ቦታ",
+    "area": "አካባቢ",
+    "time": "ሰዓት",
+    "rows": "ረድፎች",
+    "rowsSample": "{px}px ልዩነት · {first} እስከ {last}",
+    "ownText": "የራስዎ ጽሑፍ",
+    "noteTokenSample": "ልጥፉን ሲፈጥሩ የሚጽፉት ማስታወሻ",
+    "nothingYet": "እስካሁን ምንም የለም",
+    "thisBox": "ይህ ሳጥን"
+  },
+  "sample": {
+    "venue": "የቅዳሜ ገበያ",
+    "area": "ቦሌ"
+  },
+  "bar": {
+    "previewWith": "ቅድመ-እይታ በዚህ፦",
+    "undo": "ይቀልብሱ",
+    "undoTitle": "ይቀልብሱ (⌘Z)",
+    "redo": "ይድገሙ",
+    "redoTitle": "ይድገሙ (⇧⌘Z)",
+    "cancel": "ይቅር",
+    "saving": "በማስቀመጥ ላይ…",
+    "save": "ዲዛይኑን ያስቀምጡ"
+  },
+  "grid": {
+    "eachRow": "እያንዳንዱ ረድፍ",
+    "placeOff": "የቦታው ስም በምስልዎ ውስጥ አለ — HatchGrab አይጨምረውም።"
+  },
+  "background": {
+    "uploading": "በመስቀል ላይ…",
+    "replace": "ምስሉን ይተኩ",
+    "shape": {
+      "square": "ካሬ (1:1)",
+      "portrait45": "ቁመታዊ (4:5)",
+      "portrait916": "ቁመታዊ (9:16)",
+      "landscape169": "አግድም (16:9)",
+      "portrait": "ቁመታዊ",
+      "landscape": "አግድም"
+    }
+  },
+  "scope": {
+    "title": "የጽሑፍ አቀማመጦች",
+    "standard": "ከመደበኛው ጋር ተመሳሳይ አቀማመጦች",
+    "own": "የራሱ አቀማመጦች (ቦታ፦ {place})",
+    "locked": "እነዚህ አቀማመጦች የሚመጡት ከመደበኛ ዲዛይንዎ ነው። እዚህ ብቻ ለማንቀሳቀስ “የራሱ አቀማመጦች (ቦታ፦ {place})” የሚለውን ይምረጡ።"
+  },
+  "stage": {
+    "hint": "ለማንቀሳቀስ ሳጥኑን ይጎትቱ · መጠኑን ለመቀየር ጥጉን ይጎትቱ",
+    "zoomOut": "ያሳንሱ",
+    "zoomIn": "ያጉሉ"
+  },
+  "rows": {
+    "spacing": "ክፍተት",
+    "daysRun": "ቀኖቹ፦ {first} እስከ {last}። የረድፍ 1 ሦስቱ ሳጥኖች በዚህ ርቀት ወደ ታች ይቀዳሉ።",
+    "whichEvents": "የትኞቹ ዝግጅቶች",
+    "showCancelled": "የተሰረዙ ዝግጅቶችን ያሳዩ",
+    "showCancelledHint": "የተሰረዘ ዝግጅት ቦታው በመስመር ተሰርዞና “ተሰርዟል” የሚለው ቃል ተጽፎ ይታያል። ይህ ሲጠፋ ቀኑ እንደ ዕረፍት ቀን ይታያል።"
+  },
+  "days": {
+    "reorder": "ቅደም ተከተሉን ይቀይሩ",
+    "move": "ያንቀሳቅሱ"
+  },
+  "picture": {
+    "picture": "ምስል",
+    "fill": "ሳጥኑን ይሙላ",
+    "fit": "ውስጡ ይግጠም",
+    "corners": "ጥጎች",
+    "square": "ካሬ",
+    "rounded": "የተጠጋጋ",
+    "ifMissing": "አንድ ቦታ ምስል ከሌለው",
+    "noPicture": {
+      "omit": "አያካትቱት",
+      "blank": "ባዶ ቦታ ይተዉ",
+      "logo": "አርማዎን ያሳዩ"
+    },
+    "border": "ጠርዝ መስመር",
+    "drawBorder": "ጠርዝ መስመር ይሳሉ",
+    "drawBorderHint": "በምስሉ ዙሪያ በራስዎ ቀለም የሚሳል መስመር።",
+    "borderWidth": "የጠርዝ መስመር ውፍረት",
+    "cornerRadius": "የጥግ ክብነት",
+    "locationPictures": "የቦታ ምስሎች",
+    "addLocationPictures": "+ የቦታ ምስሎች ያክሉ",
+    "allHaveImage": "{total, plural, =0 {እስካሁን ምንም ቦታ የለዎትም።} one {# ቦታዎ ምስል አለው።} other {ሁሉም # ቦታዎችዎ ምስል አላቸው።}}",
+    "someWithout": "{total, plural, one {ካሉዎት # ቦታ} other {ካሉዎት # ቦታዎች}} መካከል {without} {without, plural, one {ገና ምስል የለውም} other {ገና ምስል የላቸውም}}"
+  },
+  "settings": {
+    "font": "ፎንት",
+    "colour": "ቀለም",
+    "textColour": "የጽሑፍ ቀለም",
+    "ownStyleNote": "{count, plural, one {{names} የራሱ ቅጥ ስላለው አልተቀየረም።} other {{names} የራሳቸው ቅጥ ስላላቸው አልተቀየሩም።}}",
+    "matchAgain": "እንደገና ያዛምዱት",
+    "matchName": "ከዚህ ጋር ያዛምዱ፦ {name}",
+    "lastToggle": "{kind, select, weekly {“ቦታ” ወይም “ሰዓት” — ከሁለቱ አንዱን አብርተው ያቆዩ። የተሰረዘ ዝግጅት ቦታው በመስመር ተሰርዞና “ተሰርዟል” የሚለው ቃል ተጽፎ ይታያል፤ ስለዚህ ሁለቱም ከጠፉ ዝግጅቱ መሰረዙን የሚያሳይ ምንም ነገር አይኖርም።} other {“የዝግጅት ቦታ” ወይም “ሰዓት” — ከሁለቱ አንዱን አብርተው ያቆዩ። የተሰረዘ ዝግጅት ቦታው በመስመር ተሰርዞና “ተሰርዟል” የሚለው ቃል ተጽፎ ይታያል፤ ስለዚህ ሁለቱም ከጠፉ ዝግጅቱ መሰረዙን የሚያሳይ ምንም ነገር አይኖርም።}}"
+  },
+  "letters": {
+    "boldGlyph": "B",
+    "italicGlyph": "I",
+    "capsGlyph": "AA",
+    "italicTitle": "{italic} — ይህ ፎንት እውነተኛ ሰያፍ አለው"
+  },
+  "align": {
+    "left": "ግራ",
+    "centre": "መሃል",
+    "right": "ቀኝ"
+  },
+  "effects": {
+    "outlineColour": "የዝርዝር መስመር ቀለም",
+    "bandColour": "የሰቁ ቀለም",
+    "bandDaysOff": "በዕረፍት ቀናት የሚታይ ሰቅ",
+    "bandCancelled": "ዝግጅቱ ሲሰረዝ የሚታይ ሰቅ",
+    "bandDaysOffHint": "ሽያጭ በሌለበት ቀን ከላይ ባለው ሰቅ ምትክ ጥቅም ላይ ይውላል።",
+    "bandCancelledHint": "ዝግጅቱ ሲሰረዝ ከላይ ባለው ሰቅ ምትክ ጥቅም ላይ ይውላል።"
+  },
+  "more": {
+    "dayOwnLine": "የሳምንቱ ቀን በራሱ መስመር",
+    "dayOwnLineHint": "የሳምንቱ ቀን ከቀኑ በላይ። ለቀን ብቻ።",
+    "noEventDay": "ዝግጅት በሌለበት ቀን",
+    "wordsBeforePlaceholder": "ለምሳሌ፦ እዚህ ያገኙናል",
+    "neverHyphenate": "ክፍተት የሌለው አንድ ረጅም ቃል ሁልጊዜ እንዲያንስ ይደረጋል — የቦታ ስምን በፍጹም በሰረዝ አንከፍልም።"
+  },
+  "bits": {
+    "less": "ያነሰ",
+    "more": "ተጨማሪ",
+    "chooseColourFor": "{label} — ማንኛውንም ቀለም ይምረጡ",
+    "chooseColour": "ማንኛውንም ቀለም ይምረጡ"
+  }
+}

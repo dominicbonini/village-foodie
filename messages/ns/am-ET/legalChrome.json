@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "privacyTitle": "የግላዊነት ፖሊሲ — HatchGrab",
+    "privacyDescription": "HatchGrab Ltd የግል መረጃን እንዴት እንደሚሰበስብና እንደሚጠቀም።",
+    "termsTitle": "የአገልግሎት ውሎች — HatchGrab",
+    "termsDescription": "HatchGrab የመጠቀሚያ ውሎች።",
+    "countryTermsTitle": "አገር-ተኮር ውሎች — HatchGrab",
+    "countryTermsDescription": "በአንዳንድ አገሮች HatchGrab ላይ የሚመለከቱ ተጨማሪ ደንቦች።"
+  },
+  "homeLabel": "የHatchGrab መነሻ ገጽ",
+  "privacy": "ግላዊነት",
+  "terms": "የአገልግሎት ውሎች",
+  "countryTerms": "የአገር ውሎች",
+  "contact": "ያግኙን",
+  "lastUpdated": "ለመጨረሻ ጊዜ የተሻሻለው፦ {date}",
+  "questions": "ጥያቄ አለዎት? <link>ያግኙን</link> — እውነተኛ ሰዎች ነን።",
+  "translationNote": "ይህ ትርጉም ነው። ከ<link>እንግሊዝኛው ቅጂ</link> ጋር ቢለያይ፣ የእንግሊዝኛው ቅጂ ተፈጻሚ ይሆናል።"
+}

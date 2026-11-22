@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "በግኝት ካርታ ላይ መዘርዘር"
+    },
+    "web_dashboard": {
+      "name": "በማንኛውም መሣሪያ የሚሠራ የድረ-ገጽ ዳሽቦርድ"
+    },
+    "qr_code": {
+      "name": "QR ኮድ"
+    },
+    "schedule_import": {
+      "name": "የሥራ ፕሮግራም ራስ-ሰር ማስገባት"
+    },
+    "meal_deals_upsells": {
+      "name": "ጥምር ምግቦች (ኮምቦ) እና የሽያጭ ጥቆማዎች"
+    },
+    "walkup_orders": {
+      "name": "በቦታው የሚሰጥ ትዕዛዝ ማስተናገድ"
+    },
+    "sold_out_toggle": {
+      "name": "ወዲያውኑ “አልቋል” የማድረጊያ ማብሪያ"
+    },
+    "kitchen_app": {
+      "name": "የኩሽና መተግበሪያ ለiPhone፣ ለiPad እና ለAndroid"
+    },
+    "offline_protection": {
+      "name": "ከመስመር ውጭ የትዕዛዝ ጥበቃ"
+    },
+    "online_payments": {
+      "name": "የኦንላይን ክፍያዎች"
+    },
+    "advance_preordering": {
+      "name": "ለወደፊት ቀን ቅድመ-ትዕዛዝ"
+    },
+    "preorder_deadline": {
+      "name": "የቅድመ-ትዕዛዝ የመጨረሻ ጊዜ"
+    },
+    "time_slot_selection": {
+      "name": "የደንበኛ የሰዓት ክፍለ ጊዜ ምርጫ"
+    },
+    "kitchen_capacity": {
+      "name": "የኩሽና አቅም አስተዳደር"
+    },
+    "stock_countdown": {
+      "name": "በራስ-ሰር የሚቀንስ የክምችት ቆጠራ"
+    },
+    "auto_accept": {
+      "name": "የኦንላይን ትዕዛዞችን በራስ-ሰር መቀበል"
+    },
+    "branded_qr_code": {
+      "name": "አርማ ያለው QR ኮድ"
+    },
+    "private_events": {
+      "name": "የግል ዝግጅት"
+    },
+    "social_media_posts": {
+      "name": "የማኅበራዊ ሚዲያ ልጥፎች"
+    },
+    "whatsapp_auto_replies": {
+      "name": "የWhatsApp ራስ-ሰር ምላሽ"
+    },
+    "messenger_instagram_replies": {
+      "name": "የMessenger እና የInstagram ራስ-ሰር ምላሽ"
+    },
+    "tap_to_pay": {
+      "name": "በስልክዎ ክፍያ ይቀበሉ"
+    },
+    "sms_order_alerts": {
+      "name": "የትዕዛዝ ማሳወቂያ በSMS"
+    },
+    "multi_device_kitchen": {
+      "name": "በብዙ መሣሪያዎች ላይ የኩሽና ማመሳሰል"
+    },
+    "multi_user_access": {
+      "name": "የብዙ ተጠቃሚዎች መዳረሻ"
+    },
+    "embed_schedule": {
+      "name": "በራስዎ ድረ-ገጽ ላይ የሥራ ፕሮግራም ገጽ"
+    },
+    "event_types": {
+      "name": "ብጁ የዝግጅት ዓይነቶች እና ዋጋዎች"
+    },
+    "buzzer_tracking": {
+      "name": "የጥሪ መሣሪያ ክትትል"
+    },
+    "documents_reminders": {
+      "name": "ሰነዶችና አስታዋሾች"
+    },
+    "profit_per_event": {
+      "name": "የእያንዳንዱ ዝግጅት ትርፍ"
+    },
+    "accountant_reports": {
+      "name": "ለሂሳብ ባለሙያዎ ሪፖርቶች"
+    },
+    "ticket_printing": {
+      "name": "የኩሽና የትዕዛዝ ወረቀት ማተም"
+    },
+    "customer_display": {
+      "name": "ለደንበኞች የሚታይ ስክሪን"
+    },
+    "loyalty_stamp_cards": {
+      "name": "ዲጂታል የታማኝነት ማኅተም ካርዶች"
+    }
+  },
+  "cardRegionOnline": "መደበኛ {region}",
+  "cardRegion": {
+    "UKcards": "የዩኬ ካርዶች",
+    "EEAcards": "የአውሮፓ ኢኮኖሚክ አካባቢ (EEA) ካርዶች",
+    "UScards": "የአሜሪካ ካርዶች",
+    "Australiancards": "የአውስትራሊያ ካርዶች",
+    "NewZealandcards": "የኒውዚላንድ ካርዶች",
+    "Canadiancards": "የካናዳ ካርዶች",
+    "Swisscards": "የስዊዘርላንድ ካርዶች",
+    "Braziliancards": "የብራዚል ካርዶች",
+    "Mexicancards": "የሜክሲኮ ካርዶች",
+    "Japanesecards": "የጃፓን ካርዶች",
+    "Singaporecards": "የሲንጋፖር ካርዶች",
+    "HongKongcards": "የሆንግ ኮንግ ካርዶች",
+    "Malaysiancards": "የማሌዥያ ካርዶች",
+    "Thaicards": "የታይላንድ ካርዶች",
+    "UAEcards": "የተባበሩት ዓረብ ኤሚሬቶች ካርዶች"
+  },
+  "perMonth": {
+    "mo": "{amount}/ወር",
+    "month": "{amount} በወር"
+  },
+  "priceWord": {
+    "free": "ነፃ",
+    "freeTrial": "ነፃ ሙከራ",
+    "lifetime": "ዕድሜ ልክ",
+    "zeroPercent": "0%",
+    "payAtHatch": "ሲወስዱ ይክፈሉ",
+    "unlimited": "ያልተገደበ",
+    "none": "—",
+    "masked": "ይረጋገጣል"
+  },
+  "cell": {
+    "included": "ተካቷል"
+  }
+}

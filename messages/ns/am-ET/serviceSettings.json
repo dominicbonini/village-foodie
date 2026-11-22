@@ -1,0 +1,59 @@
+{
+  "labels": {
+    "collection_interval_mins": "የመውሰጃ ሰዓት",
+    "takes_cash": "ጥሬ ገንዘብ ይቀበላሉ?",
+    "offline_protection": "ከመስመር ውጭ የትዕዛዝ ጥበቃ",
+    "buzzer_prompt": "የጥሪ መሣሪያ እንድሰጥ ያስታውሱኝ"
+  },
+  "typeFollowsVanTitle": "የእያንዳንዱን ተሽከርካሪ የተለመደ ቅንብር ይከተላል",
+  "sameSettingsAllVansLabel": "ለሁሉም ተሽከርካሪዎች ተመሳሳይ ቅንብሮች",
+  "sameSettingsAllVansHeader": "ሁሉም ተሽከርካሪዎች",
+  "sameSettingsConfirm": "የተሽከርካሪ 1 ቅንብሮች ወደ ሁሉም ተሽከርካሪዎች ይቀዱ? ይህ የተሽከርካሪ 1 ቅንብሮችን በሙሉ ይቀዳል — በቅንብሮች ውስጥ ካለው “ከዚህ ጋር ተመሳሳይ፦ ተሽከርካሪ 1” ጋር አንድ ነው። የኩሽና አቅም የራሱ ማብሪያ/ማጥፊያ አለው።",
+  "eventTypesFooterStandard": "መደበኛ የእርስዎ የተለመደ ማዋቀር ነው። እዚህ መቀየሩ በቅንብሮች ውስጥም ይቀይረዋል።",
+  "eventTypesFooterOneEvent": "ለአንድ ዝግጅት ብቻ ቅንብር ለመቀየር የዚያን ዝግጅት ዳሽቦርድ ይጠቀሙ።",
+  "eventTypesSubtitle": "ለውጦች ወዲያውኑ ይቀመጣሉ።",
+  "matchStandardLabel": "ከመደበኛው ጋር ያስተካክሉ",
+  "matchStandardConfirm": "በዚህ ዓይነት ላይ ያሉት ሁሉም ቅንብሮች ወደ መደበኛ ይመለሱ? እዚህ የቀየሩት ማንኛውም ነገር ይጠፋል።",
+  "priceLabels": {
+    "price_change_on": "ዋጋዎችን ይቀይሩ",
+    "price_mode": "የዋጋ ለውጥ",
+    "price_amount": "መጠን",
+    "price_rounding": "ማጠጋጋት",
+    "item_prices": "የንጥሎች ዋጋ"
+  },
+  "priceMode": {
+    "add_amount": "+ {symbol}",
+    "add_pct": "+ %",
+    "sub_amount": "− {symbol}",
+    "sub_pct": "− %",
+    "none": "እያንዳንዱን ዋጋ ራሴ አስቀምጣለሁ"
+  },
+  "priceRounding": {
+    "none": "የለም",
+    "nearest_1": "ወደ ቅርቡ {symbol}1",
+    "up_1": "ሁልጊዜ ወደ ላይ ያጠጋጉ"
+  },
+  "pricesStandardCell": "የሜኑዎ ዋጋዎች",
+  "pricesTruckWideTitle": "ዋጋዎችዎ ለሁሉም ተሽከርካሪዎች አንድ ናቸው",
+  "pricesMenuCell": "ሜኑ",
+  "pricesTypeOffCell": "የሜኑ ዋጋዎች",
+  "itemPricesShow": "ዋጋዎችን ያሳዩ",
+  "itemPricesHide": "ዋጋዎችን ይደብቁ",
+  "priceItemsHeading": "የእያንዳንዱን ንጥል ዋጋ ያስቀምጡ",
+  "priceItemsOpen": "የእያንዳንዱን ንጥል ዋጋ ይመልከቱ ወይም ይቀይሩ ›",
+  "priceItemsClose": "የንጥሎችን ዋጋ ይደብቁ ⌃",
+  "ownPriceCount": "{n, plural, one {{count} ንጥል የራሱ ዋጋ አለው} other {{count} ንጥሎች የራሳቸው ዋጋ አላቸው}}",
+  "priceTypeHint": "የራስዎን ለመጻፍ ዋጋውን ይጫኑ።",
+  "pricesLiveNotice": "ይህ ዝግጅት በሂደት ላይ ነው። አዳዲስ ትዕዛዞች አዲሶቹን ዋጋዎች ይጠቀማሉ። አስቀድመው የገቡ ትዕዛዞች የራሳቸውን ዋጋ ይይዛሉ።",
+  "placeTypeHelper": "ይህን ቦታ በመረጡ ቁጥር “ዝግጅት ያክሉ” ይህን ዓይነት ይመርጣል።",
+  "postPictureStandardNote": "እዚህ ያሉ የዝግጅት ልጥፎች የእርስዎን መደበኛ ዲዛይን ይጠቀማሉ።",
+  "eventItemsCardDescription": "ለዚህ ዝግጅት ብቻ የሚሠሩ ዋጋዎች፣ የንጥል ገደቦችና መገኘት። ለውጦች ወዲያውኑ ተግባራዊ ይሆናሉ።",
+  "eventPriceColumnLabel": "ዋጋ",
+  "eventPriceOwnNote": "{hasType, select, yes {{type} {price} · ይህ ዝግጅት} other {ሜኑ {price} · ይህ ዝግጅት}}",
+  "eventPriceEdit": "✎ ዋጋዎችን ያስተካክሉ",
+  "eventPriceCancel": "ይቅር",
+  "eventPriceSave": "ዋጋዎችን ያስቀምጡ",
+  "eventPriceEditNote": "ዋጋዎችን ለዚህ ዝግጅት ብቻ በማስተካከል ላይ። እስኪያስቀምጡ ድረስ የንጥል ገደቦችና መገኘት ተቆልፈዋል።",
+  "eventPriceLiveNote": "በሂደት ላይ፦ አዳዲስ ትዕዛዞች አዲሶቹን ዋጋዎች ይጠቀማሉ።",
+  "offlineWhenOfflineLabel": "ከመስመር ውጭ ሲሆን"
+}

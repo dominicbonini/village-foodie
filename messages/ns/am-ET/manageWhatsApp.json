@@ -1,0 +1,106 @@
+{
+  "preview": {
+    "title": "ከማገናኘትዎ በፊት ይሞክሩት",
+    "intro": "አንድ ደንበኛ እንደሚጠይቀው ዓይነት ጥያቄ ይጻፉ፤ ምን መልስ እንደሚያገኙ በትክክል ይመልከቱ። ለማንም ምንም አይላክም።",
+    "examples": {
+      "where": "ዛሬ ማታ የት ናችሁ?",
+      "doYouDo": "ፔፐሮኒ አላችሁ?",
+      "menu": "ሜኑው ላይ ምን አለ?"
+    },
+    "placeholder": "ምን ዓይነት ጣፋጮች አላችሁ?",
+    "send": "ይላኩ",
+    "empty": "መልስዎ እዚህ ይታያል",
+    "working": "መልሱን በማሰናዳት ላይ…",
+    "noReply": "ምንም መልስ አይላክም።",
+    "noReplyWhy": "ያ እንደ አይፈለጌ መልዕክት፣ የቀጠሮ ማስያዝ ጥያቄ ወይም ያልተዛመደ ነገር ይነበባል፤ ስለዚህ የWhatsApp ራስ-ሰር ምላሽ ዝም ይላል።",
+    "footnote": "መልሶቹ በሰው ሠራሽ አስተውሎት የሚፈጠሩ ናቸው፤ በእያንዳንዱ ጊዜ በትንሹ ይለያያሉ፤ አልፎ አልፎም ስህተት ሊሆኑ ይችላሉ።",
+    "failed": "አሁን ቅድመ-እይታ መፍጠር አልተቻለም።",
+    "unreachable": "ከሰርቨሩ ጋር መገናኘት አልተቻለም። ግንኙነትዎን ይፈትሹና እንደገና ይሞክሩ።"
+  },
+  "setup": {
+    "button": {
+      "preparing": "በማሰናዳት ላይ…",
+      "unavailable": "አይገኝም",
+      "waiting": "የFacebook መስኮቱን በመጠባበቅ ላይ…",
+      "finishing": "በማጠናቀቅ ላይ…",
+      "reconnect": "እንደገና ያገናኙ",
+      "setUp": "ያዋቅሩ"
+    },
+    "startAgain": "እንደገና ይጀምሩ",
+    "popupHint": "የFacebook መስኮቱን ማየት አልቻሉም? ታግዶ ሊሆን ይችላል። ለhatchgrab.com ብቅ-ባይ መስኮቶችን ይፍቀዱ፤ ከዚያም “እንደገና ይጀምሩ” የሚለውን ይጫኑ።"
+  },
+  "notice": {
+    "sdkUnavailable": "የWhatsApp ማዋቀር በዚህ የሥራ አካባቢ አይገኝም።",
+    "sdkBlocked": "የMeta የመግቢያ ስክሪፕት መጫን አልቻለም። ብዙውን ጊዜ ምክንያቱ የማስታወቂያ ማገጃ ወይም የክትትል መከላከያ ነው።",
+    "setupFailed": "ማዋቀሩ ሊጠናቀቅ አልቻለም። ምንም ነገር አልተቀየረም።",
+    "setupFinished": "ማዋቀሩ ተጠናቋል።",
+    "metaError": "በማዋቀሩ ወቅት Meta ችግር እንዳለ ገልጿል። ምንም ነገር አልተቀየረም። እንደገና ይሞክሩ፤ ችግሩ ከቀጠለ ያነጋግሩን።",
+    "closed": "ማዋቀሩ ከመጠናቀቁ በፊት ተዘግቷል። ምንም ነገር አልተቀየረም — እንደገና ለመሞከር “ያዋቅሩ” የሚለውን ይጫኑ።",
+    "disconnectedUnreachable": "የWhatsApp ግንኙነት ተቋርጧል። መዳረሻውን ለማስወገድ ከMeta ጋር መገናኘት አልቻልንም። እባክዎ HatchGrab በዚህ ቦታ ያስወግዱ፦ WhatsApp Business → Settings → Account → Business Platform።",
+    "disconnected": "የWhatsApp ግንኙነት ተቋርጧል። የWhatsApp ራስ-ሰር ምላሽ ቆሟል።",
+    "close": "ይዝጉ"
+  },
+  "card": {
+    "title": "ራስ-ሰር ምላሽ",
+    "description": "ሜኑዎንና የሥራ ፕሮግራምዎን ተጠቅሞ የደንበኞችን ጥያቄዎች በማኅበራዊ ሚዲያዎ ላይ በራስ-ሰር ይመልሳል።",
+    "channels": "የመልዕክት መንገዶች",
+    "requiresAccount": "የWhatsApp Business አካውንት ያስፈልጋል።",
+    "connected": "ተገናኝቷል",
+    "popupInstruction": "የWhatsApp Business አካውንትዎን ለማገናኘት የFacebook መስኮት ይከፈታል። ምንም ነገር ካልታየ፣ በአሳሽዎ ውስጥ ለhatchgrab.com ብቅ-ባይ መስኮቶችን ይፍቀዱ፤ ከዚያም “ያዋቅሩ” የሚለውን እንደገና ይጫኑ።",
+    "switchedOff": "ለምግብ መኪናዎ የWhatsApp ራስ-ሰር ምላሽ ጠፍቷል።",
+    "expiring": "የWhatsApp ግንኙነትዎ በቅርቡ መታደስ አለበት። የWhatsApp ራስ-ሰር ምላሽ እንዲቀጥል “እንደገና ያገናኙ” የሚለውን ይጫኑ።",
+    "comingSoon": "በቅርቡ ይመጣል",
+    "instagram": "ለInstagram የግል መልዕክቶች ራስ-ሰር ምላሽ። የInstagram ፕሮፌሽናል አካውንት ያስፈልገዋል።",
+    "messenger": "ለFacebook Messenger ራስ-ሰር ምላሽ። የFacebook ገጽ ያስፈልገዋል።"
+  },
+  "blocked": {
+    "title": "ምላሾችዎ እየደረሱ አይደሉም",
+    "body": "በWhatsApp Business አካውንትዎ ላይ ባለ የክፍያ ችግር ምክንያት WhatsApp ራስ-ሰር ምላሾችዎን ለመላክ እምቢ ብሏል። ደንበኞች አሁንም መልዕክት ሊልኩልዎ ይችላሉ፤ እርስዎም የሚልኩትን ሁሉ ያያሉ — ነገር ግን መልስ እያገኙ አይደሉም።",
+    "fix": "ለእነዚህ መልዕክቶች በቀጥታ ለWhatsApp ይከፍላሉ፤ ስለዚህ ይህ የሚስተካከለው በWhatsApp Manager ውስጥ ነው። <link>የክፍያ ዘዴዎን ይፈትሹ</link>"
+  },
+  "limit": {
+    "heading": "የWhatsApp ራስ-ሰር ምላሽ",
+    "label": "ወርሃዊ ገደብ",
+    "option": "{n, number}",
+    "usage": "ጥቅም ላይ የዋለ፦ {used, number} / {limit, number} · እንደገና የሚጀምረው፦ {date}",
+    "perCustomer": "በ24 ሰዓት ውስጥ ለአንድ ደንበኛ እስከ {n} ምላሾች፤ ከዚያም በግል እንደሚመልሱ የሚገልጽ አንድ መልዕክት።",
+    "emailAt": "ገደብዎ ላይ ሲደርሱ ምላሾች ለጊዜው ይቆማሉ። 80% እና 100% ሲደርሱ ኢሜይል እንልክልዎታለን።",
+    "saved": "ወርሃዊ የምላሽ ገደቡ ተቀምጧል",
+    "saveFailed": "ገደቡን ማስቀመጥ አልተቻለም"
+  },
+  "billing": {
+    "heading": "የሂሳብ አከፋፈል",
+    "paymentMethod": "የክፍያ ዘዴ",
+    "added": "የክፍያ ዘዴ ታክሏል",
+    "missing": "ምንም የክፍያ ዘዴ አልታከለም",
+    "addInManager": "በWhatsApp Manager ውስጥ ያክሉ",
+    "summary": "ለምላሾቹ የWhatsApp አካውንትዎን የሚያስከፍለው Meta ነው እንጂ HatchGrab አይደለም። ከዚህ ቀን ጀምሮ፦ {from}፣ በወር የመጀመሪያዎቹ {free, number} ምላሾች ነፃ ናቸው። የተረጋገጠበት ቀን፦ {checked}፤ ለለውጦች <link>የMeta ዋጋዎችን</link> ይመልከቱ።",
+    "howMetaCharges": "Meta እንዴት እንደሚያስከፍል",
+    "chargesTitle": "ለWhatsApp ምላሾች የሚያስከፍለው Meta ነው እንጂ HatchGrab አይደለም።",
+    "chargesBody": "HatchGrab ለእርስዎ የሚልከውን እያንዳንዱን ምላሽ Meta በWhatsApp Business አካውንትዎ ላይ ያስከፍላል። ከዚህ ቀን ጀምሮ፦ {from}፣ Meta ለእያንዳንዱ ቁጥር በወር {free, number} ነፃ ምላሾችን ያካትታል፤ ከዚያ በኋላ እያንዳንዱ ምላሽ በMeta ዋጋ ይከፈላል። ከWhatsApp Business መተግበሪያ ራስዎ የሚልኳቸው ምላሾች አይከፈሉም። እነዚህን ዋጋዎች የሚወስነው Meta ነው፤ ሊቀይራቸውም ይችላል። <link>የMeta ዋጋዎችን ይመልከቱ</link>",
+    "addPaymentInManager": "በWhatsApp Manager ውስጥ የክፍያ ዘዴ ያክሉ",
+    "aboveMissing": "ገደብዎ ከMeta ነፃ ምላሾች ({free, number}) በላይ ነው። የክፍያ ዘዴ ከሌለ፣ እነዚያ ካለቁ በኋላ Meta ሁሉንም ምላሾች ያቆማል።",
+    "aboveGeneral": "ገደብዎ ከMeta ነፃ ምላሾች ({free, number}) በላይ ነው። ከዚያ በላይ ያሉ ምላሾች በWhatsApp አካውንትዎ ላይ የክፍያ ዘዴ ያስፈልጋቸዋል፤ የክፍያ ዘዴ ከሌለ፣ ነፃዎቹ ካለቁ በኋላ Meta ሁሉንም ምላሾች ያቆማል።",
+    "addPaymentMethod": "የክፍያ ዘዴ ያክሉ"
+  },
+  "disconnect": {
+    "link": "የWhatsApp ግንኙነቱን ያቋርጡ",
+    "title": "የWhatsApp ግንኙነቱ ይቋረጥ?",
+    "body": "የWhatsApp ራስ-ሰር ምላሽ ወዲያውኑ ይቆማል፤ HatchGrab የWhatsApp አካውንትዎን የመጠቀም መዳረሻውን ያጣል። ቁጥርዎ በWhatsApp Business መተግበሪያ ውስጥ መሥራቱን ይቀጥላል። HatchGrab ሙሉ በሙሉ እንዲወገድ፣ ይህንንም ይክፈቱ፦ WhatsApp Business → Settings → Account → Business Platform።",
+    "cancel": "ይቅር",
+    "confirm": "ግንኙነቱን ያቋርጡ",
+    "working": "ግንኙነቱን በማቋረጥ ላይ…",
+    "failed": "ግንኙነቱን ማቋረጥ አልተቻለም"
+  },
+  "signup": {
+    "logged": "ተመዝግቧል።",
+    "partial": "የWhatsApp Business አካውንትዎን አገናኝተናል፤ ነገር ግን ግንኙነቱን ማጠናቀቅ አልቻልንም። በእርስዎ በኩል ምንም ችግር የለም — እባክዎ ያነጋግሩን፤ እኛ እናጠናቅቀዋለን።",
+    "noNumber": "የWhatsApp Business አካውንትዎ ተገናኝቷል፤ ነገር ግን ምንም ስልክ ቁጥር አልተመለሰም። “እንደገና ያገናኙ” የሚለውን ይጫኑና የቁጥሩን ደረጃ ያጠናቅቁ።",
+    "needsRegistering": "አካውንትዎ ተገናኝቷል፤ ነገር ግን ምላሾች ከመጀመራቸው በፊት ይህ ቁጥር በእኛ መመዝገብ አለበት። እባክዎ የድጋፍ ቡድኑን ያነጋግሩ — ማዋቀርዎ ተቀምጧል፤ እንደገና አያካሂዱት።",
+    "registerRefused": "አካውንትዎ ተገናኝቷል፤ ነገር ግን Meta ቁጥሩን ለመመዝገብ ፈቃደኛ አልሆነም። ማዋቀርዎ ተቀምጧል — እንደገና ከማካሄድ ይልቅ እባክዎ የድጋፍ ቡድኑን ያነጋግሩ።",
+    "deliveryRefused": "አካውንትዎ ተገናኝቷል፤ ነገር ግን Meta የመልዕክት መላኪያን ለማብራት ፈቃደኛ አልሆነም። ማዋቀርዎ ተቀምጧል — እንደገና ከማካሄድ ይልቅ እባክዎ የድጋፍ ቡድኑን ያነጋግሩ።",
+    "numberTaken": "ያ የWhatsApp ቁጥር አስቀድሞ ከሌላ የHatchGrab አካውንት ጋር ተገናኝቷል። አንድ ቁጥር ምላሽ መስጠት የሚችለው ለአንድ የምግብ መኪና ብቻ ነው። የድጋፍ ቡድኑን ያነጋግሩ፤ እኛ እናዛውረዋለን።",
+    "saveIncomplete": "ልንጨርስ ተቃርበናል — ማስቀመጡን ማጠናቀቅ አልቻልንም። ማዋቀርዎ ተቀምጧል፤ እንደገና ከማካሄድ ይልቅ እባክዎ የድጋፍ ቡድኑን ያነጋግሩ።",
+    "connected": "WhatsApp ተገናኝቷል። የWhatsApp ራስ-ሰር ምላሽ ወደዚህ ቁጥር ለሚመጡ መልዕክቶች መልስ መስጠት ይጀምራል።"
+  }
+}

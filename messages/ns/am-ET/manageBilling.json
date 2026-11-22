@@ -1,0 +1,44 @@
+{
+  "perTruckMonth": "ለአንድ ተሽከርካሪ / በወር",
+  "transactionFees": "የግብይት ክፍያዎች",
+  "comingSoon": "በቅርቡ ይመጣል",
+  "footnote2Masked": "የኦንላይን ክፍያዎች የሚሠሩት በStripe Connect ነው። የመድረክና የካርድ ክፍያ ማስኬጃ ክፍያዎች፦ ይረጋገጣል — አገልግሎቱ ሲጀመር ይገለጻሉ።",
+  "card": {
+    "title": "የሂሳብ አከፋፈልና ክፍያዎች",
+    "managed": "የሂሳብ አከፋፈሉን የሚያስተዳድረው HatchGrab ነው",
+    "earlyAccess": "በቅድመ-መዳረሻ ጊዜ ፓኬጆችን በእጅ እናዋቅራለን፤ እናስተካክላለንም።",
+    "planLine": "{trial, select, yes {{truck} · {plan} ፓኬጅ (ሙከራ)} other {{truck} · {plan} ፓኬጅ}}"
+  },
+  "currentPlan": "የአሁኑ ፓኬጅ",
+  "plan": {
+    "included": "በወር እስከ {amount} የሚደርስ የኦንላይን ትዕዛዝ ያካትታል።",
+    "includedUnlimited": "ያልተገደበ የኦንላይን ትዕዛዝ ተካቷል።",
+    "promo": "ልዩ ዋጋ።",
+    "promoUntil": "ልዩ ዋጋ እስከ {date} ድረስ።",
+    "ended": "{plan} ፓኬጅዎ {date} ላይ አብቅቷል። አሁን ያሉበት ፓኬጅ፦ {now}።",
+    "trialMonths": "{months} ወር የሚቆይ ነፃ ሙከራ።"
+  },
+  "trialEnds": "ሙከራው የሚያበቃው፦ {date}",
+  "yourTrialEnds": "ሙከራዎ የሚያበቃው፦ {date}",
+  "notStarted": {
+    "heading": "ነፃ ሙከራዎ ገና አልተጀመረም"
+  },
+  "onTrial": "ሁሉም አገልግሎቶች አሉዎት። ሙከራዎ ከማብቃቱ በፊት ፓኬጅ ይምረጡ።",
+  "onTrialPaidEnd": "ሁሉም አገልግሎቶች አሉዎት። ሙከራዎ ሲያበቃ {plan} በወር {price} ነው። ክፍያውን ለማዋቀር ከዚያ በፊት እናነጋግርዎታለን።",
+  "onTrialNoCta": "ሁሉም አገልግሎቶች አሉዎት።",
+  "noCharge": "🔒 በሙከራዎ ጊዜ ምንም አይከፍሉም፤ ሙከራው እስከ {date} ድረስ ይቆያል። ክፍያ የሚጀምረው ፓኬጅ መርጠው የክፍያ ዝርዝሮችዎን ሲያስገቡ ብቻ ነው። እስከዚያ ድረስ የሚሰርዙትም ሆነ የሚከፍሉት ነገር የለም።",
+  "noChargePaidEnd": "🔒 በሙከራዎ ጊዜ ምንም አይከፍሉም፤ ሙከራው እስከ {date} ድረስ ይቆያል።",
+  "fees": "*በኦንላይን ትዕዛዞች ላይ መደበኛ የካርድ ክፍያ ማስኬጃ ክፍያዎች ይመለከታሉ",
+  "setUpPayment": "⏱ ሙከራዎ ከማብቃቱ በፊት ፓኬጅ ይምረጡ",
+  "changeYourPlan": "ፓኬጅዎን ይቀይሩ",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+    "title": "ወደ {plan} ይቀይሩ",
+    "tagline": "{price} — {description}",
+    "body": "ራስ-ሰር የሂሳብ አከፋፈል እያዋቀርን ነው። አሁን ለመቀየር መልዕክት ይላኩልን፤ በ24 ሰዓት ውስጥ እናዋቅርልዎታለን።",
+    "mailSubject": "ወደ {plan} መቀየር — {truck}",
+    "mailBody": "ሰላም፣ {truck} ወደ {plan} ({price}) ፓኬጅ እንዲቀየር እፈልጋለሁ።",
+    "email": "ለመቀየር ኢሜይል ይላኩልን",
+    "cancel": "ይቅር"
+  }
+}

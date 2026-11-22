@@ -1,0 +1,137 @@
+{
+  "binary": {
+    "cameraUsage": "HatchGrab ካሜራውን የሚጠቀመው የሜኑ ሰሌዳዎን፣ ምግቦችዎንና ሌሎች ሰነዶችን ፎቶ አንስተው በቀጥታ ወደ አካውንትዎ እንዲሰቅሉ ነው። ምስሎቹ ጥቅም ላይ የሚውሉት እርስዎ ለመረጧቸው ስቀላዎች ብቻ ነው።",
+    "bluetoothUsage": "HatchGrab Bluetooth የሚጠቀመው የትዕዛዝ ወረቀቶች በራስ-ሰር እንዲታተሙ ከኩሽናዎ የደረሰኝ ማተሚያ ጋር ለመገናኘት ነው። ለሌላ ለምንም ነገር ጥቅም ላይ አይውልም።",
+    "localNetworkUsage": "HatchGrab የትዕዛዝ ወረቀቶች በራስ-ሰር እንዲታተሙ በአካባቢዎ አውታረ መረብ ላይ ካለው የኩሽና ማተሚያዎ ጋር ይገናኛል። ለሌላ ለምንም ነገር ጥቅም ላይ አይውልም።",
+    "faceIdUsage": "መተግበሪያውን (HatchGrab) በFace ID ይክፈቱ።",
+    "offlineTitle": "ከHatchGrab ጋር መገናኘት አልተቻለም",
+    "offlineDetail": "ግንኙነትዎን ያረጋግጡ።",
+    "retry": "እንደገና ይሞክሩ"
+  },
+  "gate": {
+    "reverted": "ትዕዛዝ #{id} ወደ ቀድሞው ተመልሷል",
+    "saved": "ትዕዛዝ #{id} ተቀምጧል",
+    "undo": "↩ ይቀልብሱ",
+    "paymentNotRecorded": "⚠ ትዕዛዝ #{id} — ክፍያው አልተመዘገበም። {collect, select, yes {ትዕዛዙ ተጠናቋል} other {ትዕዛዙ ተቀምጧል}}፤ ገንዘቡ ግን አልተመዘገበም።",
+    "recordPayment": "ክፍያውን ይመዝግቡ",
+    "paid": "ትዕዛዝ #{id} ተከፍሏል",
+    "undonePayment": "ተቀልብሷል — ክፍያው ተወግዷል",
+    "undoneCollected": "ተቀልብሷል — ትዕዛዙ አልተወሰደም",
+    "collected": "ትዕዛዝ #{id} {paidToo, select, yes {ተከፍሎ ተወስዷል} other {ተወስዷል}}",
+    "ready": "ትዕዛዝ #{id} ዝግጁ ነው",
+    "readyBuzzer": "ትዕዛዝ #{id} ዝግጁ ነው · <pill></pill>",
+    "status": "ትዕዛዝ #{id} {action, select, confirm {ተረጋግጧል} reject {ውድቅ ተደርጓል} ready {ዝግጁ ነው} collected {ተወስዷል} undo_collected {ወደ ቀድሞው ተመልሷል} cancel {ተሰርዟል} other {ተሻሽሏል}}"
+  },
+  "conflicts": {
+    "more": "+{count} ተጨማሪ",
+    "notOnScreenPlus": "+{count} በዚህ ስክሪን ላይ የሉም",
+    "notOnScreen": "{n, plural, one {በዚህ ስክሪን ላይ የሌለ {count} ትዕዛዝ} other {በዚህ ስክሪን ላይ የሌሉ {count} ትዕዛዞች}}"
+  },
+  "banner": {
+    "paymentTitle": "⚠ ክፍያው አልተመዘገበም",
+    "paymentBody": "{orders} — የተከፈለ ተብሎ ምልክት የተደረገው በዚህ መሣሪያ ላይ ብቻ ነው። ክፍያው አልተጠናቀቀም።",
+    "paymentCheck": "ትዕዛዙን ያረጋግጡ፤ ክፍያው አሁንም ካልተከፈለ እንደገና ክፍያ ይቀበሉ።",
+    "dismiss": "ይዝጉ",
+    "confirmChecked": "እንደተመለከቱ ያረጋግጡ፦ {orders}",
+    "confirmHides": "ይህ ማስጠንቀቂያውን ይደብቃል። ያም ሆነ ይህ መዝገቡ በዚህ መሣሪያ ላይ ይቀመጣል።",
+    "notYet": "ገና ነው",
+    "iveChecked": "ተመልክቻለሁ፦ {orders}",
+    "statusBody": "⚠ {orders} — ይህ ለውጥ አልተሳካም። ትዕዛዙን ያረጋግጡ።",
+    "offline": "📴 ግንኙነት የለም — {n, plural, one {{count} ለውጥ በዚህ መሣሪያ ላይ ተቀምጧል። ወደ ኦንላይን ሲመለሱ ይላካል።} other {{count} ለውጦች በዚህ መሣሪያ ላይ ተቀምጠዋል። ወደ ኦንላይን ሲመለሱ ይላካሉ።}} ቅንብሮች ተቆልፈዋል።",
+    "syncing": "ወደ ኦንላይን ተመልሰዋል — {n, plural, one {{count} ለውጥ} other {{count} ለውጦች}} በመላክ ላይ…",
+    "synced": "ሁሉም ለውጦች ተልከዋል።",
+    "stillQueued": "{n, plural, one {{count} ለውጥ በዚህ መሣሪያ ላይ ተቀምጧል። አሁንም ለመላክ እየሞከርን ነው።} other {{count} ለውጦች በዚህ መሣሪያ ላይ ተቀምጠዋል። አሁንም ለመላክ እየሞከርን ነው።}}",
+    "notApproved": "{n, plural, one {{count} ትዕዛዝ እየጠበቀ ነው} other {{count} ትዕዛዞች እየጠበቁ ናቸው}}፦ ይህ ዝግጅት አልጸደቀም። ለመላክ ዝግጅቱን ያጽድቁ።"
+  },
+  "lock": {
+    "locked": "HatchGrab ተቆልፏል",
+    "verifying": "በማረጋገጥ ላይ…",
+    "unlock": "ይክፈቱ",
+    "cantUseBiometric": "Face / Touch ID መጠቀም አልቻሉም?",
+    "enterPin": "የመጠባበቂያ PIN ያስገቡ",
+    "wrongPin": "የተሳሳተ PIN — እንደገና ይሞክሩ።",
+    "checking": "በማረጋገጥ ላይ…",
+    "tryBiometric": "በምትኩ Face / Touch ID ይሞክሩ",
+    "forgot": "PIN ረሱ? መተግበሪያውን እንደገና መጫን ያስፈልግዎታል።"
+  },
+  "notify": {
+    "title": "🔔 ማሳወቂያዎች",
+    "intro": "በዚህ መሣሪያ ላይ የሚደርሱ ማሳወቂያዎች። የትኞቹ እንደሚደርስዎ ለመምረጥ ያብሩት።",
+    "refused": "ይህን ለማብራት ማሳወቂያዎች በመሣሪያዎ ቅንብሮች (Settings) ውስጥ መፈቀድ አለባቸው።",
+    "newOrder": "የአዲስ ትዕዛዝ ማሳወቂያዎች",
+    "newOrderHelp": "የደንበኛ ትዕዛዝ ማረጋገጥ ሲያስፈልገው ማሳወቂያ ይድረስዎ።",
+    "offline": "ከመስመር ውጭ / ለጊዜው የመቆም ማሳወቂያዎች",
+    "offlineHelp": "ይህ መሣሪያ ከመስመር ውጭ ሲሆን (ትዕዛዝ መቀበልም ለጊዜው ሲቆም) ማሳወቂያ ይድረስዎ። <green>ከመስመር ውጭም ይሠራል።</green>"
+  },
+  "van": {
+    "label": "ተሽከርካሪ",
+    "loadRetry": "መጫን አልተቻለም · እንደገና ይሞክሩ",
+    "select": "ይምረጡ…"
+  },
+  "deviceSave": {
+    "network": "ሰርቨሩን ማግኘት አልተቻለም — ግንኙነቱን ያረጋግጡና እንደገና ይሞክሩ።",
+    "server": "አሁን ማስቀመጥ አልተቻለም። እባክዎ እንደገና ይሞክሩ።"
+  },
+  "setup": {
+    "fetchErrorTitle": "የመሣሪያ ማዋቀሪያውን መጫን አልተቻለም",
+    "fetchErrorBody": "<b>ይህን መሣሪያ</b> ለማዋቀር ሰርቨሩን ማግኘት አልቻልንም። ግንኙነቱን ያረጋግጡና እንደገና ይሞክሩ — ትዕዛዞችዎና ቅንብሮችዎ አልተነኩም።",
+    "retry": "እንደገና ይሞክሩ",
+    "later": "በኋላ",
+    "noVanTitle": "ገቢር ተሽከርካሪ የለም",
+    "noVanBody": "ይህ የምግብ መኪና ገና ገቢር ተሽከርካሪ የለውም። <b>ቅንብሮች → የእርስዎ ተሽከርካሪዎች</b> በሚለው ውስጥ አንዱን ገቢር ያድርጉ፤ ከዚያ ይህ መሣሪያ በራስ-ሰር ይዋቀራል — እዚህ ሌላ እርምጃ አያስፈልግም።",
+    "goToVans": "ወደ ቅንብሮች → የእርስዎ ተሽከርካሪዎች ይሂዱ",
+    "title": "ይህን መሣሪያ ያዋቅሩ",
+    "body": "<b>ለዚህ መሣሪያ</b> የአንድ ጊዜ ማዋቀር፦ ሲከፈት የሚያሳየው ስክሪን እና የሚያገለግለው ተሽከርካሪ። የሚመለከተው ይህን መሣሪያ ብቻ ነው — ሌሎች መሣሪያዎች ለየብቻ ይዋቀራሉ፤ እነዚህን በኋላ ከመገለጫ ሜኑ → “ይህ መሣሪያ” መቀየር ይችላሉ።",
+    "whichScreen": "ይህ መሣሪያ ሲከፈት የትኛውን ስክሪን ያሳይ?",
+    "dashboard": "ዳሽቦርድ",
+    "kds": "የኩሽና ማሳያ (KDS)",
+    "whichVan": "ይህ መሣሪያ የየትኛው ተሽከርካሪ ነው?",
+    "selectVan": "ተሽከርካሪ ይምረጡ…",
+    "saving": "በማስቀመጥ ላይ…",
+    "tryAgain": "እንደገና ይሞክሩ",
+    "continue": "ይቀጥሉ"
+  },
+  "device": {
+    "title": "ይህ መሣሪያ",
+    "viewing": "እየተመለከቱ ያሉት፦ <b>{truck}</b>",
+    "viewingVan": "እየተመለከቱ ያሉት፦ <b>{truck}</b> — <b>{van}</b>",
+    "only": "ለዚህ መሣሪያ ብቻ — ሌሎች መሣሪያዎች ለየብቻ ይዋቀራሉ። (መለያ፦ {id}…)",
+    "truck": "የምግብ መኪና",
+    "van": "ተሽከርካሪ",
+    "defaultScreen": "ነባሪ ስክሪን",
+    "orderNotifications": "የትዕዛዝ ማሳወቂያዎች",
+    "patchFailed": "ቅንብሩ አልተቀመጠም፦ {setting, select, van {ተሽከርካሪ} defaultScreen {ነባሪ ስክሪን} other {የትዕዛዝ ማሳወቂያዎች}}። {reason}",
+    "requireBiometric": "ለመክፈት የጣት አሻራ ወይም የፊት መለያ ይጠየቅ",
+    "pinTitle": "የመጠባበቂያ PIN ይወስኑ (4–6 አኃዝ)",
+    "pinHelp": "የጣት አሻራ ወይም የፊት መለያ ካልሠራ የመግቢያ መንገድዎ ይህ ነው — ብቸኛው አማራጭ ስለሆነ አይርሱት (PIN ከረሱ መተግበሪያውን እንደገና መጫን ያስፈልጋል)። ከመስመር ውጭም ይሠራል።",
+    "pinPlaceholder": "PIN",
+    "confirmPinPlaceholder": "PIN ያረጋግጡ",
+    "pinTooShort": "ቢያንስ 4 አኃዝ ይጠቀሙ።",
+    "pinMismatch": "PIN ቁጥሮቹ አይመሳሰሉም።",
+    "setPin": "PIN ይወስኑና ያብሩ",
+    "cancel": "ይቅር",
+    "noBiometric": "በዚህ መሣሪያ ላይ የጣት አሻራ ወይም የፊት መለያ አልተዋቀረም — በመሣሪያዎ ቅንብሮች ውስጥ ያክሉ። የመጠባበቂያ PIN አሁንም ይሠራል።",
+    "footer": "እነዚህ ቅንብሮች የሚመለከቱት ይህን መሣሪያ ብቻ ነው — ሌሎች መሣሪያዎች ለየብቻ ይዋቀራሉ።"
+  },
+  "appLock": {
+    "unlockReason": "መተግበሪያውን (HatchGrab) ይክፈቱ",
+    "usePasscode": "የይለፍ ኮድ ይጠቀሙ",
+    "cancel": "ይቅር",
+    "confirmEnable": "የመተግበሪያ መቆለፊያን ለማብራት ያረጋግጡ"
+  },
+  "channel": {
+    "ordersName": "አዲስ ትዕዛዞች",
+    "ordersDescription": "ትዕዛዝ ማረጋገጥ ሲያስፈልገው የሚደርሱ ማሳወቂያዎች።"
+  },
+  "localNotify": {
+    "newOrderTitle": "አዲስ ትዕዛዝ",
+    "orderReceived": "ትዕዛዝ {number} ደርሷል",
+    "newOrders": "{n, plural, one {{count} አዲስ ትዕዛዝ አለዎት} other {{count} አዲስ ትዕዛዞች አለዎት}}"
+  },
+  "offlineAlert": {
+    "pausedTitle": "ትዕዛዝ መቀበል ለጊዜው ቆሟል",
+    "pausedBody": "ከመስመር ውጭ ነዎት — የደንበኞች ትዕዛዝ ለጊዜው ቆሟል።",
+    "offlineTitle": "ከመስመር ውጭ ነዎት",
+    "offlineBody": "ይህ መሣሪያ ግንኙነቱን አጥቷል።"
+  }
+}

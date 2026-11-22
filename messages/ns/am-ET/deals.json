@@ -1,0 +1,17 @@
+{
+  "back": "← ወደ ኋላ",
+  "title": "ጥምር ምግብ ይምረጡ",
+  "save": "{amount} ይቆጥቡ",
+  "selectItems": "ለእያንዳንዱ ቦታ ንጥሎችን ይምረጡ",
+  "choose": "{category} ይምረጡ…",
+  "inYourBasket": "── በቅርጫትዎ ውስጥ ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (በቅርጫት ውስጥ){state, select, used { — አስቀድሞ በጥምር ምግብ ውስጥ አለ} taken { — በሌላ ቦታ ተመርጧል} other {}}",
+  "addNew": "── አዲስ ያክሉ ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {ግዴታ · አንዱን ይምረጡ} required {ግዴታ} other {አንዱን ይምረጡ}}{unmet, select, yes { (ግዴታ)} other {}}",
+  "notePlaceholder": "ማስታወሻ ያክሉ፣ ለምሳሌ፦ ሽንኩርት አይጨመር (አማራጭ)",
+  "backButton": "ወደ ኋላ",
+  "cancel": "ይቅር",
+  "chooseRequired": "ግዴታ የሆኑ አማራጮችን ይምረጡ",
+  "apply": "ጥምር ምግቡን ያክሉ · {amount}"
+}
