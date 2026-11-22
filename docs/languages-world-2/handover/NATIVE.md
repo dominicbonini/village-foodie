@@ -676,3 +676,12 @@
 - Suggested for part 04: Place ສະຖານທີ່, Venue ບ່ອນຈັດງານ, Area ເຂດ, Time ເວລາ.
 - Native check: allergens ມັນຢາມ (yam), ໝາກທໍ້ (peach), ປາທູ (mackerel), ຫອຍເປົ໋າຮື້ (abalone), ໝາກເກົາລັດ (chestnut), ຜັກຂຶ້ນສ່າຍ (celery); nut names mostly phonetic; molluscs ສັດຈຳພວກຫອຍ ແລະ ປາມຶກ. Card "held, not charged" ກັນວົງເງິນ. Event ງານ (also "work") vs loan ອີເວັ້ນ. Undo ຍ້ອນກັບ; Dashboard ແຜງຄວບຄຸມ; offline ບໍ່ມີອິນເຕີເນັດ; Vegan ວີແກນ (not ອາຫານເຈ).
 - Samples: customer ມະນີ (manee@email.com); Pepperoni → ເຂົ້າຈີ່ປາເຕ. Every plural one = other.
+
+## lo-LA part 02 (languages-world-3, 22 Nov 2026)
+- check-part: 754 keys / 754; STRUCTURAL 0; back missing 0. No Thai script, no ZWSP, no old ຫລ/ຫນ/ຫມ, no Lao digits.
+- English left 17: Food Truck, Bluetooth, Face / Touch ID, iOS setting names "(Local Network)" / "(Settings)" in brackets (iOS has no Lao UI). Glossary 3 = vowel-mark false alarm (ໜ້າຈໍຄົວ (KDS) present). Length 14 = combining marks; Resume = ເປີດຮັບອໍເດີ້ຄືນ.
+- New: Schedule tab ກຳນົດການ (keeps ຕາຕະລາງ for the KDS Grid view); Venue ບ່ອນຈັດງານ (part 01 suggestion); "anyway" ຢູ່ດີ (ສ້າງຢູ່ດີ); Admin ຜູ້ດູແລລະບົບ; Terms ເງື່ອນໄຂການໃຊ້ງານ.
+- Ticket words (no capitals): CARD HELD ກັນວົງເງິນບັດແລ້ວ; DO NOT COLLECT ຫ້າມເກັບເງິນ; COLLECT {time} ໄປຮັບ {time}; NEW ORDERS MAY BE MISSING ends "!".
+- Accept the order ຢືນຢັນອໍເດີ້ (= Confirm); "for the hatch" in add-order ເປັນອໍເດີ້ໜ້າຮ້ານ (walk-up). cashIcon 💷 → 💵 (as km-KH).
+- Plurals: one = other everywhere (Lao only selects other).
+- Native check: takings ຍອດຂາຍ; restored ກູ້ຄືນແລ້ວ; Syncing… ກຳລັງສົ່ງຂໍ້ມູນ…; samples ລົດພ່ວງ (trailer), ເຕັ້ນສີສົ້ມ (orange tent).
