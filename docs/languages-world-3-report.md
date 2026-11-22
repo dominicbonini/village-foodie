@@ -2,6 +2,85 @@
 
 **Date:** 16 November 2026 · **Runs so far:** batch 1 (ru-KZ legal), batch 2 (uk-UA legal), batch 3 (kk-KZ legal), batch 4 (uz-UZ legal), batch 5 (az-AZ legal), batch 6 (ka-GE legal), batch 7 (hy-AM legal), batch 8 (mn-MN legal), batch 9 (hi-IN legal), batch 10 (bn-BD legal), batch 11 (ur-PK legal), batch 12 (ne-NP legal), batch 14 (fil-PH legal), batch 15 (sq-AL legal), batch 16 (bs-BA legal), batch 17 (mk-MK legal), batch 18 (ca-AD UI), batch 19 (ca-AD legal), batch 20 (sw-TZ UI), batch 21 (sw-TZ legal), batch 22 (si-LK UI), batch 23 (si-LK legal), batch 24 (ta-LK UI), batch 25 (ta-LK legal), batch 26 (km-KH UI), batch 27 (km-KH legal), batch 28 (lo-LA UI), batch 29 (lo-LA legal), batch 30 (am-ET UI), batch 31 (am-ET legal) of 35 · **Resumes:** languages-world-2 (paused at 12 of 23)
 
+## Final report (22 November 2026) — languages-world-3 is finished
+
+**All 23 languages are done:** the UI is installed and the three legal pages are written for every one of them. Store listings are
+staged and the full sweep has run. All of it is committed locally; nothing was pushed or deployed (you push and deploy by hand).
+No `.env*` file was opened, no database row was changed in this run (one read-only query of the KH / LA / ET rows), and Pizzeria
+Gusto and Le Roi du Churrasco were not touched.
+
+### What this run added (resumed by you on 22 Nov, one agent at a time)
+
+| Language | UI (9 parts + consistency + install) | Legal (privacy, terms, country terms) |
+|---|---|---|
+| km-KH Khmer | 26b63538 — consistency 64 fixes; + the 5 post-pay pricing keys (7d19a422) | 6943d41d (batch 27) |
+| lo-LA Lao | ac36ef75 — consistency 112 fixes incl. the 5 post-pay keys | 3e2e4286 (batch 29) |
+| am-ET Amharic | 910ce207 — consistency 94 fixes incl. the 5 post-pay keys | 59fc28d4 (batch 31) |
+
+Every install: translation-check structural 0; pricing-copy-4, messages-keys-used and languages-1 pass (1157/0, 61/0, 91/0 after
+am-ET); iOS strings in step (120 `.strings` files, 60 languages). Every legal batch: `_legal-translations.cjs` 3/3 and
+`legal-languages-1` renders /privacy, /terms, /country-terms (408/0 after am-ET); no ENOENT left — every base has its three files.
+
+- **The 5 post-pay pricing keys.** en-GB gained `pricing.fee.feeOnlyMonthly`, `pricing.fee.includedMonthly`,
+  `pricing.monthlyNote.atTruck` / `.online` and `planTable.pay.feeMonthly` on 19 Nov (plans-everywhere-1/2), after these three
+  languages' parts were split. They were translated into each language's `fix.json`, so they went through the normal pipeline.
+- **Faithfulness fixes caught in review** (all in the consistency passes): Lao's allergen-card example had swapped milk for egg
+  (milk restored); Amharic part 08 had added a sentence the English does not have (removed) and part 07 had read "Post-pay charge"
+  as a charge on pay-at-the-truck orders (now the post-pay bill).
+- **Legal:** the terms are translated from the current English (19 Nov, with the post-pay wording). No Cambodian, Lao or
+  Ethiopian law is mentioned; the Brazilian real is never the riel, kip or birr; Lao has no Thai script.
+
+### Store listings (8a420c41)
+
+15 listings staged in `data/store-listing/next/` with English back-translations in `docs/i18n/back-store-listing/next/`:
+sq-AL (written in languages-world-2, now staged) and the 14 without one — mk-MK, ca-AD, hi-IN, bn-BD, ur-PK, ne-NP, si-LK,
+ta-LK, km-KH, lo-LA, mn-MN, fil-PH, sw-TZ, am-ET. `scripts/ios/listing-rules.cjs` passes each, with only the two notes the
+earlier staged files carry ("whatsNew should say 29 languages"; "appStoreLocale missing" for Play-only languages).
+
+- **Uzbek and Bosnian have no listing language in either store**, so they have no file.
+- whatsNew says **60 languages** — now the real count, so the README's ⚠️ about the six languages-world-2 files is resolved.
+- "No commission" keywords were dropped: the app charges a fee on online orders, so the claim is not true in every country.
+- **Your call:** the README says to move a file up one level when its country is switched on and its pages answer. AL (sq-AL),
+  AD (ca-AD), MK (mk-MK), LK (si-LK) and TZ (sw-TZ) are switched on, so their listings could move up and go out with the next
+  `scripts/ios/push-listing.cjs`. I did not move them — that publishes to the stores.
+
+### The full sweep
+
+Run once, in a clean worktree at 2da8ec99 (`scripts/run-harnesses.cjs` with a copy of the list).
+
+- **One harness was not run: `event-types.cjs`.** The runner refuses the WHOLE sweep because that file fails its production screen:
+  lines 2675/2679 are a comment and a `.replace('fetch(' …)` added by dashboard-auth-2 (18 Nov), which the screen reads as a
+  non-localhost `fetch(`. It is not this workstream's file, so I did not edit it; the other 225 ran from a copy of the list without
+  it. **Someone should reword that comment so the screen passes** (another session's fix).
+- **225 run: 205 passed, 20 failed.** Four were this work's, now fixed (bf971963) and re-run green:
+  - compare-suits-1 (72/72): card-word lists for the 11 bases languages-world-3 added; Lao and Khmer join the no-spaces scripts.
+  - compare-autopublish-1 (75/75): its base regex read two-letter languages only, so fil-PH was missed.
+  - pricing-copy-3 (34/34) and costs-accounts-1's Pay-at rule: si-LK and ta-LK's accountant-report label now equals their own
+    price word.
+  - copy-truth-1 (56/56): lo-LA's extra-van line had a typed "1" ("each extra van" now).
+- **The other 16 are not this work's** (checked; none names a languages-world-3 locale):
+  - no `.next` build in a fresh worktree (and I can't build without the environment files): event-types-render,
+    pending-card-render, pending-card-buttons;
+  - GB/US byte-identity against other sessions' dashboard, sign-up and paperwork changes: language-phase-1b, -1c, -1d, -1d2,
+    -1e, -2;
+  - dashboard routes changed by dashboard-auth / events-create: cwv-2, loyalty-1, costs-accounts-1 (its route check);
+  - billing-1 (the submit gate before booking), france-1 (fr-FR back-translations missing for later keys), contact-1
+    (plans-everywhere's planTable change — new-locale files are set aside there by design), tidy-1 (outreach `is_test`).
+
+### Open items for you
+
+1. **Switch-on, your call:** Cambodia (KH), Laos (LA) and Ethiopia (ET) have enabled rows still on en-GB / en-GB / en-KE. km-KH,
+   lo-LA and am-ET are installed but on no row. As with LK and TZ, each switch would be one committed migration, run only after
+   the live site serves the locale, plus the own-language short_name (Intl: កម្ពុជា, ລາວ, ኢትዮጵያ).
+2. **Older Terms now out of step with the English:** terms-postpay-1 (19 Nov) updated the Terms for the 51 languages enabled
+   countries use, not for ta-LK, fil-PH, hi-IN, ur-PK and vi-VN (no enabled country uses them). Before any of those is switched on
+   its Terms need the post-pay sentences.
+3. **Native checks:** every language here is a faithful machine translation. The per-part word choices to check are in
+   `docs/languages-world-2/handover/NATIVE.md` (km-KH, lo-LA, am-ET part and consistency sections); every legal page needs a
+   native/legal check; the listings need one too.
+4. **The event-types.cjs screen** (above) blocks the full sweep for everyone until its comment is reworded.
+
+
 ## Progress
 
 | # | Language | UI done | Legal done | Checks | Commit |
@@ -30,7 +109,7 @@
 | 22 | lo-LA Lao | ✅ installed ac36ef75 (9 parts + consistency incl. the 5 post-pay pricing keys; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass; iOS strings in step) — needs native check | ✅ batch 29 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs lo-LA` 3/3 ✓; `legal-languages-1` /la/privacy, /la/terms, /la/country-terms ✓ | ac36ef75 · legal 3e2e4286 |
 | 23 | am-ET Amharic | ✅ installed 910ce207 (9 parts + consistency incl. the 5 post-pay pricing keys; translation-check structural 0, pricing-copy-4, messages-keys-used and languages-1 pass; iOS strings in step) — needs native check | ✅ batch 31 — **needs native/legal check** | check-part 9/9 STRUCTURAL 0; check-fix 0; `_legal-translations.cjs am-ET` 3/3 ✓; `legal-languages-1` /et/privacy, /et/terms, /et/country-terms ✓ | 910ce207 · legal 59fc28d4 |
 
-Legal pages: **23 of 23 languages, 69 of 69 pages.** UI: **23 of 23 installed** (am-ET on 22 Nov). Next: store listings (the 14 languages without them + staging sq-AL), then full sweep, final report, reference manual update.
+Legal pages: **23 of 23 languages, 69 of 69 pages.** UI: **23 of 23 installed** (am-ET on 22 Nov). Store listings, sweep, final report and reference manual: done (22 Nov).
 
 ## Batch order
 
@@ -387,4 +466,4 @@ Every UI batch adds the 5 pricing-copy-4 keys and runs `scripts/pricing-copy-4.c
 
 **After the last batch (Dominic, 18 Nov):** full sweep → final report → **reference manual update** (docs/reference-manual.md, a languages-world-3 section).
 
-Batch 31 was the am-ET legal pages (batch 30 was the am-ET UI). Next: store listings (the 14 languages without them + staging sq-AL), then full sweep, final report, reference manual update.
+Batch 31 was the am-ET legal pages (batch 30 was the am-ET UI). Then: store listings (8a420c41), the full sweep and its fixes (bf971963), this final report and the reference manual update (§89.6). **languages-world-3 is finished** — see the Final report at the top for what is left for you.

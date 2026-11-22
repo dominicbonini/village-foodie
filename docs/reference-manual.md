@@ -832,8 +832,10 @@ capacity-one-source-1 (`docs/capacity-one-source-1-report.md`, `docs/capacity-on
   - ~~**The switch-on migration (20261095) has NOT been run**~~ ✅ It ran on 12 Nov at 18:12 UTC (V16.19) (§89.3–§89.5).
 - **Languages:**
   - languages-world-1: 8 new full bases and 39 variants.
-  - languages-world-2: 12 of 23 new bases, paused (handover kit in `docs/languages-world-2/handover/`).
-  - **48 bases, 103 locales** in all, every new one switched off. Serbian country names and dates are in Latin script (§89.6).
+  - languages-world-2: 12 of 23 new bases, then paused (handover kit in `docs/languages-world-2/handover/`).
+  - languages-world-3 (16–22 Nov): the other 11 installed, legal pages for all 23, 21 store listings staged; AL, AD, BA, MK, LK and
+    TZ switched to their own language (§89.6).
+  - **59 bases** in all. Serbian country names and dates are in Latin script (§89.6).
 - **Also:**
   - **ios-intl-1:** the app 1.1 in 29 languages, uploaded and not yet submitted (§89.7).
   - **meta-sdk-1:** the Meta SDK no longer logs app events (§89.7).
@@ -38886,7 +38888,7 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
   buttons scroll sideways, one country per row, everything 44px or more.
 - **Screenshots:** in `docs/world-countries-5/shots/`, from a local render with all 210 countries switched on in memory only.
 
-## 89.6 Languages: 48 bases, 103 locales, every new one switched off
+## 89.6 Languages: 59 bases, every new one switched off unless listed below
 
 - **languages-world-1 (10–11 Nov; pushed):**
   - **8 new full bases:** tr-TR, ko-KR, zh-TW, id-ID, vi-VN, he-IL, is-IS, sr-RS.
@@ -38896,7 +38898,7 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
     any of these countries.** That is a lawyer's job before each switch-on.
   - **Hebrew is right to left.** The RTL rule is `/^(ar|he|ur)(-|$)/` with Urdu (below).
   - iOS `.lproj` folders were added; the store listings are staged in `data/store-listing/next/`.
-- **languages-world-2 (11–12 Nov; local, not pushed): PAUSED at 12 of 23.**
+- **languages-world-2 (11–12 Nov): paused at 12 of 23 — finished by languages-world-3 (below).**
   - **Done, committed, switched off:** uk-UA, ru-KZ, kk-KZ, uz-UZ (Latin), az-AZ, ka-GE, hy-AM, mn-MN (Cyrillic), hi-IN, bn-BD,
     **ur-PK (right to left)** and ne-NP.
   - Each has every key, back-translations, 0 structural problems, allergen-guard words, an iOS `.lproj` and its registration.
@@ -38905,6 +38907,24 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
   - **Not done:** sq-AL, mk-MK, bs-BA, ca-AD, si-LK, ta-LK, km-KH, lo-LA, fil-PH (3 of 9 parts), sw-TZ, am-ET; **the legal pages
     for all 23**; store listings for 14.
   - **Resume from `docs/languages-world-2/handover/`.** Note that its `en-GB.start.json` lacks pricing-copy-4's 5 keys.
+- **languages-world-3 (16–22 Nov; local, not pushed): FINISHED — all 23 languages-world-2 languages.**
+  - **UI installed** for the 11 that were left: fil-PH, sq-AL, bs-BA, mk-MK, ca-AD, sw-TZ, si-LK, ta-LK, km-KH, lo-LA, am-ET (9
+    parts + a consistency pass each, through `docs/languages-world-2/handover/`). Each has every key, back-translations,
+    structural 0, allergen-guard words, an iOS `.lproj` (120 `.strings` files, 60 languages) and its registration.
+  - **Legal pages for all 23** (69 pages): Privacy Policy, Terms, Country-specific terms. 🔴 All need a native/legal check.
+    `legal-languages-1` renders every base (408/0); no base is missing a file.
+  - **Store listings:** 21 staged in `data/store-listing/next/` (6 from languages-world-2, 15 from languages-world-3). Uzbek and
+    Bosnian have no listing language in either store. whatsNew says 60 languages (the real count).
+  - **Switched on since (languages-switch-1/2/3, 19 Nov, migrations run):** AL sq-AL, AD ca-AD, BA bs-BA, MK mk-MK, LK si-LK, TZ
+    sw-TZ, with own-language `short_name`s for AL, MK and LK. India and Pakistan stay on English (Dominic); ta-LK and hi-IN/ur-PK
+    are installed but on no row. KH, LA and ET rows are enabled but still on English — km-KH, lo-LA, am-ET wait for Dominic.
+  - **The 5 post-pay pricing keys** (plans-everywhere-1/2, 19 Nov) were added to km-KH, lo-LA and am-ET in their `fix.json`.
+  - **Not in step:** terms-postpay-1's Terms update skipped ta-LK, fil-PH, hi-IN, ur-PK and vi-VN (no enabled country uses them) —
+    update before switching any of them on.
+  - **Sweep (22 Nov, clean worktree):** 225 run, 205 passed; the 4 failures from this work fixed (bf971963: compare-suits-1 word
+    lists for the 11 new bases, compare-autopublish-1's three-letter base regex, si/ta report label, a typed digit in lo-LA).
+    `event-types.cjs` blocks the runner's screen (a dashboard-auth-2 comment reads as a non-localhost `fetch(`) and was left out.
+  - Report: `docs/languages-world-3-report.md` (Final report at the top); per-language word choices in the handover's `NATIVE.md`.
 - **Decisions still open:**
   - Native digits (Intl writes Bengali and Devanagari digits for bn-BD and ne-NP) or `-u-nu-latn`. The same choice applies to the 7
     Arabic variants.
@@ -38913,7 +38933,8 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
   - tú, usted or vos in Central America.
   - One zh-Hant listing serves both HK and TW.
 - **Serbian:** Latin script for dates (pricing-copy-3) and for country names (world-countries-5; live Serbia included).
-- **Sweep:** 5 harnesses fail until the new bases have legal pages: paperwork-1, legal-languages-1, world-countries-3, contact-1, tidy-1.
+- **Sweep:** the 5 harnesses that failed for missing legal pages (paperwork-1, legal-languages-1, world-countries-3, contact-1,
+  tidy-1) no longer fail for that reason — every base has its pages (languages-world-3).
 
 ## 89.7 The apps: the App Store everywhere, the 1.1 build, and Meta's SDK
 
