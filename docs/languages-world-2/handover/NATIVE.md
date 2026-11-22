@@ -693,3 +693,10 @@
 - auth.signup code/deal = demoGetStarted.partnerCode*/partnerDeal*/promoPlaceholder/freeMonth (script-checked). Schedule ກຳນົດການ (sentences ແຖບ “ກຳນົດການ”); Your trucks (vans) ລົດຂອງທ່ານ; Deals ຊຸດອາຫານ; ຫຼຸດ only for partner/promo % off.
 - New: go live ເປີດໃຊ້ງານ; Billing ການຮຽກເກັບເງິນ; upsell ການຂາຍເພີ່ມ; customisation ການປັບແຕ່ງ; Dietary ອາຫານສະເພາະ; Finish ຈົບຂັ້ນຕອນ (≠ Done ສຳເລັດ); allergen-card Yes/No ມີ / ບໍ່ມີ; Pub chip ຮ້ານເບຍ.
 - Native check: dish names ຊາກປານີ (saag paneer), ຊີ້ນແກະໂຣແກນໂຈສ, ຈານາມາຊາລາ, ໄສ້ກອກເຜັດ (nduja), ໝາກກອກ (olives; also hog plum). Samples ເບີເກີບຸນມີ, ຄົວບ້ານອານຸ, wedding ບຸນມີ ແລະ ແກ້ວ; allergen-card example "ເຂົ້າຈີ່ປາເຕ… ເຂົ້າສາລີ ແລະ ໄຂ່" replaces fish & chips — NOTE English lists wheat and MILK; consistency pass to restore milk. Spam folder ໂຟນເດີສະແປມ; promo code ລະຫັດໂປຣໂມຊັນ; partner ພາດເນີ.
+
+## lo-LA part 04 (languages-world-3, 22 Nov 2026)
+- check-part: 695 keys / 695; STRUCTURAL 0; back missing 0. No Thai script, no ZWSP, no old ຫລ/ຫນ/ຫມ, no Lao digits.
+- English left 38: Food Truck; migration paths/IDs; JSON; subdomain example "events"; eventId/placeId; Canva "Share › Download" (no Lao Canva UI). Drift 33 deliberate (Unassigned ຍັງບໍ່ໄດ້ກຳນົດລົດ; Free from ບໍ່ມີ). Length 1: Date TBC "ວັນທີ: ລໍຖ້າຢືນຢັນ".
+- Settled: Place “ສະຖານທີ່”, Venue “ບ່ອນຈັດງານ”, Area (town box) “ເຂດ”, Time “ເວລາ”; Location toggle in errorsManage.wp_last_toggle shown as Place “ສະຖານທີ່” (as km-KH); CANCELLED “ຍົກເລີກແລ້ວ”. Fleet "truck" (vanFilter, van for an event) ລົດ — ລົດທີ່ຈະອອກງານນີ້.
+- Native check: "Kitchen also handles" “ໃນຄົວຍັງມີການໃຊ້”; Instant prep “ພ້ອມເສີບ”; Import ນຳເຂົ້າ; Discard ຖິ້ມ; Show me around ພາຂ້ອຍທ່ອງເບິ່ງ; Tidy up places ຈັດລະບຽບສະຖານທີ່; Cost to make ຕົ້ນທຶນການເຮັດ; caption ຄຳບັນຍາຍ; font library ຄັງຟອນ; blank image ຮູບພື້ນຫວ່າງ; days off ວັນພັກ.
+- Samples: Margherita → ເຂົ້າຈີ່ປາເຕ (ປາເຕ, ໝູຍໍ, ແຕງກວາ); @vientianemusicfest; yourfoodtruck.la/events. WhatsApp "Set up" quoted “ຕັ້ງຄ່າ” (button must match). Uncategorized/Uncategorised both ບໍ່ມີໝວດໝູ່.
