@@ -35,3 +35,32 @@ Same staging, same rules (`node scripts/ios/listing-rules.cjs <file>` passes for
 
 ⚠️ `whatsNew` in these six says the app supports **60 languages** (the number planned when they were written). Correct it to the
 real count before uploading.
+
+## languages-world-3 (22 November 2026)
+
+Same staging, same rules (`node scripts/ios/listing-rules.cjs <file>` passes for each, with only the two notes the earlier staged
+files carry: "whatsNew should say 29 languages" and, for Play-only languages, "appStoreLocale missing"). Files are named by messages
+locale; sources in docs/languages-world-2/handover/listing/src/ (c.cjs sq-AL, d.cjs, e.cjs). Uzbek and Bosnian have no listing
+language in either store, so they have no file.
+
+| File | App Store locale | Google Play locale | Note |
+|---|---|---|---|
+| sq-AL.json | — | sq | Play only |
+| mk-MK.json | — | mk-MK | Play only |
+| ca-AD.json | ca | ca | Andorra |
+| hi-IN.json | hi | hi-IN | India stays on English for now (Dominic, 19 Nov) — stage until switched on |
+| bn-BD.json | bn-BD | bn-BD |  |
+| ur-PK.json | ur-PK | ur | Right to left; Latin brand words inline, no bidi controls. Pakistan stays on English for now (Dominic, 19 Nov) |
+| ne-NP.json | — | ne-NP | Play only |
+| si-LK.json | — | si-LK | Play only; zero-width joiners in conjunct letters are intentional |
+| ta-LK.json | ta-IN | ta-IN | App Store / Play have only Tamil (India): Sri Lankan Tamil words kept neutral enough for India |
+| km-KH.json | — | km-KH | Play only |
+| lo-LA.json | — | lo-LA | Play only |
+| mn-MN.json | — | mn-MN | Play only |
+| fil-PH.json | — | fil | Play only; the Philippines has no country row yet |
+| sw-TZ.json | — | sw | Play has ONE Swahili listing: Kenya and Tanzania both see it |
+| am-ET.json | — | am | Play only |
+
+`whatsNew` in these fifteen says **60 languages**, which is the real count now (60 iOS languages after am-ET). The six
+languages-world-2 files above say 60 too, so that ⚠️ is now resolved — recheck the count before uploading if more languages land.
+Every listing needs a native check (docs/languages-world-3-report.md, store listings section).
