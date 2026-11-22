@@ -650,3 +650,11 @@
 - Comparison: vendor/provider អ្នកផ្តល់សេវា; competitor គូប្រជែង; Yes មាន / No គ្មាន / Not stated មិនបានបញ្ជាក់ / Not listed មិនបានរាយបញ្ជី / Doesn't say មិនបាននិយាយ / Doesn't apply មិនពាក់ព័ន្ធ; cell.notApplicable read as "a marketplace" វេទិកាលក់. comparison.cell.trial = `{months, plural, one {# ខែ} other {# ខែ}} ឥតគិតថ្លៃ` (part 09 reuses).
 - Native check: loyalty រង្វាន់អតិថិជនស្មោះត្រង់ (avoids កម្មវិធី); signal សញ្ញាអ៊ីនធឺណិត; griddle បន្ទះអាំង; pitch កន្លែងលក់; food festival មហោស្រពម្ហូប; "on us" យើងជូនឥតគិតថ្លៃ; "Yes." answer បាន។ (not បាទ/ចាស).
 - Pay at the truck: feature row បង់ពេលទៅយក, sentences បង់ប្រាក់នៅ Food Truck.
+
+## km-KH part 09 (languages-world-3, 22 Nov 2026)
+- check-part: 453 keys / 439 (14 planNames extra); STRUCTURAL 0; back missing 0 (English left 38 · glossary 16 · drift 45 · length 24). markRules 0 failures. No ZWSP, no Khmer digits.
+- English left: Food Truck; testimonial names Nadia & Bogdan; "Dominic Bonini" in the SEO string; Bluetooth. Glossary 16: combining-mark false alarms (KDS, WhatsApp auto-reply); Messenger/Instagram auto-reply names without "via WhatsApp" (as part 06); landing.meta.description = STYLE.md SEO string; featuresPage.detail.whatsapp_auto_replies uses a verb as the English.
+- planTable.trial.length `{months, plural, one {# ខែ} other {# ខែ}}` (part 08's month plural without ឥតគិតថ្លៃ — English doesn't say free). priceWord.masked មិនទាន់កំណត់. planNames: demo ដេម៉ូ; tester អ្នកសាកល្បង; payg back ends "…only pay 0.99% on online orders."
+- Fleet per truck / month ឡាន; Pay at Hatch price word បង់ពេលទៅយក, feature name បង់ប្រាក់ពេលទៅយក. UK company line keeps "England and Wales".
+- Native check: Unlimited allowance/price word មិនកំណត់ចំនួន vs plan name គ្មានដែនកំណត់; truckPage.meta.orderDescription "ទៅយកផ្ទាល់នៅឡាន" (STYLE SEO wording; TERMS elsewhere នៅ Food Truck); Most trucks badge Food Truck ភាគច្រើនជ្រើសរើស; Lifetime ពេញមួយជីវិត; Hire a Food Truck ជួល Food Truck សម្រាប់ពិធី.
+- Village Foodie footer: "Never miss a slice" → ភីហ្សាមួយចំណិត; Spam/Pepperoni pun → "(but maybe some pizza)". Loanwords: wifi វ៉ាយហ្វាយ; apron អាវផាយ; EEA cards កាតតំបន់សេដ្ឋកិច្ចអឺរ៉ុប (EEA).
