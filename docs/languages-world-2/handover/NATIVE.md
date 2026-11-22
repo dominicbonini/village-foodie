@@ -788,3 +788,13 @@
 - New: Import menu ሜኑ ያስገቡ; Instant “ወዲያው የሚቀርብ”; Manager ሥራ አስኪያጅ; staff ሠራተኛ. manageSchedule.card.dealsActive gained a one branch (English =0 + other).
 - Native check: go live በሥራ ላይ መዋል vs Live badge በሂደት ላይ; Discard import ይተዉት (ይጣሉ = drag-and-drop drop); Free from የሌሉበት; Cost to make የመሥሪያ ወጪ (avoids prep word ማዘጋጀት); first-person schedule options ("የሥራ ፕሮግራሜ በድረ-ገጼ ላይ አለ", "ቀኖቼን ራሴ አክላለሁ"); loans ፎንት, ታግ, ኤክስፖርት; Contact details የመገኛ መረጃ.
 - Samples: @buresmusicfest → @addisfoodfest; yourtruck.co.uk → yourfoodtruck.et. GST/PST kept.
+
+## am-ET part 05 (languages-world-3, 22 Nov 2026)
+- check-part: 840 keys / 840; STRUCTURAL 0; back missing 0; glossary 0.
+- English left 2: yourfoodtruck.et/events; key "Delete" ("ወይም Delete ቁልፍን ይጫኑ"). Length 5: Deals ጥምር ምግቦች (ኮምቦ) ×2, Walk-up በቦታው የሚሰጥ ትዕዛዝ ×2, Card fees የካርድ አገልግሎት ክፍያዎች. Drift 107 wording only.
+- Glossary fixes: cancellation sentence "የመውሰጃ ሰዓት ከመድረሱ <select></select> በፊት ድረስ…"; Settings Auto-replies tab "የWhatsApp ራስ-ሰር ምላሽ" (long for a tab; consistency pass — the card also holds Instagram/Messenger).
+- Report row "Pay at Hatch" used the feature name ሲወስዱ ክፍያ — consistency pass to apply the label/feature-name rule.
+- "Same as …" labels as part 03 "ከመደበኛው ጋር ተመሳሳይ" ("ከዚህ ጋር ተመሳሳይ፦ {name}", “ከተሽከርካሪ 1 ጋር ተመሳሳይ”); schedule option first person "ዝግጅቶቼ በራስ-ሰር ይፈለጉልኝ". No prefix glued to quoted names (“ዲዛይኖች” በሚለው ትር ውስጥ; “ዝግጅት ያክሉ” በሚለው ውስጥ).
+- Native check — post editor: Style ቅጥ, Look መልክ, strip ሰቅ, See-through አሳላፊ, Italic ሰያፍ, CAPITALS ትላልቅ ፊደላት, template አብነት; reports: Channel የሽያጭ መንገድ, accountant የሂሳብ ባለሙያ, tax year የግብር ዓመት; allergen per-dish tags ምልክቶች (መለያ = order chip).
+- Samples: yourfoodtruck.et, hello@yourfoodtruck.et, @addisfoodfest, a pub’s logo → a café's logo, Van 2 / Festival Van → ተሽከርካሪ 2፣ የፌስቲቫል ተሽከርካሪ. Oswald, Excel, Numbers, Xero, QuickBooks kept.
+- one branches show #/{count}; private-event count "# የግል ዝግጅት" in both branches (glossary match).
