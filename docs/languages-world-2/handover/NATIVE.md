@@ -836,3 +836,12 @@
 - Ranges without affixes on placeholders: Under {to} "እስከ {to}"; Over {from} "{from} እና ከዚያ በላይ"; "{fee} above {included}" "{included} ካለፈ በኋላ <b>{fee}</b>". planPrompt "{plan} ፓኬጅ {feature} ያካትታል።" both select branches. Banner opens "{brand}፦ …"; no-monthly-fee select text in brackets.
 - Native check: Features አገልግሎቶች; Discovery map በግኝት ካርታ; customer/cook screens ስክሪን; Most trucks badge ብዙዎች የሚመርጡት; Tester ሞካሪ; Lifetime ዕድሜ ልክ; apron ሽርጥ; grill ምድጃ; customer quotes plural-you ናችሁ / አላችሁ.
 - Substitutions: "Pizza Kitchen" → የአበበ በርገር; Pepperoni joke → sambusa; wifi → Wi-Fi; "registered in England and Wales" kept in Amharic words.
+
+## am-ET consistency pass (languages-world-3, 22 Nov 2026) — fix.json, 94 corrections, check-fix 0
+- Includes the 5 post-pay pricing keys en-GB gained on 19 Nov (pre-orders ቅድመ-ትዕዛዞች, billed monthly በየወሩ ይከፈላል, card on file በአካውንትዎ ላይ የተመዘገበ ካርድ). Native check.
+- Faithfulness: comparisonSuits.q.commission added clause removed; billing.tab.next.surcharge → "የድኅረ-ክፍያ ሂሳብ (ወር፦ {month})" (post-pay bill); allergen-card example back to fish & chips with ስንዴና ወተት.
+- Billing/calculator "per truck" → van word ለአንድ ተሽከርካሪ (13 keys incl. "How many trucks"); deleteAccount.allTrucks stays የምግብ መኪና. Pay at the truck: report row label ሲወስዱ ይክፈሉ; comparison feature row ሲወስዱ ክፍያ. Auto-replies Settings tab / card title plain ራስ-ሰር ምላሽ.
+- Postcode: fields the code stores as postcodes → ፖስትኮድ everywhere (no Ethiopian address format; the GB fallback's postcode check would flag a sub-city); sample addresses keep sub-city / woreda.
+- Heading box የሳምንቱ ርዕስ ሳጥን; wp_last_toggle "“ቦታ” ወይም “ሰዓት” —" pattern; private-event messages say weekly post ሳምንታዊ ልጥፍ. Live: running event በሂደት ላይ; event going live በሥራ ላይ መዋል; truck going live "ትዕዛዝ መቀበል ከመጀመርዎ በፊት".
+- Save my menu quotes the real button “ሜኑውን ያስቀምጡ”; "Start free, keep my menu" "…ሜኑዎ ይቀመጥ". 💷 → 💵 (4 keys); የStripe አካውንት; Payment method የክፍያ ዘዴ; 3 glued prefixes removed. ~86 unifications.
+- Check: Post-pay ድኅረ-ክፍያ (also seen ድህረ); "Week commencing" "ሳምንቱ የሚጀምረው፦ {date}" and poster heading "ሳምንት፦ {start} እስከ {end}"; ተሽከርካሪ on the public pricing card; ፖስትኮድ on the create-event field; the 5 new pricing lines.
