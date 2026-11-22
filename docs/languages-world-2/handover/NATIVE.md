@@ -771,3 +771,12 @@
 - Native check: Postcode field → ክፍለ ከተማ ወይም ወረዳ (Ethiopia has no postcodes, per STYLE.md — substitution); picker Done ተጠናቋል (maybe ጨርሻለሁ); DO NOT COLLECT (next to CARD HELD) ክፍያ አይቀበሉ; NEW ORDERS MAY BE MISSING prefixed "ትኩረት፦" (no capitals in Fidel); "for the hatch" በቦታው ለሚሰጥ ትዕዛዝ.
 - 💷 cash icon kept as English — consistency pass: other non-£ languages (km-KH, lo-LA, si-LK, hi-IN…) use 💵.
 - No affix glued to placeholders (apposition "(አድራሻ፦ {address})", "ከዝግጅቱ {from} ወደ ዝግጅቱ {to}"); every one branch shows #.
+
+## am-ET part 03 (languages-world-3, 22 Nov 2026)
+- check-part: 834 keys / 834; STRUCTURAL 0; back missing 0; glossary 0.
+- English left 6: WhatsApp Manager (3), "Dominic" sign-off, DELETE (typed confirmation), San Pellegrino. Length 13: locked allergen term on short labels, cuisine names. Drift 125 back-translation wording.
+- eventTypes.phone.cardSummary gained a one branch (English =0 + other), as part 01; every one shows # / {count}.
+- Account አካውንት (መለያ is the order "chip"); Log in ይግቡ. Extras & upsells ተጨማሪዎች እና የሽያጭ ጥቆማዎች; upsells የሽያጭ ጥቆማዎች; custom extras ብጁ ተጨማሪዎች; Billing የሂሳብ አከፋፈል; Kitchen setup የኩሽና ማዋቀር; Upcoming መጪ; Delete ይሰርዙ (shares ተሰርዟል with cancelled — native check).
+- ቅናሽ only for partner/promo offers, never meal deals; auth.signup code/deal = demoGetStarted partnerCode*/partnerDeal* word for word; Private hire chip የምግብ መኪና ለዝግጅት መከራየት (long, locked).
+- Local substitutions: Abebe's Burgers (የአበበ በርገር); Henok & Betelhem wedding; sambusa in the allergen-card example (consistency pass: allergens must stay as the English lists them); school fete የትምህርት ቤት በዓል; Last name → የአባት ስም (father's name); postcode → ክፍለ ከተማ; you@yourfoodtruck.et; demo dishes transliterated, Coke ኮካ ኮላ.
+- Native check: Done buttons ተጠናቋል; Dismiss on unmatched allergen rows ይዝጉ (maybe ይተዉ); Optional (አማራጭ) = option word.

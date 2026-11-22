@@ -1,0 +1,1054 @@
+{
+ "alertsOperator": {
+  "hi": "ሰላም {name}፣",
+  "limit80": {
+   "subject": "የዚህ ወር የWhatsApp ምላሾችዎን 80% ተጠቅመዋል",
+   "used": "የWhatsApp ራስ-ሰር ምላሽ ለዚህ ወር <b>{used} / {limit}</b> ተጠቅሟል።",
+   "nothingStopped": "ምንም ነገር አልቆመም። ገደቡ ({limit}) ላይ ሲደርሱ፣ አበልዎ እስኪታደስ ድረስ ራስ-ሰር ምላሾች ለጊዜው ይቆማሉ (የሚታደስበት ቀን፦ <b>{reset}</b>) — ደንበኞች አሁንም መልዕክት ሊልኩልዎ ይችላሉ፤ የሚልኩትንም ሁሉ ያያሉ።",
+   "raise": "ወርሃዊ ገደብዎን በፈለጉት ጊዜ በቅንብሮች ውስጥ ከፍ ማድረግ ይችላሉ።",
+   "raiseLink": "ወርሃዊ ገደብዎን በፈለጉት ጊዜ በቅንብሮች ውስጥ ከፍ ማድረግ ይችላሉ፦",
+   "button": "ቅንብሮችን ይክፈቱ"
+  },
+  "limit100": {
+   "subject": "የWhatsApp ራስ-ሰር ምላሽ ለዚህ ወር ለጊዜው ቆሟል",
+   "usedAll": "የዚህን ወር ራስ-ሰር የWhatsApp ምላሾች በሙሉ ({limit}) ስለተጠቀሙ ለጊዜው ቆመዋል።",
+   "stillReach": "<b>ደንበኞች አሁንም እንደተለመደው መልዕክት ሊልኩልዎ ይችላሉ፤ እያንዳንዱ መልዕክትም ይደርስዎታል።</b> የቆመው ብቸኛው ነገር መልሶ የሚላከው ራስ-ሰር ምላሽ ነው።",
+   "startAgain": "እንደገና የሚጀምሩት <b>{reset}</b> ላይ ነው፤ ወይም ወርሃዊ ገደብዎን በቅንብሮች ውስጥ ከፍ ካደረጉ ወዲያውኑ ይጀምራሉ።",
+   "startAgainLink": "እንደገና የሚጀምሩት {reset} ላይ ነው፤ ወይም ወርሃዊ ገደብዎን በቅንብሮች ውስጥ ከፍ ካደረጉ ወዲያውኑ ይጀምራሉ፦",
+   "button": "ገደቡን ከፍ ያድርጉ"
+  },
+  "paymentBlocked": {
+   "subject": "WhatsApp መልዕክት ከመላኩ በፊት የመክፈያ ዘዴ ያስፈልገዋል",
+   "stopped": "በWhatsApp Business አካውንትዎ ላይ የሚሠራ የመክፈያ ዘዴ ስለሌለ WhatsApp ራስ-ሰር ምላሾችዎ እንዳይላኩ አቁሟል።",
+   "stillMessage": "<b>ደንበኞች አሁንም መልዕክት ሊልኩልዎ ይችላሉ፤ የሚልኩትንም ሁሉ ያያሉ</b> — ነገር ግን ምላሾቹ አይደርሷቸውም።",
+   "payDirect": "ለእነዚህ መልዕክቶች ለWhatsApp በቀጥታ ይከፍላሉ፤ ስለዚህ ይህ የሚስተካከለው በHatchGrab ሳይሆን በWhatsApp Manager ውስጥ ነው። እዚያ ካርድ ያክሉ ወይም ያዘምኑ፤ ምላሾቹም በራሳቸው እንደገና ይጀምራሉ።",
+   "payDirectLink": "ለእነዚህ መልዕክቶች ለWhatsApp በቀጥታ ይከፍላሉ፤ ስለዚህ ይህ የሚስተካከለው በHatchGrab ሳይሆን በWhatsApp Manager ውስጥ ነው። እዚያ ካርድ ያክሉ ወይም ያዘምኑ፤ ምላሾቹም በራሳቸው እንደገና ይጀምራሉ፦",
+   "button": "WhatsApp Manager ይክፈቱ",
+   "settings": "የHatchGrab ቅንብሮችዎ፦ <link>{url}</link>"
+  }
+ },
+ "setup": {
+  "steps": {
+   "based": "የሚገኙበት ቦታ",
+   "identity": "የምግብ መኪናዎ",
+   "menu": "ሜኑዎ",
+   "event": "የመጀመሪያው ዝግጅት"
+  },
+  "stepItem": "{number}. {label}",
+  "settingUp": "በማዋቀር ላይ",
+  "loading": "በመጫን ላይ",
+  "loadingCountries": "በመጫን ላይ…",
+  "verify": {
+   "ok": "ኢሜይሉ ተረጋግጧል — እናመሰግናለን።",
+   "expired": "ያ የማረጋገጫ ሊንክ ጊዜው አልፎበታል። ያነጋግሩን፤ ሥራ ከመጀመርዎ በፊት እናስተካክለዋለን።",
+   "invalid": "ያ የማረጋገጫ ሊንክ አልሠራም። ያነጋግሩን፤ ሥራ ከመጀመርዎ በፊት እናስተካክለዋለን።"
+  },
+  "identity": {
+   "heading": "የምግብ መኪናዎ ስም ማን ነው?",
+   "intro": "ደንበኞች የሚያዩት ይህን ስም ነው። ለሕዝብ ክፍት ለማድረግ እስኪወስኑ ድረስ ምንም ነገር አይታይም።",
+   "nameLabel": "የምግብ መኪናው ስም",
+   "namePlaceholder": "የአበበ በርገር",
+   "phoneLabel": "ስልክ",
+   "whatsappTick": "ይህ ቁጥር WhatsApp አለው",
+   "phoneHelp": "ደንበኞች ስለ ትዕዛዛቸው መጠየቅ እንዲችሉ ይህን ቁጥር በትዕዛዝ ማረጋገጫቸው ላይ ያዩታል። ምልክቱ ቁልፉ “ይደውሉልን” ወይም “በWhatsApp ይጻፉልን” እንደሚል ይወስናል። ሁለቱንም በቅንብሮች ውስጥ መቀየር ይችላሉ።"
+  },
+  "phoneRequired": "ስልክ ቁጥር ያክሉ — እርስዎን ለማግኘት ደንበኞችም እኛም እንጠቀምበታለን።",
+  "createFailed": "የምግብ መኪናዎን መፍጠር አልተቻለም።",
+  "unreachable": "አሁን ልናገኝዎ አልቻልንም — እባክዎ እንደገና ይሞክሩ።",
+  "back": "ወደ ኋላ",
+  "creating": "የምግብ መኪናዎን በመፍጠር ላይ…",
+  "continue": "ይቀጥሉ"
+ },
+ "whereBased": {
+  "countriesFailed": "የሀገሮችን ዝርዝር መጫን አልቻልንም። ከጥቂት ጊዜ በኋላ እንደገና ይሞክሩ።"
+ },
+ "cuisinePicker": {
+  "choose": "የምግብ ዓይነት ይምረጡ…",
+  "other": "ሌላ…",
+  "otherPlaceholder": "የምግብ ዓይነትዎን ይንገሩን",
+  "addAnother": "+ ሌላ ይምረጡ",
+  "remove": "ያስወግዱ፦ {label}",
+  "cuisine": {
+   "Asian": "የእስያ ምግብ",
+   "BBQ": "ባርቤኪው",
+   "Bakery": "ዳቦና ኬክ",
+   "Burgers": "በርገር",
+   "Caribbean": "የካሪቢያን ምግብ",
+   "Chicken": "ዶሮ",
+   "Chinese": "የቻይና ምግብ",
+   "Coffee": "ቡና",
+   "Desserts": "ጣፋጮች",
+   "FishChips": "ዓሣና ቺፕስ",
+   "Greek": "የግሪክ ምግብ",
+   "HotDogs": "ሆት ዶግ",
+   "Indian": "የሕንድ ምግብ",
+   "Italian": "የጣሊያን ምግብ",
+   "JacketPotatoes": "በልጣጩ የተጋገረ ድንች",
+   "Kebab": "ከባብ",
+   "Korean": "የኮሪያ ምግብ",
+   "Mexican": "የሜክሲኮ ምግብ",
+   "PieMash": "ፓይና የተፈጨ ድንች",
+   "Pizza": "ፒዛ",
+   "Seafood": "የባሕር ምግብ",
+   "Tacos": "ታኮ",
+   "Thai": "የታይላንድ ምግብ",
+   "Vegan": "ቪጋን",
+   "Wraps": "ራፕ"
+  }
+ },
+ "priceControls": {
+  "change": "{label} — ይቀይሩ",
+  "useRule": "{label} — በምትኩ ደንቡን ይጠቀሙ",
+  "typePrice": "{label} — ዋጋ ይጻፉ",
+  "backToRule": "ወደ ደንቡ ይመለሱ",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+ },
+ "goLive": {
+  "allergensUnanswered": {
+   "title": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች መረጃን እንዴት እንደሚያሳዩ ይምረጡ",
+   "detail": "እስኪመርጡ ድረስ ደንበኞች ከምግቦችዎ አንዱንም አያዩም — ሜኑው ራሱን የሚጠብቀው አለርጂ የሚያስከትሉ ንጥረ ነገሮች ያልተረጋገጡለትን ሁሉ በመደበቅ ነው፤ አሁን ደግሞ ያ ሁሉንም ይመለከታል።",
+   "where": "ሜኑ → አለርጂ የሚያስከትሉ ንጥረ ነገሮች"
+  },
+  "allergensCardMissing": {
+   "title": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድዎን ያክሉ",
+   "detail": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድ ለማሳየት መርጠዋል፤ ነገር ግን ምንም ካርድ አልተቀመጠም — ስለዚህ ደንበኞች መረጃው እንዳለ ይነገራቸውና ምንም አያገኙም።",
+   "where": "ሜኑ → አለርጂ የሚያስከትሉ ንጥረ ነገሮች"
+  },
+  "allergensItemsUnverified": {
+   "title": "{n, plural, one {አለርጂ የሚያስከትሉ ንጥረ ነገሮችን ያረጋግጡ — {count} ምግብ} other {አለርጂ የሚያስከትሉ ንጥረ ነገሮችን ያረጋግጡ — {count} ምግቦች}}",
+   "detail": "{n, plural, one {# ምግብ አለርጂ የሚያስከትሉ ንጥረ ነገሮችን እስኪያረጋግጡለት ድረስ ከደንበኞች ተደብቋል።} other {{u, plural, one {ከምግቦችዎ (ጠቅላላ፦ {total}) ውስጥ {unverified} ምግብ አለርጂ የሚያስከትሉ ንጥረ ነገሮችን እስኪያረጋግጡለት ድረስ ከደንበኞች ተደብቋል።} other {ከምግቦችዎ (ጠቅላላ፦ {total}) ውስጥ {unverified} ምግቦች አለርጂ የሚያስከትሉ ንጥረ ነገሮችን እስኪያረጋግጡላቸው ድረስ ከደንበኞች ተደብቀዋል።}}}} ያልተረጋገጡ አለርጂ የሚያስከትሉ ንጥረ ነገሮች ይዞ የሚታይ ምግብ “ምንም የለውም” ተብሎ ስለሚነበብ፣ ሜኑው ያንን ስጋት ከመውሰድ ይልቅ ምግቡን ይደብቀዋል።",
+   "where": "ሜኑ → አለርጂ የሚያስከትሉ ንጥረ ነገሮች"
+  },
+  "noVan": {
+   "title": "ተሽከርካሪ ያክሉ",
+   "detail": "ዝግጅቶች የሚካሄዱት በአንድ ተሽከርካሪ ላይ ነው — ተሽከርካሪ ከሌለ ትዕዛዝ የሚቀበሉበት ምንም ነገር የለም።",
+   "where": "ቅንብሮች → የእርስዎ ተሽከርካሪዎች"
+  },
+  "kitchenCapacityUnset": {
+   "title": "የኩሽና አቅምዎን ያስቀምጡ",
+   "detail": "ለእነዚህ ምንም አቅም አልተቀመጠም፦ {vans}። ያለ እሱ ኩሽናዎ ሊደርስበት የማይችለውን የመውሰጃ ሰዓት ለደንበኞች ቃል መግባታችንን እንቀጥላለን።",
+   "where": "ሜኑ → የኩሽና አቅም",
+   "unnamedVan": "ስም የሌለው ተሽከርካሪ"
+  },
+  "noPrepBearingCategory": {
+   "title": "ምግብዎ ምን ያህል ጊዜ እንደሚወስድ ይንገሩን",
+   "detail": "{categories, select, none {እስካሁን ምንም የሜኑ ምድብ የለዎትም፤ ስለዚህ አንድ ትዕዛዝ ምን ያህል ጊዜ እንደሚወስድ ማስላት አንችልም።} other {ከምድቦችዎ አንዱም የማብሰያ ጊዜ አልተቀመጠለትም፤ ስለዚህ እያንዳንዱ ትዕዛዝ ወዲያው የሚቀርብ ይመስለናል። ኩሽናዎ በምንም መንገድ ሊደርስበት የማይችለውን የመውሰጃ ሰዓት ለደንበኞች መስጠታችንን እንቀጥላለን፤ ሥራዎ በበዛ ቁጥር ደግሞ ልዩነቱ እየሰፋ ይሄዳል።}}",
+   "where": "ሜኑ → ምድቦች → የኩሽና ማዋቀር"
+  },
+  "emailUnverified": {
+   "title": "የኢሜይል አድራሻዎን ያረጋግጡ",
+   "detail": "የትዕዛዝ ማሳወቂያዎችንና የአካውንት መመለሻን የምንልከው ወደዚህ አድራሻ ነው። የተሳሳተ ከሆነ የሚያውቁት የሆነ ነገር ከተበላሸ በኋላ ነው።",
+   "where": "የማረጋገጫ ሊንካችንን ለማግኘት የኢሜይል ሳጥንዎን ይመልከቱ"
+  },
+  "emailUnknown": {
+   "title": "የኢሜይል ማረጋገጫው ሁኔታ አይታወቅም",
+   "detail": "የኢሜይል ማረጋገጫ ገና አልተገናኘም፤ ስለዚህ ይህ ሊገመገም አይችልም። ሳይታወቅ ከማለፍ ይልቅ ሆን ተብሎ ያግዳል።",
+   "where": "—"
+  }
+ },
+ "walkthrough": {
+  "intro": "“አስተዳደር” የምግብ መኪናዎን የሚያዋቅሩበትና እንዴት እየሠራ እንደሆነ የሚያዩበት ነው። ዳሽቦርዱ ደግሞ ትዕዛዝ የሚቀበሉበትና እያንዳንዱን ዝግጅት በሚካሄድበት ጊዜ የሚመሩበት ነው።",
+  "ariaLabel": "የዳሽቦርድ ጉብኝት",
+  "step": "{current} / {total}",
+  "skip": "ይዝለሉ",
+  "back": "← ወደ ኋላ",
+  "next": "ቀጣይ →",
+  "done": "ተጠናቋል",
+  "stops": {
+   "menu": {
+    "title": "ሜኑ",
+    "body": "ምግቦችዎ፣ ዋጋዎችዎና አለርጂ የሚያስከትሉ ንጥረ ነገሮች። እዚህ ማንኛውንም ነገር ከቀየሩ ወዲያውኑ ይተገበራል።"
+   },
+   "schedule": {
+    "title": "የሥራ ፕሮግራም",
+    "body": "የት እና መቼ እንደሚሸጡ። እዚህ ዝግጅት ያክሉ፤ ደንበኞችም ለዚያ ዝግጅት ማዘዝ ይችላሉ።"
+   },
+   "build": {
+    "title": "ጥምር ምግቦች (ኮምቦ)፣ ተጨማሪዎች እና የሽያጭ ጥቆማዎች",
+    "body": "ጥምር ምግቦች፣ የሽያጭ ጥቆማዎች፣ ብጁ አማራጮችና የኩሽና አቅምዎ የሚገኙት በሜኑ ስር ነው — ይሞክሯቸው።"
+   },
+   "settings": {
+    "title": "ቅንብሮች",
+    "body": "የምግብ መኪናዎ ዝርዝሮችና ደንበኞች እንዴት እንደሚከፍሉ።"
+   },
+   "billing": {
+    "title": "የሂሳብ አከፋፈል",
+    "body": "ፓኬጅዎ፣ የሂሳብ አከፋፈልዎና የአገልግሎቶች መረጃ የሚገኙበት።"
+   }
+  }
+ },
+ "auth": {
+  "fields": {
+   "email": "ኢሜይል",
+   "password": "የይለፍ ቃል",
+   "emailPlaceholder": "you@example.com",
+   "passwordHint": "ቢያንስ 8 ቁምፊዎች"
+  },
+  "signup": {
+   "title": "አካውንትዎን ይፍጠሩ",
+   "subtitle": "{months, plural, =0 {ነፃ ሙከራዎ የሚጀምረው ሲመዘገቡ ነው።} one {የመጀመሪያው # ወር ነፃ ነው፤ የሚጀምረው ሲመዘገቡ ነው።} other {የመጀመሪያዎቹ # ወራት ነፃ ናቸው፤ የሚጀምሩት ሲመዘገቡ ነው።}}",
+   "emailPlaceholder": "you@yourfoodtruck.et",
+   "codeLabel": "ኮድ አለዎት? <optional>(አማራጭ)</optional>",
+   "codePlaceholder": "እዚህ ያስገቡት",
+   "codeApply": "ይተግብሩ",
+   "codeApplied": "ኮዱ ተተግብሯል፦ {deal} ({partner})",
+   "codeInvalid": "ይህ ኮድ ትክክል አይደለም።",
+   "codeExpired": "የዚህ ኮድ ጊዜ አልፏል።",
+   "dealExtraMonths": "{months, plural, one {# ተጨማሪ ወር ነፃ} other {# ተጨማሪ ወራት ነፃ}}",
+   "dealPercentOff": "{pct}% ቅናሽ፣ {months, plural, one {# ወር} other {# ወራት}} የሚቆይ",
+   "dealPercentOffPlan": "{plan} ፓኬጅ — {pct}% ቅናሽ፣ {months, plural, one {# ወር} other {# ወራት}} የሚቆይ",
+   "dealFixedPrice": "{plan} ፓኬጅ — በወር {price}፣ {months, plural, one {# ወር} other {# ወራት}} የሚቆይ",
+   "dealPlanOffer": "{plan} ፓኬጅ ላይ ልዩ ዋጋ፣ {months, plural, one {# ወር} other {# ወራት}} የሚቆይ",
+   "partnerCodeLabel": "የአጋር ወይም የቅናሽ ኮድ <optional>(አማራጭ)</optional>",
+   "marketing": "አልፎ አልፎ ጠቃሚ ምክሮችንና የምርት ዜናዎችን በኢሜይል ይላኩልኝ። ከትዕዛዞችዎ ጋር ምንም ግንኙነት የለውም — በማንኛውም ጊዜ ማቆም ይችላሉ።",
+   "signIn": "ይግቡ",
+   "submit": "አካውንት ይፍጠሩ",
+   "submitting": "አካውንትዎን በመፍጠር ላይ…",
+   "consent": "አካውንት በመፍጠርዎ የእኛን <terms>የአገልግሎት ውሎች</terms> እና <privacy>የግላዊነት ፖሊሲ</privacy> ይቀበላሉ። ካርድ አያስፈልግም። እርስዎ እስኪፈቅዱ ድረስ ምንም ነገር ለሕዝብ አይታይም።",
+   "haveAccount": "አካውንት አለዎት? ይግቡ",
+   "errorFallback": "አካውንትዎን መፍጠር አልተቻለም።",
+   "errorOffline": "አሁን ልናገኝዎ አልቻልንም — እባክዎ እንደገና ይሞክሩ።"
+  },
+  "login": {
+   "title": "ወደ ኩሽናዎ ይግቡ",
+   "dashboardOf": "{brand} — የኦፕሬተር ዳሽቦርድ",
+   "resetSuccess": "የይለፍ ቃሉ ተዘምኗል። እባክዎ ይግቡ።",
+   "emailChanged": "የኢሜይል አድራሻው ተዘምኗል። እባክዎ በአዲሱ የኢሜይል አድራሻዎ ይግቡ።",
+   "errorFallback": "ኢሜይሉ ወይም የይለፍ ቃሉ ትክክል አይደለም። እባክዎ እንደገና ይሞክሩ።",
+   "submit": "ይግቡ",
+   "submitting": "በመግባት ላይ…",
+   "forgot": "የይለፍ ቃልዎን ረስተዋል?",
+   "invalidLink": "ያ ሊንክ ጊዜው አልፎበታል ወይም ትክክል አይደለም።"
+  },
+  "forgot": {
+   "sentTitle": "ኢሜይልዎን ይመልከቱ",
+   "sentBody": "በዚያ የኢሜይል አድራሻ አካውንት ካለ፣ በቅርቡ የዳግም ማስጀመሪያ ሊንክ ይደርስዎታል። በጥቂት ደቂቃዎች ውስጥ ካልደረሰ የአይፈለጌ መልዕክት ማኅደርዎን ይመልከቱ።",
+   "title": "የይለፍ ቃልዎን ዳግም ያስጀምሩ",
+   "subtitle": "ኢሜይልዎን ያስገቡ፤ የዳግም ማስጀመሪያ ሊንክ እንልክልዎታለን",
+   "submit": "የዳግም ማስጀመሪያ ሊንክ ይላኩ",
+   "sending": "በመላክ ላይ…",
+   "back": "ወደ መግቢያ ይመለሱ"
+  },
+  "reset": {
+   "invalidTitle": "ልክ ያልሆነ የዳግም ማስጀመሪያ ሊንክ",
+   "invalidBody": "ይህ ሊንክ ልክ አይደለም ወይም ጊዜው አልፎበታል።",
+   "requestNew": "አዲስ የዳግም ማስጀመሪያ ሊንክ ይጠይቁ",
+   "mismatch": "የይለፍ ቃሎቹ አይዛመዱም",
+   "tooShort": "የይለፍ ቃሉ ቢያንስ 8 ቁምፊዎች መሆን አለበት።",
+   "errorFallback": "የሆነ ችግር ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።",
+   "titleFirstLogin": "የይለፍ ቃልዎን ይፍጠሩ",
+   "titleReset": "አዲስ የይለፍ ቃል ይምረጡ",
+   "subtitleFirstLogin": "አካውንትዎን ለመጠበቅ የይለፍ ቃል ይምረጡ",
+   "subtitleReset": "አዲሱ የይለፍ ቃልዎ ቢያንስ 8 ቁምፊዎች መሆን አለበት",
+   "newPassword": "አዲስ የይለፍ ቃል",
+   "confirmPassword": "የይለፍ ቃሉን ያረጋግጡ",
+   "confirmPlaceholder": "የይለፍ ቃልዎን ይድገሙ",
+   "submit": "የይለፍ ቃሉን ያስቀምጡ",
+   "saving": "በማስቀመጥ ላይ…",
+   "sendNewLink": "አዲስ ሊንክ ይላኩ"
+  },
+  "verifyEmail": {
+   "goToLogin": "ወደ መግቢያ ይሂዱ",
+   "failedTitle": "ማረጋገጫው አልተሳካም",
+   "invalidTitle": "ልክ ያልሆነ ወይም ጊዜው ያለፈበት ሊንክ",
+   "invalidBody": "ይህ የማረጋገጫ ሊንክ ልክ አይደለም ወይም ጊዜው አስቀድሞ አልፎበታል።",
+   "verifiedTitle": "አስቀድሞ ተረጋግጧል",
+   "verifiedBody": "ይህ የኢሜይል አድራሻ አስቀድሞ ተረጋግጧል።",
+   "expiredTitle": "የሊንኩ ጊዜ አልፏል",
+   "expiredBody": "ይህ የማረጋገጫ ሊንክ ጊዜው አልፎበታል። ከመገለጫ ቅንብሮችዎ አዲስ ይጠይቁ።",
+   "accountNotFound": "አካውንቱ አልተገኘም። እባክዎ የድጋፍ ቡድኑን ያነጋግሩ።",
+   "emailTaken": "ይህ የኢሜይል አድራሻ ከሌላ አካውንት ጋር ተያይዟል። እባክዎ ሌላ የኢሜይል አድራሻ ይጠቀሙ።",
+   "updateFailed": "ኢሜይሉን ማዘመን አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+   "loginUpdateFailed": "የመግቢያ መረጃውን ማዘመን አልተሳካም። ኢሜይልዎ አልተቀየረም።",
+   "successTitle": "የኢሜይል አድራሻው ተዘምኗል",
+   "successBody": "ኢሜይልዎ ወደዚህ ተቀይሯል፦ <b>{email}</b>። ከአካውንትዎ በማስወጣት ላይ…"
+  },
+  "sessionAlert": {
+   "title": "መግቢያዎ ትኩረት ያስፈልገዋል",
+   "body": "በስክሪኑ ላይ ያለው ሁሉ አሁንም አለ። እንደገና እስኪገቡ ድረስ አዳዲስ ለውጦች ላይቀመጡ ይችላሉ።",
+   "signIn": "እንደገና ይግቡ"
+  }
+ },
+ "emailSignup": {
+  "greeting": "{hasName, select, yes {ሰላም {name}፣} other {ሰላም፣}}",
+  "signoffName": "Dominic",
+  "signoffRole": "መሥራች፣ HatchGrab",
+  "verify": {
+   "subject": "የኢሜይል አድራሻዎን ያረጋግጡ",
+   "thanks": "{hasTruck, select, yes {የምግብ መኪናዎን ({truck}) በHatchGrab ላይ ስላዋቀሩ እናመሰግናለን።} other {የምግብ መኪናዎን በHatchGrab ላይ ስላዋቀሩ እናመሰግናለን።}}",
+   "button": "የኢሜይል አድራሻውን ያረጋግጡ",
+   "buttonText": "የኢሜይል አድራሻውን ያረጋግጡ፦ {url}",
+   "why": "የሚገቡት በዚህ አድራሻ ነው፤ የትዕዛዝ ማሳወቂያዎችም የሚላኩት ወደዚሁ ነው — ስለዚህ አሁኑኑ ቢያደርጉት ይመረጣል።",
+   "next": "ከተረጋገጠ በኋላ ለመጀመር የሚያስፈልግዎትን ሁሉ እልክልዎታለሁ።",
+   "carryOn": "እስከዚያው ማዋቀርዎን መቀጠል ይችላሉ።",
+   "stuck": "የሆነ ነገር ላይ ተቸግረዋል? ለዚህ ኢሜይል መልስ ብቻ ይስጡ — እነዚህን የምመልሰው እኔ ራሴ ነኝ።",
+   "fallbackLink": "ቁልፉ ካልሠራ ይህን ይለጥፉ፦ {url}"
+  },
+  "welcome": {
+   "subject": "{hasName, select, yes {እንኳን ወደ HatchGrab በደህና መጡ፣ {name}} other {እንኳን ወደ HatchGrab በደህና መጡ}}",
+   "intro": "{hasTruck, select, yes {የምግብ መኪናዎን ({truck}) ወደ HatchGrab ስቀበል በጣም ደስ ብሎኛል።} other {የምግብ መኪናዎን ወደ HatchGrab ስቀበል በጣም ደስ ብሎኛል።}}",
+   "trial": "{months, plural, one {# ወር የሚቆይ ነፃ ሙከራዎ ተጀምሯል — ሁሉም አገልግሎቶች ተከፍተዋል።} other {# ወራት የሚቆይ ነፃ ሙከራዎ ተጀምሯል — ሁሉም አገልግሎቶች ተከፍተዋል።}}",
+   "setup": "እስካሁን ካላደረጉት፣ ማዋቀሩ ቀላል ነው፤ አሥራ አምስት ደቂቃ ያህል ይወስዳል።",
+   "button": "ዳሽቦርድዎን ይክፈቱ",
+   "bookmark": "ዕልባት ቢያደርጉት ይጠቅማል። በማንኛውም መሣሪያ ላይ ይሠራል።",
+   "stuck": "ከተቸገሩ ለዚህ ኢሜይል መልስ ብቻ ይስጡ — እነዚህን የምመልሰው እኔ ራሴ ነኝ።",
+   "lookingForward": "{hasTruck, select, yes {የምግብ መኪናዎ ({truck}) ሲሸጥ ለማየት በጉጉት እጠብቃለሁ።} other {የምግብ መኪናዎ ሲሸጥ ለማየት በጉጉት እጠብቃለሁ።}}"
+  }
+ },
+ "errorsOnboarding": {
+  "not_signed_in": "አልገቡም",
+  "no_operator_record": "የኦፕሬተር መዝገብ የለም",
+  "bad_request": "የተሳሳተ ጥያቄ",
+  "truck_name_missing": "ለምግብ መኪናዎ ስም ይስጡ።",
+  "contact_phone_required": "የመገናኛ ስልክ ቁጥር ያስፈልጋል።",
+  "phone_invalid": "{withName, select, yes {ትክክለኛ የስልክ ቁጥር ያስገቡ ({name})} other {ትክክለኛ የስልክ ቁጥር ያስገቡ}}{withExample, select, yes { (ለምሳሌ፦ {example})} other {}}።",
+  "truck_create_failed": "የምግብ መኪናዎን መፍጠር አልተቻለም።",
+  "unknown_step": "ያልታወቀ ደረጃ",
+  "unknown_action": "ያልታወቀ ተግባር",
+  "countries_unavailable": "የሀገሮችን ዝርዝር መጫን አልቻልንም። ከጥቂት ጊዜ በኋላ እንደገና ይሞክሩ።",
+  "email_invalid": "ትክክለኛ የኢሜይል አድራሻ ያስገቡ።",
+  "password_too_short": "የይለፍ ቃሉ ቢያንስ {min, plural, one {# ቁምፊ} other {# ቁምፊዎች}} መሆን አለበት።",
+  "signup_closed": "ምዝገባ ገና አልተከፈተም።",
+  "too_many_attempts": "አሁን በጣም ብዙ ሙከራዎች ተደርገዋል — እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።",
+  "account_exists": "በዚያ ኢሜይል አካውንት አስቀድሞ አለ — በምትኩ ይግቡ።",
+  "account_create_failed": "አካውንቱን መፍጠር አልተቻለም።",
+  "account_finish_failed": "አካውንትዎን ፈጥሮ መጨረስ አልተቻለም — እባክዎ እንደገና ይሞክሩ።",
+  "unauthorised": "ፈቃድ የለዎትም",
+  "unauthenticated": "ማንነትዎ አልተረጋገጠም",
+  "change_id_required": "የሆነ ችግር ተፈጥሯል — ገጹን ያድሱና እንደገና ይሞክሩ።",
+  "operator_not_found": "ኦፕሬተሩ አልተገኘም",
+  "cancel_change_failed": "ለውጡን መሰረዝ አልተሳካም",
+  "email_required": "ኢሜይል ያስፈልጋል",
+  "email_already_current": "ያ አሁን ያለው ኢሜይልዎ ነው",
+  "email_already_registered": "ይህ ኢሜይል በHatchGrab ላይ አስቀድሞ ተመዝግቧል",
+  "change_request_failed": "የለውጥ ጥያቄውን መፍጠር አልተሳካም",
+  "verification_email_failed": "የማረጋገጫ ኢሜይሉን መላክ አልተሳካም",
+  "verification_request_not_found": "የማረጋገጫ ጥያቄው አልተገኘም",
+  "email_already_verified": "ኢሜይሉ አስቀድሞ ተረጋግጧል",
+  "email_send_failed": "ኢሜይሉን መላክ አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+  "reset_email_failed": "የዳግም ማስጀመሪያ ኢሜይሉን መላክ አልተሳካም",
+  "token_and_password_required": "ቶክን እና የይለፍ ቃል ያስፈልጋሉ",
+  "new_password_too_short": "የይለፍ ቃሉ ቢያንስ {min, plural, one {# ቁምፊ} other {# ቁምፊዎች}} መሆን አለበት።",
+  "reset_link_invalid": "ልክ ያልሆነ ወይም ጊዜው ያለፈበት የዳግም ማስጀመሪያ ሊንክ። እባክዎ አዲስ ይጠይቁ።",
+  "reset_link_used": "ይህ የዳግም ማስጀመሪያ ሊንክ አስቀድሞ ጥቅም ላይ ውሏል። እባክዎ አዲስ ይጠይቁ።",
+  "reset_link_expired": "ይህ የዳግም ማስጀመሪያ ሊንክ ጊዜው አልፎበታል። እባክዎ አዲስ ይጠይቁ።",
+  "account_not_found": "አካውንቱ አልተገኘም።",
+  "password_update_failed": "የይለፍ ቃሉን ማዘመን አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+  "no_fields_to_update": "የሚዘመን መስክ የለም",
+  "upload_unreadable": "የሰቀሉትን ማንበብ አልተቻለም — እባክዎ እንደገና ይሞክሩ።",
+  "file_too_big": "ያ ፋይል በጣም ትልቅ ነው (ከፍተኛው {mb} MB)። የሜኑዎ መደበኛ ፎቶ በቂ ነው።",
+  "file_type_unsupported": "ያ የፋይል ዓይነት አይደገፍም — የሜኑዎን ፎቶ ወይም PDF ይላኩ።",
+  "text_too_long": "ያ በጣም ብዙ ጽሑፍ ነው — እባክዎ ሜኑውን ብቻ ይለጥፉ።",
+  "menu_missing": "የሜኑዎን ፎቶ ያክሉ ወይም ሜኑውን ይለጥፉ።",
+  "demo_rate_limited": "አስቀድመው ጥቂት ዲሞዎችን ሠርተዋል። ትንሽ ቆይተው እንደገና ይሞክሩ፤ ወይም ያነጋግሩን፤ እንረዳዎታለን።",
+  "demo_build_failed": "ዲሞዎን በመሥራት ላይ የሆነ ችግር ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።",
+  "request_unreadable": "ያንን ማንበብ አልተቻለም።",
+  "email_not_valid": "ያ የኢሜይል አድራሻ አይመስልም።",
+  "try_again_shortly": "እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።",
+  "invalid_request_body": "ልክ ያልሆነ የጥያቄ ይዘት",
+  "not_demo_session": "የዲሞ ክፍለ ጊዜ አይደለም",
+  "demo_not_found": "ዲሞው አልተገኘም",
+  "not_demo_truck": "የዲሞ የምግብ መኪና አይደለም",
+  "new_service_failed": "አዲስ የሽያጭ ጊዜ መጀመር አልተቻለም",
+  "not_available": "አይገኝም።",
+  "demo_save_failed": "አሁን ያንን ማስቀመጥ አልቻልንም — እባክዎ እንደገና ይሞክሩ።",
+  "deletion_view_owner_only": "ይህን ማየት የሚችለው የአካውንቱ ባለቤት ብቻ ነው።",
+  "deletion_sign_in": "አካውንት እንዲሰረዝ ለመጠየቅ ይግቡ።",
+  "deletion_owner_only": "መሰረዝን መጠየቅ የሚችለው የአካውንቱ ባለቤት ብቻ ነው።",
+  "confirm_mismatch": "ለማረጋገጥ DELETE ብለው ይጻፉ።",
+  "partial_stamp": "የስረዛ ጥያቄዎ ተመዝግቧል፤ ነገር ግን በሁሉም የምግብ መኪናዎች ላይ ትዕዛዝ መቀበልን ማቆም አልቻልንም። የድጋፍ ቡድኑን ያነጋግሩ።"
+ },
+ "emailAccount": {
+  "newEmail": {
+   "subject": "አዲሱን የHatchGrab ኢሜይል አድራሻዎን ያረጋግጡ",
+   "heading": "የኢሜይል አድራሻዎን ያረጋግጡ",
+   "button": "የኢሜይል አድራሻውን ያረጋግጡ"
+  },
+  "changeEmail": {
+   "requested": "የHatchGrab ኢሜይል አድራሻዎ ወደዚህ አድራሻ እንዲቀየር ጠይቀዋል።",
+   "click": "ለማረጋገጥ ከታች ያለውን ቁልፍ ይጫኑ። ይህ ሊንክ በ24 ሰዓት ውስጥ ጊዜው ያልፋል።",
+   "ignore": "ይህን ለውጥ ካልጠየቁ ይህን ኢሜይል ያለ ስጋት ቸል ማለት ይችላሉ።",
+   "stillActive": "አሁን ያለው የኢሜይል አድራሻዎ እንደሚሠራ ይቆያል።"
+  },
+  "resendVerification": {
+   "requested": "የHatchGrab ኢሜይልዎ ወደዚህ አድራሻ እንዲቀየር ጠይቀዋል።",
+   "click": "ለማረጋገጥ ከታች ይጫኑ። ይህ ሊንክ በ24 ሰዓት ውስጥ ጊዜው ያልፋል።",
+   "ignore": "ይህን ካልጠየቁ ይህን ኢሜይል ቸል ይበሉት።",
+   "stillActive": "አሁን ያለው ኢሜይልዎ እንደሚሠራ ይቆያል።"
+  },
+  "passwordReset": {
+   "subject": "የHatchGrab የይለፍ ቃልዎን ዳግም ያስጀምሩ",
+   "heading": "የይለፍ ቃልዎን ዳግም ያስጀምሩ",
+   "requested": "የHatchGrab አካውንትዎን የይለፍ ቃል ዳግም ለማስጀመር ጥያቄ ደርሶናል።",
+   "click": "አዲስ የይለፍ ቃል ለመምረጥ ከታች ያለውን ቁልፍ ይጫኑ። ይህ ሊንክ በ1 ሰዓት ውስጥ ጊዜው ያልፋል።",
+   "button": "የይለፍ ቃሉን ዳግም ያስጀምሩ",
+   "ignore": "ይህን ካልጠየቁ ይህን ኢሜይል ያለ ስጋት ቸል ማለት ይችላሉ።",
+   "unchanged": "ከላይ ያለውን ሊንክ እስኪጫኑ ድረስ የይለፍ ቃልዎ አይቀየርም።"
+  },
+  "deletionScheduled": {
+   "subject": "የHatchGrab አካውንትዎ እንዲሰረዝ ቀጠሮ ተይዟል",
+   "received": "ይህ የHatchGrab አካውንት እንዲሰረዝ ጥያቄ ደርሶናል።",
+   "orderingStopped": "<b>የኦንላይን ትዕዛዝ መቀበል ወዲያውኑ ቆሟል</b>፦ {trucks}።",
+   "noTrucks": "(ምንም የምግብ መኪና የለም)",
+   "readable": "ዳሽቦርድዎ ለሚቀጥሉት {days, plural, one {# ቀን} other {# ቀናት}}\n    ለንባብ ክፍት ሆኖ ይቆያል።",
+   "scheduled": "አካውንቱ የሚሰረዝበት ቀን፦ <b>{date}</b>።",
+   "cannotCancel": "<b>ይህ ከመተግበሪያው ውስጥ ሊሰረዝ አይችልም።</b> ይህን ያደረጉት እርስዎ ካልሆኑ፣ ወይም\n    ሐሳብዎን ከቀየሩ፣ በተቻለ ፍጥነት ለዚህ ኢሜይል መልስ ይስጡ።",
+   "kept": "አካውንቱ ሲሰረዝ የእርስዎንና የደንበኞችዎን የግል መረጃ እናስወግዳለን። በሕግ እንድናስቀምጣቸው የሚጠበቅብንን\n    ማንነት የማይገልጹ የሂሳብ መዝገቦች እናስቀምጣለን።"
+  }
+ },
+ "demoSaveEmail": {
+  "subject": "የHatchGrab ዲሞዎ — የመመለሻ ሊንክዎ ይኸውና",
+  "heading": "ዲሞዎ ተቀምጧል",
+  "intro": "ሜኑዎ ወዳለበት ዲሞ የሚመልስዎ ሊንክ ይኸውና። መግባት አያስፈልግም — ይንኩት ብቻ።",
+  "button": "ዲሞውን ይክፈቱ",
+  "freshDay": "በተመለሱ ቁጥር የሚሞክሩት ነገር እንዲኖር አዲስ የሽያጭ ቀን እናዘጋጃለን።",
+  "deletion": "ይህ ዲሞ ስለሆነ ለዘላለም አናስቀምጠውም — ዲሞውንና ሜኑውን\n                <b>{date}</b> ላይ እንሰርዘዋለን ({days, plural, one {# ቀን} other {# ቀናት}})። ከዚያ በፊት\n                ከተመዘገቡ ሜኑዎ አብሮዎት ይሄዳል።",
+  "notSent": "ተቀምጧል፤ ነገር ግን አሁን ኢሜይሉን መላክ አልቻልንም።"
+ },
+ "demoGetStarted": {
+  "upload": {
+   "bannerButton": "ሜኑውን ያስቀምጡ →",
+   "heading": "የምግብ መኪናዎን ያዋቅሩ",
+   "sub": "ሜኑዎ በቀጥታ አብሮ ይሄዳል።",
+   "privacy": "ይህን የምንጠቀመው የምግብ መኪናዎን ለማዋቀርና የዲሞ ሊንክዎን ለመላክ ብቻ ነው — <link>የግላዊነት ፖሊሲያችንን</link> ይመልከቱ።"
+  },
+  "sample": {
+   "bannerButton": "የምግብ መኪናዎን ያዋቅሩ →",
+   "heading": "የምግብ መኪናዎን ያዋቅሩ",
+   "sub": "ቀጥሎ የራስዎን ሜኑ ይሰቅላሉ — አንድ ደቂቃ ይወስዳል።",
+   "privacy": "ይህን የምንጠቀመው የምግብ መኪናዎን ለማዋቀርና የዲሞ ሊንክዎን ለመላክ ብቻ ነው — <link>የግላዊነት ፖሊሲያችንን</link> ይመልከቱ።"
+  },
+  "saveOnly": {
+   "bannerButton": "ሜኑውን ያስቀምጡ →",
+   "heading": "ዲሞዎን ያስቀምጡ",
+   "sub": "ለ14 ቀናት እናስቀምጠዋለን፤ የመመለሻ ሊንክም ወዲያውኑ በኢሜይል እንልክልዎታለን።",
+   "privacy": "ይህን የምንጠቀመው የዲሞ ሊንክዎን ለመላክ ብቻ ነው — <link>የግላዊነት ፖሊሲያችንን</link> ይመልከቱ።"
+  },
+  "confirmationHeading": "ሁሉም ዝግጁ ነው",
+  "postSaveButton": "የምግብ መኪናዎን ያዋቅሩ →",
+  "enterSetupButton": "የምግብ መኪናዎን ያዋቅሩ →",
+  "emailOnlyLink": "ወደዚህ ዲሞ የምመለስበትን ሊንክ ብቻ በኢሜይል ይላኩልኝ",
+  "sendLinkButton": "ሊንኩን ይላኩልኝ",
+  "savingButton": "በማስቀመጥ ላይ…",
+  "continueButton": "ይቀጥሉ →",
+  "createAccountButton": "አካውንት ይፍጠሩ →",
+  "retryButton": "እንደገና ይሞክሩ",
+  "backToDemoButton": "ወደ ዲሞው ይመለሱ",
+  "savedStatus": "{hasDate, select, yes {✓ ተቀምጧል — እስከ {date} ድረስ ይቆያል} other {✓ ተቀምጧል}}",
+  "back": "ወደ ኋላ",
+  "close": "ይዝጉ",
+  "truckStepHeading": "ስለ ምግብ መኪናዎ",
+  "detailsStepHeading": "ማዋቀሩን ይጨርሱ",
+  "stepper": {
+   "details": "የእርስዎ ዝርዝሮች",
+   "menu": "ሜኑ",
+   "allergens": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች",
+   "kitchen": "የኩሽና ማዋቀር",
+   "schedule": "የሥራ ፕሮግራም"
+  },
+  "confirmEmailed": "ወደዚህ ዲሞ በቀጥታ የሚመልስዎ ሊንክ በኢሜይል ልከንልዎታል — መግባት አያስፈልግም።",
+  "confirmKeepUntil": "እስከ <b>{date}</b> ድረስ እናስቀምጠዋለን። በትክክል ሲያዋቅሩ ሜኑዎ አብሮዎት ይሄዳል።",
+  "loading": "በመጫን ላይ…",
+  "firstName": "ስም",
+  "lastName": "የአባት ስም",
+  "truckName": "የምግብ መኪናው ስም",
+  "truckNamePlaceholder": "ለምሳሌ፦ የሰፈር ኩሽና",
+  "cuisine": "የምግብ ዓይነት",
+  "logoLabel": "አርማ <opt>(አማራጭ)</opt>",
+  "logoPreviewAlt": "የአርማ ቅድመ እይታ",
+  "changeLogo": "አርማውን ይቀይሩ",
+  "removeLogo": "ያስወግዱ",
+  "uploadLogo": "📷 አርማ ይስቀሉ",
+  "readyTitle": "አካውንትዎ ዝግጁ ነው",
+  "readyBody": "አሁን የምግብ መኪናዎን ማዋቀር እንጨርስ — ሜኑዎን፣ አለርጂ የሚያስከትሉ ንጥረ ነገሮችን እና ኩሽናዎን።",
+  "hangTight": "ትንሽ ይጠብቁ — ሁሉንም ነገር በማዋቀር ላይ ነን።",
+  "stage": {
+   "account": "አካውንትዎን በመፍጠር ላይ",
+   "truck": "የምግብ መኪናዎን በማዋቀር ላይ",
+   "menu": "ሜኑዎን በመጫን ላይ"
+  },
+  "stageState": {
+   "done": "ተጠናቋል",
+   "recognised": "አስቀድመው አካውንት አለዎት",
+   "failed": "አልተሳካም",
+   "active": "በሂደት ላይ",
+   "pending": "በመጠባበቅ ላይ"
+  },
+  "signIn": "ይግቡ",
+  "phone": "ስልክ",
+  "onWhatsapp": "ይህ ቁጥር WhatsApp አለው",
+  "email": "ኢሜይል",
+  "emailPlaceholder": "you@yourfoodtruck.et",
+  "settingUpAs": "በዚህ ኢሜይል በማዋቀር ላይ፦ <b>{email}</b> <change>ይቀይሩ</change>",
+  "password": "የይለፍ ቃል",
+  "passwordPlaceholder": "ቢያንስ 8 ቁምፊዎች",
+  "hidePassword": "የይለፍ ቃሉን ይደብቁ",
+  "showPassword": "የይለፍ ቃሉን ያሳዩ",
+  "promoLabel": "ኮድ አለዎት? <opt>(አማራጭ)</opt>",
+  "promoPlaceholder": "እዚህ ያስገቡት",
+  "partnerCodeLabel": "የአጋር ወይም የቅናሽ ኮድ <optional>(አማራጭ)</optional>",
+  "partnerCodeApply": "ይተግብሩ",
+  "partnerCodeApplied": "ኮዱ ተተግብሯል፦ {deal} ({partner})",
+  "partnerCodeInvalid": "ይህ ኮድ ትክክል አይደለም።",
+  "partnerCodeExpired": "የዚህ ኮድ ጊዜ አልፏል።",
+  "partnerDealExtraMonths": "{months, plural, one {# ተጨማሪ ወር ነፃ} other {# ተጨማሪ ወራት ነፃ}}",
+  "partnerDealPercentOff": "{pct}% ቅናሽ፣ {months, plural, one {# ወር} other {# ወራት}} የሚቆይ",
+  "partnerDealPercentOffPlan": "{plan} ፓኬጅ — {pct}% ቅናሽ፣ {months, plural, one {# ወር} other {# ወራት}} የሚቆይ",
+  "partnerDealFixedPrice": "{plan} ፓኬጅ — በወር {price}፣ {months, plural, one {# ወር} other {# ወራት}} የሚቆይ",
+  "partnerDealPlanOffer": "{plan} ፓኬጅ ላይ ልዩ ዋጋ፣ {months, plural, one {# ወር} other {# ወራት}} የሚቆይ",
+  "agreeTerms": "በ<terms>የአገልግሎት ውሎች</terms> እና በ<privacy>የግላዊነት ፖሊሲ</privacy> እስማማለሁ።",
+  "freeMonth": "{months, plural, =0 {ነፃ ሙከራዎ የሚጀምረው ሲመዘገቡ ነው።} one {የመጀመሪያው # ወር ነፃ ነው፤ የሚጀምረው ሲመዘገቡ ነው።} other {የመጀመሪያዎቹ # ወራት ነፃ ናቸው፤ የሚጀምሩት ሲመዘገቡ ነው።}}",
+  "fieldError": {
+   "firstName": "ስምዎን ይንገሩን።",
+   "lastName": "የአባት ስምዎንም ይንገሩን።",
+   "truck": "ለምግብ መኪናዎ ስም ይስጡ።",
+   "cuisine": "ምን እንደሚያበስሉ ይንገሩን።",
+   "phoneMissing": "ስልክ ቁጥር ያክሉ — እርስዎን ለማግኘት ደንበኞችም እኛም እንጠቀምበታለን።",
+   "email": "ትክክለኛ የኢሜይል አድራሻ ያስገቡ።",
+   "password": "የይለፍ ቃሉ ቢያንስ 8 ቁምፊዎች መሆን አለበት።",
+   "terms": "ለመቀጠል እባክዎ ውሎቹን ይቀበሉ።"
+  },
+  "error": {
+   "saveFailed": "ያንን ማስቀመጥ አልተቻለም — እንደገና ይሞክሩ።",
+   "savedNoEmail": "ተቀምጧል — ነገር ግን አሁን ሊንኩን በኢሜይል መላክ አልቻልንም።",
+   "unreachable": "አሁን ልናገኝዎ አልቻልንም — እንደገና ይሞክሩ።",
+   "createAccountFailed": "አካውንትዎን መፍጠር አልተቻለም።",
+   "truckCreateFailed": "አካውንትዎ ዝግጁ ነው፤ ነገር ግን የምግብ መኪናዎን መፍጠር አልቻልንም። እንደገና ይሞክሩ።",
+   "truckUnreachable": "አካውንትዎ ዝግጁ ነው፤ ነገር ግን አሁን የምግብ መኪናዎን መፍጠር አልቻልንም። እንደገና ይሞክሩ።",
+   "truckNoToken": "የምግብ መኪናዎ ተዋቅሯል፤ ነገር ግን አሁን ልንከፍተው አልቻልንም። እንደገና ይሞክሩ።"
+  }
+ },
+ "demoUpload": {
+  "steps": {
+   "reading": "ሜኑዎን በማንበብ ላይ…",
+   "found": "ንጥሎችዎን አግኝተናል…",
+   "kitchen": "ኩሽናዎን በማዋቀር ላይ…",
+   "page": "የትዕዛዝ ገጽዎን በመሥራት ላይ…",
+   "almost": "ሊደርስ ነው…"
+  },
+  "templateSteps": {
+   "truck": "የናሙና የምግብ መኪናዎን በመሥራት ላይ…",
+   "menu": "ሜኑውን በማዋቀር ላይ…",
+   "kitchen": "ኩሽናውን በማዋቀር ላይ…",
+   "page": "የትዕዛዝ ገጹን በመሥራት ላይ…",
+   "almost": "ሊደርስ ነው…"
+  },
+  "dialogLabel": "ሜኑዎን ይስቀሉ",
+  "heading": "✨ ሜኑዎን ይስቀሉ",
+  "failedHeading": "ያንን ሜኑ ማንበብ አልቻልንም",
+  "close": "ይዝጉ",
+  "intro": "የሜኑ ሰሌዳዎ ፎቶ፣ ስክሪንሾት ወይም PDF፤ ወይም እንደ ጽሑፍ ይለጥፉት። የእኛ AI አንብቦ የሚሠራ የትዕዛዝ ገጽ ይሠራልዎታል — የእርስዎ ንጥሎች፣ የእርስዎ ዋጋዎች — ከ60 ሰከንድ ባነሰ ጊዜ። ምዝገባ የለም፣ ካርድ የለም።",
+  "failedIntro": "አንዳንድ ጊዜ ፎቶ በጣም ጨለማ፣ በጣም የተጣመመ ወይም በእጅ የተጻፈ ይሆናል። ይህን መፍታት የእኛ ኃላፊነት ነው እንጂ እርስዎ የተሳሳቱት ነገር አይደለም። ጥቂት አማራጮች፦",
+  "usually": "ይህ ብዙውን ጊዜ ከ60 ሰከንድ ያነሰ ይወስዳል።",
+  "slow": "ይህ ከወትሮው በላይ እየቆየ ነው — ትልልቅ ሜኑዎች አንዳንድ ጊዜ እንዲህ ናቸው።",
+  "keepWaiting": "መጠበቅዎን ይቀጥሉ",
+  "sampleWhileYouWait": "ወይም እየጠበቁ ሳሉ በናሙና ሜኑ ይጎብኙ",
+  "standIn": "ይህ <b>የእርስዎ ሜኑ አይሆንም</b> — እንዴት እንደሚሠራ እንዲያዩ የቀረበ ምትክ ነው።",
+  "seeSample": "የናሙና ሜኑ ይመልከቱ",
+  "tryAgain": "እንደገና ይሞክሩ",
+  "tryPhotoAgain": "ይህን ፎቶ እንደገና ይሞክሩ",
+  "tryDifferent": "ሌላ ፎቶ ይሞክሩ",
+  "uploadAnother": "← ሌላ ፎቶ ይስቀሉ",
+  "orSample": "ወይም በናሙና ሜኑ ይጎብኙ",
+  "orBuild": "ወይም እኛ እንሠራልዎታለን",
+  "buildSent": "✓ እናመሰግናለን — ደርሶናል። በኢሜይል እናሳውቅዎታለን።",
+  "buildBody": "ኢሜይልዎን ይተዉልን፤ እውነተኛ ሰው ሜኑዎን አስገብቶ ሊንኩን ይልክልዎታል።",
+  "emailPlaceholder": "you@yourfoodtruck.et",
+  "sending": "…",
+  "send": "ይላኩ",
+  "noPhoto": "የሜኑ ፎቶ በእጅዎ የለም?",
+  "noPhotoBody": "በምትኩ በናሙና የምግብ መኪና ይጎብኙ — የራስዎን በማንኛውም ጊዜ መስቀል ይችላሉ።",
+  "build": "ዲሞውን ይሥሩ →",
+  "nothingPublished": "ምንም ነገር አልታተመም — ሊያዩት የሚችሉት እርስዎ ብቻ ነዎት።",
+  "error": {
+   "somethingWrong": "የሆነ ችግር ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።",
+   "serverUnreachable": "ሰርቨሩን ማግኘት አልቻልንም። ግንኙነትዎን ያረጋግጡና እንደገና ይሞክሩ።",
+   "sendFailed": "ያንን መላክ አልተቻለም — እንደገና ይሞክሩ።"
+  },
+  "fields": {
+   "uploadLabel": "የሜኑ ፋይል ይስቀሉ",
+   "dropHere": "ሜኑዎን እዚህ ይጣሉ",
+   "dragOrTap": "ጎትተው ይጣሉ ወይም ለመምረጥ ይንኩ",
+   "fileTypes": "ምስል ወይም PDF",
+   "or": "ወይም",
+   "pasteLabel": "የሜኑ ጽሑፍ ይለጥፉ",
+   "pastePlaceholder": "ሜኑዎን እዚህ ይለጥፉ — የንጥሎች ስሞች፣ መግለጫዎች፣ ዋጋዎች..."
+  },
+  "emailLabel": "ኢሜይልዎ",
+  "emailNote": "የዲሞዎን ሊንክ በኢሜይል እንልክልዎታለን፤ HatchGrab ስለማዋቀርም ልናነጋግርዎ እንችላለን። <link>የግላዊነት ፖሊሲ</link>",
+  "marketing": "ከHatchGrab አልፎ አልፎ ጠቃሚ ምክሮችንና ዜናዎችን ይላኩልኝ",
+  "emailInvalid": "እባክዎ ትክክለኛ የኢሜይል አድራሻ ያስገቡ።"
+ },
+ "provisionContent": {
+  "standardCategories": {
+   "starters": "መክሰሶች",
+   "mains": "ዋና ምግቦች",
+   "burgers": "በርገሮች",
+   "pizza": "ፒዛ",
+   "wrapsSandwiches": "ራፖችና ሳንድዊቾች",
+   "sides": "ተጨማሪ ምግቦች",
+   "dipsSauces": "መጥመቂያዎችና ሶሶች",
+   "desserts": "ጣፋጮች",
+   "drinks": "መጠጦች",
+   "kidsMenu": "የልጆች ሜኑ",
+   "specials": "ልዩ ምግቦች",
+   "other": "ሌሎች"
+  },
+  "demoEventName": "የዲሞ ዝግጅት",
+  "firstVanName": "ተሽከርካሪ 1",
+  "demoCategories": {
+   "pizza": "ፒዛ",
+   "burgers": "በርገሮች",
+   "mains": "ዋና ምግቦች",
+   "sides": "ተጨማሪ ምግቦች",
+   "drinks": "መጠጦች"
+  },
+  "demoTemplates": {
+   "pizza": {
+    "label": "🍕 የፒዛ ምግብ መኪና",
+    "items": {
+     "margherita": "ማርጋሪታ",
+     "pepperoni": "ፔፐሮኒ",
+     "ndujaHoney": "ንዱጃ እና ማር",
+     "fourCheese": "አራት ዓይነት አይብ",
+     "gardenVeg": "የአትክልት ፒዛ",
+     "garlicBread": "የነጭ ሽንኩርት ዳቦ",
+     "rocketParmesan": "አሩጉላና ፓርሜዛን",
+     "olives": "የወይራ ፍሬ",
+     "sanPellegrino": "San Pellegrino",
+     "coke": "ኮካ ኮላ"
+    }
+   },
+   "burgers": {
+    "label": "🍔 የበርገር ምግብ መኪና",
+    "items": {
+     "classicCheeseburger": "ክላሲክ ቺዝበርገር",
+     "doubleBacon": "ደብል ቤከን",
+     "buttermilkChicken": "በቅቤ ወተት የተጠበሰ ዶሮ",
+     "halloumiStack": "የሃሎሚ አይብ በርገር",
+     "smashBurger": "ስማሽ በርገር",
+     "skinOnFries": "ከልጣጩ ጋር የተጠበሰ ድንች",
+     "loadedCheeseFries": "አይብ የበዛበት ቺፕስ",
+     "onionRings": "የሽንኩርት ቀለበቶች",
+     "craftLemonade": "በቤት የተሠራ ሎሚናት",
+     "coke": "ኮካ ኮላ"
+    }
+   },
+   "curries": {
+    "label": "🍛 የካሪ ምግብ መኪና",
+    "items": {
+     "chickenTikkaMasala": "ቺክን ቲካ ማሳላ",
+     "lambRoganJosh": "የበግ ሮጋን ጆሽ",
+     "chanaMasala": "ቻና ማሳላ",
+     "butterChicken": "በቅቤ የበሰለ ዶሮ",
+     "saagPaneer": "ሳግ ፓኒር",
+     "pilauRice": "ፒላው ሩዝ",
+     "garlicNaan": "የነጭ ሽንኩርት ናን",
+     "onionBhaji": "የሽንኩርት ባጂ",
+     "mangoLassi": "የማንጎ ላሲ",
+     "coke": "ኮካ ኮላ"
+    }
+   }
+  }
+ },
+ "manageAllergens": {
+  "cardEditor": {
+   "title": "የእርስዎ አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድ",
+   "intro": "ደንበኞች ይህን የሚያዩት <b>ልክ እርስዎ እንደጻፉት</b> ነው — ምንም ነገር እንደገና አይጻፍም። ከታች ይጻፉ ወይም ይለጥፉ፤ ወይም ፎቶ/PDF ይስቀሉ፤ እኛም ጽሑፉን አንብበን እንዲያረጋግጡት እናስገባልዎታለን።",
+   "empty": "እስካሁን አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድ የለም።",
+   "placeholder": "ለምሳሌ፦ ሁሉም ሳንቡሳዎቻችንና ቂጣዎቻችን ስንዴና ወተት አላቸው። የመጥበሻ ዘይቱ ግሉተንና ለውዞች ካሉባቸው ምግቦች ጋር የጋራ ነው። የቪጋን አማራጮች አሉ — ሠራተኞቻችንን ይጠይቁ።",
+   "reading": "ምስሉን በማንበብ ላይ…",
+   "upload": "📷 ምስል / PDF ይስቀሉ",
+   "uploadNote": "እንዲገመግሙት ጽሑፉን ከምስልዎ ላይ እናነባለን — ምስሉ አይቀመጥም።"
+  },
+  "cardUpload": {
+   "dishFallback": "ምግብ",
+   "question": "የሚሰቅሉት አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድ አለዎት?",
+   "perDish": "{detected, select, yes {ካርዱን ይስቀሉ፤ የምግቦችዎን አለርጂ የሚያስከትሉ ንጥረ ነገሮች ለማዘጋጀት እንጠቀምበታለን። የተገኙት አለርጂ የሚያስከትሉ ንጥረ ነገሮች እያንዳንዱን ምግብ በሚያረጋግጡበት በሚቀጥለው ገጽ ላይ ይታያሉ።} other {ካርዱን ይስቀሉ፤ የምግቦችዎን አለርጂ የሚያስከትሉ ንጥረ ነገሮች ለማዘጋጀት እንጠቀምበታለን።}}",
+   "cardOnly": "ደንበኞች የሚያዩትን አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድ ይስቀሉ።",
+   "yes": "አዎ",
+   "no": "አይ",
+   "noProblem": "ችግር የለም — ካርድ አያስፈልግዎትም። ከታች ባለው ቁልፍ ይቀጥሉ።",
+   "analysing": "ካርዱን በመተንተን ላይ…",
+   "dropzone": "ጎትተው ይጣሉ ወይም ለመምረጥ ይንኩ",
+   "imageOrPdf": "ምስል ወይም PDF",
+   "or": "ወይም",
+   "pastePlaceholder": "የእርስዎን አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድ ጽሑፍ እዚህ ይለጥፉ…",
+   "process": "ካርዱን ያስኬዱ",
+   "cardRead": "ካርዱ ተነቧል ✓",
+   "unmatchedHeading": "እነዚህን በራስ-ሰር ማዛመድ አልተቻለም — ይመድቡ ወይም ይዝጉ",
+   "quotedName": "“{name}”",
+   "ambiguous": "አሻሚ — ከብዙ ምግቦች ጋር ይዛመዳል፤ ትክክለኛውን ይምረጡ።",
+   "assignTo": "ለምግብ ይመድቡ…",
+   "dismiss": "ይዝጉ",
+   "kitchenNotes": "የኩሽና ማስታወሻዎች (ስለ አለርጂ የሚያስከትሉ ንጥረ ነገሮች መረጃዎ ውስጥ ይቀመጣሉ)",
+   "matchSummary": "{n, plural, =0 {{matched} ከምግብ ጋር ተዛምደዋል።} one {{matched} ከምግብ ጋር ተዛምደዋል። {count} የእርስዎን ምደባ ይፈልጋል።} other {{matched} ከምግብ ጋር ተዛምደዋል። {count} የእርስዎን ምደባ ይፈልጋሉ።}}",
+   "blanketInfo": "ካርድዎ እነዚህ በሁሉም ምግቦች ውስጥ ሊኖሩ እንደሚችሉ ይገልጻል፦ {list}። ኩሽናዎ በሚጠቀምባቸው አለርጂ የሚያስከትሉ ንጥረ ነገሮች ላይ እናክላቸዋለን። በመጨረሻው ደረጃ ማረጋገጥ ይችላሉ።"
+  },
+  "savedCard": {
+   "showLess": "ያነሰ ያሳዩ",
+   "showMore": "ተጨማሪ ያሳዩ",
+   "fileOnly": "ለዚህ የምግብ መኪና የካርድ ፋይል ተቀምጧል፤ ነገር ግን ምንም የማጠቃለያ ጽሑፍ አልተቀመጠም። ለማንበብ ዋናውን ይክፈቱ።",
+   "viewOriginal": "ዋናውን ካርድ ይመልከቱ"
+  },
+  "wizard": {
+   "toast": {
+    "readFailed": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርዱን ማንበብ አልተቻለም — እንደገና ይሞክሩ",
+    "confirmed": "ተረጋግጧል፦ {name}",
+    "undo": "ይቀልብሱ",
+    "saveFailed": "ማስቀመጥ አልተቻለም — እባክዎ እንደገና ይሞክሩ",
+    "imageFailed": "ያንን ምስል ማንበብ አልተቻለም — በምትኩ ካርድዎን ይጻፉ ወይም ይለጥፉ",
+    "cardRead": "{n, plural, one {ካርዱ ተነቧል — {matched} ተዛምደዋል፣ {count} ምደባ ይፈልጋል} other {ካርዱ ተነቧል — {matched} ተዛምደዋል፣ {count} ምደባ ይፈልጋሉ}}"
+   },
+   "genericWarn": {
+    "text": "“{generic}” ተገኝቷል፤ ነገር ግን የተወሰነ አይደለም። ይህ ምግብ {family} ካለው {picks} ይምረጡ — ከሌለው ሳይመረጡ ይተዉዋቸው።",
+    "andOr": "{a} እና/ወይም {b}"
+   },
+   "badge": {
+    "justConfirmed": "✓ ተረጋግጧል",
+    "confirmed": "ተረጋግጧል",
+    "needsReview": "መገምገም ያስፈልገዋል"
+   },
+   "confirm": {
+    "confirming": "በማረጋገጥ ላይ…",
+    "confirmed": "ተረጋግጧል ✓",
+    "confirm": "ያረጋግጡ",
+    "changed": "· ተቀይሯል",
+    "changedTitle": "መጨረሻ ካረጋገጡ በኋላ ተስተካክሏል — እንደገና ያረጋግጡ"
+   },
+   "allergens": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች",
+   "dietary": "አመጋገብ",
+   "uncategorised": "ምድብ ያልተሰጣቸው",
+   "review": {
+    "progress": "{confirmed} / {total} ተረጋግጠዋል",
+    "allConfirmed": "✓ ሁሉም ተረጋግጠዋል",
+    "list": "ዝርዝር",
+    "table": "ሰንጠረዥ",
+    "detected": "ከሜኑዎ የተገኙ — <b>እነዚህን ይፈትሹ</b>። እያንዳንዱን ምግብ እስኪያረጋግጡ ድረስ አለርጂ የሚያስከትሉ ንጥረ ነገሮች ከደንበኞች ተደብቀው ይቆያሉ።",
+    "viewOnly": "👁 ለማየት ብቻ — አለርጂ የሚያስከትሉ ንጥረ ነገሮችን ማረጋገጥ ወይም መቀየር የሚችለው ባለቤቱ ብቻ ነው።",
+    "emptyTitle": "ምንም የሜኑ ንጥሎች የሉም",
+    "emptyBody": "መጀመሪያ የሜኑ ንጥሎችን ያክሉ፤ ከዚያም የእነሱን አለርጂ የሚያስከትሉ ንጥረ ነገሮች እዚህ ያስቀምጡ።",
+    "dish": "ምግብ",
+    "status": "ሁኔታ"
+   },
+   "cardPanel": {
+    "reading": "ስለ አለርጂ የሚያስከትሉ ንጥረ ነገሮች መረጃ በማንበብ ላይ…",
+    "saved": "🛡️ አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድ ተቀምጧል",
+    "viewOriginal": "ዋናውን ካርድ ይመልከቱ",
+    "replace": "ካርዱን ይተኩ",
+    "uploadHelp": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድዎን (ፎቶ/PDF) ይስቀሉ ወይም ስለ አለርጂ የሚያስከትሉ ንጥረ ነገሮች መረጃዎን ይለጥፉ — የእኛ AI ለደንበኞች ያደራጀዋል።",
+    "add": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድ ያክሉ",
+    "viewOnly": "👁 ለማየት ብቻ — አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርዱን ማከል የሚችለው ባለቤቱ ብቻ ነው።",
+    "intro": "ደንበኞች ይህን ካርድ ለሜኑው አለርጂ የሚያስከትሉ ንጥረ ነገሮች ማመሳከሪያ አድርገው ያዩታል። “ካርድ ብቻ” በሆነው ሁነታ የእያንዳንዱ ምግብ አለርጂ የሚያስከትሉ ንጥረ ነገሮች ተደብቀው ይቆያሉ (በኋላ ወደ እያንዳንዱ ምግብ ሁነታ ከቀየሩ እንዲጠቅም የምግቦችዎ መረጃ ይቀመጣል)።"
+   },
+   "subtitle": {
+    "choose": "ደንበኞች ስለ አለርጂ የሚያስከትሉ ንጥረ ነገሮች መረጃ እንዴት እንደሚያዩ ይምረጡ",
+    "card": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድዎን ያክሉ",
+    "cardOptional": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች ካርድ ያክሉ (አማራጭ)",
+    "review": "እያንዳንዱን ምግብ ይፈትሹና ያረጋግጡ",
+    "kitchen": "የመጨረሻ ደረጃ፦ ኩሽናዎ"
+   },
+   "heading": {
+    "import": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች",
+    "standalone": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች ማዋቀር"
+   },
+   "nav": {
+    "next": "ቀጣይ →",
+    "back": "← ወደ ኋላ",
+    "skip": "ለአሁን ይዝለሉ",
+    "saving": "በማስቀመጥ ላይ…",
+    "done": "ተጠናቋል",
+    "saveLater": "ያስቀምጡና በኋላ ይጨርሱ",
+    "close": "ይዝጉ",
+    "finish": "ይጨርሱ",
+    "skipImport": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች ማዋቀርን ለአሁን ይዝለሉ"
+   },
+   "hint": {
+    "skipDefers": "መዝለል ያዘገያል እንጂ አያስቀርም — ያላረጋገጧቸው ምግቦች አለርጂ የሚያስከትሉ ንጥረ ነገሮች እስኪረጋገጡ ድረስ ከደንበኞች ተደብቀው ይቆያሉ።",
+    "importIncomplete": "ለመቀጠል እያንዳንዱን ምግብ ያረጋግጡ — ወይም “አለርጂ የሚያስከትሉ ንጥረ ነገሮች ማዋቀርን ለአሁን ይዝለሉ” የሚለውን ይምረጡ።"
+   },
+   "recipeOnly": "በዚህ ምግብ አዘገጃጀት ውስጥ ያሉት ብቻ።",
+   "tooMany": "{count} አለርጂ የሚያስከትሉ ንጥረ ነገሮች ምልክት ተደርጎባቸዋል። ይህ ሁሉ በእርግጥ በዚህ ምግብ አዘገጃጀት ውስጥ አለ? በሌሎች ምግቦች ውስጥ የሚገቡ አለርጂ የሚያስከትሉ ንጥረ ነገሮች እዚህ አይመዘገቡም። እነሱን በመጨረሻው ደረጃ ማከል ይችላሉ።"
+  },
+  "kitchen": {
+   "title": "ኩሽናዎ የትኞቹን አለርጂ የሚያስከትሉ ንጥረ ነገሮች ይጠቀማል?",
+   "body": "በምግቦችዎ ውስጥ ያሉትን አስቀድመን ምልክት አድርገናል። በምግብ መኪናው ውስጥ የሚጠቀሙባቸው ሌሎች ካሉ ምልክት ያድርጉባቸው፤ ለምሳሌ ለልዩ ምግቦች።",
+   "legendDishes": "በምግቦችዎ ውስጥ",
+   "legendAdded": "እርስዎ ያከሏቸው",
+   "customersSee": "ደንበኞች የሚያዩት፦",
+   "confirm": "የእያንዳንዱ ምግብ አለርጂ የሚያስከትሉ ንጥረ ነገሮች ትክክል መሆናቸውን አረጋግጣለሁ፤ ወቅታዊ እንዲሆኑም አደርጋለሁ።"
+  }
+ },
+ "manageUpsells": {
+  "heading": "የሽያጭ ጥቆማዎች",
+  "intro": "ደንበኞች ተጨማሪ ነገር እንዲያክሉ ያበረታቱ። አንድ ሰው ከአንድ ምድብ ሲያዝ፣ ከሌላ ምድብ ንጥሎችን ይጠቁሙ — ከፒዛ ጋር መጠጥ፣ ከበርገር ጋር ሶስ።",
+  "add": "+ የሽያጭ ጥቆማ ያክሉ",
+  "toast": {
+   "updated": "የሽያጭ ጥቆማ ደንቡ ተዘምኗል",
+   "added": "የሽያጭ ጥቆማ ደንቡ ታክሏል",
+   "removed": "ደንቡ ተወግዷል"
+  },
+  "whenAdds": "ደንበኛው ሲያክል…",
+  "suggestFrom": "ንጥሎችን ከዚህ ይጠቁሙ…",
+  "chooseCategory": "ምድብ ይምረጡ",
+  "cancel": "ይቅር",
+  "saveChanges": "ለውጦቹን ያስቀምጡ",
+  "addRule": "ደንብ ያክሉ",
+  "empty": "እስካሁን ምንም የሽያጭ ጥቆማ ደንቦች የሉም።",
+  "confirmRemove": "የሽያጭ ጥቆማ ደንቡ “{trigger} → {suggest}” ይወገድ?",
+  "upTo": "{n, plural, one {እስከ {count} ንጥል ይጠቆማል} other {እስከ {count} ንጥሎች ይጠቆማሉ}}"
+ },
+ "manageExtras": {
+  "toast": {
+   "groupCreated": "ቡድኑ ተፈጥሯል",
+   "groupRenamed": "የቡድኑ ስም ተቀይሯል",
+   "groupDeleted": "ቡድኑ ተሰርዟል",
+   "optionUpdated": "አማራጩ ተዘምኗል",
+   "optionAdded": "አማራጩ ታክሏል",
+   "optionRemoved": "አማራጩ ተወግዷል"
+  },
+  "description": "ደንበኞች ሲያዙ ሊመርጧቸው የሚችሉ የሚከፈልባቸው ወይም ነፃ አማራጮችን ያክሉ — ለምሳሌ፦ ተጨማሪ አይብ +{price}፣ ሽንኩርት አይጨመር {zero}",
+  "note": "የአማራጮች ቡድን ይፍጠሩና ለአንድ የሜኑ ምድብ ይመድቡት። ደንበኞች ሲያዙ በዚያ ምድብ ውስጥ ያሉ ሁሉም ንጥሎች እነዚያን አማራጮች ያቀርባሉ።",
+  "addLabel": "+ ብጁ አማራጭ ያክሉ",
+  "emptyTitle": "እስካሁን ምንም ብጁ ተጨማሪዎች የሉም",
+  "optionCount": "{n, plural, one {{count} አማራጭ} other {{count} አማራጮች}}",
+  "dishCount": "{n, plural, one {{count} ምግብ} other {{count} ምግቦች}}",
+  "rename": "ስም ይቀይሩ",
+  "deleteGroup": "ቡድኑን ይሰርዙ",
+  "required": "ግዴታ",
+  "requiredHint": "(ደንበኛው መምረጥ አለበት)",
+  "selection": "ምርጫ፦",
+  "chooseOne": "አንዱን ይምረጡ",
+  "chooseMultiple": "ብዙ ይምረጡ",
+  "maxChoices": "ከፍተኛው የምርጫ ብዛት",
+  "upTo": "እስከ {n}",
+  "unlimited": "ያልተገደበ",
+  "options": "አማራጮች",
+  "optionType": "{type, select, add {መጨመር} remove {ማስወገድ} other {{type}}}",
+  "soldOut": "አልቋል",
+  "left": "{count} ቀርቷል",
+  "priceAdd": "+{price}",
+  "priceRemove": "-{price}",
+  "free": "ነፃ",
+  "addOption": "+ አማራጭ ያክሉ",
+  "offeredOn": "የሚቀርብባቸው",
+  "editPerDish": "የእያንዳንዱን ምግብ አማራጮች ያስተካክሉ",
+  "notOffered": "እስካሁን በየትኛውም ምግብ ላይ አይቀርብም።",
+  "catPartial": "{name} ({n} / {m})",
+  "hiddenOptions": "* {dish}፦ {options} ተደብቀዋል",
+  "matrix": {
+   "title": "{group} — የእያንዳንዱ ምግብ አማራጮች",
+   "dish": "ምግብ",
+   "include": "ያካትቱ",
+   "removeAll": "ቡድኑን ({group}) ከሁሉም {category} ያስወግዱ",
+   "offerAll": "ቡድኑን ({group}) በሁሉም {category} ላይ ያቅርቡ",
+   "offerCount": "{n} / {total} ይህን ያቀርባሉ",
+   "offeredRemoveGroup": "ይቀርባል — ቡድኑን ከዚህ ምግብ ለማስወገድ ይጫኑ",
+   "notOfferedAdd": "አይቀርብም — ለማከል ይጫኑ",
+   "addGroupFirst": "መጀመሪያ ቡድኑን ወደዚህ ምግብ ያክሉ",
+   "requiredNeedsOne": "ግዴታ የሆነ ቡድን ለእያንዳንዱ ምግብ ቢያንስ አንድ አማራጭ ያስፈልገዋል",
+   "offeredRemove": "ይቀርባል — ለማስወገድ ይጫኑ",
+   "help": "ቡድኑን ወደ አንድ ምግብ ለማከል “ያካትቱ” የሚለውን ምልክት ያድርጉ፤ ከዚያም የትኞቹን አማራጮች እንደሚያሳይ ምልክት ያድርጉ። ወዲያውኑ ይቀመጣል።"
+  },
+  "newGroup": {
+   "title": "አዲስ ብጁ ተጨማሪ",
+   "name": "የቡድን ስም",
+   "placeholder": "ለምሳሌ፦ የፒዛ ተጨማሪዎች"
+  },
+  "option": {
+   "editTitle": "አማራጩን ያስተካክሉ",
+   "newTitle": "አዲስ አማራጭ",
+   "name": "የአማራጭ ስም",
+   "placeholder": "ለምሳሌ፦ ተጨማሪ አይብ",
+   "type": "ዓይነት",
+   "add": "መጨመር",
+   "remove": "ማስወገድ",
+   "price": "የዋጋ ማስተካከያ ({symbol})",
+   "priceHint": "0 = ነፃ",
+   "soldOut": "አልቋል",
+   "stock": "የክምችት ብዛት <opt>(አማራጭ)</opt>",
+   "stockPlaceholder": "∞ አይቆጠርም",
+   "sharedPool": "ይህን አማራጭ በሚጠቀሙ ሁሉም ምግቦች መካከል የጋራ ክምችት።",
+   "allergens": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች",
+   "dietary": "አመጋገብ",
+   "allergensHelp": "የዚህ አማራጭ የራሱ አለርጂ የሚያስከትሉ ንጥረ ነገሮች (ከምግቡ የተለዩ)"
+  },
+  "cancel": "ይቅር",
+  "save": "ያስቀምጡ",
+  "title": "ብጁ ተጨማሪዎች",
+  "confirmDeleteGroup": "“{name}” ይሰረዝ? ሁሉም አማራጮች ይወገዳሉ፤ ከሁሉም ምድቦችም ይነሳል።",
+  "emptyBody": "እንደ “የፒዛ ተጨማሪዎች” ያለ ቡድን ይፍጠሩና እንደ “ተጨማሪ አይብ +{price}” ያሉ አማራጮችን ያክሉ",
+  "saving": "በማስቀመጥ ላይ…",
+  "uncategorized": "ምድብ ያልተሰጣቸው"
+ },
+ "manageDeals": {
+  "toast": {
+   "updated": "ጥምር ምግቡ ተዘምኗል",
+   "created": "ጥምር ምግቡ ተፈጥሯል",
+   "removed": "ጥምር ምግቡ ተወግዷል"
+  },
+  "confirmRemove": "ይህ ጥምር ምግብ ይወገድ?",
+  "heading": "ጥምር ምግቦች (ኮምቦ)",
+  "count": "{n, plural, one {{count} ጥምር ምግብ ተዋቅሯል} other {{count} ጥምር ምግቦች ተዋቅረዋል}}",
+  "newDeal": "+ አዲስ ጥምር ምግብ",
+  "emptyTitle": "እስካሁን ምንም ጥምር ምግቦች የሉም",
+  "active": "ንቁ",
+  "off": "ጠፍቷል",
+  "autoApply": "በራስ-ሰር ይተገበራል",
+  "manual": "በእጅ",
+  "hidden": "አሁን ከደንበኞች ተደብቋል — {warning}",
+  "edit": "ያስተካክሉ",
+  "delete": "ይሰርዙ",
+  "editTitle": "ጥምር ምግቡን ያስተካክሉ",
+  "newTitle": "አዲስ ጥምር ምግብ",
+  "name": "የጥምር ምግቡ ስም",
+  "namePlaceholder": "ለምሳሌ፦ የምሳ ጥምር ምግብ",
+  "description": "መግለጫ",
+  "descriptionPlaceholder": "ማንኛውም ፒዛ + መጠጥ + መጥመቂያ",
+  "price": "የጥምር ምግቡ ዋጋ",
+  "originalPrice": "የመጀመሪያው ዋጋ",
+  "originalPlaceholder": "ባዶ ይተዉ = በራስ-ሰር",
+  "originalHint": "ባዶ = ከንጥሎቹ ይሰላል",
+  "slots": "የንጥል ቦታዎች (ለዚህ ጥምር ምግብ የሚያስፈልጉ ምድቦች)",
+  "slot": "ቦታ {n}",
+  "notUsed": "— ጥቅም ላይ አልዋለም —",
+  "dealActive": "ጥምር ምግቡ ንቁ ነው",
+  "applyHeading": "ለዝግጅቶች ይተግብሩ",
+  "applyHelp": "ይህ ጥምር ምግብ በዝግጅቶችዎ ላይ በራስ-ሰር ይተገበር እንደሆነ ይምረጡ",
+  "applyAll": "ለሁሉም የወደፊት ዝግጅቶች በራስ-ሰር ይተግብሩ",
+  "applyAllHelp": "ይህ ጥምር ምግብ በሚፈጥሩት እያንዳንዱ አዲስ ዝግጅት ላይ ንቁ ይሆናል። ለተወሰኑ ዝግጅቶች አሁንም “የሥራ ፕሮግራም” በሚለው ትር ውስጥ ማጥፋት ይችላሉ።",
+  "manualTitle": "ለእያንዳንዱ ዝግጅት በእጅ ይምረጡ",
+  "applyAllNote": "ይህ ጥምር ምግብ ወደ አዲስ ዝግጅቶች ይታከላል። ለነባር ዝግጅቶች፣ የእያንዳንዱን ዝግጅት ጥምር ምግቦች ለማስተዳደር ወደ “የሥራ ፕሮግራም” ትር ይሂዱ።",
+  "cancel": "ይቅር",
+  "save": "ጥምር ምግቡን ያስቀምጡ",
+  "emptyBody": "እንደ “የምሳ ጥምር ምግብ — ማንኛውም ፒዛ + መጠጥ + መጥመቂያ፣ ዋጋ፦ {price}” ያለ ጥምር ምግብ ይፍጠሩ",
+  "manualHelp": "“የሥራ ፕሮግራም” በሚለው ትር ውስጥ ካላበሩት በስተቀር ይህ ጥምር ምግብ በዝግጅቶች ላይ አይታይም።",
+  "saving": "በማስቀመጥ ላይ…"
+ },
+ "eventTypes": {
+  "title": "የዝግጅት ዓይነቶች",
+  "newTypeButton": "+ አዲስ የዝግጅት ዓይነት",
+  "close": "ይዝጉ",
+  "loading": "በመጫን ላይ…",
+  "missingTitle": "የዝግጅት ዓይነቶች ገና አልበሩም።",
+  "missingBody": "የዚህ አገልግሎት የዳታቤዝ ማሻሻያ ገና አልተተገበረም። ምንም ነገር አልተበላሸም — እያንዳንዱ ዝግጅት መደበኛ ማዋቀርዎን እየተጠቀመ ነው።",
+  "column": "ዓምድ",
+  "vanGone": "ያ ተሽከርካሪ ከእንግዲህ የለም።",
+  "typeGone": "ያ ዓይነት ከእንግዲህ የለም።",
+  "standard": "መደበኛ",
+  "standardHeading": "መደበኛ",
+  "moreFor": "ተጨማሪ አማራጮች፦ {name}",
+  "rename": "ስም ይቀይሩ",
+  "moveLeft": "ወደ ግራ ያንቀሳቅሱ",
+  "moveRight": "ወደ ቀኝ ያንቀሳቅሱ",
+  "delete": "ይሰርዙ",
+  "sections": {
+   "vans": "ተሽከርካሪዎች",
+   "prices": "ዋጋዎች",
+   "itemPrices": "የንጥል ዋጋዎች",
+   "service": "አገልግሎት"
+  },
+  "labelFor": "{label} — {name}",
+  "intervalEvery": "በእያንዳንዱ {mins} ደቂቃ",
+  "noTypes": "እስካሁን ምንም የዝግጅት ዓይነቶች የሉዎትም፤ ስለዚህ እያንዳንዱ ዝግጅት መደበኛ ማዋቀርዎን ይጠቀማል።",
+  "renameTitle": "የዚህን ዓይነት ስም ይቀይሩ",
+  "name": "ስም",
+  "cancel": "ይቅር",
+  "save": "ያስቀምጡ",
+  "copyVanOne": "የተሽከርካሪ 1 ቅንብሮችን ይቅዱ",
+  "thisType": "ይህ ዓይነት",
+  "matchTitle": "“{name}” ከመደበኛው ጋር ይመሳሰል?",
+  "matchKeeps": "በአንድ ዝግጅት ዳሽቦርድ ላይ የቀየሩት ማንኛውም ነገር እንዳለ ይቆያል፤ የዚህ ዓይነት ዋጋዎችም አይቀየሩም።",
+  "matchWillUse": "የሚጠቀመው፦ {summary}",
+  "deleteTitle": "“{name}” ይሰረዝ?",
+  "deleteBody": "{n, plural, =0 {“{name}” የሚጠቀም መጪ ዝግጅት የለም።} one {{count} መጪ ዝግጅት “{name}” ይጠቀማል። ወደ መደበኛ ይመለሳል።} other {{count} መጪ ዝግጅቶች “{name}” ይጠቀማሉ። ወደ መደበኛ ይመለሳሉ።}} በአንድ ዝግጅት ላይ የቀየሩት ማንኛውም ነገር እንዳለ ይቆያል።",
+  "keep": "ይቆይ",
+  "phone": {
+   "standardTag": "መደበኛ",
+   "defaultTag": "ነባሪ",
+   "vanSetup": "የዚህ ተሽከርካሪ የተለመደ ማዋቀር — ዓይነት በሌለው እያንዳንዱ ዝግጅት ላይ ይውላል።",
+   "standardSetup": "የእርስዎ የተለመደ ማዋቀር — ዓይነት በሌለው እያንዳንዱ ዝግጅት ላይ ይውላል።",
+   "cardSummary": "{upcoming, plural, one {{upcomingCount} መጪ ዝግጅት} other {{upcomingCount} መጪ ዝግጅቶች}} · {changed, plural, =0 {እስካሁን ምንም አልተቀየረም} one {{changedCount} / {total} ተቀይሯል} other {{changedCount} / {total} ተቀይረዋል}}",
+   "noMenuItems": "እስካሁን የሜኑ ንጥሎች የሉም — በሜኑ › ንጥሎች ውስጥ ያክሏቸው።"
+  },
+  "newType": {
+   "title": "አዲስ የዝግጅት ዓይነት",
+   "namePlaceholder": "ለምሳሌ፦ የትምህርት ቤት በዓል",
+   "help": "ስም ይንኩ ወይም የራስዎን ይጻፉ። የሚጀምረው የመደበኛው ቅጂ ሆኖ ነው፤ በኋላ መደበኛውን መቀየር ይህን አይቀይረውም። ከዚያ በኋላ ማንኛውንም ነገር ይቀይሩ።",
+   "create": "ይፍጠሩ",
+   "chips": {
+    "festival": "ፌስቲቫል",
+    "pub": "መጠጥ ቤት",
+    "market": "ገበያ",
+    "privateHire": "የምግብ መኪና ለዝግጅት መከራየት"
+   }
+  },
+  "select": {
+   "label": "የዝግጅት ዓይነት",
+   "usual": "ለዚህ ቦታ የተለመደው፦ {name}።"
+  },
+  "summary": {
+   "normalSetup": "የእርስዎ መደበኛ ማዋቀር",
+   "sameAsStandard": "ከመደበኛው ጋር ተመሳሳይ",
+   "buzzersOn": "የጥሪ መሣሪያዎች በርተዋል",
+   "buzzersOff": "የጥሪ መሣሪያዎች ጠፍተዋል",
+   "takeCashOn": "ጥሬ ገንዘብ መቀበል በርቷል",
+   "takeCashOff": "ጥሬ ገንዘብ መቀበል ጠፍቷል",
+   "markReadyOn": "“ዝግጁ ምልክት ያድርጉ” ደረጃ በርቷል",
+   "markReadyOff": "“ዝግጁ ምልክት ያድርጉ” ደረጃ ጠፍቷል",
+   "collectionEvery": "መውሰድ በእያንዳንዱ {mins} ደቂቃ",
+   "offlineOff": "ከመስመር ውጭ ጥበቃ ጠፍቷል",
+   "offlineKeepTaking": "ከመስመር ውጭ፦ ትዕዛዝ መቀበል ይቀጥላል",
+   "offlinePause": "ከመስመር ውጭ፦ ትዕዛዝ መቀበል ለጊዜው ይቆማል"
+  },
+  "errors": {
+   "somethingWentWrong": "የሆነ ችግር ተፈጥሯል",
+   "couldNotLoad": "መጫን አልተቻለም",
+   "couldNotSave": "ማስቀመጥ አልተቻለም",
+   "noVans": "ይህ የምግብ መኪና የሚቀየሩ ተሽከርካሪዎች የሉትም።"
+  }
+ },
+ "privateEvents": {
+  "publicName": "የግል ዝግጅት",
+  "chip": "የግል",
+  "grid": {
+   "orderingSection": "ትዕዛዝ መቀበል",
+   "linkRowLabel": "በግል ሊንክ እና QR ኮድ ትዕዛዝ ይቀበሉ",
+   "columnTitle": "አብሮ የተሠራው የግል ዓይነት። ስሙ ሊቀየር፣ ሊንቀሳቀስ ወይም ሊሰረዝ አይችልም።"
+  },
+  "form": {
+   "help": "በሥራ ፕሮግራምዎ ላይ “የግል ዝግጅት” ተብሎ ቀኑና ሰዓቶቹ ብቻ ይታያሉ — አድራሻው፣ ካርታው ወይም Village Foodie በጭራሽ አይታዩም።",
+   "linkPromise": "እንግዶች በግል ሊንክ እና QR ኮድ ያዝዛሉ — ካስቀመጡ በኋላ ያገኟቸዋል።",
+   "nameLabel": "የዝግጅቱ ስም",
+   "nameHelp": "እንግዶች ይህን በትዕዛዝ ገጹ አናት ላይ ያዩታል።",
+   "namePlaceholder": "የሔኖክና የቤተልሔም ሰርግ",
+   "previewNote": "በሥራ ፕሮግራምዎ ላይ እንዴት እንደሚታይ — ያለ የዝግጅት ቦታ፣ ከተማ ወይም ክፍለ ከተማ።",
+   "needsTimes": "የመጀመሪያና የማብቂያ ሰዓት ያክሉ — በሊንክ ትዕዛዝ የሚቀበል የግል ዝግጅት እነዚህን ያስፈልገዋል።"
+  },
+  "link": {
+   "button": "ሊንክ እና QR",
+   "title": "የግል ሊንክ እና QR ኮድ",
+   "label": "የግል ሊንክ",
+   "copy": "ይቅዱ",
+   "copied": "ተቀድቷል",
+   "qrDownload": "QR ያውርዱ",
+   "tableCards": "የጠረጴዛ ካርዶችን ያትሙ",
+   "newLink": "አዲስ ሊንክ ይፍጠሩ",
+   "working": "በመሥራት ላይ…",
+   "newLinkConfirm": "አዲስ ሊንክ ይፈጠር? አሁን ያለው ሊንክ ወዲያውኑ መሥራት ያቆማል፤ አስቀድመው ያተሟቸው QR ኮዶችም መሥራት ያቆማሉ።",
+   "newLinkHelp": "ሊንኩ መድረስ ወደሌለበት ቦታ ከደረሰ ይህን ይጠቀሙ። አሁን ያለው ሊንክ ወዲያውኑ መሥራት ያቆማል፤ የታተሙ QR ኮዶችም መሥራት ያቆማሉ።",
+   "newLinkFailed": "አዲስ ሊንክ መፍጠር አልተቻለም።",
+   "offNotice": "ለዚህ ዝግጅት በግል ሊንክ ትዕዛዝ መቀበል ጠፍቷል፤ ስለዚህ የሚጋራ ሊንክ የለም። ዝግጅቱ አሁንም በሥራ ፕሮግራምዎ ላይ “የግል ዝግጅት” ተብሎ ይታያል።"
+  },
+  "cards": {
+   "printTitle": "{truck} — የጠረጴዛ ካርዶች",
+   "scan": "ለማዘዝ ይቃኙ",
+   "blurb": "በስልክዎ ይዘዙና ይክፈሉ። ዝግጁ ሲሆን ስምዎን እንጠራለን።",
+   "footer": "ትዕዛዝ በHatchGrab"
+  },
+  "noSinglePost": "የግል ዝግጅት የራሱ ልጥፍ አያገኝም — በሳምንታዊ ፖስተርዎ ላይ “የግል ዝግጅት” ተብሎ ይታያል።",
+  "confirmToPrivate": "ይህ አድራሻውንና ዝግጅቱን ከካርታው ላይ ይደብቃል። እንግዶች ለማዘዝ የግል ሊንኩ ያስፈልጋቸዋል።",
+  "confirmFromPrivate": "ይህ ዝግጅቱን ለሕዝብ ክፍት ያደርገዋል፦ አድራሻውና በካርታው ላይ ያለው ምልክት ይታያሉ፤ የግል ሊንኩም መሥራት ያቆማል።"
+ }
+}
