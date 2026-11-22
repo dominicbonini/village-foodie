@@ -69,17 +69,21 @@ Run once, in a clean worktree at 2da8ec99 (`scripts/run-harnesses.cjs` with a co
 
 ### Open items for you
 
-1. **Switch-on, your call:** Cambodia (KH), Laos (LA) and Ethiopia (ET) have enabled rows still on en-GB / en-GB / en-KE. km-KH,
-   lo-LA and am-ET are installed but on no row. As with LK and TZ, each switch would be one committed migration, run only after
-   the live site serves the locale, plus the own-language short_name (Intl: កម្ពុជា, ລາວ, ኢትዮጵያ).
-2. **Older Terms now out of step with the English:** terms-postpay-1 (19 Nov) updated the Terms for the 51 languages enabled
-   countries use, not for ta-LK, fil-PH, hi-IN, ur-PK and vi-VN (no enabled country uses them). Before any of those is switched on
-   its Terms need the post-pay sentences.
-3. **Native checks:** every language here is a faithful machine translation. The per-part word choices to check are in
+*(updated 22 Nov by languages-switch-4, docs/languages-switch-4-report.md)*
+
+1. ~~**Switch-on, your call:** Cambodia, Laos, Ethiopia.~~ ✅ Done 22 Nov (languages-switch-4, 2117bbb0, run): KH km-KH
+   «កម្ពុជា», LA lo-LA «ລາວ», ET am-ET «ኢትዮጵያ»; live at 21:58.
+2. **Update the Terms of the five unused languages before any of them is switched on** (Dominic, 22 Nov: leave them as they are
+   until then). terms-postpay-1 (19 Nov) updated the Terms for the languages enabled countries use, not for ta-LK, fil-PH,
+   hi-IN, ur-PK and vi-VN. Whoever switches one of them on first adds the post-pay sentences to its
+   `content/legal/<locale>/terms-and-conditions.md`.
+3. **Native checks (open):** every language here is a faithful machine translation. The per-part word choices to check are in
    `docs/languages-world-2/handover/NATIVE.md` (km-KH, lo-LA, am-ET part and consistency sections); every legal page needs a
    native/legal check; the listings need one too.
-4. **The event-types.cjs screen** (above) blocks the full sweep for everyone until its comment is reworded.
-
+4. ~~**The event-types.cjs screen** blocks the full sweep.~~ ✅ Fixed 22 Nov (48fc9490): the runner's screen passes for the whole
+   list and event-types.cjs is 192/192.
+5. **Store listings out of staging:** waiting on your answer (languages-switch-4 report, §2) — moving them as they are would make
+   `push-listing.cjs` send nothing.
 
 ## Progress
 
