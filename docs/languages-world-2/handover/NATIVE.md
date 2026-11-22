@@ -700,3 +700,11 @@
 - Settled: Place “ສະຖານທີ່”, Venue “ບ່ອນຈັດງານ”, Area (town box) “ເຂດ”, Time “ເວລາ”; Location toggle in errorsManage.wp_last_toggle shown as Place “ສະຖານທີ່” (as km-KH); CANCELLED “ຍົກເລີກແລ້ວ”. Fleet "truck" (vanFilter, van for an event) ລົດ — ລົດທີ່ຈະອອກງານນີ້.
 - Native check: "Kitchen also handles" “ໃນຄົວຍັງມີການໃຊ້”; Instant prep “ພ້ອມເສີບ”; Import ນຳເຂົ້າ; Discard ຖິ້ມ; Show me around ພາຂ້ອຍທ່ອງເບິ່ງ; Tidy up places ຈັດລະບຽບສະຖານທີ່; Cost to make ຕົ້ນທຶນການເຮັດ; caption ຄຳບັນຍາຍ; font library ຄັງຟອນ; blank image ຮູບພື້ນຫວ່າງ; days off ວັນພັກ.
 - Samples: Margherita → ເຂົ້າຈີ່ປາເຕ (ປາເຕ, ໝູຍໍ, ແຕງກວາ); @vientianemusicfest; yourfoodtruck.la/events. WhatsApp "Set up" quoted “ຕັ້ງຄ່າ” (button must match). Uncategorized/Uncategorised both ບໍ່ມີໝວດໝູ່.
+
+## lo-LA part 05 (languages-world-3, 22 Nov 2026)
+- check-part: 840 keys / 840; STRUCTURAL 0; back missing 0. No Thai script, no ZWSP, no old ຫລ/ຫນ/ຫມ, no Lao digits; one = other.
+- English left 16: Food Truck; Excel/Numbers/Xero/QuickBooks; Oswald; key "Delete"; "events" in yourfoodtruck.la/events. Glossary 5: 4 vowel-mark false alarms (KDS); qr.printHelp "pre-order" as verb ສັ່ງລ່ວງໜ້າ. Length 1: Auto-replies ຕອບກັບອັດຕະໂນມັດທາງ WhatsApp (locked term). Drift 75: exclude from imports ບໍ່ນຳເຂົ້າອີກ; restore ສະແດງຄືນ.
+- Kept: Truck settings ການຕັ້ງຄ່າລົດ; Truck details ຂໍ້ມູນ Food Truck; Your trucks ລົດຂອງທ່ານ / + ເພີ່ມລົດ; Schedule ກຳນົດການ; Place/Area ສະຖານທີ່/ເຂດ. Accountant report row Pay at Hatch = short label ຈ່າຍທີ່ລົດ (beside "Card online").
+- Social: location ສະຖານທີ່ (= place); weekly post ໂພສປະຈຳອາທິດ; single event post ໂພສງານດຽວ; Designs tab ການອອກແບບ; template ແມ່ແບບ; Main image “ຫຼັກ”; All text ຂໍ້ຄວາມທັງໝົດ; photo space ຊ່ອງໃສ່ຮູບ.
+- Native check (reports): Gross/Net sales ຍອດຂາຍລວມ / ຍອດຂາຍສຸດທິ; Modifier ຕົວເລືອກ; Rounding ການປັດເສດ; tax year ປີພາສີ; accountant ນັກບັນຊີ; Walk-up channel ໜ້າຮ້ານ.
+- Samples: yourfoodtruck.la, hello@yourfoodtruck.la, @vientianemusicfest, Van 2 / Festival van ລົດ 2 / ລົດງານບຸນ. Team → My profile ທີມ → ໂປຣໄຟລ໌ຂອງຂ້ອຍ. Prep units "{s} ວິ" / "{m} ນາທີ"; own-style badge ສະເພາະ; CAPITALS option ຕົວພິມໃຫຍ່ (no capitals in Lao).
