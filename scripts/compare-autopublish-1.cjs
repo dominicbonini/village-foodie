@@ -236,7 +236,8 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   t('the contact form has the "comparison" topic, chosen by ?topic=comparison', L.CONTACT_TOPICS.includes('comparison') && L.topicFromParam('comparison') === 'comparison' && L.topicFromParam('Cost Comparison') === 'question')
   // ⚠️ RE-PINNED (languages-world-1, 10 November 2026): "29" was en-GB + the 28 bases of the day. The files with the contact form must
   // be exactly en-GB + lib/i18n/locales.ts's live LANGUAGE_BASES (36 then, more may follow), never a typed count.
-  const BASES = read('lib/i18n/locales.ts').match(/export const LANGUAGE_BASES[^=]*= \[([^\]]*)\]/)[1].match(/'([a-z]{2}-[A-Z]{2})'/g).map(x => x.slice(1, -1))
+  // ⚠️ RE-PINNED (languages-world-3, 22 November 2026): a base's language part may have three letters (fil-PH), so {2,3}.
+  const BASES = read('lib/i18n/locales.ts').match(/export const LANGUAGE_BASES[^=]*= \[([^\]]*)\]/)[1].match(/'([a-z]{2,3}-[A-Z]{2})'/g).map(x => x.slice(1, -1))
   const langFiles = fs.readdirSync(path.join(REPO, 'messages')).filter(x => x.endsWith('.json')).map(x => [x.slice(0, -5), JSON.parse(read(`messages/${x}`))]).filter(([, m]) => m.contactPage?.form?.topics?.other)
   const langs = langFiles.map(([, m]) => m), langNames = langFiles.map(([l]) => l).sort().join()
   t(`…its words in every language base that has the contact form (${1 + BASES.length}: en-GB and the ${BASES.length} bases)`, BASES.length >= 28 && langNames === ['en-GB', ...BASES].sort().join() && langs.every(m => typeof m.contactPage.form.topics.comparison === 'string' && m.contactPage.form.topics.comparison.length > 3), { files: langFiles.map(([l]) => l), noComparisonTopic: langFiles.filter(([, m]) => !(typeof m.contactPage.form.topics.comparison === 'string' && m.contactPage.form.topics.comparison.length > 3)).map(([l]) => l) })

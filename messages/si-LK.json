@@ -4243,7 +4243,7 @@
       "online": "ඔන්ලයින්",
       "walkUp": "ස්ථානයේදී",
       "cardOnline": "ඔන්ලයින් කාඩ්පත",
-      "payAtTruck": "ස්ථානයේදී ගෙවන්න",
+      "payAtTruck": "රැගෙන යන විට ගෙවීම",
       "cost": "විකුණූ කෑමවල වියදම",
       "profit": "ලාභය",
       "coverage": "{total, plural, one {විකුණූ කෑම: # · වියදම සකසා ඇති: {withCost}} other {විකුණූ කෑම: # · වියදම සකසා ඇති: {withCost}}}",

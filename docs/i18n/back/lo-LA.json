@@ -4057,7 +4057,7 @@
  "manageSettings.vanBilling.title": "Add another van",
  "manageSettings.vans.add": "+ Add van",
  "manageSettings.vans.addButton": "Add",
- "manageSettings.vans.addConfirm": "{free, select, yes {Adding a van is free on your plan.} other {One extra van costs {price} per month on your plan. We will contact you before anything is charged.}}\n\nDo you want to continue?",
+ "manageSettings.vans.addConfirm": "{free, select, yes {Adding a van is free on your plan.} other {Each extra van costs {price} per month on your plan. We will contact you before anything is charged.}}\n\nDo you want to continue?",
  "manageSettings.vans.buzzerCountAria": "Number of buzzers",
  "manageSettings.vans.cancel": "Cancel",
  "manageSettings.vans.delete": "Delete",

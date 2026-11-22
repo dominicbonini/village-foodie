@@ -6,7 +6,8 @@
 // anywhere (NO_SPACES below).
 'use strict'
 /** Scripts without spaces between words: a word in them is matched anywhere. */
-const NO_SPACES = /[\u3040-\u30ff\u3400-\u9fff\u0e00-\u0e7f]/
+// languages-world-3 (22 November 2026): Lao (\u0e80-\u0eff) and Khmer (\u1780-\u17ff) are written without spaces too.
+const NO_SPACES = /[\u3040-\u30ff\u3400-\u9fff\u0e00-\u0eff\u1780-\u17ff]/
 module.exports = {
   'en-GB': ['card reader', 'card machine', 'till', 'cash register', 'payment terminal', 'card terminal', 'point of sale', 'pos', 'offline card'],
   'de-DE': ['kartenlesegerät', 'kartenleser', 'kartengerät', 'ec-gerät', 'kasse', 'registrierkasse', 'kassensystem', 'kartenterminal', 'zahlungsterminal', 'bezahlterminal', 'pos', 'point of sale'],
@@ -60,5 +61,18 @@ module.exports = {
   'bn-BD': ['কার্ড মেশিন', 'pos মেশিন', 'ক্যাশ বাক্স', 'ক্যাশ রেজিস্টার', 'pos'],
   'ur-PK': ['کارڈ مشین', 'pos مشین', 'کیش رجسٹر', 'گلہ', 'pos'],
   'ne-NP': ['कार्ड मेसिन', 'pos मेसिन', 'क्यास काउन्टर', 'गल्ला', 'pos'],
+  // languages-world-3 (22 November 2026): the 11 bases it added, from each installed UI's own words for card machine / card reader /
+  // till / POS (paymentActions.paidCardMachine, comparison.groups.pos, comparison.faq.tseQ, comparison.features.terminal.label).
+  'fil-PH': ['card reader', 'card machine', 'kahera', 'pos'],
+  'sq-AL': ['terminal', 'sistem arke', 'arkë', 'arka', 'pos'],
+  'bs-BA': ['pos terminal', 'terminal', 'kasa', 'kase', 'kasu', 'pos'],
+  'mk-MK': ['pos терминал', 'терминал', 'касов', 'каса', 'pos'],
+  'ca-AD': ['datàfon', 'caixa registradora', 'terminal', 'tpv', 'pos'],
+  'sw-TZ': ['mashine ya kadi', 'mashine ya pos', 'pos'],
+  'si-LK': ['කාඩ් යන්ත්‍ර', 'pos'],
+  'ta-LK': ['அட்டை இயந்திர', 'pos'],
+  'km-KH': ['ម៉ាស៊ីនឆូតកាត', 'pos'],
+  'lo-LA': ['ເຄື່ອງຮູດບັດ', 'pos'],
+  'am-ET': ['የካርድ ማሽን', 'ካርድ ማሽን', 'የሽያጭ ማሽን', 'pos'],
 }
 module.exports.NO_SPACES = NO_SPACES
