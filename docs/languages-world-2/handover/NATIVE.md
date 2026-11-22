@@ -780,3 +780,11 @@
 - ቅናሽ only for partner/promo offers, never meal deals; auth.signup code/deal = demoGetStarted partnerCode*/partnerDeal* word for word; Private hire chip የምግብ መኪና ለዝግጅት መከራየት (long, locked).
 - Local substitutions: Abebe's Burgers (የአበበ በርገር); Henok & Betelhem wedding; sambusa in the allergen-card example (consistency pass: allergens must stay as the English lists them); school fete የትምህርት ቤት በዓል; Last name → የአባት ስም (father's name); postcode → ክፍለ ከተማ; you@yourfoodtruck.et; demo dishes transliterated, Coke ኮካ ኮላ.
 - Native check: Done buttons ተጠናቋል; Dismiss on unmatched allergen rows ይዝጉ (maybe ይተዉ); Optional (አማራጭ) = option word.
+
+## am-ET part 04 (languages-world-3, 22 Nov 2026)
+- check-part: 695 keys / 695; STRUCTURAL 0; back missing 0; glossary 0 (manageMenu.allergens.buildFirst fixed).
+- English left 14 (developer-facing): migration paths, eventId/placeId, "(migration)" / "(schedule-places migration)", JSON, JPEG/HEIC/WebP, Canva "Share › Download", "events" in domain_www. Length 11: allergen term on short labels, "የማዘጋጃ ጊዜ፦ {secs} ሰከንድ". Drift 97 (van → "vehicle").
+- Settled: Place “ቦታ”, Venue “የዝግጅት ቦታ”, Area “አካባቢ”, Time “ሰዓት”, Date “ቀን”; Location toggle quoted “ቦታ”; poster CANCELLED “ተሰርዟል”. Schedule-card Cancel (cancels the event) ይሰርዙ; dialog Cancel ይቅር.
+- New: Import menu ሜኑ ያስገቡ; Instant “ወዲያው የሚቀርብ”; Manager ሥራ አስኪያጅ; staff ሠራተኛ. manageSchedule.card.dealsActive gained a one branch (English =0 + other).
+- Native check: go live በሥራ ላይ መዋል vs Live badge በሂደት ላይ; Discard import ይተዉት (ይጣሉ = drag-and-drop drop); Free from የሌሉበት; Cost to make የመሥሪያ ወጪ (avoids prep word ማዘጋጀት); first-person schedule options ("የሥራ ፕሮግራሜ በድረ-ገጼ ላይ አለ", "ቀኖቼን ራሴ አክላለሁ"); loans ፎንት, ታግ, ኤክስፖርት; Contact details የመገኛ መረጃ.
+- Samples: @buresmusicfest → @addisfoodfest; yourtruck.co.uk → yourfoodtruck.et. GST/PST kept.
