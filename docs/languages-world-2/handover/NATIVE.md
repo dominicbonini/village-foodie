@@ -751,3 +751,14 @@
 - Heading box ກ່ອງຫົວຂໍ້ອາທິດ (= designEditor.item.weekHeading); wp_last_toggle = design editor wording; private-event messages say weekly post ໂພສປະຈຳອາທິດ; blank image ຮູບພື້ນຫວ່າງ everywhere; WhatsApp schedule fallback ກຳນົດການ.
 - Plurals read for 1: compare.breakdown.freeMonths "# ເດືອນທຳອິດ"; dashboard.settings.everyMinutes = collection setting. ~85 same-label unifications (kitchen-capacity labels, 16 "something went wrong" errors, Payment method ວິທີການຈ່າຍເງິນ, Branded QR / pre-order closing time = plan feature names, Phone ເບີໂທລະສັບ, PIN, Continue, refund reasons, file/font errors).
 - Check: Prefecture ແຂວງ (ຈັງຫວັດ is Thai usage); event approval "goes live" ກ່ອນເຜີຍແຜ່; operator go live ເປີດໃຊ້ງານ; "Food Truck … ຄັນ" classifier in deleteAccount.allTrucks; the 5 new pricing lines.
+
+## am-ET part 01 (languages-world-3, 22 Nov 2026)
+- check-part: 805 keys / 805; STRUCTURAL 0; back missing 0.
+- English left 21: eftpos (order.dualNetworkNotice brand); "slug" in brackets (dashboard.toast.orderUrlMissing); 19 allergen names with English in brackets (crustaceans, tree nuts, nuts, sulphites, molluscs, shellfish, rye, yam, pecan, chestnut…). Length 17 = those allergen badges. Drift 175 = back-translation wording.
+- Van ተሽከርካሪ; business የምግብ መኪና; Truck settings (vans) የተሽከርካሪዎች ቅንብሮች; Truck details (business) የምግብ መኪናው ዝርዝሮች.
+- Event ዝግጅት; prep ማዘጋጀት (prep time የማዘጋጃ ጊዜ) — ዝግጅት means both. Allergens locked አለርጂ የሚያስከትሉ ንጥረ ነገሮች (long on the "ⓘ Allergen info" button). Collection times uses singular የመውሰጃ ሰዓት (glossary match).
+- Peanut ኦቾሎኒ (ለውዝ read as peanut) → nuts / tree nuts carry English brackets. Native check: lupin ገብጦ, yam ቦዬ (not taro ጎደሬ), oats አጃ, peach ኮክ.
+- Cancel button ይቅር; cancelled / poster CANCELLED ተሰርዟል; buzzer የጥሪ መሣሪያ; tip ጉርሻ; Done ተጠናቋል / የተጠናቀቁ; Ready ዝግጁ; TBC ይረጋገጣል; Powered by ቴክኖሎጂ፦ HatchGrab.
+- One spelling each: መልዕክት, መሣሪያ, አኃዝ, ማኅበራዊ. No affix glued to a placeholder (apposition or ፦).
+- Plural one branches show # (read for 0). dashboard.tabs.orders gained a one branch (English has =0 and other; checker requires one).
+- Suggested for part 04: Place ቦታ, Venue የዝግጅት ቦታ, Area አካባቢ, Time ሰዓት, Date ቀን.
