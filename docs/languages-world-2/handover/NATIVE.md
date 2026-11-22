@@ -658,3 +658,10 @@
 - Fleet per truck / month ឡាន; Pay at Hatch price word បង់ពេលទៅយក, feature name បង់ប្រាក់ពេលទៅយក. UK company line keeps "England and Wales".
 - Native check: Unlimited allowance/price word មិនកំណត់ចំនួន vs plan name គ្មានដែនកំណត់; truckPage.meta.orderDescription "ទៅយកផ្ទាល់នៅឡាន" (STYLE SEO wording; TERMS elsewhere នៅ Food Truck); Most trucks badge Food Truck ភាគច្រើនជ្រើសរើស; Lifetime ពេញមួយជីវិត; Hire a Food Truck ជួល Food Truck សម្រាប់ពិធី.
 - Village Foodie footer: "Never miss a slice" → ភីហ្សាមួយចំណិត; Spam/Pepperoni pun → "(but maybe some pizza)". Loanwords: wifi វ៉ាយហ្វាយ; apron អាវផាយ; EEA cards កាតតំបន់សេដ្ឋកិច្ចអឺរ៉ុប (EEA).
+
+## km-KH consistency pass (languages-world-3, 22 Nov 2026) — fix.json, 64 corrections, check-fix 0
+- deleteAccount.allTrucks lists businesses → Food Truck; truckPage.meta.orderDescription "at the truck" → នៅ Food Truck. Billing, calculator and physical-vehicle lines keep ឡាន.
+- Pay at the truck: options/buttons/statuses/report row/price word បង់ពេលទៅយក; feature names បង់ប្រាក់ពេលទៅយក (comparison row changed); sentences "បង់ប្រាក់នៅ Food Truck".
+- Private-event own-post messages say weekly post ការបង្ហោះប្រចាំសប្តាហ៍. Auto-replies section/card title plain ការឆ្លើយតបស្វ័យប្រវត្តិ (card holds Instagram/Messenger too); WhatsApp block keeps "តាម WhatsApp".
+- Reason មូលហេតុ; Payment method មធ្យោបាយបង់ប្រាក់; Log in ចូលគណនី (auth.login.title, new-order operator e-mail); prefecture plain ខេត្ត; More tab ច្រើនទៀត (not បន្ថែម); Days off ថ្ងៃឈប់; Branded QR setting = plan feature name. ~31 same-label pairs unified.
+- Check: "Show me around" ណែនាំខ្ញុំ; amber ticket ពណ៌ទឹកក្រូច; auth.login.title "ចូលគណនីផ្ទះបាយរបស់អ្នក"; prefecture as ខេត្ត; Auto-replies heading without "តាម WhatsApp"; pending-email-change Cancel stays បោះបង់ (shared key).
