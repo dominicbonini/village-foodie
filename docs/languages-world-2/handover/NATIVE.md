@@ -735,3 +735,11 @@
 - Comparison: vendor ຜູ້ໃຫ້ບໍລິການ; competitor ຄູ່ແຂ່ງ; Yes ມີ / No ບໍ່ມີ / Partly ບາງສ່ວນ / Not stated ບໍ່ໄດ້ລະບຸ / Not listed ບໍ່ໄດ້ລົງໄວ້ / Doesn't say ບໍ່ໄດ້ບອກ / Doesn't apply ບໍ່ກ່ຽວຂ້ອງ.
 - Native check: pitch ຈຸດຂາຍ; griddle ເຕົາປີ້ງແຜ່ນ; signal ສັນຍານ; push notification ການແຈ້ງເຕືອນໃນໂທລະສັບ; loyalty ລາງວັນລູກຄ້າປະຈຳ; set-up fee ຄ່າຕິດຕັ້ງ; "on us" ພວກເຮົາໃຫ້ຟຣີ; breadcrumb ເສັ້ນທາງນຳທາງ; bundles ຊຸດລວມລາຍການ (vs meal deal ຊຸດອາຫານ); SEO description ending "ແຕ່ລະລາຍ".
 - Plurals one = other; price.lead drops English " each" (both branches empty); compare.plan.summary says "for each van" in every branch.
+
+## lo-LA part 09 (languages-world-3, 22 Nov 2026)
+- check-part: 453 keys / 439 (14 planNames extra); STRUCTURAL 0; back missing 0. markRules 0 failures (function copied to a scratch script). No Thai script, no ZWSP, no old ຫລ/ຫນ/ຫມ, no Lao digits.
+- English left 37: Food Truck, Bluetooth, testimonial names Nadia & Bogdan and Pizzeria Gusto, Dominic Bonini, Village Foodie titles, EEA/UAE/UK in card-region names. Glossary 7: 5 KDS vowel-mark false alarms; landing.jsonLd.description = STYLE.md SEO string (ໜ້າຈໍຄົວ without "(KDS)"); Messenger & Instagram auto-reply names without WhatsApp. Length 17: Log in, FAQ ຄຳຖາມທີ່ພົບເລື້ອຍ, Terms, TBC, About ກ່ຽວກັບພວກເຮົາ.
+- planNames: payg ບໍ່ມີຄ່າລາຍເດືອນ; unlimited ບໍ່ຈຳກັດ; trial ທົດລອງໃຊ້ຟຣີ; demo ເດໂມ; tester ຜູ້ທົດສອບ; subtitles start ສຳລັບ…; payg back ends "only pay 0.99% on online orders."
+- planTable.trial.length `{months, plural, one {# ເດືອນ} other {# ເດືອນ}}`; priceWord.masked ລໍຖ້າຢືນຢັນ; priceWord.payAtHatch = feature name ຈ່າຍເງິນຕອນໄປຮັບ (Khmer used the short label here — consistency pass decides). per truck / month ຕໍ່ລົດ / ເດືອນ; planPrompt.switchedOff and truck page Food Truck.
+- Native check: cook screen ໜ້າຈໍຜູ້ແຕ່ງອາຫານ; Multi-device kitchen sync ຊິງຄ໌ຄົວໃນຫຼາຍອຸປະກອນ; loyalty stamp cards ບັດສະສົມແຕ້ມດິຈິຕອນ; Most trucks badge Food Truck ສ່ວນໃຫຍ່ເລືອກ; Google Play badge ມີໃຫ້ດາວໂຫຼດໃນ Google Play; footer "Never miss a slice" ບໍ່ພາດທຸກຄວາມແຊບ; Pepperoni joke ເຂົ້າຈີ່ປາເຕ.
+- "registered in England and Wales" translated (ອັງກິດ ແລະ ເວລສ໌), UK company details as English; HatchGrab Ltd kept. one = other; =0 in planTable.meta.description kept.
