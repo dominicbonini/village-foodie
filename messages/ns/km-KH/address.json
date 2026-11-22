@@ -1,0 +1,58 @@
+{
+  "label": {
+    "street": "អាសយដ្ឋាន",
+    "postcode": "លេខកូដប្រៃសណីយ៍",
+    "zip": "លេខកូដ ZIP",
+    "eircode": "Eircode",
+    "postalCode": "លេខកូដប្រៃសណីយ៍",
+    "state": "រដ្ឋ",
+    "stateTerritory": "រដ្ឋ ឬដែនដី",
+    "province": "ខេត្ត",
+    "county": "ខោនធី",
+    "prefecture": "ខេត្ត",
+    "emirate": "អេមីរ៉ាត",
+    "region": "តំបន់",
+    "area": "តំបន់ (ភូមិ ក្រុង ឬទីក្រុង)",
+    "townOrArea": "ទីក្រុង ឬតំបន់",
+    "city": "ទីក្រុង",
+    "suburb": "សង្កាត់",
+    "townOrCity": "ទីក្រុង ឬក្រុង"
+  },
+  "short": {
+    "area": "តំបន់",
+    "townOrArea": "ទីក្រុង ឬតំបន់",
+    "city": "ទីក្រុង",
+    "suburb": "សង្កាត់",
+    "townOrCity": "ទីក្រុង ឬក្រុង"
+  },
+  "inSentence": {
+    "postcode": "លេខកូដប្រៃសណីយ៍",
+    "zip": "លេខកូដ ZIP",
+    "eircode": "Eircode",
+    "postalCode": "លេខកូដប្រៃសណីយ៍"
+  },
+  "withArticle": {
+    "postcode": "លេខកូដប្រៃសណីយ៍",
+    "zip": "លេខកូដ ZIP",
+    "eircode": "Eircode",
+    "postalCode": "លេខកូដប្រៃសណីយ៍"
+  },
+  "tradeLabel": {
+    "area": "ទីក្រុង ឬក្រុង",
+    "townOrArea": "ទីក្រុង ឬតំបន់",
+    "city": "ទីក្រុង",
+    "suburb": "សង្កាត់",
+    "townOrCity": "ទីក្រុង ឬក្រុង"
+  },
+  "basedIn": {
+    "area": "ទីក្រុង ឬក្រុងដែលអ្នកមានមូលដ្ឋាន",
+    "townOrArea": "ទីក្រុង ឬតំបន់ដែលអ្នកមានមូលដ្ឋាន",
+    "city": "ទីក្រុងដែលអ្នកមានមូលដ្ឋាន",
+    "suburb": "សង្កាត់ដែលអ្នកមានមូលដ្ឋាន",
+    "townOrCity": "ទីក្រុង ឬក្រុងដែលអ្នកមានមូលដ្ឋាន"
+  },
+  "example": "ឧ. {example}",
+  "customersSee": "អតិថិជនឃើញ៖",
+  "postalWarning": "នេះមើលទៅមិនដូចជា {article} ទេ — ឧទាហរណ៍ {example}។ អ្នកនៅតែអាចរក្សាទុកវាបាន។",
+  "regionChoose": "ជ្រើសរើស…"
+}

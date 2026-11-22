@@ -1,0 +1,21 @@
+{
+  "breachHeadline": "{n, plural, one {ចន្លោះម៉ោង {count}} other {ចន្លោះម៉ោង {count}}} លើសសមត្ថភាព — សូមពិនិត្យ",
+  "batchOver": "{cat} លើសចំនួនក្នុងមួយលើក — {count} សម្រាប់ {slot} ({per} ក្នុងមួយលើក)",
+  "eventStartOver": "លើសសមត្ថភាពនៅពេលព្រឹត្តិការណ៍ចាប់ផ្តើម — {n, plural, one {{count} មុខ} other {{count} មុខ}} សម្រាប់ {slot}",
+  "kitchenOver": "ផ្ទះបាយលើសសមត្ថភាព — {n, plural, one {{count} មុខ} other {{count} មុខ}} កំពុងចម្អិនសម្រាប់ {slot}",
+  "orderItems": "#{id} — {n, plural, one {{count} មុខ} other {{count} មុខ}}",
+  "placedAnyway": "នៅតែបានដាក់៖ {list}",
+  "placedItem": "#{id} សម្រាប់ {slot}",
+  "orphans": "{times} លើសសមត្ថភាព — រកមិនឃើញការកុម្ម៉ង់ដែលបណ្តាលឲ្យលើសនេះទេ",
+  "dismiss": "លាក់",
+  "kitchenCapacity": "សមត្ថភាពផ្ទះបាយ",
+  "overCapacity": "លើសសមត្ថភាព",
+  "wakeUnsupported": "ឧបករណ៍នេះមិនអាចទុកអេក្រង់ឲ្យភ្លឺបានទេ។",
+  "wakeInsecure": "មិនអាចទុកអេក្រង់ឲ្យភ្លឺពីអាសយដ្ឋាននេះបានទេ។",
+  "wakeRetry": "ទុកអេក្រង់ឲ្យភ្លឺ — ចុចដើម្បីព្យាយាមម្តងទៀត",
+  "wakeAcquire": "ទុកអេក្រង់ឲ្យភ្លឺ",
+  "degraded": {
+    "serverError": "ម៉ាស៊ីនមេមិនអាចផ្ទុកការកុម្ម៉ង់បានទេ{hasStatus, select, yes { (កំហុស {status})} other {}}។ កំពុងបង្ហាញការកុម្ម៉ង់ពី {at}។ អាចមានការកុម្ម៉ង់ថ្មីដែលមិនបានបង្ហាញ។",
+    "unreachable": "មិនអាចភ្ជាប់ទៅម៉ាស៊ីនមេបានទេ។ កំពុងបង្ហាញការកុម្ម៉ង់ពី {at}។ អាចមានការកុម្ម៉ង់ថ្មីដែលមិនបានបង្ហាញ។"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "row": {
+    "discovery_map_listing": {
+      "name": "ការបង្ហាញលើផែនទីស្វែងរក"
+    },
+    "web_dashboard": {
+      "name": "ផ្ទាំងគ្រប់គ្រងលើវេបសម្រាប់គ្រប់ឧបករណ៍"
+    },
+    "qr_code": {
+      "name": "កូដ QR"
+    },
+    "schedule_import": {
+      "name": "ការនាំចូលកាលវិភាគដោយស្វ័យប្រវត្តិ"
+    },
+    "meal_deals_upsells": {
+      "name": "ឈុតម្ហូប (Combo) និងការលក់បន្ថែម"
+    },
+    "walkup_orders": {
+      "name": "ការដំណើរការការកុម្ម៉ង់នៅនឹងកន្លែង"
+    },
+    "sold_out_toggle": {
+      "name": "ប៊ូតុងសម្គាល់ថាអស់ហើយភ្លាមៗ"
+    },
+    "kitchen_app": {
+      "name": "កម្មវិធីផ្ទះបាយលើ iPhone iPad និង Android"
+    },
+    "offline_protection": {
+      "name": "ការការពារការកុម្ម៉ង់ពេលគ្មានអ៊ីនធឺណិត"
+    },
+    "online_payments": {
+      "name": "ការបង់ប្រាក់អនឡាញ"
+    },
+    "advance_preordering": {
+      "name": "ការកុម្ម៉ង់ទុកជាមុនសម្រាប់ថ្ងៃក្រោយ"
+    },
+    "preorder_deadline": {
+      "name": "ពេលផុតកំណត់ការកុម្ម៉ង់ទុកជាមុន"
+    },
+    "time_slot_selection": {
+      "name": "អតិថិជនជ្រើសរើសចន្លោះម៉ោង"
+    },
+    "kitchen_capacity": {
+      "name": "ការគ្រប់គ្រងសមត្ថភាពផ្ទះបាយ"
+    },
+    "stock_countdown": {
+      "name": "ការរាប់ស្តុកថយក្រោយដោយស្វ័យប្រវត្តិ"
+    },
+    "auto_accept": {
+      "name": "ទទួលការកុម្ម៉ង់អនឡាញដោយស្វ័យប្រវត្តិ"
+    },
+    "branded_qr_code": {
+      "name": "កូដ QR ដែលមានឡូហ្គោរបស់អ្នក"
+    },
+    "private_events": {
+      "name": "ពិធីឯកជន"
+    },
+    "social_media_posts": {
+      "name": "ការបង្ហោះលើបណ្តាញសង្គម"
+    },
+    "whatsapp_auto_replies": {
+      "name": "ការឆ្លើយតបស្វ័យប្រវត្តិតាម WhatsApp"
+    },
+    "messenger_instagram_replies": {
+      "name": "ការឆ្លើយតបស្វ័យប្រវត្តិតាម Messenger និង Instagram"
+    },
+    "tap_to_pay": {
+      "name": "ទទួលការបង់ប្រាក់នៅលើទូរស័ព្ទរបស់អ្នក"
+    },
+    "sms_order_alerts": {
+      "name": "ការជូនដំណឹងការកុម្ម៉ង់តាម SMS"
+    },
+    "multi_device_kitchen": {
+      "name": "ការធ្វើសមកាលកម្មផ្ទះបាយលើឧបករណ៍ច្រើន"
+    },
+    "multi_user_access": {
+      "name": "សិទ្ធិចូលប្រើសម្រាប់អ្នកប្រើច្រើននាក់"
+    },
+    "embed_schedule": {
+      "name": "ទំព័រកាលវិភាគនៅលើគេហទំព័រផ្ទាល់ខ្លួនរបស់អ្នក"
+    },
+    "event_types": {
+      "name": "ប្រភេទព្រឹត្តិការណ៍ និងតម្លៃតាមចិត្ត"
+    },
+    "buzzer_tracking": {
+      "name": "ការតាមដានឧបករណ៍រោទ៍"
+    },
+    "documents_reminders": {
+      "name": "ឯកសារ និងការរំលឹក"
+    },
+    "profit_per_event": {
+      "name": "ប្រាក់ចំណេញតាមព្រឹត្តិការណ៍"
+    },
+    "accountant_reports": {
+      "name": "របាយការណ៍សម្រាប់គណនេយ្យកររបស់អ្នក"
+    },
+    "ticket_printing": {
+      "name": "ការបោះពុម្ពបង្កាន់ដៃផ្ទះបាយ"
+    },
+    "customer_display": {
+      "name": "អេក្រង់សម្រាប់អតិថិជនមើល"
+    },
+    "loyalty_stamp_cards": {
+      "name": "កាតប្រមូលត្រាឌីជីថលសម្រាប់អតិថិជនស្មោះត្រង់"
+    }
+  },
+  "cardRegionOnline": "{region} ស្តង់ដារ",
+  "cardRegion": {
+    "UKcards": "កាតចក្រភពអង់គ្លេស",
+    "EEAcards": "កាតតំបន់សេដ្ឋកិច្ចអឺរ៉ុប (EEA)",
+    "UScards": "កាតសហរដ្ឋអាមេរិក",
+    "Australiancards": "កាតអូស្ត្រាលី",
+    "NewZealandcards": "កាតនូវែលសេឡង់",
+    "Canadiancards": "កាតកាណាដា",
+    "Swisscards": "កាតស្វីស",
+    "Braziliancards": "កាតប្រេស៊ីល",
+    "Mexicancards": "កាតម៉ិកស៊ិក",
+    "Japanesecards": "កាតជប៉ុន",
+    "Singaporecards": "កាតសិង្ហបុរី",
+    "HongKongcards": "កាតហុងកុង",
+    "Malaysiancards": "កាតម៉ាឡេស៊ី",
+    "Thaicards": "កាតថៃ",
+    "UAEcards": "កាតអេមីរ៉ាតអារ៉ាប់រួម"
+  },
+  "perMonth": {
+    "mo": "{amount}/ខែ",
+    "month": "{amount}/ខែ"
+  },
+  "priceWord": {
+    "free": "ឥតគិតថ្លៃ",
+    "freeTrial": "សាកល្បងឥតគិតថ្លៃ",
+    "lifetime": "ពេញមួយជីវិត",
+    "zeroPercent": "0%",
+    "payAtHatch": "បង់ពេលទៅយក",
+    "unlimited": "មិនកំណត់ចំនួន",
+    "none": "—",
+    "masked": "មិនទាន់កំណត់"
+  },
+  "cell": {
+    "included": "រួមបញ្ចូល"
+  }
+}

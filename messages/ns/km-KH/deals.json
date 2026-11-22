@@ -1,0 +1,17 @@
+{
+  "back": "← ត្រឡប់ក្រោយ",
+  "title": "ជ្រើសរើសឈុតម្ហូប (Combo)",
+  "save": "សន្សំ {amount}",
+  "selectItems": "ជ្រើសរើសមុខម្ហូបសម្រាប់ផ្នែកនីមួយៗ",
+  "choose": "ជ្រើសរើស {category}…",
+  "inYourBasket": "── ក្នុងកន្ត្រករបស់អ្នក ──",
+  "basketUnit": "{name}{withMods, select, yes { (+ {mods})} other {}} (ក្នុងកន្ត្រក){state, select, used { — មាននៅក្នុងឈុតម្ហូបរួចហើយ} taken { — បានជ្រើសនៅផ្នែកផ្សេងរួចហើយ} other {}}",
+  "addNew": "── បន្ថែមថ្មី ──",
+  "itemWithPrice": "{name} {price}",
+  "ruleHint": "· {rule, select, requiredOne {ចាំបាច់ · ជ្រើសរើសមួយ} required {ចាំបាច់} other {ជ្រើសរើសមួយ}}{unmet, select, yes { (ចាំបាច់)} other {}}",
+  "notePlaceholder": "បន្ថែមកំណត់សម្គាល់ ឧ. មិនដាក់ខ្ទឹមបារាំង (មិនចាំបាច់)",
+  "backButton": "ត្រឡប់ក្រោយ",
+  "cancel": "បោះបង់",
+  "chooseRequired": "ជ្រើសរើសជម្រើសដែលចាំបាច់",
+  "apply": "ប្រើឈុតម្ហូប · {amount}"
+}

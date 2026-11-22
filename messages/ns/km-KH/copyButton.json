@@ -1,0 +1,10 @@
+{
+  "copy": "ចម្លង",
+  "copied": "បានចម្លង ✓",
+  "failed": "ការចម្លងបរាជ័យ",
+  "aria": "{label} {thing}",
+  "announceCopied": "បានចម្លង {thing}",
+  "announceCopiedValue": "បានចម្លងតម្លៃ",
+  "announceFailed": "មិនអាចចម្លង {thing} បានទេ។ សូមជ្រើសរើសអត្ថបទ ហើយចម្លងវាដោយខ្លួនឯង។",
+  "announceFailedValue": "មិនអាចចម្លងតម្លៃបានទេ។ សូមជ្រើសរើសអត្ថបទ ហើយចម្លងវាដោយខ្លួនឯង។"
+}

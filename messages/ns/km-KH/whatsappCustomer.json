@@ -1,0 +1,15 @@
+{
+  "greeting": "សួស្តី 👋",
+  "opener": "{greeting} ",
+  "allergenRedirect": "{opener}អ្នកអាចមើលម៉ឺនុយពេញលេញ និងព័ត៌មានសារធាតុអាឡែកហ្ស៊ីរបស់យើងនៅទីនេះ៖ {url} — {truck} {emoji}",
+  "menuFallback": "{opener}អ្នកអាចមើលម៉ឺនុយពេញលេញរបស់យើងនៅទីនេះ៖ {url} — {truck} {emoji}",
+  "otherCategory": "ផ្សេងៗ",
+  "categoryFrom": "{category} ចាប់ពី {price}",
+  "listTwo": "{first} និង {second}",
+  "listMany": "{init} និង {last}",
+  "menuSummary": "{opener}យើងមាន {summary}។ មើលម៉ឺនុយពេញលេញ និងកុម្ម៉ង់ទុកជាមុននៅទីនេះ៖ {url} — {truck} {emoji}",
+  "allergenCaveat": "សូមពិនិត្យម៉ឺនុយពេញលេញម្តងទៀត សម្រាប់ព័ត៌មានសារធាតុអាឡែកហ្ស៊ី — នេះជាការឆ្លើយតបស្វ័យប្រវត្តិ។",
+  "specificFallback": "{opener}មើលកាលវិភាគថ្មីបំផុតរបស់យើងនៅទីនេះ៖ {url}\n\n{truck} {emoji}",
+  "capHandoff": "អរគុណសម្រាប់សាររបស់អ្នកទាំងអស់! ខ្ញុំអាចឆ្លើយតបនៅទីនេះបានតែពីរបីដងក្នុងមួយថ្ងៃប៉ុណ្ណោះ។\n\nដើម្បីកុម្ម៉ង់៖ {link}",
+  "capContact": "ដើម្បីទាក់ទងយើងដោយផ្ទាល់៖ {number}"
+}

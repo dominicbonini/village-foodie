@@ -1,0 +1,8 @@
+{
+  "change": "{label} — ប្តូរ",
+  "useRule": "{label} — ប្រើច្បាប់វិញ",
+  "typePrice": "{label} — វាយតម្លៃ",
+  "backToRule": "ត្រឡប់ទៅច្បាប់វិញ",
+  "diffUp": "(+{amount})",
+  "diffDown": "(−{amount})"
+}

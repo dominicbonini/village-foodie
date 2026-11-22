@@ -1,0 +1,13 @@
+{
+  "subtotal": "សរុបរង",
+  "taxFallback": "ពន្ធ",
+  "taxIncluded": "រួមបញ្ចូល {label}",
+  "serviceFeeCustomer": "ថ្លៃសេវាអនឡាញ",
+  "serviceFee": "ថ្លៃសេវា",
+  "cardFee": "ថ្លៃកាត",
+  "tip": "ទឹកតែ",
+  "rate": "{rate}%",
+  "line": "{label}៖ {amount}",
+  "lineWithRate": "{label} {rate}៖ {amount}",
+  "foldedCharges": "{parts, select, tax_fees_tip {ពន្ធ ថ្លៃសេវា និងទឹកតែ} tax_tip {ពន្ធ និងទឹកតែ} fees_tip {ថ្លៃសេវា និងទឹកតែ} fees {ថ្លៃសេវា} other {ពន្ធ និងថ្លៃសេវា}}"
+}

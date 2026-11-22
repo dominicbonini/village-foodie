@@ -1,0 +1,72 @@
+{
+  "standardCategories": {
+    "starters": "ម្ហូបចំណី",
+    "mains": "ម្ហូបចម្បង",
+    "burgers": "បឺហ្គឺរ",
+    "pizza": "ភីហ្សា",
+    "wrapsSandwiches": "នំរុំ និងនំប៉័ងសាំងវិច",
+    "sides": "ម្ហូបបន្ទាប់បន្សំ",
+    "dipsSauces": "ទឹកជ្រលក់ និងទឹកសុស",
+    "desserts": "បង្អែម",
+    "drinks": "ភេសជ្ជៈ",
+    "kidsMenu": "ម៉ឺនុយកុមារ",
+    "specials": "មុខម្ហូបពិសេស",
+    "other": "ផ្សេងៗ"
+  },
+  "demoEventName": "ព្រឹត្តិការណ៍ដេម៉ូ",
+  "firstVanName": "ឡាន 1",
+  "demoCategories": {
+    "pizza": "ភីហ្សា",
+    "burgers": "បឺហ្គឺរ",
+    "mains": "ម្ហូបចម្បង",
+    "sides": "ម្ហូបបន្ទាប់បន្សំ",
+    "drinks": "ភេសជ្ជៈ"
+  },
+  "demoTemplates": {
+    "pizza": {
+      "label": "🍕 Food Truck ភីហ្សា",
+      "items": {
+        "margherita": "ភីហ្សាម៉ាហ្គារីតា",
+        "pepperoni": "ភីហ្សាប៉េប៉េរ៉ូនី",
+        "ndujaHoney": "សាច់ក្រកហឹរ និងទឹកឃ្មុំ",
+        "fourCheese": "ឈីសបួនប្រភេទ",
+        "gardenVeg": "បន្លែស្រស់",
+        "garlicBread": "នំប៉័ងខ្ទឹមស",
+        "rocketParmesan": "ស្លឹករ៉ុកកែត និងឈីសប៉ាម៉េសាន",
+        "olives": "ផ្លែអូលីវ",
+        "sanPellegrino": "San Pellegrino",
+        "coke": "កូកា"
+      }
+    },
+    "burgers": {
+      "label": "🍔 Food Truck បឺហ្គឺរ",
+      "items": {
+        "classicCheeseburger": "ឈីសបឺហ្គឺរបុរាណ",
+        "doubleBacon": "បឺហ្គឺរបេកុនទ្វេ",
+        "buttermilkChicken": "បឺហ្គឺរសាច់មាន់បំពង",
+        "halloumiStack": "បឺហ្គឺរឈីសហាលូមី",
+        "smashBurger": "ស្ម៉ាសបឺហ្គឺរ",
+        "skinOnFries": "ដំឡូងបំពងទាំងសំបក",
+        "loadedCheeseFries": "ដំឡូងបំពងឈីសពេញ",
+        "onionRings": "ខ្ទឹមបារាំងបំពង",
+        "craftLemonade": "ទឹកក្រូចឆ្មាធ្វើដោយដៃ",
+        "coke": "កូកា"
+      }
+    },
+    "curries": {
+      "label": "🍛 Food Truck ការី",
+      "items": {
+        "chickenTikkaMasala": "សាច់មាន់ទីកាម៉ាសាឡា",
+        "lambRoganJosh": "សាច់ចៀមរ៉ូហ្គាន់ចូស",
+        "chanaMasala": "ឆាណាម៉ាសាឡា",
+        "butterChicken": "សាច់មាន់ប៊ឺ",
+        "saagPaneer": "សាក់ប៉ានៀរ",
+        "pilauRice": "បាយពីឡៅ",
+        "garlicNaan": "នំណានខ្ទឹមស",
+        "onionBhaji": "ខ្ទឹមបារាំងបំពងបាជី",
+        "mangoLassi": "ឡាស៊ីស្វាយ",
+        "coke": "កូកា"
+      }
+    }
+  }
+}

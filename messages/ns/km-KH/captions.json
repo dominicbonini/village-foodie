@@ -1,0 +1,30 @@
+{
+  "labels": {
+    "weekDates": "កាលបរិច្ឆេទសប្តាហ៍",
+    "dayList": "បញ្ជីថ្ងៃ",
+    "place": "កន្លែង",
+    "venue": "ទីតាំង",
+    "area": "តំបន់",
+    "dayDate": "ថ្ងៃ និងកាលបរិច្ឆេទ",
+    "times": "ម៉ោង",
+    "orderLink": "តំណកុម្ម៉ង់",
+    "locationTag": "ស្លាកកន្លែង"
+  },
+  "weekHeader": "{truck} — កន្លែងដែលយើងនៅសប្តាហ៍នេះ៖",
+  "dayLine": "{day} — {where} — {times}",
+  "dayLineNoTimes": "{day} — {where}",
+  "dayLineCancelled": "{day} — {where} — បានលុបចោល សូមអភ័យទោស",
+  "noDates": "គ្មានកាលបរិច្ឆេទសប្តាហ៍នេះទេ — សូមត្រឡប់មកមើលម្តងទៀតឆាប់ៗ។",
+  "orderAhead": "កុម្ម៉ង់ទុកជាមុន៖ {url}",
+  "orderAheadTagged": "កុម្ម៉ង់ទុកជាមុន៖ {url} {tag}",
+  "eventLine": "{truck} នៅ {where} {when} ម៉ោង {times}។",
+  "eventLineNoTimes": "{truck} នៅ {where} {when}។",
+  "cancelledSorry": "សូមអភ័យទោស — យើងមិនអាចទៅ {where} {when} បានទេ។",
+  "cancelledApology": "សូមអភ័យទោសដល់អ្នកទាំងអស់គ្នាដែលមានគម្រោងមក។ យើងនឹងត្រឡប់មកវិញឆាប់ៗ។",
+  "when": {
+    "today": "ថ្ងៃនេះ",
+    "tonight": "យប់នេះ",
+    "tomorrow": "ថ្ងៃស្អែក",
+    "dated": "នៅ {date}"
+  }
+}

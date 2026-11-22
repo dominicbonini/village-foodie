@@ -1,0 +1,122 @@
+{
+  "includedOn": "{many, select, yes {{feature} រួមបញ្ចូលក្នុងកញ្ចប់ {plan}។} other {{feature} រួមបញ្ចូលក្នុងកញ្ចប់ {plan}។}}",
+  "notOnPlan": "{many, select, yes {{feature} មិនមាននៅក្នុងកញ្ចប់របស់អ្នកទេ។} other {{feature} មិនមាននៅក្នុងកញ្ចប់របស់អ្នកទេ។}}",
+  "switchedOff": "{many, select, yes {{feature} ត្រូវបានបិទសម្រាប់ Food Truck របស់អ្នក។} other {{feature} ត្រូវបានបិទសម្រាប់ Food Truck របស់អ្នក។}}",
+  "planLine": "{plan} · {price} · {description}",
+  "planLineNoPrice": "{plan} · {description}",
+  "upgrade": "ដំឡើងកញ្ចប់ →",
+  "features": {
+    "discovery_map": {
+      "name": "ការបង្ហាញលើផែនទីស្វែងរក",
+      "many": "no"
+    },
+    "web_dashboard": {
+      "name": "ផ្ទាំងគ្រប់គ្រងលើវេប",
+      "many": "no"
+    },
+    "ipad_kds": {
+      "name": "កម្មវិធីផ្ទះបាយ",
+      "many": "no"
+    },
+    "qr_menu": {
+      "name": "ម៉ឺនុយតាមកូដ QR",
+      "many": "no"
+    },
+    "meal_deals": {
+      "name": "ឈុតម្ហូប (Combo)",
+      "many": "yes"
+    },
+    "upsells": {
+      "name": "ការលក់បន្ថែម",
+      "many": "yes"
+    },
+    "walkup_orders": {
+      "name": "ការកុម្ម៉ង់នៅនឹងកន្លែង",
+      "many": "yes"
+    },
+    "online_ordering_pay_at_hatch": {
+      "name": "ការកុម្ម៉ង់ដោយបង់ប្រាក់ពេលទៅយក",
+      "many": "no"
+    },
+    "sold_out_toggle": {
+      "name": "ប៊ូតុងសម្គាល់ថាអស់ហើយ",
+      "many": "no"
+    },
+    "stock_countdown": {
+      "name": "ការរាប់ស្តុកថយក្រោយ",
+      "many": "no"
+    },
+    "offline_protection": {
+      "name": "ការការពារការកុម្ម៉ង់ពេលគ្មានអ៊ីនធឺណិត",
+      "many": "no"
+    },
+    "online_payments": {
+      "name": "ការបង់ប្រាក់អនឡាញ",
+      "many": "yes"
+    },
+    "advance_preordering": {
+      "name": "ការកុម្ម៉ង់ទុកជាមុនសម្រាប់ថ្ងៃក្រោយ",
+      "many": "no"
+    },
+    "time_slot_selection": {
+      "name": "ចន្លោះម៉ោងសម្រាប់អតិថិជន",
+      "many": "yes"
+    },
+    "smart_batch_pacing": {
+      "name": "ការគ្រប់គ្រងសមត្ថភាពផ្ទះបាយ",
+      "many": "no"
+    },
+    "auto_accept": {
+      "name": "ការទទួលការកុម្ម៉ង់ដោយស្វ័យប្រវត្តិ",
+      "many": "no"
+    },
+    "instagram_messenger_replies": {
+      "name": "ការឆ្លើយតបស្វ័យប្រវត្តិតាម Messenger និង Instagram",
+      "many": "yes"
+    },
+    "branded_qr_code": {
+      "name": "កូដ QR ដែលមានឡូហ្គោរបស់អ្នក",
+      "many": "yes"
+    },
+    "advanced_reporting": {
+      "name": "របាយការណ៍កម្រិតខ្ពស់",
+      "many": "no"
+    },
+    "ticket_printing": {
+      "name": "ការបោះពុម្ពបង្កាន់ដៃផ្ទះបាយ",
+      "many": "no"
+    },
+    "multi_device_kds": {
+      "name": "ការធ្វើសមកាលកម្មផ្ទះបាយលើឧបករណ៍ច្រើន",
+      "many": "no"
+    },
+    "cook_screen": {
+      "name": "អេក្រង់ចុងភៅ",
+      "many": "no"
+    },
+    "whatsapp_replies": {
+      "name": "ការឆ្លើយតបស្វ័យប្រវត្តិតាម WhatsApp",
+      "many": "yes"
+    },
+    "embed_schedule": {
+      "name": "កាលវិភាគរបស់អ្នកនៅលើគេហទំព័រផ្ទាល់ខ្លួនរបស់អ្នក",
+      "many": "no"
+    },
+    "schedule_graphics": {
+      "name": "ការបង្ហោះលើបណ្តាញសង្គម",
+      "many": "yes"
+    },
+    "event_types": {
+      "name": "ប្រភេទព្រឹត្តិការណ៍តាមចិត្ត",
+      "many": "yes"
+    },
+    "private_events": {
+      "name": "ពិធីឯកជន",
+      "many": "yes"
+    },
+    "paperwork": {
+      "name": "ឯកសារ",
+      "many": "yes"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "vanFallback": "ឡាន",
+  "eventsFeed": {
+    "today": "ថ្ងៃនេះ · {date}",
+    "tomorrow": "ថ្ងៃស្អែក · {date}"
+  },
+  "privacyNotSaved": "ព្រឹត្តិការណ៍កំពុងដំណើរការ ប៉ុន្តែមិនអាចរក្សាទុកការកំណត់ឯកជនភាពរបស់វាបានទេ។",
+  "stockWarning": "គ្មានមុខម្ហូបដែលមានលក់ក្នុង “{category}” ទេ",
+  "uncategorised": "គ្មានប្រភេទ"
+}
