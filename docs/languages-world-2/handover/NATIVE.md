@@ -708,3 +708,12 @@
 - Social: location ສະຖານທີ່ (= place); weekly post ໂພສປະຈຳອາທິດ; single event post ໂພສງານດຽວ; Designs tab ການອອກແບບ; template ແມ່ແບບ; Main image “ຫຼັກ”; All text ຂໍ້ຄວາມທັງໝົດ; photo space ຊ່ອງໃສ່ຮູບ.
 - Native check (reports): Gross/Net sales ຍອດຂາຍລວມ / ຍອດຂາຍສຸດທິ; Modifier ຕົວເລືອກ; Rounding ການປັດເສດ; tax year ປີພາສີ; accountant ນັກບັນຊີ; Walk-up channel ໜ້າຮ້ານ.
 - Samples: yourfoodtruck.la, hello@yourfoodtruck.la, @vientianemusicfest, Van 2 / Festival van ລົດ 2 / ລົດງານບຸນ. Team → My profile ທີມ → ໂປຣໄຟລ໌ຂອງຂ້ອຍ. Prep units "{s} ວິ" / "{m} ນາທີ"; own-style badge ສະເພາະ; CAPITALS option ຕົວພິມໃຫຍ່ (no capitals in Lao).
+
+## lo-LA part 06 (languages-world-3, 22 Nov 2026)
+- check-part: 722 keys / 722; STRUCTURAL 0; back missing 0. No Thai script, no ZWSP, no old ຫລ/ຫນ/ຫມ, no Lao digits, no "hatch".
+- English left 50: Food Truck; Zettle, Square, Stripe Connect, WhatsApp Manager; "(publishable key)" / "(secret key)" / "(migration)" in brackets; Canva "Share › Download › PNG"; WhatsApp Business path "Settings → Account → Business Platform"; Cloudflare/GoDaddy/123 Reg/Wix labels quoted in English; events.{host}. Phone placeholder → +856 20 5512 3456.
+- Glossary 2: weekly-post note "pre-order" as verb ສັ່ງລ່ວງໜ້າ; Instagram/Messenger lines plain ຕອບກັບອັດຕະໂນມັດ. WhatsApp lines use ຕອບກັບອັດຕະໂນມັດທາງ WhatsApp. Length 8: Billing, Auto-replies title, domain badge Live ເປີດໃຊ້ງານແລ້ວ.
+- Vans ລົດ: Team "All vans / All trucks", Truck access, (only truck), Select at least one truck, billing per truck / month. Business Food Truck: this truck, Truck name, WhatsApp number line, deleteAccount.allTrucks.
+- designEditor.settings.lastToggle quotes Place/Venue/Area/Time and CANCELLED exactly as errorsManage. paymentsIcon 💷 → 💵. UK law stays UK.
+- Native check: padlock ຮູບແມ່ກະແຈ; contactless ການແຕະຈ່າຍ; Sales tax rate ອັດຕາພາສີການຂາຍ; Management console ລະບົບຈັດການ; Danger zone ເຂດອັນຕະລາຍ; Bold & tall tab ໜາ ແລະ ສູງ; week heading sample "ອາທິດເລີ່ມວັນທີ …"; blank image ຮູບເປົ່າ (part 04 ຮູບພື້ນຫວ່າງ — consistency pass picks one); designEditor.picture.someWithout plural wording.
+- Samples: venue ຕະຫຼາດກາງຄືນ / area ຈັນທະບູລີ; pepperoni → ເຂົ້າຈີ່ປາເຕ; team member ສົມພອນ (somphone@example.com).
