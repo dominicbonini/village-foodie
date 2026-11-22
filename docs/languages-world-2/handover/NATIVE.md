@@ -817,3 +817,13 @@
 - Address labels literal per country scheme: Postcode ፖስትኮድ, Postal code የፖስታ ኮድ, State ግዛት, Province ክፍለ ሀገር, Suburb ሰፈር, Town or city / City ከተማ (part 02's own field is ክፍለ ከተማ ወይም ወረዳ — consistency pass decides).
 - Reused: CANCELLED ተሰርዟል; Place/Venue/Area/Time; Powered by; "Week commencing" የሚጀምርበት ሳምንት፦ (awkward before "{start} እስከ {end}"); demo kitchen screen የኩሽና ማሳያ (KDS).
 - Samples: The Kings Arms / Lavenham → የቅዳሜ ገበያ / ቦሌ; Suffolk venues → Bole, Megenagna, Piassa, Adama, Sarbet, Kazanchis; demo customer Alex → ማርታ. one shows #; apposition "(የምግብ መኪና፦ {truck})", "ለወሩ ቀሪ ቀናት ({month})".
+
+## am-ET part 08 (languages-world-3, 22 Nov 2026)
+- check-part: 431 keys / 431; STRUCTURAL 0; back missing 0; no length/numbers/banned flags; drift 77.
+- English left 11: URL path/slug comparison / food-truck-ordering-system; Uber Eats, Wolt, PayPal, Klarna, BLIK, iDEAL, Swish, MobilePay, "kassaregister" in the till-rules label; "(reverse charge)"; admin-only noindex, llms.txt, hreflang, “Pricing check”, Admin › Countries.
+- Glossary 1: comparison.fit.marketplacesBody keeps ኮሚሽን (platforms take commission — ያለ ኮሚሽን would be wrong). comparisonSuits.q.commission: the agent ADDED "ያለ ኮሚሽን መሥራት እፈልጋለሁ፤" before the faithful sentence to satisfy the glossary — not in the English; consistency pass to remove.
+- Truck vs van: "per truck" written ለአንድ የምግብ መኪና (business word, as part 06), "per van" ለእያንዳንዱ ተሽከርካሪ — Khmer/Lao/Tamil use the van word for billing/calculator "per truck" (fleet sense); consistency pass to decide.
+- Till POS (የሽያጭ ማሽን); TSE, EET, German Uber Eats 14% / 30% kept as English.
+- Substitutions: "Less than a coffee" ከአንድ ስኒ ቡና ያነሰ; "Pence per order" ቋሚ ክፍያ (በሳንቲም); signal (የሞባይል) ኔትወርክ; pitch የመሸጫ ቦታ; fryer and griddle የዘይት መጥበሻና ጠፍጣፋ የብረት ምጣድ.
+- Native check: Feature ባህሪ; Vendor አቅራቢ; Rival ተወዳዳሪ; Calculator ማስሊያ; Breadcrumb የገጽ ዱካ; Delivery platforms የምግብ ማድረሻ መድረኮች; Feature flag ማብሪያ; published-page Live badge በሥራ ላይ (as custom-domain badge, not event በሂደት ላይ).
+- No affix on placeholders/quoted names (የ“አልቋል” fixed); one branches show #; verb agreement inside plural branches (ያስችላል / ያስችላሉ).
