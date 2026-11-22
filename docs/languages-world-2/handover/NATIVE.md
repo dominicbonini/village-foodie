@@ -587,3 +587,12 @@
 - Pay at the truck = បង់ពេលទៅយក; Tip = ទឹកតែ; Buzzer = ឧបករណ៍រោទ៍ (uncertain); kitchen ticket = បង្កាន់ដៃ; TBC = មិនទាន់កំណត់; Cancel button = បោះបង់; cancelled / poster CANCELLED = បានលុបចោល.
 - Allergens transliterated/descriptive with English in brackets: celery ស៊ែលរី, mustard ម៉ូស្តាត, molluscs សត្វទន់, crustaceans សត្វសំបករឹង, yam ដំឡូងយ៉ាម, mackerel ត្រីម៉ាកឃឺរែល, chestnut គ្រាប់ចេស្ណាត់ — native check.
 - Place/Venue/Area/Time suggested only (កន្លែង / ទីតាំង / តំបន់ / ម៉ោង) for part 04 to confirm.
+
+## km-KH part 02 (languages-world-3, 22 Nov 2026)
+- check-part: 754 keys / 754; STRUCTURAL 0; back missing 0 (English left 17 · glossary 3 · drift 127 · length 39).
+- English left: Food Truck, Bluetooth, Face ID / Touch ID, "Local Network" in brackets after បណ្តាញមូលដ្ឋាន (iOS has no Khmer UI). Glossary 3 = KDS combining-mark false alarm. eventCard.preOrder → ការកុម្ម៉ង់ទុកជាមុន (glossary lock).
+- Matched: van ឡាន, business Food Truck, Settings → Your trucks = ការកំណត់ → ឡានរបស់អ្នក, events ព្រឹត្តិការណ៍, Cancelled/CANCELLED បានលុបចោល, Venue = ទីតាំង (confirms part 01 suggestion).
+- Ticket words (no capitals in Khmer): DO NOT COLLECT → កុំយកប្រាក់; CARD HELD → បានបង្កកលើកាត; NEW ORDERS MAY BE MISSING → ប្រយ័ត្ន៖ អាចមានការកុម្ម៉ង់ថ្មីដែលមិនបានបង្ហាញ។
+- Done button រួចហើយ vs Ready status រួចរាល់. cashIcon 💷 → 💵 (USD/riel, as en-US/th-TH/vi-VN).
+- Operator e-mails formal លោកអ្នក (សួស្តីលោកអ្នក,); customer e-mails សួស្តីអ្នក,. Schedule tab = ផ្ទាំងកាលវិភាគ.
+- Native check: amber ticket ពណ៌ទឹកក្រូច, trailer រ៉ឺម៉ក, Admin អ្នកគ្រប់គ្រងប្រព័ន្ធ, add for the hatch សម្រាប់ការកុម្ម៉ង់នៅនឹងកន្លែង, oversell លក់លើសស្តុក.
