@@ -1,0 +1,944 @@
+{
+ "managePayments": {
+  "heading": "ክፍያዎች",
+  "loading": "የStripe አካውንትዎን በማረጋገጥ ላይ…",
+  "state": {
+   "not_connected": {
+    "title": "አልተዋቀረም",
+    "body": "10 ደቂቃ ያህል ይወስዳል። የባንክ ዝርዝሮችዎና መታወቂያዎ ያስፈልጋሉ።",
+    "chip": "አልተዋቀረም"
+   },
+   "requirements": {
+    "title": "Stripe ዝርዝሮችዎን ይፈልጋል",
+    "body": "Stripe የንግድዎንና የባንክዎን ዝርዝሮች እስኪያገኝ ድረስ የካርድ ክፍያ አይሠራም።",
+    "chip": "እርምጃ ያስፈልጋል"
+   },
+   "pending": {
+    "title": "ተገናኝቷል — Stripe ዝርዝሮችዎን እያረጋገጠ ነው",
+    "body": "ምንም ማድረግ አያስፈልግዎትም። Stripe የላኩትን እየገመገመ ነው፤ ሲጨርሱም ይህ ገጽ ይዘምናል።",
+    "chip": "በማረጋገጥ ላይ"
+   },
+   "ready": {
+    "title": "ተገናኝቷል",
+    "body": "የStripe አካውንትዎ ተገናኝቷል፤ ክፍያ መቀበልም ይችላል።",
+    "chip": "ዝግጁ"
+   },
+   "restricted": {
+    "title": "የካርድ ክፍያ ለጊዜው ቆሟል",
+    "body": "አንድ ጉዳይ እስኪፈታ ድረስ Stripe በአካውንትዎ ላይ የካርድ ክፍያን ለጊዜው አቁሟል።",
+    "chip": "ለጊዜው ቆሟል"
+   },
+   "unsupported": {
+    "title": "በዚህ አካውንት የካርድ ክፍያ አይገኝም",
+    "body": "Stripe እዚህ የካርድ ክፍያን ማንቃት አይችልም። ያነጋግሩን፤ ከእርስዎ ጋር ሆነን እንፈታዋለን።",
+    "chip": "አይገኝም"
+   }
+  },
+  "keyMismatch": {
+   "title": "የStripe ቁልፎቹ አይዛመዱም",
+   "body": "የዚህ ድረ-ገጽ ሰርቨር የሚጠቀመው <b>{server, select, live {የቀጥታ} other {የሙከራ}}</b> የStripe ቁልፍ ነው፤ አሳሹ ግን የተገነባው <b>{browser, select, live {የቀጥታ} other {የሙከራ}}</b> ቁልፉን ይዞ ነው። አንድ ደንበኛ ለመክፈል በሚሞክርበት ቅጽበት የካርድ ክፍያው አይሳካም፤ ስለዚህ ሁለቱ እስኪስማሙ ድረስ Stripe ማዋቀር ታግዷል።",
+   "fix": "ሁለቱም ቁልፎች ለአንድ ዓይነት የሥራ አካባቢ መቀመጥ አለባቸው፤ ከዚያ በኋላ ድረ-ገጹ እንደገና መገንባት አለበት — የሕዝብ ቁልፉ በግንባታ ጊዜ ውስጥ ይካተታል፤ ሚስጥራዊ ቁልፉ ደግሞ በእያንዳንዱ ጥያቄ ይነበባል።"
+  },
+  "permission": {
+   "title": "ክፍያዎችን ማዋቀር የሚችለው የምግብ መኪናው ባለቤት ብቻ ነው",
+   "body": "Stripe የሚገናኘው ገንዘቡ ወደ ባንክ አካውንታቸው በሚገባላቸው ሰው ነው፤ ስለዚህ መዋቀር ያለበት እነሱ ከገቡበት የራሳቸው አካውንት ነው። በዚህ የምግብ መኪና ወይም በHatchGrab ላይ ምንም ችግር የለም።"
+  },
+  "config": {
+   "keyMissingTitle": "የካርድ ክፍያ ገና አልተዋቀረም",
+   "fetchTitle": "የዚህን የምግብ መኪና የStripe አካውንት ማረጋገጥ አልቻልንም",
+   "keyMissing": "{name} አልተቀመጠም — የተካተቱት ክፍሎች መጫን አይችሉም።"
+  },
+  "errors": {
+   "requestFailed": "ጥያቄው አልተሳካም ({status})",
+   "unreachable": "ከStripe ጋር መገናኘት አልተቻለም"
+  },
+  "online": {
+   "heading": "የኦንላይን ክፍያ",
+   "body": "ደንበኞች ሲያዝዙ በካርድ ይከፍላሉ። ገንዘቡ በቀጥታ ወደ ራስዎ የStripe አካውንት ይገባል — እኛ በፍጹም አንይዘውም።",
+   "feeLine": "Stripe በመደበኛ {region} ላይ ለእያንዳንዱ ክፍያ {fee} ያስከፍላል። ሌሎች ካርዶች የበለጠ ሊያስከፍሉ ይችላሉ። HatchGrab በኦንላይን ትዕዛዞች ላይ የሚያስከፍለው የራሱ ክፍያ በፓኬጅዎ ይወሰናል — “የሂሳብ አከፋፈል” የሚለውን ይመልከቱ።",
+   "testMode": "የሙከራ ሁነታ። እስካሁን እውነተኛ ክፍያ መቀበል አይቻልም።"
+  },
+  "trialNote": "ይህን ማዋቀር የደንበኝነት ምዝገባዎን አያስጀምርም፤ ዛሬም ምንም አያስከፍልዎትም። ይህ ደንበኞችዎ የሚከፍሉዎት መንገድ ነው — ፓኬጅዎ የተለየ ጉዳይ ነው።",
+  "admin": {
+   "title": "እንደ መድረኩ አስተዳዳሪ በማየት ላይ",
+   "body": "ይህ የምግብ መኪና የኦንላይን ክፍያ አላዋቀረም። ሊጀምረው የሚችለው ባለቤቱ ብቻ ነው፣ ከገቡበት የራሳቸው አካውንት — እዚህ የሚጫን ነገር የለም።"
+  },
+  "setUp": {
+   "button": "የኦንላይን ክፍያ ያዋቅሩ",
+   "busy": "በማዋቀር ላይ…"
+  },
+  "toast": {
+   "alreadySetUp": "አስቀድሞ ተዋቅሯል — በመቀጠል ላይ",
+   "addDetails": "አሁን ዝርዝሮችዎን ለStripe ያስገቡ",
+   "createFailed": "አካውንቱን መፍጠር አልተቻለም"
+  },
+  "onboarding": {
+   "restricted": "ከዚህ በኋላ Stripe ይረከባል — ወደ Stripe ገብተው የሚያስፈልጉትን ዝርዝሮች ያዘምናሉ።",
+   "firstRun": "ከዚህ በኋላ Stripe ይረከባል — ወደ Stripe ገብተው የንግድዎንና የባንክዎን ዝርዝሮች ይሰጣሉ።"
+  },
+  "details": {
+   "title": "የStripe ዝርዝሮችዎ",
+   "body": "ገንዘብ የሚገባበትን የባንክ አካውንት ይቀይሩ፣ ወይም የንግድዎን ዝርዝሮችና ሰነዶች ያዘምኑ።",
+   "button": "ይመልከቱ ወይም ያስተካክሉ"
+  },
+  "walkUp": {
+   "heading": "በቦታው ለሚሰጥ ትዕዛዝ ክፍያ",
+   "body": "መኪናው ጋ ገንዘብ እንዴት እንደሚቀበሉ። የትኛውንም ቢመርጡ HatchGrab በቦታው በሚሰጥ ትዕዛዝ ላይ የመድረክ ክፍያ አያስከፍልም።",
+   "ownTerminal": "የራስዎ የካርድ ማሽን",
+   "current": "አሁን ያለው",
+   "ownTerminalHelp": "Zettle፣ Square ወይም አሁን የሚጠቀሙት ማንኛውም። የሚዋቀር ነገር የለም — የአቅራቢዎ የራሱ ክፍያዎች ብቻ ይመለከታሉ።",
+   "hatchgrab": "በHatchGrab በኩል",
+   "comingSoon": "በቅርቡ ይመጣል",
+   "hatchgrabHelp": "ከኦንላይን ክፍያዎ ጋር ያንኑ የStripe ግንኙነት ይጠቀማል — የካርድ ማሽን (POS)፣ ወይም በቀጥታ ከስልክዎ ወይም ከታብሌትዎ የሚቀበሉት ንክኪ አልባ ክፍያ።",
+   "hatchgrabFees": "ለእያንዳንዱ ክፍያ {fee} ({region})፤ በተጨማሪም በስልክ ወይም በታብሌት ለሚቀበሉት ንክኪ አልባ ክፍያ {surcharge}። ሌሎች ካርዶች የበለጠ ሊያስከፍሉ ይችላሉ።"
+  }
+ },
+ "manageCharges": {
+  "heading": "ታክስ፣ ጉርሻና የአገልግሎት ክፍያዎች",
+  "rate": {
+   "label": "የሽያጭ ታክስ መጠን",
+   "hint": "በእያንዳንዱ ትዕዛዝ ላይ የሚያስከፍሉት መጠን። ደንበኞች ሲከፍሉ፣ በደረሰኝና በትዕዛዝ ወረቀት ላይ ተጨምሮ ያዩታል።",
+   "regionDefault": "ባዶ ከተዉት {label} {rate}% ይሆናል — ይህ ተዘጋጅቶ በሚሸጥ ምግብ ላይ የሚጣለው መጠን ነው ({region})።"
+  },
+  "included": {
+   "label": "{label} በዋጋዎችዎ ውስጥ ተካቷል",
+   "hint": "ዋጋዎችዎ አስቀድመው {label} ያካትታሉ። ይህ መጠን የሚያሳየው ከእያንዳንዱ ዋጋ ምን ያህሉ {label} እንደሆነ ብቻ ነው፣ በደረሰኝና በትዕዛዝ ወረቀት ላይ — ሲከፍሉ ምንም አይጨመርም።",
+   "default": "ባዶ ከተዉት {rate}% ጥቅም ላይ ይውላል — ይህ ለመውሰድ በሚሸጥ ትኩስ ምግብ ላይ የሚጣለው መጠን ነው (ታክስ፦ {label}፣ {country})።"
+  },
+  "tips": {
+   "label": "ጉርሻ",
+   "hint": "በኦንላይን በካርድ የሚከፍሉ ደንበኞች ጉርሻ ማከል ይችላሉ። ሙሉ በሙሉ ለእርስዎ ይደርሳል።",
+   "choices": "ደንበኞች የሚያዩት ምርጫዎች፦",
+   "chip": "{rate}%",
+   "other": "ሌላ መጠን"
+  },
+  "fee": {
+   "label": "የኦንላይን አገልግሎት ክፍያ",
+   "hint": "በኦንላይን ትዕዛዞች ላይ ብቻ ይጨመራል። “ሲወስዱ ይክፈሉ” ትዕዛዞች ወይም በቦታው በሚሰጡ ትዕዛዞች ላይ በፍጹም አይጨመርም። ገንዘቡ የእርስዎ ነው።",
+   "pctAria": "የአገልግሎት ክፍያ መቶኛ",
+   "fixedAria": "የአገልግሎት ክፍያ ቋሚ መጠን",
+   "max": "ከፍተኛው የሚያስከፍሉት፦ {max}",
+   "example": "ደንበኞች ከመክፈላቸው በፊት በአንድ መስመር ያዩታል፦ “{label} {amount}”።",
+   "hatchgrab": "HatchGrab በደንበኞችዎ የኦንላይን ትዕዛዞች ላይ {fee} የአገልግሎት ክፍያ ይጨምራል። እርስዎ አይከፍሉትም፤ መቀየርም አይችሉም።"
+  },
+  "saveFailed": "ማስቀመጥ አልተቻለም — እባክዎ እንደገና ይሞክሩ።"
+ },
+ "takingPayment": {
+  "heading": "ክፍያ መቀበል",
+  "intro": "ቡድንዎ ለእያንዳንዱ ትዕዛዝ ገንዘብን እንዴት እንደሚመዘግብ።",
+  "paidStepHelp": "ትዕዛዝ ራስዎ ሲያክሉ “ያረጋግጡ” የሚል ቁልፍ ይጨምራል፤ ስለዚህ ትዕዛዙን አሁን አስገብተው ክፍያውን በኋላ መቀበል ይችላሉ። በስልክ ወይም አስቀድመው የሚሰጡ ትዕዛዞችን የሚቀበሉ ከሆነ ይህን ያብሩ።",
+  "paidStepNote": "ይህ የሚመለከተው እርስዎ የሚያክሏቸውን ትዕዛዞች ብቻ ነው። የኦንላይን ትዕዛዞችን አይነካም።"
+ },
+ "designEditor": {
+  "item": {
+   "weekHeading": "የሳምንቱ ርዕስ",
+   "weekHeadingSample": "የሚጀምርበት ሳምንት፦ …",
+   "daysSample": "{first} እስከ {last}",
+   "date": "ቀን",
+   "place": "ቦታ",
+   "venue": "የዝግጅት ቦታ",
+   "area": "አካባቢ",
+   "time": "ሰዓት",
+   "rows": "ረድፎች",
+   "rowsSample": "{px}px ልዩነት · {first} እስከ {last}",
+   "ownText": "የራስዎ ጽሑፍ",
+   "noteTokenSample": "ልጥፉን ሲፈጥሩ የሚጽፉት ማስታወሻ",
+   "nothingYet": "እስካሁን ምንም የለም",
+   "thisBox": "ይህ ሳጥን"
+  },
+  "sample": {
+   "venue": "የቅዳሜ ገበያ",
+   "area": "ቦሌ"
+  },
+  "bar": {
+   "previewWith": "ቅድመ-እይታ በዚህ፦",
+   "undo": "ይቀልብሱ",
+   "undoTitle": "ይቀልብሱ (⌘Z)",
+   "redo": "ይድገሙ",
+   "redoTitle": "ይድገሙ (⇧⌘Z)",
+   "cancel": "ይቅር",
+   "saving": "በማስቀመጥ ላይ…",
+   "save": "ዲዛይኑን ያስቀምጡ"
+  },
+  "grid": {
+   "eachRow": "እያንዳንዱ ረድፍ",
+   "placeOff": "የቦታው ስም በምስልዎ ውስጥ አለ — HatchGrab አይጨምረውም።"
+  },
+  "background": {
+   "uploading": "በመስቀል ላይ…",
+   "replace": "ምስሉን ይተኩ",
+   "shape": {
+    "square": "ካሬ (1:1)",
+    "portrait45": "ቁመታዊ (4:5)",
+    "portrait916": "ቁመታዊ (9:16)",
+    "landscape169": "አግድም (16:9)",
+    "portrait": "ቁመታዊ",
+    "landscape": "አግድም"
+   }
+  },
+  "scope": {
+   "title": "የጽሑፍ አቀማመጦች",
+   "standard": "ከመደበኛው ጋር ተመሳሳይ አቀማመጦች",
+   "own": "የራሱ አቀማመጦች (ቦታ፦ {place})",
+   "locked": "እነዚህ አቀማመጦች የሚመጡት ከመደበኛ ዲዛይንዎ ነው። እዚህ ብቻ ለማንቀሳቀስ “የራሱ አቀማመጦች (ቦታ፦ {place})” የሚለውን ይምረጡ።"
+  },
+  "stage": {
+   "hint": "ለማንቀሳቀስ ሳጥኑን ይጎትቱ · መጠኑን ለመቀየር ጥጉን ይጎትቱ",
+   "zoomOut": "ያሳንሱ",
+   "zoomIn": "ያጉሉ"
+  },
+  "rows": {
+   "spacing": "ክፍተት",
+   "daysRun": "ቀኖቹ፦ {first} እስከ {last}። የረድፍ 1 ሦስቱ ሳጥኖች በዚህ ርቀት ወደ ታች ይቀዳሉ።",
+   "whichEvents": "የትኞቹ ዝግጅቶች",
+   "showCancelled": "የተሰረዙ ዝግጅቶችን ያሳዩ",
+   "showCancelledHint": "የተሰረዘ ዝግጅት ቦታው በመስመር ተሰርዞና “ተሰርዟል” የሚለው ቃል ተጽፎ ይታያል። ይህ ሲጠፋ ቀኑ እንደ ዕረፍት ቀን ይታያል።"
+  },
+  "days": {
+   "reorder": "ቅደም ተከተሉን ይቀይሩ",
+   "move": "ያንቀሳቅሱ"
+  },
+  "picture": {
+   "picture": "ምስል",
+   "fill": "ሳጥኑን ይሙላ",
+   "fit": "ውስጡ ይግጠም",
+   "corners": "ጥጎች",
+   "square": "ካሬ",
+   "rounded": "የተጠጋጋ",
+   "ifMissing": "አንድ ቦታ ምስል ከሌለው",
+   "noPicture": {
+    "omit": "አያካትቱት",
+    "blank": "ባዶ ቦታ ይተዉ",
+    "logo": "አርማዎን ያሳዩ"
+   },
+   "border": "ጠርዝ መስመር",
+   "drawBorder": "ጠርዝ መስመር ይሳሉ",
+   "drawBorderHint": "በምስሉ ዙሪያ በራስዎ ቀለም የሚሳል መስመር።",
+   "borderWidth": "የጠርዝ መስመር ውፍረት",
+   "cornerRadius": "የጥግ ክብነት",
+   "locationPictures": "የቦታ ምስሎች",
+   "addLocationPictures": "+ የቦታ ምስሎች ያክሉ",
+   "allHaveImage": "{total, plural, =0 {እስካሁን ምንም ቦታ የለዎትም።} one {# ቦታዎ ምስል አለው።} other {ሁሉም # ቦታዎችዎ ምስል አላቸው።}}",
+   "someWithout": "{total, plural, one {ካሉዎት # ቦታ} other {ካሉዎት # ቦታዎች}} መካከል {without} {without, plural, one {ገና ምስል የለውም} other {ገና ምስል የላቸውም}}"
+  },
+  "settings": {
+   "font": "ፎንት",
+   "colour": "ቀለም",
+   "textColour": "የጽሑፍ ቀለም",
+   "ownStyleNote": "{count, plural, one {{names} የራሱ ቅጥ ስላለው አልተቀየረም።} other {{names} የራሳቸው ቅጥ ስላላቸው አልተቀየሩም።}}",
+   "matchAgain": "እንደገና ያዛምዱት",
+   "matchName": "ከዚህ ጋር ያዛምዱ፦ {name}",
+   "lastToggle": "{kind, select, weekly {“ቦታ” ወይም “ሰዓት” — ከሁለቱ አንዱን አብርተው ያቆዩ። የተሰረዘ ዝግጅት ቦታው በመስመር ተሰርዞና “ተሰርዟል” የሚለው ቃል ተጽፎ ይታያል፤ ስለዚህ ሁለቱም ከጠፉ ዝግጅቱ መሰረዙን የሚያሳይ ምንም ነገር አይኖርም።} other {“የዝግጅት ቦታ” ወይም “ሰዓት” — ከሁለቱ አንዱን አብርተው ያቆዩ። የተሰረዘ ዝግጅት ቦታው በመስመር ተሰርዞና “ተሰርዟል” የሚለው ቃል ተጽፎ ይታያል፤ ስለዚህ ሁለቱም ከጠፉ ዝግጅቱ መሰረዙን የሚያሳይ ምንም ነገር አይኖርም።}}"
+  },
+  "letters": {
+   "boldGlyph": "B",
+   "italicGlyph": "I",
+   "capsGlyph": "AA",
+   "italicTitle": "{italic} — ይህ ፎንት እውነተኛ ሰያፍ አለው"
+  },
+  "align": {
+   "left": "ግራ",
+   "centre": "መሃል",
+   "right": "ቀኝ"
+  },
+  "effects": {
+   "outlineColour": "የዝርዝር መስመር ቀለም",
+   "bandColour": "የሰቁ ቀለም",
+   "bandDaysOff": "በዕረፍት ቀናት የሚታይ ሰቅ",
+   "bandCancelled": "ዝግጅቱ ሲሰረዝ የሚታይ ሰቅ",
+   "bandDaysOffHint": "ሽያጭ በሌለበት ቀን ከላይ ባለው ሰቅ ምትክ ጥቅም ላይ ይውላል።",
+   "bandCancelledHint": "ዝግጅቱ ሲሰረዝ ከላይ ባለው ሰቅ ምትክ ጥቅም ላይ ይውላል።"
+  },
+  "more": {
+   "dayOwnLine": "የሳምንቱ ቀን በራሱ መስመር",
+   "dayOwnLineHint": "የሳምንቱ ቀን ከቀኑ በላይ። ለቀን ብቻ።",
+   "noEventDay": "ዝግጅት በሌለበት ቀን",
+   "wordsBeforePlaceholder": "ለምሳሌ፦ እዚህ ያገኙናል",
+   "neverHyphenate": "ክፍተት የሌለው አንድ ረጅም ቃል ሁልጊዜ እንዲያንስ ይደረጋል — የቦታ ስምን በፍጹም በሰረዝ አንከፍልም።"
+  },
+  "bits": {
+   "less": "ያነሰ",
+   "more": "የበለጠ",
+   "chooseColourFor": "{label} — ማንኛውንም ቀለም ይምረጡ",
+   "chooseColour": "ማንኛውንም ቀለም ይምረጡ"
+  }
+ },
+ "fontPicker": {
+  "tab": {
+   "all": "ሁሉም",
+   "bold": "ደማቅና ረጃጅም",
+   "hand": "በእጅ የተጻፉ",
+   "classic": "ክላሲክ",
+   "clean": "ቀላልና ንጹሕ",
+   "own": "የእርስዎ",
+   "ownCount": "የእርስዎ ({count})"
+  },
+  "yoursTag": "· የእርስዎ",
+  "loadingFonts": "ፎንቶችን በመጫን ላይ…",
+  "search": "{count, number} ፎንቶችን ይፈልጉ",
+  "uploadButton": "↑ ፎንትዎን ይስቀሉ",
+  "loadingLibrary": "የፎንት ስብስቡን በመጫን ላይ…",
+  "tryAgain": "እንደገና ይሞክሩ",
+  "noOwn": "እስካሁን ፎንት አልሰቀሉም። ከላይ ያለውን “↑ ፎንትዎን ይስቀሉ” የሚለውን ቁልፍ ይጠቀሙ።",
+  "recent": "በቅርቡ የተጠቀሙባቸው",
+  "popular": "ለፖስተሮች ተወዳጅ",
+  "adding": "በማከል ላይ…",
+  "noMatch": "ምንም ፎንት አይዛመድም፦ “{query}”።",
+  "showing": "የሚታዩት፦ {shown} / {total, number} — ለማጥበብ ተጨማሪ ይጻፉ።",
+  "couldNotAdd": "ያ ፎንት ሊታከል አልቻለም",
+  "tooBig": "የፎንቱ መጠን፦ {size, number, ::.0 group-off}MB። ገደቡ 5MB ነው።",
+  "woff": "እባክዎ TTF ወይም OTF ፋይል ይስቀሉ — ብዙውን ጊዜ ፎንቱን ከገዙበት ቦታ ማውረድ ይችላሉ።",
+  "uploadIncomplete": "መስቀሉ አልተጠናቀቀም",
+  "added": "“{name}” ታክሏል (ስሪት፦ {face})።",
+  "face": {
+   "regular": "መደበኛ",
+   "bold": "ደማቅ",
+   "italic": "ሰያፍ"
+  },
+  "licenceTick": "ይህ ፎንት የእኔ ነው ወይም ለመጠቀም ፈቃድ አለኝ",
+  "checking": "ፎንቱን በማረጋገጥ ላይ…",
+  "addFont": "ፎንት ያክሉ",
+  "cancel": "ይቅር",
+  "missingFaces": "የዚህን ፎንት {faces} ስሪት ያክሉ፦ “{name}” (አማራጭ) — ፋይሉን እንደገና ይምረጡ።",
+  "somethingWrong": "የሆነ ችግር ተፈጥሯል",
+  "faceLower": {
+   "regular": "መደበኛ",
+   "bold": "ደማቅ",
+   "italic": "ሰያፍ"
+  },
+  "ownLicence": "የራስዎ",
+  "loadFailed": "ፎንቶችን መጫን አልተቻለም"
+ },
+ "weeklyPost": {
+  "error": {
+   "generic": "የሆነ ችግር ተፈጥሯል",
+   "previewFailed": "ቅድመ-እይታውን መፍጠር አልተቻለም",
+   "loadFailed": "መጫን አልተቻለም",
+   "tooBig": "የምስሉ መጠን፦ {size, number, ::.0 group-off}MB። ገደቡ 10MB ነው።",
+   "wrongType": "እባክዎ PNG ወይም JPG ይምረጡ።",
+   "uploadIncomplete": "መስቀሉ አልተጠናቀቀም",
+   "uploadFailed": "መስቀሉ አልተሳካም",
+   "saveFailed": "ማስቀመጥ አልተቻለም",
+   "buildFailed": "ልጥፉን መሥራት አልተቻለም",
+   "copyFailed": "መቅዳት አልተቻለም — ጽሑፉን መርጠው በእጅ ይቅዱት።"
+  },
+  "loading": "በመጫን ላይ…",
+  "missingTable": {
+   "title": "ሳምንታዊው ልጥፍ የዳታቤዝ ማሻሻያ ያስፈልገዋል",
+   "body": "የዲዛይን ሰንጠረዡ ገና አልተፈጠረም። የዳታቤዝ ማሻሻያው ከተተገበረ በኋላ ይህ ስክሪን ይሠራል።"
+  },
+  "kind": {
+   "label": "የትኛው ዲዛይን",
+   "event": "የአንድ ዝግጅት",
+   "week": "ሳምንታዊ"
+  },
+  "setup": {
+   "title": "ሳምንታዊ ልጥፍዎን ያዋቅሩ",
+   "intro": "አስቀድመው የሚሠሩትን የሳምንታዊ የሥራ ፕሮግራም ምስል ባዶ ስሪት ይስቀሉ — ያው ዲዛይን፣ የራስዎ የጽሑፍ ሳጥኖች ተወግደውበት። HatchGrab ሳምንቱን ከሥራ ፕሮግራምዎ ይሞላል።",
+   "canvaTitle": "ከCanva ባዶ ስሪት እንዴት ኤክስፖርት እንደሚያደርጉ",
+   "canvaStep1": "የተለመደውን የሳምንታዊ የሥራ ፕሮግራም ዲዛይንዎን ይክፈቱ።",
+   "canvaStep2": "ቀኖቹን፣ ቦታዎቹንና ሰዓቶቹን የያዙትን የጽሑፍ ሳጥኖች ይሰርዙ — ማቆየት የሚፈልጉትን ጀርባና ርዕሶች ይተዉ።",
+   "canvaStep3": "Share › Download › PNG።",
+   "uploading": "በመስቀል ላይ…",
+   "upload": "ባዶ ምስልዎን ይስቀሉ",
+   "uploadHint": "PNG ወይም JPG፣ እስከ 10MB፣ አጭሩ ጎን ቢያንስ {px}px።",
+   "phoneTip": "በኮምፒውተር ወይም በiPad ላይ ቢሆን ይሻላል — ሳጥኖቹ በስልክ ላይ ለመጎተት ትንሽ ናቸው።",
+   "designName": "የሳምንታዊ ልጥፍ ዲዛይን",
+   "backDesigns": "‹ ዲዛይኖች",
+   "back": "‹ ወደ ኋላ",
+   "pictureNote": "ምንም ቀን ወይም ቦታ ያልተጻፈበት ምስልዎ። እነሱን እኛ እንጨምራለን።",
+   "saved": "ዲዛይኑ ተቀምጧል።"
+  },
+  "week": {
+   "this": "ይህ ሳምንት",
+   "next": "የሚቀጥለው ሳምንት"
+  },
+  "post": {
+   "title": "ሳምንታዊ ልጥፍዎ",
+   "editDesign": "ዲዛይኑን ያስተካክሉ",
+   "weekOf": "የሚጀምርበት ሳምንት፦ {date}",
+   "imageAlt": "ሳምንታዊ ልጥፍዎ",
+   "building": "ልጥፍዎን በመሥራት ላይ…",
+   "updating": "በማዘመን ላይ…",
+   "eventsTitle": "የዚህ ሳምንት ዝግጅቶች",
+   "noEvents": "በዚህ ሳምንት ምንም ዝግጅት የለም።",
+   "eventDateCancelled": "{date} · ተሰርዟል",
+   "showCancelled": "የተሰረዙ ዝግጅቶችን ያሳዩ",
+   "showPrivate": "የግል ዝግጅት ካለ ያሳዩት",
+   "privateHint": "“የግል ዝግጅት” ተብለው ከቀኑና ከሰዓቱ ጋር ይታያሉ — ቦታው በፍጹም አይታይም።",
+   "noteTitle": "ማስታወሻ",
+   "notePlaceholder": "ለምሳሌ፦ ለመውሰድ ቅድመ-ትዕዛዝ ያስገቡ",
+   "noteHint": "በመግለጫ ጽሑፉ ውስጥ ይታያል፤ የማስታወሻ ሳጥን ካስቀመጡም በእሱ ውስጥ።",
+   "captionTitle": "ለገጽዎ መግለጫ ጽሑፍ",
+   "perEventTitle": "ለእያንዳንዱ ዝግጅት ልጥፍ",
+   "nothingToPost": "በዚህ ሳምንት የሚለጠፍ ነገር የለም።",
+   "textCopied": "ጽሑፉ ተቀድቷል።",
+   "copyText": "ጽሑፉን ይቅዱ",
+   "image": "ምስል",
+   "share": "ያጋሩ",
+   "noOrderLink": "እስካሁን የትዕዛዝ ሊንክ የለም — የምግብ መኪናዎን የድረ-ገጽ አድራሻ በቅንብሮች ውስጥ ያስቀምጡ።"
+  }
+ },
+ "manageShell": {
+  "loading": "የአስተዳደር ማዕከሉን በመጫን ላይ…",
+  "loadFailed": "መጫን አልተሳካም",
+  "requestFailed": "አልተሳካም",
+  "invalidToken": "ልክ ያልሆነ ወይም ጊዜው ያለፈበት ቶከን",
+  "loadFailedReason": "ይህን ገጽ መጫን አልተቻለም፦ {reason}",
+  "noCountrySettings": "የዚህን የምግብ መኪና የአገር ቅንብሮች መጫን አልተቻለም። እባክዎ ገጹን ያድሱ።",
+  "noPlans": "የዚህን የምግብ መኪና ፓኬጅ መጫን አልተቻለም። እባክዎ ገጹን ያድሱ።",
+  "stale": "{hasTime, select, yes {ማደስ አልተቻለም። {time} ላይ የተቀመጠውን በማሳየት ላይ። የሚያደርጓቸው ለውጦች አሁንም ይቀመጣሉ።} other {ማደስ አልተቻለም። የተቀመጠውን በማሳየት ላይ። የሚያደርጓቸው ለውጦች አሁንም ይቀመጣሉ።}}",
+  "verify": {
+   "ok": "ኢሜይሉ ተረጋግጧል — እናመሰግናለን።",
+   "expired": "ያ የማረጋገጫ ሊንክ ጊዜው አልፎበታል። ያነጋግሩን፤ ትዕዛዝ መቀበል ከመጀመርዎ በፊት እናስተካክለዋለን።",
+   "invalid": "ያ የማረጋገጫ ሊንክ አልሠራም። ያነጋግሩን፤ ትዕዛዝ መቀበል ከመጀመርዎ በፊት እናስተካክለዋለን።"
+  },
+  "profile": {
+   "updated": "መገለጫው ተዘምኗል",
+   "saveFailed": "ማስቀመጥ አልተሳካም",
+   "title": "መገለጫውን ያስተካክሉ",
+   "name": "ስም",
+   "namePlaceholder": "ስምዎ",
+   "email": "ኢሜይል",
+   "cancel": "ይቅር",
+   "saving": "በማስቀመጥ ላይ…",
+   "save": "ያስቀምጡ"
+  },
+  "header": {
+   "subtitle": "የአስተዳደር ማዕከል",
+   "ordersDashboard": "← የትዕዛዞች ዳሽቦርድ"
+  },
+  "tabs": {
+   "menu": "ሜኑ",
+   "schedule": "የሥራ ፕሮግራም",
+   "paperwork": "ሰነዶች",
+   "social": "ማኅበራዊ ሚዲያ",
+   "reports": "ሪፖርቶች",
+   "team": "ቡድን",
+   "settings": "ቅንብሮች",
+   "payments": "ክፍያዎች",
+   "billing": "የሂሳብ አከፋፈል",
+   "paymentsIcon": "💵",
+   "scheduleCount": "የሥራ ፕሮግራም ({count})",
+   "stripeAttention": "Stripe ትኩረትዎን ይፈልጋል",
+   "allergensNotSet": "አለርጂ የሚያስከትሉ ንጥረ ነገሮች አልተቀመጡም"
+  },
+  "menuSections": {
+   "label": "የሜኑ ክፍሎች",
+   "items": "ንጥሎች",
+   "capacity": "የኩሽና አቅም",
+   "extras": "ተጨማሪዎች እና የሽያጭ ጥቆማዎች",
+   "deals": "ጥምር ምግቦች (ኮምቦ)"
+  },
+  "socialSections": {
+   "label": "የማኅበራዊ ሚዲያ ክፍሎች",
+   "create": "ልጥፍ ይፍጠሩ",
+   "designs": "ዲዛይኖች",
+   "locations": "የቦታ ቅንብሮች"
+  },
+  "notices": {
+   "review": "ይገምግሙ →",
+   "tour": "የዳሽቦርድዎን አጭር ጉብኝት ይፈልጋሉ?",
+   "showMeAround": "አስጎብኙኝ",
+   "dismiss": "ይዝጉ",
+   "approval": "{count, plural, one {<b>{count}</b> ዝግጅት አግኝተንልዎታል — በሥራ ላይ ከመዋሉ በፊት ይገምግሙና ያጽድቁ።} other {<b>{count}</b> ዝግጅቶች አግኝተንልዎታል — በሥራ ላይ ከመዋላቸው በፊት ይገምግሙና ያጽድቋቸው።}}",
+   "allergens": "<b>አለርጂ የሚያስከትሉ ንጥረ ነገሮች አልተቀመጡም</b> — እርስዎ እስኪያረጋግጡ ድረስ ደንበኞች ስለ አለርጂ የሚያስከትሉ ንጥረ ነገሮች መረጃ ማየት አይችሉም። “ሜኑ” በሚለው ትር ውስጥ የእያንዳንዱን ምግብ አለርጂ የሚያስከትሉ ንጥረ ነገሮች ይገምግሙ።",
+   "domainLive": "<link>{domain}</link> አሁን ይሠራል። ይመልከቱት፤ ከዚያም ትክክል መሆኑን በቅንብሮች ውስጥ ይንገሩን።",
+   "stripe": "<b>Stripe ከእርስዎ አንድ ነገር ይፈልጋል</b> — ጉዳዩ እስኪፈታ ድረስ የካርድ ክፍያ ሊቆም ይችላል።",
+   "profileTitle": "መገለጫዎን ያጠናቅቁ",
+   "missing": "የጎደሉ፦ {fields}።",
+   "goToSettings": "ወደ ቅንብሮች ይሂዱ →",
+   "field": {
+    "truckName": "የምግብ መኪናው ስም",
+    "cuisineType": "የምግብ ዓይነት",
+    "contactEmail": "የመገኛ ኢሜይል",
+    "contactPhone": "የመገኛ ስልክ"
+   }
+  },
+  "trialPopup": {
+   "title": "{months, select, none {ነፃ ሙከራ ላይ ነዎት} other {ነፃ ሙከራ ላይ ነዎት ({months} ወር)}}",
+   "ends": "{hasDate, select, yes {ሙከራው የሚያበቃው፦ <hl>{date}</hl>} other {ሙከራው <hl>በቅርቡ</hl> ያበቃል}}",
+   "offer": "{hasMonths, select, yes {{months, plural, one {ሁሉም አገልግሎቶች ነፃ ናቸው — # ወር} other {ሁሉም አገልግሎቶች ነፃ ናቸው — # ወራት}}} other {በሙከራዎ ጊዜ ሁሉም አገልግሎቶች ነፃ ናቸው}}",
+   "body": "{hasDate, select, yes {በሙከራዎ ጊዜ ምንም አይከፍሉም፤ ሙከራው እስከ <b>{date}</b> ድረስ ይቆያል። ክፍያ የሚጀምረው ፓኬጅ መርጠው የክፍያ ዝርዝሮችዎን ሲያስገቡ ብቻ ነው። እስከዚያ ድረስ የሚሰርዙትም ሆነ የሚከፍሉት ነገር የለም። ከዚያ በፊት ፓኬጅዎን ይምረጡ — ካልመረጡ ወደ {fallback} ይዛወራሉ፤ አንዳንድ አገልግሎቶችም መሥራት ያቆማሉ።} other {ሙከራ ላይ እስካሉ ድረስ ምንም አይከፍሉም። ክፍያ የሚጀምረው ፓኬጅ መርጠው የክፍያ ዝርዝሮችዎን ሲያስገቡ ብቻ ነው። እስከዚያ ድረስ የሚሰርዙትም ሆነ የሚከፍሉት ነገር የለም። ከዚያ በፊት ፓኬጅዎን ይምረጡ — ካልመረጡ ወደ {fallback} ይዛወራሉ፤ አንዳንድ አገልግሎቶችም መሥራት ያቆማሉ።}}",
+   "bodyPaidEnd": "{hasDate, select, yes {በሙከራዎ ጊዜ ምንም አይከፍሉም፤ ሙከራው እስከ <b>{date}</b> ድረስ ይቆያል። ሙከራዎ ሲያበቃ {fallback} በወር {price} ነው። ክፍያውን ለማዋቀር ከዚያ በፊት እናነጋግርዎታለን።} other {ሙከራ ላይ እስካሉ ድረስ ምንም አይከፍሉም። ሙከራዎ ሲያበቃ {fallback} በወር {price} ነው። ክፍያውን ለማዋቀር ከዚያ በፊት እናነጋግርዎታለን።}}",
+   "fees": "*በኦንላይን ትዕዛዞች ላይ መደበኛ የካርድ ክፍያ ማስኬጃ ክፍያዎች ይመለከታሉ",
+   "upgrade": "ፓኬጅዎን እዚህ ያሳድጉ →"
+  }
+ },
+ "manageBilling": {
+  "perTruckMonth": "ለአንድ የምግብ መኪና / በወር",
+  "transactionFees": "የግብይት ክፍያዎች",
+  "comingSoon": "በቅርቡ ይመጣል",
+  "footnote2Masked": "የኦንላይን ክፍያዎች የሚሠሩት በStripe Connect ነው። የመድረክና የካርድ ክፍያ ማስኬጃ ክፍያዎች፦ ይረጋገጣል — አገልግሎቱ ሲጀመር ይገለጻሉ።",
+  "card": {
+   "title": "የሂሳብ አከፋፈልና ክፍያዎች",
+   "managed": "የሂሳብ አከፋፈሉን የሚያስተዳድረው HatchGrab ነው",
+   "earlyAccess": "በቅድመ-መዳረሻ ጊዜ ፓኬጆችን በእጅ እናዋቅራለን፤ እናስተካክላለንም።",
+   "planLine": "{trial, select, yes {{truck} · {plan} ፓኬጅ (ሙከራ)} other {{truck} · {plan} ፓኬጅ}}"
+  },
+  "currentPlan": "የአሁኑ ፓኬጅ",
+  "plan": {
+   "included": "በወር እስከ {amount} የሚደርስ የኦንላይን ትዕዛዝ ያካትታል።",
+   "includedUnlimited": "ያልተገደበ የኦንላይን ትዕዛዝ ተካቷል።",
+   "promo": "ልዩ ዋጋ።",
+   "promoUntil": "ልዩ ዋጋ እስከ {date} ድረስ።",
+   "ended": "{plan} ፓኬጅዎ {date} ላይ አብቅቷል። አሁን ያሉበት ፓኬጅ፦ {now}።",
+   "trialMonths": "{months} ወር የሚቆይ ነፃ ሙከራ።"
+  },
+  "trialEnds": "ሙከራው የሚያበቃው፦ {date}",
+  "yourTrialEnds": "ሙከራዎ የሚያበቃው፦ {date}",
+  "notStarted": {
+   "heading": "ነፃ ሙከራዎ ገና አልተጀመረም"
+  },
+  "onTrial": "ሁሉም አገልግሎቶች አሉዎት። ሙከራዎ ከማብቃቱ በፊት ፓኬጅ ይምረጡ።",
+  "onTrialPaidEnd": "ሁሉም አገልግሎቶች አሉዎት። ሙከራዎ ሲያበቃ {plan} በወር {price} ነው። ክፍያውን ለማዋቀር ከዚያ በፊት እናነጋግርዎታለን።",
+  "onTrialNoCta": "ሁሉም አገልግሎቶች አሉዎት።",
+  "noCharge": "🔒 በሙከራዎ ጊዜ ምንም አይከፍሉም፤ ሙከራው እስከ {date} ድረስ ይቆያል። ክፍያ የሚጀምረው ፓኬጅ መርጠው የክፍያ ዝርዝሮችዎን ሲያስገቡ ብቻ ነው። እስከዚያ ድረስ የሚሰርዙትም ሆነ የሚከፍሉት ነገር የለም።",
+  "noChargePaidEnd": "🔒 በሙከራዎ ጊዜ ምንም አይከፍሉም፤ ሙከራው እስከ {date} ድረስ ይቆያል።",
+  "fees": "*በኦንላይን ትዕዛዞች ላይ መደበኛ የካርድ ክፍያ ማስኬጃ ክፍያዎች ይመለከታሉ",
+  "setUpPayment": "⏱ ሙከራዎ ከማብቃቱ በፊት ፓኬጅ ይምረጡ",
+  "changeYourPlan": "ፓኬጅዎን ይቀይሩ",
+  "planButton": "{plan} — {price}",
+  "upgradeModal": {
+   "title": "ወደ {plan} ይቀይሩ",
+   "tagline": "{price} — {description}",
+   "body": "ራስ-ሰር የሂሳብ አከፋፈል እያዋቀርን ነው። አሁን ለመቀየር መልዕክት ይላኩልን፤ በ24 ሰዓት ውስጥ እናዋቅርልዎታለን።",
+   "mailSubject": "ወደ {plan} መቀየር — {truck}",
+   "mailBody": "ሰላም፣ {truck} ወደ {plan} ({price}) ፓኬጅ እንዲቀየር እፈልጋለሁ።",
+   "email": "ለመቀየር ኢሜይል ይላኩልን",
+   "cancel": "ይቅር"
+  }
+ },
+ "manageTeam": {
+  "toast": {
+   "verificationSent": "የማረጋገጫ ኢሜይል ተልኳል",
+   "emailChangeFailed": "ኢሜይሉን መቀየር አልተሳካም",
+   "profileUpdated": "መገለጫው ተዘምኗል",
+   "saveProfileFailed": "መገለጫውን ማስቀመጥ አልተሳካም",
+   "verificationResent": "የማረጋገጫ ኢሜይሉ በድጋሚ ተልኳል — የገቢ መልዕክት ሳጥንዎን ይመልከቱ",
+   "resendFailed": "በድጋሚ መላክ አልተሳካም",
+   "emailChangeCancelled": "የኢሜይል ለውጡ ተሰርዟል",
+   "cancelFailed": "መሰረዝ አልተሳካም",
+   "memberUpdated": "አባሉ ተዘምኗል",
+   "inviteSent": "ግብዣው ተልኳል",
+   "memberRemoved": "አባሉ ተወግዷል"
+  },
+  "confirmRemove": "ይህ የቡድን አባል ይወገድ?",
+  "title": "የቡድን አባላት",
+  "intro": "ሠራተኞች የትዕዛዝ ስክሪኑን እንዲጠቀሙና ትዕዛዝ እንዲቀበሉ ይጋብዙ",
+  "inviteMember": "+ አባል ይጋብዙ",
+  "ownerName": "{you, select, yes {{name} (እርስዎ)} other {{name}}}",
+  "ownerLine": "ባለቤት · ሁሉም ተሽከርካሪዎች",
+  "edit": "ያስተካክሉ",
+  "remove": "ያስወግዱ",
+  "awaiting": "⏳ ማረጋገጫ በመጠባበቅ ላይ",
+  "sentTo": "ማረጋገጫው ወደዚህ ተልኳል፦ <b>{email}</b>። የገቢ መልዕክት ሳጥንዎን ይመልከቱ።",
+  "sending": "በመላክ ላይ…",
+  "resend": "በድጋሚ ይላኩ",
+  "cancelling": "በመሰረዝ ላይ…",
+  "cancel": "ይሰርዙ",
+  "myProfile": "መገለጫዬ",
+  "firstName": "ስም *",
+  "lastName": "የአባት ስም *",
+  "phone": "ስልክ",
+  "phonePlaceholder": "+251 911 234 567",
+  "email": "ኢሜይል",
+  "verifyNote": "የማረጋገጫ ሊንክ ወደዚህ አድራሻ ይላካል። እስኪረጋገጥ ድረስ የአሁኑ ኢሜይልዎ መሥራቱን ይቀጥላል።",
+  "privacy": "የግል ዝርዝሮችዎ ሚስጥራዊ ናቸው፤ ለደንበኞች በፍጹም አይታዩም። ለአካውንት አስተዳደርና ለሂሳብ አከፋፈል ማረጋገጫ ያገለግላሉ።",
+  "saving": "በማስቀመጥ ላይ…",
+  "save": "ያስቀምጡ",
+  "memberLine": "{role, select, manager {ሥራ አስኪያጅ} other {ሠራተኛ}} · {vans}{pending, select, yes { · ግብዣው በመጠባበቅ ላይ} other {}}",
+  "allTrucks": "ሁሉም ተሽከርካሪዎች",
+  "noMembers": "እስካሁን ምንም የቡድን አባል የለም",
+  "modal": {
+   "editTitle": "የቡድን አባሉን ያስተካክሉ",
+   "inviteTitle": "የቡድን አባል ይጋብዙ",
+   "name": "ስም",
+   "namePlaceholder": "ለምሳሌ፦ ሜሮን",
+   "email": "ኢሜይል",
+   "emailPlaceholder": "meron@example.com",
+   "role": "ሚና",
+   "roleStaff": "ሠራተኛ — ትዕዛዝ ይቀበላል፣ ኩሽናውን ያስተዳድራል",
+   "roleManager": "ሥራ አስኪያጅ — ሜኑንና ቅንብሮችን ጨምሮ ሙሉ መዳረሻ",
+   "roleOwner": "ባለቤት — ቡድንንና የሂሳብ አከፋፈልን ጨምሮ ሙሉ መዳረሻ",
+   "truckAccess": "የተሽከርካሪ መዳረሻ",
+   "onlyTruck": "{van} <muted>(ብቸኛው ተሽከርካሪ)</muted>",
+   "selectOne": "ቢያንስ አንድ ተሽከርካሪ ይምረጡ",
+   "saveChanges": "ለውጦቹን ያስቀምጡ",
+   "sendInvite": "ግብዣ ይላኩ"
+  },
+  "inviteEmail": {
+   "subject": "በHatchGrab ላይ ቡድኑን እንዲቀላቀሉ ተጋብዘዋል — {truck}",
+   "greeting": "{hasName, select, yes {ሰላም {name}፣} other {ሰላም፣}}",
+   "invited": "{truck} በHatchGrab ላይ ቡድኑን {role, select, owner {እንደ ባለቤት} manager {እንደ ሥራ አስኪያጅ} other {እንደ ሠራተኛ}} እንዲቀላቀሉ ጋብዞዎታል።",
+   "click": "የይለፍ ቃልዎን ለማስቀመጥና ለመጀመር ከታች ያለውን ቁልፍ ይጫኑ። ይህ ሊንክ በ7 ቀናት ውስጥ ጊዜው ያልፋል።",
+   "button": "ግብዣውን ይቀበሉ",
+   "ignore": "ይህን ግብዣ ካልጠበቁ፣ ይህን ኢሜይል ችላ ማለት ይችላሉ።"
+  }
+ },
+ "copyButton": {
+  "copy": "ይቅዱ",
+  "copied": "ተቀድቷል ✓",
+  "failed": "መቅዳት አልተሳካም",
+  "aria": "{label} {thing}",
+  "announceCopied": "ተቀድቷል፦ {thing}",
+  "announceCopiedValue": "እሴቱ ተቀድቷል",
+  "announceFailed": "መቅዳት አልተቻለም፦ {thing}። ጽሑፉን መርጠው ራስዎ ይቅዱት።",
+  "announceFailedValue": "እሴቱን መቅዳት አልተቻለም። ጽሑፉን መርጠው ራስዎ ይቅዱት።"
+ },
+ "deleteAccount": {
+  "dangerZone": "አደገኛ ክፍል",
+  "scheduled": "ይህ አካውንት እንዲሰረዝ ቀጠሮ ተይዟል",
+  "requested": "የተጠየቀበት ቀን፦ <b>{requested}</b>። የሚሰረዝበት ቀን፦ <b>{due}</b>።",
+  "orderingStopped": "የኦንላይን ትዕዛዝ መቀበል ቆሟል። እስከዚያ ድረስ ዳሽቦርድዎ ለንባብ ክፍት ሆኖ ይቆያል።",
+  "cannotCancelPending": "<b>ይህን ራስዎ ማስቀረት አይችሉም።</b> ለማስቆም በተቻለ ፍጥነት ወደዚህ ኢሜይል ይላኩ፦ <link>{email}</link>።",
+  "title": "አካውንትዎን ይሰርዙ",
+  "body": "ይህን የHatchGrab አካውንት በቋሚነት ይዝጉና የኦንላይን ትዕዛዝ መቀበል ያቁሙ።",
+  "open": "አካውንቱን ይሰርዙ…",
+  "dialogTitle": "አካውንትዎ ይሰረዝ?",
+  "stopsImmediately": "የኦንላይን ትዕዛዝ መቀበል ወዲያውኑ ይቆማል — ከ30 ቀናት በኋላ አይደለም። እንዳረጋገጡ ወዲያውኑ ደንበኞች ከእርስዎ ማዘዝ አይችሉም።",
+  "upcoming": "<b>{count, plural, one {# መጪ ትዕዛዝ አለዎት} other {# መጪ ትዕዛዞች አሉዎት}}።</b> እነዚህ አሁንም መፈጸም አለባቸው።",
+  "allTrucks": "<b>በዚህ አካውንት ላይ ያሉት ሁሉም የምግብ መኪናዎች ({count}) ተካትተዋል፦</b> {names}።",
+  "deletedAfter": "አካውንትዎ <b>ከ30 ቀናት</b> በኋላ ይሰረዛል። በዚያ ጊዜ ውስጥ ዳሽቦርድዎ ለንባብ ክፍት ሆኖ ይቆያል።",
+  "cannotCancel": "ይህን ራስዎ ማስቀረት አይችሉም። ለማስቆም ወደዚህ ኢሜይል መላክ አለብዎት፦ <link>{email}</link>።",
+  "whatHeading": "ምን ይሰረዛል፣ ምን ይቀመጣል",
+  "whatPersonal": "የእርስዎና የቡድንዎ የግል ዝርዝሮች ይሰረዛሉ፤ የመግቢያ መረጃዎችዎም ይወገዳሉ።",
+  "whatCustomers": "የደንበኞችዎ ስሞች፣ ኢሜይሎችና ስልክ ቁጥሮች ከትዕዛዞችዎ ይሰረዛሉ።",
+  "whatAccounting": "ማንነት የማይገልጹ የሂሳብ መዝገቦች የዩኬ ሕግ በሚጠይቀው መሠረት <b>ለስድስት ዓመት ይቀመጣሉ</b>። የእኛን <link>የግላዊነት ፖሊሲ</link> ይመልከቱ።",
+  "copyFirst": "<b>መጀመሪያ የመረጃዎን ቅጂ ይፈልጋሉ?</b> በመተግበሪያው ውስጥ ማውረጃ የለም። ቅጂ የማግኘት መብት አለዎት — ከማረጋገጥዎ <b>በፊት</b> ወደዚህ ኢሜይል ይላኩ፦ <link>{email}</link>፤ እኛም እንልክልዎታለን።",
+  "typeToConfirm": "ለማረጋገጥ <code>{name}</code> ብለው ይጻፉ",
+  "typeAria": "አካውንቱን መሰረዝ ለማረጋገጥ ይህን ይጻፉ፦ {name}",
+  "cancel": "ይቅር — አካውንቱ ይቆይ",
+  "requesting": "በመጠየቅ ላይ…",
+  "confirm": "አካውንቱን ይሰርዙ",
+  "requestedToast": "አካውንቱ እንዲሰረዝ ተጠይቋል። ኢሜይልዎን ይመልከቱ።",
+  "failed": "ጥያቄውን ማስገባት አልተቻለም"
+ },
+ "manageWhatsApp": {
+  "preview": {
+   "title": "ከማገናኘትዎ በፊት ይሞክሩት",
+   "intro": "አንድ ደንበኛ እንደሚጠይቀው ዓይነት ጥያቄ ይጻፉ፤ ምን መልስ እንደሚያገኙ በትክክል ይመልከቱ። ለማንም ምንም አይላክም።",
+   "examples": {
+    "where": "ዛሬ ማታ የት ናችሁ?",
+    "doYouDo": "ፔፐሮኒ አላችሁ?",
+    "menu": "ሜኑው ላይ ምን አለ?"
+   },
+   "placeholder": "ምን ዓይነት ጣፋጮች አላችሁ?",
+   "send": "ይላኩ",
+   "empty": "መልስዎ እዚህ ይታያል",
+   "working": "መልሱን በማሰናዳት ላይ…",
+   "noReply": "ምንም መልስ አይላክም።",
+   "noReplyWhy": "ያ እንደ አይፈለጌ መልዕክት፣ የቀጠሮ ማስያዝ ጥያቄ ወይም ያልተዛመደ ነገር ይነበባል፤ ስለዚህ የWhatsApp ራስ-ሰር ምላሽ ዝም ይላል።",
+   "footnote": "መልሶቹ በሰው ሠራሽ አስተውሎት የሚፈጠሩ ናቸው፤ በእያንዳንዱ ጊዜ በትንሹ ይለያያሉ፤ አልፎ አልፎም ስህተት ሊሆኑ ይችላሉ።",
+   "failed": "አሁን ቅድመ-እይታ መፍጠር አልተቻለም።",
+   "unreachable": "ከሰርቨሩ ጋር መገናኘት አልተቻለም። ግንኙነትዎን ይፈትሹና እንደገና ይሞክሩ።"
+  },
+  "setup": {
+   "button": {
+    "preparing": "በማሰናዳት ላይ…",
+    "unavailable": "አይገኝም",
+    "waiting": "የFacebook መስኮቱን በመጠባበቅ ላይ…",
+    "finishing": "በማጠናቀቅ ላይ…",
+    "reconnect": "እንደገና ያገናኙ",
+    "setUp": "ያዋቅሩ"
+   },
+   "startAgain": "እንደገና ይጀምሩ",
+   "popupHint": "የFacebook መስኮቱን ማየት አልቻሉም? ታግዶ ሊሆን ይችላል። ለhatchgrab.com ብቅ-ባይ መስኮቶችን ይፍቀዱ፤ ከዚያም “እንደገና ይጀምሩ” የሚለውን ይጫኑ።"
+  },
+  "notice": {
+   "sdkUnavailable": "የWhatsApp ማዋቀር በዚህ የሥራ አካባቢ አይገኝም።",
+   "sdkBlocked": "የMeta የመግቢያ ስክሪፕት መጫን አልቻለም። ብዙውን ጊዜ ምክንያቱ የማስታወቂያ ማገጃ ወይም የክትትል መከላከያ ነው።",
+   "setupFailed": "ማዋቀሩ ሊጠናቀቅ አልቻለም። ምንም ነገር አልተቀየረም።",
+   "setupFinished": "ማዋቀሩ ተጠናቋል።",
+   "metaError": "በማዋቀሩ ወቅት Meta ችግር እንዳለ ገልጿል። ምንም ነገር አልተቀየረም። እንደገና ይሞክሩ፤ ችግሩ ከቀጠለ ያነጋግሩን።",
+   "closed": "ማዋቀሩ ከመጠናቀቁ በፊት ተዘግቷል። ምንም ነገር አልተቀየረም — እንደገና ለመሞከር “ያዋቅሩ” የሚለውን ይጫኑ።",
+   "disconnectedUnreachable": "የWhatsApp ግንኙነት ተቋርጧል። መዳረሻውን ለማስወገድ ከMeta ጋር መገናኘት አልቻልንም። እባክዎ HatchGrab በዚህ ቦታ ያስወግዱ፦ WhatsApp Business → Settings → Account → Business Platform።",
+   "disconnected": "የWhatsApp ግንኙነት ተቋርጧል። የWhatsApp ራስ-ሰር ምላሽ ቆሟል።",
+   "close": "ይዝጉ"
+  },
+  "card": {
+   "title": "የWhatsApp ራስ-ሰር ምላሽ",
+   "description": "ሜኑዎንና የሥራ ፕሮግራምዎን ተጠቅሞ የደንበኞችን ጥያቄዎች በማኅበራዊ ሚዲያዎ ላይ በራስ-ሰር ይመልሳል።",
+   "channels": "የመልዕክት መንገዶች",
+   "requiresAccount": "የWhatsApp Business አካውንት ያስፈልጋል።",
+   "connected": "ተገናኝቷል",
+   "popupInstruction": "የWhatsApp Business አካውንትዎን ለማገናኘት የFacebook መስኮት ይከፈታል። ምንም ነገር ካልታየ፣ በአሳሽዎ ውስጥ ለhatchgrab.com ብቅ-ባይ መስኮቶችን ይፍቀዱ፤ ከዚያም “ያዋቅሩ” የሚለውን እንደገና ይጫኑ።",
+   "switchedOff": "ለምግብ መኪናዎ የWhatsApp ራስ-ሰር ምላሽ ጠፍቷል።",
+   "expiring": "የWhatsApp ግንኙነትዎ በቅርቡ መታደስ አለበት። የWhatsApp ራስ-ሰር ምላሽ እንዲቀጥል “እንደገና ያገናኙ” የሚለውን ይጫኑ።",
+   "comingSoon": "በቅርቡ ይመጣል",
+   "instagram": "ለInstagram የግል መልዕክቶች ራስ-ሰር ምላሽ። የInstagram ፕሮፌሽናል አካውንት ያስፈልገዋል።",
+   "messenger": "ለFacebook Messenger ራስ-ሰር ምላሽ። የFacebook ገጽ ያስፈልገዋል።"
+  },
+  "blocked": {
+   "title": "ምላሾችዎ እየደረሱ አይደሉም",
+   "body": "በWhatsApp Business አካውንትዎ ላይ ባለ የክፍያ ችግር ምክንያት WhatsApp ራስ-ሰር ምላሾችዎን ለመላክ እምቢ ብሏል። ደንበኞች አሁንም መልዕክት ሊልኩልዎ ይችላሉ፤ እርስዎም የሚልኩትን ሁሉ ያያሉ — ነገር ግን መልስ እያገኙ አይደሉም።",
+   "fix": "ለእነዚህ መልዕክቶች በቀጥታ ለWhatsApp ይከፍላሉ፤ ስለዚህ ይህ የሚስተካከለው በWhatsApp Manager ውስጥ ነው። <link>የክፍያ ዘዴዎን ይፈትሹ</link>"
+  },
+  "limit": {
+   "heading": "የWhatsApp ራስ-ሰር ምላሽ",
+   "label": "ወርሃዊ ገደብ",
+   "option": "{n, number}",
+   "usage": "ጥቅም ላይ የዋለ፦ {used, number} / {limit, number} · እንደገና የሚጀምረው፦ {date}",
+   "perCustomer": "በ24 ሰዓት ውስጥ ለአንድ ደንበኛ እስከ {n} ምላሾች፤ ከዚያም በግል እንደሚመልሱ የሚገልጽ አንድ መልዕክት።",
+   "emailAt": "ገደብዎ ላይ ሲደርሱ ምላሾች ለጊዜው ይቆማሉ። 80% እና 100% ሲደርሱ ኢሜይል እንልክልዎታለን።",
+   "saved": "ወርሃዊ የምላሽ ገደቡ ተቀምጧል",
+   "saveFailed": "ገደቡን ማስቀመጥ አልተቻለም"
+  },
+  "billing": {
+   "heading": "የሂሳብ አከፋፈል",
+   "paymentMethod": "የክፍያ ዘዴ",
+   "added": "የክፍያ ዘዴ ታክሏል",
+   "missing": "ምንም የክፍያ ዘዴ አልታከለም",
+   "addInManager": "በWhatsApp Manager ውስጥ ያክሉ",
+   "summary": "ለምላሾቹ የWhatsApp አካውንትዎን የሚያስከፍለው Meta ነው እንጂ HatchGrab አይደለም። ከዚህ ቀን ጀምሮ፦ {from}፣ በወር የመጀመሪያዎቹ {free, number} ምላሾች ነፃ ናቸው። የተረጋገጠበት ቀን፦ {checked}፤ ለለውጦች <link>የMeta ዋጋዎችን</link> ይመልከቱ።",
+   "howMetaCharges": "Meta እንዴት እንደሚያስከፍል",
+   "chargesTitle": "ለWhatsApp ምላሾች የሚያስከፍለው Meta ነው እንጂ HatchGrab አይደለም።",
+   "chargesBody": "HatchGrab ለእርስዎ የሚልከውን እያንዳንዱን ምላሽ Meta በWhatsApp Business አካውንትዎ ላይ ያስከፍላል። ከዚህ ቀን ጀምሮ፦ {from}፣ Meta ለእያንዳንዱ ቁጥር በወር {free, number} ነፃ ምላሾችን ያካትታል፤ ከዚያ በኋላ እያንዳንዱ ምላሽ በMeta ዋጋ ይከፈላል። ከWhatsApp Business መተግበሪያ ራስዎ የሚልኳቸው ምላሾች አይከፈሉም። እነዚህን ዋጋዎች የሚወስነው Meta ነው፤ ሊቀይራቸውም ይችላል። <link>የMeta ዋጋዎችን ይመልከቱ</link>",
+   "addPaymentInManager": "በWhatsApp Manager ውስጥ የክፍያ ዘዴ ያክሉ",
+   "aboveMissing": "ገደብዎ ከMeta ነፃ ምላሾች ({free, number}) በላይ ነው። የክፍያ ዘዴ ከሌለ፣ እነዚያ ካለቁ በኋላ Meta ሁሉንም ምላሾች ያቆማል።",
+   "aboveGeneral": "ገደብዎ ከMeta ነፃ ምላሾች ({free, number}) በላይ ነው። ከዚያ በላይ ያሉ ምላሾች በWhatsApp አካውንትዎ ላይ የክፍያ ዘዴ ያስፈልጋቸዋል፤ የክፍያ ዘዴ ከሌለ፣ ነፃዎቹ ካለቁ በኋላ Meta ሁሉንም ምላሾች ያቆማል።",
+   "addPaymentMethod": "የክፍያ ዘዴ ያክሉ"
+  },
+  "disconnect": {
+   "link": "የWhatsApp ግንኙነቱን ያቋርጡ",
+   "title": "የWhatsApp ግንኙነቱ ይቋረጥ?",
+   "body": "የWhatsApp ራስ-ሰር ምላሽ ወዲያውኑ ይቆማል፤ HatchGrab የWhatsApp አካውንትዎን የመጠቀም መዳረሻውን ያጣል። ቁጥርዎ በWhatsApp Business መተግበሪያ ውስጥ መሥራቱን ይቀጥላል። HatchGrab ሙሉ በሙሉ እንዲወገድ፣ ይህንንም ይክፈቱ፦ WhatsApp Business → Settings → Account → Business Platform።",
+   "cancel": "ይቅር",
+   "confirm": "ግንኙነቱን ያቋርጡ",
+   "working": "ግንኙነቱን በማቋረጥ ላይ…",
+   "failed": "ግንኙነቱን ማቋረጥ አልተቻለም"
+  },
+  "signup": {
+   "logged": "ተመዝግቧል።",
+   "partial": "የWhatsApp Business አካውንትዎን አገናኝተናል፤ ነገር ግን ግንኙነቱን ማጠናቀቅ አልቻልንም። በእርስዎ በኩል ምንም ችግር የለም — እባክዎ ያነጋግሩን፤ እኛ እናጠናቅቀዋለን።",
+   "noNumber": "የWhatsApp Business አካውንትዎ ተገናኝቷል፤ ነገር ግን ምንም ስልክ ቁጥር አልተመለሰም። “እንደገና ያገናኙ” የሚለውን ይጫኑና የቁጥሩን ደረጃ ያጠናቅቁ።",
+   "needsRegistering": "አካውንትዎ ተገናኝቷል፤ ነገር ግን ምላሾች ከመጀመራቸው በፊት ይህ ቁጥር በእኛ መመዝገብ አለበት። እባክዎ የድጋፍ ቡድኑን ያነጋግሩ — ማዋቀርዎ ተቀምጧል፤ እንደገና አያካሂዱት።",
+   "registerRefused": "አካውንትዎ ተገናኝቷል፤ ነገር ግን Meta ቁጥሩን ለመመዝገብ ፈቃደኛ አልሆነም። ማዋቀርዎ ተቀምጧል — እንደገና ከማካሄድ ይልቅ እባክዎ የድጋፍ ቡድኑን ያነጋግሩ።",
+   "deliveryRefused": "አካውንትዎ ተገናኝቷል፤ ነገር ግን Meta የመልዕክት መላኪያን ለማብራት ፈቃደኛ አልሆነም። ማዋቀርዎ ተቀምጧል — እንደገና ከማካሄድ ይልቅ እባክዎ የድጋፍ ቡድኑን ያነጋግሩ።",
+   "numberTaken": "ያ የWhatsApp ቁጥር አስቀድሞ ከሌላ የHatchGrab አካውንት ጋር ተገናኝቷል። አንድ ቁጥር ምላሽ መስጠት የሚችለው ለአንድ የምግብ መኪና ብቻ ነው። የድጋፍ ቡድኑን ያነጋግሩ፤ እኛ እናዛውረዋለን።",
+   "saveIncomplete": "ልንጨርስ ተቃርበናል — ማስቀመጡን ማጠናቀቅ አልቻልንም። ማዋቀርዎ ተቀምጧል፤ እንደገና ከማካሄድ ይልቅ እባክዎ የድጋፍ ቡድኑን ያነጋግሩ።",
+   "connected": "WhatsApp ተገናኝቷል። የWhatsApp ራስ-ሰር ምላሽ ወደዚህ ቁጥር ለሚመጡ መልዕክቶች መልስ መስጠት ይጀምራል።"
+  }
+ },
+ "eventPost": {
+  "loading": "በመጫን ላይ…",
+  "uploading": "በመስቀል ላይ…",
+  "cancel": "ይቅር",
+  "error": {
+   "somethingWrong": "የሆነ ችግር ተፈጥሯል።",
+   "previewFailed": "ቅድመ-እይታውን መፍጠር አልተቻለም።",
+   "imageTooBig": "የምስሉ መጠን፦ {size}MB። ገደቡ 10MB ነው።",
+   "pngOrJpg": "እባክዎ PNG ወይም JPG ይምረጡ።",
+   "uploadIncomplete": "መስቀሉ አልተጠናቀቀም።",
+   "couldNotLoad": "መጫን አልተቻለም።",
+   "uploadFailed": "መስቀሉ አልተሳካም።",
+   "couldNotChange": "ያንን መቀየር አልተቻለም።",
+   "couldNotRemove": "ማስወገድ አልተቻለም።",
+   "couldNotSave": "ማስቀመጥ አልተቻለም።",
+   "couldNotBuild": "ምስሉን መሥራት አልተቻለም።"
+  },
+  "setup": {
+   "stranded": "እነዚህ የቦታ ምስሎች መደበኛ አቀማመጦቹን ይጠቀማሉ፤ ቅርጻቸውም የተለየ ነው፤ ስለዚህ እስኪተኩዋቸው ድረስ ጥቅም ላይ አይውሉም፦ {places}።",
+   "pictureReplaced": "ምስሉ ተተክቷል።",
+   "designSaved": "ዲዛይኑ ተቀምጧል።",
+   "firstTitle": "የአንድ ዝግጅት ልጥፍዎን ያዋቅሩ",
+   "firstBody": "ለአንድ ዝግጅት የሚጠቀሙበትን ምስል ይስቀሉ — ቀን፣ ቦታ ወይም ሰዓት ያልተጻፈበት የጥበብ ሥራዎ። HatchGrab ለእያንዳንዱ ዝግጅት እነሱን ይጨምራል።",
+   "uploadYourPicture": "ምስልዎን ይስቀሉ",
+   "fileRule": "PNG ወይም JPG፣ እስከ 10MB፣ አጭሩ ጎን ቢያንስ {px}px።",
+   "thisPlaceFallback": "ይህ ቦታ",
+   "standard": "መደበኛ",
+   "standardStatus": "በሌሎች ቦታዎች ሁሉ ጥቅም ላይ ይውላል",
+   "pendingStatus": "እስካሁን ምስል የለም — መደበኛውን በመጠቀም ላይ",
+   "phoneWarning": "በኮምፒውተር ወይም በiPad ላይ ቢሆን ይሻላል — ሳጥኖቹ በስልክ ላይ ለመጎተት ትንሽ ናቸው።",
+   "designsHeading": "ዲዛይኖች",
+   "addPlaceDesignLink": "+ ለአንድ ቦታ ዲዛይን ያክሉ",
+   "placeDesignName": "{name} · የዝግጅት ልጥፍ ዲዛይን",
+   "standardDesignName": "የአንድ ዝግጅት ልጥፍ ዲዛይን",
+   "backToDesigns": "‹ ዲዛይኖች",
+   "back": "‹ ወደ ኋላ",
+   "pictureNote": "ምንም ቀን ወይም ቦታ ያልተጻፈበት ምስልዎ። እነሱን እኛ እንጨምራለን።",
+   "thisPlaceHeading": "ይህ ቦታ",
+   "removeConfirm": "የቦታው ምስልና የጽሑፍ አቀማመጦች ይወገዱ? (ቦታ፦ {name}) እዚያ የሚደረጉ ዝግጅቶች መደበኛ ዲዛይንዎን ይጠቀማሉ።",
+   "remove": "ያስወግዱ",
+   "keep": "ይቆይ",
+   "removeLink": "የዚህን ቦታ ዲዛይን ያስወግዱ",
+   "noEvents": "እስካሁን ምንም ዝግጅት የለም — አንድ ያክሉ፤ ቅድመ-እይታው ይጠቀምበታል።",
+   "pickerTitle": "ለአንድ ቦታ ዲዛይን ያክሉ",
+   "pickerSearch": "ቦታዎችን ይፈልጉ",
+   "pickerNoPlaces": "እስካሁን ምንም ቦታ የለም።",
+   "pickerAllDone": "እያንዳንዱ ቦታ አስቀድሞ ዲዛይን አለው።"
+  },
+  "modal": {
+   "title": "ለዚህ ዝግጅት ልጥፍ",
+   "close": "ይዝጉ",
+   "imageAlt": "የዝግጅት ልጥፍዎ",
+   "building": "በመሥራት ላይ…",
+   "imageHeading": "ምስል",
+   "standardNotPlace": "የመደበኛው ምስልና የመደበኛው የጽሑፍ አቀማመጦች — የዚህ ቦታ አይደሉም (ቦታ፦ {place})።",
+   "replaceIt": "ይተኩት",
+   "noteHeading": "ማስታወሻ (ለዚህ ልጥፍ ብቻ)",
+   "postTextHeading": "የልጥፉ ጽሑፍ"
+  }
+ },
+ "customDomain": {
+  "card": {
+   "title": "የሥራ ፕሮግራምዎን ወደ ድረ-ገጽዎ ያክሉ",
+   "live": "<addr>{address}</addr> የሥራ ፕሮግራምዎን እያሳየ ነው።",
+   "create": "የሥራ ፕሮግራምዎን የሚያሳይ ገጽ እንፈጥራለን፦ <addr>{address}</addr>።",
+   "exampleDomain": "yourfoodtruck.et",
+   "liveBadge": "በሥራ ላይ",
+   "setUp": "ያዋቅሩ",
+   "viewSetup": "ማዋቀሩን ይመልከቱ",
+   "continue": "ይቀጥሉ",
+   "justLive": "<b>{address}</b> እየሠራ ነው። ይመልከቱት፤ ከዚያም ትክክል መሆኑን ከታች ይንገሩን።"
+  },
+  "waiting": {
+   "title": "ይህን አድራሻ በመጠባበቅ ላይ ነን፦ {address}",
+   "bodySince": "ይህን ያዋቀሩት {date} ላይ ነው። አዲስ የድረ-ገጽ አድራሻዎች ብዙውን ጊዜ በጥቂት ደቂቃዎች ውስጥ መሥራት ይጀምራሉ፤ አልፎ አልፎም ሁሉም ሰው ጋ ለመድረስ እስከ 24 ሰዓት ሊወስዱ ይችላሉ — ይህ በሚሆንበት ጊዜ ማድረግ ያለብዎት ነገር የለም። መስመሩን ሌላ ሰው ያከለልዎት ከሆነ፣ ማከላቸውን ማረጋገጥ ጠቃሚ ነው።",
+   "body": "አዲስ የድረ-ገጽ አድራሻዎች ብዙውን ጊዜ በጥቂት ደቂቃዎች ውስጥ መሥራት ይጀምራሉ፤ አልፎ አልፎም ሁሉም ሰው ጋ ለመድረስ እስከ 24 ሰዓት ሊወስዱ ይችላሉ — ይህ በሚሆንበት ጊዜ ማድረግ ያለብዎት ነገር የለም። መስመሩን ሌላ ሰው ያከለልዎት ከሆነ፣ ማከላቸውን ማረጋገጥ ጠቃሚ ነው።"
+  },
+  "ready": {
+   "title": "{address} አሁን ይሠራል",
+   "body": "ይመልከቱት፤ ከዚያም ትክክል መሆኑን በቅንብሮችዎ ውስጥ ይንገሩን።"
+  },
+  "confirm": {
+   "heading": "ይመልከቱት፤ ከዚያም ትክክል መሆኑን ይንገሩን",
+   "open": "<link>{address}</link> ይክፈቱ",
+   "checkTimes": "ቀኖቹና ሰዓቶቹ ትክክል መሆናቸውን ይፈትሹ።",
+   "yes": "አዎ፣ ትክክል ነው",
+   "no": "አይ፣ ችግር አለ",
+   "problemLine": "የሚያዩትን ይንገሩን፤ እኛም እንመለከተዋለን።",
+   "emailUs": "ኢሜይል ይላኩልን",
+   "mailSubject": "በዚህ አድራሻ ላይ ችግር አለ፦ {address}",
+   "mailLiveSince": "መሥራት የጀመረበት ቀን፦ {date}",
+   "mailSeeing": "የማየው ነገር፦"
+  },
+  "confirmed": {
+   "heading": "እናመሰግናለን — ሁሉም ተመዝግቧል።",
+   "body": "ሌላ የሚደረግ ነገር የለም።"
+  },
+  "turnOff": {
+   "link": "ይህን ያጥፉ",
+   "heading": "የራስዎ የድረ-ገጽ አድራሻ ይጥፋ?",
+   "stops": "ይህ መሥራት ያቆማል፦",
+   "carriesOn": "ይህ ባለበት ሁኔታ ይቀጥላል፤ QR ኮድዎም ሰዎችን የሚልከው ወደዚህ ነው፦",
+   "reAdd": "በኋላ እንደገና የሚያዋቅሩት ከሆነ፣ የድረ-ገጽ አድራሻዎን በሚያስተዳድረው ድርጅት ላይ ያከሉትን መስመር ይተዉት። ካልሆነ ግን እንዲያስወግዱት ይጠይቋቸው።",
+   "cancel": "እንደበራ ይቆይ",
+   "confirm": "ያጥፉት",
+   "working": "በማጥፋት ላይ…",
+   "failed": "ያንን አሁን ማጥፋት አልቻልንም። ምንም ነገር አልተቀየረም — አድራሻዎ አሁንም ይሠራል። ትንሽ ቆይተው እንደገና ይሞክሩ።"
+  },
+  "wizard": {
+   "resumeFailedTitle": "ማዋቀርዎን መጫን አልቻልንም።",
+   "resumeFailedBody": "ምንም ነገር አልተቀየረም። ትንሽ ቆይተው እንደገና ይሞክሩ።",
+   "close": "ይዝጉ",
+   "resuming": "ካቆሙበት በመቀጠል ላይ…",
+   "genericError": "የሆነ ችግር ተፈጥሯል",
+   "saveFailed": "ማስቀመጥ አልተቻለም"
+  },
+  "address": {
+   "intro": "የሥራ ፕሮግራምዎ የራሱ የድረ-ገጽ አድራሻ ያገኛል።",
+   "question": "የድረ-ገጽ አድራሻዎ ምንድን ነው?",
+   "hint": "ሰዎች እርስዎን ለማግኘት አስቀድመው የሚጠቀሙበት።",
+   "aria": "የራስዎ የድረ-ገጽ አድራሻ",
+   "willBe": "አድራሻዎ የሚሆነው፦ <addr>{address}</addr>",
+   "example": "ለምሳሌ፦ <addr>{address}</addr>",
+   "noChange": "ድረ-ገጽዎ አይቀየርም — ወደ አዲሱ አድራሻ የሚወስድ ሊንክ ብቻ ያክላሉ።",
+   "notSetUp": "ይህን አላዋቀርነውም።",
+   "restricted": "የድረ-ገጽ አድራሻዎን የሚያስተዳድረው አካል የመቆለፊያ ምልክቱን እንድናዋቅር መፍቀድ አለበት — ደንበኞች ከአድራሻው አጠገብ የሚያዩትን ትንሽ የቁልፍ ምስል። እኛን እስኪያክሉ ድረስ አይታይም፤ ስለዚህ እንዲጠብቁ ከማድረግ ይልቅ አቁመናል። እንዲያክሉን ይጠይቋቸው፤ ከዚያም እንደገና ይሞክሩ።",
+   "blocked": "የድረ-ገጽ አድራሻዎ በአሁኑ ጊዜ የመቆለፊያ ምልክቱን ሙሉ በሙሉ ያግዳል። ይህ እንዲሠራ፣ አድራሻውን የሚያስተዳድረው አካል መፍቀድ አለበት። ያንን እንዲቀይሩ ይጠይቋቸው፤ ከዚያም እንደገና ይሞክሩ።",
+   "elsewhere": "በዚያ አድራሻ ላይ አስቀድሞ የሆነ ነገር ምላሽ ይሰጣል። በሚቀጥለው ስክሪን ላይ ያለውን መልዕክት አድራሻውን ለሚያስተዳድረው አካል ይላኩ — ምን ማድረግ እንዳለባቸው ያውቃሉ።",
+   "provider": "የድረ-ገጽ አድራሻዎን የሚያስተዳድረው፦ <b>{provider}</b>። የት መሄድ እንዳለብዎ እናሳይዎታለን።",
+   "provisionFailed": "ያንን አድራሻ ማዋቀር አልቻልንም።",
+   "willNotWork": "ያ አድራሻ አይሠራም።",
+   "couldNotBeSetUp": "ያ አድራሻ ሊዋቀር አልቻለም።",
+   "couldNotSetUp": "ያንን ማዋቀር አልተቻለም",
+   "checking": "በማረጋገጥ ላይ…",
+   "setting": "በማዋቀር ላይ…",
+   "tryAgain": "እንደገና ይሞክሩ",
+   "setUpAddress": "ይህን አድራሻ ያዋቅሩ",
+   "notNow": "አሁን አይደለም"
+  },
+  "apex": {
+   "empty": "ሊጠቀሙበት የሚፈልጉትን አድራሻ ይጻፉ።",
+   "not_a_domain": "ያ የድረ-ገጽ አድራሻ አይመስልም።",
+   "unparseable": "ያንን እንደ ድረ-ገጽ አድራሻ ማንበብ አልቻልንም። አጻጻፉን ይፈትሹና እንደገና ይሞክሩ።",
+   "apex": "{host} የድረ-ገጽዎ ሙሉ አድራሻ ነው። ያንን ወደ እኛ ካመለከቱ ድረ-ገጽዎ በዚህ ገጽ ይተካል። በምትኩ ከፊቱ አንድ ቃል ያስቀምጡ — ለምሳሌ፦ events.{host}።",
+   "too_deep": "ያ አድራሻ በጣም ብዙ ክፍሎች አሉት። እንደ events.{domain} ያለ ነገር የተሻለ ይሠራል።"
+  },
+  "record": {
+   "addAt": "ይህን እዚህ ያክሉ፦ {provider}",
+   "open": "{provider} ይክፈቱ",
+   "guide": "ስለዚህ የአቅራቢው የራሱ መመሪያ ({provider})",
+   "addAtSave": "ይህን እዚህ ያክሉና ያስቀምጡ፦ {provider}።",
+   "addSomewhere": "ይህን የድረ-ገጽ አድራሻዎ በሚተዳደርበት ቦታ ያክሉና ያስቀምጡ።",
+   "hintChoose": "ይህን ከዝርዝሩ ይምረጡ።",
+   "hintWord": "ይህን ቃል ብቻ እንጂ ሙሉውን አድራሻ አይደለም።",
+   "hintExact": "ይህን በትክክል ይቅዱ።",
+   "timing": "ብዙውን ጊዜ በአንድ ሰዓት ውስጥ መሥራት ይጀምራል፤ ነገር ግን ከዚያ በላይ ሊወስድ ይችላል። ይህን ገጽ ክፍት አድርገው ማቆየት አያስፈልግዎትም።",
+   "someoneElse": "የድረ-ገጽ አድራሻዎን የሚያስተዳድረው ሌላ ሰው ነው?",
+   "sentTo": "ተልኳል፦ {email}",
+   "emailPlaceholder": "የእነሱ የኢሜይል አድራሻ",
+   "sending": "በመላክ ላይ…",
+   "send": "እነዚህን ዝርዝሮች ይላኩ",
+   "sendFailed": "መላክ አልተቻለም"
+  },
+  "providers": {
+   "cloudflare": {
+    "open": "የድረ-ገጽ አድራሻዎን ይክፈቱ፤ ከዚያም “DNS” እና “Records” የሚለውን።",
+    "add": "“Add record” የሚለውን ይምረጡ፤ ከዚያም “Type” በሚለው ውስጥ “CNAME” የሚለውን ይምረጡ።",
+    "name": "ከታች ያለውን የመጀመሪያ እሴት “Name” በሚለው ውስጥ ያስገቡ።",
+    "value": "ከታች ያለውን ሁለተኛ እሴት “Target” በሚለው ውስጥ ያስገቡ።",
+    "proxy": "“Proxy status” የሚለውን “DNS only” ያድርጉት — ከአጠገቡ ያለው ደመና ግራጫ መሆን አለበት እንጂ ብርቱካናማ አይደለም።",
+    "save": "“TTL” እንደ “Auto” ይተዉትና “Save” የሚለውን ይምረጡ።",
+    "caveat": "ደመናው ብርቱካናማ ሆኖ ከቀረ የመቆለፊያ ምልክቱ በፍጹም አይታይም፤ ምክንያቱንም የሚገልጽ ነገር አይኖርም።"
+   },
+   "godaddy": {
+    "open": "“Domain Portfolio” የሚለውን ይክፈቱና የድረ-ገጽ አድራሻዎን ይምረጡ።",
+    "dns": "“Domain Settings” በሚለው ላይ “DNS” የሚለውን ይምረጡ።",
+    "add": "“Add New Record” የሚለውን ይምረጡ፤ ከዚያም “Type” በሚለው ምናሌ ውስጥ “CNAME” የሚለውን ይምረጡ።",
+    "name": "ከታች ያለውን የመጀመሪያ እሴት “Name” በሚለው ውስጥ ያስገቡ።",
+    "value": "ከታች ያለውን ሁለተኛ እሴት “Value” በሚለው ውስጥ ያስገቡ።",
+    "save": "“TTL” እንዳለ ይተዉትና “Save” የሚለውን ይምረጡ።",
+    "caveat": "ከአንድ በላይ መዝገብ በአንድ ጊዜ ካከሉ፣ ቁልፉ “Save All Records” ይላል።"
+   },
+   "123reg": {
+    "signIn": "ወደ “123 Reg Control Panel” ይግቡ።",
+    "manage": "“Domains” በሚለው አጠገብ “Manage All” የሚለውን ይምረጡ፤ ከዚያም የድረ-ገጽ አድራሻዎን ይምረጡ።",
+    "dns": "“DNS” የሚለውን ይምረጡ፤ ከዚያም “Add New Record” የሚለውን።",
+    "type": "“Type” በሚለው ዝርዝር ውስጥ “CNAME” የሚለውን ይምረጡ።",
+    "name": "ከታች ያለውን የመጀመሪያ እሴት “Name” በሚለው ውስጥ ያስገቡ።",
+    "value": "ከታች ያለውን ሁለተኛ እሴት “Value” በሚለው ውስጥ ያስገቡ፤ መጨረሻው ላይም ነጥብ (.) ይጨምሩ።",
+    "save": "“TTL” እንደ “Default” ይተዉትና “Save” የሚለውን ይጫኑ።",
+    "caveat": "123 Reg በሁለተኛው እሴት መጨረሻ ላይ ነጥብ (.) ያስፈልገዋል፤ አለበለዚያ አይሠራም።"
+   },
+   "wix": {
+    "open": "“Domains” የሚለውን ይክፈቱ፤ ከዚያም ከድረ-ገጽ አድራሻዎ አጠገብ ያለውን “Domain Actions” ምልክት ይጫኑ።",
+    "manage": "“Manage DNS Records” የሚለውን ይምረጡ።",
+    "add": "“CNAME (Aliases)” በሚለው ክፍል ውስጥ “+ Add Record” የሚለውን ይጫኑ፤ ከዚያም “Got it” የሚለውን ይጫኑ።",
+    "name": "ከታች ያለውን የመጀመሪያ እሴት “Host Name” በሚለው ውስጥ ያስገቡ።",
+    "value": "ከታች ያለውን ሁለተኛ እሴት “Value” በሚለው ውስጥ ያስገቡ።",
+    "save": "“Save” የሚለውን ይጫኑ፤ ከዚያም በብቅ-ባዩ መስኮት ውስጥ “Save Changes” የሚለውን ይጫኑ።",
+    "caveat": "የድረ-ገጽ አድራሻዎ በWix የተያዘ ሳይሆን ወደ Wix የሚያመለክት ብቻ ከሆነ፣ Wix ይህን ለውጥ ማድረግ አይችልም — አድራሻውን የያዘው አካል ማድረግ አለበት።"
+   }
+  },
+  "instructionsEmail": {
+   "subject": "የሥራ ፕሮግራም ገጽ፦ {truckName} — የሚታከል አንድ መዝገብ",
+   "hello": "ሰላም፣",
+   "introAt": "የምግብ መኪናውን {truckName} የቀጥታ የሥራ ፕሮግራም በዚህ አድራሻ ላይ እያስቀመጥን ነው፦ {address}፤ ለዚህም በዶሜናችን ላይ አንድ መዝገብ መታከል አለበት (አቅራቢ፦ {provider})።",
+   "introHolder": "የምግብ መኪናውን {truckName} የቀጥታ የሥራ ፕሮግራም በዚህ አድራሻ ላይ እያስቀመጥን ነው፦ {address}፤ ለዚህም ዶሜናችንን በያዘው አካል በኩል በዶሜናችን ላይ አንድ መዝገብ መታከል አለበት።",
+   "stepsAt": "{provider} ላይ፦",
+   "guide": "የእነሱ የራሳቸው መመሪያ፦ {url}",
+   "wholeChange": "ሙሉው ለውጥ ይህ ብቻ ነው — በድረ-ገጹ ላይ ሌላ ምንም ነገር አይነካም፤ የተቀረው ዶሜናችንም አሁን እንደሚሠራው በትክክል መሥራቱን ይቀጥላል። ብዙውን ጊዜ በአንድ ሰዓት ውስጥ መሥራት ይጀምራል።",
+   "pointsAt": "የሚያመለክተው ገጽ ቀጥሎ የምንሸጥበትን ቦታ ያሳያል፤ ራሱንም በራሱ ያዘምናል።",
+   "replyTo": "ጥያቄ ካለዎት ለዚህ አድራሻ መልስ ይስጡ፦ {email}።",
+   "thanks": "እናመሰግናለን፣"
+  },
+  "liveEmail": {
+   "subject": "{address} እየሠራ ነው",
+   "goodNews": "መልካም ዜና — {address} እየሠራ ነው።",
+   "body": "የሥራ ፕሮግራምዎ አሁን በራስዎ አድራሻ ላይ እየታየ ነው። ይመልከቱትና ትክክል መሆኑን ያረጋግጡ፦ {address} ይክፈቱ፤ ዝግጅቶቹ የእርስዎ መሆናቸውንና ቀኖቹ ትክክል መሆናቸውን ያረጋግጡ።",
+   "confirm": "ይህን ካደረጉ በኋላ በHatchGrab ላይ ቅንብሮችዎን ይክፈቱና ትክክል መሆኑን ይንገሩን። ምንም ነገር በዚያ ላይ የተመሠረተ አይደለም — አንድ ሰው እንዳየው እንድናውቅ ብቻ ነው።"
+  }
+ }
+}

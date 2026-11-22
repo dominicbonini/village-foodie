@@ -798,3 +798,12 @@
 - Native check — post editor: Style ቅጥ, Look መልክ, strip ሰቅ, See-through አሳላፊ, Italic ሰያፍ, CAPITALS ትላልቅ ፊደላት, template አብነት; reports: Channel የሽያጭ መንገድ, accountant የሂሳብ ባለሙያ, tax year የግብር ዓመት; allergen per-dish tags ምልክቶች (መለያ = order chip).
 - Samples: yourfoodtruck.et, hello@yourfoodtruck.et, @addisfoodfest, a pub’s logo → a café's logo, Van 2 / Festival Van → ተሽከርካሪ 2፣ የፌስቲቫል ተሽከርካሪ. Oswald, Excel, Numbers, Xero, QuickBooks kept.
 - one branches show #/{count}; private-event count "# የግል ዝግጅት" in both branches (glossary match).
+
+## am-ET part 06 (languages-world-3, 22 Nov 2026)
+- check-part: 722 keys / 722; STRUCTURAL 0; back missing 0.
+- English left 36: Zettle, Square, Stripe Connect, WhatsApp Manager, WhatsApp Business path Settings → Account → Business Platform, Canva "Share › Download", Cloudflare/GoDaddy/123 Reg/Wix field labels quoted “…” በሚለው, events.{host}. Glossary 2: Instagram/Messenger auto-reply lines without WhatsApp (correct); WhatsApp lines, card title and limit heading የWhatsApp ራስ-ሰር ምላሽ (= part 05 Settings tab). Numbers 1: phone placeholder +251 911 234 567. Length 4: Reorder ቅደም ተከተሉን ይቀይሩ, w/c የሚጀምርበት ሳምንት፦ {date}, Allergens not set, Deals.
+- Custom-domain Live badge በሥራ ላይ (working) vs event Live በሂደት ላይ — native check.
+- Native check: Management console የአስተዳደር ማዕከል; Documents ሰነዶች; Reports ሪፖርቶች; padlock የመቆለፊያ ምልክት; DNS record መዝገብ; domain ዶሜን (e-mail to web person only); contactless ንክኪ አልባ ክፍያ; pop-ups ብቅ-ባይ መስኮቶች; Preparing… በማሰናዳት ላይ… (keeps ማዘጋጀት for kitchen prep).
+- No affix on placeholders or quoted UI names (“ሜኑ” በሚለው ትር ውስጥ; “ቦታ” ወይም “ሰዓት” — ከሁለቱ አንዱን…). Part 04 errorsManage.wp_last_toggle has ከ“ቦታ” — consistency pass to fix.
+- Team-screen Cancel (stops pending e-mail change) ይሰርዙ; dialog Cancel ይቅር; Delete my account አካውንቱን ይሰርዙ.
+- Samples: The Kings Arms / Lavenham → የቅዳሜ ገበያ / ቦሌ; team member ሜሮን (meron@example.com); yourfoodtruck.et. "As UK law requires" kept. one branches show #/{count}; someWithout restructured with {total} first.
