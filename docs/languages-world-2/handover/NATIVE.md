@@ -603,3 +603,13 @@
 - Matched: van ឡាន / Van 1 = ឡាន 1, business Food Truck, events ព្រឹត្តិការណ៍ (ពិធី only private events/private hire), Standard ធម្មតា, meal deals ឈុតម្ហូប (+ "(Combo)" in heading), allergens សារធាតុអាឡែកហ្ស៊ី, Log in ចូលគណនី, Schedule tab label កាលវិភាគ (ផ្ទាំងកាលវិភាគ = "the Schedule tab" in sentences). auth.signup code/deal = demoGetStarted.partnerCode*/partnerDeal* (script-checked).
 - New: Go live ដាក់ឲ្យដំណើរការ; upsells ការលក់បន្ថែម; custom extras គ្រឿងបន្ថែមតាមចិត្ត; customisations ជម្រើសតាមចិត្ត; Billing វិក្កយបត្រ; Kitchen setup ការរៀបចំផ្ទះបាយ; weekly poster ផ្ទាំងប្រកាសប្រចាំសប្តាហ៍; private-hire chip ជួល Food Truck សម្រាប់ពិធី (long for a chip).
 - Samples localised: Bob’s Burgers → បឺហ្គឺរសុខា, The Village Kitchen → ផ្ទះបាយភូមិ, wedding សុភា និងវិសាល, school fete ពិធីបុណ្យសាលារៀន, fish & chips → ម្ហូបបំពង (allergens wheat + milk kept). Phonetic dish names; BBQ សាច់អាំង, Coke កូកា; AI in Latin.
+
+## km-KH part 04 (languages-world-3, 22 Nov 2026)
+- check-part: 695 keys / 695; STRUCTURAL 0; back missing 0; glossary 0. No ZWSP, no Khmer digits.
+- English left 31: Food Truck, JSON/eventId/placeId, supabase migration paths, Canva menu "Share › Download" (no Khmer Canva UI), sample URL word "events", JPEG/HEIC/WebP. Drift 53 / length 39 cosmetic (Available → មានលក់ as part 01).
+- Place / Venue / Area / Time = កន្លែង / ទីតាំង / តំបន់ / ម៉ោង. Poster boxes: location ប្រអប់កន្លែង, town ប្រអប់តំបន់, heading ប្រអប់ចំណងជើងសប្តាហ៍ (= "Week heading"). Toggles quoted “កន្លែង” / “ម៉ោង”. CANCELLED = បានលុបចោល.
+- ទីតាំង = Venue and also "text position" (ទីតាំងអត្ថបទ) in poster-design errors — native check.
+- Standard: weekly-post default picture/text positions ស្តង់ដារ; event type Standard ធម្មតា; usual event type ប្រភេទដែលប្រើជាប្រចាំ.
+- Import នាំចូល (≠ upload ផ្ទុក…ឡើង); sub-category ប្រភេទរង; caption អត្ថបទភ្ជាប់; time zone ល្វែងម៉ោង; WhatsApp Set up “រៀបចំ”; database migration ការធ្វើបច្ចុប្បន្នភាពមូលដ្ឋានទិន្នន័យ; Manager អ្នកគ្រប់គ្រង (Admin អ្នកគ្រប់គ្រងប្រព័ន្ធ).
+- Truck at an event = ឡាន; "Your truck" (business) = Food Truck. Event-card Cancel (cancels the event) = លុបចោល; dialog Cancel = បោះបង់; Discard = បោះចោល.
+- Samples: ភីហ្សាសាច់មាន់, ប៉េងប៉ោះ ឈីស សាច់មាន់, @phnompenhfoodfest, https://yourfoodtruck.com.kh/events. Canada GST/PST lines kept as the English.
