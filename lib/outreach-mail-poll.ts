@@ -21,6 +21,11 @@
 // auto-reply, a no-reply sender, our own mail, or a diner's order mail — those are counted and never stored, logged or
 // named, exactly as before. The outreach and partner behaviour above is unchanged; with the switch off the run is
 // byte-identical to before (scripts/enquiries-backend-1.cjs proves it against HEAD). Nothing in the enquiry step sends.
+// ⛔ inbox-2 (23 November 2026, Dominic's decision on inbox-1 §7): under the SAME switch, the enquiry step also walks
+// dominic@'s INBOX — read-only, its own watermark ('enquiries_intake_state' → 'dominic/INBOX') — and takes ONLY mail from a
+// linked HatchGrab truck (a customer, which the outreach walk above skips as "not a prospect"), as a Customer enquiry linked to
+// that truck. Prospect and partner mail there stays the outreach walk's, everything else is left alone; the outreach and
+// partner matching above is unchanged (scripts/inbox-2.cjs runs both accounts against HEAD).
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { ImapFlow } from 'imapflow'
 import { OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
@@ -1218,11 +1223,48 @@ function outreachClaims(m: SeenMessage, h: IncomingHeaders, dir: Directory): boo
 }
 
 /**
- * hello@ INBOX, READ-ONLY, from the enquiry watermark: the same client, the same EXAMINE lock (`withReadOnlyMailbox`), the same
+ * inbox-2 (23 November 2026): WHICH HATCHGRAB TRUCK, IF ANY, A MESSAGE IN dominic@'s INBOX IS FROM. A linked truck is left out of the
+ * outreach directory on purpose (`loadDirectory`: it is not a prospect), so it is recognised here, from the same tables, without touching
+ * that directory or the outreach walk: a reply in a thread of the linked prospect's (`dir.byMessageId` → a prospect in `dir.skip`), or
+ * the From address of a discovery truck linked to exactly one HatchGrab truck. Anything else → null (left alone, as today).
+ */
+interface LinkedTrucks { byAddress: Map<string, string>; byProspect: Map<string, string> }
+async function loadLinkedTrucks(supabase: SupabaseClient, dir: Directory): Promise<LinkedTrucks> {
+  const byAddress = new Map<string, string>(), byProspect = new Map<string, string>(), ambiguous = new Set<string>()
+  const { data } = await supabase.from('discovery_trucks').select('contact_email, hatchgrab_truck_id').not('hatchgrab_truck_id', 'is', null)
+  for (const r of (data ?? []) as { contact_email: string | null; hatchgrab_truck_id: string | null }[]) {
+    const e = (r.contact_email ?? '').trim().toLowerCase(), t = r.hatchgrab_truck_id ?? ''
+    if (!e || !t) continue
+    if (byAddress.has(e) && byAddress.get(e) !== t) ambiguous.add(e); else byAddress.set(e, t)
+  }
+  for (const e of ambiguous) byAddress.delete(e)   // two different trucks share the address: never guessed
+  if (dir.skip.size) {
+    const { data: p } = await supabase.from('outreach_prospects').select('id, discovery_trucks(hatchgrab_truck_id)').in('id', [...dir.skip])
+    for (const r of (p ?? []) as unknown as { id: string; discovery_trucks: { hatchgrab_truck_id: string | null } | null }[]) {
+      if (r.discovery_trucks?.hatchgrab_truck_id) byProspect.set(r.id, r.discovery_trucks.hatchgrab_truck_id)
+    }
+  }
+  return { byAddress, byProspect }
+}
+function linkedTruckOf(m: SeenMessage, h: IncomingHeaders, dir: Directory, linked: LinkedTrucks): string | null {
+  if (outreachClaims(m, h, dir)) return null   // a prospect's or a partner's mail stays outreach's
+  const match = matchIncoming({ get: h.get, fromAddress: h.fromAddress }, dir.byMessageId, dir.byAddress)
+  if (match.kind === 'thread' && dir.skip.has(match.prospectId)) return linked.byProspect.get(match.prospectId) ?? null
+  return linked.byAddress.get((h.fromAddress ?? '').trim().toLowerCase()) ?? null
+}
+
+/** Which mail a walk takes: hello@'s — everything outreach does not claim; dominic@'s (inbox-2) — only a linked truck's. */
+type EnquiryPick = (m: SeenMessage, h: IncomingHeaders) => { take: false } | { take: true; truckId: string | null }
+
+/**
+ * An INBOX, READ-ONLY, from the enquiry watermark: the same client, the same EXAMINE lock (`withReadOnlyMailbox`), the same
  * header fetch and the same `readBodies` (BODY.PEEK) as the outreach walk. 🔴 The watermark moves only over messages that were
  * handled (or are not for this step); a message whose handling failed is read again next run.
+ * hello@'s INBOX keeps its watermark under `INBOX` (as enquiries-backend-1 stored it); dominic@'s (inbox-2) under `dominic/INBOX`.
  */
-function enquiryMailSource(supabase: SupabaseClient, creds: AccountCredentials, dir: Directory, since: Date): MailSource {
+function enquiryMailSource(supabase: SupabaseClient, creds: AccountCredentials, dir: Directory, since: Date,
+  pick: EnquiryPick = (m, h) => (outreachClaims(m, h, dir) ? { take: false } : { take: true, truckId: null })): MailSource {
+  const slot = creds.account === 'hello' ? ENQUIRY_MAILBOX : `${creds.account}/${ENQUIRY_MAILBOX}`
   return {
     async walk(handle, limit) {
       const state = ((await readSetting(supabase, ENQUIRY_STATE_KEY)) ?? {}) as PollState
@@ -1234,7 +1276,7 @@ function enquiryMailSource(supabase: SupabaseClient, creds: AccountCredentials, 
           const mb = client.mailbox
           const uidvalidity = mb && typeof mb === 'object' && 'uidValidity' in mb ? String(mb.uidValidity) : '0'
           const highestUid = mb && typeof mb === 'object' && 'uidNext' in mb ? Math.max(0, Number(mb.uidNext) - 1) : 0
-          const stored = state[ENQUIRY_MAILBOX]
+          const stored = state[slot]
           const plan = planFetch(stored, { uidvalidity, highestUid }, since)
           if (plan.mode === 'none') return
           const query = plan.mode === 'rescan' ? { since: new Date(Date.now() - plan.sinceDays * 86_400_000) }
@@ -1257,12 +1299,13 @@ function enquiryMailSource(supabase: SupabaseClient, creds: AccountCredentials, 
             for (const m of batch.sort((a, b) => a.uid - b.uid)) {
               if (!m.ignore) {
                 const h = headersOf(m.raw, m.subject, m.from[0] ?? null)
-                if (outreachClaims(m, h, dir)) outreach++
+                const p = pick(m, h)
+                if (!p.take) outreach++
                 else {
                   examined++
                   await handle({
-                    mailbox: `hello/${ENQUIRY_MAILBOX}`, uid: m.uid, messageId: m.messageId!, headers: { ...h, to: m.to },
-                    fromName: m.fromName, date: m.date,
+                    mailbox: `${creds.account}/${ENQUIRY_MAILBOX}`, uid: m.uid, messageId: m.messageId!, headers: { ...h, to: m.to },
+                    fromName: m.fromName, date: m.date, truckId: p.truckId,
                     readText: async () => textOfBodies(await readBodies(client, m.uid)),
                   })
                 }
@@ -1271,8 +1314,8 @@ function enquiryMailSource(supabase: SupabaseClient, creds: AccountCredentials, 
             }
           } finally {
             const same = stored && String(stored.uidvalidity) === uidvalidity
-            if (done.length) state[ENQUIRY_MAILBOX] = { uidvalidity, lastUid: Math.max(same ? stored.lastUid : 0, ...done) }
-            else if (plan.mode !== 'first_look' && !batch.length) state[ENQUIRY_MAILBOX] = { uidvalidity, lastUid: same ? stored.lastUid : highestUid }
+            if (done.length) state[slot] = { uidvalidity, lastUid: Math.max(same ? stored.lastUid : 0, ...done) }
+            else if (plan.mode !== 'first_look' && !batch.length) state[slot] = { uidvalidity, lastUid: same ? stored.lastUid : highestUid }
           }
         })
       } finally {
@@ -1294,11 +1337,16 @@ async function enquiriesAfterPoll(supabase: SupabaseClient, accounts: AccountSet
   const deadline = startedAt.getTime() + ENQUIRY_DEADLINE_MS
   try {
     const creds = credentialsFor(accounts, 'hello')
+    // inbox-2: dominic@'s INBOX too, for a linked HatchGrab truck's mail only — and only when dominic@ is its own configured account.
+    const dominic = accounts.primaryConfigured ? credentialsFor(accounts, 'dominic') : null
     const result = await runEnquiries({
       store,
       // Built lazily: nothing below is reached while the switch is off (runEnquiries returns first).
       get mail() {
         return creds ? enquiryMailSourceSince(supabase, creds, dir, store) : null
+      },
+      get customerMail() {
+        return dominic ? enquiryMailSourceSince(supabase, dominic, dir, store, true) : null
       },
       model: null,
       packInputs: async c => (await import('@/lib/enquiries/answer-pack-server')).readPackInputs(c),
@@ -1316,12 +1364,18 @@ async function enquiriesAfterPoll(supabase: SupabaseClient, accounts: AccountSet
   }
 }
 
-/** The mail source, reading from the moment the switch was turned on. */
-function enquiryMailSourceSince(supabase: SupabaseClient, creds: AccountCredentials, dir: Directory, store: ReturnType<typeof supabaseEnquiryStore>): MailSource {
+/** The mail source, reading from the moment the switch was turned on. `customersOnly` (inbox-2): a linked truck's mail, nothing else. */
+function enquiryMailSourceSince(supabase: SupabaseClient, creds: AccountCredentials, dir: Directory, store: ReturnType<typeof supabaseEnquiryStore>, customersOnly = false): MailSource {
   return {
     async walk(handle, limit) {
       const sw = await store.readSwitch()
-      return enquiryMailSource(supabase, creds, dir, sw.since ? new Date(sw.since) : new Date()).walk(handle, limit)
+      const since = sw.since ? new Date(sw.since) : new Date()
+      if (!customersOnly) return enquiryMailSource(supabase, creds, dir, since).walk(handle, limit)
+      const linked = await loadLinkedTrucks(supabase, dir)
+      return enquiryMailSource(supabase, creds, dir, since, (m, h) => {
+        const truckId = linkedTruckOf(m, h, dir, linked)
+        return truckId ? { take: true, truckId } : { take: false }
+      }).walk(handle, limit)
     },
   }
 }

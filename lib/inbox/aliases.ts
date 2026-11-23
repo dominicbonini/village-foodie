@@ -36,11 +36,13 @@ export function wroteTo(recipients: readonly (string | null | undefined)[], alia
 export const shortAddress = (a: string | null | undefined) => (a ? lower(a).replace(/@hatchgrab\.com$/, '@') : '')
 
 /**
- * 🔴 THE FROM OF AN ENQUIRY'S REPLY. hello@ — unless 'enquiries_reply_from_alias' is true AND they wrote to one of the aliases, in which
+ * 🔴 THE FROM OF AN ENQUIRY'S REPLY. dominic@ when they wrote to dominic@ (inbox-2); otherwise hello@ — unless 'enquiries_reply_from_alias' is true AND they wrote to one of the aliases, in which
  * case the reply comes from that alias. Dominic switches the setting on after a test send.
  */
 export function enquiryReplyFrom(o: { replyFromAlias: boolean; wroteTo: string | null; aliases: readonly string[] }): string {
   const w = lower(o.wroteTo)
+  // inbox-2: a customer who wrote to dominic@ (taken in from dominic@'s INBOX) is answered from dominic@, whatever the alias setting.
+  if (w === DOMINIC_ADDRESS) return DOMINIC_ADDRESS
   if (o.replyFromAlias && w && o.aliases.map(lower).includes(w)) return w
   return HELLO_ADDRESS
 }

@@ -10,6 +10,7 @@
 //   3 · the send, through the EXISTING delivery:
 //       • a prospect → app/api/admin/outreach/mail-send POST (from dominic@, threaded, logged as a reply, every refusal it has);
 //       • a partner  → app/api/admin/partners/mail-send POST (from dominic@, threaded);
+//       • a customer who wrote to dominic@ (inbox-2) → from dominic@, logged in as dominic@, the copy in dominic@'s Sent;
 //       • an enquiry or customer → from hello@ (or the alias they wrote to, when 'enquiries_reply_from_alias' is true): the outreach
 //         envelope (composeRaw / rawMailFor / smtpTransportOptions), a Message-ID of ours, In-Reply-To / References onto their email, the
 //         SMTP send logged in with hello@'s own credentials, then the Sent copy in hello@'s Sent (fileSentCopy: found, or appended once);
@@ -39,6 +40,8 @@ export interface SendDeps extends DraftDeps {
   sendPartner(body: Record<string, unknown>): Promise<Record<string, unknown>>
   /** hello@'s login (lib/outreach-mail-accounts.ts accountForInboxReply), or null when it is not set here. */
   hello: { user: string; pass: string } | null
+  /** inbox-2: dominic@'s login, for a customer who wrote to dominic@; null / absent when it is not set here. */
+  dominic?: { user: string; pass: string } | null
   /** The sender's display name (outreach_settings from_name), or null for the bare address. */
   fromName(): Promise<string | null>
   /** The SMTP send of composed bytes. Default: nodemailer over SMTP. The harness hands a fake transport. */
@@ -150,12 +153,14 @@ export async function learnAfterSend(db: SupabaseClient, ctx: ThreadContext, sen
 /** The enquiry send: from hello@ (or the alias), threaded onto their email, the copy filed in hello@'s Sent. */
 async function sendEnquiryReply(deps: SendDeps, ctx: ThreadContext, o: { customer: string; english: string; language: string; files: OutboundAttachment[]; idempotencyKey: string | null }):
   Promise<{ ok: true; from: string; messageRowId: string; duplicate?: boolean } | { ok: false; refusal: string }> {
-  const login = deps.hello
-  if (!login) return { ok: false, refusal: 'The hello@ mailbox credentials are not set on this environment, so nothing can be sent.' }
   const c = ctx.thread.conversation
   const e = ctx.enquiry ?? {}
   const latest = ctx.latestRow
   const from = ctx.thread.from
+  // inbox-2: a customer who wrote to dominic@ is answered from dominic@, logged in as dominic@ (its Sent gets the copy); else hello@.
+  const viaDominic = from === 'dominic@hatchgrab.com'
+  const login = viaDominic ? deps.dominic ?? null : deps.hello
+  if (!login) return { ok: false, refusal: `The ${viaDominic ? 'dominic@' : 'hello@'} mailbox credentials are not set on this environment, so nothing can be sent.` }
   const to = lower(e.email)
   if (!to || !to.includes('@')) return { ok: false, refusal: 'This enquiry has no address to answer, so nothing was sent.' }
   if (o.idempotencyKey) {

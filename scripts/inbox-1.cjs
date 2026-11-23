@@ -33,6 +33,8 @@ const { compile, headWorktree, REPO } = require('./_slot-interval-compile.cjs')
 /** The commit inbox-1 was built on (HEAD when it started: france-vat-1's last commit). */
 const BASE = '12e9a770'
 const SCREENS = !process.argv.includes('--no-screens')
+/** inbox-1's code commit: the "this work changed nothing else" checks are about it, not about later work in the same files. */
+const INBOX1 = 'fbc98a34'
 const OUT_DIR = path.join(REPO, 'docs/inbox-1')
 
 let pass = 0, fail = 0
@@ -284,7 +286,7 @@ function seed() {
       { id: ID.m(17), enquiry_id: ID.e6, direction: 'out', original_text: 'Hi, here are the prices…', original_language: 'en', english_text: 'Hi, here are the prices…', subject: 'Re: Cost', mail_message_id: '<a6@hatchgrab.com>', mailbox: 'hello/Sent', uid: null, received_at: days(6), to_address: 'done@x.example', from_address: 'hello@hatchgrab.com', send_status: 'sent' },
     ],
     enquiry_drafts: [
-      { id: U(701), enquiry_id: ID.e1, message_id: ID.m(11), english_draft: 'Hi Claire,\nThanks for your message. The Pro plan is €19 a month. Card fees on online card orders are Stripe’s (1.5% + €0.25) and are separate.\nDominic', customer_draft: 'Bonjour Claire,\nMerci pour votre message. Le plan Pro coûte 19 € par mois. Les frais de carte des commandes en ligne sont ceux de Stripe (1,5 % + 0,25 €), à part.\nDominic', asks: [{ ask: 'price of Pro', topics: ['prices'] }], flags: [], numbers_check: 'pass', model: 'stand-in', cost_usd: 0, created_at: days(3) },
+      { id: U(701), enquiry_id: ID.e1, message_id: ID.m(11), english_draft: 'Hi Claire,\nThanks for your message. The Pro plan is €19 a month. Card fees on online card orders (1.5% + €0.25) are separate.\nDominic', customer_draft: 'Bonjour Claire,\nMerci pour votre message. Le plan Pro coûte 19 € par mois. Les frais de carte des commandes en ligne (1,5 % + 0,25 €) sont à part.\nDominic', asks: [{ ask: 'price of Pro', topics: ['prices'] }], flags: [], numbers_check: 'pass', model: 'stand-in', cost_usd: 0, created_at: days(3) },
     ],
     contact_messages: [{ id: ID.c2, business_name: 'Big Bao', created_at: days(0) }],
     trucks: [{ id: 'linked-tacos', name: 'Linked Tacos', contact_email: 'owner@tacos.example', country: 'GB' }],
@@ -637,7 +639,8 @@ async function main() {
       t('…and the envelope sender too (rawMailFor)', JSON.stringify(OLD.rawMailFor(Buffer.from('x'), row).envelope) === JSON.stringify(ENV.rawMailFor(Buffer.from('x'), row).envelope))
       t('…an outreach_messages row carrying from_address (an inbound row\'s sender) still sends from dominic@ — the Inbox field is a different name', /^From: dominic@hatchgrab\.com$/m.test(norm(await ENV.composeRaw({ ...row, from_address: 'someone@else.example' }))))
       t('lib/outreach-mail-deliver.ts, the poll\'s outreach walk, sequences, templates and the partner send/cron paths: unchanged since BASE',
-        git('diff', '--name-only', BASE, '--', 'lib/outreach-mail-deliver.ts', 'lib/outreach-sequence.ts', 'lib/outreach-template-render.ts', 'lib/partner-send.ts', 'lib/partner-offers.ts', 'lib/partner-codes-server.ts', 'app/api/admin/outreach/mail-send', 'app/api/admin/partners', 'app/api/admin/outreach/today', 'app/api/admin/outreach/timeline', 'app/api/admin/outreach-templates', 'app/api/cron', 'lib/outreach-mail-poll.ts').trim() === '')
+        // inbox-2: pinned to inbox-1's own code commit (later work — inbox-2's dominic@ customers — changes the poll on purpose)
+        git('diff', '--name-only', BASE, INBOX1, '--', 'lib/outreach-mail-deliver.ts', 'lib/outreach-sequence.ts', 'lib/outreach-template-render.ts', 'lib/partner-send.ts', 'lib/partner-offers.ts', 'lib/partner-codes-server.ts', 'app/api/admin/outreach/mail-send', 'app/api/admin/partners', 'app/api/admin/outreach/today', 'app/api/admin/outreach/timeline', 'app/api/admin/outreach-templates', 'app/api/cron', 'lib/outreach-mail-poll.ts').trim() === '')
       t('no outreach_templates row is created, edited, seeded or deactivated (no file of this work names the table)', ![...mine()].filter(f => /\.(ts|tsx|sql)$/.test(f)).some(f => /outreach_templates/.test(read(f))))
     } finally { wt.remove() }
   }
@@ -703,10 +706,11 @@ function identity() {
   const PROTECTED = [
     // ordering, checkout, payments, KDS, dashboard, Add order, heartbeat, auth, Manage — every operator / customer screen (app/(app) minus admin)
     ...fs.readdirSync(path.join(REPO, 'app/(app)')).filter(d => d !== 'admin').map(d => `app/(app)/${d}`),
-    'app/api/orders', 'app/api/menu', 'app/api/events', 'app/api/slots', 'app/api/dashboard', 'app/api/heartbeat', 'app/api/stripe', 'app/api/webhooks', 'app/api/payments',
-    'app/api/auth', 'app/api/manage', 'app/api/native', 'app/api/printing', 'app/api/account', 'app/api/signup', 'app/api/setup',
+    // inbox-2: every app/api route folder but admin, read from the tree — a superset of the 16 it named (the payment routes included)
+    ...fs.readdirSync(path.join(REPO, 'app/api')).filter(d => d !== 'admin').map(d => `app/api/${d}`),
     ...fs.readdirSync(path.join(REPO, 'components')).filter(d => d !== 'admin').map(d => `components/${d}`),
-    'lib/orders', 'lib/payments', 'lib/auth', 'lib/native', 'lib/printing', 'lib/billing', 'lib/stripe.ts', 'lib/slot-availability.ts', 'lib/slot-bookings.ts', 'lib/slot-capacity.ts',
+    // …and every lib entry but the ones inbox-1 (and inbox-2) work in — a superset of the lib paths it named
+    ...fs.readdirSync(path.join(REPO, 'lib')).map(f => `lib/${f}`).filter(p => !['lib/inbox', 'lib/enquiries', 'lib/outreach-mail-envelope.ts', 'lib/outreach-mail-accounts.ts', 'lib/order-retention.ts'].includes(p)),
     'lib/menu-loader.ts', 'lib/order-calculations.ts', 'lib/order-charges.ts', 'lib/preorder.ts', 'proxy.ts', 'next.config.ts', 'vercel.json',
     // the contact form, the landing page, every customer-facing page and word, the legal pages
     'app/contact', 'app/api/contact', 'lib/contact.ts', 'lib/contact-server.ts', 'app/(public)', 'app/page.tsx', 'app/layout.tsx', 'messages', 'content', 'lib/i18n', 'public',

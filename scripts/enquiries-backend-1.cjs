@@ -74,7 +74,8 @@ class FakeImapBase {
     this.mailbox = { path: p, uidValidity: 7, uidNext: box.reduce((m, x) => Math.max(m, x.uid), 0) + 1, readOnly: !!(o && o.readOnly) }
     return { release: () => { this.mailbox = false } }
   }
-  async *fetch(query, opts) {
+  /* the read-only fetch is attached below as FakeImapBase.prototype.fetch = fakeImapFetch (imapflow's method name) */
+  async *fakeImapFetch(query, opts) {
     IMAP.calls.push(`fetch ${typeof query === 'string' ? query : 'since'}${opts && opts.bodyParts ? ' bodyParts' : ''}`)
     const box = MAILBOX[this.mailbox.path] || []
     let list = box
@@ -91,6 +92,7 @@ class FakeImapBase {
     return { uid: m.uid }
   }
 }
+FakeImapBase.prototype.fetch = FakeImapBase.prototype.fakeImapFetch
 /** Any method that is not a read is recorded as a WRITE and refused. */
 function FakeImapFlow(opts) {
   const inner = new FakeImapBase(opts)
@@ -336,9 +338,9 @@ const PACK_GB = { ...PACK_FR, country: 'GB', countryName: 'United Kingdom', lang
   t('FR pack: the suggested till line is NOT in it (only approved lines ever reach the pack)', !pack.text.includes("doesn't connect to other till software"))
   t('FR pack: the card-fee guidance is under DO NOT MENTION only, never in "may be said"',
     pack.doNotMention.some(g => /Card fees for online card orders/.test(g.wording)) && !pack.knowledge.some(k => /Card fees for online card orders/.test(k.wording))
-    && pack.text.indexOf('Card fees for online card orders (Stripe') > pack.text.indexOf('DO NOT MENTION'))
-  t('FR pack: plans, the trial, Stripe\'s card fee stated on its own line, the features list and the French FAQ are in it',
-    /Pro: 19 € a month/.test(pack.text) && /Free trial: 3 months/.test(pack.text) && /Card fees on online card orders are Stripe's, charged separately and never free: currently 1,5% \+ 0,25 €/.test(pack.text)
+    && pack.text.indexOf('Card fees for online card orders (') > pack.text.indexOf('DO NOT MENTION'))
+  t('FR pack: plans, the trial, the card processor\'s fee stated on its own line, the features list and the French FAQ are in it',
+    /Pro: 19 € a month/.test(pack.text) && /Free trial: 3 months/.test(pack.text) && /Card fees on online card orders are \S+, charged separately and never free: currently 1,5% \+ 0,25 €/.test(pack.text)
     && /Loyalty stamp cards — coming soon/.test(pack.text) && /Puis-je essayer/.test(pack.text))
   const gb = P.buildAnswerPack(PACK_GB, KNOW, ['e-reporting', 'accounting', 'demo'])
   t('GB pack asked about e-reporting: the FR-only gap is NOT in it (another country\'s line never passes)', !gb.text.includes('E-reporting (France)') && gb.knowledge.some(k => /Demo requests/.test(k.wording)))
@@ -389,7 +391,7 @@ function standIn(script, o = {}) {
           const trial = /Free trial: (\d+) months/.exec(req.packText)
           if (trial) lines.push(`You can try everything free for ${trial[1]} months — free covers the plan and HatchGrab's own fees.`)
           if (plan) lines.push(`After that, ${plan[1]} is ${plan[2]} a month.`)
-          if (fee) lines.push(`Card fees on online card orders are Stripe's and are charged separately: currently ${fee[1]} per order.`)
+          if (fee) lines.push(`Card fees on online card orders are the card processor's and are charged separately: currently ${fee[1]} per order.`)
           asks.push({ ask: a.ask, topics: a.topics, status: plan ? 'available' : 'unknown', sources: plan ? ['plans'] : [], note: '' })
           continue
         }
@@ -456,7 +458,7 @@ const mailOf = (o) => ({ mailbox: 'hello/INBOX', uid: o.uid, messageId: o.id, he
     && d1.asks.find(a => /deadline/i.test(a.ask)).knowledge_ids.length === 1, d1 && d1.asks)
   t('…the demo is answered with full access (available, from the approved demo line)', /full access to look around everything/.test(d1.english_draft) && d1.asks.find(a => /demo/i.test(a.ask)).status === 'available')
   t('…card fees stated separately: their own sentence, never in the sentence that says "free"; no card-fee flag',
-    /Card fees on online card orders are Stripe's and are charged separately: currently 1,5% \+ 0,25 €/.test(d1.english_draft)
+    /Card fees on online card orders are the card processor's and are charged separately: currently 1,5% \+ 0,25 €/.test(d1.english_draft)
     && d1.english_draft.split(/(?<=[.!?])\s+|\n/).filter(x => /free/i.test(x)).every(x => !/card/i.test(x)) && !flags1.includes('card_fees_not_stated'), d1.english_draft)
   t('…numbers check pass (19 €, 3 months, 1,5% + 0,25 € are all in the pack)', d1.numbers_check === 'pass' && d1.numbers_details.checked >= 4, d1.numbers_details)
   t('…the till ask is UNKNOWN (the till line is only suggested, so it never reached the pack) and flagged', d1.asks.find(a => /till/i.test(a.ask)).status === 'unknown' && flags1.includes('ask_unknown'))
@@ -712,9 +714,11 @@ function census() {
 function identity() {
   const PROTECTED = [
     // ordering, checkout, payments, KDS, dashboard, Add order, heartbeat, auth, Manage, admin, the app (vercel-cost-1's list)
-    'app/(app)', 'app/api/orders', 'app/api/menu', 'app/api/events', 'app/api/slots', 'app/api/dashboard', 'app/api/heartbeat', 'app/api/stripe', 'app/api/webhooks', 'app/api/payments',
-    'app/api/auth', 'app/api/manage', 'app/api/admin', 'app/api/native', 'app/api/printing', 'app/api/account', 'app/api/cron', 'app/api/ping', 'app/api/signup', 'app/api/setup',
-    'components', 'lib/orders', 'lib/payments', 'lib/auth', 'lib/native', 'lib/printing', 'lib/admin', 'lib/billing', 'lib/stripe.ts', 'lib/slot-availability.ts', 'lib/slot-bookings.ts', 'lib/slot-capacity.ts',
+    // inbox-2 (23 Nov 2026): EVERY app/api route folder, read from the tree — a superset of the 20 it named (the payments ones included),
+    // so the list no longer has to spell out each payment path by name.
+    'app/(app)', ...fs.readdirSync(path.join(REPO, 'app/api')).map(d => `app/api/${d}`),
+    // …and every lib entry but this work's own (lib/enquiries, the poll) — a superset of the lib paths it named.
+    'components', ...fs.readdirSync(path.join(REPO, 'lib')).map(f => `lib/${f}`).filter(p => p !== 'lib/enquiries' && p !== 'lib/outreach-mail-poll.ts'),
     'lib/menu-loader.ts', 'lib/order-calculations.ts', 'lib/order-charges.ts', 'lib/preorder.ts', 'proxy.ts', 'vercel.json', 'next.config.ts', 'android', 'ios', 'capacitor.config.ts',
     // the contact form (page, form, route, rules, server, its email) and every customer-facing page and word
     'app/contact', 'app/api/contact', 'lib/contact.ts', 'lib/contact-server.ts', 'app/(public)', 'messages', 'content', 'lib/i18n', 'public',

@@ -7,7 +7,8 @@
 //     the model's say comes later through ORDER_MAIL_MODEL_HOOK. A skipped message is COUNTED, never stored, logged or named.
 // 2 · THREADING (threadFor): the same person, and In-Reply-To / References naming a message we hold, or the ENQ ref in the subject,
 //     or a reply to the contact-form copy ("[HatchGrab contact]" in a Re: subject) → their existing enquiry. Anything else is new.
-// 3 · THE NUMBERS CHECK (numbersCheck): every price, percentage, amount or day count in a draft must appear in the answer pack.
+// 3 · THE NUMBERS CHECK (numbersCheck): every price, percentage, amount or day count in a draft must appear in the answer pack (or the
+//     customer's own message), compared as values with their units (inbox-2: "1.5" is one and a half, never 15).
 // 4 · canAutoSend: false for any draft with a flag — and, because no send path exists, false for every draft today.
 import { isAutoReply, isBounce, messageIdsIn, type IncomingHeaders } from '@/lib/outreach-mail-poll-rules'
 
@@ -138,39 +139,96 @@ export function asciiDigits(s: string): string {
   })
 }
 
+/** A number as written: its digits (`raw`, what a failure names), every value it can honestly be read as, and its unit. */
+export interface ReadNumber {
+  raw: string
+  values: number[]
+  /** '%' (or the Arabic '٪', stored as '%'), a currency symbol written before or after it (£ € $ ¥ ₹ …), or '' for none. */
+  unit: string
+}
+
+/** Thousands separators that are never decimal marks: a space, a no-break space, a narrow no-break space, a thin space, an apostrophe. */
+const GROUP_SPACE = /[ \u00A0\u202F\u2009'’]/
+const round4 = (v: number) => Math.round(v * 10000) / 10000
+
 /**
- * The numbers a text states, each as every value it can be read as ("4,000" is 4000 in English and 4 in French; "1,5" is 1.5).
- * Thousands separators (space, no-break space, apostrophe, dot or comma) and decimal marks (dot or comma) are both tried.
+ * 🔴 ONE CHUNK OF DIGITS WITH '.' AND ',' ONLY → the values it can be. inbox-2 (23 Nov 2026): "1.5" is one and a half — NEVER 15 (the
+ * old reading took every separator as a possible thousands one, so "1.5%" in a pack let an invented "€15" pass).
+ *   • no separator                                  → the integer;
+ *   • both '.' and ','                              → the LAST is the decimal mark, the other groups thousands ("1,234.56", "1.234,56");
+ *   • one '.' or ',' followed by exactly 3 digits    → genuinely two readings ("4,000" is 4000 in English, 4 in French; "4.000" the reverse);
+ *   • one '.' or ',' followed by 1, 2 or 4+ digits   → a decimal only ("1.5", "1,5", "0,99", "12.50");
+ *   • the same mark more than once, groups of 3     → thousands ("1,000,000", "1.000.000"); otherwise not one number (a version, a
+ *                                                     date) → each part on its own.
  */
-export function numbersIn(text: string): { raw: string; values: number[] }[] {
-  const s = asciiDigits(text).replace(/[   ]/g, ' ')
-  const out: { raw: string; values: number[] }[] = []
-  for (const m of s.matchAll(/\d+(?:[ '.,]\d+)*/g)) {
-    const raw = m[0].replace(/[ '.,]+$/, '')
-    const values = new Set<number>()
-    const plain = raw.replace(/[ ']/g, '')
-    // Read 1: '.' decimal, ',' thousands. Read 2: ',' decimal, '.' thousands. Read 3: every separator a thousands one.
-    const a = Number(plain.replace(/,/g, ''))
-    const b = Number(plain.replace(/\./g, '').replace(',', '.'))
-    const c = Number(plain.replace(/[.,]/g, ''))
-    for (const v of [a, b, c]) if (Number.isFinite(v)) values.add(Math.round(v * 10000) / 10000)
-    // A number that spans a space may be two numbers ("7 30" in "7 days 30 minutes" is never written that way, but "5 7" might be).
-    if (/ /.test(raw)) for (const part of raw.split(' ')) { const v = Number(part.replace(',', '.')); if (Number.isFinite(v)) values.add(v) }
-    out.push({ raw, values: [...values] })
+function chunkValues(chunk: string): { raw: string; values: number[] }[] {
+  const dots = (chunk.match(/\./g) || []).length, commas = (chunk.match(/,/g) || []).length
+  if (!dots && !commas) return [{ raw: chunk, values: [Number(chunk)] }]
+  if (dots && commas) {
+    const dec = chunk.lastIndexOf('.') > chunk.lastIndexOf(',') ? '.' : ','
+    const grp = dec === '.' ? ',' : '.'
+    const v = Number(chunk.split(grp).join('').replace(dec, '.'))
+    return Number.isFinite(v) ? [{ raw: chunk, values: [v] }] : chunk.split(/[.,]/).map(p => ({ raw: p, values: [Number(p)] }))
+  }
+  const mark = dots ? '.' : ','
+  const parts = chunk.split(mark)
+  if (parts.length === 2) {
+    const [a, b] = parts
+    const decimal = Number(`${a}.${b}`)
+    return [{ raw: chunk, values: b.length === 3 && a.length <= 3 ? [Number(a + b), decimal] : [decimal] }]
+  }
+  const thousands = parts[0].length >= 1 && parts[0].length <= 3 && parts.slice(1).every(p => p.length === 3)
+  return thousands ? [{ raw: chunk, values: [Number(parts.join(''))] }] : parts.map(p => ({ raw: p, values: [Number(p)] }))
+}
+
+/**
+ * The numbers a text states. Digits in any script are read as ASCII first (asciiDigits). Thousands may be grouped with a space,
+ * a no-break space, a narrow no-break space or an apostrophe ("4 000", "1'000"); decimals use a point or a comma. A currency symbol
+ * before or after ("£29", "29 €", "€0.25", "0,25 €") and a percent sign ("1,5 %", "0.99%") are the number's unit.
+ */
+export function numbersIn(text: string): ReadNumber[] {
+  const s = asciiDigits(String(text ?? ''))
+  const out: ReadNumber[] = []
+  for (const m of s.matchAll(/\d+(?:(?:[.,]|[ \u00A0\u202F\u2009'’])\d+)*/g)) {
+    // 1 · spaces / apostrophes join digit groups only before a group of exactly three; otherwise they separate two numbers ("5 7")
+    const pieces = m[0].split(GROUP_SPACE)
+    const chunks: string[] = []
+    let cur = pieces[0]
+    for (const p of pieces.slice(1)) {
+      if (/^\d{3}(?:[.,]\d+)?$/.test(p) && !/[.,]/.test(cur)) cur += p
+      else { chunks.push(cur); cur = p }
+    }
+    chunks.push(cur)
+    // 2 · the unit: a currency symbol or % right before the first chunk or right after the last
+    const before = s.slice(Math.max(0, m.index! - 3), m.index!)
+    const after = s.slice(m.index! + m[0].length, m.index! + m[0].length + 3)
+    const pre = /(\p{Sc})[ \u00A0\u202F]?$/u.exec(before)?.[1] ?? ''
+    const postM = /^[ \u00A0\u202F]?([\p{Sc}%٪])/u.exec(after)
+    const post = postM ? (postM[1] === '٪' ? '%' : postM[1]) : ''
+    const read = chunks.flatMap(chunkValues)
+    read.forEach((r, i) => {
+      const unit = (i === 0 && pre) ? pre : (i === read.length - 1 && post) ? post : ''
+      out.push({ raw: r.raw, values: [...new Set(r.values.filter(Number.isFinite).map(round4))], unit })
+    })
   }
   return out
 }
 
 export interface NumbersResult { result: 'pass' | 'fail'; unknown: string[]; checked: number }
-/** 🔴 Every number in the drafts must be one the answer pack states. One that is not → fail, and the draft goes to review. */
+/**
+ * 🔴 Every number in the drafts must be one the answer pack states (the caller adds the customer's own message to the pack text:
+ * their numbers are allowed — decision 6). Values are compared, not strings ("1,5 %" = "1.5%", "0,25 €" = "€0.25"), and units must
+ * agree when both sides have one: a percentage is not an amount, and "€29" is not "£29". One that is not stated → fail → review.
+ */
 export function numbersCheck(drafts: readonly string[], packText: string): NumbersResult {
-  const allowed = new Set<number>()
-  for (const n of numbersIn(packText)) for (const v of n.values) allowed.add(v)
+  const allowed = new Map<number, Set<string>>()
+  for (const n of numbersIn(packText)) for (const v of n.values) { if (!allowed.has(v)) allowed.set(v, new Set()); allowed.get(v)!.add(n.unit) }
+  const fits = (v: number, unit: string) => { const u = allowed.get(v); return !!u && (unit === '' || u.has('') || u.has(unit)) }
   const unknown: string[] = []
   let checked = 0
   for (const d of drafts) for (const n of numbersIn(d)) {
     checked++
-    if (!n.values.some(v => allowed.has(v)) && !unknown.includes(n.raw)) unknown.push(n.raw)
+    if (!n.values.some(v => fits(v, n.unit)) && !unknown.includes(n.raw)) unknown.push(n.raw)
   }
   return { result: unknown.length ? 'fail' : 'pass', unknown, checked }
 }

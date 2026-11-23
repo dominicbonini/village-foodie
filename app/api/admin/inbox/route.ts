@@ -150,12 +150,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(r.ok ? { ok: true, draft: r.draft, message: r.message } : { ok: false, refusal: r.refusal, held: r.held ?? null })
   }
   if (action === 'send') {
-    const hello = accountForInboxReply(resolveAccounts())
+    const accounts = resolveAccounts()
+    const hello = accountForInboxReply(accounts)
+    const dominic = accountForInboxReply(accounts, 'dominic')   // inbox-2: a customer who wrote to dominic@
     const deps: SendDeps = {
       ...draftDeps,
       sendProspect: b => call(outreachSendPOST as never, req, '/api/admin/outreach/mail-send', b),
       sendPartner: b => call(partnerSendPOST as never, req, '/api/admin/partners/mail-send', b),
       hello: hello ? { user: hello.user, pass: hello.pass } : null,
+      dominic: dominic ? { user: dominic.user, pass: dominic.pass } : null,
       fromName: () => readFromName(supabase),
     }
     const idem = typeof body.idempotency_key === 'string' && body.idempotency_key ? body.idempotency_key.slice(0, 200) : null

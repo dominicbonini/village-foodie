@@ -113,6 +113,11 @@ export function supabaseEnquiryStore(db: SupabaseClient): EnquiryStore {
       fail('spend', error)
       return Number((data as { usd_spent?: unknown } | null)?.usd_spent ?? 0) || 0
     },
+    async truckCountry(truckId) {
+      const { data, error } = await db.from('trucks').select('country').eq('id', truckId).maybeSingle()
+      fail('truck country', error)
+      return ((data as { country?: string | null } | null)?.country ?? null) || null
+    },
     async aliases() {
       const { data, error } = await db.from('outreach_settings').select('value').eq('key', ALIASES_KEY).maybeSingle()
       fail('aliases', error)

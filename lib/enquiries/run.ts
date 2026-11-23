@@ -70,12 +70,16 @@ export interface EnquiryStore {
   addSpent(month: string, usd: number): Promise<void>
   /** inbox-1: outreach_settings 'mail_aliases' — the 36 aliases delivered into hello@ (our own addresses; [] when unset). */
   aliases?(): Promise<string[]>
+  /** inbox-2: a HatchGrab truck's country, for a customer's enquiry. */
+  truckCountry?(truckId: string): Promise<string | null>
 }
 
 /** One message from hello@ INBOX that the outreach poll did NOT claim. Its body is read only if it is kept (readText). */
 export interface MailCandidate {
   mailbox: string; uid: number; messageId: string; headers: MailHeaders; fromName: string | null; date: string | null
   readText(): Promise<string | null>
+  /** inbox-2: the linked HatchGrab truck this mail is from (dominic@'s INBOX walk only takes such mail) — the enquiry is a Customer. */
+  truckId?: string | null
 }
 export interface MailSource {
   /** Walk the new messages (read-only), oldest first, handing each to `handle`. A throw stops the walk there; that message is read again
@@ -86,6 +90,8 @@ export interface MailSource {
 export interface EnquiryDeps {
   store: EnquiryStore
   mail: MailSource | null
+  /** inbox-2: dominic@'s INBOX, read-only, and ONLY mail from a linked HatchGrab truck (a customer). null: dominic@ not configured. */
+  customerMail?: MailSource | null
   /** null: no Claude API login on this environment — intake still runs, drafting waits. */
   model: EnquiryModel | null
   packInputs(country: string | null): Promise<PackInputs>
@@ -104,6 +110,9 @@ export interface EnquirySummary {
   /** Messages the outreach poll claims (a prospect's or a partner's mail) — left to it, as before. */
   mailLeftToOutreach: number
   mailLogged: number
+  /** inbox-2: dominic@'s INBOX — messages from a linked HatchGrab truck examined, and the rest left alone (outreach's, or nobody's). */
+  customerMailExamined: number
+  customerMailLeft: number
   joinedExisting: number
   /** Counted only: nothing about these is stored. */
   skipped: Record<SkipReason | 'empty' | 'duplicate', number>
@@ -134,7 +143,7 @@ export async function runEnquiries(deps: EnquiryDeps, hooks: { onEnabled?(deps: 
   const now = deps.now()
   const since = sw.since ?? now.toISOString()
   const s: EnquirySummary = {
-    formsLogged: 0, mailExamined: 0, mailLeftToOutreach: 0, mailLogged: 0, joinedExisting: 0,
+    formsLogged: 0, mailExamined: 0, mailLeftToOutreach: 0, mailLogged: 0, customerMailExamined: 0, customerMailLeft: 0, joinedExisting: 0,
     skipped: Object.fromEntries([...SKIP_REASONS, 'empty', 'duplicate'].map(k => [k, 0])) as EnquirySummary['skipped'],
     drafted: 0, needsReview: 0, draftingHeld: null, usd: 0, errors: [],
   }
@@ -169,6 +178,14 @@ export async function runEnquiries(deps: EnquiryDeps, hooks: { onEnabled?(deps: 
     } catch (e) { s.errors.push(errText('mail', e)) }
   }
 
+  // ── inbox-2: dominic@'s INBOX, mail from a linked HatchGrab truck only (a customer writing to Dominic) ─────────────────────
+  if (deps.customerMail && !late()) {
+    try {
+      const r = await deps.customerMail.walk(c => intakeMail(c, deps, s, aliases), MAIL_PER_RUN)
+      s.customerMailExamined = r.examined; s.customerMailLeft = r.outreach
+    } catch (e) { s.errors.push(errText('customer mail', e)) }
+  }
+
   // ── drafts ─────────────────────────────────────────────────────────────────────────────────────────────────────────
   if (!deps.model) { s.draftingHeld = 'no_model'; return s }
   const m = month(now)
@@ -201,6 +218,8 @@ async function intakeMail(c: MailCandidate, deps: EnquiryDeps, s: EnquirySummary
   if (reason) { s.skipped[reason]++; return }
   const { store } = deps
   if (await store.messageHeld(c.mailbox, cap(c.messageId, 1000))) { s.skipped.duplicate++; return }
+  // inbox-2: the same email copied to hello@ AND dominic@ is held once — hello@'s walk runs first and keeps it.
+  if (c.mailbox !== 'hello/INBOX' && await store.messageHeld('hello/INBOX', cap(c.messageId, 1000))) { s.skipped.duplicate++; return }
   const raw = await c.readText()
   const text = raw ? stripQuotedHistory(raw, TEXT_CAP).trim() : ''
   if (!text) { s.skipped.empty++; return }
@@ -214,7 +233,8 @@ async function intakeMail(c: MailCandidate, deps: EnquiryDeps, s: EnquirySummary
     enquiryId = decision.enquiryId
     s.joinedExisting++
   } else {
-    const truck = await store.truckFor(from)
+    // inbox-2: mail the dominic@ walk took is from a linked truck it already identified; otherwise the one truck with this address
+    const truck = c.truckId ? { id: c.truckId, country: store.truckCountry ? await store.truckCountry(c.truckId) : null } : await store.truckFor(from)
     const made = await store.createEnquiry({ source: 'email', name: c.fromName ? cap(c.fromName.trim(), 200) || null : null, email: from, country: truck?.country ?? null, language: null, truck_id: truck?.id ?? null, contact_message_id: null })
     if (!made) throw new Error('could not create an enquiry')
     enquiryId = made.id

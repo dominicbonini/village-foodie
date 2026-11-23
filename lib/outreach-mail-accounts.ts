@@ -156,10 +156,10 @@ export function legacyIsReadOnly(set: AccountSet): boolean {
 }
 
 /**
- * inbox-1: the account an Inbox reply to an ENQUIRY or CUSTOMER logs in with — hello@, always (its own OUTREACH_MAIL_* credentials),
- * whichever account is primary. Null when hello@ is not configured here. 🔴 Only lib/inbox/send.ts calls this (scripts/inbox-1.cjs census);
+ * inbox-1: the account an Inbox reply to an ENQUIRY or CUSTOMER logs in with — hello@ (its own OUTREACH_MAIL_* credentials),
+ * whichever account is primary; inbox-2: dominic@ for a customer who wrote to dominic@ (pass 'dominic'). Null when hello@ is not configured here. 🔴 Only lib/inbox/send.ts calls this (scripts/inbox-1.cjs census);
  * a prospect's or partner's reply goes through its own route and `accountForSend`, from dominic@, as before.
  */
-export function accountForInboxReply(set: AccountSet): AccountCredentials | null {
-  return credentialsFor(set, LEGACY_ACCOUNT)
+export function accountForInboxReply(set: AccountSet, account: MailAccount = LEGACY_ACCOUNT): AccountCredentials | null {
+  return credentialsFor(set, account)
 }
