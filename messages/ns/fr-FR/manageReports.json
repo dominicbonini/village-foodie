@@ -140,6 +140,8 @@
       "refunded": "Remboursé",
       "cost": "Coût",
       "profit": "Bénéfice",
+      "netAtRate": "Net {rate}",
+      "taxAtRate": "Taxes {rate}",
       "eventDate": "Date de l’événement",
       "orders": "Commandes",
       "dishesSold": "Plats vendus",
@@ -149,6 +151,7 @@
       "stored": "enregistrées avec la commande",
       "estimated": "estimées d’après votre taux de taxe",
       "none": "aucun taux de taxe défini"
-    }
+    },
+    "noRate": "sans taux"
   }
 }

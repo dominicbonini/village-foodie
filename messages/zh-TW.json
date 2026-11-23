@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {此活動已結束。重新開始以接受訂單。} cancelled {此活動已取消。} other {此活動未開放。}}",
     "sign_in_to_create": "請以團隊成員身分登入以建立活動。",
     "event_details_invalid": "{reason, select, name {請輸入活動名稱} times {請輸入開始與結束時間} end {結束時間必須晚於開始} van {請選擇車輛} date {在這裡建立的活動僅限今天} other {請檢查活動資料}}",
-    "event_overlaps": "這與今天另一個活動時間重疊。"
+    "event_overlaps": "這與今天另一個活動時間重疊。",
+    "order_finished_edit": "這筆訂單已結束，因此無法變更。",
+    "order_finished_cancel": "這筆訂單已結束，因此無法取消。"
   },
   "kitchenModals": {
     "close": "關閉",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "發生錯誤——請重新整理頁面後再試一次。",
     "charges_owner_only": "只有擁有者可以變更稅金、小費和手續費",
     "charges_rate_decimals": "最多使用 3 位小數，例如 8.875。",
-    "charges_rate_range": "請使用 0 到 20% 之間的稅率。",
+    "charges_rate_range": "請使用 0 到 30% 之間的稅率。",
     "charges_rate_not_here": "你所在國家的價格已含稅，所以不需要設定稅率。",
     "charges_fee_not_here": "你所在的國家無法使用線上服務費。",
     "charges_fee_hatchgrab": "你所在國家的線上服務費由 HatchGrab 設定，所以無法在這裡變更。",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "你所在的國家不允許這部分的費用。",
     "charges_choose_on_off": "請選擇開啟或關閉。",
     "charges_nothing_to_save": "沒有需要儲存的內容。",
+    "charges_items_invalid": "其中有品項已不在你的菜單上。請關閉此視窗後再試一次。",
     "country_settings_failed": "無法載入這台餐車的國家設定，請稍後再試。",
     "plans_failed": "無法載入這台餐車的方案，請稍後再試。",
     "demo_not_available": "示範版餐車無法使用",
@@ -4273,6 +4276,8 @@
         "refunded": "已退款",
         "cost": "成本",
         "profit": "利潤",
+        "netAtRate": "淨額 {rate}",
+        "taxAtRate": "稅金 {rate}",
         "eventDate": "活動日期",
         "orders": "訂單數",
         "dishesSold": "已售餐點數",
@@ -4282,7 +4287,8 @@
         "stored": "隨訂單儲存",
         "estimated": "依你的稅率估算",
         "none": "未設定稅率"
-      }
+      },
+      "noRate": "無稅率"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "顧客付款前會看到一行：「{label} {amount}」。",
       "hatchgrab": "HatchGrab 會在你顧客的線上訂單加收 {fee} 服務費。這筆費用不由你支付，你也無法更改。"
     },
-    "saveFailed": "無法儲存，請再試一次。"
+    "saveFailed": "無法儲存，請再試一次。",
+    "noVat": "不收{label}",
+    "noVatHint": "如果你不收取{label}，請選擇「不收{label}」。",
+    "otherRate": "其他…",
+    "itemRates": {
+      "label": "品項稅率",
+      "hintSome": "{n, plural, one {{count} 個品項使用不同稅率} other {{count} 個品項使用不同稅率}}",
+      "hintNone": "所有品項都使用你的預設稅率",
+      "button": "變更品項稅率",
+      "title": "品項稅率",
+      "intro": "你可以為每個品項選擇稅率。",
+      "setAll": "全部設定",
+      "default": "預設（{rate}）",
+      "rateAria": "{item} 的稅率",
+      "otherItems": "其他品項",
+      "noItems": "你的菜單上還沒有品項。",
+      "close": "關閉",
+      "cancel": "取消",
+      "save": "儲存",
+      "saved": "品項稅率已儲存"
+    }
   },
   "takingPayment": {
     "heading": "收款方式",

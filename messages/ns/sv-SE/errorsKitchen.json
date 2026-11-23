@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Evenemanget är avslutat. Starta om det för att ta emot beställningar.} cancelled {Evenemanget är inställt.} other {Evenemanget är inte öppet.}}",
   "sign_in_to_create": "Logga in som teammedlem för att skapa ett evenemang.",
   "event_details_invalid": "{reason, select, name {Lägg till ett namn på evenemanget} times {Lägg till start- och sluttid} end {Sluttiden måste vara efter starttiden} van {Välj en vagn} date {Evenemang som skapas här gäller bara i dag} other {Kontrollera uppgifterna}}",
-  "event_overlaps": "Det överlappar ett annat evenemang i dag."
+  "event_overlaps": "Det överlappar ett annat evenemang i dag.",
+  "order_finished_edit": "Den här beställningen är avslutad, så den kan inte ändras.",
+  "order_finished_cancel": "Den här beställningen är avslutad, så den kan inte avbokas."
 }

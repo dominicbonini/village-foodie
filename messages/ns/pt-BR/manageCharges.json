@@ -26,5 +26,25 @@
     "example": "Os clientes veem a taxa antes de pagar, em uma linha: “{label} {amount}”.",
     "hatchgrab": "O HatchGrab adiciona uma taxa de serviço de {fee} aos pedidos online dos seus clientes. Você não paga essa taxa e não pode alterá-la."
   },
-  "saveFailed": "Não foi possível salvar — tente de novo."
+  "saveFailed": "Não foi possível salvar — tente de novo.",
+  "noVat": "Sem {label}",
+  "noVatHint": "Escolha “Sem {label}” se você não cobra {label}.",
+  "otherRate": "Outra…",
+  "itemRates": {
+    "label": "Alíquotas por item",
+    "hintSome": "{n, plural, one {{count} item usa uma alíquota diferente} other {{count} itens usam uma alíquota diferente}}",
+    "hintNone": "Todos os itens usam sua alíquota padrão",
+    "button": "Alterar alíquotas por item",
+    "title": "Alíquotas por item",
+    "intro": "Você escolhe a alíquota de cada item.",
+    "setAll": "Aplicar a todos",
+    "default": "Padrão ({rate})",
+    "rateAria": "Alíquota de {item}",
+    "otherItems": "Outros itens",
+    "noItems": "Ainda não há itens no seu cardápio.",
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "saved": "Alíquotas por item salvas"
+  }
 }

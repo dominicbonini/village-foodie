@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {ይህ ዝግጅት ተጠናቋል። ትዕዛዝ ለመቀበል ዝግጅቱን እንደገና ያስጀምሩ።} cancelled {ይህ ዝግጅት ተሰርዟል።} other {ይህ ዝግጅት ክፍት አይደለም።}}",
     "sign_in_to_create": "ዝግጅት ለመፍጠር እንደ ቡድን አባል ይግቡ።",
     "event_details_invalid": "{reason, select, name {የዝግጅት ስም ያክሉ} times {የመጀመሪያና የማብቂያ ሰዓት ያክሉ} end {የማብቂያ ሰዓቱ ከመጀመሪያ ሰዓቱ በኋላ መሆን አለበት} van {ተሽከርካሪ ይምረጡ} date {እዚህ የሚፈጠሩ ዝግጅቶች ለዛሬ ብቻ ናቸው} other {የዝግጅቱን ዝርዝሮች ያረጋግጡ}}",
-    "event_overlaps": "ይህ ዛሬ ካለ ሌላ ዝግጅት ጋር ይደራረባል።"
+    "event_overlaps": "ይህ ዛሬ ካለ ሌላ ዝግጅት ጋር ይደራረባል።",
+    "order_finished_edit": "ይህ ትዕዛዝ ተጠናቋል፣ ስለዚህ ሊቀየር አይችልም።",
+    "order_finished_cancel": "ይህ ትዕዛዝ ተጠናቋል፣ ስለዚህ ሊሰረዝ አይችልም።"
   },
   "kitchenModals": {
     "close": "ይዝጉ",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "የሆነ ችግር ተፈጥሯል — ገጹን ያድሱና እንደገና ይሞክሩ።",
     "charges_owner_only": "ታክስን፣ ጉርሻዎችንና የአገልግሎት ክፍያዎችን መቀየር የሚችለው ባለቤቱ ብቻ ነው",
     "charges_rate_decimals": "እስከ 3 የአስርዮሽ ቦታዎች ይጠቀሙ፤ ለምሳሌ፦ 8.875።",
-    "charges_rate_range": "ከ0 እስከ 20% ያለ መጠን ይጠቀሙ።",
+    "charges_rate_range": "ከ0 እስከ 30% ያለ መጠን ይጠቀሙ።",
     "charges_rate_not_here": "በአገርዎ ዋጋዎች ታክስን አስቀድመው ያካትታሉ፤ ስለዚህ የሚቀመጥ መጠን የለም።",
     "charges_fee_not_here": "የኦንላይን አገልግሎት ክፍያ በአገርዎ አይገኝም።",
     "charges_fee_hatchgrab": "በአገርዎ የኦንላይን አገልግሎት ክፍያን የሚወስነው HatchGrab ነው፤ ስለዚህ እዚህ ሊቀየር አይችልም።",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "ያ የክፍያው ክፍል በአገርዎ አይፈቀድም።",
     "charges_choose_on_off": "ማብራት ወይም ማጥፋትን ይምረጡ።",
     "charges_nothing_to_save": "የሚቀመጥ ነገር የለም።",
+    "charges_items_invalid": "ከእነዚህ ንጥሎች አንዱ ከእንግዲህ በሜኑዎ ላይ የለም። ይህንን ዘግተው እንደገና ይሞክሩ።",
     "country_settings_failed": "የዚህን የምግብ መኪና የአገር ቅንብሮች መጫን አልተቻለም። ከአፍታ በኋላ እንደገና ይሞክሩ።",
     "plans_failed": "የዚህን የምግብ መኪና ፓኬጅ መጫን አልተቻለም። ከአፍታ በኋላ እንደገና ይሞክሩ።",
     "demo_not_available": "በዲሞ የምግብ መኪና ላይ አይገኝም",
@@ -4273,6 +4276,8 @@
         "refunded": "ተመላሽ የተደረገ",
         "cost": "ወጪ",
         "profit": "ትርፍ",
+        "netAtRate": "የተጣራ {rate}",
+        "taxAtRate": "ታክስ {rate}",
         "eventDate": "የዝግጅቱ ቀን",
         "orders": "ትዕዛዞች",
         "dishesSold": "የተሸጡ ምግቦች",
@@ -4282,7 +4287,8 @@
         "stored": "ከትዕዛዙ ጋር የተቀመጠ",
         "estimated": "ከታክስ መጠንዎ የተገመተ",
         "none": "የታክስ መጠን አልተቀመጠም"
-      }
+      },
+      "noRate": "ያለ መጠን"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "ደንበኞች ከመክፈላቸው በፊት በአንድ መስመር ያዩታል፦ “{label} {amount}”።",
       "hatchgrab": "HatchGrab በደንበኞችዎ የኦንላይን ትዕዛዞች ላይ {fee} የአገልግሎት ክፍያ ይጨምራል። እርስዎ አይከፍሉትም፤ መቀየርም አይችሉም።"
     },
-    "saveFailed": "ማስቀመጥ አልተቻለም — እባክዎ እንደገና ይሞክሩ።"
+    "saveFailed": "ማስቀመጥ አልተቻለም — እባክዎ እንደገና ይሞክሩ።",
+    "noVat": "ያለ {label}",
+    "noVatHint": "{label} የማያስከፍሉ ከሆነ “ያለ {label}” የሚለውን ይምረጡ።",
+    "otherRate": "ሌላ…",
+    "itemRates": {
+      "label": "የንጥል መጠኖች",
+      "hintSome": "{n, plural, one {{count} ንጥል የተለየ መጠን ይጠቀማል} other {{count} ንጥሎች የተለየ መጠን ይጠቀማሉ}}",
+      "hintNone": "ሁሉም ንጥሎች ነባሪ መጠንዎን ይጠቀማሉ",
+      "button": "የንጥል መጠኖችን ይቀይሩ",
+      "title": "የንጥል መጠኖች",
+      "intro": "ለእያንዳንዱ ንጥል መጠኑን እርስዎ ይመርጣሉ።",
+      "setAll": "ለሁሉም ያዘጋጁ",
+      "default": "ነባሪ ({rate})",
+      "rateAria": "መጠን፦ {item}",
+      "otherItems": "ሌሎች ንጥሎች",
+      "noItems": "በሜኑዎ ላይ እስካሁን ምንም ንጥል የለም።",
+      "close": "ይዝጉ",
+      "cancel": "ይቅር",
+      "save": "ያስቀምጡ",
+      "saved": "የንጥል መጠኖች ተቀምጠዋል"
+    }
   },
   "takingPayment": {
     "heading": "ክፍያ መቀበል",

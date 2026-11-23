@@ -140,6 +140,8 @@
       "refunded": "환불액",
       "cost": "원가",
       "profit": "이익",
+      "netAtRate": "순액 {rate}",
+      "taxAtRate": "세금 {rate}",
       "eventDate": "영업 일정 날짜",
       "orders": "주문",
       "dishesSold": "판매 메뉴 수",
@@ -149,6 +151,7 @@
       "stored": "주문과 함께 저장됨",
       "estimated": "설정한 세율로 추정",
       "none": "세율 미설정"
-    }
+    },
+    "noRate": "세율 없음"
   }
 }

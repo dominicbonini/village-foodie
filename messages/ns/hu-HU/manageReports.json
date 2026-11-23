@@ -140,6 +140,8 @@
       "refunded": "Visszatérítve",
       "cost": "Költség",
       "profit": "Nyereség",
+      "netAtRate": "Nettó {rate}",
+      "taxAtRate": "Adó {rate}",
       "eventDate": "Esemény dátuma",
       "orders": "Rendelések",
       "dishesSold": "Eladott ételek",
@@ -149,6 +151,7 @@
       "stored": "a rendeléssel együtt tárolva",
       "estimated": "az Ön adókulcsa alapján becsülve",
       "none": "nincs beállítva adókulcs"
-    }
+    },
+    "noRate": "nincs adókulcs"
   }
 }

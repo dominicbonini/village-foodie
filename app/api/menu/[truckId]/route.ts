@@ -746,6 +746,9 @@ export async function GET(
          * /api/event-types and the dashboard, never through here.
          * ⚠️ `?? i.price` AND NOT `|| i.price`: a typed price of £0 is a real instruction. */
         price: eventItemPrice[i.id] ?? i.price,
+        // france-vat-1: the dish's own tax rate — ONLY when it has one, so every menu without item rates answers exactly as before.
+        // The order page's totals preview splits by it where tax is added at checkout; the server re-prices regardless.
+        ...(typeof (i as any).tax_rate_milli === 'number' ? { tax_rate_milli: (i as any).tax_rate_milli } : {}),
         category: (i.menu_categories as any)?.name || 'Uncategorized',
         // Stage B: per-item modifier groups (SOLE resolution source). Customer modal + operator
         // AddOrderPanel read item.modifierGroups directly (no more category name-match).

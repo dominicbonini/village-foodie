@@ -140,6 +140,8 @@
       "refunded": "Palautettu",
       "cost": "Kustannus",
       "profit": "Voitto",
+      "netAtRate": "Netto {rate}",
+      "taxAtRate": "ALV {rate}",
       "eventDate": "Tapahtumapäivä",
       "orders": "Tilaukset",
       "dishesSold": "Myydyt annokset",
@@ -149,6 +151,7 @@
       "stored": "tallennettu tilauksen mukana",
       "estimated": "arvioitu ALV-kantasi perusteella",
       "none": "ALV-kantaa ei asetettu"
-    }
+    },
+    "noRate": "ei kantaa"
   }
 }

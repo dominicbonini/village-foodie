@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Acara ini sudah tamat. Mulakan semula untuk menerima pesanan.} cancelled {Acara ini telah dibatalkan.} other {Acara ini tidak dibuka.}}",
   "sign_in_to_create": "Log masuk sebagai ahli pasukan untuk mencipta acara.",
   "event_details_invalid": "{reason, select, name {Tambah nama acara} times {Tambah masa mula dan tamat} end {Masa tamat mesti selepas mula} van {Pilih van} date {Acara yang dicipta di sini untuk hari ini sahaja} other {Semak butiran acara}}",
-  "event_overlaps": "Ini bertindih dengan acara lain hari ini."
+  "event_overlaps": "Ini bertindih dengan acara lain hari ini.",
+  "order_finished_edit": "Pesanan ini sudah selesai, jadi ia tidak boleh diubah.",
+  "order_finished_cancel": "Pesanan ini sudah selesai, jadi ia tidak boleh dibatalkan."
 }

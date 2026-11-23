@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {This event has finished. Restart it to take orders.} cancelled {This event was cancelled.} other {This event isn’t open.}}",
   "sign_in_to_create": "Log in as a team member to create an event.",
   "event_details_invalid": "{reason, select, name {Add an event name} times {Add a start and end time} end {The end time must be after the start} van {Choose a van} date {Events made here are for today only} other {Check the event details}}",
-  "event_overlaps": "This overlaps another event today."
+  "event_overlaps": "This overlaps another event today.",
+  "order_finished_edit": "This order is finished, so it can’t be changed.",
+  "order_finished_cancel": "This order is finished, so it can’t be cancelled."
 }

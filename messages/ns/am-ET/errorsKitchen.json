@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {ይህ ዝግጅት ተጠናቋል። ትዕዛዝ ለመቀበል ዝግጅቱን እንደገና ያስጀምሩ።} cancelled {ይህ ዝግጅት ተሰርዟል።} other {ይህ ዝግጅት ክፍት አይደለም።}}",
   "sign_in_to_create": "ዝግጅት ለመፍጠር እንደ ቡድን አባል ይግቡ።",
   "event_details_invalid": "{reason, select, name {የዝግጅት ስም ያክሉ} times {የመጀመሪያና የማብቂያ ሰዓት ያክሉ} end {የማብቂያ ሰዓቱ ከመጀመሪያ ሰዓቱ በኋላ መሆን አለበት} van {ተሽከርካሪ ይምረጡ} date {እዚህ የሚፈጠሩ ዝግጅቶች ለዛሬ ብቻ ናቸው} other {የዝግጅቱን ዝርዝሮች ያረጋግጡ}}",
-  "event_overlaps": "ይህ ዛሬ ካለ ሌላ ዝግጅት ጋር ይደራረባል።"
+  "event_overlaps": "ይህ ዛሬ ካለ ሌላ ዝግጅት ጋር ይደራረባል።",
+  "order_finished_edit": "ይህ ትዕዛዝ ተጠናቋል፣ ስለዚህ ሊቀየር አይችልም።",
+  "order_finished_cancel": "ይህ ትዕዛዝ ተጠናቋል፣ ስለዚህ ሊሰረዝ አይችልም።"
 }

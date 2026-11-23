@@ -26,5 +26,25 @@
     "example": "Mijozlar uni toʻlashdan oldin bitta qator sifatida koʻradi: “{label} {amount}”.",
     "hatchgrab": "HatchGrab mijozlaringizning onlayn buyurtmalariga {fee} xizmat yigʻimi qoʻshadi. Uni siz toʻlamaysiz va oʻzgartira olmaysiz."
   },
-  "saveFailed": "Saqlab boʻlmadi — qaytadan urinib koʻring."
+  "saveFailed": "Saqlab boʻlmadi — qaytadan urinib koʻring.",
+  "noVat": "{label} yoʻq",
+  "noVatHint": "{label} qoʻllamasangiz, “{label} yoʻq” variantini tanlang.",
+  "otherRate": "Boshqa…",
+  "itemRates": {
+    "label": "Mahsulot stavkalari",
+    "hintSome": "{n, plural, one {{count} ta mahsulot boshqa stavkadan foydalanadi} other {{count} ta mahsulot boshqa stavkadan foydalanadi}}",
+    "hintNone": "Barcha mahsulotlar standart stavkangizdan foydalanadi",
+    "button": "Mahsulot stavkalarini oʻzgartirish",
+    "title": "Mahsulot stavkalari",
+    "intro": "Har bir mahsulot stavkasini oʻzingiz tanlaysiz.",
+    "setAll": "Hammasiga belgilash",
+    "default": "Standart ({rate})",
+    "rateAria": "{item} stavkasi",
+    "otherItems": "Boshqa mahsulotlar",
+    "noItems": "Menyuingizda hali mahsulot yoʻq.",
+    "close": "Yopish",
+    "cancel": "Bekor qilish",
+    "save": "Saqlash",
+    "saved": "Mahsulot stavkalari saqlandi"
+  }
 }

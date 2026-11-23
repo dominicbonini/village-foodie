@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {이 영업은 끝났어요. 주문을 받으려면 다시 시작하세요.} cancelled {이 영업은 취소됐어요.} other {이 영업은 열려 있지 않아요.}}",
     "sign_in_to_create": "영업 일정을 만들려면 팀원으로 로그인하세요.",
     "event_details_invalid": "{reason, select, name {영업 일정 이름을 입력하세요} times {시작 시간과 종료 시간을 입력하세요} end {종료 시간은 시작 이후여야 해요} van {차량을 선택하세요} date {여기서 만든 영업 일정은 오늘만 해당돼요} other {영업 일정 정보를 확인하세요}}",
-    "event_overlaps": "오늘 다른 영업 일정과 시간이 겹쳐요."
+    "event_overlaps": "오늘 다른 영업 일정과 시간이 겹쳐요.",
+    "order_finished_edit": "이미 종료된 주문이라 수정할 수 없습니다.",
+    "order_finished_cancel": "이미 종료된 주문이라 취소할 수 없습니다."
   },
   "kitchenModals": {
     "close": "닫기",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "문제가 발생했습니다. 페이지를 새로고침한 뒤 다시 시도하세요.",
     "charges_owner_only": "세금, 팁, 수수료는 소유자만 변경할 수 있습니다",
     "charges_rate_decimals": "소수점 이하 3자리까지 입력하세요(예: 8.875).",
-    "charges_rate_range": "0~20% 사이의 세율을 입력하세요.",
+    "charges_rate_range": "0~30% 사이의 세율을 입력하세요.",
     "charges_rate_not_here": "이 나라에서는 가격에 이미 세금이 포함되어 있어 설정할 세율이 없습니다.",
     "charges_fee_not_here": "이 나라에서는 온라인 서비스 수수료를 사용할 수 없습니다.",
     "charges_fee_hatchgrab": "이 나라의 온라인 서비스 수수료는 HatchGrab이 정하므로 여기서 바꿀 수 없습니다.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "이 나라에서는 수수료의 해당 항목을 사용할 수 없습니다.",
     "charges_choose_on_off": "켜기 또는 끄기를 선택하세요.",
     "charges_nothing_to_save": "저장할 내용이 없습니다.",
+    "charges_items_invalid": "이 중 일부 메뉴가 더 이상 메뉴판에 없습니다. 이 창을 닫고 다시 시도하세요.",
     "country_settings_failed": "이 푸드트럭의 국가 설정을 불러오지 못했습니다. 잠시 후 다시 시도하세요.",
     "plans_failed": "이 푸드트럭의 요금제를 불러오지 못했습니다. 잠시 후 다시 시도하세요.",
     "demo_not_available": "데모 푸드트럭에서는 사용할 수 없습니다",
@@ -4273,6 +4276,8 @@
         "refunded": "환불액",
         "cost": "원가",
         "profit": "이익",
+        "netAtRate": "순액 {rate}",
+        "taxAtRate": "세금 {rate}",
         "eventDate": "영업 일정 날짜",
         "orders": "주문",
         "dishesSold": "판매 메뉴 수",
@@ -4282,7 +4287,8 @@
         "stored": "주문과 함께 저장됨",
         "estimated": "설정한 세율로 추정",
         "none": "세율 미설정"
-      }
+      },
+      "noRate": "세율 없음"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "손님은 결제 전에 한 줄로 확인해요: “{label} {amount}”.",
       "hatchgrab": "HatchGrab은 손님의 온라인 주문에 {fee} 서비스 수수료를 추가합니다. 사장님이 부담하지 않으며 변경할 수 없어요."
     },
-    "saveFailed": "저장하지 못했어요. 다시 시도해 주세요."
+    "saveFailed": "저장하지 못했어요. 다시 시도해 주세요.",
+    "noVat": "{label} 없음",
+    "noVatHint": "{label} 미부과 시 ‘{label} 없음’을 선택하세요.",
+    "otherRate": "기타…",
+    "itemRates": {
+      "label": "메뉴별 세율",
+      "hintSome": "{n, plural, one {메뉴 {count}개에 다른 세율 적용 중} other {메뉴 {count}개에 다른 세율 적용 중}}",
+      "hintNone": "모든 메뉴에 기본 세율 적용 중",
+      "button": "메뉴별 세율 변경",
+      "title": "메뉴별 세율",
+      "intro": "메뉴마다 세율을 선택할 수 있어요.",
+      "setAll": "일괄 설정",
+      "default": "기본값({rate})",
+      "rateAria": "{item} 세율",
+      "otherItems": "기타 메뉴",
+      "noItems": "아직 등록된 메뉴가 없습니다.",
+      "close": "닫기",
+      "cancel": "취소",
+      "save": "저장",
+      "saved": "메뉴별 세율을 저장했습니다"
+    }
   },
   "takingPayment": {
     "heading": "결제 받기",

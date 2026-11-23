@@ -19,6 +19,8 @@
 //   D25 pay at the truck drops the service fee and the surcharge.
 //   D26 the service fee is a percentage, a fixed amount or both, as ONE amount.
 //
+import type { FoodPart } from '@/lib/order-tax'
+
 // ── 🔴 WHERE PRICES INCLUDE TAX (GB) ─────────────────────────────────────────────────────────────────────
 // Tax is 0 and nothing is added. With every add-on off, the grand total IS the food, and the snapshot's
 // only non-null values are food_minor, tax_inclusive (true), tax_label and card_fee_payer.
@@ -73,6 +75,22 @@ export interface OrderChargeSnapshot {
   card_funding: null
   card_fee_payer: 'truck' | 'customer'
   application_fee_minor: null
+  /** france-vat-1: the tax per rate (20261124). null when the order has no rate at all (every UK truck with no VAT set). */
+  tax_breakdown: TaxBreakdownRow[] | null
+}
+
+/** france-vat-1: one rate's figures on an order (orders.tax_breakdown). Minor units. Ascending by rate, no rate first.
+ *   food_minor   the food (dishes, extras, deals) after the discount at this rate;
+ *   net_minor    before tax: the food where prices include tax, less its tax; where tax is added, the food (+ the fees when the
+ *                country taxes them, on the default rate's row);
+ *   tax_minor    the tax at this rate: included (food × r ÷ (100 % + r), rounded once) or added (net × r, D3's rounding);
+ *   gross_minor  net + tax. */
+export interface TaxBreakdownRow {
+  rate_milli: number | null
+  food_minor: number
+  gross_minor: number
+  net_minor: number
+  tax_minor: number
 }
 
 export interface OrderCharges {
@@ -94,6 +112,9 @@ export interface ChargeInput {
   tip?: TipChoice | null
   /** An operator edit's ceilings (D14): the tip and service fee are never above what the order had. */
   caps?: { tipMinor?: number; serviceFeeMinor?: number }
+  /** france-vat-1: the food split by rate (lib/order-tax.ts `lineTax`), adding up to foodMinor. Absent → one part at the
+   *  rules' rate, which is exactly the engine before france-vat-1. */
+  foodParts?: readonly FoodPart[] | null
 }
 
 /** The thirteen snapshot columns, in the migration's order (20261010_17) — on orders AND order_drafts. */
@@ -101,6 +122,8 @@ export const ORDER_CHARGE_COLUMNS = [
   'food_minor', 'tax_minor', 'tax_rate_milli', 'tax_inclusive', 'tax_label', 'tip_minor', 'tip_pct_bps',
   'service_fee_minor', 'service_fee_recipient', 'card_surcharge_minor', 'card_funding', 'card_fee_payer',
   'application_fee_minor',
+  // france-vat-1 (20261124): the per-rate breakdown — on orders AND order_drafts, copied on promotion like the rest.
+  'tax_breakdown',
 ] as const satisfies readonly (keyof OrderChargeSnapshot)[]
 
 /**
@@ -141,6 +164,31 @@ export function applyBpsDown(n: number, bps: number): number {
 export const applyMilli = (n: number, milli: number): number => applyRatio(n, milli, MILLI)
 
 const isMinor = (n: unknown): n is number => typeof n === 'number' && Number.isSafeInteger(n) && n >= 0
+
+/** france-vat-1: the parts merged by rate (same rate → one part), zero parts dropped unless every part is zero, ascending by
+ *  rate with no rate first. They must add up to `foodMinor`; anything else is a caller's bug and throws. */
+function mergeFoodParts(parts: readonly FoodPart[] | null | undefined, foodMinor: number, fallbackRate: number | null): FoodPart[] {
+  if (!parts || parts.length === 0) return [{ rate: fallbackRate, minor: foodMinor }]
+  const by = new Map<string, FoodPart>()
+  let sum = 0
+  for (const p of parts) {
+    if (!isMinor(p.minor)) throw new RangeError(`[order-charges] a food part must be a non-negative integer (got ${p.minor})`)
+    const rate = typeof p.rate === 'number' && Number.isSafeInteger(p.rate) && p.rate >= 0 ? p.rate : null
+    const k = rate === null ? 'none' : String(rate)
+    const cur = by.get(k)
+    if (cur) cur.minor += p.minor; else by.set(k, { rate, minor: p.minor })
+    sum += p.minor
+  }
+  if (sum !== foodMinor) throw new RangeError(`[order-charges] the food parts add up to ${sum}, not ${foodMinor}`)
+  const all = [...by.values()].sort((a, b) => (a.rate ?? -1) - (b.rate ?? -1))
+  const nonZero = all.filter(p => p.minor > 0)
+  return nonZero.length ? nonZero : [all[0]]
+}
+
+/** france-vat-1: the tax a price INCLUDES at one rate — the receipt's "Dont TVA" sum, rounded once (the formula
+ *  lib/order-charge-lines.ts and lib/accounts/ledger.ts have always used). */
+export const includedTaxOfMinor = (gross: number, milli: number | null): number =>
+  milli && milli > 0 && gross > 0 ? Math.round(gross * milli / (MILLI + milli)) : 0
 
 /**
  * Is this tip choice one the rules allow a CUSTOMER to make? A percentage must be one of the country's
@@ -199,15 +247,33 @@ export function computeOrderCharges(input: ChargeInput): OrderCharges {
     if (tipMinor === 0) tipPctBps = null
   }
 
-  // ── tax (D3: once; D6: food is after the discount; D8: fees only when the country says) ──
+  // ── tax (D3: once PER RATE; D6: food is after the discount; D8: fees only when the country says) ──
+  // france-1: an INCLUSIVE rate (France's TVA) is kept on the snapshot for the receipt's "dont TVA" line and never added.
+  // france-vat-1: the food comes in PARTS, one per rate (lib/order-tax.ts). With every line on the rules' rate there is ONE part
+  // and every figure below is exactly the engine before france-vat-1: added tax = applyMilli(food + taxed fees, rate).
+  const defaultRate = rules.taxRateMilli
+  const parts = mergeFoodParts(input.foodParts, foodMinor, defaultRate)
   let taxMinor = 0
-  // france-1: an INCLUSIVE rate (France's TVA) is kept on the snapshot for the receipt's "dont TVA" line and never added;
-  // every other inclusive country's rules carry no rate, so its snapshot is exactly as before (null).
-  const taxRateMilli = rules.taxRateMilli
-  if (!rules.taxInclusive && taxRateMilli) {
-    const base = foodMinor + (rules.feesTaxed ? serviceFeeMinor + cardSurchargeMinor : 0)
-    taxMinor = applyMilli(base, taxRateMilli)
+  const rows: TaxBreakdownRow[] = []
+  if (rules.taxInclusive) {
+    for (const p of parts) {
+      const tax = includedTaxOfMinor(p.minor, p.rate)
+      rows.push({ rate_milli: p.rate, food_minor: p.minor, gross_minor: p.minor, net_minor: p.minor - tax, tax_minor: tax })
+    }
+  } else {
+    // The taxed fees go on the default rate's row (added when no line is on it).
+    const feeBase = rules.feesTaxed ? serviceFeeMinor + cardSurchargeMinor : 0
+    const list = feeBase > 0 && !parts.some(p => p.rate === defaultRate) ? [...parts, { rate: defaultRate, minor: 0 }].sort((a, b) => (a.rate ?? -1) - (b.rate ?? -1)) : parts
+    for (const p of list) {
+      const net = p.minor + (p.rate === defaultRate ? feeBase : 0)
+      const tax = p.rate ? applyMilli(net, p.rate) : 0
+      taxMinor += tax
+      rows.push({ rate_milli: p.rate, food_minor: p.minor, gross_minor: net + tax, net_minor: net, tax_minor: tax })
+    }
   }
+  // The rate on the snapshot: the single rate when every part shares one, else the default (backward compatibility).
+  const taxRateMilli = parts.length === 1 ? parts[0].rate : defaultRate
+  const taxBreakdown = rows.some(r => r.rate_milli !== null) ? rows : null
 
   const totalMinor = foodMinor + taxMinor + tipMinor + serviceFeeMinor + cardSurchargeMinor
   return {
@@ -227,6 +293,7 @@ export function computeOrderCharges(input: ChargeInput): OrderCharges {
       card_funding: null,                 // not known until a card is read — Phase 4
       card_fee_payer: rules.cardFeePayer,
       application_fee_minor: null,        // D19: taken at capture — not this phase
+      tax_breakdown: taxBreakdown,        // france-vat-1
     },
   }
 }
@@ -254,6 +321,20 @@ export interface StoredCharges {
   service_fee_recipient?: string | null
   card_surcharge_minor?: number | null
   card_fee_payer?: string | null
+  /** france-vat-1: the per-rate breakdown (null on every order before it). */
+  tax_breakdown?: unknown
+}
+
+/** france-vat-1: the stored breakdown, checked, or null (absent, malformed, or not an array). */
+export function storedBreakdown(v: unknown): TaxBreakdownRow[] | null {
+  if (!Array.isArray(v) || v.length === 0) return null
+  const out: TaxBreakdownRow[] = []
+  for (const r of v as Record<string, unknown>[]) {
+    const n = (k: string) => (typeof r?.[k] === 'number' && Number.isFinite(r[k] as number) ? Math.round(r[k] as number) : 0)
+    const rate = typeof r?.rate_milli === 'number' && Number.isSafeInteger(r.rate_milli) && (r.rate_milli as number) >= 0 ? r.rate_milli as number : null
+    out.push({ rate_milli: rate, food_minor: n('food_minor'), gross_minor: n('gross_minor'), net_minor: n('net_minor'), tax_minor: n('tax_minor') })
+  }
+  return out
 }
 
 /**
@@ -282,13 +363,13 @@ export function rulesForStoredOrder(current: OrderChargeRules, stored: StoredCha
  *   • the service fee is recomputed under today's rules, capped at the original amount;
  *   • tax uses the order's own snapshot (D4).
  */
-export function chargesForEdit(newFoodMinor: number, current: OrderChargeRules, stored: StoredCharges): OrderCharges {
+export function chargesForEdit(newFoodMinor: number, current: OrderChargeRules, stored: StoredCharges, foodParts?: readonly FoodPart[] | null): OrderCharges {
   const rules = rulesForStoredOrder(current, stored)
   const oldTip = stored.tip_minor ?? 0
   const oldFee = stored.service_fee_minor ?? 0
   const oldSurcharge = stored.card_surcharge_minor ?? 0
   const hadOnline = oldTip > 0 || oldFee > 0 || oldSurcharge > 0
-  if (!hadOnline) return computeOrderCharges({ foodMinor: newFoodMinor, rules, channel: 'walk_up' })
+  if (!hadOnline) return computeOrderCharges({ foodMinor: newFoodMinor, rules, channel: 'walk_up', foodParts })
   const tip: TipChoice = oldTip === 0 ? { kind: 'none' }
     : stored.tip_pct_bps != null ? { kind: 'percent', bps: stored.tip_pct_bps }
     : { kind: 'amount', minor: oldTip }
@@ -304,7 +385,17 @@ export function chargesForEdit(newFoodMinor: number, current: OrderChargeRules, 
     channel: 'online_card',
     tip,
     caps: { tipMinor: oldTip, serviceFeeMinor: oldFee },
+    foodParts,
   })
+}
+
+/** france-vat-1: the food parts a stored order was priced with (its breakdown), or null when it has none or they no longer add
+ *  up to its food (then the order is taxed at its one stored rate, as before). */
+export function storedFoodParts(stored: StoredCharges): FoodPart[] | null {
+  const rows = storedBreakdown(stored.tax_breakdown)
+  if (!rows || stored.food_minor == null) return null
+  const parts = rows.filter(r => r.food_minor > 0).map(r => ({ rate: r.rate_milli, minor: r.food_minor }))
+  return parts.reduce((s, p) => s + p.minor, 0) === stored.food_minor && parts.length > 0 ? parts : null
 }
 
 /**
@@ -326,7 +417,7 @@ export function chargesForHatchSwitch(stored: StoredCharges): OrderCharges | nul
     cardFeePayer: stored.card_fee_payer === 'customer' ? 'customer' : 'truck',
     platformFee: null,
   }
-  return computeOrderCharges({ foodMinor: stored.food_minor, rules, channel: 'online_pay_at_truck' })
+  return computeOrderCharges({ foodMinor: stored.food_minor, rules, channel: 'online_pay_at_truck', foodParts: storedFoodParts(stored) })
 }
 
 /**

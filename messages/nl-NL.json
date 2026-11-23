@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Dit evenement is afgelopen. Herstart het om bestellingen aan te nemen.} cancelled {Dit evenement is geannuleerd.} other {Dit evenement is niet open.}}",
     "sign_in_to_create": "Log in als teamlid om een evenement te maken.",
     "event_details_invalid": "{reason, select, name {Vul een naam voor het evenement in} times {Vul een begin- en eindtijd in} end {De eindtijd moet na het begin liggen} van {Kies een wagen} date {Evenementen die je hier maakt zijn alleen voor vandaag} other {Controleer de gegevens van het evenement}}",
-    "event_overlaps": "Dit overlapt vandaag met een ander evenement."
+    "event_overlaps": "Dit overlapt vandaag met een ander evenement.",
+    "order_finished_edit": "Deze bestelling is afgerond, dus je kunt hem niet meer wijzigen.",
+    "order_finished_cancel": "Deze bestelling is afgerond, dus je kunt hem niet meer annuleren."
   },
   "kitchenModals": {
     "close": "Sluiten",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Er ging iets mis — vernieuw de pagina en probeer het opnieuw.",
     "charges_owner_only": "Alleen de eigenaar kan belasting, fooien en kosten wijzigen",
     "charges_rate_decimals": "Gebruik maximaal 3 decimalen, zoals 8,875.",
-    "charges_rate_range": "Gebruik een tarief van 0 tot 20%.",
+    "charges_rate_range": "Gebruik een tarief van 0 tot 30%.",
     "charges_rate_not_here": "In jouw land zijn prijzen al inclusief belasting, dus er is geen tarief in te stellen.",
     "charges_fee_not_here": "Online servicekosten zijn in jouw land niet beschikbaar.",
     "charges_fee_hatchgrab": "HatchGrab stelt de online servicekosten in jouw land vast, dus je kunt ze hier niet wijzigen.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Dat deel van de kosten is in jouw land niet toegestaan.",
     "charges_choose_on_off": "Kies aan of uit.",
     "charges_nothing_to_save": "Niets om op te slaan.",
+    "charges_items_invalid": "Een van deze items staat niet meer op je menukaart. Sluit dit venster en probeer het opnieuw.",
     "country_settings_failed": "De landinstellingen van deze foodtruck konden niet worden geladen. Probeer het zo opnieuw.",
     "plans_failed": "Het abonnement van deze foodtruck kon niet worden geladen. Probeer het zo opnieuw.",
     "demo_not_available": "Niet beschikbaar voor een demo-foodtruck",
@@ -4273,6 +4276,8 @@
         "refunded": "Terugbetaald",
         "cost": "Kosten",
         "profit": "Winst",
+        "netAtRate": "Netto {rate}",
+        "taxAtRate": "Btw {rate}",
         "eventDate": "Datum evenement",
         "orders": "Bestellingen",
         "dishesSold": "Verkochte gerechten",
@@ -4282,7 +4287,8 @@
         "stored": "opgeslagen bij de bestelling",
         "estimated": "geschat op basis van je btw-tarief",
         "none": "geen btw-tarief ingesteld"
-      }
+      },
+      "noRate": "geen tarief"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Klanten zien ze vóór het betalen, als één regel: ‘{label} {amount}’.",
       "hatchgrab": "HatchGrab rekent {fee} servicekosten op de online bestellingen van je klanten. Jij betaalt die niet en kunt ze niet wijzigen."
     },
-    "saveFailed": "Opslaan mislukt — probeer het opnieuw."
+    "saveFailed": "Opslaan mislukt — probeer het opnieuw.",
+    "noVat": "Geen {label}",
+    "noVatHint": "Kies ‘Geen {label}’ als je geen {label} rekent.",
+    "otherRate": "Ander tarief…",
+    "itemRates": {
+      "label": "Tarieven per item",
+      "hintSome": "{n, plural, one {{count} item heeft een ander tarief} other {{count} items hebben een ander tarief}}",
+      "hintNone": "Alle items gebruiken je standaardtarief",
+      "button": "Tarieven per item wijzigen",
+      "title": "Tarieven per item",
+      "intro": "Je kiest het tarief voor elk item.",
+      "setAll": "Voor alle instellen",
+      "default": "Standaard ({rate})",
+      "rateAria": "Tarief voor {item}",
+      "otherItems": "Overige items",
+      "noItems": "Nog geen items op je menukaart.",
+      "close": "Sluiten",
+      "cancel": "Annuleren",
+      "save": "Opslaan",
+      "saved": "Tarieven per item opgeslagen"
+    }
   },
   "takingPayment": {
     "heading": "Afrekenen",

@@ -26,5 +26,25 @@
     "example": "Kupci je vide pre plaćanja, kao jednu stavku: „{label} {amount}“.",
     "hatchgrab": "HatchGrab dodaje naknadu za uslugu od {fee} na online porudžbine vaših kupaca. Vi je ne plaćate i ne možete da je menjate."
   },
-  "saveFailed": "Čuvanje nije uspelo — pokušajte ponovo."
+  "saveFailed": "Čuvanje nije uspelo — pokušajte ponovo.",
+  "noVat": "Bez {label}",
+  "noVatHint": "Izaberite „Bez {label}“ ako ne naplaćujete {label}.",
+  "otherRate": "Druga stopa…",
+  "itemRates": {
+    "label": "Stope stavki",
+    "hintSome": "{n, plural, one {{count} stavka ima drugačiju stopu} few {{count} stavke imaju drugačiju stopu} other {{count} stavki ima drugačiju stopu}}",
+    "hintNone": "Sve stavke koriste vašu podrazumevanu stopu",
+    "button": "Promeni stope stavki",
+    "title": "Stope stavki",
+    "intro": "Vi birate stopu za svaku stavku.",
+    "setAll": "Postavi za sve",
+    "default": "Podrazumevana ({rate})",
+    "rateAria": "Stopa: {item}",
+    "otherItems": "Ostale stavke",
+    "noItems": "U meniju još nemate stavki.",
+    "close": "Zatvori",
+    "cancel": "Otkaži",
+    "save": "Sačuvaj",
+    "saved": "Stope stavki su sačuvane"
+  }
 }

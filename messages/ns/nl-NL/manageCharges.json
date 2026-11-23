@@ -26,5 +26,25 @@
     "example": "Klanten zien ze vóór het betalen, als één regel: ‘{label} {amount}’.",
     "hatchgrab": "HatchGrab rekent {fee} servicekosten op de online bestellingen van je klanten. Jij betaalt die niet en kunt ze niet wijzigen."
   },
-  "saveFailed": "Opslaan mislukt — probeer het opnieuw."
+  "saveFailed": "Opslaan mislukt — probeer het opnieuw.",
+  "noVat": "Geen {label}",
+  "noVatHint": "Kies ‘Geen {label}’ als je geen {label} rekent.",
+  "otherRate": "Ander tarief…",
+  "itemRates": {
+    "label": "Tarieven per item",
+    "hintSome": "{n, plural, one {{count} item heeft een ander tarief} other {{count} items hebben een ander tarief}}",
+    "hintNone": "Alle items gebruiken je standaardtarief",
+    "button": "Tarieven per item wijzigen",
+    "title": "Tarieven per item",
+    "intro": "Je kiest het tarief voor elk item.",
+    "setAll": "Voor alle instellen",
+    "default": "Standaard ({rate})",
+    "rateAria": "Tarief voor {item}",
+    "otherItems": "Overige items",
+    "noItems": "Nog geen items op je menukaart.",
+    "close": "Sluiten",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "saved": "Tarieven per item opgeslagen"
+  }
 }

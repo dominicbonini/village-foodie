@@ -512,7 +512,7 @@
  "errorsManage.charges_fee_over_pct": "The most you can charge is {max}%.",
  "errorsManage.charges_fee_pct": "Use a percentage like 3 or 3.5.",
  "errorsManage.charges_rate_decimals": "Use up to 3 decimal places, like 8.875.",
- "errorsManage.charges_rate_range": "Use a rate from 0 to 20%.",
+ "errorsManage.charges_rate_range": "Use a rate from 0 to 30%.",
  "errorsManage.choose_truck_for_event": "Choose which truck is working this event before it can go live.",
  "errorsManage.clear_first_setup_only": "Something went wrong — refresh the page and try again.",
  "errorsManage.collection_interval_choices": "Collection times must be every {choices} minutes.",

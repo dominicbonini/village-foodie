@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Arrangementet er slut. Genstart det for at tage imod bestillinger.} cancelled {Arrangementet er aflyst.} other {Arrangementet er ikke åbent.}}",
     "sign_in_to_create": "Log ind som teammedlem for at oprette et arrangement.",
     "event_details_invalid": "{reason, select, name {Tilføj et navn til arrangementet} times {Tilføj start- og sluttid} end {Sluttiden skal være efter starten} van {Vælg en vogn} date {Arrangementer oprettet her gælder kun i dag} other {Tjek oplysningerne}}",
-    "event_overlaps": "Det overlapper et andet arrangement i dag."
+    "event_overlaps": "Det overlapper et andet arrangement i dag.",
+    "order_finished_edit": "Denne bestilling er afsluttet, så den kan ikke ændres.",
+    "order_finished_cancel": "Denne bestilling er afsluttet, så den kan ikke annulleres."
   },
   "kitchenModals": {
     "close": "Luk",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Noget gik galt — genindlæs siden, og prøv igen.",
     "charges_owner_only": "Kun ejeren kan ændre moms, drikkepenge og gebyrer",
     "charges_rate_decimals": "Brug højst 3 decimaler, f.eks. 8,875.",
-    "charges_rate_range": "Brug en sats fra 0 til 20 %.",
+    "charges_rate_range": "Brug en sats fra 0 til 30 %.",
     "charges_rate_not_here": "Priserne i dit land er allerede inkl. moms, så der er ingen sats at angive.",
     "charges_fee_not_here": "Onlineservicegebyrer er ikke tilgængelige i dit land.",
     "charges_fee_hatchgrab": "HatchGrab fastsætter onlineservicegebyret i dit land, så det kan ikke ændres her.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Den del af gebyret er ikke tilladt i dit land.",
     "charges_choose_on_off": "Vælg til eller fra.",
     "charges_nothing_to_save": "Intet at gemme.",
+    "charges_items_invalid": "En af disse varer er ikke længere på dit menukort. Luk dette, og prøv igen.",
     "country_settings_failed": "Foodtruckens landeindstillinger kunne ikke indlæses. Prøv igen om lidt.",
     "plans_failed": "Foodtruckens abonnement kunne ikke indlæses. Prøv igen om lidt.",
     "demo_not_available": "Ikke tilgængelig for en demo-foodtruck",
@@ -4273,6 +4276,8 @@
         "refunded": "Refunderet",
         "cost": "Kostpris",
         "profit": "Fortjeneste",
+        "netAtRate": "Netto {rate}",
+        "taxAtRate": "Moms {rate}",
         "eventDate": "Arrangementsdato",
         "orders": "Bestillinger",
         "dishesSold": "Solgte retter",
@@ -4282,7 +4287,8 @@
         "stored": "gemt med bestillingen",
         "estimated": "anslået ud fra din momssats",
         "none": "ingen momssats angivet"
-      }
+      },
+      "noRate": "ingen sats"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Kunderne ser det, før de betaler, som én linje: »{label} {amount}«.",
       "hatchgrab": "HatchGrab lægger et servicegebyr på {fee} på dine kunders onlinebestillinger. Du betaler det ikke og kan ikke ændre det."
     },
-    "saveFailed": "Kunne ikke gemme — prøv igen."
+    "saveFailed": "Kunne ikke gemme — prøv igen.",
+    "noVat": "Ingen {label}",
+    "noVatHint": "Vælg »Ingen {label}«, hvis du ikke opkræver {label}.",
+    "otherRate": "Anden sats…",
+    "itemRates": {
+      "label": "Satser pr. vare",
+      "hintSome": "{n, plural, one {{count} vare har en anden sats} other {{count} varer har en anden sats}}",
+      "hintNone": "Alle varer bruger din standardsats",
+      "button": "Skift satser pr. vare",
+      "title": "Satser pr. vare",
+      "intro": "Du vælger satsen for hver vare.",
+      "setAll": "Angiv for alle",
+      "default": "Standard ({rate})",
+      "rateAria": "Sats for {item}",
+      "otherItems": "Andre varer",
+      "noItems": "Der er ingen varer på dit menukort endnu.",
+      "close": "Luk",
+      "cancel": "Annuller",
+      "save": "Gem",
+      "saved": "Satser pr. vare gemt"
+    }
   },
   "takingPayment": {
     "heading": "Modtagelse af betaling",

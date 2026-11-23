@@ -11,7 +11,7 @@
 //   • NO customer name, email or phone.
 import { minorDigits } from '@/lib/money-format'
 import type { AccountRow, EventSummary, TaxBasis, Channel, PaymentMethod } from '@/lib/accounts/ledger'
-import { taxBasisOf } from '@/lib/accounts/ledger'
+import { taxBasisOf, ratesIn } from '@/lib/accounts/ledger'
 
 export const CSV_BOM = '﻿'
 
@@ -44,19 +44,32 @@ export interface CsvWords {
   taxBasis: (b: TaxBasis) => string
   /** The event's name ("Venue, Town"), or the "unknown event" word. */
   event: (eventId: string | null, eventDate: string | null) => string
+  /** france-vat-1: a per-rate column's header — "Net 10%" / "Tax 10%" (rate null: no rate). Absent → no per-rate columns. */
+  rateHeader?: (kind: 'net' | 'tax', rateMilli: number | null) => string
 }
 
 export const ORDER_COLUMNS = ['date', 'time', 'orderNumber', 'event', 'channel', 'paymentMethod', 'currency', 'gross', 'tax', 'taxBasis', 'net', 'refunded', 'cost', 'profit'] as const
 export const EVENT_COLUMNS = ['eventDate', 'event', 'orders', 'currency', 'gross', 'tax', 'taxBasis', 'net', 'refunded', 'dishesSold', 'dishesWithCost', 'cost', 'profit'] as const
 export type CsvColumn = (typeof ORDER_COLUMNS)[number] | (typeof EVENT_COLUMNS)[number]
 
-/** One row per order. Cost and profit are blank unless every dish in the order has a cost. */
+/** One row per order. Cost and profit are blank unless every dish in the order has a cost.
+ *  france-vat-1: when the file holds MORE THAN ONE rate, a Net and a Tax column per rate (ascending) follow Profit. One rate, or
+ *  none (every file before france-vat-1, every UK truck): exactly the columns it always had. */
 export function ordersCsv(rows: readonly AccountRow[], w: CsvWords): string {
-  return csvFile(ORDER_COLUMNS.map(w.header), rows.map(r => {
+  const rates = w.rateHeader ? ratesIn(rows) : []
+  const perRate = rates.length > 1 && !!w.rateHeader
+  const header = [...ORDER_COLUMNS.map(w.header), ...(perRate ? rates.flatMap(rt => [w.rateHeader!('net', rt), w.rateHeader!('tax', rt)]) : [])]
+  return csvFile(header, rows.map(r => {
     const complete = r.dishesWithCost === r.dishes
-    return [r.date, r.time, r.number, w.event(r.eventId, r.eventDate), w.channel(r.channel), w.payment(r.payment), r.currency,
+    const base = [r.date, r.time, r.number, w.event(r.eventId, r.eventDate), w.channel(r.channel), w.payment(r.payment), r.currency,
       csvAmount(r.grossMinor, r.currency), csvAmount(r.taxMinor, r.currency), w.taxBasis(r.taxBasis), csvAmount(r.netMinor, r.currency),
       csvAmount(r.refundedMinor, r.currency), complete ? csvAmount(r.costMinor, r.currency) : '', r.profitMinor != null ? csvAmount(r.profitMinor, r.currency) : '']
+    if (!perRate) return base
+    const cells = rates.flatMap(rt => {
+      const sh = (r.rates ?? []).find(x => x.rate === rt)
+      return [csvAmount(sh?.netMinor ?? 0, r.currency), csvAmount(sh?.taxMinor ?? 0, r.currency)]
+    })
+    return [...base, ...cells]
   }))
 }
 

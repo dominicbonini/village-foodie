@@ -26,5 +26,25 @@
     "example": "客戶付款前會看到一行：「{label} {amount}」。",
     "hatchgrab": "HatchGrab 會向你的客戶的網上訂單收取 {fee} 服務費。你毋須支付，亦不能更改。"
   },
-  "saveFailed": "未能儲存，請再試一次。"
+  "saveFailed": "未能儲存，請再試一次。",
+  "noVat": "不收 {label}",
+  "noVatHint": "如你不收取 {label}，請選擇「不收 {label}」。",
+  "otherRate": "其他…",
+  "itemRates": {
+    "label": "個別食品稅率",
+    "hintSome": "{n, plural, one {{count} 項食品使用不同稅率} other {{count} 項食品使用不同稅率}}",
+    "hintNone": "所有食品均使用你的預設稅率",
+    "button": "更改食品稅率",
+    "title": "個別食品稅率",
+    "intro": "你可為每項食品選擇稅率。",
+    "setAll": "全部設定",
+    "default": "預設（{rate}）",
+    "rateAria": "{item} 的稅率",
+    "otherItems": "其他食品",
+    "noItems": "你的餐牌上暫時未有食品。",
+    "close": "關閉",
+    "cancel": "取消",
+    "save": "儲存",
+    "saved": "已儲存食品稅率"
+  }
 }

@@ -140,6 +140,8 @@
       "refunded": "Refunderet",
       "cost": "Kostpris",
       "profit": "Fortjeneste",
+      "netAtRate": "Netto {rate}",
+      "taxAtRate": "Moms {rate}",
       "eventDate": "Arrangementsdato",
       "orders": "Bestillinger",
       "dishesSold": "Solgte retter",
@@ -149,6 +151,7 @@
       "stored": "gemt med bestillingen",
       "estimated": "anslået ud fra din momssats",
       "none": "ingen momssats angivet"
-    }
+    },
+    "noRate": "ingen sats"
   }
 }

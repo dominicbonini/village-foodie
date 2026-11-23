@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Tato akce skončila. Spusťte ji znovu, abyste mohli přijímat objednávky.} cancelled {Tato akce byla zrušena.} other {Tato akce není otevřená.}}",
   "sign_in_to_create": "Přihlaste se jako člen týmu, abyste mohli vytvořit akci.",
   "event_details_invalid": "{reason, select, name {Přidejte název akce} times {Přidejte čas začátku a konce} end {Konec musí být po začátku} van {Vyberte vůz} date {Akce vytvořené zde platí jen pro dnešek} other {Zkontrolujte údaje akce}}",
-  "event_overlaps": "Překrývá se s jinou dnešní akcí."
+  "event_overlaps": "Překrývá se s jinou dnešní akcí.",
+  "order_finished_edit": "Tato objednávka je dokončená, takže ji nelze změnit.",
+  "order_finished_cancel": "Tato objednávka je dokončená, takže ji nelze zrušit."
 }

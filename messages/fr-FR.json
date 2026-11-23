@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Cet événement est terminé. Redémarrez-le pour prendre des commandes.} cancelled {Cet événement a été annulé.} other {Cet événement n’est pas ouvert.}}",
     "sign_in_to_create": "Connectez-vous en tant que membre de l’équipe pour créer un événement.",
     "event_details_invalid": "{reason, select, name {Ajoutez un nom d’événement} times {Ajoutez une heure de début et de fin} end {L’heure de fin doit être après le début} van {Choisissez un camion} date {Les événements créés ici sont pour aujourd’hui uniquement} other {Vérifiez les détails de l’événement}}",
-    "event_overlaps": "Cet événement en chevauche un autre aujourd’hui."
+    "event_overlaps": "Cet événement en chevauche un autre aujourd’hui.",
+    "order_finished_edit": "Cette commande est terminée : elle ne peut plus être modifiée.",
+    "order_finished_cancel": "Cette commande est terminée : elle ne peut plus être annulée."
   },
   "kitchenModals": {
     "close": "Fermer",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Une erreur s’est produite — actualisez la page et réessayez.",
     "charges_owner_only": "Seul le propriétaire peut modifier les taxes, les pourboires et les frais",
     "charges_rate_decimals": "Utilisez jusqu’à 3 décimales, par exemple 8,875.",
-    "charges_rate_range": "Utilisez un taux compris entre 0 et 20 %.",
+    "charges_rate_range": "Utilisez un taux compris entre 0 et 30 %.",
     "charges_rate_not_here": "Dans votre pays, les prix incluent déjà les taxes : il n’y a donc aucun taux à définir.",
     "charges_fee_not_here": "Les frais de service en ligne ne sont pas disponibles dans votre pays.",
     "charges_fee_hatchgrab": "HatchGrab fixe les frais de service en ligne dans votre pays : ils ne peuvent donc pas être modifiés ici.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Cette partie des frais n’est pas autorisée dans votre pays.",
     "charges_choose_on_off": "Choisissez activé ou désactivé.",
     "charges_nothing_to_save": "Rien à enregistrer.",
+    "charges_items_invalid": "L’un de ces articles n’est plus sur votre carte. Fermez cette fenêtre et réessayez.",
     "country_settings_failed": "Impossible de charger les paramètres de pays de ce food truck. Réessayez dans un instant.",
     "plans_failed": "Impossible de charger l’offre de ce food truck. Réessayez dans un instant.",
     "demo_not_available": "Non disponible sur un food truck de démonstration",
@@ -4273,6 +4276,8 @@
         "refunded": "Remboursé",
         "cost": "Coût",
         "profit": "Bénéfice",
+        "netAtRate": "Net {rate}",
+        "taxAtRate": "Taxes {rate}",
         "eventDate": "Date de l’événement",
         "orders": "Commandes",
         "dishesSold": "Plats vendus",
@@ -4282,7 +4287,8 @@
         "stored": "enregistrées avec la commande",
         "estimated": "estimées d’après votre taux de taxe",
         "none": "aucun taux de taxe défini"
-      }
+      },
+      "noRate": "sans taux"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Les clients les voient avant de payer, sur une seule ligne : « {label} {amount} ».",
       "hatchgrab": "HatchGrab ajoute des frais de service de {fee} aux commandes en ligne de vos clients. Vous ne les payez pas et ne pouvez pas les modifier."
     },
-    "saveFailed": "Impossible d’enregistrer — veuillez réessayer."
+    "saveFailed": "Impossible d’enregistrer — veuillez réessayer.",
+    "noVat": "Sans {label}",
+    "noVatHint": "Choisissez « Sans {label} » si vous ne facturez pas de {label}.",
+    "otherRate": "Autre…",
+    "itemRates": {
+      "label": "Taux par article",
+      "hintSome": "{n, plural, one {{count} article a un taux différent} other {{count} articles ont un taux différent}}",
+      "hintNone": "Tous les articles utilisent votre taux par défaut",
+      "button": "Modifier les taux par article",
+      "title": "Taux par article",
+      "intro": "Vous choisissez le taux de chaque article.",
+      "setAll": "Appliquer à tous",
+      "default": "Par défaut ({rate})",
+      "rateAria": "Taux pour {item}",
+      "otherItems": "Autres articles",
+      "noItems": "Aucun article sur votre carte pour l’instant.",
+      "close": "Fermer",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saved": "Taux par article enregistrés"
+    }
   },
   "takingPayment": {
     "heading": "Encaissement",

@@ -140,6 +140,8 @@
       "refunded": "İade edilen",
       "cost": "Maliyet",
       "profit": "Kâr",
+      "netAtRate": "Net {rate}",
+      "taxAtRate": "Vergi {rate}",
       "eventDate": "Etkinlik tarihi",
       "orders": "Siparişler",
       "dishesSold": "Satılan ürünler",
@@ -149,6 +151,7 @@
       "stored": "siparişle birlikte kaydedildi",
       "estimated": "vergi oranınıza göre tahmini",
       "none": "vergi oranı ayarlanmadı"
-    }
+    },
+    "noRate": "oran yok"
   }
 }

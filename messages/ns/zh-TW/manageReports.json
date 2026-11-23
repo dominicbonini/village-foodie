@@ -140,6 +140,8 @@
       "refunded": "已退款",
       "cost": "成本",
       "profit": "利潤",
+      "netAtRate": "淨額 {rate}",
+      "taxAtRate": "稅金 {rate}",
       "eventDate": "活動日期",
       "orders": "訂單數",
       "dishesSold": "已售餐點數",
@@ -149,6 +151,7 @@
       "stored": "隨訂單儲存",
       "estimated": "依你的稅率估算",
       "none": "未設定稅率"
-    }
+    },
+    "noRate": "無稅率"
   }
 }

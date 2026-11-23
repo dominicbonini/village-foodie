@@ -140,6 +140,8 @@
       "refunded": "הוחזר",
       "cost": "עלות",
       "profit": "רווח",
+      "netAtRate": "נטו {rate}",
+      "taxAtRate": "מס {rate}",
       "eventDate": "תאריך האירוע",
       "orders": "הזמנות",
       "dishesSold": "מנות שנמכרו",
@@ -149,6 +151,7 @@
       "stored": "נשמר עם ההזמנה",
       "estimated": "הערכה לפי שיעור המס שלכם",
       "none": "לא הוגדר שיעור מס"
-    }
+    },
+    "noRate": "ללא שיעור"
   }
 }

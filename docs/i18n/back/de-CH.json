@@ -98,5 +98,7 @@
  "weeklyPost.error.tooBig": "This image is {size, number, ::.0 group-off} MB. The upper limit is 10 MB.",
  "manageReports.accounts.partial": "Dishes without a cost are left out of the cost, so this profit is higher than it really is. Add a cost to each dish in the Menu tab.",
  "manageMenu.item.tooMany": "{count} allergens ticked. Are they really all in this dish's recipe? Allergens used elsewhere in your kitchen belong under “Also used in the kitchen” in the “Menu” tab.",
- "manageMenu.allergens.kitchenLine": "Also used in the kitchen: {list}"
+ "manageMenu.allergens.kitchenLine": "Also used in the kitchen: {list}",
+ "manageCharges.itemRates.close": "Close",
+ "errorsManage.charges_items_invalid": "One of these items is no longer on your menu. Close this window and try again."
 }

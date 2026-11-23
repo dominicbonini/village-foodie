@@ -140,6 +140,8 @@
       "refunded": "Reembolsado",
       "cost": "Custo",
       "profit": "Lucro",
+      "netAtRate": "Líquido {rate}",
+      "taxAtRate": "Tributos {rate}",
       "eventDate": "Data do evento",
       "orders": "Pedidos",
       "dishesSold": "Pratos vendidos",
@@ -149,6 +151,7 @@
       "stored": "registrado com o pedido",
       "estimated": "estimado pela sua alíquota",
       "none": "sem alíquota definida"
-    }
+    },
+    "noRate": "sem alíquota"
   }
 }

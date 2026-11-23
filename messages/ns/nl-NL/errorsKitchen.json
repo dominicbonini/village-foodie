@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Dit evenement is afgelopen. Herstart het om bestellingen aan te nemen.} cancelled {Dit evenement is geannuleerd.} other {Dit evenement is niet open.}}",
   "sign_in_to_create": "Log in als teamlid om een evenement te maken.",
   "event_details_invalid": "{reason, select, name {Vul een naam voor het evenement in} times {Vul een begin- en eindtijd in} end {De eindtijd moet na het begin liggen} van {Kies een wagen} date {Evenementen die je hier maakt zijn alleen voor vandaag} other {Controleer de gegevens van het evenement}}",
-  "event_overlaps": "Dit overlapt vandaag met een ander evenement."
+  "event_overlaps": "Dit overlapt vandaag met een ander evenement.",
+  "order_finished_edit": "Deze bestelling is afgerond, dus je kunt hem niet meer wijzigen.",
+  "order_finished_cancel": "Deze bestelling is afgerond, dus je kunt hem niet meer annuleren."
 }

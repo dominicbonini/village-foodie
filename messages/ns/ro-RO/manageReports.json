@@ -140,6 +140,8 @@
       "refunded": "Rambursat",
       "cost": "Cost",
       "profit": "Profit",
+      "netAtRate": "Net {rate}",
+      "taxAtRate": "TVA {rate}",
       "eventDate": "Data evenimentului",
       "orders": "Comenzi",
       "dishesSold": "Preparate vândute",
@@ -149,6 +151,7 @@
       "stored": "salvată odată cu comanda",
       "estimated": "estimată după cota dumneavoastră de TVA",
       "none": "nicio cotă de TVA setată"
-    }
+    },
+    "noRate": "fără cotă"
   }
 }

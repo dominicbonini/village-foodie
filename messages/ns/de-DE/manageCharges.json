@@ -26,5 +26,25 @@
     "example": "Kunden sehen sie vor dem Bezahlen als eine Zeile: „{label} {amount}“.",
     "hatchgrab": "HatchGrab erhebt auf die Online-Bestellungen Ihrer Kunden eine Servicegebühr von {fee}. Sie zahlen sie nicht und können sie nicht ändern."
   },
-  "saveFailed": "Speichern fehlgeschlagen – bitte versuchen Sie es erneut."
+  "saveFailed": "Speichern fehlgeschlagen – bitte versuchen Sie es erneut.",
+  "noVat": "Ohne {label}",
+  "noVatHint": "Wählen Sie „Ohne {label}“, wenn Sie {label} nicht berechnen.",
+  "otherRate": "Anderer Satz…",
+  "itemRates": {
+    "label": "Steuersätze pro Artikel",
+    "hintSome": "{n, plural, one {{count} Artikel hat einen anderen Satz} other {{count} Artikel haben einen anderen Satz}}",
+    "hintNone": "Alle Artikel nutzen Ihren Standardsatz",
+    "button": "Steuersätze ändern",
+    "title": "Steuersätze pro Artikel",
+    "intro": "Sie wählen den Satz für jeden Artikel.",
+    "setAll": "Für alle festlegen",
+    "default": "Standard ({rate})",
+    "rateAria": "Satz für {item}",
+    "otherItems": "Weitere Artikel",
+    "noItems": "Noch keine Artikel auf Ihrer Speisekarte.",
+    "close": "Schließen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "saved": "Steuersätze gespeichert"
+  }
 }

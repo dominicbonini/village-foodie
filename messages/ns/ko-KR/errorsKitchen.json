@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {이 영업은 끝났어요. 주문을 받으려면 다시 시작하세요.} cancelled {이 영업은 취소됐어요.} other {이 영업은 열려 있지 않아요.}}",
   "sign_in_to_create": "영업 일정을 만들려면 팀원으로 로그인하세요.",
   "event_details_invalid": "{reason, select, name {영업 일정 이름을 입력하세요} times {시작 시간과 종료 시간을 입력하세요} end {종료 시간은 시작 이후여야 해요} van {차량을 선택하세요} date {여기서 만든 영업 일정은 오늘만 해당돼요} other {영업 일정 정보를 확인하세요}}",
-  "event_overlaps": "오늘 다른 영업 일정과 시간이 겹쳐요."
+  "event_overlaps": "오늘 다른 영업 일정과 시간이 겹쳐요.",
+  "order_finished_edit": "이미 종료된 주문이라 수정할 수 없습니다.",
+  "order_finished_cancel": "이미 종료된 주문이라 취소할 수 없습니다."
 }

@@ -26,5 +26,25 @@
     "example": "Pelanggan melihatnya sebelum membayar, sebagai satu baris: “{label} {amount}”.",
     "hatchgrab": "HatchGrab menambahkan biaya layanan {fee} ke pesanan online pelanggan Anda. Anda tidak membayarnya dan tidak bisa mengubahnya."
   },
-  "saveFailed": "Tidak dapat menyimpan — silakan coba lagi."
+  "saveFailed": "Tidak dapat menyimpan — silakan coba lagi.",
+  "noVat": "Tanpa {label}",
+  "noVatHint": "Pilih Tanpa {label} jika Anda tidak mengenakan {label}.",
+  "otherRate": "Lainnya…",
+  "itemRates": {
+    "label": "Tarif per item",
+    "hintSome": "{n, plural, one {{count} item memakai tarif berbeda} other {{count} item memakai tarif berbeda}}",
+    "hintNone": "Semua item memakai tarif bawaan Anda",
+    "button": "Ubah tarif item",
+    "title": "Tarif per item",
+    "intro": "Anda memilih tarif untuk setiap item.",
+    "setAll": "Atur semua",
+    "default": "Bawaan ({rate})",
+    "rateAria": "Tarif untuk {item}",
+    "otherItems": "Item lainnya",
+    "noItems": "Belum ada item di menu Anda.",
+    "close": "Tutup",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "saved": "Tarif item disimpan"
+  }
 }

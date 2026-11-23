@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Bu etkinlik bitti. Sipariş almak için yeniden başlatın.} cancelled {Bu etkinlik iptal edildi.} other {Bu etkinlik açık değil.}}",
     "sign_in_to_create": "Etkinlik oluşturmak için ekip üyesi olarak giriş yapın.",
     "event_details_invalid": "{reason, select, name {Etkinlik adı ekleyin} times {Başlangıç ve bitiş saati ekleyin} end {Bitiş saati başlangıçtan sonra olmalı} van {Bir araç seçin} date {Burada oluşturulan etkinlikler yalnızca bugün içindir} other {Etkinlik bilgilerini kontrol edin}}",
-    "event_overlaps": "Bu, bugünkü başka bir etkinlikle çakışıyor."
+    "event_overlaps": "Bu, bugünkü başka bir etkinlikle çakışıyor.",
+    "order_finished_edit": "Bu sipariş tamamlandı, bu yüzden değiştirilemez.",
+    "order_finished_cancel": "Bu sipariş tamamlandı, bu yüzden iptal edilemez."
   },
   "kitchenModals": {
     "close": "Kapat",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Bir sorun oluştu — sayfayı yenileyip tekrar deneyin.",
     "charges_owner_only": "Vergi, bahşiş ve ücretleri yalnızca işletme sahibi değiştirebilir",
     "charges_rate_decimals": "En fazla 3 ondalık basamak kullanın, ör. 8,875.",
-    "charges_rate_range": "%0 ile %20 arasında bir oran kullanın.",
+    "charges_rate_range": "%0 ile %30 arasında bir oran kullanın.",
     "charges_rate_not_here": "Ülkenizde fiyatlara vergi zaten dahildir, bu yüzden ayarlanacak bir oran yok.",
     "charges_fee_not_here": "Ülkenizde online hizmet bedeli kullanılamıyor.",
     "charges_fee_hatchgrab": "Ülkenizde online hizmet bedelini HatchGrab belirler, bu yüzden burada değiştirilemez.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Ücretin bu kısmına ülkenizde izin verilmiyor.",
     "charges_choose_on_off": "Açık veya kapalı seçin.",
     "charges_nothing_to_save": "Kaydedilecek bir şey yok.",
+    "charges_items_invalid": "Bu ürünlerden biri artık menünüzde yok. Bunu kapatıp tekrar deneyin.",
     "country_settings_failed": "Bu food truck’ın ülke ayarları yüklenemedi. Biraz sonra tekrar deneyin.",
     "plans_failed": "Bu food truck’ın paketi yüklenemedi. Biraz sonra tekrar deneyin.",
     "demo_not_available": "Demo food truck’ta kullanılamaz",
@@ -4273,6 +4276,8 @@
         "refunded": "İade edilen",
         "cost": "Maliyet",
         "profit": "Kâr",
+        "netAtRate": "Net {rate}",
+        "taxAtRate": "Vergi {rate}",
         "eventDate": "Etkinlik tarihi",
         "orders": "Siparişler",
         "dishesSold": "Satılan ürünler",
@@ -4282,7 +4287,8 @@
         "stored": "siparişle birlikte kaydedildi",
         "estimated": "vergi oranınıza göre tahmini",
         "none": "vergi oranı ayarlanmadı"
-      }
+      },
+      "noRate": "oran yok"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Müşteriler bunu ödemeden önce tek satır olarak görür: “{label} {amount}”.",
       "hatchgrab": "HatchGrab, müşterilerinizin online siparişlerine {fee} hizmet bedeli ekler. Bunu siz ödemezsiniz ve değiştiremezsiniz."
     },
-    "saveFailed": "Kaydedilemedi — lütfen tekrar deneyin."
+    "saveFailed": "Kaydedilemedi — lütfen tekrar deneyin.",
+    "noVat": "{label} yok",
+    "noVatHint": "{label} uygulamıyorsanız “{label} yok” seçeneğini seçin.",
+    "otherRate": "Diğer…",
+    "itemRates": {
+      "label": "Ürün oranları",
+      "hintSome": "{n, plural, one {{count} ürün farklı bir oran kullanıyor} other {{count} ürün farklı bir oran kullanıyor}}",
+      "hintNone": "Tüm ürünler varsayılan oranınızı kullanıyor",
+      "button": "Ürün oranlarını değiştir",
+      "title": "Ürün oranları",
+      "intro": "Her ürünün oranını siz seçersiniz.",
+      "setAll": "Tümünü ayarla",
+      "default": "Varsayılan ({rate})",
+      "rateAria": "{item} için oran",
+      "otherItems": "Diğer ürünler",
+      "noItems": "Menünüzde henüz ürün yok.",
+      "close": "Kapat",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saved": "Ürün oranları kaydedildi"
+    }
   },
   "takingPayment": {
     "heading": "Ödeme alma",

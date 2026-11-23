@@ -14,7 +14,6 @@ import type { ManageErrorCode } from '@/lib/i18n/manage-errors'
 import { translatorFor } from '@/lib/i18n/translator'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import '@/lib/i18n/catalog/errorsManage'
-import { includedTaxOf } from '@/lib/address-formats'   // france-1
 
 /** The four country facts the card and the action read. */
 export type ChargeCountry = Pick<CountrySettings,
@@ -39,8 +38,12 @@ export function rateBoxToMilli(text: string): number | null | 'decimals' | 'bad'
   if (!m) return 'bad'
   if ((m[2] ?? '').length > 3) return 'decimals'
   const n = Number(m[1] + (m[2] ?? '').padEnd(3, '0'))
-  return n >= 0 && n <= 20000 ? n : 'bad'
+  return n >= 0 && n <= MAX_RATE_MILLI ? n : 'bad'
 }
+
+/** france-vat-1 (Dominic, 24 November 2026): the highest rate a truck can set — its default and each item's — 30 %, so Ireland's
+ *  23 % and the 25–27 % countries fit (was 20 %). The database CHECKs say the same (20261124). */
+export const MAX_RATE_MILLI = 30000
 
 /** A typed amount in major units → minor units ("0.50" → 50), two decimals. '' → null. */
 export function moneyBoxToMinor(text: string): number | null | 'bad' {
@@ -82,7 +85,8 @@ export function checkChargeSettings(
   const values: ChargeSettingsValues = {}
   if ('taxRate' in input) {
     // france-1: a country whose prices INCLUDE a tax its receipts word (France's TVA) takes the rate those prices include.
-    if (c.pricesIncludeTax && !includedTaxOf(c.addressFormat)) return refusal('charges_rate_not_here')
+    // france-vat-1 (Dominic, 24 November 2026): EVERY country takes a rate now. Where prices include tax and the format has no
+    // default (GB, IE …) an empty box is "No VAT" (NULL), which every existing truck has, so nothing changes until one is set.
     const v = rateBoxToMilli(String(input.taxRate ?? ''))
     if (v === 'decimals') return refusal('charges_rate_decimals')
     if (v === 'bad') return refusal('charges_rate_range')

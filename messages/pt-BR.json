@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Este evento terminou. Reinicie para receber pedidos.} cancelled {Este evento foi cancelado.} other {Este evento não está aberto.}}",
     "sign_in_to_create": "Entre como membro da equipe para criar um evento.",
     "event_details_invalid": "{reason, select, name {Adicione um nome para o evento} times {Adicione um horário de início e de fim} end {O horário de fim precisa ser depois do início} van {Escolha um food truck} date {Eventos criados aqui são só para hoje} other {Confira os dados do evento}}",
-    "event_overlaps": "Isso se sobrepõe a outro evento de hoje."
+    "event_overlaps": "Isso se sobrepõe a outro evento de hoje.",
+    "order_finished_edit": "Este pedido já foi finalizado, então não pode ser alterado.",
+    "order_finished_cancel": "Este pedido já foi finalizado, então não pode ser cancelado."
   },
   "kitchenModals": {
     "close": "Fechar",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Algo deu errado — atualize a página e tente de novo.",
     "charges_owner_only": "Só o proprietário pode alterar tributos, gorjetas e taxas",
     "charges_rate_decimals": "Use até 3 casas decimais, como 8.875.",
-    "charges_rate_range": "Use uma alíquota de 0 a 20%.",
+    "charges_rate_range": "Use uma alíquota de 0 a 30%.",
     "charges_rate_not_here": "No seu país, os preços já incluem os tributos, então não há alíquota para definir.",
     "charges_fee_not_here": "Taxas de serviço online não estão disponíveis no seu país.",
     "charges_fee_hatchgrab": "No seu país, o HatchGrab define a taxa de serviço online, então ela não pode ser alterada aqui.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Essa parte da taxa não é permitida no seu país.",
     "charges_choose_on_off": "Escolha ativado ou desativado.",
     "charges_nothing_to_save": "Nada para salvar.",
+    "charges_items_invalid": "Um destes itens não está mais no seu cardápio. Feche esta janela e tente de novo.",
     "country_settings_failed": "Não foi possível carregar as configurações de país deste food truck. Tente de novo em instantes.",
     "plans_failed": "Não foi possível carregar o plano deste food truck. Tente de novo em instantes.",
     "demo_not_available": "Não disponível em um food truck de demonstração",
@@ -4273,6 +4276,8 @@
         "refunded": "Reembolsado",
         "cost": "Custo",
         "profit": "Lucro",
+        "netAtRate": "Líquido {rate}",
+        "taxAtRate": "Tributos {rate}",
         "eventDate": "Data do evento",
         "orders": "Pedidos",
         "dishesSold": "Pratos vendidos",
@@ -4282,7 +4287,8 @@
         "stored": "registrado com o pedido",
         "estimated": "estimado pela sua alíquota",
         "none": "sem alíquota definida"
-      }
+      },
+      "noRate": "sem alíquota"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Os clientes veem a taxa antes de pagar, em uma linha: “{label} {amount}”.",
       "hatchgrab": "O HatchGrab adiciona uma taxa de serviço de {fee} aos pedidos online dos seus clientes. Você não paga essa taxa e não pode alterá-la."
     },
-    "saveFailed": "Não foi possível salvar — tente de novo."
+    "saveFailed": "Não foi possível salvar — tente de novo.",
+    "noVat": "Sem {label}",
+    "noVatHint": "Escolha “Sem {label}” se você não cobra {label}.",
+    "otherRate": "Outra…",
+    "itemRates": {
+      "label": "Alíquotas por item",
+      "hintSome": "{n, plural, one {{count} item usa uma alíquota diferente} other {{count} itens usam uma alíquota diferente}}",
+      "hintNone": "Todos os itens usam sua alíquota padrão",
+      "button": "Alterar alíquotas por item",
+      "title": "Alíquotas por item",
+      "intro": "Você escolhe a alíquota de cada item.",
+      "setAll": "Aplicar a todos",
+      "default": "Padrão ({rate})",
+      "rateAria": "Alíquota de {item}",
+      "otherItems": "Outros itens",
+      "noItems": "Ainda não há itens no seu cardápio.",
+      "close": "Fechar",
+      "cancel": "Cancelar",
+      "save": "Salvar",
+      "saved": "Alíquotas por item salvas"
+    }
   },
   "takingPayment": {
     "heading": "Recebimento",

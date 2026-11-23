@@ -62,6 +62,7 @@ import {
 } from '@/lib/order-calculations'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { minorDigits } from '@/lib/money-format'
+import type { TaxBook } from '@/lib/order-tax'
 
 // ─── Payload shapes (deliberately loose — these come off the wire / out of jsonb) ────────────────
 
@@ -150,6 +151,20 @@ export interface PriceBook {
   bundle: Record<string, { name: string; bundle_price: number; original_price: number | null }>
   /** menu_items_db as calculateOrderTotal's MenuItem[] — used for deal original-price/savings. */
   menuItems: MenuItem[]
+  /** france-vat-1: menu_items_db: name → its id and its own tax rate (null = the truck's default). Optional so a hand-built
+   *  book (a harness, a preview) without it still prices exactly as before. */
+  itemTax?: Record<string, { id: string | null; rate: number | null }>
+}
+
+/** france-vat-1: the price book as lib/order-tax.ts's book — each dish's id, own rate and à-la-carte price (minor units, the
+ *  price at this event when event pricing moved it), the weight a deal is split by. */
+export function taxBookOf(book: PriceBook, currency: string | null | undefined): TaxBook {
+  const out: TaxBook = {}
+  for (const [name, price] of Object.entries(book.itemPrice)) {
+    const meta = book.itemTax?.[name]
+    out[name] = { id: meta?.id ?? null, rate: meta?.rate ?? null, priceMinor: Math.max(0, toMinor(price, currency)) }
+  }
+  return out
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────────────────────
@@ -205,7 +220,8 @@ export function lineIdentity(name: unknown, modifiers?: { name?: unknown }[] | n
  */
 export async function loadPriceBook(supabase: SupabaseClient, truckId: string): Promise<PriceBook> {
   const [{ data: itemRows }, { data: optionRows }, { data: bundleRows }, { data: linkRows }] = await Promise.all([
-    supabase.from('menu_items_db').select('name, price').eq('truck_id', truckId),
+    // france-vat-1: + id and the dish's own rate (20261124), for lib/order-tax.ts.
+    supabase.from('menu_items_db').select('id, name, price, tax_rate_milli').eq('truck_id', truckId),
     // SAME truck-scoping join as lib/option-stock.ts fetchTruckOptionsByName — modifier_options has no
     // truck_id of its own, only group_id → modifier_groups.truck_id. `id` is selected because
     // excluded_option_ids is a list of OPTION IDS, so exclusions cannot be applied without it.
@@ -227,9 +243,12 @@ export async function loadPriceBook(supabase: SupabaseClient, truckId: string): 
 
   const itemPrice: Record<string, number> = {}
   const menuItems: MenuItem[] = []
-  for (const r of (itemRows as { name: string; price: unknown }[] | null) || []) {
+  const itemTax: Record<string, { id: string | null; rate: number | null }> = {}
+  for (const r of (itemRows as { id?: string; name: string; price: unknown; tax_rate_milli?: unknown }[] | null) || []) {
     itemPrice[r.name] = num(r.price)
     menuItems.push({ name: r.name, price: num(r.price) })
+    const rate = typeof r.tax_rate_milli === 'number' && Number.isSafeInteger(r.tax_rate_milli) && r.tax_rate_milli >= 0 ? r.tax_rate_milli : null
+    itemTax[r.name] = { id: typeof r.id === 'string' ? r.id : null, rate }
   }
 
   // Options bucketed by their group, so a link row can expand to that group's options in one step.
@@ -269,7 +288,7 @@ export async function loadPriceBook(supabase: SupabaseClient, truckId: string): 
     }
   }
 
-  return { itemPrice, optionPrice, bundle, menuItems }
+  return { itemPrice, optionPrice, bundle, menuItems, itemTax }
 }
 
 // ─── The stored order (PRIMARY source — everything already on the order) ────────────────────────

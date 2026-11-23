@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Este evento ha terminado. Reinícialo para recibir pedidos.} cancelled {Este evento se ha cancelado.} other {Este evento no está abierto.}}",
     "sign_in_to_create": "Inicia sesión como miembro del equipo para crear un evento.",
     "event_details_invalid": "{reason, select, name {Añade un nombre para el evento} times {Añade una hora de inicio y de fin} end {La hora de fin debe ser posterior al inicio} van {Elige una furgoneta} date {Los eventos creados aquí son solo para hoy} other {Revisa los datos del evento}}",
-    "event_overlaps": "Se solapa con otro evento de hoy."
+    "event_overlaps": "Se solapa con otro evento de hoy.",
+    "order_finished_edit": "Este pedido está finalizado, así que no se puede modificar.",
+    "order_finished_cancel": "Este pedido está finalizado, así que no se puede cancelar."
   },
   "kitchenModals": {
     "close": "Cerrar",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Algo ha fallado: actualiza la página y vuelve a intentarlo.",
     "charges_owner_only": "Solo el propietario puede cambiar los impuestos, las propinas y los cargos",
     "charges_rate_decimals": "Usa hasta 3 decimales, por ejemplo 8,875.",
-    "charges_rate_range": "Usa un tipo de entre 0 y 20 %.",
+    "charges_rate_range": "Usa un tipo de entre 0 y 30 %.",
     "charges_rate_not_here": "En tu país los precios ya incluyen los impuestos, así que no hay ningún tipo que configurar.",
     "charges_fee_not_here": "Los gastos de servicio online no están disponibles en tu país.",
     "charges_fee_hatchgrab": "En tu país, HatchGrab fija los gastos de servicio online, así que no se pueden cambiar aquí.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Esa parte de los gastos no está permitida en tu país.",
     "charges_choose_on_off": "Elige activado o desactivado.",
     "charges_nothing_to_save": "No hay nada que guardar.",
+    "charges_items_invalid": "Uno de estos productos ya no está en tu carta. Cierra esta ventana y vuelve a intentarlo.",
     "country_settings_failed": "No se han podido cargar los ajustes de país de este food truck. Vuelve a intentarlo en un momento.",
     "plans_failed": "No se ha podido cargar el plan de este food truck. Vuelve a intentarlo en un momento.",
     "demo_not_available": "No disponible en un food truck de demostración",
@@ -4273,6 +4276,8 @@
         "refunded": "Reembolsado",
         "cost": "Coste",
         "profit": "Beneficio",
+        "netAtRate": "Neto {rate}",
+        "taxAtRate": "Impuestos {rate}",
         "eventDate": "Fecha del evento",
         "orders": "Pedidos",
         "dishesSold": "Platos vendidos",
@@ -4282,7 +4287,8 @@
         "stored": "guardado con el pedido",
         "estimated": "estimado a partir de tu tipo de impuesto",
         "none": "sin tipo de impuesto configurado"
-      }
+      },
+      "noRate": "sin tipo"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Los clientes lo ven antes de pagar, en una sola línea: “{label} {amount}”.",
       "hatchgrab": "HatchGrab añade un cargo por servicio de {fee} a los pedidos online de tus clientes. No lo pagas tú y no puedes cambiarlo."
     },
-    "saveFailed": "No se ha podido guardar. Inténtalo de nuevo."
+    "saveFailed": "No se ha podido guardar. Inténtalo de nuevo.",
+    "noVat": "Sin {label}",
+    "noVatHint": "Elige “Sin {label}” si no cobras {label}.",
+    "otherRate": "Otro…",
+    "itemRates": {
+      "label": "Tipos por producto",
+      "hintSome": "{n, plural, one {{count} producto tiene un tipo distinto} other {{count} productos tienen un tipo distinto}}",
+      "hintNone": "Todos los productos usan tu tipo predeterminado",
+      "button": "Cambiar tipos por producto",
+      "title": "Tipos por producto",
+      "intro": "Tú eliges el tipo de cada producto.",
+      "setAll": "Aplicar a todos",
+      "default": "Predeterminado ({rate})",
+      "rateAria": "Tipo de {item}",
+      "otherItems": "Otros productos",
+      "noItems": "Aún no hay productos en tu carta.",
+      "close": "Cerrar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saved": "Tipos por producto guardados"
+    }
   },
   "takingPayment": {
     "heading": "Cobro",

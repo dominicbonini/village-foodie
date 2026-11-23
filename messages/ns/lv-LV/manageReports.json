@@ -140,6 +140,8 @@
       "refunded": "Atmaksāts",
       "cost": "Izmaksas",
       "profit": "Peļņa",
+      "netAtRate": "Neto {rate}",
+      "taxAtRate": "Nodoklis {rate}",
       "eventDate": "Pasākuma datums",
       "orders": "Pasūtījumi",
       "dishesSold": "Pārdotie ēdieni",
@@ -149,6 +151,7 @@
       "stored": "saglabāts kopā ar pasūtījumu",
       "estimated": "aprēķināts pēc jūsu nodokļa likmes",
       "none": "nodokļa likme nav iestatīta"
-    }
+    },
+    "noRate": "bez likmes"
   }
 }

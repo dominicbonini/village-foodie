@@ -140,6 +140,8 @@
       "refunded": "Vráceno",
       "cost": "Náklady",
       "profit": "Zisk",
+      "netAtRate": "Čistá částka {rate}",
+      "taxAtRate": "Daň {rate}",
       "eventDate": "Datum akce",
       "orders": "Objednávky",
       "dishesSold": "Prodaná jídla",
@@ -149,6 +151,7 @@
       "stored": "uloženo s objednávkou",
       "estimated": "odhad podle vaší sazby daně",
       "none": "sazba daně není nastavena"
-    }
+    },
+    "noRate": "bez sazby"
   }
 }

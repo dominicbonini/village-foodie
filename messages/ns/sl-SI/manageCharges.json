@@ -26,5 +26,25 @@
     "example": "Stranke jo vidijo pred plačilom, v eni vrstici: „{label} {amount}“.",
     "hatchgrab": "HatchGrab spletnim naročilom vaših strank doda pristojbino za storitev v višini {fee}. Vi je ne plačate in je ne morete spremeniti."
   },
-  "saveFailed": "Shranjevanje ni uspelo – poskusite znova."
+  "saveFailed": "Shranjevanje ni uspelo – poskusite znova.",
+  "noVat": "Brez {label}",
+  "noVatHint": "Izberite „Brez {label}“, če ne zaračunavate {label}.",
+  "otherRate": "Druga stopnja…",
+  "itemRates": {
+    "label": "Stopnje artiklov",
+    "hintSome": "{n, plural, one {{count} artikel ima drugačno stopnjo} two {{count} artikla imata drugačno stopnjo} few {{count} artikli imajo drugačno stopnjo} other {{count} artiklov ima drugačno stopnjo}}",
+    "hintNone": "Vsi artikli imajo vašo privzeto stopnjo",
+    "button": "Spremeni stopnje artiklov",
+    "title": "Stopnje artiklov",
+    "intro": "Stopnjo izberete za vsak artikel posebej.",
+    "setAll": "Nastavi vse",
+    "default": "Privzeta ({rate})",
+    "rateAria": "Stopnja: {item}",
+    "otherItems": "Drugi artikli",
+    "noItems": "Na jedilniku še nimate artiklov.",
+    "close": "Zapri",
+    "cancel": "Prekliči",
+    "save": "Shrani",
+    "saved": "Stopnje artiklov shranjene"
+  }
 }

@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {この出店は終了しました。注文を受けるには再開してください。} cancelled {この出店はキャンセルされました。} other {この出店は開いていません。}}",
   "sign_in_to_create": "出店を作成するにはチームメンバーとしてログインしてください。",
   "event_details_invalid": "{reason, select, name {出店名を入力してください} times {開始時刻と終了時刻を入力してください} end {終了時刻は開始より後にしてください} van {車両を選んでください} date {ここで作成する出店は本日分のみです} other {出店の内容を確認してください}}",
-  "event_overlaps": "本日の別の出店と時間が重なっています。"
+  "event_overlaps": "本日の別の出店と時間が重なっています。",
+  "order_finished_edit": "この注文はすでに終了しているため、変更できません。",
+  "order_finished_cancel": "この注文はすでに終了しているため、キャンセルできません。"
 }

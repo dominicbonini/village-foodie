@@ -26,5 +26,25 @@
     "example": "I clienti lo vedono prima di pagare, su una sola riga: «{label} {amount}».",
     "hatchgrab": "HatchGrab aggiunge un costo del servizio di {fee} agli ordini online dei tuoi clienti. Non lo paghi tu e non puoi modificarlo."
   },
-  "saveFailed": "Salvataggio non riuscito: riprova."
+  "saveFailed": "Salvataggio non riuscito: riprova.",
+  "noVat": "Senza {label}",
+  "noVatHint": "Scegli «Senza {label}» se non applichi l’{label}.",
+  "otherRate": "Altra…",
+  "itemRates": {
+    "label": "Aliquote per prodotto",
+    "hintSome": "{n, plural, one {{count} prodotto ha un’aliquota diversa} other {{count} prodotti hanno un’aliquota diversa}}",
+    "hintNone": "Tutti i prodotti usano la tua aliquota predefinita",
+    "button": "Modifica aliquote",
+    "title": "Aliquote per prodotto",
+    "intro": "Scegli tu l’aliquota di ogni prodotto.",
+    "setAll": "Applica a tutti",
+    "default": "Predefinita ({rate})",
+    "rateAria": "Aliquota per {item}",
+    "otherItems": "Altri prodotti",
+    "noItems": "Non ci sono ancora prodotti nel tuo menu.",
+    "close": "Chiudi",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "saved": "Aliquote per prodotto salvate"
+  }
 }

@@ -26,5 +26,25 @@
     "example": "Asiakkaat näkevät sen ennen maksamista yhtenä rivinä: ”{label} {amount}”.",
     "hatchgrab": "HatchGrab lisää asiakkaidesi verkkotilauksiin palvelumaksun {fee}. Sinä et maksa sitä etkä voi muuttaa sitä."
   },
-  "saveFailed": "Tallennus epäonnistui — yritä uudelleen."
+  "saveFailed": "Tallennus epäonnistui — yritä uudelleen.",
+  "noVat": "Ei {label}",
+  "noVatHint": "Valitse ”Ei {label}”, jos et peri veroa ({label}).",
+  "otherRate": "Muu kanta…",
+  "itemRates": {
+    "label": "Tuotekohtaiset kannat",
+    "hintSome": "{n, plural, one {{count} tuote käyttää eri kantaa} other {{count} tuotetta käyttää eri kantaa}}",
+    "hintNone": "Kaikki tuotteet käyttävät oletuskantaasi",
+    "button": "Muuta tuotteiden kantoja",
+    "title": "Tuotekohtaiset kannat",
+    "intro": "Valitset kannan jokaiselle tuotteelle.",
+    "setAll": "Aseta kaikille",
+    "default": "Oletus ({rate})",
+    "rateAria": "Tuotteen {item} kanta",
+    "otherItems": "Muut tuotteet",
+    "noItems": "Ruokalistallasi ei ole vielä tuotteita.",
+    "close": "Sulje",
+    "cancel": "Peruuta",
+    "save": "Tallenna",
+    "saved": "Tuotekohtaiset kannat tallennettu"
+  }
 }

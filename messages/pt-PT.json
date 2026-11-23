@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Este evento terminou. Reinicie-o para receber pedidos.} cancelled {Este evento foi cancelado.} other {Este evento não está aberto.}}",
     "sign_in_to_create": "Inicie sessão como membro da equipa para criar um evento.",
     "event_details_invalid": "{reason, select, name {Adicione um nome para o evento} times {Adicione uma hora de início e de fim} end {A hora de fim tem de ser depois do início} van {Escolha uma carrinha} date {Os eventos criados aqui são só para hoje} other {Verifique os dados do evento}}",
-    "event_overlaps": "Sobrepõe-se a outro evento de hoje."
+    "event_overlaps": "Sobrepõe-se a outro evento de hoje.",
+    "order_finished_edit": "Esta encomenda está concluída, por isso não pode ser alterada.",
+    "order_finished_cancel": "Esta encomenda está concluída, por isso não pode ser cancelada."
   },
   "kitchenModals": {
     "close": "Fechar",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Algo correu mal — atualize a página e tente novamente.",
     "charges_owner_only": "Só o proprietário pode alterar impostos, gorjetas e taxas",
     "charges_rate_decimals": "Use no máximo 3 casas decimais, por exemplo 8,875.",
-    "charges_rate_range": "Use uma taxa entre 0 e 20 %.",
+    "charges_rate_range": "Use uma taxa entre 0 e 30 %.",
     "charges_rate_not_here": "No seu país, os preços já incluem impostos, por isso não há taxa a definir.",
     "charges_fee_not_here": "As taxas de serviço online não estão disponíveis no seu país.",
     "charges_fee_hatchgrab": "A HatchGrab define a taxa de serviço online no seu país, por isso não pode ser alterada aqui.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Essa parte da taxa não é permitida no seu país.",
     "charges_choose_on_off": "Escolha ativado ou desativado.",
     "charges_nothing_to_save": "Nada para guardar.",
+    "charges_items_invalid": "Um destes artigos já não está na sua ementa. Feche esta janela e tente novamente.",
     "country_settings_failed": "Não foi possível carregar as definições de país deste food truck. Tente novamente daqui a pouco.",
     "plans_failed": "Não foi possível carregar o plano deste food truck. Tente novamente daqui a pouco.",
     "demo_not_available": "Indisponível num food truck de demonstração",
@@ -4273,6 +4276,8 @@
         "refunded": "Reembolsado",
         "cost": "Custo",
         "profit": "Lucro",
+        "netAtRate": "Líquido {rate}",
+        "taxAtRate": "Impostos {rate}",
         "eventDate": "Data do evento",
         "orders": "Encomendas",
         "dishesSold": "Pratos vendidos",
@@ -4282,7 +4287,8 @@
         "stored": "guardado com a encomenda",
         "estimated": "estimado com base na sua taxa de imposto",
         "none": "sem taxa de imposto definida"
-      }
+      },
+      "noRate": "sem taxa"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Os clientes veem-na antes de pagar, numa só linha: «{label} {amount}».",
       "hatchgrab": "O HatchGrab acrescenta uma taxa de serviço de {fee} às encomendas online dos seus clientes. Não é paga por si e não a pode alterar."
     },
-    "saveFailed": "Não foi possível guardar — tente novamente."
+    "saveFailed": "Não foi possível guardar — tente novamente.",
+    "noVat": "Sem {label}",
+    "noVatHint": "Escolha «Sem {label}» se não cobrar {label}.",
+    "otherRate": "Outra…",
+    "itemRates": {
+      "label": "Taxas por artigo",
+      "hintSome": "{n, plural, one {{count} artigo usa uma taxa diferente} other {{count} artigos usam uma taxa diferente}}",
+      "hintNone": "Todos os artigos usam a sua taxa predefinida",
+      "button": "Alterar taxas por artigo",
+      "title": "Taxas por artigo",
+      "intro": "Escolha a taxa de cada artigo.",
+      "setAll": "Aplicar a todos",
+      "default": "Predefinida ({rate})",
+      "rateAria": "Taxa de {item}",
+      "otherItems": "Outros artigos",
+      "noItems": "Ainda não há artigos na sua ementa.",
+      "close": "Fechar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saved": "Taxas por artigo guardadas"
+    }
   },
   "takingPayment": {
     "heading": "Receber pagamentos",

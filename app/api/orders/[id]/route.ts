@@ -58,6 +58,7 @@ export async function GET(
       tip_pct_bps,
       service_fee_minor,
       card_surcharge_minor,
+      tax_breakdown,
       trucks!truck_id (
         name,
         slug,

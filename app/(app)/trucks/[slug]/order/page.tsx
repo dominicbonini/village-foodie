@@ -45,6 +45,7 @@ import { MoneyProvider } from '@/components/MoneyContext'
 // Phase 3 screens: tax, a tip and the service fee, SHOWN with the server's own pure engine. The server
 // re-prices on submit; the browser sends only the tip choice.
 import { computeOrderCharges, rulesFromCheckout, applyBps, applyBpsDown, type CheckoutRules, type TipChoice } from '@/lib/order-charges'
+import { lineTax, taxBookFrom, bookHasOwnRates } from '@/lib/order-tax'   // france-vat-1: the same split the server makes
 import { ChargeRows, FoldedChargeRows } from '@/components/ChargeRows'
 import { formatRateBps, chargeLinesFor, type ChargeLineSource } from '@/lib/order-charge-lines'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
@@ -1560,10 +1561,24 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     : tipSel === 'other' ? (tipOtherMinor > 0 ? { kind: 'amount', minor: tipOtherMinor } : { kind: 'none' })
     : { kind: 'percent', bps: tipSel }), [tipSel, tipOtherMinor])
   const showTip = !!checkout?.tipping && cardChosen
+  // france-vat-1: where tax is ADDED at checkout and a dish has its own rate, the food is split by rate exactly as the server will
+  // split it (lib/order-tax.ts, the same function). Prices that include tax never change the total, so nothing is needed there.
+  const pageFoodParts = useMemo(() => {
+    if (!checkout || checkout.taxInclusive) return null
+    const cur = truck?.money?.currency ?? null
+    const book = taxBookFrom(menu?.items ?? [], cur)
+    if (!bookHasOwnRates(book)) return null
+    return lineTax({
+      items: basket.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0) })),
+      deals: appliedDeals.map(d => ({ name: d.bundle.name, price: d.bundle.bundle_price + (d.modifierExtra || 0), slots: d.slots, slotModifiers: {} })),
+      foodMinor, book, defaultRate: checkout.taxRateMilli, currency: cur,
+    }).parts
+  }, [checkout, truck?.money?.currency, menu, basket, appliedDeals, foodMinor])
   const pageCharges = checkout ? computeOrderCharges({
     foodMinor, rules: rulesFromCheckout(checkout),
     channel: cardChosen ? 'online_card' : 'online_pay_at_truck',
     tip: showTip ? tipChoice : null,
+    foodParts: pageFoodParts,
   }) : null
   const grandTotal = pageCharges ? pageCharges.totalMinor / 10 ** minorDp : total
 

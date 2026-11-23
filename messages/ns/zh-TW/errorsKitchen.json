@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {此活動已結束。重新開始以接受訂單。} cancelled {此活動已取消。} other {此活動未開放。}}",
   "sign_in_to_create": "請以團隊成員身分登入以建立活動。",
   "event_details_invalid": "{reason, select, name {請輸入活動名稱} times {請輸入開始與結束時間} end {結束時間必須晚於開始} van {請選擇車輛} date {在這裡建立的活動僅限今天} other {請檢查活動資料}}",
-  "event_overlaps": "這與今天另一個活動時間重疊。"
+  "event_overlaps": "這與今天另一個活動時間重疊。",
+  "order_finished_edit": "這筆訂單已結束，因此無法變更。",
+  "order_finished_cancel": "這筆訂單已結束，因此無法取消。"
 }

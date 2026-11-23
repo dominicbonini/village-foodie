@@ -26,5 +26,25 @@
     "example": "Kunderne ser det, før de betaler, som én linje: »{label} {amount}«.",
     "hatchgrab": "HatchGrab lægger et servicegebyr på {fee} på dine kunders onlinebestillinger. Du betaler det ikke og kan ikke ændre det."
   },
-  "saveFailed": "Kunne ikke gemme — prøv igen."
+  "saveFailed": "Kunne ikke gemme — prøv igen.",
+  "noVat": "Ingen {label}",
+  "noVatHint": "Vælg »Ingen {label}«, hvis du ikke opkræver {label}.",
+  "otherRate": "Anden sats…",
+  "itemRates": {
+    "label": "Satser pr. vare",
+    "hintSome": "{n, plural, one {{count} vare har en anden sats} other {{count} varer har en anden sats}}",
+    "hintNone": "Alle varer bruger din standardsats",
+    "button": "Skift satser pr. vare",
+    "title": "Satser pr. vare",
+    "intro": "Du vælger satsen for hver vare.",
+    "setAll": "Angiv for alle",
+    "default": "Standard ({rate})",
+    "rateAria": "Sats for {item}",
+    "otherItems": "Andre varer",
+    "noItems": "Der er ingen varer på dit menukort endnu.",
+    "close": "Luk",
+    "cancel": "Annuller",
+    "save": "Gem",
+    "saved": "Satser pr. vare gemt"
+  }
 }

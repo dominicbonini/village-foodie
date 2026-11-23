@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Questo evento è terminato. Riavvialo per ricevere ordini.} cancelled {Questo evento è stato annullato.} other {Questo evento non è aperto.}}",
     "sign_in_to_create": "Accedi come membro del team per creare un evento.",
     "event_details_invalid": "{reason, select, name {Aggiungi un nome per l’evento} times {Aggiungi un orario di inizio e di fine} end {L’orario di fine deve essere dopo l’inizio} van {Scegli un furgone} date {Gli eventi creati qui valgono solo per oggi} other {Controlla i dettagli dell’evento}}",
-    "event_overlaps": "Si sovrappone a un altro evento di oggi."
+    "event_overlaps": "Si sovrappone a un altro evento di oggi.",
+    "order_finished_edit": "Questo ordine è concluso, quindi non si può modificare.",
+    "order_finished_cancel": "Questo ordine è concluso, quindi non si può annullare."
   },
   "kitchenModals": {
     "close": "Chiudi",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Qualcosa è andato storto — aggiorna la pagina e riprova.",
     "charges_owner_only": "Solo il titolare può modificare tasse, mance e costi",
     "charges_rate_decimals": "Usa al massimo 3 decimali, per esempio 8,875.",
-    "charges_rate_range": "Usa un’aliquota da 0 a 20%.",
+    "charges_rate_range": "Usa un’aliquota da 0 a 30%.",
     "charges_rate_not_here": "Nel tuo Paese i prezzi includono già le tasse, quindi non c’è nessuna aliquota da impostare.",
     "charges_fee_not_here": "I costi del servizio online non sono disponibili nel tuo Paese.",
     "charges_fee_hatchgrab": "Nel tuo Paese il costo del servizio online lo stabilisce HatchGrab, quindi non puoi modificarlo qui.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Questa parte del costo non è consentita nel tuo Paese.",
     "charges_choose_on_off": "Scegli attivo o disattivo.",
     "charges_nothing_to_save": "Niente da salvare.",
+    "charges_items_invalid": "Uno di questi prodotti non è più nel tuo menu. Chiudi questa finestra e riprova.",
     "country_settings_failed": "Impossibile caricare le impostazioni del Paese di questo food truck. Riprova tra un momento.",
     "plans_failed": "Impossibile caricare il piano di questo food truck. Riprova tra un momento.",
     "demo_not_available": "Non disponibile su un food truck demo",
@@ -4273,6 +4276,8 @@
         "refunded": "Rimborsato",
         "cost": "Costo",
         "profit": "Guadagno",
+        "netAtRate": "Netto {rate}",
+        "taxAtRate": "Imposte {rate}",
         "eventDate": "Data evento",
         "orders": "Ordini",
         "dishesSold": "Piatti venduti",
@@ -4282,7 +4287,8 @@
         "stored": "registrate con l’ordine",
         "estimated": "stimate in base alla tua aliquota",
         "none": "nessuna aliquota impostata"
-      }
+      },
+      "noRate": "senza aliquota"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "I clienti lo vedono prima di pagare, su una sola riga: «{label} {amount}».",
       "hatchgrab": "HatchGrab aggiunge un costo del servizio di {fee} agli ordini online dei tuoi clienti. Non lo paghi tu e non puoi modificarlo."
     },
-    "saveFailed": "Salvataggio non riuscito: riprova."
+    "saveFailed": "Salvataggio non riuscito: riprova.",
+    "noVat": "Senza {label}",
+    "noVatHint": "Scegli «Senza {label}» se non applichi l’{label}.",
+    "otherRate": "Altra…",
+    "itemRates": {
+      "label": "Aliquote per prodotto",
+      "hintSome": "{n, plural, one {{count} prodotto ha un’aliquota diversa} other {{count} prodotti hanno un’aliquota diversa}}",
+      "hintNone": "Tutti i prodotti usano la tua aliquota predefinita",
+      "button": "Modifica aliquote",
+      "title": "Aliquote per prodotto",
+      "intro": "Scegli tu l’aliquota di ogni prodotto.",
+      "setAll": "Applica a tutti",
+      "default": "Predefinita ({rate})",
+      "rateAria": "Aliquota per {item}",
+      "otherItems": "Altri prodotti",
+      "noItems": "Non ci sono ancora prodotti nel tuo menu.",
+      "close": "Chiudi",
+      "cancel": "Annulla",
+      "save": "Salva",
+      "saved": "Aliquote per prodotto salvate"
+    }
   },
   "takingPayment": {
     "heading": "Incasso",

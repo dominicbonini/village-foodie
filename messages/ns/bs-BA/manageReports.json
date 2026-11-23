@@ -140,6 +140,8 @@
       "refunded": "Vraćeno",
       "cost": "Trošak",
       "profit": "Dobit",
+      "netAtRate": "Neto {rate}",
+      "taxAtRate": "Porez {rate}",
       "eventDate": "Datum događaja",
       "orders": "Narudžbe",
       "dishesSold": "Prodana jela",
@@ -149,6 +151,7 @@
       "stored": "sačuvano uz narudžbu",
       "estimated": "procijenjeno na osnovu vaše poreske stope",
       "none": "poreska stopa nije postavljena"
-    }
+    },
+    "noRate": "bez stope"
   }
 }

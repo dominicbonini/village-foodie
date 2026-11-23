@@ -26,5 +26,25 @@
     "example": "Viðskiptavinir sjá það áður en þeir greiða, sem eina línu: „{label} {amount}“.",
     "hatchgrab": "HatchGrab bætir {fee} þjónustugjaldi við netpantanir viðskiptavina þinna. Þú greiðir það ekki og getur ekki breytt því."
   },
-  "saveFailed": "Ekki tókst að vista — reyndu aftur."
+  "saveFailed": "Ekki tókst að vista — reyndu aftur.",
+  "noVat": "Án {label}",
+  "noVatHint": "Veldu „Án {label}“ ef þú innheimtir ekki {label}.",
+  "otherRate": "Annað hlutfall…",
+  "itemRates": {
+    "label": "Hlutföll vara",
+    "hintSome": "{n, plural, one {{count} vara notar annað hlutfall} other {{count} vörur nota annað hlutfall}}",
+    "hintNone": "Allar vörur nota sjálfgefna hlutfallið þitt",
+    "button": "Breyta hlutföllum vara",
+    "title": "Hlutföll vara",
+    "intro": "Þú velur hlutfallið fyrir hverja vöru.",
+    "setAll": "Setja á allar",
+    "default": "Sjálfgefið ({rate})",
+    "rateAria": "Hlutfall fyrir {item}",
+    "otherItems": "Aðrar vörur",
+    "noItems": "Engar vörur á matseðlinum þínum enn.",
+    "close": "Loka",
+    "cancel": "Hætta við",
+    "save": "Vista",
+    "saved": "Hlutföll vara vistuð"
+  }
 }

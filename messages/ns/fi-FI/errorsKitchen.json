@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Tapahtuma on päättynyt. Käynnistä se uudelleen ottaaksesi tilauksia.} cancelled {Tapahtuma on peruttu.} other {Tapahtuma ei ole auki.}}",
   "sign_in_to_create": "Kirjaudu tiimin jäsenenä luodaksesi tapahtuman.",
   "event_details_invalid": "{reason, select, name {Lisää tapahtuman nimi} times {Lisää alkamis- ja päättymisaika} end {Päättymisajan on oltava alkamisen jälkeen} van {Valitse auto} date {Täällä luodut tapahtumat ovat vain tälle päivälle} other {Tarkista tapahtuman tiedot}}",
-  "event_overlaps": "Tämä menee päällekkäin toisen tämänpäiväisen tapahtuman kanssa."
+  "event_overlaps": "Tämä menee päällekkäin toisen tämänpäiväisen tapahtuman kanssa.",
+  "order_finished_edit": "Tämä tilaus on päättynyt, joten sitä ei voi muuttaa.",
+  "order_finished_cancel": "Tämä tilaus on päättynyt, joten sitä ei voi perua."
 }

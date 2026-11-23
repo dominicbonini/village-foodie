@@ -96,7 +96,7 @@ export interface TicketOrder {
   adjustments?: { label: string; minor: number }[] | null
   /** france-1: the tax the total INCLUDES, printed under TOTAL ("Dont TVA 10 %   1,09 €"). Absent for every order but an
    *  inclusive-rate one (France), so every other ticket prints exactly what it printed. */
-  includedTax?: { label: string; minor: number } | null
+  includedTax?: { label: string; minor: number } | { label: string; minor: number }[] | null
   total: number
   /** ── PAYMENT (D) ────────────────────────────────────────────────────────────────────────────────
    *  🔴 RESOLVED BY THE CALLER, NEVER RE-DERIVED HERE. `showPaidStep` comes from resolvePaidStep()
@@ -422,7 +422,10 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   }
 
   lines.push({ text: padBetween(t('total'), fitted(t('total'), order.total), width), bold: true })
-  if (order.includedTax) lines.push({ text: padBetween(order.includedTax.label, fitted(order.includedTax.label, order.includedTax.minor / 100), width) })
+  // france-vat-1: one line per rate (a list) on a mixed-rate order; the one line it always was otherwise.
+  for (const inc of order.includedTax ? (Array.isArray(order.includedTax) ? order.includedTax : [order.includedTax]) : []) {
+    lines.push({ text: padBetween(inc.label, fitted(inc.label, inc.minor / 100), width) })
+  }
 
   // ── PAYMENT (D) — the caller has already resolved this. See the TicketOrder note.
   // 🔴 ABSENT when showPaidStep is false. Not "unpaid" — a truck without the paid step has no such state.

@@ -26,5 +26,25 @@
     "example": "Les clients les voient avant de payer, sur une seule ligne : « {label} {amount} ».",
     "hatchgrab": "HatchGrab ajoute des frais de service de {fee} aux commandes en ligne de vos clients. Vous ne les payez pas et ne pouvez pas les modifier."
   },
-  "saveFailed": "Impossible d’enregistrer — veuillez réessayer."
+  "saveFailed": "Impossible d’enregistrer — veuillez réessayer.",
+  "noVat": "Sans {label}",
+  "noVatHint": "Choisissez « Sans {label} » si vous ne facturez pas de {label}.",
+  "otherRate": "Autre…",
+  "itemRates": {
+    "label": "Taux par article",
+    "hintSome": "{n, plural, one {{count} article a un taux différent} other {{count} articles ont un taux différent}}",
+    "hintNone": "Tous les articles utilisent votre taux par défaut",
+    "button": "Modifier les taux par article",
+    "title": "Taux par article",
+    "intro": "Vous choisissez le taux de chaque article.",
+    "setAll": "Appliquer à tous",
+    "default": "Par défaut ({rate})",
+    "rateAria": "Taux pour {item}",
+    "otherItems": "Autres articles",
+    "noItems": "Aucun article sur votre carte pour l’instant.",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saved": "Taux par article enregistrés"
+  }
 }

@@ -91,7 +91,8 @@ import { DeviceSetupGate } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 // Phase 3 screens: an order with tax, a tip or a fee is re-priced by the engine, never by adding to its total.
-import { chargesForEdit, rulesFromCheckout } from '@/lib/order-charges'
+import { chargesForEdit, rulesFromCheckout, rulesForStoredOrder } from '@/lib/order-charges'
+import { lineTax, taxBookFrom, bookHasOwnRates } from '@/lib/order-tax'   // france-vat-1: the same split the server's edit makes
 import { chargeLinesFor, chargeSourceOf } from '@/lib/order-charge-lines'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory, groupBySubcategory, isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
@@ -4050,7 +4051,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const cur=(o as {currency?:string|null}).currency??truck?.money?.currency??'GBP'
     const baseFood=o.food_minor!=null?toMajor(o.food_minor,cur):editOrderBaseline.total
     const food=Math.max(0,baseFood+itemDelta-removedOriginalValue+addedNewValue)
-    return toMajor(chargesForEdit(toMinorUnits(food,cur),rulesFromCheckout(truck!.charge_rules!),o).totalMinor,cur)
+    const editRulesNow=rulesFromCheckout(truck!.charge_rules!)
+    const foodMinorNow=toMinorUnits(food,cur)
+    // france-vat-1: where tax is ADDED, split the edited food by rate exactly as the server's edit will (rate-locked lines keep their
+    // stamp). Only when a dish has its own rate or the order already has more than one: otherwise one part, as before.
+    const editBook=o.tax_inclusive===false?taxBookFrom(truckMenu?.items??[],cur):null
+    const storedRows=Array.isArray((o as {tax_breakdown?:unknown}).tax_breakdown)?((o as {tax_breakdown?:unknown[]}).tax_breakdown as unknown[]).length:0
+    const editParts=editBook&&(bookHasOwnRates(editBook)||storedRows>1)?lineTax({
+      items:editItems.filter(i=>i.quantity>0),
+      deals:editDeals.map(d=>({name:d.name,price:(o.deals||[]).find(x=>x.name===d.name)?.price??(truckMenu?.bundles??[]).find(b=>b.name===d.name)?.bundle_price??0,slots:d.slots,slotModifiers:d.slotModifiers})),
+      foodMinor:foodMinorNow,book:editBook,defaultRate:rulesForStoredOrder(editRulesNow,o).taxRateMilli,currency:cur,
+      stored:{items:o.items,deals:o.deals},
+    }).parts:null
+    return toMajor(chargesForEdit(foodMinorNow,editRulesNow,o,editParts).totalMinor,cur)
   })():Math.max(0,editItemsSubtotal)
   // The server's unpriceable-line verdict is only meaningful for the basket it was computed against.
   // Change anything and the banner disappears rather than naming a line that is no longer there;

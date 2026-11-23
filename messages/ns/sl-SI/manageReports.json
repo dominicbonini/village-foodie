@@ -140,6 +140,8 @@
       "refunded": "Vrnjeno",
       "cost": "Strošek",
       "profit": "Dobiček",
+      "netAtRate": "Neto {rate}",
+      "taxAtRate": "DDV {rate}",
       "eventDate": "Datum dogodka",
       "orders": "Naročila",
       "dishesSold": "Prodane jedi",
@@ -149,6 +151,7 @@
       "stored": "shranjeno z naročilom",
       "estimated": "ocenjeno glede na vašo stopnjo DDV",
       "none": "stopnja DDV ni nastavljena"
-    }
+    },
+    "noRate": "brez stopnje"
   }
 }

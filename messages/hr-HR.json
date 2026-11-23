@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Ovaj je događaj završio. Pokrenite ga ponovno za primanje narudžbi.} cancelled {Ovaj je događaj otkazan.} other {Ovaj događaj nije otvoren.}}",
     "sign_in_to_create": "Prijavite se kao član tima da biste izradili događaj.",
     "event_details_invalid": "{reason, select, name {Dodajte naziv događaja} times {Dodajte vrijeme početka i kraja} end {Kraj mora biti nakon početka} van {Odaberite vozilo} date {Događaji izrađeni ovdje vrijede samo za danas} other {Provjerite podatke događaja}}",
-    "event_overlaps": "Preklapa se s drugim današnjim događajem."
+    "event_overlaps": "Preklapa se s drugim današnjim događajem.",
+    "order_finished_edit": "Ova je narudžba završena pa se ne može mijenjati.",
+    "order_finished_cancel": "Ova je narudžba završena pa se ne može otkazati."
   },
   "kitchenModals": {
     "close": "Zatvori",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Nešto je pošlo po zlu – osvježite stranicu i pokušajte ponovno.",
     "charges_owner_only": "Samo vlasnik može mijenjati porez, napojnice i naknade",
     "charges_rate_decimals": "Upotrijebite najviše 3 decimale, npr. 8,875.",
-    "charges_rate_range": "Upotrijebite stopu od 0 do 20 %.",
+    "charges_rate_range": "Upotrijebite stopu od 0 do 30 %.",
     "charges_rate_not_here": "Cijene u vašoj zemlji već uključuju porez, pa nema stope koju treba postaviti.",
     "charges_fee_not_here": "Online naknade za uslugu nisu dostupne u vašoj zemlji.",
     "charges_fee_hatchgrab": "U vašoj zemlji online naknadu za uslugu određuje HatchGrab, pa je ovdje nije moguće promijeniti.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Taj dio naknade nije dopušten u vašoj zemlji.",
     "charges_choose_on_off": "Odaberite uključeno ili isključeno.",
     "charges_nothing_to_save": "Nema ništa za spremanje.",
+    "charges_items_invalid": "Jedan od ovih artikala više nije na vašem jelovniku. Zatvorite ovo i pokušajte ponovno.",
     "country_settings_failed": "Nismo mogli učitati postavke zemlje za ovaj food truck. Pokušajte ponovno za trenutak.",
     "plans_failed": "Nismo mogli učitati paket ovog food trucka. Pokušajte ponovno za trenutak.",
     "demo_not_available": "Nije dostupno za demo food truck",
@@ -4273,6 +4276,8 @@
         "refunded": "Vraćeno",
         "cost": "Trošak",
         "profit": "Dobit",
+        "netAtRate": "Neto {rate}",
+        "taxAtRate": "Porez {rate}",
         "eventDate": "Datum događaja",
         "orders": "Narudžbe",
         "dishesSold": "Prodana jela",
@@ -4282,7 +4287,8 @@
         "stored": "spremljeno uz narudžbu",
         "estimated": "procijenjeno prema vašoj poreznoj stopi",
         "none": "porezna stopa nije postavljena"
-      }
+      },
+      "noRate": "bez stope"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Kupci je vide prije plaćanja, u jednom retku: „{label} {amount}“.",
       "hatchgrab": "HatchGrab online narudžbama vaših kupaca dodaje naknadu za uslugu od {fee}. Vi je ne plaćate i ne možete je promijeniti."
     },
-    "saveFailed": "Spremanje nije uspjelo – pokušajte ponovno."
+    "saveFailed": "Spremanje nije uspjelo – pokušajte ponovno.",
+    "noVat": "Bez {label}",
+    "noVatHint": "Odaberite „Bez {label}” ako ne obračunavate {label}.",
+    "otherRate": "Druga stopa…",
+    "itemRates": {
+      "label": "Stope artikala",
+      "hintSome": "{n, plural, one {{count} artikl ima drugačiju stopu} few {{count} artikla imaju drugačiju stopu} other {{count} artikala ima drugačiju stopu}}",
+      "hintNone": "Svi artikli imaju vašu zadanu stopu",
+      "button": "Promijeni stope artikala",
+      "title": "Stope artikala",
+      "intro": "Vi birate stopu za svaki artikl.",
+      "setAll": "Postavi za sve",
+      "default": "Zadana ({rate})",
+      "rateAria": "Stopa: {item}",
+      "otherItems": "Ostali artikli",
+      "noItems": "Na jelovniku još nemate artikala.",
+      "close": "Zatvori",
+      "cancel": "Odustani",
+      "save": "Spremi",
+      "saved": "Stope artikala spremljene"
+    }
   },
   "takingPayment": {
     "heading": "Naplata narudžbi",

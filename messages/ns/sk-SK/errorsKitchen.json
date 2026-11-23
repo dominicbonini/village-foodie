@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Táto akcia skončila. Spustite ju znova, aby ste mohli prijímať objednávky.} cancelled {Táto akcia bola zrušená.} other {Táto akcia nie je otvorená.}}",
   "sign_in_to_create": "Prihláste sa ako člen tímu, aby ste mohli vytvoriť akciu.",
   "event_details_invalid": "{reason, select, name {Pridajte názov akcie} times {Pridajte čas začiatku a konca} end {Koniec musí byť po začiatku} van {Vyberte voz} date {Akcie vytvorené tu platia len pre dnešok} other {Skontrolujte údaje akcie}}",
-  "event_overlaps": "Prekrýva sa s inou dnešnou akciou."
+  "event_overlaps": "Prekrýva sa s inou dnešnou akciou.",
+  "order_finished_edit": "Táto objednávka je dokončená, preto ju nemožno zmeniť.",
+  "order_finished_cancel": "Táto objednávka je dokončená, preto ju nemožno zrušiť."
 }

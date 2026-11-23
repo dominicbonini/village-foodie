@@ -26,5 +26,25 @@
     "example": "顧客付款前會看到一行：「{label} {amount}」。",
     "hatchgrab": "HatchGrab 會在你顧客的線上訂單加收 {fee} 服務費。這筆費用不由你支付，你也無法更改。"
   },
-  "saveFailed": "無法儲存，請再試一次。"
+  "saveFailed": "無法儲存，請再試一次。",
+  "noVat": "不收{label}",
+  "noVatHint": "如果你不收取{label}，請選擇「不收{label}」。",
+  "otherRate": "其他…",
+  "itemRates": {
+    "label": "品項稅率",
+    "hintSome": "{n, plural, one {{count} 個品項使用不同稅率} other {{count} 個品項使用不同稅率}}",
+    "hintNone": "所有品項都使用你的預設稅率",
+    "button": "變更品項稅率",
+    "title": "品項稅率",
+    "intro": "你可以為每個品項選擇稅率。",
+    "setAll": "全部設定",
+    "default": "預設（{rate}）",
+    "rateAria": "{item} 的稅率",
+    "otherItems": "其他品項",
+    "noItems": "你的菜單上還沒有品項。",
+    "close": "關閉",
+    "cancel": "取消",
+    "save": "儲存",
+    "saved": "品項稅率已儲存"
+  }
 }

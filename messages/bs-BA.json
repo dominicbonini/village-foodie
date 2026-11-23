@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Ovaj događaj je završen. Ponovo ga pokrenite da biste primali narudžbe.} cancelled {Ovaj događaj je otkazan.} other {Ovaj događaj nije otvoren.}}",
     "sign_in_to_create": "Prijavite se kao član tima da biste napravili događaj.",
     "event_details_invalid": "{reason, select, name {Dodajte naziv događaja} times {Dodajte vrijeme početka i završetka} end {Vrijeme završetka mora biti nakon početka} van {Odaberite vozilo} date {Događaji napravljeni ovdje važe samo za danas} other {Provjerite detalje događaja}}",
-    "event_overlaps": "Ovo se preklapa s drugim današnjim događajem."
+    "event_overlaps": "Ovo se preklapa s drugim današnjim događajem.",
+    "order_finished_edit": "Ova narudžba je završena, pa se ne može mijenjati.",
+    "order_finished_cancel": "Ova narudžba je završena, pa se ne može otkazati."
   },
   "kitchenModals": {
     "close": "Zatvori",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Došlo je do greške — osvježite stranicu i pokušajte ponovo.",
     "charges_owner_only": "Samo vlasnik može mijenjati porez, napojnice i naknade",
     "charges_rate_decimals": "Koristite najviše 3 decimale, npr. 8,875.",
-    "charges_rate_range": "Unesite stopu od 0 do 20%.",
+    "charges_rate_range": "Unesite stopu od 0 do 30%.",
     "charges_rate_not_here": "Cijene u vašoj državi već uključuju porez, pa nema stope koju treba postaviti.",
     "charges_fee_not_here": "Naknade za online uslugu nisu dostupne u vašoj državi.",
     "charges_fee_hatchgrab": "HatchGrab određuje naknadu za online uslugu u vašoj državi, pa se ovdje ne može mijenjati.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Taj dio naknade nije dozvoljen u vašoj državi.",
     "charges_choose_on_off": "Odaberite uključeno ili isključeno.",
     "charges_nothing_to_save": "Nema ništa za čuvanje.",
+    "charges_items_invalid": "Jedan od ovih artikala više nije u vašem meniju. Zatvorite ovo i pokušajte ponovo.",
     "country_settings_failed": "Nije moguće učitati postavke države za ovaj food truck. Pokušajte ponovo za trenutak.",
     "plans_failed": "Nije moguće učitati paket ovog food trucka. Pokušajte ponovo za trenutak.",
     "demo_not_available": "Nije dostupno za demo food truck",
@@ -4273,6 +4276,8 @@
         "refunded": "Vraćeno",
         "cost": "Trošak",
         "profit": "Dobit",
+        "netAtRate": "Neto {rate}",
+        "taxAtRate": "Porez {rate}",
         "eventDate": "Datum događaja",
         "orders": "Narudžbe",
         "dishesSold": "Prodana jela",
@@ -4282,7 +4287,8 @@
         "stored": "sačuvano uz narudžbu",
         "estimated": "procijenjeno na osnovu vaše poreske stope",
         "none": "poreska stopa nije postavljena"
-      }
+      },
+      "noRate": "bez stope"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Kupci je vide prije plaćanja, kao jedan red: „{label} {amount}“.",
       "hatchgrab": "HatchGrab dodaje naknadu za uslugu od {fee} na online narudžbe vaših kupaca. Vi je ne plaćate i ne možete je promijeniti."
     },
-    "saveFailed": "Nije sačuvano — pokušajte ponovo."
+    "saveFailed": "Nije sačuvano — pokušajte ponovo.",
+    "noVat": "Bez {label}",
+    "noVatHint": "Odaberite „Bez {label}“ ako ne obračunavate {label}.",
+    "otherRate": "Druga stopa…",
+    "itemRates": {
+      "label": "Stope artikala",
+      "hintSome": "{n, plural, one {{count} artikal ima drugačiju stopu} few {{count} artikla imaju drugačiju stopu} other {{count} artikala ima drugačiju stopu}}",
+      "hintNone": "Svi artikli koriste vašu zadanu stopu",
+      "button": "Promijeni stope artikala",
+      "title": "Stope artikala",
+      "intro": "Vi birate stopu za svaki artikal.",
+      "setAll": "Postavi za sve",
+      "default": "Zadana ({rate})",
+      "rateAria": "Stopa: {item}",
+      "otherItems": "Ostali artikli",
+      "noItems": "U meniju još nemate artikala.",
+      "close": "Zatvori",
+      "cancel": "Otkaži",
+      "save": "Sačuvaj",
+      "saved": "Stope artikala su sačuvane"
+    }
   },
   "takingPayment": {
     "heading": "Naplata narudžbi",

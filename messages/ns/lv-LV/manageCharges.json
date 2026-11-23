@@ -26,5 +26,25 @@
     "example": "Klienti to redz pirms maksāšanas vienā rindā: “{label} {amount}”.",
     "hatchgrab": "HatchGrab pievieno {fee} apkalpošanas maksu jūsu klientu tiešsaistes pasūtījumiem. Jūs to nemaksājat un nevarat mainīt."
   },
-  "saveFailed": "Neizdevās saglabāt — lūdzu, mēģiniet vēlreiz."
+  "saveFailed": "Neizdevās saglabāt — lūdzu, mēģiniet vēlreiz.",
+  "noVat": "Bez {label}",
+  "noVatHint": "Izvēlieties “Bez {label}”, ja nepiemērojat {label}.",
+  "otherRate": "Cita…",
+  "itemRates": {
+    "label": "Pozīciju likmes",
+    "hintSome": "{n, plural, zero {{count} pozīcijām ir cita likme} one {{count} pozīcijai ir cita likme} other {{count} pozīcijām ir cita likme}}",
+    "hintNone": "Visām pozīcijām ir jūsu noklusējuma likme",
+    "button": "Mainīt pozīciju likmes",
+    "title": "Pozīciju likmes",
+    "intro": "Jūs izvēlaties likmi katrai pozīcijai.",
+    "setAll": "Iestatīt visām",
+    "default": "Noklusējuma ({rate})",
+    "rateAria": "Likme: {item}",
+    "otherItems": "Citas pozīcijas",
+    "noItems": "Jūsu ēdienkartē vēl nav pozīciju.",
+    "close": "Aizvērt",
+    "cancel": "Atcelt",
+    "save": "Saglabāt",
+    "saved": "Pozīciju likmes saglabātas"
+  }
 }

@@ -24,6 +24,29 @@ export interface ChargeLineSource {
   tip_pct_bps?: number | null
   service_fee_minor?: number | null
   card_surcharge_minor?: number | null
+  /** france-vat-1: the per-rate breakdown (orders.tax_breakdown). Absent or null on every order before it. */
+  tax_breakdown?: unknown
+}
+
+/** france-vat-1: the breakdown's rows with a rate above 0 and food on them, ascending by rate. */
+interface RateRow { rate: number; food: number; tax: number }
+function taxedRows(src: ChargeLineSource): RateRow[] | null {
+  const v = src.tax_breakdown
+  if (!Array.isArray(v) || v.length === 0) return null
+  const rows: RateRow[] = []
+  for (const r of v as Record<string, unknown>[]) {
+    const rate = typeof r?.rate_milli === 'number' && Number.isFinite(r.rate_milli) ? Math.trunc(r.rate_milli as number) : 0
+    const food = typeof r?.food_minor === 'number' && Number.isFinite(r.food_minor) ? Math.round(r.food_minor as number) : 0
+    const tax = typeof r?.tax_minor === 'number' && Number.isFinite(r.tax_minor) ? Math.round(r.tax_minor as number) : 0
+    if (rate > 0 && food > 0) rows.push({ rate, food, tax })
+  }
+  return rows.sort((a, b) => a.rate - b.rate)
+}
+
+/** Options for the receipts (the customer email and the printed ticket) — france-vat-1. */
+export interface ChargeLineOptions {
+  /** One tax line per rate (ascending), each with its rate, when the order has more than one. Absent: one tax line. */
+  perRate?: boolean
 }
 
 export type ChargeLineKey = 'subtotal' | 'tax' | 'service_fee' | 'card_fee' | 'tip'
@@ -61,7 +84,7 @@ export function formatRateBps(bps: number): string {
 const pos = (n: number | null | undefined): number => (typeof n === 'number' && Number.isFinite(n) && n > 0 ? Math.round(n) : 0)
 
 /** The lines, in the order every surface draws them, each only when non-zero. Empty for every UK order. */
-export function chargeLinesFor(src: ChargeLineSource | null | undefined, audience: ChargeLineAudience = 'customer', locale?: string | null): ChargeLine[] {
+export function chargeLinesFor(src: ChargeLineSource | null | undefined, audience: ChargeLineAudience = 'customer', locale?: string | null, opts: ChargeLineOptions = {}): ChargeLine[] {
   if (!src) return []
   // The words: messages/en-GB.json `charges` (Language Phase 1a). The tax label is the country's own data
   // (country_settings) and stays as it is stored; the rate is still written by hand — listed for later.
@@ -73,7 +96,15 @@ export function chargeLinesFor(src: ChargeLineSource | null | undefined, audienc
   const lines: ChargeLine[] = []
   if (tax > 0) {
     const label = String(src.tax_label ?? '').trim() || t('taxFallback')
-    lines.push({ key: 'tax', label, rate: src.tax_rate_milli ? t('rate', { rate: formatRateMilli(src.tax_rate_milli) }) : null, minor: tax })
+    // france-vat-1: an order taxed at MORE THAN ONE rate — one line per rate on a receipt; elsewhere one line with no rate (no
+    // single rate is true of it). One rate (every order before france-vat-1): exactly the line it always had.
+    const rows = taxedRows(src)?.filter(r => r.tax > 0)
+    if (rows && rows.length > 1) {
+      if (opts.perRate) for (const r of rows) lines.push({ key: 'tax', label, rate: t('rate', { rate: formatRateMilli(r.rate) }), minor: r.tax })
+      else lines.push({ key: 'tax', label, rate: null, minor: tax })
+    } else {
+      lines.push({ key: 'tax', label, rate: src.tax_rate_milli ? t('rate', { rate: formatRateMilli(src.tax_rate_milli) }) : null, minor: tax })
+    }
   }
   if (fee > 0) lines.push({ key: 'service_fee', label: audience === 'customer' ? t('serviceFeeCustomer') : t('serviceFee'), rate: null, minor: fee })
   if (card > 0) lines.push({ key: 'card_fee', label: t('cardFee'), rate: null, minor: card })
@@ -111,6 +142,27 @@ export function includedTaxLine(src: ChargeLineSource | null | undefined, locale
 }
 
 /**
+ * france-vat-1: THE TAX A PRICE INCLUDES, ONE LINE PER RATE, ascending — "Dont TVA 5,5 % : 0,13 €", "Dont TVA 10 % : 0,77 €"…
+ * An order with a breakdown words each row that carries tax (a 0 % row has none, so it is left out, as a 0 rate always was);
+ * an order without one is exactly `includedTaxLine` (one line, or none). Same words and format as that line.
+ */
+export function includedTaxLines(src: ChargeLineSource | null | undefined, locale?: string | null): ChargeLine[] {
+  if (!src) return []
+  const rows = taxedRows(src)
+  // No breakdown, or ONE rated row and nothing else (every single-rate order): exactly the line it always had.
+  const breakdownRows = Array.isArray(src.tax_breakdown) ? src.tax_breakdown.length : 0
+  if (!rows || pos(src.tax_minor) > 0 || (rows.length === 1 && breakdownRows === 1)) { const one = includedTaxLine(src, locale); return one ? [one] : [] }
+  const t = translatorFor(locale, 'charges')
+  const label = String(src.tax_label ?? '').trim() || t('taxFallback')
+  let comma = false
+  try { comma = new Intl.NumberFormat(locale ?? 'en-GB').formatToParts(1.5).find(p => p.type === 'decimal')?.value === ',' } catch { /* an unknown tag */ }
+  return rows.map(r => {
+    const rate = formatRateMilli(r.rate)
+    return { key: 'tax' as const, label: t('taxIncluded', { label }), rate: t('rate', { rate: comma ? rate.replace('.', ',') : rate }), minor: r.tax }
+  })
+}
+
+/**
  * Which kinds of charge a folded row adds up — the `parts` value the ONE ICU select names its row by
  * ("Tax & fees", "Tax, fees & tip", "Fees & tip"…). Service fee and card fee are both "fees". 19 October 2026
  * (US dress rehearsal Finding 4): the fold is named by what is in it, not always "Tax & fees".
@@ -137,6 +189,8 @@ export function chargeSourceOf(row: Record<string, unknown> | null | undefined):
     tax_label: typeof row.tax_label === 'string' ? row.tax_label : null,
     tip_minor: n('tip_minor'), tip_pct_bps: n('tip_pct_bps'),
     service_fee_minor: n('service_fee_minor'), card_surcharge_minor: n('card_surcharge_minor'),
+    // france-vat-1: carried only when the row has one, so an older order's source is exactly as before.
+    ...(Array.isArray(row.tax_breakdown) ? { tax_breakdown: row.tax_breakdown } : {}),
   }
 }
 

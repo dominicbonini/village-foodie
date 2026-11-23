@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Tukio hili limekwisha. Lianzishe upya ili kupokea oda.} cancelled {Tukio hili limeghairiwa.} other {Tukio hili halijafunguliwa.}}",
     "sign_in_to_create": "Ingia kama mwanatimu ili kutengeneza tukio.",
     "event_details_invalid": "{reason, select, name {Ongeza jina la tukio} times {Ongeza muda wa kuanza na wa kumalizika} end {Muda wa kumalizika lazima uwe baada ya muda wa kuanza} van {Chagua gari} date {Matukio yanayotengenezwa hapa ni ya leo tu} other {Angalia taarifa za tukio}}",
-    "event_overlaps": "Tukio hili linagongana na tukio lingine la leo."
+    "event_overlaps": "Tukio hili linagongana na tukio lingine la leo.",
+    "order_finished_edit": "Oda hii imeshafungwa, kwa hiyo haiwezi kubadilishwa.",
+    "order_finished_cancel": "Oda hii imeshafungwa, kwa hiyo haiwezi kughairiwa."
   },
   "kitchenModals": {
     "close": "Funga",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Hitilafu imetokea — pakia upya ukurasa kisha ujaribu tena.",
     "charges_owner_only": "Mmiliki pekee ndiye anayeweza kubadilisha kodi, bakshishi na ada",
     "charges_rate_decimals": "Tumia hadi nafasi 3 za desimali, kama 8.875.",
-    "charges_rate_range": "Tumia kiwango kati ya 0 na 20%.",
+    "charges_rate_range": "Tumia kiwango kati ya 0 na 30%.",
     "charges_rate_not_here": "Bei katika nchi yako tayari zinajumuisha kodi, kwa hiyo hakuna kiwango cha kuweka.",
     "charges_fee_not_here": "Ada ya huduma mtandaoni haipatikani katika nchi yako.",
     "charges_fee_hatchgrab": "HatchGrab huweka ada ya huduma mtandaoni katika nchi yako, kwa hiyo haiwezi kubadilishwa hapa.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Sehemu hiyo ya ada hairuhusiwi katika nchi yako.",
     "charges_choose_on_off": "Chagua kuwasha au kuzima.",
     "charges_nothing_to_save": "Hakuna cha kuhifadhi.",
+    "charges_items_invalid": "Moja ya bidhaa hizi haipo tena kwenye menyu yako. Funga hiki kisha ujaribu tena.",
     "country_settings_failed": "Imeshindikana kupakia mipangilio ya nchi ya food truck hii. Jaribu tena baada ya muda mfupi.",
     "plans_failed": "Imeshindikana kupakia kifurushi cha food truck hii. Jaribu tena baada ya muda mfupi.",
     "demo_not_available": "Haipatikani kwenye food truck ya majaribio",
@@ -4273,6 +4276,8 @@
         "refunded": "Imerejeshwa",
         "cost": "Gharama",
         "profit": "Faida",
+        "netAtRate": "Halisi {rate}",
+        "taxAtRate": "Kodi {rate}",
         "eventDate": "Tarehe ya tukio",
         "orders": "Oda",
         "dishesSold": "Vyakula vilivyouzwa",
@@ -4282,7 +4287,8 @@
         "stored": "imehifadhiwa pamoja na oda",
         "estimated": "imekadiriwa kutokana na kiwango chako cha kodi",
         "none": "hakuna kiwango cha kodi kilichowekwa"
-      }
+      },
+      "noRate": "hakuna kiwango"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Wateja wanaiona kabla ya kulipa, kama mstari mmoja: “{label} {amount}”.",
       "hatchgrab": "HatchGrab huongeza ada ya huduma ya {fee} kwenye oda za mtandaoni za wateja wako. Wewe huilipi na huwezi kuibadilisha."
     },
-    "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena."
+    "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena.",
+    "noVat": "Hakuna {label}",
+    "noVatHint": "Chagua Hakuna {label} kama hutozi {label}.",
+    "otherRate": "Kiwango kingine…",
+    "itemRates": {
+      "label": "Viwango vya bidhaa",
+      "hintSome": "{n, plural, one {Bidhaa {count} inatumia kiwango tofauti} other {Bidhaa {count} zinatumia kiwango tofauti}}",
+      "hintNone": "Bidhaa zote zinatumia kiwango chako cha kawaida",
+      "button": "Badilisha viwango vya bidhaa",
+      "title": "Viwango vya bidhaa",
+      "intro": "Unachagua kiwango kwa kila bidhaa.",
+      "setAll": "Weka kwa zote",
+      "default": "Kawaida ({rate})",
+      "rateAria": "Kiwango cha {item}",
+      "otherItems": "Bidhaa nyingine",
+      "noItems": "Bado hakuna bidhaa kwenye menyu yako.",
+      "close": "Funga",
+      "cancel": "Ghairi",
+      "save": "Hifadhi",
+      "saved": "Viwango vya bidhaa vimehifadhiwa"
+    }
   },
   "takingPayment": {
     "heading": "Kupokea malipo",

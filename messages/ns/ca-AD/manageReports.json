@@ -140,6 +140,8 @@
       "refunded": "Retornat",
       "cost": "Cost",
       "profit": "Benefici",
+      "netAtRate": "Net {rate}",
+      "taxAtRate": "Impostos {rate}",
       "eventDate": "Data de l’esdeveniment",
       "orders": "Comandes",
       "dishesSold": "Plats venuts",
@@ -149,6 +151,7 @@
       "stored": "desat amb la comanda",
       "estimated": "estimat a partir del teu tipus impositiu",
       "none": "sense tipus impositiu configurat"
-    }
+    },
+    "noRate": "sense tipus"
   }
 }

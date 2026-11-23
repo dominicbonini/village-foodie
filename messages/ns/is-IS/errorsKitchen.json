@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Þessum viðburði er lokið. Hefðu hann aftur til að taka við pöntunum.} cancelled {Þessum viðburði var aflýst.} other {Þessi viðburður er ekki opinn.}}",
   "sign_in_to_create": "Skráðu þig inn sem liðsmaður til að búa til viðburð.",
   "event_details_invalid": "{reason, select, name {Bættu við heiti viðburðar} times {Bættu við upphafs- og lokatíma} end {Lokatími verður að vera eftir upphaf} van {Veldu bíl} date {Viðburðir búnir til hér gilda aðeins í dag} other {Athugaðu upplýsingar viðburðarins}}",
-  "event_overlaps": "Þetta skarast við annan viðburð í dag."
+  "event_overlaps": "Þetta skarast við annan viðburð í dag.",
+  "order_finished_edit": "Þessari pöntun er lokið, svo það er ekki hægt að breyta henni.",
+  "order_finished_cancel": "Þessari pöntun er lokið, svo það er ekki hægt að afpanta hana."
 }

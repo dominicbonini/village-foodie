@@ -140,6 +140,8 @@
       "refunded": "Refunded",
       "cost": "Cost",
       "profit": "Profit",
+      "netAtRate": "Net {rate}",
+      "taxAtRate": "Tax {rate}",
       "eventDate": "Event date",
       "orders": "Orders",
       "dishesSold": "Dishes sold",
@@ -149,6 +151,7 @@
       "stored": "stored with the order",
       "estimated": "estimated from your tax rate",
       "none": "no tax rate set"
-    }
+    },
+    "noRate": "no rate"
   }
 }

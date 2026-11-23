@@ -431,5 +431,18 @@
  "manageReports.accountsCsv.header.dishesSold": "Dishes sold",
  "manageReports.accountsCsv.header.dishesWithCost": "Dishes with a cost",
  "pricing.banner.bodyCard": "With {brand}, your customers order ahead and pay on collection, so you can accept online orders without connecting any card processor. Prefer to take payment up front? Add online card payment whenever you like. When your trial ends you move to the {fallback} plan (no monthly fee, if free) unless you choose another plan. No card to start, no fixed-term contract, cancel anytime.",
- "pricing.banner.bodyOnlyCard": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. Prefer to charge up front? Add online card payments whenever you like. When your trial ends, the <plan>{fallback}</plan> plan will cost {price} a month. Before that date we’ll get in touch with you to set up payment. No card to start, no forced term, cancel whenever you like."
+ "pricing.banner.bodyOnlyCard": "With {brand}, your customers order ahead and pay when they collect, so you can take online orders without connecting any card processor. Prefer to charge up front? Add online card payments whenever you like. When your trial ends, the <plan>{fallback}</plan> plan will cost {price} a month. Before that date we’ll get in touch with you to set up payment. No card to start, no forced term, cancel whenever you like.",
+ "manageCharges.otherRate": "Other…",
+ "manageCharges.itemRates.label": "Rates per item",
+ "manageCharges.itemRates.hintSome": "{n, plural, one {{count} item has a different rate} other {{count} items have a different rate}}",
+ "manageCharges.itemRates.hintNone": "All items use your default rate",
+ "manageCharges.itemRates.button": "Change rates per item",
+ "manageCharges.itemRates.title": "Rates per item",
+ "manageCharges.itemRates.intro": "You choose the rate of each item.",
+ "manageCharges.itemRates.default": "Default ({rate})",
+ "manageCharges.itemRates.rateAria": "Rate of {item}",
+ "manageCharges.itemRates.noItems": "There are no items on your menu yet.",
+ "manageCharges.itemRates.saved": "Rates per item saved",
+ "errorsManage.charges_items_invalid": "One of these items is no longer on your menu. Close this window and try again.",
+ "manageReports.accountsCsv.noRate": "no rate"
 }

@@ -8,7 +8,8 @@ import type { DiscountCode } from '@/lib/order-calculations'
 /* ⚠️ `loadPriceBook` IS NO LONGER IMPORTED HERE, AND THAT IS THE POINT: this route reaches it
  * through `loadEventPriceBook` (below), which is the ONE place the event-aware wrapper is
  * applied. An import of the raw book beside the wrapper is an invitation to call the wrong one. */
-import { repriceOrder, toMinor, fromMinor, type RepriceItem } from '@/lib/order-repricing'
+import { repriceOrder, toMinor, fromMinor, taxBookOf, type RepriceItem } from '@/lib/order-repricing'
+import { lineTax, stampItems, stampDeals } from '@/lib/order-tax'   // france-vat-1
 // Phase 3: tax, tip and fees — the pure engine and the server's rules (docs/phase-3-foundations-report.md).
 import { computeOrderCharges, parseTipChoice, tipChoiceAllowed } from '@/lib/order-charges'
 import { loadChargeRules } from '@/lib/order-charge-rules'
@@ -721,7 +722,7 @@ export async function POST(req: NextRequest) {
     // charged" and is written only beside an operator `price_override` (the walk-up path). Under
     // event pricing the system's own charge IS `unit_price`; the MENU price is a third quantity and
     // has its own field. See §70 in the manual.
-    const pricedItems = Object.keys(eventBook.menuPrice).length === 0
+    let pricedItems = Object.keys(eventBook.menuPrice).length === 0
       ? repriced.items
       : repriced.items.map(line => {
           /* ⚠️ THE BASIS IS PER ITEM since 5 October 2026 — one event can charge its own price for
@@ -733,7 +734,7 @@ export async function POST(req: NextRequest) {
           if (menu === undefined || basis === undefined) return line
           return { ...line, menu_price: menu, price_basis: basis }
         })
-    const pricedDeals = repriced.deals
+    let pricedDeals = repriced.deals
     // 🔴 FOOD AFTER THE DISCOUNT, in minor units — the base every Phase 3 charge is computed on, and the
     // stored food_minor. The GRAND total (serverTotalMinor) is decided below, once the event is known.
     // world-countries-1: in the truck's currency's minor units — whole yen for JPY (the order's currency is the truck's).
@@ -808,7 +809,16 @@ export async function POST(req: NextRequest) {
     if (tipChoice === 'invalid' || (chargeChannel === 'online_card' && tipChoice && !tipChoiceAllowed(tipChoice, chargeRules))) {
       return NextResponse.json(customerErrorBody(locale, 'tip_invalid', {}, { tipInvalid: true }), { status: 400 })
     }
-    const charges = computeOrderCharges({ foodMinor, rules: chargeRules, channel: chargeChannel, tip: tipChoice })
+    // ── 🔴 france-vat-1: EACH LINE'S RATE, FROM THE SERVER'S MENU (lib/order-tax.ts). Every line is stamped with its dish's id
+    // and the rate it is sold at (a browser-sent one is overwritten); the food is split by rate after the discount. Every line on
+    // the truck's one rate → one part → the same charges as before.
+    const lineTaxResult = lineTax({
+      items: pricedItems, deals: deals ? pricedDeals : [], foodMinor,
+      book: taxBookOf(priceBook, truck.currency), defaultRate: chargeRules.taxRateMilli, currency: truck.currency,
+    })
+    pricedItems = stampItems(pricedItems, lineTaxResult.itemStamps)
+    if (deals) pricedDeals = stampDeals(pricedDeals, lineTaxResult.dealStamps)
+    const charges = computeOrderCharges({ foodMinor, rules: chargeRules, channel: chargeChannel, tip: tipChoice, foodParts: lineTaxResult.parts })
     // The GRAND total: what the card is authorised for, what total_minor stores, what the emails show.
     // `total` (major units) is derived from it, so the two are the same number by construction.
     const serverTotalMinor = charges.totalMinor

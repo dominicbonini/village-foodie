@@ -140,6 +140,8 @@
       "refunded": "Refundert",
       "cost": "Kostpris",
       "profit": "Fortjeneste",
+      "netAtRate": "Netto {rate}",
+      "taxAtRate": "Mva. {rate}",
       "eventDate": "Arrangementsdato",
       "orders": "Bestillinger",
       "dishesSold": "Solgte retter",
@@ -149,6 +151,7 @@
       "stored": "lagret med bestillingen",
       "estimated": "anslått ut fra mva.-satsen din",
       "none": "ingen mva.-sats angitt"
-    }
+    },
+    "noRate": "ingen sats"
   }
 }

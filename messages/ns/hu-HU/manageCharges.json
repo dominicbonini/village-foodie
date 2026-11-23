@@ -26,5 +26,25 @@
     "example": "A vásárlók fizetés előtt egy sorban látják: „{label} {amount}”.",
     "hatchgrab": "A HatchGrab {fee} szolgáltatási díjat ad hozzá a vásárlói online rendeléseihez. Ezt nem Ön fizeti, és nem módosíthatja."
   },
-  "saveFailed": "A mentés nem sikerült — kérjük, próbálja újra."
+  "saveFailed": "A mentés nem sikerült — kérjük, próbálja újra.",
+  "noVat": "{label} nélkül",
+  "noVatHint": "Ha nem számít fel adót ({label}), válassza a „{label} nélkül” lehetőséget.",
+  "otherRate": "Egyéb…",
+  "itemRates": {
+    "label": "Tételenkénti adókulcsok",
+    "hintSome": "{n, plural, one {{count} tétel eltérő kulcsot használ} other {{count} tétel eltérő kulcsot használ}}",
+    "hintNone": "Minden tétel az alapértelmezett kulcsot használja",
+    "button": "Adókulcsok módosítása",
+    "title": "Tételenkénti adókulcsok",
+    "intro": "Az adókulcsot minden tételhez Ön választja ki.",
+    "setAll": "Összes beállítása",
+    "default": "Alapértelmezett ({rate})",
+    "rateAria": "Adókulcs: {item}",
+    "otherItems": "Egyéb tételek",
+    "noItems": "Az étlapján még nincsenek tételek.",
+    "close": "Bezárás",
+    "cancel": "Mégse",
+    "save": "Mentés",
+    "saved": "Tételenkénti adókulcsok mentve"
+  }
 }

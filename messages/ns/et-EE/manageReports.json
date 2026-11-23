@@ -140,6 +140,8 @@
       "refunded": "Tagastatud",
       "cost": "Kulu",
       "profit": "Kasum",
+      "netAtRate": "Neto {rate}",
+      "taxAtRate": "Maks {rate}",
       "eventDate": "Ürituse kuupäev",
       "orders": "Tellimused",
       "dishesSold": "Müüdud road",
@@ -149,6 +151,7 @@
       "stored": "salvestatud koos tellimusega",
       "estimated": "hinnatud sinu maksumäära põhjal",
       "none": "maksumäära pole määratud"
-    }
+    },
+    "noRate": "ilma määrata"
   }
 }

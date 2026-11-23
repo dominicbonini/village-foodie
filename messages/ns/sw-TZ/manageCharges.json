@@ -26,5 +26,25 @@
     "example": "Wateja wanaiona kabla ya kulipa, kama mstari mmoja: “{label} {amount}”.",
     "hatchgrab": "HatchGrab huongeza ada ya huduma ya {fee} kwenye oda za mtandaoni za wateja wako. Wewe huilipi na huwezi kuibadilisha."
   },
-  "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena."
+  "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena.",
+  "noVat": "Hakuna {label}",
+  "noVatHint": "Chagua Hakuna {label} kama hutozi {label}.",
+  "otherRate": "Kiwango kingine…",
+  "itemRates": {
+    "label": "Viwango vya bidhaa",
+    "hintSome": "{n, plural, one {Bidhaa {count} inatumia kiwango tofauti} other {Bidhaa {count} zinatumia kiwango tofauti}}",
+    "hintNone": "Bidhaa zote zinatumia kiwango chako cha kawaida",
+    "button": "Badilisha viwango vya bidhaa",
+    "title": "Viwango vya bidhaa",
+    "intro": "Unachagua kiwango kwa kila bidhaa.",
+    "setAll": "Weka kwa zote",
+    "default": "Kawaida ({rate})",
+    "rateAria": "Kiwango cha {item}",
+    "otherItems": "Bidhaa nyingine",
+    "noItems": "Bado hakuna bidhaa kwenye menyu yako.",
+    "close": "Funga",
+    "cancel": "Ghairi",
+    "save": "Hifadhi",
+    "saved": "Viwango vya bidhaa vimehifadhiwa"
+  }
 }

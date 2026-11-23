@@ -26,5 +26,25 @@
     "example": "Els clients la veuen abans de pagar, en una sola línia: «{label} {amount}».",
     "hatchgrab": "HatchGrab afegeix una comissió de servei de {fee} a les comandes en línia dels teus clients. No la pagues tu i no la pots canviar."
   },
-  "saveFailed": "No s’ha pogut desar. Torna-ho a provar."
+  "saveFailed": "No s’ha pogut desar. Torna-ho a provar.",
+  "noVat": "Sense {label}",
+  "noVatHint": "Tria «Sense {label}» si no cobres {label}.",
+  "otherRate": "Un altre…",
+  "itemRates": {
+    "label": "Tipus per producte",
+    "hintSome": "{n, plural, one {{count} producte té un tipus diferent} other {{count} productes tenen un tipus diferent}}",
+    "hintNone": "Tots els productes fan servir el teu tipus per defecte",
+    "button": "Canvia els tipus per producte",
+    "title": "Tipus per producte",
+    "intro": "Tu tries el tipus de cada producte.",
+    "setAll": "Aplica a tots",
+    "default": "Per defecte ({rate})",
+    "rateAria": "Tipus de {item}",
+    "otherItems": "Altres productes",
+    "noItems": "Encara no hi ha productes a la teva carta.",
+    "close": "Tanca",
+    "cancel": "Cancel·la",
+    "save": "Desa",
+    "saved": "Tipus per producte desats"
+  }
 }

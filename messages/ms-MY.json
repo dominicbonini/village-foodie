@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Acara ini sudah tamat. Mulakan semula untuk menerima pesanan.} cancelled {Acara ini telah dibatalkan.} other {Acara ini tidak dibuka.}}",
     "sign_in_to_create": "Log masuk sebagai ahli pasukan untuk mencipta acara.",
     "event_details_invalid": "{reason, select, name {Tambah nama acara} times {Tambah masa mula dan tamat} end {Masa tamat mesti selepas mula} van {Pilih van} date {Acara yang dicipta di sini untuk hari ini sahaja} other {Semak butiran acara}}",
-    "event_overlaps": "Ini bertindih dengan acara lain hari ini."
+    "event_overlaps": "Ini bertindih dengan acara lain hari ini.",
+    "order_finished_edit": "Pesanan ini sudah selesai, jadi ia tidak boleh diubah.",
+    "order_finished_cancel": "Pesanan ini sudah selesai, jadi ia tidak boleh dibatalkan."
   },
   "kitchenModals": {
     "close": "Tutup",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Ada masalah — muat semula halaman dan cuba lagi.",
     "charges_owner_only": "Hanya pemilik boleh menukar cukai, tip dan yuran",
     "charges_rate_decimals": "Gunakan sehingga 3 tempat perpuluhan, contohnya 8.875.",
-    "charges_rate_range": "Gunakan kadar dari 0 hingga 20%.",
+    "charges_rate_range": "Gunakan kadar dari 0 hingga 30%.",
     "charges_rate_not_here": "Harga di negara anda sudah termasuk cukai, jadi tiada kadar untuk ditetapkan.",
     "charges_fee_not_here": "Yuran perkhidmatan dalam talian tidak tersedia di negara anda.",
     "charges_fee_hatchgrab": "HatchGrab menetapkan yuran perkhidmatan dalam talian di negara anda, jadi ia tidak boleh ditukar di sini.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Bahagian yuran itu tidak dibenarkan di negara anda.",
     "charges_choose_on_off": "Pilih hidup atau mati.",
     "charges_nothing_to_save": "Tiada apa untuk disimpan.",
+    "charges_items_invalid": "Salah satu item ini sudah tiada dalam menu anda. Tutup ini dan cuba lagi.",
     "country_settings_failed": "Tetapan negara trak ini tidak dapat dimuatkan. Cuba lagi sebentar lagi.",
     "plans_failed": "Pelan trak ini tidak dapat dimuatkan. Cuba lagi sebentar lagi.",
     "demo_not_available": "Tidak tersedia pada trak demo",
@@ -4273,6 +4276,8 @@
         "refunded": "Dibayar balik",
         "cost": "Kos",
         "profit": "Untung",
+        "netAtRate": "Bersih {rate}",
+        "taxAtRate": "Cukai {rate}",
         "eventDate": "Tarikh acara",
         "orders": "Pesanan",
         "dishesSold": "Hidangan terjual",
@@ -4282,7 +4287,8 @@
         "stored": "disimpan bersama pesanan",
         "estimated": "dianggarkan daripada kadar cukai anda",
         "none": "tiada kadar cukai ditetapkan"
-      }
+      },
+      "noRate": "tiada kadar"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Pelanggan melihatnya sebelum membayar, sebagai satu baris: “{label} {amount}”.",
       "hatchgrab": "HatchGrab menambah yuran perkhidmatan {fee} pada pesanan dalam talian pelanggan anda. Anda tidak membayarnya dan tidak boleh mengubahnya."
     },
-    "saveFailed": "Tidak dapat disimpan — sila cuba lagi."
+    "saveFailed": "Tidak dapat disimpan — sila cuba lagi.",
+    "noVat": "Tiada {label}",
+    "noVatHint": "Pilih Tiada {label} jika anda tidak mengenakan {label}.",
+    "otherRate": "Lain-lain…",
+    "itemRates": {
+      "label": "Kadar setiap item",
+      "hintSome": "{n, plural, other {{count} item menggunakan kadar berbeza}}",
+      "hintNone": "Semua item menggunakan kadar lalai anda",
+      "button": "Tukar kadar item",
+      "title": "Kadar setiap item",
+      "intro": "Anda memilih kadar untuk setiap item.",
+      "setAll": "Tetapkan semua",
+      "default": "Lalai ({rate})",
+      "rateAria": "Kadar untuk {item}",
+      "otherItems": "Item lain",
+      "noItems": "Belum ada item dalam menu anda.",
+      "close": "Tutup",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "saved": "Kadar item disimpan"
+    }
   },
   "takingPayment": {
     "heading": "Menerima bayaran",

@@ -140,6 +140,8 @@
       "refunded": "Qaytarilgan",
       "cost": "Tannarx",
       "profit": "Foyda",
+      "netAtRate": "Sof {rate}",
+      "taxAtRate": "Soliq {rate}",
       "eventDate": "Tadbir sanasi",
       "orders": "Buyurtmalar",
       "dishesSold": "Sotilgan taomlar",
@@ -149,6 +151,7 @@
       "stored": "buyurtma bilan saqlangan",
       "estimated": "soliq stavkangiz asosida hisoblangan",
       "none": "soliq stavkasi belgilanmagan"
-    }
+    },
+    "noRate": "stavkasiz"
   }
 }

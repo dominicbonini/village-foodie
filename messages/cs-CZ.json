@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Tato akce skončila. Spusťte ji znovu, abyste mohli přijímat objednávky.} cancelled {Tato akce byla zrušena.} other {Tato akce není otevřená.}}",
     "sign_in_to_create": "Přihlaste se jako člen týmu, abyste mohli vytvořit akci.",
     "event_details_invalid": "{reason, select, name {Přidejte název akce} times {Přidejte čas začátku a konce} end {Konec musí být po začátku} van {Vyberte vůz} date {Akce vytvořené zde platí jen pro dnešek} other {Zkontrolujte údaje akce}}",
-    "event_overlaps": "Překrývá se s jinou dnešní akcí."
+    "event_overlaps": "Překrývá se s jinou dnešní akcí.",
+    "order_finished_edit": "Tato objednávka je dokončená, takže ji nelze změnit.",
+    "order_finished_cancel": "Tato objednávka je dokončená, takže ji nelze zrušit."
   },
   "kitchenModals": {
     "close": "Zavřít",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Něco se pokazilo — obnovte stránku a zkuste to znovu.",
     "charges_owner_only": "Daně, spropitné a poplatky může měnit jen majitel",
     "charges_rate_decimals": "Použijte nejvýše 3 desetinná místa, například 8,875.",
-    "charges_rate_range": "Zadejte sazbu od 0 do 20 %.",
+    "charges_rate_range": "Zadejte sazbu od 0 do 30 %.",
     "charges_rate_not_here": "Ceny ve vaší zemi už daň obsahují, takže není co nastavovat.",
     "charges_fee_not_here": "Online servisní poplatky nejsou ve vaší zemi k dispozici.",
     "charges_fee_hatchgrab": "Online servisní poplatek ve vaší zemi stanovuje HatchGrab, takže ho zde nelze změnit.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Tato část poplatku není ve vaší zemi povolena.",
     "charges_choose_on_off": "Zvolte zapnuto, nebo vypnuto.",
     "charges_nothing_to_save": "Není co uložit.",
+    "charges_items_invalid": "Jedna z těchto položek už na vašem jídelním lístku není. Zavřete toto okno a zkuste to znovu.",
     "country_settings_failed": "Nastavení země pro tento food truck se nepodařilo načíst. Zkuste to za chvíli znovu.",
     "plans_failed": "Tarif tohoto food trucku se nepodařilo načíst. Zkuste to za chvíli znovu.",
     "demo_not_available": "U demo food trucku není k dispozici",
@@ -4273,6 +4276,8 @@
         "refunded": "Vráceno",
         "cost": "Náklady",
         "profit": "Zisk",
+        "netAtRate": "Čistá částka {rate}",
+        "taxAtRate": "Daň {rate}",
         "eventDate": "Datum akce",
         "orders": "Objednávky",
         "dishesSold": "Prodaná jídla",
@@ -4282,7 +4287,8 @@
         "stored": "uloženo s objednávkou",
         "estimated": "odhad podle vaší sazby daně",
         "none": "sazba daně není nastavena"
-      }
+      },
+      "noRate": "bez sazby"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Zákazníci ho uvidí před zaplacením jako jeden řádek: „{label} {amount}“.",
       "hatchgrab": "HatchGrab přidává k online objednávkám vašich zákazníků servisní poplatek {fee}. Vy ho neplatíte a nemůžete ho změnit."
     },
-    "saveFailed": "Uložení se nezdařilo – zkuste to prosím znovu."
+    "saveFailed": "Uložení se nezdařilo – zkuste to prosím znovu.",
+    "noVat": "Bez {label}",
+    "noVatHint": "Pokud neúčtujete {label}, zvolte „Bez {label}“.",
+    "otherRate": "Jiná…",
+    "itemRates": {
+      "label": "Sazby položek",
+      "hintSome": "{n, plural, one {{count} položka má jinou sazbu} few {{count} položky mají jinou sazbu} other {{count} položek má jinou sazbu}}",
+      "hintNone": "Všechny položky mají vaši výchozí sazbu",
+      "button": "Změnit sazby položek",
+      "title": "Sazby položek",
+      "intro": "Sazbu volíte pro každou položku zvlášť.",
+      "setAll": "Nastavit vše",
+      "default": "Výchozí ({rate})",
+      "rateAria": "Sazba: {item}",
+      "otherItems": "Ostatní položky",
+      "noItems": "Na jídelním lístku zatím nemáte žádné položky.",
+      "close": "Zavřít",
+      "cancel": "Zrušit",
+      "save": "Uložit",
+      "saved": "Sazby položek uloženy"
+    }
   },
   "takingPayment": {
     "heading": "Přijímání plateb",

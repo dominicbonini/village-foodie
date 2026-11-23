@@ -140,6 +140,8 @@
       "refunded": "Endurgreitt",
       "cost": "Kostnaður",
       "profit": "Hagnaður",
+      "netAtRate": "Nettó {rate}",
+      "taxAtRate": "Skattur {rate}",
       "eventDate": "Dagsetning viðburðar",
       "orders": "Pantanir",
       "dishesSold": "Seldir réttir",
@@ -149,6 +151,7 @@
       "stored": "vistað með pöntuninni",
       "estimated": "áætlað út frá skatthlutfallinu þínu",
       "none": "ekkert skatthlutfall stillt"
-    }
+    },
+    "noRate": "ekkert hlutfall"
   }
 }

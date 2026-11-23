@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Táto akcia skončila. Spustite ju znova, aby ste mohli prijímať objednávky.} cancelled {Táto akcia bola zrušená.} other {Táto akcia nie je otvorená.}}",
     "sign_in_to_create": "Prihláste sa ako člen tímu, aby ste mohli vytvoriť akciu.",
     "event_details_invalid": "{reason, select, name {Pridajte názov akcie} times {Pridajte čas začiatku a konca} end {Koniec musí byť po začiatku} van {Vyberte voz} date {Akcie vytvorené tu platia len pre dnešok} other {Skontrolujte údaje akcie}}",
-    "event_overlaps": "Prekrýva sa s inou dnešnou akciou."
+    "event_overlaps": "Prekrýva sa s inou dnešnou akciou.",
+    "order_finished_edit": "Táto objednávka je dokončená, preto ju nemožno zmeniť.",
+    "order_finished_cancel": "Táto objednávka je dokončená, preto ju nemožno zrušiť."
   },
   "kitchenModals": {
     "close": "Zavrieť",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Niečo sa pokazilo — obnovte stránku a skúste to znova.",
     "charges_owner_only": "Daň, prepitné a poplatky môže meniť iba vlastník",
     "charges_rate_decimals": "Použite najviac 3 desatinné miesta, napríklad 8,875.",
-    "charges_rate_range": "Použite sadzbu od 0 do 20 %.",
+    "charges_rate_range": "Použite sadzbu od 0 do 30 %.",
     "charges_rate_not_here": "Ceny vo vašej krajine už obsahujú daň, takže nie je čo nastavovať.",
     "charges_fee_not_here": "Online servisné poplatky nie sú vo vašej krajine k dispozícii.",
     "charges_fee_hatchgrab": "Online servisný poplatok vo vašej krajine určuje HatchGrab, preto ho tu nemožno zmeniť.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Táto časť poplatku nie je vo vašej krajine povolená.",
     "charges_choose_on_off": "Vyberte zapnuté alebo vypnuté.",
     "charges_nothing_to_save": "Nie je čo uložiť.",
+    "charges_items_invalid": "Jedna z týchto položiek už nie je na vašom jedálnom lístku. Zatvorte toto okno a skúste to znova.",
     "country_settings_failed": "Nastavenia krajiny pre tento food truck sa nepodarilo načítať. Skúste to o chvíľu znova.",
     "plans_failed": "Plán tohto food trucku sa nepodarilo načítať. Skúste to o chvíľu znova.",
     "demo_not_available": "Na ukážkovom food trucku nie je k dispozícii",
@@ -4273,6 +4276,8 @@
         "refunded": "Vrátené",
         "cost": "Náklady",
         "profit": "Zisk",
+        "netAtRate": "Čistá suma {rate}",
+        "taxAtRate": "Daň {rate}",
         "eventDate": "Dátum akcie",
         "orders": "Objednávky",
         "dishesSold": "Predané jedlá",
@@ -4282,7 +4287,8 @@
         "stored": "uložené s objednávkou",
         "estimated": "odhad podľa vašej sadzby dane",
         "none": "sadzba dane nie je nastavená"
-      }
+      },
+      "noRate": "bez sadzby"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Zákazníci ho uvidia pred platbou ako jeden riadok: „{label} {amount}“.",
       "hatchgrab": "HatchGrab pripočíta k online objednávkam vašich zákazníkov servisný poplatok {fee}. Neplatíte ho vy a nemôžete ho zmeniť."
     },
-    "saveFailed": "Nepodarilo sa uložiť — skúste to znova."
+    "saveFailed": "Nepodarilo sa uložiť — skúste to znova.",
+    "noVat": "Bez {label}",
+    "noVatHint": "Ak neúčtujete {label}, vyberte „Bez {label}“.",
+    "otherRate": "Iná…",
+    "itemRates": {
+      "label": "Sadzby položiek",
+      "hintSome": "{n, plural, one {{count} položka má inú sadzbu} few {{count} položky majú inú sadzbu} other {{count} položiek má inú sadzbu}}",
+      "hintNone": "Všetky položky majú vašu predvolenú sadzbu",
+      "button": "Zmeniť sadzby položiek",
+      "title": "Sadzby položiek",
+      "intro": "Sadzbu si zvolíte pre každú položku zvlášť.",
+      "setAll": "Nastaviť všetky",
+      "default": "Predvolená ({rate})",
+      "rateAria": "Sadzba: {item}",
+      "otherItems": "Ostatné položky",
+      "noItems": "Na jedálnom lístku zatiaľ nemáte žiadne položky.",
+      "close": "Zavrieť",
+      "cancel": "Zrušiť",
+      "save": "Uložiť",
+      "saved": "Sadzby položiek uložené"
+    }
   },
   "takingPayment": {
     "heading": "Prijímanie platieb",

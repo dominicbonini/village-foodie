@@ -42,9 +42,12 @@ import { nextOrderId } from '@/lib/order-utils'
 /* ⚠️ `loadPriceBook` IS NO LONGER IMPORTED HERE, AND THAT IS THE POINT: this route reaches it
  * through `loadEventPriceBook` (below), which is the ONE place the event-aware wrapper is
  * applied. An import of the raw book beside the wrapper is an invitation to call the wrong one. */
-import { repriceOrder, toMinor, fromMinor, type RepriceItem } from '@/lib/order-repricing'
+import { repriceOrder, toMinor, fromMinor, taxBookOf, type RepriceItem } from '@/lib/order-repricing'
+import { lineTax, stampItems, stampDeals } from '@/lib/order-tax'   // france-vat-1
+/** france-vat-1: the statuses after which an order is a finished record — refused by `edit` and `cancel`. */
+const FINISHED_STATUSES = new Set(['collected', 'cancelled', 'rejected'])
 // Phase 3: tax, tip and fees — the same engine and rules as the customer path (docs/phase-3-foundations-report.md).
-import { computeOrderCharges, chargesForEdit } from '@/lib/order-charges'
+import { computeOrderCharges, chargesForEdit, rulesForStoredOrder } from '@/lib/order-charges'
 import { chargeSourceOf } from '@/lib/order-charge-lines'
 import { loadChargeRules } from '@/lib/order-charge-rules'
 /* 🔴 EVENT PRICING (§70, October 2026). The walk-up path prices NEW lines, so it prices at the
@@ -443,6 +446,9 @@ export async function POST(req: NextRequest) {
       const { cancellationReason } = body
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
+      // 🔴 france-vat-1: A FINISHED ORDER IS NOT CANCELLED — for every actor and every path (web, the apps, offline replay all
+      // arrive here). The screen already offers no cancel on these; this makes the server agree.
+      if (FINISHED_STATUSES.has(String(order.status))) return NextResponse.json(await kErr('order_finished_cancel'), { status: 409 })
       // ── 🔴 WHAT THE MONEY WAS DOING, ASKED BEFORE ANYTHING MOVES. ────────────────────────────────
       // Resolved here rather than after the release, because releasing stamps `authorization_cancelled_at`
       // and the resolver would then answer 'hatch' — "Pay at the truck on collection" — to a customer
@@ -796,6 +802,9 @@ export async function POST(req: NextRequest) {
       } = editedOrder || {}
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
+      // 🔴 france-vat-1: A FINISHED ORDER IS NOT EDITED — for every actor and every path. The screen offers Edit only on pending,
+      // confirmed, modified, cooking and ready orders; the server now refuses the rest too.
+      if (FINISHED_STATUSES.has(String(order.status))) return NextResponse.json(await kErr('order_finished_edit'), { status: 409 })
 
       // ── SERVER-AUTHORITATIVE PRICING, PRICE-LOCKED ─────────────────────────────────────────────
       // The request body's unit_price / modifier prices / deal price are ADVISORY ONLY — they say
@@ -871,7 +880,18 @@ export async function POST(req: NextRequest) {
       // the food, the same number as before Phase 3.
       // world-countries-1: in the ORDER's currency's minor units (whole yen for JPY).
       const editFoodMinor = toMinor(repriced.calculation.total, order.currency ?? truck.currency)
-      const editCharges = chargesForEdit(editFoodMinor, await loadChargeRules(truck), order)
+      // ── 🔴 france-vat-1: THE RATES, LOCKED LIKE THE PRICES (lib/order-tax.ts). A line already on the order keeps the rate it was
+      // stamped with (an older, unstamped line: the order's own stored rate); a line this edit adds takes its dish's rate, else the
+      // order's stored default (D4). The discount is spread again over the edited food.
+      const editRules = await loadChargeRules(truck)
+      const editTax = lineTax({
+        items: repriced.items, deals: repriced.deals, foodMinor: editFoodMinor,
+        book: taxBookOf(priceBook, order.currency ?? truck.currency),
+        defaultRate: rulesForStoredOrder(editRules, order).taxRateMilli,
+        currency: order.currency ?? truck.currency,
+        stored: { items: order.items, deals: order.deals },
+      })
+      const editCharges = chargesForEdit(editFoodMinor, editRules, order, editTax.parts)
       const newTotalMinor = editCharges.totalMinor
       const newTotal = fromMinor(newTotalMinor, order.currency ?? truck.currency)
       const unresolved = [...repriced.unresolved, ...unresolvedDiscount]
@@ -922,7 +942,8 @@ export async function POST(req: NextRequest) {
       }))
       // An untouched order that never had deals keeps its stored value (null stays null) — only an
       // order that HAS deals, or whose deals were edited, gets the canonical array written.
-      const dealsToStore = (editedDeals === undefined && dealsCanonical.length === 0) ? order.deals : dealsCanonical
+      // france-vat-1: each deal carries its rate split (stamped in repriced.deals' order, which dealsCanonical keeps).
+      const dealsToStore = (editedDeals === undefined && dealsCanonical.length === 0) ? order.deals : stampDeals(dealsCanonical, editTax.dealStamps)
 
       const newSlot = slot !== undefined ? slot : order.slot
       // ── P3: THE EDIT LOCK, TAKEN BEFORE THE ROW IS WRITTEN (19 September 2026) ─────────────────
@@ -958,7 +979,8 @@ export async function POST(req: NextRequest) {
        * identity-queue pairing so duplicates line up — see its header. With nothing stored and no
        * event pricing it returns `repriced.items` itself, so an ordinary edit writes the same bytes
        * as before this build. */
-      const itemsToStore = stampEditedLines(repriced.items, order.items, eventBook.menuPrice, eventBook.basisByName)
+      // france-vat-1: + each line's dish id and rate (stampEditedLines keeps repriced.items' order, so the stamps line up).
+      const itemsToStore = stampItems(stampEditedLines(repriced.items, order.items, eventBook.menuPrice, eventBook.basisByName), editTax.itemStamps)
 
       const { error: updateErr } = await supabase.from('orders').update({
         // Items carry the AUTHORITATIVE unit_price (and modifier prices): the locked-in figure for a
@@ -1780,10 +1802,19 @@ export async function POST(req: NextRequest) {
       // 🔴 An OVERRIDE is not an unresolved. The operator setting a price is an answer, not a question.
       // ── 🔴 Phase 3: A WALK-UP IS TAXED (D9) AND CARRIES NO SERVICE FEE, SURCHARGE OR ONLINE TIP. The same
       // engine and rules as the customer path, channel 'walk_up'. GB: tax included → total = food.
+      // ── 🔴 france-vat-1: each line's rate from the server's menu (lib/order-tax.ts), the food split by rate. The prices are
+      // `priced`'s, which `pricedItems` / `pricedDeals` below keep line for line, so the stamps line up by index.
+      const walkupFoodMinor = toMinor(priced.calculation.total, truck.currency)   // world-countries-1: the truck's currency's minor units
+      const walkupRules = await loadChargeRules(truck)
+      const walkupTax = lineTax({
+        items: priced.items, deals: deals ? priced.deals : [], foodMinor: walkupFoodMinor,
+        book: taxBookOf(priceBook, truck.currency), defaultRate: walkupRules.taxRateMilli, currency: truck.currency,
+      })
       const walkupCharges = computeOrderCharges({
-        foodMinor: toMinor(priced.calculation.total, truck.currency),   // world-countries-1: the truck's currency's minor units
-        rules: await loadChargeRules(truck),
+        foodMinor: walkupFoodMinor,
+        rules: walkupRules,
         channel: 'walk_up',
+        foodParts: walkupTax.parts,
       })
       const serverTotalMinor = walkupCharges.totalMinor
       const serverTotal = fromMinor(serverTotalMinor, truck.currency)
@@ -1824,7 +1855,7 @@ export async function POST(req: NextRequest) {
        * both below makes "stamped together or not at all" a property of this code rather than of the
        * loader that filled them. */
       const anyEventPrice = Object.keys(eventBook.menuPrice).length > 0
-      const pricedItems = (!hasOverride && !anyEventPrice)
+      const pricedItemsBeforeTax = (!hasOverride && !anyEventPrice)
         ? priced.items
         : priced.items.map((line, i) => {
             const ov = overrideByIndex[i]
@@ -1838,7 +1869,7 @@ export async function POST(req: NextRequest) {
           })
       // Deals in EXACTLY the shape the edit path persists — price is the AUTHORITATIVE bundle price.
       // `deals ? … : null` preserves the existing null-vs-[] distinction on this column.
-      const pricedDeals = deals
+      const pricedDealsBeforeTax = deals
         ? priced.deals.map(d => ({
             name: d.name,
             slots: d.slots ?? {},
@@ -1847,6 +1878,9 @@ export async function POST(req: NextRequest) {
             price: Number(d.price) || 0,
           }))
         : null
+      // france-vat-1: the stamps — each line's dish id and rate, each deal's split.
+      const pricedItems = stampItems(pricedItemsBeforeTax, walkupTax.itemStamps)
+      const pricedDeals = pricedDealsBeforeTax ? stampDeals(pricedDealsBeforeTax, walkupTax.dealStamps) : null
 
       // Informed-override flag: the operator only sees this AFTER an atomic check reported the
       // real shortfall, then consciously chooses to proceed. It does NOT skip the check.
@@ -2459,7 +2493,7 @@ export async function POST(req: NextRequest) {
       // discarded and this branch returns `{ success: true, newSlot }` unconditionally, so a filtered
       // write would report SUCCESS for an order that never moved — while the booking, the capture and
       // the email still ran. That is the silent-no-op trap the cross-truck cancel hole hid behind.
-      const { data: ord } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt,currency,country,food_minor,tax_minor,tax_rate_milli,tax_label,tip_minor,tip_pct_bps,service_fee_minor,card_surcharge_minor').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      const { data: ord } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt,currency,country,food_minor,tax_minor,tax_rate_milli,tax_label,tip_minor,tip_pct_bps,service_fee_minor,card_surcharge_minor,tax_breakdown').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!ord?.slot) return NextResponse.json(await kErr('no_slot'), { status: 400 })
       const [h, m] = ord.slot.split(':').map(Number)
       const newTotal = h * 60 + m + mins

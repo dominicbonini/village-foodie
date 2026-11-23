@@ -26,7 +26,13 @@
 //   CHANNEL        online (the customer placed it) or walk-up (the truck did) — Reports' own rule, `customer_email`.
 //   PAYMENT        card online (a succeeded online charge), pay at the truck (placed online, not paid online), walk-up.
 // Lines are matched to dishes BY NAME (an order line carries no dish id; Reports' category breakdown does the same).
+//   PER RATE       france-vat-1 (24 November 2026): an order with a breakdown (orders.tax_breakdown) takes its tax from it — the sum
+//                  of each rate's tax, the receipt's own lines. Each row also carries `rates`: its Net and Tax split by rate (in
+//                  proportion to the breakdown's net and tax, largest remainder, so they add up to the row's Net and Tax exactly);
+//                  an order without a breakdown has one entry, at its one rate. The Orders CSV shows them as columns only when the
+//                  file holds more than one rate.
 import { minorDigits } from '@/lib/money-format'
+import { allocate } from '@/lib/order-tax'
 
 export type Channel = 'online' | 'walkup'
 export type PaymentMethod = 'card_online' | 'pay_at_truck' | 'walkup'
@@ -47,6 +53,8 @@ export interface LedgerOrder {
   tax_minor?: number | null
   tax_inclusive?: boolean | null
   tax_rate_milli?: number | null
+  /** france-vat-1: the per-rate breakdown; null/absent on every order before it. */
+  tax_breakdown?: unknown
 }
 export interface LedgerPayment { order_key: string; kind: string; channel: string | null; amount_minor: number; state: string | null }
 export interface CostRow { item_id: string; cost_minor: number | null; currency: string; effective_from: string }
@@ -76,6 +84,20 @@ export interface AccountRow {
   costMinor: number
   /** net − cost, only when every dish has a cost; else null. */
   profitMinor: number | null
+  /** france-vat-1: Net and Tax split by rate (ascending, no rate first), adding up to netMinor and taxMinor. */
+  rates: RateShare[]
+}
+/** One rate's share of an order row. `rate` null = no rate. */
+export interface RateShare { rate: number | null; netMinor: number; taxMinor: number }
+
+interface BreakdownLite { rate: number | null; net: number; tax: number }
+/** The stored breakdown, read loosely (a row is jsonb); null when there is none. */
+function breakdownOf(v: unknown): BreakdownLite[] | null {
+  if (!Array.isArray(v) || v.length === 0) return null
+  return (v as Record<string, unknown>[]).map(r => ({
+    rate: typeof r?.rate_milli === 'number' && Number.isSafeInteger(r.rate_milli) && (r.rate_milli as number) >= 0 ? r.rate_milli as number : null,
+    net: int(r?.net_minor), tax: int(r?.tax_minor),
+  }))
 }
 
 const CANCELLED = new Set(['cancelled', 'rejected'])
@@ -103,6 +125,9 @@ export function localParts(iso: string | null, timeZone: string): { date: string
 
 /** The tax in an order, and where the figure comes from (see the header). */
 export function orderTax(o: LedgerOrder, grossMinor: number, rule: TaxRule): { minor: number; basis: TaxBasis } {
+  // france-vat-1: the breakdown, when the order has one — each rate's tax, as its receipt says. (One rate: the same figure as below.)
+  const bd = breakdownOf(o.tax_breakdown)
+  if (bd && o.tax_inclusive != null) return { minor: bd.reduce((s, r) => s + r.tax, 0), basis: 'stored' }
   const food = o.food_minor != null ? int(o.food_minor) : grossMinor
   const storedMilli = int(o.tax_rate_milli)
   if (o.tax_inclusive != null && (int(o.tax_minor) > 0 || storedMilli > 0)) {
@@ -164,12 +189,25 @@ export function accountRows(input: AccountRowsInput): AccountRow[] {
     }
     const { date, time } = localParts(o.created_at, input.timeZone)
     const online = !!o.customer_email
+    // france-vat-1: Net and Tax by rate. A breakdown → split in proportion to its net and tax; otherwise the order's one rate
+    // (stored, estimated from the truck's, or none).
+    const bd = breakdownOf(o.tax_breakdown)
+    let rates: RateShare[]
+    if (bd && bd.length > 0) {
+      const nets = allocate(netMinor, bd.map(r => r.net)), taxes = allocate(taxMinor, bd.map(r => r.tax))
+      // All the tax on a row with no tax to weigh by (every row 0) goes to the first; keep it on a rated row when there is one.
+      rates = bd.map((r, i) => ({ rate: r.rate, netMinor: nets[i], taxMinor: taxes[i] }))
+    } else {
+      const one = tax.basis === 'stored' ? (int(o.tax_rate_milli) || null) : tax.basis === 'estimated' ? (input.tax.rateMilli ?? null) : null
+      rates = [{ rate: one, netMinor, taxMinor }]
+    }
     rows.push({
       orderKey: o.order_key, number: String(o.id ?? ''), date, time, eventDate: o.event_date, eventId: o.event_id,
       channel: online ? 'online' : 'walkup',
       payment: !online ? 'walkup' : pays.some(p => p.kind === 'charge' && p.channel === 'online') ? 'card_online' : 'pay_at_truck',
       currency, cancelled, grossMinor, refundedMinor, taxMinor, taxBasis: tax.basis, netMinor,
       dishes, dishesWithCost, costMinor, profitMinor: dishesWithCost === dishes ? netMinor - costMinor : null,
+      rates,
     })
   }
   return rows
@@ -217,6 +255,14 @@ export function summarise(rows: readonly AccountRow[]): { totals: Totals; events
   const list = [...events.entries()].map(([key, e]) => ({ ...e, key, profitMinor: e.dishesWithCost === e.dishes ? e.netMinor - e.costMinor : null }))
     .sort((a, b) => String(a.eventDate).localeCompare(String(b.eventDate)) || a.key.localeCompare(b.key))
   return { totals, events: list }
+}
+
+/** france-vat-1: every rate the rows hold, ascending (no rate first) — the Orders CSV's per-rate columns, shown only when there are
+ *  two or more. */
+export function ratesIn(rows: readonly AccountRow[]): (number | null)[] {
+  const set = new Map<string, number | null>()
+  for (const r of rows) for (const s of r.rates ?? []) set.set(s.rate === null ? 'none' : String(s.rate), s.rate)
+  return [...set.values()].sort((a, b) => (a ?? -1) - (b ?? -1))
 }
 
 /** The tax basis to show for a set of rows: estimated if any row was estimated, none only if every row had no rate. */

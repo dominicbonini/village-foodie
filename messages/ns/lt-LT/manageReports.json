@@ -140,6 +140,8 @@
       "refunded": "Grąžinta",
       "cost": "Savikaina",
       "profit": "Pelnas",
+      "netAtRate": "Neto {rate}",
+      "taxAtRate": "Mokesčiai {rate}",
       "eventDate": "Renginio data",
       "orders": "Užsakymai",
       "dishesSold": "Parduoti patiekalai",
@@ -149,6 +151,7 @@
       "stored": "išsaugota su užsakymu",
       "estimated": "apskaičiuota pagal jūsų mokesčio tarifą",
       "none": "mokesčio tarifas nenustatytas"
-    }
+    },
+    "noRate": "be tarifo"
   }
 }

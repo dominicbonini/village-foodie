@@ -504,7 +504,8 @@
     "wa_no_code": "Meta no devolvió un código de un solo uso. Toca “Configurar” y vuelve a intentarlo.",
     "wa_no_waba": "Meta no devolvió una cuenta de WhatsApp Business. Toca “Configurar” y vuelve a intentarlo.",
     "wa_code_expired": "Tardó demasiado y el código de un solo uso de Meta expiró. No se guardó nada. Toca “Configurar” y vuelve a hacerlo: solo debería tomarte un minuto.",
-    "cost_invalid": "Ingresa un costo de 0 o más, o deja el campo vacío."
+    "cost_invalid": "Ingresa un costo de 0 o más, o deja el campo vacío.",
+    "charges_items_invalid": "Uno de estos productos ya no está en tu menú. Cierra esta ventana y vuelve a intentarlo."
   },
   "manageSchedule": {
     "card": {
@@ -587,7 +588,8 @@
         "profit": "Ganancia",
         "dishesSold": "Platillos vendidos",
         "dishesWithCost": "Platillos con costo"
-      }
+      },
+      "noRate": "sin tasa"
     }
   },
   "socialPosts": {
@@ -617,6 +619,19 @@
     "included": {
       "hint": "Tus precios ya incluyen el {label}. Esta tasa solo indica qué parte de cada precio es {label}, en los tickets y en las comandas: no se suma nada al pagar.",
       "default": "Déjalo vacío para usar el {rate} %, la tasa de {label} de la comida caliente para llevar ({country})."
+    },
+    "otherRate": "Otra…",
+    "itemRates": {
+      "label": "Tasas por producto",
+      "hintSome": "{n, plural, one {{count} producto tiene una tasa distinta} other {{count} productos tienen una tasa distinta}}",
+      "hintNone": "Todos los productos usan tu tasa predeterminada",
+      "button": "Cambiar tasas por producto",
+      "title": "Tasas por producto",
+      "intro": "Tú eliges la tasa de cada producto.",
+      "default": "Predeterminada ({rate})",
+      "rateAria": "Tasa de {item}",
+      "noItems": "Aún no hay productos en tu menú.",
+      "saved": "Tasas por producto guardadas"
     }
   },
   "designEditor": {

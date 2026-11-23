@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Bu etkinlik bitti. Sipariş almak için yeniden başlatın.} cancelled {Bu etkinlik iptal edildi.} other {Bu etkinlik açık değil.}}",
   "sign_in_to_create": "Etkinlik oluşturmak için ekip üyesi olarak giriş yapın.",
   "event_details_invalid": "{reason, select, name {Etkinlik adı ekleyin} times {Başlangıç ve bitiş saati ekleyin} end {Bitiş saati başlangıçtan sonra olmalı} van {Bir araç seçin} date {Burada oluşturulan etkinlikler yalnızca bugün içindir} other {Etkinlik bilgilerini kontrol edin}}",
-  "event_overlaps": "Bu, bugünkü başka bir etkinlikle çakışıyor."
+  "event_overlaps": "Bu, bugünkü başka bir etkinlikle çakışıyor.",
+  "order_finished_edit": "Bu sipariş tamamlandı, bu yüzden değiştirilemez.",
+  "order_finished_cancel": "Bu sipariş tamamlandı, bu yüzden iptal edilemez."
 }

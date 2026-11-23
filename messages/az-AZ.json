@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Bu tədbir bitib. Sifariş qəbul etmək üçün yenidən başladın.} cancelled {Bu tədbir ləğv edilib.} other {Bu tədbir açıq deyil.}}",
     "sign_in_to_create": "Tədbir yaratmaq üçün komanda üzvü kimi daxil olun.",
     "event_details_invalid": "{reason, select, name {Tədbirin adını əlavə edin} times {Başlama və bitmə vaxtını əlavə edin} end {Bitmə vaxtı başlamadan sonra olmalıdır} van {Furqon seçin} date {Burada yaradılan tədbirlər yalnız bu gün üçündür} other {Tədbirin məlumatlarını yoxlayın}}",
-    "event_overlaps": "Bu, bu günkü başqa tədbirlə üst-üstə düşür."
+    "event_overlaps": "Bu, bu günkü başqa tədbirlə üst-üstə düşür.",
+    "order_finished_edit": "Bu sifariş tamamlanıb, ona görə də onu dəyişmək olmaz.",
+    "order_finished_cancel": "Bu sifariş tamamlanıb, ona görə də onu ləğv etmək olmaz."
   },
   "kitchenModals": {
     "close": "Bağla",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Nəsə səhv getdi — səhifəni yeniləyib yenidən cəhd edin.",
     "charges_owner_only": "Vergini, çaypulunu və haqları yalnız sahib dəyişə bilər",
     "charges_rate_decimals": "Vergüldən sonra ən çoxu 3 rəqəm yazın, məsələn, 8,875.",
-    "charges_rate_range": "0–20% arasında dərəcə istifadə edin.",
+    "charges_rate_range": "0–30% arasında dərəcə istifadə edin.",
     "charges_rate_not_here": "Ölkənizdə qiymətlərə vergi artıq daxildir, ona görə də təyin ediləcək dərəcə yoxdur.",
     "charges_fee_not_here": "Ölkənizdə onlayn xidmət haqları mövcud deyil.",
     "charges_fee_hatchgrab": "Ölkənizdə onlayn xidmət haqqını HatchGrab təyin edir, ona görə də onu burada dəyişmək olmaz.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Haqqın bu hissəsinə ölkənizdə icazə verilmir.",
     "charges_choose_on_off": "Açıq və ya bağlı seçin.",
     "charges_nothing_to_save": "Yadda saxlanılacaq heç nə yoxdur.",
+    "charges_items_invalid": "Bu məhsullardan biri artıq menyunuzda yoxdur. Bunu bağlayın və yenidən cəhd edin.",
     "country_settings_failed": "Bu food truck-ın ölkə ayarlarını yükləmək mümkün olmadı. Bir azdan yenidən cəhd edin.",
     "plans_failed": "Bu food truck-ın planını yükləmək mümkün olmadı. Bir azdan yenidən cəhd edin.",
     "demo_not_available": "Demo food truck-da mövcud deyil",
@@ -4273,6 +4276,8 @@
         "refunded": "Geri qaytarılıb",
         "cost": "Maya dəyəri",
         "profit": "Mənfəət",
+        "netAtRate": "Xalis {rate}",
+        "taxAtRate": "Vergi {rate}",
         "eventDate": "Tədbir tarixi",
         "orders": "Sifarişlər",
         "dishesSold": "Satılan yeməklər",
@@ -4282,7 +4287,8 @@
         "stored": "sifarişlə birlikdə saxlanılıb",
         "estimated": "vergi dərəcənizə əsasən təxmin edilib",
         "none": "vergi dərəcəsi təyin edilməyib"
-      }
+      },
+      "noRate": "dərəcəsiz"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Müştərilər bunu ödənişdən əvvəl bir sətir kimi görür: “{label} {amount}”.",
       "hatchgrab": "HatchGrab müştərilərinizin onlayn sifarişlərinə {fee} xidmət haqqı əlavə edir. Bunu siz ödəmirsiniz və dəyişə bilməzsiniz."
     },
-    "saveFailed": "Yadda saxlamaq mümkün olmadı — yenidən cəhd edin."
+    "saveFailed": "Yadda saxlamaq mümkün olmadı — yenidən cəhd edin.",
+    "noVat": "{label} yoxdur",
+    "noVatHint": "{label} tətbiq etmirsinizsə, “{label} yoxdur” seçimini edin.",
+    "otherRate": "Digər…",
+    "itemRates": {
+      "label": "Məhsul dərəcələri",
+      "hintSome": "{n, plural, one {{count} məhsul fərqli dərəcədən istifadə edir} other {{count} məhsul fərqli dərəcədən istifadə edir}}",
+      "hintNone": "Bütün məhsullar standart dərəcənizdən istifadə edir",
+      "button": "Məhsul dərəcələrini dəyiş",
+      "title": "Məhsul dərəcələri",
+      "intro": "Hər məhsulun dərəcəsini siz seçirsiniz.",
+      "setAll": "Hamısına təyin et",
+      "default": "Standart ({rate})",
+      "rateAria": "{item} üçün dərəcə",
+      "otherItems": "Digər məhsullar",
+      "noItems": "Menyunuzda hələ məhsul yoxdur.",
+      "close": "Bağla",
+      "cancel": "Ləğv et",
+      "save": "Yadda saxla",
+      "saved": "Məhsul dərəcələri yadda saxlanıldı"
+    }
   },
   "takingPayment": {
     "heading": "Ödənişin qəbulu",

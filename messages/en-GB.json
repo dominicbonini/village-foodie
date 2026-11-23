@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {This event has finished. Restart it to take orders.} cancelled {This event was cancelled.} other {This event isn’t open.}}",
     "sign_in_to_create": "Log in as a team member to create an event.",
     "event_details_invalid": "{reason, select, name {Add an event name} times {Add a start and end time} end {The end time must be after the start} van {Choose a van} date {Events made here are for today only} other {Check the event details}}",
-    "event_overlaps": "This overlaps another event today."
+    "event_overlaps": "This overlaps another event today.",
+    "order_finished_edit": "This order is finished, so it can’t be changed.",
+    "order_finished_cancel": "This order is finished, so it can’t be cancelled."
   },
   "kitchenModals": {
     "close": "Close",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Something went wrong — refresh the page and try again.",
     "charges_owner_only": "Only the owner can change tax, tips and fees",
     "charges_rate_decimals": "Use up to 3 decimal places, like 8.875.",
-    "charges_rate_range": "Use a rate from 0 to 20%.",
+    "charges_rate_range": "Use a rate from 0 to 30%.",
     "charges_rate_not_here": "Prices in your country already include tax, so there is no rate to set.",
     "charges_fee_not_here": "Online service fees aren’t available in your country.",
     "charges_fee_hatchgrab": "HatchGrab sets the online service fee in your country, so it can’t be changed here.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "That part of the fee isn’t allowed in your country.",
     "charges_choose_on_off": "Choose on or off.",
     "charges_nothing_to_save": "Nothing to save.",
+    "charges_items_invalid": "One of these items isn’t on your menu any more. Close this and try again.",
     "country_settings_failed": "Could not load this truck’s country settings. Try again in a moment.",
     "plans_failed": "Could not load this truck’s plan. Try again in a moment.",
     "demo_not_available": "Not available on a demo truck",
@@ -4273,6 +4276,8 @@
         "refunded": "Refunded",
         "cost": "Cost",
         "profit": "Profit",
+        "netAtRate": "Net {rate}",
+        "taxAtRate": "Tax {rate}",
         "eventDate": "Event date",
         "orders": "Orders",
         "dishesSold": "Dishes sold",
@@ -4282,7 +4287,8 @@
         "stored": "stored with the order",
         "estimated": "estimated from your tax rate",
         "none": "no tax rate set"
-      }
+      },
+      "noRate": "no rate"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Customers see it before they pay, as one line: “{label} {amount}”.",
       "hatchgrab": "HatchGrab adds a {fee} service fee to your customers’ online orders. You don’t pay it and can’t change it."
     },
-    "saveFailed": "Couldn’t save — please try again."
+    "saveFailed": "Couldn’t save — please try again.",
+    "noVat": "No {label}",
+    "noVatHint": "Choose No {label} if you don’t charge {label}.",
+    "otherRate": "Other…",
+    "itemRates": {
+      "label": "Item rates",
+      "hintSome": "{n, plural, one {{count} item uses a different rate} other {{count} items use a different rate}}",
+      "hintNone": "All items use your default rate",
+      "button": "Change item rates",
+      "title": "Item rates",
+      "intro": "You choose the rate for each item.",
+      "setAll": "Set all",
+      "default": "Default ({rate})",
+      "rateAria": "Rate for {item}",
+      "otherItems": "Other items",
+      "noItems": "No items on your menu yet.",
+      "close": "Close",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saved": "Item rates saved"
+    }
   },
   "takingPayment": {
     "heading": "Taking payment",

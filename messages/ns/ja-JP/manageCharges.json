@@ -26,5 +26,25 @@
     "example": "お客様にはお支払い前に「{label} {amount}」という1行で表示されます。",
     "hatchgrab": "HatchGrabは、お客様のオンライン注文に{fee}のサービス料を加算します。この料金をお店が負担することはなく、変更もできません。"
   },
-  "saveFailed": "保存できませんでした。もう一度お試しください。"
+  "saveFailed": "保存できませんでした。もう一度お試しください。",
+  "noVat": "{label}なし",
+  "noVatHint": "{label}を請求しない場合は「{label}なし」を選んでください。",
+  "otherRate": "その他…",
+  "itemRates": {
+    "label": "商品ごとの税率",
+    "hintSome": "{n, plural, other {{count}点の商品は別の税率です}}",
+    "hintNone": "すべての商品で初期設定の税率を使っています",
+    "button": "商品ごとの税率を変更",
+    "title": "商品ごとの税率",
+    "intro": "商品ごとに税率を選べます。",
+    "setAll": "一括設定",
+    "default": "初期設定（{rate}）",
+    "rateAria": "{item}の税率",
+    "otherItems": "その他の商品",
+    "noItems": "メニューにまだ商品がありません。",
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "saved": "商品ごとの税率を保存しました"
+  }
 }

@@ -6,5 +6,6 @@
   "intervals_save_failed": "Pickup times could not be saved right now.",
   "no_van_for_device": "This device isn’t set to a truck yet, so wired printing isn’t available.",
   "van_not_for_truck": "That truck isn’t part of this account",
-  "van_not_for_target": "That truck isn’t part of the account you’re switching to"
+  "van_not_for_target": "That truck isn’t part of the account you’re switching to",
+  "order_finished_cancel": "This order is finished, so it can’t be canceled."
 }

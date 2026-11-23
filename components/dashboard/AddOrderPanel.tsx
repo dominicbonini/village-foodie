@@ -42,6 +42,7 @@ import { MoneyProvider } from '@/components/MoneyContext'
 import { formatMajorOrBare, toMinorUnits, toMajor } from '@/lib/money-format'
 // Phase 3 screens: the offline walk-up total, worked out by the server's own pure engine.
 import { computeOrderCharges, rulesFromCheckout } from '@/lib/order-charges'
+import { lineTax, taxBookFrom, bookHasOwnRates } from '@/lib/order-tax'   // france-vat-1
 import { WALK_UP_NAME } from '@/lib/walk-up'
 import { DEFAULT_CATEGORY_KEY } from '@/lib/category-key'
 import { useT, useAppLocale } from '@/lib/i18n/use-t'
@@ -1645,7 +1646,15 @@ setItemModal({ item, modGroups, editCartKey })
           ...(truck.charge_rules ? (() => {
             // world-countries-1: the truck's currency's minor units (whole yen for JPY), never ×100.
             const cur = truck.money?.currency ?? 'GBP'
-            const c = computeOrderCharges({ foodMinor: toMinorUnits(manualTotal, cur), rules: rulesFromCheckout(truck.charge_rules), channel: 'walk_up' })
+            const foodMinor = toMinorUnits(manualTotal, cur)
+            const rules = rulesFromCheckout(truck.charge_rules)
+            // france-vat-1: where tax is ADDED and a dish has its own rate, split the food by rate as the server will (lib/order-tax.ts).
+            const book = !rules.taxInclusive ? taxBookFrom(truckMenu?.items ?? [], cur) : null
+            const foodParts = book && bookHasOwnRates(book) ? lineTax({
+              items: manualItems, deals: appliedDeals.map(d => ({ name: d.bundle.name, price: d.bundle.bundle_price + (d.modifierExtra || 0), slots: d.slots, slotModifiers: {} })),
+              foodMinor, book, defaultRate: rules.taxRateMilli, currency: cur,
+            }).parts : null
+            const c = computeOrderCharges({ foodMinor, rules, channel: 'walk_up', foodParts })
             return { total: toMajor(c.totalMinor, cur), total_minor: c.totalMinor, ...c.snapshot }
           })() : {}),
           // 🔴 DERIVED FROM THE SAME VALUE THAT WAS QUEUED, NOT A LITERAL (14 August 2026). This read

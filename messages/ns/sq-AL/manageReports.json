@@ -140,6 +140,8 @@
       "refunded": "Rimbursuar",
       "cost": "Kostoja",
       "profit": "Fitimi",
+      "netAtRate": "Neto {rate}",
+      "taxAtRate": "Taksa {rate}",
       "eventDate": "Data e eventit",
       "orders": "Porositë",
       "dishesSold": "Pjata të shitura",
@@ -149,6 +151,7 @@
       "stored": "ruajtur me porosinë",
       "estimated": "vlerësuar nga norma juaj e taksës",
       "none": "pa normë takse"
-    }
+    },
+    "noRate": "pa normë"
   }
 }

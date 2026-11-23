@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Ez az esemény véget ért. Indítsd újra a rendelések fogadásához.} cancelled {Ezt az eseményt lemondták.} other {Ez az esemény nincs nyitva.}}",
     "sign_in_to_create": "Jelentkezz be csapattagként az esemény létrehozásához.",
     "event_details_invalid": "{reason, select, name {Add meg az esemény nevét} times {Add meg a kezdés és a befejezés idejét} end {A befejezésnek a kezdés után kell lennie} van {Válassz kocsit} date {Az itt létrehozott események csak a mai napra szólnak} other {Ellenőrizd az esemény adatait}}",
-    "event_overlaps": "Ez átfedésben van egy másik mai eseménnyel."
+    "event_overlaps": "Ez átfedésben van egy másik mai eseménnyel.",
+    "order_finished_edit": "Ez a rendelés már lezárult, ezért nem módosítható.",
+    "order_finished_cancel": "Ez a rendelés már lezárult, ezért nem mondható le."
   },
   "kitchenModals": {
     "close": "Bezárás",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Hiba történt — frissítse az oldalt, és próbálja újra.",
     "charges_owner_only": "Az adót, a borravalót és a díjakat csak a tulajdonos módosíthatja",
     "charges_rate_decimals": "Legfeljebb 3 tizedesjegyet használjon, például 8,875.",
-    "charges_rate_range": "0 és 20% közötti kulcsot adjon meg.",
+    "charges_rate_range": "0 és 30% közötti kulcsot adjon meg.",
     "charges_rate_not_here": "Az Ön országában az árak már tartalmazzák az adót, így nincs beállítandó adókulcs.",
     "charges_fee_not_here": "Online szolgáltatási díj az Ön országában nem érhető el.",
     "charges_fee_hatchgrab": "Az Ön országában az online szolgáltatási díjat a HatchGrab határozza meg, ezért itt nem módosítható.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "A díjnak ez a része az Ön országában nem megengedett.",
     "charges_choose_on_off": "Válasszon: be vagy ki.",
     "charges_nothing_to_save": "Nincs mit menteni.",
+    "charges_items_invalid": "Az egyik tétel már nem szerepel az étlapján. Zárja be ezt az ablakot, és próbálja újra.",
     "country_settings_failed": "Nem sikerült betölteni a food truck országbeállításait. Próbálja újra egy kicsit később.",
     "plans_failed": "Nem sikerült betölteni a food truck csomagját. Próbálja újra egy kicsit később.",
     "demo_not_available": "Bemutató food trucknál nem érhető el",
@@ -4273,6 +4276,8 @@
         "refunded": "Visszatérítve",
         "cost": "Költség",
         "profit": "Nyereség",
+        "netAtRate": "Nettó {rate}",
+        "taxAtRate": "Adó {rate}",
         "eventDate": "Esemény dátuma",
         "orders": "Rendelések",
         "dishesSold": "Eladott ételek",
@@ -4282,7 +4287,8 @@
         "stored": "a rendeléssel együtt tárolva",
         "estimated": "az Ön adókulcsa alapján becsülve",
         "none": "nincs beállítva adókulcs"
-      }
+      },
+      "noRate": "nincs adókulcs"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "A vásárlók fizetés előtt egy sorban látják: „{label} {amount}”.",
       "hatchgrab": "A HatchGrab {fee} szolgáltatási díjat ad hozzá a vásárlói online rendeléseihez. Ezt nem Ön fizeti, és nem módosíthatja."
     },
-    "saveFailed": "A mentés nem sikerült — kérjük, próbálja újra."
+    "saveFailed": "A mentés nem sikerült — kérjük, próbálja újra.",
+    "noVat": "{label} nélkül",
+    "noVatHint": "Ha nem számít fel adót ({label}), válassza a „{label} nélkül” lehetőséget.",
+    "otherRate": "Egyéb…",
+    "itemRates": {
+      "label": "Tételenkénti adókulcsok",
+      "hintSome": "{n, plural, one {{count} tétel eltérő kulcsot használ} other {{count} tétel eltérő kulcsot használ}}",
+      "hintNone": "Minden tétel az alapértelmezett kulcsot használja",
+      "button": "Adókulcsok módosítása",
+      "title": "Tételenkénti adókulcsok",
+      "intro": "Az adókulcsot minden tételhez Ön választja ki.",
+      "setAll": "Összes beállítása",
+      "default": "Alapértelmezett ({rate})",
+      "rateAria": "Adókulcs: {item}",
+      "otherItems": "Egyéb tételek",
+      "noItems": "Az étlapján még nincsenek tételek.",
+      "close": "Bezárás",
+      "cancel": "Mégse",
+      "save": "Mentés",
+      "saved": "Tételenkénti adókulcsok mentve"
+    }
   },
   "takingPayment": {
     "heading": "Fizetés fogadása",

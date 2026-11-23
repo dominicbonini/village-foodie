@@ -26,5 +26,25 @@
     "example": "Klientai mato jį prieš mokėdami, viena eilute: „{label} {amount}“.",
     "hatchgrab": "HatchGrab prideda aptarnavimo mokestį ({fee}) prie jūsų klientų užsakymų internetu. Jūs jo nemokate ir negalite pakeisti."
   },
-  "saveFailed": "Nepavyko išsaugoti — bandykite dar kartą."
+  "saveFailed": "Nepavyko išsaugoti — bandykite dar kartą.",
+  "noVat": "Be {label}",
+  "noVatHint": "Pasirinkite „Be {label}“, jei netaikote {label}.",
+  "otherRate": "Kitas…",
+  "itemRates": {
+    "label": "Patiekalų tarifai",
+    "hintSome": "{n, plural, one {{count} patiekalas turi kitokį tarifą} few {{count} patiekalai turi kitokį tarifą} many {{count} patiekalų turi kitokį tarifą} other {{count} patiekalų turi kitokį tarifą}}",
+    "hintNone": "Visiems patiekalams taikomas numatytasis tarifas",
+    "button": "Keisti patiekalų tarifus",
+    "title": "Patiekalų tarifai",
+    "intro": "Tarifą kiekvienam patiekalui pasirenkate jūs.",
+    "setAll": "Nustatyti visiems",
+    "default": "Numatytasis ({rate})",
+    "rateAria": "Tarifas: {item}",
+    "otherItems": "Kiti patiekalai",
+    "noItems": "Jūsų meniu dar nėra patiekalų.",
+    "close": "Uždaryti",
+    "cancel": "Atšaukti",
+    "save": "Išsaugoti",
+    "saved": "Patiekalų tarifai išsaugoti"
+  }
 }

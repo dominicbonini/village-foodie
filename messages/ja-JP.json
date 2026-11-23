@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {この出店は終了しました。注文を受けるには再開してください。} cancelled {この出店はキャンセルされました。} other {この出店は開いていません。}}",
     "sign_in_to_create": "出店を作成するにはチームメンバーとしてログインしてください。",
     "event_details_invalid": "{reason, select, name {出店名を入力してください} times {開始時刻と終了時刻を入力してください} end {終了時刻は開始より後にしてください} van {車両を選んでください} date {ここで作成する出店は本日分のみです} other {出店の内容を確認してください}}",
-    "event_overlaps": "本日の別の出店と時間が重なっています。"
+    "event_overlaps": "本日の別の出店と時間が重なっています。",
+    "order_finished_edit": "この注文はすでに終了しているため、変更できません。",
+    "order_finished_cancel": "この注文はすでに終了しているため、キャンセルできません。"
   },
   "kitchenModals": {
     "close": "閉じる",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "問題が発生しました。ページを再読み込みして、もう一度お試しください。",
     "charges_owner_only": "税金、チップ、手数料を変更できるのはオーナーのみです",
     "charges_rate_decimals": "小数点以下3桁までで入力してください（例：8.875）。",
-    "charges_rate_range": "税率は0〜20%で入力してください。",
+    "charges_rate_range": "税率は0〜30%で入力してください。",
     "charges_rate_not_here": "お住まいの国では価格がすでに税込みのため、設定する税率はありません。",
     "charges_fee_not_here": "お住まいの国ではオンラインサービス料はご利用いただけません。",
     "charges_fee_hatchgrab": "お住まいの国ではHatchGrabがオンラインサービス料を設定しているため、ここでは変更できません。",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "お住まいの国では、この手数料の項目は認められていません。",
     "charges_choose_on_off": "オンかオフを選んでください。",
     "charges_nothing_to_save": "保存する変更はありません。",
+    "charges_items_invalid": "この中に、メニューから削除された商品があります。これを閉じて、もう一度お試しください。",
     "country_settings_failed": "このキッチンカーの国の設定を読み込めませんでした。しばらくしてからもう一度お試しください。",
     "plans_failed": "このキッチンカーのプランを読み込めませんでした。しばらくしてからもう一度お試しください。",
     "demo_not_available": "デモのキッチンカーではご利用いただけません",
@@ -4273,6 +4276,8 @@
         "refunded": "返金額",
         "cost": "原価",
         "profit": "利益",
+        "netAtRate": "純額 {rate}",
+        "taxAtRate": "消費税 {rate}",
         "eventDate": "出店日",
         "orders": "注文数",
         "dishesSold": "販売した商品数",
@@ -4282,7 +4287,8 @@
         "stored": "注文時に記録",
         "estimated": "税率から算出した見込み額",
         "none": "税率未設定"
-      }
+      },
+      "noRate": "税率なし"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "お客様にはお支払い前に「{label} {amount}」という1行で表示されます。",
       "hatchgrab": "HatchGrabは、お客様のオンライン注文に{fee}のサービス料を加算します。この料金をお店が負担することはなく、変更もできません。"
     },
-    "saveFailed": "保存できませんでした。もう一度お試しください。"
+    "saveFailed": "保存できませんでした。もう一度お試しください。",
+    "noVat": "{label}なし",
+    "noVatHint": "{label}を請求しない場合は「{label}なし」を選んでください。",
+    "otherRate": "その他…",
+    "itemRates": {
+      "label": "商品ごとの税率",
+      "hintSome": "{n, plural, other {{count}点の商品は別の税率です}}",
+      "hintNone": "すべての商品で初期設定の税率を使っています",
+      "button": "商品ごとの税率を変更",
+      "title": "商品ごとの税率",
+      "intro": "商品ごとに税率を選べます。",
+      "setAll": "一括設定",
+      "default": "初期設定（{rate}）",
+      "rateAria": "{item}の税率",
+      "otherItems": "その他の商品",
+      "noItems": "メニューにまだ商品がありません。",
+      "close": "閉じる",
+      "cancel": "キャンセル",
+      "save": "保存",
+      "saved": "商品ごとの税率を保存しました"
+    }
   },
   "takingPayment": {
     "heading": "代金の受け取り",

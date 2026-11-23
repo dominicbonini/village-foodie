@@ -25,6 +25,7 @@
       "profit": "Ganancia",
       "dishesSold": "Platillos vendidos",
       "dishesWithCost": "Platillos con costo"
-    }
+    },
+    "noRate": "sin tasa"
   }
 }

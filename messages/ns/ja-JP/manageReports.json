@@ -140,6 +140,8 @@
       "refunded": "返金額",
       "cost": "原価",
       "profit": "利益",
+      "netAtRate": "純額 {rate}",
+      "taxAtRate": "消費税 {rate}",
       "eventDate": "出店日",
       "orders": "注文数",
       "dishesSold": "販売した商品数",
@@ -149,6 +151,7 @@
       "stored": "注文時に記録",
       "estimated": "税率から算出した見込み額",
       "none": "税率未設定"
-    }
+    },
+    "noRate": "税率なし"
   }
 }

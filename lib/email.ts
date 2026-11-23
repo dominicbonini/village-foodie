@@ -12,7 +12,7 @@ import { brevoFrom } from '@/lib/email-config'
 // lib/money-server.ts (moneyFormatForOrder) — never a default, never GBP by omission.
 import { formatMajor, formatMinor, type MoneyFormat } from '@/lib/money-format'
 // Phase 3 screens: the order's tax, fee and tip lines — the same list every surface draws.
-import { chargeLinesFor, chargeLineText, includedTaxLine, type ChargeLineSource } from '@/lib/order-charge-lines'
+import { chargeLinesFor, chargeLineText, includedTaxLines, type ChargeLineSource } from '@/lib/order-charge-lines'
 import { formatSlot, formatYmd, type TimeSettings } from '@/lib/time-utils'
 // 🔴 EVERY CUSTOMER SENTENCE BELOW IS IN messages/en-GB.json `emailCustomer` (Language Phase 1a), read in the
 // order's language — `money.locale`, its country's — so a translated email is a translated file, not an edit
@@ -241,8 +241,10 @@ export function renderOrderLinesHtml(items: EmailOrderItem[], deals: EmailDeal[]
  * same lines as the order page's totals box. ⚠️ EMPTY FOR EVERY UK ORDER (lib/order-charge-lines.ts), so
  * the rows add nothing and the email is byte-identical.
  */
-export function chargeRowsHtml(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string {
-  return chargeLinesFor(charges, 'customer', money.locale).map(l => `
+export function chargeRowsHtml(charges: ChargeLineSource | null | undefined, money: MoneyFormat, perRate = false): string {
+  // france-vat-1: `perRate` — the CUSTOMER confirmation only: one tax line per rate on a mixed-rate order (the truck's new-order
+  // email keeps the one line, Dominic's decision 3). One rate: the same line either way.
+  return chargeLinesFor(charges, 'customer', money.locale, { perRate }).map(l => `
       <tr>
         <td style="padding:4px 0;color:#64748b">${l.label}${l.rate ? ` <span style="font-size:12px;color:#94a3b8">${l.rate}</span>` : ''}</td>
         <td style="text-align:right;padding:4px 0;color:#64748b">${formatMinor(l.minor, money)}</td>
@@ -251,17 +253,16 @@ export function chargeRowsHtml(charges: ChargeLineSource | null | undefined, mon
 /** france-1: the tax the price INCLUDES, as a row after the total ("Dont TVA 10 % : 1,09 €") — '' for every order but an
  *  inclusive-rate one (France), so the email is byte-identical everywhere else (lib/order-charge-lines.ts includedTaxLine). */
 export function includedTaxRowHtml(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string {
-  const l = includedTaxLine(charges, money.locale)
-  return l ? `<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8">${l.label} ${l.rate}</td><td style="text-align:right;padding:4px 0;font-size:12px;color:#94a3b8">${formatMinor(l.minor, money)}</td></tr>` : ''
+  // france-vat-1: one row per rate, ascending (lib/order-charge-lines.ts includedTaxLines); a single-rate order is the one row it always had.
+  return includedTaxLines(charges, money.locale).map(l => `<tr><td style="padding:4px 0;font-size:12px;color:#94a3b8">${l.label} ${l.rate}</td><td style="text-align:right;padding:4px 0;font-size:12px;color:#94a3b8">${formatMinor(l.minor, money)}</td></tr>`).join('')
 }
 /** The same, as a text line — an empty list for every order but an inclusive-rate one. */
 export function includedTaxTextLines(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string[] {
-  const l = includedTaxLine(charges, money.locale)
-  return l ? [chargeLineText(l, m => formatMinor(m, money), money.locale)] : []
+  return includedTaxLines(charges, money.locale).map(l => chargeLineText(l, m => formatMinor(m, money), money.locale))
 }
 /** The same rows as text lines, e.g. "Sales tax 8.25%: $1.98". Empty for every UK order. */
-export function chargeTextLines(charges: ChargeLineSource | null | undefined, money: MoneyFormat): string[] {
-  return chargeLinesFor(charges, 'customer', money.locale).map(l => chargeLineText(l, m => formatMinor(m, money), money.locale))
+export function chargeTextLines(charges: ChargeLineSource | null | undefined, money: MoneyFormat, perRate = false): string[] {
+  return chargeLinesFor(charges, 'customer', money.locale, { perRate }).map(l => chargeLineText(l, m => formatMinor(m, money), money.locale))
 }
 
 export function formatConfirmationEmail(params: {
@@ -373,7 +374,7 @@ export function formatConfirmationEmail(params: {
   const orderLinesHtml = renderOrderLinesHtml(params.items, params.deals, params.money)
 
   // The discount row this used to hold was emptied long ago; the tax, fee and tip rows take its place.
-  const discountRow = chargeRowsHtml(params.charges, params.money)
+  const discountRow = chargeRowsHtml(params.charges, params.money, true)   // france-vat-1: one tax line per rate
 
   const slotSection = (params.slot && !isReady) ? `
     <div style="background:${params.slotAdjustedFrom || !params.autoAccepted ? '#fff7ed' : '#f0fdf4'};border:1px solid ${params.slotAdjustedFrom || !params.autoAccepted ? '#fed7aa' : '#bbf7d0'};border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center">
@@ -528,7 +529,7 @@ export function formatConfirmationEmail(params: {
       })
       return lines.join('\n')
     }).join('\n') : '',
-    ...chargeTextLines(params.charges, params.money),
+    ...chargeTextLines(params.charges, params.money, true),   // france-vat-1: one tax line per rate
     t('confirmation.textTotal', { amount: formatMajor(params.total, params.money) }),
     ...includedTaxTextLines(params.charges, params.money),
     isReady

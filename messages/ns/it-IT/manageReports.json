@@ -140,6 +140,8 @@
       "refunded": "Rimborsato",
       "cost": "Costo",
       "profit": "Guadagno",
+      "netAtRate": "Netto {rate}",
+      "taxAtRate": "Imposte {rate}",
       "eventDate": "Data evento",
       "orders": "Ordini",
       "dishesSold": "Piatti venduti",
@@ -149,6 +151,7 @@
       "stored": "registrate con l’ordine",
       "estimated": "stimate in base alla tua aliquota",
       "none": "nessuna aliquota impostata"
-    }
+    },
+    "noRate": "senza aliquota"
   }
 }

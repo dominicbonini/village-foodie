@@ -28,6 +28,7 @@ import { formatMajor, formatWholeAmount, formatAmount, currencySymbol, minorDigi
 import { datePresets, presetOf, PRESET_KEYS, type PresetKey, type TaxYearStart } from '@/lib/accounts/tax-year'
 import { summarise, taxBasisOf, type AccountRow, type Channel, type PaymentMethod, type TaxBasis } from '@/lib/accounts/ledger'
 import { ordersCsv, eventsCsv, type CsvWords } from '@/lib/accounts/csv'
+import { formatRateMilli } from '@/lib/order-charge-lines'   // france-vat-1: the per-rate CSV headers
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 // billing-2: Manage › Billing when billing is on (or for a billing_test truck), and its one notice — invisible to every other truck.
 import { BillingScreen, useBillingScreen, useBillingNotice, BillingNoticeStrip } from '@/components/manage/BillingScreen'
@@ -15196,6 +15197,9 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     payment: paymentWord,
     taxBasis: (b: TaxBasis) => t(`accountsCsv.taxBasis.${b}`),
     event: eventLabelOf,
+    // france-vat-1: the per-rate columns' headers ("Net 10%", "Tax 10%"; no rate: "Net no rate"), shown only for a file with 2+ rates.
+    rateHeader: (kind: 'net' | 'tax', rateMilli: number | null) => t(kind === 'net' ? 'accountsCsv.header.netAtRate' : 'accountsCsv.header.taxAtRate',
+      { rate: rateMilli === null ? t('accountsCsv.noRate') : `${formatRateMilli(rateMilli)}%` }),
   }
   const downloadAccounts = (kind: 'orders' | 'events') => {
     if (!accounts || accountRowsInScope.length === 0) return

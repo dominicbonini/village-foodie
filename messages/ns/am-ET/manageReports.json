@@ -140,6 +140,8 @@
       "refunded": "ተመላሽ የተደረገ",
       "cost": "ወጪ",
       "profit": "ትርፍ",
+      "netAtRate": "የተጣራ {rate}",
+      "taxAtRate": "ታክስ {rate}",
       "eventDate": "የዝግጅቱ ቀን",
       "orders": "ትዕዛዞች",
       "dishesSold": "የተሸጡ ምግቦች",
@@ -149,6 +151,7 @@
       "stored": "ከትዕዛዙ ጋር የተቀመጠ",
       "estimated": "ከታክስ መጠንዎ የተገመተ",
       "none": "የታክስ መጠን አልተቀመጠም"
-    }
+    },
+    "noRate": "ያለ መጠን"
   }
 }

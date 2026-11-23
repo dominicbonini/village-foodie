@@ -4,6 +4,11 @@
 //
 // 🔴 SHOWN ONLY WHERE THE TRUCK'S COUNTRY ADDS TAX AT CHECKOUT. A UK truck never sees it: its country's
 // prices include VAT, and this component returns null before anything renders.
+// ⛔ france-vat-1 (Dominic, 24 November 2026): SHOWN IN EVERY COUNTRY NOW, in three forms:
+//   • tax added at checkout (US, CA …): the rows below, plus "Item rates" after the rate;
+//   • prices include a named tax with a default (France's TVA): its one rate box, plus "Item rates";
+//   • prices include tax with no default (GB, IE and the rest): a rate dropdown whose first choice, "No VAT" (NULL), is what
+//     every existing truck has — so nothing changes until a truck picks a rate — plus "Item rates".
 //
 // Three rows, each a label with a grey hint on the left and the control on the right:
 //   • "Sales tax rate" — the truck's ONE rate, 0–20 % with up to 3 decimals, stored in thousandths;
@@ -11,7 +16,7 @@
 //   • "Online service fee" — only where the country allows one: the truck's own switch and amounts within
 //     the country's maximum, or, where HatchGrab keeps it, one line saying so and nothing to change.
 // Every save is `update_charges`, which runs lib/charge-settings.ts again on the server.
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, Toggle } from './primitives'
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { formatMinor, currencySymbol, editableMinor, toMinorUnits } from '@/lib/money-format'
@@ -20,6 +25,8 @@ import { normaliseDecimal, decimalForInput } from '@/lib/decimal-input'   // fra
 import { formatRateMilli, formatRateBps } from '@/lib/order-charge-lines'
 import { checkChargeSettings, feePhrase, pctText, type ChargeSettingsInput } from '@/lib/charge-settings'
 import { addressFormatOf, regionOf, regionSalesTax, includedTaxOf } from '@/lib/address-formats'
+import { defaultRateOf, quickRatesFor, itemsOffDefault } from '@/lib/item-rates'   // france-vat-1
+import { ItemRatesModal, type ItemRateData } from './ItemRatesModal'
 // Language Phase 1d Part 2: the card's words are `manageCharges`; a refusal is an `errorsManage` code — the same one
 // `update_charges` sends — worded here in the truck's locale; the example quotes the customer's own charge line
 // (`charges.serviceFeeCustomer`), so it can never name a line the customer does not see.
@@ -60,11 +67,24 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
   const [feePct, setFeePct] = useState(truck.service_fee_bps ? decimalForInput(pctText(truck.service_fee_bps), cs.locale) : '')
   const [feeFixed, setFeeFixed] = useState(truck.service_fee_fixed_minor ? decimalForInput(editableMinor(truck.service_fee_fixed_minor, fmt), cs.locale) : '')
   const [feeError, setFeeError] = useState<string | null>(null)
+  // france-vat-1: the dishes and their own rates (for the "Item rates" hint and popup), and whether the popup is open.
+  const [itemRates, setItemRates] = useState<ItemRateData | null>(null)
+  const [itemRatesOpen, setItemRatesOpen] = useState(false)
+  useEffect(() => {
+    let live = true
+    api('get_item_rates').then(r => { const d = r as unknown as Partial<ItemRateData> | null; if (live && d?.items && d?.categories) setItemRates({ items: d.items, categories: d.categories }) }).catch(() => { /* the row says nothing until it loads */ })
+    return () => { live = false }
+  }, [api])
+  // france-vat-1: where prices include tax and there is no default (GB, IE …), the "Other…" box shows when the truck's rate is not
+  // one of the quick choices.
+  const quick = quickRatesFor(cs.countryCode)
+  const [otherOpen, setOtherOpen] = useState(truck.tax_rate_milli != null && !quick.includes(truck.tax_rate_milli))
 
   // france-1: a country whose prices INCLUDE a named tax its receipts word (France's TVA) shows ONE row — the rate its prices
-  // include, its default from the address format, the truck's own when typed. Every other tax-inclusive country: nothing, as before.
+  // include, its default from the address format, the truck's own when typed.
+  // france-vat-1: every other tax-inclusive country shows its own form (below) instead of nothing.
   const includedTax = cs.pricesIncludeTax ? includedTaxOf(cs.addressFormat) : null
-  if (cs.pricesIncludeTax && !includedTax) return null
+  const noDefault = cs.pricesIncludeTax && !includedTax
   // canada-1 (22 October 2026): the base region's sales tax, when the address format holds one (Canada) — the rate an empty box
   // charges, shown as its placeholder and in one line under it. A region without one (every US state) shows nothing new.
   const regionTax = regionSalesTax(cs.addressFormat, truck.base_region_code)
@@ -119,6 +139,20 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
       <span className="text-sm text-slate-600">%</span>
     </div>
   )
+  // ── france-vat-1: "Item rates" — the hint, the button, and the popup ──────────────────────────────────────────────────────
+  const rateWords = (milli: number) => tCharges('rate', { rate: decimalForInput(formatRateMilli(milli), cs.locale) })
+  const defaultRate = defaultRateOf(cs, truck)
+  const taxLabel = includedTax?.label ?? cs.taxLabel
+  const defaultLabel = t('itemRates.default', { rate: defaultRate === null ? (noDefault ? t('noVat', { label: taxLabel }) : rateWords(0)) : rateWords(defaultRate) })
+  const offDefault = itemRates ? itemsOffDefault(itemRates.items, defaultRate) : 0
+  const itemRatesRow = row(t('itemRates.label'),
+    itemRates ? (offDefault > 0 ? t('itemRates.hintSome', { n: offDefault, count: String(offDefault) }) : t('itemRates.hintNone')) : '',
+    <button type="button" onClick={() => setItemRatesOpen(true)} disabled={!itemRates} data-item-rates-open
+      className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60">{t('itemRates.button')}</button>,
+    itemRatesOpen && itemRates ? <ItemRatesModal data={itemRates} defaultLabel={defaultLabel} api={api} showToast={showToast}
+      onClose={() => setItemRatesOpen(false)} onSaved={d => setItemRates(d)} /> : null,
+    'item-rates')
+
   if (includedTax) {
     return (
       <Card className="p-4">
@@ -128,6 +162,40 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
             rateError ? <p className="text-xs text-red-600 mt-1" role="alert">{rateError}</p>
               : <p className="text-xs text-slate-500 mt-1" data-included-tax>{t('included.default', { label: includedTax.label, rate: decimalForInput(formatRateMilli(includedTax.milli), cs.locale), country: cs.name })}</p>,
             'rate')}
+          {itemRatesRow}
+        </div>
+      </Card>
+    )
+  }
+
+  if (noDefault) {
+    // "No VAT" (NULL — every existing truck), the country's quick rates, or "Other…" (the same box, the same check).
+    const selected = truck.tax_rate_milli == null ? 'none' : otherOpen || !quick.includes(truck.tax_rate_milli) ? 'other' : String(truck.tax_rate_milli)
+    const choose = (v: string) => {
+      if (v === 'other') { setOtherOpen(true); return }
+      setOtherOpen(false)
+      const text = v === 'none' ? '' : formatRateMilli(Number(v))
+      setRate(v === 'none' ? '' : decimalForInput(text, cs.locale))
+      void save({ taxRate: text }, setRateError)
+    }
+    return (
+      <Card className="p-4">
+        <h3 className="text-base font-bold text-slate-800">{t('heading')}</h3>
+        <div className="divide-y divide-slate-100">
+          {row(t('included.label', { label: cs.taxLabel }), t('included.hint', { label: cs.taxLabel }),
+            <div className="flex items-center gap-1.5">
+              <select aria-label={t('included.label', { label: cs.taxLabel })} value={selected} onChange={e => choose(e.target.value)} data-no-vat-select
+                className="rounded-xl border border-slate-200 bg-white px-2 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                <option value="none">{t('noVat', { label: cs.taxLabel })}</option>
+                {quick.map(m => <option key={m} value={String(m)}>{rateWords(m)}</option>)}
+                <option value="other">{t('otherRate')}</option>
+              </select>
+              {selected === 'other' && rateBox(null)}
+            </div>,
+            rateError ? <p className="text-xs text-red-600 mt-1" role="alert">{rateError}</p>
+              : <p className="text-xs text-slate-500 mt-1" data-no-vat-hint>{t('noVatHint', { label: cs.taxLabel })}</p>,
+            'rate')}
+          {itemRatesRow}
         </div>
       </Card>
     )
@@ -150,6 +218,7 @@ export function ChargesCard({ truck, api, showToast, onTruckUpdate }: {
           rateError ? <p className="text-xs text-red-600 mt-1" role="alert">{rateError}</p>
             : regionTax ? <p className="text-xs text-slate-500 mt-1" data-region-tax>{t('rate.regionDefault', { label: regionTax.label, rate: formatRateMilli(regionTax.milli), region: regionName })}</p> : null,
           'rate')}
+        {itemRatesRow}
 
         {row(t('tips.label'),
           t('tips.hint'),

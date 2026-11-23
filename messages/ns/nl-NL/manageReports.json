@@ -140,6 +140,8 @@
       "refunded": "Terugbetaald",
       "cost": "Kosten",
       "profit": "Winst",
+      "netAtRate": "Netto {rate}",
+      "taxAtRate": "Btw {rate}",
       "eventDate": "Datum evenement",
       "orders": "Bestellingen",
       "dishesSold": "Verkochte gerechten",
@@ -149,6 +151,7 @@
       "stored": "opgeslagen bij de bestelling",
       "estimated": "geschat op basis van je btw-tarief",
       "none": "geen btw-tarief ingesteld"
-    }
+    },
+    "noRate": "geen tarief"
   }
 }

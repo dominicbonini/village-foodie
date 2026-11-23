@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Aquest esdeveniment ha acabat. Reinicia’l per rebre comandes.} cancelled {Aquest esdeveniment s’ha cancel·lat.} other {Aquest esdeveniment no està obert.}}",
   "sign_in_to_create": "Inicia la sessió com a membre de l’equip per crear un esdeveniment.",
   "event_details_invalid": "{reason, select, name {Afegeix un nom per a l’esdeveniment} times {Afegeix una hora d’inici i una de final} end {L’hora de final ha de ser posterior a la d’inici} van {Tria un vehicle} date {Els esdeveniments que es creen aquí només són per a avui} other {Revisa els detalls de l’esdeveniment}}",
-  "event_overlaps": "Se solapa amb un altre esdeveniment d’avui."
+  "event_overlaps": "Se solapa amb un altre esdeveniment d’avui.",
+  "order_finished_edit": "Aquesta comanda està finalitzada, així que no es pot modificar.",
+  "order_finished_cancel": "Aquesta comanda està finalitzada, així que no es pot cancel·lar."
 }

@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {To wydarzenie się zakończyło. Uruchom je ponownie, żeby przyjmować zamówienia.} cancelled {To wydarzenie zostało odwołane.} other {To wydarzenie nie jest otwarte.}}",
     "sign_in_to_create": "Zaloguj się jako członek zespołu, aby utworzyć wydarzenie.",
     "event_details_invalid": "{reason, select, name {Dodaj nazwę wydarzenia} times {Dodaj godzinę rozpoczęcia i zakończenia} end {Koniec musi być po rozpoczęciu} van {Wybierz food truck} date {Wydarzenia tworzone tutaj są tylko na dziś} other {Sprawdź dane wydarzenia}}",
-    "event_overlaps": "To nakłada się na inne dzisiejsze wydarzenie."
+    "event_overlaps": "To nakłada się na inne dzisiejsze wydarzenie.",
+    "order_finished_edit": "To zamówienie jest zakończone, więc nie można go zmienić.",
+    "order_finished_cancel": "To zamówienie jest zakończone, więc nie można go anulować."
   },
   "kitchenModals": {
     "close": "Zamknij",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Coś poszło nie tak — odśwież stronę i spróbuj ponownie.",
     "charges_owner_only": "Tylko właściciel może zmieniać podatki, napiwki i opłaty",
     "charges_rate_decimals": "Użyj maksymalnie 3 miejsc po przecinku, np. 8,875.",
-    "charges_rate_range": "Podaj stawkę od 0 do 20%.",
+    "charges_rate_range": "Podaj stawkę od 0 do 30%.",
     "charges_rate_not_here": "Ceny w twoim kraju zawierają już podatek, więc nie ma stawki do ustawienia.",
     "charges_fee_not_here": "Opłaty serwisowe online nie są dostępne w twoim kraju.",
     "charges_fee_hatchgrab": "W twoim kraju opłatę serwisową online ustala HatchGrab, więc nie można jej tu zmienić.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Ta część opłaty nie jest dozwolona w twoim kraju.",
     "charges_choose_on_off": "Wybierz: włączone lub wyłączone.",
     "charges_nothing_to_save": "Nie ma nic do zapisania.",
+    "charges_items_invalid": "Jednej z tych pozycji nie ma już w twoim menu. Zamknij to okno i spróbuj ponownie.",
     "country_settings_failed": "Nie udało się wczytać ustawień kraju dla tego food trucka. Spróbuj ponownie za chwilę.",
     "plans_failed": "Nie udało się wczytać planu tego food trucka. Spróbuj ponownie za chwilę.",
     "demo_not_available": "Niedostępne w food trucku demonstracyjnym",
@@ -4273,6 +4276,8 @@
         "refunded": "Zwrócono",
         "cost": "Koszt",
         "profit": "Zysk",
+        "netAtRate": "Netto {rate}",
+        "taxAtRate": "Podatek {rate}",
         "eventDate": "Data wydarzenia",
         "orders": "Zamówienia",
         "dishesSold": "Sprzedane dania",
@@ -4282,7 +4287,8 @@
         "stored": "zapisany z zamówieniem",
         "estimated": "szacowany na podstawie twojej stawki podatku",
         "none": "brak ustawionej stawki podatku"
-      }
+      },
+      "noRate": "bez stawki"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Klienci widzą ją przed zapłatą jako jedną pozycję: „{label} {amount}”.",
       "hatchgrab": "HatchGrab dolicza opłatę serwisową {fee} do zamówień online twoich klientów. Nie płacisz jej i nie możesz jej zmienić."
     },
-    "saveFailed": "Nie udało się zapisać — spróbuj ponownie."
+    "saveFailed": "Nie udało się zapisać — spróbuj ponownie.",
+    "noVat": "Bez {label}",
+    "noVatHint": "Wybierz „Bez {label}”, jeśli nie naliczasz {label}.",
+    "otherRate": "Inna…",
+    "itemRates": {
+      "label": "Stawki pozycji",
+      "hintSome": "{n, plural, one {{count} pozycja ma inną stawkę} few {{count} pozycje mają inną stawkę} many {{count} pozycji ma inną stawkę} other {{count} pozycji ma inną stawkę}}",
+      "hintNone": "Wszystkie pozycje mają twoją domyślną stawkę",
+      "button": "Zmień stawki pozycji",
+      "title": "Stawki pozycji",
+      "intro": "Ty wybierasz stawkę dla każdej pozycji.",
+      "setAll": "Ustaw wszystkie",
+      "default": "Domyślna ({rate})",
+      "rateAria": "Stawka: {item}",
+      "otherItems": "Inne pozycje",
+      "noItems": "W twoim menu nie ma jeszcze pozycji.",
+      "close": "Zamknij",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "saved": "Zapisano stawki pozycji"
+    }
   },
   "takingPayment": {
     "heading": "Przyjmowanie płatności",

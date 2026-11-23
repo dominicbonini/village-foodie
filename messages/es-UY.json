@@ -1058,7 +1058,7 @@
     "van_id_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
     "auto_open_close_required": "Algo ha fallado: actualizá la página y volvé a intentarlo.",
     "charges_rate_decimals": "Usá hasta 3 decimales, por ejemplo 8,875.",
-    "charges_rate_range": "Usá un tipo de entre 0 y 20 %.",
+    "charges_rate_range": "Usá un tipo de entre 0 y 30 %.",
     "charges_fee_pct": "Usá un porcentaje, por ejemplo 3 o 3,5.",
     "charges_fee_fixed": "Usá un importe, por ejemplo 0,50.",
     "charges_fee_over_pct": "Lo máximo que podés cobrar es un {max} %.",

@@ -228,5 +228,8 @@
     "faq": {
       "whatA": "An ordering system takes orders online before customers reach the truck: they choose dishes and a pickup time, pay online or at pickup, and the order appears in your kitchen. A POS or card terminal takes payment at the truck. The two complement each other."
     }
+  },
+  "errorsKitchen": {
+    "order_finished_cancel": "This order is finished, so it can’t be cancelled."
   }
 }

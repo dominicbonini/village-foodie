@@ -26,5 +26,25 @@
     "example": "Kliendid näevad seda enne maksmist ühe reana: „{label} {amount}“.",
     "hatchgrab": "HatchGrab lisab sinu klientide veebitellimustele teenustasu {fee}. Sina seda ei maksa ega saa seda muuta."
   },
-  "saveFailed": "Salvestamine ebaõnnestus — proovi uuesti."
+  "saveFailed": "Salvestamine ebaõnnestus — proovi uuesti.",
+  "noVat": "Ilma {label}",
+  "noVatHint": "Vali „Ilma {label}“, kui sa ei küsi {label}.",
+  "otherRate": "Muu määr…",
+  "itemRates": {
+    "label": "Toodete määrad",
+    "hintSome": "{n, plural, one {{count} toode kasutab teist määra} other {{count} toodet kasutavad teist määra}}",
+    "hintNone": "Kõik tooted kasutavad sinu vaikemäära",
+    "button": "Muuda toodete määri",
+    "title": "Toodete määrad",
+    "intro": "Sina valid iga toote määra.",
+    "setAll": "Määra kõigile",
+    "default": "Vaikimisi ({rate})",
+    "rateAria": "Toote {item} määr",
+    "otherItems": "Muud tooted",
+    "noItems": "Sinu menüüs pole veel tooteid.",
+    "close": "Sulge",
+    "cancel": "Tühista",
+    "save": "Salvesta",
+    "saved": "Toodete määrad salvestatud"
+  }
 }

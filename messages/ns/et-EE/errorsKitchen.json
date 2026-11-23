@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {See üritus on lõppenud. Alusta seda uuesti, et tellimusi vastu võtta.} cancelled {See üritus on tühistatud.} other {See üritus pole avatud.}}",
   "sign_in_to_create": "Ürituse loomiseks logi sisse meeskonnaliikmena.",
   "event_details_invalid": "{reason, select, name {Lisa ürituse nimi} times {Lisa algus- ja lõpuaeg} end {Lõpp peab olema pärast algust} van {Vali auto} date {Siin loodud üritused kehtivad ainult tänaseks} other {Kontrolli ürituse andmeid}}",
-  "event_overlaps": "See kattub teise tänase üritusega."
+  "event_overlaps": "See kattub teise tänase üritusega.",
+  "order_finished_edit": "See tellimus on lõpetatud, seega seda ei saa muuta.",
+  "order_finished_cancel": "See tellimus on lõpetatud, seega seda ei saa tühistada."
 }

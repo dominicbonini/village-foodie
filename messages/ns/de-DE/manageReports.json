@@ -140,6 +140,8 @@
       "refunded": "Erstattet",
       "cost": "Kosten",
       "profit": "Gewinn",
+      "netAtRate": "Netto {rate}",
+      "taxAtRate": "Steuer {rate}",
       "eventDate": "Eventdatum",
       "orders": "Bestellungen",
       "dishesSold": "Verkaufte Gerichte",
@@ -149,6 +151,7 @@
       "stored": "mit der Bestellung gespeichert",
       "estimated": "geschätzt anhand Ihres Steuersatzes",
       "none": "kein Steuersatz hinterlegt"
-    }
+    },
+    "noRate": "ohne Steuersatz"
   }
 }

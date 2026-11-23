@@ -130,7 +130,8 @@
     "wp_picture_wrong_shape": "Dieses Bild hat ein anderes Format als Ihr Standardbild ({width}×{height}). Exportieren Sie es in derselben Grösse.",
     "wp_layout_size_unknown": "Die Bildgrösse des Designs ist nicht bekannt.",
     "wp_box_not_number": "{box, select, heading {Das Feld für die Überschrift hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} date {Das Feld für das Datum hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} location {Das Feld für den Ort hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} time {Das Feld für die Uhrzeit hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} town {Das Feld für die Stadt hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} days {Das Feld für die 7 Tage hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.} other {Ihr eigener Text hat eine Position oder Grösse, die keine Zahl innerhalb des Bildes ist.}}",
-    "paperwork_file_too_big": "Diese Datei ist grösser als 20 MB. Bitte wählen Sie eine kleinere."
+    "paperwork_file_too_big": "Diese Datei ist grösser als 20 MB. Bitte wählen Sie eine kleinere.",
+    "charges_items_invalid": "Einer dieser Artikel ist nicht mehr auf Ihrer Speisekarte. Schliessen Sie dieses Fenster und versuchen Sie es erneut."
   },
   "manageSchedule": {
     "link": {
@@ -317,6 +318,11 @@
   "provisionContent": {
     "standardCategories": {
       "dipsSauces": "Dips & Saucen"
+    }
+  },
+  "manageCharges": {
+    "itemRates": {
+      "close": "Schliessen"
     }
   }
 }

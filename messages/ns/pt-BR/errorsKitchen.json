@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Este evento terminou. Reinicie para receber pedidos.} cancelled {Este evento foi cancelado.} other {Este evento não está aberto.}}",
   "sign_in_to_create": "Entre como membro da equipe para criar um evento.",
   "event_details_invalid": "{reason, select, name {Adicione um nome para o evento} times {Adicione um horário de início e de fim} end {O horário de fim precisa ser depois do início} van {Escolha um food truck} date {Eventos criados aqui são só para hoje} other {Confira os dados do evento}}",
-  "event_overlaps": "Isso se sobrepõe a outro evento de hoje."
+  "event_overlaps": "Isso se sobrepõe a outro evento de hoje.",
+  "order_finished_edit": "Este pedido já foi finalizado, então não pode ser alterado.",
+  "order_finished_cancel": "Este pedido já foi finalizado, então não pode ser cancelado."
 }

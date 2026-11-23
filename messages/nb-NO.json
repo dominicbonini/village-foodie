@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Arrangementet er ferdig. Start det på nytt for å ta imot bestillinger.} cancelled {Arrangementet er avlyst.} other {Arrangementet er ikke åpent.}}",
     "sign_in_to_create": "Logg inn som teammedlem for å opprette et arrangement.",
     "event_details_invalid": "{reason, select, name {Legg til et navn på arrangementet} times {Legg til start- og sluttid} end {Sluttiden må være etter starten} van {Velg en vogn} date {Arrangementer opprettet her gjelder bare i dag} other {Sjekk opplysningene}}",
-    "event_overlaps": "Dette overlapper et annet arrangement i dag."
+    "event_overlaps": "Dette overlapper et annet arrangement i dag.",
+    "order_finished_edit": "Denne bestillingen er avsluttet, så den kan ikke endres.",
+    "order_finished_cancel": "Denne bestillingen er avsluttet, så den kan ikke kanselleres."
   },
   "kitchenModals": {
     "close": "Lukk",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Noe gikk galt – last inn siden på nytt og prøv igjen.",
     "charges_owner_only": "Bare eieren kan endre mva., tips og gebyrer",
     "charges_rate_decimals": "Bruk høyst 3 desimaler, f.eks. 8,875.",
-    "charges_rate_range": "Bruk en sats fra 0 til 20 %.",
+    "charges_rate_range": "Bruk en sats fra 0 til 30 %.",
     "charges_rate_not_here": "Prisene i landet ditt inkluderer allerede mva., så det er ingen sats å angi.",
     "charges_fee_not_here": "Servicegebyr på nett er ikke tilgjengelig i landet ditt.",
     "charges_fee_hatchgrab": "HatchGrab fastsetter servicegebyret på nett i landet ditt, så det kan ikke endres her.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Den delen av gebyret er ikke tillatt i landet ditt.",
     "charges_choose_on_off": "Velg på eller av.",
     "charges_nothing_to_save": "Ingenting å lagre.",
+    "charges_items_invalid": "En av disse varene er ikke lenger på menyen din. Lukk dette og prøv igjen.",
     "country_settings_failed": "Kunne ikke laste inn landinnstillingene for denne matbilen. Prøv igjen om et øyeblikk.",
     "plans_failed": "Kunne ikke laste inn abonnementet til denne matbilen. Prøv igjen om et øyeblikk.",
     "demo_not_available": "Ikke tilgjengelig på en demomatbil",
@@ -4273,6 +4276,8 @@
         "refunded": "Refundert",
         "cost": "Kostpris",
         "profit": "Fortjeneste",
+        "netAtRate": "Netto {rate}",
+        "taxAtRate": "Mva. {rate}",
         "eventDate": "Arrangementsdato",
         "orders": "Bestillinger",
         "dishesSold": "Solgte retter",
@@ -4282,7 +4287,8 @@
         "stored": "lagret med bestillingen",
         "estimated": "anslått ut fra mva.-satsen din",
         "none": "ingen mva.-sats angitt"
-      }
+      },
+      "noRate": "ingen sats"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Kundene ser det før de betaler, som én linje: «{label} {amount}».",
       "hatchgrab": "HatchGrab legger et servicegebyr på {fee} til kundenes nettbestillinger. Du betaler det ikke og kan ikke endre det."
     },
-    "saveFailed": "Kunne ikke lagre – prøv igjen."
+    "saveFailed": "Kunne ikke lagre – prøv igjen.",
+    "noVat": "Ingen {label}",
+    "noVatHint": "Velg «Ingen {label}» hvis du ikke tar {label}.",
+    "otherRate": "Annen sats…",
+    "itemRates": {
+      "label": "Satser per vare",
+      "hintSome": "{n, plural, one {{count} vare har en annen sats} other {{count} varer har en annen sats}}",
+      "hintNone": "Alle varer bruker standardsatsen din",
+      "button": "Endre satser per vare",
+      "title": "Satser per vare",
+      "intro": "Du velger satsen for hver vare.",
+      "setAll": "Angi for alle",
+      "default": "Standard ({rate})",
+      "rateAria": "Sats for {item}",
+      "otherItems": "Andre varer",
+      "noItems": "Ingen varer på menyen din ennå.",
+      "close": "Lukk",
+      "cancel": "Avbryt",
+      "save": "Lagre",
+      "saved": "Satser per vare lagret"
+    }
   },
   "takingPayment": {
     "heading": "Ta betalt",

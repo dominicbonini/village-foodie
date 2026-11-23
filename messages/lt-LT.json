@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Šis renginys baigėsi. Pradėkite jį iš naujo, kad priimtumėte užsakymus.} cancelled {Šis renginys atšauktas.} other {Šis renginys neatidarytas.}}",
     "sign_in_to_create": "Prisijunkite kaip komandos narys, kad sukurtumėte renginį.",
     "event_details_invalid": "{reason, select, name {Pridėkite renginio pavadinimą} times {Pridėkite pradžios ir pabaigos laiką} end {Pabaiga turi būti po pradžios} van {Pasirinkite furgoną} date {Čia sukurti renginiai galioja tik šiandien} other {Patikrinkite renginio duomenis}}",
-    "event_overlaps": "Tai persidengia su kitu šiandienos renginiu."
+    "event_overlaps": "Tai persidengia su kitu šiandienos renginiu.",
+    "order_finished_edit": "Šis užsakymas užbaigtas, todėl jo pakeisti negalima.",
+    "order_finished_cancel": "Šis užsakymas užbaigtas, todėl jo atšaukti negalima."
   },
   "kitchenModals": {
     "close": "Uždaryti",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Kažkas nepavyko — atnaujinkite puslapį ir bandykite dar kartą.",
     "charges_owner_only": "Mokesčius, priemokas ir arbatpinigius gali keisti tik savininkas",
     "charges_rate_decimals": "Naudokite ne daugiau kaip 3 skaitmenis po kablelio, pvz., 8,875.",
-    "charges_rate_range": "Nurodykite tarifą nuo 0 iki 20 %.",
+    "charges_rate_range": "Nurodykite tarifą nuo 0 iki 30 %.",
     "charges_rate_not_here": "Jūsų šalyje kainos jau apima mokesčius, todėl tarifo nustatyti nereikia.",
     "charges_fee_not_here": "Internetinio aptarnavimo priemokos jūsų šalyje negalimos.",
     "charges_fee_hatchgrab": "Internetinio aptarnavimo priemoką jūsų šalyje nustato HatchGrab, todėl čia jos pakeisti negalima.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Ši priemokos dalis jūsų šalyje neleidžiama.",
     "charges_choose_on_off": "Pasirinkite: įjungta ar išjungta.",
     "charges_nothing_to_save": "Nėra ką išsaugoti.",
+    "charges_items_invalid": "Vieno iš šių patiekalų jūsų meniu nebėra. Uždarykite šį langą ir bandykite dar kartą.",
     "country_settings_failed": "Nepavyko įkelti šio food truck šalies nustatymų. Bandykite dar kartą po akimirkos.",
     "plans_failed": "Nepavyko įkelti šio food truck plano. Bandykite dar kartą po akimirkos.",
     "demo_not_available": "Negalima demonstraciniame food truck",
@@ -4273,6 +4276,8 @@
         "refunded": "Grąžinta",
         "cost": "Savikaina",
         "profit": "Pelnas",
+        "netAtRate": "Neto {rate}",
+        "taxAtRate": "Mokesčiai {rate}",
         "eventDate": "Renginio data",
         "orders": "Užsakymai",
         "dishesSold": "Parduoti patiekalai",
@@ -4282,7 +4287,8 @@
         "stored": "išsaugota su užsakymu",
         "estimated": "apskaičiuota pagal jūsų mokesčio tarifą",
         "none": "mokesčio tarifas nenustatytas"
-      }
+      },
+      "noRate": "be tarifo"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Klientai mato jį prieš mokėdami, viena eilute: „{label} {amount}“.",
       "hatchgrab": "HatchGrab prideda aptarnavimo mokestį ({fee}) prie jūsų klientų užsakymų internetu. Jūs jo nemokate ir negalite pakeisti."
     },
-    "saveFailed": "Nepavyko išsaugoti — bandykite dar kartą."
+    "saveFailed": "Nepavyko išsaugoti — bandykite dar kartą.",
+    "noVat": "Be {label}",
+    "noVatHint": "Pasirinkite „Be {label}“, jei netaikote {label}.",
+    "otherRate": "Kitas…",
+    "itemRates": {
+      "label": "Patiekalų tarifai",
+      "hintSome": "{n, plural, one {{count} patiekalas turi kitokį tarifą} few {{count} patiekalai turi kitokį tarifą} many {{count} patiekalų turi kitokį tarifą} other {{count} patiekalų turi kitokį tarifą}}",
+      "hintNone": "Visiems patiekalams taikomas numatytasis tarifas",
+      "button": "Keisti patiekalų tarifus",
+      "title": "Patiekalų tarifai",
+      "intro": "Tarifą kiekvienam patiekalui pasirenkate jūs.",
+      "setAll": "Nustatyti visiems",
+      "default": "Numatytasis ({rate})",
+      "rateAria": "Tarifas: {item}",
+      "otherItems": "Kiti patiekalai",
+      "noItems": "Jūsų meniu dar nėra patiekalų.",
+      "close": "Uždaryti",
+      "cancel": "Atšaukti",
+      "save": "Išsaugoti",
+      "saved": "Patiekalų tarifai išsaugoti"
+    }
   },
   "takingPayment": {
     "heading": "Mokėjimų priėmimas",

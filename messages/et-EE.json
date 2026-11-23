@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {See üritus on lõppenud. Alusta seda uuesti, et tellimusi vastu võtta.} cancelled {See üritus on tühistatud.} other {See üritus pole avatud.}}",
     "sign_in_to_create": "Ürituse loomiseks logi sisse meeskonnaliikmena.",
     "event_details_invalid": "{reason, select, name {Lisa ürituse nimi} times {Lisa algus- ja lõpuaeg} end {Lõpp peab olema pärast algust} van {Vali auto} date {Siin loodud üritused kehtivad ainult tänaseks} other {Kontrolli ürituse andmeid}}",
-    "event_overlaps": "See kattub teise tänase üritusega."
+    "event_overlaps": "See kattub teise tänase üritusega.",
+    "order_finished_edit": "See tellimus on lõpetatud, seega seda ei saa muuta.",
+    "order_finished_cancel": "See tellimus on lõpetatud, seega seda ei saa tühistada."
   },
   "kitchenModals": {
     "close": "Sulge",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Midagi läks valesti — värskenda lehte ja proovi uuesti.",
     "charges_owner_only": "Makse, jootrahasid ja tasusid saab muuta ainult omanik",
     "charges_rate_decimals": "Kasuta kuni 3 kümnendkohta, näiteks 8,875.",
-    "charges_rate_range": "Kasuta määra vahemikus 0–20%.",
+    "charges_rate_range": "Kasuta määra vahemikus 0–30%.",
     "charges_rate_not_here": "Sinu riigis sisaldavad hinnad juba makse, seega pole määra vaja seada.",
     "charges_fee_not_here": "Veebiteenustasud pole sinu riigis saadaval.",
     "charges_fee_hatchgrab": "Sinu riigis määrab veebiteenustasu HatchGrab, seega ei saa seda siin muuta.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "See tasu osa pole sinu riigis lubatud.",
     "charges_choose_on_off": "Vali sees või väljas.",
     "charges_nothing_to_save": "Pole midagi salvestada.",
+    "charges_items_invalid": "Üht neist toodetest pole enam sinu menüüs. Sulge see ja proovi uuesti.",
     "country_settings_failed": "Selle toiduauto riigiseadeid ei õnnestunud laadida. Proovi hetke pärast uuesti.",
     "plans_failed": "Selle toiduauto paketti ei õnnestunud laadida. Proovi hetke pärast uuesti.",
     "demo_not_available": "Demotoiduautol pole saadaval",
@@ -4273,6 +4276,8 @@
         "refunded": "Tagastatud",
         "cost": "Kulu",
         "profit": "Kasum",
+        "netAtRate": "Neto {rate}",
+        "taxAtRate": "Maks {rate}",
         "eventDate": "Ürituse kuupäev",
         "orders": "Tellimused",
         "dishesSold": "Müüdud road",
@@ -4282,7 +4287,8 @@
         "stored": "salvestatud koos tellimusega",
         "estimated": "hinnatud sinu maksumäära põhjal",
         "none": "maksumäära pole määratud"
-      }
+      },
+      "noRate": "ilma määrata"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Kliendid näevad seda enne maksmist ühe reana: „{label} {amount}“.",
       "hatchgrab": "HatchGrab lisab sinu klientide veebitellimustele teenustasu {fee}. Sina seda ei maksa ega saa seda muuta."
     },
-    "saveFailed": "Salvestamine ebaõnnestus — proovi uuesti."
+    "saveFailed": "Salvestamine ebaõnnestus — proovi uuesti.",
+    "noVat": "Ilma {label}",
+    "noVatHint": "Vali „Ilma {label}“, kui sa ei küsi {label}.",
+    "otherRate": "Muu määr…",
+    "itemRates": {
+      "label": "Toodete määrad",
+      "hintSome": "{n, plural, one {{count} toode kasutab teist määra} other {{count} toodet kasutavad teist määra}}",
+      "hintNone": "Kõik tooted kasutavad sinu vaikemäära",
+      "button": "Muuda toodete määri",
+      "title": "Toodete määrad",
+      "intro": "Sina valid iga toote määra.",
+      "setAll": "Määra kõigile",
+      "default": "Vaikimisi ({rate})",
+      "rateAria": "Toote {item} määr",
+      "otherItems": "Muud tooted",
+      "noItems": "Sinu menüüs pole veel tooteid.",
+      "close": "Sulge",
+      "cancel": "Tühista",
+      "save": "Salvesta",
+      "saved": "Toodete määrad salvestatud"
+    }
   },
   "takingPayment": {
     "heading": "Makse vastuvõtmine",

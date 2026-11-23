@@ -26,7 +26,7 @@ import { resolvePaidStep } from '@/lib/payments/paid-step'
 import type { TicketOrder, TicketReprint } from '@/lib/printing/ticket'
 import { orderMoney } from '@/lib/money-format'
 import { formatSlot } from '@/lib/time-utils'
-import { chargeLinesFor, chargeSourceOf, includedTaxLine } from '@/lib/order-charge-lines'
+import { chargeLinesFor, chargeSourceOf, includedTaxLines } from '@/lib/order-charge-lines'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/ticket'
@@ -127,15 +127,18 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
     // 🔴 Phase 3 screens — the kitchen's words ("Service fee", "Tip"). `undefined` when there are none, which
     // is every UK order: the renderer then prints exactly what it printed before.
     adjustments: (() => {
-      const lines = chargeLinesFor(chargeSourceOf(order as unknown as Record<string, unknown>), 'kitchen', locale)
+      // france-vat-1: a receipt — one tax line per rate on a mixed-rate order (one rate: the line it always had).
+      const lines = chargeLinesFor(chargeSourceOf(order as unknown as Record<string, unknown>), 'kitchen', locale, { perRate: true })
       if (!lines.length) return undefined
       const t = translatorFor(locale, 'ticket')
       return lines.map(l => ({ label: l.rate ? t('chargeWithRate', { label: l.label, rate: l.rate }) : l.label, minor: l.minor }))
     })(),
     // france-1: the tax the total includes (France's TVA) — undefined for every other order, which prints as before.
+    // france-vat-1: one line per rate, ascending. ONE line (every single-rate order) stays the single object it always was;
+    // only a mixed-rate order carries a list.
     includedTax: (() => {
-      const l = includedTaxLine(chargeSourceOf(order as unknown as Record<string, unknown>), locale)
-      return l ? { label: `${l.label} ${l.rate}`, minor: l.minor } : undefined
+      const ls = includedTaxLines(chargeSourceOf(order as unknown as Record<string, unknown>), locale).map(l => ({ label: `${l.label} ${l.rate}`, minor: l.minor }))
+      return ls.length === 0 ? undefined : ls.length === 1 ? ls[0] : ls
     })(),
     total: order.total,
 

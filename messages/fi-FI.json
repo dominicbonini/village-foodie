@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Tapahtuma on päättynyt. Käynnistä se uudelleen ottaaksesi tilauksia.} cancelled {Tapahtuma on peruttu.} other {Tapahtuma ei ole auki.}}",
     "sign_in_to_create": "Kirjaudu tiimin jäsenenä luodaksesi tapahtuman.",
     "event_details_invalid": "{reason, select, name {Lisää tapahtuman nimi} times {Lisää alkamis- ja päättymisaika} end {Päättymisajan on oltava alkamisen jälkeen} van {Valitse auto} date {Täällä luodut tapahtumat ovat vain tälle päivälle} other {Tarkista tapahtuman tiedot}}",
-    "event_overlaps": "Tämä menee päällekkäin toisen tämänpäiväisen tapahtuman kanssa."
+    "event_overlaps": "Tämä menee päällekkäin toisen tämänpäiväisen tapahtuman kanssa.",
+    "order_finished_edit": "Tämä tilaus on päättynyt, joten sitä ei voi muuttaa.",
+    "order_finished_cancel": "Tämä tilaus on päättynyt, joten sitä ei voi perua."
   },
   "kitchenModals": {
     "close": "Sulje",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Jokin meni vikaan — päivitä sivu ja yritä uudelleen.",
     "charges_owner_only": "Vain omistaja voi muuttaa ALV:tä, juomarahoja ja palvelumaksuja",
     "charges_rate_decimals": "Käytä enintään 3 desimaalia, esim. 8,875.",
-    "charges_rate_range": "Anna prosentti väliltä 0–20 %.",
+    "charges_rate_range": "Anna prosentti väliltä 0–30 %.",
     "charges_rate_not_here": "Maassasi hinnat sisältävät jo veron, joten veroprosenttia ei aseteta.",
     "charges_fee_not_here": "Verkkotilausten palvelumaksut eivät ole käytettävissä maassasi.",
     "charges_fee_hatchgrab": "HatchGrab määrittää verkkotilausten palvelumaksun maassasi, joten sitä ei voi muuttaa täällä.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Tämä maksun osa ei ole sallittu maassasi.",
     "charges_choose_on_off": "Valitse päällä tai pois.",
     "charges_nothing_to_save": "Ei tallennettavaa.",
+    "charges_items_invalid": "Yksi näistä tuotteista ei ole enää ruokalistallasi. Sulje tämä ja yritä uudelleen.",
     "country_settings_failed": "Ruokarekan maa-asetuksia ei voitu ladata. Yritä hetken kuluttua uudelleen.",
     "plans_failed": "Ruokarekan pakettia ei voitu ladata. Yritä hetken kuluttua uudelleen.",
     "demo_not_available": "Ei käytettävissä demoruokarekassa",
@@ -4273,6 +4276,8 @@
         "refunded": "Palautettu",
         "cost": "Kustannus",
         "profit": "Voitto",
+        "netAtRate": "Netto {rate}",
+        "taxAtRate": "ALV {rate}",
         "eventDate": "Tapahtumapäivä",
         "orders": "Tilaukset",
         "dishesSold": "Myydyt annokset",
@@ -4282,7 +4287,8 @@
         "stored": "tallennettu tilauksen mukana",
         "estimated": "arvioitu ALV-kantasi perusteella",
         "none": "ALV-kantaa ei asetettu"
-      }
+      },
+      "noRate": "ei kantaa"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Asiakkaat näkevät sen ennen maksamista yhtenä rivinä: ”{label} {amount}”.",
       "hatchgrab": "HatchGrab lisää asiakkaidesi verkkotilauksiin palvelumaksun {fee}. Sinä et maksa sitä etkä voi muuttaa sitä."
     },
-    "saveFailed": "Tallennus epäonnistui — yritä uudelleen."
+    "saveFailed": "Tallennus epäonnistui — yritä uudelleen.",
+    "noVat": "Ei {label}",
+    "noVatHint": "Valitse ”Ei {label}”, jos et peri veroa ({label}).",
+    "otherRate": "Muu kanta…",
+    "itemRates": {
+      "label": "Tuotekohtaiset kannat",
+      "hintSome": "{n, plural, one {{count} tuote käyttää eri kantaa} other {{count} tuotetta käyttää eri kantaa}}",
+      "hintNone": "Kaikki tuotteet käyttävät oletuskantaasi",
+      "button": "Muuta tuotteiden kantoja",
+      "title": "Tuotekohtaiset kannat",
+      "intro": "Valitset kannan jokaiselle tuotteelle.",
+      "setAll": "Aseta kaikille",
+      "default": "Oletus ({rate})",
+      "rateAria": "Tuotteen {item} kanta",
+      "otherItems": "Muut tuotteet",
+      "noItems": "Ruokalistallasi ei ole vielä tuotteita.",
+      "close": "Sulje",
+      "cancel": "Peruuta",
+      "save": "Tallenna",
+      "saved": "Tuotekohtaiset kannat tallennettu"
+    }
   },
   "takingPayment": {
     "heading": "Maksun vastaanotto",

@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Þessum viðburði er lokið. Hefðu hann aftur til að taka við pöntunum.} cancelled {Þessum viðburði var aflýst.} other {Þessi viðburður er ekki opinn.}}",
     "sign_in_to_create": "Skráðu þig inn sem liðsmaður til að búa til viðburð.",
     "event_details_invalid": "{reason, select, name {Bættu við heiti viðburðar} times {Bættu við upphafs- og lokatíma} end {Lokatími verður að vera eftir upphaf} van {Veldu bíl} date {Viðburðir búnir til hér gilda aðeins í dag} other {Athugaðu upplýsingar viðburðarins}}",
-    "event_overlaps": "Þetta skarast við annan viðburð í dag."
+    "event_overlaps": "Þetta skarast við annan viðburð í dag.",
+    "order_finished_edit": "Þessari pöntun er lokið, svo það er ekki hægt að breyta henni.",
+    "order_finished_cancel": "Þessari pöntun er lokið, svo það er ekki hægt að afpanta hana."
   },
   "kitchenModals": {
     "close": "Loka",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Eitthvað fór úrskeiðis — endurhlaððu síðuna og reyndu aftur.",
     "charges_owner_only": "Aðeins eigandinn getur breytt skatti, þjórfé og gjöldum",
     "charges_rate_decimals": "Notaðu að hámarki 3 aukastafi, t.d. 8,875.",
-    "charges_rate_range": "Notaðu hlutfall frá 0 til 20%.",
+    "charges_rate_range": "Notaðu hlutfall frá 0 til 30%.",
     "charges_rate_not_here": "Verð í þínu landi eru þegar með skatti, svo það er ekkert hlutfall til að stilla.",
     "charges_fee_not_here": "Þjónustugjöld á netinu eru ekki í boði í þínu landi.",
     "charges_fee_hatchgrab": "HatchGrab ákveður þjónustugjald á netinu í þínu landi, svo ekki er hægt að breyta því hér.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Sá hluti gjaldsins er ekki leyfður í þínu landi.",
     "charges_choose_on_off": "Veldu kveikt eða slökkt.",
     "charges_nothing_to_save": "Ekkert til að vista.",
+    "charges_items_invalid": "Ein af þessum vörum er ekki lengur á matseðlinum þínum. Lokaðu þessu og reyndu aftur.",
     "country_settings_failed": "Ekki tókst að hlaða landsstillingum þessa vagns. Reyndu aftur eftir smástund.",
     "plans_failed": "Ekki tókst að hlaða áskriftarleið þessa vagns. Reyndu aftur eftir smástund.",
     "demo_not_available": "Ekki í boði á sýnivagni",
@@ -4273,6 +4276,8 @@
         "refunded": "Endurgreitt",
         "cost": "Kostnaður",
         "profit": "Hagnaður",
+        "netAtRate": "Nettó {rate}",
+        "taxAtRate": "Skattur {rate}",
         "eventDate": "Dagsetning viðburðar",
         "orders": "Pantanir",
         "dishesSold": "Seldir réttir",
@@ -4282,7 +4287,8 @@
         "stored": "vistað með pöntuninni",
         "estimated": "áætlað út frá skatthlutfallinu þínu",
         "none": "ekkert skatthlutfall stillt"
-      }
+      },
+      "noRate": "ekkert hlutfall"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Viðskiptavinir sjá það áður en þeir greiða, sem eina línu: „{label} {amount}“.",
       "hatchgrab": "HatchGrab bætir {fee} þjónustugjaldi við netpantanir viðskiptavina þinna. Þú greiðir það ekki og getur ekki breytt því."
     },
-    "saveFailed": "Ekki tókst að vista — reyndu aftur."
+    "saveFailed": "Ekki tókst að vista — reyndu aftur.",
+    "noVat": "Án {label}",
+    "noVatHint": "Veldu „Án {label}“ ef þú innheimtir ekki {label}.",
+    "otherRate": "Annað hlutfall…",
+    "itemRates": {
+      "label": "Hlutföll vara",
+      "hintSome": "{n, plural, one {{count} vara notar annað hlutfall} other {{count} vörur nota annað hlutfall}}",
+      "hintNone": "Allar vörur nota sjálfgefna hlutfallið þitt",
+      "button": "Breyta hlutföllum vara",
+      "title": "Hlutföll vara",
+      "intro": "Þú velur hlutfallið fyrir hverja vöru.",
+      "setAll": "Setja á allar",
+      "default": "Sjálfgefið ({rate})",
+      "rateAria": "Hlutfall fyrir {item}",
+      "otherItems": "Aðrar vörur",
+      "noItems": "Engar vörur á matseðlinum þínum enn.",
+      "close": "Loka",
+      "cancel": "Hætta við",
+      "save": "Vista",
+      "saved": "Hlutföll vara vistuð"
+    }
   },
   "takingPayment": {
     "heading": "Móttaka greiðslna",

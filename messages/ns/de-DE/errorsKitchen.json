@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Dieses Event ist beendet. Neu starten, um Bestellungen anzunehmen.} cancelled {Dieses Event wurde abgesagt.} other {Dieses Event ist nicht geöffnet.}}",
   "sign_in_to_create": "Melde dich als Teammitglied an, um ein Event zu erstellen.",
   "event_details_invalid": "{reason, select, name {Gib einen Namen für das Event ein} times {Gib Beginn und Ende ein} end {Das Ende muss nach dem Beginn liegen} van {Wähle einen Wagen} date {Hier erstellte Events gelten nur für heute} other {Prüfe die Angaben zum Event}}",
-  "event_overlaps": "Das überschneidet sich heute mit einem anderen Event."
+  "event_overlaps": "Das überschneidet sich heute mit einem anderen Event.",
+  "order_finished_edit": "Diese Bestellung ist abgeschlossen und kann nicht mehr geändert werden.",
+  "order_finished_cancel": "Diese Bestellung ist abgeschlossen und kann nicht mehr storniert werden."
 }

@@ -65,7 +65,9 @@ export function resolveChargeRules(
   // france-1: a format whose prices INCLUDE a named tax (France's TVA) keeps a rate for the receipt's "dont TVA" line — the
   // truck's own, else the format's default. Nothing is added to a price for it. Every other inclusive country: null, as before.
   const includedTax = taxInclusive ? includedTaxOf(country.addressFormat) : null
-  const taxRateMilli = taxInclusive ? (includedTax ? (int(truck.tax_rate_milli) ?? includedTax.milli) : null) : (int(truck.tax_rate_milli) ?? regionTax?.milli ?? null)
+  // france-vat-1 (Dominic, 24 November 2026): an inclusive country with no format default (GB, IE …) now takes the truck's own rate
+  // too — NULL ("No VAT", every existing truck there) is still null, so nothing changes until a truck sets one.
+  const taxRateMilli = taxInclusive ? (includedTax ? (int(truck.tax_rate_milli) ?? includedTax.milli) : int(truck.tax_rate_milli)) : (int(truck.tax_rate_milli) ?? regionTax?.milli ?? null)
 
   let serviceFee: OrderChargeRules['serviceFee'] = null
   if (country.serviceFeeAllowed) {

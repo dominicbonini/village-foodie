@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Ta dogodek se je končal. Znova ga začnite za sprejemanje naročil.} cancelled {Ta dogodek je bil odpovedan.} other {Ta dogodek ni odprt.}}",
   "sign_in_to_create": "Prijavite se kot član ekipe, da ustvarite dogodek.",
   "event_details_invalid": "{reason, select, name {Dodajte ime dogodka} times {Dodajte čas začetka in konca} end {Konec mora biti po začetku} van {Izberite vozilo} date {Dogodki, ustvarjeni tukaj, veljajo samo za danes} other {Preverite podatke dogodka}}",
-  "event_overlaps": "Prekriva se z drugim današnjim dogodkom."
+  "event_overlaps": "Prekriva se z drugim današnjim dogodkom.",
+  "order_finished_edit": "To naročilo je zaključeno, zato ga ni mogoče spremeniti.",
+  "order_finished_cancel": "To naročilo je zaključeno, zato ga ni mogoče preklicati."
 }

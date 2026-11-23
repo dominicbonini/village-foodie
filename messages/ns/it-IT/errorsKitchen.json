@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Questo evento è terminato. Riavvialo per ricevere ordini.} cancelled {Questo evento è stato annullato.} other {Questo evento non è aperto.}}",
   "sign_in_to_create": "Accedi come membro del team per creare un evento.",
   "event_details_invalid": "{reason, select, name {Aggiungi un nome per l’evento} times {Aggiungi un orario di inizio e di fine} end {L’orario di fine deve essere dopo l’inizio} van {Scegli un furgone} date {Gli eventi creati qui valgono solo per oggi} other {Controlla i dettagli dell’evento}}",
-  "event_overlaps": "Si sovrappone a un altro evento di oggi."
+  "event_overlaps": "Si sovrappone a un altro evento di oggi.",
+  "order_finished_edit": "Questo ordine è concluso, quindi non si può modificare.",
+  "order_finished_cancel": "Questo ordine è concluso, quindi non si può annullare."
 }

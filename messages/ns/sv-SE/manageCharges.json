@@ -26,5 +26,25 @@
     "example": "Kunderna ser den innan de betalar, på en rad: ”{label} {amount}”.",
     "hatchgrab": "HatchGrab lägger till en serviceavgift på {fee} på dina kunders onlinebeställningar. Du betalar den inte och kan inte ändra den."
   },
-  "saveFailed": "Kunde inte spara – försök igen."
+  "saveFailed": "Kunde inte spara – försök igen.",
+  "noVat": "Ingen {label}",
+  "noVatHint": "Välj ”Ingen {label}” om du inte tar ut {label}.",
+  "otherRate": "Annan sats…",
+  "itemRates": {
+    "label": "Satser per artikel",
+    "hintSome": "{n, plural, one {{count} artikel har en annan sats} other {{count} artiklar har en annan sats}}",
+    "hintNone": "Alla artiklar använder din standardsats",
+    "button": "Ändra satser per artikel",
+    "title": "Satser per artikel",
+    "intro": "Du väljer satsen för varje artikel.",
+    "setAll": "Ange för alla",
+    "default": "Standard ({rate})",
+    "rateAria": "Sats för {item}",
+    "otherItems": "Övriga artiklar",
+    "noItems": "Inga artiklar på din meny än.",
+    "close": "Stäng",
+    "cancel": "Avbryt",
+    "save": "Spara",
+    "saved": "Satser per artikel sparade"
+  }
 }

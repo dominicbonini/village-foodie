@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Tukio hili limekwisha. Lianzishe upya ili kupokea oda.} cancelled {Tukio hili limeghairiwa.} other {Tukio hili halijafunguliwa.}}",
   "sign_in_to_create": "Ingia kama mwanatimu ili kutengeneza tukio.",
   "event_details_invalid": "{reason, select, name {Ongeza jina la tukio} times {Ongeza muda wa kuanza na wa kumalizika} end {Muda wa kumalizika lazima uwe baada ya muda wa kuanza} van {Chagua gari} date {Matukio yanayotengenezwa hapa ni ya leo tu} other {Angalia taarifa za tukio}}",
-  "event_overlaps": "Tukio hili linagongana na tukio lingine la leo."
+  "event_overlaps": "Tukio hili linagongana na tukio lingine la leo.",
+  "order_finished_edit": "Oda hii imeshafungwa, kwa hiyo haiwezi kubadilishwa.",
+  "order_finished_cancel": "Oda hii imeshafungwa, kwa hiyo haiwezi kughairiwa."
 }

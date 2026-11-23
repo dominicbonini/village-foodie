@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Ky event ka përfunduar. Rifillojeni për të marrë porosi.} cancelled {Ky event u anulua.} other {Ky event nuk është i hapur.}}",
   "sign_in_to_create": "Hyni si anëtar i ekipit për të krijuar një event.",
   "event_details_invalid": "{reason, select, name {Shtoni emrin e eventit} times {Shtoni orën e fillimit dhe të mbarimit} end {Ora e mbarimit duhet të jetë pas orës së fillimit} van {Zgjidhni një furgon} date {Eventet e krijuara këtu janë vetëm për sot} other {Kontrolloni të dhënat e eventit}}",
-  "event_overlaps": "Ky event mbivendoset me një event tjetër sot."
+  "event_overlaps": "Ky event mbivendoset me një event tjetër sot.",
+  "order_finished_edit": "Kjo porosi ka përfunduar, ndaj nuk mund të ndryshohet.",
+  "order_finished_cancel": "Kjo porosi ka përfunduar, ndaj nuk mund të anulohet."
 }

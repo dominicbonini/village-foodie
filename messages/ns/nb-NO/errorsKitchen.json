@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Arrangementet er ferdig. Start det på nytt for å ta imot bestillinger.} cancelled {Arrangementet er avlyst.} other {Arrangementet er ikke åpent.}}",
   "sign_in_to_create": "Logg inn som teammedlem for å opprette et arrangement.",
   "event_details_invalid": "{reason, select, name {Legg til et navn på arrangementet} times {Legg til start- og sluttid} end {Sluttiden må være etter starten} van {Velg en vogn} date {Arrangementer opprettet her gjelder bare i dag} other {Sjekk opplysningene}}",
-  "event_overlaps": "Dette overlapper et annet arrangement i dag."
+  "event_overlaps": "Dette overlapper et annet arrangement i dag.",
+  "order_finished_edit": "Denne bestillingen er avsluttet, så den kan ikke endres.",
+  "order_finished_cancel": "Denne bestillingen er avsluttet, så den kan ikke kanselleres."
 }

@@ -26,5 +26,25 @@
     "example": "Klientët e shohin para se të paguajnë, si një rresht: “{label} {amount}”.",
     "hatchgrab": "HatchGrab shton një tarifë shërbimi prej {fee} te porositë online të klientëve tuaj. Ju nuk e paguani dhe nuk mund ta ndryshoni."
   },
-  "saveFailed": "Nuk u ruajt dot — ju lutemi provoni sërish."
+  "saveFailed": "Nuk u ruajt dot — ju lutemi provoni sërish.",
+  "noVat": "Pa {label}",
+  "noVatHint": "Zgjidhni “Pa {label}” nëse nuk aplikoni {label}.",
+  "otherRate": "Normë tjetër…",
+  "itemRates": {
+    "label": "Normat e artikujve",
+    "hintSome": "{n, plural, one {{count} artikull ka normë të ndryshme} other {{count} artikuj kanë normë të ndryshme}}",
+    "hintNone": "Të gjithë artikujt përdorin normën tuaj standarde",
+    "button": "Ndrysho normat e artikujve",
+    "title": "Normat e artikujve",
+    "intro": "Ju zgjidhni normën për çdo artikull.",
+    "setAll": "Vendos për të gjithë",
+    "default": "Standarde ({rate})",
+    "rateAria": "Norma për {item}",
+    "otherItems": "Artikuj të tjerë",
+    "noItems": "Ende nuk keni artikuj në menu.",
+    "close": "Mbyll",
+    "cancel": "Anulo",
+    "save": "Ruaj",
+    "saved": "Normat e artikujve u ruajtën"
+  }
 }

@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Aquest esdeveniment ha acabat. Reinicia’l per rebre comandes.} cancelled {Aquest esdeveniment s’ha cancel·lat.} other {Aquest esdeveniment no està obert.}}",
     "sign_in_to_create": "Inicia la sessió com a membre de l’equip per crear un esdeveniment.",
     "event_details_invalid": "{reason, select, name {Afegeix un nom per a l’esdeveniment} times {Afegeix una hora d’inici i una de final} end {L’hora de final ha de ser posterior a la d’inici} van {Tria un vehicle} date {Els esdeveniments que es creen aquí només són per a avui} other {Revisa els detalls de l’esdeveniment}}",
-    "event_overlaps": "Se solapa amb un altre esdeveniment d’avui."
+    "event_overlaps": "Se solapa amb un altre esdeveniment d’avui.",
+    "order_finished_edit": "Aquesta comanda està finalitzada, així que no es pot modificar.",
+    "order_finished_cancel": "Aquesta comanda està finalitzada, així que no es pot cancel·lar."
   },
   "kitchenModals": {
     "close": "Tanca",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Alguna cosa ha fallat: actualitza la pàgina i torna-ho a provar.",
     "charges_owner_only": "Només el titular pot canviar els impostos, les propines i les comissions",
     "charges_rate_decimals": "Fes servir fins a 3 decimals, com ara 8,875.",
-    "charges_rate_range": "Fes servir un tipus del 0 al 20 %.",
+    "charges_rate_range": "Fes servir un tipus del 0 al 30 %.",
     "charges_rate_not_here": "Al teu país els preus ja inclouen els impostos, així que no hi ha cap tipus per configurar.",
     "charges_fee_not_here": "Al teu país no hi ha comissions de servei en línia.",
     "charges_fee_hatchgrab": "Al teu país, HatchGrab fixa la comissió de servei en línia, així que no es pot canviar aquí.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Al teu país no es permet aquesta part de la comissió.",
     "charges_choose_on_off": "Tria activat o desactivat.",
     "charges_nothing_to_save": "No hi ha res per desar.",
+    "charges_items_invalid": "Un d’aquests productes ja no és a la teva carta. Tanca aquesta finestra i torna-ho a provar.",
     "country_settings_failed": "No s’ha pogut carregar la configuració de país d’aquest food truck. Torna-ho a provar d’aquí a un moment.",
     "plans_failed": "No s’ha pogut carregar el pla d’aquest food truck. Torna-ho a provar d’aquí a un moment.",
     "demo_not_available": "No disponible en un food truck de demostració",
@@ -4273,6 +4276,8 @@
         "refunded": "Retornat",
         "cost": "Cost",
         "profit": "Benefici",
+        "netAtRate": "Net {rate}",
+        "taxAtRate": "Impostos {rate}",
         "eventDate": "Data de l’esdeveniment",
         "orders": "Comandes",
         "dishesSold": "Plats venuts",
@@ -4282,7 +4287,8 @@
         "stored": "desat amb la comanda",
         "estimated": "estimat a partir del teu tipus impositiu",
         "none": "sense tipus impositiu configurat"
-      }
+      },
+      "noRate": "sense tipus"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Els clients la veuen abans de pagar, en una sola línia: «{label} {amount}».",
       "hatchgrab": "HatchGrab afegeix una comissió de servei de {fee} a les comandes en línia dels teus clients. No la pagues tu i no la pots canviar."
     },
-    "saveFailed": "No s’ha pogut desar. Torna-ho a provar."
+    "saveFailed": "No s’ha pogut desar. Torna-ho a provar.",
+    "noVat": "Sense {label}",
+    "noVatHint": "Tria «Sense {label}» si no cobres {label}.",
+    "otherRate": "Un altre…",
+    "itemRates": {
+      "label": "Tipus per producte",
+      "hintSome": "{n, plural, one {{count} producte té un tipus diferent} other {{count} productes tenen un tipus diferent}}",
+      "hintNone": "Tots els productes fan servir el teu tipus per defecte",
+      "button": "Canvia els tipus per producte",
+      "title": "Tipus per producte",
+      "intro": "Tu tries el tipus de cada producte.",
+      "setAll": "Aplica a tots",
+      "default": "Per defecte ({rate})",
+      "rateAria": "Tipus de {item}",
+      "otherItems": "Altres productes",
+      "noItems": "Encara no hi ha productes a la teva carta.",
+      "close": "Tanca",
+      "cancel": "Cancel·la",
+      "save": "Desa",
+      "saved": "Tipus per producte desats"
+    }
   },
   "takingPayment": {
     "heading": "Cobrament",

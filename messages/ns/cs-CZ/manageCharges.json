@@ -26,5 +26,25 @@
     "example": "Zákazníci ho uvidí před zaplacením jako jeden řádek: „{label} {amount}“.",
     "hatchgrab": "HatchGrab přidává k online objednávkám vašich zákazníků servisní poplatek {fee}. Vy ho neplatíte a nemůžete ho změnit."
   },
-  "saveFailed": "Uložení se nezdařilo – zkuste to prosím znovu."
+  "saveFailed": "Uložení se nezdařilo – zkuste to prosím znovu.",
+  "noVat": "Bez {label}",
+  "noVatHint": "Pokud neúčtujete {label}, zvolte „Bez {label}“.",
+  "otherRate": "Jiná…",
+  "itemRates": {
+    "label": "Sazby položek",
+    "hintSome": "{n, plural, one {{count} položka má jinou sazbu} few {{count} položky mají jinou sazbu} other {{count} položek má jinou sazbu}}",
+    "hintNone": "Všechny položky mají vaši výchozí sazbu",
+    "button": "Změnit sazby položek",
+    "title": "Sazby položek",
+    "intro": "Sazbu volíte pro každou položku zvlášť.",
+    "setAll": "Nastavit vše",
+    "default": "Výchozí ({rate})",
+    "rateAria": "Sazba: {item}",
+    "otherItems": "Ostatní položky",
+    "noItems": "Na jídelním lístku zatím nemáte žádné položky.",
+    "close": "Zavřít",
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "saved": "Sazby položek uloženy"
+  }
 }

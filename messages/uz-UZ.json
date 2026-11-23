@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Bu tadbir tugagan. Buyurtma olish uchun qayta boshlang.} cancelled {Bu tadbir bekor qilingan.} other {Bu tadbir ochiq emas.}}",
     "sign_in_to_create": "Tadbir yaratish uchun jamoa a’zosi sifatida kiring.",
     "event_details_invalid": "{reason, select, name {Tadbir nomini kiriting} times {Boshlanish va tugash vaqtini kiriting} end {Tugash vaqti boshlanishdan keyin bo‘lishi kerak} van {Furgonni tanlang} date {Bu yerda yaratilgan tadbirlar faqat bugun uchun} other {Tadbir ma’lumotlarini tekshiring}}",
-    "event_overlaps": "Bu bugungi boshqa tadbir bilan vaqti ustma-ust tushadi."
+    "event_overlaps": "Bu bugungi boshqa tadbir bilan vaqti ustma-ust tushadi.",
+    "order_finished_edit": "Bu buyurtma yakunlangan, shuning uchun uni oʻzgartirib boʻlmaydi.",
+    "order_finished_cancel": "Bu buyurtma yakunlangan, shuning uchun uni bekor qilib boʻlmaydi."
   },
   "kitchenModals": {
     "close": "Yopish",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Nimadir xato ketdi — sahifani yangilang va qayta urinib koʻring.",
     "charges_owner_only": "Soliq, choychaqa va yigʻimlarni faqat egasi oʻzgartira oladi",
     "charges_rate_decimals": "Verguldan keyin koʻpi bilan 3 ta raqam kiriting, masalan, 8,875.",
-    "charges_rate_range": "0 dan 20% gacha boʻlgan stavkani kiriting.",
+    "charges_rate_range": "0 dan 30% gacha boʻlgan stavkani kiriting.",
     "charges_rate_not_here": "Mamlakatingizda narxlar soliqni allaqachon oʻz ichiga oladi, shuning uchun stavka belgilash shart emas.",
     "charges_fee_not_here": "Mamlakatingizda onlayn xizmat yigʻimlari mavjud emas.",
     "charges_fee_hatchgrab": "Mamlakatingizda onlayn xizmat yigʻimini HatchGrab belgilaydi, shuning uchun uni bu yerda oʻzgartirib boʻlmaydi.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Yigʻimning bu qismiga mamlakatingizda ruxsat berilmagan.",
     "charges_choose_on_off": "Yoqish yoki oʻchirishni tanlang.",
     "charges_nothing_to_save": "Saqlanadigan narsa yoʻq.",
+    "charges_items_invalid": "Bu mahsulotlardan biri endi menyuingizda yoʻq. Buni yopib, qayta urinib koʻring.",
     "country_settings_failed": "Bu fudtrakning mamlakat sozlamalarini yuklab boʻlmadi. Birozdan soʻng qayta urinib koʻring.",
     "plans_failed": "Bu fudtrakning tarifini yuklab boʻlmadi. Birozdan soʻng qayta urinib koʻring.",
     "demo_not_available": "Demo fudtrakda mavjud emas",
@@ -4273,6 +4276,8 @@
         "refunded": "Qaytarilgan",
         "cost": "Tannarx",
         "profit": "Foyda",
+        "netAtRate": "Sof {rate}",
+        "taxAtRate": "Soliq {rate}",
         "eventDate": "Tadbir sanasi",
         "orders": "Buyurtmalar",
         "dishesSold": "Sotilgan taomlar",
@@ -4282,7 +4287,8 @@
         "stored": "buyurtma bilan saqlangan",
         "estimated": "soliq stavkangiz asosida hisoblangan",
         "none": "soliq stavkasi belgilanmagan"
-      }
+      },
+      "noRate": "stavkasiz"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Mijozlar uni toʻlashdan oldin bitta qator sifatida koʻradi: “{label} {amount}”.",
       "hatchgrab": "HatchGrab mijozlaringizning onlayn buyurtmalariga {fee} xizmat yigʻimi qoʻshadi. Uni siz toʻlamaysiz va oʻzgartira olmaysiz."
     },
-    "saveFailed": "Saqlab boʻlmadi — qaytadan urinib koʻring."
+    "saveFailed": "Saqlab boʻlmadi — qaytadan urinib koʻring.",
+    "noVat": "{label} yoʻq",
+    "noVatHint": "{label} qoʻllamasangiz, “{label} yoʻq” variantini tanlang.",
+    "otherRate": "Boshqa…",
+    "itemRates": {
+      "label": "Mahsulot stavkalari",
+      "hintSome": "{n, plural, one {{count} ta mahsulot boshqa stavkadan foydalanadi} other {{count} ta mahsulot boshqa stavkadan foydalanadi}}",
+      "hintNone": "Barcha mahsulotlar standart stavkangizdan foydalanadi",
+      "button": "Mahsulot stavkalarini oʻzgartirish",
+      "title": "Mahsulot stavkalari",
+      "intro": "Har bir mahsulot stavkasini oʻzingiz tanlaysiz.",
+      "setAll": "Hammasiga belgilash",
+      "default": "Standart ({rate})",
+      "rateAria": "{item} stavkasi",
+      "otherItems": "Boshqa mahsulotlar",
+      "noItems": "Menyuingizda hali mahsulot yoʻq.",
+      "close": "Yopish",
+      "cancel": "Bekor qilish",
+      "save": "Saqlash",
+      "saved": "Mahsulot stavkalari saqlandi"
+    }
   },
   "takingPayment": {
     "heading": "Toʻlov qabul qilish",

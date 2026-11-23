@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Ky event ka përfunduar. Rifillojeni për të marrë porosi.} cancelled {Ky event u anulua.} other {Ky event nuk është i hapur.}}",
     "sign_in_to_create": "Hyni si anëtar i ekipit për të krijuar një event.",
     "event_details_invalid": "{reason, select, name {Shtoni emrin e eventit} times {Shtoni orën e fillimit dhe të mbarimit} end {Ora e mbarimit duhet të jetë pas orës së fillimit} van {Zgjidhni një furgon} date {Eventet e krijuara këtu janë vetëm për sot} other {Kontrolloni të dhënat e eventit}}",
-    "event_overlaps": "Ky event mbivendoset me një event tjetër sot."
+    "event_overlaps": "Ky event mbivendoset me një event tjetër sot.",
+    "order_finished_edit": "Kjo porosi ka përfunduar, ndaj nuk mund të ndryshohet.",
+    "order_finished_cancel": "Kjo porosi ka përfunduar, ndaj nuk mund të anulohet."
   },
   "kitchenModals": {
     "close": "Mbyll",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Ndodhi një gabim — rifreskoni faqen dhe provoni sërish.",
     "charges_owner_only": "Vetëm pronari mund të ndryshojë taksën, bakshishet dhe tarifat",
     "charges_rate_decimals": "Përdorni deri në 3 shifra dhjetore, si 8,875.",
-    "charges_rate_range": "Përdorni një normë nga 0 deri në 20%.",
+    "charges_rate_range": "Përdorni një normë nga 0 deri në 30%.",
     "charges_rate_not_here": "Në vendin tuaj çmimet e përfshijnë tashmë taksën, ndaj nuk ka normë për të caktuar.",
     "charges_fee_not_here": "Tarifat e shërbimit online nuk janë të disponueshme në vendin tuaj.",
     "charges_fee_hatchgrab": "Në vendin tuaj tarifën e shërbimit online e cakton HatchGrab, ndaj nuk mund të ndryshohet këtu.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Kjo pjesë e tarifës nuk lejohet në vendin tuaj.",
     "charges_choose_on_off": "Zgjidhni aktiv ose joaktiv.",
     "charges_nothing_to_save": "Nuk ka asgjë për të ruajtur.",
+    "charges_items_invalid": "Një nga këta artikuj nuk është më në menunë tuaj. Mbylleni këtë dhe provoni sërish.",
     "country_settings_failed": "Cilësimet e vendit për këtë food truck nuk u ngarkuan dot. Provoni sërish pas pak.",
     "plans_failed": "Paketa e këtij food truck-u nuk u ngarkua dot. Provoni sërish pas pak.",
     "demo_not_available": "Nuk disponohet për një food truck demo",
@@ -4273,6 +4276,8 @@
         "refunded": "Rimbursuar",
         "cost": "Kostoja",
         "profit": "Fitimi",
+        "netAtRate": "Neto {rate}",
+        "taxAtRate": "Taksa {rate}",
         "eventDate": "Data e eventit",
         "orders": "Porositë",
         "dishesSold": "Pjata të shitura",
@@ -4282,7 +4287,8 @@
         "stored": "ruajtur me porosinë",
         "estimated": "vlerësuar nga norma juaj e taksës",
         "none": "pa normë takse"
-      }
+      },
+      "noRate": "pa normë"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Klientët e shohin para se të paguajnë, si një rresht: “{label} {amount}”.",
       "hatchgrab": "HatchGrab shton një tarifë shërbimi prej {fee} te porositë online të klientëve tuaj. Ju nuk e paguani dhe nuk mund ta ndryshoni."
     },
-    "saveFailed": "Nuk u ruajt dot — ju lutemi provoni sërish."
+    "saveFailed": "Nuk u ruajt dot — ju lutemi provoni sërish.",
+    "noVat": "Pa {label}",
+    "noVatHint": "Zgjidhni “Pa {label}” nëse nuk aplikoni {label}.",
+    "otherRate": "Normë tjetër…",
+    "itemRates": {
+      "label": "Normat e artikujve",
+      "hintSome": "{n, plural, one {{count} artikull ka normë të ndryshme} other {{count} artikuj kanë normë të ndryshme}}",
+      "hintNone": "Të gjithë artikujt përdorin normën tuaj standarde",
+      "button": "Ndrysho normat e artikujve",
+      "title": "Normat e artikujve",
+      "intro": "Ju zgjidhni normën për çdo artikull.",
+      "setAll": "Vendos për të gjithë",
+      "default": "Standarde ({rate})",
+      "rateAria": "Norma për {item}",
+      "otherItems": "Artikuj të tjerë",
+      "noItems": "Ende nuk keni artikuj në menu.",
+      "close": "Mbyll",
+      "cancel": "Anulo",
+      "save": "Ruaj",
+      "saved": "Normat e artikujve u ruajtën"
+    }
   },
   "takingPayment": {
     "heading": "Marrja e pagesës",

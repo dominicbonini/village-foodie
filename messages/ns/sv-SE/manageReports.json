@@ -140,6 +140,8 @@
       "refunded": "Återbetalt",
       "cost": "Kostnad",
       "profit": "Vinst",
+      "netAtRate": "Netto {rate}",
+      "taxAtRate": "Moms {rate}",
       "eventDate": "Evenemangsdatum",
       "orders": "Beställningar",
       "dishesSold": "Sålda rätter",
@@ -149,6 +151,7 @@
       "stored": "sparad med beställningen",
       "estimated": "uppskattad utifrån din momssats",
       "none": "ingen momssats inställd"
-    }
+    },
+    "noRate": "ingen sats"
   }
 }

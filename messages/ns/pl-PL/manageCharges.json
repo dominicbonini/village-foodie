@@ -26,5 +26,25 @@
     "example": "Klienci widzą ją przed zapłatą jako jedną pozycję: „{label} {amount}”.",
     "hatchgrab": "HatchGrab dolicza opłatę serwisową {fee} do zamówień online twoich klientów. Nie płacisz jej i nie możesz jej zmienić."
   },
-  "saveFailed": "Nie udało się zapisać — spróbuj ponownie."
+  "saveFailed": "Nie udało się zapisać — spróbuj ponownie.",
+  "noVat": "Bez {label}",
+  "noVatHint": "Wybierz „Bez {label}”, jeśli nie naliczasz {label}.",
+  "otherRate": "Inna…",
+  "itemRates": {
+    "label": "Stawki pozycji",
+    "hintSome": "{n, plural, one {{count} pozycja ma inną stawkę} few {{count} pozycje mają inną stawkę} many {{count} pozycji ma inną stawkę} other {{count} pozycji ma inną stawkę}}",
+    "hintNone": "Wszystkie pozycje mają twoją domyślną stawkę",
+    "button": "Zmień stawki pozycji",
+    "title": "Stawki pozycji",
+    "intro": "Ty wybierasz stawkę dla każdej pozycji.",
+    "setAll": "Ustaw wszystkie",
+    "default": "Domyślna ({rate})",
+    "rateAria": "Stawka: {item}",
+    "otherItems": "Inne pozycje",
+    "noItems": "W twoim menu nie ma jeszcze pozycji.",
+    "close": "Zamknij",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "saved": "Zapisano stawki pozycji"
+  }
 }

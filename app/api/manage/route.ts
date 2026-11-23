@@ -223,6 +223,8 @@ const MANAGE_TAB_ACTIONS: ReadonlySet<string> = new Set([
   'get_item_cost', 'set_item_cost', 'get_accounts_settings',
   // Payments › Tax, tips and fees (Language Phase 1d Part 2): its own refusals are `errorsManage.charges_*` codes.
   'update_charges',
+  // france-vat-1: Payments › Item rates — the same `errorsManage.charges_*` codes.
+  'get_item_rates', 'set_item_rates',
   // Team (Language Phase 1d Part 2): their own refusals are `errorsManage` codes too, and the invite email is worded in
   // the truck's language (`manageTeam.inviteEmail`).
   'get_team', 'invite_member', 'update_member', 'remove_member', 'invite_team_member', 'remove_team_member',
@@ -1892,6 +1894,61 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, truck: data })
   }
 
+  /* ── france-vat-1: PAYMENTS › ITEM RATES ──────────────────────────────────────────────────────────────────────────────────
+   * get_item_rates: the truck's dishes, grouped by category in menu order, each with its own rate (NULL = the default).
+   * set_item_rates: { rates: [{ id, rate }] } — only the CHANGED dishes, `rate` in thousandths of a percent (0–30 %) or null for
+   * "Default". Every id must be one of this truck's dishes; anything else refuses the whole save and writes nothing.
+   * The owner only (an admin too), exactly as update_charges. */
+  if (action === 'get_item_rates' || action === 'set_item_rates') {
+    if (requestingUserRole !== 'owner' && !requestingIsAdmin) {
+      return await refuse('charges_owner_only', 403)
+    }
+    const readRates = async () => {
+      const [{ data: cats, error: cErr }, { data: rows, error: iErr }] = await Promise.all([
+        supabase.from('menu_categories').select('id, name, sort_order').eq('truck_id', truck.id),
+        supabase.from('menu_items_db').select('id, name, category_id, sort_order, is_active, tax_rate_milli').eq('truck_id', truck.id),
+      ])
+      if (cErr || iErr) throw new Error((cErr || iErr)!.message)
+      return {
+        categories: ((cats ?? []) as { id: string; name: string; sort_order: number | null }[])
+          .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name))
+          .map(c => ({ id: c.id, name: c.name })),
+        items: ((rows ?? []) as { id: string; name: string; category_id: string | null; sort_order: number | null; is_active: boolean | null; tax_rate_milli: number | null }[])
+          .filter(r => r.is_active !== false)
+          .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.name.localeCompare(b.name))
+          .map(r => ({ id: r.id, name: r.name, category_id: r.category_id, tax_rate_milli: r.tax_rate_milli ?? null })),
+      }
+    }
+    if (action === 'set_item_rates') {
+      const { MAX_RATE_MILLI } = await import('@/lib/charge-settings')
+      const list = Array.isArray(body.rates) ? body.rates as { id?: unknown; rate?: unknown }[] : null
+      if (!list || list.length === 0) return await refuse('charges_nothing_to_save', 400)
+      const changes = new Map<string, number | null>()
+      for (const c of list) {
+        const id = typeof c?.id === 'string' ? c.id : ''
+        const rate = c?.rate === null ? null : (typeof c?.rate === 'number' && Number.isSafeInteger(c.rate) && c.rate >= 0 && c.rate <= MAX_RATE_MILLI ? c.rate : undefined)
+        if (!id) return await refuse('charges_items_invalid', 400)
+        if (rate === undefined) return await refuse('charges_rate_range', 400)
+        changes.set(id, rate)
+      }
+      const { data: own, error: oErr } = await supabase.from('menu_items_db').select('id').eq('truck_id', truck.id).in('id', [...changes.keys()])
+      if (oErr) return NextResponse.json({ error: oErr.message }, { status: 500 })
+      if ((own ?? []).length !== changes.size) return await refuse('charges_items_invalid', 400)
+      // One write per distinct rate — the changed dishes only, always scoped to this truck.
+      const byRate = new Map<string, { rate: number | null; ids: string[] }>()
+      for (const [id, rate] of changes) {
+        const k = rate === null ? 'none' : String(rate)
+        const g = byRate.get(k); if (g) g.ids.push(id); else byRate.set(k, { rate, ids: [id] })
+      }
+      for (const g of byRate.values()) {
+        const { error } = await supabase.from('menu_items_db').update({ tax_rate_milli: g.rate }).eq('truck_id', truck.id).in('id', g.ids)
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      }
+    }
+    try { return NextResponse.json({ ok: true, ...(await readRates()) }) }
+    catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 }) }
+  }
+
   if (action === 'update_trade_area') {
     const cs = await countrySettingsForTruck(truck)
     const r = checkTradeArea(body, cs)
@@ -3030,7 +3087,7 @@ export async function POST(req: NextRequest) {
     // test-truck-3-2 ~1,800), in a fixed order (placed, then order_key) so no page can repeat or skip a row. The filters below are
     // recorded in `scopeOrders` and applied to every page, and to the cancelled read the accounts need.
     // `currency` and `tax_inclusive` ride along for the accounts only and are removed from the rows before the response.
-    const ORDER_COLS = 'order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id, food_minor, tax_minor, tax_rate_milli, tax_label, tip_minor, tip_pct_bps, service_fee_minor, card_surcharge_minor, currency, tax_inclusive'
+    const ORDER_COLS = 'order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id, food_minor, tax_minor, tax_rate_milli, tax_label, tip_minor, tip_pct_bps, service_fee_minor, card_surcharge_minor, currency, tax_inclusive, tax_breakdown'
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- a PostgREST builder, as everywhere in this route
     let scopeOrders = (q: any) => q
     const readOrders = async (cancelled: boolean): Promise<{ data: any[] | null }> => {   // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -3234,7 +3291,7 @@ export async function POST(req: NextRequest) {
       }
     }
     // The two columns read for the accounts only leave the rows, so `orders` is what it was before costs-accounts-1.
-    for (const o of rows) { delete o.currency; delete o.tax_inclusive }
+    for (const o of rows) { delete o.currency; delete o.tax_inclusive; delete o.tax_breakdown }   // france-vat-1: the breakdown is for the accounts only
 
     return NextResponse.json({
       ok: true,

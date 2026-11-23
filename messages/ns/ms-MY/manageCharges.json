@@ -26,5 +26,25 @@
     "example": "Pelanggan melihatnya sebelum membayar, sebagai satu baris: “{label} {amount}”.",
     "hatchgrab": "HatchGrab menambah yuran perkhidmatan {fee} pada pesanan dalam talian pelanggan anda. Anda tidak membayarnya dan tidak boleh mengubahnya."
   },
-  "saveFailed": "Tidak dapat disimpan — sila cuba lagi."
+  "saveFailed": "Tidak dapat disimpan — sila cuba lagi.",
+  "noVat": "Tiada {label}",
+  "noVatHint": "Pilih Tiada {label} jika anda tidak mengenakan {label}.",
+  "otherRate": "Lain-lain…",
+  "itemRates": {
+    "label": "Kadar setiap item",
+    "hintSome": "{n, plural, other {{count} item menggunakan kadar berbeza}}",
+    "hintNone": "Semua item menggunakan kadar lalai anda",
+    "button": "Tukar kadar item",
+    "title": "Kadar setiap item",
+    "intro": "Anda memilih kadar untuk setiap item.",
+    "setAll": "Tetapkan semua",
+    "default": "Lalai ({rate})",
+    "rateAria": "Kadar untuk {item}",
+    "otherItems": "Item lain",
+    "noItems": "Belum ada item dalam menu anda.",
+    "close": "Tutup",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "saved": "Kadar item disimpan"
+  }
 }

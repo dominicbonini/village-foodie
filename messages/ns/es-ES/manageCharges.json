@@ -26,5 +26,25 @@
     "example": "Los clientes lo ven antes de pagar, en una sola línea: “{label} {amount}”.",
     "hatchgrab": "HatchGrab añade un cargo por servicio de {fee} a los pedidos online de tus clientes. No lo pagas tú y no puedes cambiarlo."
   },
-  "saveFailed": "No se ha podido guardar. Inténtalo de nuevo."
+  "saveFailed": "No se ha podido guardar. Inténtalo de nuevo.",
+  "noVat": "Sin {label}",
+  "noVatHint": "Elige “Sin {label}” si no cobras {label}.",
+  "otherRate": "Otro…",
+  "itemRates": {
+    "label": "Tipos por producto",
+    "hintSome": "{n, plural, one {{count} producto tiene un tipo distinto} other {{count} productos tienen un tipo distinto}}",
+    "hintNone": "Todos los productos usan tu tipo predeterminado",
+    "button": "Cambiar tipos por producto",
+    "title": "Tipos por producto",
+    "intro": "Tú eliges el tipo de cada producto.",
+    "setAll": "Aplicar a todos",
+    "default": "Predeterminado ({rate})",
+    "rateAria": "Tipo de {item}",
+    "otherItems": "Otros productos",
+    "noItems": "Aún no hay productos en tu carta.",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saved": "Tipos por producto guardados"
+  }
 }

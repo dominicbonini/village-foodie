@@ -26,5 +26,25 @@
     "example": "Müştərilər bunu ödənişdən əvvəl bir sətir kimi görür: “{label} {amount}”.",
     "hatchgrab": "HatchGrab müştərilərinizin onlayn sifarişlərinə {fee} xidmət haqqı əlavə edir. Bunu siz ödəmirsiniz və dəyişə bilməzsiniz."
   },
-  "saveFailed": "Yadda saxlamaq mümkün olmadı — yenidən cəhd edin."
+  "saveFailed": "Yadda saxlamaq mümkün olmadı — yenidən cəhd edin.",
+  "noVat": "{label} yoxdur",
+  "noVatHint": "{label} tətbiq etmirsinizsə, “{label} yoxdur” seçimini edin.",
+  "otherRate": "Digər…",
+  "itemRates": {
+    "label": "Məhsul dərəcələri",
+    "hintSome": "{n, plural, one {{count} məhsul fərqli dərəcədən istifadə edir} other {{count} məhsul fərqli dərəcədən istifadə edir}}",
+    "hintNone": "Bütün məhsullar standart dərəcənizdən istifadə edir",
+    "button": "Məhsul dərəcələrini dəyiş",
+    "title": "Məhsul dərəcələri",
+    "intro": "Hər məhsulun dərəcəsini siz seçirsiniz.",
+    "setAll": "Hamısına təyin et",
+    "default": "Standart ({rate})",
+    "rateAria": "{item} üçün dərəcə",
+    "otherItems": "Digər məhsullar",
+    "noItems": "Menyunuzda hələ məhsul yoxdur.",
+    "close": "Bağla",
+    "cancel": "Ləğv et",
+    "save": "Yadda saxla",
+    "saved": "Məhsul dərəcələri yadda saxlanıldı"
+  }
 }

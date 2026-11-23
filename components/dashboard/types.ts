@@ -43,6 +43,8 @@ export interface Order {
   service_fee_minor?: number | null
   service_fee_recipient?: string | null
   card_surcharge_minor?: number | null
+  /** france-vat-1: the per-rate breakdown (orders.tax_breakdown, 20261124). Null on orders before it. */
+  tax_breakdown?: unknown
   card_fee_payer?: string | null
   /** UUID row identity. Every lookup, update, React key, action payload. */
   order_key: string

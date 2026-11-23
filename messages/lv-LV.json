@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Šis pasākums ir beidzies. Atsāciet to, lai pieņemtu pasūtījumus.} cancelled {Šis pasākums ir atcelts.} other {Šis pasākums nav atvērts.}}",
     "sign_in_to_create": "Piesakieties kā komandas loceklis, lai izveidotu pasākumu.",
     "event_details_invalid": "{reason, select, name {Pievienojiet pasākuma nosaukumu} times {Pievienojiet sākuma un beigu laiku} end {Beigām jābūt pēc sākuma} van {Izvēlieties furgonu} date {Šeit izveidotie pasākumi ir tikai šodienai} other {Pārbaudiet pasākuma datus}}",
-    "event_overlaps": "Tas pārklājas ar citu šodienas pasākumu."
+    "event_overlaps": "Tas pārklājas ar citu šodienas pasākumu.",
+    "order_finished_edit": "Šis pasūtījums ir pabeigts, tāpēc to nevar mainīt.",
+    "order_finished_cancel": "Šis pasūtījums ir pabeigts, tāpēc to nevar atcelt."
   },
   "kitchenModals": {
     "close": "Aizvērt",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Kaut kas nogāja greizi — atsvaidziniet lapu un mēģiniet vēlreiz.",
     "charges_owner_only": "Nodokļus, dzeramnaudu un maksas var mainīt tikai īpašnieks",
     "charges_rate_decimals": "Izmantojiet līdz 3 zīmēm aiz komata, piemēram, 8,875.",
-    "charges_rate_range": "Izmantojiet likmi no 0 līdz 20%.",
+    "charges_rate_range": "Izmantojiet likmi no 0 līdz 30%.",
     "charges_rate_not_here": "Jūsu valstī cenās nodoklis jau ir iekļauts, tāpēc likme nav jāiestata.",
     "charges_fee_not_here": "Tiešsaistes apkalpošanas maksas jūsu valstī nav pieejamas.",
     "charges_fee_hatchgrab": "Tiešsaistes apkalpošanas maksu jūsu valstī nosaka HatchGrab, tāpēc to šeit nevar mainīt.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Šī maksas daļa jūsu valstī nav atļauta.",
     "charges_choose_on_off": "Izvēlieties: ieslēgts vai izslēgts.",
     "charges_nothing_to_save": "Nav ko saglabāt.",
+    "charges_items_invalid": "Vienas no šīm pozīcijām vairs nav jūsu ēdienkartē. Aizveriet šo logu un mēģiniet vēlreiz.",
     "country_settings_failed": "Neizdevās ielādēt šī food truck valsts iestatījumus. Pēc brīža mēģiniet vēlreiz.",
     "plans_failed": "Neizdevās ielādēt šī food truck plānu. Pēc brīža mēģiniet vēlreiz.",
     "demo_not_available": "Demonstrācijas food truck tas nav pieejams",
@@ -4273,6 +4276,8 @@
         "refunded": "Atmaksāts",
         "cost": "Izmaksas",
         "profit": "Peļņa",
+        "netAtRate": "Neto {rate}",
+        "taxAtRate": "Nodoklis {rate}",
         "eventDate": "Pasākuma datums",
         "orders": "Pasūtījumi",
         "dishesSold": "Pārdotie ēdieni",
@@ -4282,7 +4287,8 @@
         "stored": "saglabāts kopā ar pasūtījumu",
         "estimated": "aprēķināts pēc jūsu nodokļa likmes",
         "none": "nodokļa likme nav iestatīta"
-      }
+      },
+      "noRate": "bez likmes"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Klienti to redz pirms maksāšanas vienā rindā: “{label} {amount}”.",
       "hatchgrab": "HatchGrab pievieno {fee} apkalpošanas maksu jūsu klientu tiešsaistes pasūtījumiem. Jūs to nemaksājat un nevarat mainīt."
     },
-    "saveFailed": "Neizdevās saglabāt — lūdzu, mēģiniet vēlreiz."
+    "saveFailed": "Neizdevās saglabāt — lūdzu, mēģiniet vēlreiz.",
+    "noVat": "Bez {label}",
+    "noVatHint": "Izvēlieties “Bez {label}”, ja nepiemērojat {label}.",
+    "otherRate": "Cita…",
+    "itemRates": {
+      "label": "Pozīciju likmes",
+      "hintSome": "{n, plural, zero {{count} pozīcijām ir cita likme} one {{count} pozīcijai ir cita likme} other {{count} pozīcijām ir cita likme}}",
+      "hintNone": "Visām pozīcijām ir jūsu noklusējuma likme",
+      "button": "Mainīt pozīciju likmes",
+      "title": "Pozīciju likmes",
+      "intro": "Jūs izvēlaties likmi katrai pozīcijai.",
+      "setAll": "Iestatīt visām",
+      "default": "Noklusējuma ({rate})",
+      "rateAria": "Likme: {item}",
+      "otherItems": "Citas pozīcijas",
+      "noItems": "Jūsu ēdienkartē vēl nav pozīciju.",
+      "close": "Aizvērt",
+      "cancel": "Atcelt",
+      "save": "Saglabāt",
+      "saved": "Pozīciju likmes saglabātas"
+    }
   },
   "takingPayment": {
     "heading": "Maksājumu pieņemšana",

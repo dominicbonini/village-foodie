@@ -140,6 +140,8 @@
       "refunded": "Dibayar balik",
       "cost": "Kos",
       "profit": "Untung",
+      "netAtRate": "Bersih {rate}",
+      "taxAtRate": "Cukai {rate}",
       "eventDate": "Tarikh acara",
       "orders": "Pesanan",
       "dishesSold": "Hidangan terjual",
@@ -149,6 +151,7 @@
       "stored": "disimpan bersama pesanan",
       "estimated": "dianggarkan daripada kadar cukai anda",
       "none": "tiada kadar cukai ditetapkan"
-    }
+    },
+    "noRate": "tiada kadar"
   }
 }

@@ -26,5 +26,25 @@
     "example": "Os clientes veem-na antes de pagar, numa só linha: «{label} {amount}».",
     "hatchgrab": "O HatchGrab acrescenta uma taxa de serviço de {fee} às encomendas online dos seus clientes. Não é paga por si e não a pode alterar."
   },
-  "saveFailed": "Não foi possível guardar — tente novamente."
+  "saveFailed": "Não foi possível guardar — tente novamente.",
+  "noVat": "Sem {label}",
+  "noVatHint": "Escolha «Sem {label}» se não cobrar {label}.",
+  "otherRate": "Outra…",
+  "itemRates": {
+    "label": "Taxas por artigo",
+    "hintSome": "{n, plural, one {{count} artigo usa uma taxa diferente} other {{count} artigos usam uma taxa diferente}}",
+    "hintNone": "Todos os artigos usam a sua taxa predefinida",
+    "button": "Alterar taxas por artigo",
+    "title": "Taxas por artigo",
+    "intro": "Escolha a taxa de cada artigo.",
+    "setAll": "Aplicar a todos",
+    "default": "Predefinida ({rate})",
+    "rateAria": "Taxa de {item}",
+    "otherItems": "Outros artigos",
+    "noItems": "Ainda não há artigos na sua ementa.",
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saved": "Taxas por artigo guardadas"
+  }
 }

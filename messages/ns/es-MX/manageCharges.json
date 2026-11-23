@@ -7,5 +7,18 @@
   "included": {
     "hint": "Tus precios ya incluyen el {label}. Esta tasa solo indica qué parte de cada precio es {label}, en los tickets y en las comandas: no se suma nada al pagar.",
     "default": "Déjalo vacío para usar el {rate} %, la tasa de {label} de la comida caliente para llevar ({country})."
+  },
+  "otherRate": "Otra…",
+  "itemRates": {
+    "label": "Tasas por producto",
+    "hintSome": "{n, plural, one {{count} producto tiene una tasa distinta} other {{count} productos tienen una tasa distinta}}",
+    "hintNone": "Todos los productos usan tu tasa predeterminada",
+    "button": "Cambiar tasas por producto",
+    "title": "Tasas por producto",
+    "intro": "Tú eliges la tasa de cada producto.",
+    "default": "Predeterminada ({rate})",
+    "rateAria": "Tasa de {item}",
+    "noItems": "Aún no hay productos en tu menú.",
+    "saved": "Tasas por producto guardadas"
   }
 }

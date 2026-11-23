@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Dieses Event ist beendet. Neu starten, um Bestellungen anzunehmen.} cancelled {Dieses Event wurde abgesagt.} other {Dieses Event ist nicht geöffnet.}}",
     "sign_in_to_create": "Melde dich als Teammitglied an, um ein Event zu erstellen.",
     "event_details_invalid": "{reason, select, name {Gib einen Namen für das Event ein} times {Gib Beginn und Ende ein} end {Das Ende muss nach dem Beginn liegen} van {Wähle einen Wagen} date {Hier erstellte Events gelten nur für heute} other {Prüfe die Angaben zum Event}}",
-    "event_overlaps": "Das überschneidet sich heute mit einem anderen Event."
+    "event_overlaps": "Das überschneidet sich heute mit einem anderen Event.",
+    "order_finished_edit": "Diese Bestellung ist abgeschlossen und kann nicht mehr geändert werden.",
+    "order_finished_cancel": "Diese Bestellung ist abgeschlossen und kann nicht mehr storniert werden."
   },
   "kitchenModals": {
     "close": "Schließen",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Etwas ist schiefgelaufen – laden Sie die Seite neu und versuchen Sie es erneut.",
     "charges_owner_only": "Nur der Inhaber kann Steuern, Trinkgeld und Gebühren ändern",
     "charges_rate_decimals": "Verwenden Sie höchstens 3 Nachkommastellen, z. B. 8,875.",
-    "charges_rate_range": "Verwenden Sie einen Satz von 0 bis 20 %.",
+    "charges_rate_range": "Verwenden Sie einen Satz von 0 bis 30 %.",
     "charges_rate_not_here": "In Ihrem Land enthalten die Preise bereits die Steuer, daher ist kein Satz festzulegen.",
     "charges_fee_not_here": "Online-Servicegebühren sind in Ihrem Land nicht verfügbar.",
     "charges_fee_hatchgrab": "HatchGrab legt die Online-Servicegebühr in Ihrem Land fest, daher kann sie hier nicht geändert werden.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Dieser Teil der Gebühr ist in Ihrem Land nicht zulässig.",
     "charges_choose_on_off": "Wählen Sie „An“ oder „Aus“.",
     "charges_nothing_to_save": "Nichts zu speichern.",
+    "charges_items_invalid": "Einer dieser Artikel ist nicht mehr auf Ihrer Speisekarte. Schließen Sie dieses Fenster und versuchen Sie es erneut.",
     "country_settings_failed": "Die Ländereinstellungen dieses Foodtrucks konnten nicht geladen werden. Versuchen Sie es gleich noch einmal.",
     "plans_failed": "Der Tarif dieses Foodtrucks konnte nicht geladen werden. Versuchen Sie es gleich noch einmal.",
     "demo_not_available": "Bei einem Demo-Foodtruck nicht verfügbar",
@@ -4273,6 +4276,8 @@
         "refunded": "Erstattet",
         "cost": "Kosten",
         "profit": "Gewinn",
+        "netAtRate": "Netto {rate}",
+        "taxAtRate": "Steuer {rate}",
         "eventDate": "Eventdatum",
         "orders": "Bestellungen",
         "dishesSold": "Verkaufte Gerichte",
@@ -4282,7 +4287,8 @@
         "stored": "mit der Bestellung gespeichert",
         "estimated": "geschätzt anhand Ihres Steuersatzes",
         "none": "kein Steuersatz hinterlegt"
-      }
+      },
+      "noRate": "ohne Steuersatz"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Kunden sehen sie vor dem Bezahlen als eine Zeile: „{label} {amount}“.",
       "hatchgrab": "HatchGrab erhebt auf die Online-Bestellungen Ihrer Kunden eine Servicegebühr von {fee}. Sie zahlen sie nicht und können sie nicht ändern."
     },
-    "saveFailed": "Speichern fehlgeschlagen – bitte versuchen Sie es erneut."
+    "saveFailed": "Speichern fehlgeschlagen – bitte versuchen Sie es erneut.",
+    "noVat": "Ohne {label}",
+    "noVatHint": "Wählen Sie „Ohne {label}“, wenn Sie {label} nicht berechnen.",
+    "otherRate": "Anderer Satz…",
+    "itemRates": {
+      "label": "Steuersätze pro Artikel",
+      "hintSome": "{n, plural, one {{count} Artikel hat einen anderen Satz} other {{count} Artikel haben einen anderen Satz}}",
+      "hintNone": "Alle Artikel nutzen Ihren Standardsatz",
+      "button": "Steuersätze ändern",
+      "title": "Steuersätze pro Artikel",
+      "intro": "Sie wählen den Satz für jeden Artikel.",
+      "setAll": "Für alle festlegen",
+      "default": "Standard ({rate})",
+      "rateAria": "Satz für {item}",
+      "otherItems": "Weitere Artikel",
+      "noItems": "Noch keine Artikel auf Ihrer Speisekarte.",
+      "close": "Schließen",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "saved": "Steuersätze gespeichert"
+    }
   },
   "takingPayment": {
     "heading": "Zahlung annehmen",

@@ -140,6 +140,8 @@
       "refunded": "Dikembalikan",
       "cost": "Modal",
       "profit": "Laba",
+      "netAtRate": "Bersih {rate}",
+      "taxAtRate": "Pajak {rate}",
       "eventDate": "Tanggal acara",
       "orders": "Pesanan",
       "dishesSold": "Hidangan terjual",
@@ -149,6 +151,7 @@
       "stored": "disimpan bersama pesanan",
       "estimated": "diperkirakan dari tarif pajak Anda",
       "none": "tarif pajak belum diatur"
-    }
+    },
+    "noRate": "tanpa tarif"
   }
 }

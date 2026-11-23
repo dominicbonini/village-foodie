@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Acest eveniment s-a încheiat. Reporniți-l ca să primiți comenzi.} cancelled {Acest eveniment a fost anulat.} other {Acest eveniment nu este deschis.}}",
     "sign_in_to_create": "Autentificați-vă ca membru al echipei pentru a crea un eveniment.",
     "event_details_invalid": "{reason, select, name {Adăugați un nume pentru eveniment} times {Adăugați ora de început și de sfârșit} end {Ora de sfârșit trebuie să fie după început} van {Alegeți un vehicul} date {Evenimentele create aici sunt doar pentru azi} other {Verificați detaliile evenimentului}}",
-    "event_overlaps": "Se suprapune cu alt eveniment de azi."
+    "event_overlaps": "Se suprapune cu alt eveniment de azi.",
+    "order_finished_edit": "Această comandă este finalizată, deci nu mai poate fi modificată.",
+    "order_finished_cancel": "Această comandă este finalizată, deci nu mai poate fi anulată."
   },
   "kitchenModals": {
     "close": "Închideți",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Ceva nu a mers bine — reîmprospătați pagina și încercați din nou.",
     "charges_owner_only": "Doar proprietarul poate modifica taxele, bacșișurile și comisioanele",
     "charges_rate_decimals": "Folosiți cel mult 3 zecimale, de exemplu 8,875.",
-    "charges_rate_range": "Folosiți o cotă între 0 și 20%.",
+    "charges_rate_range": "Folosiți o cotă între 0 și 30%.",
     "charges_rate_not_here": "Prețurile din țara dumneavoastră includ deja taxele, așa că nu există nicio cotă de setat.",
     "charges_fee_not_here": "Taxele de serviciu online nu sunt disponibile în țara dumneavoastră.",
     "charges_fee_hatchgrab": "HatchGrab stabilește taxa de serviciu online în țara dumneavoastră, așa că nu poate fi modificată aici.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Această parte a taxei nu este permisă în țara dumneavoastră.",
     "charges_choose_on_off": "Alegeți activat sau dezactivat.",
     "charges_nothing_to_save": "Nimic de salvat.",
+    "charges_items_invalid": "Unul dintre aceste produse nu mai este în meniul dumneavoastră. Închideți această fereastră și încercați din nou.",
     "country_settings_failed": "Setările de țară ale acestui food truck nu au putut fi încărcate. Încercați din nou peste câteva momente.",
     "plans_failed": "Planul acestui food truck nu a putut fi încărcat. Încercați din nou peste câteva momente.",
     "demo_not_available": "Indisponibil pentru un food truck demo",
@@ -4273,6 +4276,8 @@
         "refunded": "Rambursat",
         "cost": "Cost",
         "profit": "Profit",
+        "netAtRate": "Net {rate}",
+        "taxAtRate": "TVA {rate}",
         "eventDate": "Data evenimentului",
         "orders": "Comenzi",
         "dishesSold": "Preparate vândute",
@@ -4282,7 +4287,8 @@
         "stored": "salvată odată cu comanda",
         "estimated": "estimată după cota dumneavoastră de TVA",
         "none": "nicio cotă de TVA setată"
-      }
+      },
+      "noRate": "fără cotă"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Clienții o văd înainte să plătească, pe un singur rând: „{label} {amount}”.",
       "hatchgrab": "HatchGrab adaugă o taxă de serviciu de {fee} la comenzile online ale clienților dumneavoastră. Nu o plătiți dumneavoastră și nu o puteți modifica."
     },
-    "saveFailed": "Nu s-a putut salva — încercați din nou."
+    "saveFailed": "Nu s-a putut salva — încercați din nou.",
+    "noVat": "Fără {label}",
+    "noVatHint": "Alegeți „Fără {label}” dacă nu aplicați {label}.",
+    "otherRate": "Altă cotă…",
+    "itemRates": {
+      "label": "Cote pe produs",
+      "hintSome": "{n, plural, one {{count} produs are altă cotă} few {{count} produse au altă cotă} other {{count} de produse au altă cotă}}",
+      "hintNone": "Toate produsele folosesc cota implicită",
+      "button": "Modificați cotele produselor",
+      "title": "Cote pe produs",
+      "intro": "Dumneavoastră alegeți cota pentru fiecare produs.",
+      "setAll": "Setați la toate",
+      "default": "Implicită ({rate})",
+      "rateAria": "Cota pentru {item}",
+      "otherItems": "Alte produse",
+      "noItems": "Încă nu aveți produse în meniu.",
+      "close": "Închideți",
+      "cancel": "Anulați",
+      "save": "Salvați",
+      "saved": "Cotele produselor au fost salvate"
+    }
   },
   "takingPayment": {
     "heading": "Încasarea plății",

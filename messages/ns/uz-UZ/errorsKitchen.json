@@ -72,5 +72,7 @@
   "event_not_open": "{status, select, closed {Bu tadbir tugagan. Buyurtma olish uchun qayta boshlang.} cancelled {Bu tadbir bekor qilingan.} other {Bu tadbir ochiq emas.}}",
   "sign_in_to_create": "Tadbir yaratish uchun jamoa a’zosi sifatida kiring.",
   "event_details_invalid": "{reason, select, name {Tadbir nomini kiriting} times {Boshlanish va tugash vaqtini kiriting} end {Tugash vaqti boshlanishdan keyin bo‘lishi kerak} van {Furgonni tanlang} date {Bu yerda yaratilgan tadbirlar faqat bugun uchun} other {Tadbir ma’lumotlarini tekshiring}}",
-  "event_overlaps": "Bu bugungi boshqa tadbir bilan vaqti ustma-ust tushadi."
+  "event_overlaps": "Bu bugungi boshqa tadbir bilan vaqti ustma-ust tushadi.",
+  "order_finished_edit": "Bu buyurtma yakunlangan, shuning uchun uni oʻzgartirib boʻlmaydi.",
+  "order_finished_cancel": "Bu buyurtma yakunlangan, shuning uchun uni bekor qilib boʻlmaydi."
 }

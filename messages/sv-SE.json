@@ -1009,7 +1009,9 @@
     "event_not_open": "{status, select, closed {Evenemanget är avslutat. Starta om det för att ta emot beställningar.} cancelled {Evenemanget är inställt.} other {Evenemanget är inte öppet.}}",
     "sign_in_to_create": "Logga in som teammedlem för att skapa ett evenemang.",
     "event_details_invalid": "{reason, select, name {Lägg till ett namn på evenemanget} times {Lägg till start- och sluttid} end {Sluttiden måste vara efter starttiden} van {Välj en vagn} date {Evenemang som skapas här gäller bara i dag} other {Kontrollera uppgifterna}}",
-    "event_overlaps": "Det överlappar ett annat evenemang i dag."
+    "event_overlaps": "Det överlappar ett annat evenemang i dag.",
+    "order_finished_edit": "Den här beställningen är avslutad, så den kan inte ändras.",
+    "order_finished_cancel": "Den här beställningen är avslutad, så den kan inte avbokas."
   },
   "kitchenModals": {
     "close": "Stäng",
@@ -3315,7 +3317,7 @@
     "auto_open_close_required": "Något gick fel – ladda om sidan och försök igen.",
     "charges_owner_only": "Bara ägaren kan ändra moms, dricks och avgifter",
     "charges_rate_decimals": "Använd högst 3 decimaler, till exempel 8,875.",
-    "charges_rate_range": "Ange en sats från 0 till 20 %.",
+    "charges_rate_range": "Ange en sats från 0 till 30 %.",
     "charges_rate_not_here": "I ditt land ingår redan moms i priserna, så det finns ingen sats att ställa in.",
     "charges_fee_not_here": "Serviceavgifter för onlinebeställningar är inte tillgängliga i ditt land.",
     "charges_fee_hatchgrab": "HatchGrab bestämmer serviceavgiften för onlinebeställningar i ditt land, så den kan inte ändras här.",
@@ -3326,6 +3328,7 @@
     "charges_fee_part_not_allowed": "Den delen av avgiften är inte tillåten i ditt land.",
     "charges_choose_on_off": "Välj på eller av.",
     "charges_nothing_to_save": "Inget att spara.",
+    "charges_items_invalid": "En av de här artiklarna finns inte längre på din meny. Stäng det här och försök igen.",
     "country_settings_failed": "Det gick inte att ladda foodtruckens landsinställningar. Försök igen om en stund.",
     "plans_failed": "Det gick inte att ladda foodtruckens abonnemang. Försök igen om en stund.",
     "demo_not_available": "Inte tillgängligt för en demo-foodtruck",
@@ -4273,6 +4276,8 @@
         "refunded": "Återbetalt",
         "cost": "Kostnad",
         "profit": "Vinst",
+        "netAtRate": "Netto {rate}",
+        "taxAtRate": "Moms {rate}",
         "eventDate": "Evenemangsdatum",
         "orders": "Beställningar",
         "dishesSold": "Sålda rätter",
@@ -4282,7 +4287,8 @@
         "stored": "sparad med beställningen",
         "estimated": "uppskattad utifrån din momssats",
         "none": "ingen momssats inställd"
-      }
+      },
+      "noRate": "ingen sats"
     }
   },
   "socialPosts": {
@@ -4737,7 +4743,27 @@
       "example": "Kunderna ser den innan de betalar, på en rad: ”{label} {amount}”.",
       "hatchgrab": "HatchGrab lägger till en serviceavgift på {fee} på dina kunders onlinebeställningar. Du betalar den inte och kan inte ändra den."
     },
-    "saveFailed": "Kunde inte spara – försök igen."
+    "saveFailed": "Kunde inte spara – försök igen.",
+    "noVat": "Ingen {label}",
+    "noVatHint": "Välj ”Ingen {label}” om du inte tar ut {label}.",
+    "otherRate": "Annan sats…",
+    "itemRates": {
+      "label": "Satser per artikel",
+      "hintSome": "{n, plural, one {{count} artikel har en annan sats} other {{count} artiklar har en annan sats}}",
+      "hintNone": "Alla artiklar använder din standardsats",
+      "button": "Ändra satser per artikel",
+      "title": "Satser per artikel",
+      "intro": "Du väljer satsen för varje artikel.",
+      "setAll": "Ange för alla",
+      "default": "Standard ({rate})",
+      "rateAria": "Sats för {item}",
+      "otherItems": "Övriga artiklar",
+      "noItems": "Inga artiklar på din meny än.",
+      "close": "Stäng",
+      "cancel": "Avbryt",
+      "save": "Spara",
+      "saved": "Satser per artikel sparade"
+    }
   },
   "takingPayment": {
     "heading": "Ta betalt",

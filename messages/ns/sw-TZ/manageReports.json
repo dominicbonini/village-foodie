@@ -140,6 +140,8 @@
       "refunded": "Imerejeshwa",
       "cost": "Gharama",
       "profit": "Faida",
+      "netAtRate": "Halisi {rate}",
+      "taxAtRate": "Kodi {rate}",
       "eventDate": "Tarehe ya tukio",
       "orders": "Oda",
       "dishesSold": "Vyakula vilivyouzwa",
@@ -149,6 +151,7 @@
       "stored": "imehifadhiwa pamoja na oda",
       "estimated": "imekadiriwa kutokana na kiwango chako cha kodi",
       "none": "hakuna kiwango cha kodi kilichowekwa"
-    }
+    },
+    "noRate": "hakuna kiwango"
   }
 }
