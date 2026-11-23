@@ -124,4 +124,7 @@ async function main() {
   }
 }
 
-main().catch(e => { console.error(`db-migrate: ${e && e.message ? e.message.replace(/postgres(ql)?:\/\/\S+/g, '[redacted]') : e}`); process.exit(1) })
+// france-records-1 (24 November 2026): the connection helpers, for scripts/db-rollback-proofs.cjs (the one other operational script
+// that connects — every transaction it opens ends in ROLLBACK). Run as a command, this file behaves exactly as before.
+module.exports = { dbUrl, scrub, loadPg, withoutSslmode }
+if (require.main === module) main().catch(e => { console.error(`db-migrate: ${e && e.message ? e.message.replace(/postgres(ql)?:\/\/\S+/g, '[redacted]') : e}`); process.exit(1) })

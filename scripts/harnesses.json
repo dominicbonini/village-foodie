@@ -248,6 +248,7 @@
         "migrate-from-sheets.cjs",
         "register-payment-domain.cjs",
         "db-migrate.cjs",
+        "db-rollback-proofs.cjs",
         "revalidate-pages.cjs",
         "partners-add.cjs"
       ]
