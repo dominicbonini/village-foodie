@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.33
+HatchGrab Engineering Reference Manual · V16.34
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.33**
+**Version 16.34**
 
 November 2026
 
@@ -98,7 +98,17 @@ emulator could not create its data partition and the script waited forever for a
   - **Not covered:** the scrapers (`.js`), `.mjs` tools, and `scripts/screenshots/{anz,ie,us}-screens.cjs`, whose output folder
     defaults to temp (pass an output folder).
 
-# Open items (V16.33, 18 November 2026) — THE ONLY CURRENT LIST
+**⚠️ STANDING RULE — DEPLOYS (V16.34; Dominic, 19 and 23 Nov 2026).** Only Dominic deploys, by hand, and as rarely as possible
+(Vercel usage credit: $15 of $20 used by 23 Nov). Agents never run `git push`, `vercel deploy`, `vercel redeploy` or anything else that
+starts a build, even when asked to "carry on" or when blocked: stop and say a deploy is needed. Prompts and replies don't include deploy
+instructions. Work that needs a deploy waits for the next batched one; database-only changes go live without one (the database is
+shared).
+
+**⚠️ STANDING RULE — TRANSLATE ONLY WHAT'S USED (V16.34; 19 Nov 2026).** New wording (messages, FAQ, terms) is translated only into
+locales used by an enabled country, read from `country_settings` at run time. Installed but unused locales are left as they are and pick
+up again only if a country is switched to them.
+
+# Open items (V16.34, 23 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
@@ -110,16 +120,22 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
    record, and the web side of Capacitor 8.6.2 (`@capacitor/core`, in the website bundle). order-page-2 is already pushed; check it is
    live after the deploy. The deploy also brings the bare-host hand-off, so customer links open the phone's browser on Android.~~
    ⛔ **Done V16.33:** the 13 Nov batch was pushed (origin/main `c0192554`, 17 Nov) and deployed by Dominic.
-   🔴 **Deploy the website (V16.33 batch) BEFORE releasing either app 1.1.** 93 local commits since `c0192554` (observed
+   ~~🔴 **Deploy the website (V16.33 batch) BEFORE releasing either app 1.1.** 93 local commits since `c0192554` (observed
    18 Nov): the events work, Create event now, the WhatsApp fix, dashboard sign-in groundwork, pricing-copy-4, legal-languages-1
    and the languages-world-3 commits (83 of the 93). admin-speed-1, trial-column-1 and partners-2/3 are already in origin/main.
    **First** check the Supabase session settings (see Dashboard sign-in). **After:** on test-truck check the default event, the
    date-grouped list, Create event now and a walk-up; on the installed store apps check printing, keep-awake and an iPad walk-up;
-   watch (never test) Pizzeria Gusto's next service.
+   watch (never test) Pizzeria Gusto's next service.~~
+   ✅ **Done V16.34:** deployed 19 Nov (`16702ae6`; the 13:56 build failed and was redeployed as `1d916cac`) and 22 Nov
+   (`f2e2b4ab`). OBSERVED 23 Nov: origin/main = `f2e2b4ab`, main 5 commits ahead (local only; deploys are Dominic's, standing rule).
 2. **iOS 1.1:** archive build 4 (build 3 is already in App Store Connect), the TestFlight check on a real iPhone and iPad, then
    Submit for Review. Steps under "Releasing the 1.1 apps" below.
+   **V16.34:** upload the new store listings with it: `scripts/ios/push-listing.cjs` with `--only` and the 28 locales in
+   `docs/languages-switch-5-report.md` §3 (until /ad/faq answers 200, and while /mx redirects because Mexico is off).
 3. **Android 1.1:** upload the AAB to internal testing, do the on-phone checks (printing, biometric unlock, push; R8 is the
    risk), then promote to production. Steps below.
+   **V16.34:** upload the new store listings with it — by hand in Play Console, including the 7 Google-Play-only listings in
+   `data/store-listing/play/` (its README; there is no Play upload script).
 4. **Google Play country availability (187, world-countries-5).** Needs the Play key at `~/.googleplay/hatchgrab-play.json`; then
    `scripts/android/play-availability.cjs` read-only, then `--apply`. The script refuses while production's release is
    "completed", so in practice set them by hand in Play Console when promoting 1.1 (§89.7).
@@ -143,6 +159,8 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
    - **lv, hr, sl, hu, de:** the billing words (billing-2 §0.10, billing-3 §6). **sl:** plurals (pricing-copy-2 §2).
    - **V16.33:** fil-PH's Philippine permit names for "Trading licence" / "Street trading licence"; ne-NP's log-in word; all four
      new languages' legal pages (`docs/languages-world-2/handover/NATIVE.md`).
+   - **V16.34:** also km-KH, lo-LA, am-ET, ca-AD, sw-TZ and si-LK — their UI word choices, legal pages and store listings
+     (`docs/languages-world-2/handover/NATIVE.md`).
 7. **Le Roi du Churrasco fixes their allergens by hand:** their 11 dishes were confirmed with all 14 allergens ticked
    (demo-claim-2) and need the truck's own look. Not something an agent edits.
 8. **The country-specific terms sections** for the 47 languages-world-1 countries and the 167 new ones (a lawyer).
@@ -161,6 +179,11 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     **Also failing, identically on HEAD (V16.33):** `billing-1`, `france-1`, `language-phase-1d2`, `costs-accounts-1`, `cwv-2` (1,
     path freeze), `event-types-render` (measurement), `subtab-row` (fixture crash). A tidy-up prompt after the V16.33 deploy.
     `app-fixes-2` now passes (55/0); `time-dates-parity` passes.
+    ⛔ **V16.34:** the missing-legal-files cause is closed (languages-world-3: every base has its three pages; legal-languages-1,
+    paperwork-1 and world-countries-3 pass; contact-1 and tidy-1 now fail for other reasons, in the 16 below). **Add:**
+    `faq-3-screens` (a hand-run screenshot script, not in the sweep: it points at the removed landing FAQ css) and the sweep's other
+    16 failures not caused by languages-world-3 (the list in `docs/languages-world-3-report.md`, Final report). One tidy-up prompt,
+    after the next deploy.
 13. 🔴 **Rotate `FCM_SERVICE_ACCOUNT_JSON` and `GOOGLE_SHEETS_CREDENTIALS`** (the standing secrets rule at the top). It is still
     recorded as open; Dominic confirms or strikes it.
 
@@ -171,6 +194,8 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     fil-PH, sq-AL, bs-BA, mk-MK (UI installed + legal pages); ca-AD UI installed and its legal pages done (batch 19, progress table
     observed 18 Nov). Left: sw-TZ, si-LK, ta-LK, km-KH, lo-LA, am-ET. Progress table at the top of
     `docs/languages-world-3-report.md`.
+    ✅ **V16.34: languages-world-3 finished 22 Nov** — all 23 languages done (UI + the three legal pages), and switched on where
+    a country uses them (§89.6).
 15. **Billing switch-on** (§89.1), in order, with the Stripe Dashboard hand steps: Pix (test, then live); customer emails OFF; the
     billing webhook with its event list and secret in Vercel; Checkout branding; Wise EUR/USD payout accounts. Plus 🔴 **lock the
     account 7 days after the pause** (billing-2 §1).
@@ -196,7 +221,8 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 
 **Added V16.33 (events, dashboard sign-in, languages):**
 27. 🔴 **Dashboard sign-in, next steps** (rollout steps 2–8 in "Dashboard sign-in"). **Around 2 Dec:** read the `auth_shadow` counts.
-28. **Supabase session settings** (time-box, inactivity) must be OFF — check before the V16.33 deploy.
+28. **Supabase session settings** (time-boxed sessions and inactivity timeout) must be OFF. ⛔ **V16.34:** keep open unless Dominic
+    confirms he checked.
 29. **Decision: the comparison pages' Germany-only content** (Uber Eats DE rates, Lieferando, TSE) in non-German languages'
     comparison pages. Recommendation: leave those sections out for countries without their own comparison check.
 30. **Decision: "per food truck" vs "per vehicle"** — sq-AL follows the English ("per food truck"); bs-BA and mk-MK say "per
@@ -207,6 +233,22 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     events-create-1).
 33. **The KDS doesn't follow a newly created or switched event**; staff switch it (the toast says so). Improve later if it bites.
 34. **Walk-up-only events** (events-create-1 D3 b) — only if trucks ask.
+
+**Added V16.34 (plans everywhere, post-pay terms, deploys):**
+35. 🔴 **Vercel cost: build less on each deploy.** 7 country page types × ~210 countries (~1,470 pages) are built ahead on every
+    deploy, and the country, features and FAQ pages regenerate every 5 minutes (`revalidate = 300`) whenever visited — including by
+    Googlebot. Review: build ahead only the busiest countries and the rest on first visit; a much longer `revalidate` with an
+    immediate refresh when prices or FAQ text change in admin; Vercel **Ignored Build Step** for pushes that only touch `docs/`,
+    `supabase/migrations` or `*.md` (a dashboard setting, no deploy). Check Vercel → Usage first to see which charge dominates.
+36. **FAQ translations after 1 Dec:** run the translator until done; check /tz/faq, /ad/faq, the four new answers in fr-FR and
+    es-MX, and /br …0002. Optional: raise the Anthropic monthly spend limit instead of waiting. (OBSERVED 23 Nov: /al, /mk, /ba
+    and /lk/faq also answer 404; their locales have 14 FAQ translation rows each.)
+37. **Decision: competitor price check for the countries priced from meal costs only** (Japan was under the local market).
+    Research-only prompt, run in Claude Code; no price changes without Dominic.
+38. **Decision: a price floor** (e.g. Unlimited never below ~£10; 9 countries under it today: NG, EG, ID, BD, BO, IN, DZ, LA, PK) or
+    yearly billing where prices are low. Must be settled before billing is switched on (Stripe's ~6% + 20p per charge).
+39. **Unused languages' terms** (fil-PH, hi-IN, ur-PK, ta-LK, vi-VN) still have the pre-19-Nov wording: update before any of them is
+    switched on.
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -458,6 +500,58 @@ actions, `refund`, the Manage-level token routes. 6. After two clean weeks, grou
 board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings (owner only; needs a mockup first).
 
 # Changelog
+
+## V16.34 — 19–23 November 2026 — **ALL THREE PLANS IN ALL 210 COUNTRIES; POST-PAY TERMS; 23 LANGUAGES DONE; DEPLOYS KEPT TO A MINIMUM**
+
+- **Deploys:** 19 Nov 10:41 (`16702ae6`: the V16.33 events / Create event now / WhatsApp / sign-in groundwork batch); 19 Nov
+  13:56 failed (page-generation timeout in one build worker, 7 country pages) and was redeployed by Dominic as `1d916cac`;
+  22 Nov (`f2e2b4ab`: post-pay terms, translator fix, languages-world-3). The `auth_shadow` record started on 19 Nov.
+- **Languages switched on (database only, each confirmed live first):** Albania sq-AL, Andorra ca-AD, Bosnia bs-BA, North
+  Macedonia mk-MK (19 Nov); Sri Lanka si-LK, Tanzania sw-TZ (19 Nov); Cambodia km-KH, Laos lo-LA, Ethiopia am-ET (22 Nov,
+  `2117bbb0`). Own-language country names: Shqipëri, Северна Македонија, ශ්‍රී ලංකාව, កម្ពុជា, ລາວ, ኢትዮጵያ (Andorra and Bosnia
+  already had theirs; "Tanzania" is the Swahili name too). **India and Pakistan stay on English; Sri Lanka uses Sinhala, not Tamil.**
+- **languages-world-3 finished** (latest `0416a7f7`): all 23 languages have UI + the 3 legal pages; sweep 205/225 (4 fixed in
+  `bf971963`; the rest not caused by it). `scripts/event-types.cjs` comment reworded so the sweep's safety screen passes (192/192).
+- **Store listings** (`389e2979`, `981b888e`): every listing says **"50+ languages"** ("more than 50" in ja, zh, ko, ar, he, ur);
+  Catalan is the 30th App Store listing; 7 Play-only listings in `data/store-listing/play/`. **Not uploaded.**
+- **Japan:** Unlimited ¥2,980 → **¥3,980** (extra van too), Pro stays ¥1,980 (`335fc699`). Japan's ¥1,000 meal (Numbeo) makes
+  ¥1,980 ≈ 2 meals; Unlimited now matches KitchenCarMenu (¥3,980) with no order fee. No Japanese trucks.
+- **plans-readiness-1:** 210 countries live (only Mexico off) in 103 locales / 50 languages; 46 card countries (fee from payment),
+  160 pay-at-truck (`billed_at_truck`), 4 online-but-billed (BR, MY, SG, TH, `billed_online`).
+- **plans-everywhere-1 → -5:** post-pay wording on pricing / features / plans PDF (a box: "How you pay us here: …", ending "You'll
+  need a card on file when your free trial ends."); "Online payments" and "Take payment on your phone" hidden where customers pay
+  at the truck; FAQ show-in values `card_payments` / `pay_at_truck` with four pay-at-truck answers; the world guard now allows Pay as
+  you go and Pro in billed countries while billing is off; **migration `20261119_plans_everywhere_1.sql` run: Pay as you go, Pro and
+  Unlimited on sale in all 210; every trial ends on Pay as you go.** Billing stays OFF, so nothing is charged anywhere.
+- **Post-pay terms published** (`a38bfe0d`, "Last updated 19 November 2026"), changed paragraphs translated into the 51 used
+  languages: fee on every pre-order (online or at the truck, never walk-ups); monthly invoicing where the fee can't be taken from the
+  payment; a card on file when the trial ends; the 5-day pause (online ordering pauses, nothing deleted); trials end on Pay as you
+  go; 30 days' notice of changes to prices or how the fee is collected.
+- **FAQ translator** (`645e145a`): accepts three-letter language codes (the DB check was also widened), saves with one upsert
+  (never deletes before saving), translates only locales used by enabled countries. It had failed every run from 18 Nov on
+  fil-PH (≈$0.35–1 spent, nothing saved). **The Anthropic workspace spend limit is reached until 1 Dec 00:00 UTC**, so /tz/faq
+  (and /ad/faq) are 404 and the four new answers are untranslated outside English. Dominic: the FAQ can wait.
+- **Search Console (19 Nov exports):** "Page with redirect" = http/https/apex → www (correct; stop requesting validation);
+  404s = old `/_next/static` files and `/mies`, `/μήνα` (price "/month" text Google guessed as links; harmless); 47 crawled-not-
+  indexed = real country/legal pages waiting + build files + two old /venues pages (now 308 to Village Foodie). No code change needed.
+- **Prices in GBP (18 Nov rates):** Unlimited from ~£4.20 (Nigeria) to £69 (UK, Crown dependencies, Gibraltar); Pro from ~£1.68
+  (Nigeria) to £29 (UK). The UK is the most expensive country for both.
+- **New standing rules (top):** DEPLOYS (only Dominic, by hand, as rarely as possible) and TRANSLATE ONLY WHAT'S USED.
+- **OBSERVED, read-only, 23 November 2026** (docs/manual-v16-34-report.md):
+  - git: origin/main = `f2e2b4ab`; main is 5 commits ahead (`2117bbb0`, `48fc9490`, `389e2979`, `981b888e`, `fc44e0b3`; local only).
+    Every commit named above exists; `16702ae6`, `1d916cac`, `f2e2b4ab`, `0416a7f7`, `bf971963`, `335fc699`, `645e145a` and
+    `a38bfe0d` are in origin/main.
+  - `plan_prices` in enabled countries: payg, pro and unlimited each **210 on sale, 0 off**.
+  - `is_trial_end`: **1 row — Mexico's Unlimited** (Mexico is off; plans-everywhere-1 left it untouched by design). No enabled
+    country has one, so every trial falls back to `plans.is_expiry_fallback` = **payg**.
+  - Country rows: AD ca-AD Andorra · AL sq-AL Shqipëri · BA bs-BA Bosna i Hercegovina · ET am-ET ኢትዮጵያ · JP ja-JP 日本 · KH km-KH
+    កម្ពុជា · LA lo-LA ລາວ · LK si-LK ශ්‍රී ලංකාව · MK mk-MK Северна Македонија · TZ sw-TZ Tanzania.
+  - Japan: payg 0 / 0, pro 1980 / 1980, unlimited 3980 / 3980 (monthly / extra van, yen).
+  - Payment models of the 210: fee_from_payment 46, billed_at_truck 160, billed_online 4.
+  - **Where the delta and today differ:** the 210 enabled countries now use **106 locales** (103 before km-KH, lo-LA and am-ET were
+    switched on on 22 Nov); there are **114 message files = 60 full translations + 54 regional add-ons** (the delta's 111 = 57 + 54
+    predates km-KH, lo-LA and am-ET). The FAQ 404s are wider than /tz and /ad: /al, /mk, /ba and /lk/faq too (14 translation
+    rows each).
 
 ## V16.33 — 17–18 November 2026 — **EVENTS: APPROVED ONLY, DUPLICATES UNDER THEIR EVENT, CREATE EVENT NOW; EVERY STAFF WRITE CARRIES ITS SIGN-IN**
 
@@ -36472,11 +36566,15 @@ switched on; the 29 European rows are switched off (§83.1).
 
 - **`plan_prices.offered`** (default true): a plan is shown only where its row is offered (35.an-18). Pay as you go and Pro
   are kept but **not offered** in BR, MX, MY, SG and TH, so turning one on later is a single flag. ⛔ *V16.18: the world guard also requires billing on and model (b)/(c); the offer SQL is prepared, not run (§89.1). The 160 new model-(c) countries follow the same pattern (§89.3).*
+  ⛔ **V16.34:** all three plans are on sale in all 210 enabled countries (`20261119_plans_everywhere_1.sql`, run) — §89.2.
 - **`plan_prices.is_trial_end`** (default false): the country's own trial-end plan — Unlimited in those five; elsewhere no
   row says so, and the global `plans.is_expiry_fallback` (Pay as you go) applies. A CHECK refuses an `is_trial_end` row
   that is not offered.
+  ⛔ **V16.34:** no enabled country has an `is_trial_end` row any more (only Mexico's, which is off), so every trial ends on Pay as
+  you go — §89.2.
 - **`plan_prices_world_guard`** (triggers on `country_settings` and `plan_prices`): a country can be switched on only if
   its trial-end plan is offered there.
+  ⛔ **V16.34:** rule (a) relaxed by plans-everywhere-1 — §89.2.
 - **A single offered plan renders as one centred card.**
 - **The wording there:** "When your trial ends, Unlimited is <price> a month. We'll be in touch before then to set up
   payment." (world-countries-2 F1). **No paid plan is billed anywhere yet** — §82.11, §27. ⛔ *V16.18: billing is built, switched off; the design is a card in Manage › Billing, not a manual set-up (§89.1).*
@@ -36916,6 +37014,7 @@ with its own live values.*
   then it should automatically be translated and rolled out in all other countries without further involvement", 2 Nov).
 - **No Pay at Hatch wording** ("dont mention pay at hatch as dont want people thinking its available long term", 2 Nov;
   35.ao-3, §81.7).
+  ⛔ **V16.34:** pay-at-the-truck countries now have their own four answers (`show_in` `pay_at_truck`, below).
 - **The CHECK notes Cursor left on the seed were accepted when he published.**
 - **No `operator_apps` column** (Q1 → A, 1 Nov): the existing `country_settings.ios_app_available` /
   `android_app_available` decide every app sentence; Admin › Countries gained an "Apps" group showing them.
@@ -36927,12 +37026,14 @@ with its own live values.*
   - `id`, `section_id` (FK, on delete cascade), `position`, `question_en` (not blank), `answer_en`,
     `answer_single_plan_en` (nullable);
   - `show_in` (`all` | `apps` | `plan:<key>`, default `all`);
+    ⛔ **V16.34:** also `card_payments` and `pay_at_truck` (plans-everywhere-2), chosen by the country's payment model — below.
   - `status` (`draft` | `published`; a published row must have `published_at`);
   - `note`, `note_done`, `published_at`, `created_at`, `updated_at` (moves when the texts change, not the notes),
     `updated_by`.
   - Seed ids are fixed literals (`fa000001-…` sections, `fa000002-0000-4000-8000-0000000000NN` questions).
 - **`faq_translations`** (`20261060_faq_2_translations.sql`):
   - `item_id` or `section_id` (exactly one), with `source_id` generated from them; `locale` (`xx-XX`);
+    ⛔ **V16.34:** the CHECK also accepts a three-letter language code (`fil-PH`) — below.
   - `question`, `answer`, `answer_single_plan`, `title`;
   - `source_hash` (64 hex), `model`, `translated_at`, `status` (`ok` | `failed`; a failed row has a `reason`);
   - PK (`source_id`, `locale`).
@@ -37013,7 +37114,8 @@ before saving a published question):
   `competitor-check.yml` (the run on 2 Nov signed in, so in practice it does).
 - **The call:** model `claude-sonnet-5-5`, through the checker's own `converse` (no forced `tool_choice` — the first live
   run on 2 Nov failed on exactly that, every call 400; fixed by faq-translate-fix).
-- **Locales:**
+- **Locales:** ⛔ **V16.34:** only the locales used by enabled countries, read from `country_settings` at run time (standing rule
+  TRANSLATE ONLY WHAT'S USED) — below.
   - the 28 language bases;
   - de-CH is derived from de-DE (ß → ss), and de-LI reads de-CH;
   - a regional variant (en-US, en-IE, en-AU, en-NZ, en-CA, en-MT, en-GI, en-SG, de-AT, nl-BE, el-CY, fr-LU, es-MX) gets a
@@ -37040,6 +37142,27 @@ before saving a published question):
 - **Scheduling caveats:** GitHub's scheduled runs can start late. On a public repository, GitHub pauses scheduled
   workflows after 60 days without commits. The repository was public on 27 Oct (§27); still UNVERIFIED for this
   workflow.
+
+**V16.34 — show-in by payment model, four pay-at-truck answers, the translator's fixes (plans-everywhere-2 to -4):**
+- **`show_in` values:** `all` / `apps` / `card_payments` / `pay_at_truck` / `plan:<key>`. `card_payments` shows where the country
+  takes online card payments (`fee_from_payment`, `billed_online`), `pay_at_truck` where it doesn't (`billed_at_truck`). The four
+  card answers (…0002, …0006, …0007, …0011) are `card_payments`.
+- **The four pay-at-truck answers** (`20261119_plans_everywhere_2_faq.sql`, run; published):
+  - **…1002 "What do I pay on each order?"** — "Walk-up orders are free. On pre-orders you pay only your plan's fee, charged to your
+    card once a month. Customers pay you at the truck, so there's no card processing fee." (no single-plan answer);
+  - **…1006 "How long does it take to set up?"** — "Upload a photo of your menu and see it working in under 60 seconds. When you're
+    ready, sign up to start your {trial.months}-month free trial, check your menu, and add where and when you're trading. We then
+    switch your ordering page on.";
+  - **…1007 "Do I need an iPad, card reader or special equipment?"** — "No. HatchGrab runs in the web browser on any phone, tablet or
+    laptop. We recommend a tablet for the best experience, but it works on a phone too. You don't need a card reader: for walk-up
+    orders you take payment the way you do today. {apps.sentence}";
+  - **…1011 "How do I get paid?"** — "Customers pay you at the truck when they collect, so the money is yours straight away."
+- **The translator's three fixes (`645e145a`):** three-letter language codes (the DB check widened too); one upsert per save (it
+  never deletes before saving); only locales used by enabled countries. Before it, every run from 18 Nov failed on fil-PH (≈$0.35–1
+  spent, nothing saved). **The $2-per-run cap** (`max_usd`) is unchanged.
+- **State (23 Nov):** the Anthropic workspace spend limit is reached until 1 Dec 00:00 UTC, so the four new answers are untranslated
+  outside English and some country FAQ pages answer 404 (`app/(public)/[country]/faq/page.tsx`: a country whose FAQ shows nothing →
+  404). OBSERVED: /ad, /tz, /al, /mk, /ba and /lk/faq are 404; their locales have 14 `faq_translations` rows each. Open item 36.
 
 **The question list as Dominic left it** (OBSERVED 3 Nov):
 - faq-1b seeded 26 agreed questions (2 Nov, reviewed with ChatGPT) in 5 sections (5 · 4 · 9 · 4 · 4).
@@ -38727,14 +38850,25 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
 **Switch-on day, in order** (billing-1 §10.6; none of it is done):
 1. The operator screens approved.
 2. The pricing, FAQ and PDF wording (§89.2 already says "online orders").
-3. The new terms published. They are drafted in billing-1 §11 and billing-2 §10; "30 days" notice is a placeholder.
+3. ~~The new terms published. They are drafted in billing-1 §11 and billing-2 §10; "30 days" notice is a placeholder.~~ ⛔ **V16.34:**
+   published 19 Nov (`a38bfe0d`) — below.
 4. The live key in `processor.ts`.
 5. `platform_fee_enabled` per model-(a) country.
 6. The emails.
 7. A migration setting `billing_enabled = true`.
-8. Then the prepared, not-run SQL that offers Pay as you go and Pro in BR, MY, SG and TH (and MX, if it were still on). The world guard
-   refuses that SQL until billing is on.
+8. ~~Then the prepared, not-run SQL that offers Pay as you go and Pro in BR, MY, SG and TH (and MX, if it were still on). The world guard
+   refuses that SQL until billing is on.~~ ⛔ **V16.34:** done differently — all three plans are on sale in all 210 while billing is off
+   (§89.2).
 - **Mind Gusto's trial end, 31 Dec.** With billing on and no card, its online ordering would pause.
+
+**V16.34 (terms-postpay-1, plans-everywhere-1):**
+- **The published terms now match the post-pay design** (`a38bfe0d`, "Last updated 19 November 2026"; the changed paragraphs in the
+  51 used languages): the fee on every pre-order (online or at the truck, never walk-ups); monthly invoicing where the fee can't be
+  taken from the payment; a card on file when the trial ends; the 5-day pause (online ordering pauses, nothing deleted); trials end on
+  Pay as you go; 30 days' notice of changes to prices or how the fee is collected.
+- **Switch-on still needs** Open items 15 and 19–22; **threshold logging (20) is a prerequisite** (Dominic, 19 Nov).
+- **The account lock after the pause is decided at switch-on;** until then it is pause-only.
+- **Pro and Pay as you go in billed countries** are invoiced monthly once billing is on.
 
 **Known limits (billing-1 §14, billing-2 §0.5):**
 - A downgrade on the 1st is applied at that hour's run, so up to an hour of orders is priced at the old plan.
@@ -38755,7 +38889,8 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
   - Pay as you go's description: "No monthly fee. You only pay 0.99% on online orders." It now holds a figure, so a fee change must
     update it;
   - `compare.*`, `comparison.costs.feeOnly`, `lib/faq/live-values.ts` and /llms.txt.
-- **The terms are deliberately unchanged:** §4 still says "online card orders". Align it at the next terms change (§89.14).
+- ~~**The terms are deliberately unchanged:** §4 still says "online card orders". Align it at the next terms change (§89.14).~~
+  ⛔ **V16.34:** the post-pay terms are published (`a38bfe0d`, 19 Nov) — §89.1.
 - **The split (pricing-copy-4):** `offersOnlineCardPayments(s)` (`lib/country-settings-types.ts`) reads `country_billing.payment_model`,
   embedded in the settings loader's one read.
   - `fee_from_payment` or `billed_online` → a **card country**.
@@ -38773,14 +38908,30 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
 | /llms.txt | the card sentence (English) | not listed |
 | Plans PDF (`lib/plans-pdf.ts`) | the same rule throughout | the same rule throughout |
 
-- **Live today: every live country is a card country** (39 model (a) + 5 model (b)). The 160 new model-(c) countries will show the
-  monthly-only form once switched on.
+- ~~**Live today: every live country is a card country** (39 model (a) + 5 model (b)). The 160 new model-(c) countries will show the
+  monthly-only form once switched on.~~ ⛔ **V16.34:** of the 210 enabled countries, 46 are card countries (`fee_from_payment`),
+  160 pay at the truck (`billed_at_truck`) and 4 pay online but are billed monthly (`billed_online`: BR, MY, SG, TH) — below.
 - **The same in every country:** the FAQ answers, Pay as you go's description and the comparison pages. Whether `comparison.costs.cardFee`
   should follow the helper is open; no comparison page is live in a monthly-only country.
 - **Other fixes:**
   - **Serbian dates** use `sr-Latn-RS` everywhere (`intlDateLocale`, `lib/i18n/intl-locale.ts`; pricing-copy-3, option (a)).
   - **The accountant report's "pay at truck" label** is the language's own price word (option A).
   - The pricing-copy-2/3 wording is in languages-world-2's new bases.
+- **V16.34 — all three plans everywhere (plans-readiness-1, plans-everywhere-1 to -5, jp-price-1; OBSERVED 23 Nov):**
+  - **On sale:** Pay as you go, Pro and Unlimited in **all 210 enabled countries** (`20261119_plans_everywhere_1.sql`, run).
+    Billing stays OFF, so nothing is charged anywhere.
+  - **Trial-end plan = Pay as you go everywhere:** `is_trial_end` no longer on Unlimited (the one remaining row is Mexico's, which is
+    off); trials fall back to `plans.is_expiry_fallback` = payg.
+  - **The world guard (rule (a), plans-everywhere-1):** an offered fee plan where `platform_fee_allowed` is false is allowed when the
+    country's `payment_model` is `billed_online` / `billed_at_truck`, **whether or not billing is on** — so Pay as you go and Pro may
+    be on sale in billed countries while billing is off.
+  - **Post-pay wording (data-driven, shown only where `country_billing.payment_model` is `billed_at_truck` / `billed_online`):** a
+    box on pricing / features / the plans PDF — "How you pay us here: …", ending "You'll need a card on file when your free trial
+    ends." (`pricing.monthlyNote.atTruck` / `.online`, `pricing.fee.feeOnlyMonthly` / `includedMonthly`, `planTable.pay.feeMonthly`);
+    "Online payments" and "Take payment on your phone" hidden where customers pay at the truck.
+  - **The pricing principle:** **Pro ≈ the price of 2 local meals, easy-number prices, Unlimited about 2× Pro.**
+  - **Japan:** Pro ¥1,980, Unlimited **¥3,980** (was ¥2,980; extra van the same; `335fc699`). OBSERVED: payg 0, pro 1980 / 1980,
+    unlimited 3980 / 3980 (monthly / extra van).
 - **Harnesses:** pricing-copy-1 (1,391), pricing-copy-2 (597), pricing-copy-3 (34), pricing-copy-4 (1,135), and the re-pin modules
   `_lp-pricing-copy-1/2/4.cjs`.
 
@@ -38914,10 +39065,12 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
   - **Legal pages for all 23** (69 pages): Privacy Policy, Terms, Country-specific terms. 🔴 All need a native/legal check.
     `legal-languages-1` renders every base (408/0); no base is missing a file.
   - **Store listings:** 21 staged in `data/store-listing/next/` (6 from languages-world-2, 15 from languages-world-3). Uzbek and
-    Bosnian have no listing language in either store. whatsNew says 60 languages (the real count).
+    Bosnian have no listing language in either store. ~~whatsNew says 60 languages (the real count).~~ ⛔ **V16.34:** "50+
+    languages"; Catalan live, 7 Play-only in `data/store-listing/play/` (§89.7).
   - **Switched on since (languages-switch-1/2/3, 19 Nov, migrations run):** AL sq-AL, AD ca-AD, BA bs-BA, MK mk-MK, LK si-LK, TZ
     sw-TZ, with own-language `short_name`s for AL, MK and LK. India and Pakistan stay on English (Dominic); ta-LK and hi-IN/ur-PK
-    are installed but on no row. KH, LA and ET rows are enabled but still on English — km-KH, lo-LA, am-ET wait for Dominic.
+    are installed but on no row. ~~KH, LA and ET rows are enabled but still on English — km-KH, lo-LA, am-ET wait for Dominic.~~
+    ⛔ **V16.34:** switched on 22 Nov (languages-switch-4, `2117bbb0`) — see the V16.34 list below.
   - **The 5 post-pay pricing keys** (plans-everywhere-1/2, 19 Nov) were added to km-KH, lo-LA and am-ET in their `fix.json`.
   - **Not in step:** terms-postpay-1's Terms update skipped ta-LK, fil-PH, hi-IN, ur-PK and vi-VN (no enabled country uses them) —
     update before switching any of them on.
@@ -38925,6 +39078,17 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
     lists for the 11 new bases, compare-autopublish-1's three-letter base regex, si/ta report label, a typed digit in lo-LA).
     `event-types.cjs` blocks the runner's screen (a dashboard-auth-2 comment reads as a non-localhost `fetch(`) and was left out.
   - Report: `docs/languages-world-3-report.md` (Final report at the top); per-language word choices in the handover's `NATIVE.md`.
+- **Country languages as of V16.34 (OBSERVED 23 Nov, read-only):**
+  - **Switched to their own language (database only, each confirmed live first):** Albania sq-AL «Shqipëri», Andorra ca-AD
+    «Andorra», Bosnia bs-BA «Bosna i Hercegovina», North Macedonia mk-MK «Северна Македонија» (19 Nov); Sri Lanka si-LK
+    «ශ්‍රී ලංකාව», Tanzania sw-TZ «Tanzania» (19 Nov); Cambodia km-KH «កម្ពុជា», Laos lo-LA «ລາວ», Ethiopia am-ET «ኢትዮጵያ» (22 Nov).
+    `short_name` is the country's name in its own language (Intl.DisplayNames). Sri Lanka uses Sinhala, not Tamil.
+  - **India and Pakistan stay on en-GB** (Dominic); hi-IN and ur-PK are installed but unused.
+  - **Installed but unused locales (no enabled country uses them):** fil-PH, hi-IN, ur-PK, ta-LK, en-PH, en-BB, fr-CI, vi-VN. The
+    Philippines has no country row (not a priced country). Under TRANSLATE ONLY WHAT'S USED (standing rule) they get no new wording
+    until a country is switched to them.
+  - **114 message files = 60 full translations + 54 small regional add-ons (~190 keys each)**; the 210 enabled countries use 106
+    locales.
 - **Decisions still open:**
   - Native digits (Intl writes Bengali and Devanagari digits for bn-BD and ne-NP) or `-u-nu-latn`. The same choice applies to the 7
     Arabic variants.
@@ -38971,10 +39135,23 @@ Sources: `docs/billing-1-report.md`, `billing-1-stripe-report.md`, `billing-2-re
   - **1.1 build 3** is uploaded, VALID and in internal TestFlight; App Store Connect shows PREPARE_FOR_SUBMISSION. It is in 29
     languages (`scripts/ios/native-strings.cjs`), with 29 listing locales in `data/store-listing/` (bg, et, lv and lt have no ASC
     locale and see en-GB).
+    ⛔ **V16.34:** 30 listing locales (+ Catalan `ca`), and the store listings below.
   - **The App Store Connect API key lives outside the repo:** `~/.appstoreconnect/hatchgrab-asc.json` and `private_keys/AuthKey_*.p8`,
     chmod 600, read by `scripts/ios/asc.cjs`. It is never printed or committed, and never in a `.env*` file (Dominic's choice (b)).
   - ⛔ **V16.28:** what is still open here (the TestFlight check, App Privacy, age rating, Submit for Review, the demo events) is in
     the Open items list and "Releasing the 1.1 apps" at the top.
+- **Store listings (V16.34 — languages-switch-5, `389e2979`, `981b888e`; not uploaded):**
+  - **whatsNew says "50+ languages"** in every listing — live, staged and Play — never an exact count ("more than 50" in ja, zh, ko,
+    ar, he, ur, where a "+" reads badly or right-to-left text would turn it round). `scripts/ios/listing-rules.cjs` asks for it and
+    refuses an exact count.
+  - **30 App Store listings** in `data/store-listing/` (Catalan `ca.json` is the 30th). **7 Google-Play-only listings** in
+    `data/store-listing/play/` (sq-AL, mk-MK, si-LK, sw-TZ, km-KH, lo-LA, am-ET: `appStoreLocale` null, `playLocale` set), which
+    `push-listing.cjs` does not read; set by hand in Play Console (its README). Still staged in `next/`: languages whose country is
+    not switched on to them, plus older languages-world-1/2 files.
+  - 🔴 **The upload must use `--only` with the 28 locales in `docs/languages-switch-5-report.md` §3** until /ad/faq is fixed and
+    while /mx redirects (Mexico off): push-listing checks every listing's support / marketing / privacy URLs and sends nothing if one
+    isn't 200.
+  - Harnesses: ios-intl-1 (17; LOCALES + `ca`, and a check of the `play/` folder), listing-rules over 37 files.
 - **meta-sdk-1 (pushed):** `FB.init` in `lib/whatsapp/embedded-signup.ts` sets `autoLogAppEvents: false` and `xfbml: false`. The SDK
   still loads when the WhatsApp setup panel renders (option A only; stated). The privacy-form answers: App Store "Data used to track
   you: None"; Play "not shared".
