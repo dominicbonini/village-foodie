@@ -211,5 +211,43 @@
     "close": "Жабу",
     "logoPlaceholder": "Логотипіңіз\nосында"
   },
-  "qrPoweredBy": "HatchGrab негізінде жұмыс істейді"
+  "qrPoweredBy": "HatchGrab негізінде жұмыс істейді",
+  "business": {
+    "title": "Бизнес деректемелері",
+    "intro": "Бухгалтерге арналған есептер мен есепке алу үшін. Клиенттер оларды көрмейді.",
+    "ownerOnly": "Оларды тек иесі өзгерте алады.",
+    "legalName": {
+      "label": "Заңды атауы",
+      "hint": "Бизнесіңіз тіркелген атау."
+    },
+    "address": {
+      "label": "Заңды мекенжайы",
+      "hint": "Бизнесіңіз тіркелген жер.",
+      "street": "Мекенжай"
+    },
+    "registration": {
+      "siren": "SIREN немесе SIRET",
+      "sirenHint": "9 сан (SIREN) немесе 14 сан (SIRET).",
+      "gb": "Компания нөмірі",
+      "gbHint": "Міндетті емес. Companies House берген 8 әріп не сан.",
+      "other": "Тіркеу нөмірі",
+      "otherHint": "Міндетті емес. Бизнесіңіздің ресми тіркеу нөмірі."
+    },
+    "vat": {
+      "label": "{label} нөмірі",
+      "hint": "Міндетті емес.",
+      "euHint": "{prefix} деп басталады, мысалы, {example}."
+    },
+    "regime": {
+      "label": "ҚҚС режимі",
+      "hint": "Күнделікті қорытындылар файлыңыздағы кезеңдерді белгілейді.",
+      "none": "Белгіленбеген",
+      "franchise": "Franchise en base (ҚҚС алынбайды)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – ай сайын",
+      "reelNormalQuarterly": "Réel normal – тоқсан сайын",
+      "franchiseNote": "Сіз franchise en base режимін таңдадыңыз, сондықтан ҚҚС-ты 0% етіп қойғыңыз келуі мүмкін."
+    },
+    "saveFailed": "Сақталмады — қайталап көріңіз."
+  }
 }

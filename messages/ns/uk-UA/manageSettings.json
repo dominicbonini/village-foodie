@@ -211,5 +211,43 @@
     "close": "Закрити",
     "logoPlaceholder": "Ваш логотип\nтут"
   },
-  "qrPoweredBy": "Працює на HatchGrab"
+  "qrPoweredBy": "Працює на HatchGrab",
+  "business": {
+    "title": "Реквізити бізнесу",
+    "intro": "Для звітів вашому бухгалтеру та обліку. Клієнти їх не бачать.",
+    "ownerOnly": "Змінювати їх може лише власник.",
+    "legalName": {
+      "label": "Юридична назва",
+      "hint": "Назва, під якою зареєстровано ваш бізнес."
+    },
+    "address": {
+      "label": "Юридична адреса",
+      "hint": "Де зареєстровано ваш бізнес.",
+      "street": "Адреса"
+    },
+    "registration": {
+      "siren": "SIREN або SIRET",
+      "sirenHint": "9 цифр (SIREN) або 14 цифр (SIRET).",
+      "gb": "Номер компанії",
+      "gbHint": "Необов’язково. 8 літер або цифр, з Companies House.",
+      "other": "Реєстраційний номер",
+      "otherHint": "Необов’язково. Офіційний реєстраційний номер вашого бізнесу."
+    },
+    "vat": {
+      "label": "Номер {label}",
+      "hint": "Необов’язково.",
+      "euHint": "Починається з {prefix}, наприклад {example}."
+    },
+    "regime": {
+      "label": "Режим ПДВ",
+      "hint": "Визначає періоди у вашому файлі щоденних підсумків.",
+      "none": "Не задано",
+      "franchise": "Franchise en base (без ПДВ)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – щомісяця",
+      "reelNormalQuarterly": "Réel normal – щокварталу",
+      "franchiseNote": "Ви вибрали franchise en base, тож, можливо, варто встановити ПДВ 0%."
+    },
+    "saveFailed": "Не вдалося зберегти — спробуйте ще раз."
+  }
 }

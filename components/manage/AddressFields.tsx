@@ -126,13 +126,15 @@ export interface EventAddressValue { address: string; town: string; suburb?: str
  * Manage › Schedule › Add/Edit event: the address fields after the venue. Rendered INSIDE the form's two-column grid,
  * so each field is its own grid item, exactly as the GB and US fields always were.
  */
-export function EventAddressFields({ format, value, venueName, onChange, addressLabel }: {
+export function EventAddressFields({ format, value, venueName, onChange, addressLabel, customersSee = true }: {
   format: AddressFormat
   value: EventAddressValue
   venueName: string
   onChange: (patch: Partial<EventAddressValue>) => void
   /** "Full address (optional)" — the form's own label for the street line. */
   addressLabel: string
+  /** france-records-1: false for an address customers never see (Settings › Business details' registered address). Default: as before. */
+  customersSee?: boolean
 }) {
   const w = useAddressWords(format)
   const warning = usePostalWarning(format, value.postcode)
@@ -172,7 +174,7 @@ export function EventAddressFields({ format, value, venueName, onChange, address
           {postalWithWarning}
         </div>
       ) : postalWithWarning}
-      {format.entry.customersSee && (
+      {customersSee && format.entry.customersSee && (
         <CustomersSee format={format} className="sm:col-span-2" venue={venueName} town={value.town} suburb={value.suburb} region={value.region} postcode={value.postcode} />
       )}
     </>

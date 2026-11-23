@@ -65,6 +65,7 @@ import { captureOnConfirmation } from '@/lib/payments/capture'
 import { writeCookingReservation, writeReservationRecord } from '@/lib/orders/cooking-reservation'
 import { readEventRegion } from '@/lib/event-region-read'
 import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
+import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
 // CUSTOMER CHECKOUT. Calls authorizeDraft (:806) -> Stripe PaymentIntent creation. This one is NOT, and the reason is measured rather than assumed.
@@ -1319,6 +1320,9 @@ export async function POST(req: NextRequest) {
       }
       orderId = String((rpcData as any).order_number)
       order = { order_key: (rpcData as any).order_key }
+      // france-records-1: the placement (pay at the truck), in action_audit_log (best-effort — never stops the order).
+      await logOrderEvent(supabase, { action: 'order_placed', truckId: resolvedTruckId, orderKey: String(order.order_key), after: { ...p_order, status },
+        note: { path: 'customer_pay_at_truck' }, actor: { actorKind: 'unknown', actorId: null, actorLabel: 'customer' }, source: 'web' })
       // P2/P3: the reservation, written INSIDE the lock (released in the finally below). Switch ON ⇒ the
       // exact record the walk admitted (claimReservation, from the same read); OFF ⇒ P2's today's split.
       if (batchReservationsOn && claimReservation) await writeReservationRecord(supabase, { truckId: resolvedTruckId, orderKey: String(order.order_key), record: claimReservation })

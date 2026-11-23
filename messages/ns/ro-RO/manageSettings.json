@@ -211,5 +211,43 @@
     "close": "Închideți",
     "logoPlaceholder": "Logoul\naici"
   },
-  "qrPoweredBy": "Oferit de HatchGrab"
+  "qrPoweredBy": "Oferit de HatchGrab",
+  "business": {
+    "title": "Datele firmei",
+    "intro": "Pentru rapoartele pentru contabil și evidențe. Clienții nu le văd.",
+    "ownerOnly": "Doar proprietarul le poate modifica.",
+    "legalName": {
+      "label": "Denumire oficială",
+      "hint": "Numele sub care este înregistrată firma dumneavoastră."
+    },
+    "address": {
+      "label": "Sediu social",
+      "hint": "Unde este înregistrată firma dumneavoastră.",
+      "street": "Adresă"
+    },
+    "registration": {
+      "siren": "SIREN sau SIRET",
+      "sirenHint": "9 cifre (SIREN) sau 14 cifre (SIRET).",
+      "gb": "Număr de companie",
+      "gbHint": "Opțional. 8 litere sau cifre, de la Companies House.",
+      "other": "Număr de înregistrare",
+      "otherHint": "Opțional. Numărul oficial de înregistrare al firmei dumneavoastră."
+    },
+    "vat": {
+      "label": "Cod {label}",
+      "hint": "Opțional.",
+      "euHint": "Începe cu {prefix}, de exemplu {example}."
+    },
+    "regime": {
+      "label": "Regim de TVA",
+      "hint": "Stabilește perioadele din fișierul cu totaluri zilnice.",
+      "none": "Nesetat",
+      "franchise": "Franchise en base (fără TVA)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – lunar",
+      "reelNormalQuarterly": "Réel normal – trimestrial",
+      "franchiseNote": "Ați ales franchise en base, așa că poate doriți să setați TVA la 0 %."
+    },
+    "saveFailed": "Nu s-a putut salva — vă rugăm să încercați din nou."
+  }
 }

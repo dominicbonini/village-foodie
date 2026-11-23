@@ -129,6 +129,7 @@
       "date": "Data",
       "time": "Ora",
       "orderNumber": "Numri i porosisë",
+      "receiptNo": "Nr. i kuponit",
       "event": "Eventi",
       "channel": "Kanali",
       "paymentMethod": "Mënyra e pagesës",
@@ -153,5 +154,38 @@
       "none": "pa normë takse"
     },
     "noRate": "pa normë"
+  },
+  "daily": {
+    "title": "Totalet ditore sipas normës së TVSH-së",
+    "help": "Një rresht për çdo ditë dhe normë TVSH-je, për platformën tuaj të raportimit elektronik.",
+    "period": "Periudha",
+    "custom": "Data të zgjedhura",
+    "from": "Nga",
+    "to": "Deri",
+    "button": "Totalet ditore sipas normës së TVSH-së (CSV)",
+    "badRange": "Zgjidhni një datë fillimi jo më vonë se data e mbarimit.",
+    "failed": "Skedari nuk u krijua dot — ju lutemi provoni përsëri."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Emri ligjor",
+      "siren": "SIREN/SIRET",
+      "registration": "Numri i regjistrimit",
+      "vatNumber": "Numri i TVSH-së",
+      "vatRegime": "Regjimi i TVSH-së",
+      "period": "Periudha"
+    },
+    "header": {
+      "date": "Data",
+      "type": "Lloji",
+      "rate": "Norma e TVSH-së",
+      "sales": "Shitjet me TVSH",
+      "refunds": "Rimbursimet me TVSH",
+      "net": "Neto pa TVSH",
+      "vat": "TVSH"
+    },
+    "goods": "Mallra",
+    "total": "Totali",
+    "noRate": "{n, plural, one {{count} porosi pa normë TVSH-je nuk është përfshirë.} other {{count} porosi pa normë TVSH-je nuk janë përfshirë.}}"
   }
 }

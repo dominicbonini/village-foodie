@@ -211,5 +211,43 @@
     "close": "বন্ধ করুন",
     "logoPlaceholder": "আপনার লোগো\nএখানে"
   },
-  "qrPoweredBy": "চালিত: HatchGrab"
+  "qrPoweredBy": "চালিত: HatchGrab",
+  "business": {
+    "title": "ব্যবসার তথ্য",
+    "intro": "আপনার হিসাবরক্ষকের রিপোর্ট ও রেকর্ডের জন্য। গ্রাহকেরা এগুলো দেখেন না।",
+    "ownerOnly": "এগুলো শুধু মালিক বদলাতে পারেন।",
+    "legalName": {
+      "label": "আইনি নাম",
+      "hint": "যে নামে আপনার ব্যবসা নিবন্ধিত।"
+    },
+    "address": {
+      "label": "নিবন্ধিত ঠিকানা",
+      "hint": "যেখানে আপনার ব্যবসা নিবন্ধিত।",
+      "street": "ঠিকানা"
+    },
+    "registration": {
+      "siren": "SIREN বা SIRET",
+      "sirenHint": "9 অঙ্ক (SIREN) বা 14 অঙ্ক (SIRET)।",
+      "gb": "কোম্পানি নম্বর",
+      "gbHint": "ঐচ্ছিক। 8টি অক্ষর বা অঙ্ক, Companies House থেকে।",
+      "other": "নিবন্ধন নম্বর",
+      "otherHint": "ঐচ্ছিক। আপনার ব্যবসার সরকারি নিবন্ধন নম্বর।"
+    },
+    "vat": {
+      "label": "{label} নম্বর",
+      "hint": "ঐচ্ছিক।",
+      "euHint": "{prefix} দিয়ে শুরু হয়, যেমন {example}।"
+    },
+    "regime": {
+      "label": "ভ্যাট পদ্ধতি",
+      "hint": "আপনার দৈনিক মোটের ফাইলে সময়কাল ঠিক করে।",
+      "none": "সেট করা নেই",
+      "franchise": "Franchise en base (ভ্যাট নেওয়া হয় না)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – মাসিক",
+      "reelNormalQuarterly": "Réel normal – ত্রৈমাসিক",
+      "franchiseNote": "আপনি franchise en base বেছে নিয়েছেন, তাই আপনার ভ্যাট 0 % করে দিতে পারেন।"
+    },
+    "saveFailed": "সেভ করা যায়নি — আবার চেষ্টা করুন।"
+  }
 }

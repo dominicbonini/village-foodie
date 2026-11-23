@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Choose on or off.",
     "charges_nothing_to_save": "Nothing to save.",
     "charges_items_invalid": "One of these items isn’t on your menu any more. Close this and try again.",
+    "business_owner_only": "Only the owner can change business details.",
+    "business_too_long": "That’s too long — please shorten it.",
+    "business_siren_invalid": "Check the number: a SIREN has 9 digits and a SIRET 14.",
+    "business_company_number_invalid": "A company number has 8 letters or digits, like 01234567 or SC123456.",
+    "business_vat_invalid": "That VAT number doesn’t look right. It starts with {prefix}, like {example}.",
+    "business_regime_invalid": "Choose a VAT regime from the list.",
+    "business_regime_not_here": "The VAT regime is only asked for in France.",
+    "business_nothing_to_save": "Nothing to save.",
     "country_settings_failed": "Could not load this truck’s country settings. Try again in a moment.",
     "plans_failed": "Could not load this truck’s plan. Try again in a moment.",
     "demo_not_available": "Not available on a demo truck",
@@ -4132,7 +4140,45 @@
       "close": "Close",
       "logoPlaceholder": "Your logo\nhere"
     },
-    "qrPoweredBy": "Powered by HatchGrab"
+    "qrPoweredBy": "Powered by HatchGrab",
+    "business": {
+      "title": "Business details",
+      "intro": "For your accountant reports and records. Customers don’t see these.",
+      "ownerOnly": "Only the owner can change these.",
+      "legalName": {
+        "label": "Legal name",
+        "hint": "The name your business is registered under."
+      },
+      "address": {
+        "label": "Registered address",
+        "hint": "Where your business is registered.",
+        "street": "Address"
+      },
+      "registration": {
+        "siren": "SIREN or SIRET",
+        "sirenHint": "9 digits (SIREN) or 14 digits (SIRET).",
+        "gb": "Company number",
+        "gbHint": "Optional. 8 letters or digits, from Companies House.",
+        "other": "Registration number",
+        "otherHint": "Optional. Your business’s official registration number."
+      },
+      "vat": {
+        "label": "{label} number",
+        "hint": "Optional.",
+        "euHint": "Starts with {prefix}, like {example}."
+      },
+      "regime": {
+        "label": "VAT regime",
+        "hint": "Sets the periods in your daily totals file.",
+        "none": "Not set",
+        "franchise": "Franchise en base (no TVA charged)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – monthly",
+        "reelNormalQuarterly": "Réel normal – quarterly",
+        "franchiseNote": "You’ve chosen franchise en base, so you may want to set your VAT to 0 %."
+      },
+      "saveFailed": "Couldn’t save — please try again."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Date",
         "time": "Time",
         "orderNumber": "Order number",
+        "receiptNo": "Receipt no.",
         "event": "Event",
         "channel": "Channel",
         "paymentMethod": "Payment method",
@@ -4289,6 +4336,39 @@
         "none": "no tax rate set"
       },
       "noRate": "no rate"
+    },
+    "daily": {
+      "title": "Daily totals by VAT rate",
+      "help": "One row per day and VAT rate, for your e-reporting platform.",
+      "period": "Period",
+      "custom": "Custom dates",
+      "from": "From",
+      "to": "To",
+      "button": "Daily totals by VAT rate (CSV)",
+      "badRange": "Choose a start date on or before the end date.",
+      "failed": "Couldn’t build the file — please try again."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Legal name",
+        "siren": "SIREN/SIRET",
+        "registration": "Registration number",
+        "vatNumber": "VAT number",
+        "vatRegime": "VAT regime",
+        "period": "Period"
+      },
+      "header": {
+        "date": "Date",
+        "type": "Type",
+        "rate": "VAT rate",
+        "sales": "Sales incl. VAT",
+        "refunds": "Refunds incl. VAT",
+        "net": "Net excl. VAT",
+        "vat": "VAT"
+      },
+      "goods": "Goods",
+      "total": "Total",
+      "noRate": "{n, plural, one {{count} order with no VAT rate is not included.} other {{count} orders with no VAT rate are not included.}}"
     }
   },
   "socialPosts": {

@@ -211,5 +211,43 @@
     "close": "Bağla",
     "logoPlaceholder": "Loqonuz\nburada"
   },
-  "qrPoweredBy": "HatchGrab ilə hazırlanıb"
+  "qrPoweredBy": "HatchGrab ilə hazırlanıb",
+  "business": {
+    "title": "Biznes rekvizitləri",
+    "intro": "Mühasibiniz üçün hesabatlar və uçot üçün. Müştərilər bunları görmür.",
+    "ownerOnly": "Bunları yalnız sahib dəyişə bilər.",
+    "legalName": {
+      "label": "Hüquqi ad",
+      "hint": "Biznesinizin qeydiyyatdan keçdiyi ad."
+    },
+    "address": {
+      "label": "Hüquqi ünvan",
+      "hint": "Biznesinizin qeydiyyatdan keçdiyi yer.",
+      "street": "Ünvan"
+    },
+    "registration": {
+      "siren": "SIREN və ya SIRET",
+      "sirenHint": "9 rəqəm (SIREN) və ya 14 rəqəm (SIRET).",
+      "gb": "Şirkət nömrəsi",
+      "gbHint": "İstəyə bağlı. Companies House-dan 8 hərf və ya rəqəm.",
+      "other": "Qeydiyyat nömrəsi",
+      "otherHint": "İstəyə bağlı. Biznesinizin rəsmi qeydiyyat nömrəsi."
+    },
+    "vat": {
+      "label": "{label} nömrəsi",
+      "hint": "İstəyə bağlı.",
+      "euHint": "{prefix} ilə başlayır, məsələn, {example}."
+    },
+    "regime": {
+      "label": "ƏDV rejimi",
+      "hint": "Gündəlik yekunlar faylınızdakı dövrləri müəyyən edir.",
+      "none": "Təyin edilməyib",
+      "franchise": "Franchise en base (ƏDV tutulmur)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – aylıq",
+      "reelNormalQuarterly": "Réel normal – rüblük",
+      "franchiseNote": "Siz franchise en base seçmisiniz, ona görə də ƏDV-ni 0% etmək istəyə bilərsiniz."
+    },
+    "saveFailed": "Yadda saxlamaq mümkün olmadı — yenidən cəhd edin."
+  }
 }

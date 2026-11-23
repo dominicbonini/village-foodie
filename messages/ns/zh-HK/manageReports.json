@@ -129,6 +129,7 @@
       "date": "日期",
       "time": "時間",
       "orderNumber": "訂單編號",
+      "receiptNo": "收據編號",
       "event": "活動",
       "channel": "渠道",
       "paymentMethod": "付款方式",
@@ -153,5 +154,38 @@
       "none": "未設定稅率"
     },
     "noRate": "無稅率"
+  },
+  "daily": {
+    "title": "按增值稅率劃分的每日總額",
+    "help": "每日每個增值稅率一行，供你的電子申報平台使用。",
+    "period": "期間",
+    "custom": "自訂日期",
+    "from": "由",
+    "to": "至",
+    "button": "按增值稅率劃分的每日總額（CSV）",
+    "badRange": "請選擇不遲於結束日期的開始日期。",
+    "failed": "未能建立檔案，請再試一次。"
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "法定名稱",
+      "siren": "SIREN/SIRET",
+      "registration": "登記號碼",
+      "vatNumber": "增值稅號碼",
+      "vatRegime": "增值稅制度",
+      "period": "期間"
+    },
+    "header": {
+      "date": "日期",
+      "type": "類型",
+      "rate": "增值稅率",
+      "sales": "含增值稅銷售額",
+      "refunds": "含增值稅退款額",
+      "net": "不含增值稅淨額",
+      "vat": "增值稅"
+    },
+    "goods": "貨品",
+    "total": "總計",
+    "noRate": "{n, plural, other {有 {count} 張沒有增值稅率的訂單未計算在內。}}"
   }
 }

@@ -170,7 +170,17 @@ const ENTRY = [
     const [cur, , tz] = CUR[sc]
     const rule = { inclusive: RULES[sc].taxInclusive, rateMilli: RULES[sc].taxRateMilli }
     const acc = O.LG.accountRows({ orders: rows, payments: [{ order_key: 'ok-1', kind: 'charge', channel: 'online', amount_minor: rows[0].total_minor, state: 'succeeded' }], costs: [], itemIdByName: {}, tax: rule, timeZone: tz, currency: cur })
-    return { rows: acc.map(r => omit(r, 'rates')), orders: O.CSV.ordersCsv(acc, csvWordsFor(withRates)), events: O.CSV.eventsCsv(O.LG.summarise(acc).events, cur, csvWordsFor(withRates)) }
+    // ⚠️ RE-PINNED (france-records-1, 24 November 2026, docs/france-records-1-report.md): the Orders CSV gains "Receipt no." after the
+    // order number (and each row `receiptNo`). These fixtures carry no receipt number, so the cell is empty: the new field and the new
+    // column — and only they — are set aside on this tree's side (each must be exactly there), so every other byte is compared as before.
+    const accRows = acc.map(r => omit(r, 'rates', 'receiptNo'))
+    let orders = O.CSV.ordersCsv(acc, csvWordsFor(withRates))
+    if (acc.some(r => 'receiptNo' in r)) {
+      const ls = orders.split('\r\n')
+      if (!ls[0].includes(',H:receiptNo,') || !acc.every(r => r.receiptNo === '')) throw new Error('[france-vat-1] the receipt column is not exactly as france-records-1 added it')
+      orders = [ls[0].replace(',H:receiptNo,', ','), ...ls.slice(1).map(l => (l ? l.replace(/^([^,]*,[^,]*,[^,]*),,/, '$1,') : l))].join('\r\n')
+    }
+    return { rows: accRows, orders, events: O.CSV.eventsCsv(O.LG.summarise(acc).events, cur, csvWordsFor(withRates)) }
   }
   /** One scenario through BASE and HEAD. `explicitDefault`: every dish set explicitly to the truck's default rate (still one rate). */
   const capture = (O, sc, channel, { head: isHead, code = null, tip = null, explicitDefault = false } = {}) => {

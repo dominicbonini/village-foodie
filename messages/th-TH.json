@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "เลือกเปิดหรือปิด",
     "charges_nothing_to_save": "ไม่มีอะไรต้องบันทึก",
     "charges_items_invalid": "มีรายการหนึ่งที่ไม่อยู่ในเมนูของคุณแล้ว ปิดหน้านี้แล้วลองอีกครั้ง",
+    "business_owner_only": "เฉพาะเจ้าของเท่านั้นที่เปลี่ยนข้อมูลธุรกิจได้",
+    "business_too_long": "ยาวเกินไป — โปรดทำให้สั้นลง",
+    "business_siren_invalid": "ตรวจสอบหมายเลข: SIREN มี 9 หลัก และ SIRET มี 14 หลัก",
+    "business_company_number_invalid": "เลขทะเบียนบริษัทมีตัวอักษรหรือตัวเลข 8 ตัว เช่น 01234567 หรือ SC123456",
+    "business_vat_invalid": "หมายเลข VAT นี้ดูไม่ถูกต้อง ต้องขึ้นต้นด้วย {prefix} เช่น {example}",
+    "business_regime_invalid": "เลือกระบบ VAT จากรายการ",
+    "business_regime_not_here": "ต้องระบุระบบ VAT เฉพาะในฝรั่งเศสเท่านั้น",
+    "business_nothing_to_save": "ไม่มีอะไรต้องบันทึก",
     "country_settings_failed": "โหลดการตั้งค่าประเทศของฟู้ดทรัคนี้ไม่ได้ ลองอีกครั้งในอีกสักครู่",
     "plans_failed": "โหลดแพ็กเกจของฟู้ดทรัคนี้ไม่ได้ ลองอีกครั้งในอีกสักครู่",
     "demo_not_available": "ใช้ไม่ได้กับฟู้ดทรัคตัวอย่าง",
@@ -4132,7 +4140,45 @@
       "close": "ปิด",
       "logoPlaceholder": "โลโก้ของคุณ\nที่นี่"
     },
-    "qrPoweredBy": "ขับเคลื่อนโดย HatchGrab"
+    "qrPoweredBy": "ขับเคลื่อนโดย HatchGrab",
+    "business": {
+      "title": "ข้อมูลธุรกิจ",
+      "intro": "สำหรับรายงานนักบัญชีและบันทึกของคุณ ลูกค้าจะไม่เห็นข้อมูลนี้",
+      "ownerOnly": "เฉพาะเจ้าของเท่านั้นที่เปลี่ยนข้อมูลเหล่านี้ได้",
+      "legalName": {
+        "label": "ชื่อตามกฎหมาย",
+        "hint": "ชื่อที่ใช้จดทะเบียนธุรกิจของคุณ"
+      },
+      "address": {
+        "label": "ที่อยู่ที่จดทะเบียน",
+        "hint": "ที่อยู่ที่ธุรกิจของคุณจดทะเบียนไว้",
+        "street": "ที่อยู่"
+      },
+      "registration": {
+        "siren": "SIREN หรือ SIRET",
+        "sirenHint": "9 หลัก (SIREN) หรือ 14 หลัก (SIRET)",
+        "gb": "เลขทะเบียนบริษัท",
+        "gbHint": "ไม่บังคับ ตัวอักษรหรือตัวเลข 8 ตัว จาก Companies House",
+        "other": "เลขทะเบียน",
+        "otherHint": "ไม่บังคับ เลขทะเบียนอย่างเป็นทางการของธุรกิจคุณ"
+      },
+      "vat": {
+        "label": "หมายเลข {label}",
+        "hint": "ไม่บังคับ",
+        "euHint": "ขึ้นต้นด้วย {prefix} เช่น {example}"
+      },
+      "regime": {
+        "label": "ระบบ VAT",
+        "hint": "กำหนดช่วงเวลาในไฟล์ยอดรวมรายวันของคุณ",
+        "none": "ยังไม่ได้ตั้ง",
+        "franchise": "Franchise en base (ไม่เก็บ VAT)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – รายเดือน",
+        "reelNormalQuarterly": "Réel normal – รายไตรมาส",
+        "franchiseNote": "คุณเลือก franchise en base จึงอาจต้องตั้ง VAT เป็น 0 %"
+      },
+      "saveFailed": "บันทึกไม่สำเร็จ — โปรดลองอีกครั้ง"
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "วันที่",
         "time": "เวลา",
         "orderNumber": "เลขที่ออเดอร์",
+        "receiptNo": "เลขที่ใบเสร็จ",
         "event": "อีเวนต์",
         "channel": "ช่องทาง",
         "paymentMethod": "วิธีการชำระเงิน",
@@ -4289,6 +4336,39 @@
         "none": "ไม่ได้ตั้งอัตราภาษี"
       },
       "noRate": "ไม่มีอัตราภาษี"
+    },
+    "daily": {
+      "title": "ยอดรวมรายวันตามอัตรา VAT",
+      "help": "หนึ่งแถวต่อวันและอัตรา VAT สำหรับแพลตฟอร์มรายงานอิเล็กทรอนิกส์ของคุณ",
+      "period": "ช่วงเวลา",
+      "custom": "กำหนดวันที่เอง",
+      "from": "ตั้งแต่",
+      "to": "ถึง",
+      "button": "ยอดรวมรายวันตามอัตรา VAT (CSV)",
+      "badRange": "เลือกวันเริ่มต้นที่ตรงกับหรือก่อนวันสิ้นสุด",
+      "failed": "สร้างไฟล์ไม่สำเร็จ — โปรดลองอีกครั้ง"
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "ชื่อตามกฎหมาย",
+        "siren": "SIREN/SIRET",
+        "registration": "เลขทะเบียน",
+        "vatNumber": "หมายเลข VAT",
+        "vatRegime": "ระบบ VAT",
+        "period": "ช่วงเวลา"
+      },
+      "header": {
+        "date": "วันที่",
+        "type": "ประเภท",
+        "rate": "อัตรา VAT",
+        "sales": "ยอดขายรวม VAT",
+        "refunds": "เงินคืนรวม VAT",
+        "net": "สุทธิไม่รวม VAT",
+        "vat": "VAT"
+      },
+      "goods": "สินค้า",
+      "total": "ยอดรวม",
+      "noRate": "{n, plural, other {ไม่รวม {count} ออเดอร์ที่ไม่มีอัตรา VAT}}"
     }
   },
   "socialPosts": {

@@ -211,5 +211,43 @@
     "close": "閉じる",
     "logoPlaceholder": "ロゴを\nここに"
   },
-  "qrPoweredBy": "提供：HatchGrab"
+  "qrPoweredBy": "提供：HatchGrab",
+  "business": {
+    "title": "事業者情報",
+    "intro": "税理士向けのレポートと記録に使われます。お客様には表示されません。",
+    "ownerOnly": "これらを変更できるのはオーナーのみです。",
+    "legalName": {
+      "label": "正式な事業者名",
+      "hint": "事業者として登録している名称です。"
+    },
+    "address": {
+      "label": "登録住所",
+      "hint": "事業者として登録している住所です。",
+      "street": "住所"
+    },
+    "registration": {
+      "siren": "SIREN または SIRET",
+      "sirenHint": "9桁（SIREN）または14桁（SIRET）。",
+      "gb": "会社番号",
+      "gbHint": "任意。Companies House の8文字の英数字です。",
+      "other": "登録番号",
+      "otherHint": "任意。事業者の公式な登録番号です。"
+    },
+    "vat": {
+      "label": "{label}の登録番号",
+      "hint": "任意。",
+      "euHint": "{prefix}で始まります（例：{example}）。"
+    },
+    "regime": {
+      "label": "消費税の課税方式",
+      "hint": "日次集計ファイルの期間を決めます。",
+      "none": "未設定",
+      "franchise": "Franchise en base（消費税を請求しない）",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – 月次",
+      "reelNormalQuarterly": "Réel normal – 四半期ごと",
+      "franchiseNote": "franchise en base を選んでいるため、消費税を0 %に設定するとよいでしょう。"
+    },
+    "saveFailed": "保存できませんでした。もう一度お試しください。"
+  }
 }

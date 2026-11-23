@@ -129,6 +129,7 @@
       "date": "Tanggal",
       "time": "Jam",
       "orderNumber": "Nomor pesanan",
+      "receiptNo": "No. struk",
       "event": "Acara",
       "channel": "Saluran",
       "paymentMethod": "Metode pembayaran",
@@ -153,5 +154,38 @@
       "none": "tarif pajak belum diatur"
     },
     "noRate": "tanpa tarif"
+  },
+  "daily": {
+    "title": "Total harian per tarif PPN",
+    "help": "Satu baris per hari dan tarif PPN, untuk platform pelaporan elektronik Anda.",
+    "period": "Periode",
+    "custom": "Tanggal khusus",
+    "from": "Dari",
+    "to": "Sampai",
+    "button": "Total harian per tarif PPN (CSV)",
+    "badRange": "Pilih tanggal mulai yang sama dengan atau sebelum tanggal akhir.",
+    "failed": "Tidak dapat membuat file — silakan coba lagi."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Nama resmi",
+      "siren": "SIREN/SIRET",
+      "registration": "Nomor registrasi",
+      "vatNumber": "Nomor PPN",
+      "vatRegime": "Rezim PPN",
+      "period": "Periode"
+    },
+    "header": {
+      "date": "Tanggal",
+      "type": "Jenis",
+      "rate": "Tarif PPN",
+      "sales": "Penjualan termasuk PPN",
+      "refunds": "Pengembalian dana termasuk PPN",
+      "net": "Bersih di luar PPN",
+      "vat": "PPN"
+    },
+    "goods": "Barang",
+    "total": "Total",
+    "noRate": "{n, plural, one {{count} pesanan tanpa tarif PPN tidak disertakan.} other {{count} pesanan tanpa tarif PPN tidak disertakan.}}"
   }
 }

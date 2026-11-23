@@ -211,5 +211,43 @@
     "close": "Lukk",
     "logoPlaceholder": "Logoen din\nher"
   },
-  "qrPoweredBy": "Drevet av HatchGrab"
+  "qrPoweredBy": "Drevet av HatchGrab",
+  "business": {
+    "title": "Bedriftsopplysninger",
+    "intro": "Til rapportene til regnskapsføreren og regnskapet ditt. Kundene ser ikke dette.",
+    "ownerOnly": "Bare eieren kan endre dette.",
+    "legalName": {
+      "label": "Juridisk navn",
+      "hint": "Navnet bedriften din er registrert under."
+    },
+    "address": {
+      "label": "Registrert adresse",
+      "hint": "Der bedriften din er registrert.",
+      "street": "Adresse"
+    },
+    "registration": {
+      "siren": "SIREN eller SIRET",
+      "sirenHint": "9 sifre (SIREN) eller 14 sifre (SIRET).",
+      "gb": "Selskapsnummer",
+      "gbHint": "Valgfritt. 8 bokstaver eller sifre, fra Companies House.",
+      "other": "Registreringsnummer",
+      "otherHint": "Valgfritt. Bedriftens offisielle registreringsnummer."
+    },
+    "vat": {
+      "label": "{label}-nummer",
+      "hint": "Valgfritt.",
+      "euHint": "Begynner med {prefix}, f.eks. {example}."
+    },
+    "regime": {
+      "label": "Mva.-ordning",
+      "hint": "Bestemmer periodene i filen med dagstotaler.",
+      "none": "Ikke valgt",
+      "franchise": "Franchise en base (ingen mva. beregnes)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – månedlig",
+      "reelNormalQuarterly": "Réel normal – kvartalsvis",
+      "franchiseNote": "Du har valgt franchise en base, så du vil kanskje sette mva. til 0 %."
+    },
+    "saveFailed": "Kunne ikke lagre – prøv igjen."
+  }
 }

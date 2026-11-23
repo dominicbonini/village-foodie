@@ -211,5 +211,43 @@
     "close": "Chiudi",
     "logoPlaceholder": "Il tuo logo\nqui"
   },
-  "qrPoweredBy": "Con la tecnologia di HatchGrab"
+  "qrPoweredBy": "Con la tecnologia di HatchGrab",
+  "business": {
+    "title": "Dati aziendali",
+    "intro": "Per i report per il commercialista e i tuoi registri. I clienti non li vedono.",
+    "ownerOnly": "Solo il titolare può modificarli.",
+    "legalName": {
+      "label": "Ragione sociale",
+      "hint": "Il nome con cui è registrata la tua attività."
+    },
+    "address": {
+      "label": "Sede legale",
+      "hint": "Dove è registrata la tua attività.",
+      "street": "Indirizzo"
+    },
+    "registration": {
+      "siren": "SIREN o SIRET",
+      "sirenHint": "9 cifre (SIREN) o 14 cifre (SIRET).",
+      "gb": "Numero di società",
+      "gbHint": "Facoltativo. 8 lettere o cifre, da Companies House.",
+      "other": "Numero di registrazione",
+      "otherHint": "Facoltativo. Il numero di registrazione ufficiale della tua attività."
+    },
+    "vat": {
+      "label": "Numero {label}",
+      "hint": "Facoltativo.",
+      "euHint": "Inizia con {prefix}, come {example}."
+    },
+    "regime": {
+      "label": "Regime IVA",
+      "hint": "Determina i periodi nel file dei totali giornalieri.",
+      "none": "Non impostato",
+      "franchise": "Franchise en base (nessuna IVA addebitata)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – mensile",
+      "reelNormalQuarterly": "Réel normal – trimestrale",
+      "franchiseNote": "Hai scelto franchise en base, quindi potresti voler impostare l’IVA allo 0 %."
+    },
+    "saveFailed": "Salvataggio non riuscito: riprova."
+  }
 }

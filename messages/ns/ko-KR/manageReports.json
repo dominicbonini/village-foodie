@@ -129,6 +129,7 @@
       "date": "날짜",
       "time": "시간",
       "orderNumber": "주문 번호",
+      "receiptNo": "영수증 번호",
       "event": "영업 일정",
       "channel": "채널",
       "paymentMethod": "결제 수단",
@@ -153,5 +154,38 @@
       "none": "세율 미설정"
     },
     "noRate": "세율 없음"
+  },
+  "daily": {
+    "title": "부가세율별 일별 합계",
+    "help": "날짜와 부가세율별로 한 행씩 나옵니다. 전자 보고 플랫폼용입니다.",
+    "period": "기간",
+    "custom": "직접 설정",
+    "from": "시작",
+    "to": "종료",
+    "button": "부가세율별 일별 합계(CSV)",
+    "badRange": "시작 날짜는 종료 날짜와 같거나 그 이전으로 선택하세요.",
+    "failed": "파일을 만들지 못했어요. 다시 시도해 주세요."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "정식 상호",
+      "siren": "SIREN/SIRET",
+      "registration": "등록 번호",
+      "vatNumber": "부가세 번호",
+      "vatRegime": "부가세 과세 유형",
+      "period": "기간"
+    },
+    "header": {
+      "date": "날짜",
+      "type": "유형",
+      "rate": "부가세율",
+      "sales": "매출(부가세 포함)",
+      "refunds": "환불(부가세 포함)",
+      "net": "순액(부가세 제외)",
+      "vat": "부가세"
+    },
+    "goods": "재화",
+    "total": "합계",
+    "noRate": "{n, plural, one {부가세율이 없는 주문 {count}건은 포함되지 않았습니다.} other {부가세율이 없는 주문 {count}건은 포함되지 않았습니다.}}"
   }
 }

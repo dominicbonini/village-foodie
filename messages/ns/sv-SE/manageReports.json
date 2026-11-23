@@ -129,6 +129,7 @@
       "date": "Datum",
       "time": "Tid",
       "orderNumber": "Beställningsnummer",
+      "receiptNo": "Kvittonr",
       "event": "Evenemang",
       "channel": "Kanal",
       "paymentMethod": "Betalsätt",
@@ -153,5 +154,38 @@
       "none": "ingen momssats inställd"
     },
     "noRate": "ingen sats"
+  },
+  "daily": {
+    "title": "Dagssummor per momssats",
+    "help": "En rad per dag och momssats, för din plattform för e-rapportering.",
+    "period": "Period",
+    "custom": "Egna datum",
+    "from": "Från",
+    "to": "Till",
+    "button": "Dagssummor per momssats (CSV)",
+    "badRange": "Välj ett startdatum som är samma som eller före slutdatumet.",
+    "failed": "Kunde inte skapa filen – försök igen."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Juridiskt namn",
+      "siren": "SIREN/SIRET",
+      "registration": "Registreringsnummer",
+      "vatNumber": "Momsregistreringsnummer",
+      "vatRegime": "Momsordning",
+      "period": "Period"
+    },
+    "header": {
+      "date": "Datum",
+      "type": "Typ",
+      "rate": "Momssats",
+      "sales": "Försäljning inkl. moms",
+      "refunds": "Återbetalningar inkl. moms",
+      "net": "Netto exkl. moms",
+      "vat": "Moms"
+    },
+    "goods": "Varor",
+    "total": "Totalt",
+    "noRate": "{n, plural, one {{count} beställning utan momssats ingår inte.} other {{count} beställningar utan momssats ingår inte.}}"
   }
 }

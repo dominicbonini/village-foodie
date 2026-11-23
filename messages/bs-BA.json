@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Odaberite uključeno ili isključeno.",
     "charges_nothing_to_save": "Nema ništa za čuvanje.",
     "charges_items_invalid": "Jedan od ovih artikala više nije u vašem meniju. Zatvorite ovo i pokušajte ponovo.",
+    "business_owner_only": "Samo vlasnik može mijenjati podatke o firmi.",
+    "business_too_long": "Predugo je — molimo skratite.",
+    "business_siren_invalid": "Provjerite broj: SIREN ima 9 cifara, a SIRET 14.",
+    "business_company_number_invalid": "Broj firme ima 8 slova ili cifara, npr. 01234567 ili SC123456.",
+    "business_vat_invalid": "Taj PDV broj ne izgleda ispravno. Počinje sa {prefix}, npr. {example}.",
+    "business_regime_invalid": "Odaberite PDV režim sa liste.",
+    "business_regime_not_here": "PDV režim se traži samo u Francuskoj.",
+    "business_nothing_to_save": "Nema ništa za čuvanje.",
     "country_settings_failed": "Nije moguće učitati postavke države za ovaj food truck. Pokušajte ponovo za trenutak.",
     "plans_failed": "Nije moguće učitati paket ovog food trucka. Pokušajte ponovo za trenutak.",
     "demo_not_available": "Nije dostupno za demo food truck",
@@ -4132,7 +4140,45 @@
       "close": "Zatvori",
       "logoPlaceholder": "Vaš logo\novdje"
     },
-    "qrPoweredBy": "Pokreće HatchGrab"
+    "qrPoweredBy": "Pokreće HatchGrab",
+    "business": {
+      "title": "Podaci o firmi",
+      "intro": "Za izvještaje za računovođu i evidenciju. Kupci ih ne vide.",
+      "ownerOnly": "Samo ih vlasnik može mijenjati.",
+      "legalName": {
+        "label": "Službeni naziv",
+        "hint": "Naziv pod kojim je vaša firma registrovana."
+      },
+      "address": {
+        "label": "Adresa sjedišta",
+        "hint": "Gdje je vaša firma registrovana.",
+        "street": "Adresa"
+      },
+      "registration": {
+        "siren": "SIREN ili SIRET",
+        "sirenHint": "9 cifara (SIREN) ili 14 cifara (SIRET).",
+        "gb": "Broj firme",
+        "gbHint": "Neobavezno. 8 slova ili cifara, iz registra Companies House.",
+        "other": "Registracijski broj",
+        "otherHint": "Neobavezno. Službeni registracijski broj vaše firme."
+      },
+      "vat": {
+        "label": "{label} broj",
+        "hint": "Neobavezno.",
+        "euHint": "Počinje sa {prefix}, npr. {example}."
+      },
+      "regime": {
+        "label": "PDV režim",
+        "hint": "Određuje periode u datoteci dnevnih zbirova.",
+        "none": "Nije postavljeno",
+        "franchise": "Franchise en base (bez obračuna PDV-a)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – mjesečno",
+        "reelNormalQuarterly": "Réel normal – kvartalno",
+        "franchiseNote": "Odabrali ste franchise en base, pa biste možda htjeli postaviti PDV na 0 %."
+      },
+      "saveFailed": "Čuvanje nije uspjelo — pokušajte ponovo."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Datum",
         "time": "Vrijeme",
         "orderNumber": "Broj narudžbe",
+        "receiptNo": "Br. računa",
         "event": "Događaj",
         "channel": "Kanal",
         "paymentMethod": "Način plaćanja",
@@ -4289,6 +4336,39 @@
         "none": "poreska stopa nije postavljena"
       },
       "noRate": "bez stope"
+    },
+    "daily": {
+      "title": "Dnevni zbirovi po stopama PDV-a",
+      "help": "Jedan red po danu i stopi PDV-a, za vašu platformu za e-izvještavanje.",
+      "period": "Period",
+      "custom": "Prilagođeni datumi",
+      "from": "Od",
+      "to": "Do",
+      "button": "Dnevni zbirovi po stopama PDV-a (CSV)",
+      "badRange": "Odaberite početni datum koji nije nakon krajnjeg.",
+      "failed": "Pravljenje datoteke nije uspjelo — pokušajte ponovo."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Službeni naziv",
+        "siren": "SIREN/SIRET",
+        "registration": "Registracijski broj",
+        "vatNumber": "PDV broj",
+        "vatRegime": "PDV režim",
+        "period": "Period"
+      },
+      "header": {
+        "date": "Datum",
+        "type": "Vrsta",
+        "rate": "Stopa PDV-a",
+        "sales": "Prodaja s PDV-om",
+        "refunds": "Povrati novca s PDV-om",
+        "net": "Neto bez PDV-a",
+        "vat": "PDV"
+      },
+      "goods": "Dobra",
+      "total": "Ukupno",
+      "noRate": "{n, plural, one {{count} narudžba bez stope PDV-a nije uključena.} few {{count} narudžbe bez stope PDV-a nisu uključene.} other {{count} narudžbi bez stope PDV-a nije uključeno.}}"
     }
   },
   "socialPosts": {

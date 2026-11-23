@@ -211,5 +211,43 @@
     "close": "Uždaryti",
     "logoPlaceholder": "Jūsų logotipas\nčia"
   },
-  "qrPoweredBy": "Veikia su HatchGrab"
+  "qrPoweredBy": "Veikia su HatchGrab",
+  "business": {
+    "title": "Įmonės duomenys",
+    "intro": "Ataskaitoms buhalteriui ir apskaitai. Klientai jų nemato.",
+    "ownerOnly": "Juos gali keisti tik savininkas.",
+    "legalName": {
+      "label": "Teisinis pavadinimas",
+      "hint": "Pavadinimas, kuriuo įregistruota jūsų įmonė."
+    },
+    "address": {
+      "label": "Registracijos adresas",
+      "hint": "Kur įregistruota jūsų įmonė.",
+      "street": "Adresas"
+    },
+    "registration": {
+      "siren": "SIREN arba SIRET",
+      "sirenHint": "9 skaitmenys (SIREN) arba 14 skaitmenų (SIRET).",
+      "gb": "Įmonės numeris",
+      "gbHint": "Neprivaloma. 8 raidės arba skaitmenys, iš Companies House.",
+      "other": "Registracijos numeris",
+      "otherHint": "Neprivaloma. Oficialus jūsų įmonės registracijos numeris."
+    },
+    "vat": {
+      "label": "{label} mokėtojo kodas",
+      "hint": "Neprivaloma.",
+      "euHint": "Prasideda {prefix}, pvz., {example}."
+    },
+    "regime": {
+      "label": "PVM režimas",
+      "hint": "Nustato laikotarpius dienos sumų faile.",
+      "none": "Nenustatyta",
+      "franchise": "Franchise en base (be PVM)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – kas mėnesį",
+      "reelNormalQuarterly": "Réel normal – kas ketvirtį",
+      "franchiseNote": "Pasirinkote franchise en base, tad galbūt norėsite nustatyti PVM 0 %."
+    },
+    "saveFailed": "Nepavyko išsaugoti — bandykite dar kartą."
+  }
 }

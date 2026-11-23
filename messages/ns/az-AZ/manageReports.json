@@ -129,6 +129,7 @@
       "date": "Tarix",
       "time": "Vaxt",
       "orderNumber": "Sifariş nömrəsi",
+      "receiptNo": "Qəbz №",
       "event": "Tədbir",
       "channel": "Kanal",
       "paymentMethod": "Ödəniş üsulu",
@@ -153,5 +154,38 @@
       "none": "vergi dərəcəsi təyin edilməyib"
     },
     "noRate": "dərəcəsiz"
+  },
+  "daily": {
+    "title": "ƏDV dərəcəsi üzrə gündəlik yekunlar",
+    "help": "Hər gün və ƏDV dərəcəsi üçün bir sətir — e-hesabat platformanız üçün.",
+    "period": "Dövr",
+    "custom": "Fərdi tarixlər",
+    "from": "Başlanğıc",
+    "to": "Son",
+    "button": "ƏDV dərəcəsi üzrə gündəlik yekunlar (CSV)",
+    "badRange": "Bitmə tarixindən gec olmayan başlanğıc tarixi seçin.",
+    "failed": "Faylı yaratmaq mümkün olmadı — yenidən cəhd edin."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Hüquqi ad",
+      "siren": "SIREN/SIRET",
+      "registration": "Qeydiyyat nömrəsi",
+      "vatNumber": "ƏDV nömrəsi",
+      "vatRegime": "ƏDV rejimi",
+      "period": "Dövr"
+    },
+    "header": {
+      "date": "Tarix",
+      "type": "Növ",
+      "rate": "ƏDV dərəcəsi",
+      "sales": "Satış (ƏDV daxil)",
+      "refunds": "Geri qaytarmalar (ƏDV daxil)",
+      "net": "Xalis (ƏDV-siz)",
+      "vat": "ƏDV"
+    },
+    "goods": "Mallar",
+    "total": "Cəmi",
+    "noRate": "{n, plural, one {ƏDV dərəcəsi olmayan {count} sifariş daxil edilməyib.} other {ƏDV dərəcəsi olmayan {count} sifariş daxil edilməyib.}}"
   }
 }

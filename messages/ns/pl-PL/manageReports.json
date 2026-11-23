@@ -129,6 +129,7 @@
       "date": "Data",
       "time": "Godzina",
       "orderNumber": "Numer zamówienia",
+      "receiptNo": "Nr paragonu",
       "event": "Wydarzenie",
       "channel": "Kanał",
       "paymentMethod": "Metoda płatności",
@@ -153,5 +154,38 @@
       "none": "brak ustawionej stawki podatku"
     },
     "noRate": "bez stawki"
+  },
+  "daily": {
+    "title": "Sumy dzienne wg stawek VAT",
+    "help": "Jeden wiersz na dzień i stawkę VAT, dla twojej platformy do e-raportowania.",
+    "period": "Okres",
+    "custom": "Własne daty",
+    "from": "Od",
+    "to": "Do",
+    "button": "Sumy dzienne wg stawek VAT (CSV)",
+    "badRange": "Wybierz datę początkową nie późniejszą niż data końcowa.",
+    "failed": "Nie udało się utworzyć pliku — spróbuj ponownie."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Pełna nazwa firmy",
+      "siren": "SIREN/SIRET",
+      "registration": "Numer rejestrowy",
+      "vatNumber": "Numer VAT",
+      "vatRegime": "System VAT",
+      "period": "Okres"
+    },
+    "header": {
+      "date": "Data",
+      "type": "Rodzaj",
+      "rate": "Stawka VAT",
+      "sales": "Sprzedaż z VAT",
+      "refunds": "Zwroty z VAT",
+      "net": "Netto bez VAT",
+      "vat": "VAT"
+    },
+    "goods": "Towary",
+    "total": "Razem",
+    "noRate": "{n, plural, one {{count} zamówienie bez stawki VAT nie jest uwzględnione.} few {{count} zamówienia bez stawki VAT nie są uwzględnione.} many {{count} zamówień bez stawki VAT nie jest uwzględnionych.} other {{count} zamówienia bez stawki VAT nie są uwzględnione.}}"
   }
 }

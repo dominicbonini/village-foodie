@@ -15,6 +15,7 @@ import {
 import { customerErrorBody } from '@/lib/i18n/customer-errors'
 import { localeForTruck } from '@/lib/i18n/server-locale'
 import { DEFAULT_LOCALE, type AppLocale } from '@/lib/i18n/locales'
+import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -117,6 +118,10 @@ export async function POST(req: NextRequest) {
     if (cancelError) {
       return NextResponse.json(customerErrorBody(locale, 'cancel_failed'), { status: 500 })
     }
+    // france-records-1: the customer's own cancellation, in action_audit_log (best-effort — never stops the cancel).
+    await logOrderEvent(supabase, { action: 'order_cancelled', truckId: String((order as { truck_id?: unknown }).truck_id ?? ''), orderKey,
+      before: order as Record<string, unknown>, after: { ...(order as Record<string, unknown>), status: 'cancelled' }, note: { by: 'customer' },
+      actor: { actorKind: 'unknown', actorId: null, actorLabel: 'customer' }, source: 'web' })
 
     // Remove from production slot (same pattern as operator cancel).
     // order.slot may be null (ASAP) — resolved to the event-start window so it unbooks.

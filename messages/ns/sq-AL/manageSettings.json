@@ -211,5 +211,43 @@
     "close": "Mbyll",
     "logoPlaceholder": "Logoja juaj\nkëtu"
   },
-  "qrPoweredBy": "Mundësuar nga HatchGrab"
+  "qrPoweredBy": "Mundësuar nga HatchGrab",
+  "business": {
+    "title": "Të dhënat e biznesit",
+    "intro": "Për raportet për kontabilistin dhe dokumentacionin. Klientët nuk i shohin.",
+    "ownerOnly": "Vetëm pronari mund t’i ndryshojë.",
+    "legalName": {
+      "label": "Emri ligjor",
+      "hint": "Emri me të cilin është regjistruar biznesi juaj."
+    },
+    "address": {
+      "label": "Adresa e regjistruar",
+      "hint": "Ku është regjistruar biznesi juaj.",
+      "street": "Adresa"
+    },
+    "registration": {
+      "siren": "SIREN ose SIRET",
+      "sirenHint": "9 shifra (SIREN) ose 14 shifra (SIRET).",
+      "gb": "Numri i kompanisë",
+      "gbHint": "Opsionale. 8 shkronja ose shifra, nga Companies House.",
+      "other": "Numri i regjistrimit",
+      "otherHint": "Opsionale. Numri zyrtar i regjistrimit të biznesit tuaj."
+    },
+    "vat": {
+      "label": "Numri i {label}",
+      "hint": "Opsionale.",
+      "euHint": "Fillon me {prefix}, p.sh. {example}."
+    },
+    "regime": {
+      "label": "Regjimi i TVSH-së",
+      "hint": "Përcakton periudhat në skedarin e totaleve ditore.",
+      "none": "Pa caktuar",
+      "franchise": "Franchise en base (pa aplikuar TVSH)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – mujor",
+      "reelNormalQuarterly": "Réel normal – tremujor",
+      "franchiseNote": "Keni zgjedhur franchise en base, ndaj mund të doni ta vendosni TVSH-në në 0 %."
+    },
+    "saveFailed": "Ruajtja dështoi — ju lutemi provoni përsëri."
+  }
 }

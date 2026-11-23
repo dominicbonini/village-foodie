@@ -211,5 +211,43 @@
     "close": "إغلاق",
     "logoPlaceholder": "شعارك\nهنا"
   },
-  "qrPoweredBy": "بدعم من HatchGrab"
+  "qrPoweredBy": "بدعم من HatchGrab",
+  "business": {
+    "title": "بيانات النشاط التجاري",
+    "intro": "لتقارير محاسبك وسجلاتك. لا يراها العملاء.",
+    "ownerOnly": "يمكن للمالك وحده تغييرها.",
+    "legalName": {
+      "label": "الاسم القانوني",
+      "hint": "الاسم الذي سُجّل به نشاطك التجاري."
+    },
+    "address": {
+      "label": "العنوان المسجّل",
+      "hint": "المكان الذي سُجّل فيه نشاطك التجاري.",
+      "street": "العنوان"
+    },
+    "registration": {
+      "siren": "SIREN أو SIRET",
+      "sirenHint": "9 أرقام (SIREN) أو 14 رقمًا (SIRET).",
+      "gb": "رقم الشركة",
+      "gbHint": "اختياري. 8 أحرف أو أرقام، من Companies House.",
+      "other": "رقم التسجيل",
+      "otherHint": "اختياري. رقم التسجيل الرسمي لنشاطك التجاري."
+    },
+    "vat": {
+      "label": "رقم {label}",
+      "hint": "اختياري.",
+      "euHint": "يبدأ بـ {prefix}، مثل {example}."
+    },
+    "regime": {
+      "label": "نظام ضريبة القيمة المضافة",
+      "hint": "يحدّد الفترات في ملف الإجماليات اليومية.",
+      "none": "غير محدّد",
+      "franchise": "Franchise en base (بدون ضريبة القيمة المضافة)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – شهري",
+      "reelNormalQuarterly": "Réel normal – ربع سنوي",
+      "franchiseNote": "اخترت franchise en base، لذا قد ترغب في ضبط ضريبة القيمة المضافة على 0%."
+    },
+    "saveFailed": "تعذّر الحفظ — يُرجى المحاولة مرة أخرى."
+  }
 }

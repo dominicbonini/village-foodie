@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "ማብራት ወይም ማጥፋትን ይምረጡ።",
     "charges_nothing_to_save": "የሚቀመጥ ነገር የለም።",
     "charges_items_invalid": "ከእነዚህ ንጥሎች አንዱ ከእንግዲህ በሜኑዎ ላይ የለም። ይህንን ዘግተው እንደገና ይሞክሩ።",
+    "business_owner_only": "የንግድ ዝርዝሮችን መቀየር የሚችለው ባለቤቱ ብቻ ነው።",
+    "business_too_long": "ይህ በጣም ረጅም ነው — እባክዎ ያሳጥሩት።",
+    "business_siren_invalid": "ቁጥሩን ያረጋግጡ፦ SIREN 9 አሃዞች፣ SIRET ደግሞ 14 አሃዞች አሉት።",
+    "business_company_number_invalid": "የኩባንያ ቁጥር 8 ፊደሎች ወይም አሃዞች አሉት፤ ለምሳሌ 01234567 ወይም SC123456።",
+    "business_vat_invalid": "ይህ የVAT ቁጥር ትክክል አይመስልም። በ{prefix} ይጀምራል፤ ለምሳሌ {example}።",
+    "business_regime_invalid": "ከዝርዝሩ የVAT ሥርዓት ይምረጡ።",
+    "business_regime_not_here": "የVAT ሥርዓት የሚጠየቀው በፈረንሳይ ብቻ ነው።",
+    "business_nothing_to_save": "የሚቀመጥ ነገር የለም።",
     "country_settings_failed": "የዚህን የምግብ መኪና የአገር ቅንብሮች መጫን አልተቻለም። ከአፍታ በኋላ እንደገና ይሞክሩ።",
     "plans_failed": "የዚህን የምግብ መኪና ፓኬጅ መጫን አልተቻለም። ከአፍታ በኋላ እንደገና ይሞክሩ።",
     "demo_not_available": "በዲሞ የምግብ መኪና ላይ አይገኝም",
@@ -4132,7 +4140,45 @@
       "close": "ይዝጉ",
       "logoPlaceholder": "አርማዎ\nእዚህ"
     },
-    "qrPoweredBy": "ቴክኖሎጂ፦ HatchGrab"
+    "qrPoweredBy": "ቴክኖሎጂ፦ HatchGrab",
+    "business": {
+      "title": "የንግድ ዝርዝሮች",
+      "intro": "ለሂሳብ ባለሙያዎ ሪፖርቶችና ለመዝገቦችዎ። ደንበኞች እነዚህን አያዩም።",
+      "ownerOnly": "እነዚህን መቀየር የሚችለው ባለቤቱ ብቻ ነው።",
+      "legalName": {
+        "label": "ሕጋዊ ስም",
+        "hint": "ንግድዎ የተመዘገበበት ስም።"
+      },
+      "address": {
+        "label": "የተመዘገበ አድራሻ",
+        "hint": "ንግድዎ የተመዘገበበት ቦታ።",
+        "street": "አድራሻ"
+      },
+      "registration": {
+        "siren": "SIREN ወይም SIRET",
+        "sirenHint": "9 አሃዞች (SIREN) ወይም 14 አሃዞች (SIRET)።",
+        "gb": "የኩባንያ ቁጥር",
+        "gbHint": "አማራጭ። ከCompanies House የተሰጠ 8 ፊደሎች ወይም አሃዞች።",
+        "other": "የምዝገባ ቁጥር",
+        "otherHint": "አማራጭ። የንግድዎ ይፋዊ የምዝገባ ቁጥር።"
+      },
+      "vat": {
+        "label": "የ{label} ቁጥር",
+        "hint": "አማራጭ።",
+        "euHint": "በ{prefix} ይጀምራል፤ ለምሳሌ {example}።"
+      },
+      "regime": {
+        "label": "የVAT ሥርዓት",
+        "hint": "በዕለታዊ ድምሮች ፋይልዎ ውስጥ ያሉትን ጊዜያት ይወስናል።",
+        "none": "አልተቀመጠም",
+        "franchise": "Franchise en base (VAT አይከፈልም)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – ወርሃዊ",
+        "reelNormalQuarterly": "Réel normal – በየሩብ ዓመቱ",
+        "franchiseNote": "franchise en base መርጠዋል፤ ስለዚህ VATዎን 0% ማድረግ ሊፈልጉ ይችላሉ።"
+      },
+      "saveFailed": "ማስቀመጥ አልተቻለም — እባክዎ እንደገና ይሞክሩ።"
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "ቀን",
         "time": "ሰዓት",
         "orderNumber": "የትዕዛዝ ቁጥር",
+        "receiptNo": "የደረሰኝ ቁ.",
         "event": "ዝግጅት",
         "channel": "የሽያጭ መንገድ",
         "paymentMethod": "የክፍያ ዘዴ",
@@ -4289,6 +4336,39 @@
         "none": "የታክስ መጠን አልተቀመጠም"
       },
       "noRate": "ያለ መጠን"
+    },
+    "daily": {
+      "title": "ዕለታዊ ድምሮች በVAT መጠን",
+      "help": "ለእያንዳንዱ ቀንና የVAT መጠን አንድ ረድፍ — ለኤሌክትሮኒክ ሪፖርት ማቅረቢያ መድረክዎ።",
+      "period": "ጊዜ",
+      "custom": "የራስዎ ቀኖች",
+      "from": "ከ",
+      "to": "እስከ",
+      "button": "ዕለታዊ ድምሮች በVAT መጠን (CSV)",
+      "badRange": "ከማብቂያው ቀን ያልዘገየ የመጀመሪያ ቀን ይምረጡ።",
+      "failed": "ፋይሉን መፍጠር አልተቻለም — እባክዎ እንደገና ይሞክሩ።"
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "ሕጋዊ ስም",
+        "siren": "SIREN/SIRET",
+        "registration": "የምዝገባ ቁጥር",
+        "vatNumber": "የVAT ቁጥር",
+        "vatRegime": "የVAT ሥርዓት",
+        "period": "ጊዜ"
+      },
+      "header": {
+        "date": "ቀን",
+        "type": "ዓይነት",
+        "rate": "የVAT መጠን",
+        "sales": "ሽያጭ (VAT ጨምሮ)",
+        "refunds": "ተመላሽ (VAT ጨምሮ)",
+        "net": "የተጣራ (VAT ሳይጨምር)",
+        "vat": "VAT"
+      },
+      "goods": "ዕቃዎች",
+      "total": "ጠቅላላ ድምር",
+      "noRate": "{n, plural, one {VAT መጠን የሌለው {count} ትዕዛዝ አልተካተተም።} other {VAT መጠን የሌላቸው {count} ትዕዛዞች አልተካተቱም።}}"
     }
   },
   "socialPosts": {

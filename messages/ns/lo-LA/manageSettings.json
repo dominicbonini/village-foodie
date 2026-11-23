@@ -211,5 +211,43 @@
     "close": "ປິດ",
     "logoPlaceholder": "ໂລໂກ້ຂອງທ່ານ\nຢູ່ນີ້"
   },
-  "qrPoweredBy": "ໃຫ້ບໍລິການໂດຍ HatchGrab"
+  "qrPoweredBy": "ໃຫ້ບໍລິການໂດຍ HatchGrab",
+  "business": {
+    "title": "ຂໍ້ມູນທຸລະກິດ",
+    "intro": "ສຳລັບລາຍງານນັກບັນຊີ ແລະ ບັນທຶກຂອງທ່ານ. ລູກຄ້າບໍ່ເຫັນຂໍ້ມູນເຫຼົ່ານີ້.",
+    "ownerOnly": "ມີແຕ່ເຈົ້າຂອງທີ່ປ່ຽນຂໍ້ມູນເຫຼົ່ານີ້ໄດ້.",
+    "legalName": {
+      "label": "ຊື່ຕາມກົດໝາຍ",
+      "hint": "ຊື່ທີ່ທຸລະກິດຂອງທ່ານຈົດທະບຽນໄວ້."
+    },
+    "address": {
+      "label": "ທີ່ຢູ່ທີ່ຈົດທະບຽນ",
+      "hint": "ບ່ອນທີ່ທຸລະກິດຂອງທ່ານຈົດທະບຽນ.",
+      "street": "ທີ່ຢູ່"
+    },
+    "registration": {
+      "siren": "SIREN ຫຼື SIRET",
+      "sirenHint": "9 ຕົວເລກ (SIREN) ຫຼື 14 ຕົວເລກ (SIRET).",
+      "gb": "ເລກທະບຽນບໍລິສັດ",
+      "gbHint": "ບໍ່ບັງຄັບ. 8 ຕົວອັກສອນ ຫຼື ຕົວເລກ, ຈາກ Companies House.",
+      "other": "ເລກທະບຽນ",
+      "otherHint": "ບໍ່ບັງຄັບ. ເລກທະບຽນທາງການຂອງທຸລະກິດທ່ານ."
+    },
+    "vat": {
+      "label": "ເລກ {label}",
+      "hint": "ບໍ່ບັງຄັບ.",
+      "euHint": "ຂຶ້ນຕົ້ນດ້ວຍ {prefix} ເຊັ່ນ {example}."
+    },
+    "regime": {
+      "label": "ລະບົບ VAT",
+      "hint": "ກຳນົດຊ່ວງເວລາໃນໄຟລ໌ຍອດລວມລາຍວັນຂອງທ່ານ.",
+      "none": "ຍັງບໍ່ໄດ້ຕັ້ງ",
+      "franchise": "Franchise en base (ບໍ່ເກັບ VAT)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – ລາຍເດືອນ",
+      "reelNormalQuarterly": "Réel normal – ລາຍໄຕມາດ",
+      "franchiseNote": "ທ່ານເລືອກ franchise en base, ສະນັ້ນທ່ານອາດຈະຕ້ອງຕັ້ງ VAT ເປັນ 0 %."
+    },
+    "saveFailed": "ບັນທຶກບໍ່ສຳເລັດ — ກະລຸນາລອງໃໝ່ອີກຄັ້ງ."
+  }
 }

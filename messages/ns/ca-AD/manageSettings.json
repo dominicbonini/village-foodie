@@ -211,5 +211,43 @@
     "close": "Tanca",
     "logoPlaceholder": "El teu logotip\naquí"
   },
-  "qrPoweredBy": "Amb la tecnologia de HatchGrab"
+  "qrPoweredBy": "Amb la tecnologia de HatchGrab",
+  "business": {
+    "title": "Dades de l’empresa",
+    "intro": "Per als informes per al gestor i els teus registres. Els clients no les veuen.",
+    "ownerOnly": "Només el titular les pot canviar.",
+    "legalName": {
+      "label": "Raó social",
+      "hint": "El nom amb què està registrada la teva empresa."
+    },
+    "address": {
+      "label": "Domicili social",
+      "hint": "On està registrada la teva empresa.",
+      "street": "Adreça"
+    },
+    "registration": {
+      "siren": "SIREN o SIRET",
+      "sirenHint": "9 xifres (SIREN) o 14 xifres (SIRET).",
+      "gb": "Número d’empresa",
+      "gbHint": "Opcional. 8 lletres o xifres, de Companies House.",
+      "other": "Número de registre",
+      "otherHint": "Opcional. El número de registre oficial de la teva empresa."
+    },
+    "vat": {
+      "label": "Número de {label}",
+      "hint": "Opcional.",
+      "euHint": "Comença per {prefix}, com ara {example}."
+    },
+    "regime": {
+      "label": "Règim d’IVA",
+      "hint": "Defineix els períodes del teu fitxer de totals diaris.",
+      "none": "Sense definir",
+      "franchise": "Franchise en base (no es cobra IVA)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – mensual",
+      "reelNormalQuarterly": "Réel normal – trimestral",
+      "franchiseNote": "Has triat franchise en base, així que potser vols posar el teu IVA al 0 %."
+    },
+    "saveFailed": "No s’ha pogut desar. Torna-ho a provar."
+  }
 }

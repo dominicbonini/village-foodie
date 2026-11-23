@@ -129,6 +129,7 @@
       "date": "Data",
       "time": "Hora",
       "orderNumber": "Número de comanda",
+      "receiptNo": "Núm. de rebut",
       "event": "Esdeveniment",
       "channel": "Canal",
       "paymentMethod": "Mètode de pagament",
@@ -153,5 +154,38 @@
       "none": "sense tipus impositiu configurat"
     },
     "noRate": "sense tipus"
+  },
+  "daily": {
+    "title": "Totals diaris per tipus d’IVA",
+    "help": "Una fila per dia i tipus d’IVA, per a la teva plataforma d’e-reporting.",
+    "period": "Període",
+    "custom": "Dates personalitzades",
+    "from": "Des de",
+    "to": "Fins a",
+    "button": "Totals diaris per tipus d’IVA (CSV)",
+    "badRange": "Tria una data d’inici igual o anterior a la data de fi.",
+    "failed": "No s’ha pogut crear el fitxer. Torna-ho a provar."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Raó social",
+      "siren": "SIREN/SIRET",
+      "registration": "Número de registre",
+      "vatNumber": "Número d’IVA",
+      "vatRegime": "Règim d’IVA",
+      "period": "Període"
+    },
+    "header": {
+      "date": "Data",
+      "type": "Tipus",
+      "rate": "Tipus d’IVA",
+      "sales": "Vendes amb IVA",
+      "refunds": "Devolucions amb IVA",
+      "net": "Net sense IVA",
+      "vat": "IVA"
+    },
+    "goods": "Béns",
+    "total": "Total",
+    "noRate": "{n, plural, one {{count} comanda sense tipus d’IVA no s’hi inclou.} other {{count} comandes sense tipus d’IVA no s’hi inclouen.}}"
   }
 }

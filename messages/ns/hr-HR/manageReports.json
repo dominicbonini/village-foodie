@@ -129,6 +129,7 @@
       "date": "Datum",
       "time": "Vrijeme",
       "orderNumber": "Broj narudžbe",
+      "receiptNo": "Br. računa",
       "event": "Događaj",
       "channel": "Kanal",
       "paymentMethod": "Način plaćanja",
@@ -153,5 +154,38 @@
       "none": "porezna stopa nije postavljena"
     },
     "noRate": "bez stope"
+  },
+  "daily": {
+    "title": "Dnevni zbrojevi po stopama PDV-a",
+    "help": "Jedan redak po danu i stopi PDV-a, za vašu platformu za e-izvješćivanje.",
+    "period": "Razdoblje",
+    "custom": "Vlastiti datumi",
+    "from": "Od",
+    "to": "Do",
+    "button": "Dnevni zbrojevi po stopama PDV-a (CSV)",
+    "badRange": "Odaberite početni datum koji nije nakon završnog.",
+    "failed": "Izrada datoteke nije uspjela — pokušajte ponovno."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Službeni naziv",
+      "siren": "SIREN/SIRET",
+      "registration": "Registracijski broj",
+      "vatNumber": "PDV broj",
+      "vatRegime": "Sustav PDV-a",
+      "period": "Razdoblje"
+    },
+    "header": {
+      "date": "Datum",
+      "type": "Vrsta",
+      "rate": "Stopa PDV-a",
+      "sales": "Prodaja s PDV-om",
+      "refunds": "Povrati s PDV-om",
+      "net": "Neto bez PDV-a",
+      "vat": "PDV"
+    },
+    "goods": "Dobra",
+    "total": "Ukupno",
+    "noRate": "{n, plural, one {{count} narudžba bez stope PDV-a nije uključena.} few {{count} narudžbe bez stope PDV-a nisu uključene.} other {{count} narudžbi bez stope PDV-a nije uključeno.}}"
   }
 }

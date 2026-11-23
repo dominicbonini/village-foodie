@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Wybierz: włączone lub wyłączone.",
     "charges_nothing_to_save": "Nie ma nic do zapisania.",
     "charges_items_invalid": "Jednej z tych pozycji nie ma już w twoim menu. Zamknij to okno i spróbuj ponownie.",
+    "business_owner_only": "Tylko właściciel może zmieniać dane firmy.",
+    "business_too_long": "To za długie — skróć, proszę.",
+    "business_siren_invalid": "Sprawdź numer: SIREN ma 9 cyfr, a SIRET 14.",
+    "business_company_number_invalid": "Numer firmy ma 8 liter lub cyfr, np. 01234567 lub SC123456.",
+    "business_vat_invalid": "Ten numer VAT wygląda na niepoprawny. Zaczyna się od {prefix}, np. {example}.",
+    "business_regime_invalid": "Wybierz system VAT z listy.",
+    "business_regime_not_here": "System VAT podaje się tylko we Francji.",
+    "business_nothing_to_save": "Nie ma nic do zapisania.",
     "country_settings_failed": "Nie udało się wczytać ustawień kraju dla tego food trucka. Spróbuj ponownie za chwilę.",
     "plans_failed": "Nie udało się wczytać planu tego food trucka. Spróbuj ponownie za chwilę.",
     "demo_not_available": "Niedostępne w food trucku demonstracyjnym",
@@ -4132,7 +4140,45 @@
       "close": "Zamknij",
       "logoPlaceholder": "Tu twoje\nlogo"
     },
-    "qrPoweredBy": "Działa dzięki HatchGrab"
+    "qrPoweredBy": "Działa dzięki HatchGrab",
+    "business": {
+      "title": "Dane firmy",
+      "intro": "Do raportów dla księgowości i dokumentacji. Klienci ich nie widzą.",
+      "ownerOnly": "Tylko właściciel może je zmieniać.",
+      "legalName": {
+        "label": "Pełna nazwa firmy",
+        "hint": "Nazwa, pod którą zarejestrowana jest twoja firma."
+      },
+      "address": {
+        "label": "Adres siedziby",
+        "hint": "Adres, pod którym zarejestrowana jest twoja firma.",
+        "street": "Adres"
+      },
+      "registration": {
+        "siren": "SIREN lub SIRET",
+        "sirenHint": "9 cyfr (SIREN) lub 14 cyfr (SIRET).",
+        "gb": "Numer firmy",
+        "gbHint": "Opcjonalnie. 8 liter lub cyfr, z Companies House.",
+        "other": "Numer rejestrowy",
+        "otherHint": "Opcjonalnie. Oficjalny numer rejestrowy twojej firmy."
+      },
+      "vat": {
+        "label": "Numer {label}",
+        "hint": "Opcjonalnie.",
+        "euHint": "Zaczyna się od {prefix}, np. {example}."
+      },
+      "regime": {
+        "label": "System VAT",
+        "hint": "Określa okresy w pliku z sumami dziennymi.",
+        "none": "Nie ustawiono",
+        "franchise": "Franchise en base (bez naliczania VAT)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – miesięcznie",
+        "reelNormalQuarterly": "Réel normal – kwartalnie",
+        "franchiseNote": "Wybrano franchise en base, więc może warto ustawić VAT na 0 %."
+      },
+      "saveFailed": "Nie udało się zapisać — spróbuj ponownie."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Data",
         "time": "Godzina",
         "orderNumber": "Numer zamówienia",
+        "receiptNo": "Nr paragonu",
         "event": "Wydarzenie",
         "channel": "Kanał",
         "paymentMethod": "Metoda płatności",
@@ -4289,6 +4336,39 @@
         "none": "brak ustawionej stawki podatku"
       },
       "noRate": "bez stawki"
+    },
+    "daily": {
+      "title": "Sumy dzienne wg stawek VAT",
+      "help": "Jeden wiersz na dzień i stawkę VAT, dla twojej platformy do e-raportowania.",
+      "period": "Okres",
+      "custom": "Własne daty",
+      "from": "Od",
+      "to": "Do",
+      "button": "Sumy dzienne wg stawek VAT (CSV)",
+      "badRange": "Wybierz datę początkową nie późniejszą niż data końcowa.",
+      "failed": "Nie udało się utworzyć pliku — spróbuj ponownie."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Pełna nazwa firmy",
+        "siren": "SIREN/SIRET",
+        "registration": "Numer rejestrowy",
+        "vatNumber": "Numer VAT",
+        "vatRegime": "System VAT",
+        "period": "Okres"
+      },
+      "header": {
+        "date": "Data",
+        "type": "Rodzaj",
+        "rate": "Stawka VAT",
+        "sales": "Sprzedaż z VAT",
+        "refunds": "Zwroty z VAT",
+        "net": "Netto bez VAT",
+        "vat": "VAT"
+      },
+      "goods": "Towary",
+      "total": "Razem",
+      "noRate": "{n, plural, one {{count} zamówienie bez stawki VAT nie jest uwzględnione.} few {{count} zamówienia bez stawki VAT nie są uwzględnione.} many {{count} zamówień bez stawki VAT nie jest uwzględnionych.} other {{count} zamówienia bez stawki VAT nie są uwzględnione.}}"
     }
   },
   "socialPosts": {

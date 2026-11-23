@@ -211,5 +211,43 @@
     "close": "වසන්න",
     "logoPlaceholder": "ඔබේ ලාංඡනය\nමෙතැන"
   },
-  "qrPoweredBy": "HatchGrab මගින් ක්‍රියාත්මකයි"
+  "qrPoweredBy": "HatchGrab මගින් ක්‍රියාත්මකයි",
+  "business": {
+    "title": "ව්‍යාපාර විස්තර",
+    "intro": "ඔබේ ගණකාධිකාරී වාර්තා සහ ලේඛන සඳහා. පාරිභෝගිකයන්ට මේවා නොපෙනේ.",
+    "ownerOnly": "මේවා වෙනස් කළ හැක්කේ හිමිකරුට පමණි.",
+    "legalName": {
+      "label": "නීත්‍යානුකූල නම",
+      "hint": "ඔබේ ව්‍යාපාරය ලියාපදිංචි කර ඇති නම."
+    },
+    "address": {
+      "label": "ලියාපදිංචි ලිපිනය",
+      "hint": "ඔබේ ව්‍යාපාරය ලියාපදිංචි කර ඇති ස්ථානය.",
+      "street": "ලිපිනය"
+    },
+    "registration": {
+      "siren": "SIREN හෝ SIRET",
+      "sirenHint": "ඉලක්කම් 9 (SIREN) හෝ ඉලක්කම් 14 (SIRET).",
+      "gb": "සමාගම් අංකය",
+      "gbHint": "අත්‍යවශ්‍ය නැත. Companies House වෙතින් ලැබෙන අකුරු හෝ ඉලක්කම් 8ක්.",
+      "other": "ලියාපදිංචි අංකය",
+      "otherHint": "අත්‍යවශ්‍ය නැත. ඔබේ ව්‍යාපාරයේ නිල ලියාපදිංචි අංකය."
+    },
+    "vat": {
+      "label": "{label} අංකය",
+      "hint": "අත්‍යවශ්‍ය නැත.",
+      "euHint": "{prefix} වලින් ආරම්භ වේ, උදා. {example}."
+    },
+    "regime": {
+      "label": "VAT ක්‍රමය",
+      "hint": "ඔබේ දෛනික එකතු ගොනුවේ කාල පරිච්ඡේද සකසයි.",
+      "none": "සකසා නැත",
+      "franchise": "Franchise en base (VAT අය නොකෙරේ)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – මාසික",
+      "reelNormalQuarterly": "Réel normal – කාර්තුමය",
+      "franchiseNote": "ඔබ franchise en base තෝරා ඇති නිසා, ඔබේ VAT 0 % ලෙස සැකසීමට ඔබට අවශ්‍ය විය හැක."
+    },
+    "saveFailed": "සුරැකිය නොහැකි විය — කරුණාකර නැවත උත්සාහ කරන්න."
+  }
 }

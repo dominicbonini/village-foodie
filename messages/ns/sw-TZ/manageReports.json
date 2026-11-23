@@ -129,6 +129,7 @@
       "date": "Tarehe",
       "time": "Muda",
       "orderNumber": "Namba ya oda",
+      "receiptNo": "Namba ya risiti",
       "event": "Tukio",
       "channel": "Njia",
       "paymentMethod": "Njia ya malipo",
@@ -153,5 +154,38 @@
       "none": "hakuna kiwango cha kodi kilichowekwa"
     },
     "noRate": "hakuna kiwango"
+  },
+  "daily": {
+    "title": "Jumla za kila siku kwa kiwango cha VAT",
+    "help": "Mstari mmoja kwa kila siku na kiwango cha VAT, kwa jukwaa lako la kuripoti kielektroniki.",
+    "period": "Kipindi",
+    "custom": "Tarehe maalum",
+    "from": "Kuanzia",
+    "to": "Hadi",
+    "button": "Jumla za kila siku kwa kiwango cha VAT (CSV)",
+    "badRange": "Chagua tarehe ya kuanza iliyo sawa na au kabla ya tarehe ya mwisho.",
+    "failed": "Imeshindikana kutengeneza faili — tafadhali jaribu tena."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Jina la kisheria",
+      "siren": "SIREN/SIRET",
+      "registration": "Namba ya usajili",
+      "vatNumber": "Namba ya VAT",
+      "vatRegime": "Mfumo wa VAT",
+      "period": "Kipindi"
+    },
+    "header": {
+      "date": "Tarehe",
+      "type": "Aina",
+      "rate": "Kiwango cha VAT",
+      "sales": "Mauzo pamoja na VAT",
+      "refunds": "Marejesho pamoja na VAT",
+      "net": "Halisi bila VAT",
+      "vat": "VAT"
+    },
+    "goods": "Bidhaa",
+    "total": "Jumla",
+    "noRate": "{n, plural, one {Oda {count} isiyo na kiwango cha VAT haijajumuishwa.} other {Oda {count} zisizo na kiwango cha VAT hazijajumuishwa.}}"
   }
 }

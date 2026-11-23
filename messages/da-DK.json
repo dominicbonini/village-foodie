@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Vælg til eller fra.",
     "charges_nothing_to_save": "Intet at gemme.",
     "charges_items_invalid": "En af disse varer er ikke længere på dit menukort. Luk dette, og prøv igen.",
+    "business_owner_only": "Kun ejeren kan ændre virksomhedsoplysningerne.",
+    "business_too_long": "Det er for langt — gør det kortere.",
+    "business_siren_invalid": "Tjek nummeret: et SIREN har 9 cifre og et SIRET 14.",
+    "business_company_number_invalid": "Et selskabsnummer har 8 bogstaver eller cifre, fx 01234567 eller SC123456.",
+    "business_vat_invalid": "Det momsnummer ser ikke rigtigt ud. Det starter med {prefix}, fx {example}.",
+    "business_regime_invalid": "Vælg en momsordning på listen.",
+    "business_regime_not_here": "Der spørges kun om momsordning i Frankrig.",
+    "business_nothing_to_save": "Intet at gemme.",
     "country_settings_failed": "Foodtruckens landeindstillinger kunne ikke indlæses. Prøv igen om lidt.",
     "plans_failed": "Foodtruckens abonnement kunne ikke indlæses. Prøv igen om lidt.",
     "demo_not_available": "Ikke tilgængelig for en demo-foodtruck",
@@ -4132,7 +4140,45 @@
       "close": "Luk",
       "logoPlaceholder": "Dit logo\nher"
     },
-    "qrPoweredBy": "Drevet af HatchGrab"
+    "qrPoweredBy": "Drevet af HatchGrab",
+    "business": {
+      "title": "Virksomhedsoplysninger",
+      "intro": "Til dine rapporter til revisoren og dit regnskab. Kunderne kan ikke se dem.",
+      "ownerOnly": "Kun ejeren kan ændre dem.",
+      "legalName": {
+        "label": "Juridisk navn",
+        "hint": "Det navn, din virksomhed er registreret under."
+      },
+      "address": {
+        "label": "Registreret adresse",
+        "hint": "Hvor din virksomhed er registreret.",
+        "street": "Adresse"
+      },
+      "registration": {
+        "siren": "SIREN eller SIRET",
+        "sirenHint": "9 cifre (SIREN) eller 14 cifre (SIRET).",
+        "gb": "Selskabsnummer",
+        "gbHint": "Valgfrit. 8 bogstaver eller cifre, fra Companies House.",
+        "other": "Registreringsnummer",
+        "otherHint": "Valgfrit. Din virksomheds officielle registreringsnummer."
+      },
+      "vat": {
+        "label": "{label}-nummer",
+        "hint": "Valgfrit.",
+        "euHint": "Starter med {prefix}, fx {example}."
+      },
+      "regime": {
+        "label": "Momsordning",
+        "hint": "Bestemmer perioderne i din fil med daglige totaler.",
+        "none": "Ikke valgt",
+        "franchise": "Franchise en base (ingen moms opkræves)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – månedlig",
+        "reelNormalQuarterly": "Réel normal – kvartalsvis",
+        "franchiseNote": "Du har valgt franchise en base, så du vil måske sætte din moms til 0 %."
+      },
+      "saveFailed": "Kunne ikke gemme — prøv igen."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Dato",
         "time": "Tidspunkt",
         "orderNumber": "Ordrenummer",
+        "receiptNo": "Kvitteringsnr.",
         "event": "Arrangement",
         "channel": "Kanal",
         "paymentMethod": "Betalingsmåde",
@@ -4289,6 +4336,39 @@
         "none": "ingen momssats angivet"
       },
       "noRate": "ingen sats"
+    },
+    "daily": {
+      "title": "Daglige totaler pr. momssats",
+      "help": "Én række pr. dag og momssats, til din e-rapporteringsplatform.",
+      "period": "Periode",
+      "custom": "Vælg datoer",
+      "from": "Fra",
+      "to": "Til",
+      "button": "Daglige totaler pr. momssats (CSV)",
+      "badRange": "Vælg en startdato, der er samme dag som eller før slutdatoen.",
+      "failed": "Kunne ikke lave filen — prøv igen."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Juridisk navn",
+        "siren": "SIREN/SIRET",
+        "registration": "Registreringsnummer",
+        "vatNumber": "Momsnummer",
+        "vatRegime": "Momsordning",
+        "period": "Periode"
+      },
+      "header": {
+        "date": "Dato",
+        "type": "Type",
+        "rate": "Momssats",
+        "sales": "Salg inkl. moms",
+        "refunds": "Refunderinger inkl. moms",
+        "net": "Netto ekskl. moms",
+        "vat": "Moms"
+      },
+      "goods": "Varer",
+      "total": "I alt",
+      "noRate": "{n, plural, one {{count} bestilling uden momssats er ikke medtaget.} other {{count} bestillinger uden momssats er ikke medtaget.}}"
     }
   },
   "socialPosts": {

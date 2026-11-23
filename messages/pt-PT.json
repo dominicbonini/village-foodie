@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Escolha ativado ou desativado.",
     "charges_nothing_to_save": "Nada para guardar.",
     "charges_items_invalid": "Um destes artigos já não está na sua ementa. Feche esta janela e tente novamente.",
+    "business_owner_only": "Só o proprietário pode alterar os dados da empresa.",
+    "business_too_long": "É demasiado longo — encurte-o, por favor.",
+    "business_siren_invalid": "Verifique o número: um SIREN tem 9 dígitos e um SIRET 14.",
+    "business_company_number_invalid": "Um número de empresa tem 8 letras ou dígitos, como 01234567 ou SC123456.",
+    "business_vat_invalid": "Esse número de IVA não parece correto. Começa por {prefix}, como {example}.",
+    "business_regime_invalid": "Escolha um regime de IVA da lista.",
+    "business_regime_not_here": "O regime de IVA só é pedido em França.",
+    "business_nothing_to_save": "Nada para guardar.",
     "country_settings_failed": "Não foi possível carregar as definições de país deste food truck. Tente novamente daqui a pouco.",
     "plans_failed": "Não foi possível carregar o plano deste food truck. Tente novamente daqui a pouco.",
     "demo_not_available": "Indisponível num food truck de demonstração",
@@ -4132,7 +4140,45 @@
       "close": "Fechar",
       "logoPlaceholder": "O seu logótipo\naqui"
     },
-    "qrPoweredBy": "Com tecnologia HatchGrab"
+    "qrPoweredBy": "Com tecnologia HatchGrab",
+    "business": {
+      "title": "Dados da empresa",
+      "intro": "Para os relatórios do seu contabilista e os seus registos. Os clientes não os veem.",
+      "ownerOnly": "Só o proprietário pode alterar estes dados.",
+      "legalName": {
+        "label": "Denominação social",
+        "hint": "O nome com que a sua empresa está registada."
+      },
+      "address": {
+        "label": "Morada da sede",
+        "hint": "Onde a sua empresa está registada.",
+        "street": "Morada"
+      },
+      "registration": {
+        "siren": "SIREN ou SIRET",
+        "sirenHint": "9 dígitos (SIREN) ou 14 dígitos (SIRET).",
+        "gb": "Número de empresa",
+        "gbHint": "Opcional. 8 letras ou dígitos, da Companies House.",
+        "other": "Número de registo",
+        "otherHint": "Opcional. O número de registo oficial da sua empresa."
+      },
+      "vat": {
+        "label": "Número de {label}",
+        "hint": "Opcional.",
+        "euHint": "Começa por {prefix}, como {example}."
+      },
+      "regime": {
+        "label": "Regime de IVA",
+        "hint": "Define os períodos no seu ficheiro de totais diários.",
+        "none": "Não definido",
+        "franchise": "Franchise en base (sem IVA cobrado)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – mensal",
+        "reelNormalQuarterly": "Réel normal – trimestral",
+        "franchiseNote": "Escolheu franchise en base, por isso talvez queira definir o seu IVA para 0 %."
+      },
+      "saveFailed": "Não foi possível guardar — tente novamente."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Data",
         "time": "Hora",
         "orderNumber": "Número da encomenda",
+        "receiptNo": "N.º do recibo",
         "event": "Evento",
         "channel": "Canal",
         "paymentMethod": "Forma de pagamento",
@@ -4289,6 +4336,39 @@
         "none": "sem taxa de imposto definida"
       },
       "noRate": "sem taxa"
+    },
+    "daily": {
+      "title": "Totais diários por taxa de IVA",
+      "help": "Uma linha por dia e por taxa de IVA, para a sua plataforma de e-reporting.",
+      "period": "Período",
+      "custom": "Datas personalizadas",
+      "from": "De",
+      "to": "Até",
+      "button": "Totais diários por taxa de IVA (CSV)",
+      "badRange": "Escolha uma data de início igual ou anterior à data de fim.",
+      "failed": "Não foi possível criar o ficheiro — tente novamente."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Denominação social",
+        "siren": "SIREN/SIRET",
+        "registration": "Número de registo",
+        "vatNumber": "Número de IVA",
+        "vatRegime": "Regime de IVA",
+        "period": "Período"
+      },
+      "header": {
+        "date": "Data",
+        "type": "Tipo",
+        "rate": "Taxa de IVA",
+        "sales": "Vendas com IVA",
+        "refunds": "Reembolsos com IVA",
+        "net": "Líquido sem IVA",
+        "vat": "IVA"
+      },
+      "goods": "Bens",
+      "total": "Total",
+      "noRate": "{n, plural, one {{count} encomenda sem taxa de IVA não está incluída.} other {{count} encomendas sem taxa de IVA não estão incluídas.}}"
     }
   },
   "socialPosts": {

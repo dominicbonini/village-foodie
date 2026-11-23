@@ -129,6 +129,7 @@
       "date": "Fecha",
       "time": "Hora",
       "orderNumber": "Número de pedido",
+      "receiptNo": "N.º de recibo",
       "event": "Evento",
       "channel": "Canal",
       "paymentMethod": "Forma de pago",
@@ -153,5 +154,38 @@
       "none": "sin tipo de impuesto configurado"
     },
     "noRate": "sin tipo"
+  },
+  "daily": {
+    "title": "Totales diarios por tipo de IVA",
+    "help": "Una fila por día y tipo de IVA, para tu plataforma de e-reporting.",
+    "period": "Periodo",
+    "custom": "Fechas personalizadas",
+    "from": "Desde",
+    "to": "Hasta",
+    "button": "Totales diarios por tipo de IVA (CSV)",
+    "badRange": "Elige una fecha de inicio igual o anterior a la fecha de fin.",
+    "failed": "No se ha podido crear el archivo. Inténtalo de nuevo."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Razón social",
+      "siren": "SIREN/SIRET",
+      "registration": "Número de registro",
+      "vatNumber": "Número de IVA",
+      "vatRegime": "Régimen de IVA",
+      "period": "Periodo"
+    },
+    "header": {
+      "date": "Fecha",
+      "type": "Tipo",
+      "rate": "Tipo de IVA",
+      "sales": "Ventas con IVA",
+      "refunds": "Reembolsos con IVA",
+      "net": "Neto sin IVA",
+      "vat": "IVA"
+    },
+    "goods": "Bienes",
+    "total": "Total",
+    "noRate": "{n, plural, one {{count} pedido sin tipo de IVA no está incluido.} other {{count} pedidos sin tipo de IVA no están incluidos.}}"
   }
 }

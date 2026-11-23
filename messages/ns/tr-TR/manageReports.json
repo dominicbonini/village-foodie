@@ -129,6 +129,7 @@
       "date": "Tarih",
       "time": "Saat",
       "orderNumber": "Sipariş numarası",
+      "receiptNo": "Fiş no.",
       "event": "Etkinlik",
       "channel": "Kanal",
       "paymentMethod": "Ödeme yöntemi",
@@ -153,5 +154,38 @@
       "none": "vergi oranı ayarlanmadı"
     },
     "noRate": "oran yok"
+  },
+  "daily": {
+    "title": "KDV oranına göre günlük toplamlar",
+    "help": "Her gün ve KDV oranı için bir satır; e-raporlama platformunuz için.",
+    "period": "Dönem",
+    "custom": "Özel tarihler",
+    "from": "Başlangıç",
+    "to": "Bitiş",
+    "button": "KDV oranına göre günlük toplamlar (CSV)",
+    "badRange": "Bitiş tarihiyle aynı gün veya daha önce olan bir başlangıç tarihi seçin.",
+    "failed": "Dosya oluşturulamadı — lütfen tekrar deneyin."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Ticari unvan",
+      "siren": "SIREN/SIRET",
+      "registration": "Sicil numarası",
+      "vatNumber": "KDV numarası",
+      "vatRegime": "KDV rejimi",
+      "period": "Dönem"
+    },
+    "header": {
+      "date": "Tarih",
+      "type": "Tür",
+      "rate": "KDV oranı",
+      "sales": "KDV dahil satışlar",
+      "refunds": "KDV dahil iadeler",
+      "net": "KDV hariç net",
+      "vat": "KDV"
+    },
+    "goods": "Mal",
+    "total": "Toplam",
+    "noRate": "{n, plural, one {KDV oranı olmayan {count} sipariş dahil edilmedi.} other {KDV oranı olmayan {count} sipariş dahil edilmedi.}}"
   }
 }

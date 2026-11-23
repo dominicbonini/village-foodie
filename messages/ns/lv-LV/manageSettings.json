@@ -211,5 +211,43 @@
     "close": "Aizvērt",
     "logoPlaceholder": "Jūsu\nlogotips"
   },
-  "qrPoweredBy": "Darbina HatchGrab"
+  "qrPoweredBy": "Darbina HatchGrab",
+  "business": {
+    "title": "Uzņēmuma dati",
+    "intro": "Jūsu grāmatveža atskaitēm un uzskaitei. Klienti tos neredz.",
+    "ownerOnly": "Tos var mainīt tikai īpašnieks.",
+    "legalName": {
+      "label": "Juridiskais nosaukums",
+      "hint": "Nosaukums, ar kādu jūsu uzņēmums ir reģistrēts."
+    },
+    "address": {
+      "label": "Juridiskā adrese",
+      "hint": "Kur jūsu uzņēmums ir reģistrēts.",
+      "street": "Adrese"
+    },
+    "registration": {
+      "siren": "SIREN vai SIRET",
+      "sirenHint": "9 cipari (SIREN) vai 14 cipari (SIRET).",
+      "gb": "Uzņēmuma numurs",
+      "gbHint": "Neobligāti. 8 burti vai cipari, no Companies House.",
+      "other": "Reģistrācijas numurs",
+      "otherHint": "Neobligāti. Jūsu uzņēmuma oficiālais reģistrācijas numurs."
+    },
+    "vat": {
+      "label": "{label} numurs",
+      "hint": "Neobligāti.",
+      "euHint": "Sākas ar {prefix}, piemēram, {example}."
+    },
+    "regime": {
+      "label": "PVN režīms",
+      "hint": "Nosaka periodus jūsu dienas kopsummu datnē.",
+      "none": "Nav iestatīts",
+      "franchise": "Franchise en base (bez PVN)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – ikmēneša",
+      "reelNormalQuarterly": "Réel normal – ikceturkšņa",
+      "franchiseNote": "Jūs izvēlējāties franchise en base, tāpēc, iespējams, vēlēsieties iestatīt PVN uz 0%."
+    },
+    "saveFailed": "Neizdevās saglabāt — lūdzu, mēģiniet vēlreiz."
+  }
 }

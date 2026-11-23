@@ -19,6 +19,7 @@ import '@/lib/i18n/catalog/manageApi'
 import { readEventRegion } from '@/lib/event-region-read'
 import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
 import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
+import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -388,6 +389,11 @@ export async function POST(req: NextRequest) {
         .in('order_key', orderKeys)
 
       cancelledOrders = affectedOrders.length
+      // france-records-1: each cancellation, in action_audit_log (best-effort — never stops the event cancel).
+      for (const o of affectedOrders as Record<string, unknown>[]) {
+        await logOrderEvent(supabase, { action: 'order_cancelled', truckId: String(o.truck_id ?? ''), orderKey: String(o.order_key ?? ''), before: o,
+          after: { ...o, status: 'cancelled' }, note: { by: 'event_cancelled', event_id: eventId }, actor: { actorKind: 'unknown', actorId: null, actorLabel: 'event cancellation' }, source: 'web' })
+      }
 
       // The truck's time settings — the email's date in its country's words (Phase 2B).
       const truckTime = await truckTimeSettings(truck)

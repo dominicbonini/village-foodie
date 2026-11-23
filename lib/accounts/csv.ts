@@ -48,7 +48,8 @@ export interface CsvWords {
   rateHeader?: (kind: 'net' | 'tax', rateMilli: number | null) => string
 }
 
-export const ORDER_COLUMNS = ['date', 'time', 'orderNumber', 'event', 'channel', 'paymentMethod', 'currency', 'gross', 'tax', 'taxBasis', 'net', 'refunded', 'cost', 'profit'] as const
+// france-records-1: + 'receiptNo' (the truck's gap-free receipt number) right after the order's display number.
+export const ORDER_COLUMNS = ['date', 'time', 'orderNumber', 'receiptNo', 'event', 'channel', 'paymentMethod', 'currency', 'gross', 'tax', 'taxBasis', 'net', 'refunded', 'cost', 'profit'] as const
 export const EVENT_COLUMNS = ['eventDate', 'event', 'orders', 'currency', 'gross', 'tax', 'taxBasis', 'net', 'refunded', 'dishesSold', 'dishesWithCost', 'cost', 'profit'] as const
 export type CsvColumn = (typeof ORDER_COLUMNS)[number] | (typeof EVENT_COLUMNS)[number]
 
@@ -61,7 +62,7 @@ export function ordersCsv(rows: readonly AccountRow[], w: CsvWords): string {
   const header = [...ORDER_COLUMNS.map(w.header), ...(perRate ? rates.flatMap(rt => [w.rateHeader!('net', rt), w.rateHeader!('tax', rt)]) : [])]
   return csvFile(header, rows.map(r => {
     const complete = r.dishesWithCost === r.dishes
-    const base = [r.date, r.time, r.number, w.event(r.eventId, r.eventDate), w.channel(r.channel), w.payment(r.payment), r.currency,
+    const base = [r.date, r.time, r.number, r.receiptNo ?? '', w.event(r.eventId, r.eventDate), w.channel(r.channel), w.payment(r.payment), r.currency,
       csvAmount(r.grossMinor, r.currency), csvAmount(r.taxMinor, r.currency), w.taxBasis(r.taxBasis), csvAmount(r.netMinor, r.currency),
       csvAmount(r.refundedMinor, r.currency), complete ? csvAmount(r.costMinor, r.currency) : '', r.profitMinor != null ? csvAmount(r.profitMinor, r.currency) : '']
     if (!perRate) return base

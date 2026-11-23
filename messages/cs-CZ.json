@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Zvolte zapnuto, nebo vypnuto.",
     "charges_nothing_to_save": "Není co uložit.",
     "charges_items_invalid": "Jedna z těchto položek už na vašem jídelním lístku není. Zavřete toto okno a zkuste to znovu.",
+    "business_owner_only": "Údaje o firmě může měnit jen majitel.",
+    "business_too_long": "Je to příliš dlouhé — zkraťte to prosím.",
+    "business_siren_invalid": "Zkontrolujte číslo: SIREN má 9 číslic a SIRET 14.",
+    "business_company_number_invalid": "Číslo společnosti má 8 písmen nebo číslic, např. 01234567 nebo SC123456.",
+    "business_vat_invalid": "Toto číslo DPH nevypadá správně. Začíná na {prefix}, např. {example}.",
+    "business_regime_invalid": "Vyberte režim DPH ze seznamu.",
+    "business_regime_not_here": "Režim DPH se zadává jen ve Francii.",
+    "business_nothing_to_save": "Není co uložit.",
     "country_settings_failed": "Nastavení země pro tento food truck se nepodařilo načíst. Zkuste to za chvíli znovu.",
     "plans_failed": "Tarif tohoto food trucku se nepodařilo načíst. Zkuste to za chvíli znovu.",
     "demo_not_available": "U demo food trucku není k dispozici",
@@ -4132,7 +4140,45 @@
       "close": "Zavřít",
       "logoPlaceholder": "Vaše logo\nzde"
     },
-    "qrPoweredBy": "Běží na HatchGrab"
+    "qrPoweredBy": "Běží na HatchGrab",
+    "business": {
+      "title": "Údaje o firmě",
+      "intro": "Pro výkazy pro účetní a vaše záznamy. Zákazníci je nevidí.",
+      "ownerOnly": "Měnit je může jen majitel.",
+      "legalName": {
+        "label": "Oficiální název",
+        "hint": "Název, pod kterým je vaše firma registrovaná."
+      },
+      "address": {
+        "label": "Adresa sídla",
+        "hint": "Kde je vaše firma registrovaná.",
+        "street": "Adresa"
+      },
+      "registration": {
+        "siren": "SIREN nebo SIRET",
+        "sirenHint": "9 číslic (SIREN) nebo 14 číslic (SIRET).",
+        "gb": "Číslo společnosti",
+        "gbHint": "Nepovinné. 8 písmen nebo číslic, z Companies House.",
+        "other": "Registrační číslo",
+        "otherHint": "Nepovinné. Oficiální registrační číslo vaší firmy."
+      },
+      "vat": {
+        "label": "Číslo {label}",
+        "hint": "Nepovinné.",
+        "euHint": "Začíná na {prefix}, např. {example}."
+      },
+      "regime": {
+        "label": "Režim DPH",
+        "hint": "Určuje období v souboru denních součtů.",
+        "none": "Nenastaveno",
+        "franchise": "Franchise en base (bez DPH)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – měsíčně",
+        "reelNormalQuarterly": "Réel normal – čtvrtletně",
+        "franchiseNote": "Zvolili jste franchise en base, takže možná budete chtít nastavit DPH na 0 %."
+      },
+      "saveFailed": "Uložení se nezdařilo — zkuste to prosím znovu."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Datum",
         "time": "Čas",
         "orderNumber": "Číslo objednávky",
+        "receiptNo": "Č. účtenky",
         "event": "Akce",
         "channel": "Kanál",
         "paymentMethod": "Způsob platby",
@@ -4289,6 +4336,39 @@
         "none": "sazba daně není nastavena"
       },
       "noRate": "bez sazby"
+    },
+    "daily": {
+      "title": "Denní součty podle sazeb DPH",
+      "help": "Jeden řádek za každý den a sazbu DPH, pro vaši platformu e-reportingu.",
+      "period": "Období",
+      "custom": "Vlastní data",
+      "from": "Od",
+      "to": "Do",
+      "button": "Denní součty podle sazeb DPH (CSV)",
+      "badRange": "Zvolte počáteční datum, které není po koncovém datu.",
+      "failed": "Soubor se nepodařilo vytvořit — zkuste to prosím znovu."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Oficiální název",
+        "siren": "SIREN/SIRET",
+        "registration": "Registrační číslo",
+        "vatNumber": "Číslo DPH",
+        "vatRegime": "Režim DPH",
+        "period": "Období"
+      },
+      "header": {
+        "date": "Datum",
+        "type": "Typ",
+        "rate": "Sazba DPH",
+        "sales": "Tržby vč. DPH",
+        "refunds": "Vrácené peníze vč. DPH",
+        "net": "Čistá částka bez DPH",
+        "vat": "DPH"
+      },
+      "goods": "Zboží",
+      "total": "Celkem",
+      "noRate": "{n, plural, one {{count} objednávka bez sazby DPH není zahrnuta.} few {{count} objednávky bez sazby DPH nejsou zahrnuty.} other {{count} objednávek bez sazby DPH není zahrnuto.}}"
     }
   },
   "socialPosts": {

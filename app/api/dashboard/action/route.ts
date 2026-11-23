@@ -44,6 +44,7 @@ import { nextOrderId } from '@/lib/order-utils'
  * applied. An import of the raw book beside the wrapper is an invitation to call the wrong one. */
 import { repriceOrder, toMinor, fromMinor, taxBookOf, type RepriceItem } from '@/lib/order-repricing'
 import { lineTax, stampItems, stampDeals } from '@/lib/order-tax'   // france-vat-1
+import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
 /** france-vat-1: the statuses after which an order is a finished record — refused by `edit` and `cancel`. */
 const FINISHED_STATUSES = new Set(['collected', 'cancelled', 'rejected'])
 // Phase 3: tax, tip and fees — the same engine and rules as the customer path (docs/phase-3-foundations-report.md).
@@ -455,6 +456,8 @@ export async function POST(req: NextRequest) {
       // whose order has just been cancelled. One read, one answer, used by the email below.
       const cancelPaymentState = await resolveEmailPaymentState(supabase, orderKey)
       await supabase.from('orders').update({ status: 'cancelled', cancellation_reason: cancellationReason || null }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      // france-records-1: the cancellation, in action_audit_log (best-effort — never stops the cancel).
+      await logOrderEvent(supabase, { action: 'order_cancelled', truckId: truck.id, orderKey, before: order, after: { ...order, status: 'cancelled' }, note: { by: 'operator' }, actor, source: actorSource })
       // ── 🔴 THE ORDER IS CANCELLED FIRST, AND THE HOLD IS RELEASED AFTER. ────────────────────────
       // ── WHY THIS ORDERING, WHEN THE REFUND-ON-CANCEL USES THE OPPOSITE ONE ─────────────────────
       // The refund goes FIRST because a refund that fails must not leave a cancelled order with the
@@ -982,7 +985,8 @@ export async function POST(req: NextRequest) {
       // france-vat-1: + each line's dish id and rate (stampEditedLines keeps repriced.items' order, so the stamps line up).
       const itemsToStore = stampItems(stampEditedLines(repriced.items, order.items, eventBook.menuPrice, eventBook.basisByName), editTax.itemStamps)
 
-      const { error: updateErr } = await supabase.from('orders').update({
+      // france-records-1: the patch is kept so the edit's audit row can say what changed (before → after).
+      const editPatch = {
         // Items carry the AUTHORITATIVE unit_price (and modifier prices): the locked-in figure for a
         // line already on the order, the current menu figure for one this edit added. Writing them
         // back means the stored line prices and the stored total can never disagree — and it is what
@@ -1005,11 +1009,14 @@ export async function POST(req: NextRequest) {
         // Phase 3: the whole snapshot, re-written with the re-priced amounts.
         ...editCharges.snapshot,
         status:   'modified',
-      }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      }
+      const { error: updateErr } = await supabase.from('orders').update(editPatch).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (updateErr) {
         console.error('[edit] order update failed:', updateErr.message, updateErr.details, updateErr.hint)
         return NextResponse.json(await kErr('edit_save_failed'), { status: 500 })
       }
+      // france-records-1: the edit, in action_audit_log — items, deals and totals before and after (no customer details, no notes).
+      await logOrderEvent(supabase, { action: 'order_edited', truckId: truck.id, orderKey, before: order, after: { ...order, ...editPatch }, actor, source: actorSource })
 
       // ── 🔴 THE TOTAL MOVED, SO THE MONEY QUESTION HAS A NEW ANSWER. RECOMPUTE IT. ────────────────
       // ── WHAT THIS FIXES ─────────────────────────────────────────────────────────────────────────
@@ -2067,6 +2074,11 @@ export async function POST(req: NextRequest) {
           return NextResponse.json(await kErr('save_failed'), { status: 500 })
         }
         manualOrderKey = manualOrderRow.order_key
+        // france-records-1: the walk-up placement, in action_audit_log (best-effort). An offline replay of an order already synced
+        // (the upsert above did nothing) is not a new placement and is not logged again.
+        if (!clientOrderKey || ((await supabase.from('action_audit_log').select('id', { count: 'exact', head: true }).eq('order_key', manualOrderKey).eq('action', 'order_placed')).count ?? 0) === 0) {
+          await logOrderEvent(supabase, { action: 'order_placed', truckId: truck.id, orderKey: manualOrderKey, after: { ...insertPayload, order_key: manualOrderKey }, note: { path: 'walk_up' }, actor, source: actorSource })
+        }
 
         // (c2) THE COUNTER ADOPTION THAT SAT HERE IS DELETED.
         //      It read: if (provNum > order_counter) update order_counter = provNum -- raising the EVENT

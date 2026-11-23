@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Izberite vklop ali izklop.",
     "charges_nothing_to_save": "Ni ničesar za shranjevanje.",
     "charges_items_invalid": "Enega od teh artiklov ni več na vašem jedilniku. Zaprite to okno in poskusite znova.",
+    "business_owner_only": "Podatke o podjetju lahko spremeni samo lastnik.",
+    "business_too_long": "To je predolgo — prosimo, skrajšajte.",
+    "business_siren_invalid": "Preverite številko: SIREN ima 9 števk, SIRET pa 14.",
+    "business_company_number_invalid": "Številka podjetja ima 8 črk ali števk, npr. 01234567 ali SC123456.",
+    "business_vat_invalid": "Ta identifikacijska številka za DDV ni videti pravilna. Začne se s {prefix}, npr. {example}.",
+    "business_regime_invalid": "Izberite sistem DDV s seznama.",
+    "business_regime_not_here": "Sistem DDV je treba navesti samo v Franciji.",
+    "business_nothing_to_save": "Ni ničesar za shranjevanje.",
     "country_settings_failed": "Nastavitev države za ta food truck ni bilo mogoče naložiti. Poskusite znova čez trenutek.",
     "plans_failed": "Paketa za ta food truck ni bilo mogoče naložiti. Poskusite znova čez trenutek.",
     "demo_not_available": "Ni na voljo za demo food truck",
@@ -4132,7 +4140,45 @@
       "close": "Zapri",
       "logoPlaceholder": "Vaš logotip\ntukaj"
     },
-    "qrPoweredBy": "Poganja HatchGrab"
+    "qrPoweredBy": "Poganja HatchGrab",
+    "business": {
+      "title": "Podatki o podjetju",
+      "intro": "Za poročila za računovodjo in evidenco. Stranke jih ne vidijo.",
+      "ownerOnly": "Spremeni jih lahko samo lastnik.",
+      "legalName": {
+        "label": "Uradni naziv",
+        "hint": "Naziv, pod katerim je registrirano vaše podjetje."
+      },
+      "address": {
+        "label": "Naslov sedeža",
+        "hint": "Kjer je registrirano vaše podjetje.",
+        "street": "Naslov"
+      },
+      "registration": {
+        "siren": "SIREN ali SIRET",
+        "sirenHint": "9 števk (SIREN) ali 14 števk (SIRET).",
+        "gb": "Številka podjetja",
+        "gbHint": "Neobvezno. 8 črk ali števk, iz registra Companies House.",
+        "other": "Registrska številka",
+        "otherHint": "Neobvezno. Uradna registrska številka vašega podjetja."
+      },
+      "vat": {
+        "label": "ID za {label}",
+        "hint": "Neobvezno.",
+        "euHint": "Začne se s {prefix}, npr. {example}."
+      },
+      "regime": {
+        "label": "Sistem DDV",
+        "hint": "Določa obdobja v datoteki dnevnih seštevkov.",
+        "none": "Ni nastavljeno",
+        "franchise": "Franchise en base (brez obračuna DDV)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – mesečno",
+        "reelNormalQuarterly": "Réel normal – četrtletno",
+        "franchiseNote": "Izbrali ste franchise en base, zato boste DDV morda želeli nastaviti na 0 %."
+      },
+      "saveFailed": "Shranjevanje ni uspelo — poskusite znova."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Datum",
         "time": "Čas",
         "orderNumber": "Številka naročila",
+        "receiptNo": "Št. računa",
         "event": "Dogodek",
         "channel": "Kanal",
         "paymentMethod": "Način plačila",
@@ -4289,6 +4336,39 @@
         "none": "stopnja DDV ni nastavljena"
       },
       "noRate": "brez stopnje"
+    },
+    "daily": {
+      "title": "Dnevni seštevki po stopnjah DDV",
+      "help": "Ena vrstica za vsak dan in stopnjo DDV, za vašo platformo za e-poročanje.",
+      "period": "Obdobje",
+      "custom": "Datumi po izbiri",
+      "from": "Od",
+      "to": "Do",
+      "button": "Dnevni seštevki po stopnjah DDV (CSV)",
+      "badRange": "Izberite začetni datum, ki ni po končnem datumu.",
+      "failed": "Datoteke ni bilo mogoče ustvariti — poskusite znova."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Uradni naziv",
+        "siren": "SIREN/SIRET",
+        "registration": "Registrska številka",
+        "vatNumber": "ID za DDV",
+        "vatRegime": "Sistem DDV",
+        "period": "Obdobje"
+      },
+      "header": {
+        "date": "Datum",
+        "type": "Vrsta",
+        "rate": "Stopnja DDV",
+        "sales": "Prodaja z DDV",
+        "refunds": "Vračila z DDV",
+        "net": "Neto brez DDV",
+        "vat": "DDV"
+      },
+      "goods": "Blago",
+      "total": "Skupaj",
+      "noRate": "{n, plural, one {{count} naročilo brez stopnje DDV ni vključeno.} two {{count} naročili brez stopnje DDV nista vključeni.} few {{count} naročila brez stopnje DDV niso vključena.} other {{count} naročil brez stopnje DDV ni vključenih.}}"
     }
   },
   "socialPosts": {

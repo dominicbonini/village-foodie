@@ -7,5 +7,23 @@
   },
   "accounts": {
     "payAtTruck": "Pay at the truck"
+  },
+  "daily": {
+    "title": "Daily totals by tax rate",
+    "button": "Daily totals by tax rate (CSV)",
+    "help": "One row per day and tax rate, for your e-reporting platform."
+  },
+  "dailyCsv": {
+    "meta": {
+      "vatNumber": "Tax number"
+    },
+    "header": {
+      "rate": "Tax rate",
+      "sales": "Sales incl. tax",
+      "refunds": "Refunds incl. tax",
+      "net": "Net excl. tax",
+      "vat": "Tax"
+    },
+    "noRate": "{n, plural, one {{count} order with no tax rate is not included.} other {{count} orders with no tax rate are not included.}}"
   }
 }

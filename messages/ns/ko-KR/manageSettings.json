@@ -211,5 +211,43 @@
     "close": "닫기",
     "logoPlaceholder": "로고\n위치"
   },
-  "qrPoweredBy": "HatchGrab 제공"
+  "qrPoweredBy": "HatchGrab 제공",
+  "business": {
+    "title": "사업자 정보",
+    "intro": "세무사용 보고서와 기록에 사용됩니다. 손님에게는 보이지 않습니다.",
+    "ownerOnly": "소유자만 변경할 수 있습니다.",
+    "legalName": {
+      "label": "정식 상호",
+      "hint": "사업자로 등록된 이름입니다."
+    },
+    "address": {
+      "label": "등록 주소",
+      "hint": "사업자가 등록된 주소입니다.",
+      "street": "주소"
+    },
+    "registration": {
+      "siren": "SIREN 또는 SIRET",
+      "sirenHint": "9자리(SIREN) 또는 14자리(SIRET) 숫자입니다.",
+      "gb": "회사 번호",
+      "gbHint": "선택 사항. Companies House에서 받은 영문자나 숫자 8자리입니다.",
+      "other": "등록 번호",
+      "otherHint": "선택 사항. 사업자의 공식 등록 번호입니다."
+    },
+    "vat": {
+      "label": "{label} 번호",
+      "hint": "선택 사항.",
+      "euHint": "{example}처럼 {prefix}(으)로 시작합니다."
+    },
+    "regime": {
+      "label": "부가세 과세 유형",
+      "hint": "일별 합계 파일의 기간을 정합니다.",
+      "none": "설정 안 함",
+      "franchise": "Franchise en base(부가세 미부과)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – 월별",
+      "reelNormalQuarterly": "Réel normal – 분기별",
+      "franchiseNote": "franchise en base를 선택하셨으니 부가세를 0 %로 설정하는 것이 좋을 수 있습니다."
+    },
+    "saveFailed": "저장하지 못했어요. 다시 시도해 주세요."
+  }
 }

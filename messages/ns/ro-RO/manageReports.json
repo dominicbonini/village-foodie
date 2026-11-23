@@ -129,6 +129,7 @@
       "date": "Data",
       "time": "Ora",
       "orderNumber": "Număr comandă",
+      "receiptNo": "Nr. bon",
       "event": "Eveniment",
       "channel": "Canal",
       "paymentMethod": "Metodă de plată",
@@ -153,5 +154,38 @@
       "none": "nicio cotă de TVA setată"
     },
     "noRate": "fără cotă"
+  },
+  "daily": {
+    "title": "Totaluri zilnice pe cote de TVA",
+    "help": "Un rând pentru fiecare zi și cotă de TVA, pentru platforma dumneavoastră de raportare electronică.",
+    "period": "Perioadă",
+    "custom": "Date personalizate",
+    "from": "De la",
+    "to": "Până la",
+    "button": "Totaluri zilnice pe cote de TVA (CSV)",
+    "badRange": "Alegeți o dată de început care nu este după data de sfârșit.",
+    "failed": "Nu s-a putut crea fișierul — vă rugăm să încercați din nou."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Denumire oficială",
+      "siren": "SIREN/SIRET",
+      "registration": "Număr de înregistrare",
+      "vatNumber": "Cod de TVA",
+      "vatRegime": "Regim de TVA",
+      "period": "Perioadă"
+    },
+    "header": {
+      "date": "Data",
+      "type": "Tip",
+      "rate": "Cotă TVA",
+      "sales": "Vânzări cu TVA",
+      "refunds": "Rambursări cu TVA",
+      "net": "Net fără TVA",
+      "vat": "TVA"
+    },
+    "goods": "Bunuri",
+    "total": "Total",
+    "noRate": "{n, plural, one {{count} comandă fără cotă de TVA nu este inclusă.} few {{count} comenzi fără cotă de TVA nu sunt incluse.} other {{count} de comenzi fără cotă de TVA nu sunt incluse.}}"
   }
 }

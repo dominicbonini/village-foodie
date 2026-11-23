@@ -144,7 +144,7 @@ console.log(`\n── 3 · every used key exists in every shipped language base 
 for (const l of BASES) {
   // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): its 24 new keys are not in the five bases no enabled country uses (TRANSLATE ONLY WHAT'S USED) —
   // set aside by name (scripts/_lp-france-vat-1.cjs), and only those; every other missing key still fails.
-  const miss = [...usedLiteral.keys()].filter(k => !BASE_LEAVES[l].has(k) && !require('./_lp-france-vat-1.cjs').setAside(l, k))
+  const miss = [...usedLiteral.keys()].filter(k => !BASE_LEAVES[l].has(k) && !require('./_lp-france-records-1.cjs').setAside(l, k))
   ok(`${l}: all ${usedLiteral.size} used keys present`, miss.length === 0, `${miss.length} missing: ${miss.slice(0, 40).join(', ')}${miss.length > 40 ? ' …' : ''}`)
 }
 console.log(`\n${fail ? '🔴' : '✅'} messages-keys-used: ${pass} passed, ${fail} failed`)

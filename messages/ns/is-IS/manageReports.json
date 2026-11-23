@@ -129,6 +129,7 @@
       "date": "Dagsetning",
       "time": "Tími",
       "orderNumber": "Pöntunarnúmer",
+      "receiptNo": "Kvittunarnr.",
       "event": "Viðburður",
       "channel": "Leið",
       "paymentMethod": "Greiðslumáti",
@@ -153,5 +154,38 @@
       "none": "ekkert skatthlutfall stillt"
     },
     "noRate": "ekkert hlutfall"
+  },
+  "daily": {
+    "title": "Daglegar samtölur eftir VSK-hlutfalli",
+    "help": "Ein lína fyrir hvern dag og VSK-hlutfall, fyrir rafræna skilakerfið þitt.",
+    "period": "Tímabil",
+    "custom": "Valdar dagsetningar",
+    "from": "Frá",
+    "to": "Til",
+    "button": "Daglegar samtölur eftir VSK-hlutfalli (CSV)",
+    "badRange": "Veldu upphafsdag sem er sami dagur og lokadagur eða fyrr.",
+    "failed": "Ekki tókst að búa til skrána — reyndu aftur."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Skráð heiti",
+      "siren": "SIREN/SIRET",
+      "registration": "Skráningarnúmer",
+      "vatNumber": "VSK-númer",
+      "vatRegime": "VSK-fyrirkomulag",
+      "period": "Tímabil"
+    },
+    "header": {
+      "date": "Dagsetning",
+      "type": "Tegund",
+      "rate": "VSK-hlutfall",
+      "sales": "Sala með VSK",
+      "refunds": "Endurgreiðslur með VSK",
+      "net": "Nettó án VSK",
+      "vat": "VSK"
+    },
+    "goods": "Vörur",
+    "total": "Samtals",
+    "noRate": "{n, plural, one {{count} pöntun án VSK-hlutfalls er ekki með.} other {{count} pantanir án VSK-hlutfalls eru ekki með.}}"
   }
 }

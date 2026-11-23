@@ -35,6 +35,7 @@ import { localeForTruck } from '@/lib/i18n/server-locale'
 import type { ResolvedActor, ActorSource } from '@/lib/audit/actor'
 import '@/lib/i18n/catalog/emailCustomer'
 import { privacyFooterHtml, privacyFooterText } from '@/lib/email-privacy'
+import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
 
 // Escape operator free-text before interpolating into a customer email's HTML (prevents broken
 // markup / injection from a rejection/cancellation reason). NOTE: the CANCEL email (:cancellation
@@ -79,6 +80,8 @@ export async function rejectOrder(
   const rejectPaymentState = await resolveEmailPaymentState(supabase, orderKey)
   // Dedicated rejection_reason column (NOT cancellation_reason — a rejected order isn't cancelled).
   await supabase.from('orders').update({ status: 'rejected', rejection_reason: rejectionReason || null }).eq('order_key', orderKey).eq('truck_id', truck.id)
+  // france-records-1: the rejection, in action_audit_log (best-effort — never stops the reject). The operator's or the cron's actor.
+  await logOrderEvent(supabase, { action: 'order_rejected', truckId: truck.id, orderKey, before: order, after: { ...order, status: 'rejected' }, actor, source })
   // ── 🔴 THE ORDER IS REJECTED FIRST, AND THE HOLD IS RELEASED AFTER — CANCEL'S ORDERING. ─────
   // A hold is not money out. Nothing has been taken, and a release that fails leaves an
   // authorisation that expires by itself in about a week — so an operator refusing an order

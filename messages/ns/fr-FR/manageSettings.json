@@ -211,5 +211,43 @@
     "close": "Fermer",
     "logoPlaceholder": "Votre logo\nici"
   },
-  "qrPoweredBy": "Propulsé par HatchGrab"
+  "qrPoweredBy": "Propulsé par HatchGrab",
+  "business": {
+    "title": "Informations de l’entreprise",
+    "intro": "Pour vos rapports comptables et vos registres. Les clients ne les voient pas.",
+    "ownerOnly": "Seul le propriétaire peut modifier ces informations.",
+    "legalName": {
+      "label": "Raison sociale",
+      "hint": "Le nom sous lequel votre entreprise est immatriculée."
+    },
+    "address": {
+      "label": "Adresse du siège social",
+      "hint": "L’adresse où votre entreprise est immatriculée.",
+      "street": "Adresse"
+    },
+    "registration": {
+      "siren": "SIREN ou SIRET",
+      "sirenHint": "9 chiffres (SIREN) ou 14 chiffres (SIRET).",
+      "gb": "Numéro d’entreprise",
+      "gbHint": "Facultatif. 8 lettres ou chiffres, attribué par Companies House.",
+      "other": "Numéro d’immatriculation",
+      "otherHint": "Facultatif. Le numéro d’immatriculation officiel de votre entreprise."
+    },
+    "vat": {
+      "label": "Numéro de {label}",
+      "hint": "Facultatif.",
+      "euHint": "Commence par {prefix}, par exemple {example}."
+    },
+    "regime": {
+      "label": "Régime de TVA",
+      "hint": "Détermine les périodes de votre fichier de totaux journaliers.",
+      "none": "Non défini",
+      "franchise": "Franchise en base (pas de TVA facturée)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – mensuel",
+      "reelNormalQuarterly": "Réel normal – trimestriel",
+      "franchiseNote": "Vous avez choisi la franchise en base : vous voudrez peut-être régler votre TVA sur 0 %."
+    },
+    "saveFailed": "Impossible d’enregistrer — veuillez réessayer."
+  }
 }

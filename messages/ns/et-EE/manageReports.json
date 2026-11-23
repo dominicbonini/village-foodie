@@ -129,6 +129,7 @@
       "date": "Kuupäev",
       "time": "Kellaaeg",
       "orderNumber": "Tellimuse number",
+      "receiptNo": "Tšeki nr",
       "event": "Üritus",
       "channel": "Kanal",
       "paymentMethod": "Makseviis",
@@ -153,5 +154,38 @@
       "none": "maksumäära pole määratud"
     },
     "noRate": "ilma määrata"
+  },
+  "daily": {
+    "title": "Päevasummad käibemaksumäärade kaupa",
+    "help": "Üks rida päeva ja käibemaksumäära kohta, sinu e-aruandluse platvormi jaoks.",
+    "period": "Periood",
+    "custom": "Valitud kuupäevad",
+    "from": "Alates",
+    "to": "Kuni",
+    "button": "Päevasummad käibemaksumäärade kaupa (CSV)",
+    "badRange": "Vali alguskuupäev, mis on lõppkuupäevaga sama või varasem.",
+    "failed": "Faili loomine ebaõnnestus — proovi uuesti."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Ametlik nimi",
+      "siren": "SIREN/SIRET",
+      "registration": "Registrikood",
+      "vatNumber": "KMKR-number",
+      "vatRegime": "Käibemaksukord",
+      "period": "Periood"
+    },
+    "header": {
+      "date": "Kuupäev",
+      "type": "Tüüp",
+      "rate": "Käibemaksumäär",
+      "sales": "Müük koos käibemaksuga",
+      "refunds": "Tagastused koos käibemaksuga",
+      "net": "Neto ilma käibemaksuta",
+      "vat": "Käibemaks"
+    },
+    "goods": "Kaubad",
+    "total": "Kokku",
+    "noRate": "{n, plural, one {{count} tellimus ilma käibemaksumäärata ei ole arvestatud.} other {{count} tellimust ilma käibemaksumäärata ei ole arvestatud.}}"
   }
 }

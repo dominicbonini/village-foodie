@@ -211,5 +211,43 @@
     "close": "Затваряне",
     "logoPlaceholder": "Вашето\nлого тук"
   },
-  "qrPoweredBy": "С технологията на HatchGrab"
+  "qrPoweredBy": "С технологията на HatchGrab",
+  "business": {
+    "title": "Данни на фирмата",
+    "intro": "За отчетите за счетоводителя и документацията. Клиентите не ги виждат.",
+    "ownerOnly": "Само собственикът може да ги променя.",
+    "legalName": {
+      "label": "Официално наименование",
+      "hint": "Наименованието, под което е регистрирана фирмата ви."
+    },
+    "address": {
+      "label": "Адрес по регистрация",
+      "hint": "Къде е регистрирана фирмата ви.",
+      "street": "Адрес"
+    },
+    "registration": {
+      "siren": "SIREN или SIRET",
+      "sirenHint": "9 цифри (SIREN) или 14 цифри (SIRET).",
+      "gb": "Номер на дружеството",
+      "gbHint": "Незадължително. 8 букви или цифри, от Companies House.",
+      "other": "Регистрационен номер",
+      "otherHint": "Незадължително. Официалният регистрационен номер на фирмата ви."
+    },
+    "vat": {
+      "label": "{label} номер",
+      "hint": "Незадължително.",
+      "euHint": "Започва с {prefix}, например {example}."
+    },
+    "regime": {
+      "label": "Режим по ДДС",
+      "hint": "Определя периодите във файла с дневните суми.",
+      "none": "Не е зададено",
+      "franchise": "Franchise en base (без начисляване на ДДС)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – месечно",
+      "reelNormalQuarterly": "Réel normal – тримесечно",
+      "franchiseNote": "Избрали сте franchise en base, така че може да искате да зададете ДДС 0 %."
+    },
+    "saveFailed": "Неуспешно запазване — моля, опитайте отново."
+  }
 }

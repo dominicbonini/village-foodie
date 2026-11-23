@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Pilih hidup atau mati.",
     "charges_nothing_to_save": "Tiada apa untuk disimpan.",
     "charges_items_invalid": "Salah satu item ini sudah tiada dalam menu anda. Tutup ini dan cuba lagi.",
+    "business_owner_only": "Hanya pemilik boleh menukar butiran perniagaan.",
+    "business_too_long": "Terlalu panjang — sila pendekkan.",
+    "business_siren_invalid": "Semak nombor itu: SIREN ada 9 digit dan SIRET ada 14.",
+    "business_company_number_invalid": "Nombor syarikat ada 8 huruf atau digit, seperti 01234567 atau SC123456.",
+    "business_vat_invalid": "Nombor cukai itu nampaknya tidak betul. Ia bermula dengan {prefix}, seperti {example}.",
+    "business_regime_invalid": "Pilih rejim cukai daripada senarai.",
+    "business_regime_not_here": "Rejim cukai hanya ditanya di Perancis.",
+    "business_nothing_to_save": "Tiada apa untuk disimpan.",
     "country_settings_failed": "Tetapan negara trak ini tidak dapat dimuatkan. Cuba lagi sebentar lagi.",
     "plans_failed": "Pelan trak ini tidak dapat dimuatkan. Cuba lagi sebentar lagi.",
     "demo_not_available": "Tidak tersedia pada trak demo",
@@ -4132,7 +4140,45 @@
       "close": "Tutup",
       "logoPlaceholder": "Logo anda\ndi sini"
     },
-    "qrPoweredBy": "Dikuasakan oleh HatchGrab"
+    "qrPoweredBy": "Dikuasakan oleh HatchGrab",
+    "business": {
+      "title": "Butiran perniagaan",
+      "intro": "Untuk laporan akauntan dan rekod anda. Pelanggan tidak nampak butiran ini.",
+      "ownerOnly": "Hanya pemilik boleh menukar butiran ini.",
+      "legalName": {
+        "label": "Nama sah",
+        "hint": "Nama yang didaftarkan untuk perniagaan anda."
+      },
+      "address": {
+        "label": "Alamat berdaftar",
+        "hint": "Tempat perniagaan anda didaftarkan.",
+        "street": "Alamat"
+      },
+      "registration": {
+        "siren": "SIREN atau SIRET",
+        "sirenHint": "9 digit (SIREN) atau 14 digit (SIRET).",
+        "gb": "Nombor syarikat",
+        "gbHint": "Pilihan. 8 huruf atau digit, daripada Companies House.",
+        "other": "Nombor pendaftaran",
+        "otherHint": "Pilihan. Nombor pendaftaran rasmi perniagaan anda."
+      },
+      "vat": {
+        "label": "Nombor {label}",
+        "hint": "Pilihan.",
+        "euHint": "Bermula dengan {prefix}, seperti {example}."
+      },
+      "regime": {
+        "label": "Rejim cukai",
+        "hint": "Menetapkan tempoh dalam fail jumlah harian anda.",
+        "none": "Belum ditetapkan",
+        "franchise": "Franchise en base (tiada cukai dikenakan)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – bulanan",
+        "reelNormalQuarterly": "Réel normal – suku tahunan",
+        "franchiseNote": "Anda telah memilih franchise en base, jadi anda mungkin mahu menetapkan cukai anda kepada 0 %."
+      },
+      "saveFailed": "Tidak dapat disimpan — sila cuba lagi."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Tarikh",
         "time": "Masa",
         "orderNumber": "Nombor pesanan",
+        "receiptNo": "No. resit",
         "event": "Acara",
         "channel": "Saluran",
         "paymentMethod": "Kaedah pembayaran",
@@ -4289,6 +4336,39 @@
         "none": "tiada kadar cukai ditetapkan"
       },
       "noRate": "tiada kadar"
+    },
+    "daily": {
+      "title": "Jumlah harian mengikut kadar cukai",
+      "help": "Satu baris bagi setiap hari dan kadar cukai, untuk platform e-pelaporan anda.",
+      "period": "Tempoh",
+      "custom": "Tarikh pilihan sendiri",
+      "from": "Dari",
+      "to": "Hingga",
+      "button": "Jumlah harian mengikut kadar cukai (CSV)",
+      "badRange": "Pilih tarikh mula yang sama dengan atau sebelum tarikh akhir.",
+      "failed": "Tidak dapat menjana fail — sila cuba lagi."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Nama sah",
+        "siren": "SIREN/SIRET",
+        "registration": "Nombor pendaftaran",
+        "vatNumber": "Nombor cukai",
+        "vatRegime": "Rejim cukai",
+        "period": "Tempoh"
+      },
+      "header": {
+        "date": "Tarikh",
+        "type": "Jenis",
+        "rate": "Kadar cukai",
+        "sales": "Jualan termasuk cukai",
+        "refunds": "Bayaran balik termasuk cukai",
+        "net": "Bersih tanpa cukai",
+        "vat": "Cukai"
+      },
+      "goods": "Barangan",
+      "total": "Jumlah",
+      "noRate": "{n, plural, other {{count} pesanan tanpa kadar cukai tidak dimasukkan.}}"
     }
   },
   "socialPosts": {

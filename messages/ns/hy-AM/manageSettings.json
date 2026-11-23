@@ -211,5 +211,43 @@
     "close": "Փակել",
     "logoPlaceholder": "Ձեր լոգոն\nայստեղ"
   },
-  "qrPoweredBy": "Աշխատում է HatchGrab հարթակով"
+  "qrPoweredBy": "Աշխատում է HatchGrab հարթակով",
+  "business": {
+    "title": "Բիզնեսի տվյալներ",
+    "intro": "Ձեր հաշվապահի հաշվետվությունների և հաշվառման համար։ Հաճախորդներն այս տվյալները չեն տեսնում։",
+    "ownerOnly": "Դրանք կարող է փոխել միայն սեփականատերը։",
+    "legalName": {
+      "label": "Իրավաբանական անվանում",
+      "hint": "Անվանումը, որով գրանցված է ձեր բիզնեսը։"
+    },
+    "address": {
+      "label": "Իրավաբանական հասցե",
+      "hint": "Որտեղ է գրանցված ձեր բիզնեսը։",
+      "street": "Հասցե"
+    },
+    "registration": {
+      "siren": "SIREN կամ SIRET",
+      "sirenHint": "9 թվանշան (SIREN) կամ 14 թվանշան (SIRET)։",
+      "gb": "Ընկերության համար",
+      "gbHint": "Ըստ ցանկության։ 8 տառ կամ թվանշան՝ Companies House-ից։",
+      "other": "Գրանցման համար",
+      "otherHint": "Ըստ ցանկության։ Ձեր բիզնեսի պաշտոնական գրանցման համարը։"
+    },
+    "vat": {
+      "label": "{label} համար",
+      "hint": "Ըստ ցանկության։",
+      "euHint": "Սկսվում է {prefix}-ով, օրինակ՝ {example}։"
+    },
+    "regime": {
+      "label": "ԱԱՀ ռեժիմ",
+      "hint": "Որոշում է ձեր օրական հանրագումարների ֆայլի ժամանակահատվածները։",
+      "none": "Նշված չէ",
+      "franchise": "Franchise en base (առանց ԱԱՀ-ի)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – ամսական",
+      "reelNormalQuarterly": "Réel normal – եռամսյակային",
+      "franchiseNote": "Դուք ընտրել եք franchise en base, ուստի գուցե ցանկանաք ԱԱՀ-ն սահմանել 0%։"
+    },
+    "saveFailed": "Չհաջողվեց պահպանել։ Խնդրում ենք կրկին փորձել։"
+  }
 }

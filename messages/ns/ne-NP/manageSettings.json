@@ -211,5 +211,43 @@
     "close": "बन्द गर्नुहोस्",
     "logoPlaceholder": "तपाईंको लोगो\nयहाँ"
   },
-  "qrPoweredBy": "प्रविधि सहयोग: HatchGrab"
+  "qrPoweredBy": "प्रविधि सहयोग: HatchGrab",
+  "business": {
+    "title": "व्यवसायको विवरण",
+    "intro": "तपाईंको लेखापालका रिपोर्ट र अभिलेखका लागि। ग्राहकले यी देख्दैनन्।",
+    "ownerOnly": "यी मालिकले मात्र बदल्न सक्नुहुन्छ।",
+    "legalName": {
+      "label": "कानुनी नाम",
+      "hint": "तपाईंको व्यवसाय दर्ता भएको नाम।"
+    },
+    "address": {
+      "label": "दर्ता ठेगाना",
+      "hint": "तपाईंको व्यवसाय दर्ता भएको ठाउँ।",
+      "street": "ठेगाना"
+    },
+    "registration": {
+      "siren": "SIREN वा SIRET",
+      "sirenHint": "9 अङ्क (SIREN) वा 14 अङ्क (SIRET)।",
+      "gb": "कम्पनी नम्बर",
+      "gbHint": "ऐच्छिक। Companies House बाट पाएको 8 अक्षर वा अङ्क।",
+      "other": "दर्ता नम्बर",
+      "otherHint": "ऐच्छिक। तपाईंको व्यवसायको आधिकारिक दर्ता नम्बर।"
+    },
+    "vat": {
+      "label": "{label} नम्बर",
+      "hint": "ऐच्छिक।",
+      "euHint": "{prefix} बाट सुरु हुन्छ, जस्तै {example}।"
+    },
+    "regime": {
+      "label": "भ्याट प्रणाली",
+      "hint": "तपाईंको दैनिक जम्मा फाइलका अवधिहरू तय गर्छ।",
+      "none": "राखिएको छैन",
+      "franchise": "Franchise en base (भ्याट नलिने)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – मासिक",
+      "reelNormalQuarterly": "Réel normal – त्रैमासिक",
+      "franchiseNote": "तपाईंले franchise en base छान्नुभएको छ, त्यसैले भ्याट 0 % राख्न चाहनुहुन्छ होला।"
+    },
+    "saveFailed": "सेभ गर्न सकिएन — कृपया फेरि प्रयास गर्नुहोस्।"
+  }
 }

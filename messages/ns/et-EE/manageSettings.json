@@ -211,5 +211,43 @@
     "close": "Sulge",
     "logoPlaceholder": "Sinu logo\nsiia"
   },
-  "qrPoweredBy": "Platvorm: HatchGrab"
+  "qrPoweredBy": "Platvorm: HatchGrab",
+  "business": {
+    "title": "Ettevõtte andmed",
+    "intro": "Raamatupidaja aruannete ja sinu arvestuse jaoks. Kliendid neid ei näe.",
+    "ownerOnly": "Neid saab muuta ainult omanik.",
+    "legalName": {
+      "label": "Ametlik nimi",
+      "hint": "Nimi, millega sinu ettevõte on registreeritud."
+    },
+    "address": {
+      "label": "Registrijärgne aadress",
+      "hint": "Kus sinu ettevõte on registreeritud.",
+      "street": "Aadress"
+    },
+    "registration": {
+      "siren": "SIREN või SIRET",
+      "sirenHint": "9 numbrit (SIREN) või 14 numbrit (SIRET).",
+      "gb": "Ettevõtte number",
+      "gbHint": "Valikuline. 8 tähte või numbrit (Companies House).",
+      "other": "Registrikood",
+      "otherHint": "Valikuline. Sinu ettevõtte ametlik registrikood."
+    },
+    "vat": {
+      "label": "{label}-number",
+      "hint": "Valikuline.",
+      "euHint": "Algab tähtedega {prefix}, nt {example}."
+    },
+    "regime": {
+      "label": "Käibemaksukord",
+      "hint": "Määrab perioodid sinu päevasummade failis.",
+      "none": "Määramata",
+      "franchise": "Franchise en base (käibemaksu ei lisata)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – igakuine",
+      "reelNormalQuarterly": "Réel normal – kvartaalne",
+      "franchiseNote": "Valisid franchise en base, seega võiksid seada käibemaksu määraks 0 %."
+    },
+    "saveFailed": "Salvestamine ebaõnnestus — proovi uuesti."
+  }
 }

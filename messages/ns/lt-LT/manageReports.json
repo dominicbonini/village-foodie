@@ -129,6 +129,7 @@
       "date": "Data",
       "time": "Laikas",
       "orderNumber": "Užsakymo numeris",
+      "receiptNo": "Kvito nr.",
       "event": "Renginys",
       "channel": "Kanalas",
       "paymentMethod": "Mokėjimo būdas",
@@ -153,5 +154,38 @@
       "none": "mokesčio tarifas nenustatytas"
     },
     "noRate": "be tarifo"
+  },
+  "daily": {
+    "title": "Dienos sumos pagal PVM tarifą",
+    "help": "Viena eilutė kiekvienai dienai ir PVM tarifui, jūsų e. ataskaitų platformai.",
+    "period": "Laikotarpis",
+    "custom": "Pasirinktos datos",
+    "from": "Nuo",
+    "to": "Iki",
+    "button": "Dienos sumos pagal PVM tarifą (CSV)",
+    "badRange": "Pasirinkite pradžios datą, kuri nėra vėlesnė už pabaigos datą.",
+    "failed": "Nepavyko sukurti failo — bandykite dar kartą."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Teisinis pavadinimas",
+      "siren": "SIREN/SIRET",
+      "registration": "Registracijos numeris",
+      "vatNumber": "PVM mokėtojo kodas",
+      "vatRegime": "PVM režimas",
+      "period": "Laikotarpis"
+    },
+    "header": {
+      "date": "Data",
+      "type": "Tipas",
+      "rate": "PVM tarifas",
+      "sales": "Pardavimai su PVM",
+      "refunds": "Grąžinimai su PVM",
+      "net": "Neto be PVM",
+      "vat": "PVM"
+    },
+    "goods": "Prekės",
+    "total": "Iš viso",
+    "noRate": "{n, plural, one {{count} užsakymas be PVM tarifo neįtrauktas.} few {{count} užsakymai be PVM tarifo neįtraukti.} many {{count} užsakymų be PVM tarifo neįtraukta.} other {{count} užsakymų be PVM tarifo neįtraukta.}}"
   }
 }

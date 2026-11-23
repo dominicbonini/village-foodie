@@ -211,5 +211,43 @@
     "close": "Zatvori",
     "logoPlaceholder": "Vaš logo\novdje"
   },
-  "qrPoweredBy": "Pokreće HatchGrab"
+  "qrPoweredBy": "Pokreće HatchGrab",
+  "business": {
+    "title": "Podaci o tvrtki",
+    "intro": "Za izvješća za knjigovođu i evidenciju. Kupci ih ne vide.",
+    "ownerOnly": "Samo ih vlasnik može mijenjati.",
+    "legalName": {
+      "label": "Službeni naziv",
+      "hint": "Naziv pod kojim je vaša tvrtka registrirana."
+    },
+    "address": {
+      "label": "Adresa sjedišta",
+      "hint": "Gdje je vaša tvrtka registrirana.",
+      "street": "Adresa"
+    },
+    "registration": {
+      "siren": "SIREN ili SIRET",
+      "sirenHint": "9 znamenki (SIREN) ili 14 znamenki (SIRET).",
+      "gb": "Broj tvrtke",
+      "gbHint": "Neobavezno. 8 slova ili znamenki, iz registra Companies House.",
+      "other": "Registracijski broj",
+      "otherHint": "Neobavezno. Službeni registracijski broj vaše tvrtke."
+    },
+    "vat": {
+      "label": "{label} broj",
+      "hint": "Neobavezno.",
+      "euHint": "Počinje s {prefix}, npr. {example}."
+    },
+    "regime": {
+      "label": "Sustav PDV-a",
+      "hint": "Određuje razdoblja u datoteci dnevnih zbrojeva.",
+      "none": "Nije postavljeno",
+      "franchise": "Franchise en base (bez obračuna PDV-a)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – mjesečno",
+      "reelNormalQuarterly": "Réel normal – tromjesečno",
+      "franchiseNote": "Odabrali ste franchise en base, pa biste možda htjeli postaviti PDV na 0 %."
+    },
+    "saveFailed": "Spremanje nije uspjelo — pokušajte ponovno."
+  }
 }

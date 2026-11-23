@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Chagua kuwasha au kuzima.",
     "charges_nothing_to_save": "Hakuna cha kuhifadhi.",
     "charges_items_invalid": "Moja ya bidhaa hizi haipo tena kwenye menyu yako. Funga hiki kisha ujaribu tena.",
+    "business_owner_only": "Mmiliki pekee ndiye anayeweza kubadilisha taarifa za biashara.",
+    "business_too_long": "Ni ndefu mno — tafadhali ifupishe.",
+    "business_siren_invalid": "Kagua namba: SIREN ina tarakimu 9 na SIRET ina 14.",
+    "business_company_number_invalid": "Namba ya kampuni ina herufi au tarakimu 8, kama 01234567 au SC123456.",
+    "business_vat_invalid": "Namba hiyo ya VAT haionekani kuwa sahihi. Inaanza na {prefix}, kama {example}.",
+    "business_regime_invalid": "Chagua mfumo wa VAT kutoka kwenye orodha.",
+    "business_regime_not_here": "Mfumo wa VAT unaulizwa nchini Ufaransa pekee.",
+    "business_nothing_to_save": "Hakuna cha kuhifadhi.",
     "country_settings_failed": "Imeshindikana kupakia mipangilio ya nchi ya food truck hii. Jaribu tena baada ya muda mfupi.",
     "plans_failed": "Imeshindikana kupakia kifurushi cha food truck hii. Jaribu tena baada ya muda mfupi.",
     "demo_not_available": "Haipatikani kwenye food truck ya majaribio",
@@ -4132,7 +4140,45 @@
       "close": "Funga",
       "logoPlaceholder": "Nembo yako\nhapa"
     },
-    "qrPoweredBy": "Inaendeshwa na HatchGrab"
+    "qrPoweredBy": "Inaendeshwa na HatchGrab",
+    "business": {
+      "title": "Taarifa za biashara",
+      "intro": "Kwa ripoti za mhasibu wako na kumbukumbu zako. Wateja hawazioni.",
+      "ownerOnly": "Mmiliki pekee ndiye anayeweza kubadilisha hizi.",
+      "legalName": {
+        "label": "Jina la kisheria",
+        "hint": "Jina ambalo biashara yako imesajiliwa nalo."
+      },
+      "address": {
+        "label": "Anwani iliyosajiliwa",
+        "hint": "Mahali ambapo biashara yako imesajiliwa.",
+        "street": "Anwani"
+      },
+      "registration": {
+        "siren": "SIREN au SIRET",
+        "sirenHint": "Tarakimu 9 (SIREN) au tarakimu 14 (SIRET).",
+        "gb": "Namba ya kampuni",
+        "gbHint": "Si lazima. Herufi au tarakimu 8, kutoka Companies House.",
+        "other": "Namba ya usajili",
+        "otherHint": "Si lazima. Namba rasmi ya usajili wa biashara yako."
+      },
+      "vat": {
+        "label": "Namba ya {label}",
+        "hint": "Si lazima.",
+        "euHint": "Inaanza na {prefix}, kama {example}."
+      },
+      "regime": {
+        "label": "Mfumo wa VAT",
+        "hint": "Huweka vipindi katika faili lako la jumla za kila siku.",
+        "none": "Haijawekwa",
+        "franchise": "Franchise en base (hakuna VAT inayotozwa)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – kila mwezi",
+        "reelNormalQuarterly": "Réel normal – kila robo mwaka",
+        "franchiseNote": "Umechagua franchise en base, kwa hiyo huenda ukataka kuweka VAT yako kuwa 0 %."
+      },
+      "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Tarehe",
         "time": "Muda",
         "orderNumber": "Namba ya oda",
+        "receiptNo": "Namba ya risiti",
         "event": "Tukio",
         "channel": "Njia",
         "paymentMethod": "Njia ya malipo",
@@ -4289,6 +4336,39 @@
         "none": "hakuna kiwango cha kodi kilichowekwa"
       },
       "noRate": "hakuna kiwango"
+    },
+    "daily": {
+      "title": "Jumla za kila siku kwa kiwango cha VAT",
+      "help": "Mstari mmoja kwa kila siku na kiwango cha VAT, kwa jukwaa lako la kuripoti kielektroniki.",
+      "period": "Kipindi",
+      "custom": "Tarehe maalum",
+      "from": "Kuanzia",
+      "to": "Hadi",
+      "button": "Jumla za kila siku kwa kiwango cha VAT (CSV)",
+      "badRange": "Chagua tarehe ya kuanza iliyo sawa na au kabla ya tarehe ya mwisho.",
+      "failed": "Imeshindikana kutengeneza faili — tafadhali jaribu tena."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Jina la kisheria",
+        "siren": "SIREN/SIRET",
+        "registration": "Namba ya usajili",
+        "vatNumber": "Namba ya VAT",
+        "vatRegime": "Mfumo wa VAT",
+        "period": "Kipindi"
+      },
+      "header": {
+        "date": "Tarehe",
+        "type": "Aina",
+        "rate": "Kiwango cha VAT",
+        "sales": "Mauzo pamoja na VAT",
+        "refunds": "Marejesho pamoja na VAT",
+        "net": "Halisi bila VAT",
+        "vat": "VAT"
+      },
+      "goods": "Bidhaa",
+      "total": "Jumla",
+      "noRate": "{n, plural, one {Oda {count} isiyo na kiwango cha VAT haijajumuishwa.} other {Oda {count} zisizo na kiwango cha VAT hazijajumuishwa.}}"
     }
   },
   "socialPosts": {

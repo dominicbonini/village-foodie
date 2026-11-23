@@ -129,6 +129,7 @@
       "date": "Date",
       "time": "Heure",
       "orderNumber": "Numéro de commande",
+      "receiptNo": "N° de reçu",
       "event": "Événement",
       "channel": "Canal",
       "paymentMethod": "Mode de paiement",
@@ -153,5 +154,38 @@
       "none": "aucun taux de taxe défini"
     },
     "noRate": "sans taux"
+  },
+  "daily": {
+    "title": "Totaux journaliers par taux de TVA",
+    "help": "Une ligne par jour et par taux de TVA, pour votre plateforme d’e-reporting.",
+    "period": "Période",
+    "custom": "Dates personnalisées",
+    "from": "Du",
+    "to": "Au",
+    "button": "Totaux journaliers par taux de TVA (CSV)",
+    "badRange": "Choisissez une date de début antérieure ou égale à la date de fin.",
+    "failed": "Impossible de créer le fichier — veuillez réessayer."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Raison sociale",
+      "siren": "SIREN/SIRET",
+      "registration": "Numéro d’immatriculation",
+      "vatNumber": "Numéro de TVA",
+      "vatRegime": "Régime de TVA",
+      "period": "Période"
+    },
+    "header": {
+      "date": "Date",
+      "type": "Type",
+      "rate": "Taux de TVA",
+      "sales": "Ventes TTC",
+      "refunds": "Remboursements TTC",
+      "net": "Net HT",
+      "vat": "TVA"
+    },
+    "goods": "Biens",
+    "total": "Total",
+    "noRate": "{n, plural, one {{count} commande sans taux de TVA n’est pas incluse.} other {{count} commandes sans taux de TVA ne sont pas incluses.}}"
   }
 }

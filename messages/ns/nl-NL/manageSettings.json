@@ -211,5 +211,43 @@
     "close": "Sluiten",
     "logoPlaceholder": "Je logo\nhier"
   },
-  "qrPoweredBy": "Mogelijk gemaakt door HatchGrab"
+  "qrPoweredBy": "Mogelijk gemaakt door HatchGrab",
+  "business": {
+    "title": "Bedrijfsgegevens",
+    "intro": "Voor je rapporten voor de boekhouder en je administratie. Klanten zien deze niet.",
+    "ownerOnly": "Alleen de eigenaar kan deze wijzigen.",
+    "legalName": {
+      "label": "Officiële bedrijfsnaam",
+      "hint": "De naam waaronder je bedrijf is ingeschreven."
+    },
+    "address": {
+      "label": "Vestigingsadres",
+      "hint": "Waar je bedrijf is ingeschreven.",
+      "street": "Adres"
+    },
+    "registration": {
+      "siren": "SIREN of SIRET",
+      "sirenHint": "9 cijfers (SIREN) of 14 cijfers (SIRET).",
+      "gb": "Bedrijfsnummer",
+      "gbHint": "Optioneel. 8 letters of cijfers, van Companies House.",
+      "other": "Registratienummer",
+      "otherHint": "Optioneel. Het officiële registratienummer van je bedrijf."
+    },
+    "vat": {
+      "label": "{label}-nummer",
+      "hint": "Optioneel.",
+      "euHint": "Begint met {prefix}, zoals {example}."
+    },
+    "regime": {
+      "label": "Btw-regeling",
+      "hint": "Bepaalt de periodes in je bestand met dagtotalen.",
+      "none": "Niet ingesteld",
+      "franchise": "Franchise en base (geen btw berekend)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – maandelijks",
+      "reelNormalQuarterly": "Réel normal – per kwartaal",
+      "franchiseNote": "Je hebt franchise en base gekozen, dus misschien wil je je btw op 0 % zetten."
+    },
+    "saveFailed": "Opslaan mislukt — probeer het opnieuw."
+  }
 }

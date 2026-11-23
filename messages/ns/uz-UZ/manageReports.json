@@ -129,6 +129,7 @@
       "date": "Sana",
       "time": "Vaqt",
       "orderNumber": "Buyurtma raqami",
+      "receiptNo": "Chek raqami",
       "event": "Tadbir",
       "channel": "Kanal",
       "paymentMethod": "Toʻlov usuli",
@@ -153,5 +154,38 @@
       "none": "soliq stavkasi belgilanmagan"
     },
     "noRate": "stavkasiz"
+  },
+  "daily": {
+    "title": "QQS stavkasi boʻyicha kunlik jamlar",
+    "help": "Har bir kun va QQS stavkasi uchun bitta qator — elektron hisobot platformangiz uchun.",
+    "period": "Davr",
+    "custom": "Boshqa sanalar",
+    "from": "Boshlanish",
+    "to": "Tugash",
+    "button": "QQS stavkasi boʻyicha kunlik jamlar (CSV)",
+    "badRange": "Tugash sanasidan kech boʻlmagan boshlanish sanasini tanlang.",
+    "failed": "Faylni yaratib boʻlmadi — qaytadan urinib koʻring."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Yuridik nomi",
+      "siren": "SIREN/SIRET",
+      "registration": "Roʻyxatdan oʻtish raqami",
+      "vatNumber": "QQS raqami",
+      "vatRegime": "QQS rejimi",
+      "period": "Davr"
+    },
+    "header": {
+      "date": "Sana",
+      "type": "Turi",
+      "rate": "QQS stavkasi",
+      "sales": "Savdo (QQS bilan)",
+      "refunds": "Qaytarishlar (QQS bilan)",
+      "net": "Sof (QQSsiz)",
+      "vat": "QQS"
+    },
+    "goods": "Tovarlar",
+    "total": "Jami",
+    "noRate": "{n, plural, one {QQS stavkasi boʻlmagan {count} ta buyurtma kiritilmagan.} other {QQS stavkasi boʻlmagan {count} ta buyurtma kiritilmagan.}}"
   }
 }

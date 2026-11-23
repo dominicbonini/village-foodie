@@ -587,9 +587,21 @@
         "cost": "Costo",
         "profit": "Ganancia",
         "dishesSold": "Platillos vendidos",
-        "dishesWithCost": "Platillos con costo"
+        "dishesWithCost": "Platillos con costo",
+        "receiptNo": "Núm. de recibo"
       },
       "noRate": "sin tasa"
+    },
+    "daily": {
+      "title": "Totales diarios por tasa de IVA",
+      "help": "Una fila por día y tasa de IVA, para tu plataforma de e-reporting.",
+      "button": "Totales diarios por tasa de IVA (CSV)"
+    },
+    "dailyCsv": {
+      "header": {
+        "rate": "Tasa de IVA"
+      },
+      "noRate": "{n, plural, one {{count} pedido sin tasa de IVA no está incluido.} other {{count} pedidos sin tasa de IVA no están incluidos.}}"
     }
   },
   "socialPosts": {

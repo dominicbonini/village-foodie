@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Pilih aktif atau nonaktif.",
     "charges_nothing_to_save": "Tidak ada yang perlu disimpan.",
     "charges_items_invalid": "Salah satu item ini sudah tidak ada di menu Anda. Tutup ini lalu coba lagi.",
+    "business_owner_only": "Hanya pemilik yang bisa mengubah detail usaha.",
+    "business_too_long": "Itu terlalu panjang — silakan persingkat.",
+    "business_siren_invalid": "Periksa nomornya: SIREN terdiri dari 9 digit dan SIRET 14 digit.",
+    "business_company_number_invalid": "Nomor perusahaan terdiri dari 8 huruf atau angka, misalnya 01234567 atau SC123456.",
+    "business_vat_invalid": "Nomor PPN itu sepertinya tidak benar. Nomornya diawali {prefix}, misalnya {example}.",
+    "business_regime_invalid": "Pilih rezim PPN dari daftar.",
+    "business_regime_not_here": "Rezim PPN hanya ditanyakan di Prancis.",
+    "business_nothing_to_save": "Tidak ada yang perlu disimpan.",
     "country_settings_failed": "Tidak dapat memuat pengaturan negara truk ini. Coba lagi sebentar lagi.",
     "plans_failed": "Tidak dapat memuat paket truk ini. Coba lagi sebentar lagi.",
     "demo_not_available": "Tidak tersedia di truk demo",
@@ -4132,7 +4140,45 @@
       "close": "Tutup",
       "logoPlaceholder": "Logo Anda\ndi sini"
     },
-    "qrPoweredBy": "Didukung oleh HatchGrab"
+    "qrPoweredBy": "Didukung oleh HatchGrab",
+    "business": {
+      "title": "Detail usaha",
+      "intro": "Untuk laporan akuntan dan catatan Anda. Pelanggan tidak melihat ini.",
+      "ownerOnly": "Hanya pemilik yang bisa mengubah ini.",
+      "legalName": {
+        "label": "Nama resmi",
+        "hint": "Nama yang terdaftar untuk usaha Anda."
+      },
+      "address": {
+        "label": "Alamat terdaftar",
+        "hint": "Tempat usaha Anda terdaftar.",
+        "street": "Alamat"
+      },
+      "registration": {
+        "siren": "SIREN atau SIRET",
+        "sirenHint": "9 digit (SIREN) atau 14 digit (SIRET).",
+        "gb": "Nomor perusahaan",
+        "gbHint": "Opsional. 8 huruf atau angka, dari Companies House.",
+        "other": "Nomor registrasi",
+        "otherHint": "Opsional. Nomor registrasi resmi usaha Anda."
+      },
+      "vat": {
+        "label": "Nomor {label}",
+        "hint": "Opsional.",
+        "euHint": "Diawali {prefix}, misalnya {example}."
+      },
+      "regime": {
+        "label": "Rezim PPN",
+        "hint": "Menentukan periode dalam file total harian Anda.",
+        "none": "Belum diatur",
+        "franchise": "Franchise en base (tidak memungut PPN)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – bulanan",
+        "reelNormalQuarterly": "Réel normal – triwulanan",
+        "franchiseNote": "Anda memilih franchise en base, jadi Anda mungkin perlu mengatur PPN ke 0 %."
+      },
+      "saveFailed": "Tidak dapat menyimpan — silakan coba lagi."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Tanggal",
         "time": "Jam",
         "orderNumber": "Nomor pesanan",
+        "receiptNo": "No. struk",
         "event": "Acara",
         "channel": "Saluran",
         "paymentMethod": "Metode pembayaran",
@@ -4289,6 +4336,39 @@
         "none": "tarif pajak belum diatur"
       },
       "noRate": "tanpa tarif"
+    },
+    "daily": {
+      "title": "Total harian per tarif PPN",
+      "help": "Satu baris per hari dan tarif PPN, untuk platform pelaporan elektronik Anda.",
+      "period": "Periode",
+      "custom": "Tanggal khusus",
+      "from": "Dari",
+      "to": "Sampai",
+      "button": "Total harian per tarif PPN (CSV)",
+      "badRange": "Pilih tanggal mulai yang sama dengan atau sebelum tanggal akhir.",
+      "failed": "Tidak dapat membuat file — silakan coba lagi."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Nama resmi",
+        "siren": "SIREN/SIRET",
+        "registration": "Nomor registrasi",
+        "vatNumber": "Nomor PPN",
+        "vatRegime": "Rezim PPN",
+        "period": "Periode"
+      },
+      "header": {
+        "date": "Tanggal",
+        "type": "Jenis",
+        "rate": "Tarif PPN",
+        "sales": "Penjualan termasuk PPN",
+        "refunds": "Pengembalian dana termasuk PPN",
+        "net": "Bersih di luar PPN",
+        "vat": "PPN"
+      },
+      "goods": "Barang",
+      "total": "Total",
+      "noRate": "{n, plural, one {{count} pesanan tanpa tarif PPN tidak disertakan.} other {{count} pesanan tanpa tarif PPN tidak disertakan.}}"
     }
   },
   "socialPosts": {

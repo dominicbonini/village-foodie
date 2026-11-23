@@ -238,7 +238,8 @@
     "enquiries-backend-1.cjs",
     "inbox-1.cjs",
     "inbox-2.cjs",
-    "france-vat-1.cjs"
+    "france-vat-1.cjs",
+    "france-records-1.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -280,6 +281,7 @@
         "_lp-costs-accounts-1.cjs",
         "_lp-france-vat-1.cjs",
         "_named-france-vat-1.cjs",
+        "_lp-france-records-1.cjs",
         "_batch-rolling-snapshot.cjs",
         "_mini-dom.cjs",
         "_country-settings-gb.cjs",

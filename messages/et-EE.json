@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Vali sees või väljas.",
     "charges_nothing_to_save": "Pole midagi salvestada.",
     "charges_items_invalid": "Üht neist toodetest pole enam sinu menüüs. Sulge see ja proovi uuesti.",
+    "business_owner_only": "Ettevõtte andmeid saab muuta ainult omanik.",
+    "business_too_long": "See on liiga pikk — palun lühenda.",
+    "business_siren_invalid": "Kontrolli numbrit: SIREN on 9-kohaline ja SIRET 14-kohaline.",
+    "business_company_number_invalid": "Ettevõtte number koosneb 8 tähest või numbrist, nt 01234567 või SC123456.",
+    "business_vat_invalid": "See käibemaksunumber ei tundu õige. See algab tähtedega {prefix}, nt {example}.",
+    "business_regime_invalid": "Vali loendist käibemaksukord.",
+    "business_regime_not_here": "Käibemaksukorda küsitakse ainult Prantsusmaal.",
+    "business_nothing_to_save": "Pole midagi salvestada.",
     "country_settings_failed": "Selle toiduauto riigiseadeid ei õnnestunud laadida. Proovi hetke pärast uuesti.",
     "plans_failed": "Selle toiduauto paketti ei õnnestunud laadida. Proovi hetke pärast uuesti.",
     "demo_not_available": "Demotoiduautol pole saadaval",
@@ -4132,7 +4140,45 @@
       "close": "Sulge",
       "logoPlaceholder": "Sinu logo\nsiia"
     },
-    "qrPoweredBy": "Platvorm: HatchGrab"
+    "qrPoweredBy": "Platvorm: HatchGrab",
+    "business": {
+      "title": "Ettevõtte andmed",
+      "intro": "Raamatupidaja aruannete ja sinu arvestuse jaoks. Kliendid neid ei näe.",
+      "ownerOnly": "Neid saab muuta ainult omanik.",
+      "legalName": {
+        "label": "Ametlik nimi",
+        "hint": "Nimi, millega sinu ettevõte on registreeritud."
+      },
+      "address": {
+        "label": "Registrijärgne aadress",
+        "hint": "Kus sinu ettevõte on registreeritud.",
+        "street": "Aadress"
+      },
+      "registration": {
+        "siren": "SIREN või SIRET",
+        "sirenHint": "9 numbrit (SIREN) või 14 numbrit (SIRET).",
+        "gb": "Ettevõtte number",
+        "gbHint": "Valikuline. 8 tähte või numbrit (Companies House).",
+        "other": "Registrikood",
+        "otherHint": "Valikuline. Sinu ettevõtte ametlik registrikood."
+      },
+      "vat": {
+        "label": "{label}-number",
+        "hint": "Valikuline.",
+        "euHint": "Algab tähtedega {prefix}, nt {example}."
+      },
+      "regime": {
+        "label": "Käibemaksukord",
+        "hint": "Määrab perioodid sinu päevasummade failis.",
+        "none": "Määramata",
+        "franchise": "Franchise en base (käibemaksu ei lisata)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – igakuine",
+        "reelNormalQuarterly": "Réel normal – kvartaalne",
+        "franchiseNote": "Valisid franchise en base, seega võiksid seada käibemaksu määraks 0 %."
+      },
+      "saveFailed": "Salvestamine ebaõnnestus — proovi uuesti."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Kuupäev",
         "time": "Kellaaeg",
         "orderNumber": "Tellimuse number",
+        "receiptNo": "Tšeki nr",
         "event": "Üritus",
         "channel": "Kanal",
         "paymentMethod": "Makseviis",
@@ -4289,6 +4336,39 @@
         "none": "maksumäära pole määratud"
       },
       "noRate": "ilma määrata"
+    },
+    "daily": {
+      "title": "Päevasummad käibemaksumäärade kaupa",
+      "help": "Üks rida päeva ja käibemaksumäära kohta, sinu e-aruandluse platvormi jaoks.",
+      "period": "Periood",
+      "custom": "Valitud kuupäevad",
+      "from": "Alates",
+      "to": "Kuni",
+      "button": "Päevasummad käibemaksumäärade kaupa (CSV)",
+      "badRange": "Vali alguskuupäev, mis on lõppkuupäevaga sama või varasem.",
+      "failed": "Faili loomine ebaõnnestus — proovi uuesti."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Ametlik nimi",
+        "siren": "SIREN/SIRET",
+        "registration": "Registrikood",
+        "vatNumber": "KMKR-number",
+        "vatRegime": "Käibemaksukord",
+        "period": "Periood"
+      },
+      "header": {
+        "date": "Kuupäev",
+        "type": "Tüüp",
+        "rate": "Käibemaksumäär",
+        "sales": "Müük koos käibemaksuga",
+        "refunds": "Tagastused koos käibemaksuga",
+        "net": "Neto ilma käibemaksuta",
+        "vat": "Käibemaks"
+      },
+      "goods": "Kaubad",
+      "total": "Kokku",
+      "noRate": "{n, plural, one {{count} tellimus ilma käibemaksumäärata ei ole arvestatud.} other {{count} tellimust ilma käibemaksumäärata ei ole arvestatud.}}"
     }
   },
   "socialPosts": {

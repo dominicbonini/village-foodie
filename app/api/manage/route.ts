@@ -225,6 +225,8 @@ const MANAGE_TAB_ACTIONS: ReadonlySet<string> = new Set([
   'update_charges',
   // france-vat-1: Payments › Item rates — the same `errorsManage.charges_*` codes.
   'get_item_rates', 'set_item_rates',
+  // france-records-1: Settings › Business details, and Reports' daily totals by VAT rate.
+  'update_business_details', 'get_daily_totals',
   // Team (Language Phase 1d Part 2): their own refusals are `errorsManage` codes too, and the invite email is worded in
   // the truck's language (`manageTeam.inviteEmail`).
   'get_team', 'invite_member', 'update_member', 'remove_member', 'invite_team_member', 'remove_team_member',
@@ -1949,6 +1951,72 @@ export async function POST(req: NextRequest) {
     catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 }) }
   }
 
+  /* ── france-records-1: SETTINGS › BUSINESS DETAILS ─────────────────────────────────────────────────────────────────────────────────
+   * The owner (or an admin) only — the rule update_settings applies to its sensitive fields. lib/business-details.ts checks each field
+   * against the truck's country (SIREN/SIRET with Luhn in France, the 8-character company number in GB, an EU VAT number's format) and
+   * returns only the columns the request named; a blank box clears its column. The change goes to action_audit_log (no customer data). */
+  if (action === 'update_business_details') {
+    if (requestingUserRole !== 'owner' && !requestingIsAdmin) return await refuse('business_owner_only', 403)
+    const { checkBusinessDetails } = await import('@/lib/business-details')
+    const input: Record<string, unknown> = {}
+    for (const k of ['legalName', 'registeredAddress', 'registrationNumber', 'vatNumber', 'vatRegime']) if (k in body) input[k] = body[k]
+    const r = checkBusinessDetails(input, (truck as { country?: string | null }).country)
+    if (!r.ok) return await refuse(r.code, 400, r.params)
+    const { data, error } = await supabase.from('trucks').update(r.values).eq('id', truck.id)
+      .select('legal_name, registered_address, registration_number, vat_number, vat_regime').single()
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    const { logAction } = await import('@/lib/audit/actionAudit')
+    await logAction(supabase, { action: 'business_details_saved', truckId: truck.id, afterState: { fields: Object.keys(r.values) },
+      actor: { actorKind: requestingUserRole === 'owner' ? 'owner' : 'unknown', actorId: null, actorLabel: requestingIsAdmin ? 'admin' : null }, source: 'web' })
+    return NextResponse.json({ ok: true, truck: data })
+  }
+
+  /* ── france-records-1: REPORTS › DAILY TOTALS BY VAT RATE ────────────────────────────────────────────────────────────────────────────
+   * { from, to } (YYYY-MM-DD, the truck's calendar). The orders PLACED in the period, the refunds MADE in it, and the cancellations in it
+   * (an order taken and then cancelled with no refund row — lib/accounts/daily-totals.ts has the rules); the screen builds the file.
+   * Never for staff, like the accountant's card. Read in pages (the API's 1,000-row cap). */
+  if (action === 'get_daily_totals') {
+    if (requestingUserRole === 'staff') return await refuse('business_owner_only', 403)
+    const from = String(body.from ?? ''), to = String(body.to ?? '')
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(from) || !/^\d{4}-\d{2}-\d{2}$/.test(to) || from > to) return NextResponse.json({ error: 'bad period' }, { status: 400 })
+    const tz = await truckTimeZone(truck)
+    const startIso = new Date(instantOfLocal(from, '00:00', tz)).toISOString()
+    const endIso = new Date(instantOfLocal(addDaysYmd(to, 1), '00:00', tz)).toISOString()
+    const COLS = 'order_key, status, created_at, placed_at, updated_at, total, total_minor, currency, food_minor, tax_minor, tax_inclusive, tax_rate_milli, tax_breakdown, receipt_no'
+    const paged = async <T,>(build: (a: number, b: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>) => {
+      const out: T[] = []
+      for (let i = 0; ; i += 1000) { const { data, error } = await build(i, i + 999); if (error) throw new Error(error.message); out.push(...(data ?? [])); if (!data || data.length < 1000) return out }
+    }
+    try {
+      const placed = await paged(async (a, b) => supabase.from('orders').select(COLS).eq('truck_id', truck.id).gte('created_at', startIso).lt('created_at', endIso).order('created_at').order('order_key').range(a, b))
+      const refundRows = await paged(async (a, b) => supabase.from('order_payments').select('order_key').eq('truck_id', truck.id).eq('kind', 'refund').eq('state', 'succeeded').gte('created_at', startIso).lt('created_at', endIso).order('created_at').range(a, b))
+      const cancelRows = await paged(async (a, b) => supabase.from('action_audit_log').select('order_key, created_at').eq('truck_id', truck.id).eq('action', 'order_cancelled').gte('created_at', startIso).lt('created_at', endIso).order('created_at').range(a, b))
+      const cancelledNoAudit = await paged(async (a, b) => supabase.from('orders').select(COLS).eq('truck_id', truck.id).eq('status', 'cancelled').gte('updated_at', startIso).lt('updated_at', endIso).order('updated_at').range(a, b))
+      const have = new Set((placed as { order_key: string }[]).map(o => o.order_key))
+      const extraKeys = [...new Set([...(refundRows as { order_key: string }[]), ...(cancelRows as { order_key: string }[])].map(r => r.order_key))].filter(k => k && !have.has(k))
+      const extra: unknown[] = []
+      for (let i = 0; i < extraKeys.length; i += 150) {
+        const { data, error } = await supabase.from('orders').select(COLS).eq('truck_id', truck.id).in('order_key', extraKeys.slice(i, i + 150))
+        if (error) throw new Error(error.message)
+        extra.push(...(data ?? []))
+      }
+      const orders = [...(placed as { order_key: string }[]), ...(extra as { order_key: string }[]), ...(cancelledNoAudit as { order_key: string }[]).filter(o => !have.has(o.order_key) && !extraKeys.includes(o.order_key))]
+      const keys = orders.map(o => o.order_key)
+      const payments: unknown[] = []
+      for (let i = 0; i < keys.length; i += 150) {
+        const { data, error } = await supabase.from('order_payments').select('order_key, kind, amount_minor, state, created_at').eq('truck_id', truck.id).in('order_key', keys.slice(i, i + 150))
+        if (error) throw new Error(error.message)
+        payments.push(...(data ?? []))
+      }
+      const cancelledAt: Record<string, string> = {}
+      for (const r of cancelRows as { order_key: string; created_at: string }[]) if (r.order_key && !cancelledAt[r.order_key]) cancelledAt[r.order_key] = r.created_at
+      const rules = await loadChargeRules(truck)
+      return NextResponse.json({ ok: true, orders, payments, cancelledAt, tax: { inclusive: rules.taxInclusive, rateMilli: rules.taxRateMilli ?? null }, timeZone: tz, from, to })
+    } catch (e) {
+      return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 })
+    }
+  }
+
   if (action === 'update_trade_area') {
     const cs = await countrySettingsForTruck(truck)
     const r = checkTradeArea(body, cs)
@@ -3087,7 +3155,7 @@ export async function POST(req: NextRequest) {
     // test-truck-3-2 ~1,800), in a fixed order (placed, then order_key) so no page can repeat or skip a row. The filters below are
     // recorded in `scopeOrders` and applied to every page, and to the cancelled read the accounts need.
     // `currency` and `tax_inclusive` ride along for the accounts only and are removed from the rows before the response.
-    const ORDER_COLS = 'order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id, food_minor, tax_minor, tax_rate_milli, tax_label, tip_minor, tip_pct_bps, service_fee_minor, card_surcharge_minor, currency, tax_inclusive, tax_breakdown'
+    const ORDER_COLS = 'order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id, food_minor, tax_minor, tax_rate_milli, tax_label, tip_minor, tip_pct_bps, service_fee_minor, card_surcharge_minor, currency, tax_inclusive, tax_breakdown, receipt_no'
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- a PostgREST builder, as everywhere in this route
     let scopeOrders = (q: any) => q
     const readOrders = async (cancelled: boolean): Promise<{ data: any[] | null }> => {   // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -3291,7 +3359,7 @@ export async function POST(req: NextRequest) {
       }
     }
     // The two columns read for the accounts only leave the rows, so `orders` is what it was before costs-accounts-1.
-    for (const o of rows) { delete o.currency; delete o.tax_inclusive; delete o.tax_breakdown }   // france-vat-1: the breakdown is for the accounts only
+    for (const o of rows) { delete o.currency; delete o.tax_inclusive; delete o.tax_breakdown; delete o.receipt_no }   // france-vat-1 / france-records-1: for the accounts only
 
     return NextResponse.json({
       ok: true,

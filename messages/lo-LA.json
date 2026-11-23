@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "ກະລຸນາເລືອກ ເປີດ ຫຼື ປິດ.",
     "charges_nothing_to_save": "ບໍ່ມີຫຍັງໃຫ້ບັນທຶກ.",
     "charges_items_invalid": "ມີລາຍການໜຶ່ງໃນນີ້ທີ່ບໍ່ຢູ່ໃນເມນູຂອງທ່ານແລ້ວ. ກະລຸນາປິດອັນນີ້ ແລ້ວລອງໃໝ່ອີກຄັ້ງ.",
+    "business_owner_only": "ມີແຕ່ເຈົ້າຂອງທີ່ປ່ຽນຂໍ້ມູນທຸລະກິດໄດ້.",
+    "business_too_long": "ຍາວເກີນໄປ — ກະລຸນາເຮັດໃຫ້ສັ້ນລົງ.",
+    "business_siren_invalid": "ກວດເບິ່ງເລກ: SIREN ມີ 9 ຕົວເລກ ແລະ SIRET ມີ 14 ຕົວເລກ.",
+    "business_company_number_invalid": "ເລກທະບຽນບໍລິສັດມີ 8 ຕົວອັກສອນ ຫຼື ຕົວເລກ ເຊັ່ນ 01234567 ຫຼື SC123456.",
+    "business_vat_invalid": "ເລກ VAT ນັ້ນເບິ່ງຄືວ່າບໍ່ຖືກຕ້ອງ. ມັນຂຶ້ນຕົ້ນດ້ວຍ {prefix} ເຊັ່ນ {example}.",
+    "business_regime_invalid": "ເລືອກລະບົບ VAT ຈາກລາຍການ.",
+    "business_regime_not_here": "ລະບົບ VAT ຕ້ອງລະບຸສະເພາະໃນປະເທດຝຣັ່ງເທົ່ານັ້ນ.",
+    "business_nothing_to_save": "ບໍ່ມີຫຍັງໃຫ້ບັນທຶກ.",
     "country_settings_failed": "ບໍ່ສາມາດໂຫຼດການຕັ້ງຄ່າປະເທດຂອງ Food Truck ນີ້ໄດ້. ກະລຸນາລອງໃໝ່ໃນອີກບໍ່ດົນ.",
     "plans_failed": "ບໍ່ສາມາດໂຫຼດແພັກເກັດຂອງ Food Truck ນີ້ໄດ້. ກະລຸນາລອງໃໝ່ໃນອີກບໍ່ດົນ.",
     "demo_not_available": "ໃຊ້ບໍ່ໄດ້ກັບ Food Truck ເດໂມ",
@@ -4132,7 +4140,45 @@
       "close": "ປິດ",
       "logoPlaceholder": "ໂລໂກ້ຂອງທ່ານ\nຢູ່ນີ້"
     },
-    "qrPoweredBy": "ໃຫ້ບໍລິການໂດຍ HatchGrab"
+    "qrPoweredBy": "ໃຫ້ບໍລິການໂດຍ HatchGrab",
+    "business": {
+      "title": "ຂໍ້ມູນທຸລະກິດ",
+      "intro": "ສຳລັບລາຍງານນັກບັນຊີ ແລະ ບັນທຶກຂອງທ່ານ. ລູກຄ້າບໍ່ເຫັນຂໍ້ມູນເຫຼົ່ານີ້.",
+      "ownerOnly": "ມີແຕ່ເຈົ້າຂອງທີ່ປ່ຽນຂໍ້ມູນເຫຼົ່ານີ້ໄດ້.",
+      "legalName": {
+        "label": "ຊື່ຕາມກົດໝາຍ",
+        "hint": "ຊື່ທີ່ທຸລະກິດຂອງທ່ານຈົດທະບຽນໄວ້."
+      },
+      "address": {
+        "label": "ທີ່ຢູ່ທີ່ຈົດທະບຽນ",
+        "hint": "ບ່ອນທີ່ທຸລະກິດຂອງທ່ານຈົດທະບຽນ.",
+        "street": "ທີ່ຢູ່"
+      },
+      "registration": {
+        "siren": "SIREN ຫຼື SIRET",
+        "sirenHint": "9 ຕົວເລກ (SIREN) ຫຼື 14 ຕົວເລກ (SIRET).",
+        "gb": "ເລກທະບຽນບໍລິສັດ",
+        "gbHint": "ບໍ່ບັງຄັບ. 8 ຕົວອັກສອນ ຫຼື ຕົວເລກ, ຈາກ Companies House.",
+        "other": "ເລກທະບຽນ",
+        "otherHint": "ບໍ່ບັງຄັບ. ເລກທະບຽນທາງການຂອງທຸລະກິດທ່ານ."
+      },
+      "vat": {
+        "label": "ເລກ {label}",
+        "hint": "ບໍ່ບັງຄັບ.",
+        "euHint": "ຂຶ້ນຕົ້ນດ້ວຍ {prefix} ເຊັ່ນ {example}."
+      },
+      "regime": {
+        "label": "ລະບົບ VAT",
+        "hint": "ກຳນົດຊ່ວງເວລາໃນໄຟລ໌ຍອດລວມລາຍວັນຂອງທ່ານ.",
+        "none": "ຍັງບໍ່ໄດ້ຕັ້ງ",
+        "franchise": "Franchise en base (ບໍ່ເກັບ VAT)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – ລາຍເດືອນ",
+        "reelNormalQuarterly": "Réel normal – ລາຍໄຕມາດ",
+        "franchiseNote": "ທ່ານເລືອກ franchise en base, ສະນັ້ນທ່ານອາດຈະຕ້ອງຕັ້ງ VAT ເປັນ 0 %."
+      },
+      "saveFailed": "ບັນທຶກບໍ່ສຳເລັດ — ກະລຸນາລອງໃໝ່ອີກຄັ້ງ."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "ວັນທີ",
         "time": "ເວລາ",
         "orderNumber": "ເລກອໍເດີ້",
+        "receiptNo": "ເລກໃບຮັບເງິນ",
         "event": "ງານ",
         "channel": "ຊ່ອງທາງ",
         "paymentMethod": "ວິທີການຈ່າຍເງິນ",
@@ -4289,6 +4336,39 @@
         "none": "ບໍ່ໄດ້ຕັ້ງອັດຕາພາສີ"
       },
       "noRate": "ບໍ່ມີອັດຕາ"
+    },
+    "daily": {
+      "title": "ຍອດລວມລາຍວັນຕາມອັດຕາ VAT",
+      "help": "ໜຶ່ງແຖວຕໍ່ມື້ ແລະ ອັດຕາ VAT, ສຳລັບແພລດຟອມລາຍງານອີເລັກໂທຣນິກຂອງທ່ານ.",
+      "period": "ຊ່ວງເວລາ",
+      "custom": "ກຳນົດວັນທີເອງ",
+      "from": "ຈາກ",
+      "to": "ຫາ",
+      "button": "ຍອດລວມລາຍວັນຕາມອັດຕາ VAT (CSV)",
+      "badRange": "ເລືອກວັນທີເລີ່ມຕົ້ນທີ່ກົງກັບ ຫຼື ກ່ອນວັນທີສິ້ນສຸດ.",
+      "failed": "ສ້າງໄຟລ໌ບໍ່ສຳເລັດ — ກະລຸນາລອງໃໝ່ອີກຄັ້ງ."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "ຊື່ຕາມກົດໝາຍ",
+        "siren": "SIREN/SIRET",
+        "registration": "ເລກທະບຽນ",
+        "vatNumber": "ເລກ VAT",
+        "vatRegime": "ລະບົບ VAT",
+        "period": "ຊ່ວງເວລາ"
+      },
+      "header": {
+        "date": "ວັນທີ",
+        "type": "ປະເພດ",
+        "rate": "ອັດຕາ VAT",
+        "sales": "ຍອດຂາຍລວມ VAT",
+        "refunds": "ການຄືນເງິນລວມ VAT",
+        "net": "ສຸດທິບໍ່ລວມ VAT",
+        "vat": "VAT"
+      },
+      "goods": "ສິນຄ້າ",
+      "total": "ລວມທັງໝົດ",
+      "noRate": "{n, plural, one {{count} ອໍເດີ້ທີ່ບໍ່ມີອັດຕາ VAT ບໍ່ໄດ້ລວມຢູ່.} other {{count} ອໍເດີ້ທີ່ບໍ່ມີອັດຕາ VAT ບໍ່ໄດ້ລວມຢູ່.}}"
     }
   },
   "socialPosts": {

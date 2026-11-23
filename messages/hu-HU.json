@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Válasszon: be vagy ki.",
     "charges_nothing_to_save": "Nincs mit menteni.",
     "charges_items_invalid": "Az egyik tétel már nem szerepel az étlapján. Zárja be ezt az ablakot, és próbálja újra.",
+    "business_owner_only": "A cégadatokat csak a tulajdonos módosíthatja.",
+    "business_too_long": "Ez túl hosszú — kérjük, rövidítse le.",
+    "business_siren_invalid": "Ellenőrizze a számot: a SIREN 9, a SIRET 14 számjegyből áll.",
+    "business_company_number_invalid": "A cégszám 8 betűből vagy számjegyből áll, például 01234567 vagy SC123456.",
+    "business_vat_invalid": "Ez az áfaazonosító nem tűnik helyesnek. Így kezdődik: {prefix}, például {example}.",
+    "business_regime_invalid": "Válasszon áfarendszert a listából.",
+    "business_regime_not_here": "Az áfarendszert csak Franciaországban kell megadni.",
+    "business_nothing_to_save": "Nincs mit menteni.",
     "country_settings_failed": "Nem sikerült betölteni a food truck országbeállításait. Próbálja újra egy kicsit később.",
     "plans_failed": "Nem sikerült betölteni a food truck csomagját. Próbálja újra egy kicsit később.",
     "demo_not_available": "Bemutató food trucknál nem érhető el",
@@ -4132,7 +4140,45 @@
       "close": "Bezárás",
       "logoPlaceholder": "Az Ön\nlogója"
     },
-    "qrPoweredBy": "Működteti: HatchGrab"
+    "qrPoweredBy": "Működteti: HatchGrab",
+    "business": {
+      "title": "Cégadatok",
+      "intro": "A könyvelői kimutatásokhoz és a nyilvántartáshoz. Az ügyfelek ezeket nem látják.",
+      "ownerOnly": "Ezeket csak a tulajdonos módosíthatja.",
+      "legalName": {
+        "label": "Hivatalos cégnév",
+        "hint": "A név, amelyen a vállalkozása be van jegyezve."
+      },
+      "address": {
+        "label": "Székhely",
+        "hint": "Ahol a vállalkozása be van jegyezve.",
+        "street": "Cím"
+      },
+      "registration": {
+        "siren": "SIREN vagy SIRET",
+        "sirenHint": "9 számjegy (SIREN) vagy 14 számjegy (SIRET).",
+        "gb": "Cégszám",
+        "gbHint": "Nem kötelező. 8 betű vagy számjegy, a Companies House nyilvántartásából.",
+        "other": "Nyilvántartási szám",
+        "otherHint": "Nem kötelező. A vállalkozása hivatalos nyilvántartási száma."
+      },
+      "vat": {
+        "label": "{label}-azonosító",
+        "hint": "Nem kötelező.",
+        "euHint": "Így kezdődik: {prefix}, például {example}."
+      },
+      "regime": {
+        "label": "Áfarendszer",
+        "hint": "Ez határozza meg az időszakokat a napi összesítő fájlban.",
+        "none": "Nincs beállítva",
+        "franchise": "Franchise en base (áfa felszámítása nélkül)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – havi",
+        "reelNormalQuarterly": "Réel normal – negyedéves",
+        "franchiseNote": "A franchise en base-t választotta, ezért érdemes lehet az áfát 0 %-ra állítani."
+      },
+      "saveFailed": "Nem sikerült menteni — kérjük, próbálja újra."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Dátum",
         "time": "Időpont",
         "orderNumber": "Rendelésszám",
+        "receiptNo": "Nyugtaszám",
         "event": "Esemény",
         "channel": "Csatorna",
         "paymentMethod": "Fizetési mód",
@@ -4289,6 +4336,39 @@
         "none": "nincs beállítva adókulcs"
       },
       "noRate": "nincs adókulcs"
+    },
+    "daily": {
+      "title": "Napi összesítők áfakulcsonként",
+      "help": "Naponta és áfakulcsonként egy sor, az e-adatszolgáltatási platformjához.",
+      "period": "Időszak",
+      "custom": "Egyéni dátumok",
+      "from": "Ettől",
+      "to": "Eddig",
+      "button": "Napi összesítők áfakulcsonként (CSV)",
+      "badRange": "A kezdő dátum ne legyen későbbi a záró dátumnál.",
+      "failed": "Nem sikerült elkészíteni a fájlt — kérjük, próbálja újra."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Hivatalos cégnév",
+        "siren": "SIREN/SIRET",
+        "registration": "Nyilvántartási szám",
+        "vatNumber": "Áfaazonosító",
+        "vatRegime": "Áfarendszer",
+        "period": "Időszak"
+      },
+      "header": {
+        "date": "Dátum",
+        "type": "Típus",
+        "rate": "Áfakulcs",
+        "sales": "Forgalom áfával",
+        "refunds": "Visszatérítések áfával",
+        "net": "Nettó áfa nélkül",
+        "vat": "Áfa"
+      },
+      "goods": "Termék",
+      "total": "Összesen",
+      "noRate": "{n, plural, one {{count} áfakulcs nélküli rendelés nem szerepel benne.} other {{count} áfakulcs nélküli rendelés nem szerepel benne.}}"
     }
   },
   "socialPosts": {

@@ -129,6 +129,7 @@
       "date": "Dátum",
       "time": "Időpont",
       "orderNumber": "Rendelésszám",
+      "receiptNo": "Nyugtaszám",
       "event": "Esemény",
       "channel": "Csatorna",
       "paymentMethod": "Fizetési mód",
@@ -153,5 +154,38 @@
       "none": "nincs beállítva adókulcs"
     },
     "noRate": "nincs adókulcs"
+  },
+  "daily": {
+    "title": "Napi összesítők áfakulcsonként",
+    "help": "Naponta és áfakulcsonként egy sor, az e-adatszolgáltatási platformjához.",
+    "period": "Időszak",
+    "custom": "Egyéni dátumok",
+    "from": "Ettől",
+    "to": "Eddig",
+    "button": "Napi összesítők áfakulcsonként (CSV)",
+    "badRange": "A kezdő dátum ne legyen későbbi a záró dátumnál.",
+    "failed": "Nem sikerült elkészíteni a fájlt — kérjük, próbálja újra."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Hivatalos cégnév",
+      "siren": "SIREN/SIRET",
+      "registration": "Nyilvántartási szám",
+      "vatNumber": "Áfaazonosító",
+      "vatRegime": "Áfarendszer",
+      "period": "Időszak"
+    },
+    "header": {
+      "date": "Dátum",
+      "type": "Típus",
+      "rate": "Áfakulcs",
+      "sales": "Forgalom áfával",
+      "refunds": "Visszatérítések áfával",
+      "net": "Nettó áfa nélkül",
+      "vat": "Áfa"
+    },
+    "goods": "Termék",
+    "total": "Összesen",
+    "noRate": "{n, plural, one {{count} áfakulcs nélküli rendelés nem szerepel benne.} other {{count} áfakulcs nélküli rendelés nem szerepel benne.}}"
   }
 }

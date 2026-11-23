@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "בחרו הפעלה או כיבוי.",
     "charges_nothing_to_save": "אין מה לשמור.",
     "charges_items_invalid": "אחד מהפריטים האלה כבר לא בתפריט שלכם. סגרו את החלון ונסו שוב.",
+    "business_owner_only": "רק הבעלים יכולים לשנות את פרטי העסק.",
+    "business_too_long": "הטקסט ארוך מדי — נא לקצר אותו.",
+    "business_siren_invalid": "כדאי לבדוק את המספר: ל-SIREN יש 9 ספרות ול-SIRET יש 14.",
+    "business_company_number_invalid": "מספר חברה כולל 8 אותיות או ספרות, למשל 01234567 או SC123456.",
+    "business_vat_invalid": "מספר המע״מ הזה לא נראה תקין. הוא מתחיל ב-{prefix}, למשל {example}.",
+    "business_regime_invalid": "בחרו משטר מע״מ מהרשימה.",
+    "business_regime_not_here": "משטר המע״מ נדרש רק בצרפת.",
+    "business_nothing_to_save": "אין מה לשמור.",
     "country_settings_failed": "לא הצלחנו לטעון את הגדרות המדינה של הפודטראק. נסו שוב בעוד רגע.",
     "plans_failed": "לא הצלחנו לטעון את המסלול של הפודטראק. נסו שוב בעוד רגע.",
     "demo_not_available": "לא זמין בפודטראק דמו",
@@ -4132,7 +4140,45 @@
       "close": "סגירה",
       "logoPlaceholder": "הלוגו שלכם\nכאן"
     },
-    "qrPoweredBy": "מופעל על ידי HatchGrab"
+    "qrPoweredBy": "מופעל על ידי HatchGrab",
+    "business": {
+      "title": "פרטי העסק",
+      "intro": "לדוחות לרואה החשבון ולרישומים שלכם. הלקוחות לא רואים את הפרטים האלה.",
+      "ownerOnly": "רק הבעלים יכולים לשנות אותם.",
+      "legalName": {
+        "label": "שם רשמי",
+        "hint": "השם שבו העסק שלכם רשום."
+      },
+      "address": {
+        "label": "כתובת רשומה",
+        "hint": "המקום שבו העסק שלכם רשום.",
+        "street": "כתובת"
+      },
+      "registration": {
+        "siren": "SIREN או SIRET",
+        "sirenHint": "9 ספרות (SIREN) או 14 ספרות (SIRET).",
+        "gb": "מספר חברה",
+        "gbHint": "לא חובה. 8 אותיות או ספרות, מ-Companies House.",
+        "other": "מספר רישום",
+        "otherHint": "לא חובה. מספר הרישום הרשמי של העסק שלכם."
+      },
+      "vat": {
+        "label": "מספר {label}",
+        "hint": "לא חובה.",
+        "euHint": "מתחיל ב-{prefix}, למשל {example}."
+      },
+      "regime": {
+        "label": "משטר מע״מ",
+        "hint": "קובע את התקופות בקובץ הסיכומים היומיים שלכם.",
+        "none": "לא הוגדר",
+        "franchise": "Franchise en base (ללא גביית מע״מ)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – חודשי",
+        "reelNormalQuarterly": "Réel normal – רבעוני",
+        "franchiseNote": "בחרתם ב-franchise en base, ולכן אולי כדאי לקבוע את המע״מ ל-0%."
+      },
+      "saveFailed": "השמירה נכשלה — נסו שוב."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "תאריך",
         "time": "שעה",
         "orderNumber": "מספר הזמנה",
+        "receiptNo": "מס׳ קבלה",
         "event": "אירוע",
         "channel": "ערוץ",
         "paymentMethod": "אמצעי תשלום",
@@ -4289,6 +4336,39 @@
         "none": "לא הוגדר שיעור מס"
       },
       "noRate": "ללא שיעור"
+    },
+    "daily": {
+      "title": "סיכומים יומיים לפי שיעור מע״מ",
+      "help": "שורה אחת לכל יום ולכל שיעור מע״מ, עבור פלטפורמת הדיווח האלקטרוני שלכם.",
+      "period": "תקופה",
+      "custom": "תאריכים לבחירה",
+      "from": "מתאריך",
+      "to": "עד תאריך",
+      "button": "סיכומים יומיים לפי שיעור מע״מ (CSV)",
+      "badRange": "בחרו תאריך התחלה שאינו מאוחר מתאריך הסיום.",
+      "failed": "לא הצלחנו ליצור את הקובץ — נסו שוב."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "שם רשמי",
+        "siren": "SIREN/SIRET",
+        "registration": "מספר רישום",
+        "vatNumber": "מספר מע״מ",
+        "vatRegime": "משטר מע״מ",
+        "period": "תקופה"
+      },
+      "header": {
+        "date": "תאריך",
+        "type": "סוג",
+        "rate": "שיעור מע״מ",
+        "sales": "מכירות כולל מע״מ",
+        "refunds": "החזרים כולל מע״מ",
+        "net": "נטו לא כולל מע״מ",
+        "vat": "מע״מ"
+      },
+      "goods": "טובין",
+      "total": "סה״כ",
+      "noRate": "{n, plural, one {{count} הזמנה ללא שיעור מע״מ לא נכללה.} two {{count} הזמנות ללא שיעור מע״מ לא נכללו.} other {{count} הזמנות ללא שיעור מע״מ לא נכללו.}}"
     }
   },
   "socialPosts": {

@@ -1,0 +1,56 @@
+
+══ TWO-CONNECTION PROOFS — every transaction ROLLED BACK ══
+SQL [counts-before]> set statement_timeout = '5s'
+SQL [counts-before]> set lock_timeout = '3s'
+SQL [counts-before]> begin
+SQL [counts-before]> set transaction read only
+SQL [counts-before]> select (select count(*) from public.orders where truck_id = any($1))::int as orders, (select count(*) from public.order_payments where truck_id = any($1))::int as order_payments, (select count(*) from public.action_audit_log where truck_id = any($1))::int as action_audit_log, (select count(*) from public.production_slot_usage where truck_id = any($1))::int as production_slot_usage, (select coalesce(sum(order_counter), 0) from public.trucks where id = any($1))::int as trucks_order_counter, (select coalesce(sum(e.order_counter), 0) from public.truck_events e where e.truck_id = any($1))::int as events_order_counter, to_regclass('public.receipt_counters') is not null as has_counters   -- params [["demo-mk65q66spjck0g9mxt50btfxtr","test-truck-2"]]
+SQL [counts-before]> select (select count(*) from public.receipt_counters where truck_id = any($1))::int as counter_rows, (select coalesce(sum(last_no), 0) from public.receipt_counters where truck_id = any($1))::int as counter_sum, (select count(*) from public.receipt_no_failures)::int as failures   -- params [["demo-mk65q66spjck0g9mxt50btfxtr","test-truck-2"]]
+  counts before: {"orders":0,"order_payments":0,"action_audit_log":0,"production_slot_usage":0,"trucks_order_counter":0,"events_order_counter":0,"counter_rows":0,"counter_sum":0,"failures":0}
+SQL [counts-before]> rollback
+SQL [guard]> set statement_timeout = '5s'
+SQL [guard]> set lock_timeout = '3s'
+SQL [guard]> select id, plan, is_customer from public.trucks where id = any($1) order by id   -- params [["demo-mk65q66spjck0g9mxt50btfxtr","test-truck-2"]]
+  guard: demo-mk65q66spjck0g9mxt50btfxtr (plan demo, is_customer false) · test-truck-2 (plan demo, is_customer false) — demo trucks only
+SQL [c1]> set statement_timeout = '5s'
+SQL [c1]> set lock_timeout = '3s'
+SQL [c2]> set statement_timeout = '5s'
+SQL [c2]> set lock_timeout = '3s'
+SQL [c3]> set statement_timeout = '5s'
+SQL [c3]> set lock_timeout = '3s'
+SQL [c1]> begin
+SQL [c2]> begin
+SQL [c3]> begin
+SQL [c1]> select coalesce((select last_no from public.receipt_counters where truck_id = $1), 0) as n   -- params ["demo-mk65q66spjck0g9mxt50btfxtr"]
+SQL [c1]> insert into public.orders (id, truck_id, customer_name, customer_phone, customer_email, slot, order_type, event_date, event_id, items, deals, discount_code, subtotal, discount_amt, total, total_minor, food_minor, tax_minor, tax_inclusive, tax_label, card_fee_payer, status, payment_status, source) values ($1, $2, 'rollback proof', null, null, null, 'collection', current_date, null, '[]'::jsonb, null, null, 0, 0, 0, 0, 0, 0, true, 'TVA', 'truck', 'confirmed', 'unpaid', 'manual') returning order_key, receipt_no   -- params ["rbp-23db06d7","demo-mk65q66spjck0g9mxt50btfxtr"]
+  ✓ c1 holds truck A's counter: its insert got 1
+SQL [c2]> insert into public.orders (id, truck_id, customer_name, customer_phone, customer_email, slot, order_type, event_date, event_id, items, deals, discount_code, subtotal, discount_amt, total, total_minor, food_minor, tax_minor, tax_inclusive, tax_label, card_fee_payer, status, payment_status, source) values ($1, $2, 'rollback proof', null, null, null, 'collection', current_date, null, '[]'::jsonb, null, null, 0, 0, 0, 0, 0, 0, true, 'TVA', 'truck', 'confirmed', 'unpaid', 'manual') returning order_key, receipt_no   -- params ["rbp-fbdf4f9b","demo-mk65q66spjck0g9mxt50btfxtr"]
+SQL [c3]> insert into public.orders (id, truck_id, customer_name, customer_phone, customer_email, slot, order_type, event_date, event_id, items, deals, discount_code, subtotal, discount_amt, total, total_minor, food_minor, tax_minor, tax_inclusive, tax_label, card_fee_payer, status, payment_status, source) values ($1, $2, 'rollback proof', null, null, null, 'collection', current_date, null, '[]'::jsonb, null, null, 0, 0, 0, 0, 0, 0, true, 'TVA', 'truck', 'confirmed', 'unpaid', 'manual') returning order_key, receipt_no   -- params ["rbp-a3f225fb","test-truck-2"]
+  ✓ truck B's insert is NOT blocked while truck A's counter is held (19 ms)
+SQL [c1]> rollback
+  ✓ c2 waited on truck A's row, then — c1 rolled back — got 1: no gap, no duplicate
+SQL [c2]> insert into public.orders (id, truck_id, customer_name, customer_phone, customer_email, slot, order_type, event_date, event_id, items, deals, discount_code, subtotal, discount_amt, total, total_minor, food_minor, tax_minor, tax_inclusive, tax_label, card_fee_payer, status, payment_status, source) values ($1, $2, 'rollback proof', null, null, null, 'collection', current_date, null, '[]'::jsonb, null, null, 0, 0, 0, 0, 0, 0, true, 'TVA', 'truck', 'confirmed', 'unpaid', 'manual') returning order_key, receipt_no   -- params ["rbp-16df198c","demo-mk65q66spjck0g9mxt50btfxtr"]
+SQL [c2]> insert into public.orders (id, truck_id, customer_name, customer_phone, customer_email, slot, order_type, event_date, event_id, items, deals, discount_code, subtotal, discount_amt, total, total_minor, food_minor, tax_minor, tax_inclusive, tax_label, card_fee_payer, status, payment_status, source) values ($1, $2, 'rollback proof', null, null, null, 'collection', current_date, null, '[]'::jsonb, null, null, 0, 0, 0, 0, 0, 0, true, 'TVA', 'truck', 'confirmed', 'unpaid', 'manual') returning order_key, receipt_no   -- params ["rbp-d4a46d02","demo-mk65q66spjck0g9mxt50btfxtr"]
+  ✓ …and its next two are 2, 3 — consecutive
+SQL [c4]> set statement_timeout = '5s'
+SQL [c4]> set lock_timeout = '3s'
+SQL [c4]> begin
+SQL [c4]> insert into public.orders (id, truck_id, customer_name, customer_phone, customer_email, slot, order_type, event_date, event_id, items, deals, discount_code, subtotal, discount_amt, total, total_minor, food_minor, tax_minor, tax_inclusive, tax_label, card_fee_payer, status, payment_status, source) values ($1, $2, 'rollback proof', null, null, null, 'collection', current_date, null, '[]'::jsonb, null, null, 0, 0, 0, 0, 0, 0, true, 'TVA', 'truck', 'confirmed', 'unpaid', 'manual') returning order_key, receipt_no   -- params ["rbp-ca04a7a3","demo-mk65q66spjck0g9mxt50btfxtr"]
+  notice [c4]: orders_assign_receipt_no: no receipt number for truck demo-mk65q66spjck0g9mxt50btfxtr (55P03: canceling statement due to lock timeout)
+  ✓ a holder past the trigger's 2 s lock_timeout: the waiting insert goes IN, receipt_no NULL, after ~2 s (2019 ms) — never an error
+SQL [c4]> rollback
+SQL [c1]> rollback
+  notice [c1]: there is no transaction in progress
+SQL [c2]> rollback
+SQL [c3]> rollback
+SQL [counts-after]> set statement_timeout = '5s'
+SQL [counts-after]> set lock_timeout = '3s'
+SQL [counts-after]> begin
+SQL [counts-after]> set transaction read only
+SQL [counts-after]> select (select count(*) from public.orders where truck_id = any($1))::int as orders, (select count(*) from public.order_payments where truck_id = any($1))::int as order_payments, (select count(*) from public.action_audit_log where truck_id = any($1))::int as action_audit_log, (select count(*) from public.production_slot_usage where truck_id = any($1))::int as production_slot_usage, (select coalesce(sum(order_counter), 0) from public.trucks where id = any($1))::int as trucks_order_counter, (select coalesce(sum(e.order_counter), 0) from public.truck_events e where e.truck_id = any($1))::int as events_order_counter, to_regclass('public.receipt_counters') is not null as has_counters   -- params [["demo-mk65q66spjck0g9mxt50btfxtr","test-truck-2"]]
+SQL [counts-after]> select (select count(*) from public.receipt_counters where truck_id = any($1))::int as counter_rows, (select coalesce(sum(last_no), 0) from public.receipt_counters where truck_id = any($1))::int as counter_sum, (select count(*) from public.receipt_no_failures)::int as failures   -- params [["demo-mk65q66spjck0g9mxt50btfxtr","test-truck-2"]]
+  counts after: {"orders":0,"order_payments":0,"action_audit_log":0,"production_slot_usage":0,"trucks_order_counter":0,"events_order_counter":0,"counter_rows":0,"counter_sum":0,"failures":0}
+SQL [counts-after]> rollback
+  ✓ the demo trucks' counts are identical before and after (nothing was committed)
+
+✅ every proof passed

@@ -129,6 +129,7 @@
       "date": "ቀን",
       "time": "ሰዓት",
       "orderNumber": "የትዕዛዝ ቁጥር",
+      "receiptNo": "የደረሰኝ ቁ.",
       "event": "ዝግጅት",
       "channel": "የሽያጭ መንገድ",
       "paymentMethod": "የክፍያ ዘዴ",
@@ -153,5 +154,38 @@
       "none": "የታክስ መጠን አልተቀመጠም"
     },
     "noRate": "ያለ መጠን"
+  },
+  "daily": {
+    "title": "ዕለታዊ ድምሮች በVAT መጠን",
+    "help": "ለእያንዳንዱ ቀንና የVAT መጠን አንድ ረድፍ — ለኤሌክትሮኒክ ሪፖርት ማቅረቢያ መድረክዎ።",
+    "period": "ጊዜ",
+    "custom": "የራስዎ ቀኖች",
+    "from": "ከ",
+    "to": "እስከ",
+    "button": "ዕለታዊ ድምሮች በVAT መጠን (CSV)",
+    "badRange": "ከማብቂያው ቀን ያልዘገየ የመጀመሪያ ቀን ይምረጡ።",
+    "failed": "ፋይሉን መፍጠር አልተቻለም — እባክዎ እንደገና ይሞክሩ።"
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "ሕጋዊ ስም",
+      "siren": "SIREN/SIRET",
+      "registration": "የምዝገባ ቁጥር",
+      "vatNumber": "የVAT ቁጥር",
+      "vatRegime": "የVAT ሥርዓት",
+      "period": "ጊዜ"
+    },
+    "header": {
+      "date": "ቀን",
+      "type": "ዓይነት",
+      "rate": "የVAT መጠን",
+      "sales": "ሽያጭ (VAT ጨምሮ)",
+      "refunds": "ተመላሽ (VAT ጨምሮ)",
+      "net": "የተጣራ (VAT ሳይጨምር)",
+      "vat": "VAT"
+    },
+    "goods": "ዕቃዎች",
+    "total": "ጠቅላላ ድምር",
+    "noRate": "{n, plural, one {VAT መጠን የሌለው {count} ትዕዛዝ አልተካተተም።} other {VAT መጠን የሌላቸው {count} ትዕዛዞች አልተካተቱም።}}"
   }
 }

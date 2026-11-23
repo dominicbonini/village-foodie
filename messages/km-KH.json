@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "សូមជ្រើសរើស បើក ឬបិទ។",
     "charges_nothing_to_save": "គ្មានអ្វីត្រូវរក្សាទុកទេ។",
     "charges_items_invalid": "មុខម្ហូបមួយក្នុងចំណោមនេះលែងមាននៅលើម៉ឺនុយរបស់អ្នកហើយ។ សូមបិទវា ហើយព្យាយាមម្តងទៀត។",
+    "business_owner_only": "មានតែម្ចាស់ប៉ុណ្ណោះដែលអាចប្តូរព័ត៌មានអាជីវកម្មបាន។",
+    "business_too_long": "វែងពេក — សូមកាត់ឲ្យខ្លី។",
+    "business_siren_invalid": "សូមពិនិត្យលេខ៖ SIREN មាន 9 ខ្ទង់ ហើយ SIRET មាន 14 ខ្ទង់។",
+    "business_company_number_invalid": "លេខក្រុមហ៊ុនមានអក្សរ ឬលេខ 8 ខ្ទង់ ដូចជា 01234567 ឬ SC123456។",
+    "business_vat_invalid": "លេខ VAT នោះហាក់ដូចជាមិនត្រឹមត្រូវទេ។ វាចាប់ផ្តើមដោយ {prefix} ដូចជា {example}។",
+    "business_regime_invalid": "សូមជ្រើសរើសរបប VAT ពីបញ្ជី។",
+    "business_regime_not_here": "របប VAT ត្រូវបានសួរតែនៅប្រទេសបារាំងប៉ុណ្ណោះ។",
+    "business_nothing_to_save": "គ្មានអ្វីត្រូវរក្សាទុកទេ។",
     "country_settings_failed": "មិនអាចផ្ទុកការកំណត់ប្រទេសរបស់ Food Truck នេះបានទេ។ សូមព្យាយាមម្តងទៀតបន្តិចទៀត។",
     "plans_failed": "មិនអាចផ្ទុកកញ្ចប់របស់ Food Truck នេះបានទេ។ សូមព្យាយាមម្តងទៀតបន្តិចទៀត។",
     "demo_not_available": "មិនអាចប្រើបាននៅលើ Food Truck ដេម៉ូទេ",
@@ -4132,7 +4140,45 @@
       "close": "បិទ",
       "logoPlaceholder": "ឡូហ្គោ\nរបស់អ្នក"
     },
-    "qrPoweredBy": "ដំណើរការដោយ HatchGrab"
+    "qrPoweredBy": "ដំណើរការដោយ HatchGrab",
+    "business": {
+      "title": "ព័ត៌មានអាជីវកម្ម",
+      "intro": "សម្រាប់របាយការណ៍គណនេយ្យករ និងកំណត់ត្រារបស់អ្នក។ អតិថិជនមិនឃើញព័ត៌មានទាំងនេះទេ។",
+      "ownerOnly": "មានតែម្ចាស់ប៉ុណ្ណោះដែលអាចប្តូរព័ត៌មានទាំងនេះបាន។",
+      "legalName": {
+        "label": "ឈ្មោះស្របច្បាប់",
+        "hint": "ឈ្មោះដែលអាជីវកម្មរបស់អ្នកបានចុះបញ្ជី។"
+      },
+      "address": {
+        "label": "អាសយដ្ឋានចុះបញ្ជី",
+        "hint": "កន្លែងដែលអាជីវកម្មរបស់អ្នកបានចុះបញ្ជី។",
+        "street": "អាសយដ្ឋាន"
+      },
+      "registration": {
+        "siren": "SIREN ឬ SIRET",
+        "sirenHint": "9 ខ្ទង់ (SIREN) ឬ 14 ខ្ទង់ (SIRET)។",
+        "gb": "លេខក្រុមហ៊ុន",
+        "gbHint": "មិនចាំបាច់។ អក្សរ ឬលេខ 8 ខ្ទង់ ពី Companies House។",
+        "other": "លេខចុះបញ្ជី",
+        "otherHint": "មិនចាំបាច់។ លេខចុះបញ្ជីផ្លូវការរបស់អាជីវកម្មអ្នក។"
+      },
+      "vat": {
+        "label": "លេខ {label}",
+        "hint": "មិនចាំបាច់។",
+        "euHint": "ចាប់ផ្តើមដោយ {prefix} ដូចជា {example}។"
+      },
+      "regime": {
+        "label": "របប VAT",
+        "hint": "កំណត់រយៈពេលក្នុងឯកសារសរុបប្រចាំថ្ងៃរបស់អ្នក។",
+        "none": "មិនទាន់កំណត់",
+        "franchise": "Franchise en base (មិនគិត VAT)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – ប្រចាំខែ",
+        "reelNormalQuarterly": "Réel normal – ប្រចាំត្រីមាស",
+        "franchiseNote": "អ្នកបានជ្រើស franchise en base ដូច្នេះអ្នកប្រហែលជាចង់កំណត់ VAT របស់អ្នកទៅ 0 %។"
+      },
+      "saveFailed": "រក្សាទុកមិនបានទេ — សូមព្យាយាមម្តងទៀត។"
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "កាលបរិច្ឆេទ",
         "time": "ម៉ោង",
         "orderNumber": "លេខការកុម្ម៉ង់",
+        "receiptNo": "លេខបង្កាន់ដៃ",
         "event": "ព្រឹត្តិការណ៍",
         "channel": "ប្រភព",
         "paymentMethod": "មធ្យោបាយបង់ប្រាក់",
@@ -4289,6 +4336,39 @@
         "none": "មិនទាន់កំណត់អត្រាពន្ធ"
       },
       "noRate": "គ្មានអត្រា"
+    },
+    "daily": {
+      "title": "សរុបប្រចាំថ្ងៃតាមអត្រា VAT",
+      "help": "មួយជួរសម្រាប់ថ្ងៃនីមួយៗ និងអត្រា VAT នីមួយៗ សម្រាប់វេទិការបាយការណ៍អេឡិចត្រូនិករបស់អ្នក។",
+      "period": "រយៈពេល",
+      "custom": "កាលបរិច្ឆេទតាមចិត្ត",
+      "from": "ពី",
+      "to": "ដល់",
+      "button": "សរុបប្រចាំថ្ងៃតាមអត្រា VAT (CSV)",
+      "badRange": "សូមជ្រើសកាលបរិច្ឆេទចាប់ផ្តើមដែលស្មើ ឬមុនកាលបរិច្ឆេទបញ្ចប់។",
+      "failed": "បង្កើតឯកសារមិនបានទេ — សូមព្យាយាមម្តងទៀត។"
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "ឈ្មោះស្របច្បាប់",
+        "siren": "SIREN/SIRET",
+        "registration": "លេខចុះបញ្ជី",
+        "vatNumber": "លេខ VAT",
+        "vatRegime": "របប VAT",
+        "period": "រយៈពេល"
+      },
+      "header": {
+        "date": "កាលបរិច្ឆេទ",
+        "type": "ប្រភេទ",
+        "rate": "អត្រា VAT",
+        "sales": "ការលក់រួម VAT",
+        "refunds": "ការសងប្រាក់វិញរួម VAT",
+        "net": "សុទ្ធមិនរួម VAT",
+        "vat": "VAT"
+      },
+      "goods": "ទំនិញ",
+      "total": "សរុប",
+      "noRate": "{n, plural, one {ការកុម្ម៉ង់ {count} ដែលគ្មានអត្រា VAT មិនត្រូវបានរាប់បញ្ចូលទេ។} other {ការកុម្ម៉ង់ {count} ដែលគ្មានអត្រា VAT មិនត្រូវបានរាប់បញ្ចូលទេ។}}"
     }
   },
   "socialPosts": {

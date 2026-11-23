@@ -211,5 +211,43 @@
     "close": "Funga",
     "logoPlaceholder": "Nembo yako\nhapa"
   },
-  "qrPoweredBy": "Inaendeshwa na HatchGrab"
+  "qrPoweredBy": "Inaendeshwa na HatchGrab",
+  "business": {
+    "title": "Taarifa za biashara",
+    "intro": "Kwa ripoti za mhasibu wako na kumbukumbu zako. Wateja hawazioni.",
+    "ownerOnly": "Mmiliki pekee ndiye anayeweza kubadilisha hizi.",
+    "legalName": {
+      "label": "Jina la kisheria",
+      "hint": "Jina ambalo biashara yako imesajiliwa nalo."
+    },
+    "address": {
+      "label": "Anwani iliyosajiliwa",
+      "hint": "Mahali ambapo biashara yako imesajiliwa.",
+      "street": "Anwani"
+    },
+    "registration": {
+      "siren": "SIREN au SIRET",
+      "sirenHint": "Tarakimu 9 (SIREN) au tarakimu 14 (SIRET).",
+      "gb": "Namba ya kampuni",
+      "gbHint": "Si lazima. Herufi au tarakimu 8, kutoka Companies House.",
+      "other": "Namba ya usajili",
+      "otherHint": "Si lazima. Namba rasmi ya usajili wa biashara yako."
+    },
+    "vat": {
+      "label": "Namba ya {label}",
+      "hint": "Si lazima.",
+      "euHint": "Inaanza na {prefix}, kama {example}."
+    },
+    "regime": {
+      "label": "Mfumo wa VAT",
+      "hint": "Huweka vipindi katika faili lako la jumla za kila siku.",
+      "none": "Haijawekwa",
+      "franchise": "Franchise en base (hakuna VAT inayotozwa)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – kila mwezi",
+      "reelNormalQuarterly": "Réel normal – kila robo mwaka",
+      "franchiseNote": "Umechagua franchise en base, kwa hiyo huenda ukataka kuweka VAT yako kuwa 0 %."
+    },
+    "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena."
+  }
 }

@@ -211,5 +211,43 @@
     "close": "Stäng",
     "logoPlaceholder": "Din logotyp\nhär"
   },
-  "qrPoweredBy": "Drivs av HatchGrab"
+  "qrPoweredBy": "Drivs av HatchGrab",
+  "business": {
+    "title": "Företagsuppgifter",
+    "intro": "För dina rapporter till redovisningskonsulten och din bokföring. Kunderna ser inte detta.",
+    "ownerOnly": "Bara ägaren kan ändra detta.",
+    "legalName": {
+      "label": "Juridiskt namn",
+      "hint": "Namnet som ditt företag är registrerat under."
+    },
+    "address": {
+      "label": "Registrerad adress",
+      "hint": "Där ditt företag är registrerat.",
+      "street": "Adress"
+    },
+    "registration": {
+      "siren": "SIREN eller SIRET",
+      "sirenHint": "9 siffror (SIREN) eller 14 siffror (SIRET).",
+      "gb": "Företagsnummer",
+      "gbHint": "Valfritt. 8 bokstäver eller siffror, från Companies House.",
+      "other": "Registreringsnummer",
+      "otherHint": "Valfritt. Ditt företags officiella registreringsnummer."
+    },
+    "vat": {
+      "label": "Registreringsnummer för {label}",
+      "hint": "Valfritt.",
+      "euHint": "Börjar med {prefix}, t.ex. {example}."
+    },
+    "regime": {
+      "label": "Momsordning",
+      "hint": "Styr perioderna i din fil med dagssummor.",
+      "none": "Inte vald",
+      "franchise": "Franchise en base (ingen moms debiteras)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – månadsvis",
+      "reelNormalQuarterly": "Réel normal – kvartalsvis",
+      "franchiseNote": "Du har valt franchise en base, så du kanske vill sätta din moms till 0 %."
+    },
+    "saveFailed": "Kunde inte spara – försök igen."
+  }
 }

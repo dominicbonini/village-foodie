@@ -129,6 +129,7 @@
       "date": "Datum",
       "time": "Čas",
       "orderNumber": "Številka naročila",
+      "receiptNo": "Št. računa",
       "event": "Dogodek",
       "channel": "Kanal",
       "paymentMethod": "Način plačila",
@@ -153,5 +154,38 @@
       "none": "stopnja DDV ni nastavljena"
     },
     "noRate": "brez stopnje"
+  },
+  "daily": {
+    "title": "Dnevni seštevki po stopnjah DDV",
+    "help": "Ena vrstica za vsak dan in stopnjo DDV, za vašo platformo za e-poročanje.",
+    "period": "Obdobje",
+    "custom": "Datumi po izbiri",
+    "from": "Od",
+    "to": "Do",
+    "button": "Dnevni seštevki po stopnjah DDV (CSV)",
+    "badRange": "Izberite začetni datum, ki ni po končnem datumu.",
+    "failed": "Datoteke ni bilo mogoče ustvariti — poskusite znova."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Uradni naziv",
+      "siren": "SIREN/SIRET",
+      "registration": "Registrska številka",
+      "vatNumber": "ID za DDV",
+      "vatRegime": "Sistem DDV",
+      "period": "Obdobje"
+    },
+    "header": {
+      "date": "Datum",
+      "type": "Vrsta",
+      "rate": "Stopnja DDV",
+      "sales": "Prodaja z DDV",
+      "refunds": "Vračila z DDV",
+      "net": "Neto brez DDV",
+      "vat": "DDV"
+    },
+    "goods": "Blago",
+    "total": "Skupaj",
+    "noRate": "{n, plural, one {{count} naročilo brez stopnje DDV ni vključeno.} two {{count} naročili brez stopnje DDV nista vključeni.} few {{count} naročila brez stopnje DDV niso vključena.} other {{count} naročil brez stopnje DDV ni vključenih.}}"
   }
 }

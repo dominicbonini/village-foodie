@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Yoqish yoki oʻchirishni tanlang.",
     "charges_nothing_to_save": "Saqlanadigan narsa yoʻq.",
     "charges_items_invalid": "Bu mahsulotlardan biri endi menyuingizda yoʻq. Buni yopib, qayta urinib koʻring.",
+    "business_owner_only": "Biznes rekvizitlarini faqat egasi oʻzgartira oladi.",
+    "business_too_long": "Juda uzun — iltimos, qisqartiring.",
+    "business_siren_invalid": "Raqamni tekshiring: SIREN 9 ta, SIRET esa 14 ta raqamdan iborat.",
+    "business_company_number_invalid": "Kompaniya raqami 8 ta harf yoki raqamdan iborat, masalan, 01234567 yoki SC123456.",
+    "business_vat_invalid": "Bu QQS raqami notoʻgʻri koʻrinadi. U {prefix} bilan boshlanadi, masalan, {example}.",
+    "business_regime_invalid": "Roʻyxatdan QQS rejimini tanlang.",
+    "business_regime_not_here": "QQS rejimi faqat Fransiyada soʻraladi.",
+    "business_nothing_to_save": "Saqlanadigan narsa yoʻq.",
     "country_settings_failed": "Bu fudtrakning mamlakat sozlamalarini yuklab boʻlmadi. Birozdan soʻng qayta urinib koʻring.",
     "plans_failed": "Bu fudtrakning tarifini yuklab boʻlmadi. Birozdan soʻng qayta urinib koʻring.",
     "demo_not_available": "Demo fudtrakda mavjud emas",
@@ -4132,7 +4140,45 @@
       "close": "Yopish",
       "logoPlaceholder": "Logotipingiz\nshu yerda"
     },
-    "qrPoweredBy": "HatchGrab asosida ishlaydi"
+    "qrPoweredBy": "HatchGrab asosida ishlaydi",
+    "business": {
+      "title": "Biznes rekvizitlari",
+      "intro": "Buxgalteringiz uchun hisobotlar va hisob yuritish uchun. Mijozlar ularni koʻrmaydi.",
+      "ownerOnly": "Ularni faqat egasi oʻzgartira oladi.",
+      "legalName": {
+        "label": "Yuridik nomi",
+        "hint": "Biznesingiz roʻyxatdan oʻtgan nom."
+      },
+      "address": {
+        "label": "Yuridik manzil",
+        "hint": "Biznesingiz roʻyxatdan oʻtgan joy.",
+        "street": "Manzil"
+      },
+      "registration": {
+        "siren": "SIREN yoki SIRET",
+        "sirenHint": "9 ta raqam (SIREN) yoki 14 ta raqam (SIRET).",
+        "gb": "Kompaniya raqami",
+        "gbHint": "Ixtiyoriy. Companies House bergan 8 ta harf yoki raqam.",
+        "other": "Roʻyxatdan oʻtish raqami",
+        "otherHint": "Ixtiyoriy. Biznesingizning rasmiy roʻyxatdan oʻtish raqami."
+      },
+      "vat": {
+        "label": "{label} raqami",
+        "hint": "Ixtiyoriy.",
+        "euHint": "{prefix} bilan boshlanadi, masalan, {example}."
+      },
+      "regime": {
+        "label": "QQS rejimi",
+        "hint": "Kunlik jamlar faylingizdagi davrlarni belgilaydi.",
+        "none": "Belgilanmagan",
+        "franchise": "Franchise en base (QQS olinmaydi)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – har oy",
+        "reelNormalQuarterly": "Réel normal – har chorak",
+        "franchiseNote": "Siz franchise en base rejimini tanladingiz, shuning uchun QQSni 0% qilib qoʻyishingiz mumkin."
+      },
+      "saveFailed": "Saqlab boʻlmadi — qaytadan urinib koʻring."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Sana",
         "time": "Vaqt",
         "orderNumber": "Buyurtma raqami",
+        "receiptNo": "Chek raqami",
         "event": "Tadbir",
         "channel": "Kanal",
         "paymentMethod": "Toʻlov usuli",
@@ -4289,6 +4336,39 @@
         "none": "soliq stavkasi belgilanmagan"
       },
       "noRate": "stavkasiz"
+    },
+    "daily": {
+      "title": "QQS stavkasi boʻyicha kunlik jamlar",
+      "help": "Har bir kun va QQS stavkasi uchun bitta qator — elektron hisobot platformangiz uchun.",
+      "period": "Davr",
+      "custom": "Boshqa sanalar",
+      "from": "Boshlanish",
+      "to": "Tugash",
+      "button": "QQS stavkasi boʻyicha kunlik jamlar (CSV)",
+      "badRange": "Tugash sanasidan kech boʻlmagan boshlanish sanasini tanlang.",
+      "failed": "Faylni yaratib boʻlmadi — qaytadan urinib koʻring."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Yuridik nomi",
+        "siren": "SIREN/SIRET",
+        "registration": "Roʻyxatdan oʻtish raqami",
+        "vatNumber": "QQS raqami",
+        "vatRegime": "QQS rejimi",
+        "period": "Davr"
+      },
+      "header": {
+        "date": "Sana",
+        "type": "Turi",
+        "rate": "QQS stavkasi",
+        "sales": "Savdo (QQS bilan)",
+        "refunds": "Qaytarishlar (QQS bilan)",
+        "net": "Sof (QQSsiz)",
+        "vat": "QQS"
+      },
+      "goods": "Tovarlar",
+      "total": "Jami",
+      "noRate": "{n, plural, one {QQS stavkasi boʻlmagan {count} ta buyurtma kiritilmagan.} other {QQS stavkasi boʻlmagan {count} ta buyurtma kiritilmagan.}}"
     }
   },
   "socialPosts": {

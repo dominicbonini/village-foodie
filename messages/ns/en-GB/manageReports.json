@@ -129,6 +129,7 @@
       "date": "Date",
       "time": "Time",
       "orderNumber": "Order number",
+      "receiptNo": "Receipt no.",
       "event": "Event",
       "channel": "Channel",
       "paymentMethod": "Payment method",
@@ -153,5 +154,38 @@
       "none": "no tax rate set"
     },
     "noRate": "no rate"
+  },
+  "daily": {
+    "title": "Daily totals by VAT rate",
+    "help": "One row per day and VAT rate, for your e-reporting platform.",
+    "period": "Period",
+    "custom": "Custom dates",
+    "from": "From",
+    "to": "To",
+    "button": "Daily totals by VAT rate (CSV)",
+    "badRange": "Choose a start date on or before the end date.",
+    "failed": "Couldn’t build the file — please try again."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Legal name",
+      "siren": "SIREN/SIRET",
+      "registration": "Registration number",
+      "vatNumber": "VAT number",
+      "vatRegime": "VAT regime",
+      "period": "Period"
+    },
+    "header": {
+      "date": "Date",
+      "type": "Type",
+      "rate": "VAT rate",
+      "sales": "Sales incl. VAT",
+      "refunds": "Refunds incl. VAT",
+      "net": "Net excl. VAT",
+      "vat": "VAT"
+    },
+    "goods": "Goods",
+    "total": "Total",
+    "noRate": "{n, plural, one {{count} order with no VAT rate is not included.} other {{count} orders with no VAT rate are not included.}}"
   }
 }

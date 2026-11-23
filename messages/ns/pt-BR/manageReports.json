@@ -129,6 +129,7 @@
       "date": "Data",
       "time": "Horário",
       "orderNumber": "Número do pedido",
+      "receiptNo": "Nº do recibo",
       "event": "Evento",
       "channel": "Canal",
       "paymentMethod": "Forma de pagamento",
@@ -153,5 +154,38 @@
       "none": "sem alíquota definida"
     },
     "noRate": "sem alíquota"
+  },
+  "daily": {
+    "title": "Totais diários por alíquota de IVA",
+    "help": "Uma linha por dia e alíquota de IVA, para sua plataforma de e-reporting.",
+    "period": "Período",
+    "custom": "Datas personalizadas",
+    "from": "De",
+    "to": "Até",
+    "button": "Totais diários por alíquota de IVA (CSV)",
+    "badRange": "Escolha uma data de início igual ou anterior à data final.",
+    "failed": "Não foi possível gerar o arquivo — tente de novo."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Razão social",
+      "siren": "SIREN/SIRET",
+      "registration": "Número de registro",
+      "vatNumber": "Número de IVA",
+      "vatRegime": "Regime de IVA",
+      "period": "Período"
+    },
+    "header": {
+      "date": "Data",
+      "type": "Tipo",
+      "rate": "Alíquota de IVA",
+      "sales": "Vendas com IVA",
+      "refunds": "Reembolsos com IVA",
+      "net": "Líquido sem IVA",
+      "vat": "IVA"
+    },
+    "goods": "Mercadorias",
+    "total": "Total",
+    "noRate": "{n, plural, one {{count} pedido sem alíquota de IVA não está incluído.} other {{count} pedidos sem alíquota de IVA não estão incluídos.}}"
   }
 }

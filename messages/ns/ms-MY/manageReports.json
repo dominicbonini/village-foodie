@@ -129,6 +129,7 @@
       "date": "Tarikh",
       "time": "Masa",
       "orderNumber": "Nombor pesanan",
+      "receiptNo": "No. resit",
       "event": "Acara",
       "channel": "Saluran",
       "paymentMethod": "Kaedah pembayaran",
@@ -153,5 +154,38 @@
       "none": "tiada kadar cukai ditetapkan"
     },
     "noRate": "tiada kadar"
+  },
+  "daily": {
+    "title": "Jumlah harian mengikut kadar cukai",
+    "help": "Satu baris bagi setiap hari dan kadar cukai, untuk platform e-pelaporan anda.",
+    "period": "Tempoh",
+    "custom": "Tarikh pilihan sendiri",
+    "from": "Dari",
+    "to": "Hingga",
+    "button": "Jumlah harian mengikut kadar cukai (CSV)",
+    "badRange": "Pilih tarikh mula yang sama dengan atau sebelum tarikh akhir.",
+    "failed": "Tidak dapat menjana fail — sila cuba lagi."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Nama sah",
+      "siren": "SIREN/SIRET",
+      "registration": "Nombor pendaftaran",
+      "vatNumber": "Nombor cukai",
+      "vatRegime": "Rejim cukai",
+      "period": "Tempoh"
+    },
+    "header": {
+      "date": "Tarikh",
+      "type": "Jenis",
+      "rate": "Kadar cukai",
+      "sales": "Jualan termasuk cukai",
+      "refunds": "Bayaran balik termasuk cukai",
+      "net": "Bersih tanpa cukai",
+      "vat": "Cukai"
+    },
+    "goods": "Barangan",
+    "total": "Jumlah",
+    "noRate": "{n, plural, other {{count} pesanan tanpa kadar cukai tidak dimasukkan.}}"
   }
 }

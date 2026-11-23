@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "請選擇開啟或關閉。",
     "charges_nothing_to_save": "沒有需要儲存的內容。",
     "charges_items_invalid": "其中有品項已不在你的菜單上。請關閉此視窗後再試一次。",
+    "business_owner_only": "只有擁有者可以變更商家資料。",
+    "business_too_long": "內容太長了，請縮短。",
+    "business_siren_invalid": "請檢查號碼：SIREN 為 9 位數字，SIRET 為 14 位數字。",
+    "business_company_number_invalid": "公司編號為 8 個字母或數字，例如 01234567 或 SC123456。",
+    "business_vat_invalid": "這個稅籍編號看起來不正確。開頭應為 {prefix}，例如 {example}。",
+    "business_regime_invalid": "請從清單中選擇營業稅制度。",
+    "business_regime_not_here": "只有在法國才需要填寫營業稅制度。",
+    "business_nothing_to_save": "沒有需要儲存的內容。",
     "country_settings_failed": "無法載入這台餐車的國家設定，請稍後再試。",
     "plans_failed": "無法載入這台餐車的方案，請稍後再試。",
     "demo_not_available": "示範版餐車無法使用",
@@ -4132,7 +4140,45 @@
       "close": "關閉",
       "logoPlaceholder": "你的 Logo\n放這裡"
     },
-    "qrPoweredBy": "由 HatchGrab 提供技術支援"
+    "qrPoweredBy": "由 HatchGrab 提供技術支援",
+    "business": {
+      "title": "商家資料",
+      "intro": "用於給會計師的報表和紀錄。顧客看不到這些資料。",
+      "ownerOnly": "只有擁有者可以變更這些資料。",
+      "legalName": {
+        "label": "登記名稱",
+        "hint": "你的商家登記時使用的名稱。"
+      },
+      "address": {
+        "label": "登記地址",
+        "hint": "你的商家登記的地址。",
+        "street": "地址"
+      },
+      "registration": {
+        "siren": "SIREN 或 SIRET",
+        "sirenHint": "9 位數字（SIREN）或 14 位數字（SIRET）。",
+        "gb": "公司編號",
+        "gbHint": "選填。8 個字母或數字，來自 Companies House。",
+        "other": "登記編號",
+        "otherHint": "選填。你商家的正式登記編號。"
+      },
+      "vat": {
+        "label": "{label}編號",
+        "hint": "選填。",
+        "euHint": "開頭為 {prefix}，例如 {example}。"
+      },
+      "regime": {
+        "label": "營業稅制度",
+        "hint": "決定每日總額檔案中的期間。",
+        "none": "未設定",
+        "franchise": "Franchise en base（不收營業稅）",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – 每月",
+        "reelNormalQuarterly": "Réel normal – 每季",
+        "franchiseNote": "你選擇了 franchise en base，可能需要把營業稅設為 0 %。"
+      },
+      "saveFailed": "無法儲存，請再試一次。"
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "日期",
         "time": "時間",
         "orderNumber": "訂單編號",
+        "receiptNo": "收據編號",
         "event": "活動",
         "channel": "管道",
         "paymentMethod": "付款方式",
@@ -4289,6 +4336,39 @@
         "none": "未設定稅率"
       },
       "noRate": "無稅率"
+    },
+    "daily": {
+      "title": "依營業稅率的每日總額",
+      "help": "每天每個營業稅率一列，供你的電子申報平台使用。",
+      "period": "期間",
+      "custom": "自訂日期",
+      "from": "從",
+      "to": "到",
+      "button": "依營業稅率的每日總額（CSV）",
+      "badRange": "請選擇早於或等於結束日期的開始日期。",
+      "failed": "無法建立檔案，請再試一次。"
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "登記名稱",
+        "siren": "SIREN/SIRET",
+        "registration": "登記編號",
+        "vatNumber": "稅籍編號",
+        "vatRegime": "營業稅制度",
+        "period": "期間"
+      },
+      "header": {
+        "date": "日期",
+        "type": "類型",
+        "rate": "營業稅率",
+        "sales": "銷售額（含稅）",
+        "refunds": "退款（含稅）",
+        "net": "淨額（未稅）",
+        "vat": "營業稅"
+      },
+      "goods": "貨物",
+      "total": "總計",
+      "noRate": "{n, plural, one {有 {count} 筆訂單沒有營業稅率，未列入計算。} other {有 {count} 筆訂單沒有營業稅率，未列入計算。}}"
     }
   },
   "socialPosts": {

@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Açıq və ya bağlı seçin.",
     "charges_nothing_to_save": "Yadda saxlanılacaq heç nə yoxdur.",
     "charges_items_invalid": "Bu məhsullardan biri artıq menyunuzda yoxdur. Bunu bağlayın və yenidən cəhd edin.",
+    "business_owner_only": "Biznes rekvizitlərini yalnız sahib dəyişə bilər.",
+    "business_too_long": "Bu çox uzundur — qısaldın.",
+    "business_siren_invalid": "Nömrəni yoxlayın: SIREN 9, SIRET isə 14 rəqəmdən ibarətdir.",
+    "business_company_number_invalid": "Şirkət nömrəsi 8 hərf və ya rəqəmdən ibarətdir, məsələn, 01234567 və ya SC123456.",
+    "business_vat_invalid": "Bu ƏDV nömrəsi düzgün görünmür. O, {prefix} ilə başlayır, məsələn, {example}.",
+    "business_regime_invalid": "Siyahıdan ƏDV rejimi seçin.",
+    "business_regime_not_here": "ƏDV rejimi yalnız Fransada soruşulur.",
+    "business_nothing_to_save": "Yadda saxlanılacaq heç nə yoxdur.",
     "country_settings_failed": "Bu food truck-ın ölkə ayarlarını yükləmək mümkün olmadı. Bir azdan yenidən cəhd edin.",
     "plans_failed": "Bu food truck-ın planını yükləmək mümkün olmadı. Bir azdan yenidən cəhd edin.",
     "demo_not_available": "Demo food truck-da mövcud deyil",
@@ -4132,7 +4140,45 @@
       "close": "Bağla",
       "logoPlaceholder": "Loqonuz\nburada"
     },
-    "qrPoweredBy": "HatchGrab ilə hazırlanıb"
+    "qrPoweredBy": "HatchGrab ilə hazırlanıb",
+    "business": {
+      "title": "Biznes rekvizitləri",
+      "intro": "Mühasibiniz üçün hesabatlar və uçot üçün. Müştərilər bunları görmür.",
+      "ownerOnly": "Bunları yalnız sahib dəyişə bilər.",
+      "legalName": {
+        "label": "Hüquqi ad",
+        "hint": "Biznesinizin qeydiyyatdan keçdiyi ad."
+      },
+      "address": {
+        "label": "Hüquqi ünvan",
+        "hint": "Biznesinizin qeydiyyatdan keçdiyi yer.",
+        "street": "Ünvan"
+      },
+      "registration": {
+        "siren": "SIREN və ya SIRET",
+        "sirenHint": "9 rəqəm (SIREN) və ya 14 rəqəm (SIRET).",
+        "gb": "Şirkət nömrəsi",
+        "gbHint": "İstəyə bağlı. Companies House-dan 8 hərf və ya rəqəm.",
+        "other": "Qeydiyyat nömrəsi",
+        "otherHint": "İstəyə bağlı. Biznesinizin rəsmi qeydiyyat nömrəsi."
+      },
+      "vat": {
+        "label": "{label} nömrəsi",
+        "hint": "İstəyə bağlı.",
+        "euHint": "{prefix} ilə başlayır, məsələn, {example}."
+      },
+      "regime": {
+        "label": "ƏDV rejimi",
+        "hint": "Gündəlik yekunlar faylınızdakı dövrləri müəyyən edir.",
+        "none": "Təyin edilməyib",
+        "franchise": "Franchise en base (ƏDV tutulmur)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – aylıq",
+        "reelNormalQuarterly": "Réel normal – rüblük",
+        "franchiseNote": "Siz franchise en base seçmisiniz, ona görə də ƏDV-ni 0% etmək istəyə bilərsiniz."
+      },
+      "saveFailed": "Yadda saxlamaq mümkün olmadı — yenidən cəhd edin."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Tarix",
         "time": "Vaxt",
         "orderNumber": "Sifariş nömrəsi",
+        "receiptNo": "Qəbz №",
         "event": "Tədbir",
         "channel": "Kanal",
         "paymentMethod": "Ödəniş üsulu",
@@ -4289,6 +4336,39 @@
         "none": "vergi dərəcəsi təyin edilməyib"
       },
       "noRate": "dərəcəsiz"
+    },
+    "daily": {
+      "title": "ƏDV dərəcəsi üzrə gündəlik yekunlar",
+      "help": "Hər gün və ƏDV dərəcəsi üçün bir sətir — e-hesabat platformanız üçün.",
+      "period": "Dövr",
+      "custom": "Fərdi tarixlər",
+      "from": "Başlanğıc",
+      "to": "Son",
+      "button": "ƏDV dərəcəsi üzrə gündəlik yekunlar (CSV)",
+      "badRange": "Bitmə tarixindən gec olmayan başlanğıc tarixi seçin.",
+      "failed": "Faylı yaratmaq mümkün olmadı — yenidən cəhd edin."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Hüquqi ad",
+        "siren": "SIREN/SIRET",
+        "registration": "Qeydiyyat nömrəsi",
+        "vatNumber": "ƏDV nömrəsi",
+        "vatRegime": "ƏDV rejimi",
+        "period": "Dövr"
+      },
+      "header": {
+        "date": "Tarix",
+        "type": "Növ",
+        "rate": "ƏDV dərəcəsi",
+        "sales": "Satış (ƏDV daxil)",
+        "refunds": "Geri qaytarmalar (ƏDV daxil)",
+        "net": "Xalis (ƏDV-siz)",
+        "vat": "ƏDV"
+      },
+      "goods": "Mallar",
+      "total": "Cəmi",
+      "noRate": "{n, plural, one {ƏDV dərəcəsi olmayan {count} sifariş daxil edilməyib.} other {ƏDV dərəcəsi olmayan {count} sifariş daxil edilməyib.}}"
     }
   },
   "socialPosts": {

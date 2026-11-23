@@ -211,5 +211,43 @@
     "close": "បិទ",
     "logoPlaceholder": "ឡូហ្គោ\nរបស់អ្នក"
   },
-  "qrPoweredBy": "ដំណើរការដោយ HatchGrab"
+  "qrPoweredBy": "ដំណើរការដោយ HatchGrab",
+  "business": {
+    "title": "ព័ត៌មានអាជីវកម្ម",
+    "intro": "សម្រាប់របាយការណ៍គណនេយ្យករ និងកំណត់ត្រារបស់អ្នក។ អតិថិជនមិនឃើញព័ត៌មានទាំងនេះទេ។",
+    "ownerOnly": "មានតែម្ចាស់ប៉ុណ្ណោះដែលអាចប្តូរព័ត៌មានទាំងនេះបាន។",
+    "legalName": {
+      "label": "ឈ្មោះស្របច្បាប់",
+      "hint": "ឈ្មោះដែលអាជីវកម្មរបស់អ្នកបានចុះបញ្ជី។"
+    },
+    "address": {
+      "label": "អាសយដ្ឋានចុះបញ្ជី",
+      "hint": "កន្លែងដែលអាជីវកម្មរបស់អ្នកបានចុះបញ្ជី។",
+      "street": "អាសយដ្ឋាន"
+    },
+    "registration": {
+      "siren": "SIREN ឬ SIRET",
+      "sirenHint": "9 ខ្ទង់ (SIREN) ឬ 14 ខ្ទង់ (SIRET)។",
+      "gb": "លេខក្រុមហ៊ុន",
+      "gbHint": "មិនចាំបាច់។ អក្សរ ឬលេខ 8 ខ្ទង់ ពី Companies House។",
+      "other": "លេខចុះបញ្ជី",
+      "otherHint": "មិនចាំបាច់។ លេខចុះបញ្ជីផ្លូវការរបស់អាជីវកម្មអ្នក។"
+    },
+    "vat": {
+      "label": "លេខ {label}",
+      "hint": "មិនចាំបាច់។",
+      "euHint": "ចាប់ផ្តើមដោយ {prefix} ដូចជា {example}។"
+    },
+    "regime": {
+      "label": "របប VAT",
+      "hint": "កំណត់រយៈពេលក្នុងឯកសារសរុបប្រចាំថ្ងៃរបស់អ្នក។",
+      "none": "មិនទាន់កំណត់",
+      "franchise": "Franchise en base (មិនគិត VAT)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – ប្រចាំខែ",
+      "reelNormalQuarterly": "Réel normal – ប្រចាំត្រីមាស",
+      "franchiseNote": "អ្នកបានជ្រើស franchise en base ដូច្នេះអ្នកប្រហែលជាចង់កំណត់ VAT របស់អ្នកទៅ 0 %។"
+    },
+    "saveFailed": "រក្សាទុកមិនបានទេ — សូមព្យាយាមម្តងទៀត។"
+  }
 }

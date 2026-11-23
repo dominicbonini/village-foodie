@@ -55,6 +55,8 @@ export interface LedgerOrder {
   tax_rate_milli?: number | null
   /** france-vat-1: the per-rate breakdown; null/absent on every order before it. */
   tax_breakdown?: unknown
+  /** france-records-1: the truck's gap-free receipt number (NULL on orders before it). */
+  receipt_no?: number | string | null
 }
 export interface LedgerPayment { order_key: string; kind: string; channel: string | null; amount_minor: number; state: string | null }
 export interface CostRow { item_id: string; cost_minor: number | null; currency: string; effective_from: string }
@@ -64,6 +66,8 @@ export interface TaxRule { inclusive: boolean; rateMilli: number | null }
 export interface AccountRow {
   orderKey: string
   number: string
+  /** france-records-1: the receipt number ('' before it). */
+  receiptNo: string
   /** Placed, on the truck's clock: YYYY-MM-DD and HH:MM (24-hour). */
   date: string
   time: string
@@ -202,7 +206,7 @@ export function accountRows(input: AccountRowsInput): AccountRow[] {
       rates = [{ rate: one, netMinor, taxMinor }]
     }
     rows.push({
-      orderKey: o.order_key, number: String(o.id ?? ''), date, time, eventDate: o.event_date, eventId: o.event_id,
+      orderKey: o.order_key, number: String(o.id ?? ''), receiptNo: o.receipt_no == null ? '' : String(o.receipt_no), date, time, eventDate: o.event_date, eventId: o.event_id,
       channel: online ? 'online' : 'walkup',
       payment: !online ? 'walkup' : pays.some(p => p.kind === 'charge' && p.channel === 'online') ? 'card_online' : 'pay_at_truck',
       currency, cancelled, grossMinor, refundedMinor, taxMinor, taxBasis: tax.basis, netMinor,

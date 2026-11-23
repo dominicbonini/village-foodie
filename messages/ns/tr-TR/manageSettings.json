@@ -211,5 +211,43 @@
     "close": "Kapat",
     "logoPlaceholder": "Logonuz\nburada"
   },
-  "qrPoweredBy": "HatchGrab altyapısıyla"
+  "qrPoweredBy": "HatchGrab altyapısıyla",
+  "business": {
+    "title": "İşletme bilgileri",
+    "intro": "Muhasebeci raporlarınız ve kayıtlarınız için. Müşteriler bunları görmez.",
+    "ownerOnly": "Bunları yalnızca işletme sahibi değiştirebilir.",
+    "legalName": {
+      "label": "Ticari unvan",
+      "hint": "İşletmenizin kayıtlı olduğu ad."
+    },
+    "address": {
+      "label": "Kayıtlı adres",
+      "hint": "İşletmenizin kayıtlı olduğu yer.",
+      "street": "Adres"
+    },
+    "registration": {
+      "siren": "SIREN veya SIRET",
+      "sirenHint": "9 hane (SIREN) veya 14 hane (SIRET).",
+      "gb": "Şirket numarası",
+      "gbHint": "İsteğe bağlı. Companies House’tan alınan 8 harf veya rakam.",
+      "other": "Sicil numarası",
+      "otherHint": "İsteğe bağlı. İşletmenizin resmî sicil numarası."
+    },
+    "vat": {
+      "label": "{label} numarası",
+      "hint": "İsteğe bağlı.",
+      "euHint": "{prefix} ile başlar, örneğin {example}."
+    },
+    "regime": {
+      "label": "KDV rejimi",
+      "hint": "Günlük toplamlar dosyanızdaki dönemleri belirler.",
+      "none": "Ayarlanmadı",
+      "franchise": "Franchise en base (KDV alınmaz)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – aylık",
+      "reelNormalQuarterly": "Réel normal – üç aylık",
+      "franchiseNote": "Franchise en base seçtiğiniz için KDV’nizi %0 olarak ayarlamak isteyebilirsiniz."
+    },
+    "saveFailed": "Kaydedilemedi — lütfen tekrar deneyin."
+  }
 }

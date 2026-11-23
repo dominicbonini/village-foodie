@@ -1,0 +1,16 @@
+﻿Legal name,Crêperie Léa SARL
+SIREN/SIRET,73282932000074
+VAT number,FR12345678901
+VAT regime,Réel simplifié
+Period,2026-11-02 – 2026-11-03
+
+Date,Type,VAT rate,Sales incl. VAT,Refunds incl. VAT,Net excl. VAT,VAT
+2026-11-02,Goods,5.5%,4.75,0.00,4.50,0.25
+2026-11-02,Goods,10%,24.65,0.00,22.41,2.24
+2026-11-02,Goods,20%,7.60,0.00,6.33,1.27
+2026-11-03,Goods,5.5%,0.00,-0.84,-0.79,-0.05
+2026-11-03,Goods,10%,8.50,-11.33,-2.57,-0.26
+2026-11-03,Goods,20%,0.00,-1.33,-1.11,-0.22
+Total,Goods,5.5%,4.75,-0.84,3.71,0.20
+Total,Goods,10%,33.15,-11.33,19.84,1.98
+Total,Goods,20%,7.60,-1.33,5.22,1.05

@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "켜기 또는 끄기를 선택하세요.",
     "charges_nothing_to_save": "저장할 내용이 없습니다.",
     "charges_items_invalid": "이 중 일부 메뉴가 더 이상 메뉴판에 없습니다. 이 창을 닫고 다시 시도하세요.",
+    "business_owner_only": "사업자 정보는 소유자만 변경할 수 있습니다.",
+    "business_too_long": "너무 깁니다. 줄여 주세요.",
+    "business_siren_invalid": "번호를 확인하세요. SIREN은 9자리, SIRET은 14자리입니다.",
+    "business_company_number_invalid": "회사 번호는 01234567 또는 SC123456처럼 영문자나 숫자 8자리입니다.",
+    "business_vat_invalid": "부가세 번호가 올바르지 않은 것 같습니다. {example}처럼 {prefix}(으)로 시작합니다.",
+    "business_regime_invalid": "목록에서 부가세 과세 유형을 선택하세요.",
+    "business_regime_not_here": "부가세 과세 유형은 프랑스에서만 입력합니다.",
+    "business_nothing_to_save": "저장할 내용이 없습니다.",
     "country_settings_failed": "이 푸드트럭의 국가 설정을 불러오지 못했습니다. 잠시 후 다시 시도하세요.",
     "plans_failed": "이 푸드트럭의 요금제를 불러오지 못했습니다. 잠시 후 다시 시도하세요.",
     "demo_not_available": "데모 푸드트럭에서는 사용할 수 없습니다",
@@ -4132,7 +4140,45 @@
       "close": "닫기",
       "logoPlaceholder": "로고\n위치"
     },
-    "qrPoweredBy": "HatchGrab 제공"
+    "qrPoweredBy": "HatchGrab 제공",
+    "business": {
+      "title": "사업자 정보",
+      "intro": "세무사용 보고서와 기록에 사용됩니다. 손님에게는 보이지 않습니다.",
+      "ownerOnly": "소유자만 변경할 수 있습니다.",
+      "legalName": {
+        "label": "정식 상호",
+        "hint": "사업자로 등록된 이름입니다."
+      },
+      "address": {
+        "label": "등록 주소",
+        "hint": "사업자가 등록된 주소입니다.",
+        "street": "주소"
+      },
+      "registration": {
+        "siren": "SIREN 또는 SIRET",
+        "sirenHint": "9자리(SIREN) 또는 14자리(SIRET) 숫자입니다.",
+        "gb": "회사 번호",
+        "gbHint": "선택 사항. Companies House에서 받은 영문자나 숫자 8자리입니다.",
+        "other": "등록 번호",
+        "otherHint": "선택 사항. 사업자의 공식 등록 번호입니다."
+      },
+      "vat": {
+        "label": "{label} 번호",
+        "hint": "선택 사항.",
+        "euHint": "{example}처럼 {prefix}(으)로 시작합니다."
+      },
+      "regime": {
+        "label": "부가세 과세 유형",
+        "hint": "일별 합계 파일의 기간을 정합니다.",
+        "none": "설정 안 함",
+        "franchise": "Franchise en base(부가세 미부과)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – 월별",
+        "reelNormalQuarterly": "Réel normal – 분기별",
+        "franchiseNote": "franchise en base를 선택하셨으니 부가세를 0 %로 설정하는 것이 좋을 수 있습니다."
+      },
+      "saveFailed": "저장하지 못했어요. 다시 시도해 주세요."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "날짜",
         "time": "시간",
         "orderNumber": "주문 번호",
+        "receiptNo": "영수증 번호",
         "event": "영업 일정",
         "channel": "채널",
         "paymentMethod": "결제 수단",
@@ -4289,6 +4336,39 @@
         "none": "세율 미설정"
       },
       "noRate": "세율 없음"
+    },
+    "daily": {
+      "title": "부가세율별 일별 합계",
+      "help": "날짜와 부가세율별로 한 행씩 나옵니다. 전자 보고 플랫폼용입니다.",
+      "period": "기간",
+      "custom": "직접 설정",
+      "from": "시작",
+      "to": "종료",
+      "button": "부가세율별 일별 합계(CSV)",
+      "badRange": "시작 날짜는 종료 날짜와 같거나 그 이전으로 선택하세요.",
+      "failed": "파일을 만들지 못했어요. 다시 시도해 주세요."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "정식 상호",
+        "siren": "SIREN/SIRET",
+        "registration": "등록 번호",
+        "vatNumber": "부가세 번호",
+        "vatRegime": "부가세 과세 유형",
+        "period": "기간"
+      },
+      "header": {
+        "date": "날짜",
+        "type": "유형",
+        "rate": "부가세율",
+        "sales": "매출(부가세 포함)",
+        "refunds": "환불(부가세 포함)",
+        "net": "순액(부가세 제외)",
+        "vat": "부가세"
+      },
+      "goods": "재화",
+      "total": "합계",
+      "noRate": "{n, plural, one {부가세율이 없는 주문 {count}건은 포함되지 않았습니다.} other {부가세율이 없는 주문 {count}건은 포함되지 않았습니다.}}"
     }
   },
   "socialPosts": {

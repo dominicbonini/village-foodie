@@ -47,6 +47,8 @@ import { STOPPED_AFTER_MS } from '@/lib/custom-domain/cadence'
 import { QR_POSTER, posterLogoRect } from '@/lib/generateQRCode'
 import { ChargesCard } from '@/components/manage/ChargesCard'
 import { formatRateMilli } from '@/lib/order-charge-lines'   // france-vat-1: the per-rate CSV headers
+import { BusinessDetailsCard } from '@/components/manage/BusinessDetailsCard'   // france-records-1
+import { DailyTotalsCsv } from '@/components/manage/DailyTotalsCsv'   // france-records-1
 import { TakingPaymentPanel } from '@/components/manage/TakingPaymentPanel'
 import { PaymentsTab } from '@/components/manage/PaymentsTab'
 import PaperworkTab from '@/components/manage/PaperworkTab'
@@ -1664,7 +1666,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} notices={notices} appsAvailable={appsAvailable} />}
+        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} isAdmin={isAdmin} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} notices={notices} appsAvailable={appsAvailable} />}
         {activeTab === 'payments'  && <PaymentsTab  token={token} onTrial={onTrialPlan} features={featureAccessView(truck, planCatalog, truck?.country ?? null)} showToast={showToast}
           /* Phase 3 screens: after the online payments section and before "Walk-up payments" — the new
            * "Tax, tips and fees" card (only where tax is added at checkout), then "Taking payment", moved
@@ -11405,10 +11407,12 @@ function useSettingsJumpBar(active: boolean) {
 /** store-badges-1: no app in the truck's country's stores — the default until /api/manage says otherwise. */
 const NO_APPS = { ios: false, android: false } as const
 
-function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, appsAvailable = NO_APPS, onOpenWalkthrough, notices }: {
+function SettingsTab({ userRole, isAdmin = false, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, appsAvailable = NO_APPS, onOpenWalkthrough, notices }: {
   /** store-badges-1: the truck's country's app flags — the app-download card shows only where at least one app is available.
    *  Absent → none (no card). */
   appsAvailable?: { ios: boolean; android: boolean }
+  /** france-records-1: an admin may edit Business details (as the server allows); everyone else but the owner reads them. */
+  isAdmin?: boolean
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
   userRole: UserRole
@@ -12585,6 +12589,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       </Card>
       {/* Where you trade (Phase 2D-1) — the signup step's answers, editable; the country is read-only. */}
       <WhereYouTrade truck={truck} api={api} showToast={showToast} onTruckUpdate={onTruckUpdate} readOnly={userRole === 'staff'} />
+      {/* france-records-1: Business details — the owner (or an admin) edits; never shown to customers. */}
+      <BusinessDetailsCard truck={truck} api={api} showToast={showToast} onTruckUpdate={onTruckUpdate} readOnly={!(userRole === 'owner' || isAdmin)} />
       </section>
       {/* ══ SECTION: Contact ══ */}
       <section
@@ -15784,6 +15790,8 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                     className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">{t('accounts.downloadEvents')}</button>
                 </div>
                 <p className="text-xs text-slate-400 mt-2">{t('accounts.downloadHelp')}</p>
+                {/* france-records-1: daily totals by VAT rate, for the truck's e-reporting platform — its own period picker. */}
+                {truck && <DailyTotalsCsv truck={truck as unknown as import('@/components/manage/DailyTotalsCsv').DailyTotalsTruck} api={api} currency={accounts?.currency ?? truckFmt.currency} />}
               </div>
             )
           })()}

@@ -129,6 +129,7 @@
       "date": "Datum",
       "time": "Tijd",
       "orderNumber": "Bestelnummer",
+      "receiptNo": "Bonnummer",
       "event": "Evenement",
       "channel": "Kanaal",
       "paymentMethod": "Betaalwijze",
@@ -153,5 +154,38 @@
       "none": "geen btw-tarief ingesteld"
     },
     "noRate": "geen tarief"
+  },
+  "daily": {
+    "title": "Dagtotalen per btw-tarief",
+    "help": "Eén regel per dag en btw-tarief, voor je e-reportingplatform.",
+    "period": "Periode",
+    "custom": "Eigen datums",
+    "from": "Van",
+    "to": "Tot",
+    "button": "Dagtotalen per btw-tarief (CSV)",
+    "badRange": "Kies een begindatum op of vóór de einddatum.",
+    "failed": "Bestand maken mislukt — probeer het opnieuw."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Officiële bedrijfsnaam",
+      "siren": "SIREN/SIRET",
+      "registration": "Registratienummer",
+      "vatNumber": "Btw-nummer",
+      "vatRegime": "Btw-regeling",
+      "period": "Periode"
+    },
+    "header": {
+      "date": "Datum",
+      "type": "Soort",
+      "rate": "Btw-tarief",
+      "sales": "Omzet incl. btw",
+      "refunds": "Terugbetalingen incl. btw",
+      "net": "Netto excl. btw",
+      "vat": "Btw"
+    },
+    "goods": "Goederen",
+    "total": "Totaal",
+    "noRate": "{n, plural, one {{count} bestelling zonder btw-tarief is niet meegenomen.} other {{count} bestellingen zonder btw-tarief zijn niet meegenomen.}}"
   }
 }

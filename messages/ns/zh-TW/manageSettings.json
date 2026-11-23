@@ -211,5 +211,43 @@
     "close": "關閉",
     "logoPlaceholder": "你的 Logo\n放這裡"
   },
-  "qrPoweredBy": "由 HatchGrab 提供技術支援"
+  "qrPoweredBy": "由 HatchGrab 提供技術支援",
+  "business": {
+    "title": "商家資料",
+    "intro": "用於給會計師的報表和紀錄。顧客看不到這些資料。",
+    "ownerOnly": "只有擁有者可以變更這些資料。",
+    "legalName": {
+      "label": "登記名稱",
+      "hint": "你的商家登記時使用的名稱。"
+    },
+    "address": {
+      "label": "登記地址",
+      "hint": "你的商家登記的地址。",
+      "street": "地址"
+    },
+    "registration": {
+      "siren": "SIREN 或 SIRET",
+      "sirenHint": "9 位數字（SIREN）或 14 位數字（SIRET）。",
+      "gb": "公司編號",
+      "gbHint": "選填。8 個字母或數字，來自 Companies House。",
+      "other": "登記編號",
+      "otherHint": "選填。你商家的正式登記編號。"
+    },
+    "vat": {
+      "label": "{label}編號",
+      "hint": "選填。",
+      "euHint": "開頭為 {prefix}，例如 {example}。"
+    },
+    "regime": {
+      "label": "營業稅制度",
+      "hint": "決定每日總額檔案中的期間。",
+      "none": "未設定",
+      "franchise": "Franchise en base（不收營業稅）",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – 每月",
+      "reelNormalQuarterly": "Réel normal – 每季",
+      "franchiseNote": "你選擇了 franchise en base，可能需要把營業稅設為 0 %。"
+    },
+    "saveFailed": "無法儲存，請再試一次。"
+  }
 }

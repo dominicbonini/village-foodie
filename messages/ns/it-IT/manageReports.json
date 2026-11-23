@@ -129,6 +129,7 @@
       "date": "Data",
       "time": "Ora",
       "orderNumber": "Numero d’ordine",
+      "receiptNo": "N. ricevuta",
       "event": "Evento",
       "channel": "Canale",
       "paymentMethod": "Metodo di pagamento",
@@ -153,5 +154,38 @@
       "none": "nessuna aliquota impostata"
     },
     "noRate": "senza aliquota"
+  },
+  "daily": {
+    "title": "Totali giornalieri per aliquota IVA",
+    "help": "Una riga per giorno e aliquota IVA, per la tua piattaforma di e-reporting.",
+    "period": "Periodo",
+    "custom": "Date personalizzate",
+    "from": "Dal",
+    "to": "Al",
+    "button": "Totali giornalieri per aliquota IVA (CSV)",
+    "badRange": "Scegli una data di inizio uguale o precedente alla data di fine.",
+    "failed": "Impossibile creare il file: riprova."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Ragione sociale",
+      "siren": "SIREN/SIRET",
+      "registration": "Numero di registrazione",
+      "vatNumber": "Partita IVA",
+      "vatRegime": "Regime IVA",
+      "period": "Periodo"
+    },
+    "header": {
+      "date": "Data",
+      "type": "Tipo",
+      "rate": "Aliquota IVA",
+      "sales": "Vendite IVA inclusa",
+      "refunds": "Rimborsi IVA inclusa",
+      "net": "Netto IVA esclusa",
+      "vat": "IVA"
+    },
+    "goods": "Beni",
+    "total": "Totale",
+    "noRate": "{n, plural, one {{count} ordine senza aliquota IVA non è incluso.} other {{count} ordini senza aliquota IVA non sono inclusi.}}"
   }
 }

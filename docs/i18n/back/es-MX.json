@@ -426,6 +426,7 @@
  "manageReports.accounts.eventNoProfit": "A dash means not every dish sold there has a cost.",
  "manageReports.accounts.downloadOrders": "⬇ Orders for your accountant",
  "manageReports.accounts.downloadEvents": "⬇ Events for your accountant",
+ "manageReports.accountsCsv.header.receiptNo": "Receipt no.",
  "manageReports.accountsCsv.header.cost": "Cost",
  "manageReports.accountsCsv.header.profit": "Profit",
  "manageReports.accountsCsv.header.dishesSold": "Dishes sold",
@@ -444,5 +445,10 @@
  "manageCharges.itemRates.noItems": "There are no items on your menu yet.",
  "manageCharges.itemRates.saved": "Rates per item saved",
  "errorsManage.charges_items_invalid": "One of these items is no longer on your menu. Close this window and try again.",
- "manageReports.accountsCsv.noRate": "no rate"
+ "manageReports.accountsCsv.noRate": "no rate",
+ "manageReports.daily.title": "Daily totals by VAT rate",
+ "manageReports.daily.help": "One row per day and VAT rate, for your e-reporting platform.",
+ "manageReports.daily.button": "Daily totals by VAT rate (CSV)",
+ "manageReports.dailyCsv.header.rate": "VAT rate",
+ "manageReports.dailyCsv.noRate": "{n, plural, one {{count} order without a VAT rate is not included.} other {{count} orders without a VAT rate are not included.}}"
 }

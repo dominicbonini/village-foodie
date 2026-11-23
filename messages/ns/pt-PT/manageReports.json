@@ -129,6 +129,7 @@
       "date": "Data",
       "time": "Hora",
       "orderNumber": "Número da encomenda",
+      "receiptNo": "N.º do recibo",
       "event": "Evento",
       "channel": "Canal",
       "paymentMethod": "Forma de pagamento",
@@ -153,5 +154,38 @@
       "none": "sem taxa de imposto definida"
     },
     "noRate": "sem taxa"
+  },
+  "daily": {
+    "title": "Totais diários por taxa de IVA",
+    "help": "Uma linha por dia e por taxa de IVA, para a sua plataforma de e-reporting.",
+    "period": "Período",
+    "custom": "Datas personalizadas",
+    "from": "De",
+    "to": "Até",
+    "button": "Totais diários por taxa de IVA (CSV)",
+    "badRange": "Escolha uma data de início igual ou anterior à data de fim.",
+    "failed": "Não foi possível criar o ficheiro — tente novamente."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Denominação social",
+      "siren": "SIREN/SIRET",
+      "registration": "Número de registo",
+      "vatNumber": "Número de IVA",
+      "vatRegime": "Regime de IVA",
+      "period": "Período"
+    },
+    "header": {
+      "date": "Data",
+      "type": "Tipo",
+      "rate": "Taxa de IVA",
+      "sales": "Vendas com IVA",
+      "refunds": "Reembolsos com IVA",
+      "net": "Líquido sem IVA",
+      "vat": "IVA"
+    },
+    "goods": "Bens",
+    "total": "Total",
+    "noRate": "{n, plural, one {{count} encomenda sem taxa de IVA não está incluída.} other {{count} encomendas sem taxa de IVA não estão incluídas.}}"
   }
 }

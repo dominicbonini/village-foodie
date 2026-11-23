@@ -211,5 +211,43 @@
     "close": "Tutup",
     "logoPlaceholder": "Logo anda\ndi sini"
   },
-  "qrPoweredBy": "Dikuasakan oleh HatchGrab"
+  "qrPoweredBy": "Dikuasakan oleh HatchGrab",
+  "business": {
+    "title": "Butiran perniagaan",
+    "intro": "Untuk laporan akauntan dan rekod anda. Pelanggan tidak nampak butiran ini.",
+    "ownerOnly": "Hanya pemilik boleh menukar butiran ini.",
+    "legalName": {
+      "label": "Nama sah",
+      "hint": "Nama yang didaftarkan untuk perniagaan anda."
+    },
+    "address": {
+      "label": "Alamat berdaftar",
+      "hint": "Tempat perniagaan anda didaftarkan.",
+      "street": "Alamat"
+    },
+    "registration": {
+      "siren": "SIREN atau SIRET",
+      "sirenHint": "9 digit (SIREN) atau 14 digit (SIRET).",
+      "gb": "Nombor syarikat",
+      "gbHint": "Pilihan. 8 huruf atau digit, daripada Companies House.",
+      "other": "Nombor pendaftaran",
+      "otherHint": "Pilihan. Nombor pendaftaran rasmi perniagaan anda."
+    },
+    "vat": {
+      "label": "Nombor {label}",
+      "hint": "Pilihan.",
+      "euHint": "Bermula dengan {prefix}, seperti {example}."
+    },
+    "regime": {
+      "label": "Rejim cukai",
+      "hint": "Menetapkan tempoh dalam fail jumlah harian anda.",
+      "none": "Belum ditetapkan",
+      "franchise": "Franchise en base (tiada cukai dikenakan)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – bulanan",
+      "reelNormalQuarterly": "Réel normal – suku tahunan",
+      "franchiseNote": "Anda telah memilih franchise en base, jadi anda mungkin mahu menetapkan cukai anda kepada 0 %."
+    },
+    "saveFailed": "Tidak dapat disimpan — sila cuba lagi."
+  }
 }

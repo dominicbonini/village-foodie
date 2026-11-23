@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Zgjidhni aktiv ose joaktiv.",
     "charges_nothing_to_save": "Nuk ka asgjë për të ruajtur.",
     "charges_items_invalid": "Një nga këta artikuj nuk është më në menunë tuaj. Mbylleni këtë dhe provoni sërish.",
+    "business_owner_only": "Vetëm pronari mund t’i ndryshojë të dhënat e biznesit.",
+    "business_too_long": "Është shumë e gjatë — ju lutemi shkurtojeni.",
+    "business_siren_invalid": "Kontrolloni numrin: SIREN ka 9 shifra dhe SIRET 14.",
+    "business_company_number_invalid": "Numri i kompanisë ka 8 shkronja ose shifra, p.sh. 01234567 ose SC123456.",
+    "business_vat_invalid": "Ky numër TVSH-je nuk duket i saktë. Fillon me {prefix}, p.sh. {example}.",
+    "business_regime_invalid": "Zgjidhni një regjim TVSH-je nga lista.",
+    "business_regime_not_here": "Regjimi i TVSH-së kërkohet vetëm në Francë.",
+    "business_nothing_to_save": "Nuk ka asgjë për të ruajtur.",
     "country_settings_failed": "Cilësimet e vendit për këtë food truck nuk u ngarkuan dot. Provoni sërish pas pak.",
     "plans_failed": "Paketa e këtij food truck-u nuk u ngarkua dot. Provoni sërish pas pak.",
     "demo_not_available": "Nuk disponohet për një food truck demo",
@@ -4132,7 +4140,45 @@
       "close": "Mbyll",
       "logoPlaceholder": "Logoja juaj\nkëtu"
     },
-    "qrPoweredBy": "Mundësuar nga HatchGrab"
+    "qrPoweredBy": "Mundësuar nga HatchGrab",
+    "business": {
+      "title": "Të dhënat e biznesit",
+      "intro": "Për raportet për kontabilistin dhe dokumentacionin. Klientët nuk i shohin.",
+      "ownerOnly": "Vetëm pronari mund t’i ndryshojë.",
+      "legalName": {
+        "label": "Emri ligjor",
+        "hint": "Emri me të cilin është regjistruar biznesi juaj."
+      },
+      "address": {
+        "label": "Adresa e regjistruar",
+        "hint": "Ku është regjistruar biznesi juaj.",
+        "street": "Adresa"
+      },
+      "registration": {
+        "siren": "SIREN ose SIRET",
+        "sirenHint": "9 shifra (SIREN) ose 14 shifra (SIRET).",
+        "gb": "Numri i kompanisë",
+        "gbHint": "Opsionale. 8 shkronja ose shifra, nga Companies House.",
+        "other": "Numri i regjistrimit",
+        "otherHint": "Opsionale. Numri zyrtar i regjistrimit të biznesit tuaj."
+      },
+      "vat": {
+        "label": "Numri i {label}",
+        "hint": "Opsionale.",
+        "euHint": "Fillon me {prefix}, p.sh. {example}."
+      },
+      "regime": {
+        "label": "Regjimi i TVSH-së",
+        "hint": "Përcakton periudhat në skedarin e totaleve ditore.",
+        "none": "Pa caktuar",
+        "franchise": "Franchise en base (pa aplikuar TVSH)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – mujor",
+        "reelNormalQuarterly": "Réel normal – tremujor",
+        "franchiseNote": "Keni zgjedhur franchise en base, ndaj mund të doni ta vendosni TVSH-në në 0 %."
+      },
+      "saveFailed": "Ruajtja dështoi — ju lutemi provoni përsëri."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Data",
         "time": "Ora",
         "orderNumber": "Numri i porosisë",
+        "receiptNo": "Nr. i kuponit",
         "event": "Eventi",
         "channel": "Kanali",
         "paymentMethod": "Mënyra e pagesës",
@@ -4289,6 +4336,39 @@
         "none": "pa normë takse"
       },
       "noRate": "pa normë"
+    },
+    "daily": {
+      "title": "Totalet ditore sipas normës së TVSH-së",
+      "help": "Një rresht për çdo ditë dhe normë TVSH-je, për platformën tuaj të raportimit elektronik.",
+      "period": "Periudha",
+      "custom": "Data të zgjedhura",
+      "from": "Nga",
+      "to": "Deri",
+      "button": "Totalet ditore sipas normës së TVSH-së (CSV)",
+      "badRange": "Zgjidhni një datë fillimi jo më vonë se data e mbarimit.",
+      "failed": "Skedari nuk u krijua dot — ju lutemi provoni përsëri."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Emri ligjor",
+        "siren": "SIREN/SIRET",
+        "registration": "Numri i regjistrimit",
+        "vatNumber": "Numri i TVSH-së",
+        "vatRegime": "Regjimi i TVSH-së",
+        "period": "Periudha"
+      },
+      "header": {
+        "date": "Data",
+        "type": "Lloji",
+        "rate": "Norma e TVSH-së",
+        "sales": "Shitjet me TVSH",
+        "refunds": "Rimbursimet me TVSH",
+        "net": "Neto pa TVSH",
+        "vat": "TVSH"
+      },
+      "goods": "Mallra",
+      "total": "Totali",
+      "noRate": "{n, plural, one {{count} porosi pa normë TVSH-je nuk është përfshirë.} other {{count} porosi pa normë TVSH-je nuk janë përfshirë.}}"
     }
   },
   "socialPosts": {

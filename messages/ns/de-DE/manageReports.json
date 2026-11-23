@@ -129,6 +129,7 @@
       "date": "Datum",
       "time": "Uhrzeit",
       "orderNumber": "Bestellnummer",
+      "receiptNo": "Belegnr.",
       "event": "Event",
       "channel": "Kanal",
       "paymentMethod": "Zahlungsart",
@@ -153,5 +154,38 @@
       "none": "kein Steuersatz hinterlegt"
     },
     "noRate": "ohne Steuersatz"
+  },
+  "daily": {
+    "title": "Tagessummen nach MwSt.-Satz",
+    "help": "Eine Zeile pro Tag und MwSt.-Satz, für Ihre E-Reporting-Plattform.",
+    "period": "Zeitraum",
+    "custom": "Eigener Zeitraum",
+    "from": "Von",
+    "to": "Bis",
+    "button": "Tagessummen nach MwSt.-Satz (CSV)",
+    "badRange": "Wählen Sie ein Startdatum am oder vor dem Enddatum.",
+    "failed": "Datei konnte nicht erstellt werden – bitte versuchen Sie es erneut."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Offizieller Name",
+      "siren": "SIREN/SIRET",
+      "registration": "Registernummer",
+      "vatNumber": "USt-IdNr.",
+      "vatRegime": "MwSt.-Regelung",
+      "period": "Zeitraum"
+    },
+    "header": {
+      "date": "Datum",
+      "type": "Art",
+      "rate": "MwSt.-Satz",
+      "sales": "Umsatz inkl. MwSt.",
+      "refunds": "Erstattungen inkl. MwSt.",
+      "net": "Netto ohne MwSt.",
+      "vat": "MwSt."
+    },
+    "goods": "Waren",
+    "total": "Gesamt",
+    "noRate": "{n, plural, one {{count} Bestellung ohne MwSt.-Satz ist nicht enthalten.} other {{count} Bestellungen ohne MwSt.-Satz sind nicht enthalten.}}"
   }
 }

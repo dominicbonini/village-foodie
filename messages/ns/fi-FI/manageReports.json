@@ -129,6 +129,7 @@
       "date": "Päivä",
       "time": "Aika",
       "orderNumber": "Tilausnumero",
+      "receiptNo": "Kuittinro",
       "event": "Tapahtuma",
       "channel": "Kanava",
       "paymentMethod": "Maksutapa",
@@ -153,5 +154,38 @@
       "none": "ALV-kantaa ei asetettu"
     },
     "noRate": "ei kantaa"
+  },
+  "daily": {
+    "title": "Päiväsummat ALV-kannoittain",
+    "help": "Yksi rivi päivää ja ALV-kantaa kohden, e-raportointialustaasi varten.",
+    "period": "Ajanjakso",
+    "custom": "Omat päivämäärät",
+    "from": "Alkupäivä",
+    "to": "Loppupäivä",
+    "button": "Päiväsummat ALV-kannoittain (CSV)",
+    "badRange": "Valitse alkupäivä, joka on sama tai aiempi kuin loppupäivä.",
+    "failed": "Tiedoston luonti epäonnistui — yritä uudelleen."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Virallinen nimi",
+      "siren": "SIREN/SIRET",
+      "registration": "Rekisterinumero",
+      "vatNumber": "ALV-numero",
+      "vatRegime": "ALV-järjestelmä",
+      "period": "Ajanjakso"
+    },
+    "header": {
+      "date": "Päivä",
+      "type": "Tyyppi",
+      "rate": "ALV-kanta",
+      "sales": "Myynti sis. ALV",
+      "refunds": "Palautukset sis. ALV",
+      "net": "Netto ilman ALV:tä",
+      "vat": "ALV"
+    },
+    "goods": "Tavarat",
+    "total": "Yhteensä",
+    "noRate": "{n, plural, one {{count} tilaus ilman ALV-kantaa ei ole mukana.} other {{count} tilausta ilman ALV-kantaa ei ole mukana.}}"
   }
 }

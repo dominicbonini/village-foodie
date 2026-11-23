@@ -211,5 +211,43 @@
     "close": "ปิด",
     "logoPlaceholder": "โลโก้ของคุณ\nที่นี่"
   },
-  "qrPoweredBy": "ขับเคลื่อนโดย HatchGrab"
+  "qrPoweredBy": "ขับเคลื่อนโดย HatchGrab",
+  "business": {
+    "title": "ข้อมูลธุรกิจ",
+    "intro": "สำหรับรายงานนักบัญชีและบันทึกของคุณ ลูกค้าจะไม่เห็นข้อมูลนี้",
+    "ownerOnly": "เฉพาะเจ้าของเท่านั้นที่เปลี่ยนข้อมูลเหล่านี้ได้",
+    "legalName": {
+      "label": "ชื่อตามกฎหมาย",
+      "hint": "ชื่อที่ใช้จดทะเบียนธุรกิจของคุณ"
+    },
+    "address": {
+      "label": "ที่อยู่ที่จดทะเบียน",
+      "hint": "ที่อยู่ที่ธุรกิจของคุณจดทะเบียนไว้",
+      "street": "ที่อยู่"
+    },
+    "registration": {
+      "siren": "SIREN หรือ SIRET",
+      "sirenHint": "9 หลัก (SIREN) หรือ 14 หลัก (SIRET)",
+      "gb": "เลขทะเบียนบริษัท",
+      "gbHint": "ไม่บังคับ ตัวอักษรหรือตัวเลข 8 ตัว จาก Companies House",
+      "other": "เลขทะเบียน",
+      "otherHint": "ไม่บังคับ เลขทะเบียนอย่างเป็นทางการของธุรกิจคุณ"
+    },
+    "vat": {
+      "label": "หมายเลข {label}",
+      "hint": "ไม่บังคับ",
+      "euHint": "ขึ้นต้นด้วย {prefix} เช่น {example}"
+    },
+    "regime": {
+      "label": "ระบบ VAT",
+      "hint": "กำหนดช่วงเวลาในไฟล์ยอดรวมรายวันของคุณ",
+      "none": "ยังไม่ได้ตั้ง",
+      "franchise": "Franchise en base (ไม่เก็บ VAT)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – รายเดือน",
+      "reelNormalQuarterly": "Réel normal – รายไตรมาส",
+      "franchiseNote": "คุณเลือก franchise en base จึงอาจต้องตั้ง VAT เป็น 0 %"
+    },
+    "saveFailed": "บันทึกไม่สำเร็จ — โปรดลองอีกครั้ง"
+  }
 }

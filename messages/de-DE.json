@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Wählen Sie „An“ oder „Aus“.",
     "charges_nothing_to_save": "Nichts zu speichern.",
     "charges_items_invalid": "Einer dieser Artikel ist nicht mehr auf Ihrer Speisekarte. Schließen Sie dieses Fenster und versuchen Sie es erneut.",
+    "business_owner_only": "Nur der Inhaber kann die Unternehmensdaten ändern.",
+    "business_too_long": "Das ist zu lang – bitte kürzen Sie es.",
+    "business_siren_invalid": "Prüfen Sie die Nummer: Eine SIREN hat 9 Ziffern, eine SIRET 14.",
+    "business_company_number_invalid": "Eine Firmennummer hat 8 Buchstaben oder Ziffern, z. B. 01234567 oder SC123456.",
+    "business_vat_invalid": "Diese USt-IdNr. sieht nicht richtig aus. Sie beginnt mit {prefix}, z. B. {example}.",
+    "business_regime_invalid": "Wählen Sie eine MwSt.-Regelung aus der Liste.",
+    "business_regime_not_here": "Die MwSt.-Regelung wird nur in Frankreich abgefragt.",
+    "business_nothing_to_save": "Nichts zu speichern.",
     "country_settings_failed": "Die Ländereinstellungen dieses Foodtrucks konnten nicht geladen werden. Versuchen Sie es gleich noch einmal.",
     "plans_failed": "Der Tarif dieses Foodtrucks konnte nicht geladen werden. Versuchen Sie es gleich noch einmal.",
     "demo_not_available": "Bei einem Demo-Foodtruck nicht verfügbar",
@@ -4132,7 +4140,45 @@
       "close": "Schließen",
       "logoPlaceholder": "Ihr Logo\nhier"
     },
-    "qrPoweredBy": "Bereitgestellt von HatchGrab"
+    "qrPoweredBy": "Bereitgestellt von HatchGrab",
+    "business": {
+      "title": "Unternehmensdaten",
+      "intro": "Für Ihre Buchhaltungsberichte und Unterlagen. Kunden sehen diese Angaben nicht.",
+      "ownerOnly": "Nur der Inhaber kann diese Angaben ändern.",
+      "legalName": {
+        "label": "Offizieller Name",
+        "hint": "Der Name, unter dem Ihr Unternehmen eingetragen ist."
+      },
+      "address": {
+        "label": "Eingetragene Anschrift",
+        "hint": "Wo Ihr Unternehmen eingetragen ist.",
+        "street": "Adresse"
+      },
+      "registration": {
+        "siren": "SIREN oder SIRET",
+        "sirenHint": "9 Ziffern (SIREN) oder 14 Ziffern (SIRET).",
+        "gb": "Firmennummer",
+        "gbHint": "Optional. 8 Buchstaben oder Ziffern, von Companies House.",
+        "other": "Registernummer",
+        "otherHint": "Optional. Die offizielle Registernummer Ihres Unternehmens."
+      },
+      "vat": {
+        "label": "{label}-Nummer",
+        "hint": "Optional.",
+        "euHint": "Beginnt mit {prefix}, z. B. {example}."
+      },
+      "regime": {
+        "label": "MwSt.-Regelung",
+        "hint": "Legt die Zeiträume in Ihrer Datei mit den Tagessummen fest.",
+        "none": "Nicht festgelegt",
+        "franchise": "Franchise en base (keine MwSt. berechnet)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – monatlich",
+        "reelNormalQuarterly": "Réel normal – vierteljährlich",
+        "franchiseNote": "Sie haben franchise en base gewählt, daher sollten Sie Ihre MwSt. eventuell auf 0 % setzen."
+      },
+      "saveFailed": "Speichern fehlgeschlagen – bitte versuchen Sie es erneut."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Datum",
         "time": "Uhrzeit",
         "orderNumber": "Bestellnummer",
+        "receiptNo": "Belegnr.",
         "event": "Event",
         "channel": "Kanal",
         "paymentMethod": "Zahlungsart",
@@ -4289,6 +4336,39 @@
         "none": "kein Steuersatz hinterlegt"
       },
       "noRate": "ohne Steuersatz"
+    },
+    "daily": {
+      "title": "Tagessummen nach MwSt.-Satz",
+      "help": "Eine Zeile pro Tag und MwSt.-Satz, für Ihre E-Reporting-Plattform.",
+      "period": "Zeitraum",
+      "custom": "Eigener Zeitraum",
+      "from": "Von",
+      "to": "Bis",
+      "button": "Tagessummen nach MwSt.-Satz (CSV)",
+      "badRange": "Wählen Sie ein Startdatum am oder vor dem Enddatum.",
+      "failed": "Datei konnte nicht erstellt werden – bitte versuchen Sie es erneut."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Offizieller Name",
+        "siren": "SIREN/SIRET",
+        "registration": "Registernummer",
+        "vatNumber": "USt-IdNr.",
+        "vatRegime": "MwSt.-Regelung",
+        "period": "Zeitraum"
+      },
+      "header": {
+        "date": "Datum",
+        "type": "Art",
+        "rate": "MwSt.-Satz",
+        "sales": "Umsatz inkl. MwSt.",
+        "refunds": "Erstattungen inkl. MwSt.",
+        "net": "Netto ohne MwSt.",
+        "vat": "MwSt."
+      },
+      "goods": "Waren",
+      "total": "Gesamt",
+      "noRate": "{n, plural, one {{count} Bestellung ohne MwSt.-Satz ist nicht enthalten.} other {{count} Bestellungen ohne MwSt.-Satz sind nicht enthalten.}}"
     }
   },
   "socialPosts": {

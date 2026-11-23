@@ -211,5 +211,43 @@
     "close": "Zamknij",
     "logoPlaceholder": "Tu twoje\nlogo"
   },
-  "qrPoweredBy": "Działa dzięki HatchGrab"
+  "qrPoweredBy": "Działa dzięki HatchGrab",
+  "business": {
+    "title": "Dane firmy",
+    "intro": "Do raportów dla księgowości i dokumentacji. Klienci ich nie widzą.",
+    "ownerOnly": "Tylko właściciel może je zmieniać.",
+    "legalName": {
+      "label": "Pełna nazwa firmy",
+      "hint": "Nazwa, pod którą zarejestrowana jest twoja firma."
+    },
+    "address": {
+      "label": "Adres siedziby",
+      "hint": "Adres, pod którym zarejestrowana jest twoja firma.",
+      "street": "Adres"
+    },
+    "registration": {
+      "siren": "SIREN lub SIRET",
+      "sirenHint": "9 cyfr (SIREN) lub 14 cyfr (SIRET).",
+      "gb": "Numer firmy",
+      "gbHint": "Opcjonalnie. 8 liter lub cyfr, z Companies House.",
+      "other": "Numer rejestrowy",
+      "otherHint": "Opcjonalnie. Oficjalny numer rejestrowy twojej firmy."
+    },
+    "vat": {
+      "label": "Numer {label}",
+      "hint": "Opcjonalnie.",
+      "euHint": "Zaczyna się od {prefix}, np. {example}."
+    },
+    "regime": {
+      "label": "System VAT",
+      "hint": "Określa okresy w pliku z sumami dziennymi.",
+      "none": "Nie ustawiono",
+      "franchise": "Franchise en base (bez naliczania VAT)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – miesięcznie",
+      "reelNormalQuarterly": "Réel normal – kwartalnie",
+      "franchiseNote": "Wybrano franchise en base, więc może warto ustawić VAT na 0 %."
+    },
+    "saveFailed": "Nie udało się zapisać — spróbuj ponownie."
+  }
 }

@@ -211,5 +211,43 @@
     "close": "Κλείσιμο",
     "logoPlaceholder": "Το λογότυπό\nσας εδώ"
   },
-  "qrPoweredBy": "Λειτουργεί με HatchGrab"
+  "qrPoweredBy": "Λειτουργεί με HatchGrab",
+  "business": {
+    "title": "Στοιχεία επιχείρησης",
+    "intro": "Για τις αναφορές προς τον λογιστή και το αρχείο σας. Οι πελάτες δεν τα βλέπουν.",
+    "ownerOnly": "Μόνο ο ιδιοκτήτης μπορεί να τα αλλάξει.",
+    "legalName": {
+      "label": "Επωνυμία",
+      "hint": "Η επωνυμία με την οποία είναι καταχωρισμένη η επιχείρησή σας."
+    },
+    "address": {
+      "label": "Διεύθυνση έδρας",
+      "hint": "Η διεύθυνση όπου είναι καταχωρισμένη η επιχείρησή σας.",
+      "street": "Διεύθυνση"
+    },
+    "registration": {
+      "siren": "SIREN ή SIRET",
+      "sirenHint": "9 ψηφία (SIREN) ή 14 ψηφία (SIRET).",
+      "gb": "Αριθμός εταιρείας",
+      "gbHint": "Προαιρετικό. 8 γράμματα ή ψηφία, από το Companies House.",
+      "other": "Αριθμός μητρώου",
+      "otherHint": "Προαιρετικό. Ο επίσημος αριθμός μητρώου της επιχείρησής σας."
+    },
+    "vat": {
+      "label": "Αριθμός {label}",
+      "hint": "Προαιρετικό.",
+      "euHint": "Ξεκινά με {prefix}, π.χ. {example}."
+    },
+    "regime": {
+      "label": "Καθεστώς ΦΠΑ",
+      "hint": "Ορίζει τις περιόδους στο αρχείο ημερήσιων συνόλων.",
+      "none": "Δεν έχει οριστεί",
+      "franchise": "Franchise en base (χωρίς χρέωση ΦΠΑ)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – μηνιαίο",
+      "reelNormalQuarterly": "Réel normal – τριμηνιαίο",
+      "franchiseNote": "Επιλέξατε franchise en base, οπότε ίσως θέλετε να ορίσετε τον ΦΠΑ σε 0 %."
+    },
+    "saveFailed": "Η αποθήκευση απέτυχε — δοκιμάστε ξανά."
+  }
 }

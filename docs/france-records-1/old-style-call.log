@@ -1,0 +1,31 @@
+
+══ vat-live-check-1 step 2 — the DEPLOYED code's call to place_order_atomic_v2, ROLLED BACK ══
+SQL [counts-before]> set statement_timeout = '5s'
+SQL [counts-before]> set lock_timeout = '3s'
+SQL [counts-before]> begin
+SQL [counts-before]> set transaction read only
+SQL [counts-before]> select (select count(*) from public.orders where truck_id = any($1))::int as orders, (select count(*) from public.order_payments where truck_id = any($1))::int as order_payments, (select count(*) from public.action_audit_log where truck_id = any($1))::int as action_audit_log, (select count(*) from public.production_slot_usage where truck_id = any($1))::int as production_slot_usage, (select coalesce(sum(order_counter), 0) from public.trucks where id = any($1))::int as trucks_order_counter, (select coalesce(sum(e.order_counter), 0) from public.truck_events e where e.truck_id = any($1))::int as events_order_counter, to_regclass('public.receipt_counters') is not null as has_counters   -- params [["demo-mk65q66spjck0g9mxt50btfxtr","test-truck-2"]]
+SQL [counts-before]> select (select count(*) from public.receipt_counters where truck_id = any($1))::int as counter_rows, (select coalesce(sum(last_no), 0) from public.receipt_counters where truck_id = any($1))::int as counter_sum, (select count(*) from public.receipt_no_failures)::int as failures   -- params [["demo-mk65q66spjck0g9mxt50btfxtr","test-truck-2"]]
+  counts before: {"orders":0,"order_payments":0,"action_audit_log":0,"production_slot_usage":0,"trucks_order_counter":0,"events_order_counter":0,"counter_rows":0,"counter_sum":0,"failures":0}
+SQL [counts-before]> rollback
+SQL [oldcall]> set statement_timeout = '5s'
+SQL [oldcall]> set lock_timeout = '3s'
+SQL [oldcall]> begin
+SQL [guard]> select id, plan, is_customer from public.trucks where id = any($1) order by id   -- params [["demo-mk65q66spjck0g9mxt50btfxtr","test-truck-2"]]
+  guard: demo-mk65q66spjck0g9mxt50btfxtr (plan demo, is_customer false) · test-truck-2 (plan demo, is_customer false) — demo trucks only
+SQL [oldcall]> select public.place_order_atomic_v2($1::jsonb, null, 'confirmed', null, $2, current_date, null) as r   -- params ["{\"customer_name\":\"rollback proof\",\"customer_email\":null,\"customer_phone\":null,\"order_type\":\"collection\",\"items\":[],\"deals\":null,\"discount_code\":null,\"subtotal\":0,\"discount_amt\":0,\"total\":0,\"notes\":null,\"van_id\":null,\"payment_status\":\"unpaid\",\"total_minor\":0,\"food_minor\":0,\"tax_minor\":0,\"tax_rate_milli\":10000,\"tax_inclusive\":true,\"tax_label\":\"TVA\",\"tip_minor\":0,\"tip_pct_bps\":null,\"service_fee_minor\":0,\"service_fee_recipient\":null,\"card_surcharge_minor\":0,\"card_funding\":null,\"card_fee_payer\":\"truck\",\"application_fee_minor\":null}","demo-mk65q66spjck0g9mxt50btfxtr"]
+SQL [oldcall]> select receipt_no, tax_breakdown, tax_rate_milli, tax_inclusive, total_minor, currency, country from public.orders where order_key = $1   -- params ["ce37cce2-a11b-4a1c-936b-e1da33e8424d"]
+  ✓ the old-style call succeeds: an order key and a display number come back
+  ✓ …the row stores tax_breakdown NULL (no key sent), its snapshot as sent, and a receipt number
+SQL [oldcall]> rollback
+SQL [counts-after]> set statement_timeout = '5s'
+SQL [counts-after]> set lock_timeout = '3s'
+SQL [counts-after]> begin
+SQL [counts-after]> set transaction read only
+SQL [counts-after]> select (select count(*) from public.orders where truck_id = any($1))::int as orders, (select count(*) from public.order_payments where truck_id = any($1))::int as order_payments, (select count(*) from public.action_audit_log where truck_id = any($1))::int as action_audit_log, (select count(*) from public.production_slot_usage where truck_id = any($1))::int as production_slot_usage, (select coalesce(sum(order_counter), 0) from public.trucks where id = any($1))::int as trucks_order_counter, (select coalesce(sum(e.order_counter), 0) from public.truck_events e where e.truck_id = any($1))::int as events_order_counter, to_regclass('public.receipt_counters') is not null as has_counters   -- params [["demo-mk65q66spjck0g9mxt50btfxtr","test-truck-2"]]
+SQL [counts-after]> select (select count(*) from public.receipt_counters where truck_id = any($1))::int as counter_rows, (select coalesce(sum(last_no), 0) from public.receipt_counters where truck_id = any($1))::int as counter_sum, (select count(*) from public.receipt_no_failures)::int as failures   -- params [["demo-mk65q66spjck0g9mxt50btfxtr","test-truck-2"]]
+  counts after: {"orders":0,"order_payments":0,"action_audit_log":0,"production_slot_usage":0,"trucks_order_counter":0,"events_order_counter":0,"counter_rows":0,"counter_sum":0,"failures":0}
+SQL [counts-after]> rollback
+  ✓ the demo trucks' counts are identical before and after (nothing was committed)
+
+✅ every proof passed

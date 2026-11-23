@@ -129,6 +129,7 @@
       "date": "Dátum",
       "time": "Čas",
       "orderNumber": "Číslo objednávky",
+      "receiptNo": "Č. dokladu",
       "event": "Akcia",
       "channel": "Kanál",
       "paymentMethod": "Spôsob platby",
@@ -153,5 +154,38 @@
       "none": "sadzba dane nie je nastavená"
     },
     "noRate": "bez sadzby"
+  },
+  "daily": {
+    "title": "Denné súčty podľa sadzieb DPH",
+    "help": "Jeden riadok za každý deň a sadzbu DPH, pre vašu platformu e-reportingu.",
+    "period": "Obdobie",
+    "custom": "Vlastné dátumy",
+    "from": "Od",
+    "to": "Do",
+    "button": "Denné súčty podľa sadzieb DPH (CSV)",
+    "badRange": "Vyberte dátum začiatku, ktorý nie je po dátume konca.",
+    "failed": "Súbor sa nepodarilo vytvoriť — skúste to, prosím, znova."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Obchodné meno",
+      "siren": "SIREN/SIRET",
+      "registration": "Registračné číslo",
+      "vatNumber": "IČ DPH",
+      "vatRegime": "Režim DPH",
+      "period": "Obdobie"
+    },
+    "header": {
+      "date": "Dátum",
+      "type": "Typ",
+      "rate": "Sadzba DPH",
+      "sales": "Tržby vrátane DPH",
+      "refunds": "Vrátené peniaze vrátane DPH",
+      "net": "Čistá suma bez DPH",
+      "vat": "DPH"
+    },
+    "goods": "Tovar",
+    "total": "Spolu",
+    "noRate": "{n, plural, one {{count} objednávka bez sadzby DPH nie je zahrnutá.} few {{count} objednávky bez sadzby DPH nie sú zahrnuté.} other {{count} objednávok bez sadzby DPH nie je zahrnutých.}}"
   }
 }

@@ -211,5 +211,43 @@
     "close": "Luk",
     "logoPlaceholder": "Dit logo\nher"
   },
-  "qrPoweredBy": "Drevet af HatchGrab"
+  "qrPoweredBy": "Drevet af HatchGrab",
+  "business": {
+    "title": "Virksomhedsoplysninger",
+    "intro": "Til dine rapporter til revisoren og dit regnskab. Kunderne kan ikke se dem.",
+    "ownerOnly": "Kun ejeren kan ændre dem.",
+    "legalName": {
+      "label": "Juridisk navn",
+      "hint": "Det navn, din virksomhed er registreret under."
+    },
+    "address": {
+      "label": "Registreret adresse",
+      "hint": "Hvor din virksomhed er registreret.",
+      "street": "Adresse"
+    },
+    "registration": {
+      "siren": "SIREN eller SIRET",
+      "sirenHint": "9 cifre (SIREN) eller 14 cifre (SIRET).",
+      "gb": "Selskabsnummer",
+      "gbHint": "Valgfrit. 8 bogstaver eller cifre, fra Companies House.",
+      "other": "Registreringsnummer",
+      "otherHint": "Valgfrit. Din virksomheds officielle registreringsnummer."
+    },
+    "vat": {
+      "label": "{label}-nummer",
+      "hint": "Valgfrit.",
+      "euHint": "Starter med {prefix}, fx {example}."
+    },
+    "regime": {
+      "label": "Momsordning",
+      "hint": "Bestemmer perioderne i din fil med daglige totaler.",
+      "none": "Ikke valgt",
+      "franchise": "Franchise en base (ingen moms opkræves)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – månedlig",
+      "reelNormalQuarterly": "Réel normal – kvartalsvis",
+      "franchiseNote": "Du har valgt franchise en base, så du vil måske sætte din moms til 0 %."
+    },
+    "saveFailed": "Kunne ikke gemme — prøv igen."
+  }
 }

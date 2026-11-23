@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Veldu kveikt eða slökkt.",
     "charges_nothing_to_save": "Ekkert til að vista.",
     "charges_items_invalid": "Ein af þessum vörum er ekki lengur á matseðlinum þínum. Lokaðu þessu og reyndu aftur.",
+    "business_owner_only": "Aðeins eigandinn getur breytt fyrirtækjaupplýsingum.",
+    "business_too_long": "Þetta er of langt — styttu það.",
+    "business_siren_invalid": "Athugaðu númerið: SIREN er 9 tölustafir og SIRET 14.",
+    "business_company_number_invalid": "Fyrirtækjanúmer er 8 bókstafir eða tölustafir, t.d. 01234567 eða SC123456.",
+    "business_vat_invalid": "Þetta VSK-númer lítur ekki rétt út. Það byrjar á {prefix}, t.d. {example}.",
+    "business_regime_invalid": "Veldu VSK-fyrirkomulag af listanum.",
+    "business_regime_not_here": "Aðeins er spurt um VSK-fyrirkomulag í Frakklandi.",
+    "business_nothing_to_save": "Ekkert að vista.",
     "country_settings_failed": "Ekki tókst að hlaða landsstillingum þessa vagns. Reyndu aftur eftir smástund.",
     "plans_failed": "Ekki tókst að hlaða áskriftarleið þessa vagns. Reyndu aftur eftir smástund.",
     "demo_not_available": "Ekki í boði á sýnivagni",
@@ -4132,7 +4140,45 @@
       "close": "Loka",
       "logoPlaceholder": "Merkið þitt\nhér"
     },
-    "qrPoweredBy": "Knúið af HatchGrab"
+    "qrPoweredBy": "Knúið af HatchGrab",
+    "business": {
+      "title": "Fyrirtækjaupplýsingar",
+      "intro": "Fyrir skýrslur til bókarans og bókhaldið þitt. Viðskiptavinir sjá þetta ekki.",
+      "ownerOnly": "Aðeins eigandinn getur breytt þessu.",
+      "legalName": {
+        "label": "Skráð heiti",
+        "hint": "Nafnið sem fyrirtækið þitt er skráð undir."
+      },
+      "address": {
+        "label": "Skráð heimilisfang",
+        "hint": "Þar sem fyrirtækið þitt er skráð.",
+        "street": "Heimilisfang"
+      },
+      "registration": {
+        "siren": "SIREN eða SIRET",
+        "sirenHint": "9 tölustafir (SIREN) eða 14 tölustafir (SIRET).",
+        "gb": "Fyrirtækjanúmer",
+        "gbHint": "Valfrjálst. 8 bókstafir eða tölustafir (Companies House).",
+        "other": "Skráningarnúmer",
+        "otherHint": "Valfrjálst. Opinbert skráningarnúmer fyrirtækisins."
+      },
+      "vat": {
+        "label": "{label}-númer",
+        "hint": "Valfrjálst.",
+        "euHint": "Byrjar á {prefix}, t.d. {example}."
+      },
+      "regime": {
+        "label": "VSK-fyrirkomulag",
+        "hint": "Ákveður tímabilin í skránni með daglegum samtölum.",
+        "none": "Ekki valið",
+        "franchise": "Franchise en base (enginn VSK innheimtur)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – mánaðarlega",
+        "reelNormalQuarterly": "Réel normal – ársfjórðungslega",
+        "franchiseNote": "Þú valdir franchise en base, svo þú gætir viljað stilla VSK á 0 %."
+      },
+      "saveFailed": "Ekki tókst að vista — reyndu aftur."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Dagsetning",
         "time": "Tími",
         "orderNumber": "Pöntunarnúmer",
+        "receiptNo": "Kvittunarnr.",
         "event": "Viðburður",
         "channel": "Leið",
         "paymentMethod": "Greiðslumáti",
@@ -4289,6 +4336,39 @@
         "none": "ekkert skatthlutfall stillt"
       },
       "noRate": "ekkert hlutfall"
+    },
+    "daily": {
+      "title": "Daglegar samtölur eftir VSK-hlutfalli",
+      "help": "Ein lína fyrir hvern dag og VSK-hlutfall, fyrir rafræna skilakerfið þitt.",
+      "period": "Tímabil",
+      "custom": "Valdar dagsetningar",
+      "from": "Frá",
+      "to": "Til",
+      "button": "Daglegar samtölur eftir VSK-hlutfalli (CSV)",
+      "badRange": "Veldu upphafsdag sem er sami dagur og lokadagur eða fyrr.",
+      "failed": "Ekki tókst að búa til skrána — reyndu aftur."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Skráð heiti",
+        "siren": "SIREN/SIRET",
+        "registration": "Skráningarnúmer",
+        "vatNumber": "VSK-númer",
+        "vatRegime": "VSK-fyrirkomulag",
+        "period": "Tímabil"
+      },
+      "header": {
+        "date": "Dagsetning",
+        "type": "Tegund",
+        "rate": "VSK-hlutfall",
+        "sales": "Sala með VSK",
+        "refunds": "Endurgreiðslur með VSK",
+        "net": "Nettó án VSK",
+        "vat": "VSK"
+      },
+      "goods": "Vörur",
+      "total": "Samtals",
+      "noRate": "{n, plural, one {{count} pöntun án VSK-hlutfalls er ekki með.} other {{count} pantanir án VSK-hlutfalls eru ekki með.}}"
     }
   },
   "socialPosts": {

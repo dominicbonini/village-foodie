@@ -211,5 +211,43 @@
     "close": "ይዝጉ",
     "logoPlaceholder": "አርማዎ\nእዚህ"
   },
-  "qrPoweredBy": "ቴክኖሎጂ፦ HatchGrab"
+  "qrPoweredBy": "ቴክኖሎጂ፦ HatchGrab",
+  "business": {
+    "title": "የንግድ ዝርዝሮች",
+    "intro": "ለሂሳብ ባለሙያዎ ሪፖርቶችና ለመዝገቦችዎ። ደንበኞች እነዚህን አያዩም።",
+    "ownerOnly": "እነዚህን መቀየር የሚችለው ባለቤቱ ብቻ ነው።",
+    "legalName": {
+      "label": "ሕጋዊ ስም",
+      "hint": "ንግድዎ የተመዘገበበት ስም።"
+    },
+    "address": {
+      "label": "የተመዘገበ አድራሻ",
+      "hint": "ንግድዎ የተመዘገበበት ቦታ።",
+      "street": "አድራሻ"
+    },
+    "registration": {
+      "siren": "SIREN ወይም SIRET",
+      "sirenHint": "9 አሃዞች (SIREN) ወይም 14 አሃዞች (SIRET)።",
+      "gb": "የኩባንያ ቁጥር",
+      "gbHint": "አማራጭ። ከCompanies House የተሰጠ 8 ፊደሎች ወይም አሃዞች።",
+      "other": "የምዝገባ ቁጥር",
+      "otherHint": "አማራጭ። የንግድዎ ይፋዊ የምዝገባ ቁጥር።"
+    },
+    "vat": {
+      "label": "የ{label} ቁጥር",
+      "hint": "አማራጭ።",
+      "euHint": "በ{prefix} ይጀምራል፤ ለምሳሌ {example}።"
+    },
+    "regime": {
+      "label": "የVAT ሥርዓት",
+      "hint": "በዕለታዊ ድምሮች ፋይልዎ ውስጥ ያሉትን ጊዜያት ይወስናል።",
+      "none": "አልተቀመጠም",
+      "franchise": "Franchise en base (VAT አይከፈልም)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – ወርሃዊ",
+      "reelNormalQuarterly": "Réel normal – በየሩብ ዓመቱ",
+      "franchiseNote": "franchise en base መርጠዋል፤ ስለዚህ VATዎን 0% ማድረግ ሊፈልጉ ይችላሉ።"
+    },
+    "saveFailed": "ማስቀመጥ አልተቻለም — እባክዎ እንደገና ይሞክሩ።"
+  }
 }

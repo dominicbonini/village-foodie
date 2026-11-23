@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Scegli attivo o disattivo.",
     "charges_nothing_to_save": "Niente da salvare.",
     "charges_items_invalid": "Uno di questi prodotti non è più nel tuo menu. Chiudi questa finestra e riprova.",
+    "business_owner_only": "Solo il titolare può modificare i dati aziendali.",
+    "business_too_long": "È troppo lungo: accorcialo.",
+    "business_siren_invalid": "Controlla il numero: un SIREN ha 9 cifre e un SIRET 14.",
+    "business_company_number_invalid": "Un numero di società ha 8 lettere o cifre, come 01234567 o SC123456.",
+    "business_vat_invalid": "Questa partita IVA non sembra corretta. Inizia con {prefix}, come {example}.",
+    "business_regime_invalid": "Scegli un regime IVA dall’elenco.",
+    "business_regime_not_here": "Il regime IVA è richiesto solo in Francia.",
+    "business_nothing_to_save": "Niente da salvare.",
     "country_settings_failed": "Impossibile caricare le impostazioni del Paese di questo food truck. Riprova tra un momento.",
     "plans_failed": "Impossibile caricare il piano di questo food truck. Riprova tra un momento.",
     "demo_not_available": "Non disponibile su un food truck demo",
@@ -4132,7 +4140,45 @@
       "close": "Chiudi",
       "logoPlaceholder": "Il tuo logo\nqui"
     },
-    "qrPoweredBy": "Con la tecnologia di HatchGrab"
+    "qrPoweredBy": "Con la tecnologia di HatchGrab",
+    "business": {
+      "title": "Dati aziendali",
+      "intro": "Per i report per il commercialista e i tuoi registri. I clienti non li vedono.",
+      "ownerOnly": "Solo il titolare può modificarli.",
+      "legalName": {
+        "label": "Ragione sociale",
+        "hint": "Il nome con cui è registrata la tua attività."
+      },
+      "address": {
+        "label": "Sede legale",
+        "hint": "Dove è registrata la tua attività.",
+        "street": "Indirizzo"
+      },
+      "registration": {
+        "siren": "SIREN o SIRET",
+        "sirenHint": "9 cifre (SIREN) o 14 cifre (SIRET).",
+        "gb": "Numero di società",
+        "gbHint": "Facoltativo. 8 lettere o cifre, da Companies House.",
+        "other": "Numero di registrazione",
+        "otherHint": "Facoltativo. Il numero di registrazione ufficiale della tua attività."
+      },
+      "vat": {
+        "label": "Numero {label}",
+        "hint": "Facoltativo.",
+        "euHint": "Inizia con {prefix}, come {example}."
+      },
+      "regime": {
+        "label": "Regime IVA",
+        "hint": "Determina i periodi nel file dei totali giornalieri.",
+        "none": "Non impostato",
+        "franchise": "Franchise en base (nessuna IVA addebitata)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – mensile",
+        "reelNormalQuarterly": "Réel normal – trimestrale",
+        "franchiseNote": "Hai scelto franchise en base, quindi potresti voler impostare l’IVA allo 0 %."
+      },
+      "saveFailed": "Salvataggio non riuscito: riprova."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Data",
         "time": "Ora",
         "orderNumber": "Numero d’ordine",
+        "receiptNo": "N. ricevuta",
         "event": "Evento",
         "channel": "Canale",
         "paymentMethod": "Metodo di pagamento",
@@ -4289,6 +4336,39 @@
         "none": "nessuna aliquota impostata"
       },
       "noRate": "senza aliquota"
+    },
+    "daily": {
+      "title": "Totali giornalieri per aliquota IVA",
+      "help": "Una riga per giorno e aliquota IVA, per la tua piattaforma di e-reporting.",
+      "period": "Periodo",
+      "custom": "Date personalizzate",
+      "from": "Dal",
+      "to": "Al",
+      "button": "Totali giornalieri per aliquota IVA (CSV)",
+      "badRange": "Scegli una data di inizio uguale o precedente alla data di fine.",
+      "failed": "Impossibile creare il file: riprova."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Ragione sociale",
+        "siren": "SIREN/SIRET",
+        "registration": "Numero di registrazione",
+        "vatNumber": "Partita IVA",
+        "vatRegime": "Regime IVA",
+        "period": "Periodo"
+      },
+      "header": {
+        "date": "Data",
+        "type": "Tipo",
+        "rate": "Aliquota IVA",
+        "sales": "Vendite IVA inclusa",
+        "refunds": "Rimborsi IVA inclusa",
+        "net": "Netto IVA esclusa",
+        "vat": "IVA"
+      },
+      "goods": "Beni",
+      "total": "Totale",
+      "noRate": "{n, plural, one {{count} ordine senza aliquota IVA non è incluso.} other {{count} ordini senza aliquota IVA non sono inclusi.}}"
     }
   },
   "socialPosts": {

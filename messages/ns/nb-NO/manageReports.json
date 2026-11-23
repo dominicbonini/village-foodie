@@ -129,6 +129,7 @@
       "date": "Dato",
       "time": "Tid",
       "orderNumber": "Bestillingsnummer",
+      "receiptNo": "Kvitteringsnr.",
       "event": "Arrangement",
       "channel": "Kanal",
       "paymentMethod": "Betalingsmåte",
@@ -153,5 +154,38 @@
       "none": "ingen mva.-sats angitt"
     },
     "noRate": "ingen sats"
+  },
+  "daily": {
+    "title": "Dagstotaler per mva.-sats",
+    "help": "Én rad per dag og mva.-sats, til plattformen din for e-rapportering.",
+    "period": "Periode",
+    "custom": "Velg datoer",
+    "from": "Fra",
+    "to": "Til",
+    "button": "Dagstotaler per mva.-sats (CSV)",
+    "badRange": "Velg en startdato som er samme dag som eller før sluttdatoen.",
+    "failed": "Kunne ikke lage filen – prøv igjen."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Juridisk navn",
+      "siren": "SIREN/SIRET",
+      "registration": "Registreringsnummer",
+      "vatNumber": "Mva.-nummer",
+      "vatRegime": "Mva.-ordning",
+      "period": "Periode"
+    },
+    "header": {
+      "date": "Dato",
+      "type": "Type",
+      "rate": "Mva.-sats",
+      "sales": "Salg inkl. mva.",
+      "refunds": "Refusjoner inkl. mva.",
+      "net": "Netto ekskl. mva.",
+      "vat": "Mva."
+    },
+    "goods": "Varer",
+    "total": "Totalt",
+    "noRate": "{n, plural, one {{count} bestilling uten mva.-sats er ikke tatt med.} other {{count} bestillinger uten mva.-sats er ikke tatt med.}}"
   }
 }

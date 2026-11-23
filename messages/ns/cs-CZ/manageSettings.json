@@ -211,5 +211,43 @@
     "close": "Zavřít",
     "logoPlaceholder": "Vaše logo\nzde"
   },
-  "qrPoweredBy": "Běží na HatchGrab"
+  "qrPoweredBy": "Běží na HatchGrab",
+  "business": {
+    "title": "Údaje o firmě",
+    "intro": "Pro výkazy pro účetní a vaše záznamy. Zákazníci je nevidí.",
+    "ownerOnly": "Měnit je může jen majitel.",
+    "legalName": {
+      "label": "Oficiální název",
+      "hint": "Název, pod kterým je vaše firma registrovaná."
+    },
+    "address": {
+      "label": "Adresa sídla",
+      "hint": "Kde je vaše firma registrovaná.",
+      "street": "Adresa"
+    },
+    "registration": {
+      "siren": "SIREN nebo SIRET",
+      "sirenHint": "9 číslic (SIREN) nebo 14 číslic (SIRET).",
+      "gb": "Číslo společnosti",
+      "gbHint": "Nepovinné. 8 písmen nebo číslic, z Companies House.",
+      "other": "Registrační číslo",
+      "otherHint": "Nepovinné. Oficiální registrační číslo vaší firmy."
+    },
+    "vat": {
+      "label": "Číslo {label}",
+      "hint": "Nepovinné.",
+      "euHint": "Začíná na {prefix}, např. {example}."
+    },
+    "regime": {
+      "label": "Režim DPH",
+      "hint": "Určuje období v souboru denních součtů.",
+      "none": "Nenastaveno",
+      "franchise": "Franchise en base (bez DPH)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – měsíčně",
+      "reelNormalQuarterly": "Réel normal – čtvrtletně",
+      "franchiseNote": "Zvolili jste franchise en base, takže možná budete chtít nastavit DPH na 0 %."
+    },
+    "saveFailed": "Uložení se nezdařilo — zkuste to prosím znovu."
+  }
 }

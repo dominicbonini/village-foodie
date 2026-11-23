@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "オンかオフを選んでください。",
     "charges_nothing_to_save": "保存する変更はありません。",
     "charges_items_invalid": "この中に、メニューから削除された商品があります。これを閉じて、もう一度お試しください。",
+    "business_owner_only": "事業者情報を変更できるのはオーナーのみです。",
+    "business_too_long": "長すぎます。短くしてください。",
+    "business_siren_invalid": "番号を確認してください。SIRENは9桁、SIRETは14桁です。",
+    "business_company_number_invalid": "会社番号は8文字の英数字です（例：01234567、SC123456）。",
+    "business_vat_invalid": "その消費税の登録番号は正しくないようです。{prefix}で始まります（例：{example}）。",
+    "business_regime_invalid": "リストから消費税の課税方式を選んでください。",
+    "business_regime_not_here": "消費税の課税方式は、フランスでのみ入力します。",
+    "business_nothing_to_save": "保存する変更はありません。",
     "country_settings_failed": "このキッチンカーの国の設定を読み込めませんでした。しばらくしてからもう一度お試しください。",
     "plans_failed": "このキッチンカーのプランを読み込めませんでした。しばらくしてからもう一度お試しください。",
     "demo_not_available": "デモのキッチンカーではご利用いただけません",
@@ -4132,7 +4140,45 @@
       "close": "閉じる",
       "logoPlaceholder": "ロゴを\nここに"
     },
-    "qrPoweredBy": "提供：HatchGrab"
+    "qrPoweredBy": "提供：HatchGrab",
+    "business": {
+      "title": "事業者情報",
+      "intro": "税理士向けのレポートと記録に使われます。お客様には表示されません。",
+      "ownerOnly": "これらを変更できるのはオーナーのみです。",
+      "legalName": {
+        "label": "正式な事業者名",
+        "hint": "事業者として登録している名称です。"
+      },
+      "address": {
+        "label": "登録住所",
+        "hint": "事業者として登録している住所です。",
+        "street": "住所"
+      },
+      "registration": {
+        "siren": "SIREN または SIRET",
+        "sirenHint": "9桁（SIREN）または14桁（SIRET）。",
+        "gb": "会社番号",
+        "gbHint": "任意。Companies House の8文字の英数字です。",
+        "other": "登録番号",
+        "otherHint": "任意。事業者の公式な登録番号です。"
+      },
+      "vat": {
+        "label": "{label}の登録番号",
+        "hint": "任意。",
+        "euHint": "{prefix}で始まります（例：{example}）。"
+      },
+      "regime": {
+        "label": "消費税の課税方式",
+        "hint": "日次集計ファイルの期間を決めます。",
+        "none": "未設定",
+        "franchise": "Franchise en base（消費税を請求しない）",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – 月次",
+        "reelNormalQuarterly": "Réel normal – 四半期ごと",
+        "franchiseNote": "franchise en base を選んでいるため、消費税を0 %に設定するとよいでしょう。"
+      },
+      "saveFailed": "保存できませんでした。もう一度お試しください。"
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "日付",
         "time": "時刻",
         "orderNumber": "注文番号",
+        "receiptNo": "レシート番号",
         "event": "出店",
         "channel": "チャネル",
         "paymentMethod": "支払い方法",
@@ -4289,6 +4336,39 @@
         "none": "税率未設定"
       },
       "noRate": "税率なし"
+    },
+    "daily": {
+      "title": "消費税率別の日次集計",
+      "help": "1日ごと・税率ごとに1行です。eレポーティングのプラットフォーム用です。",
+      "period": "期間",
+      "custom": "日付を指定",
+      "from": "開始日",
+      "to": "終了日",
+      "button": "消費税率別の日次集計（CSV）",
+      "badRange": "開始日は終了日以前の日付を選んでください。",
+      "failed": "ファイルを作成できませんでした。もう一度お試しください。"
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "正式な事業者名",
+        "siren": "SIREN/SIRET",
+        "registration": "登録番号",
+        "vatNumber": "消費税の登録番号",
+        "vatRegime": "消費税の課税方式",
+        "period": "期間"
+      },
+      "header": {
+        "date": "日付",
+        "type": "種別",
+        "rate": "消費税率",
+        "sales": "売上（税込）",
+        "refunds": "返金（税込）",
+        "net": "純額（税抜）",
+        "vat": "消費税"
+      },
+      "goods": "物品",
+      "total": "合計",
+      "noRate": "{n, plural, other {消費税率のない注文{count}件は含まれていません。}}"
     }
   },
   "socialPosts": {

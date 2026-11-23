@@ -211,5 +211,43 @@
     "close": "Хаах",
     "logoPlaceholder": "Таны лого\nэнд"
   },
-  "qrPoweredBy": "Технологи: HatchGrab"
+  "qrPoweredBy": "Технологи: HatchGrab",
+  "business": {
+    "title": "Бизнесийн мэдээлэл",
+    "intro": "Нягтлан бодогчийн тайлан, бүртгэлд зориулсан. Үйлчлүүлэгчид үүнийг харахгүй.",
+    "ownerOnly": "Эдгээрийг зөвхөн эзэмшигч өөрчилнө.",
+    "legalName": {
+      "label": "Хуулийн этгээдийн нэр",
+      "hint": "Таны бизнесийн бүртгэлтэй нэр."
+    },
+    "address": {
+      "label": "Бүртгэлтэй хаяг",
+      "hint": "Таны бизнес бүртгэлтэй газар.",
+      "street": "Хаяг"
+    },
+    "registration": {
+      "siren": "SIREN эсвэл SIRET",
+      "sirenHint": "9 орон (SIREN) эсвэл 14 орон (SIRET).",
+      "gb": "Компанийн дугаар",
+      "gbHint": "Заавал биш. Companies House-ээс олгосон 8 үсэг эсвэл цифр.",
+      "other": "Бүртгэлийн дугаар",
+      "otherHint": "Заавал биш. Таны бизнесийн албан ёсны бүртгэлийн дугаар."
+    },
+    "vat": {
+      "label": "{label} дугаар",
+      "hint": "Заавал биш.",
+      "euHint": "{prefix} гэж эхэлнэ, жишээ нь {example}."
+    },
+    "regime": {
+      "label": "НӨАТ-ын горим",
+      "hint": "Өдрийн нийлбэрийн файлын хугацааг тодорхойлно.",
+      "none": "Тохируулаагүй",
+      "franchise": "Franchise en base (НӨАТ авахгүй)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – сар бүр",
+      "reelNormalQuarterly": "Réel normal – улирал бүр",
+      "franchiseNote": "Та franchise en base сонгосон тул НӨАТ-аа 0% болгох нь зүйтэй байж магадгүй."
+    },
+    "saveFailed": "Хадгалж чадсангүй — дахин оролдоно уу."
+  }
 }

@@ -129,6 +129,7 @@
       "date": "日付",
       "time": "時刻",
       "orderNumber": "注文番号",
+      "receiptNo": "レシート番号",
       "event": "出店",
       "channel": "チャネル",
       "paymentMethod": "支払い方法",
@@ -153,5 +154,38 @@
       "none": "税率未設定"
     },
     "noRate": "税率なし"
+  },
+  "daily": {
+    "title": "消費税率別の日次集計",
+    "help": "1日ごと・税率ごとに1行です。eレポーティングのプラットフォーム用です。",
+    "period": "期間",
+    "custom": "日付を指定",
+    "from": "開始日",
+    "to": "終了日",
+    "button": "消費税率別の日次集計（CSV）",
+    "badRange": "開始日は終了日以前の日付を選んでください。",
+    "failed": "ファイルを作成できませんでした。もう一度お試しください。"
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "正式な事業者名",
+      "siren": "SIREN/SIRET",
+      "registration": "登録番号",
+      "vatNumber": "消費税の登録番号",
+      "vatRegime": "消費税の課税方式",
+      "period": "期間"
+    },
+    "header": {
+      "date": "日付",
+      "type": "種別",
+      "rate": "消費税率",
+      "sales": "売上（税込）",
+      "refunds": "返金（税込）",
+      "net": "純額（税抜）",
+      "vat": "消費税"
+    },
+    "goods": "物品",
+    "total": "合計",
+    "noRate": "{n, plural, other {消費税率のない注文{count}件は含まれていません。}}"
   }
 }

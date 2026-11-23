@@ -211,5 +211,43 @@
     "close": "Loka",
     "logoPlaceholder": "Merkið þitt\nhér"
   },
-  "qrPoweredBy": "Knúið af HatchGrab"
+  "qrPoweredBy": "Knúið af HatchGrab",
+  "business": {
+    "title": "Fyrirtækjaupplýsingar",
+    "intro": "Fyrir skýrslur til bókarans og bókhaldið þitt. Viðskiptavinir sjá þetta ekki.",
+    "ownerOnly": "Aðeins eigandinn getur breytt þessu.",
+    "legalName": {
+      "label": "Skráð heiti",
+      "hint": "Nafnið sem fyrirtækið þitt er skráð undir."
+    },
+    "address": {
+      "label": "Skráð heimilisfang",
+      "hint": "Þar sem fyrirtækið þitt er skráð.",
+      "street": "Heimilisfang"
+    },
+    "registration": {
+      "siren": "SIREN eða SIRET",
+      "sirenHint": "9 tölustafir (SIREN) eða 14 tölustafir (SIRET).",
+      "gb": "Fyrirtækjanúmer",
+      "gbHint": "Valfrjálst. 8 bókstafir eða tölustafir (Companies House).",
+      "other": "Skráningarnúmer",
+      "otherHint": "Valfrjálst. Opinbert skráningarnúmer fyrirtækisins."
+    },
+    "vat": {
+      "label": "{label}-númer",
+      "hint": "Valfrjálst.",
+      "euHint": "Byrjar á {prefix}, t.d. {example}."
+    },
+    "regime": {
+      "label": "VSK-fyrirkomulag",
+      "hint": "Ákveður tímabilin í skránni með daglegum samtölum.",
+      "none": "Ekki valið",
+      "franchise": "Franchise en base (enginn VSK innheimtur)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – mánaðarlega",
+      "reelNormalQuarterly": "Réel normal – ársfjórðungslega",
+      "franchiseNote": "Þú valdir franchise en base, svo þú gætir viljað stilla VSK á 0 %."
+    },
+    "saveFailed": "Ekki tókst að vista — reyndu aftur."
+  }
 }

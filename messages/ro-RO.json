@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Alegeți activat sau dezactivat.",
     "charges_nothing_to_save": "Nimic de salvat.",
     "charges_items_invalid": "Unul dintre aceste produse nu mai este în meniul dumneavoastră. Închideți această fereastră și încercați din nou.",
+    "business_owner_only": "Doar proprietarul poate modifica datele firmei.",
+    "business_too_long": "Este prea lung — vă rugăm să-l scurtați.",
+    "business_siren_invalid": "Verificați numărul: un SIREN are 9 cifre, iar un SIRET 14.",
+    "business_company_number_invalid": "Un număr de companie are 8 litere sau cifre, de exemplu 01234567 sau SC123456.",
+    "business_vat_invalid": "Acest cod de TVA nu pare corect. Începe cu {prefix}, de exemplu {example}.",
+    "business_regime_invalid": "Alegeți un regim de TVA din listă.",
+    "business_regime_not_here": "Regimul de TVA se cere doar în Franța.",
+    "business_nothing_to_save": "Nu este nimic de salvat.",
     "country_settings_failed": "Setările de țară ale acestui food truck nu au putut fi încărcate. Încercați din nou peste câteva momente.",
     "plans_failed": "Planul acestui food truck nu a putut fi încărcat. Încercați din nou peste câteva momente.",
     "demo_not_available": "Indisponibil pentru un food truck demo",
@@ -4132,7 +4140,45 @@
       "close": "Închideți",
       "logoPlaceholder": "Logoul\naici"
     },
-    "qrPoweredBy": "Oferit de HatchGrab"
+    "qrPoweredBy": "Oferit de HatchGrab",
+    "business": {
+      "title": "Datele firmei",
+      "intro": "Pentru rapoartele pentru contabil și evidențe. Clienții nu le văd.",
+      "ownerOnly": "Doar proprietarul le poate modifica.",
+      "legalName": {
+        "label": "Denumire oficială",
+        "hint": "Numele sub care este înregistrată firma dumneavoastră."
+      },
+      "address": {
+        "label": "Sediu social",
+        "hint": "Unde este înregistrată firma dumneavoastră.",
+        "street": "Adresă"
+      },
+      "registration": {
+        "siren": "SIREN sau SIRET",
+        "sirenHint": "9 cifre (SIREN) sau 14 cifre (SIRET).",
+        "gb": "Număr de companie",
+        "gbHint": "Opțional. 8 litere sau cifre, de la Companies House.",
+        "other": "Număr de înregistrare",
+        "otherHint": "Opțional. Numărul oficial de înregistrare al firmei dumneavoastră."
+      },
+      "vat": {
+        "label": "Cod {label}",
+        "hint": "Opțional.",
+        "euHint": "Începe cu {prefix}, de exemplu {example}."
+      },
+      "regime": {
+        "label": "Regim de TVA",
+        "hint": "Stabilește perioadele din fișierul cu totaluri zilnice.",
+        "none": "Nesetat",
+        "franchise": "Franchise en base (fără TVA)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – lunar",
+        "reelNormalQuarterly": "Réel normal – trimestrial",
+        "franchiseNote": "Ați ales franchise en base, așa că poate doriți să setați TVA la 0 %."
+      },
+      "saveFailed": "Nu s-a putut salva — vă rugăm să încercați din nou."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Data",
         "time": "Ora",
         "orderNumber": "Număr comandă",
+        "receiptNo": "Nr. bon",
         "event": "Eveniment",
         "channel": "Canal",
         "paymentMethod": "Metodă de plată",
@@ -4289,6 +4336,39 @@
         "none": "nicio cotă de TVA setată"
       },
       "noRate": "fără cotă"
+    },
+    "daily": {
+      "title": "Totaluri zilnice pe cote de TVA",
+      "help": "Un rând pentru fiecare zi și cotă de TVA, pentru platforma dumneavoastră de raportare electronică.",
+      "period": "Perioadă",
+      "custom": "Date personalizate",
+      "from": "De la",
+      "to": "Până la",
+      "button": "Totaluri zilnice pe cote de TVA (CSV)",
+      "badRange": "Alegeți o dată de început care nu este după data de sfârșit.",
+      "failed": "Nu s-a putut crea fișierul — vă rugăm să încercați din nou."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Denumire oficială",
+        "siren": "SIREN/SIRET",
+        "registration": "Număr de înregistrare",
+        "vatNumber": "Cod de TVA",
+        "vatRegime": "Regim de TVA",
+        "period": "Perioadă"
+      },
+      "header": {
+        "date": "Data",
+        "type": "Tip",
+        "rate": "Cotă TVA",
+        "sales": "Vânzări cu TVA",
+        "refunds": "Rambursări cu TVA",
+        "net": "Net fără TVA",
+        "vat": "TVA"
+      },
+      "goods": "Bunuri",
+      "total": "Total",
+      "noRate": "{n, plural, one {{count} comandă fără cotă de TVA nu este inclusă.} few {{count} comenzi fără cotă de TVA nu sunt incluse.} other {{count} de comenzi fără cotă de TVA nu sunt incluse.}}"
     }
   },
   "socialPosts": {

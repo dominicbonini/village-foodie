@@ -211,5 +211,43 @@
     "close": "Zapri",
     "logoPlaceholder": "Vaš logotip\ntukaj"
   },
-  "qrPoweredBy": "Poganja HatchGrab"
+  "qrPoweredBy": "Poganja HatchGrab",
+  "business": {
+    "title": "Podatki o podjetju",
+    "intro": "Za poročila za računovodjo in evidenco. Stranke jih ne vidijo.",
+    "ownerOnly": "Spremeni jih lahko samo lastnik.",
+    "legalName": {
+      "label": "Uradni naziv",
+      "hint": "Naziv, pod katerim je registrirano vaše podjetje."
+    },
+    "address": {
+      "label": "Naslov sedeža",
+      "hint": "Kjer je registrirano vaše podjetje.",
+      "street": "Naslov"
+    },
+    "registration": {
+      "siren": "SIREN ali SIRET",
+      "sirenHint": "9 števk (SIREN) ali 14 števk (SIRET).",
+      "gb": "Številka podjetja",
+      "gbHint": "Neobvezno. 8 črk ali števk, iz registra Companies House.",
+      "other": "Registrska številka",
+      "otherHint": "Neobvezno. Uradna registrska številka vašega podjetja."
+    },
+    "vat": {
+      "label": "ID za {label}",
+      "hint": "Neobvezno.",
+      "euHint": "Začne se s {prefix}, npr. {example}."
+    },
+    "regime": {
+      "label": "Sistem DDV",
+      "hint": "Določa obdobja v datoteki dnevnih seštevkov.",
+      "none": "Ni nastavljeno",
+      "franchise": "Franchise en base (brez obračuna DDV)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – mesečno",
+      "reelNormalQuarterly": "Réel normal – četrtletno",
+      "franchiseNote": "Izbrali ste franchise en base, zato boste DDV morda želeli nastaviti na 0 %."
+    },
+    "saveFailed": "Shranjevanje ni uspelo — poskusite znova."
+  }
 }

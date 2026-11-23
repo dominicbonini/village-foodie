@@ -85,6 +85,7 @@ import type { StoredCookingReservation } from '@/lib/slot-bookings'
 import '@/lib/i18n/catalog/errorsCustomer'
 import { readEventRegion } from '@/lib/event-region-read'
 import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
+import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
 
 /** What a refusal tells the customer: the sentence, in the truck's language, and the code and values it was
  *  made from — which /api/payments/return carries to the page (?payment_failed=, and its JSON reply) so the
@@ -430,6 +431,10 @@ export async function promoteDraft(
       // P2: record today's split for the promoted order (best-effort, separate UPDATE; null on failure).
       if (batchReservationsOn && claimReservation) await writeReservationRecord(supabase, { truckId: draft.truck_id, orderKey, record: claimReservation })
       else await writeCookingReservation(supabase, { truckId: draft.truck_id, eventId: eventRow?.id ?? null, orderKey })
+
+      // france-records-1: the placement (a card order, promoted), in action_audit_log (best-effort — never stops the promotion).
+      await logOrderEvent(supabase, { action: 'order_placed', truckId: draft.truck_id, orderKey, after: { ...(draft as unknown as Record<string, unknown>), status: (inserted as { status?: unknown } | null)?.status ?? null },
+        note: { path: 'card_promoted', trigger }, actor: { actorKind: 'system', actorId: null, actorLabel: `promotion:${trigger}` }, source: 'system' })
 
       // ── 7a. 🔴 THE ORDER EXISTS. ERASE THE DRAFT'S COPY OF THE CUSTOMER'S DETAILS. ─────────────
       // Only now: the order holds them from this point, so the draft must not. Deliberately after the

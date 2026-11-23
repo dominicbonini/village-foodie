@@ -211,5 +211,43 @@
     "close": "Sulje",
     "logoPlaceholder": "Logosi\ntähän"
   },
-  "qrPoweredBy": "Palvelun tarjoaa HatchGrab"
+  "qrPoweredBy": "Palvelun tarjoaa HatchGrab",
+  "business": {
+    "title": "Yrityksen tiedot",
+    "intro": "Kirjanpitäjän raportteja ja kirjanpitoasi varten. Asiakkaat eivät näe näitä.",
+    "ownerOnly": "Vain omistaja voi muuttaa näitä.",
+    "legalName": {
+      "label": "Virallinen nimi",
+      "hint": "Nimi, jolla yrityksesi on rekisteröity."
+    },
+    "address": {
+      "label": "Rekisteröity osoite",
+      "hint": "Osoite, johon yrityksesi on rekisteröity.",
+      "street": "Osoite"
+    },
+    "registration": {
+      "siren": "SIREN tai SIRET",
+      "sirenHint": "9 numeroa (SIREN) tai 14 numeroa (SIRET).",
+      "gb": "Yritysnumero",
+      "gbHint": "Valinnainen. 8 kirjainta tai numeroa (Companies House).",
+      "other": "Rekisterinumero",
+      "otherHint": "Valinnainen. Yrityksesi virallinen rekisterinumero."
+    },
+    "vat": {
+      "label": "{label}-numero",
+      "hint": "Valinnainen.",
+      "euHint": "Alkaa tunnuksella {prefix}, esim. {example}."
+    },
+    "regime": {
+      "label": "ALV-järjestelmä",
+      "hint": "Määrittää jaksot päiväsummatiedostossasi.",
+      "none": "Ei asetettu",
+      "franchise": "Franchise en base (ALV:tä ei peritä)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – kuukausittain",
+      "reelNormalQuarterly": "Réel normal – neljännesvuosittain",
+      "franchiseNote": "Valitsit franchise en base -järjestelmän, joten ALV-kannaksi kannattaa ehkä asettaa 0 %."
+    },
+    "saveFailed": "Tallennus epäonnistui — yritä uudelleen."
+  }
 }

@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Velg på eller av.",
     "charges_nothing_to_save": "Ingenting å lagre.",
     "charges_items_invalid": "En av disse varene er ikke lenger på menyen din. Lukk dette og prøv igjen.",
+    "business_owner_only": "Bare eieren kan endre bedriftsopplysningene.",
+    "business_too_long": "Det er for langt – gjør det kortere.",
+    "business_siren_invalid": "Sjekk nummeret: et SIREN har 9 sifre og et SIRET 14.",
+    "business_company_number_invalid": "Et selskapsnummer har 8 bokstaver eller sifre, f.eks. 01234567 eller SC123456.",
+    "business_vat_invalid": "Det mva.-nummeret ser ikke riktig ut. Det begynner med {prefix}, f.eks. {example}.",
+    "business_regime_invalid": "Velg en mva.-ordning fra listen.",
+    "business_regime_not_here": "Det spørres bare om mva.-ordning i Frankrike.",
+    "business_nothing_to_save": "Ingenting å lagre.",
     "country_settings_failed": "Kunne ikke laste inn landinnstillingene for denne matbilen. Prøv igjen om et øyeblikk.",
     "plans_failed": "Kunne ikke laste inn abonnementet til denne matbilen. Prøv igjen om et øyeblikk.",
     "demo_not_available": "Ikke tilgjengelig på en demomatbil",
@@ -4132,7 +4140,45 @@
       "close": "Lukk",
       "logoPlaceholder": "Logoen din\nher"
     },
-    "qrPoweredBy": "Drevet av HatchGrab"
+    "qrPoweredBy": "Drevet av HatchGrab",
+    "business": {
+      "title": "Bedriftsopplysninger",
+      "intro": "Til rapportene til regnskapsføreren og regnskapet ditt. Kundene ser ikke dette.",
+      "ownerOnly": "Bare eieren kan endre dette.",
+      "legalName": {
+        "label": "Juridisk navn",
+        "hint": "Navnet bedriften din er registrert under."
+      },
+      "address": {
+        "label": "Registrert adresse",
+        "hint": "Der bedriften din er registrert.",
+        "street": "Adresse"
+      },
+      "registration": {
+        "siren": "SIREN eller SIRET",
+        "sirenHint": "9 sifre (SIREN) eller 14 sifre (SIRET).",
+        "gb": "Selskapsnummer",
+        "gbHint": "Valgfritt. 8 bokstaver eller sifre, fra Companies House.",
+        "other": "Registreringsnummer",
+        "otherHint": "Valgfritt. Bedriftens offisielle registreringsnummer."
+      },
+      "vat": {
+        "label": "{label}-nummer",
+        "hint": "Valgfritt.",
+        "euHint": "Begynner med {prefix}, f.eks. {example}."
+      },
+      "regime": {
+        "label": "Mva.-ordning",
+        "hint": "Bestemmer periodene i filen med dagstotaler.",
+        "none": "Ikke valgt",
+        "franchise": "Franchise en base (ingen mva. beregnes)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – månedlig",
+        "reelNormalQuarterly": "Réel normal – kvartalsvis",
+        "franchiseNote": "Du har valgt franchise en base, så du vil kanskje sette mva. til 0 %."
+      },
+      "saveFailed": "Kunne ikke lagre – prøv igjen."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Dato",
         "time": "Tid",
         "orderNumber": "Bestillingsnummer",
+        "receiptNo": "Kvitteringsnr.",
         "event": "Arrangement",
         "channel": "Kanal",
         "paymentMethod": "Betalingsmåte",
@@ -4289,6 +4336,39 @@
         "none": "ingen mva.-sats angitt"
       },
       "noRate": "ingen sats"
+    },
+    "daily": {
+      "title": "Dagstotaler per mva.-sats",
+      "help": "Én rad per dag og mva.-sats, til plattformen din for e-rapportering.",
+      "period": "Periode",
+      "custom": "Velg datoer",
+      "from": "Fra",
+      "to": "Til",
+      "button": "Dagstotaler per mva.-sats (CSV)",
+      "badRange": "Velg en startdato som er samme dag som eller før sluttdatoen.",
+      "failed": "Kunne ikke lage filen – prøv igjen."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Juridisk navn",
+        "siren": "SIREN/SIRET",
+        "registration": "Registreringsnummer",
+        "vatNumber": "Mva.-nummer",
+        "vatRegime": "Mva.-ordning",
+        "period": "Periode"
+      },
+      "header": {
+        "date": "Dato",
+        "type": "Type",
+        "rate": "Mva.-sats",
+        "sales": "Salg inkl. mva.",
+        "refunds": "Refusjoner inkl. mva.",
+        "net": "Netto ekskl. mva.",
+        "vat": "Mva."
+      },
+      "goods": "Varer",
+      "total": "Totalt",
+      "noRate": "{n, plural, one {{count} bestilling uten mva.-sats er ikke tatt med.} other {{count} bestillinger uten mva.-sats er ikke tatt med.}}"
     }
   },
   "socialPosts": {

@@ -211,5 +211,43 @@
     "close": "Schließen",
     "logoPlaceholder": "Ihr Logo\nhier"
   },
-  "qrPoweredBy": "Bereitgestellt von HatchGrab"
+  "qrPoweredBy": "Bereitgestellt von HatchGrab",
+  "business": {
+    "title": "Unternehmensdaten",
+    "intro": "Für Ihre Buchhaltungsberichte und Unterlagen. Kunden sehen diese Angaben nicht.",
+    "ownerOnly": "Nur der Inhaber kann diese Angaben ändern.",
+    "legalName": {
+      "label": "Offizieller Name",
+      "hint": "Der Name, unter dem Ihr Unternehmen eingetragen ist."
+    },
+    "address": {
+      "label": "Eingetragene Anschrift",
+      "hint": "Wo Ihr Unternehmen eingetragen ist.",
+      "street": "Adresse"
+    },
+    "registration": {
+      "siren": "SIREN oder SIRET",
+      "sirenHint": "9 Ziffern (SIREN) oder 14 Ziffern (SIRET).",
+      "gb": "Firmennummer",
+      "gbHint": "Optional. 8 Buchstaben oder Ziffern, von Companies House.",
+      "other": "Registernummer",
+      "otherHint": "Optional. Die offizielle Registernummer Ihres Unternehmens."
+    },
+    "vat": {
+      "label": "{label}-Nummer",
+      "hint": "Optional.",
+      "euHint": "Beginnt mit {prefix}, z. B. {example}."
+    },
+    "regime": {
+      "label": "MwSt.-Regelung",
+      "hint": "Legt die Zeiträume in Ihrer Datei mit den Tagessummen fest.",
+      "none": "Nicht festgelegt",
+      "franchise": "Franchise en base (keine MwSt. berechnet)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – monatlich",
+      "reelNormalQuarterly": "Réel normal – vierteljährlich",
+      "franchiseNote": "Sie haben franchise en base gewählt, daher sollten Sie Ihre MwSt. eventuell auf 0 % setzen."
+    },
+    "saveFailed": "Speichern fehlgeschlagen – bitte versuchen Sie es erneut."
+  }
 }

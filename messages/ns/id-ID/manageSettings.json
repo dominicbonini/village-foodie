@@ -211,5 +211,43 @@
     "close": "Tutup",
     "logoPlaceholder": "Logo Anda\ndi sini"
   },
-  "qrPoweredBy": "Didukung oleh HatchGrab"
+  "qrPoweredBy": "Didukung oleh HatchGrab",
+  "business": {
+    "title": "Detail usaha",
+    "intro": "Untuk laporan akuntan dan catatan Anda. Pelanggan tidak melihat ini.",
+    "ownerOnly": "Hanya pemilik yang bisa mengubah ini.",
+    "legalName": {
+      "label": "Nama resmi",
+      "hint": "Nama yang terdaftar untuk usaha Anda."
+    },
+    "address": {
+      "label": "Alamat terdaftar",
+      "hint": "Tempat usaha Anda terdaftar.",
+      "street": "Alamat"
+    },
+    "registration": {
+      "siren": "SIREN atau SIRET",
+      "sirenHint": "9 digit (SIREN) atau 14 digit (SIRET).",
+      "gb": "Nomor perusahaan",
+      "gbHint": "Opsional. 8 huruf atau angka, dari Companies House.",
+      "other": "Nomor registrasi",
+      "otherHint": "Opsional. Nomor registrasi resmi usaha Anda."
+    },
+    "vat": {
+      "label": "Nomor {label}",
+      "hint": "Opsional.",
+      "euHint": "Diawali {prefix}, misalnya {example}."
+    },
+    "regime": {
+      "label": "Rezim PPN",
+      "hint": "Menentukan periode dalam file total harian Anda.",
+      "none": "Belum diatur",
+      "franchise": "Franchise en base (tidak memungut PPN)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – bulanan",
+      "reelNormalQuarterly": "Réel normal – triwulanan",
+      "franchiseNote": "Anda memilih franchise en base, jadi Anda mungkin perlu mengatur PPN ke 0 %."
+    },
+    "saveFailed": "Tidak dapat menyimpan — silakan coba lagi."
+  }
 }

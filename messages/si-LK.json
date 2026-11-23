@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "සක්‍රියයි හෝ අක්‍රියයි තෝරන්න.",
     "charges_nothing_to_save": "සුරැකීමට කිසිවක් නැත.",
     "charges_items_invalid": "මෙම අයිතමවලින් එකක් තවදුරටත් ඔබේ මෙනුවේ නැත. මෙය වසා නැවත උත්සාහ කරන්න.",
+    "business_owner_only": "ව්‍යාපාර විස්තර වෙනස් කළ හැක්කේ හිමිකරුට පමණි.",
+    "business_too_long": "එය දිග වැඩියි — කරුණාකර කෙටි කරන්න.",
+    "business_siren_invalid": "අංකය පරීක්ෂා කරන්න: SIREN එකක ඉලක්කම් 9ක් සහ SIRET එකක ඉලක්කම් 14ක් ඇත.",
+    "business_company_number_invalid": "සමාගම් අංකයක අකුරු හෝ ඉලක්කම් 8ක් ඇත, උදා. 01234567 හෝ SC123456.",
+    "business_vat_invalid": "එම VAT අංකය නිවැරදි නොවන බව පෙනේ. එය {prefix} වලින් ආරම්භ වේ, උදා. {example}.",
+    "business_regime_invalid": "ලැයිස්තුවෙන් VAT ක්‍රමයක් තෝරන්න.",
+    "business_regime_not_here": "VAT ක්‍රමය අසනු ලබන්නේ ප්‍රංශයේ පමණි.",
+    "business_nothing_to_save": "සුරැකීමට කිසිවක් නැත.",
     "country_settings_failed": "මෙම food truck එකේ රට සැකසුම් පූරණය කළ නොහැකි විය. මොහොතකින් නැවත උත්සාහ කරන්න.",
     "plans_failed": "මෙම food truck එකේ පැකේජය පූරණය කළ නොහැකි විය. මොහොතකින් නැවත උත්සාහ කරන්න.",
     "demo_not_available": "ඩෙමෝ food truck එකක ලබා ගත නොහැක",
@@ -4132,7 +4140,45 @@
       "close": "වසන්න",
       "logoPlaceholder": "ඔබේ ලාංඡනය\nමෙතැන"
     },
-    "qrPoweredBy": "HatchGrab මගින් ක්‍රියාත්මකයි"
+    "qrPoweredBy": "HatchGrab මගින් ක්‍රියාත්මකයි",
+    "business": {
+      "title": "ව්‍යාපාර විස්තර",
+      "intro": "ඔබේ ගණකාධිකාරී වාර්තා සහ ලේඛන සඳහා. පාරිභෝගිකයන්ට මේවා නොපෙනේ.",
+      "ownerOnly": "මේවා වෙනස් කළ හැක්කේ හිමිකරුට පමණි.",
+      "legalName": {
+        "label": "නීත්‍යානුකූල නම",
+        "hint": "ඔබේ ව්‍යාපාරය ලියාපදිංචි කර ඇති නම."
+      },
+      "address": {
+        "label": "ලියාපදිංචි ලිපිනය",
+        "hint": "ඔබේ ව්‍යාපාරය ලියාපදිංචි කර ඇති ස්ථානය.",
+        "street": "ලිපිනය"
+      },
+      "registration": {
+        "siren": "SIREN හෝ SIRET",
+        "sirenHint": "ඉලක්කම් 9 (SIREN) හෝ ඉලක්කම් 14 (SIRET).",
+        "gb": "සමාගම් අංකය",
+        "gbHint": "අත්‍යවශ්‍ය නැත. Companies House වෙතින් ලැබෙන අකුරු හෝ ඉලක්කම් 8ක්.",
+        "other": "ලියාපදිංචි අංකය",
+        "otherHint": "අත්‍යවශ්‍ය නැත. ඔබේ ව්‍යාපාරයේ නිල ලියාපදිංචි අංකය."
+      },
+      "vat": {
+        "label": "{label} අංකය",
+        "hint": "අත්‍යවශ්‍ය නැත.",
+        "euHint": "{prefix} වලින් ආරම්භ වේ, උදා. {example}."
+      },
+      "regime": {
+        "label": "VAT ක්‍රමය",
+        "hint": "ඔබේ දෛනික එකතු ගොනුවේ කාල පරිච්ඡේද සකසයි.",
+        "none": "සකසා නැත",
+        "franchise": "Franchise en base (VAT අය නොකෙරේ)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – මාසික",
+        "reelNormalQuarterly": "Réel normal – කාර්තුමය",
+        "franchiseNote": "ඔබ franchise en base තෝරා ඇති නිසා, ඔබේ VAT 0 % ලෙස සැකසීමට ඔබට අවශ්‍ය විය හැක."
+      },
+      "saveFailed": "සුරැකිය නොහැකි විය — කරුණාකර නැවත උත්සාහ කරන්න."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "දිනය",
         "time": "වේලාව",
         "orderNumber": "ඇණවුම් අංකය",
+        "receiptNo": "රිසිට්පත් අංකය",
         "event": "සිදුවීම",
         "channel": "මාර්ගය",
         "paymentMethod": "ගෙවීම් ක්‍රමය",
@@ -4289,6 +4336,39 @@
         "none": "බදු අනුපාතයක් සකසා නැත"
       },
       "noRate": "අනුපාතයක් නැත"
+    },
+    "daily": {
+      "title": "VAT අනුපාතය අනුව දෛනික එකතු",
+      "help": "එක් දිනකට සහ VAT අනුපාතයකට එක් පේළියක්, ඔබේ ඉ-වාර්තාකරණ වේදිකාව සඳහා.",
+      "period": "කාලය",
+      "custom": "අභිරුචි දින",
+      "from": "සිට",
+      "to": "දක්වා",
+      "button": "VAT අනුපාතය අනුව දෛනික එකතු (CSV)",
+      "badRange": "අවසන් දිනයට සමාන හෝ ඊට පෙර ආරම්භක දිනයක් තෝරන්න.",
+      "failed": "ගොනුව සෑදිය නොහැකි විය — කරුණාකර නැවත උත්සාහ කරන්න."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "නීත්‍යානුකූල නම",
+        "siren": "SIREN/SIRET",
+        "registration": "ලියාපදිංචි අංකය",
+        "vatNumber": "VAT අංකය",
+        "vatRegime": "VAT ක්‍රමය",
+        "period": "කාලය"
+      },
+      "header": {
+        "date": "දිනය",
+        "type": "වර්ගය",
+        "rate": "VAT අනුපාතය",
+        "sales": "VAT සහිත විකුණුම්",
+        "refunds": "VAT සහිත ආපසු ගෙවීම්",
+        "net": "VAT රහිත ශුද්ධ",
+        "vat": "VAT"
+      },
+      "goods": "භාණ්ඩ",
+      "total": "මුළු එකතුව",
+      "noRate": "{n, plural, one {VAT අනුපාතයක් නැති ඇණවුම් {count} ඇතුළත් කර නැත.} other {VAT අනුපාතයක් නැති ඇණවුම් {count} ඇතුළත් කර නැත.}}"
     }
   },
   "socialPosts": {

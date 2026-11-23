@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Açık veya kapalı seçin.",
     "charges_nothing_to_save": "Kaydedilecek bir şey yok.",
     "charges_items_invalid": "Bu ürünlerden biri artık menünüzde yok. Bunu kapatıp tekrar deneyin.",
+    "business_owner_only": "İşletme bilgilerini yalnızca işletme sahibi değiştirebilir.",
+    "business_too_long": "Bu çok uzun — lütfen kısaltın.",
+    "business_siren_invalid": "Numarayı kontrol edin: SIREN 9, SIRET 14 haneden oluşur.",
+    "business_company_number_invalid": "Şirket numarası 01234567 veya SC123456 gibi 8 harf ya da rakamdan oluşur.",
+    "business_vat_invalid": "Bu KDV numarası doğru görünmüyor. {prefix} ile başlar, örneğin {example}.",
+    "business_regime_invalid": "Listeden bir KDV rejimi seçin.",
+    "business_regime_not_here": "KDV rejimi yalnızca Fransa’da sorulur.",
+    "business_nothing_to_save": "Kaydedilecek bir şey yok.",
     "country_settings_failed": "Bu food truck’ın ülke ayarları yüklenemedi. Biraz sonra tekrar deneyin.",
     "plans_failed": "Bu food truck’ın paketi yüklenemedi. Biraz sonra tekrar deneyin.",
     "demo_not_available": "Demo food truck’ta kullanılamaz",
@@ -4132,7 +4140,45 @@
       "close": "Kapat",
       "logoPlaceholder": "Logonuz\nburada"
     },
-    "qrPoweredBy": "HatchGrab altyapısıyla"
+    "qrPoweredBy": "HatchGrab altyapısıyla",
+    "business": {
+      "title": "İşletme bilgileri",
+      "intro": "Muhasebeci raporlarınız ve kayıtlarınız için. Müşteriler bunları görmez.",
+      "ownerOnly": "Bunları yalnızca işletme sahibi değiştirebilir.",
+      "legalName": {
+        "label": "Ticari unvan",
+        "hint": "İşletmenizin kayıtlı olduğu ad."
+      },
+      "address": {
+        "label": "Kayıtlı adres",
+        "hint": "İşletmenizin kayıtlı olduğu yer.",
+        "street": "Adres"
+      },
+      "registration": {
+        "siren": "SIREN veya SIRET",
+        "sirenHint": "9 hane (SIREN) veya 14 hane (SIRET).",
+        "gb": "Şirket numarası",
+        "gbHint": "İsteğe bağlı. Companies House’tan alınan 8 harf veya rakam.",
+        "other": "Sicil numarası",
+        "otherHint": "İsteğe bağlı. İşletmenizin resmî sicil numarası."
+      },
+      "vat": {
+        "label": "{label} numarası",
+        "hint": "İsteğe bağlı.",
+        "euHint": "{prefix} ile başlar, örneğin {example}."
+      },
+      "regime": {
+        "label": "KDV rejimi",
+        "hint": "Günlük toplamlar dosyanızdaki dönemleri belirler.",
+        "none": "Ayarlanmadı",
+        "franchise": "Franchise en base (KDV alınmaz)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – aylık",
+        "reelNormalQuarterly": "Réel normal – üç aylık",
+        "franchiseNote": "Franchise en base seçtiğiniz için KDV’nizi %0 olarak ayarlamak isteyebilirsiniz."
+      },
+      "saveFailed": "Kaydedilemedi — lütfen tekrar deneyin."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Tarih",
         "time": "Saat",
         "orderNumber": "Sipariş numarası",
+        "receiptNo": "Fiş no.",
         "event": "Etkinlik",
         "channel": "Kanal",
         "paymentMethod": "Ödeme yöntemi",
@@ -4289,6 +4336,39 @@
         "none": "vergi oranı ayarlanmadı"
       },
       "noRate": "oran yok"
+    },
+    "daily": {
+      "title": "KDV oranına göre günlük toplamlar",
+      "help": "Her gün ve KDV oranı için bir satır; e-raporlama platformunuz için.",
+      "period": "Dönem",
+      "custom": "Özel tarihler",
+      "from": "Başlangıç",
+      "to": "Bitiş",
+      "button": "KDV oranına göre günlük toplamlar (CSV)",
+      "badRange": "Bitiş tarihiyle aynı gün veya daha önce olan bir başlangıç tarihi seçin.",
+      "failed": "Dosya oluşturulamadı — lütfen tekrar deneyin."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Ticari unvan",
+        "siren": "SIREN/SIRET",
+        "registration": "Sicil numarası",
+        "vatNumber": "KDV numarası",
+        "vatRegime": "KDV rejimi",
+        "period": "Dönem"
+      },
+      "header": {
+        "date": "Tarih",
+        "type": "Tür",
+        "rate": "KDV oranı",
+        "sales": "KDV dahil satışlar",
+        "refunds": "KDV dahil iadeler",
+        "net": "KDV hariç net",
+        "vat": "KDV"
+      },
+      "goods": "Mal",
+      "total": "Toplam",
+      "noRate": "{n, plural, one {KDV oranı olmayan {count} sipariş dahil edilmedi.} other {KDV oranı olmayan {count} sipariş dahil edilmedi.}}"
     }
   },
   "socialPosts": {

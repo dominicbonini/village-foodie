@@ -3329,6 +3329,14 @@
     "charges_choose_on_off": "Tria activat o desactivat.",
     "charges_nothing_to_save": "No hi ha res per desar.",
     "charges_items_invalid": "Un d’aquests productes ja no és a la teva carta. Tanca aquesta finestra i torna-ho a provar.",
+    "business_owner_only": "Només el titular pot canviar les dades de l’empresa.",
+    "business_too_long": "És massa llarg. Escurça’l, si us plau.",
+    "business_siren_invalid": "Revisa el número: un SIREN té 9 xifres i un SIRET, 14.",
+    "business_company_number_invalid": "Un número d’empresa té 8 lletres o xifres, com ara 01234567 o SC123456.",
+    "business_vat_invalid": "Aquest número d’IVA no sembla correcte. Comença per {prefix}, com ara {example}.",
+    "business_regime_invalid": "Tria un règim d’IVA de la llista.",
+    "business_regime_not_here": "El règim d’IVA només es demana a França.",
+    "business_nothing_to_save": "No hi ha res per desar.",
     "country_settings_failed": "No s’ha pogut carregar la configuració de país d’aquest food truck. Torna-ho a provar d’aquí a un moment.",
     "plans_failed": "No s’ha pogut carregar el pla d’aquest food truck. Torna-ho a provar d’aquí a un moment.",
     "demo_not_available": "No disponible en un food truck de demostració",
@@ -4132,7 +4140,45 @@
       "close": "Tanca",
       "logoPlaceholder": "El teu logotip\naquí"
     },
-    "qrPoweredBy": "Amb la tecnologia de HatchGrab"
+    "qrPoweredBy": "Amb la tecnologia de HatchGrab",
+    "business": {
+      "title": "Dades de l’empresa",
+      "intro": "Per als informes per al gestor i els teus registres. Els clients no les veuen.",
+      "ownerOnly": "Només el titular les pot canviar.",
+      "legalName": {
+        "label": "Raó social",
+        "hint": "El nom amb què està registrada la teva empresa."
+      },
+      "address": {
+        "label": "Domicili social",
+        "hint": "On està registrada la teva empresa.",
+        "street": "Adreça"
+      },
+      "registration": {
+        "siren": "SIREN o SIRET",
+        "sirenHint": "9 xifres (SIREN) o 14 xifres (SIRET).",
+        "gb": "Número d’empresa",
+        "gbHint": "Opcional. 8 lletres o xifres, de Companies House.",
+        "other": "Número de registre",
+        "otherHint": "Opcional. El número de registre oficial de la teva empresa."
+      },
+      "vat": {
+        "label": "Número de {label}",
+        "hint": "Opcional.",
+        "euHint": "Comença per {prefix}, com ara {example}."
+      },
+      "regime": {
+        "label": "Règim d’IVA",
+        "hint": "Defineix els períodes del teu fitxer de totals diaris.",
+        "none": "Sense definir",
+        "franchise": "Franchise en base (no es cobra IVA)",
+        "reelSimplifie": "Réel simplifié",
+        "reelNormalMonthly": "Réel normal – mensual",
+        "reelNormalQuarterly": "Réel normal – trimestral",
+        "franchiseNote": "Has triat franchise en base, així que potser vols posar el teu IVA al 0 %."
+      },
+      "saveFailed": "No s’ha pogut desar. Torna-ho a provar."
+    }
   },
   "manageReports": {
     "filter": {
@@ -4265,6 +4311,7 @@
         "date": "Data",
         "time": "Hora",
         "orderNumber": "Número de comanda",
+        "receiptNo": "Núm. de rebut",
         "event": "Esdeveniment",
         "channel": "Canal",
         "paymentMethod": "Mètode de pagament",
@@ -4289,6 +4336,39 @@
         "none": "sense tipus impositiu configurat"
       },
       "noRate": "sense tipus"
+    },
+    "daily": {
+      "title": "Totals diaris per tipus d’IVA",
+      "help": "Una fila per dia i tipus d’IVA, per a la teva plataforma d’e-reporting.",
+      "period": "Període",
+      "custom": "Dates personalitzades",
+      "from": "Des de",
+      "to": "Fins a",
+      "button": "Totals diaris per tipus d’IVA (CSV)",
+      "badRange": "Tria una data d’inici igual o anterior a la data de fi.",
+      "failed": "No s’ha pogut crear el fitxer. Torna-ho a provar."
+    },
+    "dailyCsv": {
+      "meta": {
+        "legalName": "Raó social",
+        "siren": "SIREN/SIRET",
+        "registration": "Número de registre",
+        "vatNumber": "Número d’IVA",
+        "vatRegime": "Règim d’IVA",
+        "period": "Període"
+      },
+      "header": {
+        "date": "Data",
+        "type": "Tipus",
+        "rate": "Tipus d’IVA",
+        "sales": "Vendes amb IVA",
+        "refunds": "Devolucions amb IVA",
+        "net": "Net sense IVA",
+        "vat": "IVA"
+      },
+      "goods": "Béns",
+      "total": "Total",
+      "noRate": "{n, plural, one {{count} comanda sense tipus d’IVA no s’hi inclou.} other {{count} comandes sense tipus d’IVA no s’hi inclouen.}}"
     }
   },
   "socialPosts": {

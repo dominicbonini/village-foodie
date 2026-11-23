@@ -211,5 +211,43 @@
     "close": "Закрыть",
     "logoPlaceholder": "Ваш логотип\nздесь"
   },
-  "qrPoweredBy": "Работает на HatchGrab"
+  "qrPoweredBy": "Работает на HatchGrab",
+  "business": {
+    "title": "Реквизиты бизнеса",
+    "intro": "Для отчётов Вашему бухгалтеру и учёта. Клиенты их не видят.",
+    "ownerOnly": "Изменять их может только владелец.",
+    "legalName": {
+      "label": "Юридическое название",
+      "hint": "Название, под которым зарегистрирован Ваш бизнес."
+    },
+    "address": {
+      "label": "Юридический адрес",
+      "hint": "Где зарегистрирован Ваш бизнес.",
+      "street": "Адрес"
+    },
+    "registration": {
+      "siren": "SIREN или SIRET",
+      "sirenHint": "9 цифр (SIREN) или 14 цифр (SIRET).",
+      "gb": "Номер компании",
+      "gbHint": "Необязательно. 8 букв или цифр, из Companies House.",
+      "other": "Регистрационный номер",
+      "otherHint": "Необязательно. Официальный регистрационный номер Вашего бизнеса."
+    },
+    "vat": {
+      "label": "Номер {label}",
+      "hint": "Необязательно.",
+      "euHint": "Начинается с {prefix}, например {example}."
+    },
+    "regime": {
+      "label": "Режим НДС",
+      "hint": "Задаёт периоды в Вашем файле дневных итогов.",
+      "none": "Не задан",
+      "franchise": "Franchise en base (без НДС)",
+      "reelSimplifie": "Réel simplifié",
+      "reelNormalMonthly": "Réel normal – ежемесячно",
+      "reelNormalQuarterly": "Réel normal – ежеквартально",
+      "franchiseNote": "Вы выбрали franchise en base, поэтому, возможно, стоит установить НДС 0 %."
+    },
+    "saveFailed": "Не удалось сохранить — попробуйте ещё раз."
+  }
 }

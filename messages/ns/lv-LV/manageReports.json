@@ -129,6 +129,7 @@
       "date": "Datums",
       "time": "Laiks",
       "orderNumber": "Pasūtījuma numurs",
+      "receiptNo": "Čeka nr.",
       "event": "Pasākums",
       "channel": "Kanāls",
       "paymentMethod": "Maksājuma veids",
@@ -153,5 +154,38 @@
       "none": "nodokļa likme nav iestatīta"
     },
     "noRate": "bez likmes"
+  },
+  "daily": {
+    "title": "Dienas kopsummas pa PVN likmēm",
+    "help": "Viena rinda par katru dienu un PVN likmi — jūsu e-atskaišu platformai.",
+    "period": "Periods",
+    "custom": "Pielāgoti datumi",
+    "from": "No",
+    "to": "Līdz",
+    "button": "Dienas kopsummas pa PVN likmēm (CSV)",
+    "badRange": "Izvēlieties sākuma datumu, kas nav vēlāks par beigu datumu.",
+    "failed": "Neizdevās izveidot datni — lūdzu, mēģiniet vēlreiz."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Juridiskais nosaukums",
+      "siren": "SIREN/SIRET",
+      "registration": "Reģistrācijas numurs",
+      "vatNumber": "PVN numurs",
+      "vatRegime": "PVN režīms",
+      "period": "Periods"
+    },
+    "header": {
+      "date": "Datums",
+      "type": "Veids",
+      "rate": "PVN likme",
+      "sales": "Pārdošana ar PVN",
+      "refunds": "Atmaksas ar PVN",
+      "net": "Neto bez PVN",
+      "vat": "PVN"
+    },
+    "goods": "Preces",
+    "total": "Kopā",
+    "noRate": "{n, plural, zero {{count} pasūtījumi bez PVN likmes nav iekļauti.} one {{count} pasūtījums bez PVN likmes nav iekļauts.} other {{count} pasūtījumi bez PVN likmes nav iekļauti.}}"
   }
 }

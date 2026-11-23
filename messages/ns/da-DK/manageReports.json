@@ -129,6 +129,7 @@
       "date": "Dato",
       "time": "Tidspunkt",
       "orderNumber": "Ordrenummer",
+      "receiptNo": "Kvitteringsnr.",
       "event": "Arrangement",
       "channel": "Kanal",
       "paymentMethod": "Betalingsmåde",
@@ -153,5 +154,38 @@
       "none": "ingen momssats angivet"
     },
     "noRate": "ingen sats"
+  },
+  "daily": {
+    "title": "Daglige totaler pr. momssats",
+    "help": "Én række pr. dag og momssats, til din e-rapporteringsplatform.",
+    "period": "Periode",
+    "custom": "Vælg datoer",
+    "from": "Fra",
+    "to": "Til",
+    "button": "Daglige totaler pr. momssats (CSV)",
+    "badRange": "Vælg en startdato, der er samme dag som eller før slutdatoen.",
+    "failed": "Kunne ikke lave filen — prøv igen."
+  },
+  "dailyCsv": {
+    "meta": {
+      "legalName": "Juridisk navn",
+      "siren": "SIREN/SIRET",
+      "registration": "Registreringsnummer",
+      "vatNumber": "Momsnummer",
+      "vatRegime": "Momsordning",
+      "period": "Periode"
+    },
+    "header": {
+      "date": "Dato",
+      "type": "Type",
+      "rate": "Momssats",
+      "sales": "Salg inkl. moms",
+      "refunds": "Refunderinger inkl. moms",
+      "net": "Netto ekskl. moms",
+      "vat": "Moms"
+    },
+    "goods": "Varer",
+    "total": "I alt",
+    "noRate": "{n, plural, one {{count} bestilling uden momssats er ikke medtaget.} other {{count} bestillinger uden momssats er ikke medtaget.}}"
   }
 }
