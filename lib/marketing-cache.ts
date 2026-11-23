@@ -6,6 +6,9 @@
 //   • TAGGED (lib/marketing-tags.ts) — an app write calls revalidateMarketing(), which EXPIRES the tag at once
 //     (`revalidateTag(tag, { expire: 0 })`): the very next request reads the database, never a stale copy;
 //   • a 5-minute expiry (MARKETING_REVALIDATE_SECONDS) for a change nothing announces (the Supabase dashboard);
+//     vercel-cost-1 (23 November 2026, docs/vercel-cost-1-report.md): NO expiry now (MARKETING_REVALIDATE = false) — a change nothing
+//     announces needs `node scripts/revalidate-pages.cjs`. And the key names THIS DEPLOYMENT (DEPLOYMENT_KEY): Vercel's data cache
+//     outlives a deployment, and with no expiry an entry written by older code would otherwise be read by newer code for ever;
 //   • KEYED BY COUNTRY/LOCALE ONLY — never a host, header, cookie, visitor, truck or order;
 //   • NEVER A FAILED READ: each read here THROWS on a database error (unstable_cache keeps nothing that throws); the reader that
 //     called it then answers exactly as it did before perf-1, uncached;
@@ -13,16 +16,20 @@
 import 'server-only'
 import { unstable_cache, revalidateTag } from 'next/cache'
 import { cache } from 'react'
-import { MARKETING_TAGS, MARKETING_REVALIDATE_SECONDS, type MarketingTag } from '@/lib/marketing-tags'
+import { MARKETING_TAGS, MARKETING_REVALIDATE, type MarketingTag } from '@/lib/marketing-tags'
 import type { CountrySettings } from '@/lib/country-settings-types'
 import type { PlanCatalog } from '@/lib/plans'
 import type { ComparisonFlags } from '@/lib/comparison-types'
 
 const { countries, plans } = MARKETING_TAGS
 
+/** vercel-cost-1: this deployment's name in every key — Vercel's deployment id (set at build and at run time), else the commit, else
+ *  'local'. A new deployment starts with its own entries; the same deployment's build and functions share them. */
+export const DEPLOYMENT_KEY = process.env.VERCEL_DEPLOYMENT_ID || process.env.VERCEL_GIT_COMMIT_SHA || 'local'
+
 /** A read through the shared cache, under `key` (+ its arguments, which Next adds to the key), with `tags`. */
 export function shared<A extends unknown[], R>(key: string, tags: MarketingTag[], read: (...args: A) => Promise<R>): (...args: A) => Promise<R> {
-  return cache(unstable_cache(read, ['perf-1', key], { tags, revalidate: MARKETING_REVALIDATE_SECONDS }))
+  return cache(unstable_cache(read, ['perf-1', key, DEPLOYMENT_KEY], { tags, revalidate: MARKETING_REVALIDATE }))
 }
 
 /** Expire these tags NOW, so the next request reads the database (an app write; /api/revalidate). Never throws. */

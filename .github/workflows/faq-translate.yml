@@ -4,7 +4,7 @@ name: FAQ translate
 # translation is missing, out of date (its source_hash no longer matches the English) or failed, into every language base the site
 # uses (lib/i18n/locales.ts) and the regional variants whose wording truly differs. Writes only public.faq_translations; the
 # country pages show a new translation on the next request once the run has called /api/revalidate (perf-1: SECRET
-# REVALIDATE_SECRET), else within 5 minutes (their cached data's expiry), with no deploy.
+# REVALIDATE_SECRET), else not until the pages are refreshed (vercel-cost-1: no timer any more) — the secret must be set.
 #
 # ⚠️ SCHEDULED WORKFLOWS RUN ONLY FROM THE DEFAULT BRANCH: nothing runs on the timer until this file is on main on GitHub.
 # 🔴 CLAUDE API LOGIN: Workload Identity Federation, exactly as competitor-check.yml — no API key anywhere. The job asks GitHub for
@@ -83,7 +83,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           # perf-1 (5 November 2026): after a run that wrote, the script asks the site to refresh the FAQ's cached data
-          # (POST /api/revalidate). Not set → one warning line and the pages show the change within 5 minutes; it never fails the run.
+          # (POST /api/revalidate). Not set → one warning line and the pages keep the old FAQ until refreshed (vercel-cost-1); it never fails the run.
           REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
           MAX_USD: ${{ github.event.inputs.max_usd }}

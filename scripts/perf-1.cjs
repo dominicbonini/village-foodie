@@ -110,7 +110,8 @@ const json = f => JSON.parse(read(f))
   head('3 · the tagged shared cache — only a marketing render, tags, expiry, never a failed read')
   {
     const mc = read('lib/marketing-cache.ts') + '\n' + read('lib/faq/public-cache.ts'), code = mc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
-    t('Next 16 data cache: unstable_cache with tags and revalidate MARKETING_REVALIDATE_SECONDS (300), deduplicated per render by React cache', /cache\(unstable_cache\(read, \['perf-1', key\], \{ tags, revalidate: MARKETING_REVALIDATE_SECONDS \}\)\)/.test(code) && /MARKETING_REVALIDATE_SECONDS = 300/.test(read('lib/marketing-tags.ts')))
+    // ⚠️ RE-PINNED (vercel-cost-1, 23 November 2026, docs/vercel-cost-1-report.md): no expiry (MARKETING_REVALIDATE false), keyed by deployment.
+    t('Next 16 data cache: unstable_cache with tags, NO expiry (MARKETING_REVALIDATE false — vercel-cost-1), keyed by this deployment, deduplicated per render by React cache', /cache\(unstable_cache\(read, \['perf-1', key, DEPLOYMENT_KEY\], \{ tags, revalidate: MARKETING_REVALIDATE \}\)\)/.test(code) && /^export const MARKETING_REVALIDATE = false$/m.test(read('lib/marketing-tags.ts')))
     t('a write EXPIRES the tag at once — revalidateTag(tag, { expire: 0 }), not the stale-then-refresh profile', /revalidateTag\(t, \{ expire: 0 \}\)/.test(code) && !/revalidateTag\([^)]*'max'/.test(code))
     t('the country and plan readers never pull the FAQ code in: lib/marketing-cache.ts imports nothing from lib/faq', !/lib\/faq/.test(read('lib/marketing-cache.ts').replace(/\/\/.*$/gm, '')))
     t('keyed by country/locale only: the cache module reads no header, cookie, host, visitor, truck or order', !/next\/headers|cookies\(|headers\(|visitor|truck_id|order_key|from\('orders'\)|from\('trucks'\)/.test(code)

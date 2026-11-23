@@ -16,7 +16,8 @@ const TIMEOUT_MS = 10_000
 
 /** @returns {Promise<boolean>} true when the site answered 200; never throws. */
 async function revalidatePages(tags = TAGS, { why = 'a script', log = console.log } = {}) {
-  const warn = msg => log(`WARNING (pages not told — they show the change within 5 minutes instead): ${msg}`)
+  // vercel-cost-1 (23 November 2026): the pages have no timer any more, so an untold change stays hidden until someone refreshes them.
+  const warn = msg => log(`WARNING (pages not told — they keep showing the old data until refreshed: REVALIDATE_SECRET=… node scripts/revalidate-pages.cjs): ${msg}`)
   try {
     const secret = process.env.REVALIDATE_SECRET
     const base = (process.env.REVALIDATE_BASE_URL || DEFAULT_BASE).replace(/\/+$/, '')
@@ -37,3 +38,13 @@ async function revalidatePages(tags = TAGS, { why = 'a script', log = console.lo
 }
 
 module.exports = { revalidatePages, TAGS, DEFAULT_BASE }
+
+// vercel-cost-1 (23 November 2026, docs/vercel-cost-1-report.md): RUN DIRECTLY, it refreshes EVERY marketing page — the one command after
+// a migration run any other way, or a Supabase dashboard edit:
+//   REVALIDATE_SECRET='<the secret>' node scripts/revalidate-pages.cjs            (every tag)
+//   REVALIDATE_SECRET='<the secret>' node scripts/revalidate-pages.cjs marketing-plans   (only the tags named)
+// Exit 0 when the site answered 200, else 1 (the warning says why). Required as a module (db-migrate.cjs, faq-translate), it does nothing.
+if (require.main === module) {
+  const named = process.argv.slice(2)
+  revalidatePages(named.length ? named : TAGS, { why: 'scripts/revalidate-pages.cjs (by hand)' }).then(ok => process.exit(ok ? 0 : 1))
+}

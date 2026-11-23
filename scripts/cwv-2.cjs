@@ -180,12 +180,14 @@ t('MarketingFrame (the shared header and footer) is unchanged apart from where l
 
 // ══ 3 ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 head('3 · built ahead and served from the CDN (manual 35.ap-2)')
-const SECS = +(read('lib/marketing-tags.ts').match(/MARKETING_REVALIDATE_SECONDS = (\d+)/) || [])[1]
+// ⚠️ RE-PINNED (vercel-cost-1, 23 November 2026, docs/vercel-cost-1-report.md): no timer (revalidate = false, the tags' MARKETING_REVALIDATE
+// false) and built ahead only for lib/built-ahead-countries.ts — the rest render on first visit (dynamicParams stays true, as cwv-2 requires).
+const NO_TIMER = /^export const MARKETING_REVALIDATE = false$/m.test(read('lib/marketing-tags.ts'))
 for (const [f, mod] of [['app/(public)/[country]/page.tsx', 'landing'], ['app/(public)/[country]/features/page.tsx', 'features'], ['app/(public)/[country]/faq/page.tsx', 'faq']]) {
   const s = read(f)
-  t(`${f}: re-exports (site)/${mod}, revalidate = ${SECS} (the tags' 5-minute expiry), dynamicParams true, every country listed, nothing per request`,
-    new RegExp(`export \\{ default, generateMetadata \\} from '\\.\\.(/\\.\\.)?/\\(site\\)/${mod}/page'`).test(s) && new RegExp(`^export const revalidate = ${SECS}$`, 'm').test(s)
-    && /^export const dynamicParams = true$/m.test(s) && /Object\.values\(COUNTRY_PATH_SEGMENTS\)\.map\(country => \(\{ country \}\)\)/.test(s) && !/^export const dynamic\b/m.test(s))
+  t(`${f}: re-exports (site)/${mod}, revalidate = false (no timer, as the tags' data), dynamicParams true, the built-ahead countries listed, nothing per request`,
+    new RegExp(`export \\{ default, generateMetadata \\} from '\\.\\.(/\\.\\.)?/\\(site\\)/${mod}/page'`).test(s) && NO_TIMER && /^export const revalidate = false$/m.test(s)
+    && /^export const dynamicParams = true$/m.test(s) && /BUILT_AHEAD_COUNTRIES\.map\(code => \(\{ country: COUNTRY_PATH_SEGMENTS\[code\] \}\)\)/.test(s) && !/^export const dynamic\b/m.test(s))
 }
 for (const [f, page] of [['app/(public)/(site)/landing/page.tsx', 'landing'], ['app/(public)/(site)/features/page.tsx', 'features'], ['app/(public)/(site)/faq/page.tsx', 'faq']]) {
   const s = read(f)

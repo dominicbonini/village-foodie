@@ -28,7 +28,7 @@ import { NO_COMPARISON_PAGE } from '@/lib/comparison-types'
 
 /** compare-autopublish-1: asks the site to refresh its cached comparison switches (tag marketing-countries). Never throws. */
 async function revalidateCountries(log: (l: string) => void): Promise<boolean> {
-  const warn = (m: string) => { log(`WARNING (pages not told — they show the change within 5 minutes instead): ${m}`); return false }
+  const warn = (m: string) => { log(`WARNING (pages not told — they keep showing the old data until refreshed: REVALIDATE_SECRET=… node scripts/revalidate-pages.cjs): ${m}`); return false }
   try {
     const secret = process.env.REVALIDATE_SECRET
     const base = (process.env.REVALIDATE_BASE_URL || 'https://www.hatchgrab.com').replace(/\/+$/, '')

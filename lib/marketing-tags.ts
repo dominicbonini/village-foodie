@@ -12,5 +12,9 @@ export const MARKETING_TAGS = {
 export type MarketingTag = (typeof MARKETING_TAGS)[keyof typeof MARKETING_TAGS]
 export const MARKETING_TAG_LIST: readonly MarketingTag[] = Object.values(MARKETING_TAGS)
 export const isMarketingTag = (t: unknown): t is MarketingTag => typeof t === 'string' && (MARKETING_TAG_LIST as readonly string[]).includes(t)
-/** The cached data's expiry: a change made where nothing calls the endpoint (the Supabase dashboard) shows within 5 minutes. */
-export const MARKETING_REVALIDATE_SECONDS = 300
+/** The cached data's expiry. perf-1 had 300 seconds (a change made where nothing calls the endpoint — the Supabase dashboard — showed
+ *  within 5 minutes). vercel-cost-1 (23 November 2026, docs/vercel-cost-1-report.md): NONE. A numeric expiry here also shortened the
+ *  pages' own (unstable_cache lowers the page's revalidate to it), and the 5-minute rebuilds were a third of the Vercel bill. The data
+ *  and the pages are kept until a tag is expired: an app write (revalidateMarketing), the FAQ translator and the competitor check
+ *  (POST /api/revalidate), scripts/db-migrate.cjs after a migration, or by hand: `node scripts/revalidate-pages.cjs`. */
+export const MARKETING_REVALIDATE = false
