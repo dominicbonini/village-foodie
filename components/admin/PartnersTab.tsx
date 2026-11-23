@@ -19,6 +19,7 @@ import { MAIL_STATUS_LABEL, mailStatusTone, FIELD_CLS, LABEL_CLS } from '@/compo
 import { RowLabelCell } from '@/components/admin/outreach-icons'
 import { PartnersTable, CodesPanel, QueuePanel, ImportPanel, ProgrammeBox, type Overview } from '@/components/admin/PartnerProgramme'   // partners-2
 import { messageRowLabel, type TimelineMessage } from '@/lib/outreach-timeline'
+import { openInInbox, partnerInboxKey } from '@/lib/inbox/open'   // inbox-1: replies are answered in Admin › Inbox
 import type { OutboxEntry } from '@/lib/outreach-outbox'
 import type { TemplateContext } from '@/lib/outreach-template-render'
 import {
@@ -399,11 +400,10 @@ function PartnerDetail({ detail, today, onSave, onStatus, onReload }: {
         <EmailReadingPanel message={opened} ids={emailIds} onOpen={setOpenId} onClose={() => setOpenId(null)}
           handLogged={null} prospectEmail={p.email}
           footer={<>
+            {/* inbox-1 (23 November 2026): a partner's email is answered in Admin › Inbox, this partner's conversation selected. */}
             {opened.direction === 'inbound' && !opened.is_test && (
-              <button type="button" onClick={() => {
-                setReplyTo({ messageId: opened.id, subject: opened.subject ?? null, fromAddress: opened.from_address ?? null, date: opened.message_date ?? null, inbound: true })
-                setRestore(null); setComposing(true); setOpenId(null)
-              }} className={`${BTN} border-orange-600 bg-orange-600 text-white`}>Reply</button>
+              <button type="button" data-open-in-inbox onClick={() => { setOpenId(null); openInInbox(partnerInboxKey(p.id)) }}
+                className={`${BTN} border-orange-600 bg-orange-600 text-white`}>Open in Inbox</button>
             )}
             {(opened.status === 'failed' || opened.status === 'uncertain') && (
               <button type="button" onClick={() => void retry(opened.id)} className={`${BTN} border-slate-300 text-slate-700`}>Retry</button>

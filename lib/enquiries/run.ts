@@ -13,6 +13,7 @@ import { skipReason, threadFor, refInSubject, splitNotes, numbersCheck, SKIP_REA
 import { buildAnswerPack, settleAsk, topicVocabulary, type KnowledgeRow, type PackInputs } from '@/lib/enquiries/answer-pack'
 import type { EnquiryModel, Understood } from '@/lib/enquiries/model'
 import { messageIdsIn, stripQuotedHistory } from '@/lib/outreach-mail-poll-rules'
+import { wroteTo, aliasLanguage } from '@/lib/inbox/aliases'
 
 export const ENQUIRY_SWITCH_KEY = 'enquiries_intake_enabled'
 /** 🔴 $5 per calendar month across every enquiry model call (the FAQ translator's cap is separate). No call starts once reached. */
@@ -34,6 +35,8 @@ export interface MessageRow {
   id: string; enquiry_id: string; direction: 'in' | 'out'; original_text: string; original_language: string | null; english_text: string | null
   subject: string | null; mail_message_id: string | null; in_reply_to: string | null; references: string | null; mailbox: string | null
   uid: number | null; received_at: string
+  /** inbox-1: the address they wrote to (hello@, bonjour@ …); null for the contact form. */
+  to_address?: string | null
 }
 export interface DraftRow {
   enquiry_id: string; message_id: string; english_draft: string; customer_draft: string; back_translation: string | null
@@ -65,6 +68,8 @@ export interface EnquiryStore {
   insertDraft(row: DraftRow): Promise<void>
   monthSpent(month: string): Promise<number>
   addSpent(month: string, usd: number): Promise<void>
+  /** inbox-1: outreach_settings 'mail_aliases' — the 36 aliases delivered into hello@ (our own addresses; [] when unset). */
+  aliases?(): Promise<string[]>
 }
 
 /** One message from hello@ INBOX that the outreach poll did NOT claim. Its body is read only if it is kept (readText). */
@@ -116,7 +121,7 @@ const cap = (s: string, n: number) => (s.length > n ? s.slice(0, n) : s)
 /** An error's message without anything that could be message content: the first line, capped. */
 const errText = (step: string, e: unknown) => `${step}: ${String(e instanceof Error ? e.message : e).split('\n')[0].slice(0, 160)}`
 
-class CapReached extends Error { constructor() { super('the monthly enquiry spend cap is reached') } }
+export class CapReached extends Error { constructor() { super('the monthly enquiry spend cap is reached') } }
 
 /** The whole step. null = switched off (or the switch unreadable): nothing was done and the poll's answer must not change. */
 export async function runEnquiries(deps: EnquiryDeps, hooks: { onEnabled?(deps: EnquiryDeps): Promise<void> } = {}): Promise<EnquirySummary | null> {
@@ -134,6 +139,9 @@ export async function runEnquiries(deps: EnquiryDeps, hooks: { onEnabled?(deps: 
     drafted: 0, needsReview: 0, draftingHeld: null, usd: 0, errors: [],
   }
   const late = () => deps.now().getTime() >= deps.deadline
+  // inbox-1: the aliases are our own addresses (never taken in) and say which address each email was written to.
+  let aliases: string[] = []
+  try { aliases = store.aliases ? await store.aliases() : [] } catch (e) { s.errors.push(errText('aliases', e)) }
 
   // ── contact-form messages ───────────────────────────────────────────────────────────────────────────────────────────
   try {
@@ -156,7 +164,7 @@ export async function runEnquiries(deps: EnquiryDeps, hooks: { onEnabled?(deps: 
   // ── hello@ INBOX mail the outreach poll did not claim ─────────────────────────────────────────────────────────────────
   if (deps.mail && !late()) {
     try {
-      const r = await deps.mail.walk(c => intakeMail(c, deps, s), MAIL_PER_RUN)
+      const r = await deps.mail.walk(c => intakeMail(c, deps, s, aliases), MAIL_PER_RUN)
       s.mailExamined = r.examined; s.mailLeftToOutreach = r.outreach
     } catch (e) { s.errors.push(errText('mail', e)) }
   }
@@ -188,8 +196,8 @@ export async function runEnquiries(deps: EnquiryDeps, hooks: { onEnabled?(deps: 
   return s
 }
 
-async function intakeMail(c: MailCandidate, deps: EnquiryDeps, s: EnquirySummary): Promise<void> {
-  const reason = skipReason(c.headers, deps.orderSubjects)
+async function intakeMail(c: MailCandidate, deps: EnquiryDeps, s: EnquirySummary, aliases: string[] = []): Promise<void> {
+  const reason = skipReason(c.headers, deps.orderSubjects, aliases)
   if (reason) { s.skipped[reason]++; return }
   const { store } = deps
   if (await store.messageHeld(c.mailbox, cap(c.messageId, 1000))) { s.skipped.duplicate++; return }
@@ -215,6 +223,7 @@ async function intakeMail(c: MailCandidate, deps: EnquiryDeps, s: EnquirySummary
     enquiry_id: enquiryId, direction: 'in', original_text: text, original_language: null, english_text: null,
     subject: c.headers.subject ? cap(c.headers.subject, 1000) : null, mail_message_id: cap(c.messageId, 1000), in_reply_to: inReplyTo, references,
     mailbox: c.mailbox, uid: c.uid, received_at: c.date ?? deps.now().toISOString(),
+    ...(wroteTo(c.headers.to, aliases) ? { to_address: wroteTo(c.headers.to, aliases) } : {}),
   })
   if (!added) { s.skipped.duplicate++; return }
   // A new message reopens its enquiry for a draft (an answered or closed one included: the person wrote again).
@@ -222,36 +231,62 @@ async function intakeMail(c: MailCandidate, deps: EnquiryDeps, s: EnquirySummary
   s.mailLogged++
 }
 
-type Ledger = { canStart(): boolean; add(usd: number): Promise<void> }
+export type Ledger = { canStart(): boolean; add(usd: number): Promise<void> }
 
-/** One draft: understand → pack → draft → back-translate → checks. Returns the status it set. */
-export async function draftOne(e: EnquiryRow, msg: MessageRow, knowledge: KnowledgeRow[], deps: Pick<EnquiryDeps, 'store' | 'packInputs' | 'now'>, model: EnquiryModel, ledger: Ledger): Promise<'drafted' | 'needs_review'> {
-  let cost = 0
-  async function call<T>(f: () => Promise<{ value: T; usd: number }>): Promise<T> {
+/** What a draft is made from: the message being answered, who wrote it, and anything the answer pack should add for this conversation. */
+export interface DraftInput {
+  text: string; subject: string | null; knownLanguage: string | null; languageHint: string | null; name: string | null; country: string | null
+  /** The language the reply is written in when already known (the enquiry's own); else knownLanguage, else the model's answer. */
+  replyLanguage?: string | null
+  /** inbox-1: a prospect's or partner's own history (their thread, platform, the offer and code) — appended to the pack as written. */
+  conversationPack?: string | null
+}
+export interface ComposedDraft {
+  understood: Understood; language: string; country: string | null; flags: DraftFlag[]
+  english: string; customer: string; back: string | null; asks: DraftRow['asks']; numbers: { result: 'pass' | 'fail'; unknown: string[]; checked: number }
+  packText: string; cost: number
+}
+
+/** A metered model call: refused before it starts once the cap is reached; what it cost counts towards the cap even when it fails. */
+export function meteredCall(ledger: Ledger, onCost: (usd: number) => void) {
+  return async function call<T>(f: () => Promise<{ value: T; usd: number }>): Promise<T> {
     if (!ledger.canStart()) throw new CapReached()
-    try { const r = await f(); cost += r.usd; await ledger.add(r.usd); return r.value }
-    catch (err) { const u = Number((err as { usd?: number }).usd) || 0; cost += u; await ledger.add(u); throw err }
+    try { const r = await f(); onCost(r.usd); await ledger.add(r.usd); return r.value }
+    catch (err) { const u = Number((err as { usd?: number }).usd) || 0; onCost(u); await ledger.add(u); throw err }
   }
+}
+
+/** The pack text a conversation's draft is checked against: the answer pack, plus this conversation's own section. */
+const withConversation = (packText: string, extra: string | null | undefined) => (extra && extra.trim() ? `${packText}\n\nTHIS CONVERSATION\n${extra.trim()}` : packText)
+
+/**
+ * 🔴 THE DRAFT ITSELF, SHARED BY THE POLL (draftOne) AND THE INBOX (lib/inbox/drafting.ts): understand → pack → draft → back-translate →
+ * checks. Writes nothing; returns what was made and what it cost.
+ * 🔴 THE NUMBERS CHECK (Dominic's decision 6, 23 Nov 2026): a number that appears in the person's OWN message is allowed (their opening
+ * hours, their price, their date); any other number must be in the answer pack.
+ */
+export async function composeDraft(input: DraftInput, knowledge: KnowledgeRow[], packInputs: (country: string | null) => Promise<PackInputs>, model: EnquiryModel, ledger: Ledger): Promise<ComposedDraft> {
+  let cost = 0
+  const call = meteredCall(ledger, usd => { cost += usd })
   const flags: DraftFlag[] = []
 
   // a · translate, b · list the asks with topics
-  const u: Understood = await call(() => model.understand({ text: msg.original_text, subject: msg.subject, knownLanguage: msg.original_language ?? e.language, topics: topicVocabulary(knowledge) }))
-  const language = e.language ?? msg.original_language ?? u.language
-  await deps.store.updateMessage(msg.id, { english_text: cap(u.english_text, 40_000), original_language: msg.original_language ?? normLang(u.language) })
-  if (!e.language) await deps.store.updateEnquiry(e.id, { language: normLang(u.language) })
+  const u: Understood = await call(() => model.understand({ text: input.text, subject: input.subject, knownLanguage: input.knownLanguage, topics: topicVocabulary(knowledge), languageHint: input.languageHint }))
+  const language = input.replyLanguage ?? input.knownLanguage ?? u.language
   if (!u.asks.length) flags.push({ kind: 'no_asks', detail: 'nothing asked was found' })
 
   // the country: the form's or the linked truck's; else the message's own guess (flagged); else unknown (flagged, no prices)
-  let country = e.country
+  let country = input.country
   if (!country && /^[A-Z]{2}$/.test(u.country_guess)) { country = u.country_guess; flags.push({ kind: 'country_guessed', detail: `country taken from the message: ${country}` }) }
   if (!country) flags.push({ kind: 'country_unknown', detail: 'no country known: the pack has no prices' })
 
-  // c · the answer pack
+  // c · the answer pack (and this conversation's own section)
   const topics = [...new Set(u.asks.flatMap(a => a.topics))]
-  const pack = buildAnswerPack(await deps.packInputs(country), knowledge, topics)
+  const pack = buildAnswerPack(await packInputs(country), knowledge, topics)
+  const packText = withConversation(pack.text, input.conversationPack)
 
   // e · the draft
-  const d = await call(() => model.draft({ englishText: u.english_text, asks: u.asks, packText: pack.text, customerLanguage: language, name: e.name }))
+  const d = await call(() => model.draft({ englishText: u.english_text, asks: u.asks, packText, customerLanguage: language, name: input.name }))
   const en = splitNotes(d.english_draft), cu = splitNotes(d.customer_draft)
   if (en.notes.length || cu.notes.length) flags.push({ kind: 'note_lines_removed', detail: `${en.notes.length + cu.notes.length} "Note:" line(s) removed from the draft` })
   const english = language.startsWith('en')
@@ -266,19 +301,30 @@ export async function draftOne(e: EnquiryRow, msg: MessageRow, knowledge: Knowle
     return { ask: r.ask, topics: r.topics, status: r.status, knowledge_ids: r.knowledge_ids, sources: r.sources, note: a.note }
   })
 
-  // f · the numbers check, and the wording rules that code can see
-  const nums = numbersCheck([en.text, customer], pack.text)
-  if (nums.result === 'fail') flags.push({ kind: 'numbers', detail: `not in the answer pack: ${nums.unknown.join(', ')}` })
+  // f · the numbers check (their own numbers allowed), and the wording rules that code can see
+  const nums = numbersCheck([en.text, customer], `${packText}\n${input.text}\n${u.english_text}`)
+  if (nums.result === 'fail') flags.push({ kind: 'numbers', detail: `not in the answer pack or their message: ${nums.unknown.join(', ')}` })
   if ([en.text, customer].some(t => /pay\s+at\s+(the\s+)?hatch/i.test(t))) flags.push({ kind: 'mentions_pay_at_hatch', detail: 'the draft names Pay at Hatch' })
   if (/\b(free|trial)\b/i.test(en.text) && /card fees/i.test(pack.text) && !/\bcard\b[^.]{0,40}\bfees?\b|\bstripe\b/i.test(en.text)) flags.push({ kind: 'card_fees_not_stated', detail: 'free or the trial is mentioned without the card fees stated separately' })
+  return { understood: u, language, country, flags, english: en.text, customer, back, asks, numbers: nums, packText, cost }
+}
 
+/** One draft for the poll: compose it, store it on the enquiry. Returns the status it set. */
+export async function draftOne(e: EnquiryRow, msg: MessageRow, knowledge: KnowledgeRow[], deps: Pick<EnquiryDeps, 'store' | 'packInputs' | 'now'>, model: EnquiryModel, ledger: Ledger): Promise<'drafted' | 'needs_review'> {
+  const c = await composeDraft({
+    text: msg.original_text, subject: msg.subject, knownLanguage: msg.original_language ?? e.language, languageHint: aliasLanguage(msg.to_address ?? null),
+    name: e.name, country: e.country, replyLanguage: e.language ?? msg.original_language,
+  }, knowledge, deps.packInputs, model, ledger)
+  const u = c.understood
+  await deps.store.updateMessage(msg.id, { english_text: cap(u.english_text, 40_000), original_language: msg.original_language ?? normLang(u.language) })
+  if (!e.language) await deps.store.updateEnquiry(e.id, { language: normLang(u.language) })
   const row: DraftRow = {
-    enquiry_id: e.id, message_id: msg.id, english_draft: en.text, customer_draft: customer, back_translation: back, asks, flags,
-    numbers_check: nums.result, numbers_details: { unknown: nums.unknown, checked: nums.checked }, model: model.model, cost_usd: Math.round(cost * 1e6) / 1e6,
+    enquiry_id: e.id, message_id: msg.id, english_draft: c.english, customer_draft: c.customer, back_translation: c.back, asks: c.asks, flags: c.flags,
+    numbers_check: c.numbers.result, numbers_details: { unknown: c.numbers.unknown, checked: c.numbers.checked }, model: model.model, cost_usd: Math.round(c.cost * 1e6) / 1e6,
   }
   await deps.store.insertDraft(row)
-  const status: 'drafted' | 'needs_review' = flags.length || !asks.every(a => a.status === 'available') ? 'needs_review' : 'drafted'
-  // 🔴 Whatever the status, lib/enquiries/rules.ts canAutoSend(row) is false: for any flag, and — no send path exists — for every draft.
+  const status: 'drafted' | 'needs_review' = c.flags.length || !c.asks.every(a => a.status === 'available') ? 'needs_review' : 'drafted'
+  // 🔴 Whatever the status, lib/enquiries/rules.ts canAutoSend(row) is false: for any flag, and for every draft (AUTO_SEND_BUILT is false).
   await deps.store.updateEnquiry(e.id, { status, updated_at: deps.now().toISOString() })
   return status
 }

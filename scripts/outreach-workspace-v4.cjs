@@ -182,8 +182,9 @@ function runPanelSuite(rawTL, rawPanel, rawShared) {
    * way Outlook does it. WHAT THE CHECK WAS PROTECTING IS UNCHANGED and is asserted here: a TEST
    * send is never replyable, because it went to Dominic's own address and there is nobody at the
    * other end of it. */
+  // ⚠️ RE-ANCHORED (inbox-1, 23 November 2026): a received email now opens in Admin › Inbox; a sent one keeps "Follow up on this".
   t('⚠️ …never for a test send, and only for a message that actually went or arrived',
-    /!m\.is_test && \(m\.status === 'received' \|\| m\.status === 'sent'\)/.test(TL))
+    /!m\.is_test && !inbound && m\.status === 'sent'/.test(TL) && /!m\.is_test && inbound && m\.status === 'received'/.test(TL))
   t('⚠️ a phone gets a sheet with a Back button', /\{phone \? '← Back' : '×'\}/.test(P))
   t('🔴 the attachments come from the viewer, with their download links',
     /<AttachmentList attachments=\{data\.attachments\}/.test(stripComments(rawShared)))

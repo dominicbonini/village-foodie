@@ -23,6 +23,11 @@
 // deleted row is not there to delete twice.
 // contact-1 (2 November 2026; privacy section 7, "Support correspondence: 24 months"): it also DELETES every
 // `contact_messages` row (HatchGrab's own contact form) created more than CONTACT_RETENTION_MONTHS ago — the whole row.
+// inbox-1 (23 November 2026; Dominic's decision 2, enquiries-backend-1 §7): and the ENQUIRIES — `enquiries`, with their `enquiry_messages`
+// and `enquiry_drafts` (and the Inbox's own drafts, comments and sent records for them), deleted 24 months after the conversation's LAST
+// message, the same 24 months as `contact_messages`. "Last message" is `enquiries.last_message_at`, which a trigger keeps at the newest
+// message (either direction, 20261123_inbox_1.sql); an enquiry with no message at all is aged by its own `created_at`. Deleting the
+// enquiry deletes the rest (on delete cascade). Bounded and idempotent like the rest.
 // loyalty-1 (5 November 2026): and the loyalty tables past 12 months — old stamps, finished rewards and cards with no stamp for
 // 12 months (lib/loyalty/retention.ts says exactly what), so no loyalty row still ties an anonymised order to a customer.
 import type { SupabaseClient } from '@supabase/supabase-js'
@@ -46,6 +51,8 @@ export function retentionCutoff(now: Date = new Date(), months: number = RETENTI
 
 /** contact-1: a contact-form message is support correspondence — kept 24 months (privacy section 7), then deleted. */
 export const CONTACT_RETENTION_MONTHS = 24
+/** inbox-1: an enquiry conversation — the same 24 months, counted from its last message. */
+export const ENQUIRY_RETENTION_MONTHS = CONTACT_RETENTION_MONTHS
 
 type Json = unknown
 const blank = (v: unknown) => v == null || (typeof v === 'string' && v === '')
@@ -96,6 +103,8 @@ export function retentionPatch(row: Row, nameEmpty: '' | null): Record<string, u
 export interface RetentionResult {
   cutoff: string; ordersExamined: number; ordersCleared: number; draftsExamined: number; draftsCleared: number; draftsPurged: number | null
   whatsappLogsDeleted: number; messagesDeleted: number; contactMessagesDeleted: number
+  /** inbox-1: enquiry conversations whose last message is past 24 months, deleted (their messages and drafts with them). */
+  enquiriesDeleted: number
   /** loyalty-1: stamps, finished rewards and idle cards past 12 months, deleted. */
   loyalty: LoyaltyPurgeResult
   failures: string[]
@@ -148,6 +157,30 @@ async function deleteOld(supabase: SupabaseClient, table: (typeof WHATSAPP_TABLE
   return deleted
 }
 
+/**
+ * inbox-1: the enquiries whose conversation's last message is older than `cutoffIso` (or, with no message, created before it) — deleted
+ * with everything that hangs off them. Two id-keyed passes (a last message, then none), each bounded like `deleteOld`.
+ */
+export async function deleteOldEnquiries(supabase: SupabaseClient, cutoffIso: string, failures: string[]): Promise<number> {
+  let deleted = 0
+  for (const pick of [
+    (q: ReturnType<ReturnType<SupabaseClient['from']>['select']>) => q.lt('last_message_at', cutoffIso),
+    (q: ReturnType<ReturnType<SupabaseClient['from']>['select']>) => q.is('last_message_at', null).lt('created_at', cutoffIso),
+  ]) {
+    while (deleted < RETENTION_MAX_PER_RUN) {
+      const { data, error } = await pick(supabase.from('enquiries').select('id')).order('id', { ascending: true }).limit(RETENTION_BATCH)
+      if (error) { failures.push(`enquiries read: ${error.message}`); return deleted }
+      const ids = ((data || []) as { id: string }[]).map(r => r.id)
+      if (!ids.length) break
+      const { error: dErr } = await supabase.from('enquiries').delete().in('id', ids)
+      if (dErr) { failures.push(`enquiries delete: ${dErr.message}`); return deleted }
+      deleted += ids.length
+      if (ids.length < RETENTION_BATCH) break
+    }
+  }
+  return deleted
+}
+
 /** The daily run: purge abandoned drafts, clear the details of every order and promoted draft past the cutoff, and
  *  delete the WhatsApp logs past it. */
 export async function runOrderRetention(supabase: SupabaseClient, now: Date = new Date()): Promise<RetentionResult> {
@@ -169,10 +202,12 @@ export async function runOrderRetention(supabase: SupabaseClient, now: Date = ne
   const messagesDeleted = await deleteOld(supabase, 'messages', cutoff.toISOString(), failures)
   // 5 · contact-1: the contact form's messages past 24 months
   const contactMessagesDeleted = await deleteOld(supabase, 'contact_messages', retentionCutoff(now, CONTACT_RETENTION_MONTHS).toISOString(), failures)
+  // 5b · inbox-1: enquiry conversations whose last message is past 24 months
+  const enquiriesDeleted = await deleteOldEnquiries(supabase, retentionCutoff(now, ENQUIRY_RETENTION_MONTHS).toISOString(), failures)
   // 6 · loyalty-1: the loyalty tables past 12 months
   const loyalty = await purgeOldLoyalty(supabase, cutoff.toISOString(), RETENTION_BATCH, RETENTION_MAX_PER_RUN, failures)
   return {
     cutoff: cutoff.toISOString(), ordersExamined: o.examined, ordersCleared: o.cleared, draftsExamined: d.examined, draftsCleared: d.cleared,
-    draftsPurged, whatsappLogsDeleted, messagesDeleted, contactMessagesDeleted, loyalty, failures,
+    draftsPurged, whatsappLogsDeleted, messagesDeleted, contactMessagesDeleted, enquiriesDeleted, loyalty, failures,
   }
 }

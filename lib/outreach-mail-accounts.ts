@@ -8,7 +8,11 @@
 //   'dominic'  PRIMARY  — sends, files its Sent copy, and is polled for replies.
 //   'hello'    LEGACY   — read-only, kept because every existing row's `mailbox`+`uid` points into it.
 //
-// 🔴 THE LEGACY ACCOUNT IS NEVER WRITTEN TO AGAIN once the primary is configured. No send, no APPEND.
+// 🔴 THE LEGACY ACCOUNT IS NEVER WRITTEN TO AGAIN BY OUTREACH once the primary is configured. No send, no APPEND.
+// ⚠️ ONE EXCEPTION (inbox-1, 23 November 2026, Dominic's brief): Admin › Inbox's Send answers an ENQUIRY or a CUSTOMER from hello@ (or
+// the alias they wrote to), logging in with hello@'s own OUTREACH_MAIL_* credentials and filing the copy in hello@'s Sent — through
+// `accountForInboxReply` below, which only lib/inbox/send.ts calls. Outreach sending, the poll and partner sends are unchanged: they still
+// ask for `accountForSend`, which still cannot return hello@ once dominic@ exists.
 // It is opened read-only so that an email imported in September still opens today and a chase can still
 // quote it. `legacyIsReadOnly` is what the harness asserts, and `accountForSend` is why it holds: the
 // send path asks for the PRIMARY account and cannot be handed the legacy one.
@@ -149,4 +153,13 @@ export function accountForSend(set: AccountSet): AccountCredentials | null {
 /** True when `hello` must be treated as read-only: the primary is configured and it is not `hello`. */
 export function legacyIsReadOnly(set: AccountSet): boolean {
   return set.primaryConfigured
+}
+
+/**
+ * inbox-1: the account an Inbox reply to an ENQUIRY or CUSTOMER logs in with — hello@, always (its own OUTREACH_MAIL_* credentials),
+ * whichever account is primary. Null when hello@ is not configured here. 🔴 Only lib/inbox/send.ts calls this (scripts/inbox-1.cjs census);
+ * a prospect's or partner's reply goes through its own route and `accountForSend`, from dominic@, as before.
+ */
+export function accountForInboxReply(set: AccountSet): AccountCredentials | null {
+  return credentialsFor(set, LEGACY_ACCOUNT)
 }

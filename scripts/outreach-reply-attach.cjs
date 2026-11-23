@@ -546,8 +546,9 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
      * CHECK PROTECTED IS KEPT AND IS ASSERTED HERE: a TEST send is never replyable (it went to his
      * own address, and there is nobody at the other end), and neither is a message that never went
      * or arrived. `scripts/outreach-reply-any-notes.cjs` owns the rest of the rule. */
-    check(/!m\.is_test && \(m\.status === 'received' \|\| m\.status === 'sent'\)/.test(TL),
-      '🔴 Reply is offered on a real message, never on a test send')
+    // ⚠️ RE-ANCHORED (inbox-1, 23 November 2026): a received email opens in Admin › Inbox; a sent one keeps "Follow up on this". Never a test.
+    check(/!m\.is_test && !inbound && m\.status === 'sent'/.test(TL) && /!m\.is_test && inbound && m\.status === 'received'/.test(TL),
+      '🔴 Follow up / Open in Inbox are offered on a real message, never on a test send')
     check(/a\.storagePath && prospectId/.test(SHARED),
       '🔴 a Download link appears only where there is a file of ours to download…')
     check(/listed only, not downloaded/.test(SHARED),

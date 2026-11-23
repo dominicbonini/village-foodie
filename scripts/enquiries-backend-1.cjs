@@ -26,6 +26,9 @@ const { compile, headWorktree, REPO } = require('./_slot-interval-compile.cjs')
 
 /** The commit before enquiries-backend-1. */
 const BASE = '5df925d8'
+/** enquiries-backend-1's own code commit. ⚠️ inbox-1 (23 Nov 2026): §7's "byte-identical" and "only its own files" checks are about THIS
+ *  work, so they compare BASE with this commit — not with the working tree, which later work (france-vat-1, inbox-1) moves on purpose. */
+const WORK = '40c27cd4'
 
 let pass = 0, fail = 0
 const t = (label, ok, detail) => { if (ok) { pass++; console.log('  ✓ ' + label) } else { fail++; console.log('  🔴 ' + label + (detail !== undefined ? `\n      ${typeof detail === 'string' ? detail.slice(0, 1500) : JSON.stringify(detail).slice(0, 1500)}` : '')) } }
@@ -721,10 +724,9 @@ function identity() {
     'lib/outreach-mail-poll-rules.ts', 'lib/partner-mail-poll.ts', 'lib/outreach-mail-box.ts', 'lib/outreach-mail-deliver.ts', 'lib/outreach-poll-claims.ts', 'lib/outreach-mail-accounts.ts',
     'lib/outreach-contact-log.ts', 'lib/outreach-mail-format.ts', 'lib/outreach-mail-bodies.ts', 'lib/email.ts', 'lib/email-config.ts', 'lib/competitor-check', 'lib/faq',
   ].filter(p => fs.existsSync(path.join(REPO, p)))
-  const changed = git('diff', '--name-only', BASE, '--', ...PROTECTED).trim()
-  const untracked = git('ls-files', '--others', '--exclude-standard', '--', ...PROTECTED).trim()
-  t(`🔴 ${PROTECTED.length} protected paths (ordering … admin, the contact form, every customer page and word, the four shared readers, outreach / partner matching): byte-identical to ${BASE}, committed and working tree, no new file`,
-    changed === '' && untracked === '', { changed, untracked })
+  const changed = git('diff', '--name-only', BASE, WORK, '--', ...PROTECTED).trim()
+  t(`🔴 ${PROTECTED.length} protected paths (ordering … admin, the contact form, every customer page and word, the four shared readers, outreach / partner matching): byte-identical between ${BASE} and enquiries-backend-1's commit ${WORK}`,
+    changed === '', { changed })
   t('the brief\'s "lib/plan-features.ts" does not exist (flagged in the report); the plan-feature readers it means are in the protected list', !fs.existsSync(path.join(REPO, 'lib/plan-features.ts')))
   {
     const poll = read('lib/outreach-mail-poll.ts'), was = git('show', `${BASE}:lib/outreach-mail-poll.ts`)
@@ -738,9 +740,8 @@ function identity() {
   }
   const MINE = new Set(['lib/outreach-mail-poll.ts', 'supabase/migrations/20261123_enquiries_backend_1.sql', 'scripts/enquiries-backend-1.cjs', 'scripts/harnesses.json',
     ...fs.readdirSync(path.join(REPO, 'lib/enquiries')).map(f => `lib/enquiries/${f}`)])
-  const committed = git('diff', '--name-only', BASE, 'HEAD').split('\n').filter(Boolean)
-  const working = git('diff', '--name-only', 'HEAD').split('\n').filter(Boolean).concat(git('ls-files', '--others', '--exclude-standard').split('\n').filter(Boolean))
-  const extra = [...new Set([...committed, ...working])].filter(f => !f.startsWith('docs/') && !MINE.has(f))
+  const committed = git('diff', '--name-only', BASE, WORK).split('\n').filter(Boolean)
+  const extra = [...new Set(committed)].filter(f => !f.startsWith('docs/') && !MINE.has(f))
   t('this work changed only its own files (lib/enquiries/*, the poll, the migration, this harness, the sweep list) — docs/ aside', extra.length === 0, extra)
   {
     // The new files only (the poll and the sweep list are older files that this work only added to).

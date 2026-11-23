@@ -36,7 +36,16 @@ export interface SendableRow {
   text_body: string | null
   /** 🔴 ATTACHED IN-PROCESS, NEVER A COLUMN — the column stores paths; these are the bytes. */
   attachments?: SendableAttachment[] | null
+  /**
+   * inbox-1 (23 November 2026): the From for an Inbox reply to an enquiry — hello@hatchgrab.com or the alias they wrote to. NEVER A
+   * COLUMN (no table has it, so no stored row can carry one into a retry), and ABSENT ON EVERY OUTREACH SEND: then From and the envelope
+   * sender are OUTREACH_FROM_ADDRESS exactly as before, byte for byte (scripts/inbox-1.cjs composes both and compares).
+   */
+  send_from_address?: string | null
 }
+
+/** The From address: an Inbox reply's own, else the outreach address. */
+const fromAddressOf = (row: SendableRow) => (row.send_from_address ?? '').trim() || OUTREACH_FROM_ADDRESS
 
 export function smtpTransportOptions(user: string, pass: string): SMTPTransport.Options {
   return {
@@ -80,7 +89,7 @@ export function mailFor(row: SendableRow): Mail.Options {
   // existed. This never refuses.
   const name = (row.from_name ?? OUTREACH_FROM_NAME ?? '').trim()
   return {
-    from: name ? { name, address: OUTREACH_FROM_ADDRESS } : OUTREACH_FROM_ADDRESS,
+    from: name ? { name, address: fromAddressOf(row) } : fromAddressOf(row),
     to: row.to_address ?? '',
     subject: row.subject ?? '',
     messageId: row.message_id,
@@ -148,6 +157,6 @@ export async function composeRaw(row: SendableRow): Promise<Buffer> {
 export function rawMailFor(raw: Buffer, row: SendableRow): Mail.Options {
   return {
     raw,
-    envelope: { from: OUTREACH_FROM_ADDRESS, to: [row.to_address ?? ''] },
+    envelope: { from: fromAddressOf(row), to: [row.to_address ?? ''] },
   }
 }

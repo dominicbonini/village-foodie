@@ -59,13 +59,14 @@ export function stripReplyPrefixes(subject: string | null | undefined): string {
 /**
  * Why this message is NOT an enquiry, or null when it is one.
  * `orderSubjects`: the order-mail subjects in every language (lib/enquiries/order-subjects.ts orderSubjectPatterns), passed in so this
- * stays pure. The order is fixed: our own mail first (a loop is the worst outcome), then delivery reports, then the rest.
+ * stays pure. `ownAddresses` (inbox-1): the aliases, also our own. The order is fixed: our own mail first (a loop is the worst outcome), then delivery reports, then the rest.
  */
-export function skipReason(h: MailHeaders, orderSubjects: readonly RegExp[]): SkipReason | null {
+export function skipReason(h: MailHeaders, orderSubjects: readonly RegExp[], ownAddresses: readonly string[] = []): SkipReason | null {
   const subject = String(h.subject ?? '').trim()
   // The Brevo copy of a contact-form message: exactly that subject (never a Re:) — or anything from our own sender.
   if (subject.startsWith(CONTACT_COPY_PREFIX)) return 'contact_form_copy'
-  if (isOwnDomain(h.fromAddress)) return 'own_address'
+  // inbox-1: the 36 aliases (outreach_settings 'mail_aliases') are our own addresses too — named, as well as covered by the domain.
+  if (isOwnDomain(h.fromAddress) || ownAddresses.some(a => lower(a) === lower(h.fromAddress))) return 'own_address'
   // ⚠️ Only the null sender "<>" marks a bounce — an ABSENT Return-Path does not (some relays omit it).
   if (isBounce(h) || lower(h.get('return-path')) === '<>') return 'bounce'
   if (isAutoReply(h)) return 'auto_reply'

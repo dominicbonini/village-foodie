@@ -60,8 +60,10 @@ const timeOf = (iso: string | null | undefined): string => {
 }
 
 export interface TimelineActions {
-  /** Answer this inbound message. */
+  /** Follow up on MY OWN email (a chase in-thread). ⚠️ inbox-1: an inbound message is answered in the Inbox (onOpenInInbox). */
   onReply: (m: TimelineMessage) => void
+  /** inbox-1: open this conversation in Admin › Inbox, selected. */
+  onOpenInInbox: (m: TimelineMessage) => void
   /** Mark done / Snooze / Mark as needing reply / Retry / Save to Sent / log it — all POSTs. */
   onMessageAction: (action: string, messageId: string, extra?: Record<string, unknown>) => Promise<void>
   onDeleteContact: (c: Contact) => Promise<void>
@@ -538,7 +540,16 @@ function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, o
           message it threads onto and, through the server, what the send is LOGGED as: answering
           somebody is a `reply`, following up on myself is the step the ladder is on.
           ⚠️ A TEST SEND IS STILL NOT REPLYABLE — it went to my own address. */}
-      {!m.is_test && (m.status === 'received' || m.status === 'sent') && (
+      {/* inbox-1 (23 November 2026): a reply to THEIR email is written in Admin › Inbox — this opens it there, the conversation selected. */}
+      {!m.is_test && inbound && m.status === 'received' && (
+        <button type="button" data-open-in-inbox onClick={() => { onClose(); actions.onOpenInInbox(m) }}
+          title="Answer this message in the Inbox, with the conversation beside it (R)"
+          className="text-sm font-bold px-3 py-1.5 max-md:min-h-11 rounded-lg border border-slate-400 text-slate-800 bg-white hover:bg-slate-50">
+          Open in Inbox
+        </button>
+      )}
+      {/* Following up on MY OWN email (a chase in-thread) stays here, as before. */}
+      {!m.is_test && !inbound && m.status === 'sent' && (
         <button type="button" onClick={() => { onClose(); actions.onReply(m) }}
           title={inbound
             ? 'Answer this message, with the conversation quoted underneath (R)'

@@ -40,3 +40,16 @@ export function suggestFromNotes(text: string, o: { topics?: string[]; ref?: str
 
 /** What may go to a customer from Dominic's text: the text with every "Note:" line removed. */
 export const customerTextOf = (text: string) => splitNotes(text).text
+
+/**
+ * inbox-1: one of Dominic's "comments for the AI" (Update reply), after the reply it shaped was SENT → one suggested guidance line
+ * (source 'note', never customer-safe, never approved here). `ref`: the ENQ ref, or the conversation key for a prospect or partner.
+ */
+export function suggestFromComment(comment: string, o: { topics?: string[]; ref?: string | null; country?: string | null } = {}): SuggestedLine | null {
+  const wording = String(comment ?? '').replace(/\s+/g, ' ').trim().replace(/^note\s*:\s*/i, '')
+  if (wording.length < 3) return null
+  return {
+    kind: 'guidance', topics: [...new Set(o.topics ?? [])], wording: wording.slice(0, 4000), customer_safe: false,
+    countries: o.country ? [o.country] : [], status: 'suggested', source: 'note', source_ref: o.ref ?? null,
+  }
+}

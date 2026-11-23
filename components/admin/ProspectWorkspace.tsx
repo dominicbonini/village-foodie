@@ -64,6 +64,7 @@ import {
   type FollowUpChoice,
 } from '@/lib/outreach-workspace'
 import { readQueue, queuePosition, neighbours, prospectPath, type QueueState } from '@/lib/outreach-queue'
+import { openInInbox, prospectInboxKey } from '@/lib/inbox/open'   // inbox-1: replies are answered in Admin › Inbox
 
 const stageLabel = (s: string) => STATUS_LABEL[s] ?? s.replace(/_/g, ' ')
 const CARD = 'border border-slate-200 rounded-xl bg-white'
@@ -694,9 +695,9 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
    * elsewhere on the page; two of those handlers cannot be memoised at all (they branch on a
    * `window.confirm`). The ref is written in an effect, never during render.
    */
-  const latest = useRef({ panel, expandedId, nav, resolved, focus, timeline, goTo, openPanel, closePanel, replyToMessage, focusNoteBox })
+  const latest = useRef({ panel, expandedId, nav, resolved, focus, timeline, goTo, openPanel, closePanel, replyToMessage, focusNoteBox, prospectId })
   useEffect(() => {
-    latest.current = { panel, expandedId, nav, resolved, focus, timeline, goTo, openPanel, closePanel, replyToMessage, focusNoteBox }
+    latest.current = { panel, expandedId, nav, resolved, focus, timeline, goTo, openPanel, closePanel, replyToMessage, focusNoteBox, prospectId }
   })
 
   useEffect(() => {
@@ -719,9 +720,10 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
         // ⚠️ R DOES NOTHING WHEN NOTHING IS WAITING, deliberately: it answers the message the Next
         // line names, and inventing a target when there is none would reply to the wrong email.
         const f = L.focus
+        // inbox-1 (23 November 2026): answering their email happens in Admin › Inbox — R opens this conversation there.
         if (f && f.kind === 'reply') {
           const m = (L.timeline?.messages ?? []).find(x => x.id === f.messageId)
-          if (m) { e.preventDefault(); L.replyToMessage(m) }
+          if (m) { e.preventDefault(); openInInbox(prospectInboxKey(L.prospectId)) }
         }
         return
       }
@@ -989,6 +991,8 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
             onExpand={setExpandedId}
             actions={{
               onReply: replyToMessage,
+              // inbox-1: their email is answered in Admin › Inbox, this conversation selected.
+              onOpenInInbox: () => openInInbox(prospectInboxKey(prospectId)),
               onMessageAction: messageAction,
               onRecordStep: recordAsStep,
               onNotesChanged: reloadAll,

@@ -58,6 +58,7 @@ import {
 // "Is this reply waiting for me", "when does a snooze come back", "what order does the timeline go
 // in" and "what is on the Today screen" are all decisions, and a decision written inside a component
 // cannot be tested without a browser. Each of these is pure and has a harness standing on it.
+import { openInInbox, inboxHref, prospectInboxKey } from '@/lib/inbox/open'   // inbox-1: replies are answered in Admin › Inbox
 import { SNOOZE_OPTIONS, SNOOZE_LABELS } from '@/lib/outreach-attention'
 import {
   buildToday, PROBLEM_LABEL,
@@ -1991,7 +1992,7 @@ function TodaySection({ title, hint, count, children }: {
  * ⚠️ AND `channelFor`, NOT `step.channel`: every stopped step carries `channel: null`, so reading the
  * step would file reachable trucks as unreachable. The map is built with `channelFor` upstream.
  */
-function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onReply, onAction }: {
+function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onAction }: {
   view: TodayView
   /** False until the first fetch answers — an empty screen and an unloaded one look identical. */
   loaded: boolean
@@ -2002,8 +2003,9 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
   onOpen: (prospectId: string, queue: TodayQueue) => void
   /** Opens the page with the composer already up, on the step's own template. */
   onCompose: (prospectId: string, queue: TodayQueue) => void
-  /** 🔴 Opens the page with the composer ANSWERING this message. */
-  onReply: (prospectId: string, messageId: string, queue: TodayQueue) => void
+  /** 🔴 Opens the page with the composer ANSWERING this message. ⚠️ inbox-1: no longer used by the rows (they say "Open in Inbox");
+   *  kept so the prospect page's ?reply= intent still works for any link that carries it. */
+  onReply?: (prospectId: string, messageId: string, queue: TodayQueue) => void
   onAction: () => void | Promise<void>
 }) {
   const [busyId, setBusyId] = useState<string | null>(null)
@@ -2091,15 +2093,14 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
                   three 20px targets crowded against a truncated name is not a control anybody can
                   hit with a thumb. */}
               <div className="flex flex-wrap items-center gap-1 justify-end max-md:w-full max-md:justify-start">
-                {/* 🔴 REPLY IS THE FIRST BUTTON, because answering is the thing this row is asking
-                    for. It opens the prospect with the composer already up on THIS message, the
-                    conversation visible below the editor. Nothing is sent until Send is pressed. */}
-                <button type="button"
-                  onClick={() => onReply(r.prospect_id, r.id, repliesQueue)}
-                  title="Answer this reply, with the conversation quoted underneath."
+                {/* 🔴 OPEN IN INBOX IS THE FIRST BUTTON (inbox-1, 23 November 2026): replies are answered in Admin › Inbox now,
+                    side by side with the message, with the conversation selected. Nothing is sent until Send is pressed there. */}
+                <a href={inboxHref(prospectInboxKey(r.prospect_id))} data-open-in-inbox={r.prospect_id}
+                  onClick={e => { e.preventDefault(); openInInbox(prospectInboxKey(r.prospect_id)) }}
+                  title="Answer this reply in the Inbox, with the conversation beside it."
                   className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
-                  Reply
-                </button>
+                  Open in Inbox
+                </a>
                 <button type="button" onClick={() => onOpen(r.prospect_id, repliesQueue)}
                   className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
                   Open

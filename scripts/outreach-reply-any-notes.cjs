@@ -111,8 +111,10 @@ function runCensus(over = {}) {
   const SHARED = stripComments(over.SHARED ?? read('components/admin/outreach-shared.tsx'))
 
   // ── 1 · REPLY TO A SENT EMAIL ────────────────────────────────────────────────────────────────
-  t('🔴 Reply is offered on a sent email as well as a received one',
-    /!m\.is_test && \(m\.status === 'received' \|\| m\.status === 'sent'\)/.test(TL))
+  // ⚠️ RE-ANCHORED (inbox-1, 23 November 2026, Dominic's brief): a RECEIVED email is answered in Admin › Inbox now ("Open in Inbox");
+  // following up on a SENT email stays here. Still never on a test send.
+  t('🔴 Follow up is offered on a sent email; a received one opens in the Inbox (inbox-1); neither on a test send',
+    /!m\.is_test && !inbound && m\.status === 'sent'/.test(TL) && /!m\.is_test && inbound && m\.status === 'received'[\s\S]{0,200}actions\.onOpenInInbox\(m\)/.test(TL))
   t('…and it says which it is', /\{inbound \? 'Reply' : 'Follow up on this'\}/.test(TL))
   t('🔴 the page picks the recipient with the ONE rule, not a second copy',
     /const back = replyRecipientFor\(m\)/.test(PAGE))

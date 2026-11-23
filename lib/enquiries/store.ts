@@ -1,17 +1,18 @@
 // lib/enquiries/store.ts — the enquiry step's database, through the service-role client the reply poll already holds (enquiries-backend-1,
 // 23 November 2026). It writes ONLY the five enquiry tables (enquiries, enquiry_messages, enquiry_drafts, enquiry_spend; reply_knowledge
-// is read, approved rows only) and reads outreach_settings (the switch), contact_messages and trucks — it never writes those three.
+// is read, approved rows only) and reads outreach_settings (the switch; inbox-1: the aliases), contact_messages and trucks — it never writes those three.
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { EnquiryStore, EnquiryRow, MessageRow, ContactForIntake } from '@/lib/enquiries/run'
 import { ENQUIRY_SWITCH_KEY } from '@/lib/enquiries/run'
 import type { KnownThread } from '@/lib/enquiries/rules'
 import type { KnowledgeRow } from '@/lib/enquiries/answer-pack'
+import { parseAliases, ALIASES_KEY } from '@/lib/inbox/aliases'
 
 type Row = Record<string, unknown>
 const fail = (what: string, e: { message: string } | null) => { if (e) throw new Error(`${what}: ${e.message}`) }
 /** An ilike pattern that matches this text exactly (case aside): %, _ and \ escaped. */
 const exactly = (s: string) => s.replace(/[\\%_]/g, c => `\\${c}`)
-const MESSAGE_COLS = 'id, enquiry_id, direction, original_text, original_language, english_text, subject, mail_message_id, in_reply_to, references, mailbox, uid, received_at'
+const MESSAGE_COLS = 'id, enquiry_id, direction, original_text, original_language, english_text, subject, mail_message_id, in_reply_to, references, mailbox, uid, received_at, to_address'
 const ENQUIRY_COLS = 'id, ref, source, name, email, country, language, truck_id, contact_message_id, status, created_at, updated_at'
 
 export function supabaseEnquiryStore(db: SupabaseClient): EnquiryStore {
@@ -111,6 +112,11 @@ export function supabaseEnquiryStore(db: SupabaseClient): EnquiryStore {
       const { data, error } = await db.from('enquiry_spend').select('usd_spent').eq('month', month).maybeSingle()
       fail('spend', error)
       return Number((data as { usd_spent?: unknown } | null)?.usd_spent ?? 0) || 0
+    },
+    async aliases() {
+      const { data, error } = await db.from('outreach_settings').select('value').eq('key', ALIASES_KEY).maybeSingle()
+      fail('aliases', error)
+      return parseAliases((data as { value?: unknown } | null)?.value)
     },
     async addSpent(month, usd) {
       // Under the poll's lock there is one writer, so read-then-write is safe here.

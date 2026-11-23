@@ -33,6 +33,8 @@ import CountriesTab from '@/components/admin/CountriesTab'           // per-coun
 import PricingCheckTab from '@/components/admin/PricingCheckTab'     // competitor prices vs ours, per country (admin only)
 import DemosTab from '@/components/admin/DemosTab'                   // demo-2: the demos, their menus and the funnel
 import FaqTab from '@/components/admin/FaqTab'                       // faq-1: the FAQ's sections, questions, check and notes
+import InboxTab from '@/components/admin/InboxTab'                   // inbox-1: every incoming email, read and answered side by side
+import { OPEN_INBOX_EVENT, INBOX_COUNT_EVENT } from '@/lib/inbox/open'
 import { useSignupCountries } from '@/components/setup/WhereBasedStep'  // switched-on countries (create-truck)
 
 interface AdminTruck {
@@ -227,6 +229,8 @@ const DISCOVERY_BADGE = 'bg-slate-100 text-slate-500'
 // ⚠️ The `?tab=` validator below reads THIS OBJECT rather than repeating the names, so a tab cannot be
 // reachable by URL but missing from the bar, or the reverse.
 const ADMIN_TABS = {
+  // inbox-1 (23 November 2026): every incoming email — enquiries, prospects, partners, customers — components/admin/InboxTab.tsx. FIRST.
+  inbox:       { icon: '📥', label: 'Inbox' },
   trucks:      { icon: '🚚', label: 'Trucks' },
   features:    { icon: '📋', label: 'Features' },
   domains:     { icon: '🌐', label: 'Domains' },
@@ -283,6 +287,18 @@ export default function AdminPage() {
   // partners-1: the same for Partners — mounted on the first visit, then hidden, so a half-written email survives.
   const [partnersSeen, setPartnersSeen] = useState(false)
   if (adminTab === 'partners' && !partnersSeen) setPartnersSeen(true)
+  // inbox-1: the same for Inbox — mounted on the first visit, then hidden, so a half-typed reply survives a look at another tab.
+  const [inboxSeen, setInboxSeen] = useState(false)
+  if (adminTab === 'inbox' && !inboxSeen) setInboxSeen(true)
+  /** inbox-1: the emails waiting, on the tab (null until the count arrives). */
+  const [inboxCount, setInboxCount] = useState<number | null>(null)
+  // "Open in Inbox" (Today, a partner's drawer) selects the tab in place; the Inbox's own Send lowers the count at once.
+  useEffect(() => {
+    const open = () => setAdminTab('inbox')
+    const count = (e: Event) => { const n = (e as CustomEvent<{ waiting?: number }>).detail?.waiting; if (typeof n === 'number') setInboxCount(n) }
+    window.addEventListener(OPEN_INBOX_EVENT, open); window.addEventListener(INBOX_COUNT_EVENT, count)
+    return () => { window.removeEventListener(OPEN_INBOX_EVENT, open); window.removeEventListener(INBOX_COUNT_EVENT, count) }
+  }, [])
 
   // ── ?tab= SEEDS THE OPENING TAB, so /admin/outreach's redirect lands on the outreach tab rather than
   // on Trucks. 🔴 READ FROM window.location IN AN EFFECT, NOT useSearchParams(): useSearchParams forces
@@ -439,6 +455,9 @@ export default function AdminPage() {
       }
       if (opts.initial && res.status === 401) { setCheckingSession(false); setDenied(true); return }
       if (opts.initial) {
+        // inbox-1: the Inbox's waiting count for its tab — best-effort, never in the way of the page.
+        fetch('/api/admin/inbox?view=count', { headers: h }).then(r => r.json())
+          .then(j => { if (typeof j?.waiting === 'number') setInboxCount(j.waiting) }).catch(() => null)
         // As before, the name in the header is asked for only once the visitor is known to be an admin.
         fetch('/api/auth/me', { headers: h }).then(r => r.json()).then(me => {
           setOperatorName(me.first_name || me.name || null)
@@ -925,6 +944,9 @@ export default function AdminPage() {
               }`}
             >
               <span aria-hidden="true">{ADMIN_TABS[tab].icon}</span>{ADMIN_TABS[tab].label}
+              {tab === 'inbox' && inboxCount !== null && (
+                <span data-inbox-count className={`ml-1 min-w-[20px] px-1.5 rounded-full text-[11px] leading-5 text-center tabular-nums ${inboxCount > 0 ? 'bg-orange-500 text-white' : 'bg-slate-700 text-slate-300'}`}>{inboxCount}</span>
+              )}
             </button>
           ))}
         </div>
@@ -934,7 +956,7 @@ export default function AdminPage() {
           max-w-6xl (1152px) until admin-countries-1 (23 October 2026); every admin body is now full width with
           32px side padding (px-8), and a text-heavy panel keeps its own readable width (the screenshot uploader's
           max-w-3xl). The wrapper is HIDDEN rather than unmounted so the tab blocks inside keep their state. */}
-      <div className={(adminTab === 'outreach' || adminTab === 'partners' || adminTab === 'events' || adminTab === 'pricing' || adminTab === 'demos' || adminTab === 'faq') ? 'hidden' : "w-full px-8 py-6"}>
+      <div className={(adminTab === 'inbox' || adminTab === 'outreach' || adminTab === 'partners' || adminTab === 'events' || adminTab === 'pricing' || adminTab === 'demos' || adminTab === 'faq') ? 'hidden' : "w-full px-8 py-6"}>
 
         {/* ── EVENT SCREENSHOTS ─────────────────────────────────────────────────────────────────
             🔎 INSIDE this wrapper, unlike Outreach. Outreach is out there because its table needs
@@ -1430,6 +1452,14 @@ export default function AdminPage() {
       {adminTab === 'outreach' && (
         <div className="w-full px-8 py-6">
           <OutreachPanel />
+        </div>
+      )}
+
+      {/* inbox-1: Admin › Inbox — the full width, no side padding (three columns, each scrolling on its own); mounted on the first visit
+          and hidden after, so a half-typed reply survives a look at another tab. */}
+      {inboxSeen && (
+        <div className={adminTab === 'inbox' ? 'w-full' : 'hidden'}>
+          <InboxTab onCount={setInboxCount} />
         </div>
       )}
 
