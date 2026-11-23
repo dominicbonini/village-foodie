@@ -8,7 +8,8 @@ const FIELDS = ['subtitle', 'promotionalText', 'description', 'keywords', 'whats
 // the new languages' own plan names (seo/<CC>.json terms) — not in messages/ yet, so check them here too
 const NEW_PLANS = require('fs').readdirSync(path.join(D, '../seo')).filter(f => /^[a-z]{2,3}-[A-Z]{2}\.json$/.test(f)).flatMap(f => { const t = JSON.parse(fs.readFileSync(path.join(D, '../seo', f), 'utf8')).terms; return [t.payAsYouGo, t.unlimited, t.freeTrial].filter(x => x && x !== 'Pro') })
 const plans = [...planNames(), ...NEW_PLANS]
-const OK = [/^whatsNew should say 29 languages$/, /^appStoreLocale missing$/]
+// languages-switch-5 (23 November 2026): whatsNew says "50+ languages" (listing-rules.cjs checks it); Play-only languages have no appStoreLocale.
+const OK = [/^appStoreLocale missing$/]
 fs.mkdirSync(path.join(D, 'back'), { recursive: true })
 let fail = 0
 for (const L of [...A, ...B, ...C]) {
@@ -21,7 +22,6 @@ for (const L of [...A, ...B, ...C]) {
   fs.writeFileSync(path.join(D, 'back', L.file + '.json'), JSON.stringify(back, null, 2) + '\n')
   const bad = check(f, plans)
   // extra checks: 37 in whatsNew, no bidi controls, keyword count, no straight apostrophes, no Cyrillic in sr, para count = master
-  if (!/60|٦٠|৬০|६०/.test(out.whatsNew)) bad.push('whatsNew lacks 60')
   if (/[‎‏‪-‮⁦-⁩]/.test(JSON.stringify(out))) bad.push('bidi control char')
   if (/'/.test(FIELDS.map(k => out[k]).join(''))) bad.push('straight apostrophe')
   if (/[\u0000-\u0008]/.test(JSON.stringify(out))) bad.push('control char')

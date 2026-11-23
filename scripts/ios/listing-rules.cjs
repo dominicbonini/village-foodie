@@ -35,13 +35,23 @@ function check(file, plans = planNames()) {
   const text = ['subtitle', 'promotionalText', 'description', 'keywords', 'whatsNew', 'shortDescription'].map(k => d[k] || '').join('\n')
   for (const re of FORBIDDEN) if (re.test(text)) bad.push(`forbidden: ${re} → "${text.match(re)[0]}"`)
   for (const p of plans) if (new RegExp(`(^|[^\\p{L}])${p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^\\p{L}]|$)`, 'u').test(text)) bad.push(`plan name: "${p}"`)
-  if (!/\b29\b|２９/.test(d.whatsNew || '')) bad.push('whatsNew should say 29 languages')
-  for (const k of ['appStoreLocale', 'messagesLocale', 'countrySegment']) if (!d[k]) bad.push(`${k} missing`)
+  // ⚠️ RE-PINNED (languages-switch-5, 23 November 2026, Dominic): whatsNew says "50+ languages", never an exact count, so it stays
+  // true as languages are added (was "29", the iOS 1.1 build 3 count). "50+" in every language, or that language's own "more than
+  // 50" where a "+" reads badly or would be turned around by right-to-left text: ja 50以上, zh 超過 50, ko 50개 이상, ar أكثر من 50,
+  // he יותר מ־50, ur 50 سے زائد. And no exact count left in it.
+  if (!/(^|[^\d])50\+|50以上|超過 ?50|50개 이상|أكثر من 50|יותר מ[־-]50|50 سے زائد/.test(d.whatsNew || '')) bad.push('whatsNew should say 50+ languages')
+  if (/(^|[^\d])(29|37|60)([^\d]|$)|２９/.test(d.whatsNew || '')) bad.push('whatsNew still names an exact language count')
+  // languages-switch-5 (23 November 2026): a file in data/store-listing/play/ is Google Play only — App Store Connect has no listing
+  // language for it — so it has no appStoreLocale and must have a playLocale instead.
+  const playOnly = path.basename(path.dirname(path.resolve(file))) === 'play'
+  for (const k of [playOnly ? 'playLocale' : 'appStoreLocale', 'messagesLocale', 'countrySegment']) if (!d[k]) bad.push(`${k} missing`)
+  if (playOnly && d.appStoreLocale) bad.push('a play/ listing has an appStoreLocale (it belongs in data/store-listing/)')
   return bad
 }
-module.exports = { DIR, LIMITS, check, planNames }
+const PLAY_DIR = path.join(DIR, 'play')
+module.exports = { DIR, PLAY_DIR, LIMITS, check, planNames }
 if (require.main === module) {
-  const files = process.argv.slice(2).length ? process.argv.slice(2) : fs.readdirSync(DIR).filter(f => f.endsWith('.json')).map(f => path.join(DIR, f))
+  const files = process.argv.slice(2).length ? process.argv.slice(2) : [DIR, path.join(DIR, 'play')].flatMap(d => fs.readdirSync(d).filter(f => f.endsWith('.json')).map(f => path.join(d, f)))
   const plans = planNames(); let n = 0
   for (const f of files) { const b = check(f, plans); if (b.length) { n++; console.log(`🔴 ${path.basename(f)}: ${b.join(' · ')}`) } else console.log(`✓ ${path.basename(f)}`) }
   process.exit(n ? 1 : 0)

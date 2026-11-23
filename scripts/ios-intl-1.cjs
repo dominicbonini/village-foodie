@@ -45,7 +45,9 @@ t('the project knows every language as a region', [...new Set(Object.values(NS.L
 
 console.log('\n── 2 · the store listing')
 const files = fs.readdirSync(RULES.DIR).filter(f => f.endsWith('.json'))
-const LOCALES = ['en-GB', 'en-US', 'en-AU', 'en-CA', 'fr-FR', 'de-DE', 'es-ES', 'es-MX', 'it', 'pt-PT', 'pt-BR', 'nl-NL', 'sv', 'da', 'no', 'pl', 'cs', 'hu', 'sk', 'ro', 'hr', 'sl-SI', 'fi', 'el', 'ja', 'zh-Hant', 'th', 'ar-SA', 'ms']
+// ⚠️ RE-PINNED (languages-switch-5, 23 November 2026, Dominic): + 'ca' (Catalan, Andorra switched on 19 Nov). Google-Play-only
+// listings live in data/store-listing/play/ (push-listing does not read it) and are checked below.
+const LOCALES = ['en-GB', 'en-US', 'en-AU', 'en-CA', 'fr-FR', 'de-DE', 'es-ES', 'es-MX', 'it', 'pt-PT', 'pt-BR', 'nl-NL', 'sv', 'da', 'no', 'pl', 'cs', 'hu', 'sk', 'ro', 'hr', 'sl-SI', 'fi', 'el', 'ja', 'zh-Hant', 'th', 'ar-SA', 'ms', 'ca']
 t(`one listing per App Store locale (${LOCALES.length}; Bulgarian, Estonian, Latvian and Lithuanian have none — they fall back to en-GB)`, JSON.stringify(files.map(f => f.replace('.json', '')).sort()) === JSON.stringify([...LOCALES].sort()), files)
 const plans = RULES.planNames()
 const bad = files.map(f => [f, RULES.check(path.join(RULES.DIR, f), plans)]).filter(([, b]) => b.length)
@@ -53,6 +55,10 @@ t('every listing passes the rules (limits; no prices, plan names, trials, purcha
 const nonEn = files.filter(f => !f.startsWith('en-'))
 t('…and every non-English one has an English back-translation (docs/i18n/back-store-listing)', nonEn.every(f => fs.existsSync(path.join(REPO, 'docs/i18n/back-store-listing', f))), nonEn.filter(f => !fs.existsSync(path.join(REPO, 'docs/i18n/back-store-listing', f))))
 t('…each names the messages locale it was translated from, and that file exists', files.every(f => { const d = JSON.parse(fs.readFileSync(path.join(RULES.DIR, f), 'utf8')); return fs.existsSync(path.join(REPO, 'messages', `${d.messagesLocale}.json`)) }))
+
+const playFiles = fs.existsSync(RULES.PLAY_DIR) ? fs.readdirSync(RULES.PLAY_DIR).filter(f => f.endsWith('.json')) : []
+const playBad = playFiles.map(f => [f, RULES.check(path.join(RULES.PLAY_DIR, f), plans)]).filter(([, b]) => b.length)
+t(`the Google-Play-only listings (data/store-listing/play/, ${playFiles.length}) pass the same rules, each with a playLocale and an English back-translation`, !playBad.length && playFiles.every(f => fs.existsSync(path.join(REPO, 'docs/i18n/back-store-listing/play', f))), { playBad, noBack: playFiles.filter(f => !fs.existsSync(path.join(REPO, 'docs/i18n/back-store-listing/play', f))) })
 
 console.log('\n── 3 · the build')
 t('version 1.1, build 3, in both configurations; no CURRENT_PROJECT_VERSION[sdk=*] override', (proj.match(/MARKETING_VERSION = 1\.1;/g) || []).length === 2 && (proj.match(/CURRENT_PROJECT_VERSION = 3;/g) || []).length === 2 && !/CURRENT_PROJECT_VERSION\[sdk/.test(proj))
