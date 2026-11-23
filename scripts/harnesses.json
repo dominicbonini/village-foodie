@@ -234,7 +234,8 @@
     "app-fixes-2.cjs",
     "admin-speed-1.cjs",
     "trial-column-1.cjs",
-    "partners-2.cjs"
+    "partners-2.cjs",
+    "enquiries-backend-1.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",

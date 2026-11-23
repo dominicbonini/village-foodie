@@ -1,0 +1,203 @@
+// lib/enquiries/rules.ts — 🔴 THE DECISIONS THE ENQUIRY BACKEND MAKES, AS PURE FUNCTIONS (enquiries-backend-1, 23 November 2026;
+// docs/enquiries-backend-1-report.md). No network, no database, no mailbox: scripts/enquiries-backend-1.cjs proves every rule.
+//
+// 1 · WHAT IS NEVER STORED (skipReason). Mail the outreach poll did not claim is an enquiry EXCEPT: the contact-form copies Brevo sends
+//     to hello@ (the form path logged them already), bounces and auto-replies, no-reply senders, our own addresses and domains (no
+//     loops), and ORDER MAIL FROM DINERS (Dominic, 23 Nov: it stays in the mailbox — no log, no draft). Header and subject rules only;
+//     the model's say comes later through ORDER_MAIL_MODEL_HOOK. A skipped message is COUNTED, never stored, logged or named.
+// 2 · THREADING (threadFor): the same person, and In-Reply-To / References naming a message we hold, or the ENQ ref in the subject,
+//     or a reply to the contact-form copy ("[HatchGrab contact]" in a Re: subject) → their existing enquiry. Anything else is new.
+// 3 · THE NUMBERS CHECK (numbersCheck): every price, percentage, amount or day count in a draft must appear in the answer pack.
+// 4 · canAutoSend: false for any draft with a flag — and, because no send path exists, false for every draft today.
+import { isAutoReply, isBounce, messageIdsIn, type IncomingHeaders } from '@/lib/outreach-mail-poll-rules'
+
+// ── the reference ─────────────────────────────────────────────────────────────────────────────────────────────────────
+/** ENQ-0001 style (the database numbers them: public.enquiry_next_ref). */
+export const REF_RE = /\bENQ-(\d{4,})\b/i
+export function refInSubject(subject: string | null | undefined): string | null {
+  const m = REF_RE.exec(String(subject ?? ''))
+  return m ? `ENQ-${m[1]}` : null
+}
+
+// ── 1 · what is never stored ──────────────────────────────────────────────────────────────────────────────────────────
+/** Our own domains: mail from any address on them is ours (no loops). */
+export const OWN_DOMAINS = ['hatchgrab.com', 'villagefoodie.co.uk'] as const
+/** The address a truck's order mail is sent from (lib/email-config.ts HATCHGRAB_NOREPLY), written here so this module stays pure. */
+export const ORDER_MAIL_FROM = 'donotreply@hatchgrab.com'
+/** The subject the contact form's copy to hello@ starts with (lib/contact-server.ts contactMail). */
+export const CONTACT_COPY_PREFIX = '[HatchGrab contact]'
+
+export type SkipReason = 'contact_form_copy' | 'own_address' | 'bounce' | 'auto_reply' | 'noreply' | 'order_mail'
+export const SKIP_REASONS: readonly SkipReason[] = ['contact_form_copy', 'own_address', 'bounce', 'auto_reply', 'noreply', 'order_mail']
+
+/** The headers a rule may read: the poll's IncomingHeaders plus every recipient. */
+export interface MailHeaders extends IncomingHeaders { to: string[] }
+
+const lower = (s: string | null | undefined) => String(s ?? '').trim().toLowerCase()
+export function isOwnDomain(address: string | null | undefined): boolean {
+  const a = lower(address)
+  const at = a.lastIndexOf('@')
+  if (at < 1) return false
+  const domain = a.slice(at + 1)
+  return OWN_DOMAINS.some(d => domain === d || domain.endsWith(`.${d}`))
+}
+/** no-reply, noreply, no_reply, donotreply, do-not-reply … as the local part (or its start: noreply-billing@). */
+const NOREPLY_RE = /^(no[-_.]?reply|do[-_.]?not[-_.]?reply|mailer-daemon|postmaster)([-_.+][^@]*)?@/i
+export const isNoReplySender = (address: string | null | undefined) => NOREPLY_RE.test(lower(address))
+
+/** "Re: ", "RE : ", "Fwd:", "AW:", "TR:", "Réf. :" … stripped from the front, as many times as they repeat. */
+export function stripReplyPrefixes(subject: string | null | undefined): string {
+  let s = String(subject ?? '').trim()
+  for (let i = 0; i < 10; i++) {
+    const next = s.replace(/^\s*(re|fw|fwd|aw|wg|tr|sv|vs|rv|odp|r|enc|antw|réf|ref)\s*(\[\d+\])?\s*[:：]\s*/i, '')
+    if (next === s) break
+    s = next
+  }
+  return s.trim()
+}
+
+/**
+ * Why this message is NOT an enquiry, or null when it is one.
+ * `orderSubjects`: the order-mail subjects in every language (lib/enquiries/order-subjects.ts orderSubjectPatterns), passed in so this
+ * stays pure. The order is fixed: our own mail first (a loop is the worst outcome), then delivery reports, then the rest.
+ */
+export function skipReason(h: MailHeaders, orderSubjects: readonly RegExp[]): SkipReason | null {
+  const subject = String(h.subject ?? '').trim()
+  // The Brevo copy of a contact-form message: exactly that subject (never a Re:) — or anything from our own sender.
+  if (subject.startsWith(CONTACT_COPY_PREFIX)) return 'contact_form_copy'
+  if (isOwnDomain(h.fromAddress)) return 'own_address'
+  // ⚠️ Only the null sender "<>" marks a bounce — an ABSENT Return-Path does not (some relays omit it).
+  if (isBounce(h) || lower(h.get('return-path')) === '<>') return 'bounce'
+  if (isAutoReply(h)) return 'auto_reply'
+  if (isNoReplySender(h.fromAddress)) return 'noreply'
+  if (isOrderMail(h, orderSubjects)) return 'order_mail'
+  return null
+}
+
+/**
+ * 🔴 ORDER MAIL FROM DINERS (Dominic, 23 Nov 2026: stays in the mailbox, no log, no draft). By headers and subject only:
+ *   • it was sent to (or copies) the order-mail address, donotreply@hatchgrab.com;
+ *   • its subject, without Re:/Fwd:, is one of the emails a diner gets about their own order (confirmed, ready, refunded, cancelled,
+ *     updated, review request), in any of our languages.
+ * Anything subtler ("about my order last Saturday" in a fresh email) needs the model: ORDER_MAIL_MODEL_HOOK.
+ */
+export function isOrderMail(h: Pick<MailHeaders, 'subject' | 'to'>, orderSubjects: readonly RegExp[]): boolean {
+  if (h.to.some(a => lower(a) === ORDER_MAIL_FROM)) return true
+  const s = stripReplyPrefixes(h.subject)
+  return !!s && orderSubjects.some(re => re.test(s))
+}
+
+/**
+ * 🔴 THE HOOK FOR THE MODEL TO CLASSIFY LATER (not called today). When the model is available it may be asked, with the message held in
+ * memory only and BEFORE anything is stored, whether a message the header rules let through is about a diner's own order. The intake
+ * calls `deps.classifyOrderMail` where this name is mentioned (lib/enquiries/run.ts); while that dependency is absent, nothing changes.
+ */
+export const ORDER_MAIL_MODEL_HOOK = 'classifyOrderMail'
+
+// ── 2 · threading ─────────────────────────────────────────────────────────────────────────────────────────────────────
+export interface KnownThread { enquiryId: string; email: string }
+export interface ThreadLookup {
+  /** Message-IDs we hold (enquiry_messages.mail_message_id) → their enquiry and its person. */
+  byMailId: Map<string, KnownThread>
+  /** ENQ refs → their enquiry and its person. */
+  byRef: Map<string, KnownThread>
+  /** The person's most recent FORM enquiry, for a reply to the contact-form copy. */
+  latestFormFor(email: string): KnownThread | null
+}
+export type ThreadDecision = { kind: 'join'; enquiryId: string; by: 'headers' | 'ref' | 'form_copy_reply' } | { kind: 'new' }
+
+/** 🔴 THE SAME PERSON, ALWAYS: a matching thread id or ref from a DIFFERENT address starts a new enquiry (never someone else's). */
+export function threadFor(m: { from: string; subject: string | null; inReplyTo: string | null; references: string | null }, k: ThreadLookup): ThreadDecision {
+  const from = lower(m.from)
+  for (const id of [...messageIdsIn(m.inReplyTo), ...messageIdsIn(m.references)]) {
+    const t = k.byMailId.get(id)
+    if (t && lower(t.email) === from) return { kind: 'join', enquiryId: t.enquiryId, by: 'headers' }
+  }
+  const ref = refInSubject(m.subject)
+  const r = ref ? k.byRef.get(ref) : undefined
+  if (r && lower(r.email) === from) return { kind: 'join', enquiryId: r.enquiryId, by: 'ref' }
+  if (stripReplyPrefixes(m.subject) !== String(m.subject ?? '').trim() && String(m.subject ?? '').includes(CONTACT_COPY_PREFIX)) {
+    const f = k.latestFormFor(from)
+    if (f) return { kind: 'join', enquiryId: f.enquiryId, by: 'form_copy_reply' }
+  }
+  return { kind: 'new' }
+}
+
+// ── 3 · the numbers check ─────────────────────────────────────────────────────────────────────────────────────────────
+/** Every decimal digit Unicode has (Arabic-Indic, Devanagari, Bengali, Thai, full-width …) → ASCII. */
+export function asciiDigits(s: string): string {
+  return s.replace(/\p{Nd}/gu, ch => {
+    const c = ch.codePointAt(0)!
+    if (c >= 48 && c <= 57) return ch
+    // Every Unicode decimal-digit block is ten consecutive code points starting at a value ending in 0 (hex) or 6 (Arabic-Indic: 0x660).
+    for (const zero of [0x660, 0x6f0, 0x7c0, 0x966, 0x9e6, 0xa66, 0xae6, 0xb66, 0xbe6, 0xc66, 0xce6, 0xd66, 0xde6, 0xe50, 0xed0, 0xf20, 0x1040, 0x1090, 0x17e0, 0x1810, 0xff10]) {
+      if (c >= zero && c < zero + 10) return String(c - zero)
+    }
+    return ch
+  })
+}
+
+/**
+ * The numbers a text states, each as every value it can be read as ("4,000" is 4000 in English and 4 in French; "1,5" is 1.5).
+ * Thousands separators (space, no-break space, apostrophe, dot or comma) and decimal marks (dot or comma) are both tried.
+ */
+export function numbersIn(text: string): { raw: string; values: number[] }[] {
+  const s = asciiDigits(text).replace(/[   ]/g, ' ')
+  const out: { raw: string; values: number[] }[] = []
+  for (const m of s.matchAll(/\d+(?:[ '.,]\d+)*/g)) {
+    const raw = m[0].replace(/[ '.,]+$/, '')
+    const values = new Set<number>()
+    const plain = raw.replace(/[ ']/g, '')
+    // Read 1: '.' decimal, ',' thousands. Read 2: ',' decimal, '.' thousands. Read 3: every separator a thousands one.
+    const a = Number(plain.replace(/,/g, ''))
+    const b = Number(plain.replace(/\./g, '').replace(',', '.'))
+    const c = Number(plain.replace(/[.,]/g, ''))
+    for (const v of [a, b, c]) if (Number.isFinite(v)) values.add(Math.round(v * 10000) / 10000)
+    // A number that spans a space may be two numbers ("7 30" in "7 days 30 minutes" is never written that way, but "5 7" might be).
+    if (/ /.test(raw)) for (const part of raw.split(' ')) { const v = Number(part.replace(',', '.')); if (Number.isFinite(v)) values.add(v) }
+    out.push({ raw, values: [...values] })
+  }
+  return out
+}
+
+export interface NumbersResult { result: 'pass' | 'fail'; unknown: string[]; checked: number }
+/** 🔴 Every number in the drafts must be one the answer pack states. One that is not → fail, and the draft goes to review. */
+export function numbersCheck(drafts: readonly string[], packText: string): NumbersResult {
+  const allowed = new Set<number>()
+  for (const n of numbersIn(packText)) for (const v of n.values) allowed.add(v)
+  const unknown: string[] = []
+  let checked = 0
+  for (const d of drafts) for (const n of numbersIn(d)) {
+    checked++
+    if (!n.values.some(v => allowed.has(v)) && !unknown.includes(n.raw)) unknown.push(n.raw)
+  }
+  return { result: unknown.length ? 'fail' : 'pass', unknown, checked }
+}
+
+// ── 4 · auto-send ─────────────────────────────────────────────────────────────────────────────────────────────────────
+export type AskStatus = 'available' | 'limited' | 'gap' | 'unknown'
+export interface DraftFlag { kind: string; detail: string }
+/** 🔴 No send path exists (enquiries-backend-1 sends nothing). Changing this is a decision for Dominic AND new code. */
+export const AUTO_SEND_BUILT = false
+/**
+ * Could this draft ever go out without Dominic? NEVER with a flag, a failed numbers check or an ask that is not fully covered. And today
+ * never at all: AUTO_SEND_BUILT is false.
+ */
+export function canAutoSend(d: { flags: readonly DraftFlag[]; numbers_check: 'pass' | 'fail'; asks: readonly { status: AskStatus }[] }): boolean {
+  if (d.flags.length > 0) return false
+  if (d.numbers_check !== 'pass') return false
+  if (d.asks.some(a => a.status !== 'available')) return false
+  return AUTO_SEND_BUILT
+}
+
+// ── "Note:" lines ─────────────────────────────────────────────────────────────────────────────────────────────────────
+const NOTE_RE = /^\s*(?:[-*•>]\s*)?note\s*:\s*(.*)$/i
+/** Lines starting "Note:" are Dominic's instructions to the drafter, never words for a customer: split them off. */
+export function splitNotes(text: string): { text: string; notes: string[] } {
+  const keep: string[] = [], notes: string[] = []
+  for (const line of String(text ?? '').replace(/\r\n/g, '\n').split('\n')) {
+    const m = NOTE_RE.exec(line)
+    if (m) { if (m[1].trim()) notes.push(m[1].trim()) } else keep.push(line)
+  }
+  return { text: keep.join('\n').replace(/\n{3,}/g, '\n\n').trim(), notes }
+}

@@ -11,8 +11,16 @@
 // 🔴 IT NEVER COMPOSES AN EMAIL. The only send it can cause is a retry of a row Dominic already sent,
 // with the same stored bytes and the same Message-ID — see `shouldAutoRetry` for how narrow that is.
 //
-// 🔴 UNMATCHED MAIL IS NOT STORED, LOGGED OR NAMED. `hello@hatchgrab.com` receives order and support
-// mail; most of what this reads is nothing to do with outreach. It is counted and forgotten.
+// 🔴 UNMATCHED MAIL IS NOT STORED, LOGGED OR NAMED — BY THE OUTREACH WALK. `hello@hatchgrab.com` receives
+// order and support mail; most of what this reads is nothing to do with outreach. It is counted and forgotten.
+// ⛔ enquiries-backend-1 (23 November 2026, Dominic approved): THIS REVERSES THE "UNMATCHED MAIL IS NOT STORED" RULE
+// FOR REAL PEOPLE'S ENQUIRIES ONLY, and only while outreach_settings 'enquiries_intake_enabled' is true (it is
+// false until Dominic switches it on). After ALL of the work above, `enquiriesAfterPoll` walks hello@ INBOX again,
+// read-only and with its own watermark ('enquiries_intake_state'), and hands each message the outreach rules do NOT
+// claim to lib/enquiries/run.ts, which stores it as an enquiry message UNLESS it is a contact-form copy, a bounce, an
+// auto-reply, a no-reply sender, our own mail, or a diner's order mail — those are counted and never stored, logged or
+// named, exactly as before. The outreach and partner behaviour above is unchanged; with the switch off the run is
+// byte-identical to before (scripts/enquiries-backend-1.cjs proves it against HEAD). Nothing in the enquiry step sends.
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { ImapFlow } from 'imapflow'
 import { OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
@@ -46,6 +54,9 @@ import {
   resolveAccounts, credentialsFor, accountOfRow, pollSince,
   type MailAccount, type AccountCredentials, type AccountSet,
 } from '@/lib/outreach-mail-accounts'
+// enquiries-backend-1 (23 November 2026): the enquiry step, run after everything else and only when switched on.
+import { runEnquiries, type EnquirySummary, type MailSource } from '@/lib/enquiries/run'
+import { supabaseEnquiryStore } from '@/lib/enquiries/store'
 
 /** The mailboxes walked for incoming mail, and the one walked for Dominic's own Outlook-sent mail. */
 export const INCOMING_MAILBOXES = ['INBOX', 'Spam', 'Archive'] as const
@@ -124,6 +135,8 @@ export interface PollSummary {
   /** Per folder: what was examined and how the watermark moved. See `FolderReport`. */
   folders: FolderReport[]
   errors: { step: string; error: string }[]
+  /** enquiries-backend-1: what the enquiry step did — COUNTS ONLY. Absent while the step is switched off. */
+  enquiries?: EnquirySummary
 }
 
 const emptySummary = (): PollSummary => ({
@@ -448,6 +461,8 @@ export async function runReplyPoll(supabase: SupabaseClient): Promise<PollSummar
     catch (err) { fail('bodies', err) }
     try { await housekeeping(supabase, accounts, now, summary) }
     catch (err) { fail('housekeeping', err) }
+    // enquiries-backend-1: LAST, inside the lock, and a no-op (nothing read but the switch, nothing added to the summary) while off.
+    await enquiriesAfterPoll(supabase, accounts, dir, now, summary)
   } catch (err) {
     fail('poll', err)
     summary.ok = false
@@ -1176,4 +1191,153 @@ async function housekeeping(
       }
     }
   }
+}
+
+// ── ENQUIRIES (enquiries-backend-1, 23 November 2026) ───────────────────────────────────────────────────────────────
+/** The enquiry walk's own watermark — separate from `mail_poll_state`, so it never moves the outreach poll's. */
+const ENQUIRY_STATE_KEY = 'enquiries_intake_state'
+/** Only hello@'s INBOX: it is the address customers and visitors write to. */
+const ENQUIRY_MAILBOX = 'INBOX'
+/** The step stops starting work this long after the run began (maxDuration is 60 s; the lock goes stale at 2 minutes). */
+const ENQUIRY_DEADLINE_MS = 50_000
+
+/**
+ * Would the outreach walk above CLAIM this message? The same functions, called the same way — this only answers the question; the
+ * walk itself is untouched. 🔴 A linked HatchGrab truck (`dir.skip`) is not in the outreach process (see `loadDirectory`): its mail is
+ * NOT claimed, so a customer's question reaches the enquiry step.
+ */
+function outreachClaims(m: SeenMessage, h: IncomingHeaders, dir: Directory): boolean {
+  if (m.messageId && (dir.byMessageId.has(m.messageId) || dir.partners.byMessageId.has(m.messageId))) return true
+  if (isReplyToTestOnly(h, dir)) return true
+  const match = addPartnerMatch(
+    matchIncoming({ get: h.get, fromAddress: h.fromAddress }, dir.byMessageId, dir.byAddress),
+    { get: h.get, fromAddress: h.fromAddress }, dir.partners)
+  if (match.kind === 'none') return false
+  if ((match.kind === 'thread' || match.kind === 'address') && dir.skip.has(match.prospectId)) return false
+  return true
+}
+
+/**
+ * hello@ INBOX, READ-ONLY, from the enquiry watermark: the same client, the same EXAMINE lock (`withReadOnlyMailbox`), the same
+ * header fetch and the same `readBodies` (BODY.PEEK) as the outreach walk. 🔴 The watermark moves only over messages that were
+ * handled (or are not for this step); a message whose handling failed is read again next run.
+ */
+function enquiryMailSource(supabase: SupabaseClient, creds: AccountCredentials, dir: Directory, since: Date): MailSource {
+  return {
+    async walk(handle, limit) {
+      const state = ((await readSetting(supabase, ENQUIRY_STATE_KEY)) ?? {}) as PollState
+      let examined = 0, outreach = 0
+      const client = makeImapClient(creds.user, creds.pass)
+      try {
+        await client.connect()
+        await withReadOnlyMailbox(client, ENQUIRY_MAILBOX, async () => {
+          const mb = client.mailbox
+          const uidvalidity = mb && typeof mb === 'object' && 'uidValidity' in mb ? String(mb.uidValidity) : '0'
+          const highestUid = mb && typeof mb === 'object' && 'uidNext' in mb ? Math.max(0, Number(mb.uidNext) - 1) : 0
+          const stored = state[ENQUIRY_MAILBOX]
+          const plan = planFetch(stored, { uidvalidity, highestUid }, since)
+          if (plan.mode === 'none') return
+          const query = plan.mode === 'rescan' ? { since: new Date(Date.now() - plan.sinceDays * 86_400_000) }
+            : plan.mode === 'first_look' ? { since: plan.since } : `${plan.from}:*`
+          const batch: (SeenMessage & { ignore: boolean; fromName: string | null })[] = []
+          for await (const msg of client.fetch(query as never, { uid: true, envelope: true, headers: true, internalDate: true }, { uid: plan.mode === 'incremental' })) {
+            if (batch.length >= limit) break
+            const env = msg.envelope
+            batch.push({
+              uid: msg.uid, messageId: env?.messageId ?? null, raw: headerBlockOf(msg), subject: env?.subject ?? null,
+              from: addressesOf(env?.from), to: [...addressesOf(env?.to), ...addressesOf(env?.cc)],
+              date: env?.date ? new Date(env.date).toISOString() : null,
+              // Before the switch-on moment (a first look), or with no Message-ID to be idempotent on: not for this step.
+              ignore: (plan.mode === 'first_look' && !withinFirstLook(msg.internalDate, plan.since)) || !env?.messageId,
+              fromName: env?.from?.[0]?.name || null,
+            })
+          }
+          const done: number[] = []
+          try {
+            for (const m of batch.sort((a, b) => a.uid - b.uid)) {
+              if (!m.ignore) {
+                const h = headersOf(m.raw, m.subject, m.from[0] ?? null)
+                if (outreachClaims(m, h, dir)) outreach++
+                else {
+                  examined++
+                  await handle({
+                    mailbox: `hello/${ENQUIRY_MAILBOX}`, uid: m.uid, messageId: m.messageId!, headers: { ...h, to: m.to },
+                    fromName: m.fromName, date: m.date,
+                    readText: async () => textOfBodies(await readBodies(client, m.uid)),
+                  })
+                }
+              }
+              done.push(m.uid)
+            }
+          } finally {
+            const same = stored && String(stored.uidvalidity) === uidvalidity
+            if (done.length) state[ENQUIRY_MAILBOX] = { uidvalidity, lastUid: Math.max(same ? stored.lastUid : 0, ...done) }
+            else if (plan.mode !== 'first_look' && !batch.length) state[ENQUIRY_MAILBOX] = { uidvalidity, lastUid: same ? stored.lastUid : highestUid }
+          }
+        })
+      } finally {
+        try { await client.logout() } catch { /* already gone */ }
+        await writeSetting(supabase, ENQUIRY_STATE_KEY, state)
+      }
+      return { examined, outreach }
+    },
+  }
+}
+
+/**
+ * The enquiry step. 🔴 OFF → `runEnquiries` reads the switch, finds it false and returns null: nothing else is read, nothing written,
+ * and `summary` is not touched, so the run's answer is exactly what it was before this step existed. ON → its counts go under
+ * `summary.enquiries` (counts only, never content). It never throws into the poll.
+ */
+async function enquiriesAfterPoll(supabase: SupabaseClient, accounts: AccountSet, dir: Directory, startedAt: Date, summary: PollSummary): Promise<void> {
+  const store = supabaseEnquiryStore(supabase)
+  const deadline = startedAt.getTime() + ENQUIRY_DEADLINE_MS
+  try {
+    const creds = credentialsFor(accounts, 'hello')
+    const result = await runEnquiries({
+      store,
+      // Built lazily: nothing below is reached while the switch is off (runEnquiries returns first).
+      get mail() {
+        return creds ? enquiryMailSourceSince(supabase, creds, dir, store) : null
+      },
+      model: null,
+      packInputs: async c => (await import('@/lib/enquiries/answer-pack-server')).readPackInputs(c),
+      orderSubjects: [],
+      now: () => new Date(),
+      deadline,
+    }, { onEnabled: async deps => {
+      deps.orderSubjects = (await import('@/lib/enquiries/order-subjects')).orderSubjectPatterns()
+      deps.model = await liveEnquiryModelIfConfigured(supabase, deadline)
+    } })
+    if (result) summary.enquiries = result
+  } catch (err) {
+    // Only reachable once the switch read true (runEnquiries swallows a failed switch read and returns null).
+    summary.errors.push({ step: 'enquiries', error: sanitiseMailError(err) })
+  }
+}
+
+/** The mail source, reading from the moment the switch was turned on. */
+function enquiryMailSourceSince(supabase: SupabaseClient, creds: AccountCredentials, dir: Directory, store: ReturnType<typeof supabaseEnquiryStore>): MailSource {
+  return {
+    async walk(handle, limit) {
+      const sw = await store.readSwitch()
+      return enquiryMailSource(supabase, creds, dir, sw.since ? new Date(sw.since) : new Date()).walk(handle, limit)
+    },
+  }
+}
+
+/**
+ * The live model, or null. 🔴 THERE IS NO CLAUDE API LOGIN ON VERCEL TODAY (the FAQ translator and competitor checker log in from
+ * GitHub Actions by Workload Identity Federation). Until Dominic decides how this job logs in, this returns null and drafting waits
+ * ('no_model'); intake still runs. With ANTHROPIC_API_KEY set on the environment it builds the SDK client and prices the calls from
+ * competitor_check_settings.prices (data, never typed).
+ */
+async function liveEnquiryModelIfConfigured(supabase: SupabaseClient, deadline: number) {
+  if (!process.env.ANTHROPIC_API_KEY) return null
+  const { data } = await supabase.from('competitor_check_settings').select('prices').limit(1).maybeSingle()
+  const prices = (data as { prices?: unknown } | null)?.prices
+  if (!prices || typeof prices !== 'object') return null
+  const [{ default: Anthropic }, { liveEnquiryModel }] = await Promise.all([import('@anthropic-ai/sdk'), import('@/lib/enquiries/model')])
+  const client = new Anthropic()
+  return liveEnquiryModel((params, opts) => client.beta.messages.create(params as never, opts) as never, prices as never, { deadline })
 }
