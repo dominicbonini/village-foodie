@@ -82,8 +82,10 @@ Run once, in a clean worktree at 2da8ec99 (`scripts/run-harnesses.cjs` with a co
    native/legal check; the listings need one too.
 4. ~~**The event-types.cjs screen** blocks the full sweep.~~ ✅ Fixed 22 Nov (48fc9490): the runner's screen passes for the whole
    list and event-types.cjs is 192/192.
-5. **Store listings out of staging:** waiting on your answer (languages-switch-4 report, §2) — moving them as they are would make
-   `push-listing.cjs` send nothing.
+5. ~~**Store listings out of staging.**~~ ✅ Done 23 Nov (languages-switch-5, 389e2979). Catalan is the 30th App Store listing
+   (`data/store-listing/ca.json`). The seven Google-Play-only listings are in `data/store-listing/play/`, to set by hand in Play
+   Console. Every listing says "50+ languages". 🔴 **Before the push:** `/ad/faq` answers 404, and `/mx` redirects because Mexico is off (there before this work).
+   So `push-listing.cjs` would refuse; push with `--only` and the other 28 locales (docs/languages-switch-5-report.md §3).
 
 ## Progress
 
