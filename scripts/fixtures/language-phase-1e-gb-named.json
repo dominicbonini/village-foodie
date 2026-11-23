@@ -227,5 +227,11 @@
     "after": null,
     "kind": "eb7ed44 key deleted",
     "why": "allergen-kitchen-1 (13 November 2026): Dominic’s approved allergen wording — the severe line reworded; the blanket checkbox and the pop-up’s old heading and note removed (docs/allergen-kitchen-1-report.md)"
+  },
+  "errorsManage.charges_rate_range": {
+    "before": "Use a rate from 0 to 20%.",
+    "after": "Use a rate from 0 to 30%.",
+    "kind": "france-vat-1: the rate refusal's limit 20 % → 30 % (scripts/_lp1e-words.cjs FV1_REWORDED)",
+    "why": "france-vat-1 (24 November 2026): the rate limit is now 30 % (Dominic, decision 2) — Ireland's 23 % and the 25–27 % countries fit (docs/france-vat-1-report.md)"
   }
 }

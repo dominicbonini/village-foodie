@@ -588,6 +588,15 @@ const NAMED = [
   // ── ⚠️ RE-PINNED (email-sender-1, 9 November 2026, docs/email-sender-1-report.md) ──────────────────────────────────────────
   //    The account-deletion screen's support address is hello@hatchgrab.com (scripts/_lp-email-sender-1.cjs). PRECISE.
   ...require('./_lp-email-sender-1.cjs').LP1D2_ENTRIES,
+  // ── ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md) ──────────────────────────────────────────────────
+  //    Manage › Payments in every country (Dominic's decision 2): the US card gains the "Item rates" row (PRECISE: exactly that row,
+  //    before tips); the GB card, which rendered nothing, is now the "No VAT" form (STRUCTURAL: the dropdown on No VAT, its hint, Item
+  //    rates, no tips or fee row; on the whole page exactly that card is added); a rate where prices include tax is taken (5 → 5000)
+  //    and 20.5 % is inside the new 0–30 % limit (20500) — the two refusals became saves. scripts/_named-france-vat-1.cjs proveLp1d2.
+  { id: 'france-vat-1-payments', country: 'both', agent: 'france-vat-1 (24 Nov 2026)',
+    what: '⚠️ RE-PINNED (france-vat-1, 24 November 2026): the Payments card in every country — US + the Item rates row (PRECISE); GB the No VAT form where there was nothing (STRUCTURAL); a GB rate and a 20.5 % rate are now saved (the limit is 30 %).',
+    views: id => /^api\/(GB|US)\|manage\|charges\.(rateRange|rateNotHere)$/.test(id) || /^payments\/(GB|US)\|(copy\|checkCharge\|(rateRange|rateNotHere)|chargeErr\|rateRange|charges\|.+)$/.test(id) || id === 'payments/GB|page|ready',
+    proveWith: (exp, f, id) => require('./_named-france-vat-1.cjs').proveLp1d2(id, exp, f) },
 ]
 
 const SMOKE_SHARED = [

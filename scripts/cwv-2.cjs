@@ -66,7 +66,11 @@ const LIOP = require('./_longer-intervals-order-page.cjs')
 // ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026; scripts/_named-allergen-kitchen-1.cjs undoFile): this work's order-page edits are
 // taken out FIRST (exact pairs, round-trip proven), then the longer-intervals ones, as before.
 const AK1 = require('./_named-allergen-kitchen-1.cjs')
-const ak1 = f => AK1.undoFile(f, read(f)) ?? read(f)
+// ⚠️ RE-PINNED (france-vat-1, 24 November 2026; scripts/_named-france-vat-1.cjs undoCode): the order page's totals preview, split by rate
+// where tax is added (one import, one memo, one argument), is put back exactly FIRST; then allergen-kitchen-1's and longer-intervals'.
+const FV1 = require('./_named-france-vat-1.cjs')
+const fv1 = f => FV1.undoCode(f, read(f)) ?? read(f)
+const ak1 = f => AK1.undoFile(f, fv1(f)) ?? fv1(f)
 const notLonger = f => { if (f !== LIOP.FILE) return true; const u = LIOP.undo(ak1(f)); return !(u && u === showAt(LIOP.BASE, f)) }
 // ⚠️ RE-PINNED (app-fixes-1, 14 November 2026; scripts/_named-app-fixes-1.cjs undoFile): the auth pages' ways forward, the error / 404
 // pages' way back, and the root layout's one added line (the in-app link guard). A file of those passes when putting exactly those

@@ -399,6 +399,9 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const flat = (o, p) => { for (const [k, v] of Object.entries(o)) { if (v && typeof v === 'object') flat(v, `${p}.${k}`); else KEYS.push(`${p}.${k}`) } }
     flat(en.manageReports.presets, 'manageReports.presets'); flat(en.manageReports.accounts, 'manageReports.accounts'); flat(en.manageReports.accountsCsv, 'manageReports.accountsCsv')
     KEYS.push('manageMenu.item.costToMake', 'manageMenu.item.costHelp', 'errorsManage.cost_invalid')
+    // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): the per-rate CSV headers (accountsCsv.header.netAtRate / taxAtRate, accountsCsv.noRate) are france-vat-1's words,
+    // checked by scripts/france-vat-1.cjs §F — they are taken out of this list, which stays costs-accounts-1's 55.
+    for (const k of require('./_lp-france-vat-1.cjs').NEW_KEYS) { const i = KEYS.indexOf(k); if (i >= 0) KEYS.splice(i, 1) }
     t('the help text is the brief\'s, word for word', en.manageMenu.item.costToMake === 'Cost to make' && en.manageMenu.item.costHelp === 'Optional. What one portion costs you in ingredients and packaging. Used only in your reports; customers never see it.')
     const BASES = read('lib/i18n/locales.ts').match(/export const LANGUAGE_BASES[^=]*= \[([^\]]*)\]/)[1].match(/'([a-z]{2}-[A-Z]{2})'/g).map(s => s.slice(1, -1))
     const get = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]), o)
@@ -410,7 +413,8 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     for (const l of BASES) {
       let out = ''
       try { out = execFileSync('node', ['scripts/translation-check.cjs', '--locale', l], { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }) } catch (e) { out = String(e.stdout || '') }
-      const m = /Structural: (\d+)/.exec(out); if (!m || m[1] !== '0') structural.push(`${l}: ${m ? m[1] : '?'}`)
+      // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): a base no enabled country uses lacks exactly france-vat-1's 24 keys (TRANSLATE ONLY WHAT'S USED).
+      const m = /Structural: (\d+)/.exec(out); if ((!m || m[1] !== '0') && !require('./_lp-france-vat-1.cjs').onlySetAside(l)) structural.push(`${l}: ${m ? m[1] : '?'}`)
     }
     t(`translation-check: structural 0 in all ${BASES.length}`, !structural.length, structural)
     t('every back-translation written (docs/i18n/back)', BASES.every(l => { const b = JSON.parse(read(`docs/i18n/back/${l}.json`)); return KEYS.every(k => b[k] != null) }), BASES.filter(l => { const b = JSON.parse(read(`docs/i18n/back/${l}.json`)); return !KEYS.every(k => b[k] != null) }))

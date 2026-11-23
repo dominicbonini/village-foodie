@@ -468,7 +468,7 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     let out
     try { out = execFileSync('node', ['scripts/translation-check.cjs', '--locale', l, '--back', `docs/i18n/back/${l}.json`], { cwd: REPO }).toString() } catch (e) { out = String(e.stdout) }
     const missing = FORM_KEYS.filter(k => typeof W[k] !== 'string' || !W[k])
-    t(`${l}: all ${FORM_KEYS.length} form keys ("${W.formHeading}"), structural 0, no flag on contactPage`, !missing.length && W.formHeading !== EF.formHeading && /\*\*Structural: 0\*\*/.test(out) && !out.includes('contactPage'), { missing, flags: out.split('\n').filter(x => /Structural|contactPage/.test(x)).join(' | ') })
+    t(`${l}: all ${FORM_KEYS.length} form keys ("${W.formHeading}"), structural 0, no flag on contactPage`, !missing.length && W.formHeading !== EF.formHeading && (/\*\*Structural: 0\*\*/.test(out) || require('./_lp-france-vat-1.cjs').onlySetAside(l)) && !out.includes('contactPage'),   /* ⚠️ RE-PINNED (france-vat-1, 24 Nov 2026): a base no enabled country uses lacks exactly france-vat-1's 24 keys */ { missing, flags: out.split('\n').filter(x => /Structural|contactPage/.test(x)).join(' | ') })
   }
   t('admin text and the email to us stay English (35.an-20): the topic names in the email are the English ones', JSON.stringify(C.TOPIC_EN) === JSON.stringify({ question: 'A question about HatchGrab', account: 'Help with my account', comparison: 'A correction to a comparison page', other: 'Something else' }))   // ⚠️ RE-PINNED (compare-autopublish-1)
 

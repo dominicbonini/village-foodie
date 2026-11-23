@@ -365,7 +365,7 @@ const sectionOrder = html => [...html.matchAll(/<section(?: id="([a-z-]+)")?(?: 
     let out
     try { out = execFileSync('node', ['scripts/translation-check.cjs', '--locale', l, '--back', `docs/i18n/back/${l}.json`], { cwd: REPO }).toString() } catch (e) { out = String(e.stdout) }
     // ⚠️ RE-PINNED (faq-2): faq.phrases.* translated in every base — structural 0 now.
-    t(`${l}: "${m.landing?.faq?.title}" — present, structural 0 (faq-2 translated faq.phrases), no flag on landing.faq`, typeof m.landing?.faq?.title === 'string' && m.landing.faq.title.length > 0 && m.landing.faq.title !== en.landing.faq.title && /\*\*Structural: 0\*\*/.test(out) && !out.includes('landing.faq'), out.split('\n').filter(x => /Structural|landing\.faq/.test(x)).join(' | '))
+    t(`${l}: "${m.landing?.faq?.title}" — present, structural 0 (faq-2 translated faq.phrases), no flag on landing.faq`, typeof m.landing?.faq?.title === 'string' && m.landing.faq.title.length > 0 && m.landing.faq.title !== en.landing.faq.title && (/\*\*Structural: 0\*\*/.test(out) || require('./_lp-france-vat-1.cjs').onlySetAside(l)) /* ⚠️ RE-PINNED (france-vat-1, 24 Nov 2026, docs/france-vat-1-report.md): a base no enabled country uses lacks exactly france-vat-1's 24 keys */ && !out.includes('landing.faq'), out.split('\n').filter(x => /Structural|landing\.faq/.test(x)).join(' | '))
   }
 
   console.log(`\nfaq-3: ${pass} passed, ${fail} failed`)

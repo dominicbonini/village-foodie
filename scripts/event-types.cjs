@@ -431,7 +431,24 @@ head('1 · ZERO CHANGE FOR A TRUCK WITH NO TYPES — against the PRE-BUILD TREE'
       .replace("import type { SupabaseClient } from '@supabase/supabase-js'\nimport { minorDigits } from '@/lib/money-format'", "import type { SupabaseClient } from '@supabase/supabase-js'")
       .replace(/\/\*\* pence, exact\. The authoritative charge amount for orders\.total_minor\.[\s\S]*?const digitsOf = [^\n]*\n/, '/** pence, exact. The authoritative charge amount for orders.total_minor. */\nexport function toMinor(amount: number): number {\n  return Math.round(num(amount) * 100)\n}\n')
       .replace('export function fromMinor(minor: number, currency: string | null | undefined): number {\n  return Math.round(num(minor)) / 10 ** digitsOf(currency)\n}', 'export function fromMinor(minor: number): number {\n  return Math.round(num(minor)) / 100\n}')
-    const sansDisplay = (f, src) => f === 'lib/order-repricing.ts' ? sansYen(src) : f !== 'lib/order-calculations.ts' ? src : src
+    /* ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): the price book also reads each dish's id and own tax
+     * rate (`itemTax`) and has `taxBookOf()` for lib/order-tax.ts — both put back out here, exactly as added (each must apply), so the
+     * rest of the file is still compared byte for byte. loadPriceBook still reads the same rows and repriceOrder is untouched;
+     * scripts/france-vat-1.cjs §A proves every single-rate order's figures unchanged. */
+    const FV1_EDITS = [
+      ["import { minorDigits } from '@/lib/money-format'\nimport type { TaxBook } from '@/lib/order-tax'\n", "import { minorDigits } from '@/lib/money-format'\n"],
+      [/  \/\*\* france-vat-1: menu_items_db: name → its id and its own tax rate[\s\S]*?\n\}\n\n\/\*\* france-vat-1: the price book as lib\/order-tax\.ts's book[\s\S]*?\n  return out\n\}/, '}'],
+      ["    // france-vat-1: + id and the dish's own rate (20261124), for lib/order-tax.ts.\n    supabase.from('menu_items_db').select('id, name, price, tax_rate_milli').eq('truck_id', truckId),", "    supabase.from('menu_items_db').select('name, price').eq('truck_id', truckId),"],
+      [/  const itemTax: Record<string, \{ id: string \| null; rate: number \| null \}> = \{\}\n  for \(const r of \(itemRows as \{ id\?: string; name: string; price: unknown; tax_rate_milli\?: unknown \}\[\] \| null\) \|\| \[\]\) \{\n    itemPrice\[r\.name\] = num\(r\.price\)\n    menuItems\.push\(\{ name: r\.name, price: num\(r\.price\) \}\)\n[\s\S]*?itemTax\[r\.name\] = \{ id: typeof r\.id === 'string' \? r\.id : null, rate \}\n  \}/,
+        "  for (const r of (itemRows as { name: string; price: unknown }[] | null) || []) {\n    itemPrice[r.name] = num(r.price)\n    menuItems.push({ name: r.name, price: num(r.price) })\n  }"],
+      ['  return { itemPrice, optionPrice, bundle, menuItems, itemTax }\n', '  return { itemPrice, optionPrice, bundle, menuItems }\n'],
+    ]
+    const sansFv1 = src => FV1_EDITS.reduce((acc, [from, to]) => {
+      const next = acc.replace(from, to)
+      if (next === acc && acc.includes('france-vat-1')) throw new Error(`[event-types] a france-vat-1 edit to lib/order-repricing.ts did not apply: ${String(from).slice(0, 80)}`)
+      return next
+    }, src)
+    const sansDisplay = (f, src) => f === 'lib/order-repricing.ts' ? sansYen(src.includes('france-vat-1') ? sansFv1(src) : src) : f !== 'lib/order-calculations.ts' ? src : src
       .replace(/^import \{ formatMajorOrBare, type MoneyFormat \} from '@\/lib\/money-format'\n\n/m, '')
       .replace(/\/\*\* Format modifier names[\s\S]*?\n\}\n/, '')
       .replace(/        \/\/ Fixed amount discount — never more than the subtotal \(audit D34\)[^\n]*\n        \/\/ zero, but the STORED[^\n]*\n        discountAmt = Math\.min\(discountCode\.value, subtotal\)/,

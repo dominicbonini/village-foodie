@@ -68,6 +68,9 @@ const LIB = [
   // ⚠️ RE-PINNED (currency-registry, 21 October 2026): the money formatter reads the currency registry (decimals, minor
   // signs), a leaf that imports nothing — compiled alongside, so the no-cycle guarantee below still holds.
   'lib/currencies.ts',
+  // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): the price book names lib/order-tax.ts's TaxBook type
+  // (taxBookOf) — a leaf that imports only the money formatter, so it is compiled alongside and nothing can cycle through it.
+  'lib/order-tax.ts',
 ]
 
 function build(root, files, tag) {

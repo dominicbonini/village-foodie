@@ -197,5 +197,9 @@ export function chargeSourceOf(row: Record<string, unknown> | null | undefined):
 /** The charges for a JSON response, or undefined when there are none — so a UK response gains no key. */
 export function chargesForResponse(row: Record<string, unknown> | null | undefined): ChargeLineSource | undefined {
   const src = chargeSourceOf(row)
-  return chargeLinesFor(src).length ? (src as ChargeLineSource) : undefined
+  if (!src || !chargeLinesFor(src).length) return undefined
+  // france-vat-1: the breakdown rides along only when the order has MORE THAN ONE rate (what the screens' one tax line needs to know);
+  // a single-rate order's answer is exactly what it was before.
+  if (!(Array.isArray(src.tax_breakdown) && src.tax_breakdown.length > 1)) { const { tax_breakdown, ...rest } = src; void tax_breakdown; return rest }
+  return src
 }

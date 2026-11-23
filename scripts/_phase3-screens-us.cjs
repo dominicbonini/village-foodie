@@ -187,12 +187,14 @@ module.exports = async function us(h) {
     }
     const dash = read('app/(app)/dashboard/[token]/page.tsx')
     t('the dashboard edit preview calls chargesForEdit for a charged order, and keeps its old sum for every other (UK) order',
-      /chargesForEdit\(toMinorUnits\(food,cur\),rulesFromCheckout\(truck!\.charge_rules!\),o\)/.test(dash)   /* ⚠️ RE-PINNED (world-countries-1): in the order's currency's minor units */ && /if\(!priced\|\|!o\)return linear/.test(dash))
+      /* ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): the edit preview now passes the edited food split by rate (lib/order-tax.ts, null unless a dish has its own rate) */
+      /const editRulesNow=rulesFromCheckout\(truck!\.charge_rules!\)[\s\S]{0,1200}?chargesForEdit\(foodMinorNow,editRulesNow,o,editParts\)/.test(dash) && /const foodMinorNow=toMinorUnits\(food,cur\)/.test(dash)   /* ⚠️ RE-PINNED (world-countries-1): in the order's currency's minor units */ && /if\(!priced\|\|!o\)return linear/.test(dash))
     const walk = E.computeOrderCharges({ foodMinor: 2400, rules: browserRules, channel: 'walk_up' })
     t('offline walk-up: tax, no fee, no tip → $25.98', walk.totalMinor === 2598 && walk.serviceFeeMinor === 0 && walk.tipMinor === 0)
     const panel = read('components/dashboard/AddOrderPanel.tsx')
     t('the Add Order panel\'s offline order uses it, ONLY when the dashboard sent charge_rules (never for a UK truck)',
-      /\.\.\.\(truck\.charge_rules \? \(\(\) => \{[\s\S]{0,200}?const c = computeOrderCharges\(\{ foodMinor: toMinorUnits\(manualTotal, cur\), rules: rulesFromCheckout\(truck\.charge_rules\), channel: 'walk_up' \}\)/.test(panel))   // ⚠️ RE-PINNED (world-countries-1): the truck's currency's minor units
+      // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): the same call, with the food split by rate where tax is added and a dish has its own rate (else null → as before).
+      /\.\.\.\(truck\.charge_rules \? \(\(\) => \{[\s\S]{0,200}?const foodMinor = toMinorUnits\(manualTotal, cur\)\s*const rules = rulesFromCheckout\(truck\.charge_rules\)[\s\S]{0,700}?const c = computeOrderCharges\(\{ foodMinor, rules, channel: 'walk_up', foodParts \}\)/.test(panel))   // ⚠️ RE-PINNED (world-countries-1): the truck's currency's minor units
     t('the dashboard route sends charge_rules only when a rule applies', /\.\.\.\(chargeRules \? \{ charge_rules: chargeRules \} : \{\}\)/.test(read('app/api/dashboard/route.ts'))
       && E.checkoutRulesFrom(R.resolveChargeRules(SEEDS.gbFromSeed(), { country: 'GB' })) === null)
   }
@@ -278,14 +280,17 @@ module.exports = async function us(h) {
     t('0, 20 and 8.25 are accepted; "" clears it', ['0', '20', '8.25'].every(v => C.checkChargeSettings({ taxRate: v }, usC, fmtMinor).ok) && C.checkChargeSettings({ taxRate: '' }, usC, fmtMinor).values.tax_rate_milli === null)
     const four = C.checkChargeSettings({ taxRate: '8.8755' }, usC, fmtMinor)
     t('more than 3 decimals: "Use up to 3 decimal places, like 8.875."', !four.ok && four.error === 'Use up to 3 decimal places, like 8.875.')
-    t('above 20 or not a number: refused', !C.checkChargeSettings({ taxRate: '20.001' }, usC, fmtMinor).ok && !C.checkChargeSettings({ taxRate: 'abc' }, usC, fmtMinor).ok)
+    // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): the limit is 30 % (Dominic, decision 2), so Ireland's 23 % and the 25–27 % countries fit.
+    t('above 30 or not a number: refused (20.001 and 30 accepted)', !C.checkChargeSettings({ taxRate: '30.001' }, usC, fmtMinor).ok && !C.checkChargeSettings({ taxRate: 'abc' }, usC, fmtMinor).ok
+      && C.checkChargeSettings({ taxRate: '20.001' }, usC, fmtMinor).ok && C.checkChargeSettings({ taxRate: '30' }, usC, fmtMinor).ok)
     t('a truck fee within the maximum saves (3% + $0.30 → 300, 30)', (r => r.ok && r.values.service_fee_bps === 300 && r.values.service_fee_fixed_minor === 30)(C.checkChargeSettings({ serviceFeePct: '3', serviceFeeFixed: '0.30' }, usC, fmtMinor)))
     t('a fee part over the maximum is refused with the maximum named', C.checkChargeSettings({ serviceFeePct: '5' }, usC, fmtMinor).error === 'The most you can charge is 4%.'
       && C.checkChargeSettings({ serviceFeeFixed: '0.60' }, usC, fmtMinor).error === 'The most you can charge is $0.50.')
     t('nothing is saved for a country without a service fee, or where HatchGrab keeps it, or a rate where tax is included',
       !C.checkChargeSettings({ serviceFeeEnabled: true }, { ...usC, serviceFeeAllowed: false }, fmtMinor).ok
       && !C.checkChargeSettings({ serviceFeeEnabled: true }, { ...usC, serviceFeeRecipient: 'hatchgrab' }, fmtMinor).ok
-      && !C.checkChargeSettings({ taxRate: '8' }, SEEDS.gbFromSeed(), fmtMinor).ok)
+      // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): every country takes a rate now (GB: "No VAT" = empty = NULL, or a rate).
+      && C.checkChargeSettings({ taxRate: '8' }, SEEDS.gbFromSeed(), fmtMinor).ok && C.checkChargeSettings({ taxRate: '' }, SEEDS.gbFromSeed(), fmtMinor).values?.tax_rate_milli === null)
     t('the mockup\'s phrases: "4% + 50¢", and HatchGrab\'s "3% + 30¢"', C.feePhrase(400, 50, 'USD', fmtMinor) === '4% + 50¢' && C.feePhrase(300, 30, 'USD', fmtMinor) === '3% + 30¢' && C.feePhrase(400, null, 'USD', fmtMinor) === '4%')
 
     // the action, on the real Manage route
@@ -307,7 +312,8 @@ module.exports = async function us(h) {
     const over = await call('owner', { serviceFeePct: '5' })
     t('…refuses a fee over the country maximum, writing nothing', over.status === 400 && over.writes.length === 0)
     const gb = await call('owner', { taxRate: '8' }, { country: 'GB' })
-    t('…refuses a rate for a GB truck (tax included), writing nothing', gb.status === 400 && gb.writes.length === 0)
+    // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): a GB truck may now set a rate (it is the rate its prices include) — the one column, nothing else.
+    t('…takes a rate for a GB truck too (8 → 8000), writing tax_rate_milli and nothing else', gb.status === 200 && JSON.stringify(gb.writes.map(w => w.patch)) === '[{"tax_rate_milli":8000}]', JSON.stringify(gb))
     const staff = await call('staff', { taxRate: '8' })
     const manager = await call('manager', { taxRate: '8' })
     t('…is the owner\'s: staff and managers are refused, nothing written', staff.status === 403 && manager.status === 403 && staff.writes.length === 0 && manager.writes.length === 0)
@@ -315,7 +321,8 @@ module.exports = async function us(h) {
     // the card's source: rows, hints, variants
     const card = read('components/manage/ChargesCard.tsx')
     // ⚠️ RE-PINNED (france-1, 22 October 2026): …unless the country's address format names an included tax (France's TVA, one row).
-    t('the card returns nothing where prices include tax (every UK truck) — unless the format names an included tax (France)', /if \(cs\.pricesIncludeTax && !includedTax\) return null/.test(card) && /const includedTax = cs\.pricesIncludeTax \? includedTaxOf\(cs\.addressFormat\) : null/.test(card))
+    // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): the card shows in every country; where prices include tax with no default (GB) it is the "No VAT" form.
+    t('the card shows everywhere: France its included rate, GB-style countries the "No VAT" form (noDefault)', !/return null/.test(card) && /const includedTax = cs\.pricesIncludeTax \? includedTaxOf\(cs\.addressFormat\) : null/.test(card) && /const noDefault = cs\.pricesIncludeTax && !includedTax/.test(card) && /if \(noDefault\) \{/.test(card))
     // ⚠️ RE-PINNED (Language Phase 1d Part 2): the card's words moved to messages/ (`manageCharges`, and the example's
     // line name is the customer's own `charges.serviceFeeCustomer`). The same approved words are asserted, now in two
     // halves: (1) the card reads each row's word from the key at the same spot (same argument shapes — the fee phrase

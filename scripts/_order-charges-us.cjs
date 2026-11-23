@@ -100,7 +100,10 @@ module.exports = async function us(h) {
     t('GB: tax included, "VAT", no rate, no fee, no tip, no surcharge, truck pays the card fee, no platform fee',
       r0.taxInclusive === true && r0.taxLabel === 'VAT' && r0.taxRateMilli === null && r0.serviceFee === null && r0.tipping === null
       && r0.surcharge === null && r0.cardFeePayer === 'truck' && r0.platformFee === null)
-    t('GB ignores any rate a truck carries', R.resolveChargeRules(GB_SETTINGS, { tax_rate_milli: 8250 }).taxRateMilli === null)
+    // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md — Dominic's decision 2): every country now takes the
+    // truck's own rate; where prices include tax and the format has no default (GB), NULL is "No VAT" — every existing UK truck.
+    t('GB: a truck with no rate (every existing UK truck) has none; one that sets a rate has it (france-vat-1)',
+      R.resolveChargeRules(GB_SETTINGS, { tax_rate_milli: null }).taxRateMilli === null && R.resolveChargeRules(GB_SETTINGS, { tax_rate_milli: 20000 }).taxRateMilli === 20000)
     const us = US_SETTINGS()
     const r1 = R.resolveChargeRules(us, { tax_rate_milli: 8250 })
     t('US: the truck\'s ONE rate (8250 thousandths), "Sales tax", tipping on by country default with presets 1000/1500/2000 bps',
@@ -181,7 +184,8 @@ module.exports = async function us(h) {
     t('…the draft stores the snapshot (food 2400, tax 198, tip 360 @ 1500 bps, fee 102 → hatchgrab, total_minor 3060)',
       draft && draft.food_minor === 2400 && draft.tax_minor === 198 && draft.tip_minor === 360 && draft.tip_pct_bps === 1500
       && draft.service_fee_minor === 102 && draft.service_fee_recipient === 'hatchgrab' && draft.total_minor === 3060)
-    t('…promotion copies every snapshot column to the order unchanged', order && E.ORDER_CHARGE_COLUMNS.every(c => order[c] === draft[c]) && order.total_minor === 3060)
+    // ⚠️ RE-PINNED (france-vat-1): `tax_breakdown` is a jsonb ARRAY, so it is compared by value (the in-memory database copies rows).
+    t('…promotion copies every snapshot column to the order unchanged', order && E.ORDER_CHARGE_COLUMNS.every(c => JSON.stringify(order[c]) === JSON.stringify(draft[c])) && order.total_minor === 3060)
     t('…and no application_fee_amount anywhere in what was sent to the card processor', !JSON.stringify(r.auth).includes('application_fee'))
   }
   {
@@ -317,18 +321,21 @@ module.exports = async function us(h) {
   // ══════════════════════════════════════════════════════════════════════════════════════════════════════
   head('7 · the migration, the old function, and what is never sent')
   {
-    const sql = read('supabase/migrations/20261010_18_tax_rate_milli.sql')  // v2's CURRENT definition
+    const sql = read('supabase/migrations/20261010_18_tax_rate_milli.sql')  // 20261010_18 — its columns and comments are checked below
     const code = sql.replace(/--.*$/gm, '')
-    const v2 = code.slice(code.indexOf('create or replace function place_order_atomic_v2'), code.indexOf('$$;', code.indexOf('create or replace function place_order_atomic_v2')))
+    // ⚠️ RE-PINNED (france-vat-1, 24 November 2026): v2's CURRENT definition is 20261124's — 20261010_18's body plus tax_breakdown (a jsonb,
+    // read with -> and nullif). Only the function is read from it; scripts/france-vat-1.cjs §D proves it is 20261010_18's + that column.
+    const cur = read('supabase/migrations/20261124_france_vat_1.sql').replace(/--.*$/gm, '')
+    const v2 = cur.slice(cur.indexOf('create or replace function place_order_atomic_v2'), cur.indexOf('$$;', cur.indexOf('create or replace function place_order_atomic_v2')))
     const insertCols = (v2.match(/insert into orders \(([\s\S]*?)\) values/) || [])[1] || ''
     t('v2 writes every snapshot column', E.ORDER_CHARGE_COLUMNS.every(c => new RegExp(`\\b${c}\\b`).test(insertCols)), insertCols)
-    t('…reads each from p_order', E.ORDER_CHARGE_COLUMNS.every(c => v2.includes(`p_order->>'${c}'`)))
+    t('…reads each from p_order', E.ORDER_CHARGE_COLUMNS.every(c => c === 'tax_breakdown' ? v2.includes(`nullif(p_order->'tax_breakdown', 'null'::jsonb)`) : v2.includes(`p_order->>'${c}'`)))
     t('…and takes total_minor from p_order, falling back to round(total × 100)', /coalesce\(\(p_order->>'total_minor'\)::integer, round\(coalesce\(\(p_order->>'total'\)::numeric, 0\) \* 100\)::integer\)/.test(v2))
     const old = read('supabase/migrations/20260804_place_order_atomic_placed_at.sql')
     const oldBody = old.slice(old.indexOf('declare'), old.indexOf('$$;', old.indexOf('declare')))
     const v2Body = v2.slice(v2.indexOf('declare'))
     const strip = s => s.replace(/--.*$/gm, '').replace(/\s+/g, ' ').trim()
-    const added = strip(v2Body).replace(/, food_minor, tax_minor[^)]*application_fee_minor/, '').replace(/ coalesce\(\(p_order->>'total_minor'\)::integer, (round\(coalesce\(\(p_order->>'total'\)::numeric, 0\) \* 100\)::integer)\)/, ' $1')
+    const added = strip(v2Body).replace(', application_fee_minor, tax_breakdown )', ', application_fee_minor )').replace(", (p_order->>'application_fee_minor')::integer, nullif(p_order->'tax_breakdown', 'null'::jsonb) )", ", (p_order->>'application_fee_minor')::integer )").replace(/, food_minor, tax_minor[^)]*application_fee_minor/, '').replace(/ coalesce\(\(p_order->>'total_minor'\)::integer, (round\(coalesce\(\(p_order->>'total'\)::numeric, 0\) \* 100\)::integer)\)/, ' $1')
       .replace(/, \(p_order->>'food_minor'\)::integer[\s\S]*?\(p_order->>'application_fee_minor'\)::integer/, '')
     t('…and is otherwise the 20260804 function, line for line', added === strip(oldBody), `\nOLD ${strip(oldBody).slice(0, 300)}\nV2  ${added.slice(0, 300)}`)
     t('the OLD function is not redefined, altered or dropped here', !/function place_order_atomic\s*\(/.test(code) && !/drop\s+(function|table|column)/i.test(code))

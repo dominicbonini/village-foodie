@@ -28,7 +28,6 @@ import { formatMajor, formatWholeAmount, formatAmount, currencySymbol, minorDigi
 import { datePresets, presetOf, PRESET_KEYS, type PresetKey, type TaxYearStart } from '@/lib/accounts/tax-year'
 import { summarise, taxBasisOf, type AccountRow, type Channel, type PaymentMethod, type TaxBasis } from '@/lib/accounts/ledger'
 import { ordersCsv, eventsCsv, type CsvWords } from '@/lib/accounts/csv'
-import { formatRateMilli } from '@/lib/order-charge-lines'   // france-vat-1: the per-rate CSV headers
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 // billing-2: Manage › Billing when billing is on (or for a billing_test truck), and its one notice — invisible to every other truck.
 import { BillingScreen, useBillingScreen, useBillingNotice, BillingNoticeStrip } from '@/components/manage/BillingScreen'
@@ -47,6 +46,7 @@ import { STOPPED_AFTER_MS } from '@/lib/custom-domain/cadence'
 // definition, in the file that draws the poster.
 import { QR_POSTER, posterLogoRect } from '@/lib/generateQRCode'
 import { ChargesCard } from '@/components/manage/ChargesCard'
+import { formatRateMilli } from '@/lib/order-charge-lines'   // france-vat-1: the per-rate CSV headers
 import { TakingPaymentPanel } from '@/components/manage/TakingPaymentPanel'
 import { PaymentsTab } from '@/components/manage/PaymentsTab'
 import PaperworkTab from '@/components/manage/PaperworkTab'

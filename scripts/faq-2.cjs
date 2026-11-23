@@ -376,7 +376,7 @@ const faqLd = html => { const m = /<script type="application\/ld\+json">([\s\S]*
     let o
     try { o = execFileSync('node', ['scripts/translation-check.cjs', '--locale', l, '--back', `docs/i18n/back/${l}.json`], { cwd: REPO }).toString() } catch (e) { o = String(e.stdout) }
     const m = JSON.parse(read(`messages/${l}.json`)).faq?.phrases
-    t(`${l}: structural 0; faq.phrases translated (3)`, /\*\*Structural: 0\*\*/.test(o) && m && Object.keys(m).length === 3 && m.appsSentence !== JSON.parse(read('messages/en-GB.json')).faq.phrases.appsSentence, o.split('\n').find(x => /Structural/.test(x)))
+    t(`${l}: structural 0; faq.phrases translated (3)`, (/\*\*Structural: 0\*\*/.test(o) || require('./_lp-france-vat-1.cjs').onlySetAside(l)) /* ⚠️ RE-PINNED (france-vat-1, 24 Nov 2026, docs/france-vat-1-report.md): a base no enabled country uses lacks exactly france-vat-1's 24 keys */ && m && Object.keys(m).length === 3 && m.appsSentence !== JSON.parse(read('messages/en-GB.json')).faq.phrases.appsSentence, o.split('\n').find(x => /Structural/.test(x)))
   }
 
   console.log(`\nfaq-2: ${pass} passed, ${fail} failed`)

@@ -340,6 +340,10 @@ NEW_WORDING['kitchenModals.picker.approved'] = 'events-overlap-8: the "Approved"
 // the "How you pay us here" note.
 for (const k of ['pricing.fee.feeOnlyMonthly', 'pricing.fee.includedMonthly', 'pricing.monthlyNote.atTruck', 'pricing.monthlyNote.online',
   'planTable.pay.feeMonthly']) NEW_WORDING[k] = 'plans-everywhere-1: post-pay plan wording in monthly-billed countries'
+// ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): NEW messages — Manage › Payments' "No VAT" choice and
+// "Other…", the "Item rates" row and popup, the item-rates refusal, the two finished-order refusals, and the accountant CSV's per-rate
+// headers. Their en-GB text and every enabled base are held by scripts/france-vat-1.cjs §F (the list: scripts/_lp-france-vat-1.cjs).
+for (const k of require('./_lp-france-vat-1.cjs').NEW_KEYS) NEW_WORDING[k] = 'france-vat-1: item rates, No VAT, the finished-order lock, per-rate CSV headers'
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {

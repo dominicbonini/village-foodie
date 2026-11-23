@@ -254,7 +254,7 @@ const navOf = html => (/<nav[\s\S]*?<\/nav>/.exec(String(html)) || [''])[0]
   for (const l of M.LANGUAGE_BASES) {
     const m = JSON.parse(read(`messages/${l}.json`))
     let o; try { o = execFileSync('node', ['scripts/translation-check.cjs', '--locale', l, '--back', `docs/i18n/back/${l}.json`], { cwd: REPO }).toString() } catch (e) { o = String(e.stdout) }
-    t(`${l}: the three keys translated, structural 0, no flag on them`, m.landing.faq.metaTitle && m.landing.faq.metaDescription && m.landingFooter.faq && m.landing.faq.metaDescription !== en.landing.faq.metaDescription && /\*\*Structural: 0\*\*/.test(o) && !/landing\.faq\.meta|landingFooter\.faq/.test(o))
+    t(`${l}: the three keys translated, structural 0, no flag on them`, m.landing.faq.metaTitle && m.landing.faq.metaDescription && m.landingFooter.faq && m.landing.faq.metaDescription !== en.landing.faq.metaDescription && (/\*\*Structural: 0\*\*/.test(o) || require('./_lp-france-vat-1.cjs').onlySetAside(l)) /* ⚠️ RE-PINNED (france-vat-1, 24 Nov 2026, docs/france-vat-1-report.md): a base no enabled country uses lacks exactly france-vat-1's 24 keys */ && !/landing\.faq\.meta|landingFooter\.faq/.test(o))
   }
 
   console.log(`\nfaq-4: ${pass} passed, ${fail} failed`)

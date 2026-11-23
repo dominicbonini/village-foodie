@@ -112,9 +112,12 @@ const OLD_LINE = '**Last updated:** 21 October 2026', NEW_LINE = `**Last updated
   // ⚠️ RE-PINNED (france-1, 22 October 2026): a tax-inclusive country whose address FORMAT names an included tax (France's TVA,
   // `includedTax`) takes a rate that is only worded on receipts, never added; AU and NZ's formats name none, so for them it is
   // exactly as before — no rate box, no rate, no tax line.
-  t('a tax-inclusive country has no tax rate box (charges_rate_not_here) and adds no tax line (taxRateMilli null) — unless its format names an included tax (France); AU / NZ name none',
-    /if \(c\.pricesIncludeTax && !includedTaxOf\(c\.addressFormat\)\) return refusal\('charges_rate_not_here'\)/.test(read('lib/charge-settings.ts'))
-    && /const taxRateMilli = taxInclusive \? \(includedTax \? \(int\(truck\.tax_rate_milli\) \?\? includedTax\.milli\) : null\) :/.test(read('lib/order-charge-rules.ts'))
+  // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md — Dominic's decision 2): every country now takes a rate. Where prices include
+  // tax and the format names none (AU, NZ, GB …) the truck's rate is used when it sets one; NULL ("No GST") is every existing truck,
+  // so an AU / NZ truck with no rate still has no rate and no tax line, exactly as before.
+  t('a tax-inclusive country with no format default (AU / NZ) has no rate unless the truck sets one (NULL = No GST, every existing truck) — France\'s format names an included tax; AU / NZ name none',
+    !/charges_rate_not_here/.test(read('lib/charge-settings.ts'))
+    && /const taxRateMilli = taxInclusive \? \(includedTax \? \(int\(truck\.tax_rate_milli\) \?\? includedTax\.milli\) : int\(truck\.tax_rate_milli\)\) :/.test(read('lib/order-charge-rules.ts'))
     && !/includedTax/.test(read('lib/address-formats.ts').slice(read('lib/address-formats.ts').indexOf('  au: {'), read('lib/address-formats.ts').indexOf('  ca: {'))))
 
   // ── 6 · the rendered page ──

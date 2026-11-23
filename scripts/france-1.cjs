@@ -149,7 +149,9 @@ const at = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]
   t('…nothing is added: 24,00 € of food is a 24,00 € total; the snapshot keeps the rate (10000) with no added tax', c.totalMinor === 2400 && c.taxMinor === 0 && c.snapshot.tax_rate_milli === 10000 && c.snapshot.tax_inclusive === true && c.snapshot.tax_label === 'TVA')
   t('the truck\'s own rate wins (5,5 %); no service fee, no surcharge, no tip in France', rules({ tax_rate_milli: 5500 }).taxRateMilli === 5500 && rules({ service_fee_enabled: true, service_fee_bps: 300 }).serviceFee === null && frR.surcharge === null && frR.tipping === null)
   const gbRow = await R.rowOf(frOn, 'GB'), ieRow = await R.rowOf(frOn, 'IE')
-  t('GB and IE exactly as before: inclusive, NO rate (a stale truck rate is still ignored), so no snapshot rate and no « Dont » line', [gbRow, ieRow].every(row => { const r = ENG.RU.resolveChargeRules(row, { country: row.countryCode, tax_rate_milli: 2000 }); const s = E.computeOrderCharges({ foodMinor: 2400, rules: r, channel: 'online_pay_at_truck' }).snapshot; return r.taxRateMilli === null && s.tax_rate_milli === null && ENG.L.includedTaxLine(s, row.locale) === null }))
+  // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md — Dominic's decision 2): GB and IE take the truck's rate when one is set; NULL ("No VAT", every existing truck — none holds a stale one,
+  // checked live 24 Nov) is still no rate, no snapshot rate and no "Includes" line.
+  t('GB and IE with no rate set (every existing truck): inclusive, NO rate, so no snapshot rate and no « Dont » line', [gbRow, ieRow].every(row => { const r = ENG.RU.resolveChargeRules(row, { country: row.countryCode, tax_rate_milli: null }); const s = E.computeOrderCharges({ foodMinor: 2400, rules: r, channel: 'online_pay_at_truck' }).snapshot; return r.taxRateMilli === null && s.tax_rate_milli === null && ENG.L.includedTaxLine(s, row.locale) === null }))
   const line = ENG.L.includedTaxLine(c.snapshot, 'fr-FR')
   t('the line: « Dont TVA » « 10 % », 2,18 € of 24,00 € (24 × 10 / 110, rounded once)', line?.label === 'Dont TVA' && line?.rate.replace(NB, ' ') === '10 %' && line?.minor === 218, line)
   t('…never one of the added lines (chargeLinesFor gives none for a French order), so nothing folds or totals it', ENG.L.chargeLinesFor(c.snapshot, 'customer', 'fr-FR').length === 0)
@@ -177,9 +179,11 @@ const at = (o, k) => k.split('.').reduce((x, p) => (x == null ? undefined : x[p]
   try { frHtml = chargesHtml(FR, { tax_rate_milli: null }, 'fr-FR'); gbHtml = chargesHtml(gbRow, { tax_rate_milli: null }, 'en-GB') } catch (e) { frHtml = 'ERROR ' + e.message }
   t('Manage › Payments, France: one row — « TVA incluse dans vos prix », placeholder 10, « Laissez vide pour appliquer 10 % … »; no tip or service-fee row',
     /placeholder="10"/.test(frHtml) && has(text(frHtml), 'TVA incluse dans vos prix', 'Laissez vide pour appliquer 10 %') && !/data-charges-row="tips"|data-tip-chips/.test(frHtml), text(frHtml).slice(0, 400))
-  t('…a GB truck\'s Payments shows no charges card at all, as before', gbHtml === '')
+  // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md — Dominic's decision 2): the card shows in GB now, as the "No VAT" form with No VAT selected.
+  t('…a GB truck\'s Payments shows the "No VAT" form, with No VAT selected (france-vat-1)', /data-no-vat-select/.test(gbHtml) && /<option value="none" selected="">No VAT<\/option>/.test(gbHtml))
   const chk = ENG.CS.checkChargeSettings({ taxRate: '5.5' }, FR, m => String(m)), chkGB = ENG.CS.checkChargeSettings({ taxRate: '5.5' }, gbRow, m => String(m))
-  t('the route takes a French truck\'s rate (5.5 → 5500) and still refuses one for GB', chk.ok === true && chk.values.tax_rate_milli === 5500 && chkGB.ok === false && chkGB.code === 'charges_rate_not_here')
+  // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md — Dominic's decision 2): GB takes a rate too.
+  t('the route takes a French truck\'s rate (5.5 → 5500), and a GB truck\'s (france-vat-1)', chk.ok === true && chk.values.tax_rate_milli === 5500 && chkGB.ok === true && chkGB.values.tax_rate_milli === 5500)
 
   // ══ 6 ════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('6 · ALLERGENS — the EU 14 in French; the WhatsApp guard in French; the card allowed on its own')

@@ -305,7 +305,10 @@ const ROWS = () => WF.rowsWith(WF.WORLD).map(r => {
     for (const food of [999, 1099, 2079, 12345]) for (const bps of [250, 333, 1000, 1250]) {
       const rules = { ...OLD.resolveChargeRules(GB, {}), serviceFee: { recipient: 'truck', bps, fixedMinor: 20 }, tipping: { presetsBps: [bps] } }
       const a = NOW.computeOrderCharges({ foodMinor: food, rules, channel: 'online_card', tip: { kind: 'percent', bps } }), b = OLD.computeOrderCharges({ foodMinor: food, rules, channel: 'online_card', tip: { kind: 'percent', bps } })
-      if (JSON.stringify(a) !== JSON.stringify(b)) gbCharges.push({ food, bps })
+      // ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): the snapshot gains `tax_breakdown`, which is NULL for
+      // a GB order (no rate). It must be null, and is then set aside; every other byte is compared as before.
+      const aa = a.snapshot.tax_breakdown === null ? { ...a, snapshot: (({ tax_breakdown, ...rest }) => (void tax_breakdown, rest))(a.snapshot) } : a
+      if (JSON.stringify(aa) !== JSON.stringify(b)) gbCharges.push({ food, bps })
     }
     t('GBP charges (a percentage service fee and tip, 16 cases) byte-identical to before — half a penny still rounds as D3 says', gbCharges.length === 0, gbCharges)
     t('Pizzeria Gusto\'s path is GBP and untouched: no tidy-2 file names it', !['lib/event-pricing/price.ts', 'lib/event-pricing/read.ts', 'lib/order-charges.ts', 'lib/order-charge-rules.ts'].some(f => /pizzeria-gusto/i.test(read(f))))

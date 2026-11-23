@@ -42,6 +42,8 @@ function gbKeyDiff() {
     else if (k in IE1_REWORDED && d.before === IE1_REWORDED[k].before && d.after === IE1_REWORDED[k].after) d.kind = IE1_KIND
     // ⚠️ RE-PINNED (allergen-kitchen-1, 13 November 2026): Dominic's approved severe-allergy line, marked only on an EXACT match.
     else if (k in AK1_REWORDED && d.before === AK1_REWORDED[k].before && d.after === AK1_REWORDED[k].after) d.kind = AK1_KIND
+    // ⚠️ RE-PINNED (france-vat-1, 24 November 2026): the rate refusal's limit, 20 % → 30 %, marked only on an EXACT match.
+    else if (k in FV1_REWORDED && d.before === FV1_REWORDED[k].before && d.after === FV1_REWORDED[k].after) d.kind = FV1_KIND
   }
   return out
 }
@@ -61,6 +63,12 @@ const isIE1 = d => !!d && d.kind === IE1_KIND
 const AK1_KIND = 'allergen-kitchen-1: the severe-allergy line reworded (Dominic\'s approved wording; scripts/_lp1e-words.cjs AK1_REWORDED)'
 const AK1_REWORDED = {
   'order.allergenSevere': { before: 'If you have a severe allergy, please contact the vendor directly before ordering.', after: 'If you have a food allergy, please contact the truck before ordering.' },
+}
+/* ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): the rate limit is now 30 % (Dominic, decision 2), so
+ * the range refusal says so in every enabled locale (scripts/france-vat-1.cjs §F holds them). Exempt ONLY on this exact before → after. */
+const FV1_KIND = 'france-vat-1: the rate refusal\'s limit 20 % → 30 % (scripts/_lp1e-words.cjs FV1_REWORDED)'
+const FV1_REWORDED = {
+  'errorsManage.charges_rate_range': { before: 'Use a rate from 0 to 20%.', after: 'Use a rate from 0 to 30%.' },
 }
 const STAGE_A_REWORDED = 'plans-data-model Stage A: reworded (scripts/fixtures/plans-stage-a-messages.json)'
 const STAGE_A_REMOVED = 'plans-data-model Stage A: removed (scripts/fixtures/plans-stage-a-messages.json)'

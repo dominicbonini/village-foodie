@@ -276,6 +276,8 @@
         "_paperwork-1-fixtures.cjs",
         "_lp-paperwork-1.cjs",
         "_lp-costs-accounts-1.cjs",
+        "_lp-france-vat-1.cjs",
+        "_named-france-vat-1.cjs",
         "_batch-rolling-snapshot.cjs",
         "_mini-dom.cjs",
         "_country-settings-gb.cjs",

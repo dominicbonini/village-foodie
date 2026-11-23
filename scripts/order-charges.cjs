@@ -242,6 +242,27 @@ function gbSnapshot(where, row, totalMinor) {
 }
 const minorOf = row => (row.total_minor != null ? row.total_minor : Math.round(Number(row.total) * 100))
 
+/** ⚠️ RE-PINNED (france-vat-1, 24 November 2026, docs/france-vat-1-report.md): NAMED DIFFERENCE 2 — every NEW order line carries its
+ *  dish's id and the rate it was sold at (`item_id`, `tax_rate_milli`), every deal its rate split (`tax_parts`), and the snapshot a
+ *  `tax_breakdown`. For a GB order (no rate set) the rate is null everywhere and the breakdown is NULL. Taken out here, and only
+ *  these keys, each checked on the way; everything else is compared as before. */
+function stripFv1(where, payload) {
+  if (!payload || typeof payload !== 'object') return payload
+  const out = { ...payload }
+  if ('tax_breakdown' in out) { t(`${where}: tax_breakdown is NULL (a GB order has no rate)`, out.tax_breakdown === null, JSON.stringify(out.tax_breakdown)); delete out.tax_breakdown }
+  if (Array.isArray(out.items)) out.items = out.items.map(it => {
+    if (!it || typeof it !== 'object' || !('tax_rate_milli' in it)) return it
+    t(`${where}: a line is stamped with its dish id and no rate`, (typeof it.item_id === 'string' || it.item_id === null) && it.tax_rate_milli === null, JSON.stringify(it))
+    const { item_id, tax_rate_milli, ...rest } = it; void item_id; void tax_rate_milli; return rest
+  })
+  if (Array.isArray(out.deals)) out.deals = out.deals.map(d => {
+    if (!d || typeof d !== 'object' || !('tax_parts' in d)) return d
+    t(`${where}: a deal's split is all at no rate`, Array.isArray(d.tax_parts) && d.tax_parts.every(p => p.tax_rate_milli === null), JSON.stringify(d.tax_parts))
+    const { tax_parts, ...rest } = d; void tax_parts; return rest
+  })
+  return out
+}
+
 /** Strip the named difference from an AFTER capture, checking each instance on the way. */
 function stripNamed(name, r) {
   const c = JSON.parse(JSON.stringify(r))
@@ -266,7 +287,7 @@ function stripNamed(name, r) {
       call.fn = 'place_order_atomic'
       const p = call.args.p_order
       t(`${name}: v2 is passed total_minor = round(total × 100)`, p.total_minor === Math.round(p.total * 100), `${p.total_minor} vs ${p.total}`)
-      call.args.p_order = gbSnapshot(`${name} p_order`, p, p.total_minor)
+      call.args.p_order = gbSnapshot(`${name} p_order`, stripFv1(`${name} p_order`, p), p.total_minor)
       delete call.args.p_order.total_minor
     } else t(`${name}: no call to the OLD place_order_atomic`, call.fn !== 'place_order_atomic')
   }
@@ -274,7 +295,7 @@ function stripNamed(name, r) {
     if (!['orders', 'order_drafts'].includes(w.table)) continue
     const payload = w.row || w.patch
     if (!payload || !NEW_ORDER_COLS.some(k => k in payload)) continue
-    const stripped = gbSnapshot(`${name} ${w.table} ${w.op}`, payload, minorOf(payload))
+    const stripped = gbSnapshot(`${name} ${w.table} ${w.op}`, stripFv1(`${name} ${w.table} ${w.op}`, payload), minorOf(payload))
     if (w.row) w.row = stripped; else w.patch = stripped
   }
   return c

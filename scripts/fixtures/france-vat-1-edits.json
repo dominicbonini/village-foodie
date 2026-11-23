@@ -1,0 +1,19 @@
+{
+ "base": "59ae6161",
+ "edits": {
+  "app/(app)/trucks/[slug]/order/page.tsx": [
+   [
+    "import { lineTax, taxBookFrom, bookHasOwnRates } from '@/lib/order-tax'   // france-vat-1: the same split the server makes\n",
+    ""
+   ],
+   [
+    "  // france-vat-1: where tax is ADDED at checkout and a dish has its own rate, the food is split by rate exactly as the server will\n  // split it (lib/order-tax.ts, the same function). Prices that include tax never change the total, so nothing is needed there.\n  const pageFoodParts = useMemo(() => {\n    if (!checkout || checkout.taxInclusive) return null\n    const cur = truck?.money?.currency ?? null\n    const book = taxBookFrom(menu?.items ?? [], cur)\n    if (!bookHasOwnRates(book)) return null\n    return lineTax({\n      items: basket.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0) })),\n      deals: appliedDeals.map(d => ({ name: d.bundle.name, price: d.bundle.bundle_price + (d.modifierExtra || 0), slots: d.slots, slotModifiers: {} })),\n      foodMinor, book, defaultRate: checkout.taxRateMilli, currency: cur,\n    }).parts\n  }, [checkout, truck?.money?.currency, menu, basket, appliedDeals, foodMinor])\n",
+    ""
+   ],
+   [
+    "    tip: showTip ? tipChoice : null,\n    foodParts: pageFoodParts,\n",
+    "    tip: showTip ? tipChoice : null,\n"
+   ]
+  ]
+ }
+}

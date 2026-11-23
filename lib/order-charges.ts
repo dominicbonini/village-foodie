@@ -186,7 +186,7 @@ function mergeFoodParts(parts: readonly FoodPart[] | null | undefined, foodMinor
 }
 
 /** france-vat-1: the tax a price INCLUDES at one rate — the receipt's "Dont TVA" sum, rounded once (the formula
- *  lib/order-charge-lines.ts and lib/accounts/ledger.ts have always used). */
+ *  lib/order-charge-lines.ts and the accountant's ledger have always used). */
 export const includedTaxOfMinor = (gross: number, milli: number | null): number =>
   milli && milli > 0 && gross > 0 ? Math.round(gross * milli / (MILLI + milli)) : 0
 
