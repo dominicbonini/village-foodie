@@ -171,6 +171,13 @@ async function preflight(file) {
     ok('8 · a cancelled order keeps its number', Number(cancel.receipt_no) === 7, cancel)
     const ctr = (await q(c, 'preflight', 'select truck_id, last_no from public.receipt_counters where truck_id = any($1) order by truck_id', [IDS])).rows
     ok('9 · the counters read 7 (A) and 1 (B) — the rolled-back 6 and the failed insert took none', JSON.stringify(ctr.map(r => [r.truck_id, Number(r.last_no)]).sort()) === JSON.stringify([[A, 7], [B, 1]].sort()), ctr)
+    // 10 · the walk-up's OFFLINE REPLAY: INSERT … ON CONFLICT (order_key) DO NOTHING of an order that already exists takes no number.
+    const key = crypto.randomUUID()
+    const REPLAY = WALKUP.replace('insert into public.orders (id,', 'insert into public.orders (order_key, id,').replace("values ($1, $2,", "values ($3::uuid, $1, $2,").replace('returning order_key, receipt_no', 'on conflict (order_key) do nothing returning order_key, receipt_no')
+    const first = (await q(c, 'preflight', REPLAY, [rid(), A, key])).rows[0]
+    const again = (await q(c, 'preflight', REPLAY, [rid(), A, key])).rows
+    const next = (await q(c, 'preflight', WALKUP, [rid(), A])).rows[0]
+    ok('10 · an offline replay (ON CONFLICT DO NOTHING) of an existing order takes no number: 8, the replay skipped, the next order 9', Number(first.receipt_no) === 8 && again.length === 0 && Number(next.receipt_no) === 9, { first, again, next })
   })
   const after = await counts('after')
   ok('the demo trucks\' counts are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
