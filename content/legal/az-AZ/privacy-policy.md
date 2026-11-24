@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Məxfilik siyasəti
 
 **Son yenilənmə:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Siyasət iOS və Android üçün HatchGrab mobil və planşet tətbiqlərini də
 
 Əgər bura yalnız food truck-dan yemək sifariş etdiyiniz üçün gəlmisinizsə, sizə **«Əgər food truck-dan sifariş vermisinizsə»** bölməsi aiddir.
 
-**Bəzi ölkələrdə əlavə qaydalar var.** Onlar sizə aid olduqda, bu siyasətin bir hissəsi olan [Ölkəyə aid şərtlər](/country-terms) səhifəsində göstərilib.
-
+**Bu siyasət harada olmağınızdan asılı olmayaraq tətbiq olunur.** Birləşmiş Krallığın məlumatların qorunması qanunvericiliyinə əməl edirik, yaşadığınız ölkənin məlumatların qorunması qanunvericiliyi də tətbiq olunduqda isə ona da əməl edirik.
 ---
 
 ## 1. Biz kimik
@@ -84,6 +83,8 @@ Food truck-ın sifariş səhifəsi vasitəsilə sifariş verdikdə aşağıdakı
 
 Məlumatlarınızı nə qədər saxlamağa və sonra sizinlə necə əlaqə saxlamağa food truck qərar verir. Buna onun öz məxfilik təcrübəsi aiddir. Food truck-ın kim olduğunu bilmirsinizsə, privacy@hatchgrab.com ünvanına yazın, sizi ona yönləndirəcəyik.
 
+**Allergiya və pəhriz qeydləri.** Onları sifarişinizlə birlikdə food truck-a ötürürük və başqa heç nə üçün istifadə etmirik. Sifarişdən 12 ay sonra onları adınız və əlaqə məlumatlarınızla birlikdə silirik (7-ci bölməyə baxın).
+
 **Allergen məlumatı.** Food truck allergen məlumatını dərc etdikdə, food truck-ın təsdiqlədiyini göstəririk. Biz onu müstəqil yoxlamırıq. Ciddi allergiyanız barədə həmişə birbaşa food truck-a deyin.
 
 ---
@@ -135,7 +136,7 @@ Həmçinin qanun tələb etdikdə və ya hüquqi iddiaları əsaslandırmaq və 
 
 **Şəxsi məlumatları satmırıq və reklam üçün paylaşmırıq.**
 
-**Beynəlxalq ötürmələr.** Hesab məlumatlarınız və sifariş məlumatlarınız Birləşmiş Krallıqda saxlanılır və emal olunur. Bəzi işlər onun xaricində görülür: Amerika Birləşmiş Ştatlarındakı Google xidmətindən istifadə edən menyu çıxarılması və WhatsApp avtomatik cavabları; Amerika Birləşmiş Ştatlarında Meta tərəfindən həyata keçirilən WhatsApp mesajlarının çatdırılması; Amerika Birləşmiş Ştatlarında Stripe tərəfindən həyata keçirilən ödənişlər; və Amerika Birləşmiş Ştatlarında Apple və Google tərəfindən çatdırılan push-bildirişlər. Məlumatlar Birləşmiş Krallıqdan çıxdıqda, ötürmə Birləşmiş Krallığın adekvatlıq qaydaları və ya müvafiq təminatlar verən Beynəlxalq Məlumat Ötürmə Müqaviləsi (International Data Transfer Agreement) və ya Əlavə (Addendum) ilə əhatə olunur. Hansı təminatların tətbiq olunduğu barədə bizdən ətraflı məlumat istəyə bilərsiniz.
+**Beynəlxalq ötürmələr.** Hesab məlumatlarınız və sifariş məlumatlarınız Birləşmiş Krallıqda saxlanılır və emal olunur. Bəzi işlər onun xaricində görülür: Amerika Birləşmiş Ştatlarındakı Google xidmətindən istifadə edən menyu çıxarılması və WhatsApp avtomatik cavabları; Amerika Birləşmiş Ştatlarında Meta tərəfindən həyata keçirilən WhatsApp mesajlarının çatdırılması; Amerika Birləşmiş Ştatlarında Stripe tərəfindən həyata keçirilən ödənişlər; və Amerika Birləşmiş Ştatlarında Apple və Google tərəfindən çatdırılan push-bildirişlər. Məlumatlar Birləşmiş Krallıqdan çıxdıqda, ötürmə Birləşmiş Krallığın adekvatlıq qaydaları və ya Beynəlxalq Məlumat Ötürmə Müqaviləsi (International Data Transfer Agreement) və ya Əlavə (Addendum) ilə, ölkənizin qanunvericiliyi tələb etdikdə isə həmin qanunvericiliyin tanıdığı təminatla da əhatə olunur. Hansı təminatların tətbiq olunduğu barədə bizdən ətraflı məlumat istəyə bilərsiniz.
 
 Xidmətimiz böyüdükcə SMS provayderi də daxil olmaqla yeni provayderlər əlavə edə bilərik. Onlar məlumatlarınızı emal etməyə başlamazdan əvvəl bu siyahını yeniləyəcəyik.
 
@@ -161,7 +162,7 @@ Bu müddətlər bitdikdən sonra məlumatları silir və ya anonimləşdiririk.
 
 ## 8. Hüquqlarınız
 
-Birləşmiş Krallığın məlumatların qorunması qanunvericiliyinə əsasən aşağıdakı hüquqlara maliksiniz:
+Birləşmiş Krallığın məlumatların qorunması qanunvericiliyinə və tətbiq olunduğu hallarda yaşadığınız ölkənin qanunvericiliyinə əsasən aşağıdakı hüquqlara maliksiniz:
 
 - haqqınızda hansı şəxsi məlumatları saxladığımızı soruşmaq və onların surətini almaq;
 - yanlış məlumatları düzəltdirmək;
@@ -171,11 +172,17 @@ Birləşmiş Krallığın məlumatların qorunması qanunvericiliyinə əsasən 
 - qanuni maraqlara əsaslanan emala etiraz etmək;
 - razılığa əsaslandığımız hallarda istənilən vaxt razılığınızı geri götürmək.
 
-Bu hüquqlardan hər hansı birini həyata keçirmək üçün privacy@hatchgrab.com ünvanına yazın. Bir ay ərzində cavab verəcəyik.
+Yaşadığınız ölkənin qanunvericiliyi bu hüquqları sizə başqa adlar altında və ya əlavə hüquqlar da verə bilər. Onlar da sizə məxsusdur.
 
-**Hesabınızın silinməsi.** Food truck sahibləri hesabın silinməsini tətbiqin özündən və ya privacy@hatchgrab.com ünvanına yazaraq tələb edə bilərlər. Hesabınızı və şəxsi məlumatlarınızı siləcəyik, mühasibat və ya hüquqi səbəblərdən qeydləri saxlamağa borclu olduğumuz hallar istisna olmaqla.
+**Sorğu göndərmək.** privacy@hatchgrab.com ünvanına yazın. Hərəkət etməzdən əvvəl sorğunun həqiqi olduğunu yoxlayacağıq. Sorğunu sizin adınızdan başqasına həvalə edə bilərsiniz və sorğu göndərdiyiniz üçün sizə fərqli münasibət göstərməyəcəyik. Bir ay ərzində və ya ölkənizin qanunvericiliyi tələb edirsə, daha tez cavab verəcəyik. Food truck-dan sifariş vermisinizsə, sorğunuzu həmin food truck-a ötürə bilərik, çünki sifariş məlumatlarınızdan necə istifadə olunduğuna o qərar verir. Sorğunu rədd etsək, cavabımıza cavab yazaraq ona yenidən baxmağımızı istəyə bilərsiniz.
 
-**Şikayətlər.** Məlumatlarınızla necə davrandığımızdan narazısınızsa, İnformasiya Komissarı Ofisinə (Information Commissioner's Office) ico.org.uk saytı vasitəsilə və ya 0303 123 1113 nömrəsinə zəng edərək şikayət edə bilərsiniz. Əvvəlcə məsələni özümüz həll etməyə imkan versəniz, minnətdar olarıq.
+**Hesabınızın silinməsi.** Food truck sahibləri hesabın silinməsini tətbiqin özündən və ya privacy@hatchgrab.com ünvanına yazaraq tələb edə bilərlər. Hesabınızı və şəxsi məlumatlarınızı siləcəyik, mühasibat və ya hüquqi səbəblərdən qeydləri saxlamağa borclu olduğumuz hallar istisna olmaqla. Food truck sahibinin hesabı silindikdə, saxladığımız sifarişlərdən onun müştərilərinin adlarını, əlaqə məlumatlarını və qeydlərini də silirik.
+
+**Marketinq məktubları.** Marketinq məktublarını yalnız yaşadığınız ölkənin qanunvericiliyinin icazə verdiyi hallarda göndəririk; bəzi ölkələrdə bu, yalnız razılığınızla deməkdir. Onların hər birində kimdən olduğu göstərilir, poçt ünvanımız yer alır və onları almağı necə dayandırmaq olduğu bildirilir. Dayandırmağı xahiş etsəniz, pulsuz və 10 iş günü ərzində dayandıracağıq. Sifariş və ya hesabınız haqqında məktublar marketinq deyil. Biz və ya food truck sifariş yenilikləri üçün SMS təklif etsək, onları yalnız razılıq versəniz alacaqsınız və istənilən vaxt dayandıra bilərsiniz.
+
+**Nəsə səhv getdikdə.** Şəxsi məlumatlarınızla bağlı pozuntu sizə ciddi zərər vura bilərsə, qanun tələb etdikdə bu barədə sizə və məlumatların qorunması orqanına mümkün qədər tez məlumat verəcəyik və ya sifariş verdiyiniz food truck-a bunu etməkdə kömək edəcəyik.
+
+**Şikayətlər.** Əvvəlcə privacy@hatchgrab.com ünvanına yazaraq bizə bildirin; vəziyyəti düzəltməyə imkan versəniz, minnətdar olarıq. Yaşadığınız ölkənin məlumatların qorunması orqanına da şikayət edə bilərsiniz. Birləşmiş Krallıqda bu, Information Commissioner's Office (İnformasiya Komissarı Ofisi) — ico.org.uk saytı və ya 0303 123 1113 nömrəsi.
 
 ---
 

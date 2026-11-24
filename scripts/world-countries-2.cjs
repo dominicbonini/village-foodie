@@ -45,7 +45,11 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
   // taken back exactly first (scripts/_named-terms-postpay-1.cjs), so these checks still prove the Terms as world-countries-2 left them.
   // (The post-pay Terms name the Pay as you go plan on purpose — Dominic's approved wording, superseding the V16.2 "names no plan" rule.)
   const TPU = (f, s) => require('./_named-terms-postpay-1.cjs').undoCode(f, s)
-  const terms = TPU('content/legal/terms-and-conditions.md', read('content/legal/terms-and-conditions.md')), country = read('content/legal/country-specific-terms.md'), legal = TPU('lib/legal.ts', read('lib/legal.ts'))
+  // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md): the Country-specific terms' per-country privacy parts
+  // were deleted and the Privacy Policy made one policy for every country (new dates); both documents are taken back exactly first
+  // (scripts/_named-france-privacy-1.cjs, START ec16f022 byte for byte), so these checks still prove the sections as world-countries-2 left them.
+  const FPU = (f, s) => require('./_named-france-privacy-1.cjs').asBefore(f, s)
+  const terms = TPU('content/legal/terms-and-conditions.md', read('content/legal/terms-and-conditions.md')), country = FPU('content/legal/country-specific-terms.md', read('content/legal/country-specific-terms.md')), legal = TPU('lib/legal.ts', read('lib/legal.ts'))
   const s4 = terms.slice(terms.indexOf('## 4.'), terms.indexOf('\n## 5.'))
   t('Terms: no sentence promises "our plan with no monthly fee", "the plan with no monthly fee" or that "one plan has no monthly fee"', !/(our|the) plan with no monthly fee|One plan has no monthly fee/i.test(terms))
   t('Terms §4: a finished trial, a cancellation and a failed payment move to "the plan shown for your country on our pricing page" (and a payment 7 days late to "that plan")', (s4.match(/the plan shown for your country on our pricing page/g) || []).length === 3 && s4.includes('of its due date, your account moves to that plan.'))
@@ -74,7 +78,7 @@ const UNLIMITED_ONLY = ['BR', 'MX', 'MY', 'SG', 'TH']
   const constOf = k => new RegExp(`export const ${k} = '([^']+)'`).exec(legal)[1]
   t(`each document's own line and its lib/legal.ts date agree: Terms and Country-specific terms ${W2.NEW_DATE}; Privacy unchanged (${constOf('PRIVACY_UPDATED')})`,
     docDate(terms) === W2.NEW_DATE && constOf('TERMS_UPDATED') === W2.NEW_DATE && docDate(country) === W2.NEW_DATE && constOf('COUNTRY_TERMS_UPDATED') === W2.NEW_DATE
-    && docDate(read('content/legal/privacy-policy.md')) === constOf('PRIVACY_UPDATED') && W2.asBefore('content/legal/privacy-policy.md', read('content/legal/privacy-policy.md')) === atHead('content/legal/privacy-policy.md'))   // ⚠️ RE-PINNED (tidy-1): contact-1's and tidy-1's later Privacy changes taken back first (the chain)
+    && docDate(FPU('content/legal/privacy-policy.md', read('content/legal/privacy-policy.md'))) === constOf('PRIVACY_UPDATED') && W2.asBefore('content/legal/privacy-policy.md', read('content/legal/privacy-policy.md')) === atHead('content/legal/privacy-policy.md'))   // ⚠️ RE-PINNED (tidy-1): contact-1's and tidy-1's later Privacy changes taken back first (the chain)
   const iso = d => new Date(Date.parse(`${d} UTC`)).toISOString().slice(0, 10)
   t(`TERMS_VERSION '${constOf('TERMS_VERSION')}' is the latest of the three documents' dates`, constOf('TERMS_VERSION') === [constOf('PRIVACY_UPDATED'), constOf('TERMS_UPDATED'), constOf('COUNTRY_TERMS_UPDATED')].map(iso).sort().at(-1))
 

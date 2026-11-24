@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Riigipõhised tingimused
 
 **Viimati uuendatud:** {{LAST_UPDATED}}
 
-Meie [teenusetingimused](/terms) ja [privaatsuspoliitika](/privacy) kehtivad igas riigis, kus HatchGrabi kasutatakse. Mõnes riigis kehtivad lisareeglid. Sellel lehel on need esitatud riikide kaupa.
+Meie [teenusetingimused](/terms) kehtivad igas riigis, kus HatchGrabi kasutatakse. Mõnes riigis kehtivad lisareeglid. Sellel lehel on need esitatud riikide kaupa.
 
-Kui mõni allpool olev jaotis kehtib teie kohta, on see meie teenusetingimuste ja privaatsuspoliitika osa. Kui selles on sätestatud midagi neist erinevat, kehtib selle riigi puhul käesolev leht.
+Kui mõni allpool olev jaotis kehtib teie kohta, on see meie teenusetingimuste osa. Kui selles on sätestatud midagi neist erinevat, kehtib selle riigi puhul käesolev leht.
 
-Kui teie riiki ei ole loetletud, lisareegleid ei ole: teenusetingimused ja privaatsuspoliitika kehtivad nii, nagu need on kirjutatud.
-
+Kui teie riiki ei ole loetletud, lisareegleid ei ole: teenusetingimused kehtivad nii, nagu need on kirjutatud. Meie [privaatsuspoliitika](/privacy) on igas riigis sama.
 ---
 
 ## Ameerika Ühendriigid
@@ -31,26 +30,6 @@ Kui teie riiki ei ole loetletud, lisareegleid ei ole: teenusetingimused ja priva
 
 **Teie klientide andmed.** USA osariikide privaatsusseaduste alusel tähendab teenusetingimuste jaotis 10 sama asja nende seaduste mõistetes: teie olete „business“ (ettevõte) ja meie oleme teie „service provider“ (teenuseosutaja) või „processor“ (töötleja). Kasutame teie klientide isikuteavet ainult HatchGrabi käitamiseks teie jaoks. Me ei müü seda, ei jaga seda kontekstiülese käitumusliku reklaami eesmärgil ega kasuta seda ühelgi muul eesmärgil, välja arvatud nii, nagu need seadused teenuseosutajal lubavad.
 
-### Privaatsus, kõigile Ameerika Ühendriikides
-
-**Mida me kogume ja kellega me seda jagame.** Sama, mis on sätestatud privaatsuspoliitikas: toiduautode haldajate konto- ja ettevõtteandmed; teie nimi, kontaktandmed ja tellimuse andmed, kui tellite toiduautolt; ning põhilised tehnilised andmed, kui külastate meie veebisaite. Jagame neid toiduautoga, kellelt te tellite, ja privaatsuspoliitika jaotises 6 loetletud teenuseosutajatega ainult teenuse osutamiseks või siis, kui seadus seda nõuab. Neid võidakse töödelda Ühendkuningriigis, Euroopa Liidus ja Ameerika Ühendriikides.
-
-**Me ei müü ega jaga teie isikuteavet.** Me ei müü isikuteavet ega jaga seda kontekstiülese käitumusliku reklaami eesmärgil.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida meilt, millist isikuteavet me teie kohta säilitame, ja paluda meil seda parandada või kustutada. Saatke e-kiri aadressile privacy@hatchgrab.com. Enne taotluse alusel tegutsemist kontrollime, et see on ehtne, ja vastame 45 päeva jooksul. Võite paluda kellelgi teisel taotluse teie eest esitada. Me ei kohtle teid taotluse esitamise tõttu teisiti. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse. Kui me taotlusest keeldume, võite paluda meil seda uuesti läbi vaadata, vastates meie vastusele.
-
-**Osariikide privaatsusseadused.** Mõned osariikide privaatsusseadused kehtivad ainult teatud suurusest suuremate ettevõtete suhtes ja need ei pruugi meie suhtes kehtida. Sellegipoolest täidame eespool nimetatud taotlusi kõigilt Ameerika Ühendriikides asuvatelt isikutelt.
-
-**Lapsed.** Meie teenused ei ole suunatud alla 13-aastastele lastele ja me ei kogu teadlikult nende isikuteavet. Kui arvate, et laps on meile oma teabe andnud, võtke meiega ühendust ja me kustutame selle.
-
-**Turunduslikud e-kirjad.** Igas meie saadetud turunduslikus e-kirjas on kirjas, kuidas nende saamine lõpetada, ning meie postiaadress. Kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Tekstisõnumid.** Kui meie või toiduauto pakume tellimuse uuendusi tekstisõnumiga, saate neid ainult siis, kui nõustute neid saama, ja võite nende saamise igal ajal lõpetada.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Iirimaa
 
 ### Toiduautode haldajatele
@@ -70,22 +49,6 @@ Kui teie riiki ei ole loetletud, lisareegleid ei ole: teenusetingimused ja priva
 **Teie klientide andmed.** EL-i isikuandmete kaitse üldmääruse (IKÜM) alusel on teenusetingimuste jaotis 10 meie andmetöötlusleping teiega: teie olete vastutav töötleja ja meie oleme volitatud töötleja samas tähenduses nagu IKÜM-i artiklis 28.
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Iirimaa õigus teile annab ja mida ei saa kokkuleppega välistada.
-
-### Privaatsus, kõigile Iirimaal
-
-**Kohaldatav õigus.** Kui käitleme Iirimaal asuvate inimeste isikuandmeid, kohaldatakse EL-i isikuandmete kaitse üldmäärust (IKÜM) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust. Privaatsuspoliitika jaotises 8 loetletud õigused on ka teie õigused IKÜM-i alusel.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis. Euroopa Komisjon on otsustanud, et Ühendkuningriik kaitseb isikuandmeid samal tasemel kui EL, seega ei ole selleks täiendavat kaitsemeedet vaja. Kui teenuseosutaja käitleb andmeid Ameerika Ühendriikides (privaatsuspoliitika jaotis 6), on edastamine kaetud IKÜM-iga tunnustatud kaitsemeetmega.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida meilt, milliseid isikuandmeid me teie kohta säilitame, ja paluda meil neid parandada, kustutada või nende kasutamine lõpetada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame ühe kuu jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Võite esitada kaebuse Iirimaa andmekaitse järelevalveasutusele Data Protection Commission aadressil www.dataprotection.ie või posti teel aadressil 6 Pembroke Row, Dublin 2, D02 X963. Oleksime tänulikud, kui annaksite meile esmalt võimaluse asi heastada.
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui seadus seda lubab. Igas neist on kirjas, kuidas nende saamine lõpetada, ja kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Austraalia
 
@@ -109,22 +72,6 @@ Kui teie riiki ei ole loetletud, lisareegleid ei ole: teenusetingimused ja priva
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Austraalia õigus teile annab ja mida ei saa kokkuleppega välistada.
 
-### Privaatsus, kõigile Austraalias
-
-**Kohaldatav õigus.** Kui käitleme Austraalias asuvate inimeste isikuteavet, järgime seaduse Privacy Act 1988 (privaatsusseadus) Australian Privacy Principles’it (Austraalia privaatsuspõhimõtted) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust.
-
-**Kus teie teavet hoitakse.** Teie teavet säilitatakse ja töödeldakse Ühendkuningriigis. Osa sellest käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides, nagu on sätestatud privaatsuspoliitika jaotises 6.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida meilt, millist isikuteavet me teie kohta säilitame, ja paluda meil seda parandada või kustutada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame 30 päeva jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Kui te ei ole rahul sellega, kuidas oleme teie isikuteavet käidelnud, teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Kui te ei ole meie vastusega rahul või me ei ole 30 päeva jooksul vastanud, võite esitada kirjaliku kaebuse asutusele Office of the Australian Information Commissioner (OAIC) aadressil www.oaic.gov.au.
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui seadus seda lubab. Igas neist on kirjas, kellelt see on, ja kuidas nende saamine lõpetada, ning kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Uus-Meremaa
 
 ### Toiduautode haldajatele
@@ -147,24 +94,6 @@ Kui teie riiki ei ole loetletud, lisareegleid ei ole: teenusetingimused ja priva
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Uus-Meremaa õigus teile annab ja mida ei saa kokkuleppega välistada.
 
-### Privaatsus, kõigile Uus-Meremaal
-
-**Kohaldatav õigus.** Kui käitleme Uus-Meremaal asuvate inimeste isikuteavet, kohaldatakse seadust Privacy Act 2020 (privaatsusseadus) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust. See kohaldub meile, sest me tegutseme Uus-Meremaal majanduslikult, kuigi asume Ühendkuningriigis.
-
-**Kus teie teavet hoitakse.** Teie teavet säilitatakse ja töödeldakse Ühendkuningriigis. Osa sellest käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides, nagu on sätestatud privaatsuspoliitika jaotises 6.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida meilt isikuteavet, mida me teie kohta säilitame, ja paluda meil seda parandada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame niipea, kui see on mõistlikult võimalik, ja 20 tööpäeva jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Kui te ei ole rahul sellega, kuidas oleme teie isikuteavet käidelnud, teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Privacy Commissioner (privaatsusvolinik) palub teil seda teha enne kaebuse esitamist. Kui te ei ole meie vastusega rahul, võite esitada kaebuse asutusele Office of the Privacy Commissioner aadressil www.privacy.org.nz, telefonil 0800 803 909 või posti teel aadressil PO Box 10 094, Wellington 6140.
-
-**Privaatsusrikkumised.** Kui teie isikuteavet puudutav privaatsusrikkumine on põhjustanud või tõenäoliselt põhjustab tõsist kahju, nõuab Privacy Act 2020 (privaatsusseadus), et sellest teatataks privaatsusvolinikule ja teile niipea, kui see on praktiliselt võimalik. Teeme seda või, kui tegemist on tellimusega, mille esitasite toiduautole, aitame toiduautol seda teha.
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui seadus seda lubab. Igas neist on kirjas, kellelt see on, ja kuidas nende saamine lõpetada, ning kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### Toiduautode haldajatele
@@ -186,22 +115,6 @@ Kui teie riiki ei ole loetletud, lisareegleid ei ole: teenusetingimused ja priva
 **Teie õigused kohaliku õiguse alusel.** Miski teenusetingimustes ei võta teilt õigust, mida teie asukoha õiguse kohaselt ei saa piirata ega sellest loobuda.
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida teie provintsi või territooriumi õigus teile annab ja mida ei saa kokkuleppega välistada.
-
-### Privaatsus, kõigile Kanadas
-
-**Kohaldatav õigus.** Kui käitleme Kanadas asuvate inimeste isikuteavet, kohaldatakse seadust Personal Information Protection and Electronic Documents Act (PIPEDA) (isikuteabe kaitse ja elektrooniliste dokumentide seadus) ning Briti Columbias ja Albertas nende endi erasektori privaatsusseadusi, samuti meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust.
-
-**Kus teie teavet hoitakse.** Teie teavet säilitatakse ja töödeldakse Ühendkuningriigis ning osa sellest käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides (privaatsuspoliitika jaotis 6), kus sellele võidakse juurde pääseda nende riikide seaduste alusel.
-
-**Teie taotlused.** Võite küsida isikuteavet, mida me teie kohta säilitame, ja paluda meil seda parandada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame 30 päeva jooksul.
-
-**Kaebused.** Teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Kui te ei ole rahul, võite esitada kaebuse asutusele Office of the Privacy Commissioner of Canada aadressil www.priv.gc.ca või telefonil 1-800-282-1376.
-
-**Rikkumised.** Kui teie teavet puudutav turvameetmete rikkumine tekitab tegeliku olulise kahju ohu, teatame sellest privaatsusvolinikule (Privacy Commissioner) ja teile niipea, kui see on võimalik.
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult teie nõusolekul, nagu nõuab Kanada rämpspostivastane seadus. Igas neist on kirjas, kellelt see on ja kuidas tellimusest loobuda, ning me täidame loobumissoovi 10 tööpäeva jooksul.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Prantsusmaa
 
@@ -226,22 +139,6 @@ Kui teie riiki ei ole loetletud, lisareegleid ei ole: teenusetingimused ja priva
 **Teie klientide andmed.** EL-i isikuandmete kaitse üldmääruse (IKÜM) alusel on teenusetingimuste jaotis 10 meie andmetöötlusleping teiega: teie olete vastutav töötleja ja meie oleme volitatud töötleja samas tähenduses nagu IKÜM-i artiklis 28.
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Prantsusmaa õigus teile annab ja mida ei saa kokkuleppega välistada.
-
-### Privaatsus, kõigile Prantsusmaal
-
-**Kohaldatav õigus.** Kui käitleme Prantsusmaal asuvate inimeste isikuandmeid, kohaldatakse EL-i isikuandmete kaitse üldmäärust (IKÜM) ja Prantsusmaa andmekaitseseadust (loi Informatique et Libertés) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust. Privaatsuspoliitika jaotises 8 loetletud õigused on ka teie õigused IKÜM-i alusel.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis. Euroopa Komisjon on otsustanud, et Ühendkuningriik kaitseb isikuandmeid samal tasemel kui EL, seega ei ole selleks täiendavat kaitsemeedet vaja. Kui teenuseosutaja käitleb andmeid Ameerika Ühendriikides (privaatsuspoliitika jaotis 6), on edastamine kaetud IKÜM-iga tunnustatud kaitsemeetmega.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida meilt, milliseid isikuandmeid me teie kohta säilitame, ja paluda meil neid parandada, kustutada või nende kasutamine lõpetada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame ühe kuu jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Võite esitada kaebuse Prantsusmaa andmekaitse järelevalveasutusele CNIL (Commission nationale de l'informatique et des libertés) aadressil www.cnil.fr või posti teel aadressil CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Oleksime tänulikud, kui annaksite meile esmalt võimaluse asi heastada.
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui Prantsusmaa õigus seda lubab. Igas neist on kirjas, kuidas nende saamine lõpetada, ja kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Euroopa Majanduspiirkond ja Šveits
 
@@ -269,53 +166,6 @@ See jaotis kehtib igas Euroopa Majanduspiirkonna riigis, millel ei ole eespool o
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida teie riigi õigus teile annab ja mida ei saa kokkuleppega välistada.
 
-### Privaatsus, kõigile Euroopa Majanduspiirkonnas ja Šveitsis
-
-**Kohaldatav õigus.** Kui käitleme Euroopa Majanduspiirkonnas asuvate inimeste isikuandmeid, kohaldatakse EL-i isikuandmete kaitse üldmäärust (IKÜM) ja nende riigi andmekaitseõigust; Šveitsis seadust Federal Act on Data Protection (andmekaitse föderaalseadus). Lisaks kohaldatakse meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust. Privaatsuspoliitika jaotises 8 loetletud õigused on ka teie õigused nende seaduste alusel.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis. Euroopa Komisjon ja Šveits on kumbki otsustanud, et Ühendkuningriik kaitseb isikuandmeid piisaval tasemel, seega ei ole selleks täiendavat kaitsemeedet vaja. Kui teenuseosutaja käitleb andmeid Ameerika Ühendriikides (privaatsuspoliitika jaotis 6), on edastamine kaetud kaitsemeetmega, mida IKÜM ja Šveitsi õigus tunnustavad.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida meilt, milliseid isikuandmeid me teie kohta säilitame, ja paluda meil neid parandada, kustutada või nende kasutamine lõpetada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame ühe kuu jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Võite esitada kaebuse selle riigi andmekaitseasutusele, kus te elate või töötate. Euroopa Andmekaitsenõukogu loetleb kõik Euroopa Majanduspiirkonna asutused aadressil www.edpb.europa.eu (About EDPB › Members). Šveitsis on selleks Federal Data Protection and Information Commissioner (föderaalne andmekaitse- ja teabevolinik), www.edoeb.admin.ch. Oleksime tänulikud, kui annaksite meile esmalt võimaluse asi heastada.
-
-| Riik | Andmekaitseasutus |
-|---|---|
-| Austria | dsb.gv.at |
-| Belgia | autoriteprotectiondonnees.be |
-| Bulgaaria | cpdp.bg |
-| Horvaatia | azop.hr |
-| Küpros | dataprotection.gov.cy |
-| Tšehhi Vabariik | uoou.gov.cz |
-| Taani | datatilsynet.dk |
-| Eesti | aki.ee |
-| Soome | tietosuoja.fi |
-| Saksamaa | teie liidumaa asutus (föderaalne: bfdi.bund.de) |
-| Kreeka | dpa.gr |
-| Ungari | naih.hu |
-| Itaalia | garanteprivacy.it |
-| Läti | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Leedu | vdai.lrv.lt |
-| Luksemburg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Madalmaad | autoriteitpersoonsgegevens.nl |
-| Norra | datatilsynet.no |
-| Poola | uodo.gov.pl |
-| Portugal | cnpd.pt |
-| Rumeenia | dataprotection.ro |
-| Slovakkia | dataprotection.gov.sk |
-| Sloveenia | ip-rs.si |
-| Hispaania | aepd.es |
-| Rootsi | imy.se |
-| Šveits | Federal Data Protection and Information Commissioner (FDPIC), edoeb.admin.ch |
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui teie riigi õigus seda lubab. Igas neist on kirjas, kuidas nende saamine lõpetada, ja kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### Toiduautode haldajatele
@@ -337,22 +187,6 @@ See jaotis kehtib igas Euroopa Majanduspiirkonna riigis, millel ei ole eespool o
 **Teie klientide andmed.** Gibraltari andmekaitseõiguse alusel, mis hõlmab EL-i isikuandmete kaitse üldmäärust (IKÜM) sellisena, nagu seda Gibraltaril kohaldatakse, on teenusetingimuste jaotis 10 meie andmetöötlusleping teiega: teie olete vastutav töötleja ja meie oleme volitatud töötleja samas tähenduses nagu IKÜM-i artiklis 28.
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Gibraltari õigus teile annab ja mida ei saa kokkuleppega välistada.
-
-### Privaatsus, kõigile Gibraltaril
-
-**Kohaldatav õigus.** Kui käitleme Gibraltaril asuvate inimeste isikuandmeid, kohaldatakse Gibraltari andmekaitseõigust, sealhulgas EL-i isikuandmete kaitse üldmäärust (IKÜM) sellisena, nagu seda seal kohaldatakse, ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust. Privaatsuspoliitika jaotises 8 loetletud õigused on ka teie õigused selle õiguse alusel.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis. Kui teenuseosutaja käitleb andmeid Ameerika Ühendriikides (privaatsuspoliitika jaotis 6), on edastamine kaetud õiguse poolt tunnustatud kaitsemeetmega.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida meilt, milliseid isikuandmeid me teie kohta säilitame, ja paluda meil neid parandada, kustutada või nende kasutamine lõpetada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame ühe kuu jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Võite esitada kaebuse Gibraltari andmekaitse järelevalveasutusele Gibraltar Regulatory Authority aadressil www.gra.gi. Oleksime tänulikud, kui annaksite meile esmalt võimaluse asi heastada.
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui Gibraltari õigus seda lubab. Igas neist on kirjas, kuidas nende saamine lõpetada, ja kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brasiilia
 
@@ -378,22 +212,6 @@ See jaotis kehtib igas Euroopa Majanduspiirkonna riigis, millel ei ole eespool o
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Brasiilia õigus teile annab ja mida ei saa kokkuleppega välistada.
 
-### Privaatsus, kõigile Brasiilias
-
-**Kohaldatav õigus.** Kui käitleme Brasiilias asuvate inimeste isikuandmeid, kohaldatakse isikuandmete kaitse üldseadust (LGPD) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust. Privaatsuspoliitika jaotises 8 loetletud õigused on ka teie õigused LGPD alusel.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis ning osa neist käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides, nagu on sätestatud privaatsuspoliitika jaotises 6. Edastame neid ainult LGPD-ga lubatud alusel.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite paluda meil kinnitada, kas me säilitame teie kohta isikuandmeid, ja küsida neist koopiat või paluda meil neid parandada, kustutada või nende kasutamine lõpetada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame 15 päeva jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Võite esitada kaebuse ka riiklikule andmekaitseasutusele (Autoridade Nacional de Proteção de Dados, ANPD) aadressil www.gov.br/anpd.
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui Brasiilia õigus seda lubab. Igas neist on kirjas, kuidas nende saamine lõpetada, ja kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Mehhiko
 
 ### Toiduautode haldajatele
@@ -417,22 +235,6 @@ See jaotis kehtib igas Euroopa Majanduspiirkonna riigis, millel ei ole eespool o
 **Teie klientide andmed.** Mehhiko seaduse Federal Law on the Protection of Personal Data Held by Private Parties (eraisikute valduses olevate isikuandmete kaitse föderaalseadus) alusel tähendab teenusetingimuste jaotis 10 sama asja selle seaduse mõistetes: teie olete vastutav töötleja ja meie oleme teie volitatud töötleja (encargado) ning käitleme teie klientide isikuandmeid ainult HatchGrabi käitamiseks teie jaoks ja teie juhiste kohaselt. Vastutate oma privaatsusteate (aviso de privacidad) eest oma klientidele.
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Mehhiko õigus teile annab ja mida ei saa kokkuleppega välistada.
-
-### Privaatsus, kõigile Mehhikos
-
-**Kohaldatav õigus.** Kui käitleme Mehhikos asuvate inimeste isikuandmeid, kohaldatakse seadust Federal Law on the Protection of Personal Data Held by Private Parties (eraisikute valduses olevate isikuandmete kaitse föderaalseadus) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust. See leht ja privaatsuspoliitika moodustavad koos meie privaatsusteate Mehhikos asuvatele inimestele.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis ning osa neist käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides, nagu on sätestatud privaatsuspoliitika jaotises 6, ainult teenuse osutamiseks.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite taotleda juurdepääsu isikuandmetele, mida me teie kohta säilitame, ja paluda meil neid parandada, kustutada või nende kasutamine lõpetada (teie ARCO-õigused). Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame 20 tööpäeva jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Kui te ei ole rahul, võite esitada kaebuse asutusele Secretaría Anticorrupción y Buen Gobierno (korruptsioonivastase võitluse ja hea valitsemise sekretariaat), mis jõustab Mehhiko föderaalset seadust eraisikute valduses olevate isikuandmete kaitse kohta (kehtib alates 21. märtsist 2025).
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui Mehhiko õigus seda lubab. Igas neist on kirjas, kuidas nende saamine lõpetada, ja kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Jaapan
 
@@ -458,22 +260,6 @@ See jaotis kehtib igas Euroopa Majanduspiirkonna riigis, millel ei ole eespool o
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Jaapani õigus teile annab ja mida ei saa kokkuleppega välistada.
 
-### Privaatsus, kõigile Jaapanis
-
-**Kohaldatav õigus.** Kui käitleme Jaapanis asuvate inimeste isikuteavet, kohaldatakse seadust Act on the Protection of Personal Information (isikuteabe kaitse seadus) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust.
-
-**Kus teie teavet hoitakse.** Teie teavet säilitatakse ja töödeldakse Ühendkuningriigis ning osa sellest käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides, nagu on sätestatud privaatsuspoliitika jaotises 6. Jaapan tunnustab, et Ühendkuningriigis ja Euroopa Liidus on isikuteabe kaitse Jaapani tasemel. Ameerika Ühendriikides käideldavat teavet kaitsevad meie lepingud nende teenuseosutajatega.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite paluda meil avaldada isikuteabe, mida me teie kohta säilitame, ja paluda meil seda parandada, kustutada või selle kasutamine lõpetada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame viivitamata. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Võite pöörduda ka asutuse Personal Information Protection Commission (isikuteabe kaitse komisjon) poole aadressil www.ppc.go.jp.
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult inimestele, kes on nõustunud neid saama. Igas neist on kirjas, kellelt see on ja kuidas nende saamine lõpetada, ning kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapur
 
 ### Toiduautode haldajatele
@@ -498,22 +284,6 @@ See jaotis kehtib igas Euroopa Majanduspiirkonna riigis, millel ei ole eespool o
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Singapuri õigus teile annab ja mida ei saa kokkuleppega välistada.
 
-### Privaatsus, kõigile Singapuris
-
-**Kohaldatav õigus.** Kui käitleme Singapuris asuvate inimeste isikuandmeid, kohaldatakse seadust Personal Data Protection Act 2012 (PDPA) (isikuandmete kaitse seadus) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis ning osa neist käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides, nagu on sätestatud privaatsuspoliitika jaotises 6. Tagame, et neid kaitstakse kõikjal PDPA-ga võrreldaval tasemel.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida isikuandmeid, mida me teie kohta säilitame, ja seda, kuidas neid on kasutatud, ning paluda meil neid parandada. Samuti võite võtta tagasi oma nõusoleku nende kasutamiseks meie poolt. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame 30 päeva jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Kui te ei ole rahul, võite esitada kaebuse asutusele Personal Data Protection Commission aadressil www.pdpc.gov.sg.
-
-**Turundussõnumid.** Saadame turunduslikke e-kirju ainult siis, kui Singapuri õigus seda lubab. Igas neist on kirjas, kuidas nende saamine lõpetada, ja kui palute meil saatmine lõpetada, teeme seda. Me ei tee turunduskõnesid ega saada turunduslikke tekstisõnumeid numbritele, mis on kantud Singapuri registrisse Do Not Call Registry. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hongkong
 
 ### Toiduautode haldajatele
@@ -535,22 +305,6 @@ See jaotis kehtib igas Euroopa Majanduspiirkonna riigis, millel ei ole eespool o
 **Teie klientide andmed.** Hongkongi määruse Personal Data (Privacy) Ordinance (Cap. 486) (isikuandmete (privaatsuse) määrus) alusel tähendab teenusetingimuste jaotis 10 sama asja selle määruse mõistetes: teie olete andmekasutaja (data user) ja meie oleme teie andmetöötleja (data processor) ning käitleme teie klientide isikuandmeid ainult HatchGrabi käitamiseks teie jaoks ja teie juhiste kohaselt ega säilita neid kauem, kui selleks vaja on.
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Hongkongi õigus teile annab ja mida ei saa kokkuleppega välistada.
-
-### Privaatsus, kõigile Hongkongis
-
-**Kohaldatav õigus.** Kui käitleme Hongkongis asuvate inimeste isikuandmeid, kohaldatakse määrust Personal Data (Privacy) Ordinance (isikuandmete (privaatsuse) määrus) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis ning osa neist käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides, nagu on sätestatud privaatsuspoliitika jaotises 6.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida koopiat isikuandmetest, mida me teie kohta säilitame, ja paluda meil neid parandada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame 40 päeva jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Kui te ei ole rahul, võite esitada kaebuse asutusele Office of the Privacy Commissioner for Personal Data aadressil www.pcpd.org.hk.
-
-**Turundussõnumid.** Kasutame teie isikuandmeid otseturunduseks ainult teie nõusolekul ning igas turundussõnumis on kirjas, kuidas nende saamine lõpetada. Kui palute meil saatmine lõpetada, teeme seda tasuta. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malaisia
 
@@ -576,22 +330,6 @@ See jaotis kehtib igas Euroopa Majanduspiirkonna riigis, millel ei ole eespool o
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Malaisia õigus teile annab ja mida ei saa kokkuleppega välistada.
 
-### Privaatsus, kõigile Malaisias
-
-**Kohaldatav õigus.** Kui käitleme Malaisias asuvate inimeste isikuandmeid, kohaldatakse seadust Personal Data Protection Act 2010 (PDPA) (isikuandmete kaitse seadus) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis ning osa neist käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides, nagu on sätestatud privaatsuspoliitika jaotises 6. Edastame neid ainult siis, kui PDPA seda lubab.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida isikuandmeid, mida me teie kohta säilitame, ja paluda meil neid parandada või nende kasutamine lõpetada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame 21 päeva jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Kui te ei ole rahul, võite esitada kaebuse ametiisikule Personal Data Protection Commissioner aadressil www.pdp.gov.my.
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui Malaisia õigus seda lubab. Igas neist on kirjas, kuidas nende saamine lõpetada, ja kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Tai
 
 ### Toiduautode haldajatele
@@ -616,22 +354,6 @@ See jaotis kehtib igas Euroopa Majanduspiirkonna riigis, millel ei ole eespool o
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Tai õigus teile annab ja mida ei saa kokkuleppega välistada.
 
-### Privaatsus, kõigile Tais
-
-**Kohaldatav õigus.** Kui käitleme Tais asuvate inimeste isikuandmeid, kohaldatakse seadust Personal Data Protection Act B.E. 2562 (PDPA) (isikuandmete kaitse seadus) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust. Privaatsuspoliitika jaotises 8 loetletud õigused on ka teie õigused PDPA alusel.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis ning osa neist käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides, nagu on sätestatud privaatsuspoliitika jaotises 6. Edastame neid ainult PDPA-ga lubatud alusel.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida koopiat isikuandmetest, mida me teie kohta säilitame, ja paluda meil neid parandada, kustutada või nende kasutamine lõpetada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame 30 päeva jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Võite esitada kaebuse ka asutusele Personal Data Protection Committee aadressil www.pdpc.or.th.
-
-**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui Tai õigus seda lubab. Igas neist on kirjas, kuidas nende saamine lõpetada, ja kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Araabia Ühendemiraadid
 
 ### Toiduautode haldajatele
@@ -653,19 +375,3 @@ See jaotis kehtib igas Euroopa Majanduspiirkonna riigis, millel ei ole eespool o
 **Teie klientide andmed.** Araabia Ühendemiraatide seaduse Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data (isikuandmete kaitse föderaalne dekreetseadus) alusel tähendab teenusetingimuste jaotis 10 sama asja selle seaduse mõistetes: teie olete vastutav töötleja ja meie oleme teie volitatud töötleja ning käitleme teie klientide isikuandmeid ainult HatchGrabi käitamiseks teie jaoks ja teie juhiste kohaselt.
 
 **Teated ja kohaldatav õigus.** Teated toimivad nii, nagu on sätestatud teenusetingimuste jaotises 12: võtame teiega ühendust teie kontol oleval e-posti aadressil ja teie saate meiega ühendust võtta allpool toodud aadressil. Nendele tingimustele kohaldatakse Inglismaa ja Walesi õigust ning Inglismaa ja Walesi kohtutel on pädevus. See ei võta teilt kaitset, mida Araabia Ühendemiraatide õigus teile annab ja mida ei saa kokkuleppega välistada.
-
-### Privaatsus, kõigile Araabia Ühendemiraatides
-
-**Kohaldatav õigus.** Kui käitleme Araabia Ühendemiraatides asuvate inimeste isikuandmeid, kohaldatakse seadust Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data (isikuandmete kaitse föderaalne dekreetseadus) ning lisaks meie privaatsuspoliitikas nimetatud Ühendkuningriigi õigust. Kui asute vabatsoonis, millel on oma andmekaitseseadus, näiteks DIFC või ADGM, kohaldatakse selle asemel seda seadust.
-
-**Kus teie andmeid hoitakse.** Teie andmeid säilitatakse ja töödeldakse Ühendkuningriigis ning osa neist käitlevad teenuseosutajad Euroopa Liidus ja Ameerika Ühendriikides, nagu on sätestatud privaatsuspoliitika jaotises 6. Edastame neid ainult seadusega lubatud alusel.
-
-**Allergia- ja toitumismärkused.** Kui lisate tellimusele allergia- või toitumismärkusi, edastame need koos teie tellimusega toiduautole. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust, nagu on sätestatud privaatsuspoliitika jaotises 7. Me ei kasuta neid millekski muuks.
-
-**Teie taotlused.** Võite küsida isikuandmeid, mida me teie kohta säilitame, ja paluda meil neid parandada, kustutada või nende kasutamine lõpetada. Saatke e-kiri aadressile privacy@hatchgrab.com. Vastame 30 päeva jooksul. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse.
-
-**Kaebused.** Teatage sellest esmalt meile aadressil privacy@hatchgrab.com. Kui te ei ole rahul, võite esitada kaebuse asutusele UAE Data Office.
-
-**Turundussõnumid.** Saadame turundussõnumeid ainult siis, kui Araabia Ühendemiraatide õigus seda lubab. Igas neist on kirjas, kuidas nende saamine lõpetada, ja kui palute meil saatmine lõpetada, teeme seda. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus.
-
-**Kontakt.** privacy@hatchgrab.com või posti teel aadressil HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

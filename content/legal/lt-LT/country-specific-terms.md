@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Konkrečioms šalims taikomos sąlygos
 
 **Paskutinį kartą atnaujinta:** {{LAST_UPDATED}}
 
-Mūsų [Paslaugų teikimo sąlygos](/terms) ir [Privatumo politika](/privacy) taikomos kiekvienoje šalyje, kurioje naudojama HatchGrab. Kai kuriose šalyse taikomos papildomos taisyklės. Šiame puslapyje jos pateikiamos atskirai kiekvienai šaliai.
+Mūsų [Paslaugų teikimo sąlygos](/terms) taikomos kiekvienoje šalyje, kurioje naudojama HatchGrab. Kai kuriose šalyse taikomos papildomos taisyklės. Šiame puslapyje jos pateikiamos atskirai kiekvienai šaliai.
 
-Jei toliau pateiktas skirsnis taikomas jums, jis yra mūsų Paslaugų teikimo sąlygų ir mūsų Privatumo politikos dalis. Jei jame nustatyta kitaip nei jose, tai šaliai taikomas šis puslapis.
+Jei toliau pateiktas skirsnis taikomas jums, jis yra mūsų Paslaugų teikimo sąlygų dalis. Jei jame nustatyta kitaip nei jose, tai šaliai taikomas šis puslapis.
 
-Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikimo sąlygos ir Privatumo politika taikomos taip, kaip parašyta.
-
+Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikimo sąlygos taikomos taip, kaip parašyta. Mūsų [Privatumo politika](/privacy) visose šalyse yra ta pati.
 ---
 
 ## Jungtinės Amerikos Valstijos
@@ -31,26 +30,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 
 **Jūsų klientų duomenys.** Pagal JAV valstijų privatumo įstatymus Paslaugų teikimo sąlygų 10 skyrius jų sąvokomis reiškia tą patį: jūs esate „business“ (verslas), o mes esame jūsų „service provider“ (paslaugų teikėjas) arba „processor“ (tvarkytojas). Jūsų klientų asmeninę informaciją naudojame tik tam, kad jums teiktume HatchGrab. Mes jos neparduodame, nesidaliname ja kontekstus peržengiančios elgsenos reklamos (cross-context behavioral advertising) tikslais ir nenaudojame jos jokiam kitam tikslui, išskyrus tiek, kiek tie įstatymai leidžia paslaugų teikėjui.
 
-### Privatumas visiems, esantiems Jungtinėse Amerikos Valstijose
-
-**Ką renkame ir su kuo tuo dalijamės.** Tą patį, kas nurodyta Privatumo politikoje: furgonų operatorių paskyros ir verslo duomenis; jūsų vardą, kontaktinius duomenis ir užsakymo duomenis, jei užsisakote iš furgono; ir pagrindinius techninius duomenis, jei lankotės mūsų svetainėse. Jais dalijamės su furgonu, iš kurio užsisakote, ir su Privatumo politikos 6 skyriuje išvardytais paslaugų teikėjais, tik tam, kad teiktume paslaugą, arba kai to reikalauja įstatymai. Jie gali būti tvarkomi Jungtinėje Karalystėje, Europos Sąjungoje ir Jungtinėse Amerikos Valstijose.
-
-**Mes neparduodame jūsų asmeninės informacijos ir ja nesidaliname.** Mes neparduodame asmeninės informacijos ir nesidaliname ja kontekstus peržengiančios elgsenos reklamos tikslais.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paklausti mūsų, kokią asmeninę informaciją apie jus turime, ir paprašyti ją ištaisyti ar ištrinti. Rašykite adresu privacy@hatchgrab.com. Prieš imdamiesi veiksmų patikrinsime, ar prašymas tikras, ir atsakysime per 45 dienas. Galite paprašyti, kad prašymą už jus pateiktų kitas asmuo. Dėl to, kad pateikėte prašymą, su jumis nesielgsime kitaip. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys. Jei prašymą atmesime, galite paprašyti mūsų jį peržiūrėti dar kartą, atsakydami į mūsų atsakymą.
-
-**Valstijų privatumo įstatymai.** Kai kurie valstijų privatumo įstatymai taikomi tik verslams, viršijantiems tam tikrą dydį, ir mums jie gali būti netaikomi. Vis dėlto pirmiau nurodytus prašymus vykdome, kad ir kas juos pateiktų Jungtinėse Amerikos Valstijose.
-
-**Vaikai.** Mūsų paslaugos nėra skirtos jaunesniems nei 13 metų vaikams, ir mes sąmoningai nerenkame jų asmeninės informacijos. Jei manote, kad vaikas mums pateikė savo informaciją, susisiekite su mumis, ir mes ją ištrinsime.
-
-**Rinkodaros el. laiškai.** Kiekviename mūsų siunčiamame rinkodaros el. laiške nurodoma, kaip atsisakyti jų gavimo, ir pateikiamas mūsų pašto adresas. Jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Tekstinės žinutės.** Jei mes ar furgonas siūlome atnaujinimus apie užsakymą tekstinėmis žinutėmis, jas gausite tik tada, jei sutiksite jas gauti, ir galėsite bet kada jas sustabdyti.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Airija
 
 ### Food truck operatoriams
@@ -70,22 +49,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 **Jūsų klientų duomenys.** Pagal ES Bendrąjį duomenų apsaugos reglamentą (BDAR) Paslaugų teikimo sąlygų 10 skyrius yra mūsų duomenų tvarkymo sutartis su jumis: jūs esate duomenų valdytojas, o mes — duomenų tvarkytojas, ta pačia prasme kaip BDAR 28 straipsnyje.
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Airijos teisė ir kurios negalima panaikinti susitarimu.
-
-### Privatumas visiems, esantiems Airijoje
-
-**Taikoma teisė.** Kai tvarkome Airijoje esančių asmenų asmens duomenis, taikomas ES Bendrasis duomenų apsaugos reglamentas (BDAR), taip pat mūsų Privatumo politikoje nurodyta JK teisė. Privatumo politikos 8 skyriuje išvardytos teisės yra ir jūsų teisės pagal BDAR.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje. Europos Komisija yra nusprendusi, kad JK asmens duomenis saugo tokiu pačiu lygiu kaip ES, todėl tam papildomos apsaugos priemonės nereikia. Kai paslaugų teikėjas tvarko duomenis Jungtinėse Amerikos Valstijose (Privatumo politikos 6 skyrius), perdavimui taikoma BDAR pripažįstama apsaugos priemonė.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paklausti mūsų, kokius jūsų asmens duomenis turime, ir paprašyti juos ištaisyti, ištrinti arba nustoti juos naudoti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per vieną mėnesį. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Galite pateikti skundą Airijos duomenų apsaugos priežiūros institucijai Data Protection Commission svetainėje www.dataprotection.ie arba paštu adresu 6 Pembroke Row, Dublin 2, D02 X963. Būtume dėkingi, jei pirmiausia suteiktumėte mums galimybę padėtį ištaisyti.
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia įstatymai. Kiekviename jų nurodoma, kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australija
 
@@ -109,22 +72,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Australijos teisė ir kurios negalima panaikinti susitarimu.
 
-### Privatumas visiems, esantiems Australijoje
-
-**Taikoma teisė.** Kai tvarkome Australijoje esančių asmenų asmeninę informaciją, laikomės Privacy Act 1988 (Privatumo įstatymas) nustatytų Australian Privacy Principles (Australijos privatumo principai), taip pat mūsų Privatumo politikoje nurodytos JK teisės.
-
-**Kur saugoma jūsų informacija.** Jūsų informacija saugoma ir tvarkoma Jungtinėje Karalystėje. Dalį jos tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose, kaip nurodyta Privatumo politikos 6 skyriuje.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paklausti mūsų, kokią asmeninę informaciją apie jus turime, ir paprašyti ją ištaisyti ar ištrinti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per 30 dienų. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Jei esate nepatenkinti tuo, kaip tvarkėme jūsų asmeninę informaciją, pirmiausia praneškite mums adresu privacy@hatchgrab.com. Jei jūsų netenkina mūsų atsakymas arba neatsakėme per 30 dienų, galite raštu pateikti skundą Office of the Australian Information Commissioner (OAIC, Australijos informacijos komisaro tarnyba) svetainėje www.oaic.gov.au.
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia įstatymai. Kiekviename jų nurodoma, nuo ko jis siunčiamas ir kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Naujoji Zelandija
 
 ### Food truck operatoriams
@@ -147,24 +94,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Naujosios Zelandijos teisė ir kurios negalima panaikinti susitarimu.
 
-### Privatumas visiems, esantiems Naujojoje Zelandijoje
-
-**Taikoma teisė.** Kai tvarkome Naujojoje Zelandijoje esančių asmenų asmeninę informaciją, taikomas Privacy Act 2020 (Privatumo įstatymas), taip pat mūsų Privatumo politikoje nurodyta JK teisė. Jis mums taikomas todėl, kad vykdome veiklą Naujojoje Zelandijoje, nors esame įsikūrę Jungtinėje Karalystėje.
-
-**Kur saugoma jūsų informacija.** Jūsų informacija saugoma ir tvarkoma Jungtinėje Karalystėje. Dalį jos tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose, kaip nurodyta Privatumo politikos 6 skyriuje.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paprašyti mūsų pateikti asmeninę informaciją, kurią apie jus turime, ir paprašyti ją ištaisyti. Rašykite adresu privacy@hatchgrab.com. Atsakysime kuo greičiau, kiek tai pagrįstai įmanoma, ir per 20 darbo dienų. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Jei esate nepatenkinti tuo, kaip tvarkėme jūsų asmeninę informaciją, pirmiausia praneškite mums adresu privacy@hatchgrab.com. Privacy Commissioner (Privatumo komisaras) prašo tai padaryti prieš pateikiant skundą. Jei jūsų netenkina mūsų atsakymas, galite pateikti skundą Office of the Privacy Commissioner (Privatumo komisaro tarnyba) svetainėje www.privacy.org.nz, telefonu 0800 803 909 arba paštu adresu PO Box 10 094, Wellington 6140.
-
-**Privatumo pažeidimai.** Jei privatumo pažeidimas, susijęs su jūsų asmenine informacija, padarė arba gali padaryti didelę žalą, Privacy Act 2020 (Privatumo įstatymas) reikalauja, kad apie tai kuo skubiau, kiek tai praktiškai įmanoma, būtų pranešta Privacy Commissioner (Privatumo komisarui) ir jums. Mes tai padarysime arba, jei tai susiję su užsakymu, kurį pateikėte furgonui, padėsime tai padaryti furgonui.
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia įstatymai. Kiekviename jų nurodoma, nuo ko jis siunčiamas ir kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### Food truck operatoriams
@@ -186,22 +115,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 **Jūsų teisės pagal vietos teisę.** Niekas Paslaugų teikimo sąlygose neatima teisės, kurios pagal jūsų buvimo vietos teisę negalima apriboti ar jos atsisakyti.
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia jūsų provincijos ar teritorijos teisė ir kurios negalima panaikinti susitarimu.
-
-### Privatumas visiems, esantiems Kanadoje
-
-**Taikoma teisė.** Kai tvarkome Kanadoje esančių asmenų asmeninę informaciją, taikomas Personal Information Protection and Electronic Documents Act (PIPEDA, Asmeninės informacijos apsaugos ir elektroninių dokumentų įstatymas), o Britų Kolumbijoje ir Albertoje — jų pačių privataus sektoriaus privatumo įstatymai, taip pat mūsų Privatumo politikoje nurodyta JK teisė.
-
-**Kur saugoma jūsų informacija.** Jūsų informacija saugoma ir tvarkoma Jungtinėje Karalystėje, o dalį jos tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose (Privatumo politikos 6 skyrius), kur prie jos gali būti suteikta prieiga pagal tų šalių įstatymus.
-
-**Jūsų prašymai.** Galite paprašyti pateikti asmeninę informaciją, kurią apie jus turime, ir paprašyti ją ištaisyti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per 30 dienų.
-
-**Skundai.** Pirmiausia praneškite mums adresu privacy@hatchgrab.com. Jei jūsų tai netenkina, galite pateikti skundą Office of the Privacy Commissioner of Canada (Kanados privatumo komisaro tarnyba) svetainėje www.priv.gc.ca arba telefonu 1-800-282-1376.
-
-**Pažeidimai.** Jei saugumo apsaugos priemonių pažeidimas, susijęs su jūsų informacija, sukelia realią didelės žalos riziką, apie jį pranešime Privacy Commissioner (Privatumo komisarui) ir jums, kai tik tai bus įmanoma.
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik gavę jūsų sutikimą, kaip reikalauja Kanados antišlamšto įstatymas. Kiekviename jų nurodoma, nuo ko jis siunčiamas ir kaip atsisakyti prenumeratos, o prašymą atsisakyti prenumeratos įvykdome per 10 darbo dienų.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Prancūzija
 
@@ -226,22 +139,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 **Jūsų klientų duomenys.** Pagal ES Bendrąjį duomenų apsaugos reglamentą (BDAR) Paslaugų teikimo sąlygų 10 skyrius yra mūsų duomenų tvarkymo sutartis su jumis: jūs esate duomenų valdytojas, o mes — duomenų tvarkytojas, ta pačia prasme kaip BDAR 28 straipsnyje.
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Prancūzijos teisė ir kurios negalima panaikinti susitarimu.
-
-### Privatumas visiems, esantiems Prancūzijoje
-
-**Taikoma teisė.** Kai tvarkome Prancūzijoje esančių asmenų asmens duomenis, taikomi ES Bendrasis duomenų apsaugos reglamentas (BDAR) ir Prancūzijos duomenų apsaugos įstatymas (loi Informatique et Libertés), taip pat mūsų Privatumo politikoje nurodyta JK teisė. Privatumo politikos 8 skyriuje išvardytos teisės yra ir jūsų teisės pagal BDAR.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje. Europos Komisija yra nusprendusi, kad JK asmens duomenis saugo tokiu pačiu lygiu kaip ES, todėl tam papildomos apsaugos priemonės nereikia. Kai paslaugų teikėjas tvarko duomenis Jungtinėse Amerikos Valstijose (Privatumo politikos 6 skyrius), perdavimui taikoma BDAR pripažįstama apsaugos priemonė.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paklausti mūsų, kokius jūsų asmens duomenis turime, ir paprašyti juos ištaisyti, ištrinti arba nustoti juos naudoti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per vieną mėnesį. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Galite pateikti skundą Prancūzijos duomenų apsaugos priežiūros institucijai CNIL (Commission nationale de l'informatique et des libertés) svetainėje www.cnil.fr arba paštu adresu CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Būtume dėkingi, jei pirmiausia suteiktumėte mums galimybę padėtį ištaisyti.
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia Prancūzijos teisė. Kiekviename jų nurodoma, kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Europos ekonominė erdvė ir Šveicarija
 
@@ -269,53 +166,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia jūsų šalies teisė ir kurios negalima panaikinti susitarimu.
 
-### Privatumas visiems, esantiems Europos ekonominėje erdvėje ir Šveicarijoje
-
-**Taikoma teisė.** Kai tvarkome Europos ekonominėje erdvėje esančių asmenų asmens duomenis, taikomi ES Bendrasis duomenų apsaugos reglamentas (BDAR) ir jų šalies duomenų apsaugos teisė; Šveicarijoje — Federal Act on Data Protection (Federalinis duomenų apsaugos įstatymas). Taip pat taikoma mūsų Privatumo politikoje nurodyta JK teisė. Privatumo politikos 8 skyriuje išvardytos teisės yra ir jūsų teisės pagal šiuos teisės aktus.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje. Europos Komisija ir Šveicarija kiekviena yra nusprendusios, kad JK asmens duomenis saugo tinkamu lygiu, todėl tam papildomos apsaugos priemonės nereikia. Kai paslaugų teikėjas tvarko duomenis Jungtinėse Amerikos Valstijose (Privatumo politikos 6 skyrius), perdavimui taikoma BDAR ir Šveicarijos teisės pripažįstama apsaugos priemonė.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paklausti mūsų, kokius jūsų asmens duomenis turime, ir paprašyti juos ištaisyti, ištrinti arba nustoti juos naudoti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per vieną mėnesį. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Galite pateikti skundą šalies, kurioje gyvenate ar dirbate, duomenų apsaugos priežiūros institucijai. Europos duomenų apsaugos valdyba visų Europos ekonominės erdvės institucijų sąrašą skelbia svetainėje www.edpb.europa.eu (About EDPB › Members). Šveicarijoje tai yra Federal Data Protection and Information Commissioner (Federalinis duomenų apsaugos ir informacijos komisaras), www.edoeb.admin.ch. Būtume dėkingi, jei pirmiausia suteiktumėte mums galimybę padėtį ištaisyti.
-
-| Šalis | Duomenų apsaugos priežiūros institucija |
-|---|---|
-| Austrija | dsb.gv.at |
-| Belgija | autoriteprotectiondonnees.be |
-| Bulgarija | cpdp.bg |
-| Kroatija | azop.hr |
-| Kipras | dataprotection.gov.cy |
-| Čekijos Respublika | uoou.gov.cz |
-| Danija | datatilsynet.dk |
-| Estija | aki.ee |
-| Suomija | tietosuoja.fi |
-| Vokietija | jūsų žemės (Land) institucija (federalinė: bfdi.bund.de) |
-| Graikija | dpa.gr |
-| Vengrija | naih.hu |
-| Italija | garanteprivacy.it |
-| Latvija | dvi.gov.lv |
-| Lichtenšteinas | datenschutzstelle.li |
-| Lietuva | vdai.lrv.lt |
-| Liuksemburgas | cnpd.lu |
-| Malta | idpc.org.mt |
-| Nyderlandai | autoriteitpersoonsgegevens.nl |
-| Norvegija | datatilsynet.no |
-| Lenkija | uodo.gov.pl |
-| Portugalija | cnpd.pt |
-| Rumunija | dataprotection.ro |
-| Slovakija | dataprotection.gov.sk |
-| Slovėnija | ip-rs.si |
-| Ispanija | aepd.es |
-| Švedija | imy.se |
-| Šveicarija | Federal Data Protection and Information Commissioner (FDPIC, Federalinis duomenų apsaugos ir informacijos komisaras), edoeb.admin.ch |
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia jūsų šalies teisė. Kiekviename jų nurodoma, kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltaras
 
 ### Food truck operatoriams
@@ -337,22 +187,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 **Jūsų klientų duomenys.** Pagal Gibraltaro duomenų apsaugos teisę, kuri apima ES Bendrąjį duomenų apsaugos reglamentą (BDAR) tokį, koks jis taikomas Gibraltare, Paslaugų teikimo sąlygų 10 skyrius yra mūsų duomenų tvarkymo sutartis su jumis: jūs esate duomenų valdytojas, o mes — duomenų tvarkytojas, ta pačia prasme kaip BDAR 28 straipsnyje.
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Gibraltaro teisė ir kurios negalima panaikinti susitarimu.
-
-### Privatumas visiems, esantiems Gibraltare
-
-**Taikoma teisė.** Kai tvarkome Gibraltare esančių asmenų asmens duomenis, taikoma Gibraltaro duomenų apsaugos teisė, įskaitant ES Bendrąjį duomenų apsaugos reglamentą (BDAR) tokį, koks jis ten taikomas, taip pat mūsų Privatumo politikoje nurodyta JK teisė. Privatumo politikos 8 skyriuje išvardytos teisės yra ir jūsų teisės pagal tą teisę.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje. Kai paslaugų teikėjas tvarko duomenis Jungtinėse Amerikos Valstijose (Privatumo politikos 6 skyrius), perdavimui taikoma teisės pripažįstama apsaugos priemonė.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paklausti mūsų, kokius jūsų asmens duomenis turime, ir paprašyti juos ištaisyti, ištrinti arba nustoti juos naudoti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per vieną mėnesį. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Galite pateikti skundą Gibraltaro duomenų apsaugos priežiūros institucijai Gibraltar Regulatory Authority svetainėje www.gra.gi. Būtume dėkingi, jei pirmiausia suteiktumėte mums galimybę padėtį ištaisyti.
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia Gibraltaro teisė. Kiekviename jų nurodoma, kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brazilija
 
@@ -378,22 +212,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Brazilijos teisė ir kurios negalima panaikinti susitarimu.
 
-### Privatumas visiems, esantiems Brazilijoje
-
-**Taikoma teisė.** Kai tvarkome Brazilijoje esančių asmenų asmens duomenis, taikomas Bendrasis duomenų apsaugos įstatymas (LGPD), taip pat mūsų Privatumo politikoje nurodyta JK teisė. Privatumo politikos 8 skyriuje išvardytos teisės yra ir jūsų teisės pagal LGPD.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje, o dalį jų tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose, kaip nurodyta Privatumo politikos 6 skyriuje. Juos perduodame tik LGPD leidžiamu pagrindu.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paprašyti mūsų patvirtinti, ar turime jūsų asmens duomenų, ir paprašyti jų kopijos arba paprašyti juos ištaisyti, ištrinti ar nustoti juos naudoti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per 15 dienų. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Pirmiausia praneškite mums adresu privacy@hatchgrab.com. Taip pat galite pateikti skundą Nacionalinei duomenų apsaugos institucijai (Autoridade Nacional de Proteção de Dados, ANPD) svetainėje www.gov.br/anpd.
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia Brazilijos teisė. Kiekviename jų nurodoma, kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Meksika
 
 ### Food truck operatoriams
@@ -417,22 +235,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 **Jūsų klientų duomenys.** Pagal Meksikos Federal Law on the Protection of Personal Data Held by Private Parties (Federalinis įstatymas dėl privačių asmenų turimų asmens duomenų apsaugos) Paslaugų teikimo sąlygų 10 skyrius jo sąvokomis reiškia tą patį: jūs esate duomenų valdytojas, o mes — jūsų duomenų tvarkytojas (encargado), ir jūsų klientų asmens duomenis tvarkome tik tam, kad jums teiktume HatchGrab, ir pagal jūsų nurodymus. Jūs atsakote už savo privatumo pranešimą (aviso de privacidad) savo klientams.
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Meksikos teisė ir kurios negalima panaikinti susitarimu.
-
-### Privatumas visiems, esantiems Meksikoje
-
-**Taikoma teisė.** Kai tvarkome Meksikoje esančių asmenų asmens duomenis, taikomas Federal Law on the Protection of Personal Data Held by Private Parties (Federalinis įstatymas dėl privačių asmenų turimų asmens duomenų apsaugos), taip pat mūsų Privatumo politikoje nurodyta JK teisė. Šis puslapis ir Privatumo politika kartu yra mūsų privatumo pranešimas Meksikoje esantiems asmenims.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje, o dalį jų tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose, kaip nurodyta Privatumo politikos 6 skyriuje, tik tam, kad būtų teikiama paslauga.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paprašyti mūsų suteikti prieigą prie asmens duomenų, kuriuos apie jus turime, ir paprašyti juos ištaisyti, ištrinti arba nustoti juos naudoti (jūsų ARCO teisės). Rašykite adresu privacy@hatchgrab.com. Atsakysime per 20 darbo dienų. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Pirmiausia praneškite mums adresu privacy@hatchgrab.com. Jei jūsų tai netenkina, galite pateikti skundą institucijai Secretaría Anticorrupción y Buen Gobierno (Kovos su korupcija ir gero valdymo sekretoriatas), kuri užtikrina Meksikos federalinio įstatymo dėl privačių subjektų turimų asmens duomenų apsaugos vykdymą (galioja nuo 2025 m. kovo 21 d.).
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia Meksikos teisė. Kiekviename jų nurodoma, kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japonija
 
@@ -458,22 +260,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Japonijos teisė ir kurios negalima panaikinti susitarimu.
 
-### Privatumas visiems, esantiems Japonijoje
-
-**Taikoma teisė.** Kai tvarkome Japonijoje esančių asmenų asmeninę informaciją, taikomas Act on the Protection of Personal Information (Asmeninės informacijos apsaugos įstatymas), taip pat mūsų Privatumo politikoje nurodyta JK teisė.
-
-**Kur saugoma jūsų informacija.** Jūsų informacija saugoma ir tvarkoma Jungtinėje Karalystėje, o dalį jos tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose, kaip nurodyta Privatumo politikos 6 skyriuje. Japonija pripažįsta, kad Jungtinėje Karalystėje ir Europos Sąjungoje asmeninė informacija saugoma Japonijos standartą atitinkančiu lygiu. Jungtinėse Amerikos Valstijose tvarkoma informacija saugoma pagal mūsų sutartis su tais teikėjais.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paprašyti mūsų atskleisti asmeninę informaciją, kurią apie jus turime, ir paprašyti ją ištaisyti, ištrinti arba nustoti ją naudoti. Rašykite adresu privacy@hatchgrab.com. Atsakysime nedelsdami. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Pirmiausia praneškite mums adresu privacy@hatchgrab.com. Taip pat galite kreiptis į Personal Information Protection Commission (Asmeninės informacijos apsaugos komisija) svetainėje www.ppc.go.jp.
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik asmenims, kurie sutiko juos gauti. Kiekviename jų nurodoma, nuo ko jis siunčiamas ir kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapūras
 
 ### Food truck operatoriams
@@ -498,22 +284,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Singapūro teisė ir kurios negalima panaikinti susitarimu.
 
-### Privatumas visiems, esantiems Singapūre
-
-**Taikoma teisė.** Kai tvarkome Singapūre esančių asmenų asmens duomenis, taikomas Personal Data Protection Act 2012 (PDPA, Asmens duomenų apsaugos įstatymas), taip pat mūsų Privatumo politikoje nurodyta JK teisė.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje, o dalį jų tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose, kaip nurodyta Privatumo politikos 6 skyriuje. Užtikriname, kad, kad ir kur jie būtų, jie būtų saugomi PDPA standartui prilygstančiu lygiu.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paprašyti pateikti asmens duomenis, kuriuos apie jus turime, ir informaciją, kaip jie buvo naudojami, ir paprašyti juos ištaisyti. Taip pat galite atšaukti savo sutikimą, kad juos naudotume. Rašykite adresu privacy@hatchgrab.com. Atsakysime per 30 dienų. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Pirmiausia praneškite mums adresu privacy@hatchgrab.com. Jei jūsų tai netenkina, galite pateikti skundą Personal Data Protection Commission (Asmens duomenų apsaugos komisija) svetainėje www.pdpc.gov.sg.
-
-**Rinkodaros pranešimai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia Singapūro teisė. Kiekviename jų nurodoma, kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. Rinkodaros skambučių ir tekstinių žinučių nesiunčiame numeriais, įtrauktais į Singapūro Do Not Call Registry (registras „Neskambinti“). El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Honkongas
 
 ### Food truck operatoriams
@@ -535,22 +305,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 **Jūsų klientų duomenys.** Pagal Honkongo Personal Data (Privacy) Ordinance (Cap. 486) (Asmens duomenų (privatumo) potvarkis) Paslaugų teikimo sąlygų 10 skyrius jo sąvokomis reiškia tą patį: jūs esate duomenų naudotojas (data user), o mes — jūsų duomenų tvarkytojas (data processor), ir jūsų klientų asmens duomenis tvarkome tik tam, kad jums teiktume HatchGrab, ir pagal jūsų nurodymus, ir saugome juos ne ilgiau, nei tam reikia.
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Honkongo teisė ir kurios negalima panaikinti susitarimu.
-
-### Privatumas visiems, esantiems Honkonge
-
-**Taikoma teisė.** Kai tvarkome Honkonge esančių asmenų asmens duomenis, taikomas Personal Data (Privacy) Ordinance (Asmens duomenų (privatumo) potvarkis), taip pat mūsų Privatumo politikoje nurodyta JK teisė.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje, o dalį jų tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose, kaip nurodyta Privatumo politikos 6 skyriuje.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paprašyti asmens duomenų, kuriuos apie jus turime, kopijos ir paprašyti juos ištaisyti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per 40 dienų. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Pirmiausia praneškite mums adresu privacy@hatchgrab.com. Jei jūsų tai netenkina, galite pateikti skundą Office of the Privacy Commissioner for Personal Data (Asmens duomenų privatumo komisaro tarnyba) svetainėje www.pcpd.org.hk.
-
-**Rinkodaros pranešimai.** Jūsų asmens duomenis tiesioginei rinkodarai naudojame tik gavę jūsų sutikimą, ir kiekviename rinkodaros pranešime nurodoma, kaip atsisakyti jų gavimo. Jei paprašysite nustoti, taip ir padarysime, nemokamai. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malaizija
 
@@ -576,22 +330,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Malaizijos teisė ir kurios negalima panaikinti susitarimu.
 
-### Privatumas visiems, esantiems Malaizijoje
-
-**Taikoma teisė.** Kai tvarkome Malaizijoje esančių asmenų asmens duomenis, taikomas Personal Data Protection Act 2010 (PDPA, Asmens duomenų apsaugos įstatymas), taip pat mūsų Privatumo politikoje nurodyta JK teisė.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje, o dalį jų tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose, kaip nurodyta Privatumo politikos 6 skyriuje. Juos perduodame tik tada, kai tai leidžia PDPA.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paprašyti pateikti asmens duomenis, kuriuos apie jus turime, ir paprašyti juos ištaisyti arba nustoti juos naudoti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per 21 dieną. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Pirmiausia praneškite mums adresu privacy@hatchgrab.com. Jei jūsų tai netenkina, galite pateikti skundą Personal Data Protection Commissioner (Asmens duomenų apsaugos komisaras) svetainėje www.pdp.gov.my.
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia Malaizijos teisė. Kiekviename jų nurodoma, kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Tailandas
 
 ### Food truck operatoriams
@@ -616,22 +354,6 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia Tailando teisė ir kurios negalima panaikinti susitarimu.
 
-### Privatumas visiems, esantiems Tailande
-
-**Taikoma teisė.** Kai tvarkome Tailande esančių asmenų asmens duomenis, taikomas Personal Data Protection Act B.E. 2562 (PDPA, Asmens duomenų apsaugos įstatymas), taip pat mūsų Privatumo politikoje nurodyta JK teisė. Privatumo politikos 8 skyriuje išvardytos teisės yra ir jūsų teisės pagal PDPA.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje, o dalį jų tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose, kaip nurodyta Privatumo politikos 6 skyriuje. Juos perduodame tik PDPA leidžiamu pagrindu.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paprašyti asmens duomenų, kuriuos apie jus turime, kopijos ir paprašyti juos ištaisyti, ištrinti arba nustoti juos naudoti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per 30 dienų. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Pirmiausia praneškite mums adresu privacy@hatchgrab.com. Taip pat galite pateikti skundą Personal Data Protection Committee (Asmens duomenų apsaugos komitetas) svetainėje www.pdpc.or.th.
-
-**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia Tailando teisė. Kiekviename jų nurodoma, kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Jungtiniai Arabų Emyratai
 
 ### Food truck operatoriams
@@ -653,19 +375,3 @@ Jei jūsų šalies sąraše nėra, papildomų taisyklių nėra: Paslaugų teikim
 **Jūsų klientų duomenys.** Pagal JAE Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data (Federalinis dekretas-įstatymas dėl asmens duomenų apsaugos) Paslaugų teikimo sąlygų 10 skyrius jo sąvokomis reiškia tą patį: jūs esate duomenų valdytojas, o mes — jūsų duomenų tvarkytojas, ir jūsų klientų asmens duomenis tvarkome tik tam, kad jums teiktume HatchGrab, ir pagal jūsų nurodymus.
 
 **Pranešimai ir taikytina teisė.** Pranešimai teikiami taip, kaip nurodyta Paslaugų teikimo sąlygų 12 skyriuje: susisiekiame su jumis jūsų paskyroje nurodytu el. pašto adresu, o jūs mus galite pasiekti toliau nurodytu adresu. Šioms sąlygoms taikoma Anglijos ir Velso teisė, o jurisdikciją turi Anglijos ir Velso teismai. Tai neatima jokios apsaugos, kurią jums suteikia JAE teisė ir kurios negalima panaikinti susitarimu.
-
-### Privatumas visiems, esantiems Jungtiniuose Arabų Emyratuose
-
-**Taikoma teisė.** Kai tvarkome Jungtiniuose Arabų Emyratuose esančių asmenų asmens duomenis, taikomas Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data (Federalinis dekretas-įstatymas dėl asmens duomenų apsaugos), taip pat mūsų Privatumo politikoje nurodyta JK teisė. Jei esate laisvojoje zonoje, turinčioje savo duomenų apsaugos teisę, pavyzdžiui, DIFC ar ADGM, vietoj jo taikoma ta teisė.
-
-**Kur saugomi jūsų duomenys.** Jūsų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje, o dalį jų tvarko paslaugų teikėjai Europos Sąjungoje ir Jungtinėse Amerikos Valstijose, kaip nurodyta Privatumo politikos 6 skyriuje. Juos perduodame tik teisės leidžiamu pagrindu.
-
-**Pastabos apie alergijas ir mitybą.** Jei prie užsakymo pridedate pastabų apie alergijas ar mitybą, perduodame jas furgonui kartu su jūsų užsakymu. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo, kaip nurodyta Privatumo politikos 7 skyriuje. Niekam kitam jų nenaudojame.
-
-**Jūsų prašymai.** Galite paprašyti pateikti asmens duomenis, kuriuos apie jus turime, ir paprašyti juos ištaisyti, ištrinti arba nustoti juos naudoti. Rašykite adresu privacy@hatchgrab.com. Atsakysime per 30 dienų. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys.
-
-**Skundai.** Pirmiausia praneškite mums adresu privacy@hatchgrab.com. Jei jūsų tai netenkina, galite pateikti skundą UAE Data Office (JAE duomenų biuras).
-
-**Rinkodaros pranešimai.** Rinkodaros pranešimus siunčiame tik tada, kai tai leidžia JAE teisė. Kiekviename jų nurodoma, kaip atsisakyti jų gavimo, ir jei paprašysite nustoti, taip ir padarysime. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara.
-
-**Kontaktai.** privacy@hatchgrab.com arba paštu adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

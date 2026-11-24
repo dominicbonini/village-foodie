@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Política de privacidad
 
 **Última actualización:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ También abarca las aplicaciones de HatchGrab para móvil y tableta en iOS y And
 
 Si ha llegado aquí solo porque ha pedido comida a un food truck, la sección **«Si ha hecho un pedido a un food truck»** es la parte que le afecta.
 
-**Algunos países tienen normas adicionales.** Cuando le sean aplicables, figuran en nuestra página de [Condiciones específicas por país](/country-terms), que forma parte de esta política.
-
+**Esta política se aplica dondequiera que se encuentre.** Cumplimos la legislación de protección de datos del Reino Unido y, cuando también se aplique la legislación de protección de datos del país en el que vive, cumplimos también esta.
 ---
 
 ## 1. Quiénes somos
@@ -84,6 +83,8 @@ Cuando usted hace un pedido a través de la página de pedidos de un food truck,
 
 El food truck decide durante cuánto tiempo conserva sus datos y cómo se pone en contacto con usted después. A ello se aplican sus propias prácticas de privacidad. Si no está seguro de qué food truck se trata, póngase en contacto con nosotros en privacy@hatchgrab.com y le indicaremos cuál es.
 
+**Notas sobre alergias y dietas.** Se las transmitimos al food truck junto con su pedido y no las utilizamos para nada más. Las eliminamos, junto con su nombre y sus datos de contacto, 12 meses después del pedido (véase la sección 7).
+
 **Información sobre alérgenos.** Cuando un food truck publica información sobre alérgenos, mostramos lo que el food truck ha confirmado. No la verificamos de forma independiente. Informe siempre directamente al food truck de cualquier alergia grave.
 
 ---
@@ -135,7 +136,7 @@ También podemos comunicar datos cuando la ley nos obligue a ello, o para formul
 
 **No vendemos datos personales ni los compartimos con fines publicitarios.**
 
-**Transferencias internacionales.** Los datos de su cuenta y los datos de los pedidos se almacenan y se tratan en el Reino Unido. Algunas operaciones se realizan fuera de él: la extracción de cartas y las respuestas automáticas de WhatsApp, que utilizan un servicio de Google en Estados Unidos; la entrega de mensajes de WhatsApp, que realiza Meta en Estados Unidos; los pagos, que gestiona Stripe en Estados Unidos; y las notificaciones push, que entregan Apple y Google en Estados Unidos. Cuando los datos salen del Reino Unido, la transferencia está amparada por la normativa de adecuación del Reino Unido o por el International Data Transfer Agreement (Acuerdo Internacional de Transferencia de Datos) o el Addendum (Adenda), que ofrecen garantías adecuadas. Puede solicitarnos información sobre las garantías aplicables.
+**Transferencias internacionales.** Los datos de su cuenta y los datos de los pedidos se almacenan y se tratan en el Reino Unido. Algunas operaciones se realizan fuera de él: la extracción de cartas y las respuestas automáticas de WhatsApp, que utilizan un servicio de Google en Estados Unidos; la entrega de mensajes de WhatsApp, que realiza Meta en Estados Unidos; los pagos, que gestiona Stripe en Estados Unidos; y las notificaciones push, que entregan Apple y Google en Estados Unidos. Cuando los datos salen del Reino Unido, la transferencia está amparada por la normativa de adecuación del Reino Unido o por el International Data Transfer Agreement (Acuerdo Internacional de Transferencia de Datos) o el Addendum (Adenda) y, cuando la legislación de su país lo exija, por una garantía reconocida por dicha legislación. Puede solicitarnos información sobre las garantías aplicables.
 
 A medida que crezca nuestro servicio, podremos incorporar proveedores, entre ellos un proveedor de SMS. Actualizaremos esta lista antes de que empiecen a tratar sus datos.
 
@@ -161,7 +162,7 @@ Suprimimos o anonimizamos los datos una vez finalizados estos plazos.
 
 ## 8. Sus derechos
 
-Conforme a la legislación de protección de datos del Reino Unido, usted tiene derecho a:
+Conforme a la legislación de protección de datos del Reino Unido y, cuando sea aplicable, a la legislación del país en el que vive, usted tiene derecho a:
 
 - preguntar qué datos personales tenemos sobre usted y obtener una copia;
 - obtener la rectificación de los datos inexactos;
@@ -171,11 +172,17 @@ Conforme a la legislación de protección de datos del Reino Unido, usted tiene 
 - oponerse al tratamiento basado en intereses legítimos;
 - retirar su consentimiento en cualquier momento, cuando nos basemos en el consentimiento.
 
-Para ejercer cualquiera de estos derechos, escriba a privacy@hatchgrab.com. Le responderemos en el plazo de un mes.
+La legislación del país en el que vive puede reconocerle estos derechos con otros nombres, o derechos adicionales. También tiene esos derechos.
 
-**Eliminación de su cuenta.** Los operadores pueden solicitar la eliminación de su cuenta desde la aplicación o escribiendo a privacy@hatchgrab.com. Eliminaremos su cuenta y sus datos personales, salvo cuando estemos obligados a conservar registros por motivos contables o legales.
+**Cómo presentar una solicitud.** Escriba a privacy@hatchgrab.com. Comprobaremos que la solicitud es auténtica antes de atenderla. Puede pedir a otra persona que presente la solicitud en su nombre, y no le trataremos de forma diferente por presentarla. Le responderemos en el plazo de un mes, o antes si la legislación de su país lo exige. Si hizo un pedido a un food truck, podemos transmitir su solicitud a ese food truck, porque es él quien decide cómo se utilizan los datos de su pedido. Si rechazamos una solicitud, puede pedirnos que la examinemos de nuevo respondiendo a nuestra respuesta.
 
-**Reclamaciones.** Si no está satisfecho con la forma en que hemos tratado sus datos, puede presentar una reclamación ante la Information Commissioner's Office (la autoridad de protección de datos del Reino Unido) en ico.org.uk, o en el teléfono 0303 123 1113. Le agradeceríamos que nos diera antes la oportunidad de resolverlo.
+**Eliminación de su cuenta.** Los operadores pueden solicitar la eliminación de su cuenta desde la aplicación o escribiendo a privacy@hatchgrab.com. Eliminaremos su cuenta y sus datos personales, salvo cuando estemos obligados a conservar registros por motivos contables o legales. Cuando se elimina la cuenta de un operador, también suprimimos los nombres, los datos de contacto y las notas de sus clientes de los pedidos que conservamos.
+
+**Correos electrónicos comerciales.** Solo enviamos correos electrónicos comerciales cuando la legislación del país en el que vive lo permite, lo que en algunos países significa únicamente con su consentimiento. Todos ellos indican quién los envía, incluyen nuestra dirección postal y le indican cómo dejar de recibirlos. Si nos pide que dejemos de enviarlos, lo haremos, sin coste alguno y en un plazo de 10 días hábiles. Los correos electrónicos sobre un pedido o sobre su cuenta no son comunicaciones comerciales. Si nosotros o un food truck ofrecemos actualizaciones del pedido por mensaje de texto, solo las recibirá si acepta recibirlas, y puede detenerlas en cualquier momento.
+
+**Si algo sale mal.** Si una violación de seguridad que afecte a sus datos personales puede causarle un daño grave, se lo comunicaremos a usted y a la autoridad de control lo antes posible cuando la ley lo exija, o ayudaremos al food truck al que hizo el pedido a hacerlo.
+
+**Reclamaciones.** Comuníquenoslo primero en privacy@hatchgrab.com; le agradeceríamos la oportunidad de solucionarlo. También puede presentar una reclamación ante la autoridad de protección de datos del país en el que vive. En el Reino Unido, es la Information Commissioner's Office (la autoridad de protección de datos del Reino Unido), en ico.org.uk o en el teléfono 0303 123 1113.
 
 ---
 

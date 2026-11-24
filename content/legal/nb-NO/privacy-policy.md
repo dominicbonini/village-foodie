@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Personvernerklæring
 
 **Sist oppdatert:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Den omfatter også HatchGrabs apper for mobil og nettbrett for iOS og Android.
 
 Hvis du bare er her fordi du har bestilt mat fra en matbil, er det avsnittet **«Hvis du har bestilt fra en matbil»** som gjelder for deg.
 
-**Noen land har tilleggsregler.** Der de gjelder for deg, står de på siden vår med [landsspesifikke vilkår](/country-terms), som er en del av denne erklæringen.
-
+**Denne erklæringen gjelder uansett hvor du er.** Vi følger britisk personvernlovgivning, og der personvernlovgivningen i landet du bor i, også gjelder, følger vi den også.
 ---
 
 ## 1. Hvem vi er
@@ -84,6 +83,8 @@ Når du legger inn en bestilling via en matbils bestillingsside, samler vi inn o
 
 Matbilen bestemmer hvor lenge opplysningene dine skal oppbevares, og hvordan den kontakter deg senere. Dens egen personvernpraksis gjelder for dette. Hvis du ikke er sikker på hvem matbilen er, kan du kontakte oss på privacy@hatchgrab.com, så viser vi deg til den.
 
+**Merknader om allergier og kosthold.** Vi videreformidler dem til matbilen sammen med bestillingen din og bruker dem ikke til noe annet. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen (se punkt 7).
+
 **Allergeninformasjon.** Der en matbil publiserer allergeninformasjon, viser vi det matbilen har bekreftet. Vi kontrollerer det ikke selvstendig. Si alltid fra direkte til matbilen om en alvorlig allergi.
 
 ---
@@ -135,7 +136,7 @@ Vi kan også utlevere opplysninger der loven pålegger oss det, eller for å fas
 
 **Vi selger ikke personopplysninger, og vi deler dem ikke for annonsering.**
 
-**Internasjonale overføringer.** Kontoopplysningene og bestillingsopplysningene dine lagres og behandles i Storbritannia. Noe håndteres utenfor Storbritannia: uthenting av menyer og automatiske WhatsApp-svar, som bruker en Google-tjeneste i USA; levering av WhatsApp-meldinger, som håndteres av Meta i USA; betalinger, som håndteres av Stripe i USA; og push-varsler, som leveres av Apple og Google i USA. Der opplysninger forlater Storbritannia, er overføringen dekket av britiske adekvansbestemmelser (UK adequacy regulations) eller av International Data Transfer Agreement eller Addendum (britisk avtale om, eller tillegg for, internasjonal dataoverføring), som gir nødvendige garantier. Du kan be oss om nærmere opplysninger om garantiene som gjelder.
+**Internasjonale overføringer.** Kontoopplysningene og bestillingsopplysningene dine lagres og behandles i Storbritannia. Noe håndteres utenfor Storbritannia: uthenting av menyer og automatiske WhatsApp-svar, som bruker en Google-tjeneste i USA; levering av WhatsApp-meldinger, som håndteres av Meta i USA; betalinger, som håndteres av Stripe i USA; og push-varsler, som leveres av Apple og Google i USA. Der opplysninger forlater Storbritannia, er overføringen dekket av britiske adekvansbestemmelser (UK adequacy regulations) eller av International Data Transfer Agreement eller Addendum (britisk avtale om, eller tillegg for, internasjonal dataoverføring) og, der lovgivningen i landet ditt krever det, av en garanti som den lovgivningen anerkjenner. Du kan be oss om nærmere opplysninger om garantiene som gjelder.
 
 Etter hvert som tjenesten vår vokser, kan vi legge til leverandører, blant annet en SMS-leverandør. Vi oppdaterer denne listen før de begynner å behandle opplysningene dine.
 
@@ -161,7 +162,7 @@ Vi sletter eller anonymiserer opplysninger når disse periodene er over.
 
 ## 8. Dine rettigheter
 
-Etter britisk personvernlovgivning har du rett til å:
+Etter britisk personvernlovgivning, og lovgivningen i landet du bor i der den gjelder, har du rett til å:
 
 - spørre hvilke personopplysninger vi har om deg, og få en kopi;
 - få uriktige opplysninger rettet;
@@ -171,11 +172,17 @@ Etter britisk personvernlovgivning har du rett til å:
 - protestere mot behandling basert på berettigede interesser;
 - når som helst trekke tilbake samtykke, der vi bygger på samtykke.
 
-For å utøve noen av disse rettighetene kan du sende e-post til privacy@hatchgrab.com. Vi svarer innen én måned.
+Lovgivningen der du bor, kan gi deg disse rettighetene under andre navn, eller flere rettigheter. Dem har du også.
 
-**Sletting av kontoen din.** Operatører kan be om sletting av kontoen i appen eller ved å sende e-post til privacy@hatchgrab.com. Vi sletter kontoen din og personopplysningene dine, unntatt der vi er pålagt å oppbevare opplysninger av regnskapsmessige eller rettslige grunner.
+**Slik sender du en forespørsel.** Send e-post til privacy@hatchgrab.com. Vi kontrollerer at forespørselen er ekte før vi handler på den. Du kan be noen om å sende forespørselen for deg, og vi behandler deg ikke annerledes fordi du sender en. Vi svarer innen én måned, eller tidligere hvis lovgivningen i landet ditt krever det. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes. Hvis vi avslår en forespørsel, kan du be oss om å vurdere den på nytt ved å svare på svaret vårt.
 
-**Klager.** Hvis du er misfornøyd med hvordan vi har håndtert opplysningene dine, kan du klage til Information Commissioner's Office (det britiske datatilsynet) på ico.org.uk, eller på telefon 0303 123 1113. Vi setter pris på å få muligheten til å ta tak i saken først.
+**Sletting av kontoen din.** Operatører kan be om sletting av kontoen i appen eller ved å sende e-post til privacy@hatchgrab.com. Vi sletter kontoen din og personopplysningene dine, unntatt der vi er pålagt å oppbevare opplysninger av regnskapsmessige eller rettslige grunner. Når en operatørs konto slettes, fjerner vi også navnene, kontaktopplysningene og merknadene til operatørens kunder fra bestillingene vi oppbevarer.
+
+**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der lovgivningen der du bor, tillater det, noe som i enkelte land betyr bare med ditt samtykke. Hver av dem opplyser om hvem den er fra, inneholder postadressen vår og forteller deg hvordan du slutter å motta dem. Hvis du ber oss om å slutte, gjør vi det, kostnadsfritt og innen 10 virkedager. E-poster om en bestilling eller kontoen din er ikke markedsføring. Hvis vi eller en matbil tilbyr oppdateringer om bestillinger på tekstmelding, får du dem bare hvis du samtykker, og du kan stoppe dem når som helst.
+
+**Hvis noe går galt.** Hvis et brudd på personopplysningssikkerheten som gjelder personopplysningene dine, sannsynligvis vil påføre deg alvorlig skade, varsler vi deg og tilsynsmyndigheten så snart vi kan der loven krever det, eller hjelper matbilen du bestilte fra, med å gjøre det.
+
+**Klager.** Si fra til oss først på privacy@hatchgrab.com; vi setter pris på å få muligheten til å rette opp i saken. Du kan også klage til tilsynsmyndigheten for personvern der du bor. I Storbritannia er det Information Commissioner's Office (det britiske datatilsynet), på ico.org.uk eller på telefon 0303 123 1113.
 
 ---
 

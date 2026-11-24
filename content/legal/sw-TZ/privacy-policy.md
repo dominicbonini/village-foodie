@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Sera ya Faragha
 
 **Ilisasishwa mwisho:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Sera hii inahusu pia programu za HatchGrab za simu ya mkononi na tableti kwa iOS
 
 Ikiwa umefika hapa kwa sababu tu uliagiza chakula kutoka kwa food truck, sehemu ya **“Ikiwa uliagiza kutoka kwa food truck”** ndiyo inayokuhusu.
 
-**Baadhi ya nchi zina kanuni za ziada.** Pale zinapokuhusu, ziko kwenye ukurasa wetu wa [Masharti ya nchi mahususi](/country-terms), ambao ni sehemu ya sera hii.
-
+**Sera hii inatumika popote ulipo.** Tunafuata sheria ya Uingereza ya ulinzi wa data, na pale sheria ya ulinzi wa data ya nchi unayoishi inapotumika pia, tunaifuata hiyo pia.
 ---
 
 ## 1. Sisi ni nani
@@ -84,6 +83,8 @@ Unapoweka oda kupitia ukurasa wa oda wa food truck, tunakusanya na kuipa food tr
 
 Food truck ndiyo huamua muda wa kuhifadhi taarifa zako na jinsi watakavyowasiliana nawe baadaye. Taratibu zao wenyewe za faragha ndizo zinazohusika katika hilo. Ikiwa huna uhakika food truck ni ipi, wasiliana nasi kupitia privacy@hatchgrab.com na tutakuelekeza kwao.
 
+**Maelezo ya mzio na ya lishe.** Tunayapitisha kwa food truck pamoja na oda yako na hatuyatumii kwa jambo lingine lolote. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda (tazama sehemu ya 7).
+
 **Taarifa za viambato vinavyosababisha mzio.** Pale food truck inapochapisha taarifa za viambato vinavyosababisha mzio, tunaonyesha kile ambacho food truck imethibitisha. Hatuzihakiki sisi wenyewe. Daima iambie food truck moja kwa moja ikiwa una mzio mkali.
 
 ---
@@ -135,7 +136,7 @@ Tunaweza pia kufichua data pale tunapolazimika kisheria, au ili kuthibitisha au 
 
 **Hatuuzi taarifa binafsi, na hatuzishiriki kwa ajili ya matangazo.**
 
-**Uhamishaji wa data kimataifa.** Data za akaunti yako na data za oda zinahifadhiwa na kuchakatwa nchini Uingereza. Baadhi ya mambo yanashughulikiwa nje yake: kutoa yaliyomo kwenye menyu na majibu ya kiotomatiki ya WhatsApp, ambayo yanatumia huduma ya Google nchini Marekani; kufikisha ujumbe wa WhatsApp, kunakoshughulikiwa na Meta nchini Marekani; malipo, yanayoshughulikiwa na Stripe nchini Marekani; na arifa (push notifications), zinazofikishwa na Apple na Google nchini Marekani. Pale data zinapotoka nje ya Uingereza, uhamishaji unalindwa na kanuni za utoshelevu za Uingereza (UK adequacy regulations) au na Mkataba wa Kimataifa wa Uhamishaji wa Data (International Data Transfer Agreement) au Nyongeza yake (Addendum), ambavyo vinatoa kinga zinazofaa. Unaweza kutuomba maelezo ya kinga zinazohusika.
+**Uhamishaji wa data kimataifa.** Data za akaunti yako na data za oda zinahifadhiwa na kuchakatwa nchini Uingereza. Baadhi ya mambo yanashughulikiwa nje yake: kutoa yaliyomo kwenye menyu na majibu ya kiotomatiki ya WhatsApp, ambayo yanatumia huduma ya Google nchini Marekani; kufikisha ujumbe wa WhatsApp, kunakoshughulikiwa na Meta nchini Marekani; malipo, yanayoshughulikiwa na Stripe nchini Marekani; na arifa (push notifications), zinazofikishwa na Apple na Google nchini Marekani. Pale data zinapotoka nje ya Uingereza, uhamishaji unalindwa na kanuni za utoshelevu za Uingereza (UK adequacy regulations) au na Mkataba wa Kimataifa wa Uhamishaji wa Data (International Data Transfer Agreement) au Nyongeza yake (Addendum), na, pale sheria ya nchi yako inapotaka hivyo, na kinga inayotambuliwa na sheria hiyo. Unaweza kutuomba maelezo ya kinga zinazohusika.
 
 Huduma yetu inapokua tunaweza kuongeza watoa huduma, akiwemo mtoa huduma wa SMS. Tutasasisha orodha hii kabla hawajaanza kuchakata data zako.
 
@@ -161,7 +162,7 @@ Tunafuta data au kuzifanya zisimtambulishe mtu mara vipindi hivi vinapoisha.
 
 ## 8. Haki zako
 
-Chini ya sheria ya Uingereza ya ulinzi wa data una haki ya:
+Chini ya sheria ya Uingereza ya ulinzi wa data, na sheria ya nchi unayoishi pale inapotumika, una haki ya:
 
 - kuuliza ni taarifa binafsi zipi tunazoshikilia kukuhusu, na kupata nakala yake;
 - kurekebishiwa data zisizo sahihi;
@@ -171,11 +172,17 @@ Chini ya sheria ya Uingereza ya ulinzi wa data una haki ya:
 - kupinga uchakataji unaotegemea maslahi halali;
 - kuondoa ridhaa wakati wowote, pale tunapotegemea ridhaa.
 
-Ili kutumia yoyote kati ya haki hizi, tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya mwezi mmoja.
+Sheria ya mahali unapoishi inaweza kukupa haki hizi kwa majina mengine, au haki za ziada. Haki hizo pia unazo.
 
-**Kufuta akaunti yako.** Waendeshaji wanaweza kuomba akaunti ifutwe kutoka ndani ya programu au kwa kutuma barua pepe kwa privacy@hatchgrab.com. Tutafuta akaunti yako na taarifa binafsi, isipokuwa pale tunapolazimika kuhifadhi rekodi kwa sababu za kihasibu au za kisheria.
+**Kutoa ombi.** Tuma barua pepe kwa privacy@hatchgrab.com. Tutahakiki kwamba ombi ni halisi kabla ya kulishughulikia. Unaweza kumwomba mtu mwingine atoe ombi kwa niaba yako, na hatutakutendea tofauti kwa sababu ya kutoa ombi. Tutajibu ndani ya mwezi mmoja, au mapema zaidi ikiwa sheria ya nchi yako inataka hivyo. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika. Tukikataa ombi, unaweza kutuomba tuliangalie upya kwa kujibu jibu letu.
 
-**Malalamiko.** Ikiwa huridhiki na jinsi tulivyoshughulikia data zako, unaweza kulalamika kwa Ofisi ya Kamishna wa Taarifa (Information Commissioner’s Office) kupitia ico.org.uk, au kwa simu 0303 123 1113. Tungependa kupata nafasi ya kulishughulikia kwanza.
+**Kufuta akaunti yako.** Waendeshaji wanaweza kuomba akaunti ifutwe kutoka ndani ya programu au kwa kutuma barua pepe kwa privacy@hatchgrab.com. Tutafuta akaunti yako na taarifa binafsi, isipokuwa pale tunapolazimika kuhifadhi rekodi kwa sababu za kihasibu au za kisheria. Akaunti ya mwendeshaji inapofutwa, tunaondoa pia majina, taarifa za mawasiliano na maelezo ya wateja wake kwenye oda tunazohifadhi.
+
+**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria ya mahali unapoishi inaporuhusu, jambo ambalo katika baadhi ya nchi linamaanisha kwa ridhaa yako tu. Kila moja inasema imetoka kwa nani, ina anwani yetu ya posta na inakueleza jinsi ya kuacha kuzipokea. Ukituomba tuache, tutaacha, bila malipo na ndani ya siku 10 za kazi. Barua pepe kuhusu oda au akaunti yako si za masoko. Ikiwa sisi au food truck tunatoa taarifa za oda kwa ujumbe mfupi, utazipata tu ukikubali, na unaweza kuzisimamisha wakati wowote.
+
+**Jambo likienda vibaya.** Ikiwa uvunjaji unaohusu data zako binafsi una uwezekano wa kukusababishia madhara makubwa, tutakujulisha wewe na mamlaka ya usimamizi mapema iwezekanavyo pale sheria inapotaka hivyo, au tutaisaidia food truck uliyoagiza kutoka kwayo kufanya hivyo.
+
+**Malalamiko.** Tuambie kwanza kupitia privacy@hatchgrab.com; tungependa kupata nafasi ya kurekebisha mambo. Unaweza pia kulalamika kwa mamlaka ya usimamizi wa ulinzi wa data ya mahali unapoishi. Nchini Uingereza, hiyo ni Ofisi ya Kamishna wa Taarifa (Information Commissioner's Office), kupitia ico.org.uk au kwa simu 0303 123 1113.
 
 ---
 

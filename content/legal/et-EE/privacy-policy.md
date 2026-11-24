@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Privaatsuspoliitika
 
 **Viimati uuendatud:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Poliitika hõlmab ka HatchGrabi mobiili- ja tahvelarvutirakendusi iOS-i ja Andro
 
 Kui tulite siia ainult seetõttu, et tellisite toiduautolt toitu, kehtib teie kohta jaotis **„Kui tellisite toiduautolt“**.
 
-**Mõnes riigis kehtivad lisareeglid.** Kui need kehtivad teie kohta, on need esitatud meie lehel [Riigipõhised tingimused](/country-terms), mis on käesoleva poliitika osa.
-
+**See poliitika kehtib olenemata sellest, kus te asute.** Järgime Ühendkuningriigi andmekaitseõigust ning kui kohaldub ka selle riigi andmekaitseõigus, kus te elate, järgime ka seda.
 ---
 
 ## 1. Kes me oleme
@@ -84,6 +83,8 @@ Kui esitate tellimuse toiduauto tellimislehe kaudu, kogume ja edastame sellele t
 
 Toiduauto otsustab, kui kaua teie andmeid säilitada ja kuidas teiega hiljem ühendust võtta. Selle suhtes kehtivad toiduauto enda privaatsustavad. Kui te pole kindel, milline toiduauto see on, võtke meiega ühendust aadressil privacy@hatchgrab.com ja me juhatame teid selle juurde.
 
+**Allergia- ja toitumismärkused.** Edastame need koos teie tellimusega toiduautole ega kasuta neid millekski muuks. Eemaldame need koos teie nime ja kontaktandmetega 12 kuud pärast tellimust (vt jaotis 7).
+
 **Allergeeniteave.** Kui toiduauto avaldab allergeeniteavet, kuvame selle, mida toiduauto on kinnitanud. Me ei kontrolli seda sõltumatult. Rääkige raskest allergiast alati otse toiduautole.
 
 ---
@@ -135,7 +136,7 @@ Võime andmeid avaldada ka siis, kui seadus seda nõuab, või õigusnõuete esit
 
 **Me ei müü isikuandmeid ega jaga neid reklaami eesmärgil.**
 
-**Rahvusvahelised edastamised.** Teie kontoandmeid ja tellimuste andmeid säilitatakse ja töödeldakse Ühendkuningriigis. Mõnda toimingut tehakse väljaspool seda: menüüde väljalugemine ja WhatsAppi automaatsed vastused, mis kasutavad Google’i teenust Ameerika Ühendriikides; WhatsAppi sõnumite edastamine, mida teeb Meta Ameerika Ühendriikides; maksed, mida töötleb Stripe Ameerika Ühendriikides; ning tõuketeavitused, mida edastavad Apple ja Google Ameerika Ühendriikides. Kui andmed lahkuvad Ühendkuningriigist, on edastamine kaetud Ühendkuningriigi piisavusotsustega (UK adequacy regulations) või dokumendiga International Data Transfer Agreement (rahvusvahelise andmeedastuse leping) või Addendum (lisa), mis tagavad asjakohased kaitsemeetmed. Võite küsida meilt teavet kohaldatavate kaitsemeetmete kohta.
+**Rahvusvahelised edastamised.** Teie kontoandmeid ja tellimuste andmeid säilitatakse ja töödeldakse Ühendkuningriigis. Mõnda toimingut tehakse väljaspool seda: menüüde väljalugemine ja WhatsAppi automaatsed vastused, mis kasutavad Google’i teenust Ameerika Ühendriikides; WhatsAppi sõnumite edastamine, mida teeb Meta Ameerika Ühendriikides; maksed, mida töötleb Stripe Ameerika Ühendriikides; ning tõuketeavitused, mida edastavad Apple ja Google Ameerika Ühendriikides. Kui andmed lahkuvad Ühendkuningriigist, on edastamine kaetud Ühendkuningriigi piisavusotsustega (UK adequacy regulations) või dokumendiga International Data Transfer Agreement (rahvusvahelise andmeedastuse leping) või Addendum (lisa) ning, kui teie riigi õigus seda nõuab, kaitsemeetmega, mida see õigus tunnustab. Võite küsida meilt teavet kohaldatavate kaitsemeetmete kohta.
 
 Teenuse kasvades võime lisada teenuseosutajaid, sealhulgas SMS-teenuse pakkuja. Uuendame seda loetelu enne, kui nad hakkavad teie andmeid töötlema.
 
@@ -161,7 +162,7 @@ Kui need tähtajad lõppevad, kustutame või anonüümime andmed.
 
 ## 8. Teie õigused
 
-Ühendkuningriigi andmekaitseõiguse alusel on teil õigus:
+Ühendkuningriigi andmekaitseõiguse ja teie elukohariigi õiguse alusel, kui see kohaldub, on teil õigus:
 
 - küsida, milliseid isikuandmeid me teie kohta säilitame, ja saada neist koopia;
 - lasta ebaõiged andmed parandada;
@@ -171,11 +172,17 @@ Kui need tähtajad lõppevad, kustutame või anonüümime andmed.
 - esitada vastuväide õigustatud huvidel põhinevale töötlemisele;
 - võtta nõusolek igal ajal tagasi, kui tugineme nõusolekule.
 
-Nende õiguste kasutamiseks saatke e-kiri aadressile privacy@hatchgrab.com. Vastame ühe kuu jooksul.
+Teie elukohariigi õigus võib anda teile need õigused teiste nimetuste all või lisaõigusi. Ka need on teil olemas.
 
-**Konto kustutamine.** Haldajad saavad taotleda konto kustutamist rakenduses või e-kirjaga aadressile privacy@hatchgrab.com. Kustutame teie konto ja isikuandmed, välja arvatud juhul, kui oleme kohustatud säilitama dokumente raamatupidamise või õiguslikel põhjustel.
+**Taotluse esitamine.** Saatke e-kiri aadressile privacy@hatchgrab.com. Enne taotluse alusel tegutsemist kontrollime, et see on ehtne. Võite paluda kellelgi teisel taotluse teie eest esitada ja me ei kohtle teid taotluse esitamise tõttu teisiti. Vastame ühe kuu jooksul või varem, kui teie riigi õigus seda nõuab. Kui tellisite toiduautolt, võime teie taotluse edastada sellele toiduautole, sest tema otsustab, kuidas teie tellimuse andmeid kasutatakse. Kui me taotlusest keeldume, võite paluda meil seda uuesti läbi vaadata, vastates meie vastusele.
 
-**Kaebused.** Kui te ei ole rahul sellega, kuidas oleme teie andmeid käidelnud, võite esitada kaebuse asutusele Information Commissioner's Office (Ühendkuningriigi teabevoliniku büroo) aadressil ico.org.uk või telefonil 0303 123 1113. Oleksime tänulikud, kui annaksite meile esmalt võimaluse probleem lahendada.
+**Konto kustutamine.** Haldajad saavad taotleda konto kustutamist rakenduses või e-kirjaga aadressile privacy@hatchgrab.com. Kustutame teie konto ja isikuandmed, välja arvatud juhul, kui oleme kohustatud säilitama dokumente raamatupidamise või õiguslikel põhjustel. Kui haldaja konto kustutatakse, eemaldame ka tema klientide nimed, kontaktandmed ja märkused tellimustest, mida me säilitame.
+
+**Turunduslikud e-kirjad.** Saadame turunduslikke e-kirju ainult siis, kui teie elukohariigi õigus seda lubab, mis mõnes riigis tähendab ainult teie nõusolekul. Igas neist on kirjas, kellelt see on, meie postiaadress ja see, kuidas nende saamine lõpetada. Kui palute meil saatmine lõpetada, teeme seda tasuta ja 10 tööpäeva jooksul. Tellimuse või teie kontoga seotud e-kirjad ei ole turundus. Kui meie või toiduauto pakume tellimuse uuendusi tekstisõnumiga, saate neid ainult siis, kui nõustute, ja võite nende saamise igal ajal lõpetada.
+
+**Kui midagi läheb valesti.** Kui teie isikuandmetega seotud rikkumine tõenäoliselt põhjustab teile tõsist kahju, teatame sellest teile ja järelevalveasutusele niipea kui võimalik, kui seadus seda nõuab, või aitame toiduautol, kellelt tellisite, seda teha.
+
+**Kaebused.** Teatage sellest esmalt meile aadressil privacy@hatchgrab.com; oleksime tänulikud võimaluse eest asi heastada. Võite esitada kaebuse ka oma elukohariigi andmekaitseasutusele. Ühendkuningriigis on selleks Information Commissioner's Office (Ühendkuningriigi teabevoliniku büroo), aadressil ico.org.uk või telefonil 0303 123 1113.
 
 ---
 

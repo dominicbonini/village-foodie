@@ -242,6 +242,7 @@
     "france-records-1.cjs",
     "france-receipts-1.cjs",
     "france-notes-1.cjs",
+    "france-privacy-1.cjs",
     "compare-fix-1.cjs",
     "compare-fix-2.cjs"
   ],
@@ -288,6 +289,7 @@
         "_named-france-vat-1.cjs",
         "_lp-france-records-1.cjs",
         "_lp-france-receipts-1.cjs",
+        "_named-france-privacy-1.cjs",
         "_batch-rolling-snapshot.cjs",
         "_mini-dom.cjs",
         "_country-settings-gb.cjs",

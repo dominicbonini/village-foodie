@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Landsspesifikke vilkår
 
 **Sist oppdatert:** {{LAST_UPDATED}}
 
-[Bruksvilkårene](/terms) og [personvernerklæringen](/privacy) vår gjelder i alle land der HatchGrab brukes. Noen land har tilleggsregler. Denne siden beskriver dem, ett land om gangen.
+[Bruksvilkårene](/terms) våre gjelder i alle land der HatchGrab brukes. Noen land har tilleggsregler. Denne siden beskriver dem, ett land om gangen.
 
-Der et avsnitt nedenfor gjelder for deg, er det en del av bruksvilkårene og personvernerklæringen vår. Hvis det sier noe annet enn de gjør, gjelder denne siden for det landet.
+Der et avsnitt nedenfor gjelder for deg, er det en del av bruksvilkårene våre. Hvis det sier noe annet enn de gjør, gjelder denne siden for det landet.
 
-Hvis landet ditt ikke er oppført, finnes det ingen tilleggsregler: Bruksvilkårene og personvernerklæringen gjelder slik de er skrevet.
-
+Hvis landet ditt ikke er oppført, finnes det ingen tilleggsregler: Bruksvilkårene gjelder slik de er skrevet. [Personvernerklæringen](/privacy) vår er den samme i alle land.
 ---
 
 ## USA
@@ -31,26 +30,6 @@ Hvis landet ditt ikke er oppført, finnes det ingen tilleggsregler: Bruksvilkår
 
 **Kundenes opplysninger.** Etter amerikanske delstatlige personvernlover betyr punkt 10 i bruksvilkårene det samme i disse lovenes terminologi: Du er «business» (virksomheten), og vi er din «service provider» (tjenesteleverandør) eller «processor» (databehandler). Vi bruker kundenes personopplysninger bare til å drive HatchGrab for deg. Vi selger dem ikke, vi deler dem ikke for kontekstoverskridende atferdsbasert annonsering, og vi bruker dem ikke til noe annet formål, unntatt slik disse lovene tillater for en tjenesteleverandør.
 
-### Personvern, for alle i USA
-
-**Hva vi samler inn, og hvem vi deler det med.** Det samme som personvernerklæringen sier: konto- og virksomhetsopplysninger for matbiloperatører; navnet ditt, kontaktopplysningene dine og bestillingsopplysningene dine hvis du bestiller fra en matbil; og grunnleggende tekniske data hvis du besøker nettstedene våre. Vi deler dem med matbilen du bestiller fra og med tjenesteleverandørene som er oppført i punkt 6 i personvernerklæringen, bare for å drive tjenesten eller der loven krever det. De kan bli behandlet i Storbritannia, Den europeiske union og USA.
-
-**Vi selger ikke og deler ikke personopplysningene dine.** Vi selger ikke personopplysninger, og vi deler dem ikke for kontekstoverskridende atferdsbasert annonsering.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan spørre oss hvilke personopplysninger vi har om deg, og be oss om å rette eller slette dem. Send e-post til privacy@hatchgrab.com. Vi kontrollerer at forespørselen er ekte før vi handler på den, og vi svarer innen 45 dager. Du kan be noen om å sende forespørselen for deg. Vi behandler deg ikke annerledes fordi du sender en forespørsel. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes. Hvis vi avslår en forespørsel, kan du be oss om å vurdere den på nytt ved å svare på svaret vårt.
-
-**Delstatlige personvernlover.** Noen delstatlige personvernlover gjelder bare for virksomheter over en viss størrelse, og de gjelder kanskje ikke for oss. Vi etterkommer likevel forespørslene ovenfor fra alle i USA.
-
-**Barn.** Tjenestene våre er ikke rettet mot barn under 13 år, og vi samler ikke bevisst inn personopplysningene deres. Hvis du mener at et barn har gitt oss opplysningene sine, kan du kontakte oss, så sletter vi dem.
-
-**Markedsførings-e-poster.** Hver markedsførings-e-post vi sender, forteller deg hvordan du slutter å motta dem, og inneholder postadressen vår. Hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Tekstmeldinger.** Hvis vi eller en matbil tilbyr oppdateringer om bestillinger på tekstmelding, får du dem bare hvis du samtykker i å motta dem, og du kan stoppe dem når som helst.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Irland
 
 ### For matbiloperatører
@@ -70,22 +49,6 @@ Hvis landet ditt ikke er oppført, finnes det ingen tilleggsregler: Bruksvilkår
 **Kundenes opplysninger.** Etter EUs personvernforordning (GDPR) er punkt 10 i bruksvilkårene vår databehandleravtale med deg: Du er behandlingsansvarlig, og vi er databehandler, i samme betydning som i artikkel 28 i GDPR.
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som irsk lov gir deg, og som ikke kan fravikes ved avtale.
-
-### Personvern, for alle i Irland
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Irland, gjelder EUs personvernforordning (GDPR) i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår. Rettighetene som er oppført i punkt 8 i personvernerklæringen, er også rettighetene dine etter GDPR.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia. Europakommisjonen har fastslått at Storbritannia beskytter personopplysninger på samme nivå som EU, så det trengs ingen ytterligere garanti for dette. Der en tjenesteleverandør håndterer opplysninger i USA (punkt 6 i personvernerklæringen), er overføringen dekket av en garanti som GDPR anerkjenner.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan spørre oss hvilke personopplysninger vi har om deg, og be oss om å rette dem, slette dem eller slutte å bruke dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen én måned. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Du kan klage til Data Protection Commission, Irlands tilsynsmyndighet for personvern, på www.dataprotection.ie, eller per post til 6 Pembroke Row, Dublin 2, D02 X963. Vi setter pris på å få muligheten til å rette opp i saken først.
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der loven tillater det. Hver av dem forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australia
 
@@ -109,22 +72,6 @@ Hvis landet ditt ikke er oppført, finnes det ingen tilleggsregler: Bruksvilkår
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som australsk lov gir deg, og som ikke kan fravikes ved avtale.
 
-### Personvern, for alle i Australia
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Australia, følger vi Australian Privacy Principles i Privacy Act 1988, i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia. Noen av dem håndteres av tjenesteleverandører i Den europeiske union og USA, slik punkt 6 i personvernerklæringen sier.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan spørre oss hvilke personopplysninger vi har om deg, og be oss om å rette eller slette dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen 30 dager. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Hvis du er misfornøyd med hvordan vi har håndtert personopplysningene dine, si fra til oss først på privacy@hatchgrab.com. Hvis du ikke er fornøyd med svaret vårt, eller vi ikke har svart innen 30 dager, kan du klage skriftlig til Office of the Australian Information Commissioner (OAIC) på www.oaic.gov.au.
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der loven tillater det. Hver av dem opplyser om hvem den er fra, og forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## New Zealand
 
 ### For matbiloperatører
@@ -147,24 +94,6 @@ Hvis landet ditt ikke er oppført, finnes det ingen tilleggsregler: Bruksvilkår
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som newzealandsk lov gir deg, og som ikke kan fravikes ved avtale.
 
-### Personvern, for alle i New Zealand
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i New Zealand, gjelder Privacy Act 2020 i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår. Den gjelder for oss fordi vi driver virksomhet i New Zealand, selv om vi holder til i Storbritannia.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia. Noen av dem håndteres av tjenesteleverandører i Den europeiske union og USA, slik punkt 6 i personvernerklæringen sier.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan be oss om personopplysningene vi har om deg, og be oss om å rette dem. Send e-post til privacy@hatchgrab.com. Vi svarer så snart vi med rimelighet kan, og innen 20 virkedager. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Hvis du er misfornøyd med hvordan vi har håndtert personopplysningene dine, si fra til oss først på privacy@hatchgrab.com. Privacy Commissioner ber deg om å gjøre det før du klager. Hvis du ikke er fornøyd med svaret vårt, kan du klage til Office of the Privacy Commissioner på www.privacy.org.nz, på telefon 0800 803 909 eller per post til PO Box 10 094, Wellington 6140.
-
-**Brudd på personvernet.** Hvis et brudd på personvernet som gjelder personopplysningene dine, har forårsaket eller sannsynligvis vil forårsake alvorlig skade, krever Privacy Act 2020 at Privacy Commissioner og du blir varslet så snart det er praktisk mulig. Vi gjør det, eller hjelper matbilen med å gjøre det når det gjelder en bestilling du la inn hos en matbil.
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der loven tillater det. Hver av dem opplyser om hvem den er fra, og forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Canada
 
 ### For matbiloperatører
@@ -186,22 +115,6 @@ Hvis landet ditt ikke er oppført, finnes det ingen tilleggsregler: Bruksvilkår
 **Dine rettigheter etter lokal lov.** Ingenting i bruksvilkårene fratar deg en rettighet som etter loven der du holder til, ikke kan begrenses eller fraskrives.
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som lovgivningen i provinsen eller territoriet ditt gir deg, og som ikke kan fravikes ved avtale.
-
-### Personvern, for alle i Canada
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Canada, gjelder Personal Information Protection and Electronic Documents Act (PIPEDA), og i British Columbia og Alberta disse provinsenes egne personvernlover for privat sektor, i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia, og noen håndteres av tjenesteleverandører i Den europeiske union og USA (punkt 6 i personvernerklæringen), der det kan gis tilgang til dem etter disse landenes lover.
-
-**Dine forespørsler.** Du kan be om personopplysningene vi har om deg, og be oss om å rette dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen 30 dager.
-
-**Klager.** Si fra til oss først på privacy@hatchgrab.com. Hvis du ikke er fornøyd, kan du klage til Office of the Privacy Commissioner of Canada på www.priv.gc.ca eller på telefon 1-800-282-1376.
-
-**Brudd.** Hvis et brudd på sikkerhetstiltakene som gjelder opplysningene dine, skaper en reell risiko for betydelig skade, rapporterer vi det til Privacy Commissioner og gir deg beskjed så snart det er mulig.
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare med ditt samtykke, slik Canadas antispamlov krever. Hver av dem opplyser om hvem den er fra, og hvordan du melder deg av, og vi etterkommer en avmelding innen 10 virkedager.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Frankrike
 
@@ -226,22 +139,6 @@ Hvis landet ditt ikke er oppført, finnes det ingen tilleggsregler: Bruksvilkår
 **Kundenes opplysninger.** Etter EUs personvernforordning (GDPR) er punkt 10 i bruksvilkårene vår databehandleravtale med deg: Du er behandlingsansvarlig, og vi er databehandler, i samme betydning som i artikkel 28 i GDPR.
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som fransk lov gir deg, og som ikke kan fravikes ved avtale.
-
-### Personvern, for alle i Frankrike
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Frankrike, gjelder EUs personvernforordning (GDPR) og den franske personvernloven (loi Informatique et Libertés), i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår. Rettighetene som er oppført i punkt 8 i personvernerklæringen, er også rettighetene dine etter GDPR.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia. Europakommisjonen har fastslått at Storbritannia beskytter personopplysninger på samme nivå som EU, så det trengs ingen ytterligere garanti for dette. Der en tjenesteleverandør håndterer opplysninger i USA (punkt 6 i personvernerklæringen), er overføringen dekket av en garanti som GDPR anerkjenner.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan spørre oss hvilke personopplysninger vi har om deg, og be oss om å rette dem, slette dem eller slutte å bruke dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen én måned. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Du kan klage til CNIL (Commission nationale de l'informatique et des libertés), Frankrikes tilsynsmyndighet for personvern, på www.cnil.fr, eller per post til CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Vi setter pris på å få muligheten til å rette opp i saken først.
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der fransk lov tillater det. Hver av dem forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Det europeiske økonomiske samarbeidsområdet og Sveits
 
@@ -269,53 +166,6 @@ Dette avsnittet gjelder i alle land i Det europeiske økonomiske samarbeidsområ
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som lovgivningen i landet ditt gir deg, og som ikke kan fravikes ved avtale.
 
-### Personvern, for alle i Det europeiske økonomiske samarbeidsområdet og Sveits
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i EØS, gjelder EUs personvernforordning (GDPR) og personvernlovgivningen i deres land; i Sveits gjelder Federal Act on Data Protection. Den britiske lovgivningen som er nevnt i personvernerklæringen vår, gjelder også. Rettighetene som er oppført i punkt 8 i personvernerklæringen, er også rettighetene dine etter disse lovene.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia. Europakommisjonen og Sveits har hver for seg fastslått at Storbritannia beskytter personopplysninger på et tilstrekkelig nivå, så det trengs ingen ytterligere garanti for dette. Der en tjenesteleverandør håndterer opplysninger i USA (punkt 6 i personvernerklæringen), er overføringen dekket av en garanti som GDPR og sveitsisk lov anerkjenner.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan spørre oss hvilke personopplysninger vi har om deg, og be oss om å rette dem, slette dem eller slutte å bruke dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen én måned. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Du kan klage til tilsynsmyndigheten for personvern i landet der du bor eller arbeider. Det europeiske personvernrådet (EDPB) har en oversikt over alle tilsynsmyndighetene i EØS på www.edpb.europa.eu (About EDPB › Members). I Sveits er det Federal Data Protection and Information Commissioner, www.edoeb.admin.ch. Vi setter pris på å få muligheten til å rette opp i saken først.
-
-| Land | Tilsynsmyndighet for personvern |
-|---|---|
-| Østerrike | dsb.gv.at |
-| Belgia | autoriteprotectiondonnees.be |
-| Bulgaria | cpdp.bg |
-| Kroatia | azop.hr |
-| Kypros | dataprotection.gov.cy |
-| Tsjekkia | uoou.gov.cz |
-| Danmark | datatilsynet.dk |
-| Estland | aki.ee |
-| Finland | tietosuoja.fi |
-| Tyskland | tilsynsmyndigheten i delstaten din (føderalt nivå: bfdi.bund.de) |
-| Hellas | dpa.gr |
-| Ungarn | naih.hu |
-| Italia | garanteprivacy.it |
-| Latvia | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Litauen | vdai.lrv.lt |
-| Luxembourg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Nederland | autoriteitpersoonsgegevens.nl |
-| Norge | datatilsynet.no |
-| Polen | uodo.gov.pl |
-| Portugal | cnpd.pt |
-| Romania | dataprotection.ro |
-| Slovakia | dataprotection.gov.sk |
-| Slovenia | ip-rs.si |
-| Spania | aepd.es |
-| Sverige | imy.se |
-| Sveits | Federal Data Protection and Information Commissioner (FDPIC), edoeb.admin.ch |
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der lovgivningen i landet ditt tillater det. Hver av dem forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### For matbiloperatører
@@ -337,22 +187,6 @@ Dette avsnittet gjelder i alle land i Det europeiske økonomiske samarbeidsområ
 **Kundenes opplysninger.** Etter Gibraltars personvernlovgivning, som omfatter EUs personvernforordning (GDPR) slik den gjelder i Gibraltar, er punkt 10 i bruksvilkårene vår databehandleravtale med deg: Du er behandlingsansvarlig, og vi er databehandler, i samme betydning som i artikkel 28 i GDPR.
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som Gibraltars lovgivning gir deg, og som ikke kan fravikes ved avtale.
-
-### Personvern, for alle i Gibraltar
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Gibraltar, gjelder Gibraltars personvernlovgivning, inkludert EUs personvernforordning (GDPR) slik den gjelder der, i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår. Rettighetene som er oppført i punkt 8 i personvernerklæringen, er også rettighetene dine etter den lovgivningen.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia. Der en tjenesteleverandør håndterer opplysninger i USA (punkt 6 i personvernerklæringen), er overføringen dekket av en garanti som loven anerkjenner.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan spørre oss hvilke personopplysninger vi har om deg, og be oss om å rette dem, slette dem eller slutte å bruke dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen én måned. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Du kan klage til Gibraltar Regulatory Authority, Gibraltars tilsynsmyndighet for personvern, på www.gra.gi. Vi setter pris på å få muligheten til å rette opp i saken først.
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der Gibraltars lovgivning tillater det. Hver av dem forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brasil
 
@@ -378,22 +212,6 @@ Dette avsnittet gjelder i alle land i Det europeiske økonomiske samarbeidsområ
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som brasiliansk lov gir deg, og som ikke kan fravikes ved avtale.
 
-### Personvern, for alle i Brasil
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Brasil, gjelder General Data Protection Law (LGPD) i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår. Rettighetene som er oppført i punkt 8 i personvernerklæringen, er også rettighetene dine etter LGPD.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia, og noen av dem håndteres av tjenesteleverandører i Den europeiske union og USA, slik punkt 6 i personvernerklæringen sier. Vi overfører dem bare på et grunnlag som LGPD tillater.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan be oss om å bekrefte om vi har personopplysninger om deg, og be om en kopi av dem, eller be oss om å rette dem, slette dem eller slutte å bruke dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen 15 dager. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Si fra til oss først på privacy@hatchgrab.com. Du kan også klage til den nasjonale personvernmyndigheten (Autoridade Nacional de Proteção de Dados, ANPD) på www.gov.br/anpd.
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der brasiliansk lov tillater det. Hver av dem forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Mexico
 
 ### For matbiloperatører
@@ -417,22 +235,6 @@ Dette avsnittet gjelder i alle land i Det europeiske økonomiske samarbeidsområ
 **Kundenes opplysninger.** Etter Mexicos Federal Law on the Protection of Personal Data Held by Private Parties betyr punkt 10 i bruksvilkårene det samme i denne lovens terminologi: Du er behandlingsansvarlig, og vi er din databehandler (encargado), og vi håndterer kundenes personopplysninger bare for å drive HatchGrab for deg og etter dine instrukser. Du er ansvarlig for din egen personvernerklæring (aviso de privacidad) overfor kundene dine.
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som meksikansk lov gir deg, og som ikke kan fravikes ved avtale.
-
-### Personvern, for alle i Mexico
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Mexico, gjelder Federal Law on the Protection of Personal Data Held by Private Parties i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår. Denne siden og personvernerklæringen utgjør til sammen vår personvernerklæring for personer i Mexico.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia, og noen av dem håndteres av tjenesteleverandører i Den europeiske union og USA, slik punkt 6 i personvernerklæringen sier, bare for å drive tjenesten.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan be oss om innsyn i personopplysningene vi har om deg, og be oss om å rette dem, slette dem eller slutte å bruke dem (ARCO-rettighetene dine). Send e-post til privacy@hatchgrab.com. Vi svarer innen 20 virkedager. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Si fra til oss først på privacy@hatchgrab.com. Hvis du ikke er fornøyd, kan du klage til Secretaría Anticorrupción y Buen Gobierno (sekretariatet for korrupsjonsbekjempelse og godt styresett), som håndhever Mexicos føderale lov om vern av personopplysninger som private parter har (i kraft siden 21. mars 2025).
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der meksikansk lov tillater det. Hver av dem forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japan
 
@@ -458,22 +260,6 @@ Dette avsnittet gjelder i alle land i Det europeiske økonomiske samarbeidsområ
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som japansk lov gir deg, og som ikke kan fravikes ved avtale.
 
-### Personvern, for alle i Japan
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Japan, gjelder Act on the Protection of Personal Information i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia, og noen av dem håndteres av tjenesteleverandører i Den europeiske union og USA, slik punkt 6 i personvernerklæringen sier. Japan anerkjenner Storbritannia og Den europeiske union som områder med et vern av personopplysninger på japansk nivå. Opplysninger som håndteres i USA, er beskyttet av avtalene våre med disse leverandørene.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan be oss om å utlevere personopplysningene vi har om deg, og be oss om å rette dem, slette dem eller slutte å bruke dem. Send e-post til privacy@hatchgrab.com. Vi svarer uten opphold. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Si fra til oss først på privacy@hatchgrab.com. Du kan også kontakte Personal Information Protection Commission på www.ppc.go.jp.
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare til personer som har samtykket i å motta dem. Hver av dem opplyser om hvem den er fra, og hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapore
 
 ### For matbiloperatører
@@ -498,22 +284,6 @@ Dette avsnittet gjelder i alle land i Det europeiske økonomiske samarbeidsområ
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som singaporsk lov gir deg, og som ikke kan fravikes ved avtale.
 
-### Personvern, for alle i Singapore
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Singapore, gjelder Personal Data Protection Act 2012 (PDPA) i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia, og noen av dem håndteres av tjenesteleverandører i Den europeiske union og USA, slik punkt 6 i personvernerklæringen sier. Vi sørger for at de er beskyttet på et nivå som kan sammenlignes med PDPA, uansett hvor de befinner seg.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan be om personopplysningene vi har om deg, og om hvordan de har blitt brukt, og be oss om å rette dem. Du kan også trekke tilbake samtykket ditt til at vi bruker dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen 30 dager. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Si fra til oss først på privacy@hatchgrab.com. Hvis du ikke er fornøyd, kan du klage til Personal Data Protection Commission på www.pdpc.gov.sg.
-
-**Markedsføringsmeldinger.** Vi sender markedsførings-e-poster bare der singaporsk lov tillater det. Hver av dem forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. Vi ringer ikke og sender ikke tekstmeldinger med markedsføring til numre som er oppført i Singapores Do Not Call Registry. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hongkong
 
 ### For matbiloperatører
@@ -535,22 +305,6 @@ Dette avsnittet gjelder i alle land i Det europeiske økonomiske samarbeidsområ
 **Kundenes opplysninger.** Etter Hongkongs Personal Data (Privacy) Ordinance (Cap. 486) betyr punkt 10 i bruksvilkårene det samme i denne lovens terminologi: Du er databruker (data user), og vi er din databehandler (data processor), og vi håndterer kundenes personopplysninger bare for å drive HatchGrab for deg og etter dine instrukser, og oppbevarer dem ikke lenger enn det som er nødvendig for dette.
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som Hongkongs lovgivning gir deg, og som ikke kan fravikes ved avtale.
-
-### Personvern, for alle i Hongkong
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Hongkong, gjelder Personal Data (Privacy) Ordinance i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia, og noen av dem håndteres av tjenesteleverandører i Den europeiske union og USA, slik punkt 6 i personvernerklæringen sier.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan be om en kopi av personopplysningene vi har om deg, og be oss om å rette dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen 40 dager. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Si fra til oss først på privacy@hatchgrab.com. Hvis du ikke er fornøyd, kan du klage til Office of the Privacy Commissioner for Personal Data på www.pcpd.org.hk.
-
-**Markedsføringsmeldinger.** Vi bruker personopplysningene dine til direkte markedsføring bare med ditt samtykke, og hver markedsføringsmelding forteller deg hvordan du slutter å motta dem. Hvis du ber oss om å slutte, gjør vi det, kostnadsfritt. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malaysia
 
@@ -576,22 +330,6 @@ Dette avsnittet gjelder i alle land i Det europeiske økonomiske samarbeidsområ
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som malaysisk lov gir deg, og som ikke kan fravikes ved avtale.
 
-### Personvern, for alle i Malaysia
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Malaysia, gjelder Personal Data Protection Act 2010 (PDPA) i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia, og noen av dem håndteres av tjenesteleverandører i Den europeiske union og USA, slik punkt 6 i personvernerklæringen sier. Vi overfører dem bare der PDPA tillater det.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan be om personopplysningene vi har om deg, og be oss om å rette dem eller slutte å bruke dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen 21 dager. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Si fra til oss først på privacy@hatchgrab.com. Hvis du ikke er fornøyd, kan du klage til Personal Data Protection Commissioner på www.pdp.gov.my.
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der malaysisk lov tillater det. Hver av dem forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Thailand
 
 ### For matbiloperatører
@@ -616,22 +354,6 @@ Dette avsnittet gjelder i alle land i Det europeiske økonomiske samarbeidsområ
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som thailandsk lov gir deg, og som ikke kan fravikes ved avtale.
 
-### Personvern, for alle i Thailand
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i Thailand, gjelder Personal Data Protection Act B.E. 2562 (PDPA) i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår. Rettighetene som er oppført i punkt 8 i personvernerklæringen, er også rettighetene dine etter PDPA.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia, og noen av dem håndteres av tjenesteleverandører i Den europeiske union og USA, slik punkt 6 i personvernerklæringen sier. Vi overfører dem bare på et grunnlag som PDPA tillater.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan be om en kopi av personopplysningene vi har om deg, og be oss om å rette dem, slette dem eller slutte å bruke dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen 30 dager. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Si fra til oss først på privacy@hatchgrab.com. Du kan også klage til Personal Data Protection Committee på www.pdpc.or.th.
-
-**Markedsførings-e-poster.** Vi sender markedsførings-e-poster bare der thailandsk lov tillater det. Hver av dem forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## De forente arabiske emirater
 
 ### For matbiloperatører
@@ -653,19 +375,3 @@ Dette avsnittet gjelder i alle land i Det europeiske økonomiske samarbeidsområ
 **Kundenes opplysninger.** Etter Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data i De forente arabiske emirater betyr punkt 10 i bruksvilkårene det samme i denne lovens terminologi: Du er behandlingsansvarlig, og vi er din databehandler, og vi håndterer kundenes personopplysninger bare for å drive HatchGrab for deg og etter dine instrukser.
 
 **Meldinger og lovvalg.** Meldinger fungerer slik punkt 12 i bruksvilkårene sier: Vi kontakter deg på e-postadressen som er registrert på kontoen din, og du kan nå oss på adressen nedenfor. Disse vilkårene er underlagt lovgivningen i England og Wales, og domstolene i England og Wales har jurisdiksjon. Dette fratar deg ikke noe vern som lovgivningen i De forente arabiske emirater gir deg, og som ikke kan fravikes ved avtale.
-
-### Personvern, for alle i De forente arabiske emirater
-
-**Gjeldende lov.** Når vi håndterer personopplysninger om personer i De forente arabiske emirater, gjelder Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data i tillegg til den britiske lovgivningen som er nevnt i personvernerklæringen vår. Hvis du befinner deg i en frisone med egen personvernlovgivning, for eksempel DIFC eller ADGM, gjelder den lovgivningen i stedet.
-
-**Hvor opplysningene dine oppbevares.** Opplysningene dine lagres og behandles i Storbritannia, og noen av dem håndteres av tjenesteleverandører i Den europeiske union og USA, slik punkt 6 i personvernerklæringen sier. Vi overfører dem bare på et grunnlag som loven tillater.
-
-**Merknader om allergier og kosthold.** Hvis du legger til merknader om allergier eller kosthold i en bestilling, videreformidler vi dem til matbilen sammen med bestillingen din. Vi fjerner dem, sammen med navnet og kontaktopplysningene dine, 12 måneder etter bestillingen, slik punkt 7 i personvernerklæringen sier. Vi bruker dem ikke til noe annet.
-
-**Dine forespørsler.** Du kan be om personopplysningene vi har om deg, og be oss om å rette dem, slette dem eller slutte å bruke dem. Send e-post til privacy@hatchgrab.com. Vi svarer innen 30 dager. Hvis du har bestilt fra en matbil, kan vi videreformidle forespørselen din til den matbilen, fordi det er den som bestemmer hvordan bestillingsopplysningene dine brukes.
-
-**Klager.** Si fra til oss først på privacy@hatchgrab.com. Hvis du ikke er fornøyd, kan du klage til UAE Data Office.
-
-**Markedsføringsmeldinger.** Vi sender markedsføringsmeldinger bare der lovgivningen i De forente arabiske emirater tillater det. Hver av dem forteller deg hvordan du slutter å motta dem, og hvis du ber oss om å slutte, gjør vi det. E-poster om en bestilling eller kontoen din er ikke markedsføring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

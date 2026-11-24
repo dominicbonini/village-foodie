@@ -352,7 +352,15 @@ const SUBMIT = (extra = {}) => ({ truckId: 'test-kitchen', ...CUSTOMER, slot: '1
     t('a new-style order: the patch blanks the customer fields, the order note and line_notes — and names NEITHER items NOR deals', !('items' in pN) && !('deals' in pN) && pN.customer_name === '' && pN.customer_email === null && pN.customer_phone === null && pN.notes === null && !NOTE_RE.test(J(pN.line_notes)), pN)
     t('…after it, the order\'s items and deals are byte-identical to before; read back, its lines show no note (as an old-style order\'s do once cleaned)', J(after.items) === J(NEW.items) && J(after.deals) === J(NEW.deals) && !NOTE_RE.test(J(L.withLineNotes(after))) && J(L.withLineNotes(after).items.map(l => l.specialInstructions)) === J(S.RET.scrubItems(OLD.items).value.map(l => l.specialInstructions)))
     t('…and it is idempotent: a second run has nothing left to write', H.RET.retentionPatch(after, '') === null)
-    t('the job reads line_notes with the rest (COLS) and the privacy text is not touched', /const COLS = '[^']*, line_notes'/.test(read('lib/order-retention.ts')) && execFileSync('git', ['diff', '--name-only', START, '--', 'content/legal'], { cwd: REPO, encoding: 'utf8' }).trim() === '')
+    // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md): the legal text DID change after france-notes-1 — one
+    // privacy policy for every country, the country terms' privacy parts deleted, in English and the 54 used languages. "Not touched by
+    // france-notes-1" now means: only those two documents changed under content/legal, and the English taken back by france-privacy-1's exact
+    // undo (scripts/_named-france-privacy-1.cjs) is START's, byte for byte.
+    const legalChanged = execFileSync('git', ['diff', '--name-only', START, '--', 'content/legal'], { cwd: REPO, encoding: 'utf8' }).trim().split('\n').filter(Boolean)
+    const FPU = f => require('./_named-france-privacy-1.cjs').asBefore(f, read(f))
+    t('the job reads line_notes with the rest (COLS) and the privacy text is not touched by france-notes-1 (france-privacy-1\'s later change aside)', /const COLS = '[^']*, line_notes'/.test(read('lib/order-retention.ts'))
+      && legalChanged.every(f => /(^|\/)(privacy-policy|country-specific-terms)\.md$/.test(f))
+      && ['content/legal/privacy-policy.md', 'content/legal/country-specific-terms.md'].every(f => FPU(f) === execFileSync('git', ['show', `${START}:${f}`], { cwd: REPO, encoding: 'utf8' })), legalChanged.filter(f => !/(privacy-policy|country-specific-terms)\.md$/.test(f)))
   }
 
   // ══ E ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════

@@ -457,10 +457,17 @@ const { fakeSupabase, MIGRATION, TYPE_ROWS, BYTES, STUBS } = require('./_paperwo
     const pp = read('content/legal/privacy-policy.md')
     t('the English privacy paragraph is there, in section 3, naming Google’s Gemini and expiring links', /\*\*Compliance documents\.\*\* If you keep your certificates[^\n]*Google's Gemini service, the same one that reads menus[^\n]*through links that expire, and we keep them until you delete them or close your account\./.test(pp)
       && pp.indexOf('**Compliance documents.**') > pp.indexOf('## 3.') && pp.indexOf('**Compliance documents.**') < pp.indexOf('## 4.'))
-    t('PRIVACY_UPDATED moved with it (4 November 2026, the document\'s own line) and TERMS_VERSION with it', /PRIVACY_UPDATED = '4 November 2026'/.test(read('lib/legal.ts')) && /\*\*Last updated:\*\* 4 November 2026/.test(pp) && /TERMS_VERSION = '2026-11-04'/.test(require('./_named-terms-postpay-1.cjs').undoCode('lib/legal.ts', read('lib/legal.ts')))   /* ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md):TERMS_VERSION read through terms-postpay-1's undo */)
+    // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md): the date and PRIVACY_UPDATED moved on again (one
+    // policy for every country); both are read through france-privacy-1's exact undo (scripts/_named-france-privacy-1.cjs) first.
+    const FPU = f => require('./_named-france-privacy-1.cjs').asBefore(f, read(f))
+    t('PRIVACY_UPDATED moved with it (4 November 2026, the document\'s own line) and TERMS_VERSION with it', /PRIVACY_UPDATED = '4 November 2026'/.test(FPU('lib/legal.ts')) && /\*\*Last updated:\*\* 4 November 2026/.test(FPU('content/legal/privacy-policy.md')) && /TERMS_VERSION = '2026-11-04'/.test(require('./_named-terms-postpay-1.cjs').undoCode('lib/legal.ts', read('lib/legal.ts')))   /* ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md):TERMS_VERSION read through terms-postpay-1's undo */)
     const LT = require('./_legal-translations.cjs')
-    const drift = BASES.map(l => [l, LT.compare('privacy-policy.md', read(`content/legal/${l}/privacy-policy.md`))]).filter(([, p]) => p.length)
-    t(`the drift check: all ${BASES.length} translations re-stamped against the new English and structurally equal`, !drift.length, drift.map(([l, p]) => `${l}: ${p[0]}`))
+    // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026): its new English was translated only into the bases an enabled country uses; the
+    // five unused bases (scripts/_lp-france-vat-1.cjs UNUSED_BASES) keep the translation of the English before it, byte for byte.
+    const FP1_UNUSED = require('./_lp-france-vat-1.cjs').UNUSED_BASES
+    const drift = BASES.filter(l => !FP1_UNUSED.includes(l)).map(l => [l, LT.compare('privacy-policy.md', read(`content/legal/${l}/privacy-policy.md`))]).filter(([, p]) => p.length)
+    t(`the drift check: all ${BASES.length - FP1_UNUSED.filter(l => BASES.includes(l)).length} used translations re-stamped against the new English and structurally equal`, !drift.length, drift.map(([l, p]) => `${l}: ${p[0]}`))
+    t('…and the unused bases\' privacy policy is byte-identical to before france-privacy-1 (ec16f022)', FP1_UNUSED.filter(l => BASES.includes(l)).every(l => read(`content/legal/${l}/privacy-policy.md`) === execFileSync('git', ['show', `ec16f022:content/legal/${l}/privacy-policy.md`], { cwd: REPO, encoding: 'utf8' })))
     t('…and each one has a new paragraph in section 3 (one more paragraph than before the change)', BASES.every(l => /Gemini/.test(read(`content/legal/${l}/privacy-policy.md`).split(/\n## 4\./)[0])))
     // ⚠️ RE-PINNED (features-list-1, 4 November 2026, docs/features-list-1-report.md): /features' table gained a "Documents and
     // reminders" row on purpose (its one `paperwork` mention in lib/feature-table.ts); still no landing page and no card bullet.

@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Polityka prywatności
 
 **Ostatnia aktualizacja:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Polityka obejmuje również aplikacje HatchGrab na telefony i tablety z systemem
 
 Jeśli trafili Państwo tutaj wyłącznie dlatego, że zamówili Państwo jedzenie w food trucku, dotyczy Państwa sekcja **„Jeśli zamówili Państwo jedzenie w food trucku”**.
 
-**W niektórych krajach obowiązują dodatkowe zasady.** Jeżeli mają one zastosowanie do Państwa, znajdują się na naszej stronie [Warunki dla poszczególnych krajów](/country-terms), która stanowi część niniejszej polityki.
-
+**Niniejsza polityka ma zastosowanie bez względu na to, gdzie Państwo się znajdują.** Przestrzegamy brytyjskich przepisów o ochronie danych, a jeżeli zastosowanie mają również przepisy o ochronie danych kraju, w którym Państwo mieszkają, przestrzegamy także ich.
 ---
 
 ## 1. Kim jesteśmy
@@ -84,6 +83,8 @@ Gdy składają Państwo zamówienie za pośrednictwem strony zamówień food tru
 
 Food truck decyduje, jak długo przechowuje Państwa dane i w jaki sposób kontaktuje się z Państwem później. W tym zakresie obowiązują jego własne zasady ochrony prywatności. Jeśli nie są Państwo pewni, który to food truck, prosimy o kontakt pod adresem privacy@hatchgrab.com, a wskażemy go Państwu.
 
+**Uwagi dotyczące alergii i diety.** Przekazujemy je food truckowi razem z zamówieniem i nie wykorzystujemy ich do żadnych innych celów. Usuwamy je wraz z Państwa imieniem i nazwiskiem oraz danymi kontaktowymi 12 miesięcy po złożeniu zamówienia (zob. sekcja 7).
+
 **Informacje o alergenach.** Jeśli food truck publikuje informacje o alergenach, wyświetlamy to, co food truck potwierdził. Nie weryfikujemy ich niezależnie. O poważnej alergii należy zawsze poinformować food truck bezpośrednio.
 
 ---
@@ -135,7 +136,7 @@ Możemy również ujawniać dane, gdy wymaga tego od nas prawo, lub w celu ustal
 
 **Nie sprzedajemy danych osobowych i nie udostępniamy ich w celach reklamowych.**
 
-**Przekazywanie danych za granicę.** Dane Państwa konta i dane zamówień są przechowywane i przetwarzane w Wielkiej Brytanii. Niektóre czynności odbywają się poza nią: odczytywanie menu i automatyczne odpowiedzi w WhatsApp, które korzystają z usługi Google w Stanach Zjednoczonych; doręczanie wiadomości WhatsApp, którym zajmuje się Meta w Stanach Zjednoczonych; płatności, którymi zajmuje się Stripe w Stanach Zjednoczonych; oraz powiadomienia push, które dostarczają Apple i Google w Stanach Zjednoczonych. Gdy dane opuszczają Wielką Brytanię, przekazanie jest objęte brytyjskimi przepisami stwierdzającymi odpowiedni stopień ochrony (UK adequacy regulations) albo umową International Data Transfer Agreement lub Addendum, które zapewniają odpowiednie zabezpieczenia. Mogą Państwo poprosić nas o szczegółowe informacje o zabezpieczeniach, które mają zastosowanie.
+**Przekazywanie danych za granicę.** Dane Państwa konta i dane zamówień są przechowywane i przetwarzane w Wielkiej Brytanii. Niektóre czynności odbywają się poza nią: odczytywanie menu i automatyczne odpowiedzi w WhatsApp, które korzystają z usługi Google w Stanach Zjednoczonych; doręczanie wiadomości WhatsApp, którym zajmuje się Meta w Stanach Zjednoczonych; płatności, którymi zajmuje się Stripe w Stanach Zjednoczonych; oraz powiadomienia push, które dostarczają Apple i Google w Stanach Zjednoczonych. Gdy dane opuszczają Wielką Brytanię, przekazanie jest objęte brytyjskimi przepisami stwierdzającymi odpowiedni stopień ochrony (UK adequacy regulations) albo umową International Data Transfer Agreement lub Addendum, a jeżeli wymaga tego prawo Państwa kraju, także zabezpieczeniem uznawanym przez to prawo. Mogą Państwo poprosić nas o szczegółowe informacje o zabezpieczeniach, które mają zastosowanie.
 
 Wraz z rozwojem naszej usługi możemy dodawać kolejnych dostawców, w tym dostawcę usług SMS. Zaktualizujemy tę listę, zanim zaczną oni przetwarzać Państwa dane.
 
@@ -161,7 +162,7 @@ Po upływie tych okresów usuwamy lub anonimizujemy dane.
 
 ## 8. Państwa prawa
 
-Na podstawie brytyjskich przepisów o ochronie danych mają Państwo prawo do:
+Na podstawie brytyjskich przepisów o ochronie danych oraz, w zakresie, w jakim ma ono zastosowanie, prawa kraju, w którym Państwo mieszkają, mają Państwo prawo do:
 
 - uzyskania informacji, jakie dane osobowe dotyczące Państwa przechowujemy, oraz otrzymania ich kopii;
 - sprostowania nieprawidłowych danych;
@@ -171,11 +172,17 @@ Na podstawie brytyjskich przepisów o ochronie danych mają Państwo prawo do:
 - wniesienia sprzeciwu wobec przetwarzania opartego na prawnie uzasadnionych interesach;
 - wycofania zgody w dowolnym momencie, jeśli opieramy się na zgodzie.
 
-Aby skorzystać z któregokolwiek z tych praw, prosimy o wiadomość e-mail na adres privacy@hatchgrab.com. Odpowiemy w ciągu jednego miesiąca.
+Prawo kraju, w którym Państwo mieszkają, może przyznawać Państwu te prawa pod innymi nazwami lub przyznawać prawa dodatkowe. Te prawa również Państwu przysługują.
 
-**Usunięcie konta.** Operatorzy mogą zażądać usunięcia konta w aplikacji lub wysyłając e-mail na adres privacy@hatchgrab.com. Usuniemy Państwa konto i dane osobowe, z wyjątkiem przypadków, w których jesteśmy zobowiązani zachować dokumentację ze względów księgowych lub prawnych.
+**Składanie żądania.** Prosimy o e-mail na adres privacy@hatchgrab.com. Zanim podejmiemy działania, sprawdzimy, czy żądanie jest autentyczne. Mogą Państwo upoważnić inną osobę do złożenia żądania w Państwa imieniu, a z powodu złożenia żądania nie będziemy traktować Państwa inaczej. Odpowiemy w ciągu jednego miesiąca lub szybciej, jeśli wymaga tego prawo Państwa kraju. Jeśli zamawiali Państwo w food trucku, możemy przekazać Państwa żądanie temu food truckowi, ponieważ to on decyduje, w jaki sposób wykorzystywane są szczegóły Państwa zamówienia. Jeśli odrzucimy żądanie, mogą Państwo poprosić nas o ponowne rozpatrzenie sprawy, odpowiadając na naszą odpowiedź.
 
-**Skargi.** Jeśli są Państwo niezadowoleni ze sposobu, w jaki postąpiliśmy z Państwa danymi, mogą Państwo złożyć skargę do Information Commissioner's Office (brytyjskiego organu ochrony danych) za pośrednictwem strony ico.org.uk lub pod numerem telefonu 0303 123 1113. Będziemy wdzięczni za możliwość wcześniejszego zajęcia się sprawą.
+**Usunięcie konta.** Operatorzy mogą zażądać usunięcia konta w aplikacji lub wysyłając e-mail na adres privacy@hatchgrab.com. Usuniemy Państwa konto i dane osobowe, z wyjątkiem przypadków, w których jesteśmy zobowiązani zachować dokumentację ze względów księgowych lub prawnych. Gdy konto operatora zostaje usunięte, usuwamy także imiona i nazwiska, dane kontaktowe i uwagi jego klientów z przechowywanych przez nas zamówień.
+
+**E-maile marketingowe.** Wysyłamy e-maile marketingowe wyłącznie wtedy, gdy zezwala na to prawo kraju, w którym Państwo mieszkają, co w niektórych krajach oznacza, że wyłącznie za Państwa zgodą. Każdy z nich wskazuje nadawcę, zawiera nasz adres pocztowy i informuje, jak zrezygnować z ich otrzymywania. Jeśli poproszą nas Państwo o zaprzestanie, zastosujemy się do tego nieodpłatnie i w ciągu 10 dni roboczych. E-maile dotyczące zamówienia lub Państwa konta nie są marketingiem. Jeśli my lub food truck oferujemy powiadomienia o zamówieniu za pomocą wiadomości SMS, będą je Państwo otrzymywać wyłącznie po wyrażeniu zgody i mogą je Państwo w każdej chwili wyłączyć.
+
+**Jeśli coś pójdzie nie tak.** Jeśli naruszenie dotyczące Państwa danych osobowych może spowodować dla Państwa poważną szkodę, poinformujemy o nim Państwa i organ ochrony danych tak szybko, jak to możliwe, jeżeli wymaga tego prawo, lub pomożemy zrobić to food truckowi, w którym Państwo zamawiali.
+
+**Skargi.** Prosimy najpierw zwrócić się do nas na adres privacy@hatchgrab.com; będziemy wdzięczni za możliwość naprawienia sytuacji. Mogą Państwo również złożyć skargę do organu ochrony danych w kraju, w którym Państwo mieszkają. W Wielkiej Brytanii jest to Information Commissioner's Office, dostępny na stronie ico.org.uk lub pod numerem telefonu 0303 123 1113.
 
 ---
 

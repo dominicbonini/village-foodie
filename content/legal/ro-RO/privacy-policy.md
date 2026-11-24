@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Politica de confidențialitate
 
 **Ultima actualizare:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Politica acoperă, de asemenea, aplicațiile HatchGrab pentru telefon mobil și 
 
 Dacă ați ajuns aici doar pentru că ați comandat mâncare de la un food truck, secțiunea **„Dacă ați comandat de la un food truck”** este partea care vi se aplică.
 
-**Unele țări au reguli suplimentare.** Acolo unde vi se aplică, acestea se află pe pagina noastră [Termeni specifici fiecărei țări](/country-terms), care face parte din această politică.
-
+**Această politică se aplică oriunde v-ați afla.** Respectăm legislația privind protecția datelor din Regatul Unit și, acolo unde se aplică și legislația privind protecția datelor din țara în care locuiți, o respectăm și pe aceasta.
 ---
 
 ## 1. Cine suntem
@@ -84,6 +83,8 @@ Atunci când plasați o comandă prin pagina de comandă a unui food truck, cole
 
 Food truck-ul decide cât timp vă păstrează datele și cum vă contactează ulterior. În această privință se aplică propriile sale practici de confidențialitate. Dacă nu sunteți sigur care este food truck-ul, contactați-ne la privacy@hatchgrab.com și vă vom îndruma către acesta.
 
+**Observații privind alergiile și dieta.** Le transmitem food truck-ului împreună cu comanda dumneavoastră și nu le utilizăm în niciun alt scop. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă (consultați secțiunea 7).
+
 **Informații despre alergeni.** Atunci când un food truck publică informații despre alergeni, afișăm ceea ce a confirmat food truck-ul. Nu le verificăm în mod independent. Informați întotdeauna direct food truck-ul despre o alergie gravă.
 
 ---
@@ -135,7 +136,7 @@ De asemenea, putem divulga date atunci când legea ne obligă sau pentru a const
 
 **Nu vindem date cu caracter personal și nu le partajăm în scopuri publicitare.**
 
-**Transferuri internaționale.** Datele contului și datele comenzilor dumneavoastră sunt stocate și prelucrate în Regatul Unit. Unele operațiuni sunt efectuate în afara acestuia: extragerea meniurilor și răspunsurile automate pe WhatsApp, care utilizează un serviciu Google din Statele Unite; livrarea mesajelor WhatsApp, care este efectuată de Meta în Statele Unite; plățile, care sunt gestionate de Stripe în Statele Unite; și notificările push, care sunt livrate de Apple și Google în Statele Unite. Atunci când datele părăsesc Regatul Unit, transferul este acoperit de reglementările britanice privind caracterul adecvat (UK adequacy regulations) sau de International Data Transfer Agreement ori de Addendum, care oferă garanții adecvate. Ne puteți cere detalii despre garanțiile aplicabile.
+**Transferuri internaționale.** Datele contului și datele comenzilor dumneavoastră sunt stocate și prelucrate în Regatul Unit. Unele operațiuni sunt efectuate în afara acestuia: extragerea meniurilor și răspunsurile automate pe WhatsApp, care utilizează un serviciu Google din Statele Unite; livrarea mesajelor WhatsApp, care este efectuată de Meta în Statele Unite; plățile, care sunt gestionate de Stripe în Statele Unite; și notificările push, care sunt livrate de Apple și Google în Statele Unite. Atunci când datele părăsesc Regatul Unit, transferul este acoperit de reglementările britanice privind caracterul adecvat (UK adequacy regulations) sau de International Data Transfer Agreement ori de Addendum și, acolo unde legea din țara dumneavoastră impune acest lucru, de o garanție recunoscută de legea respectivă. Ne puteți cere detalii despre garanțiile aplicabile.
 
 Pe măsură ce serviciul nostru se extinde, putem adăuga furnizori, inclusiv un furnizor de SMS. Vom actualiza această listă înainte ca aceștia să înceapă să vă prelucreze datele.
 
@@ -161,7 +162,7 @@ Furnizorul nostru de e-mail păstrează jurnalele de livrare pentru o perioadă 
 
 ## 8. Drepturile dumneavoastră
 
-În temeiul legislației privind protecția datelor din Regatul Unit, aveți dreptul:
+În temeiul legislației privind protecția datelor din Regatul Unit și, acolo unde se aplică, al legii din țara în care locuiți, aveți dreptul:
 
 - să întrebați ce date cu caracter personal deținem despre dumneavoastră și să obțineți o copie a acestora;
 - să obțineți corectarea datelor inexacte;
@@ -171,11 +172,17 @@ Furnizorul nostru de e-mail păstrează jurnalele de livrare pentru o perioadă 
 - să vă opuneți prelucrării întemeiate pe interese legitime;
 - să vă retrageți consimțământul în orice moment, atunci când ne întemeiem pe consimțământ.
 
-Pentru a exercita oricare dintre aceste drepturi, trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de o lună.
+Legea din țara în care locuiți vă poate acorda aceste drepturi sub alte denumiri sau vă poate acorda drepturi suplimentare. Beneficiați și de acestea.
 
-**Ștergerea contului.** Operatorii pot solicita ștergerea contului din aplicație sau printr-un e-mail la privacy@hatchgrab.com. Vom șterge contul și datele dumneavoastră cu caracter personal, cu excepția cazurilor în care suntem obligați să păstrăm evidențe din motive contabile sau juridice.
+**Cum faceți o solicitare.** Trimiteți un e-mail la privacy@hatchgrab.com. Vom verifica dacă solicitarea este autentică înainte de a da curs acesteia. Puteți cere altcuiva să facă solicitarea în numele dumneavoastră și nu vă vom trata diferit pentru că ați făcut o solicitare. Vă vom răspunde în termen de o lună sau mai devreme, dacă legea din țara dumneavoastră impune acest lucru. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră. Dacă respingem o solicitare, ne puteți cere să o reexaminăm, răspunzând la mesajul nostru.
 
-**Plângeri.** Dacă nu sunteți mulțumit de modul în care v-am gestionat datele, puteți depune o plângere la Information Commissioner's Office, la ico.org.uk, sau la numărul 0303 123 1113. Am aprecia să avem mai întâi ocazia de a rezolva problema.
+**Ștergerea contului.** Operatorii pot solicita ștergerea contului din aplicație sau printr-un e-mail la privacy@hatchgrab.com. Vom șterge contul și datele dumneavoastră cu caracter personal, cu excepția cazurilor în care suntem obligați să păstrăm evidențe din motive contabile sau juridice. Atunci când contul unui operator este șters, eliminăm, de asemenea, numele, datele de contact și observațiile clienților săi din comenzile pe care le păstrăm.
+
+**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea din țara în care locuiți permite acest lucru, ceea ce, în unele țări, înseamnă numai cu consimțământul dumneavoastră. Fiecare dintre ele precizează de la cine provine, include adresa noastră poștală și vă spune cum să nu mai primiți astfel de e-mailuri. Dacă ne cereți să ne oprim, ne vom opri, gratuit și în termen de 10 zile lucrătoare. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing. Dacă noi sau un food truck oferim actualizări ale comenzii prin mesaj text, le veți primi doar dacă sunteți de acord să le primiți și le puteți opri în orice moment.
+
+**Dacă ceva nu merge bine.** Dacă o încălcare a securității care implică datele dumneavoastră cu caracter personal este susceptibilă să vă cauzeze un prejudiciu grav, vă vom informa pe dumneavoastră și autoritatea de supraveghere cât mai curând posibil, acolo unde legea impune acest lucru, sau vom ajuta food truck-ul de la care ați comandat să facă acest lucru.
+
+**Plângeri.** Spuneți-ne mai întâi la privacy@hatchgrab.com; am aprecia să avem ocazia de a remedia situația. Puteți depune, de asemenea, o plângere la autoritatea pentru protecția datelor din țara în care locuiți. În Regatul Unit, aceasta este Information Commissioner's Office, la ico.org.uk sau la numărul 0303 123 1113.
 
 ---
 

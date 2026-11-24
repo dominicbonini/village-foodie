@@ -81,16 +81,17 @@ export const PRIVACY_PATH = '/privacy'
 export const TERMS_PATH = '/terms'
 
 /** Canonical route for the Country-specific terms — the one page of each country's extra rules, which forms part of the
- *  terms and the privacy policy (19 October 2026). Linked from both documents and the legal footer. */
+ *  terms (19 October 2026; since france-privacy-1, 24 November 2026, no longer of the privacy policy, which is the same in every
+ *  country). Linked from the terms and the legal footer. */
 export const COUNTRY_TERMS_PATH = '/country-terms'
 
 /** Human-readable last-updated dates.
  *  🔴 THESE MIRROR THE `**Last updated:**` LINE INSIDE content/legal/*.md, WHICH IS THE SOURCE OF TRUTH.
  *  The pages render the document's own line; these exist for anywhere else that needs the date without
  *  parsing the file. ⚠️ If you amend a document, change BOTH — the .md line is what a reader sees. */
-export const PRIVACY_UPDATED = '4 November 2026'
+export const PRIVACY_UPDATED = '24 November 2026'
 export const TERMS_UPDATED = '19 November 2026'
-export const COUNTRY_TERMS_UPDATED = '1 November 2026'
+export const COUNTRY_TERMS_UPDATED = '24 November 2026'
 
 /** One of the dates above ("19 October 2026") as a Date (UTC midnight), for the sitemap's lastmod (seo-fixes S5). */
 export function legalUpdatedDate(written: string): Date {
@@ -102,7 +103,8 @@ export function legalUpdatedDate(written: string): Date {
 
 /** The version of the terms a signup accepts, recorded as `operators.terms_version` beside `terms_accepted_at`
  *  (app/api/signup). 🔴 MOVE IT WITH THE DOCUMENTS: it names the Terms of Service, Privacy Policy and Country-specific
- *  terms dated above — the latest of them; 19 November 2026 since the Terms' post-pay wording (terms-postpay-1: the fee on every pre-order,
+ *  terms dated above — the latest of them; 24 November 2026 since the Privacy Policy became one policy for every country and the
+ *  Country-specific terms lost their per-country privacy parts (france-privacy-1), 19 November 2026 before that, since the Terms' post-pay wording (terms-postpay-1: the fee on every pre-order,
  *  monthly billing where it can't be taken from the payment, a card on file at the trial's end, the 5-day pause, the trial ending on Pay as
  *  you go), 4 November 2026 before that, since the Privacy Policy's compliance-documents paragraph (paperwork-1: stored, read by
  *  Gemini to fill in the details, shared only through expiring links, kept until deleted), 3 November 2026 for its demo-section wording (tidy-1: "simple counts",
@@ -116,7 +118,7 @@ export function legalUpdatedDate(written: string): Date {
  *  'holding-2026-07-23', typed in the route, and stayed there while the documents moved twice (legal follow-ups,
  *  19 October 2026). ⚠️ It is only WRITTEN, at signup: nothing reads or compares it, so moving it asks no existing truck
  *  to re-accept anything (checked 20 October 2026 — app, edge functions, database functions and triggers). */
-export const TERMS_VERSION = '2026-11-19'
+export const TERMS_VERSION = '2026-11-24'
 
 /** Both documents, for anywhere that renders the pair (footers, consent lines). */
 export const LEGAL_LINKS = [

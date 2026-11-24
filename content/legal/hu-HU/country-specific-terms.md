@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Országspecifikus feltételek
 
 **Utolsó frissítés:** {{LAST_UPDATED}}
 
-[Általános szerződési feltételeink](/terms) és [Adatvédelmi tájékoztatónk](/privacy) minden olyan országban alkalmazandók, ahol a HatchGrabet használják. Egyes országokban további szabályok érvényesek. Ez az oldal ezeket ismerteti, országonként.
+[Általános szerződési feltételeink](/terms) minden olyan országban alkalmazandók, ahol a HatchGrabet használják. Egyes országokban további szabályok érvényesek. Ez az oldal ezeket ismerteti, országonként.
 
-Ahol az alábbi pontok valamelyike Önre vonatkozik, az Általános szerződési feltételeink és Adatvédelmi tájékoztatónk részét képezi. Ha azoktól eltérő rendelkezést tartalmaz, az adott ország tekintetében ez az oldal az irányadó.
+Ahol az alábbi pontok valamelyike Önre vonatkozik, az Általános szerződési feltételeink részét képezi. Ha azoktól eltérő rendelkezést tartalmaz, az adott ország tekintetében ez az oldal az irányadó.
 
-Ha az Ön országa nem szerepel a listán, nincsenek további szabályok: az Általános szerződési feltételek és az Adatvédelmi tájékoztató az ott írtak szerint alkalmazandók.
-
+Ha az Ön országa nem szerepel a listán, nincsenek további szabályok: az Általános szerződési feltételek az ott írtak szerint alkalmazandók. [Adatvédelmi tájékoztatónk](/privacy) minden országban ugyanaz.
 ---
 
 ## Egyesült Államok
@@ -31,26 +30,6 @@ Ha az Ön országa nem szerepel a listán, nincsenek további szabályok: az Ál
 
 **A vásárlói adatai.** Az amerikai tagállami adatvédelmi törvények alapján az Általános szerződési feltételek 10. pontja ugyanazt jelenti az ő fogalmaik szerint: Ön a „business” (vállalkozás), mi pedig az Ön „service provider”-e (szolgáltatója) vagy „processor”-a (adatfeldolgozója) vagyunk. A vásárlói személyes adatait kizárólag arra használjuk, hogy az Ön számára működtessük a HatchGrabet. Nem adjuk el, nem osztjuk meg kontextusokon átívelő viselkedésalapú hirdetés (cross-context behavioral advertising) céljából, és semmilyen más célra nem használjuk, kivéve, ahogyan azt e törvények egy szolgáltató számára megengedik.
 
-### Adatvédelem – mindenkinek az Egyesült Államokban
-
-**Mit gyűjtünk, és kivel osztjuk meg.** Ugyanazt, amit az Adatvédelmi tájékoztató ír: a food truck-üzemeltetők esetében a fiók- és üzleti adatokat; ha Ön egy food trucktól rendel, a nevét, elérhetőségeit és rendelési adatait; ha pedig meglátogatja weboldalainkat, alapvető technikai adatokat. Ezeket megosztjuk azzal a food truckkal, amelytől Ön rendel, valamint az Adatvédelmi tájékoztató 6. pontjában felsorolt szolgáltatókkal, kizárólag a szolgáltatás működtetése érdekében, vagy ha a jogszabály ezt előírja. Az adatok kezelése az Egyesült Királyságban, az Európai Unióban és az Egyesült Államokban történhet.
-
-**Személyes adatait nem adjuk el és nem osztjuk meg.** Személyes adatokat nem adunk el, és nem osztunk meg kontextusokon átívelő viselkedésalapú hirdetés céljából.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Megkérdezheti tőlünk, milyen személyes adatokat kezelünk Önről, és kérheti azok helyesbítését vagy törlését. Írjon a privacy@hatchgrab.com címre. Mielőtt intézkednénk, ellenőrizzük, hogy a kérelem valódi-e, és 45 napon belül válaszolunk. Megkérhet valakit, hogy az Ön nevében nyújtsa be a kérelmet. Nem bánunk Önnel másként azért, mert kérelmet nyújtott be. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait. Ha egy kérelmet elutasítunk, a válaszunkra válaszolva kérheti, hogy vizsgáljuk felül.
-
-**Tagállami adatvédelmi törvények.** Egyes tagállami adatvédelmi törvények csak egy bizonyos méret feletti vállalkozásokra vonatkoznak, és lehet, hogy ránk nem vonatkoznak. A fenti kérelmeket ettől függetlenül bárkitől teljesítjük az Egyesült Államokban.
-
-**Gyermekek.** Szolgáltatásaink nem 13 év alatti gyermekeknek szólnak, és tudatosan nem gyűjtjük személyes adataikat. Ha úgy véli, hogy egy gyermek megadta nekünk az adatait, vegye fel velünk a kapcsolatot, és töröljük azokat.
-
-**Marketing e-mailek.** Minden általunk küldött marketing e-mail tartalmazza, hogyan iratkozhat le, valamint a postai címünket. Ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**SMS-üzenetek.** Ha mi vagy egy food truck SMS-ben küldött rendelési értesítéseket kínálunk, csak akkor kapja meg azokat, ha hozzájárul a fogadásukhoz, és bármikor leállíthatja őket.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Írország
 
 ### Food truck-üzemeltetőknek
@@ -70,22 +49,6 @@ Ha az Ön országa nem szerepel a listán, nincsenek további szabályok: az Ál
 **A vásárlói adatai.** Az EU általános adatvédelmi rendelete (GDPR) alapján az Általános szerződési feltételek 10. pontja az Önnel kötött adatfeldolgozási megállapodásunk: Ön az adatkezelő, mi pedig az adatfeldolgozó, a GDPR 28. cikkével azonos értelemben.
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet az ír jog biztosít Önnek, és amely megállapodással nem zárható ki.
-
-### Adatvédelem – mindenkinek Írországban
-
-**Az alkalmazandó jog.** Amikor írországi személyek személyes adatait kezeljük, az EU általános adatvédelmi rendelete (GDPR) alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog. Az Adatvédelmi tájékoztató 8. pontjában felsorolt jogok a GDPR szerint is az Ön jogai.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük. Az Európai Bizottság megállapította, hogy az Egyesült Királyság az EU-val azonos szinten védi a személyes adatokat, így ehhez nincs szükség további garanciára. Ha egy szolgáltató az Egyesült Államokban kezel adatokat (az Adatvédelmi tájékoztató 6. pontja), az adattovábbításra a GDPR által elismert garancia vonatkozik.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Megkérdezheti tőlünk, milyen személyes adatokat kezelünk Önről, és kérheti azok helyesbítését, törlését vagy felhasználásuk megszüntetését. Írjon a privacy@hatchgrab.com címre. Egy hónapon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Panaszt tehet a Data Protection Commission-nél, Írország adatvédelmi hatóságánál, a www.dataprotection.ie oldalon, vagy postai úton: 6 Pembroke Row, Dublin 2, D02 X963. Örülnénk, ha előbb nekünk adna lehetőséget a helyzet orvoslására.
-
-**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol a jogszabály ezt megengedi. Mindegyik tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Ausztrália
 
@@ -109,22 +72,6 @@ Ha az Ön országa nem szerepel a listán, nincsenek további szabályok: az Ál
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet az ausztrál jog biztosít Önnek, és amely megállapodással nem zárható ki.
 
-### Adatvédelem – mindenkinek Ausztráliában
-
-**Az alkalmazandó jog.** Amikor ausztráliai személyek személyes adatait kezeljük, a Privacy Act 1988 (adatvédelmi törvény) szerinti Australian Privacy Principles (ausztrál adatvédelmi elvek) szerint járunk el, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog szerint.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük. Egy részüket az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik, ahogyan azt az Adatvédelmi tájékoztató 6. pontja kimondja.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Megkérdezheti tőlünk, milyen személyes adatokat kezelünk Önről, és kérheti azok helyesbítését vagy törlését. Írjon a privacy@hatchgrab.com címre. 30 napon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Ha elégedetlen azzal, ahogyan a személyes adatait kezeltük, először nekünk jelezze a privacy@hatchgrab.com címen. Ha nem elégedett a válaszunkkal, vagy 30 napon belül nem válaszoltunk, írásban panaszt tehet az Office of the Australian Information Commissioner (OAIC) hivatalánál a www.oaic.gov.au oldalon.
-
-**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol a jogszabály ezt megengedi. Mindegyikből kiderül, kitől származik, és tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Új-Zéland
 
 ### Food truck-üzemeltetőknek
@@ -147,24 +94,6 @@ Ha az Ön országa nem szerepel a listán, nincsenek további szabályok: az Ál
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet az új-zélandi jog biztosít Önnek, és amely megállapodással nem zárható ki.
 
-### Adatvédelem – mindenkinek Új-Zélandon
-
-**Az alkalmazandó jog.** Amikor új-zélandi személyek személyes adatait kezeljük, a Privacy Act 2020 (adatvédelmi törvény) alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog. Azért vonatkozik ránk, mert Új-Zélandon üzleti tevékenységet folytatunk, annak ellenére, hogy székhelyünk az Egyesült Királyságban van.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük. Egy részüket az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik, ahogyan azt az Adatvédelmi tájékoztató 6. pontja kimondja.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Kérheti tőlünk az Önről kezelt személyes adatokat, és kérheti azok helyesbítését. Írjon a privacy@hatchgrab.com címre. Amint észszerűen lehetséges, de legkésőbb 20 munkanapon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Ha elégedetlen azzal, ahogyan a személyes adatait kezeltük, először nekünk jelezze a privacy@hatchgrab.com címen. A Privacy Commissioner (adatvédelmi biztos) azt kéri, hogy ezt tegye meg, mielőtt panaszt nyújt be. Ha nem elégedett a válaszunkkal, panaszt tehet az Office of the Privacy Commissioner hivatalánál a www.privacy.org.nz oldalon, a 0800 803 909 telefonszámon, vagy postai úton: PO Box 10 094, Wellington 6140.
-
-**Adatvédelmi incidensek.** Ha egy az Ön személyes adatait érintő adatvédelmi incidens súlyos kárt okozott vagy valószínűleg súlyos kárt okoz, a Privacy Act 2020 előírja, hogy erről a Privacy Commissionert és Önt a lehető leghamarabb tájékoztatni kell. Ezt megtesszük, illetve egy food trucknál leadott rendelés esetében segítünk a food trucknak ennek megtételében.
-
-**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol a jogszabály ezt megengedi. Mindegyikből kiderül, kitől származik, és tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### Food truck-üzemeltetőknek
@@ -186,22 +115,6 @@ Ha az Ön országa nem szerepel a listán, nincsenek további szabályok: az Ál
 **Az Ön helyi jog szerinti jogai.** Az Általános szerződési feltételek semmilyen rendelkezése nem vonja el azokat a jogait, amelyeket a székhelye szerinti jog szerint nem lehet korlátozni vagy azokról lemondani.
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet az Ön tartományának vagy területének joga biztosít Önnek, és amely megállapodással nem zárható ki.
-
-### Adatvédelem – mindenkinek Kanadában
-
-**Az alkalmazandó jog.** Amikor kanadai személyek személyes adatait kezeljük, a Personal Information Protection and Electronic Documents Act (PIPEDA; a személyes adatok védelméről és az elektronikus dokumentumokról szóló törvény) alkalmazandó, British Columbiában és Albertában pedig azok saját, a magánszektorra vonatkozó adatvédelmi törvényei, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük, egy részüket pedig az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik (az Adatvédelmi tájékoztató 6. pontja), ahol azokhoz az adott országok jogszabályai alapján hozzáférhetnek.
-
-**Az Ön kérelmei.** Kérheti az Önről kezelt személyes adatokat, és kérheti azok helyesbítését. Írjon a privacy@hatchgrab.com címre. 30 napon belül válaszolunk.
-
-**Panaszok.** Először nekünk jelezze a privacy@hatchgrab.com címen. Ha nem elégedett, panaszt tehet az Office of the Privacy Commissioner of Canada hivatalánál a www.priv.gc.ca oldalon vagy az 1-800-282-1376 telefonszámon.
-
-**Incidensek.** Ha a biztonsági garanciák olyan megsértése, amely az Ön adatait érinti, jelentős kár valós kockázatát idézi elő, bejelentjük azt a Privacy Commissionernek, és a lehető leghamarabb tájékoztatjuk Önt.
-
-**Marketing e-mailek.** Marketing e-maileket csak az Ön hozzájárulásával küldünk, ahogyan azt Kanada spamellenes törvénye előírja. Mindegyikből kiderül, kitől származik, és hogyan iratkozhat le, a leiratkozásokat pedig 10 munkanapon belül teljesítjük.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Franciaország
 
@@ -226,22 +139,6 @@ Ha az Ön országa nem szerepel a listán, nincsenek további szabályok: az Ál
 **A vásárlói adatai.** Az EU általános adatvédelmi rendelete (GDPR) alapján az Általános szerződési feltételek 10. pontja az Önnel kötött adatfeldolgozási megállapodásunk: Ön az adatkezelő, mi pedig az adatfeldolgozó, a GDPR 28. cikkével azonos értelemben.
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet a francia jog biztosít Önnek, és amely megállapodással nem zárható ki.
-
-### Adatvédelem – mindenkinek Franciaországban
-
-**Az alkalmazandó jog.** Amikor franciaországi személyek személyes adatait kezeljük, az EU általános adatvédelmi rendelete (GDPR) és a francia adatvédelmi törvény (loi Informatique et Libertés) alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog. Az Adatvédelmi tájékoztató 8. pontjában felsorolt jogok a GDPR szerint is az Ön jogai.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük. Az Európai Bizottság megállapította, hogy az Egyesült Királyság az EU-val azonos szinten védi a személyes adatokat, így ehhez nincs szükség további garanciára. Ha egy szolgáltató az Egyesült Államokban kezel adatokat (az Adatvédelmi tájékoztató 6. pontja), az adattovábbításra a GDPR által elismert garancia vonatkozik.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Megkérdezheti tőlünk, milyen személyes adatokat kezelünk Önről, és kérheti azok helyesbítését, törlését vagy felhasználásuk megszüntetését. Írjon a privacy@hatchgrab.com címre. Egy hónapon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Panaszt tehet a CNIL-nél (Commission nationale de l'informatique et des libertés), Franciaország adatvédelmi hatóságánál, a www.cnil.fr oldalon, vagy postai úton: CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Örülnénk, ha előbb nekünk adna lehetőséget a helyzet orvoslására.
-
-**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol a francia jog ezt megengedi. Mindegyik tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Európai Gazdasági Térség és Svájc
 
@@ -269,53 +166,6 @@ Ez a pont az Európai Gazdasági Térség minden olyan országában alkalmazand�
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet az Ön országának joga biztosít Önnek, és amely megállapodással nem zárható ki.
 
-### Adatvédelem – mindenkinek az Európai Gazdasági Térségben és Svájcban
-
-**Az alkalmazandó jog.** Amikor az Európai Gazdasági Térségben élő személyek személyes adatait kezeljük, az EU általános adatvédelmi rendelete (GDPR) és az adott ország adatvédelmi joga alkalmazandó; Svájcban a szövetségi adatvédelmi törvény. Az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog is alkalmazandó. Az Adatvédelmi tájékoztató 8. pontjában felsorolt jogok e jogszabályok szerint is az Ön jogai.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük. Az Európai Bizottság és Svájc egyaránt megállapította, hogy az Egyesült Királyság megfelelő szinten védi a személyes adatokat, így ehhez nincs szükség további garanciára. Ha egy szolgáltató az Egyesült Államokban kezel adatokat (az Adatvédelmi tájékoztató 6. pontja), az adattovábbításra a GDPR és a svájci jog által elismert garancia vonatkozik.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Megkérdezheti tőlünk, milyen személyes adatokat kezelünk Önről, és kérheti azok helyesbítését, törlését vagy felhasználásuk megszüntetését. Írjon a privacy@hatchgrab.com címre. Egy hónapon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Panaszt tehet annak az országnak az adatvédelmi hatóságánál, ahol él vagy dolgozik. Az Európai Adatvédelmi Testület az Európai Gazdasági Térség valamennyi hatóságát felsorolja a www.edpb.europa.eu oldalon (About EDPB › Members). Svájcban ez a szövetségi adatvédelmi és információs biztos (Eidgenössischer Datenschutz- und Öffentlichkeitsbeauftragter), www.edoeb.admin.ch. Örülnénk, ha előbb nekünk adna lehetőséget a helyzet orvoslására.
-
-| Ország | Adatvédelmi hatóság |
-|---|---|
-| Ausztria | dsb.gv.at |
-| Belgium | autoriteprotectiondonnees.be |
-| Bulgária | cpdp.bg |
-| Horvátország | azop.hr |
-| Ciprus | dataprotection.gov.cy |
-| Csehország | uoou.gov.cz |
-| Dánia | datatilsynet.dk |
-| Észtország | aki.ee |
-| Finnország | tietosuoja.fi |
-| Németország | a tartománya (Land) hatósága (szövetségi szinten: bfdi.bund.de) |
-| Görögország | dpa.gr |
-| Magyarország | naih.hu |
-| Olaszország | garanteprivacy.it |
-| Lettország | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Litvánia | vdai.lrv.lt |
-| Luxemburg | cnpd.lu |
-| Málta | idpc.org.mt |
-| Hollandia | autoriteitpersoonsgegevens.nl |
-| Norvégia | datatilsynet.no |
-| Lengyelország | uodo.gov.pl |
-| Portugália | cnpd.pt |
-| Románia | dataprotection.ro |
-| Szlovákia | dataprotection.gov.sk |
-| Szlovénia | ip-rs.si |
-| Spanyolország | aepd.es |
-| Svédország | imy.se |
-| Svájc | Eidgenössischer Datenschutz- und Öffentlichkeitsbeauftragter (EDÖB; szövetségi adatvédelmi és információs biztos), edoeb.admin.ch |
-
-**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol az Ön országának joga ezt megengedi. Mindegyik tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltár
 
 ### Food truck-üzemeltetőknek
@@ -337,22 +187,6 @@ Ez a pont az Európai Gazdasági Térség minden olyan országában alkalmazand�
 **A vásárlói adatai.** Gibraltár adatvédelmi joga alapján, amely magában foglalja az EU általános adatvédelmi rendeletét (GDPR) a Gibraltáron alkalmazandó formájában, az Általános szerződési feltételek 10. pontja az Önnel kötött adatfeldolgozási megállapodásunk: Ön az adatkezelő, mi pedig az adatfeldolgozó, a GDPR 28. cikkével azonos értelemben.
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet Gibraltár joga biztosít Önnek, és amely megállapodással nem zárható ki.
-
-### Adatvédelem – mindenkinek Gibraltáron
-
-**Az alkalmazandó jog.** Amikor gibraltári személyek személyes adatait kezeljük, Gibraltár adatvédelmi joga alkalmazandó, beleértve az EU általános adatvédelmi rendeletét (GDPR) az ott alkalmazandó formájában, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog. Az Adatvédelmi tájékoztató 8. pontjában felsorolt jogok e jog szerint is az Ön jogai.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük. Ha egy szolgáltató az Egyesült Államokban kezel adatokat (az Adatvédelmi tájékoztató 6. pontja), az adattovábbításra a jog által elismert garancia vonatkozik.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Megkérdezheti tőlünk, milyen személyes adatokat kezelünk Önről, és kérheti azok helyesbítését, törlését vagy felhasználásuk megszüntetését. Írjon a privacy@hatchgrab.com címre. Egy hónapon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Panaszt tehet a Gibraltar Regulatory Authority-nél, Gibraltár adatvédelmi hatóságánál, a www.gra.gi oldalon. Örülnénk, ha előbb nekünk adna lehetőséget a helyzet orvoslására.
-
-**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol Gibraltár joga ezt megengedi. Mindegyik tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brazília
 
@@ -378,22 +212,6 @@ Ez a pont az Európai Gazdasági Térség minden olyan országában alkalmazand�
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet a brazil jog biztosít Önnek, és amely megállapodással nem zárható ki.
 
-### Adatvédelem – mindenkinek Brazíliában
-
-**Az alkalmazandó jog.** Amikor brazíliai személyek személyes adatait kezeljük, az általános adatvédelmi törvény (LGPD) alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog. Az Adatvédelmi tájékoztató 8. pontjában felsorolt jogok az LGPD szerint is az Ön jogai.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük, egy részüket pedig az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik, ahogyan azt az Adatvédelmi tájékoztató 6. pontja kimondja. Azokat kizárólag az LGPD által megengedett jogalapon továbbítjuk.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Kérheti, hogy erősítsük meg, kezelünk-e Önre vonatkozó személyes adatokat, és kérhet azokról másolatot, vagy kérheti azok helyesbítését, törlését vagy felhasználásuk megszüntetését. Írjon a privacy@hatchgrab.com címre. 15 napon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Először nekünk jelezze a privacy@hatchgrab.com címen. Panaszt tehet a Nemzeti Adatvédelmi Hatóságnál (Autoridade Nacional de Proteção de Dados, ANPD) is a www.gov.br/anpd oldalon.
-
-**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol a brazil jog ezt megengedi. Mindegyik tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Mexikó
 
 ### Food truck-üzemeltetőknek
@@ -417,22 +235,6 @@ Ez a pont az Európai Gazdasági Térség minden olyan országában alkalmazand�
 **A vásárlói adatai.** Mexikó magánfelek birtokában lévő személyes adatok védelméről szóló szövetségi törvénye alapján az Általános szerződési feltételek 10. pontja ugyanazt jelenti a törvény fogalmai szerint: Ön az adatkezelő, mi pedig az Ön adatfeldolgozója (encargado) vagyunk, és a vásárlói személyes adatait kizárólag arra kezeljük, hogy az Ön számára működtessük a HatchGrabet, az Ön utasításai szerint. Ön felel a vásárlóinak szóló saját adatkezelési tájékoztatójáért (aviso de privacidad).
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet a mexikói jog biztosít Önnek, és amely megállapodással nem zárható ki.
-
-### Adatvédelem – mindenkinek Mexikóban
-
-**Az alkalmazandó jog.** Amikor mexikói személyek személyes adatait kezeljük, a magánfelek birtokában lévő személyes adatok védelméről szóló szövetségi törvény alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog. Ez az oldal és az Adatvédelmi tájékoztató együtt képezi a mexikói személyeknek szóló adatkezelési tájékoztatónkat.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük, egy részüket pedig az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik, ahogyan azt az Adatvédelmi tájékoztató 6. pontja kimondja, kizárólag a szolgáltatás működtetése érdekében.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Kérheti, hogy hozzáférjen az Önről kezelt személyes adatokhoz, és kérheti azok helyesbítését, törlését vagy felhasználásuk megszüntetését (ARCO-jogai). Írjon a privacy@hatchgrab.com címre. 20 munkanapon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Először nekünk jelezze a privacy@hatchgrab.com címen. Ha nem elégedett, panaszt tehet a Secretaría Anticorrupción y Buen Gobierno (Korrupcióellenes és Jó Kormányzási Titkárság) nevű hatóságnál, amely a magánfelek birtokában lévő személyes adatok védelméről szóló mexikói szövetségi törvényt (hatályos 2025. március 21. óta) érvényesíti.
-
-**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol a mexikói jog ezt megengedi. Mindegyik tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japán
 
@@ -458,22 +260,6 @@ Ez a pont az Európai Gazdasági Térség minden olyan országában alkalmazand�
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet a japán jog biztosít Önnek, és amely megállapodással nem zárható ki.
 
-### Adatvédelem – mindenkinek Japánban
-
-**Az alkalmazandó jog.** Amikor japán személyek személyes adatait kezeljük, a személyes adatok védelméről szóló törvény alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük, egy részüket pedig az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik, ahogyan azt az Adatvédelmi tájékoztató 6. pontja kimondja. Japán elismeri, hogy az Egyesült Királyság és az Európai Unió a japánnal azonos szintű személyesadat-védelmet biztosít. Az Egyesült Államokban kezelt adatokat az adott szolgáltatókkal kötött megállapodásaink védik.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Kérheti, hogy tegyük hozzáférhetővé az Önről kezelt személyes adatokat, és kérheti azok helyesbítését, törlését vagy felhasználásuk megszüntetését. Írjon a privacy@hatchgrab.com címre. Késedelem nélkül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Először nekünk jelezze a privacy@hatchgrab.com címen. Felveheti a kapcsolatot a Personal Information Protection Commission (személyesadat-védelmi bizottság) szervvel is a www.ppc.go.jp oldalon.
-
-**Marketing e-mailek.** Marketing e-maileket csak azoknak küldünk, akik hozzájárultak a fogadásukhoz. Mindegyikből kiderül, kitől származik, és hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Szingapúr
 
 ### Food truck-üzemeltetőknek
@@ -498,22 +284,6 @@ Ez a pont az Európai Gazdasági Térség minden olyan országában alkalmazand�
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet a szingapúri jog biztosít Önnek, és amely megállapodással nem zárható ki.
 
-### Adatvédelem – mindenkinek Szingapúrban
-
-**Az alkalmazandó jog.** Amikor szingapúri személyek személyes adatait kezeljük, a Personal Data Protection Act 2012 (PDPA) alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük, egy részüket pedig az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik, ahogyan azt az Adatvédelmi tájékoztató 6. pontja kimondja. Gondoskodunk arról, hogy bárhol is legyenek, a PDPA szerintivel összevethető szintű védelemben részesüljenek.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Kérheti az Önről kezelt személyes adatokat és annak ismertetését, hogyan használták fel azokat, és kérheti azok helyesbítését. Visszavonhatja azt a hozzájárulását is, hogy felhasználjuk azokat. Írjon a privacy@hatchgrab.com címre. 30 napon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Először nekünk jelezze a privacy@hatchgrab.com címen. Ha nem elégedett, panaszt tehet a Personal Data Protection Commission (személyesadat-védelmi bizottság) szervnél a www.pdpc.gov.sg oldalon.
-
-**Marketingüzenetek.** Marketing e-maileket csak ott küldünk, ahol a szingapúri jog ezt megengedi. Mindegyik tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. Nem kezdeményezünk marketinghívásokat és nem küldünk marketing célú SMS-eket a szingapúri Do Not Call Registry (tiltólista) által tartalmazott számokra. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hongkong
 
 ### Food truck-üzemeltetőknek
@@ -535,22 +305,6 @@ Ez a pont az Európai Gazdasági Térség minden olyan országában alkalmazand�
 **A vásárlói adatai.** Hongkong Personal Data (Privacy) Ordinance (Cap. 486) (személyes adatok védelméről szóló rendelet) alapján az Általános szerződési feltételek 10. pontja ugyanazt jelenti a rendelet fogalmai szerint: Ön az adatfelhasználó (data user), mi pedig az Ön adatfeldolgozója (data processor) vagyunk, és a vásárlói személyes adatait kizárólag arra kezeljük, hogy az Ön számára működtessük a HatchGrabet, az Ön utasításai szerint, és nem őrizzük meg azokat az ehhez szükségesnél tovább.
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet a hongkongi jog biztosít Önnek, és amely megállapodással nem zárható ki.
-
-### Adatvédelem – mindenkinek Hongkongban
-
-**Az alkalmazandó jog.** Amikor hongkongi személyek személyes adatait kezeljük, a Personal Data (Privacy) Ordinance alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük, egy részüket pedig az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik, ahogyan azt az Adatvédelmi tájékoztató 6. pontja kimondja.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Másolatot kérhet az Önről kezelt személyes adatokról, és kérheti azok helyesbítését. Írjon a privacy@hatchgrab.com címre. 40 napon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Először nekünk jelezze a privacy@hatchgrab.com címen. Ha nem elégedett, panaszt tehet az Office of the Privacy Commissioner for Personal Data hivatalánál a www.pcpd.org.hk oldalon.
-
-**Marketingüzenetek.** Személyes adatait közvetlen üzletszerzés céljából csak az Ön hozzájárulásával használjuk fel, és minden marketingüzenet tartalmazza, hogyan iratkozhat le. Ha kéri, hogy ne küldjünk többet, díjmentesen eleget teszünk ennek. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malajzia
 
@@ -576,22 +330,6 @@ Ez a pont az Európai Gazdasági Térség minden olyan országában alkalmazand�
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet a malajziai jog biztosít Önnek, és amely megállapodással nem zárható ki.
 
-### Adatvédelem – mindenkinek Malajziában
-
-**Az alkalmazandó jog.** Amikor malajziai személyek személyes adatait kezeljük, a Personal Data Protection Act 2010 (PDPA) alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük, egy részüket pedig az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik, ahogyan azt az Adatvédelmi tájékoztató 6. pontja kimondja. Azokat kizárólag ott továbbítjuk, ahol a PDPA ezt megengedi.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Kérheti az Önről kezelt személyes adatokat, és kérheti azok helyesbítését vagy felhasználásuk megszüntetését. Írjon a privacy@hatchgrab.com címre. 21 napon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Először nekünk jelezze a privacy@hatchgrab.com címen. Ha nem elégedett, panaszt tehet a Personal Data Protection Commissioner (személyesadat-védelmi biztos) hivatalánál a www.pdp.gov.my oldalon.
-
-**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol a malajziai jog ezt megengedi. Mindegyik tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Thaiföld
 
 ### Food truck-üzemeltetőknek
@@ -616,22 +354,6 @@ Ez a pont az Európai Gazdasági Térség minden olyan országában alkalmazand�
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet a thai jog biztosít Önnek, és amely megállapodással nem zárható ki.
 
-### Adatvédelem – mindenkinek Thaiföldön
-
-**Az alkalmazandó jog.** Amikor thaiföldi személyek személyes adatait kezeljük, a Personal Data Protection Act B.E. 2562 (PDPA) alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog. Az Adatvédelmi tájékoztató 8. pontjában felsorolt jogok a PDPA szerint is az Ön jogai.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük, egy részüket pedig az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik, ahogyan azt az Adatvédelmi tájékoztató 6. pontja kimondja. Azokat kizárólag a PDPA által megengedett jogalapon továbbítjuk.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Másolatot kérhet az Önről kezelt személyes adatokról, és kérheti azok helyesbítését, törlését vagy felhasználásuk megszüntetését. Írjon a privacy@hatchgrab.com címre. 30 napon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Először nekünk jelezze a privacy@hatchgrab.com címen. Panaszt tehet a Personal Data Protection Committee (személyesadat-védelmi bizottság) szervnél is a www.pdpc.or.th oldalon.
-
-**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol a thai jog ezt megengedi. Mindegyik tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Egyesült Arab Emírségek
 
 ### Food truck-üzemeltetőknek
@@ -653,19 +375,3 @@ Ez a pont az Európai Gazdasági Térség minden olyan országában alkalmazand�
 **A vásárlói adatai.** Az Egyesült Arab Emírségek Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data (személyes adatok védelméről szóló szövetségi törvényerejű rendelet) alapján az Általános szerződési feltételek 10. pontja ugyanazt jelenti annak fogalmai szerint: Ön az adatkezelő, mi pedig az Ön adatfeldolgozója vagyunk, és a vásárlói személyes adatait kizárólag arra kezeljük, hogy az Ön számára működtessük a HatchGrabet, az Ön utasításai szerint.
 
 **Értesítések és irányadó jog.** Az értesítésekre az Általános szerződési feltételek 12. pontjában foglaltak vonatkoznak: a fiókjában megadott e-mail-címen vesszük fel Önnel a kapcsolatot, Ön pedig az alábbi címen érhet el minket. E feltételekre Anglia és Wales joga az irányadó, és Anglia és Wales bíróságai rendelkeznek joghatósággal. Ez nem vonja el azt a védelmet, amelyet az Egyesült Arab Emírségek joga biztosít Önnek, és amely megállapodással nem zárható ki.
-
-### Adatvédelem – mindenkinek az Egyesült Arab Emírségekben
-
-**Az alkalmazandó jog.** Amikor az Egyesült Arab Emírségekben élő személyek személyes adatait kezeljük, a Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data alkalmazandó, valamint az Adatvédelmi tájékoztatónkban megnevezett egyesült királysági jog. Ha Ön olyan szabad övezetben tartózkodik, amelynek saját adatvédelmi joga van, például a DIFC-ben vagy az ADGM-ben, ehelyett az a jog alkalmazandó.
-
-**Hol tároljuk az adatait.** Adatait az Egyesült Királyságban tároljuk és kezeljük, egy részüket pedig az Európai Unióban és az Egyesült Államokban működő szolgáltatók kezelik, ahogyan azt az Adatvédelmi tájékoztató 6. pontja kimondja. Azokat kizárólag a jog által megengedett jogalapon továbbítjuk.
-
-**Allergiával és étrenddel kapcsolatos megjegyzések.** Ha allergiával vagy étrenddel kapcsolatos megjegyzést fűz egy rendeléshez, azt a rendelésével együtt továbbítjuk a food trucknak. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk, ahogyan azt az Adatvédelmi tájékoztató 7. pontja kimondja. Semmi másra nem használjuk.
-
-**Az Ön kérelmei.** Kérheti az Önről kezelt személyes adatokat, és kérheti azok helyesbítését, törlését vagy felhasználásuk megszüntetését. Írjon a privacy@hatchgrab.com címre. 30 napon belül válaszolunk. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait.
-
-**Panaszok.** Először nekünk jelezze a privacy@hatchgrab.com címen. Ha nem elégedett, panaszt tehet az UAE Data Office (az Egyesült Arab Emírségek adatvédelmi hivatala) szervnél.
-
-**Marketingüzenetek.** Marketingüzeneteket csak ott küldünk, ahol az Egyesült Arab Emírségek joga ezt megengedi. Mindegyik tartalmazza, hogyan iratkozhat le, és ha kéri, hogy ne küldjünk többet, nem küldünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek.
-
-**Kapcsolat.** privacy@hatchgrab.com, vagy postai úton: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

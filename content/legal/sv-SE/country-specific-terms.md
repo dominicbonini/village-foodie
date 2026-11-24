@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Landsspecifika villkor
 
 **Senast uppdaterad:** {{LAST_UPDATED}}
 
-Våra [Användarvillkor](/terms) och vår [Integritetspolicy](/privacy) gäller i alla länder där HatchGrab används. Vissa länder har ytterligare regler. Denna sida beskriver dem, ett land i taget.
+Våra [Användarvillkor](/terms) gäller i alla länder där HatchGrab används. Vissa länder har ytterligare regler. Denna sida beskriver dem, ett land i taget.
 
-När ett avsnitt nedan gäller för dig utgör det en del av våra Användarvillkor och vår Integritetspolicy. Om det anger något annat än de gör, gäller denna sida för det landet.
+När ett avsnitt nedan gäller för dig utgör det en del av våra Användarvillkor. Om det anger något annat än de gör, gäller denna sida för det landet.
 
-Om ditt land inte finns med finns det inga ytterligare regler: Användarvillkoren och Integritetspolicyn gäller som de är skrivna.
-
+Om ditt land inte finns med finns det inga ytterligare regler: Användarvillkoren gäller som de är skrivna. Vår [Integritetspolicy](/privacy) är densamma i alla länder.
 ---
 
 ## USA
@@ -31,26 +30,6 @@ Om ditt land inte finns med finns det inga ytterligare regler: Användarvillkore
 
 **Dina kunders uppgifter.** Enligt de amerikanska delstaternas integritetslagar betyder avsnitt 10 i Användarvillkoren samma sak uttryckt i deras termer: du är ”business” och vi är din ”service provider” eller ”processor”. Vi använder dina kunders personuppgifter endast för att driva HatchGrab åt dig. Vi säljer dem inte, vi delar dem inte för kontextöverskridande beteendebaserad annonsering, och vi använder dem inte för något annat ändamål, utom i den mån dessa lagar tillåter en service provider att göra det.
 
-### Integritet, för alla i USA
-
-**Vad vi samlar in och vem vi delar det med.** Detsamma som Integritetspolicyn anger: konto- och företagsuppgifter för foodtruckföretagare; ditt namn, dina kontaktuppgifter och dina beställningsuppgifter om du beställer från en foodtruck; och grundläggande tekniska uppgifter om du besöker våra webbplatser. Vi delar dem med den foodtruck du beställer från och med de tjänsteleverantörer som anges i avsnitt 6 i Integritetspolicyn, endast för att driva tjänsten eller när lagen kräver det. De kan behandlas i Storbritannien, Europeiska unionen och USA.
-
-**Vi säljer inte och delar inte dina personuppgifter.** Vi säljer inte personuppgifter, och vi delar dem inte för kontextöverskridande beteendebaserad annonsering.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan fråga oss vilka personuppgifter vi har om dig och be oss att rätta eller radera dem. Mejla privacy@hatchgrab.com. Vi kontrollerar att förfrågan är äkta innan vi agerar på den, och vi svarar inom 45 dagar. Du kan be någon annan att göra förfrågan åt dig. Vi behandlar dig inte annorlunda för att du gör en förfrågan. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används. Om vi avslår en förfrågan kan du be oss att se över den igen genom att svara på vårt besked.
-
-**Delstaternas integritetslagar.** Vissa delstaters integritetslagar gäller endast för företag över en viss storlek, och de gäller kanske inte för oss. Vi tillmötesgår ändå förfrågningarna ovan från alla i USA.
-
-**Barn.** Våra tjänster riktar sig inte till barn under 13 år, och vi samlar inte medvetet in deras personuppgifter. Om du tror att ett barn har lämnat sina uppgifter till oss, kontakta oss så raderar vi dem.
-
-**Marknadsföringsmejl.** Varje marknadsföringsmejl som vi skickar talar om hur du slutar ta emot dem och innehåller vår postadress. Om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Sms.** Om vi eller en foodtruck erbjuder uppdateringar om beställningar via sms får du dem endast om du samtycker till att ta emot dem, och du kan när som helst stoppa dem.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Irland
 
 ### För foodtruckföretagare
@@ -70,22 +49,6 @@ Om ditt land inte finns med finns det inga ytterligare regler: Användarvillkore
 **Dina kunders uppgifter.** Enligt EU:s allmänna dataskyddsförordning (GDPR) är avsnitt 10 i Användarvillkoren vårt personuppgiftsbiträdesavtal med dig: du är personuppgiftsansvarig och vi är personuppgiftsbiträde, i samma mening som i artikel 28 i GDPR.
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som irländsk lag ger dig och som inte kan avtalas bort.
-
-### Integritet, för alla i Irland
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Irland gäller EU:s allmänna dataskyddsförordning (GDPR), liksom den brittiska lag som anges i vår Integritetspolicy. De rättigheter som anges i avsnitt 8 i Integritetspolicyn är även dina rättigheter enligt GDPR.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien. Europeiska kommissionen har beslutat att Storbritannien skyddar personuppgifter enligt samma standard som EU, så ingen ytterligare skyddsåtgärd behövs för detta. När en tjänsteleverantör hanterar uppgifter i USA (avsnitt 6 i Integritetspolicyn) omfattas överföringen av en skyddsåtgärd som GDPR erkänner.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan fråga oss vilka personuppgifter vi har om dig och be oss att rätta dem, radera dem eller sluta använda dem. Mejla privacy@hatchgrab.com. Vi svarar inom en månad. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Du kan klaga till Data Protection Commission, Irlands dataskyddsmyndighet, på www.dataprotection.ie, eller per post till 6 Pembroke Row, Dublin 2, D02 X963. Vi skulle uppskatta möjligheten att rätta till saken först.
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där lagen tillåter det. Varje mejl talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australien
 
@@ -109,22 +72,6 @@ Om ditt land inte finns med finns det inga ytterligare regler: Användarvillkore
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som australisk lag ger dig och som inte kan avtalas bort.
 
-### Integritet, för alla i Australien
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Australien följer vi Australian Privacy Principles i Privacy Act 1988, liksom den brittiska lag som anges i vår Integritetspolicy.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien. En del av dem hanteras av tjänsteleverantörer i Europeiska unionen och USA, enligt avsnitt 6 i Integritetspolicyn.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan fråga oss vilka personuppgifter vi har om dig och be oss att rätta eller radera dem. Mejla privacy@hatchgrab.com. Vi svarar inom 30 dagar. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Om du är missnöjd med hur vi har hanterat dina personuppgifter, meddela oss först på privacy@hatchgrab.com. Om du inte är nöjd med vårt svar, eller om vi inte har svarat inom 30 dagar, kan du klaga skriftligen till Office of the Australian Information Commissioner (OAIC) på www.oaic.gov.au.
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där lagen tillåter det. Varje mejl anger vem det kommer från och talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Nya Zeeland
 
 ### För foodtruckföretagare
@@ -147,24 +94,6 @@ Om ditt land inte finns med finns det inga ytterligare regler: Användarvillkore
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som nyzeeländsk lag ger dig och som inte kan avtalas bort.
 
-### Integritet, för alla i Nya Zeeland
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Nya Zeeland gäller Privacy Act 2020, liksom den brittiska lag som anges i vår Integritetspolicy. Den gäller för oss eftersom vi bedriver verksamhet i Nya Zeeland, även om vi är etablerade i Storbritannien.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien. En del av dem hanteras av tjänsteleverantörer i Europeiska unionen och USA, enligt avsnitt 6 i Integritetspolicyn.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan be oss om de personuppgifter vi har om dig och be oss att rätta dem. Mejla privacy@hatchgrab.com. Vi svarar så snart vi rimligen kan, och inom 20 arbetsdagar. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Om du är missnöjd med hur vi har hanterat dina personuppgifter, meddela oss först på privacy@hatchgrab.com. Privacy Commissioner ber dig att göra det innan du lämnar in ett klagomål. Om du inte är nöjd med vårt svar kan du klaga till Office of the Privacy Commissioner på www.privacy.org.nz, på telefon 0800 803 909, eller per post till PO Box 10 094, Wellington 6140.
-
-**Personuppgiftsincidenter.** Om en personuppgiftsincident som rör dina personuppgifter har orsakat, eller sannolikt kommer att orsaka, allvarlig skada kräver Privacy Act 2020 att Privacy Commissioner och du underrättas så snart det är praktiskt möjligt. Vi gör det, eller, när det gäller en beställning som du har gjort hos en foodtruck, hjälper vi foodtrucken att göra det.
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där lagen tillåter det. Varje mejl anger vem det kommer från och talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### För foodtruckföretagare
@@ -186,22 +115,6 @@ Om ditt land inte finns med finns det inga ytterligare regler: Användarvillkore
 **Dina rättigheter enligt lokal lag.** Ingenting i Användarvillkoren tar ifrån dig en rättighet som enligt lagen där du är etablerad inte kan begränsas eller avstås från.
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som lagen i din provins eller ditt territorium ger dig och som inte kan avtalas bort.
-
-### Integritet, för alla i Kanada
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Kanada gäller Personal Information Protection and Electronic Documents Act (PIPEDA), och i British Columbia och Alberta dessa provinsers egna integritetslagar för den privata sektorn, liksom den brittiska lag som anges i vår Integritetspolicy.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien, och en del hanteras av tjänsteleverantörer i Europeiska unionen och USA (avsnitt 6 i Integritetspolicyn), där de kan bli åtkomliga enligt dessa länders lagar.
-
-**Dina förfrågningar.** Du kan be om de personuppgifter vi har om dig och be oss att rätta dem. Mejla privacy@hatchgrab.com. Vi svarar inom 30 dagar.
-
-**Klagomål.** Meddela oss först på privacy@hatchgrab.com. Om du inte är nöjd kan du klaga till Office of the Privacy Commissioner of Canada på www.priv.gc.ca eller på telefon 1-800-282-1376.
-
-**Incidenter.** Om ett intrång i säkerhetsskydden som rör dina uppgifter medför en verklig risk för betydande skada rapporterar vi det till Privacy Commissioner och meddelar dig så snart det är möjligt.
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast med ditt samtycke, i enlighet med kraven i Kanadas antispamlag. Varje mejl anger vem det kommer från och hur du avregistrerar dig, och vi verkställer en avregistrering inom 10 arbetsdagar.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Frankrike
 
@@ -226,22 +139,6 @@ Om ditt land inte finns med finns det inga ytterligare regler: Användarvillkore
 **Dina kunders uppgifter.** Enligt EU:s allmänna dataskyddsförordning (GDPR) är avsnitt 10 i Användarvillkoren vårt personuppgiftsbiträdesavtal med dig: du är personuppgiftsansvarig och vi är personuppgiftsbiträde, i samma mening som i artikel 28 i GDPR.
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som fransk lag ger dig och som inte kan avtalas bort.
-
-### Integritet, för alla i Frankrike
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Frankrike gäller EU:s allmänna dataskyddsförordning (GDPR) och den franska dataskyddslagen (loi Informatique et Libertés), liksom den brittiska lag som anges i vår Integritetspolicy. De rättigheter som anges i avsnitt 8 i Integritetspolicyn är även dina rättigheter enligt GDPR.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien. Europeiska kommissionen har beslutat att Storbritannien skyddar personuppgifter enligt samma standard som EU, så ingen ytterligare skyddsåtgärd behövs för detta. När en tjänsteleverantör hanterar uppgifter i USA (avsnitt 6 i Integritetspolicyn) omfattas överföringen av en skyddsåtgärd som GDPR erkänner.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan fråga oss vilka personuppgifter vi har om dig och be oss att rätta dem, radera dem eller sluta använda dem. Mejla privacy@hatchgrab.com. Vi svarar inom en månad. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Du kan klaga till CNIL (Commission nationale de l'informatique et des libertés), Frankrikes dataskyddsmyndighet, på www.cnil.fr, eller per post till CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Vi skulle uppskatta möjligheten att rätta till saken först.
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där fransk lag tillåter det. Varje mejl talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Europeiska ekonomiska samarbetsområdet och Schweiz
 
@@ -269,53 +166,6 @@ Detta avsnitt gäller i alla länder i Europeiska ekonomiska samarbetsområdet s
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som lagen i ditt land ger dig och som inte kan avtalas bort.
 
-### Integritet, för alla i Europeiska ekonomiska samarbetsområdet och Schweiz
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Europeiska ekonomiska samarbetsområdet gäller EU:s allmänna dataskyddsförordning (GDPR) och dataskyddslagstiftningen i deras land; i Schweiz gäller Federal Act on Data Protection. Den brittiska lag som anges i vår Integritetspolicy gäller också. De rättigheter som anges i avsnitt 8 i Integritetspolicyn är även dina rättigheter enligt dessa lagar.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien. Europeiska kommissionen och Schweiz har var för sig beslutat att Storbritannien skyddar personuppgifter på en adekvat nivå, så ingen ytterligare skyddsåtgärd behövs för detta. När en tjänsteleverantör hanterar uppgifter i USA (avsnitt 6 i Integritetspolicyn) omfattas överföringen av en skyddsåtgärd som GDPR och schweizisk lag erkänner.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan fråga oss vilka personuppgifter vi har om dig och be oss att rätta dem, radera dem eller sluta använda dem. Mejla privacy@hatchgrab.com. Vi svarar inom en månad. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Du kan klaga till dataskyddsmyndigheten i det land där du bor eller arbetar. Europeiska dataskyddsstyrelsen förtecknar alla myndigheter i Europeiska ekonomiska samarbetsområdet på www.edpb.europa.eu (About EDPB › Members). I Schweiz är det Federal Data Protection and Information Commissioner, www.edoeb.admin.ch. Vi skulle uppskatta möjligheten att rätta till saken först.
-
-| Land | Dataskyddsmyndighet |
-|---|---|
-| Österrike | dsb.gv.at |
-| Belgien | autoriteprotectiondonnees.be |
-| Bulgarien | cpdp.bg |
-| Kroatien | azop.hr |
-| Cypern | dataprotection.gov.cy |
-| Tjeckien | uoou.gov.cz |
-| Danmark | datatilsynet.dk |
-| Estland | aki.ee |
-| Finland | tietosuoja.fi |
-| Tyskland | myndigheten i din delstat (förbundsnivå: bfdi.bund.de) |
-| Grekland | dpa.gr |
-| Ungern | naih.hu |
-| Italien | garanteprivacy.it |
-| Lettland | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Litauen | vdai.lrv.lt |
-| Luxemburg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Nederländerna | autoriteitpersoonsgegevens.nl |
-| Norge | datatilsynet.no |
-| Polen | uodo.gov.pl |
-| Portugal | cnpd.pt |
-| Rumänien | dataprotection.ro |
-| Slovakien | dataprotection.gov.sk |
-| Slovenien | ip-rs.si |
-| Spanien | aepd.es |
-| Sverige | imy.se |
-| Schweiz | Federal Data Protection and Information Commissioner (FDPIC), edoeb.admin.ch |
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där lagen i ditt land tillåter det. Varje mejl talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### För foodtruckföretagare
@@ -337,22 +187,6 @@ Detta avsnitt gäller i alla länder i Europeiska ekonomiska samarbetsområdet s
 **Dina kunders uppgifter.** Enligt Gibraltars dataskyddslagstiftning, som omfattar EU:s allmänna dataskyddsförordning (GDPR) i den form den tillämpas i Gibraltar, är avsnitt 10 i Användarvillkoren vårt personuppgiftsbiträdesavtal med dig: du är personuppgiftsansvarig och vi är personuppgiftsbiträde, i samma mening som i artikel 28 i GDPR.
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som Gibraltars lag ger dig och som inte kan avtalas bort.
-
-### Integritet, för alla i Gibraltar
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Gibraltar gäller Gibraltars dataskyddslagstiftning, inklusive EU:s allmänna dataskyddsförordning (GDPR) i den form den tillämpas där, liksom den brittiska lag som anges i vår Integritetspolicy. De rättigheter som anges i avsnitt 8 i Integritetspolicyn är även dina rättigheter enligt den lagstiftningen.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien. När en tjänsteleverantör hanterar uppgifter i USA (avsnitt 6 i Integritetspolicyn) omfattas överföringen av en skyddsåtgärd som lagen erkänner.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan fråga oss vilka personuppgifter vi har om dig och be oss att rätta dem, radera dem eller sluta använda dem. Mejla privacy@hatchgrab.com. Vi svarar inom en månad. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Du kan klaga till Gibraltar Regulatory Authority, Gibraltars dataskyddsmyndighet, på www.gra.gi. Vi skulle uppskatta möjligheten att rätta till saken först.
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där Gibraltars lag tillåter det. Varje mejl talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brasilien
 
@@ -378,22 +212,6 @@ Detta avsnitt gäller i alla länder i Europeiska ekonomiska samarbetsområdet s
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som brasiliansk lag ger dig och som inte kan avtalas bort.
 
-### Integritet, för alla i Brasilien
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Brasilien gäller General Data Protection Law (LGPD), liksom den brittiska lag som anges i vår Integritetspolicy. De rättigheter som anges i avsnitt 8 i Integritetspolicyn är även dina rättigheter enligt LGPD.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien, och en del av dem hanteras av tjänsteleverantörer i Europeiska unionen och USA, enligt avsnitt 6 i Integritetspolicyn. Vi överför dem endast på en grund som LGPD tillåter.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan be oss bekräfta om vi har personuppgifter om dig och be om en kopia av dem, eller be oss att rätta dem, radera dem eller sluta använda dem. Mejla privacy@hatchgrab.com. Vi svarar inom 15 dagar. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Meddela oss först på privacy@hatchgrab.com. Du kan också klaga till National Data Protection Authority (Autoridade Nacional de Proteção de Dados, ANPD) på www.gov.br/anpd.
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där brasiliansk lag tillåter det. Varje mejl talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Mexiko
 
 ### För foodtruckföretagare
@@ -417,22 +235,6 @@ Detta avsnitt gäller i alla länder i Europeiska ekonomiska samarbetsområdet s
 **Dina kunders uppgifter.** Enligt Mexikos Federal Law on the Protection of Personal Data Held by Private Parties betyder avsnitt 10 i Användarvillkoren samma sak uttryckt i den lagens termer: du är personuppgiftsansvarig och vi är ditt personuppgiftsbiträde (encargado), och vi hanterar dina kunders personuppgifter endast för att driva HatchGrab åt dig och enligt dina instruktioner. Du ansvarar för ditt eget integritetsmeddelande (aviso de privacidad) till dina kunder.
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som mexikansk lag ger dig och som inte kan avtalas bort.
-
-### Integritet, för alla i Mexiko
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Mexiko gäller Federal Law on the Protection of Personal Data Held by Private Parties, liksom den brittiska lag som anges i vår Integritetspolicy. Denna sida och Integritetspolicyn utgör tillsammans vårt integritetsmeddelande för personer i Mexiko.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien, och en del av dem hanteras av tjänsteleverantörer i Europeiska unionen och USA, enligt avsnitt 6 i Integritetspolicyn, endast för att driva tjänsten.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan be oss om tillgång till de personuppgifter vi har om dig och be oss att rätta dem, radera dem eller sluta använda dem (dina ARCO-rättigheter). Mejla privacy@hatchgrab.com. Vi svarar inom 20 arbetsdagar. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Meddela oss först på privacy@hatchgrab.com. Om du inte är nöjd kan du klaga till Secretaría Anticorrupción y Buen Gobierno (sekretariatet för korruptionsbekämpning och god förvaltning), som verkställer Mexikos federala lag om skydd av personuppgifter som innehas av privata aktörer (i kraft sedan den 21 mars 2025).
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där mexikansk lag tillåter det. Varje mejl talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japan
 
@@ -458,22 +260,6 @@ Detta avsnitt gäller i alla länder i Europeiska ekonomiska samarbetsområdet s
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som japansk lag ger dig och som inte kan avtalas bort.
 
-### Integritet, för alla i Japan
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Japan gäller Act on the Protection of Personal Information, liksom den brittiska lag som anges i vår Integritetspolicy.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien, och en del av dem hanteras av tjänsteleverantörer i Europeiska unionen och USA, enligt avsnitt 6 i Integritetspolicyn. Japan erkänner att Storbritannien och Europeiska unionen har ett skydd för personuppgifter som motsvarar Japans standard. Uppgifter som hanteras i USA skyddas genom våra avtal med dessa leverantörer.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan be oss att lämna ut de personuppgifter vi har om dig och be oss att rätta dem, radera dem eller sluta använda dem. Mejla privacy@hatchgrab.com. Vi svarar utan dröjsmål. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Meddela oss först på privacy@hatchgrab.com. Du kan också kontakta Personal Information Protection Commission på www.ppc.go.jp.
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast till personer som har samtyckt till att ta emot dem. Varje mejl anger vem det kommer från och hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapore
 
 ### För foodtruckföretagare
@@ -498,22 +284,6 @@ Detta avsnitt gäller i alla länder i Europeiska ekonomiska samarbetsområdet s
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som singaporiansk lag ger dig och som inte kan avtalas bort.
 
-### Integritet, för alla i Singapore
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Singapore gäller Personal Data Protection Act 2012 (PDPA), liksom den brittiska lag som anges i vår Integritetspolicy.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien, och en del av dem hanteras av tjänsteleverantörer i Europeiska unionen och USA, enligt avsnitt 6 i Integritetspolicyn. Vi ser till att de skyddas enligt en standard som är jämförbar med PDPA:s, var de än finns.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan be om de personuppgifter vi har om dig och om hur de har använts, och be oss att rätta dem. Du kan också återkalla ditt samtycke till att vi använder dem. Mejla privacy@hatchgrab.com. Vi svarar inom 30 dagar. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Meddela oss först på privacy@hatchgrab.com. Om du inte är nöjd kan du klaga till Personal Data Protection Commission på www.pdpc.gov.sg.
-
-**Marknadsföringsmeddelanden.** Vi skickar marknadsföringsmejl endast där singaporiansk lag tillåter det. Varje mejl talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Vi ringer inga marknadsföringssamtal och skickar inga marknadsförings-sms till nummer som finns i Singapores Do Not Call Registry. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hongkong
 
 ### För foodtruckföretagare
@@ -535,22 +305,6 @@ Detta avsnitt gäller i alla länder i Europeiska ekonomiska samarbetsområdet s
 **Dina kunders uppgifter.** Enligt Hongkongs Personal Data (Privacy) Ordinance (Cap. 486) betyder avsnitt 10 i Användarvillkoren samma sak uttryckt i den lagens termer: du är dataanvändare (data user) och vi är din databehandlare (data processor), och vi hanterar dina kunders personuppgifter endast för att driva HatchGrab åt dig och enligt dina instruktioner, och sparar dem inte längre än vad det kräver.
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som Hongkongs lag ger dig och som inte kan avtalas bort.
-
-### Integritet, för alla i Hongkong
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Hongkong gäller Personal Data (Privacy) Ordinance, liksom den brittiska lag som anges i vår Integritetspolicy.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien, och en del av dem hanteras av tjänsteleverantörer i Europeiska unionen och USA, enligt avsnitt 6 i Integritetspolicyn.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan be om en kopia av de personuppgifter vi har om dig och be oss att rätta dem. Mejla privacy@hatchgrab.com. Vi svarar inom 40 dagar. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Meddela oss först på privacy@hatchgrab.com. Om du inte är nöjd kan du klaga till Office of the Privacy Commissioner for Personal Data på www.pcpd.org.hk.
-
-**Marknadsföringsmeddelanden.** Vi använder dina personuppgifter för direktmarknadsföring endast med ditt samtycke, och varje marknadsföringsmeddelande talar om hur du slutar ta emot dem. Om du ber oss att sluta gör vi det, utan kostnad. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malaysia
 
@@ -576,22 +330,6 @@ Detta avsnitt gäller i alla länder i Europeiska ekonomiska samarbetsområdet s
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som malaysisk lag ger dig och som inte kan avtalas bort.
 
-### Integritet, för alla i Malaysia
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Malaysia gäller Personal Data Protection Act 2010 (PDPA), liksom den brittiska lag som anges i vår Integritetspolicy.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien, och en del av dem hanteras av tjänsteleverantörer i Europeiska unionen och USA, enligt avsnitt 6 i Integritetspolicyn. Vi överför dem endast där PDPA tillåter det.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan be om de personuppgifter vi har om dig och be oss att rätta dem eller sluta använda dem. Mejla privacy@hatchgrab.com. Vi svarar inom 21 dagar. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Meddela oss först på privacy@hatchgrab.com. Om du inte är nöjd kan du klaga till Personal Data Protection Commissioner på www.pdp.gov.my.
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där malaysisk lag tillåter det. Varje mejl talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Thailand
 
 ### För foodtruckföretagare
@@ -616,22 +354,6 @@ Detta avsnitt gäller i alla länder i Europeiska ekonomiska samarbetsområdet s
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som thailändsk lag ger dig och som inte kan avtalas bort.
 
-### Integritet, för alla i Thailand
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Thailand gäller Personal Data Protection Act B.E. 2562 (PDPA), liksom den brittiska lag som anges i vår Integritetspolicy. De rättigheter som anges i avsnitt 8 i Integritetspolicyn är även dina rättigheter enligt PDPA.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien, och en del av dem hanteras av tjänsteleverantörer i Europeiska unionen och USA, enligt avsnitt 6 i Integritetspolicyn. Vi överför dem endast på en grund som PDPA tillåter.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan be om en kopia av de personuppgifter vi har om dig och be oss att rätta dem, radera dem eller sluta använda dem. Mejla privacy@hatchgrab.com. Vi svarar inom 30 dagar. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Meddela oss först på privacy@hatchgrab.com. Du kan också klaga till Personal Data Protection Committee på www.pdpc.or.th.
-
-**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där thailändsk lag tillåter det. Varje mejl talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Förenade Arabemiraten
 
 ### För foodtruckföretagare
@@ -653,19 +375,3 @@ Detta avsnitt gäller i alla länder i Europeiska ekonomiska samarbetsområdet s
 **Dina kunders uppgifter.** Enligt Förenade Arabemiratens Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data betyder avsnitt 10 i Användarvillkoren samma sak uttryckt i den lagens termer: du är personuppgiftsansvarig och vi är ditt personuppgiftsbiträde, och vi hanterar dina kunders personuppgifter endast för att driva HatchGrab åt dig och enligt dina instruktioner.
 
 **Meddelanden och tillämplig lag.** Meddelanden fungerar enligt avsnitt 12 i Användarvillkoren: vi kontaktar dig på den e-postadress som finns på ditt konto, och du når oss på adressen nedan. Dessa villkor regleras av lagen i England och Wales, och domstolarna i England och Wales är behöriga. Detta tar inte ifrån dig något skydd som Förenade Arabemiratens lag ger dig och som inte kan avtalas bort.
-
-### Integritet, för alla i Förenade Arabemiraten
-
-**Tillämplig lag.** När vi hanterar personuppgifter om personer i Förenade Arabemiraten gäller Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data, liksom den brittiska lag som anges i vår Integritetspolicy. Om du befinner dig i en frizon med en egen dataskyddslag, till exempel DIFC eller ADGM, gäller den lagen i stället.
-
-**Var dina uppgifter förvaras.** Dina uppgifter lagras och behandlas i Storbritannien, och en del av dem hanteras av tjänsteleverantörer i Europeiska unionen och USA, enligt avsnitt 6 i Integritetspolicyn. Vi överför dem endast på en grund som lagen tillåter.
-
-**Anteckningar om allergier och kost.** Om du lägger till anteckningar om allergier eller kost i en beställning för vi dem vidare till foodtrucken tillsammans med din beställning. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen, enligt avsnitt 7 i Integritetspolicyn. Vi använder dem inte till något annat.
-
-**Dina förfrågningar.** Du kan be om de personuppgifter vi har om dig och be oss att rätta dem, radera dem eller sluta använda dem. Mejla privacy@hatchgrab.com. Vi svarar inom 30 dagar. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används.
-
-**Klagomål.** Meddela oss först på privacy@hatchgrab.com. Om du inte är nöjd kan du klaga till UAE Data Office.
-
-**Marknadsföringsmeddelanden.** Vi skickar marknadsföringsmeddelanden endast där Förenade Arabemiratens lag tillåter det. Varje meddelande talar om hur du slutar ta emot dem, och om du ber oss att sluta gör vi det. Mejl om en beställning eller ditt konto är inte marknadsföring.
-
-**Kontakt.** privacy@hatchgrab.com, eller per post till HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

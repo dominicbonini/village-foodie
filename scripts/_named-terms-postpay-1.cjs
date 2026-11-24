@@ -11,6 +11,11 @@
 const EDITS = require('./fixtures/terms-postpay-1-code-edits.json')
 
 function undoCode(file, src) {
+  // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md): the newer round's legal edits (one privacy
+  // policy for every country; the country terms' privacy parts deleted; the dates and TERMS_VERSION) are taken back FIRST, by name —
+  // newest change first, the chain's own rule — so every helper that calls this one sees the legal files as they were before it.
+  src = require('./_named-france-privacy-1.cjs').undoCode(file, src)
+  if (src === null) return null
   const pairs = EDITS[file]
   if (!pairs || typeof src !== 'string') return src
   let out = src

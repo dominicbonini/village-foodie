@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Masharti ya nchi mahususi
 
 **Ilisasishwa mwisho:** {{LAST_UPDATED}}
 
-[Masharti yetu ya Huduma](/terms) na [Sera yetu ya Faragha](/privacy) yanatumika katika kila nchi ambako HatchGrab inatumika. Baadhi ya nchi zina kanuni za ziada. Ukurasa huu unazieleza, nchi moja baada ya nyingine.
+[Masharti yetu ya Huduma](/terms) yanatumika katika kila nchi ambako HatchGrab inatumika. Baadhi ya nchi zina kanuni za ziada. Ukurasa huu unazieleza, nchi moja baada ya nyingine.
 
-Pale sehemu iliyo hapa chini inapokuhusu, ni sehemu ya Masharti yetu ya Huduma na Sera yetu ya Faragha. Ikisema jambo tofauti na yale, ukurasa huu ndio unaotumika kwa nchi hiyo.
+Pale sehemu iliyo hapa chini inapokuhusu, ni sehemu ya Masharti yetu ya Huduma. Ikisema jambo tofauti na yale, ukurasa huu ndio unaotumika kwa nchi hiyo.
 
-Ikiwa nchi yako haijaorodheshwa, hakuna kanuni za ziada: Masharti ya Huduma na Sera ya Faragha yanatumika kama yalivyoandikwa.
-
+Ikiwa nchi yako haijaorodheshwa, hakuna kanuni za ziada: Masharti ya Huduma yanatumika kama yalivyoandikwa. [Sera yetu ya Faragha](/privacy) ni ileile katika kila nchi.
 ---
 
 ## Marekani
@@ -31,26 +30,6 @@ Ikiwa nchi yako haijaorodheshwa, hakuna kanuni za ziada: Masharti ya Huduma na S
 
 **Data za wateja wako.** Chini ya sheria za faragha za majimbo ya Marekani, sehemu ya 10 ya Masharti ya Huduma inamaanisha kitu kile kile kwa istilahi zao: wewe ni “biashara” (business) na sisi ni “mtoa huduma” (service provider) au “mchakataji” (processor) wako. Tunatumia taarifa binafsi za wateja wako tu kuendesha HatchGrab kwa ajili yako. Hatuziuzi, hatuzishiriki kwa ajili ya matangazo yanayolenga tabia katika miktadha tofauti (cross-context behavioral advertising), na hatuzitumii kwa madhumuni mengine yoyote isipokuwa kama sheria hizo zinavyomruhusu mtoa huduma.
 
-### Faragha, kwa kila mtu aliyeko Marekani
-
-**Tunachokusanya na tunayeshiriki naye.** Ni kama Sera ya Faragha inavyosema: taarifa za akaunti na za biashara kwa waendeshaji wa food truck; jina lako, taarifa zako za mawasiliano na taarifa za oda ukiagiza kutoka kwa food truck; na data za msingi za kiufundi ukitembelea tovuti zetu. Tunazishiriki na food truck unayoagiza kutoka kwayo na watoa huduma walioorodheshwa katika sehemu ya 6 ya Sera ya Faragha, tu ili kuendesha huduma au pale sheria inapotaka. Zinaweza kuchakatwa nchini Uingereza, katika Umoja wa Ulaya na nchini Marekani.
-
-**Hatuuzi wala hatushiriki taarifa zako binafsi.** Hatuuzi taarifa binafsi, na hatuzishiriki kwa ajili ya matangazo yanayolenga tabia katika miktadha tofauti (cross-context behavioral advertising).
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kutuuliza ni taarifa binafsi zipi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe au tuzifute. Tuma barua pepe kwa privacy@hatchgrab.com. Tutahakiki kwamba ombi ni halisi kabla ya kulishughulikia, na tutajibu ndani ya siku 45. Unaweza kumwomba mtu mwingine atoe ombi kwa niaba yako. Hatutakutendea tofauti kwa sababu ya kutoa ombi. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika. Tukikataa ombi, unaweza kutuomba tuliangalie upya kwa kujibu jibu letu.
-
-**Sheria za faragha za majimbo.** Baadhi ya sheria za faragha za majimbo zinahusu tu biashara zinazozidi ukubwa fulani, na huenda zisituhusu. Hata hivyo tunayaheshimu maombi yaliyotajwa hapo juu kutoka kwa mtu yeyote aliyeko Marekani.
-
-**Watoto.** Huduma zetu hazilengi watoto walio chini ya miaka 13, na hatukusanyi kwa kujua taarifa zao binafsi. Ikiwa unaamini kwamba mtoto ametupa taarifa zake, wasiliana nasi na tutazifuta.
-
-**Barua pepe za masoko.** Kila barua pepe ya masoko tunayotuma inakueleza jinsi ya kuacha kuzipokea na ina anwani yetu ya posta. Ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Ujumbe mfupi (SMS).** Ikiwa sisi au food truck tunatoa taarifa za oda kwa ujumbe mfupi, utazipata tu ukikubali kuzipokea, na unaweza kuzisimamisha wakati wowote.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Ayalandi
 
 ### Kwa waendeshaji wa food truck
@@ -70,22 +49,6 @@ Ikiwa nchi yako haijaorodheshwa, hakuna kanuni za ziada: Masharti ya Huduma na S
 **Data za wateja wako.** Chini ya Kanuni ya Jumla ya Ulinzi wa Data ya EU (GDPR), sehemu ya 10 ya Masharti ya Huduma ndiyo makubaliano yetu ya uchakataji wa data na wewe: wewe ni mdhibiti wa data (controller) na sisi ni mchakataji wa data (processor), kwa maana ile ile kama Ibara ya 28 ya GDPR.
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Ayalandi inakupa na ambao hauwezi kuondolewa kwa makubaliano.
-
-### Faragha, kwa kila mtu aliyeko Ayalandi
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Ayalandi, Kanuni ya Jumla ya Ulinzi wa Data ya EU (GDPR) inatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha. Haki zilizoorodheshwa katika sehemu ya 8 ya Sera ya Faragha ni haki zako chini ya GDPR pia.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza. Tume ya Ulaya imeamua kwamba Uingereza inalinda taarifa binafsi kwa kiwango sawa na EU, kwa hiyo hakuna kinga ya ziada inayohitajika kwa hilo. Pale mtoa huduma anaposhughulikia data nchini Marekani (sehemu ya 6 ya Sera ya Faragha), uhamishaji unalindwa na kinga inayotambuliwa na GDPR.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kutuuliza ni taarifa binafsi zipi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe, tuzifute au tuache kuzitumia. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya mwezi mmoja. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Unaweza kulalamika kwa Tume ya Ulinzi wa Data (Data Protection Commission), mdhibiti wa ulinzi wa data wa Ayalandi, kupitia www.dataprotection.ie, au kwa posta kwa 6 Pembroke Row, Dublin 2, D02 X963. Tungependa kupata nafasi ya kurekebisha mambo kwanza.
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria inaporuhusu. Kila moja inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australia
 
@@ -109,22 +72,6 @@ Ikiwa nchi yako haijaorodheshwa, hakuna kanuni za ziada: Masharti ya Huduma na S
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Australia inakupa na ambao hauwezi kuondolewa kwa makubaliano.
 
-### Faragha, kwa kila mtu aliyeko Australia
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Australia, tunafuata Kanuni za Faragha za Australia (Australian Privacy Principles) zilizomo katika Sheria ya Faragha (Privacy Act 1988), pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha.
-
-**Mahali taarifa zako zinapohifadhiwa.** Taarifa zako zinahifadhiwa na kuchakatwa nchini Uingereza. Baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani, kama sehemu ya 6 ya Sera ya Faragha inavyosema.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kutuuliza ni taarifa binafsi zipi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe au tuzifute. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya siku 30. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Ikiwa huridhiki na jinsi tulivyoshughulikia taarifa zako binafsi, tuambie kwanza kupitia privacy@hatchgrab.com. Ikiwa huridhiki na jibu letu, au hatujajibu ndani ya siku 30, unaweza kulalamika kwa maandishi kwa Ofisi ya Kamishna wa Taarifa wa Australia (Office of the Australian Information Commissioner, OAIC) kupitia www.oaic.gov.au.
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria inaporuhusu. Kila moja inasema imetoka kwa nani na inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Nyuzilandi
 
 ### Kwa waendeshaji wa food truck
@@ -147,24 +94,6 @@ Ikiwa nchi yako haijaorodheshwa, hakuna kanuni za ziada: Masharti ya Huduma na S
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Nyuzilandi inakupa na ambao hauwezi kuondolewa kwa makubaliano.
 
-### Faragha, kwa kila mtu aliyeko Nyuzilandi
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Nyuzilandi, Sheria ya Faragha (Privacy Act 2020) inatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha. Inatuhusu kwa sababu tunafanya biashara nchini Nyuzilandi, ingawa tuko nchini Uingereza.
-
-**Mahali taarifa zako zinapohifadhiwa.** Taarifa zako zinahifadhiwa na kuchakatwa nchini Uingereza. Baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani, kama sehemu ya 6 ya Sera ya Faragha inavyosema.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kutuomba taarifa binafsi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu mapema kadri tunavyoweza kwa njia inayofaa, na ndani ya siku 20 za kazi. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Ikiwa huridhiki na jinsi tulivyoshughulikia taarifa zako binafsi, tuambie kwanza kupitia privacy@hatchgrab.com. Kamishna wa Faragha anakuomba ufanye hivyo kabla ya kuwasilisha malalamiko. Ikiwa huridhiki na jibu letu, unaweza kulalamika kwa Ofisi ya Kamishna wa Faragha (Office of the Privacy Commissioner) kupitia www.privacy.org.nz, kwa simu 0800 803 909, au kwa posta kwa PO Box 10 094, Wellington 6140.
-
-**Uvunjaji wa faragha.** Ikiwa uvunjaji wa faragha unaohusu taarifa zako binafsi umesababisha, au una uwezekano wa kusababisha, madhara makubwa, Sheria ya Faragha (Privacy Act 2020) inataka Kamishna wa Faragha na wewe mjulishwe mapema iwezekanavyo. Tutafanya hivyo, au, kwa oda uliyoweka kwa food truck, tutaisaidia food truck kufanya hivyo.
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria inaporuhusu. Kila moja inasema imetoka kwa nani na inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### Kwa waendeshaji wa food truck
@@ -186,22 +115,6 @@ Ikiwa nchi yako haijaorodheshwa, hakuna kanuni za ziada: Masharti ya Huduma na S
 **Haki zako chini ya sheria ya eneo lako.** Hakuna chochote katika Masharti ya Huduma kinachoondoa haki ambayo sheria ya mahali ulipo inasema haiwezi kuwekewa kikomo wala kuachwa.
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya jimbo au eneo lako inakupa na ambao hauwezi kuondolewa kwa makubaliano.
-
-### Faragha, kwa kila mtu aliyeko Kanada
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Kanada, Sheria ya Ulinzi wa Taarifa Binafsi na Nyaraka za Kielektroniki (Personal Information Protection and Electronic Documents Act, PIPEDA) inatumika, na katika British Columbia na Alberta sheria zao wenyewe za faragha kwa sekta binafsi, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha.
-
-**Mahali taarifa zako zinapohifadhiwa.** Taarifa zako zinahifadhiwa na kuchakatwa nchini Uingereza, na baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani (sehemu ya 6 ya Sera ya Faragha), ambako zinaweza kufikiwa chini ya sheria za nchi hizo.
-
-**Maombi yako.** Unaweza kuomba taarifa binafsi tunazoshikilia kukuhusu na kutuomba tuzirekebishe. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya siku 30.
-
-**Malalamiko.** Tuambie kwanza kupitia privacy@hatchgrab.com. Ikiwa huridhiki, unaweza kulalamika kwa Ofisi ya Kamishna wa Faragha wa Kanada (Office of the Privacy Commissioner of Canada) kupitia www.priv.gc.ca au kwa simu 1-800-282-1376.
-
-**Uvunjaji wa usalama.** Ikiwa uvunjaji wa kinga za usalama unaohusu taarifa zako unaleta hatari halisi ya madhara makubwa, tutauripoti kwa Kamishna wa Faragha na kukuambia mapema iwezekanavyo.
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko tu kwa ridhaa yako, kama sheria ya Kanada dhidi ya barua taka (anti-spam) inavyotaka. Kila moja inasema imetoka kwa nani na jinsi ya kujiondoa, na tunashughulikia ombi la kujiondoa ndani ya siku 10 za kazi.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Ufaransa
 
@@ -226,22 +139,6 @@ Ikiwa nchi yako haijaorodheshwa, hakuna kanuni za ziada: Masharti ya Huduma na S
 **Data za wateja wako.** Chini ya Kanuni ya Jumla ya Ulinzi wa Data ya EU (GDPR), sehemu ya 10 ya Masharti ya Huduma ndiyo makubaliano yetu ya uchakataji wa data na wewe: wewe ni mdhibiti wa data (controller) na sisi ni mchakataji wa data (processor), kwa maana ile ile kama Ibara ya 28 ya GDPR.
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Ufaransa inakupa na ambao hauwezi kuondolewa kwa makubaliano.
-
-### Faragha, kwa kila mtu aliyeko Ufaransa
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Ufaransa, Kanuni ya Jumla ya Ulinzi wa Data ya EU (GDPR) na Sheria ya Ufaransa ya Ulinzi wa Data (loi Informatique et Libertés) zinatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha. Haki zilizoorodheshwa katika sehemu ya 8 ya Sera ya Faragha ni haki zako chini ya GDPR pia.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza. Tume ya Ulaya imeamua kwamba Uingereza inalinda taarifa binafsi kwa kiwango sawa na EU, kwa hiyo hakuna kinga ya ziada inayohitajika kwa hilo. Pale mtoa huduma anaposhughulikia data nchini Marekani (sehemu ya 6 ya Sera ya Faragha), uhamishaji unalindwa na kinga inayotambuliwa na GDPR.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kutuuliza ni taarifa binafsi zipi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe, tuzifute au tuache kuzitumia. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya mwezi mmoja. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Unaweza kulalamika kwa CNIL (Commission nationale de l’informatique et des libertés), mdhibiti wa ulinzi wa data wa Ufaransa, kupitia www.cnil.fr, au kwa posta kwa CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Tungependa kupata nafasi ya kurekebisha mambo kwanza.
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria ya Ufaransa inaporuhusu. Kila moja inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Eneo la Kiuchumi la Ulaya na Uswisi
 
@@ -269,53 +166,6 @@ Sehemu hii inatumika katika kila nchi ya Eneo la Kiuchumi la Ulaya ambayo haina 
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya nchi yako inakupa na ambao hauwezi kuondolewa kwa makubaliano.
 
-### Faragha, kwa kila mtu aliyeko katika Eneo la Kiuchumi la Ulaya na Uswisi
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko katika Eneo la Kiuchumi la Ulaya, Kanuni ya Jumla ya Ulinzi wa Data ya EU (GDPR) na sheria ya ulinzi wa data ya nchi yao zinatumika; nchini Uswisi, Sheria ya Shirikisho ya Ulinzi wa Data (Federal Act on Data Protection). Sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha inatumika pia. Haki zilizoorodheshwa katika sehemu ya 8 ya Sera ya Faragha ni haki zako chini ya sheria hizi pia.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza. Tume ya Ulaya na Uswisi kila moja imeamua kwamba Uingereza inalinda taarifa binafsi kwa kiwango cha kutosha, kwa hiyo hakuna kinga ya ziada inayohitajika kwa hilo. Pale mtoa huduma anaposhughulikia data nchini Marekani (sehemu ya 6 ya Sera ya Faragha), uhamishaji unalindwa na kinga inayotambuliwa na GDPR na sheria ya Uswisi.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kutuuliza ni taarifa binafsi zipi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe, tuzifute au tuache kuzitumia. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya mwezi mmoja. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Unaweza kulalamika kwa mamlaka ya ulinzi wa data ya nchi unayoishi au unayofanyia kazi. Bodi ya Ulaya ya Ulinzi wa Data (European Data Protection Board) inaorodhesha kila mamlaka katika Eneo la Kiuchumi la Ulaya kwenye www.edpb.europa.eu (About EDPB › Members). Nchini Uswisi, ni Kamishna wa Shirikisho wa Ulinzi wa Data na Taarifa (Federal Data Protection and Information Commissioner), www.edoeb.admin.ch. Tungependa kupata nafasi ya kurekebisha mambo kwanza.
-
-| Nchi | Mamlaka ya ulinzi wa data |
-|---|---|
-| Austria | dsb.gv.at |
-| Ubelgiji | autoriteprotectiondonnees.be |
-| Bulgaria | cpdp.bg |
-| Croatia | azop.hr |
-| Saiprasi | dataprotection.gov.cy |
-| Jamhuri ya Cheki | uoou.gov.cz |
-| Denmaki | datatilsynet.dk |
-| Estonia | aki.ee |
-| Ufini | tietosuoja.fi |
-| Ujerumani | mamlaka ya Land (jimbo) lako (ya shirikisho: bfdi.bund.de) |
-| Ugiriki | dpa.gr |
-| Hungaria | naih.hu |
-| Italia | garanteprivacy.it |
-| Latvia | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Lithuania | vdai.lrv.lt |
-| Luxembourg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Uholanzi | autoriteitpersoonsgegevens.nl |
-| Norway | datatilsynet.no |
-| Poland | uodo.gov.pl |
-| Ureno | cnpd.pt |
-| Romania | dataprotection.ro |
-| Slovakia | dataprotection.gov.sk |
-| Slovenia | ip-rs.si |
-| Uhispania | aepd.es |
-| Uswidi | imy.se |
-| Uswisi | Kamishna wa Shirikisho wa Ulinzi wa Data na Taarifa (Federal Data Protection and Information Commissioner, FDPIC), edoeb.admin.ch |
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria ya nchi yako inaporuhusu. Kila moja inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### Kwa waendeshaji wa food truck
@@ -337,22 +187,6 @@ Sehemu hii inatumika katika kila nchi ya Eneo la Kiuchumi la Ulaya ambayo haina 
 **Data za wateja wako.** Chini ya sheria ya ulinzi wa data ya Gibraltar, inayojumuisha Kanuni ya Jumla ya Ulinzi wa Data ya EU (GDPR) kama inavyotumika Gibraltar, sehemu ya 10 ya Masharti ya Huduma ndiyo makubaliano yetu ya uchakataji wa data na wewe: wewe ni mdhibiti wa data (controller) na sisi ni mchakataji wa data (processor), kwa maana ile ile kama Ibara ya 28 ya GDPR.
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Gibraltar inakupa na ambao hauwezi kuondolewa kwa makubaliano.
-
-### Faragha, kwa kila mtu aliyeko Gibraltar
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Gibraltar, sheria ya ulinzi wa data ya Gibraltar inatumika, ikiwemo Kanuni ya Jumla ya Ulinzi wa Data ya EU (GDPR) kama inavyotumika huko, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha. Haki zilizoorodheshwa katika sehemu ya 8 ya Sera ya Faragha ni haki zako chini ya sheria hiyo pia.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza. Pale mtoa huduma anaposhughulikia data nchini Marekani (sehemu ya 6 ya Sera ya Faragha), uhamishaji unalindwa na kinga inayotambuliwa na sheria.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kutuuliza ni taarifa binafsi zipi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe, tuzifute au tuache kuzitumia. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya mwezi mmoja. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Unaweza kulalamika kwa Mamlaka ya Udhibiti ya Gibraltar (Gibraltar Regulatory Authority), mdhibiti wa ulinzi wa data wa Gibraltar, kupitia www.gra.gi. Tungependa kupata nafasi ya kurekebisha mambo kwanza.
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria ya Gibraltar inaporuhusu. Kila moja inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brazil
 
@@ -378,22 +212,6 @@ Sehemu hii inatumika katika kila nchi ya Eneo la Kiuchumi la Ulaya ambayo haina 
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Brazil inakupa na ambao hauwezi kuondolewa kwa makubaliano.
 
-### Faragha, kwa kila mtu aliyeko Brazil
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Brazil, Sheria ya Jumla ya Ulinzi wa Data (LGPD) inatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha. Haki zilizoorodheshwa katika sehemu ya 8 ya Sera ya Faragha ni haki zako chini ya LGPD pia.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza, na baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani, kama sehemu ya 6 ya Sera ya Faragha inavyosema. Tunazihamisha tu kwa msingi unaoruhusiwa na LGPD.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kutuomba tuthibitishe kama tunashikilia taarifa binafsi kukuhusu, na kuomba nakala yake, au kutuomba tuzirekebishe, tuzifute au tuache kuzitumia. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya siku 15. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Tuambie kwanza kupitia privacy@hatchgrab.com. Unaweza pia kulalamika kwa Mamlaka ya Kitaifa ya Ulinzi wa Data (Autoridade Nacional de Proteção de Dados, ANPD) kupitia www.gov.br/anpd.
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria ya Brazil inaporuhusu. Kila moja inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Meksiko
 
 ### Kwa waendeshaji wa food truck
@@ -417,22 +235,6 @@ Sehemu hii inatumika katika kila nchi ya Eneo la Kiuchumi la Ulaya ambayo haina 
 **Data za wateja wako.** Chini ya Sheria ya Shirikisho ya Meksiko ya Ulinzi wa Taarifa Binafsi Zinazoshikiliwa na Watu Binafsi (Federal Law on the Protection of Personal Data Held by Private Parties), sehemu ya 10 ya Masharti ya Huduma inamaanisha kitu kile kile kwa istilahi zake: wewe ni mdhibiti wa data (controller) na sisi ni mchakataji wako (encargado), na tunashughulikia taarifa binafsi za wateja wako tu ili kuendesha HatchGrab kwa ajili yako na kwa maelekezo yako. Unawajibika kwa taarifa yako mwenyewe ya faragha (aviso de privacidad) kwa wateja wako.
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Meksiko inakupa na ambao hauwezi kuondolewa kwa makubaliano.
-
-### Faragha, kwa kila mtu aliyeko Meksiko
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Meksiko, Sheria ya Shirikisho ya Ulinzi wa Taarifa Binafsi Zinazoshikiliwa na Watu Binafsi (Federal Law on the Protection of Personal Data Held by Private Parties) inatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha. Ukurasa huu na Sera ya Faragha kwa pamoja ndizo taarifa yetu ya faragha (aviso de privacidad) kwa watu walioko Meksiko.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza, na baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani, kama sehemu ya 6 ya Sera ya Faragha inavyosema, tu ili kuendesha huduma.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kutuomba kufikia taarifa binafsi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe, tuzifute au tuache kuzitumia (haki zako za ARCO). Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya siku 20 za kazi. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Tuambie kwanza kupitia privacy@hatchgrab.com. Ikiwa huridhiki, unaweza kulalamika kwa Secretaría Anticorrupción y Buen Gobierno (Wizara ya Kupambana na Rushwa na Utawala Bora), inayosimamia utekelezaji wa Sheria ya Shirikisho ya Meksiko ya Ulinzi wa Taarifa Binafsi Zinazoshikiliwa na Watu Binafsi (inayotumika tangu tarehe 21 Machi 2025).
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria ya Meksiko inaporuhusu. Kila moja inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japani
 
@@ -458,22 +260,6 @@ Sehemu hii inatumika katika kila nchi ya Eneo la Kiuchumi la Ulaya ambayo haina 
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Japani inakupa na ambao hauwezi kuondolewa kwa makubaliano.
 
-### Faragha, kwa kila mtu aliyeko Japani
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Japani, Sheria ya Ulinzi wa Taarifa Binafsi (Act on the Protection of Personal Information) inatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha.
-
-**Mahali taarifa zako zinapohifadhiwa.** Taarifa zako zinahifadhiwa na kuchakatwa nchini Uingereza, na baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani, kama sehemu ya 6 ya Sera ya Faragha inavyosema. Japani inatambua Uingereza na Umoja wa Ulaya kuwa na ulinzi wa taarifa binafsi unaofikia kiwango cha Japani. Taarifa zinazoshughulikiwa nchini Marekani zinalindwa na makubaliano yetu na watoa huduma hao.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kutuomba tukufichulie taarifa binafsi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe, tuzifute au tuache kuzitumia. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu bila kuchelewa. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Tuambie kwanza kupitia privacy@hatchgrab.com. Unaweza pia kuwasiliana na Tume ya Ulinzi wa Taarifa Binafsi (Personal Information Protection Commission) kupitia www.ppc.go.jp.
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko tu kwa watu waliokubali kuzipokea. Kila moja inasema imetoka kwa nani na jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapore
 
 ### Kwa waendeshaji wa food truck
@@ -498,22 +284,6 @@ Sehemu hii inatumika katika kila nchi ya Eneo la Kiuchumi la Ulaya ambayo haina 
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Singapore inakupa na ambao hauwezi kuondolewa kwa makubaliano.
 
-### Faragha, kwa kila mtu aliyeko Singapore
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Singapore, Sheria ya Ulinzi wa Taarifa Binafsi (Personal Data Protection Act 2012, PDPA) inatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza, na baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani, kama sehemu ya 6 ya Sera ya Faragha inavyosema. Tunahakikisha zinalindwa kwa kiwango kinacholingana na kile cha PDPA popote zilipo.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kuomba taarifa binafsi tunazoshikilia kukuhusu na jinsi zilivyotumika, na kutuomba tuzirekebishe. Unaweza pia kuondoa ridhaa yako kwa sisi kuzitumia. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya siku 30. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Tuambie kwanza kupitia privacy@hatchgrab.com. Ikiwa huridhiki, unaweza kulalamika kwa Tume ya Ulinzi wa Taarifa Binafsi (Personal Data Protection Commission) kupitia www.pdpc.gov.sg.
-
-**Ujumbe wa masoko.** Tunatuma barua pepe za masoko pale tu sheria ya Singapore inaporuhusu. Kila moja inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Hatupigi simu za masoko wala hatutumi ujumbe mfupi wa masoko kwa namba zilizo kwenye Rejista ya Usinipigie Simu ya Singapore (Do Not Call Registry). Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hong Kong
 
 ### Kwa waendeshaji wa food truck
@@ -535,22 +305,6 @@ Sehemu hii inatumika katika kila nchi ya Eneo la Kiuchumi la Ulaya ambayo haina 
 **Data za wateja wako.** Chini ya Agizo la Hong Kong la Taarifa Binafsi (Faragha) (Personal Data (Privacy) Ordinance, Cap. 486), sehemu ya 10 ya Masharti ya Huduma inamaanisha kitu kile kile kwa istilahi zake: wewe ni mtumiaji wa data (data user) na sisi ni mchakataji wako wa data (data processor), na tunashughulikia taarifa binafsi za wateja wako tu ili kuendesha HatchGrab kwa ajili yako na kwa maelekezo yako, na hatuzihifadhi kwa muda mrefu kuliko inavyohitajika kwa hilo.
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Hong Kong inakupa na ambao hauwezi kuondolewa kwa makubaliano.
-
-### Faragha, kwa kila mtu aliyeko Hong Kong
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Hong Kong, Agizo la Taarifa Binafsi (Faragha) (Personal Data (Privacy) Ordinance) linatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza, na baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani, kama sehemu ya 6 ya Sera ya Faragha inavyosema.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kuomba nakala ya taarifa binafsi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya siku 40. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Tuambie kwanza kupitia privacy@hatchgrab.com. Ikiwa huridhiki, unaweza kulalamika kwa Ofisi ya Kamishna wa Faragha wa Taarifa Binafsi (Office of the Privacy Commissioner for Personal Data) kupitia www.pcpd.org.hk.
-
-**Ujumbe wa masoko.** Tunatumia taarifa zako binafsi kwa masoko ya moja kwa moja tu kwa ridhaa yako, na kila ujumbe wa masoko unakueleza jinsi ya kuacha kuupokea. Ukituomba tuache, tutaacha, bila malipo. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malesia
 
@@ -576,22 +330,6 @@ Sehemu hii inatumika katika kila nchi ya Eneo la Kiuchumi la Ulaya ambayo haina 
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Malesia inakupa na ambao hauwezi kuondolewa kwa makubaliano.
 
-### Faragha, kwa kila mtu aliyeko Malesia
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Malesia, Sheria ya Ulinzi wa Taarifa Binafsi (Personal Data Protection Act 2010, PDPA) inatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza, na baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani, kama sehemu ya 6 ya Sera ya Faragha inavyosema. Tunazihamisha tu pale PDPA inaporuhusu.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kuomba taarifa binafsi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe au tuache kuzitumia. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya siku 21. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Tuambie kwanza kupitia privacy@hatchgrab.com. Ikiwa huridhiki, unaweza kulalamika kwa Kamishna wa Ulinzi wa Taarifa Binafsi (Personal Data Protection Commissioner) kupitia www.pdp.gov.my.
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria ya Malesia inaporuhusu. Kila moja inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Tailandi
 
 ### Kwa waendeshaji wa food truck
@@ -616,22 +354,6 @@ Sehemu hii inatumika katika kila nchi ya Eneo la Kiuchumi la Ulaya ambayo haina 
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Tailandi inakupa na ambao hauwezi kuondolewa kwa makubaliano.
 
-### Faragha, kwa kila mtu aliyeko Tailandi
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko Tailandi, Sheria ya Ulinzi wa Taarifa Binafsi (Personal Data Protection Act B.E. 2562, PDPA) inatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha. Haki zilizoorodheshwa katika sehemu ya 8 ya Sera ya Faragha ni haki zako chini ya PDPA pia.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza, na baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani, kama sehemu ya 6 ya Sera ya Faragha inavyosema. Tunazihamisha tu kwa msingi unaoruhusiwa na PDPA.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kuomba nakala ya taarifa binafsi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe, tuzifute au tuache kuzitumia. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya siku 30. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Tuambie kwanza kupitia privacy@hatchgrab.com. Unaweza pia kulalamika kwa Kamati ya Ulinzi wa Taarifa Binafsi (Personal Data Protection Committee) kupitia www.pdpc.or.th.
-
-**Barua pepe za masoko.** Tunatuma barua pepe za masoko pale tu sheria ya Tailandi inaporuhusu. Kila moja inakueleza jinsi ya kuacha kuzipokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Falme za Kiarabu
 
 ### Kwa waendeshaji wa food truck
@@ -653,19 +375,3 @@ Sehemu hii inatumika katika kila nchi ya Eneo la Kiuchumi la Ulaya ambayo haina 
 **Data za wateja wako.** Chini ya Amri-Sheria ya Shirikisho ya Falme za Kiarabu kuhusu Ulinzi wa Taarifa Binafsi (Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data), sehemu ya 10 ya Masharti ya Huduma inamaanisha kitu kile kile kwa istilahi zake: wewe ni mdhibiti wa data (controller) na sisi ni mchakataji wako wa data (processor), na tunashughulikia taarifa binafsi za wateja wako tu ili kuendesha HatchGrab kwa ajili yako na kwa maelekezo yako.
 
 **Notisi na sheria inayotumika.** Notisi zinafanya kazi kama sehemu ya 12 ya Masharti ya Huduma inavyosema: tunawasiliana nawe kupitia anwani ya barua pepe iliyo kwenye akaunti yako, na unaweza kutufikia kupitia anwani iliyo hapa chini. Masharti haya yanasimamiwa na sheria ya Uingereza (England) na Wales, na mahakama za Uingereza (England) na Wales zina mamlaka. Hili haliondoi ulinzi wowote ambao sheria ya Falme za Kiarabu inakupa na ambao hauwezi kuondolewa kwa makubaliano.
-
-### Faragha, kwa kila mtu aliyeko katika Falme za Kiarabu
-
-**Sheria inayotumika.** Tunaposhughulikia taarifa binafsi za watu walioko katika Falme za Kiarabu, Amri-Sheria ya Shirikisho kuhusu Ulinzi wa Taarifa Binafsi (Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data) inatumika, pamoja na sheria ya Uingereza iliyotajwa katika Sera yetu ya Faragha. Ikiwa uko katika eneo huru (free zone) lenye sheria yake yenyewe ya ulinzi wa data, kama vile DIFC au ADGM, sheria hiyo ndiyo inayotumika badala yake.
-
-**Mahali data zako zinapohifadhiwa.** Data zako zinahifadhiwa na kuchakatwa nchini Uingereza, na baadhi yake zinashughulikiwa na watoa huduma katika Umoja wa Ulaya na nchini Marekani, kama sehemu ya 6 ya Sera ya Faragha inavyosema. Tunazihamisha tu kwa msingi unaoruhusiwa na sheria.
-
-**Maelezo ya mzio na ya lishe.** Ukiongeza maelezo ya mzio au ya lishe kwenye oda, tunayapitisha kwa food truck pamoja na oda yako. Tunayaondoa, pamoja na jina lako na taarifa zako za mawasiliano, miezi 12 baada ya oda, kama sehemu ya 7 ya Sera ya Faragha inavyosema. Hatuyatumii kwa jambo lingine lolote.
-
-**Maombi yako.** Unaweza kuomba taarifa binafsi tunazoshikilia kukuhusu, na kutuomba tuzirekebishe, tuzifute au tuache kuzitumia. Tuma barua pepe kwa privacy@hatchgrab.com. Tutajibu ndani ya siku 30. Ikiwa uliagiza kutoka kwa food truck, tunaweza kupitisha ombi lako kwa food truck hiyo, kwa sababu ndiyo inayoamua jinsi taarifa za oda yako zinavyotumika.
-
-**Malalamiko.** Tuambie kwanza kupitia privacy@hatchgrab.com. Ikiwa huridhiki, unaweza kulalamika kwa Ofisi ya Data ya Falme za Kiarabu (UAE Data Office).
-
-**Ujumbe wa masoko.** Tunatuma ujumbe wa masoko pale tu sheria ya Falme za Kiarabu inaporuhusu. Kila mmoja unakueleza jinsi ya kuacha kuupokea, na ukituomba tuache, tutaacha. Barua pepe kuhusu oda au akaunti yako si za masoko.
-
-**Mawasiliano.** privacy@hatchgrab.com, au kwa posta kwa HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

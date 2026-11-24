@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Tietosuojaseloste
 
 **Päivitetty viimeksi:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Seloste koskee myös HatchGrabin iOS- ja Android-sovelluksia puhelimille ja tabl
 
 Jos tulit tänne vain siksi, että tilasit ruokaa ruokarekalta, sinua koskee kohta **”Jos tilasit ruokarekalta”**.
 
-**Joissakin maissa sovelletaan lisäsääntöjä.** Jos ne koskevat sinua, ne löytyvät sivultamme [Maakohtaiset ehdot](/country-terms), joka on osa tätä selostetta.
-
+**Tätä selostetta sovelletaan riippumatta siitä, missä olet.** Noudatamme Yhdistyneen kuningaskunnan tietosuojalainsäädäntöä, ja jos myös asuinmaasi tietosuojalainsäädäntöä sovelletaan, noudatamme myös sitä.
 ---
 
 ## 1. Keitä olemme
@@ -84,6 +83,8 @@ Kun teet tilauksen ruokarekan tilaussivun kautta, keräämme seuraavat tiedot ja
 
 Ruokarekka päättää, kuinka kauan se säilyttää tietojasi ja miten se on sinuun yhteydessä jälkikäteen. Tähän sovelletaan ruokarekan omia tietosuojakäytäntöjä. Jos et ole varma, mikä ruokarekka on kyseessä, ota meihin yhteyttä osoitteeseen privacy@hatchgrab.com, niin ohjaamme sinut sen luo.
 
+**Allergia- ja ruokavaliohuomautukset.** Välitämme ne ruokarekalle tilauksesi mukana emmekä käytä niitä mihinkään muuhun. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta (ks. kohta 7).
+
 **Allergeenitiedot.** Jos ruokarekka julkaisee allergeenitietoja, näytämme sen, minkä ruokarekka on vahvistanut. Emme tarkista tietoja itsenäisesti. Kerro vakavasta allergiasta aina suoraan ruokarekalle.
 
 ---
@@ -135,7 +136,7 @@ Voimme myös luovuttaa tietoja, jos laki meitä siihen velvoittaa, tai oikeudell
 
 **Emme myy henkilötietoja emmekä jaa niitä mainontaa varten.**
 
-**Kansainväliset siirrot.** Tilitietojasi ja tilaustietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Osa käsittelystä tapahtuu sen ulkopuolella: ruokalistojen tietojen poiminta ja WhatsAppin automaattiset vastaukset, joissa käytetään Googlen palvelua Yhdysvalloissa; WhatsApp-viestien toimittaminen, jonka hoitaa Meta Yhdysvalloissa; maksut, jotka hoitaa Stripe Yhdysvalloissa; sekä push-ilmoitukset, jotka toimittavat Apple ja Google Yhdysvalloissa. Kun tietoja siirretään Yhdistyneen kuningaskunnan ulkopuolelle, siirto perustuu Yhdistyneen kuningaskunnan tietosuojan riittävyyttä koskeviin säännöksiin (UK adequacy regulations) tai International Data Transfer Agreement -sopimukseen tai Addendum-lisäykseen (kansainvälistä tiedonsiirtoa koskeva sopimus tai lisäys), jotka tarjoavat asianmukaiset suojatoimet. Voit pyytää meiltä tietoja sovellettavista suojatoimista.
+**Kansainväliset siirrot.** Tilitietojasi ja tilaustietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Osa käsittelystä tapahtuu sen ulkopuolella: ruokalistojen tietojen poiminta ja WhatsAppin automaattiset vastaukset, joissa käytetään Googlen palvelua Yhdysvalloissa; WhatsApp-viestien toimittaminen, jonka hoitaa Meta Yhdysvalloissa; maksut, jotka hoitaa Stripe Yhdysvalloissa; sekä push-ilmoitukset, jotka toimittavat Apple ja Google Yhdysvalloissa. Kun tietoja siirretään Yhdistyneen kuningaskunnan ulkopuolelle, siirto perustuu Yhdistyneen kuningaskunnan tietosuojan riittävyyttä koskeviin säännöksiin (UK adequacy regulations) tai International Data Transfer Agreement -sopimukseen tai Addendum-lisäykseen (kansainvälistä tiedonsiirtoa koskeva sopimus tai lisäys) sekä, jos maasi lainsäädäntö sitä edellyttää, kyseisen lainsäädännön tunnustamaan suojatoimeen. Voit pyytää meiltä tietoja sovellettavista suojatoimista.
 
 Palvelumme kasvaessa voimme ottaa käyttöön uusia palveluntarjoajia, mukaan lukien tekstiviestipalvelun tarjoajan. Päivitämme tämän luettelon ennen kuin ne aloittavat tietojesi käsittelyn.
 
@@ -161,7 +162,7 @@ Poistamme tai anonymisoimme tiedot näiden aikojen päätyttyä.
 
 ## 8. Oikeutesi
 
-Yhdistyneen kuningaskunnan tietosuojalainsäädännön nojalla sinulla on oikeus:
+Yhdistyneen kuningaskunnan tietosuojalainsäädännön ja, silloin kun sitä sovelletaan, asuinmaasi lainsäädännön nojalla sinulla on oikeus:
 
 - kysyä, mitä henkilötietoja meillä on sinusta, ja saada niistä jäljennös;
 - saada virheelliset tiedot oikaistuiksi;
@@ -171,11 +172,17 @@ Yhdistyneen kuningaskunnan tietosuojalainsäädännön nojalla sinulla on oikeus
 - vastustaa oikeutettuihin etuihin perustuvaa käsittelyä;
 - peruuttaa suostumuksesi milloin tahansa, kun käsittely perustuu suostumukseen.
 
-Voit käyttää mitä tahansa näistä oikeuksista lähettämällä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme kuukauden kuluessa.
+Asuinmaasi laki voi antaa sinulle nämä oikeudet eri nimillä tai lisäoikeuksia. Myös ne kuuluvat sinulle.
 
-**Tilin poistaminen.** Yrittäjät voivat pyytää tilinsä poistamista sovelluksessa tai lähettämällä sähköpostia osoitteeseen privacy@hatchgrab.com. Poistamme tilisi ja henkilötietosi lukuun ottamatta tietoja, joita meidän on säilytettävä kirjanpitoon liittyvistä tai oikeudellisista syistä.
+**Pyynnön tekeminen.** Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Tarkistamme, että pyyntö on aito, ennen kuin toimimme sen perusteella. Voit pyytää jotakuta toista tekemään pyynnön puolestasi, emmekä kohtele sinua eri tavalla sen vuoksi, että teet pyynnön. Vastaamme kuukauden kuluessa tai aiemmin, jos maasi lainsäädäntö sitä edellyttää. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään. Jos hylkäämme pyynnön, voit pyytää meitä käsittelemään sen uudelleen vastaamalla vastaukseemme.
 
-**Valitukset.** Jos olet tyytymätön siihen, miten olemme käsitelleet tietojasi, voit tehdä valituksen Information Commissioner's Officelle (Yhdistyneen kuningaskunnan tietosuojavaltuutettu) osoitteessa ico.org.uk tai numerossa 0303 123 1113. Toivomme kuitenkin, että saamme ensin mahdollisuuden käsitellä asian.
+**Tilin poistaminen.** Yrittäjät voivat pyytää tilinsä poistamista sovelluksessa tai lähettämällä sähköpostia osoitteeseen privacy@hatchgrab.com. Poistamme tilisi ja henkilötietosi lukuun ottamatta tietoja, joita meidän on säilytettävä kirjanpitoon liittyvistä tai oikeudellisista syistä. Kun yrittäjän tili poistetaan, poistamme myös hänen asiakkaidensa nimet, yhteystiedot ja huomautukset säilyttämistämme tilauksista.
+
+**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun asuinmaasi laki sen sallii, mikä joissakin maissa tarkoittaa vain suostumuksellasi. Jokaisessa niistä kerrotaan, keneltä se on, se sisältää postiosoitteemme ja siinä kerrotaan, miten voit lopettaa niiden vastaanottamisen. Jos pyydät meitä lopettamaan, lopetamme maksutta ja 10 arkipäivän kuluessa. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia. Jos me tai ruokarekka tarjoamme tilauspäivityksiä tekstiviestillä, saat niitä vain, jos suostut siihen, ja voit lopettaa ne milloin tahansa.
+
+**Jos jokin menee vikaan.** Jos henkilötietojasi koskeva tietoturvaloukkaus todennäköisesti aiheuttaa sinulle vakavaa haittaa, ilmoitamme siitä sinulle ja tietosuojaviranomaiselle niin pian kuin voimme, kun laki sitä edellyttää, tai autamme ruokarekkaa, jolta tilasit, tekemään niin.
+
+**Valitukset.** Kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com; toivomme saavamme mahdollisuuden korjata asian. Voit myös tehdä valituksen asuinmaasi tietosuojaviranomaiselle. Yhdistyneessä kuningaskunnassa se on Information Commissioner's Office (Yhdistyneen kuningaskunnan tietosuojavaltuutettu), osoitteessa ico.org.uk tai numerossa 0303 123 1113.
 
 ---
 

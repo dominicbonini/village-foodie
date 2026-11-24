@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Datenschutzerklärung
 
 **Zuletzt aktualisiert:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Sie gilt auch für die HatchGrab-Apps für Smartphones und Tablets unter iOS und
 
 Wenn Sie nur hier sind, weil Sie Essen bei einem Foodtruck bestellt haben, ist der Abschnitt **„Wenn Sie bei einem Foodtruck bestellt haben“** der Teil, der für Sie gilt.
 
-**Für einige Länder gelten zusätzliche Regeln.** Soweit sie für Sie gelten, finden Sie sie auf unserer Seite [Länderspezifische Bedingungen](/country-terms), die Bestandteil dieser Erklärung ist.
-
+**Diese Erklärung gilt, wo auch immer Sie sich befinden.** Wir befolgen das Datenschutzrecht des Vereinigten Königreichs, und soweit auch das Datenschutzrecht des Landes gilt, in dem Sie leben, befolgen wir auch dieses.
 ---
 
 ## 1. Wer wir sind
@@ -84,6 +83,8 @@ Wenn Sie über die Bestellseite eines Foodtrucks eine Bestellung aufgeben, erheb
 
 Der Foodtruck entscheidet, wie lange er Ihre Daten aufbewahrt und wie er Sie danach kontaktiert. Dafür gelten seine eigenen Datenschutzpraktiken. Wenn Sie nicht sicher sind, wer der Foodtruck ist, wenden Sie sich an privacy@hatchgrab.com, und wir nennen ihn Ihnen.
 
+**Allergie- und Ernährungshinweise.** Wir geben sie mit Ihrer Bestellung an den Foodtruck weiter und verwenden sie für nichts anderes. Wir entfernen sie zusammen mit Ihrem Namen und Ihren Kontaktdaten 12 Monate nach der Bestellung (siehe Abschnitt 7).
+
 **Allergeninformationen.** Wenn ein Foodtruck Allergeninformationen veröffentlicht, zeigen wir an, was der Foodtruck bestätigt hat. Wir überprüfen sie nicht selbst. Informieren Sie den Foodtruck bei einer schweren Allergie immer direkt.
 
 ---
@@ -135,7 +136,7 @@ Wir können Daten außerdem offenlegen, wenn wir gesetzlich dazu verpflichtet si
 
 **Wir verkaufen keine personenbezogenen Daten und geben sie nicht zu Werbezwecken weiter.**
 
-**Internationale Übermittlungen.** Ihre Kontodaten und Bestelldaten werden im Vereinigten Königreich gespeichert und verarbeitet. Einiges wird außerhalb davon abgewickelt: das Auslesen von Speisekarten und die automatischen WhatsApp-Antworten, die einen Dienst von Google in den Vereinigten Staaten nutzen; die Zustellung von WhatsApp-Nachrichten, die von Meta in den Vereinigten Staaten abgewickelt wird; Zahlungen, die von Stripe in den Vereinigten Staaten abgewickelt werden; und Push-Benachrichtigungen, die von Apple und Google in den Vereinigten Staaten zugestellt werden. Wenn Daten das Vereinigte Königreich verlassen, ist die Übermittlung durch Angemessenheitsvorschriften des Vereinigten Königreichs (UK adequacy regulations) oder durch das International Data Transfer Agreement (internationale Datenübermittlungsvereinbarung) bzw. das Addendum abgedeckt, die geeignete Garantien bieten. Sie können von uns Einzelheiten zu den jeweils geltenden Garantien verlangen.
+**Internationale Übermittlungen.** Ihre Kontodaten und Bestelldaten werden im Vereinigten Königreich gespeichert und verarbeitet. Einiges wird außerhalb davon abgewickelt: das Auslesen von Speisekarten und die automatischen WhatsApp-Antworten, die einen Dienst von Google in den Vereinigten Staaten nutzen; die Zustellung von WhatsApp-Nachrichten, die von Meta in den Vereinigten Staaten abgewickelt wird; Zahlungen, die von Stripe in den Vereinigten Staaten abgewickelt werden; und Push-Benachrichtigungen, die von Apple und Google in den Vereinigten Staaten zugestellt werden. Wenn Daten das Vereinigte Königreich verlassen, ist die Übermittlung durch Angemessenheitsvorschriften des Vereinigten Königreichs (UK adequacy regulations) oder durch das International Data Transfer Agreement (internationale Datenübermittlungsvereinbarung) bzw. das Addendum abgedeckt und, soweit das Recht Ihres Landes es verlangt, durch eine von diesem Recht anerkannte Garantie. Sie können von uns Einzelheiten zu den jeweils geltenden Garantien verlangen.
 
 Wenn unser Dienst wächst, können wir weitere Anbieter hinzufügen, darunter einen SMS-Anbieter. Wir aktualisieren diese Liste, bevor sie mit der Verarbeitung Ihrer Daten beginnen.
 
@@ -161,7 +162,7 @@ Nach Ablauf dieser Fristen löschen oder anonymisieren wir die Daten.
 
 ## 8. Ihre Rechte
 
-Nach dem Datenschutzrecht des Vereinigten Königreichs haben Sie das Recht,
+Nach dem Datenschutzrecht des Vereinigten Königreichs und, soweit es anwendbar ist, nach dem Recht des Landes, in dem Sie leben, haben Sie das Recht,
 
 - zu erfahren, welche personenbezogenen Daten wir über Sie gespeichert haben, und eine Kopie davon zu erhalten;
 - unrichtige Daten berichtigen zu lassen;
@@ -171,11 +172,17 @@ Nach dem Datenschutzrecht des Vereinigten Königreichs haben Sie das Recht,
 - einer auf berechtigte Interessen gestützten Verarbeitung zu widersprechen;
 - eine Einwilligung jederzeit zu widerrufen, soweit wir uns auf eine Einwilligung stützen.
 
-Um eines dieser Rechte auszuüben, schreiben Sie an privacy@hatchgrab.com. Wir antworten innerhalb eines Monats.
+Das Recht des Landes, in dem Sie leben, kann Ihnen diese Rechte unter anderen Bezeichnungen oder zusätzliche Rechte gewähren. Auch diese stehen Ihnen zu.
 
-**Löschung Ihres Kontos.** Betreiber können die Löschung ihres Kontos in der App beantragen oder per E-Mail an privacy@hatchgrab.com. Wir löschen Ihr Konto und Ihre personenbezogenen Daten, außer soweit wir verpflichtet sind, Unterlagen aus buchhalterischen oder rechtlichen Gründen aufzubewahren.
+**Eine Anfrage stellen.** Schreiben Sie an privacy@hatchgrab.com. Wir prüfen, ob die Anfrage echt ist, bevor wir tätig werden. Sie können eine andere Person bitten, die Anfrage für Sie zu stellen, und wir behandeln Sie nicht anders, weil Sie eine Anfrage gestellt haben. Wir antworten innerhalb eines Monats oder früher, wenn das Recht Ihres Landes es verlangt. Wenn Sie bei einem Foodtruck bestellt haben, können wir Ihre Anfrage an diesen Foodtruck weiterleiten, weil er entscheidet, wie Ihre Bestelldaten verwendet werden. Wenn wir eine Anfrage ablehnen, können Sie uns bitten, sie erneut zu prüfen, indem Sie auf unsere Antwort antworten.
 
-**Beschwerden.** Wenn Sie mit unserem Umgang mit Ihren Daten nicht zufrieden sind, können Sie sich beim Information Commissioner's Office (britische Datenschutzaufsichtsbehörde) unter ico.org.uk oder telefonisch unter 0303 123 1113 beschweren. Wir würden uns freuen, wenn wir zuerst die Gelegenheit erhielten, uns darum zu kümmern.
+**Löschung Ihres Kontos.** Betreiber können die Löschung ihres Kontos in der App beantragen oder per E-Mail an privacy@hatchgrab.com. Wir löschen Ihr Konto und Ihre personenbezogenen Daten, außer soweit wir verpflichtet sind, Unterlagen aus buchhalterischen oder rechtlichen Gründen aufzubewahren. Wenn das Konto eines Betreibers gelöscht wird, entfernen wir außerdem die Namen, Kontaktdaten und Anmerkungen seiner Kunden aus den Bestellungen, die wir aufbewahren.
+
+**Marketing-E-Mails.** Wir senden Marketing-E-Mails nur, soweit das Recht des Landes, in dem Sie leben, es erlaubt, was in einigen Ländern bedeutet: nur mit Ihrer Einwilligung. Jede gibt an, von wem sie stammt, enthält unsere Postanschrift und erklärt Ihnen, wie Sie den Empfang beenden können. Wenn Sie uns bitten, damit aufzuhören, tun wir das, kostenlos und innerhalb von 10 Geschäftstagen. E-Mails zu einer Bestellung oder zu Ihrem Konto sind kein Marketing. Wenn wir oder ein Foodtruck Bestellaktualisierungen per SMS anbieten, erhalten Sie diese nur, wenn Sie zustimmen, und Sie können sie jederzeit beenden.
+
+**Wenn etwas schiefgeht.** Wenn eine Datenschutzverletzung, die Ihre personenbezogenen Daten betrifft, Ihnen voraussichtlich einen schweren Schaden zufügt, informieren wir Sie und die Aufsichtsbehörde so bald wie möglich, soweit das Gesetz es verlangt, oder wir helfen dem Foodtruck, bei dem Sie bestellt haben, dies zu tun.
+
+**Beschwerden.** Wenden Sie sich zuerst an uns unter privacy@hatchgrab.com; wir würden uns über die Gelegenheit freuen, die Sache in Ordnung zu bringen. Sie können sich auch bei der Datenschutzaufsichtsbehörde des Landes beschweren, in dem Sie leben. Im Vereinigten Königreich ist dies das Information Commissioner's Office (britische Datenschutzaufsichtsbehörde), unter ico.org.uk oder telefonisch unter 0303 123 1113.
 
 ---
 

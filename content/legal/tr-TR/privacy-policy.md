@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Gizlilik Politikası
 
 **Son güncelleme:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Bu politika, iOS ve Android için HatchGrab cep telefonu ve tablet uygulamaları
 
 Buraya yalnızca bir food truck’tan yemek sipariş ettiğiniz için geldiyseniz, sizin için geçerli olan bölüm **“Bir food truck’tan sipariş verdiyseniz”** bölümüdür.
 
-**Bazı ülkelerde ek kurallar vardır.** Sizin için geçerli olduklarında, bu politikanın bir parçasını oluşturan [Ülkeye özgü koşullar](/country-terms) sayfamızda yer alırlar.
-
+**Bu politika, nerede olursanız olun geçerlidir.** Birleşik Krallık veri koruma mevzuatına uyarız; yaşadığınız ülkenin veri koruma mevzuatının da uygulandığı durumlarda ona da uyarız.
 ---
 
 ## 1. Biz kimiz
@@ -84,6 +83,8 @@ Bir food truck’ın sipariş sayfası üzerinden sipariş verdiğinizde aşağ�
 
 Bilgilerinizin ne kadar süre saklanacağına ve sonrasında sizinle nasıl iletişim kurulacağına food truck karar verir. Bu konuda food truck’ın kendi gizlilik uygulamaları geçerlidir. Food truck’ın kim olduğundan emin değilseniz, privacy@hatchgrab.com adresinden bizimle iletişime geçin; sizi ona yönlendiririz.
 
+**Alerji ve beslenme notları.** Bunları siparişinizle birlikte food truck’a iletiriz ve başka hiçbir amaçla kullanmayız. Bu notları adınız ve iletişim bilgilerinizle birlikte siparişten 12 ay sonra sileriz (bkz. 7. bölüm).
+
 **Alerjen bilgileri.** Bir food truck alerjen bilgisi yayımladığında, food truck’ın onayladığı bilgileri gösteririz. Bu bilgileri bağımsız olarak doğrulamayız. Ciddi bir alerjiniz varsa bunu her zaman doğrudan food truck’a bildirin.
 
 ---
@@ -135,7 +136,7 @@ Kanunen zorunlu olduğumuz durumlarda veya hukuki taleplerin tesisi ya da savunu
 
 **Kişisel verileri satmayız ve reklam amacıyla paylaşmayız.**
 
-**Yurt dışına aktarımlar.** Hesap verileriniz ve sipariş verileriniz Birleşik Krallık’ta saklanır ve işlenir. Bazı işlemler Birleşik Krallık dışında yürütülür: Amerika Birleşik Devletleri’ndeki bir Google hizmetini kullanan menü içeriği çıkarma ve WhatsApp otomatik yanıtları; Amerika Birleşik Devletleri’nde Meta tarafından yürütülen WhatsApp mesaj iletimi; Amerika Birleşik Devletleri’nde Stripe tarafından yürütülen ödemeler ve Amerika Birleşik Devletleri’nde Apple ve Google tarafından iletilen anlık bildirimler. Veriler Birleşik Krallık dışına çıktığında aktarım, Birleşik Krallık yeterlilik düzenlemeleri (UK adequacy regulations) veya uygun güvenceler sağlayan Uluslararası Veri Aktarım Sözleşmesi (International Data Transfer Agreement) ya da Ek (Addendum) kapsamındadır. Geçerli güvencelerin ayrıntılarını bizden talep edebilirsiniz.
+**Yurt dışına aktarımlar.** Hesap verileriniz ve sipariş verileriniz Birleşik Krallık’ta saklanır ve işlenir. Bazı işlemler Birleşik Krallık dışında yürütülür: Amerika Birleşik Devletleri’ndeki bir Google hizmetini kullanan menü içeriği çıkarma ve WhatsApp otomatik yanıtları; Amerika Birleşik Devletleri’nde Meta tarafından yürütülen WhatsApp mesaj iletimi; Amerika Birleşik Devletleri’nde Stripe tarafından yürütülen ödemeler ve Amerika Birleşik Devletleri’nde Apple ve Google tarafından iletilen anlık bildirimler. Veriler Birleşik Krallık dışına çıktığında aktarım, Birleşik Krallık yeterlilik düzenlemeleri (UK adequacy regulations) veya Uluslararası Veri Aktarım Sözleşmesi (International Data Transfer Agreement) ya da Ek (Addendum) kapsamında ve ülkenizin hukukunun gerektirdiği durumlarda ayrıca o hukukun tanıdığı bir güvence kapsamındadır. Geçerli güvencelerin ayrıntılarını bizden talep edebilirsiniz.
 
 Hizmetimiz büyüdükçe bir SMS sağlayıcısı da dâhil olmak üzere yeni sağlayıcılar ekleyebiliriz. Bu sağlayıcılar verilerinizi işlemeye başlamadan önce bu listeyi güncelleriz.
 
@@ -161,7 +162,7 @@ Bu süreler sona erdiğinde verileri siler veya anonim hâle getiririz.
 
 ## 8. Haklarınız
 
-Birleşik Krallık veri koruma mevzuatı kapsamında aşağıdaki haklara sahipsiniz:
+Birleşik Krallık veri koruma mevzuatı ve uygulandığı durumlarda yaşadığınız ülkenin hukuku kapsamında aşağıdaki haklara sahipsiniz:
 
 - hakkınızda hangi kişisel verileri tuttuğumuzu sorma ve bunların bir kopyasını alma;
 - yanlış verilerin düzeltilmesini isteme;
@@ -171,11 +172,17 @@ Birleşik Krallık veri koruma mevzuatı kapsamında aşağıdaki haklara sahips
 - meşru menfaate dayanan işlemeye itiraz etme;
 - açık rızaya dayandığımız durumlarda rızanızı istediğiniz zaman geri alma.
 
-Bu haklardan herhangi birini kullanmak için privacy@hatchgrab.com adresine e-posta gönderin. Bir ay içinde yanıt veririz.
+Yaşadığınız yerin hukuku bu hakları size başka adlar altında tanıyabilir veya size ek haklar da tanıyabilir. Bu haklara da sahipsiniz.
 
-**Hesabınızın silinmesi.** İşletmeciler hesaplarının silinmesini uygulama içinden veya privacy@hatchgrab.com adresine e-posta göndererek talep edebilir. Muhasebe veya yasal nedenlerle kayıtları saklamakla yükümlü olduğumuz durumlar dışında hesabınızı ve kişisel verilerinizi sileriz.
+**Talepte bulunma.** privacy@hatchgrab.com adresine e-posta gönderin. Talep üzerine işlem yapmadan önce talebin gerçek olduğunu doğrularız. Talebi sizin adınıza bir başkasının yapmasını isteyebilirsiniz ve talepte bulunduğunuz için size farklı bir muamele yapmayız. Bir ay içinde veya ülkenizin hukuku gerektiriyorsa daha kısa sürede yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz. Bir talebi reddedersek, yanıtımıza cevap vererek talebin yeniden incelenmesini isteyebilirsiniz.
 
-**Şikâyetler.** Verilerinizi işleme biçimimizden memnun değilseniz, Birleşik Krallık Bilgi Komiserliği Ofisi’ne (Information Commissioner's Office) ico.org.uk üzerinden veya 0303 123 1113 numaralı telefondan şikâyette bulunabilirsiniz. Öncelikle konuyu çözme fırsatını bize tanımanızı rica ederiz.
+**Hesabınızın silinmesi.** İşletmeciler hesaplarının silinmesini uygulama içinden veya privacy@hatchgrab.com adresine e-posta göndererek talep edebilir. Muhasebe veya yasal nedenlerle kayıtları saklamakla yükümlü olduğumuz durumlar dışında hesabınızı ve kişisel verilerinizi sileriz. Bir işletmecinin hesabı silindiğinde, sakladığımız siparişlerden o işletmecinin müşterilerinin adlarını, iletişim bilgilerini ve notlarını da kaldırırız.
+
+**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca yaşadığınız yerin hukukunun izin verdiği durumlarda göndeririz; bu, bazı ülkelerde yalnızca onayınızla anlamına gelir. Her biri kimden geldiğini belirtir, posta adresimizi içerir ve bu e-postaları almayı nasıl durdurabileceğinizi açıklar. Göndermeyi durdurmamızı isterseniz, ücretsiz olarak ve 10 iş günü içinde durdururuz. Bir sipariş veya hesabınızla ilgili e-postalar pazarlama niteliğinde değildir. Biz veya bir food truck sipariş güncellemelerini kısa mesajla sunarsak, bunları yalnızca kabul etmeniz halinde alırsınız ve dilediğiniz zaman durdurabilirsiniz.
+
+**Bir sorun çıkarsa.** Kişisel verilerinizi içeren bir ihlalin size ciddi bir zarar vermesi muhtemelse, hukukun gerektirdiği durumlarda size ve veri koruma otoritesine mümkün olan en kısa sürede bildirimde bulunuruz veya sipariş verdiğiniz food truck’ın bunu yapmasına yardımcı oluruz.
+
+**Şikâyetler.** Öncelikle privacy@hatchgrab.com adresinden bize bildirin; durumu düzeltme fırsatı verirseniz memnun oluruz. Yaşadığınız yerin veri koruma otoritesine de şikâyette bulunabilirsiniz. Birleşik Krallık’ta bu otorite, ico.org.uk adresinden veya 0303 123 1113 numaralı telefondan ulaşılabilen Information Commissioner's Office’tir (Bilgi Komiserliği Ofisi).
 
 ---
 

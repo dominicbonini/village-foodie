@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Privātuma politika
 
 **Pēdējoreiz atjaunināts:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Tā attiecas arī uz HatchGrab mobilajām un planšetdatoru lietotnēm iOS un An
 
 Ja esat šeit tikai tāpēc, ka pasūtījāt ēdienu no busiņa, uz jums attiecas sadaļa **„Ja pasūtījāt no food truck“**.
 
-**Dažās valstīs ir papildu noteikumi.** Ja tie attiecas uz jums, tie ir izklāstīti mūsu lapā [Valstij specifiskie noteikumi](/country-terms), kas ir šīs politikas daļa.
-
+**Šī politika ir piemērojama neatkarīgi no tā, kur jūs atrodaties.** Mēs ievērojam Apvienotās Karalistes datu aizsardzības tiesību aktus, un, ja ir piemērojami arī tās valsts datu aizsardzības tiesību akti, kurā jūs dzīvojat, mēs ievērojam arī tos.
 ---
 
 ## 1. Kas mēs esam
@@ -84,6 +83,8 @@ Kad jūs veicat pasūtījumu busiņa pasūtīšanas lapā, mēs vācam un nododa
 
 Busiņš nosaka, cik ilgi glabāt jūsu datus un kā ar jums sazināties pēc tam. Uz to attiecas paša busiņa privātuma prakse. Ja neesat pārliecināts, kas ir šis busiņš, sazinieties ar mums, rakstot uz privacy@hatchgrab.com, un mēs jūs pie tā novirzīsim.
 
+**Piezīmes par alerģijām un uzturu.** Mēs tās kopā ar jūsu pasūtījumu nododam busiņam un neizmantojam nekam citam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma (skatiet 7. sadaļu).
+
 **Informācija par alergēniem.** Ja busiņš publicē informāciju par alergēniem, mēs parādām to, ko busiņš ir apstiprinājis. Mēs to neatkarīgi nepārbaudām. Par nopietnu alerģiju vienmēr pastāstiet tieši busiņam.
 
 ---
@@ -135,7 +136,7 @@ Mēs varam izpaust datus arī tad, ja to no mums prasa tiesību akti, vai lai ce
 
 **Mēs nepārdodam personas datus un nekopīgojam tos reklāmas nolūkos.**
 
-**Starptautiska nosūtīšana.** Jūsu konta dati un pasūtījumu dati tiek glabāti un apstrādāti Apvienotajā Karalistē. Dažas darbības tiek veiktas ārpus tās: ēdienkaršu satura iegūšana un WhatsApp automātiskās atbildes, kurās tiek izmantots Google pakalpojums Amerikas Savienotajās Valstīs; WhatsApp ziņojumu piegāde, ko veic Meta Amerikas Savienotajās Valstīs; maksājumi, ko apstrādā Stripe Amerikas Savienotajās Valstīs; un pašpiegādes paziņojumi, ko piegādā Apple un Google Amerikas Savienotajās Valstīs. Ja dati tiek nosūtīti ārpus Apvienotās Karalistes, nosūtīšanu aptver Apvienotās Karalistes noteikumi par aizsardzības līmeņa pietiekamību vai International Data Transfer Agreement (Starptautiskās datu nosūtīšanas līgums) vai Addendum (papildinājums), kas nodrošina atbilstošas garantijas. Jūs varat lūgt mums sniegt informāciju par piemērojamajām garantijām.
+**Starptautiska nosūtīšana.** Jūsu konta dati un pasūtījumu dati tiek glabāti un apstrādāti Apvienotajā Karalistē. Dažas darbības tiek veiktas ārpus tās: ēdienkaršu satura iegūšana un WhatsApp automātiskās atbildes, kurās tiek izmantots Google pakalpojums Amerikas Savienotajās Valstīs; WhatsApp ziņojumu piegāde, ko veic Meta Amerikas Savienotajās Valstīs; maksājumi, ko apstrādā Stripe Amerikas Savienotajās Valstīs; un pašpiegādes paziņojumi, ko piegādā Apple un Google Amerikas Savienotajās Valstīs. Ja dati tiek nosūtīti ārpus Apvienotās Karalistes, nosūtīšanu aptver Apvienotās Karalistes noteikumi par aizsardzības līmeņa pietiekamību vai International Data Transfer Agreement (Starptautiskās datu nosūtīšanas līgums) vai Addendum (papildinājums), un, ja to prasa jūsu valsts tiesību akti, arī garantija, ko atzīst šie tiesību akti. Jūs varat lūgt mums sniegt informāciju par piemērojamajām garantijām.
 
 Mūsu pakalpojumam augot, mēs varam pievienot pakalpojumu sniedzējus, tostarp īsziņu pakalpojumu sniedzēju. Mēs atjaunināsim šo sarakstu, pirms tie sāks apstrādāt jūsu datus.
 
@@ -161,7 +162,7 @@ Kad šie termiņi beidzas, mēs datus dzēšam vai anonimizējam.
 
 ## 8. Jūsu tiesības
 
-Saskaņā ar Apvienotās Karalistes datu aizsardzības tiesību aktiem jums ir tiesības:
+Saskaņā ar Apvienotās Karalistes datu aizsardzības tiesību aktiem un, ja tie ir piemērojami, tās valsts tiesību aktiem, kurā jūs dzīvojat, jums ir tiesības:
 
 - jautāt, kādus personas datus mēs par jums glabājam, un saņemt to kopiju;
 - panākt neprecīzu datu labošanu;
@@ -171,11 +172,17 @@ Saskaņā ar Apvienotās Karalistes datu aizsardzības tiesību aktiem jums ir t
 - iebilst pret apstrādi, kuras pamatā ir leģitīmās intereses;
 - jebkurā laikā atsaukt piekrišanu, ja mēs balstāmies uz piekrišanu.
 
-Lai īstenotu kādu no šīm tiesībām, rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim viena mēneša laikā.
+Jūsu dzīvesvietas valsts tiesību akti var piešķirt jums šīs tiesības ar citiem nosaukumiem vai piešķirt papildu tiesības. Arī tās jums ir.
 
-**Jūsu konta dzēšana.** Operatori var pieprasīt konta dzēšanu lietotnē vai rakstot uz privacy@hatchgrab.com. Mēs dzēsīsim jūsu kontu un personas datus, izņemot gadījumus, kad mums ir pienākums glabāt ierakstus grāmatvedības vai juridisku iemeslu dēļ.
+**Pieprasījuma iesniegšana.** Rakstiet uz privacy@hatchgrab.com. Pirms rīkojamies, mēs pārbaudīsim, vai pieprasījums ir īsts. Jūs varat lūgt kādu citu iesniegt pieprasījumu jūsu vietā, un mēs pret jums neizturēsimies citādi tāpēc, ka esat iesniedzis pieprasījumu. Mēs atbildēsim viena mēneša laikā vai ātrāk, ja to prasa jūsu valsts tiesību akti. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati. Ja mēs noraidām pieprasījumu, jūs varat lūgt mums to pārskatīt, atbildot uz mūsu atbildi.
 
-**Sūdzības.** Ja neesat apmierināts ar to, kā mēs esam rīkojušies ar jūsu datiem, jūs varat iesniegt sūdzību Information Commissioner's Office (Informācijas komisāra birojam) vietnē ico.org.uk vai pa tālruni 0303 123 1113. Mēs būtu pateicīgi par iespēju vispirms to atrisināt pašiem.
+**Jūsu konta dzēšana.** Operatori var pieprasīt konta dzēšanu lietotnē vai rakstot uz privacy@hatchgrab.com. Mēs dzēsīsim jūsu kontu un personas datus, izņemot gadījumus, kad mums ir pienākums glabāt ierakstus grāmatvedības vai juridisku iemeslu dēļ. Kad operatora konts tiek dzēsts, mēs no mūsu glabātajiem pasūtījumiem dzēšam arī tā klientu vārdus, kontaktinformāciju un piezīmes.
+
+**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj jūsu dzīvesvietas valsts tiesību akti, un dažās valstīs tas nozīmē – tikai ar jūsu piekrišanu. Katrā no tiem ir norādīts, no kā tas ir, iekļauta mūsu pasta adrese un norādīts, kā atteikties no to saņemšanas. Ja jūs lūdzat mums pārtraukt, mēs to darīsim bez maksas un 10 darba dienu laikā. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings. Ja mēs vai busiņš piedāvājam pasūtījuma jaunumus īsziņās, jūs tās saņemsiet tikai tad, ja piekritīsiet, un jūs varat jebkurā laikā tās atteikt.
+
+**Ja kaut kas noiet greizi.** Ja pārkāpums, kas skar jūsu personas datus, varētu radīt jums nopietnu kaitējumu, mēs, ja to prasa tiesību akti, pēc iespējas ātrāk paziņosim par to jums un uzraudzības iestādei vai palīdzēsim to izdarīt busiņam, no kura pasūtījāt.
+
+**Sūdzības.** Vispirms vērsieties pie mums, rakstot uz privacy@hatchgrab.com; mēs būtu pateicīgi par iespēju visu nokārtot. Jūs varat arī iesniegt sūdzību savas dzīvesvietas valsts datu aizsardzības uzraudzības iestādei. Apvienotajā Karalistē tā ir Information Commissioner's Office (Informācijas komisāra birojs), vietne ico.org.uk, tālrunis 0303 123 1113.
 
 ---
 

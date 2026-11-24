@@ -112,12 +112,20 @@ if (process.argv[2] === 'capture') {
   t(`28 language bases at ${BASE} (tidy-1's), all still bases (${BASES.length} today; each checked below)`, BASES_AT_BASE.length === 28 && BASES_AT_BASE.every(l => BASES.includes(l)), BASES_AT_BASE.filter(l => !BASES.includes(l)))   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026)
   for (const l of BASES.filter(x => !BASES_AT_BASE.includes(x))) {   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): the bases added since
     const tr = read(`content/legal/${l}/privacy-policy.md`)
-    t(`${l} (added after tidy-1, no translation at ${BASE}): re-stamped, the drift check clean (the 30 days kept)`, atBase(`content/legal/${l}/privacy-policy.md`) === null && L.compare('privacy-policy.md', tr).length === 0 && /\b30\b/.test(tr), L.compare('privacy-policy.md', tr))
+    // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026): the 5 bases no enabled country uses keep the translation of the English before it —
+    // their file must be ec16f022's byte for byte; every other base is checked as before.
+    const FP1u = require('./_named-france-privacy-1.cjs')
+    const unusedOk = FP1u.LANDED && FP1u.UNUSED_BASES.includes(l) && tr === FP1u.translationAtStart(l, 'privacy-policy.md')
+    t(`${l} (added after tidy-1, no translation at ${BASE}): re-stamped, the drift check clean (the 30 days kept)${unusedOk ? ' — unused base: ec16f022\'s bytes (france-privacy-1)' : ''}`, atBase(`content/legal/${l}/privacy-policy.md`) === null && (unusedOk || L.compare('privacy-policy.md', tr).length === 0) && /\b30\b/.test(tr), L.compare('privacy-policy.md', tr))
   }
   for (const l of BASES_AT_BASE) {   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): tidy-1's own 28
     const tr = read(`content/legal/${l}/privacy-policy.md`), old = atBase(`content/legal/${l}/privacy-policy.md`).split('\n')
     // ⚠️ RE-PINNED (paperwork-1, 4 November 2026): paperwork-1's own paragraph (section 3, compliance documents) is set aside by name.
-    const changed = tr.split('\n').slice(1).filter(x => !old.includes(x) && !P1.isTranslationParagraph(tr, x))
+    // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md): its later lines (the one-policy intro, the allergy
+    // notes, the transfer sentence, section 8 — and the re-stamp) are set aside by name: a line not in the file at ec16f022 is france-privacy-1's
+    // (scripts/france-privacy-1.cjs §C proves the file is ec16f022 plus exactly those parts).
+    const FP1 = require('./_named-france-privacy-1.cjs')
+    const changed = tr.split('\n').slice(1).filter(x => !old.includes(x) && !P1.isTranslationParagraph(tr, x) && !FP1.isNewLine(l, 'privacy-policy.md', x))
     t(`${l}: re-stamped, the drift check clean; exactly the demo section's two paragraphs changed (the 30 days kept)`, L.compare('privacy-policy.md', tr).length === 0 && changed.length === 2 && changed.some(x => /\b30\b/.test(x)), changed.map(x => x.slice(0, 80)))
   }
   t('demo-2\'s drift check reads the merged sentence (still tied to CLAIM_GRACE_DAYS = 30)', read('scripts/demo-2.cjs').includes("we keep the demo record for up to 30 days so the menu can move across, then delete it."))

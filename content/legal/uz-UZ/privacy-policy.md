@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Maxfiylik siyosati
 
 **Oxirgi yangilanish:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Siyosat iOS va Android uchun HatchGrab mobil va planshet ilovalariga ham taalluq
 
 Agar siz bu yerga faqat fudtrakdan ovqat buyurtma qilganingiz uchun kelgan boʻlsangiz, sizga **«Agar siz fudtrakdan buyurtma bergan boʻlsangiz»** boʻlimi taalluqli.
 
-**Baʼzi mamlakatlarda qoʻshimcha qoidalar bor.** Ular sizga taalluqli boʻlsa, ushbu siyosatning bir qismi boʻlgan [Mamlakatga xos shartlar](/country-terms) sahifasida keltirilgan.
-
+**Ushbu siyosat qayerda boʻlishingizdan qatʼi nazar amal qiladi.** Biz Buyuk Britaniyaning maʼlumotlarni himoya qilish toʻgʻrisidagi qonunchiligiga amal qilamiz, siz yashaydigan mamlakatning maʼlumotlarni himoya qilish toʻgʻrisidagi qonunchiligi ham qoʻllaniladigan hollarda esa unga ham amal qilamiz.
 ---
 
 ## 1. Biz kimmiz
@@ -84,6 +83,8 @@ Fudtrakning buyurtma sahifasi orqali buyurtma berganingizda, biz quyidagilarni y
 
 Maʼlumotlaringizni qancha muddat saqlash va keyin siz bilan qanday bogʻlanishni fudtrak hal qiladi. Bunga uning oʻz maxfiylik amaliyoti taalluqli. Agar fudtrak kimligini bilmasangiz, privacy@hatchgrab.com manziliga yozing, biz sizni unga yoʻnaltiramiz.
 
+**Allergiya va parhez haqidagi izohlar.** Biz ularni buyurtmangiz bilan birga fudtrakka uzatamiz va ulardan boshqa hech narsa uchun foydalanmaymiz. Buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz (7-boʻlimga qarang).
+
 **Allergenlar haqida maʼlumot.** Fudtrak allergenlar haqida maʼlumot eʼlon qilsa, biz fudtrak tasdiqlagan narsani koʻrsatamiz. Biz uni mustaqil tekshirmaymiz. Jiddiy allergiyangiz haqida har doim fudtrakka bevosita ayting.
 
 ---
@@ -135,7 +136,7 @@ Shuningdek, qonun talab qilganda yoki huquqiy daʼvolarni asoslash yoki himoya q
 
 **Biz shaxsiy maʼlumotlarni sotmaymiz va reklama uchun ulashmaymiz.**
 
-**Xalqaro uzatish.** Hisob maʼlumotlaringiz va buyurtma maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ishlov beriladi. Baʼzi ishlar undan tashqarida bajariladi: Amerika Qoʻshma Shtatlaridagi Google xizmatidan foydalanadigan menyuni ajratib olish va WhatsApp avtomatik javoblari; Amerika Qoʻshma Shtatlarida Meta bajaradigan WhatsApp xabarlarini yetkazish; Amerika Qoʻshma Shtatlarida Stripe bajaradigan toʻlovlar; va Amerika Qoʻshma Shtatlarida Apple va Google yetkazadigan push-bildirishnomalar. Maʼlumotlar Buyuk Britaniyadan chiqqanda, uzatish Buyuk Britaniyaning adekvatlik qoidalari yoki tegishli kafolatlarni taʼminlaydigan Xalqaro maʼlumotlarni uzatish shartnomasi (International Data Transfer Agreement) yoki Qoʻshimcha (Addendum) bilan qamrab olinadi. Qaysi kafolatlar qoʻllanilishi haqida bizdan batafsil maʼlumot soʻrashingiz mumkin.
+**Xalqaro uzatish.** Hisob maʼlumotlaringiz va buyurtma maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ishlov beriladi. Baʼzi ishlar undan tashqarida bajariladi: Amerika Qoʻshma Shtatlaridagi Google xizmatidan foydalanadigan menyuni ajratib olish va WhatsApp avtomatik javoblari; Amerika Qoʻshma Shtatlarida Meta bajaradigan WhatsApp xabarlarini yetkazish; Amerika Qoʻshma Shtatlarida Stripe bajaradigan toʻlovlar; va Amerika Qoʻshma Shtatlarida Apple va Google yetkazadigan push-bildirishnomalar. Maʼlumotlar Buyuk Britaniyadan chiqqanda, uzatish Buyuk Britaniyaning adekvatlik qoidalari yoki Xalqaro maʼlumotlarni uzatish shartnomasi (International Data Transfer Agreement) yoki Qoʻshimcha (Addendum) bilan, mamlakatingiz qonunchiligi talab qilgan hollarda esa ushbu qonunchilik tan oladigan kafolat bilan ham qamrab olinadi. Qaysi kafolatlar qoʻllanilishi haqida bizdan batafsil maʼlumot soʻrashingiz mumkin.
 
 Xizmatimiz oʻsgani sari yangi provayderlar, jumladan SMS provayderini qoʻshishimiz mumkin. Ular maʼlumotlaringizga ishlov berishni boshlashidan oldin ushbu roʻyxatni yangilaymiz.
 
@@ -161,7 +162,7 @@ Bu muddatlar tugagach, maʼlumotlarni oʻchiramiz yoki anonimlashtiramiz.
 
 ## 8. Sizning huquqlaringiz
 
-Buyuk Britaniyaning maʼlumotlarni himoya qilish toʻgʻrisidagi qonunchiligiga koʻra sizda quyidagi huquqlar bor:
+Buyuk Britaniyaning maʼlumotlarni himoya qilish toʻgʻrisidagi qonunchiligiga va, qoʻllaniladigan hollarda, siz yashaydigan mamlakat qonunchiligiga koʻra sizda quyidagi huquqlar bor:
 
 - biz siz haqingizda qanday shaxsiy maʼlumotlarni saqlayotganimizni soʻrash va ularning nusxasini olish;
 - notoʻgʻri maʼlumotlarni tuzattirish;
@@ -171,11 +172,17 @@ Buyuk Britaniyaning maʼlumotlarni himoya qilish toʻgʻrisidagi qonunchiligiga 
 - qonuniy manfaatlarga asoslangan ishlov berishga eʼtiroz bildirish;
 - rozilikka tayanadigan hollarda istalgan vaqtda roziligingizni qaytarib olish.
 
-Ushbu huquqlardan birortasini amalga oshirish uchun privacy@hatchgrab.com manziliga yozing. Biz bir oy ichida javob beramiz.
+Siz yashaydigan mamlakat qonunchiligi sizga bu huquqlarni boshqa nomlar ostida yoki qoʻshimcha huquqlarni ham berishi mumkin. Ular ham sizda bor.
 
-**Hisobingizni oʻchirish.** Fudtrak egalari hisobni oʻchirishni ilovaning oʻzidan yoki privacy@hatchgrab.com manziliga yozib soʻrashlari mumkin. Biz hisobingizni va shaxsiy maʼlumotlaringizni oʻchiramiz, buxgalteriya yoki qonuniy sabablarga koʻra yozuvlarni saqlashimiz shart boʻlgan hollar bundan mustasno.
+**Soʻrov yuborish.** privacy@hatchgrab.com manziliga yozing. Harakat qilishdan oldin soʻrov haqiqiy ekanini tekshiramiz. Soʻrovni siz uchun boshqa birovga topshirishingiz mumkin va soʻrov yuborganingiz uchun sizga boshqacha munosabatda boʻlmaymiz. Biz bir oy ichida yoki, agar mamlakatingiz qonunchiligi talab qilsa, undan ham tezroq javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi. Agar soʻrovni rad etsak, javobimizga javob yozib, uni qayta koʻrib chiqishimizni soʻrashingiz mumkin.
 
-**Shikoyatlar.** Agar maʼlumotlaringiz bilan qanday ishlaganimizdan norozi boʻlsangiz, Axborot komissari idorasiga (Information Commissioner's Office) ico.org.uk sayti orqali yoki 0303 123 1113 raqamiga qoʻngʻiroq qilib shikoyat qilishingiz mumkin. Avval masalani oʻzimiz hal qilishimizga imkon bersangiz, minnatdor boʻlardik.
+**Hisobingizni oʻchirish.** Fudtrak egalari hisobni oʻchirishni ilovaning oʻzidan yoki privacy@hatchgrab.com manziliga yozib soʻrashlari mumkin. Biz hisobingizni va shaxsiy maʼlumotlaringizni oʻchiramiz, buxgalteriya yoki qonuniy sabablarga koʻra yozuvlarni saqlashimiz shart boʻlgan hollar bundan mustasno. Fudtrak egasining hisobi oʻchirilganda, biz saqlaydigan buyurtmalardan uning mijozlarining ismlari, aloqa maʼlumotlari va izohlarini ham olib tashlaymiz.
+
+**Marketing xatlari.** Biz marketing xatlarini faqat siz yashaydigan mamlakat qonunchiligi ruxsat bergan hollarda yuboramiz, bu baʼzi mamlakatlarda faqat roziligingiz bilan degani. Ularning har birida kimdan ekani aytilgan, pochta manzilimiz koʻrsatilgan va ularni olishni qanday toʻxtatish mumkinligi aytilgan. Toʻxtatishni soʻrasangiz, bepul va 10 ish kuni ichida toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas. Agar biz yoki fudtrak buyurtma haqidagi yangiliklarni SMS orqali taklif qilsak, ularni faqat rozi boʻlsangiz olasiz va istalgan vaqtda toʻxtatishingiz mumkin.
+
+**Agar biror narsa notoʻgʻri ketsa.** Agar shaxsiy maʼlumotlaringiz bilan bogʻliq buzilish sizga jiddiy zarar yetkazishi mumkin boʻlsa, qonun talab qilgan hollarda biz bu haqda sizga va maʼlumotlarni himoya qilish organiga imkon qadar tezroq xabar beramiz yoki siz buyurtma bergan fudtrakka buni qilishda yordam beramiz.
+
+**Shikoyatlar.** Avval privacy@hatchgrab.com manziliga yozib, bizga xabar bering; vaziyatni oʻzimiz tuzatishimizga imkon bersangiz, minnatdor boʻlardik. Siz yashaydigan mamlakatning maʼlumotlarni himoya qilish organiga ham shikoyat qilishingiz mumkin. Buyuk Britaniyada bu Information Commissioner's Office (Axborot komissari idorasi), ico.org.uk sayti yoki 0303 123 1113 telefon raqami.
 
 ---
 

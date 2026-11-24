@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Kebijakan Privasi
 
 **Terakhir diperbarui:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Kebijakan ini juga mencakup aplikasi HatchGrab untuk ponsel dan tablet di iOS da
 
 Jika Anda datang ke sini hanya karena Anda memesan makanan dari sebuah food truck, bagian **"Jika Anda memesan dari food truck"** adalah bagian yang berlaku bagi Anda.
 
-**Beberapa negara memiliki ketentuan tambahan.** Jika ketentuan tersebut berlaku bagi Anda, ketentuan itu tercantum di halaman [Ketentuan khusus negara](/country-terms) kami, yang merupakan bagian dari kebijakan ini.
-
+**Kebijakan ini berlaku di mana pun Anda berada.** Kami mematuhi hukum pelindungan data Britania Raya, dan apabila hukum pelindungan data negara tempat Anda tinggal juga berlaku, kami juga mematuhi hukum tersebut.
 ---
 
 ## 1. Siapa kami
@@ -84,6 +83,8 @@ Saat Anda membuat pesanan melalui halaman pemesanan sebuah food truck, kami meng
 
 Food truck tersebut yang menentukan berapa lama detail Anda disimpan dan bagaimana mereka menghubungi Anda setelahnya. Praktik privasi mereka sendiri berlaku untuk hal tersebut. Jika Anda tidak yakin food truck mana yang dimaksud, hubungi kami di privacy@hatchgrab.com dan kami akan mengarahkan Anda kepada mereka.
 
+**Catatan alergi dan diet.** Kami meneruskannya kepada food truck bersama pesanan Anda dan tidak menggunakannya untuk keperluan lain apa pun. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan (lihat bagian 7).
+
 **Informasi alergen.** Jika sebuah food truck memublikasikan informasi alergen, kami menampilkan apa yang telah dikonfirmasi oleh food truck tersebut. Kami tidak memverifikasinya secara independen. Selalu beri tahu food truck secara langsung tentang alergi yang serius.
 
 ---
@@ -135,7 +136,7 @@ Kami juga dapat mengungkapkan data jika diwajibkan oleh hukum, atau untuk meneta
 
 **Kami tidak menjual data pribadi, dan kami tidak membagikannya untuk keperluan iklan.**
 
-**Transfer internasional.** Data akun dan data pesanan Anda disimpan dan diproses di Britania Raya (United Kingdom). Beberapa hal ditangani di luar Britania Raya: ekstraksi menu dan balasan otomatis WhatsApp, yang menggunakan layanan Google di Amerika Serikat; pengiriman pesan WhatsApp, yang ditangani oleh Meta di Amerika Serikat; pembayaran, yang ditangani oleh Stripe di Amerika Serikat; dan notifikasi push, yang dikirimkan oleh Apple dan Google di Amerika Serikat. Jika data keluar dari Britania Raya, transfer tersebut dilindungi oleh regulasi kecukupan (adequacy regulations) Britania Raya atau oleh International Data Transfer Agreement (Perjanjian Transfer Data Internasional) atau Addendum, yang memberikan pelindungan yang memadai. Anda dapat meminta kepada kami rincian pelindungan yang berlaku.
+**Transfer internasional.** Data akun dan data pesanan Anda disimpan dan diproses di Britania Raya (United Kingdom). Beberapa hal ditangani di luar Britania Raya: ekstraksi menu dan balasan otomatis WhatsApp, yang menggunakan layanan Google di Amerika Serikat; pengiriman pesan WhatsApp, yang ditangani oleh Meta di Amerika Serikat; pembayaran, yang ditangani oleh Stripe di Amerika Serikat; dan notifikasi push, yang dikirimkan oleh Apple dan Google di Amerika Serikat. Jika data keluar dari Britania Raya, transfer tersebut dilindungi oleh regulasi kecukupan (adequacy regulations) Britania Raya atau oleh International Data Transfer Agreement (Perjanjian Transfer Data Internasional) atau Addendum, dan, apabila diwajibkan oleh hukum negara Anda, oleh pelindungan yang diakui oleh hukum tersebut. Anda dapat meminta kepada kami rincian pelindungan yang berlaku.
 
 Seiring berkembangnya layanan kami, kami dapat menambahkan penyedia, termasuk penyedia SMS. Kami akan memperbarui daftar ini sebelum mereka mulai memproses data Anda.
 
@@ -161,7 +162,7 @@ Kami menghapus atau menganonimkan data setelah jangka waktu tersebut berakhir.
 
 ## 8. Hak-hak Anda
 
-Berdasarkan hukum pelindungan data Britania Raya, Anda berhak untuk:
+Berdasarkan hukum pelindungan data Britania Raya, dan hukum negara tempat Anda tinggal apabila berlaku, Anda berhak untuk:
 
 - menanyakan data pribadi apa yang kami simpan tentang Anda, dan memperoleh salinannya;
 - meminta perbaikan atas data yang tidak akurat;
@@ -171,11 +172,17 @@ Berdasarkan hukum pelindungan data Britania Raya, Anda berhak untuk:
 - mengajukan keberatan atas pemrosesan yang didasarkan pada kepentingan yang sah;
 - menarik persetujuan kapan saja, jika kami mengandalkan persetujuan.
 
-Untuk menggunakan hak-hak tersebut, kirim email ke privacy@hatchgrab.com. Kami akan menanggapi dalam waktu satu bulan.
+Hukum di tempat Anda tinggal dapat memberikan hak-hak ini kepada Anda dengan nama lain, atau memberikan hak tambahan. Anda juga memiliki hak-hak tersebut.
 
-**Menghapus akun Anda.** Operator dapat meminta penghapusan akun dari dalam aplikasi atau dengan mengirim email ke privacy@hatchgrab.com. Kami akan menghapus akun dan data pribadi Anda, kecuali jika kami diwajibkan menyimpan catatan untuk keperluan akuntansi atau hukum.
+**Mengajukan permintaan.** Kirim email ke privacy@hatchgrab.com. Kami akan memeriksa keaslian permintaan tersebut sebelum menindaklanjutinya. Anda dapat meminta orang lain untuk mengajukan permintaan atas nama Anda, dan kami tidak akan memperlakukan Anda secara berbeda karena mengajukan permintaan. Kami akan menanggapi dalam waktu satu bulan, atau lebih cepat apabila diwajibkan oleh hukum negara Anda. Apabila Anda memesan dari food truck, kami dapat meneruskan permintaan Anda kepada food truck tersebut, karena food truck itulah yang menentukan cara penggunaan detail pesanan Anda. Apabila kami menolak suatu permintaan, Anda dapat meminta kami untuk meninjaunya kembali dengan membalas jawaban kami.
 
-**Pengaduan.** Jika Anda tidak puas dengan cara kami menangani data Anda, Anda dapat mengajukan pengaduan kepada Information Commissioner's Office (otoritas pelindungan data Britania Raya) di ico.org.uk, atau melalui telepon di 0303 123 1113. Kami akan menghargai kesempatan untuk menanganinya terlebih dahulu.
+**Menghapus akun Anda.** Operator dapat meminta penghapusan akun dari dalam aplikasi atau dengan mengirim email ke privacy@hatchgrab.com. Kami akan menghapus akun dan data pribadi Anda, kecuali jika kami diwajibkan menyimpan catatan untuk keperluan akuntansi atau hukum. Apabila akun seorang operator dihapus, kami juga menghapus nama, detail kontak, dan catatan pelanggannya dari pesanan yang kami simpan.
+
+**Email pemasaran.** Kami mengirim email pemasaran hanya apabila diperbolehkan oleh hukum di tempat Anda tinggal, yang di beberapa negara berarti hanya dengan persetujuan Anda. Setiap email tersebut menyebutkan pengirimnya, mencantumkan alamat pos kami, dan memberi tahu Anda cara berhenti menerimanya. Apabila Anda meminta kami untuk berhenti, kami akan berhenti, tanpa biaya dan dalam waktu 10 hari kerja. Email mengenai pesanan atau akun Anda bukan merupakan pemasaran. Apabila kami atau food truck menawarkan informasi terbaru pesanan melalui pesan teks, Anda hanya akan menerimanya apabila Anda setuju, dan Anda dapat menghentikannya kapan saja.
+
+**Apabila terjadi masalah.** Apabila suatu pelanggaran yang melibatkan data pribadi Anda kemungkinan besar akan menyebabkan kerugian serius bagi Anda, kami akan memberi tahu Anda dan otoritas pengawas sesegera mungkin apabila diwajibkan oleh hukum, atau membantu food truck tempat Anda memesan untuk melakukannya.
+
+**Pengaduan.** Beri tahu kami terlebih dahulu di privacy@hatchgrab.com; kami akan menghargai kesempatan untuk memperbaiki keadaan. Anda juga dapat mengajukan pengaduan kepada otoritas pelindungan data di tempat Anda tinggal. Di Britania Raya, otoritas tersebut adalah Information Commissioner's Office (otoritas pelindungan data Britania Raya), di ico.org.uk atau melalui telepon di 0303 123 1113.
 
 ---
 

@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Ketentuan khusus negara
 
 **Terakhir diperbarui:** {{LAST_UPDATED}}
 
-[Ketentuan Layanan](/terms) dan [Kebijakan Privasi](/privacy) kami berlaku di setiap negara tempat HatchGrab digunakan. Beberapa negara memiliki aturan tambahan. Halaman ini menguraikan aturan tersebut, satu negara demi satu negara.
+[Ketentuan Layanan](/terms) kami berlaku di setiap negara tempat HatchGrab digunakan. Beberapa negara memiliki aturan tambahan. Halaman ini menguraikan aturan tersebut, satu negara demi satu negara.
 
-Apabila suatu bagian di bawah ini berlaku bagi Anda, bagian tersebut merupakan bagian dari Ketentuan Layanan dan Kebijakan Privasi kami. Apabila bagian tersebut menyatakan sesuatu yang berbeda dari keduanya, halaman inilah yang berlaku untuk negara yang bersangkutan.
+Apabila suatu bagian di bawah ini berlaku bagi Anda, bagian tersebut merupakan bagian dari Ketentuan Layanan kami. Apabila bagian tersebut menyatakan sesuatu yang berbeda dari Ketentuan Layanan, halaman inilah yang berlaku untuk negara yang bersangkutan.
 
-Apabila negara Anda tidak tercantum, tidak ada aturan tambahan: Ketentuan Layanan dan Kebijakan Privasi berlaku sebagaimana tertulis.
-
+Apabila negara Anda tidak tercantum, tidak ada aturan tambahan: Ketentuan Layanan berlaku sebagaimana tertulis. [Kebijakan Privasi](/privacy) kami sama di setiap negara.
 ---
 
 ## Amerika Serikat
@@ -31,26 +30,6 @@ Apabila negara Anda tidak tercantum, tidak ada aturan tambahan: Ketentuan Layana
 
 **Data pelanggan Anda.** Berdasarkan undang-undang privasi negara bagian di AS, bagian 10 Ketentuan Layanan memiliki arti yang sama dalam istilah undang-undang tersebut: Anda adalah "bisnis" ("business") dan kami adalah "penyedia layanan" ("service provider") atau "pemroses" ("processor") Anda. Kami menggunakan informasi pribadi pelanggan Anda hanya untuk menjalankan HatchGrab bagi Anda. Kami tidak menjualnya, kami tidak membagikannya untuk iklan perilaku lintas konteks (cross-context behavioral advertising), dan kami tidak menggunakannya untuk tujuan lain apa pun kecuali sebagaimana diperbolehkan oleh undang-undang tersebut bagi penyedia layanan.
 
-### Privasi, untuk semua orang di Amerika Serikat
-
-**Apa yang kami kumpulkan dan dengan siapa kami membagikannya.** Sama seperti yang dinyatakan dalam Kebijakan Privasi: data akun dan data usaha untuk pemilik food truck; nama, detail kontak, dan detail pesanan Anda apabila Anda memesan dari food truck; serta data teknis dasar apabila Anda mengunjungi situs web kami. Kami membagikannya kepada food truck tempat Anda memesan dan kepada penyedia layanan yang tercantum dalam bagian 6 Kebijakan Privasi, semata-mata untuk menjalankan layanan atau apabila diwajibkan oleh hukum. Data tersebut dapat diproses di Britania Raya, Uni Eropa, dan Amerika Serikat.
-
-**Kami tidak menjual atau membagikan informasi pribadi Anda.** Kami tidak menjual informasi pribadi, dan kami tidak membagikannya untuk iklan perilaku lintas konteks (cross-context behavioral advertising).
-
-**Catatan alergi dan diet.** Apabila Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada food truck bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana dinyatakan dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat menanyakan kepada kami informasi pribadi apa yang kami simpan tentang Anda, serta meminta kami untuk memperbaiki atau menghapusnya. Kirim email ke privacy@hatchgrab.com. Kami akan memeriksa keaslian permintaan tersebut sebelum menindaklanjutinya, dan kami akan membalas dalam waktu 45 hari. Anda dapat meminta orang lain untuk mengajukan permintaan atas nama Anda. Kami tidak akan memperlakukan Anda secara berbeda karena mengajukan permintaan. Apabila Anda memesan dari food truck, kami dapat meneruskan permintaan Anda kepada food truck tersebut, karena food truck itulah yang menentukan cara penggunaan detail pesanan Anda. Apabila kami menolak suatu permintaan, Anda dapat meminta kami untuk meninjaunya kembali dengan membalas jawaban kami.
-
-**Undang-undang privasi negara bagian.** Beberapa undang-undang privasi negara bagian hanya berlaku bagi usaha di atas ukuran tertentu, dan mungkin tidak berlaku bagi kami. Bagaimanapun, kami tetap memenuhi permintaan di atas dari siapa pun di Amerika Serikat.
-
-**Anak-anak.** Layanan kami tidak ditujukan bagi anak-anak di bawah usia 13 tahun, dan kami tidak secara sadar mengumpulkan informasi pribadi mereka. Apabila Anda meyakini bahwa seorang anak telah memberikan informasinya kepada kami, hubungi kami dan kami akan menghapusnya.
-
-**Email pemasaran.** Setiap email pemasaran yang kami kirim memberi tahu Anda cara berhenti menerimanya dan mencantumkan alamat pos kami. Apabila Anda meminta kami untuk berhenti, kami akan berhenti. Email mengenai pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Pesan teks.** Apabila kami atau food truck menawarkan informasi terbaru pesanan melalui pesan teks, Anda hanya akan menerimanya apabila Anda setuju untuk menerimanya, dan Anda dapat menghentikannya kapan saja.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Irlandia
 
 ### Untuk pemilik food truck
@@ -70,22 +49,6 @@ Apabila negara Anda tidak tercantum, tidak ada aturan tambahan: Ketentuan Layana
 **Data pelanggan Anda.** Berdasarkan Peraturan Perlindungan Data Umum Uni Eropa (General Data Protection Regulation/GDPR), bagian 10 Ketentuan Layanan merupakan perjanjian pemrosesan data antara kami dan Anda: Anda adalah pengendali data dan kami adalah prosesor data, dalam pengertian yang sama dengan Pasal 28 GDPR.
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan dilakukan sebagaimana dinyatakan dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda di alamat email pada akun Anda, dan Anda dapat menghubungi kami di alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan hukum Irlandia kepada Anda dan yang tidak dapat dikecualikan melalui perjanjian.
-
-### Privasi, untuk semua orang di Irlandia
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Irlandia, yang berlaku adalah Peraturan Perlindungan Data Umum Uni Eropa (GDPR), di samping hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami. Hak-hak yang tercantum dalam bagian 8 Kebijakan Privasi juga merupakan hak Anda berdasarkan GDPR.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya. Komisi Eropa telah memutuskan bahwa Britania Raya melindungi data pribadi dengan standar yang sama dengan Uni Eropa, sehingga tidak diperlukan pengamanan tambahan untuk hal tersebut. Apabila penyedia layanan menangani data di Amerika Serikat (bagian 6 Kebijakan Privasi), transfer tersebut dilindungi oleh pengamanan yang diakui GDPR.
-
-**Catatan alergi dan diet.** Apabila Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada food truck bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana dinyatakan dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat menanyakan kepada kami data pribadi apa yang kami simpan tentang Anda, serta meminta kami untuk memperbaiki, menghapus, atau berhenti menggunakannya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu satu bulan. Apabila Anda memesan dari food truck, kami dapat meneruskan permintaan Anda kepada food truck tersebut, karena food truck itulah yang menentukan cara penggunaan detail pesanan Anda.
-
-**Pengaduan.** Anda dapat mengajukan pengaduan kepada Data Protection Commission, otoritas pelindungan data Irlandia, di www.dataprotection.ie, atau melalui pos ke 6 Pembroke Row, Dublin 2, D02 X963. Kami akan menghargai kesempatan untuk terlebih dahulu memperbaiki keadaan.
-
-**Email pemasaran.** Kami mengirim email pemasaran hanya apabila diperbolehkan oleh hukum. Setiap email tersebut memberi tahu Anda cara berhenti menerimanya, dan apabila Anda meminta kami untuk berhenti, kami akan berhenti. Email mengenai pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australia
 
@@ -109,22 +72,6 @@ Apabila negara Anda tidak tercantum, tidak ada aturan tambahan: Ketentuan Layana
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan dilakukan sebagaimana dinyatakan dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda di alamat email pada akun Anda, dan Anda dapat menghubungi kami di alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan hukum Australia kepada Anda dan yang tidak dapat dikecualikan melalui perjanjian.
 
-### Privasi, untuk semua orang di Australia
-
-**Hukum yang berlaku.** Apabila kami menangani informasi pribadi orang-orang di Australia, kami mematuhi Australian Privacy Principles dalam Privacy Act 1988, di samping hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami.
-
-**Tempat informasi Anda disimpan.** Informasi Anda disimpan dan diproses di Britania Raya. Sebagian di antaranya ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat, sebagaimana dinyatakan dalam bagian 6 Kebijakan Privasi.
-
-**Catatan alergi dan diet.** Apabila Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada food truck bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana dinyatakan dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat menanyakan kepada kami informasi pribadi apa yang kami simpan tentang Anda, serta meminta kami untuk memperbaiki atau menghapusnya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu 30 hari. Apabila Anda memesan dari food truck, kami dapat meneruskan permintaan Anda kepada food truck tersebut, karena food truck itulah yang menentukan cara penggunaan detail pesanan Anda.
-
-**Pengaduan.** Apabila Anda tidak puas dengan cara kami menangani informasi pribadi Anda, beri tahu kami terlebih dahulu di privacy@hatchgrab.com. Apabila Anda tidak puas dengan jawaban kami, atau kami belum membalas dalam waktu 30 hari, Anda dapat mengajukan pengaduan secara tertulis kepada Office of the Australian Information Commissioner (OAIC) di www.oaic.gov.au.
-
-**Email pemasaran.** Kami mengirim email pemasaran hanya apabila diperbolehkan oleh hukum. Setiap email tersebut menyebutkan pengirimnya dan memberi tahu Anda cara berhenti menerimanya, dan apabila Anda meminta kami untuk berhenti, kami akan berhenti. Email mengenai pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Selandia Baru
 
 ### Untuk pemilik food truck
@@ -147,24 +94,6 @@ Apabila negara Anda tidak tercantum, tidak ada aturan tambahan: Ketentuan Layana
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan dilakukan sebagaimana dinyatakan dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda di alamat email pada akun Anda, dan Anda dapat menghubungi kami di alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan hukum Selandia Baru kepada Anda dan yang tidak dapat dikecualikan melalui perjanjian.
 
-### Privasi, untuk semua orang di Selandia Baru
-
-**Hukum yang berlaku.** Apabila kami menangani informasi pribadi orang-orang di Selandia Baru, yang berlaku adalah Privacy Act 2020, di samping hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami. Undang-Undang tersebut berlaku bagi kami karena kami menjalankan usaha di Selandia Baru, meskipun kami berkedudukan di Britania Raya.
-
-**Tempat informasi Anda disimpan.** Informasi Anda disimpan dan diproses di Britania Raya. Sebagian di antaranya ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat, sebagaimana dinyatakan dalam bagian 6 Kebijakan Privasi.
-
-**Catatan alergi dan diet.** Apabila Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada food truck bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana dinyatakan dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat meminta kepada kami informasi pribadi yang kami simpan tentang Anda, serta meminta kami untuk memperbaikinya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas sesegera mungkin secara wajar, dan dalam waktu 20 hari kerja. Apabila Anda memesan dari food truck, kami dapat meneruskan permintaan Anda kepada food truck tersebut, karena food truck itulah yang menentukan cara penggunaan detail pesanan Anda.
-
-**Pengaduan.** Apabila Anda tidak puas dengan cara kami menangani informasi pribadi Anda, beri tahu kami terlebih dahulu di privacy@hatchgrab.com. Privacy Commissioner meminta Anda melakukan hal tersebut sebelum mengajukan pengaduan. Apabila Anda tidak puas dengan jawaban kami, Anda dapat mengajukan pengaduan kepada Office of the Privacy Commissioner di www.privacy.org.nz, melalui telepon di 0800 803 909, atau melalui pos ke PO Box 10 094, Wellington 6140.
-
-**Pelanggaran privasi.** Apabila suatu pelanggaran privasi yang melibatkan informasi pribadi Anda telah menyebabkan, atau kemungkinan besar akan menyebabkan, kerugian serius, Privacy Act 2020 mewajibkan agar Privacy Commissioner dan Anda diberi tahu sesegera mungkin secara praktis. Kami akan melakukannya, atau, untuk pesanan yang Anda buat pada food truck, membantu food truck tersebut melakukannya.
-
-**Email pemasaran.** Kami mengirim email pemasaran hanya apabila diperbolehkan oleh hukum. Setiap email tersebut menyebutkan pengirimnya dan memberi tahu Anda cara berhenti menerimanya, dan apabila Anda meminta kami untuk berhenti, kami akan berhenti. Email mengenai pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### Untuk pemilik food truck
@@ -186,22 +115,6 @@ Apabila negara Anda tidak tercantum, tidak ada aturan tambahan: Ketentuan Layana
 **Hak Anda berdasarkan hukum setempat.** Tidak ada ketentuan dalam Ketentuan Layanan yang menghapus hak yang menurut hukum di tempat kedudukan Anda tidak dapat dibatasi atau dikesampingkan.
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan dilakukan sebagaimana dinyatakan dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda di alamat email pada akun Anda, dan Anda dapat menghubungi kami di alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan hukum provinsi atau teritori Anda kepada Anda dan yang tidak dapat dikecualikan melalui perjanjian.
-
-### Privasi, untuk semua orang di Kanada
-
-**Hukum yang berlaku.** Apabila kami menangani informasi pribadi orang-orang di Kanada, yang berlaku adalah Personal Information Protection and Electronic Documents Act (PIPEDA), dan di British Columbia serta Alberta, undang-undang privasi sektor swasta masing-masing, di samping hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami.
-
-**Tempat informasi Anda disimpan.** Informasi Anda disimpan dan diproses di Britania Raya, dan sebagian ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat (bagian 6 Kebijakan Privasi), tempat informasi tersebut dapat diakses berdasarkan hukum negara-negara tersebut.
-
-**Permintaan Anda.** Anda dapat meminta informasi pribadi yang kami simpan tentang Anda dan meminta kami untuk memperbaikinya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu 30 hari.
-
-**Pengaduan.** Beri tahu kami terlebih dahulu di privacy@hatchgrab.com. Apabila Anda tidak puas, Anda dapat mengajukan pengaduan kepada Office of the Privacy Commissioner of Canada di www.priv.gc.ca atau melalui telepon di 1-800-282-1376.
-
-**Pelanggaran.** Apabila suatu pelanggaran langkah pengamanan (breach of security safeguards) yang melibatkan informasi Anda menimbulkan risiko nyata terjadinya kerugian yang signifikan, kami akan melaporkannya kepada Privacy Commissioner dan memberi tahu Anda sesegera mungkin.
-
-**Email pemasaran.** Kami mengirim email pemasaran hanya dengan persetujuan Anda, sebagaimana diwajibkan oleh undang-undang antispam Kanada. Setiap email tersebut menyebutkan pengirimnya dan cara berhenti berlangganan, dan kami menindaklanjuti permintaan berhenti berlangganan dalam waktu 10 hari kerja.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Prancis
 
@@ -227,21 +140,6 @@ Apabila negara Anda tidak tercantum, tidak ada aturan tambahan: Ketentuan Layana
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan dilakukan sebagaimana dinyatakan dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda di alamat email pada akun Anda, dan Anda dapat menghubungi kami di alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan hukum Prancis kepada Anda dan yang tidak dapat dikecualikan melalui perjanjian.
 
-### Privasi, untuk semua orang di Prancis
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Prancis, yang berlaku adalah Peraturan Perlindungan Data Umum Uni Eropa (GDPR) dan Undang-Undang Perlindungan Data Prancis (loi Informatique et Libertés), di samping hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami. Hak-hak yang tercantum dalam bagian 8 Kebijakan Privasi juga merupakan hak Anda berdasarkan GDPR.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya. Komisi Eropa telah memutuskan bahwa Britania Raya melindungi data pribadi dengan standar yang sama dengan Uni Eropa, sehingga tidak diperlukan pengamanan tambahan untuk hal tersebut. Apabila penyedia layanan menangani data di Amerika Serikat (bagian 6 Kebijakan Privasi), transfer tersebut dilindungi oleh pengamanan yang diakui GDPR.
-
-**Catatan alergi dan diet.** Apabila Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada food truck bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana dinyatakan dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat menanyakan kepada kami data pribadi apa yang kami simpan tentang Anda, serta meminta kami untuk memperbaiki, menghapus, atau berhenti menggunakannya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu satu bulan. Apabila Anda memesan dari food truck, kami dapat meneruskan permintaan Anda kepada food truck tersebut, karena food truck itulah yang menentukan cara penggunaan detail pesanan Anda.
-
-**Pengaduan.** Anda dapat mengajukan pengaduan kepada CNIL (Commission nationale de l'informatique et des libertés), otoritas pelindungan data Prancis, di www.cnil.fr, atau melalui pos ke CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Kami akan menghargai kesempatan untuk terlebih dahulu memperbaiki keadaan.
-
-**Email pemasaran.** Kami mengirim email pemasaran hanya apabila diperbolehkan oleh hukum Prancis. Setiap email tersebut memberi tahu Anda cara berhenti menerimanya, dan apabila Anda meminta kami untuk berhenti, kami akan berhenti. Email mengenai pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 ## Kawasan Ekonomi Eropa dan Swiss
 
 Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Area) yang tidak memiliki bagian tersendiri di atas, serta di Swiss: Austria, Belgia, Bulgaria, Kroasia, Siprus, Republik Ceko, Denmark, Estonia, Finlandia, Jerman, Yunani, Hongaria, Italia, Latvia, Liechtenstein, Lituania, Luksemburg, Malta, Belanda, Norwegia, Polandia, Portugal, Rumania, Slowakia, Slovenia, Spanyol, Swedia, dan Swiss.
@@ -268,53 +166,6 @@ Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Are
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan berlaku sebagaimana diatur dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda melalui alamat email pada akun Anda, dan Anda dapat menghubungi kami melalui alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan kepada Anda oleh hukum negara Anda dan yang tidak dapat dikecualikan melalui perjanjian.
 
-### Privasi, untuk semua orang di Kawasan Ekonomi Eropa dan Swiss
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Kawasan Ekonomi Eropa, Peraturan Perlindungan Data Umum Uni Eropa (GDPR) dan hukum perlindungan data negara mereka berlaku; di Swiss, Undang-Undang Federal tentang Perlindungan Data. Hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami juga berlaku. Hak-hak yang tercantum dalam bagian 8 Kebijakan Privasi juga merupakan hak Anda berdasarkan hukum-hukum tersebut.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya. Komisi Eropa dan Swiss masing-masing telah memutuskan bahwa Britania Raya melindungi data pribadi dengan standar yang memadai, sehingga tidak diperlukan perlindungan tambahan untuk hal tersebut. Apabila penyedia layanan menangani data di Amerika Serikat (bagian 6 Kebijakan Privasi), transfer tersebut dilindungi oleh mekanisme perlindungan yang diakui oleh GDPR dan hukum Swiss.
-
-**Catatan alergi dan diet.** Jika Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada truk bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana diatur dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat menanyakan kepada kami data pribadi apa yang kami simpan tentang Anda, dan meminta kami untuk memperbaiki, menghapus, atau berhenti menggunakannya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu satu bulan. Jika Anda memesan dari sebuah truk, kami dapat meneruskan permintaan Anda kepada truk tersebut, karena truk tersebut yang menentukan bagaimana detail pesanan Anda digunakan.
-
-**Pengaduan.** Anda dapat mengajukan pengaduan kepada otoritas perlindungan data di negara tempat Anda tinggal atau bekerja. Dewan Perlindungan Data Eropa (European Data Protection Board/EDPB) mencantumkan setiap otoritas di Kawasan Ekonomi Eropa di www.edpb.europa.eu (About EDPB › Members). Di Swiss, otoritas tersebut adalah Komisaris Federal Perlindungan Data dan Informasi (Federal Data Protection and Information Commissioner), www.edoeb.admin.ch. Kami akan menghargai kesempatan untuk memperbaiki keadaan terlebih dahulu.
-
-| Negara | Otoritas perlindungan data |
-|---|---|
-| Austria | dsb.gv.at |
-| Belgia | autoriteprotectiondonnees.be |
-| Bulgaria | cpdp.bg |
-| Kroasia | azop.hr |
-| Siprus | dataprotection.gov.cy |
-| Republik Ceko | uoou.gov.cz |
-| Denmark | datatilsynet.dk |
-| Estonia | aki.ee |
-| Finlandia | tietosuoja.fi |
-| Jerman | otoritas di Land (negara bagian) Anda (federal: bfdi.bund.de) |
-| Yunani | dpa.gr |
-| Hongaria | naih.hu |
-| Italia | garanteprivacy.it |
-| Latvia | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Lituania | vdai.lrv.lt |
-| Luksemburg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Belanda | autoriteitpersoonsgegevens.nl |
-| Norwegia | datatilsynet.no |
-| Polandia | uodo.gov.pl |
-| Portugal | cnpd.pt |
-| Rumania | dataprotection.ro |
-| Slowakia | dataprotection.gov.sk |
-| Slovenia | ip-rs.si |
-| Spanyol | aepd.es |
-| Swedia | imy.se |
-| Swiss | Komisaris Federal Perlindungan Data dan Informasi (FDPIC), edoeb.admin.ch |
-
-**Email pemasaran.** Kami mengirimkan email pemasaran hanya apabila diperbolehkan oleh hukum negara Anda. Setiap email tersebut memberi tahu Anda cara untuk berhenti menerimanya, dan jika Anda meminta kami untuk berhenti, kami akan berhenti. Email tentang pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### Untuk pemilik food truck
@@ -336,22 +187,6 @@ Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Are
 **Data pelanggan Anda.** Berdasarkan hukum perlindungan data Gibraltar, yang mencakup Peraturan Perlindungan Data Umum Uni Eropa (GDPR) sebagaimana berlaku di Gibraltar, bagian 10 Ketentuan Layanan merupakan perjanjian pemrosesan data kami dengan Anda: Anda adalah pengendali data dan kami adalah prosesor data, dalam pengertian yang sama dengan Pasal 28 GDPR.
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan berlaku sebagaimana diatur dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda melalui alamat email pada akun Anda, dan Anda dapat menghubungi kami melalui alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan kepada Anda oleh hukum Gibraltar dan yang tidak dapat dikecualikan melalui perjanjian.
-
-### Privasi, untuk semua orang di Gibraltar
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Gibraltar, hukum perlindungan data Gibraltar berlaku, termasuk Peraturan Perlindungan Data Umum Uni Eropa (GDPR) sebagaimana berlaku di sana, serta hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami. Hak-hak yang tercantum dalam bagian 8 Kebijakan Privasi juga merupakan hak Anda berdasarkan hukum tersebut.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya. Apabila penyedia layanan menangani data di Amerika Serikat (bagian 6 Kebijakan Privasi), transfer tersebut dilindungi oleh mekanisme perlindungan yang diakui oleh hukum.
-
-**Catatan alergi dan diet.** Jika Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada truk bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana diatur dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat menanyakan kepada kami data pribadi apa yang kami simpan tentang Anda, dan meminta kami untuk memperbaiki, menghapus, atau berhenti menggunakannya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu satu bulan. Jika Anda memesan dari sebuah truk, kami dapat meneruskan permintaan Anda kepada truk tersebut, karena truk tersebut yang menentukan bagaimana detail pesanan Anda digunakan.
-
-**Pengaduan.** Anda dapat mengajukan pengaduan kepada Gibraltar Regulatory Authority, otoritas pengawas perlindungan data Gibraltar, di www.gra.gi. Kami akan menghargai kesempatan untuk memperbaiki keadaan terlebih dahulu.
-
-**Email pemasaran.** Kami mengirimkan email pemasaran hanya apabila diperbolehkan oleh hukum Gibraltar. Setiap email tersebut memberi tahu Anda cara untuk berhenti menerimanya, dan jika Anda meminta kami untuk berhenti, kami akan berhenti. Email tentang pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brasil
 
@@ -377,22 +212,6 @@ Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Are
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan berlaku sebagaimana diatur dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda melalui alamat email pada akun Anda, dan Anda dapat menghubungi kami melalui alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan kepada Anda oleh hukum Brasil dan yang tidak dapat dikecualikan melalui perjanjian.
 
-### Privasi, untuk semua orang di Brasil
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Brasil, Undang-Undang Umum Perlindungan Data (LGPD) berlaku, serta hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami. Hak-hak yang tercantum dalam bagian 8 Kebijakan Privasi juga merupakan hak Anda berdasarkan LGPD.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya, dan sebagian di antaranya ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat, sebagaimana diatur dalam bagian 6 Kebijakan Privasi. Kami mentransfernya hanya berdasarkan dasar yang diperbolehkan oleh LGPD.
-
-**Catatan alergi dan diet.** Jika Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada truk bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana diatur dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat meminta kami untuk mengonfirmasi apakah kami menyimpan data pribadi tentang Anda, dan meminta salinannya, atau meminta kami untuk memperbaiki, menghapus, atau berhenti menggunakannya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu 15 hari. Jika Anda memesan dari sebuah truk, kami dapat meneruskan permintaan Anda kepada truk tersebut, karena truk tersebut yang menentukan bagaimana detail pesanan Anda digunakan.
-
-**Pengaduan.** Sampaikan terlebih dahulu kepada kami di privacy@hatchgrab.com. Anda juga dapat mengajukan pengaduan kepada Otoritas Nasional Perlindungan Data (Autoridade Nacional de Proteção de Dados, ANPD) di www.gov.br/anpd.
-
-**Email pemasaran.** Kami mengirimkan email pemasaran hanya apabila diperbolehkan oleh hukum Brasil. Setiap email tersebut memberi tahu Anda cara untuk berhenti menerimanya, dan jika Anda meminta kami untuk berhenti, kami akan berhenti. Email tentang pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Meksiko
 
 ### Untuk pemilik food truck
@@ -416,22 +235,6 @@ Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Are
 **Data pelanggan Anda.** Berdasarkan Undang-Undang Federal Meksiko tentang Perlindungan Data Pribadi yang Dikuasai oleh Pihak Swasta (Ley Federal de Protección de Datos Personales en Posesión de los Particulares), bagian 10 Ketentuan Layanan memiliki arti yang sama menurut istilah undang-undang tersebut: Anda adalah pengendali data (responsable) dan kami adalah prosesor data Anda (encargado), dan kami menangani data pribadi pelanggan Anda hanya untuk menjalankan HatchGrab bagi Anda dan berdasarkan instruksi Anda. Anda bertanggung jawab atas pemberitahuan privasi Anda sendiri (aviso de privacidad) kepada pelanggan Anda.
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan berlaku sebagaimana diatur dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda melalui alamat email pada akun Anda, dan Anda dapat menghubungi kami melalui alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan kepada Anda oleh hukum Meksiko dan yang tidak dapat dikecualikan melalui perjanjian.
-
-### Privasi, untuk semua orang di Meksiko
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Meksiko, Undang-Undang Federal tentang Perlindungan Data Pribadi yang Dikuasai oleh Pihak Swasta berlaku, serta hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami. Halaman ini dan Kebijakan Privasi bersama-sama merupakan pemberitahuan privasi (aviso de privacidad) kami bagi orang-orang di Meksiko.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya, dan sebagian di antaranya ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat, sebagaimana diatur dalam bagian 6 Kebijakan Privasi, semata-mata untuk menjalankan layanan.
-
-**Catatan alergi dan diet.** Jika Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada truk bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana diatur dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat meminta akses ke data pribadi yang kami simpan tentang Anda, dan meminta kami untuk memperbaiki, menghapus, atau berhenti menggunakannya (hak ARCO Anda). Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu 20 hari kerja. Jika Anda memesan dari sebuah truk, kami dapat meneruskan permintaan Anda kepada truk tersebut, karena truk tersebut yang menentukan bagaimana detail pesanan Anda digunakan.
-
-**Pengaduan.** Sampaikan terlebih dahulu kepada kami di privacy@hatchgrab.com. Jika Anda tidak puas, Anda dapat mengajukan pengaduan kepada Secretaría Anticorrupción y Buen Gobierno (Kementerian Antikorupsi dan Tata Kelola Pemerintahan yang Baik), yang menegakkan Undang-Undang Federal Meksiko tentang Perlindungan Data Pribadi yang Dikuasai oleh Pihak Swasta (berlaku sejak 21 Maret 2025).
-
-**Email pemasaran.** Kami mengirimkan email pemasaran hanya apabila diperbolehkan oleh hukum Meksiko. Setiap email tersebut memberi tahu Anda cara untuk berhenti menerimanya, dan jika Anda meminta kami untuk berhenti, kami akan berhenti. Email tentang pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Jepang
 
@@ -457,22 +260,6 @@ Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Are
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan berlaku sebagaimana diatur dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda melalui alamat email pada akun Anda, dan Anda dapat menghubungi kami melalui alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan kepada Anda oleh hukum Jepang dan yang tidak dapat dikecualikan melalui perjanjian.
 
-### Privasi, untuk semua orang di Jepang
-
-**Hukum yang berlaku.** Apabila kami menangani informasi pribadi orang-orang di Jepang, Undang-Undang tentang Perlindungan Informasi Pribadi berlaku, serta hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami.
-
-**Tempat informasi Anda disimpan.** Informasi Anda disimpan dan diproses di Britania Raya, dan sebagian di antaranya ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat, sebagaimana diatur dalam bagian 6 Kebijakan Privasi. Britania Raya dan Uni Eropa diakui oleh Jepang memiliki perlindungan informasi pribadi yang setara dengan standar Jepang. Informasi yang ditangani di Amerika Serikat dilindungi oleh perjanjian kami dengan penyedia layanan tersebut.
-
-**Catatan alergi dan diet.** Jika Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada truk bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana diatur dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat meminta kami untuk mengungkapkan informasi pribadi yang kami simpan tentang Anda, dan meminta kami untuk memperbaiki, menghapus, atau berhenti menggunakannya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas tanpa penundaan. Jika Anda memesan dari sebuah truk, kami dapat meneruskan permintaan Anda kepada truk tersebut, karena truk tersebut yang menentukan bagaimana detail pesanan Anda digunakan.
-
-**Pengaduan.** Sampaikan terlebih dahulu kepada kami di privacy@hatchgrab.com. Anda juga dapat menghubungi Komisi Perlindungan Informasi Pribadi (Personal Information Protection Commission) di www.ppc.go.jp.
-
-**Email pemasaran.** Kami mengirimkan email pemasaran hanya kepada orang-orang yang telah menyetujui untuk menerimanya. Setiap email tersebut menyebutkan pengirimnya dan cara untuk berhenti menerimanya, dan jika Anda meminta kami untuk berhenti, kami akan berhenti. Email tentang pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapura
 
 ### Untuk pemilik food truck
@@ -497,22 +284,6 @@ Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Are
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan berlaku sebagaimana diatur dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda melalui alamat email pada akun Anda, dan Anda dapat menghubungi kami melalui alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan kepada Anda oleh hukum Singapura dan yang tidak dapat dikecualikan melalui perjanjian.
 
-### Privasi, untuk semua orang di Singapura
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Singapura, Personal Data Protection Act 2012 (PDPA) berlaku, serta hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya, dan sebagian di antaranya ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat, sebagaimana diatur dalam bagian 6 Kebijakan Privasi. Kami memastikan data tersebut dilindungi dengan standar yang sebanding dengan standar PDPA di mana pun data tersebut berada.
-
-**Catatan alergi dan diet.** Jika Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada truk bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana diatur dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat meminta data pribadi yang kami simpan tentang Anda dan bagaimana data tersebut telah digunakan, serta meminta kami untuk memperbaikinya. Anda juga dapat menarik persetujuan Anda atas penggunaan data tersebut oleh kami. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu 30 hari. Jika Anda memesan dari sebuah truk, kami dapat meneruskan permintaan Anda kepada truk tersebut, karena truk tersebut yang menentukan bagaimana detail pesanan Anda digunakan.
-
-**Pengaduan.** Sampaikan terlebih dahulu kepada kami di privacy@hatchgrab.com. Jika Anda tidak puas, Anda dapat mengajukan pengaduan kepada Personal Data Protection Commission (Komisi Perlindungan Data Pribadi Singapura) di www.pdpc.gov.sg.
-
-**Pesan pemasaran.** Kami mengirimkan email pemasaran hanya apabila diperbolehkan oleh hukum Singapura. Setiap email tersebut memberi tahu Anda cara untuk berhenti menerimanya, dan jika Anda meminta kami untuk berhenti, kami akan berhenti. Kami tidak melakukan panggilan telepon atau mengirim pesan teks pemasaran ke nomor yang terdaftar dalam Do Not Call Registry Singapura. Email tentang pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hong Kong
 
 ### Untuk pemilik food truck
@@ -534,22 +305,6 @@ Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Are
 **Data pelanggan Anda.** Berdasarkan Personal Data (Privacy) Ordinance (Cap. 486) Hong Kong, bagian 10 Ketentuan Layanan memiliki arti yang sama menurut istilah peraturan tersebut: Anda adalah pengguna data (data user) dan kami adalah prosesor data (data processor) Anda, dan kami menangani data pribadi pelanggan Anda hanya untuk menjalankan HatchGrab bagi Anda dan berdasarkan instruksi Anda, serta tidak menyimpannya lebih lama dari yang diperlukan untuk itu.
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan berlaku sebagaimana diatur dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda melalui alamat email pada akun Anda, dan Anda dapat menghubungi kami melalui alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan kepada Anda oleh hukum Hong Kong dan yang tidak dapat dikecualikan melalui perjanjian.
-
-### Privasi, untuk semua orang di Hong Kong
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Hong Kong, Personal Data (Privacy) Ordinance berlaku, serta hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya, dan sebagian di antaranya ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat, sebagaimana diatur dalam bagian 6 Kebijakan Privasi.
-
-**Catatan alergi dan diet.** Jika Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada truk bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana diatur dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat meminta salinan data pribadi yang kami simpan tentang Anda, dan meminta kami untuk memperbaikinya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu 40 hari. Jika Anda memesan dari sebuah truk, kami dapat meneruskan permintaan Anda kepada truk tersebut, karena truk tersebut yang menentukan bagaimana detail pesanan Anda digunakan.
-
-**Pengaduan.** Sampaikan terlebih dahulu kepada kami di privacy@hatchgrab.com. Jika Anda tidak puas, Anda dapat mengajukan pengaduan kepada Office of the Privacy Commissioner for Personal Data (Kantor Komisaris Privasi untuk Data Pribadi) di www.pcpd.org.hk.
-
-**Pesan pemasaran.** Kami menggunakan data pribadi Anda untuk pemasaran langsung hanya dengan persetujuan Anda, dan setiap pesan pemasaran memberi tahu Anda cara untuk berhenti menerimanya. Jika Anda meminta kami untuk berhenti, kami akan berhenti, tanpa dipungut biaya. Email tentang pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malaysia
 
@@ -575,22 +330,6 @@ Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Are
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan berlaku sebagaimana diatur dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda melalui alamat email pada akun Anda, dan Anda dapat menghubungi kami melalui alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan kepada Anda oleh hukum Malaysia dan yang tidak dapat dikecualikan melalui perjanjian.
 
-### Privasi, untuk semua orang di Malaysia
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Malaysia, Personal Data Protection Act 2010 (PDPA) berlaku, serta hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya, dan sebagian di antaranya ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat, sebagaimana diatur dalam bagian 6 Kebijakan Privasi. Kami mentransfernya hanya apabila diperbolehkan oleh PDPA.
-
-**Catatan alergi dan diet.** Jika Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada truk bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana diatur dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat meminta data pribadi yang kami simpan tentang Anda, dan meminta kami untuk memperbaikinya atau berhenti menggunakannya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu 21 hari. Jika Anda memesan dari sebuah truk, kami dapat meneruskan permintaan Anda kepada truk tersebut, karena truk tersebut yang menentukan bagaimana detail pesanan Anda digunakan.
-
-**Pengaduan.** Sampaikan terlebih dahulu kepada kami di privacy@hatchgrab.com. Jika Anda tidak puas, Anda dapat mengajukan pengaduan kepada Personal Data Protection Commissioner (Pesuruhjaya Perlindungan Data Peribadi) di www.pdp.gov.my.
-
-**Email pemasaran.** Kami mengirimkan email pemasaran hanya apabila diperbolehkan oleh hukum Malaysia. Setiap email tersebut memberi tahu Anda cara untuk berhenti menerimanya, dan jika Anda meminta kami untuk berhenti, kami akan berhenti. Email tentang pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Thailand
 
 ### Untuk pemilik food truck
@@ -615,22 +354,6 @@ Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Are
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan berlaku sebagaimana diatur dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda melalui alamat email pada akun Anda, dan Anda dapat menghubungi kami melalui alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan kepada Anda oleh hukum Thailand dan yang tidak dapat dikecualikan melalui perjanjian.
 
-### Privasi, untuk semua orang di Thailand
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Thailand, Personal Data Protection Act B.E. 2562 (PDPA) berlaku, serta hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami. Hak-hak yang tercantum dalam bagian 8 Kebijakan Privasi juga merupakan hak Anda berdasarkan PDPA.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya, dan sebagian di antaranya ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat, sebagaimana diatur dalam bagian 6 Kebijakan Privasi. Kami mentransfernya hanya berdasarkan dasar yang diperbolehkan oleh PDPA.
-
-**Catatan alergi dan diet.** Jika Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada truk bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana diatur dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat meminta salinan data pribadi yang kami simpan tentang Anda, dan meminta kami untuk memperbaiki, menghapus, atau berhenti menggunakannya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu 30 hari. Jika Anda memesan dari sebuah truk, kami dapat meneruskan permintaan Anda kepada truk tersebut, karena truk tersebut yang menentukan bagaimana detail pesanan Anda digunakan.
-
-**Pengaduan.** Sampaikan terlebih dahulu kepada kami di privacy@hatchgrab.com. Anda juga dapat mengajukan pengaduan kepada Personal Data Protection Committee (Komite Perlindungan Data Pribadi Thailand) di www.pdpc.or.th.
-
-**Email pemasaran.** Kami mengirimkan email pemasaran hanya apabila diperbolehkan oleh hukum Thailand. Setiap email tersebut memberi tahu Anda cara untuk berhenti menerimanya, dan jika Anda meminta kami untuk berhenti, kami akan berhenti. Email tentang pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Uni Emirat Arab
 
 ### Untuk pemilik food truck
@@ -652,19 +375,3 @@ Bagian ini berlaku di setiap negara Kawasan Ekonomi Eropa (European Economic Are
 **Data pelanggan Anda.** Berdasarkan Dekret-Undang-Undang Federal UEA No. 45 Tahun 2021 tentang Perlindungan Data Pribadi, bagian 10 Ketentuan Layanan memiliki arti yang sama menurut istilah undang-undang tersebut: Anda adalah pengendali data dan kami adalah prosesor data Anda, dan kami menangani data pribadi pelanggan Anda hanya untuk menjalankan HatchGrab bagi Anda dan berdasarkan instruksi Anda.
 
 **Pemberitahuan dan hukum yang berlaku.** Pemberitahuan berlaku sebagaimana diatur dalam bagian 12 Ketentuan Layanan: kami menghubungi Anda melalui alamat email pada akun Anda, dan Anda dapat menghubungi kami melalui alamat di bawah ini. Ketentuan ini diatur oleh hukum Inggris dan Wales, dan pengadilan Inggris dan Wales memiliki yurisdiksi. Hal ini tidak menghapus perlindungan apa pun yang diberikan kepada Anda oleh hukum UEA dan yang tidak dapat dikecualikan melalui perjanjian.
-
-### Privasi, untuk semua orang di Uni Emirat Arab
-
-**Hukum yang berlaku.** Apabila kami menangani data pribadi orang-orang di Uni Emirat Arab, Dekret-Undang-Undang Federal No. 45 Tahun 2021 tentang Perlindungan Data Pribadi berlaku, serta hukum Britania Raya yang disebutkan dalam Kebijakan Privasi kami. Jika Anda berada di zona bebas yang memiliki hukum perlindungan datanya sendiri, seperti DIFC atau ADGM, maka hukum tersebut yang berlaku sebagai gantinya.
-
-**Tempat data Anda disimpan.** Data Anda disimpan dan diproses di Britania Raya, dan sebagian di antaranya ditangani oleh penyedia layanan di Uni Eropa dan Amerika Serikat, sebagaimana diatur dalam bagian 6 Kebijakan Privasi. Kami mentransfernya hanya berdasarkan dasar yang diperbolehkan oleh hukum.
-
-**Catatan alergi dan diet.** Jika Anda menambahkan catatan alergi atau diet pada pesanan, kami meneruskannya kepada truk bersama pesanan Anda. Kami menghapusnya, beserta nama dan detail kontak Anda, 12 bulan setelah pesanan, sebagaimana diatur dalam bagian 7 Kebijakan Privasi. Kami tidak menggunakannya untuk keperluan lain apa pun.
-
-**Permintaan Anda.** Anda dapat meminta data pribadi yang kami simpan tentang Anda, dan meminta kami untuk memperbaiki, menghapus, atau berhenti menggunakannya. Kirim email ke privacy@hatchgrab.com. Kami akan membalas dalam waktu 30 hari. Jika Anda memesan dari sebuah truk, kami dapat meneruskan permintaan Anda kepada truk tersebut, karena truk tersebut yang menentukan bagaimana detail pesanan Anda digunakan.
-
-**Pengaduan.** Sampaikan terlebih dahulu kepada kami di privacy@hatchgrab.com. Jika Anda tidak puas, Anda dapat mengajukan pengaduan kepada UAE Data Office (Kantor Data UEA).
-
-**Pesan pemasaran.** Kami mengirimkan pesan pemasaran hanya apabila diperbolehkan oleh hukum UEA. Setiap pesan tersebut memberi tahu Anda cara untuk berhenti menerimanya, dan jika Anda meminta kami untuk berhenti, kami akan berhenti. Email tentang pesanan atau akun Anda bukan merupakan pemasaran.
-
-**Kontak.** privacy@hatchgrab.com, atau melalui pos ke HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

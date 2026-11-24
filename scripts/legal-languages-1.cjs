@@ -65,11 +65,14 @@ const REGIONAL = [['de-AT', 'AT', 'de-DE'], ['de-CH', 'CH', 'de-DE'], ['nl-BE', 
   // languages an enabled country uses (Dominic). These five language bases are installed but used by no enabled country on that day, so
   // their terms-and-conditions.md still translates the English before 19 Nov 2026 (no page serves them). Named, file by file; every other
   // base × document must still match today's English. When one of these is used by a country again, translate it and drop it here.
-  const NOT_RETRANSLATED = { 'terms-and-conditions.md': ['fil-PH', 'hi-IN', 'ur-PK', 'ta-LK', 'vi-VN'] }
+  // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md): the one-policy Privacy Policy and the Country-specific
+  // terms without their per-country privacy parts were translated ONLY into the 54 language bases an enabled country uses (standing rule);
+  // the same five bases keep translating the English before 24 Nov 2026 for both documents (no page serves them). Named, file by file.
+  const NOT_RETRANSLATED = { 'terms-and-conditions.md': ['fil-PH', 'hi-IN', 'ur-PK', 'ta-LK', 'vi-VN'], 'privacy-policy.md': ['fil-PH', 'hi-IN', 'ur-PK', 'ta-LK', 'vi-VN'], 'country-specific-terms.md': ['fil-PH', 'hi-IN', 'ur-PK', 'ta-LK', 'vi-VN'] }
   for (const locale of BASES) for (const file of L.DOCS) {
     const p = L.translationPath(locale, file)
     if ((NOT_RETRANSLATED[file] || []).includes(locale)) {
-      t(`${locale}/${file}: left on the English before 19 Nov 2026 (no enabled country uses ${locale}; terms-postpay-1)`, fs.existsSync(p) && /^<!-- translation-of: terms-and-conditions\.md sha256:/.test(fs.readFileSync(p, 'utf8')))
+      t(`${locale}/${file}: left on the English before ${file === 'terms-and-conditions.md' ? '19 Nov 2026 (no enabled country uses ' + locale + '; terms-postpay-1)' : '24 Nov 2026 (no enabled country uses ' + locale + '; france-privacy-1)'}`, fs.existsSync(p) && new RegExp(`^<!-- translation-of: ${file.replace('.', '\\.')} sha256:`).test(fs.readFileSync(p, 'utf8')))
       continue
     }
     const probs = fs.existsSync(p) ? L.compare(file, fs.readFileSync(p, 'utf8')) : ['missing']

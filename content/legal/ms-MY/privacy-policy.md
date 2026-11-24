@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Dasar Privasi
 
 **Kemas kini terakhir:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Dasar ini juga meliputi aplikasi mudah alih dan tablet HatchGrab untuk iOS dan A
 
 Jika anda datang ke sini hanya kerana anda telah memesan makanan daripada sebuah trak, seksyen **"Jika anda memesan daripada food truck"** ialah bahagian yang terpakai kepada anda.
 
-**Sesetengah negara mempunyai peraturan tambahan.** Jika peraturan tersebut terpakai kepada anda, ia dinyatakan pada halaman [Terma khusus negara](/country-terms) kami, yang menjadi sebahagian daripada dasar ini.
-
+**Dasar ini terpakai di mana-mana sahaja anda berada.** Kami mematuhi undang-undang perlindungan data UK, dan apabila undang-undang perlindungan data negara tempat anda tinggal juga terpakai, kami mematuhi undang-undang itu juga.
 ---
 
 ## 1. Siapa kami
@@ -84,6 +83,8 @@ Apabila anda membuat pesanan melalui halaman pesanan sesebuah trak, kami mengump
 
 Trak tersebut menentukan berapa lama butiran anda disimpan dan cara mereka menghubungi anda selepas itu. Amalan privasi mereka sendiri terpakai terhadap perkara tersebut. Jika anda tidak pasti siapa trak tersebut, hubungi kami di privacy@hatchgrab.com dan kami akan menunjukkan mereka kepada anda.
 
+**Nota alahan dan diet.** Kami menyerahkannya kepada trak bersama pesanan anda dan tidak menggunakannya untuk apa-apa tujuan lain. Kami membuangnya, bersama nama dan butiran hubungan anda, 12 bulan selepas pesanan (lihat seksyen 7).
+
 **Maklumat alergen.** Apabila sesebuah trak menerbitkan maklumat alergen, kami memaparkan apa yang telah disahkan oleh trak tersebut. Kami tidak mengesahkannya secara bebas. Sentiasa maklumkan kepada trak secara langsung tentang alahan yang serius.
 
 ---
@@ -135,7 +136,7 @@ Kami juga boleh mendedahkan data apabila kami dikehendaki berbuat demikian oleh 
 
 **Kami tidak menjual data peribadi, dan kami tidak berkongsinya untuk pengiklanan.**
 
-**Pemindahan antarabangsa.** Data akaun dan data pesanan anda disimpan dan diproses di United Kingdom. Sesetengah perkara dikendalikan di luarnya: pengekstrakan menu dan balasan automatik WhatsApp, yang menggunakan perkhidmatan Google di Amerika Syarikat; penghantaran mesej WhatsApp, yang dikendalikan oleh Meta di Amerika Syarikat; pembayaran, yang dikendalikan oleh Stripe di Amerika Syarikat; dan pemberitahuan tolak, yang disampaikan oleh Apple dan Google di Amerika Syarikat. Apabila data meninggalkan UK, pemindahan itu dilindungi oleh peraturan kecukupan UK atau oleh International Data Transfer Agreement (Perjanjian Pemindahan Data Antarabangsa) atau Addendum, yang menyediakan perlindungan yang sesuai. Anda boleh meminta daripada kami butiran perlindungan yang terpakai.
+**Pemindahan antarabangsa.** Data akaun dan data pesanan anda disimpan dan diproses di United Kingdom. Sesetengah perkara dikendalikan di luarnya: pengekstrakan menu dan balasan automatik WhatsApp, yang menggunakan perkhidmatan Google di Amerika Syarikat; penghantaran mesej WhatsApp, yang dikendalikan oleh Meta di Amerika Syarikat; pembayaran, yang dikendalikan oleh Stripe di Amerika Syarikat; dan pemberitahuan tolak, yang disampaikan oleh Apple dan Google di Amerika Syarikat. Apabila data meninggalkan UK, pemindahan itu dilindungi oleh peraturan kecukupan UK atau oleh International Data Transfer Agreement (Perjanjian Pemindahan Data Antarabangsa) atau Addendum, dan, apabila dikehendaki oleh undang-undang negara anda, oleh perlindungan yang diiktiraf oleh undang-undang itu. Anda boleh meminta daripada kami butiran perlindungan yang terpakai.
 
 Seiring dengan perkembangan perkhidmatan kami, kami mungkin menambah pembekal, termasuk pembekal SMS. Kami akan mengemas kini senarai ini sebelum mereka mula memproses data anda.
 
@@ -161,7 +162,7 @@ Kami memadam atau menganonimkan data sebaik sahaja tempoh ini tamat.
 
 ## 8. Hak anda
 
-Di bawah undang-undang perlindungan data UK, anda berhak untuk:
+Di bawah undang-undang perlindungan data UK, dan undang-undang negara tempat anda tinggal apabila ia terpakai, anda berhak untuk:
 
 - bertanya data peribadi apa yang kami pegang tentang anda, dan mendapatkan salinannya;
 - meminta data yang tidak tepat dibetulkan;
@@ -171,11 +172,17 @@ Di bawah undang-undang perlindungan data UK, anda berhak untuk:
 - membantah pemprosesan berdasarkan kepentingan sah;
 - menarik balik persetujuan pada bila-bila masa, apabila kami bergantung pada persetujuan.
 
-Untuk melaksanakan mana-mana hak ini, hantar e-mel ke privacy@hatchgrab.com. Kami akan memberikan jawapan dalam tempoh satu bulan.
+Undang-undang di tempat anda tinggal mungkin memberikan hak ini kepada anda di bawah nama lain, atau hak tambahan. Anda juga mempunyai hak tersebut.
 
-**Memadam akaun anda.** Pengusaha boleh meminta pemadaman akaun dari dalam aplikasi atau dengan menghantar e-mel ke privacy@hatchgrab.com. Kami akan memadam akaun dan data peribadi anda, kecuali jika kami dikehendaki menyimpan rekod atas sebab perakaunan atau undang-undang.
+**Membuat permintaan.** Hantar e-mel ke privacy@hatchgrab.com. Kami akan menyemak bahawa permintaan itu tulen sebelum kami bertindak ke atasnya. Anda boleh meminta orang lain membuat permintaan bagi pihak anda, dan kami tidak akan melayan anda secara berbeza kerana membuat permintaan. Kami akan menjawab dalam tempoh satu bulan, atau lebih awal jika dikehendaki oleh undang-undang negara anda. Jika anda memesan daripada sebuah trak, kami mungkin menyerahkan permintaan anda kepada trak tersebut, kerana trak itulah yang menentukan cara butiran pesanan anda digunakan. Jika kami menolak sesuatu permintaan, anda boleh meminta kami menelitinya semula dengan membalas jawapan kami.
 
-**Aduan.** Jika anda tidak berpuas hati dengan cara kami mengendalikan data anda, anda boleh membuat aduan kepada Information Commissioner's Office (Pejabat Pesuruhjaya Maklumat UK) di ico.org.uk, atau di talian 0303 123 1113. Kami amat menghargai peluang untuk menanganinya terlebih dahulu.
+**Memadam akaun anda.** Pengusaha boleh meminta pemadaman akaun dari dalam aplikasi atau dengan menghantar e-mel ke privacy@hatchgrab.com. Kami akan memadam akaun dan data peribadi anda, kecuali jika kami dikehendaki menyimpan rekod atas sebab perakaunan atau undang-undang. Apabila akaun seseorang pengusaha dipadam, kami juga membuang nama, butiran hubungan dan nota pelanggannya daripada pesanan yang kami simpan.
+
+**E-mel pemasaran.** Kami menghantar e-mel pemasaran hanya apabila dibenarkan oleh undang-undang di tempat anda tinggal, yang di sesetengah negara bermakna hanya dengan persetujuan anda. Setiap e-mel menyatakan daripada siapa ia dihantar, mengandungi alamat pos kami dan memberitahu anda cara untuk berhenti menerimanya. Jika anda meminta kami berhenti, kami akan berhenti, secara percuma dan dalam tempoh 10 hari perniagaan. E-mel tentang pesanan atau akaun anda bukan pemasaran. Jika kami atau sesebuah trak menawarkan kemas kini pesanan melalui mesej teks, anda hanya akan menerimanya jika anda bersetuju, dan anda boleh menghentikannya pada bila-bila masa.
+
+**Jika berlaku masalah.** Jika pelanggaran yang melibatkan data peribadi anda berkemungkinan menyebabkan kemudaratan yang serius kepada anda, kami akan memberitahu anda dan pihak berkuasa kawal selia secepat yang boleh apabila dikehendaki oleh undang-undang, atau membantu trak yang anda pesan daripadanya berbuat demikian.
+
+**Aduan.** Maklumkan kepada kami terlebih dahulu di privacy@hatchgrab.com; kami amat menghargai peluang untuk membetulkan keadaan. Anda juga boleh membuat aduan kepada pihak berkuasa perlindungan data di tempat anda tinggal. Di UK, pihak berkuasa tersebut ialah Information Commissioner's Office (Pejabat Pesuruhjaya Maklumat UK), di ico.org.uk atau di talian 0303 123 1113.
 
 ---
 

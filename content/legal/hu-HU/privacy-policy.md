@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Adatvédelmi tájékoztató
 
 **Utolsó frissítés:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ A tájékoztató kiterjed a HatchGrab iOS és Android rendszerre készült mobil
 
 Ha csak azért érkezett ide, mert ételt rendelt egy food trucktól, az **„Ha Ön food trucktól rendelt”** című rész az, amely Önre vonatkozik.
 
-**Egyes országokban további szabályok érvényesek.** Ahol ezek Önre vonatkoznak, az [Országspecifikus feltételek](/country-terms) oldalunkon találhatók, amely e tájékoztató részét képezi.
-
+**Ez a tájékoztató attól függetlenül alkalmazandó, hogy Ön hol tartózkodik.** Betartjuk az egyesült királysági adatvédelmi jogot, és ahol az Ön lakóhelye szerinti ország adatvédelmi joga is alkalmazandó, azt is betartjuk.
 ---
 
 ## 1. Kik vagyunk
@@ -84,6 +83,8 @@ Amikor egy food truck rendelési oldalán rendelést ad le, a következőket gy�
 
 A food truck dönti el, mennyi ideig őrzi meg az Ön adatait, és hogyan veszi fel Önnel a kapcsolatot ezt követően. Erre a food truck saját adatvédelmi gyakorlata vonatkozik. Ha nem biztos benne, ki az adott food truck, írjon nekünk a privacy@hatchgrab.com címre, és megmondjuk, kihez forduljon.
 
+**Allergiával és étrenddel kapcsolatos megjegyzések.** Ezeket a rendelésével együtt továbbítjuk a food trucknak, és semmi másra nem használjuk. A nevével és elérhetőségeivel együtt a rendelést követő 12 hónap elteltével eltávolítjuk őket (lásd a 7. pontot).
+
 **Allergénekkel kapcsolatos információk.** Ahol egy food truck allergénekkel kapcsolatos információt tesz közzé, azt jelenítjük meg, amit a food truck megerősített. Ezt nem ellenőrizzük önállóan. Súlyos allergiáról mindig közvetlenül tájékoztassa a food truckot.
 
 ---
@@ -135,7 +136,7 @@ Adatokat akkor is közölhetünk, ha erre jogszabály kötelez minket, vagy jogi
 
 **Személyes adatokat nem adunk el, és hirdetési célból nem osztunk meg.**
 
-**Nemzetközi adattovábbítás.** Fiókadatait és rendelési adatait az Egyesült Királyságban tároljuk és kezeljük. Egyes műveletek azon kívül történnek: az étlapok kiolvasása és a WhatsApp automatikus válaszok, amelyek egy egyesült államokbeli Google-szolgáltatást használnak; a WhatsApp-üzenetek kézbesítése, amelyet a Meta végez az Egyesült Államokban; a fizetések, amelyeket a Stripe kezel az Egyesült Államokban; valamint a push-értesítések, amelyeket az Apple és a Google kézbesít az Egyesült Államokban. Ahol adatok hagyják el az Egyesült Királyságot, a továbbításra az Egyesült Királyság megfelelőségi szabályai (UK adequacy regulations), illetve az International Data Transfer Agreement (nemzetközi adattovábbítási megállapodás) vagy az Addendum vonatkozik, amelyek megfelelő garanciákat nyújtanak. Kérésére tájékoztatjuk az alkalmazandó garanciákról.
+**Nemzetközi adattovábbítás.** Fiókadatait és rendelési adatait az Egyesült Királyságban tároljuk és kezeljük. Egyes műveletek azon kívül történnek: az étlapok kiolvasása és a WhatsApp automatikus válaszok, amelyek egy egyesült államokbeli Google-szolgáltatást használnak; a WhatsApp-üzenetek kézbesítése, amelyet a Meta végez az Egyesült Államokban; a fizetések, amelyeket a Stripe kezel az Egyesült Államokban; valamint a push-értesítések, amelyeket az Apple és a Google kézbesít az Egyesült Államokban. Ahol adatok hagyják el az Egyesült Királyságot, a továbbításra az Egyesült Királyság megfelelőségi szabályai (UK adequacy regulations), illetve az International Data Transfer Agreement (nemzetközi adattovábbítási megállapodás) vagy az Addendum, valamint – ahol az Ön országának joga ezt előírja – egy e jog által elismert garancia vonatkozik. Kérésére tájékoztatjuk az alkalmazandó garanciákról.
 
 Szolgáltatásunk bővülésével újabb szolgáltatókat vehetünk igénybe, köztük SMS-szolgáltatót is. Ezt a listát még azelőtt frissítjük, hogy az új szolgáltatók megkezdenék az Ön adatainak kezelését.
 
@@ -161,7 +162,7 @@ Ezen időtartamok lejártát követően az adatokat töröljük vagy anonimizál
 
 ## 8. Az Ön jogai
 
-Az egyesült királysági adatvédelmi jog alapján Önnek joga van:
+Az egyesült királysági adatvédelmi jog, valamint – ahol alkalmazandó – a lakóhelye szerinti ország joga alapján Önnek joga van:
 
 - megkérdezni, milyen személyes adatokat kezelünk Önről, és másolatot kapni azokról;
 - a pontatlan adatok helyesbítéséhez;
@@ -171,11 +172,17 @@ Az egyesült királysági adatvédelmi jog alapján Önnek joga van:
 - tiltakozni a jogos érdeken alapuló adatkezelés ellen;
 - hozzájárulását bármikor visszavonni, ahol hozzájáruláson alapuló adatkezelést végzünk.
 
-E jogok bármelyikének gyakorlásához írjon a privacy@hatchgrab.com címre. Egy hónapon belül válaszolunk.
+A lakóhelye szerinti ország joga ezeket a jogokat más elnevezéssel is biztosíthatja Önnek, vagy további jogokat is adhat. Ezek is megilletik Önt.
 
-**A fiók törlése.** Az üzemeltetők az alkalmazásban vagy a privacy@hatchgrab.com címre küldött e-mailben kérhetik fiókjuk törlését. Töröljük fiókját és személyes adatait, kivéve, ha számviteli vagy jogi okokból nyilvántartások megőrzésére vagyunk kötelesek.
+**Kérelem benyújtása.** Írjon a privacy@hatchgrab.com címre. Mielőtt intézkednénk, ellenőrizzük, hogy a kérelem valódi-e. Megkérhet valakit, hogy az Ön nevében nyújtsa be a kérelmet, és nem bánunk Önnel másként azért, mert kérelmet nyújtott be. Egy hónapon belül válaszolunk, vagy hamarabb, ha az Ön országának joga ezt előírja. Ha Ön egy food trucktól rendelt, kérelmét továbbíthatjuk annak a food trucknak, mert az dönt arról, hogyan használják a rendelési adatait. Ha egy kérelmet elutasítunk, a válaszunkra válaszolva kérheti, hogy vizsgáljuk felül.
 
-**Panaszok.** Ha elégedetlen azzal, ahogyan az adatait kezeltük, panaszt tehet az Information Commissioner's Office-nál (az Egyesült Királyság adatvédelmi hatósága) az ico.org.uk oldalon vagy a 0303 123 1113 telefonszámon. Örülnénk, ha előbb nekünk adna lehetőséget a probléma rendezésére.
+**A fiók törlése.** Az üzemeltetők az alkalmazásban vagy a privacy@hatchgrab.com címre küldött e-mailben kérhetik fiókjuk törlését. Töröljük fiókját és személyes adatait, kivéve, ha számviteli vagy jogi okokból nyilvántartások megőrzésére vagyunk kötelesek. Egy üzemeltető fiókjának törlésekor az általunk megőrzött rendelésekből a vásárlóinak nevét, elérhetőségeit és megjegyzéseit is eltávolítjuk.
+
+**Marketing e-mailek.** Marketing e-maileket csak ott küldünk, ahol a lakóhelye szerinti ország joga ezt megengedi, ami egyes országokban azt jelenti, hogy csak az Ön hozzájárulásával. Mindegyikből kiderül, kitől származik, tartalmazza a postai címünket, és azt is, hogyan iratkozhat le. Ha kéri, hogy ne küldjünk többet, ennek díjmentesen, 10 munkanapon belül eleget teszünk. A rendeléssel vagy a fiókjával kapcsolatos e-mailek nem minősülnek marketingnek. Ha mi vagy egy food truck SMS-ben küldött rendelési értesítéseket kínálunk, csak akkor kapja meg azokat, ha hozzájárul, és bármikor leállíthatja őket.
+
+**Ha valami gond adódik.** Ha egy az Ön személyes adatait érintő adatvédelmi incidens valószínűleg súlyos kárt okoz Önnek, ahol a jogszabály ezt előírja, a lehető leghamarabb tájékoztatjuk Önt és az adatvédelmi hatóságot, vagy segítünk annak a food trucknak, amelytől rendelt, hogy ezt megtegye.
+
+**Panaszok.** Először nekünk jelezze a privacy@hatchgrab.com címen; örülnénk, ha lehetőséget kapnánk a helyzet orvoslására. Panaszt tehet a lakóhelye szerinti ország adatvédelmi hatóságánál is. Az Egyesült Királyságban ez az Information Commissioner's Office (az Egyesült Királyság adatvédelmi hatósága), az ico.org.uk oldalon vagy a 0303 123 1113 telefonszámon.
 
 ---
 

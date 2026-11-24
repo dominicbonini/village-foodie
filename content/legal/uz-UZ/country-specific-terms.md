@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Mamlakatga xos shartlar
 
 **Oxirgi yangilanish:** {{LAST_UPDATED}}
 
-Bizning [Xizmat koʻrsatish shartlari](/terms) va [Maxfiylik siyosati](/privacy) HatchGrab dan foydalaniladigan barcha mamlakatlarda amal qiladi. Baʼzi mamlakatlarda qoʻshimcha qoidalar bor. Bu sahifada ular har bir mamlakat boʻyicha alohida keltirilgan.
+Bizning [Xizmat koʻrsatish shartlari](/terms) HatchGrab dan foydalaniladigan barcha mamlakatlarda amal qiladi. Baʼzi mamlakatlarda qoʻshimcha qoidalar bor. Bu sahifada ular har bir mamlakat boʻyicha alohida keltirilgan.
 
-Quyidagi boʻlimlardan biri sizga taalluqli boʻlsa, u bizning Xizmat koʻrsatish shartlarimiz va Maxfiylik siyosatimizning bir qismi hisoblanadi. Agar unda ulardan farqli narsa aytilgan boʻlsa, oʻsha mamlakat uchun ushbu sahifa amal qiladi.
+Quyidagi boʻlimlardan biri sizga taalluqli boʻlsa, u bizning Xizmat koʻrsatish shartlarimizning bir qismi hisoblanadi. Agar unda ulardan farqli narsa aytilgan boʻlsa, oʻsha mamlakat uchun ushbu sahifa amal qiladi.
 
-Agar mamlakatingiz roʻyxatda boʻlmasa, qoʻshimcha qoidalar yoʻq: Xizmat koʻrsatish shartlari va Maxfiylik siyosati yozilganidek amal qiladi.
-
+Agar mamlakatingiz roʻyxatda boʻlmasa, qoʻshimcha qoidalar yoʻq: Xizmat koʻrsatish shartlari yozilganidek amal qiladi. Bizning [Maxfiylik siyosatimiz](/privacy) barcha mamlakatlarda bir xil.
 ---
 
 ## Amerika Qoʻshma Shtatlari
@@ -31,26 +30,6 @@ Agar mamlakatingiz roʻyxatda boʻlmasa, qoʻshimcha qoidalar yoʻq: Xizmat koʻ
 
 **Mijozlaringiz maʼlumotlari.** AQSh shtatlarining maxfiylik toʻgʻrisidagi qonunlariga koʻra Xizmat koʻrsatish shartlarining 10-boʻlimi ularning atamalarida xuddi shu maʼnoni anglatadi: siz — «biznes» (business), biz esa sizning «xizmat koʻrsatuvchingiz» (service provider) yoki «ishlovchingiz» (processor). Biz mijozlaringizning shaxsiy maʼlumotlaridan faqat siz uchun HatchGrab ni yuritish maqsadida foydalanamiz. Biz ularni sotmaymiz, kontekstlararo xulq-atvorga asoslangan reklama uchun ulashmaymiz va ushbu qonunlar xizmat koʻrsatuvchiga ruxsat bergan hollardan tashqari boshqa hech qanday maqsadda foydalanmaymiz.
 
-### Maxfiylik — Amerika Qoʻshma Shtatlaridagi barcha uchun
-
-**Nimalarni yigʻamiz va kim bilan ulashamiz.** Maxfiylik siyosatida aytilganidek: fudtrak egalari uchun hisob va biznes maʼlumotlari; fudtrakdan buyurtma bersangiz, ismingiz, aloqa maʼlumotlaringiz va buyurtma tafsilotlari; veb-saytlarimizga kirsangiz, asosiy texnik maʼlumotlar. Biz ularni siz buyurtma bergan fudtrak va Maxfiylik siyosatining 6-boʻlimida sanab oʻtilgan xizmat koʻrsatuvchilar bilan faqat xizmatni yuritish uchun yoki qonun talab qilganda ulashamiz. Ularga Buyuk Britaniyada, Yevropa Ittifoqida va Amerika Qoʻshma Shtatlarida ishlov berilishi mumkin.
-
-**Biz shaxsiy maʼlumotlaringizni sotmaymiz va ulashmaymiz.** Biz shaxsiy maʼlumotlarni sotmaymiz va ularni kontekstlararo xulq-atvorga asoslangan reklama uchun ulashmaymiz.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Siz haqingizda qanday shaxsiy maʼlumotlarni saqlayotganimizni soʻrashingiz va ularni tuzatish yoki oʻchirishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Harakat qilishdan oldin soʻrov haqiqiy ekanini tekshiramiz va 45 kun ichida javob beramiz. Soʻrovni siz uchun boshqa birovga topshirishingiz mumkin. Soʻrov yuborganingiz uchun sizga boshqacha munosabatda boʻlmaymiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi. Agar soʻrovni rad etsak, javobimizga javob yozib, uni qayta koʻrib chiqishimizni soʻrashingiz mumkin.
-
-**Shtatlarning maxfiylik toʻgʻrisidagi qonunlari.** Shtatlarning maxfiylik toʻgʻrisidagi baʼzi qonunlari faqat muayyan hajmdan katta biznesga taalluqli va bizga taalluqli boʻlmasligi mumkin. Shunga qaramay, yuqoridagi soʻrovlarni Amerika Qoʻshma Shtatlaridagi har kimdan bajaramiz.
-
-**Bolalar.** Xizmatlarimiz 13 yoshdan kichik bolalarga moʻljallanmagan va biz ularning shaxsiy maʼlumotlarini bila turib yigʻmaymiz. Agar bola bizga oʻz maʼlumotlarini bergan deb hisoblasangiz, biz bilan bogʻlaning, biz ularni oʻchiramiz.
-
-**Marketing xatlari.** Biz yuboradigan har bir marketing xatida ularni olishni qanday toʻxtatish mumkinligi aytilgan va pochta manzilimiz koʻrsatilgan. Toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**SMS xabarlar.** Agar biz yoki fudtrak buyurtma haqidagi yangiliklarni SMS orqali taklif qilsak, ularni faqat olishga rozi boʻlsangiz olasiz va istalgan vaqtda toʻxtatishingiz mumkin.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Irlandiya
 
 ### Fudtrak egalari uchun
@@ -70,22 +49,6 @@ Agar mamlakatingiz roʻyxatda boʻlmasa, qoʻshimcha qoidalar yoʻq: Xizmat koʻ
 **Mijozlaringiz maʼlumotlari.** Yevropa Ittifoqining Maʼlumotlarni himoya qilish toʻgʻrisidagi umumiy reglamentiga (GDPR) koʻra Xizmat koʻrsatish shartlarining 10-boʻlimi siz bilan maʼlumotlarga ishlov berish toʻgʻrisidagi kelishuvimizdir: GDPR ning 28-moddasidagi maʼnoda siz nazoratchisiz, biz esa ishlovchimiz.
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Irlandiya qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
-
-### Maxfiylik — Irlandiyadagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Irlandiyadagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Yevropa Ittifoqining Maʼlumotlarni himoya qilish toʻgʻrisidagi umumiy reglamenti (GDPR), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi. Maxfiylik siyosatining 8-boʻlimida sanab oʻtilgan huquqlar GDPR boʻyicha ham sizning huquqlaringizdir.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi. Yevropa Komissiyasi Buyuk Britaniya shaxsiy maʼlumotlarni Yevropa Ittifoqi bilan bir xil darajada himoya qiladi deb qaror qilgan, shuning uchun buning uchun qoʻshimcha kafolat kerak emas. Agar xizmat koʻrsatuvchi maʼlumotlarga Amerika Qoʻshma Shtatlarida ishlov bersa (Maxfiylik siyosatining 6-boʻlimi), uzatish GDPR tan oladigan kafolat bilan qamrab olinadi.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Siz haqingizda qanday shaxsiy maʼlumotlarni saqlayotganimizni soʻrashingiz va ularni tuzatish, oʻchirish yoki ulardan foydalanishni toʻxtatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz bir oy ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Irlandiyaning maʼlumotlarni himoya qilish boʻyicha tartibga soluvchisi — Maʼlumotlarni himoya qilish komissiyasiga (Data Protection Commission) www.dataprotection.ie sayti orqali yoki pochta orqali shikoyat qilishingiz mumkin: 6 Pembroke Row, Dublin 2, D02 X963. Avval vaziyatni oʻzimiz tuzatishimizga imkon bersangiz, minnatdor boʻlardik.
-
-**Marketing xatlari.** Biz marketing xatlarini faqat qonun ruxsat bergan hollarda yuboramiz. Ularning har birida ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Avstraliya
 
@@ -109,22 +72,6 @@ Agar mamlakatingiz roʻyxatda boʻlmasa, qoʻshimcha qoidalar yoʻq: Xizmat koʻ
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Avstraliya qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
 
-### Maxfiylik — Avstraliyadagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Avstraliyadagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda biz Maxfiylik toʻgʻrisidagi qonundagi (Privacy Act 1988) Avstraliya maxfiylik tamoyillariga (Australian Privacy Principles), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligiga amal qilamiz.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi. Maxfiylik siyosatining 6-boʻlimida aytilganidek, ularning bir qismi bilan Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Siz haqingizda qanday shaxsiy maʼlumotlarni saqlayotganimizni soʻrashingiz va ularni tuzatish yoki oʻchirishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz 30 kun ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Agar shaxsiy maʼlumotlaringiz bilan qanday ishlaganimizdan norozi boʻlsangiz, avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Agar javobimiz sizni qoniqtirmasa yoki 30 kun ichida javob bermasak, Avstraliya axborot komissari idorasiga (Office of the Australian Information Commissioner, OAIC) www.oaic.gov.au sayti orqali yozma shikoyat qilishingiz mumkin.
-
-**Marketing xatlari.** Biz marketing xatlarini faqat qonun ruxsat bergan hollarda yuboramiz. Ularning har birida kimdan ekani va ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Yangi Zelandiya
 
 ### Fudtrak egalari uchun
@@ -147,24 +94,6 @@ Agar mamlakatingiz roʻyxatda boʻlmasa, qoʻshimcha qoidalar yoʻq: Xizmat koʻ
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Yangi Zelandiya qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
 
-### Maxfiylik — Yangi Zelandiyadagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Yangi Zelandiyadagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Maxfiylik toʻgʻrisidagi qonun (Privacy Act 2020), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi. U bizga taalluqli, chunki biz Buyuk Britaniyada joylashgan boʻlsak ham, Yangi Zelandiyada faoliyat yuritamiz.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi. Maxfiylik siyosatining 6-boʻlimida aytilganidek, ularning bir qismi bilan Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Biz siz haqingizda saqlayotgan shaxsiy maʼlumotlarni soʻrashingiz va ularni tuzatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz imkon qadar tez va 20 ish kuni ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Agar shaxsiy maʼlumotlaringiz bilan qanday ishlaganimizdan norozi boʻlsangiz, avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Maxfiylik komissari shikoyat qilishdan oldin shunday qilishingizni soʻraydi. Agar javobimiz sizni qoniqtirmasa, Maxfiylik komissari idorasiga (Office of the Privacy Commissioner) www.privacy.org.nz sayti orqali, 0800 803 909 raqamiga qoʻngʻiroq qilib yoki pochta orqali shikoyat qilishingiz mumkin: PO Box 10 094, Wellington 6140.
-
-**Maxfiylik buzilishlari.** Agar shaxsiy maʼlumotlaringiz bilan bogʻliq maxfiylik buzilishi jiddiy zarar yetkazgan boʻlsa yoki yetkazishi mumkin boʻlsa, Maxfiylik toʻgʻrisidagi qonun (Privacy Act 2020) bu haqda Maxfiylik komissariga va sizga imkon qadar tezroq xabar berilishini talab qiladi. Biz shunday qilamiz yoki fudtrakka bergan buyurtmangiz boʻyicha bunga fudtrakka yordam beramiz.
-
-**Marketing xatlari.** Biz marketing xatlarini faqat qonun ruxsat bergan hollarda yuboramiz. Ularning har birida kimdan ekani va ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### Fudtrak egalari uchun
@@ -186,22 +115,6 @@ Agar mamlakatingiz roʻyxatda boʻlmasa, qoʻshimcha qoidalar yoʻq: Xizmat koʻ
 **Mahalliy qonunchilik boʻyicha huquqlaringiz.** Xizmat koʻrsatish shartlaridagi hech narsa siz joylashgan yerning qonuni cheklash yoki undan voz kechish mumkin emas deb belgilagan huquqni sizdan tortib olmaydi.
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu provinsiyangiz yoki hududingiz qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
-
-### Maxfiylik — Kanadadagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Kanadadagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Shaxsiy maʼlumotlarni himoya qilish va elektron hujjatlar toʻgʻrisidagi qonun (Personal Information Protection and Electronic Documents Act, PIPEDA), Britaniya Kolumbiyasi va Albertada esa ularning xususiy sektor uchun oʻz maxfiylik qonunlari, shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi, ularning bir qismi bilan esa Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi (Maxfiylik siyosatining 6-boʻlimi) va u yerda ularga oʻsha mamlakatlar qonunlariga muvofiq kirish mumkin.
-
-**Sizning soʻrovlaringiz.** Biz siz haqingizda saqlayotgan shaxsiy maʼlumotlarni soʻrashingiz va ularni tuzatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz 30 kun ichida javob beramiz.
-
-**Shikoyatlar.** Avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Agar qoniqmasangiz, Kanada Maxfiylik komissari idorasiga (Office of the Privacy Commissioner of Canada) www.priv.gc.ca sayti orqali yoki 1-800-282-1376 raqamiga qoʻngʻiroq qilib shikoyat qilishingiz mumkin.
-
-**Buzilishlar.** Agar maʼlumotlaringiz bilan bogʻliq xavfsizlik kafolatlarining buzilishi jiddiy zarar yetkazishning real xavfini tugʻdirsa, biz bu haqda Maxfiylik komissariga xabar beramiz va imkon qadar tezroq sizga xabar qilamiz.
-
-**Marketing xatlari.** Kanadaning spamga qarshi qonuni talab qilganidek, biz marketing xatlarini faqat roziligingiz bilan yuboramiz. Ularning har birida kimdan ekani va obunani qanday bekor qilish mumkinligi aytilgan va biz obunani bekor qilish soʻrovini 10 ish kuni ichida bajaramiz.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Fransiya
 
@@ -226,22 +139,6 @@ Agar mamlakatingiz roʻyxatda boʻlmasa, qoʻshimcha qoidalar yoʻq: Xizmat koʻ
 **Mijozlaringiz maʼlumotlari.** Yevropa Ittifoqining Maʼlumotlarni himoya qilish toʻgʻrisidagi umumiy reglamentiga (GDPR) koʻra Xizmat koʻrsatish shartlarining 10-boʻlimi siz bilan maʼlumotlarga ishlov berish toʻgʻrisidagi kelishuvimizdir: GDPR ning 28-moddasidagi maʼnoda siz nazoratchisiz, biz esa ishlovchimiz.
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Fransiya qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
-
-### Maxfiylik — Fransiyadagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Fransiyadagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Yevropa Ittifoqining Maʼlumotlarni himoya qilish toʻgʻrisidagi umumiy reglamenti (GDPR) va Fransiyaning Maʼlumotlarni himoya qilish toʻgʻrisidagi qonuni (loi Informatique et Libertés), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi. Maxfiylik siyosatining 8-boʻlimida sanab oʻtilgan huquqlar GDPR boʻyicha ham sizning huquqlaringizdir.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi. Yevropa Komissiyasi Buyuk Britaniya shaxsiy maʼlumotlarni Yevropa Ittifoqi bilan bir xil darajada himoya qiladi deb qaror qilgan, shuning uchun buning uchun qoʻshimcha kafolat kerak emas. Agar xizmat koʻrsatuvchi maʼlumotlarga Amerika Qoʻshma Shtatlarida ishlov bersa (Maxfiylik siyosatining 6-boʻlimi), uzatish GDPR tan oladigan kafolat bilan qamrab olinadi.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Siz haqingizda qanday shaxsiy maʼlumotlarni saqlayotganimizni soʻrashingiz va ularni tuzatish, oʻchirish yoki ulardan foydalanishni toʻxtatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz bir oy ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Fransiyaning maʼlumotlarni himoya qilish boʻyicha tartibga soluvchisi — CNIL ga (Commission nationale de l'informatique et des libertés) www.cnil.fr sayti orqali yoki pochta orqali shikoyat qilishingiz mumkin: CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Avval vaziyatni oʻzimiz tuzatishimizga imkon bersangiz, minnatdor boʻlardik.
-
-**Marketing xatlari.** Biz marketing xatlarini faqat Fransiya qonunchiligi ruxsat bergan hollarda yuboramiz. Ularning har birida ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Yevropa iqtisodiy hududi va Shveytsariya
 
@@ -269,53 +166,6 @@ Ushbu boʻlim yuqorida oʻz boʻlimi boʻlmagan Yevropa iqtisodiy hududining har
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu mamlakatingiz qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
 
-### Maxfiylik — Yevropa iqtisodiy hududi va Shveytsariyadagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Yevropa iqtisodiy hududidagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Yevropa Ittifoqining Maʼlumotlarni himoya qilish toʻgʻrisidagi umumiy reglamenti (GDPR) va ularning mamlakatidagi maʼlumotlarni himoya qilish toʻgʻrisidagi qonunchilik qoʻllaniladi; Shveytsariyada — Maʼlumotlarni himoya qilish toʻgʻrisidagi federal qonun. Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi ham qoʻllaniladi. Maxfiylik siyosatining 8-boʻlimida sanab oʻtilgan huquqlar ushbu qonunlar boʻyicha ham sizning huquqlaringizdir.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi. Yevropa Komissiyasi ham, Shveytsariya ham Buyuk Britaniya shaxsiy maʼlumotlarni yetarli darajada himoya qiladi deb qaror qilgan, shuning uchun buning uchun qoʻshimcha kafolat kerak emas. Agar xizmat koʻrsatuvchi maʼlumotlarga Amerika Qoʻshma Shtatlarida ishlov bersa (Maxfiylik siyosatining 6-boʻlimi), uzatish GDPR va Shveytsariya qonunchiligi tan oladigan kafolat bilan qamrab olinadi.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Siz haqingizda qanday shaxsiy maʼlumotlarni saqlayotganimizni soʻrashingiz va ularni tuzatish, oʻchirish yoki ulardan foydalanishni toʻxtatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz bir oy ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Siz yashaydigan yoki ishlaydigan mamlakatning maʼlumotlarni himoya qilish organiga shikoyat qilishingiz mumkin. Yevropa maʼlumotlarni himoya qilish kengashi Yevropa iqtisodiy hududidagi barcha organlar roʻyxatini www.edpb.europa.eu saytida (About EDPB › Members) eʼlon qiladi. Shveytsariyada bu Federal maʼlumotlarni himoya qilish va axborot komissari, www.edoeb.admin.ch. Avval vaziyatni oʻzimiz tuzatishimizga imkon bersangiz, minnatdor boʻlardik.
-
-| Mamlakat | Maʼlumotlarni himoya qilish organi |
-|---|---|
-| Avstriya | dsb.gv.at |
-| Belgiya | autoriteprotectiondonnees.be |
-| Bolgariya | cpdp.bg |
-| Xorvatiya | azop.hr |
-| Kipr | dataprotection.gov.cy |
-| Chexiya | uoou.gov.cz |
-| Daniya | datatilsynet.dk |
-| Estoniya | aki.ee |
-| Finlandiya | tietosuoja.fi |
-| Germaniya | federal yeringiz (Land) organi (federal daraja: bfdi.bund.de) |
-| Gretsiya | dpa.gr |
-| Vengriya | naih.hu |
-| Italiya | garanteprivacy.it |
-| Latviya | dvi.gov.lv |
-| Lixtenshteyn | datenschutzstelle.li |
-| Litva | vdai.lrv.lt |
-| Lyuksemburg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Niderlandiya | autoriteitpersoonsgegevens.nl |
-| Norvegiya | datatilsynet.no |
-| Polsha | uodo.gov.pl |
-| Portugaliya | cnpd.pt |
-| Ruminiya | dataprotection.ro |
-| Slovakiya | dataprotection.gov.sk |
-| Sloveniya | ip-rs.si |
-| Ispaniya | aepd.es |
-| Shvetsiya | imy.se |
-| Shveytsariya | Federal maʼlumotlarni himoya qilish va axborot komissari (FDPIC), edoeb.admin.ch |
-
-**Marketing xatlari.** Biz marketing xatlarini faqat mamlakatingiz qonunchiligi ruxsat bergan hollarda yuboramiz. Ularning har birida ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### Fudtrak egalari uchun
@@ -337,22 +187,6 @@ Ushbu boʻlim yuqorida oʻz boʻlimi boʻlmagan Yevropa iqtisodiy hududining har
 **Mijozlaringiz maʼlumotlari.** Gibraltarning maʼlumotlarni himoya qilish toʻgʻrisidagi qonunchiligiga, jumladan Gibraltarda qoʻllanilishidagi Yevropa Ittifoqining Maʼlumotlarni himoya qilish toʻgʻrisidagi umumiy reglamentiga (GDPR) koʻra Xizmat koʻrsatish shartlarining 10-boʻlimi siz bilan maʼlumotlarga ishlov berish toʻgʻrisidagi kelishuvimizdir: GDPR ning 28-moddasidagi maʼnoda siz nazoratchisiz, biz esa ishlovchimiz.
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Gibraltar qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
-
-### Maxfiylik — Gibraltardagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Gibraltardagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Gibraltarning maʼlumotlarni himoya qilish toʻgʻrisidagi qonunchiligi, jumladan u yerda qoʻllanilishidagi Yevropa Ittifoqining Maʼlumotlarni himoya qilish toʻgʻrisidagi umumiy reglamenti (GDPR), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi. Maxfiylik siyosatining 8-boʻlimida sanab oʻtilgan huquqlar ushbu qonunchilik boʻyicha ham sizning huquqlaringizdir.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi. Agar xizmat koʻrsatuvchi maʼlumotlarga Amerika Qoʻshma Shtatlarida ishlov bersa (Maxfiylik siyosatining 6-boʻlimi), uzatish qonun tan oladigan kafolat bilan qamrab olinadi.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Siz haqingizda qanday shaxsiy maʼlumotlarni saqlayotganimizni soʻrashingiz va ularni tuzatish, oʻchirish yoki ulardan foydalanishni toʻxtatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz bir oy ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Gibraltarning maʼlumotlarni himoya qilish boʻyicha tartibga soluvchisi — Gibraltar tartibga solish organiga (Gibraltar Regulatory Authority) www.gra.gi sayti orqali shikoyat qilishingiz mumkin. Avval vaziyatni oʻzimiz tuzatishimizga imkon bersangiz, minnatdor boʻlardik.
-
-**Marketing xatlari.** Biz marketing xatlarini faqat Gibraltar qonunchiligi ruxsat bergan hollarda yuboramiz. Ularning har birida ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Braziliya
 
@@ -378,22 +212,6 @@ Ushbu boʻlim yuqorida oʻz boʻlimi boʻlmagan Yevropa iqtisodiy hududining har
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Braziliya qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
 
-### Maxfiylik — Braziliyadagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Braziliyadagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Maʼlumotlarni himoya qilish toʻgʻrisidagi umumiy qonun (LGPD), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi. Maxfiylik siyosatining 8-boʻlimida sanab oʻtilgan huquqlar LGPD boʻyicha ham sizning huquqlaringizdir.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi, Maxfiylik siyosatining 6-boʻlimida aytilganidek, ularning bir qismi bilan esa Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi. Biz ularni faqat LGPD ruxsat bergan asosda uzatamiz.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Siz haqingizda shaxsiy maʼlumotlar saqlayotganimizni tasdiqlashimizni soʻrashingiz va ularning nusxasini soʻrashingiz yoki ularni tuzatish, oʻchirish yoki ulardan foydalanishni toʻxtatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz 15 kun ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Shuningdek, Milliy maʼlumotlarni himoya qilish organiga (Autoridade Nacional de Proteção de Dados, ANPD) www.gov.br/anpd sayti orqali shikoyat qilishingiz mumkin.
-
-**Marketing xatlari.** Biz marketing xatlarini faqat Braziliya qonunchiligi ruxsat bergan hollarda yuboramiz. Ularning har birida ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Meksika
 
 ### Fudtrak egalari uchun
@@ -417,22 +235,6 @@ Ushbu boʻlim yuqorida oʻz boʻlimi boʻlmagan Yevropa iqtisodiy hududining har
 **Mijozlaringiz maʼlumotlari.** Meksikaning Xususiy shaxslar ixtiyoridagi shaxsiy maʼlumotlarni himoya qilish toʻgʻrisidagi federal qonuniga koʻra Xizmat koʻrsatish shartlarining 10-boʻlimi uning atamalarida xuddi shu maʼnoni anglatadi: siz nazoratchisiz, biz esa sizning ishlovchingizmiz (encargado) va mijozlaringizning shaxsiy maʼlumotlariga faqat siz uchun HatchGrab ni yuritish maqsadida va sizning koʻrsatmalaringiz boʻyicha ishlov beramiz. Mijozlaringiz uchun oʻz maxfiylik bildirishnomangiz (aviso de privacidad) uchun siz javobgarsiz.
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Meksika qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
-
-### Maxfiylik — Meksikadagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Meksikadagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Xususiy shaxslar ixtiyoridagi shaxsiy maʼlumotlarni himoya qilish toʻgʻrisidagi federal qonun, shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi. Ushbu sahifa va Maxfiylik siyosati birgalikda Meksikadagi odamlar uchun maxfiylik bildirishnomamiz hisoblanadi.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi, Maxfiylik siyosatining 6-boʻlimida aytilganidek, ularning bir qismi bilan esa faqat xizmatni yuritish uchun Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Biz siz haqingizda saqlayotgan shaxsiy maʼlumotlarga kirishni soʻrashingiz va ularni tuzatish, oʻchirish yoki ulardan foydalanishni toʻxtatishni soʻrashingiz mumkin (ARCO huquqlaringiz). privacy@hatchgrab.com manziliga yozing. Biz 20 ish kuni ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Agar qoniqmasangiz, Meksikaning Xususiy shaxslar ixtiyoridagi shaxsiy maʼlumotlarni himoya qilish toʻgʻrisidagi federal qonuni (2025-yil 21-martdan kuchga kirgan) ijrosini nazorat qiladigan Korrupsiyaga qarshi kurash va yaxshi boshqaruv kotibiyatiga (Secretaría Anticorrupción y Buen Gobierno) shikoyat qilishingiz mumkin.
-
-**Marketing xatlari.** Biz marketing xatlarini faqat Meksika qonunchiligi ruxsat bergan hollarda yuboramiz. Ularning har birida ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Yaponiya
 
@@ -458,22 +260,6 @@ Ushbu boʻlim yuqorida oʻz boʻlimi boʻlmagan Yevropa iqtisodiy hududining har
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Yaponiya qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
 
-### Maxfiylik — Yaponiyadagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Yaponiyadagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Shaxsiy maʼlumotlarni himoya qilish toʻgʻrisidagi qonun, shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi, Maxfiylik siyosatining 6-boʻlimida aytilganidek, ularning bir qismi bilan esa Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi. Yaponiya Buyuk Britaniya va Yevropa Ittifoqini shaxsiy maʼlumotlarni Yaponiya standarti darajasida himoya qiladi deb tan olgan. Amerika Qoʻshma Shtatlarida ishlov beriladigan maʼlumotlar oʻsha provayderlar bilan tuzgan shartnomalarimiz orqali himoya qilinadi.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Biz siz haqingizda saqlayotgan shaxsiy maʼlumotlarni oshkor qilishimizni va ularni tuzatish, oʻchirish yoki ulardan foydalanishni toʻxtatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz kechiktirmasdan javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Shuningdek, Shaxsiy maʼlumotlarni himoya qilish komissiyasiga (Personal Information Protection Commission) www.ppc.go.jp sayti orqali murojaat qilishingiz mumkin.
-
-**Marketing xatlari.** Biz marketing xatlarini faqat ularni olishga rozilik bergan odamlarga yuboramiz. Ularning har birida kimdan ekani va ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapur
 
 ### Fudtrak egalari uchun
@@ -498,22 +284,6 @@ Ushbu boʻlim yuqorida oʻz boʻlimi boʻlmagan Yevropa iqtisodiy hududining har
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Singapur qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
 
-### Maxfiylik — Singapurdagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Singapurdagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Shaxsiy maʼlumotlarni himoya qilish toʻgʻrisidagi qonun (Personal Data Protection Act 2012, PDPA), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi, Maxfiylik siyosatining 6-boʻlimida aytilganidek, ularning bir qismi bilan esa Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi. Ular qayerda boʻlmasin, PDPA standartiga teng darajada himoya qilinishini taʼminlaymiz.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Biz siz haqingizda saqlayotgan shaxsiy maʼlumotlarni va ulardan qanday foydalanilganini soʻrashingiz hamda ularni tuzatishni soʻrashingiz mumkin. Shuningdek, ulardan foydalanishimizga bergan roziligingizni qaytarib olishingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz 30 kun ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Agar qoniqmasangiz, Shaxsiy maʼlumotlarni himoya qilish komissiyasiga (Personal Data Protection Commission) www.pdpc.gov.sg sayti orqali shikoyat qilishingiz mumkin.
-
-**Marketing xabarlari.** Biz marketing xatlarini faqat Singapur qonunchiligi ruxsat bergan hollarda yuboramiz. Ularning har birida ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Biz Singapurning «Qoʻngʻiroq qilmang» reyestridagi (Do Not Call Registry) raqamlarga marketing qoʻngʻiroqlari yoki SMS xabarlarini yubormaymiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gonkong
 
 ### Fudtrak egalari uchun
@@ -535,22 +305,6 @@ Ushbu boʻlim yuqorida oʻz boʻlimi boʻlmagan Yevropa iqtisodiy hududining har
 **Mijozlaringiz maʼlumotlari.** Gonkongning Shaxsiy maʼlumotlar (maxfiylik) toʻgʻrisidagi farmoniga (Personal Data (Privacy) Ordinance, Cap. 486) koʻra Xizmat koʻrsatish shartlarining 10-boʻlimi uning atamalarida xuddi shu maʼnoni anglatadi: siz maʼlumotlar foydalanuvchisisiz (data user), biz esa sizning maʼlumotlarga ishlov beruvchingizmiz (data processor), mijozlaringizning shaxsiy maʼlumotlariga faqat siz uchun HatchGrab ni yuritish maqsadida va sizning koʻrsatmalaringiz boʻyicha ishlov beramiz va ularni bunga zarur boʻlgandan ortiq saqlamaymiz.
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Gonkong qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
-
-### Maxfiylik — Gonkongdagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Gonkongdagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Shaxsiy maʼlumotlar (maxfiylik) toʻgʻrisidagi farmon (Personal Data (Privacy) Ordinance), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi, Maxfiylik siyosatining 6-boʻlimida aytilganidek, ularning bir qismi bilan esa Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Biz siz haqingizda saqlayotgan shaxsiy maʼlumotlarning nusxasini soʻrashingiz va ularni tuzatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz 40 kun ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Agar qoniqmasangiz, Shaxsiy maʼlumotlar boʻyicha maxfiylik komissari idorasiga (Office of the Privacy Commissioner for Personal Data) www.pcpd.org.hk sayti orqali shikoyat qilishingiz mumkin.
-
-**Marketing xabarlari.** Biz shaxsiy maʼlumotlaringizdan bevosita marketing uchun faqat roziligingiz bilan foydalanamiz va har bir marketing xabarida ularni olishni qanday toʻxtatish mumkinligi aytilgan. Toʻxtatishni soʻrasangiz, bepul toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malayziya
 
@@ -576,22 +330,6 @@ Ushbu boʻlim yuqorida oʻz boʻlimi boʻlmagan Yevropa iqtisodiy hududining har
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Malayziya qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
 
-### Maxfiylik — Malayziyadagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Malayziyadagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Shaxsiy maʼlumotlarni himoya qilish toʻgʻrisidagi qonun (Personal Data Protection Act 2010, PDPA), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi, Maxfiylik siyosatining 6-boʻlimida aytilganidek, ularning bir qismi bilan esa Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi. Biz ularni faqat PDPA ruxsat bergan hollarda uzatamiz.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Biz siz haqingizda saqlayotgan shaxsiy maʼlumotlarni soʻrashingiz va ularni tuzatish yoki ulardan foydalanishni toʻxtatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz 21 kun ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Agar qoniqmasangiz, Shaxsiy maʼlumotlarni himoya qilish komissariga (Personal Data Protection Commissioner) www.pdp.gov.my sayti orqali shikoyat qilishingiz mumkin.
-
-**Marketing xatlari.** Biz marketing xatlarini faqat Malayziya qonunchiligi ruxsat bergan hollarda yuboramiz. Ularning har birida ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Tailand
 
 ### Fudtrak egalari uchun
@@ -616,22 +354,6 @@ Ushbu boʻlim yuqorida oʻz boʻlimi boʻlmagan Yevropa iqtisodiy hududining har
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu Tailand qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
 
-### Maxfiylik — Tailanddagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Tailanddagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Shaxsiy maʼlumotlarni himoya qilish toʻgʻrisidagi qonun (Personal Data Protection Act B.E. 2562, PDPA), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi. Maxfiylik siyosatining 8-boʻlimida sanab oʻtilgan huquqlar PDPA boʻyicha ham sizning huquqlaringizdir.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi, Maxfiylik siyosatining 6-boʻlimida aytilganidek, ularning bir qismi bilan esa Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi. Biz ularni faqat PDPA ruxsat bergan asosda uzatamiz.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Biz siz haqingizda saqlayotgan shaxsiy maʼlumotlarning nusxasini soʻrashingiz va ularni tuzatish, oʻchirish yoki ulardan foydalanishni toʻxtatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz 30 kun ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Shuningdek, Shaxsiy maʼlumotlarni himoya qilish qoʻmitasiga (Personal Data Protection Committee) www.pdpc.or.th sayti orqali shikoyat qilishingiz mumkin.
-
-**Marketing xatlari.** Biz marketing xatlarini faqat Tailand qonunchiligi ruxsat bergan hollarda yuboramiz. Ularning har birida ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Birlashgan Arab Amirliklari
 
 ### Fudtrak egalari uchun
@@ -653,19 +375,3 @@ Ushbu boʻlim yuqorida oʻz boʻlimi boʻlmagan Yevropa iqtisodiy hududining har
 **Mijozlaringiz maʼlumotlari.** BAAning Shaxsiy maʼlumotlarni himoya qilish toʻgʻrisidagi federal qonun kuchiga ega farmoniga (Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data) koʻra Xizmat koʻrsatish shartlarining 10-boʻlimi uning atamalarida xuddi shu maʼnoni anglatadi: siz nazoratchisiz, biz esa sizning ishlovchingizmiz va mijozlaringizning shaxsiy maʼlumotlariga faqat siz uchun HatchGrab ni yuritish maqsadida va sizning koʻrsatmalaringiz boʻyicha ishlov beramiz.
 
 **Xabarnomalar va qoʻllaniladigan huquq.** Xabarnomalar Xizmat koʻrsatish shartlarining 12-boʻlimida aytilganidek ishlaydi: biz siz bilan hisobingizdagi e-pochta manzili orqali bogʻlanamiz, siz esa biz bilan quyidagi manzil orqali bogʻlanishingiz mumkin. Ushbu shartlar Angliya va Uels huquqi bilan tartibga solinadi va yurisdiksiya Angliya va Uels sudlariga tegishli. Bu BAA qonunchiligi sizga beradigan va kelishuv bilan istisno qilib boʻlmaydigan himoyani bekor qilmaydi.
-
-### Maxfiylik — Birlashgan Arab Amirliklaridagi barcha uchun
-
-**Qoʻllaniladigan huquq.** Birlashgan Arab Amirliklaridagi odamlarning shaxsiy maʼlumotlariga ishlov berganimizda Shaxsiy maʼlumotlarni himoya qilish toʻgʻrisidagi federal qonun kuchiga ega farmon (Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data), shuningdek Maxfiylik siyosatimizda nomlangan Buyuk Britaniya qonunchiligi qoʻllaniladi. Agar siz DIFC yoki ADGM kabi oʻz maʼlumotlarni himoya qilish qonuniga ega erkin iqtisodiy zonada boʻlsangiz, buning oʻrniga oʻsha qonun qoʻllaniladi.
-
-**Maʼlumotlaringiz qayerda saqlanadi.** Maʼlumotlaringiz Buyuk Britaniyada saqlanadi va ularga ishlov beriladi, Maxfiylik siyosatining 6-boʻlimida aytilganidek, ularning bir qismi bilan esa Yevropa Ittifoqi va Amerika Qoʻshma Shtatlaridagi xizmat koʻrsatuvchilar ishlaydi. Biz ularni faqat qonun ruxsat bergan asosda uzatamiz.
-
-**Allergiya va parhez haqidagi izohlar.** Agar buyurtmaga allergiya yoki parhez haqida izoh qoʻshsangiz, biz uni buyurtmangiz bilan birga fudtrakka uzatamiz. Maxfiylik siyosatining 7-boʻlimida aytilganidek, buyurtmadan 12 oy oʻtgach, ularni ismingiz va aloqa maʼlumotlaringiz bilan birga oʻchiramiz. Biz ulardan boshqa hech narsa uchun foydalanmaymiz.
-
-**Sizning soʻrovlaringiz.** Biz siz haqingizda saqlayotgan shaxsiy maʼlumotlarni soʻrashingiz va ularni tuzatish, oʻchirish yoki ulardan foydalanishni toʻxtatishni soʻrashingiz mumkin. privacy@hatchgrab.com manziliga yozing. Biz 30 kun ichida javob beramiz. Agar fudtrakdan buyurtma bergan boʻlsangiz, soʻrovingizni oʻsha fudtrakka uzatishimiz mumkin, chunki buyurtma maʼlumotlaringizdan qanday foydalanishni u hal qiladi.
-
-**Shikoyatlar.** Avval privacy@hatchgrab.com manziliga yozib bizga xabar bering. Agar qoniqmasangiz, BAA Maʼlumotlar idorasiga (UAE Data Office) shikoyat qilishingiz mumkin.
-
-**Marketing xabarlari.** Biz marketing xabarlarini faqat BAA qonunchiligi ruxsat bergan hollarda yuboramiz. Ularning har birida ularni olishni qanday toʻxtatish mumkinligi aytilgan va toʻxtatishni soʻrasangiz, toʻxtatamiz. Buyurtma yoki hisobingiz haqidagi xatlar marketing emas.
-
-**Aloqa.** privacy@hatchgrab.com yoki pochta orqali: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

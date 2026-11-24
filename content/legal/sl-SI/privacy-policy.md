@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Politika zasebnosti
 
 **Zadnja posodobitev:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Zajema tudi mobilne aplikacije in aplikacije za tablice HatchGrab za iOS in Andr
 
 Če ste sem prišli samo zato, ker ste naročili hrano pri food trucku, za vas velja razdelek **„Če ste naročili pri food trucku“**.
 
-**Nekatere države imajo dodatna pravila.** Kadar veljajo za vas, so navedena na naši strani [Posebni pogoji za posamezne države](/country-terms), ki je del te politike.
-
+**Ta politika velja, kjer koli ste.** Upoštevamo zakonodajo Združenega kraljestva o varstvu podatkov, kadar pa se uporablja tudi zakonodaja o varstvu podatkov države, v kateri živite, upoštevamo tudi to.
 ---
 
 ## 1. Kdo smo
@@ -84,6 +83,8 @@ Ko oddate naročilo prek strani za naročanje food trucka, zberemo in temu food 
 
 Food truck odloča, kako dolgo hrani vaše podatke in kako stopi v stik z vami pozneje. Za to veljajo njegova lastna pravila o zasebnosti. Če niste prepričani, kateri food truck je to, nam pišite na privacy@hatchgrab.com in vas bomo usmerili k njemu.
 
+**Opombe o alergijah in prehrani.** Skupaj z naročilom jih posredujemo food trucku in jih za nič drugega ne uporabljamo. Odstranimo jih, skupaj z vašim imenom in kontaktnimi podatki, 12 mesecev po naročilu (glejte razdelek 7).
+
 **Podatki o alergenih.** Kadar food truck objavi podatke o alergenih, prikažemo to, kar je food truck potrdil. Tega neodvisno ne preverjamo. O resni alergiji vedno neposredno obvestite food truck.
 
 ---
@@ -135,7 +136,7 @@ Podatke lahko razkrijemo tudi, kadar nam to nalaga zakon, ali za uveljavljanje a
 
 **Osebnih podatkov ne prodajamo in jih ne delimo za oglaševanje.**
 
-**Mednarodni prenosi.** Podatki vašega računa in podatki o naročilih se shranjujejo in obdelujejo v Združenem kraljestvu. Nekatere stvari se obdelujejo zunaj njega: izluščanje jedilnikov in samodejni odgovori WhatsApp, ki uporabljajo Googlovo storitev v Združenih državah Amerike; dostava sporočil WhatsApp, ki jo izvaja Meta v Združenih državah Amerike; plačila, ki jih izvaja Stripe v Združenih državah Amerike; in potisna obvestila, ki jih dostavljata Apple in Google v Združenih državah Amerike. Kadar podatki zapustijo Združeno kraljestvo, je prenos zajet v predpisih Združenega kraljestva o ustreznosti ali v International Data Transfer Agreement (sporazum o mednarodnem prenosu podatkov) ali Addendum (dodatek), ki zagotavljajo ustrezne zaščitne ukrepe. Za podrobnosti o zaščitnih ukrepih, ki se uporabljajo, nas lahko vprašate.
+**Mednarodni prenosi.** Podatki vašega računa in podatki o naročilih se shranjujejo in obdelujejo v Združenem kraljestvu. Nekatere stvari se obdelujejo zunaj njega: izluščanje jedilnikov in samodejni odgovori WhatsApp, ki uporabljajo Googlovo storitev v Združenih državah Amerike; dostava sporočil WhatsApp, ki jo izvaja Meta v Združenih državah Amerike; plačila, ki jih izvaja Stripe v Združenih državah Amerike; in potisna obvestila, ki jih dostavljata Apple in Google v Združenih državah Amerike. Kadar podatki zapustijo Združeno kraljestvo, je prenos zajet v predpisih Združenega kraljestva o ustreznosti ali v International Data Transfer Agreement (sporazum o mednarodnem prenosu podatkov) ali Addendum (dodatek), kadar pa to zahteva pravo vaše države, tudi z zaščitnim ukrepom, ki ga to pravo priznava. Za podrobnosti o zaščitnih ukrepih, ki se uporabljajo, nas lahko vprašate.
 
 Z rastjo naše storitve lahko dodamo ponudnike, vključno s ponudnikom storitev SMS. Ta seznam bomo posodobili, preden začnejo obdelovati vaše podatke.
 
@@ -161,7 +162,7 @@ Ko se ta obdobja iztečejo, podatke izbrišemo ali anonimiziramo.
 
 ## 8. Vaše pravice
 
-V skladu z zakonodajo Združenega kraljestva o varstvu podatkov imate pravico:
+V skladu z zakonodajo Združenega kraljestva o varstvu podatkov in s pravom države, v kateri živite, kadar se uporablja, imate pravico:
 
 - vprašati, katere osebne podatke hranimo o vas, in dobiti njihovo kopijo;
 - zahtevati popravek netočnih podatkov;
@@ -171,11 +172,17 @@ V skladu z zakonodajo Združenega kraljestva o varstvu podatkov imate pravico:
 - ugovarjati obdelavi, ki temelji na zakonitih interesih;
 - kadar koli preklicati privolitev, kadar se opiramo na privolitev.
 
-Za uveljavljanje katere koli od teh pravic pišite na privacy@hatchgrab.com. Odgovorili bomo v enem mesecu.
+Pravo države, v kateri živite, vam lahko te pravice daje pod drugimi imeni ali vam daje dodatne pravice. Tudi te imate.
 
-**Izbris vašega računa.** Operaterji lahko izbris računa zahtevajo v aplikaciji ali po e-pošti na privacy@hatchgrab.com. Izbrisali bomo vaš račun in osebne podatke, razen kadar moramo evidence hraniti iz računovodskih ali pravnih razlogov.
+**Vložitev zahteve.** Pišite na privacy@hatchgrab.com. Preden ukrepamo, bomo preverili, ali je zahteva pristna. Nekoga lahko prosite, da zahtevo vloži za vas, zaradi vložitve zahteve pa vas ne bomo obravnavali drugače. Odgovorili bomo v enem mesecu ali prej, če to zahteva pravo vaše države. Če ste naročili pri food trucku, lahko vašo zahtevo posredujemo temu food trucku, ker on odloča, kako se uporabljajo podatki vašega naročila. Če zahtevo zavrnemo, lahko z odgovorom na naš odgovor zaprosite, da jo ponovno preučimo.
 
-**Pritožbe.** Če niste zadovoljni s tem, kako smo ravnali z vašimi podatki, se lahko pritožite pri Information Commissioner's Office (britanski informacijski pooblaščenec) na ico.org.uk ali na telefonski številki 0303 123 1113. Cenili bi, če bi nam najprej dali priložnost, da zadevo rešimo.
+**Izbris vašega računa.** Operaterji lahko izbris računa zahtevajo v aplikaciji ali po e-pošti na privacy@hatchgrab.com. Izbrisali bomo vaš račun in osebne podatke, razen kadar moramo evidence hraniti iz računovodskih ali pravnih razlogov. Ko je račun operaterja izbrisan, iz naročil, ki jih hranimo, odstranimo tudi imena, kontaktne podatke in opombe njegovih strank.
+
+**Trženjska e-poštna sporočila.** Trženjska e-poštna sporočila pošiljamo samo, kadar to dovoljuje pravo države, v kateri živite, kar v nekaterih državah pomeni samo z vašo privolitvijo. Vsako navaja, od koga je, vključuje naš poštni naslov in vam pove, kako prenehati prejemati takšna sporočila. Če nas prosite, da prenehamo, bomo prenehali, brezplačno in v 10 delovnih dneh. E-poštna sporočila o naročilu ali vašem računu niso trženje. Če mi ali food truck ponujamo obvestila o naročilu po SMS, jih boste prejemali samo, če se s tem strinjate, ustavite pa jih lahko kadar koli.
+
+**Če gre kaj narobe.** Če bo kršitev, ki zadeva vaše osebne podatke, verjetno povzročila resno škodo za vas, bomo vas in nadzorni organ o tem obvestili, kakor hitro bo mogoče, kadar to zahteva zakon, ali pa bomo food trucku, pri katerem ste naročili, pomagali, da to stori.
+
+**Pritožbe.** Najprej nam pišite na privacy@hatchgrab.com; cenili bi priložnost, da stvari popravimo. Pritožite se lahko tudi pri organu za varstvo podatkov v državi, v kateri živite. V Združenem kraljestvu je to Information Commissioner's Office (britanski informacijski pooblaščenec), na ico.org.uk ali na telefonski številki 0303 123 1113.
 
 ---
 

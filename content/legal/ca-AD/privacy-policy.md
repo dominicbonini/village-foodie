@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Política de privadesa
 
 **Última actualització:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ També inclou les aplicacions mòbils i per a tauleta de HatchGrab per a iOS i A
 
 Si només has arribat aquí perquè has fet una comanda de menjar a un food truck, l’apartat **«Si has fet una comanda a un food truck»** és el que t’afecta.
 
-**Alguns països tenen normes addicionals.** Quan t’afecten, figuren a la nostra pàgina de [Condicions específiques per país](/country-terms), que forma part d’aquesta política.
-
+**Aquesta política s’aplica siguis on siguis.** Complim la legislació de protecció de dades del Regne Unit i, quan també s’aplica la legislació de protecció de dades del país on vius, també complim aquesta.
 ---
 
 ## 1. Qui som
@@ -84,6 +83,8 @@ Quan fas una comanda a través de la pàgina de comandes d’un food truck, reco
 
 El food truck decideix quant de temps conserva les teves dades i com es posa en contacte amb tu després. A això s’hi apliquen les seves pròpies pràctiques de privadesa. Si no saps segur de quin food truck es tracta, escriu-nos a privacy@hatchgrab.com i t’hi adreçarem.
 
+**Notes sobre al·lèrgies i dieta.** Les transmetem al food truck juntament amb la comanda i no les utilitzem per a res més. Les eliminem, juntament amb el teu nom i les teves dades de contacte, 12 mesos després de la comanda (consulta l’apartat 7).
+
 **Informació sobre al·lèrgens.** Quan un food truck publica informació sobre al·lèrgens, mostrem el que el food truck ha confirmat. No ho verifiquem pel nostre compte. Si tens una al·lèrgia greu, digues-ho sempre directament al food truck.
 
 ---
@@ -135,7 +136,7 @@ També podem revelar dades quan la llei ens hi obligui, o per formular o defensa
 
 **No venem dades personals ni les compartim amb finalitats publicitàries.**
 
-**Transferències internacionals.** Les dades del teu compte i de les comandes es desen i es tracten al Regne Unit. Algunes coses es gestionen fora del Regne Unit: l’extracció de cartes i les respostes automàtiques de WhatsApp, que utilitzen un servei de Google als Estats Units; el lliurament de missatges de WhatsApp, que gestiona Meta als Estats Units; els pagaments, que gestiona Stripe als Estats Units; i les notificacions push, que lliuren Apple i Google als Estats Units. Quan les dades surten del Regne Unit, la transferència està coberta per les normes d’adequació del Regne Unit o per l’International Data Transfer Agreement o l’Addendum, que ofereixen garanties adequades. Ens pots demanar els detalls de les garanties que s’hi apliquen.
+**Transferències internacionals.** Les dades del teu compte i de les comandes es desen i es tracten al Regne Unit. Algunes coses es gestionen fora del Regne Unit: l’extracció de cartes i les respostes automàtiques de WhatsApp, que utilitzen un servei de Google als Estats Units; el lliurament de missatges de WhatsApp, que gestiona Meta als Estats Units; els pagaments, que gestiona Stripe als Estats Units; i les notificacions push, que lliuren Apple i Google als Estats Units. Quan les dades surten del Regne Unit, la transferència està coberta per les normes d’adequació del Regne Unit o per l’International Data Transfer Agreement o l’Addendum i, quan la llei del teu país ho exigeix, per una garantia que aquesta llei reconeix. Ens pots demanar els detalls de les garanties que s’hi apliquen.
 
 A mesura que el nostre servei creixi, podem afegir proveïdors, inclòs un proveïdor d’SMS. Actualitzarem aquesta llista abans que comencin a tractar les teves dades.
 
@@ -161,7 +162,7 @@ Eliminem o anonimitzem les dades quan acaben aquests terminis.
 
 ## 8. Els teus drets
 
-D’acord amb la legislació de protecció de dades del Regne Unit, tens dret a:
+D’acord amb la legislació de protecció de dades del Regne Unit i, quan s’aplica, la llei del país on vius, tens dret a:
 
 - preguntar quines dades personals tenim sobre tu i obtenir-ne una còpia;
 - fer corregir les dades inexactes;
@@ -171,11 +172,17 @@ D’acord amb la legislació de protecció de dades del Regne Unit, tens dret a:
 - oposar-te al tractament basat en l’interès legítim;
 - retirar el consentiment en qualsevol moment, quan ens basem en el consentiment.
 
-Per exercir qualsevol d’aquests drets, escriu a privacy@hatchgrab.com. Et respondrem en el termini d’un mes.
+La llei del país on vius et pot reconèixer aquests drets amb altres noms, o drets addicionals. També tens aquests drets.
 
-**Eliminació del compte.** Els operadors poden sol·licitar l’eliminació del compte des de l’aplicació o escrivint a privacy@hatchgrab.com. Eliminarem el teu compte i les teves dades personals, excepte quan estiguem obligats a conservar registres per motius comptables o legals.
+**Fer una sol·licitud.** Escriu a privacy@hatchgrab.com. Comprovarem que la sol·licitud és autèntica abans d’actuar. Pots demanar a una altra persona que faci la sol·licitud per tu, i no et tractarem de manera diferent per haver-ne fet una. Et respondrem en el termini d’un mes, o abans si la llei del teu país ho exigeix. Si has fet una comanda a un food truck, és possible que li transmetem la teva sol·licitud, perquè és el food truck qui decideix com s’utilitzen les dades de la teva comanda. Si rebutgem una sol·licitud, ens pots demanar que la tornem a examinar responent a la nostra resposta.
 
-**Reclamacions.** Si no estàs satisfet amb com hem tractat les teves dades, pots presentar una reclamació a l’Information Commissioner’s Office a ico.org.uk, o al 0303 123 1113. Ens agradaria tenir l’oportunitat de resoldre-ho primer.
+**Eliminació del compte.** Els operadors poden sol·licitar l’eliminació del compte des de l’aplicació o escrivint a privacy@hatchgrab.com. Eliminarem el teu compte i les teves dades personals, excepte quan estiguem obligats a conservar registres per motius comptables o legals. Quan s’elimina el compte d’un operador, també eliminem els noms, les dades de contacte i les notes dels seus clients de les comandes que conservem.
+
+**Correus electrònics de màrqueting.** Només enviem correus electrònics de màrqueting quan la llei del país on vius ho permet, cosa que en alguns països vol dir només amb el teu consentiment. Cadascun indica qui l’envia, inclou la nostra adreça postal i t’explica com deixar de rebre’ls. Si ens demanes que deixem d’enviar-te’ls, ho farem, sense cap cost i en un termini de 10 dies hàbils. Els correus electrònics sobre una comanda o sobre el teu compte no són màrqueting. Si nosaltres o un food truck oferim actualitzacions de la comanda per missatge de text, només les rebràs si acceptes rebre-les, i les pots aturar en qualsevol moment.
+
+**Si alguna cosa va malament.** Si és probable que una violació de seguretat que afecti les teves dades personals et causi un perjudici greu, t’ho direm a tu i a l’autoritat de control tan aviat com puguem quan la llei ho exigeixi, o ajudarem el food truck on has fet la comanda a fer-ho.
+
+**Reclamacions.** Digues-nos-ho primer a privacy@hatchgrab.com; ens agradaria tenir l’oportunitat de solucionar-ho. També pots presentar una reclamació a l’autoritat de protecció de dades del país on vius. Al Regne Unit, és l’Information Commissioner's Office, a ico.org.uk o al 0303 123 1113.
 
 ---
 

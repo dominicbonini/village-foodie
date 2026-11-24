@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Persónuverndarstefna
 
 **Síðast uppfært:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Stefnan nær einnig til smáforrita HatchGrab fyrir síma og spjaldtölvur, fyri
 
 Ef þú ert aðeins hér vegna þess að þú pantaðir mat hjá matarvagni er það kaflinn **„Ef þú pantaðir hjá matarvagni“** sem á við um þig.
 
-**Í sumum löndum gilda viðbótarreglur.** Þar sem þær eiga við um þig koma þær fram á síðunni okkar [Skilmálar eftir löndum](/country-terms), sem er hluti af þessari stefnu.
-
+**Þessi stefna gildir hvar sem þú ert.** Við fylgjum breskum persónuverndarlögum og, þar sem persónuverndarlög landsins sem þú býrð í gilda einnig, fylgjum við þeim líka.
 ---
 
 ## 1. Hver við erum
@@ -84,6 +83,8 @@ Við erum ábyrgðaraðili þeirra persónuupplýsinga sem lýst er í 3. og 5. 
 
 Matarvagninn ákveður hversu lengi upplýsingar þínar eru geymdar og hvernig hann hefur samband við þig síðar. Um það gilda hans eigin persónuverndarvenjur. Ef þú ert ekki viss um hvaða matarvagn á í hlut skaltu hafa samband við okkur á privacy@hatchgrab.com og við vísum þér á hann.
 
+**Athugasemdir um ofnæmi og mataræði.** Við komum þeim áleiðis til matarvagnsins ásamt pöntuninni þinni og notum þær ekki í neinum öðrum tilgangi. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina (sjá 7. kafla).
+
 **Upplýsingar um ofnæmisvalda.** Þegar matarvagn birtir upplýsingar um ofnæmisvalda sýnum við það sem matarvagninn hefur staðfest. Við sannreynum þær ekki sjálfstætt. Láttu matarvagninn alltaf vita beint ef þú ert með alvarlegt ofnæmi.
 
 ---
@@ -135,7 +136,7 @@ Við kunnum einnig að veita upplýsingar þegar okkur ber skylda til þess samk
 
 **Við seljum ekki persónuupplýsingar og deilum þeim ekki í auglýsingaskyni.**
 
-**Flutningur milli landa.** Upplýsingar um aðgang þinn og pantanir eru geymdar og unnar í Bretlandi. Sumt er meðhöndlað utan þess: lestur matseðla og sjálfvirk svör á WhatsApp, sem nota þjónustu Google í Bandaríkjunum; afhending WhatsApp-skilaboða, sem Meta annast í Bandaríkjunum; greiðslur, sem Stripe annast í Bandaríkjunum; og tilkynningar, sem Apple og Google afhenda í Bandaríkjunum. Þegar upplýsingar fara frá Bretlandi byggist flutningurinn á breskum reglum um fullnægjandi vernd (UK adequacy regulations) eða á International Data Transfer Agreement eða Addendum, sem veita viðeigandi verndarráðstafanir. Þú getur óskað eftir upplýsingum frá okkur um þær verndarráðstafanir sem eiga við.
+**Flutningur milli landa.** Upplýsingar um aðgang þinn og pantanir eru geymdar og unnar í Bretlandi. Sumt er meðhöndlað utan þess: lestur matseðla og sjálfvirk svör á WhatsApp, sem nota þjónustu Google í Bandaríkjunum; afhending WhatsApp-skilaboða, sem Meta annast í Bandaríkjunum; greiðslur, sem Stripe annast í Bandaríkjunum; og tilkynningar, sem Apple og Google afhenda í Bandaríkjunum. Þegar upplýsingar fara frá Bretlandi byggist flutningurinn á breskum reglum um fullnægjandi vernd (UK adequacy regulations) eða á International Data Transfer Agreement eða Addendum og, þar sem lög lands þíns krefjast þess, á verndarráðstöfun sem þau lög viðurkenna. Þú getur óskað eftir upplýsingum frá okkur um þær verndarráðstafanir sem eiga við.
 
 Eftir því sem þjónusta okkar vex kunnum við að bæta við veitendum, þar á meðal SMS-veitanda. Við munum uppfæra þennan lista áður en þeir hefja vinnslu upplýsinga þinna.
 
@@ -161,7 +162,7 @@ Við eyðum upplýsingum eða gerum þær ópersónugreinanlegar þegar þessum 
 
 ## 8. Réttindi þín
 
-Samkvæmt breskum persónuverndarlögum átt þú rétt á að:
+Samkvæmt breskum persónuverndarlögum, og lögum landsins sem þú býrð í þar sem þau eiga við, átt þú rétt á að:
 
 - fá að vita hvaða persónuupplýsingar við höfum um þig og fá afrit af þeim;
 - fá rangar upplýsingar leiðréttar;
@@ -171,11 +172,17 @@ Samkvæmt breskum persónuverndarlögum átt þú rétt á að:
 - andmæla vinnslu sem byggist á lögmætum hagsmunum;
 - draga samþykki þitt til baka hvenær sem er, þar sem vinnslan byggist á samþykki.
 
-Til að neyta einhverra þessara réttinda skaltu senda tölvupóst á privacy@hatchgrab.com. Við svörum innan eins mánaðar.
+Lögin þar sem þú býrð kunna að veita þér þessi réttindi undir öðrum heitum, eða viðbótarréttindi. Þau hefur þú einnig.
 
-**Eyðing aðgangs.** Rekstraraðilar geta óskað eftir eyðingu aðgangs í smáforritinu eða með tölvupósti á privacy@hatchgrab.com. Við eyðum aðganginum þínum og persónuupplýsingum, nema þar sem okkur ber að varðveita gögn af bókhalds- eða lagalegum ástæðum.
+**Að leggja fram beiðni.** Sendu tölvupóst á privacy@hatchgrab.com. Við göngum úr skugga um að beiðnin sé ósvikin áður en við bregðumst við henni. Þú getur falið öðrum að leggja fram beiðnina fyrir þína hönd og við mismunum þér ekki fyrir að leggja fram beiðni. Við svörum innan eins mánaðar, eða fyrr ef lög lands þíns krefjast þess. Ef þú pantaðir frá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntun þína eru notaðar. Ef við höfnum beiðni getur þú beðið okkur að endurskoða hana með því að svara svari okkar.
 
-**Kvartanir.** Ef þér mislíkar hvernig við höfum farið með upplýsingar þínar getur þú lagt fram kvörtun hjá bresku persónuverndarstofnuninni (Information Commissioner's Office) á ico.org.uk eða í síma 0303 123 1113. Við kynnum þó að meta að fá tækifæri til að bregðast við fyrst.
+**Eyðing aðgangs.** Rekstraraðilar geta óskað eftir eyðingu aðgangs í smáforritinu eða með tölvupósti á privacy@hatchgrab.com. Við eyðum aðganginum þínum og persónuupplýsingum, nema þar sem okkur ber að varðveita gögn af bókhalds- eða lagalegum ástæðum. Þegar aðgangi rekstraraðila er eytt fjarlægjum við einnig nöfn, samskiptaupplýsingar og athugasemdir viðskiptavina hans úr þeim pöntunum sem við varðveitum.
+
+**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem lögin þar sem þú býrð heimila það, sem í sumum löndum þýðir aðeins með samþykki þínu. Í hverjum þeirra kemur fram frá hverjum hann er, póstfang okkar og hvernig þú getur afþakkað frekari sendingar. Ef þú biður okkur að hætta gerum við það, þér að kostnaðarlausu og innan 10 virkra daga. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni. Ef við eða matarvagn bjóðum upp á tilkynningar um stöðu pantana með smáskilaboðum færðu þær aðeins ef þú samþykkir það og þú getur stöðvað þær hvenær sem er.
+
+**Ef eitthvað fer úrskeiðis.** Ef persónuverndarbrot sem varðar persónuupplýsingar þínar er líklegt til að valda þér alvarlegum skaða munum við tilkynna þér og persónuverndaryfirvaldinu um það eins fljótt og unnt er þar sem lög krefjast þess, eða aðstoða matarvagninn sem þú pantaðir frá við að gera það.
+
+**Kvartanir.** Láttu okkur fyrst vita á privacy@hatchgrab.com; við kunnum að meta að fá tækifæri til að bæta úr málinu. Þú getur einnig lagt fram kvörtun hjá persónuverndaryfirvaldi þess lands þar sem þú býrð. Í Bretlandi er það breska persónuverndarstofnunin (Information Commissioner's Office), á ico.org.uk eða í síma 0303 123 1113.
 
 ---
 

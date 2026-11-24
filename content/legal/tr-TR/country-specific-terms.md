@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Ülkeye özgü koşullar
 
 **Son güncelleme:** {{LAST_UPDATED}}
 
-[Kullanım Koşullarımız](/terms) ve [Gizlilik Politikamız](/privacy), HatchGrab’in kullanıldığı her ülkede geçerlidir. Bazı ülkelerde ek kurallar bulunmaktadır. Bu sayfa, söz konusu kuralları ülke ülke açıklamaktadır.
+[Kullanım Koşullarımız](/terms), HatchGrab’in kullanıldığı her ülkede geçerlidir. Bazı ülkelerde ek kurallar bulunmaktadır. Bu sayfa, söz konusu kuralları ülke ülke açıklamaktadır.
 
-Aşağıdaki bölümlerden biri sizin için geçerli olduğunda, o bölüm Kullanım Koşullarımızın ve Gizlilik Politikamızın bir parçasını oluşturur. Bu sayfa söz konusu belgelerden farklı bir hüküm içeriyorsa, ilgili ülke bakımından bu sayfa uygulanır.
+Aşağıdaki bölümlerden biri sizin için geçerli olduğunda, o bölüm Kullanım Koşullarımızın bir parçasını oluşturur. Bu sayfa söz konusu belgelerden farklı bir hüküm içeriyorsa, ilgili ülke bakımından bu sayfa uygulanır.
 
-Ülkeniz listede yer almıyorsa ek kural yoktur: Kullanım Koşulları ve Gizlilik Politikası yazıldığı şekliyle uygulanır.
-
+Ülkeniz listede yer almıyorsa ek kural yoktur: Kullanım Koşulları yazıldığı şekliyle uygulanır. [Gizlilik Politikamız](/privacy) her ülkede aynıdır.
 ---
 
 ## Amerika Birleşik Devletleri
@@ -31,26 +30,6 @@ Aşağıdaki bölümlerden biri sizin için geçerli olduğunda, o bölüm Kulla
 
 **Müşterilerinizin verileri.** ABD eyaletlerinin gizlilik kanunları kapsamında, Kullanım Koşullarının 10. bölümü bu kanunların terimleriyle aynı anlama gelir: siz “business” (işletme), biz ise sizin “service provider” (hizmet sağlayıcınız) veya “processor” (veri işleyeniniz) konumundayız. Müşterilerinizin kişisel bilgilerini yalnızca HatchGrab’i sizin için çalıştırmak amacıyla kullanırız. Bu bilgileri satmayız, bağlamlar arası davranışsal reklamcılık için paylaşmayız ve söz konusu kanunların bir hizmet sağlayıcıya izin verdiği haller dışında başka hiçbir amaçla kullanmayız.
 
-### Gizlilik: Amerika Birleşik Devletleri’ndeki herkes için
-
-**Neleri topluyoruz ve kimlerle paylaşıyoruz.** Gizlilik Politikasında belirtilenlerin aynısı: food truck işletmecilerinin hesap ve işletme bilgileri; bir food truck’tan sipariş verirseniz adınız, iletişim bilgileriniz ve sipariş bilgileriniz; web sitelerimizi ziyaret ederseniz temel teknik veriler. Bunları, yalnızca hizmeti yürütmek amacıyla veya kanunun gerektirdiği durumlarda, sipariş verdiğiniz food truck ile ve Gizlilik Politikasının 6. bölümünde sayılan hizmet sağlayıcılarla paylaşırız. Bu veriler Birleşik Krallık’ta, Avrupa Birliği’nde ve Amerika Birleşik Devletleri’nde işlenebilir.
-
-**Kişisel bilgilerinizi satmayız veya paylaşmayız.** Kişisel bilgileri satmayız ve bağlamlar arası davranışsal reklamcılık için paylaşmayız.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notları eklerseniz, bunları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikasının 7. bölümünde belirtildiği üzere, bu notları adınız ve iletişim bilgilerinizle birlikte siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda hangi kişisel bilgileri tuttuğumuzu sorabilir, bunların düzeltilmesini veya silinmesini isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. Talep üzerine işlem yapmadan önce talebin gerçek olduğunu doğrularız ve 45 gün içinde yanıt veririz. Talebi sizin adınıza bir başkasının yapmasını isteyebilirsiniz. Talepte bulunduğunuz için size farklı bir muamele yapmayız. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz. Bir talebi reddedersek, yanıtımıza cevap vererek talebin yeniden incelenmesini isteyebilirsiniz.
-
-**Eyalet gizlilik kanunları.** Bazı eyalet gizlilik kanunları yalnızca belirli bir büyüklüğün üzerindeki işletmelere uygulanır ve bize uygulanmayabilir. Yine de yukarıdaki talepleri Amerika Birleşik Devletleri’ndeki herkes için yerine getiririz.
-
-**Çocuklar.** Hizmetlerimiz 13 yaşın altındaki çocuklara yönelik değildir ve onların kişisel bilgilerini bilerek toplamayız. Bir çocuğun bize bilgilerini verdiğini düşünüyorsanız bizimle iletişime geçin; bu bilgileri sileriz.
-
-**Pazarlama e-postaları.** Gönderdiğimiz her pazarlama e-postası, bu e-postaları almayı nasıl durdurabileceğinizi belirtir ve posta adresimizi içerir. Göndermeyi durdurmamızı isterseniz durdururuz. Bir sipariş veya hesabınızla ilgili e-postalar pazarlama niteliğinde değildir.
-
-**Kısa mesajlar.** Biz veya bir food truck sipariş güncellemelerini kısa mesajla sunarsak, bunları yalnızca almayı kabul etmeniz halinde alırsınız ve dilediğiniz zaman durdurabilirsiniz.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## İrlanda
 
 ### Food truck işletmecileri için
@@ -70,22 +49,6 @@ Aşağıdaki bölümlerden biri sizin için geçerli olduğunda, o bölüm Kulla
 **Müşterilerinizin verileri.** AB Genel Veri Koruma Tüzüğü (GDPR) kapsamında, Kullanım Koşullarının 10. bölümü sizinle aramızdaki veri işleme sözleşmesidir: GDPR madde 28 anlamında siz veri sorumlusu, biz ise veri işleyen konumundayız.
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşullarının 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, İrlanda hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
-
-### Gizlilik: İrlanda’daki herkes için
-
-**Uygulanacak hukuk.** İrlanda’daki kişilerin kişisel verilerini işlediğimizde, Gizlilik Politikamızda belirtilen Birleşik Krallık hukukunun yanı sıra AB Genel Veri Koruma Tüzüğü (GDPR) de uygulanır. Gizlilik Politikasının 8. bölümünde sayılan haklar, aynı zamanda GDPR kapsamındaki haklarınızdır.
-
-**Verilerinizin tutulduğu yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir. Avrupa Komisyonu, Birleşik Krallık’ın kişisel verileri AB ile aynı düzeyde koruduğuna karar vermiştir; bu nedenle bunun için ek bir güvence gerekmez. Bir hizmet sağlayıcının verileri Amerika Birleşik Devletleri’nde işlediği durumlarda (Gizlilik Politikasının 6. bölümü), aktarım GDPR’ın tanıdığı bir güvence kapsamındadır.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notları eklerseniz, bunları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikasının 7. bölümünde belirtildiği üzere, bu notları adınız ve iletişim bilgilerinizle birlikte siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda hangi kişisel verileri tuttuğumuzu sorabilir, bunların düzeltilmesini, silinmesini veya kullanımının durdurulmasını isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. Bir ay içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** İrlanda’nın veri koruma denetim otoritesi olan Veri Koruma Komisyonuna (Data Protection Commission) www.dataprotection.ie adresinden veya 6 Pembroke Row, Dublin 2, D02 X963 adresine posta yoluyla şikâyette bulunabilirsiniz. Önce durumu düzeltme fırsatını bize tanımanızdan memnuniyet duyarız.
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca kanunun izin verdiği durumlarda göndeririz. Her biri, bu e-postaları almayı nasıl durdurabileceğinizi belirtir ve göndermeyi durdurmamızı isterseniz durdururuz. Bir sipariş veya hesabınızla ilgili e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Avustralya
 
@@ -109,22 +72,6 @@ Aşağıdaki bölümlerden biri sizin için geçerli olduğunda, o bölüm Kulla
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşullarının 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Avustralya hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
 
-### Gizlilik: Avustralya’daki herkes için
-
-**Uygulanacak hukuk.** Avustralya’daki kişilerin kişisel bilgilerini işlediğimizde, Gizlilik Politikamızda belirtilen Birleşik Krallık hukukunun yanı sıra Gizlilik Kanunundaki (Privacy Act 1988) Avustralya Gizlilik İlkelerine (Australian Privacy Principles) de uyarız.
-
-**Bilgilerinizin tutulduğu yer.** Bilgileriniz Birleşik Krallık’ta saklanır ve işlenir. Gizlilik Politikasının 6. bölümünde belirtildiği üzere, bunların bir kısmı Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notları eklerseniz, bunları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikasının 7. bölümünde belirtildiği üzere, bu notları adınız ve iletişim bilgilerinizle birlikte siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda hangi kişisel bilgileri tuttuğumuzu sorabilir, bunların düzeltilmesini veya silinmesini isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. 30 gün içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Kişisel bilgilerinizi işleme biçimimizden memnun değilseniz, önce privacy@hatchgrab.com adresinden bize bildirin. Yanıtımızdan memnun kalmazsanız veya 30 gün içinde yanıt vermemişsek, Avustralya Bilgi Komiserliği Ofisine (Office of the Australian Information Commissioner, OAIC) www.oaic.gov.au adresinden yazılı olarak şikâyette bulunabilirsiniz.
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca kanunun izin verdiği durumlarda göndeririz. Her biri kimden geldiğini ve bu e-postaları almayı nasıl durdurabileceğinizi belirtir ve göndermeyi durdurmamızı isterseniz durdururuz. Bir sipariş veya hesabınızla ilgili e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Yeni Zelanda
 
 ### Food truck işletmecileri için
@@ -147,24 +94,6 @@ Aşağıdaki bölümlerden biri sizin için geçerli olduğunda, o bölüm Kulla
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşullarının 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Yeni Zelanda hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
 
-### Gizlilik: Yeni Zelanda’daki herkes için
-
-**Uygulanacak hukuk.** Yeni Zelanda’daki kişilerin kişisel bilgilerini işlediğimizde, Gizlilik Politikamızda belirtilen Birleşik Krallık hukukunun yanı sıra Gizlilik Kanunu (Privacy Act 2020) da uygulanır. Merkezimiz Birleşik Krallık’ta bulunmasına rağmen Yeni Zelanda’da ticari faaliyet yürüttüğümüz için bu Kanun bize uygulanır.
-
-**Bilgilerinizin tutulduğu yer.** Bilgileriniz Birleşik Krallık’ta saklanır ve işlenir. Gizlilik Politikasının 6. bölümünde belirtildiği üzere, bunların bir kısmı Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notları eklerseniz, bunları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikasının 7. bölümünde belirtildiği üzere, bu notları adınız ve iletişim bilgilerinizle birlikte siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda tuttuğumuz kişisel bilgileri bizden isteyebilir ve bunların düzeltilmesini talep edebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. Makul olarak mümkün olan en kısa sürede ve 20 iş günü içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Kişisel bilgilerinizi işleme biçimimizden memnun değilseniz, önce privacy@hatchgrab.com adresinden bize bildirin. Gizlilik Komiseri (Privacy Commissioner), şikâyette bulunmadan önce bunu yapmanızı istemektedir. Yanıtımızdan memnun kalmazsanız, Gizlilik Komiserliği Ofisine (Office of the Privacy Commissioner) www.privacy.org.nz adresinden, 0800 803 909 numaralı telefondan veya PO Box 10 094, Wellington 6140 adresine posta yoluyla şikâyette bulunabilirsiniz.
-
-**Gizlilik ihlalleri.** Kişisel bilgilerinizi içeren bir gizlilik ihlali ciddi bir zarara yol açmışsa veya yol açması muhtemelse, Gizlilik Kanunu (Privacy Act 2020), Gizlilik Komiserine ve size mümkün olan en kısa sürede bildirimde bulunulmasını gerektirir. Bu bildirimi biz yaparız veya bir food truck’a verdiğiniz bir sipariş söz konusuysa, food truck’ın bunu yapmasına yardımcı oluruz.
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca kanunun izin verdiği durumlarda göndeririz. Her biri kimden geldiğini ve bu e-postaları almayı nasıl durdurabileceğinizi belirtir ve göndermeyi durdurmamızı isterseniz durdururuz. Bir sipariş veya hesabınızla ilgili e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### Food truck işletmecileri için
@@ -186,22 +115,6 @@ Aşağıdaki bölümlerden biri sizin için geçerli olduğunda, o bölüm Kulla
 **Yerel hukuk kapsamındaki haklarınız.** Kullanım Koşullarındaki hiçbir hüküm, bulunduğunuz yerin hukukuna göre sınırlandırılamayan veya bundan feragat edilemeyen bir hakkınızı ortadan kaldırmaz.
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşullarının 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, eyaletinizin veya bölgenizin hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
-
-### Gizlilik: Kanada’daki herkes için
-
-**Uygulanacak hukuk.** Kanada’daki kişilerin kişisel bilgilerini işlediğimizde, Gizlilik Politikamızda belirtilen Birleşik Krallık hukukunun yanı sıra Kişisel Bilgilerin Korunması ve Elektronik Belgeler Kanunu (Personal Information Protection and Electronic Documents Act, PIPEDA) ve Britanya Kolumbiyası ile Alberta’da bu eyaletlerin özel sektöre ilişkin kendi gizlilik kanunları uygulanır.
-
-**Bilgilerinizin tutulduğu yer.** Bilgileriniz Birleşik Krallık’ta saklanır ve işlenir; bir kısmı ise Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir (Gizlilik Politikasının 6. bölümü) ve bu bilgilere söz konusu ülkelerin kanunları uyarınca erişilebilir.
-
-**Talepleriniz.** Hakkınızda tuttuğumuz kişisel bilgileri isteyebilir ve bunların düzeltilmesini talep edebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. 30 gün içinde yanıt veririz.
-
-**Şikâyetler.** Önce privacy@hatchgrab.com adresinden bize bildirin. Memnun kalmazsanız, Kanada Gizlilik Komiserliği Ofisine (Office of the Privacy Commissioner of Canada) www.priv.gc.ca adresinden veya 1-800-282-1376 numaralı telefondan şikâyette bulunabilirsiniz.
-
-**İhlaller.** Bilgilerinizi içeren bir güvenlik önlemleri ihlali ciddi zarar açısından gerçek bir risk oluşturuyorsa, bunu Gizlilik Komiserine bildiririz ve size mümkün olan en kısa sürede haber veririz.
-
-**Pazarlama e-postaları.** Kanada’nın istenmeyen elektronik iletiler (spam) ile mücadele mevzuatının gerektirdiği üzere, pazarlama e-postalarını yalnızca onayınızla göndeririz. Her biri kimden geldiğini ve abonelikten nasıl çıkılacağını belirtir ve abonelikten çıkma talebini 10 iş günü içinde yerine getiririz.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Fransa
 
@@ -227,21 +140,6 @@ Aşağıdaki bölümlerden biri sizin için geçerli olduğunda, o bölüm Kulla
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşullarının 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Fransız hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
 
-### Gizlilik: Fransa’daki herkes için
-
-**Uygulanacak hukuk.** Fransa’daki kişilerin kişisel verilerini işlediğimizde, Gizlilik Politikamızda belirtilen Birleşik Krallık hukukunun yanı sıra AB Genel Veri Koruma Tüzüğü (GDPR) ve Fransız Veri Koruma Kanunu (loi Informatique et Libertés) uygulanır. Gizlilik Politikasının 8. bölümünde sayılan haklar, aynı zamanda GDPR kapsamındaki haklarınızdır.
-
-**Verilerinizin tutulduğu yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir. Avrupa Komisyonu, Birleşik Krallık’ın kişisel verileri AB ile aynı düzeyde koruduğuna karar vermiştir; bu nedenle bunun için ek bir güvence gerekmez. Bir hizmet sağlayıcının verileri Amerika Birleşik Devletleri’nde işlediği durumlarda (Gizlilik Politikasının 6. bölümü), aktarım GDPR’ın tanıdığı bir güvence kapsamındadır.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notları eklerseniz, bunları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikasının 7. bölümünde belirtildiği üzere, bu notları adınız ve iletişim bilgilerinizle birlikte siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda hangi kişisel verileri tuttuğumuzu sorabilir, bunların düzeltilmesini, silinmesini veya kullanımının durdurulmasını isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. Bir ay içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Fransa’nın veri koruma denetim otoritesi olan CNIL’e (Commission nationale de l'informatique et des libertés) www.cnil.fr adresinden veya CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris adresine posta yoluyla şikâyette bulunabilirsiniz. Önce durumu düzeltme fırsatını bize tanımanızdan memnuniyet duyarız.
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca Fransız hukukunun izin verdiği durumlarda göndeririz. Her biri, bu e-postaları almayı nasıl durdurabileceğinizi belirtir ve göndermeyi durdurmamızı isterseniz durdururuz. Bir sipariş veya hesabınızla ilgili e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 ## Avrupa Ekonomik Alanı ve İsviçre
 
 Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik Alanı’nın (European Economic Area) her ülkesinde ve İsviçre’de uygulanır: Avusturya, Belçika, Bulgaristan, Hırvatistan, Kıbrıs, Çek Cumhuriyeti, Danimarka, Estonya, Finlandiya, Almanya, Yunanistan, Macaristan, İtalya, Letonya, Lihtenştayn, Litvanya, Lüksemburg, Malta, Hollanda, Norveç, Polonya, Portekiz, Romanya, Slovakya, Slovenya, İspanya, İsveç ve İsviçre.
@@ -268,53 +166,6 @@ Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşulları’nın 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, ülkenizin hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
 
-### Gizlilik — Avrupa Ekonomik Alanı’ndaki ve İsviçre’deki herkes için
-
-**Uygulanacak hukuk.** Avrupa Ekonomik Alanı’ndaki kişilerin kişisel verilerini işlerken AB Genel Veri Koruma Tüzüğü (GDPR) ve ilgili kişinin ülkesinin veri koruma mevzuatı, İsviçre’de ise Federal Veri Koruma Kanunu uygulanır. Gizlilik Politikamızda belirtilen Birleşik Krallık mevzuatı da ayrıca uygulanır. Gizlilik Politikası’nın 8. bölümünde sayılan haklar, bu kanunlar kapsamında da sizin haklarınızdır.
-
-**Verilerinizin saklandığı yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir. Avrupa Komisyonu ve İsviçre, Birleşik Krallık’ın kişisel verileri yeterli düzeyde koruduğuna ayrı ayrı karar vermiştir; bu nedenle bunun için ek bir güvenceye gerek yoktur. Bir hizmet sağlayıcının verileri Amerika Birleşik Devletleri’nde işlediği durumlarda (Gizlilik Politikası’nın 6. bölümü), aktarım GDPR’nin ve İsviçre hukukunun tanıdığı bir güvence kapsamındadır.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notu eklerseniz, bu notları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikası’nın 7. bölümünde belirtildiği üzere bu notları, adınız ve iletişim bilgilerinizle birlikte, siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda hangi kişisel verileri tuttuğumuzu bize sorabilir, bunları düzeltmemizi, silmemizi veya kullanmayı durdurmamızı isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. Bir ay içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Yaşadığınız veya çalıştığınız ülkenin veri koruma otoritesine şikâyette bulunabilirsiniz. Avrupa Veri Koruma Kurulu (European Data Protection Board), Avrupa Ekonomik Alanı’ndaki tüm otoriteleri www.edpb.europa.eu adresinde (About EDPB › Members) listeler. İsviçre’de bu otorite Federal Veri Koruma ve Bilgi Komiseri’dir (Federal Data Protection and Information Commissioner), www.edoeb.admin.ch. Öncelikle konuyu çözme fırsatını bize tanımanızı rica ederiz.
-
-| Ülke | Veri koruma otoritesi |
-|---|---|
-| Avusturya | dsb.gv.at |
-| Belçika | autoriteprotectiondonnees.be |
-| Bulgaristan | cpdp.bg |
-| Hırvatistan | azop.hr |
-| Kıbrıs | dataprotection.gov.cy |
-| Çek Cumhuriyeti | uoou.gov.cz |
-| Danimarka | datatilsynet.dk |
-| Estonya | aki.ee |
-| Finlandiya | tietosuoja.fi |
-| Almanya | bulunduğunuz eyaletin (Land) otoritesi (federal düzeyde: bfdi.bund.de) |
-| Yunanistan | dpa.gr |
-| Macaristan | naih.hu |
-| İtalya | garanteprivacy.it |
-| Letonya | dvi.gov.lv |
-| Lihtenştayn | datenschutzstelle.li |
-| Litvanya | vdai.lrv.lt |
-| Lüksemburg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Hollanda | autoriteitpersoonsgegevens.nl |
-| Norveç | datatilsynet.no |
-| Polonya | uodo.gov.pl |
-| Portekiz | cnpd.pt |
-| Romanya | dataprotection.ro |
-| Slovakya | dataprotection.gov.sk |
-| Slovenya | ip-rs.si |
-| İspanya | aepd.es |
-| İsveç | imy.se |
-| İsviçre | Federal Veri Koruma ve Bilgi Komiseri (FDPIC), edoeb.admin.ch |
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca ülkenizin hukukunun izin verdiği durumlarda göndeririz. Her birinde bunları almayı nasıl durdurabileceğiniz belirtilir; göndermeyi durdurmamızı isterseniz durdururuz. Bir siparişe veya hesabınıza ilişkin e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Cebelitarık
 
 ### Food truck işletmecileri için
@@ -336,22 +187,6 @@ Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik
 **Müşterilerinizin verileri.** Cebelitarık’ta uygulandığı şekliyle AB Genel Veri Koruma Tüzüğü’nü (GDPR) de kapsayan Cebelitarık veri koruma mevzuatı kapsamında, Kullanım Koşulları’nın 10. bölümü sizinle aramızdaki veri işleme sözleşmesidir: GDPR’nin 28. maddesindeki anlamıyla veri sorumlusu siz, veri işleyen ise biziz.
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşulları’nın 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Cebelitarık hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
-
-### Gizlilik — Cebelitarık’taki herkes için
-
-**Uygulanacak hukuk.** Cebelitarık’taki kişilerin kişisel verilerini işlerken, Gizlilik Politikamızda belirtilen Birleşik Krallık mevzuatının yanı sıra, orada uygulandığı şekliyle AB Genel Veri Koruma Tüzüğü (GDPR) dahil olmak üzere Cebelitarık veri koruma mevzuatı uygulanır. Gizlilik Politikası’nın 8. bölümünde sayılan haklar, bu mevzuat kapsamında da sizin haklarınızdır.
-
-**Verilerinizin saklandığı yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir. Bir hizmet sağlayıcının verileri Amerika Birleşik Devletleri’nde işlediği durumlarda (Gizlilik Politikası’nın 6. bölümü), aktarım mevzuatın tanıdığı bir güvence kapsamındadır.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notu eklerseniz, bu notları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikası’nın 7. bölümünde belirtildiği üzere bu notları, adınız ve iletişim bilgilerinizle birlikte, siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda hangi kişisel verileri tuttuğumuzu bize sorabilir, bunları düzeltmemizi, silmemizi veya kullanmayı durdurmamızı isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. Bir ay içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Cebelitarık’ın veri koruma düzenleyicisi olan Cebelitarık Düzenleme Kurumu’na (Gibraltar Regulatory Authority) www.gra.gi adresi üzerinden şikâyette bulunabilirsiniz. Öncelikle konuyu çözme fırsatını bize tanımanızı rica ederiz.
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca Cebelitarık hukukunun izin verdiği durumlarda göndeririz. Her birinde bunları almayı nasıl durdurabileceğiniz belirtilir; göndermeyi durdurmamızı isterseniz durdururuz. Bir siparişe veya hesabınıza ilişkin e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brezilya
 
@@ -377,22 +212,6 @@ Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşulları’nın 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Brezilya hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
 
-### Gizlilik — Brezilya’daki herkes için
-
-**Uygulanacak hukuk.** Brezilya’daki kişilerin kişisel verilerini işlerken, Gizlilik Politikamızda belirtilen Birleşik Krallık mevzuatının yanı sıra Genel Veri Koruma Kanunu (LGPD) uygulanır. Gizlilik Politikası’nın 8. bölümünde sayılan haklar, LGPD kapsamında da sizin haklarınızdır.
-
-**Verilerinizin saklandığı yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir; Gizlilik Politikası’nın 6. bölümünde belirtildiği üzere verilerinizin bir kısmı Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir. Verilerinizi yalnızca LGPD’nin izin verdiği bir dayanağa göre aktarırız.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notu eklerseniz, bu notları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikası’nın 7. bölümünde belirtildiği üzere bu notları, adınız ve iletişim bilgilerinizle birlikte, siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda kişisel veri tutup tutmadığımızı teyit etmemizi ve bu verilerin bir kopyasını isteyebilir ya da bunları düzeltmemizi, silmemizi veya kullanmayı durdurmamızı talep edebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. 15 gün içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Önce privacy@hatchgrab.com adresinden bize bildirin. Ayrıca Ulusal Veri Koruma Otoritesi’ne (Autoridade Nacional de Proteção de Dados, ANPD) www.gov.br/anpd adresi üzerinden şikâyette bulunabilirsiniz.
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca Brezilya hukukunun izin verdiği durumlarda göndeririz. Her birinde bunları almayı nasıl durdurabileceğiniz belirtilir; göndermeyi durdurmamızı isterseniz durdururuz. Bir siparişe veya hesabınıza ilişkin e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Meksika
 
 ### Food truck işletmecileri için
@@ -416,22 +235,6 @@ Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik
 **Müşterilerinizin verileri.** Meksika’nın Özel Kişilerin Elindeki Kişisel Verilerin Korunmasına İlişkin Federal Kanunu (Ley Federal de Protección de Datos Personales en Posesión de los Particulares) kapsamında, Kullanım Koşulları’nın 10. bölümü bu Kanun’un kavramlarıyla da aynı anlamı taşır: veri sorumlusu siz, veri işleyeniniz (encargado) ise biziz ve müşterilerinizin kişisel verilerini yalnızca HatchGrab’i sizin için çalıştırmak amacıyla ve sizin talimatlarınız doğrultusunda işleriz. Müşterilerinize yönelik kendi gizlilik bildiriminizden (aviso de privacidad) siz sorumlusunuz.
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşulları’nın 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Meksika hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
-
-### Gizlilik — Meksika’daki herkes için
-
-**Uygulanacak hukuk.** Meksika’daki kişilerin kişisel verilerini işlerken, Gizlilik Politikamızda belirtilen Birleşik Krallık mevzuatının yanı sıra Özel Kişilerin Elindeki Kişisel Verilerin Korunmasına İlişkin Federal Kanun uygulanır. Bu sayfa ve Gizlilik Politikası birlikte, Meksika’daki kişilere yönelik gizlilik bildirimimizi oluşturur.
-
-**Verilerinizin saklandığı yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir; Gizlilik Politikası’nın 6. bölümünde belirtildiği üzere verilerinizin bir kısmı, yalnızca hizmetin yürütülmesi amacıyla, Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notu eklerseniz, bu notları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikası’nın 7. bölümünde belirtildiği üzere bu notları, adınız ve iletişim bilgilerinizle birlikte, siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda tuttuğumuz kişisel verilere erişim talep edebilir, bunları düzeltmemizi, silmemizi veya kullanmayı durdurmamızı isteyebilirsiniz (ARCO haklarınız). privacy@hatchgrab.com adresine e-posta gönderin. 20 iş günü içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Önce privacy@hatchgrab.com adresinden bize bildirin. Memnun kalmazsanız, Meksika’nın Özel Kişilerin Elindeki Kişisel Verilerin Korunmasına İlişkin Federal Kanunu’nu (21 Mart 2025’ten bu yana yürürlükte) uygulayan Secretaría Anticorrupción y Buen Gobierno’ya (Yolsuzlukla Mücadele ve İyi Yönetişim Bakanlığı) şikâyette bulunabilirsiniz.
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca Meksika hukukunun izin verdiği durumlarda göndeririz. Her birinde bunları almayı nasıl durdurabileceğiniz belirtilir; göndermeyi durdurmamızı isterseniz durdururuz. Bir siparişe veya hesabınıza ilişkin e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japonya
 
@@ -457,22 +260,6 @@ Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşulları’nın 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Japon hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
 
-### Gizlilik — Japonya’daki herkes için
-
-**Uygulanacak hukuk.** Japonya’daki kişilerin kişisel bilgilerini işlerken, Gizlilik Politikamızda belirtilen Birleşik Krallık mevzuatının yanı sıra Kişisel Bilgilerin Korunması Hakkında Kanun uygulanır.
-
-**Bilgilerinizin saklandığı yer.** Bilgileriniz Birleşik Krallık’ta saklanır ve işlenir; Gizlilik Politikası’nın 6. bölümünde belirtildiği üzere bilgilerinizin bir kısmı Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir. Birleşik Krallık ve Avrupa Birliği, Japonya tarafından Japonya’nın standardında kişisel bilgi korumasına sahip olarak tanınmaktadır. Amerika Birleşik Devletleri’nde işlenen bilgiler, söz konusu sağlayıcılarla yaptığımız sözleşmelerle korunur.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notu eklerseniz, bu notları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikası’nın 7. bölümünde belirtildiği üzere bu notları, adınız ve iletişim bilgilerinizle birlikte, siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda tuttuğumuz kişisel bilgileri size açıklamamızı, bunları düzeltmemizi, silmemizi veya kullanmayı durdurmamızı isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. Gecikmeksizin yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Önce privacy@hatchgrab.com adresinden bize bildirin. Ayrıca Kişisel Bilgileri Koruma Komisyonu’na (Personal Information Protection Commission) www.ppc.go.jp adresi üzerinden başvurabilirsiniz.
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca bunları almayı kabul etmiş kişilere göndeririz. Her birinde kimden geldiği ve bunları almayı nasıl durdurabileceğiniz belirtilir; göndermeyi durdurmamızı isterseniz durdururuz. Bir siparişe veya hesabınıza ilişkin e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapur
 
 ### Food truck işletmecileri için
@@ -497,22 +284,6 @@ Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşulları’nın 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Singapur hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
 
-### Gizlilik — Singapur’daki herkes için
-
-**Uygulanacak hukuk.** Singapur’daki kişilerin kişisel verilerini işlerken, Gizlilik Politikamızda belirtilen Birleşik Krallık mevzuatının yanı sıra 2012 tarihli Kişisel Verilerin Korunması Kanunu (PDPA) uygulanır.
-
-**Verilerinizin saklandığı yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir; Gizlilik Politikası’nın 6. bölümünde belirtildiği üzere verilerinizin bir kısmı Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir. Verilerinizin, nerede olursa olsun, PDPA’nınkiyle karşılaştırılabilir bir standartta korunmasını sağlarız.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notu eklerseniz, bu notları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikası’nın 7. bölümünde belirtildiği üzere bu notları, adınız ve iletişim bilgilerinizle birlikte, siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda tuttuğumuz kişisel verileri ve bu verilerin nasıl kullanıldığını öğrenmeyi talep edebilir, bunları düzeltmemizi isteyebilirsiniz. Ayrıca verilerinizi kullanmamıza ilişkin rızanızı geri alabilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. 30 gün içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Önce privacy@hatchgrab.com adresinden bize bildirin. Memnun kalmazsanız, Kişisel Verileri Koruma Komisyonu’na (Personal Data Protection Commission) www.pdpc.gov.sg adresi üzerinden şikâyette bulunabilirsiniz.
-
-**Pazarlama mesajları.** Pazarlama e-postalarını yalnızca Singapur hukukunun izin verdiği durumlarda göndeririz. Her birinde bunları almayı nasıl durdurabileceğiniz belirtilir; göndermeyi durdurmamızı isterseniz durdururuz. Singapur’un Aranmama Kaydı’nda (Do Not Call Registry) bulunan numaralara pazarlama araması yapmaz veya pazarlama amaçlı kısa mesaj göndermeyiz. Bir siparişe veya hesabınıza ilişkin e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hong Kong
 
 ### Food truck işletmecileri için
@@ -534,22 +305,6 @@ Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik
 **Müşterilerinizin verileri.** Hong Kong’un Kişisel Veriler (Gizlilik) Kararnamesi (Personal Data (Privacy) Ordinance, Cap. 486) kapsamında, Kullanım Koşulları’nın 10. bölümü bu Kararname’nin kavramlarıyla da aynı anlamı taşır: veri kullanıcısı (data user) siz, veri işleyeniniz (data processor) ise biziz; müşterilerinizin kişisel verilerini yalnızca HatchGrab’i sizin için çalıştırmak amacıyla ve sizin talimatlarınız doğrultusunda işler ve bu amacın gerektirdiğinden daha uzun süre saklamayız.
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşulları’nın 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Hong Kong hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
-
-### Gizlilik — Hong Kong’daki herkes için
-
-**Uygulanacak hukuk.** Hong Kong’daki kişilerin kişisel verilerini işlerken, Gizlilik Politikamızda belirtilen Birleşik Krallık mevzuatının yanı sıra Kişisel Veriler (Gizlilik) Kararnamesi uygulanır.
-
-**Verilerinizin saklandığı yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir; Gizlilik Politikası’nın 6. bölümünde belirtildiği üzere verilerinizin bir kısmı Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notu eklerseniz, bu notları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikası’nın 7. bölümünde belirtildiği üzere bu notları, adınız ve iletişim bilgilerinizle birlikte, siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda tuttuğumuz kişisel verilerin bir kopyasını talep edebilir, bunları düzeltmemizi isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. 40 gün içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Önce privacy@hatchgrab.com adresinden bize bildirin. Memnun kalmazsanız, Kişisel Veriler Gizlilik Komiserliği Ofisi’ne (Office of the Privacy Commissioner for Personal Data) www.pcpd.org.hk adresi üzerinden şikâyette bulunabilirsiniz.
-
-**Pazarlama mesajları.** Kişisel verilerinizi doğrudan pazarlama amacıyla yalnızca rızanızla kullanırız ve her pazarlama mesajında bunları almayı nasıl durdurabileceğiniz belirtilir. Durdurmamızı isterseniz, bunu ücretsiz olarak yaparız. Bir siparişe veya hesabınıza ilişkin e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malezya
 
@@ -575,22 +330,6 @@ Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşulları’nın 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Malezya hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
 
-### Gizlilik — Malezya’daki herkes için
-
-**Uygulanacak hukuk.** Malezya’daki kişilerin kişisel verilerini işlerken, Gizlilik Politikamızda belirtilen Birleşik Krallık mevzuatının yanı sıra 2010 tarihli Kişisel Verilerin Korunması Kanunu (PDPA) uygulanır.
-
-**Verilerinizin saklandığı yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir; Gizlilik Politikası’nın 6. bölümünde belirtildiği üzere verilerinizin bir kısmı Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir. Verilerinizi yalnızca PDPA’nın izin verdiği durumlarda aktarırız.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notu eklerseniz, bu notları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikası’nın 7. bölümünde belirtildiği üzere bu notları, adınız ve iletişim bilgilerinizle birlikte, siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda tuttuğumuz kişisel verileri talep edebilir, bunları düzeltmemizi veya kullanmayı durdurmamızı isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. 21 gün içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Önce privacy@hatchgrab.com adresinden bize bildirin. Memnun kalmazsanız, Kişisel Verileri Koruma Komiseri’ne (Personal Data Protection Commissioner) www.pdp.gov.my adresi üzerinden şikâyette bulunabilirsiniz.
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca Malezya hukukunun izin verdiği durumlarda göndeririz. Her birinde bunları almayı nasıl durdurabileceğiniz belirtilir; göndermeyi durdurmamızı isterseniz durdururuz. Bir siparişe veya hesabınıza ilişkin e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Tayland
 
 ### Food truck işletmecileri için
@@ -615,22 +354,6 @@ Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşulları’nın 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, Tayland hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
 
-### Gizlilik — Tayland’daki herkes için
-
-**Uygulanacak hukuk.** Tayland’daki kişilerin kişisel verilerini işlerken, Gizlilik Politikamızda belirtilen Birleşik Krallık mevzuatının yanı sıra B.E. 2562 tarihli Kişisel Verilerin Korunması Kanunu (PDPA) uygulanır. Gizlilik Politikası’nın 8. bölümünde sayılan haklar, PDPA kapsamında da sizin haklarınızdır.
-
-**Verilerinizin saklandığı yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir; Gizlilik Politikası’nın 6. bölümünde belirtildiği üzere verilerinizin bir kısmı Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir. Verilerinizi yalnızca PDPA’nın izin verdiği bir dayanağa göre aktarırız.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notu eklerseniz, bu notları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikası’nın 7. bölümünde belirtildiği üzere bu notları, adınız ve iletişim bilgilerinizle birlikte, siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda tuttuğumuz kişisel verilerin bir kopyasını talep edebilir, bunları düzeltmemizi, silmemizi veya kullanmayı durdurmamızı isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. 30 gün içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Önce privacy@hatchgrab.com adresinden bize bildirin. Ayrıca Kişisel Verileri Koruma Komitesi’ne (Personal Data Protection Committee) www.pdpc.or.th adresi üzerinden şikâyette bulunabilirsiniz.
-
-**Pazarlama e-postaları.** Pazarlama e-postalarını yalnızca Tayland hukukunun izin verdiği durumlarda göndeririz. Her birinde bunları almayı nasıl durdurabileceğiniz belirtilir; göndermeyi durdurmamızı isterseniz durdururuz. Bir siparişe veya hesabınıza ilişkin e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Birleşik Arap Emirlikleri
 
 ### Food truck işletmecileri için
@@ -652,19 +375,3 @@ Bu bölüm, yukarıda kendisine ait ayrı bir bölüm bulunmayan Avrupa Ekonomik
 **Müşterilerinizin verileri.** BAE’nin Kişisel Verilerin Korunmasına İlişkin 2021 tarihli ve 45 sayılı Federal Kanun Hükmünde Kararnamesi kapsamında, Kullanım Koşulları’nın 10. bölümü bu Kararname’nin kavramlarıyla da aynı anlamı taşır: veri sorumlusu siz, veri işleyeniniz ise biziz ve müşterilerinizin kişisel verilerini yalnızca HatchGrab’i sizin için çalıştırmak amacıyla ve sizin talimatlarınız doğrultusunda işleriz.
 
 **Bildirimler ve uygulanacak hukuk.** Bildirimler, Kullanım Koşulları’nın 12. bölümünde belirtildiği şekilde yapılır: sizinle hesabınızdaki e-posta adresi üzerinden iletişime geçeriz, siz de bize aşağıdaki adresten ulaşabilirsiniz. Bu koşullar İngiltere ve Galler hukukuna tabidir ve İngiltere ve Galler mahkemeleri yetkilidir. Bu durum, BAE hukukunun size sağladığı ve sözleşmeyle hariç tutulamayan herhangi bir korumayı ortadan kaldırmaz.
-
-### Gizlilik — Birleşik Arap Emirlikleri’ndeki herkes için
-
-**Uygulanacak hukuk.** Birleşik Arap Emirlikleri’ndeki kişilerin kişisel verilerini işlerken, Gizlilik Politikamızda belirtilen Birleşik Krallık mevzuatının yanı sıra Kişisel Verilerin Korunmasına İlişkin 2021 tarihli ve 45 sayılı Federal Kanun Hükmünde Kararname uygulanır. DIFC veya ADGM gibi kendi veri koruma mevzuatı bulunan bir serbest bölgedeyseniz, bunun yerine o mevzuat uygulanır.
-
-**Verilerinizin saklandığı yer.** Verileriniz Birleşik Krallık’ta saklanır ve işlenir; Gizlilik Politikası’nın 6. bölümünde belirtildiği üzere verilerinizin bir kısmı Avrupa Birliği’ndeki ve Amerika Birleşik Devletleri’ndeki hizmet sağlayıcılar tarafından işlenir. Verilerinizi yalnızca mevzuatın izin verdiği bir dayanağa göre aktarırız.
-
-**Alerji ve beslenme notları.** Bir siparişe alerji veya beslenme notu eklerseniz, bu notları siparişinizle birlikte food truck’a iletiriz. Gizlilik Politikası’nın 7. bölümünde belirtildiği üzere bu notları, adınız ve iletişim bilgilerinizle birlikte, siparişten 12 ay sonra sileriz. Bunları başka hiçbir amaçla kullanmayız.
-
-**Talepleriniz.** Hakkınızda tuttuğumuz kişisel verileri talep edebilir, bunları düzeltmemizi, silmemizi veya kullanmayı durdurmamızı isteyebilirsiniz. privacy@hatchgrab.com adresine e-posta gönderin. 30 gün içinde yanıt veririz. Bir food truck’tan sipariş verdiyseniz, sipariş bilgilerinizin nasıl kullanılacağına o food truck karar verdiği için talebinizi ona iletebiliriz.
-
-**Şikâyetler.** Önce privacy@hatchgrab.com adresinden bize bildirin. Memnun kalmazsanız, BAE Veri Ofisi’ne (UAE Data Office) şikâyette bulunabilirsiniz.
-
-**Pazarlama mesajları.** Pazarlama mesajlarını yalnızca BAE hukukunun izin verdiği durumlarda göndeririz. Her birinde bunları almayı nasıl durdurabileceğiniz belirtilir; göndermeyi durdurmamızı isterseniz durdururuz. Bir siparişe veya hesabınıza ilişkin e-postalar pazarlama niteliğinde değildir.
-
-**İletişim.** privacy@hatchgrab.com veya posta yoluyla: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

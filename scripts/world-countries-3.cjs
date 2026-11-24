@@ -42,7 +42,8 @@ const text = s => String(s ?? '').replace(/<[^>]+>/g, ' ').replace(/&#x27;|&#39;
 // same section and offset as the English one; nothing else is accepted.
 const locate = s => { const ps = s.split(/\n{2,}|\n(?=#{1,6} )/); let sec = -1; return { ps, idx: ps.map(p => (/^## /.test(p) ? ++sec : sec)) } }   // ⚠️ RE-PINNED (pricing-copy-2, 11 November 2026): see above
 const placeOf = (file, start) => {
-  const E = locate(read(`content/legal/${file}`)); const i = E.ps.findIndex(p => p.startsWith(start))
+  // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026): the English as world-countries-3 left it (scripts/_named-france-privacy-1.cjs).
+  const E = locate(require('./_named-france-privacy-1.cjs').asBefore(`content/legal/${file}`, read(`content/legal/${file}`))); const i = E.ps.findIndex(p => p.startsWith(start))
   if (i < 0) throw new Error(`no English paragraph starting ${start}`)
   const sec = E.idx[i], off = i - E.idx.indexOf(sec)
   return s => { const T = locate(s); return T.ps[T.idx.indexOf(sec) + off] }
@@ -51,9 +52,13 @@ const placeOf = (file, start) => {
 ;(async () => {
   head('1 · ENGLISH — exactly the three named sentences')
   // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md): the Terms read through terms-postpay-1's exact undo.
-  const country = read('content/legal/country-specific-terms.md'), terms = require('./_named-terms-postpay-1.cjs').undoCode('content/legal/terms-and-conditions.md', read('content/legal/terms-and-conditions.md'))
+  // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md): the Country-specific terms' per-country privacy parts
+  // (Mexico's complaint route among them) were deleted and the date moved; the English is read through france-privacy-1's exact undo
+  // (scripts/_named-france-privacy-1.cjs, START ec16f022 byte for byte), so these checks still prove the sentences as world-countries-3 left them.
+  const FPU = (f, x) => require('./_named-france-privacy-1.cjs').asBefore(f, x)
+  const country = FPU('content/legal/country-specific-terms.md', read('content/legal/country-specific-terms.md')), terms = require('./_named-terms-postpay-1.cjs').undoCode('content/legal/terms-and-conditions.md', read('content/legal/terms-and-conditions.md'))
   for (const [file, before, after] of W3.EDITS) {
-    const s = read(file)
+    const s = FPU(file, read(file))   // ⚠️ RE-PINNED (france-privacy-1): see above
     t(`${file}: "${after.slice(0, 70)}…" once, the old words gone`, s.split(after).length === 2 && !s.includes(before))
   }
   const sectionOf = (s, re) => { const i = s.search(re); const j = s.indexOf('\n## ', i + 4); return s.slice(i, j < 0 ? s.length : j) }
@@ -82,15 +87,23 @@ const placeOf = (file, start) => {
   const ca = placeOf('country-specific-terms.md', '**Quebec, Saskatchewan and Manitoba.**')
   const t3 = placeOf('terms-and-conditions.md', "**Your customers' data.**")
   const bad = []
+  // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md): the per-country privacy parts — Mexico's complaint
+  // paragraph among them — were deleted from every translation on purpose; the Secretaría is checked in each translation as it was at
+  // ec16f022 (the commit before), and today's files must have no privacy part left. The five bases no enabled country uses keep their
+  // country terms on the English before 24 Nov 2026 too, so their stamp is not checked (as for their Terms since terms-postpay-1).
+  const FP1 = require('./_named-france-privacy-1.cjs')
+  const before = (b, f) => (FP1.LANDED ? execSync(`git show ec16f022:content/legal/${b}/${f}`, { cwd: REPO, encoding: 'utf8' }) : fs.readFileSync(L.translationPath(b, f), 'utf8'))
   for (const b of BASES) {
-    const c = fs.readFileSync(L.translationPath(b, 'country-specific-terms.md'), 'utf8'), tt = fs.readFileSync(L.translationPath(b, 'terms-and-conditions.md'), 'utf8')
+    const cNow = fs.readFileSync(L.translationPath(b, 'country-specific-terms.md'), 'utf8')
+    if (FP1.LANDED && !['fil-PH', 'hi-IN', 'ur-PK', 'ta-LK', 'vi-VN'].includes(b) && /\n### [^\n]*\n[\s\S]*?\n### /.test(cNow.split(/\n(?=## )/).slice(1).find(x => (x.match(/^### /gm) || []).length > 1) || '')) bad.push(`${b}: a country section still has a privacy part`)
+    const c = before(b, 'country-specific-terms.md'), tt = fs.readFileSync(L.translationPath(b, 'terms-and-conditions.md'), 'utf8')
     const m = mx(c), q = ca(c), s3 = t3(tt)
     if (!m.includes(SEC) || !/21/.test(m) || !m.includes('2025')) bad.push(`${b} Mexico: ${m.slice(0, 120)}`)
     if (!/(?<!\d)10(?!\d)/.test(s3) || /(?<!\d)9(?!\d)/.test(s3)) bad.push(`${b} Terms §3: ${s3}`)
     void q
     // ⚠️ RE-PINNED (terms-postpay-1, 19 November 2026, docs/terms-postpay-1-report.md): fil-PH, hi-IN, ur-PK, ta-LK and vi-VN (no enabled country uses
     // them) keep their Terms on the English before 19 Nov 2026 — their Terms §3 is still checked above, their stamp is not.
-    for (const [file, s] of [['country-specific-terms.md', c], ['terms-and-conditions.md', tt]]) { if (file === 'terms-and-conditions.md' && ['fil-PH', 'hi-IN', 'ur-PK', 'ta-LK', 'vi-VN'].includes(b)) continue; const p = L.compare(file, s); if (p.length) bad.push(`${b}/${file}: ${p[0]}`) }
+    for (const [file, s] of [['country-specific-terms.md', cNow], ['terms-and-conditions.md', tt]]) { if ((file === 'terms-and-conditions.md' || FP1.LANDED) && ['fil-PH', 'hi-IN', 'ur-PK', 'ta-LK', 'vi-VN'].includes(b)) continue; const p = L.compare(file, s); if (p.length) bad.push(`${b}/${file}: ${p[0]}`) }
   }
   t('every translation: Mexico names the Secretaría (in Spanish, as written) with the date\'s day and year; Terms §3 points at 10; both files stamped with today\'s English and the same structure', bad.length === 0, bad.slice(0, 6))
 
@@ -102,8 +115,16 @@ const placeOf = (file, start) => {
   const en = text(await ctx.withReq({ rows }, async () => ctx.prerender(h(EN.Page, {}))))
   const params = Promise.resolve({ country: 'mx' })
   const es = text(await ctx.withReq({ rows }, async () => ctx.prerender(h(MX.Layout, { params }, h(MX.Page, { params })))))
-  t('/country-terms renders the Secretaría with its English name and the law', en.includes(`${SEC} (Secretariat of Anti-Corruption and Good Governance)`) && en.includes('in force since 21 March 2025'))
-  t('/mx/country-terms (Spanish) renders the Secretaría and the law\'s Spanish title', es.includes(SEC) && es.includes('Ley Federal de Protección de Datos Personales en Posesión de los Particulares'))
+  // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026): the pages no longer carry Mexico's privacy part (deleted with every country's, one
+  // privacy policy for every country) — proved gone, and the English before it (ec16f022) proved to have carried it.
+  if (FP1.LANDED) {
+    const enBefore = execSync('git show ec16f022:content/legal/country-specific-terms.md', { cwd: REPO, encoding: 'utf8' })
+    t('/country-terms no longer renders Mexico\'s privacy part (france-privacy-1); the English before it named the Secretaría and the law', !en.includes(SEC) && enBefore.includes(`${SEC} (Secretariat of Anti-Corruption and Good Governance)`) && enBefore.includes('in force since 21 March 2025'))
+    t('/mx/country-terms (Spanish) no longer renders it either; the Spanish before it named the Secretaría and the law\'s Spanish title', !es.includes(SEC) && before('es-ES', 'country-specific-terms.md').includes(SEC) && before('es-ES', 'country-specific-terms.md').includes('Ley Federal de Protección de Datos Personales en Posesión de los Particulares'))
+  } else {
+    t('/country-terms renders the Secretaría with its English name and the law', en.includes(`${SEC} (Secretariat of Anti-Corruption and Good Governance)`) && en.includes('in force since 21 March 2025'))
+    t('/mx/country-terms (Spanish) renders the Secretaría and the law\'s Spanish title', es.includes(SEC) && es.includes('Ley Federal de Protección de Datos Personales en Posesión de los Particulares'))
+  }
 
   console.log(`\n${fail ? '🔴' : '✅'} world-countries-3: ${pass} passed, ${fail} failed`)
   process.exit(fail ? 1 : 0)

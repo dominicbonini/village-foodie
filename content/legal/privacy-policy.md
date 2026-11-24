@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 4 November 2026
+**Last updated:** 24 November 2026
 
 This policy explains how HatchGrab Ltd ("we", "us", "our") collects and uses personal data across two connected services:
 
@@ -11,7 +11,7 @@ It also covers the HatchGrab mobile and tablet apps for iOS and Android.
 
 If you only came here because you ordered food from a truck, the section **"If you ordered from a food truck"** is the part that applies to you.
 
-**Some countries have extra rules.** Where they apply to you, they're on our [Country-specific terms](/country-terms) page, which forms part of this policy.
+**This policy applies wherever you are.** We follow UK data protection law, and where the data protection law of the country you live in also applies, we follow that too.
 
 ---
 
@@ -83,6 +83,8 @@ When you place an order through a truck's ordering page, we collect and pass to 
 
 The truck decides how long to keep your details and how they contact you afterwards. Their own privacy practices apply to that. If you are not sure who the truck is, contact us at privacy@hatchgrab.com and we will point you to them.
 
+**Allergy and dietary notes.** We pass them to the truck with your order and use them for nothing else. We remove them, with your name and contact details, 12 months after the order (see section 7).
+
 **Allergen information.** Where a truck publishes allergen information, we display what the truck has confirmed. We do not verify it independently. Always tell the truck directly about a serious allergy.
 
 ---
@@ -134,7 +136,7 @@ We may also disclose data where we are required to by law, or to establish or de
 
 **We do not sell personal data, and we do not share it for advertising.**
 
-**International transfers.** Your account data and order data are stored and processed in the United Kingdom. Some things are handled outside it: menu extraction and WhatsApp automatic replies, which use a Google service in the United States; WhatsApp message delivery, which is handled by Meta in the United States; payments, which are handled by Stripe in the United States; and push notifications, which are delivered by Apple and Google in the United States. Where data leaves the UK, the transfer is covered by UK adequacy regulations or by the International Data Transfer Agreement or Addendum, which provide appropriate safeguards. You can ask us for details of the safeguards that apply.
+**International transfers.** Your account data and order data are stored and processed in the United Kingdom. Some things are handled outside it: menu extraction and WhatsApp automatic replies, which use a Google service in the United States; WhatsApp message delivery, which is handled by Meta in the United States; payments, which are handled by Stripe in the United States; and push notifications, which are delivered by Apple and Google in the United States. Where data leaves the UK, the transfer is covered by UK adequacy regulations or by the International Data Transfer Agreement or Addendum, and, where the law of your country requires it, by a safeguard that law recognises. You can ask us for details of the safeguards that apply.
 
 As our service grows we may add providers, including an SMS provider. We will update this list before they begin processing your data.
 
@@ -160,7 +162,7 @@ We delete or anonymise data once these periods end.
 
 ## 8. Your rights
 
-Under UK data protection law you have the right to:
+Under UK data protection law, and the law of the country you live in where it applies, you have the right to:
 
 - ask what personal data we hold about you, and get a copy;
 - have inaccurate data corrected;
@@ -170,11 +172,17 @@ Under UK data protection law you have the right to:
 - object to processing based on legitimate interests;
 - withdraw consent at any time, where we rely on consent.
 
-To exercise any of these, email privacy@hatchgrab.com. We will respond within one month.
+The law where you live may give you these rights under other names, or extra ones. You have those too.
 
-**Deleting your account.** Operators can request account deletion from within the app or by emailing privacy@hatchgrab.com. We will delete your account and personal data, except where we are required to retain records for accounting or legal reasons.
+**Making a request.** Email privacy@hatchgrab.com. We will check that the request is genuine before we act on it. You can ask someone to make the request for you, and we will not treat you differently for making one. We will reply within one month, or sooner if the law of your country requires it. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used. If we turn down a request, you can ask us to look at it again by replying to our answer.
 
-**Complaints.** If you are unhappy with how we have handled your data, you can complain to the Information Commissioner's Office at ico.org.uk, or on 0303 123 1113. We would appreciate the chance to address it first.
+**Deleting your account.** Operators can request account deletion from within the app or by emailing privacy@hatchgrab.com. We will delete your account and personal data, except where we are required to retain records for accounting or legal reasons. When an operator's account is deleted, we also remove their customers' names, contact details and notes from the orders we keep.
+
+**Marketing emails.** We send marketing emails only where the law where you live allows it, which in some countries means only with your consent. Every one says who it is from, includes our postal address and tells you how to stop receiving them. If you ask us to stop, we will, free of charge and within 10 business days. Emails about an order or your account are not marketing. If we or a truck offer order updates by text message, you will get them only if you agree, and you can stop them at any time.
+
+**If something goes wrong.** If a breach involving your personal data is likely to cause you serious harm, we will tell you and the regulator as soon as we can where the law requires it, or help the truck you ordered from to do so.
+
+**Complaints.** Tell us first at privacy@hatchgrab.com; we would appreciate the chance to put things right. You can also complain to the data protection regulator where you live. In the UK, that is the Information Commissioner's Office, at ico.org.uk or on 0303 123 1113.
 
 ---
 

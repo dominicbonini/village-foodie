@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Privatumo politika
 
 **Paskutinį kartą atnaujinta:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Ji taip pat taikoma HatchGrab mobiliosioms ir planšetinėms programėlėms, ski
 
 Jei čia patekote tik todėl, kad užsisakėte maisto iš furgono, jums taikoma skiltis **„Jei užsisakėte iš food truck“**.
 
-**Kai kuriose šalyse taikomos papildomos taisyklės.** Jei jos taikomos jums, jos pateiktos mūsų puslapyje [Konkrečioms šalims taikomos sąlygos](/country-terms), kuris yra šios politikos dalis.
-
+**Ši politika taikoma, kad ir kur būtumėte.** Laikomės JK duomenų apsaugos teisės, o kai taip pat taikoma šalies, kurioje gyvenate, duomenų apsaugos teisė, laikomės ir jos.
 ---
 
 ## 1. Kas mes esame
@@ -84,6 +83,8 @@ Kai pateikiate užsakymą per furgono užsakymų puslapį, mes renkame ir tam fu
 
 Furgonas sprendžia, kiek laiko saugoti jūsų duomenis ir kaip su jumis susisiekti vėliau. Tam taikoma jo paties privatumo praktika. Jei nežinote, kas yra tas furgonas, susisiekite su mumis adresu privacy@hatchgrab.com, ir mes jus nukreipsime.
 
+**Pastabos apie alergijas ir mitybą.** Perduodame jas furgonui kartu su jūsų užsakymu ir niekam kitam jų nenaudojame. Jas kartu su jūsų vardu ir kontaktiniais duomenimis pašaliname praėjus 12 mėnesių po užsakymo (žr. 7 skyrių).
+
 **Informacija apie alergenus.** Kai furgonas skelbia informaciją apie alergenus, mes rodome tai, ką furgonas patvirtino. Mes jos savarankiškai netikriname. Apie rimtą alergiją visada praneškite tiesiogiai furgonui.
 
 ---
@@ -135,7 +136,7 @@ Duomenis taip pat galime atskleisti, kai to reikalauja įstatymai, arba siekdami
 
 **Asmens duomenų neparduodame ir nesidaliname jais reklamos tikslais.**
 
-**Tarptautiniai perdavimai.** Jūsų paskyros duomenys ir užsakymų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje. Kai kurie dalykai tvarkomi už jos ribų: meniu nuskaitymas ir WhatsApp automatiniai atsakymai, kuriems naudojama Google paslauga Jungtinėse Amerikos Valstijose; WhatsApp žinučių pristatymas, kurį atlieka Meta Jungtinėse Amerikos Valstijose; mokėjimai, kuriuos tvarko Stripe Jungtinėse Amerikos Valstijose; ir tiesioginiai pranešimai, kuriuos pristato Apple ir Google Jungtinėse Amerikos Valstijose. Kai duomenys perduodami už JK ribų, perdavimui taikomi JK tinkamumo reglamentai (UK adequacy regulations) arba International Data Transfer Agreement (Tarptautinio duomenų perdavimo sutartis) ar Addendum (Priedas), kurie numato tinkamas apsaugos priemones. Galite paprašyti mūsų informacijos apie taikomas apsaugos priemones.
+**Tarptautiniai perdavimai.** Jūsų paskyros duomenys ir užsakymų duomenys saugomi ir tvarkomi Jungtinėje Karalystėje. Kai kurie dalykai tvarkomi už jos ribų: meniu nuskaitymas ir WhatsApp automatiniai atsakymai, kuriems naudojama Google paslauga Jungtinėse Amerikos Valstijose; WhatsApp žinučių pristatymas, kurį atlieka Meta Jungtinėse Amerikos Valstijose; mokėjimai, kuriuos tvarko Stripe Jungtinėse Amerikos Valstijose; ir tiesioginiai pranešimai, kuriuos pristato Apple ir Google Jungtinėse Amerikos Valstijose. Kai duomenys perduodami už JK ribų, perdavimui taikomi JK tinkamumo reglamentai (UK adequacy regulations) arba International Data Transfer Agreement (Tarptautinio duomenų perdavimo sutartis) ar Addendum (Priedas), o kai to reikalauja jūsų šalies teisė, – ir tos teisės pripažįstama apsaugos priemonė. Galite paprašyti mūsų informacijos apie taikomas apsaugos priemones.
 
 Plečiantis mūsų paslaugai, galime pridėti naujų teikėjų, įskaitant SMS paslaugų teikėją. Šį sąrašą atnaujinsime prieš jiems pradedant tvarkyti jūsų duomenis.
 
@@ -161,7 +162,7 @@ Pasibaigus šiems laikotarpiams, duomenis ištriname arba nuasmeniname.
 
 ## 8. Jūsų teisės
 
-Pagal JK duomenų apsaugos teisę turite teisę:
+Pagal JK duomenų apsaugos teisę ir, kai ji taikoma, šalies, kurioje gyvenate, teisę turite teisę:
 
 - paklausti, kokius jūsų asmens duomenis turime, ir gauti jų kopiją;
 - reikalauti ištaisyti netikslius duomenis;
@@ -171,11 +172,17 @@ Pagal JK duomenų apsaugos teisę turite teisę:
 - nesutikti su tvarkymu, grindžiamu teisėtais interesais;
 - bet kada atšaukti sutikimą, kai remiamės sutikimu.
 
-Norėdami pasinaudoti bet kuria iš šių teisių, rašykite adresu privacy@hatchgrab.com. Atsakysime per vieną mėnesį.
+Šalies, kurioje gyvenate, teisė šias teises jums gali suteikti kitais pavadinimais arba suteikti papildomų teisių. Jas taip pat turite.
 
-**Paskyros ištrynimas.** Operatoriai gali paprašyti ištrinti paskyrą programėlėje arba parašę adresu privacy@hatchgrab.com. Ištrinsime jūsų paskyrą ir asmens duomenis, išskyrus atvejus, kai privalome saugoti įrašus dėl apskaitos ar teisinių priežasčių.
+**Prašymo pateikimas.** Rašykite adresu privacy@hatchgrab.com. Prieš imdamiesi veiksmų patikrinsime, ar prašymas tikras. Galite paprašyti, kad prašymą už jus pateiktų kitas asmuo, ir dėl to, kad pateikėte prašymą, su jumis nesielgsime kitaip. Atsakysime per vieną mėnesį arba anksčiau, jei to reikalauja jūsų šalies teisė. Jei užsisakėte iš furgono, jūsų prašymą galime perduoti tam furgonui, nes jis sprendžia, kaip naudojami jūsų užsakymo duomenys. Jei prašymą atmesime, galite paprašyti mūsų jį peržiūrėti dar kartą, atsakydami į mūsų atsakymą.
 
-**Skundai.** Jei esate nepatenkinti tuo, kaip tvarkėme jūsų duomenis, galite pateikti skundą Information Commissioner's Office (JK Informacijos komisaro biurui) svetainėje ico.org.uk arba telefonu 0303 123 1113. Būtume dėkingi, jei pirmiausia suteiktumėte mums galimybę tai išspręsti.
+**Paskyros ištrynimas.** Operatoriai gali paprašyti ištrinti paskyrą programėlėje arba parašę adresu privacy@hatchgrab.com. Ištrinsime jūsų paskyrą ir asmens duomenis, išskyrus atvejus, kai privalome saugoti įrašus dėl apskaitos ar teisinių priežasčių. Kai operatoriaus paskyra ištrinama, iš mūsų saugomų užsakymų taip pat pašaliname jo klientų vardus, kontaktinius duomenis ir pastabas.
+
+**Rinkodaros el. laiškai.** Rinkodaros el. laiškus siunčiame tik tada, kai tai leidžia šalies, kurioje gyvenate, teisė, o kai kuriose šalyse tai reiškia – tik gavę jūsų sutikimą. Kiekviename jų nurodoma, nuo ko jis siunčiamas, pateikiamas mūsų pašto adresas ir nurodoma, kaip atsisakyti jų gavimo. Jei paprašysite nustoti, taip ir padarysime nemokamai ir per 10 darbo dienų. El. laiškai apie užsakymą ar jūsų paskyrą nėra rinkodara. Jei mes ar furgonas siūlome atnaujinimus apie užsakymą tekstinėmis žinutėmis, jas gausite tik tada, jei sutiksite, ir galėsite bet kada jas sustabdyti.
+
+**Jei kas nors nutiktų ne taip.** Jei pažeidimas, susijęs su jūsų asmens duomenimis, gali padaryti jums didelę žalą, kai to reikalauja teisė, kuo greičiau apie tai pranešime jums ir priežiūros institucijai arba padėsime tai padaryti furgonui, iš kurio užsisakėte.
+
+**Skundai.** Pirmiausia kreipkitės į mus adresu privacy@hatchgrab.com; būtume dėkingi už galimybę padėtį ištaisyti. Taip pat galite pateikti skundą šalies, kurioje gyvenate, duomenų apsaugos priežiūros institucijai. JK tai yra Information Commissioner's Office (JK Informacijos komisaro biuras): svetainė ico.org.uk, telefonas 0303 123 1113.
 
 ---
 

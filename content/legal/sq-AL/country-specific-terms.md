@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Kushtet specifike sipas shtetit
 
 **Përditësuar së fundi:** {{LAST_UPDATED}}
 
-[Kushtet tona të shërbimit](/terms) dhe [Politika jonë e privatësisë](/privacy) zbatohen në çdo shtet ku përdoret HatchGrab. Disa shtete kanë rregulla shtesë. Kjo faqe i paraqet ato, shtet pas shteti.
+[Kushtet tona të shërbimit](/terms) zbatohen në çdo shtet ku përdoret HatchGrab. Disa shtete kanë rregulla shtesë. Kjo faqe i paraqet ato, shtet pas shteti.
 
-Kur një seksion më poshtë zbatohet për ju, ai është pjesë e Kushteve tona të shërbimit dhe e Politikës sonë të privatësisë. Nëse thotë diçka ndryshe prej tyre, për atë shtet zbatohet kjo faqe.
+Kur një seksion më poshtë zbatohet për ju, ai është pjesë e Kushteve tona të shërbimit. Nëse thotë diçka ndryshe prej tyre, për atë shtet zbatohet kjo faqe.
 
-Nëse shteti juaj nuk është në listë, nuk ka rregulla shtesë: Kushtet e shërbimit dhe Politika e privatësisë zbatohen ashtu siç janë shkruar.
-
+Nëse shteti juaj nuk është në listë, nuk ka rregulla shtesë: Kushtet e shërbimit zbatohen ashtu siç janë shkruar. [Politika jonë e privatësisë](/privacy) është e njëjtë në çdo shtet.
 ---
 
 ## Shtetet e Bashkuara
@@ -31,26 +30,6 @@ Nëse shteti juaj nuk është në listë, nuk ka rregulla shtesë: Kushtet e sh�
 
 **Të dhënat e klientëve tuaj.** Sipas ligjeve shtetërore të privatësisë në SHBA, seksioni 10 i Kushteve të shërbimit do të thotë të njëjtën gjë në termat e tyre: ju jeni “biznesi” (business) dhe ne jemi “ofruesi juaj i shërbimit” (service provider) ose “përpunuesi” (processor). Ne i përdorim informacionet personale të klientëve tuaj vetëm për ta vënë në punë HatchGrab për ju. Nuk i shesim, nuk i ndajmë për reklama të bazuara në sjelljen ndërmjet konteksteve të ndryshme (cross-context behavioral advertising), dhe nuk i përdorim për asnjë qëllim tjetër, përveç rasteve kur këto ligje ia lejojnë një ofruesi shërbimi.
 
-### Privatësia, për të gjithë në Shtetet e Bashkuara
-
-**Çfarë mbledhim dhe me kë e ndajmë.** Njësoj si thotë Politika e privatësisë: të dhënat e llogarisë dhe të biznesit për operatorët e food truck-eve; emrin tuaj, të dhënat e kontaktit dhe të dhënat e porosisë nëse porositni nga një food truck; dhe të dhëna teknike bazë nëse vizitoni faqet tona të internetit. I ndajmë me food truck-un nga i cili porositni dhe me ofruesit e shërbimeve të renditur në seksionin 6 të Politikës së privatësisë, vetëm për ta vënë në punë shërbimin ose kur e kërkon ligji. Ato mund të përpunohen në Mbretërinë e Bashkuar, në Bashkimin Evropian dhe në Shtetet e Bashkuara.
-
-**Ne nuk i shesim dhe nuk i ndajmë informacionet tuaja personale.** Nuk shesim informacione personale dhe nuk i ndajmë për reklama të bazuara në sjelljen ndërmjet konteksteve të ndryshme (cross-context behavioral advertising).
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të na pyesni cilat informacione personale mbajmë për ju dhe të na kërkoni t’i korrigjojmë ose t’i fshijmë. Shkruani në privacy@hatchgrab.com. Do të kontrollojmë që kërkesa të jetë e vërtetë para se të veprojmë, dhe do të përgjigjemi brenda 45 ditëve. Mund t’i kërkoni dikujt ta bëjë kërkesën për ju. Nuk do t’ju trajtojmë ndryshe pse keni bërë një kërkesë. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj. Nëse refuzojmë një kërkesë, mund të na kërkoni ta shqyrtojmë sërish duke iu përgjigjur përgjigjes sonë.
-
-**Ligjet shtetërore të privatësisë.** Disa ligje shtetërore të privatësisë zbatohen vetëm për bizneset mbi një madhësi të caktuar, dhe mund të mos zbatohen për ne. Megjithatë, ne i respektojmë kërkesat e mësipërme nga kushdo në Shtetet e Bashkuara.
-
-**Fëmijët.** Shërbimet tona nuk u drejtohen fëmijëve nën 13 vjeç, dhe ne nuk mbledhim me dijeni informacionet e tyre personale. Nëse besoni se një fëmijë na ka dhënë informacionet e tij, na kontaktoni dhe do t’i fshijmë.
-
-**Email-et e marketingut.** Çdo email marketingu që dërgojmë ju tregon si të ndaloni marrjen e tyre dhe përfshin adresën tonë postare. Nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Mesazhet SMS.** Nëse ne ose një food truck ofrojmë përditësime të porosisë me SMS, do t’i merrni vetëm nëse pranoni t’i merrni, dhe mund t’i ndaloni në çdo kohë.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Irlanda
 
 ### Për operatorët e food truck-eve
@@ -70,22 +49,6 @@ Nëse shteti juaj nuk është në listë, nuk ka rregulla shtesë: Kushtet e sh�
 **Të dhënat e klientëve tuaj.** Sipas Rregullores së Përgjithshme të BE-së për Mbrojtjen e të Dhënave (GDPR), seksioni 10 i Kushteve të shërbimit është marrëveshja jonë me ju për përpunimin e të dhënave: ju jeni kontrolluesi (controller) dhe ne jemi përpunuesi (processor), në të njëjtin kuptim si në Nenin 28 të GDPR-së.
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji irlandez dhe që nuk mund të përjashtohet me marrëveshje.
-
-### Privatësia, për të gjithë në Irlandë
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Irlandë, zbatohet Rregullorja e Përgjithshme e BE-së për Mbrojtjen e të Dhënave (GDPR), si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë. Të drejtat e renditura në seksionin 8 të Politikës së privatësisë janë gjithashtu të drejtat tuaja sipas GDPR-së.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar. Komisioni Evropian ka vendosur që Mbretëria e Bashkuar i mbron të dhënat personale në të njëjtin standard si BE-ja, prandaj për këtë nuk nevojitet asnjë masë mbrojtëse shtesë. Kur një ofrues shërbimi trajton të dhëna në Shtetet e Bashkuara (seksioni 6 i Politikës së privatësisë), transferimi mbulohet nga një masë mbrojtëse që GDPR-ja e njeh.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të na pyesni cilat të dhëna personale mbajmë për ju dhe të na kërkoni t’i korrigjojmë, t’i fshijmë ose të ndalojmë përdorimin e tyre. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda një muaji. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Mund të ankoheni te Komisioni për Mbrojtjen e të Dhënave (Data Protection Commission), autoriteti rregullator i Irlandës për mbrojtjen e të dhënave, në www.dataprotection.ie, ose me postë në 6 Pembroke Row, Dublin 2, D02 X963. Do ta vlerësonim mundësinë që t’i ndreqim gjërat ne më parë.
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji. Secili prej tyre ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australia
 
@@ -109,22 +72,6 @@ Nëse shteti juaj nuk është në listë, nuk ka rregulla shtesë: Kushtet e sh�
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji australian dhe që nuk mund të përjashtohet me marrëveshje.
 
-### Privatësia, për të gjithë në Australi
-
-**Ligji që zbatohet.** Kur trajtojmë informacione personale të personave në Australi, ne ndjekim Parimet Australiane të Privatësisë (Australian Privacy Principles) në Ligjin për Privatësinë (Privacy Act 1988), si dhe ligjin e Mbretërisë së Bashkuar të përmendur në Politikën tonë të privatësisë.
-
-**Ku mbahen informacionet tuaja.** Informacionet tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar. Disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara, siç thotë seksioni 6 i Politikës së privatësisë.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të na pyesni cilat informacione personale mbajmë për ju dhe të na kërkoni t’i korrigjojmë ose t’i fshijmë. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda 30 ditëve. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Nëse nuk jeni të kënaqur me mënyrën se si i kemi trajtuar informacionet tuaja personale, na e thoni së pari në privacy@hatchgrab.com. Nëse nuk jeni të kënaqur me përgjigjen tonë, ose nëse nuk jemi përgjigjur brenda 30 ditëve, mund të ankoheni me shkrim te Zyra e Komisionerit Australian të Informacionit (Office of the Australian Information Commissioner, OAIC) në www.oaic.gov.au.
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji. Secili prej tyre tregon nga kush vjen dhe ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Zelanda e Re
 
 ### Për operatorët e food truck-eve
@@ -147,24 +94,6 @@ Nëse shteti juaj nuk është në listë, nuk ka rregulla shtesë: Kushtet e sh�
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji i Zelandës së Re dhe që nuk mund të përjashtohet me marrëveshje.
 
-### Privatësia, për të gjithë në Zelandën e Re
-
-**Ligji që zbatohet.** Kur trajtojmë informacione personale të personave në Zelandën e Re, zbatohet Ligji për Privatësinë (Privacy Act 2020), si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë. Ai zbatohet për ne sepse ushtrojmë veprimtari biznesi në Zelandën e Re, edhe pse selia jonë është në Mbretërinë e Bashkuar.
-
-**Ku mbahen informacionet tuaja.** Informacionet tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar. Disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara, siç thotë seksioni 6 i Politikës së privatësisë.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të na kërkoni informacionet personale që mbajmë për ju dhe të na kërkoni t’i korrigjojmë. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi sa më shpejt që të mundemi në mënyrë të arsyeshme, dhe brenda 20 ditëve pune. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Nëse nuk jeni të kënaqur me mënyrën se si i kemi trajtuar informacionet tuaja personale, na e thoni së pari në privacy@hatchgrab.com. Komisioneri i Privatësisë (Privacy Commissioner) ju kërkon ta bëni këtë para se të paraqisni një ankesë. Nëse nuk jeni të kënaqur me përgjigjen tonë, mund të ankoheni te Zyra e Komisionerit të Privatësisë (Office of the Privacy Commissioner) në www.privacy.org.nz, në 0800 803 909, ose me postë në PO Box 10 094, Wellington 6140.
-
-**Cenimet e privatësisë.** Nëse një cenim i privatësisë që përfshin informacionet tuaja personale ka shkaktuar, ose ka gjasa të shkaktojë, dëm serioz, Ligji për Privatësinë (Privacy Act 2020) kërkon që Komisioneri i Privatësisë dhe ju të njoftoheni sa më shpejt që të jetë praktikisht e mundur. Ne do ta bëjmë këtë, ose, për një porosi që keni bërë te një food truck, do ta ndihmojmë food truck-un ta bëjë.
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji. Secili prej tyre tregon nga kush vjen dhe ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanadaja
 
 ### Për operatorët e food truck-eve
@@ -186,22 +115,6 @@ Nëse shteti juaj nuk është në listë, nuk ka rregulla shtesë: Kushtet e sh�
 **Të drejtat tuaja sipas ligjit vendor.** Asgjë në Kushtet e shërbimit nuk ju heq një të drejtë që ligji i vendit ku keni seli thotë se nuk mund të kufizohet ose të hiqet dorë prej saj.
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji i provincës ose i territorit tuaj dhe që nuk mund të përjashtohet me marrëveshje.
-
-### Privatësia, për të gjithë në Kanada
-
-**Ligji që zbatohet.** Kur trajtojmë informacione personale të personave në Kanada, zbatohet Ligji për Mbrojtjen e Informacionit Personal dhe Dokumentet Elektronike (Personal Information Protection and Electronic Documents Act, PIPEDA), dhe në Kolumbinë Britanike dhe Albertë ligjet e tyre për privatësinë në sektorin privat, si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë.
-
-**Ku mbahen informacionet tuaja.** Informacionet tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar, dhe disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara (seksioni 6 i Politikës së privatësisë), ku mund të aksesohen sipas ligjeve të atyre vendeve.
-
-**Kërkesat tuaja.** Mund të kërkoni informacionet personale që mbajmë për ju dhe të na kërkoni t’i korrigjojmë. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda 30 ditëve.
-
-**Ankesat.** Na e thoni së pari në privacy@hatchgrab.com. Nëse nuk jeni të kënaqur, mund të ankoheni te Zyra e Komisionerit të Privatësisë së Kanadasë (Office of the Privacy Commissioner of Canada) në www.priv.gc.ca ose në 1-800-282-1376.
-
-**Cenimet.** Nëse një cenim i masave mbrojtëse të sigurisë që përfshin informacionet tuaja krijon një rrezik real dëmi të konsiderueshëm, do t’ia raportojmë Komisionerit të Privatësisë dhe do t’jua themi sa më shpejt që të jetë e mundur.
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm me pëlqimin tuaj, siç e kërkon ligji kanadez kundër spam-it. Secili prej tyre tregon nga kush vjen dhe si të çregjistroheni, dhe ne veprojmë sipas një çregjistrimi brenda 10 ditëve pune.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Franca
 
@@ -226,22 +139,6 @@ Nëse shteti juaj nuk është në listë, nuk ka rregulla shtesë: Kushtet e sh�
 **Të dhënat e klientëve tuaj.** Sipas Rregullores së Përgjithshme të BE-së për Mbrojtjen e të Dhënave (GDPR), seksioni 10 i Kushteve të shërbimit është marrëveshja jonë me ju për përpunimin e të dhënave: ju jeni kontrolluesi (controller) dhe ne jemi përpunuesi (processor), në të njëjtin kuptim si në Nenin 28 të GDPR-së.
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji francez dhe që nuk mund të përjashtohet me marrëveshje.
-
-### Privatësia, për të gjithë në Francë
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Francë, zbatohen Rregullorja e Përgjithshme e BE-së për Mbrojtjen e të Dhënave (GDPR) dhe Ligji francez për Mbrojtjen e të Dhënave (loi Informatique et Libertés), si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë. Të drejtat e renditura në seksionin 8 të Politikës së privatësisë janë gjithashtu të drejtat tuaja sipas GDPR-së.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar. Komisioni Evropian ka vendosur që Mbretëria e Bashkuar i mbron të dhënat personale në të njëjtin standard si BE-ja, prandaj për këtë nuk nevojitet asnjë masë mbrojtëse shtesë. Kur një ofrues shërbimi trajton të dhëna në Shtetet e Bashkuara (seksioni 6 i Politikës së privatësisë), transferimi mbulohet nga një masë mbrojtëse që GDPR-ja e njeh.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të na pyesni cilat të dhëna personale mbajmë për ju dhe të na kërkoni t’i korrigjojmë, t’i fshijmë ose të ndalojmë përdorimin e tyre. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda një muaji. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Mund të ankoheni te CNIL (Commission nationale de l’informatique et des libertés), autoriteti rregullator i Francës për mbrojtjen e të dhënave, në www.cnil.fr, ose me postë te CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Do ta vlerësonim mundësinë që t’i ndreqim gjërat ne më parë.
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji francez. Secili prej tyre ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Zona Ekonomike Evropiane dhe Zvicra
 
@@ -269,53 +166,6 @@ Ky seksion zbatohet në çdo shtet të Zonës Ekonomike Evropiane që nuk ka sek
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji i shtetit tuaj dhe që nuk mund të përjashtohet me marrëveshje.
 
-### Privatësia, për të gjithë në Zonën Ekonomike Evropiane dhe në Zvicër
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Zonën Ekonomike Evropiane, zbatohen Rregullorja e Përgjithshme e BE-së për Mbrojtjen e të Dhënave (GDPR) dhe ligji për mbrojtjen e të dhënave i shtetit të tyre; në Zvicër, Ligji Federal për Mbrojtjen e të Dhënave (Federal Act on Data Protection). Zbatohet gjithashtu ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë. Të drejtat e renditura në seksionin 8 të Politikës së privatësisë janë gjithashtu të drejtat tuaja sipas këtyre ligjeve.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar. Komisioni Evropian dhe Zvicra kanë vendosur secili që Mbretëria e Bashkuar i mbron të dhënat personale në një standard të përshtatshëm, prandaj për këtë nuk nevojitet asnjë masë mbrojtëse shtesë. Kur një ofrues shërbimi trajton të dhëna në Shtetet e Bashkuara (seksioni 6 i Politikës së privatësisë), transferimi mbulohet nga një masë mbrojtëse që e njohin GDPR-ja dhe ligji zviceran.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të na pyesni cilat të dhëna personale mbajmë për ju dhe të na kërkoni t’i korrigjojmë, t’i fshijmë ose të ndalojmë përdorimin e tyre. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda një muaji. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Mund të ankoheni te autoriteti për mbrojtjen e të dhënave i shtetit ku jetoni ose punoni. Bordi Evropian i Mbrojtjes së të Dhënave (European Data Protection Board) i rendit të gjitha autoritetet në Zonën Ekonomike Evropiane në www.edpb.europa.eu (About EDPB › Members). Në Zvicër, ky është Komisioneri Federal për Mbrojtjen e të Dhënave dhe Informacionin (Federal Data Protection and Information Commissioner), www.edoeb.admin.ch. Do ta vlerësonim mundësinë që t’i ndreqim gjërat ne më parë.
-
-| Shteti | Autoriteti për mbrojtjen e të dhënave |
-|---|---|
-| Austria | dsb.gv.at |
-| Belgjika | autoriteprotectiondonnees.be |
-| Bullgaria | cpdp.bg |
-| Kroacia | azop.hr |
-| Qiproja | dataprotection.gov.cy |
-| Republika Çeke | uoou.gov.cz |
-| Danimarka | datatilsynet.dk |
-| Estonia | aki.ee |
-| Finlanda | tietosuoja.fi |
-| Gjermania | autoriteti i landit tuaj (Land) (federal: bfdi.bund.de) |
-| Greqia | dpa.gr |
-| Hungaria | naih.hu |
-| Italia | garanteprivacy.it |
-| Letonia | dvi.gov.lv |
-| Lihtenshtajni | datenschutzstelle.li |
-| Lituania | vdai.lrv.lt |
-| Luksemburgu | cnpd.lu |
-| Malta | idpc.org.mt |
-| Holanda | autoriteitpersoonsgegevens.nl |
-| Norvegjia | datatilsynet.no |
-| Polonia | uodo.gov.pl |
-| Portugalia | cnpd.pt |
-| Rumania | dataprotection.ro |
-| Sllovakia | dataprotection.gov.sk |
-| Sllovenia | ip-rs.si |
-| Spanja | aepd.es |
-| Suedia | imy.se |
-| Zvicra | Komisioneri Federal për Mbrojtjen e të Dhënave dhe Informacionin (Federal Data Protection and Information Commissioner, FDPIC), edoeb.admin.ch |
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji i shtetit tuaj. Secili prej tyre ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gjibraltari
 
 ### Për operatorët e food truck-eve
@@ -337,22 +187,6 @@ Ky seksion zbatohet në çdo shtet të Zonës Ekonomike Evropiane që nuk ka sek
 **Të dhënat e klientëve tuaj.** Sipas ligjit të Gjibraltarit për mbrojtjen e të dhënave, i cili përfshin Rregulloren e Përgjithshme të BE-së për Mbrojtjen e të Dhënave (GDPR) ashtu siç zbatohet në Gjibraltar, seksioni 10 i Kushteve të shërbimit është marrëveshja jonë me ju për përpunimin e të dhënave: ju jeni kontrolluesi (controller) dhe ne jemi përpunuesi (processor), në të njëjtin kuptim si në Nenin 28 të GDPR-së.
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji i Gjibraltarit dhe që nuk mund të përjashtohet me marrëveshje.
-
-### Privatësia, për të gjithë në Gjibraltar
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Gjibraltar, zbatohet ligji i Gjibraltarit për mbrojtjen e të dhënave, përfshirë Rregulloren e Përgjithshme të BE-së për Mbrojtjen e të Dhënave (GDPR) ashtu siç zbatohet atje, si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë. Të drejtat e renditura në seksionin 8 të Politikës së privatësisë janë gjithashtu të drejtat tuaja sipas atij ligji.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar. Kur një ofrues shërbimi trajton të dhëna në Shtetet e Bashkuara (seksioni 6 i Politikës së privatësisë), transferimi mbulohet nga një masë mbrojtëse që ligji e njeh.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të na pyesni cilat të dhëna personale mbajmë për ju dhe të na kërkoni t’i korrigjojmë, t’i fshijmë ose të ndalojmë përdorimin e tyre. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda një muaji. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Mund të ankoheni te Autoriteti Rregullator i Gjibraltarit (Gibraltar Regulatory Authority), autoriteti rregullator i Gjibraltarit për mbrojtjen e të dhënave, në www.gra.gi. Do ta vlerësonim mundësinë që t’i ndreqim gjërat ne më parë.
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji i Gjibraltarit. Secili prej tyre ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brazili
 
@@ -378,22 +212,6 @@ Ky seksion zbatohet në çdo shtet të Zonës Ekonomike Evropiane që nuk ka sek
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji brazilian dhe që nuk mund të përjashtohet me marrëveshje.
 
-### Privatësia, për të gjithë në Brazil
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Brazil, zbatohet Ligji i Përgjithshëm për Mbrojtjen e të Dhënave (LGPD), si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë. Të drejtat e renditura në seksionin 8 të Politikës së privatësisë janë gjithashtu të drejtat tuaja sipas LGPD-së.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar, dhe disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara, siç thotë seksioni 6 i Politikës së privatësisë. I transferojmë vetëm mbi një bazë që e lejon LGPD-ja.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të na kërkoni të konfirmojmë nëse mbajmë të dhëna personale për ju dhe të kërkoni një kopje të tyre, ose të na kërkoni t’i korrigjojmë, t’i fshijmë ose të ndalojmë përdorimin e tyre. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda 15 ditëve. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Na e thoni së pari në privacy@hatchgrab.com. Mund të ankoheni gjithashtu te Autoriteti Kombëtar për Mbrojtjen e të Dhënave (Autoridade Nacional de Proteção de Dados, ANPD) në www.gov.br/anpd.
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji brazilian. Secili prej tyre ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Meksika
 
 ### Për operatorët e food truck-eve
@@ -417,22 +235,6 @@ Ky seksion zbatohet në çdo shtet të Zonës Ekonomike Evropiane që nuk ka sek
 **Të dhënat e klientëve tuaj.** Sipas Ligjit Federal të Meksikës për Mbrojtjen e të Dhënave Personale në Zotërim të Palëve Private (Federal Law on the Protection of Personal Data Held by Private Parties), seksioni 10 i Kushteve të shërbimit do të thotë të njëjtën gjë në termat e tij: ju jeni kontrolluesi (controller) dhe ne jemi përpunuesi juaj (encargado), dhe i trajtojmë të dhënat personale të klientëve tuaj vetëm për ta vënë në punë HatchGrab për ju dhe sipas udhëzimeve tuaja. Ju jeni përgjegjës për njoftimin tuaj të privatësisë (aviso de privacidad) për klientët tuaj.
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji meksikan dhe që nuk mund të përjashtohet me marrëveshje.
-
-### Privatësia, për të gjithë në Meksikë
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Meksikë, zbatohet Ligji Federal për Mbrojtjen e të Dhënave Personale në Zotërim të Palëve Private (Federal Law on the Protection of Personal Data Held by Private Parties), si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë. Kjo faqe dhe Politika e privatësisë së bashku përbëjnë njoftimin tonë të privatësisë për personat në Meksikë.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar, dhe disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara, siç thotë seksioni 6 i Politikës së privatësisë, vetëm për ta vënë në punë shërbimin.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të na kërkoni qasje në të dhënat personale që mbajmë për ju, dhe të na kërkoni t’i korrigjojmë, t’i fshijmë ose të ndalojmë përdorimin e tyre (të drejtat tuaja ARCO). Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda 20 ditëve pune. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Na e thoni së pari në privacy@hatchgrab.com. Nëse nuk jeni të kënaqur, mund të ankoheni te Secretaría Anticorrupción y Buen Gobierno (Sekretariati për Antikorrupsionin dhe Qeverisjen e Mirë), i cili zbaton Ligjin Federal të Meksikës për Mbrojtjen e të Dhënave Personale në Zotërim të Palëve Private (në fuqi që nga 21 mars 2025).
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji meksikan. Secili prej tyre ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japonia
 
@@ -458,22 +260,6 @@ Ky seksion zbatohet në çdo shtet të Zonës Ekonomike Evropiane që nuk ka sek
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji japonez dhe që nuk mund të përjashtohet me marrëveshje.
 
-### Privatësia, për të gjithë në Japoni
-
-**Ligji që zbatohet.** Kur trajtojmë informacione personale të personave në Japoni, zbatohet Ligji për Mbrojtjen e Informacionit Personal, si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë.
-
-**Ku mbahen informacionet tuaja.** Informacionet tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar, dhe disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara, siç thotë seksioni 6 i Politikës së privatësisë. Japonia e njeh Mbretërinë e Bashkuar dhe Bashkimin Evropian si vende me mbrojtje të informacionit personal në standardin e Japonisë. Informacionet që trajtohen në Shtetet e Bashkuara mbrohen nga marrëveshjet tona me ata ofrues.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të na kërkoni t’ju bëjmë të njohura informacionet personale që mbajmë për ju, dhe të na kërkoni t’i korrigjojmë, t’i fshijmë ose të ndalojmë përdorimin e tyre. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi pa vonesë. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Na e thoni së pari në privacy@hatchgrab.com. Mund të kontaktoni gjithashtu Komisionin për Mbrojtjen e Informacionit Personal (Personal Information Protection Commission) në www.ppc.go.jp.
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm te personat që kanë pranuar t’i marrin. Secili prej tyre tregon nga kush vjen dhe si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapori
 
 ### Për operatorët e food truck-eve
@@ -498,22 +284,6 @@ Ky seksion zbatohet në çdo shtet të Zonës Ekonomike Evropiane që nuk ka sek
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji i Singaporit dhe që nuk mund të përjashtohet me marrëveshje.
 
-### Privatësia, për të gjithë në Singapor
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Singapor, zbatohet Ligji për Mbrojtjen e të Dhënave Personale (Personal Data Protection Act 2012, PDPA), si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar, dhe disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara, siç thotë seksioni 6 i Politikës së privatësisë. Ne sigurojmë që ato të mbrohen në një standard të krahasueshëm me atë të PDPA-së kudo që të jenë.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të kërkoni të dhënat personale që mbajmë për ju dhe mënyrën se si janë përdorur, dhe të na kërkoni t’i korrigjojmë. Mund ta tërhiqni gjithashtu pëlqimin tuaj që ne t’i përdorim. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda 30 ditëve. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Na e thoni së pari në privacy@hatchgrab.com. Nëse nuk jeni të kënaqur, mund të ankoheni te Komisioni për Mbrojtjen e të Dhënave Personale (Personal Data Protection Commission) në www.pdpc.gov.sg.
-
-**Mesazhet e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji i Singaporit. Secili prej tyre ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Nuk bëjmë telefonata marketingu dhe nuk dërgojmë SMS marketingu te numrat në Regjistrin e Singaporit “Mos telefononi” (Do Not Call Registry). Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hong Kongu
 
 ### Për operatorët e food truck-eve
@@ -535,22 +305,6 @@ Ky seksion zbatohet në çdo shtet të Zonës Ekonomike Evropiane që nuk ka sek
 **Të dhënat e klientëve tuaj.** Sipas Urdhëresës së Hong Kongut për të Dhënat Personale (Privatësia) (Personal Data (Privacy) Ordinance, Cap. 486), seksioni 10 i Kushteve të shërbimit do të thotë të njëjtën gjë në termat e saj: ju jeni përdoruesi i të dhënave (data user) dhe ne jemi përpunuesi juaj i të dhënave (data processor), dhe i trajtojmë të dhënat personale të klientëve tuaj vetëm për ta vënë në punë HatchGrab për ju dhe sipas udhëzimeve tuaja, dhe nuk i mbajmë më gjatë se sa nevojitet për këtë.
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji i Hong Kongut dhe që nuk mund të përjashtohet me marrëveshje.
-
-### Privatësia, për të gjithë në Hong Kong
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Hong Kong, zbatohet Urdhëresa për të Dhënat Personale (Privatësia) (Personal Data (Privacy) Ordinance), si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar, dhe disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara, siç thotë seksioni 6 i Politikës së privatësisë.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të kërkoni një kopje të të dhënave personale që mbajmë për ju dhe të na kërkoni t’i korrigjojmë. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda 40 ditëve. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Na e thoni së pari në privacy@hatchgrab.com. Nëse nuk jeni të kënaqur, mund të ankoheni te Zyra e Komisionerit të Privatësisë për të Dhënat Personale (Office of the Privacy Commissioner for Personal Data) në www.pcpd.org.hk.
-
-**Mesazhet e marketingut.** Ne i përdorim të dhënat tuaja personale për marketing të drejtpërdrejtë vetëm me pëlqimin tuaj, dhe çdo mesazh marketingu ju tregon si të ndaloni marrjen e tyre. Nëse na kërkoni të ndalojmë, do ta bëjmë, pa pagesë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malajzia
 
@@ -576,22 +330,6 @@ Ky seksion zbatohet në çdo shtet të Zonës Ekonomike Evropiane që nuk ka sek
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji malajzian dhe që nuk mund të përjashtohet me marrëveshje.
 
-### Privatësia, për të gjithë në Malajzi
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Malajzi, zbatohet Ligji për Mbrojtjen e të Dhënave Personale (Personal Data Protection Act 2010, PDPA), si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar, dhe disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara, siç thotë seksioni 6 i Politikës së privatësisë. I transferojmë vetëm kur e lejon PDPA-ja.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të kërkoni të dhënat personale që mbajmë për ju dhe të na kërkoni t’i korrigjojmë ose të ndalojmë përdorimin e tyre. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda 21 ditëve. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Na e thoni së pari në privacy@hatchgrab.com. Nëse nuk jeni të kënaqur, mund të ankoheni te Komisioneri për Mbrojtjen e të Dhënave Personale (Personal Data Protection Commissioner) në www.pdp.gov.my.
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji malajzian. Secili prej tyre ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Tajlanda
 
 ### Për operatorët e food truck-eve
@@ -616,22 +354,6 @@ Ky seksion zbatohet në çdo shtet të Zonës Ekonomike Evropiane që nuk ka sek
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji tajlandez dhe që nuk mund të përjashtohet me marrëveshje.
 
-### Privatësia, për të gjithë në Tajlandë
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Tajlandë, zbatohet Ligji për Mbrojtjen e të Dhënave Personale (Personal Data Protection Act B.E. 2562, PDPA), si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë. Të drejtat e renditura në seksionin 8 të Politikës së privatësisë janë gjithashtu të drejtat tuaja sipas PDPA-së.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar, dhe disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara, siç thotë seksioni 6 i Politikës së privatësisë. I transferojmë vetëm mbi një bazë që e lejon PDPA-ja.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të kërkoni një kopje të të dhënave personale që mbajmë për ju dhe të na kërkoni t’i korrigjojmë, t’i fshijmë ose të ndalojmë përdorimin e tyre. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda 30 ditëve. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Na e thoni së pari në privacy@hatchgrab.com. Mund të ankoheni gjithashtu te Komiteti për Mbrojtjen e të Dhënave Personale (Personal Data Protection Committee) në www.pdpc.or.th.
-
-**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji tajlandez. Secili prej tyre ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Emiratet e Bashkuara Arabe
 
 ### Për operatorët e food truck-eve
@@ -653,19 +375,3 @@ Ky seksion zbatohet në çdo shtet të Zonës Ekonomike Evropiane që nuk ka sek
 **Të dhënat e klientëve tuaj.** Sipas Dekret-Ligjit Federal të Emirateve të Bashkuara Arabe për Mbrojtjen e të Dhënave Personale (Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data), seksioni 10 i Kushteve të shërbimit do të thotë të njëjtën gjë në termat e tij: ju jeni kontrolluesi (controller) dhe ne jemi përpunuesi juaj (processor), dhe i trajtojmë të dhënat personale të klientëve tuaj vetëm për ta vënë në punë HatchGrab për ju dhe sipas udhëzimeve tuaja.
 
 **Njoftimet dhe ligji i zbatueshëm.** Njoftimet funksionojnë siç thotë seksioni 12 i Kushteve të shërbimit: ne ju kontaktojmë në adresën e email-it në llogarinë tuaj, dhe ju mund të na kontaktoni në adresën më poshtë. Këto kushte rregullohen nga ligji i Anglisë dhe i Uellsit, dhe gjykatat e Anglisë dhe të Uellsit kanë juridiksion. Kjo nuk ju heq asnjë mbrojtje që ju jep ligji i Emirateve të Bashkuara Arabe dhe që nuk mund të përjashtohet me marrëveshje.
-
-### Privatësia, për të gjithë në Emiratet e Bashkuara Arabe
-
-**Ligji që zbatohet.** Kur trajtojmë të dhëna personale të personave në Emiratet e Bashkuara Arabe, zbatohet Dekret-Ligji Federal për Mbrojtjen e të Dhënave Personale (Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data), si dhe ligji i Mbretërisë së Bashkuar i përmendur në Politikën tonë të privatësisë. Nëse ndodheni në një zonë të lirë me ligjin e vet për mbrojtjen e të dhënave, si DIFC ose ADGM, zbatohet ai ligj në vend të tij.
-
-**Ku mbahen të dhënat tuaja.** Të dhënat tuaja ruhen dhe përpunohen në Mbretërinë e Bashkuar, dhe disa prej tyre trajtohen nga ofrues shërbimesh në Bashkimin Evropian dhe në Shtetet e Bashkuara, siç thotë seksioni 6 i Politikës së privatësisë. I transferojmë vetëm mbi një bazë që e lejon ligji.
-
-**Shënimet për alergji dhe dietë.** Nëse shtoni shënime për alergji ose dietë në një porosi, ia kalojmë food truck-ut bashkë me porosinë tuaj. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë, siç thotë seksioni 7 i Politikës së privatësisë. Nuk i përdorim për asgjë tjetër.
-
-**Kërkesat tuaja.** Mund të kërkoni të dhënat personale që mbajmë për ju dhe të na kërkoni t’i korrigjojmë, t’i fshijmë ose të ndalojmë përdorimin e tyre. Shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda 30 ditëve. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj.
-
-**Ankesat.** Na e thoni së pari në privacy@hatchgrab.com. Nëse nuk jeni të kënaqur, mund të ankoheni te Zyra e të Dhënave e Emirateve (UAE Data Office).
-
-**Mesazhet e marketingut.** Dërgojmë mesazhe marketingu vetëm kur e lejon ligji i Emirateve të Bashkuara Arabe. Secili prej tyre ju tregon si të ndaloni marrjen e tyre, dhe nëse na kërkoni të ndalojmë, do ta bëjmë. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing.
-
-**Kontakti.** privacy@hatchgrab.com, ose me postë te HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

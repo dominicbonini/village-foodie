@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Uslovi za pojedine države
 
 **Posljednje ažuriranje:** {{LAST_UPDATED}}
 
-Naši [Uslovi korištenja](/terms) i [Politika privatnosti](/privacy) primjenjuju se u svakoj državi u kojoj se HatchGrab koristi. U nekim državama vrijede dodatna pravila. Ova stranica ih navodi, državu po državu.
+Naši [Uslovi korištenja](/terms) primjenjuju se u svakoj državi u kojoj se HatchGrab koristi. U nekim državama vrijede dodatna pravila. Ova stranica ih navodi, državu po državu.
 
-Kada se neki od odjeljaka u nastavku odnosi na vas, on je sastavni dio naših Uslova korištenja i naše Politike privatnosti. Ako navodi nešto drugačije od njih, za tu državu vrijedi ova stranica.
+Kada se neki od odjeljaka u nastavku odnosi na vas, on je sastavni dio naših Uslova korištenja. Ako navodi nešto drugačije od njih, za tu državu vrijedi ova stranica.
 
-Ako vaša država nije navedena, nema dodatnih pravila: Uslovi korištenja i Politika privatnosti primjenjuju se onako kako su napisani.
-
+Ako vaša država nije navedena, nema dodatnih pravila: Uslovi korištenja primjenjuju se onako kako su napisani. Naša [Politika privatnosti](/privacy) ista je u svakoj državi.
 ---
 
 ## Sjedinjene Američke Države
@@ -31,26 +30,6 @@ Ako vaša država nije navedena, nema dodatnih pravila: Uslovi korištenja i Pol
 
 **Podaci vaših kupaca.** Prema zakonima o privatnosti američkih saveznih država, odjeljak 10 Uslova korištenja znači isto u njihovim pojmovima: vi ste „poslovni subjekt“ („business“), a mi smo vaš „pružalac usluga“ („service provider“) ili „obrađivač“ („processor“). Lične informacije vaših kupaca koristimo samo da bismo za vas vodili HatchGrab. Ne prodajemo ih, ne dijelimo ih radi bihevioralnog oglašavanja u različitim kontekstima (cross-context behavioral advertising) i ne koristimo ih ni u koju drugu svrhu, osim kako ti zakoni dozvoljavaju pružaocu usluga.
 
-### Privatnost, za sve u Sjedinjenim Američkim Državama
-
-**Šta prikupljamo i s kim to dijelimo.** Isto što navodi Politika privatnosti: podatke o računu i poslovanju za operatere food truckova; vaše ime, kontakt podatke i podatke o narudžbi ako naručite od food trucka; i osnovne tehničke podatke ako posjetite naše web stranice. Dijelimo ih s food truckom od kojeg naručite i s pružaocima usluga navedenim u odjeljku 6 Politike privatnosti, samo radi pružanja usluge ili kada to zakon zahtijeva. Mogu se obrađivati u Ujedinjenom Kraljevstvu, Evropskoj uniji i Sjedinjenim Američkim Državama.
-
-**Vaše lične informacije ne prodajemo niti dijelimo.** Lične informacije ne prodajemo i ne dijelimo ih radi bihevioralnog oglašavanja u različitim kontekstima (cross-context behavioral advertising).
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete nas pitati koje lične informacije o vama imamo i zatražiti da ih ispravimo ili izbrišemo. Pišite na privacy@hatchgrab.com. Prije nego što postupimo, provjerit ćemo je li zahtjev stvaran, a odgovorit ćemo u roku od 45 dana. Možete zamoliti nekoga da zahtjev podnese umjesto vas. Zbog podnošenja zahtjeva nećemo se prema vama odnositi drugačije. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi. Ako odbijemo zahtjev, možete nas zamoliti da ga ponovo razmotrimo tako što ćete odgovoriti na naš odgovor.
-
-**Zakoni saveznih država o privatnosti.** Neki zakoni saveznih država o privatnosti primjenjuju se samo na poslovne subjekte iznad određene veličine i možda se ne odnose na nas. Zahtjeve navedene gore ipak ispunjavamo za svakoga u Sjedinjenim Američkim Državama.
-
-**Djeca.** Naše usluge nisu namijenjene djeci mlađoj od 13 godina i svjesno ne prikupljamo njihove lične informacije. Ako smatrate da nam je dijete dalo svoje informacije, kontaktirajte nas i izbrisat ćemo ih.
-
-**Marketinške e-poruke.** Svaka marketinška e-poruka koju pošaljemo navodi kako prestati da ih primate i sadrži našu poštansku adresu. Ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**SMS poruke.** Ako mi ili neki food truck nudimo novosti o narudžbi putem SMS poruka, primat ćete ih samo ako pristanete na njihovo primanje, a možete ih zaustaviti u bilo kojem trenutku.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Irska
 
 ### Za operatere food truckova
@@ -70,22 +49,6 @@ Ako vaša država nije navedena, nema dodatnih pravila: Uslovi korištenja i Pol
 **Podaci vaših kupaca.** Prema Općoj uredbi EU o zaštiti podataka (GDPR), odjeljak 10 Uslova korištenja je naš ugovor o obradi podataka s vama: vi ste kontrolor, a mi smo obrađivač, u istom smislu kao u Članu 28 GDPR-a.
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje irsko pravo i koja se ne može isključiti sporazumom.
-
-### Privatnost, za sve u Irskoj
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba u Irskoj, primjenjuje se Opća uredba EU o zaštiti podataka (GDPR), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti. Prava navedena u odjeljku 8 Politike privatnosti vaša su prava i prema GDPR-u.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu. Evropska komisija je odlučila da Ujedinjeno Kraljevstvo štiti lične podatke prema istom standardu kao EU, pa za to nije potrebna dodatna zaštitna mjera. Kada pružalac usluga obrađuje podatke u Sjedinjenim Američkim Državama (odjeljak 6 Politike privatnosti), prenos je obuhvaćen zaštitnom mjerom koju GDPR priznaje.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete nas pitati koje lične podatke o vama imamo i zatražiti da ih ispravimo, izbrišemo ili prestanemo koristiti. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od jednog mjeseca. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Pritužbu možete podnijeti Komisiji za zaštitu podataka (Data Protection Commission), irskom regulatoru za zaštitu podataka, na www.dataprotection.ie ili poštom na adresu 6 Pembroke Row, Dublin 2, D02 X963. Bili bismo zahvalni da nam prvo pružite priliku da stvari ispravimo.
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo kada to zakon dozvoljava. Svaka navodi kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australija
 
@@ -109,22 +72,6 @@ Ako vaša država nije navedena, nema dodatnih pravila: Uslovi korištenja i Pol
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje australijsko pravo i koja se ne može isključiti sporazumom.
 
-### Privatnost, za sve u Australiji
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične informacije osoba u Australiji, pridržavamo se Australijskih principa privatnosti (Australian Privacy Principles) iz Zakona o privatnosti (Privacy Act 1988), kao i prava Ujedinjenog Kraljevstva navedenog u našoj Politici privatnosti.
-
-**Gdje se čuvaju vaše informacije.** Vaše informacije se čuvaju i obrađuju u Ujedinjenom Kraljevstvu. Dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama, kako navodi odjeljak 6 Politike privatnosti.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete nas pitati koje lične informacije o vama imamo i zatražiti da ih ispravimo ili izbrišemo. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od 30 dana. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Ako niste zadovoljni načinom na koji smo postupali s vašim ličnim informacijama, prvo nam se obratite na privacy@hatchgrab.com. Ako niste zadovoljni našim odgovorom ili vam nismo odgovorili u roku od 30 dana, možete podnijeti pisanu pritužbu Uredu australijskog povjerenika za informacije (Office of the Australian Information Commissioner, OAIC) na www.oaic.gov.au.
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo kada to zakon dozvoljava. Svaka navodi od koga je i kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Novi Zeland
 
 ### Za operatere food truckova
@@ -147,24 +94,6 @@ Ako vaša država nije navedena, nema dodatnih pravila: Uslovi korištenja i Pol
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje novozelandsko pravo i koja se ne može isključiti sporazumom.
 
-### Privatnost, za sve na Novom Zelandu
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične informacije osoba na Novom Zelandu, primjenjuje se Zakon o privatnosti (Privacy Act 2020), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti. Na nas se primjenjuje jer poslujemo na Novom Zelandu, iako smo sa sjedištem u Ujedinjenom Kraljevstvu.
-
-**Gdje se čuvaju vaše informacije.** Vaše informacije se čuvaju i obrađuju u Ujedinjenom Kraljevstvu. Dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama, kako navodi odjeljak 6 Politike privatnosti.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete zatražiti lične informacije koje o vama imamo i zatražiti da ih ispravimo. Pišite na privacy@hatchgrab.com. Odgovorit ćemo čim to razumno budemo mogli, a najkasnije u roku od 20 radnih dana. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Ako niste zadovoljni načinom na koji smo postupali s vašim ličnim informacijama, prvo nam se obratite na privacy@hatchgrab.com. Povjerenik za privatnost (Privacy Commissioner) traži da to učinite prije podnošenja pritužbe. Ako niste zadovoljni našim odgovorom, možete podnijeti pritužbu Uredu povjerenika za privatnost (Office of the Privacy Commissioner) na www.privacy.org.nz, na broj 0800 803 909 ili poštom na adresu PO Box 10 094, Wellington 6140.
-
-**Povrede privatnosti.** Ako je povreda privatnosti koja uključuje vaše lične informacije prouzrokovala ili će vjerovatno prouzrokovati ozbiljnu štetu, Zakon o privatnosti (Privacy Act 2020) zahtijeva da se o tome što prije obavijeste Povjerenik za privatnost (Privacy Commissioner) i vi. Mi ćemo to učiniti ili, za narudžbu koju ste napravili kod food trucka, pomoći food trucku da to učini.
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo kada to zakon dozvoljava. Svaka navodi od koga je i kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### Za operatere food truckova
@@ -186,22 +115,6 @@ Ako vaša država nije navedena, nema dodatnih pravila: Uslovi korištenja i Pol
 **Vaša prava prema lokalnom pravu.** Ništa u Uslovima korištenja ne oduzima vam pravo za koje pravo mjesta u kojem poslujete kaže da se ne može ograničiti niti ga se možete odreći.
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje pravo vaše provincije ili teritorije i koja se ne može isključiti sporazumom.
-
-### Privatnost, za sve u Kanadi
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične informacije osoba u Kanadi, primjenjuje se Zakon o zaštiti ličnih informacija i elektronskim dokumentima (Personal Information Protection and Electronic Documents Act, PIPEDA), a u Britanskoj Kolumbiji i Alberti i njihovi vlastiti zakoni o privatnosti za privatni sektor, kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti.
-
-**Gdje se čuvaju vaše informacije.** Vaše informacije se čuvaju i obrađuju u Ujedinjenom Kraljevstvu, a dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama (odjeljak 6 Politike privatnosti), gdje im se može pristupiti prema zakonima tih država.
-
-**Vaši zahtjevi.** Možete zatražiti lične informacije koje o vama imamo i zatražiti da ih ispravimo. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od 30 dana.
-
-**Pritužbe.** Prvo nam se obratite na privacy@hatchgrab.com. Ako niste zadovoljni, možete podnijeti pritužbu Uredu povjerenika za privatnost Kanade (Office of the Privacy Commissioner of Canada) na www.priv.gc.ca ili na broj 1-800-282-1376.
-
-**Povrede.** Ako povreda sigurnosnih zaštitnih mjera koja uključuje vaše informacije stvori stvarni rizik od značajne štete, prijavit ćemo je Povjereniku za privatnost (Privacy Commissioner) i obavijestiti vas čim to bude izvodljivo.
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo uz vaš pristanak, kako zahtijeva kanadski zakon protiv neželjene pošte. Svaka navodi od koga je i kako se odjaviti, a odjavu provodimo u roku od 10 radnih dana.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Francuska
 
@@ -226,22 +139,6 @@ Ako vaša država nije navedena, nema dodatnih pravila: Uslovi korištenja i Pol
 **Podaci vaših kupaca.** Prema Općoj uredbi EU o zaštiti podataka (GDPR), odjeljak 10 Uslova korištenja je naš ugovor o obradi podataka s vama: vi ste kontrolor, a mi smo obrađivač, u istom smislu kao u Članu 28 GDPR-a.
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje francusko pravo i koja se ne može isključiti sporazumom.
-
-### Privatnost, za sve u Francuskoj
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba u Francuskoj, primjenjuju se Opća uredba EU o zaštiti podataka (GDPR) i francuski Zakon o zaštiti podataka (loi Informatique et Libertés), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti. Prava navedena u odjeljku 8 Politike privatnosti vaša su prava i prema GDPR-u.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu. Evropska komisija je odlučila da Ujedinjeno Kraljevstvo štiti lične podatke prema istom standardu kao EU, pa za to nije potrebna dodatna zaštitna mjera. Kada pružalac usluga obrađuje podatke u Sjedinjenim Američkim Državama (odjeljak 6 Politike privatnosti), prenos je obuhvaćen zaštitnom mjerom koju GDPR priznaje.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete nas pitati koje lične podatke o vama imamo i zatražiti da ih ispravimo, izbrišemo ili prestanemo koristiti. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od jednog mjeseca. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Pritužbu možete podnijeti CNIL-u (Commission nationale de l’informatique et des libertés), francuskom regulatoru za zaštitu podataka, na www.cnil.fr ili poštom na adresu CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Bili bismo zahvalni da nam prvo pružite priliku da stvari ispravimo.
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo kada to francusko pravo dozvoljava. Svaka navodi kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Evropski ekonomski prostor i Švicarska
 
@@ -269,53 +166,6 @@ Ovaj odjeljak se primjenjuje u svakoj državi Evropskog ekonomskog prostora koja
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje pravo vaše države i koja se ne može isključiti sporazumom.
 
-### Privatnost, za sve u Evropskom ekonomskom prostoru i Švicarskoj
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba u Evropskom ekonomskom prostoru, primjenjuju se Opća uredba EU o zaštiti podataka (GDPR) i pravo o zaštiti podataka njihove države; u Švicarskoj, Savezni zakon o zaštiti podataka (Federal Act on Data Protection). Primjenjuje se i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti. Prava navedena u odjeljku 8 Politike privatnosti vaša su prava i prema ovim zakonima.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu. Evropska komisija i Švicarska su svaka odlučile da Ujedinjeno Kraljevstvo štiti lične podatke prema adekvatnom standardu, pa za to nije potrebna dodatna zaštitna mjera. Kada pružalac usluga obrađuje podatke u Sjedinjenim Američkim Državama (odjeljak 6 Politike privatnosti), prenos je obuhvaćen zaštitnom mjerom koju priznaju GDPR i švicarsko pravo.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete nas pitati koje lične podatke o vama imamo i zatražiti da ih ispravimo, izbrišemo ili prestanemo koristiti. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od jednog mjeseca. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Pritužbu možete podnijeti tijelu za zaštitu podataka države u kojoj živite ili radite. Evropski odbor za zaštitu podataka (European Data Protection Board) navodi sva tijela u Evropskom ekonomskom prostoru na www.edpb.europa.eu (About EDPB › Members). U Švicarskoj je to Savezni povjerenik za zaštitu podataka i informacije (Federal Data Protection and Information Commissioner), www.edoeb.admin.ch. Bili bismo zahvalni da nam prvo pružite priliku da stvari ispravimo.
-
-| Država | Tijelo za zaštitu podataka |
-|---|---|
-| Austrija | dsb.gv.at |
-| Belgija | autoriteprotectiondonnees.be |
-| Bugarska | cpdp.bg |
-| Hrvatska | azop.hr |
-| Kipar | dataprotection.gov.cy |
-| Češka Republika | uoou.gov.cz |
-| Danska | datatilsynet.dk |
-| Estonija | aki.ee |
-| Finska | tietosuoja.fi |
-| Njemačka | tijelo vaše savezne pokrajine (Land) (savezno: bfdi.bund.de) |
-| Grčka | dpa.gr |
-| Mađarska | naih.hu |
-| Italija | garanteprivacy.it |
-| Latvija | dvi.gov.lv |
-| Lihtenštajn | datenschutzstelle.li |
-| Litvanija | vdai.lrv.lt |
-| Luksemburg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Holandija | autoriteitpersoonsgegevens.nl |
-| Norveška | datatilsynet.no |
-| Poljska | uodo.gov.pl |
-| Portugal | cnpd.pt |
-| Rumunija | dataprotection.ro |
-| Slovačka | dataprotection.gov.sk |
-| Slovenija | ip-rs.si |
-| Španija | aepd.es |
-| Švedska | imy.se |
-| Švicarska | Savezni povjerenik za zaštitu podataka i informacije (Federal Data Protection and Information Commissioner, FDPIC), edoeb.admin.ch |
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo kada to pravo vaše države dozvoljava. Svaka navodi kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### Za operatere food truckova
@@ -337,22 +187,6 @@ Ovaj odjeljak se primjenjuje u svakoj državi Evropskog ekonomskog prostora koja
 **Podaci vaših kupaca.** Prema pravu Gibraltara o zaštiti podataka, koje uključuje Opću uredbu EU o zaštiti podataka (GDPR) u obliku u kojem se primjenjuje na Gibraltaru, odjeljak 10 Uslova korištenja je naš ugovor o obradi podataka s vama: vi ste kontrolor, a mi smo obrađivač, u istom smislu kao u Članu 28 GDPR-a.
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje pravo Gibraltara i koja se ne može isključiti sporazumom.
-
-### Privatnost, za sve na Gibraltaru
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba na Gibraltaru, primjenjuje se pravo Gibraltara o zaštiti podataka, uključujući Opću uredbu EU o zaštiti podataka (GDPR) u obliku u kojem se tamo primjenjuje, kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti. Prava navedena u odjeljku 8 Politike privatnosti vaša su prava i prema tom pravu.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu. Kada pružalac usluga obrađuje podatke u Sjedinjenim Američkim Državama (odjeljak 6 Politike privatnosti), prenos je obuhvaćen zaštitnom mjerom koju pravo priznaje.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete nas pitati koje lične podatke o vama imamo i zatražiti da ih ispravimo, izbrišemo ili prestanemo koristiti. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od jednog mjeseca. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Pritužbu možete podnijeti Regulatornoj agenciji Gibraltara (Gibraltar Regulatory Authority), gibraltarskom regulatoru za zaštitu podataka, na www.gra.gi. Bili bismo zahvalni da nam prvo pružite priliku da stvari ispravimo.
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo kada to pravo Gibraltara dozvoljava. Svaka navodi kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brazil
 
@@ -378,22 +212,6 @@ Ovaj odjeljak se primjenjuje u svakoj državi Evropskog ekonomskog prostora koja
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje brazilsko pravo i koja se ne može isključiti sporazumom.
 
-### Privatnost, za sve u Brazilu
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba u Brazilu, primjenjuje se Opći zakon o zaštiti podataka (LGPD), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti. Prava navedena u odjeljku 8 Politike privatnosti vaša su prava i prema LGPD-u.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu, a dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama, kako navodi odjeljak 6 Politike privatnosti. Prenosimo ih samo na osnovu koji LGPD dozvoljava.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete zatražiti da potvrdimo imamo li lične podatke o vama i zatražiti njihovu kopiju ili zatražiti da ih ispravimo, izbrišemo ili prestanemo koristiti. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od 15 dana. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Prvo nam se obratite na privacy@hatchgrab.com. Pritužbu možete podnijeti i Nacionalnoj agenciji za zaštitu podataka (Autoridade Nacional de Proteção de Dados, ANPD) na www.gov.br/anpd.
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo kada to brazilsko pravo dozvoljava. Svaka navodi kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Meksiko
 
 ### Za operatere food truckova
@@ -417,22 +235,6 @@ Ovaj odjeljak se primjenjuje u svakoj državi Evropskog ekonomskog prostora koja
 **Podaci vaših kupaca.** Prema meksičkom Saveznom zakonu o zaštiti ličnih podataka u posjedu privatnih lica (Federal Law on the Protection of Personal Data Held by Private Parties), odjeljak 10 Uslova korištenja znači isto u njegovim pojmovima: vi ste kontrolor, a mi smo vaš obrađivač (encargado), i s ličnim podacima vaših kupaca postupamo samo da bismo za vas vodili HatchGrab i po vašim uputama. Odgovorni ste za vlastito obavještenje o privatnosti (aviso de privacidad) za svoje kupce.
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje meksičko pravo i koja se ne može isključiti sporazumom.
-
-### Privatnost, za sve u Meksiku
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba u Meksiku, primjenjuje se Savezni zakon o zaštiti ličnih podataka u posjedu privatnih lica (Federal Law on the Protection of Personal Data Held by Private Parties), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti. Ova stranica i Politika privatnosti zajedno čine naše obavještenje o privatnosti za osobe u Meksiku.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu, a dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama, kako navodi odjeljak 6 Politike privatnosti, samo radi pružanja usluge.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete zatražiti pristup ličnim podacima koje o vama imamo i zatražiti da ih ispravimo, izbrišemo ili prestanemo koristiti (vaša prava ARCO). Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od 20 radnih dana. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Prvo nam se obratite na privacy@hatchgrab.com. Ako niste zadovoljni, možete podnijeti pritužbu Sekretarijatu za borbu protiv korupcije i dobro upravljanje (Secretaría Anticorrupción y Buen Gobierno), koji nadzire primjenu meksičkog Saveznog zakona o zaštiti ličnih podataka u posjedu privatnih lica (Federal Law on the Protection of Personal Data Held by Private Parties) (na snazi od 21. marta 2025.).
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo kada to meksičko pravo dozvoljava. Svaka navodi kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japan
 
@@ -458,22 +260,6 @@ Ovaj odjeljak se primjenjuje u svakoj državi Evropskog ekonomskog prostora koja
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje japansko pravo i koja se ne može isključiti sporazumom.
 
-### Privatnost, za sve u Japanu
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične informacije osoba u Japanu, primjenjuje se Zakon o zaštiti ličnih informacija (Act on the Protection of Personal Information), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti.
-
-**Gdje se čuvaju vaše informacije.** Vaše informacije se čuvaju i obrađuju u Ujedinjenom Kraljevstvu, a dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama, kako navodi odjeljak 6 Politike privatnosti. Japan priznaje da Ujedinjeno Kraljevstvo i Evropska unija imaju zaštitu ličnih informacija prema japanskom standardu. Informacije koje se obrađuju u Sjedinjenim Američkim Državama zaštićene su našim ugovorima s tim pružaocima usluga.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete zatražiti da vam otkrijemo lične informacije koje o vama imamo i zatražiti da ih ispravimo, izbrišemo ili prestanemo koristiti. Pišite na privacy@hatchgrab.com. Odgovorit ćemo bez odgađanja. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Prvo nam se obratite na privacy@hatchgrab.com. Možete se obratiti i Komisiji za zaštitu ličnih informacija (Personal Information Protection Commission) na www.ppc.go.jp.
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo osobama koje su pristale da ih primaju. Svaka navodi od koga je i kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapur
 
 ### Za operatere food truckova
@@ -498,22 +284,6 @@ Ovaj odjeljak se primjenjuje u svakoj državi Evropskog ekonomskog prostora koja
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje singapursko pravo i koja se ne može isključiti sporazumom.
 
-### Privatnost, za sve u Singapuru
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba u Singapuru, primjenjuje se Zakon o zaštiti ličnih podataka (Personal Data Protection Act 2012, PDPA), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu, a dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama, kako navodi odjeljak 6 Politike privatnosti. Gdje god se nalazili, osiguravamo da budu zaštićeni prema standardu uporedivom sa standardom PDPA-a.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete zatražiti lične podatke koje o vama imamo i informaciju o tome kako su korišteni te zatražiti da ih ispravimo. Možete i povući svoj pristanak da ih koristimo. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od 30 dana. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Prvo nam se obratite na privacy@hatchgrab.com. Ako niste zadovoljni, možete podnijeti pritužbu Komisiji za zaštitu ličnih podataka (Personal Data Protection Commission) na www.pdpc.gov.sg.
-
-**Marketinške poruke.** Marketinške e-poruke šaljemo samo kada to singapursko pravo dozvoljava. Svaka navodi kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. Ne upućujemo marketinške pozive niti šaljemo marketinške SMS poruke na brojeve upisane u singapurski registar zabrane poziva (Do Not Call Registry). E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hong Kong
 
 ### Za operatere food truckova
@@ -535,22 +305,6 @@ Ovaj odjeljak se primjenjuje u svakoj državi Evropskog ekonomskog prostora koja
 **Podaci vaših kupaca.** Prema hongkonškoj Uredbi o ličnim podacima (privatnost) (Personal Data (Privacy) Ordinance, Cap. 486), odjeljak 10 Uslova korištenja znači isto u njenim pojmovima: vi ste korisnik podataka (data user), a mi smo vaš obrađivač podataka (data processor), i s ličnim podacima vaših kupaca postupamo samo da bismo za vas vodili HatchGrab i po vašim uputama, a čuvamo ih samo onoliko koliko je za to potrebno.
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje hongkonško pravo i koja se ne može isključiti sporazumom.
-
-### Privatnost, za sve u Hong Kongu
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba u Hong Kongu, primjenjuje se Uredba o ličnim podacima (privatnost) (Personal Data (Privacy) Ordinance), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu, a dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama, kako navodi odjeljak 6 Politike privatnosti.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete zatražiti kopiju ličnih podataka koje o vama imamo i zatražiti da ih ispravimo. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od 40 dana. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Prvo nam se obratite na privacy@hatchgrab.com. Ako niste zadovoljni, možete podnijeti pritužbu Uredu povjerenika za privatnost ličnih podataka (Office of the Privacy Commissioner for Personal Data) na www.pcpd.org.hk.
-
-**Marketinške poruke.** Vaše lične podatke koristimo za direktni marketing samo uz vaš pristanak, a svaka marketinška poruka navodi kako prestati da ih primate. Ako zatražite da prestanemo, prestat ćemo, besplatno. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malezija
 
@@ -576,22 +330,6 @@ Ovaj odjeljak se primjenjuje u svakoj državi Evropskog ekonomskog prostora koja
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje malezijsko pravo i koja se ne može isključiti sporazumom.
 
-### Privatnost, za sve u Maleziji
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba u Maleziji, primjenjuje se Zakon o zaštiti ličnih podataka (Personal Data Protection Act 2010, PDPA), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu, a dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama, kako navodi odjeljak 6 Politike privatnosti. Prenosimo ih samo kada to PDPA dozvoljava.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete zatražiti lične podatke koje o vama imamo i zatražiti da ih ispravimo ili prestanemo koristiti. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od 21 dana. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Prvo nam se obratite na privacy@hatchgrab.com. Ako niste zadovoljni, možete podnijeti pritužbu Povjereniku za zaštitu ličnih podataka (Personal Data Protection Commissioner) na www.pdp.gov.my.
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo kada to malezijsko pravo dozvoljava. Svaka navodi kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Tajland
 
 ### Za operatere food truckova
@@ -616,22 +354,6 @@ Ovaj odjeljak se primjenjuje u svakoj državi Evropskog ekonomskog prostora koja
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje tajlandsko pravo i koja se ne može isključiti sporazumom.
 
-### Privatnost, za sve na Tajlandu
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba na Tajlandu, primjenjuje se Zakon o zaštiti ličnih podataka (Personal Data Protection Act B.E. 2562, PDPA), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti. Prava navedena u odjeljku 8 Politike privatnosti vaša su prava i prema PDPA-u.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu, a dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama, kako navodi odjeljak 6 Politike privatnosti. Prenosimo ih samo na osnovu koji PDPA dozvoljava.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete zatražiti kopiju ličnih podataka koje o vama imamo i zatražiti da ih ispravimo, izbrišemo ili prestanemo koristiti. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od 30 dana. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Prvo nam se obratite na privacy@hatchgrab.com. Pritužbu možete podnijeti i Komitetu za zaštitu ličnih podataka (Personal Data Protection Committee) na www.pdpc.or.th.
-
-**Marketinške e-poruke.** Marketinške e-poruke šaljemo samo kada to tajlandsko pravo dozvoljava. Svaka navodi kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Ujedinjeni Arapski Emirati
 
 ### Za operatere food truckova
@@ -653,19 +375,3 @@ Ovaj odjeljak se primjenjuje u svakoj državi Evropskog ekonomskog prostora koja
 **Podaci vaših kupaca.** Prema Saveznom dekretu-zakonu UAE-a o zaštiti ličnih podataka (Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data), odjeljak 10 Uslova korištenja znači isto u njegovim pojmovima: vi ste kontrolor, a mi smo vaš obrađivač, i s ličnim podacima vaših kupaca postupamo samo da bismo za vas vodili HatchGrab i po vašim uputama.
 
 **Obavještenja i mjerodavno pravo.** Obavještenja funkcionišu kako navodi odjeljak 12 Uslova korištenja: kontaktiramo vas na adresu e-pošte navedenu na vašem računu, a vi nama se možete obratiti na adresu navedenu u nastavku. Ovi uslovi podliježu pravu Engleske i Velsa, a nadležni su sudovi Engleske i Velsa. To vam ne oduzima nikakvu zaštitu koju vam daje pravo UAE-a i koja se ne može isključiti sporazumom.
-
-### Privatnost, za sve u Ujedinjenim Arapskim Emiratima
-
-**Pravo koje se primjenjuje.** Kada obrađujemo lične podatke osoba u Ujedinjenim Arapskim Emiratima, primjenjuje se Savezni dekret-zakon o zaštiti ličnih podataka (Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data), kao i pravo Ujedinjenog Kraljevstva navedeno u našoj Politici privatnosti. Ako se nalazite u slobodnoj zoni s vlastitim zakonom o zaštiti podataka, poput DIFC-a ili ADGM-a, umjesto njega primjenjuje se taj zakon.
-
-**Gdje se čuvaju vaši podaci.** Vaši podaci se čuvaju i obrađuju u Ujedinjenom Kraljevstvu, a dio njih obrađuju pružaoci usluga u Evropskoj uniji i Sjedinjenim Američkim Državama, kako navodi odjeljak 6 Politike privatnosti. Prenosimo ih samo na osnovu koji zakon dozvoljava.
-
-**Napomene o alergijama i prehrani.** Ako uz narudžbu dodate napomene o alergijama ili prehrani, prosljeđujemo ih food trucku zajedno s vašom narudžbom. Uklanjamo ih, zajedno s vašim imenom i kontakt podacima, 12 mjeseci nakon narudžbe, kako navodi odjeljak 7 Politike privatnosti. Ne koristimo ih ni za šta drugo.
-
-**Vaši zahtjevi.** Možete zatražiti lične podatke koje o vama imamo i zatražiti da ih ispravimo, izbrišemo ili prestanemo koristiti. Pišite na privacy@hatchgrab.com. Odgovorit ćemo u roku od 30 dana. Ako ste naručili od food trucka, vaš zahtjev možemo proslijediti tom food trucku, jer on odlučuje kako se koriste podaci o vašoj narudžbi.
-
-**Pritužbe.** Prvo nam se obratite na privacy@hatchgrab.com. Ako niste zadovoljni, možete podnijeti pritužbu Uredu za podatke UAE-a (UAE Data Office).
-
-**Marketinške poruke.** Marketinške poruke šaljemo samo kada to pravo UAE-a dozvoljava. Svaka navodi kako prestati da ih primate, a ako zatražite da prestanemo, prestat ćemo. E-poruke o narudžbi ili vašem računu nisu marketing.
-
-**Kontakt.** privacy@hatchgrab.com ili poštom na adresu HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

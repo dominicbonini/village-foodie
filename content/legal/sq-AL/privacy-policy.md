@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Politika e privatësisë
 
 **Përditësuar së fundi:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Ajo mbulon gjithashtu aplikacionet e HatchGrab për celular dhe tablet në iOS d
 
 Nëse keni ardhur këtu vetëm sepse keni porositur ushqim nga një food truck, pjesa që ju përket juve është seksioni **“Nëse keni porositur nga një food truck”**.
 
-**Disa shtete kanë rregulla shtesë.** Kur zbatohen për ju, ato gjenden në faqen tonë [Kushtet specifike sipas shtetit](/country-terms), e cila është pjesë e kësaj politike.
-
+**Kjo politikë zbatohet kudo që të ndodheni.** Ne zbatojmë ligjin e Mbretërisë së Bashkuar për mbrojtjen e të dhënave dhe, kur zbatohet edhe ligji për mbrojtjen e të dhënave i shtetit ku jetoni, zbatojmë edhe atë.
 ---
 
 ## 1. Kush jemi ne
@@ -84,6 +83,8 @@ Kur dërgoni një porosi përmes faqes së porosive të një food truck-u, ne mb
 
 Food truck-u vendos sa kohë t’i mbajë të dhënat tuaja dhe si t’ju kontaktojë më pas. Për këtë zbatohen praktikat e tij të privatësisë. Nëse nuk jeni të sigurt cili është food truck-u, na kontaktoni në privacy@hatchgrab.com dhe do t’ju drejtojmë tek ai.
 
+**Shënimet për alergji dhe dietë.** Ia kalojmë food truck-ut bashkë me porosinë tuaj dhe nuk i përdorim për asgjë tjetër. I heqim, bashkë me emrin dhe të dhënat tuaja të kontaktit, 12 muaj pas porosisë (shihni seksionin 7).
+
 **Informacioni për alergjenët.** Kur një food truck publikon informacion për alergjenët, ne shfaqim atë që ka konfirmuar food truck-u. Ne nuk e verifikojmë në mënyrë të pavarur. Për një alergji të rëndë, tregojini gjithmonë drejtpërdrejt food truck-ut.
 
 ---
@@ -135,7 +136,7 @@ Ne mund t’i zbulojmë të dhënat edhe kur jemi të detyruar me ligj, ose për
 
 **Ne nuk i shesim të dhënat personale dhe nuk i ndajmë për reklama.**
 
-**Transferimet ndërkombëtare.** Të dhënat e llogarisë suaj dhe të dhënat e porosive ruhen dhe përpunohen në Mbretërinë e Bashkuar. Disa gjëra trajtohen jashtë saj: nxjerrja e menusë dhe përgjigjet automatike në WhatsApp, që përdorin një shërbim të Google në Shtetet e Bashkuara; dërgimi i mesazheve në WhatsApp, që trajtohet nga Meta në Shtetet e Bashkuara; pagesat, që trajtohen nga Stripe në Shtetet e Bashkuara; dhe njoftimet push, që dërgohen nga Apple dhe Google në Shtetet e Bashkuara. Kur të dhënat dalin nga Mbretëria e Bashkuar, transferimi mbulohet nga rregulloret e përshtatshmërisë të Mbretërisë së Bashkuar ose nga Marrëveshja Ndërkombëtare e Transferimit të të Dhënave (International Data Transfer Agreement) ose Shtojca (Addendum), të cilat ofrojnë masa mbrojtëse të përshtatshme. Mund të na kërkoni hollësi për masat mbrojtëse që zbatohen.
+**Transferimet ndërkombëtare.** Të dhënat e llogarisë suaj dhe të dhënat e porosive ruhen dhe përpunohen në Mbretërinë e Bashkuar. Disa gjëra trajtohen jashtë saj: nxjerrja e menusë dhe përgjigjet automatike në WhatsApp, që përdorin një shërbim të Google në Shtetet e Bashkuara; dërgimi i mesazheve në WhatsApp, që trajtohet nga Meta në Shtetet e Bashkuara; pagesat, që trajtohen nga Stripe në Shtetet e Bashkuara; dhe njoftimet push, që dërgohen nga Apple dhe Google në Shtetet e Bashkuara. Kur të dhënat dalin nga Mbretëria e Bashkuar, transferimi mbulohet nga rregulloret e përshtatshmërisë të Mbretërisë së Bashkuar ose nga Marrëveshja Ndërkombëtare e Transferimit të të Dhënave (International Data Transfer Agreement) ose Shtojca (Addendum) dhe, kur e kërkon ligji i shtetit tuaj, nga një masë mbrojtëse që e njeh ai ligj. Mund të na kërkoni hollësi për masat mbrojtëse që zbatohen.
 
 Ndërsa shërbimi ynë rritet, mund të shtojmë ofrues, përfshirë një ofrues SMS. Do ta përditësojmë këtë listë para se ata të fillojnë të përpunojnë të dhënat tuaja.
 
@@ -161,7 +162,7 @@ Ne i fshijmë ose i anonimizojmë të dhënat pasi të përfundojnë këto periu
 
 ## 8. Të drejtat tuaja
 
-Sipas ligjit të Mbretërisë së Bashkuar për mbrojtjen e të dhënave, ju keni të drejtë:
+Sipas ligjit të Mbretërisë së Bashkuar për mbrojtjen e të dhënave dhe, kur zbatohet, ligjit të shtetit ku jetoni, ju keni të drejtë:
 
 - të pyesni cilat të dhëna personale mbajmë për ju dhe të merrni një kopje;
 - të korrigjohen të dhënat e pasakta;
@@ -171,11 +172,17 @@ Sipas ligjit të Mbretërisë së Bashkuar për mbrojtjen e të dhënave, ju ken
 - të kundërshtoni përpunimin e bazuar në interesa legjitime;
 - ta tërhiqni pëlqimin në çdo kohë, kur mbështetemi te pëlqimi.
 
-Për të ushtruar cilëndo prej tyre, shkruani në privacy@hatchgrab.com. Do të përgjigjemi brenda një muaji.
+Ligji i shtetit ku jetoni mund t’jua japë këto të drejta me emra të tjerë, ose të drejta shtesë. I keni edhe ato.
 
-**Fshirja e llogarisë suaj.** Operatorët mund të kërkojnë fshirjen e llogarisë nga brenda aplikacionit ose duke shkruar në privacy@hatchgrab.com. Do ta fshijmë llogarinë dhe të dhënat tuaja personale, përveç rasteve kur jemi të detyruar të mbajmë regjistrime për arsye kontabël ose ligjore.
+**Si të bëni një kërkesë.** Shkruani në privacy@hatchgrab.com. Do të kontrollojmë që kërkesa të jetë e vërtetë para se të veprojmë. Mund t’i kërkoni dikujt ta bëjë kërkesën për ju, dhe nuk do t’ju trajtojmë ndryshe pse keni bërë një të tillë. Do të përgjigjemi brenda një muaji, ose më shpejt nëse e kërkon ligji i shtetit tuaj. Nëse keni porositur nga një food truck, mund ta kalojmë kërkesën tuaj te ai food truck, sepse ai vendos si përdoren të dhënat e porosisë suaj. Nëse refuzojmë një kërkesë, mund të na kërkoni ta shqyrtojmë sërish duke iu përgjigjur përgjigjes sonë.
 
-**Ankesat.** Nëse nuk jeni të kënaqur me mënyrën se si i kemi trajtuar të dhënat tuaja, mund të ankoheni te Zyra e Komisionerit të Informacionit (Information Commissioner’s Office) në ico.org.uk, ose në 0303 123 1113. Do ta vlerësonim mundësinë që ta zgjidhim ne më parë.
+**Fshirja e llogarisë suaj.** Operatorët mund të kërkojnë fshirjen e llogarisë nga brenda aplikacionit ose duke shkruar në privacy@hatchgrab.com. Do ta fshijmë llogarinë dhe të dhënat tuaja personale, përveç rasteve kur jemi të detyruar të mbajmë regjistrime për arsye kontabël ose ligjore. Kur fshihet llogaria e një operatori, heqim gjithashtu emrat, të dhënat e kontaktit dhe shënimet e klientëve të tij nga porositë që mbajmë.
+
+**Email-et e marketingut.** Dërgojmë email-e marketingu vetëm kur e lejon ligji i shtetit ku jetoni, që në disa shtete do të thotë vetëm me pëlqimin tuaj. Secili prej tyre tregon nga kush vjen, përfshin adresën tonë postare dhe ju tregon si të ndaloni marrjen e tyre. Nëse na kërkoni të ndalojmë, do ta bëjmë, falas dhe brenda 10 ditëve pune. Email-et për një porosi ose për llogarinë tuaj nuk janë marketing. Nëse ne ose një food truck ofrojmë përditësime të porosisë me SMS, do t’i merrni vetëm nëse pranoni t’i merrni, dhe mund t’i ndaloni në çdo kohë.
+
+**Nëse diçka shkon keq.** Nëse një cenim që përfshin të dhënat tuaja personale ka gjasa t’ju shkaktojë dëm të rëndë, do t’jua themi juve dhe autoritetit mbikëqyrës sa më shpejt që të mundemi, kur e kërkon ligji, ose do ta ndihmojmë food truck-un nga i cili keni porositur ta bëjë këtë.
+
+**Ankesat.** Na e thoni së pari në privacy@hatchgrab.com; do ta vlerësonim mundësinë që t’i ndreqim gjërat. Mund të ankoheni edhe te autoriteti për mbrojtjen e të dhënave i shtetit ku jetoni. Në Mbretërinë e Bashkuar, kjo është Zyra e Komisionerit të Informacionit (Information Commissioner's Office), në ico.org.uk ose në 0303 123 1113.
 
 ---
 

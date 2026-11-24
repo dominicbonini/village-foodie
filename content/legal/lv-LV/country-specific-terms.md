@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Valstij specifiskie noteikumi
 
 **Pēdējoreiz atjaunināts:** {{LAST_UPDATED}}
 
-Mūsu [Pakalpojuma noteikumi](/terms) un [Privātuma politika](/privacy) ir piemērojami katrā valstī, kur tiek izmantots HatchGrab. Dažās valstīs ir papildu noteikumi. Šajā lapā tie ir izklāstīti, katrai valstij atsevišķi.
+Mūsu [Pakalpojuma noteikumi](/terms) ir piemērojami katrā valstī, kur tiek izmantots HatchGrab. Dažās valstīs ir papildu noteikumi. Šajā lapā tie ir izklāstīti, katrai valstij atsevišķi.
 
-Ja kāda no tālāk minētajām sadaļām attiecas uz jums, tā ir mūsu Pakalpojuma noteikumu un mūsu Privātuma politikas daļa. Ja tajā ir noteikts kaut kas atšķirīgs no tiem, attiecīgajā valstī piemēro šo lapu.
+Ja kāda no tālāk minētajām sadaļām attiecas uz jums, tā ir mūsu Pakalpojuma noteikumu daļa. Ja tajā ir noteikts kaut kas atšķirīgs no tiem, attiecīgajā valstī piemēro šo lapu.
 
-Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Privātuma politika ir piemērojami tā, kā tie ir uzrakstīti.
-
+Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi ir piemērojami tā, kā tie ir uzrakstīti. Mūsu [Privātuma politika](/privacy) ir vienāda visās valstīs.
 ---
 
 ## Amerikas Savienotās Valstis
@@ -31,26 +30,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 
 **Jūsu klientu dati.** Saskaņā ar ASV štatu privātuma likumiem Pakalpojuma noteikumu 10. sadaļa nozīmē to pašu šo likumu terminos: jūs esat „business“ (uzņēmums), bet mēs esam jūsu „service provider“ (pakalpojumu sniedzējs) vai „processor“ (apstrādātājs). Mēs izmantojam jūsu klientu personisko informāciju tikai, lai jūsu labā darbinātu HatchGrab. Mēs to nepārdodam, nekopīgojam starpkontekstu uzvedības reklāmai un neizmantojam nekādiem citiem nolūkiem, izņemot to, ko šie likumi atļauj pakalpojumu sniedzējam.
 
-### Privātums visiem, kas atrodas Amerikas Savienotajās Valstīs
-
-**Ko mēs vācam un ar ko to kopīgojam.** Tas pats, kas noteikts Privātuma politikā: busiņu operatoru konta un uzņēmuma dati; jūsu vārds, kontaktinformācija un pasūtījuma dati, ja pasūtāt no busiņa; un pamata tehniskie dati, ja apmeklējat mūsu tīmekļvietnes. Mēs to kopīgojam ar busiņu, no kura pasūtāt, un ar pakalpojumu sniedzējiem, kas uzskaitīti Privātuma politikas 6. sadaļā, tikai pakalpojuma darbības nodrošināšanai vai tad, ja to prasa likums. Tā var tikt apstrādāta Apvienotajā Karalistē, Eiropas Savienībā un Amerikas Savienotajās Valstīs.
-
-**Mēs nepārdodam un nekopīgojam jūsu personisko informāciju.** Mēs nepārdodam personisko informāciju un nekopīgojam to starpkontekstu uzvedības reklāmai.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat jautāt mums, kādu personisko informāciju mēs par jums glabājam, un lūgt mums to labot vai dzēst. Rakstiet uz privacy@hatchgrab.com. Pirms rīkojamies, mēs pārbaudīsim, vai pieprasījums ir īsts, un atbildēsim 45 dienu laikā. Jūs varat lūgt kādu citu iesniegt pieprasījumu jūsu vietā. Mēs pret jums neizturēsimies citādi tāpēc, ka esat iesniedzis pieprasījumu. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati. Ja mēs noraidām pieprasījumu, jūs varat lūgt mums to pārskatīt, atbildot uz mūsu atbildi.
-
-**Štatu privātuma likumi.** Daži štatu privātuma likumi attiecas tikai uz uzņēmumiem, kas pārsniedz noteiktu lielumu, un tie var neattiekties uz mums. Mēs tik un tā izpildām iepriekš minētos pieprasījumus no ikviena, kas atrodas Amerikas Savienotajās Valstīs.
-
-**Bērni.** Mūsu pakalpojumi nav paredzēti bērniem, kas jaunāki par 13 gadiem, un mēs apzināti nevācam viņu personisko informāciju. Ja uzskatāt, ka bērns mums ir sniedzis savu informāciju, sazinieties ar mums, un mēs to dzēsīsim.
-
-**Mārketinga e-pasta ziņojumi.** Katrā mūsu sūtītajā mārketinga e-pasta ziņojumā ir norādīts, kā atteikties no to saņemšanas, un ir iekļauta mūsu pasta adrese. Ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Īsziņas.** Ja mēs vai busiņš piedāvājam pasūtījuma jaunumus īsziņās, jūs tās saņemsiet tikai tad, ja piekritīsiet tās saņemt, un jūs varat jebkurā laikā tās atteikt.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Īrija
 
 ### Food truck operatoriem
@@ -70,22 +49,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 **Jūsu klientu dati.** Saskaņā ar ES Vispārīgo datu aizsardzības regulu (VDAR) Pakalpojuma noteikumu 10. sadaļa ir mūsu datu apstrādes līgums ar jums: jūs esat pārzinis un mēs esam apstrādātājs tādā pašā nozīmē kā VDAR 28. pantā.
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Īrijas tiesību akti un ko nevar izslēgt ar vienošanos.
-
-### Privātums visiem, kas atrodas Īrijā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Īrijā esošu personu personas datus, ir piemērojama ES Vispārīgā datu aizsardzības regula (VDAR), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti. Privātuma politikas 8. sadaļā uzskaitītās tiesības ir arī jūsu tiesības saskaņā ar VDAR.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē. Eiropas Komisija ir pieņēmusi lēmumu, ka Apvienotā Karaliste aizsargā personas datus tādā pašā līmenī kā ES, tāpēc šim nolūkam papildu garantija nav nepieciešama. Ja pakalpojumu sniedzējs apstrādā datus Amerikas Savienotajās Valstīs (Privātuma politikas 6. sadaļa), nosūtīšanu aptver VDAR atzīta garantija.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat jautāt mums, kādus personas datus mēs par jums glabājam, un lūgt mums tos labot, dzēst vai pārtraukt to izmantošanu. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim viena mēneša laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Jūs varat iesniegt sūdzību Data Protection Commission — Īrijas datu aizsardzības uzraudzības iestādei — vietnē www.dataprotection.ie vai pa pastu: 6 Pembroke Row, Dublin 2, D02 X963. Mēs būtu pateicīgi par iespēju vispirms visu nokārtot pašiem.
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj tiesību akti. Katrā no tiem ir norādīts, kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Austrālija
 
@@ -109,22 +72,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Austrālijas tiesību akti un ko nevar izslēgt ar vienošanos.
 
-### Privātums visiem, kas atrodas Austrālijā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Austrālijā esošu personu personisko informāciju, mēs ievērojam Australian Privacy Principles (Austrālijas privātuma principi), kas noteikti Privacy Act 1988 (Privātuma likums), kā arī mūsu Privātuma politikā minētos Apvienotās Karalistes tiesību aktus.
-
-**Kur tiek glabāta jūsu informācija.** Jūsu informācija tiek glabāta un apstrādāta Apvienotajā Karalistē. Daļu no tās apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs, kā noteikts Privātuma politikas 6. sadaļā.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat jautāt mums, kādu personisko informāciju mēs par jums glabājam, un lūgt mums to labot vai dzēst. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim 30 dienu laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Ja neesat apmierināts ar to, kā mēs esam rīkojušies ar jūsu personisko informāciju, vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Ja neesat apmierināts ar mūsu atbildi vai mēs neesam atbildējuši 30 dienu laikā, jūs varat rakstiski iesniegt sūdzību Office of the Australian Information Commissioner (OAIC) vietnē www.oaic.gov.au.
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj tiesību akti. Katrā no tiem ir norādīts, no kā tas ir, un kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Jaunzēlande
 
 ### Food truck operatoriem
@@ -147,24 +94,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Jaunzēlandes tiesību akti un ko nevar izslēgt ar vienošanos.
 
-### Privātums visiem, kas atrodas Jaunzēlandē
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Jaunzēlandē esošu personu personisko informāciju, ir piemērojams Privacy Act 2020 (Privātuma likums), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti. Tas attiecas uz mums, jo mēs veicam uzņēmējdarbību Jaunzēlandē, lai gan esam bāzēti Apvienotajā Karalistē.
-
-**Kur tiek glabāta jūsu informācija.** Jūsu informācija tiek glabāta un apstrādāta Apvienotajā Karalistē. Daļu no tās apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs, kā noteikts Privātuma politikas 6. sadaļā.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat lūgt mums personisko informāciju, ko mēs par jums glabājam, un lūgt mums to labot. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim, tiklīdz tas saprātīgi iespējams, un 20 darba dienu laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Ja neesat apmierināts ar to, kā mēs esam rīkojušies ar jūsu personisko informāciju, vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Privacy Commissioner (Privātuma komisārs) lūdz to izdarīt pirms sūdzības iesniegšanas. Ja neesat apmierināts ar mūsu atbildi, jūs varat iesniegt sūdzību Office of the Privacy Commissioner vietnē www.privacy.org.nz, pa tālruni 0800 803 909 vai pa pastu: PO Box 10 094, Wellington 6140.
-
-**Privātuma pārkāpumi.** Ja privātuma pārkāpums, kas skar jūsu personisko informāciju, ir radījis vai varētu radīt nopietnu kaitējumu, Privacy Act 2020 (Privātuma likums) prasa, lai par to tiktu paziņots Privacy Commissioner un jums, tiklīdz tas praktiski iespējams. Mēs to izdarīsim vai, ja runa ir par pasūtījumu, ko veicāt busiņam, palīdzēsim busiņam to izdarīt.
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj tiesību akti. Katrā no tiem ir norādīts, no kā tas ir, un kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanāda
 
 ### Food truck operatoriem
@@ -186,22 +115,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 **Jūsu tiesības saskaņā ar vietējiem tiesību aktiem.** Nekas Pakalpojuma noteikumos neatņem tiesības, kuras saskaņā ar jūsu atrašanās vietas tiesību aktiem nevar ierobežot vai no kurām nevar atteikties.
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz jūsu provinces vai teritorijas tiesību akti un ko nevar izslēgt ar vienošanos.
-
-### Privātums visiem, kas atrodas Kanādā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Kanādā esošu personu personisko informāciju, ir piemērojams Personal Information Protection and Electronic Documents Act (PIPEDA) (Personiskās informācijas aizsardzības un elektronisko dokumentu likums), bet Britu Kolumbijā un Albertā — to pašu privātā sektora privātuma likumi, kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti.
-
-**Kur tiek glabāta jūsu informācija.** Jūsu informācija tiek glabāta un apstrādāta Apvienotajā Karalistē, un daļu no tās apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs (Privātuma politikas 6. sadaļa), kur tai var piekļūt saskaņā ar šo valstu tiesību aktiem.
-
-**Jūsu pieprasījumi.** Jūs varat lūgt personisko informāciju, ko mēs par jums glabājam, un lūgt mums to labot. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim 30 dienu laikā.
-
-**Sūdzības.** Vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Ja neesat apmierināts, jūs varat iesniegt sūdzību Office of the Privacy Commissioner of Canada vietnē www.priv.gc.ca vai pa tālruni 1-800-282-1376.
-
-**Pārkāpumi.** Ja drošības pasākumu pārkāpums, kas skar jūsu informāciju, rada reālu nopietna kaitējuma risku, mēs par to ziņosim Privacy Commissioner (Privātuma komisāram) un paziņosim jums, tiklīdz tas būs iespējams.
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai ar jūsu piekrišanu, kā to prasa Kanādas pretsurogātpasta likums. Katrā no tiem ir norādīts, no kā tas ir un kā atteikties no abonēšanas, un mēs izpildām atteikumu no abonēšanas 10 darba dienu laikā.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Francija
 
@@ -226,22 +139,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 **Jūsu klientu dati.** Saskaņā ar ES Vispārīgo datu aizsardzības regulu (VDAR) Pakalpojuma noteikumu 10. sadaļa ir mūsu datu apstrādes līgums ar jums: jūs esat pārzinis un mēs esam apstrādātājs tādā pašā nozīmē kā VDAR 28. pantā.
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Francijas tiesību akti un ko nevar izslēgt ar vienošanos.
-
-### Privātums visiem, kas atrodas Francijā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Francijā esošu personu personas datus, ir piemērojama ES Vispārīgā datu aizsardzības regula (VDAR) un Francijas Datu aizsardzības likums (loi Informatique et Libertés), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti. Privātuma politikas 8. sadaļā uzskaitītās tiesības ir arī jūsu tiesības saskaņā ar VDAR.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē. Eiropas Komisija ir pieņēmusi lēmumu, ka Apvienotā Karaliste aizsargā personas datus tādā pašā līmenī kā ES, tāpēc šim nolūkam papildu garantija nav nepieciešama. Ja pakalpojumu sniedzējs apstrādā datus Amerikas Savienotajās Valstīs (Privātuma politikas 6. sadaļa), nosūtīšanu aptver VDAR atzīta garantija.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat jautāt mums, kādus personas datus mēs par jums glabājam, un lūgt mums tos labot, dzēst vai pārtraukt to izmantošanu. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim viena mēneša laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Jūs varat iesniegt sūdzību CNIL (Commission nationale de l'informatique et des libertés) — Francijas datu aizsardzības uzraudzības iestādei — vietnē www.cnil.fr vai pa pastu: CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Mēs būtu pateicīgi par iespēju vispirms visu nokārtot pašiem.
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj Francijas tiesību akti. Katrā no tiem ir norādīts, kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Eiropas Ekonomikas zona un Šveice
 
@@ -269,53 +166,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz jūsu valsts tiesību akti un ko nevar izslēgt ar vienošanos.
 
-### Privātums visiem, kas atrodas Eiropas Ekonomikas zonā un Šveicē
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Eiropas Ekonomikas zonā esošu personu personas datus, ir piemērojama ES Vispārīgā datu aizsardzības regula (VDAR) un viņu valsts datu aizsardzības tiesību akti; Šveicē — Federal Act on Data Protection (Federālais datu aizsardzības likums). Piemērojami ir arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti. Privātuma politikas 8. sadaļā uzskaitītās tiesības ir arī jūsu tiesības saskaņā ar šiem tiesību aktiem.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē. Eiropas Komisija un Šveice katra ir pieņēmusi lēmumu, ka Apvienotā Karaliste nodrošina pietiekamu personas datu aizsardzības līmeni, tāpēc šim nolūkam papildu garantija nav nepieciešama. Ja pakalpojumu sniedzējs apstrādā datus Amerikas Savienotajās Valstīs (Privātuma politikas 6. sadaļa), nosūtīšanu aptver garantija, ko atzīst VDAR un Šveices tiesību akti.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat jautāt mums, kādus personas datus mēs par jums glabājam, un lūgt mums tos labot, dzēst vai pārtraukt to izmantošanu. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim viena mēneša laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Jūs varat iesniegt sūdzību tās valsts datu aizsardzības uzraudzības iestādei, kurā dzīvojat vai strādājat. Eiropas Datu aizsardzības kolēģija uzskaita visas Eiropas Ekonomikas zonas uzraudzības iestādes vietnē www.edpb.europa.eu (About EDPB › Members). Šveicē tā ir Federal Data Protection and Information Commissioner (Federālais datu aizsardzības un informācijas komisārs), www.edoeb.admin.ch. Mēs būtu pateicīgi par iespēju vispirms visu nokārtot pašiem.
-
-| Valsts | Datu aizsardzības uzraudzības iestāde |
-|---|---|
-| Austrija | dsb.gv.at |
-| Beļģija | autoriteprotectiondonnees.be |
-| Bulgārija | cpdp.bg |
-| Horvātija | azop.hr |
-| Kipra | dataprotection.gov.cy |
-| Čehija | uoou.gov.cz |
-| Dānija | datatilsynet.dk |
-| Igaunija | aki.ee |
-| Somija | tietosuoja.fi |
-| Vācija | jūsu federālās zemes (Land) iestāde (federālā līmenī: bfdi.bund.de) |
-| Grieķija | dpa.gr |
-| Ungārija | naih.hu |
-| Itālija | garanteprivacy.it |
-| Latvija | dvi.gov.lv |
-| Lihtenšteina | datenschutzstelle.li |
-| Lietuva | vdai.lrv.lt |
-| Luksemburga | cnpd.lu |
-| Malta | idpc.org.mt |
-| Nīderlande | autoriteitpersoonsgegevens.nl |
-| Norvēģija | datatilsynet.no |
-| Polija | uodo.gov.pl |
-| Portugāle | cnpd.pt |
-| Rumānija | dataprotection.ro |
-| Slovākija | dataprotection.gov.sk |
-| Slovēnija | ip-rs.si |
-| Spānija | aepd.es |
-| Zviedrija | imy.se |
-| Šveice | Federal Data Protection and Information Commissioner (FDPIC), edoeb.admin.ch |
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj jūsu valsts tiesību akti. Katrā no tiem ir norādīts, kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltārs
 
 ### Food truck operatoriem
@@ -337,22 +187,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 **Jūsu klientu dati.** Saskaņā ar Gibraltāra datu aizsardzības tiesību aktiem, kas ietver ES Vispārīgo datu aizsardzības regulu (VDAR) tādā veidā, kā tā piemērojama Gibraltārā, Pakalpojuma noteikumu 10. sadaļa ir mūsu datu apstrādes līgums ar jums: jūs esat pārzinis un mēs esam apstrādātājs tādā pašā nozīmē kā VDAR 28. pantā.
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Gibraltāra tiesību akti un ko nevar izslēgt ar vienošanos.
-
-### Privātums visiem, kas atrodas Gibraltārā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Gibraltārā esošu personu personas datus, ir piemērojami Gibraltāra datu aizsardzības tiesību akti, tostarp ES Vispārīgā datu aizsardzības regula (VDAR) tādā veidā, kā tā tur piemērojama, kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti. Privātuma politikas 8. sadaļā uzskaitītās tiesības ir arī jūsu tiesības saskaņā ar šiem tiesību aktiem.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē. Ja pakalpojumu sniedzējs apstrādā datus Amerikas Savienotajās Valstīs (Privātuma politikas 6. sadaļa), nosūtīšanu aptver tiesību aktos atzīta garantija.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat jautāt mums, kādus personas datus mēs par jums glabājam, un lūgt mums tos labot, dzēst vai pārtraukt to izmantošanu. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim viena mēneša laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Jūs varat iesniegt sūdzību Gibraltar Regulatory Authority — Gibraltāra datu aizsardzības uzraudzības iestādei — vietnē www.gra.gi. Mēs būtu pateicīgi par iespēju vispirms visu nokārtot pašiem.
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj Gibraltāra tiesību akti. Katrā no tiem ir norādīts, kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brazīlija
 
@@ -378,22 +212,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Brazīlijas tiesību akti un ko nevar izslēgt ar vienošanos.
 
-### Privātums visiem, kas atrodas Brazīlijā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Brazīlijā esošu personu personas datus, ir piemērojams Vispārīgais datu aizsardzības likums (LGPD), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti. Privātuma politikas 8. sadaļā uzskaitītās tiesības ir arī jūsu tiesības saskaņā ar LGPD.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē, un daļu no tiem apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs, kā noteikts Privātuma politikas 6. sadaļā. Mēs tos nosūtām tikai uz pamata, ko atļauj LGPD.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat lūgt mums apstiprināt, vai mēs glabājam personas datus par jums, un lūgt to kopiju vai lūgt mums tos labot, dzēst vai pārtraukt to izmantošanu. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim 15 dienu laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Jūs varat arī iesniegt sūdzību Valsts datu aizsardzības iestādei (Autoridade Nacional de Proteção de Dados, ANPD) vietnē www.gov.br/anpd.
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj Brazīlijas tiesību akti. Katrā no tiem ir norādīts, kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Meksika
 
 ### Food truck operatoriem
@@ -417,22 +235,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 **Jūsu klientu dati.** Saskaņā ar Meksikas Federal Law on the Protection of Personal Data Held by Private Parties (Federālais likums par privātpersonu rīcībā esošo personas datu aizsardzību) Pakalpojuma noteikumu 10. sadaļa nozīmē to pašu šī likuma terminos: jūs esat pārzinis un mēs esam jūsu apstrādātājs (encargado), un mēs apstrādājam jūsu klientu personas datus tikai, lai jūsu labā darbinātu HatchGrab, un saskaņā ar jūsu norādījumiem. Jūs esat atbildīgs par savu privātuma paziņojumu (aviso de privacidad) saviem klientiem.
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Meksikas tiesību akti un ko nevar izslēgt ar vienošanos.
-
-### Privātums visiem, kas atrodas Meksikā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Meksikā esošu personu personas datus, ir piemērojams Federal Law on the Protection of Personal Data Held by Private Parties (Federālais likums par privātpersonu rīcībā esošo personas datu aizsardzību), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti. Šī lapa kopā ar Privātuma politiku ir mūsu privātuma paziņojums personām Meksikā.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē, un daļu no tiem apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs, kā noteikts Privātuma politikas 6. sadaļā, tikai pakalpojuma darbības nodrošināšanai.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat lūgt mums piekļuvi personas datiem, ko mēs par jums glabājam, un lūgt mums tos labot, dzēst vai pārtraukt to izmantošanu (jūsu ARCO tiesības). Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim 20 darba dienu laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Ja neesat apmierināts, jūs varat iesniegt sūdzību iestādei Secretaría Anticorrupción y Buen Gobierno (Korupcijas apkarošanas un labas pārvaldības sekretariāts), kas nodrošina Meksikas federālā likuma par privātpersonu rīcībā esošo personas datu aizsardzību izpildi (spēkā kopš 2025. gada 21. marta).
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj Meksikas tiesību akti. Katrā no tiem ir norādīts, kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japāna
 
@@ -458,22 +260,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Japānas tiesību akti un ko nevar izslēgt ar vienošanos.
 
-### Privātums visiem, kas atrodas Japānā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Japānā esošu personu personisko informāciju, ir piemērojams Act on the Protection of Personal Information (Personiskās informācijas aizsardzības likums), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti.
-
-**Kur tiek glabāta jūsu informācija.** Jūsu informācija tiek glabāta un apstrādāta Apvienotajā Karalistē, un daļu no tās apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs, kā noteikts Privātuma politikas 6. sadaļā. Japāna atzīst, ka Apvienotajā Karalistē un Eiropas Savienībā personiskās informācijas aizsardzība atbilst Japānas standartam. Amerikas Savienotajās Valstīs apstrādātā informācija ir aizsargāta ar mūsu līgumiem ar šiem pakalpojumu sniedzējiem.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat lūgt mums izpaust personisko informāciju, ko mēs par jums glabājam, un lūgt mums to labot, dzēst vai pārtraukt tās izmantošanu. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim bez kavēšanās. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Jūs varat arī sazināties ar Personal Information Protection Commission (Personiskās informācijas aizsardzības komisija) vietnē www.ppc.go.jp.
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai personām, kuras ir piekritušas tos saņemt. Katrā no tiem ir norādīts, no kā tas ir un kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapūra
 
 ### Food truck operatoriem
@@ -498,22 +284,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Singapūras tiesību akti un ko nevar izslēgt ar vienošanos.
 
-### Privātums visiem, kas atrodas Singapūrā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Singapūrā esošu personu personas datus, ir piemērojams Personal Data Protection Act 2012 (PDPA) (Personas datu aizsardzības likums), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē, un daļu no tiem apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs, kā noteikts Privātuma politikas 6. sadaļā. Mēs nodrošinām, ka neatkarīgi no to atrašanās vietas tie ir aizsargāti līmenī, kas ir salīdzināms ar PDPA prasībām.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat lūgt personas datus, ko mēs par jums glabājam, un informāciju par to, kā tie ir izmantoti, un lūgt mums tos labot. Jūs varat arī atsaukt savu piekrišanu tam, ka mēs tos izmantojam. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim 30 dienu laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Ja neesat apmierināts, jūs varat iesniegt sūdzību Personal Data Protection Commission (Personas datu aizsardzības komisija) vietnē www.pdpc.gov.sg.
-
-**Mārketinga ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj Singapūras tiesību akti. Katrā no tiem ir norādīts, kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. Mēs neveicam mārketinga zvanus un nesūtām mārketinga īsziņas uz numuriem, kas iekļauti Singapūras Do Not Call Registry (reģistrs „Nezvanīt“). E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Honkonga
 
 ### Food truck operatoriem
@@ -535,22 +305,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 **Jūsu klientu dati.** Saskaņā ar Honkongas Personal Data (Privacy) Ordinance (Cap. 486) (Rīkojums par personas datiem (privātumu)) Pakalpojuma noteikumu 10. sadaļa nozīmē to pašu šī rīkojuma terminos: jūs esat datu lietotājs (data user) un mēs esam jūsu datu apstrādātājs (data processor), un mēs apstrādājam jūsu klientu personas datus tikai, lai jūsu labā darbinātu HatchGrab, un saskaņā ar jūsu norādījumiem, un glabājam tos ne ilgāk, kā tas nepieciešams.
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Honkongas tiesību akti un ko nevar izslēgt ar vienošanos.
-
-### Privātums visiem, kas atrodas Honkongā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Honkongā esošu personu personas datus, ir piemērojams Personal Data (Privacy) Ordinance (Rīkojums par personas datiem (privātumu)), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē, un daļu no tiem apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs, kā noteikts Privātuma politikas 6. sadaļā.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat lūgt to personas datu kopiju, ko mēs par jums glabājam, un lūgt mums tos labot. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim 40 dienu laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Ja neesat apmierināts, jūs varat iesniegt sūdzību Office of the Privacy Commissioner for Personal Data vietnē www.pcpd.org.hk.
-
-**Mārketinga ziņojumi.** Mēs izmantojam jūsu personas datus tiešajā mārketingā tikai ar jūsu piekrišanu, un katrā mārketinga ziņojumā ir norādīts, kā atteikties no to saņemšanas. Ja jūs lūdzat mums pārtraukt, mēs to darīsim bez maksas. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malaizija
 
@@ -576,22 +330,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Malaizijas tiesību akti un ko nevar izslēgt ar vienošanos.
 
-### Privātums visiem, kas atrodas Malaizijā
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Malaizijā esošu personu personas datus, ir piemērojams Personal Data Protection Act 2010 (PDPA) (Personas datu aizsardzības likums), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē, un daļu no tiem apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs, kā noteikts Privātuma politikas 6. sadaļā. Mēs tos nosūtām tikai tad, ja to atļauj PDPA.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat lūgt personas datus, ko mēs par jums glabājam, un lūgt mums tos labot vai pārtraukt to izmantošanu. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim 21 dienas laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Ja neesat apmierināts, jūs varat iesniegt sūdzību Personal Data Protection Commissioner (Personas datu aizsardzības komisārs) vietnē www.pdp.gov.my.
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj Malaizijas tiesību akti. Katrā no tiem ir norādīts, kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Taizeme
 
 ### Food truck operatoriem
@@ -616,22 +354,6 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz Taizemes tiesību akti un ko nevar izslēgt ar vienošanos.
 
-### Privātums visiem, kas atrodas Taizemē
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Taizemē esošu personu personas datus, ir piemērojams Personal Data Protection Act B.E. 2562 (PDPA) (Personas datu aizsardzības likums), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti. Privātuma politikas 8. sadaļā uzskaitītās tiesības ir arī jūsu tiesības saskaņā ar PDPA.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē, un daļu no tiem apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs, kā noteikts Privātuma politikas 6. sadaļā. Mēs tos nosūtām tikai uz pamata, ko atļauj PDPA.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat lūgt to personas datu kopiju, ko mēs par jums glabājam, un lūgt mums tos labot, dzēst vai pārtraukt to izmantošanu. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim 30 dienu laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Jūs varat arī iesniegt sūdzību Personal Data Protection Committee (Personas datu aizsardzības komiteja) vietnē www.pdpc.or.th.
-
-**Mārketinga e-pasta ziņojumi.** Mēs sūtām mārketinga e-pasta ziņojumus tikai tad, ja to atļauj Taizemes tiesību akti. Katrā no tiem ir norādīts, kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Apvienotie Arābu Emirāti
 
 ### Food truck operatoriem
@@ -653,19 +375,3 @@ Ja jūsu valsts nav minēta, papildu noteikumu nav: Pakalpojuma noteikumi un Pri
 **Jūsu klientu dati.** Saskaņā ar AAE Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data (Federālais dekrētlikums par personas datu aizsardzību) Pakalpojuma noteikumu 10. sadaļa nozīmē to pašu šī likuma terminos: jūs esat pārzinis un mēs esam jūsu apstrādātājs, un mēs apstrādājam jūsu klientu personas datus tikai, lai jūsu labā darbinātu HatchGrab, un saskaņā ar jūsu norādījumiem.
 
 **Paziņojumi un piemērojamie tiesību akti.** Paziņojumi darbojas, kā noteikts Pakalpojuma noteikumu 12. sadaļā: mēs sazināmies ar jums, izmantojot jūsu kontā norādīto e-pasta adresi, un jūs varat sazināties ar mums, izmantojot tālāk norādīto adresi. Šos noteikumus reglamentē Anglijas un Velsas tiesību akti, un Anglijas un Velsas tiesām ir jurisdikcija. Tas neatņem nekādu aizsardzību, ko jums sniedz AAE tiesību akti un ko nevar izslēgt ar vienošanos.
-
-### Privātums visiem, kas atrodas Apvienotajos Arābu Emirātos
-
-**Piemērojamie tiesību akti.** Kad mēs apstrādājam Apvienotajos Arābu Emirātos esošu personu personas datus, ir piemērojams Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data (Federālais dekrētlikums par personas datu aizsardzību), kā arī mūsu Privātuma politikā minētie Apvienotās Karalistes tiesību akti. Ja atrodaties brīvajā zonā, kurā ir savi datu aizsardzības tiesību akti, piemēram, DIFC vai ADGM, tā vietā piemēro šos tiesību aktus.
-
-**Kur tiek glabāti jūsu dati.** Jūsu dati tiek glabāti un apstrādāti Apvienotajā Karalistē, un daļu no tiem apstrādā pakalpojumu sniedzēji Eiropas Savienībā un Amerikas Savienotajās Valstīs, kā noteikts Privātuma politikas 6. sadaļā. Mēs tos nosūtām tikai uz pamata, ko atļauj tiesību akti.
-
-**Piezīmes par alerģijām un uzturu.** Ja pasūtījumam pievienojat piezīmes par alerģijām vai uzturu, mēs tās kopā ar jūsu pasūtījumu nododam busiņam. Mēs tās kopā ar jūsu vārdu un kontaktinformāciju dzēšam 12 mēnešus pēc pasūtījuma, kā noteikts Privātuma politikas 7. sadaļā. Mēs tās neizmantojam nekam citam.
-
-**Jūsu pieprasījumi.** Jūs varat lūgt personas datus, ko mēs par jums glabājam, un lūgt mums tos labot, dzēst vai pārtraukt to izmantošanu. Rakstiet uz privacy@hatchgrab.com. Mēs atbildēsim 30 dienu laikā. Ja pasūtījāt no busiņa, mēs varam nodot jūsu pieprasījumu šim busiņam, jo tas nosaka, kā tiek izmantoti jūsu pasūtījuma dati.
-
-**Sūdzības.** Vispirms paziņojiet mums, rakstot uz privacy@hatchgrab.com. Ja neesat apmierināts, jūs varat iesniegt sūdzību UAE Data Office (AAE Datu birojs).
-
-**Mārketinga ziņojumi.** Mēs sūtām mārketinga ziņojumus tikai tad, ja to atļauj AAE tiesību akti. Katrā no tiem ir norādīts, kā atteikties no to saņemšanas, un, ja jūs lūdzat mums pārtraukt, mēs to darīsim. E-pasta ziņojumi par pasūtījumu vai jūsu kontu nav mārketings.
-
-**Kontakti.** privacy@hatchgrab.com vai pa pastu: HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

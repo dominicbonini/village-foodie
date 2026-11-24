@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Politique de confidentialité
 
 **Dernière mise à jour :** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Elle couvre également les applications HatchGrab pour mobile et tablette, sur i
 
 Si vous êtes ici uniquement parce que vous avez commandé à manger auprès d’un food truck, c’est la section **« Si vous avez commandé auprès d’un food truck »** qui vous concerne.
 
-**Certains pays prévoient des règles supplémentaires.** Lorsqu’elles s’appliquent à vous, elles figurent sur notre page [Conditions propres à chaque pays](/country-terms), qui fait partie intégrante de la présente politique.
-
+**La présente politique s’applique où que vous soyez.** Nous respectons le droit britannique de la protection des données et, lorsque le droit de la protection des données du pays où vous résidez s’applique également, nous le respectons aussi.
 ---
 
 ## 1. Qui sommes-nous
@@ -84,6 +83,8 @@ Lorsque vous passez une commande sur la page de commande d’un food truck, nous
 
 C’est le food truck qui décide de la durée de conservation de vos informations et de la manière dont il vous contacte par la suite. Ses propres pratiques en matière de confidentialité s’appliquent à cet égard. Si vous ne savez pas de quel food truck il s’agit, contactez-nous à privacy@hatchgrab.com et nous vous orienterons vers lui.
 
+**Remarques sur les allergies et le régime alimentaire.** Nous les transmettons au food truck avec votre commande et ne les utilisons à aucune autre fin. Nous les supprimons, ainsi que vos nom et coordonnées, 12 mois après la commande (voir la section 7).
+
 **Informations sur les allergènes.** Lorsqu’un food truck publie des informations sur les allergènes, nous affichons ce que le food truck a confirmé. Nous ne les vérifions pas de manière indépendante. Signalez toujours directement au food truck toute allergie grave.
 
 ---
@@ -135,7 +136,7 @@ Nous pouvons également communiquer des données lorsque la loi nous y oblige, o
 
 **Nous ne vendons pas de données personnelles et nous ne les partageons pas à des fins publicitaires.**
 
-**Transferts internationaux.** Les données de votre compte et de vos commandes sont stockées et traitées au Royaume-Uni. Certains traitements ont lieu en dehors de celui-ci : l’extraction des cartes et les réponses automatiques WhatsApp, qui utilisent un service de Google aux États-Unis ; l’acheminement des messages WhatsApp, assuré par Meta aux États-Unis ; les paiements, traités par Stripe aux États-Unis ; et les notifications push, acheminées par Apple et Google aux États-Unis. Lorsque des données quittent le Royaume-Uni, le transfert est couvert par les UK adequacy regulations (réglementations britanniques d’adéquation) ou par l’International Data Transfer Agreement ou l’Addendum, qui offrent des garanties appropriées. Vous pouvez nous demander le détail des garanties applicables.
+**Transferts internationaux.** Les données de votre compte et de vos commandes sont stockées et traitées au Royaume-Uni. Certains traitements ont lieu en dehors de celui-ci : l’extraction des cartes et les réponses automatiques WhatsApp, qui utilisent un service de Google aux États-Unis ; l’acheminement des messages WhatsApp, assuré par Meta aux États-Unis ; les paiements, traités par Stripe aux États-Unis ; et les notifications push, acheminées par Apple et Google aux États-Unis. Lorsque des données quittent le Royaume-Uni, le transfert est couvert par les UK adequacy regulations (réglementations britanniques d’adéquation) ou par l’International Data Transfer Agreement ou l’Addendum et, lorsque le droit de votre pays l’exige, par une garantie reconnue par ce droit. Vous pouvez nous demander le détail des garanties applicables.
 
 À mesure que notre service se développe, nous pourrons ajouter des prestataires, notamment un prestataire de SMS. Nous mettrons cette liste à jour avant qu’ils ne commencent à traiter vos données.
 
@@ -161,7 +162,7 @@ Nous supprimons ou anonymisons les données à l’expiration de ces durées.
 
 ## 8. Vos droits
 
-En vertu du droit britannique de la protection des données, vous avez le droit :
+En vertu du droit britannique de la protection des données et, lorsqu’il s’applique, du droit du pays où vous résidez, vous avez le droit :
 
 - de demander quelles données personnelles nous détenons à votre sujet, et d’en obtenir une copie ;
 - de faire corriger des données inexactes ;
@@ -171,11 +172,17 @@ En vertu du droit britannique de la protection des données, vous avez le droit�
 - de vous opposer à un traitement fondé sur des intérêts légitimes ;
 - de retirer votre consentement à tout moment, lorsque nous nous fondons sur le consentement.
 
-Pour exercer l’un de ces droits, écrivez à privacy@hatchgrab.com. Nous vous répondrons dans un délai d’un mois.
+Le droit du pays où vous résidez peut vous accorder ces droits sous d’autres noms, ou des droits supplémentaires. Vous en disposez également.
 
-**Suppression de votre compte.** Les exploitants peuvent demander la suppression de leur compte depuis l’application ou en écrivant à privacy@hatchgrab.com. Nous supprimerons votre compte et vos données personnelles, sauf lorsque nous sommes tenus de conserver des documents pour des raisons comptables ou légales.
+**Présenter une demande.** Écrivez à privacy@hatchgrab.com. Nous vérifierons que la demande est authentique avant d’y donner suite. Vous pouvez demander à une autre personne de présenter la demande pour vous, et nous ne vous traiterons pas différemment parce que vous en avez présenté une. Nous vous répondrons dans un délai d’un mois, ou plus tôt si le droit de votre pays l’exige. Si vous avez commandé auprès d’un food truck, nous pouvons transmettre votre demande à ce food truck, car c’est lui qui décide de l’utilisation des informations de votre commande. Si nous rejetons une demande, vous pouvez nous demander de la réexaminer en répondant à notre réponse.
 
-**Réclamations.** Si vous n’êtes pas satisfait de la manière dont nous avons traité vos données, vous pouvez adresser une réclamation à l’Information Commissioner’s Office, sur ico.org.uk ou au 0303 123 1113. Nous vous serions reconnaissants de nous donner d’abord l’occasion d’y remédier.
+**Suppression de votre compte.** Les exploitants peuvent demander la suppression de leur compte depuis l’application ou en écrivant à privacy@hatchgrab.com. Nous supprimerons votre compte et vos données personnelles, sauf lorsque nous sommes tenus de conserver des documents pour des raisons comptables ou légales. Lorsque le compte d’un exploitant est supprimé, nous supprimons également les nom, coordonnées et remarques de ses clients des commandes que nous conservons.
+
+**E-mails marketing.** Nous n’envoyons d’e-mails marketing que lorsque le droit du pays où vous résidez le permet, ce qui, dans certains pays, signifie uniquement avec votre consentement. Chacun d’eux indique de qui il émane, comporte notre adresse postale et vous indique comment ne plus en recevoir. Si vous nous demandez d’arrêter, nous le ferons, gratuitement et dans un délai de 10 jours ouvrables. Les e-mails concernant une commande ou votre compte ne constituent pas du marketing. Si nous ou un food truck proposons des informations de suivi de commande par SMS, vous ne les recevrez que si vous acceptez de les recevoir, et vous pouvez y mettre fin à tout moment.
+
+**En cas de problème.** Si une violation de vos données personnelles est susceptible de vous causer un préjudice grave, nous vous en informerons, ainsi que l’autorité de contrôle, dès que possible lorsque la loi l’exige, ou nous aiderons le food truck auprès duquel vous avez commandé à le faire.
+
+**Réclamations.** Écrivez-nous d’abord à privacy@hatchgrab.com ; nous vous serions reconnaissants de nous donner l’occasion de corriger la situation. Vous pouvez également adresser une réclamation à l’autorité de protection des données du pays où vous résidez. Au Royaume-Uni, il s’agit de l’Information Commissioner's Office, sur ico.org.uk ou au 0303 123 1113.
 
 ---
 

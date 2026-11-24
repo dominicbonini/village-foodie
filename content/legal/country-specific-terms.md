@@ -1,12 +1,12 @@
 # Country-specific terms
 
-**Last updated:** 1 November 2026
+**Last updated:** 24 November 2026
 
-Our [Terms of Service](/terms) and [Privacy Policy](/privacy) apply in every country where HatchGrab is used. Some countries have extra rules. This page sets them out, one country at a time.
+Our [Terms of Service](/terms) apply in every country where HatchGrab is used. Some countries have extra rules. This page sets them out, one country at a time.
 
-Where a section below applies to you, it forms part of our Terms of Service and our Privacy Policy. If it says something different from them, this page applies for that country.
+Where a section below applies to you, it forms part of our Terms of Service. If it says something different from them, this page applies for that country.
 
-If your country is not listed, there are no extra rules: the Terms of Service and the Privacy Policy apply as written.
+If your country is not listed, there are no extra rules: the Terms of Service apply as written. Our [Privacy Policy](/privacy) is the same in every country.
 
 ---
 
@@ -30,26 +30,6 @@ If your country is not listed, there are no extra rules: the Terms of Service an
 
 **Your customers' data.** Under US state privacy laws, section 10 of the Terms of Service means the same thing in their terms: you are the "business" and we are your "service provider" or "processor". We use your customers' personal information only to run HatchGrab for you. We do not sell it, we do not share it for cross-context behavioral advertising, and we do not use it for any other purpose except as those laws allow a service provider to.
 
-### Privacy, for everyone in the United States
-
-**What we collect and who we share it with.** The same as the Privacy Policy says: account and business details for truck operators; your name, contact details and order details if you order from a truck; and basic technical data if you visit our websites. We share it with the truck you order from and with the service providers listed in section 6 of the Privacy Policy, only to run the service or where the law requires it. It may be processed in the United Kingdom, the European Union and the United States.
-
-**We do not sell or share your personal information.** We do not sell personal information, and we do not share it for cross-context behavioral advertising.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask us what personal information we hold about you, and ask us to correct it or delete it. Email privacy@hatchgrab.com. We will check that the request is genuine before we act on it, and we will reply within 45 days. You can ask someone to make the request for you. We will not treat you differently for making a request. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used. If we turn down a request, you can ask us to look at it again by replying to our answer.
-
-**State privacy laws.** Some state privacy laws only apply to businesses above a certain size, and they may not apply to us. We honor the requests above from anyone in the United States anyway.
-
-**Children.** Our services are not directed at children under 13, and we do not knowingly collect their personal information. If you believe a child has given us their information, contact us and we will delete it.
-
-**Marketing emails.** Every marketing email we send tells you how to stop receiving them and includes our postal address. If you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Text messages.** If we or a truck offer order updates by text message, you will only get them if you agree to receive them, and you can stop them at any time.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Ireland
 
 ### For food truck operators
@@ -69,22 +49,6 @@ If your country is not listed, there are no extra rules: the Terms of Service an
 **Your customers' data.** Under the EU General Data Protection Regulation (GDPR), section 10 of the Terms of Service is our data processing agreement with you: you are the controller and we are the processor, in the same sense as Article 28 of the GDPR.
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that Irish law gives you and that cannot be excluded by agreement.
-
-### Privacy, for everyone in Ireland
-
-**The law that applies.** When we handle personal data of people in Ireland, the EU General Data Protection Regulation (GDPR) applies, as well as the UK law named in our Privacy Policy. The rights listed in section 8 of the Privacy Policy are your rights under the GDPR too.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom. The European Commission has decided that the UK protects personal data to the same standard as the EU, so no extra safeguard is needed for that. Where a service provider handles data in the United States (section 6 of the Privacy Policy), the transfer is covered by a safeguard the GDPR recognises.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask us what personal data we hold about you, and ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply within one month. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** You can complain to the Data Protection Commission, Ireland's data protection regulator, at www.dataprotection.ie, or by post to 6 Pembroke Row, Dublin 2, D02 X963. We would appreciate the chance to put things right first.
-
-**Marketing emails.** We send marketing emails only where the law allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australia
 
@@ -108,22 +72,6 @@ If your country is not listed, there are no extra rules: the Terms of Service an
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that Australian law gives you and that cannot be excluded by agreement.
 
-### Privacy, for everyone in Australia
-
-**The law that applies.** When we handle personal information of people in Australia, we follow the Australian Privacy Principles in the Privacy Act 1988, as well as the UK law named in our Privacy Policy.
-
-**Where your information is kept.** Your information is stored and processed in the United Kingdom. Some of it is handled by service providers in the European Union and the United States, as section 6 of the Privacy Policy says.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask us what personal information we hold about you, and ask us to correct it or delete it. Email privacy@hatchgrab.com. We will reply within 30 days. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** If you are unhappy with how we have handled your personal information, tell us first at privacy@hatchgrab.com. If you are not satisfied with our answer, or we have not replied within 30 days, you can complain in writing to the Office of the Australian Information Commissioner (OAIC) at www.oaic.gov.au.
-
-**Marketing emails.** We send marketing emails only where the law allows it. Every one says who it is from and tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## New Zealand
 
 ### For food truck operators
@@ -146,24 +94,6 @@ If your country is not listed, there are no extra rules: the Terms of Service an
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that New Zealand law gives you and that cannot be excluded by agreement.
 
-### Privacy, for everyone in New Zealand
-
-**The law that applies.** When we handle personal information of people in New Zealand, the Privacy Act 2020 applies, as well as the UK law named in our Privacy Policy. It applies to us because we carry on business in New Zealand, even though we are based in the United Kingdom.
-
-**Where your information is kept.** Your information is stored and processed in the United Kingdom. Some of it is handled by service providers in the European Union and the United States, as section 6 of the Privacy Policy says.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask us for the personal information we hold about you, and ask us to correct it. Email privacy@hatchgrab.com. We will reply as soon as we reasonably can, and within 20 working days. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** If you are unhappy with how we have handled your personal information, tell us first at privacy@hatchgrab.com. The Privacy Commissioner asks you to do that before making a complaint. If you are not satisfied with our answer, you can complain to the Office of the Privacy Commissioner at www.privacy.org.nz, on 0800 803 909, or by post to PO Box 10 094, Wellington 6140.
-
-**Privacy breaches.** If a privacy breach involving your personal information has caused, or is likely to cause, serious harm, the Privacy Act 2020 requires the Privacy Commissioner and you to be told as soon as practicable. We will do that, or, for an order you placed with a truck, help the truck to do it.
-
-**Marketing emails.** We send marketing emails only where the law allows it. Every one says who it is from and tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Canada
 
 ### For food truck operators
@@ -185,22 +115,6 @@ If your country is not listed, there are no extra rules: the Terms of Service an
 **Your rights under local law.** Nothing in the Terms of Service takes away a right that the law where you are based says cannot be limited or waived.
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that the law of your province or territory gives you and that cannot be excluded by agreement.
-
-### Privacy, for everyone in Canada
-
-**The law that applies.** When we handle personal information of people in Canada, the Personal Information Protection and Electronic Documents Act (PIPEDA) applies, and in British Columbia and Alberta their own private-sector privacy laws, as well as the UK law named in our Privacy Policy.
-
-**Where your information is kept.** Your information is stored and processed in the United Kingdom, and some is handled by service providers in the European Union and the United States (section 6 of the Privacy Policy), where it may be accessed under those countries' laws.
-
-**Your requests.** You can ask for the personal information we hold about you and ask us to correct it. Email privacy@hatchgrab.com. We will reply within 30 days.
-
-**Complaints.** Tell us first at privacy@hatchgrab.com. If you are not satisfied, you can complain to the Office of the Privacy Commissioner of Canada at www.priv.gc.ca or on 1-800-282-1376.
-
-**Breaches.** If a breach of security safeguards involving your information creates a real risk of significant harm, we will report it to the Privacy Commissioner and tell you as soon as feasible.
-
-**Marketing emails.** We send marketing emails only with your consent, as Canada's anti-spam law requires. Every one says who it is from and how to unsubscribe, and we act on an unsubscribe within 10 business days.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## France
 
@@ -225,22 +139,6 @@ If your country is not listed, there are no extra rules: the Terms of Service an
 **Your customers' data.** Under the EU General Data Protection Regulation (GDPR), section 10 of the Terms of Service is our data processing agreement with you: you are the controller and we are the processor, in the same sense as Article 28 of the GDPR.
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that French law gives you and that cannot be excluded by agreement.
-
-### Privacy, for everyone in France
-
-**The law that applies.** When we handle personal data of people in France, the EU General Data Protection Regulation (GDPR) and the French Data Protection Act (loi Informatique et Libertés) apply, as well as the UK law named in our Privacy Policy. The rights listed in section 8 of the Privacy Policy are your rights under the GDPR too.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom. The European Commission has decided that the UK protects personal data to the same standard as the EU, so no extra safeguard is needed for that. Where a service provider handles data in the United States (section 6 of the Privacy Policy), the transfer is covered by a safeguard the GDPR recognises.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask us what personal data we hold about you, and ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply within one month. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** You can complain to the CNIL (Commission nationale de l'informatique et des libertés), France's data protection regulator, at www.cnil.fr, or by post to CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. We would appreciate the chance to put things right first.
-
-**Marketing emails.** We send marketing emails only where French law allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## European Economic Area and Switzerland
 
@@ -268,53 +166,6 @@ This section applies in every country of the European Economic Area that has no 
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that the law of your country gives you and that cannot be excluded by agreement.
 
-### Privacy, for everyone in the European Economic Area and Switzerland
-
-**The law that applies.** When we handle personal data of people in the European Economic Area, the EU General Data Protection Regulation (GDPR) and the data protection law of their country apply; in Switzerland, the Federal Act on Data Protection. The UK law named in our Privacy Policy applies as well. The rights listed in section 8 of the Privacy Policy are your rights under these laws too.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom. The European Commission and Switzerland have each decided that the UK protects personal data to an adequate standard, so no extra safeguard is needed for that. Where a service provider handles data in the United States (section 6 of the Privacy Policy), the transfer is covered by a safeguard the GDPR and Swiss law recognise.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask us what personal data we hold about you, and ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply within one month. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** You can complain to the data protection authority of the country where you live or work. The European Data Protection Board lists every authority in the European Economic Area at www.edpb.europa.eu (About EDPB › Members). In Switzerland, it is the Federal Data Protection and Information Commissioner, www.edoeb.admin.ch. We would appreciate the chance to put things right first.
-
-| Country | Data protection authority |
-|---|---|
-| Austria | dsb.gv.at |
-| Belgium | autoriteprotectiondonnees.be |
-| Bulgaria | cpdp.bg |
-| Croatia | azop.hr |
-| Cyprus | dataprotection.gov.cy |
-| Czech Republic | uoou.gov.cz |
-| Denmark | datatilsynet.dk |
-| Estonia | aki.ee |
-| Finland | tietosuoja.fi |
-| Germany | the authority of your Land (federal: bfdi.bund.de) |
-| Greece | dpa.gr |
-| Hungary | naih.hu |
-| Italy | garanteprivacy.it |
-| Latvia | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Lithuania | vdai.lrv.lt |
-| Luxembourg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Netherlands | autoriteitpersoonsgegevens.nl |
-| Norway | datatilsynet.no |
-| Poland | uodo.gov.pl |
-| Portugal | cnpd.pt |
-| Romania | dataprotection.ro |
-| Slovakia | dataprotection.gov.sk |
-| Slovenia | ip-rs.si |
-| Spain | aepd.es |
-| Sweden | imy.se |
-| Switzerland | Federal Data Protection and Information Commissioner (FDPIC), edoeb.admin.ch |
-
-**Marketing emails.** We send marketing emails only where the law of your country allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### For food truck operators
@@ -336,22 +187,6 @@ This section applies in every country of the European Economic Area that has no 
 **Your customers' data.** Under the data protection law of Gibraltar, which includes the EU General Data Protection Regulation (GDPR) as it applies in Gibraltar, section 10 of the Terms of Service is our data processing agreement with you: you are the controller and we are the processor, in the same sense as Article 28 of the GDPR.
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that the law of Gibraltar gives you and that cannot be excluded by agreement.
-
-### Privacy, for everyone in Gibraltar
-
-**The law that applies.** When we handle personal data of people in Gibraltar, the data protection law of Gibraltar applies, including the EU General Data Protection Regulation (GDPR) as it applies there, as well as the UK law named in our Privacy Policy. The rights listed in section 8 of the Privacy Policy are your rights under that law too.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom. Where a service provider handles data in the United States (section 6 of the Privacy Policy), the transfer is covered by a safeguard the law recognises.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask us what personal data we hold about you, and ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply within one month. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** You can complain to the Gibraltar Regulatory Authority, Gibraltar's data protection regulator, at www.gra.gi. We would appreciate the chance to put things right first.
-
-**Marketing emails.** We send marketing emails only where the law of Gibraltar allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brazil
 
@@ -377,22 +212,6 @@ This section applies in every country of the European Economic Area that has no 
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that Brazilian law gives you and that cannot be excluded by agreement.
 
-### Privacy, for everyone in Brazil
-
-**The law that applies.** When we handle personal data of people in Brazil, the General Data Protection Law (LGPD) applies, as well as the UK law named in our Privacy Policy. The rights listed in section 8 of the Privacy Policy are your rights under the LGPD too.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom, and some of it is handled by service providers in the European Union and the United States, as section 6 of the Privacy Policy says. We transfer it only on a basis the LGPD allows.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask us to confirm whether we hold personal data about you, and ask for a copy of it, or ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply within 15 days. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** Tell us first at privacy@hatchgrab.com. You can also complain to the National Data Protection Authority (Autoridade Nacional de Proteção de Dados, ANPD) at www.gov.br/anpd.
-
-**Marketing emails.** We send marketing emails only where Brazilian law allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Mexico
 
 ### For food truck operators
@@ -416,22 +235,6 @@ This section applies in every country of the European Economic Area that has no 
 **Your customers' data.** Under Mexico's Federal Law on the Protection of Personal Data Held by Private Parties, section 10 of the Terms of Service means the same thing in its terms: you are the controller and we are your processor (encargado), and we handle your customers' personal data only to run HatchGrab for you and on your instructions. You are responsible for your own privacy notice (aviso de privacidad) to your customers.
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that Mexican law gives you and that cannot be excluded by agreement.
-
-### Privacy, for everyone in Mexico
-
-**The law that applies.** When we handle personal data of people in Mexico, the Federal Law on the Protection of Personal Data Held by Private Parties applies, as well as the UK law named in our Privacy Policy. This page and the Privacy Policy together are our privacy notice for people in Mexico.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom, and some of it is handled by service providers in the European Union and the United States, as section 6 of the Privacy Policy says, only to run the service.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask us for access to the personal data we hold about you, and ask us to correct it, delete it or stop using it (your ARCO rights). Email privacy@hatchgrab.com. We will reply within 20 business days. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** Tell us first at privacy@hatchgrab.com. If you are not satisfied, you can complain to the Secretaría Anticorrupción y Buen Gobierno (Secretariat of Anti-Corruption and Good Governance), which enforces Mexico's Federal Law on the Protection of Personal Data Held by Private Parties (in force since 21 March 2025).
-
-**Marketing emails.** We send marketing emails only where Mexican law allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japan
 
@@ -457,22 +260,6 @@ This section applies in every country of the European Economic Area that has no 
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that Japanese law gives you and that cannot be excluded by agreement.
 
-### Privacy, for everyone in Japan
-
-**The law that applies.** When we handle personal information of people in Japan, the Act on the Protection of Personal Information applies, as well as the UK law named in our Privacy Policy.
-
-**Where your information is kept.** Your information is stored and processed in the United Kingdom, and some of it is handled by service providers in the European Union and the United States, as section 6 of the Privacy Policy says. The United Kingdom and the European Union are recognised by Japan as having personal information protection to Japan's standard. Information handled in the United States is protected by our agreements with those providers.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask us to disclose the personal information we hold about you, and ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply without delay. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** Tell us first at privacy@hatchgrab.com. You can also contact the Personal Information Protection Commission at www.ppc.go.jp.
-
-**Marketing emails.** We send marketing emails only to people who have agreed to receive them. Every one says who it is from and how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapore
 
 ### For food truck operators
@@ -497,22 +284,6 @@ This section applies in every country of the European Economic Area that has no 
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that Singapore law gives you and that cannot be excluded by agreement.
 
-### Privacy, for everyone in Singapore
-
-**The law that applies.** When we handle personal data of people in Singapore, the Personal Data Protection Act 2012 (PDPA) applies, as well as the UK law named in our Privacy Policy.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom, and some of it is handled by service providers in the European Union and the United States, as section 6 of the Privacy Policy says. We make sure it is protected to a standard comparable to the PDPA's wherever it is.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask for the personal data we hold about you and how it has been used, and ask us to correct it. You can also withdraw your consent to our using it. Email privacy@hatchgrab.com. We will reply within 30 days. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** Tell us first at privacy@hatchgrab.com. If you are not satisfied, you can complain to the Personal Data Protection Commission at www.pdpc.gov.sg.
-
-**Marketing messages.** We send marketing emails only where Singapore law allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. We do not send marketing calls or text messages to numbers on Singapore's Do Not Call Registry. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hong Kong
 
 ### For food truck operators
@@ -534,22 +305,6 @@ This section applies in every country of the European Economic Area that has no 
 **Your customers' data.** Under Hong Kong's Personal Data (Privacy) Ordinance (Cap. 486), section 10 of the Terms of Service means the same thing in its terms: you are the data user and we are your data processor, and we handle your customers' personal data only to run HatchGrab for you and on your instructions, and keep it no longer than that needs.
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that Hong Kong law gives you and that cannot be excluded by agreement.
-
-### Privacy, for everyone in Hong Kong
-
-**The law that applies.** When we handle personal data of people in Hong Kong, the Personal Data (Privacy) Ordinance applies, as well as the UK law named in our Privacy Policy.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom, and some of it is handled by service providers in the European Union and the United States, as section 6 of the Privacy Policy says.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask for a copy of the personal data we hold about you, and ask us to correct it. Email privacy@hatchgrab.com. We will reply within 40 days. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** Tell us first at privacy@hatchgrab.com. If you are not satisfied, you can complain to the Office of the Privacy Commissioner for Personal Data at www.pcpd.org.hk.
-
-**Marketing messages.** We use your personal data for direct marketing only with your consent, and every marketing message tells you how to stop receiving them. If you ask us to stop, we will, free of charge. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malaysia
 
@@ -575,22 +330,6 @@ This section applies in every country of the European Economic Area that has no 
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that Malaysian law gives you and that cannot be excluded by agreement.
 
-### Privacy, for everyone in Malaysia
-
-**The law that applies.** When we handle personal data of people in Malaysia, the Personal Data Protection Act 2010 (PDPA) applies, as well as the UK law named in our Privacy Policy.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom, and some of it is handled by service providers in the European Union and the United States, as section 6 of the Privacy Policy says. We transfer it only where the PDPA allows.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask for the personal data we hold about you, and ask us to correct it or stop using it. Email privacy@hatchgrab.com. We will reply within 21 days. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** Tell us first at privacy@hatchgrab.com. If you are not satisfied, you can complain to the Personal Data Protection Commissioner at www.pdp.gov.my.
-
-**Marketing emails.** We send marketing emails only where Malaysian law allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Thailand
 
 ### For food truck operators
@@ -615,22 +354,6 @@ This section applies in every country of the European Economic Area that has no 
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that Thai law gives you and that cannot be excluded by agreement.
 
-### Privacy, for everyone in Thailand
-
-**The law that applies.** When we handle personal data of people in Thailand, the Personal Data Protection Act B.E. 2562 (PDPA) applies, as well as the UK law named in our Privacy Policy. The rights listed in section 8 of the Privacy Policy are your rights under the PDPA too.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom, and some of it is handled by service providers in the European Union and the United States, as section 6 of the Privacy Policy says. We transfer it only on a basis the PDPA allows.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask for a copy of the personal data we hold about you, and ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply within 30 days. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** Tell us first at privacy@hatchgrab.com. You can also complain to the Personal Data Protection Committee at www.pdpc.or.th.
-
-**Marketing emails.** We send marketing emails only where Thai law allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## United Arab Emirates
 
 ### For food truck operators
@@ -652,19 +375,3 @@ This section applies in every country of the European Economic Area that has no 
 **Your customers' data.** Under the UAE's Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data, section 10 of the Terms of Service means the same thing in its terms: you are the controller and we are your processor, and we handle your customers' personal data only to run HatchGrab for you and on your instructions.
 
 **Notices and governing law.** Notices work as section 12 of the Terms of Service says: we contact you at the email address on your account, and you can reach us at the address below. These terms are governed by the law of England and Wales, and the courts of England and Wales have jurisdiction. This does not take away any protection that UAE law gives you and that cannot be excluded by agreement.
-
-### Privacy, for everyone in the United Arab Emirates
-
-**The law that applies.** When we handle personal data of people in the United Arab Emirates, Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data applies, as well as the UK law named in our Privacy Policy. If you are in a free zone with its own data protection law, such as the DIFC or ADGM, that law applies instead.
-
-**Where your data is kept.** Your data is stored and processed in the United Kingdom, and some of it is handled by service providers in the European Union and the United States, as section 6 of the Privacy Policy says. We transfer it only on a basis the law allows.
-
-**Allergy and dietary notes.** If you add allergy or dietary notes to an order, we pass them to the truck with your order. We remove them, with your name and contact details, 12 months after the order, as section 7 of the Privacy Policy says. We do not use them for anything else.
-
-**Your requests.** You can ask for the personal data we hold about you, and ask us to correct it, delete it or stop using it. Email privacy@hatchgrab.com. We will reply within 30 days. If you ordered from a truck, we may pass your request to that truck, because it decides how your order details are used.
-
-**Complaints.** Tell us first at privacy@hatchgrab.com. If you are not satisfied, you can complain to the UAE Data Office.
-
-**Marketing messages.** We send marketing messages only where UAE law allows it. Every one tells you how to stop receiving them, and if you ask us to stop, we will. Emails about an order or your account are not marketing.
-
-**Contact.** privacy@hatchgrab.com, or by post to HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

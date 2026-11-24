@@ -92,12 +92,11 @@ export function scrubDeals(deals: Json): { value: Json; changed: boolean } {
 
 interface Row { order_key: string; customer_name?: string | null; customer_email?: string | null; customer_phone?: string | null; notes?: string | null; items?: Json; deals?: Json; line_notes?: Json }
 
-/** What to write to one row, or null when it holds nothing left to remove. `nameEmpty` is the value a cleared name takes. */
-export function retentionPatch(row: Row, nameEmpty: '' | null): Record<string, unknown> | null {
+/** The NOTES half of a row's patch: the order note, and the line notes — in `line_notes` when the row has it, else inside items /
+ *  deals. Empty when there is no note text left. france-privacy-1 (24 November 2026, docs/france-privacy-1-report.md): shared with
+ *  account deletion (lib/account-deletion.ts), so the two clear notes in exactly the same way. */
+export function notesPatch(row: Pick<Row, 'notes' | 'items' | 'deals' | 'line_notes'>): Record<string, unknown> {
   const patch: Record<string, unknown> = {}
-  if (!blank(row.customer_name)) patch.customer_name = nameEmpty
-  if (!blank(row.customer_email)) patch.customer_email = null
-  if (!blank(row.customer_phone)) patch.customer_phone = null
   if (!blank(row.notes)) patch.notes = null
   if (row.line_notes != null) {
     // france-notes-1: the notes live in line_notes — blank them there; the lines are never touched.
@@ -106,6 +105,16 @@ export function retentionPatch(row: Row, nameEmpty: '' | null): Record<string, u
     const items = scrubItems(row.items); if (items.changed) patch.items = items.value
     const deals = scrubDeals(row.deals); if (deals.changed) patch.deals = deals.value
   }
+  return patch
+}
+
+/** What to write to one row, or null when it holds nothing left to remove. `nameEmpty` is the value a cleared name takes. */
+export function retentionPatch(row: Row, nameEmpty: '' | null): Record<string, unknown> | null {
+  const patch: Record<string, unknown> = {}
+  if (!blank(row.customer_name)) patch.customer_name = nameEmpty
+  if (!blank(row.customer_email)) patch.customer_email = null
+  if (!blank(row.customer_phone)) patch.customer_phone = null
+  Object.assign(patch, notesPatch(row))   // france-privacy-1: the notes half, shared with account deletion
   return Object.keys(patch).length ? patch : null
 }
 

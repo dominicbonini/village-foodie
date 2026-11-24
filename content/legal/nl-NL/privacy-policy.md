@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Privacybeleid
 
 **Laatst bijgewerkt:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Het beleid geldt ook voor de mobiele apps en tablet-apps van HatchGrab voor iOS 
 
 Als u hier alleen bent omdat u eten bij een truck hebt besteld, is het onderdeel **"Als u bij een foodtruck hebt besteld"** het deel dat op u van toepassing is.
 
-**Voor sommige landen gelden aanvullende regels.** Waar deze op u van toepassing zijn, staan ze op onze pagina [Landspecifieke voorwaarden](/country-terms), die deel uitmaakt van dit beleid.
-
+**Dit beleid is van toepassing waar u zich ook bevindt.** Wij volgen de Britse wetgeving inzake gegevensbescherming, en waar ook de wetgeving inzake gegevensbescherming van het land waar u woont van toepassing is, volgen wij die eveneens.
 ---
 
 ## 1. Wie wij zijn
@@ -84,6 +83,8 @@ Wanneer u een bestelling plaatst via de bestelpagina van een truck, verzamelen w
 
 De truck bepaalt hoe lang uw gegevens worden bewaard en hoe hij daarna contact met u opneemt. Daarop is het eigen privacybeleid van de truck van toepassing. Als u niet zeker weet welke truck het is, neem dan contact met ons op via privacy@hatchgrab.com en wij verwijzen u naar de truck.
 
+**Opmerkingen over allergieën en dieetwensen.** Wij geven ze met uw bestelling door aan de truck en gebruiken ze nergens anders voor. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling (zie onderdeel 7).
+
 **Allergeneninformatie.** Waar een truck allergeneninformatie publiceert, tonen wij wat de truck heeft bevestigd. Wij controleren dit niet zelfstandig. Meld een ernstige allergie altijd rechtstreeks aan de truck.
 
 ---
@@ -135,7 +136,7 @@ Wij kunnen gegevens ook verstrekken wanneer wij daartoe wettelijk verplicht zijn
 
 **Wij verkopen geen persoonsgegevens en delen ze niet voor advertentiedoeleinden.**
 
-**Internationale doorgiften.** Uw accountgegevens en bestelgegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. Sommige zaken worden daarbuiten afgehandeld: het uitlezen van menu's en de automatische WhatsApp-antwoorden, waarvoor een dienst van Google in de Verenigde Staten wordt gebruikt; de bezorging van WhatsApp-berichten, die wordt afgehandeld door Meta in de Verenigde Staten; betalingen, die worden afgehandeld door Stripe in de Verenigde Staten; en pushmeldingen, die worden bezorgd door Apple en Google in de Verenigde Staten. Waar gegevens het VK verlaten, valt de doorgifte onder de UK adequacy regulations (Britse adequaatheidsregelgeving) of onder de International Data Transfer Agreement of het Addendum, die passende waarborgen bieden. U kunt ons vragen naar de details van de waarborgen die van toepassing zijn.
+**Internationale doorgiften.** Uw accountgegevens en bestelgegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. Sommige zaken worden daarbuiten afgehandeld: het uitlezen van menu's en de automatische WhatsApp-antwoorden, waarvoor een dienst van Google in de Verenigde Staten wordt gebruikt; de bezorging van WhatsApp-berichten, die wordt afgehandeld door Meta in de Verenigde Staten; betalingen, die worden afgehandeld door Stripe in de Verenigde Staten; en pushmeldingen, die worden bezorgd door Apple en Google in de Verenigde Staten. Waar gegevens het VK verlaten, valt de doorgifte onder de UK adequacy regulations (Britse adequaatheidsregelgeving) of onder de International Data Transfer Agreement of het Addendum, en, waar het recht van uw land dat vereist, onder een waarborg die dat recht erkent. U kunt ons vragen naar de details van de waarborgen die van toepassing zijn.
 
 Naarmate onze dienst groeit, kunnen wij aanbieders toevoegen, waaronder een sms-aanbieder. Wij werken deze lijst bij voordat zij uw gegevens gaan verwerken.
 
@@ -161,7 +162,7 @@ Wij verwijderen of anonimiseren gegevens zodra deze termijnen zijn verstreken.
 
 ## 8. Uw rechten
 
-Op grond van de Britse wetgeving inzake gegevensbescherming hebt u het recht om:
+Op grond van de Britse wetgeving inzake gegevensbescherming, en van het recht van het land waar u woont voor zover dat van toepassing is, hebt u het recht om:
 
 - te vragen welke persoonsgegevens wij over u bewaren, en een kopie daarvan te krijgen;
 - onjuiste gegevens te laten corrigeren;
@@ -171,11 +172,17 @@ Op grond van de Britse wetgeving inzake gegevensbescherming hebt u het recht om:
 - bezwaar te maken tegen verwerking op basis van gerechtvaardigde belangen;
 - uw toestemming op elk moment in te trekken, waar wij ons op toestemming baseren.
 
-Om een van deze rechten uit te oefenen, kunt u e-mailen naar privacy@hatchgrab.com. Wij reageren binnen één maand.
+Het recht van het land waar u woont, kan u deze rechten onder andere namen geven, of aanvullende rechten. Ook die hebt u.
 
-**Uw account verwijderen.** Exploitanten kunnen verwijdering van hun account aanvragen vanuit de app of door te e-mailen naar privacy@hatchgrab.com. Wij verwijderen uw account en persoonsgegevens, behalve waar wij verplicht zijn gegevens te bewaren om boekhoudkundige of wettelijke redenen.
+**Een verzoek indienen.** E-mail naar privacy@hatchgrab.com. Wij controleren of het verzoek echt is voordat wij er gevolg aan geven. U kunt iemand vragen het verzoek namens u in te dienen, en wij behandelen u niet anders omdat u een verzoek indient. Wij antwoorden binnen één maand, of eerder als het recht van uw land dat vereist. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt. Als wij een verzoek afwijzen, kunt u ons vragen het opnieuw te bekijken door op ons antwoord te reageren.
 
-**Klachten.** Als u niet tevreden bent over hoe wij met uw gegevens zijn omgegaan, kunt u een klacht indienen bij het Information Commissioner's Office via ico.org.uk, of telefonisch op 0303 123 1113. Wij stellen het op prijs als wij eerst de kans krijgen om het op te lossen.
+**Uw account verwijderen.** Exploitanten kunnen verwijdering van hun account aanvragen vanuit de app of door te e-mailen naar privacy@hatchgrab.com. Wij verwijderen uw account en persoonsgegevens, behalve waar wij verplicht zijn gegevens te bewaren om boekhoudkundige of wettelijke redenen. Wanneer het account van een exploitant wordt verwijderd, wissen wij ook de namen, contactgegevens en opmerkingen van diens klanten uit de bestellingen die wij bewaren.
+
+**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar het recht van het land waar u woont dat toestaat, wat in sommige landen betekent: alleen met uw toestemming. Elke e-mail vermeldt van wie hij afkomstig is, bevat ons postadres en vermeldt hoe u zich kunt afmelden. Als u ons vraagt te stoppen, doen wij dat, kosteloos en binnen 10 werkdagen. E-mails over een bestelling of uw account zijn geen marketing. Als wij of een truck bestelupdates per sms aanbieden, ontvangt u die alleen als u ermee instemt, en u kunt ze op elk moment stopzetten.
+
+**Als er iets misgaat.** Als een inbreuk in verband met uw persoonsgegevens waarschijnlijk ernstige schade voor u veroorzaakt, laten wij het u en de toezichthoudende autoriteit zo snel mogelijk weten waar de wet dat vereist, of helpen wij de truck waarbij u hebt besteld dat te doen.
+
+**Klachten.** Laat het ons eerst weten via privacy@hatchgrab.com; wij stellen het op prijs als wij de kans krijgen om het recht te zetten. U kunt ook een klacht indienen bij de toezichthoudende autoriteit voor gegevensbescherming van het land waar u woont. In het VK is dat het Information Commissioner's Office, via ico.org.uk of telefonisch op 0303 123 1113.
 
 ---
 

@@ -18,6 +18,8 @@
 // order details at twelve months. The schema already supports exactly that:
 //   • order_payments carries NO customer identifiers — no name, no email, no phone. It needs no
 //     scrubbing whatsoever. It needs to survive, which it does by simply not being deleted.
+//   • orders (and card drafts) also carry the customer's free-text NOTES — the order note and each line's note — which can hold
+//     allergy or dietary details: step 2b clears them exactly as the 12-month retention does (france-privacy-1, 24 Nov 2026).
 //   • orders carries exactly THREE personal columns. Null them and the row is anonymous but financially
 //     complete — total, total_minor, payment_status, amount_paid, line items and timestamps all intact.
 //   • action_audit_log has no FKs, so nothing cascades to it. Verified live on 6 Aug 2026: 63 rows, no
@@ -33,6 +35,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { deleteTruckPaperwork } from '@/lib/paperwork/store'
 import { deleteTruckLoyalty } from '@/lib/loyalty/retention'
+import { notesPatch } from '@/lib/order-retention'   // france-privacy-1: the notes are cleared exactly as the 12-month retention clears them
 
 /** The pending window. Stored on the operator row at request time so changing this never moves an
  *  already-running countdown. */
@@ -45,6 +48,9 @@ export const RENOTIFY_INTERVAL_HOURS = 24
 /** The placeholder written over a nulled-out identity, so an anonymised row is legible as anonymised
  *  rather than looking like missing data or a bug. */
 export const ANON_LABEL = '[deleted]'
+
+/** france-privacy-1: rows read per page while clearing the customers' notes (every row of every truck is read; only those with note text are written). */
+const NOTES_PAGE = 500
 
 export class AccountDeletionError extends Error {
   readonly step: string
@@ -59,6 +65,8 @@ export interface AccountDeletionResult {
   operatorId: string
   truckIds: string[]
   ordersAnonymised: number
+  /** france-privacy-1: the orders and card drafts whose free-text notes were cleared (order note, dish and slot notes). */
+  notesCleared: { orders: number; drafts: number }
   staffRemoved: number
   authUsersDeleted: number
   /** paperwork-1: the truck documents' files removed from storage, their rows, and the links to organisers deleted. */
@@ -118,6 +126,37 @@ export async function executeAccountDeletion(
       .select('order_key')
     if (error) throw new AccountDeletionError(`anonymise_orders:${truckId}`, error.message)
     ordersAnonymised += data?.length ?? 0
+  }
+
+  // ── 2b. THE CUSTOMERS' NOTES (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md) ───────────────────────────
+  // An order note, a dish's note and a deal's slot notes are free text a customer types — where allergy and dietary requests, and
+  // sometimes a name or a number, land. They go with the identity: on every order AND every card draft of the account's trucks.
+  // 🔴 THE SAME PATCH AS THE 12-MONTH RETENTION (lib/order-retention.ts notesPatch): `notes` → null; a row with `line_notes`
+  // (france-notes-1) has THAT blanked and its items and deals are never written; an older row (or one the deployed code wrote) has
+  // each item's `specialInstructions` → '' and each deal's `slotNotes` → {} — nothing else in the lines changes. Totals, items'
+  // names, prices and quantities, deals and order_payments are untouched; nothing is deleted. A row with no note text left is not
+  // written, so a second run writes nothing.
+  const notesCleared = { orders: 0, drafts: 0 }
+  for (const [table, key] of [['orders', 'orders'], ['order_drafts', 'drafts']] as const) {
+    for (const truckId of truckIds) {
+      let after: string | null = null
+      for (;;) {
+        let q = supabase.from(table).select('order_key, notes, items, deals, line_notes').eq('truck_id', truckId)
+        if (after) q = q.gt('order_key', after)
+        const { data, error } = await q.order('order_key', { ascending: true }).limit(NOTES_PAGE)
+        if (error) throw new AccountDeletionError(`clear_notes:${table}:${truckId}`, error.message)
+        const rows = (data ?? []) as { order_key: string; notes?: string | null; items?: unknown; deals?: unknown; line_notes?: unknown }[]
+        for (const r of rows) {
+          const patch = notesPatch(r)
+          if (!Object.keys(patch).length) continue
+          const { error: wErr } = await supabase.from(table).update(patch).eq('order_key', r.order_key).eq('truck_id', truckId)
+          if (wErr) throw new AccountDeletionError(`clear_notes:${table}:${r.order_key}`, wErr.message)
+          notesCleared[key]++
+        }
+        if (rows.length < NOTES_PAGE) break
+        after = rows[rows.length - 1].order_key
+      }
+    }
   }
 
   // ── 3. STAFF — memberships and their auth users ──────────────────────────────────────────────────
@@ -207,5 +246,5 @@ export async function executeAccountDeletion(
     authUsersDeleted++
   }
 
-  return { operatorId, truckIds, ordersAnonymised, staffRemoved, authUsersDeleted, paperwork, loyalty, paymentsDeleted: 0 }
+  return { operatorId, truckIds, ordersAnonymised, notesCleared, staffRemoved, authUsersDeleted, paperwork, loyalty, paymentsDeleted: 0 }
 }

@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Termeni specifici fiecărei țări
 
 **Ultima actualizare:** {{LAST_UPDATED}}
 
-[Termenii serviciului](/terms) și [Politica de confidențialitate](/privacy) se aplică în fiecare țară în care este utilizat HatchGrab. Unele țări au reguli suplimentare. Această pagină le prezintă, țară cu țară.
+[Termenii serviciului](/terms) se aplică în fiecare țară în care este utilizat HatchGrab. Unele țări au reguli suplimentare. Această pagină le prezintă, țară cu țară.
 
-Atunci când o secțiune de mai jos vi se aplică, aceasta face parte din Termenii serviciului și din Politica noastră de confidențialitate. Dacă prevede ceva diferit față de acestea, pentru țara respectivă se aplică această pagină.
+Atunci când o secțiune de mai jos vi se aplică, aceasta face parte din Termenii serviciului. Dacă prevede ceva diferit față de acestea, pentru țara respectivă se aplică această pagină.
 
-Dacă țara dumneavoastră nu este enumerată, nu există reguli suplimentare: Termenii serviciului și Politica de confidențialitate se aplică așa cum sunt redactate.
-
+Dacă țara dumneavoastră nu este enumerată, nu există reguli suplimentare: Termenii serviciului se aplică așa cum sunt redactați. [Politica noastră de confidențialitate](/privacy) este aceeași în fiecare țară.
 ---
 
 ## Statele Unite
@@ -31,26 +30,6 @@ Dacă țara dumneavoastră nu este enumerată, nu există reguli suplimentare: T
 
 **Datele clienților dumneavoastră.** În temeiul legilor statale privind confidențialitatea din SUA, secțiunea 10 din Termenii serviciului înseamnă același lucru în termenii acestor legi: dumneavoastră sunteți „business”, iar noi suntem „service provider” sau „processor” al dumneavoastră. Utilizăm informațiile personale ale clienților dumneavoastră numai pentru a opera HatchGrab pentru dumneavoastră. Nu le vindem, nu le partajăm pentru publicitate comportamentală între contexte diferite (cross-context behavioral advertising) și nu le utilizăm în niciun alt scop, cu excepția celor pe care aceste legi le permit unui furnizor de servicii.
 
-### Confidențialitate, pentru toate persoanele din Statele Unite
-
-**Ce colectăm și cu cine partajăm.** Același lucru pe care îl prevede Politica de confidențialitate: datele contului și ale afacerii, pentru operatorii de food truck-uri; numele, datele de contact și detaliile comenzii dumneavoastră, dacă comandați de la un food truck; și date tehnice de bază, dacă vizitați site-urile noastre. Le partajăm cu food truck-ul de la care comandați și cu furnizorii de servicii enumerați în secțiunea 6 din Politica de confidențialitate, numai pentru a opera serviciul sau atunci când legea impune acest lucru. Acestea pot fi prelucrate în Regatul Unit, în Uniunea Europeană și în Statele Unite.
-
-**Nu vindem și nu partajăm informațiile dumneavoastră personale.** Nu vindem informații personale și nu le partajăm pentru publicitate comportamentală între contexte diferite (cross-context behavioral advertising).
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Ne puteți întreba ce informații personale deținem despre dumneavoastră și ne puteți cere să le corectăm sau să le ștergem. Trimiteți un e-mail la privacy@hatchgrab.com. Vom verifica dacă solicitarea este autentică înainte de a da curs acesteia și vă vom răspunde în termen de 45 de zile. Puteți cere altcuiva să facă solicitarea în numele dumneavoastră. Nu vă vom trata diferit pentru că ați făcut o solicitare. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră. Dacă respingem o solicitare, ne puteți cere să o reexaminăm, răspunzând la mesajul nostru.
-
-**Legile statale privind confidențialitatea.** Unele legi statale privind confidențialitatea se aplică doar întreprinderilor care depășesc o anumită dimensiune și este posibil să nu ni se aplice. Cu toate acestea, dăm curs solicitărilor de mai sus din partea oricărei persoane din Statele Unite.
-
-**Copii.** Serviciile noastre nu se adresează copiilor sub 13 ani și nu colectăm în mod intenționat informațiile lor personale. Dacă credeți că un copil ne-a furnizat informațiile sale, contactați-ne și le vom șterge.
-
-**E-mailuri de marketing.** Fiecare e-mail de marketing pe care îl trimitem vă spune cum să nu mai primiți astfel de e-mailuri și include adresa noastră poștală. Dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Mesaje text.** Dacă noi sau un food truck oferim actualizări ale comenzii prin mesaj text, le veți primi doar dacă sunteți de acord să le primiți și le puteți opri în orice moment.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Irlanda
 
 ### Pentru operatorii de food truck-uri
@@ -70,22 +49,6 @@ Dacă țara dumneavoastră nu este enumerată, nu există reguli suplimentare: T
 **Datele clienților dumneavoastră.** În temeiul Regulamentului general al UE privind protecția datelor (RGPD), secțiunea 10 din Termenii serviciului reprezintă acordul nostru de prelucrare a datelor cu dumneavoastră: dumneavoastră sunteți operatorul, iar noi suntem persoana împuternicită de operator, în sensul articolului 28 din RGPD.
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea irlandeză și care nu poate fi exclusă prin acord.
-
-### Confidențialitate, pentru toate persoanele din Irlanda
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Irlanda, se aplică Regulamentul general al UE privind protecția datelor (RGPD), precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate. Drepturile enumerate în secțiunea 8 din Politica de confidențialitate sunt, de asemenea, drepturile dumneavoastră în temeiul RGPD.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit. Comisia Europeană a decis că Regatul Unit protejează datele cu caracter personal la același nivel ca UE, așa că nu este necesară nicio garanție suplimentară în acest sens. Atunci când un furnizor de servicii prelucrează date în Statele Unite (secțiunea 6 din Politica de confidențialitate), transferul este acoperit de o garanție recunoscută de RGPD.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Ne puteți întreba ce date cu caracter personal deținem despre dumneavoastră și ne puteți cere să le corectăm, să le ștergem sau să încetăm să le utilizăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de o lună. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Puteți depune o plângere la Data Protection Commission, autoritatea de reglementare în domeniul protecției datelor din Irlanda, la www.dataprotection.ie, sau prin poștă la 6 Pembroke Row, Dublin 2, D02 X963. Am aprecia să avem mai întâi ocazia de a remedia situația.
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea permite acest lucru. Fiecare dintre ele vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australia
 
@@ -109,22 +72,6 @@ Dacă țara dumneavoastră nu este enumerată, nu există reguli suplimentare: T
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea australiană și care nu poate fi exclusă prin acord.
 
-### Confidențialitate, pentru toate persoanele din Australia
-
-**Legea aplicabilă.** Atunci când prelucrăm informații personale ale persoanelor din Australia, respectăm Australian Privacy Principles din Privacy Act 1988, precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate.
-
-**Unde sunt păstrate informațiile dumneavoastră.** Informațiile dumneavoastră sunt stocate și prelucrate în Regatul Unit. O parte dintre acestea sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite, conform secțiunii 6 din Politica de confidențialitate.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Ne puteți întreba ce informații personale deținem despre dumneavoastră și ne puteți cere să le corectăm sau să le ștergem. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de 30 de zile. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Dacă nu sunteți mulțumit de modul în care am gestionat informațiile dumneavoastră personale, spuneți-ne mai întâi la privacy@hatchgrab.com. Dacă nu sunteți mulțumit de răspunsul nostru sau dacă nu v-am răspuns în termen de 30 de zile, puteți depune o plângere în scris la Office of the Australian Information Commissioner (OAIC), la www.oaic.gov.au.
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea permite acest lucru. Fiecare dintre ele precizează de la cine provine și vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Noua Zeelandă
 
 ### Pentru operatorii de food truck-uri
@@ -147,24 +94,6 @@ Dacă țara dumneavoastră nu este enumerată, nu există reguli suplimentare: T
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea din Noua Zeelandă și care nu poate fi exclusă prin acord.
 
-### Confidențialitate, pentru toate persoanele din Noua Zeelandă
-
-**Legea aplicabilă.** Atunci când prelucrăm informații personale ale persoanelor din Noua Zeelandă, se aplică Privacy Act 2020, precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate. Acesta ni se aplică deoarece desfășurăm activitate comercială în Noua Zeelandă, chiar dacă avem sediul în Regatul Unit.
-
-**Unde sunt păstrate informațiile dumneavoastră.** Informațiile dumneavoastră sunt stocate și prelucrate în Regatul Unit. O parte dintre acestea sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite, conform secțiunii 6 din Politica de confidențialitate.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Ne puteți cere informațiile personale pe care le deținem despre dumneavoastră și ne puteți cere să le corectăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde cât mai curând posibil în mod rezonabil și în termen de 20 de zile lucrătoare. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Dacă nu sunteți mulțumit de modul în care am gestionat informațiile dumneavoastră personale, spuneți-ne mai întâi la privacy@hatchgrab.com. Privacy Commissioner vă cere să faceți acest lucru înainte de a depune o plângere. Dacă nu sunteți mulțumit de răspunsul nostru, puteți depune o plângere la Office of the Privacy Commissioner, la www.privacy.org.nz, la numărul 0800 803 909 sau prin poștă la PO Box 10 094, Wellington 6140.
-
-**Încălcări ale confidențialității.** Dacă o încălcare a confidențialității care implică informațiile dumneavoastră personale a cauzat sau este probabil să cauzeze un prejudiciu grav, Privacy Act 2020 impune ca Privacy Commissioner și dumneavoastră să fiți informați cât mai curând posibil în mod practic. Vom face acest lucru sau, în cazul unei comenzi pe care ați plasat-o la un food truck, vom ajuta food truck-ul să facă acest lucru.
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea permite acest lucru. Fiecare dintre ele precizează de la cine provine și vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Canada
 
 ### Pentru operatorii de food truck-uri
@@ -186,22 +115,6 @@ Dacă țara dumneavoastră nu este enumerată, nu există reguli suplimentare: T
 **Drepturile dumneavoastră conform legislației locale.** Nimic din Termenii serviciului nu înlătură un drept care, potrivit legii din locul în care vă aflați, nu poate fi limitat sau la care nu se poate renunța.
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea provinciei sau a teritoriului dumneavoastră și care nu poate fi exclusă prin acord.
-
-### Confidențialitate, pentru toate persoanele din Canada
-
-**Legea aplicabilă.** Atunci când prelucrăm informații personale ale persoanelor din Canada, se aplică Personal Information Protection and Electronic Documents Act (PIPEDA), iar în British Columbia și Alberta, propriile lor legi privind confidențialitatea în sectorul privat, precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate.
-
-**Unde sunt păstrate informațiile dumneavoastră.** Informațiile dumneavoastră sunt stocate și prelucrate în Regatul Unit, iar o parte dintre ele sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite (secțiunea 6 din Politica de confidențialitate), unde pot fi accesate în temeiul legilor acestor țări.
-
-**Solicitările dumneavoastră.** Puteți solicita informațiile personale pe care le deținem despre dumneavoastră și ne puteți cere să le corectăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de 30 de zile.
-
-**Plângeri.** Spuneți-ne mai întâi la privacy@hatchgrab.com. Dacă nu sunteți mulțumit, puteți depune o plângere la Office of the Privacy Commissioner of Canada, la www.priv.gc.ca sau la numărul 1-800-282-1376.
-
-**Încălcări.** Dacă o încălcare a măsurilor de securitate care implică informațiile dumneavoastră creează un risc real de prejudiciu semnificativ, o vom raporta către Privacy Commissioner și vă vom informa cât mai curând posibil.
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai cu consimțământul dumneavoastră, conform cerințelor legii canadiene împotriva spamului. Fiecare dintre ele precizează de la cine provine și cum vă puteți dezabona, iar noi dăm curs unei dezabonări în termen de 10 zile lucrătoare.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Franța
 
@@ -226,22 +139,6 @@ Dacă țara dumneavoastră nu este enumerată, nu există reguli suplimentare: T
 **Datele clienților dumneavoastră.** În temeiul Regulamentului general al UE privind protecția datelor (RGPD), secțiunea 10 din Termenii serviciului reprezintă acordul nostru de prelucrare a datelor cu dumneavoastră: dumneavoastră sunteți operatorul, iar noi suntem persoana împuternicită de operator, în sensul articolului 28 din RGPD.
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea franceză și care nu poate fi exclusă prin acord.
-
-### Confidențialitate, pentru toate persoanele din Franța
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Franța, se aplică Regulamentul general al UE privind protecția datelor (RGPD) și legea franceză privind protecția datelor (loi Informatique et Libertés), precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate. Drepturile enumerate în secțiunea 8 din Politica de confidențialitate sunt, de asemenea, drepturile dumneavoastră în temeiul RGPD.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit. Comisia Europeană a decis că Regatul Unit protejează datele cu caracter personal la același nivel ca UE, așa că nu este necesară nicio garanție suplimentară în acest sens. Atunci când un furnizor de servicii prelucrează date în Statele Unite (secțiunea 6 din Politica de confidențialitate), transferul este acoperit de o garanție recunoscută de RGPD.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Ne puteți întreba ce date cu caracter personal deținem despre dumneavoastră și ne puteți cere să le corectăm, să le ștergem sau să încetăm să le utilizăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de o lună. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Puteți depune o plângere la CNIL (Commission nationale de l'informatique et des libertés), autoritatea de reglementare în domeniul protecției datelor din Franța, la www.cnil.fr, sau prin poștă la CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Am aprecia să avem mai întâi ocazia de a remedia situația.
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea franceză permite acest lucru. Fiecare dintre ele vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Spațiul Economic European și Elveția
 
@@ -269,53 +166,6 @@ Această secțiune se aplică în fiecare țară din Spațiul Economic European 
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea din țara dumneavoastră și care nu poate fi exclusă prin acord.
 
-### Confidențialitate, pentru toate persoanele din Spațiul Economic European și Elveția
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Spațiul Economic European, se aplică Regulamentul general al UE privind protecția datelor (RGPD) și legislația privind protecția datelor din țara acestora; în Elveția, Federal Act on Data Protection (legea federală privind protecția datelor). Se aplică, de asemenea, legislația Regatului Unit menționată în Politica noastră de confidențialitate. Drepturile enumerate în secțiunea 8 din Politica de confidențialitate sunt, de asemenea, drepturile dumneavoastră în temeiul acestor legi.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit. Comisia Europeană și Elveția au decis fiecare că Regatul Unit protejează datele cu caracter personal la un nivel adecvat, așa că nu este necesară nicio garanție suplimentară în acest sens. Atunci când un furnizor de servicii prelucrează date în Statele Unite (secțiunea 6 din Politica de confidențialitate), transferul este acoperit de o garanție recunoscută de RGPD și de legislația elvețiană.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Ne puteți întreba ce date cu caracter personal deținem despre dumneavoastră și ne puteți cere să le corectăm, să le ștergem sau să încetăm să le utilizăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de o lună. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Puteți depune o plângere la autoritatea pentru protecția datelor din țara în care locuiți sau lucrați. Comitetul european pentru protecția datelor enumeră toate autoritățile din Spațiul Economic European la www.edpb.europa.eu (About EDPB › Members). În Elveția, aceasta este Federal Data Protection and Information Commissioner, www.edoeb.admin.ch. Am aprecia să avem mai întâi ocazia de a remedia situația.
-
-| Țara | Autoritatea pentru protecția datelor |
-|---|---|
-| Austria | dsb.gv.at |
-| Belgia | autoriteprotectiondonnees.be |
-| Bulgaria | cpdp.bg |
-| Croația | azop.hr |
-| Cipru | dataprotection.gov.cy |
-| Republica Cehă | uoou.gov.cz |
-| Danemarca | datatilsynet.dk |
-| Estonia | aki.ee |
-| Finlanda | tietosuoja.fi |
-| Germania | autoritatea landului dumneavoastră (la nivel federal: bfdi.bund.de) |
-| Grecia | dpa.gr |
-| Ungaria | naih.hu |
-| Italia | garanteprivacy.it |
-| Letonia | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Lituania | vdai.lrv.lt |
-| Luxemburg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Țările de Jos | autoriteitpersoonsgegevens.nl |
-| Norvegia | datatilsynet.no |
-| Polonia | uodo.gov.pl |
-| Portugalia | cnpd.pt |
-| România | dataprotection.ro |
-| Slovacia | dataprotection.gov.sk |
-| Slovenia | ip-rs.si |
-| Spania | aepd.es |
-| Suedia | imy.se |
-| Elveția | Federal Data Protection and Information Commissioner (FDPIC), edoeb.admin.ch |
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea din țara dumneavoastră permite acest lucru. Fiecare dintre ele vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### Pentru operatorii de food truck-uri
@@ -337,22 +187,6 @@ Această secțiune se aplică în fiecare țară din Spațiul Economic European 
 **Datele clienților dumneavoastră.** În temeiul legislației privind protecția datelor din Gibraltar, care include Regulamentul general al UE privind protecția datelor (RGPD) în forma în care se aplică în Gibraltar, secțiunea 10 din Termenii serviciului reprezintă acordul nostru de prelucrare a datelor cu dumneavoastră: dumneavoastră sunteți operatorul, iar noi suntem persoana împuternicită de operator, în sensul articolului 28 din RGPD.
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea din Gibraltar și care nu poate fi exclusă prin acord.
-
-### Confidențialitate, pentru toate persoanele din Gibraltar
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Gibraltar, se aplică legislația privind protecția datelor din Gibraltar, inclusiv Regulamentul general al UE privind protecția datelor (RGPD) în forma în care se aplică acolo, precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate. Drepturile enumerate în secțiunea 8 din Politica de confidențialitate sunt, de asemenea, drepturile dumneavoastră în temeiul acestei legislații.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit. Atunci când un furnizor de servicii prelucrează date în Statele Unite (secțiunea 6 din Politica de confidențialitate), transferul este acoperit de o garanție recunoscută de lege.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Ne puteți întreba ce date cu caracter personal deținem despre dumneavoastră și ne puteți cere să le corectăm, să le ștergem sau să încetăm să le utilizăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de o lună. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Puteți depune o plângere la Gibraltar Regulatory Authority, autoritatea de reglementare în domeniul protecției datelor din Gibraltar, la www.gra.gi. Am aprecia să avem mai întâi ocazia de a remedia situația.
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea din Gibraltar permite acest lucru. Fiecare dintre ele vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brazilia
 
@@ -378,22 +212,6 @@ Această secțiune se aplică în fiecare țară din Spațiul Economic European 
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea braziliană și care nu poate fi exclusă prin acord.
 
-### Confidențialitate, pentru toate persoanele din Brazilia
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Brazilia, se aplică Legea generală privind protecția datelor (LGPD), precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate. Drepturile enumerate în secțiunea 8 din Politica de confidențialitate sunt, de asemenea, drepturile dumneavoastră în temeiul LGPD.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit, iar o parte dintre ele sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite, conform secțiunii 6 din Politica de confidențialitate. Le transferăm numai pe un temei permis de LGPD.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Ne puteți cere să confirmăm dacă deținem date cu caracter personal despre dumneavoastră și să vă furnizăm o copie a acestora sau ne puteți cere să le corectăm, să le ștergem sau să încetăm să le utilizăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de 15 zile. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Spuneți-ne mai întâi la privacy@hatchgrab.com. Puteți depune, de asemenea, o plângere la Autoritatea Națională pentru Protecția Datelor (Autoridade Nacional de Proteção de Dados, ANPD), la www.gov.br/anpd.
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea braziliană permite acest lucru. Fiecare dintre ele vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Mexic
 
 ### Pentru operatorii de food truck-uri
@@ -417,22 +235,6 @@ Această secțiune se aplică în fiecare țară din Spațiul Economic European 
 **Datele clienților dumneavoastră.** În temeiul Legii federale a Mexicului privind protecția datelor cu caracter personal deținute de persoane private (Federal Law on the Protection of Personal Data Held by Private Parties), secțiunea 10 din Termenii serviciului înseamnă același lucru în termenii acestei legi: dumneavoastră sunteți operatorul, iar noi suntem persoana împuternicită de dumneavoastră (encargado), și gestionăm datele cu caracter personal ale clienților dumneavoastră numai pentru a opera HatchGrab pentru dumneavoastră și conform instrucțiunilor dumneavoastră. Sunteți responsabil pentru propria notă de informare privind confidențialitatea (aviso de privacidad) destinată clienților dumneavoastră.
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea mexicană și care nu poate fi exclusă prin acord.
-
-### Confidențialitate, pentru toate persoanele din Mexic
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Mexic, se aplică Legea federală privind protecția datelor cu caracter personal deținute de persoane private, precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate. Această pagină și Politica de confidențialitate constituie împreună nota noastră de informare privind confidențialitatea pentru persoanele din Mexic.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit, iar o parte dintre ele sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite, conform secțiunii 6 din Politica de confidențialitate, numai pentru a opera serviciul.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Ne puteți solicita accesul la datele cu caracter personal pe care le deținem despre dumneavoastră și ne puteți cere să le corectăm, să le ștergem sau să încetăm să le utilizăm (drepturile dumneavoastră ARCO). Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de 20 de zile lucrătoare. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Spuneți-ne mai întâi la privacy@hatchgrab.com. Dacă nu sunteți mulțumit, puteți depune o plângere la Secretaría Anticorrupción y Buen Gobierno (Secretariatul pentru Combaterea Corupției și Buna Guvernare), care asigură aplicarea Legii federale mexicane privind protecția datelor cu caracter personal deținute de persoane private (în vigoare din 21 martie 2025).
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea mexicană permite acest lucru. Fiecare dintre ele vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japonia
 
@@ -458,22 +260,6 @@ Această secțiune se aplică în fiecare țară din Spațiul Economic European 
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea japoneză și care nu poate fi exclusă prin acord.
 
-### Confidențialitate, pentru toate persoanele din Japonia
-
-**Legea aplicabilă.** Atunci când prelucrăm informații personale ale persoanelor din Japonia, se aplică Act on the Protection of Personal Information, precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate.
-
-**Unde sunt păstrate informațiile dumneavoastră.** Informațiile dumneavoastră sunt stocate și prelucrate în Regatul Unit, iar o parte dintre ele sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite, conform secțiunii 6 din Politica de confidențialitate. Regatul Unit și Uniunea Europeană sunt recunoscute de Japonia ca asigurând o protecție a informațiilor personale la nivelul standardului japonez. Informațiile prelucrate în Statele Unite sunt protejate prin contractele noastre cu acești furnizori.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Ne puteți cere să vă dezvăluim informațiile personale pe care le deținem despre dumneavoastră și ne puteți cere să le corectăm, să le ștergem sau să încetăm să le utilizăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde fără întârziere. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Spuneți-ne mai întâi la privacy@hatchgrab.com. Puteți contacta, de asemenea, Personal Information Protection Commission, la www.ppc.go.jp.
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai persoanelor care au fost de acord să le primească. Fiecare dintre ele precizează de la cine provine și cum puteți înceta să mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapore
 
 ### Pentru operatorii de food truck-uri
@@ -498,22 +284,6 @@ Această secțiune se aplică în fiecare țară din Spațiul Economic European 
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea din Singapore și care nu poate fi exclusă prin acord.
 
-### Confidențialitate, pentru toate persoanele din Singapore
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Singapore, se aplică Personal Data Protection Act 2012 (PDPA), precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit, iar o parte dintre ele sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite, conform secțiunii 6 din Politica de confidențialitate. Ne asigurăm că acestea sunt protejate la un nivel comparabil cu cel al PDPA, oriunde s-ar afla.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Puteți solicita datele cu caracter personal pe care le deținem despre dumneavoastră și informații despre modul în care au fost utilizate și ne puteți cere să le corectăm. Vă puteți retrage, de asemenea, consimțământul pentru utilizarea lor de către noi. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de 30 de zile. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Spuneți-ne mai întâi la privacy@hatchgrab.com. Dacă nu sunteți mulțumit, puteți depune o plângere la Personal Data Protection Commission, la www.pdpc.gov.sg.
-
-**Mesaje de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea din Singapore permite acest lucru. Fiecare dintre ele vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. Nu efectuăm apeluri de marketing și nu trimitem mesaje text de marketing către numerele înscrise în Do Not Call Registry din Singapore. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hong Kong
 
 ### Pentru operatorii de food truck-uri
@@ -535,22 +305,6 @@ Această secțiune se aplică în fiecare țară din Spațiul Economic European 
 **Datele clienților dumneavoastră.** În temeiul Personal Data (Privacy) Ordinance (Cap. 486) din Hong Kong, secțiunea 10 din Termenii serviciului înseamnă același lucru în termenii acestei legi: dumneavoastră sunteți utilizatorul datelor (data user), iar noi suntem persoana care prelucrează datele pentru dumneavoastră (data processor), și gestionăm datele cu caracter personal ale clienților dumneavoastră numai pentru a opera HatchGrab pentru dumneavoastră și conform instrucțiunilor dumneavoastră și nu le păstrăm mai mult decât este necesar în acest scop.
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea din Hong Kong și care nu poate fi exclusă prin acord.
-
-### Confidențialitate, pentru toate persoanele din Hong Kong
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Hong Kong, se aplică Personal Data (Privacy) Ordinance, precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit, iar o parte dintre ele sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite, conform secțiunii 6 din Politica de confidențialitate.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Puteți solicita o copie a datelor cu caracter personal pe care le deținem despre dumneavoastră și ne puteți cere să le corectăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de 40 de zile. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Spuneți-ne mai întâi la privacy@hatchgrab.com. Dacă nu sunteți mulțumit, puteți depune o plângere la Office of the Privacy Commissioner for Personal Data, la www.pcpd.org.hk.
-
-**Mesaje de marketing.** Utilizăm datele dumneavoastră cu caracter personal pentru marketing direct numai cu consimțământul dumneavoastră, iar fiecare mesaj de marketing vă spune cum să nu mai primiți astfel de mesaje. Dacă ne cereți să ne oprim, ne vom opri, în mod gratuit. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malaezia
 
@@ -576,22 +330,6 @@ Această secțiune se aplică în fiecare țară din Spațiul Economic European 
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea malaeziană și care nu poate fi exclusă prin acord.
 
-### Confidențialitate, pentru toate persoanele din Malaezia
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Malaezia, se aplică Personal Data Protection Act 2010 (PDPA), precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit, iar o parte dintre ele sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite, conform secțiunii 6 din Politica de confidențialitate. Le transferăm numai acolo unde PDPA permite acest lucru.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Puteți solicita datele cu caracter personal pe care le deținem despre dumneavoastră și ne puteți cere să le corectăm sau să încetăm să le utilizăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de 21 de zile. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Spuneți-ne mai întâi la privacy@hatchgrab.com. Dacă nu sunteți mulțumit, puteți depune o plângere la Personal Data Protection Commissioner, la www.pdp.gov.my.
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea malaeziană permite acest lucru. Fiecare dintre ele vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Thailanda
 
 ### Pentru operatorii de food truck-uri
@@ -616,22 +354,6 @@ Această secțiune se aplică în fiecare țară din Spațiul Economic European 
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea thailandeză și care nu poate fi exclusă prin acord.
 
-### Confidențialitate, pentru toate persoanele din Thailanda
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Thailanda, se aplică Personal Data Protection Act B.E. 2562 (PDPA), precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate. Drepturile enumerate în secțiunea 8 din Politica de confidențialitate sunt, de asemenea, drepturile dumneavoastră în temeiul PDPA.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit, iar o parte dintre ele sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite, conform secțiunii 6 din Politica de confidențialitate. Le transferăm numai pe un temei permis de PDPA.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Puteți solicita o copie a datelor cu caracter personal pe care le deținem despre dumneavoastră și ne puteți cere să le corectăm, să le ștergem sau să încetăm să le utilizăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de 30 de zile. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Spuneți-ne mai întâi la privacy@hatchgrab.com. Puteți depune, de asemenea, o plângere la Personal Data Protection Committee, la www.pdpc.or.th.
-
-**E-mailuri de marketing.** Trimitem e-mailuri de marketing numai acolo unde legea thailandeză permite acest lucru. Fiecare dintre ele vă spune cum să nu mai primiți astfel de e-mailuri, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Emiratele Arabe Unite
 
 ### Pentru operatorii de food truck-uri
@@ -653,19 +375,3 @@ Această secțiune se aplică în fiecare țară din Spațiul Economic European 
 **Datele clienților dumneavoastră.** În temeiul Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data din EAU, secțiunea 10 din Termenii serviciului înseamnă același lucru în termenii acestei legi: dumneavoastră sunteți operatorul, iar noi suntem persoana împuternicită de dumneavoastră, și gestionăm datele cu caracter personal ale clienților dumneavoastră numai pentru a opera HatchGrab pentru dumneavoastră și conform instrucțiunilor dumneavoastră.
 
 **Notificări și legea aplicabilă.** Notificările funcționează conform secțiunii 12 din Termenii serviciului: vă contactăm la adresa de e-mail asociată contului dumneavoastră, iar dumneavoastră ne puteți contacta la adresa de mai jos. Acești termeni sunt guvernați de legea Angliei și a Țării Galilor, iar instanțele din Anglia și Țara Galilor sunt competente. Acest lucru nu înlătură nicio protecție pe care v-o oferă legea din EAU și care nu poate fi exclusă prin acord.
-
-### Confidențialitate, pentru toate persoanele din Emiratele Arabe Unite
-
-**Legea aplicabilă.** Atunci când prelucrăm date cu caracter personal ale persoanelor din Emiratele Arabe Unite, se aplică Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data, precum și legislația Regatului Unit menționată în Politica noastră de confidențialitate. Dacă vă aflați într-o zonă liberă care are propria lege privind protecția datelor, cum ar fi DIFC sau ADGM, se aplică în schimb legea respectivă.
-
-**Unde sunt păstrate datele dumneavoastră.** Datele dumneavoastră sunt stocate și prelucrate în Regatul Unit, iar o parte dintre ele sunt prelucrate de furnizori de servicii din Uniunea Europeană și din Statele Unite, conform secțiunii 6 din Politica de confidențialitate. Le transferăm numai pe un temei permis de lege.
-
-**Observații privind alergiile și dieta.** Dacă adăugați la o comandă observații privind alergiile sau dieta, le transmitem food truck-ului împreună cu comanda dumneavoastră. Le eliminăm, împreună cu numele și datele dumneavoastră de contact, la 12 luni după comandă, conform secțiunii 7 din Politica de confidențialitate. Nu le utilizăm în niciun alt scop.
-
-**Solicitările dumneavoastră.** Puteți solicita datele cu caracter personal pe care le deținem despre dumneavoastră și ne puteți cere să le corectăm, să le ștergem sau să încetăm să le utilizăm. Trimiteți un e-mail la privacy@hatchgrab.com. Vă vom răspunde în termen de 30 de zile. Dacă ați comandat de la un food truck, putem transmite solicitarea dumneavoastră food truck-ului respectiv, deoarece acesta decide cum sunt utilizate detaliile comenzii dumneavoastră.
-
-**Plângeri.** Spuneți-ne mai întâi la privacy@hatchgrab.com. Dacă nu sunteți mulțumit, puteți depune o plângere la UAE Data Office.
-
-**Mesaje de marketing.** Trimitem mesaje de marketing numai acolo unde legea din EAU permite acest lucru. Fiecare dintre ele vă spune cum să nu mai primiți astfel de mesaje, iar dacă ne cereți să ne oprim, ne vom opri. E-mailurile despre o comandă sau despre contul dumneavoastră nu sunt marketing.
-
-**Contact.** privacy@hatchgrab.com sau prin poștă la HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

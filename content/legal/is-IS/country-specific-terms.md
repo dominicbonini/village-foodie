@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Skilmálar eftir löndum
 
 **Síðast uppfært:** {{LAST_UPDATED}}
 
-[Notkunarskilmálar](/terms) okkar og [Persónuverndarstefna](/privacy) okkar gilda í öllum löndum þar sem HatchGrab er notað. Í sumum löndum gilda viðbótarreglur. Á þessari síðu eru þær raktar, eitt land í einu.
+[Notkunarskilmálar](/terms) okkar gilda í öllum löndum þar sem HatchGrab er notað. Í sumum löndum gilda viðbótarreglur. Á þessari síðu eru þær raktar, eitt land í einu.
 
-Þegar einhver kaflanna hér að neðan á við um þig er hann hluti af Notkunarskilmálum okkar og Persónuverndarstefnu okkar. Ef hann kveður á um annað en þau skjöl gildir þessi síða fyrir viðkomandi land.
+Þegar einhver kaflanna hér að neðan á við um þig er hann hluti af Notkunarskilmálum okkar. Ef hann kveður á um annað en þau skjöl gildir þessi síða fyrir viðkomandi land.
 
-Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmálarnir og Persónuverndarstefnan gilda eins og þau eru orðuð.
-
+Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmálarnir gilda eins og þeir eru orðaðir. [Persónuverndarstefna](/privacy) okkar er sú sama í öllum löndum.
 ---
 
 ## Bandaríkin
@@ -31,26 +30,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 
 **Gögn viðskiptavina þinna.** Samkvæmt persónuverndarlögum bandarískra fylkja merkir 10. kafli Notkunarskilmálanna það sama á hugtakamáli þeirra laga: þú ert „business“ (fyrirtækið) og við erum „service provider“ (þjónustuveitandi) þinn eða „processor“ (vinnsluaðili). Við notum persónuupplýsingar viðskiptavina þinna eingöngu til að reka HatchGrab fyrir þig. Við seljum þær ekki, við deilum þeim ekki vegna atferlismiðaðra auglýsinga þvert á samhengi (cross-context behavioral advertising) og við notum þær ekki í neinum öðrum tilgangi nema að því marki sem þessi lög heimila þjónustuveitanda.
 
-### Persónuvernd, fyrir alla í Bandaríkjunum
-
-**Hvað við söfnum og hverjum við miðlum því.** Hið sama og fram kemur í Persónuverndarstefnunni: upplýsingum um aðgang og rekstur frá rekstraraðilum matarvagna; nafni þínu, samskiptaupplýsingum og upplýsingum um pöntun ef þú pantar frá matarvagni; og grunntæknigögnum ef þú heimsækir vefsíður okkar. Við miðlum þeim til matarvagnsins sem þú pantar frá og til þeirra þjónustuveitenda sem taldir eru upp í 6. kafla Persónuverndarstefnunnar, eingöngu til að reka þjónustuna eða þar sem lög krefjast þess. Þær kunna að vera unnar í Bretlandi, Evrópusambandinu og Bandaríkjunum.
-
-**Við hvorki seljum né deilum persónuupplýsingum þínum.** Við seljum ekki persónuupplýsingar og deilum þeim ekki vegna atferlismiðaðra auglýsinga þvert á samhengi.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun komum við þeim áleiðis til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og fram kemur í 7. kafla Persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur spurt okkur hvaða persónuupplýsingar við höfum um þig og beðið okkur að leiðrétta þær eða eyða þeim. Sendu tölvupóst á privacy@hatchgrab.com. Við göngum úr skugga um að beiðnin sé ósvikin áður en við bregðumst við henni og svörum innan 45 daga. Þú getur falið öðrum að leggja fram beiðnina fyrir þína hönd. Við mismunum þér ekki fyrir að leggja fram beiðni. Ef þú pantaðir frá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntun þína eru notaðar. Ef við höfnum beiðni getur þú beðið okkur að endurskoða hana með því að svara svari okkar.
-
-**Persónuverndarlög fylkja.** Sum persónuverndarlög fylkja gilda aðeins um fyrirtæki yfir tiltekinni stærð og kunna að eiga ekki við um okkur. Við verðum engu að síður við ofangreindum beiðnum frá hverjum sem er í Bandaríkjunum.
-
-**Börn.** Þjónustu okkar er ekki beint að börnum yngri en 13 ára og við söfnum ekki vísvitandi persónuupplýsingum um þau. Ef þú telur að barn hafi veitt okkur upplýsingar um sig skaltu hafa samband við okkur og við munum eyða þeim.
-
-**Markaðspóstur.** Í hverjum markaðspósti sem við sendum kemur fram hvernig þú getur afþakkað frekari sendingar og póstfang okkar. Ef þú biður okkur að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Smáskilaboð.** Ef við eða matarvagn bjóðum upp á tilkynningar um stöðu pantana með smáskilaboðum færðu þær aðeins ef þú samþykkir að fá þær og þú getur stöðvað þær hvenær sem er.
-
-**Hafa samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Írland
 
 ### Fyrir rekstraraðila matarvagna
@@ -70,22 +49,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 **Gögn viðskiptavina þinna.** Samkvæmt almennu persónuverndarreglugerð Evrópusambandsins (GDPR) er 10. kafli Notkunarskilmálanna vinnslusamningur okkar við þig: þú ert ábyrgðaraðili og við erum vinnsluaðili, í sama skilningi og í 28. gr. GDPR.
 
 **Tilkynningar og lagaval.** Um tilkynningar fer eins og segir í 12. kafla Notkunarskilmálanna: við höfum samband við þig á netfangið sem skráð er á aðganginn þinn og þú getur náð í okkur á heimilisfanginu hér að neðan. Um þessa skilmála gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki neina vernd sem írsk lög veita þér og ekki er hægt að víkja frá með samningi.
-
-### Persónuvernd, fyrir alla á Írlandi
-
-**Lög sem gilda.** Þegar við vinnum persónuupplýsingar einstaklinga á Írlandi gildir almenna persónuverndarreglugerð Evrópusambandsins (GDPR), auk þeirra bresku laga sem nefnd eru í Persónuverndarstefnu okkar. Réttindin sem talin eru upp í 8. kafla Persónuverndarstefnunnar eru einnig réttindi þín samkvæmt GDPR.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi. Framkvæmdastjórn Evrópusambandsins hefur ákveðið að Bretland verndi persónuupplýsingar til jafns við ESB og því er ekki þörf á frekari verndarráðstöfunum vegna þess. Þegar þjónustuveitandi vinnur gögn í Bandaríkjunum (6. kafli Persónuverndarstefnunnar) fellur flutningurinn undir verndarráðstöfun sem GDPR viðurkennir.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun komum við þeim áleiðis til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og fram kemur í 7. kafla Persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur spurt okkur hvaða persónuupplýsingar við höfum um þig og beðið okkur að leiðrétta þær, eyða þeim eða hætta að nota þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan eins mánaðar. Ef þú pantaðir frá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntun þína eru notaðar.
-
-**Kvartanir.** Þú getur lagt fram kvörtun hjá Data Protection Commission, persónuverndaryfirvaldi Írlands, á www.dataprotection.ie, eða bréfleiðis á 6 Pembroke Row, Dublin 2, D02 X963. Við kynnum að meta að fá fyrst tækifæri til að bæta úr málinu.
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem lög heimila það. Í hverjum þeirra kemur fram hvernig þú getur afþakkað frekari sendingar og ef þú biður okkur að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafa samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Ástralía
 
@@ -109,22 +72,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 
 **Tilkynningar og lagaval.** Um tilkynningar fer eins og segir í 12. kafla Notkunarskilmálanna: við höfum samband við þig á netfangið sem skráð er á aðganginn þinn og þú getur náð í okkur á heimilisfanginu hér að neðan. Um þessa skilmála gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki neina vernd sem áströlsk lög veita þér og ekki er hægt að víkja frá með samningi.
 
-### Persónuvernd, fyrir alla í Ástralíu
-
-**Lög sem gilda.** Þegar við meðhöndlum persónuupplýsingar einstaklinga í Ástralíu fylgjum við áströlsku persónuverndarreglunum (Australian Privacy Principles) í Privacy Act 1988, auk þeirra bresku laga sem nefnd eru í Persónuverndarstefnu okkar.
-
-**Hvar upplýsingarnar þínar eru geymdar.** Upplýsingarnar þínar eru geymdar og unnar í Bretlandi. Hluti þeirra er meðhöndlaður af þjónustuveitendum í Evrópusambandinu og Bandaríkjunum, eins og fram kemur í 6. kafla Persónuverndarstefnunnar.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun komum við þeim áleiðis til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og fram kemur í 7. kafla Persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur spurt okkur hvaða persónuupplýsingar við höfum um þig og beðið okkur að leiðrétta þær eða eyða þeim. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan 30 daga. Ef þú pantaðir frá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntun þína eru notaðar.
-
-**Kvartanir.** Ef þér mislíkar hvernig við höfum meðhöndlað persónuupplýsingar þínar skaltu fyrst láta okkur vita á privacy@hatchgrab.com. Ef svar okkar fullnægir þér ekki, eða við höfum ekki svarað innan 30 daga, getur þú lagt fram skriflega kvörtun hjá Office of the Australian Information Commissioner (OAIC) á www.oaic.gov.au.
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem lög heimila það. Í hverjum þeirra kemur fram frá hverjum hann er og hvernig þú getur afþakkað frekari sendingar og ef þú biður okkur að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafa samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Nýja-Sjáland
 
 ### Fyrir rekstraraðila matarvagna
@@ -147,24 +94,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 
 **Tilkynningar og lagaval.** Um tilkynningar fer eins og segir í 12. kafla Notkunarskilmálanna: við höfum samband við þig á netfangið sem skráð er á aðganginn þinn og þú getur náð í okkur á heimilisfanginu hér að neðan. Um þessa skilmála gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki neina vernd sem nýsjálensk lög veita þér og ekki er hægt að víkja frá með samningi.
 
-### Persónuvernd, fyrir alla á Nýja-Sjálandi
-
-**Lög sem gilda.** Þegar við meðhöndlum persónuupplýsingar einstaklinga á Nýja-Sjálandi gilda Privacy Act 2020, auk þeirra bresku laga sem nefnd eru í Persónuverndarstefnu okkar. Þau gilda um okkur vegna þess að við stundum viðskipti á Nýja-Sjálandi, enda þótt við höfum aðsetur í Bretlandi.
-
-**Hvar upplýsingarnar þínar eru geymdar.** Upplýsingarnar þínar eru geymdar og unnar í Bretlandi. Hluti þeirra er meðhöndlaður af þjónustuveitendum í Evrópusambandinu og Bandaríkjunum, eins og fram kemur í 6. kafla Persónuverndarstefnunnar.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun komum við þeim áleiðis til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og fram kemur í 7. kafla Persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur beðið okkur um þær persónuupplýsingar sem við höfum um þig og beðið okkur að leiðrétta þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum eins fljótt og með sanngirni er unnt og innan 20 virkra daga. Ef þú pantaðir frá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntun þína eru notaðar.
-
-**Kvartanir.** Ef þér mislíkar hvernig við höfum meðhöndlað persónuupplýsingar þínar skaltu fyrst láta okkur vita á privacy@hatchgrab.com. Persónuverndarstjóri Nýja-Sjálands (Privacy Commissioner) biður þig um að gera það áður en þú leggur fram kvörtun. Ef svar okkar fullnægir þér ekki getur þú lagt fram kvörtun hjá Office of the Privacy Commissioner á www.privacy.org.nz, í síma 0800 803 909, eða bréfleiðis á PO Box 10 094, Wellington 6140.
-
-**Persónuverndarbrot.** Ef persónuverndarbrot sem varðar persónuupplýsingar þínar hefur valdið, eða er líklegt til að valda, alvarlegum skaða er samkvæmt Privacy Act 2020 skylt að tilkynna persónuverndarstjóranum og þér um það eins fljótt og unnt er. Við munum gera það eða, vegna pöntunar sem þú gerðir hjá matarvagni, aðstoða matarvagninn við að gera það.
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem lög heimila það. Í hverjum þeirra kemur fram frá hverjum hann er og hvernig þú getur afþakkað frekari sendingar og ef þú biður okkur að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafa samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### Fyrir rekstraraðila matarvagna
@@ -186,22 +115,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 **Réttindi þín samkvæmt lögum á staðnum.** Ekkert í Notkunarskilmálunum skerðir réttindi sem samkvæmt lögum þess staðar þar sem þú hefur aðsetur er óheimilt að takmarka eða falla frá.
 
 **Tilkynningar og lagaval.** Um tilkynningar fer eins og segir í 12. kafla Notkunarskilmálanna: við höfum samband við þig á netfangið sem skráð er á aðganginn þinn og þú getur náð í okkur á heimilisfanginu hér að neðan. Um þessa skilmála gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki neina vernd sem lög fylkis þíns eða yfirráðasvæðis veita þér og ekki er hægt að víkja frá með samningi.
-
-### Persónuvernd, fyrir alla í Kanada
-
-**Lög sem gilda.** Þegar við meðhöndlum persónuupplýsingar einstaklinga í Kanada gilda Personal Information Protection and Electronic Documents Act (PIPEDA) og, í Bresku-Kólumbíu og Alberta, eigin persónuverndarlög þeirra fyrir einkageirann, auk þeirra bresku laga sem nefnd eru í Persónuverndarstefnu okkar.
-
-**Hvar upplýsingarnar þínar eru geymdar.** Upplýsingarnar þínar eru geymdar og unnar í Bretlandi og hluti þeirra er meðhöndlaður af þjónustuveitendum í Evrópusambandinu og Bandaríkjunum (6. kafli Persónuverndarstefnunnar), þar sem aðgangur kann að vera veittur að þeim samkvæmt lögum þessara landa.
-
-**Beiðnir þínar.** Þú getur beðið um þær persónuupplýsingar sem við höfum um þig og beðið okkur að leiðrétta þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan 30 daga.
-
-**Kvartanir.** Láttu okkur fyrst vita á privacy@hatchgrab.com. Ef þú unir ekki svari okkar getur þú lagt fram kvörtun hjá Office of the Privacy Commissioner of Canada á www.priv.gc.ca eða í síma 1-800-282-1376.
-
-**Öryggisbrot.** Ef brot á öryggisráðstöfunum sem varðar upplýsingarnar þínar skapar raunverulega hættu á verulegum skaða munum við tilkynna það persónuverndarstjóranum (Privacy Commissioner) og láta þig vita eins fljótt og unnt er.
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins með samþykki þínu, eins og kanadísku lögin gegn ruslpósti krefjast. Í hverjum þeirra kemur fram frá hverjum hann er og hvernig þú getur afskráð þig, og við verðum við afskráningu innan 10 virkra daga.
-
-**Hafa samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Frakkland
 
@@ -227,21 +140,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 
 **Tilkynningar og lagaval.** Um tilkynningar fer eins og segir í 12. kafla Notkunarskilmálanna: við höfum samband við þig á netfangið sem skráð er á aðganginn þinn og þú getur náð í okkur á heimilisfanginu hér að neðan. Um þessa skilmála gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki neina vernd sem frönsk lög veita þér og ekki er hægt að víkja frá með samningi.
 
-### Persónuvernd, fyrir alla í Frakklandi
-
-**Lög sem gilda.** Þegar við vinnum persónuupplýsingar einstaklinga í Frakklandi gilda almenna persónuverndarreglugerð Evrópusambandsins (GDPR) og frönsku persónuverndarlögin (loi Informatique et Libertés), auk þeirra bresku laga sem nefnd eru í Persónuverndarstefnu okkar. Réttindin sem talin eru upp í 8. kafla Persónuverndarstefnunnar eru einnig réttindi þín samkvæmt GDPR.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi. Framkvæmdastjórn Evrópusambandsins hefur ákveðið að Bretland verndi persónuupplýsingar til jafns við ESB og því er ekki þörf á frekari verndarráðstöfunum vegna þess. Þegar þjónustuveitandi vinnur gögn í Bandaríkjunum (6. kafli Persónuverndarstefnunnar) fellur flutningurinn undir verndarráðstöfun sem GDPR viðurkennir.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun komum við þeim áleiðis til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og fram kemur í 7. kafla Persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur spurt okkur hvaða persónuupplýsingar við höfum um þig og beðið okkur að leiðrétta þær, eyða þeim eða hætta að nota þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan eins mánaðar. Ef þú pantaðir frá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntun þína eru notaðar.
-
-**Kvartanir.** Þú getur lagt fram kvörtun hjá CNIL (Commission nationale de l'informatique et des libertés), persónuverndaryfirvaldi Frakklands, á www.cnil.fr, eða bréfleiðis til CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Við kynnum að meta að fá fyrst tækifæri til að bæta úr málinu.
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem frönsk lög heimila það. Í hverjum þeirra kemur fram hvernig þú getur afþakkað frekari sendingar og ef þú biður okkur að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafa samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 ## Evrópska efnahagssvæðið og Sviss
 
 Þessi kafli gildir í öllum löndum Evrópska efnahagssvæðisins sem ekki hafa sérstakan kafla hér að ofan, og í Sviss. Þau eru: Austurríki, Belgía, Búlgaría, Króatía, Kýpur, Tékkland, Danmörk, Eistland, Finnland, Þýskaland, Grikkland, Ungverjaland, Ítalía, Lettland, Liechtenstein, Litáen, Lúxemborg, Malta, Holland, Noregur, Pólland, Portúgal, Rúmenía, Slóvakía, Slóvenía, Spánn, Svíþjóð og Sviss.
@@ -268,53 +166,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 
 **Tilkynningar og lög sem gilda.** Um tilkynningar fer eins og segir í 12. kafla notkunarskilmálanna: við höfum samband við þig á netfanginu sem skráð er á aðganginn þinn og þú getur haft samband við okkur á heimilisfanginu hér að neðan. Um skilmála þessa gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki þá vernd sem lög lands þíns veita þér og ekki er hægt að víkja frá með samningi.
 
-### Persónuvernd, fyrir alla á Evrópska efnahagssvæðinu og í Sviss
-
-**Lög sem gilda.** Þegar við vinnum með persónuupplýsingar einstaklinga á Evrópska efnahagssvæðinu gilda almenna persónuverndarreglugerð ESB (GDPR) og persónuverndarlög viðkomandi lands; í Sviss sambandslögin um persónuvernd (DSG). Bresku lögin sem nefnd eru í persónuverndarstefnu okkar gilda einnig. Réttindin sem talin eru upp í 8. kafla persónuverndarstefnunnar eru einnig réttindi þín samkvæmt þessum lögum.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi. Framkvæmdastjórn Evrópusambandsins og Sviss hafa hvort um sig ákveðið að Bretland veiti persónuupplýsingum fullnægjandi vernd, og því er ekki þörf á frekari verndarráðstöfunum vegna þess. Þegar þjónustuveitandi vinnur með gögn í Bandaríkjunum (6. kafli persónuverndarstefnunnar) fellur flutningurinn undir verndarráðstöfun sem GDPR og svissnesk lög viðurkenna.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun sendum við þær til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og segir í 7. kafla persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur spurt okkur hvaða persónuupplýsingar við höfum um þig og beðið okkur um að leiðrétta þær, eyða þeim eða hætta að nota þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan eins mánaðar. Ef þú pantaðir hjá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntunina þína eru notaðar.
-
-**Kvartanir.** Þú getur lagt fram kvörtun hjá persónuverndaryfirvaldi þess lands þar sem þú býrð eða starfar. Evrópska persónuverndarráðið (EDPB) birtir lista yfir öll slík yfirvöld á Evrópska efnahagssvæðinu á www.edpb.europa.eu (About EDPB › Members). Í Sviss er það alríkisfulltrúi persónuverndar og upplýsingamála (Federal Data Protection and Information Commissioner, FDPIC), www.edoeb.admin.ch. Við kunnum að meta að fá fyrst tækifæri til að bæta úr málinu.
-
-| Land | Persónuverndaryfirvald |
-|---|---|
-| Austurríki | dsb.gv.at |
-| Belgía | autoriteprotectiondonnees.be |
-| Búlgaría | cpdp.bg |
-| Króatía | azop.hr |
-| Kýpur | dataprotection.gov.cy |
-| Tékkland | uoou.gov.cz |
-| Danmörk | datatilsynet.dk |
-| Eistland | aki.ee |
-| Finnland | tietosuoja.fi |
-| Þýskaland | persónuverndaryfirvald þíns sambandslands (alríkisstig: bfdi.bund.de) |
-| Grikkland | dpa.gr |
-| Ungverjaland | naih.hu |
-| Ítalía | garanteprivacy.it |
-| Lettland | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Litáen | vdai.lrv.lt |
-| Lúxemborg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Holland | autoriteitpersoonsgegevens.nl |
-| Noregur | datatilsynet.no |
-| Pólland | uodo.gov.pl |
-| Portúgal | cnpd.pt |
-| Rúmenía | dataprotection.ro |
-| Slóvakía | dataprotection.gov.sk |
-| Slóvenía | ip-rs.si |
-| Spánn | aepd.es |
-| Svíþjóð | imy.se |
-| Sviss | alríkisfulltrúi persónuverndar og upplýsingamála (FDPIC), edoeb.admin.ch |
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem lög lands þíns heimila það. Í hverjum pósti kemur fram hvernig þú getur afþakkað frekari póst og ef þú biður okkur um að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafðu samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gíbraltar
 
 ### Fyrir rekstraraðila matarvagna
@@ -336,22 +187,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 **Gögn viðskiptavina þinna.** Samkvæmt persónuverndarlögum Gíbraltar, sem fela í sér almennu persónuverndarreglugerð ESB (GDPR) eins og hún gildir á Gíbraltar, er 10. kafli notkunarskilmálanna vinnslusamningur okkar við þig: þú ert ábyrgðaraðili og við erum vinnsluaðili, í sama skilningi og í 28. gr. GDPR.
 
 **Tilkynningar og lög sem gilda.** Um tilkynningar fer eins og segir í 12. kafla notkunarskilmálanna: við höfum samband við þig á netfanginu sem skráð er á aðganginn þinn og þú getur haft samband við okkur á heimilisfanginu hér að neðan. Um skilmála þessa gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki þá vernd sem lög Gíbraltar veita þér og ekki er hægt að víkja frá með samningi.
-
-### Persónuvernd, fyrir alla á Gíbraltar
-
-**Lög sem gilda.** Þegar við vinnum með persónuupplýsingar einstaklinga á Gíbraltar gilda persónuverndarlög Gíbraltar, þar á meðal almenna persónuverndarreglugerð ESB (GDPR) eins og hún gildir þar, auk þeirra bresku laga sem nefnd eru í persónuverndarstefnu okkar. Réttindin sem talin eru upp í 8. kafla persónuverndarstefnunnar eru einnig réttindi þín samkvæmt þeim lögum.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi. Þegar þjónustuveitandi vinnur með gögn í Bandaríkjunum (6. kafli persónuverndarstefnunnar) fellur flutningurinn undir verndarráðstöfun sem lögin viðurkenna.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun sendum við þær til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og segir í 7. kafla persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur spurt okkur hvaða persónuupplýsingar við höfum um þig og beðið okkur um að leiðrétta þær, eyða þeim eða hætta að nota þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan eins mánaðar. Ef þú pantaðir hjá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntunina þína eru notaðar.
-
-**Kvartanir.** Þú getur lagt fram kvörtun hjá eftirlitsstofnun Gíbraltar (Gibraltar Regulatory Authority), sem fer með persónuverndareftirlit á Gíbraltar, á www.gra.gi. Við kunnum að meta að fá fyrst tækifæri til að bæta úr málinu.
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem lög Gíbraltar heimila það. Í hverjum pósti kemur fram hvernig þú getur afþakkað frekari póst og ef þú biður okkur um að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafðu samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brasilía
 
@@ -377,22 +212,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 
 **Tilkynningar og lög sem gilda.** Um tilkynningar fer eins og segir í 12. kafla notkunarskilmálanna: við höfum samband við þig á netfanginu sem skráð er á aðganginn þinn og þú getur haft samband við okkur á heimilisfanginu hér að neðan. Um skilmála þessa gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki þá vernd sem brasilísk lög veita þér og ekki er hægt að víkja frá með samningi.
 
-### Persónuvernd, fyrir alla í Brasilíu
-
-**Lög sem gilda.** Þegar við vinnum með persónuupplýsingar einstaklinga í Brasilíu gilda almennu persónuverndarlögin (LGPD), auk þeirra bresku laga sem nefnd eru í persónuverndarstefnu okkar. Réttindin sem talin eru upp í 8. kafla persónuverndarstefnunnar eru einnig réttindi þín samkvæmt LGPD.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi og þjónustuveitendur í Evrópusambandinu og Bandaríkjunum vinna með hluta þeirra, eins og segir í 6. kafla persónuverndarstefnunnar. Við flytjum þau aðeins á grundvelli sem LGPD heimilar.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun sendum við þær til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og segir í 7. kafla persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur beðið okkur um að staðfesta hvort við höfum persónuupplýsingar um þig og beðið um afrit af þeim, eða beðið okkur um að leiðrétta þær, eyða þeim eða hætta að nota þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan 15 daga. Ef þú pantaðir hjá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntunina þína eru notaðar.
-
-**Kvartanir.** Láttu okkur fyrst vita á privacy@hatchgrab.com. Þú getur einnig lagt fram kvörtun hjá persónuverndaryfirvaldi Brasilíu (Autoridade Nacional de Proteção de Dados, ANPD) á www.gov.br/anpd.
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem brasilísk lög heimila það. Í hverjum pósti kemur fram hvernig þú getur afþakkað frekari póst og ef þú biður okkur um að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafðu samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Mexíkó
 
 ### Fyrir rekstraraðila matarvagna
@@ -416,22 +235,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 **Gögn viðskiptavina þinna.** Samkvæmt mexíkóskum alríkislögum um vernd persónuupplýsinga í vörslu einkaaðila (Ley Federal de Protección de Datos Personales en Posesión de los Particulares) hefur 10. kafli notkunarskilmálanna sömu merkingu í hugtökum þeirra laga: þú ert ábyrgðaraðili og við erum vinnsluaðili þinn (encargado), og við vinnum aðeins með persónuupplýsingar viðskiptavina þinna til að reka HatchGrab fyrir þig og samkvæmt fyrirmælum þínum. Þú berð ábyrgð á eigin persónuverndartilkynningu (aviso de privacidad) til viðskiptavina þinna.
 
 **Tilkynningar og lög sem gilda.** Um tilkynningar fer eins og segir í 12. kafla notkunarskilmálanna: við höfum samband við þig á netfanginu sem skráð er á aðganginn þinn og þú getur haft samband við okkur á heimilisfanginu hér að neðan. Um skilmála þessa gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki þá vernd sem mexíkósk lög veita þér og ekki er hægt að víkja frá með samningi.
-
-### Persónuvernd, fyrir alla í Mexíkó
-
-**Lög sem gilda.** Þegar við vinnum með persónuupplýsingar einstaklinga í Mexíkó gilda alríkislögin um vernd persónuupplýsinga í vörslu einkaaðila, auk þeirra bresku laga sem nefnd eru í persónuverndarstefnu okkar. Þessi síða og persónuverndarstefnan eru saman persónuverndartilkynning okkar fyrir einstaklinga í Mexíkó.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi og þjónustuveitendur í Evrópusambandinu og Bandaríkjunum vinna með hluta þeirra, eins og segir í 6. kafla persónuverndarstefnunnar, eingöngu til að reka þjónustuna.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun sendum við þær til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og segir í 7. kafla persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur óskað eftir aðgangi að þeim persónuupplýsingum sem við höfum um þig og beðið okkur um að leiðrétta þær, eyða þeim eða hætta að nota þær (ARCO-réttindi þín). Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan 20 virkra daga. Ef þú pantaðir hjá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntunina þína eru notaðar.
-
-**Kvartanir.** Láttu okkur fyrst vita á privacy@hatchgrab.com. Ef þú unir ekki niðurstöðunni getur þú lagt fram kvörtun hjá Secretaría Anticorrupción y Buen Gobierno (ráðuneyti gegn spillingu og fyrir góða stjórnarhætti), sem framfylgir mexíkóskum alríkislögum um vernd persónuupplýsinga í vörslu einkaaðila (í gildi frá 21. mars 2025).
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem mexíkósk lög heimila það. Í hverjum pósti kemur fram hvernig þú getur afþakkað frekari póst og ef þú biður okkur um að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafðu samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japan
 
@@ -457,22 +260,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 
 **Tilkynningar og lög sem gilda.** Um tilkynningar fer eins og segir í 12. kafla notkunarskilmálanna: við höfum samband við þig á netfanginu sem skráð er á aðganginn þinn og þú getur haft samband við okkur á heimilisfanginu hér að neðan. Um skilmála þessa gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki þá vernd sem japönsk lög veita þér og ekki er hægt að víkja frá með samningi.
 
-### Persónuvernd, fyrir alla í Japan
-
-**Lög sem gilda.** Þegar við vinnum með persónuupplýsingar einstaklinga í Japan gilda lög um vernd persónuupplýsinga, auk þeirra bresku laga sem nefnd eru í persónuverndarstefnu okkar.
-
-**Hvar upplýsingarnar þínar eru geymdar.** Upplýsingarnar þínar eru geymdar og unnar í Bretlandi og þjónustuveitendur í Evrópusambandinu og Bandaríkjunum vinna með hluta þeirra, eins og segir í 6. kafla persónuverndarstefnunnar. Japan viðurkennir að Bretland og Evrópusambandið veiti persónuupplýsingum vernd sem jafnast á við japanskar kröfur. Upplýsingar sem unnið er með í Bandaríkjunum eru verndaðar með samningum okkar við þá þjónustuveitendur.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun sendum við þær til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og segir í 7. kafla persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur beðið okkur um að upplýsa hvaða persónuupplýsingar við höfum um þig og beðið okkur um að leiðrétta þær, eyða þeim eða hætta að nota þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum án tafar. Ef þú pantaðir hjá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntunina þína eru notaðar.
-
-**Kvartanir.** Láttu okkur fyrst vita á privacy@hatchgrab.com. Þú getur einnig haft samband við persónuverndarnefnd Japans (Personal Information Protection Commission) á www.ppc.go.jp.
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins til þeirra sem hafa samþykkt að fá hann. Í hverjum pósti kemur fram frá hverjum hann er og hvernig hægt er að afþakka frekari póst, og ef þú biður okkur um að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafðu samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapúr
 
 ### Fyrir rekstraraðila matarvagna
@@ -497,22 +284,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 
 **Tilkynningar og lög sem gilda.** Um tilkynningar fer eins og segir í 12. kafla notkunarskilmálanna: við höfum samband við þig á netfanginu sem skráð er á aðganginn þinn og þú getur haft samband við okkur á heimilisfanginu hér að neðan. Um skilmála þessa gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki þá vernd sem lög Singapúr veita þér og ekki er hægt að víkja frá með samningi.
 
-### Persónuvernd, fyrir alla í Singapúr
-
-**Lög sem gilda.** Þegar við vinnum með persónuupplýsingar einstaklinga í Singapúr gilda persónuverndarlögin Personal Data Protection Act 2012 (PDPA), auk þeirra bresku laga sem nefnd eru í persónuverndarstefnu okkar.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi og þjónustuveitendur í Evrópusambandinu og Bandaríkjunum vinna með hluta þeirra, eins og segir í 6. kafla persónuverndarstefnunnar. Við tryggjum að þau njóti verndar sem er sambærileg við þá vernd sem PDPA kveður á um, hvar sem þau eru.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun sendum við þær til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og segir í 7. kafla persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur óskað eftir þeim persónuupplýsingum sem við höfum um þig og upplýsingum um hvernig þær hafa verið notaðar, og beðið okkur um að leiðrétta þær. Þú getur einnig afturkallað samþykki þitt fyrir því að við notum þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan 30 daga. Ef þú pantaðir hjá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntunina þína eru notaðar.
-
-**Kvartanir.** Láttu okkur fyrst vita á privacy@hatchgrab.com. Ef þú unir ekki niðurstöðunni getur þú lagt fram kvörtun hjá persónuverndarnefnd Singapúr (Personal Data Protection Commission) á www.pdpc.gov.sg.
-
-**Markaðsskilaboð.** Við sendum markaðspóst aðeins þar sem lög Singapúr heimila það. Í hverjum pósti kemur fram hvernig þú getur afþakkað frekari póst og ef þú biður okkur um að hætta gerum við það. Við hringjum hvorki markaðssímtöl né sendum markaðssmáskilaboð í númer sem skráð eru á bannskrá Singapúr (Do Not Call Registry). Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafðu samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hong Kong
 
 ### Fyrir rekstraraðila matarvagna
@@ -534,22 +305,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 **Gögn viðskiptavina þinna.** Samkvæmt persónuverndarlögum Hong Kong (Personal Data (Privacy) Ordinance, Cap. 486) hefur 10. kafli notkunarskilmálanna sömu merkingu í hugtökum þeirra laga: þú ert gagnanotandi (data user) og við erum vinnsluaðili þinn (data processor), og við vinnum aðeins með persónuupplýsingar viðskiptavina þinna til að reka HatchGrab fyrir þig og samkvæmt fyrirmælum þínum, og geymum þær ekki lengur en nauðsynlegt er í þeim tilgangi.
 
 **Tilkynningar og lög sem gilda.** Um tilkynningar fer eins og segir í 12. kafla notkunarskilmálanna: við höfum samband við þig á netfanginu sem skráð er á aðganginn þinn og þú getur haft samband við okkur á heimilisfanginu hér að neðan. Um skilmála þessa gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki þá vernd sem lög Hong Kong veita þér og ekki er hægt að víkja frá með samningi.
-
-### Persónuvernd, fyrir alla í Hong Kong
-
-**Lög sem gilda.** Þegar við vinnum með persónuupplýsingar einstaklinga í Hong Kong gilda persónuverndarlögin Personal Data (Privacy) Ordinance, auk þeirra bresku laga sem nefnd eru í persónuverndarstefnu okkar.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi og þjónustuveitendur í Evrópusambandinu og Bandaríkjunum vinna með hluta þeirra, eins og segir í 6. kafla persónuverndarstefnunnar.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun sendum við þær til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og segir í 7. kafla persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur óskað eftir afriti af þeim persónuupplýsingum sem við höfum um þig og beðið okkur um að leiðrétta þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan 40 daga. Ef þú pantaðir hjá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntunina þína eru notaðar.
-
-**Kvartanir.** Láttu okkur fyrst vita á privacy@hatchgrab.com. Ef þú unir ekki niðurstöðunni getur þú lagt fram kvörtun hjá skrifstofu persónuverndarfulltrúa Hong Kong (Office of the Privacy Commissioner for Personal Data) á www.pcpd.org.hk.
-
-**Markaðsskilaboð.** Við notum persónuupplýsingar þínar til beinnar markaðssetningar aðeins með samþykki þínu og í hverjum markaðsskilaboðum kemur fram hvernig þú getur afþakkað frekari skilaboð. Ef þú biður okkur um að hætta gerum við það, þér að kostnaðarlausu. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafðu samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malasía
 
@@ -575,22 +330,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 
 **Tilkynningar og lög sem gilda.** Um tilkynningar fer eins og segir í 12. kafla notkunarskilmálanna: við höfum samband við þig á netfanginu sem skráð er á aðganginn þinn og þú getur haft samband við okkur á heimilisfanginu hér að neðan. Um skilmála þessa gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki þá vernd sem malasísk lög veita þér og ekki er hægt að víkja frá með samningi.
 
-### Persónuvernd, fyrir alla í Malasíu
-
-**Lög sem gilda.** Þegar við vinnum með persónuupplýsingar einstaklinga í Malasíu gilda persónuverndarlögin Personal Data Protection Act 2010 (PDPA), auk þeirra bresku laga sem nefnd eru í persónuverndarstefnu okkar.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi og þjónustuveitendur í Evrópusambandinu og Bandaríkjunum vinna með hluta þeirra, eins og segir í 6. kafla persónuverndarstefnunnar. Við flytjum þau aðeins þar sem PDPA heimilar það.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun sendum við þær til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og segir í 7. kafla persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur óskað eftir þeim persónuupplýsingum sem við höfum um þig og beðið okkur um að leiðrétta þær eða hætta að nota þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan 21 dags. Ef þú pantaðir hjá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntunina þína eru notaðar.
-
-**Kvartanir.** Láttu okkur fyrst vita á privacy@hatchgrab.com. Ef þú unir ekki niðurstöðunni getur þú lagt fram kvörtun hjá persónuverndarstjóra Malasíu (Personal Data Protection Commissioner) á www.pdp.gov.my.
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem malasísk lög heimila það. Í hverjum pósti kemur fram hvernig þú getur afþakkað frekari póst og ef þú biður okkur um að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafðu samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Taíland
 
 ### Fyrir rekstraraðila matarvagna
@@ -615,22 +354,6 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 
 **Tilkynningar og lög sem gilda.** Um tilkynningar fer eins og segir í 12. kafla notkunarskilmálanna: við höfum samband við þig á netfanginu sem skráð er á aðganginn þinn og þú getur haft samband við okkur á heimilisfanginu hér að neðan. Um skilmála þessa gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki þá vernd sem taílensk lög veita þér og ekki er hægt að víkja frá með samningi.
 
-### Persónuvernd, fyrir alla í Taílandi
-
-**Lög sem gilda.** Þegar við vinnum með persónuupplýsingar einstaklinga í Taílandi gilda persónuverndarlögin Personal Data Protection Act B.E. 2562 (PDPA), auk þeirra bresku laga sem nefnd eru í persónuverndarstefnu okkar. Réttindin sem talin eru upp í 8. kafla persónuverndarstefnunnar eru einnig réttindi þín samkvæmt PDPA.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi og þjónustuveitendur í Evrópusambandinu og Bandaríkjunum vinna með hluta þeirra, eins og segir í 6. kafla persónuverndarstefnunnar. Við flytjum þau aðeins á grundvelli sem PDPA heimilar.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun sendum við þær til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og segir í 7. kafla persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur óskað eftir afriti af þeim persónuupplýsingum sem við höfum um þig og beðið okkur um að leiðrétta þær, eyða þeim eða hætta að nota þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan 30 daga. Ef þú pantaðir hjá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntunina þína eru notaðar.
-
-**Kvartanir.** Láttu okkur fyrst vita á privacy@hatchgrab.com. Þú getur einnig lagt fram kvörtun hjá persónuverndarnefnd Taílands (Personal Data Protection Committee) á www.pdpc.or.th.
-
-**Markaðspóstur.** Við sendum markaðspóst aðeins þar sem taílensk lög heimila það. Í hverjum pósti kemur fram hvernig þú getur afþakkað frekari póst og ef þú biður okkur um að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafðu samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Sameinuðu arabísku furstadæmin
 
 ### Fyrir rekstraraðila matarvagna
@@ -652,19 +375,3 @@ Ef landið þitt er ekki tilgreint gilda engar viðbótarreglur: Notkunarskilmá
 **Gögn viðskiptavina þinna.** Samkvæmt alríkislagatilskipun Sameinuðu arabísku furstadæmanna nr. 45 frá 2021 um vernd persónuupplýsinga hefur 10. kafli notkunarskilmálanna sömu merkingu í hugtökum þeirra laga: þú ert ábyrgðaraðili og við erum vinnsluaðili þinn, og við vinnum aðeins með persónuupplýsingar viðskiptavina þinna til að reka HatchGrab fyrir þig og samkvæmt fyrirmælum þínum.
 
 **Tilkynningar og lög sem gilda.** Um tilkynningar fer eins og segir í 12. kafla notkunarskilmálanna: við höfum samband við þig á netfanginu sem skráð er á aðganginn þinn og þú getur haft samband við okkur á heimilisfanginu hér að neðan. Um skilmála þessa gilda lög Englands og Wales og dómstólar Englands og Wales hafa lögsögu. Þetta skerðir ekki þá vernd sem lög Sameinuðu arabísku furstadæmanna veita þér og ekki er hægt að víkja frá með samningi.
-
-### Persónuvernd, fyrir alla í Sameinuðu arabísku furstadæmunum
-
-**Lög sem gilda.** Þegar við vinnum með persónuupplýsingar einstaklinga í Sameinuðu arabísku furstadæmunum gildir alríkislagatilskipun nr. 45 frá 2021 um vernd persónuupplýsinga, auk þeirra bresku laga sem nefnd eru í persónuverndarstefnu okkar. Ef þú ert á fríverslunarsvæði sem hefur eigin persónuverndarlöggjöf, svo sem DIFC eða ADGM, gilda þau lög í staðinn.
-
-**Hvar gögnin þín eru geymd.** Gögnin þín eru geymd og unnin í Bretlandi og þjónustuveitendur í Evrópusambandinu og Bandaríkjunum vinna með hluta þeirra, eins og segir í 6. kafla persónuverndarstefnunnar. Við flytjum þau aðeins á grundvelli sem lögin heimila.
-
-**Athugasemdir um ofnæmi og mataræði.** Ef þú bætir athugasemdum um ofnæmi eða mataræði við pöntun sendum við þær til matarvagnsins ásamt pöntuninni. Við eyðum þeim, ásamt nafni þínu og samskiptaupplýsingum, 12 mánuðum eftir pöntunina, eins og segir í 7. kafla persónuverndarstefnunnar. Við notum þær ekki í neinum öðrum tilgangi.
-
-**Beiðnir þínar.** Þú getur óskað eftir þeim persónuupplýsingum sem við höfum um þig og beðið okkur um að leiðrétta þær, eyða þeim eða hætta að nota þær. Sendu tölvupóst á privacy@hatchgrab.com. Við svörum innan 30 daga. Ef þú pantaðir hjá matarvagni kunnum við að framsenda beiðni þína til þess matarvagns, því hann ákveður hvernig upplýsingar um pöntunina þína eru notaðar.
-
-**Kvartanir.** Láttu okkur fyrst vita á privacy@hatchgrab.com. Ef þú unir ekki niðurstöðunni getur þú lagt fram kvörtun hjá gagnaskrifstofu Sameinuðu arabísku furstadæmanna (UAE Data Office).
-
-**Markaðsskilaboð.** Við sendum markaðsskilaboð aðeins þar sem lög Sameinuðu arabísku furstadæmanna heimila það. Í hverjum skilaboðum kemur fram hvernig þú getur afþakkað frekari skilaboð og ef þú biður okkur um að hætta gerum við það. Tölvupóstur um pöntun eða aðganginn þinn telst ekki markaðsefni.
-
-**Hafðu samband.** privacy@hatchgrab.com, eða bréfleiðis til HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

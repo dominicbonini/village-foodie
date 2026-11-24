@@ -494,7 +494,11 @@ const flat = (o, p = '', out = {}) => { for (const [k, v] of Object.entries(o ??
     // 6c29c2e2, so there is no "only change" to measure: it is a NEW document, and must pass the drift check against today's English with
     // the paragraph (Brevo, 24) as the last paragraph of section 5 — the same shape the 28 were re-stamped to.
     if (!BASES_AT_BASE.includes(l)) {
-      t(`${l} (added after contact-1, no translation at ${BASE}): the drift check clean, the paragraph (Brevo, 24) at the end of section 5`, old === null && !probs.length && sec5.includes('Brevo') && /\b24\b/.test(sec5) && /\*\*[^*\n]+\*\*\n\n[^\n]+\n\n---$/.test(sec5.trimEnd()), { existedAtBase: old !== null, probs })
+      // ⚠️ RE-PINNED (france-privacy-1, 24 November 2026, docs/france-privacy-1-report.md): the 5 bases no enabled country uses keep the
+      // translation of the English before it — ec16f022's bytes (so the drift check against today's English is not theirs to pass).
+      const FP1 = require('./_named-france-privacy-1.cjs')
+      const unusedOk = FP1.LANDED && FP1.UNUSED_BASES.includes(l) && tr === FP1.translationAtStart(l, 'privacy-policy.md')
+      t(`${l} (added after contact-1, no translation at ${BASE}): the drift check clean, the paragraph (Brevo, 24) at the end of section 5`, old === null && (unusedOk || !probs.length) && sec5.includes('Brevo') && /\b24\b/.test(sec5) && /\*\*[^*\n]+\*\*\n\n[^\n]+\n\n---$/.test(sec5.trimEnd()), { existedAtBase: old !== null, probs })
       continue
     }
     // ⚠️ RE-PINNED (tidy-1, 3 November 2026): the lines tidy-1 changed later (the demo section's two paragraphs, in every language) are

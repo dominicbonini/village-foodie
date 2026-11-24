@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Zásady ochrany osobních údajů
 
 **Poslední aktualizace:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Vztahují se také na mobilní a tabletové aplikace HatchGrab pro iOS a Android
 
 Pokud jste sem přišli jen proto, že jste si objednali jídlo z food trucku, týká se vás oddíl **„Pokud jste si objednali z food trucku“**.
 
-**Některé země mají dodatečná pravidla.** Pokud se na vás vztahují, najdete je na naší stránce [Podmínky pro jednotlivé země](/country-terms), která je součástí těchto zásad.
-
+**Tyto zásady platí, ať jste kdekoli.** Řídíme se britskými předpisy o ochraně osobních údajů, a pokud se uplatní i předpisy o ochraně osobních údajů země, ve které žijete, řídíme se také jimi.
 ---
 
 ## 1. Kdo jsme
@@ -84,6 +83,8 @@ Když zadáte objednávku prostřednictvím objednávkové stránky food trucku,
 
 Food truck rozhoduje o tom, jak dlouho vaše údaje uchová a jak vás bude následně kontaktovat. Na to se vztahují jeho vlastní postupy ochrany osobních údajů. Pokud si nejste jisti, o jaký food truck jde, kontaktujte nás na privacy@hatchgrab.com a my vás na něj odkážeme.
 
+**Poznámky o alergiích a stravovacích omezeních.** Předáme je s vaší objednávkou food trucku a k ničemu jinému je nepoužíváme. Odstraníme je spolu s vaším jménem a kontaktními údaji 12 měsíců po objednávce (viz oddíl 7).
+
 **Informace o alergenech.** Pokud food truck zveřejňuje informace o alergenech, zobrazujeme to, co food truck potvrdil. Nezávisle to neověřujeme. O závažné alergii vždy informujte přímo food truck.
 
 ---
@@ -135,7 +136,7 @@ Využíváme malý počet poskytovatelů služeb, z nichž každý zpracovává 
 
 **Osobní údaje neprodáváme a nesdílíme je pro reklamní účely.**
 
-**Mezinárodní předávání.** Údaje vašeho účtu a údaje o objednávkách jsou uloženy a zpracovávány ve Spojeném království. Některé věci se zpracovávají mimo něj: vytahování obsahu jídelních lístků a automatické odpovědi na WhatsAppu, které využívají službu Google ve Spojených státech; doručování zpráv WhatsApp, které zajišťuje Meta ve Spojených státech; platby, které zpracovává Stripe ve Spojených státech; a nabízená oznámení, která doručují Apple a Google ve Spojených státech. Pokud údaje opouštějí Spojené království, vztahují se na předání britské předpisy o odpovídající ochraně (UK adequacy regulations) nebo International Data Transfer Agreement či Addendum (mezinárodní smlouva o předávání údajů nebo dodatek), které poskytují vhodné záruky. Můžete nás požádat o podrobnosti o zárukách, které se uplatní.
+**Mezinárodní předávání.** Údaje vašeho účtu a údaje o objednávkách jsou uloženy a zpracovávány ve Spojeném království. Některé věci se zpracovávají mimo něj: vytahování obsahu jídelních lístků a automatické odpovědi na WhatsAppu, které využívají službu Google ve Spojených státech; doručování zpráv WhatsApp, které zajišťuje Meta ve Spojených státech; platby, které zpracovává Stripe ve Spojených státech; a nabízená oznámení, která doručují Apple a Google ve Spojených státech. Pokud údaje opouštějí Spojené království, vztahují se na předání britské předpisy o odpovídající ochraně (UK adequacy regulations) nebo International Data Transfer Agreement či Addendum (mezinárodní smlouva o předávání údajů nebo dodatek), a pokud to vyžaduje právo vaší země, také záruka, kterou toto právo uznává. Můžete nás požádat o podrobnosti o zárukách, které se uplatní.
 
 S růstem naší služby můžeme přidat další poskytovatele, včetně poskytovatele SMS. Tento seznam aktualizujeme dříve, než začnou vaše údaje zpracovávat.
 
@@ -161,7 +162,7 @@ Po uplynutí těchto lhůt údaje smažeme nebo anonymizujeme.
 
 ## 8. Vaše práva
 
-Podle britských předpisů o ochraně osobních údajů máte právo:
+Podle britských předpisů o ochraně osobních údajů a podle práva země, ve které žijete, pokud se uplatní, máte právo:
 
 - zeptat se, jaké osobní údaje o vás uchováváme, a získat jejich kopii;
 - nechat opravit nepřesné údaje;
@@ -171,11 +172,17 @@ Podle britských předpisů o ochraně osobních údajů máte právo:
 - vznést námitku proti zpracování založenému na oprávněných zájmech;
 - kdykoli odvolat souhlas, pokud se o souhlas opíráme.
 
-K uplatnění kteréhokoli z těchto práv napište na privacy@hatchgrab.com. Odpovíme do jednoho měsíce.
+Právo země, ve které žijete, vám může tato práva přiznávat pod jinými názvy nebo vám může přiznávat práva další. I ta máte.
 
-**Smazání účtu.** Provozovatelé mohou požádat o smazání účtu přímo v aplikaci nebo e-mailem na privacy@hatchgrab.com. Smažeme váš účet a osobní údaje, s výjimkou případů, kdy jsme povinni uchovávat záznamy z účetních nebo právních důvodů.
+**Podání žádosti.** Napište na privacy@hatchgrab.com. Než na žádost zareagujeme, ověříme, že je pravá. Můžete někoho požádat, aby žádost podal za vás, a za podání žádosti s vámi nebudeme zacházet jinak. Odpovíme do jednoho měsíce, nebo dříve, pokud to vyžaduje právo vaší země. Pokud jste si objednali z food trucku, můžeme vaši žádost předat tomuto food trucku, protože on rozhoduje o tom, jak se údaje o vaší objednávce používají. Pokud žádost zamítneme, můžete nás požádat o její opětovné posouzení odpovědí na naši odpověď.
 
-**Stížnosti.** Pokud nejste spokojeni s tím, jak jsme s vašimi údaji naložili, můžete podat stížnost u Information Commissioner's Office (britský Úřad informačního komisaře) na ico.org.uk nebo na čísle 0303 123 1113. Ocenili bychom, kdybychom měli možnost věc nejprve vyřešit sami.
+**Smazání účtu.** Provozovatelé mohou požádat o smazání účtu přímo v aplikaci nebo e-mailem na privacy@hatchgrab.com. Smažeme váš účet a osobní údaje, s výjimkou případů, kdy jsme povinni uchovávat záznamy z účetních nebo právních důvodů. Když je účet provozovatele smazán, odstraníme z objednávek, které uchováváme, také jména, kontaktní údaje a poznámky jeho zákazníků.
+
+**Marketingové e-maily.** Marketingové e-maily zasíláme pouze tam, kde to dovoluje právo země, ve které žijete, což v některých zemích znamená pouze s vaším souhlasem. Každý z nich uvádí, od koho je, obsahuje naši poštovní adresu a uvádí, jak se z jejich odběru odhlásit. Pokud nás požádáte, abychom je přestali zasílat, učiníme tak bezplatně a do 10 pracovních dnů. E-maily týkající se objednávky nebo vašeho účtu nejsou marketingem. Pokud my nebo food truck nabízíme informace o objednávce formou textových zpráv, budete je dostávat pouze tehdy, pokud s tím souhlasíte, a můžete je kdykoli zastavit.
+
+**Pokud se něco pokazí.** Pokud porušení zabezpečení týkající se vašich osobních údajů pravděpodobně vám způsobí závažnou újmu, budeme vás i dozorový úřad informovat co nejdříve, pokud to vyžaduje zákon, nebo pomůžeme food trucku, u kterého jste si objednali, aby tak učinil.
+
+**Stížnosti.** Nejprve se obraťte na nás na privacy@hatchgrab.com; ocenili bychom, kdybychom měli možnost věc napravit. Stížnost můžete podat také u dozorového úřadu pro ochranu osobních údajů v zemi, kde žijete. Ve Spojeném království je to Information Commissioner's Office (britský Úřad informačního komisaře), na ico.org.uk nebo na čísle 0303 123 1113.
 
 ---
 

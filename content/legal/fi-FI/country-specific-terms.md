@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Maakohtaiset ehdot
 
 **Päivitetty viimeksi:** {{LAST_UPDATED}}
 
-[Käyttöehtojamme](/terms) ja [tietosuojaselostettamme](/privacy) sovelletaan kaikissa maissa, joissa HatchGrabia käytetään. Joissakin maissa sovelletaan lisäsääntöjä. Tällä sivulla ne esitetään maa kerrallaan.
+[Käyttöehtojamme](/terms) sovelletaan kaikissa maissa, joissa HatchGrabia käytetään. Joissakin maissa sovelletaan lisäsääntöjä. Tällä sivulla ne esitetään maa kerrallaan.
 
-Jos jokin alla olevista kohdista koskee sinua, se on osa käyttöehtojamme ja tietosuojaselostettamme. Jos siinä todetaan jotakin niistä poikkeavaa, kyseisessä maassa sovelletaan tätä sivua.
+Jos jokin alla olevista kohdista koskee sinua, se on osa käyttöehtojamme. Jos siinä todetaan jotakin niistä poikkeavaa, kyseisessä maassa sovelletaan tätä sivua.
 
-Jos maatasi ei ole lueteltu, lisäsääntöjä ei ole: käyttöehtoja ja tietosuojaselostetta sovelletaan sellaisinaan.
-
+Jos maatasi ei ole lueteltu, lisäsääntöjä ei ole: käyttöehtoja sovelletaan sellaisinaan. [Tietosuojaselosteemme](/privacy) on sama kaikissa maissa.
 ---
 
 ## Yhdysvallat
@@ -31,26 +30,6 @@ Jos maatasi ei ole lueteltu, lisäsääntöjä ei ole: käyttöehtoja ja tietosu
 
 **Asiakkaidesi tiedot.** Yhdysvaltain osavaltioiden tietosuojalakien mukaan käyttöehtojen kohta 10 tarkoittaa samaa niiden omin käsittein: sinä olet ”business” (yritys) ja me olemme ”service provider” (palveluntarjoaja) tai ”processor” (käsittelijä). Käytämme asiakkaidesi henkilötietoja ainoastaan HatchGrabin ylläpitämiseen puolestasi. Emme myy niitä, emme jaa niitä kontekstirajat ylittävää käyttäytymiseen perustuvaa mainontaa varten emmekä käytä niitä mihinkään muuhun tarkoitukseen kuin siihen, mitä nämä lait sallivat palveluntarjoajalle.
 
-### Tietosuoja kaikille Yhdysvalloissa oleville
-
-**Mitä keräämme ja kenen kanssa jaamme tietoja.** Samat kuin tietosuojaselosteessa todetaan: ruokarekkayrittäjien tili- ja yritystiedot; nimesi, yhteystietosi ja tilaustietosi, jos tilaat ruokarekalta; sekä perustason tekniset tiedot, jos vierailet verkkosivustoillamme. Jaamme niitä sen ruokarekan kanssa, jolta tilaat, sekä tietosuojaselosteen kohdassa 6 lueteltujen palveluntarjoajien kanssa ainoastaan palvelun ylläpitämiseksi tai silloin, kun laki sitä edellyttää. Niitä voidaan käsitellä Yhdistyneessä kuningaskunnassa, Euroopan unionissa ja Yhdysvalloissa.
-
-**Emme myy tai jaa henkilötietojasi.** Emme myy henkilötietoja emmekä jaa niitä kontekstirajat ylittävää käyttäytymiseen perustuvaa mainontaa varten.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit kysyä meiltä, mitä henkilötietoja meillä on sinusta, ja pyytää meitä oikaisemaan tai poistamaan ne. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Tarkistamme, että pyyntö on aito, ennen kuin toimimme sen perusteella, ja vastaamme 45 päivän kuluessa. Voit pyytää jotakuta toista tekemään pyynnön puolestasi. Emme kohtele sinua eri tavalla sen vuoksi, että teet pyynnön. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään. Jos hylkäämme pyynnön, voit pyytää meitä käsittelemään sen uudelleen vastaamalla vastaukseemme.
-
-**Osavaltioiden tietosuojalait.** Joitakin osavaltioiden tietosuojalakeja sovelletaan vain tietyn koon ylittäviin yrityksiin, eikä niitä välttämättä sovelleta meihin. Noudatamme edellä mainittuja pyyntöjä kuitenkin kaikkien Yhdysvalloissa olevien osalta.
-
-**Lapset.** Palvelujamme ei ole suunnattu alle 13-vuotiaille lapsille, emmekä tietoisesti kerää heidän henkilötietojaan. Jos uskot, että lapsi on antanut meille tietojaan, ota meihin yhteyttä, niin poistamme ne.
-
-**Markkinointisähköpostit.** Jokaisessa lähettämässämme markkinointisähköpostissa kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja se sisältää postiosoitteemme. Jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Tekstiviestit.** Jos me tai ruokarekka tarjoamme tilauspäivityksiä tekstiviestillä, saat niitä vain, jos suostut vastaanottamaan niitä, ja voit lopettaa ne milloin tahansa.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Irlanti
 
 ### Ruokarekkayrittäjille
@@ -70,22 +49,6 @@ Jos maatasi ei ole lueteltu, lisäsääntöjä ei ole: käyttöehtoja ja tietosu
 **Asiakkaidesi tiedot.** EU:n yleisen tietosuoja-asetuksen nojalla käyttöehtojen kohta 10 on kanssasi tekemämme henkilötietojen käsittelysopimus: sinä olet rekisterinpitäjä ja me olemme henkilötietojen käsittelijä samassa merkityksessä kuin yleisen tietosuoja-asetuksen 28 artiklassa.
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Irlannin lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
-
-### Tietosuoja kaikille Irlannissa oleville
-
-**Sovellettava laki.** Kun käsittelemme Irlannissa olevien henkilöiden henkilötietoja, sovelletaan EU:n yleistä tietosuoja-asetusta sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä. Tietosuojaselosteen kohdassa 8 luetellut oikeudet ovat oikeuksiasi myös yleisen tietosuoja-asetuksen nojalla.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Euroopan komissio on päättänyt, että Yhdistynyt kuningaskunta suojaa henkilötietoja samalla tasolla kuin EU, joten tätä varten ei tarvita lisäsuojatoimia. Kun palveluntarjoaja käsittelee tietoja Yhdysvalloissa (tietosuojaselosteen kohta 6), siirto perustuu yleisessä tietosuoja-asetuksessa tunnustettuun suojatoimeen.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit kysyä meiltä, mitä henkilötietoja meillä on sinusta, ja pyytää meitä oikaisemaan tai poistamaan ne tai lopettamaan niiden käytön. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme kuukauden kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Voit tehdä valituksen Irlannin tietosuojaviranomaiselle Data Protection Commissionille osoitteessa www.dataprotection.ie tai postitse osoitteeseen 6 Pembroke Row, Dublin 2, D02 X963. Toivomme kuitenkin, että saamme ensin mahdollisuuden korjata asian.
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun laki sen sallii. Jokaisessa niistä kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australia
 
@@ -109,22 +72,6 @@ Jos maatasi ei ole lueteltu, lisäsääntöjä ei ole: käyttöehtoja ja tietosu
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Australian lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
 
-### Tietosuoja kaikille Australiassa oleville
-
-**Sovellettava laki.** Kun käsittelemme Australiassa olevien henkilöiden henkilötietoja, noudatamme Privacy Act 1988 -lain (tietosuojalaki) Australian Privacy Principles -periaatteita (Australian tietosuojaperiaatteet) sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa, kuten tietosuojaselosteen kohdassa 6 todetaan.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit kysyä meiltä, mitä henkilötietoja meillä on sinusta, ja pyytää meitä oikaisemaan tai poistamaan ne. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme 30 päivän kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Jos olet tyytymätön siihen, miten olemme käsitelleet henkilötietojasi, kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Jos et ole tyytyväinen vastaukseemme tai emme ole vastanneet 30 päivän kuluessa, voit tehdä kirjallisen valituksen Office of the Australian Information Commissionerille (OAIC) osoitteessa www.oaic.gov.au.
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun laki sen sallii. Jokaisessa niistä kerrotaan, keneltä se on, ja miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Uusi-Seelanti
 
 ### Ruokarekkayrittäjille
@@ -147,24 +94,6 @@ Jos maatasi ei ole lueteltu, lisäsääntöjä ei ole: käyttöehtoja ja tietosu
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Uuden-Seelannin lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
 
-### Tietosuoja kaikille Uudessa-Seelannissa oleville
-
-**Sovellettava laki.** Kun käsittelemme Uudessa-Seelannissa olevien henkilöiden henkilötietoja, sovelletaan Privacy Act 2020 -lakia (tietosuojalaki) sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä. Sitä sovelletaan meihin, koska harjoitamme liiketoimintaa Uudessa-Seelannissa, vaikka toimipaikkamme on Yhdistyneessä kuningaskunnassa.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa, kuten tietosuojaselosteen kohdassa 6 todetaan.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit pyytää meiltä henkilötietoja, joita meillä on sinusta, ja pyytää meitä oikaisemaan ne. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme niin pian kuin kohtuudella pystymme ja viimeistään 20 työpäivän kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Jos olet tyytymätön siihen, miten olemme käsitelleet henkilötietojasi, kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Privacy Commissioner (Uuden-Seelannin tietosuojavaltuutettu) pyytää sinua tekemään niin ennen valituksen tekemistä. Jos et ole tyytyväinen vastaukseemme, voit tehdä valituksen Office of the Privacy Commissionerille osoitteessa www.privacy.org.nz, puhelimitse numerossa 0800 803 909 tai postitse osoitteeseen PO Box 10 094, Wellington 6140.
-
-**Tietosuojaloukkaukset.** Jos henkilötietojasi koskeva tietosuojaloukkaus on aiheuttanut tai todennäköisesti aiheuttaa vakavaa haittaa, Privacy Act 2020 -laki edellyttää, että siitä ilmoitetaan Privacy Commissionerille ja sinulle niin pian kuin se on käytännössä mahdollista. Teemme niin, tai jos kyse on ruokarekalta tekemästäsi tilauksesta, autamme ruokarekkaa tekemään niin.
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun laki sen sallii. Jokaisessa niistä kerrotaan, keneltä se on, ja miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Kanada
 
 ### Ruokarekkayrittäjille
@@ -186,22 +115,6 @@ Jos maatasi ei ole lueteltu, lisäsääntöjä ei ole: käyttöehtoja ja tietosu
 **Paikallisen lainsäädännön mukaiset oikeutesi.** Mikään käyttöehdoissa ei poista oikeutta, jota sijaintipaikkasi lainsäädännön mukaan ei voida rajoittaa tai josta ei voida luopua.
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään provinssisi tai territoriosi lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
-
-### Tietosuoja kaikille Kanadassa oleville
-
-**Sovellettava laki.** Kun käsittelemme Kanadassa olevien henkilöiden henkilötietoja, sovelletaan Personal Information Protection and Electronic Documents Act -lakia (PIPEDA, henkilötietojen suojaa ja sähköisiä asiakirjoja koskeva laki) ja Brittiläisessä Kolumbiassa ja Albertassa niiden omia yksityistä sektoria koskevia tietosuojalakeja sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa, ja osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa (tietosuojaselosteen kohta 6), missä niihin voidaan päästä käsiksi näiden maiden lakien nojalla.
-
-**Pyyntösi.** Voit pyytää henkilötietoja, joita meillä on sinusta, ja pyytää meitä oikaisemaan ne. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme 30 päivän kuluessa.
-
-**Valitukset.** Kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Jos et ole tyytyväinen, voit tehdä valituksen Office of the Privacy Commissioner of Canadalle (Kanadan tietosuojavaltuutetun toimisto) osoitteessa www.priv.gc.ca tai numerossa 1-800-282-1376.
-
-**Tietoturvaloukkaukset.** Jos tietojasi koskeva turvatoimien loukkaus aiheuttaa todellisen merkittävän haitan riskin, ilmoitamme siitä Privacy Commissionerille ja kerromme siitä sinulle niin pian kuin se on mahdollista.
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain suostumuksellasi, kuten Kanadan roskapostin vastainen laki edellyttää. Jokaisessa niistä kerrotaan, keneltä se on ja miten tilauksen voi perua, ja toteutamme tilauksen peruutuksen 10 arkipäivän kuluessa.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Ranska
 
@@ -226,22 +139,6 @@ Jos maatasi ei ole lueteltu, lisäsääntöjä ei ole: käyttöehtoja ja tietosu
 **Asiakkaidesi tiedot.** EU:n yleisen tietosuoja-asetuksen nojalla käyttöehtojen kohta 10 on kanssasi tekemämme henkilötietojen käsittelysopimus: sinä olet rekisterinpitäjä ja me olemme henkilötietojen käsittelijä samassa merkityksessä kuin yleisen tietosuoja-asetuksen 28 artiklassa.
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Ranskan lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
-
-### Tietosuoja kaikille Ranskassa oleville
-
-**Sovellettava laki.** Kun käsittelemme Ranskassa olevien henkilöiden henkilötietoja, sovelletaan EU:n yleistä tietosuoja-asetusta ja Ranskan tietosuojalakia (loi Informatique et Libertés) sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä. Tietosuojaselosteen kohdassa 8 luetellut oikeudet ovat oikeuksiasi myös yleisen tietosuoja-asetuksen nojalla.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Euroopan komissio on päättänyt, että Yhdistynyt kuningaskunta suojaa henkilötietoja samalla tasolla kuin EU, joten tätä varten ei tarvita lisäsuojatoimia. Kun palveluntarjoaja käsittelee tietoja Yhdysvalloissa (tietosuojaselosteen kohta 6), siirto perustuu yleisessä tietosuoja-asetuksessa tunnustettuun suojatoimeen.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit kysyä meiltä, mitä henkilötietoja meillä on sinusta, ja pyytää meitä oikaisemaan tai poistamaan ne tai lopettamaan niiden käytön. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme kuukauden kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Voit tehdä valituksen Ranskan tietosuojaviranomaiselle CNIL:lle (Commission nationale de l'informatique et des libertés) osoitteessa www.cnil.fr tai postitse osoitteeseen CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Toivomme kuitenkin, että saamme ensin mahdollisuuden korjata asian.
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun Ranskan lainsäädäntö sen sallii. Jokaisessa niistä kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Euroopan talousalue ja Sveitsi
 
@@ -269,53 +166,6 @@ Tätä kohtaa sovelletaan jokaisessa Euroopan talousalueen maassa, jolla ei ole 
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään maasi lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
 
-### Tietosuoja kaikille Euroopan talousalueella ja Sveitsissä oleville
-
-**Sovellettava laki.** Kun käsittelemme Euroopan talousalueella olevien henkilöiden henkilötietoja, sovelletaan EU:n yleistä tietosuoja-asetusta ja heidän maansa tietosuojalainsäädäntöä; Sveitsissä sovelletaan Federal Act on Data Protection -lakia (liittovaltion tietosuojalaki). Lisäksi sovelletaan tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä. Tietosuojaselosteen kohdassa 8 luetellut oikeudet ovat oikeuksiasi myös näiden lakien nojalla.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Euroopan komissio ja Sveitsi ovat kumpikin päättäneet, että Yhdistynyt kuningaskunta suojaa henkilötietoja riittävällä tasolla, joten tätä varten ei tarvita lisäsuojatoimia. Kun palveluntarjoaja käsittelee tietoja Yhdysvalloissa (tietosuojaselosteen kohta 6), siirto perustuu yleisessä tietosuoja-asetuksessa ja Sveitsin lainsäädännössä tunnustettuun suojatoimeen.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit kysyä meiltä, mitä henkilötietoja meillä on sinusta, ja pyytää meitä oikaisemaan tai poistamaan ne tai lopettamaan niiden käytön. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme kuukauden kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Voit tehdä valituksen sen maan tietosuojaviranomaiselle, jossa asut tai työskentelet. Euroopan tietosuojaneuvosto luettelee kaikki Euroopan talousalueen viranomaiset osoitteessa www.edpb.europa.eu (About EDPB › Members). Sveitsissä viranomainen on Federal Data Protection and Information Commissioner (liittovaltion tietosuoja- ja julkisuusvaltuutettu), www.edoeb.admin.ch. Toivomme kuitenkin, että saamme ensin mahdollisuuden korjata asian.
-
-| Maa | Tietosuojaviranomainen |
-|---|---|
-| Itävalta | dsb.gv.at |
-| Belgia | autoriteprotectiondonnees.be |
-| Bulgaria | cpdp.bg |
-| Kroatia | azop.hr |
-| Kypros | dataprotection.gov.cy |
-| Tšekki | uoou.gov.cz |
-| Tanska | datatilsynet.dk |
-| Viro | aki.ee |
-| Suomi | tietosuoja.fi |
-| Saksa | osavaltiosi (Land) viranomainen (liittovaltio: bfdi.bund.de) |
-| Kreikka | dpa.gr |
-| Unkari | naih.hu |
-| Italia | garanteprivacy.it |
-| Latvia | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Liettua | vdai.lrv.lt |
-| Luxemburg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Alankomaat | autoriteitpersoonsgegevens.nl |
-| Norja | datatilsynet.no |
-| Puola | uodo.gov.pl |
-| Portugali | cnpd.pt |
-| Romania | dataprotection.ro |
-| Slovakia | dataprotection.gov.sk |
-| Slovenia | ip-rs.si |
-| Espanja | aepd.es |
-| Ruotsi | imy.se |
-| Sveitsi | Federal Data Protection and Information Commissioner (FDPIC, liittovaltion tietosuoja- ja julkisuusvaltuutettu), edoeb.admin.ch |
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun maasi lainsäädäntö sen sallii. Jokaisessa niistä kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### Ruokarekkayrittäjille
@@ -337,22 +187,6 @@ Tätä kohtaa sovelletaan jokaisessa Euroopan talousalueen maassa, jolla ei ole 
 **Asiakkaidesi tiedot.** Gibraltarin tietosuojalainsäädännön nojalla, johon sisältyy EU:n yleinen tietosuoja-asetus sellaisena kuin sitä sovelletaan Gibraltarilla, käyttöehtojen kohta 10 on kanssasi tekemämme henkilötietojen käsittelysopimus: sinä olet rekisterinpitäjä ja me olemme henkilötietojen käsittelijä samassa merkityksessä kuin yleisen tietosuoja-asetuksen 28 artiklassa.
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Gibraltarin lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
-
-### Tietosuoja kaikille Gibraltarilla oleville
-
-**Sovellettava laki.** Kun käsittelemme Gibraltarilla olevien henkilöiden henkilötietoja, sovelletaan Gibraltarin tietosuojalainsäädäntöä, mukaan lukien EU:n yleinen tietosuoja-asetus sellaisena kuin sitä siellä sovelletaan, sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä. Tietosuojaselosteen kohdassa 8 luetellut oikeudet ovat oikeuksiasi myös kyseisen lainsäädännön nojalla.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa. Kun palveluntarjoaja käsittelee tietoja Yhdysvalloissa (tietosuojaselosteen kohta 6), siirto perustuu lainsäädännössä tunnustettuun suojatoimeen.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit kysyä meiltä, mitä henkilötietoja meillä on sinusta, ja pyytää meitä oikaisemaan tai poistamaan ne tai lopettamaan niiden käytön. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme kuukauden kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Voit tehdä valituksen Gibraltarin tietosuojaviranomaiselle Gibraltar Regulatory Authoritylle osoitteessa www.gra.gi. Toivomme kuitenkin, että saamme ensin mahdollisuuden korjata asian.
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun Gibraltarin lainsäädäntö sen sallii. Jokaisessa niistä kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brasilia
 
@@ -378,22 +212,6 @@ Tätä kohtaa sovelletaan jokaisessa Euroopan talousalueen maassa, jolla ei ole 
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Brasilian lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
 
-### Tietosuoja kaikille Brasiliassa oleville
-
-**Sovellettava laki.** Kun käsittelemme Brasiliassa olevien henkilöiden henkilötietoja, sovelletaan yleistä tietosuojalakia (LGPD) sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä. Tietosuojaselosteen kohdassa 8 luetellut oikeudet ovat oikeuksiasi myös LGPD:n nojalla.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa, ja osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa, kuten tietosuojaselosteen kohdassa 6 todetaan. Siirrämme niitä ainoastaan LGPD:n sallimalla perusteella.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit pyytää meitä vahvistamaan, onko meillä sinua koskevia henkilötietoja, ja pyytää niistä jäljennöksen tai pyytää meitä oikaisemaan tai poistamaan ne tai lopettamaan niiden käytön. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme 15 päivän kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Voit myös tehdä valituksen kansalliselle tietosuojaviranomaiselle (Autoridade Nacional de Proteção de Dados, ANPD) osoitteessa www.gov.br/anpd.
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun Brasilian lainsäädäntö sen sallii. Jokaisessa niistä kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Meksiko
 
 ### Ruokarekkayrittäjille
@@ -417,22 +235,6 @@ Tätä kohtaa sovelletaan jokaisessa Euroopan talousalueen maassa, jolla ei ole 
 **Asiakkaidesi tiedot.** Meksikon Federal Law on the Protection of Personal Data Held by Private Parties -lain (yksityisten tahojen hallussa olevien henkilötietojen suojaa koskeva liittovaltion laki) mukaan käyttöehtojen kohta 10 tarkoittaa samaa lain omin käsittein: sinä olet rekisterinpitäjä ja me olemme käsittelijäsi (encargado), ja käsittelemme asiakkaidesi henkilötietoja ainoastaan HatchGrabin ylläpitämiseksi puolestasi ja ohjeidesi mukaisesti. Vastaat omasta asiakkaillesi annettavasta tietosuojailmoituksestasi (aviso de privacidad).
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Meksikon lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
-
-### Tietosuoja kaikille Meksikossa oleville
-
-**Sovellettava laki.** Kun käsittelemme Meksikossa olevien henkilöiden henkilötietoja, sovelletaan Federal Law on the Protection of Personal Data Held by Private Parties -lakia (yksityisten tahojen hallussa olevien henkilötietojen suojaa koskeva liittovaltion laki) sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä. Tämä sivu ja tietosuojaseloste muodostavat yhdessä tietosuojailmoituksemme Meksikossa oleville henkilöille.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa, ja osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa, kuten tietosuojaselosteen kohdassa 6 todetaan, ainoastaan palvelun ylläpitämiseksi.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit pyytää pääsyä henkilötietoihin, joita meillä on sinusta, ja pyytää meitä oikaisemaan tai poistamaan ne tai lopettamaan niiden käytön (ARCO-oikeutesi). Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme 20 arkipäivän kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Jos et ole tyytyväinen, voit tehdä valituksen Secretaría Anticorrupción y Buen Gobierno -virastolle (korruptiontorjunnan ja hyvän hallinnon sihteeristö), joka valvoo Meksikon liittovaltion lakia yksityisten tahojen hallussa olevien henkilötietojen suojasta (voimassa 21. maaliskuuta 2025 alkaen).
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun Meksikon lainsäädäntö sen sallii. Jokaisessa niistä kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japani
 
@@ -458,22 +260,6 @@ Tätä kohtaa sovelletaan jokaisessa Euroopan talousalueen maassa, jolla ei ole 
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Japanin lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
 
-### Tietosuoja kaikille Japanissa oleville
-
-**Sovellettava laki.** Kun käsittelemme Japanissa olevien henkilöiden henkilötietoja, sovelletaan Act on the Protection of Personal Information -lakia (henkilötietojen suojaa koskeva laki) sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa, ja osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa, kuten tietosuojaselosteen kohdassa 6 todetaan. Japani tunnustaa, että Yhdistyneen kuningaskunnan ja Euroopan unionin henkilötietojen suoja vastaa Japanin tasoa. Yhdysvalloissa käsiteltäviä tietoja suojaavat näiden palveluntarjoajien kanssa tekemämme sopimukset.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit pyytää meitä luovuttamaan sinulle henkilötiedot, joita meillä on sinusta, ja pyytää meitä oikaisemaan tai poistamaan ne tai lopettamaan niiden käytön. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme viipymättä. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Voit myös ottaa yhteyttä Personal Information Protection Commissioniin (Japanin henkilötietojen suojaa valvova komissio) osoitteessa www.ppc.go.jp.
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain henkilöille, jotka ovat suostuneet vastaanottamaan niitä. Jokaisessa niistä kerrotaan, keneltä se on ja miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapore
 
 ### Ruokarekkayrittäjille
@@ -498,22 +284,6 @@ Tätä kohtaa sovelletaan jokaisessa Euroopan talousalueen maassa, jolla ei ole 
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Singaporen lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
 
-### Tietosuoja kaikille Singaporessa oleville
-
-**Sovellettava laki.** Kun käsittelemme Singaporessa olevien henkilöiden henkilötietoja, sovelletaan Personal Data Protection Act 2012 -lakia (PDPA) sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa, ja osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa, kuten tietosuojaselosteen kohdassa 6 todetaan. Varmistamme, että niitä suojataan PDPA:n tasoon verrattavalla tavalla, missä tahansa ne ovatkin.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit pyytää henkilötietoja, joita meillä on sinusta, ja tietoa siitä, miten niitä on käytetty, sekä pyytää meitä oikaisemaan ne. Voit myös peruuttaa suostumuksesi siihen, että käytämme niitä. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme 30 päivän kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Jos et ole tyytyväinen, voit tehdä valituksen Personal Data Protection Commissionille (Singaporen tietosuojaviranomainen) osoitteessa www.pdpc.gov.sg.
-
-**Markkinointiviestit.** Lähetämme markkinointisähköposteja vain silloin, kun Singaporen lainsäädäntö sen sallii. Jokaisessa niistä kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Emme soita markkinointipuheluita emmekä lähetä markkinointitekstiviestejä numeroihin, jotka ovat Singaporen Do Not Call Registry -rekisterissä (puhelinmarkkinoinnin kieltorekisteri). Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hongkong
 
 ### Ruokarekkayrittäjille
@@ -535,22 +305,6 @@ Tätä kohtaa sovelletaan jokaisessa Euroopan talousalueen maassa, jolla ei ole 
 **Asiakkaidesi tiedot.** Hongkongin Personal Data (Privacy) Ordinance -säädöksen (Cap. 486, henkilötietojen suojaa koskeva säädös) mukaan käyttöehtojen kohta 10 tarkoittaa samaa säädöksen omin käsittein: sinä olet tietojen käyttäjä (data user) ja me olemme henkilötietojen käsittelijäsi (data processor), ja käsittelemme asiakkaidesi henkilötietoja ainoastaan HatchGrabin ylläpitämiseksi puolestasi ja ohjeidesi mukaisesti emmekä säilytä niitä pidempään kuin se edellyttää.
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Hongkongin lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
-
-### Tietosuoja kaikille Hongkongissa oleville
-
-**Sovellettava laki.** Kun käsittelemme Hongkongissa olevien henkilöiden henkilötietoja, sovelletaan Personal Data (Privacy) Ordinance -säädöstä sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa, ja osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa, kuten tietosuojaselosteen kohdassa 6 todetaan.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit pyytää jäljennöksen henkilötiedoista, joita meillä on sinusta, ja pyytää meitä oikaisemaan ne. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme 40 päivän kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Jos et ole tyytyväinen, voit tehdä valituksen Office of the Privacy Commissioner for Personal Datalle (Hongkongin tietosuojavaltuutetun toimisto) osoitteessa www.pcpd.org.hk.
-
-**Markkinointiviestit.** Käytämme henkilötietojasi suoramarkkinointiin vain suostumuksellasi, ja jokaisessa markkinointiviestissä kerrotaan, miten voit lopettaa niiden vastaanottamisen. Jos pyydät meitä lopettamaan, lopetamme maksutta. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Malesia
 
@@ -576,22 +330,6 @@ Tätä kohtaa sovelletaan jokaisessa Euroopan talousalueen maassa, jolla ei ole 
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Malesian lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
 
-### Tietosuoja kaikille Malesiassa oleville
-
-**Sovellettava laki.** Kun käsittelemme Malesiassa olevien henkilöiden henkilötietoja, sovelletaan Personal Data Protection Act 2010 -lakia (PDPA) sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa, ja osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa, kuten tietosuojaselosteen kohdassa 6 todetaan. Siirrämme niitä vain silloin, kun PDPA sen sallii.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit pyytää henkilötietoja, joita meillä on sinusta, ja pyytää meitä oikaisemaan ne tai lopettamaan niiden käytön. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme 21 päivän kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Jos et ole tyytyväinen, voit tehdä valituksen Personal Data Protection Commissionerille (Malesian tietosuojavaltuutettu) osoitteessa www.pdp.gov.my.
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun Malesian lainsäädäntö sen sallii. Jokaisessa niistä kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Thaimaa
 
 ### Ruokarekkayrittäjille
@@ -616,22 +354,6 @@ Tätä kohtaa sovelletaan jokaisessa Euroopan talousalueen maassa, jolla ei ole 
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Thaimaan lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
 
-### Tietosuoja kaikille Thaimaassa oleville
-
-**Sovellettava laki.** Kun käsittelemme Thaimaassa olevien henkilöiden henkilötietoja, sovelletaan Personal Data Protection Act B.E. 2562 -lakia (PDPA) sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä. Tietosuojaselosteen kohdassa 8 luetellut oikeudet ovat oikeuksiasi myös PDPA:n nojalla.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa, ja osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa, kuten tietosuojaselosteen kohdassa 6 todetaan. Siirrämme niitä ainoastaan PDPA:n sallimalla perusteella.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit pyytää jäljennöksen henkilötiedoista, joita meillä on sinusta, ja pyytää meitä oikaisemaan tai poistamaan ne tai lopettamaan niiden käytön. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme 30 päivän kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Voit myös tehdä valituksen Personal Data Protection Committeelle (Thaimaan henkilötietojen suojaa valvova komitea) osoitteessa www.pdpc.or.th.
-
-**Markkinointisähköpostit.** Lähetämme markkinointisähköposteja vain silloin, kun Thaimaan lainsäädäntö sen sallii. Jokaisessa niistä kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Arabiemiirikunnat
 
 ### Ruokarekkayrittäjille
@@ -653,19 +375,3 @@ Tätä kohtaa sovelletaan jokaisessa Euroopan talousalueen maassa, jolla ei ole 
 **Asiakkaidesi tiedot.** Arabiemiirikuntien Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data -säädöksen (henkilötietojen suojaa koskeva liittovaltion lakiasetus) mukaan käyttöehtojen kohta 10 tarkoittaa samaa säädöksen omin käsittein: sinä olet rekisterinpitäjä ja me olemme henkilötietojen käsittelijäsi, ja käsittelemme asiakkaidesi henkilötietoja ainoastaan HatchGrabin ylläpitämiseksi puolestasi ja ohjeidesi mukaisesti.
 
 **Ilmoitukset ja sovellettava laki.** Ilmoituksiin sovelletaan käyttöehtojen kohtaa 12: otamme sinuun yhteyttä tilissäsi olevaan sähköpostiosoitteeseen, ja voit tavoittaa meidät alla olevasta osoitteesta. Näihin ehtoihin sovelletaan Englannin ja Walesin lakia, ja Englannin ja Walesin tuomioistuimilla on toimivalta. Tämä ei poista mitään Arabiemiirikuntien lainsäädännön sinulle antamaa suojaa, jota ei voida sopimuksella sulkea pois.
-
-### Tietosuoja kaikille Arabiemiirikunnissa oleville
-
-**Sovellettava laki.** Kun käsittelemme Arabiemiirikunnissa olevien henkilöiden henkilötietoja, sovelletaan Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data -säädöstä (henkilötietojen suojaa koskeva liittovaltion lakiasetus) sekä tietosuojaselosteessamme mainittua Yhdistyneen kuningaskunnan lainsäädäntöä. Jos olet vapaa-alueella, jolla on oma tietosuojalainsäädäntönsä, kuten DIFC tai ADGM, sovelletaan sen sijaan kyseistä lainsäädäntöä.
-
-**Missä tietojasi säilytetään.** Tietojasi säilytetään ja käsitellään Yhdistyneessä kuningaskunnassa, ja osaa niistä käsittelevät palveluntarjoajat Euroopan unionissa ja Yhdysvalloissa, kuten tietosuojaselosteen kohdassa 6 todetaan. Siirrämme niitä ainoastaan lain sallimalla perusteella.
-
-**Allergia- ja ruokavaliohuomautukset.** Jos lisäät tilaukseen allergia- tai ruokavaliohuomautuksia, välitämme ne ruokarekalle tilauksesi mukana. Poistamme ne yhdessä nimesi ja yhteystietojesi kanssa 12 kuukauden kuluttua tilauksesta, kuten tietosuojaselosteen kohdassa 7 todetaan. Emme käytä niitä mihinkään muuhun.
-
-**Pyyntösi.** Voit pyytää henkilötietoja, joita meillä on sinusta, ja pyytää meitä oikaisemaan tai poistamaan ne tai lopettamaan niiden käytön. Lähetä sähköpostia osoitteeseen privacy@hatchgrab.com. Vastaamme 30 päivän kuluessa. Jos tilasit ruokarekalta, voimme välittää pyyntösi kyseiselle ruokarekalle, koska se päättää, miten tilaustietojasi käytetään.
-
-**Valitukset.** Kerro siitä ensin meille osoitteeseen privacy@hatchgrab.com. Jos et ole tyytyväinen, voit tehdä valituksen UAE Data Officelle (Arabiemiirikuntien tietosuojavirasto).
-
-**Markkinointiviestit.** Lähetämme markkinointiviestejä vain silloin, kun Arabiemiirikuntien lainsäädäntö sen sallii. Jokaisessa niistä kerrotaan, miten voit lopettaa niiden vastaanottamisen, ja jos pyydät meitä lopettamaan, lopetamme. Tilausta tai tiliäsi koskevat sähköpostit eivät ole markkinointia.
-
-**Yhteystiedot.** privacy@hatchgrab.com tai postitse osoitteeseen HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

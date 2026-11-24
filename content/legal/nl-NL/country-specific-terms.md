@@ -1,14 +1,13 @@
-<!-- translation-of: country-specific-terms.md sha256:86105458b054142ca2a96db8fc05a03ab8dbc7a1cd162e28633479b235e6cc78 -->
+<!-- translation-of: country-specific-terms.md sha256:3d0b7b45eb2210a1735363edbe1ec254ac37e2505b346e650921c56a1e3373f6 -->
 # Landspecifieke voorwaarden
 
 **Laatst bijgewerkt:** {{LAST_UPDATED}}
 
-Onze [Gebruiksvoorwaarden](/terms) en ons [Privacybeleid](/privacy) zijn van toepassing in elk land waar HatchGrab wordt gebruikt. Voor sommige landen gelden aanvullende regels. Deze pagina zet ze uiteen, land voor land.
+Onze [Gebruiksvoorwaarden](/terms) zijn van toepassing in elk land waar HatchGrab wordt gebruikt. Voor sommige landen gelden aanvullende regels. Deze pagina zet ze uiteen, land voor land.
 
-Waar een onderdeel hieronder op u van toepassing is, maakt het deel uit van onze Gebruiksvoorwaarden en ons Privacybeleid. Als het iets anders bepaalt dan die documenten, geldt voor dat land deze pagina.
+Waar een onderdeel hieronder op u van toepassing is, maakt het deel uit van onze Gebruiksvoorwaarden. Als het iets anders bepaalt dan die documenten, geldt voor dat land deze pagina.
 
-Als uw land niet wordt vermeld, gelden er geen aanvullende regels: de Gebruiksvoorwaarden en het Privacybeleid zijn van toepassing zoals ze zijn geschreven.
-
+Als uw land niet wordt vermeld, gelden er geen aanvullende regels: de Gebruiksvoorwaarden zijn van toepassing zoals ze zijn geschreven. Ons [Privacybeleid](/privacy) is in elk land hetzelfde.
 ---
 
 ## Verenigde Staten
@@ -31,26 +30,6 @@ Als uw land niet wordt vermeld, gelden er geen aanvullende regels: de Gebruiksvo
 
 **De gegevens van uw klanten.** Op grond van de privacywetten van Amerikaanse staten betekent onderdeel 10 van de Gebruiksvoorwaarden hetzelfde in hun termen: u bent de "business" en wij zijn uw "service provider" of "processor". Wij gebruiken de persoonsgegevens van uw klanten uitsluitend om HatchGrab voor u te laten werken. Wij verkopen ze niet, wij delen ze niet voor contextoverschrijdende gedragsgerichte advertenties en wij gebruiken ze niet voor enig ander doel, behalve voor zover die wetten een service provider dat toestaan.
 
-### Privacy, voor iedereen in de Verenigde Staten
-
-**Wat wij verzamelen en met wie wij het delen.** Hetzelfde als in het Privacybeleid staat: account- en bedrijfsgegevens van truckexploitanten; uw naam, contactgegevens en bestelgegevens als u bij een truck bestelt; en technische basisgegevens als u onze websites bezoekt. Wij delen deze met de truck waarbij u bestelt en met de dienstverleners die worden vermeld in onderdeel 6 van het Privacybeleid, uitsluitend om de dienst te laten werken of waar de wet dat vereist. Ze kunnen worden verwerkt in het Verenigd Koninkrijk, de Europese Unie en de Verenigde Staten.
-
-**Wij verkopen of delen uw persoonsgegevens niet.** Wij verkopen geen persoonsgegevens, en wij delen ze niet voor contextoverschrijdende gedragsgerichte advertenties.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt ons vragen welke persoonsgegevens wij over u bewaren, en ons vragen deze te corrigeren of te verwijderen. E-mail naar privacy@hatchgrab.com. Wij controleren of het verzoek echt is voordat wij er gevolg aan geven, en wij antwoorden binnen 45 dagen. U kunt iemand vragen het verzoek namens u in te dienen. Wij behandelen u niet anders omdat u een verzoek indient. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt. Als wij een verzoek afwijzen, kunt u ons vragen het opnieuw te bekijken door op ons antwoord te reageren.
-
-**Privacywetten van staten.** Sommige privacywetten van staten zijn alleen van toepassing op bedrijven boven een bepaalde omvang, en zijn mogelijk niet op ons van toepassing. Wij geven toch gevolg aan de bovengenoemde verzoeken van iedereen in de Verenigde Staten.
-
-**Kinderen.** Onze diensten zijn niet gericht op kinderen jonger dan 13 jaar, en wij verzamelen niet bewust hun persoonsgegevens. Als u denkt dat een kind ons zijn gegevens heeft verstrekt, neem dan contact met ons op en wij zullen deze verwijderen.
-
-**Marketing-e-mails.** Elke marketing-e-mail die wij versturen, vermeldt hoe u zich kunt afmelden en bevat ons postadres. Als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Sms-berichten.** Als wij of een truck bestelupdates per sms aanbieden, ontvangt u die alleen als u ermee instemt ze te ontvangen, en u kunt ze op elk moment stopzetten.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Ierland
 
 ### Voor foodtruckexploitanten
@@ -70,22 +49,6 @@ Als uw land niet wordt vermeld, gelden er geen aanvullende regels: de Gebruiksvo
 **De gegevens van uw klanten.** Op grond van de Algemene Verordening Gegevensbescherming (AVG) van de EU is onderdeel 10 van de Gebruiksvoorwaarden onze verwerkersovereenkomst met u: u bent de verwerkingsverantwoordelijke en wij zijn de verwerker, in dezelfde zin als in artikel 28 van de AVG.
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het Ierse recht u biedt en die niet bij overeenkomst kan worden uitgesloten.
-
-### Privacy, voor iedereen in Ierland
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Ierland verwerken, is de Algemene Verordening Gegevensbescherming (AVG) van de EU van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd. De rechten die worden vermeld in onderdeel 8 van het Privacybeleid zijn ook uw rechten op grond van de AVG.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. De Europese Commissie heeft besloten dat het VK persoonsgegevens volgens dezelfde norm beschermt als de EU, zodat daarvoor geen aanvullende waarborg nodig is. Waar een dienstverlener gegevens verwerkt in de Verenigde Staten (onderdeel 6 van het Privacybeleid), valt de doorgifte onder een waarborg die de AVG erkent.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt ons vragen welke persoonsgegevens wij over u bewaren, en ons vragen deze te corrigeren, te verwijderen of niet langer te gebruiken. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen één maand. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** U kunt een klacht indienen bij de Data Protection Commission, de Ierse toezichthouder voor gegevensbescherming, via www.dataprotection.ie, of per post aan 6 Pembroke Row, Dublin 2, D02 X963. Wij stellen het op prijs als wij eerst de kans krijgen om het recht te zetten.
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar de wet dat toestaat. Elke e-mail vermeldt hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Australië
 
@@ -109,22 +72,6 @@ Als uw land niet wordt vermeld, gelden er geen aanvullende regels: de Gebruiksvo
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het Australische recht u biedt en die niet bij overeenkomst kan worden uitgesloten.
 
-### Privacy, voor iedereen in Australië
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Australië verwerken, volgen wij de Australian Privacy Principles in de Privacy Act 1988, naast het Britse recht dat in ons Privacybeleid wordt genoemd.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. Een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten, zoals onderdeel 6 van het Privacybeleid bepaalt.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt ons vragen welke persoonsgegevens wij over u bewaren, en ons vragen deze te corrigeren of te verwijderen. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen 30 dagen. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** Als u niet tevreden bent over hoe wij met uw persoonsgegevens zijn omgegaan, laat het ons dan eerst weten via privacy@hatchgrab.com. Als u niet tevreden bent met ons antwoord, of als wij niet binnen 30 dagen hebben geantwoord, kunt u schriftelijk een klacht indienen bij het Office of the Australian Information Commissioner (OAIC) via www.oaic.gov.au.
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar de wet dat toestaat. Elke e-mail vermeldt van wie hij afkomstig is en hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Nieuw-Zeeland
 
 ### Voor foodtruckexploitanten
@@ -147,24 +94,6 @@ Als uw land niet wordt vermeld, gelden er geen aanvullende regels: de Gebruiksvo
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het Nieuw-Zeelandse recht u biedt en die niet bij overeenkomst kan worden uitgesloten.
 
-### Privacy, voor iedereen in Nieuw-Zeeland
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Nieuw-Zeeland verwerken, is de Privacy Act 2020 van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd. Deze wet is op ons van toepassing omdat wij in Nieuw-Zeeland zaken doen, ook al zijn wij in het Verenigd Koninkrijk gevestigd.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. Een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten, zoals onderdeel 6 van het Privacybeleid bepaalt.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt ons vragen om de persoonsgegevens die wij over u bewaren, en ons vragen deze te corrigeren. E-mail naar privacy@hatchgrab.com. Wij antwoorden zo snel als redelijkerwijs mogelijk is, en binnen 20 werkdagen. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** Als u niet tevreden bent over hoe wij met uw persoonsgegevens zijn omgegaan, laat het ons dan eerst weten via privacy@hatchgrab.com. De Privacy Commissioner vraagt u dat te doen voordat u een klacht indient. Als u niet tevreden bent met ons antwoord, kunt u een klacht indienen bij het Office of the Privacy Commissioner via www.privacy.org.nz, telefonisch op 0800 803 909, of per post aan PO Box 10 094, Wellington 6140.
-
-**Privacy-inbreuken.** Als een privacy-inbreuk met betrekking tot uw persoonsgegevens ernstige schade heeft veroorzaakt of waarschijnlijk zal veroorzaken, vereist de Privacy Act 2020 dat de Privacy Commissioner en u daarvan zo snel als praktisch mogelijk op de hoogte worden gesteld. Wij zullen dat doen, of, bij een bestelling die u bij een truck hebt geplaatst, de truck helpen dat te doen.
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar de wet dat toestaat. Elke e-mail vermeldt van wie hij afkomstig is en hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Canada
 
 ### Voor foodtruckexploitanten
@@ -186,22 +115,6 @@ Als uw land niet wordt vermeld, gelden er geen aanvullende regels: de Gebruiksvo
 **Uw rechten op grond van lokaal recht.** Niets in de Gebruiksvoorwaarden ontneemt u een recht dat volgens het recht van de plaats waar u gevestigd bent niet kan worden beperkt of waarvan geen afstand kan worden gedaan.
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het recht van uw provincie of territorium u biedt en die niet bij overeenkomst kan worden uitgesloten.
-
-### Privacy, voor iedereen in Canada
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Canada verwerken, is de Personal Information Protection and Electronic Documents Act (PIPEDA) van toepassing, en in British Columbia en Alberta hun eigen privacywetten voor de private sector, naast het Britse recht dat in ons Privacybeleid wordt genoemd.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk, en een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten (onderdeel 6 van het Privacybeleid), waar ze op grond van de wetten van die landen toegankelijk kunnen zijn.
-
-**Uw verzoeken.** U kunt vragen om de persoonsgegevens die wij over u bewaren, en ons vragen deze te corrigeren. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen 30 dagen.
-
-**Klachten.** Laat het ons eerst weten via privacy@hatchgrab.com. Als u niet tevreden bent, kunt u een klacht indienen bij het Office of the Privacy Commissioner of Canada via www.priv.gc.ca of telefonisch op 1-800-282-1376.
-
-**Inbreuken.** Als een inbreuk op de beveiligingsmaatregelen met betrekking tot uw gegevens een reëel risico op aanzienlijke schade oplevert, melden wij dit aan de Privacy Commissioner en laten wij het u zo snel als haalbaar weten.
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen met uw toestemming, zoals de Canadese antispamwet vereist. Elke e-mail vermeldt van wie hij afkomstig is en hoe u zich kunt afmelden, en wij verwerken een afmelding binnen 10 werkdagen.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Frankrijk
 
@@ -226,22 +139,6 @@ Als uw land niet wordt vermeld, gelden er geen aanvullende regels: de Gebruiksvo
 **De gegevens van uw klanten.** Op grond van de Algemene Verordening Gegevensbescherming (AVG) van de EU is onderdeel 10 van de Gebruiksvoorwaarden onze verwerkersovereenkomst met u: u bent de verwerkingsverantwoordelijke en wij zijn de verwerker, in dezelfde zin als in artikel 28 van de AVG.
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het Franse recht u biedt en die niet bij overeenkomst kan worden uitgesloten.
-
-### Privacy, voor iedereen in Frankrijk
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Frankrijk verwerken, zijn de Algemene Verordening Gegevensbescherming (AVG) van de EU en de Franse wet op de gegevensbescherming (loi Informatique et Libertés) van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd. De rechten die worden vermeld in onderdeel 8 van het Privacybeleid zijn ook uw rechten op grond van de AVG.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. De Europese Commissie heeft besloten dat het VK persoonsgegevens volgens dezelfde norm beschermt als de EU, zodat daarvoor geen aanvullende waarborg nodig is. Waar een dienstverlener gegevens verwerkt in de Verenigde Staten (onderdeel 6 van het Privacybeleid), valt de doorgifte onder een waarborg die de AVG erkent.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt ons vragen welke persoonsgegevens wij over u bewaren, en ons vragen deze te corrigeren, te verwijderen of niet langer te gebruiken. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen één maand. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** U kunt een klacht indienen bij de CNIL (Commission nationale de l'informatique et des libertés), de Franse toezichthouder voor gegevensbescherming, via www.cnil.fr, of per post aan CNIL, Service des plaintes, 3 Place de Fontenoy, 75007 Paris. Wij stellen het op prijs als wij eerst de kans krijgen om het recht te zetten.
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar het Franse recht dat toestaat. Elke e-mail vermeldt hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Europese Economische Ruimte en Zwitserland
 
@@ -269,53 +166,6 @@ Dit onderdeel is van toepassing in elk land van de Europese Economische Ruimte d
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het recht van uw land u biedt en die niet bij overeenkomst kan worden uitgesloten.
 
-### Privacy, voor iedereen in de Europese Economische Ruimte en Zwitserland
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in de Europese Economische Ruimte verwerken, zijn de Algemene Verordening Gegevensbescherming (AVG) van de EU en het gegevensbeschermingsrecht van hun land van toepassing; in Zwitserland de Federal Act on Data Protection (federale wet inzake gegevensbescherming). Het Britse recht dat in ons Privacybeleid wordt genoemd, is eveneens van toepassing. De rechten die worden vermeld in onderdeel 8 van het Privacybeleid zijn ook uw rechten op grond van deze wetten.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. De Europese Commissie en Zwitserland hebben elk besloten dat het VK persoonsgegevens op een passend niveau beschermt, zodat daarvoor geen aanvullende waarborg nodig is. Waar een dienstverlener gegevens verwerkt in de Verenigde Staten (onderdeel 6 van het Privacybeleid), valt de doorgifte onder een waarborg die de AVG en het Zwitserse recht erkennen.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt ons vragen welke persoonsgegevens wij over u bewaren, en ons vragen deze te corrigeren, te verwijderen of niet langer te gebruiken. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen één maand. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** U kunt een klacht indienen bij de toezichthoudende autoriteit voor gegevensbescherming van het land waar u woont of werkt. Het Europees Comité voor gegevensbescherming vermeldt alle autoriteiten in de Europese Economische Ruimte op www.edpb.europa.eu (About EDPB › Members). In Zwitserland is dat de Federal Data Protection and Information Commissioner, www.edoeb.admin.ch. Wij stellen het op prijs als wij eerst de kans krijgen om het recht te zetten.
-
-| Land | Toezichthoudende autoriteit voor gegevensbescherming |
-|---|---|
-| Oostenrijk | dsb.gv.at |
-| België | autoriteprotectiondonnees.be |
-| Bulgarije | cpdp.bg |
-| Kroatië | azop.hr |
-| Cyprus | dataprotection.gov.cy |
-| Tsjechië | uoou.gov.cz |
-| Denemarken | datatilsynet.dk |
-| Estland | aki.ee |
-| Finland | tietosuoja.fi |
-| Duitsland | de autoriteit van uw deelstaat (federaal: bfdi.bund.de) |
-| Griekenland | dpa.gr |
-| Hongarije | naih.hu |
-| Italië | garanteprivacy.it |
-| Letland | dvi.gov.lv |
-| Liechtenstein | datenschutzstelle.li |
-| Litouwen | vdai.lrv.lt |
-| Luxemburg | cnpd.lu |
-| Malta | idpc.org.mt |
-| Nederland | autoriteitpersoonsgegevens.nl |
-| Noorwegen | datatilsynet.no |
-| Polen | uodo.gov.pl |
-| Portugal | cnpd.pt |
-| Roemenië | dataprotection.ro |
-| Slowakije | dataprotection.gov.sk |
-| Slovenië | ip-rs.si |
-| Spanje | aepd.es |
-| Zweden | imy.se |
-| Zwitserland | Federal Data Protection and Information Commissioner (FDPIC), edoeb.admin.ch |
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar het recht van uw land dat toestaat. Elke e-mail vermeldt hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Gibraltar
 
 ### Voor foodtruckexploitanten
@@ -337,22 +187,6 @@ Dit onderdeel is van toepassing in elk land van de Europese Economische Ruimte d
 **De gegevens van uw klanten.** Op grond van het gegevensbeschermingsrecht van Gibraltar, waartoe de Algemene Verordening Gegevensbescherming (AVG) van de EU behoort zoals die in Gibraltar van toepassing is, is onderdeel 10 van de Gebruiksvoorwaarden onze verwerkersovereenkomst met u: u bent de verwerkingsverantwoordelijke en wij zijn de verwerker, in dezelfde zin als in artikel 28 van de AVG.
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het recht van Gibraltar u biedt en die niet bij overeenkomst kan worden uitgesloten.
-
-### Privacy, voor iedereen in Gibraltar
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Gibraltar verwerken, is het gegevensbeschermingsrecht van Gibraltar van toepassing, met inbegrip van de Algemene Verordening Gegevensbescherming (AVG) van de EU zoals die daar van toepassing is, naast het Britse recht dat in ons Privacybeleid wordt genoemd. De rechten die worden vermeld in onderdeel 8 van het Privacybeleid zijn ook uw rechten op grond van dat recht.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk. Waar een dienstverlener gegevens verwerkt in de Verenigde Staten (onderdeel 6 van het Privacybeleid), valt de doorgifte onder een waarborg die het recht erkent.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt ons vragen welke persoonsgegevens wij over u bewaren, en ons vragen deze te corrigeren, te verwijderen of niet langer te gebruiken. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen één maand. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** U kunt een klacht indienen bij de Gibraltar Regulatory Authority, de toezichthouder voor gegevensbescherming van Gibraltar, via www.gra.gi. Wij stellen het op prijs als wij eerst de kans krijgen om het recht te zetten.
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar het recht van Gibraltar dat toestaat. Elke e-mail vermeldt hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Brazilië
 
@@ -378,22 +212,6 @@ Dit onderdeel is van toepassing in elk land van de Europese Economische Ruimte d
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het Braziliaanse recht u biedt en die niet bij overeenkomst kan worden uitgesloten.
 
-### Privacy, voor iedereen in Brazilië
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Brazilië verwerken, is de Algemene wet gegevensbescherming (LGPD) van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd. De rechten die worden vermeld in onderdeel 8 van het Privacybeleid zijn ook uw rechten op grond van de LGPD.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk, en een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten, zoals onderdeel 6 van het Privacybeleid bepaalt. Wij geven ze alleen door op een grondslag die de LGPD toestaat.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt ons vragen te bevestigen of wij persoonsgegevens over u bewaren, en om een kopie daarvan vragen, of ons vragen deze te corrigeren, te verwijderen of niet langer te gebruiken. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen 15 dagen. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** Laat het ons eerst weten via privacy@hatchgrab.com. U kunt ook een klacht indienen bij de nationale autoriteit voor gegevensbescherming (Autoridade Nacional de Proteção de Dados, ANPD) via www.gov.br/anpd.
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar het Braziliaanse recht dat toestaat. Elke e-mail vermeldt hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Mexico
 
 ### Voor foodtruckexploitanten
@@ -417,22 +235,6 @@ Dit onderdeel is van toepassing in elk land van de Europese Economische Ruimte d
 **De gegevens van uw klanten.** Op grond van de Mexicaanse federale wet inzake de bescherming van persoonsgegevens in het bezit van particulieren betekent onderdeel 10 van de Gebruiksvoorwaarden hetzelfde in de termen van die wet: u bent de verwerkingsverantwoordelijke en wij zijn uw verwerker (encargado), en wij verwerken de persoonsgegevens van uw klanten uitsluitend om HatchGrab voor u te laten werken en volgens uw instructies. U bent verantwoordelijk voor uw eigen privacyverklaring (aviso de privacidad) aan uw klanten.
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het Mexicaanse recht u biedt en die niet bij overeenkomst kan worden uitgesloten.
-
-### Privacy, voor iedereen in Mexico
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Mexico verwerken, is de federale wet inzake de bescherming van persoonsgegevens in het bezit van particulieren van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd. Deze pagina en het Privacybeleid vormen samen onze privacyverklaring voor mensen in Mexico.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk, en een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten, zoals onderdeel 6 van het Privacybeleid bepaalt, uitsluitend om de dienst te laten werken.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt ons om toegang vragen tot de persoonsgegevens die wij over u bewaren, en ons vragen deze te corrigeren, te verwijderen of niet langer te gebruiken (uw ARCO-rechten). E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen 20 werkdagen. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** Laat het ons eerst weten via privacy@hatchgrab.com. Als u niet tevreden bent, kunt u een klacht indienen bij de Secretaría Anticorrupción y Buen Gobierno (Secretariaat voor Corruptiebestrijding en Goed Bestuur), dat toeziet op de naleving van de Mexicaanse federale wet inzake de bescherming van persoonsgegevens in het bezit van particulieren (van kracht sinds 21 maart 2025).
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar het Mexicaanse recht dat toestaat. Elke e-mail vermeldt hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Japan
 
@@ -458,22 +260,6 @@ Dit onderdeel is van toepassing in elk land van de Europese Economische Ruimte d
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het Japanse recht u biedt en die niet bij overeenkomst kan worden uitgesloten.
 
-### Privacy, voor iedereen in Japan
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Japan verwerken, is de Act on the Protection of Personal Information van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk, en een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten, zoals onderdeel 6 van het Privacybeleid bepaalt. Japan erkent dat het Verenigd Koninkrijk en de Europese Unie persoonsgegevens beschermen volgens de Japanse norm. Gegevens die in de Verenigde Staten worden verwerkt, worden beschermd door onze overeenkomsten met die aanbieders.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt ons vragen de persoonsgegevens die wij over u bewaren bekend te maken, en ons vragen deze te corrigeren, te verwijderen of niet langer te gebruiken. E-mail naar privacy@hatchgrab.com. Wij antwoorden zonder vertraging. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** Laat het ons eerst weten via privacy@hatchgrab.com. U kunt ook contact opnemen met de Personal Information Protection Commission via www.ppc.go.jp.
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen aan mensen die ermee hebben ingestemd ze te ontvangen. Elke e-mail vermeldt van wie hij afkomstig is en hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Singapore
 
 ### Voor foodtruckexploitanten
@@ -498,22 +284,6 @@ Dit onderdeel is van toepassing in elk land van de Europese Economische Ruimte d
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het recht van Singapore u biedt en die niet bij overeenkomst kan worden uitgesloten.
 
-### Privacy, voor iedereen in Singapore
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Singapore verwerken, is de Personal Data Protection Act 2012 (PDPA) van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk, en een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten, zoals onderdeel 6 van het Privacybeleid bepaalt. Wij zorgen ervoor dat ze, waar ze zich ook bevinden, worden beschermd volgens een norm die vergelijkbaar is met die van de PDPA.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt vragen om de persoonsgegevens die wij over u bewaren en om informatie over hoe ze zijn gebruikt, en ons vragen deze te corrigeren. U kunt ook uw toestemming voor ons gebruik ervan intrekken. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen 30 dagen. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** Laat het ons eerst weten via privacy@hatchgrab.com. Als u niet tevreden bent, kunt u een klacht indienen bij de Personal Data Protection Commission via www.pdpc.gov.sg.
-
-**Marketingberichten.** Wij versturen marketing-e-mails alleen waar het recht van Singapore dat toestaat. Elke e-mail vermeldt hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. Wij doen geen marketingoproepen en versturen geen marketing-sms'jes naar nummers in het Do Not Call Registry van Singapore. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Hongkong
 
 ### Voor foodtruckexploitanten
@@ -535,22 +305,6 @@ Dit onderdeel is van toepassing in elk land van de Europese Economische Ruimte d
 **De gegevens van uw klanten.** Op grond van de Personal Data (Privacy) Ordinance (Cap. 486) van Hongkong betekent onderdeel 10 van de Gebruiksvoorwaarden hetzelfde in de termen van die wet: u bent de data user en wij zijn uw data processor, en wij verwerken de persoonsgegevens van uw klanten uitsluitend om HatchGrab voor u te laten werken en volgens uw instructies, en bewaren ze niet langer dan daarvoor nodig is.
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het recht van Hongkong u biedt en die niet bij overeenkomst kan worden uitgesloten.
-
-### Privacy, voor iedereen in Hongkong
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Hongkong verwerken, is de Personal Data (Privacy) Ordinance van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk, en een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten, zoals onderdeel 6 van het Privacybeleid bepaalt.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt vragen om een kopie van de persoonsgegevens die wij over u bewaren, en ons vragen deze te corrigeren. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen 40 dagen. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** Laat het ons eerst weten via privacy@hatchgrab.com. Als u niet tevreden bent, kunt u een klacht indienen bij het Office of the Privacy Commissioner for Personal Data via www.pcpd.org.hk.
-
-**Marketingberichten.** Wij gebruiken uw persoonsgegevens alleen met uw toestemming voor direct marketing, en elk marketingbericht vermeldt hoe u zich kunt afmelden. Als u ons vraagt te stoppen, doen wij dat, kosteloos. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
 
 ## Maleisië
 
@@ -576,22 +330,6 @@ Dit onderdeel is van toepassing in elk land van de Europese Economische Ruimte d
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het Maleisische recht u biedt en die niet bij overeenkomst kan worden uitgesloten.
 
-### Privacy, voor iedereen in Maleisië
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Maleisië verwerken, is de Personal Data Protection Act 2010 (PDPA) van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk, en een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten, zoals onderdeel 6 van het Privacybeleid bepaalt. Wij geven ze alleen door waar de PDPA dat toestaat.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt vragen om de persoonsgegevens die wij over u bewaren, en ons vragen deze te corrigeren of niet langer te gebruiken. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen 21 dagen. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** Laat het ons eerst weten via privacy@hatchgrab.com. Als u niet tevreden bent, kunt u een klacht indienen bij de Personal Data Protection Commissioner via www.pdp.gov.my.
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar het Maleisische recht dat toestaat. Elke e-mail vermeldt hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Thailand
 
 ### Voor foodtruckexploitanten
@@ -616,22 +354,6 @@ Dit onderdeel is van toepassing in elk land van de Europese Economische Ruimte d
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het Thaise recht u biedt en die niet bij overeenkomst kan worden uitgesloten.
 
-### Privacy, voor iedereen in Thailand
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in Thailand verwerken, is de Personal Data Protection Act B.E. 2562 (PDPA) van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd. De rechten die worden vermeld in onderdeel 8 van het Privacybeleid zijn ook uw rechten op grond van de PDPA.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk, en een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten, zoals onderdeel 6 van het Privacybeleid bepaalt. Wij geven ze alleen door op een grondslag die de PDPA toestaat.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt vragen om een kopie van de persoonsgegevens die wij over u bewaren, en ons vragen deze te corrigeren, te verwijderen of niet langer te gebruiken. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen 30 dagen. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** Laat het ons eerst weten via privacy@hatchgrab.com. U kunt ook een klacht indienen bij het Personal Data Protection Committee via www.pdpc.or.th.
-
-**Marketing-e-mails.** Wij versturen marketing-e-mails alleen waar het Thaise recht dat toestaat. Elke e-mail vermeldt hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.
-
 ## Verenigde Arabische Emiraten
 
 ### Voor foodtruckexploitanten
@@ -653,19 +375,3 @@ Dit onderdeel is van toepassing in elk land van de Europese Economische Ruimte d
 **De gegevens van uw klanten.** Op grond van Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data van de VAE betekent onderdeel 10 van de Gebruiksvoorwaarden hetzelfde in de termen van die wet: u bent de verwerkingsverantwoordelijke en wij zijn uw verwerker, en wij verwerken de persoonsgegevens van uw klanten uitsluitend om HatchGrab voor u te laten werken en volgens uw instructies.
 
 **Kennisgevingen en toepasselijk recht.** Kennisgevingen werken zoals onderdeel 12 van de Gebruiksvoorwaarden bepaalt: wij nemen contact met u op via het e-mailadres op uw account, en u kunt ons bereiken op het onderstaande adres. Op deze voorwaarden is het recht van Engeland en Wales van toepassing, en de rechtbanken van Engeland en Wales zijn bevoegd. Dit ontneemt u geen bescherming die het recht van de VAE u biedt en die niet bij overeenkomst kan worden uitgesloten.
-
-### Privacy, voor iedereen in de Verenigde Arabische Emiraten
-
-**Het toepasselijke recht.** Wanneer wij persoonsgegevens van mensen in de Verenigde Arabische Emiraten verwerken, is Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data van toepassing, naast het Britse recht dat in ons Privacybeleid wordt genoemd. Als u zich in een vrije zone met een eigen gegevensbeschermingswet bevindt, zoals het DIFC of ADGM, is in plaats daarvan die wet van toepassing.
-
-**Waar uw gegevens worden bewaard.** Uw gegevens worden opgeslagen en verwerkt in het Verenigd Koninkrijk, en een deel ervan wordt verwerkt door dienstverleners in de Europese Unie en de Verenigde Staten, zoals onderdeel 6 van het Privacybeleid bepaalt. Wij geven ze alleen door op een grondslag die de wet toestaat.
-
-**Opmerkingen over allergieën en dieetwensen.** Als u opmerkingen over allergieën of dieetwensen aan een bestelling toevoegt, geven wij die met uw bestelling door aan de truck. Wij verwijderen ze, samen met uw naam en contactgegevens, 12 maanden na de bestelling, zoals onderdeel 7 van het Privacybeleid bepaalt. Wij gebruiken ze nergens anders voor.
-
-**Uw verzoeken.** U kunt vragen om de persoonsgegevens die wij over u bewaren, en ons vragen deze te corrigeren, te verwijderen of niet langer te gebruiken. E-mail naar privacy@hatchgrab.com. Wij antwoorden binnen 30 dagen. Als u bij een truck hebt besteld, kunnen wij uw verzoek aan die truck doorgeven, omdat die bepaalt hoe uw bestelgegevens worden gebruikt.
-
-**Klachten.** Laat het ons eerst weten via privacy@hatchgrab.com. Als u niet tevreden bent, kunt u een klacht indienen bij het UAE Data Office.
-
-**Marketingberichten.** Wij versturen marketingberichten alleen waar het recht van de VAE dat toestaat. Elk bericht vermeldt hoe u zich kunt afmelden, en als u ons vraagt te stoppen, doen wij dat. E-mails over een bestelling of uw account zijn geen marketing.
-
-**Contact.** privacy@hatchgrab.com, of per post aan HatchGrab Ltd, Rosedale, Bury Road, Wickham Street, CB8 8PD, United Kingdom.

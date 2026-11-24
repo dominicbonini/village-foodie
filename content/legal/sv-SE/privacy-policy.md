@@ -1,4 +1,4 @@
-<!-- translation-of: privacy-policy.md sha256:82cea56af67fea07578a2661fce54e9e2af5cb9664f6c18ee064604841ee518c -->
+<!-- translation-of: privacy-policy.md sha256:37006fb01f04cae3075c84da70c3cf7e4099b13ed294f203e16dd72a4fe5d0ce -->
 # Integritetspolicy
 
 **Senast uppdaterad:** {{LAST_UPDATED}}
@@ -12,8 +12,7 @@ Den omfattar även HatchGrabs appar för mobil och surfplatta för iOS och Andro
 
 Om du bara har kommit hit för att du har beställt mat från en foodtruck är det avsnittet **”Om du har beställt från en foodtruck”** som gäller för dig.
 
-**Vissa länder har ytterligare regler.** Där de gäller för dig finns de på vår sida [Landsspecifika villkor](/country-terms), som utgör en del av denna policy.
-
+**Denna policy gäller var du än befinner dig.** Vi följer brittisk dataskyddslagstiftning, och där dataskyddslagstiftningen i det land där du bor också gäller, följer vi även den.
 ---
 
 ## 1. Vilka vi är
@@ -84,6 +83,8 @@ När du gör en beställning via en foodtrucks beställningssida samlar vi in oc
 
 Foodtrucken bestämmer hur länge dina uppgifter sparas och hur den kontaktar dig efteråt. Dess egen integritetspraxis gäller för detta. Om du inte är säker på vilken foodtruck det gäller kan du kontakta oss på privacy@hatchgrab.com, så hänvisar vi dig till den.
 
+**Anteckningar om allergier och kost.** Vi för dem vidare till foodtrucken tillsammans med din beställning och använder dem inte till något annat. Vi tar bort dem, tillsammans med ditt namn och dina kontaktuppgifter, 12 månader efter beställningen (se avsnitt 7).
+
 **Allergeninformation.** När en foodtruck publicerar allergeninformation visar vi det som foodtrucken har bekräftat. Vi kontrollerar den inte självständigt. Berätta alltid direkt för foodtrucken om en allvarlig allergi.
 
 ---
@@ -135,7 +136,7 @@ Vi kan också lämna ut uppgifter när vi är skyldiga att göra det enligt lag,
 
 **Vi säljer inte personuppgifter, och vi delar dem inte för annonsering.**
 
-**Internationella överföringar.** Dina kontouppgifter och beställningsuppgifter lagras och behandlas i Storbritannien. Vissa saker hanteras utanför Storbritannien: menyutläsning och automatiska svar på WhatsApp, som använder en tjänst från Google i USA; leverans av WhatsApp-meddelanden, som hanteras av Meta i USA; betalningar, som hanteras av Stripe i USA; och pushnotiser, som levereras av Apple och Google i USA. När uppgifter lämnar Storbritannien omfattas överföringen av brittiska föreskrifter om adekvat skyddsnivå (UK adequacy regulations) eller av International Data Transfer Agreement eller Addendum, som ger lämpliga skyddsåtgärder. Du kan be oss om uppgifter om vilka skyddsåtgärder som gäller.
+**Internationella överföringar.** Dina kontouppgifter och beställningsuppgifter lagras och behandlas i Storbritannien. Vissa saker hanteras utanför Storbritannien: menyutläsning och automatiska svar på WhatsApp, som använder en tjänst från Google i USA; leverans av WhatsApp-meddelanden, som hanteras av Meta i USA; betalningar, som hanteras av Stripe i USA; och pushnotiser, som levereras av Apple och Google i USA. När uppgifter lämnar Storbritannien omfattas överföringen av brittiska föreskrifter om adekvat skyddsnivå (UK adequacy regulations) eller av International Data Transfer Agreement eller Addendum och, där lagen i ditt land kräver det, av en skyddsåtgärd som den lagen erkänner. Du kan be oss om uppgifter om vilka skyddsåtgärder som gäller.
 
 I takt med att vår tjänst växer kan vi lägga till leverantörer, bland annat en sms-leverantör. Vi uppdaterar denna lista innan de börjar behandla dina uppgifter.
 
@@ -161,7 +162,7 @@ Vi raderar eller anonymiserar uppgifter när dessa perioder har löpt ut.
 
 ## 8. Dina rättigheter
 
-Enligt brittisk dataskyddslagstiftning har du rätt att:
+Enligt brittisk dataskyddslagstiftning, och lagen i det land där du bor när den är tillämplig, har du rätt att:
 
 - fråga vilka personuppgifter vi har om dig och få en kopia av dem;
 - få felaktiga uppgifter rättade;
@@ -171,11 +172,17 @@ Enligt brittisk dataskyddslagstiftning har du rätt att:
 - invända mot behandling som grundar sig på berättigade intressen;
 - när som helst återkalla ditt samtycke, när vi stöder oss på samtycke.
 
-För att utöva någon av dessa rättigheter, mejla privacy@hatchgrab.com. Vi svarar inom en månad.
+Lagen där du bor kan ge dig dessa rättigheter under andra namn, eller ytterligare rättigheter. Även dem har du.
 
-**Radera ditt konto.** Företagare kan begära att kontot raderas direkt i appen eller genom att mejla privacy@hatchgrab.com. Vi raderar ditt konto och dina personuppgifter, utom där vi är skyldiga att spara uppgifter av bokföringsskäl eller rättsliga skäl.
+**Göra en förfrågan.** Mejla privacy@hatchgrab.com. Vi kontrollerar att förfrågan är äkta innan vi agerar på den. Du kan be någon annan att göra förfrågan åt dig, och vi behandlar dig inte annorlunda för att du gör en förfrågan. Vi svarar inom en månad, eller tidigare om lagen i ditt land kräver det. Om du har beställt från en foodtruck kan vi föra vidare din förfrågan till den foodtrucken, eftersom den bestämmer hur dina beställningsuppgifter används. Om vi avslår en förfrågan kan du be oss att se över den igen genom att svara på vårt besked.
 
-**Klagomål.** Om du är missnöjd med hur vi har hanterat dina uppgifter kan du klaga till Information Commissioner's Office på ico.org.uk, eller på telefon 0303 123 1113. Vi skulle uppskatta möjligheten att åtgärda det först.
+**Radera ditt konto.** Företagare kan begära att kontot raderas direkt i appen eller genom att mejla privacy@hatchgrab.com. Vi raderar ditt konto och dina personuppgifter, utom där vi är skyldiga att spara uppgifter av bokföringsskäl eller rättsliga skäl. När en företagares konto raderas tar vi också bort företagarens kunders namn, kontaktuppgifter och anteckningar från de beställningar som vi sparar.
+
+**Marknadsföringsmejl.** Vi skickar marknadsföringsmejl endast där lagen där du bor tillåter det, vilket i vissa länder innebär endast med ditt samtycke. Varje mejl anger vem det kommer från, innehåller vår postadress och talar om hur du slutar ta emot dem. Om du ber oss att sluta gör vi det, kostnadsfritt och inom 10 arbetsdagar. Mejl om en beställning eller ditt konto är inte marknadsföring. Om vi eller en foodtruck erbjuder uppdateringar om beställningar via sms får du dem endast om du samtycker, och du kan när som helst stoppa dem.
+
+**Om något går fel.** Om en personuppgiftsincident som rör dina personuppgifter sannolikt kommer att orsaka dig allvarlig skada, underrättar vi dig och tillsynsmyndigheten så snart vi kan där lagen kräver det, eller hjälper den foodtruck du har beställt från att göra det.
+
+**Klagomål.** Meddela oss först på privacy@hatchgrab.com; vi skulle uppskatta möjligheten att rätta till saken. Du kan också klaga till dataskyddsmyndigheten där du bor. I Storbritannien är det Information Commissioner's Office, på ico.org.uk eller på telefon 0303 123 1113.
 
 ---
 
