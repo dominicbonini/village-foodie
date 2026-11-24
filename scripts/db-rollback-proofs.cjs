@@ -13,6 +13,9 @@
 //        past the 2 s lock_timeout makes the waiting insert go in with receipt_no NULL (never an error).
 //   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --old-style-call
 //        vat-live-check-1's step 2: the DEPLOYED code's call to place_order_atomic_v2 (no tax_breakdown key), on a demo truck, rolled back.
+//   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --preflight-regime supabase/migrations/20261126_france_receipts_1.sql
+//   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --regime-check
+//        france-receipts-1: the VAT regime stamp on every insert path (see regimeProofs below), before and after applying, rolled back.
 //
 // 🔴 THE SAFEGUARDS (Dominic, 24 November 2026), each enforced below, not just promised:
 //   • DEMO TRUCKS ONLY — every truck it touches is in TRUCKS, and it refuses to start unless each one exists, is NOT a customer, and
@@ -92,7 +95,9 @@ async function counts(label) {
         (select count(*) from public.production_slot_usage where truck_id = any($1))::int as production_slot_usage,
         (select coalesce(sum(order_counter), 0) from public.trucks where id = any($1))::int as trucks_order_counter,
         (select coalesce(sum(e.order_counter), 0) from public.truck_events e where e.truck_id = any($1))::int as events_order_counter,
-        to_regclass('public.receipt_counters') is not null as has_counters`, [IDS])
+        to_regclass('public.receipt_counters') is not null as has_counters,
+        (select count(*) from public.order_drafts where truck_id = any($1))::int as order_drafts,
+        (select string_agg(id || '=' || coalesce(vat_regime, '-'), ',' order by id) from public.trucks where id = any($1)) as truck_vat_regimes`, [IDS])
     const row = { ...base.rows[0] }
     if (row.has_counters) {
       const k = await q(c, `counts-${label}`, `select (select count(*) from public.receipt_counters where truck_id = any($1))::int as counter_rows,
@@ -236,13 +241,63 @@ async function oldStyleCall() {
   ok('the demo trucks\' counts are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
 }
 
+/* ── france-receipts-1 (24 November 2026, docs/france-receipts-1-report.md): THE VAT REGIME STAMP ────────────────────────────────────
+ *   --preflight-regime <migration>   ONE transaction, ROLLED BACK: 20261126_france_receipts_1's statements, then the proofs below.
+ *   --regime-check                   After it is applied: the same proofs (no migration body), ROLLED BACK.
+ * Truck A's regime is set INSIDE the transaction (an UPDATE of the demo truck's own row, rolled back with everything else — the
+ * before/after counts carry both demo trucks' vat_regime, so a change that survived would show). Neither trucks trigger fires on it
+ * (trucks_record_plan_history: plan / trial_expires_at only; trucks_referred_code_immutable: referred_partner_code_id only). */
+const DRAFT = `insert into public.order_drafts (order_key, truck_id, subtotal, total, total_minor) values (gen_random_uuid(), $1, 0, 0, 0) returning order_key, vat_regime`
+const regimeOf = async (c, tag, key) => (await q(c, tag, 'select vat_regime, receipt_no from public.orders where order_key = $1', [key])).rows[0]
+async function regimeProofs(file) {
+  let body = null
+  if (file) {
+    const rel = path.relative(REPO, path.resolve(REPO, file)).split(path.sep).join('/')
+    if (!/^supabase\/migrations\/[^/]+\.sql$/.test(rel)) die(`${rel} is not a migration file`)
+    body = fs.readFileSync(path.join(REPO, rel), 'utf8').replace(/--[^\n]*/g, '').replace(/^\s*set lock_timeout[^;]*;/im, '').replace(/^\s*begin;\s*$/im, '').replace(/^\s*commit;\s*$/im, '').replace(/^\s*notify pgrst[^;]*;/im, '')
+    if (/^\s*(begin|commit|rollback)\s*;/im.test(body) || /\bcommit\b/i.test(body)) die('the migration body still has a transaction statement after stripping')
+    say(`\n══ PRE-FLIGHT — ${rel} inside ONE transaction that is ROLLED BACK ══`)
+  } else say('\n══ THE VAT REGIME STAMP, LIVE — every transaction ROLLED BACK ══')
+  const before = await counts('before')
+  const tag = file ? 'preflight' : 'regime'
+  await inRollback(tag, async c => {
+    await guard(c)
+    if (body) await q(c, tag, body)
+    const A = TRUCKS.A, B = TRUCKS.B
+    const n0 = (await q(c, tag, WALKUP, [rid(), A])).rows[0]
+    const r0 = await regimeOf(c, tag, n0.order_key)
+    ok('1 · truck A has no regime: a walk-up insert is stamped NULL (and still gets a receipt number)', r0.vat_regime === null && r0.receipt_no !== null, r0)
+    await q(c, tag, "update public.trucks set vat_regime = 'franchise' where id = $1", [A])
+    const w = await regimeOf(c, tag, (await q(c, tag, WALKUP, [rid(), A])).rows[0].order_key)
+    const fn = (await q(c, tag, CALL, [JSON.stringify(OLD_STYLE_ORDER), A])).rows[0].r
+    const f = await regimeOf(c, tag, fn.order_key)
+    const p = await regimeOf(c, tag, (await q(c, tag, PROMOTE, [rid(), A])).rows[0].order_key)
+    const d = (await q(c, tag, DRAFT, [A])).rows[0]
+    ok('2 · truck A set to franchise: the walk-up insert, the DEPLOYED place_order_atomic_v2 call, the card promotion\'s insert and a card draft are each stamped franchise', [w, f, p, d].every(x => x.vat_regime === 'franchise'), { w, f, p, d })
+    ok('3 · …and the receipt numbers still run on alongside: consecutive', Number(f.receipt_no) === Number(w.receipt_no) + 1 && Number(p.receipt_no) === Number(f.receipt_no) + 1, { w: w.receipt_no, f: f.receipt_no, p: p.receipt_no })
+    const named = PROMOTE.replace('placed_at)', 'placed_at, vat_regime)').replace("now()) returning", "now(), 'reel_simplifie') returning")
+    const nm = await regimeOf(c, tag, (await q(c, tag, named, [rid(), A])).rows[0].order_key)
+    ok('4 · an insert that NAMES a regime keeps it (a promotion carries its draft\'s): reel_simplifie, though the truck says franchise', nm.vat_regime === 'reel_simplifie', nm)
+    const b = await regimeOf(c, tag, (await q(c, tag, WALKUP, [rid(), B])).rows[0].order_key)
+    ok('5 · truck B (GB, no regime): stamped NULL', b.vat_regime === null, b)
+    await q(c, tag, "update public.trucks set vat_regime = 'reel_simplifie' where id = $1", [A])
+    const after = await regimeOf(c, tag, (await q(c, tag, WALKUP, [rid(), A])).rows[0].order_key)
+    const kept = await regimeOf(c, tag, fn.order_key)
+    ok('6 · the truck changes regime: the next order is stamped reel_simplifie, and the franchise order keeps franchise', after.vat_regime === 'reel_simplifie' && kept.vat_regime === 'franchise', { after, kept })
+  })
+  const after = await counts('after')
+  ok('the demo trucks\' counts and regimes are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
+}
+
 async function main() {
   const args = process.argv.slice(2)
   URL_ = dbUrl()
-  if (args[0] === '--preflight' && args[1]) await preflight(args[1])
+  if (args[0] === '--preflight-regime' && args[1]) await regimeProofs(args[1])
+  else if (args[0] === '--regime-check') await regimeProofs(null)
+  else if (args[0] === '--preflight' && args[1]) await preflight(args[1])
   else if (args[0] === '--concurrency') await concurrency()
   else if (args[0] === '--old-style-call') await oldStyleCall()
-  else die('usage: --preflight <migration.sql> | --concurrency | --old-style-call')
+  else die('usage: --preflight <migration.sql> | --concurrency | --old-style-call | --preflight-regime <migration.sql> | --regime-check')
   say(failed ? `\n🔴 ${failed} proof(s) FAILED` : '\n✅ every proof passed')
   process.exit(failed ? 1 : 0)
 }
