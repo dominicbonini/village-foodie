@@ -39,6 +39,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { ledgerCurrency } from '@/lib/payments/currency'
 import { ORDER_CHARGE_COLUMNS, type OrderChargeSnapshot } from '@/lib/order-charges'
+import { withLineNotes, withSplitNotes } from '@/lib/line-notes'   // france-notes-1
 
 /** Every column this module reads, in one place. See the deploy-coupling note in the header. */
 export const DRAFT_ROW_COLUMNS = [
@@ -55,6 +56,13 @@ export const DRAFT_ROW_COLUMNS = [
   // 🔴 ADDED 10 October 2026 (20261010_17_order_charges.sql, and 20261010_18 for `tax_rate_milli`) — Phase 3's snapshot. Same rule as above: a
   // named select, so this build REQUIRES that migration.
   ...ORDER_CHARGE_COLUMNS,
+  // 🔴 ADDED 24 November 2026 (20261127_france_notes_1.sql) — the line notes' own column. Every read below MERGES it back into items /
+  // deals (lib/line-notes.ts withLineNotes) and drops the key, so a caller sees the draft exactly as before. Same rule: a named select.
+  'line_notes',
+  // ⚠️ ADDED 24 November 2026 (france-notes-1, found while here): france-receipts-1's stamped VAT regime (20261126_france_receipts_1.sql),
+  // which the card promotion carries onto its order — it was never selected, so the promotion fell back to the truck's regime at that
+  // moment (the trigger's rule). Now the draft's own, as france-receipts-1 intended.
+  'vat_regime',
 ].join(', ')
 
 /** The request as the draft holds it. Money is SERVER-computed — see NewOrderDraft's note. */
@@ -208,9 +216,10 @@ export async function createOrderDraft(
     )
   }
 
+  // france-notes-1: the line notes go to line_notes, not into items / deals (lib/line-notes.ts).
   const { data, error } = await supabase
     .from('order_drafts')
-    .insert({
+    .insert(withSplitNotes({
       order_key:      draft.orderKey,
       truck_id:       draft.truckId,
       event_id:       draft.eventId ?? null,
@@ -238,7 +247,7 @@ export async function createOrderDraft(
       ...draft.charges,
       // created_at, expires_at and promoted_at are the column defaults. expires_at deliberately is NOT
       // settable from here — see the migration header for why it lives in one place.
-    })
+    }))
     .select(DRAFT_ROW_COLUMNS)
     .single()
 
@@ -246,7 +255,7 @@ export async function createOrderDraft(
     console.error(`[order-drafts] create failed for order_key=${draft.orderKey} truck=${draft.truckId}:`, error?.message)
     return { ok: false, error: error?.message ?? 'draft not created' }
   }
-  return { ok: true, row: data as unknown as OrderDraftRow }
+  return { ok: true, row: withLineNotes(data as unknown as OrderDraftRow) }
 }
 
 /**
@@ -268,7 +277,7 @@ export async function getOrderDraft(
     console.error(`[order-drafts] read failed for order_key=${orderKey}:`, error.message)
     return null
   }
-  return (data as unknown as OrderDraftRow) ?? null
+  return data ? withLineNotes(data as unknown as OrderDraftRow) : null
 }
 
 /**
@@ -291,7 +300,7 @@ export async function getOrderDraftByPaymentIntent(
     console.error(`[order-drafts] read-by-intent failed for pi=${paymentIntentId}:`, error.message)
     return null
   }
-  return (data as unknown as OrderDraftRow) ?? null
+  return data ? withLineNotes(data as unknown as OrderDraftRow) : null
 }
 
 /**

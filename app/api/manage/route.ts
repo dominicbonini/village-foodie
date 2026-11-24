@@ -140,6 +140,7 @@ import {
 import { readPlaceTypeHistory, STANDARD_TYPE_NAME } from '@/lib/event-types/read'
 import { normaliseRegion } from '@/lib/event-address'
 import { readMenuReview, closeMenuReview } from '@/lib/demo-menu-carry'   // demo-claim-2: the carried-over menu's review state
+import { withLineNotes } from '@/lib/line-notes'   // france-notes-1
 /* ⛔ `readImageInfo` WAS IMPORTED HERE (5 October 2026). It measured an uploaded `place_pictures` row
  * server-side rather than trusting the browser's numbers. That pane and its four routes are deleted;
  * the POST picture is measured by the same function on /api/weekly-post, which is where it always was. */
@@ -3155,7 +3156,7 @@ export async function POST(req: NextRequest) {
     // test-truck-3-2 ~1,800), in a fixed order (placed, then order_key) so no page can repeat or skip a row. The filters below are
     // recorded in `scopeOrders` and applied to every page, and to the cancelled read the accounts need.
     // `currency` and `tax_inclusive` ride along for the accounts only and are removed from the rows before the response.
-    const ORDER_COLS = 'order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id, food_minor, tax_minor, tax_rate_milli, tax_label, tip_minor, tip_pct_bps, service_fee_minor, card_surcharge_minor, currency, tax_inclusive, tax_breakdown, receipt_no'
+    const ORDER_COLS = 'order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id, food_minor, tax_minor, tax_rate_milli, tax_label, tip_minor, tip_pct_bps, service_fee_minor, card_surcharge_minor, currency, tax_inclusive, tax_breakdown, receipt_no, line_notes'   // france-notes-1: + line_notes, merged back in readOrders
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- a PostgREST builder, as everywhere in this route
     let scopeOrders = (q: any) => q
     const readOrders = async (cancelled: boolean): Promise<{ data: any[] | null }> => {   // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -3165,7 +3166,9 @@ export async function POST(req: NextRequest) {
         const { data, error } = await scopeOrders(cancelled ? base.in('status', ['cancelled', 'rejected']) : base.not('status', 'in', '(cancelled,rejected)'))
           .order('created_at', { ascending: true }).order('order_key', { ascending: true }).range(from, from + 999)
         if (error) { console.error('[get_report] orders read failed:', error.message); return { data: from === 0 ? null : out } }
-        out.push(...(data ?? []))
+        // france-notes-1: each order's line notes merged back into its lines and the key dropped (lib/line-notes.ts) — Reports, its
+        // CSVs and the accounts read the rows exactly as before.
+        out.push(...(data ?? []).map(withLineNotes))
         if (!data || data.length < 1000) return { data: out }
       }
     }

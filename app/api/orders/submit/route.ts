@@ -68,6 +68,7 @@ import { addressFormatForTruck } from '@/lib/country-settings'   // address-form
 import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
 import { receiptForOrderKey } from '@/lib/receipt-server'   // france-receipts-1
 import { franchiseApplies, franchiseRules, franchiseTaxBook } from '@/lib/receipt'   // france-receipts-1
+import { splitLineNotes } from '@/lib/line-notes'   // france-notes-1
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
 // CUSTOMER CHECKOUT. Calls authorizeDraft (:806) -> Stripe PaymentIntent creation. This one is NOT, and the reason is measured rather than assumed.
@@ -1332,6 +1333,16 @@ export async function POST(req: NextRequest) {
       // exact record the walk admitted (claimReservation, from the same read); OFF ⇒ P2's today's split.
       if (batchReservationsOn && claimReservation) await writeReservationRecord(supabase, { truckId: resolvedTruckId, orderKey: String(order.order_key), record: claimReservation })
       else await writeCookingReservation(supabase, { truckId: resolvedTruckId, eventId: eventRow?.id ?? null, orderKey: String(order.order_key) })
+      // ── france-notes-1: THE LINE NOTES MOVE OUT OF items / deals (lib/line-notes.ts), inside the same event lock, right after the insert.
+      // place_order_atomic_v2 is NOT changed (it names its columns; the deployed code calls it): it stores the lines as they came, and this
+      // one guarded update — only while line_notes is still NULL — moves the notes. If it fails, the order simply stays as every order
+      // before this one is (its notes inside items), which every reader and the retention job still handle; nothing is lost.
+      const noteSplit = splitLineNotes(p_order.items, p_order.deals)
+      if (noteSplit.line_notes) {
+        const { error: lnErr } = await supabase.from('orders').update({ items: noteSplit.items, deals: noteSplit.deals, line_notes: noteSplit.line_notes })
+          .eq('order_key', order.order_key).is('line_notes', null)
+        if (lnErr) console.error(`[submit] line notes not moved for order_key=${order.order_key} — it keeps them inside items (as before):`, lnErr.message)
+      }
     } finally {
       if (haveLock) await releaseEventLock(resolvedTruckId, orderEventDate)
     }

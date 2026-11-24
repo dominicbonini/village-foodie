@@ -87,6 +87,7 @@ import { readEventRegion } from '@/lib/event-region-read'
 import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
 import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
 import { receiptForOrderKey } from '@/lib/receipt-server'   // france-receipts-1
+import { withSplitNotes } from '@/lib/line-notes'   // france-notes-1
 
 /** What a refusal tells the customer: the sentence, in the truck's language, and the code and values it was
  *  made from — which /api/payments/return carries to the page (?payment_failed=, and its JSON reply) so the
@@ -375,9 +376,10 @@ export async function promoteDraft(
       // MAY CAPTURE SECONDS LATER. That column is not what makes an order paid — the LEDGER is, through
       // getOrderBalance, and captureOnConfirmation writes the ledger row. Setting this to 'paid' here
       // would be a second, divergent answer to a question that already has one.
+      // france-notes-1: the draft's lines come merged (getOrderDraft); their notes go to line_notes, not into items / deals.
       const { data: inserted, error: insertErr } = await supabase
         .from('orders')
-        .insert({
+        .insert(withSplitNotes({
           order_key:      draft.order_key,
           id:             orderId,
           truck_id:       draft.truck_id,
@@ -419,7 +421,7 @@ export async function promoteDraft(
           // france-receipts-1: the VAT regime the draft was priced under (stamped when it was written), so a franchise en base order
           // keeps its « TVA non applicable » line even if the truck's regime changed in between. Absent: the trigger copies the truck's.
           ...((draft as { vat_regime?: string | null }).vat_regime ? { vat_regime: (draft as { vat_regime?: string | null }).vat_regime } : {}),
-        })
+        }))
         .select('order_key')
         .single()
 

@@ -42,6 +42,7 @@ import { kitchenErrorBody } from '@/lib/i18n/kitchen-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
 import { addressFormatForTruck } from '@/lib/country-settings'   // france-receipts-1
+import { withLineNotes } from '@/lib/line-notes'   // france-notes-1
 
 // ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
 // 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
@@ -379,8 +380,10 @@ export async function GET(req: NextRequest) {
     // rendering the half that succeeded beats losing the page.
     if (activeErr) console.error(`[dashboard] ACTIVE ORDERS query failed for event ${selectedEventId} — the live board will render EMPTY:`, activeErr.message)
     if (doneErr)   console.error(`[dashboard] DONE ORDERS query failed for event ${selectedEventId} — the collected/cancelled list will render EMPTY:`, doneErr.message)
-    activeOrders = a || []
-    doneToday = d || []
+    // france-notes-1: each order's line notes merged back into its lines and the `line_notes` key dropped (lib/line-notes.ts), so the
+    // dashboard, the KDS, the tickets and the edit screens get exactly the rows they always did.
+    activeOrders = (a || []).map(withLineNotes)
+    doneToday = (d || []).map(withLineNotes)
 
     // ── PAYMENT LEDGER ROWS FOR THE VISIBLE ORDERS (V9.4) ──────────────────────────────────────────
     // The card derives its paid/part-paid/balance state from getOrderBalance(order, rows) — the SAME

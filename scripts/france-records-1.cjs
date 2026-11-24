@@ -307,8 +307,13 @@ function extract(ref) {
   // ══ E ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
   head('E · RETENTION — unchanged (decision 1 = C)')
   {
+    // ⚠️ RE-PINNED (france-notes-1, 24 November 2026, docs/france-notes-1-report.md): this proves FRANCE-RECORDS-1 left retention unchanged
+    // (decision 1 = C), so it compares START with france-records-1's last commit (68742078). france-notes-1 changes it on purpose — an order
+    // with line_notes has them blanked there and its lines never rewritten — proven by scripts/france-notes-1.cjs §D; the old-style
+    // behaviour below (an order with no line_notes) is still asserted here, on this tree.
     const was = execFileSync('git', ['show', `${START}:lib/order-retention.ts`], { cwd: REPO, encoding: 'utf8' })
-    t('lib/order-retention.ts and its cron route are byte-identical to this prompt\'s start', read('lib/order-retention.ts') === was && read('app/api/cron/order-retention/route.ts') === execFileSync('git', ['show', `${START}:app/api/cron/order-retention/route.ts`], { cwd: REPO, encoding: 'utf8' }))
+    const at = (ref, f) => execFileSync('git', ['show', `${ref}:${f}`], { cwd: REPO, encoding: 'utf8' })
+    t('lib/order-retention.ts and its cron route are byte-identical to this prompt\'s start (at france-records-1\'s last commit)', at('68742078', 'lib/order-retention.ts') === was && at('68742078', 'app/api/cron/order-retention/route.ts') === at(START, 'app/api/cron/order-retention/route.ts'))
     const R = await kit.bundle('fr1-ret', "export * from '@/lib/order-retention'")
     const p = R.retentionPatch({ order_key: 'k', customer_name: 'Léa', customer_email: 'l@x', customer_phone: '06', notes: 'n', items: [{ name: 'Crêpe', specialInstructions: 'no nuts' }], deals: [{ name: 'F', slotNotes: { a: 'gf' } }] }, '')
     t('…so it still blanks the name, email, phone and order note, and the line and slot notes, as the privacy policy promises', p.customer_name === '' && p.customer_email === null && p.customer_phone === null && p.notes === null && p.items[0].specialInstructions === '' && J(p.deals[0].slotNotes) === '{}')

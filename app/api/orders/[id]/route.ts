@@ -7,6 +7,7 @@ import { chargesForResponse } from '@/lib/order-charge-lines'
 import { customerErrorBody } from '@/lib/i18n/customer-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { receiptForRow } from '@/lib/receipt-server'   // france-receipts-1
+import { withLineNotes } from '@/lib/line-notes'   // france-notes-1
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,7 +33,7 @@ export async function GET(
   // mismatch; a caller that does not, does not.
   const truckParam = req.nextUrl.searchParams.get('truck')
 
-  const { data: order, error } = await supabase
+  const { data: orderRow, error } = await supabase
     .from('orders')
     .select(`
       id,
@@ -64,6 +65,7 @@ export async function GET(
       placed_at,
       created_at,
       vat_regime,
+      line_notes,
       trucks!truck_id (
         name,
         slug,
@@ -80,6 +82,8 @@ export async function GET(
     `)
     .eq('order_key', id)
     .single()
+  // france-notes-1: the line notes merged back into items / deals, the key dropped (lib/line-notes.ts) — the answer is as before.
+  const order = withLineNotes(orderRow)
 
   // Both 404s below are the SAME body on purpose (see the mismatch note), so both are en-GB — a translated
   // "not found" on one of them would tell a prober the order exists (Language Phase 1a).

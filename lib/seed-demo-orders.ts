@@ -35,6 +35,7 @@ import { projectBackwardOccupancy, fitOrderBackward } from '@/lib/slot-availabil
 import { normaliseOrderLines, buildItemCatMap, type ProductionSlotUnits } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat, mergeQtyByCat, type QtyByCat } from '@/lib/slot-capacity'
 import type { CatConfig } from '@/lib/prep-utils'
+import { withSplitNotes } from '@/lib/line-notes'   // france-notes-1
 
 const CUSTOMER_NAMES = [
   'Sarah', 'Dave', 'Priya', 'Tom', 'Aisha', 'Mark', 'Chloe', 'Raj', 'Ellie', 'Ben',
@@ -996,7 +997,8 @@ export async function seedDemoOrders(
     const orderKey = randomUUID()
     r.order_key = orderKey
     r.id = String(inserted.length + 1)
-    const { error } = await supabase.from('orders').insert(r)
+    // france-notes-1: the same write rule as every order path (lib/line-notes.ts) — seeded lines carry no notes, so this changes nothing.
+    const { error } = await supabase.from('orders').insert(withSplitNotes(r))
     if (error) throw new Error(`Seeding demo orders failed: ${error.message}`)
     const lines = normaliseOrderLines((r.items as { name: string; quantity: number }[]) ?? [], null)
     // An order that cooks nothing (sides only) reserves nothing and needs no admission — the engine has

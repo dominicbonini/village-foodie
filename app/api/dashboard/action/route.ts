@@ -47,6 +47,7 @@ import { lineTax, stampItems, stampDeals } from '@/lib/order-tax'   // france-va
 import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
 import { receiptForOrderKey, receiptForRow } from '@/lib/receipt-server'   // france-receipts-1
 import { franchiseApplies, franchiseRules, franchiseTaxBook } from '@/lib/receipt'   // france-receipts-1
+import { splitLineNotes, withLineNotes, withSplitNotes } from '@/lib/line-notes'   // france-notes-1
 /** france-vat-1: the statuses after which an order is a finished record — refused by `edit` and `cancel`. */
 const FINISHED_STATUSES = new Set(['collected', 'cancelled', 'rejected'])
 // Phase 3: tax, tip and fees — the same engine and rules as the customer path (docs/phase-3-foundations-report.md).
@@ -353,7 +354,9 @@ export async function POST(req: NextRequest) {
 
     // ── CONFIRM ───────────────────────────────────────────────────────────────
     if (action === 'confirm') {
-      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      // france-notes-1: the stored row with its line notes merged back (lib/line-notes.ts) — every reader below sees the lines as before.
+      const { data: orderRow } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      const order = withLineNotes(orderRow)
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
 
@@ -449,7 +452,9 @@ export async function POST(req: NextRequest) {
     // ── CANCEL ────────────────────────────────────────────────────────────────
     if (action === 'cancel') {
       const { cancellationReason } = body
-      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      // france-notes-1: the stored row with its line notes merged back (lib/line-notes.ts) — every reader below sees the lines as before.
+      const { data: orderRow } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      const order = withLineNotes(orderRow)
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       // 🔴 france-vat-1: A FINISHED ORDER IS NOT CANCELLED — for every actor and every path (web, the apps, offline replay all
       // arrive here). The screen already offers no cancel on these; this makes the server agree.
@@ -536,7 +541,9 @@ export async function POST(req: NextRequest) {
     // undo within 4s sends no email. Either way the email always fires for a ready (model A) — KDS
     // immediately, dashboard after the undo window.
     if (action === 'ready') {
-      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      // france-notes-1: the stored row with its line notes merged back (lib/line-notes.ts) — every reader below sees the lines as before.
+      const { data: orderRow } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      const order = withLineNotes(orderRow)
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       await supabase.from('orders').update({ status: 'ready' }).eq('order_key', orderKey).eq('truck_id', truck.id)
       // RELEASE kitchen-capacity occupancy at ready (done cooking). buildUnitsFromOrders no longer counts a
@@ -555,7 +562,9 @@ export async function POST(req: NextRequest) {
     // raced undo (status back to 'confirmed') sends nothing. Double-send is prevented client-side (the 4s
     // timer is cleared whenever the flush path fires), with this status guard as the server backstop.
     if (action === 'send_ready_email') {
-      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      // france-notes-1: the stored row with its line notes merged back (lib/line-notes.ts) — every reader below sees the lines as before.
+      const { data: orderRow } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      const order = withLineNotes(orderRow)
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       if (order.status !== 'ready') return NextResponse.json({ success: true, skipped: 'not ready' })
       await deliverReadyEmail(order, truck)
@@ -807,7 +816,9 @@ export async function POST(req: NextRequest) {
         // confirm the figure they saw, not whatever we happen to compute now.
         confirmUnresolvedTotal,
       } = editedOrder || {}
-      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      // france-notes-1: the stored row with its line notes merged back (lib/line-notes.ts) — every reader below sees the lines as before.
+      const { data: orderRow } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      const order = withLineNotes(orderRow)
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
       // 🔴 france-vat-1: A FINISHED ORDER IS NOT EDITED — for every actor and every path. The screen offers Edit only on pending,
       // confirmed, modified, cooking and ready orders; the server now refuses the rest too.
@@ -1017,7 +1028,9 @@ export async function POST(req: NextRequest) {
         ...editCharges.snapshot,
         status:   'modified',
       }
-      const { error: updateErr } = await supabase.from('orders').update(editPatch).eq('order_key', orderKey).eq('truck_id', truck.id)
+      const editSplit = splitLineNotes(editPatch.items, editPatch.deals)   // france-notes-1: notes → line_notes (cleared once none is left)
+      const editStored = { ...editPatch, items: editSplit.items, deals: editSplit.deals, ...(editSplit.line_notes || orderRow?.line_notes != null ? { line_notes: editSplit.line_notes } : {}) }
+      const { error: updateErr } = await supabase.from('orders').update(editStored).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (updateErr) {
         console.error('[edit] order update failed:', updateErr.message, updateErr.details, updateErr.hint)
         return NextResponse.json(await kErr('edit_save_failed'), { status: 500 })
@@ -2054,10 +2067,12 @@ export async function POST(req: NextRequest) {
             : null,
         }
         if (clientOrderKey) insertPayload.order_key = clientOrderKey
+        // france-notes-1: the line notes go to line_notes, not into items / deals (lib/line-notes.ts) — the insert AND the offline replay.
+        const storedPayload = withSplitNotes(insertPayload)
         let manualOrderRow: { order_key: string } | null = null
         let insertErr: { message?: string; details?: string; hint?: string } | null = null
         if (clientOrderKey) {
-          const up = await supabase.from('orders').upsert(insertPayload, { onConflict: 'order_key', ignoreDuplicates: true }).select('order_key').maybeSingle()
+          const up = await supabase.from('orders').upsert(storedPayload, { onConflict: 'order_key', ignoreDuplicates: true }).select('order_key').maybeSingle()
           insertErr = up.error; manualOrderRow = up.data
           if (!manualOrderRow && !insertErr) {
             // Already present (replay of an already-synced order) → return its identity so the ACK is stable.
@@ -2065,7 +2080,7 @@ export async function POST(req: NextRequest) {
             manualOrderRow = existing.data
           }
         } else {
-          const ins = await supabase.from('orders').insert(insertPayload).select('order_key').single()
+          const ins = await supabase.from('orders').insert(storedPayload).select('order_key').single()
           insertErr = ins.error; manualOrderRow = ins.data
         }
         // ── 🔴 A DUPLICATE DISPLAY NUMBER FAILS LOUDLY. IT IS NEVER SILENTLY RENUMBERED. ───────────
@@ -2518,7 +2533,9 @@ export async function POST(req: NextRequest) {
       // discarded and this branch returns `{ success: true, newSlot }` unconditionally, so a filtered
       // write would report SUCCESS for an order that never moved — while the booking, the capture and
       // the email still ran. That is the silent-no-op trap the cross-truck cancel hole hid behind.
-      const { data: ord } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt,currency,country,food_minor,tax_minor,tax_rate_milli,tax_label,tip_minor,tip_pct_bps,service_fee_minor,card_surcharge_minor,tax_breakdown').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      // france-notes-1: + line_notes, merged back below, so the email about the new time shows the lines' notes as before.
+      const { data: ordRow } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt,currency,country,food_minor,tax_minor,tax_rate_milli,tax_label,tip_minor,tip_pct_bps,service_fee_minor,card_surcharge_minor,tax_breakdown,line_notes').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      const ord = withLineNotes(ordRow)
       if (!ord?.slot) return NextResponse.json(await kErr('no_slot'), { status: 400 })
       const [h, m] = ord.slot.split(':').map(Number)
       const newTotal = h * 60 + m + mins
@@ -2526,7 +2543,8 @@ export async function POST(req: NextRequest) {
       // canonical "HH:MM"; the readers that need its order put it on the engine clock from the event's times).
       const newSlot = `${String(Math.floor(newTotal / 60) % 24).padStart(2, '0')}:${String(newTotal % 60).padStart(2, '0')}`
       if (ord.event_date) {
-        const full = await supabase.from('orders').select('items, deals').eq('order_key', orderKey).single()
+        const full = await supabase.from('orders').select('items, deals, line_notes').eq('order_key', orderKey).single()
+        if (full.data) full.data = withLineNotes(full.data)   // france-notes-1: the notes merged back
         if (full.data) {
           const itemCatMap = await buildItemCatMap(supabase, truck.id)
           await moveSlotBooking(

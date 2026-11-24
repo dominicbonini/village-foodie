@@ -11,6 +11,9 @@
 //     null — nullable there, and erasePii already nulls them at promotion);
 //   • notes → null (the order note, which can carry allergy or dietary text);
 //   • each item's `specialInstructions` → '' (the per-dish note) and each deal's `slotNotes` → {} (per-slot notes).
+//     france-notes-1 (24 November 2026, docs/france-notes-1-report.md): an order or draft written since then keeps those notes in its own
+//     `line_notes` column (lib/line-notes.ts) — for it, THAT is blanked (each note '' / {}) and its items and deals are NEVER rewritten.
+//     A row with no line_notes (every older order, and any the deployed code writes) is cleaned exactly as before, inside items / deals.
 // 🔴 IT KEEPS EVERYTHING ELSE: totals, line items (names, quantities, prices, modifiers), deals, payments, timestamps —
 // the anonymised trading history the policy says remains. order_payments carries no customer identifiers and is not
 // touched. IDEMPOTENT: a row with nothing left to remove is not written.
@@ -32,6 +35,7 @@
 // 12 months (lib/loyalty/retention.ts says exactly what), so no loyalty row still ties an anonymised order to a customer.
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { purgeOldLoyalty, type LoyaltyPurgeResult } from '@/lib/loyalty/retention'
+import { blankLineNotes } from '@/lib/line-notes'   // france-notes-1
 
 export const RETENTION_MONTHS = 12
 /** Work per run: bounded, so one run cannot outlive its timeout; the next day's run takes the rest. */
@@ -86,7 +90,7 @@ export function scrubDeals(deals: Json): { value: Json; changed: boolean } {
   return { value: changed ? value : deals, changed }
 }
 
-interface Row { order_key: string; customer_name?: string | null; customer_email?: string | null; customer_phone?: string | null; notes?: string | null; items?: Json; deals?: Json }
+interface Row { order_key: string; customer_name?: string | null; customer_email?: string | null; customer_phone?: string | null; notes?: string | null; items?: Json; deals?: Json; line_notes?: Json }
 
 /** What to write to one row, or null when it holds nothing left to remove. `nameEmpty` is the value a cleared name takes. */
 export function retentionPatch(row: Row, nameEmpty: '' | null): Record<string, unknown> | null {
@@ -95,8 +99,13 @@ export function retentionPatch(row: Row, nameEmpty: '' | null): Record<string, u
   if (!blank(row.customer_email)) patch.customer_email = null
   if (!blank(row.customer_phone)) patch.customer_phone = null
   if (!blank(row.notes)) patch.notes = null
-  const items = scrubItems(row.items); if (items.changed) patch.items = items.value
-  const deals = scrubDeals(row.deals); if (deals.changed) patch.deals = deals.value
+  if (row.line_notes != null) {
+    // france-notes-1: the notes live in line_notes — blank them there; the lines are never touched.
+    const ln = blankLineNotes(row.line_notes); if (ln.changed) patch.line_notes = ln.value
+  } else {
+    const items = scrubItems(row.items); if (items.changed) patch.items = items.value
+    const deals = scrubDeals(row.deals); if (deals.changed) patch.deals = deals.value
+  }
   return Object.keys(patch).length ? patch : null
 }
 
@@ -110,7 +119,7 @@ export interface RetentionResult {
   failures: string[]
 }
 
-const COLS = 'order_key, created_at, customer_name, customer_email, customer_phone, notes, items, deals'
+const COLS = 'order_key, created_at, customer_name, customer_email, customer_phone, notes, items, deals, line_notes'   // france-notes-1: + line_notes
 
 /** One table's pass: page through the old rows that may still hold details, write each patch. */
 async function pass(supabase: SupabaseClient, table: 'orders' | 'order_drafts', cutoffIso: string, recheckFromIso: string, nameEmpty: '' | null,
