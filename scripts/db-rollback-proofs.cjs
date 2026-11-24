@@ -16,6 +16,9 @@
 //   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --preflight-regime supabase/migrations/20261126_france_receipts_1.sql
 //   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --regime-check
 //        france-receipts-1: the VAT regime stamp on every insert path (see regimeProofs below), before and after applying, rolled back.
+//   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --preflight-notes supabase/migrations/20261127_france_notes_1.sql
+//   npx -y -p pg@8.13.1 node scripts/db-rollback-proofs.cjs --notes-check
+//        france-notes-1: the line_notes column (see notesProofs below), before and after applying, rolled back.
 //
 // 🔴 THE SAFEGUARDS (Dominic, 24 November 2026), each enforced below, not just promised:
 //   • DEMO TRUCKS ONLY — every truck it touches is in TRUCKS, and it refuses to start unless each one exists, is NOT a customer, and
@@ -289,15 +292,70 @@ async function regimeProofs(file) {
   ok('the demo trucks\' counts and regimes are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
 }
 
+/* ── france-notes-1 (24 November 2026, docs/france-notes-1-report.md): THE LINE NOTES' OWN COLUMN ──────────────────────────────────────
+ *   --preflight-notes <migration>   ONE transaction, ROLLED BACK: 20261127_france_notes_1's statements, then the proofs below.
+ *   --notes-check                   After it is applied: the same proofs (no migration body), ROLLED BACK. Demo trucks only. */
+const LN = { v: 1, items: { '#0': { at: 3, note: 'No onions' } }, deals: { '#0': { at: 3, slotNotes: { main: 'no peanuts' } } } }
+const ITEMS_WITH = [{ name: 'Crêpe', quantity: 1, unit_price: 8.5, specialInstructions: 'No onions', modifiers: [] }]
+const DEALS_WITH = [{ name: 'Formule', price: 10, slots: { main: 'Crêpe' }, slotNotes: { main: 'no peanuts' }, slotModifiers: {} }]
+const ITEMS_OUT = [{ name: 'Crêpe', quantity: 1, unit_price: 8.5, modifiers: [] }]
+const DEALS_OUT = [{ name: 'Formule', price: 10, slots: { main: 'Crêpe' }, slotModifiers: {} }]
+async function notesProofs(file) {
+  let body = null
+  if (file) {
+    const rel = path.relative(REPO, path.resolve(REPO, file)).split(path.sep).join('/')
+    if (!/^supabase\/migrations\/[^/]+\.sql$/.test(rel)) die(`${rel} is not a migration file`)
+    body = fs.readFileSync(path.join(REPO, rel), 'utf8').replace(/--[^\n]*/g, '').replace(/^\s*set lock_timeout[^;]*;/im, '').replace(/^\s*begin;\s*$/im, '').replace(/^\s*commit;\s*$/im, '').replace(/^\s*notify pgrst[^;]*;/im, '')
+    if (/^\s*(begin|commit|rollback)\s*;/im.test(body) || /\bcommit\b/i.test(body)) die('the migration body still has a transaction statement after stripping')
+    say(`\n══ PRE-FLIGHT — ${rel} inside ONE transaction that is ROLLED BACK ══`)
+  } else say('\n══ THE LINE NOTES COLUMN, LIVE — every transaction ROLLED BACK ══')
+  const before = await counts('before')
+  const tag = file ? 'preflight' : 'notes'
+  await inRollback(tag, async c => {
+    await guard(c)
+    if (body) await q(c, tag, body)
+    const A = TRUCKS.A
+    const rowOf = async key => (await q(c, tag, 'select items, deals, line_notes, receipt_no, customer_name from public.orders where order_key = $1', [key])).rows[0]
+    // 1 · the DEPLOYED call: notes inside items, line_notes NULL (old-style, read and retained exactly as today)
+    const oldCall = (await q(c, tag, CALL, [JSON.stringify({ ...OLD_STYLE_ORDER, items: ITEMS_WITH, deals: DEALS_WITH }), A])).rows[0].r
+    const o = await rowOf(oldCall.order_key)
+    ok('1 · the deployed place_order_atomic_v2 call: its notes stay inside items / deals, line_notes NULL', o.line_notes === null && JSON.stringify(o.items) === JSON.stringify(ITEMS_WITH) && JSON.stringify(o.deals) === JSON.stringify(DEALS_WITH), o)
+    // 2 · the new customer path: the same call, then the follow-up update moves the notes (only while line_notes is still NULL)
+    const newCall = (await q(c, tag, CALL, [JSON.stringify({ ...OLD_STYLE_ORDER, items: ITEMS_WITH, deals: DEALS_WITH }), A])).rows[0].r
+    const n0 = await rowOf(newCall.order_key)
+    const moved = (await q(c, tag, 'update public.orders set items = $2::jsonb, deals = $3::jsonb, line_notes = $4::jsonb where order_key = $1 and line_notes is null returning order_key', [newCall.order_key, JSON.stringify(ITEMS_OUT), JSON.stringify(DEALS_OUT), JSON.stringify(LN)])).rows
+    const n1 = await rowOf(newCall.order_key)
+    ok('2 · the customer path\'s follow-up update: items / deals without notes, the notes in line_notes, the receipt number unchanged', moved.length === 1 && JSON.stringify(n1.items) === JSON.stringify(ITEMS_OUT) && JSON.stringify(n1.deals) === JSON.stringify(DEALS_OUT) && JSON.stringify(n1.line_notes) === JSON.stringify(LN) && String(n1.receipt_no) === String(n0.receipt_no), { n0, n1 })
+    const again = (await q(c, tag, 'update public.orders set items = $2::jsonb, deals = $3::jsonb, line_notes = $4::jsonb where order_key = $1 and line_notes is null returning order_key', [newCall.order_key, JSON.stringify(ITEMS_WITH), JSON.stringify(DEALS_WITH), JSON.stringify(LN)])).rows
+    ok('3 · …and it never runs twice: a second one (line_notes already set) changes nothing', again.length === 0 && JSON.stringify((await rowOf(newCall.order_key)).items) === JSON.stringify(ITEMS_OUT))
+    // 4 · a direct insert (the walk-up, the card promotion) naming line_notes
+    const w = (await q(c, tag, WALKUP.replace('source)', 'source, line_notes)').replace("'manual') returning", "'manual', $3::jsonb) returning"), [rid(), A, JSON.stringify(LN)])).rows[0]
+    const wr = await rowOf(w.order_key)
+    ok('4 · a direct insert naming line_notes stores it exactly (jsonb round trip)', JSON.stringify(wr.line_notes) === JSON.stringify(LN), wr.line_notes)
+    // 5 · a card draft naming line_notes
+    const d = (await q(c, tag, 'insert into public.order_drafts (order_key, truck_id, subtotal, total, total_minor, items, line_notes) values (gen_random_uuid(), $1, 1, 1, 100, $2::jsonb, $3::jsonb) returning line_notes, items', [A, JSON.stringify(ITEMS_OUT), JSON.stringify(LN)])).rows[0]
+    ok('5 · a card draft stores line_notes too', JSON.stringify(d.line_notes) === JSON.stringify(LN) && JSON.stringify(d.items) === JSON.stringify(ITEMS_OUT), d)
+    // 6 · retention's write on a new-style order: line_notes and the customer fields only — items / deals byte-identical after
+    const blanked = { v: 1, items: { '#0': { at: 3, note: '' } }, deals: { '#0': { at: 3, slotNotes: {} } } }
+    await q(c, tag, "update public.orders set customer_name = '', line_notes = $2::jsonb where order_key = $1", [newCall.order_key, JSON.stringify(blanked)])
+    const r = (await q(c, tag, 'select items = $2::jsonb as items_same, deals = $3::jsonb as deals_same, line_notes, customer_name from public.orders where order_key = $1', [newCall.order_key, JSON.stringify(ITEMS_OUT), JSON.stringify(DEALS_OUT)])).rows[0]
+    ok('6 · retention on a new-style order: the notes and the name blanked, items and deals byte-identical (jsonb =)', r.items_same === true && r.deals_same === true && r.customer_name === '' && JSON.stringify(r.line_notes) === JSON.stringify(blanked), r)
+  })
+  const after = await counts('after')
+  ok('the demo trucks\' counts are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
+}
+
 async function main() {
   const args = process.argv.slice(2)
   URL_ = dbUrl()
-  if (args[0] === '--preflight-regime' && args[1]) await regimeProofs(args[1])
+  if (args[0] === '--preflight-notes' && args[1]) await notesProofs(args[1])
+  else if (args[0] === '--notes-check') await notesProofs(null)
+  else if (args[0] === '--preflight-regime' && args[1]) await regimeProofs(args[1])
   else if (args[0] === '--regime-check') await regimeProofs(null)
   else if (args[0] === '--preflight' && args[1]) await preflight(args[1])
   else if (args[0] === '--concurrency') await concurrency()
   else if (args[0] === '--old-style-call') await oldStyleCall()
-  else die('usage: --preflight <migration.sql> | --concurrency | --old-style-call | --preflight-regime <migration.sql> | --regime-check')
+  else die('usage: --preflight <migration.sql> | --concurrency | --old-style-call | --preflight-regime <migration.sql> | --regime-check | --preflight-notes <migration.sql> | --notes-check')
   say(failed ? `\n🔴 ${failed} proof(s) FAILED` : '\n✅ every proof passed')
   process.exit(failed ? 1 : 0)
 }
