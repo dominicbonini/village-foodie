@@ -2584,25 +2584,32 @@
    "set_focus": true
   },
   {
-   "id": "ca13ac16-8af1-5d7d-ab48-f43d330051f2",
-   "name": "Owner",
+   "id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
+   "name": "Owner.com",
    "website": "https://www.owner.com",
    "focus": "nearest_local",
    "lifecycle": "active",
    "payment_providers": null,
    "features_checked_on": "2026-11-24",
    "features_verified_at": null,
-   "notes": "compare-research-1 (24 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: CA.",
+   "notes": "compare-research-1 (24 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: CA, US.",
    "check_urls": [
     "https://www.owner.com/ca/pricing",
     "https://www.owner.com/online-ordering",
-    "https://www.owner.com/catering"
+    "https://www.owner.com/catering",
+    "https://www.owner.com/pricing",
+    "https://www.owner.com/",
+    "https://www.owner.com/kitchen-tablet",
+    "https://www.owner.com/how-owner-works"
    ],
    "request_check": true,
    "answers": [
     {
      "key": "ahead",
-     "value": "not_mentioned"
+     "value": "partial",
+     "quote": "Mobile app screen showing Hawking Bird restaurant with fried chicken sandwich image, options for pickup or delivery, scheduled pickup, and a rewards progress bar",
+     "source_url": "https://www.owner.com/",
+     "note": "from an image description (alt text) on the homepage, not body text"
     },
     {
      "key": "preorder",
@@ -2634,17 +2641,20 @@
     },
     {
      "key": "offline",
-     "value": "not_mentioned"
+     "value": "not_mentioned",
+     "note": "was \"no\" without a negative quote — recorded as not mentioned"
     },
     {
      "key": "walkup",
-     "value": "not_mentioned"
+     "value": "yes",
+     "quote": "Take phone and in-store orders, manage your menu, process gift cards, and handle delivery. All from one device.",
+     "source_url": "https://www.owner.com/kitchen-tablet"
     },
     {
      "key": "vans",
-     "value": "partial",
-     "quote": "Special rates available for multi-location Flat Rate.",
-     "source_url": "https://www.owner.com/ca/pricing"
+     "value": "yes",
+     "quote": "Special rates available for multi-location",
+     "source_url": "https://www.owner.com/pricing"
     },
     {
      "key": "domain",
@@ -6999,20 +7009,24 @@
    "set_focus": true
   },
   {
-   "id": "e8beb753-d44b-5fe6-8b78-8d02f4f3ece6",
+   "id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
    "name": "MENU TIGER",
-   "website": "https://www.menutiger.com/el",
+   "website": "https://www.menutiger.com",
    "focus": "nearest_local",
    "lifecycle": "active",
    "payment_providers": null,
    "features_checked_on": "2026-11-24",
    "features_verified_at": null,
-   "notes": "compare-research-1 (24 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: GR, NO.",
+   "notes": "compare-research-1 (24 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: GR, NO, PT.",
    "check_urls": [
     "https://www.menutiger.com/el/pricing",
     "https://www.menutiger.com/nb",
     "https://www.menutiger.com/nb/pricing",
-    "https://www.menutiger.com/nb/features/online-food-order-system"
+    "https://www.menutiger.com/nb/features/online-food-order-system",
+    "https://www.menutiger.com/pricing",
+    "https://www.menutiger.com/pt/pricing",
+    "https://www.menutiger.com/pt/features/online-food-order-system",
+    "https://www.menutiger.com/pt/faq"
    ],
    "request_check": true,
    "answers": [
@@ -7088,7 +7102,24 @@
      "value": "not_mentioned"
     }
    ],
-   "set_focus": true
+   "set_focus": true,
+   "not_sold_in": [
+    {
+     "country": "HK",
+     "reason": "No Hong Kong presence on its own site (USD prices only, no currency selector, English only) and no sentence about pickup/order-ahead (only an 'Order Scheduling' table label); global QR-menu/ordering tool",
+     "source_url": "https://www.menutiger.com/pricing"
+    },
+    {
+     "country": "RO",
+     "reason": "Has Romanian pages (menutiger.com/ro), but prices are USD only (\"17US$/lună\", \"46US$/lună\", \"119US$/lună\" on /ro/pricing) and neither /ro/pricing nor /ro/features/online-food-order-system mentions pickup / ridicare / la pachet or ordering ahead (only a bare \"Programarea comenzil…",
+     "source_url": "https://www.menutiger.com/pricing"
+    },
+    {
+     "country": "TH",
+     "reason": "Has a Thai-language pricing page (menutiger.com/th/pricing), but prices are USD only (no THB) and neither the English nor the Thai pages say in words that customers can order ahead for pickup; website ordering ('ลูกค้าสั่งและจ่ายผ่านเว็บไซต์ร้านอาหารของคุณ') and a 'กำหนดเวลารับอ…",
+     "source_url": "https://www.menutiger.com/pricing"
+    }
+   ]
   },
   {
    "id": "01fa170d-7187-59ae-83d8-ac2af032907f",
@@ -10679,111 +10710,6 @@
    "set_focus": true
   },
   {
-   "id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
-   "name": "MENU TIGER",
-   "website": "https://www.menutiger.com",
-   "focus": "nearest_local",
-   "lifecycle": "active",
-   "payment_providers": null,
-   "features_checked_on": "2026-11-24",
-   "features_verified_at": null,
-   "notes": "compare-research-1 (24 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: PT.",
-   "check_urls": [
-    "https://www.menutiger.com/pricing",
-    "https://www.menutiger.com/pt/pricing",
-    "https://www.menutiger.com/pt/features/online-food-order-system",
-    "https://www.menutiger.com/pt/faq"
-   ],
-   "request_check": true,
-   "answers": [
-    {
-     "key": "ahead",
-     "value": "partial",
-     "quote": "O MENU TIGER suporta pedidos para consumo no local e takeaway.",
-     "source_url": "https://www.menutiger.com/pt/faq"
-    },
-    {
-     "key": "preorder",
-     "value": "partial",
-     "quote": "Agendamento de encomendas",
-     "source_url": "https://www.menutiger.com/pt/pricing"
-    },
-    {
-     "key": "capacity",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "schedule",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "whatsapp",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "social",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "kds",
-     "value": "yes",
-     "quote": "Os pedidos aparecem no ecrã da cozinha segundos após o envio.",
-     "source_url": "https://www.menutiger.com/pt/features/online-food-order-system"
-    },
-    {
-     "key": "offline",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "walkup",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "vans",
-     "value": "yes",
-     "quote": "Sim, pode gerir restaurantes com várias localizações no painel MENU TIGER.",
-     "source_url": "https://www.menutiger.com/pt/faq"
-    },
-    {
-     "key": "domain",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "monthly",
-     "value": "yes",
-     "quote": "US$17/mês",
-     "source_url": "https://www.menutiger.com/pt/pricing"
-    },
-    {
-     "key": "perorder",
-     "value": "not_mentioned",
-     "note": "was \"no\" without a negative quote — recorded as not mentioned"
-    },
-    {
-     "key": "cardfee",
-     "value": "not_mentioned"
-    }
-   ],
-   "set_focus": true,
-   "not_sold_in": [
-    {
-     "country": "HK",
-     "reason": "No Hong Kong presence on its own site (USD prices only, no currency selector, English only) and no sentence about pickup/order-ahead (only an 'Order Scheduling' table label); global QR-menu/ordering tool",
-     "source_url": "https://www.menutiger.com/pricing"
-    },
-    {
-     "country": "RO",
-     "reason": "Has Romanian pages (menutiger.com/ro), but prices are USD only (\"17US$/lună\", \"46US$/lună\", \"119US$/lună\" on /ro/pricing) and neither /ro/pricing nor /ro/features/online-food-order-system mentions pickup / ridicare / la pachet or ordering ahead (only a bare \"Programarea comenzil…",
-     "source_url": "https://www.menutiger.com/pricing"
-    },
-    {
-     "country": "TH",
-     "reason": "Has a Thai-language pricing page (menutiger.com/th/pricing), but prices are USD only (no THB) and neither the English nor the Thai pages say in words that customers can order ahead for pickup; website ordering ('ลูกค้าสั่งและจ่ายผ่านเว็บไซต์ร้านอาหารของคุณ') and a 'กำหนดเวลารับอ…",
-     "source_url": "https://www.menutiger.com/pricing"
-    }
-   ]
-  },
-  {
    "id": "a9825e32-f5d2-4be7-96e9-8b43d62d37c1",
    "name": "4SaleFood",
    "website": "https://4salefood.net",
@@ -12193,99 +12119,6 @@
      "value": "yes",
      "quote": "One buck per fulfilled order. You decide who pays it.",
      "source_url": "https://outbites.com/pricing/"
-    },
-    {
-     "key": "cardfee",
-     "value": "not_mentioned"
-    }
-   ],
-   "set_focus": true
-  },
-  {
-   "id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
-   "name": "Owner.com",
-   "website": "https://www.owner.com",
-   "focus": "nearest_local",
-   "lifecycle": "active",
-   "payment_providers": null,
-   "features_checked_on": "2026-11-24",
-   "features_verified_at": null,
-   "notes": "compare-research-1 (24 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: US.",
-   "check_urls": [
-    "https://www.owner.com/pricing",
-    "https://www.owner.com/online-ordering",
-    "https://www.owner.com/",
-    "https://www.owner.com/kitchen-tablet",
-    "https://www.owner.com/how-owner-works"
-   ],
-   "request_check": true,
-   "answers": [
-    {
-     "key": "ahead",
-     "value": "partial",
-     "quote": "Mobile app screen showing Hawking Bird restaurant with fried chicken sandwich image, options for pickup or delivery, scheduled pickup, and a rewards progress bar",
-     "source_url": "https://www.owner.com/",
-     "note": "from an image description (alt text) on the homepage, not body text"
-    },
-    {
-     "key": "preorder",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "capacity",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "schedule",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "whatsapp",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "social",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "kds",
-     "value": "partial",
-     "quote": "Adjust prep time, convert pickup orders to delivery, flip on Busy Mode when you're slammed, and manage your full menu. All from one screen.",
-     "source_url": "https://www.owner.com/kitchen-tablet",
-     "note": "a kitchen tablet for managing orders"
-    },
-    {
-     "key": "offline",
-     "value": "not_mentioned",
-     "note": "was \"no\" without a negative quote — recorded as not mentioned"
-    },
-    {
-     "key": "walkup",
-     "value": "yes",
-     "quote": "Take phone and in-store orders, manage your menu, process gift cards, and handle delivery. All from one device.",
-     "source_url": "https://www.owner.com/kitchen-tablet"
-    },
-    {
-     "key": "vans",
-     "value": "yes",
-     "quote": "Special rates available for multi-location",
-     "source_url": "https://www.owner.com/pricing"
-    },
-    {
-     "key": "domain",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "monthly",
-     "value": "yes",
-     "quote": "Pay month-to-month with no long-term contracts.",
-     "source_url": "https://www.owner.com/pricing"
-    },
-    {
-     "key": "perorder",
-     "value": "yes",
-     "quote": "On our Flex plan, you pay a lower subscription cost plus a 5% restaurant fee on orders.",
-     "source_url": "https://www.owner.com/pricing"
     },
     {
      "key": "cardfee",
@@ -15242,8 +15075,8 @@
    "notes": "compare-research-1, read 24 Nov 2026: \"Plans start at $99 per month per location.\" — per location. The site shows only '$' (no CAD/USD code); CAD inferred from the Canadian .ca site 'Built for Canadian restaurants'. $1.00 per order only after 100 orders (overage, pricing table). One-time $1,000 setup fee on all plans. Annual option 'Save 2 months', no annual figure. Higher plans not recorded: Growth & Marketing / App Commerce show $199/$299 in the pricing table and FAQ but $299/$499 elsewhere on the site."
   },
   {
-   "id": "cb6c1c72-e84b-5cf7-8ccf-a2d11621f96e",
-   "competitor_id": "ca13ac16-8af1-5d7d-ab48-f43d330051f2",
+   "id": "1ba6c575-fb40-5f4d-bd52-3258eb888eaa",
+   "competitor_id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
    "country_code": "CA",
    "plan_name": "Flexible",
    "currency": "CAD",
@@ -15275,8 +15108,8 @@
    "notes": "compare-research-1, read 24 Nov 2026: \"$299 CAD /month\" — billed monthly, no long-term contract; plus a 5% restaurant fee per order. Guests also pay a 5% order support fee on both plans. Setup & migration described as included."
   },
   {
-   "id": "8a06563e-e42a-5103-802d-5fee16930a96",
-   "competitor_id": "ca13ac16-8af1-5d7d-ab48-f43d330051f2",
+   "id": "1aa803f8-81b9-56aa-8a9c-54bd3cb67a3b",
+   "competitor_id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
    "country_code": "CA",
    "plan_name": "Flat Rate",
    "currency": "CAD",
@@ -15306,6 +15139,72 @@
    "verified_at": null,
    "verified_by": null,
    "notes": "compare-research-1, read 24 Nov 2026: \"$599 CAD /month\" — no restaurant fee per order; guests still pay the 5% order support fee. 'Best for restaurants at C$7k+/mo in online sales.'"
+  },
+  {
+   "id": "2efb6089-f73b-50f9-a8b6-1c8ffb944455",
+   "competitor_id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
+   "country_code": "US",
+   "plan_name": "Flexible",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 24900,
+   "monthly_major": 249,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 500,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.owner.com/pricing",
+   "checked_on": "2026-11-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-1, read 24 Nov 2026: \"$249\" — shown as '$249 /month + 5% restaurant fee per order'; month-to-month; USD selected (CAD toggle); 'On both plans, guests pay a 5% order support fee'"
+  },
+  {
+   "id": "96bd0376-be84-511d-9f45-37b15760064a",
+   "competitor_id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
+   "country_code": "US",
+   "plan_name": "Flat Rate",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 49900,
+   "monthly_major": 499,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.owner.com/pricing",
+   "checked_on": "2026-11-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-1, read 24 Nov 2026: \"$499\" — shown as '$499 /month with no additional restaurant fees'; month-to-month; guests still pay a 5% order support fee"
   },
   {
    "id": "26a700b2-59a2-532d-ae7d-d839a874e1f2",
@@ -18873,8 +18772,8 @@
    "notes": "compare-research-1, read 24 Nov 2026: \"€24,99/ μήνα\" — Only the Business plan lists 'Online ordering' and 'Ιστότοπος'. Billed yearly: 'ή €22,99/μήνα (Ετήσιο)'. Page: 'Όλες οι τιμές είναι χωρίς ΦΠΑ'. 'Χωρίς προμήθειες' on every plan. Essential (€19,99/μήνα) has 'Takeaway παραγγελίες' but no online ordering. 14-day free start."
   },
   {
-   "id": "31cf6ba4-4868-5961-ab62-d70a1ddd005f",
-   "competitor_id": "e8beb753-d44b-5fe6-8b78-8d02f4f3ece6",
+   "id": "afe9a0a0-1ebb-565b-b4d3-2ec379015db5",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
    "country_code": "GR",
    "plan_name": "Free",
    "currency": "USD",
@@ -18906,8 +18805,8 @@
    "notes": "compare-research-1, read 24 Nov 2026: \"0 US$ /μήνα\" — Greek-language page shows prices only in USD (no EUR). Quote is the price as rendered across separate elements (amount, 'US$', '/μήνα'). Monthly billing; an annual toggle says 'Εξοικονόμηση 15%' without listing annual prices. VAT not stated. Free plan: '75 παραγγελίες / μήνα'."
   },
   {
-   "id": "979b65ed-8b2a-5910-9265-b2651ac13c3e",
-   "competitor_id": "e8beb753-d44b-5fe6-8b78-8d02f4f3ece6",
+   "id": "05dd8403-bb02-5969-8cce-264aeb39314c",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
    "country_code": "GR",
    "plan_name": "Regular",
    "currency": "USD",
@@ -18939,8 +18838,8 @@
    "notes": "compare-research-1, read 24 Nov 2026: \"17 US$ /μήνα\" — Greek-language page shows prices only in USD (no EUR). Quote is the price as rendered across separate elements (amount, 'US$', '/μήνα'). Monthly billing; an annual toggle says 'Εξοικονόμηση 15%' without listing annual prices. VAT not stated. '500 παραγγελίες / μήνα'."
   },
   {
-   "id": "cdd54ee3-0bdb-5db1-9d21-336c619a3e59",
-   "competitor_id": "e8beb753-d44b-5fe6-8b78-8d02f4f3ece6",
+   "id": "e322d206-2691-5078-91b4-1ce78807b2e2",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
    "country_code": "GR",
    "plan_name": "Advanced",
    "currency": "USD",
@@ -18972,8 +18871,8 @@
    "notes": "compare-research-1, read 24 Nov 2026: \"46 US$ /μήνα\" — Greek-language page shows prices only in USD (no EUR). Quote is the price as rendered across separate elements (amount, 'US$', '/μήνα'). Monthly billing; an annual toggle says 'Εξοικονόμηση 15%' without listing annual prices. VAT not stated. '2.000 παραγγελίες / μήνα'; adds KDS. Premium is 119 US$/μήνα (unlimited orders)."
   },
   {
-   "id": "37ecf594-0ef2-5837-a6dd-3c4e4f12ce25",
-   "competitor_id": "e8beb753-d44b-5fe6-8b78-8d02f4f3ece6",
+   "id": "edb732b8-86cd-544a-ba8f-88be7103f9ff",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
    "country_code": "NO",
    "plan_name": "Free",
    "currency": "USD",
@@ -19005,8 +18904,8 @@
    "notes": "compare-research-1, read 24 Nov 2026: \"0US$/måned\" — 75 orders per month. Site shows USD only, no NOK. A yearly-billing toggle ('Spar 15 %') exists; the monthly-billing price is given."
   },
   {
-   "id": "48e58690-4c2b-550c-b714-4b12e8c49224",
-   "competitor_id": "e8beb753-d44b-5fe6-8b78-8d02f4f3ece6",
+   "id": "09aa04f0-06fa-5799-b939-fdaae48d6df6",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
    "country_code": "NO",
    "plan_name": "Regular",
    "currency": "USD",
@@ -19038,8 +18937,8 @@
    "notes": "compare-research-1, read 24 Nov 2026: \"17US$/måned\" — 500 orders per month. USD only."
   },
   {
-   "id": "178a48c6-f741-5605-8ffe-fab595337c68",
-   "competitor_id": "e8beb753-d44b-5fe6-8b78-8d02f4f3ece6",
+   "id": "c4176cbd-1a9e-5f1a-ac3d-d78c47971e40",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
    "country_code": "NO",
    "plan_name": "Advanced",
    "currency": "USD",
@@ -19069,6 +18968,105 @@
    "verified_at": null,
    "verified_by": null,
    "notes": "compare-research-1, read 24 Nov 2026: \"46US$/måned\" — 2 000 orders per month. USD only. Premium is 119US$/måned (unlimited orders, white-label domain)."
+  },
+  {
+   "id": "5a702cbf-1be5-59b6-bf80-fa99eebec832",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
+   "country_code": "PT",
+   "plan_name": "Free",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.menutiger.com/pt/pricing",
+   "checked_on": "2026-11-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-1, read 24 Nov 2026: \"US$0/mês\" — USD only on the Portuguese page, no € and no currency selector; free tier limited to 75 orders a month (per page summary)."
+  },
+  {
+   "id": "8fcbaebc-a17c-564c-902b-1185528435e6",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
+   "country_code": "PT",
+   "plan_name": "Regular",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 1700,
+   "monthly_major": 17,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.menutiger.com/pt/pricing",
+   "checked_on": "2026-11-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-1, read 24 Nov 2026: \"US$17/mês\" — USD only. FAQ gives '$14/ mo (faturação anual)' for Regular billed yearly."
+  },
+  {
+   "id": "ade31eef-85d0-5375-a174-c195096f73f5",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
+   "country_code": "PT",
+   "plan_name": "Advanced",
+   "currency": "USD",
+   "price_hidden": false,
+   "monthly_minor": 4600,
+   "monthly_major": 46,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.menutiger.com/pt/pricing",
+   "checked_on": "2026-11-24",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-1, read 24 Nov 2026: \"US$46/mês\" — USD only. Premium is US$119/mês. Add-ons: cloud POS $30/mês, printers $20/mês, white-label domain $29/mês."
   },
   {
    "id": "1d5974fd-240c-573b-99f3-3342dbcd0d89",
@@ -21900,105 +21898,6 @@
    "notes": "compare-research-1, read 24 Nov 2026: \"płacisz stały abonament miesięczny lub roczny\" — No amount shown; implementation priced on request ('Wyceń wdrożenie'). 'Foodtruck' appears only in a list of business types."
   },
   {
-   "id": "5a702cbf-1be5-59b6-bf80-fa99eebec832",
-   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
-   "country_code": "PT",
-   "plan_name": "Free",
-   "currency": "USD",
-   "price_hidden": false,
-   "monthly_minor": 0,
-   "monthly_major": 0,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "unknown",
-   "status": "counted",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://www.menutiger.com/pt/pricing",
-   "checked_on": "2026-11-24",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-1, read 24 Nov 2026: \"US$0/mês\" — USD only on the Portuguese page, no € and no currency selector; free tier limited to 75 orders a month (per page summary)."
-  },
-  {
-   "id": "8fcbaebc-a17c-564c-902b-1185528435e6",
-   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
-   "country_code": "PT",
-   "plan_name": "Regular",
-   "currency": "USD",
-   "price_hidden": false,
-   "monthly_minor": 1700,
-   "monthly_major": 17,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "unknown",
-   "status": "counted",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://www.menutiger.com/pt/pricing",
-   "checked_on": "2026-11-24",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-1, read 24 Nov 2026: \"US$17/mês\" — USD only. FAQ gives '$14/ mo (faturação anual)' for Regular billed yearly."
-  },
-  {
-   "id": "ade31eef-85d0-5375-a174-c195096f73f5",
-   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
-   "country_code": "PT",
-   "plan_name": "Advanced",
-   "currency": "USD",
-   "price_hidden": false,
-   "monthly_minor": 4600,
-   "monthly_major": 46,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "unknown",
-   "status": "counted",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://www.menutiger.com/pt/pricing",
-   "checked_on": "2026-11-24",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-1, read 24 Nov 2026: \"US$46/mês\" — USD only. Premium is US$119/mês. Add-ons: cloud POS $30/mês, printers $20/mês, white-label domain $29/mês."
-  },
-  {
    "id": "8497d130-3e1a-5331-b852-a37d5f791478",
    "competitor_id": "a9825e32-f5d2-4be7-96e9-8b43d62d37c1",
    "country_code": "RO",
@@ -22918,72 +22817,6 @@
    "notes": "compare-research-1, read 24 Nov 2026: \"$1 USD each time an order completes.\" — no monthly platform fee; $1 per fulfilled order, which the business can pass to the guest, split (50¢) or pay itself"
   },
   {
-   "id": "2efb6089-f73b-50f9-a8b6-1c8ffb944455",
-   "competitor_id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
-   "country_code": "US",
-   "plan_name": "Flexible",
-   "currency": "USD",
-   "price_hidden": false,
-   "monthly_minor": 24900,
-   "monthly_major": 249,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 500,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "unknown",
-   "status": "counted",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://www.owner.com/pricing",
-   "checked_on": "2026-11-24",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-1, read 24 Nov 2026: \"$249\" — shown as '$249 /month + 5% restaurant fee per order'; month-to-month; USD selected (CAD toggle); 'On both plans, guests pay a 5% order support fee'"
-  },
-  {
-   "id": "96bd0376-be84-511d-9f45-37b15760064a",
-   "competitor_id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
-   "country_code": "US",
-   "plan_name": "Flat Rate",
-   "currency": "USD",
-   "price_hidden": false,
-   "monthly_minor": 49900,
-   "monthly_major": 499,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "unknown",
-   "status": "counted",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://www.owner.com/pricing",
-   "checked_on": "2026-11-24",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-1, read 24 Nov 2026: \"$499\" — shown as '$499 /month with no additional restaurant fees'; month-to-month; guests still pay a 5% order support fee"
-  },
-  {
    "id": "5d84720a-dd79-5cf5-b8d9-33184ed0023e",
    "competitor_id": "30bb8773-a54b-52bc-b459-38b53fd0de8b",
    "country_code": "US",
@@ -23755,10 +23588,20 @@
    "verified_by": null
   },
   {
-   "id": "2a53495c-257a-5bd8-8e2a-1e3c7bb8f5d3",
+   "id": "fe83d42c-ed11-578f-9b63-b8724a4a5e59",
    "country_code": "CA",
-   "competitor_id": "ca13ac16-8af1-5d7d-ab48-f43d330051f2",
-   "primary_plan_id": "cb6c1c72-e84b-5cf7-8ccf-a2d11621f96e",
+   "competitor_id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
+   "primary_plan_id": "1ba6c575-fb40-5f4d-bd52-3258eb888eaa",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "943015f8-8bd4-5ad9-b991-59b78c98819a",
+   "country_code": "US",
+   "competitor_id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
+   "primary_plan_id": "2efb6089-f73b-50f9-a8b6-1c8ffb944455",
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -24305,20 +24148,30 @@
    "verified_by": null
   },
   {
-   "id": "8bf8783d-0b56-5eaa-a052-a22d040d9ccc",
+   "id": "e53bdd32-d07d-5e9a-af05-df1264a86455",
    "country_code": "GR",
-   "competitor_id": "e8beb753-d44b-5fe6-8b78-8d02f4f3ece6",
-   "primary_plan_id": "31cf6ba4-4868-5961-ab62-d70a1ddd005f",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
+   "primary_plan_id": "afe9a0a0-1ebb-565b-b4d3-2ec379015db5",
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
    "verified_by": null
   },
   {
-   "id": "1f6288e1-e9a6-5714-8053-9bbdc04993e0",
+   "id": "30c1c966-4c4d-58a1-974f-5e468787a6e6",
    "country_code": "NO",
-   "competitor_id": "e8beb753-d44b-5fe6-8b78-8d02f4f3ece6",
-   "primary_plan_id": "37ecf594-0ef2-5837-a6dd-3c4e4f12ce25",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
+   "primary_plan_id": "edb732b8-86cd-544a-ba8f-88be7103f9ff",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "e2f70dc2-7319-5bcd-a0e2-7e4d6a8fa648",
+   "country_code": "PT",
+   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
+   "primary_plan_id": "5a702cbf-1be5-59b6-bf80-fa99eebec832",
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -24795,16 +24648,6 @@
    "verified_by": null
   },
   {
-   "id": "e2f70dc2-7319-5bcd-a0e2-7e4d6a8fa648",
-   "country_code": "PT",
-   "competitor_id": "d00d6bfd-27c8-51d0-b5a1-960c79e15f83",
-   "primary_plan_id": "5a702cbf-1be5-59b6-bf80-fa99eebec832",
-   "choose_when": null,
-   "sort_order": 50,
-   "verified_at": null,
-   "verified_by": null
-  },
-  {
    "id": "4c5d5341-e97e-5407-a1a7-7c75a87e2bfc",
    "country_code": "RO",
    "competitor_id": "a9825e32-f5d2-4be7-96e9-8b43d62d37c1",
@@ -24959,16 +24802,6 @@
    "country_code": "US",
    "competitor_id": "f8d9d52d-1456-512a-b89e-8a3843a93532",
    "primary_plan_id": "ea173dd0-81e3-5952-966b-625ba822e153",
-   "choose_when": null,
-   "sort_order": 50,
-   "verified_at": null,
-   "verified_by": null
-  },
-  {
-   "id": "943015f8-8bd4-5ad9-b991-59b78c98819a",
-   "country_code": "US",
-   "competitor_id": "1a32fe8f-091e-5db1-8c08-06010d319ef6",
-   "primary_plan_id": "2efb6089-f73b-50f9-a8b6-1c8ffb944455",
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -25550,7 +25383,7 @@
    ]
   },
   {
-   "name": "Owner",
+   "name": "Owner.com",
    "evidence": [
     {
      "country": "CA",
@@ -25559,6 +25392,12 @@
      "country_quote": "SMS marketing is coming soon for Canadian restaurants, and we'll update this page as soon as it's ready.",
      "country_url": "https://www.owner.com/ca/pricing",
      "reason": "US restaurant direct online-ordering platform with a Canadian pricing page in CAD; order-ahead evidence is thin: visible text names only catering lead times (pickup appears only in image alt text on /online-ordering)"
+    },
+    {
+     "country": "US",
+     "order_quote": "Adjust prep time, convert pickup orders to delivery, flip on Busy Mode when you're slammed, and manage your full menu. All from one screen.",
+     "order_url": "https://www.owner.com/kitchen-tablet",
+     "reason": "restaurant website + online ordering with pickup orders; US prices (USD/CAD toggle, USD shown); prices unchanged (Flexible 249 + 5% per order, Flat Rate 499). The only 'scheduled pickup' wording found is an image description (alt text) on the homepage"
     }
    ]
   },
@@ -26263,6 +26102,14 @@
      "country_quote": "Følg bestillinger samlet på tvers av servering i restauranten, takeaway og levering.",
      "country_url": "https://www.menutiger.com/nb",
      "reason": "Norwegian-language site; guests order and pay on the restaurant's own website, with takeaway tracked alongside dine-in. Prices shown only in USD. Borderline: no explicit pickup-time or pre-order wording found."
+    },
+    {
+     "country": "PT",
+     "order_quote": "O MENU TIGER suporta pedidos para consumo no local e takeaway.",
+     "order_url": "https://www.menutiger.com/pt/faq",
+     "country_quote": "Os pedidos aparecem no ecrã da cozinha segundos após o envio.",
+     "country_url": "https://www.menutiger.com/pt/features/online-food-order-system",
+     "reason": "European-Portuguese site (/pt) where customers order and pay on the restaurant's own website, takeaway supported, 'Agendamento de encomendas' listed; weak fit: prices only in USD, Portugal never named, no explicit pickup-time sentence (like NO/GR)"
     }
    ]
   },
@@ -26860,19 +26707,6 @@
    ]
   },
   {
-   "name": "MENU TIGER",
-   "evidence": [
-    {
-     "country": "PT",
-     "order_quote": "O MENU TIGER suporta pedidos para consumo no local e takeaway.",
-     "order_url": "https://www.menutiger.com/pt/faq",
-     "country_quote": "Os pedidos aparecem no ecrã da cozinha segundos após o envio.",
-     "country_url": "https://www.menutiger.com/pt/features/online-food-order-system",
-     "reason": "European-Portuguese site (/pt) where customers order and pay on the restaurant's own website, takeaway supported, 'Agendamento de encomendas' listed; weak fit: prices only in USD, Portugal never named, no explicit pickup-time sentence (like NO/GR)"
-    }
-   ]
-  },
-  {
    "name": "4SaleFood",
    "evidence": [
     {
@@ -27079,17 +26913,6 @@
      "order_quote": "Upload items, photos, modifiers, pickup windows, and availability. Keep it simple enough for a guest standing outside.",
      "order_url": "https://outbites.com/solutions/food-truck-online-ordering/",
      "reason": "own food-truck page: branded ordering link/QR with pickup windows; $1 USD per fulfilled order, no monthly fee (matches stored per-order model). Order-ahead evidence is 'pickup windows'/'pickup times' only; no scheduled-time wording found. Focus food_truck because of the dedicated food-truck page"
-    }
-   ]
-  },
-  {
-   "name": "Owner.com",
-   "evidence": [
-    {
-     "country": "US",
-     "order_quote": "Adjust prep time, convert pickup orders to delivery, flip on Busy Mode when you're slammed, and manage your full menu. All from one screen.",
-     "order_url": "https://www.owner.com/kitchen-tablet",
-     "reason": "restaurant website + online ordering with pickup orders; US prices (USD/CAD toggle, USD shown); prices unchanged (Flexible 249 + 5% per order, Flat Rate 499). The only 'scheduled pickup' wording found is an image description (alt text) on the homepage"
     }
    ]
   },
@@ -28434,7 +28257,12 @@
   },
   {
    "country": "CA",
-   "name": "Owner",
+   "name": "Owner.com",
+   "focus": "nearest_local"
+  },
+  {
+   "country": "US",
+   "name": "Owner.com",
    "focus": "nearest_local"
   },
   {
@@ -28535,11 +28363,6 @@
   {
    "country": "US",
    "name": "Menufy",
-   "focus": "nearest_local"
-  },
-  {
-   "country": "US",
-   "name": "Owner.com",
    "focus": "nearest_local"
   },
   {

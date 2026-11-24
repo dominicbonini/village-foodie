@@ -247,7 +247,8 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   head('6 · the source: the publish-only entry point, the workflow, the deployed page')
   const pub = read('scripts/comparison-publish/main.ts')
   t('scripts/comparison-publish/main.ts runs runPublish with no Claude API (no Anthropic import, no checker)', /runPublish/.test(pub) && !/anthropic/i.test(pub.replace(/\/\/.*$/gm, '')) && !/runChecker/.test(pub))
-  t('…its --dry-run writes nothing (every write of the store replaced) and skips the findings', /savePublish: none/.test(pub) && /setAutoVerified: none/.test(pub) && /setEntryPlan: none/.test(pub) && /skipFindings: dryRun/.test(pub))
+  // compare-fix-2 (24 Nov 2026): the dry run is now the real run inside ONE transaction that always ROLLBACKs (scripts/compare-fix-2.cjs §6)
+  t('…its --dry-run keeps nothing (one transaction that rolls back) and skips the findings', /inTransaction\(db\.client/.test(pub) && /\{ rollback: dryRun \}/.test(pub) && /skipFindings: true/.test(pub))
   let wf = ''
   try { wf = execSync('git diff --name-only 2f0e763a -- .github/workflows/competitor-check.yml', { cwd: REPO }).toString().trim() } catch { wf = 'error' }
   t('the workflow (.github/workflows/competitor-check.yml) is unchanged', wf === '')

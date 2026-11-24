@@ -68,6 +68,8 @@ export interface ResearchStore {
   updateCompetitor(id: string, cols: Row): Promise<void>
   insertPlans(rows: Row[]): Promise<void>
   insertEntries(rows: Row[]): Promise<void>
+  /** compare-fix-2: makes answers written "pending" current (superseded_at back to null). */
+  activateFeatureValues?(ids: string[]): Promise<void>
   /** compare-fix-1: supersedes plans (a corrected plan replaces them). */
   supersedePlans?(ids: string[], at: string): Promise<void>
   /** compare-fix-1: records the checks the file's answers come from (competitor_feature_checks, upsert). */
@@ -89,6 +91,9 @@ export interface ResearchCounts {
 const ROW_ONLY = ['answers', 'request_check', 'set_lifecycle', 'not_sold_in', 'set_focus']
 const QUOTED = ['yes', 'partial', 'no']
 const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '')
+/** compare-fix-2: the superseded_at an answer carries while it is written and not yet current (outside the unique current index). */
+export const PENDING_AT = '9999-12-31T00:00:00.000Z'
+const newId = () => globalThis.crypto.randomUUID()
 /** compare-fix-1: a page address that is a pricing page (for the check record's page kinds). */
 const PRICING_PATH = /\/(pricing|prices|price|plans|preise|preis|tarife?|kosten|precios|prix|tarifs|prezzi|prijzen|cennik|hinnasto|priser|ceny|planos|precos)(\/|$|[.?#-])/i
 
@@ -112,6 +117,7 @@ function answerProblems(who: string, answers: unknown, featureKeys?: readonly st
     if (value === 'not_mentioned' && quote) out.push(`${what}: not_mentioned is silence — it carries no quote.`)
     if (value === 'unknown' && !note) out.push(`${what}: unknown needs its reason in the note.`)
     if (quote && !/^https?:\/\//i.test(str(a?.source_url))) out.push(`${what}: a quote needs the page it is on (source_url).`)
+    if (str(a?.source_url) && !/^https?:\/\//i.test(str(a?.source_url))) out.push(`${what}: source_url must be an http(s) address (competitor_feature_values_source_url_check).`)
     if (quote.length > QUOTE_MAX) out.push(`${what}: the quote is longer than ${QUOTE_MAX} characters.`)
     if (note.length > 300) out.push(`${what}: the note is longer than 300 characters.`)
   }
@@ -136,9 +142,26 @@ export function researchProblems(file: ResearchFile, opts: { featureKeys?: reado
   const out: string[] = []
   const names = new Map(file.competitors.map(c => [String(c.id), String(c.name)]))
   const planIds = new Set(file.plans.map(p => String(p.id)))
+  // compare-fix-2: EACH COMPETITOR ONCE PER FILE — by id, by name (as competitors_name_ci_key: lower(btrim(name))) and by domain (the
+  // importer matches a stored competitor by id, then name, then domain; two rows landing on one competitor wrote its answers twice and
+  // broke competitor_feature_values_current on 24 Nov).
+  const seenId = new Map<string, string>(), seenName = new Map<string, string>(), seenDomain = new Map<string, string>()
+  for (const c of file.competitors) {
+    const label = String(c.name ?? c.id), id = String(c.id ?? ''), nm = nameKey(c.name), dom = domainOf(c.website)
+    if (id && seenId.has(id)) out.push(`Competitor "${label}": appears twice in the file (the same id as "${seenId.get(id)}") — merge them.`)
+    if (nm && seenName.has(nm)) out.push(`Competitor "${label}": appears twice in the file (the same name as "${seenName.get(nm)}") — merge them.`)
+    if (dom && seenDomain.has(dom)) out.push(`Competitor "${label}": appears twice in the file (the same website domain ${dom} as "${seenDomain.get(dom)}") — merge them.`)
+    if (id) seenId.set(id, label); if (nm) seenName.set(nm, label); if (dom) seenDomain.set(dom, label)
+  }
   for (const c of file.competitors) {
     const who = `Competitor "${c.name ?? c.id}"`
     if (!c.id || !String(c.name ?? '').trim()) out.push(`${who}: needs an id and a name.`)
+    // compare-fix-2: the competitors table's own CHECKs, mirrored (MIRRORED_DB_RULES).
+    if (c.check_interval_days != null && !(Number.isInteger(c.check_interval_days) && (c.check_interval_days as number) >= 7 && (c.check_interval_days as number) <= 365)) out.push(`${who}: check_interval_days must be 7–365 (competitors_check_interval_chk).`)
+    if (c.category != null && !['food_truck', 'general_pos', 'restaurant', 'marketplace'].includes(String(c.category))) out.push(`${who}: category "${c.category}" is not one the table allows (competitors_category_check).`)
+    if (c.category_by != null && !['auto', 'admin'].includes(String(c.category_by))) out.push(`${who}: category_by must be auto or admin (competitors_category_by_check).`)
+    if (c.check_urls_by != null && !['auto', 'admin'].includes(String(c.check_urls_by))) out.push(`${who}: check_urls_by must be auto or admin (competitors_check_urls_by_check).`)
+    if (c.check_urls != null && !(Array.isArray(c.check_urls) && (c.check_urls as unknown[]).every(u => typeof u === 'string'))) out.push(`${who}: check_urls must be a list of addresses.`)
     for (const f of FEATURES) if (c[f] != null && !TRI.includes(String(c[f]))) out.push(`${who}: ${f} must be yes, no or unknown (is "${c[f]}").`)
     if (c.focus != null && !FOCUS.includes(String(c.focus))) out.push(`${who}: focus "${c.focus}" is not one the table allows.`)
     if (c.features_verified_at) out.push(`${who}: arrives verified — research must arrive unverified.`)
@@ -162,8 +185,12 @@ export function researchProblems(file: ResearchFile, opts: { featureKeys?: reado
     if (c.set_focus != null && typeof c.set_focus !== 'boolean') out.push(`${who}: set_focus must be true or false.`)
     if (c.set_focus === true && !FOCUS.includes(String(c.focus))) out.push(`${who}: set_focus needs a focus the table allows.`)
   }
+  const seenPlan = new Set<string>()
   for (const p of file.plans) {
     const who = `Plan "${names.get(String(p.competitor_id)) ?? p.competitor_id} · ${p.plan_name}" (${p.country_code})`
+    if (!p.id) out.push(`${who}: needs an id (competitor_plans_pkey).`)
+    else if (seenPlan.has(String(p.id))) out.push(`${who}: its id appears twice in the file (competitor_plans_pkey).`)
+    seenPlan.add(String(p.id))
     if (!names.has(String(p.competitor_id))) out.push(`${who}: its competitor is not in the file.`)
     if (!/^[A-Z]{2}$/.test(String(p.country_code))) out.push(`${who}: the country must be a two-letter code.`)
     if (!/^[A-Z]{3}$/.test(String(p.currency))) out.push(`${who}: the currency must be a three-letter code.`)
@@ -181,9 +208,14 @@ export function researchProblems(file: ResearchFile, opts: { featureKeys?: reado
     if (p.vat != null && !['incl', 'excl', 'unknown'].includes(String(p.vat))) out.push(`${who}: vat "${p.vat}" is not allowed.`)
     if (p.source !== 'research' || p.verified_at) out.push(`${who}: must be source research and unverified.`)
   }
-  const pairs = new Set<string>()
+  const pairs = new Set<string>(), seenEntry = new Set<string>()
   for (const e of file.entries) {
     const who = `Entry for "${names.get(String(e.competitor_id)) ?? e.competitor_id}" (${e.country_code})`
+    if (!e.id) out.push(`${who}: needs an id (comparison_entries_pkey).`)
+    else if (seenEntry.has(String(e.id))) out.push(`${who}: its id appears twice in the file (comparison_entries_pkey).`)
+    seenEntry.add(String(e.id))
+    if (!/^[A-Z]{2}$/.test(String(e.country_code))) out.push(`${who}: the country must be a two-letter code (comparison_entries_country_code_check).`)
+    if (e.group_label != null && !(typeof e.group_label === 'string' && e.group_label.trim().length >= 1 && e.group_label.trim().length <= 60)) out.push(`${who}: group_label must be 1–60 characters (comparison_entries_group_label_chk).`)
     if (!names.has(String(e.competitor_id))) out.push(`${who}: its competitor is not in the file.`)
     if (e.primary_plan_id && !planIds.has(String(e.primary_plan_id))) out.push(`${who}: its main plan is not in the file.`)
     if (e.verified_at) out.push(`${who}: arrives verified — research must arrive unverified.`)
@@ -330,8 +362,19 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
             checked_on: c.features_checked_on ?? file.checked_on, verified_at: null, verified_by: null })
         }
       }
-      if (placeholders.length && store.supersedeFeatureValues) await store.supersedeFeatureValues(placeholders, new Date().toISOString())
-      if (fresh.length) await store.insertFeatureValues(fresh)
+      // compare-fix-2: the NEW answers are written FIRST — "pending" (superseded at PENDING_AT, outside the one-current-answer index) —
+      // then the old ones superseded, then the new ones made current. A store that cannot activate (none in the repo now) keeps the
+      // old order. Inside the import's one transaction the order is invisible; without one, nothing is ever left without an answer.
+      const at = stamp.nowIso ?? new Date().toISOString()
+      if (store.activateFeatureValues) {
+        for (const r of fresh) { r.id = r.id ?? newId(); r.superseded_at = PENDING_AT }
+        if (fresh.length) await store.insertFeatureValues(fresh)
+        if (placeholders.length && store.supersedeFeatureValues) await store.supersedeFeatureValues(placeholders, at)
+        if (fresh.length) await store.activateFeatureValues(fresh.map(r => String(r.id)))
+      } else {
+        if (placeholders.length && store.supersedeFeatureValues) await store.supersedeFeatureValues(placeholders, at)
+        if (fresh.length) await store.insertFeatureValues(fresh)
+      }
       counts.answersAdded = fresh.length
       if (checks.length && store.upsertFeatureChecks) { await store.upsertFeatureChecks(checks); counts.checksRecorded = checks.length }
     } catch (e) { throw new Error(`Feature answers: ${msg(e)} (already written: ${done()}; the next run carries on).`) }
@@ -368,8 +411,9 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
   }
   if (supersede.length && !store.supersedePlans) throw new Error('Plans: this store cannot supersede a plan, so a corrected plan cannot be written (nothing written for the plans).')
   try {
-    if (supersede.length) await store.supersedePlans!(supersede, stamp.nowIso ?? new Date().toISOString())
+    // compare-fix-2: the new plans first, then the corrected ones superseded (no index forbids two current plans of a name).
     if (fresh.length) await store.insertPlans(fresh)
+    if (supersede.length) await store.supersedePlans!(supersede, stamp.nowIso ?? new Date().toISOString())
   } catch (e) { throw new Error(`Plans: ${msg(e)} (already written: ${done()}; the next run carries on).`) }
   counts.plansAdded = fresh.length
 
@@ -390,3 +434,52 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
 }
 
 const msg = (e: unknown) => (e instanceof Error ? e.message : String(e))
+
+/** compare-fix-2: EVERY unique index and constraint of the tables the importer writes (read from pg_indexes / pg_constraint on 24 Nov
+ *  2026 — the snapshot is docs/compare-fix-2/db-rules.json; scripts/compare-fix-2.cjs checks that each one has an entry here) and
+ *  where it is enforced before anything is written: by researchProblems ("validator"), by the importer's own rows ("importer"), by
+ *  both, or it is a column the importer never writes. A database rule without an entry here fails the harness. */
+export const MIRRORED_DB_RULES: Readonly<Record<string, string>> = {
+  // unique indexes
+  competitors_pkey: 'validator: each competitor id once per file; importer: matches a stored id before inserting',
+  competitors_name_ci_key: 'validator: each name (lower, trimmed) once per file; importer: matches a stored name before inserting',
+  competitor_plans_pkey: 'validator: each plan id once per file; importer: skips an id already stored',
+  comparison_entries_pkey: 'validator: each entry id once per file; importer: skips an id already stored',
+  comparison_entries_country_code_competitor_id_key: 'validator: each (country, competitor) once per file; importer: skips a pair already stored',
+  competitor_feature_values_current: 'validator: each answer key once per competitor, each competitor once per file (id, name, domain); importer: writes only where no current answer says anything, supersedes first',
+  competitor_feature_values_pkey: 'importer: new ids',
+  competitor_feature_checks_pkey: 'importer: upsert on (competitor_id, feature_key, country_code)',
+  data_imports_ok_once: 'importer: an ok row only for a file version not yet imported',
+  data_imports_pkey: 'importer: database default id',
+  // competitors
+  competitors_name_check: 'validator: needs a name', competitors_focus_check: 'validator: focus in the table\'s list',
+  competitors_lifecycle_chk: 'validator: lifecycle active or candidate (set_lifecycle: not_relevant or active)',
+  competitors_not_in_countries_chk: 'validator: not_sold_in countries are two-letter codes', competitors_category_check: 'validator',
+  competitors_category_by_check: 'validator', competitors_check_interval_chk: 'validator', competitors_check_urls_by_check: 'validator',
+  competitors_pre_orders_check: 'validator: legacy feature columns yes / no / unknown', competitors_whatsapp_check: 'validator', competitors_social_posts_check: 'validator',
+  competitors_own_domain_check: 'validator', competitors_ios_app_check: 'validator', competitors_android_app_check: 'validator',
+  competitors_compare_features_chk: 'validator: capacity_slots, multi_location_schedule, kds, pay_at_truck yes / no / unknown',
+  competitors_deep_checked_in_chk: 'not written by the importer (database default)', competitors_pass_state_chk: 'not written by the importer (database default)',
+  // competitor_plans
+  competitor_plans_competitor_id_fkey: 'validator: a plan\'s competitor is in the file; importer: never writes a plan for a competitor it did not add or match',
+  competitor_plans_counted_has_price: 'validator: counted needs a monthly price; importer: an implausible price is written hidden',
+  competitor_plans_country_code_check: 'validator', competitor_plans_currency_check: 'validator', competitor_plans_status_check: 'validator',
+  competitor_plans_source_check: 'validator: source research', competitor_plans_vat_check: 'validator', competitor_plans_card_mode_check: 'validator',
+  competitor_plans_monthly_minor_check: 'validator: 0 or more', competitor_plans_setup_minor_check: 'validator', competitor_plans_truck_fee_bps_check: 'validator',
+  competitor_plans_truck_fee_fixed_minor_check: 'validator', competitor_plans_customer_fee_bps_check: 'validator', competitor_plans_customer_fee_fixed_minor_check: 'validator',
+  competitor_plans_card_bps_check: 'validator', competitor_plans_card_fixed_minor_check: 'validator', competitor_plans_included_orders_check: 'validator',
+  competitor_plans_overage_fixed_minor_check: 'validator', competitor_plans_order_cap_check: 'validator: above 0',
+  // comparison_entries
+  comparison_entries_competitor_id_fkey: 'validator: an entry\'s competitor is in the file', comparison_entries_primary_plan_id_fkey: 'validator: its main plan is in the file',
+  comparison_entries_country_code_check: 'validator', comparison_entries_group_label_chk: 'validator: 1–60 characters',
+  // competitor_feature_values
+  competitor_feature_values_competitor_id_fkey: 'importer: answers only for competitors it added or matched',
+  competitor_feature_values_feature_key_check: 'validator: a key from the feature list', competitor_feature_values_value_check: 'validator: yes / no / partial / unknown / not_mentioned',
+  competitor_feature_values_note_check: 'validator: at most 300 characters', competitor_feature_values_quote_check: 'validator: at most 200 (QUOTE_MAX; the table allows 2000)',
+  competitor_feature_values_source_url_check: 'validator: an http(s) address', competitor_feature_values_country_code_check: 'importer: every-country answers (country null)',
+  // competitor_feature_checks
+  competitor_feature_checks_competitor_id_fkey: 'importer: checks only for competitors it added or matched', competitor_feature_checks_country_code_check: "importer: '' (every country)",
+  competitor_feature_checks_feature_key_check: 'validator: the answer\'s key', competitor_feature_checks_pages_checked_check: 'importer: an object { pages, helpCentre, checkedAt }',
+  // data_imports
+  data_imports_file_path_check: 'importer: a registered path', data_imports_result_check: "importer: 'ok' or 'error'", data_imports_sha256_check: 'importer: sha256 hex of the file',
+}

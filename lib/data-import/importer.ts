@@ -37,8 +37,14 @@ export interface ImportDeps {
   sha256(bytes: Buffer): string
   now(): Date
   log(line: string): void
+  /** compare-fix-2: runs ONE file's reads and writes all-or-nothing — BEGIN, `fn`, COMMIT; ROLLBACK on any error, and ALWAYS when
+   *  `rollback` is true (the dry run). The Postgres store has it (scripts/data-import/main.ts); without it, writes land as they go. */
+  transaction?<T>(fn: () => Promise<T>, opts: { rollback: boolean }): Promise<T>
+  /** compare-fix-2: the real import of every file inside a transaction that always rolls back — it reports what WOULD be written and
+   *  records nothing (no data_imports row either). Needs `transaction`. */
+  dryRun?: boolean
 }
-export interface ImportOutcome { path: string; status: 'imported' | 'unchanged' | 'error'; counts?: Row; message?: string }
+export interface ImportOutcome { path: string; status: 'imported' | 'unchanged' | 'error' | 'dry_run'; counts?: Row; message?: string }
 
 export async function runImports(deps: ImportDeps, files: readonly DataFile[] = DATA_FILES): Promise<ImportOutcome[]> {
   const done = await deps.store.imports()
@@ -52,7 +58,10 @@ export async function runImports(deps: ImportDeps, files: readonly DataFile[] = 
       out.push({ path: f.path, status: 'unchanged' }); continue
     }
     const now = deps.now()
-    try {
+    const dry = deps.dryRun === true
+    if (dry && !deps.transaction) throw new Error('a dry run needs a store that holds a transaction (the Postgres one) — nothing was run.')
+    // compare-fix-2: the whole file — its writes AND its 'ok' row — in ONE transaction; on any error nothing of it is kept.
+    const importFile = async () => {
       const parsed = JSON.parse(bytes.toString('utf8'))
       const today = now.toISOString().slice(0, 10)
       // competitor-wtt-1: a research file's quoted answers are checked against the feature list in the database.
@@ -60,13 +69,22 @@ export async function runImports(deps: ImportDeps, files: readonly DataFile[] = 
         : (await deps.store.features())?.map(r => String(r.key))
       const counts = (f.kind === 'features' ? await importFeatures(deps.store, parsed as FeaturesFile, { today })
         : await importResearch(deps.store, parsed as ResearchFile, { today, path: f.path, featureKeys, nowIso: now.toISOString() })) as unknown as Row
-      await deps.store.recordImport({ file_path: f.path, sha256: sha, imported_at: now.toISOString(), result: 'ok', counts, message: null })
+      if (!dry) await deps.store.recordImport({ file_path: f.path, sha256: sha, imported_at: now.toISOString(), result: 'ok', counts, message: null })
+      return counts
+    }
+    try {
+      const counts = deps.transaction ? await deps.transaction(importFile, { rollback: dry }) : await importFile()
+      if (dry) {
+        deps.log(`${f.path}: DRY RUN (rolled back, nothing kept) — would write ${JSON.stringify(counts)}`)
+        out.push({ path: f.path, status: 'dry_run', counts }); continue
+      }
       deps.log(`${f.path}: imported — ${JSON.stringify(counts)}`)
       out.push({ path: f.path, status: 'imported', counts })
     } catch (e) {
       const message = (e instanceof Error ? e.message : String(e)).slice(0, 2000)
-      await deps.store.recordImport({ file_path: f.path, sha256: sha, imported_at: now.toISOString(), result: 'error', counts: {}, message })
-      deps.log(`${f.path}: FAILED — ${message}`)
+      // the file's transaction has been rolled back: only this error row is written (never during a dry run)
+      if (!dry) await deps.store.recordImport({ file_path: f.path, sha256: sha, imported_at: now.toISOString(), result: 'error', counts: {}, message })
+      deps.log(`${f.path}: FAILED${deps.transaction ? ' — rolled back, nothing of this file was kept' : ''} — ${message}`)
       out.push({ path: f.path, status: 'error', message })
     }
   }

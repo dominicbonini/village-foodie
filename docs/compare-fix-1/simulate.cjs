@@ -14,7 +14,7 @@ const fs = require('fs')
 const path = require('path')
 const ROOT = path.resolve(__dirname, '../..')
 const jiti = require(path.join(ROOT, 'node_modules/jiti'))(__filename, { alias: { '@': ROOT }, interopDefault: true })
-const { importResearch } = jiti(path.join(ROOT, 'lib/data-import/research.ts'))
+const { importResearch, PENDING_AT } = jiti(path.join(ROOT, 'lib/data-import/research.ts'))
 const { evaluateCountry, NEVER_AUTO } = jiti(path.join(ROOT, 'lib/comparison-publish.ts'))
 const { competitorOut, planOut, entryOut } = jiti(path.join(ROOT, 'lib/admin/pricing-check-actions.ts'))
 const { valueOut } = jiti(path.join(ROOT, 'lib/comparison-features.ts'))
@@ -28,17 +28,32 @@ const NOW = '2026-11-24T22:00:00.000Z'
 
 const S = { competitors: snap.competitors.map(r => ({ ...r })), plans: snap.plans.map(r => ({ ...r })), entries: snap.entries.map(r => ({ ...r })), values: snap.values.map(r => ({ ...r })), checks: [] }
 let n = 0
+// compare-fix-2: the database's UNIQUE indexes, enforced after every write (the compare-fix-1 simulation did not, so it showed a clean
+// import the database then refused — docs/compare-fix-1-verify-report.md §1). A duplicate throws, as Postgres would.
+function unique(rows, key, index) {
+  const seen = new Set()
+  for (const r of rows) { const k = key(r); if (k === null) continue; if (seen.has(k)) throw new Error(`duplicate key value violates unique constraint "${index}" (${k})`); seen.add(k) }
+}
+function enforce() {
+  unique(S.competitors, r => r.id, 'competitors_pkey'); unique(S.competitors, r => String(r.name).trim().toLowerCase(), 'competitors_name_ci_key')
+  unique(S.plans, r => r.id ?? null, 'competitor_plans_pkey')
+  unique(S.entries, r => r.id ?? null, 'comparison_entries_pkey'); unique(S.entries, r => `${r.country_code}|${r.competitor_id}`, 'comparison_entries_country_code_competitor_id_key')
+  unique(S.values, r => r.id, 'competitor_feature_values_pkey')
+  unique(S.values, r => (r.superseded_at ? null : `${r.competitor_id}|${r.feature_key}|${r.country_code ?? ''}`), 'competitor_feature_values_current')
+  unique(S.checks, r => `${r.competitor_id}|${r.feature_key}|${r.country_code ?? ''}`, 'competitor_feature_checks_pkey')
+}
 const store = {
   competitors: async () => S.competitors.map(r => ({ ...r })), plans: async () => S.plans.map(r => ({ ...r })), entries: async () => S.entries.map(r => ({ ...r })),
-  insertCompetitor: async r => { S.competitors.push({ lifecycle: 'active', added_as_candidate: false, check_urls: [], check_interval_days: 90, check_failures: 0, not_in_countries: [], category: null, ...r }) },
+  insertCompetitor: async r => { S.competitors.push({ lifecycle: 'active', added_as_candidate: false, check_urls: [], check_interval_days: 90, check_failures: 0, not_in_countries: [], category: null, ...r }); enforce() },
   updateCompetitor: async (id, cols) => { Object.assign(S.competitors.find(x => x.id === id), cols) },
-  insertPlans: async rows => { for (const r of rows) S.plans.push({ superseded_at: null, auto_verified_at: null, auto_blocked: false, created_at: NOW, ...r }) },
-  insertEntries: async rows => { for (const r of rows) S.entries.push({ pinned: false, hidden: false, auto_verified_at: null, auto_blocked: false, group_label: null, created_at: NOW, ...r }) },
+  insertPlans: async rows => { for (const r of rows) S.plans.push({ superseded_at: null, auto_verified_at: null, auto_blocked: false, created_at: NOW, ...r }); enforce() },
+  insertEntries: async rows => { for (const r of rows) S.entries.push({ pinned: false, hidden: false, auto_verified_at: null, auto_blocked: false, group_label: null, created_at: NOW, ...r }); enforce() },
   featureValues: async () => S.values.filter(v => !v.superseded_at).map(r => ({ ...r })),
-  insertFeatureValues: async rows => { for (const r of rows) S.values.push({ id: `sim-${n++}`, superseded_at: null, auto_verified_at: null, auto_blocked: false, created_at: NOW, ...r }) },
-  supersedeFeatureValues: async (ids, at) => { for (const v of S.values) if (ids.includes(v.id)) v.superseded_at = at },
+  insertFeatureValues: async rows => { for (const r of rows) S.values.push({ id: `sim-${n++}`, superseded_at: null, auto_verified_at: null, auto_blocked: false, created_at: NOW, ...r }); enforce() },
+  supersedeFeatureValues: async (ids, at) => { for (const v of S.values) if (ids.includes(v.id) && !v.superseded_at) v.superseded_at = at },
+  activateFeatureValues: async ids => { for (const v of S.values) if (ids.includes(v.id) && v.superseded_at === PENDING_AT) v.superseded_at = null; enforce() },
   supersedePlans: async (ids, at) => { for (const p of S.plans) if (ids.includes(p.id) && !p.superseded_at) p.superseded_at = at },
-  upsertFeatureChecks: async rows => { S.checks.push(...rows) },
+  upsertFeatureChecks: async rows => { for (const r of rows) { const i = S.checks.findIndex(x => x.competitor_id === r.competitor_id && x.feature_key === r.feature_key && (x.country_code ?? '') === (r.country_code ?? '')); if (i >= 0) S.checks[i] = { ...S.checks[i], ...r }; else S.checks.push(r) } enforce() },
 }
 
 ;(async () => {

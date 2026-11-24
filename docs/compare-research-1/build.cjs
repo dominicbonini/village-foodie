@@ -62,6 +62,17 @@ function build() {
   const vendors = new Map()   // key → merged vendor
   const hostKey = new Map(), nameKey = new Map()
   const notRelevant = [], unreadable = []
+  // compare-fix-2: a PREPASS over every raw file — the website host and the name of each row that names a stored competitor — so a
+  // row WITHOUT a stored id (e.g. "Owner" in CA, "MENU TIGER" in GR) is merged into that stored competitor wherever it comes in the
+  // files (the compare-research-1 import failed on exactly these two: a new-id row seen first was not merged with the stored row).
+  const storedByHost = new Map(), storedByName = new Map(), ambiguous = new Set()
+  const learn = (map, k, pfx) => { if (!k) return; if (map.has(k) && map.get(k) !== pfx) ambiguous.add(k); else map.set(k, pfx) }
+  for (const f of files) {
+    let raw; try { raw = JSON.parse(fs.readFileSync(path.join(RAW, f), 'utf8')) } catch { continue }
+    for (const v of raw.vendors ?? []) if (v.stored_id_prefix && STORED[v.stored_id_prefix]) { learn(storedByHost, host(v.website), v.stored_id_prefix); learn(storedByName, norm(v.name), v.stored_id_prefix) }
+  }
+  for (const k of ambiguous) { storedByHost.delete(k); storedByName.delete(k); problems.push(`two stored competitors share "${k}" — not used to merge`) }
+  const mergedIntoStored = []
   for (const f of files) {
     let raw
     try { raw = JSON.parse(fs.readFileSync(path.join(RAW, f), 'utf8')) } catch (e) { problems.push(`${f}: not valid JSON — ${e.message}`); continue }
@@ -72,14 +83,20 @@ function build() {
       if (EXCLUDED_HOSTS.some(x => (host(v.website) ?? '').endsWith(x))) { notRelevant.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: `left out (Dominic, 24 Nov): a booking tool, not a food-ordering platform. ${v.reason ?? ''}`.trim() }); continue }
       if (v.verdict === 'not_relevant') { notRelevant.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: v.reason, url: v.eligibility?.order_url ?? v.eligibility?.food_url ?? (v.check_urls ?? [])[0] ?? v.website, plans: v.plans ?? [] }); continue }
       if (v.verdict !== 'eligible') { unreadable.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: v.reason }); continue }
-      const stored = v.stored_id_prefix ? STORED[v.stored_id_prefix] : null
+      const h = host(v.website)
+      // compare-fix-2: no stored id on this row, but a stored competitor has its website host (or its name) → that competitor
+      const pfx = v.stored_id_prefix ?? storedByHost.get(h) ?? storedByName.get(norm(v.name)) ?? null
+      if (pfx && !v.stored_id_prefix) mergedIntoStored.push(`${cc} · ${v.name} (${v.website}) → stored ${pfx}`)
+      const stored = pfx ? STORED[pfx] : null
       if (v.stored_id_prefix && !stored) problems.push(`${f} · ${v.name}: stored_id_prefix ${v.stored_id_prefix} is not in stored-ids.json`)
       // one competitor per vendor: a stored id wins; otherwise the same website host (or name) as a vendor already merged
-      const h = host(v.website)
       const key = stored ? stored.id : (hostKey.get(h) ?? nameKey.get(norm(v.name)) ?? h ?? norm(v.name))
       if (h && !hostKey.has(h)) hostKey.set(h, key)
       if (!nameKey.has(norm(v.name))) nameKey.set(norm(v.name), key)
-      const m = vendors.get(key) ?? { key, stored, prefix: v.stored_id_prefix ?? null, name: stored?.name ?? v.name, website: v.website, focus: v.focus, countries: new Map(), answers: new Map(), check_urls: new Set(), evidence: [] }
+      const m = vendors.get(key) ?? { key, stored, prefix: pfx, name: stored?.name ?? v.name, website: v.website, focus: v.focus, countries: new Map(), answers: new Map(), check_urls: new Set(), evidence: [] }
+      // compare-fix-2: a vendor first seen through a row WITHOUT the stored id takes its name and website from the first row that has it
+      if (!vendors.has(key)) m.namedByStored = !!v.stored_id_prefix
+      else if (v.stored_id_prefix && !m.namedByStored) { m.name = stored?.name ?? v.name; m.website = v.website; m.namedByStored = true }
       if (!FOCUS.includes(v.focus)) problems.push(`${f} · ${v.name}: focus "${v.focus}"`)
       if (v.focus === 'food_truck' && !(v.eligibility?.food_quote && v.eligibility?.order_quote)) problems.push(`${f} · ${v.name}: a food_truck tool needs food_quote and order_quote`)
       if (v.focus !== 'food_truck' && !v.eligibility?.order_quote) problems.push(`${f} · ${v.name}: needs an order_quote`)
@@ -237,7 +254,7 @@ function build() {
     evidence: [...vendors.values()].map(m => ({ name: m.name, evidence: m.evidence })),
     not_relevant: notRelevant, unreadable, not_needed: notNeeded,
   }
-  return { file, problems }
+  return { file, problems, mergedIntoStored }
 }
 
 function validate(file) {
@@ -249,7 +266,7 @@ function validate(file) {
 const checkOnly = process.argv.includes('--check')
 let file, problems = []
 if (checkOnly) file = JSON.parse(fs.readFileSync(OUT, 'utf8'))
-else { const b = build(); file = b.file; problems = b.problems }
+else { const b = build(); file = b.file; problems = b.problems; for (const x of b.mergedIntoStored) console.log(`merged into a stored competitor (same website or name): ${x}`) }
 problems.push(...validate(file))
 if (!checkOnly) { fs.mkdirSync(path.dirname(OUT), { recursive: true }); fs.writeFileSync(OUT, JSON.stringify(file, null, 1) + '\n') }
 console.log(`not needed (2+ priced food-truck tools in the country): ${file.not_needed?.length ?? 0}`)

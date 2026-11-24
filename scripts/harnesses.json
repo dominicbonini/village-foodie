@@ -242,7 +242,8 @@
     "france-records-1.cjs",
     "france-receipts-1.cjs",
     "france-notes-1.cjs",
-    "compare-fix-1.cjs"
+    "compare-fix-1.cjs",
+    "compare-fix-2.cjs"
   ],
   "excluded": {
     "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
@@ -254,7 +255,8 @@
         "db-migrate.cjs",
         "db-rollback-proofs.cjs",
         "revalidate-pages.cjs",
-        "partners-add.cjs"
+        "partners-add.cjs",
+        "compare-db-proofs.cjs"
       ]
     },
     "operational_read_only": {
