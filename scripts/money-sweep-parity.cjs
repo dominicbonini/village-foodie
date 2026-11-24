@@ -311,9 +311,14 @@ async function ticketsView() {
     const t = m.MAP.mapOrderToTicket({ order: ORDERS[k], truck: TRUCK, event: EVENT, ledgerRows: c.ledger, printedLabel: '18:37', heldAuthorisation: c.held, money: FMT })
     for (const paper of [58, 80]) {
       const cfg = { paper_width: paper, show_phone: true }
+      // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026, docs/france-receipts-1-report.md): the ticket gains a receipt block at the
+      // bottom (a divider and the date of sale; these orders carry a time). It is taken out of the line model by name — found where it
+      // must be, never more than once (scripts/_named-france-receipts-1.cjs stripTicketLines) — and the bytes are the tree's own encoder's
+      // for what is left, so every money byte is compared as before. france-receipts-1.cjs §A proves the block against its start.
+      const strip = require('./_named-france-receipts-1.cjs').stripTicketLines(m.T.buildTicketLines(t, cfg))
       out[`${k}|${paper}`] = {
-        lines: m.T.buildTicketLines(t, cfg).map(l => l.text),
-        bytes: Buffer.from(m.T.renderTicket(t, cfg)).toString('hex'),
+        lines: strip.lines.map(l => l.text),
+        bytes: Buffer.from(m.T.encodeEscPos(strip.lines, cfg)).toString('hex'),
       }
     }
   }
@@ -739,7 +744,12 @@ async function devTicketView() {
   // The page's own sample is a UK truck; the USD run re-points that one constant pair at a US truck.
   const usd = USD ? [{ file: F, from: "const SAMPLE_MONEY: MoneyFormat = { currency: 'GBP', locale: 'en-GB' }", to: "const SAMPLE_MONEY: MoneyFormat = { currency: 'USD', locale: 'en-US' }" },
     { file: F, from: "const SAMPLE_COUNTRY = 'GB'", to: "const SAMPLE_COUNTRY = 'US'" }] : []
-  const m = await bundle('devticket', `export { default as Dev } from '@/${F}'\n` + moneyCtxExport(), { patches: [{ file: F, states: ['scenario', 'paper'] }, ...usd] })
+  // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026, docs/france-receipts-1-report.md): the preview shows the real ticket, which now
+  // ends with a receipt block (the date of sale above the truck's name) and so prints more bytes — a ticket change, not a money one.
+  // This view's mapper is patched to leave that ONE block out (named, below); every money line and byte is then compared as before.
+  // The block itself is proven against the start of that work by scripts/france-receipts-1.cjs §A.
+  const FRC1 = { file: 'lib/printing/mapOrderToTicket.ts', from: 'const receiptPart = facts.receiptNo || facts.soldAt || facts.business.length ?', to: 'const receiptPart = false ?' }
+  const m = await bundle('devticket', `export { default as Dev } from '@/${F}'\n` + moneyCtxExport(), { patches: [{ file: F, states: ['scenario', 'paper'] }, FRC1, ...usd] })
   const out = {}
   for (const sc of ['part', 'paid', 'unpaid', 'fournotes']) for (const paper of [58, 80]) {
     try { out[`${sc}|${paper}`] = renderWith({ scenario: sc, paper }, h(m.Dev)) } catch (e) { out[`${sc}|${paper}`] = 'ERROR ' + String(e.message || e).slice(0, 300) }

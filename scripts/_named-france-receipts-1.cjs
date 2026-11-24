@@ -8,8 +8,6 @@
 //                            part's receipt / date lines under the title. → { email, n } (n = how many order-number insertions were found).
 //   stripTicketLines(lines)  the ticket's line model: the receipt block — after a divider (its own, or the notes' closing rule), the receipt
 //                            number, the date of sale and the business details — directly above the centred footer. → { lines, n }.
-//   stripTicketTexts(texts)  the same on a list of line TEXTS (a harness that keeps only `l.text`): the date line (and a receipt line before
-//                            it) directly above the footer, and the divider's empty text never being in the list. → { texts, n }.
 /* eslint-disable @typescript-eslint/no-require-imports -- a CommonJS harness module, like every scripts/*.cjs */
 'use strict'
 
@@ -37,8 +35,9 @@ function stripEmail(email) {
 
 function stripTicketLines(lines) {
   if (!Array.isArray(lines)) return { lines, n: 0 }
-  const f = lines.findIndex(l => l && l.align === 'center' && !l.divider)
-  const end = f < 0 ? lines.length : f
+  // The footer is the run of centred lines at the very END (the truck's name, "printed …"); a reprint banner at the top is centred too.
+  let end = lines.length
+  while (end > 0 && lines[end - 1] && lines[end - 1].align === 'center' && !lines[end - 1].divider) end--
   let j = end - 1
   while (j >= 0 && lines[j] && !lines[j].divider && !lines[j].bold && !lines[j].invert && !lines[j].size && typeof lines[j].text === 'string' && lines[j].text.trim()) j--
   if (j < 0 || !lines[j]?.divider || j === end - 1) return { lines, n: 0 }
@@ -48,14 +47,4 @@ function stripTicketLines(lines) {
   return { lines: [...lines.slice(0, notesRule ? j + 1 : j), ...lines.slice(end)], n: 1 }
 }
 
-function stripTicketTexts(texts, footer) {
-  if (!Array.isArray(texts)) return { texts, n: 0 }
-  const f = footer ? texts.indexOf(footer) : -1
-  const at = f < 0 ? texts.findIndex(t => SOLD_AT.test(t)) + 1 : f
-  const d = at - 1
-  if (d < 0 || !SOLD_AT.test(texts[d] ?? '')) return { texts, n: 0 }
-  const from = /^(Receipt no\.|Reçu n°|Recu no) /.test(texts[d - 1] ?? '') ? d - 1 : d
-  return { texts: [...texts.slice(0, from), ...texts.slice(at)], n: 1 }
-}
-
-module.exports = { SOLD_AT, stripEmail, stripTicketLines, stripTicketTexts }
+module.exports = { SOLD_AT, stripEmail, stripTicketLines }

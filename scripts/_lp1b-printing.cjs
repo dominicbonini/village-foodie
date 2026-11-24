@@ -93,7 +93,12 @@ async function views(ctx) {
     const put = (label, t, widths = [58, 80], phones = [true, false]) => {
       for (const w of widths) for (const phone of phones) {
         const cfg = { paper_width: w, show_phone: phone }
-        out[`ticket|${cc}|${label}|${w}|phone=${phone}`] = { lines: m.T.buildTicketLines(t, cfg), bytes: hex(m.T.renderTicket(t, cfg)) }
+        // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026, docs/france-receipts-1-report.md): the ticket gains a receipt block at the
+        // bottom (a divider and the date of sale — these orders carry a time). It is taken out of the line model by name (scripts/
+        // _named-france-receipts-1.cjs stripTicketLines: a plain block after a divider, directly above the footer — nothing else matches)
+        // and the bytes are the tree's own encoder's for what is left, so every word and byte is compared as before.
+        const strip = require('./_named-france-receipts-1.cjs').stripTicketLines(m.T.buildTicketLines(t, cfg))
+        out[`ticket|${cc}|${label}|${w}|phone=${phone}`] = { lines: strip.lines, bytes: hex(m.T.encodeEscPos(strip.lines, cfg)) }
       }
     }
     for (const k of Object.keys(C.ORDERS)) put(k, ticketOf(k))
@@ -128,7 +133,9 @@ async function views(ctx) {
     for (const [k, t] of Object.entries(hand)) put(`hand|${k}`, t, [58, 80], [true])
     // TicketPreview — the on-screen twin of the paper.
     for (const [k, t] of [['card_paid', base], ['dup', hand.longId], ['data', hand.truckData]]) {
-      for (const w of [58, 80]) out[`preview|${cc}|${k}|${w}`] = html(null, h(m.TicketPreview, { order: t, config: { paper_width: w, show_phone: true } }))
+      // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026, docs/france-receipts-1-report.md): the ticket's receipt block (its `receipt` field,
+      // a divider and the date of sale) is left out of the preview's ticket by name, so the preview is compared as before.
+      for (const w of [58, 80]) out[`preview|${cc}|${k}|${w}`] = html(null, h(m.TicketPreview, { order: { ...t, receipt: undefined }, config: { paper_width: w, show_phone: true } }))
     }
     // The test ticket, on the truck's clock.
     for (const w of [58, 80]) {
