@@ -244,6 +244,7 @@
     "france-notes-1.cjs",
     "france-privacy-1.cjs",
     "france-privacy-2.cjs",
+    "till-pack-1.cjs",
     "compare-fix-1.cjs",
     "compare-fix-2.cjs"
   ],
@@ -282,6 +283,8 @@
     "shared_modules": {
       "$why": "Required BY the harnesses. They export helpers and assert nothing, so running them proves nothing.",
       "files": [
+        "_till-sealed-mirror.cjs",
+        "till-verify.cjs",
         "_batch-reservation-sim.cjs",
         "_paperwork-1-fixtures.cjs",
         "_lp-paperwork-1.cjs",

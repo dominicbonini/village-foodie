@@ -150,7 +150,7 @@ set search_path = public, pg_temp
 as $$
   select case when p_obj is null or jsonb_typeof(p_obj) <> 'object' then p_obj else
     coalesce((select jsonb_object_agg(e.key, e.value) from jsonb_each(p_obj) e where e.key = any (p_keys)), '{}'::jsonb)
-    || coalesce((select jsonb_build_object('_other_keys', jsonb_agg(e.key order by e.key)) from jsonb_each(p_obj) e
+    || coalesce((select jsonb_build_object('_other_keys', jsonb_agg(e.key order by e.key collate "C")) from jsonb_each(p_obj) e
                   where not (e.key = any (p_keys)) and e.key <> all (array['specialInstructions', 'slotNotes', 'note', 'notes'])
                   having count(*) > 0), '{}'::jsonb)
   end
