@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.35
+HatchGrab Engineering Reference Manual · V16.36
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.35**
+**Version 16.36**
 
 November 2026
 
@@ -120,7 +120,7 @@ identical; a **pre-flight** before the migration runs and a **check** after it. 
 insert fail (its own exception block; on error it leaves the value NULL and logs a WARNING). Never run a proof against Pizzeria
 Gusto or any trading truck. A proof that can't be run is a stop: say so; don't apply the migration.
 
-# Open items (V16.35, 24 November 2026) — THE ONLY CURRENT LIST
+# Open items (V16.36, 24 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
@@ -176,6 +176,8 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 7. **Le Roi du Churrasco fixes their allergens by hand:** their 11 dishes were confirmed with all 14 allergens ticked
    (demo-claim-2) and need the truck's own look. Not something an agent edits.
 8. **The country-specific terms sections** for the 47 languages-world-1 countries and the 167 new ones (a lawyer).
+   ⛔ *V16.36: the privacy parts are gone from that page (one privacy policy for every country, france-privacy-1), so the
+   lawyer's check now covers the terms parts and the single privacy policy.*
 
 **Investigations and defects:**
 9. ~~🔴 **gusto-move-1's root cause, NOT YET INVESTIGATED:** why the scraper created an unapproved "unconfirmed" event alongside
@@ -221,11 +223,14 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     `$TMPDIR/hatchgrab-harness/` and is removed on exit; 90 GB of old folders cleared (Disk space rule).
 19. **VAT / tax-number capture** in signup and Manage › Settings (VIES for the EU). Needed before billing is switched on in any of
     the 41 "VAT number required" countries.
+    ⛔ *V16.36: partly done — Manage › Settings › Business details holds the VAT number (EU format check), registration number
+    and French VAT regime (france-records-1). Left: signup, the VIES online check, and using it for billing.*
 20. **Threshold logging:** each country's registration threshold and our running turnover there.
 21. **Sanctions name check at signup** (UK and US lists). Until it exists, 9 countries stay held: Haiti, Iraq, Lebanon, Libya,
     Mali, Myanmar, Palestine, South Sudan, Venezuela.
 22. **EU non-Union OSS registration** once there are paying EU customers.
 23. **Non-Latin ticket printing:** item 10. **V16.35:** France makes it urgent ("é" → "e", "€" → "EUR" on receipts).
+    *V16.36: « N° » also prints as "No" on the new receipt block ("No TVA FR…", "Recu no 142").*
 
 **Partners (partners-2 V16.31, offer V16.32):**
 24. ~~Decision: how a percent-off code reaches the paid plan~~ ⛔ **Decided V16.32: A** — applied when the truck moves onto a paid plan.
@@ -271,8 +276,9 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 
 **Added V16.35 (marketing pages, the Inbox, VAT per dish, France records):**
 40. 🔴 **Before the next deploy: move main forward to `france-vat-1`** (fast-forward, locally; everything since `59ae6161` is there).
-    Dominic deploys. OBSERVED 24 Nov 10:12 UTC: origin/main `f2e2b4ab`, main `59ae6161` (10 ahead of origin/main), france-vat-1
-    `56ce9d7d` (17 ahead of main), checked out.
+    Dominic deploys. ~~OBSERVED 24 Nov 10:12 UTC: origin/main `f2e2b4ab`, main `59ae6161` (10 ahead of origin/main), france-vat-1
+    `56ce9d7d` (17 ahead of main), checked out.~~ ⛔ **OBSERVED 24 Nov 21:32 UTC (V16.36):** origin/main `f2e2b4ab`, main
+    `59ae6161` (10 ahead of origin/main), france-vat-1 `bafd1495` (36 ahead of main), checked out.
 41. 🔴 **Switch on the Inbox's drafting and intake, in this order:** (a) a Claude API key for drafting — a **separate Anthropic
     workspace with its own low spend limit**, key added to Vercel as `ANTHROPIC_API_KEY` (Dominic); (b) **privacy policy section 6**:
     add "Anthropic (Claude) — Translating messages you send us and helping draft our replies — United States" and "Namecheap — Our
@@ -287,15 +293,28 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     (`get_recent_events`), and Items is one line per item per order — no future-market totals exist.
 45. **Decision: a pre-order deadline typed in as a date and time per market** (today a rule: hours before the start, or a time on the
     market day, per item). Asked for by a French prospect.
-46. 🔴 **France e-reporting records — promised before 1 September 2027.** france-records-1 built the daily-totals file; left: confirm
+46. 🔴 **France e-reporting records — promised before 1 September 2027.** france-records-1 built the daily-totals file; ~~left: confirm
     the format with a French accountant / an approved platform, whether payment data is needed (goods vs services), and the VAT rates
-    a food truck should set per dish (5,5 / 10 / 20 %).
-47. 🔴 **Decision: France till-software compliance (art. 286 CGI)** — most likely the software maker's individual attestation. Have:
+    a food truck should set per dish (5,5 / 10 / 20 %).~~
+    ⛔ *V16.36: built: per-dish rates, business details, the VAT regime, receipt numbers and the daily-totals file (franchise sales
+    at 0 %). Decided: trucks choose their own rates; no French accountant; sales are "Goods" (takeaway, no seating), so no payment
+    data. Left: check the file with an approved platform (PA) when the first French truck needs it (before 1 Sep 2027); optionally,
+    send it by API (Iopole and SUPER PDP publish APIs for software makers — their own claims; formats: flow 10.3 for B2C sales,
+    10.4 for B2C payments).*
+47. 🔴 **Decision: France till-software compliance (art. 286 CGI)** — most likely the software maker's individual attestation. ~~Have:
     receipt numbers, audit rows, the finished-order lock (route only). Missing: a database guard on completed orders, a daily close
-    ("Z" total) frozen per truck per day, a tamper-evident log, archiving. **Until decided, don't tell VAT-registered French trucks
+    ("Z" total) frozen per truck per day, a tamper-evident log, archiving.~~
+    ⛔ *V16.36: **Have:** receipt numbers, audit rows, the finished-order lock (route only), business details, the VAT-regime stamp,
+    line notes outside the lines (retention no longer rewrites new orders' items or deals). **Missing:** a database guard on
+    completed orders; earlier versions of edited orders; a daily close ("Z" total) frozen per truck per day; a tamper-evident chain;
+    an archive export; counter refunds recorded as refunds (today only online card refunds have a row); `undo_collected` /
+    `undo_mark_paid` delete the payment row (should reverse it); the attestation text (model BOI-LETTRE-000242). 🔴 Seal / hash an
+    order only after france-notes-1's follow-up move.* **Keep: until decided, don't tell VAT-registered French trucks
     that HatchGrab replaces their till** (micro-entrepreneurs on franchise en base are exempt).
-48. **France receipts:** a receipt for counter orders when no email is taken (print or QR); business details and VAT regime on
-    receipts (france-receipts-1 in progress: `6ed618a9`, `56ce9d7d` committed, more uncommitted work in the folder on 24 Nov).
+48. **France receipts:** a receipt for counter orders when no email is taken (print or QR); ~~business details and VAT regime on
+    receipts (france-receipts-1 in progress: `6ed618a9`, `56ce9d7d` committed, more uncommitted work in the folder on 24 Nov).~~
+    ⛔ *V16.36: business details, receipt number, date of sale and the franchise line are on the customer email, status page and
+    ticket (france-receipts-1). Left: a receipt for counter orders when no email is taken (print or QR).*
 49. **Decision: Microsoft 365 for email** (Dominic considering). The CRM and the poll use IMAP/SMTP with a password on Namecheap;
     Microsoft 365 would need the mail connection reworked (OAuth). Decide before switching the Inbox on.
 50. **Channels research:** Search Console and Bing (Performance by country; Indexing › Pages trend; URL Inspection of /de, /es,
@@ -303,6 +322,16 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     HatchGrab (possibly a line in the Inbox's first reply).
 51. **Decision: switch on the German comparison page** (`/de/vergleich/foodtruck-bestellsystem`, built, admin-only) and one per
     country where Search Console shows interest.
+
+**Added V16.36 (France receipts, line notes, one privacy policy):**
+52. **Enquiry reply wording for France is out of date after the next deploy.** The 23 Nov drafts (facts / gaps / guidance on
+    e-reporting, VAT and till software) said "one VAT rate per order" and "doesn't produce the file yet"; both are built. Update the
+    `reply_knowledge` lines **with Dominic's approval** after the deploy. The till line stays held (item 43).
+53. **Decisions (france-privacy-1 §10):** should account deletion also (a) delete the truck's `whatsapp_logs` / `messages` rows at
+    once, rather than at 12 months, and (b) clear an unpromoted card draft's name, email and phone? (Live 24 Nov: 17 WhatsApp rows,
+    0 messages, 0 unpromoted drafts.)
+54. **A native read of the privacy wording** (france-privacy-1 §4): the "regulator" and "breach" terms, and the plural "those
+    documents" in the country-terms intro in mn-MN, km-KH and lo-LA.
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -554,6 +583,106 @@ actions, `refund`, the Manage-level token routes. 6. After two clean weeks, grou
 board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings (owner only; needs a mockup first).
 
 # Changelog
+
+## V16.36 — 24 November 2026 — **RECEIPTS CARRY THE RECEIPT NUMBER, DATE OF SALE AND BUSINESS DETAILS; FRANCHISE EN BASE SELLS AT 0 % ("TVA NON APPLICABLE"); LINE NOTES LIVE OUTSIDE THE ORDER LINES; ACCOUNT DELETION CLEARS CUSTOMERS' NOTES; ONE PRIVACY POLICY FOR EVERY COUNTRY; THE FRANCE DECISIONS AND THE LAW AS RESEARCHED**
+
+- **Nothing was deployed.** Everything is on branch `france-vat-1` with V16.35's commits (other sessions' commits are interleaved).
+  **The database changes below are already live** (shared database); the code waits for the next deploy (Open item 40).
+- **OBSERVED 24 Nov 2026, 21:32 UTC (read-only, when this entry was applied):**
+  - **Git:** checked out `france-vat-1` = `bafd1495`; `main` = `59ae6161`; `origin/main` = `f2e2b4ab`. `main..france-vat-1` = **36**
+    commits; main is **10** ahead of origin/main (local only). Every commit this entry names (`6ed618a9 55b87152 cf970e32 ae3fc8f1
+    395c75fe cb99918d bafd1495`) exists and is on france-vat-1; none is on main.
+  - **Columns live:** `orders.line_notes` (jsonb), `orders.receipt_no` (bigint), `orders.tax_breakdown` (jsonb), `orders.vat_regime`
+    (text); `order_drafts.line_notes` (jsonb), `order_drafts.tax_breakdown` (jsonb), `order_drafts.vat_regime` (text).
+    `order_drafts` has no `receipt_no` (receipt numbers are for orders only).
+  - **Triggers live:** on `orders` — `orders_fill_currency_country`, `orders_receipt_no`, `orders_receipt_no_keep`,
+    `orders_set_updated_at`, `orders_stamp_vat_regime`; on `order_drafts` — `order_drafts_stamp_vat_regime` (unchanged since V16.35).
+  - **`place_order_atomic_v2`:** md5 `e4b273abcf8e7609c6ca54033ed59332`, as expected (unchanged since V16.35).
+  - **Counts:** orders with a receipt number **0**; `receipt_no_failures` rows **0**; orders with `line_notes` **0**; orders with a
+    `vat_regime` **0**; trucks with a `vat_regime` **0**. (Expected: the code that writes them isn't deployed, no truck has set a
+    regime, and nothing was backfilled.)
+- **france-receipts-1** (migration `6ed618a9` / `20261126_france_receipts_1.sql`, run after a rolled-back pre-flight on demo trucks;
+  build `55b87152`; report `cf970e32`). Dominic approved the look from a mockup on 24 Nov; ⛔ *the mockup was not in the repo, so the
+  build followed the brief's description (business block 11–12 px muted grey, centred at the bottom; date of sale 12 px under the
+  order number — the report's "Things you should know", point 4).*
+  - **Three outputs only:** the customer confirmation email, the customer status page (`/order/<key>/manage`) and the printed
+    ticket. **Unchanged:** the truck's new-order email, the "ready", cancellation and refund emails, the order page and its in-page
+    confirmation, the dashboard card and the KDS.
+  - **Every country:** the receipt number beside the order number ("Order #23 · Receipt no. 142", « Commande #23 · Reçu n° 142 »,
+    only when `orders.receipt_no` is set) and the date and time of sale under it (`placed_at`, else `created_at` for a walk-up, on
+    the truck's clock). **Dominic decided to keep « Commande #23 »** (not « n° 23 »).
+  - **Business details block** at the bottom (only the fields filled in): legal name; registered address in the truck's address
+    format; France "SIRET 732 829 320 00074" (14 digits) / "SIREN 732 829 320" (9), digits only on the ticket; GB "Company no.";
+    elsewhere "Registration no."; VAT number « N° TVA … » in France, "{label} no." elsewhere. Business text is HTML-escaped.
+  - **The ticket:** a divider after the totals and tax lines (none extra when the notes block's closing rule is already there), then
+    the receipt number, date of sale and business details, wrapped to 58 / 80 mm. The printer path has no "°": « N° » prints as
+    "No" (with the existing "é" → "e", "€" → "EUR"; Open item 23).
+  - **Franchise en base** (French truck, `trucks.vat_regime = 'franchise'`): new orders are taxed at **0 %** on every line and deal
+    part, with a 0 % rate and breakdown; the truck's saved default and dish rates are never changed and return when the regime
+    changes. **Edits follow the order's own stamp** (`orders.vat_regime`), not the truck's regime today. The three outputs show
+    « TVA non applicable, art. 293 B du CGI » under the total and no « Dont TVA » — **only when the order is French, stamped
+    franchise AND carries no tax** (no tax amount and no non-zero rate, `lib/receipt.ts` `franchiseNoteFor`; so an order taxed by
+    the deployed code is never told it was exempt). The accountant Orders CSV adds its per-rate columns whenever the file holds a
+    0 % rate; the daily-totals file has a 0 % row with VAT 0.
+  - **`orders.vat_regime` / `order_drafts.vat_regime`:** the regime the order was sold under, stamped by never-failing BEFORE
+    INSERT triggers (`orders_stamp_vat_regime`, `order_drafts_stamp_vat_regime`) when the insert names none. Not backfilled.
+  - **Operator note** in Business details reworded, and shown whenever franchise en base is chosen (it used to need a VAT rate above
+    0): « Because you've chosen franchise en base, your receipts show "TVA non applicable" and no TVA is charged. »
+  - Code: `lib/receipt.ts` (`receiptFactsOf`, franchise helpers), `lib/receipt-server.ts`. `scripts/france-receipts-1.cjs` 53/0.
+- **france-notes-1** (migration `ae3fc8f1` / `20261127_france_notes_1.sql`; build `395c75fe`; report `cb99918d`).
+  - **Dish notes (`items[].specialInstructions`) and deal slot notes (`deals[].slotNotes`) of every NEW order and draft live in
+    `orders.line_notes` / `order_drafts.line_notes`** (jsonb `{v:1, items:{key:{at,note}}, deals:{key:{at,slotNotes}}}`; key =
+    `"k:<cartKey>"` when the line carries one, else `"#<position>"` — in practice the position, as stored lines carry no cartKey
+    today). `lib/line-notes.ts`: split at every write, merge at every read, so **everything people see is byte-identical**. Older
+    orders (and orders the deployed code writes) keep notes inside the lines; every reader handles both.
+  - **The customer path** (`place_order_atomic_v2`, unchanged) inserts with notes inside the lines; one guarded update in the same
+    request and event lock then moves them (`… where line_notes is null`). If it ever failed, the order stays old-style.
+    🔴 **For the till work (Open item 47): any sealing / hash of an order must happen after this move.**
+  - **jsonb does not keep key order**: the merge restores a note where jsonb would have put it (proved against the live database,
+    rolled back).
+  - **Retention:** an order with `line_notes` gets the notes blanked there; its items and deals are never rewritten. An order
+    without is cleaned exactly as before. The privacy promise holds for both.
+  - **Fixed a france-receipts-1 gap:** the card-draft read (`DRAFT_ROW_COLUMNS`) didn't select `vat_regime`, so promotion fell back
+    to the truck's regime at promotion; now the draft's is carried.
+  - `scripts/france-notes-1.cjs` 44/0.
+- **france-privacy-1** (`bafd1495`, start `ec16f022`; report `docs/france-privacy-1-report.md`; no database change). **Both parts
+  DONE; wording approved by Dominic, 24 Nov.**
+  - **Account deletion clears customers' notes:** new step 2b in `lib/account-deletion.ts` pages through every order and card
+    draft of the account's trucks (500 a page) and applies `notesPatch` (new export of `lib/order-retention.ts`, the notes half of
+    retention's patch, imported not copied): `notes` → null; with `line_notes`, blanked (items and deals not written); without,
+    each `specialInstructions` → `''` and each `slotNotes` → `{}`. Only rows that still hold note text are written. Totals, items,
+    deals and `order_payments` kept; nothing deleted; `deleteTruckCascade` never called; re-runnable (a failure throws
+    `clear_notes:<table>:<id>`). The result gains `notesCleared: { orders, drafts }`. Where else notes live, and what deletion does:
+    §41 (audit snapshots hold none; WhatsApp rows go at 12 months; the native offline outbox and Brevo's logs are out of reach).
+    Proved in memory only; account deletion was never run against the live database.
+  - **One simple privacy policy for every country:** UK law plus the data protection law of the country you live in; rights,
+    requests ("within one month, or sooner if the law of your country requires it"), marketing emails, breaches and complaints
+    ("the data protection regulator where you live"; the ICO for the UK) worded once; a new "Allergy and dietary notes" paragraph
+    in section 4; a transfer sentence covering other countries' safeguards; a new line: "When an operator's account is deleted,
+    we also remove their customers' names, contact details and notes from the orders we keep." **All 16 "Privacy, for everyone in
+    …" parts were removed from the Country-specific terms page**, which now covers the Terms of Service only (terms parts
+    byte-identical). Dates 24 Nov 2026 (`lib/legal.ts` mirrors; `TERMS_VERSION` 2026-11-24, written only at signup, so nobody
+    re-accepts; the sitemap's `/privacy` and `/country-terms` lastmod moved with them). Translated into the 54 bases enabled
+    countries use, with back-translations (`docs/france-privacy-1/back-translations.md`); fil-PH, hi-IN, ur-PK, ta-LK, vi-VN
+    untouched. The old text: `git show ec16f022:content/legal/country-specific-terms.md`. Details and the reply-deadlines table:
+    §43 "One privacy policy for every country".
+  - `scripts/france-privacy-1.cjs` 47/0; ten harnesses re-pinned by name, plus the undo chain (`_named-terms-postpay-1.cjs` now calls
+    the new `_named-france-privacy-1.cjs` first; report §8); the sweep shows the same 19 failures as at the start (`ec16f022`).
+  - 🔴 **The new account-deletion line and the code that makes it true go live in the same deploy** (both are on this branch).
+- **Decisions (Dominic, 23–24 Nov, France research chat):**
+  - **VAT rates are the truck's choice.** HatchGrab provides the tools (one rate, or a rate per item); Dominic is **not** consulting
+    a French accountant. **No eat-in rate** (food trucks have no seating; add only if a truck asks).
+  - **Every country** gets one rate or a rate per item; where prices include tax with no built-in default (GB, IE …) the default is
+    **"No VAT"**, so no existing truck changes. Rate limit 0–30 %.
+  - **Mixed-rate added-on-top orders (US):** the status page, dashboard card and truck's new-order email show the tax line with no
+    rate — kept (accurate); Dominic may revisit.
+  - **Receipt numbers by an insert trigger** (covers the deployed code); proofs run live in rolled-back transactions on demo trucks
+    (the V16.35 standing rule).
+  - **Retention:** notes moved out of the lines rather than retention rewriting items and deals.
+  - **Franchise en base:** TVA lines hidden automatically and sales recorded at 0 %.
+- **France — the law, as researched 23–24 Nov** (official sources; not legal advice; detail in §83.9).
+- **Reference sections updated:** §83.9 France, §37 Tax, tips and fees, §18 customer email, §42 printing, §16 schema,
+  §19 accountant reports, §43 retention and the new privacy-policy subsection, §41 account deletion, §50 Business details.
 
 ## V16.35 — 23–24 November 2026 — **MARKETING PAGES REFRESH ON DEMAND; ONE ADMIN INBOX FOR EVERY EMAIL (TRANSLATED, AI-DRAFTED, SENT BY HAND); A VAT RATE PER DISH; FRANCE: BUSINESS DETAILS, RECEIPT NUMBERS, DAILY TOTALS BY VAT RATE**
 
@@ -14896,6 +15025,18 @@ without an email. See §27.
 - **`comparison_features.checked_by` / `scope_by`** (20261067; §86.17).
 - Every new table has RLS on, no policy and no grant to anon or authenticated: the service role only.
 
+## New columns and triggers at V16.36 (france-receipts-1, france-notes-1; live in the shared database)
+
+- **`orders.vat_regime`, `order_drafts.vat_regime`** (text, nullable; `20261126_france_receipts_1.sql`): the VAT regime the order
+  was sold under. Stamped from `trucks.vat_regime` by the never-failing BEFORE INSERT triggers **`orders_stamp_vat_regime`** and
+  **`order_drafts_stamp_vat_regime`** when the insert names none (own exception block; no check constraint). Not backfilled.
+- **`orders.line_notes`, `order_drafts.line_notes`** (jsonb, nullable; `20261127_france_notes_1.sql`; nothing else in that
+  migration): the dish and slot notes of new orders and drafts, outside the lines —
+  `{v:1, items:{key:{at,note}}, deals:{key:{at,slotNotes}}}`, key `"k:<cartKey>"` when the line carries one, else `"#<position>"`;
+  `at` is the field's place among the line's stored keys. NULL on every older order and every order the deployed code writes
+  (notes still inside `items` / `deals`). Read and write only through `lib/line-notes.ts` (§37, §43).
+- OBSERVED 24 Nov 21:32 UTC: all four columns and both triggers live; 0 orders with `line_notes`, 0 with `vat_regime`.
+
 # 17. Menu API behaviour
 
 - Slug or ID lookup — /api/menu/[truckId] and /api/orders/submit accept slug or UUID. Try slug first, fall back to ID.
@@ -15117,6 +15258,18 @@ All Brevo sends must check the response and surface failures.
 > **RULE** — Both go through formatConfirmationEmail + sendConfirmationEmail (a DRY fix). formatConfirmationEmail gained a slotAdjustedFrom param (amber "collection time updated" box). The local notifyCustomer() helper remains for reject, cancel, ready, and edit.
 
 > **RULE (V6.3)** — formatConfirmationEmail takes orderKey as a REQUIRED parameter and builds the cancel link from it. The old `?? orderId` fallback was removed. tsc passing guarantees all five callers pass order_key.
+
+### The receipt facts on the confirmation email (V16.36 — france-receipts-1; not deployed)
+
+- **`formatConfirmationEmail` takes an optional `receipt`** (`lib/receipt.ts` `receiptFactsOf` → `{ receiptNo, soldAt, business[],
+  franchiseNote }`). HTML: the receipt part and date of sale in the order-number line ("Order #23 · Receipt no. 142"), the 293 B row
+  under the total in place of the « Dont TVA » rows, the business block above "Powered by" (business text HTML-escaped). Text part:
+  the same lines. With no `receipt` passed, the email is byte-identical to before.
+- **Where the facts come from** (`lib/receipt-server.ts`, never throws — on any error the email goes out exactly as before):
+  `receiptForRow` where the send site already holds the order row (the operator confirm and the edit "updated" email);
+  `receiptForOrderKey`, one read of the four receipt columns by order key, where it has only the key (the customer submit, the card
+  promotion, the walk-up and the slot change).
+- **Not on:** the "ready", cancellation and refund emails, or the truck's new-order email (byte-identical to before).
 
 ### Customer cancel page (V5, updated V6.3)
 
@@ -15383,6 +15536,9 @@ accountant").
   blocks; réel simplifié the month; réel normal monthly 1–10 / 11–20 / 21–end; réel normal quarterly, no regime or not France the
   month; "Custom dates" always.
 - **The Orders CSV** gains a **"Receipt no."** column (`orders.receipt_no`) and per-rate Net / Tax columns from `tax_breakdown`.
+  ⛔ *V16.36 (france-receipts-1): the per-rate columns appear whenever the file holds two or more rates **or any 0 % rate**
+  (`lib/accounts/csv.ts`: `rates.length > 1 || rates.includes(0)`), so a franchise-en-base truck's file says 0 % explicitly. The
+  daily-totals file needed no change: a franchise sale is a 0 % row with VAT 0.*
 - The format is still to be confirmed with a French accountant / an approved platform (Open items 46).
 
 # 20. Social media and WhatsApp auto-replies
@@ -26496,9 +26652,18 @@ it was not. Same class as the success-reporting writes already recorded. **OPEN.
 - **Receipt numbers:** `orders.receipt_no` (bigint), a gap-free number per truck assigned by a never-failing BEFORE INSERT trigger
   (`orders_receipt_no`, with `orders_receipt_no_keep`), so the deployed code is covered too. `20261125_france_records_1b_receipt_replay.sql`
   stops a replayed `order_key` from taking a number (`ON CONFLICT DO NOTHING` still fires BEFORE INSERT triggers).
-- **The VAT-regime stamp (france-receipts-1, in progress):** `orders.vat_regime` and `order_drafts.vat_regime`, copied from
+- **The VAT-regime stamp (france-receipts-1, ~~in progress~~ ⛔ V16.36: done, not deployed):** `orders.vat_regime` and `order_drafts.vat_regime`, copied from
   `trucks.vat_regime` on insert by never-failing triggers (`orders_stamp_vat_regime`, `order_drafts_stamp_vat_regime`;
-  `20261126_france_receipts_1.sql`). Its use on receipts is V16.36's.
+  `20261126_france_receipts_1.sql`). Its use on receipts is V16.36's (next bullet).
+- **Franchise en base (V16.36, france-receipts-1):** when `franchiseApplies(truck.country, truck.vat_regime)` (a French truck with
+  `vat_regime = 'franchise'`) at the moment of the order, the rules' default rate is 0 and the dish book is at 0 %, so every line
+  and deal part is stamped 0 %, `tax_rate_milli` is 0 and `tax_breakdown` is one row at 0 % (tax 0) — customer submit, card draft
+  → promotion (the order carries the draft's stamp) and walk-up. **The truck's saved default and dish rates are never written** and
+  come back when the regime changes. **Edits follow the order's own `vat_regime`**, not the truck's regime today: a line added to a
+  franchise order is 0 %; an older order keeps its rates. **The 293 B line** (« TVA non applicable, art. 293 B du CGI », fixed
+  French) shows under the total, with no « Dont TVA », only when the order is French, stamped franchise and carries no tax at all
+  (`franchiseNoteFor`: no tax amount, no non-zero order rate, no non-zero breakdown row). **The accountant Orders CSV** shows 0 %
+  per-rate columns ("Net 0% / Tax 0%") whenever the file holds a 0 % rate, even with one rate (§19).
 - **Triggers on order tables never fail an insert:** each has its own exception block; on error it leaves the value NULL and logs a
   WARNING.
 
@@ -27960,7 +28125,8 @@ The admin route refuses with **409 `accounting_records_present`**, keyed on **th
 | Table | Disposition |
 |---|---|
 | **`order_payments`** | 🔴 **RETAINED, untouched** |
-| **`orders`** | **RETAINED, anonymised** — `customer_name → '[deleted]'`, `customer_email`/`customer_phone` → null. Totals, payment status, line items, timestamps intact |
+| **`orders`** | **RETAINED, anonymised** — `customer_name → '[deleted]'`, `customer_email`/`customer_phone` → null. Totals, payment status, line items, timestamps intact. ⛔ *V16.36 (france-privacy-1), step 2b: customers' notes cleared too — `notes` → null; `line_notes` blanked; older-style `specialInstructions` → `''`, `slotNotes` → `{}` (below)* |
+| **`order_drafts`** (V16.36) | **RETAINED; notes cleared** by step 2b, the same way as orders. Name, email and phone of an unpromoted draft are **not** cleared (Open item 53) |
 | **`trucks`** | **RETAINED, anonymised**, `active: false`. Not deleted — `order_payments.truck_id` cascades from it |
 | `truck_users` | **DELETED** |
 | `auth.users` (staff) | **DELETED only when no membership survives anywhere** — a staff member may work for another account |
@@ -27969,6 +28135,30 @@ The admin route refuses with **409 `accounting_records_present`**, keyed on **th
 | `action_audit_log` | **RETAINED** — no FKs. ✅ Live-verified 6 Aug 2026: **63 rows, none containing an email-shaped string or a `customer_*` key** in `before_state`/`after_state`, so **no JSONB scrub was needed and none was built**. ⚠️ That is a property of what callers pass today, **not an enforced constraint** — nothing sweeps this table |
 
 **The execute route returns `paymentsIntact` with a before/after count**, so a regression that starts deleting payments **shows up as a changed number** rather than being found years later by an accountant.
+
+### Step 2b — customers' notes are cleared (V16.36 — france-privacy-1, `bafd1495`; not deployed)
+
+- **After the name / email / phone step,** for every truck of the account, `lib/account-deletion.ts` pages through **every order and
+  every card draft** (500 rows a page, by `order_key`) and applies **`notesPatch`** — the notes half of retention's patch, exported
+  from `lib/order-retention.ts` and **imported, not copied**: `notes` → null; with `line_notes`, blanked with `blankLineNotes` (items
+  and deals not written); without, each `specialInstructions` → `''` and each `slotNotes` → `{}` (the same `scrubItems` /
+  `scrubDeals` code). Only rows that still hold note text are written.
+- Totals, items, deals and `order_payments` kept; nothing deleted; `deleteTruckCascade` never called; still not transactional, still
+  throws a named step (`clear_notes:<table>:<id>`), still safe to re-run. **The result gains `notesCleared: { orders, drafts }`**
+  (the admin-only execute route spreads it into its answer).
+- Proved in memory only (`scripts/france-privacy-1.cjs` 47/0); never run against the live database.
+- **Where else a customer's notes live, and what deletion does** (france-privacy-1 report §2, in short):
+
+| Where | Account deletion |
+|---|---|
+| `action_audit_log` before/after snapshots | nothing to clear — a whitelist with no notes (`lib/audit/order-audit.ts`); live 24 Nov: 1,789 rows, 0 with any note |
+| `order_payments.note` | kept — our own text and the operator's refund note, not a customer note |
+| `orders.cancellation_reason` / `rejection_reason` | kept — the truck's words |
+| `orders.modify_data` | legacy, unused; live 0 rows hold anything |
+| `whatsapp_logs`, `messages` | **not cleared**; deleted at 12 months by retention (Open item 53) |
+| Stripe metadata, push notifications, KDS / dashboard, ticket printing | no notes stored |
+| The native app's offline outbox (on the operator's device) | out of reach of a server-side deletion |
+| Brevo delivery logs | held by Brevo under its own retention (privacy policy §7) |
 
 ## Multi-truck
 **Every truck the operator owns is in scope. A second truck is NOT spared** — same account, same legal entity, same person's data. Sparing one would leave a live business attached to a deleted identity with nobody able to log in. ⚠️ `trucks.operator_id` is **nullable**; an unclaimed truck has no account and is unreachable from this path.
@@ -28278,6 +28468,17 @@ the word "thermal" is gone. ⚠️ **HOLD those files until both app store updat
 - **REASONED** Real Latin-1 accents (the code page already sent) are possible later behind a per-device
   switch; non-Latin scripts need the ticket printed as an image (§77.1).
 
+## The receipt block and the franchise line on the ticket (V16.36 — france-receipts-1; not deployed)
+
+- **`lib/printing/ticket.ts`** has two optional fields: **`franchiseNote`**, printed under TOTAL, and **`receipt`**, printed at the
+  bottom before the truck's name — a divider (none extra when the notes block's closing rule is already there), the receipt number,
+  the date of sale, then the business details (SIRET / SIREN as digits only). Everything is **wrapped to 58 / 80 mm, never
+  truncated**.
+- **`lib/printing/mapOrderToTicket.ts`** fills both from `receiptFactsOf(…, { forTicket: true })`. `app/api/dashboard/route.ts`
+  adds the truck's `address_format` only when the truck has a registered address.
+- **« N° » prints as "No"** ("No TVA FR…", "Recu no 142"): the printer path has no "°" and folds it with the accents above (Open
+  item 23).
+
 # 43. Legal, email and domain (V11.4)
 
 **Privacy policy and terms are WRITTEN, PUBLISHED at `/privacy` and `/terms`, and reachable in-app — 5.1.1(i) satisfied.** `content/legal/*.md` are the **source of truth**, byte-identical to the drafts (`shasum` verified), rendered by a purpose-built renderer in which **unsupported constructs pass through as LITERAL TEXT** — the correct failure direction for legal copy, because a dropped clause is invisible and a visible `**` is not. **`lib/legal.ts` is the single source for the routes; zero inline `/privacy` or `/terms` literals.**
@@ -28388,8 +28589,10 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
   - the £100 liability cap "or its equivalent in your local currency".
 - **The Country-specific terms page** (`/country-terms`, `content/legal/country-specific-terms.md`):
   - one heading per country; today only the United States;
-  - it forms part of both documents and wins where it differs;
-  - both documents and the legal footer link to it;
+  - ~~it forms part of both documents and wins where it differs;~~ ⛔ *V16.36 (france-privacy-1): it forms part of the Terms of
+    Service only; the Privacy Policy is the same in every country ("One privacy policy for every country" below);*
+  - ~~both documents and the legal footer link to it;~~ ⛔ *V16.36: the Terms and the legal footer link to it; the Privacy Policy
+    no longer does;*
   - adding a country means adding a heading.
 - **The US section covers:**
   - the truck as seller and merchant of record;
@@ -28431,7 +28634,9 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
   - **Enquiries (V16.35, inbox-1):** deleted 24 months after their last message (§90). Orders unchanged.
   - **Orders older than 12 months:** the customer's name becomes `''` (the column is NOT NULL), email, phone and
     notes become null, per-dish `specialInstructions` become `''`, and deal `slotNotes` become `{}`. Totals and line
-    items are kept.
+    items are kept. ⛔ *V16.36: the `specialInstructions` / `slotNotes` part is only for orders without `line_notes`; for
+    orders with it, `line_notes` is blanked and items and deals are never rewritten (france-notes-1). The notes half of the
+    patch is `notesPatch` in `lib/order-retention.ts`, shared with account deletion (§41).*
   - **Promoted card drafts older than 12 months:** their notes are cleared too.
   - **`whatsapp_logs` and `messages` rows older than 12 months:** deleted.
   - **`purge_order_drafts()`:** called daily. It was never scheduled before.
@@ -28561,7 +28766,52 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
   on the Protection of Personal Data Held by Private Parties (in force since 21 March 2025; verified from Hunton's write-
   up in the planning chat); Terms §3 "Section 10"; Canada's Quebec line. No date moved (the documents and
   `TERMS_VERSION` already carried 1 November 2026). OBSERVED live 1 Nov.
-- **The UAE section** names "the UAE Data Office" with no web address (unchanged).
+- **The UAE section** names "the UAE Data Office" with no web address (unchanged). ⛔ *V16.36: the UAE's privacy part, like every
+  "Privacy, for everyone in …" part, is gone from the Country-specific terms (next subsection).*
+
+## One privacy policy for every country (V16.36 — france-privacy-1, 24 November 2026; `bafd1495`, not deployed)
+
+- **The Privacy Policy** (`content/legal/privacy-policy.md`) now applies wherever you are: UK data protection law, plus the data
+  protection law of the country you live in where it applies. Rights, requests ("We will reply within one month, or sooner if the
+  law of your country requires it"), marketing emails, breaches ("the regulator") and complaints ("the data protection regulator
+  where you live"; in the UK the Information Commissioner's Office, ico.org.uk, 0303 123 1113) are worded once, in section 8. New:
+  an **"Allergy and dietary notes."** paragraph in section 4; a transfer sentence in section 6 adding "where the law of your country
+  requires it, … a safeguard that law recognises"; and in section 8, **"When an operator's account is deleted, we also remove their
+  customers' names, contact details and notes from the orders we keep."** (made true by §41 step 2b — 🔴 both go live in the same
+  deploy). The intro no longer links the country terms.
+- **The Country-specific terms page now covers the Terms of Service only.** All 16 "### Privacy, for everyone in …" parts were
+  deleted; every country's terms part ("### For food truck operators") is byte-identical, and no country section is left empty. The
+  new intro says the Privacy Policy is the same in every country. The old text: `git show ec16f022:content/legal/country-specific-terms.md`.
+  Nothing linked to a removed part or anchor (france-privacy-1 report §5).
+- **Dates:** both documents "Last updated 24 November 2026"; `lib/legal.ts` `PRIVACY_UPDATED` and `COUNTRY_TERMS_UPDATED` mirror
+  it; `TERMS_VERSION` `'2026-11-24'` (written only at signup — nobody re-accepts); the sitemap's lastmod for `/privacy` and
+  `/country-terms` moved with them.
+- **Translations:** the 54 bases enabled countries use, by the legal-languages-1 process, re-stamped, structure checker clean;
+  back-translations in `docs/france-privacy-1/back-translations.md`. **fil-PH, hi-IN, ur-PK, ta-LK and vi-VN are untouched** (no
+  enabled country uses them; `NOT_RETRANSLATED` in `scripts/legal-languages-1.cjs`) — translate their privacy policy and country
+  terms before one is switched on (Open item 39). Native read: Open item 54.
+- **Re-pins:** the next legal edit must chain a newer undo module in front of `scripts/_named-france-privacy-1.cjs` (called first by
+  `_named-terms-postpay-1.cjs` `undoCode`); see the report's §8.
+- 🔴 **Privacy requests must still be answered within each country's legal time, which the policy no longer lists.** Keep this
+  table for whoever answers them (checked against `ec16f022`'s removed parts; the UK's one month is the old policy's own line):
+
+| Country | Reply within |
+|---|---|
+| United States | 45 days |
+| Australia | 30 days (the OAIC complaint route opens after 30 days without a reply) |
+| New Zealand | as soon as reasonably possible, within 20 working days |
+| Canada | 30 days |
+| Brazil | 15 days |
+| Mexico | 20 business days |
+| Japan | without delay |
+| Singapore | 30 days |
+| Hong Kong | 40 days |
+| Malaysia | 21 days |
+| Thailand | 30 days |
+| United Arab Emirates | 30 days |
+| EEA and Switzerland, Ireland, France, Gibraltar, UK | one month |
+
+The policy promises one month everywhere, or sooner where the law requires: answer by the earlier of the two.
 
 ### The contact form's email (V16.10 — contact-1, 2 November 2026)
 
@@ -31479,7 +31729,13 @@ Nov): every step worked, and it left nothing behind.
   chooses its **VAT regime** (`vat_regime`: franchise en base, réel simplifié, réel normal monthly or quarterly), which sets the
   daily-totals presets (§19) and is stamped on each new order (§37). The route (`app/api/manage/route.ts`
   `update_business_details`) checks owner or admin again and writes an audit row naming the fields, not the values.
-- **Customer receipts** showing these details and the regime are france-receipts-1 (V16.36).
+- ~~**Customer receipts** showing these details and the regime are france-receipts-1 (V16.36).~~ ⛔ *V16.36: done (france-receipts-1,
+  not deployed) — the customer email, status page and ticket carry these details (§18, §42).*
+- **The franchise note (V16.36, france-receipts-1):** shown under the regime whenever franchise en base is chosen
+  (`components/manage/BusinessDetailsCard.tsx`): « Because you've chosen franchise en base, your receipts show "TVA non applicable"
+  and no TVA is charged. » (`manageSettings.business.regime.franchiseNote`, in en-GB and the 54 used bases). ⛔ *It replaced
+  france-records-1's note, shown only while a VAT rate above 0 applied: "You've chosen franchise en base, so you may want to set your
+  VAT to 0 %." The rate is still never changed by choosing the regime; franchise orders are priced at 0 % instead (§37).*
 
 ---
 
@@ -37677,6 +37933,36 @@ code. A country stays switched off until its launch list is done.
     the sales records she needs for e-reporting (Open items 44, 46).
   - **Held:** the `reply_knowledge` till line ("HatchGrab … replaces it") stays suggested, and VAT-registered French trucks are not
     told HatchGrab replaces their till, until the till-software decision (Open items 43, 47).
+- **V16.36 — what is built** (france-vat-1, -records-1, -receipts-1, -notes-1; not deployed): per-dish TVA (5,5 / 10 / 20 % quick
+  choices, the truck decides); business details (SIREN/SIRET in `trucks.registration_number`, VAT number, regime); a gap-free
+  receipt number; the daily-totals-by-rate file with presets per regime; receipts with receipt number, date, details and, for
+  franchise en base, « TVA non applicable, art. 293 B du CGI » with sales at 0 %; line notes outside the order lines.
+- **V16.36 — the law, as researched 23–24 Nov** (official sources: impots.gouv.fr, BOFiP, economie.gouv.fr, service-public.fr,
+  legifrance; not legal advice):
+  - **Goods or services:** takeaway is a sale of goods; consumption on site counts as a service only when it comes with enough
+    services for eating there (seating …). A food truck without seating mostly sells goods → sales data only, no payment data.
+  - **VAT rates:** 10 % for food and soft drinks prepared for immediate consumption (on site or to take away), single ice creams
+    from any seller; 5,5 % for food packaged to keep and soft drinks in bottles or cans sold to take away (and sweet pastries,
+    crisps, fruit not eaten in a restaurant); 20 % for alcohol in all circumstances; a menu with alcohol must be split.
+  - **E-reporting:** fines €500 per missed transmission (was €250), a first slip waived if put right quickly. Data: per day,
+    goods and services separately, base excl. VAT and VAT per rate; the transaction count was dropped by the 2026 finance law
+    (reported by a commentator). The data always goes through a PA (manual entry is possible for small businesses).
+  - **Till software:** exempt also when every payment goes through a qualifying bank (lost if any sale is paid otherwise, e.g.
+    cash). The editor's attestation follows model **BOI-LETTRE-000242** (25 Mar 2026), signed by the editor's legal
+    representative, with a part signed by the user; false attestation: 3 years and €45,000. A foreign editor may issue it in a
+    foreign language with a certified French translation. A certificate (LNE, InfoCert) is reported at ~€20,000 then €3,800–6,000
+    a year. **Payment terminals** (law of 25 June 2026): unannounced inspections; €7,500 per terminal not presented.
+  - **Records:** tax records are kept **10 years** (law n° 2026-534 of 25 June 2026, art. 36, art. L102 B LPF; for documents whose
+    6-year period ends after 1 Jan 2027); accounting records 10 years (Commercial Code). Till data may be purged only once archived,
+    keeping the running totals.
+  - **Receipts:** since 1 Aug 2023 a receipt is given on request (a notice at the till says so), except services of €25 or more
+    and restaurant notes.
+  - **B2B e-invoicing** (catering, private events): issued through the truck's PA from 1 Sep 2027, with the client's SIREN, the
+    delivery address if different and the type of sale. HatchGrab doesn't issue invoices; B2B-invoiced orders must be kept out of
+    the B2C totals (not built: there is no B2B flag on orders).
+  - **Also expected:** allergens shown before purchase for remote ordering (the allergen wizard); meat origin, including for
+    takeaway-only sellers and on the website or app (not built: no field); franchise thresholds unchanged for 2026 (€85,000 for
+    goods including on-site sales, €37,500 for services).
 - **The glossary row** was split (france-1 Follow-up, ~~uncommitted~~ ⛔ Corrected V16.5 — committed; OBSERVED 23 Oct, `git status` clean): "Private hire" « privatisation », "Private event"
   « événement privé ». translation-check fr-FR: structural 0; glossary flags 69 → 50.
 
