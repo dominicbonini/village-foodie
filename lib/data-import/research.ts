@@ -28,7 +28,20 @@
 //   • "request_check": true — the import sets check_requested_at, the column Admin's "Check now" sets (35.an-3: the checker
 //     then checks it with its own quotes; a deep check while its country's deep check is running, "Check now" first).
 //   Neither key is a column: both are stripped from the competitor row.
+// compare-fix-1 (24 November 2026; docs/compare-fix-1-report.md): five more instruction keys, each with its evidence kept —
+//   • competitor row "set_lifecycle": { value: "not_relevant" | "active", reason, source_url } — marks a STORED competitor not relevant,
+//     or brings a not-relevant one back to active; the reason and page go into its notes (a new competitor is never inserted not relevant);
+//   • competitor row "not_sold_in": [{ country, reason, source_url }] — adds countries to not_in_countries (never shown there);
+//   • competitor row "set_focus": true — the file's focus replaces the stored one (research read it on the vendor's own site);
+//   • plan row "correct": true — supersedes the competitor's CURRENT plan of that name in that country and inserts this one (history kept,
+//     never edited in place);
+//   • plan row "monthly_major" / "setup_major" — the price in MAJOR units, converted with toMinorUnits; a monthly price above its
+//     currency's plausible ceiling (lib/price-units.ts) is NOT stored: the plan arrives hidden and unclear.
+// And: a quoted answer now replaces a stored answer that has no quote (Admin's verified or blocked answers are never touched), and each
+// answer written records its check (competitor_feature_checks, every country) with the pages the research read.
 import { hostOf, APP_STORE_HOSTS, FEATURE_ANSWERS, QUOTE_MAX, saysNotOffered } from '@/lib/competitor-check/model'
+import { toMinorUnits, minorDigits } from '@/lib/money-format'
+import { implausibleMonthly } from '@/lib/price-units'
 import { COUNTRIES_MARK } from '@/lib/competitor-check/core'
 import { LEGACY_FEATURE_COLUMNS } from '@/lib/comparison-features'
 // comparison-features-1 (29 Oct 2026): a file's feature columns (pre_orders … pay_at_truck, payment_methods, min_term) are
@@ -55,6 +68,10 @@ export interface ResearchStore {
   updateCompetitor(id: string, cols: Row): Promise<void>
   insertPlans(rows: Row[]): Promise<void>
   insertEntries(rows: Row[]): Promise<void>
+  /** compare-fix-1: supersedes plans (a corrected plan replaces them). */
+  supersedePlans?(ids: string[], at: string): Promise<void>
+  /** compare-fix-1: records the checks the file's answers come from (competitor_feature_checks, upsert). */
+  upsertFeatureChecks?(rows: Row[]): Promise<void>
 }
 
 export interface ResearchCounts {
@@ -64,12 +81,16 @@ export interface ResearchCounts {
   answersAdded?: number
   /** competitor-wtt-1: competitors whose check this import requested (check_requested_at). */
   checksRequested?: number
+  /** compare-fix-1: instructions applied. */
+  notRelevant?: number; revived?: number; failuresReset?: number; notSoldIn?: number; focusSet?: number; plansCorrected?: number; implausible?: number; answersReplaced?: number; checksRecorded?: number
 }
 
 /** competitor-wtt-1: the row keys that are instructions to the importer, never competitor columns. */
-const ROW_ONLY = ['answers', 'request_check']
+const ROW_ONLY = ['answers', 'request_check', 'set_lifecycle', 'not_sold_in', 'set_focus']
 const QUOTED = ['yes', 'partial', 'no']
 const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '')
+/** compare-fix-1: a page address that is a pricing page (for the check record's page kinds). */
+const PRICING_PATH = /\/(pricing|prices|price|plans|preise|preis|tarife?|kosten|precios|prix|tarifs|prezzi|prijzen|cennik|hinnasto|priser|ceny|planos|precos)(\/|$|[.?#-])/i
 
 /** competitor-wtt-1: the problems with one competitor's "answers" (empty when it has none, or they can be imported). */
 function answerProblems(who: string, answers: unknown, featureKeys?: readonly string[]): string[] {
@@ -124,6 +145,22 @@ export function researchProblems(file: ResearchFile, opts: { featureKeys?: reado
     if (c.lifecycle != null && !['active', 'candidate'].includes(String(c.lifecycle))) out.push(`${who}: lifecycle must be active or candidate.`)
     out.push(...answerProblems(who, c.answers, opts.featureKeys))
     if (c.request_check != null && typeof c.request_check !== 'boolean') out.push(`${who}: request_check must be true or false.`)
+    // compare-fix-1: the lifecycle, country and focus instructions — each with its reason and page.
+    if (c.set_lifecycle != null) {
+      const l = c.set_lifecycle as Row
+      if (!l || typeof l !== 'object' || !['not_relevant', 'active'].includes(String(l.value))) out.push(`${who}: set_lifecycle.value must be not_relevant or active.`)
+      else { if (!str(l.reason)) out.push(`${who}: set_lifecycle needs its reason.`); if (!/^https?:\/\//i.test(str(l.source_url))) out.push(`${who}: set_lifecycle needs the page (source_url) it rests on.`) }
+    }
+    if (c.not_sold_in != null) {
+      if (!Array.isArray(c.not_sold_in)) out.push(`${who}: not_sold_in must be a list.`)
+      else for (const n of c.not_sold_in as Row[]) {
+        if (!/^[A-Z]{2}$/.test(str(n?.country))) out.push(`${who}: not_sold_in needs a two-letter country.`)
+        if (!str(n?.reason)) out.push(`${who}: not_sold_in ${str(n?.country) || '?'} needs its reason.`)
+        if (!/^https?:\/\//i.test(str(n?.source_url))) out.push(`${who}: not_sold_in ${str(n?.country) || '?'} needs the page (source_url) it rests on.`)
+      }
+    }
+    if (c.set_focus != null && typeof c.set_focus !== 'boolean') out.push(`${who}: set_focus must be true or false.`)
+    if (c.set_focus === true && !FOCUS.includes(String(c.focus))) out.push(`${who}: set_focus needs a focus the table allows.`)
   }
   for (const p of file.plans) {
     const who = `Plan "${names.get(String(p.competitor_id)) ?? p.competitor_id} · ${p.plan_name}" (${p.country_code})`
@@ -131,7 +168,12 @@ export function researchProblems(file: ResearchFile, opts: { featureKeys?: reado
     if (!/^[A-Z]{2}$/.test(String(p.country_code))) out.push(`${who}: the country must be a two-letter code.`)
     if (!/^[A-Z]{3}$/.test(String(p.currency))) out.push(`${who}: the currency must be a three-letter code.`)
     if (!['counted', 'hidden', 'closed', 'excluded'].includes(String(p.status))) out.push(`${who}: status "${p.status}" is not counted, hidden, closed or excluded.`)
-    if (p.status === 'counted' && p.monthly_minor == null) out.push(`${who}: status counted needs a monthly price — a price on request is status "hidden".`)
+    // compare-fix-1: MAJOR units, explicitly — and, when both are given, they must agree (the 100× guard).
+    for (const k of ['monthly_major', 'setup_major']) if (p[k] != null && !(typeof p[k] === 'number' && Number.isFinite(p[k] as number) && (p[k] as number) >= 0)) out.push(`${who}: ${k} must be a number of 0 or more.`)
+    if (typeof p.monthly_major === 'number' && typeof p.monthly_minor === 'number' && /^[A-Z]{3}$/.test(String(p.currency)) && toMinorUnits(p.monthly_major, String(p.currency)) !== p.monthly_minor)
+      out.push(`${who}: monthly_major ${p.monthly_major} and monthly_minor ${p.monthly_minor} disagree — one of them is in the wrong unit.`)
+    if (p.correct != null && typeof p.correct !== 'boolean') out.push(`${who}: correct must be true or false.`)
+    if (p.status === 'counted' && p.monthly_minor == null && p.monthly_major == null) out.push(`${who}: status counted needs a monthly price — a price on request is status "hidden".`)
     if (p.status === 'counted' && p.price_hidden === true) out.push(`${who}: a hidden price can't be counted — status "hidden".`)
     for (const k of NON_NEGATIVE) if (p[k] != null && !(typeof p[k] === 'number' && (p[k] as number) >= 0)) out.push(`${who}: ${k} must be a number of 0 or more.`)
     if (p.order_cap != null && !(typeof p.order_cap === 'number' && p.order_cap > 0)) out.push(`${who}: order_cap must be above 0.`)
@@ -172,6 +214,9 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
     for (const c of file.competitors) {
       const match = find(c)
       const fileCandidate = c.lifecycle === 'candidate'
+      const setLife = (c.set_lifecycle ?? null) as Row | null
+      // compare-fix-1: a competitor the research found not relevant is never ADDED — the instruction only marks a stored one.
+      if (!match && setLife?.value === 'not_relevant') continue
       if (!match) {
         const { features_verified_at: _skip, ...all } = c   // eslint-disable-line @typescript-eslint/no-unused-vars
         // The retired feature columns never reach the competitors table (they become answers below), nor do the
@@ -191,7 +236,7 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
       for (const f of TEXTS) if ((match[f] == null || match[f] === '') && c[f] != null && c[f] !== '') cols[f] = c[f]
       const checkedOn = String(c.features_checked_on ?? file.checked_on)
       if (FEATURES.some(f => c[f] != null && c[f] !== 'unknown') && (!match.features_checked_on || String(match.features_checked_on) < checkedOn)) cols.features_checked_on = checkedOn
-      if (match.lifecycle === 'candidate' && !fileCandidate) {
+      if (match.lifecycle === 'candidate' && !fileCandidate && setLife?.value !== 'not_relevant') {   // compare-fix-1: never upgraded on its way to not relevant
         // A researched competitor (read on its own website) is no longer a candidate: active and counted like the file's
         // other competitors, still unverified. The note keeps where it came from.
         cols.lifecycle = 'active'; cols.added_as_candidate = false
@@ -208,7 +253,35 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
           cols.notes = COUNTRIES_MARK.test(notes) ? notes.replace(COUNTRIES_MARK, mark) : `${notes ? `${notes} · ` : ''}${stamp.path} · ${mark}`
         if (match.lifecycle === 'not_relevant') { cols.lifecycle = 'candidate'; cols.added_as_candidate = true }
       }
-      if (c.request_check === true) { cols.check_requested_at = requestedAt; counts.checksRequested = (counts.checksRequested ?? 0) + 1 }
+      // compare-fix-1: the lifecycle, country and focus instructions, each with its evidence in the notes.
+      const note = (text: string) => { const base = String(cols.notes ?? match.notes ?? ''); cols.notes = `${base ? `${base} · ` : ''}${text}` }
+      if (setLife?.value === 'not_relevant' && match.lifecycle !== 'not_relevant') {
+        cols.lifecycle = 'not_relevant'
+        note(`not relevant (${stamp.path}, ${file.checked_on}): ${str(setLife.reason)} — ${str(setLife.source_url)}`)
+        counts.notRelevant = (counts.notRelevant ?? 0) + 1
+      }
+      if (setLife?.value === 'active' && match.lifecycle === 'not_relevant') {
+        cols.lifecycle = 'active'; cols.added_as_candidate = false
+        note(`back to active (${stamp.path}, ${file.checked_on}): ${str(setLife.reason)} — ${str(setLife.source_url)}`)
+        counts.revived = (counts.revived ?? 0) + 1
+      }
+      if (Array.isArray(c.not_sold_in) && c.not_sold_in.length) {
+        const had = Array.isArray(match.not_in_countries) ? (match.not_in_countries as string[]) : []
+        const add = (c.not_sold_in as Row[]).filter(n => !had.includes(str(n.country)))
+        if (add.length) {
+          cols.not_in_countries = [...new Set([...had, ...add.map(n => str(n.country))])].sort()
+          for (const n of add) note(`not sold in ${str(n.country)} (${stamp.path}, ${file.checked_on}): ${str(n.reason)} — ${str(n.source_url)}`)
+          counts.notSoldIn = (counts.notSoldIn ?? 0) + add.length
+        }
+      }
+      if (c.set_focus === true && typeof c.focus === 'string' && c.focus !== match.focus) { cols.focus = c.focus; counts.focusSet = (counts.focusSet ?? 0) + 1 }
+      // A check is requested only for a competitor that ends up counted (never for one just marked, or left, not relevant).
+      if (c.request_check === true && (cols.lifecycle ?? match.lifecycle) !== 'not_relevant') {
+        cols.check_requested_at = requestedAt; counts.checksRequested = (counts.checksRequested ?? 0) + 1
+        // compare-fix-1: read on its own site today by the research — a good check, so the failed-check count starts again (the
+        // 20–23 Nov API outage counted five failures against every competitor in the deep share).
+        if (Number(match.check_failures ?? 0) > 0) { cols.check_failures = 0; counts.failuresReset = (counts.failuresReset ?? 0) + 1 }
+      }
       if (Object.keys(cols).length) { await store.updateCompetitor(String(match.id), cols); Object.assign(match, cols); counts.updated++ }
     }
   } catch (e) { throw new Error(`Competitors: ${msg(e)} (already written: ${done()}; the next run carries on).`) }
@@ -218,20 +291,32 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
     try {
       const current = await store.featureValues()
       const says = (r: Row) => r.value !== 'unknown' || !!r.note || !!r.source_url
-      const fresh: Row[] = [], placeholders: string[] = []
+      const fresh: Row[] = [], placeholders: string[] = [], checks: Row[] = []
       for (const c of file.competitors) {
+        if (!idOf.has(String(c.id))) continue   // compare-fix-1: a competitor not added (found not relevant) gets nothing
         const cid = idOf.get(String(c.id)) ?? String(c.id)
         // competitor-wtt-1: the row's quoted answers first; they win over a legacy column for the same feature.
         const answered = new Set<string>()
+        const pages = (Array.isArray(c.check_urls) ? c.check_urls as string[] : []).filter(u => typeof u === 'string').slice(0, 10)
+          .map(url => ({ url, kind: PRICING_PATH.test(url) ? 'pricing' : 'other', ok: true, status: 'fetched', fetchedAt: null }))
         for (const a of (Array.isArray(c.answers) ? c.answers : []) as Row[]) {
           const key = str(a.key)
           answered.add(key)
           const cur = current.find(r => r.competitor_id === cid && r.feature_key === key && r.country_code == null && r.superseded_at == null)
-          if (cur && says(cur)) continue
-          if (cur) placeholders.push(String(cur.id))
+          if (cur && says(cur)) {
+            // compare-fix-1: a quoted answer replaces a BARE stored one — no quote and no note (the 23 Oct research's legacy "yes" etc.);
+            // Admin's verified or blocked answers, and any answer with its own quote or note, are kept.
+            const better = !!str(a.quote) && !str(cur.quote) && !str(cur.note) && !cur.verified_at && cur.auto_blocked !== true
+            if (!better) continue
+            placeholders.push(String(cur.id)); counts.answersReplaced = (counts.answersReplaced ?? 0) + 1
+          } else if (cur) placeholders.push(String(cur.id))
           fresh.push({ competitor_id: cid, feature_key: key, country_code: null, value: a.value, note: str(a.note) || null,
             quote: str(a.quote) || null, source_url: str(a.source_url) || null,
             checked_on: c.features_checked_on ?? file.checked_on, verified_at: null, verified_by: null })
+          // compare-fix-1: the check this answer comes from (every country), with the pages the research read — so the page's display
+          // rule (a row shows once it was checked for every competitor shown) counts it.
+          checks.push({ competitor_id: cid, feature_key: key, country_code: '', checked_on: c.features_checked_on ?? file.checked_on, rejudge: false,
+            pages_checked: { pages, helpCentre: null, checkedAt: String(c.features_checked_on ?? file.checked_on) } })
         }
         for (const [col, m] of Object.entries(LEGACY_FEATURE_COLUMNS)) {
           const raw = c[col]
@@ -248,6 +333,7 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
       if (placeholders.length && store.supersedeFeatureValues) await store.supersedeFeatureValues(placeholders, new Date().toISOString())
       if (fresh.length) await store.insertFeatureValues(fresh)
       counts.answersAdded = fresh.length
+      if (checks.length && store.upsertFeatureChecks) { await store.upsertFeatureChecks(checks); counts.checksRecorded = checks.length }
     } catch (e) { throw new Error(`Feature answers: ${msg(e)} (already written: ${done()}; the next run carries on).`) }
   }
 
@@ -256,15 +342,35 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
   const ids = new Set(plans.map(p => String(p.id)))
   const current = new Map(plans.filter(p => p.superseded_at == null).map(p => [planKey(p.competitor_id, p.country_code, p.plan_name), String(p.id)]))
   const planIdOf = new Map<string, string>()
-  const fresh: Row[] = []
+  const fresh: Row[] = [], supersede: string[] = []
   for (const p of file.plans) {
+    if (!idOf.has(String(p.competitor_id))) continue   // compare-fix-1: its competitor was not added (found not relevant)
     const cid = idOf.get(String(p.competitor_id)) ?? String(p.competitor_id)
-    const same = ids.has(String(p.id)) ? String(p.id) : current.get(planKey(cid, p.country_code, p.plan_name))
-    if (same) { planIdOf.set(String(p.id), same); counts.plansExisting++; continue }
+    const { monthly_major: monthlyMajor, setup_major: setupMajor, correct, ...base } = p
+    if (ids.has(String(p.id))) { planIdOf.set(String(p.id), String(p.id)); counts.plansExisting++; continue }
+    const sameName = current.get(planKey(cid, p.country_code, p.plan_name))
+    // compare-fix-1: "correct": the stored plan of that name is superseded (kept as history) and this one inserted.
+    if (sameName && correct !== true) { planIdOf.set(String(p.id), sameName); counts.plansExisting++; continue }
+    if (sameName) { supersede.push(sameName); counts.plansCorrected = (counts.plansCorrected ?? 0) + 1 }
+    const cur = String(p.currency)
+    const row: Row = { ...base, competitor_id: cid, verified_at: null, verified_by: null }
+    // compare-fix-1: MAJOR units are converted here (lib/money-format.ts knows zero-decimal currencies), and a monthly price above its
+    // currency's plausible ceiling is never stored as a price: the plan arrives hidden and unclear.
+    if (typeof monthlyMajor === 'number') row.monthly_minor = toMinorUnits(monthlyMajor, cur)
+    if (typeof setupMajor === 'number') row.setup_minor = toMinorUnits(setupMajor, cur)
+    if (typeof row.monthly_minor === 'number' && implausibleMonthly(row.monthly_minor / 10 ** minorDigits(cur), cur)) {
+      row.notes = `${row.notes ? `${String(row.notes)} · ` : ''}NOT STORED as a price: ${row.monthly_minor / 10 ** minorDigits(cur)} ${cur} a month is above the plausible ceiling (a unit slip?).`
+      row.monthly_minor = null; row.price_hidden = true; row.status = 'hidden'; row.unclear = true
+      counts.implausible = (counts.implausible ?? 0) + 1
+    }
     planIdOf.set(String(p.id), String(p.id))
-    fresh.push({ ...p, competitor_id: cid, verified_at: null, verified_by: null })
+    fresh.push(row)
   }
-  try { if (fresh.length) await store.insertPlans(fresh) } catch (e) { throw new Error(`Plans: ${msg(e)} (already written: ${done()}; the next run carries on).`) }
+  if (supersede.length && !store.supersedePlans) throw new Error('Plans: this store cannot supersede a plan, so a corrected plan cannot be written (nothing written for the plans).')
+  try {
+    if (supersede.length) await store.supersedePlans!(supersede, stamp.nowIso ?? new Date().toISOString())
+    if (fresh.length) await store.insertPlans(fresh)
+  } catch (e) { throw new Error(`Plans: ${msg(e)} (already written: ${done()}; the next run carries on).`) }
   counts.plansAdded = fresh.length
 
   // ── entries: skip an id already in, or one for the same country and competitor ──
@@ -273,6 +379,7 @@ export async function importResearch(store: ResearchStore, file: ResearchFile, s
   const pairs = new Set(entries.map(e => `${e.country_code}|${e.competitor_id}`))
   const newEntries: Row[] = []
   for (const e of file.entries) {
+    if (!idOf.has(String(e.competitor_id))) continue   // compare-fix-1: its competitor was not added
     const cid = idOf.get(String(e.competitor_id)) ?? String(e.competitor_id)
     if (entryIds.has(String(e.id)) || pairs.has(`${e.country_code}|${cid}`)) { counts.entriesExisting++; continue }
     newEntries.push({ ...e, competitor_id: cid, primary_plan_id: e.primary_plan_id ? planIdOf.get(String(e.primary_plan_id)) ?? null : null, verified_at: null, verified_by: null })

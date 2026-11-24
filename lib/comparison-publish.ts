@@ -20,6 +20,8 @@
 //       • "not sold in X": only when both checks agree (it removes the competitor from X's page); "sold in X": its quote on its page;
 //       • a new page: added to check_urls (never when Admin set them by hand); a page gone: left for Admin (a page leaves the list by hand).
 //     ADMIN'S CHOICES WIN: a finding about a plan or an answer Admin verified, or one Admin un-verified, is rejected — the row is kept.
+// ⛔ compare-fix-1 (24 Nov 2026): §2 below is superseded by Dominic's rules — see evaluateCountry (eligibility from a quoted
+//    order-ahead answer, food-truck tools first, one check of the price is enough, SumUp only as a single fallback, Anolla never).
 // 2 · A COUNTRY, evaluated (§3, §4) — `evaluateCountry`. A competitor is PUBLISHABLE when it is counted, has a website (addendum E), has
 //     not failed its last two checks, and its plan is publishable: Admin verified it, or (not blocked by Admin) it is current and
 //     counted, in the country's currency, with a real price, a source on its own site, a price both checks confirmed at this value, and
@@ -85,7 +87,8 @@ export function answerOf(f: Row): string | null {
 /** The monthly price (minor units, or null = price hidden) a plan finding gives; undefined when it gives none. */
 function foundMonthly(f: Row, currency: string): { minor: number | null; currency: string } | undefined {
   const found = (f.found ?? {}) as Row
-  const c = planColsOf('monthly_price', found, currency)
+  const c = planColsOf('monthly_price', found, currency, [str(f.quote)])
+  if (c.ok && c.implausible) return undefined
   if (!c.ok) return undefined
   return { minor: (c.cols.monthly_minor as number | null) ?? null, currency: String(c.cols.currency ?? currency) }
 }
@@ -135,6 +138,8 @@ export function decideOne(f: Row, ctx: DecideCtx): { action: Action; reason: str
     const cur = str(found.currency) ?? str(plan?.currency)
     if (want && cur && cur !== want) return { action: 'reject', reason: `the price is in ${cur}, not ${want}` }
     if (isPlaceholderAmount(found)) return { action: 'reject', reason: 'the amount is not a real price' }
+    // compare-fix-1: a monthly amount above its currency's plausible ceiling (a unit slip) is never stored.
+    if ((field === 'monthly_price' || outcome === 'new_plan') && cur) { const c = planColsOf('monthly_price', found, cur, [str(f.quote)]); if (c.ok && c.implausible) return { action: 'reject', reason: 'the amount is not plausible for a monthly price in this currency (a unit slip?)' } }
     if (outcome === 'new_plan') return code && str(found.plan_name) ? { action: 'accept', reason: 'a new plan — both checks agree' } : { action: 'reject', reason: 'a new plan needs its country and name' }
     if (!plan) return { action: 'reject', reason: 'no stored plan' }
     if (plan.superseded_at) return { action: 'reject', reason: 'the plan has changed since' }
@@ -248,57 +253,111 @@ export function priceConfirmed(p: CompetitorPlan, evidence: readonly Row[]): boo
   })
 }
 
-/** Whether a plan may be published automatically, and why not. */
-export function planVerdict(p: CompetitorPlan | null, c: Competitor, x: Pick<CountryInput, 'currency' | 'today' | 'priceEvidence' | 'heldPlanIds'>): { ok: boolean; manual: boolean; reason: string } {
+/** compare-fix-1 (Dominic, 24 Nov): Romania's vendors price in EUR, so EUR also counts there. */
+export const ALSO_ACCEPTED_CURRENCY: Readonly<Record<string, readonly string[]>> = { RO: ['EUR'] }
+const currencyOk = (planCurrency: string, code: string, countryCurrency: string) => planCurrency === countryCurrency || (ALSO_ACCEPTED_CURRENCY[code] ?? []).includes(planCurrency)
+
+/** Whether a plan may be published automatically, and why not.
+ *  compare-fix-1 (Dominic's PRICE rule): a monthly price in the country's currency (EUR also in RO), with a source on the vendor's own
+ *  site, checked within its interval + 30 days — ONE check is enough (the "both checks confirmed" rule is dropped). Admin-verified
+ *  still counts. A held price change keeps the old price while it is within its interval. `priceEvidence` is no longer required. */
+export function planVerdict(p: CompetitorPlan | null, c: Competitor, x: Pick<CountryInput, 'currency' | 'today' | 'priceEvidence' | 'heldPlanIds'> & { code?: string }): { ok: boolean; manual: boolean; reason: string } {
   if (!p) return { ok: false, manual: false, reason: 'no current plan' }
   if (p.verifiedAt) return { ok: true, manual: true, reason: 'Admin verified the plan' }
   if (p.autoBlocked) return { ok: false, manual: false, reason: 'Admin took back the plan’s verification' }
   if (p.status !== 'counted') return { ok: false, manual: false, reason: `the plan is ${p.status}` }
   if (p.priceHidden || p.monthlyMinor === null) return { ok: false, manual: false, reason: 'no price stated' }
   if (p.unclear) return { ok: false, manual: false, reason: 'the price is marked unclear' }
-  if (p.currency !== x.currency) return { ok: false, manual: false, reason: `the price is in ${p.currency}, not ${x.currency}` }
+  if (!currencyOk(p.currency, x.code ?? p.countryCode, x.currency)) return { ok: false, manual: false, reason: `the price is in ${p.currency}, not ${x.currency}` }
   if (!ownSource(p.sourceUrl, c)) return { ok: false, manual: false, reason: 'no source on its own site' }
   const interval = c.checkIntervalDays || 90
   if (addDays(p.checkedOn, interval + GRACE_DAYS) < x.today) return { ok: false, manual: false, reason: `taken down: the price was last checked ${p.checkedOn}, more than its interval + ${GRACE_DAYS} days ago` }
   if (x.heldPlanIds.has(p.id) && addDays(p.checkedOn, interval) < x.today) return { ok: false, manual: false, reason: 'a price change is held, and the old price is past its check interval' }
-  if (!priceConfirmed(p, x.priceEvidence)) return { ok: false, manual: false, reason: 'the price has not been confirmed by both checks' }
-  return { ok: true, manual: false, reason: x.heldPlanIds.has(p.id) ? 'the old price stays while a change is held' : 'its price is confirmed by both checks, on its own site' }
+  return { ok: true, manual: false, reason: x.heldPlanIds.has(p.id) ? 'the old price stays while a change is held' : 'a monthly price on its own site, checked within its interval' }
 }
 
-/** 🔴 ONE COUNTRY: who is publishable, who the four-cap shows, and whether the page is live. */
+// ── compare-fix-1: Dominic's ELIGIBILITY and PREFERENCE rules (24 Nov) ──────────────────────────────────────────────────────
+/** Food-truck-like focuses — shown first. */
+export const FOOD_TRUCK_FOCUS = new Set(['food_truck', 'street_food_markets', 'pop_up'])
+/** A generic web shop (not a food-ordering product): counts only as the single fallback, beside one eligible food-truck or restaurant tool. */
+export const GENERIC_SHOP_DOMAINS = ['sumup.com']
+/** Never counted (Dominic, 24 Nov): a booking tool, not a food-ordering platform. */
+export const EXCLUDED_DOMAINS = ['anolla.com']
+const onDomain = (c: Pick<Competitor, 'website'>, domains: readonly string[]) => { const h = hostOf(c.website); return !!h && domains.some(d => h === d || h.endsWith(`.${d}`)) }
+/** The answers that show online ordering ahead. */
+export const ORDER_AHEAD_KEYS = ['ahead', 'preorder'] as const
+
+/** ELIGIBLE (only correct platforms): its own site shows customers can order online ahead — an `ahead` or `preorder` answer of yes /
+ *  partial with a quote on its own site (the research file's eligibility evidence arrives as such an answer), for this country or for
+ *  every country. Admin-verified answers count as they are. */
+export function eligibleOf(c: Competitor, values: readonly FeatureValueRow[], code: string): { ok: boolean; reason: string } {
+  if (onDomain(c, EXCLUDED_DOMAINS)) return { ok: false, reason: 'not counted (a booking tool, not a food-ordering platform)' }
+  const ok = values.some(v => v.competitorId === c.id && v.supersededAt === null && (v.countryCode === null || v.countryCode === code)
+    && (ORDER_AHEAD_KEYS as readonly string[]).includes(v.featureKey) && (v.value === 'yes' || v.value === 'partial')
+    && !v.autoBlocked && (!!v.verifiedAt || (!!v.quote?.trim() && ownSource(v.sourceUrl, c))))
+  return ok ? { ok: true, reason: 'its own site shows online ordering ahead' } : { ok: false, reason: 'no quote on its own site showing customers can order online ahead' }
+}
+
+/** 🔴 ONE COUNTRY: who is publishable, who shows, and whether the page is live.
+ *  compare-fix-1 (Dominic, 24 Nov):
+ *   • ELIGIBLE: counted, a website, not "not sold here", not failed twice, and eligibleOf (online ordering ahead, quoted on its own site);
+ *   • PRICE: planVerdict — the entry's plan, or else the competitor's best qualifying plan in the country (one check is enough);
+ *   • PREFERENCE: food-truck tools first (up to four); restaurant and pos tools only to MAKE UP 2; a generic shop (SumUp) only as the
+ *     single fallback beside one eligible food-truck or restaurant tool; Anolla never;
+ *   • LIVE: at least 2 shown (at most 4), a page, auto-publish on, Admin not off, never AE. Features may be "not stated". */
 export function evaluateCountry(x: CountryInput): CountryVerdict {
   const comps = new Map(x.competitors.map(c => [c.id, c]))
   const verdicts: CompetitorVerdict[] = []
-  const cands: SelectionCandidate<CompetitorVerdict>[] = []
+  const pools = { ft: [] as SelectionCandidate<CompetitorVerdict>[], other: [] as SelectionCandidate<CompetitorVerdict>[], shop: [] as SelectionCandidate<CompetitorVerdict>[] }
   const entries = x.entries.filter(e => e.countryCode === x.code)
   for (const e of entries) {
     const c = comps.get(e.competitorId)
     if (!c) continue
-    const plan = planOf(e, x.plans)
-    const pv = planVerdict(plan, c, x)
+    // The entry's own plan first, then the competitor's other current plans in this country (cheapest first), the first that qualifies.
+    const own = planOf(e, x.plans)
+    const others = x.plans.filter(p => p.competitorId === c.id && p.countryCode === x.code && p.supersededAt === null && p.id !== own?.id)
+      .sort((a, b) => (a.monthlyMinor ?? Infinity) - (b.monthlyMinor ?? Infinity))
+    let plan = own, pv = planVerdict(own, c, { ...x, code: x.code })
+    if (!pv.ok) for (const p of others) { const v = planVerdict(p, c, { ...x, code: x.code }); if (v.ok) { plan = p; pv = v; break } }
     const manualEntry = !!e.verifiedAt
     const v: CompetitorVerdict = { competitorId: c.id, name: c.name, entryId: e.id, publishable: false, reason: '', planId: plan?.id ?? null, planPublishable: pv.ok, manual: manualEntry && pv.manual }
+    const elig = eligibleOf(c, x.values, x.code)
     if (!isCountedCompetitor(c)) v.reason = `not counted (${c.lifecycle}${c.addedAsCandidate ? ', a candidate' : ''})`
     else if (!c.website?.trim()) v.reason = 'no website (never shown)'
+    else if ((c.notInCountries ?? []).includes(x.code)) v.reason = 'not sold in this country'
     else if (e.autoBlocked && !manualEntry) v.reason = 'Admin took back the entry’s verification'
     else if ((c.checkFailures ?? 0) >= TAKE_DOWN_FAILURES && !v.manual) v.reason = `taken down: its last ${c.checkFailures} checks failed`
+    else if (!elig.ok && !manualEntry) v.reason = elig.reason
     else if (!pv.ok) v.reason = pv.reason
     else { v.publishable = true; v.reason = pv.reason }
     verdicts.push(v)
     if (!v.publishable) continue
     const verifiedFeatures = x.values.filter(r => r.competitorId === c.id && r.supersededAt === null && (r.countryCode === null || r.countryCode === x.code) && (r.verifiedAt || passesEvidence(r))).length
-    cands.push({ entry: v, name: c.name, pinned: e.pinned === true, hidden: e.hidden === true, sortOrder: e.sortOrder,
-      category: isCategory(c.category) ? c.category : null, pricingVerified: true, verifiedFeatures })
+    const cand: SelectionCandidate<CompetitorVerdict> = { entry: v, name: c.name, pinned: e.pinned === true, hidden: e.hidden === true, sortOrder: e.sortOrder,
+      category: isCategory(c.category) ? c.category : null, pricingVerified: true, verifiedFeatures }
+    if (onDomain(c, GENERIC_SHOP_DOMAINS)) pools.shop.push(cand)
+    else if (FOOD_TRUCK_FOCUS.has(String(c.focus))) pools.ft.push(cand)
+    else pools.other.push(cand)
   }
-  const sel = selectShown(cands)
-  const shown = sel.shown.map(s => ({ competitorId: s.entry.competitorId, name: s.entry.name }))
-  for (const n of sel.notShown) n.candidate.entry.reason = n.reason === 'hidden' ? 'hidden by Admin' : `${n.candidate.entry.reason}; beyond the four shown`
+  // Food-truck tools first (up to four); others only to make up 2; the generic shop only as the single fallback beside one other.
+  const ftSel = selectShown(pools.ft)
+  const shownCands = [...ftSel.shown]
+  const notShown: { candidate: SelectionCandidate<CompetitorVerdict>; why: string }[] = ftSel.notShown.map(n => ({ candidate: n.candidate, why: n.reason === 'hidden' ? 'hidden by Admin' : 'beyond the four shown' }))
+  const otherSel = selectShown(pools.other, Math.max(0, 2 - shownCands.length))
+  shownCands.push(...otherSel.shown)
+  notShown.push(...otherSel.notShown.map(n => ({ candidate: n.candidate, why: n.reason === 'hidden' ? 'hidden by Admin' : 'not needed: food-truck tools come first; others only make up 2' })))
+  const shopAllowed = shownCands.length === 1
+  const shopSel = selectShown(pools.shop, shopAllowed ? 1 : 0)
+  shownCands.push(...shopSel.shown)
+  notShown.push(...shopSel.notShown.map(n => ({ candidate: n.candidate, why: n.reason === 'hidden' ? 'hidden by Admin' : 'a generic web shop counts only as the single fallback beside one eligible food-truck or restaurant tool' })))
+  const shown = shownCands.map(s => ({ competitorId: s.entry.competitorId, name: s.entry.name }))
+  for (const n of notShown) n.candidate.entry.reason = `${n.candidate.entry.reason}; ${n.why}`
   const live = !NEVER_AUTO.has(x.code) && x.hasPage && x.autoPublish && !x.adminOff && shown.length >= 2
   const reason = NEVER_AUTO.has(x.code) ? 'never auto-published'
     : !x.hasPage ? 'its language has no comparison page yet'
     : !x.autoPublish ? 'auto-publish is off'
     : x.adminOff ? 'Admin set the country off'
-    : shown.length >= 2 ? `${shown.length} competitors shown` : `only ${shown.length} competitor${shown.length === 1 ? '' : 's'} publishable (2 needed)`
+    : shown.length >= 2 ? `${shown.length} competitors shown` : `only ${shown.length} eligible competitor${shown.length === 1 ? '' : 's'} with a price (2 needed)`
   return { code: x.code, live, reason, shown, competitors: verdicts }
 }
 

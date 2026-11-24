@@ -45,8 +45,12 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     sourceUrl: `https://${cid}.example/pricing`, checkedOn: '2026-11-01', verifiedAt: null, verifiedBy: null, supersededAt: null, autoVerifiedAt: null, autoBlocked: false, ...o })
   const entry = (id, cid, pid, o = {}) => ({ id, countryCode: 'GB', competitorId: cid, primaryPlanId: pid, sortOrder: 1, verifiedAt: null, pinned: false, hidden: false, autoVerifiedAt: null, autoBlocked: false, ...o })
   const ev = (cid, amount, o = {}) => ({ competitor_id: cid, country_code: 'GB', plan_id: null, found: { plan_name: 'Basic', amount, currency: 'GBP', period: 'month' }, ...o })
+  const aheadOf = cid => ({ id: `ahead-${cid}`, competitorId: cid, featureKey: 'ahead', countryCode: null, value: 'yes', note: null, quote: 'Order ahead and collect.', sourceUrl: `https://${cid}.example/order`,
+    checkedOn: '2026-11-01', verifiedAt: null, verifiedBy: null, supersededAt: null, createdAt: null, autoVerifiedAt: null, autoBlocked: false })
   const country = (o = {}) => ({ code: 'GB', currency: 'GBP', hasPage: true, autoPublish: true, adminOff: false, today: '2026-11-07', competitors: [comp(C1), comp(C2), comp(C3)],
-    plans: [plan('p1', C1), plan('p2', C2), plan('p3', C3)], entries: [entry('e1', C1, 'p1'), entry('e2', C2, 'p2'), entry('e3', C3, 'p3')], values: [],
+    // compare-fix-1 re-pin (24 Nov 2026): Dominic's ELIGIBILITY rule needs a quoted order-ahead answer on the competitor's own site, so the
+    // fixture competitors carry one — the tests below then test what they always tested.
+    plans: [plan('p1', C1), plan('p2', C2), plan('p3', C3)], entries: [entry('e1', C1, 'p1'), entry('e2', C2, 'p2'), entry('e3', C3, 'p3')], values: [C1, C2, C3].map(aheadOf),
     priceEvidence: [ev(C1, 29), ev(C2, 29), ev(C3, 29)], heldPlanIds: new Set(), ...o })
   const f = (o = {}) => ({ id: 'f1', competitor_id: C1, field: 'feature', outcome: 'changed', country_code: null, plan_id: null, quote: 'We offer pre-orders.', source_url: 'https://c1.example/features',
     quote_in_page: true, second_check: 'confirmed', created_at: '2026-11-07T10:00:00Z', found: { feature_key: 'preorder', feature: 'yes' }, ...o })
@@ -90,7 +94,9 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
   const v0 = L.evaluateCountry(country())
   t('three confirmed competitors → all publishable, live', v0.live && v0.shown.length === 3 && v0.competitors.every(c => c.publishable), v0)
   const one = L.evaluateCountry(country({ priceEvidence: [ev(C1, 29)] }))
-  t('only one with its price confirmed by both checks → NOT live (2 needed); the others say why', !one.live && one.shown.length === 1 && /not been confirmed/.test(one.competitors[1].reason), one)
+  // compare-fix-1 re-pin (Dominic, 24 Nov): ONE check of the price is enough — "both checks confirmed" is dropped, so evidence for only one
+  // no longer takes the other two down. (Was: 'only one with its price confirmed by both checks → NOT live (2 needed); the others say why'.)
+  t('only one with its price confirmed by both checks → still LIVE: one check is enough (compare-fix-1)', one.live && one.shown.length === 3 && one.competitors.every(c => c.publishable), one)
   t('a confirmation of a DIFFERENT price does not count', !L.priceConfirmed(plan('p1', C1), [ev(C1, 35)]) && L.priceConfirmed(plan('p1', C1), [ev(C1, 29)]))
   t('the source must be on its own site', !L.ownSource('https://elsewhere.example/p', comp(C1)) && L.ownSource('https://www.c1.example/pricing', comp(C1, { website: 'https://c1.example' })))
   t('the price in the wrong currency → not publishable', /not GBP/.test(L.planVerdict(plan('p1', C1, { currency: 'USD' }), comp(C1), country()).reason))
@@ -154,7 +160,9 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     checks: [{ competitor_id: C2, checked_on: '2026-11-07', pages_checked: { pages: [{ url: 'https://c2.example/pricing', kind: 'other', ok: false, status: 'url_not_in_prior_context', fetchedAt: null }, { url: 'https://c2.example/features', kind: 'features', ok: true, status: 'fetched', fetchedAt: null }], helpCentre: 'none_found', checkedAt: '2026-11-07T10:00:00Z' } }],
     evidence: [ev(C1, 29), ev(C2, 29)], exported_at: NOW.toISOString(), ...o })
   const run = async (b, pending, o = {}) => {
-    const m = L.memory(b, [], pending, NOW)
+    // compare-fix-1 re-pin: C1 and C2 carry a quoted order-ahead answer (Dominic's eligibility rule); C3 does not — so it is still "the third".
+    const m = L.memory(b, o.values ?? [C1, C2].map(cid => ({ id: `ahead-${cid}`, competitor_id: cid, feature_key: 'ahead', country_code: null, value: 'yes', note: null, quote: 'Order ahead and collect.',
+      source_url: `https://${cid}.example/order`, checked_on: '2026-11-01', verified_at: null, verified_by: null, superseded_at: null, created_at: null, auto_verified_at: null, auto_blocked: false })), pending, NOW)
     let told = 0
     const r = await L.runPublish({ pricing: m.pricing, checks: m.checks, store: m.store, now: () => NOW, log: () => {}, hasPage: (code, loc) => /^(en|de)/.test(loc), revalidate: async () => { told++; return true }, ...o })
     return { m, r, told }
@@ -165,7 +173,8 @@ const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
     && a.m.T.competitor_check_findings.get('fq').review_status === 'rejected' && /contradicts/.test(a.m.T.competitor_check_findings.get('fq').auto_reason)
     && [...a.m.T.competitor_feature_values.values()].some(v => v.feature_key === 'preorder' && v.value === 'yes' && v.quote === 'Pre-orders.' && v.auto_verified_at))
   t('…accepted automatically, reviewed_by is empty (no admin id)', a.m.T.competitor_check_findings.get('fy').reviewed_by === null)
-  t('GB goes live with the two whose prices both checks confirmed; the third says why; entries and plans marked auto-verified',
+  // compare-fix-1 re-pin: "the two whose prices both checks confirmed" became "the two eligible ones" — one check is enough; C3 has no order-ahead answer.
+  t('GB goes live with the two eligible ones (a quoted order-ahead answer, a price on their own site); the third says why; entries and plans marked auto-verified',
     a.r.verdicts.find(v => v.code === 'GB').live && a.m.T.comparison_publish.get('GB').auto_live === true && a.m.T.comparison_entries.get('e1').auto_verified_at && !a.m.T.comparison_entries.get('e3').auto_verified_at
     && a.m.T.competitor_plans.get('p1').auto_verified_at && !a.m.T.competitor_plans.get('p3').auto_verified_at)
   t('AE: never live, its row untouched by auto-publish', a.m.T.comparison_publish.get('AE').auto_live === false && !a.r.verdicts.find(v => v.code === 'AE').live)

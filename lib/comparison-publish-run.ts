@@ -39,6 +39,8 @@ export interface PublishStore {
   /** competitor_feature_checks: competitor_id, checked_on, pages_checked (the newest per competitor is enough). */
   featureChecks(): Promise<Row[]>
   addEvents(rows: Omit<PublishEvent, 'at'>[], at: string): Promise<void>
+  /** compare-fix-1: points a shown entry at the plan the evaluation chose (comparison_entries.primary_plan_id). */
+  setEntryPlan?(entryId: string, planId: string): Promise<void>
 }
 export interface PublishDeps {
   pricing: PricingStore
@@ -58,6 +60,8 @@ export interface PublishDeps {
 export interface PublishReport {
   decisions: Decision[]; failedAccepts: { id: string; error: string }[]; checkUrls: { competitorId: string; urls: string[] }[]
   verdicts: CountryVerdict[]; events: number; revalidated: boolean | null
+  /** compare-fix-1: countries whose evaluation or save failed (each logged; the run carried on). */
+  countryErrors?: { code: string; error: string }[]
 }
 
 /** A check-admin store whose reviews are marked automatic (no admin id) — what acceptFinding writes through. */
@@ -166,25 +170,41 @@ export async function runPublish(d: PublishDeps): Promise<PublishReport> {
   const held = new Set((await d.store.pendingFindings()).filter(f => typeof f.auto_reason === 'string' && f.auto_reason.startsWith('held') && f.plan_id).map(f => String(f.plan_id)))
   const verdicts: CountryVerdict[] = []
   const entryMark = new Map<string, boolean>(), planMark = new Map<string, boolean>()
+  // compare-fix-1: ONE country's failure never stops the loop again (compare-status-1 §1.3: AE's upsert broke its CHECK on every run
+  // from 10 Nov, so the countries after it were never evaluated and the marks, events and refresh below never ran). Logged and reported.
+  const countryErrors: { code: string; error: string }[] = []
+  const entryPlan = new Map<string, string>()
   for (const c of countries) {
-    const pub = pubRows.get(c.code)
-    const v = evaluateCountry({ code: c.code, currency: c.currency, hasPage: d.hasPage(c.code, c.locale), autoPublish: autoCodes.has(c.code), adminOff: pub?.admin_off === true,
-      today, competitors, plans: current, entries, values, priceEvidence: evidence, heldPlanIds: held })
-    verdicts.push(v)
-    for (const cv of v.competitors) {
-      const on = autoCodes.has(c.code) && cv.publishable
-      entryMark.set(cv.entryId, on)
-      if (cv.planId && autoCodes.has(c.code)) planMark.set(cv.planId, (planMark.get(cv.planId) ?? false) || (cv.planPublishable && !plans.find(p => p.id === cv.planId)?.verifiedAt))
-      const e = entries.find(x => x.id === cv.entryId)!
-      if (on && !e.autoVerifiedAt) events.push({ country_code: c.code, competitor_id: cv.competitorId, kind: 'published', detail: cv.reason })
-      if (!on && e.autoVerifiedAt) events.push({ country_code: c.code, competitor_id: cv.competitorId, kind: /held/.test(cv.reason) ? 'held' : 'taken_down', detail: cv.reason })
-      const before = (Array.isArray(pub?.shown) ? pub!.shown as Row[] : []).find(s => s.competitorId === cv.competitorId)
-      if (on && e.autoVerifiedAt && before && before.planId && before.planId !== cv.planId) events.push({ country_code: c.code, competitor_id: cv.competitorId, kind: 'changed', detail: 'its plan or price changed (both checks agree)' })
+    try {
+      const pub = pubRows.get(c.code)
+      const v = evaluateCountry({ code: c.code, currency: c.currency, hasPage: d.hasPage(c.code, c.locale), autoPublish: autoCodes.has(c.code), adminOff: pub?.admin_off === true,
+        today, competitors, plans: current, entries, values, priceEvidence: evidence, heldPlanIds: held })
+      verdicts.push(v)
+      const shownIds = new Set(v.shown.map(s => s.competitorId))
+      for (const cv of v.competitors) {
+        // compare-fix-1: only the competitors SHOWN are marked (at most four), so the page — which picks its own four from the marked
+        // entries (lib/comparison.ts) — shows exactly the ones this evaluation chose.
+        const on = autoCodes.has(c.code) && cv.publishable && shownIds.has(cv.competitorId)
+        entryMark.set(cv.entryId, on)
+        if (on && cv.planId) { planMark.set(cv.planId, (planMark.get(cv.planId) ?? false) || (cv.planPublishable && !plans.find(p => p.id === cv.planId)?.verifiedAt)); entryPlan.set(cv.entryId, cv.planId) }
+        const e = entries.find(x => x.id === cv.entryId)!
+        if (on && !e.autoVerifiedAt) events.push({ country_code: c.code, competitor_id: cv.competitorId, kind: 'published', detail: cv.reason })
+        if (!on && e.autoVerifiedAt) events.push({ country_code: c.code, competitor_id: cv.competitorId, kind: /held/.test(cv.reason) ? 'held' : 'taken_down', detail: cv.reason })
+        const before = (Array.isArray(pub?.shown) ? pub!.shown as Row[] : []).find(s => s.competitorId === cv.competitorId)
+        if (on && e.autoVerifiedAt && before && before.planId && before.planId !== cv.planId) events.push({ country_code: c.code, competitor_id: cv.competitorId, kind: 'changed', detail: 'its plan or price changed' })
+      }
+      const wasLive = pub?.auto_live === true
+      if (v.live !== wasLive) events.push({ country_code: c.code, competitor_id: null, kind: v.live ? 'country_live' : 'country_not_live', detail: v.live ? `live: ${v.shown.map(s => s.name).join(', ')}` : `not live: ${v.reason}` })
+      const shown = v.shown.map(s => ({ ...s, planId: v.competitors.find(x => x.competitorId === s.competitorId)?.planId ?? null }))
+      // compare-fix-1: AE's row always carries auto_publish false (the table's CHECK comparison_publish_never_ae; an upsert's insert half
+      // is checked with the column defaults, so leaving it out broke every run).
+      await d.store.savePublish(c.code, { auto_live: v.live, shown, evaluated_at: nowIso, live_since: v.live ? (wasLive ? pub?.live_since ?? nowIso : nowIso) : null, updated_at: nowIso,
+        ...(NEVER_AUTO.has(c.code) ? { auto_publish: false } : {}) })
+    } catch (e) {
+      const error = e instanceof Error ? e.message : String(e)
+      countryErrors.push({ code: c.code, error })
+      d.log(`publish: ${c.code} FAILED and was skipped (the other countries carry on) — ${error}`)
     }
-    const wasLive = pub?.auto_live === true
-    if (v.live !== wasLive) events.push({ country_code: c.code, competitor_id: null, kind: v.live ? 'country_live' : 'country_not_live', detail: v.live ? `live: ${v.shown.map(s => s.name).join(', ')}` : `not live: ${v.reason}` })
-    const shown = v.shown.map(s => ({ ...s, planId: v.competitors.find(x => x.competitorId === s.competitorId)?.planId ?? null }))
-    await d.store.savePublish(c.code, { auto_live: v.live, shown, evaluated_at: nowIso, live_since: v.live ? (wasLive ? pub?.live_since ?? nowIso : nowIso) : null, updated_at: nowIso })
   }
   // Entries outside an auto-publish country lose any automatic mark.
   for (const e of entries) if (!entryMark.has(e.id)) entryMark.set(e.id, false)
@@ -194,6 +214,12 @@ export async function runPublish(d: PublishDeps): Promise<PublishReport> {
     if (off.length) await d.store.setAutoVerified(table, off, null)
   }
   await apply('comparison_entries', entryMark, id => !!entries.find(e => e.id === id)?.autoVerifiedAt)
+  // compare-fix-1: the page shows an entry's OWN plan (lib/comparison.ts entryPlan); where the evaluation chose another current plan of
+  // that competitor (the entry's own does not qualify), the entry is pointed at it — only for the entries shown.
+  if (d.store.setEntryPlan) for (const [entryId, planId] of entryPlan) {
+    const e = entries.find(x => x.id === entryId)
+    if (e && e.primaryPlanId !== planId) await d.store.setEntryPlan(entryId, planId)
+  }
   for (const p of current) if (p.autoVerifiedAt && !planMark.has(p.id)) planMark.set(p.id, false)
   await apply('competitor_plans', planMark, id => !!plans.find(p => p.id === id)?.autoVerifiedAt)
   // The answers: every current answer of a competitor in scope — marked when it passes the evidence rule as it is.
@@ -209,5 +235,6 @@ export async function runPublish(d: PublishDeps): Promise<PublishReport> {
     d.log(`publish: ${v.code} ${v.live ? 'LIVE' : 'not live'} — ${v.reason}${v.shown.length ? ` (${v.shown.map(s => s.name).join(', ')})` : ''}`)
   const changed = events.some(e => !e.kind.startsWith('finding_'))
   const revalidated = changed && d.revalidate ? await d.revalidate() : null
-  return { decisions, failedAccepts, checkUrls, verdicts, events: events.length, revalidated }
+  if (countryErrors.length) d.log(`publish: ${countryErrors.length} countr${countryErrors.length === 1 ? 'y' : 'ies'} failed: ${countryErrors.map(x => x.code).join(', ')}`)
+  return { decisions, failedAccepts, checkUrls, verdicts, events: events.length, revalidated, countryErrors }
 }

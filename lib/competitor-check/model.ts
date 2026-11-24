@@ -176,7 +176,8 @@ export const RECORD_FINDINGS_TOOL = {
             country_code: text,
             outcome: { type: 'string', enum: [...OUTCOMES] },
             found_value: text,
-            amount: nullable('number'),
+            // compare-fix-1: the unit, explicit — the number AS PRINTED, in the currency's normal units (never cents).
+            amount: { ...nullable('number'), description: 'The amount exactly as printed, in the currency\'s normal units: 79 for "R$79,00", 59 for "59 € / mois", 29.99 for "£29.99", 3980 for "3,980円". Never in cents or the smallest unit.' },
             currency: text,
             period: choice(['month', 'year', 'one_off']),
             vat: choice(['incl', 'excl', 'unknown']),
@@ -372,6 +373,11 @@ export function hostOf(url: string | null | undefined): string | null {
   try { return new URL(url).hostname.toLowerCase().replace(/^www\./, '') } catch { return null }
 }
 /** The official app stores — the one place other than its own website a competitor's words may be read. */
+/** compare-fix-1: an ACCOUNT-level API failure — the organisation's credit ran out, the workspace hit its usage limit, or the login
+ *  failed. It says nothing about the competitor, so it never counts as one of its failed checks (20–23 Nov 2026 took 15 competitors
+ *  "down" for 5 failed checks that were the account's, not theirs). */
+export const ACCOUNT_ERROR = /credit balance is too low|workspace API usage limits|usage limits?\b.*regain access|insufficient[_ ]quota|WorkloadIdentityError|AuthenticationError|PermissionDeniedError|\b40[13]\b/i
+export const isAccountError = (error: string | null | undefined) => ACCOUNT_ERROR.test(String(error ?? ''))
 export const APP_STORE_HOSTS = ['apps.apple.com', 'play.google.com'] as const
 /** True when `url` is on one of the competitor's own domains (a subdomain counts) or an official app store. */
 export function onOwnSite(url: string | null, domains: readonly string[]): boolean {

@@ -17,6 +17,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { runChecker, summaryEmail, exitCodeOf, type CheckerDeps } from '@/lib/competitor-check/checker'
+import { isAccountError } from '@/lib/competitor-check/model'
 import { supabaseCheckerStore } from '@/lib/competitor-check/store-supabase'
 import { sendConfirmationEmail } from '@/lib/email'
 import { ADMIN_ALERT_TO } from '@/lib/custom-domain/alert'
@@ -100,7 +101,8 @@ async function main() {
     try {
       const { data: comps } = await db.from('competitors').select('id, name, check_failures')
       const byName = new Map(((comps ?? []) as { id: string; name: string; check_failures: number | null }[]).map(c => [c.name, c]))
-      const failed = new Set(reports.flatMap(r => r.failed.filter(f => f.kind !== 'incomplete').map(f => byName.get(f.name)?.id).filter((x): x is string => !!x)))
+      // compare-fix-1: an account-level API failure (credit, workspace limit, login) is never the competitor's failed check.
+      const failed = new Set(reports.flatMap(r => r.failed.filter(f => f.kind !== 'incomplete' && !isAccountError(f.error)).map(f => byName.get(f.name)?.id).filter((x): x is string => !!x)))
       const good = new Set(reports.flatMap(r => r.checkedIds ?? []).filter(id => !failed.has(id)))
       for (const c of byName.values()) {
         const next = failed.has(c.id) ? (c.check_failures ?? 0) + 1 : good.has(c.id) ? 0 : null

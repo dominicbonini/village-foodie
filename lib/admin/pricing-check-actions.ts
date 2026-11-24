@@ -101,6 +101,8 @@ const COMPETITOR: Record<keyof Competitor, Def> = {
   categoryBy: { col: 'category_by', kind: { oneOf: ['auto', 'admin'], nullable: true } },
   // compare-autopublish-1 (20261078), read tolerantly (SUITS_COMPETITOR_COLUMNS).
   checkFailures: { col: 'check_failures', kind: 'int0' }, checkUrlsBy: { col: 'check_urls_by', kind: { oneOf: ['auto', 'admin'], nullable: true } },
+  // compare-fix-1: read with the suits columns (tolerantly), for the publish step's "not sold here".
+  notInCountries: { col: 'not_in_countries', kind: 'textArray' },
 }
 const PLAN: Record<keyof CompetitorPlan, Def> = {
   id: { col: 'id', kind: 'text' }, competitorId: { col: 'competitor_id', kind: 'text' },
@@ -150,9 +152,9 @@ export const COMPARE_COMPETITOR_COLUMNS = ['capacity_slots', 'multi_location_sch
 /** competitor-check-1: the columns added by 20261043 — left out of the select while that migration has not run. */
 export const CHECK_COMPETITOR_COLUMNS = ['lifecycle', 'added_as_candidate', 'check_urls', 'check_interval_days', 'next_check_at', 'last_checked_at', 'deep_checked_at', 'check_requested_at'] as const
 /** competitor-check-1: what a competitor column reads as when the row does not carry it (before 20261043). */
-const ABSENT: Record<string, unknown> = { lifecycle: 'active', added_as_candidate: false, check_urls: [], check_interval_days: 90, pinned: false, hidden: false, auto_blocked: false, check_failures: 0 }
+const ABSENT: Record<string, unknown> = { lifecycle: 'active', added_as_candidate: false, check_urls: [], check_interval_days: 90, pinned: false, hidden: false, auto_blocked: false, check_failures: 0, not_in_countries: [] }
 /** compare-suits-1: the competitor columns added by 20261075 — left out of the select while that migration has not run. */
-export const SUITS_COMPETITOR_COLUMNS = ['category', 'category_by', 'check_failures', 'check_urls_by'] as const
+export const SUITS_COMPETITOR_COLUMNS = ['category', 'category_by', 'check_failures', 'check_urls_by', 'not_in_countries'] as const
 
 const LABEL: Record<string, string> = {
   planName: 'Plan name', currency: 'Currency', monthlyMinor: 'Monthly price', setupMinor: 'Setup fee', truckFeeBps: 'Fee the truck pays (%)',

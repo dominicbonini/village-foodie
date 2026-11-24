@@ -57,6 +57,8 @@ export interface Competitor {
    *  who set check_urls ('admin' — the checker never changes them; 'auto' or null — the checker may add addresses). Absent before: 0 / null. */
   checkFailures?: number
   checkUrlsBy?: 'auto' | 'admin' | null
+  /** compare-fix-1: the countries it is NOT sold in (global-players-1's not_in_countries) — never shown on those pages. */
+  notInCountries?: string[]
 }
 
 /** competitor-check-1: whether a competitor is counted and shown anywhere in Pricing check (and the comparison pages).

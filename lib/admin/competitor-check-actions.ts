@@ -22,6 +22,7 @@ import { CLASSIFICATION_EFFECT, PLAN_FIELDS, type Classification } from '@/lib/c
 import { LEGACY_FEATURE_COLUMNS, effectiveValue, valueOut, type FeatureValue } from '@/lib/comparison-features'
 import { writeAnswer } from '@/lib/admin/feature-actions'
 import { minorDigits } from '@/lib/money-format'
+import { resolveAmountMinor } from '@/lib/price-units'   // compare-fix-1: the price-unit rule
 import { overviewOf } from '@/lib/competitor-check/overview'
 import { countriesOf, deepQueueOf, type QueueCountry } from '@/lib/competitor-check/core'
 
@@ -64,14 +65,20 @@ function featureOf(f: Row): { key: string; legacyText: boolean } | null {
 const toMinor = (amount: unknown, currency: string) => (typeof amount === 'number' && Number.isFinite(amount) ? Math.round(amount * 10 ** minorDigits(currency)) : null)
 const toBps = (percent: unknown) => (typeof percent === 'number' && Number.isFinite(percent) ? Math.round(percent * 100) : null)
 
-/** The plan columns a plan finding sets, from its typed `found` — never from its words. */
-export function planColsOf(field: string, found: Row, currency: string): { ok: true; cols: Row } | { ok: false; error: string } {
+/** The plan columns a plan finding sets, from its typed `found` — never from its words.
+ *  compare-fix-1: a MONTHLY price's unit is decided by lib/price-units.ts resolveAmountMinor — checked against the price printed in
+ *  the finding's own words (found_value, quote), so an amount already in minor units is never multiplied again; one above its
+ *  currency's plausible ceiling is not stored: the plan is only marked unclear (`implausible` says why). */
+export function planColsOf(field: string, found: Row, currency: string, words: readonly (string | null | undefined)[] = []): { ok: true; cols: Row; implausible?: boolean } | { ok: false; error: string } {
   const cur = typeof found.currency === 'string' && /^[A-Z]{3}$/.test(found.currency) ? found.currency : currency
   switch (field) {
     case 'monthly_price': {
-      const m = toMinor(found.amount, cur)
-      if (m === null) return { ok: true, cols: { price_hidden: true, monthly_minor: null } }
+      if (typeof found.amount !== 'number') return { ok: true, cols: { price_hidden: true, monthly_minor: null } }
       const yearly = found.period === 'year'
+      const r = resolveAmountMinor(found.amount, cur, [typeof found.found_value === 'string' ? found.found_value : null, ...words], yearly ? 'year' : null)
+      if (r.implausible) return { ok: true, cols: { unclear: true }, implausible: true }
+      const m = r.minor
+      if (m === null) return { ok: true, cols: { price_hidden: true, monthly_minor: null } }
       return { ok: true, cols: { price_hidden: false, currency: cur, monthly_minor: yearly ? Math.round(m / 12) : m, yearly_only: yearly,
         ...(found.vat === 'incl' || found.vat === 'excl' || found.vat === 'unknown' ? { vat: found.vat } : {}) } }
     }
@@ -114,8 +121,9 @@ export async function acceptFinding(pricing: PricingStore, checks: CheckAdminSto
       const old = await pricing.getPlan(String(f.plan_id))
       if (!old) return refuse(404, 'That plan is gone.')
       if (old.superseded_at != null) return refuse(409, 'That plan has been edited since this finding was made. Reject it, or check the plan by hand.')
-      const c = planColsOf(field, found, String(old.currency))
+      const c = planColsOf(field, found, String(old.currency), [typeof f.quote === 'string' ? f.quote : null])
       if (!c.ok) return refuse(400, c.error)
+      // compare-fix-1: an implausible amount is not stored — the plan keeps its price and is marked unclear.
       const v = await newPlanVersion(pricing, old, { ...c.cols, source_url: f.source_url ?? old.source_url }, stamp)
       if (!v.ok) return v
     } else if (feat) {
@@ -138,7 +146,8 @@ export async function acceptFinding(pricing: PricingStore, checks: CheckAdminSto
     const name = typeof found.plan_name === 'string' && found.plan_name.trim() ? found.plan_name.trim() : null
     const cur = typeof found.currency === 'string' && /^[A-Z]{3}$/.test(found.currency) ? found.currency : null
     if (!code || !name || !cur) return refuse(400, 'A new plan needs its country, name and currency — add it by hand (+ Add competitor) or reject this.')
-    const price = planColsOf('monthly_price', found, cur)
+    const price = planColsOf('monthly_price', found, cur, [typeof f.quote === 'string' ? f.quote : null])
+    if (price.ok && price.implausible) return refuse(400, 'The amount is not plausible for a monthly price in this currency (a unit slip?) — add the plan by hand, or reject this.')
     const row: Row = {
       competitor_id: cid, country_code: code, plan_name: name, currency: cur, price_hidden: false, monthly_minor: null, yearly_only: false, setup_minor: 0,
       truck_fee_bps: 0, truck_fee_fixed_minor: 0, customer_fee_bps: 0, customer_fee_fixed_minor: 0, card_mode: 'unknown', card_bps: null, card_fixed_minor: null,

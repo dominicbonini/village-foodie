@@ -78,5 +78,10 @@ export function supabasePublishStore(db: SupabaseClient): PublishStore {
         if (error) fail('save events', error)
       }
     },
+    // compare-fix-1: the plan a shown entry displays (only an entry the evaluation shows, only when its own plan does not qualify).
+    async setEntryPlan(entryId, planId) {
+      const { error } = await db.from('comparison_entries').update({ primary_plan_id: planId }).eq('id', entryId)
+      if (error) fail('point the entry at its plan', error)
+    },
   }
 }

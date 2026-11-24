@@ -29,6 +29,27 @@ const FEATURE_KEYS = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/comparison
 const KEYS = ['ahead', 'preorder', 'capacity', 'schedule', 'whatsapp', 'social', 'kds', 'offline', 'walkup', 'vans', 'domain', 'monthly', 'perorder', 'cardfee']
 const FOCUS = ['food_truck', 'street_food_markets', 'nearest_local', 'pop_up', 'pos']
 const CHECKED_ON = '2026-11-24'
+// ── compare-fix-1 (24 Nov 2026): Dominic's decisions on compare-research-1 §5 / §6 ──────────────────────────────────────────
+// Never counted (a booking tool, not a food-ordering platform): left out of the file entirely.
+const EXCLUDED_HOSTS = ['anolla.com']
+// STORED competitors that fail the ordering rule everywhere (compare-research-1 §5) → set_lifecycle not_relevant, with the agent's reason
+// and the page it rests on (from raw/*.json). Borderline or presence-only cases are NOT here (OlaClick, CloudOrders).
+const NOT_RELEVANT = ['93cd38bf' /* Aphelios */, '4524d8f0' /* Liven */, '0c786162' /* Soften Food */, '1af3a80c' /* VirtualLine */,
+  '64e49b93' /* Moduurn */, '57790b35' /* Dine360 */, 'f508b55e' /* Gustoco */, '2c389cf4' /* Ordeno App */, '34a72bd1' /* Creavo Order */,
+  '5286c363' /* Food Truck Concept */, '9f932a75' /* AdvaNceD IoT */, 'c762b9c2' /* FoodTruck POS */, '875ca26d' /* apetitio */,
+  '78b5be7c' /* POSbistro */, '356a620b' /* ABS POS */, 'cd9f8f3d' /* Orsys */, 'b030b97d' /* DineEasy */, 'aa8cf034' /* Zettle */]
+// STORED competitors not sold (or not eligible) in a country only → not_sold_in (never shown on that page).
+const NOT_SOLD_IN = { '4c350e59': ['AU'] /* Ordering.co */, '47a1fbe0': ['ES'] /* EatSelf */, 'd00d6bfd': ['HK', 'RO', 'TH'] /* MENU TIGER */,
+  'dc1d8f05': ['IE', 'PT', 'TH'] /* GloriaFood */, '2a58410a': ['TH'] /* Take App */, 'd0eb16fa': ['MT', 'SE'] /* SumUp */,
+  '5b50f4e3': ['PT'] /* Flipdish */, 'ef9dcbd8': ['PT'] /* UpMenu */, 'aed7bf67': ['PT'] /* Order Tiger */, '2cbec3e7': ['LI'] /* Pikit */ }
+// STORED not-relevant competitors the research found eligible → set_lifecycle active (compare-research-1 §6.2).
+const REVIVE = ['b6a1a595' /* Qromo IT */, 'aebf5a80' /* Yoveletta CH */, '462996c6' /* WEIQ SE */, '0e42d25f' /* Digitaste BE */, 'a09713bc' /* Superb NO */]
+// A research plan whose name differs from the stored plan it corrects (compare-research-1 §4).
+const RENAME = { 'a207b996|FR|membre fondateur': 'Eatch Fondateur (Membre Fondateur)', '430c8cb2|CY|εφαρμογή (own app add-on)': 'Own app' }
+// Not-relevant stored vendors whose 100× plan is still corrected (history kept right).
+const CORRECT_EVEN_IF_NOT_RELEVANT = ['c762b9c2']
+const STORED_PLANS = JSON.parse(fs.readFileSync(path.join(__dirname, 'stored-plans.json'), 'utf8'))   // current plans, read once (read-only SELECT)
+const storedPlan = new Map(STORED_PLANS.map(x => [`${x.c}|${x.cc}|${String(x.n).trim().toLowerCase()}`, x]))
 
 const uuid = (seed) => { const h = crypto.createHash('sha1').update(`compare-research-1:${seed}`).digest('hex'); return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-${((parseInt(h[16], 16) & 3) | 8).toString(16)}${h.slice(17, 20)}-${h.slice(20, 32)}` }
 const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, '').toLowerCase() } catch { return null } }
@@ -48,7 +69,8 @@ function build() {
     for (const v of raw.vendors ?? []) {
       const cc = String(v.country ?? countries[0] ?? '').toUpperCase()
       if (!/^[A-Z]{2}$/.test(cc)) { problems.push(`${f} · ${v.name}: no country`); continue }
-      if (v.verdict === 'not_relevant') { notRelevant.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: v.reason }); continue }
+      if (EXCLUDED_HOSTS.some(x => (host(v.website) ?? '').endsWith(x))) { notRelevant.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: `left out (Dominic, 24 Nov): a booking tool, not a food-ordering platform. ${v.reason ?? ''}`.trim() }); continue }
+      if (v.verdict === 'not_relevant') { notRelevant.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: v.reason, url: v.eligibility?.order_url ?? v.eligibility?.food_url ?? (v.check_urls ?? [])[0] ?? v.website, plans: v.plans ?? [] }); continue }
       if (v.verdict !== 'eligible') { unreadable.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: v.reason }); continue }
       const stored = v.stored_id_prefix ? STORED[v.stored_id_prefix] : null
       if (v.stored_id_prefix && !stored) problems.push(`${f} · ${v.name}: stored_id_prefix ${v.stored_id_prefix} is not in stored-ids.json`)
@@ -57,7 +79,7 @@ function build() {
       const key = stored ? stored.id : (hostKey.get(h) ?? nameKey.get(norm(v.name)) ?? h ?? norm(v.name))
       if (h && !hostKey.has(h)) hostKey.set(h, key)
       if (!nameKey.has(norm(v.name))) nameKey.set(norm(v.name), key)
-      const m = vendors.get(key) ?? { key, stored, name: stored?.name ?? v.name, website: v.website, focus: v.focus, countries: new Map(), answers: new Map(), check_urls: new Set(), evidence: [] }
+      const m = vendors.get(key) ?? { key, stored, prefix: v.stored_id_prefix ?? null, name: stored?.name ?? v.name, website: v.website, focus: v.focus, countries: new Map(), answers: new Map(), check_urls: new Set(), evidence: [] }
       if (!FOCUS.includes(v.focus)) problems.push(`${f} · ${v.name}: focus "${v.focus}"`)
       if (v.focus === 'food_truck' && !(v.eligibility?.food_quote && v.eligibility?.order_quote)) problems.push(`${f} · ${v.name}: a food_truck tool needs food_quote and order_quote`)
       if (v.focus !== 'food_truck' && !v.eligibility?.order_quote) problems.push(`${f} · ${v.name}: needs an order_quote`)
@@ -85,7 +107,9 @@ function build() {
   const notNeeded = []
   for (const m of vendors.values()) {
     if (!['nearest_local', 'pos'].includes(m.focus)) continue
-    for (const cc of [...m.countries.keys()]) if ((ftPriced.get(cc) ?? 0) >= 2) { notNeeded.push({ country: cc, name: m.name, focus: m.focus }); m.countries.delete(cc) }
+    // compare-fix-1: informational only — the publish step (lib/comparison-publish.ts evaluateCountry) applies the preference itself,
+    // so every eligible vendor is imported (its plan corrections too).
+    for (const cc of [...m.countries.keys()]) if ((ftPriced.get(cc) ?? 0) >= 2) notNeeded.push({ country: cc, name: m.name, focus: m.focus })
   }
   const competitors = [], plans = [], entries = []
   for (const m of vendors.values()) {
@@ -102,13 +126,24 @@ function build() {
       if (a.value === 'no' && !saysNotOffered(row.quote ?? '', null)) { row.value = 'not_mentioned'; delete row.quote; delete row.source_url; row.note = clip(`was "no" without a negative quote — recorded as not mentioned${a.note ? `; ${a.note}` : ''}`, 300) }
       answers.push(row)
     }
+    // compare-fix-1: the eligibility evidence reaches the database as an answer — where neither `ahead` nor `preorder` already says
+    // yes / partly with a quote, the research's order-ahead quote becomes `ahead` partly ("online ordering ahead of collection").
+    const quotedAhead = answers.some(a => ['ahead', 'preorder'].includes(a.key) && ['yes', 'partial'].includes(a.value) && a.quote)
+    const ev = m.evidence.find(e => e.order_quote && e.order_url)
+    if (!quotedAhead && ev) {
+      const i = answers.findIndex(a => a.key === 'ahead')
+      answers[i] = { key: 'ahead', value: 'partial', quote: clip(ev.order_quote, QUOTE_MAX), source_url: ev.order_url, note: 'online ordering ahead of collection (the eligibility evidence); a chosen time is not stated' }
+    }
     const cs = [...m.countries.keys()].sort()
-    competitors.push({
+    const row = {
       id, name: m.name, website: m.website, focus: m.focus, lifecycle: 'active', payment_providers: null,
       features_checked_on: CHECKED_ON, features_verified_at: null,
       notes: `compare-research-1 (24 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in "evidence"). Countries: ${cs.join(', ')}.`,
-      check_urls: [...m.check_urls].slice(0, 10), request_check: true, answers,
-    })
+      check_urls: [...m.check_urls].slice(0, 10), request_check: true, answers, set_focus: true,
+    }
+    if (m.prefix && REVIVE.includes(m.prefix)) row.set_lifecycle = { value: 'active', reason: `eligible: ${clip(ev?.order_quote ?? m.evidence[0]?.reason ?? '', 240)}`, source_url: ev?.order_url ?? m.website }
+    if (m.prefix && NOT_SOLD_IN[m.prefix]) row.not_sold_in = notSoldInRows(m.prefix)
+    competitors.push(row)
     for (const cc of cs) {
       const ps = m.countries.get(cc)
       let primary = null, cheapest = Infinity
@@ -130,12 +165,21 @@ function build() {
         const minor = hidden ? null : toMinorUnits(monthlyMajor, cur)
         // the 100× guard: the stored value read back must be the page's amount
         if (!hidden && Math.abs(minor / 10 ** minorDigits(cur) - monthlyMajor) > 0.01) problems.push(`${m.name} · ${p.plan_name}: ${minor} does not read back as ${monthlyMajor} ${cur}`)
-        const pid = uuid(`plan:${id}:${cc}:${norm(p.plan_name)}`)
+        // compare-fix-1: a research plan that matches a STORED current plan (by name, or RENAME) with a different price or currency
+        // corrects it: the stored one is superseded, this one inserted (lib/data-import/research.ts "correct").
+        let planName = clip(p.plan_name, 120), correct = false
+        if (m.prefix && !hidden) {
+          const k = `${m.prefix}|${cc}|${norm(p.plan_name)}`
+          const named = RENAME[k] ?? null
+          const sp = storedPlan.get(named ? `${m.prefix}|${cc}|${named.toLowerCase()}` : k)
+          if (sp) { planName = sp.n; correct = sp.m !== minor || sp.cur !== cur }
+        }
+        const pid = uuid(`plan:${id}:${cc}:${norm(planName)}${correct ? ':corrected' : ''}`)
         const feePct = typeof p.per_order_pct === 'number' ? Math.round(p.per_order_pct * 100) : 0
         const feeFixed = typeof p.per_order_fixed_major === 'number' ? toMinorUnits(p.per_order_fixed_major, cur) : 0
         plans.push({
-          id: pid, competitor_id: id, country_code: cc, plan_name: clip(p.plan_name, 120), currency: cur,
-          price_hidden: hidden, monthly_minor: minor, yearly_only: yearly, setup_minor: typeof p.setup_major === 'number' ? toMinorUnits(p.setup_major, cur) : 0,
+          id: pid, competitor_id: id, country_code: cc, plan_name: planName, currency: cur,
+          price_hidden: hidden, monthly_minor: minor, ...(hidden ? {} : { monthly_major: monthlyMajor }), yearly_only: yearly, ...(correct ? { correct: true } : {}), setup_minor: typeof p.setup_major === 'number' ? toMinorUnits(p.setup_major, cur) : 0,
           truck_fee_bps: feePct, truck_fee_fixed_minor: feeFixed, customer_fee_bps: 0, customer_fee_fixed_minor: 0,
           card_mode: 'unknown', card_bps: null, card_fixed_minor: null, card_rate_assumed: false,
           order_cap: null, included_orders: null, overage_fixed_minor: null,
@@ -147,6 +191,45 @@ function build() {
       }
       entries.push({ id: uuid(`entry:${cc}:${id}`), country_code: cc, competitor_id: id, primary_plan_id: primary, choose_when: null, sort_order: 50, verified_at: null, verified_by: null })
     }
+  }
+  // compare-fix-1: STORED competitors marked not relevant (NOT_RELEVANT) or not sold in a country, that are not already a row above —
+  // a row carrying only the instruction, its reason and its page (and, for CORRECT_EVEN_IF_NOT_RELEVANT, the corrected plans).
+  const have = new Set(competitors.map(c => c.id))
+  const nrBy = (pre) => notRelevant.filter(x => x.stored === pre)
+  for (const pre of [...new Set([...NOT_RELEVANT, ...Object.keys(NOT_SOLD_IN)])]) {
+    const st = STORED[pre]
+    if (!st) { problems.push(`stored competitor ${pre} is not in stored-ids.json`); continue }
+    if (have.has(st.id)) {
+      if (NOT_RELEVANT.includes(pre)) problems.push(`${pre}: marked not relevant but eligible elsewhere in the research — check`)
+      continue
+    }
+    const ev = nrBy(pre)[0]
+    const row = { id: st.id, name: ev?.name ?? pre, request_check: false }
+    if (NOT_RELEVANT.includes(pre)) {
+      if (!ev) { problems.push(`${pre}: no not-relevant evidence in raw/*.json`); continue }
+      row.set_lifecycle = { value: 'not_relevant', reason: clip(ev.reason, 280), source_url: ev.url ?? ev.website }
+    }
+    if (NOT_SOLD_IN[pre]) row.not_sold_in = notSoldInRows(pre)
+    competitors.push(row)
+    if (CORRECT_EVEN_IF_NOT_RELEVANT.includes(pre)) for (const x of nrBy(pre)) for (const p of x.plans ?? []) {
+      if (typeof p.price_major !== 'number') continue
+      const cur = String(p.currency).toUpperCase(), minor = toMinorUnits(p.price_major, cur)
+      const sp = storedPlan.get(`${pre}|${x.country}|${norm(p.plan_name)}`)
+      if (!sp || (sp.m === minor && sp.cur === cur)) continue
+      plans.push({ id: uuid(`plan:${st.id}:${x.country}:${norm(sp.n)}:corrected`), competitor_id: st.id, country_code: x.country, plan_name: sp.n, currency: cur,
+        price_hidden: false, monthly_minor: minor, monthly_major: p.price_major, yearly_only: false, correct: true, setup_minor: 0, truck_fee_bps: 0, truck_fee_fixed_minor: 0,
+        customer_fee_bps: 0, customer_fee_fixed_minor: 0, card_mode: 'unknown', card_bps: null, card_fixed_minor: null, card_rate_assumed: false, order_cap: null,
+        included_orders: null, overage_fixed_minor: null, vat: ['incl', 'excl'].includes(p.vat) ? p.vat : 'unknown', status: 'counted', unclear: false, second_hand: false,
+        source: 'research', source_url: p.url ?? null, checked_on: CHECKED_ON, verified_at: null, verified_by: null,
+        notes: clip(`compare-research-1, read 24 Nov 2026 (corrects the stored ${sp.m} ${sp.cur}, a unit slip): "${p.quote ?? ''}"`, 1000) })
+    }
+  }
+  function notSoldInRows(pre) {
+    return NOT_SOLD_IN[pre].map(cc => {
+      const ev = notRelevant.find(x => x.stored === pre && x.country === cc)
+      if (!ev) problems.push(`${pre} ${cc}: no evidence in raw/*.json for "not sold in"`)
+      return { country: cc, reason: clip(ev?.reason ?? '', 280), source_url: ev?.url ?? ev?.website ?? '' }
+    })
   }
   const file = {
     $comment: 'compare-research-1 (24 Nov 2026): competitors read on their OWN websites by Claude Code, one request at a time (docs/compare-research-1-report.md). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import/). Every row source research, UNVERIFIED (35.an-1). Each answer carries the vendor’s verbatim quote and its page (35.an-4); "no" only with a quote saying it is not offered, silence is not_mentioned (35.ao-7). monthly_minor is MINOR units, converted from the page’s amount with lib/money-format.ts toMinorUnits (the 100× guard). request_check sets check_requested_at. "evidence" and "not_relevant" are for the reviewer; the import does not read them (the importer cannot mark a competitor not relevant).',
@@ -170,6 +253,7 @@ else { const b = build(); file = b.file; problems = b.problems }
 problems.push(...validate(file))
 if (!checkOnly) { fs.mkdirSync(path.dirname(OUT), { recursive: true }); fs.writeFileSync(OUT, JSON.stringify(file, null, 1) + '\n') }
 console.log(`not needed (2+ priced food-truck tools in the country): ${file.not_needed?.length ?? 0}`)
+console.log(`instructions: ${file.competitors.filter(c => c.set_lifecycle?.value === 'not_relevant').length} not relevant, ${file.competitors.filter(c => c.set_lifecycle?.value === 'active').length} back to active, ${file.competitors.reduce((n, c) => n + (c.not_sold_in?.length ?? 0), 0)} not sold in, ${file.plans.filter(p => p.correct).length} plans corrected`)
 console.log(`competitors ${file.competitors.length}, plans ${file.plans.length} (${file.plans.filter(p => p.status === 'counted').length} priced), entries ${file.entries.length}, not relevant ${file.not_relevant?.length ?? 0}, unreadable ${file.unreadable?.length ?? 0}`)
 if (problems.length) { console.log(`🔴 ${problems.length} problem(s):\n- ` + problems.join('\n- ')); process.exit(1) }
 console.log('✓ the importer’s own validation (researchProblems) and the 100× guard pass — nothing written to any database')
