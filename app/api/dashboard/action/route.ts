@@ -47,7 +47,7 @@ import { lineTax, stampItems, stampDeals } from '@/lib/order-tax'   // france-va
 import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
 import { receiptForOrderKey, receiptForRow } from '@/lib/receipt-server'   // france-receipts-1
 import { franchiseApplies, franchiseRules, franchiseTaxBook } from '@/lib/receipt'   // france-receipts-1
-import { splitLineNotes, withLineNotes, withSplitNotes } from '@/lib/line-notes'   // france-notes-1
+import { splitLineNotes, withLineNotes, withSplitNotes } from '@/lib/line-notes'   // france-notes-1: every order row read here is merged (withLineNotes); every write splits
 /** france-vat-1: the statuses after which an order is a finished record — refused by `edit` and `cancel`. */
 const FINISHED_STATUSES = new Set(['collected', 'cancelled', 'rejected'])
 // Phase 3: tax, tip and fees — the same engine and rules as the customer path (docs/phase-3-foundations-report.md).
@@ -354,7 +354,6 @@ export async function POST(req: NextRequest) {
 
     // ── CONFIRM ───────────────────────────────────────────────────────────────
     if (action === 'confirm') {
-      // france-notes-1: the stored row with its line notes merged back (lib/line-notes.ts) — every reader below sees the lines as before.
       const { data: orderRow } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       const order = withLineNotes(orderRow)
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
@@ -452,7 +451,6 @@ export async function POST(req: NextRequest) {
     // ── CANCEL ────────────────────────────────────────────────────────────────
     if (action === 'cancel') {
       const { cancellationReason } = body
-      // france-notes-1: the stored row with its line notes merged back (lib/line-notes.ts) — every reader below sees the lines as before.
       const { data: orderRow } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       const order = withLineNotes(orderRow)
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
@@ -541,7 +539,6 @@ export async function POST(req: NextRequest) {
     // undo within 4s sends no email. Either way the email always fires for a ready (model A) — KDS
     // immediately, dashboard after the undo window.
     if (action === 'ready') {
-      // france-notes-1: the stored row with its line notes merged back (lib/line-notes.ts) — every reader below sees the lines as before.
       const { data: orderRow } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       const order = withLineNotes(orderRow)
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
@@ -562,7 +559,6 @@ export async function POST(req: NextRequest) {
     // raced undo (status back to 'confirmed') sends nothing. Double-send is prevented client-side (the 4s
     // timer is cleared whenever the flush path fires), with this status guard as the server backstop.
     if (action === 'send_ready_email') {
-      // france-notes-1: the stored row with its line notes merged back (lib/line-notes.ts) — every reader below sees the lines as before.
       const { data: orderRow } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       const order = withLineNotes(orderRow)
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
@@ -816,7 +812,6 @@ export async function POST(req: NextRequest) {
         // confirm the figure they saw, not whatever we happen to compute now.
         confirmUnresolvedTotal,
       } = editedOrder || {}
-      // france-notes-1: the stored row with its line notes merged back (lib/line-notes.ts) — every reader below sees the lines as before.
       const { data: orderRow } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       const order = withLineNotes(orderRow)
       if (!order) return NextResponse.json(await kErr('order_not_found'), { status: 404 })
