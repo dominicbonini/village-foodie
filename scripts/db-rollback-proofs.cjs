@@ -295,6 +295,15 @@ async function regimeProofs(file) {
 /* ── france-notes-1 (24 November 2026, docs/france-notes-1-report.md): THE LINE NOTES' OWN COLUMN ──────────────────────────────────────
  *   --preflight-notes <migration>   ONE transaction, ROLLED BACK: 20261127_france_notes_1's statements, then the proofs below.
  *   --notes-check                   After it is applied: the same proofs (no migration body), ROLLED BACK. Demo trucks only. */
+/** lib/line-notes.ts itself (bundled on the fly with the repo's esbuild), so proof 7 runs the real merge, not a copy. */
+function mergeFor(items, deals, lineNotes) {
+  if (!mergeFor.mod) {
+    const esbuild = require(path.join(REPO, 'node_modules/esbuild'))
+    const out = esbuild.buildSync({ entryPoints: [path.join(REPO, 'lib/line-notes.ts')], bundle: true, write: false, platform: 'node', format: 'cjs', logLevel: 'silent' }).outputFiles[0].text
+    const m = { exports: {} }; new Function('module', 'exports', 'require', out)(m, m.exports, require); mergeFor.mod = m.exports
+  }
+  return mergeFor.mod.mergeLineNotes(items, deals, lineNotes)
+}
 const LN = { v: 1, items: { '#0': { at: 3, note: 'No onions' } }, deals: { '#0': { at: 3, slotNotes: { main: 'no peanuts' } } } }
 const ITEMS_WITH = [{ name: 'Crêpe', quantity: 1, unit_price: 8.5, specialInstructions: 'No onions', modifiers: [] }]
 const DEALS_WITH = [{ name: 'Formule', price: 10, slots: { main: 'Crêpe' }, slotNotes: { main: 'no peanuts' }, slotModifiers: {} }]
@@ -318,28 +327,35 @@ async function notesProofs(file) {
     const rowOf = async key => (await q(c, tag, 'select items, deals, line_notes, receipt_no, customer_name from public.orders where order_key = $1', [key])).rows[0]
     // 1 · the DEPLOYED call: notes inside items, line_notes NULL (old-style, read and retained exactly as today)
     const oldCall = (await q(c, tag, CALL, [JSON.stringify({ ...OLD_STYLE_ORDER, items: ITEMS_WITH, deals: DEALS_WITH }), A])).rows[0].r
-    const o = await rowOf(oldCall.order_key)
-    ok('1 · the deployed place_order_atomic_v2 call: its notes stay inside items / deals, line_notes NULL', o.line_notes === null && JSON.stringify(o.items) === JSON.stringify(ITEMS_WITH) && JSON.stringify(o.deals) === JSON.stringify(DEALS_WITH), o)
+    // (jsonb keeps no key order — it hands objects back shortest key first — so every comparison here is jsonb = jsonb, in SQL.)
+    const same = async (key, items, deals, ln) => (await q(c, tag, 'select items = $2::jsonb as i, deals = $3::jsonb as d, (line_notes is not distinct from $4::jsonb) as n from public.orders where order_key = $1', [key, JSON.stringify(items), JSON.stringify(deals), ln === null ? null : JSON.stringify(ln)])).rows[0]
+    const o = await same(oldCall.order_key, ITEMS_WITH, DEALS_WITH, null)
+    ok('1 · the deployed place_order_atomic_v2 call: its notes stay inside items / deals, line_notes NULL', o.i && o.d && o.n, o)
     // 2 · the new customer path: the same call, then the follow-up update moves the notes (only while line_notes is still NULL)
     const newCall = (await q(c, tag, CALL, [JSON.stringify({ ...OLD_STYLE_ORDER, items: ITEMS_WITH, deals: DEALS_WITH }), A])).rows[0].r
     const n0 = await rowOf(newCall.order_key)
     const moved = (await q(c, tag, 'update public.orders set items = $2::jsonb, deals = $3::jsonb, line_notes = $4::jsonb where order_key = $1 and line_notes is null returning order_key', [newCall.order_key, JSON.stringify(ITEMS_OUT), JSON.stringify(DEALS_OUT), JSON.stringify(LN)])).rows
-    const n1 = await rowOf(newCall.order_key)
-    ok('2 · the customer path\'s follow-up update: items / deals without notes, the notes in line_notes, the receipt number unchanged', moved.length === 1 && JSON.stringify(n1.items) === JSON.stringify(ITEMS_OUT) && JSON.stringify(n1.deals) === JSON.stringify(DEALS_OUT) && JSON.stringify(n1.line_notes) === JSON.stringify(LN) && String(n1.receipt_no) === String(n0.receipt_no), { n0, n1 })
+    const n1 = await rowOf(newCall.order_key), n1s = await same(newCall.order_key, ITEMS_OUT, DEALS_OUT, LN)
+    ok('2 · the customer path\'s follow-up update: items / deals without notes, the notes in line_notes, the receipt number unchanged', moved.length === 1 && n1s.i && n1s.d && n1s.n && String(n1.receipt_no) === String(n0.receipt_no), { n0, n1, n1s })
     const again = (await q(c, tag, 'update public.orders set items = $2::jsonb, deals = $3::jsonb, line_notes = $4::jsonb where order_key = $1 and line_notes is null returning order_key', [newCall.order_key, JSON.stringify(ITEMS_WITH), JSON.stringify(DEALS_WITH), JSON.stringify(LN)])).rows
-    ok('3 · …and it never runs twice: a second one (line_notes already set) changes nothing', again.length === 0 && JSON.stringify((await rowOf(newCall.order_key)).items) === JSON.stringify(ITEMS_OUT))
+    const a3 = await same(newCall.order_key, ITEMS_OUT, DEALS_OUT, LN)
+    ok('3 · …and it never runs twice: a second one (line_notes already set) changes nothing', again.length === 0 && a3.i && a3.d && a3.n, a3)
+    // 3b · the read: what the database hands back, merged, is EXACTLY what it hands back for the old-style order (jsonb's key order)
+    const oldRow = await rowOf(oldCall.order_key), newRow = await rowOf(newCall.order_key)
+    const M = mergeFor(newRow.items, newRow.deals, newRow.line_notes)
+    ok('3b · read back: the new-style order\'s lines, merged by lib/line-notes.ts, are byte-identical to the old-style order\'s as the database returns them', JSON.stringify(M.items) === JSON.stringify(oldRow.items) && JSON.stringify(M.deals) === JSON.stringify(oldRow.deals), { merged: M, old: { items: oldRow.items, deals: oldRow.deals } })
     // 4 · a direct insert (the walk-up, the card promotion) naming line_notes
     const w = (await q(c, tag, WALKUP.replace('source)', 'source, line_notes)').replace("'manual') returning", "'manual', $3::jsonb) returning"), [rid(), A, JSON.stringify(LN)])).rows[0]
-    const wr = await rowOf(w.order_key)
-    ok('4 · a direct insert naming line_notes stores it exactly (jsonb round trip)', JSON.stringify(wr.line_notes) === JSON.stringify(LN), wr.line_notes)
+    const wr = (await q(c, tag, 'select line_notes = $2::jsonb as n from public.orders where order_key = $1', [w.order_key, JSON.stringify(LN)])).rows[0]
+    ok('4 · a direct insert naming line_notes stores it (jsonb =)', wr.n === true, wr)
     // 5 · a card draft naming line_notes
-    const d = (await q(c, tag, 'insert into public.order_drafts (order_key, truck_id, subtotal, total, total_minor, items, line_notes) values (gen_random_uuid(), $1, 1, 1, 100, $2::jsonb, $3::jsonb) returning line_notes, items', [A, JSON.stringify(ITEMS_OUT), JSON.stringify(LN)])).rows[0]
-    ok('5 · a card draft stores line_notes too', JSON.stringify(d.line_notes) === JSON.stringify(LN) && JSON.stringify(d.items) === JSON.stringify(ITEMS_OUT), d)
+    const d = (await q(c, tag, 'insert into public.order_drafts (order_key, truck_id, subtotal, total, total_minor, items, line_notes) values (gen_random_uuid(), $1, 1, 1, 100, $2::jsonb, $3::jsonb) returning line_notes = $3::jsonb as n, items = $2::jsonb as i', [A, JSON.stringify(ITEMS_OUT), JSON.stringify(LN)])).rows[0]
+    ok('5 · a card draft stores line_notes too', d.n === true && d.i === true, d)
     // 6 · retention's write on a new-style order: line_notes and the customer fields only — items / deals byte-identical after
     const blanked = { v: 1, items: { '#0': { at: 3, note: '' } }, deals: { '#0': { at: 3, slotNotes: {} } } }
     await q(c, tag, "update public.orders set customer_name = '', line_notes = $2::jsonb where order_key = $1", [newCall.order_key, JSON.stringify(blanked)])
-    const r = (await q(c, tag, 'select items = $2::jsonb as items_same, deals = $3::jsonb as deals_same, line_notes, customer_name from public.orders where order_key = $1', [newCall.order_key, JSON.stringify(ITEMS_OUT), JSON.stringify(DEALS_OUT)])).rows[0]
-    ok('6 · retention on a new-style order: the notes and the name blanked, items and deals byte-identical (jsonb =)', r.items_same === true && r.deals_same === true && r.customer_name === '' && JSON.stringify(r.line_notes) === JSON.stringify(blanked), r)
+    const r = (await q(c, tag, 'select items = $2::jsonb as items_same, deals = $3::jsonb as deals_same, line_notes = $4::jsonb as notes_blank, customer_name from public.orders where order_key = $1', [newCall.order_key, JSON.stringify(ITEMS_OUT), JSON.stringify(DEALS_OUT), JSON.stringify(blanked)])).rows[0]
+    ok('6 · retention on a new-style order: the notes and the name blanked, items and deals byte-identical (jsonb =)', r.items_same === true && r.deals_same === true && r.customer_name === '' && r.notes_blank === true, r)
   })
   const after = await counts('after')
   ok('the demo trucks\' counts are identical before and after (nothing was committed)', JSON.stringify(before) === JSON.stringify(after), { before, after })
