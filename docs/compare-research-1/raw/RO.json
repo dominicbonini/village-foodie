@@ -1,0 +1,310 @@
+{
+  "country": "RO",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "sistem comenzi online restaurant ridicare personală abonament lunar preț",
+    "food truck comenzi online aplicație România precomandă ridicare",
+    "Zur food truck app Romania pre-order pickup time",
+    "platformă comenzi online restaurant site propriu fără comision lei/lună ridicare de la local",
+    "UpMenu România comenzi online restaurant prețuri"
+  ],
+  "vendors": [
+    {
+      "name": "Choice",
+      "website": "https://choiceqr.com",
+      "stored_id_prefix": "70b34967",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "choiceqr.com/ro/pricing answered HTTP 403 (tried once today, as instructed; it also answered 403 earlier today). Stored RO plans (Basic 0, Standard 200, Smart 425, Pro 625 RON) could not be re-checked.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://choiceqr.com/ro/pricing"
+      ]
+    },
+    {
+      "name": "Appy POS",
+      "website": "https://appy.ro",
+      "stored_id_prefix": "878164f6",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "appy.ro and www.appy.ro both show only a bot check (\"Verifying that you are not a robot...\"); no product text readable.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://appy.ro",
+        "https://www.appy.ro/"
+      ]
+    },
+    {
+      "name": "MenuForma",
+      "website": "https://menuforma.com",
+      "stored_id_prefix": "b70bbf5e",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "QR-menu platform whose paid plans add online pickup / takeaway / delivery ordering; Romanian-language site (menuforma.com/ro) priced in EUR; names food trucks among its business types but is a general restaurant tool, so recorded as nearest_local",
+      "eligibility": {
+        "food_quote": "rulotelor cu mâncare, barurilor și puburilor, precum și restaurantelor fast-casual.",
+        "food_url": "https://menuforma.com/ro",
+        "order_quote": "Ridicare, la pachet și livrare disponibile în planurile plătite.",
+        "order_url": "https://menuforma.com/ro",
+        "country_quote": "Platformă de meniuri digitale QR, bazată pe AI, pentru restaurante moderne.",
+        "country_url": "https://menuforma.com/ro"
+      },
+      "plans": [
+        {
+          "plan_name": "Regular",
+          "currency": "EUR",
+          "price_major": 8.99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "€8.99",
+          "url": "https://menuforma.com/ro",
+          "note": "The Romanian page prices in EUR, not RON. Shown as \"€8.99\" \"/lună\" on the monthly (\"Lunar\") toggle; a yearly toggle says \"Facturat anual Economisește 20%\". Pickup/takeaway is in the paid plans; the page lists features once without per-plan ticks, so which paid plan includes what was not confirmed. /ro/plans returned 404 and /plans rendered no plan text."
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "EUR",
+          "price_major": 44.99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "€44.99",
+          "url": "https://menuforma.com/ro",
+          "note": "EUR on the Romanian page; \"/lună\" on the monthly toggle. No commission stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Ridicare, la pachet și livrare disponibile în planurile plătite.",
+          "url": "https://menuforma.com/ro"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "no",
+          "quote": "Meniul online necesită conexiune la internet, așa că un exemplar tipărit rămâne o soluție de rezervă utilă.",
+          "url": "https://menuforma.com/ro"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "sau gestionează mai multe locații pe măsură ce nevoile tale evoluează.",
+          "url": "https://menuforma.com/ro"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "€8.99",
+          "url": "https://menuforma.com/ro"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Folosirea unor procesatori de plăți externi poate implica comisioane separate.",
+          "url": "https://menuforma.com/ro"
+        }
+      ],
+      "check_urls": [
+        "https://menuforma.com/ro",
+        "https://menuforma.com/plans"
+      ]
+    },
+    {
+      "name": "4SaleFood",
+      "website": "https://4salefood.net",
+      "stored_id_prefix": "a9825e32",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Romanian website + online shop builder for food businesses; pickup orders with a chosen date and time, a food-truck mode (today's location, schedule, online prepayment), event orders; flat EUR monthly fee, no commission; Romanian support number and lei billing",
+      "eligibility": {
+        "food_quote": "Pentru food truck afișezi locația de azi, programul și meniul disponibil, cu plată online în avans.",
+        "food_url": "https://4salefood.net/ro",
+        "order_quote": "Primești comenzi cu data și ora de ridicare pe care le alegi.",
+        "order_url": "https://4salefood.net/ro",
+        "country_quote": "Platformă pentru site și magazin online de mâncare în România",
+        "country_url": "https://4salefood.net/ro"
+      },
+      "plans": [
+        {
+          "plan_name": "Start",
+          "currency": "EUR",
+          "price_major": 5,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "5€/lună",
+          "url": "https://4salefood.net/ro/pricing",
+          "note": "Priced in EUR on the Romanian page; the page says Romanian accounts pay in lei: \"Un cont din România plătește în lei, la cursul BNR din ziua plății + 5 %.\" (on https://4salefood.net/ro). Page text renders as \"apoi5€/lună\" after \"14 zile gratuit\". No yearly price shown; VAT not stated."
+        },
+        {
+          "plan_name": "Plus",
+          "currency": "EUR",
+          "price_major": 10,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "10€/lună",
+          "url": "https://4salefood.net/ro/pricing",
+          "note": "Priced in EUR on the Romanian page; the page says Romanian accounts pay in lei: \"Un cont din România plătește în lei, la cursul BNR din ziua plății + 5 %.\" (on https://4salefood.net/ro). Page text renders as \"apoi10€/lună\" after \"14 zile gratuit\". No yearly price shown; VAT not stated."
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "EUR",
+          "price_major": 20,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "20€/lună",
+          "url": "https://4salefood.net/ro/pricing",
+          "note": "Priced in EUR on the Romanian page; the page says Romanian accounts pay in lei: \"Un cont din România plătește în lei, la cursul BNR din ziua plății + 5 %.\" (on https://4salefood.net/ro). Page text renders as \"apoi20€/lună\" after \"14 zile gratuit\". No yearly price shown; VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Primești comenzi cu data și ora de ridicare pe care le alegi.",
+          "url": "https://4salefood.net/ro"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Primești comenzi pentru evenimente, pachete corporate și meniuri fixe, cu dată și locație de livrare pe care le alegi.",
+          "url": "https://4salefood.net/ro"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Pentru food truck afișezi locația de azi, programul și meniul disponibil, cu plată online în avans.",
+          "url": "https://4salefood.net/ro"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "no",
+          "quote": "today the shop has no kitchen display",
+          "url": "https://4salefood.net"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Connect your own domain, SSL included",
+          "url": "https://4salefood.net"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Plătești 4salefood un abonament lunar fix.",
+          "url": "https://4salefood.net/ro"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Fără comision pe comandă",
+          "url": "https://4salefood.net/ro"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://4salefood.net",
+        "https://4salefood.net/ro",
+        "https://4salefood.net/ro/pricing"
+      ]
+    },
+    {
+      "name": "MENU TIGER",
+      "website": "https://www.menutiger.com",
+      "stored_id_prefix": "d00d6bfd",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Has Romanian pages (menutiger.com/ro), but prices are USD only (\"17US$/lună\", \"46US$/lună\", \"119US$/lună\" on /ro/pricing) and neither /ro/pricing nor /ro/features/online-food-order-system mentions pickup / ridicare / la pachet or ordering ahead (only a bare \"Programarea comenzilor\" table label). No online ordering ahead shown, so not eligible. Borderline: /ro/features/web-site-builder has only an English FAQ line \"accept takeout and delivery orders\" (no ordering-ahead or pickup-time wording) and \"Conectează ușor propriul domeniu sau subdomeniu.\"; kept not_relevant, as in the other countries checked today.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.menutiger.com/pricing",
+        "https://www.menutiger.com/ro/pricing",
+        "https://www.menutiger.com/ro/features/online-food-order-system",
+        "https://www.menutiger.com/ro/features/web-site-builder"
+      ]
+    }
+  ],
+  "notes": "Two eligible with own-site prices, both priced in EUR on their Romanian pages, not RON: 4SaleFood (food_truck; Start 5 / Plus 10 / Pro 20 EUR per month; the Romanian page says Romanian accounts are billed in lei at the BNR rate + 5%) and MenuForma (nearest_local; Regular 8.99 / Pro 44.99 EUR per month on the monthly toggle). 4SaleFood: the Romanian homepage lists \"Interval orar și sloturi de livrare\", but the English homepage's limits section says the shop has \"no delivery time slots\", so capacity is left not_mentioned. Its kds 'no' and domain 'yes' quotes come from the English homepage (https://4salefood.net). MenuForma: the Romanian page lists its features once, with no per-plan ticks; it says pickup/takeaway is in the paid plans, without naming which one. /ro/plans is a 404 and /plans rendered no plan text, so the prices come from the homepage pricing section; quotes are \"€8.99\" / \"€44.99\" because \"/lună\" sits in a separate element. Choice: 403 again (once today, as instructed), so the stored RON plans are unverified. Appy POS: bot check on both appy.ro and www.appy.ro. MENU TIGER: Romanian pages exist but prices are USD only and there is no ordering-ahead wording, so it's kept not_relevant. Not recorded: Zur (found only via App Store search results; Irish developer, support@zur.ie; a consumer food-truck app that appears to have moved to event booking; own site not read) and UpMenu (no Romanian page or prices found; not read). No Romanian-built food-truck ordering tool turned up in the searches. Big till players weren't checked, since 2 eligible tools were found."
+}

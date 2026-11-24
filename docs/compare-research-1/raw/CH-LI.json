@@ -1,0 +1,654 @@
+{
+  "countries": [
+    "CH",
+    "LI"
+  ],
+  "researched_on": "2026-11-24",
+  "searches": [
+    "pikit.ch Liechtenstein",
+    "Online Bestellsystem Gastronomie Abholung \"Schweiz und Liechtenstein\"",
+    "Kassensystem Gastronomie Liechtenstein Online-Bestellung Takeaway Foodtruck",
+    "Liechtenstein (restricted to swisspos.ch, yoveletta.ch, ordero.ch, rent-a-shop.ch, pikit.ch)",
+    "SumUp Liechtenstein Online-Bestellungen Abholung (sumup.com)",
+    "\"Liechtenstein\" SumUp de-ch Händler Schweiz (sumup.com)",
+    "Foodtruck Vorbestellung App \"Liechtenstein\" Bestellsystem"
+  ],
+  "vendors": [
+    {
+      "name": "Pikit",
+      "country": "CH",
+      "website": "https://pikit.ch",
+      "stored_id_prefix": "2cbec3e7",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Swiss (French-language) takeaway ordering site for restaurants: customers choose dishes and pickup time; CHF prices incl. Swiss VAT; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Vos clients choisissent leurs plats et leur heure de retrait sur votre site.",
+        "order_url": "https://pikit.ch/",
+        "country_quote": "TVA suisse, export comptable et comptes pour toute l’équipe",
+        "country_url": "https://pikit.ch/tarifs"
+      },
+      "plans": [
+        {
+          "plan_name": "Essentiel",
+          "currency": "CHF",
+          "price_major": 89,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "89.00 CHF/ mois",
+          "url": "https://pikit.ch/tarifs",
+          "note": "\"Facturé chaque mois · TVA incluse\"; \"CHF 0de frais de mise en route\" (no set-up fee); \"Pas de commission par commande.\" Annual billing gives \"1 mois offert\" (annual amount not shown as text, only in structured data)."
+        },
+        {
+          "plan_name": "Plus",
+          "currency": "CHF",
+          "price_major": 139,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "139.00 CHF/ mois",
+          "url": "https://pikit.ch/tarifs",
+          "note": "Includes own domain (\"Votre propre nom de domaine\")."
+        },
+        {
+          "plan_name": "Max",
+          "currency": "CHF",
+          "price_major": 199,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "199.00 CHF/ mois",
+          "url": "https://pikit.ch/tarifs",
+          "note": ""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Vos clients choisissent leurs plats et leur heure de retrait sur votre site.",
+          "url": "https://pikit.ch/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Créneaux de retrait calés sur vos horaires et votre capacité",
+          "url": "https://pikit.ch/tarifs"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Tableau de production, ticket cuisine 80 mm et commandes au téléphone",
+          "url": "https://pikit.ch/tarifs"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Votre propre nom de domaine",
+          "url": "https://pikit.ch/tarifs"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "89.00 CHF/ mois",
+          "url": "https://pikit.ch/tarifs"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Pas de commission par commande.",
+          "url": "https://pikit.ch/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://pikit.ch/",
+        "https://pikit.ch/tarifs"
+      ]
+    },
+    {
+      "name": "Pikit",
+      "country": "LI",
+      "website": "https://pikit.ch",
+      "stored_id_prefix": "2cbec3e7",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "stored for LI, but neither the homepage nor the pricing page mentions Liechtenstein (Swiss VAT, French-language Swiss restaurants only); a web search found nothing linking it to Liechtenstein",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://pikit.ch/",
+        "https://pikit.ch/tarifs"
+      ]
+    },
+    {
+      "name": "Yoveletta",
+      "country": "CH",
+      "website": "https://yoveletta.ch",
+      "stored_id_prefix": "aebf5a80",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "REVERSES the stored not_relevant: Swiss cloud till whose own food-truck page offers click & collect (guests order ahead on the truck's website and pick up at the truck); Gastro plan names Foodtrucks; CHF prices",
+      "eligibility": {
+        "food_quote": "Für Gastrobetriebe, Bars, Foodtrucks etc.",
+        "food_url": "https://yoveletta.ch/preise-fuer-dein-kassensystem",
+        "order_quote": "Gäste bestellen vorab über deine Website und holen ihr Essen direkt am Truck ab.",
+        "order_url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck",
+        "country_quote": "Die Schweizer Branchenlösung für Gastronomie und Einzelhandel.",
+        "country_url": "https://yoveletta.ch/"
+      },
+      "plans": [
+        {
+          "plan_name": "Gastro (monthly)",
+          "currency": "CHF",
+          "price_major": 49,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "ab Fr. 49.–/Monat oder Fr. 490.–/Jahr · jede weitere Lizenz Fr. 39.–/Monat oder Fr. 390.–/Jahr",
+          "url": "https://yoveletta.ch/preise-fuer-dein-kassensystem",
+          "note": "'ab' (from) price; MwSt not stated; the pricing page does not say whether the Online-Bestellung module is included or extra. The food-truck page instead says: \"Yoveletta startet für Foodtrucks bei einem Tarif ab CHF 29.– pro Monat.\" (that is the Handel tariff price on the pricing page)."
+        },
+        {
+          "plan_name": "Gastro (yearly)",
+          "currency": "CHF",
+          "price_major": 490,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "ab Fr. 49.–/Monat oder Fr. 490.–/Jahr · jede weitere Lizenz Fr. 39.–/Monat oder Fr. 390.–/Jahr",
+          "url": "https://yoveletta.ch/preise-fuer-dein-kassensystem",
+          "note": "same plan paid yearly; each extra licence Fr. 390.–/Jahr"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Gäste bestellen vorab über deine Website und holen ihr Essen direkt am Truck ab.",
+          "url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Kund:innen reservieren Produkte vorab – ideal für Bio-Boxen, Wochenend-Spezialitäten und saisonale Ware.",
+          "url": "https://yoveletta.ch/kassensystem-alle-branchen/kassensystem-marktstand"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Küchenmonitor",
+          "url": "https://yoveletta.ch/cloudkasse-kassensystem"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "Kein Empfang am Standort? Yoveletta kassiert offline weiter und synchronisiert automatisch, sobald wieder Netz da ist.",
+          "url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bei langer Schlange kann dein Team die Bestellung schon vor dem Verkaufsfenster aufnehmen.",
+          "url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Stammdaten und Preise einmal pflegen, alle Trucks sind synchron.",
+          "url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "ab Fr. 49.–/Monat oder Fr. 490.–/Jahr · jede weitere Lizenz Fr. 39.–/Monat oder Fr. 390.–/Jahr",
+          "url": "https://yoveletta.ch/preise-fuer-dein-kassensystem"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Ab 0,5 % Disagio",
+          "url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck"
+        }
+      ],
+      "check_urls": [
+        "https://yoveletta.ch/",
+        "https://yoveletta.ch/preise-fuer-dein-kassensystem",
+        "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck",
+        "https://yoveletta.ch/cloudkasse-kassensystem",
+        "https://yoveletta.ch/kassensystem-alle-branchen/kassensystem-marktstand",
+        "https://yoveletta.ch/en"
+      ]
+    },
+    {
+      "name": "Ordero",
+      "country": "CH",
+      "website": "https://ordero.ch",
+      "stored_id_prefix": "515a8c44",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Swiss restaurant till suite with its own order shop and take-away pickup at a chosen time; CHF prices excl. MwSt; the online shop is only in Premium/Enterprise; Foodtruck listed only as a till ('Kasse für unterwegs'), so not food_truck focus",
+      "eligibility": {
+        "order_quote": "Abholen zur Wunschzeit",
+        "order_url": "https://ordero.ch/"
+      },
+      "plans": [
+        {
+          "plan_name": "Premium",
+          "currency": "CHF",
+          "price_major": 229,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "229CHF / Mt.",
+          "url": "https://ordero.ch/preise",
+          "note": "\"im Jahresabo, exkl. MwSt.\" i.e. per month billed yearly; \"Im Monatsabo zahlst du CHF 20 mehr und kannst monatlich kündigen.\" Premium is the cheapest plan with the Online-Shop (Starter 89 / Professional 149 CHF show it as 'nicht enthalten'). Setup: \"Einrichtung und Hardware offerieren wir dir vorab.\""
+        },
+        {
+          "plan_name": "Enterprise",
+          "currency": "CHF",
+          "price_major": null,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Auf Anfrage",
+          "url": "https://ordero.ch/preise",
+          "note": "price on request; includes Online-Shop"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Abholen zur Wunschzeit",
+          "url": "https://ordero.ch/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Bestellungen live in der Küche",
+          "url": "https://ordero.ch/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Alle Filialen in einer Ansicht",
+          "url": "https://ordero.ch/"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Im Monatsabo zahlst du CHF 20 mehr und kannst monatlich kündigen.",
+          "url": "https://ordero.ch/preise"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Im Enterprise-Paket bekommst du Worldline-Konditionen ab 0.9% pro Transaktion.",
+          "url": "https://ordero.ch/preise"
+        }
+      ],
+      "check_urls": [
+        "https://ordero.ch/",
+        "https://ordero.ch/preise"
+      ]
+    },
+    {
+      "name": "Rent-a-Shop",
+      "country": "CH",
+      "website": "https://www.rent-a-shop.ch",
+      "stored_id_prefix": "6fa20b90",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Swiss website/shop/till builder with a food-truck page offering 'Online vorbestellen, lokal abholen'; modular CHF prices excl. MwSt. Thin evidence: the page does not explain how pre-ordering works or which module it needs (presumably the Onlineshop module)",
+      "eligibility": {
+        "food_quote": "Kassensystem für Foodtruck",
+        "food_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+        "order_quote": "Online vorbestellen, lokal abholen",
+        "order_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+        "country_quote": "100 % in der Schweiz entwickelt",
+        "country_url": "https://www.rent-a-shop.ch/"
+      },
+      "plans": [
+        {
+          "plan_name": "Kassensystem für Foodtruck",
+          "currency": "CHF",
+          "price_major": 44.9,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "ab CHF 44.90 pro Monat",
+          "url": "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+          "note": "'ab' price on the food-truck page; matches Kasse 1 Verkaufsterminal 25.00 CHF + Warenwirtschaft 19.90 CHF on /preise (all prices excl. MwSt per /preise). Whether online pre-ordering is included is not stated; the Onlineshop module is priced separately."
+        },
+        {
+          "plan_name": "Onlineshop – Bis zu 100 Produkte",
+          "currency": "CHF",
+          "price_major": 25.0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "25.00 CHF",
+          "url": "https://www.rent-a-shop.ch/preise",
+          "note": "Onlineshop module, monthly; 'Bis zu 25 Produkte' 0.00 CHF, 'Bis zu 5'000 Produkte' 55.00 CHF, 'Unlimitierte Produkte' 85.00 CHF. Own domain + SSL set-up is CHF 87.50 one-off on one variant (wording not captured verbatim)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Online vorbestellen, lokal abholen",
+          "url": "https://www.rent-a-shop.ch/foodtruck-kassensystem"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "ab CHF 44.90 pro Monat",
+          "url": "https://www.rent-a-shop.ch/foodtruck-kassensystem"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "keine Transaktionsgebühren",
+          "url": "https://www.rent-a-shop.ch/preise"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.rent-a-shop.ch/",
+        "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+        "https://www.rent-a-shop.ch/preise"
+      ]
+    },
+    {
+      "name": "SwissPOS",
+      "country": "CH",
+      "website": "https://www.swisspos.ch",
+      "stored_id_prefix": "369127ec",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Swiss till with online menu ordering (pickup/delivery, no commission) included in every plan; has a Food Truck & Events page, but its event pre-ordering ('Online vorbestellen am Event') is listed as 'In Entwicklung', so kept as nearest_local; no pickup-time wording found",
+      "eligibility": {
+        "food_quote": "Food Truck, Festival, Markt, Catering, Vereinsfest",
+        "food_url": "https://www.swisspos.ch/kassensystem/foodtruck-events",
+        "order_quote": "Tisch-QR, Abholung, Lieferung, ohne Kommission.",
+        "order_url": "https://www.swisspos.ch/preise",
+        "country_quote": "Für die Schweiz gemacht",
+        "country_url": "https://www.swisspos.ch/"
+      },
+      "plans": [
+        {
+          "plan_name": "Start (monthly)",
+          "currency": "CHF",
+          "price_major": 39,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "CHF39/ Monat",
+          "url": "https://www.swisspos.ch/preise",
+          "note": "\"Alle Preise in CHF inkl. 8.1 % MWST.\"; Online-Karte und Online-Bestellen are 'In jedem Abo'; set-up/training 'auf Offerte'."
+        },
+        {
+          "plan_name": "Start (yearly)",
+          "currency": "CHF",
+          "price_major": 390,
+          "period": "year",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "CHF390/ Jahr",
+          "url": "https://www.swisspos.ch/preise",
+          "note": "page adds 'entspricht CHF 32.50 pro Monat'"
+        },
+        {
+          "plan_name": "Pro (monthly)",
+          "currency": "CHF",
+          "price_major": 69,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "CHF69/ Monat",
+          "url": "https://www.swisspos.ch/preise",
+          "note": "yearly CHF690/ Jahr; Gastro Plus is 99/month (up to 3 Standorte)"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Tisch-QR, Abholung, Lieferung, ohne Kommission.",
+          "url": "https://www.swisspos.ch/preise"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "SwissPOS CDS als Kundenanzeige und SwissPOS KDS als Küchenmonitor einrichten – mit einem 6-stelligen Code.",
+          "url": "https://www.swisspos.ch/kassensystem/foodtruck-events"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "Offline weiter. Kein Internet, trotzdem Verkauf, Abgleich danach.",
+          "url": "https://www.swisspos.ch/kassensystem/foodtruck-events"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Mehrere Stände. Pro Gerät eigene Abrechnung, alles in einem Backoffice.",
+          "url": "https://www.swisspos.ch/kassensystem/foodtruck-events"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "CHF39/ Monat",
+          "url": "https://www.swisspos.ch/preise"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Tisch-QR, Abholung, Lieferung, ohne Kommission.",
+          "url": "https://www.swisspos.ch/preise"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Online-Bestellen ist im Abo enthalten, es fallen nur die Gebühren des Zahlungsanbieters an.",
+          "url": "https://www.swisspos.ch/preise"
+        }
+      ],
+      "check_urls": [
+        "https://www.swisspos.ch/",
+        "https://www.swisspos.ch/kassensystem/foodtruck-events",
+        "https://www.swisspos.ch/preise"
+      ]
+    }
+  ],
+  "notes": "CH: 5 eligible with CHF prices on own sites (2 food_truck: Yoveletta, Rent-a-Shop; 3 nearest_local: Pikit, Ordero, SwissPOS); big till players not needed. Yoveletta was stored as not_relevant but its own food-truck page now offers click & collect at the truck and pre-orders (market page) - reviewer should confirm the reversal; its pricing page (Gastro ab Fr. 49.-/Monat) and food-truck page (ab CHF 29.- pro Monat) disagree, and neither says whether the Online-Bestellung module costs extra. Rent-a-Shop's pre-order evidence is one bullet ('Online vorbestellen, lokal abholen'). SwissPOS has a Food Truck & Events page but lists event pre-ordering as 'In Entwicklung', so it is nearest_local. Ordero's online shop is only in Premium (229 CHF/Mt. billed yearly) and Enterprise. LI: NO eligible vendor. None of the five Swiss sites mentions Liechtenstein as a market (Rent-a-Shop only in shipping docs, Liechtenstein having Swiss Post rates), so Pikit's stored LI row is recorded not_relevant. SumUp's help centre lists Liechtenstein as a supported country, but the page is script-rendered and could not be read/quoted, so SumUp was not added. Pikit pages are French (Romandie)."
+}

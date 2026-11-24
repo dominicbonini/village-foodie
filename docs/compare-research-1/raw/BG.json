@@ -1,0 +1,308 @@
+{
+ "country": "BG",
+ "researched_on": "2026-11-24",
+ "searches": [
+  "система за онлайн поръчки ресторант вземане от място цени",
+  "онлайн поръчки за ресторант собствен сайт без комисионна месечен абонамент лв вземане от ресторанта",
+  "Bulgaria restaurant online ordering software pickup own website pricing EUR",
+  "food truck онлайн поръчки приложение България предварителна поръчка",
+  "\"онлайн поръчки\" ресторанти платформа \"собствен сайт\" \"вземане\" абонамент \"€/месец\" OR \"лв./месец\"",
+  "ресторантьорски софтуер модул онлайн поръчки уеб магазин за ресторант България цена",
+  "Barsy онлайн поръчки ресторант модул",
+  "дигитално меню онлайн поръчки за вкъщи и вземане от заведението цени планове",
+  "система за онлайн поръчки за ресторанти и пицарии без комисиона",
+  "приложение за поръчки за ресторант \"вземане от място\" \"изберете час\" софтуер за заведения България",
+  "myPOS онлайн магазин ресторант поръчки вземане от място (site:mypos.com)",
+  "безплатна система за онлайн поръчки за ресторант уиджет за сайт меню поръчки вземане доставка български",
+  "\"онлайн поръчки\" \"за ресторанти\" платформа абонамент цена site:.bg"
+ ],
+ "vendors": [
+  {
+   "name": "Choice",
+   "website": "https://choiceqr.com",
+   "stored_id_prefix": "70b34967",
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "choiceqr.com/bg/pricing answered HTTP 403 (tried once, as instructed; RO agent also got 403 today). Could not confirm a Bulgarian page or prices.",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://choiceqr.com/bg/pricing"
+   ]
+  },
+  {
+   "name": "SumUp",
+   "website": "https://www.sumup.com/bg-bg/",
+   "stored_id_prefix": "d0eb16fa",
+   "focus": "pos",
+   "verdict": "eligible",
+   "reason": "till player with a Bulgarian-language bg-bg site; its free online store offers in-store pickup (получаване в магазина). Generic online store, not food-specific; no time-slot wording. Prices in EUR.",
+   "eligibility": {
+    "order_quote": "Предложете на клиентите доставка, получаване в магазина и места за обслужване.",
+    "order_url": "https://www.sumup.com/bg-bg/onlain-magazin/",
+    "country_quote": "Отворете своя онлайн магазин без такси за абонамент или скрити такси.",
+    "country_url": "https://www.sumup.com/bg-bg/onlain-magazin/"
+   },
+   "plans": [
+    {
+     "plan_name": "Онлайн магазин (Online store)",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 1.49,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Отворете своя онлайн магазин без такси за абонамент или скрити такси.",
+     "url": "https://www.sumup.com/bg-bg/onlain-magazin/",
+     "note": "Page figures: '0 €' next to 'Месечни разходи'; '1,49%' next to 'Конкурентна такса за транзакция' (payment fee per online sale). VAT not stated for the online store. Country evidence: Bulgarian-language bg-bg site whose country selector shows България; no sentence names Bulgaria. Prices shown in EUR, not BGN."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Предложете на клиентите доставка, получаване в магазина и места за обслужване.",
+     "url": "https://www.sumup.com/bg-bg/onlain-magazin/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "yes",
+     "quote": "Можете лесно да продавате артикули от онлайн магазин чрез Instagram.",
+     "url": "https://www.sumup.com/bg-bg/onlain-magazin/"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Персонализирани домейни",
+     "url": "https://www.sumup.com/bg-bg/onlain-magazin/"
+    },
+    {
+     "key": "monthly",
+     "value": "no",
+     "quote": "Отворете своя онлайн магазин без такси за абонамент или скрити такси.",
+     "url": "https://www.sumup.com/bg-bg/onlain-magazin/"
+    },
+    {
+     "key": "perorder",
+     "value": "partial",
+     "quote": "Конкурентна такса за транзакция",
+     "url": "https://www.sumup.com/bg-bg/onlain-magazin/"
+    },
+    {
+     "key": "cardfee",
+     "value": "yes",
+     "quote": "Конкурентна такса за транзакция",
+     "url": "https://www.sumup.com/bg-bg/onlain-magazin/"
+    }
+   ],
+   "check_urls": [
+    "https://www.sumup.com/bg-bg/",
+    "https://www.sumup.com/bg-bg/onlain-magazin/"
+   ]
+  },
+  {
+   "name": "Jotform (food ordering system)",
+   "website": "https://www.jotform.com/bg/food-ordering-system/",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "a general form builder, not a food-business ordering platform (left out by the coordinator under \"only correct platforms\"; it has a Bulgarian food-order form with pickup date/time, USD prices only). form builder with a Bulgarian-language restaurant food-ordering page: online order forms for delivery or pickup (вземане) with a requested date and time. General form tool, not food-specific software; priced in USD only.",
+   "eligibility": {
+    "order_quote": "Онлайн формите за поръчка на храна са идеални за ресторанти, предлагащи опции за доставка или вземане.",
+    "order_url": "https://www.jotform.com/bg/food-ordering-system/",
+    "country_quote": "Онлайн система за поръчки на храни се използва от ресторантите и хранителните магазини",
+    "country_url": "https://www.jotform.com/bg/food-ordering-system/"
+   },
+   "plans": [
+    {
+     "plan_name": "Starter",
+     "currency": "USD",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Starter (Free) — $0/month",
+     "url": "https://www.jotform.com/bg/pricing/",
+     "note": "Free plan with usage limits. Pricing page at /bg/pricing/ is in English and in USD (no BGN/EUR shown); 'Taxes are included as required by local rules.' so VAT left unknown."
+    },
+    {
+     "plan_name": "Bronze",
+     "currency": "USD",
+     "price_major": 39,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Bronze — $39/month or $408/year",
+     "url": "https://www.jotform.com/bg/pricing/",
+     "note": "$34/month when billed yearly ($408/year). USD only."
+    },
+    {
+     "plan_name": "Silver",
+     "currency": "USD",
+     "price_major": 49,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Silver — $49/month or $468/year",
+     "url": "https://www.jotform.com/bg/pricing/",
+     "note": "$39/month when billed yearly ($468/year). USD only."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "за да съберете подробности за доставката, като адрес, телефонен номер и исканата дата и час на доставката",
+     "url": "https://www.jotform.com/bg/food-ordering-system/"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "за да съберете подробности за доставката, като адрес, телефонен номер и исканата дата и час на доставката",
+     "url": "https://www.jotform.com/bg/food-ordering-system/"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Bronze — $39/month or $408/year",
+     "url": "https://www.jotform.com/bg/pricing/"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "Събирайте плащания без допълнителни такси за транзакции.",
+     "url": "https://www.jotform.com/bg/food-ordering-system/"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.jotform.com/bg/food-ordering-system/",
+    "https://www.jotform.com/bg/pricing/"
+   ]
+  },
+  {
+   "name": "order.bg",
+   "website": "https://order.bg",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "delivery/pickup marketplace listing many restaurants (Sofia, Plovdiv, Varna); not software a food business runs its own ordering on.",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://order.bg/"
+   ]
+  },
+  {
+   "name": "myPOS",
+   "website": "https://www.mypos.com/bg-bg/",
+   "stored_id_prefix": null,
+   "focus": "pos",
+   "verdict": "not_relevant",
+   "reason": "Bulgarian payments/till company; its restaurant (F&B) page offers card terminals, payment links and online payments but no customer online ordering ahead (no pickup or pre-order ordering flow).",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.mypos.com/bg-bg/industries/pos-terminali-za-restoranti-barove"
+   ]
+  },
+  {
+   "name": "Ecwid",
+   "website": "https://www.ecwid.com/bg/",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "unreadable",
+   "reason": "Bulgarian-language blog exists, but ecwid.com/bg/pricing and ecwid.com/bg/solutions/restaurants both answered HTTP 404; the readable blog page says nothing about Ecwid's own restaurant ordering, pickup or prices. Not assessed.",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.ecwid.com/bg/pricing",
+    "https://www.ecwid.com/bg/blog/restaurant-software.html",
+    "https://www.ecwid.com/bg/solutions/restaurants"
+   ]
+  }
+ ],
+ "notes": "No food-truck / market / events ordering tool serving Bulgaria was found (Bulgarian and English searches). No Bulgarian-made restaurant online-ordering SaaS with a public price turned up either: search results were dominated by Jotform, order.bg (marketplace) and Glovo/Wolt/Takeaway listings. Eligible with an own-site price: SumUp (pos, bg-bg online store, 0 €/month + 1,49% per transaction, EUR not BGN; generic store with in-store pickup, no time-slot wording) and Jotform (Bulgarian-language food-ordering page with pickup and requested date/time; a general form builder, pricing page in English and USD only) — both weak fits. Choice (stored 70b34967) answered 403 at choiceqr.com/bg/pricing; UpMenu has no /bg site (404); MENU TIGER /bg/pricing 404; Ecwid /bg pricing and restaurant pages 404. Prices on SumUp's Bulgarian site are in EUR (Bulgaria shows EUR, not BGN). Dropped the 'Barsy' lead: only myPOS app-market listings, no own site found."
+}

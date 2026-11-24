@@ -1,0 +1,230 @@
+{
+  "country": "SI",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "food truck spletno naročanje aplikacija Slovenija prevzem",
+    "sistem za spletno naročanje restavracija prevzem cenik",
+    "spletna naročila hrane za gostince lastna spletna stran brez provizije prevzem na lokaciji",
+    "DISH Order Slovenija spletno naročanje gostinstvo dish.co",
+    "naročilo vnaprej za prevzem restavracija programska oprema slovenski ponudnik mesečna naročnina €",
+    "SumUp sl-si spletna trgovina prevzem naročila restavracija (sumup.com only)",
+    "sistem za spletna naročila za picerije in okrepčevalnice Slovenija lastna spletna stran prevzem cena na mesec",
+    "davčna blagajna gostinstvo spletna naročila za prevzem modul cenik"
+  ],
+  "vendors": [
+    {
+      "name": "Anolla",
+      "website": "https://anolla.com/sl",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Slovenian-language hospitality booking system with online food orders / food pre-orders; free plan pitched at street-food concepts and festival caterers. Mainly a reservation tool; reviewer may prefer focus nearest_local.",
+      "eligibility": {
+        "food_quote": "Primeren je za samostojnega kuharja, manjšo kavarno ali nov koncept ulične prehrane,",
+        "food_url": "https://anolla.com/sl/programska-oprema-za-prehrambne-storitve",
+        "order_quote": "omogoča, da so prednaročila hrane, rezervacije miz in naročila za s seboj opravljena z nekaj dotiki",
+        "order_url": "https://anolla.com/sl/programska-oprema-za-prehrambne-storitve",
+        "country_quote": "Anolla je rezervacijski sistem za gostinstvo, ki v eni platformi združi rezervacije miz, spletna naročila hrane",
+        "country_url": "https://anolla.com/sl/programska-oprema-za-prehrambne-storitve"
+      },
+      "plans": [
+        {
+          "plan_name": "Brezplačni paket",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "0€",
+          "url": "https://anolla.com/sl/programska-oprema-za-prehrambne-storitve",
+          "note": "Free plan shown as '0€' with no period stated, so period left null. Paid add-on features are usage-based with no amounts on the site ('Cene Anolle temeljijo na dejanski uporabi, zato plačate le za obseg'); features page says 'DDV ni vključen v ceno.' The page reader capped quotes at 125 chars, so some quotes are sentence excerpts."
+        },
+        {
+          "plan_name": "Plačljive funkcije (po uporabi)",
+          "currency": "EUR",
+          "price_major": null,
+          "period": null,
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Natančna cena in pogoji so prikazani v podrobnem pogledu posamezne funkcije.",
+          "url": "https://anolla.com/sl/funkcije",
+          "note": "No amounts shown on the site; feature detail links are '#'. VAT: 'DDV ni vključen v ceno.'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "postane hiter neposredni dostop do rezervacije mize ali prednaročila hrane.",
+          "url": "https://anolla.com/sl/programska-oprema-za-prehrambne-storitve"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "rešitvami za zaslone v kuhinji (KDS)",
+          "url": "https://anolla.com/sl/programska-oprema-za-prehrambne-storitve"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Na enem mestu upravljajte neomejeno število gostinskih lokacij, uporabnikov, storitev in strank.",
+          "url": "https://anolla.com/sl/programska-oprema-za-prehrambne-storitve"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://anolla.com/sl/programska-oprema-za-prehrambne-storitve",
+        "https://anolla.com/sl/cenik",
+        "https://anolla.com/sl/funkcije"
+      ]
+    },
+    {
+      "name": "SumUp (Spletna trgovina)",
+      "website": "https://www.sumup.com/sl-si/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "SumUp sells in Slovenia (Slovenian site, EUR prices); its free online store takes orders online with in-store pickup. Generic shop, no food/restaurant wording on the page.",
+      "eligibility": {
+        "order_quote": "Strankam ponudite dostavo, prevzem v trgovini in storitev na lokacijah.",
+        "order_url": "https://www.sumup.com/sl-si/spletna-trgovina/",
+        "country_quote": "Ustvarite svojo spletno trgovino brez stroškov naročnine ali skritih provizij.",
+        "country_url": "https://www.sumup.com/sl-si/spletna-trgovina/"
+      },
+      "plans": [
+        {
+          "plan_name": "Spletna trgovina",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.5,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "0 €",
+          "url": "https://www.sumup.com/sl-si/spletna-trgovina/",
+          "note": "Page shows '0 €' labelled 'mesečni stroški' and a transaction commission of '2,50 %' ('Konkurenčne provizije za transakcijo.'). The 2.5% is a per-transaction payment fee. VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Artikle iz spletne trgovine lahko preprosto prodajate na Instagramu.",
+          "url": "https://www.sumup.com/sl-si/spletna-trgovina/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Domene po meri",
+          "url": "https://www.sumup.com/sl-si/spletna-trgovina/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Ustvarite svojo spletno trgovino brez stroškov naročnine ali skritih provizij.",
+          "url": "https://www.sumup.com/sl-si/spletna-trgovina/"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "Konkurenčne provizije za transakcijo.",
+          "url": "https://www.sumup.com/sl-si/spletna-trgovina/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Konkurenčne provizije za transakcijo.",
+          "url": "https://www.sumup.com/sl-si/spletna-trgovina/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/sl-si/spletna-trgovina/"
+      ]
+    }
+  ],
+  "notes": "No Slovenia-specific food-truck ordering tool found. Two eligible: Anolla (Slovenian-language booking system with food pre-orders and takeaway orders; free plan '0€' with no period stated, so period null; paid features usage-based with no amounts; focus set food_truck on a street-food / festival-catering quote but it is mainly a reservation tool) and SumUp Spletna trgovina (pos; generic online shop with in-store pickup, 0 € monthly + 2,50 % per transaction; no food wording). Looked at but not recorded (they fail the 'serves Slovenia' test or show no evidence, not the ordering rule): DISH Order (dish.co/SI/... returns 404, no Slovenia site); UpMenu (upmenu.com/sl/ returns 404); Restaumatic (has a Slovenian site restaumatic.com/sl/ with 'Strankam omogočite, da oddajo in plačajo naročila prek spleta.' but no pickup / order-ahead sentence and no price, only 'prilagojeno ponudbo'; /sl/price-list/ and /sl/payments 404); Odoo sl_SI restaurant-features (English text, no online ordering/pickup). Zettle not checked (no sign it sells in Slovenia). Delivery marketplaces (Wolt, Glovo, Bolt Food, ehrana) excluded. The page reader capped quotes at 125 chars, so Anolla quotes are verbatim excerpts."
+}

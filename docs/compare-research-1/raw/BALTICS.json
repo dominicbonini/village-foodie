@@ -1,0 +1,807 @@
+{
+  "countries": [
+    "EE",
+    "LV",
+    "LT"
+  ],
+  "researched_on": "2026-11-24",
+  "searches": [
+    "toidu eeltellimus rakendus restoran veebitellimus järeletulek",
+    "internetiniai užsakymai restoranui sistema atsiėmimas kaina mėn",
+    "užsakymų sistema maisto furgonui food truck išankstiniai užsakymai internetu",
+    "e-pood restoranile veebitellimused kaasa ostmine tellimissüsteem hind kuus",
+    "užsakymai internetu restoranams be komisinių savo svetainėje išsinešimui sistema Lietuva",
+    "tiešsaistes pasūtījumu sistēma restorāniem līdzņemšanai savā mājaslapā cena mēnesī",
+    "tänavatoit toiduauto tellimine ette veebis järele tulemine platvorm",
+    "Vilnius startup online ordering platform for restaurants takeaway pickup own website commission-free",
+    "tiešsaistes pasūtījumi restorāniem līdzņemšanai sistēma cena mēnesī (restricted to .lv)",
+    "internetiniai užsakymai restoranams atsiėmimas vietoje sistema kaina (restricted to .lt)",
+    "iepriekšēja pasūtīšana tiešsaistē kafejnīca līdzņemšanai sistēma \"bez komisijas\" Latvija",
+    "kavinių restoranų užsakymų internetu modulis išsinešimui \"atsiėmimo laikas\" kainodara",
+    "restaurant POS with online ordering takeaway Baltic states Latvia Estonia Lithuania local provider",
+    "Poster POS Latvia Lithuania restaurant point of sale system (joinposter.com)",
+    "FoodChow online ordering system Estonia Latvia Lithuania (foodchow.com)",
+    "\"järeletulemisega\" veebitellimused restoranidele oma kodulehel tarkvara",
+    "pasūtījumu pieņemšana savā mājaslapā kafejnīcai līdzņemšana saņemšanas laiks bez komisijas (restricted to .lv)",
+    "veebitellimused restoranile kaasa järeletulek tellimissüsteem kodulehele hind kuus (restricted to .ee)",
+    "online pasūtījumu sistēma restorānam savai mājaslapai klienti pasūta un izņem (restricted to .lv)",
+    "food truck pasūtīt iepriekš tiešsaistē sistēma tirdziņš pasākumi pasūtījumu saņemšana (restricted to .lv)",
+    "eeltellimus järeletulek kohvik restoran veebis tellimine süsteem kassa integratsioon (restricted to .ee)",
+    "Tellikohe veebitellimused restoranidele",
+    "kliendid tellivad ette ja tulevad järele kellaajaks toitlustajale veebitellimise lahendus hinnakiri (restricted to .ee)"
+  ],
+  "vendors": [
+    {
+      "name": "Choice",
+      "country": "EE",
+      "website": "https://choiceqr.com",
+      "stored_id_prefix": "70b34967",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "choiceqr.com/ee/pricing answered HTTP 403 on 24 Nov 2026 (tried once, as instructed); stored 'Basic (free)' 0 EUR could not be re-checked for Estonia",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://choiceqr.com/ee/pricing"
+      ]
+    },
+    {
+      "name": "Choice",
+      "country": "LV",
+      "website": "https://choiceqr.com",
+      "stored_id_prefix": "70b34967",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "choiceqr.com/lv/pricing answered HTTP 403 on 24 Nov 2026 (tried once, as instructed); stored 'Basic (free)' 0 EUR could not be re-checked for Latvia",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://choiceqr.com/lv/pricing"
+      ]
+    },
+    {
+      "name": "Choice",
+      "country": "LT",
+      "website": "https://choiceqr.com",
+      "stored_id_prefix": "70b34967",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "choiceqr.com/lt/pricing answered HTTP 403 on 24 Nov 2026 (tried once, as instructed); stored 'Basic (free)' 0 EUR could not be re-checked for Lithuania",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://choiceqr.com/lt/pricing"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "country": "EE",
+      "website": "https://www.sumup.com/et-ee/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "Estonian et-ee SumUp site sells a Veebipood (online store) where the business can describe where the customer comes to collect; 0 € monthly, 1,69% fee. Weak fit: generic shop builder, nothing food-specific, no pickup-time choice",
+      "eligibility": {
+        "order_quote": "Pakkuge postitamist või kirjeldage, kuhu klient saab kauba või teenuse jaoks kohale tulla.",
+        "order_url": "https://www.sumup.com/et-ee/veebipood/",
+        "country_quote": "Madalad teenustasud. Ei mingeid peidetud teenustasusid.",
+        "country_url": "https://www.sumup.com/et-ee/veebipood/"
+      },
+      "plans": [
+        {
+          "plan_name": "Veebipood",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 1.69,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "0 €",
+          "url": "https://www.sumup.com/et-ee/veebipood/",
+          "note": "Page shows \"0 €\" labelled \"Kuutasu\" (monthly fee) and \"1,69%\" labelled \"Soodne teenustasu\". Estonian-language et-ee page. Generic online store, not food-specific; no time-slot wording."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Instagrami kasutamine veebipoes müüdavate kaupade reklaamimiseks on väga lihtne.",
+          "url": "https://www.sumup.com/et-ee/veebipood/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Kohandatud domeenid",
+          "url": "https://www.sumup.com/et-ee/veebipood/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "0 €",
+          "url": "https://www.sumup.com/et-ee/veebipood/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "1,69%",
+          "url": "https://www.sumup.com/et-ee/veebipood/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/et-ee/",
+        "https://www.sumup.com/et-ee/veebipood/"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "country": "LV",
+      "website": "https://www.sumup.com/lv-lv/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "Latvian lv-lv SumUp site sells an Interneta veikals (online store) offering in-store pickup; 0 € monthly, 1,69% per transaction. Weak fit: generic shop builder, nothing food-specific, no pickup-time choice",
+      "eligibility": {
+        "order_quote": "Piedāvā klientiem piegādi, saņemšanu veikalā vai pakalpojumu sniegšanas vietas.",
+        "order_url": "https://www.sumup.com/lv-lv/interneta-veikals/",
+        "country_quote": "Zemas maksas. Nekādu slēpto izmaksu.",
+        "country_url": "https://www.sumup.com/lv-lv/interneta-veikals/"
+      },
+      "plans": [
+        {
+          "plan_name": "Interneta veikals",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 1.69,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0 €",
+          "url": "https://www.sumup.com/lv-lv/interneta-veikals/",
+          "note": "Page shows \"0 €\" labelled \"Ikmēneša izmaksas\" (monthly costs), \"0 €\" labelled \"Interneta veikala izveide\" (set-up) and \"1,69%\" labelled \"Konkurētspējīga maksa par darījumu\". Latvian-language lv-lv page. Generic online store, not food-specific; no time-slot wording."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Pārdot interneta veikala preces tīklā Instagram ir pavisam viegli.",
+          "url": "https://www.sumup.com/lv-lv/interneta-veikals/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Pielāgoti domēni",
+          "url": "https://www.sumup.com/lv-lv/interneta-veikals/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "0 €",
+          "url": "https://www.sumup.com/lv-lv/interneta-veikals/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "1,69%",
+          "url": "https://www.sumup.com/lv-lv/interneta-veikals/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/lv-lv/",
+        "https://www.sumup.com/lv-lv/interneta-veikals/"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "country": "LT",
+      "website": "https://www.sumup.com/lt-lt/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "Lithuanian lt-lt SumUp site sells a free Internetinė parduotuvė (online store) with in-store pickup; 0 € monthly, 1,69 % per transaction. Weak fit: generic shop builder, nothing food-specific, no pickup-time choice",
+      "eligibility": {
+        "order_quote": "Suteikite klientams galimybę prekes gauti norimu adresu ar atsiimti parduotuvėje.",
+        "order_url": "https://www.sumup.com/lt-lt/internetine-parduotuve/",
+        "country_quote": "Susikurkite internetinę parduotuvę be jokių mėnesinių mokesčių ar kitų netikėtų išlaidų.",
+        "country_url": "https://www.sumup.com/lt-lt/internetine-parduotuve/"
+      },
+      "plans": [
+        {
+          "plan_name": "Internetinė parduotuvė",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 1.69,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Susikurkite internetinę parduotuvę be jokių mėnesinių mokesčių ar kitų netikėtų išlaidų.",
+          "url": "https://www.sumup.com/lt-lt/internetine-parduotuve/",
+          "note": "Page figures: \"Nemokama internetinė parduotuvė\" 0 EUR, \"Jokių mėnesinių išlaidų\" 0 €, \"Konkurencingas operacijos mokestis\" 1,69 %. Lithuanian-language lt-lt page. Generic online store, not food-specific; no time-slot wording."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Internetinės parduotuvės prekes galite lengvai parduoti savo „Instagram“ paskyroje.",
+          "url": "https://www.sumup.com/lt-lt/internetine-parduotuve/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Asmeniniai domenai",
+          "url": "https://www.sumup.com/lt-lt/internetine-parduotuve/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Susikurkite internetinę parduotuvę be jokių mėnesinių mokesčių ar kitų netikėtų išlaidų.",
+          "url": "https://www.sumup.com/lt-lt/internetine-parduotuve/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Konkurencingas operacijos mokestis",
+          "url": "https://www.sumup.com/lt-lt/internetine-parduotuve/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/lt-lt/",
+        "https://www.sumup.com/lt-lt/internetine-parduotuve/"
+      ]
+    },
+    {
+      "name": "Poster",
+      "country": "EE",
+      "website": "https://joinposter.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Cloud POS with a food-truck page and an Estonia page naming an official representative there; its Poster Site/Shop add-on is a website for takeout and delivery orders. Weak fit: English-only, USD prices, no pickup-time or pre-order wording",
+      "eligibility": {
+        "food_quote": "Poster makes running a food truck simple",
+        "food_url": "https://joinposter.com/en/business/foodtruck",
+        "order_quote": "Customers don’t need to download a separate app to place an order.",
+        "order_url": "https://joinposter.com/en/tour/addons/poster-shop",
+        "country_quote": "Anton Okrut is the official representative of Poster in Estonia",
+        "country_url": "https://joinposter.com/en/pages/est-restaurant-pos-ads"
+      },
+      "plans": [
+        {
+          "plan_name": "Poster Site (add-on)",
+          "currency": "USD",
+          "price_major": 19,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$19/mo, if you have up to 500 orders per month;",
+          "url": "https://joinposter.com/en/tour/addons/poster-shop",
+          "note": "USD only (no EUR price shown). Add-on to a Poster POS plan; pricing page says \"Website for delivery and takeout\" $19/month. Same page: \"The monthly rate depends on the number of orders placed through the website.\" and \"The first 100 orders are free.\""
+        },
+        {
+          "plan_name": "Mini (POS)",
+          "currency": "USD",
+          "price_major": 26,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Prices from $26per month",
+          "url": "https://joinposter.com/en/business/foodtruck",
+          "note": "USD only. Pricing page shows Mini $26/mo with $29 struck through next to an 'Annual payment' toggle; it does not say whether $26 is the billed-yearly rate. The Poster Site add-on is extra."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "perfect for sharing on platforms like Instagram",
+          "url": "https://joinposter.com/en/tour/addons/poster-shop"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Your cook will be able to see incoming orders queued on the screen of a KDS tablet",
+          "url": "https://joinposter.com/en/business/foodtruck"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "continues working in offline mode when the Internet connection drops.",
+          "url": "https://joinposter.com/en/business/foodtruck"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "automatically sent to the Poster terminal",
+          "url": "https://joinposter.com/en/tour/addons/poster-shop"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "use Poster’s extended features for managing multiple units",
+          "url": "https://joinposter.com/en/business/foodtruck"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Yes, connecting your own domain is included in all of our subscription plans.",
+          "url": "https://joinposter.com/en/tour/addons/poster-shop"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Cost starts from $19/mo.",
+          "url": "https://joinposter.com/en/tour/addons/poster-shop"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://joinposter.com/en/pages/est-restaurant-pos-ads",
+        "https://joinposter.com/en/tour/addons/poster-shop",
+        "https://joinposter.com/en/business/foodtruck",
+        "https://joinposter.com/en/pricing"
+      ]
+    },
+    {
+      "name": "Refektorius",
+      "country": "LT",
+      "website": "https://refektorius.lt",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Lithuanian (lt-language, .lt) online ordering for cafés/restaurants on their own site: customer chooses delivery or pickup and pays online; 0 € set-up, 2–5% commission + 7 € a week. No food-truck wording; no pickup-time choice stated",
+      "eligibility": {
+        "order_quote": "Klientas renkasi pristatymą ar atsiėmimą ir patogiai apmoka internetu.",
+        "order_url": "https://refektorius.lt/"
+      },
+      "plans": [
+        {
+          "plan_name": "Užsakymai internetu",
+          "currency": "EUR",
+          "price_major": 7,
+          "period": "week",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "+ 7 €/sav. aptarnavimo mokestis.",
+          "url": "https://refektorius.lt/",
+          "note": "Weekly service fee, as stated (not converted). Commission is a range: \"2–5% komisinis.\" — \"Komisinis skaičiuojamas tik nuo užsakymų, gautų per internetą.\" (per_order_pct left null because only a 2–5% range is given). Set-up \"0 €\" (\"Sukūrimas ir paleidimas\")."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Užsakymai patenka tiesiai į virtuvės planšetę – su garsiniu signalu.",
+          "url": "https://refektorius.lt/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "partial",
+          "quote": "+ 7 €/sav. aptarnavimo mokestis.",
+          "url": "https://refektorius.lt/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "2–5% komisinis.",
+          "url": "https://refektorius.lt/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://refektorius.lt/"
+      ]
+    },
+    {
+      "name": "ared",
+      "country": "LT",
+      "website": "https://ared.lt",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Lithuanian café POS (lt-language, .lt) that takes online orders for pickup at the café, ordered ahead and collected at an agreed time; 20 € per till a month + PVM, no set-up fee. No food-truck wording",
+      "eligibility": {
+        "order_quote": "Užsakymas iš anksto ir atsiėmimas sutartu laiku.",
+        "order_url": "https://ared.lt/sprendimai/pos-sistema-kavinei"
+      },
+      "plans": [
+        {
+          "plan_name": "ared (one plan)",
+          "currency": "EUR",
+          "price_major": 20,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "20 € už kasą per mėnesį + PVM",
+          "url": "https://ared.lt/kainos",
+          "note": "Per till (kasa) per month, excl. VAT; FAQ: \"20 € už kasą per mėnesį + 21 % PVM.\" and \"Ne, diegimo mokesčio nėra.\" Pricing page says \"Viena kaina. Viskas įskaičiuota\"; online-order pickup is described on the café POS page, not named on the pricing page."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Užsakymas iš anksto ir atsiėmimas sutartu laiku.",
+          "url": "https://ared.lt/sprendimai/pos-sistema-kavinei"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "ared KDS veikia iPad ekrane ir yra įskaičiuotas į kainą.",
+          "url": "https://ared.lt/sprendimai/pos-sistema-kavinei"
+        },
+        {
+          "key": "offline",
+          "value": "no",
+          "quote": "todėl darbui reikia interneto ryšio",
+          "url": "https://ared.lt/kainos"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Valdote kelias vietas? Parašykite, aptarsime sąlygas.",
+          "url": "https://ared.lt/kainos"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "20 € už kasą per mėnesį + PVM",
+          "url": "https://ared.lt/kainos"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ared.lt/sprendimai/pos-sistema-kavinei",
+        "https://ared.lt/kainos"
+      ]
+    },
+    {
+      "name": "MEALS",
+      "country": "LV",
+      "website": "https://meals.lv",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Latvian restaurant POS (waiter tablets, kitchen, bar); the homepage describes only staff-entered orders, no customer online ordering ahead or pickup",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://meals.lv/",
+        "https://meals.lv/merchants"
+      ]
+    },
+    {
+      "name": "EestiPOS",
+      "country": "EE",
+      "website": "https://eestipos.ee",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Estonian till (Tasuta 0 / Starter €29 / Growth €59 / Pro €149 a month); offers QR-menu table ordering and a Wolt & Bolt intake marked coming soon, but no customer online ordering ahead or pickup on its home or pricing page",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://eestipos.ee/",
+        "https://eestipos.ee/pricing"
+      ]
+    },
+    {
+      "name": "CompuCash",
+      "country": "LV",
+      "website": "https://compucash.lv",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Latvian cloud till with a food-truck page (\"Food truck kases sistēma\"), but takeaway orders come only through Bolt & Wolt integrations; no customer online ordering ahead of its own (from 40 eur/mēn.)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://compucash.lv/",
+        "https://compucash.lv/food-truck-kases-sistema/"
+      ]
+    },
+    {
+      "name": "NRdata",
+      "country": "LV",
+      "website": "https://nrdata.lv",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Latvian till for caterers: in-store kiosk and table tablet ordering only; no customer online ordering ahead or pickup, no prices on the page",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://nrdata.lv/edinatajiem/"
+      ]
+    },
+    {
+      "name": "Tellikohe",
+      "country": "EE",
+      "website": "https://tellikohe.ee",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Named by a CompuCash (ektaco.ee) search snippet as an Estonian platform where customers order and pay online; tellikohe.ee returned only its title to the page reader (JavaScript-rendered, no body text), so nothing could be checked on its own site",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://tellikohe.ee/"
+      ]
+    },
+    {
+      "name": "Kassahaldus",
+      "country": "EE",
+      "website": "https://www.kassahaldus.ee",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Estonian till software whose search snippet mentions an e-sales module for online orders for cafés and restaurants; kassahaldus.ee returned an empty page to the page reader, so the module, pickup and prices could not be checked on its own site",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.kassahaldus.ee/"
+      ]
+    },
+    {
+      "name": "PapaPos",
+      "country": "LV",
+      "website": "https://www.papapos.lv",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Latvian restaurant till (from 45€/mēn.); no customer online ordering, pickup or pre-order on its homepage, only reports on remote orders",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.papapos.lv/"
+      ]
+    }
+  ],
+  "notes": "Search engines surfaced almost nothing Baltic until results were restricted to .lt/.lv/.ee domains. No food-truck / market pre-order tool with customer online ordering was found in any of the three countries (CompuCash LV has a food-truck till page but takes takeaway orders only via Bolt/Wolt). Choice answered 403 on /ee, /lv and /lt pricing (one try each); an Estonian café's own pre-order page (akadeemiakohv.ee/delivery/pages/preorder) redirects to akadeemia-kohv.choiceqr.com, so Choice is in use in Estonia, but that is not the vendor's site and no price could be confirmed. EE: SumUp (generic web shop, weak) and Poster (food-truck page + Estonia representative page, but English-only and USD prices, add-on website for takeout; weak). Tellikohe and Kassahaldus (EE) could not be read (JS-rendered / empty). LV: only SumUp (generic web shop with in-store pickup) is eligible; Latvian tills checked (MEALS, CompuCash, NRdata, PapaPos) show no customer online ordering. LT: Refektorius (weekly fee 7 €/sav. + 2–5% commission, period 'week' kept as stated) and ared (20 € per till per month + PVM, pickup at an agreed time) are genuine local café/restaurant tools; SumUp as the till fallback. Zettle not checked: no Baltic site is known and SumUp already covers the till fallback."
+}

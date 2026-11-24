@@ -1,0 +1,476 @@
+{
+  "country": "HU",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "food truck online rendelés rendszer előrendelés",
+    "online rendelési rendszer étterem elvitel előrendelés saját weboldal jutalékmentes"
+  ],
+  "vendors": [
+    {
+      "name": "Orderly",
+      "website": "https://orderly.hu",
+      "stored_id_prefix": "1cccb6df",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Hungarian hospitality software with its own online ordering (pickup at the counter, now or a later time) and a dedicated seasonal / food truck page; HUF prices",
+      "eligibility": {
+        "food_quote": "Strandbüfé, food truck vagy nyári terasz: akkor használod, amikor nyitva vagy.",
+        "food_url": "https://orderly.hu/",
+        "order_quote": "Rendelhet azonnalra vagy későbbi időpontra, nyitvatartási időn belül.",
+        "order_url": "https://orderly.hu/funkciok/online-rendeles/"
+      },
+      "plans": [
+        {
+          "plan_name": "Alapcsomag (base subscription)",
+          "currency": "HUF",
+          "price_major": 6990,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0.5,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "6 990 Ft",
+          "url": "https://orderly.hu/arkalkulator/",
+          "note": "Base monthly fee shown by the price calculator ('+ ÁFA / hó'), before optional modules (e.g. 'Előrendelések kezelése' 1 990, 'Konyhai kijelző' 1 990, 'Offline mód' 990). Monthly fee capped: 'Az előfizetés havidíja legfeljebb 24 990 Ft.' 0.5% commission on its own online ordering is from the online-rendeles page ('Saját webshop, 0,5% jutalékkal'). Yearly payment gives '2 hónap ajándék'. The calculator lists no separate online-ordering module, so it is unclear whether the webshop is in the base fee."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Rendelhet azonnalra vagy későbbi időpontra, nyitvatartási időn belül.",
+          "url": "https://orderly.hu/funkciok/online-rendeles/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Rendelés akár estére vagy holnapra – csak nyitvatartáson belül.",
+          "url": "https://orderly.hu/funkciok/online-rendeles/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Blokk vagy kijelző: a rendelés azonnal a konyhára kerül, a kész étel jelzést kap.",
+          "url": "https://orderly.hu/"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "Az Orderly offline módjával kieső internet mellett is tovább veheted fel a rendeléseket és számlázhatsz.",
+          "url": "https://orderly.hu/megoldasok/szezonalis-food-truck/"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "A vendég a telefonjáról rendel és fizet, a rendelés pedig egyenesen a kasszádba és a konyhára érkezik.",
+          "url": "https://orderly.hu/funkciok/online-rendeles/"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Az étlap a te arculatoddal, a saját címeden fut.",
+          "url": "https://orderly.hu/funkciok/online-rendeles/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Az előfizetés havidíja legfeljebb 24 990 Ft.",
+          "url": "https://orderly.hu/arkalkulator/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Saját webshop, 0,5% jutalékkal",
+          "url": "https://orderly.hu/funkciok/online-rendeles/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://orderly.hu/",
+        "https://orderly.hu/arkalkulator/",
+        "https://orderly.hu/funkciok/online-rendeles/",
+        "https://orderly.hu/megoldasok/szezonalis-food-truck/"
+      ]
+    },
+    {
+      "name": "QRM.hu",
+      "website": "https://qrm.hu",
+      "stored_id_prefix": "53395fcb",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Hungarian QR menu with paid ordering modules: an Előrendelés module (guest orders now, collects later at a requested time) and a Food Truck-oknak page; HUF prices",
+      "eligibility": {
+        "food_quote": "Szűk hely, gyors forgalom, változó helyszínek — a food truck élet más, mint egy étterem.",
+        "food_url": "https://qrm.hu/content/food-truck-oknak",
+        "order_quote": "A vendég most rendel, és később veszi át.",
+        "order_url": "https://qrm.hu/content/elorendeles"
+      },
+      "plans": [
+        {
+          "plan_name": "Alapszolgáltatás (QR menu base)",
+          "currency": "HUF",
+          "price_major": 3900,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "3 900 Ft / hó, bruttó",
+          "url": "https://qrm.hu/",
+          "note": "Base QR menu only; ordering needs a paid module on top. Home page also shows 'Évesen 39 000 Ft — 2 hónap ingyen'."
+        },
+        {
+          "plan_name": "Digitális megrendelés (ordering module)",
+          "currency": "HUF",
+          "price_major": 8900,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "8 900 HUF",
+          "url": "https://qrm.hu/content/arak-es-szolgaltatasok",
+          "note": "Module price on top of the base. The price line itself states no period ('Megújuló szolgáltatás'); monthly is inferred from the page's 'Elérhető havi és éves előfizetéssel is.' and the bundle line 'Kedvezmény: 300 Ft/hó' — reviewer please confirm. The separate 'Előrendelés' module is 'Önálló, külön előfizethető modul' with no price shown. 'Pickup csomag' (ordering + pickup point) is 9 900 HUF."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Ő kér egy időpontot, te visszaigazolod a valódit — és te döntöd el, hogy előre fizessen, vagy átvételkor a helyszínen.",
+          "url": "https://qrm.hu/content/elorendeles"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "A vendég most rendel, és később veszi át.",
+          "url": "https://qrm.hu/content/elorendeles"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Sorszámos átvétel, TV-kijelző, operátori kanban. Kedvezmény: 300 Ft/hó.",
+          "url": "https://qrm.hu/content/arak-es-szolgaltatasok"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "3 900 Ft / hó, bruttó",
+          "url": "https://qrm.hu/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://qrm.hu/",
+        "https://qrm.hu/content/arak-es-szolgaltatasok",
+        "https://qrm.hu/content/elorendeles",
+        "https://qrm.hu/content/food-truck-oknak"
+      ]
+    },
+    {
+      "name": "Happy Gastro",
+      "website": "https://www.happygastro.hu",
+      "stored_id_prefix": "6d6a20e9",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "home page and /arak returned only the title 'Happy Solutions – Modern üzleti rendszerek növekvő vállalkozásoknak' (JavaScript-rendered); no features or prices readable",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.happygastro.hu",
+        "https://www.happygastro.hu/arak"
+      ]
+    },
+    {
+      "name": "eSystem",
+      "website": "https://vendeglatoprogram.com",
+      "stored_id_prefix": "c0542ae9",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Hungarian restaurant POS with its own webshop where guests order ahead (takeaway and delivery in the same system); no food-truck wording found; HUF prices",
+      "eligibility": {
+        "order_quote": "A vendég előre rendel, te előre tudsz tervezni.",
+        "order_url": "https://vendeglatoprogram.com/megoldasaink/pizza-webshop-es-kiszallitas/"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "HUF",
+          "price_major": 320,
+          "period": "day",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "A Basic csomag napi 320 Ft + ÁFA",
+          "url": "https://vendeglatoprogram.com/arak/",
+          "note": "Price stated per day on /arak. The /arak page does not say which plan includes the webshop, and the webshop page gives no price ('Hogy mennyibe kerül, az árak oldalon megnézheted.'). The home page summary also listed Basic 9 900 / Standard 13 750 / Pro 16 900 Ft per month + ÁFA, but the page reader would not give the exact wording, so those are left out."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "A vendég előre rendel, te előre tudsz tervezni.",
+          "url": "https://vendeglatoprogram.com/megoldasaink/pizza-webshop-es-kiszallitas/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Az éttermi kassza, az elvitel és a kiszállítás ugyanabban a rendszerben fut.",
+          "url": "https://vendeglatoprogram.com/megoldasaink/pizza-webshop-es-kiszallitas/"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "A saját webshopnál nincs rendelésenkénti jutalék, a bevétel nálad marad.",
+          "url": "https://vendeglatoprogram.com/megoldasaink/pizza-webshop-es-kiszallitas/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://vendeglatoprogram.com/",
+        "https://vendeglatoprogram.com/megoldasaink/pizza-webshop-es-kiszallitas/",
+        "https://vendeglatoprogram.com/arak/"
+      ]
+    },
+    {
+      "name": "StandMágus / OnlineMágus",
+      "website": "https://www.vendeglato-szoftver.hu",
+      "stored_id_prefix": "c4972b72",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Hungarian hospitality software; OnlineMágus lets guests order online, also weeks ahead; lists food trucks, street-food stalls and events as target businesses; HUF prices",
+      "eligibility": {
+        "food_quote": "Food truck-oknak, Streetfood büféknek",
+        "food_url": "https://www.vendeglato-szoftver.hu/",
+        "order_quote": "A vendégek előzetesen leadhatják menü- vagy a’la carte rendeléseiket, akár hetekre előre is.",
+        "order_url": "https://www.vendeglato-szoftver.hu/"
+      },
+      "plans": [
+        {
+          "plan_name": "SM Max (includes OnlineMágus alap)",
+          "currency": "HUF",
+          "price_major": 16800,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "SM Max 16 800 Ft-tól",
+          "url": "https://www.vendeglato-szoftver.hu/",
+          "note": "A 'from' price. The plan line has no '/hó'; monthly is from the same page ('nettó 7 900 Ft/hó' for the entry plan) and 'A feltüntetett árak nettó kezdő árak.' SM Max is the plan listed with 'SM alap kiszállítás modullal + OnlineMágus alap'; SM Alap (7 900 Ft-tól) and SM Teljes (14 900 Ft-tól) are not shown with online ordering. Promo: '3 havi bérleti díjért 6 hónap használat!'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "A vendégek otthonról (vagy bárhonnan) online rendelhetnek",
+          "url": "https://www.vendeglato-szoftver.hu/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "A vendégek előzetesen leadhatják menü- vagy a’la carte rendeléseiket, akár hetekre előre is.",
+          "url": "https://www.vendeglato-szoftver.hu/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "A rendeléskijelzők és konyhai monitorok megjelenítik a beérkezett rendeléseket",
+          "url": "https://www.vendeglato-szoftver.hu/"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "A StandMágus egy telepített szoftver, amely helyben, a saját eszközödön fut, így nem függ internetkapcsolattól.",
+          "url": "https://www.vendeglato-szoftver.hu/"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Az ingyenes próbaidőszakot követően már nettó 7 900 Ft/hó áron használhatod a szoftvert.",
+          "url": "https://www.vendeglato-szoftver.hu/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Jutalékmentes bérleti konstrukcióval.",
+          "url": "https://www.vendeglato-szoftver.hu/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.vendeglato-szoftver.hu/"
+      ]
+    },
+    {
+      "name": "Orsys",
+      "website": "https://www.orsys.hu",
+      "stored_id_prefix": "cd9f8f3d",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "POS that aggregates Foodora/Wolt orders; its only own guest ordering is a QR menu add-on 'rendeléssel az asztaltól' (table ordering); no own webshop / order-ahead found. Plans 9 990 / 15 900 / 29 900 Ft/hó net.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.orsys.hu",
+        "https://www.orsys.hu/arak"
+      ]
+    },
+    {
+      "name": "Choice",
+      "website": "https://choiceqr.com",
+      "stored_id_prefix": "70b34967",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "https://choiceqr.com/hu/pricing answered HTTP 403 on 24 Nov 2026 (tried once, as for CZ); stored 'Basic (free)' 0 HUF could not be re-checked",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://choiceqr.com/hu/pricing"
+      ]
+    }
+  ],
+  "notes": "Three eligible food-truck-focus tools with HUF prices on their own sites (Orderly, QRM.hu, StandMágus/OnlineMágus), so eSystem (restaurant) is likely surplus under the 2+ food-truck rule. Period caveats: QRM's 8 900 HUF ordering-module line and StandMágus's 'SM Max 16 800 Ft-tól' line state no period themselves; 'month' comes from other lines on the same page (see plan notes). eSystem's /arak gives a per-day price ('napi 320 Ft + ÁFA'), while the home-page summary listed monthly prices; those were not quoted. Orderly's 0.5% commission is on its own online ordering; whether the webshop sits in the 6 990 Ft base fee is not stated. Happy Gastro is JavaScript-only (unreadable); Choice answered 403 (tried once). Both web searches returned mostly non-Hungarian vendors; nothing new was added from them (ZunaPro, a website builder, was not checked)."
+}

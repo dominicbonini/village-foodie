@@ -1,0 +1,473 @@
+{
+  "country": "NO",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "food truck matbil forhåndsbestilling app bestilling på nett",
+    "bestillingssystem restaurant takeaway hente selv nettbestilling uten provisjon pris kr/mnd",
+    "\"bestillingssystem\" \"food truck\" OR \"matbil\" takeaway uten kommisjon Norge",
+    "Munu mobilbestilling festival matbil bestill og hent priser",
+    "nettbestilling for restauranter \"kr/mnd\" takeaway forhåndsbestilling hentetid",
+    "SumUp nb-no nettbestilling restaurant takeaway bestillinger på nett"
+  ],
+  "vendors": [
+    {
+      "name": "Favrit",
+      "website": "https://web.favrit.com",
+      "stored_id_prefix": "58b9820f",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Norwegian POS with mobile / online ordering for takeaway and pick-up, order packed and ready when the guest arrives; NOK prices on its own site",
+      "eligibility": {
+        "order_quote": "Riktig bestilling, pakket og klar når de kommer.",
+        "order_url": "https://web.favrit.com/type-sted/pos-takeaway",
+        "country_quote": "Per sted, eks. mva. Endelig pris settes ut fra oppsettet ditt.",
+        "country_url": "https://web.favrit.com/pris"
+      },
+      "plans": [
+        {
+          "plan_name": "Alt-i-ett kassesystem (from)",
+          "currency": "NOK",
+          "price_major": 899,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Kom i gang fra 899 kr/mnd",
+          "url": "https://web.favrit.com",
+          "note": "A 'from' price, per location, ex. VAT ('Per sted, eks. mva.' on /pris); final price depends on set-up. The /pris page title says 'fra 699 kr/mnd' while its body shows 899 kr/mnd; 899 kept. Which modules (mobilbestilling) are included is not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Riktig bestilling, pakket og klar når de kommer.",
+          "url": "https://web.favrit.com/type-sted/pos-takeaway"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Gjestene bestiller og betaler selv på mobil, og ordren går rett til kjøkkenet.",
+          "url": "https://web.favrit.com/type-sted/pos-takeaway"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Favrit samler bestilling fra disk, mobil og nett",
+          "url": "https://web.favrit.com/type-sted/pos-takeaway"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Én meny, alle stedene",
+          "url": "https://web.favrit.com/vaare-losninger/mobilbestilling"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Kom i gang fra 899 kr/mnd",
+          "url": "https://web.favrit.com"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Nettbestilling uten kommisjon.",
+          "url": "https://web.favrit.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://web.favrit.com",
+        "https://web.favrit.com/pris",
+        "https://web.favrit.com/vaare-losninger/mobilbestilling",
+        "https://web.favrit.com/type-sted/pos-takeaway"
+      ]
+    },
+    {
+      "name": "Superb",
+      "website": "https://www.superbexperience.com",
+      "stored_id_prefix": "a09713bc",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Norwegian-language site; 'Online Takeaway' (order on the restaurant's website, guest collects) is in the Plus plan, which has no listed price (Skreddersydd). The free Go plan (0 kr./mnd.) has no online ordering.",
+      "eligibility": {
+        "order_quote": "Legg til en takeaway-lenke på nettstedet ditt og ta imot bestillinger i dag.",
+        "order_url": "https://www.superbexperience.com/no/platform/takeaway",
+        "country_quote": "Nei, vi tilbyr ikke levering, men gjestene dine kan enten hente eller du kan velge å levere selv.",
+        "country_url": "https://www.superbexperience.com/no/platform/takeaway",
+        "food_quote": "Superb has saved our food truck thousands of euros a year!",
+        "food_url": "https://www.superbexperience.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Plus (includes Online Takeaway)",
+          "currency": "NOK",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Skreddersydd",
+          "url": "https://www.superbexperience.com/no/pricing",
+          "note": "Price on request ('Beregn din pris'). Card fee 0.75% (IC++) on Plus. The Go plan is '0 kr./mnd.' with 0.99% card fee but its included list is only Kassesystem, Kortterminal, Telefonsupport - no online ordering, so not used as the ordering price."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Nei, vi tilbyr ikke levering, men gjestene dine kan enten hente eller du kan velge å levere selv.",
+          "url": "https://www.superbexperience.com/no/platform/takeaway"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Nettbestillingene dine går direkte til kjøkkenet.",
+          "url": "https://www.superbexperience.com/no/platform/takeaway"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "All-in-one platform for restaurants with POS, reservations, and takeaway.",
+          "url": "https://www.superbexperience.com"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Legg til en takeaway-lenke på nettstedet ditt og ta imot bestillinger i dag.",
+          "url": "https://www.superbexperience.com/no/platform/takeaway"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Vi mener ikke at restauranter skal betale provisjon for takeaway, vi vil at du skal beholde inntektene dine selv.",
+          "url": "https://www.superbexperience.com/no/platform/takeaway"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Vårt transaksjonsgebyr er IC++ og dekker alle debet-, kreditt- og firmakort.",
+          "url": "https://www.superbexperience.com/no/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.superbexperience.com",
+        "https://www.superbexperience.com/no/platform/takeaway",
+        "https://www.superbexperience.com/no/pricing"
+      ]
+    },
+    {
+      "name": "MENU TIGER",
+      "website": "https://www.menutiger.com/nb",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Norwegian-language site; guests order and pay on the restaurant's own website, with takeaway tracked alongside dine-in. Prices shown only in USD. Borderline: no explicit pickup-time or pre-order wording found.",
+      "eligibility": {
+        "order_quote": "Gjester bestiller og betaler via restaurantens nettsted",
+        "order_url": "https://www.menutiger.com/nb",
+        "country_quote": "Følg bestillinger samlet på tvers av servering i restauranten, takeaway og levering.",
+        "country_url": "https://www.menutiger.com/nb"
+      },
+      "plans": [
+        {
+          "plan_name": "Free",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "0US$/måned",
+          "url": "https://www.menutiger.com/nb/pricing",
+          "note": "75 orders per month. Site shows USD only, no NOK. A yearly-billing toggle ('Spar 15 %') exists; the monthly-billing price is given."
+        },
+        {
+          "plan_name": "Regular",
+          "currency": "USD",
+          "price_major": 17,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "17US$/måned",
+          "url": "https://www.menutiger.com/nb/pricing",
+          "note": "500 orders per month. USD only."
+        },
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 46,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "46US$/måned",
+          "url": "https://www.menutiger.com/nb/pricing",
+          "note": "2 000 orders per month. USD only. Premium is 119US$/måned (unlimited orders, white-label domain)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Følg bestillinger samlet på tvers av servering i restauranten, takeaway og levering.",
+          "url": "https://www.menutiger.com/nb"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Ordrer vises på kjøkkenskjermen sekunder etter innsending.",
+          "url": "https://www.menutiger.com/nb/features/online-food-order-system"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Følg bestillinger samlet på tvers av servering i restauranten, takeaway og levering.",
+          "url": "https://www.menutiger.com/nb"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "White label (eget domene)",
+          "url": "https://www.menutiger.com/nb"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "17US$/måned",
+          "url": "https://www.menutiger.com/nb/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Ingen oppstartsgebyrer. Ingen provisjon per bestilling.",
+          "url": "https://www.menutiger.com/nb/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.menutiger.com/nb",
+        "https://www.menutiger.com/nb/pricing",
+        "https://www.menutiger.com/nb/features/online-food-order-system"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/nb-no/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "Norwegian SumUp site sells a free online store (nettbutikk) with in-store pickup, 0 kr/month and 1,49 % per transaction. Weak fit: the Norwegian pages read do not mention restaurants, food or takeaway; no Norwegian food ordering (Order & Pay / Kvikorder) page found.",
+      "eligibility": {
+        "order_quote": "Tilby kundene frakt, henting i butikk og servicepunkter.",
+        "order_url": "https://www.sumup.com/nb-no/nettbutikk/",
+        "country_quote": "For våre alternativer for nettbetaling, betaler du 1,49 % per transaksjon.",
+        "country_url": "https://www.sumup.com/nb-no/nettbetalinger/"
+      },
+      "plans": [
+        {
+          "plan_name": "Nettbutikk",
+          "currency": "NOK",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 1.49,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Det er ingen etableringsgebyrer eller månedlige kostnader.",
+          "url": "https://www.sumup.com/nb-no/nettbetalinger/",
+          "note": "0 kr/month; 1,49 % per online transaction ('For våre alternativer for nettbetaling, betaler du 1,49 % per transaksjon.'). No set-up fee stated in the same sentence."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Tilby kundene frakt, henting i butikk og servicepunkter.",
+          "url": "https://www.sumup.com/nb-no/nettbutikk/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Du kan enkelt selge varer fra nettbutikken på Instagram.",
+          "url": "https://www.sumup.com/nb-no/nettbutikk/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Egendefinerte domener",
+          "url": "https://www.sumup.com/nb-no/nettbutikk/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Det er ingen etableringsgebyrer eller månedlige kostnader.",
+          "url": "https://www.sumup.com/nb-no/nettbetalinger/"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "For våre alternativer for nettbetaling, betaler du 1,49 % per transaksjon.",
+          "url": "https://www.sumup.com/nb-no/nettbetalinger/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "For våre alternativer for nettbetaling, betaler du 1,49 % per transaksjon.",
+          "url": "https://www.sumup.com/nb-no/nettbetalinger/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/nb-no/nettbetalinger/",
+        "https://www.sumup.com/nb-no/nettbutikk/"
+      ]
+    },
+    {
+      "name": "Munu",
+      "website": "https://munu.cloud",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Norwegian POS for festivals and venues ('built for the Norwegian market'); the page read shows no customer online ordering ahead and no prices ('Book a demo').",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://munu.cloud/?p=2696"
+      ]
+    }
+  ],
+  "notes": "Favrit: no pickup-time choice or pre-order for a later day is stated; 'Food truck' appears only as a business-type option in a contact-form dropdown, so focus kept nearest_local. Superb: stored as not relevant because only Go (0 NOK, no online ordering) was priced; its Plus plan does include Online Takeaway with pickup but shows no price, so it is recorded eligible with price_major null. The food-truck line is an English customer testimonial on the homepage. MENU TIGER: a global QR/online-ordering tool with a Norwegian translation and USD-only prices; included because website ordering with takeaway is stated, but a reviewer may prefer to drop it (no explicit 'order ahead / pickup time' sentence, no NOK). SumUp: Norwegian nettbutikk with 'henting i butikk' counted as click-and-collect, but it is a generic web shop (no food wording on the Norwegian pages); the Danish Kvikorder food ordering page exists, no Norwegian equivalent was found in search. No Norwegian food-truck-specific ordering tool with its own site was found: search results were mostly app-store listings, FINN classified ads (an unnamed commission-free takeaway system for food trucks at 450/850 kr/mnd, vendor not named, so not usable) and Wolt. Zettle not checked (enough candidates). One process slip: the Favrit /mobilbestilling and /pris pages were fetched in the same turn early on; all later requests were one at a time."
+}

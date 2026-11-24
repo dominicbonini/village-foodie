@@ -1,0 +1,149 @@
+{
+  "countries": [
+    "GI",
+    "JP"
+  ],
+  "researched_on": "2026-11-24",
+  "searches": [
+    "Gibraltar online ordering click and collect takeaway system",
+    "Gibraltar (site search on whatthetruck.ai, ordea.uk, ordertiger.com, flipdish.com, storekit.com, sumup.com)",
+    "Gibraltar restaurant online ordering platform order ahead collection app for businesses"
+  ],
+  "vendors": [
+    {
+      "country": "GI",
+      "name": "Order Tiger",
+      "website": "https://www.ordertiger.com",
+      "stored_id_prefix": "aed7bf67",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "food-truck ordering page (pre-orders, pickup time slots, capacity limits); its own franchise page names a Gibraltar Order Tiger marketplace, so it operates there; prices shown in GBP (Gibraltar uses GIP at par with GBP)",
+      "eligibility": {
+        "food_quote": "Take pre-orders before you park up",
+        "food_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+        "order_quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+        "order_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+        "country_quote": "Consider our Gibraltar location, which experienced remarkable growth and emerged as the dominant marketplace in its region.",
+        "country_url": "https://www.ordertiger.com/franchise"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering",
+          "currency": "GBP",
+          "price_major": 59,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "with plans from £59 in the UK and €59 in the EU",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing",
+          "note": "Price in GBP as shown (Gibraltar pound is at par with GBP; the site shows no GIP price and no Gibraltar-specific price). Plan, quote and answers carried over from the GB check of the same pages earlier today (GB-2.json): 'from £59' is the UK entry price; the page text read shows the plan prices in USD only (Online Ordering $69/month, EPOS $49, Online Ordering + EPOS $109, Growth $299) behind a '£ UK' selector, so the GBP amounts of the other plans could not be read. 'All prices per location, billed monthly.' 'No contract, no setup fee.' UK online card processing 1.5% + £0.20 per transaction (card fee, not a commission)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled orders for busy days and events.",
+          "url": "https://www.ordertiger.com"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Pickup time slots and capacity limits let the crew prep orders in advance.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Push notifications tell every app user where the truck will be tomorrow.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Monthly social media packages",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Kitchen Display System",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "All prices per location, billed monthly.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Take orders on your own website, or let us build a site on your domain.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "All prices per location, billed monthly.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Plans are a flat monthly fee per location, with no commission on orders and no contract",
+          "url": "https://www.ordertiger.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Online card processing on every plan is 1.5% + £0.20 per transaction.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.ordertiger.com",
+        "https://www.ordertiger.com/online-ordering-system-pricing",
+        "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+        "https://www.ordertiger.com/franchise"
+      ]
+    },
+    {
+      "country": "JP",
+      "name": "KitchenCarMenu (キッチンカーメニュー)",
+      "website": "https://kitchencarmenu.com",
+      "stored_id_prefix": "fbea19b8",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "https://kitchencarmenu.com returned HTTP 503 Service Unavailable again on 24 Nov (second failure today); https://www.kitchencarmenu.com fails with a TLS certificate mismatch (cert covers kitchencarmenu.com only). Stored prices (Monthly 3,980 / Annual 3,317 per month yen) could not be re-checked.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://kitchencarmenu.com",
+        "https://www.kitchencarmenu.com/"
+      ]
+    }
+  ],
+  "notes": "GI: Order Tiger is the only tool found whose own site names Gibraltar (franchise page: a Gibraltar Order Tiger marketplace, Sept 2022-Aug 2023 figures). The Gibraltar quote shows presence via the franchise marketplace, not a Gibraltar pricing page; prices are the UK GBP ones. Pricing page and 14 answers were read today for GB and reused unchanged (not re-fetched). A site-restricted search for 'Gibraltar' on whatthetruck.ai, ordea.uk, flipdish.com and storekit.com returned nothing, so nothing is recorded for What The Truck, Ordea, Flipdish or Storekit. SumUp: search showed a help-centre page ('Countries supported and accept card abroad') said to list Gibraltar, but the page text read (en-GB and en-IE) shows no country list (rendered by script), and the card-reader country-lock page does not name Gibraltar; no SumUp page naming Gibraltar with online ordering could be read, so SumUp is not recorded. Local Gibraltar apps seen only in search results (Hungry Monkey, NomNoms, Llanito Eats) are delivery marketplaces/consumer apps; their sites were not opened and they are not recorded. JP: KitchenCarMenu still returns HTTP 503 (retried once; www. host has a certificate mismatch) - marked unreadable, stored prices unverified."
+}

@@ -5,7 +5,10 @@
     "site:foodtruck.pub Canada",
     "Moduurn food truck ordering",
     "\"FoodTrucker\" Find & Order app food trucks website",
-    "FoodTrucker app Canada food truck find and order"
+    "FoodTrucker app Canada food truck find and order",
+    "food truck online ordering system Canada pre-order pickup pricing CAD",
+    "commande en ligne camion de rue Québec plateforme précommande cueillette prix",
+    "Canadian commission-free online ordering for restaurants pickup pricing per month CAD"
   ],
   "vendors": [
     {
@@ -193,7 +196,356 @@
         "https://cloudorders.co/food-trucks?hsLang=en-us",
         "https://cloudorders.co/about?hsLang=en-us"
       ]
+    },
+    {
+      "name": "iShopo",
+      "website": "https://ishopo.ca",
+      "stored_id_prefix": "5c901b17",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Canadian (.ca) commission-free online ordering with pickup and scheduled orders; names food trucks and lists them as a Basic-plan fit; prices shown with '$' only (CAD not named)",
+      "eligibility": {
+        "food_quote": "Customers order and pay before they even reach the truck.",
+        "food_url": "https://ishopo.ca",
+        "order_quote": "Make scheduled orders and pickups simple for customers.",
+        "order_url": "https://ishopo.ca",
+        "country_quote": "Built for Canadian restaurants.",
+        "country_url": "https://ishopo.ca"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic Web Ordering",
+          "currency": "CAD",
+          "price_major": 99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 1.0,
+          "setup_major": 1000,
+          "quote": "Plans start at $99 per month per location.",
+          "url": "https://ishopo.ca",
+          "note": "per location. The site shows only '$' (no CAD/USD code); CAD inferred from the Canadian .ca site 'Built for Canadian restaurants'. $1.00 per order only after 100 orders (overage, pricing table). One-time $1,000 setup fee on all plans. Annual option 'Save 2 months', no annual figure. Higher plans not recorded: Growth & Marketing / App Commerce show $199/$299 in the pricing table and FAQ but $299/$499 elsewhere on the site."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Make scheduled orders and pickups simple for customers.",
+          "url": "https://ishopo.ca"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Regulars can pre-order ahead, earn loyalty points, and order from their phone.",
+          "url": "https://ishopo.ca"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Share your ordering link across Instagram, Facebook, and TikTok.",
+          "url": "https://ishopo.ca"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "iShopo provides a complete restaurant POS system built for dine-in, takeaway, delivery, and table service.",
+          "url": "https://ishopo.ca"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Whether you run two locations or twenty, iShopo gives you one dashboard.",
+          "url": "https://ishopo.ca"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "All plans billed per month per location.",
+          "url": "https://ishopo.ca"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "$1.00 per order after 100",
+          "url": "https://ishopo.ca/pricing/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://ishopo.ca",
+        "https://ishopo.ca/pricing/"
+      ]
+    },
+    {
+      "name": "Dine360",
+      "website": "https://dine360.ca",
+      "stored_id_prefix": "57790b35",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Toronto all-in-one restaurant system (POS, QR menu, website orders); home page names no pickup, order-ahead or scheduled ordering, shows no price amount ('1 Flat Fee'), and its Pricing link (dine360ads.com/temppricing) returns 404; borderline, not counted",
+      "eligibility": {
+        "country_quote": "Proudly serving independent restaurants in Toronto (GTA), Hamilton, and Kitchener-Waterloo.",
+        "country_url": "https://dine360.ca"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://dine360.ca",
+        "https://dine360ads.com/temppricing/"
+      ]
+    },
+    {
+      "name": "Owner",
+      "website": "https://www.owner.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "US restaurant direct online-ordering platform with a Canadian pricing page in CAD; order-ahead evidence is thin: visible text names only catering lead times (pickup appears only in image alt text on /online-ordering)",
+      "eligibility": {
+        "order_quote": "Yes. You choose order minimums, lead time, required confirmation, and any delivery or setup fees.",
+        "order_url": "https://www.owner.com/catering",
+        "country_quote": "SMS marketing is coming soon for Canadian restaurants, and we'll update this page as soon as it's ready.",
+        "country_url": "https://www.owner.com/ca/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Flexible",
+          "currency": "CAD",
+          "price_major": 299,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 5,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$299 CAD /month",
+          "url": "https://www.owner.com/ca/pricing",
+          "note": "billed monthly, no long-term contract; plus a 5% restaurant fee per order. Guests also pay a 5% order support fee on both plans. Setup & migration described as included."
+        },
+        {
+          "plan_name": "Flat Rate",
+          "currency": "CAD",
+          "price_major": 599,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$599 CAD /month",
+          "url": "https://www.owner.com/ca/pricing",
+          "note": "no restaurant fee per order; guests still pay the 5% order support fee. 'Best for restaurants at C$7k+/mo in online sales.'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Yes. You choose order minimums, lead time, required confirmation, and any delivery or setup fees.",
+          "url": "https://www.owner.com/catering"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "We can also send you a tablet or printer (at no extra fee) if that's what you'd prefer.",
+          "url": "https://www.owner.com/online-ordering"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Special rates available for multi-location Flat Rate.",
+          "url": "https://www.owner.com/ca/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "We'll ask you for details like your website domain, Google Business Profile, and Yelp information.",
+          "url": "https://www.owner.com/ca/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$299 CAD /month",
+          "url": "https://www.owner.com/ca/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "On our Flex plan, you pay a lower subscription cost plus a 5% restaurant fee on orders.",
+          "url": "https://www.owner.com/ca/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.owner.com/ca/pricing",
+        "https://www.owner.com/online-ordering",
+        "https://www.owner.com/catering"
+      ]
+    },
+    {
+      "name": "OrderEatRepeat",
+      "website": "https://ordereatrepeat.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Ottawa-made commission-free restaurant ordering page with pickup and scheduled orders; one plan priced in CAD on its own site; food trucks not mentioned",
+      "eligibility": {
+        "order_quote": "Customers order pickup or delivery from a branded page on a link you own.",
+        "order_url": "https://ordereatrepeat.com",
+        "country_quote": "OrderEatRepeat costs $89 CAD or $79 USD per location, per month.",
+        "country_url": "https://ordereatrepeat.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Everything included",
+          "currency": "CAD",
+          "price_major": 89,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "OrderEatRepeat costs $89 CAD or $79 USD per location, per month.",
+          "url": "https://ordereatrepeat.com",
+          "note": "per location; 0% commission, no per-order fee, no setup fee; 30-day free trial. Card fees go to the restaurant's own processor. The site also says 'Made in Ottawa'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled orders",
+          "url": "https://ordereatrepeat.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Put it on your website, Google profile and socials.",
+          "url": "https://ordereatrepeat.com"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen order board",
+          "url": "https://ordereatrepeat.com/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "each active location is its own subscription at $89 CAD or $79 USD a month",
+          "url": "https://ordereatrepeat.com/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Customers order pickup or delivery from a branded page on a link you own.",
+          "url": "https://ordereatrepeat.com"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "OrderEatRepeat costs $89 CAD or $79 USD per location, per month.",
+          "url": "https://ordereatrepeat.com"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "no per-order fee",
+          "url": "https://ordereatrepeat.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Card-processing fees are separate.",
+          "url": "https://ordereatrepeat.com/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://ordereatrepeat.com",
+        "https://ordereatrepeat.com/pricing"
+      ]
     }
   ],
-  "notes": ""
+  "notes": "4 eligible with a price. iShopo is the one Canadian food-truck tool: its .ca site shows '$' only, and CAD is inferred. Its Growth/App Commerce prices conflict across the site ($199/$299 vs $299/$499), so only Basic $99 is recorded. Food Truck Pub is eligible only loosely: it is USD only, and Canada is never named, only merchants 'outside the United States'. Owner (new) has CAD prices on owner.com/ca/pricing, but its visible order-ahead evidence is only a catering lead-time line, so its ahead answer is not_mentioned. OrderEatRepeat (new, Ottawa) has a clear CAD price. CloudOrders has a food-truck page and $30/month, but names no country anywhere, so it is not counted. Dine360's pricing link returns 404. Moduurn's own site is a coming-soon page. FoodTrucker has no own site. Ritual's pages name no country and no price amount. The till players (Square, Lightspeed, Clover, Toast) were not checked, because 2 food-truck and 2 restaurant tools were found."
 }

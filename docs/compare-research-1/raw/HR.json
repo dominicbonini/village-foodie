@@ -1,0 +1,219 @@
+{
+  "country": "HR",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "food truck online narudžbe aplikacija Hrvatska preuzimanje",
+    "sustav online narudžbi za restorane vlastita web stranica preuzimanje bez provizije cijena mjesečno",
+    "online narudžbe za ugostitelje hrvatska softver \"preuzimanje\" web shop restoran cjenik €",
+    "Gustico online naručivanje hrane restorani BOKO Hvar",
+    "\"online narudžbe\" restoran sustav \"naruči unaprijed\" OR \"prednarudžba\" OR \"osobno preuzimanje\" softver za ugostitelje paketi cijene",
+    "SumUp hr-hr online narudžbe restoran preuzimanje (sumup.com only)",
+    "aplikacija za online narudžbe hrane za ugostitelje bez provizije Hrvatska vlastita aplikacija restorana"
+  ],
+  "vendors": [
+    {
+      "name": "Anolla",
+      "website": "https://anolla.com/hr",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Croatian-language page for food businesses: customers pre-order food ahead in the client app/web; names street-food stands and catering at food festivals; free plan 0€, paid add-ons (prices not shown)",
+      "eligibility": {
+        "food_quote": "Model je idealan za plažne kafiće, ketering sudionike na gastronomskim festivalima",
+        "food_url": "https://anolla.com/hr/softver-za-posluzivanje-hrane",
+        "order_quote": "Klijentska aplikacija (iOS, Android, web) omogućuje unaprijed naručivanje hrane",
+        "order_url": "https://anolla.com/hr/softver-za-posluzivanje-hrane",
+        "country_quote": "Mali kafić, ulični punkt s hranom ili obiteljski restoran mogu pokrenuti online rezervacije i naručivanje",
+        "country_url": "https://anolla.com/hr/softver-za-posluzivanje-hrane"
+      },
+      "plans": [
+        {
+          "plan_name": "Besplatan softver",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Započnite besplatno i isprobajte osnovni paket softvera za rezervacije u ugostiteljstvu",
+          "url": "https://anolla.com/hr/softver-za-posluzivanje-hrane",
+          "note": "Plan card shows '0€' with no period. Paid features are priced one by one ('Aktiviraj plaćene značajke prema potrebi.'; 'Na cijene se dodaje PDV (VAT).' on /hr/funkcionalnosti) but no amounts are shown on any page read (feature detail links are '#' placeholders). Period left null because the page states none."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Klijentska aplikacija (iOS, Android, web) omogućuje unaprijed naručivanje hrane",
+          "url": "https://anolla.com/hr/softver-za-posluzivanje-hrane"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Dodatno, Anolla pruža snažan API za integracije s POS sustavima, KDS kuhinjskim zaslonima",
+          "url": "https://anolla.com/hr/softver-za-posluzivanje-hrane"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Platforma omogućuje neograničeno dodavanje objekata za objedovanje",
+          "url": "https://anolla.com/hr/softver-za-posluzivanje-hrane"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://anolla.com/hr/softver-za-posluzivanje-hrane",
+        "https://anolla.com/hr/funkcionalnosti",
+        "https://anolla.com/hr/cijene"
+      ],
+      "note": "Reviewer check: Anolla is mainly a booking platform with its own consumer app and a 'Tržnica usluga' (service marketplace); the business also runs it on its own web page ('Pretvori svoju web-stranicu i brend hrane u 24/7 virtualnu prodajnu dvoranu'). Food-truck wording is not used; closest are street-food stand and festival catering. KDS marked partial (API integration only). 'Nema skrivenih naknada' is on the page but is not a clear negation of monthly or per-order fees, so those stay not_mentioned. /hr/cijene is a general FAQ page, not prices."
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/hr-hr/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "Croatian site and help centre: free Internetska trgovina (online store) where customers order online and pick up at a location the business sets; 2,50 % per online payment, no monthly fee",
+      "eligibility": {
+        "order_quote": "Stvorite opcije preuzimanja artikala naručenih preko vaše Internetske trgovine",
+        "order_url": "https://help.sumup.com/hr-HR/sections/5xqOcqueHnUjWTyp5loSAh-online-store",
+        "country_quote": "izraditi u nekoliko minuta s našim jednostavnim alatom za izradu internetske trgovine",
+        "country_url": "https://www.sumup.com/hr-hr/online-placanja/"
+      },
+      "plans": [
+        {
+          "plan_name": "Internetska trgovina / Online plaćanja",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.5,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Nema naknada za postavljanje ili mjesečnih troškova.",
+          "url": "https://www.sumup.com/hr-hr/online-placanja/",
+          "note": "Fee quote on the same page: \"Za naše opcije plaćanja putem interneta, plaćate 2,50 % po transakciji.\" No monthly or set-up fee; the 2,50 % is per online transaction. VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Stvorite opcije preuzimanja artikala naručenih preko vaše Internetske trgovine",
+          "url": "https://help.sumup.com/hr-HR/sections/5xqOcqueHnUjWTyp5loSAh-online-store"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Nema naknada za postavljanje ili mjesečnih troškova.",
+          "url": "https://www.sumup.com/hr-hr/online-placanja/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Za naše opcije plaćanja putem interneta, plaćate 2,50 % po transakciji.",
+          "url": "https://www.sumup.com/hr-hr/online-placanja/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Za naše opcije plaćanja putem interneta, plaćate 2,50 % po transakciji.",
+          "url": "https://www.sumup.com/hr-hr/online-placanja/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/hr-hr/",
+        "https://www.sumup.com/hr-hr/online-placanja/",
+        "https://help.sumup.com/hr-HR/sections/5xqOcqueHnUjWTyp5loSAh-online-store",
+        "https://help.sumup.com/hr-HR/articles/2e2BybR2UdkUcCcKaspr5J-internetska-trgovina-preuzimanje"
+      ],
+      "note": "Generic online store, not food-specific: no Croatian page names restaurants or food (Order & Pay is shown only on the UK site). Pickup is by location the customer picks; no pickup time is mentioned, so ahead = partial. /hr-hr/internetska-trgovina/ is 404; the pickup article body did not load (title only: 'Načini preuzimanja u Internetskoj trgovini'). Order quote is the article summary shown in the help-centre section list."
+    }
+  ],
+  "notes": "No Croatian food-truck ordering tool found; searches returned mostly Wolt/Glovo listings (excluded), single-restaurant apps (Gustico, Hvar = one restaurant's own app, not a tool; Dobartek = consumer ordering app, own site not checked) and WordPress plugins. Anolla recorded as food_truck on the strength of 'ulični punkt s hranom' and festival-catering wording; it is booking-first with its own consumer app, so a reviewer may prefer nearest_local or excluding it. Its paid feature prices are not shown on any page read. SumUp is the only big till player confirmed with a Croatian site and online store with pickup; no food-specific Croatian page. Zettle not checked (not needed; 2 eligible found). UpMenu has no Croatian site (/hr/ 404), prices USD only, not recorded. Restaumatic not checked."
+}

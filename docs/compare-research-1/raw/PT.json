@@ -1,0 +1,457 @@
+{
+ "country": "PT",
+ "researched_on": "2026-11-24",
+ "searches": [
+  "food truck encomendas online app Portugal",
+  "sistema de encomendas online restaurante take-away levantamento sem comissões preço mensal",
+  "plataforma encomendas online restaurantes Portugal take-away sem comissões software preços €/mês",
+  "Kitch restaurantes loja online encomendas take-away preços planos",
+  "software pedidos online food truck eventos festivais levantamento Portugal encomendar antecipadamente QR",
+  "\"encomendas online\" restaurante \"levantamento\" \"hora\" site próprio software Portugal planos \"IVA\" €",
+  "ZoneSoft OR Weevi OR Vendus \"encomendas online\" restaurante take-away loja online clientes encomendam",
+  "menu digital com encomendas take-away e entrega para restaurantes portugueses sem comissões subscrição mensal €",
+  "alternativa Glovo Uber Eats restaurante site próprio encomendas take-away Portugal software português planos preços",
+  "\"hora de levantamento\" encomendas online restaurante software para restaurantes planos"
+ ],
+ "vendors": [
+  {
+   "name": "DineEasy",
+   "website": "https://www.dineeasy.app",
+   "stored_id_prefix": "b030b97d",
+   "focus": "food_truck",
+   "verdict": "not_relevant",
+   "reason": "No Portuguese pages (sitemap lists only en/de/fr/it; /pt has no content); its food-truck page shows only scan-and-order by printed QR code at the truck, no ordering ahead online or pickup time",
+   "eligibility": {
+    "food_quote": "Set up at the market. Ready before the first customer.",
+    "food_url": "https://www.dineeasy.app/en/solutions/food-trucks"
+   },
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.dineeasy.app/pt/solutions/food-trucks",
+    "https://www.dineeasy.app/pt",
+    "https://www.dineeasy.app/sitemap.xml",
+    "https://www.dineeasy.app/en/solutions/food-trucks"
+   ],
+   "note": "/pt/solutions/food-trucks returns 404; /pt shows only a 'Dashboard - pt' title. Food-truck page: \"DineEasy gets you live in under five minutes with a printed QR code and a phone.\" It says \"Built for restaurants around Europe\" but names no Portugal presence. Matches today's IT finding. Pricing (2.5% per online order, no monthly fee) recorded in IT.json; not repeated here."
+  },
+  {
+   "name": "MENU TIGER",
+   "website": "https://www.menutiger.com",
+   "stored_id_prefix": "d00d6bfd",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "European-Portuguese site (/pt) where customers order and pay on the restaurant's own website, takeaway supported, 'Agendamento de encomendas' listed; weak fit: prices only in USD, Portugal never named, no explicit pickup-time sentence (like NO/GR)",
+   "eligibility": {
+    "order_quote": "O MENU TIGER suporta pedidos para consumo no local e takeaway.",
+    "order_url": "https://www.menutiger.com/pt/faq",
+    "country_quote": "Os pedidos aparecem no ecrã da cozinha segundos após o envio.",
+    "country_url": "https://www.menutiger.com/pt/features/online-food-order-system"
+   },
+   "plans": [
+    {
+     "plan_name": "Free",
+     "currency": "USD",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "US$0/mês",
+     "url": "https://www.menutiger.com/pt/pricing",
+     "note": "USD only on the Portuguese page, no € and no currency selector; free tier limited to 75 orders a month (per page summary)."
+    },
+    {
+     "plan_name": "Regular",
+     "currency": "USD",
+     "price_major": 17,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "US$17/mês",
+     "url": "https://www.menutiger.com/pt/pricing",
+     "note": "USD only. FAQ gives '$14/ mo (faturação anual)' for Regular billed yearly."
+    },
+    {
+     "plan_name": "Advanced",
+     "currency": "USD",
+     "price_major": 46,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "US$46/mês",
+     "url": "https://www.menutiger.com/pt/pricing",
+     "note": "USD only. Premium is US$119/mês. Add-ons: cloud POS $30/mês, printers $20/mês, white-label domain $29/mês."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "O MENU TIGER suporta pedidos para consumo no local e takeaway.",
+     "url": "https://www.menutiger.com/pt/faq"
+    },
+    {
+     "key": "preorder",
+     "value": "partial",
+     "quote": "Agendamento de encomendas",
+     "url": "https://www.menutiger.com/pt/pricing"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Os pedidos aparecem no ecrã da cozinha segundos após o envio.",
+     "url": "https://www.menutiger.com/pt/features/online-food-order-system"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "Sim, pode gerir restaurantes com várias localizações no painel MENU TIGER.",
+     "url": "https://www.menutiger.com/pt/faq"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "US$17/mês",
+     "url": "https://www.menutiger.com/pt/pricing"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "Sem comissão por pedido. Sem taxa de configuração. Sem contratos",
+     "url": "https://www.menutiger.com/pt/features/online-food-order-system"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.menutiger.com/pricing",
+    "https://www.menutiger.com/pt/pricing",
+    "https://www.menutiger.com/pt/features/online-food-order-system",
+    "https://www.menutiger.com/pt/faq"
+   ],
+   "note": "Country evidence is the European-Portuguese wording only (ecrã); pricing page also says 'Os clientes pedem e pagam através do website do restaurante.' 'Agendamento de encomendas' is only a row label in the pricing comparison table (which plans tick it could not be read), so preorder is partial. White-label domain is a paid add-on ('$29/mês') but no sentence was captured, so domain is left not_mentioned. Delivery only via Zapier ('Os serviços de entrega só são possíveis através de integração com Zapier.'). Food trucks only as a blog link title."
+  },
+  {
+   "name": "DISH (METRO)",
+   "website": "https://www.dish.co/PT/pt/",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Portuguese DISH site offers reservations, Pay Now, website and a POS; no online-ordering product in Portugal (/PT/pt/dish-order/ returns 404) and no € prices shown",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.dish.co/PT/pt/",
+    "https://www.dish.co/PT/pt/dish-order/"
+   ],
+   "note": "Checked because DISH Order exists in other METRO countries."
+  },
+  {
+   "name": "GloriaFood",
+   "website": "https://www.gloriafood.com",
+   "stored_id_prefix": "dc1d8f05",
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "USD-only global site; its only Portuguese pages are Brazilian (/pt-br/precos), Portugal not named, no € prices; end of life announced elsewhere on its site (see IE-NZ/TH files)",
+   "eligibility": {
+    "order_quote": "Allow your customers to order now and schedule a specific fulfillment time for pickup or delivery.",
+    "order_url": "https://www.gloriafood.com/pricing"
+   },
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.gloriafood.com/pricing",
+    "https://www.gloriafood.com/pt/pricing"
+   ],
+   "note": "Ordering itself is free ('No commission per order', 'No monthly fee'); paid add-ons in USD (Online / Credit Card Payment Service US$ 29 per month). /pt/pricing 404; language menu 'Português' links to /pt-br/precos. A Portuguese article called it 'GlobalFood Menu' with 25€/mês, but that is not the vendor's site, so not used."
+  },
+  {
+   "name": "Flipdish",
+   "website": "https://www.flipdish.com",
+   "stored_id_prefix": "5b50f4e3",
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "No Portugal site: /pt serves the English Irish/UK page (Dublin address, 'the UK and Ireland's largest food delivery fleets'), no Portuguese, no € prices, Portugal not named",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.flipdish.com/pt"
+   ],
+   "note": ""
+  },
+  {
+   "name": "UpMenu",
+   "website": "https://www.upmenu.com",
+   "stored_id_prefix": "ef9dcbd8",
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "No Portuguese site found (/pt/ returns 404); nothing on its own pages read shows it serves Portugal",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.upmenu.com/pt/"
+   ],
+   "note": "Only one page tried; eligible in PL."
+  },
+  {
+   "name": "Order Tiger",
+   "website": "https://www.ordertiger.com",
+   "stored_id_prefix": "aed7bf67",
+   "focus": "food_truck",
+   "verdict": "not_relevant",
+   "reason": "no presence in Portugal shown on its own site (no Portuguese pages, Portugal never named; \"works worldwide\" only) — left out by the coordinator under \"the tool must plausibly serve this country\". own food-truck page with order ahead, pickup time slots and capacity limits; EU (EUR) price region and EU card fee on its pricing page. Weak presence: Portugal never named, no Portuguese language (EN/ES/SV/AR/DE); presence rests on 'works worldwide' + EU/EUR pricing, as in IE",
+   "eligibility": {
+    "food_quote": "Built for food trucks",
+    "food_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+    "order_quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+    "order_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+    "country_quote": "with plans from £59 in the UK and €59 in the EU",
+    "country_url": "https://www.ordertiger.com/online-ordering-system-pricing"
+   },
+   "plans": [
+    {
+     "plan_name": "Online Ordering",
+     "currency": "EUR",
+     "price_major": 59,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "with plans from £59 in the UK and €59 in the EU",
+     "url": "https://www.ordertiger.com/online-ordering-system-pricing",
+     "note": "Plan cards render in USD (Online Ordering $69/month, EPOS $49, Online Ordering + EPOS $109, Growth $299); € shown only as the 'plans from' figure, which matches Online Ordering ($69). 'No contract, no setup fee.' VAT not stated. EU card processing 1.5% + €0.25 per transaction."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+     "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Scheduled orders for busy days and events.",
+     "url": "https://www.ordertiger.com"
+    },
+    {
+     "key": "capacity",
+     "value": "yes",
+     "quote": "Pickup time slots and capacity limits let the crew prep orders in advance.",
+     "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+    },
+    {
+     "key": "schedule",
+     "value": "yes",
+     "quote": "Pin today’s location, take orders before the queue forms and tell everyone where you will be tomorrow.",
+     "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "yes",
+     "quote": "Monthly social media packages",
+     "url": "https://www.ordertiger.com"
+    },
+    {
+     "key": "kds",
+     "value": "yes",
+     "quote": "Tickets appear on the kitchen display sorted by prep time, so the pass never guesses.",
+     "url": "https://www.ordertiger.com"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "yes",
+     "quote": "Counter and online orders in one queue with a printer.",
+     "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+    },
+    {
+     "key": "vans",
+     "value": "yes",
+     "quote": "Every location, every channel, one login",
+     "url": "https://www.ordertiger.com"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "A menu on your own domain and in the App Store and Google Play, under your brand.",
+     "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "Plans are a flat monthly fee per location, with no commission on orders and no contract",
+     "url": "https://www.ordertiger.com"
+    },
+    {
+     "key": "perorder",
+     "value": "no",
+     "quote": "Plans are a flat monthly fee per location, with no commission on orders and no contract",
+     "url": "https://www.ordertiger.com"
+    },
+    {
+     "key": "cardfee",
+     "value": "yes",
+     "quote": "Online card processing on every plan is 1.5% + €0.25 per transaction.",
+     "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+    }
+   ],
+   "check_urls": [
+    "https://www.ordertiger.com",
+    "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+    "https://www.ordertiger.com/online-ordering-system-pricing"
+   ],
+   "note": "Not in the stored list given for PT; found via today's IE-NZ file. Schedule quote uses the curly apostrophe (today’s) as in IE-NZ.json; one page read showed a straight one. Footer: 'Online ordering, EPOS and marketing for restaurants, takeaways and food businesses worldwide.' WhatsApp only as an unlabeled footer icon (not counted)."
+  },
+  {
+   "name": "SumUp",
+   "website": "https://www.sumup.com/pt-pt/",
+   "stored_id_prefix": "d0eb16fa",
+   "focus": "pos",
+   "verdict": "eligible",
+   "reason": "SumUp Portugal's free online store (pt-pt site, € prices) offers in-store pickup; generic shop builder, nothing food-specific and no pickup-time choice: weak fallback (same basis as GR/LU/NO)",
+   "eligibility": {
+    "order_quote": "Ofereça aos clientes envio, recolha na loja e locais de prestação do serviço.",
+    "order_url": "https://www.sumup.com/pt-pt/loja-online/",
+    "country_quote": "Crie uma loja online gratuita e leve o seu negócio ainda mais longe.",
+    "country_url": "https://www.sumup.com/pt-pt/loja-online/"
+   },
+   "plans": [
+    {
+     "plan_name": "Loja online",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 2.75,
+     "per_order_fixed_major": null,
+     "setup_major": 0,
+     "quote": "0 €",
+     "url": "https://www.sumup.com/pt-pt/loja-online/",
+     "note": "Page shows '0 €' next to 'Custos mensais' and '0 €' next to 'Crie uma loja online'; '2,75%' next to 'Taxa de transação competitiva' (per online sale). VAT not stated."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Ofereça aos clientes envio, recolha na loja e locais de prestação do serviço.",
+     "url": "https://www.sumup.com/pt-pt/loja-online/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "yes",
+     "quote": "Domínios personalizados",
+     "url": "https://www.sumup.com/pt-pt/loja-online/"
+    },
+    {
+     "key": "monthly",
+     "value": "no",
+     "quote": "Monte a sua loja online sem custos de subscrição ou taxas escondidas.",
+     "url": "https://www.sumup.com/pt-pt/loja-online/"
+    },
+    {
+     "key": "perorder",
+     "value": "partial",
+     "quote": "Taxa de transação competitiva",
+     "url": "https://www.sumup.com/pt-pt/loja-online/"
+    },
+    {
+     "key": "cardfee",
+     "value": "yes",
+     "quote": "Taxa de transação competitiva",
+     "url": "https://www.sumup.com/pt-pt/loja-online/"
+    }
+   ],
+   "check_urls": [
+    "https://www.sumup.com/pt-pt/loja-online/"
+   ],
+   "note": "Social: FAQ says the store can be shared 'ou em qualquer outra aplicação de redes sociais ou de mensagens' — sharing links, not social posts, so not counted."
+  }
+ ],
+ "notes": "No Portuguese food-truck / roulotte / market ordering tool found; searches returned mostly marketplaces (Glovo, Uber Eats, Please/noMenu, Comer em Casa — excluded) and old news (Kitch, bought by Glovo 2022; eStart 2021). Only food-truck tool: Order Tiger (global, EU/EUR pricing, Portugal not named). Restaurant fallback MENU TIGER has a European-Portuguese site but USD prices only. SumUp added as the till fallback because it is the only one with an € price on a Portuguese page; it is a generic e-shop. Square/Zettle/Toast/Clover/Lightspeed not checked (not known to sell online ordering in Portugal). Vendus (Portuguese POS) appears to have no own online ordering (only a blog about marketplaces) — not opened. Weevi (UK) seen only on directories — not opened."
+}

@@ -1,0 +1,278 @@
+{
+  "country": "FI",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "ruokarekka ennakkotilaus sovellus",
+    "verkkotilausjärjestelmä ravintola nouto kuukausimaksu",
+    "tilausjärjestelmä ruokarekalle tapahtumiin etukäteen tilaus noutoaika",
+    "ravintolan oma verkkotilaus ilman provisiota noutotilaukset hinnasto €/kk",
+    "\"ruokarekat\" tilausjärjestelmä verkkotilaukset nouto",
+    "suomalainen verkkotilauspalvelu ravintoloille ennakkotilaus noutoaika kahvila hinnat"
+  ],
+  "vendors": [
+    {
+      "name": "Food4you",
+      "website": "https://food4you.fi",
+      "stored_id_prefix": "f6a04474",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Finnish restaurant online ordering on the restaurant's own site with pre-ordering and queue-free pickup; EUR prices excl. VAT; no food-truck wording found",
+      "eligibility": {
+        "order_quote": "Ennakkoon tilaaminen ja jonoton nouto",
+        "order_url": "https://food4you.fi",
+        "country_quote": "Food4you hyödyntää suomalaista Paytrail maksupalvelua, joka tarjoaa laajan valikoiman maksutapoja.",
+        "country_url": "https://food4you.fi/ukk/"
+      },
+      "plans": [
+        {
+          "plan_name": "Startti",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 3,
+          "per_order_fixed_major": null,
+          "setup_major": 490,
+          "quote": "0€ / kk",
+          "url": "https://food4you.fi/#hinnasto",
+          "note": "Commission 'Komissio: 3% / tilaus'; prices '+ Alv 25,5%'. Set-up 'Perus Käyttöönotto' 490€ + Alv (extended set-up 790€); set-up appears to be separate from the plan, not confirmed per plan."
+        },
+        {
+          "plan_name": "Aktiivinen",
+          "currency": "EUR",
+          "price_major": 39,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 1.8,
+          "per_order_fixed_major": null,
+          "setup_major": 490,
+          "quote": "39€ / kk",
+          "url": "https://food4you.fi/#hinnasto",
+          "note": "Commission 'Komissio: 1,8% / tilaus'; '+ Alv 25,5%'. Set-up as for Startti."
+        },
+        {
+          "plan_name": "Kasvu",
+          "currency": "EUR",
+          "price_major": 89,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 1.2,
+          "per_order_fixed_major": null,
+          "setup_major": 490,
+          "quote": "89€ / kk",
+          "url": "https://food4you.fi/#hinnasto",
+          "note": "Commission 'Komissio: 1,2% / tilaus'; '+ Alv 25,5%'. Set-up as for Startti."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Ennakkoon tilaaminen ja jonoton nouto",
+          "url": "https://food4you.fi"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "taukoja, toimitusaikoja ja tilauskatkoja suoraan hallintapaneelista",
+          "url": "https://food4you.fi/ukk/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Tilaukset tulevat suoraan keittiön tai myyntipisteen näytölle",
+          "url": "https://food4you.fi"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Food4you toimii ravintolan omassa verkkoympäristössä ilman välikäsiä.",
+          "url": "https://food4you.fi/ukk/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Palvelun perushinta muodostuu valitun paketin mukaan 0 – 89 €/kk + komissio + alv.",
+          "url": "https://food4you.fi/ukk/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Komissio: 3% / tilaus",
+          "url": "https://food4you.fi/#hinnasto"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://food4you.fi",
+        "https://food4you.fi/ukk/"
+      ]
+    },
+    {
+      "name": "Creavo Order",
+      "website": "https://creavo.fi",
+      "stored_id_prefix": "34a72bd1",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "table ordering by tablet only (38 € per table per month); no online ordering ahead or pickup on its own site",
+      "eligibility": {
+        "order_quote": "Asiakas selaa menua, valitsee annokset ja lähettää tilauksen suoraan pöydästä tabletilla.",
+        "order_url": "https://creavo.fi/creavo-order"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://creavo.fi",
+        "https://creavo.fi/creavo-order"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/fi-fi/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "SumUp Verkkokauppa (online store) on its Finnish site offers orders for pickup; 0 € a month plus 1,49 % per order; no food wording on the page",
+      "eligibility": {
+        "order_quote": "Tarjoa tilauksille toimitus tai nouto tai myy paikan päällä suoritettavia palveluita.",
+        "order_url": "https://www.sumup.com/fi-fi/verkkokauppa/",
+        "country_quote": "Avaa verkkokauppa ilmaiseksi – ei tilausmaksuja eikä piilokuluja.",
+        "country_url": "https://www.sumup.com/fi-fi/verkkokauppa/"
+      },
+      "plans": [
+        {
+          "plan_name": "Verkkokauppa",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 1.49,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Avaa verkkokauppa ilmaiseksi – ei tilausmaksuja eikä piilokuluja.",
+          "url": "https://www.sumup.com/fi-fi/verkkokauppa/",
+          "note": "Page figures: 0 € Verkkokaupan perustaminen, 0 € Kuukausimaksu, 1,49 % Kilpailukykyinen välityspalkkio. Finnish-language fi-fi page. Generic online store, not food-specific; no time-slot wording."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Voit myydä verkkokaupan nimikkeitä helposti myös Instagramissa.",
+          "url": "https://www.sumup.com/fi-fi/verkkokauppa/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Mukautetut verkkotunnukset",
+          "url": "https://www.sumup.com/fi-fi/verkkokauppa/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Avaa verkkokauppa ilmaiseksi – ei tilausmaksuja eikä piilokuluja.",
+          "url": "https://www.sumup.com/fi-fi/verkkokauppa/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Kilpailukykyinen välityspalkkio",
+          "url": "https://www.sumup.com/fi-fi/verkkokauppa/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/fi-fi/verkkokauppa/"
+      ]
+    },
+    {
+      "name": "Zettle (PayPal Point of Sale)",
+      "website": "https://www.zettle.com/fi",
+      "stored_id_prefix": "aa8cf034",
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Finnish site shows in-person card payments, payment links and integrations only; no online ordering ahead or pickup offered",
+      "eligibility": {
+        "country_quote": "Ei sopimuksia tai toistuvia maksuja.",
+        "country_url": "https://www.zettle.com/fi/hinnoittelustamme"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.zettle.com/fi",
+        "https://www.zettle.com/fi/hinnoittelustamme"
+      ]
+    }
+  ],
+  "notes": "No Finnish food-truck / ruokarekka ordering tool found: six searches returned only Jotform, MenuTiger, comparison/listing sites and Wolt (excluded). Food4you is the only Finland-specific restaurant tool confirmed (no food-truck wording; set-up 490 € or 790 € + alv, recorded as 490 on each plan). Food4you price quotes are the short plan figures (\"39€ / kk\"); the page reader gave them as separate fragments, so the checker should confirm their exact spacing. Creavo Order is table ordering only (not_relevant). SumUp counted as pos via its Finnish online store with pickup (0 €/kk, 1,49 %), which is a generic web shop with no food wording. Zettle Finland shows no online ordering. \"Restis\" came up in a search summary but restis.fi does not resolve; GastroSprint appeared only on a comparison site and was not checked (its own site and Finnish presence unknown)."
+}

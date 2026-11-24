@@ -1,0 +1,569 @@
+{
+  "countries": [
+    "CY",
+    "MT"
+  ],
+  "country": "CY-MT",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "online ordering system restaurant Cyprus takeaway commission free",
+    "online ordering system Malta restaurant pickup own website",
+    "Malta food truck pre-order app events street food ordering platform",
+    "Maltese company online ordering software for restaurants takeaways click and collect price per month",
+    "σύστημα online παραγγελιών εστιατόριο Κύπρος take away χωρίς προμήθεια",
+    "Orpay order and pay app restaurants Cyprus",
+    "\"Malta\" restaurant online ordering platform commission-free direct orders pickup local startup",
+    "sumup.com Cyprus online store (sumup.com only)",
+    "storekit Malta order and pay Sixteen",
+    "καντίνα online παραγγελίες εφαρμογή Κύπρος παραλαβή εκδηλώσεις",
+    "Malta takeaway online ordering website for restaurants pricing € per month order online collection",
+    "Malta online ordering restaurants (flipdish/upmenu/gonnaorder/orderyoyo/lightspeed only)",
+    "Sliema pizzeria \"order online\" collection \"powered by\"",
+    "Malta-based restaurant ordering app company pre-order OR click and collect Gozo cafes software"
+  ],
+  "vendors": [
+    {
+      "name": "Wiiz Eat",
+      "website": "https://wiizeat.com",
+      "stored_id_prefix": "430c8cb2",
+      "country": "CY",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Cyprus-based (+357) commission-free restaurant ordering link/QR with delivery or pickup; Greek-language site, EUR prices excl. VAT; pays per order, no percentage.",
+      "eligibility": {
+        "order_quote": "delivery με τους δικούς σου διανομείς ή παραλαβή",
+        "order_url": "https://wiizeat.com/systima-paraggelion-estiatoriou/",
+        "country_quote": "19–25% προμήθεια στις παραγγελίες με delivery, όπως αναφέρουν εστιατόρια στην Κύπρο",
+        "country_url": "https://wiizeat.com/business/"
+      },
+      "plans": [
+        {
+          "plan_name": "Κατάστημα (online store)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": null,
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.15,
+          "setup_major": 250,
+          "quote": "€0,15 ανά παραγγελία συν εφάπαξ €250 εγκατάσταση — χωρίς ποσοστιαία προμήθεια, ποτέ.",
+          "url": "https://wiizeat.com/business/",
+          "note": "No monthly fee shown for the store; €0.15 per accepted order + €250 one-off setup, so price_major 0 with the fees and period left null. VAT: 'Οι τιμές δεν περιλαμβάνουν ΦΠΑ.'"
+        },
+        {
+          "plan_name": "Εφαρμογή (own app add-on)",
+          "currency": "EUR",
+          "price_major": 85,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 950,
+          "quote": "Η εφαρμογή είναι προαιρετικό πρόσθετο (+€85/μήνα + €950 εγκατάσταση).",
+          "url": "https://wiizeat.com/business/",
+          "note": "Optional add-on on top of the store (store per-order fee and €250 setup presumably still apply). The stored 8,500 EUR/month is 100x too high: the page shows €85/month (major units). €950 one-off setup."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Πίνακας κουζίνας σε πραγματικό χρόνο & αναφορές εκκαθάρισης.",
+          "url": "https://wiizeat.com/business/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "partial",
+          "quote": "Η εφαρμογή είναι προαιρετικό πρόσθετο (+€85/μήνα + €950 εγκατάσταση).",
+          "url": "https://wiizeat.com/business/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "€0,15 ανά παραγγελία. Τέλος.",
+          "url": "https://wiizeat.com/business/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://wiizeat.com/",
+        "https://wiizeat.com/business/",
+        "https://wiizeat.com/systima-paraggelion-estiatoriou/"
+      ],
+      "note": "Pickup is offered but the pages read never mention ordering for a chosen time or pre-orders (only opening hours), so ahead/preorder are not_mentioned. Messaging channel shown is Viber, not WhatsApp. Homepage also names 'Κύπρος & Ελλάδα' (reader summary; not used as a quote)."
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/el-cy/",
+      "stored_id_prefix": "d0eb16fa",
+      "country": "CY",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "SumUp Cyprus (el-cy, country selector Κύπρος) free online store offers in-store pickup and delivery; € prices. Generic shop builder, not food-specific — weak fit.",
+      "eligibility": {
+        "order_quote": "Προσφέρετε στους πελάτες παραδόσεις, παραλαβές από το κατάστημα και τοποθεσίες εξυπηρέτησης.",
+        "order_url": "https://www.sumup.com/el-cy/online-katastima/",
+        "country_quote": "Ηλεκτρονικό κατάστημα με SumUp: δωρεάν και εύκολα",
+        "country_url": "https://www.sumup.com/el-cy/online-katastima/"
+      },
+      "plans": [
+        {
+          "plan_name": "Ηλεκτρονικό κατάστημα (Online Store)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.75,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0 € Μηνιαία κόστη",
+          "url": "https://www.sumup.com/el-cy/online-katastima/",
+          "note": "Page shows '0 €' over 'Μηνιαία κόστη' and '0 €' to create the store; '2,75%' labelled 'Ανταγωνιστικό τέλος συναλλαγής' per online sale. VAT not stated. The country quote is the page's Greek top line on the /el-cy/ path; the country selector highlights Κύπρος (reader observation)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Προσφέρετε στους πελάτες παραδόσεις, παραλαβές από το κατάστημα και τοποθεσίες εξυπηρέτησης.",
+          "url": "https://www.sumup.com/el-cy/online-katastima/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Εξατομικευμένοι τομείς",
+          "url": "https://www.sumup.com/el-cy/online-katastima/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Ανοίξτε το ηλεκτρονικό σας κατάστημα χωρίς έξοδα συνδρομής ή κρυφά τέλη.",
+          "url": "https://www.sumup.com/el-cy/online-katastima/"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "Ανταγωνιστικό τέλος συναλλαγής",
+          "url": "https://www.sumup.com/el-cy/online-katastima/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Ανταγωνιστικό τέλος συναλλαγής",
+          "url": "https://www.sumup.com/el-cy/online-katastima/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/el-cy/online-katastima/",
+        "https://www.sumup.com/en-cy/online-store/"
+      ],
+      "note": "en-cy/online-store/ is 404; the Cyprus site is Greek (el-cy). No restaurant/food wording on the page."
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/en-mt/",
+      "stored_id_prefix": "d0eb16fa",
+      "country": "MT",
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "SumUp Malta's online store page (en-mt) mentions only shipping methods — no pickup, collection or ordering ahead, so it fails the ordering rule for Malta on today's page.",
+      "eligibility": {
+        "country_quote": "Create your online store for free – no subscription costs or hidden fees.",
+        "country_url": "https://www.sumup.com/en-mt/online-store/"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.sumup.com/en-mt/online-store/"
+      ],
+      "note": "Page is SumUp's Malta site (en-mt path, footer 'Malta'); prices '€0' monthly and '2.5 %' transaction fee. Only 'Add shipping methods' found; none of pickup/collect/delivery/in-store. Re-check if SumUp adds collection wording to the Malta page."
+    },
+    {
+      "name": "Deliwee",
+      "website": "https://deliwee.com",
+      "stored_id_prefix": null,
+      "country": "MT",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Found by search as a Maltese delivery company said to give restaurants a website and online ordering; its site refused the connection (ECONNREFUSED) for both www and bare domain, so nothing could be checked. May be a delivery marketplace.",
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.deliwee.com",
+        "https://deliwee.com"
+      ]
+    },
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": "98c064da",
+      "country": "CY",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK restaurant/takeaway ordering platform with scheduled pickup pre-orders; its own supported-regions doc lists Cyprus (English, EUR payments). Prices shown only in GBP.",
+      "eligibility": {
+        "order_quote": "Scheduled pre-orders (pickup & delivery slots)",
+        "order_url": "https://storekit.com/pricing",
+        "country_quote": "Cyprus, Estonia, Latvia, Lithuania, Luxembourg, Malta, Slovakia, Slovenia, Bulgaria",
+        "country_url": "https://storekit.com/docs/getting-started/supported-regions"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Freeper month",
+          "url": "https://storekit.com/pricing",
+          "note": "Only GBP prices on the site, no EUR and no currency switcher, although EUR payments are supported for this country. 'All prices are per location and exclude VAT.' Every plan adds a flat per-order rate (amount not shown)."
+        },
+        {
+          "plan_name": "Connect",
+          "currency": "GBP",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£49per month",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only (no EUR shown). Adds own domain. Plus a flat per-order rate (amount not shown)."
+        },
+        {
+          "plan_name": "Grow",
+          "currency": "GBP",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "£99per month",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only (no EUR shown). Setup fee '£199 per location'. Plus a flat per-order rate (amount not shown)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Capacity controls (slot limits)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Stories (Instagram-style content on the store)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen display (KDS)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "4 or more sites, one dashboard",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Your own domain",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "You pay a monthly fee and a flat per-order rate, never a percentage of the basket.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Every plan adds a flat per-order rate, never a commission, plus unlimited items and your own customer data.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://storekit.com/pricing",
+        "https://storekit.com/docs/getting-started/supported-regions",
+        "https://storekit.com/post/sixteen-has-partnered-with-storekit-to-bring-order-and-pay-to-malta-lightspeed-uk"
+      ],
+      "note": "Country quote is the Euro row of the Supported Currencies table in the supported-regions doc; the Supported Countries table also has rows for Cyprus and Malta (English, EUR). The 'Sixteen partnered with Storekit to bring order and pay to Malta' post URL now shows generic text that names neither Malta nor Sixteen. Food trucks/markets not mentioned on the pricing page. Card rates given only as tiers, so cardfee not_mentioned."
+    },
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": "98c064da",
+      "country": "MT",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK restaurant/takeaway ordering platform with scheduled pickup pre-orders; its own supported-regions doc lists Malta (English, EUR payments). Prices shown only in GBP.",
+      "eligibility": {
+        "order_quote": "Scheduled pre-orders (pickup & delivery slots)",
+        "order_url": "https://storekit.com/pricing",
+        "country_quote": "Cyprus, Estonia, Latvia, Lithuania, Luxembourg, Malta, Slovakia, Slovenia, Bulgaria",
+        "country_url": "https://storekit.com/docs/getting-started/supported-regions"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Freeper month",
+          "url": "https://storekit.com/pricing",
+          "note": "Only GBP prices on the site, no EUR and no currency switcher, although EUR payments are supported for this country. 'All prices are per location and exclude VAT.' Every plan adds a flat per-order rate (amount not shown)."
+        },
+        {
+          "plan_name": "Connect",
+          "currency": "GBP",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£49per month",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only (no EUR shown). Adds own domain. Plus a flat per-order rate (amount not shown)."
+        },
+        {
+          "plan_name": "Grow",
+          "currency": "GBP",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "£99per month",
+          "url": "https://storekit.com/pricing",
+          "note": "GBP only (no EUR shown). Setup fee '£199 per location'. Plus a flat per-order rate (amount not shown)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Capacity controls (slot limits)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Stories (Instagram-style content on the store)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen display (KDS)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "4 or more sites, one dashboard",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Your own domain",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "You pay a monthly fee and a flat per-order rate, never a percentage of the basket.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Every plan adds a flat per-order rate, never a commission, plus unlimited items and your own customer data.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://storekit.com/pricing",
+        "https://storekit.com/docs/getting-started/supported-regions",
+        "https://storekit.com/post/sixteen-has-partnered-with-storekit-to-bring-order-and-pay-to-malta-lightspeed-uk"
+      ],
+      "note": "Country quote is the Euro row of the Supported Currencies table in the supported-regions doc; the Supported Countries table also has rows for Cyprus and Malta (English, EUR). The 'Sixteen partnered with Storekit to bring order and pay to Malta' post URL now shows generic text that names neither Malta nor Sixteen. Food trucks/markets not mentioned on the pricing page. Card rates given only as tiers, so cardfee not_mentioned."
+    },
+    {
+      "name": "KantinApp",
+      "website": "https://kantinapp.com.cy",
+      "stored_id_prefix": null,
+      "country": "CY",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "Found via the Cyprus App Store (developer Opium Works Ltd; description: 'Kantinapp facilitates the fast, reliable and effective sale of food and beverages in time-sensitive situations.'). Its own sites kantinapp.com.cy and web.kantinapp.com.cy do not resolve (DNS ENOTFOUND), so nothing could be checked on the vendor's site.",
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://apps.apple.com/cy/app/kantinapp/id1616642433",
+        "https://kantinapp.com.cy",
+        "https://web.kantinapp.com.cy"
+      ]
+    }
+  ],
+  "notes": "No food-truck / market / event ordering tool with a readable own site was found for either country (KantinApp, Cyprus, has dead domains). CY: 3 eligible — Wiiz Eat (Cyprus-based, €0.15/order + €250 setup; own app add-on is €85/month + €950 setup, so the stored 8,500 EUR/month is 100x too high), SumUp el-cy online store (pickup, €0/month, 2.75%), Storekit (supported-regions doc lists Cyprus with EUR payments, but prices only in GBP). MT: only Storekit is eligible, and its prices are GBP, not EUR; SumUp's Malta online-store page shows shipping only (no pickup) so it is recorded not_relevant for MT; Deliwee (Maltese delivery company) refused connections. Malta's restaurant ordering appears dominated by Wolt/Bolt Food (excluded). Greek tools checked for Cyprus and left out because their own sites do not name Cyprus: Spevdo (spevdo.gr/el/ names only Athens/Greece; prices still load by script) and Worldline Greece ordering (no Cyprus/Malta on the page; €12.99/€19.99/€24.99 per month excl. VAT). Also looked at and left out as not shown to serve CY/MT: LivePepper (country list UK/IE, US, AU, FR, IT; no Malta in portfolio pages read), GonnaOrder (pricing page names neither country, amounts not in page text), Lightspeed Order Anywhere (availability list per search excludes Malta; not fetched), Maltix (help article 404, maltix.com empty), Orpay (Cypriot consumer app found only via App Store; looks like a venue-discovery/order app, own site not checked). Storekit entries are duplicated per country (same evidence) so each country row can be matched. Wiiz Eat's ahead/preorder are not_mentioned: pickup is offered but no ordering-for-a-time wording was found."
+}

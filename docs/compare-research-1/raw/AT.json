@@ -1,7 +1,10 @@
 {
   "country": "AT",
   "researched_on": "2026-11-24",
-  "searches": [],
+  "searches": [
+    "Foodtruck Vorbestellung online Österreich Bestellsystem",
+    "Online Bestellsystem Gastronomie Österreich Abholung ohne Provision"
+  ],
   "vendors": [
     {
       "name": "GASTRODIGITAL",
@@ -119,7 +122,516 @@
         "https://gastro.digital/preise/",
         "https://gastro.digital/bestellsystem/"
       ]
+    },
+    {
+      "name": "Liefersoft",
+      "website": "https://liefersoft.de",
+      "stored_id_prefix": "79fcc90d",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "gastro POS suite whose own site names Austria and food trucks; own webshop with pre-orders and pickup time windows (webshop from GOLD); net EUR prices (German site, no Austria-specific price)",
+      "eligibility": {
+        "food_quote": "Über 3.000 Betriebe in Deutschland, Österreich, der Schweiz und Spanien — vom Foodtruck bis zur Sterneküche.",
+        "food_url": "https://liefersoft.de",
+        "order_quote": "Vorbestellung, Lieferung und Abholung mit eigenen Zeitfenstern",
+        "order_url": "https://liefersoft.de",
+        "country_quote": "Über 3.000 Betriebe in Deutschland, Österreich, der Schweiz und Spanien — vom Foodtruck bis zur Sterneküche.",
+        "country_url": "https://liefersoft.de"
+      },
+      "plans": [
+        {
+          "plan_name": "GOLD",
+          "currency": "EUR",
+          "price_major": 129,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.09,
+          "setup_major": 299,
+          "quote": "Mit Webshop & App · ab 129 €/Mon.",
+          "url": "https://liefersoft.de",
+          "note": "First plan with the webshop (\"Webshop inkl. (eigene Domain, SEO)\"). 129 € is at a 60-month term (\"(bei 60 Mon. Laufzeit)\"); elsewhere the page says \"GOLD ab 149 €/Mon.\" (36-month card). \"Onboarding: 299 € einmalig\". \"Alle Preise zzgl. MwSt. · TSE 10 €/Mon. · Onboarding einmalig\". Webshop and self-order payments \"+ 0,09 € netto je erfolgreicher Zahlung\"; webshop fee is a revenue tier (example \"Staffel 5,0 %\"), tiers not listed, so per_order_pct left null. Stored 129 still matches."
+        },
+        {
+          "plan_name": "STARTUP",
+          "currency": "EUR",
+          "price_major": 39,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "Für Neugründer · 39 €/Mon. · 24 Monate fest",
+          "url": "https://liefersoft.de",
+          "note": "Webshop NOT included in STARTUP (its feature list is POS, QR Order & Pay, delivery-platform integration); the webshop is an add-on (\"Webshop zubuchbar: +100 € Onboarding (einmalig)\"), add-on monthly price not stated. Onboarding 199 € per the reader (not verified verbatim). Stored 39 still matches, but this is not an online-ordering plan on its own."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Vorbestellung, Lieferung und Abholung mit eigenen Zeitfenstern",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Vorbestellungen, Terminbestellungen & Lieferung möglich",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Einmal einstellen — die Kanäle erscheinen in jedem Filial-Webshop und in den Gäste-E-Mails.",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Küchenmonitore je Station, Gangsteuerung und klare Zeiten statt Zuruf.",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "Einfach, schnell und günstig starten: ein Handgerät, mobil bezahlen, Standort wechseln — läuft auch bei schlechtem Netz.",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Kasse, Tisch, Küche, Lieferung, eigener Webshop und Zahlung in einem System.",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Karten und Aktionen zentral ausrollen, Auswertung über alle Standorte in Echtzeit.",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Webshop auf eigener Domain",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "ab 39 € / Monat",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "+ 0,09 € netto je erfolgreicher Zahlung",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Ab 1,19 % + 0,09 € für EC, Giro & Kreditkarte am Terminal – transparent, ohne versteckte Kosten",
+          "url": "https://liefersoft.de"
+        }
+      ],
+      "check_urls": [
+        "https://liefersoft.de"
+      ]
+    },
+    {
+      "name": "GastroDok",
+      "website": "https://gastrodok.de",
+      "stored_id_prefix": "abd86253",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "gastro templates + ordering software run by a Vienna company (IGCP Capital Partners GmbH, Wien); online pickup orders for a chosen time with capacity logic; Imbiss & Foodtruck solution page; 29 €/month or 290 €/year incl. USt",
+      "eligibility": {
+        "food_quote": "Imbiss und Foodtruck leben von Tempo an der Theke und kleinen Margen pro Portion.",
+        "food_url": "https://gastrodok.de/loesungen/imbiss-foodtruck",
+        "order_quote": "Gäste stellen den Warenkorb zusammen und wählen eine Abholzeit — in Ihrem Dashboard läuft die Bestellung mit allen Positionen ein.",
+        "order_url": "https://gastrodok.de/bestellsystem-gastronomie",
+        "country_quote": "© 2026 GastroDok · GastroDok ist eine Marke der IGCP Capital Partners GmbH, Wien",
+        "country_url": "https://gastrodok.de/bestellsystem-gastronomie"
+      },
+      "plans": [
+        {
+          "plan_name": "Bestellsystem Monatlich",
+          "currency": "EUR",
+          "price_major": 29,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": 0,
+          "quote": "Unbegrenzte Bestellungen — 0 % Provision",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie",
+          "note": "Price card reads \"29 € / Monat\" and \"inkl. USt, zum Laufzeitende kündbar\". \"Alle Preise inklusive Umsatzsteuer. Keine Einrichtungsgebühr, keine Provision pro Bestellung.\" 14-day free trial. Needs the (free) GastroDok QR menu. Stored 29 still matches."
+        },
+        {
+          "plan_name": "Bestellsystem Jährlich",
+          "currency": "EUR",
+          "price_major": 290,
+          "period": "year",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": 0,
+          "quote": "290 € / Jahr",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie",
+          "note": "\"inkl. USt, entspricht zwei Freimonaten\". Stored 24.17 was a derived monthly figure; the page states only the yearly 290 €."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Gäste stellen den Warenkorb zusammen und wählen eine Abholzeit — in Ihrem Dashboard läuft die Bestellung mit allen Positionen ein.",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Pro Fenster legen Sie fest, wie viele Bestellungen Ihre Küche schafft; ist das Fenster voll, wird es nicht mehr angeboten.",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Für getrennte Karten je Standort legen Sie im Pro-Plan bis zu fünf Karten an.",
+          "url": "https://gastrodok.de/loesungen/imbiss-foodtruck"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "14 Tage kostenlos testen — danach automatisch 29 €/Monat",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Alle Preise inklusive Umsatzsteuer. Keine Einrichtungsgebühr, keine Provision pro Bestellung.",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie"
+        },
+        {
+          "key": "cardfee",
+          "value": "no",
+          "quote": "Es gibt keine Auszahlungsfristen, keine Zahlungsdienstleister-Gebühren und keine Rückabwicklung über Dritte.",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie"
+        }
+      ],
+      "check_urls": [
+        "https://gastrodok.de",
+        "https://gastrodok.de/bestellsystem-gastronomie",
+        "https://gastrodok.de/loesungen/imbiss-foodtruck"
+      ]
+    },
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com/de/",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "multi-country ordering platform (German site, EUR fee, food-truck use-case page); its country-terms page lists Austria (Österreich) among the countries where restaurants can register; scheduled pickup orders; no monthly fee, 0,45 € per order paid by the customer",
+      "eligibility": {
+        "food_quote": "Betreiben Sie Ihren Food Truck smarter. Kunden bestellen per Handy während sie warten — kürzere Schlangen, schnellerer Umsatz und bargeldloses Bezahlen ohne teure POS-Hardware.",
+        "food_url": "https://www.foxifood.com/de/anwendungsfalle/food-truck/",
+        "order_quote": "Ermöglichen Sie Ihren Kunden, Bestellungen im Voraus für eine bestimmte Abhol- oder Lieferzeit aufzugeben.",
+        "order_url": "https://www.foxifood.com/de/funktionen/geplante-bestellungen/",
+        "country_quote": "the country addenda below set out the provisions specific to each country where restaurants can register",
+        "country_url": "https://www.foxifood.com/legal/country-terms/"
+      },
+      "plans": [
+        {
+          "plan_name": "Pay-per-Order",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.45,
+          "setup_major": 0,
+          "quote": "Die einzige Gebühr ist eine Bearbeitungsgebühr von 0,45 € pro Bestellung — gleichermaßen bei Karte, Bargeld und Überweisung —, die der Kunde zusätzlich zur Bestellung zahlt.",
+          "url": "https://www.foxifood.com/de/",
+          "note": "Price table: \"Monatliche Gebühr\" 0 €, \"Einrichtungsgebühr\" 0 €, \"Vertragsbindung\" Keine. The 0,45 € is added to the customer's bill, not charged to the business. Stripe card fee extra (typically 1,5 % / 2 % + 0,25 €). Delivery priced by distance. Also a 5 % customer discount (\"Die 5% gehen als Rabatt an den Endkunden.\"). VAT not stated. Stored 0 still matches."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Gäste wählen bei der Bestellung ihre bevorzugte Abhol- oder Lieferzeit. Keine Last-Minute-Hektik mehr.",
+          "url": "https://www.foxifood.com/de/funktionen/geplante-bestellungen/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Nehmen Sie große Catering-Bestellungen Tage oder Wochen im Voraus an. Firmenessen, Geburtstagsfeiern und Events — alles in einem System.",
+          "url": "https://www.foxifood.com/de/funktionen/geplante-bestellungen/"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Sie können verfügbare Zeitfenster festlegen, bestimmte Daten sperren (Feiertage, Wartung) und die Anzahl geplanter Bestellungen pro Zeitfenster begrenzen",
+          "url": "https://www.foxifood.com/de/funktionen/geplante-bestellungen/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Küchenanzeige",
+          "url": "https://www.foxifood.com/de/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Ja! Sie können Ihre eigene Domain (wie pizza-luigi.de) mit automatischem SSL-Zertifikat verbinden.",
+          "url": "https://www.foxifood.com/de/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "FoxiFood hat keine monatliche Gebühr und nimmt keine Provision auf Ihren Umsatz.",
+          "url": "https://www.foxifood.com/de/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Die einzige Gebühr ist eine Bearbeitungsgebühr von 0,45 € pro Bestellung — gleichermaßen bei Karte, Bargeld und Überweisung —, die der Kunde zusätzlich zur Bestellung zahlt.",
+          "url": "https://www.foxifood.com/de/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "* Die Kartengebühr wird direkt vom Zahlungsanbieter (Stripe) berechnet — typisch 1,5% + 0,25 € für Standard-EU-Karten und rund 2% plus 0,25 € für Firmenkarten.",
+          "url": "https://www.foxifood.com/de/"
+        }
+      ],
+      "check_urls": [
+        "https://www.foxifood.com/de/",
+        "https://www.foxifood.com/de/anwendungsfalle/food-truck/",
+        "https://www.foxifood.com/de/funktionen/geplante-bestellungen/",
+        "https://www.foxifood.com/de/funktionen/bestellverwaltung/",
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    },
+    {
+      "name": "gastro25",
+      "website": "https://www.gastro25.de",
+      "stored_id_prefix": "a59dfb20",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "DACH online-ordering shop with a dedicated Food Truck page: online pickup orders for a chosen pickup slot, daily location switch; pricing page tagged de-AT; 69 € per month net, 0 % commission",
+      "eligibility": {
+        "food_quote": "Bestellsystem für Food Trucks — QR-Code scannen, nicht anstehen.",
+        "food_url": "https://gastro25.de/fuer/food-truck",
+        "order_quote": "Bei kurzen Garzeiten (z. B. Bowl in 3 Minuten) sind 5-Minuten-Abholfenster optimal.",
+        "order_url": "https://gastro25.de/fuer/food-truck",
+        "country_quote": "Das Online-Bestellsystem für inhabergeführte Restaurants im DACH-Raum. Eigene Seite, eigene Kunden, null Provision.",
+        "country_url": "https://gastro25.de/preise"
+      },
+      "plans": [
+        {
+          "plan_name": "Gastro25 Komplett",
+          "currency": "EUR",
+          "price_major": 69,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": 0,
+          "quote": "69 € pro Monat. Alles drin. Keine Einrichtungsgebühr, keine Mindestlaufzeit.",
+          "url": "https://gastro25.de/preise",
+          "note": "Card says \"zzgl. MwSt., monatlich kündbar\". First two months free (\"Die ersten zwei Monate sind komplett kostenlos.\"). Includes \"Geplante Bestellungen (Vorbestellung)\". Stored 69 still matches; stored focus could move to food_truck (dedicated Food Truck page)."
+        },
+        {
+          "plan_name": "Business & Ketten",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Auf Anfrage",
+          "url": "https://gastro25.de/preise",
+          "note": "Price on request; several locations under one account. Stored 'hidden' still correct."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Bei kurzen Garzeiten (z. B. Bowl in 3 Minuten) sind 5-Minuten-Abholfenster optimal.",
+          "url": "https://gastro25.de/fuer/food-truck"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Geplante Bestellungen (Vorbestellung)",
+          "url": "https://gastro25.de/preise"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "So weiß der Gast, wo er hinmuss, wenn er den QR scannt.",
+          "url": "https://gastro25.de/fuer/food-truck"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "no",
+          "quote": "Für wirklich abgelegene Standorte (Berge, Festivals ohne Netz) gibt es einen Offline-Modus im Roadmap-Backlog.",
+          "url": "https://gastro25.de/fuer/food-truck"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Mehrere Standorte unter einem Konto",
+          "url": "https://gastro25.de/preise"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Eigene Domain inklusive SSL",
+          "url": "https://gastro25.de/preise"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "69 € pro Monat. Alles drin. Keine Einrichtungsgebühr, keine Mindestlaufzeit.",
+          "url": "https://gastro25.de/preise"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Unlimitierte Bestellungen, null Provision",
+          "url": "https://gastro25.de/preise"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://gastro25.de/",
+        "https://gastro25.de/fuer/food-truck",
+        "https://gastro25.de/preise"
+      ]
+    },
+    {
+      "name": "GastroOnline & Winorder",
+      "website": "https://gastro-online.at",
+      "stored_id_prefix": "a431bf75",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "site in maintenance: https://gastro-online.at/ (and www.) answered HTTP 503 with a 'Wartung' page twice ('Unsere Website wird gerade überarbeitet.'); the page says restaurants' ordering pages keep running, so the product still exists; no price or feature could be read today",
+      "eligibility": {},
+      "plans": [
+        {
+          "plan_name": "Online-Bestellsystem",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://gastro-online.at/",
+          "note": "site in maintenance (503); price could not be read; stored 'hidden' left as is"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://gastro-online.at/"
+      ]
     }
   ],
-  "notes": ""
+  "notes": "Four food-truck tools serve Austria with a price on their own site: GastroDok (actually run by a Vienna company, IGCP Capital Partners GmbH; 29 €/month or 290 €/year incl. USt), gastro25 (DACH; 69 €/month net; pricing page tagged hreflang de-AT), Liefersoft (site names Österreich; GOLD with webshop ab 129 €/month net at 60 months, 299 € onboarding), FoxiFood (Austria listed on its country-terms page; 0 €/month, 0,45 € per order paid by the customer). GASTRODIGITAL is a restaurant tool that says only 'DACH-Raum' (99 €/month flat or 0,49 € per order; VAT not stated). For these five, prices, features and eligibility quotes are carried over from today's DE check (raw/DE.json, same pages, same day); for AT only the country evidence was fetched new, and the prices pages of GASTRODIGITAL, GastroDok and gastro25 were re-read and their price quotes found again. None shows an Austria-specific price; all prices are the German-site EUR prices. Liefersoft quotes come from its JS bundle (single-page app), as noted in DE.json. FoxiFood's country quote is on an English-language legal page; it does not name Austria in the sentence itself, but 'Österreich / Austria' is the first entry in the list right under it. GastroDok's footer quote names only 'Wien'; its JSON-LD (not visible text) says 'für Gastronomiebetriebe in Deutschland, Österreich und der Schweiz' with areaServed DE/AT/CH. GastroOnline & Winorder (stored, Austrian) was in maintenance (HTTP 503) on both tries; marked unreadable, recheck later. Two searches found no other Austria-made pre-order tool with an own-site price (results were directories, app stores, marketplaces, and a lockdown-era WKO OÖ 'klickundguat' PDF, not followed). SumUp, Zettle and Lightspeed were not needed and not checked."
 }

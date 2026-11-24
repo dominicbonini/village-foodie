@@ -39,6 +39,7 @@ function build() {
   const problems = []
   const files = fs.existsSync(RAW) ? fs.readdirSync(RAW).filter(f => f.endsWith('.json')).sort() : []
   const vendors = new Map()   // key → merged vendor
+  const hostKey = new Map(), nameKey = new Map()
   const notRelevant = [], unreadable = []
   for (const f of files) {
     let raw
@@ -51,7 +52,11 @@ function build() {
       if (v.verdict !== 'eligible') { unreadable.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: v.reason }); continue }
       const stored = v.stored_id_prefix ? STORED[v.stored_id_prefix] : null
       if (v.stored_id_prefix && !stored) problems.push(`${f} · ${v.name}: stored_id_prefix ${v.stored_id_prefix} is not in stored-ids.json`)
-      const key = stored ? stored.id : (host(v.website) ?? norm(v.name))
+      // one competitor per vendor: a stored id wins; otherwise the same website host (or name) as a vendor already merged
+      const h = host(v.website)
+      const key = stored ? stored.id : (hostKey.get(h) ?? nameKey.get(norm(v.name)) ?? h ?? norm(v.name))
+      if (h && !hostKey.has(h)) hostKey.set(h, key)
+      if (!nameKey.has(norm(v.name))) nameKey.set(norm(v.name), key)
       const m = vendors.get(key) ?? { key, stored, name: stored?.name ?? v.name, website: v.website, focus: v.focus, countries: new Map(), answers: new Map(), check_urls: new Set(), evidence: [] }
       if (!FOCUS.includes(v.focus)) problems.push(`${f} · ${v.name}: focus "${v.focus}"`)
       if (v.focus === 'food_truck' && !(v.eligibility?.food_quote && v.eligibility?.order_quote)) problems.push(`${f} · ${v.name}: a food_truck tool needs food_quote and order_quote`)

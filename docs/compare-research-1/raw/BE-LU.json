@@ -1,0 +1,697 @@
+{
+  "countries": [
+    "BE",
+    "LU"
+  ],
+  "researched_on": "2026-11-24",
+  "searches": [
+    "Payli foodtruck online bestellen België",
+    "DigiCommerce digicommerce.be online bestellen",
+    "Vev online bestellen horeca foodtruck België",
+    "Eatch bestelplatform foodtruck België",
+    "Snack Track app food truck pre-order Luxembourg",
+    "commande en ligne click and collect restaurant Luxembourg logiciel",
+    "Luxembourg solution commande en ligne à emporter restaurant food truck tarif par mois",
+    "Rapidle click and collect commerçants tarifs"
+  ],
+  "vendors": [
+    {
+      "name": "Payli",
+      "country": "BE",
+      "website": "https://payli.be",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Belgian till + webshop with a food-truck page; webshop takes pickup orders with time slots; EUR prices excl. btw",
+      "eligibility": {
+        "food_quote": "Mobiel kassasysteem en betaalterminal voor foodtrucks. Pin overal, ook zonder vaste lijn.",
+        "food_url": "https://payli.be/foodtrucks/",
+        "order_quote": "Afhalen en levering met tijdsloten",
+        "order_url": "https://payli.be/foodtrucks/",
+        "country_quote": "Prijzen exclusief btw (voor Belgische ondernemers wordt de btw verlegd).",
+        "country_url": "https://payli.be/foodtrucks/"
+      },
+      "plans": [
+        {
+          "plan_name": "Webshop",
+          "currency": "EUR",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "€49",
+          "url": "https://payli.be/prijsstelling/",
+          "note": "Shown as \"€49\" then \"/maand · maandelijks opzegbaar\" on separate lines; \"Alle prijzen zijn exclusief btw.\"; \"Geen setup-kosten\". Card fee 1,2% per successful Bancontact/debit payment (credit cards: different rate, not stated)."
+        },
+        {
+          "plan_name": "Combo",
+          "currency": "EUR",
+          "price_major": 79,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "€79",
+          "url": "https://payli.be/prijsstelling/",
+          "note": "Till + webshop together; shown as \"€79\" then \"/maand · maandelijks opzegbaar\"."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Afhalen en levering met tijdsloten",
+          "url": "https://payli.be/foodtrucks/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kiosk, tafelplan en keukenscherm",
+          "url": "https://payli.be/foodtrucks/"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "Geen bereik? Contante verkopen blijven doorgaan en worden later gesynchroniseerd.",
+          "url": "https://payli.be/foodtrucks/"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Webshop Online verkopen met dezelfde voorraad",
+          "url": "https://payli.be/foodtrucks/"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Elke truck een eigen kassa en, als je wilt, een eigen vestiging met eigen voorraad en omzet.",
+          "url": "https://payli.be/foodtrucks/"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Daarna vanaf €49 per maand, maandelijks opzegbaar.",
+          "url": "https://payli.be/foodtrucks/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Bancontact en debetkaarten kosten 1,2% per geslaagde betaling; kredietkaarten hebben een ander tarief.",
+          "url": "https://payli.be/foodtrucks/"
+        }
+      ],
+      "check_urls": [
+        "https://payli.be",
+        "https://payli.be/foodtrucks/",
+        "https://payli.be/prijsstelling/"
+      ]
+    },
+    {
+      "name": "Digitaste",
+      "country": "BE",
+      "website": "https://www.digitaste.be",
+      "stored_id_prefix": "0e42d25f",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Belgian hospitality system with a foodtruck sector page and an online ordering platform (pickup/delivery from own website, time-slot limits, 0% commission); no prices on site, only a configurator. Stored as not relevant: should be re-marked eligible",
+      "eligibility": {
+        "food_quote": "Digitaliseer jouw foodtruck van A tot Z.",
+        "food_url": "https://www.digitaste.be/onze-sectoren/foodtruck",
+        "order_quote": "Afhaal-, bezorg- en dine-in bestellingen rechtstreeks vanaf je website snel en handig voor klanten.",
+        "order_url": "https://www.digitaste.be/onze-sectoren/foodtruck",
+        "country_quote": "GKS 2.0-conform, met de deadline voor jouw kassa erbij",
+        "country_url": "https://www.digitaste.be/onze-sectoren/foodtruck"
+      },
+      "plans": [
+        {
+          "plan_name": "Kassa + online bestellen (configurator)",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Hardware koop je één keer; de software betaal je per maand",
+          "url": "https://www.digitaste.be/kassasysteem-prijs",
+          "note": "No euro amounts on the site; price only via a 5-step configurator (\"ontvang meteen een prijsindicatie op maat\"), not submitted. \"0% commissie\" on online orders."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Afhaal-, bezorg- en dine-in bestellingen rechtstreeks vanaf je website snel en handig voor klanten.",
+          "url": "https://www.digitaste.be/onze-sectoren/foodtruck"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Bepaal hoeveel bestellingen je binnen specifieke tijdslots ontvangt",
+          "url": "https://www.digitaste.be/onze-oplossingen/online-bestelsysteem"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Onze keuken schermen vereenvoudigen het orderbeheer,",
+          "url": "https://www.digitaste.be"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Kassa, bestelzuil, online bestellen en schermen in één systeem",
+          "url": "https://www.digitaste.be/onze-sectoren/foodtruck"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Bestellingen gaan direct naar de juiste locatie.",
+          "url": "https://www.digitaste.be/onze-sectoren/foodtruck"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Laat klanten bestellen uit hun zetel via je eigen website of bestelpagina, online betaald & zonder kopzorgen, 0% commissie.",
+          "url": "https://www.digitaste.be/onze-oplossingen/online-bestelsysteem"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Hardware koop je één keer; de software betaal je per maand",
+          "url": "https://www.digitaste.be/kassasysteem-prijs"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Ontvang bestellingen rechtstreeks met 0% commissie, geen verborgen kosten, geen verrassingen.",
+          "url": "https://www.digitaste.be/onze-oplossingen/online-bestelsysteem"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.digitaste.be",
+        "https://www.digitaste.be/onze-sectoren/foodtruck",
+        "https://www.digitaste.be/onze-oplossingen/online-bestelsysteem",
+        "https://www.digitaste.be/kassasysteem-prijs"
+      ]
+    },
+    {
+      "name": "Fritzy",
+      "country": "BE",
+      "website": "https://fritzy.be",
+      "stored_id_prefix": "80a8b5b2",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Belgian (Wallonia/Brussels) order-ahead platform for friteries: customers order ahead, ticket prints with pickup time; no subscription, €0.90 excl. VAT per online order. Pickup-first app with a Fritzy page per friterie (not a delivery marketplace); no food-truck wording",
+      "eligibility": {
+        "order_quote": "Vos clients commandent à l'avance, la commande arrive sur le terminal Fritzy fourni à votre friterie,",
+        "order_url": "https://fritzy.be/pro"
+      },
+      "plans": [
+        {
+          "plan_name": "Fritzy (sans abonnement)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0.9,
+          "setup_major": null,
+          "quote": "0,90 € HTVA par commande en ligne",
+          "url": "https://fritzy.be/pro",
+          "note": "No monthly fee (\"Sans abonnement, sans engagement:\"); \"0 € sur les commandes de moins de 7 €\"; \"Aucun pourcentage sur vos ventes\"; \"Frais bancaires des paiements en ligne en plus\" (amount not stated). Set-up fee not mentioned."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Le ticket s'imprime aussitôt sur votre imprimante, avec l'heure de retrait et le détail de la commande.",
+          "url": "https://fritzy.be/pro"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Frais réduits pour les commandes sur place et à la borne",
+          "url": "https://fritzy.be/pro"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Votre page web Fritzy",
+          "url": "https://fritzy.be/pro"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Sans abonnement, sans engagement:",
+          "url": "https://fritzy.be/pro"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "0,90 € HTVA par commande en ligne",
+          "url": "https://fritzy.be/pro"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Frais bancaires des paiements en ligne en plus",
+          "url": "https://fritzy.be/pro"
+        }
+      ],
+      "check_urls": [
+        "https://fritzy.be",
+        "https://fritzy.be/pro"
+      ]
+    },
+    {
+      "name": "Restomax",
+      "country": "BE",
+      "website": "https://www.restomax.be",
+      "stored_id_prefix": "7734b770",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Belgian horeca till suite whose fast-food/food-truck offer includes Click & Collect online ordering with order slots; EUR monthly prices per store (VAT not stated, annual commitment)",
+      "eligibility": {
+        "food_quote": "Gérer un fast-food ou un food-truck, c’est sport.",
+        "food_url": "https://www.restomax.be",
+        "order_quote": "Vos clients commandent en ligne depuis leur salon.",
+        "order_url": "https://www.restomax.be/fastfood-click-collect",
+        "country_quote": "en Belgique, il y a Restomax.",
+        "country_url": "https://www.restomax.be"
+      },
+      "plans": [
+        {
+          "plan_name": "Quick Menu",
+          "currency": "EUR",
+          "price_major": 249,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "249 € / store / mois",
+          "url": "https://www.restomax.be/tarifs",
+          "note": "Per store, licence only; \"Engagement annuel\". Includes \"Click & Collect\" and \"Kitchen - écran cuisine/ KDS (maximum 1)\". Page shows other amounts (\"299€ ou\" … \"899€ ou\") without labelling them; VAT treatment not stated."
+        },
+        {
+          "plan_name": "All-in Menu",
+          "currency": "EUR",
+          "price_major": 349,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "349 € / store / mois",
+          "url": "https://www.restomax.be/tarifs",
+          "note": "Per store; \"Engagement annuel\"; includes \"Click & Collect\"."
+        },
+        {
+          "plan_name": "Table Menu",
+          "currency": "EUR",
+          "price_major": 149,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "149 € / store / mois",
+          "url": "https://www.restomax.be/tarifs",
+          "note": "Per store; \"Engagement annuel\"; Click & Collect only via \"QR code - commande à table et/ou Click & Collect\"."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Slots de commandes par heures et par jours",
+          "url": "https://www.restomax.be/fastfood-click-collect"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Slots de commandes par heures et par jours",
+          "url": "https://www.restomax.be/fastfood-click-collect"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Préparations par priorité via l'écran cuisine ou la caisse Restomax",
+          "url": "https://www.restomax.be/fastfood-click-collect"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Caisse (nb. illimité)",
+          "url": "https://www.restomax.be/tarifs"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "249 € / store / mois",
+          "url": "https://www.restomax.be/tarifs"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Pas de plateforme tierce couteuse. Pas de frais additionnels.",
+          "url": "https://www.restomax.be/fastfood-click-collect"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.restomax.be",
+        "https://www.restomax.be/fastfood-click-collect",
+        "https://www.restomax.be/tarifs"
+      ]
+    },
+    {
+      "name": "DigiCommerce",
+      "country": "BE",
+      "website": "https://www.digicommerce.be",
+      "stored_id_prefix": "678a4310",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Real site is digicommerce.be (stored URL stage.app.digicommerce.be is a staging app): Belgian click & collect shop for local food businesses (friteries, pizzerias, traiteurs) with a chosen pickup slot; price only after a demo",
+      "eligibility": {
+        "order_quote": "Depuis votre boutique en ligne, sur ordinateur ou mobile. Il choisit ses produits, un créneau de retrait, et c'est tout.",
+        "order_url": "https://www.digicommerce.be",
+        "country_quote": "Le click & collect et la livraison pour les commerces de proximité en Belgique.",
+        "country_url": "https://www.digicommerce.be"
+      },
+      "plans": [
+        {
+          "plan_name": "Click & collect (sur devis)",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Nous vous établissons une proposition claire après un rendez-vous de démo.",
+          "url": "https://www.digicommerce.be",
+          "note": "No price on the site; \"Notre tarification est personnalisée selon votre métier, votre catalogue, le type de site (1 ou 5 pages),\". Billing period not stated (\"month\" is a placeholder)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Depuis votre boutique en ligne, sur ordinateur ou mobile. Il choisit ses produits, un créneau de retrait, et c'est tout.",
+          "url": "https://www.digicommerce.be"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Précommande chaude et créneaux serrés",
+          "url": "https://www.digicommerce.be"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.digicommerce.be"
+      ]
+    },
+    {
+      "name": "Snack Track",
+      "country": "LU",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Luxembourg food-truck locator app (positions, menus); found via search, no ordering described; own site not read",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "SumUp",
+      "country": "LU",
+      "website": "https://www.sumup.com/fr-lu/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "Luxembourg country site (fr-lu) with a free e-shop offering in-store pickup; generic retail e-shop, nothing food-specific and no pickup-time choice; weak fallback because no LU food tool was found",
+      "eligibility": {
+        "order_quote": "Proposez à vos clients d'être livrés à domicile ou de récupérer leur commande en magasin et indiquez l'emplacement de vos services.",
+        "order_url": "https://www.sumup.com/fr-lu/boutique-en-ligne/",
+        "country_quote": "Ouvrez votre boutique en ligne sans frais d'inscription ni frais cachés.",
+        "country_url": "https://www.sumup.com/fr-lu/boutique-en-ligne/"
+      },
+      "plans": [
+        {
+          "plan_name": "E-shop (Boutique en ligne)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.75,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Frais mensuels",
+          "url": "https://www.sumup.com/fr-lu/boutique-en-ligne/",
+          "note": "Label \"Frais mensuels\" shown with \"0 €\"; \"Frais de transaction compétitifs\" shown with \"2,75 %\" (per transaction); \"sans frais d'inscription\". Country evidence is the fr-lu (Luxembourg) country page; no sentence names Luxembourg."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Proposez à vos clients d'être livrés à domicile ou de récupérer leur commande en magasin et indiquez l'emplacement de vos services.",
+          "url": "https://www.sumup.com/fr-lu/boutique-en-ligne/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Domaines personnalisés",
+          "url": "https://www.sumup.com/fr-lu/boutique-en-ligne/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Créez une boutique en ligne gratuite et faites passer votre entreprise au niveau supérieur.",
+          "url": "https://www.sumup.com/fr-lu/boutique-en-ligne/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Frais de transaction compétitifs",
+          "url": "https://www.sumup.com/fr-lu/boutique-en-ligne/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/fr-lu/",
+        "https://www.sumup.com/fr-lu/boutique-en-ligne/"
+      ]
+    }
+  ],
+  "notes": "BE: 5 eligible — Payli (food_truck, €49/€79 per month excl. btw), Restomax (food_truck, €149–€349 per store per month, annual commitment, VAT not stated), Fritzy (nearest_local, no subscription + €0,90 HTVA per online order), Digitaste (food_truck, price only via configurator) and DigiCommerce (nearest_local, price after demo). Digitaste (0e42d25f) is stored as not relevant but its own site shows online pickup/delivery ordering with time-slot limits and a foodtruck sector page: re-mark eligible. DigiCommerce's real site is https://www.digicommerce.be (stored URL stage.app.digicommerce.be is a staging app). LU: no Luxembourg food-truck or restaurant ordering tool found on own sites; only SumUp's fr-lu country page with a generic free e-shop (in-store pickup, 2,75 % per transaction) — weak, nothing food-specific. Snack Track (LU food-truck locator) has no ordering. Rapidle (Belgian click & collect, press says used in Luxembourg) — rapidle.com refused the connection, not recorded. None of the BE tools' own pages read mention Luxembourg (Restomax, Fritzy, DigiCommerce say Belgium only; Payli, Digitaste silent), so no BE tool is listed for LU. Checked, no BE/LU entry added (own site shows no Belgium/Luxembourg presence): Qrder (qrder.app: Dutch team, NL only), Foodticket (foodticket.nl and foodticket.be: Dutch contact details only), Vev (vev.co: no country named; NL/ES versions only), Truckons (truckons.com: French cities only). Eatch: search shows a robot-kitchen company; not checked further. Lightspeed be-fr Order Anywhere page: online takeaway ordering, no price (\"Contactez nos experts…\"), no Luxembourg mention; not recorded since BE already has enough tools."
+}
