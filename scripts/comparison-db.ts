@@ -26,6 +26,17 @@ export async function connectComparisonDb(app: string, log: (line: string) => vo
   const { Client } = m.loadPg()
   const client = new Client({ connectionString: m.withoutSslmode(url), ssl: { rejectUnauthorized: false }, application_name: `${app} (compare-fix-2)` })
   client.on('notice', n => log(`  notice: ${scrub(n.message)}`))
+  // every statement is printed before it is sent: its text, and for each parameter only its size (a JSON batch: its row count) — never
+  // row values. The table counts (comparisonTally) are printed as one line, not repeated.
+  const send = client.query.bind(client)
+  client.query = (async (sql: string, params?: unknown[]) => {
+    const flat = sql.replace(/\s+/g, ' ').trim()
+    if (!/^select \(select count\(\*\) from public\.competitors\)/.test(flat)) {
+      const sizes = (params ?? []).map(p => (typeof p === 'string' && p.startsWith('[') ? `json[${(() => { try { return (JSON.parse(p) as unknown[]).length } catch { return '?' } })()} rows]` : Array.isArray(p) ? `array[${p.length}]` : typeof p))
+      log(`SQL> ${flat.slice(0, 600)}${flat.length > 600 ? ' …' : ''}${sizes.length ? `   -- params: ${sizes.join(', ')}` : ''}`)
+    } else log('SQL> select (select count(*) from public.competitors) … (the comparison tables\' row counts — scripts/comparison-db.ts comparisonTally)')
+    return send(sql, params)
+  }) as PgClient['query']
   try { await client.connect() } catch (e) { throw new Error(`could not connect: ${scrub(e)}`) }
   await client.query("set statement_timeout = '120s'")
   await client.query("set lock_timeout = '10s'")
