@@ -17,7 +17,7 @@
       "stored_id_prefix": "54b82bfa",
       "focus": "nearest_local",
       "verdict": "eligible",
-      "reason": "Athens-built commission-free ordering site for Greek restaurants: delivery and takeaway pickup at a customer-chosen time; Greek-language site, EUR, +ΦΠΑ pricing. Prices load by script and could not be read as page text.",
+      "reason": "Athens-built commission-free ordering site for Greek restaurants: delivery and takeaway pickup at a customer-chosen time; Greek-language site, EUR, +ΦΠΑ pricing. Prices load by script from its own plan API (https://api.spevdo.gr/api/v1/plans), read once on 24 Nov 2026 (compare-research-1b): Starter 60, Growth 120, Pro 230 a month.",
       "eligibility": {
         "order_quote": "Παραγγελίες για παραλαβή, με ώρα που διαλέγει ο πελάτης.",
         "order_url": "https://spevdo.gr/el/",
@@ -28,41 +28,41 @@
         {
           "plan_name": "Starter",
           "currency": "EUR",
-          "price_major": null,
+          "price_major": 60,
           "period": "month",
           "vat": "excl",
           "per_order_pct": 0,
           "per_order_fixed_major": null,
           "setup_major": 0,
-          "quote": "/μήνα +ΦΠΑ",
-          "url": "https://spevdo.gr/el/",
-          "note": "Price is loaded by script from the vendor's live plan catalog; the page text shows only 'Φόρτωση της τιμής' (price loading). Stored figure could not be re-confirmed as page text; not changed here. Stored value was 60 EUR/month. Page: 'Όλες οι τιμές είναι +ΦΠΑ. Η ετήσια χρέωση εξοικονομεί 2 μήνες (17%).' No setup or per-order fee stated (FAQ)."
+          "quote": "\"name\":\"Starter\",\"priceMonthly\":60,\"priceAnnual\":600",
+          "url": "https://api.spevdo.gr/api/v1/plans",
+          "note": "compare-research-1b: read from the vendor's own plan API https://api.spevdo.gr/api/v1/plans (one read-only GET, 24 Nov 2026, allowed by Dominic). The API has no currency or VAT field: EUR and excl. VAT come from the page https://spevdo.gr/el/ (\"/μήνα +ΦΠΑ\"; \"Όλες οι τιμές είναι +ΦΠΑ.\"). Billed yearly 600 (= 50 a month; page: \"Η ετήσια χρέωση εξοικονομεί 2 μήνες (17%)\"). Stored value was 60 EUR/month. No setup or per-order fee stated (FAQ)."
         },
         {
           "plan_name": "Growth",
           "currency": "EUR",
-          "price_major": null,
+          "price_major": 120,
           "period": "month",
           "vat": "excl",
           "per_order_pct": 0,
           "per_order_fixed_major": null,
           "setup_major": 0,
-          "quote": "/μήνα +ΦΠΑ",
-          "url": "https://spevdo.gr/el/",
-          "note": "Price is loaded by script from the vendor's live plan catalog; the page text shows only 'Φόρτωση της τιμής' (price loading). Stored figure could not be re-confirmed as page text; not changed here. Stored value was 119 EUR/month. Page: 'Όλες οι τιμές είναι +ΦΠΑ. Η ετήσια χρέωση εξοικονομεί 2 μήνες (17%).' No setup or per-order fee stated (FAQ)."
+          "quote": "\"name\":\"Growth\",\"priceMonthly\":120,\"priceAnnual\":1200",
+          "url": "https://api.spevdo.gr/api/v1/plans",
+          "note": "compare-research-1b: read from the vendor's own plan API https://api.spevdo.gr/api/v1/plans (one read-only GET, 24 Nov 2026, allowed by Dominic). The API has no currency or VAT field: EUR and excl. VAT come from the page https://spevdo.gr/el/ (\"/μήνα +ΦΠΑ\"; \"Όλες οι τιμές είναι +ΦΠΑ.\"). Billed yearly 1200 (= 100 a month; page: \"Η ετήσια χρέωση εξοικονομεί 2 μήνες (17%)\"). Stored value was 119 EUR/month. No setup or per-order fee stated (FAQ)."
         },
         {
           "plan_name": "Pro",
           "currency": "EUR",
-          "price_major": null,
+          "price_major": 230,
           "period": "month",
           "vat": "excl",
           "per_order_pct": 0,
           "per_order_fixed_major": null,
           "setup_major": 0,
-          "quote": "/μήνα +ΦΠΑ",
-          "url": "https://spevdo.gr/el/",
-          "note": "Price is loaded by script from the vendor's live plan catalog; the page text shows only 'Φόρτωση της τιμής' (price loading). Stored figure could not be re-confirmed as page text; not changed here. Stored value was 229 EUR/month. Page: 'Όλες οι τιμές είναι +ΦΠΑ. Η ετήσια χρέωση εξοικονομεί 2 μήνες (17%).' No setup or per-order fee stated (FAQ)."
+          "quote": "\"name\":\"Pro\",\"priceMonthly\":230,\"priceAnnual\":2300",
+          "url": "https://api.spevdo.gr/api/v1/plans",
+          "note": "compare-research-1b: read from the vendor's own plan API https://api.spevdo.gr/api/v1/plans (one read-only GET, 24 Nov 2026, allowed by Dominic). The API has no currency or VAT field: EUR and excl. VAT come from the page https://spevdo.gr/el/ (\"/μήνα +ΦΠΑ\"; \"Όλες οι τιμές είναι +ΦΠΑ.\"). Billed yearly 2300 (= 191.67 a month; page: \"Η ετήσια χρέωση εξοικονομεί 2 μήνες (17%)\"). Stored value was 229 EUR/month. No setup or per-order fee stated (FAQ)."
         }
       ],
       "answers": [
