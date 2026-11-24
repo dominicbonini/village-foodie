@@ -247,7 +247,7 @@ async function oldStyleCall() {
  * Truck A's regime is set INSIDE the transaction (an UPDATE of the demo truck's own row, rolled back with everything else — the
  * before/after counts carry both demo trucks' vat_regime, so a change that survived would show). Neither trucks trigger fires on it
  * (trucks_record_plan_history: plan / trial_expires_at only; trucks_referred_code_immutable: referred_partner_code_id only). */
-const DRAFT = `insert into public.order_drafts (order_key, truck_id, subtotal, total, total_minor) values (gen_random_uuid(), $1, 0, 0, 0) returning order_key, vat_regime`
+const DRAFT = `insert into public.order_drafts (order_key, truck_id, subtotal, total, total_minor) values (gen_random_uuid(), $1, 1, 1, 100) returning order_key, vat_regime`
 const regimeOf = async (c, tag, key) => (await q(c, tag, 'select vat_regime, receipt_no from public.orders where order_key = $1', [key])).rows[0]
 async function regimeProofs(file) {
   let body = null
