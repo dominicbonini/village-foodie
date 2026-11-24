@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V16.34
+HatchGrab Engineering Reference Manual · V16.35
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 16.34**
+**Version 16.35**
 
 November 2026
 
@@ -108,7 +108,19 @@ shared).
 locales used by an enabled country, read from `country_settings` at run time. Installed but unused locales are left as they are and pick
 up again only if a country is switched to them.
 
-# Open items (V16.34, 23 November 2026) — THE ONLY CURRENT LIST
+**⚠️ STANDING RULE — A CHANGE TO THE ORDER PATH IN THE SHARED DATABASE IS PROVED LIVE, ROLLED BACK, BEFORE AND AFTER IT IS APPLIED
+(V16.35; 23–24 Nov 2026).** The database is shared with the live site, so a migration that replaces an ordering function or adds a
+trigger on `orders` / `order_drafts` goes live the moment it runs — no deploy needed — on every truck, Pizzeria Gusto included.
+**Precedent (the reason this rule exists):** `20261124_france_vat_1.sql` replaced `place_order_atomic_v2` on 23 Nov at 14:28 UTC.
+Its proof was "structural, not executed" (the text equalled the old body plus one column); the new body had never run. No order was
+placed for four hours, and it was proved only when Dominic ran a rolled-back call by hand in the Supabase SQL editor at 18:28
+(vat-live-check-1: no error, `left_behind = 0`). **The method since (france-records-1):** `scripts/db-rollback-proofs.cjs` — live
+proofs inside ONE transaction that always ends in ROLLBACK, on demo / test trucks only, with the counts before and after shown
+identical; a **pre-flight** before the migration runs and a **check** after it. A trigger on an order table must never make an
+insert fail (its own exception block; on error it leaves the value NULL and logs a WARNING). Never run a proof against Pizzeria
+Gusto or any trading truck. A proof that can't be run is a stop: say so; don't apply the migration.
+
+# Open items (V16.35, 24 November 2026) — THE ONLY CURRENT LIST
 
 **This is the one list of what is still to do.** Update it in place: strike an item when it's done, add new ones here. Never
 start another "open items" list elsewhere. Lists inside older changelog entries are dated history, not current.
@@ -172,6 +184,7 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 10. 🔴 **Kitchen tickets print non-Latin scripts as "?"** (`lib/printing/ticket.ts` `encodeEscPos` sends ASCII and "£" only).
     Greek, Bulgarian, Japanese, Chinese, Thai, Arabic and Hebrew are live and affected; Latin scripts lose accents. Needs a raster
     ticket path or printer code pages (Dominic's decision) before more countries in those scripts switch on.
+    **V16.35:** France makes it urgent — "é" prints as "e" and "€" as "EUR" on receipts.
 11. **The capacity-window display defect and Q1–Q3** (§89.11): at W > 5 with instant counted items the dashboard marks a slot full
     up to W minutes early.
 12. **The five failing harnesses** (paperwork-1, legal-languages-1, world-countries-3, contact-1, tidy-1): translated legal files
@@ -184,6 +197,8 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     `faq-3-screens` (a hand-run screenshot script, not in the sweep: it points at the removed landing FAQ css) and the sweep's other
     16 failures not caused by languages-world-3 (the list in `docs/languages-world-3-report.md`, Final report). One tidy-up prompt,
     after the next deploy.
+    **V16.35:** now **209 passed, 21 failed** (list: `docs/inbox-2-report.md` §3); the enquiries harness no longer blocks the sweep.
+    Still one tidy-up prompt after the next deploy.
 13. 🔴 **Rotate `FCM_SERVICE_ACCOUNT_JSON` and `GOOGLE_SHEETS_CREDENTIALS`** (the standing secrets rule at the top). It is still
     recorded as open; Dominic confirms or strikes it.
 
@@ -210,7 +225,7 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 21. **Sanctions name check at signup** (UK and US lists). Until it exists, 9 countries stay held: Haiti, Iraq, Lebanon, Libya,
     Mali, Myanmar, Palestine, South Sudan, Venezuela.
 22. **EU non-Union OSS registration** once there are paying EU customers.
-23. **Non-Latin ticket printing:** item 10.
+23. **Non-Latin ticket printing:** item 10. **V16.35:** France makes it urgent ("é" → "e", "€" → "EUR" on receipts).
 
 **Partners (partners-2 V16.31, offer V16.32):**
 24. ~~Decision: how a percent-off code reaches the paid plan~~ ⛔ **Decided V16.32: A** — applied when the truck moves onto a paid plan.
@@ -218,6 +233,7 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     `docs/partners-3-report.md` §0). Native-speaker read of fr nl de es it sv still advisable before the first real send.
 26. 🔴 **The offer is not decided: every partner shows "Needs offer".** Create each partner's code (deal + commission) by hand in
     its drawer. Nothing is queued or sent until then. (The 13 site addresses: ⛔ done V16.32, site address primary.)
+    **V16.35:** Dominic will reach out to partners once the landing page is updated.
 
 **Added V16.33 (events, dashboard sign-in, languages):**
 27. 🔴 **Dashboard sign-in, next steps** (rollout steps 2–8 in "Dashboard sign-in"). **Around 2 Dec:** read the `auth_shadow` counts.
@@ -235,11 +251,14 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 34. **Walk-up-only events** (events-create-1 D3 b) — only if trucks ask.
 
 **Added V16.34 (plans everywhere, post-pay terms, deploys):**
-35. 🔴 **Vercel cost: build less on each deploy.** 7 country page types × ~210 countries (~1,470 pages) are built ahead on every
+35. ⛔ **Mostly done V16.35 by vercel-cost-1** (`5df925d8`, not deployed; §48 "Marketing pages refresh only on demand"). **Left:**
+    after the next deploy check that `POST /api/revalidate` answers **401**; set Vercel **Ignored Build Step** for pushes touching
+    only `docs/`, `supabase/migrations` or `*.md` (dashboard setting); look at Vercel → Usage after a week.
+    ~~🔴 **Vercel cost: build less on each deploy.** 7 country page types × ~210 countries (~1,470 pages) are built ahead on every
     deploy, and the country, features and FAQ pages regenerate every 5 minutes (`revalidate = 300`) whenever visited — including by
     Googlebot. Review: build ahead only the busiest countries and the rest on first visit; a much longer `revalidate` with an
     immediate refresh when prices or FAQ text change in admin; Vercel **Ignored Build Step** for pushes that only touch `docs/`,
-    `supabase/migrations` or `*.md` (a dashboard setting, no deploy). Check Vercel → Usage first to see which charge dominates.
+    `supabase/migrations` or `*.md` (a dashboard setting, no deploy). Check Vercel → Usage first to see which charge dominates.~~
 36. **FAQ translations after 1 Dec:** run the translator until done; check /tz/faq, /ad/faq, the four new answers in fr-FR and
     es-MX, and /br …0002. Optional: raise the Anthropic monthly spend limit instead of waiting. (OBSERVED 23 Nov: /al, /mk, /ba
     and /lk/faq also answer 404; their locales have 14 FAQ translation rows each.)
@@ -249,6 +268,41 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
     yearly billing where prices are low. Must be settled before billing is switched on (Stripe's ~6% + 20p per charge).
 39. **Unused languages' terms** (fil-PH, hi-IN, ur-PK, ta-LK, vi-VN) still have the pre-19-Nov wording: update before any of them is
     switched on.
+
+**Added V16.35 (marketing pages, the Inbox, VAT per dish, France records):**
+40. 🔴 **Before the next deploy: move main forward to `france-vat-1`** (fast-forward, locally; everything since `59ae6161` is there).
+    Dominic deploys. OBSERVED 24 Nov 10:12 UTC: origin/main `f2e2b4ab`, main `59ae6161` (10 ahead of origin/main), france-vat-1
+    `56ce9d7d` (17 ahead of main), checked out.
+41. 🔴 **Switch on the Inbox's drafting and intake, in this order:** (a) a Claude API key for drafting — a **separate Anthropic
+    workspace with its own low spend limit**, key added to Vercel as `ANTHROPIC_API_KEY` (Dominic); (b) **privacy policy section 6**:
+    add "Anthropic (Claude) — Translating messages you send us and helping draft our replies — United States" and "Namecheap — Our
+    email mailboxes — [location to check]", English first for Dominic's approval, then only the used languages; (c) a **test send from
+    an alias** in Outlook, then `enquiries_reply_from_alias` = true if it works; (d) the deploy; (e) `enquiries_intake_enabled` = true.
+    OBSERVED 24 Nov: both settings false, 36 aliases, 0 enquiries.
+42. **Knowledge screen** to approve or retire suggested `reply_knowledge` lines (mockup first). Until then, SQL. OBSERVED 24 Nov:
+    approved 4 fact, 1 gap, 2 guidance; suggested 1 fact.
+43. **Decision: the till line** (held as suggested) — follows the till-software decision (item 47).
+44. 🔴 **Forecasting and a per-market prep summary** (how many of each product are pre-ordered for a market, ahead of time).
+    **Promised to a French prospect "well before June 2027".** Today Reports' market picker shows only the last 30 days up to today
+    (`get_recent_events`), and Items is one line per item per order — no future-market totals exist.
+45. **Decision: a pre-order deadline typed in as a date and time per market** (today a rule: hours before the start, or a time on the
+    market day, per item). Asked for by a French prospect.
+46. 🔴 **France e-reporting records — promised before 1 September 2027.** france-records-1 built the daily-totals file; left: confirm
+    the format with a French accountant / an approved platform, whether payment data is needed (goods vs services), and the VAT rates
+    a food truck should set per dish (5,5 / 10 / 20 %).
+47. 🔴 **Decision: France till-software compliance (art. 286 CGI)** — most likely the software maker's individual attestation. Have:
+    receipt numbers, audit rows, the finished-order lock (route only). Missing: a database guard on completed orders, a daily close
+    ("Z" total) frozen per truck per day, a tamper-evident log, archiving. **Until decided, don't tell VAT-registered French trucks
+    that HatchGrab replaces their till** (micro-entrepreneurs on franchise en base are exempt).
+48. **France receipts:** a receipt for counter orders when no email is taken (print or QR); business details and VAT regime on
+    receipts (france-receipts-1 in progress: `6ed618a9`, `56ce9d7d` committed, more uncommitted work in the folder on 24 Nov).
+49. **Decision: Microsoft 365 for email** (Dominic considering). The CRM and the poll use IMAP/SMTP with a password on Namecheap;
+    Microsoft 365 would need the mail connection reworked (OAuth). Decide before switching the Inbox on.
+50. **Channels research:** Search Console and Bing (Performance by country; Indexing › Pages trend; URL Inspection of /de, /es,
+    /it) and PostHog (visits and sources per country page), France against two or three others; ask new customers how they found
+    HatchGrab (possibly a line in the Inbox's first reply).
+51. **Decision: switch on the German comparison page** (`/de/vergleich/foodtruck-bestellsystem`, built, admin-only) and one per
+    country where Search Console shows interest.
 
 **Not re-verified in this pass:** the engineering notes in §36's "Still open on Android (V11.43)" (`hg_device_id` on
 `localStorage`, back-handler overlays, deep links, the splash colour). Check them against the code before acting on them.
@@ -500,6 +554,124 @@ actions, `refund`, the Manage-level token routes. 6. After two clean weeks, grou
 board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings (owner only; needs a mockup first).
 
 # Changelog
+
+## V16.35 — 23–24 November 2026 — **MARKETING PAGES REFRESH ON DEMAND; ONE ADMIN INBOX FOR EVERY EMAIL (TRANSLATED, AI-DRAFTED, SENT BY HAND); A VAT RATE PER DISH; FRANCE: BUSINESS DETAILS, RECEIPT NUMBERS, DAILY TOTALS BY VAT RATE**
+
+- **Nothing was deployed** in this session (Vercel usage: $15 of $20 used by 23 Nov). **Every commit since `59ae6161` is on branch
+  `france-vat-1`** (france-vat-1, inbox-1, inbox-2, vat-live-check-1, france-records-1 and france-receipts-1 interleaved, in one
+  line). origin/main was `f2e2b4ab` on 23 Nov. **Database changes below are already live** (the database is shared); the code waits
+  for the next deploy.
+- **OBSERVED 24 Nov 2026, 10:12 UTC (read-only, when this entry was applied):**
+  - **Git:** checked out `france-vat-1` = `56ce9d7d`; `main` = `59ae6161`; `origin/main` = `f2e2b4ab`. `main..france-vat-1` = 17
+    commits; main is 10 ahead of origin/main (local only). Every commit named in this entry exists and is on france-vat-1;
+    `59ae6161`, `5df925d8` and `40c27cd4` are also on main (vercel-cost-1 and enquiries-backend-1 came before `59ae6161`).
+  - **Settings:** `enquiries_intake_enabled` false, `enquiries_reply_from_alias` false, `mail_aliases` 36 entries. **Enquiries: 0.**
+  - **`reply_knowledge`:** approved — 4 fact, 1 gap, 2 guidance; suggested — 1 fact (8 lines).
+  - **Columns live:** `orders.tax_breakdown`, `orders.receipt_no`, `orders.vat_regime`, `order_drafts.tax_breakdown`,
+    `order_drafts.vat_regime`, `menu_items_db.tax_rate_milli`; on `trucks`: `legal_name`, `registered_address` (jsonb),
+    `registration_number`, `vat_number`, `vat_regime`. **There is no `trucks.siren` column:** SIREN / SIRET is held in
+    `registration_number` (`20261125_france_records_1.sql`).
+  - **Triggers live:** on `orders` — `orders_fill_currency_country`, `orders_receipt_no`, `orders_receipt_no_keep`,
+    `orders_set_updated_at`, `orders_stamp_vat_regime`; on `order_drafts` — `order_drafts_stamp_vat_regime`.
+- **vercel-cost-1** (`5df925d8`): the landing, /features and /faq at every country address no longer rebuild every 5 minutes
+  (`revalidate = false`; the marketing data cache has no expiry either, keyed by deployment). **Built ahead: 8 countries** (uk, us, ie,
+  au, nz, ca, fr, de — `lib/built-ahead-countries.ts`, a one-line list), so **24 pages instead of 651** per deploy; every other
+  country renders on its first visit and is then kept (`dynamicParams = true`). Pages refresh **only on demand**: Admin writes do it
+  in-process; the FAQ translator, the competitor check and `scripts/db-migrate.cjs` call `POST /api/revalidate` (header
+  `x-revalidate-secret`, tags `marketing-countries` / `marketing-plans` / `marketing-faq`). **`REVALIDATE_SECRET` is set in Vercel,
+  GitHub and Dominic's `~/.zshrc` (Dominic, 23 Nov). After the next deploy, `POST /api/revalidate` with no secret must answer 401,
+  not 503.** A Supabase dashboard edit to prices, plans or FAQ now needs `REVALIDATE_SECRET='…' node scripts/revalidate-pages.cjs`.
+  Estimates: ISR writes ~100k → ~10–45k a day (deploy frequency is the main lever); build ~5 → ~3 min. Harnesses
+  `scripts/vercel-cost-1.cjs` (30/0) and `-local.cjs` (16/0). Per-screen server calls listed in its §7 (ping 10 s, heartbeat 15 s).
+- **enquiries-backend-1** (`40c27cd4`, report `59ae6161`; migration `20261123_enquiries_backend_1.sql` run): private tables
+  `enquiries` (ref `ENQ-0001…`), `enquiry_messages`, `enquiry_drafts`, `reply_knowledge`, `enquiry_spend`. Intake from the contact
+  form and from hello@'s INBOX (read-only as always) runs inside the existing `outreach-replies` cron, **behind
+  `outreach_settings.enquiries_intake_enabled` = false**. Skipped and never stored: contact-form copies, bounces / auto-replies,
+  no-reply senders, our own addresses, **diners' order mail** (Dominic: it stays in the mailbox). Drafting: translate → list the asks
+  → an **answer pack** (the country's plans and prices from the pricing readers, the public features list, the published FAQ, and
+  only **approved** `reply_knowledge` lines for the topics and country — never code, the manual or docs) → match each ask
+  (available / limited / gap / unknown; anything but available = needs review) → English draft in Dominic's style (friendly, short,
+  only what was asked; **card fees always stated separately, never inside "free"**) → customer-language version → **numbers check**
+  (every number must appear in the pack or in the customer's own message). **$5 a month cap**, separate from the FAQ translator.
+  **`canAutoSend` is always false.** Drafting needs `ANTHROPIC_API_KEY` on Vercel (absent today → `no_model`).
+- **reply_knowledge seeded** (Dominic, 23 Nov; approved unless marked): card fees stated separately (guidance); demo requests →
+  offer full access, ask for their demo link or menu and Dominic builds it; forecasting and a per-market prep summary "being built,
+  ready in the next few months"; pre-orders open up to 7 days before and close by a rule; a deadline typed in per market = gap;
+  never mention Pay at Hatch (guidance); **e-reporting (France) — changed by inbox-1 from a gap to an approved fact:** "HatchGrab
+  will provide the sales records they need to send to their approved e-reporting platform"; **the till line stays SUGGESTED**
+  ("HatchGrab doesn't connect to other till software; it replaces it…") pending France's till-software rule.
+- **inbox-1** (migration `09f191df` / `20261123_inbox_1.sql` run; code `fbc98a34`; report `8e6104f4`): **Admin › Inbox**, first in
+  the admin navigation, approved by Dominic from a clickable mockup. Every incoming email needing an answer — **Enquiry, Prospect,
+  Partner, Customer** — in three columns: the list (type label, the address written to, language), **their message in English in
+  full** (Show original; earlier messages folded above), **your reply in English, editable** (Show <language>; "Your comments for
+  the AI" → **Update reply**; Attach; **Send** — "Send in French" etc.). No review flags or gaps on the page (Dominic: handled in the
+  background). Mark done and Snooze kept. **Send only by hand.** From: **prospects and partners dominic@; enquiries hello@**
+  (hello@ is now a send account for Inbox replies only); `outreach_settings.enquiries_reply_from_alias` = false (true = reply from the
+  alias they wrote to). **36 aliases** in `outreach_settings.mail_aliases`, all counted as our own addresses (Dominic created them on
+  hello@, 23 Nov: admin ahoj annyeong billing bok bonjour buna ciao czesc hallo halo hei hej hola jambo konnichiwa kumusta labas
+  marhaba merhaba namaste nihao ola privacy privet sawasdee shalom support sveiki szia tere tester xinchao yassou zdravei zdravo).
+  Drafts for prospects and partners are made when Dominic opens the conversation (with their history and offer). Comments become
+  **suggested** `reply_knowledge` lines after Send (no approval screen yet). Today's "Replies waiting", prospect timelines and partner
+  drawers now offer **"Open in Inbox"**; outbound first contact and chasers are unchanged. Reply subject to a form enquiry:
+  "HatchGrab — ENQ-0002". **Enquiries are deleted 24 months after their last message** (order-retention job). New tables
+  `inbox_drafts`, `inbox_comments`, `inbox_sent`. Harness `scripts/inbox-1.cjs` 164/0.
+- **inbox-2** (`38d579e6`, report `26a8b0b9`): mail from a linked HatchGrab truck to dominic@ becomes a **Customer** enquiry (same
+  switch; replies from dominic@). The numbers check compares values and units in every format our languages use ("1.5" is one and a
+  half; "1,5 %", "4 000", "0,25 €"). enquiries-backend-1 and inbox-1 harnesses now pass the sweep's safety screen honestly (screen
+  unchanged). **Full sweep: 209 passed, 21 failed — none from this work** (18 identical on clean checkouts, 1 needs a build, 2 Add
+  Order harnesses depend on machine load). `scripts/inbox-2.cjs` 46/0.
+- **france-readiness-1** (read-only diagnosis, 23 Nov): what France needs — the short list is the report's §0 (sizes S/M/L).
+- **france-vat-1** (migration `c91b7a59` / `20261124_france_vat_1.sql`, **run 23 Nov 14:28 UTC**; code `12e9a770`, `1e10844e`; report
+  `099019cf`): **a VAT rate per dish** (`menu_items_db.tax_rate_milli`, NULL = the truck's default) in Manage › Payments › "Item
+  rates", every country; each order line stamped with its dish and rate; **`tax_breakdown`** (jsonb, one object per rate) on orders
+  and drafts; one shared engine `lib/order-tax.ts` (deal split, discount spread, largest remainder, tax rounded once per rate); per-
+  rate « Dont TVA » lines on the customer email and ticket; per-rate Net/Tax columns in the accountant Orders CSV; **rate limit 0–30 %**
+  (was 20 %, which blocked IE 23 %, DK/NO/SE 25 %, HU 27 %). **Finished orders are locked:** `edit` and `cancel` refuse `collected`,
+  `cancelled` and `rejected` with 409 (route `app/api/dashboard/action/route.ts`, every client). **`place_order_atomic_v2` replaced in
+  place** (same signature and grants; adds `nullif(p_order->'tax_breakdown','null'::jsonb)`). Single-rate orders proved byte-identical
+  (43 × 9 outputs). On a mixed-rate order where tax is added on top (US), the single tax line now shows no rate. `scripts/france-vat-1.cjs` 61/0.
+- **vat-live-check-1** (`8956bb90`, `eab06a0a`): no order on any truck between 14:28 and the check; the live definition is the
+  20261124 body; **Dominic ran the rolled-back call in the Supabase SQL editor at 18:28: no error, `left_behind = 0` → PASSED.**
+  This incident is the precedent for the new standing rule.
+- **france-records-1** (migrations `0b2cad75` / `20261125_france_records_1.sql` and `3a796041` /
+  `20261125_france_records_1b_receipt_replay.sql`, each run only after a rolled-back live pre-flight passed; code `d6231c73`; report
+  `68742078`): **business details** in Manage › Settings for every country (legal name, registered address, SIREN/SIRET with Luhn for
+  France, GB company number, EU VAT number format-checked, France's VAT regime; owner or admin; not in signup); **a gap-free receipt
+  number per truck** (`orders.receipt_no`, assigned by a never-failing insert trigger, so the deployed code is covered; 1b fixes an
+  offline-replay gap: `ON CONFLICT DO NOTHING` still fires BEFORE INSERT triggers); **Reports › For your accountant › "Daily totals
+  by VAT rate (CSV)"** with presets that follow the regime, and "Receipt no." in the accountant Orders CSV; **audit rows** for
+  placement (3 paths), edit (before/after), cancel and reject (snapshots leave out name, email, phone and all free-text notes).
+  Retention unchanged. `place_order_atomic_v2` not touched. `scripts/france-records-1.cjs` 60/0. New script
+  `scripts/db-rollback-proofs.cjs`.
+- **france-receipts-1 — IN PROGRESS when this was written** (`6ed618a9`, `56ce9d7d`): `orders.vat_regime` / `order_drafts.vat_regime`
+  stamped from the truck by a never-failing BEFORE INSERT trigger (migration `20261126_france_receipts_1.sql`; logs in
+  `docs/france-receipts-1/` show the rolled-back pre-flight and regime check passing). **OBSERVED 24 Nov 10:12 UTC:** both columns
+  and both triggers (`orders_stamp_vat_regime`, `order_drafts_stamp_vat_regime`) are live; its code (customer receipts, the
+  franchise-en-base rule, `lib/receipt.ts`) is uncommitted work in the folder. The full entry is V16.36's.
+- **France — enquiries and promises.** Two enquiries since the multi-country launch, both French: Le Roi du Churrasco (9 Nov, now a
+  customer) and **Le Poulpe à Pattes** (Sabrina, Lens, Pas-de-Calais; crêpe trailer opening **June 2027**; markets with pre-orders).
+  **Told her in writing:** HatchGrab replaces till software (a tablet shows stock per market; she needs only a payment terminal);
+  **forecasting will be ready well before June 2027**; **HatchGrab will provide the sales records she needs for e-reporting**; card
+  fees are separate from the free months; full access offered instead of the menu demo. These are now commitments (Open items
+  44 and 46).
+- **France — the law, as researched 23 Nov from official sources** (detail belongs to the French research chat):
+  - **B2C e-reporting:** from **1 September 2027** for SMEs and micro-businesses, **including franchise en base**; sent only through
+    an approved platform (PA); daily totals before VAT and VAT per rate, no customer data; frequency follows the VAT regime
+    (franchise en base every 2 months, simplified regime monthly, standard monthly regime three times a month); plus payment data
+    where VAT is due on payment (typically services — whether a food truck's sales are goods or services is for a French accountant).
+  - **Till software (article 286 I 3° bis CGI):** VAT-registered businesses that sell to consumers and record payments must use
+    compliant till software — an NF525 / LNE certificate **or the software maker's individual attestation** (restored by the 2026
+    finance law, 19 Feb 2026). **Exempt:** franchise en base (most micro-entrepreneurs), B2B-only, VAT-exempt-only. Fine: €7,500 per
+    non-compliant software. HatchGrab may count as till software; it has neither a certificate nor an attestation.
+- **Search / channels (23 Nov):** France's lead is consistent with time in its own language (since 23 Oct; many countries only since
+  19–22 Nov), thin local competition (no local-language page compares food-truck pre-ordering tools), and AI assistants with web
+  search. Search Console's 19 Nov export already showed 47 real pages crawled-not-indexed. Dominic plans partner outreach once the
+  landing page is updated.
+- **New standing rule** (top of the manual): a change to the order path in the shared database is proved live, rolled back, before
+  and after it is applied.
+- **Reference sections updated:** §48 (marketing pages refresh on demand; 35.ap-2), §60.2 / §60.5 / §61.1 (mail accounts, the poll,
+  Today), **new §90 Enquiries and the Inbox**, §37 Tax, tips and fees (per-dish rates, `tax_breakdown`, the lock, receipt numbers,
+  the VAT-regime stamp), §19 accountant reports, §50 business details, the V11.52 audit note, §43 retention, §83.9 France.
 
 ## V16.34 — 19–23 November 2026 — **ALL THREE PLANS IN ALL 210 COUNTRIES; POST-PAY TERMS; 23 LANGUAGES DONE; DEPLOYS KEPT TO A MINIMUM**
 
@@ -15201,6 +15373,18 @@ accountant").
 
 **Harnesses:** `costs-accounts-1.cjs` (75) and `costs-accounts-1-screens.cjs` (12, browser).
 
+### Daily totals by VAT rate, "Receipt no." and per-rate columns (V16.35 — france-vat-1, france-records-1; not deployed)
+
+- **Reports › For your accountant › "Daily totals by VAT rate (CSV)":** rows by date and VAT rate (Date, Type "Goods", VAT rate,
+  Sales incl. VAT, Refunds incl. VAT, Net excl. VAT, VAT), one totals row per rate, header rows with the business details and the
+  regime; no customer data — the shape France's B2C e-reporting asks for (from 1 Sep 2027, §83.9). Accepted orders only; a sale counts
+  on the day placed and a refund on the day made, in the truck's time zone; rates from `tax_breakdown`, else the order's stored rate;
+  no-rate orders are left out and counted. **Presets follow the regime** (`lib/accounts/periods.ts`): franchise en base two-month
+  blocks; réel simplifié the month; réel normal monthly 1–10 / 11–20 / 21–end; réel normal quarterly, no regime or not France the
+  month; "Custom dates" always.
+- **The Orders CSV** gains a **"Receipt no."** column (`orders.receipt_no`) and per-rate Net / Tax columns from `tax_breakdown`.
+- The format is still to be confirmed with a French accountant / an approved platform (Open items 46).
+
 # 20. Social media and WhatsApp auto-replies
 
 ## Four-bucket classification (V6.3)
@@ -17505,6 +17689,8 @@ by the custom-domain feature. **⛔ Every "undeployed" line describing that batc
 
 **READ: `action_audit_log` records ORDER AND MONEY actions only** — collection, mark paid, undo mark
 paid, manual payment at order. **There is no trail for a change to a truck's defaults.**
+⛔ *V16.35 (france-records-1): it now also records order **placement** (all 3 paths), **edit** (before / after), **cancel** and
+**reject**. Snapshots leave out the customer's name, email, phone and every free-text note. Still no trail for settings changes.*
 
 🔴 **SO A QUESTION OF THE FORM *"when did this setting change, and who changed it"* CANNOT CURRENTLY BE
 ANSWERED FROM THE DATABASE.** ⚠️ **This is not hypothetical — it is why the `auto_open` anomaly in §15
@@ -23394,6 +23580,8 @@ of this manual).
   is a full page load (Next's rule), so /contact and the legal pages stay in `app/(app)` (the native app's legal view and Village
   Foodie link to them client-side). `scripts/cwv-2.cjs` §2 walks the graph.
 - **35.ap-2 A built-ahead public page reads nothing from the request and only tagged data.** The landing, /features and /faq at
+  ⛔ *V16.35 (vercel-cost-1): built ahead only for `lib/built-ahead-countries.ts` (8 countries), `revalidate = false`, refreshed only
+  on demand — nothing "shows within 300 seconds" any more; §48 "Marketing pages refresh only on demand".*
   `/<country>` are generated for every listed country (`revalidate = 300`, `dynamicParams = true`) and served from the CDN; their
   host gate, and the 404 for a country-shaped address with no such country, are `proxy.ts`'s. Every database read they make goes
   through the tagged shared cache, so a write shows on the very next request only if its writer revalidates the tag
@@ -26275,6 +26463,7 @@ it was not. Same class as the success-reporting writes already recorded. **OPEN.
 - **OBSERVED** **Tax rates are stored in thousandths of a percent** (8.875% = 8875; CHECK 0–20000), because
   basis points cannot hold three-decimal rates such as New York City's 8.875%. Tax is rounded once per
   order, half away from zero. The old `tax_rate_bps` columns are retired, kept not dropped (§76.1).
+  ⛔ *V16.35 (france-vat-1): CHECK 0–30000, and tax is rounded once **per rate** — "Per-dish VAT rates" below.*
 - **OBSERVED** On a UK order the only non-null new values are `food_minor` (= total), `tax_inclusive` true,
   `tax_label` 'VAT', `card_fee_payer` 'truck'.
 - **OBSERVED** Pay-at-the-truck orders go through `place_order_atomic_v2` (service-role only). The old
@@ -26286,6 +26475,32 @@ it was not. Same class as the success-reporting writes already recorded. **OPEN.
 - **OBSERVED** The card surcharge is supported by the engine but always 0: the card's credit/debit type is
   never known before the amount is fixed (the PaymentIntent is created at Place order). It needs the
   deferred-intent checkout (Phase 5).
+
+### Per-dish VAT rates, receipt numbers and the VAT-regime stamp (V16.35 — france-vat-1, france-records-1, france-receipts-1)
+
+- **A rate per dish, every country:** `menu_items_db.tax_rate_milli` (NULL = the truck's default `trucks.tax_rate_milli`), set in
+  Manage › Payments › "Item rates". Each order line is stamped with its dish and rate.
+- **One shared engine, `lib/order-tax.ts`:** deals are split across their items' rates, a discount is spread across rates, amounts
+  are shared by largest remainder, and tax is rounded **once per rate**. Single-rate orders came out byte-identical to before (43 ×
+  9 outputs, `scripts/france-vat-1.cjs`).
+- **`tax_breakdown`** (jsonb array, one object per rate; CHECK NULL or an array) on `orders` and `order_drafts`. NULL on every order
+  placed by the deployed code. Per-rate « Dont TVA » lines on the customer email and the ticket; per-rate Net / Tax columns in the
+  accountant Orders CSV. On a mixed-rate order where tax is added on top (US), the single tax line shows no rate.
+- **The rate limit is 0–30 %** (CHECK 0–30000 on `trucks`, `orders`, `order_drafts`, `menu_items_db`); 20 % blocked IE 23 %,
+  DK/NO/SE 25 % and HU 27 %.
+- **Finished orders are locked:** `edit` and `cancel` in `app/api/dashboard/action/route.ts` refuse `collected`, `cancelled` and
+  `rejected` with 409, for every client. The guard is in the route only, not the database (Open items 47).
+- **`place_order_atomic_v2` was replaced in place** by `20261124_france_vat_1.sql` (same signature and grants; one extra column,
+  `nullif(p_order->'tax_breakdown','null'::jsonb)`). Proved live by Dominic's rolled-back call on 23 Nov 18:28
+  (vat-live-check-1) — the precedent for the order-path standing rule at the top.
+- **Receipt numbers:** `orders.receipt_no` (bigint), a gap-free number per truck assigned by a never-failing BEFORE INSERT trigger
+  (`orders_receipt_no`, with `orders_receipt_no_keep`), so the deployed code is covered too. `20261125_france_records_1b_receipt_replay.sql`
+  stops a replayed `order_key` from taking a number (`ON CONFLICT DO NOTHING` still fires BEFORE INSERT triggers).
+- **The VAT-regime stamp (france-receipts-1, in progress):** `orders.vat_regime` and `order_drafts.vat_regime`, copied from
+  `trucks.vat_regime` on insert by never-failing triggers (`orders_stamp_vat_regime`, `order_drafts_stamp_vat_regime`;
+  `20261126_france_receipts_1.sql`). Its use on receipts is V16.36's.
+- **Triggers on order tables never fail an insert:** each has its own exception block; on error it leaves the value NULL and logs a
+  WARNING.
 
 ### Decisions (DECIDED 10–13 Oct)
 - **Sales tax:** the truck sets **one** rate (Manage › Payments). There is no per-event rate (12 Oct), and it is not Stripe Tax.
@@ -28213,6 +28428,7 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
   - under "Place order" and on the confirmation page;
   - " · Privacy" in every customer email footer.
 - **The data-retention job** (`/api/cron/order-retention`, daily at 04:30 UTC, service role; `lib/order-retention.ts`):
+  - **Enquiries (V16.35, inbox-1):** deleted 24 months after their last message (§90). Orders unchanged.
   - **Orders older than 12 months:** the customer's name becomes `''` (the column is NOT NULL), email, phone and
     notes become null, per-dish `specialInstructions` become `''`, and deal `slotNotes` become `{}`. Totals and line
     items are kept.
@@ -30602,6 +30818,24 @@ Recorded so they are not briefed again.
 - **Moving files:** a harness reading the working tree names the new path; one reading an old commit names the path it had there
   (`scripts/_moved-paths.cjs` `pathAt`, `changedSince`).
 
+### Marketing pages refresh only on demand (V16.35 — vercel-cost-1, 23 November 2026; not deployed)
+
+- **The rule:** no timer on the marketing pages or their data cache. The landing, /features and /faq at every country address have
+  `revalidate = false`; the marketing data cache (`lib/marketing-cache.ts`) has no expiry, keyed by deployment.
+- **Built ahead:** only the countries in `lib/built-ahead-countries.ts` (GB, US, IE, AU, NZ, CA, FR, DE — a one-line list), so 24
+  pages per deploy instead of 651. Every other country renders on its first visit and is then kept. **`dynamicParams = true` must
+  stay** (cwv-2: under `false`, Next 16.1.6 answers 404 for a built-ahead page's first visit).
+- **Refresh only on demand:** `POST /api/revalidate` (`app/api/revalidate/route.ts`), header `x-revalidate-secret`, body
+  `{"tags": [...]}`. The secret is compared in constant time (SHA-256 of each, `timingSafeEqual`). It answers **503** when
+  `REVALIDATE_SECRET` is unset, **401** for a wrong secret, and **400** for an unknown tag (allow-list `lib/marketing-tags.ts`:
+  `marketing-countries`, `marketing-plans`, `marketing-faq`).
+- **Who calls it:** Admin writes revalidate in-process (`revalidateMarketing`). The FAQ translator, the competitor check and
+  `scripts/db-migrate.cjs` call the route with `REVALIDATE_SECRET` (set in Vercel, GitHub and Dominic's `~/.zshrc`, 23 Nov). A
+  Supabase dashboard edit to prices, plans or FAQ needs `REVALIDATE_SECRET='…' node scripts/revalidate-pages.cjs` by hand.
+- **Unchanged:** `/<country>/compare`, the comparison pages and the legal pages still render per request.
+- ⛔ Supersedes every "within 5 minutes" / `revalidate = 300` statement about marketing pages (35.ap-2; Open items 35).
+- Harnesses `scripts/vercel-cost-1.cjs` (30/0) and `scripts/vercel-cost-1-local.cjs` (16/0). Report `docs/vercel-cost-1-report.md`.
+
 # 49. Deploy posture (current at V16.11; earlier postures below, each dated)
 
 ### 🔴 DEPLOY POSTURE AT V16.11 — PUSHED AND LIVE TO `bf71b9c3`; ONE LOCAL COMMIT (THE HK TAX YEAR, ALREADY RUN); MIGRATIONS 20261066–20261071 ALL RUN; WHAT THE TRUCK NOT YET IMPORTED (5 November 2026)
@@ -31235,6 +31469,17 @@ settings").
 
 **Harnesses:** `paperwork-1.cjs` (114) and `paperwork-1-screens.cjs` (21, browser). Live smoke test on `test-truck` (4
 Nov): every step worked, and it left nothing behind.
+
+### Manage › Settings › Business details (V16.35 — france-records-1, 24 November 2026; not deployed)
+
+- **Every country.** Owner or admin only; not asked at signup. Columns on `trucks` (`20261125_france_records_1.sql`): `legal_name`,
+  `registered_address` (jsonb, in the truck's address format), `registration_number`, `vat_number`, `vat_regime`.
+- **Checks:** France's SIREN / SIRET with the Luhn check (and La Poste's sum-of-digits rule for SIREN 356000000), held in
+  `registration_number`; GB's 8-character company number; free text elsewhere; an EU VAT number, format-checked. France also
+  chooses its **VAT regime** (`vat_regime`: franchise en base, réel simplifié, réel normal monthly or quarterly), which sets the
+  daily-totals presets (§19) and is stamped on each new order (§37). The route (`app/api/manage/route.ts`
+  `update_business_details`) checks owner or admin again and writes an audit row naming the fields, not the values.
+- **Customer receipts** showing these details and the regime are france-receipts-1 (V16.36).
 
 ---
 
@@ -32516,7 +32761,12 @@ directly from the mailbox, so the message is exactly what a mail client would pr
 | Account | Role | Credentials (Vercel env) |
 |---|---|---|
 | `dominic@hatchgrab.com` | **Primary** — sends, files its Sent copy, is polled | `OUTREACH_PRIMARY_USER` / `OUTREACH_PRIMARY_PASSWORD` |
-| `hello@hatchgrab.com` | **Legacy** — read-only history; still polled for replies to old threads | `OUTREACH_MAIL_USER` / `OUTREACH_MAIL_PASSWORD` |
+| `hello@hatchgrab.com` | **Legacy** — read-only history; still polled for replies to old threads. ⛔ *V16.35: also a **send** account, for Inbox replies to enquiries only (§90); its mailbox stays read-only* | `OUTREACH_MAIL_USER` / `OUTREACH_MAIL_PASSWORD` |
+
+- **V16.35 (inbox-1, inbox-2):** the **Inbox** (§90) is the one place replies are written. Prospects and partners are answered from
+  dominic@ (still the primary account for outreach). Enquiries are answered from hello@ (`accountForInboxReply`), or from the alias
+  they wrote to once `outreach_settings.enquiries_reply_from_alias` is true (false today). A linked truck's mail to dominic@ is
+  answered from dominic@. The 36 aliases in `outreach_settings.mail_aliases` all count as our own addresses.
 
 - Host `mail.privateemail.com` is a constant (`lib/outreach-mail-config.ts`): SMTP **465** (implicit TLS),
   IMAP **993**. 587 (STARTTLS) is checked by the health check and is the fallback if 465 is ever blocked,
@@ -32615,6 +32865,12 @@ directly from the mailbox, so the message is exactly what a mail client would pr
   `POLL_SINCE`.
 - An email Dominic sends **from Outlook** is found in Sent and recorded. If the prospect has replied it is
   logged as `reply`; otherwise it carries **no step** (§62.5).
+- **Enquiry intake (V16.35, enquiries-backend-1 / inbox-2; behind `enquiries_intake_enabled`, false today).** After the outreach
+  pass, the same run walks hello@'s INBOX for real people's enquiries (to hello@ or an alias), and dominic@'s INBOX for mail from a
+  **linked HatchGrab truck** (a Customer enquiry, linked to that truck). Mail outreach claims is never taken; a linked truck never
+  becomes a prospect. Still read-only (`EXAMINE`, `BODY.PEEK`), with its own watermark (`enquiries_intake_state`). Skipped and never
+  stored: contact-form copies, bounces / auto-replies, no-reply senders, our own addresses, diners' order mail. With the switch off,
+  the poll behaves exactly as before. Detail: §90.
 
 ## 60.6 The tables (all RLS on, `service_role` only, `anon` / `authenticated` revoked)
 
@@ -32655,6 +32911,9 @@ nothing above waits on it". It ships in this build's commit, `29e1b74`.
 
 Mark done sets `handled_at`. Snooze sets `snoozed_until` and leaves `handled_at` null: "not now" is not
 "done".
+
+**V16.35 (inbox-1):** "Replies waiting", the prospect timeline and the partner drawer offer **"Open in Inbox"**; replies are written
+and sent there (§90). Outbound first contact and chasers are unchanged.
 
 ## 61.2 The prospect page — `/admin/outreach/p/[prospectId]`
 
@@ -37405,7 +37664,19 @@ code. A country stays switched off until its launch list is done.
 - **Payments:** the Payment Element shows the Cartes Bancaires brand choice by default; holds work.
 - **Allergen card allowed:** the DGCCRF accepts a whole-menu table.
 - **Decisions (22 Oct):** no withdrawal line and no mediator field (the truck's duty); no per-item TVA yet; the Tap to
-  Pay CB brand choice later.
+  Pay CB brand choice later. ⛔ *V16.35: per-dish TVA rates exist now (france-vat-1, §37).*
+- **V16.35 — the law, the promises and what is held** (researched 23 Nov from official sources; detail in the French research chat):
+  - **B2C e-reporting** from **1 September 2027** for SMEs and micro-businesses, **including franchise en base**, only through an
+    approved platform (PA): daily totals before VAT and VAT per rate, no customer data; frequency follows the VAT regime (franchise
+    en base every 2 months, simplified monthly, standard monthly regime three times a month); plus payment data where VAT is due on
+    payment (typically services — goods or services for a food truck is for a French accountant). Built: the daily-totals file (§19).
+  - **Till software (article 286 I 3° bis CGI):** VAT-registered businesses selling to consumers must use compliant till software —
+    an NF525 / LNE certificate **or the software maker's individual attestation** (restored by the 2026 finance law, 19 Feb 2026).
+    Exempt: franchise en base, B2B-only, VAT-exempt-only. Fine €7,500 per non-compliant software. HatchGrab has neither.
+  - **Promised in writing to Le Poulpe à Pattes** (crêpe trailer, Lens, opening June 2027): forecasting "well before June 2027", and
+    the sales records she needs for e-reporting (Open items 44, 46).
+  - **Held:** the `reply_knowledge` till line ("HatchGrab … replaces it") stays suggested, and VAT-registered French trucks are not
+    told HatchGrab replaces their till, until the till-software decision (Open items 43, 47).
 - **The glossary row** was split (france-1 Follow-up, ~~uncommitted~~ ⛔ Corrected V16.5 — committed; OBSERVED 23 Oct, `git status` clean): "Private hire" « privatisation », "Private event"
   « événement privé ». translation-check fr-FR: structural 0; glossary flags 69 → 50.
 
@@ -39241,6 +39512,73 @@ Source research: `docs/world-countries-4-report.md`, `docs/world-countries-4/cou
 8. **Cannot sell (registration needed even for business customers):** Mexico (live today: switch off after checking no truck is trading there), ⛔ *(V16.18: no truck has ever been in MX, OBSERVED 12 Nov; its switch-off is in migration 20261095, prepared, NOT run — §89.3)* Philippines, Barbados, Cameroon, Congo, Côte d'Ivoire, DR Congo, Ghana, Kenya, Rwanda, Vietnam. Also excluded: Western Sahara, mainland China, Afghanistan, Somalia, Yemen, Sudan, the sanctioned countries and uninhabited territories.
 9. **Sanctions name check at signup** against the UK and US lists. Held until it exists (tax-clear but sanctions-flagged): Haiti, Iraq, Lebanon, Libya, Mali, Myanmar, Palestine, South Sudan, Venezuela.
 10. **Research complete (11 Nov 2026):** 249 ISO codes = 210 go live (169 + the 41 VAT-number-required) + 9 held for the sanctions check + 11 cannot sell + 19 excluded.
+
+# 90. Enquiries and the Inbox (V16.35 — enquiries-backend-1, inbox-1, inbox-2; 23 November 2026; not deployed, switched off)
+
+Reports: `docs/enquiries-backend-1-report.md`, `docs/inbox-1-report.md`, `docs/inbox-2-report.md`.
+
+## 90.1 The tables (RLS on, service role only)
+
+- `enquiries` (ref `ENQ-0001…`), `enquiry_messages`, `enquiry_drafts`, `reply_knowledge`, `enquiry_spend`
+  (`20261123_enquiries_backend_1.sql`).
+- `inbox_drafts`, `inbox_comments`, `inbox_sent` (`20261123_inbox_1.sql`).
+- Settings in `outreach_settings`: `enquiries_intake_enabled` (false), `enquiries_reply_from_alias` (false), `mail_aliases` (36),
+  and the intake watermark `enquiries_intake_state`. OBSERVED 24 Nov: 0 enquiries.
+
+## 90.2 The switch and intake
+
+- **One switch, `enquiries_intake_enabled`.** Off today. Off means the contact form and the reply poll behave exactly as before.
+- **Sources:** the contact form; hello@'s INBOX (real people writing to hello@ or an alias); dominic@'s INBOX for mail from a
+  **linked HatchGrab truck** (type Customer, linked to that truck — inbox-2). Intake runs inside the existing `outreach-replies`
+  cron, after the outreach pass, **read-only** (`EXAMINE`, `BODY.PEEK`, §60.5). Mail outreach claims stays outreach's; a linked
+  truck never becomes a prospect.
+- **Skipped, counted only, never stored:** contact-form copies, bounces / auto-replies, no-reply senders, our own addresses (every
+  alias included), **diners' order mail** (Dominic: it stays in the mailbox).
+
+## 90.3 Drafting and the answer pack
+
+- **Steps** (`lib/enquiries/run.ts`, `lib/inbox/drafting.ts`): translate → list the asks → build an **answer pack** → match each ask
+  (available / limited / gap / unknown; anything but available needs review) → English draft in Dominic's style (friendly, short,
+  only what was asked; **card fees always stated separately, never inside "free"**) → the customer-language version → the numbers
+  check.
+- **The answer pack** (`lib/enquiries/answer-pack*.ts`) holds only: the country's plans and prices from the pricing readers, the
+  public features list, the published FAQ, and **approved** `reply_knowledge` lines for the topics and country. The model never
+  sees code, this manual or the docs.
+- **The numbers check** (`lib/enquiries/rules.ts`): every number in a draft must appear in the pack or the customer's own message,
+  compared as **values with units** (decimal point or comma, thousands separators including the narrow no-break space, currency
+  before or after, percentages: "1,5 % + 0,25 €" matches 1.5 % and €0.25; an invented "€15" fails).
+- **Cost:** a **$5 a month cap** (`MONTHLY_CAP_USD`, ledger `enquiry_spend`), separate from the FAQ translator. Drafting and
+  translation need `ANTHROPIC_API_KEY` on Vercel (absent today → `no_model`; Open items 41).
+- **`canAutoSend` is always false.**
+
+## 90.4 `reply_knowledge`
+
+- **kind:** fact / guidance / gap (guidance is never customer-safe). **status:** approved / suggested / retired (approved needs
+  `approved_at`). `customer_safe`, `topics`, `countries`, `source` (dominic / edit / note).
+- **How lines are learned:** "Your comments for the AI" and edits become **suggested** lines after Send (`lib/enquiries/learning.ts`).
+  **Only approved lines reach the pack.** There is no approval screen yet (Open items 42); until then, SQL.
+- Seeded 23 Nov by Dominic (the V16.35 changelog lists them). OBSERVED 24 Nov: approved 4 fact, 1 gap, 2 guidance; suggested 1
+  fact (the till line, held — Open items 43).
+
+## 90.5 Admin › Inbox (inbox-1, approved from a mockup 23 Nov)
+
+- `app/(app)/admin/inbox/page.tsx`, `app/api/admin/inbox/route.ts`, `lib/inbox/*`. First in the admin navigation.
+- **Every incoming email needing an answer** — Enquiry, Prospect, Partner, Customer — in three columns: the list (type, the address
+  written to, language); their message in English in full (Show original; earlier messages folded); your reply in English,
+  editable (Show <language>; comments → Update reply; Attach; **Send** — "Send in French" etc.). No review flags on the page. Mark
+  done and Snooze.
+- **Send is the only send path, and only by Dominic's press** (POST `/api/admin/inbox` action `send` → `lib/inbox/send.ts`).
+  Prospect and partner replies go through their existing send routes, in-process. Drafts for prospects and partners are made when
+  the conversation is opened, with their history and offer.
+- **From:** prospects and partners — dominic@; enquiries — hello@ (`accountForInboxReply`), or the alias they wrote to once
+  `enquiries_reply_from_alias` is true; a linked truck's mail to dominic@ — dominic@ (`lib/inbox/aliases.ts`). A form enquiry's
+  reply subject is "HatchGrab — ENQ-0002".
+
+## 90.6 Retention and harnesses
+
+- **Enquiries are deleted 24 months after their last message** (the order-retention job, §43).
+- Harnesses: `scripts/enquiries-backend-1.cjs`, `scripts/inbox-1.cjs` (164/0), `scripts/inbox-2.cjs` (46/0) — fixtures and a fake
+  mail transport only, never the real mailboxes.
 
 ---
 
