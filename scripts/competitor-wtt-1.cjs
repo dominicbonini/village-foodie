@@ -147,7 +147,9 @@ const sha = b => crypto.createHash('sha256').update(b).digest('hex')
   // ── 5 · the registry, Admin's line, the deep check ─────────────────────────────────────────────────────────────────
   head('5 · the registry, Admin\'s line, and the requested competitor first in its country\'s deep check')
   {
-    t('registered last; the first three files unchanged', L.DATA_FILES.length === 4 && L.DATA_FILES[3].path === FILE_PATH && L.DATA_FILES[3].kind === 'research'
+    // compare-research-1 (24 Nov 2026) re-pin: a fifth research file (data/compare-research-1/competitors.json) is registered after
+    // this one, so "registered last" became "registered fourth, after the first three" — the first four entries are unchanged.
+    t('registered fourth; the first three files unchanged', L.DATA_FILES.length >= 4 && L.DATA_FILES[3].path === FILE_PATH && L.DATA_FILES[3].kind === 'research'
       && L.DATA_FILES[0].path === 'data/compare-de-1/competitors.json' && L.DATA_FILES[1].path === 'data/global-players/competitors.json' && L.DATA_FILES[2].kind === 'features')
     const line = L.importLines([{ file_path: FILE_PATH, sha256: 'a'.repeat(64), imported_at: '2026-11-05T02:11:00Z', result: 'ok', counts: { competitors: 1, added: 1, plans: 1, plansAdded: 1, plansExisting: 0, entries: 0, answersAdded: 42, checksRequested: 1 }, message: null }])[3].text
     t('Admin\'s line names the answers and the check request', /What The Truck research imported 5 Nov: 1 competitors, 1 plans, 0 entries \(42 feature answers, unverified; 1 check requested\)/.test(line), line)

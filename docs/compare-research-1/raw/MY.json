@@ -1,0 +1,530 @@
+{
+  "country": "MY",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "StoreHub Malaysia online ordering pickup restaurant Beep webstore",
+    "klikit.io site navigation (own site, no search)",
+    "take.app Malaysia food pre-order WhatsApp online store RM (restricted to take.app)",
+    "food truck online ordering system Malaysia pre-order pickup pasar malam",
+    "qashier.com/my food truck pasar malam events pop-up POS (restricted to qashier.com)"
+  ],
+  "vendors": [
+    {
+      "name": "StoreHub",
+      "website": "https://www.storehub.com/my",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Malaysian F&B POS with 'Takeaway & Pickup' (Beep-powered ordering link): customers order ahead for immediate or scheduled pickup; RM prices on the /my/ site",
+      "eligibility": {
+        "order_quote": "Let customers order ahead for self-pickup and takeaway, with lower fees, faster service, and seamless POS integration.",
+        "order_url": "https://www.storehub.com/my/takeaway-and-pickup",
+        "country_quote": "From: RM122 /month",
+        "country_url": "https://www.storehub.com/my/pricing/"
+      },
+      "plans": [
+        {
+          "plan_name": "Takeaway & Pickup (Beep link)",
+          "currency": "MYR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Pay only 2% transaction fees with no upfront cost, making every order more profitable.",
+          "url": "https://www.storehub.com/my/takeaway-and-pickup",
+          "note": "Page states the 2% and 'no upfront cost' but no RM figure and no monthly fee; it does not say whether a StoreHub POS plan is required (orders 'sync directly into your existing POS system')."
+        },
+        {
+          "plan_name": "Starter (POS)",
+          "currency": "MYR",
+          "price_major": 122,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "From: RM122 /month",
+          "url": "https://www.storehub.com/my/pricing/",
+          "note": "'From' price. The pricing page's plan lines do not mention online ordering / Takeaway & Pickup, so it is not stated that this plan includes it. Longer terms (12-60 months) give bonus free months; SST treatment not stated."
+        },
+        {
+          "plan_name": "Advanced (POS)",
+          "currency": "MYR",
+          "price_major": 235,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "From: RM235 /month",
+          "url": "https://www.storehub.com/my/pricing/",
+          "note": "'From' price; adds 'Multi-location management'. Online ordering not listed in plan lines. SST treatment not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers can choose to pick up their order immediately or at a later scheduled time.",
+          "url": "https://www.storehub.com/my/takeaway-and-pickup"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "StoreHub's Takeaway & Pickup orders sync directly into your existing POS system and Kitchen Display System.",
+          "url": "https://www.storehub.com/my/takeaway-and-pickup"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Menu changes, stock updates, and pricing sync instantly across dine-in, delivery,",
+          "url": "https://www.storehub.com/my/takeaway-and-pickup"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Multi-location management",
+          "url": "https://www.storehub.com/my/pricing/"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "From: RM122 /month",
+          "url": "https://www.storehub.com/my/pricing/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Pay only 2% transaction fees with no upfront cost, making every order more profitable.",
+          "url": "https://www.storehub.com/my/takeaway-and-pickup"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.storehub.com/my/pricing/",
+        "https://www.storehub.com/my/takeaway-and-pickup"
+      ]
+    },
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "own site says it is built for food trucks (Malaysia food-truck page); webshop (Omni add-on) takes pickup orders with time slots; Malaysia pricing page in RM",
+      "eligibility": {
+        "order_quote": "Support pickup, delivery, and dine-in ordering from the same webshop.",
+        "order_url": "https://klikit.io/en/products/webshop",
+        "country_quote": "Omni, which connects your delivery apps and adds your own webshop and QR ordering, is +RM159, so Core + Omni is RM218.",
+        "country_url": "https://klikit.io/en/pricing/malaysia",
+        "food_quote": "Klikit is purpose-built for APAC food businesses, including food trucks.",
+        "food_url": "https://klikit.io/en/learn/food-truck-pos-system-malaysia"
+      },
+      "plans": [
+        {
+          "plan_name": "Core + Omni (webshop / QR ordering)",
+          "currency": "MYR",
+          "price_major": 218,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Omni, which connects your delivery apps and adds your own webshop and QR ordering, is +RM159, so Core + Omni is RM218.",
+          "url": "https://klikit.io/en/pricing/malaysia",
+          "note": "Per outlet per month; page says 'Per outlet, per month, excluding tax.' Webshop (the online-ordering part) is only in Omni, which is an add-on to Core."
+        },
+        {
+          "plan_name": "Core",
+          "currency": "MYR",
+          "price_major": 59,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Core (POS, menus, stock tracking, kitchen display and reports) is RM59.",
+          "url": "https://klikit.io/en/pricing/malaysia",
+          "note": "Core alone does NOT include the webshop; listed for context only (base needed for Omni)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Set delivery zones, time slots, and minimum orders.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen Display System",
+          "url": "https://klikit.io/en/pricing/malaysia"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "Klikit offers offline mode that syncs when connection is restored.",
+          "url": "https://klikit.io/en/learn/food-truck-pos-system-malaysia"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Point of Sale (POS)",
+          "url": "https://klikit.io/en/pricing/malaysia"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Multi-location Management",
+          "url": "https://klikit.io/en/pricing/malaysia"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Per outlet, per month, excluding tax.",
+          "url": "https://klikit.io/en/pricing/malaysia"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commission fees ever. You only pay a small monthly subscription fee.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Every dollar your customers spend goes directly to you, minus payment processing fees.",
+          "url": "https://klikit.io/en/products/webshop"
+        }
+      ],
+      "check_urls": [
+        "https://klikit.io",
+        "https://klikit.io/en/products/webshop",
+        "https://klikit.io/en/pricing",
+        "https://klikit.io/en/pricing/malaysia",
+        "https://klikit.io/en/learn/food-truck-pos-system-malaysia"
+      ]
+    },
+    {
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "WhatsApp-linked online store used by Malaysian kopitiams/food sellers; checkout date & time picker, pickup and festive pre-orders; Malaysia country page; prices USD only (no MYR price on own site)",
+      "eligibility": {
+        "food_quote": "From kopitiam operators to frozen food sellers — Malaysian merchants trust Take App for every season.",
+        "food_url": "https://www.take.app/countries/malaysia",
+        "order_quote": "You can let customers choose their delivery schedule by showing the delivery date and time picker on the checkout page.",
+        "order_url": "https://www.take.app/help/delivery-or-pick-up-schedule",
+        "country_quote": "Sell online in Malaysia. Own every order.",
+        "country_url": "https://www.take.app/countries/malaysia"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "50 orders per month",
+          "url": "https://www.take.app/pricing",
+          "note": "Free ($0). USD only, no MYR price anywhere on own site (Malaysia page also shows USD). 0% commission; payment providers charge their own fees."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only — fails the MYR publish rule. Billed monthly; prepay 3/6/12 months at a discount."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only — fails the MYR publish rule. Includes 5 stores, WhatsApp automation."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Show both date and preset time-slot picker (based on service hour)",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Yes — Take App's scheduling and calendar features are perfect for festive pre-orders.",
+          "url": "https://www.take.app/countries/malaysia"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Can I cap orders for a specific delivery date? (Order daily capacity)",
+          "url": "https://www.take.app/help/delivery-or-pick-up-schedule"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Customers check out on your store and send a clean order message to WhatsApp",
+          "url": "https://www.take.app/countries/malaysia"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Multiple stores and staff",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Custom domain",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app/",
+        "https://www.take.app/countries/malaysia",
+        "https://www.take.app/help/delivery-or-pick-up-schedule"
+      ]
+    },
+    {
+      "name": "Qashier (QashierEats)",
+      "website": "https://qashier.com/my",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Malaysian F&B POS whose QashierEats branded ordering site takes pickup/delivery orders and pre-orders for a later time or date; one flat RM price incl. online ordering. CAUTION: the 'Pickup or delivery' feature block is labelled '(coming soon)' while the FAQ says customers already choose pickup at checkout",
+      "eligibility": {
+        "order_quote": "Yes. Customers can place pre-orders for a later time or date, so you can prepare ahead and manage your kitchen load.",
+        "order_url": "https://qashier.com/my/qashiereats-online-ordering-system",
+        "country_quote": "Prices exclude SST.",
+        "country_url": "https://qashier.com/my/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Qashier platform (software only)",
+          "currency": "MYR",
+          "price_major": 8,
+          "period": "day",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Software only: RM8 a day.",
+          "url": "https://qashier.com/my/pricing",
+          "note": "Priced PER DAY (no monthly figure stated on the page; ~RM240/month is our arithmetic, not theirs). One platform price, 'no feature tiers'; includes '0% commission online ordering and QR ordering'. Prices exclude SST. No fixed term. Online card payments: gateway fee 1.40% + RM0.30 per transaction (local cards)."
+        },
+        {
+          "plan_name": "Qashier platform, 2 years prepaid",
+          "currency": "MYR",
+          "price_major": 4580,
+          "period": "2 years",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Pay 2 years upfront: RM4,580.",
+          "url": "https://qashier.com/my/pricing",
+          "note": "Upfront 2-year option; page adds 'Save RM1,260.' Period is 2 years, not month/year."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Customers choose pickup or delivery at checkout",
+          "url": "https://qashier.com/my/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Yes. Customers can place pre-orders for a later time or date, so you can prepare ahead and manage your kitchen load.",
+          "url": "https://qashier.com/my/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Put your link in bio and on socials, and place QR codes on tables and takeaway counters for scan-to-order.",
+          "url": "https://qashier.com/my/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Single or multi-outlet.",
+          "url": "https://qashier.com/my/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Point orders to your own web address, order.yourshop.com, for a storefront that's fully yours.",
+          "url": "https://qashier.com/my/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "monthly",
+          "value": "partial",
+          "quote": "Software only: RM8 a day.",
+          "url": "https://qashier.com/my/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No per-order commission, ever, just a low payment gateway fee.",
+          "url": "https://qashier.com/my/qashiereats-online-ordering-system"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Online payment gateway fee 1.40% + RM0.30 per transaction (local cards)",
+          "url": "https://qashier.com/my/qashiereats-online-ordering-system"
+        }
+      ],
+      "check_urls": [
+        "https://qashier.com/my/qashiereats-online-ordering-system",
+        "https://qashier.com/my/pricing",
+        "https://qashier.com/my/qashierx1/"
+      ]
+    }
+  ],
+  "notes": "4 eligible. MYR prices on own site: Klikit (food_truck; Core + Omni RM218/outlet/month excl. tax — webshop only in the Omni add-on; own Malaysia food-truck page names food trucks; order-ahead evidence now found: webshop pickup + time slots), Qashier (RM8 a DAY, flat, online ordering included; excl. SST; its 'Pickup or delivery' block says '(coming soon)' but the FAQ says customers choose pickup at checkout and can pre-order for a later time/date — reviewer should weigh this), StoreHub (Takeaway & Pickup: 2% per transaction, 'no upfront cost', no RM figure on that page; POS plans from RM122/month on /my/pricing but the plan lines don't list online ordering and the page doesn't say whether a POS plan is required). Take App: eligible on evidence (Malaysia country page, kopitiam/food sellers, date & time picker, pre-orders) but prices are USD only everywhere on its own site, incl. the Malaysia page — fails the MYR publish rule. Klikit's food-truck page is a Klikit-published guide ('learn' section); the food truck and offline quotes are Klikit's own product claims there. Qashier's own pages name events/pop-ups/markets only for its POS hardware, so it is kept as nearest_local. StoreHub quotes 'From: RM122 /month' may render across two elements on the page. Not checked: Oddle, Eats365 (found in search, not needed); SumUp/Lightspeed not needed. No marketplaces recorded."
+}

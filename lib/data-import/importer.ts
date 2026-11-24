@@ -18,6 +18,9 @@ export const DATA_FILES = [
   { path: 'data/comparison-features/features.json', label: 'Comparison feature list', kind: 'features' },
   // competitor-wtt-1: What The Truck (GB) — one competitor, its plan and its quoted feature answers, and a check request.
   { path: 'data/competitor-wtt-1/competitors.json', label: 'What The Truck research', kind: 'research' },
+  // compare-research-1 (24 Nov 2026): competitors read on their own websites for the countries closest to a live comparison
+  // page — eligible ones only (online ordering ahead), quoted answers, plans in minor units, entries, and check requests.
+  { path: 'data/compare-research-1/competitors.json', label: 'Comparison research (24 Nov)', kind: 'research' },
 ] as const
 export type DataFile = (typeof DATA_FILES)[number]
 

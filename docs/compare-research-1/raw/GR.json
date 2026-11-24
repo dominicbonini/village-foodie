@@ -1,0 +1,500 @@
+{
+  "country": "GR",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "σύστημα online παραγγελιών εστιατόριο παραλαβή χωρίς προμήθεια τιμές",
+    "food truck καντίνα online παραγγελίες εφαρμογή",
+    "online ordering σύστημα για εστιατόρια δικό σου site παραγγελιών takeaway πακέτα τιμολόγησης €/μήνα",
+    "ελληνική πλατφόρμα online παραγγελιών για καφέ εστιατόρια takeaway συνδρομή μήνα ΦΠΑ",
+    "online παραγγελίες για το κατάστημά σου εστίαση takeaway pickup ώρα παραλαβής πλατφόρμα Ελλάδα τιμή συνδρομής",
+    "SumUp Ελλάδα online παραγγελίες εστιατόριο click and collect",
+    "eshop εστίασης online παραγγελίες delivery take away χωρίς προμήθεια ελληνική εταιρεία πακέτα"
+  ],
+  "vendors": [
+    {
+      "name": "Spevdo",
+      "website": "https://spevdo.gr",
+      "stored_id_prefix": "54b82bfa",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Athens-built commission-free ordering site for Greek restaurants: delivery and takeaway pickup at a customer-chosen time; Greek-language site, EUR, +ΦΠΑ pricing. Prices load by script and could not be read as page text.",
+      "eligibility": {
+        "order_quote": "Παραγγελίες για παραλαβή, με ώρα που διαλέγει ο πελάτης.",
+        "order_url": "https://spevdo.gr/el/",
+        "country_quote": "Η πλατφόρμα παράδοσης χωρίς προμήθειες για ελληνικά εστιατόρια. Φτιαγμένη στην Αθήνα.",
+        "country_url": "https://spevdo.gr/el/"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "/μήνα +ΦΠΑ",
+          "url": "https://spevdo.gr/el/",
+          "note": "Price is loaded by script from the vendor's live plan catalog; the page text shows only 'Φόρτωση της τιμής' (price loading). Stored figure could not be re-confirmed as page text; not changed here. Stored value was 60 EUR/month. Page: 'Όλες οι τιμές είναι +ΦΠΑ. Η ετήσια χρέωση εξοικονομεί 2 μήνες (17%).' No setup or per-order fee stated (FAQ)."
+        },
+        {
+          "plan_name": "Growth",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "/μήνα +ΦΠΑ",
+          "url": "https://spevdo.gr/el/",
+          "note": "Price is loaded by script from the vendor's live plan catalog; the page text shows only 'Φόρτωση της τιμής' (price loading). Stored figure could not be re-confirmed as page text; not changed here. Stored value was 119 EUR/month. Page: 'Όλες οι τιμές είναι +ΦΠΑ. Η ετήσια χρέωση εξοικονομεί 2 μήνες (17%).' No setup or per-order fee stated (FAQ)."
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "/μήνα +ΦΠΑ",
+          "url": "https://spevdo.gr/el/",
+          "note": "Price is loaded by script from the vendor's live plan catalog; the page text shows only 'Φόρτωση της τιμής' (price loading). Stored figure could not be re-confirmed as page text; not changed here. Stored value was 229 EUR/month. Page: 'Όλες οι τιμές είναι +ΦΠΑ. Η ετήσια χρέωση εξοικονομεί 2 μήνες (17%).' No setup or per-order fee stated (FAQ)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Παραγγελίες για παραλαβή, με ώρα που διαλέγει ο πελάτης.",
+          "url": "https://spevdo.gr/el/"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Πακέτο · προ-παραγγελία",
+          "url": "https://spevdo.gr/el/"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Ο περιορισμός παραγγελιών σε αφήνει να δέχεσαι μόνο όσα μπορείς να βγάλεις — ακόμα και με ένα scooter.",
+          "url": "https://spevdo.gr/el/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Η παραγγελία πηγαίνει στην οθόνη της κουζίνας ή ο εκτυπωτής της κουζίνας τυπώνει το δελτίο.",
+          "url": "https://spevdo.gr/el/"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "με κουμπί «παύση νέων παραγγελιών» και με διαχείριση που δουλεύει και με κακό σήμα.",
+          "url": "https://spevdo.gr/el/"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Σελίδα, τραπέζι, πακέτο και τηλέφωνο σε έναν πίνακα.",
+          "url": "https://spevdo.gr/el/"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Δικό σου όνομα ιστοσελίδας (brand.gr)",
+          "url": "https://spevdo.gr/el/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Μία επιταγή τον μήνα, ανεξάρτητα πόσες παραγγελίες κάνεις.",
+          "url": "https://spevdo.gr/el/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Καμία χρέωση ρύθμισης, καμία ακύρωσης, καμία ανά παραγγελία.",
+          "url": "https://spevdo.gr/el/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://spevdo.gr",
+        "https://spevdo.gr/el/"
+      ]
+    },
+    {
+      "name": "Worldline All-in-One Platform Ordering",
+      "website": "https://worldline.com/el-gr",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "Worldline Greece's restaurant ordering/POS platform; Business plan adds a website for online orders (takeaway/delivery) with KDS; Greek page, EUR prices excl. VAT. Not one of the stored till players; it is a payments/POS group, so treat as pos-type.",
+      "eligibility": {
+        "order_quote": "Δημιουργία website για την επιχείρησή σας για online παραγγελίες ώστε να αποκτήσετε ένα ακόμα δυνατό κανάλι πωλήσεων",
+        "order_url": "https://worldline.com/el-gr/home/main-navigation/solutions/merchants/in-person-payments/all-in-one-platform/all-in-one-platform-ordering",
+        "country_quote": "Γνωρίστε το All-in-One Platform Ordering | Worldline Ελλάδα",
+        "country_url": "https://worldline.com/el-gr/home/main-navigation/solutions/merchants/in-person-payments/all-in-one-platform/all-in-one-platform-ordering"
+      },
+      "plans": [
+        {
+          "plan_name": "Business",
+          "currency": "EUR",
+          "price_major": 24.99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "€24,99/ μήνα",
+          "url": "https://worldline.com/el-gr/home/main-navigation/solutions/merchants/in-person-payments/all-in-one-platform/all-in-one-platform-ordering",
+          "note": "Only the Business plan lists 'Online ordering' and 'Ιστότοπος'. Billed yearly: 'ή €22,99/μήνα (Ετήσιο)'. Page: 'Όλες οι τιμές είναι χωρίς ΦΠΑ'. 'Χωρίς προμήθειες' on every plan. Essential (€19,99/μήνα) has 'Takeaway παραγγελίες' but no online ordering. 14-day free start."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Δημιουργία website για την επιχείρησή σας για online παραγγελίες ώστε να αποκτήσετε ένα ακόμα δυνατό κανάλι πωλήσεων",
+          "url": "https://worldline.com/el-gr/home/main-navigation/solutions/merchants/in-person-payments/all-in-one-platform/all-in-one-platform-ordering"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "KDS (Kitchen Display System) για άμεση επικοινωνία μεταξύ σερβιτόρων και κουζίνας.",
+          "url": "https://worldline.com/el-gr/home/main-navigation/solutions/merchants/in-person-payments/all-in-one-platform/all-in-one-platform-ordering"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Παρακολούθηση των παραγγελιών και από ποιο κανάλι προέρχονται (dine-in, take away ή delivery)",
+          "url": "https://worldline.com/el-gr/home/main-navigation/solutions/merchants/in-person-payments/all-in-one-platform/all-in-one-platform-ordering"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Τοποθεσίες καταστημάτων: έως 3",
+          "url": "https://worldline.com/el-gr/home/main-navigation/solutions/merchants/in-person-payments/all-in-one-platform/all-in-one-platform-ordering"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "€24,99/ μήνα",
+          "url": "https://worldline.com/el-gr/home/main-navigation/solutions/merchants/in-person-payments/all-in-one-platform/all-in-one-platform-ordering"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Χωρίς προμήθειες",
+          "url": "https://worldline.com/el-gr/home/main-navigation/solutions/merchants/in-person-payments/all-in-one-platform/all-in-one-platform-ordering"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://worldline.com/el-gr/home/main-navigation/solutions/merchants/in-person-payments/all-in-one-platform/all-in-one-platform-ordering"
+      ]
+    },
+    {
+      "name": "MENU TIGER",
+      "website": "https://www.menutiger.com/el",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "QR + website ordering for restaurants (customers order and pay on the restaurant's site, order scheduling listed); Greek-language site, but prices only in USD and no stated Greek presence beyond the translation. Weak fit: global tool.",
+      "eligibility": {
+        "order_quote": "Οι πελάτες παραγγέλνουν και πληρώνουν μέσω της ιστοσελίδας του εστιατορίου",
+        "order_url": "https://www.menutiger.com/el/pricing",
+        "country_quote": "Βγάλτε το εστιατόριο στο διαδίκτυο",
+        "country_url": "https://www.menutiger.com/el/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Free",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0 US$ /μήνα",
+          "url": "https://www.menutiger.com/el/pricing",
+          "note": "Greek-language page shows prices only in USD (no EUR). Quote is the price as rendered across separate elements (amount, 'US$', '/μήνα'). Monthly billing; an annual toggle says 'Εξοικονόμηση 15%' without listing annual prices. VAT not stated. Free plan: '75 παραγγελίες / μήνα'."
+        },
+        {
+          "plan_name": "Regular",
+          "currency": "USD",
+          "price_major": 17,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "17 US$ /μήνα",
+          "url": "https://www.menutiger.com/el/pricing",
+          "note": "Greek-language page shows prices only in USD (no EUR). Quote is the price as rendered across separate elements (amount, 'US$', '/μήνα'). Monthly billing; an annual toggle says 'Εξοικονόμηση 15%' without listing annual prices. VAT not stated. '500 παραγγελίες / μήνα'."
+        },
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 46,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "46 US$ /μήνα",
+          "url": "https://www.menutiger.com/el/pricing",
+          "note": "Greek-language page shows prices only in USD (no EUR). Quote is the price as rendered across separate elements (amount, 'US$', '/μήνα'). Monthly billing; an annual toggle says 'Εξοικονόμηση 15%' without listing annual prices. VAT not stated. '2.000 παραγγελίες / μήνα'; adds KDS. Premium is 119 US$/μήνα (unlimited orders)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Οι πελάτες παραγγέλνουν και πληρώνουν μέσω της ιστοσελίδας του εστιατορίου",
+          "url": "https://www.menutiger.com/el/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Προγραμματισμός παραγγελιών",
+          "url": "https://www.menutiger.com/el/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Συνδέστε την οθόνη κουζίνας με το διαδικτυακό μενού του εστιατορίου για ενημερώσεις παραγγελιών σε πραγματικό χρόνο και διαχείριση κουζίνας.",
+          "url": "https://www.menutiger.com/el/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Δημιουργήστε έως πέντε καταστήματα και ρυθμίστε τα διαδικτυακά μενού τους",
+          "url": "https://www.menutiger.com/el/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Φιλοξενήστε τα ψηφιακά μενού εξ ολοκλήρου στον δικό σας τομέα (menu.yourbrand.com) με 100% επωνυμία δική σας.",
+          "url": "https://www.menutiger.com/el/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Μηνιαία χρέωση",
+          "url": "https://www.menutiger.com/el/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Χωρίς τέλη εγκατάστασης. Χωρίς προμήθεια ανά παραγγελία.",
+          "url": "https://www.menutiger.com/el/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.menutiger.com/el/pricing"
+      ]
+    },
+    {
+      "name": "Zuna",
+      "website": "https://www.zunapro.com/greece/el",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Found by search as a Greek restaurant website builder with online ordering; its Greek pages answer HTTP 410 Gone (tried the product page and /greece/el once each).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.zunapro.com/greece/el/restaurant-cafe-website",
+        "https://www.zunapro.com/greece/el"
+      ]
+    },
+    {
+      "name": "SumUp",
+      "website": "https://www.sumup.com/el-gr/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "SumUp Greece's free online store offers store pickup (click and collect) and delivery; Greek el-gr site with € prices. Generic shop builder, not food-specific (no food-truck/restaurant wording on this page) — weak fit; no Greek Order & Pay page (el-gr/order-and-pay is 404).",
+      "eligibility": {
+        "order_quote": "Προσφέρετε στους πελάτες παραδόσεις, παραλαβές από το κατάστημα και τοποθεσίες εξυπηρέτησης.",
+        "order_url": "https://www.sumup.com/el-gr/online-katastima/",
+        "country_quote": "Ηλεκτρονικό εμπόριο με SumUp: δωρεάν και εύκολα",
+        "country_url": "https://www.sumup.com/el-gr/online-katastima/"
+      },
+      "plans": [
+        {
+          "plan_name": "Ηλεκτρονικό κατάστημα (Online Store)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.75,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0 € Μηνιαία κόστη",
+          "url": "https://www.sumup.com/el-gr/online-katastima/",
+          "note": "Page shows '0 €' over 'Μηνιαία κόστη' and '0 €' to create the store; transaction fee '2,75%' labelled 'Ανταγωνιστικό τέλος συναλλαγής' (a payment-processing fee charged per online sale). VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Προσφέρετε στους πελάτες παραδόσεις, παραλαβές από το κατάστημα και τοποθεσίες εξυπηρέτησης.",
+          "url": "https://www.sumup.com/el-gr/online-katastima/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Εξατομικευμένοι τομείς",
+          "url": "https://www.sumup.com/el-gr/online-katastima/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Ανοίξτε το ηλεκτρονικό σας κατάστημα χωρίς έξοδα συνδρομής ή κρυφά τέλη.",
+          "url": "https://www.sumup.com/el-gr/online-katastima/"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "Ανταγωνιστικό τέλος συναλλαγής",
+          "url": "https://www.sumup.com/el-gr/online-katastima/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Ανταγωνιστικό τέλος συναλλαγής",
+          "url": "https://www.sumup.com/el-gr/online-katastima/"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/el-gr/",
+        "https://www.sumup.com/el-gr/online-katastima/",
+        "https://www.sumup.com/el-gr/order-and-pay/"
+      ]
+    }
+  ],
+  "notes": "No Greek food-truck / street-food / market ordering tool found (searches in Greek returned only foreign App Store apps). Spevdo (stored 54b82bfa) is still live and eligible (Greek, takeaway pickup at a chosen time, scheduled orders, +ΦΠΑ, 0% commission, no setup fee), but its plan prices are filled in by script from its own plan API (api.spevdo.gr/api/v1/plans); the server-rendered page and WebFetch show only 'Φόρτωση της τιμής' (price loading). A direct read of that API was blocked by the session's permission guard, so the stored 60/119/229 could NOT be re-confirmed today; price_major left null, stored values kept in the notes. Spevdo also has a 'Menu' plan (QR menu, no ordering), not recorded. Worldline Greece is the only vendor with an EUR price for a plan that includes online ordering (Business €24,99/μήνα excl. VAT, €22,99/μήνα billed yearly); it is a payments/POS group, not one of the stored till players, recorded as focus pos. SumUp Greece (stored d0eb16fa): only a generic free online store with store pickup (0 € monthly, 2,75% transaction fee); no Greek Order & Pay page (/el-gr/order-and-pay/ is 404), so weak fit. MENU TIGER has a Greek-language site but prices only in USD. Zuna (zunapro.com/greece) answered 410 Gone. METRO's DISH Order has no Greek country page (dish.co/GR/el/... 404), not recorded. Marketplaces (efood, Wolt, Box) excluded. Zettle, Lightspeed, Square, Toast, Clover not checked for Greece (enough candidates found)."
+}

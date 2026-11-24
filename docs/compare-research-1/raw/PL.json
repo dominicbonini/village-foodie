@@ -1,0 +1,760 @@
+{
+  "country": "PL",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "Frivo food truck zamówienia online",
+    "frivo.pl aplikacja food truck dla lokali cennik",
+    "upmenu.com/pl zamówienia online odbiór osobisty food truck",
+    "restaumatic cennik PRO zł miesięcznie",
+    "food truck zamówienia online system aplikacja odbiór bez kolejki"
+  ],
+  "vendors": [
+    {
+      "name": "Frivo",
+      "website": "https://frivo.pl",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Polish order-ahead app for food trucks, beach bars and cafés; pickup at a set time; PLN monthly plans with 0% commission",
+      "eligibility": {
+        "food_quote": "Food trucki umiejscowione w ich okolicy to idealne miejsce do zastosowania zamówień z odbiorem.",
+        "food_url": "https://frivo.pl/zamowienia-z-odbiorem",
+        "order_quote": "Dzięki Frivo udostępnisz gościom zamówienie i odbiór o dogodnym czasie, a to pozwoli na dotarcie do niedostępnych dotychczas klientów.",
+        "order_url": "https://frivo.pl/zamowienia-z-odbiorem",
+        "country_quote": "Cały utarg pomniejszony o koszty operatora płatności Przelwy24 trafia do Ciebie na konto kolejnego dnia roboczego.",
+        "country_url": "https://frivo.pl"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "PLN",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "99zł netto msc.",
+          "url": "https://frivo.pl/cennik",
+          "note": "Page shows '99zł' / 'netto msc.' / '0%' / 'Dochodu we Frivo' as separate lines. Setup 0 from homepage: 'Przy wdrożeniu Frivo nie ma jednorazowych kosztów.' Pickup orders not listed as a plan line item; Przelewy24 payment costs deducted (amount not stated)."
+        },
+        {
+          "plan_name": "Basic",
+          "currency": "PLN",
+          "price_major": 199,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "199zł netto msc.",
+          "url": "https://frivo.pl/cennik",
+          "note": "Adds loyalty programme, tech support, integrations; 0% 'Dochodu we Frivo'."
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "PLN",
+          "price_major": 349,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "349zł netto msc.",
+          "url": "https://frivo.pl/cennik",
+          "note": "Adds the venue's own app in App Store / Google Play; 0% 'Dochodu we Frivo'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Personel Twojego lokalu potwierdza możliwość przyjęcia zamówienia oraz godzinę odbioru.",
+          "url": "https://frivo.pl/zamowienia-z-odbiorem"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "99zł netto msc.",
+          "url": "https://frivo.pl/cennik"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% Dochodu we Frivo",
+          "url": "https://frivo.pl/cennik"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Cały utarg pomniejszony o koszty operatora płatności Przelwy24 trafia do Ciebie na konto kolejnego dnia roboczego.",
+          "url": "https://frivo.pl"
+        }
+      ],
+      "check_urls": [
+        "https://frivo.pl",
+        "https://frivo.pl/cennik",
+        "https://frivo.pl/zamowienia-z-odbiorem"
+      ]
+    },
+    {
+      "name": "apetitio",
+      "website": "https://apetitio.pl",
+      "stored_id_prefix": "875ca26d",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "takeaway/numbered-order module is marked 'Dostępne wkrótce - jesień 2021' (still coming soon); no ordering ahead for a time; no prices on the offer page (labels only)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://apetitio.pl",
+        "https://apetitio.pl/oferta",
+        "https://apetitio.pl/uslugi/jedzenie-na-wynos"
+      ]
+    },
+    {
+      "name": "UpMenu",
+      "website": "https://www.upmenu.com",
+      "stored_id_prefix": "ef9dcbd8",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant online-ordering platform with order-ahead, Polish site and PLN prices; also writes about food trucks selling online (blog on own site)",
+      "eligibility": {
+        "food_quote": "Food trucki posiadające swoją stronę internetową mogą również rozpocząć sprzedaż bezpośrednio ze swojej www.",
+        "food_url": "https://www.upmenu.com/pl/blog/jak-otworzyc-food-truck",
+        "order_quote": "Zamawianie z wyprzedzeniem",
+        "order_url": "https://www.upmenu.com/pl/cennik/",
+        "country_quote": "Wszystkie ceny są miesięczne i netto, bez VAT.",
+        "country_url": "https://www.upmenu.com/pl/cennik/"
+      },
+      "plans": [
+        {
+          "plan_name": "Zamówienia online (75 zamówień)",
+          "currency": "PLN",
+          "price_major": 169,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "169 zł",
+          "url": "https://www.upmenu.com/pl/cennik/",
+          "note": "Tiers are unnamed on the page; this one shows '169 zł' with '75 zamówień'. Page: 'Wszystkie ceny są miesięczne i netto, bez VAT.' Per location. Orders over the limit: '6,70 zł / zamówienie'. No commission ('Zamiast prowizji oferujemy subskrypcję, która zawsze jest stała.')."
+        },
+        {
+          "plan_name": "Zamówienia online (210 zamówień)",
+          "currency": "PLN",
+          "price_major": 289,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "289 zł",
+          "url": "https://www.upmenu.com/pl/cennik/",
+          "note": "Tiers are unnamed on the page; this one shows '289 zł' with '210 zamówień'. Page: 'Wszystkie ceny są miesięczne i netto, bez VAT.' Per location. Orders over the limit: '6,70 zł / zamówienie'. No commission ('Zamiast prowizji oferujemy subskrypcję, która zawsze jest stała.')."
+        },
+        {
+          "plan_name": "Zamówienia online (Bez limitu)",
+          "currency": "PLN",
+          "price_major": 499,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "499 zł",
+          "url": "https://www.upmenu.com/pl/cennik/",
+          "note": "Tiers are unnamed on the page; this one shows '499 zł' with 'Bez limitu'. Page: 'Wszystkie ceny są miesięczne i netto, bez VAT.' Per location. Orders over the limit: '6,70 zł / zamówienie'. No commission ('Zamiast prowizji oferujemy subskrypcję, która zawsze jest stała.')."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Zamawianie z wyprzedzeniem",
+          "url": "https://www.upmenu.com/pl/cennik/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Własna domena?",
+          "url": "https://www.upmenu.com/pl/cennik/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Wszystkie ceny są miesięczne i netto, bez VAT.",
+          "url": "https://www.upmenu.com/pl/cennik/"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "6,70 zł / zamówienie",
+          "url": "https://www.upmenu.com/pl/cennik/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.upmenu.com/pl/cennik/",
+        "https://www.upmenu.com/pl/blog/jak-otworzyc-food-truck"
+      ]
+    },
+    {
+      "name": "Restaumatic",
+      "website": "https://www.restaumatic.com",
+      "stored_id_prefix": "3d587bd6",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant website + online ordering with pre-sale and ordering in advance; Polish-language site (/pl/); no prices shown on the price list",
+      "eligibility": {
+        "order_quote": "Zamawianie z wyprzedzeniem",
+        "order_url": "https://www.restaumatic.com/pl/price-list/",
+        "country_quote": "0% prowizji od zamówień online",
+        "country_url": "https://www.restaumatic.com/pl/price-list/"
+      },
+      "plans": [
+        {
+          "plan_name": "PRO",
+          "currency": "PLN",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "0% prowizji od zamówień online",
+          "url": "https://www.restaumatic.com/pl/price-list/",
+          "note": "The Polish price list (and /en/price-list/) names PRO, PRO+, PRO+AI but shows no amounts when read; possibly loaded by script or on request. Commission 0%."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Zamawianie z wyprzedzeniem",
+          "url": "https://www.restaumatic.com/pl/price-list/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Przedsprzedaż",
+          "url": "https://www.restaumatic.com/pl/price-list/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "KDS",
+          "url": "https://www.restaumatic.com/pl/price-list/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Restaumatic nie pobiera prowizji od przyjmowanych zamówień.",
+          "url": "https://www.restaumatic.com/pl/price-list/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.restaumatic.com",
+        "https://www.restaumatic.com/pl/",
+        "https://www.restaumatic.com/pl/price-list/",
+        "https://www.restaumatic.com/en/price-list/"
+      ]
+    },
+    {
+      "name": "restauracja.online",
+      "website": "https://restauracja.online",
+      "stored_id_prefix": "bea75bdc",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Polish restaurant online-ordering system (takeaway, delivery, dine-in modules; set pickup hours for canteen points); no prices on site, commission or subscription by arrangement",
+      "eligibility": {
+        "food_quote": "Samoobsługa, ogródki, foodtrucki",
+        "food_url": "https://restauracja.online",
+        "order_quote": "Moduły zamawiania online",
+        "order_url": "https://restauracja.online"
+      },
+      "plans": [
+        {
+          "plan_name": "Standard",
+          "currency": "PLN",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "prowizja lub abonament",
+          "url": "https://restauracja.online",
+          "note": "No prices on the site; billing is commission or subscription by the restaurant's choice, via contact form. A free 'mini' package and a 30-day free trial are mentioned. The foodtrucki line sits in a self-service/QR solution list, so it is not evidence of order-ahead for trucks."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Godziny odbioru",
+          "url": "https://restauracja.online"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "partial",
+          "quote": "prowizja lub abonament",
+          "url": "https://restauracja.online"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "prowizja lub abonament",
+          "url": "https://restauracja.online"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://restauracja.online"
+      ]
+    },
+    {
+      "name": "GoPOS / GoOrder",
+      "website": "https://gopos.pl",
+      "stored_id_prefix": "b10476b9",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Polish POS vendor's GoOrder online shop: takeaway/delivery orders and ordering for a specific date; PLN net monthly packages",
+      "eligibility": {
+        "food_quote": "System numerków wyświetlanych na ekranie ułatwi odbieranie zamówień przez klientów.",
+        "food_url": "https://gopos.pl/goorder",
+        "order_quote": "Daj klientom możliwość zamawiania na konkretną datę - na specjalne okazje, lub gdy posiadasz menu tymczasowe.",
+        "order_url": "https://gopos.pl/goorder",
+        "country_quote": "Podane ceny są cenami netto.",
+        "country_url": "https://gopos.pl/cennik"
+      },
+      "plans": [
+        {
+          "plan_name": "GoOrder - Pakiet Online Basic",
+          "currency": "PLN",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "49 zł/msc",
+          "url": "https://gopos.pl/cennik",
+          "note": "50 orders included; extra orders 'od 0,4 zł/szt.' (Basic, Pro). 'Podane ceny są cenami netto.' 'Obsługa zamówień online bez dodatkowych prowizji w ramach opłaconego pakietu subskrypcyjnego.'"
+        },
+        {
+          "plan_name": "GoOrder - Pakiet Online Pro",
+          "currency": "PLN",
+          "price_major": 129,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "129 zł/msc",
+          "url": "https://gopos.pl/cennik",
+          "note": "200 orders included; extra orders 'od 0,4 zł/szt.' (Basic, Pro). 'Podane ceny są cenami netto.' 'Obsługa zamówień online bez dodatkowych prowizji w ramach opłaconego pakietu subskrypcyjnego.'"
+        },
+        {
+          "plan_name": "GoOrder - Pakiet Online Unlimited",
+          "currency": "PLN",
+          "price_major": 349,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "349 zł/msc",
+          "url": "https://gopos.pl/cennik",
+          "note": "'Brak limitów' orders included; extra orders 'od 0,4 zł/szt.' (Basic, Pro). 'Podane ceny są cenami netto.' 'Obsługa zamówień online bez dodatkowych prowizji w ramach opłaconego pakietu subskrypcyjnego.'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Przyjmuj zamówienia na wynos, z dostawą, a nawet bezpośrednio do stolika.",
+          "url": "https://gopos.pl/goorder"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Daj klientom możliwość zamawiania na konkretną datę - na specjalne okazje, lub gdy posiadasz menu tymczasowe.",
+          "url": "https://gopos.pl/goorder"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "GoOrder jest prosty do implementacji w takich miejscach jak Facebook, Instagram, wizytówka Google",
+          "url": "https://gopos.pl/goorder"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "System komunikacji pomiędzy salą a kuchnią, który umożliwia elektroniczne przesyłanie zamówień, ułatwiając pracę kucharzom i obsłudze.",
+          "url": "https://gopos.pl/cennik"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "Możliwość prowadzenia sprzedaży bez dostępu do Internetu",
+          "url": "https://gopos.pl/cennik"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "W pełni zintegrowany system pozwoli na dostęp do wszystkich lokali z jednego miejsca.",
+          "url": "https://gopos.pl/cennik"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "49 zł/msc",
+          "url": "https://gopos.pl/cennik"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "od 0,4 zł/szt.",
+          "url": "https://gopos.pl/cennik"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://gopos.pl/cennik",
+        "https://gopos.pl/goorder"
+      ]
+    },
+    {
+      "name": "Foodeliver (4B Systems)",
+      "website": "https://4bsystems.pl",
+      "stored_id_prefix": "938f3a06",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Polish restaurant online-ordering system (takeaway/delivery, ordering outside opening hours, own domain), 0% commission, fixed monthly or yearly subscription; no amounts on site",
+      "eligibility": {
+        "food_quote": "Foodtruck",
+        "food_url": "https://4bsystems.pl/uslugi-saas-dla-biznesu/foodeliver-system-zamowien-online-dla-gastronomii/",
+        "order_quote": "Sprzedawaj jedzenie online — na wynos, z dostawą lub bez — bez prowizji % od sprzedaży.",
+        "order_url": "https://4bsystems.pl/uslugi-saas-dla-biznesu/foodeliver-system-zamowien-online-dla-gastronomii/"
+      },
+      "plans": [
+        {
+          "plan_name": "Foodeliver",
+          "currency": "PLN",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "płacisz stały abonament miesięczny lub roczny",
+          "url": "https://4bsystems.pl/uslugi-saas-dla-biznesu/foodeliver-system-zamowien-online-dla-gastronomii/",
+          "note": "No amount shown; implementation priced on request ('Wyceń wdrożenie'). 'Foodtruck' appears only in a list of business types."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Godziny pracy i dostaw oraz zamawianie poza godzinami",
+          "url": "https://4bsystems.pl/uslugi-saas-dla-biznesu/foodeliver-system-zamowien-online-dla-gastronomii/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Kupimy dla Ciebie domenę i zainstalujemy na niej Twój własny system zamówień online oraz stronę restauracji.",
+          "url": "https://4bsystems.pl/uslugi-saas-dla-biznesu/foodeliver-system-zamowien-online-dla-gastronomii/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "płacisz stały abonament miesięczny lub roczny",
+          "url": "https://4bsystems.pl/uslugi-saas-dla-biznesu/foodeliver-system-zamowien-online-dla-gastronomii/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Nic. Twoja prowizja wynosi okrągłe 0.",
+          "url": "https://4bsystems.pl/uslugi-saas-dla-biznesu/foodeliver-system-zamowien-online-dla-gastronomii/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://4bsystems.pl",
+        "https://4bsystems.pl/uslugi-saas-dla-biznesu/foodeliver-system-zamowien-online-dla-gastronomii/"
+      ]
+    },
+    {
+      "name": "POSbistro",
+      "website": "https://posbistro.com",
+      "stored_id_prefix": "78b5be7c",
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Polish restaurant POS; has a 'Własna strona do zamówień Virtual Menu' but its pages read show no pickup / order-ahead wording and no price for online ordering (price list truncated twice when read); not counted",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://posbistro.com",
+        "https://posbistro.com/cennik-kasa-wirtualna-aio/"
+      ]
+    },
+    {
+      "name": "ABS POS",
+      "website": "https://abspos.pl",
+      "stored_id_prefix": "356a620b",
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Polish restaurant till; STANDARD includes 'Sprzedaż online i strona z modułem zamówień' but no pickup / order-ahead / for-a-time wording found on the pages read; not counted (price kept for reference)",
+      "eligibility": {},
+      "plans": [
+        {
+          "plan_name": "ABS POS STANDARD",
+          "currency": "PLN",
+          "price_major": 5,
+          "period": "day",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "5zł netto, dziennie",
+          "url": "https://abspos.pl/cennik/",
+          "note": "Shown as '5zł' / 'netto, dziennie' on separate lines; per DAY, not month. 'Kwoty netto, bez prowizji od obrotu i bez opłat zależnych od liczby zamówień.' Reference only: the vendor is not_relevant."
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://abspos.pl",
+        "https://abspos.pl/cennik/"
+      ]
+    }
+  ],
+  "notes": "Eligible with a PLN price on own site: Frivo (food_truck; 99/199/349 zł netto monthly, 0% commission), UpMenu (169/289/499 zł monthly net per location, order limits 75/210/unlimited), GoPOS GoOrder (49/129/349 zł/msc net). Eligible without a price on site: Restaumatic, restauracja.online, Foodeliver. Not relevant: apetitio (takeaway module still 'Dostępne wkrótce - jesień 2021'), POSbistro and ABS POS (tills; no pickup/order-ahead wording found). Frivo is the only true food-truck tool found; the last search turned up no other Polish food-truck order-ahead tool. Frivo price quotes join two page lines ('99zł' + 'netto msc.'); ABS POS shows '5zł' + 'netto, dziennie' (per DAY). UpMenu: stored tiers 169/289/499 PLN confirmed (monthly, net, per location; unnamed tiers with 75/210/unlimited order limits). UpMenu's KDS (59 zł/ stanowisko) and POS modules are marked 'Wkrótce' (coming soon), so kds left not_mentioned. The 'Zamawianie z wyprzedzeniem' and 'Własna domena?' quotes are feature-table row labels (value cell 'Tak'). Restaumatic: KDS 'partial' because the comparison table includes it in PRO+ and PRO+AI only, not PRO. No amounts visible on its price list, so the plan has price_major null; the country quote is from its Polish-language price list (the site is Polish-language at /pl/). GoPOS: the 'Food truck' card is about an on-screen order-number system, not order-ahead for trucks, so focus is nearest_local. ahead is 'partial' (online takeaway orders, but choosing a pickup hour isn't stated). KDS module priced '79 zł' (no period shown); offline is a POS-plan feature; multi-location module 'Multilokalizacja' Basic '99 zł/msc'."
+}

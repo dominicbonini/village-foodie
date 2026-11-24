@@ -1,0 +1,255 @@
+{
+  "country": "DK",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "Truckly foodtruck bestilling Danmark",
+    "truckly.dk app food truck",
+    "foodtruck online bestilling system forudbestilling afhentning abonnement",
+    "online bestillingssystem takeaway restaurant uden kommission pris pr. måned"
+  ],
+  "vendors": [
+    {
+      "name": "Truckly",
+      "website": "https://truckly.dk",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Danish platform built for food trucks: online pickup page with pickup times, events/bookings, calendar and locations; DKK prices",
+      "eligibility": {
+        "food_quote": "Truckly er bygget specifikt til food trucks.",
+        "food_url": "https://truckly.dk",
+        "order_quote": "Kunden bestiller online, betalingen lander automatisk",
+        "order_url": "https://truckly.dk",
+        "country_quote": "Alle priser er ekskl. moms.",
+        "country_url": "https://truckly.dk/priser"
+      },
+      "plans": [
+        {
+          "plan_name": "1 food truck",
+          "currency": "DKK",
+          "price_major": 995,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 2495,
+          "quote": "995 kr / md",
+          "url": "https://truckly.dk/priser",
+          "note": "Setup: \"Opstart: 2.495 kr\". \"Ubegrænset ordrer.\" SMS billed separately (\"* afregnes særskilt for forbrug.\")."
+        },
+        {
+          "plan_name": "2 food trucks",
+          "currency": "DKK",
+          "price_major": 1695,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 3995,
+          "quote": "1.695 kr / md",
+          "url": "https://truckly.dk/priser",
+          "note": "Setup: \"Opstart: 3.995 kr\". \"2 trucks under samme login\". A third plan \"Andet\" (3+ trucks) is \"Kontakt\" (price on request)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Dagens ordrer og pickups – sorteret efter afhentningstid",
+          "url": "https://truckly.dk"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Bookingmodul & events",
+          "url": "https://truckly.dk/priser"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Sæt en kapacitet på pickup-slottene før festivalweekenden.",
+          "url": "https://truckly.dk"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Kalender & flere lokationer",
+          "url": "https://truckly.dk/priser"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "2 trucks under samme login",
+          "url": "https://truckly.dk/priser"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "995 kr / md",
+          "url": "https://truckly.dk/priser"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Transaktionsgebyrer følger MobilePay/Stripe.",
+          "url": "https://truckly.dk/priser"
+        }
+      ],
+      "check_urls": [
+        "https://truckly.dk",
+        "https://truckly.dk/priser"
+      ]
+    },
+    {
+      "name": "NemTakeAway",
+      "website": "https://www.nemtakeaway.dk",
+      "stored_id_prefix": "54922ec3",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Danish takeaway ordering system on the restaurant's own ordering page, orders ahead and pre-orders; DKK subscription prices, no commission",
+      "eligibility": {
+        "order_quote": "Tag imod ordrer døgnet rundt. Bestem selv, hvor langt ud i fremtiden, der kan bestilles.",
+        "order_url": "https://www.nemtakeaway.dk",
+        "country_quote": "Lad dine kunder bestille på din egen bestillingsside med NemTakeAway",
+        "country_url": "https://www.nemtakeaway.dk"
+      },
+      "plans": [
+        {
+          "plan_name": "Standard",
+          "currency": "DKK",
+          "price_major": 395,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 399,
+          "quote": "STANDARD er vores simpleste løsning, som koster 395,- pr. måned.",
+          "url": "https://www.nemtakeaway.dk",
+          "note": "Billed monthly; priser page also shows 355/month \"Faktureres årligt\". Setup \"Oprettelse fra DKK 399,-\" (from). VAT: homepage says \"Alle priser er ekskl. moms\". SMS DKK 0,50 per SMS."
+        },
+        {
+          "plan_name": "Medium",
+          "currency": "DKK",
+          "price_major": 695,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 699,
+          "quote": "MEDIUM til 695,- pr. måned er vores mest solgte abonnementsløsning.",
+          "url": "https://www.nemtakeaway.dk",
+          "note": "Billed monthly; priser page also shows 625/month \"Faktureres årligt\". Setup \"Oprettelse fra DKK 699,-\" (from). VAT: homepage says \"Alle priser er ekskl. moms\"."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Tag imod ordrer døgnet rundt. Bestem selv, hvor langt ud i fremtiden, der kan bestilles.",
+          "url": "https://www.nemtakeaway.dk"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Kapacitetsstyringen gør det ligeledes muligt at tage imod forudbestillinger.",
+          "url": "https://www.nemtakeaway.dk"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Kapacitetsstyring - ordrer/point",
+          "url": "https://www.nemtakeaway.dk/priser/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Køkken display produktionsstatus",
+          "url": "https://www.nemtakeaway.dk/priser/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Administration af tlf. ordrer via POS.",
+          "url": "https://www.nemtakeaway.dk/priser/"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Administrér flere restauranter ét sted.",
+          "url": "https://www.nemtakeaway.dk/priser/"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Eget domæne (uden .nemtakeaway.dk)",
+          "url": "https://www.nemtakeaway.dk/priser/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "STANDARD er vores simpleste løsning, som koster 395,- pr. måned.",
+          "url": "https://www.nemtakeaway.dk"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Ingen kommission. Du betaler et fast abonnement – uanset hvor meget du sælger.",
+          "url": "https://www.nemtakeaway.dk"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.nemtakeaway.dk",
+        "https://www.nemtakeaway.dk/priser/"
+      ]
+    }
+  ],
+  "notes": "Truckly (truckly.dk) is a Danish food-truck tool, unrelated to the US app Truckly LLC (truckly.io). preorder marked partial: the site shows an events/booking module (catering bookings), not explicitly pre-orders for a later day. NemTakeAway: kds and domain are Medium-only (partial); vans is the paid \"Hovedkontor\" add-on (+499 kr./md. for 2-10 businesses); the priser page itself carries no moms statement, the homepage does. Two eligible priced vendors found (1 food_truck + 1 restaurant), so the POS players (Zettle, SumUp, Lightspeed) were not re-checked. Searches turned up no other Danish food-truck ordering tool; Lejfoodtruck.dk / Mobilmad.dk are truck-booking marketplaces (not opened, not recorded)."
+}

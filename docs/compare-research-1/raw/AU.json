@@ -1,0 +1,1003 @@
+{
+  "country": "AU",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "Liven food trucks online ordering venues Australia",
+    "food truck pre order app Australia",
+    "food truck online ordering system Australia pricing per month",
+    "\"Where The Truck\" app food truck ordering Melbourne vendors",
+    "Flash Order food truck ordering platform pricing",
+    "mobile food vendor market stall online pre-order click and collect platform Australia",
+    "food truck ordering software Australia \"food trucks\" order ahead pay app for vendors"
+  ],
+  "vendors": [
+    {
+      "name": "Asky",
+      "website": "https://asky.ai",
+      "stored_id_prefix": "b459885d",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Brisbane-made platform with an AU food-truck page; customers pre-order and pay before they arrive; price on request (monthly fee + commission not stated)",
+      "eligibility": {
+        "food_quote": "Built for food trucks at markets, festivals and pop-ups across Australia.",
+        "food_url": "https://asky.ai/au/food-trucks",
+        "order_quote": "Customers order and pay before they arrive, and their order is waiting when you open the hatch.",
+        "order_url": "https://asky.ai/au/food-trucks",
+        "country_quote": "Built for food trucks at markets, festivals and pop-ups across Australia.",
+        "country_url": "https://asky.ai/au/food-trucks"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Orders module",
+          "currency": "AUD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Asky costs a low monthly fee plus a low commission on online orders, tailored to your venue.",
+          "url": "https://asky.ai/au/pricing",
+          "note": "Price on request ('Ask for Pricing'). Digital menu free. Setup shown as 'Usually $299' but currently waived ('Free until' with a blank date). '3 Months Free — included in all Online Order plans.'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Your order #2 will be ready around 2:12 – 2:42 pm.",
+          "url": "https://asky.ai"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Customers order and pay before they arrive, and their order is waiting when you open the hatch.",
+          "url": "https://asky.ai/au/food-trucks"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Asky's AI can reply to the common questions that arrive on WhatsApp, Instagram and Messenger",
+          "url": "https://asky.ai/au/food-trucks"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Instagram Comment Auto-Reply",
+          "url": "https://asky.ai"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "One screen for the grill.",
+          "url": "https://asky.ai/au/food-trucks"
+        },
+        {
+          "key": "offline",
+          "value": "no",
+          "quote": "Asky runs online only",
+          "url": "https://asky.ai/au/food-trucks"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Take walk-up orders in a few taps on a tablet or phone",
+          "url": "https://asky.ai/au/food-trucks"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Asky costs a low monthly fee plus a low commission on online orders, tailored to your venue.",
+          "url": "https://asky.ai/au/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Asky costs a low monthly fee plus a low commission on online orders, tailored to your venue.",
+          "url": "https://asky.ai/au/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://asky.ai",
+        "https://asky.ai/au/food-trucks",
+        "https://asky.ai/au/pricing"
+      ]
+    },
+    {
+      "name": "Wollopit",
+      "website": "https://wollopit.com.au",
+      "stored_id_prefix": "d3218f9c",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Australian web/software agency that custom-builds food-truck pre-order systems (pickup slots, slot limits); quoted per job, no list price. Reviewer: a custom build, not an off-the-shelf SaaS",
+      "eligibility": {
+        "food_quote": "Wollopit builds custom food truck software around how your truck actually runs",
+        "food_url": "https://wollopit.com.au/for/food-trucks/",
+        "order_quote": "Customers order and pay from their phone, choose a pickup slot and walk straight to the window.",
+        "order_url": "https://wollopit.com.au/for/food-trucks/"
+      },
+      "plans": [
+        {
+          "plan_name": "Custom food truck software",
+          "currency": "AUD",
+          "price_major": null,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "It depends on what you need, so we quote up front once we understand it.",
+          "url": "https://wollopit.com.au/for/food-trucks/",
+          "note": "Quoted per project; no list price. Agency builds and hosts the system."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers order and pay from their phone, choose a pickup slot and walk straight to the window.",
+          "url": "https://wollopit.com.au/for/food-trucks/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "You set how many orders each slot can take so the grill keeps up and walk-ups still get served.",
+          "url": "https://wollopit.com.au/for/food-trucks/"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Set today's spot from your phone when you pull up and it shows on your website, Google Business Profile",
+          "url": "https://wollopit.com.au/for/food-trucks/"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Online and walk-up orders in one queue on a tablet, with pickup times and order numbers.",
+          "url": "https://wollopit.com.au/for/food-trucks/"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "The order screen holds what it has and catches up when signal comes back.",
+          "url": "https://wollopit.com.au/for/food-trucks/"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Online and walk-up orders in one queue on a tablet, with pickup times and order numbers.",
+          "url": "https://wollopit.com.au/for/food-trucks/"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://wollopit.com.au",
+        "https://wollopit.com.au/for/",
+        "https://wollopit.com.au/for/food-trucks/"
+      ]
+    },
+    {
+      "name": "Y wait",
+      "website": "https://ywait.com.au",
+      "stored_id_prefix": "8c7188e7",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Australian online ordering for cafes, takeaways and food trucks; ASAP, later-today and future-day pickup; AUD prices incl. GST on own site",
+      "eligibility": {
+        "food_quote": "Online ordering for cafes, takeaways and food trucks.",
+        "food_url": "https://ywait.com.au",
+        "order_quote": "Customers can order for ASAP pickup, choose a later time that day or preorder for a future collection day.",
+        "order_url": "https://ywait.com.au"
+      },
+      "plans": [
+        {
+          "plan_name": "Your Storefront on Ywait",
+          "currency": "AUD",
+          "price_major": 15,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "$15/month per venue",
+          "url": "https://ywait.com.au/pricing/",
+          "note": "First month free; 'AUD, including GST'; 'No setup fees'. A Ywait platform fee (amount not stated, added to checkout by default) plus Stripe/Square processing fees apply to orders."
+        },
+        {
+          "plan_name": "Custom Site",
+          "currency": "AUD",
+          "price_major": 49,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "$49/month per venue",
+          "url": "https://ywait.com.au/pricing/",
+          "note": "Custom domain included. Same unstated platform fee + processing fees per order."
+        },
+        {
+          "plan_name": "Custom Site & App Bundle",
+          "currency": "AUD",
+          "price_major": 89,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "$89/month per venue",
+          "url": "https://ywait.com.au/pricing/",
+          "note": "Custom domain included. Same unstated platform fee + processing fees per order."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers can order for ASAP pickup, choose a later time that day or preorder for a future collection day.",
+          "url": "https://ywait.com.au"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Customers can order for ASAP pickup, choose a later time that day or preorder for a future collection day.",
+          "url": "https://ywait.com.au"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Track stock, mark items sold out or pause online ordering from Ywait Admin as your service changes.",
+          "url": "https://ywait.com.au/food-trucks/"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Your live calendar shows each trading session’s location.",
+          "url": "https://ywait.com.au/food-trucks/"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Share your ordering link in your Instagram bio, Facebook page and trading-location posts.",
+          "url": "https://ywait.com.au/food-trucks/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "$15/month per venue",
+          "url": "https://ywait.com.au/pricing/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "A custom domain is included with Custom Site and Custom Site & App Bundle.",
+          "url": "https://ywait.com.au/pricing/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$15/month per venue",
+          "url": "https://ywait.com.au/pricing/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "A Ywait platform fee and Stripe or Square payment processing fees apply to orders.",
+          "url": "https://ywait.com.au/pricing/"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "A Ywait platform fee and Stripe or Square payment processing fees apply to orders.",
+          "url": "https://ywait.com.au/pricing/"
+        }
+      ],
+      "check_urls": [
+        "https://ywait.com.au",
+        "https://ywait.com.au/pricing/",
+        "https://ywait.com.au/food-trucks/"
+      ]
+    },
+    {
+      "name": "Bopple",
+      "website": "https://bopple.com",
+      "stored_id_prefix": "a8ba9459",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Australian restaurant/cafe online ordering with pick-up and scheduled pre-ordering; AUD prices and an AUD platform fee on own site; no food-truck wording found",
+      "eligibility": {
+        "order_quote": "Scheduled pre-ordering",
+        "order_url": "https://bopple.com/pricing",
+        "country_quote": "Australia | AUD | 1.64% + $0.10",
+        "country_url": "https://bopple.com/pricing/fees"
+      },
+      "plans": [
+        {
+          "plan_name": "Online ordering",
+          "currency": "AUD",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 1.64,
+          "per_order_fixed_major": 0.1,
+          "setup_major": null,
+          "quote": "$49per month",
+          "url": "https://bopple.com/pricing",
+          "note": "Page has an AUD/NZD/USD toggle; amount read as shown (currency label not captured in text). 'All pricing is exclusive of tax unless otherwise stated.' Platform fee from 1 Oct 2026: 'Australia | AUD | 1.64% + $0.10' (bopple.com/pricing/fees). The free Starter/Storefront plan is not enough to take online orders ('Online ordering subscription' needed), so it is not listed as a plan here."
+        },
+        {
+          "plan_name": "White-label for Web (add-on)",
+          "currency": "AUD",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 1.64,
+          "per_order_fixed_major": 0.1,
+          "setup_major": null,
+          "quote": "$99per month",
+          "url": "https://bopple.com/pricing",
+          "note": "Add-on on top of Online ordering; includes 'Custom storefront URL'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Pick-up and delivery ordering",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled pre-ordering",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Order limiting for busy service periods",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Sync your menu and manage Bopple orders from your POS terminal",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "spans your businesses and store locations",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Custom storefront URL",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$49per month",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Australia | AUD | 1.64% + $0.10",
+          "url": "https://bopple.com/pricing/fees"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://bopple.com/pricing",
+        "https://bopple.com/pricing/fees"
+      ]
+    },
+    {
+      "name": "HungryHungry",
+      "website": "https://www.hungryhungry.com",
+      "stored_id_prefix": "1b6afb43",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "AU/NZ venue ordering platform with takeaway order-ahead and pick-up; plans named but no prices on the site (sales-led)",
+      "eligibility": {
+        "order_quote": "Order ahead. Skip the queue.",
+        "order_url": "https://www.hungryhungry.com",
+        "country_quote": "Join 3,000+ venues across Australia and New Zealand.",
+        "country_url": "https://www.hungryhungry.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic Bite / Main Course / Ultimate Feast",
+          "currency": "AUD",
+          "price_major": null,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "The essentials you need to get a premium online ordering system up and running.",
+          "url": "https://www.hungryhungry.com/plans",
+          "note": "No prices or fees on the plans page; 'Get Started' / 'Speak to Sales' only."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Order Ahead and Pick Up",
+          "url": "https://www.hungryhungry.com/plans"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Order Throttling",
+          "url": "https://www.hungryhungry.com/plans"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "One platform. Every location.",
+          "url": "https://www.hungryhungry.com"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Turn your website into a place customers come to order.",
+          "url": "https://www.hungryhungry.com"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.hungryhungry.com",
+        "https://www.hungryhungry.com/plans"
+      ]
+    },
+    {
+      "name": "Liven",
+      "website": "https://liven.love",
+      "stored_id_prefix": "4524d8f0",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "liven.love is now a consumer dining wallet/marketplace (pay at the venue, Brandollars); its old food-trucks page 308-redirects to nomni.ai, whose food-truck page sells POS/offline/KDS but shows no customer ordering ahead and no price",
+      "eligibility": {
+        "food_quote": "Purpose-built solutions for Popups, Food trucks, and Mobile Hospo.",
+        "food_url": "https://www.nomni.ai/industries/food-trucks"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://liven.love",
+        "https://liven.love/venues",
+        "https://www.nomni.ai/industries/food-trucks"
+      ]
+    },
+    {
+      "name": "Order Up! (moving to Nomni)",
+      "website": "https://www.orderup.com.au",
+      "stored_id_prefix": "96ce7971",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Australian online ordering with pick-up and delivery; 'Nomni is the new home of Order Up!'; no prices or pricing page. Food trucks named only for its table-ordering product, so kept as restaurant",
+      "eligibility": {
+        "food_quote": "Perfect for bars, pubs, fast casual restaurants, cafes, theme parks, beach clubs, food trucks and more.",
+        "food_url": "https://www.orderup.com.au",
+        "order_quote": "We offer the ability to enable Contactless Pick-Up, Kerbside Pick-Up and multiple Delivery solutions.",
+        "order_url": "https://www.orderup.com.au"
+      },
+      "plans": [
+        {
+          "plan_name": "Order Up! online ordering",
+          "currency": "AUD",
+          "price_major": null,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "We can get you online fast and connect you directly to your customers without huge commissions.",
+          "url": "https://www.orderup.com.au",
+          "note": "No price and no pricing link on the site. Brand is moving to Nomni (nomni.ai), which also shows no price ('Book a demo')."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "We offer the ability to enable Contactless Pick-Up, Kerbside Pick-Up and multiple Delivery solutions.",
+          "url": "https://www.orderup.com.au"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage multiple venues from one dashboard and set granular permissions.",
+          "url": "https://www.orderup.com.au"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Get ahead with your own Online Ordering System.",
+          "url": "https://www.orderup.com.au"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.orderup.com.au"
+      ]
+    },
+    {
+      "name": "Ordering.co",
+      "website": "https://www.ordering.co",
+      "stored_id_prefix": "4c350e59",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Global white-label ordering platform (pickup, scheduled orders) but no AUD price, no Australia page and no stated AU presence ('Anywhere in the world'); pricing page today shows no amounts (stored 99 USD not visible; may be script-rendered)",
+      "eligibility": {
+        "order_quote": "Scheduled Orders",
+        "order_url": "https://www.ordering.co/pricing"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.ordering.co/pricing"
+      ]
+    },
+    {
+      "name": "Qhop",
+      "website": "https://www.qhop.com.au",
+      "stored_id_prefix": "e192197c",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Australian browser-based order-and-pay for festival stalls, pop-ups and food trucks; customers order on their phone and collect at a pick-up window (on-site skip-the-queue, no chosen time stated); no price on site",
+      "eligibility": {
+        "food_quote": "Purpose-built for Australian festival stall holders, pop-up vendors, and food truck operators.",
+        "food_url": "https://www.qhop.com.au",
+        "order_quote": "Scan, order, and pay straight from your browser.",
+        "order_url": "https://www.qhop.com.au"
+      },
+      "plans": [
+        {
+          "plan_name": "Qhop for stall holders",
+          "currency": "AUD",
+          "price_major": null,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Purpose-built for Australian festival stall holders, pop-up vendors, and food truck operators.",
+          "url": "https://www.qhop.com.au",
+          "note": "No prices, fees or pricing page; stall holders register interest (/register/stall-interest)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Head straight to the designated pick-up window",
+          "url": "https://www.qhop.com.au"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "kitchen bump screen",
+          "url": "https://www.qhop.com.au"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "multi-vendor event precincts",
+          "url": "https://www.qhop.com.au"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.qhop.com.au"
+      ]
+    },
+    {
+      "name": "Where The Truck",
+      "website": "https://wherethetruck.at",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Australian food-truck finder and event-catering booking platform (marketplace/directory); its own homepage shows no customer ordering ahead and no vendor pricing",
+      "eligibility": {
+        "food_quote": "Access 1,000+ Food Vendors Nationwide",
+        "food_url": "https://wherethetruck.at"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://wherethetruck.at"
+      ]
+    },
+    {
+      "name": "Flash Order",
+      "website": "https://flashordr.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "US (Utah) food-truck preorder/KDS layer on Square; free to operators, 35c customer-paid fee per order (currency not stated), but its own site names no Australian presence, AUD or country list. Only Square's AU app-marketplace listing says it is available in Australia (not an own-site source) — reviewer may reconsider",
+      "eligibility": {
+        "food_quote": "Run your entire food truck — from events to orders to fulfillment — in one simple, mobile-first system.",
+        "food_url": "https://flashordr.com",
+        "order_quote": "Preorders before customers arrive",
+        "order_url": "https://flashordr.com"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://flashordr.com",
+        "https://flashordr.com/pricing.html"
+      ]
+    },
+    {
+      "name": "RapidOrderz",
+      "website": "https://rapidorderz.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Food-truck 'biz in a box' ($59/mo, currency unnamed) found via AU software directories, but its own homepage states no Australian presence, no AUD and no order-ahead/pickup-time wording",
+      "eligibility": {
+        "food_quote": "Biz in a box for Food Trucks & Concession Stands",
+        "food_url": "https://rapidorderz.com"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://rapidorderz.com"
+      ]
+    },
+    {
+      "name": "Square",
+      "website": "https://squareup.com/au",
+      "stored_id_prefix": "9acae7b6",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "Sells in Australia (AU site, AU prices); Square for Restaurants includes Square Online Ordering on Free and Plus. Reviewer: the AU pages read name online ordering but no explicit pickup/order-ahead wording was captured (pages are script-heavy)",
+      "eligibility": {
+        "order_quote": "Everything your restaurant needs for day-to-day service, including online ordering and POS.",
+        "order_url": "https://squareup.com/au/en/pricing",
+        "country_quote": "No setup fees or monthly fees — only pay when you take a payment.",
+        "country_url": "https://squareup.com/au/en/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Square for Restaurants Free",
+          "currency": "AUD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.2,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "$0/month",
+          "url": "https://squareup.com/au/en/point-of-sale/restaurants/pricing",
+          "note": "Plus processing fees; online card payments '2.2%'. Square Online Ordering listed as Included ('Free tier included'). Page shows '$' on the AU site; no GST statement. The 2.2% is card processing, not a separate platform fee."
+        },
+        {
+          "plan_name": "Square for Restaurants Plus",
+          "currency": "AUD",
+          "price_major": 129,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.2,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$129/month",
+          "url": "https://squareup.com/au/en/point-of-sale/restaurants/pricing",
+          "note": "'per location + processing fees'; online '2.2%'."
+        },
+        {
+          "plan_name": "Square Online Plus",
+          "currency": "AUD",
+          "price_major": 40,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.2,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Starting from $40/mo.",
+          "url": "https://squareup.com/au/en/pricing",
+          "note": "Online store plan; plus processing fees ('2.2% per transaction' online)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Everything your restaurant needs for day-to-day service, including online ordering and POS.",
+          "url": "https://squareup.com/au/en/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Unlimited Square KDS devices",
+          "url": "https://squareup.com/au/en/point-of-sale/restaurants/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "Offline payments are processed automatically when you reconnect your device to the internet",
+          "url": "https://squareup.com/au/en/point-of-sale/restaurants/pricing"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Everything your restaurant needs for day-to-day service, including online ordering and POS.",
+          "url": "https://squareup.com/au/en/pricing"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Unlimited locations",
+          "url": "https://squareup.com/au/en/point-of-sale/restaurants/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$129/month",
+          "url": "https://squareup.com/au/en/point-of-sale/restaurants/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "2.2% per transaction",
+          "url": "https://squareup.com/au/en/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://squareup.com/au/en/online-ordering",
+        "https://squareup.com/au/en/pricing",
+        "https://squareup.com/au/en/point-of-sale/restaurants/pricing"
+      ]
+    }
+  ],
+  "notes": "Eligible with a stated AUD price: Y wait (food_truck; $15/$49/$89 a month per venue incl. GST + an unstated platform fee per order), Bopple (nearest_local; $49/month excl. tax + 1.64% + $0.10 per order) and Square (pos; $0 / $129 a month, 2.2% online card fee). Eligible food-truck tools without a price: Asky (Brisbane; 'Ask for Pricing', monthly fee + commission, setup usually $299 currently waived), Qhop (festival/stall order-and-pay, no pricing page) and Wollopit (custom-build agency, quoted per job — reviewer may prefer not_relevant). HungryHungry and Order Up! are eligible restaurant tools with hidden prices. Liven's business side has moved to Nomni (liven.love/industries/food-trucks 308-redirects to nomni.ai; Order Up! also says 'Nomni is the new home of Order Up!'); Nomni's food-truck page is POS-led with no order-ahead wording and no price. Ordering.co: no AUD price, no AU presence, and today's pricing page shows no amounts (stored 99 USD not seen). Flash Order (US) and RapidOrderz have no AU presence on their own sites. Bopple's pricing page has an AUD/NZD/USD toggle; the $49 was read as shown and the AUD platform fee is explicit on /pricing/fees. Quotes were extracted through a page-reading tool; a few were capped near 125 chars by the tool. Square AU pages are script-heavy: /au/en/online-ordering returned only its title."
+}

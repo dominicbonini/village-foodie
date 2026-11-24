@@ -1,0 +1,644 @@
+{
+  "country": "TH",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "Ocha POS ราคา แพ็กเกจ สั่งออนไลน์ ocha.in.th",
+    "ระบบสั่งอาหารออนไลน์ รับเอง ร้านอาหาร ไม่มีค่าคอมมิชชั่น ราคา ต่อเดือน",
+    "online ordering system Thailand restaurant pickup own website no commission THB per month",
+    "ระบบสั่งอาหารล่วงหน้า รับที่ร้าน สำหรับร้านอาหาร ฟู้ดทรัค ตลาดนัด แพ็กเกจ",
+    "online ordering pickup restaurant Thailand StoreHub OR \"Beep\" OR Eats365 Thailand pricing THB"
+  ],
+  "vendors": [
+    {
+      "name": "Klikit",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Commission-free restaurant webshop with pickup (รับเอง) on its Thai site; Thai prices in THB per branch per month, excl. tax",
+      "eligibility": {
+        "order_quote": "ได้ คุณสามารถเปิดใช้งานรับเอง เดลิเวอรี่ และแม้แต่การสั่งซื้อ QR สำหรับทานที่ร้านจาก webshop เดียวกัน",
+        "order_url": "https://klikit.io/th/products/webshop",
+        "country_quote": "แต่ละตลาดมีความแตกต่าง จึงมีราคาท้องถิ่นของตัวเอง",
+        "country_url": "https://klikit.io/th/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Core",
+          "currency": "THB",
+          "price_major": 499,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "฿499ต่อสาขา / เดือน",
+          "url": "https://klikit.io/th/pricing",
+          "note": "Per branch per month, excl. tax ('ต่อสาขา ต่อเดือน ไม่รวมภาษี'). Core alone does not appear to include the Webshop; Webshop is in the Omni add-on."
+        },
+        {
+          "plan_name": "Core + Omni (Webshop / QR ordering)",
+          "currency": "THB",
+          "price_major": 1789,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Core + Omni: ฿1,789 ต่อสาขา / เดือน",
+          "url": "https://klikit.io/th/pricing",
+          "note": "Omni add-on is '+฿1,290ต่อสาขา / เดือน' on top of Core; Omni includes 'เปิด Webshop ของร้านเอง และรับออเดอร์ผ่าน QR'. Per branch, excl. tax. This is the plan with online ordering ahead. Unchanged from stored."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "ตั้งโซนจัดส่ง ช่วงเวลา และออเดอร์ขั้นต่ำ",
+          "url": "https://klikit.io/th/products/webshop"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "฿499ต่อสาขา / เดือน",
+          "url": "https://klikit.io/th/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "ไม่มีค่าคอมมิชชั่นเลย คุณจ่ายเพียงค่าสมาชิกรายเดือนเล็กน้อย",
+          "url": "https://klikit.io/th/products/webshop"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "ไม่มีค่าคอมมิชชั่นเลย คุณจ่ายเพียงค่าสมาชิกรายเดือนเล็กน้อย",
+          "url": "https://klikit.io/th/products/webshop"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://klikit.io/th/pricing",
+        "https://klikit.io/th/products/webshop"
+      ]
+    },
+    {
+      "name": "GloriaFood",
+      "website": "https://www.gloriafood.com",
+      "stored_id_prefix": "dc1d8f05",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "No Thai presence on its own site (no Thai language, no THB, Thailand not named; USD only), and the site states 'GloriaFood will reach end of life on April 30, 2027.'",
+      "eligibility": {
+        "food_quote": "food businesses such as table service restaurants, coffee shops, or food trucks",
+        "food_url": "https://www.gloriafood.com/",
+        "order_quote": "Allow your customers to order now and schedule a specific fulfillment time for pickup or delivery.",
+        "order_url": "https://www.gloriafood.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Free online ordering",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "No commission per order",
+          "url": "https://www.gloriafood.com/pricing",
+          "note": "USD only. Page also says 'No monthly fee' and 'All prices are exclusive of taxes or withholdings, if any.' End of life 30 April 2027."
+        },
+        {
+          "plan_name": "Online / Credit Card Payment Service (add-on)",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 29 per month",
+          "url": "https://www.gloriafood.com/pricing",
+          "note": "USD only, no THB. Unchanged from stored 29 USD add-on. End of life 30 April 2027 ('GloriaFood will reach end of life on April 30, 2027.' on the homepage)."
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.gloriafood.com/pricing",
+        "https://www.gloriafood.com/"
+      ]
+    },
+    {
+      "name": "MENU TIGER",
+      "website": "https://www.menutiger.com",
+      "stored_id_prefix": "d00d6bfd",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Has a Thai-language pricing page (menutiger.com/th/pricing), but prices are USD only (no THB) and neither the English nor the Thai pages say in words that customers can order ahead for pickup; website ordering ('ลูกค้าสั่งและจ่ายผ่านเว็บไซต์ร้านอาหารของคุณ') and a 'กำหนดเวลารับออเดอร์' (set order-taking times) table row only. Borderline; fails the THB publish rule either way.",
+      "eligibility": {
+        "order_quote": "Customers order and pay via your restaurant website",
+        "order_url": "https://www.menutiger.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Free",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$0/month",
+          "url": "https://www.menutiger.com/pricing",
+          "note": "USD only, no THB. 'No setup fees. No commission per order.' Yearly billing option 'Save 15%'. Thai page shows the same: 'US$0/เดือน'."
+        },
+        {
+          "plan_name": "Regular",
+          "currency": "USD",
+          "price_major": 17,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$17/month",
+          "url": "https://www.menutiger.com/pricing",
+          "note": "USD only, no THB. Monthly billing price shown; yearly billing saves 15%."
+        },
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 46,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$46/month",
+          "url": "https://www.menutiger.com/pricing",
+          "note": "USD only, no THB."
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.menutiger.com/pricing",
+        "https://www.menutiger.com/",
+        "https://www.menutiger.com/th/pricing"
+      ]
+    },
+    {
+      "name": "Take App",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "No Thai presence on its own site (no Thai language — menu has English, Korean, Spanish, French, Indonesian; USD only; Thailand/THB not named). It does show pickup with a date & time at checkout and WhatsApp ordering.",
+      "eligibility": {
+        "order_quote": "Fast and clean WhatsApp ordering. No mistakes.",
+        "order_url": "https://www.take.app/"
+      },
+      "plans": [
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/",
+          "note": "USD only, no THB. Homepage also says 'Pay 0% sales commission.' take.app/pricing returned 404 on fetch."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/",
+          "note": "USD only, no THB."
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.take.app/"
+      ]
+    },
+    {
+      "name": "Ocha POS",
+      "website": "https://ocha.in.th",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "unreadable",
+      "reason": "Thai restaurant POS; ocha.in.th and ocha.in.th/price render only the page title to the fetcher (JavaScript-only), so no online-ordering-ahead evidence or prices could be read from its own site.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://ocha.in.th/",
+        "https://ocha.in.th/price"
+      ]
+    },
+    {
+      "name": "Qashier",
+      "website": "https://qashier.com/th/en/",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Sells in Thailand with THB prices, but its own pages show only in-store QR ordering ('order from your store on their phone and pay on the spot'); no pickup-ahead, scheduled or pre-order online ordering stated.",
+      "eligibility": {
+        "country_quote": "Trusted by 25,000+ merchants across Singapore, Malaysia, Thailand and the Philippines",
+        "country_url": "https://qashier.com/th/en/?p=1326"
+      },
+      "plans": [
+        {
+          "plan_name": "Essential",
+          "currency": "THB",
+          "price_major": 7990,
+          "period": "year",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "฿ 7,990",
+          "url": "https://qashier.com/th/en/software-pricing",
+          "note": "Shown with 'billed annually'; 'All prices indicated are exclusive of VAT.' QR ordering and e-commerce are add-ons on Essential (no add-on price shown). Till software, recorded for reference only."
+        },
+        {
+          "plan_name": "Growth",
+          "currency": "THB",
+          "price_major": 9990,
+          "period": "year",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "฿ 9,990",
+          "url": "https://qashier.com/th/en/software-pricing",
+          "note": "Shown with 'billed annually'; excl. VAT. Includes 'QR code ordering' (in-store), not order-ahead."
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://qashier.com/th/en/?p=1326",
+        "https://qashier.com/th/en/software-pricing",
+        "https://qashier.com/th/en/mobile-ordering"
+      ]
+    },
+    {
+      "name": "Hato Hub",
+      "website": "https://www.hatohub.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Thai commission-free direct delivery / LINE OA ordering for chains ('Bypass expensive third-party delivery platforms with Hato Delivery'); its homepage does not state pickup, order-ahead or pre-order, and shows no prices.",
+      "eligibility": {
+        "country_quote": "Keep 100% of your profits and build direct channels through LINE",
+        "country_url": "https://www.hatohub.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "Hato Delivery",
+          "currency": "THB",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://www.hatohub.com/",
+          "note": "No price on the site; no pricing page linked."
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.hatohub.com/"
+      ]
+    },
+    {
+      "name": "Wongnai POS (formerly FoodStory)",
+      "website": "https://www.wongnai.com/pos/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Thai restaurant POS (foodstory.co now 301-redirects here) whose page shows order-and-pay-ahead then self-pickup via LINE MINI Eats, received in the Wongnai Merchant App; THB prices. Borderline: LINE MINI Eats is a LINE app where customers search for shops, and the page does not say which package includes it.",
+      "eligibility": {
+        "order_quote": "ลูกค้าค้นหาร้าน สั่งและจ่ายล่วงหน้าผ่าน LINE แล้วเข้ามารับเอง",
+        "order_url": "https://www.wongnai.com/pos/"
+      },
+      "plans": [
+        {
+          "plan_name": "Quick Service",
+          "currency": "THB",
+          "price_major": 1090,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "1,090บาท/เดือน",
+          "url": "https://www.wongnai.com/pos/",
+          "note": "Card also shows 'Standard | 13,080 บาท/ปี'. Footnote: 'ราคาซอฟต์แวร์ ไม่รวมอุปกรณ์และ Add-on'. VAT not stated. LINE MINI Eats (the order-ahead channel) is not named in the package card; no fee/GP stated for it."
+        },
+        {
+          "plan_name": "Full Service",
+          "currency": "THB",
+          "price_major": 1790,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "1,790บาท/เดือน",
+          "url": "https://www.wongnai.com/pos/",
+          "note": "Card also shows 'Standard | 21,480 บาท/ปี'. Excludes hardware and add-ons. VAT not stated. LINE MINI Eats not named in the card."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "ลูกค้าค้นหาร้าน สั่งและจ่ายล่วงหน้าผ่าน LINE แล้วเข้ามารับเอง",
+          "url": "https://www.wongnai.com/pos/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "รับออเดอร์คล่องที่เคาน์เตอร์",
+          "url": "https://www.wongnai.com/pos/"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "ดูแลหลายจุดบริการและเชื่อมข้อมูลหลายสาขาในระบบเดียว",
+          "url": "https://www.wongnai.com/pos/"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "1,090บาท/เดือน",
+          "url": "https://www.wongnai.com/pos/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.wongnai.com/pos/"
+      ]
+    },
+    {
+      "name": "Loyverse",
+      "website": "https://loyverse.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Till / KDS only on its Thai pricing page; no customer online ordering, online store, pickup or order-ahead mentioned. (Prices shown to the fetcher in £, not THB: add-ons e.g. '£5/เดือน'.)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://loyverse.com/th/pricing"
+      ]
+    },
+    {
+      "name": "Restolabs",
+      "website": "https://www.restolabs.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Food-truck ordering ahead is shown ('Customers can order ahead and pick up.'), but its own site shows no Thai presence (Thailand/Asia/THB not named; only 'Trusted by 2000+ Restaurants Across 10+ Countries'). No prices on the page read.",
+      "eligibility": {
+        "food_quote": "Take direct orders before guests reach the window.",
+        "food_url": "https://www.restolabs.com/business-types/food-trucks",
+        "order_quote": "Customers can order ahead and pick up.",
+        "order_url": "https://www.restolabs.com/business-types/food-trucks"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.restolabs.com/business-types/food-trucks"
+      ]
+    },
+    {
+      "name": "StoreHub (Thailand)",
+      "website": "https://www.storehub.com/th/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Thai site (StoreHub (Thailand) Co., Ltd.) with baht prices; its online ordering (Beep) gives the restaurant its own branded link for delivery and self-pickup (รับเอง), with a 9% fee instead of marketplace commission.",
+      "eligibility": {
+        "order_quote": "ไม่ว่าจะสั่งเดลิเวอรี่หรือมารับเองก็ไม่ต้องง้อแอปใหญ่",
+        "order_url": "https://www.storehub.com/th/online-ordering",
+        "country_quote": "StoreHub (Thailand) Co., Ltd.",
+        "country_url": "https://www.storehub.com/th/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "แพ็คเกจเริ่มต้น (Starter)",
+          "currency": "THB",
+          "price_major": 990,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "990",
+          "url": "https://www.storehub.com/th/pricing",
+          "note": "Page shows '990' with 'บาท/เดือน' on the next line. VAT not stated. Monthly/Yearly toggle exists but no yearly prices shown. No plan card lists online ordering (Beep / สั่งออนไลน์ / รับเอง); inclusion not stated."
+        },
+        {
+          "plan_name": "แพ็คเกจกลาง",
+          "currency": "THB",
+          "price_major": 1999,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "1,999",
+          "url": "https://www.storehub.com/th/pricing",
+          "note": "Page shows '1,999' with 'บาท/เดือน' on the next line ('Popular' badge). Pro tier 'แพ็คเกจโปร' is 4,800 บาท/เดือน. Online-ordering inclusion not stated."
+        },
+        {
+          "plan_name": "Online ordering (Beep Delivery) fee",
+          "currency": "THB",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 9,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "ค่าธรรมเนียมเพียง 9%",
+          "url": "https://www.storehub.com/th/online-ordering",
+          "note": "The 9% figure is in the page's meta description; body text says 'ค่าธรรมเนียมถูกกว่าเจ้าใหญ่ 3 เท่า'. No monthly price stated for online ordering itself."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "ไม่ว่าจะสั่งเดลิเวอรี่หรือมารับเองก็ไม่ต้องง้อแอปใหญ่",
+          "url": "https://www.storehub.com/th/online-ordering"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "การเชื่อมต่อกับระบบแสดงออเดอร์ในครัว",
+          "url": "https://www.storehub.com/th/fb/restaurants"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "จัดการออเดอร์ทานในร้าน, สั่งกลับบ้าน และเดลิเวอรี่ได้ในระบบเดียว",
+          "url": "https://www.storehub.com/th/fb/restaurants"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "จัดการเมนู สต๊อกสินค้า พนักงาน และรายงานของหลายสาขาได้ในที่เดียวผ่านแดชบอร์ดเดียว",
+          "url": "https://www.storehub.com/th/fb/restaurants"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "ได้ลิงก์ร้านเฉพาะของคุณเอง คุมราคาได้เต็มที่",
+          "url": "https://www.storehub.com/th/online-ordering"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "บาท/เดือน",
+          "url": "https://www.storehub.com/th/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "ค่าธรรมเนียมเพียง 9%",
+          "url": "https://www.storehub.com/th/online-ordering"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "ค่า SMS ระบบเดลิเวอรี หรือค่าบริการชำระเงิน",
+          "url": "https://www.storehub.com/th/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.storehub.com/th/pricing",
+        "https://www.storehub.com/th/fb/restaurants",
+        "https://www.storehub.com/th/online-ordering"
+      ]
+    }
+  ],
+  "notes": "No Thai food-truck / market ordering tool found; Restolabs has a food-truck page but no Thai presence. Three eligible with THB prices on their own site: Klikit (Core + Omni 1,789 THB/branch/month excl. tax, unchanged; webshop with pickup; 'ahead' only partial — webshop page mentions time windows ช่วงเวลา alongside delivery zones), StoreHub Thailand (990 / 1,999 / 4,800 บาท/เดือน; online ordering with รับเอง and own link, 9% fee stated in the page's meta description; pricing cards don't say which plan includes online ordering), Wongnai POS (FoodStory now redirects here; 1,090 / 1,790 บาท/เดือน; order-ahead is via LINE MINI Eats, a LINE app where customers search shops — borderline marketplace, and package inclusion not stated). GloriaFood: site states 'GloriaFood will reach end of life on April 30, 2027.'; USD only, no Thai presence -> not_relevant. MENU TIGER has a Thai-language pricing page but USD only and no stated pickup-ahead. Take App USD only, no Thai language. Qashier sells in TH (฿7,990 / ฿9,990 billed annually, excl. VAT) but only in-store QR ordering. Ocha unreadable (JS-only). Loyverse till only. Klikit 'vans' = priced per branch (ต่อสาขา). Big till players (Square, SumUp, Zettle, Lightspeed, Toast, Clover) not checked: none is known to sell in Thailand."
+}
