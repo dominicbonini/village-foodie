@@ -20,6 +20,8 @@
 //     scrubbing whatsoever. It needs to survive, which it does by simply not being deleted.
 //   • orders (and card drafts) also carry the customer's free-text NOTES — the order note and each line's note — which can hold
 //     allergy or dietary details: step 2b clears them exactly as the 12-month retention does (france-privacy-1, 24 Nov 2026).
+//   • the trucks' WhatsApp rows (whatsapp_logs, messages) are DELETED at once, and the card drafts' name, email and phone are
+//     cleared like the orders' (steps 2c and 2d, france-privacy-2, 24 Nov 2026).
 //   • orders carries exactly THREE personal columns. Null them and the row is anonymous but financially
 //     complete — total, total_minor, payment_status, amount_paid, line items and timestamps all intact.
 //   • action_audit_log has no FKs, so nothing cascades to it. Verified live on 6 Aug 2026: 63 rows, no
@@ -67,6 +69,10 @@ export interface AccountDeletionResult {
   ordersAnonymised: number
   /** france-privacy-1: the orders and card drafts whose free-text notes were cleared (order note, dish and slot notes). */
   notesCleared: { orders: number; drafts: number }
+  /** france-privacy-2: the account's trucks' WhatsApp rows deleted at once (not left for the 12-month retention job). */
+  whatsappDeleted: { whatsapp_logs: number; messages: number }
+  /** france-privacy-2: the account's card drafts (promoted or not) whose customer name, email and phone were cleared. */
+  draftsAnonymised: number
   staffRemoved: number
   authUsersDeleted: number
   /** paperwork-1: the truck documents' files removed from storage, their rows, and the links to organisers deleted. */
@@ -159,6 +165,36 @@ export async function executeAccountDeletion(
     }
   }
 
+  // ── 2c. THE TRUCKS' WHATSAPP HISTORY (france-privacy-2, 24 November 2026, docs/france-privacy-2-report.md) ─────────────────────
+  // `whatsapp_logs` (the customer's number, their message and our automatic reply) and `messages` (the Twilio send log: from / to
+  // numbers and bodies) are customers' correspondence with the truck. The 12-month retention job deletes them by age; with the
+  // account closed they go NOW. 🔴 BY `truck_id` ONLY — both tables carry it (FK to trucks; every writer sets it) — so only the
+  // account's own trucks' rows go: never another account's, never orders or order_payments. Nothing reads these rows once the
+  // account is gone (the Settings usage line, Reports' WhatsApp counts and the reply caps are per truck, and both webhooks answer
+  // only an active truck — step 4 deactivates it). A second run finds nothing to delete.
+  const whatsappDeleted = { whatsapp_logs: 0, messages: 0 }
+  for (const table of ['whatsapp_logs', 'messages'] as const) {
+    for (const truckId of truckIds) {
+      const { data, error } = await supabase.from(table).delete().eq('truck_id', truckId).select('id')
+      if (error) throw new AccountDeletionError(`delete_whatsapp:${table}:${truckId}`, error.message)
+      whatsappDeleted[table] += data?.length ?? 0
+    }
+  }
+
+  // ── 2d. CARD DRAFTS' CUSTOMER DETAILS (france-privacy-2) — promoted or not, exactly as step 2 anonymises orders ───────────────
+  // The same placeholder values as the orders ('[deleted]', null, null; all three columns are nullable on order_drafts). The rows
+  // survive: totals and everything else untouched. Re-running writes the same values again.
+  let draftsAnonymised = 0
+  for (const truckId of truckIds) {
+    const { data, error } = await supabase
+      .from('order_drafts')
+      .update({ customer_name: ANON_LABEL, customer_email: null, customer_phone: null })
+      .eq('truck_id', truckId)
+      .select('order_key')
+    if (error) throw new AccountDeletionError(`anonymise_drafts:${truckId}`, error.message)
+    draftsAnonymised += data?.length ?? 0
+  }
+
   // ── 3. STAFF — memberships and their auth users ──────────────────────────────────────────────────
   // ⚠️ A staff member may belong to trucks under ANOTHER account. Their auth user is deleted ONLY when
   // no membership survives anywhere; deleting it with the first truck would lock them out of a business
@@ -246,5 +282,5 @@ export async function executeAccountDeletion(
     authUsersDeleted++
   }
 
-  return { operatorId, truckIds, ordersAnonymised, notesCleared, staffRemoved, authUsersDeleted, paperwork, loyalty, paymentsDeleted: 0 }
+  return { operatorId, truckIds, ordersAnonymised, notesCleared, whatsappDeleted, draftsAnonymised, staffRemoved, authUsersDeleted, paperwork, loyalty, paymentsDeleted: 0 }
 }

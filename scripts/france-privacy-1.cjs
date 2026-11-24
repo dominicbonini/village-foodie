@@ -173,9 +173,17 @@ const linesNoNotes = v => (Array.isArray(v) ? v.map(l => { if (!l || typeof l !=
     t('nothing deleted: orders, card drafts, payments, trucks and operators all kept (the same counts as the seed and START)', counts(dbH) === counts(OP_DB(SEED)) && counts(dbS) === counts(dbH), counts(dbH))
     const other = db => J([db.T.orders.filter(r => r.truck_id === 'tX'), db.T.order_drafts.filter(r => r.truck_id === 'tX'), db.T.trucks.find(r => r.id === 'tX'), db.T.operators.find(r => r.id === 'op2')])
     t('another account\'s truck, orders and drafts untouched (its notes still there)', other(dbH) === other(OP_DB(SEED)) && NOTE_RE.test(other(dbH)))
-    t('the drafts: every column but the notes byte-identical to START (their name/email/phone are not cleared — as START; listed in the report)', J(dbH.T.order_drafts.map(strip)) === J(dbS.T.order_drafts.map(strip)))
+    // ⚠️ RE-PINNED (france-privacy-2, 24 November 2026, docs/france-privacy-2-report.md): account deletion now also clears the card
+    // drafts' name, email and phone (step 2d, '[deleted]', null, null — Dominic's decision on Open item 53), so this check sets those
+    // three columns aside and asserts their new values on the account's drafts; every other column is compared with START as before.
+    const noId = r => { const o = strip(r); delete o.customer_name; delete o.customer_email; delete o.customer_phone; return o }
+    t('the drafts: every column but the notes and the name/email/phone byte-identical to START; the account\'s drafts\' name/email/phone \'[deleted]\', null, null (france-privacy-2), the other account\'s as START', J(dbH.T.order_drafts.map(noId)) === J(dbS.T.order_drafts.map(noId))
+      && mine(dbH, 'order_drafts').every(d => J([d.customer_name, d.customer_email, d.customer_phone]) === J(['[deleted]', null, null]))
+      && J(dbH.T.order_drafts.filter(d => d.truck_id === 'tX').map(d => [d.customer_name, d.customer_email, d.customer_phone])) === J(dbS.T.order_drafts.filter(d => d.truck_id === 'tX').map(d => [d.customer_name, d.customer_email, d.customer_phone])))
+    // ⚠️ RE-PINNED (france-privacy-2, 24 November 2026): the result also carries france-privacy-2's whatsappDeleted and draftsAnonymised
+    // (scripts/france-privacy-2.cjs proves them); they are left out of the comparison with START, like notesCleared.
     t(`the result reports the notes cleared (${J(rH.notesCleared)}) beside START's figures, which are unchanged`, J(rH.notesCleared) === J({ orders: 2 + 1 + 1 + [...Array(1100).keys()].filter(i => i % 2 || i % 3 === 0).length, drafts: 2 })
-      && J({ ...rH, notesCleared: undefined }) === J({ ...rS, notesCleared: undefined }), { H: rH.notesCleared, S: Object.keys(rS) })
+      && J({ ...rH, notesCleared: undefined, whatsappDeleted: undefined, draftsAnonymised: undefined }) === J({ ...rS, notesCleared: undefined }), { H: rH.notesCleared, S: Object.keys(rS) })
     t('every other table START\'s run wrote ends the same (operators, trucks, staff)', ['operators', 'trucks', 'truck_users'].every(tb => J(dbH.T[tb]) === J(dbS.T[tb])))
     // TWICE: as run again by hand (the request is still pending), and as a re-run after a failure that came after the notes step
     const before2 = J(dbH.T)

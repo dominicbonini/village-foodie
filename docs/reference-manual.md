@@ -327,9 +327,9 @@ start another "open items" list elsewhere. Lists inside older changelog entries 
 52. **Enquiry reply wording for France is out of date after the next deploy.** The 23 Nov drafts (facts / gaps / guidance on
     e-reporting, VAT and till software) said "one VAT rate per order" and "doesn't produce the file yet"; both are built. Update the
     `reply_knowledge` lines **with Dominic's approval** after the deploy. The till line stays held (item 43).
-53. **Decisions (france-privacy-1 §10):** should account deletion also (a) delete the truck's `whatsapp_logs` / `messages` rows at
+53. ~~**Decisions (france-privacy-1 §10):** should account deletion also (a) delete the truck's `whatsapp_logs` / `messages` rows at
     once, rather than at 12 months, and (b) clear an unpromoted card draft's name, email and phone? (Live 24 Nov: 17 WhatsApp rows,
-    0 messages, 0 unpromoted drafts.)
+    0 messages, 0 unpromoted drafts.)~~ ⛔ Done V16.36 (france-privacy-2): both, as decided by Dominic 24 Nov
 54. **A native read of the privacy wording** (france-privacy-1 §4): the "regulator" and "breach" terms, and the plural "those
     documents" in the country-terms intro in mn-MN, km-KH and lo-LA.
 
@@ -669,6 +669,15 @@ board read. 7. Retire the PIN. 8. "Reset dashboard link" in Manage › Settings 
   - `scripts/france-privacy-1.cjs` 47/0; ten harnesses re-pinned by name, plus the undo chain (`_named-terms-postpay-1.cjs` now calls
     the new `_named-france-privacy-1.cjs` first; report §8); the sweep shows the same 19 failures as at the start (`ec16f022`).
   - 🔴 **The new account-deletion line and the code that makes it true go live in the same deploy** (both are on this branch).
+- **france-privacy-2** (start `1bace5d4`; report `docs/france-privacy-2-report.md`; no database change; Dominic's decisions on Open
+  item 53, 24 Nov): account deletion now also **deletes the account's trucks' `whatsapp_logs` and `messages` rows at once** (step 2c,
+  by `truck_id`, instead of leaving them for the 12-month retention job) and **clears every card draft's customer name, email and
+  phone**, promoted or not (step 2d: `'[deleted]'`, null, null, as orders). The result gains `whatsappDeleted: { whatsapp_logs,
+  messages }` and `draftsAnonymised`. Named steps `delete_whatsapp:<table>:<truck>`, `anonymise_drafts:<truck>`; re-runnable.
+  Readers checked (none needs the rows after deletion; both webhooks answer only active trucks). Legal text unchanged (the policy's
+  "12 months" is a maximum; section 8 already says deletion removes personal data). `scripts/france-privacy-2.cjs` 36/0
+  (in memory only); `france-privacy-1.cjs` re-pinned (2 checks); 53 related harnesses run at the start and now: identical apart
+  from those two checks.
 - **Decisions (Dominic, 23–24 Nov, France research chat):**
   - **VAT rates are the truck's choice.** HatchGrab provides the tools (one rate, or a rate per item); Dominic is **not** consulting
     a French accountant. **No eat-in rate** (food trucks have no seating; add only if a truck asks).
@@ -28126,7 +28135,9 @@ The admin route refuses with **409 `accounting_records_present`**, keyed on **th
 |---|---|
 | **`order_payments`** | 🔴 **RETAINED, untouched** |
 | **`orders`** | **RETAINED, anonymised** — `customer_name → '[deleted]'`, `customer_email`/`customer_phone` → null. Totals, payment status, line items, timestamps intact. ⛔ *V16.36 (france-privacy-1), step 2b: customers' notes cleared too — `notes` → null; `line_notes` blanked; older-style `specialInstructions` → `''`, `slotNotes` → `{}` (below)* |
-| **`order_drafts`** (V16.36) | **RETAINED; notes cleared** by step 2b, the same way as orders. Name, email and phone of an unpromoted draft are **not** cleared (Open item 53) |
+| **`order_drafts`** (V16.36) | **RETAINED; notes cleared** by step 2b, the same way as orders. ~~Name, email and phone of an unpromoted draft are **not** cleared (Open item 53)~~ ⛔ *V16.36 (france-privacy-2), step 2d: name, email and phone cleared on every draft, promoted or not — `'[deleted]'`, null, null, as orders* |
+| **`whatsapp_logs`** (V16.36) | **DELETED** (step 2c, france-privacy-2) — every row of the account's trucks, by `truck_id` (FK to trucks, ON DELETE CASCADE; every writer sets it), not left for the 12-month retention job |
+| **`messages`** (V16.36) | **DELETED** (step 2c, france-privacy-2) — every row of the account's trucks, by `truck_id` (FK to trucks, ON DELETE SET NULL; every channel: whatsapp, sms, email) |
 | **`trucks`** | **RETAINED, anonymised**, `active: false`. Not deleted — `order_payments.truck_id` cascades from it |
 | `truck_users` | **DELETED** |
 | `auth.users` (staff) | **DELETED only when no membership survives anywhere** — a staff member may work for another account |
@@ -28155,7 +28166,7 @@ The admin route refuses with **409 `accounting_records_present`**, keyed on **th
 | `order_payments.note` | kept — our own text and the operator's refund note, not a customer note |
 | `orders.cancellation_reason` / `rejection_reason` | kept — the truck's words |
 | `orders.modify_data` | legacy, unused; live 0 rows hold anything |
-| `whatsapp_logs`, `messages` | **not cleared**; deleted at 12 months by retention (Open item 53) |
+| `whatsapp_logs`, `messages` | ~~**not cleared**; deleted at 12 months by retention (Open item 53)~~ ⛔ *V16.36 (france-privacy-2): **deleted** by step 2c* |
 | Stripe metadata, push notifications, KDS / dashboard, ticket printing | no notes stored |
 | The native app's offline outbox (on the operator's device) | out of reach of a server-side deletion |
 | Brevo delivery logs | held by Brevo under its own retention (privacy policy §7) |
