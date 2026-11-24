@@ -5,14 +5,14 @@
 //   • legal name; registered address (the truck's address format — no "Customers see" line: customers never see it);
 //   • registration number — France "SIREN or SIRET" (Luhn), GB "Company number" (8 characters), elsewhere "Registration number";
 //   • VAT number — EU countries: the country's prefix and pattern (format only);
-//   • VAT regime — France only. Picking "franchise en base" while a VAT rate applies shows a short note (the rate is never changed).
+//   • VAT regime — France only. Picking "franchise en base" shows a short note: new orders are sold at 0 % with « TVA non applicable »
+//     on the receipts (france-receipts-1); the truck's saved rates are never changed.
 // Not on customer pages, receipts or emails (that comes later, after a mockup). One layout on phone, iPad, laptop and desktop.
 import { useState } from 'react'
 import { Card, Input } from './primitives'
 import { useCountrySettings } from '@/components/CountrySettingsProvider'
 import { EventAddressFields, useAddressFormat } from '@/components/manage/AddressFields'
 import { checkBusinessDetails, euVatRuleOf, hasVatRegime, registrationKindOf, VAT_REGIMES, type BusinessDetailsInput, type RegisteredAddress } from '@/lib/business-details'
-import { defaultRateOf } from '@/lib/item-rates'
 import { useT } from '@/lib/i18n/use-t'
 import '@/lib/i18n/catalog/manageSettings'
 import '@/lib/i18n/catalog/errorsManage'
@@ -72,8 +72,9 @@ export function BusinessDetailsCard<T extends BusinessTruck>({ truck, api, showT
   const regLabel = kind === 'siren' ? t('business.registration.siren') : kind === 'gb_company' ? t('business.registration.gb') : t('business.registration.other')
   const regHint = kind === 'siren' ? t('business.registration.sirenHint') : kind === 'gb_company' ? t('business.registration.gbHint') : t('business.registration.otherHint')
   const taxLabel = cs.taxLabel
-  const rateNow = defaultRateOf(cs, truck)
-  const franchiseNote = showRegime && regime === 'franchise' && rateNow !== null && rateNow > 0
+  // france-receipts-1: franchise en base is applied to every new order (0 %, « TVA non applicable » on the receipts), so the note now
+  // says so whenever it is chosen — the old "you may want to set your VAT to 0 %" note is gone (the saved rates are left untouched).
+  const franchiseNote = showRegime && regime === 'franchise'
 
   return (
     <Card className="p-4" >

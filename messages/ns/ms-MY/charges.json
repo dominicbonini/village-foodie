@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Cukai, yuran & tip} tax_tip {Cukai & tip} fees_tip {Yuran & tip} fees {Yuran} other {Cukai & yuran}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Cukai, yuran & tip} tax_tip {Cukai & tip} fees_tip {Yuran & tip} fees {Yuran} other {Cukai & yuran}}",
+  "receipt": {
+    "number": "No. resit {n}",
+    "companyNumber": "No. syarikat",
+    "registrationNumber": "No. pendaftaran",
+    "taxNumber": "No. {label}"
+  }
 }

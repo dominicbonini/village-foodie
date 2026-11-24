@@ -58,7 +58,9 @@ export type CsvColumn = (typeof ORDER_COLUMNS)[number] | (typeof EVENT_COLUMNS)[
  *  none (every file before france-vat-1, every UK truck): exactly the columns it always had. */
 export function ordersCsv(rows: readonly AccountRow[], w: CsvWords): string {
   const rates = w.rateHeader ? ratesIn(rows) : []
-  const perRate = rates.length > 1 && !!w.rateHeader
+  // france-receipts-1: a file holding a 0 % rate (franchise en base, France) gets its per-rate columns even with one rate, so those sales
+  // show as 0 % with VAT 0. Every other one-rate file is exactly as before.
+  const perRate = (rates.length > 1 || rates.includes(0)) && !!w.rateHeader
   const header = [...ORDER_COLUMNS.map(w.header), ...(perRate ? rates.flatMap(rt => [w.rateHeader!('net', rt), w.rateHeader!('tax', rt)]) : [])]
   return csvFile(header, rows.map(r => {
     const complete = r.dishesWithCost === r.dishes

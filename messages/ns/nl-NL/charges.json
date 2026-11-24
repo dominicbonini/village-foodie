@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Btw, kosten en fooi} tax_tip {Btw en fooi} fees_tip {Kosten en fooi} fees {Kosten} other {Btw en kosten}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Btw, kosten en fooi} tax_tip {Btw en fooi} fees_tip {Kosten en fooi} fees {Kosten} other {Btw en kosten}}",
+  "receipt": {
+    "number": "Bonnummer {n}",
+    "companyNumber": "Bedrijfsnr.",
+    "registrationNumber": "Registratienr.",
+    "taxNumber": "{label}-nr."
+  }
 }

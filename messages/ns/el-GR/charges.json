@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Φόροι, χρεώσεις και φιλοδώρημα} tax_tip {Φόροι και φιλοδώρημα} fees_tip {Χρεώσεις και φιλοδώρημα} fees {Χρεώσεις} other {Φόροι και χρεώσεις}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Φόροι, χρεώσεις και φιλοδώρημα} tax_tip {Φόροι και φιλοδώρημα} fees_tip {Χρεώσεις και φιλοδώρημα} fees {Χρεώσεις} other {Φόροι και χρεώσεις}}",
+  "receipt": {
+    "number": "Αρ. απόδειξης {n}",
+    "companyNumber": "Αρ. εταιρείας",
+    "registrationNumber": "Αρ. μητρώου",
+    "taxNumber": "Αρ. {label}"
+  }
 }

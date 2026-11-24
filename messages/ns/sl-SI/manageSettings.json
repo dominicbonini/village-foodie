@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – mesečno",
       "reelNormalQuarterly": "Réel normal – četrtletno",
-      "franchiseNote": "Izbrali ste franchise en base, zato boste DDV morda želeli nastaviti na 0 %."
+      "franchiseNote": "Izbrali ste franchise en base, zato je na vaših računih navedeno „TVA non applicable“ in TVA se ne obračuna."
     },
     "saveFailed": "Shranjevanje ni uspelo — poskusite znova."
   }

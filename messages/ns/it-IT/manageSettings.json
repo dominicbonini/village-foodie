@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – mensile",
       "reelNormalQuarterly": "Réel normal – trimestrale",
-      "franchiseNote": "Hai scelto franchise en base, quindi potresti voler impostare l’IVA allo 0 %."
+      "franchiseNote": "Poiché hai scelto franchise en base, le tue ricevute riportano «TVA non applicable» e non si addebita alcuna TVA."
     },
     "saveFailed": "Salvataggio non riuscito: riprova."
   }

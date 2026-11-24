@@ -30,6 +30,7 @@ import { chargeLinesFor, chargeSourceOf, includedTaxLines } from '@/lib/order-ch
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
 import { translatorFor } from '@/lib/i18n/translator'
 import '@/lib/i18n/catalog/ticket'
+import { receiptFactsOf, type ReceiptOrder, type ReceiptTruck } from '@/lib/receipt'   // france-receipts-1
 
 /** Every TicketOrder key becomes REQUIRED while keeping its original value type (which still includes
  *  `undefined` for optional props). So the key cannot be forgotten, but "deliberately absent" is still
@@ -95,6 +96,14 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
   // Derived HERE from what the mapper already receives, so no caller (dashboard, KDS, dev preview) changes.
   const locale = truck?.time?.locale ?? null
 
+  // france-receipts-1: the receipt's own facts (lib/receipt.ts — the email's and the status page's function), for paper: the receipt
+  // number, the date and time of sale (placed_at, else created_at), the business details (registration number as digits), and France's
+  // franchise en base line. The truck's address format rides on the dashboard payload only when it has a registered address.
+  const facts = receiptFactsOf(order as unknown as ReceiptOrder, truck as unknown as ReceiptTruck, {
+    time: truck?.time ?? null, locale, addressFormat: (truck as { address_format?: unknown } | null | undefined)?.address_format, forTicket: true,
+  })
+  const receiptPart = facts.receiptNo || facts.soldAt || facts.business.length ? { receiptNo: facts.receiptNo, soldAt: facts.soldAt, business: facts.business } : undefined
+
   const t: ExhaustiveTicketOrder = {
     id: order.id,
     customer_name: order.customer_name,
@@ -140,6 +149,8 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
       const ls = includedTaxLines(chargeSourceOf(order as unknown as Record<string, unknown>), locale).map(l => ({ label: `${l.label} ${l.rate}`, minor: l.minor }))
       return ls.length === 0 ? undefined : ls.length === 1 ? ls[0] : ls
     })(),
+    franchiseNote: facts.franchiseNote ?? undefined,
+    receipt: receiptPart,
     total: order.total,
 
     showPaidStep,

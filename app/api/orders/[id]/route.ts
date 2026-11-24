@@ -6,6 +6,7 @@ import { truckTimeSettings } from '@/lib/truck-time'
 import { chargesForResponse } from '@/lib/order-charge-lines'
 import { customerErrorBody } from '@/lib/i18n/customer-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { receiptForRow } from '@/lib/receipt-server'   // france-receipts-1
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -59,6 +60,10 @@ export async function GET(
       service_fee_minor,
       card_surcharge_minor,
       tax_breakdown,
+      receipt_no,
+      placed_at,
+      created_at,
+      vat_regime,
       trucks!truck_id (
         name,
         slug,
@@ -66,7 +71,11 @@ export async function GET(
         allow_customer_cancellation,
         cancellation_cutoff_mins,
         timezone,
-        country
+        country,
+        legal_name,
+        registered_address,
+        registration_number,
+        vat_number
       )
     `)
     .eq('order_key', id)
@@ -126,6 +135,18 @@ export async function GET(
     console.error('[orders/:id] truck time settings unavailable — sending none:', e instanceof Error ? e.message : e)
   }
 
+  // ── france-receipts-1 (docs/france-receipts-1-report.md): THE RECEIPT'S OWN FACTS, worked out here in the truck's language
+  // (lib/receipt.ts — the same function the email and the ticket use): the receipt number (only when the order has one), the date and
+  // time of sale, the business details the truck has filled in, France's franchise en base line. Each key only when it has a value.
+  const money = await moneyFormatForOrder(order)
+  const facts = await receiptForRow(order as never, truck, time, time?.locale ?? money.locale)
+  const receipt = facts ? {
+    ...(facts.receiptNo ? { receiptNo: facts.receiptNo } : {}),
+    ...(facts.soldAt ? { soldAt: facts.soldAt } : {}),
+    ...(facts.business.length ? { business: facts.business } : {}),
+    ...(facts.franchiseNote ? { franchiseNote: facts.franchiseNote } : {}),
+  } : null
+
   return NextResponse.json({
     id: order.id,
     status: order.status,
@@ -154,10 +175,11 @@ export async function GET(
     deal_savings: order.deal_savings ?? null,
     truck_logo: truckLogo,
     // 🔴 THE ORDER'S OWN currency (orders.currency) and its country's locale — {currency, locale} only.
-    money: await moneyFormatForOrder(order),
+    money,
     time,
     // Phase 3 screens: the tax, fee and tip lines' source — a key only when there is a line to draw, so a
     // UK order's response is unchanged. (Named select: needs 20261010_17 and _18.)
     ...(chargesForResponse(order as unknown as Record<string, unknown>) ? { charges: chargesForResponse(order as unknown as Record<string, unknown>) } : {}),
+    ...(receipt && Object.keys(receipt).length ? { receipt } : {}),
   })
 }

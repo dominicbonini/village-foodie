@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {세금, 수수료 및 팁} tax_tip {세금 및 팁} fees_tip {수수료 및 팁} fees {수수료} other {세금 및 수수료}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {세금, 수수료 및 팁} tax_tip {세금 및 팁} fees_tip {수수료 및 팁} fees {수수료} other {세금 및 수수료}}",
+  "receipt": {
+    "number": "영수증 번호 {n}",
+    "companyNumber": "회사 번호",
+    "registrationNumber": "등록 번호",
+    "taxNumber": "{label} 번호"
+  }
 }

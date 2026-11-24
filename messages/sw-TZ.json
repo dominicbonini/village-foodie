@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Kodi, ada na bakshishi} tax_tip {Kodi na bakshishi} fees_tip {Ada na bakshishi} fees {Ada} other {Kodi na ada}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Kodi, ada na bakshishi} tax_tip {Kodi na bakshishi} fees_tip {Ada na bakshishi} fees {Ada} other {Kodi na ada}}",
+    "receipt": {
+      "number": "Risiti Na. {n}",
+      "companyNumber": "Na. ya kampuni",
+      "registrationNumber": "Na. ya usajili",
+      "taxNumber": "Na. ya {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "imeisha",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – kila mwezi",
         "reelNormalQuarterly": "Réel normal – kila robo mwaka",
-        "franchiseNote": "Umechagua franchise en base, kwa hiyo huenda ukataka kuweka VAT yako kuwa 0 %."
+        "franchiseNote": "Kwa kuwa umechagua franchise en base, risiti zako zinaonyesha “TVA non applicable” na hakuna TVA inayotozwa."
       },
       "saveFailed": "Imeshindikana kuhifadhi — tafadhali jaribu tena."
     }

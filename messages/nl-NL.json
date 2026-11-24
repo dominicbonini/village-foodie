@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Btw, kosten en fooi} tax_tip {Btw en fooi} fees_tip {Kosten en fooi} fees {Kosten} other {Btw en kosten}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Btw, kosten en fooi} tax_tip {Btw en fooi} fees_tip {Kosten en fooi} fees {Kosten} other {Btw en kosten}}",
+    "receipt": {
+      "number": "Bonnummer {n}",
+      "companyNumber": "Bedrijfsnr.",
+      "registrationNumber": "Registratienr.",
+      "taxNumber": "{label}-nr."
+    }
   },
   "menuBadges": {
     "soldOut": "uitverkocht",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – maandelijks",
         "reelNormalQuarterly": "Réel normal – per kwartaal",
-        "franchiseNote": "Je hebt franchise en base gekozen, dus misschien wil je je btw op 0 % zetten."
+        "franchiseNote": "Je hebt franchise en base gekozen, dus op je bonnen staat ‘TVA non applicable’ en er wordt geen TVA berekend."
       },
       "saveFailed": "Opslaan mislukt — probeer het opnieuw."
     }

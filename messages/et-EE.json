@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Maksud, tasud ja jootraha} tax_tip {Maksud ja jootraha} fees_tip {Tasud ja jootraha} fees {Tasud} other {Maksud ja tasud}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Maksud, tasud ja jootraha} tax_tip {Maksud ja jootraha} fees_tip {Tasud ja jootraha} fees {Tasud} other {Maksud ja tasud}}",
+    "receipt": {
+      "number": "Tšeki nr {n}",
+      "companyNumber": "Ettevõtte nr",
+      "registrationNumber": "Registrikood",
+      "taxNumber": "{label} nr"
+    }
   },
   "menuBadges": {
     "soldOut": "läbi müüdud",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – igakuine",
         "reelNormalQuarterly": "Réel normal – kvartaalne",
-        "franchiseNote": "Valisid franchise en base, seega võiksid seada käibemaksu määraks 0 %."
+        "franchiseNote": "Kuna valisid franchise en base, on sinu tšekkidel kirjas „TVA non applicable“ ja TVA-d ei lisata."
       },
       "saveFailed": "Salvestamine ebaõnnestus — proovi uuesti."
     }

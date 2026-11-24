@@ -142,8 +142,11 @@ function extract(ref) {
   }
   {
     const FRS = { pricesIncludeTax: true, addressFormat: 'fr' }
-    t('the franchise note shows when a VAT rate applies (France\'s default 10 %, or the truck\'s own), never at 0 % — the rate is never changed by it',
-      L.IR.defaultRateOf(FRS, {}) === 10000 && L.IR.defaultRateOf(FRS, { tax_rate_milli: 0 }) === 0 && /franchiseNote = showRegime && regime === 'franchise' && rateNow !== null && rateNow > 0/.test(read('components/manage/BusinessDetailsCard.tsx'))
+    // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026, docs/france-receipts-1-report.md): franchise en base is now APPLIED to new orders
+    // (0 %, « TVA non applicable » on the receipts), so the note says so whenever it is chosen — the "set your VAT to 0 %" condition on a rate
+    // is gone, as the brief asked. Still never a write of the rate.
+    t('the franchise note shows whenever franchise en base is chosen (france-receipts-1) — the rate is never changed by it',
+      L.IR.defaultRateOf(FRS, {}) === 10000 && /const franchiseNote = showRegime && regime === 'franchise'\n/.test(read('components/manage/BusinessDetailsCard.tsx'))
       && !/tax_rate_milli/.test(read('components/manage/BusinessDetailsCard.tsx').replace(/tax_rate_milli\?: number \| null/, '')))
     t('Settings mounts the card after Where you trade; the owner or an admin edits, everyone else reads; not in signup',
       /<BusinessDetailsCard truck=\{truck\} api=\{api\} showToast=\{showToast\} onTruckUpdate=\{onTruckUpdate\} readOnly=\{!\(userRole === 'owner' \|\| isAdmin\)\} \/>/.test(read('app/(app)/manage/[token]/page.tsx'))
@@ -326,7 +329,12 @@ function extract(ref) {
       const conf = O.Mail.formatConfirmationEmail({ orderId: '7', orderKey: 'ok-7', truckName: 'Crêperie', customerName: 'Léa', slot: '12:30', items, deals: [], discountAmt: 0, notes: null, autoAccepted: true, phoneCountry: 'FR', money: EUR, time: TIME, total: food / 100, charges: O.L.chargeSourceOf(row) })
       const neworder = O.Mail.formatNewOrderEmail({ orderId: '7', customerName: 'Léa', slot: '12:30', items, deals: [], total: food / 100, charges: O.L.chargeSourceOf(row), notes: null, money: EUR, time: TIME })
       const tk = O.mapOrderToTicket({ order: row, truck: { name: 'Crêperie', money: { ...EUR, localeByCountry: { FR: 'fr-FR' } }, time: TIME }, event: null, ledgerRows: [], printedLabel: '12:01' })
-      return { conf, neworder, ticket: [58, 80].map(w => Buffer.from(O.T.renderTicket(tk, { paper_width: w })).toString('hex')), status: O.L.chargesForResponse(row), lines: O.L.includedTaxLines(O.L.chargeSourceOf(row), 'fr-FR') }
+      // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026, docs/france-receipts-1-report.md): the ticket now prints the receipt number at
+      // the bottom (france-receipts-1's approved change) — taken out by name (scripts/_named-france-receipts-1.cjs, exactly once on this
+      // tree) and the rest compared byte for byte; the emails here are passed no receipt facts, so they are compared whole, as before.
+      const NFR = require('./_named-france-receipts-1.cjs')
+      const ticket = [58, 80].map(w => { const r = NFR.stripTicketLines(O.T.buildTicketLines(tk, { paper_width: w })); if (r.n !== (O === H && extraRow.receipt_no ? 1 : 0)) throw new Error(`[france-records-1] the receipt block found ${r.n} time(s)`); return Buffer.from(O.T.encodeEscPos(r.lines, { paper_width: w })).toString('hex') })
+      return { conf, neworder, ticket, status: O.L.chargesForResponse(row), lines: O.L.includedTaxLines(O.L.chargeSourceOf(row), 'fr-FR') }
     }
     const extraHead = { receipt_no: 42, legal_name: 'Crêperie Léa SARL', registration_number: '73282932000074', vat_number: 'FR12345678901', vat_regime: 'franchise' }
     for (const [label, lines, food] of [['single-rate (a crêpe)', [{ name: 'Crêpe', quantity: 2, unit_price: 8.5 }], 1700], ['mixed-rate (crêpe, can, cider)', MIX, 1500]]) {
@@ -334,7 +342,9 @@ function extract(ref) {
       const diff = Object.keys(a).filter(k => J(a[k]) !== J(b[k]))
       t(`${label}: the customer email (HTML + text), the new-order email, the ticket bytes (58 + 80 mm), the status page's / order API's charges — byte-identical to START, with a receipt number and business details on the row`, diff.length === 0, diff)
     }
-    const changed = execFileSync('git', ['diff', '--name-only', START, '--', 'lib/email.ts', 'lib/printing', 'app/(app)/order', 'app/(app)/trucks', 'app/api/orders/[id]', 'components/ChargeRows.tsx', 'lib/order-charge-lines.ts', 'app/api/menu'], { cwd: REPO, encoding: 'utf8' }).trim()
+    // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026): this proves FRANCE-RECORDS-1's commits changed no customer file — so it reads
+    // START → 68742078 (its last commit). france-receipts-1 changes three of them on purpose, proven by scripts/france-receipts-1.cjs.
+    const changed = execFileSync('git', ['diff', '--name-only', START, '68742078', '--', 'lib/email.ts', 'lib/printing', 'app/(app)/order', 'app/(app)/trucks', 'app/api/orders/[id]', 'components/ChargeRows.tsx', 'lib/order-charge-lines.ts', 'app/api/menu'], { cwd: REPO, encoding: 'utf8' }).trim()
     t('no file behind a customer screen, email or ticket changed since START (email, printing, the order and status pages, the order and menu APIs, the charge lines)', changed === '', changed)
   }
 

@@ -582,7 +582,13 @@
     "rate": "%{rate}",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Vergi, ücretler ve bahşiş} tax_tip {Vergi ve bahşiş} fees_tip {Ücretler ve bahşiş} fees {Ücretler} other {Vergi ve ücretler}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Vergi, ücretler ve bahşiş} tax_tip {Vergi ve bahşiş} fees_tip {Ücretler ve bahşiş} fees {Ücretler} other {Vergi ve ücretler}}",
+    "receipt": {
+      "number": "Fiş no. {n}",
+      "companyNumber": "Şirket no.",
+      "registrationNumber": "Sicil no.",
+      "taxNumber": "{label} no."
+    }
   },
   "menuBadges": {
     "soldOut": "tükendi",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – aylık",
         "reelNormalQuarterly": "Réel normal – üç aylık",
-        "franchiseNote": "Franchise en base seçtiğiniz için KDV’nizi %0 olarak ayarlamak isteyebilirsiniz."
+        "franchiseNote": "Seçiminiz franchise en base olduğu için fişlerinizde “TVA non applicable” yazar ve TVA alınmaz."
       },
       "saveFailed": "Kaydedilemedi — lütfen tekrar deneyin."
     }

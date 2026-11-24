@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Tributos, taxas e gorjeta} tax_tip {Tributos e gorjeta} fees_tip {Taxas e gorjeta} fees {Taxas} other {Tributos e taxas}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Tributos, taxas e gorjeta} tax_tip {Tributos e gorjeta} fees_tip {Taxas e gorjeta} fees {Taxas} other {Tributos e taxas}}",
+    "receipt": {
+      "number": "Recibo nº {n}",
+      "companyNumber": "Nº da empresa",
+      "registrationNumber": "Nº de registro",
+      "taxNumber": "Nº {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "esgotado",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – mensal",
         "reelNormalQuarterly": "Réel normal – trimestral",
-        "franchiseNote": "Você escolheu franchise en base, então talvez queira definir seu IVA como 0 %."
+        "franchiseNote": "Como você escolheu franchise en base, seus recibos mostram “TVA non applicable” e nenhuma TVA é cobrada."
       },
       "saveFailed": "Não foi possível salvar — tente de novo."
     }

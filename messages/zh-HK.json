@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}：{amount}",
     "lineWithRate": "{label} {rate}：{amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {稅項、費用及小費} tax_tip {稅項及小費} fees_tip {費用及小費} fees {費用} other {稅項及費用}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {稅項、費用及小費} tax_tip {稅項及小費} fees_tip {費用及小費} fees {費用} other {稅項及費用}}",
+    "receipt": {
+      "number": "收據編號 {n}",
+      "companyNumber": "公司編號",
+      "registrationNumber": "登記號碼",
+      "taxNumber": "{label}號碼"
+    }
   },
   "menuBadges": {
     "soldOut": "售罄",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – 每月",
         "reelNormalQuarterly": "Réel normal – 每季",
-        "franchiseNote": "你已選擇 franchise en base，或許應把增值稅設為 0 %。"
+        "franchiseNote": "由於你已選擇 franchise en base，你的收據會顯示「TVA non applicable」，並不收取 TVA。"
       },
       "saveFailed": "未能儲存，請再試一次。"
     }

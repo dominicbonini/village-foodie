@@ -582,7 +582,13 @@
     "rate": "{rate} %",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Moms, gebyrer og drikkepenge} tax_tip {Moms og drikkepenge} fees_tip {Gebyrer og drikkepenge} fees {Gebyrer} other {Moms og gebyrer}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Moms, gebyrer og drikkepenge} tax_tip {Moms og drikkepenge} fees_tip {Gebyrer og drikkepenge} fees {Gebyrer} other {Moms og gebyrer}}",
+    "receipt": {
+      "number": "Kvitteringsnr. {n}",
+      "companyNumber": "Selskabsnr.",
+      "registrationNumber": "Registreringsnr.",
+      "taxNumber": "{label}-nr."
+    }
   },
   "menuBadges": {
     "soldOut": "udsolgt",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – månedlig",
         "reelNormalQuarterly": "Réel normal – kvartalsvis",
-        "franchiseNote": "Du har valgt franchise en base, så du vil måske sætte din moms til 0 %."
+        "franchiseNote": "Da du har valgt franchise en base, står der »TVA non applicable« på dine kvitteringer, og der opkræves ingen TVA."
       },
       "saveFailed": "Kunne ikke gemme — prøv igen."
     }

@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Салық, алымдар және шайпұл} tax_tip {Салық және шайпұл} fees_tip {Алымдар және шайпұл} fees {Алымдар} other {Салық және алымдар}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Салық, алымдар және шайпұл} tax_tip {Салық және шайпұл} fees_tip {Алымдар және шайпұл} fees {Алымдар} other {Салық және алымдар}}",
+    "receipt": {
+      "number": "Чек № {n}",
+      "companyNumber": "Компания №",
+      "registrationNumber": "Тіркеу №",
+      "taxNumber": "{label} №"
+    }
   },
   "menuBadges": {
     "soldOut": "таусылды",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – ай сайын",
         "reelNormalQuarterly": "Réel normal – тоқсан сайын",
-        "franchiseNote": "Сіз franchise en base режимін таңдадыңыз, сондықтан ҚҚС-ты 0% етіп қойғыңыз келуі мүмкін."
+        "franchiseNote": "Сіз franchise en base режимін таңдағандықтан, чектеріңізде «TVA non applicable» деп көрсетіледі және TVA алынбайды."
       },
       "saveFailed": "Сақталмады — қайталап көріңіз."
     }

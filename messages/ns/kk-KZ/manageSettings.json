@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – ай сайын",
       "reelNormalQuarterly": "Réel normal – тоқсан сайын",
-      "franchiseNote": "Сіз franchise en base режимін таңдадыңыз, сондықтан ҚҚС-ты 0% етіп қойғыңыз келуі мүмкін."
+      "franchiseNote": "Сіз franchise en base режимін таңдағандықтан, чектеріңізде «TVA non applicable» деп көрсетіледі және TVA алынбайды."
     },
     "saveFailed": "Сақталмады — қайталап көріңіз."
   }

@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Pajak, biaya & tip} tax_tip {Pajak & tip} fees_tip {Biaya & tip} fees {Biaya} other {Pajak & biaya}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Pajak, biaya & tip} tax_tip {Pajak & tip} fees_tip {Biaya & tip} fees {Biaya} other {Pajak & biaya}}",
+  "receipt": {
+    "number": "No. struk {n}",
+    "companyNumber": "No. perusahaan",
+    "registrationNumber": "No. registrasi",
+    "taxNumber": "No. {label}"
+  }
 }

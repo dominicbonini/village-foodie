@@ -1,0 +1,130 @@
+════ (a) a VAT-registered French truck with full details (réel simplifié), a mixed-rate order ════
+
+── the confirmation email (its text part) ──
+Commande #23 confirmée — Crêperie
+Reçu n° 142
+24/11/2026 12:41
+1x Crêpe — 8,50 €
+1x Canette — 2,50 €
+1x Cidre — 4,00 €
+Total : 15,00 €
+Dont TVA 5,5 % : 0,13 €
+Dont TVA 10 % : 0,77 €
+Dont TVA 20 % : 0,67 €
+Heure de retrait : 12:30. À tout à l’heure au food truck !
+À payer au food truck lors du retrait.
+📍 Place du Marché, Paris
+Crêperie Léa SARL
+12 rue des Lilas, 75011 Paris
+SIRET 732 829 320 00074
+N° TVA FR12345678901
+Propulsé par HatchGrab — hatchgrab.com
+Confidentialité : https://www.hatchgrab.com/fr/privacy
+
+── the status page (its text) ──
+Crêperie Order #23 · Reçu n° 142 24/11/2026 12:41 Pickup 12:30 Payment Pay at the truck Status confirmed 1× Crêpe 8,50 € 1× Canette 2,50 € 1× Cidre 4,00 € Total 15,00 € The cancellation window has passed. Crêperie Léa SARL 12 rue des Lilas, 75011 Paris SIRET 732 829 320 00074 N° TVA FR12345678901
+
+── the ticket, 58 mm ──
+#23
+   RETRAIT 12:30
+Lea
+--------------------------------
+1x Crepe                EUR 8,50
+
+1x Canette              EUR 2,50
+
+1x Cidre                EUR 4,00
+--------------------------------
+TOTAL                  EUR 15,00
+Dont TVA 5,5 %          EUR 0,13
+Dont TVA 10 %           EUR 0,77
+Dont TVA 20 %           EUR 0,67
+--------------------------------
+Recu no 142
+24/11/2026 12:41
+Creperie Lea SARL
+12 rue des Lilas, 75011 Paris
+SIRET 73282932000074
+No TVA FR12345678901
+            Creperie
+      imprimé 24 Nov 12:41
+
+
+════ (b) a French truck under franchise en base (10 % default, a 20 % cider), the same order ════
+
+── the confirmation email (its text part) ──
+Commande #23 confirmée — Crêperie
+Reçu n° 143
+24/11/2026 12:41
+1x Crêpe — 8,50 €
+1x Canette — 2,50 €
+1x Cidre — 4,00 €
+Total : 15,00 €
+TVA non applicable, art. 293 B du CGI
+Heure de retrait : 12:30. À tout à l’heure au food truck !
+À payer au food truck lors du retrait.
+📍 Place du Marché, Paris
+Crêperie Léa SARL
+12 rue des Lilas, 75011 Paris
+SIRET 732 829 320 00074
+N° TVA FR12345678901
+Propulsé par HatchGrab — hatchgrab.com
+Confidentialité : https://www.hatchgrab.com/fr/privacy
+
+── the status page (its text) ──
+Crêperie Order #23 · Reçu n° 143 24/11/2026 12:41 Pickup 12:30 Payment Pay at the truck Status confirmed 1× Crêpe 8,50 € 1× Canette 2,50 € 1× Cidre 4,00 € Total 15,00 € TVA non applicable, art. 293 B du CGI The cancellation window has passed. Crêperie Léa SARL 12 rue des Lilas, 75011 Paris SIRET 732 829 320 00074 N° TVA FR12345678901
+
+── the ticket, 58 mm ──
+#23
+   RETRAIT 12:30
+Lea
+--------------------------------
+1x Crepe                EUR 8,50
+
+1x Canette              EUR 2,50
+
+1x Cidre                EUR 4,00
+--------------------------------
+TOTAL                  EUR 15,00
+TVA non applicable, art. 293 B
+du CGI
+--------------------------------
+Recu no 143
+24/11/2026 12:41
+Creperie Lea SARL
+12 rue des Lilas, 75011 Paris
+SIRET 73282932000074
+No TVA FR12345678901
+            Creperie
+      imprimé 24 Nov 12:41
+
+
+════ (c) a GB truck with no business details (no receipt number yet) ════
+
+── the confirmation email (its text part) ──
+Order #23 confirmed — Crêperie
+24/11/2026 11:41
+2x Crêpe — £17.00
+Total: £17.00
+Collection time: 12:30. See you at the hatch!
+Pay at the truck on collection.
+📍 Place du Marché, Paris
+Powered by HatchGrab — hatchgrab.com
+Privacy: https://www.hatchgrab.com/privacy
+
+── the status page (its text) ──
+Crêperie Order #23 24/11/2026 11:41 Pickup 12:30 Payment Pay at the truck Status confirmed 2× Crêpe £17.00 Total £17.00 Cancel order Cancellations accepted up to 30 minutes before pickup
+
+── the ticket, 58 mm ──
+#23
+   COLLECT 12:30
+Lea
+--------------------------------
+2x Crepe                  £17.00
+--------------------------------
+TOTAL                     £17.00
+--------------------------------
+24/11/2026 11:41
+            Creperie
+      printed 24 Nov 12:41
+

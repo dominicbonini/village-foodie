@@ -86,6 +86,7 @@ import '@/lib/i18n/catalog/errorsCustomer'
 import { readEventRegion } from '@/lib/event-region-read'
 import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
 import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
+import { receiptForOrderKey } from '@/lib/receipt-server'   // france-receipts-1
 
 /** What a refusal tells the customer: the sentence, in the truck's language, and the code and values it was
  *  made from — which /api/payments/return carries to the page (?payment_failed=, and its JSON reply) so the
@@ -415,6 +416,9 @@ export async function promoteDraft(
           // ⚠️ A draft written before 20261010_17's code has none of the columns' values (its food_minor is
           // NULL), and the order then keeps the same NULL/0 defaults an order placed before Phase 3 has.
           ...chargeColumnsOf(draft as unknown as Record<string, unknown>),
+          // france-receipts-1: the VAT regime the draft was priced under (stamped when it was written), so a franchise en base order
+          // keeps its « TVA non applicable » line even if the truck's regime changed in between. Absent: the trigger copies the truck's.
+          ...((draft as { vat_regime?: string | null }).vat_regime ? { vat_regime: (draft as { vat_regime?: string | null }).vat_regime } : {}),
         })
         .select('order_key')
         .single()
@@ -516,6 +520,8 @@ export async function promoteDraft(
           // The order's currency is the draft's (written on the insert above); its country the truck's (trigger).
           money:        await moneyFormatForOrder({ currency: draft.currency, country: truck.country }),
           time: await truckTimeSettings(truck),
+          // france-receipts-1: the receipt facts of the order just promoted (lib/receipt-server.ts; never the reason the email fails).
+          receipt:      await receiptForOrderKey(supabase, draft.order_key, truck, await truckTimeSettings(truck), (await moneyFormatForOrder({ currency: draft.currency, country: truck.country })).locale),
           phoneCountry: truck.country,
           orderId,
           orderKey:     draft.order_key,

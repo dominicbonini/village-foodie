@@ -45,6 +45,8 @@ import { nextOrderId } from '@/lib/order-utils'
 import { repriceOrder, toMinor, fromMinor, taxBookOf, type RepriceItem } from '@/lib/order-repricing'
 import { lineTax, stampItems, stampDeals } from '@/lib/order-tax'   // france-vat-1
 import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
+import { receiptForOrderKey, receiptForRow } from '@/lib/receipt-server'   // france-receipts-1
+import { franchiseApplies, franchiseRules, franchiseTaxBook } from '@/lib/receipt'   // france-receipts-1
 /** france-vat-1: the statuses after which an order is a finished record — refused by `edit` and `cancel`. */
 const FINISHED_STATUSES = new Set(['collected', 'cancelled', 'rejected'])
 // Phase 3: tax, tip and fees — the same engine and rules as the customer path (docs/phase-3-foundations-report.md).
@@ -392,6 +394,8 @@ export async function POST(req: NextRequest) {
         const { subject, html, text } = formatConfirmationEmail({
           money: await moneyFormatForOrder(order),
           time: await truckTimeSettings(truck),
+          // france-receipts-1: the receipt number, the date of sale, the business details, France's franchise line (lib/receipt.ts)
+          receipt: await receiptForRow(order, truck, await truckTimeSettings(truck), (await moneyFormatForOrder(order)).locale),
           phoneCountry: truck.country,
           orderId: order.id,
           orderKey: order.order_key,
@@ -887,9 +891,12 @@ export async function POST(req: NextRequest) {
       // stamped with (an older, unstamped line: the order's own stored rate); a line this edit adds takes its dish's rate, else the
       // order's stored default (D4). The discount is spread again over the edited food.
       const editRules = await loadChargeRules(truck)
+      // france-receipts-1: an order SOLD under franchise en base (its own stamp, orders.vat_regime — not the truck's regime today) stays
+      // at 0 %: a line this edit adds is at 0 % too. Every other order is re-priced exactly as before.
+      const editFranchise = order.vat_regime === 'franchise' && franchiseApplies(order.country ?? truck.country, 'franchise')
       const editTax = lineTax({
         items: repriced.items, deals: repriced.deals, foodMinor: editFoodMinor,
-        book: taxBookOf(priceBook, order.currency ?? truck.currency),
+        book: editFranchise ? franchiseTaxBook(taxBookOf(priceBook, order.currency ?? truck.currency)) : taxBookOf(priceBook, order.currency ?? truck.currency),
         defaultRate: rulesForStoredOrder(editRules, order).taxRateMilli,
         currency: order.currency ?? truck.currency,
         stored: { items: order.items, deals: order.deals },
@@ -1151,6 +1158,8 @@ export async function POST(req: NextRequest) {
         const { html, text } = formatConfirmationEmail({
           money: editMoney,
           time: await truckTimeSettings(truck),
+          // france-receipts-1: the receipt number, the date of sale, the business details, France's franchise line (lib/receipt.ts)
+          receipt: await receiptForRow(order, truck, await truckTimeSettings(truck), editMoney.locale),
           phoneCountry: truck.country,
           orderId: order.id,
           orderKey,
@@ -1812,10 +1821,12 @@ export async function POST(req: NextRequest) {
       // ── 🔴 france-vat-1: each line's rate from the server's menu (lib/order-tax.ts), the food split by rate. The prices are
       // `priced`'s, which `pricedItems` / `pricedDeals` below keep line for line, so the stamps line up by index.
       const walkupFoodMinor = toMinor(priced.calculation.total, truck.currency)   // world-countries-1: the truck's currency's minor units
-      const walkupRules = await loadChargeRules(truck)
+      // france-receipts-1: franchise en base (the truck's regime NOW) — every line and deal at 0 %, the truck's saved rates untouched.
+      const walkupFranchise = franchiseApplies(truck.country, truck.vat_regime)
+      const walkupRules = walkupFranchise ? franchiseRules(await loadChargeRules(truck)) : await loadChargeRules(truck)
       const walkupTax = lineTax({
         items: priced.items, deals: deals ? priced.deals : [], foodMinor: walkupFoodMinor,
-        book: taxBookOf(priceBook, truck.currency), defaultRate: walkupRules.taxRateMilli, currency: truck.currency,
+        book: walkupFranchise ? franchiseTaxBook(taxBookOf(priceBook, truck.currency)) : taxBookOf(priceBook, truck.currency), defaultRate: walkupRules.taxRateMilli, currency: truck.currency,
       })
       const walkupCharges = computeOrderCharges({
         foodMinor: walkupFoodMinor,
@@ -2170,6 +2181,8 @@ export async function POST(req: NextRequest) {
         const { subject, html, text } = formatConfirmationEmail({
           money: walkUpMoney,
           time: await truckTimeSettings(truck),
+          // france-receipts-1: the receipt number, the date of sale, the business details, France's franchise line (lib/receipt.ts)
+          receipt: await receiptForOrderKey(supabase, manualOrderKey, truck, await truckTimeSettings(truck), walkUpMoney.locale),
           phoneCountry: truck.country,
           orderId: newOrderId,
           orderKey: manualOrderKey,
@@ -2556,6 +2569,8 @@ export async function POST(req: NextRequest) {
         const { html, text } = formatConfirmationEmail({
           money: await moneyFormatForOrder(ord),
           time: await truckTimeSettings(truck),
+          // france-receipts-1: the receipt number, the date of sale, the business details, France's franchise line (lib/receipt.ts)
+          receipt: await receiptForOrderKey(supabase, orderKey, truck, await truckTimeSettings(truck), (await moneyFormatForOrder(ord)).locale),
           phoneCountry: truck.country,
           orderId: ord.id,
           orderKey,

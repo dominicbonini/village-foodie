@@ -4001,7 +4001,7 @@
  "manageSettings.business.regime.reelSimplifie": "Réel simplifié",
  "manageSettings.business.regime.reelNormalMonthly": "Réel normal – monthly",
  "manageSettings.business.regime.reelNormalQuarterly": "Réel normal – quarterly",
- "manageSettings.business.regime.franchiseNote": "You've chosen franchise en base, so you probably want to set VAT to 0 %.",
+ "manageSettings.business.regime.franchiseNote": "Because you chose franchise en base, “TVA non applicable” appears on your receipts and no TVA applies.",
  "manageSettings.business.saveFailed": "Couldn’t save — please try again.",
  "manageSettings.removeVan.body": "This van will be removed from your account and will no longer appear on your dashboard or in upcoming events.",
  "manageSettings.removeVan.keep": "Keep van",
@@ -6045,5 +6045,9 @@
  "demoGetStarted.partnerDealFixedPrice": "for {months} months, {plan} at {price} per month",
  "demoGetStarted.partnerDealPlanOffer": "for {months} months, special price on {plan}",
  "errorsKitchen.order_finished_edit": "This order is already finished, so it can’t be changed.",
- "errorsKitchen.order_finished_cancel": "This order is already finished, so it can’t be cancelled."
+ "errorsKitchen.order_finished_cancel": "This order is already finished, so it can’t be cancelled.",
+ "charges.receipt.number": "Receipt no. {n}",
+ "charges.receipt.companyNumber": "Company no.",
+ "charges.receipt.registrationNumber": "Registration no.",
+ "charges.receipt.taxNumber": "{label} no."
 }

@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Tax, fees & tip} tax_tip {Tax & tip} fees_tip {Fees & tip} fees {Fees} other {Tax & fees}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Tax, fees & tip} tax_tip {Tax & tip} fees_tip {Fees & tip} fees {Fees} other {Tax & fees}}",
+  "receipt": {
+    "number": "Receipt no. {n}",
+    "companyNumber": "Company no.",
+    "registrationNumber": "Registration no.",
+    "taxNumber": "{label} no."
+  }
 }

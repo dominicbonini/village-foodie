@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – μηνιαίο",
       "reelNormalQuarterly": "Réel normal – τριμηνιαίο",
-      "franchiseNote": "Επιλέξατε franchise en base, οπότε ίσως θέλετε να ορίσετε τον ΦΠΑ σε 0 %."
+      "franchiseNote": "Επειδή επιλέξατε franchise en base, οι αποδείξεις σας γράφουν «TVA non applicable» και δεν χρεώνεται TVA."
     },
     "saveFailed": "Η αποθήκευση απέτυχε — δοκιμάστε ξανά."
   }

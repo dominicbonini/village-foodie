@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – mánaðarlega",
       "reelNormalQuarterly": "Réel normal – ársfjórðungslega",
-      "franchiseNote": "Þú valdir franchise en base, svo þú gætir viljað stilla VSK á 0 %."
+      "franchiseNote": "Þar sem þú valdir franchise en base stendur „TVA non applicable“ á kvittununum þínum og enginn TVA er innheimtur."
     },
     "saveFailed": "Ekki tókst að vista — reyndu aftur."
   }

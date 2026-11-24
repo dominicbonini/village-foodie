@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – 월별",
       "reelNormalQuarterly": "Réel normal – 분기별",
-      "franchiseNote": "franchise en base를 선택하셨으니 부가세를 0 %로 설정하는 것이 좋을 수 있습니다."
+      "franchiseNote": "franchise en base를 선택하셨기 때문에 영수증에 “TVA non applicable” 문구가 표시되며 TVA는 부과되지 않습니다."
     },
     "saveFailed": "저장하지 못했어요. 다시 시도해 주세요."
   }

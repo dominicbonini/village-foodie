@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {გადასახადი, საფასური და ჩაის ფული} tax_tip {გადასახადი და ჩაის ფული} fees_tip {საფასური და ჩაის ფული} fees {საფასური} other {გადასახადი და საფასური}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {გადასახადი, საფასური და ჩაის ფული} tax_tip {გადასახადი და ჩაის ფული} fees_tip {საფასური და ჩაის ფული} fees {საფასური} other {გადასახადი და საფასური}}",
+  "receipt": {
+    "number": "ქვითარი № {n}",
+    "companyNumber": "კომპანიის №",
+    "registrationNumber": "სარეგისტრაციო №",
+    "taxNumber": "{label}-ის №"
+  }
 }

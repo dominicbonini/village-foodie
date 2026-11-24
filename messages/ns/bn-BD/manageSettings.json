@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – মাসিক",
       "reelNormalQuarterly": "Réel normal – ত্রৈমাসিক",
-      "franchiseNote": "আপনি franchise en base বেছে নিয়েছেন, তাই আপনার ভ্যাট 0 % করে দিতে পারেন।"
+      "franchiseNote": "আপনি franchise en base বেছে নিয়েছেন, তাই আপনার রসিদে “TVA non applicable” দেখায় এবং কোনো TVA নেওয়া হয় না।"
     },
     "saveFailed": "সেভ করা যায়নি — আবার চেষ্টা করুন।"
   }

@@ -9,5 +9,11 @@
   "rate": "{rate} %",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Moms, avgifter och dricks} tax_tip {Moms och dricks} fees_tip {Avgifter och dricks} fees {Avgifter} other {Moms och avgifter}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Moms, avgifter och dricks} tax_tip {Moms och dricks} fees_tip {Avgifter och dricks} fees {Avgifter} other {Moms och avgifter}}",
+  "receipt": {
+    "number": "Kvittonr {n}",
+    "companyNumber": "Företagsnr",
+    "registrationNumber": "Registreringsnr",
+    "taxNumber": "{label}-nr"
+  }
 }

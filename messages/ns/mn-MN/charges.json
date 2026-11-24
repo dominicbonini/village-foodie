@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Татвар, хураамж ба цайны мөнгө} tax_tip {Татвар ба цайны мөнгө} fees_tip {Хураамж ба цайны мөнгө} fees {Хураамж} other {Татвар ба хураамж}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Татвар, хураамж ба цайны мөнгө} tax_tip {Татвар ба цайны мөнгө} fees_tip {Хураамж ба цайны мөнгө} fees {Хураамж} other {Татвар ба хураамж}}",
+  "receipt": {
+    "number": "Баримтын № {n}",
+    "companyNumber": "Компанийн №",
+    "registrationNumber": "Бүртгэлийн №",
+    "taxNumber": "{label} №"
+  }
 }

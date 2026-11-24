@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Податок, збори й чайові} tax_tip {Податок і чайові} fees_tip {Збори й чайові} fees {Збори} other {Податок і збори}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Податок, збори й чайові} tax_tip {Податок і чайові} fees_tip {Збори й чайові} fees {Збори} other {Податок і збори}}",
+  "receipt": {
+    "number": "Чек №{n}",
+    "companyNumber": "№ компанії",
+    "registrationNumber": "Реєстр. №",
+    "taxNumber": "№ {label}"
+  }
 }

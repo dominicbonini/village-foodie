@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {ພາສີ ຄ່າທຳນຽມ ແລະ ເງິນທິບ} tax_tip {ພາສີ ແລະ ເງິນທິບ} fees_tip {ຄ່າທຳນຽມ ແລະ ເງິນທິບ} fees {ຄ່າທຳນຽມ} other {ພາສີ ແລະ ຄ່າທຳນຽມ}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {ພາສີ ຄ່າທຳນຽມ ແລະ ເງິນທິບ} tax_tip {ພາສີ ແລະ ເງິນທິບ} fees_tip {ຄ່າທຳນຽມ ແລະ ເງິນທິບ} fees {ຄ່າທຳນຽມ} other {ພາສີ ແລະ ຄ່າທຳນຽມ}}",
+    "receipt": {
+      "number": "ເລກໃບຮັບເງິນ {n}",
+      "companyNumber": "ເລກທະບຽນບໍລິສັດ",
+      "registrationNumber": "ເລກທະບຽນ",
+      "taxNumber": "ເລກ {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "ໝົດແລ້ວ",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – ລາຍເດືອນ",
         "reelNormalQuarterly": "Réel normal – ລາຍໄຕມາດ",
-        "franchiseNote": "ທ່ານເລືອກ franchise en base, ສະນັ້ນທ່ານອາດຈະຕ້ອງຕັ້ງ VAT ເປັນ 0 %."
+        "franchiseNote": "ທ່ານເລືອກ franchise en base, ສະນັ້ນໃບຮັບເງິນຂອງທ່ານຈະສະແດງ “TVA non applicable” ແລະ ບໍ່ເກັບ TVA."
       },
       "saveFailed": "ບັນທຶກບໍ່ສຳເລັດ — ກະລຸນາລອງໃໝ່ອີກຄັ້ງ."
     }

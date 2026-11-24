@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – månedlig",
       "reelNormalQuarterly": "Réel normal – kvartalsvis",
-      "franchiseNote": "Du har valgt franchise en base, så du vil kanskje sette mva. til 0 %."
+      "franchiseNote": "Du har valgt franchise en base, så kvitteringene dine viser «TVA non applicable», og det beregnes ingen TVA."
     },
     "saveFailed": "Kunne ikke lagre – prøv igjen."
   }

@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – ລາຍເດືອນ",
       "reelNormalQuarterly": "Réel normal – ລາຍໄຕມາດ",
-      "franchiseNote": "ທ່ານເລືອກ franchise en base, ສະນັ້ນທ່ານອາດຈະຕ້ອງຕັ້ງ VAT ເປັນ 0 %."
+      "franchiseNote": "ທ່ານເລືອກ franchise en base, ສະນັ້ນໃບຮັບເງິນຂອງທ່ານຈະສະແດງ “TVA non applicable” ແລະ ບໍ່ເກັບ TVA."
     },
     "saveFailed": "ບັນທຶກບໍ່ສຳເລັດ — ກະລຸນາລອງໃໝ່ອີກຄັ້ງ."
   }

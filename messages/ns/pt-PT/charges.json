@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Impostos, taxas e gorjeta} tax_tip {Impostos e gorjeta} fees_tip {Taxas e gorjeta} fees {Taxas} other {Impostos e taxas}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Impostos, taxas e gorjeta} tax_tip {Impostos e gorjeta} fees_tip {Taxas e gorjeta} fees {Taxas} other {Impostos e taxas}}",
+  "receipt": {
+    "number": "Recibo n.º {n}",
+    "companyNumber": "N.º de empresa",
+    "registrationNumber": "N.º de registo",
+    "taxNumber": "N.º {label}"
+  }
 }

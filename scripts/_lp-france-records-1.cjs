@@ -69,10 +69,13 @@ const KEYS = [
   'manageReports.dailyCsv.noRate'
 ]
 const NEW = new Set(KEYS)
-const ALL = new Set([...FV1.NEW_KEYS, ...KEYS])
-/** One key, one locale: france-vat-1's or france-records-1's named set-aside? */
+// ⚠️ RE-PINNED (france-receipts-1, 24 November 2026, docs/france-receipts-1-report.md): the 5 unused bases also lack france-receipts-1's
+// 4 receipt words (scripts/_lp-france-receipts-1.cjs) — named here too, so every harness reading this set-aside allows exactly those.
+const RECEIPTS = require('./_lp-france-receipts-1.cjs').NEW_KEYS
+const ALL = new Set([...FV1.NEW_KEYS, ...KEYS, ...RECEIPTS])
+/** One key, one locale: france-vat-1's, france-records-1's or france-receipts-1's named set-aside? */
 const setAside = (locale, key) => FV1.UNUSED_BASES.includes(locale) && ALL.has(key)
-/** The base lacks EXACTLY france-vat-1's 24 and france-records-1's 60 keys, nothing else. */
+/** The base lacks EXACTLY france-vat-1's 24, france-records-1's 60 and france-receipts-1's 4 keys, nothing else. */
 function onlySetAside(locale) {
   if (!FV1.UNUSED_BASES.includes(locale)) return false
   const miss = FV1.missingKeys(locale)

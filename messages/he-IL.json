@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {מס, דמי שירות וטיפ} tax_tip {מס וטיפ} fees_tip {דמי שירות וטיפ} fees {דמי שירות} other {מס ודמי שירות}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {מס, דמי שירות וטיפ} tax_tip {מס וטיפ} fees_tip {דמי שירות וטיפ} fees {דמי שירות} other {מס ודמי שירות}}",
+    "receipt": {
+      "number": "קבלה מס׳ {n}",
+      "companyNumber": "מס׳ חברה",
+      "registrationNumber": "מס׳ רישום",
+      "taxNumber": "מס׳ {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "אזל",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – חודשי",
         "reelNormalQuarterly": "Réel normal – רבעוני",
-        "franchiseNote": "בחרתם ב-franchise en base, ולכן אולי כדאי לקבוע את המע״מ ל-0%."
+        "franchiseNote": "מכיוון שבחרתם ב-franchise en base, בקבלות שלכם מופיע “TVA non applicable” ולא נגבה TVA."
       },
       "saveFailed": "השמירה נכשלה — נסו שוב."
     }

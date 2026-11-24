@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {ภาษี ค่าธรรมเนียม และทิป} tax_tip {ภาษีและทิป} fees_tip {ค่าธรรมเนียมและทิป} fees {ค่าธรรมเนียม} other {ภาษีและค่าธรรมเนียม}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {ภาษี ค่าธรรมเนียม และทิป} tax_tip {ภาษีและทิป} fees_tip {ค่าธรรมเนียมและทิป} fees {ค่าธรรมเนียม} other {ภาษีและค่าธรรมเนียม}}",
+  "receipt": {
+    "number": "ใบเสร็จเลขที่ {n}",
+    "companyNumber": "เลขทะเบียนบริษัท",
+    "registrationNumber": "เลขทะเบียน",
+    "taxNumber": "เลข {label}"
+  }
 }

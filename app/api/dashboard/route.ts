@@ -41,6 +41,7 @@ import type { TruckMoney } from '@/lib/money-format'
 import { kitchenErrorBody } from '@/lib/i18n/kitchen-errors'
 import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { requireMember } from '@/lib/auth/require-member'   // dashboard-auth-2: the member gate (log mode)
+import { addressFormatForTruck } from '@/lib/country-settings'   // france-receipts-1
 
 // ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
 // 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
@@ -1006,6 +1007,9 @@ export async function GET(req: NextRequest) {
       // { phoneCountry, short_name, phone_example } — never the settings row (Phase 2C).
       phone: truckPhone,
       ...(chargeRules ? { charge_rules: chargeRules } : {}),
+      // france-receipts-1: the truck's address format, for the printed receipt's registered address (lib/receipt.ts) — only when the
+      // truck has one, so every other dashboard response is unchanged.
+      ...(truck.registered_address ? { address_format: await addressFormatForTruck(truck) } : {}),
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }

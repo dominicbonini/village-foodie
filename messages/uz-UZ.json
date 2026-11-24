@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Soliq, yigʻimlar va choychaqa} tax_tip {Soliq va choychaqa} fees_tip {Yigʻimlar va choychaqa} fees {Yigʻimlar} other {Soliq va yigʻimlar}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Soliq, yigʻimlar va choychaqa} tax_tip {Soliq va choychaqa} fees_tip {Yigʻimlar va choychaqa} fees {Yigʻimlar} other {Soliq va yigʻimlar}}",
+    "receipt": {
+      "number": "Chek raqami {n}",
+      "companyNumber": "Kompaniya raqami",
+      "registrationNumber": "Roʻyxatdan oʻtish raqami",
+      "taxNumber": "{label} raqami"
+    }
   },
   "menuBadges": {
     "soldOut": "tugadi",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – har oy",
         "reelNormalQuarterly": "Réel normal – har chorak",
-        "franchiseNote": "Siz franchise en base rejimini tanladingiz, shuning uchun QQSni 0% qilib qoʻyishingiz mumkin."
+        "franchiseNote": "Siz franchise en base rejimini tanladingiz, shuning uchun cheklaringizda “TVA non applicable” yozuvi chiqadi va TVA olinmaydi."
       },
       "saveFailed": "Saqlab boʻlmadi — qaytadan urinib koʻring."
     }

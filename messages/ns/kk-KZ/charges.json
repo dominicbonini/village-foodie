@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Салық, алымдар және шайпұл} tax_tip {Салық және шайпұл} fees_tip {Алымдар және шайпұл} fees {Алымдар} other {Салық және алымдар}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Салық, алымдар және шайпұл} tax_tip {Салық және шайпұл} fees_tip {Алымдар және шайпұл} fees {Алымдар} other {Салық және алымдар}}",
+  "receipt": {
+    "number": "Чек № {n}",
+    "companyNumber": "Компания №",
+    "registrationNumber": "Тіркеу №",
+    "taxNumber": "{label} №"
+  }
 }

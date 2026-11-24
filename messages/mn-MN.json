@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Татвар, хураамж ба цайны мөнгө} tax_tip {Татвар ба цайны мөнгө} fees_tip {Хураамж ба цайны мөнгө} fees {Хураамж} other {Татвар ба хураамж}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Татвар, хураамж ба цайны мөнгө} tax_tip {Татвар ба цайны мөнгө} fees_tip {Хураамж ба цайны мөнгө} fees {Хураамж} other {Татвар ба хураамж}}",
+    "receipt": {
+      "number": "Баримтын № {n}",
+      "companyNumber": "Компанийн №",
+      "registrationNumber": "Бүртгэлийн №",
+      "taxNumber": "{label} №"
+    }
   },
   "menuBadges": {
     "soldOut": "дууссан",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – сар бүр",
         "reelNormalQuarterly": "Réel normal – улирал бүр",
-        "franchiseNote": "Та franchise en base сонгосон тул НӨАТ-аа 0% болгох нь зүйтэй байж магадгүй."
+        "franchiseNote": "Та franchise en base сонгосон тул таны баримтад “TVA non applicable” гэж харагдах бөгөөд TVA авахгүй."
       },
       "saveFailed": "Хадгалж чадсангүй — дахин оролдоно уу."
     }

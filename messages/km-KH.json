@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}៖ {amount}",
     "lineWithRate": "{label} {rate}៖ {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {ពន្ធ ថ្លៃសេវា និងទឹកតែ} tax_tip {ពន្ធ និងទឹកតែ} fees_tip {ថ្លៃសេវា និងទឹកតែ} fees {ថ្លៃសេវា} other {ពន្ធ និងថ្លៃសេវា}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {ពន្ធ ថ្លៃសេវា និងទឹកតែ} tax_tip {ពន្ធ និងទឹកតែ} fees_tip {ថ្លៃសេវា និងទឹកតែ} fees {ថ្លៃសេវា} other {ពន្ធ និងថ្លៃសេវា}}",
+    "receipt": {
+      "number": "បង្កាន់ដៃលេខ {n}",
+      "companyNumber": "លេខក្រុមហ៊ុន",
+      "registrationNumber": "លេខចុះបញ្ជី",
+      "taxNumber": "លេខ {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "អស់ហើយ",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – ប្រចាំខែ",
         "reelNormalQuarterly": "Réel normal – ប្រចាំត្រីមាស",
-        "franchiseNote": "អ្នកបានជ្រើស franchise en base ដូច្នេះអ្នកប្រហែលជាចង់កំណត់ VAT របស់អ្នកទៅ 0 %។"
+        "franchiseNote": "ដោយសារអ្នកបានជ្រើស franchise en base បង្កាន់ដៃរបស់អ្នកបង្ហាញ “TVA non applicable” ហើយមិនគិត TVA ទេ។"
       },
       "saveFailed": "រក្សាទុកមិនបានទេ — សូមព្យាយាមម្តងទៀត។"
     }

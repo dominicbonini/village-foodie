@@ -160,7 +160,16 @@ const ENTRY = [
   const ticketHex = (O, sc, row) => {
     const [cur, loc, tz, cc] = CUR[sc]
     const tk = O.mapOrderToTicket({ order: row, truck: { name: 'Pizza Kitchen', money: { currency: cur, locale: loc, localeByCountry: { [cc]: loc } }, time: TIME(tz, loc) }, event: null, ledgerRows: [], printedLabel: '12:01' })
-    return [58, 80].map(w => Buffer.from(O.T.renderTicket(tk, { paper_width: w })).toString('hex'))
+    // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026, docs/france-receipts-1-report.md): the ticket gains a receipt block at the
+    // bottom (a divider and the date of sale — these rows carry a created_at). It is taken out of the line model by name
+    // (scripts/_named-france-receipts-1.cjs stripTicketLines, found exactly once on this tree, never on BASE's) and the rest is encoded
+    // by the tree's own encoder and compared byte for byte as before. france-receipts-1.cjs §A proves the block against its start.
+    const NFR = require('./_named-france-receipts-1.cjs')
+    return [58, 80].map(w => {
+      const r = NFR.stripTicketLines(O.T.buildTicketLines(tk, { paper_width: w }))
+      if (r.n !== (O === H ? 1 : 0)) throw new Error(`[france-vat-1] france-receipts-1's receipt block found ${r.n} time(s) on ${O === H ? 'this tree' : 'BASE'}`)
+      return Buffer.from(O.T.encodeEscPos(r.lines, { paper_width: w })).toString('hex')
+    })
   }
   const csvWordsFor = (withRates) => ({
     header: k => `H:${k}`, channel: c => `C:${c}`, payment: p => `P:${p}`, taxBasis: b => `B:${b}`, event: () => 'The Green, Testville',
@@ -353,7 +362,8 @@ const ENTRY = [
   // every path calls the shared engine and stamps from the server
   const SUB = read('app/api/orders/submit/route.ts'), ACT = read('app/api/dashboard/action/route.ts')
   t('the customer submit, the walk-up and the operator edit each split with lineTax over the server\'s book (taxBookOf) and pass the parts to the engine',
-    /lineTax\(\{\s*items: pricedItems, deals: deals \? pricedDeals : \[\], foodMinor,\s*book: taxBookOf\(priceBook/.test(SUB) && /foodParts: lineTaxResult\.parts/.test(SUB)
+    // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026): the book is the server's (taxBookOf), or — franchise en base — the same book at 0 %.
+    /lineTax\(\{\s*items: pricedItems, deals: deals \? pricedDeals : \[\], foodMinor,\s*book: (?:franchise \? franchiseTaxBook\(taxBookOf\(priceBook, truck\.currency\)\) : )?taxBookOf\(priceBook/.test(SUB) && /foodParts: lineTaxResult\.parts/.test(SUB)
     && /const walkupTax = lineTax\(/.test(ACT) && /foodParts: walkupTax\.parts/.test(ACT) && /const editTax = lineTax\(/.test(ACT) && /chargesForEdit\(editFoodMinor, editRules, order, editTax\.parts\)/.test(ACT)
     && /stampItems\(pricedItems, lineTaxResult\.itemStamps\)/.test(SUB) && /stampItems\(pricedItemsBeforeTax, walkupTax\.itemStamps\)/.test(ACT) && /stampItems\(stampEditedLines\(/.test(ACT))
   t('the previews call the same function: the order page, Add order and the dashboard edit (lineTax + foodParts)',

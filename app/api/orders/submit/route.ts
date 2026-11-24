@@ -66,6 +66,8 @@ import { writeCookingReservation, writeReservationRecord } from '@/lib/orders/co
 import { readEventRegion } from '@/lib/event-region-read'
 import { addressFormatForTruck } from '@/lib/country-settings'   // address-formats-1
 import { logOrderEvent } from '@/lib/audit/order-audit'   // france-records-1
+import { receiptForOrderKey } from '@/lib/receipt-server'   // france-receipts-1
+import { franchiseApplies, franchiseRules, franchiseTaxBook } from '@/lib/receipt'   // france-receipts-1
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
 // CUSTOMER CHECKOUT. Calls authorizeDraft (:806) -> Stripe PaymentIntent creation. This one is NOT, and the reason is measured rather than assumed.
@@ -813,13 +815,17 @@ export async function POST(req: NextRequest) {
     // ── 🔴 france-vat-1: EACH LINE'S RATE, FROM THE SERVER'S MENU (lib/order-tax.ts). Every line is stamped with its dish's id
     // and the rate it is sold at (a browser-sent one is overwritten); the food is split by rate after the discount. Every line on
     // the truck's one rate → one part → the same charges as before.
+    // ── france-receipts-1: FRANCHISE EN BASE (a French truck whose regime is franchise, NOW): every line and deal at 0 %, the order's
+    // rate and breakdown at 0 % — the truck's saved default and dish rates are left as they are and come back if the regime changes.
+    const franchise = franchiseApplies(truck.country, truck.vat_regime)
+    const orderRules = franchise ? franchiseRules(chargeRules) : chargeRules
     const lineTaxResult = lineTax({
       items: pricedItems, deals: deals ? pricedDeals : [], foodMinor,
-      book: taxBookOf(priceBook, truck.currency), defaultRate: chargeRules.taxRateMilli, currency: truck.currency,
+      book: franchise ? franchiseTaxBook(taxBookOf(priceBook, truck.currency)) : taxBookOf(priceBook, truck.currency), defaultRate: orderRules.taxRateMilli, currency: truck.currency,
     })
     pricedItems = stampItems(pricedItems, lineTaxResult.itemStamps)
     if (deals) pricedDeals = stampDeals(pricedDeals, lineTaxResult.dealStamps)
-    const charges = computeOrderCharges({ foodMinor, rules: chargeRules, channel: chargeChannel, tip: tipChoice, foodParts: lineTaxResult.parts })
+    const charges = computeOrderCharges({ foodMinor, rules: orderRules, channel: chargeChannel, tip: tipChoice, foodParts: lineTaxResult.parts })
     // The GRAND total: what the card is authorised for, what total_minor stores, what the emails show.
     // `total` (major units) is derived from it, so the two are the same number by construction.
     const serverTotalMinor = charges.totalMinor
@@ -1502,6 +1508,9 @@ export async function POST(req: NextRequest) {
       const { subject, html, text } = formatConfirmationEmail({
         money:        await moneyFormatForTruck(truck),
         time: await truckTimeSettings(truck),
+        // france-receipts-1: the receipt number (given by the database on insert), the date of sale, the business details, France's
+        // franchise line — one read of the new row (lib/receipt-server.ts; never the reason the email fails).
+        receipt:      await receiptForOrderKey(supabase, order.order_key, truck, await truckTimeSettings(truck), (await moneyFormatForTruck(truck)).locale),
         phoneCountry: truck.country,
         orderId,
         orderKey:     order.order_key,

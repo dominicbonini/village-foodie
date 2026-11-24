@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – ប្រចាំខែ",
       "reelNormalQuarterly": "Réel normal – ប្រចាំត្រីមាស",
-      "franchiseNote": "អ្នកបានជ្រើស franchise en base ដូច្នេះអ្នកប្រហែលជាចង់កំណត់ VAT របស់អ្នកទៅ 0 %។"
+      "franchiseNote": "ដោយសារអ្នកបានជ្រើស franchise en base បង្កាន់ដៃរបស់អ្នកបង្ហាញ “TVA non applicable” ហើយមិនគិត TVA ទេ។"
     },
     "saveFailed": "រក្សាទុកមិនបានទេ — សូមព្យាយាមម្តងទៀត។"
   }

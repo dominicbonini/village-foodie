@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Данок, надоместоци и бакшиш} tax_tip {Данок и бакшиш} fees_tip {Надоместоци и бакшиш} fees {Надоместоци} other {Данок и надоместоци}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Данок, надоместоци и бакшиш} tax_tip {Данок и бакшиш} fees_tip {Надоместоци и бакшиш} fees {Надоместоци} other {Данок и надоместоци}}",
+  "receipt": {
+    "number": "Бр. на сметка {n}",
+    "companyNumber": "Бр. на компанија",
+    "registrationNumber": "Регистарски бр.",
+    "taxNumber": "{label} бр."
+  }
 }

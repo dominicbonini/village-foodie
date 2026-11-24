@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Kodi, ada na bakshishi} tax_tip {Kodi na bakshishi} fees_tip {Ada na bakshishi} fees {Ada} other {Kodi na ada}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Kodi, ada na bakshishi} tax_tip {Kodi na bakshishi} fees_tip {Ada na bakshishi} fees {Ada} other {Kodi na ada}}",
+  "receipt": {
+    "number": "Risiti Na. {n}",
+    "companyNumber": "Na. ya kampuni",
+    "registrationNumber": "Na. ya usajili",
+    "taxNumber": "Na. ya {label}"
+  }
 }

@@ -582,7 +582,13 @@
     "rate": "{rate} %",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Налоги, сборы и чаевые} tax_tip {Налоги и чаевые} fees_tip {Сборы и чаевые} fees {Сборы} other {Налоги и сборы}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Налоги, сборы и чаевые} tax_tip {Налоги и чаевые} fees_tip {Сборы и чаевые} fees {Сборы} other {Налоги и сборы}}",
+    "receipt": {
+      "number": "Чек №{n}",
+      "companyNumber": "№ компании",
+      "registrationNumber": "Рег. №",
+      "taxNumber": "№ {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "нет в наличии",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – ежемесячно",
         "reelNormalQuarterly": "Réel normal – ежеквартально",
-        "franchiseNote": "Вы выбрали franchise en base, поэтому, возможно, стоит установить НДС 0 %."
+        "franchiseNote": "Вы выбрали franchise en base, поэтому в Ваших чеках указано «TVA non applicable» и TVA не начисляется."
       },
       "saveFailed": "Не удалось сохранить — попробуйте ещё раз."
     }

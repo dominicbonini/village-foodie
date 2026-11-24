@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}፦ {amount}",
   "lineWithRate": "{label} {rate}፦ {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {ታክስ፣ የአገልግሎት ክፍያዎች እና ጉርሻ} tax_tip {ታክስ እና ጉርሻ} fees_tip {የአገልግሎት ክፍያዎች እና ጉርሻ} fees {የአገልግሎት ክፍያዎች} other {ታክስ እና የአገልግሎት ክፍያዎች}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {ታክስ፣ የአገልግሎት ክፍያዎች እና ጉርሻ} tax_tip {ታክስ እና ጉርሻ} fees_tip {የአገልግሎት ክፍያዎች እና ጉርሻ} fees {የአገልግሎት ክፍያዎች} other {ታክስ እና የአገልግሎት ክፍያዎች}}",
+  "receipt": {
+    "number": "የደረሰኝ ቁ. {n}",
+    "companyNumber": "የኩባንያ ቁ.",
+    "registrationNumber": "የምዝገባ ቁ.",
+    "taxNumber": "የ{label} ቁ."
+  }
 }

@@ -338,7 +338,12 @@ async function main() {
       // ⚠️ RE-PINNED (legal follow-ups, 19 October 2026, docs/legal-follow-ups-report.md): the customer emails gain the
       // named change legal-followups-privacy-link (the " · Privacy" footer link) — scripts/_legal-followups-named.cjs.
       const bp = part === 'emails' && b[part] ? JSON.parse(JSON.stringify(b[part], (_, v) => LFU.emailPrivacy(v))) : b[part]
-      const d = diffJson(bp, a[part])
+      // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026, docs/france-receipts-1-report.md): the customer confirmation email gains its
+      // receipt facts — the date of sale after the order number (and a receipt number, business details, France's 293 B line when the
+      // order / truck has them). They are taken out of the AFTER email (scripts/_named-france-receipts-1.cjs stripEmail, each found where
+      // it must be) and the rest is compared as before; the card promotion's is the one here that can read its order back.
+      const ap = part === 'emails' && Array.isArray(a[part]) ? a[part].map(e => require('./_named-france-receipts-1.cjs').stripEmail(e).email) : a[part]
+      const d = diffJson(bp, ap)
       t(`${name}: ${part} byte-identical to BEFORE apart from the named difference`, d === null, d)
     }
   }

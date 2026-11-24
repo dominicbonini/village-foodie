@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – havi",
       "reelNormalQuarterly": "Réel normal – negyedéves",
-      "franchiseNote": "A franchise en base-t választotta, ezért érdemes lehet az áfát 0 %-ra állítani."
+      "franchiseNote": "Mivel a franchise en base-t választotta, a nyugtáin „TVA non applicable” szerepel, és nem kerül felszámításra TVA."
     },
     "saveFailed": "Nem sikerült menteni — kérjük, próbálja újra."
   }

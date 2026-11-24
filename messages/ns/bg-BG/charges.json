@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Данъци, такси и бакшиш} tax_tip {Данъци и бакшиш} fees_tip {Такси и бакшиш} fees {Такси} other {Данъци и такси}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Данъци, такси и бакшиш} tax_tip {Данъци и бакшиш} fees_tip {Такси и бакшиш} fees {Такси} other {Данъци и такси}}",
+  "receipt": {
+    "number": "Бележка № {n}",
+    "companyNumber": "№ на дружеството",
+    "registrationNumber": "Рег. №",
+    "taxNumber": "{label} №"
+  }
 }

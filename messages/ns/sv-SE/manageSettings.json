@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – månadsvis",
       "reelNormalQuarterly": "Réel normal – kvartalsvis",
-      "franchiseNote": "Du har valt franchise en base, så du kanske vill sätta din moms till 0 %."
+      "franchiseNote": "Du har valt franchise en base, så dina kvitton visar ”TVA non applicable” och ingen TVA debiteras."
     },
     "saveFailed": "Kunde inte spara – försök igen."
   }

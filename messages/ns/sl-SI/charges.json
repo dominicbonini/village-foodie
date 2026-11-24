@@ -9,5 +9,11 @@
   "rate": "{rate} %",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Davek, pristojbine in napitnina} tax_tip {Davek in napitnina} fees_tip {Pristojbine in napitnina} fees {Pristojbine} other {Davek in pristojbine}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Davek, pristojbine in napitnina} tax_tip {Davek in napitnina} fees_tip {Pristojbine in napitnina} fees {Pristojbine} other {Davek in pristojbine}}",
+  "receipt": {
+    "number": "Račun št. {n}",
+    "companyNumber": "Št. podjetja",
+    "registrationNumber": "Registrska št.",
+    "taxNumber": "ID za {label}"
+  }
 }

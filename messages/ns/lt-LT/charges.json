@@ -9,5 +9,11 @@
   "rate": "{rate} %",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Mokesčiai, priemokos ir arbatpinigiai} tax_tip {Mokesčiai ir arbatpinigiai} fees_tip {Priemokos ir arbatpinigiai} fees {Priemokos} other {Mokesčiai ir priemokos}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Mokesčiai, priemokos ir arbatpinigiai} tax_tip {Mokesčiai ir arbatpinigiai} fees_tip {Priemokos ir arbatpinigiai} fees {Priemokos} other {Mokesčiai ir priemokos}}",
+  "receipt": {
+    "number": "Kvito nr. {n}",
+    "companyNumber": "Įmonės nr.",
+    "registrationNumber": "Registracijos nr.",
+    "taxNumber": "{label} kodas"
+  }
 }

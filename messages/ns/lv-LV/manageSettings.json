@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – ikmēneša",
       "reelNormalQuarterly": "Réel normal – ikceturkšņa",
-      "franchiseNote": "Jūs izvēlējāties franchise en base, tāpēc, iespējams, vēlēsieties iestatīt PVN uz 0%."
+      "franchiseNote": "Jūs izvēlējāties franchise en base, tāpēc jūsu čekos ir norāde “TVA non applicable” un TVA netiek piemērots."
     },
     "saveFailed": "Neizdevās saglabāt — lūdzu, mēģiniet vēlreiz."
   }

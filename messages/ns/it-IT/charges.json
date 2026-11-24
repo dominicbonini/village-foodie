@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Imposte, costi e mancia} tax_tip {Imposte e mancia} fees_tip {Costi e mancia} fees {Costi} other {Imposte e costi}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Imposte, costi e mancia} tax_tip {Imposte e mancia} fees_tip {Costi e mancia} fees {Costi} other {Imposte e costi}}",
+  "receipt": {
+    "number": "Ricevuta n. {n}",
+    "companyNumber": "N. società",
+    "registrationNumber": "N. registrazione",
+    "taxNumber": "N. {label}"
+  }
 }

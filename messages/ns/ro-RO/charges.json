@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Taxe, comisioane și bacșiș} tax_tip {Taxe și bacșiș} fees_tip {Comisioane și bacșiș} fees {Comisioane} other {Taxe și comisioane}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Taxe, comisioane și bacșiș} tax_tip {Taxe și bacșiș} fees_tip {Comisioane și bacșiș} fees {Comisioane} other {Taxe și comisioane}}",
+  "receipt": {
+    "number": "Bon nr. {n}",
+    "companyNumber": "Nr. companie",
+    "registrationNumber": "Nr. înregistrare",
+    "taxNumber": "Cod {label}"
+  }
 }

@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}：{amount}",
     "lineWithRate": "{label}（{rate}）：{amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {税・手数料・チップ} tax_tip {税・チップ} fees_tip {手数料・チップ} fees {手数料} other {税・手数料}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {税・手数料・チップ} tax_tip {税・チップ} fees_tip {手数料・チップ} fees {手数料} other {税・手数料}}",
+    "receipt": {
+      "number": "レシート番号 {n}",
+      "companyNumber": "会社番号",
+      "registrationNumber": "登録番号",
+      "taxNumber": "{label}番号"
+    }
   },
   "menuBadges": {
     "soldOut": "売り切れ",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – 月次",
         "reelNormalQuarterly": "Réel normal – 四半期ごと",
-        "franchiseNote": "franchise en base を選んでいるため、消費税を0 %に設定するとよいでしょう。"
+        "franchiseNote": "franchise en base を選んでいるため、レシートには「TVA non applicable」と表示され、TVA は請求されません。"
       },
       "saveFailed": "保存できませんでした。もう一度お試しください。"
     }

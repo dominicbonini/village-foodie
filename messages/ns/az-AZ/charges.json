@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Vergi, haqlar və çaypulu} tax_tip {Vergi və çaypulu} fees_tip {Haqlar və çaypulu} fees {Haqlar} other {Vergi və haqlar}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Vergi, haqlar və çaypulu} tax_tip {Vergi və çaypulu} fees_tip {Haqlar və çaypulu} fees {Haqlar} other {Vergi və haqlar}}",
+  "receipt": {
+    "number": "Qəbz № {n}",
+    "companyNumber": "Şirkət №",
+    "registrationNumber": "Qeydiyyat №",
+    "taxNumber": "{label} №"
+  }
 }

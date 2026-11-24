@@ -37,6 +37,8 @@ type OrderState = {
   cancellation_cutoff_mins: number
   /** Phase 3 screens: the tax, fee and tip lines' source — absent for every UK order (see the API). */
   charges?: ChargeLineSource | null
+  /** france-receipts-1: the receipt's own facts, already worded in the truck's language (lib/receipt.ts) — each key only when set. */
+  receipt?: { receiptNo?: string; soldAt?: string; business?: string[]; franchiseNote?: string } | null
 }
 
 // The words: messages/en-GB.json `orderStatus`, and `errorsCustomer` for a refusal's code (Language Phase 1a).
@@ -198,7 +200,11 @@ export default function ManageOrderPage() {
           </p>
           <h1 className="text-white font-black text-xl mt-0.5">
             {t('orderNumber', { id: order.id })}
+            {/* france-receipts-1: the receipt number beside the order number, only when the order has one. */}
+            {order.receipt?.receiptNo && <span className="text-slate-400 font-medium text-sm" data-receipt-no>{` · ${order.receipt.receiptNo}`}</span>}
           </h1>
+          {/* france-receipts-1: the date and time of sale, on the truck's clock. */}
+          {order.receipt?.soldAt && <p className="text-slate-400 text-xs mt-0.5" data-sold-at>{order.receipt.soldAt}</p>}
         </div>
 
         {/* Order details */}
@@ -285,6 +291,8 @@ export default function ManageOrderPage() {
             <span>{t('total')}</span>
             <span>{amount(order.total ?? 0)}</span>
           </div>
+          {/* france-receipts-1: an order sold under France's franchise en base — the legal line, under the total. */}
+          {order.receipt?.franchiseNote && <p className="text-xs text-slate-400 mt-1" data-franchise-note>{order.receipt.franchiseNote}</p>}
         </div>
 
         {/* Cancel section */}
@@ -307,6 +315,13 @@ export default function ManageOrderPage() {
             <p className="text-sm text-slate-400 text-center">{statusLabel()}</p>
           )}
         </div>
+
+        {/* france-receipts-1: the truck's business details, small and quiet, only those it has filled in. */}
+        {order.receipt?.business && order.receipt.business.length > 0 && (
+          <div className="px-6 pb-4 text-xs text-slate-400 text-center" data-business-details>
+            {order.receipt.business.map((line, i) => <p key={i}>{line}</p>)}
+          </div>
+        )}
 
       </div>
     </div>

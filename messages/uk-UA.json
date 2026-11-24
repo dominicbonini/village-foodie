@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Податок, збори й чайові} tax_tip {Податок і чайові} fees_tip {Збори й чайові} fees {Збори} other {Податок і збори}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Податок, збори й чайові} tax_tip {Податок і чайові} fees_tip {Збори й чайові} fees {Збори} other {Податок і збори}}",
+    "receipt": {
+      "number": "Чек №{n}",
+      "companyNumber": "№ компанії",
+      "registrationNumber": "Реєстр. №",
+      "taxNumber": "№ {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "розпродано",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – щомісяця",
         "reelNormalQuarterly": "Réel normal – щокварталу",
-        "franchiseNote": "Ви вибрали franchise en base, тож, можливо, варто встановити ПДВ 0%."
+        "franchiseNote": "Ви вибрали franchise en base, тож у ваших чеках зазначено «TVA non applicable», і TVA не нараховується."
       },
       "saveFailed": "Не вдалося зберегти — спробуйте ще раз."
     }

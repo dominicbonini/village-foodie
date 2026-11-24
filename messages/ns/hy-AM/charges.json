@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}՝ {amount}",
   "lineWithRate": "{label} {rate}՝ {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Հարկ, վճարներ և թեյավճար} tax_tip {Հարկ և թեյավճար} fees_tip {Վճարներ և թեյավճար} fees {Վճարներ} other {Հարկ և վճարներ}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Հարկ, վճարներ և թեյավճար} tax_tip {Հարկ և թեյավճար} fees_tip {Վճարներ և թեյավճար} fees {Վճարներ} other {Հարկ և վճարներ}}",
+  "receipt": {
+    "number": "Անդորրագիր № {n}",
+    "companyNumber": "Ընկերության №",
+    "registrationNumber": "Գրանցման №",
+    "taxNumber": "{label} №"
+  }
 }

@@ -9,5 +9,11 @@
   "rate": "{rate} %",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Daň, poplatky a prepitné} tax_tip {Daň a prepitné} fees_tip {Poplatky a prepitné} fees {Poplatky} other {Daň a poplatky}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Daň, poplatky a prepitné} tax_tip {Daň a prepitné} fees_tip {Poplatky a prepitné} fees {Poplatky} other {Daň a poplatky}}",
+  "receipt": {
+    "number": "Doklad č. {n}",
+    "companyNumber": "Č. spoločnosti",
+    "registrationNumber": "Registračné č.",
+    "taxNumber": "IČ {label}"
+  }
 }

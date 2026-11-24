@@ -3421,7 +3421,7 @@
  "manageSettings.business.regime.reelSimplifie": "Réel simplifié",
  "manageSettings.business.regime.reelNormalMonthly": "Réel normal – monthly",
  "manageSettings.business.regime.reelNormalQuarterly": "Réel normal – quarterly",
- "manageSettings.business.regime.franchiseNote": "You’ve chosen franchise en base, so you may want to set your VAT to 0 %.",
+ "manageSettings.business.regime.franchiseNote": "You have chosen franchise en base, so your receipts say ‘TVA non applicable’ and no TVA is charged.",
  "manageSettings.business.saveFailed": "Saving failed — try again.",
  "manageSettings.removeVan.body": "This food truck will be removed from your account and will no longer appear on your dashboard or at future events.",
  "manageSettings.removeVan.keep": "Keep food truck",
@@ -6045,5 +6045,9 @@
  "demoGetStarted.partnerDealFixedPrice": "{plan} for {price} per month for {months} months",
  "demoGetStarted.partnerDealPlanOffer": "a special price for {plan} for {months} months",
  "errorsKitchen.order_finished_edit": "This order is completed, so you can no longer change it.",
- "errorsKitchen.order_finished_cancel": "This order is completed, so you can no longer cancel it."
+ "errorsKitchen.order_finished_cancel": "This order is completed, so you can no longer cancel it.",
+ "charges.receipt.number": "Receipt number {n}",
+ "charges.receipt.companyNumber": "Company no.",
+ "charges.receipt.registrationNumber": "Registration no.",
+ "charges.receipt.taxNumber": "{label} no."
 }

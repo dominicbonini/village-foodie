@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Porez, naknade i napojnica} tax_tip {Porez i napojnica} fees_tip {Naknade i napojnica} fees {Naknade} other {Porez i naknade}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Porez, naknade i napojnica} tax_tip {Porez i napojnica} fees_tip {Naknade i napojnica} fees {Naknade} other {Porez i naknade}}",
+    "receipt": {
+      "number": "Račun br. {n}",
+      "companyNumber": "Br. firme",
+      "registrationNumber": "Reg. br.",
+      "taxNumber": "{label} br."
+    }
   },
   "menuBadges": {
     "soldOut": "rasprodano",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – mjesečno",
         "reelNormalQuarterly": "Réel normal – kvartalno",
-        "franchiseNote": "Odabrali ste franchise en base, pa biste možda htjeli postaviti PDV na 0 %."
+        "franchiseNote": "Pošto ste odabrali franchise en base, na vašim računima piše „TVA non applicable“ i TVA se ne obračunava."
       },
       "saveFailed": "Čuvanje nije uspjelo — pokušajte ponovo."
     }

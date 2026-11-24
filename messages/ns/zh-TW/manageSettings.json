@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – 每月",
       "reelNormalQuarterly": "Réel normal – 每季",
-      "franchiseNote": "你選擇了 franchise en base，可能需要把營業稅設為 0 %。"
+      "franchiseNote": "因為你選擇了 franchise en base，收據會顯示「TVA non applicable」，且不收取 TVA。"
     },
     "saveFailed": "無法儲存，請再試一次。"
   }

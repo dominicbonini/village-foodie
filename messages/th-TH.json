@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {ภาษี ค่าธรรมเนียม และทิป} tax_tip {ภาษีและทิป} fees_tip {ค่าธรรมเนียมและทิป} fees {ค่าธรรมเนียม} other {ภาษีและค่าธรรมเนียม}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {ภาษี ค่าธรรมเนียม และทิป} tax_tip {ภาษีและทิป} fees_tip {ค่าธรรมเนียมและทิป} fees {ค่าธรรมเนียม} other {ภาษีและค่าธรรมเนียม}}",
+    "receipt": {
+      "number": "ใบเสร็จเลขที่ {n}",
+      "companyNumber": "เลขทะเบียนบริษัท",
+      "registrationNumber": "เลขทะเบียน",
+      "taxNumber": "เลข {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "ขายหมด",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – รายเดือน",
         "reelNormalQuarterly": "Réel normal – รายไตรมาส",
-        "franchiseNote": "คุณเลือก franchise en base จึงอาจต้องตั้ง VAT เป็น 0 %"
+        "franchiseNote": "คุณเลือก franchise en base ใบเสร็จของคุณจึงแสดง “TVA non applicable” และไม่มีการเก็บ TVA"
       },
       "saveFailed": "บันทึกไม่สำเร็จ — โปรดลองอีกครั้ง"
     }

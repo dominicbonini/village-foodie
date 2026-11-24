@@ -582,7 +582,13 @@
     "rate": "{rate} %",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Steuern, Gebühren & Trinkgeld} tax_tip {Steuern & Trinkgeld} fees_tip {Gebühren & Trinkgeld} fees {Gebühren} other {Steuern & Gebühren}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Steuern, Gebühren & Trinkgeld} tax_tip {Steuern & Trinkgeld} fees_tip {Gebühren & Trinkgeld} fees {Gebühren} other {Steuern & Gebühren}}",
+    "receipt": {
+      "number": "Belegnr. {n}",
+      "companyNumber": "Firmennr.",
+      "registrationNumber": "Registernr.",
+      "taxNumber": "{label}-Nr."
+    }
   },
   "menuBadges": {
     "soldOut": "ausverkauft",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – monatlich",
         "reelNormalQuarterly": "Réel normal – vierteljährlich",
-        "franchiseNote": "Sie haben franchise en base gewählt, daher sollten Sie Ihre MwSt. eventuell auf 0 % setzen."
+        "franchiseNote": "Da Sie franchise en base gewählt haben, steht auf Ihren Belegen „TVA non applicable“ und es wird keine TVA berechnet."
       },
       "saveFailed": "Speichern fehlgeschlagen – bitte versuchen Sie es erneut."
     }

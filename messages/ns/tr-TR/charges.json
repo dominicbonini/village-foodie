@@ -9,5 +9,11 @@
   "rate": "%{rate}",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Vergi, ücretler ve bahşiş} tax_tip {Vergi ve bahşiş} fees_tip {Ücretler ve bahşiş} fees {Ücretler} other {Vergi ve ücretler}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Vergi, ücretler ve bahşiş} tax_tip {Vergi ve bahşiş} fees_tip {Ücretler ve bahşiş} fees {Ücretler} other {Vergi ve ücretler}}",
+  "receipt": {
+    "number": "Fiş no. {n}",
+    "companyNumber": "Şirket no.",
+    "registrationNumber": "Sicil no.",
+    "taxNumber": "{label} no."
+  }
 }

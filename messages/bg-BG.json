@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Данъци, такси и бакшиш} tax_tip {Данъци и бакшиш} fees_tip {Такси и бакшиш} fees {Такси} other {Данъци и такси}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Данъци, такси и бакшиш} tax_tip {Данъци и бакшиш} fees_tip {Такси и бакшиш} fees {Такси} other {Данъци и такси}}",
+    "receipt": {
+      "number": "Бележка № {n}",
+      "companyNumber": "№ на дружеството",
+      "registrationNumber": "Рег. №",
+      "taxNumber": "{label} №"
+    }
   },
   "menuBadges": {
     "soldOut": "изчерпано",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – месечно",
         "reelNormalQuarterly": "Réel normal – тримесечно",
-        "franchiseNote": "Избрали сте franchise en base, така че може да искате да зададете ДДС 0 %."
+        "franchiseNote": "Тъй като сте избрали franchise en base, на бележките ви пише „TVA non applicable“ и не се начислява TVA."
       },
       "saveFailed": "Неуспешно запазване — моля, опитайте отново."
     }

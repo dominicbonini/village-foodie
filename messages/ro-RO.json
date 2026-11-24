@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Taxe, comisioane și bacșiș} tax_tip {Taxe și bacșiș} fees_tip {Comisioane și bacșiș} fees {Comisioane} other {Taxe și comisioane}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Taxe, comisioane și bacșiș} tax_tip {Taxe și bacșiș} fees_tip {Comisioane și bacșiș} fees {Comisioane} other {Taxe și comisioane}}",
+    "receipt": {
+      "number": "Bon nr. {n}",
+      "companyNumber": "Nr. companie",
+      "registrationNumber": "Nr. înregistrare",
+      "taxNumber": "Cod {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "epuizat",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – lunar",
         "reelNormalQuarterly": "Réel normal – trimestrial",
-        "franchiseNote": "Ați ales franchise en base, așa că poate doriți să setați TVA la 0 %."
+        "franchiseNote": "Ați ales franchise en base, așa că bonurile dumneavoastră afișează „TVA non applicable” și nu se percepe TVA."
       },
       "saveFailed": "Nu s-a putut salva — vă rugăm să încercați din nou."
     }

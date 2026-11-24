@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – شهري",
       "reelNormalQuarterly": "Réel normal – ربع سنوي",
-      "franchiseNote": "اخترت franchise en base، لذا قد ترغب في ضبط ضريبة القيمة المضافة على 0%."
+      "franchiseNote": "بما أنك اخترت franchise en base، تظهر على إيصالاتك عبارة «TVA non applicable» ولا تُفرض TVA."
     },
     "saveFailed": "تعذّر الحفظ — يُرجى المحاولة مرة أخرى."
   }

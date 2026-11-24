@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – bulanan",
       "reelNormalQuarterly": "Réel normal – triwulanan",
-      "franchiseNote": "Anda memilih franchise en base, jadi Anda mungkin perlu mengatur PPN ke 0 %."
+      "franchiseNote": "Karena Anda memilih franchise en base, struk Anda menampilkan “TVA non applicable” dan tidak ada TVA yang dipungut."
     },
     "saveFailed": "Tidak dapat menyimpan — silakan coba lagi."
   }

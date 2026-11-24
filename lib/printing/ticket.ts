@@ -97,6 +97,12 @@ export interface TicketOrder {
   /** france-1: the tax the total INCLUDES, printed under TOTAL ("Dont TVA 10 %   1,09 €"). Absent for every order but an
    *  inclusive-rate one (France), so every other ticket prints exactly what it printed. */
   includedTax?: { label: string; minor: number } | { label: string; minor: number }[] | null
+  /** france-receipts-1: « TVA non applicable, art. 293 B du CGI » for a French order sold under franchise en base, printed under TOTAL
+   *  (it never has an includedTax line). Absent for every other order. */
+  franchiseNote?: string | null
+  /** france-receipts-1: the receipt's own facts (lib/receipt.ts, already worded, registration number as digits), printed at the bottom
+   *  after a divider: the receipt number, the date and time of sale, then the business details, each wrapped to the paper. */
+  receipt?: { receiptNo?: string | null; soldAt?: string | null; business?: string[] } | null
   total: number
   /** ── PAYMENT (D) ────────────────────────────────────────────────────────────────────────────────
    *  🔴 RESOLVED BY THE CALLER, NEVER RE-DERIVED HERE. `showPaidStep` comes from resolvePaidStep()
@@ -426,6 +432,8 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
   for (const inc of order.includedTax ? (Array.isArray(order.includedTax) ? order.includedTax : [order.includedTax]) : []) {
     lines.push({ text: padBetween(inc.label, fitted(inc.label, inc.minor / 100), width) })
   }
+  // france-receipts-1: franchise en base — the legal line under TOTAL, wrapped to the paper.
+  if (order.franchiseNote && order.franchiseNote.trim()) for (const w of wrap(order.franchiseNote.trim(), width)) lines.push({ text: w })
 
   // ── PAYMENT (D) — the caller has already resolved this. See the TicketOrder note.
   // 🔴 ABSENT when showPaidStep is false. Not "unpaid" — a truck without the paid step has no such state.
@@ -460,6 +468,14 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
     lines.push({ text: t('note'), bold: true, invert: true })
     for (const w of wrap(order.notes.trim(), width)) lines.push({ text: w, invert: true })
     lines.push({ divider: true })
+  }
+
+  // ── france-receipts-1: THE RECEIPT, at the bottom — a divider (one, even after the notes' closing rule), the receipt number, the date
+  // and time of sale, then the business details; every line wrapped to the paper (58 mm: 32 columns), never truncated.
+  const receiptLines = order.receipt ? [order.receipt.receiptNo, order.receipt.soldAt, ...(order.receipt.business ?? [])].filter((l): l is string => !!l && !!l.trim()) : []
+  if (receiptLines.length) {
+    if (!lines[lines.length - 1]?.divider) lines.push({ divider: true })
+    for (const l of receiptLines) for (const w of wrap(l.trim(), width)) lines.push({ text: w })
   }
 
   if (order.truck_name) lines.push({ text: order.truck_name, align: 'center' })

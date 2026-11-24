@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Taksa, tarifa dhe bakshish} tax_tip {Taksa dhe bakshish} fees_tip {Tarifa dhe bakshish} fees {Tarifa} other {Taksa dhe tarifa}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Taksa, tarifa dhe bakshish} tax_tip {Taksa dhe bakshish} fees_tip {Tarifa dhe bakshish} fees {Tarifa} other {Taksa dhe tarifa}}",
+    "receipt": {
+      "number": "Kuponi nr. {n}",
+      "companyNumber": "Nr. i kompanisë",
+      "registrationNumber": "Nr. i regjistrimit",
+      "taxNumber": "Nr. {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "mbaroi",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – mujor",
         "reelNormalQuarterly": "Réel normal – tremujor",
-        "franchiseNote": "Keni zgjedhur franchise en base, ndaj mund të doni ta vendosni TVSH-në në 0 %."
+        "franchiseNote": "Keni zgjedhur franchise en base, ndaj kuponët tuaj shfaqin “TVA non applicable” dhe nuk aplikohet TVA."
       },
       "saveFailed": "Ruajtja dështoi — ju lutemi provoni përsëri."
     }

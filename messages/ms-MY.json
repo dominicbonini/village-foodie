@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Cukai, yuran & tip} tax_tip {Cukai & tip} fees_tip {Yuran & tip} fees {Yuran} other {Cukai & yuran}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Cukai, yuran & tip} tax_tip {Cukai & tip} fees_tip {Yuran & tip} fees {Yuran} other {Cukai & yuran}}",
+    "receipt": {
+      "number": "No. resit {n}",
+      "companyNumber": "No. syarikat",
+      "registrationNumber": "No. pendaftaran",
+      "taxNumber": "No. {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "habis dijual",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – bulanan",
         "reelNormalQuarterly": "Réel normal – suku tahunan",
-        "franchiseNote": "Anda telah memilih franchise en base, jadi anda mungkin mahu menetapkan cukai anda kepada 0 %."
+        "franchiseNote": "Oleh sebab anda memilih franchise en base, resit anda memaparkan “TVA non applicable” dan tiada TVA dikenakan."
       },
       "saveFailed": "Tidak dapat disimpan — sila cuba lagi."
     }

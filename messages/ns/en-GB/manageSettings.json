@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – monthly",
       "reelNormalQuarterly": "Réel normal – quarterly",
-      "franchiseNote": "You’ve chosen franchise en base, so you may want to set your VAT to 0 %."
+      "franchiseNote": "Because you’ve chosen franchise en base, your receipts show “TVA non applicable” and no TVA is charged."
     },
     "saveFailed": "Couldn’t save — please try again."
   }

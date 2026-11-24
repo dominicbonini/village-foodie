@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – kas mėnesį",
       "reelNormalQuarterly": "Réel normal – kas ketvirtį",
-      "franchiseNote": "Pasirinkote franchise en base, tad galbūt norėsite nustatyti PVM 0 %."
+      "franchiseNote": "Pasirinkote franchise en base, todėl jūsų kvituose rodoma „TVA non applicable“ ir TVA neskaičiuojamas."
     },
     "saveFailed": "Nepavyko išsaugoti — bandykite dar kartą."
   }

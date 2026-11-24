@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Nodokļi, maksas un dzeramnauda} tax_tip {Nodokļi un dzeramnauda} fees_tip {Maksas un dzeramnauda} fees {Maksas} other {Nodokļi un maksas}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Nodokļi, maksas un dzeramnauda} tax_tip {Nodokļi un dzeramnauda} fees_tip {Maksas un dzeramnauda} fees {Maksas} other {Nodokļi un maksas}}",
+  "receipt": {
+    "number": "Čeka nr. {n}",
+    "companyNumber": "Uzņēmuma nr.",
+    "registrationNumber": "Reģistrācijas nr.",
+    "taxNumber": "{label} nr."
+  }
 }

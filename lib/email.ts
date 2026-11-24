@@ -25,6 +25,7 @@ import '@/lib/i18n/catalog/emailOperator'
 import { eventAddressLine } from '@/lib/event-address'
 import { privacyFooterHtml, privacyFooterText } from '@/lib/email-privacy'
 import { langAttrOf } from '@/lib/page-lang'   // languages-1: <html lang> for a non-English email (none for English)
+import type { ReceiptFacts } from '@/lib/receipt'   // france-receipts-1
 
 type EmailT = ReturnType<typeof translatorFor<'emailCustomer'>>
 const emailT = (locale: string | null | undefined): EmailT => translatorFor(locale, 'emailCustomer')
@@ -341,6 +342,10 @@ export function formatConfirmationEmail(params: {
   money: MoneyFormat
   /** The truck's time settings (lib/truck-time.ts) — how its collection times read (GB: as given). */
   time: TimeSettings
+  /** france-receipts-1 (docs/france-receipts-1-report.md): the receipt facts (lib/receipt.ts receiptFactsOf) — the receipt number
+   *  beside the order number, the date and time of sale under it, the business details at the bottom, and France's franchise en base
+   *  line under the total. On the confirmation only (never the 'ready' variant). Absent: the email is exactly as before. */
+  receipt?: ReceiptFacts | null
 }): { subject: string; html: string; text: string } {
   // Every time this email prints, in the truck's style (Phase 2B). GB: exactly the string passed in.
   params = {
@@ -351,6 +356,17 @@ export function formatConfirmationEmail(params: {
   }
   const isReady = params.variant === 'ready'
   const t = emailT(params.money.locale)
+  // france-receipts-1: the receipt's own facts, on the confirmation only. Business details are typed by the operator: escaped here.
+  const receipt = isReady ? null : (params.receipt ?? null)
+  const escHtml = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  const receiptNoHtml = receipt?.receiptNo ? ` · ${escHtml(receipt.receiptNo)}` : ''
+  const soldAtHtml = receipt?.soldAt ? `<br><span style="font-size:12px;font-weight:400;letter-spacing:0;text-transform:none">${escHtml(receipt.soldAt)}</span>` : ''
+  const franchiseRowHtml = receipt?.franchiseNote ? `<tr><td colspan="2" style="padding:4px 0;font-size:12px;color:#94a3b8">${escHtml(receipt.franchiseNote)}</td></tr>` : ''
+  const businessHtml = receipt?.business.length ? `
+  <div style="margin-top:16px;padding-top:12px;border-top:1px solid #f1f5f9;font-size:11px;line-height:1.5;color:#94a3b8;text-align:center">
+    ${receipt.business.map(escHtml).join('<br>')}
+  </div>
+` : ''
   // ONE RESOLUTION, USED BY ALL THREE PLACES THIS EMAIL MENTIONS MONEY. The fallback is what keeps
   // every existing caller byte-identical: promote-draft still passes only `cardHeld`, and the walk-up
   // and pay-at-hatch sites still pass neither.
@@ -472,14 +488,14 @@ export function formatConfirmationEmail(params: {
   ${slotSection}
 
   <div style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:12px">
-    <p style="margin:0 0 10px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em">${t('confirmation.orderNumber', { id: params.orderId })}</p>
+    <p style="margin:0 0 10px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em">${t('confirmation.orderNumber', { id: params.orderId })}${receiptNoHtml}${soldAtHtml}</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px">
       ${orderLinesHtml}
       ${discountRow}
       <tr style="border-top:1px solid #e2e8f0">
         <td style="padding-top:10px;font-weight:800;font-size:15px">${t('confirmation.total')}</td>
         <td style="text-align:right;padding-top:10px;font-weight:800;font-size:15px">${formatMajor(params.total, params.money)}</td>
-      </tr>${includedTaxRowHtml(params.charges, params.money)}
+      </tr>${franchiseRowHtml || includedTaxRowHtml(params.charges, params.money)}
     </table>
   </div>
 
@@ -492,7 +508,7 @@ export function formatConfirmationEmail(params: {
   ${contactSection}
 
   ${cancellationSection}
-
+${businessHtml}
   <p style="text-align:center;margin-top:20px;font-size:11px;color:#94a3b8">
     ${t.markup('confirmation.poweredBy', { brand: chunks => `<a href="https://hatchgrab.com" style="color:#ea580c;text-decoration:none;font-weight:700">${chunks}</a>` })}${privacyFooterHtml(t as never)}
   </p>
@@ -504,6 +520,8 @@ export function formatConfirmationEmail(params: {
     isReady
       ? t('confirmation.textTitleReady', ids)
       : params.autoAccepted ? t('confirmation.textTitleConfirmed', ids) : t('confirmation.textTitleReceived', ids),
+    receipt?.receiptNo ?? '',   // france-receipts-1: the receipt number and the date of sale under the title (each only when there is one)
+    receipt?.soldAt ?? '',
     '',
     params.items.map(i => {
       const lines = [`${i.quantity}x ${i.name} — ${formatMajor(i.unit_price * i.quantity, params.money)}`]
@@ -531,7 +549,7 @@ export function formatConfirmationEmail(params: {
     }).join('\n') : '',
     ...chargeTextLines(params.charges, params.money, true),   // france-vat-1: one tax line per rate
     t('confirmation.textTotal', { amount: formatMajor(params.total, params.money) }),
-    ...includedTaxTextLines(params.charges, params.money),
+    ...(receipt?.franchiseNote ? [receipt.franchiseNote] : includedTaxTextLines(params.charges, params.money)),   // france-receipts-1
     isReady
       ? `${t('confirmation.textReady')}${payNote.readySuffix}`
       : params.slotAdjustedFrom && params.slot
@@ -563,6 +581,7 @@ export function formatConfirmationEmail(params: {
       return ''
     })(),
     '',
+    ...(receipt?.business ?? []),   // france-receipts-1: the business details, one per line
     t('common.poweredByText'),
     privacyFooterText(t as never),
   ].filter(Boolean).join('\n')

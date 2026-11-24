@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Φόροι, χρεώσεις και φιλοδώρημα} tax_tip {Φόροι και φιλοδώρημα} fees_tip {Χρεώσεις και φιλοδώρημα} fees {Χρεώσεις} other {Φόροι και χρεώσεις}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Φόροι, χρεώσεις και φιλοδώρημα} tax_tip {Φόροι και φιλοδώρημα} fees_tip {Χρεώσεις και φιλοδώρημα} fees {Χρεώσεις} other {Φόροι και χρεώσεις}}",
+    "receipt": {
+      "number": "Αρ. απόδειξης {n}",
+      "companyNumber": "Αρ. εταιρείας",
+      "registrationNumber": "Αρ. μητρώου",
+      "taxNumber": "Αρ. {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "εξαντλήθηκε",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – μηνιαίο",
         "reelNormalQuarterly": "Réel normal – τριμηνιαίο",
-        "franchiseNote": "Επιλέξατε franchise en base, οπότε ίσως θέλετε να ορίσετε τον ΦΠΑ σε 0 %."
+        "franchiseNote": "Επειδή επιλέξατε franchise en base, οι αποδείξεις σας γράφουν «TVA non applicable» και δεν χρεώνεται TVA."
       },
       "saveFailed": "Η αποθήκευση απέτυχε — δοκιμάστε ξανά."
     }

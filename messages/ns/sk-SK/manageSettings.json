@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – mesačne",
       "reelNormalQuarterly": "Réel normal – štvrťročne",
-      "franchiseNote": "Zvolili ste franchise en base, preto možno budete chcieť nastaviť DPH na 0 %."
+      "franchiseNote": "Zvolili ste franchise en base, preto sa na vašich dokladoch zobrazuje „TVA non applicable“ a TVA sa neúčtuje."
     },
     "saveFailed": "Uloženie zlyhalo — skúste to, prosím, znova."
   }

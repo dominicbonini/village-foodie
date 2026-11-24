@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {מס, דמי שירות וטיפ} tax_tip {מס וטיפ} fees_tip {דמי שירות וטיפ} fees {דמי שירות} other {מס ודמי שירות}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {מס, דמי שירות וטיפ} tax_tip {מס וטיפ} fees_tip {דמי שירות וטיפ} fees {דמי שירות} other {מס ודמי שירות}}",
+  "receipt": {
+    "number": "קבלה מס׳ {n}",
+    "companyNumber": "מס׳ חברה",
+    "registrationNumber": "מס׳ רישום",
+    "taxNumber": "מס׳ {label}"
+  }
 }

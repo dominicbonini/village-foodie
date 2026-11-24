@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}：{amount}",
   "lineWithRate": "{label} {rate}：{amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {稅金、費用與小費} tax_tip {稅金與小費} fees_tip {費用與小費} fees {費用} other {稅金與費用}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {稅金、費用與小費} tax_tip {稅金與小費} fees_tip {費用與小費} fees {費用} other {稅金與費用}}",
+  "receipt": {
+    "number": "收據編號 {n}",
+    "companyNumber": "公司編號",
+    "registrationNumber": "登記編號",
+    "taxNumber": "{label}編號"
+  }
 }

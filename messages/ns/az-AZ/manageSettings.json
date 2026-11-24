@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – aylıq",
       "reelNormalQuarterly": "Réel normal – rüblük",
-      "franchiseNote": "Siz franchise en base seçmisiniz, ona görə də ƏDV-ni 0% etmək istəyə bilərsiniz."
+      "franchiseNote": "Siz franchise en base seçdiyiniz üçün qəbzlərinizdə “TVA non applicable” göstərilir və TVA tutulmur."
     },
     "saveFailed": "Yadda saxlamaq mümkün olmadı — yenidən cəhd edin."
   }

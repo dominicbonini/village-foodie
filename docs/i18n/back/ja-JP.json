@@ -3421,7 +3421,7 @@
  "manageSettings.business.regime.reelSimplifie": "Réel simplifié",
  "manageSettings.business.regime.reelNormalMonthly": "Réel normal – monthly",
  "manageSettings.business.regime.reelNormalQuarterly": "Réel normal – quarterly",
- "manageSettings.business.regime.franchiseNote": "Since you've chosen franchise en base, it would be good to set consumption tax to 0 %.",
+ "manageSettings.business.regime.franchiseNote": "Because you have chosen franchise en base, 「TVA non applicable」 is displayed on receipts and TVA is not charged.",
  "manageSettings.business.saveFailed": "Couldn't save. Please try again.",
  "manageSettings.removeVan.body": "This vehicle will be removed from the account and will no longer appear on the dashboard or in future events.",
  "manageSettings.removeVan.keep": "Keep vehicle",
@@ -6045,5 +6045,9 @@
  "demoGetStarted.partnerDealFixedPrice": "for {months} months, {plan} is {price} monthly",
  "demoGetStarted.partnerDealPlanOffer": "for {months} months, {plan} is a special price",
  "errorsKitchen.order_finished_edit": "This order has already ended, so it can’t be changed.",
- "errorsKitchen.order_finished_cancel": "This order has already ended, so it can’t be cancelled."
+ "errorsKitchen.order_finished_cancel": "This order has already ended, so it can’t be cancelled.",
+ "charges.receipt.number": "Receipt number {n}",
+ "charges.receipt.companyNumber": "Company number",
+ "charges.receipt.registrationNumber": "Registration number",
+ "charges.receipt.taxNumber": "{label} number"
 }

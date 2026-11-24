@@ -246,7 +246,7 @@
       "reelSimplifie": "Réel simplifié",
       "reelNormalMonthly": "Réel normal – ամսական",
       "reelNormalQuarterly": "Réel normal – եռամսյակային",
-      "franchiseNote": "Դուք ընտրել եք franchise en base, ուստի գուցե ցանկանաք ԱԱՀ-ն սահմանել 0%։"
+      "franchiseNote": "Քանի որ ընտրել եք franchise en base, ձեր անդորրագրերում նշվում է «TVA non applicable», և TVA չի գանձվում։"
     },
     "saveFailed": "Չհաջողվեց պահպանել։ Խնդրում ենք կրկին փորձել։"
   }

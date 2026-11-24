@@ -9,5 +9,11 @@
   "rate": "{rate} %",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Impuestos, gastos y propina} tax_tip {Impuestos y propina} fees_tip {Gastos y propina} fees {Gastos} other {Impuestos y gastos}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Impuestos, gastos y propina} tax_tip {Impuestos y propina} fees_tip {Gastos y propina} fees {Gastos} other {Impuestos y gastos}}",
+  "receipt": {
+    "number": "Recibo n.º {n}",
+    "companyNumber": "N.º de empresa",
+    "registrationNumber": "N.º de registro",
+    "taxNumber": "N.º {label}"
+  }
 }

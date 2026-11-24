@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Porez, naknade i bakšiš} tax_tip {Porez i bakšiš} fees_tip {Naknade i bakšiš} fees {Naknade} other {Porez i naknade}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Porez, naknade i bakšiš} tax_tip {Porez i bakšiš} fees_tip {Naknade i bakšiš} fees {Naknade} other {Porez i naknade}}",
+  "receipt": {
+    "number": "Račun br. {n}",
+    "companyNumber": "Br. kompanije",
+    "registrationNumber": "Registarski br.",
+    "taxNumber": "{label} br."
+  }
 }

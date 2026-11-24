@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {බදු, ගාස්තු සහ ටිප්} tax_tip {බදු සහ ටිප්} fees_tip {ගාස්තු සහ ටිප්} fees {ගාස්තු} other {බදු සහ ගාස්තු}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {බදු, ගාස්තු සහ ටිප්} tax_tip {බදු සහ ටිප්} fees_tip {ගාස්තු සහ ටිප්} fees {ගාස්තු} other {බදු සහ ගාස්තු}}",
+  "receipt": {
+    "number": "රිසිට්පත් අංකය {n}",
+    "companyNumber": "සමාගම් අංකය",
+    "registrationNumber": "ලියාපදිංචි අංකය",
+    "taxNumber": "{label} අංකය"
+  }
 }

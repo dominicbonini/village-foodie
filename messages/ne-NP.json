@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {कर, शुल्क र टिप} tax_tip {कर र टिप} fees_tip {शुल्क र टिप} fees {शुल्क} other {कर र शुल्क}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {कर, शुल्क र टिप} tax_tip {कर र टिप} fees_tip {शुल्क र टिप} fees {शुल्क} other {कर र शुल्क}}",
+    "receipt": {
+      "number": "रसिद नं. {n}",
+      "companyNumber": "कम्पनी नं.",
+      "registrationNumber": "दर्ता नं.",
+      "taxNumber": "{label} नं."
+    }
   },
   "menuBadges": {
     "soldOut": "सकियो",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – मासिक",
         "reelNormalQuarterly": "Réel normal – त्रैमासिक",
-        "franchiseNote": "तपाईंले franchise en base छान्नुभएको छ, त्यसैले भ्याट 0 % राख्न चाहनुहुन्छ होला।"
+        "franchiseNote": "तपाईंले franchise en base छान्नुभएकाले तपाईंका रसिदमा “TVA non applicable” देखिन्छ र TVA लाग्दैन।"
       },
       "saveFailed": "सेभ गर्न सकिएन — कृपया फेरि प्रयास गर्नुहोस्।"
     }

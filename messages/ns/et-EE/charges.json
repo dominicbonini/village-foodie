@@ -9,5 +9,11 @@
   "rate": "{rate}%",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Maksud, tasud ja jootraha} tax_tip {Maksud ja jootraha} fees_tip {Tasud ja jootraha} fees {Tasud} other {Maksud ja tasud}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Maksud, tasud ja jootraha} tax_tip {Maksud ja jootraha} fees_tip {Tasud ja jootraha} fees {Tasud} other {Maksud ja tasud}}",
+  "receipt": {
+    "number": "Tšeki nr {n}",
+    "companyNumber": "Ettevõtte nr",
+    "registrationNumber": "Registrikood",
+    "taxNumber": "{label} nr"
+  }
 }

@@ -582,7 +582,13 @@
     "rate": "{rate}%",
     "line": "{label}: {amount}",
     "lineWithRate": "{label} {rate}: {amount}",
-    "foldedCharges": "{parts, select, tax_fees_tip {Podatek, opłaty i napiwek} tax_tip {Podatek i napiwek} fees_tip {Opłaty i napiwek} fees {Opłaty} other {Podatek i opłaty}}"
+    "foldedCharges": "{parts, select, tax_fees_tip {Podatek, opłaty i napiwek} tax_tip {Podatek i napiwek} fees_tip {Opłaty i napiwek} fees {Opłaty} other {Podatek i opłaty}}",
+    "receipt": {
+      "number": "Nr paragonu {n}",
+      "companyNumber": "Nr firmy",
+      "registrationNumber": "Nr rejestrowy",
+      "taxNumber": "Nr {label}"
+    }
   },
   "menuBadges": {
     "soldOut": "wyprzedane",
@@ -4175,7 +4181,7 @@
         "reelSimplifie": "Réel simplifié",
         "reelNormalMonthly": "Réel normal – miesięcznie",
         "reelNormalQuarterly": "Réel normal – kwartalnie",
-        "franchiseNote": "Wybrano franchise en base, więc może warto ustawić VAT na 0 %."
+        "franchiseNote": "Wybrano franchise en base, więc na paragonach widnieje „TVA non applicable” i TVA nie jest naliczany."
       },
       "saveFailed": "Nie udało się zapisać — spróbuj ponownie."
     }

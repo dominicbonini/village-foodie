@@ -491,7 +491,15 @@ async function screensView(M, D) {
 
   // tickets: the printed-at stamp the printer hook writes, a ticket through the real mapper, the test ticket
   safe('ticket|stamp', () => `${m.print.__tdStamp(UI_TRUCK)}|${m.print.__tdNowMins(UI_TRUCK)}`)
-  safe('ticket|lines', () => m.print.T.buildTicketLines(m.print.MAP.mapOrderToTicket({ order: O.paid, truck: UI_TRUCK, event: ev, ledgerRows: CASES.paid.ledger, printedLabel: m.print.__tdStamp(UI_TRUCK) }), { paper_width: 80, show_phone: true }).map(l => l.text).filter(Boolean))
+  // ⚠️ RE-PINNED (france-receipts-1, 24 November 2026, docs/france-receipts-1-report.md) — NOT A TIME CHANGE, a named addition: the ticket
+  // gains a receipt block at the bottom (a divider, the date and time of sale on the truck's clock). It is taken out here — found EXACTLY
+  // once, directly above the footer (scripts/_named-france-receipts-1.cjs stripTicketLines) — and the rest is compared as before. Its date
+  // is the order's own placed_at/created_at, worded by lib/receipt.ts, proven against the starting commit by scripts/france-receipts-1.cjs §A.
+  safe('ticket|lines', () => {
+    const r = require('./_named-france-receipts-1.cjs').stripTicketLines(m.print.T.buildTicketLines(m.print.MAP.mapOrderToTicket({ order: O.paid, truck: UI_TRUCK, event: ev, ledgerRows: CASES.paid.ledger, printedLabel: m.print.__tdStamp(UI_TRUCK) }), { paper_width: 80, show_phone: true }))
+    if (r.n !== 1 && require('fs').existsSync(require('path').join(REPO, 'lib/receipt.ts'))) throw new Error('france-receipts-1: the receipt block is not on the ticket exactly once')
+    return r.lines.map(l => l.text).filter(Boolean)
+  })
   safe('ticket|test', () => Buffer.from(m.print.TT.renderTestTicket({ truckName: 'Pizza Kitchen', paper: 80, time: GB_TS })).toString('latin1').replace(/[^\x20-\x7e\n]/g, '').split('\n').map(l => l.trim()).filter(Boolean).join(' | '))
   return out
 }

@@ -9,5 +9,11 @@
   "rate": "{rate} %",
   "line": "{label}: {amount}",
   "lineWithRate": "{label} {rate}: {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Steuern, Gebühren & Trinkgeld} tax_tip {Steuern & Trinkgeld} fees_tip {Gebühren & Trinkgeld} fees {Gebühren} other {Steuern & Gebühren}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Steuern, Gebühren & Trinkgeld} tax_tip {Steuern & Trinkgeld} fees_tip {Gebühren & Trinkgeld} fees {Gebühren} other {Steuern & Gebühren}}",
+  "receipt": {
+    "number": "Belegnr. {n}",
+    "companyNumber": "Firmennr.",
+    "registrationNumber": "Registernr.",
+    "taxNumber": "{label}-Nr."
+  }
 }

@@ -9,5 +9,11 @@
   "rate": "{rate} %",
   "line": "{label} : {amount}",
   "lineWithRate": "{label} {rate} : {amount}",
-  "foldedCharges": "{parts, select, tax_fees_tip {Taxes, frais et pourboire} tax_tip {Taxes et pourboire} fees_tip {Frais et pourboire} fees {Frais} other {Taxes et frais}}"
+  "foldedCharges": "{parts, select, tax_fees_tip {Taxes, frais et pourboire} tax_tip {Taxes et pourboire} fees_tip {Frais et pourboire} fees {Frais} other {Taxes et frais}}",
+  "receipt": {
+    "number": "Reçu n° {n}",
+    "companyNumber": "N° d’entreprise",
+    "registrationNumber": "N° d’immatriculation",
+    "taxNumber": "N° {label}"
+  }
 }
