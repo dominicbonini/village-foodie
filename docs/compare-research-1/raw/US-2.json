@@ -1,0 +1,1025 @@
+{
+  "country": "US",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "Menufy future orders schedule pickup time support (site:menufy.com, to find own pages)",
+    "Owner.com scheduled orders pickup later time restaurant online ordering (site:owner.com, to find own pages)",
+    "EasyEats restaurant online ordering system pricing $90 per month (to find its own site)",
+    "RapidOrderz online ordering restaurants (to find its own site)"
+  ],
+  "vendors": [
+    {
+      "name": "ChowNow",
+      "website": "https://get.chownow.com",
+      "stored_id_prefix": "9bce2002",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "get.chownow.com/pricing, get.chownow.com and www.chownow.com/pricing all failed with a TLS handshake failure (SSLV3_ALERT_HANDSHAKE_FAILURE, also from curl); stored 'Pro' 229 (third-party source) not confirmed on the own site",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Menufy",
+      "website": "https://restaurant.menufy.com",
+      "stored_id_prefix": "832a682c",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant online ordering site with pickup and advance orders up to 6 days ahead; US prices in USD; prices unchanged (149 annual / 179 month-to-month)",
+      "eligibility": {
+        "order_quote": "Advance Orders allows customers to place their orders online up to 6 days in advance.",
+        "order_url": "https://restaurant.menufy.com/article/manager-blog-part-3"
+      },
+      "plans": [
+        {
+          "plan_name": "Annual",
+          "currency": "USD",
+          "price_major": 149,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$149",
+          "url": "https://restaurant.menufy.com/pricing",
+          "note": "shown as '$149 / month'; 12-month agreement billed monthly; 'Menufy is $179 a month month-to-month, or $149 a month on a 12-month agreement'"
+        },
+        {
+          "plan_name": "Month-to-month",
+          "currency": "USD",
+          "price_major": 179,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$179",
+          "url": "https://restaurant.menufy.com/pricing",
+          "note": "shown as '$179 / month'; 'Billed monthly. No agreement. $2,148 a year.'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Our system ensures that these orders can only be scheduled for fulfillment during your designated business hours.",
+          "url": "https://restaurant.menufy.com/article/manager-blog-part-3"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Advance Orders allows customers to place their orders online up to 6 days in advance.",
+          "url": "https://restaurant.menufy.com/article/manager-blog-part-3"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Expand to new locations or channels when you’re ready",
+          "url": "https://restaurant.menufy.com/how-it-works"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "No website? We’ll secure and host a domain for you.",
+          "url": "https://restaurant.menufy.com/how-it-works"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Menufy is $179 a month month-to-month, or $149 a month on a 12-month agreement",
+          "url": "https://restaurant.menufy.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://restaurant.menufy.com/pricing",
+        "https://restaurant.menufy.com/",
+        "https://restaurant.menufy.com/how-it-works",
+        "https://restaurant.menufy.com/article/manager-blog-part-3"
+      ]
+    },
+    {
+      "name": "Order Tiger",
+      "website": "https://www.ordertiger.com",
+      "stored_id_prefix": "aed7bf67",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "own site has a food-truck page with order-ahead click and collect; pricing page has a '$ US & international' tab. Stored plans were 100x too high: EPOS is $49 (not 4,900) and Online Ordering + EPOS is $109 (not 10,900). Focus food_truck because the site has a dedicated food-truck page (stored as restaurant)",
+      "eligibility": {
+        "food_quote": "Take pre-orders before you park up, cut the queue at the hatch and sell more at every pitch. Your own app, QR ordering and payments.",
+        "food_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+        "order_quote": "Customers order ahead, pay online and pick up at a time that suits them. Your team sees the queue in advance and preps to the minute.",
+        "order_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+        "country_quote": "$ US & international",
+        "country_url": "https://www.ordertiger.com/online-ordering-system-pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering",
+          "currency": "USD",
+          "price_major": 69,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Online Ordering costs $69 a month",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing",
+          "note": "per location, billed monthly, no contract; free menu setup, no setup fee; '$ US & international' tab; Growth plan $299/month also shown"
+        },
+        {
+          "plan_name": "EPOS",
+          "currency": "USD",
+          "price_major": 49,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "EPOS $49",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing",
+          "note": "stored as 4,900 (100x too high); the page says EPOS is 'A till for the counter and the phone, without online ordering.' Recorded only to correct the stored row"
+        },
+        {
+          "plan_name": "Online Ordering + EPOS",
+          "currency": "USD",
+          "price_major": 109,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Online Ordering + EPOS $109",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing",
+          "note": "stored as 10,900 (100x too high); per location, billed monthly"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers order ahead, pay online and pick up at a time that suits them. Your team sees the queue in advance and preps to the minute.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Let customers order days or weeks ahead for events, holidays and busy periods.",
+          "url": "https://www.ordertiger.com/pre-ordering"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Yes. Set capacity per day and per time slot. When a slot is full it disappears from checkout automatically.",
+          "url": "https://www.ordertiger.com/pre-ordering"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Pin today’s location, take orders before the queue forms and tell everyone where you will be tomorrow.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Monthly social media packages",
+          "url": "https://www.ordertiger.com/",
+          "note": "a separate social media marketing service, listed in the menu"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Tickets appear on the kitchen display sorted by prep time, so the pass never guesses.",
+          "url": "https://www.ordertiger.com/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Counter and online orders in one queue with a printer.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Yes. Manage menus, pricing and reports for every location from one dashboard, with franchise-level controls and per-site settings.",
+          "url": "https://www.ordertiger.com/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Take orders on your own website, or let us build a site on your domain.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Plans are a flat monthly fee per location.",
+          "url": "https://www.ordertiger.com/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Plans are a flat monthly fee per location, with no commission on orders and no contract, and most restaurants are live within days.",
+          "url": "https://www.ordertiger.com/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "In the US and internationally, Stripe's standard rates apply, see",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.ordertiger.com/",
+        "https://www.ordertiger.com/online-ordering-system-pricing",
+        "https://www.ordertiger.com/pre-ordering",
+        "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+      ]
+    },
+    {
+      "name": "Outbites",
+      "website": "https://outbites.com",
+      "stored_id_prefix": "f8d9d52d",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "own food-truck page: branded ordering link/QR with pickup windows; $1 USD per fulfilled order, no monthly fee (matches stored per-order model). Order-ahead evidence is 'pickup windows'/'pickup times' only; no scheduled-time wording found. Focus food_truck because of the dedicated food-truck page",
+      "eligibility": {
+        "food_quote": "Outbites gives food trucks a branded ordering link guests can use from Instagram, Google, a QR code, or the service window.",
+        "food_url": "https://outbites.com/solutions/food-truck-online-ordering/",
+        "order_quote": "Upload items, photos, modifiers, pickup windows, and availability. Keep it simple enough for a guest standing outside.",
+        "order_url": "https://outbites.com/solutions/food-truck-online-ordering/"
+      },
+      "plans": [
+        {
+          "plan_name": "Pay per order",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 1,
+          "setup_major": null,
+          "quote": "$1 USD each time an order completes.",
+          "url": "https://outbites.com/",
+          "note": "no monthly platform fee; $1 per fulfilled order, which the business can pass to the guest, split (50¢) or pay itself"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Upload items, photos, modifiers, pickup windows, and availability.",
+          "url": "https://outbites.com/solutions/food-truck-online-ordering/",
+          "note": "pickup windows set by the business; no wording about the guest choosing a time"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Set prep buffers, blackout dates, and staffing-aware lead times so you never overpromise.",
+          "url": "https://outbites.com/products/grow-online-sales/catering/",
+          "note": "catering orders with lead times"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Send a special before service, announce a location change, or reward regulars who keep coming back.",
+          "url": "https://outbites.com/solutions/food-truck-online-ordering/",
+          "note": "announcing a location change by message, not a location schedule"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Phone, web, and in-store orders land in one kitchen-native workflow, adjust prep times, flip busy mode, and edit the menu without running to the office computer.",
+          "url": "https://outbites.com/products/run-your-restaurant/kitchen-tablet/"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "Offline-aware modes help you recover gracefully when Wi-Fi blips.",
+          "url": "https://outbites.com/products/run-your-restaurant/kitchen-tablet/"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "QR code ordering for the window, events, and printed menus.",
+          "url": "https://outbites.com/solutions/food-truck-online-ordering/"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Accept large-event catering with clear booking flows, lead times, and menus that stay on your domain, so high-value orders land with your team, not a middleman.",
+          "url": "https://outbites.com/products/grow-online-sales/catering/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "No monthly invoice for platform access.",
+          "url": "https://outbites.com/pricing/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "One buck per fulfilled order. You decide who pays it.",
+          "url": "https://outbites.com/pricing/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://outbites.com/",
+        "https://outbites.com/pricing/",
+        "https://outbites.com/solutions/food-truck-online-ordering/",
+        "https://outbites.com/products/grow-online-sales/online-ordering/",
+        "https://outbites.com/products/grow-online-sales/catering/",
+        "https://outbites.com/products/run-your-restaurant/kitchen-tablet/"
+      ]
+    },
+    {
+      "name": "Owner.com",
+      "website": "https://www.owner.com",
+      "stored_id_prefix": "1a32fe8f",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant website + online ordering with pickup orders; US prices (USD/CAD toggle, USD shown); prices unchanged (Flexible 249 + 5% per order, Flat Rate 499). The only 'scheduled pickup' wording found is an image description (alt text) on the homepage",
+      "eligibility": {
+        "order_quote": "Adjust prep time, convert pickup orders to delivery, flip on Busy Mode when you're slammed, and manage your full menu. All from one screen.",
+        "order_url": "https://www.owner.com/kitchen-tablet"
+      },
+      "plans": [
+        {
+          "plan_name": "Flexible",
+          "currency": "USD",
+          "price_major": 249,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 5,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$249",
+          "url": "https://www.owner.com/pricing",
+          "note": "shown as '$249 /month + 5% restaurant fee per order'; month-to-month; USD selected (CAD toggle); 'On both plans, guests pay a 5% order support fee'"
+        },
+        {
+          "plan_name": "Flat Rate",
+          "currency": "USD",
+          "price_major": 499,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$499",
+          "url": "https://www.owner.com/pricing",
+          "note": "shown as '$499 /month with no additional restaurant fees'; month-to-month; guests still pay a 5% order support fee"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Mobile app screen showing Hawking Bird restaurant with fried chicken sandwich image, options for pickup or delivery, scheduled pickup, and a rewards progress bar",
+          "url": "https://www.owner.com/",
+          "note": "from an image description (alt text) on the homepage, not body text"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Adjust prep time, convert pickup orders to delivery, flip on Busy Mode when you're slammed, and manage your full menu. All from one screen.",
+          "url": "https://www.owner.com/kitchen-tablet",
+          "note": "a kitchen tablet for managing orders"
+        },
+        {
+          "key": "offline",
+          "value": "no",
+          "quote": "The tablet requires an internet connection to process orders and sync with your Owner account.",
+          "url": "https://www.owner.com/kitchen-tablet"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Take phone and in-store orders, manage your menu, process gift cards, and handle delivery. All from one device.",
+          "url": "https://www.owner.com/kitchen-tablet"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Special rates available for multi-location",
+          "url": "https://www.owner.com/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Pay month-to-month with no long-term contracts.",
+          "url": "https://www.owner.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "On our Flex plan, you pay a lower subscription cost plus a 5% restaurant fee on orders.",
+          "url": "https://www.owner.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.owner.com/pricing",
+        "https://www.owner.com/online-ordering",
+        "https://www.owner.com/",
+        "https://www.owner.com/kitchen-tablet",
+        "https://www.owner.com/how-owner-works"
+      ]
+    },
+    {
+      "name": "Snackpass",
+      "website": "https://www.snackpass.co",
+      "stored_id_prefix": "30bb8773",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "the site is now mainly a creator-marketing platform; its 'commerce' page still offers order-ahead mobile ordering and pickup online ordering. No public price for ordering: the stored 'Pro' 499 is today the creator-marketing plan ($499/mo), not ordering; commerce is 'book a demo'. /pricing returns 404",
+      "eligibility": {
+        "order_quote": "guests order and pay before they arrive, so your line keeps moving and tickets run higher.",
+        "order_url": "https://www.snackpass.co/commerce"
+      },
+      "plans": [
+        {
+          "plan_name": "Commerce (ordering & point of sale)",
+          "currency": "USD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "book a demo",
+          "url": "https://www.snackpass.co/commerce",
+          "note": "no price on the site for ordering; the only pricing page (/forbrands/pricing) is for creator marketing: free, lite $199/mo, pro $499/mo. Stored 'Pro' 499 should not be shown as an ordering price"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "guests order and pay before they arrive, so your line keeps moving and tickets run higher.",
+          "url": "https://www.snackpass.co/commerce"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "creators get you the views. the app, your own online ordering, and the register in store turn them into orders and regulars.",
+          "url": "https://www.snackpass.co/commerce",
+          "note": "creator marketing (sold separately)"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "everything flows to one kitchen",
+          "url": "https://www.snackpass.co/commerce"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "a fast, simple setup for taking orders at the counter or letting guests order themselves.",
+          "url": "https://www.snackpass.co/commerce"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "pickup and delivery from your own site",
+          "url": "https://www.snackpass.co/commerce"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.snackpass.co/",
+        "https://www.snackpass.co/commerce",
+        "https://www.snackpass.co/forbrands/pricing"
+      ]
+    },
+    {
+      "name": "The Foody Gram",
+      "website": "https://www.thefoodygram.com",
+      "stored_id_prefix": "5c805a29",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Texas-based restaurant ordering site with pickup and (Growth plan) pre-orders. Stored plans were 100x too high and partly outdated: today Starter $159, Growth $199, Full Service $349 per month; the stored 'Web Based Menu' 34.95, 'Online Ordering' 119 and 'Custom Website + Ordering' 139 plans no longer appear",
+      "eligibility": {
+        "order_quote": "Pickup and delivery management",
+        "order_url": "https://www.thefoodygram.com/pricing/",
+        "country_quote": "Your own website, ordering and customer list, with the same delivery drivers, for a flat monthly fee. Based in Georgetown, Texas.",
+        "country_url": "https://www.thefoodygram.com/pricing/"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "USD",
+          "price_major": 159,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "From $159 a month. Flat.",
+          "url": "https://www.thefoodygram.com/",
+          "note": "pricing page shows '$159/month' ($ in a separate span); no setup fees; month-to-month, or 12 months with a free tablet and printer"
+        },
+        {
+          "plan_name": "Growth",
+          "currency": "USD",
+          "price_major": 199,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "$199",
+          "url": "https://www.thefoodygram.com/pricing/",
+          "note": "shown as '$199/month' ($ in a separate span); adds 'Pre-orders and reservations'; no setup fees"
+        },
+        {
+          "plan_name": "Full Service",
+          "currency": "USD",
+          "price_major": 349,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "$349",
+          "url": "https://www.thefoodygram.com/pricing/",
+          "note": "shown as '$349/month' ($ in a separate span); adds DoorDash Drive / Uber Direct delivery for a flat fee per delivery"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Pre-orders and reservations",
+          "url": "https://www.thefoodygram.com/pricing/",
+          "note": "Growth plan and above"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Orders from your own site and from the marketplaces come into one queue on one tablet, and tickets print automatically for the kitchen.",
+          "url": "https://www.thefoodygram.com/how-it-works/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Commission-free ordering on your own domain",
+          "url": "https://www.thefoodygram.com/how-it-works/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "One monthly price, whether you take ten orders or ten thousand.",
+          "url": "https://www.thefoodygram.com/pricing/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No. You pay a flat monthly fee. Payments from your customers go to your own payment account.",
+          "url": "https://www.thefoodygram.com/pricing/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.thefoodygram.com/",
+        "https://www.thefoodygram.com/pricing/",
+        "https://www.thefoodygram.com/how-it-works/"
+      ]
+    },
+    {
+      "name": "Zay-OS (Zayos)",
+      "website": "https://zay-os.com",
+      "stored_id_prefix": "29eec8ec",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "own food-truck page: preorder with a chosen pickup window, stop-of-the-week scheduling; US (Florida) business, USD. Plans renamed: Site $399 and All $499 per location/month; the stored 'Concierge' 599 no longer appears. Note the truck page says 'Imagine your food truck running on Zay-OS' (named live customer is a restaurant). Focus food_truck because of the dedicated page",
+      "eligibility": {
+        "food_quote": "Zay-OS is commission-free preorder online ordering built for food trucks.",
+        "food_url": "https://zay-os.com/for/food-trucks",
+        "order_quote": "Customer pays in the app, picks a 5-minute pickup window, walks past the line, hands over a confirmation number.",
+        "order_url": "https://zay-os.com/for/food-trucks"
+      },
+      "plans": [
+        {
+          "plan_name": "Site",
+          "currency": "USD",
+          "price_major": 399,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "$399",
+          "url": "https://zay-os.com/pricing",
+          "note": "shown as '$399 /mo per location'; month to month, no setup fee; annual option $359.10/mo per location (12-month commitment, billed monthly, 10% off) or $4,069.80/yr billed yearly. Diner pays a flat $0.99 service fee on pickup and delivery, never the restaurant"
+        },
+        {
+          "plan_name": "All",
+          "currency": "USD",
+          "price_major": 499,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "$499",
+          "url": "https://zay-os.com/pricing",
+          "note": "shown as '$499 /mo per location'; adds branded iOS/Android app and AI phone ordering; annual option $449.10/mo billed monthly or $5,089.80/yr"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customer pays in the app, picks a 5-minute pickup window, walks past the line, hands over a confirmation number.",
+          "url": "https://zay-os.com/for/food-trucks"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Customer ordered a preorder for 7pm pickup and has not shown up by 7:25pm.",
+          "url": "https://zay-os.com/for/food-trucks",
+          "note": "preorders for a later time the same day; event catering is an inquiry form, not an order"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Configure the week's parking schedule in advance — Monday office park, Tuesday brewery, Wednesday closed, Thursday craft fair, Friday rally night.",
+          "url": "https://zay-os.com/for/food-trucks"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Auto-generate the \"we're at X tonight, order ahead here\" share card with the menu link, ready to copy into Twitter/Instagram stories the moment you park.",
+          "url": "https://zay-os.com/for/food-trucks"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "One queue at the prep window — direct preorders, walk-ups, marketplace orders all in one flow.",
+          "url": "https://zay-os.com/for/food-trucks",
+          "note": "a kitchen tablet"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "One queue at the prep window — direct preorders, walk-ups, marketplace orders all in one flow.",
+          "url": "https://zay-os.com/for/food-trucks"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Brand with 20 or more locations? Talk to us about the rollout.",
+          "url": "https://zay-os.com/pricing",
+          "note": "plans are per location / per truck; 'Multi-location' reports on the homepage"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "If you leave, you keep your domain, your customer list, and your full order history, all exportable whenever you want.",
+          "url": "https://zay-os.com/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Every plan is a flat monthly price per location.",
+          "url": "https://zay-os.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "The diner pays a flat $0.99 service fee on pickup and delivery, never the restaurant.",
+          "url": "https://zay-os.com/",
+          "note": "a per-order fee exists but is paid by the diner; 10% on catering"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://zay-os.com/",
+        "https://zay-os.com/pricing",
+        "https://zay-os.com/for/food-trucks"
+      ]
+    },
+    {
+      "name": "EasyEats",
+      "website": "https://easyeats.com",
+      "stored_id_prefix": "3d81b4a1",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "own site found (easyeats.com, via a search): POS + KDS + online ordering built for food trucks, with order-ahead and event pre-orders; US-based support, USD. Stored $90/month confirmed: Annual $90/month billed monthly on a 12-month contract; also Pay As You Go 0.95% per transaction",
+      "eligibility": {
+        "food_quote": "EasyEats is the point of sale, kitchen screen, and online ordering system built for food trucks and quick-service restaurants.",
+        "food_url": "https://easyeats.com/overview/",
+        "order_quote": "Customers order and pay ahead from their phone, or on a self-ordering kiosk at your window.",
+        "order_url": "https://easyeats.com/overview/"
+      },
+      "plans": [
+        {
+          "plan_name": "Annual",
+          "currency": "USD",
+          "price_major": 90,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "$90",
+          "url": "https://easyeats.com/pricing",
+          "note": "shown as '$90 / month'; 'Flat rate, billed monthly, no matter how much you sell.'; 12-month contract, paid monthly by card autopay; no setup fee; card processing charged separately by the processor"
+        },
+        {
+          "plan_name": "Pay As You Go",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0.95,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0.95%",
+          "url": "https://easyeats.com/pricing",
+          "note": "shown as '0.95% per transaction'; no monthly minimum, no annual commitment, no install fees; card processing charged separately by the processor"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers order and pay ahead from their phone, or on a self-ordering kiosk at your window.",
+          "url": "https://easyeats.com/overview/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Let customers order before you arrive, so you can estimate demand and cut food waste.",
+          "url": "https://easyeats.com/overview/",
+          "note": "'Events with order-ahead'"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Location tracking puts your truck on the EasyEats map the moment you open, with directions on their phone.",
+          "url": "https://easyeats.com/overview/",
+          "note": "live location when open, not a published schedule of stops"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Auto-posts to your Meta Business page when you open for the day.",
+          "url": "https://easyeats.com/overview/"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Window, online, and scheduled orders all land in one queue on your kitchen display.",
+          "url": "https://easyeats.com/overview/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Window, online, mobile, and event orders all appear in one queue.",
+          "url": "https://easyeats.com/overview/"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Every truck gets its own page, URL, and QR code that links straight to online ordering.",
+          "url": "https://easyeats.com/overview/",
+          "note": "a page on EasyEats, not stated as the business's own domain"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Pay only when you sell, or lock in a flat monthly rate.",
+          "url": "https://easyeats.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Example: $5,000 in monthly sales = $47.50 EasyEats fee.",
+          "url": "https://easyeats.com/pricing",
+          "note": "0.95% per transaction on Pay As You Go; none on Annual"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Processing fees are charged by the processor you choose, not by EasyEats, and none of our processors require a long-term contract.",
+          "url": "https://easyeats.com/pricing",
+          "note": "rates listed per processor, e.g. Fiserv card present 2.65%, online 3.25%"
+        }
+      ],
+      "check_urls": [
+        "https://easyeats.com/pricing",
+        "https://easyeats.com/overview/"
+      ]
+    },
+    {
+      "name": "RapidOrderz",
+      "website": "https://rapidorderz.com",
+      "stored_id_prefix": "7fbcd197",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "own site found (rapidorderz.com, via a search + domain check) but it is a JavaScript-only app: every route (/, /pricing) returns the same empty HTML shell, so no page text can be quoted or re-checked. The HTML meta description says 'Mobile web POS for restaurants, food trucks, and concession stands. Tap-to-pay, multilingual KDS, and real-time analytics — $59/mo.' The app's script (not page text) contains '$59 per month or $600 per year, everything included, with a 14-day free trial', 'Pick a pickup time' and 'Limits how many pre-orders fit in each 15-minute pickup slot.', so it looks eligible (food-truck POS with pickup pre-orders) at the stored $59/month, but this needs a browser check",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://rapidorderz.com/",
+        "https://rapidorderz.com/pricing"
+      ]
+    }
+  ],
+  "notes": "Pages were fetched with curl one at a time and reduced to plain text; quotes are copied from that text (the page reader truncated or summarised several pages). Re-check notes: (1) The Foody Gram and Order Tiger stored prices were 100x too high: Foody Gram Starter is $159 and Growth $199 per month (plus Full Service $349; the old 34.95/119/139 plans are gone); Order Tiger EPOS is $49 and Online Ordering + EPOS $109 per month (Online Ordering alone $69, Growth $299). (2) Snackpass's stored 'Pro' 499 is now its creator-marketing plan, not ordering; ordering has no public price. (3) Zay-OS plans are now 'Site' $399 and 'All' $499; the stored 'Concierge' 599 is gone. (4) Order Tiger, Outbites, Zay-OS, EasyEats and RapidOrderz each have dedicated food-truck pages/wording, so focus is set to food_truck (some were stored as restaurant tools). (5) ChowNow refused the TLS handshake on every URL; RapidOrderz is JavaScript-only. (6) Foody Gram prices have the '$' in a separate span, so page text reads '$159/month'. (7) Menufy's 'Setup Advanced Orders' help page (support.menufy.com) answered 403; its per-15-minute slot cap was therefore not quoted. (8) Owner.com's 'scheduled pickup' wording is only in an image description (alt text)."
+}

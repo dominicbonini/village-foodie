@@ -1,0 +1,593 @@
+{
+  "country": "JP",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "AdvaNceD IoT キッチンカー 屋台 スマートオーダーシステム and-iot.jp",
+    "どこでも注文くん キッチンカー 事前注文",
+    "チューズモンスター 注文くん 公式",
+    "funfo モバイルオーダー 料金 キッチンカー",
+    "funfo 料金プラン (site:funfo.jp)",
+    "O:der ToGo Showcase Gig テイクアウト 事前注文",
+    "\"O:der\" モバイルオーダー ショーケースギグ 公式",
+    "O:der テイクアウト 事前注文 (site:showcase-gig.com)",
+    "ISSUE PANDA 3bitter モバイルオーダー イベント",
+    "キッチンカー モバイルオーダー 事前注文 料金",
+    "キッチンカー向け モバイルオーダー サービス 事前予約 受け取り時間 アプリ",
+    "キッチンカー 事前注文システム 月額 無料 出店場所 お知らせ",
+    "キッチンカー モバイルオーダー 事前注文 導入 サービス 公式"
+  ],
+  "vendors": [
+    {
+      "name": "モバレジ (Mobaregi, EDDYS FACTORY)",
+      "website": "https://mobaregi.jp",
+      "stored_id_prefix": "e6a09d6e",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "キッチンカー order system: customers order ahead via LINE from QR; 0円 monthly, 4% on online payments",
+      "eligibility": {
+        "food_quote": "キッチンカーオーダーシステム",
+        "food_url": "https://mobaregi.jp",
+        "order_quote": "オフィスや自宅で事前に注文することで、スムーズに商品を受け取ることができます。",
+        "order_url": "https://mobaregi.jp"
+      },
+      "plans": [
+        {
+          "plan_name": "モバレジ (single plan)",
+          "currency": "JPY",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 4,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0円〜ご利用が可能です。オンライン支払い（クレジットカード、デビットカード）の場合、別途オンラインプラットフォームに売上の4%をお支払いいただきます。",
+          "url": "https://mobaregi.jp",
+          "note": "初期費用 0円, 月額費用 0円, オーダー成約手数料 0円; 4% of sales goes to the payment platform on online (card) payments only"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "オフィスや自宅で事前に注文することで、スムーズに商品を受け取ることができます。",
+          "url": "https://mobaregi.jp"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "0円〜ご利用が可能です。",
+          "url": "https://mobaregi.jp"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "※オンライン支払いの場合、ご注文料金の収益金額の4%を決済代行会社にお支払いいただきます。",
+          "url": "https://mobaregi.jp"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "オンライン支払い（クレジットカード、デビットカード）の場合、別途オンラインプラットフォームに売上の4%をお支払いいただきます。",
+          "url": "https://mobaregi.jp"
+        }
+      ],
+      "check_urls": [
+        "https://mobaregi.jp"
+      ]
+    },
+    {
+      "name": "KitchenCarMenu (キッチンカーメニュー)",
+      "website": "https://kitchencarmenu.com",
+      "stored_id_prefix": "fbea19b8",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "kitchencarmenu.com answered HTTP 503 Service Unavailable twice on 24 Nov 2026; stored prices (Monthly 3,980, Annual 3,317/month) could not be re-checked",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://kitchencarmenu.com"
+      ]
+    },
+    {
+      "name": "AdvaNceD IoT キッチンカー＆屋台スマートオーダーシステム (Device Agency)",
+      "website": "https://and-iot.jp",
+      "stored_id_prefix": "9f932a75",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "the vendor's own product list (and-iot.jp/products/) no longer shows any キッチンカー/屋台 product; its スマートオーダー（飲食店） is seat-QR table ordering only (no order ahead); stored Premium 3,980 / Standard 8,980 not found",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://and-iot.jp",
+        "https://and-iot.jp/products/",
+        "https://and-iot.jp/products/restaurant-smart-order/"
+      ]
+    },
+    {
+      "name": "どこでも注文くん (Chuzmonster) — now Yappli MobileOrder Takeout (株式会社ヤプリフードコネクト)",
+      "website": "https://order.yapp.li/takeout",
+      "stored_id_prefix": "da91c9a7",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "LINE mini-app takeout pre-order with pickup date/time choice; company renamed from チューズモンスター to ヤプリフードコネクト (choose-monster.com redirects to order.yapp.li); no food-truck mention; no price on the site. Stored website lme.jp is a third-party media article, not the vendor",
+      "eligibility": {
+        "order_quote": "受取方法・受取日時の選択が可能です。",
+        "order_url": "https://order.yapp.li/takeout",
+        "country_quote": "株式会社チューズモンスターは株式会社ヤプリフードコネクトへ社名変更いたしました。",
+        "country_url": "https://order.yapp.li/"
+      },
+      "plans": [
+        {
+          "plan_name": "Takeout (固定料金)",
+          "currency": "JPY",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Takeoutは固定料金なので、モバイルオーダーの売上が増えても料金は一切変わりません。",
+          "url": "https://order.yapp.li/takeout",
+          "note": "no amount on the site (pricing only via brochure download / contact); stored 'Flat 10,000' could not be confirmed; period not stated; 決済手数料 3.6% on prepayment"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "受取方法・受取日時の選択が可能です。",
+          "url": "https://order.yapp.li/takeout"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "事前注文・予約販売の導入で効率的な販売が可能になります",
+          "url": "https://order.yapp.li/takeout"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "日別や時間帯別の在庫設定も可能です。",
+          "url": "https://order.yapp.li/takeout"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "カウンターや券売機で注文を受ける店舗でも活躍します。",
+          "url": "https://order.yapp.li/takeout"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "partial",
+          "quote": "Takeoutは固定料金なので、モバイルオーダーの売上が増えても料金は一切変わりません。",
+          "url": "https://order.yapp.li/takeout"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Takeoutは固定料金なので、モバイルオーダーの売上が増えても料金は一切変わりません。",
+          "url": "https://order.yapp.li/takeout"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "決済手数料は3.6%です。",
+          "url": "https://order.yapp.li/takeout"
+        }
+      ],
+      "check_urls": [
+        "https://lme.jp",
+        "https://choose-monster.com",
+        "https://order.yapp.li/",
+        "https://order.yapp.li/takeout"
+      ]
+    },
+    {
+      "name": "funfo",
+      "website": "https://www.funfo.jp",
+      "stored_id_prefix": "24aa846b",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant POS + mobile order; funfoテイクアウト lets customers choose a pickup time; Japanese prices. Researched on funfo's own site funfo.jp (stored lycbiz.com is LINE's partner page, not the vendor's). No food-truck mention",
+      "eligibility": {
+        "order_quote": "お好きな商品やピックアップ時間を選択",
+        "order_url": "https://www.funfo.jp/index.php/takeout/"
+      },
+      "plans": [
+        {
+          "plan_name": "funfo Free",
+          "currency": "JPY",
+          "price_major": 0,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 3.35,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "0円",
+          "url": "https://www.funfo.jp/index.php/priceupdate/",
+          "note": "takeout page: 初期費用 ￥0 / 月額費用 ￥0 / 決済手数料 3.35%～ (payment fee on prepaid mobile orders, 'from' 3.35%)"
+        },
+        {
+          "plan_name": "funfo Lite AI",
+          "currency": "JPY",
+          "price_major": 7700,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "7,700円",
+          "url": "https://www.funfo.jp/index.php/priceupdate/",
+          "note": "from 1 Oct 2026, under 「新プラン内容（2026年10月1日より／月額・税込）」; pricing page also shows 6,930 with a 「年払い 10%お得」 toggle (billed yearly); stored Pro/Lite 5,500 is the old price"
+        },
+        {
+          "plan_name": "funfo Business AI",
+          "currency": "JPY",
+          "price_major": 13200,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "13,200円",
+          "url": "https://www.funfo.jp/index.php/priceupdate/",
+          "note": "monthly, 税込, from 1 Oct 2026; pricing page shows 11,880 billed yearly"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "お好きな商品やピックアップ時間を選択",
+          "url": "https://www.funfo.jp/index.php/takeout/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "FunPageコードをSNSや店舗名刺などで宣伝すれば、新たな収益の流れを作り出すことができます。",
+          "url": "https://www.funfo.jp/index.php/takeout/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "新プラン内容（2026年10月1日より／月額・税込）",
+          "url": "https://www.funfo.jp/index.php/priceupdate/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "決済手数料 3.35%～",
+          "url": "https://www.funfo.jp/index.php/takeout/"
+        }
+      ],
+      "check_urls": [
+        "https://www.funfo.jp",
+        "https://www.funfo.jp/index.php/pricing/",
+        "https://www.funfo.jp/index.php/takeout/",
+        "https://www.funfo.jp/index.php/priceupdate/"
+      ]
+    },
+    {
+      "name": "テイクイーツ (Take Eats)",
+      "website": "https://take-eats.jp",
+      "stored_id_prefix": "9f2ee7a6",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "takeout reservation/prepayment system: order day and handover day managed per shop, per-slot order limits; price on request; no food-truck wording (only the heading 普段使いからイベントまで)",
+      "eligibility": {
+        "order_quote": "テイクアウト業務に特化した予約・決済・管理システムです",
+        "order_url": "https://take-eats.jp"
+      },
+      "plans": [
+        {
+          "plan_name": "Proposal-based plan",
+          "currency": "JPY",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "お客さまのニーズに合わせた最適なプランをご提案しているため、導入いただく内容によって異なります。",
+          "url": "https://take-eats.jp",
+          "note": "price on request (contact form); free small-start trial offered; period not stated"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "商品や日付、時間ごとに受注可能な件数を設定",
+          "url": "https://take-eats.jp"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "日付やお店ごとに注文日や受け渡し日を管理",
+          "url": "https://take-eats.jp"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "商品や日付、時間ごとに受注可能な件数を設定",
+          "url": "https://take-eats.jp"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "HPやSNSに導線を設置して",
+          "url": "https://take-eats.jp"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "電話や店頭で受けた注文をテイクイーツ管理画面から追加でき、より正確な在庫管理や集計を実現します。",
+          "url": "https://take-eats.jp"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "1つのアカウントで複数店舗を一括管理",
+          "url": "https://take-eats.jp"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://take-eats.jp"
+      ]
+    },
+    {
+      "name": "O:der ToGo (Showcase Gig)",
+      "website": "https://www.showcase-gig.com",
+      "stored_id_prefix": "2b36ed33",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "own site is showcase-gig.com (stored saas.imitsu.jp is a listing site); its pages render by script and the page reader got only titles (e.g. 全国のGODIVAに「O:der ToGo」を導入), no body text, so no verbatim order-ahead or price quote could be taken; enterprise chain tool (吉野家, GODIVA, かつや), price not expected on site",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.showcase-gig.com",
+        "https://www.showcase-gig.com/news/godiva_20220126/",
+        "https://www.showcase-gig.com/dig-in/mobileorder-4/"
+      ]
+    },
+    {
+      "name": "ISSUE PANDA (3bitter)",
+      "website": "https://i.issuepanda.com",
+      "stored_id_prefix": "2392b933",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "own site i.issuepanda.com (operated by 3bitter; stored saas.imitsu.jp is a listing site): order and prepay from outside the shop with a chosen pickup time; quote only. The site no longer mentions events/fes/キッチンカー, so it counts as a restaurant tool, not a market tool",
+      "eligibility": {
+        "order_quote": "店外から注文・前払い。受け取り時間の指定と、準備完了のお知らせ。",
+        "order_url": "https://i.issuepanda.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "Quote (お見積もり)",
+          "currency": "JPY",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "お問い合わせいただければ、お店に合わせてお見積もりします。",
+          "url": "https://i.issuepanda.com/",
+          "note": "price on request; period not stated. The only figure (初期費用0円 from one tablet) is for テーブルオーダー(前払い), not order-ahead"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "店外から注文・前払い。受け取り時間の指定と、準備完了のお知らせ。",
+          "url": "https://i.issuepanda.com/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "並んでいる間にスマホで注文・決済。発券機にQRをかざすだけで食券が出ます。",
+          "url": "https://i.issuepanda.com/"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "複数店舗・チェーン",
+          "url": "https://i.issuepanda.com/"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://issuepanda.com",
+        "https://i.issuepanda.com/"
+      ]
+    }
+  ],
+  "notes": "Group B re-check of 8 stored JP vendors. Only ONE food-truck tool qualifies with a price today: モバレジ (0円/month, 4% on online card payments). KitchenCarMenu (fbea19b8) answered HTTP 503 twice, so its stored 3,980 / 3,317 prices are unchecked (worth a re-try later). AdvaNceD IoT (9f932a75): the vendor's own product list no longer has any キッチンカー/屋台 product; its restaurant smart order is seat-QR only -> not_relevant. どこでも注文くん (da91c9a7): stored lme.jp is a third-party media site; チューズモンスター renamed to 株式会社ヤプリフードコネクト, choose-monster.com redirects to order.yapp.li; the Takeout page states 固定料金 but no amount (stored Flat 10,000 not confirmable on own site) -> recorded as eligible restaurant tool with price null; consider updating the stored website/name. funfo (24aa846b): researched on funfo.jp (own site), not lycbiz.com; prices changed 1 Oct 2026 (Lite AI 7,700 / Business AI 13,200 per month incl. tax; stored 5,500 is the old price). O:der ToGo (2b36ed33): own site showcase-gig.com renders by script, the reader returned titles only -> unreadable. ISSUE PANDA (2392b933): own site i.issuepanda.com; order-ahead with pickup time, quote only; no event/fes wording on the site now, so focus changed to nearest_local. Several follow-up searches for further キッチンカー order-ahead tools found only articles, listings and LINE-account consultancies, no new vendor own-site candidates. Weak point: モバレジ monthly='no' rests on the phrase 0円〜ご利用が可能です (the page's 月額費用 0円 is a table cell, not a sentence)."
+}

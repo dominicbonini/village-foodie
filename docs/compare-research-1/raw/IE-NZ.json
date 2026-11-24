@@ -1,0 +1,1054 @@
+{
+  "countries": [
+    "IE",
+    "NZ"
+  ],
+  "researched_on": "2026-11-24",
+  "searches": [
+    "Flipdish collection pre-order scheduled orders order ahead time (site:flipdish.com)",
+    "food truck pre order app Ireland",
+    "Zur food truck app TZN Solutions Ireland vendors pricing",
+    "food truck online ordering system Ireland click and collect street food"
+  ],
+  "vendors": [
+    {
+      "name": "Order Tiger",
+      "country": "IE",
+      "website": "https://www.ordertiger.com",
+      "stored_id_prefix": "aed7bf67",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "own food-truck page with pre-orders, pickup time slots and capacity limits; EU (EUR) price region and EUR card fees on its pricing page. Ireland itself is never named; presence in IE rests on the EU/EUR pricing region.",
+      "eligibility": {
+        "food_quote": "Built for food trucks",
+        "food_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+        "order_quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+        "order_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+        "country_quote": "plans from £59 in the UK and €59 in the EU",
+        "country_url": "https://www.ordertiger.com/online-ordering-system-pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering",
+          "currency": "EUR",
+          "price_major": 59,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Plans from £59 / €59 / $69 a month",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing",
+          "note": "the plan cards render in USD by default (Online Ordering \"$69/month\"); the € view is a JS currency switch the reader could not toggle, so €59 is the page's own 'plans from' figure, matching $69 = Online Ordering. 'No contract, no setup fee.' and 'All prices per location, billed monthly.' Other plans in USD: EPOS $49, Online Ordering + EPOS $109, Growth $299 (EUR amounts not readable). Card processing 1.5% + €0.25 in the EU."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled orders for busy days and events.",
+          "url": "https://www.ordertiger.com"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Pickup time slots and capacity limits let the crew prep orders in advance.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Pin today’s location, take orders before the queue forms and tell everyone where you will be tomorrow.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Monthly social media packages",
+          "url": "https://www.ordertiger.com"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Tickets appear on the kitchen display sorted by prep time, so the pass never guesses.",
+          "url": "https://www.ordertiger.com"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Counter and online orders in one queue with a printer.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Every location, every channel, one login",
+          "url": "https://www.ordertiger.com"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "A menu on your own domain and in the App Store and Google Play, under your brand.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "All prices per location, billed monthly.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Plans are a flat monthly fee per location, with no commission on orders and no contract",
+          "url": "https://www.ordertiger.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Online card processing on every plan is 1.5% + €0.25 per transaction.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.ordertiger.com",
+        "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+        "https://www.ordertiger.com/online-ordering-system-pricing"
+      ]
+    },
+    {
+      "name": "Click & Collection",
+      "country": "IE",
+      "website": "https://clickandcollection.com",
+      "stored_id_prefix": "d06ae0d2",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "click-and-collect pre-ordering tool whose own blog features Irish food trucks (a Co. Cork truck pre-ordering one day in advance); EUR price; terms governed by the laws of Ireland. The food-truck evidence is a blog post, not a product page; no collection-time-slot wording found.",
+      "eligibility": {
+        "food_quote": "We are dedicated to supporting the food trucks of Ireland!",
+        "food_url": "https://clickandcollection.com/blog/food-truck",
+        "order_quote": "Provide pre-ordering and pickup",
+        "order_url": "https://clickandcollection.com/benefits",
+        "country_quote": "shall be governed by, and construed in accordance with, the laws of Ireland.",
+        "country_url": "https://clickandcollection.com/terms"
+      },
+      "plans": [
+        {
+          "plan_name": "Service",
+          "currency": "EUR",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.9,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Service €29",
+          "url": "https://clickandcollection.com/new_pricing",
+          "note": "'Billed per month'; '2.9% Transaction Fee'; optional hands-free setup 'for a one off fee' with no amount shown; '* Payment gateways charge their own seperate fees'. The E-Commerce tier shows no separate price."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Provide pre-ordering and pickup",
+          "url": "https://clickandcollection.com/benefits"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "She set her preordering one day in advance, no purchasing on the day,",
+          "url": "https://clickandcollection.com/blog/food-truck"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Automate orders from social media",
+          "url": "https://clickandcollection.com"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Billed per month",
+          "url": "https://clickandcollection.com/new_pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "2.9% Transaction Fee",
+          "url": "https://clickandcollection.com/new_pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "* Payment gateways charge their own seperate fees",
+          "url": "https://clickandcollection.com/new_pricing"
+        }
+      ],
+      "check_urls": [
+        "https://clickandcollection.com",
+        "https://clickandcollection.com/new_pricing",
+        "https://clickandcollection.com/benefits",
+        "https://clickandcollection.com/terms",
+        "https://clickandcollection.com/blog/food-truck"
+      ]
+    },
+    {
+      "name": "Flipdish",
+      "country": "IE",
+      "website": "https://www.flipdish.com/ie",
+      "stored_id_prefix": "5b50f4e3",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant/takeaway online ordering with collection for a chosen time at checkout (its own help centre); Irish site /ie with EUR prices ex. VAT. No food-truck or event wording on the pages read.",
+      "eligibility": {
+        "order_quote": "Preorder for Collection. Collect from XXpm / Edit collection time at checkout",
+        "order_url": "https://help.flipdish.com/en/articles/9585671-delivery-and-collection-order-flow-for-online-orders",
+        "country_quote": "€139 if billed monthly (ex. VAT)",
+        "country_url": "https://www.flipdish.com/ie/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Essential Package",
+          "currency": "EUR",
+          "price_major": 139,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "€139 if billed monthly (ex. VAT)",
+          "url": "https://www.flipdish.com/ie/pricing",
+          "note": "'Point of Sale & Online Ordering'. Also 'From 119 €/month' with 'Billed annually, per site.' (i.e. 119/month billed yearly). No setup, commission or card-fee amounts on the page."
+        },
+        {
+          "plan_name": "Online ordering (card name not shown; cheapest of three)",
+          "currency": "EUR",
+          "price_major": 69,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Billed annually, per site. €69 if billed monthly (ex. VAT)",
+          "url": "https://www.flipdish.com/ie/online-ordering",
+          "note": "card shows 'From' 49 €/month billed annually, €69 if billed monthly. The three cards on this page have no readable titles or feature lists; the stored 'Website & Mobile App' plan name could not be confirmed."
+        },
+        {
+          "plan_name": "Online ordering (card name not shown; 99 card)",
+          "currency": "EUR",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Billed annually, per site. €99 if billed monthly (ex. VAT)",
+          "url": "https://www.flipdish.com/ie/online-ordering",
+          "note": "card shows 'From' 79 €/month billed annually, €99 if billed monthly; likely the stored 'Website & Mobile App' 99 but untitled on the page. A third card: 59 €/month billed annually, €79 if billed monthly."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Preorder for Collection. Collect from XXpm / Edit collection time at checkout",
+          "url": "https://help.flipdish.com/en/articles/9585671-delivery-and-collection-order-flow-for-online-orders"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "A store is closed but does accept preorders: we will display the store as closed but accepting preorders",
+          "url": "https://help.flipdish.com/en/articles/9585671-delivery-and-collection-order-flow-for-online-orders"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "organic social media posts",
+          "url": "https://www.flipdish.com/ie"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Streamline food prep and reduce mistakes with real-time order screens that connect directly to your POS.",
+          "url": "https://www.flipdish.com/ie"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Point of Sale & Online Ordering",
+          "url": "https://www.flipdish.com/ie/pricing"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Flipdish works for all sizes, from single sites to growing chains.",
+          "url": "https://www.flipdish.com/ie"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Take orders through your own branded website",
+          "url": "https://www.flipdish.com/ie/online-ordering/websites"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "€139 if billed monthly (ex. VAT)",
+          "url": "https://www.flipdish.com/ie/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.flipdish.com/ie/pricing",
+        "https://www.flipdish.com/ie",
+        "https://www.flipdish.com/ie/online-ordering",
+        "https://www.flipdish.com/ie/online-ordering/websites",
+        "https://help.flipdish.com/en/articles/9585671-delivery-and-collection-order-flow-for-online-orders"
+      ]
+    },
+    {
+      "name": "GloriaFood",
+      "country": "IE",
+      "website": "https://www.gloriafood.com",
+      "stored_id_prefix": "dc1d8f05",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "end of life announced on its own site ('GloriaFood will reach end of life on April 30, 2027.'); global USD-only site with no Ireland presence stated. It does offer scheduled pickup ordering (and names food trucks), so it would otherwise qualify.",
+      "eligibility": {
+        "food_quote": "An online ordering system enables food businesses such as table service restaurants, coffee shops, or food trucks",
+        "food_url": "https://www.gloriafood.com",
+        "order_quote": "Allow your customers to order now and schedule a specific fulfillment time for pickup or delivery.",
+        "order_url": "https://www.gloriafood.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Free service plan (online ordering)",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "No monthly fee",
+          "url": "https://www.gloriafood.com/pricing",
+          "note": "'No commission per order', 'No setup fee'. 'All prices are exclusive of taxes or withholdings, if any.' USD only; no EUR. The stored 29 USD is the 'Online / Credit Card Payment Service' add-on, not the ordering itself."
+        },
+        {
+          "plan_name": "Online / Credit Card Payment Service",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 29 per month",
+          "url": "https://www.gloriafood.com/pricing",
+          "note": "page markup is 'US$ **29** _per month_' (bold/italics stripped in the quote). Optional add-on for online card payments."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Allow your customers to order now and schedule a specific fulfillment time for pickup or delivery.",
+          "url": "https://www.gloriafood.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "When enabled, this feature allows customers to order food in advance when making a table reservation.",
+          "url": "https://www.gloriafood.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "No monthly fee",
+          "url": "https://www.gloriafood.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commission per order",
+          "url": "https://www.gloriafood.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.gloriafood.com/pricing",
+        "https://www.gloriafood.com"
+      ]
+    },
+    {
+      "name": "Zur",
+      "country": "IE",
+      "website": "https://zur.ie",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "found via search (Irish App Store app by TZN Solutions Limited, support@zur.ie); https://zur.ie and https://www.zur.ie both return HTTP 404, so nothing could be confirmed on its own site. From search snippets only (not quotable) it looks like a consumer marketplace for finding/hiring food trucks with pre-ordering, which would likely make it not_relevant (marketplace) even if readable.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://zur.ie",
+        "https://www.zur.ie"
+      ]
+    },
+    {
+      "name": "HungryTrucks",
+      "country": "NZ",
+      "website": "https://www.hungrytrucks.com",
+      "stored_id_prefix": "2f51f8db",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "NZ food-truck app where customers order ahead in its shared mobile app and collect at the window; vendor subscription shown. Caveat: it is one consumer app across many trucks (with a live map), not the truck's own site; no pickup-time choice stated.",
+      "eligibility": {
+        "food_quote": "connects street food lovers with the best mobile kitchens, food trucks, and pop-up vendors in New Zealand.",
+        "food_url": "https://www.hungrytrucks.com",
+        "order_quote": "Order your food from the couch, or on the way. Walk up like a VIP.",
+        "order_url": "https://www.hungrytrucks.com",
+        "country_quote": "connects street food lovers with the best mobile kitchens, food trucks, and pop-up vendors in New Zealand.",
+        "country_url": "https://www.hungrytrucks.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Vendor (single plan shown)",
+          "currency": "NZD",
+          "price_major": 46,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Normally $46, now $0.99/mo for 6 months!",
+          "url": "https://www.hungrytrucks.com/partners.html",
+          "note": "promo still showing today: '$0.99 /mo' for 6 months, normally $46. The currency is NOT stated (only '$'); NZD assumed from the NZ site. The $46 itself carries no period; '/mo' is read from the same sentence. 'There are no hidden setup fees, and you can pause your active status at any time.' (home). No commission, card-fee or GST wording."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Order your food from the couch, or on the way. Walk up like a VIP.",
+          "url": "https://www.hungrytrucks.com"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "live-location broadcasts and scheduling.",
+          "url": "https://www.hungrytrucks.com/partners.html"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Normally $46, now $0.99/mo for 6 months!",
+          "url": "https://www.hungrytrucks.com/partners.html"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.hungrytrucks.com",
+        "https://www.hungrytrucks.com/partners.html"
+      ]
+    },
+    {
+      "name": "Bopple",
+      "country": "NZ",
+      "website": "https://bopple.com",
+      "stored_id_prefix": "a8ba9459",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant/cafe online ordering with scheduled pre-ordering; NZD price region on its pricing page and an NZ row in its fee table. No food-truck, market or event wording on the pages read.",
+      "eligibility": {
+        "order_quote": "Scheduled pre-ordering",
+        "order_url": "https://bopple.com/pricing",
+        "country_quote": "$ NZD",
+        "country_url": "https://bopple.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Online ordering",
+          "currency": "NZD",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 2.4,
+          "per_order_fixed_major": 0.1,
+          "setup_major": null,
+          "quote": "$49per month",
+          "url": "https://bopple.com/pricing",
+          "note": "the currency switch defaults to AUD; the page's own script shows $49 for AU and NZ and $29 only for US (\"US\"===country?\"$29\":\"$49\"), so the NZD view reads $49 per month. 'All pricing is exclusive of tax unless otherwise stated.' Platform fee for New Zealand (NZD) '2.4% + $0.10' from 1 October 2026, 'Charged only on successful sales.' (bopple.com/pricing/fees). Starter Storefront is free but has no online ordering; add-ons White-label for Web $99/month, app bundle $399/month."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled pre-ordering",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Scheduled pre-ordering",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Order limiting for busy service periods",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Professionally designed digital assets for social media",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Sales data and reporting with exportable data that spans your businesses and store locations.",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Custom storefront URL",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$49per month",
+          "url": "https://bopple.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "2.4% + $0.10",
+          "url": "https://bopple.com/pricing/fees"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://bopple.com/pricing",
+        "https://bopple.com/pricing/fees"
+      ]
+    },
+    {
+      "name": "MOBI (formerly Mobi2Go)",
+      "country": "NZ",
+      "website": "https://mobihq.com",
+      "stored_id_prefix": "1311faad",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "own food-truck page saying guests order in advance and pick up; order-ahead-and-pick-up product; New Zealand phone line on its contact page. Price on request only (quote-based). Mainly a restaurant/franchise ordering platform; reviewer may prefer focus nearest_local.",
+      "eligibility": {
+        "food_quote": "Serving innovation to tech-driven food trucks.",
+        "food_url": "https://www.mobihq.com/restaurant-types/food-trucks",
+        "order_quote": "Guests can place orders in advance and pick up food without waiting in line.",
+        "order_url": "https://www.mobihq.com/restaurant-types/food-trucks",
+        "country_quote": "New Zealand: +64 4 831 9400",
+        "country_url": "https://www.mobihq.com/contact"
+      },
+      "plans": [
+        {
+          "plan_name": "SMBs",
+          "currency": "NZD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Request A Quote today and our highly responsive team will be in touch soon.",
+          "url": "https://www.mobihq.com/pricing/smbs",
+          "note": "price on request: no figures, currency or period on the page. 'The structure of our pricing plan considers factors like the number of products on a menu, transaction volume, and the choice of payment gateway.' and 'Request A Quote today and our highly responsive team will be in touch soon.' Currency NZD and period are placeholders only."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests can place orders in advance and pick up food without waiting in line.",
+          "url": "https://www.mobihq.com/restaurant-types/food-trucks"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Empower guests with Self-ordering Kiosks, Skip the Queue and QR table ordering.",
+          "url": "https://mobihq.com"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Ideal for brands with less than 10 locations.",
+          "url": "https://www.mobihq.com/pricing/smbs"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Enable direct orders through your website, a mobile app, or from Google search.",
+          "url": "https://mobihq.com"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://mobihq.com",
+        "https://www.mobihq.com/pricing/smbs",
+        "https://www.mobihq.com/restaurant-types/food-trucks",
+        "https://www.mobihq.com/contact"
+      ]
+    },
+    {
+      "name": "Street Food Spot",
+      "country": "NZ",
+      "website": "https://streetfoodspot.nz",
+      "stored_id_prefix": "4f54a28d",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "NZ live map of food trucks with order-ahead in its own app (pay in the app, walk up when ready). Like HungryTrucks it is one shared consumer app across trucks, not the truck's own site. No price for ordering: only 'Free to list'.",
+      "eligibility": {
+        "food_quote": "New Zealand's local street food, live on a map.",
+        "food_url": "https://streetfoodspot.nz",
+        "order_quote": "Browse the menu, pay in the app, and walk up when it's ready.",
+        "order_url": "https://streetfoodspot.nz",
+        "country_quote": "New Zealand's local street food, live on a map.",
+        "country_url": "https://streetfoodspot.nz"
+      },
+      "plans": [
+        {
+          "plan_name": "Vendor listing",
+          "currency": "NZD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Free to list.",
+          "url": "https://streetfoodspot.nz/list-your-truck",
+          "note": "no price, commission or card fee stated for taking orders; the vendor page only says 'Free to list.' Recorded as price not shown (null) because it is unclear whether ordering is included or carries fees. Currency/period are placeholders."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "order ahead so you can skip the queue",
+          "url": "https://streetfoodspot.nz"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Trucks park somewhere different every day. See exactly where each one is today, and what's coming up this week.",
+          "url": "https://streetfoodspot.nz"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://streetfoodspot.nz",
+        "https://streetfoodspot.nz/list-your-truck"
+      ]
+    },
+    {
+      "name": "SmakSpace",
+      "country": "NZ",
+      "website": "https://smakspace.co.nz",
+      "stored_id_prefix": "d41b0ca7",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "NZ-built cafe/takeaway platform with direct online ordering and an order-ahead customer app; names food trucks in its Starter plan; flat NZD prices. Mainly cafe software (reviewer may prefer focus nearest_local); no pickup-time or pre-order-for-a-later-day wording found.",
+      "eligibility": {
+        "food_quote": "Perfect for small cafes and food trucks getting started with digital menus.",
+        "food_url": "https://smakspace.co.nz/pricing",
+        "order_quote": "orders ahead for dine-in or takeaway, tracks the order until it is ready",
+        "order_url": "https://smakspace.co.nz",
+        "country_quote": "Run a NZ café on software built in Aotearoa.",
+        "country_url": "https://smakspace.co.nz"
+      },
+      "plans": [
+        {
+          "plan_name": "Free",
+          "currency": "NZD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Free forever · no card",
+          "url": "https://smakspace.co.nz/pricing",
+          "note": "'Online ordering, up to 30 orders a month'. 'No GST is charged: we are not GST registered.' 'No, there are no setup fees for any of our plans.'"
+        },
+        {
+          "plan_name": "Starter",
+          "currency": "NZD",
+          "price_major": 49,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "NZ$49≈ NZ$39 /mo",
+          "url": "https://smakspace.co.nz/pricing",
+          "note": "price text renders run together: NZ$49/mo 'Billed monthly · save 20% with annual'; annual option 'NZ$469 billed annually · save 20% vs monthly' (≈NZ$39/mo billed yearly). 'Unlimited online orders'. Not GST registered (no GST charged)."
+        },
+        {
+          "plan_name": "Professional",
+          "currency": "NZD",
+          "price_major": 99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "NZ$99≈ NZ$79 /mo",
+          "url": "https://smakspace.co.nz/pricing",
+          "note": "NZ$99/mo billed monthly; 'NZ$949 billed annually · save 20% vs monthly'. Adds kitchen display and up to 3 locations. Enterprise NZ$179/mo (NZ$1,719 billed annually) not listed as a plan here."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "orders ahead for dine-in or takeaway, tracks the order until it is ready",
+          "url": "https://smakspace.co.nz"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Included on Pro and Enterprise",
+          "url": "https://smakspace.co.nz"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Your team rings up walk-up and phone orders, takes cash and sees the change due.",
+          "url": "https://smakspace.co.nz"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Up to 3 locations",
+          "url": "https://smakspace.co.nz"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Billed monthly · save 20% with annual",
+          "url": "https://smakspace.co.nz/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commissions on direct orders.",
+          "url": "https://smakspace.co.nz"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Card fees are between you, Windcave and your acquirer. SmakSpace takes no cut.",
+          "url": "https://smakspace.co.nz"
+        }
+      ],
+      "check_urls": [
+        "https://smakspace.co.nz",
+        "https://smakspace.co.nz/pricing"
+      ]
+    }
+  ],
+  "notes": "Multi-country file: IE (EUR) and NZ (NZD); each vendor carries its own country. IE: two food-truck tools with a price: Order Tiger (EUR 59 is the page's 'plans from' figure; the plan cards render in USD by default behind a JS currency switch, and Ireland is never named, only an EU/EUR region) and Click & Collection (EUR 29 + 2.9%; upgraded to focus food_truck from its own blog 'We are dedicated to supporting the food trucks of Ireland!'; Irish governing law). Flipdish is restaurant/takeaway only (nearest_local, kept for reference); its online-ordering page shows three untitled EUR price cards (69/79/99 billed monthly), so the stored 'Website & Mobile App' plan name could not be confirmed. GloriaFood marked not_relevant: its own site says 'GloriaFood will reach end of life on April 30, 2027.' and it is USD-only with no Ireland presence. Zur (new, IE app) unreadable: zur.ie and www.zur.ie return 404; likely a marketplace anyway. Square Online IE came up in a search but was not researched (IE already had 2 food-truck tools). NZ: HungryTrucks still shows the promo 'Normally $46, now $0.99/mo for 6 months!' with NO currency stated (NZD assumed). Bopple's currency switch defaults to AUD; the page's own script prices NZ the same as AU ($49; US is $29), and its fee page gives NZ '2.4% + $0.10' per order from 1 October 2026. MOBI is quote-only (price null). Street Food Spot shows only 'Free to list.' (price null). SmakSpace (stored candidate, first check) qualifies: names food trucks, order-ahead app, NZ$49/mo Starter, not GST registered. HungryTrucks and Street Food Spot are shared consumer apps across many trucks rather than each truck's own ordering site. Several price quotes come from run-together rendered text (Bopple '$49per month', SmakSpace 'NZ$49≈ NZ$39 /mo', GloriaFood 'US$ 29 per month' with markup stripped) and may need loosening in the quote checker. No extra NZ search was needed (HungryTrucks and SmakSpace both qualify with a price). Bopple NZ price was read from bopple.com's own pricing page HTML and its JS bundle (downloaded with curl, one request at a time). Because both IE and NZ now have 2 food-truck tools with a price, Flipdish (IE) and Bopple (NZ) are nearest_local fallbacks under the 24 Nov rule; they are kept as verdict eligible with full answers so the reviewer can decide whether to show them."
+}

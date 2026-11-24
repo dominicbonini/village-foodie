@@ -1,0 +1,1005 @@
+{
+  "country": "US",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "Truckster food truck app order ahead official site"
+  ],
+  "vendors": [
+    {
+      "name": "Best Food Trucks (BFT)",
+      "website": "https://customers.bestfoodtrucks.com",
+      "stored_id_prefix": "9a4e55c0",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "both customers.bestfoodtrucks.com and www.bestfoodtrucks.com answered HTTP 429 Too Many Requests (one retry on the second URL); eligibility and price not re-checked",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Food Truck ONE (Food Truck OS)",
+      "website": "https://foodtruckone.com",
+      "stored_id_prefix": "b7b74ca7",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "settled: an ordering system, not only a directory/POS. Customers order online from their phone (via the truck's site/link or the window QR) and pick up; it also has a free truck directory and a phone register. No pickup-time choice is mentioned. Fleet is now 'Custom' (stored 99 is stale)",
+      "eligibility": {
+        "food_quote": "Food truck management software that runs the whole truck",
+        "food_url": "https://foodtruckone.com",
+        "order_quote": "Customers scan the QR at your window or tap your link on social, order from their phone, and pay ahead.",
+        "order_url": "https://foodtruckone.com/software"
+      },
+      "plans": [
+        {
+          "plan_name": "Free",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0/mo",
+          "url": "https://foodtruckone.com",
+          "note": "'Free forever · no credit card'; includes 'Online ordering + window QR — customers pay at pickup'"
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "USD",
+          "price_major": 39,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$39/mo",
+          "url": "https://foodtruckone.com",
+          "note": "also 'or $390/yr — two months free'; 30-day free trial"
+        },
+        {
+          "plan_name": "Fleet",
+          "currency": "USD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Custom",
+          "url": "https://foodtruckone.com",
+          "note": "price on request ('Set up and priced for your operation'); the stored 99/month is no longer shown"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Customers scan the QR at your window or tap your link on social, order from their phone, and pay ahead.",
+          "url": "https://foodtruckone.com/software"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Today's location and hours update from your phone in seconds",
+          "url": "https://foodtruckone.com/software"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Park, hit one button, and your location goes live everywhere at once",
+          "url": "https://foodtruckone.com"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Keep your reader for walk-ups and record each sale in one tap.",
+          "url": "https://foodtruckone.com"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Running more than one truck? Fleet is set up and priced for your operation.",
+          "url": "https://foodtruckone.com/software"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Your own domain, no badge.",
+          "url": "https://foodtruckone.com"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$39/mo",
+          "url": "https://foodtruckone.com"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commission on a single order — ever.",
+          "url": "https://foodtruckone.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://foodtruckone.com",
+        "https://foodtruckone.com/software"
+      ]
+    },
+    {
+      "name": "Food Truck Pub",
+      "website": "https://foodtruck.pub",
+      "stored_id_prefix": "18f621da",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "food-truck ordering with chosen pickup times and future pre-orders; US site. Customer pays a convenience fee per order ($1.25 Free / $0.60 Premium)",
+      "eligibility": {
+        "food_quote": "Built specifically for food trucks, trailers, and carts!",
+        "food_url": "https://foodtruck.pub",
+        "order_quote": "People in the area will see when you're actively taking orders and can select a pickup (or delivery) time.",
+        "order_url": "https://foodtruck.pub/features.aspx"
+      },
+      "plans": [
+        {
+          "plan_name": "Free Plan",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 1.25,
+          "setup_major": 0,
+          "quote": "Monthly Fee: FREE",
+          "url": "https://foodtruck.pub/plans.aspx",
+          "note": "per-order fee is paid by the customer: 'Convenience Fee (paid by customer)*: $1.25'; 'Signup Fee: FREE'. Clover merchants: $1.25"
+        },
+        {
+          "plan_name": "Premium Plan",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.6,
+          "setup_major": 0,
+          "quote": "Monthly Fee: $29.00 (when paid annually)",
+          "url": "https://foodtruck.pub/plans.aspx",
+          "note": "billed yearly; customer convenience fee '$0.60' ($0.85 for Clover merchants); 'Signup Fee: FREE'. The features page separately says 'No transaction fees or monthly fees to truck owners.' (contradicts this plan)"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "People in the area will see when you're actively taking orders and can select a pickup (or delivery) time.",
+          "url": "https://foodtruck.pub/features.aspx"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Create Future Pre-Orders for upcoming events on different days as well!",
+          "url": "https://foodtruck.pub/features.aspx"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "We have a variety of order throttling options to help you keep up during busy times.",
+          "url": "https://foodtruck.pub/features.aspx"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Show customers when and where you'll be serving!",
+          "url": "https://foodtruck.pub/features.aspx"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Auto-post to Facebook when you're actively taking same-day orders or future pre-orders.",
+          "url": "https://foodtruck.pub/features.aspx"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "See new orders pop into the order tracking screen.",
+          "url": "https://foodtruck.pub/features.aspx"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Monthly Fee: $29.00 (when paid annually)",
+          "url": "https://foodtruck.pub/plans.aspx"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Convenience Fee (paid by customer)*: $1.25",
+          "url": "https://foodtruck.pub/plans.aspx"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://foodtruck.pub",
+        "https://foodtruck.pub/plans.aspx",
+        "https://foodtruck.pub/features.aspx"
+      ]
+    },
+    {
+      "name": "Goodfynd",
+      "website": "https://goodfynd.com",
+      "stored_id_prefix": "10aba63d",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "food-truck POS with online ordering ahead and orders up to 5 days before service; US prices unchanged from stored (0/40/80 a month)",
+      "eligibility": {
+        "food_quote": "The only Point-of-Sale system built for food trucks and mobile vendors, with no processing fees.",
+        "food_url": "https://goodfynd.com",
+        "order_quote": "Enable customers to see your schedule map, place orders ahead, add tips, and reduce wait times.",
+        "order_url": "https://goodfynd.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Free",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0/mo",
+          "url": "https://goodfynd.com/pricing",
+          "note": "plan lists 'Online ordering' and 'No processing fees'"
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "USD",
+          "price_major": 40,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$40/mo",
+          "url": "https://goodfynd.com/pricing",
+          "note": "or '$400/yr' billed annually"
+        },
+        {
+          "plan_name": "Growth",
+          "currency": "USD",
+          "price_major": 80,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$80/mo",
+          "url": "https://goodfynd.com/pricing",
+          "note": "or '$800/yr'; 'free 30-day TRIAL'; includes 'Free KDS add-on'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Enable customers to see your schedule map, place orders ahead, add tips, and reduce wait times.",
+          "url": "https://goodfynd.com"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Accept orders up to 5 days before service, perfect for events, festivals, or busy days.",
+          "url": "https://goodfynd.com/products/online-ordering"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Help customers find where you'll be next.",
+          "url": "https://goodfynd.com"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Free KDS add-on",
+          "url": "https://goodfynd.com/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "Enterprise-grade POS system designed for mobile operations with offline capabilities and real-time sync.",
+          "url": "https://goodfynd.com"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "The only Point-of-Sale system built for food trucks and mobile vendors, with no processing fees.",
+          "url": "https://goodfynd.com"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Uniform mobile-optimized online ordering for your entire fleet.",
+          "url": "https://goodfynd.com"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Your brand, your custom domain, ready to go.",
+          "url": "https://goodfynd.com/products/online-ordering"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "$40/mo",
+          "url": "https://goodfynd.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "We offer options with low to zero transaction fees.",
+          "url": "https://goodfynd.com/products/online-ordering"
+        },
+        {
+          "key": "cardfee",
+          "value": "no",
+          "quote": "No processing fees",
+          "url": "https://goodfynd.com/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://goodfynd.com",
+        "https://goodfynd.com/pricing",
+        "https://goodfynd.com/products/online-ordering"
+      ]
+    },
+    {
+      "name": "Moonrise",
+      "website": "https://ordermoonrise.com",
+      "stored_id_prefix": "647a5e78",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "food-truck / coffee-shop phone ordering for pickup, GPS-timed to the customer's arrival; launch 'Pioneer' pricing $0/month and 0% pickup commission, no end date announced",
+      "eligibility": {
+        "food_quote": "Real-time truck map — customers find you without social media",
+        "food_url": "https://ordermoonrise.com",
+        "order_quote": "Customers order from their phone. You make it. They pick it up.",
+        "order_url": "https://ordermoonrise.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Pioneer Tier",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Pioneer Tier $0/month",
+          "url": "https://ordermoonrise.com/pricing.html",
+          "note": "'0% commission on pickup'; '$0 setup'; 'Pioneer pricing is open to food trucks and coffee shops that join during our launch period.' Catering bookings carry a 10% platform fee (separate product)"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "GPS-timed ordering. Food starts when they start walking.",
+          "url": "https://ordermoonrise.com"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Regulars see where you'll be tomorrow, next week, or on their lunch break.",
+          "url": "https://ordermoonrise.com/features.html"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Drop geofences at every location you regularly park.",
+          "url": "https://ordermoonrise.com/features.html"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Pioneer Tier $0/month",
+          "url": "https://ordermoonrise.com/pricing.html"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% commission on pickup",
+          "url": "https://ordermoonrise.com/pricing.html"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "If you connect Square, their standard processing fee applies — but that’s between you and Square.",
+          "url": "https://ordermoonrise.com/pricing.html"
+        }
+      ],
+      "check_urls": [
+        "https://ordermoonrise.com",
+        "https://ordermoonrise.com/pricing.html",
+        "https://ordermoonrise.com/features.html"
+      ]
+    },
+    {
+      "name": "Restolabs",
+      "website": "https://restolabs.com",
+      "stored_id_prefix": "1c3ade45",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "has a food-truck online-ordering page: order ahead and pick up, scheduled preorders, peak-hour limits; multi-country, USD add-on prices and a New York address in the footer; plan prices not shown (page displays '$00/' placeholders)",
+      "eligibility": {
+        "food_quote": "Take direct orders before guests reach the window.",
+        "food_url": "https://www.restolabs.com/online-ordering/food-trucks",
+        "order_quote": "Customers can order ahead and pick up.",
+        "order_url": "https://www.restolabs.com/online-ordering/food-trucks",
+        "country_quote": "2,000+ Restaurants. 10+ Countries. One Powerful Platform.",
+        "country_url": "https://restolabs.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic / Growth / Pro",
+          "currency": "USD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://www.restolabs.com/pricing",
+          "note": "price hidden: the pricing page shows only '$00/' 'month' 'Billed Annually' placeholders for all three plans (probably filled by script); '0% Commission'. Add-ons shown in USD, e.g. 'SEO Optimized Website' '$29/Month'. US presence: New York, NY address and +1 phone in footer (summary only, not quoted)"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Customers can order ahead and pick up.",
+          "url": "https://www.restolabs.com/online-ordering/food-trucks"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Take large preorders for office parks, breweries, private events, or catering",
+          "url": "https://www.restolabs.com/online-ordering/food-trucks"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Set order limits during peak hours to avoid rush-time chaos at the window.",
+          "url": "https://www.restolabs.com/online-ordering/food-trucks"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Yes. Update your pickup address, delivery zones, or operating hours anytime.",
+          "url": "https://www.restolabs.com/online-ordering/food-trucks"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "partial",
+          "quote": "Billed Annually",
+          "url": "https://www.restolabs.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No hidden fees. No commissions.",
+          "url": "https://www.restolabs.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://restolabs.com",
+        "https://www.restolabs.com/online-ordering/food-trucks",
+        "https://www.restolabs.com/pricing"
+      ]
+    },
+    {
+      "name": "StreetFoodFinder",
+      "website": "https://streetfoodfinder.com",
+      "stored_id_prefix": "7bf0553c",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "streetfoodfinder.com and www.streetfoodfinder.com/pricing both answered HTTP 403 Forbidden (one retry); eligibility and price not re-checked",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Truckfindr",
+      "website": "https://truckfindr.com",
+      "stored_id_prefix": "71f255ff",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "food-truck ordering app and click-to-order page: customers order and pick up, pre-orders mentioned; no prices on the site (sign-up form only)",
+      "eligibility": {
+        "food_quote": "Truckfindr is a customizable Ordering App & Click to Order Webpage for your Food Truck at a fraction of the cost.",
+        "food_url": "https://truckfindr.com",
+        "order_quote": "View the menu, place your order and pick it up in minutes or get it delivered with Doordash.",
+        "order_url": "https://truckfindr.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Truckfindr",
+          "currency": "USD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://truckfindr.com/join-now/",
+          "note": "no price on the site: no plans, prices or fees on the home or join-now page; only 'at a fraction of the cost' and a sign-up form"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "View the menu, place your order and pick it up in minutes or get it delivered with Doordash.",
+          "url": "https://truckfindr.com"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "so you can increase your sales with pre-orders",
+          "url": "https://truckfindr.com"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "As a Food truck owner you can update your 7 days location and have Truckfindr move your location daily.",
+          "url": "https://truckfindr.com"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Whether you have one food truck or a fleet, we got your covered.",
+          "url": "https://truckfindr.com"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://truckfindr.com",
+        "https://truckfindr.com/join-now/"
+      ]
+    },
+    {
+      "name": "Truckster",
+      "website": "https://gotruckster.com",
+      "stored_id_prefix": "0ccb6996",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "own site found: gotruckster.com (privacy-policy URL and support email on the App Store listing; seller Hollowell Partners LLC). gotruckster.com and www.gotruckster.com both answered HTTP 405, so eligibility and price can't be settled from the vendor's own site. App Store (app facts only): 'Skip the lines with mobile ordering'; customer app 'Free'; version 3.0.1 dated 06/01/2025. Update the stored website from apps.apple.com to https://gotruckster.com",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://apps.apple.com/us/app/id1375284993"
+      ]
+    },
+    {
+      "name": "Where's The Foodtruck",
+      "website": "https://wheresthefoodtruck.com",
+      "stored_id_prefix": "ccd6121e",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "no longer only a listing: customers order ahead from the phone browser where a truck is set up for it; free listing, no subscription, 0% commission; nationwide US trucks",
+      "eligibility": {
+        "food_quote": "Thousands of trucks across the country in one place",
+        "food_url": "https://wheresthefoodtruck.com",
+        "order_quote": "Send your order before you arrive. Where a truck's set up to take it, your ticket is already in the kitchen before you park.",
+        "order_url": "https://wheresthefoodtruck.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Free listing",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "No listing fee, no subscription, no catch.",
+          "url": "https://wheresthefoodtruck.com/vendors.html",
+          "note": "'List free, forever.'; '0% commission, always'. No paid tiers listed; kitchen display levels 1-3 named without prices"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Customers find you and order ahead — you keep 100% of every sale, same as if they paid you at the window.",
+          "url": "https://wheresthefoodtruck.com/vendors.html"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "your menu, your photo, where you'll be, and an Order now button",
+          "url": "https://wheresthefoodtruck.com/vendors.html"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen display: working today.",
+          "url": "https://wheresthefoodtruck.com/vendors.html"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Online and walk-up orders land in one queue, oldest first.",
+          "url": "https://wheresthefoodtruck.com/vendors.html"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "No listing fee, no subscription, no catch.",
+          "url": "https://wheresthefoodtruck.com/vendors.html"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "We don't take a cut of a single order. Ever.",
+          "url": "https://wheresthefoodtruck.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://wheresthefoodtruck.com",
+        "https://wheresthefoodtruck.com/vendors.html"
+      ]
+    },
+    {
+      "name": "Hotplate",
+      "website": "https://www.hotplate.com",
+      "stored_id_prefix": "4cde17cb",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "pop-up / home-bakery pre-order 'drops' with pickup windows; no subscription, 5% + $0.55 per order (seller can pass it to customers) plus 2.9% + $0.30 card processing. Food evidence is pop-ups, not food trucks by name",
+      "eligibility": {
+        "food_quote": "Most popups already sell this way — Hotplate gives it structure.",
+        "food_url": "https://www.hotplate.com",
+        "order_quote": "Customers order and pay ahead of time during a set window.",
+        "order_url": "https://www.hotplate.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Hotplate (no subscription)",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 5,
+          "per_order_fixed_major": 0.55,
+          "setup_major": 0,
+          "quote": "No monthly subscription. No setup cost. No contract.",
+          "url": "https://www.hotplate.com/pricing",
+          "note": "per-order 'Hotplate fee (5% + $0.55)' on the subtotal; 'You can pay it yourself or pass it on to customers — your choice.' Card processing '2.9% + $0.30' paid by the chef"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Customers order and pay ahead of time during a set window.",
+          "url": "https://www.hotplate.com"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "A drop is just a preorder window with a clear start and end time.",
+          "url": "https://www.hotplate.com"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Set a menu & how much you want to make of each item",
+          "url": "https://www.hotplate.com"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Set windows for where & when customers pick up",
+          "url": "https://www.hotplate.com"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Publish your link on socials",
+          "url": "https://www.hotplate.com"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "No monthly subscription. No setup cost. No contract.",
+          "url": "https://www.hotplate.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "We charge a small transaction fee per order. You can pay it yourself or pass it on to customers — your choice.",
+          "url": "https://www.hotplate.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "2.9% + $0.30",
+          "url": "https://www.hotplate.com/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.hotplate.com",
+        "https://www.hotplate.com/pricing"
+      ]
+    },
+    {
+      "name": "Homegrown",
+      "website": "https://findhomegrown.com",
+      "stored_id_prefix": "d35d4efa",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "findhomegrown.com and www.findhomegrown.com both failed with 'Too many redirects' (one retry); eligibility and the stored 12.50 price not re-checked",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Ordering.co",
+      "website": "https://www.ordering.co",
+      "stored_id_prefix": "4c350e59",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "restaurant/marketplace ordering platform (scheduled orders ahead exist) with no food-truck, market or event wording on its own site; the US has well over 2 food-truck tools, so restaurant tools don't count here. Also no US-specific presence ('Anywhere in the world') and no prices ('Request pricing')",
+      "eligibility": {
+        "order_quote": "Scheduled Orders for customers to place orders ahead of time",
+        "order_url": "https://www.ordering.co/pricing/"
+      },
+      "plans": [
+        {
+          "plan_name": "Restaurants Platform",
+          "currency": "USD",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://www.ordering.co/pricing/",
+          "note": "no price on the site: 'Request pricing' / 'Book a demo'; 'Billed per location'; 'Ordering.co does not charge any commission on your orders.' Currency unknown (none shown)"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.ordering.co",
+        "https://www.ordering.co/pricing/"
+      ]
+    }
+  ],
+  "notes": "Group B part 1: re-check of 13 stored US food-truck / market / pop-up tools; no new vendors searched (one search only, to find Truckster's own site). Food Truck ONE settled as eligible: customers order online from their phone and pick up (homepage says 'pay at pickup', /software says 'pay ahead'); it also has a free directory and a phone register. Its Fleet plan now shows 'Custom', not the stored 99. Where's The Foodtruck has changed from a free listing to order-ahead with a kitchen display, still free and 0% commission. Food Truck Pub's Premium is $29.00/month when paid annually; its features page also says 'No transaction fees or monthly fees to truck owners.', which conflicts with the plans page (customers pay a $1.25 / $0.60 convenience fee). Hotplate's food evidence is pop-ups, not food trucks by name. Restolabs' plan prices appear as '$00/' placeholders (likely filled by script), so they're recorded as hidden. Ordering.co is not_relevant: a restaurant tool with no food-truck wording, and the US has many food-truck tools. Unreadable: Best Food Trucks (429 on customers. and www.), StreetFoodFinder (403), Homegrown (too many redirects), Truckster (own site gotruckster.com found via the App Store privacy URL but answered 405; update the stored website). Card readers or tills at the hatch are not recorded."
+}

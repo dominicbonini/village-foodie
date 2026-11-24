@@ -1,0 +1,881 @@
+{
+  "country": "IT",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "qromo asporto delivery menù ordini online ritiro (site:qromo.it, to find Qromo's own takeaway pages)"
+  ],
+  "vendors": [
+    {
+      "name": "DineEasy",
+      "website": "https://www.dineeasy.app",
+      "stored_id_prefix": "b030b97d",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Food-truck page exists, but its own Italian pages show only scan-and-order by QR code (at the table, or a separate QR flow for pickup on site); no ordering ahead online, no pickup time, no pre-order anywhere on the pages read",
+      "eligibility": {
+        "food_quote": "Food truck e pop-up non hanno tempo per configurazioni complicate.",
+        "food_url": "https://www.dineeasy.app/it/solutions/food-trucks"
+      },
+      "plans": [
+        {
+          "plan_name": "Pay as you go",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.5,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Nessun abbonamento, nessun canone mensile. Solo una piccola percentuale su ogni transazione online.",
+          "url": "https://www.dineeasy.app/it/pricing",
+          "note": "2.5% on the subtotal of each online order (\"DineEasy applica una commissione fissa del 2,5% sul subtotale di ogni ordine online.\"); cash orders free; Stripe card fees on top. Recorded for reference only (verdict not_relevant)."
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.dineeasy.app/it/solutions/food-trucks",
+        "https://www.dineeasy.app/it/pricing",
+        "https://www.dineeasy.app/it",
+        "https://www.dineeasy.app/it/solutions/restaurants"
+      ],
+      "note": "Closest to ordering ahead is the homepage feature \"Ordini da asporto\": \"QR code e flusso ordini separati per il ritiro, oltre al servizio al tavolo.\" That is a QR scan flow for pickup, not an online order placed ahead or for a time. The food-truck page says \"I clienti scansionano, ordinano e pagano senza barriere linguistiche.\" If Dominic counts QR pickup ordering as click and collect, this could be flipped to eligible (0 EUR/month + 2.5% per online order)."
+    },
+    {
+      "name": "xMenu",
+      "website": "https://www.xmenu.it",
+      "stored_id_prefix": "2e7c69aa",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "SETTLED: keep. Restaurant ordering app and e-commerce in the restaurant's own brand, with an online ordering flow for asporto (takeaway) as well as delivery; Italian site, EUR price. No food-truck wording and no pickup-time wording on the pages read",
+      "eligibility": {
+        "order_quote": "La tua App per asporto e delivery. Senza commissioni, con il tuo brand.",
+        "order_url": "https://www.xmenu.it"
+      },
+      "plans": [
+        {
+          "plan_name": "From",
+          "currency": "EUR",
+          "price_major": 39,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "xMenu ha un prezzo che parte da € 39 al mese senza vincoli di durata e/o contrattuali.",
+          "url": "https://xmenu.it/it/prezzi",
+          "note": "Starting price only ('parte da'); the pricing page names a 'Premium' plan but gives no other amount. No IVA statement."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Personalizzazione del flusso di ordinazione (asporto/delivery)",
+          "url": "https://xmenu.it/it/prezzi"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Kiosk",
+          "url": "https://www.xmenu.it"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Con 9 punti vendita",
+          "url": "https://www.xmenu.it"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "xMenu ha un prezzo che parte da € 39 al mese senza vincoli di durata e/o contrattuali.",
+          "url": "https://xmenu.it/it/prezzi"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "La tua App per asporto e delivery. Senza commissioni, con il tuo brand.",
+          "url": "https://www.xmenu.it"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.xmenu.it",
+        "https://xmenu.it/it/prezzi",
+        "https://xmenu.it/it/app-ristoranti",
+        "https://xmenu.it/it/delivery"
+      ],
+      "note": "Settled as keep (eligible, nearest_local): online orders for asporto are shown ('Ecommerce per ordini online' on the pricing page; 'pensata per asporto e delivery' on /it/app-ristoranti). ahead is only partial: no sentence about choosing a pickup time, preordine or scheduled orders on any page read. walkup 'Kiosk' is a bare list item under 'Cosa include'; vans is a customer testimonial. WhatsApp appears only as a contact link. If Dominic needs a stated pickup time to count, flip to not_relevant."
+    },
+    {
+      "name": "JMENU",
+      "website": "https://www.jmenu.it",
+      "stored_id_prefix": "11889b66",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Online ordering for asporto and delivery for restaurants/pizzerias (no app to download), orders also by WhatsApp; Italian site; free for the restaurant with 0.50 EUR service charge added to each order. No food-truck wording; no pickup-time wording",
+      "eligibility": {
+        "order_quote": "ordinare i tuoi prodotti online senza App da scaricare",
+        "order_url": "https://www.jmenu.it/takeaway-delivery-per-ristoranti-pizzerie/"
+      },
+      "plans": [
+        {
+          "plan_name": "Free (takeaway/delivery)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.5,
+          "setup_major": 0,
+          "quote": "totalmente GRATUITO, senza costi fissi e senza alcuna commissione sul venduto",
+          "url": "https://www.jmenu.it/takeaway-delivery-per-ristoranti-pizzerie/",
+          "note": "No monthly fee and no commission for the restaurant; the 0.50 EUR is a service charge added to the customer's order: \"In fase di ordinazione verranno aggiunti solamente cinquanta centesimi come costi di servizio.\" A paid 'servizio Premium' is mentioned with no price. The page also still carries a promotion that ended 30 June 2021, so it may be stale."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "ordinare i tuoi prodotti online senza App da scaricare",
+          "url": "https://www.jmenu.it/takeaway-delivery-per-ristoranti-pizzerie/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Ricezioni e gestione ordini anche tramite WhatsApp per semplificare il processo di ordinazione",
+          "url": "https://www.jmenu.it/takeaway-delivery-per-ristoranti-pizzerie/"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Condivisione istantanea tramite WhatsApp e con i principali Social Media (Facebook, Twitter, Instagram)",
+          "url": "https://www.jmenu.it/takeaway-delivery-per-ristoranti-pizzerie/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Integrabile con il tuo sito web tramite Widget perfettamente funzionante e sincronizzato",
+          "url": "https://www.jmenu.it/takeaway-delivery-per-ristoranti-pizzerie/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "senza alcun investimento iniziale, costo fisso o abbonamento",
+          "url": "https://www.jmenu.it/takeaway-delivery-per-ristoranti-pizzerie/"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "In fase di ordinazione verranno aggiunti solamente cinquanta centesimi come costi di servizio.",
+          "url": "https://www.jmenu.it/takeaway-delivery-per-ristoranti-pizzerie/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.jmenu.it",
+        "https://www.jmenu.it/takeaway-delivery-per-ristoranti-pizzerie/"
+      ],
+      "note": "perorder is partial: no commission for the restaurant (\"nessuna commissione sulle vendite\") but 0.50 EUR service charge added to each order. Kitchen printing only (\"Funzioni di Stampa automatica e a richiesta degli ordini anche su più postazioni\"), no screen. Default address is a jmenu.it short link (\"URL breve (www.jmenu.it/tuoRistorante)\"), so domain is partial via the widget."
+    },
+    {
+      "name": "Ordinalo",
+      "website": "https://www.ordinalo.com",
+      "stored_id_prefix": "09cbaaeb",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Restaurant ordering on the venue's own branded site and app for take away and delivery, with time slots and per-slot limits; Italian site, EUR prices, flat fee and no commission. No food-truck wording",
+      "eligibility": {
+        "order_quote": "Ricevi ordini di delivery e take away direttamente dal tuo sito e dalla tua app personalizzata",
+        "order_url": "https://www.ordinalo.com/caratteristiche/delivery-take-away/"
+      },
+      "plans": [
+        {
+          "plan_name": "DELIVERY (site + app ordering)",
+          "currency": "EUR",
+          "price_major": 82.5,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "82.5 € / mese",
+          "url": "https://www.ordinalo.com/prezzi/",
+          "note": "Billed yearly: shown with \"Fatturato annualmente: 990 €\" (990/12 = 82.50). The page also has 'Mensile' and 'Stagionale (7 mesi)' tabs, but the reader could not see a different month-by-month price, so none is recorded. No activation fee (\"Nessun vincolo contrattuale, nessun costo di attivazione.\"). No IVA statement."
+        },
+        {
+          "plan_name": "COMPLETO",
+          "currency": "EUR",
+          "price_major": 124.17,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "124.17 € / mese",
+          "url": "https://www.ordinalo.com/prezzi/",
+          "note": "Billed yearly: 1490 € per year (\"Fatturato annualmente\"). Whole system: ordering plus table bookings."
+        },
+        {
+          "plan_name": "Modulo: WhatsApp Automation",
+          "currency": "EUR",
+          "price_major": 19,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "+19 € / mese",
+          "url": "https://www.ordinalo.com/prezzi/",
+          "note": "CORRECTION: stored 1,900 EUR/month was 100x too high; today it is +19 € per month, an add-on module to a plan (\"Conferme d'ordine e richieste recensioni in automatico.\"). The page does not say whether modules are billed yearly."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Gestisci in autonomia slot, aree di consegna e pagamenti digitali.",
+          "url": "https://www.ordinalo.com/caratteristiche/delivery-take-away/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Accettazione ordini automatica o manuale, con limiti per fascia oraria",
+          "url": "https://www.ordinalo.com/caratteristiche/delivery-take-away/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Conferme, promemoria e link di prenotazione partono in automatico dal WhatsApp ufficiale della tua attività.",
+          "url": "https://www.ordinalo.com"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Puoi gestire gli ordini direttamente su tablet o smartphone tramite l'App Monitor dedicata",
+          "url": "https://www.ordinalo.com/caratteristiche/delivery-take-away/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Con un'unica App puoi gestire diversi punti vendita, siano essi dello stesso brand o di marchi differenti.",
+          "url": "https://www.ordinalo.com/caratteristiche/delivery-take-away/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Dominio e Hosting inclusi",
+          "url": "https://www.ordinalo.com/prezzi/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "paghi un canone fisso mensile",
+          "url": "https://www.ordinalo.com"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Paghi un canone fisso, non una percentuale su ogni ordine o tavolo.",
+          "url": "https://www.ordinalo.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.ordinalo.com",
+        "https://www.ordinalo.com/prezzi/",
+        "https://www.ordinalo.com/caratteristiche/delivery-take-away/"
+      ],
+      "note": "ahead partial: slots are mentioned, but no sentence says the customer picks a pickup time. kds partial: an order-monitor app on tablet/phone plus kitchen ticket printing. 'Dominio e Hosting inclusi' is a comparison-table row on /prezzi/ (row 'Sito Web Vetrina Ottimizzato'), its column not confirmed as DELIVERY by the reader. Walk-up: only QR table/umbrella ordering and a till integration ('Casse')."
+    },
+    {
+      "name": "Qromo",
+      "website": "https://qromo.it",
+      "stored_id_prefix": "b6a1a595",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "CHANGED from stored not_relevant: own site says food trucks and events use it, and its Pro plan includes 'Delivery e asporto da Menù' with scheduled pickups ('ritiri programmati'), customers ordering and paying online from link/QR; Italian site, EUR prices + IVA",
+      "eligibility": {
+        "food_quote": "Qromo è usato da bar, ristoranti, food truck, negozi, eventi e altre attività",
+        "food_url": "https://qromo.it",
+        "order_quote": "configuri orari e ritiri programmati",
+        "order_url": "https://qromo.it/software-gestionale-per-pizzerie/"
+      },
+      "plans": [
+        {
+          "plan_name": "Pro (billed yearly)",
+          "currency": "EUR",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "€ 49",
+          "url": "https://qromo.it/prezzi/",
+          "note": "Billed yearly. Pro is the cheapest plan with 'Delivery e asporto da Menù' (not in Free or Basic). The page shows '€ 49' and '€ 59' with a mensile/annuale toggle and 'Risparmi fino a € 240 annuale'; /software-gestionale-per-pizzerie/ says \"Piani a pagamento da 29 a 99 euro al mese + IVA, con pagamento annuale\", so 49 is the yearly-billing figure and excl. IVA. Transaction costs for Pro: '1,4% Promo 0,9%' ('Costi transazione')."
+        },
+        {
+          "plan_name": "Pro (billed monthly)",
+          "currency": "EUR",
+          "price_major": 59,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "€ 59",
+          "url": "https://qromo.it/prezzi/",
+          "note": "The second Pro figure; that it is the month-by-month price is inferred from the mensile/annuale toggle and the 240 € yearly saving (All in one 119 vs 99 = 20 x 12), not stated in words. IVA excl. inferred from the '+ IVA' sentence on the pizzerie page. Matches the stored Pro 59."
+        },
+        {
+          "plan_name": "All in one (billed yearly)",
+          "currency": "EUR",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "€ 99",
+          "url": "https://qromo.it/prezzi/",
+          "note": "Billed yearly; '€ 119' is the other (monthly-billing) figure. Only All in one includes 'KDS (Kitchen Display System)'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "configuri orari e ritiri programmati",
+          "url": "https://qromo.it/software-gestionale-per-pizzerie/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "mentre forno, cucina e bar ricevono subito le informazioni necessarie tramite stampanti comande o KDS.",
+          "url": "https://qromo.it/software-gestionale-per-pizzerie/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Qromo riunisce nella stessa coda gli ordini raccolti dal personale",
+          "url": "https://qromo.it/software-gestionale-per-pizzerie/"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Piani a pagamento da 29 a 99 euro al mese + IVA, con pagamento annuale",
+          "url": "https://qromo.it/software-gestionale-per-pizzerie/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Costi transazione",
+          "url": "https://qromo.it/prezzi/"
+        }
+      ],
+      "check_urls": [
+        "https://qromo.it",
+        "https://qromo.it/prezzi/",
+        "https://qromo.it/asporto/",
+        "https://qromo.it/software-gestionale-per-pizzerie/"
+      ],
+      "note": "Stored as not relevant; asked to confirm quickly, but the pricing page lists 'Delivery e asporto da Menù' (Pro and All in one) and the pizzerie page describes scheduled pickups and online ordering (\"Il cliente lo consulta da QR Code, senza scaricare app, e può ordinare e pagare direttamente dal tavolo o online.\"), so it now meets the rule. The food-truck evidence is a list of user types, not a food-truck feature page. cardfee quote is the row label; Pro's value is '1,4% Promo 0,9%'. /asporto/ itself read as generic QR text. A web-search summary claimed slots close when full, but I did not see those words on a page, so capacity is not_mentioned."
+    },
+    {
+      "name": "MenuForma",
+      "website": "https://menuforma.com",
+      "stored_id_prefix": "b70bbf5e",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Digital QR menu that also takes pickup/takeaway/delivery orders from the menu; Italian page (/it) names food trucks and shows EUR prices. Weak: no pickup-time wording, and which plan includes ordering could not be read",
+      "eligibility": {
+        "food_quote": "Un menu digitale è adatto a ristoranti, caffetterie e panetterie, hotel e servizio in camera, food truck, bar e pub e locali di ristorazione veloce.",
+        "food_url": "https://menuforma.com/it",
+        "order_quote": "Accetta ordini con consegna, ritiro, asporto e consumo sul posto direttamente dal tuo menu digitale e QR code menu.",
+        "order_url": "https://menuforma.com/it",
+        "country_quote": "Ordini Ritiro e Consegna",
+        "country_url": "https://menuforma.com/it"
+      },
+      "plans": [
+        {
+          "plan_name": "Regolare",
+          "currency": "EUR",
+          "price_major": 8.99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "€8.99",
+          "url": "https://menuforma.com/it",
+          "note": "Shown with '/mese' and 'Include 150 crediti / mese'. A toggle 'Mensile' / 'Fatturato annualmente Risparmia il 20%' exists; the reader could not tell which billing the shown price is. Not confirmed that this plan includes the 'Ordini Ritiro e Consegna' row (table checkmarks unreadable). The English page shows $9.99."
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "EUR",
+          "price_major": 44.99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "€44.99",
+          "url": "https://menuforma.com/it",
+          "note": "Shown with '/mese' and 'Includes 600 credits / month'. Same billing-toggle uncertainty as Regolare. The English page shows $49.99. A 'Gratis per sempre' € 0 plan also exists; which plans include ordering is not readable."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Accetta ordini con consegna, ritiro, asporto e consumo sul posto direttamente dal tuo menu digitale e QR code menu.",
+          "url": "https://menuforma.com/it"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "consegna immediata e programmata",
+          "url": "https://menuforma.com/it"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Puoi anche condividere il link sul sito o sui social.",
+          "url": "https://menuforma.com/it"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "no",
+          "quote": "Il menu online richiede una connessione Internet",
+          "url": "https://menuforma.com/it"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Gestisci più ristoranti e menu digitali con QR code da un unico account.",
+          "url": "https://menuforma.com/it"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "€8.99",
+          "url": "https://menuforma.com/it"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "un fornitore di pagamenti online può applicare commissioni proprie.",
+          "url": "https://menuforma.com/it"
+        }
+      ],
+      "check_urls": [
+        "https://menuforma.com",
+        "https://menuforma.com/it",
+        "https://menuforma.com/plans"
+      ],
+      "note": "First check of this stored candidate. Multi-country tool (English site in USD, Italian page in EUR; a badge reads 'Popular in the Netherlands'); country_quote is the Italian pricing-table row, the best local evidence. /it/plans is 404 and /plans is rendered by script (no plan details readable). preorder partial: scheduled delivery only, not scheduled pickup. Primarily a QR menu product, so a reviewer may prefer not_relevant if ordering turns out to be a paid add-on only."
+    },
+    {
+      "name": "Software Food Good",
+      "website": "https://boomsrl.it",
+      "stored_id_prefix": "9c855eec",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Italian online-ordering system (BOOM srl, Catania) naming food trucks among its users; asporto with a future pickup time slot and pre-orders for later days; EUR prices + IVA, no commission",
+      "eligibility": {
+        "food_quote": "Ristoranti, pizzerie, trattorie, bar, rosticcerie, gastronomie, food truck",
+        "food_url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/",
+        "order_quote": "il cliente può scegliere una fascia oraria futura (ritiro o consegna)",
+        "order_url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/"
+      },
+      "plans": [
+        {
+          "plan_name": "PLUS (promo)",
+          "currency": "EUR",
+          "price_major": 69,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 990,
+          "quote": "IN PROMO € 69 + Iva al mese",
+          "url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/",
+          "note": "Promotional price of the PLUS subscription. Set-up 'Attivazione & Sito' is a one-off 'IN PROMO € 990 + Iva' (list '€ 1.500 + IVA'); the reader noted the table layout is not fully clear that the promo set-up is one-off. Epson printer '€ 300 + IVA' one-off, in promo free on loan ('IN PROMO COMODATO D'USO GRATUITO')."
+        },
+        {
+          "plan_name": "PLUS (list price)",
+          "currency": "EUR",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 1500,
+          "quote": "€ 99 + IVA / mese",
+          "url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/",
+          "note": "Shown with '(abbonamento 12 mesi)': a 12-month subscription. Set-up 'Attivazione & Sito' '€ 1.500 + IVA' one-off at list price."
+        },
+        {
+          "plan_name": "Attivazione & Sito",
+          "currency": "EUR",
+          "price_major": 990,
+          "period": "one_off",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "IN PROMO € 990 + Iva",
+          "url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/",
+          "note": "One-off activation and website, promo price; list '€ 1.500 + IVA'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "il cliente può scegliere una fascia oraria futura (ritiro o consegna)",
+          "url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "ordini programmati / pre-ordine per orari e giorni futuri",
+          "url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Puoi inserire un link intelligente in bio (Instagram/TikTok) che porta direttamente al menu ordinabile.",
+          "url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Food Good supporta una gestione multi-location",
+          "url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "€ 99 + IVA / mese",
+          "url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "ricevere ordini online illimitati senza dover pagare commissioni sul venduto",
+          "url": "https://boomsrl.it/sistema-ordini-online-per-ristoranti/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://boomsrl.it",
+        "https://boomsrl.it/sistema-ordini-online-per-ristoranti/"
+      ],
+      "note": "First check of this stored candidate. The product is branded 'Food Good' / 'FoodGood' on the agency site boomsrl.it. Food trucks are named only in a list of business types. WhatsApp appears only as contact buttons and an order-phone checklist line ('Numero WhatsApp e/o telefono ordini'). Orders arrive in an app ('ricevi notifiche e confermi con un tap, anche da smartphone o tablet') and print; no kitchen screen. 'hosting incluso per sempre finché l'abbonamento è attivo' but no own-domain sentence."
+    },
+    {
+      "name": "Tilby",
+      "website": "https://tilby.com",
+      "stored_id_prefix": "5f28f634",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Italian cloud till (Zucchetti group) with a food-truck page and an ordering module that collects delivery and asporto orders into the till; weak: no pickup-time wording, the ordering runs partly through integrations (Alvòlo, delivery channels), and the ordering module has no public price",
+      "eligibility": {
+        "food_quote": "L'app di cassa su smartphone e tablet per foodtruck",
+        "food_url": "https://tilby.com/it/settori/app-cassa-foodtruck/",
+        "order_quote": "raccogli e organizza gli ordini per consegna a domicilio e asporto",
+        "order_url": "https://tilby.com/it/strumenti-di-vendita/app-ordinazione/"
+      },
+      "plans": [
+        {
+          "plan_name": "Ordering module (App ordinazione / delivery e asporto)",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://tilby.com/it/prezzi/",
+          "note": "Price on request: /it/prezzi/ has no prices, only a quote form (\"Ricevi un preventivo in pochi passaggi\")."
+        },
+        {
+          "plan_name": "Food truck till (from)",
+          "currency": "EUR",
+          "price_major": 35,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "35€",
+          "url": "https://tilby.com/it/settori/app-cassa-foodtruck/",
+          "note": "Starting price on the food-truck page, shown with '+ IVA al mese'. The page does not say whether online ordering is included at this price; most likely the till alone."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "raccogli e organizza gli ordini per consegna a domicilio e asporto",
+          "url": "https://tilby.com/it/strumenti-di-vendita/app-ordinazione/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Scegli il raggio di azione, la capacità produttiva, i prezzi egli orari",
+          "url": "https://tilby.com/it/strumenti-di-vendita/app-ordinazione/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Gestisci ordini online, prenotazioni, self order e molto altro dal tuo punto cassa.",
+          "url": "https://tilby.com/it/settori/app-cassa-foodtruck/"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Hai più di un food truck? Scopri le soluzioni per le catene",
+          "url": "https://tilby.com/it/settori/app-cassa-foodtruck/"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "+ IVA al mese",
+          "url": "https://tilby.com/it/settori/app-cassa-foodtruck/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://tilby.com",
+        "https://tilby.com/it/settori/app-cassa-foodtruck/",
+        "https://tilby.com/it/strumenti-di-vendita/app-ordinazione/",
+        "https://tilby.com/it/prezzi/"
+      ],
+      "note": "First check of this stored candidate. 'egli orari' is the page's own typo (kept verbatim). The app-ordinazione page credits delivery and self order to an integration (\"con Alvòlo e Tilby\"); Alvòlo is not on the pricing page. Homepage lists third-party ordering partners under 'Ordinazione' (Glovo, Just Eat, Deliveroo, Deliverart, YellGo, xMenu, Deliverect, See You Food). A reviewer may prefer not_relevant (till first, ordering via partners) or focus pos."
+    }
+  ],
+  "notes": "Group B re-check of 8 stored IT vendors, own sites only. Food-truck tools with a stated price: Qromo and Software Food Good are solid; MenuForma and Tilby are weak (see their notes), so no extra search for new food-truck tools was needed. Changes vs stored: Qromo flipped from not_relevant to eligible (Pro plan includes 'Delivery e asporto da Menù', pizzerie page describes 'ritiri programmati', food trucks named); DineEasy set to not_relevant (QR scan-and-order only, no ordering ahead on its pages). xMenu SETTLED as keep (nearest_local): 'La tua App per asporto e delivery' and 'Ecommerce per ordini online', but no pickup-time wording, so ahead is partial. Ordinalo WhatsApp Automation corrected: +19 EUR/month add-on (stored 1,900 was 100x). Ordinalo DELIVERY 82.50/month is the billed-yearly figure (990 EUR/year). Qromo's two figures per plan (49/59, 99/119) are assigned to yearly/monthly billing by inference from the toggle and the 240 EUR saving."
+}

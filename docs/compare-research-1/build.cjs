@@ -70,8 +70,21 @@ function build() {
     }
   }
 
+  // Dominic's preference order (24 Nov): restaurant (nearest_local) and till (pos) tools count only where a country has fewer
+  // than 2 eligible food-truck tools WITH A PRICE. Where it has 2+, the others are left out of this file for that country
+  // (listed under "not_needed"; nothing stored about them changes).
+  const ftPriced = new Map()
+  for (const m of vendors.values()) for (const [cc, ps] of m.countries) {
+    if (['food_truck', 'street_food_markets', 'pop_up'].includes(m.focus) && ps.some(p => typeof p.price_major === 'number')) ftPriced.set(cc, (ftPriced.get(cc) ?? 0) + 1)
+  }
+  const notNeeded = []
+  for (const m of vendors.values()) {
+    if (!['nearest_local', 'pos'].includes(m.focus)) continue
+    for (const cc of [...m.countries.keys()]) if ((ftPriced.get(cc) ?? 0) >= 2) { notNeeded.push({ country: cc, name: m.name, focus: m.focus }); m.countries.delete(cc) }
+  }
   const competitors = [], plans = [], entries = []
   for (const m of vendors.values()) {
+    if (!m.countries.size) continue
     const id = m.stored ? m.stored.id : uuid(`competitor:${m.key}`)
     const answers = []
     for (const k of KEYS) {
@@ -94,16 +107,20 @@ function build() {
     for (const cc of cs) {
       const ps = m.countries.get(cc)
       let primary = null, cheapest = Infinity
-      for (const p of ps.slice(0, 4)) {
+      for (let p of ps.slice(0, 4)) {
         const hidden = p.price_major === null || p.price_major === undefined
         const period = p.period ?? 'month'
         // A plan priced per day is estimated per month (× 365 / 12) and marked UNCLEAR, so it is never published as a stated
         // price; a multi-year prepay is a payment option of another plan — kept in the evidence, not written as a plan.
         if (!hidden && /^\d+\s*years?$/.test(String(period)) && period !== '1 year') continue
-        if (!hidden && !['month', 'year', 'day'].includes(period)) { problems.push(`${m.name} · ${p.plan_name}: period "${period}" is not month, year or day`); continue }
-        const yearly = period === 'year'
-        const perDay = period === 'day'
-        const monthlyMajor = hidden ? null : (yearly ? p.price_major / 12 : perDay ? Math.round((p.price_major * 365 / 12) * 100) / 100 : p.price_major)
+        // A one-off price with no subscription: no monthly fee, the amount is the set-up fee.
+        if (!hidden && period === 'one_off') { p = { ...p, setup_major: p.price_major, price_major: 0, period: 'month', note: `one-off price ${p.price_major} ${p.currency}, no subscription${p.note ? `; ${p.note}` : ''}` } }
+        if (!hidden && !['month', 'year', 'day', 'week'].includes(p.period ?? 'month')) { problems.push(`${m.name} · ${p.plan_name}: period "${period}" is not month, year, week, day or one_off`); continue }
+        const yearly = (p.period ?? 'month') === 'year'
+        // per day / per week: an estimate per month (× 365 / 12, × 52 / 12), marked unclear — never published as a stated price
+        const perDay = ['day', 'week'].includes(p.period ?? 'month')
+        const perUnit = (p.period ?? 'month') === 'week' ? 52 : 365
+        const monthlyMajor = hidden ? null : (yearly ? p.price_major / 12 : perDay ? Math.round((p.price_major * perUnit / 12) * 100) / 100 : p.price_major)
         const cur = String(p.currency ?? '').toUpperCase()
         const minor = hidden ? null : toMinorUnits(monthlyMajor, cur)
         // the 100× guard: the stored value read back must be the page's amount
@@ -119,7 +136,7 @@ function build() {
           order_cap: null, included_orders: null, overage_fixed_minor: null,
           vat: ['incl', 'excl'].includes(p.vat) ? p.vat : 'unknown', status: hidden ? 'hidden' : 'counted', unclear: perDay, second_hand: false,
           source: 'research', source_url: p.url ?? null, checked_on: CHECKED_ON, verified_at: null, verified_by: null,
-          notes: clip(`compare-research-1, read 24 Nov 2026: "${p.quote ?? ''}"${yearly ? ' (yearly price ÷ 12)' : ''}${perDay ? ` (priced per day: ${p.price_major} ${cur} a day × 365 ÷ 12 — an estimate, so marked unclear)` : ''}${p.note ? ` — ${p.note}` : ''}`, 1000),
+          notes: clip(`compare-research-1, read 24 Nov 2026: "${p.quote ?? ''}"${yearly ? ' (yearly price ÷ 12)' : ''}${perDay ? ` (priced per ${p.period}: ${p.price_major} ${cur} a ${p.period} × ${perUnit} ÷ 12 — an estimate, so marked unclear)` : ''}${p.note ? ` — ${p.note}` : ''}`, 1000),
         })
         if (!hidden && !perDay && monthlyMajor < cheapest && cur) { cheapest = monthlyMajor; primary = pid }
       }
@@ -130,7 +147,7 @@ function build() {
     $comment: 'compare-research-1 (24 Nov 2026): competitors read on their OWN websites by Claude Code, one request at a time (docs/compare-research-1-report.md). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import/). Every row source research, UNVERIFIED (35.an-1). Each answer carries the vendor’s verbatim quote and its page (35.an-4); "no" only with a quote saying it is not offered, silence is not_mentioned (35.ao-7). monthly_minor is MINOR units, converted from the page’s amount with lib/money-format.ts toMinorUnits (the 100× guard). request_check sets check_requested_at. "evidence" and "not_relevant" are for the reviewer; the import does not read them (the importer cannot mark a competitor not relevant).',
     id: 'compare-research-1', checked_on: CHECKED_ON, competitors, plans, entries,
     evidence: [...vendors.values()].map(m => ({ name: m.name, evidence: m.evidence })),
-    not_relevant: notRelevant, unreadable,
+    not_relevant: notRelevant, unreadable, not_needed: notNeeded,
   }
   return { file, problems }
 }
@@ -147,6 +164,7 @@ if (checkOnly) file = JSON.parse(fs.readFileSync(OUT, 'utf8'))
 else { const b = build(); file = b.file; problems = b.problems }
 problems.push(...validate(file))
 if (!checkOnly) { fs.mkdirSync(path.dirname(OUT), { recursive: true }); fs.writeFileSync(OUT, JSON.stringify(file, null, 1) + '\n') }
+console.log(`not needed (2+ priced food-truck tools in the country): ${file.not_needed?.length ?? 0}`)
 console.log(`competitors ${file.competitors.length}, plans ${file.plans.length} (${file.plans.filter(p => p.status === 'counted').length} priced), entries ${file.entries.length}, not relevant ${file.not_relevant?.length ?? 0}, unreadable ${file.unreadable?.length ?? 0}`)
 if (problems.length) { console.log(`🔴 ${problems.length} problem(s):\n- ` + problems.join('\n- ')); process.exit(1) }
 console.log('✓ the importer’s own validation (researchProblems) and the 100× guard pass — nothing written to any database')

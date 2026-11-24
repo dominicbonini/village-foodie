@@ -1,0 +1,512 @@
+{
+  "country": "ES",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "Ordeno app pedidos food truck",
+    "\"Ordeno\" app pedidos España",
+    "FesteaPay pagos festivales pedidos",
+    "\"Check\" app pedidos food truck España foodtruckya",
+    "pedidos anticipados food truck app España recogida",
+    "\"food truck\" \"pedidos online\" software España \"para recoger\" precio mes",
+    "app pedidos food truck \"food trucks\" pedir desde el móvil y recoger sin colas España software"
+  ],
+  "vendors": [
+    {
+      "name": "TopEstrellas (Pedidos module)",
+      "website": "https://topestrellas.com",
+      "stored_id_prefix": "034d1e1a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "hospitality suite with online pick-up and delivery ordering (Liderazgo pack); Spanish site and EUR prices; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Para recoger, el cliente pide y pasa a buscarlo.",
+        "order_url": "https://topestrellas.com/soluciones/pedidos-online/"
+      },
+      "plans": [
+        {
+          "plan_name": "Liderazgo",
+          "currency": "EUR",
+          "price_major": 129,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 1,
+          "quote": "Cobro de 129 € al mes.",
+          "url": "https://hosteleria.topestrellas.com/",
+          "note": "Only pack listing 'Pedidos para recoger y a domicilio'. Page: 'Impuestos no incluidos.' Set-up '1 € + impuestos · Pago único' (self set-up) or '229 € + impuestos · Pago único' (done for you), '+ cuota del pack elegido'. The stored 'Pedidos 24' price is no longer shown; lower packs (Reputación 49 €/mes, Crecimiento 89 €/mes) do not include Pedidos."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Para recoger, el cliente pide y pasa a buscarlo.",
+          "url": "https://topestrellas.com/soluciones/pedidos-online/",
+          "note": "pick-up ordering; no chosen pick-up time mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "compartes tus enlaces para recoger y a domicilio en Instagram, Google o WhatsApp.",
+          "url": "https://topestrellas.com/soluciones/pedidos-online/",
+          "note": "order link shared on WhatsApp; not ordering inside WhatsApp"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Pantalla de cocina (KDS) con pedidos en tiempo real",
+          "url": "https://hosteleria.topestrellas.com/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "con tu nombre, tu marca y tu dominio",
+          "url": "https://hosteleria.topestrellas.com/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Cobro de 129 € al mes.",
+          "url": "https://hosteleria.topestrellas.com/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Sin comisión por pedido.",
+          "url": "https://topestrellas.com/soluciones/pedidos-online/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Stripe cobra el procesamiento de pagos online, sin recargo de TopEstrellas.",
+          "url": "https://topestrellas.com/soluciones/pedidos-online/"
+        }
+      ],
+      "check_urls": [
+        "https://topestrellas.com",
+        "https://topestrellas.com/soluciones/pedidos-online/",
+        "https://hosteleria.topestrellas.com/"
+      ]
+    },
+    {
+      "name": "pidopago",
+      "website": "https://pidopago.com",
+      "stored_id_prefix": "51e6b79e",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Spanish restaurant online-ordering (delivery and pick-up, orders days ahead); yearly EUR prices",
+      "eligibility": {
+        "order_quote": "Aumenta tu beneficio en cada pedido a domicilio o para recoger en tu restaurante.",
+        "order_url": "https://pidopago.com"
+      },
+      "plans": [
+        {
+          "plan_name": "pidopago",
+          "currency": "EUR",
+          "price_major": 365,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "365 €/año",
+          "url": "https://pidopago.com",
+          "note": "Yearly price only; no monthly option shown; VAT not stated in the price section. Hosting + domain extra: 'Hosting + Dominio + 95 €/año'. Stored 30.42/month was 365/12 — the site shows no monthly figure."
+        },
+        {
+          "plan_name": "pidopago Factu",
+          "currency": "EUR",
+          "price_major": 485,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "485 €/año",
+          "url": "https://pidopago.com",
+          "note": "Same features plus Verifactu invoicing; yearly only; VAT not stated. Stored 40.42/month was 485/12."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Aumenta tu beneficio en cada pedido a domicilio o para recoger en tu restaurante.",
+          "url": "https://pidopago.com",
+          "note": "pick-up ordering; a chosen time today is not stated"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Ofrece la posibilidad de realizar pedidos con varios días de antelación.",
+          "url": "https://pidopago.com"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned",
+          "note": "WhatsApp only for vendor support"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Si tienes más de un restaurante, ningún problema, pidopago se adapta a vosotros.",
+          "url": "https://pidopago.com"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "También puedes contratar con nosotros el registro de tu nombre de dominio,",
+          "url": "https://pidopago.com",
+          "note": "paid extra (90 € anuales + IVA)"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned",
+          "note": "the fee is yearly (365 €/año); no monthly fee shown"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No, pidopago no cobra ninguna cantidad por las transacciones que se hagan, ni tiene ningún coste por pedidos.",
+          "url": "https://pidopago.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://pidopago.com",
+        "https://pidopago.com/#precio"
+      ]
+    },
+    {
+      "name": "Cheerfy Shop",
+      "website": "https://www.es.cheerfy.com",
+      "stored_id_prefix": "e22529b7",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant online ordering with pick-up and scheduled orders; Spanish-language site (es.cheerfy.com), EUR prices on the pricing page; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Permite a tus clientes pedir en el momento o programar un pedido para más tarde.",
+        "order_url": "https://www.es.cheerfy.com/producto/sistema-pedidos-online-restaurantes",
+        "country_quote": "Utiliza tu sistema de pedidos online en tu restaurante para ofrecer los servicios a domicilio o para recoger en el local.",
+        "country_url": "https://www.es.cheerfy.com/producto/sistema-pedidos-online-restaurantes"
+      },
+      "plans": [
+        {
+          "plan_name": "Cheerfy Shop",
+          "currency": "EUR",
+          "price_major": null,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": null,
+          "url": "https://www.es.cheerfy.com/producto/sistema-pedidos-online-restaurantes",
+          "note": "No Shop price on the site: the Shop page has no prices and https://www.es.cheerfy.com/precios is empty ('This collection does not contain any items.'). The English pricing page lists loyalty/CRM plans per point of sale (Starter 85 €/month monthly or 69 €/month billed yearly; Professional 99 €/month or 85 €/month billed yearly; 'Do not include VAT.'), which only integrate Shop orders; it mentions a 'Cheerfy Shop commission' with no rate. The stored 'Shop 0, Starter 99' should not be read as Shop prices; 99 is now the Professional loyalty plan."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Permite a tus clientes pedir en el momento o programar un pedido para más tarde.",
+          "url": "https://www.es.cheerfy.com/producto/sistema-pedidos-online-restaurantes"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Permite a tus clientes pedir en el momento o programar un pedido para más tarde.",
+          "url": "https://www.es.cheerfy.com/producto/sistema-pedidos-online-restaurantes",
+          "note": "scheduled orders 'para más tarde'; a later day is not stated"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Define el área de reparto para cada una de tus localizaciones.",
+          "url": "https://www.es.cheerfy.com/producto/sistema-pedidos-online-restaurantes"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Alójala en tu propio dominio Web.",
+          "url": "https://www.es.cheerfy.com/producto/sistema-pedidos-online-restaurantes"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned",
+          "note": "no Shop fee shown; monthly fees on the pricing page are for the loyalty plans"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "-15% on Cheerfy Shop commission when registering for Cheerfy Shop and Loyalty Professional.",
+          "url": "https://www.en.cheerfy.com/pricing",
+          "note": "a Shop commission exists; its rate is not stated; English page"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.en.cheerfy.com/",
+        "https://es.cheerfy.com/",
+        "https://www.es.cheerfy.com/producto/sistema-pedidos-online-restaurantes",
+        "https://www.es.cheerfy.com/precios",
+        "https://www.en.cheerfy.com/pricing"
+      ]
+    },
+    {
+      "name": "Ordeno App",
+      "website": "https://www.ordeno.app",
+      "stored_id_prefix": "2c389cf4",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "own site (ordeno.app, Ordeno OU, +34 WhatsApp) is an English-language TPV/ordering page for 'restaurants, stadiums, and events' but never shows ordering ahead or pick-up; no food-truck wording; plans page shows 'No plans available'; the Spanish calculator shows only 'Comisión Ordeno (0.9%) €'",
+      "eligibility": {
+        "food_quote": "The perfect solution for restaurants, stadiums, and events.",
+        "food_url": "https://www.ordeno.app"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.ordeno.app",
+        "https://www.ordeno.app/pricing",
+        "https://www.ordeno.app/plans-pricing",
+        "https://www.ordeno.app/calculadora"
+      ],
+      "note": "Found by trying ordeno.app directly (web search found nothing). If Dominic counts event QR ordering, the only price evidence is the calculator's 0.9% commission label (no monthly fee shown)."
+    },
+    {
+      "name": "FesteaPay",
+      "website": "https://festeapay.com",
+      "stored_id_prefix": "ff78ffa2",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Spanish cashless mobile-ordering tool for events and festivals (order by QR on the phone, collect at a fast lane), names foodtrucks; sold to promoters/venues rather than to single trucks; no price on the site",
+      "eligibility": {
+        "food_quote": "La interfaz de FesteaPay es muy intuitiva, tanto para tus clientes como para el personal de barras y foodtrucks.",
+        "food_url": "https://festeapay.com/es/faqs/",
+        "order_quote": "Recogen su pedido en la cola rápida.",
+        "order_url": "https://festeapay.com"
+      },
+      "plans": [
+        {
+          "plan_name": "FesteaPay",
+          "currency": "EUR",
+          "price_major": null,
+          "period": null,
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": null,
+          "url": "https://festeapay.com/es/faqs/",
+          "note": "No subscription price on the site; the FAQ says 'Estas comisiones varían entre un 1.5% y un 3%.' without making clear whose commission it is, and adds that it excludes the cashless provider's cost. Contact/demo for an event quote."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Recogen su pedido en la cola rápida.",
+          "url": "https://festeapay.com",
+          "note": "order on the phone at the event via QR and collect; no chosen time stated"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned",
+          "note": "FAQ mentions 'problemas de conectividad' only"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "Estas comisiones varían entre un 1.5% y un 3%.",
+          "url": "https://festeapay.com/es/faqs/",
+          "note": "a percentage commission; the FAQ does not make clear whether it is FesteaPay's fee or payment processing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://festeapay.com",
+        "https://festeapay.com/es/faqs/"
+      ],
+      "note": "Own site found by trying festeapay.com (web search found nothing). The menu shows a 'Pre-venta' item that was not read."
+    },
+    {
+      "name": "Check",
+      "website": "https://foodtruckya.com",
+      "stored_id_prefix": "113508e1",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "own site not found (one web search; the stored website foodtruckya.com is a directory, not the vendor's own site); nothing on a vendor site to confirm ordering ahead",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "PAYMEZONE",
+      "website": "https://paymezone.com",
+      "stored_id_prefix": "b4d82532",
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "self-service payment kiosk / cash machine hardware ('Tus clientes conforman su pedido en pantalla'); no online order-ahead or pick-up; only price a hardware promotion ('por menos de 2.800€')",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://paymezone.com"
+      ]
+    },
+    {
+      "name": "EatSelf",
+      "website": "https://www.eatself.com",
+      "stored_id_prefix": "47a1fbe0",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "French click-and-collect tool (French-only site, French phone and office); no Spanish site (/es/ is the French trial form, 'Espagne' only in a country dropdown) — does not plausibly serve Spain; belongs with FR",
+      "eligibility": {
+        "food_quote": "bars, cafés, fast foods, food trucks",
+        "food_url": "https://www.eatself.com",
+        "order_quote": "Commande récupérable sur place ou livrer à domicile",
+        "order_url": "https://www.eatself.com"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.eatself.com",
+        "https://www.eatself.com/es/"
+      ],
+      "note": "For FR use: homepage shows 'Nos plans tarifaires démarrent à 0€ (le site vitrine)', 79€ 'Par mois renouvelé automatiquement', '63€ / mois*' yearly (économisez 20%), and no commission ('0€ de commission')."
+    }
+  ],
+  "notes": "Group B re-check. Eligible with a stated price: TopEstrellas (Liderazgo 129 €/mes excl. tax; the stored 'Pedidos 24' price is gone) and pidopago (365 €/año and 485 €/año — yearly only, no monthly figure on the site; VAT not stated). Eligible without a price: Cheerfy Shop (no Shop price anywhere; the pricing page is for loyalty plans, so the stored 'Starter 99' is not a Shop price) and FesteaPay (event/festival mobile ordering naming foodtrucks; only a 1.5%–3% commission line in the FAQ, owner unclear). Only food-truck-type tool found: FesteaPay, and it has no price, so fewer than 2 food-truck tools qualify with a price. Three searches for Spanish food-truck order-ahead tools found only foreign apps (Food Truck Pub, Yumm Trux, Flash Order via Square's marketplace), directories (Capterra) and marketplaces; none added. Ordeno's own site is ordeno.app (English body, 'restaurants, stadiums, and events', no order-ahead wording, no plans) — not_relevant. FesteaPay's own site is festeapay.com. Check: own site not found. EatSelf is a French-only tool (move to FR). The TopEstrellas homepage reader once refused to give verbatim text; all quotes used came from later reads that returned exact wording."
+}

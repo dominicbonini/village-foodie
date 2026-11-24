@@ -1,0 +1,817 @@
+{
+  "country": "GB",
+  "researched_on": "2026-11-24",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Flipdish",
+      "website": "https://www.flipdish.com/gb",
+      "stored_id_prefix": "5b50f4e3",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant/takeaway online ordering on the business's own branded website and app, with pre-order for collection; GBP prices on its /gb site",
+      "eligibility": {
+        "order_quote": "There are two options in the sub-menu that follows: Pre-order for collection and Pre-order for delivery.",
+        "order_url": "https://help.flipdish.com/en/articles/9585385-configure-pre-ordering",
+        "country_quote": "Billed annually, per site. £139 if billed monthly (ex. VAT)",
+        "country_url": "https://www.flipdish.com/gb/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Essential Package (Point of Sale & Online Ordering)",
+          "currency": "GBP",
+          "price_major": 139,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Billed annually, per site. £139 if billed monthly (ex. VAT)",
+          "url": "https://www.flipdish.com/gb/pricing",
+          "note": "£139/month when billed monthly; the page also shows 'From 119 £/month' billed annually, per site. Add-ons (Kiosks, KDS, etc.) on this page show no price today."
+        },
+        {
+          "plan_name": "Online ordering (unnamed price on the online-ordering page)",
+          "currency": "GBP",
+          "price_major": 69,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Billed annually, per site. £69 if billed monthly",
+          "url": "https://www.flipdish.com/gb/online-ordering",
+          "note": "the online-ordering page shows three prices with no plan names: 'From 49 £/month' (£69 if billed monthly), 'From 79 £/month' (£99 monthly), 'From 59 £/month' (£79 monthly); the stored 'Website 49' / 'Self-Service Kiosk 59' look like these annual-billed 'from' prices, but the page no longer labels them, so only the first is recorded"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "a limit for a specific hour during the day when the order will be for today or tomorrow",
+          "url": "https://help.flipdish.com/en/articles/9585385-configure-pre-ordering"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "this gives you the control to set a specific amount of days required to place an order in advance",
+          "url": "https://help.flipdish.com/en/articles/9585385-configure-pre-ordering"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "you can control how many orders are accepted within a specified time period",
+          "url": "https://help.flipdish.com/en/articles/9585395-manage-order-capacity"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "a smart kitchen display that keeps every order on track",
+          "url": "https://www.flipdish.com/gb/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Flipdish lets you manage online, in-store, kiosk, and third-party orders from one screen.",
+          "url": "https://www.flipdish.com/gb"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Whether you have one store or many, there's a Flipdish pricing plan for you",
+          "url": "https://www.flipdish.com/gb/online-ordering"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Take orders through your own branded website.",
+          "url": "https://www.flipdish.com/gb/online-ordering/websites"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Billed annually, per site. £139 if billed monthly (ex. VAT)",
+          "url": "https://www.flipdish.com/gb/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.flipdish.com/gb/pricing",
+        "https://www.flipdish.com/gb/online-ordering",
+        "https://www.flipdish.com/gb",
+        "https://www.flipdish.com/gb/online-ordering/websites",
+        "https://www.flipdish.com/gb/pos-system/order-management",
+        "https://help.flipdish.com/en/articles/9585385-configure-pre-ordering",
+        "https://help.flipdish.com/en/articles/9585395-manage-order-capacity"
+      ]
+    },
+    {
+      "name": "GloriaFood",
+      "website": "https://www.gloriafood.com",
+      "stored_id_prefix": "dc1d8f05",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "free restaurant online ordering (takeaway/pickup, scheduled orders) on the restaurant's own website; Oracle product reaching end of life on 30 April 2027; USD prices only, no stated UK presence",
+      "eligibility": {
+        "food_quote": "An online ordering system enables food businesses such as table service restaurants, coffee shops, or food trucks",
+        "food_url": "https://www.gloriafood.com",
+        "order_quote": "Allow your customers to order now and schedule a specific fulfillment time for pickup or delivery.",
+        "order_url": "https://www.gloriafood.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Free service plan",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "No commission per order",
+          "url": "https://www.gloriafood.com/pricing",
+          "note": "free plan: the page also says 'No monthly fee' and 'No setup fee'. USD only, no GBP. End of life: 'GloriaFood will reach end of life on April 30, 2027.' (homepage)"
+        },
+        {
+          "plan_name": "Free + Online / Credit Card Payment Service add-on",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 29 per month",
+          "url": "https://www.gloriafood.com/pricing",
+          "note": "matches the stored plan; USD only, no GBP shown. Service reaches end of life on 30 April 2027 per its own homepage."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Allow your customers to order now and schedule a specific fulfillment time for pickup or delivery.",
+          "url": "https://www.gloriafood.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Order for later (scheduled orders)",
+          "url": "https://www.gloriafood.com"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Use our restaurant online ordering app to confirm orders placed on your website, Facebook page & restaurant app",
+          "url": "https://www.gloriafood.com"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Multi-location dashboard for chains, such as fast-food eateries or quick service establishments",
+          "url": "https://www.gloriafood.com"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Our online ordering system will help you transform your website into a money-making machine.",
+          "url": "https://www.gloriafood.com"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "US$ 29 per month",
+          "url": "https://www.gloriafood.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commission per order",
+          "url": "https://www.gloriafood.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.gloriafood.com/pricing",
+        "https://www.gloriafood.com",
+        "https://www.gloriafood.com/online-ordering-system-features"
+      ]
+    },
+    {
+      "name": "Order Tiger",
+      "website": "https://www.ordertiger.com",
+      "stored_id_prefix": "aed7bf67",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "has its own food-truck ordering page: pre-orders, pickup time slots and capacity limits, 'where the truck will be tomorrow'; UK pricing in GBP (from £59)",
+      "eligibility": {
+        "food_quote": "Take pre-orders before you park up",
+        "food_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+        "order_quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+        "order_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+        "country_quote": "with plans from £59 in the UK and €59 in the EU",
+        "country_url": "https://www.ordertiger.com/online-ordering-system-pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Online Ordering",
+          "currency": "GBP",
+          "price_major": 59,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "with plans from £59 in the UK and €59 in the EU",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing",
+          "note": "'from £59' is the UK entry price; the page text read shows the plan prices in USD only (Online Ordering $69/month, EPOS $49, Online Ordering + EPOS $109, Growth $299) behind a '£ UK' selector, so the GBP amounts of the other plans could not be read. 'All prices per location, billed monthly.' 'No contract, no setup fee.' UK online card processing 1.5% + £0.20 per transaction (card fee, not a commission)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled orders for busy days and events.",
+          "url": "https://www.ordertiger.com"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Pickup time slots and capacity limits let the crew prep orders in advance.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Push notifications tell every app user where the truck will be tomorrow.",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Monthly social media packages",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Kitchen Display System",
+          "url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "All prices per location, billed monthly.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Take orders on your own website, or let us build a site on your domain.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "All prices per location, billed monthly.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Plans are a flat monthly fee per location, with no commission on orders and no contract",
+          "url": "https://www.ordertiger.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Online card processing on every plan is 1.5% + £0.20 per transaction.",
+          "url": "https://www.ordertiger.com/online-ordering-system-pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.ordertiger.com",
+        "https://www.ordertiger.com/online-ordering-system-pricing",
+        "https://www.ordertiger.com/online-ordering-system-for-food-trucks"
+      ]
+    },
+    {
+      "name": "Slerp",
+      "website": "https://www.slerp.com",
+      "stored_id_prefix": "e86ba596",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK restaurant/food-brand direct ordering on the brand's own website and app, with click and collect, same-day and future-day pre-orders and slot capacity; price no longer shown (pricing page is password-protected)",
+      "eligibility": {
+        "order_quote": "They order ahead on your site or app, and pay.",
+        "order_url": "https://www.slerp.com/click-and-collect/",
+        "country_quote": "Yes, we work with multi-site concepts all across the UK.",
+        "country_url": "https://www.slerp.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Monthly plan per location (price not shown)",
+          "currency": "GBP",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "We charge a monthly fee per location, with different plans depending on what you need.",
+          "url": "https://www.slerp.com/click-and-collect/",
+          "note": "price on request: https://www.slerp.com/pricing is now password-protected and shows no plans or prices; the stored 'Web ordering / with branded app' £125 can no longer be confirmed on the vendor's own site"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "They order ahead on your site or app, and pay.",
+          "url": "https://www.slerp.com/click-and-collect/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Same-day and pre-order (future days) each get their own settings, like opening hours, capacity rules and menus.",
+          "url": "https://www.slerp.com/click-and-collect/"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Capacity rules let you limit how many of each item can be ordered per timeslot.",
+          "url": "https://www.slerp.com/click-and-collect/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Every location has its own click and collect settings that you control.",
+          "url": "https://www.slerp.com/click-and-collect/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Your own address and your branding, nobody in between.",
+          "url": "https://www.slerp.com"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "We charge a monthly fee per location, with different plans depending on what you need.",
+          "url": "https://www.slerp.com/click-and-collect/"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.slerp.com/pricing",
+        "https://www.slerp.com",
+        "https://www.slerp.com/click-and-collect/"
+      ]
+    },
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": "98c064da",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK takeaway/restaurant direct ordering with pickup, scheduled pre-orders and slot capacity limits on every plan; GBP prices excl. VAT",
+      "eligibility": {
+        "order_quote": "Scheduled pre-orders (pickup & delivery slots)",
+        "order_url": "https://storekit.com/pricing",
+        "country_quote": "All prices are per location and exclude VAT.",
+        "country_url": "https://storekit.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "You pay a monthly fee and a flat per-order rate, never a percentage of the basket.",
+          "url": "https://storekit.com/pricing",
+          "note": "shown as 'Free' 'per month' (two page elements); FAQ: 'No monthly fee for one site selling pickup and delivery ... you pay only the flat per-order rate'; the flat per-order amount is not stated on the page; FAQ says no setup fee for Starter; 1 location"
+        },
+        {
+          "plan_name": "Grow",
+          "currency": "GBP",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "£99per month",
+          "url": "https://storekit.com/pricing",
+          "note": "page renders '£99' and 'per month' run together; 'For restaurants with up to 3 sites'; setup '£199 per location'; on a contract; plus a flat per-order rate (amount not stated). Stored value 0 is out of date. Connect (not recorded, 3-plan limit) is '£49per month', 'For takeaways and cafés that run on a till'."
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "GBP",
+          "price_major": 199,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "£199per month",
+          "url": "https://storekit.com/pricing",
+          "note": "'For restaurant groups with 4 or more sites'; setup '£199 per location'; on a contract; plus a flat per-order rate. Enterprise is 'Custom', 'From £995 per brand, per month' (stored 199 is out of date)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Order ahead for the morning rush",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Scheduled pre-orders (pickup & delivery slots)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Capacity controls (slot limits)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen display (KDS)",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Self-serve at the counter",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Each location is priced on the plan it runs.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Your own domain",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "You pay a monthly fee and a flat per-order rate, never a percentage of the basket.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "You pay a monthly fee and a flat per-order rate, never a percentage of the basket.",
+          "url": "https://storekit.com/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Standard rates",
+          "url": "https://storekit.com/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://storekit.com/pricing"
+      ]
+    },
+    {
+      "name": "Weevi",
+      "website": "https://www.weevi.com",
+      "stored_id_prefix": "e72778c0",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "has its own food-truck pages ('Multi-channel ecommerce for food trucks') with scheduled ordering and pickup on an ordering website/app; GBP prices on its food-truck pricing page",
+      "eligibility": {
+        "food_quote": "Multi-channel ecommerce for food trucks",
+        "food_url": "https://www.weevi.com/food-trucks",
+        "order_quote": "Scheduled ordering",
+        "order_url": "https://www.weevi.com/food-trucks",
+        "country_quote": "£71",
+        "country_url": "https://www.weevi.com/food-trucks/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Core (first location)",
+          "currency": "GBP",
+          "price_major": 71,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£71",
+          "url": "https://www.weevi.com/food-trucks/pricing",
+          "note": "shown as '£71' with '1st location/m' and '£36' 'on extra locations'; a price toggle also shows '£78' / '£39' and the page text read doesn't say what the toggle switches between (probably yearly vs monthly billing) — the higher £78 may be the month-to-month price. Add-ons: 'Your mobile app' £39/£36 per month; loyalty £39/£36 per month / location. 'Volume pricing available for 5 locations and up'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Scheduled ordering",
+          "url": "https://www.weevi.com/food-trucks"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Scheduled ordering",
+          "url": "https://www.weevi.com/food-trucks/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Google, Facebook and Instagram ordering",
+          "url": "https://www.weevi.com/food-trucks/pricing"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "In-store ordering",
+          "url": "https://www.weevi.com/food-trucks"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "on extra locations",
+          "url": "https://www.weevi.com/food-trucks/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Ordering website",
+          "url": "https://www.weevi.com/food-trucks"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "1st location/m",
+          "url": "https://www.weevi.com/food-trucks/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Flat pricing - Zero Commission",
+          "url": "https://www.weevi.com/food-trucks/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.weevi.com/food-trucks",
+        "https://www.weevi.com/food-trucks/pricing"
+      ]
+    },
+    {
+      "name": "Yoello",
+      "website": "https://www.yoello.com",
+      "stored_id_prefix": "34c0c62f",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "UK web-app ordering for hospitality with click and collect and a chosen collection time (plus QR table ordering); no price on the site",
+      "eligibility": {
+        "order_quote": "Click & collect is a simple way for your customers to order online and select a suitable collection time.",
+        "order_url": "https://yoello.com/features/restaurant-ordering-system/click-and-collect",
+        "country_quote": "Save £1000s on transactions when you switch to Pay by Bank as your primary payment method",
+        "country_url": "https://yoello.com/features/restaurant-ordering-system/click-and-collect"
+      },
+      "plans": [
+        {
+          "plan_name": "Price on request",
+          "currency": "GBP",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Low cost pricing with no commission",
+          "url": "https://www.yoello.com",
+          "note": "no price on the site (www.yoello.com/pricing is 404); the click-and-collect page says 'Ask for a demo to find out more.' The period is unknown (set to month only as a placeholder)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers can order in advance and select a pick-up time when ordering.",
+          "url": "https://www.yoello.com"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Multiple Vendor Groups",
+          "url": "https://yoello.com/features/restaurant-ordering-system/click-and-collect"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Beautifully designed, custom branded web-app.",
+          "url": "https://www.yoello.com"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Low cost pricing with no commission",
+          "url": "https://www.yoello.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.yoello.com",
+        "https://yoello.com/features/restaurant-ordering-system/click-and-collect",
+        "https://www.yoello.com/pricing"
+      ]
+    }
+  ],
+  "notes": "Flipdish: WhatsApp appears only as a support channel for the business, so not_mentioned; domain partial (own branded website, custom domain not stated); the 'ahead' quote is a fragment of the pre-order cutoff setting (orders for today or tomorrow); add-on prices (Kiosk, Website) no longer shown on /gb/pricing.\nGloriaFood: its homepage says \"GloriaFood will reach end of life on April 30, 2027.\" (links to a foodamigos.io migration page, not used as a source). Prices in USD only; no UK/GBP or country statement found, so no country_quote. The food_quote is generic SEO text, not a food-truck page, so focus stays nearest_local. monthly = yes because the stored plan is the US$29/month payments add-on; the base plan says \"No monthly fee\". social = partial: orders via the restaurant's Facebook page, not social posting. Restaurant POS add-on is \"US$ 49 per month, per location\" (2-year commitment), not recorded as a plan.\nOrder Tiger: focus changed to food_truck (own food-truck page). No separate /uk pages exist (ordertiger.com/uk/pricing is 404); GBP comes from the pricing page's '£ UK' selector and \"from £59\" text. kds and social are partial because they appear only as a nav label / a paid \"Monthly social media packages\" line; walk-up is only in a testimonial, so not_mentioned; a WhatsApp icon in the footer has no text.\nSlerp: /pricing is password-protected today, so the plan is recorded with price_major null; the stored £125 could not be re-confirmed. capacity is per item per timeslot. \"Slerp doesn't charge your customers a service fee\" is about customers, so perorder stays not_mentioned. Instagram is mentioned only in a case-study context, so social not_mentioned.\nStorekit: today Starter Free, Connect £49, Grow £99, Pro £199, Enterprise from £995 per brand per month (all per location, excl. VAT) — the stored Grow 0 and Enterprise 199 are out of date. Every plan also charges a flat per-order rate whose amount the page does not state. Price quotes \"£99per month\"/\"£199per month\" are as the page text runs together. domain partial: \"Your own domain\" is a table row, not included on Starter. walkup partial: self-serve kiosk at the counter (add-on from Grow, +£69 per month). cardfee partial: card rates given only as tiers (\"Standard rates\" ... \"Our lowest rates\"), no numbers. Instagram appears only as \"Stories (Instagram-style content on the store)\", so social not_mentioned.\nWeevi: focus changed to food_truck (own /food-trucks pages). Pricing toggle shows £71/£36 and £78/£39 without readable labels; £71 recorded as stored, reviewer may prefer £78 if that is the monthly-billing side. Its FAQ says flat-rate fees may apply to orders beyond a cap in \"exceptional cases\" (summary only, no exact quote), so perorder \"no\" rests on \"Zero Commission\". \"Chat on WhatsApp\" is a chat link to Weevi, not ordering, so whatsapp not_mentioned. social partial: ordering via Google/Facebook/Instagram, not posting. Short quotes (\"£71\", \"Scheduled ordering\") are feature-list/price labels.\nYoello: price still hidden (no pricing page; \"Ask for a demo\"). Street food appears only in a testimonial (\"our street-food vendors who, without a mobile ordering platform would not be able to trade at all\"), no food-truck page, so focus stays nearest_local. Its Pay by Bank pitch (\"free you from typical card transaction fees\") gives no card-fee figures, so cardfee not_mentioned. The plan's period \"month\" is a placeholder; no period is stated."
+}

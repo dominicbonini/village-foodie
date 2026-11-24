@@ -1,0 +1,1567 @@
+{
+  "country": "FR",
+  "researched_on": "2026-11-24",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Eatch",
+      "website": "https://eatch.app",
+      "stored_id_prefix": "a207b996",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "food-truck software with order ahead and a chosen pickup time (click & collect); French site, EUR prices HT",
+      "eligibility": {
+        "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+        "food_url": "https://eatch.app",
+        "order_quote": "Commande à l’avance, heure de retrait au choix",
+        "order_url": "https://eatch.app"
+      },
+      "plans": [
+        {
+          "plan_name": "Standard",
+          "currency": "EUR",
+          "price_major": 89,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "89 € HT/mois tout compris, et 44,50 € HT/mois pendant 6 mois pour les 10 premiers food trucks.",
+          "url": "https://eatch.app/site-internet-food-truck",
+          "note": "Extra truck 45 € HT/month (\"chaque camion en plus à 45 € HT par mois\"). 0 € set-up (\"0 € de frais de mise en service\"). 30-day free trial."
+        },
+        {
+          "plan_name": "Membre Fondateur",
+          "currency": "EUR",
+          "price_major": 44.5,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Offre Membre Fondateur : 44,50 € HT/mois pendant 6 mois, puis 89 € HT.",
+          "url": "https://eatch.app",
+          "note": "Stored 4,450 was 100x too high: today it is 44.50 € HT per month (not a one-off fee), for the first 6 months only, then 89 € HT/month; limited to the first 10 food trucks."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Commande à l’avance, heure de retrait au choix",
+          "url": "https://eatch.app"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Les créneaux se ferment quand la cuisine est pleine.",
+          "url": "https://eatch.app"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Vos emplacements sont publiés par vous, à la journée ou en série hebdomadaire.",
+          "url": "https://eatch.app/site-internet-food-truck"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "La caisse continue sans réseau",
+          "url": "https://eatch.app"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Les commandes du site, de l’app et du comptoir arrivent au même endroit, avec l’heure de retrait.",
+          "url": "https://eatch.app"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Chaque camion a sa caisse et son ticket Z, sa carte et ses prix, son stock et son planning,",
+          "url": "https://eatch.app"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Oui, l’option existe et se règle depuis l’app avec une vérification par enregistrement DNS.",
+          "url": "https://eatch.app/site-internet-food-truck"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "puis 89 €/mois HT et 45 € par camion en plus.",
+          "url": "https://eatch.app"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Zéro commission sur vos ventes.",
+          "url": "https://eatch.app"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Les seuls frais d’encaissement sont ceux de votre terminal, au tarif de votre contrat :",
+          "url": "https://eatch.app"
+        }
+      ],
+      "check_urls": [
+        "https://eatch.app",
+        "https://eatch.app/site-internet-food-truck"
+      ]
+    },
+    {
+      "name": "Heustach",
+      "website": "https://heustach.fr",
+      "stored_id_prefix": "334357d0",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French click & collect platform (no courier fleet) where customers order ahead for a chosen slot; names the lunchtime food truck; pay-per-order, no subscription",
+      "eligibility": {
+        "food_quote": "Le food truck du midi, commandé avant d'arriver",
+        "food_url": "https://heustach.fr",
+        "order_quote": "Au créneau que vous choisissez au moment de commander, parmi ceux que le commerçant a ouverts.",
+        "order_url": "https://heustach.fr"
+      },
+      "plans": [
+        {
+          "plan_name": "Single offer (no subscription)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.25,
+          "setup_major": 0,
+          "quote": "Heustach coûte 0,25 € HT par commande payée en ligne, quel que soit le montant du panier.",
+          "url": "https://heustach.fr/je-suis-commercant/tarifs/",
+          "note": "0 € subscription, 0 € set-up; 0.25 € HT per order paid online only (free when paid in the shop). Stripe fees passed on: \"0,25 € TTC + 1,5 % du montant\". Food-truck focus is light: one homepage line names the food truck; the platform also serves other local shops."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Au créneau que vous choisissez au moment de commander, parmi ceux que le commerçant a ouverts.",
+          "url": "https://heustach.fr"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Vous ouvrez les horaires que vous voulez et limitez le nombre de commandes par créneau",
+          "url": "https://heustach.fr/je-suis-commercant/tarifs/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Un mois sans commande ne vous coûte rien.",
+          "url": "https://heustach.fr/je-suis-commercant/tarifs/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Heustach coûte 0,25 € HT par commande payée en ligne, quel que soit le montant du panier.",
+          "url": "https://heustach.fr/je-suis-commercant/tarifs/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "0,25 € TTC + 1,5 % du montant",
+          "url": "https://heustach.fr/je-suis-commercant/tarifs/"
+        }
+      ],
+      "check_urls": [
+        "https://heustach.fr",
+        "https://heustach.fr/je-suis-commercant/tarifs/"
+      ]
+    },
+    {
+      "name": "Nomad (nomadcaisse.fr)",
+      "website": "https://www.nomadcaisse.fr",
+      "stored_id_prefix": "11e41caa",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "food-truck till that DOES include customer click & collect with pickup slots on every plan (counter payment on Start, online payment from Pro); French site, EUR",
+      "eligibility": {
+        "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+        "food_url": "https://www.nomadcaisse.fr",
+        "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+        "order_url": "https://www.nomadcaisse.fr"
+      },
+      "plans": [
+        {
+          "plan_name": "Start",
+          "currency": "EUR",
+          "price_major": 59,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 250,
+          "quote": "59€ /mois",
+          "url": "https://www.nomadcaisse.fr",
+          "note": "\"Click & Collect avec paiement au comptoir\"; online payment not included. Set-up \"Mise en service : 250€\". No HT/TTC stated."
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "EUR",
+          "price_major": 99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 250,
+          "quote": "99€ /mois",
+          "url": "https://www.nomadcaisse.fr",
+          "note": "Adds online payment (Stripe, Stripe fees extra). 250€ set-up waived with a 12-month commitment."
+        },
+        {
+          "plan_name": "Pro+",
+          "currency": "EUR",
+          "price_major": 139,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 250,
+          "quote": "139€ /mois",
+          "url": "https://www.nomadcaisse.fr",
+          "note": "\"Tout Pro\" plus a packing screen. 250€ set-up waived with a 12-month commitment. Stored \"Fidélité\" 20€/mois is a loyalty add-on (\"Ajoutez un programme simple par téléphone avec messages automatiques.\"), not an ordering plan, so left out."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Click & Collect avec paiement au comptoir",
+          "url": "https://www.nomadcaisse.fr"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Limitez vos créneaux par nombre de commandes",
+          "url": "https://www.nomadcaisse.fr"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Vous pouvez créer plusieurs emplacements",
+          "url": "https://www.nomadcaisse.fr"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Écran cuisine Pro (inclus)",
+          "url": "https://www.nomadcaisse.fr"
+        },
+        {
+          "key": "offline",
+          "value": "no",
+          "quote": "Nomad fonctionne en ligne et nécessite une connexion Internet.",
+          "url": "https://www.nomadcaisse.fr"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Les commandes comptoir, click and collect et Uber Eats arrivent automatiquement dans le même flux de production.",
+          "url": "https://www.nomadcaisse.fr"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "59€ /mois",
+          "url": "https://www.nomadcaisse.fr"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Paiement en ligne : inclus (Stripe) — frais Stripe en plus.",
+          "url": "https://www.nomadcaisse.fr"
+        }
+      ],
+      "check_urls": [
+        "https://www.nomadcaisse.fr"
+      ]
+    },
+    {
+      "name": "Restaurant-internet.com",
+      "website": "https://restaurant-internet.com",
+      "stored_id_prefix": "75a79897",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French restaurant/food-truck website builder with click & collect and pickup slots, a dedicated food-truck page with weekly location planning; EUR prices",
+      "eligibility": {
+        "food_quote": "Votre Food Truck est mobile ? Votre site l'est aussi.",
+        "food_url": "https://restaurant-internet.com/foodtrucks",
+        "order_quote": "Vos clients viendront récupérer leurs plats en choisissant un créneau disponible.",
+        "order_url": "https://restaurant-internet.com"
+      },
+      "plans": [
+        {
+          "plan_name": "E-commerce",
+          "currency": "EUR",
+          "price_major": 39,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "39€ par mois",
+          "url": "https://restaurant-internet.com/pricing",
+          "note": "No commission; no set-up fee (\"pas de frais d'installation\"). Stripe charges 0.25 € + 1.4% per order. Optional yearly prepay 468€. HT/TTC not stated. The 19€/month Vitrine plan has no online ordering."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Vos clients viendront récupérer leurs plats en choisissant un créneau disponible.",
+          "url": "https://restaurant-internet.com"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Afficher votre menu en ligne pour attiser l'appétit de vos clients et proposez la précommande.",
+          "url": "https://restaurant-internet.com/foodtrucks"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Limitation possible du nombre de commande par créneau, désactivation d'un créneau, modification de l'heure du retrait",
+          "url": "https://restaurant-internet.com"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Le planning de la semaine sera mis en avant sur la page d'accueil.",
+          "url": "https://restaurant-internet.com/foodtrucks"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Liez votre page Facebook, Twitter, Instagram, Yelp, Youtube, Tripadvisor et autres.",
+          "url": "https://restaurant-internet.com/foodtrucks"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Hébergement et nom de domaine en .fr",
+          "url": "https://restaurant-internet.com/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "39€ par mois",
+          "url": "https://restaurant-internet.com/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Sans commission, sans engagement, essai gratuit",
+          "url": "https://restaurant-internet.com/foodtrucks"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Stripe factura une commission de 25 centimes + 1,4% par commande.",
+          "url": "https://restaurant-internet.com/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://restaurant-internet.com",
+        "https://restaurant-internet.com/foodtrucks",
+        "https://restaurant-internet.com/pricing"
+      ]
+    },
+    {
+      "name": "Beau Camion",
+      "website": "https://beaucamion.fr",
+      "stored_id_prefix": "640ecd44",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French food-truck website + click & collect with pickup slots, location/event planning; EUR prices",
+      "eligibility": {
+        "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+        "food_url": "https://beaucamion.fr/pricing",
+        "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+        "order_url": "https://beaucamion.fr"
+      },
+      "plans": [
+        {
+          "plan_name": "Click & Collect (module)",
+          "currency": "EUR",
+          "price_major": 49,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "49€",
+          "url": "https://beaucamion.fr/pricing",
+          "note": "Price shown as \"49€\" / \"par mois\". \"Sans frais d'installation\". HT/TTC not stated. Ordering module to add to an existing site."
+        },
+        {
+          "plan_name": "Synergie",
+          "currency": "EUR",
+          "price_major": 69,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 1290,
+          "quote": "69€",
+          "url": "https://beaucamion.fr/pricing",
+          "note": "Price shown as \"69€\" / \"par mois\". One-off set-up: \"1 290 € (ou 4x 322,50€) de frais unique (Configuration Clé en main)\". HT/TTC not stated."
+        },
+        {
+          "plan_name": "Vitrine",
+          "currency": "EUR",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 1290,
+          "quote": "29€",
+          "url": "https://beaucamion.fr/pricing",
+          "note": "Stored 2,900 was 100x too high: today the page shows \"29€\" / \"par mois\" (monthly), plus the one-off 1 290 € set-up quoted. Vitrine is a website only (\"Votre site web professionnel pour être trouvé partout.\"), no click & collect."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+          "url": "https://beaucamion.fr"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "Beau Camion lisse les commandes par créneaux et gère vos ruptures de stock en temps réel.",
+          "url": "https://beaucamion.fr"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Synchronisez votre planning avec Google Maps, Facebook et votre site en un clic.",
+          "url": "https://beaucamion.fr"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Synchronisez votre planning avec Google Maps, Facebook et votre site en un clic.",
+          "url": "https://beaucamion.fr"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "partial",
+          "quote": "Stocks en temps réel, borne, QR code & lien de bio",
+          "url": "https://beaucamion.fr"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "par mois",
+          "url": "https://beaucamion.fr/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Commande en ligne 0% commission",
+          "url": "https://beaucamion.fr/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "100% de vos marges (hors frais bancaires / titres-restaurant)",
+          "url": "https://beaucamion.fr/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://beaucamion.fr",
+        "https://beaucamion.fr/pricing"
+      ]
+    },
+    {
+      "name": "Place à emporter",
+      "website": "https://placeaemporter.fr",
+      "stored_id_prefix": "0947b3fc",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French ordering site + counter system for food trucks and takeaways, orders taken on pickup slots sized to kitchen capacity; one-off price, no subscription (no online payment: customers pay at pickup)",
+      "eligibility": {
+        "food_quote": "Food trucks, camions et commerces à emporter",
+        "food_url": "https://placeaemporter.fr",
+        "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+        "order_url": "https://placeaemporter.fr"
+      },
+      "plans": [
+        {
+          "plan_name": "Installation complète",
+          "currency": "EUR",
+          "price_major": 2000,
+          "period": "one_off",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "À partir de 2 000 €",
+          "url": "https://placeaemporter.fr",
+          "note": "ONE-OFF fee, not monthly: \"Une seule fois. Pas de mensualité, pas de licence à renouveler, pas de commission sur vos commandes.\" \"From\" price. Domain and hosting paid separately to your host. The stored plans (one-off installation 0, Site vitrine 743, Site vitrine et supports 949) are not shown on the site today; no tarifs page (/tarifs/ is 404), quotes via /contact/."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "La capacité d'un créneau se compte en temps de cuisine.",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Plusieurs emplacements, oui",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "whatsapp",
+          "value": "no",
+          "quote": "Pas de notifications WhatsApp.",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "L'écran de cuisine, lui, n'a aucune cible : il n'est fait que pour être lu.",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "offline",
+          "value": "no",
+          "quote": "Pas de caisse hors ligne. Le poste demande une connexion.",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Une vente au comptoir est une vraie commande",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Plusieurs emplacements, oui",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Restent à votre charge le nom de domaine et l'hébergement, à votre nom",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "0 euro d'abonnement logiciel par mois",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Une seule fois. Pas de mensualité, pas de licence à renouveler, pas de commission sur vos commandes.",
+          "url": "https://placeaemporter.fr"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://placeaemporter.fr",
+        "https://placeaemporter.fr/tarifs/"
+      ]
+    },
+    {
+      "name": "Truckons",
+      "website": "https://truckons.com",
+      "stored_id_prefix": "b82dcffe",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French food-truck page + click & collect (order online, collect at the truck) with weekly planning; EUR plans on its own sign-up page",
+      "eligibility": {
+        "food_quote": "Inscrivez votre food truck gratuitement",
+        "food_url": "https://truckons.com",
+        "order_quote": "commander en ligne pour récupérer sur place quand le camion le propose",
+        "order_url": "https://truckons.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Gratuit",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 1.59,
+          "setup_major": null,
+          "quote": "Gratuit — 0 €/mois · sans abonnement",
+          "url": "https://truckons.com/rejoindre",
+          "note": "No commission on dishes, but the CUSTOMER pays a service fee \"dès 1,59 € (1,65 € sur un panier de 15 €)\". Online payment included."
+        },
+        {
+          "plan_name": "Au camion",
+          "currency": "EUR",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Au camion — 29 €/mois · sans engagement",
+          "url": "https://truckons.com/rejoindre",
+          "note": "Online ordering, payment at the counter (no online payment); no service fee."
+        },
+        {
+          "plan_name": "Clé en main",
+          "currency": "EUR",
+          "price_major": 69,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Clé en main — 69 €/mois · sans engagement",
+          "url": "https://truckons.com/rejoindre",
+          "note": "Online ordering and payment, 0 € fee for the customer, page set-up and upkeep, monthly ready-to-post visuals. The stored \"Commandable\" (0) plan no longer appears; the page shows only these three."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "commander en ligne pour récupérer sur place quand le camion le propose",
+          "url": "https://truckons.com"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Tu changes ton emplacement, tes horaires ou ta carte, et ta page se met à jour.",
+          "url": "https://truckons.com/rejoindre"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "Nouvelle ardoise ? Envoie-la en photo sur WhatsApp, on met ta carte à jour.",
+          "url": "https://truckons.com/rejoindre"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Des visuels prêts à poster chaque mois",
+          "url": "https://truckons.com/rejoindre"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "no",
+          "quote": "Il faut du réseau, la 4G suffit.",
+          "url": "https://truckons.com/rejoindre"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Commandes sans limite, plusieurs camions, ton équipe.",
+          "url": "https://truckons.com/rejoindre"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Au camion — 29 €/mois · sans engagement",
+          "url": "https://truckons.com/rejoindre"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "dès 1,59 € (1,65 € sur un panier de 15 €)",
+          "url": "https://truckons.com/rejoindre"
+        },
+        {
+          "key": "cardfee",
+          "value": "no",
+          "quote": "Paiement par carte : les frais bancaires ne sont pas retenus sur ton virement.",
+          "url": "https://truckons.com/rejoindre"
+        }
+      ],
+      "check_urls": [
+        "https://truckons.com",
+        "https://truckons.com/logiciel-food-truck",
+        "https://truckons.com/rejoindre"
+      ]
+    },
+    {
+      "name": "Achil",
+      "website": "https://achil.com",
+      "stored_id_prefix": "a8ecbf68",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French local-shop online ordering (click & collect, local delivery) with a dedicated food-truck page; Free and Standard plans in EUR",
+      "eligibility": {
+        "food_quote": "Simplifiez le quotidien de votre food truck grâce à la commande en ligne avec Achil.",
+        "food_url": "https://achil.com/web/food-truck/",
+        "order_quote": "Récupérez vos achats sans faire la queue en Click & Collect ou en vous faisant livrer",
+        "order_url": "https://achil.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Free",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 249,
+          "quote": "0 € / mois",
+          "url": "https://achil.com/web/tarifs/",
+          "note": "Stored as \"Gratuit\"; the page calls it \"Formule Free\". Online card-payment fee (recorded as cardfee, not a commission) applies only with the optional online payment: \"1,9 % + 0,19 € / transaction\". Set-up \"249 € HT\", \"Offert en activant le paiement en ligne\". Subscription HT/TTC not stated."
+        },
+        {
+          "plan_name": "Standard",
+          "currency": "EUR",
+          "price_major": 19.99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "19,99 € / mois",
+          "url": "https://achil.com/web/tarifs/",
+          "note": "Monthly billing; or 14,99 € / mois billed yearly (-25%). Online-payment fee \"1,7 % + 0,17 € / transaction\". Set-up \"199 € HT\", waived when online payment is activated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Optimisez votre service avec le click & collect et la livraison locale pour vos spécialités",
+          "url": "https://achil.com/web/food-truck/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Mettez à jour l'adresse de votre food truck à tout moment pour que vos clients vous retrouvent facilement.",
+          "url": "https://achil.com/web/food-truck/"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "19,99 € / mois",
+          "url": "https://achil.com/web/tarifs/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0 frais d'installation, pas d'abonnement, pas de commission, commandes illimitées et aucun paiement requis.",
+          "url": "https://achil.com/web/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "1,9 % + 0,19 € / transaction",
+          "url": "https://achil.com/web/tarifs/"
+        }
+      ],
+      "check_urls": [
+        "https://achil.com",
+        "https://achil.com/web/",
+        "https://achil.com/web/tarifs/",
+        "https://achil.com/web/food-truck/"
+      ]
+    },
+    {
+      "name": "Vroomeat",
+      "website": "https://vroomeat.fr",
+      "stored_id_prefix": "86a8eea4",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French food-truck website + pre-order / click & collect with slots, weekly location planning and kitchen screen; EUR prices (one-off install + monthly)",
+      "eligibility": {
+        "food_quote": "Vroom'Eat est taillé pour les cuisines mobiles (food trucks, triporteurs, traiteurs ambulants).",
+        "food_url": "https://vroomeat.fr",
+        "order_quote": "Le client choisit son menu à l'avance depuis son téléphone et reçoit son numéro de commande.",
+        "order_url": "https://vroomeat.fr"
+      },
+      "plans": [
+        {
+          "plan_name": "Start",
+          "currency": "EUR",
+          "price_major": 39,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 890,
+          "quote": "39€/mois",
+          "url": "https://vroomeat.fr",
+          "note": "One-off set-up \"890€\" then 39€/mois (\"Installation unique, puis un abonnement mensuel qui couvre hébergement, mises à jour et support.\"). HT/TTC not stated."
+        },
+        {
+          "plan_name": "Rouler",
+          "currency": "EUR",
+          "price_major": 79,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 1890,
+          "quote": "79€/mois",
+          "url": "https://vroomeat.fr",
+          "note": "One-off set-up \"1 890€\". HT/TTC not stated."
+        },
+        {
+          "plan_name": "Flotte",
+          "currency": "EUR",
+          "price_major": 149,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "à partir de 149€/mois",
+          "url": "https://vroomeat.fr",
+          "note": "\"From\" price; multi-truck plan. Set-up not stated for this plan."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Le client choisit son menu à l'avance depuis son téléphone et reçoit son numéro de commande.",
+          "url": "https://vroomeat.fr"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Précommande en 3 clics, retrait express.",
+          "url": "https://vroomeat.fr"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Gestion des créneaux pour lisser l'affluence",
+          "url": "https://vroomeat.fr"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Définissez vos emplacements de la semaine en 2 clics.",
+          "url": "https://vroomeat.fr"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Un écran ultra-rapide pour voir les commandes entrantes",
+          "url": "https://vroomeat.fr"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "Mode hors-ligne",
+          "url": "https://vroomeat.fr"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Multi-trucks & multi-emplacements",
+          "url": "https://vroomeat.fr"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Installation unique, puis un abonnement mensuel qui couvre hébergement, mises à jour et support.",
+          "url": "https://vroomeat.fr"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "0% de commission sur vos ventes",
+          "url": "https://vroomeat.fr"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "seuls les frais bancaires standards Stripe s'appliquent",
+          "url": "https://vroomeat.fr"
+        }
+      ],
+      "check_urls": [
+        "https://vroomeat.fr"
+      ]
+    },
+    {
+      "name": "LivePepper",
+      "website": "https://www.livepepper.fr",
+      "stored_id_prefix": "5bb256b3",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French restaurant click & collect / order-ahead tool that also pitches food trucks with planned pickup points; EUR prices HT",
+      "eligibility": {
+        "food_quote": "Votre Food Truck est mobile et vous avez un planning bien précis",
+        "food_url": "https://www.livepepper.fr",
+        "order_quote": "Commande à l'avance",
+        "order_url": "https://www.livepepper.fr/tarifs/"
+      },
+      "plans": [
+        {
+          "plan_name": "Click & collect avancé (Standard)",
+          "currency": "EUR",
+          "price_major": 59,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 599,
+          "quote": "A partir de 59 € par mois",
+          "url": "https://www.livepepper.fr/tarifs/",
+          "note": "\"From\" price from the banner; per-plan amounts were not readable (only \"€\" visible, likely rendered by script). Billed yearly: \"Sur 12 mois. Paiement annuel\". \"Tarifs HT\". Set-up \"frais de mise en place à partir de 599 €\" (FAQ: only if LivePepper does the set-up). Expert (+ delivery) and Premium (+ app) tiers exist with no readable price."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Commande à l'avance",
+          "url": "https://www.livepepper.fr/tarifs/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "LivePepper s’adapte et met en place des points de retrait adaptés.",
+          "url": "https://www.livepepper.fr"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "A partir de 2 restaurants jusqu'à des centaines de points de vente",
+          "url": "https://www.livepepper.fr"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Hébergement du nom de domaine",
+          "url": "https://www.livepepper.fr/tarifs/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Il n'y a pas de commission sur les commandes. Vous payez seulement un abonnement mensuel.",
+          "url": "https://www.livepepper.fr/tarifs/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Il n'y a pas de commission sur les commandes. Vous payez seulement un abonnement mensuel.",
+          "url": "https://www.livepepper.fr/tarifs/"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Frais partenaires en suppléments.",
+          "url": "https://www.livepepper.fr/tarifs/"
+        }
+      ],
+      "check_urls": [
+        "https://www.livepepper.fr",
+        "https://www.livepepper.fr/tarifs/"
+      ]
+    },
+    {
+      "name": "bonappli",
+      "website": "https://bonappli.fr",
+      "stored_id_prefix": "4eff2bd5",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French website builder for restaurants and food trucks with click & collect and pickup slots (pay at pickup); EUR prices per published outlet",
+      "eligibility": {
+        "food_quote": "Restaurants, pizzerias, snacks, food trucks.",
+        "food_url": "https://bonappli.fr",
+        "order_quote": "Vos clients commandent en ligne et choisissent un créneau de retrait. Paiement au retrait, sans commission.",
+        "order_url": "https://bonappli.fr"
+      },
+      "plans": [
+        {
+          "plan_name": "Classique",
+          "currency": "EUR",
+          "price_major": 8,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "8 €/ mois",
+          "url": "https://bonappli.fr/tarifs",
+          "note": "Per published outlet (\"Par établissement publié, 14 jours d'essai\"). Includes \"Click & Collect et gestion des commandes\". HT/TTC not stated. The free Starter plan has no click & collect."
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "EUR",
+          "price_major": 12,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "12 €/ mois",
+          "url": "https://bonappli.fr/tarifs",
+          "note": "Per published outlet. \"Tout Classique +\" own domain and extra pages. HT/TTC not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Vos clients commandent en ligne et choisissent un créneau de retrait. Paiement au retrait, sans commission.",
+          "url": "https://bonappli.fr"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Vous définissez la durée des créneaux et le nombre de commandes acceptées pour chacun.",
+          "url": "https://bonappli.fr/solutions/food-truck"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Vos emplacements, votre carte du jour et le retrait sur place.",
+          "url": "https://bonappli.fr/solutions/food-truck"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Gérez tous vos points de vente depuis un seul compte, chacun avec son site et sa carte.",
+          "url": "https://bonappli.fr"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Servez votre site sur votre propre nom de domaine plutôt que sur une adresse bonappli.",
+          "url": "https://bonappli.fr"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "8 €/ mois",
+          "url": "https://bonappli.fr/tarifs"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Aucune commission sur les commandes",
+          "url": "https://bonappli.fr"
+        },
+        {
+          "key": "cardfee",
+          "value": "no",
+          "quote": "Paiement au retrait, sans frais de transaction",
+          "url": "https://bonappli.fr"
+        }
+      ],
+      "check_urls": [
+        "https://bonappli.fr",
+        "https://bonappli.fr/solutions/food-truck",
+        "https://bonappli.fr/tarifs"
+      ]
+    },
+    {
+      "name": "L'Addition (commande en ligne)",
+      "website": "https://www.laddition.com/fr/laddition-click-and-collect",
+      "stored_id_prefix": "fca70222",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French restaurant till with an L'Addition Click & Collect online-ordering module and a food-truck page; no public price (quote only). Stored URL commande-en-ligne.laddition.com now returns 404",
+      "eligibility": {
+        "food_quote": "Offrez vous la mobilité pour votre food truck ! Simplicité et rapidité de prise de commande",
+        "food_url": "https://www.laddition.com/fr/prix-logiciel-caisse",
+        "order_quote": "Intégré à votre site web ou vos réseaux sociaux, ce lien vers la commande à distance créera de nouvelles opportunités de ventes.",
+        "order_url": "https://www.laddition.com/fr/laddition-click-and-collect"
+      },
+      "plans": [
+        {
+          "plan_name": "L'Addition Click & Collect",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": null,
+          "url": "https://www.laddition.com/fr/prix-logiciel-caisse",
+          "note": "Price on request: the pricing page lists options for a quote (\"Je veux un devis !\") with no amounts. Weak food-truck fit: the food-truck line is about the till's mobility; the click & collect page itself does not mention pickup times or slots."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Intégré à votre site web ou vos réseaux sociaux, ce lien vers la commande à distance créera de nouvelles opportunités de ventes.",
+          "url": "https://www.laddition.com/fr/laddition-click-and-collect"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "vos commandes en salle et celles en ligne sont toutes accessibles depuis votre caisse enregistreuse",
+          "url": "https://www.laddition.com/fr/laddition-click-and-collect"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://commande-en-ligne.laddition.com",
+        "https://www.laddition.com/",
+        "https://www.laddition.com/fr/laddition-click-and-collect",
+        "https://www.laddition.com/fr/prix-logiciel-caisse"
+      ]
+    },
+    {
+      "name": "Feadys",
+      "website": "https://feadys.com",
+      "stored_id_prefix": "3ec3fbaa",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "French-language menu/ordering/site builder with a food-truck page offering order ahead; EUR yearly prices; multi-country (Morocco-based support line, France listed)",
+      "eligibility": {
+        "food_quote": "Votre food truck mérite une présence digitale : menu QR code, commande en ligne et site web pour vos clients fidèles.",
+        "food_url": "https://feadys.com/food-truck/",
+        "order_quote": "Commande à l'avance pour réduire l'attente",
+        "order_url": "https://feadys.com/food-truck/",
+        "country_quote": "Oui ! Feady's est accessible partout dans le monde : Maroc, France, Belgique, Suisse, Canada, Côte d'Ivoire, Sénégal",
+        "country_url": "https://feadys.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "EUR",
+          "price_major": 100,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "100 €/an",
+          "url": "https://feadys.com/food-truck/",
+          "note": "Yearly price only; includes \"300 Commandes / mois\". 14-day free trial. HT/TTC not stated."
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "EUR",
+          "price_major": 150,
+          "period": "year",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "150 €/an",
+          "url": "https://feadys.com/food-truck/",
+          "note": "Yearly price only; \"1000 Commandes / mois\" and own domain. Starter (70 €/an) appears to be menu-only (consultations, no order allowance listed), so left out. A lifetime option is shown without an amount."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Commande à l'avance pour réduire l'attente",
+          "url": "https://feadys.com/food-truck/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Partagez votre emplacement et menu du jour facilement",
+          "url": "https://feadys.com/food-truck/"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "Support par Whatsapp 7/7 jrs",
+          "url": "https://feadys.com"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Un seul lien dans votre bio Instagram qui regroupe tout",
+          "url": "https://feadys.com/food-truck/"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "monrestaurant.com ou maboutique.com — votre propre adresse web professionnelle avec certificat SSL inclus.",
+          "url": "https://feadys.com"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Non, Feady's ne prend aucune commission sur vos ventes.",
+          "url": "https://feadys.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://feadys.com",
+        "https://feadys.com/food-truck/"
+      ]
+    },
+    {
+      "name": "Food Truck Concept",
+      "website": "https://foodtruck-concept.com",
+      "stored_id_prefix": "5286c363",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "truck builder and equipment supplier, not an ordering tool: \"Food Truck Concept conçoit, aménage et équipe des food trucks, remorques et kiosques prêts à servir.\" No customer online ordering",
+      "eligibility": {
+        "food_quote": "Votre food truck aménagé sur mesure, clé en main",
+        "food_url": "https://foodtruck-concept.com"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://foodtruck-concept.com"
+      ]
+    }
+  ],
+  "notes": "Group B re-check of the 8 stored FR competitors plus 6 never-checked stored candidates; no web searches used (all vendor sites given). 100x fixes: Eatch Membre Fondateur is 44.50 EUR HT per MONTH for the first 6 months only (then 89 EUR HT), limited to the first 10 trucks, not a one-off fee; Beau Camion Vitrine is 29 EUR per month (plus a one-off 1 290 EUR set-up; website only, no click & collect). Place à emporter: today shows a single ONE-OFF 'À partir de 2 000 €' installation, no subscription; the stored 743/949 'Site vitrine' plans are not on the site any more (period recorded as one_off). Nomad: confirmed customer click & collect with slots on every plan (Start pays at the counter); stored Fidélité 20 EUR is a loyalty add-on, left out. Truckons: stored 'Commandable' plan no longer exists; Gratuit has a customer-paid service fee from 1.59 EUR. L'Addition: stored URL commande-en-ligne.laddition.com returns 404; re-pointed to www.laddition.com/fr/laddition-click-and-collect; no public price (devis), weak food-truck fit. LivePepper: only the 'A partir de 59 € par mois' banner was readable (HT, billed yearly); per-plan amounts are script-rendered. Feadys: yearly EUR prices only; multi-country (Morocco WhatsApp number), France named in its FAQ. Food Truck Concept is a truck builder, not_relevant. Quotes came via the page reader asked for exact sentences; a few short price strings (e.g. '49€', 'par mois' on beaucamion.fr/pricing) are split across page elements."
+}

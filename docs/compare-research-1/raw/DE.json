@@ -1,0 +1,1269 @@
+{
+  "country": "DE",
+  "researched_on": "2026-11-24",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Liefersoft",
+      "website": "https://liefersoft.de",
+      "stored_id_prefix": "79fcc90d",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "gastro POS suite (DE/AT/CH/ES) that names food trucks as an audience; own webshop with pre-orders and pickup time windows (webshop included from GOLD); net EUR prices",
+      "eligibility": {
+        "food_quote": "Über 3.000 Betriebe in Deutschland, Österreich, der Schweiz und Spanien — vom Foodtruck bis zur Sterneküche.",
+        "food_url": "https://liefersoft.de",
+        "order_quote": "Vorbestellung, Lieferung und Abholung mit eigenen Zeitfenstern",
+        "order_url": "https://liefersoft.de",
+        "country_quote": "Über 3.000 Betriebe in Deutschland, Österreich, der Schweiz und Spanien — vom Foodtruck bis zur Sterneküche.",
+        "country_url": "https://liefersoft.de"
+      },
+      "plans": [
+        {
+          "plan_name": "GOLD",
+          "currency": "EUR",
+          "price_major": 129,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.09,
+          "setup_major": 299,
+          "quote": "Mit Webshop & App · ab 129 €/Mon.",
+          "url": "https://liefersoft.de",
+          "note": "First plan with the webshop (\"Webshop inkl. (eigene Domain, SEO)\"). 129 € is at a 60-month term (\"(bei 60 Mon. Laufzeit)\"); elsewhere the page says \"GOLD ab 149 €/Mon.\" (36-month card). \"Onboarding: 299 € einmalig\". \"Alle Preise zzgl. MwSt. · TSE 10 €/Mon. · Onboarding einmalig\". Webshop and self-order payments \"+ 0,09 € netto je erfolgreicher Zahlung\"; webshop fee is a revenue tier (example \"Staffel 5,0 %\"), tiers not listed, so per_order_pct left null. Stored 129 still matches."
+        },
+        {
+          "plan_name": "STARTUP",
+          "currency": "EUR",
+          "price_major": 39,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 199,
+          "quote": "Für Neugründer · 39 €/Mon. · 24 Monate fest",
+          "url": "https://liefersoft.de",
+          "note": "Webshop NOT included in STARTUP (its feature list is POS, QR Order & Pay, delivery-platform integration); the webshop is an add-on (\"Webshop zubuchbar: +100 € Onboarding (einmalig)\"), add-on monthly price not stated. Onboarding 199 € per the reader (not verified verbatim). Stored 39 still matches, but this is not an online-ordering plan on its own."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Vorbestellung, Lieferung und Abholung mit eigenen Zeitfenstern",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Vorbestellungen, Terminbestellungen & Lieferung möglich",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Einmal einstellen — die Kanäle erscheinen in jedem Filial-Webshop und in den Gäste-E-Mails.",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Küchenmonitore je Station, Gangsteuerung und klare Zeiten statt Zuruf.",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "Einfach, schnell und günstig starten: ein Handgerät, mobil bezahlen, Standort wechseln — läuft auch bei schlechtem Netz.",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Kasse, Tisch, Küche, Lieferung, eigener Webshop und Zahlung in einem System.",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Karten und Aktionen zentral ausrollen, Auswertung über alle Standorte in Echtzeit.",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Webshop auf eigener Domain",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "ab 39 € / Monat",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "+ 0,09 € netto je erfolgreicher Zahlung",
+          "url": "https://liefersoft.de"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Ab 1,19 % + 0,09 € für EC, Giro & Kreditkarte am Terminal – transparent, ohne versteckte Kosten",
+          "url": "https://liefersoft.de"
+        }
+      ],
+      "check_urls": [
+        "https://liefersoft.de"
+      ]
+    },
+    {
+      "name": "GastroDok",
+      "website": "https://gastrodok.de",
+      "stored_id_prefix": "abd86253",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "German gastro templates + software; its Bestellsystem takes online pickup orders for a chosen time slot, with an Imbiss & Foodtruck solution page; pay at pickup, no online payment; prices incl. USt",
+      "eligibility": {
+        "food_quote": "Imbiss und Foodtruck leben von Tempo an der Theke und kleinen Margen pro Portion.",
+        "food_url": "https://gastrodok.de/loesungen/imbiss-foodtruck",
+        "order_quote": "Gäste stellen den Warenkorb zusammen und wählen eine Abholzeit — in Ihrem Dashboard läuft die Bestellung mit allen Positionen ein.",
+        "order_url": "https://gastrodok.de/bestellsystem-gastronomie"
+      },
+      "plans": [
+        {
+          "plan_name": "Bestellsystem Monatlich",
+          "currency": "EUR",
+          "price_major": 29,
+          "period": "month",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": 0,
+          "quote": "Unbegrenzte Bestellungen — 0 % Provision",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie",
+          "note": "Price card reads \"29 € / Monat\" and \"inkl. USt, zum Laufzeitende kündbar\". \"Alle Preise inklusive Umsatzsteuer. Keine Einrichtungsgebühr, keine Provision pro Bestellung.\" 14-day free trial. Needs the (free) GastroDok QR menu. Stored 29 still matches."
+        },
+        {
+          "plan_name": "Bestellsystem Jährlich",
+          "currency": "EUR",
+          "price_major": 290,
+          "period": "year",
+          "vat": "incl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": 0,
+          "quote": "290 € / Jahr",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie",
+          "note": "\"inkl. USt, entspricht zwei Freimonaten\". Stored 24.17 was a derived monthly figure; the page states only the yearly 290 €."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Gäste stellen den Warenkorb zusammen und wählen eine Abholzeit — in Ihrem Dashboard läuft die Bestellung mit allen Positionen ein.",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Pro Fenster legen Sie fest, wie viele Bestellungen Ihre Küche schafft; ist das Fenster voll, wird es nicht mehr angeboten.",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Für getrennte Karten je Standort legen Sie im Pro-Plan bis zu fünf Karten an.",
+          "url": "https://gastrodok.de/loesungen/imbiss-foodtruck"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "14 Tage kostenlos testen — danach automatisch 29 €/Monat",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Alle Preise inklusive Umsatzsteuer. Keine Einrichtungsgebühr, keine Provision pro Bestellung.",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie"
+        },
+        {
+          "key": "cardfee",
+          "value": "no",
+          "quote": "Es gibt keine Auszahlungsfristen, keine Zahlungsdienstleister-Gebühren und keine Rückabwicklung über Dritte.",
+          "url": "https://gastrodok.de/bestellsystem-gastronomie"
+        }
+      ],
+      "check_urls": [
+        "https://gastrodok.de",
+        "https://gastrodok.de/bestellsystem-gastronomie",
+        "https://gastrodok.de/loesungen/imbiss-foodtruck"
+      ]
+    },
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com/de/",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "multi-country ordering platform with a German site, EUR fees and a food-truck use-case page; scheduled pickup orders for a chosen date and time; no monthly fee, 0,45 € per order paid by the customer",
+      "eligibility": {
+        "food_quote": "Betreiben Sie Ihren Food Truck smarter. Kunden bestellen per Handy während sie warten — kürzere Schlangen, schnellerer Umsatz und bargeldloses Bezahlen ohne teure POS-Hardware.",
+        "food_url": "https://www.foxifood.com/de/anwendungsfalle/food-truck/",
+        "order_quote": "Ermöglichen Sie Ihren Kunden, Bestellungen im Voraus für eine bestimmte Abhol- oder Lieferzeit aufzugeben.",
+        "order_url": "https://www.foxifood.com/de/funktionen/geplante-bestellungen/",
+        "country_quote": "Ja! Sie können Ihre eigene Domain (wie pizza-luigi.de) mit automatischem SSL-Zertifikat verbinden.",
+        "country_url": "https://www.foxifood.com/de/"
+      },
+      "plans": [
+        {
+          "plan_name": "Pay-per-Order",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.45,
+          "setup_major": 0,
+          "quote": "Die einzige Gebühr ist eine Bearbeitungsgebühr von 0,45 € pro Bestellung — gleichermaßen bei Karte, Bargeld und Überweisung —, die der Kunde zusätzlich zur Bestellung zahlt.",
+          "url": "https://www.foxifood.com/de/",
+          "note": "Price table: \"Monatliche Gebühr\" 0 €, \"Einrichtungsgebühr\" 0 €, \"Vertragsbindung\" Keine. The 0,45 € is added to the customer's bill, not charged to the business. Stripe card fee extra (typically 1,5 % / 2 % + 0,25 €). Delivery priced by distance. Also a 5 % customer discount (\"Die 5% gehen als Rabatt an den Endkunden.\"). VAT not stated. Stored 0 still matches."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Gäste wählen bei der Bestellung ihre bevorzugte Abhol- oder Lieferzeit. Keine Last-Minute-Hektik mehr.",
+          "url": "https://www.foxifood.com/de/funktionen/geplante-bestellungen/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Nehmen Sie große Catering-Bestellungen Tage oder Wochen im Voraus an. Firmenessen, Geburtstagsfeiern und Events — alles in einem System.",
+          "url": "https://www.foxifood.com/de/funktionen/geplante-bestellungen/"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Sie können verfügbare Zeitfenster festlegen, bestimmte Daten sperren (Feiertage, Wartung) und die Anzahl geplanter Bestellungen pro Zeitfenster begrenzen",
+          "url": "https://www.foxifood.com/de/funktionen/geplante-bestellungen/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Küchenanzeige",
+          "url": "https://www.foxifood.com/de/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Ja! Sie können Ihre eigene Domain (wie pizza-luigi.de) mit automatischem SSL-Zertifikat verbinden.",
+          "url": "https://www.foxifood.com/de/"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "FoxiFood hat keine monatliche Gebühr und nimmt keine Provision auf Ihren Umsatz.",
+          "url": "https://www.foxifood.com/de/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Die einzige Gebühr ist eine Bearbeitungsgebühr von 0,45 € pro Bestellung — gleichermaßen bei Karte, Bargeld und Überweisung —, die der Kunde zusätzlich zur Bestellung zahlt.",
+          "url": "https://www.foxifood.com/de/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "* Die Kartengebühr wird direkt vom Zahlungsanbieter (Stripe) berechnet — typisch 1,5% + 0,25 € für Standard-EU-Karten und rund 2% plus 0,25 € für Firmenkarten.",
+          "url": "https://www.foxifood.com/de/"
+        }
+      ],
+      "check_urls": [
+        "https://www.foxifood.com/de/",
+        "https://www.foxifood.com/de/anwendungsfalle/food-truck/",
+        "https://www.foxifood.com/de/funktionen/geplante-bestellungen/",
+        "https://www.foxifood.com/de/funktionen/bestellverwaltung/"
+      ]
+    },
+    {
+      "name": "Jamezz",
+      "website": "https://jamezz.com/de",
+      "stored_id_prefix": "ce1df15a",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Dutch self-ordering platform selling in Germany, with a Foodtrucks page: webshop / QR pre-orders with a chosen pickup slot at the truck; price only by quote (fixed monthly subscription, 0 % commission)",
+      "eligibility": {
+        "food_quote": "Foodtruck-Software für Bestellung und Bezahlung auf Events",
+        "food_url": "https://jamezz.com/de/branchen/foodtrucks",
+        "order_quote": "Gäste bestellen im Voraus über den Webshop oder den QR-Code, wählen eine Abholzeit und holen ihre Bestellung am Truck ab.",
+        "order_url": "https://jamezz.com/de/branchen/foodtrucks",
+        "country_quote": "Jamezz liefert und betreut seine Lösungen in Deutschland sowie in ganz Österreich und der Schweiz.",
+        "country_url": "https://jamezz.com/de"
+      },
+      "plans": [
+        {
+          "plan_name": "Bestell-Webshop (Flex / Saison / Jahr)",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": null,
+          "quote": "Der Bestell-Webshop hat ein festes Monatsabonnement und einmalige Einrichtungskosten. Auf Bestellungen zahlen Sie 0 % Provision.",
+          "url": "https://jamezz.com/de/bestellsystem-gastronomie-kosten",
+          "note": "Price on request: \"Den Betrag für Ihren Betrieb erhalten Sie in einem Angebot.\" Fixed monthly fee per solution and location plus one-off set-up per solution; Flex (monthly cancellable), Saison or Jahr subscriptions. No amounts on the site. Stored 'hidden' still correct."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Gäste bestellen im Voraus über den Webshop oder den QR-Code, wählen eine Abholzeit und holen ihre Bestellung am Truck ab.",
+          "url": "https://jamezz.com/de/branchen/foodtrucks"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Gäste bestellen in Ihrem eigenen Webshop vor, wählen ein Abholzeitfenster und holen die Bestellung am Truck ab.",
+          "url": "https://jamezz.com/de/branchen/foodtrucks"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Bereiten Sie Speisekarten und Preise für mehrere kommende Events im Voraus vor.",
+          "url": "https://jamezz.com/de/branchen/foodtrucks"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Funktioniert mit Kassenanbindung (13 Kassensysteme und Deliverect) oder eigenständig mit Küchenmonitoren und Bondruckern",
+          "url": "https://jamezz.com/de/branchen/foodtrucks"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Stellen Sie ein kompaktes Bestellterminal neben Ihren Foodtruck, an dem Besucher selbst bestellen.",
+          "url": "https://jamezz.com/de/branchen/foodtrucks"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Jeder Truck erhält seinen eigenen QR-Code — Bestellungen gehen automatisch an die richtige Küche.",
+          "url": "https://jamezz.com/de/branchen/foodtrucks"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "0 % Provision auf alle Bestellungen — Betriebe zahlen ein festes monatliches Abonnement, keinen Prozentsatz des Umsatzes.",
+          "url": "https://jamezz.com/de"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Nein. Jamezz berechnet keine Transaktionsgebühren und keine Provision pro Bestellung.",
+          "url": "https://jamezz.com/de/bestellsystem-gastronomie-kosten"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://jamezz.com/de",
+        "https://jamezz.com/de/branchen/foodtrucks",
+        "https://jamezz.com/de/bestellsystem-gastronomie-kosten"
+      ]
+    },
+    {
+      "name": "Menuthere",
+      "website": "https://menuthere.com",
+      "stored_id_prefix": "55cd958d",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "international online-ordering tool with a full German-language site (/de) and a Foodtruck page: pre-orders with a chosen pickup time; prices shown only in USD; no stated German office or German customers",
+      "eligibility": {
+        "food_quote": "Das Bestellsystem für Ihren Foodtruck, das die Schlange in Bewegung hält.",
+        "food_url": "https://menuthere.com/de/product/food-truck",
+        "order_quote": "Gäste bestellen vorab und holen am Foodtruck ab.",
+        "order_url": "https://menuthere.com/de/product/food-truck",
+        "country_quote": "Einfache Preise. 0 % Provision.",
+        "country_url": "https://menuthere.com/de/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "USD",
+          "price_major": 49,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Starter kostet $49 im Monat pro Standort",
+          "url": "https://menuthere.com/de/product/food-truck",
+          "note": "USD only, even on the German pages (no EUR price shown). Per location, billed monthly; yearly billing \"2 Monate gratis\". Includes \"Geplante Bestellungen und Vorbestellungen\". \"Keine Einrichtungsgebühr. Keine Vertragsbindung. Jederzeit kündbar.\" Black Friday code gives 20 % off the first month until 1 Dec (shown as $39.20)."
+        },
+        {
+          "plan_name": "Growth",
+          "currency": "USD",
+          "price_major": 129,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Growth kostet $129 im Monat pro Standort",
+          "url": "https://menuthere.com/de/product/food-truck",
+          "note": "USD only. Adds set-up by their team, loyalty, POS links. Black Friday first month $103.20."
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "USD",
+          "price_major": 249,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "$249 / Monat",
+          "url": "https://menuthere.com/de/pricing",
+          "note": "USD only. Up to 3 locations (\"bis zu 3 Standorte, monatlich abgerechnet\"); \"Jeder weitere Standort für 79 $ im Monat\". Own iOS/Android app."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Ja, mit Starter und Growth. Gäste wählen bei der Bestellung eine Abholzeit, und Vorbestellungen warten in Ihrem Tab Prebookings, die am dringendsten zuerst.",
+          "url": "https://menuthere.com/de/product/food-truck"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Geplante Bestellungen und Vorbestellungen",
+          "url": "https://menuthere.com/de/pricing"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Posten Sie Ihren Bestell-Link mit Ihrem Standort.",
+          "url": "https://menuthere.com/de/product/food-truck"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Bestellungen und Status-Updates per WhatsApp",
+          "url": "https://menuthere.com/de/pricing"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Bestellungen über Instagram",
+          "url": "https://menuthere.com/de/pricing"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "Offline-Kasse",
+          "url": "https://menuthere.com/de/product/food-truck"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bestellungen aus der Schlange, Vorbestellungen und WhatsApp-Bestellungen, alles auf einem Bildschirm.",
+          "url": "https://menuthere.com/de/product/food-truck"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Zentrale Übersicht für bis zu 3 Standorte",
+          "url": "https://menuthere.com/de/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Bestell-Website auf eigener Domain, ohne Menuthere-Badge",
+          "url": "https://menuthere.com/de/pricing"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Starter kostet $49 im Monat pro Standort",
+          "url": "https://menuthere.com/de/product/food-truck"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Nein. Jeder Tarif hat 0 % Provision; Ihr Zahlungsanbieter berechnet seine eigene Kartengebühr.",
+          "url": "https://menuthere.com/de/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://menuthere.com/en",
+        "https://menuthere.com/de/pricing",
+        "https://menuthere.com/de/product/food-truck"
+      ]
+    },
+    {
+      "name": "GASTRODIGITAL",
+      "website": "https://gastro.digital",
+      "stored_id_prefix": "9ed5a6b1",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "German restaurant suite (\"made in Germany\") with an own ordering shop: pickup in fixed time windows, orders in advance; no food-truck wording found",
+      "eligibility": {
+        "order_quote": "Lieferung zu deinen Konditionen, Abholung mit festen Zeitfenstern und Bestellung direkt am Tisch per QR-Code – alles in einem System.",
+        "order_url": "https://gastro.digital/bestellsystem/"
+      },
+      "plans": [
+        {
+          "plan_name": "Online-Bestellsystem Pauschal-Flat",
+          "currency": "EUR",
+          "price_major": 99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": null,
+          "quote": "0,49 € pro Bestellung · 99 € Flat",
+          "url": "https://gastro.digital/preise/",
+          "note": "Flat card: \"unbegrenzte Bestellungen, kein Aufpreis pro Bestellung\" / \"99 € / Monat\". Yearly payment = 10 instead of 12 monthly fees (\"du zahlst nur 10 statt 12 Monate\"). VAT not stated. Stored 99 still matches."
+        },
+        {
+          "plan_name": "Online-Bestellsystem pro Bestellung",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.49,
+          "setup_major": null,
+          "quote": "0,49 € / Bestellung",
+          "url": "https://gastro.digital/preise/",
+          "note": "\"Pro Bestellung keine Fixkosten, ideal zum Testen, monatlich kündbar\". Stored 'pay per order' 0 is right for the monthly fee; the 0,49 € per-order fee should be stored with it."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Optimiere deine Abläufe durch Zeitfenster für die Abholung",
+          "url": "https://gastro.digital/bestellsystem/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Du legst fest, in welchem Zeitraum bestellt werden kann und an welchen Tagen und Uhrzeiten abgeholt oder geliefert wird – auch Wochen im Voraus.",
+          "url": "https://gastro.digital/bestellsystem/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Bestellungen landen automatisch auf Tablet oder Küchendrucker – ganz ohne Medienbruch.",
+          "url": "https://gastro.digital/bestellsystem/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Lieferung und Abholung direkt über deine eigene Website",
+          "url": "https://gastro.digital/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "99 € / Monat",
+          "url": "https://gastro.digital/preise/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "0,49 € / Bestellung",
+          "url": "https://gastro.digital/preise/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://gastro.digital/",
+        "https://gastro.digital/preise/",
+        "https://gastro.digital/bestellsystem/"
+      ]
+    },
+    {
+      "name": "gastro25",
+      "website": "https://www.gastro25.de",
+      "stored_id_prefix": "a59dfb20",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "DACH online-ordering shop with a dedicated Food Truck page: QR / online pickup orders for a chosen 5-minute pickup slot, location switch per day; 69 € per month net, 0 % commission",
+      "eligibility": {
+        "food_quote": "Bestellsystem für Food Trucks — QR-Code scannen, nicht anstehen.",
+        "food_url": "https://gastro25.de/fuer/food-truck",
+        "order_quote": "Bei kurzen Garzeiten (z. B. Bowl in 3 Minuten) sind 5-Minuten-Abholfenster optimal.",
+        "order_url": "https://gastro25.de/fuer/food-truck"
+      },
+      "plans": [
+        {
+          "plan_name": "Gastro25 Komplett",
+          "currency": "EUR",
+          "price_major": 69,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": 0,
+          "quote": "69 € pro Monat. Alles drin. Keine Einrichtungsgebühr, keine Mindestlaufzeit.",
+          "url": "https://gastro25.de/preise",
+          "note": "Card says \"zzgl. MwSt., monatlich kündbar\". First two months free (\"Die ersten zwei Monate sind komplett kostenlos.\"). Includes \"Geplante Bestellungen (Vorbestellung)\". Stored 69 still matches; stored focus could move to food_truck (dedicated Food Truck page)."
+        },
+        {
+          "plan_name": "Business & Ketten",
+          "currency": "EUR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Auf Anfrage",
+          "url": "https://gastro25.de/preise",
+          "note": "Price on request; several locations under one account. Stored 'hidden' still correct."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Bei kurzen Garzeiten (z. B. Bowl in 3 Minuten) sind 5-Minuten-Abholfenster optimal.",
+          "url": "https://gastro25.de/fuer/food-truck"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Geplante Bestellungen (Vorbestellung)",
+          "url": "https://gastro25.de/preise"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "So weiß der Gast, wo er hinmuss, wenn er den QR scannt.",
+          "url": "https://gastro25.de/fuer/food-truck"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "no",
+          "quote": "Für wirklich abgelegene Standorte (Berge, Festivals ohne Netz) gibt es einen Offline-Modus im Roadmap-Backlog.",
+          "url": "https://gastro25.de/fuer/food-truck"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Mehrere Standorte unter einem Konto",
+          "url": "https://gastro25.de/preise"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Eigene Domain inklusive SSL",
+          "url": "https://gastro25.de/preise"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "69 € pro Monat. Alles drin. Keine Einrichtungsgebühr, keine Mindestlaufzeit.",
+          "url": "https://gastro25.de/preise"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Unlimitierte Bestellungen, null Provision",
+          "url": "https://gastro25.de/preise"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://gastro25.de/",
+        "https://gastro25.de/fuer/food-truck",
+        "https://gastro25.de/preise"
+      ]
+    },
+    {
+      "name": "FoodsHero",
+      "website": "https://foodshero.de",
+      "stored_id_prefix": "9df2dcd4",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "German done-for-you restaurant website + commission-free ordering (pickup, delivery, pre-orders, time slots); net EUR prices with set-up fees; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Direktbestellungen für Abholung und Lieferung, Zeitfenster, Liefergebiete, Online-Zahlung – ohne FoodsHero-Provision.",
+        "order_url": "https://foodshero.de/"
+      },
+      "plans": [
+        {
+          "plan_name": "FoodsHero Start",
+          "currency": "EUR",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": 299,
+          "quote": "99 € netto / Monat",
+          "url": "https://foodshero.de/",
+          "note": "\"Einrichtung: 299 € einmalig\" (on /preise). Ordering with pickup only, one site (\"Eine Betriebsstätte\"), no full website. \"Alle Preise verstehen sich netto zuzüglich der gesetzlichen Umsatzsteuer.\" Stored 99 still matches."
+        },
+        {
+          "plan_name": "FoodsHero Business",
+          "currency": "EUR",
+          "price_major": 249,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": 799,
+          "quote": "249 € netto / Monat",
+          "url": "https://foodshero.de/",
+          "note": "\"Einrichtung: 799 € einmalig\". Website, ordering, reservations. Stored 249 still matches."
+        },
+        {
+          "plan_name": "FoodsHero Growth",
+          "currency": "EUR",
+          "price_major": 399,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": 999,
+          "quote": "399 € netto / Monat",
+          "url": "https://foodshero.de/",
+          "note": "\"Einrichtung: 999 € einmalig\". Business + local SEO. Premium \"ab 799 € netto / Monat\" (set-up ab 1.499 €) also still matches the stored 799."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Direktbestellungen für Abholung und Lieferung, Zeitfenster, Liefergebiete, Online-Zahlung – ohne FoodsHero-Provision.",
+          "url": "https://foodshero.de/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Abholung, Lieferung & Vorbestellung",
+          "url": "https://foodshero.de/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "WhatsApp-Automatisierung",
+          "url": "https://foodshero.de/"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Instagram- und Facebook-Inhalte, Food-Reels, saisonale Kampagnen und Redaktionsplanung.",
+          "url": "https://foodshero.de/"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Küchendisplay und Bondrucker bekommen die Bestellung in Echtzeit.",
+          "url": "https://foodshero.de/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Zusätzliche Filiale",
+          "url": "https://foodshero.de/preise"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "FoodsHero baut dir dein eigenes digitales Bestellsystem auf deiner eigenen Website.",
+          "url": "https://foodshero.de/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "99 € netto / Monat",
+          "url": "https://foodshero.de/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Keine Provision pro Bestellung durch FoodsHero.",
+          "url": "https://foodshero.de/preise"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Bei Online-Zahlungen können Gebühren des jeweiligen Zahlungsdienstleisters entstehen.",
+          "url": "https://foodshero.de/preise"
+        }
+      ],
+      "check_urls": [
+        "https://foodshero.de/",
+        "https://foodshero.de/preise"
+      ]
+    },
+    {
+      "name": "Bestelltheke",
+      "website": "https://bestelltheke.de",
+      "stored_id_prefix": "fc80e04f",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "German own-shop ordering for restaurants: ASAP or a chosen slot, also next day, with per-slot limits; commission plans (5 % / 7 %, capped) or flat 249 / 349 € net; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Jetzt bestellen oder für heute 19:30 — Sie steuern, wie viel pro Slot reinkommt.",
+        "order_url": "https://bestelltheke.de/"
+      },
+      "plans": [
+        {
+          "plan_name": "Start",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 5,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Bestelltheke Start 5 %",
+          "url": "https://bestelltheke.de/",
+          "note": "\"5 % je Bestellung\", \"Keine Grundgebühr\", \"Provisionsdeckel: 399 €/Monat Erreicht bei 7.980 € monatlichem Shopumsatz.\" \"Alle Preise zzgl. USt.\" No set-up fee (\"Keine Einrichtungsgebühr\"); optional shop takeover 49 € one-off. Stored 0 still matches; the 5 % should be stored with it."
+        },
+        {
+          "plan_name": "Komplett",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 7,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Bestelltheke Komplett 7 %",
+          "url": "https://bestelltheke.de/",
+          "note": "\"7 % je Bestellung\", \"Keine Grundgebühr\", cap \"Provisionsdeckel: 499 €/Monat\". Adds kitchen monitor, receipt printer, vouchers, SMS. Stored 0 still matches."
+        },
+        {
+          "plan_name": "Basis Flat",
+          "currency": "EUR",
+          "price_major": 249,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "Bei 5.000 € monatlichem Umsatz in Ihrem Bestelltheke-Shop kostet Start 250 €, Basis Flat 249 €. Komplett kostet 350 €, Komplett Flat 349 €.",
+          "url": "https://bestelltheke.de/",
+          "note": "\"Fester Preis · zzgl. USt.\", \"0 % Bestelltheke-Provision\". Komplett Flat is 349 €/Monat (same quote). Stored 249 and 349 still match."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Jetzt bestellen oder für heute 19:30 — Sie steuern, wie viel pro Slot reinkommt.",
+          "url": "https://bestelltheke.de/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Ja. Neben „so schnell wie möglich\" kann der Gast ein konkretes Zeitfenster wählen — auch für den nächsten Tag.",
+          "url": "https://bestelltheke.de/funktionen/vorbestellung-zeitfenster"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Jetzt bestellen oder für heute 19:30 — Sie steuern, wie viel pro Slot reinkommt.",
+          "url": "https://bestelltheke.de/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Bestellungen als Karten auf dem Tablet — durchziehen statt abhaken.",
+          "url": "https://bestelltheke.de/funktionen/vorbestellung-zeitfenster"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Filialen in einem System — jede mit eigener Karte und eigenen Zeiten.",
+          "url": "https://bestelltheke.de/"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "ihre-pizzeria.de statt Portal-Unterseite — mit Schloss in der Adresszeile.",
+          "url": "https://bestelltheke.de/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Bei 5.000 € monatlichem Umsatz in Ihrem Bestelltheke-Shop kostet Start 250 €, Basis Flat 249 €.",
+          "url": "https://bestelltheke.de/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Wer klein anfängt, zahlt pro Bestellung.",
+          "url": "https://bestelltheke.de/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Die Gebühren Ihres Zahlungsanbieters (üblich rund 1,4 % + 25 ct) kommen wie überall hinzu.",
+          "url": "https://bestelltheke.de/"
+        }
+      ],
+      "check_urls": [
+        "https://bestelltheke.de/",
+        "https://bestelltheke.de/funktionen/vorbestellung-zeitfenster"
+      ]
+    },
+    {
+      "name": "OrderFront",
+      "website": "https://www.orderfront.de",
+      "stored_id_prefix": "683bf425",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "German (Neu-Isenburg) webshop for pickup and delivery with time slots and kitchen capacity; prices now public (49 / 69 / ab 149 € net); mentions food trucks only as a case for revenue-based billing",
+      "eligibility": {
+        "food_quote": "Ja. Für Betriebe mit stark schwankendem Umsatz, etwa Foodtrucks oder Saisonbetriebe, rechnen wir auf Wunsch umsatzabhängig ab statt mit festem Monatsbeitrag.",
+        "food_url": "https://www.orderfront.de/preise",
+        "order_quote": "Gäste bestellen in wenigen Schritten unter deiner Domain und in deinem Design – zur Abholung oder Lieferung.",
+        "order_url": "https://www.orderfront.de/produkt/bestellseite"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "EUR",
+          "price_major": 49,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Starter 49 €, Premium 69 €, Multi ab 149 € im Monat – jeweils netto, monatlich kündbar, nach 30 kostenlosen Testtagen.",
+          "url": "https://www.orderfront.de/preise",
+          "note": "Stored 'hidden' is out of date: prices are now on the site. Webshop for pickup and delivery, QR table ordering, kitchen monitor. Plus a payment fee per online order whose amount is only in the quote (\"Zum Monatspreis kommt eine Zahlungsgebühr je Online-Bestellung; ihre Höhe steht in deinem Angebot.\"). 30-day trial. Revenue-based billing for food trucks on request."
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "EUR",
+          "price_major": 69,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Starter 49 €, Premium 69 €, Multi ab 149 € im Monat – jeweils netto, monatlich kündbar, nach 30 kostenlosen Testtagen.",
+          "url": "https://www.orderfront.de/preise",
+          "note": "Adds own domain, loyalty, review requests, marketing module, driver app. Same per-order payment fee (amount not stated)."
+        },
+        {
+          "plan_name": "Multi",
+          "currency": "EUR",
+          "price_major": 149,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Starter 49 €, Premium 69 €, Multi ab 149 € im Monat – jeweils netto, monatlich kündbar, nach 30 kostenlosen Testtagen.",
+          "url": "https://www.orderfront.de/preise",
+          "note": "\"ab\" (from) 149 €; each further location extra, custom development extra (\"netto · je weiterem Standort zzgl. · zzgl. individuelle Entwicklung\")."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Bestellung direkt auf Küchenmonitor und Bondrucker, mit Zeitfenstern und Kapazität je Ofen.",
+          "url": "https://www.orderfront.de/"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Bestellung direkt auf Küchenmonitor und Bondrucker, mit Zeitfenstern und Kapazität je Ofen.",
+          "url": "https://www.orderfront.de/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Marketing-Modul: Flyer und Instagram-Posts selbst erstellen",
+          "url": "https://www.orderfront.de/preise"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Bestellungen, Küchenmonitor und Bondruck",
+          "url": "https://www.orderfront.de/preise"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bestellsystem für Restaurants. Eigener Webshop, QR Order & Pay, Kiosk am Tresen – alles aus einem System.",
+          "url": "https://www.orderfront.de/produkt/bestellseite"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Zentrale Speisekarte für deine Standorte",
+          "url": "https://www.orderfront.de/preise"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Eigene Domain: dein-name.de statt Unterseite",
+          "url": "https://www.orderfront.de/preise"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Starter 49 €, Premium 69 €, Multi ab 149 € im Monat – jeweils netto, monatlich kündbar, nach 30 kostenlosen Testtagen.",
+          "url": "https://www.orderfront.de/preise"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Zum Monatspreis kommt eine Zahlungsgebühr je Online-Bestellung; ihre Höhe steht in deinem Angebot.",
+          "url": "https://www.orderfront.de/preise"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.orderfront.de/",
+        "https://www.orderfront.de/preise",
+        "https://www.orderfront.de/produkt/bestellseite"
+      ]
+    },
+    {
+      "name": "Gustoco",
+      "website": "https://www.gustoco.de",
+      "stored_id_prefix": "f508b55e",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "brand no longer sold on its own: www.gustoco.de redirects to ordersmart.de/gustoco, which says \"Gustoco gehört jetzt zu order smart\" (OrderYOYO group); the page shows no ordering-ahead wording and no price, only an old-customer login",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://ordersmart.de/gustoco/"
+      ]
+    }
+  ],
+  "notes": "Group B re-check of the 11 stored DE vendors only; no web search was run, because 5 food-truck tools qualify with a stated price (Liefersoft, GastroDok, FoxiFood, gastro25 in EUR; Menuthere in USD only), plus Jamezz with price on request. Pages were read as raw HTML one request at a time and quotes copied from the page text, not from a summary. Liefersoft is a single-page JS app: its quotes come from the site's own JS bundle (text the page renders), so a checker that does not run JS will not find them on https://liefersoft.de. gastro25's 'offline' quote is in the food-truck page's FAQ (JSON-LD answer, accordion), not in the always-visible text. Price changes against what is stored: GastroDok yearly is 290 €/year (stored 24.17 was a derived monthly figure); GASTRODIGITAL pay-per-order now carries 0,49 € per order; OrderFront prices are now public (Starter 49, Premium 69, Multi ab 149 € net; stored 'hidden'); Liefersoft STARTUP 39 € does not include the webshop (from GOLD, 129 € at 60 months / 149 € at 36 months); Bestelltheke Start and Komplett are 5 % / 7 % per order with no base fee. gastro25 has a dedicated Food Truck page (pickup slots, daily location switch) and could move from restaurant to food_truck. Menuthere has a full German site but shows only USD prices and states no German presence. Gustoco has been absorbed into order smart (OrderYOYO); order smart itself was not researched."
+}

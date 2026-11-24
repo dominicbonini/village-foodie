@@ -1,0 +1,541 @@
+{
+  "countries": [
+    "SG",
+    "CZ"
+  ],
+  "researched_on": "2026-11-24",
+  "searches": [
+    "take.app restaurant pickup pre-order food business (site:take.app)",
+    "hawker food truck online pre-order pickup system Singapore merchants",
+    "online ordering system Singapore pickup F&B pricing per month",
+    "menu55.cz objednávka čas vyzvednutí předobjednávka take away (site:menu55.cz)",
+    "food truck objednávky online předobjednávka vyzvednutí systém",
+    "objednávkový systém online restaurace vyzvednutí ceník měsíčně bez provize"
+  ],
+  "vendors": [
+    {
+      "name": "Klikit",
+      "country": "SG",
+      "website": "https://klikit.io",
+      "stored_id_prefix": "f44927e4",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "SETTLED: keep. Own webshop (Omni add-on) takes pickup orders with time slots; Singapore prices in SGD. Stored Core 1,900 SGD was 100x too high: today Core is S$19, and Core alone has no webshop (webshop comes with the Omni add-on, Core + Omni S$68).",
+      "eligibility": {
+        "order_quote": "Support pickup, delivery, and dine-in ordering from the same webshop.",
+        "order_url": "https://klikit.io/en/products/webshop",
+        "country_quote": "Prices are for Singapore, excluding tax.",
+        "country_url": "https://klikit.io"
+      },
+      "plans": [
+        {
+          "plan_name": "Core + Omni (webshop / QR ordering)",
+          "currency": "SGD",
+          "price_major": 68,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Core + Omni: S$68",
+          "url": "https://klikit.io/en/pricing",
+          "note": "per outlet per month, excluding tax. Omni add-on is +S$49 on top of Core S$19; the webshop is listed under Omni."
+        },
+        {
+          "plan_name": "Core",
+          "currency": "SGD",
+          "price_major": 19,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Core is S$19 per outlet a month.",
+          "url": "https://klikit.io",
+          "note": "corrects the stored 1,900 SGD (100x). Core alone does NOT include the webshop (webshop is under Omni); kept only so the stored Core row can be corrected or dropped."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Set delivery zones, time slots, and minimum orders.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen Display System",
+          "url": "https://klikit.io/en/pricing"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Multi-location Management",
+          "url": "https://klikit.io/en/pricing"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "klikit is priced per outlet, per month.",
+          "url": "https://klikit.io/en/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "No commission fees ever.",
+          "url": "https://klikit.io/en/products/webshop"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Every dollar your customers spend goes directly to you, minus payment processing fees.",
+          "url": "https://klikit.io/en/products/webshop"
+        }
+      ],
+      "check_urls": [
+        "https://klikit.io",
+        "https://klikit.io/en/pricing",
+        "https://klikit.io/en/products/webshop"
+      ]
+    },
+    {
+      "name": "Oddle",
+      "country": "SG",
+      "website": "https://oddle.me",
+      "stored_id_prefix": "110abdac",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "oddle.me and www.oddle.me/pricing both answered HTTP 403 (Retry-After: 30) to the page reader; tried once each, not retried further. No price or feature could be confirmed from Oddle's own site. The stored plan 'Online Ordering (Package 1, via UOB BizSmart)' 0 SGD comes from uob.com.sg, a bank page, not Oddle's own site, so it does not meet the own-site rule and should not be shown as Oddle's price.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://oddle.me",
+        "https://www.oddle.me/pricing"
+      ]
+    },
+    {
+      "name": "Take App",
+      "country": "SG",
+      "website": "https://www.take.app",
+      "stored_id_prefix": "2a58410a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant page shows pickup orders with chosen time slots, scheduling in advance and next-day prep; Singapore company (Take App Pte Ltd) with S$ examples. Prices are shown in USD only, no SGD price list.",
+      "eligibility": {
+        "order_quote": "Collect pickup and delivery times up front.",
+        "order_url": "https://www.take.app/industry/restaurants",
+        "country_quote": "Take App Pte Ltd",
+        "country_url": "https://www.take.app/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$0Free",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only (no SGD shown). Free plan includes 50 orders per month; after that orders still arrive on the registered WhatsApp number. 0% commission on all plans; no tax wording."
+        },
+        {
+          "plan_name": "Essential",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$29USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only. Billed monthly; prepaying 3, 6 or 12 months gives a discount. Custom domain from this plan."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "USD",
+          "price_major": 50,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$50USD / month",
+          "url": "https://www.take.app/pricing",
+          "note": "USD only. Can also be billed yearly upfront at a discount. Includes 5 stores and 5 staff."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Guests choose from the slots you can actually handle, so the rush spreads out instead of piling up.",
+          "url": "https://www.take.app/industry/restaurants"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "You can allow time to prepare orders, including for next-day delivery.",
+          "url": "https://www.take.app/products/delivery"
+        },
+        {
+          "key": "capacity",
+          "value": "partial",
+          "quote": "New orders pause automatically once you hit the limit.",
+          "url": "https://www.take.app/products/delivery"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Start taking WhatsApp orders in minutes.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "WhatsApp and Instagram inbox",
+          "url": "https://www.take.app/industry/restaurants"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on the kitchen screen instantly. Reduce errors and speed up service.",
+          "url": "https://www.take.app/industry/restaurants"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Bring calls, WhatsApp messages, and walk-up orders into a single dashboard so nothing slips through the cracks.",
+          "url": "https://www.take.app/industry/restaurants"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Multiple stores and staff.",
+          "url": "https://www.take.app"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Buy a domain through Take App or connect your existing one.",
+          "url": "https://www.take.app/industry/restaurants"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Both paid plans are billed monthly, and from your Billing page you can prepay 3, 6 or 12 months at a discount.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Take App charges no commission on orders.",
+          "url": "https://www.take.app/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Payment providers charge their own processing fees.",
+          "url": "https://www.take.app/pricing"
+        }
+      ],
+      "check_urls": [
+        "https://www.take.app/pricing",
+        "https://www.take.app",
+        "https://www.take.app/industry/restaurants",
+        "https://www.take.app/products/delivery"
+      ]
+    },
+    {
+      "name": "Menu55",
+      "country": "CZ",
+      "website": "https://menu55.cz",
+      "stored_id_prefix": "040f4b59",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "SETTLED: keep. Czech restaurant tool whose own commission-free online ordering system takes Take Away (collection) and delivery orders, i.e. click and collect; CZK monthly prices. Weak point: no ordering for a chosen time or pre-order for another day is described anywhere on menu55.cz.",
+      "eligibility": {
+        "order_quote": "Přijímejte objednávky na rozvoz a Take Away přes vlastní online objednávkový systém bez provize z každé objednávky.",
+        "order_url": "https://menu55.cz",
+        "country_quote": "Objednávkový systém – 350,-Kč měsíčně",
+        "country_url": "https://menu55.cz/objednavky-rozvoz"
+      },
+      "plans": [
+        {
+          "plan_name": "Objednávkový systém",
+          "currency": "CZK",
+          "price_major": 350,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Objednávkový systém – 350,-Kč měsíčně",
+          "url": "https://menu55.cz/objednavky-rozvoz",
+          "note": "no VAT wording; no commission on orders. 30-day free trial without contract."
+        },
+        {
+          "plan_name": "Plná verze",
+          "currency": "CZK",
+          "price_major": 480,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Plná verze Menu55 – 480,-Kč měsíčně",
+          "url": "https://menu55.cz/objednavky-rozvoz",
+          "note": "full version adds kitchen/bar monitors among other modules; no VAT wording. Homepage says 'Od 480 Kč měsíčně'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "odkaz můžete sdílet také e-mailem nebo na sociálních sítích;",
+          "url": "https://menu55.cz/objednavky-rozvoz"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "kuchyňské a barové monitory",
+          "url": "https://menu55.cz/objednavky-rozvoz"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "integrace objednávkového systému do vlastního webu",
+          "url": "https://menu55.cz/objednavky-rozvoz"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Objednávkový systém – 350,-Kč měsíčně",
+          "url": "https://menu55.cz/objednavky-rozvoz"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Za objednávky od vlastních zákazníků neplatíte žádnou provizi.",
+          "url": "https://menu55.cz/objednavky-rozvoz"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://menu55.cz",
+        "https://menu55.cz/objednavky-rozvoz"
+      ]
+    },
+    {
+      "name": "Choice",
+      "country": "CZ",
+      "website": "https://choiceqr.com",
+      "stored_id_prefix": "70b34967",
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "choiceqr.com/cz/pricing and choiceqr.com/cz both answered HTTP 403 to the page reader (one attempt each, no further retries). CZK prices, paid tiers and whether pickup ordering ahead exists could not be confirmed from Choice's own site today; the stored 'Basic (free)' 0 CZK row is unverified.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://choiceqr.com/cz/pricing",
+        "https://choiceqr.com/cz"
+      ]
+    },
+    {
+      "name": "DISH Professional Order",
+      "country": "CZ",
+      "website": "https://dish.co/CZ/en/dish-professional-order/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "NEW. Commission-free online ordering on the restaurant's own website or Google for takeaway (pickup) and delivery; Czechia page with Kč prices excl. VAT. No ordering for a chosen time or pre-orders described. 'Foodtruck & foodstand' appears only as a business-type label, so focus stays nearest_local.",
+      "eligibility": {
+        "food_quote": "Foodtruck & foodstand",
+        "food_url": "https://dish.co/CZ/en/dish-professional-order/",
+        "order_quote": "operate a delivery service for pizza, burgers, etc., or for to manage takeaway orders easily.",
+        "order_url": "https://dish.co/CZ/en/dish-professional-order/",
+        "country_quote": "1.349,00 Kč*",
+        "country_url": "https://dish.co/CZ/en/dish-professional-order/"
+      },
+      "plans": [
+        {
+          "plan_name": "DISH Professional Order",
+          "currency": "CZK",
+          "price_major": 1349,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 6799,
+          "quote": "1.349,00 Kč*",
+          "url": "https://dish.co/CZ/en/dish-professional-order/",
+          "note": "shown as '1.349,00 Kč* / month excl. VAT'; '*All prices are VAT excluded.' One-time set-up fee for new contracts 6.799,00 Kč. Online payments cost 1.89% on gross revenue (a payment fee, not a per-order commission). Terminal provided; receipt printer needed. Page is the Czechia site in English (EN-CZ)."
+        },
+        {
+          "plan_name": "DISH Premium",
+          "currency": "CZK",
+          "price_major": 1599,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 8226.79,
+          "quote": "1.599,00 Kč*",
+          "url": "https://dish.co/CZ/en/dish-professional-order/",
+          "note": "listed on the same Order page; one-time set-up fee 8.226,79 Kč excl. VAT. What Premium adds over Professional Order was not read."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "the DISH Professional Order tool integrates on DISH websites and any other websites you have",
+          "url": "https://dish.co/CZ/en/dish-professional-order/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "You don't pay fees per order, but a transparent fixed monthly price.",
+          "url": "https://dish.co/CZ/en/dish-professional-order/"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Commissions per order, as with other providers, do not apply to DISH Order.",
+          "url": "https://dish.co/CZ/en/dish-professional-order/"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "you only pay the monthly fee and 1.89% on gross revenue",
+          "url": "https://dish.co/CZ/en/dish-professional-order/"
+        }
+      ],
+      "check_urls": [
+        "https://dish.co/CZ/en/dish-professional-order/"
+      ]
+    }
+  ],
+  "notes": "SG: no food-truck or hawker ordering tool with its own SG site turned up (search results were delivery marketplaces, government hawker programmes and review/directory sites). Two SG vendors eligible with a price: Klikit (SGD, Core S$19 corrects the stored 1,900; webshop needs Core + Omni S$68) and Take App (USD only, no SGD price list). Oddle unreadable: oddle.me and oddle.me/pricing returned 403; the stored UOB BizSmart 0 SGD plan comes from a bank page and fails the own-site rule. klikit.io/sg/pricing is a 404; SGD prices are on klikit.io and /en/pricing. storehub.com/sg/pricing/ was a 404 (not pursued further). CZ: no Czech food-truck ordering tool found (vev.co has a food-truck page but no Czech presence, so not recorded). Two CZ vendors eligible with a price: Menu55 (settled keep; Take Away online ordering, but no order-for-a-time) and DISH Professional Order (new; Czechia page in English, Kč excl. VAT, set-up fee). Choice unreadable: choiceqr.com/cz and /cz/pricing returned 403. OneMenu.cz (named in a search summary) did not resolve (ENOTFOUND), not recorded. Take App plan quotes '$29USD / month' / '$50USD / month' / '$0Free' are as the page reader rendered them (text nodes joined); the live text may have spaces."
+}

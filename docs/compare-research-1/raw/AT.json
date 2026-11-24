@@ -1,0 +1,125 @@
+{
+  "country": "AT",
+  "researched_on": "2026-11-24",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "GASTRODIGITAL",
+      "website": "https://gastro.digital",
+      "stored_id_prefix": "9ed5a6b1",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "German restaurant suite with an own ordering shop (pickup in fixed time windows, orders weeks ahead); homepage says 700+ businesses in the DACH region; no Austria-specific page or price; no food-truck wording",
+      "eligibility": {
+        "order_quote": "Lieferung zu deinen Konditionen, Abholung mit festen Zeitfenstern und Bestellung direkt am Tisch per QR-Code – alles in einem System.",
+        "order_url": "https://gastro.digital/bestellsystem/",
+        "country_quote": "Über 700 Betriebe im DACH-Raum vertrauen bereits auf Gastro.Digital",
+        "country_url": "https://gastro.digital/"
+      },
+      "plans": [
+        {
+          "plan_name": "Online-Bestellsystem Pauschal-Flat",
+          "currency": "EUR",
+          "price_major": 99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0,
+          "setup_major": null,
+          "quote": "0,49 € pro Bestellung · 99 € Flat",
+          "url": "https://gastro.digital/preise/",
+          "note": "Flat card: \"unbegrenzte Bestellungen, kein Aufpreis pro Bestellung\" / \"99 € / Monat\". Yearly payment = 10 instead of 12 monthly fees (\"du zahlst nur 10 statt 12 Monate\"). VAT not stated. Stored 99 still matches."
+        },
+        {
+          "plan_name": "Online-Bestellsystem pro Bestellung",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.49,
+          "setup_major": null,
+          "quote": "0,49 € / Bestellung",
+          "url": "https://gastro.digital/preise/",
+          "note": "\"Pro Bestellung keine Fixkosten, ideal zum Testen, monatlich kündbar\". Stored 'pay per order' 0 is right for the monthly fee; the 0,49 € per-order fee should be stored with it."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Optimiere deine Abläufe durch Zeitfenster für die Abholung",
+          "url": "https://gastro.digital/bestellsystem/"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Du legst fest, in welchem Zeitraum bestellt werden kann und an welchen Tagen und Uhrzeiten abgeholt oder geliefert wird – auch Wochen im Voraus.",
+          "url": "https://gastro.digital/bestellsystem/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Bestellungen landen automatisch auf Tablet oder Küchendrucker – ganz ohne Medienbruch.",
+          "url": "https://gastro.digital/bestellsystem/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Lieferung und Abholung direkt über deine eigene Website",
+          "url": "https://gastro.digital/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "99 € / Monat",
+          "url": "https://gastro.digital/preise/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "0,49 € / Bestellung",
+          "url": "https://gastro.digital/preise/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://gastro.digital/",
+        "https://gastro.digital/preise/",
+        "https://gastro.digital/bestellsystem/"
+      ]
+    }
+  ],
+  "notes": ""
+}

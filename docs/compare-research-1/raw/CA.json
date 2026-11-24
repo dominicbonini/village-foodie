@@ -1,0 +1,199 @@
+{
+  "country": "CA",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "site:foodtruck.pub Canada",
+    "Moduurn food truck ordering",
+    "\"FoodTrucker\" Find & Order app food trucks website",
+    "FoodTrucker app Canada food truck find and order"
+  ],
+  "vendors": [
+    {
+      "name": "Food Truck Pub",
+      "website": "https://foodtruck.pub",
+      "stored_id_prefix": "18f621da",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "food-truck ordering with same-day and pre-orders for future dates; US site with USD prices only. Canada and CAD are never named; presence outside the US rests only on 'Square is supported internationally' and invoicing merchants outside the US.",
+      "eligibility": {
+        "food_quote": "Built specifically for food trucks, trailers, and carts!",
+        "food_url": "https://foodtruck.pub",
+        "order_quote": "Pre-Orders rock! Fill in your event gaps and pre-book your orders. Get paid now for future date(s)!",
+        "order_url": "https://foodtruck.pub",
+        "country_quote": "If you are outside the United States using Square, we will invoice you monthly",
+        "country_url": "https://foodtruck.pub/plans.aspx"
+      },
+      "plans": [
+        {
+          "plan_name": "Free",
+          "currency": "USD",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 1.25,
+          "setup_major": 0,
+          "quote": "A small $1.25 USD convenience fee is charged to the customer when they place the order",
+          "url": "https://foodtruck.pub/plans.aspx",
+          "note": "USD only (no CAD on the site). The $1.25 convenience fee is paid by the customer, not the truck. Signup Fee: FREE."
+        },
+        {
+          "plan_name": "Premium",
+          "currency": "USD",
+          "price_major": 29,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 0.6,
+          "setup_major": 0,
+          "quote": "Monthly Fee: $29.00 (when paid annually)",
+          "url": "https://foodtruck.pub/plans.aspx",
+          "note": "billed yearly. Currency not written next to the $29.00; the site is US and labels its fees USD, so recorded as USD. Customer convenience fee drops to $0.60 ($0.85 for Clover merchants, US only)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Same-day and Pre-Order ordering.",
+          "url": "https://foodtruck.pub"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Pre-Orders rock! Fill in your event gaps and pre-book your orders. Get paid now for future date(s)!",
+          "url": "https://foodtruck.pub"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Auto-post Event Calendar to Facebook",
+          "url": "https://foodtruck.pub/plans.aspx"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "Facebook Auto-post can post to your Facebook page whenever you go active or create a future pre-order event in Food Truck Pub!",
+          "url": "https://foodtruck.pub"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Monthly Fee: $29.00 (when paid annually)",
+          "url": "https://foodtruck.pub/plans.aspx"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "A small $1.25 USD convenience fee is charged to the customer when they place the order",
+          "url": "https://foodtruck.pub/plans.aspx"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://foodtruck.pub",
+        "https://foodtruck.pub/plans.aspx"
+      ]
+    },
+    {
+      "name": "Moduurn",
+      "website": "https://moduurn.com",
+      "stored_id_prefix": "64e49b93",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "own site moduurn.com is a 'coming soon' placeholder with no ordering, prices or country shown; the stored capterra.ca source is a review site and cannot be used",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://moduurn.com"
+      ]
+    },
+    {
+      "name": "Ritual",
+      "website": "https://ritual.co",
+      "stored_id_prefix": "ffac93b0",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "consumer order-ahead app (marketplace-like) plus a restaurant 'Online ordering' product with pickup, but its own pages name no country (Canada/CAD never stated) and show no price amount, only 'one monthly flat fee' and 'Under 10% commission'; not counted",
+      "eligibility": {
+        "order_quote": "order and pay ahead via your website, social media or QR code menus",
+        "order_url": "https://ritual.co/restaurants/online-ordering"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://ritual.co",
+        "https://ritual.co/restaurants/online-ordering",
+        "https://ritual.co/pricing",
+        "https://try.ritual.co/get-started"
+      ]
+    },
+    {
+      "name": "FoodTrucker – Find & Order",
+      "website": null,
+      "stored_id_prefix": "42e450a6",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "no own website found in two searches (only App Store listings, and none under this exact name); nothing can be sourced from a vendor site, so it stays hidden",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "CloudOrders",
+      "website": "https://cloudorders.co",
+      "stored_id_prefix": "b3ab941b",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "food-truck page with pre-orders and a '$30 a month' plan, but no page read (home, pricing, food trucks, about) names Canada, CAD or any country, city or address, and the $ has no currency code; nothing shows it serves Canada, so not counted for CA",
+      "eligibility": {
+        "food_quote": "Why food trucks choose CloudOrders",
+        "food_url": "https://cloudorders.co/food-trucks?hsLang=en-us",
+        "order_quote": "Take orders for the lunch window before you’ve parked — smooth out the rush.",
+        "order_url": "https://cloudorders.co/food-trucks?hsLang=en-us"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://cloudorders.co",
+        "https://cloudorders.co/pricing?hsLang=en-us",
+        "https://cloudorders.co/food-trucks?hsLang=en-us",
+        "https://cloudorders.co/about?hsLang=en-us"
+      ]
+    }
+  ],
+  "notes": ""
+}

@@ -1,0 +1,350 @@
+{
+  "country": "NL",
+  "researched_on": "2026-11-24",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Qrder",
+      "website": "https://qrder.app",
+      "stored_id_prefix": "3cc2b17f",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Dutch food-truck ordering page; customers order ahead and pick up; EUR prices",
+      "eligibility": {
+        "food_quote": "Speciaal voor foodtrucks.",
+        "food_url": "https://qrder.app/foodtruck",
+        "order_quote": "Klanten bestellen vooruit terwijl je focust op koken.",
+        "order_url": "https://qrder.app"
+      },
+      "plans": [
+        {
+          "plan_name": "Gratis", "currency": "EUR", "price_major": 0, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "€0/maand", "url": "https://qrder.app/pricing",
+          "note": "50 bestellingen/maand; FAQ says Gratis & Lite take cash only (no online payments)"
+        },
+        {
+          "plan_name": "Lite", "currency": "EUR", "price_major": 9, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "€9/maand", "url": "https://qrder.app/pricing",
+          "note": "150 bestellingen/maand; cash only per FAQ"
+        },
+        {
+          "plan_name": "Pro", "currency": "EUR", "price_major": 29, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "€29/maand", "url": "https://qrder.app/pricing",
+          "note": "unlimited orders; online payments via Stripe (iDEAL EUR 0.25, card 1.5% + EUR 0.25, Stripe's fee, not Qrder's); 0% Qrder commission"
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "yes", "quote": "Klanten bestellen vooruit terwijl je focust op koken.", "url": "https://qrder.app" },
+        { "key": "preorder", "value": "yes", "quote": "Klanten kiezen zelf hun ophaaldatum.", "url": "https://qrder.app" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "yes", "quote": "WhatsApp integratie", "url": "https://qrder.app/pricing" },
+        { "key": "social", "value": "partial", "quote": "Plak op tafel, truck, flyer of deel de link via social media.", "url": "https://qrder.app" },
+        { "key": "kds", "value": "yes", "quote": "KDS Display (keukenscherm)", "url": "https://qrder.app/pricing" },
+        { "key": "offline", "value": "no", "quote": "Je hebt een mobiele verbinding nodig voor het ontvangen van bestellingen.", "url": "https://qrder.app/foodtruck" },
+        { "key": "walkup", "value": "partial", "quote": "Klanten scannen je QR code, bestellen en betalen.", "url": "https://qrder.app" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "not_mentioned" },
+        { "key": "monthly", "value": "yes", "quote": "€29/maand", "url": "https://qrder.app/pricing" },
+        { "key": "perorder", "value": "no", "quote": "0% Qrder commissie.", "url": "https://qrder.app/pricing" },
+        { "key": "cardfee", "value": "yes", "quote": "Pro: Online betalingen via Stripe (€0,25 per iDEAL transactie, 1,5% + €0,25 per creditcard transactie).", "url": "https://qrder.app/pricing" }
+      ],
+      "check_urls": ["https://qrder.app/foodtruck", "https://qrder.app/pricing", "https://qrder.app"]
+    },
+    {
+      "name": "Digitale Menukaart",
+      "website": "https://digitalemenukaart.nl",
+      "stored_id_prefix": "ece796a2",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Dutch foodtruck page; customers order ahead and collect (Bestellen plan); EUR prices excl. btw",
+      "eligibility": {
+        "food_quote": "Digitale menukaart voor je foodtruck",
+        "food_url": "https://digitalemenukaart.nl/digitale-menukaart-foodtruck",
+        "order_quote": "De hele kaart, met foto's. Wie wil, bestelt vooraf en haalt af zonder te wachten.",
+        "order_url": "https://digitalemenukaart.nl/digitale-menukaart-foodtruck"
+      },
+      "plans": [
+        {
+          "plan_name": "Bestellen", "currency": "EUR", "price_major": 39, "period": "month", "vat": "excl",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": 0,
+          "quote": "€ 39 per maand", "url": "https://digitalemenukaart.nl/prijzen",
+          "note": "the plan with online ordering; also EUR 390 per year (EUR 32,50/month billed yearly); no commission; payment cash or pin at pickup, online payment via Mollie marked 'Binnenkort'; extra vestiging EUR 19/month"
+        },
+        {
+          "plan_name": "Menu", "currency": "EUR", "price_major": 12, "period": "month", "vat": "excl",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": 0,
+          "quote": "€ 12 per maand", "url": "https://digitalemenukaart.nl/prijzen",
+          "note": "CORRECTS stored 1,200: today EUR 12/month (or EUR 119 per year). Menu plan has NO online ordering (menu only); only Bestellen includes ordering"
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "yes", "quote": "De hele kaart, met foto's. Wie wil, bestelt vooraf en haalt af zonder te wachten.", "url": "https://digitalemenukaart.nl/digitale-menukaart-foodtruck" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "partial", "quote": "Te druk? Zet bestellen even uit met een schakelaar.", "url": "https://digitalemenukaart.nl/digitale-menukaart-foodtruck" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "partial", "quote": "Zet het in je Instagram-bio of in het bericht waarin je laat weten waar je deze week staat.", "url": "https://digitalemenukaart.nl/digitale-menukaart-foodtruck" },
+        { "key": "kds", "value": "yes", "quote": "Bestelscherm voor keuken of bar, met geluid", "url": "https://digitalemenukaart.nl/prijzen" },
+        { "key": "offline", "value": "no", "quote": "Hang naast de code ook je belangrijkste gerechten en prijzen op, voor als een netwerk het even niet doet.", "url": "https://digitalemenukaart.nl/digitale-menukaart-foodtruck" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "yes", "quote": "Elke truck is een vestiging met een eigen kaart en bestelscherm.", "url": "https://digitalemenukaart.nl/digitale-menukaart-foodtruck" },
+        { "key": "domain", "value": "not_mentioned" },
+        { "key": "monthly", "value": "yes", "quote": "€ 39 per maand", "url": "https://digitalemenukaart.nl/prijzen" },
+        { "key": "perorder", "value": "no", "quote": "Op een bestelling houden wij niets in, hoe groot hij ook is.", "url": "https://digitalemenukaart.nl/prijzen" },
+        { "key": "cardfee", "value": "not_mentioned" }
+      ],
+      "check_urls": ["https://digitalemenukaart.nl", "https://digitalemenukaart.nl/prijzen", "https://digitalemenukaart.nl/digitale-menukaart-foodtruck"]
+    },
+    {
+      "name": "Foodticket",
+      "website": "https://foodticket.nl",
+      "stored_id_prefix": "662c9884",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Dutch foodtruck page; customers order online on the way to the truck; price stated per day in EUR",
+      "eligibility": {
+        "food_quote": "Voor één of meerdere Foodtrucks",
+        "food_url": "https://foodticket.nl/foodtruck/",
+        "order_quote": "Of onderweg zijn naar jouw locatie.",
+        "order_url": "https://foodticket.nl/foodtruck/"
+      },
+      "plans": [
+        {
+          "plan_name": "All-in", "currency": "EUR", "price_major": 1.5, "period": "day", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "Daarna heb je voor €1,50 per dag, een bestelsite, kassa- en betaalsysteem en nog veel meer.",
+          "url": "https://foodticket.nl/foodtruck/",
+          "note": "page states the price PER DAY only (stored 45.63/month was a derived monthly figure, not on the page); no plan name shown, stored name kept; headline 'Voor maar €2.00 start jij vandaag'; 'Geen dure opstartkosten' (no amount); 2 weeks free trial; /prijzen/ redirects to v1.foodticket.nl/prijzen/ which is 404"
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "yes", "quote": "Of onderweg zijn naar jouw locatie.", "url": "https://foodticket.nl/foodtruck/" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "yes", "quote": "Kitchen display system", "url": "https://foodticket.nl/foodtruck/" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "partial", "quote": "Je klant bestelt terwijl ze in de rij staan.", "url": "https://foodticket.nl/foodtruck/" },
+        { "key": "vans", "value": "yes", "quote": "Voor één of meerdere Foodtrucks", "url": "https://foodticket.nl/foodtruck/" },
+        { "key": "domain", "value": "partial", "quote": "je eigen bestelsite", "url": "https://foodticket.nl/foodtruck/" },
+        { "key": "monthly", "value": "partial", "quote": "Daarna heb je voor €1,50 per dag, een bestelsite, kassa- en betaalsysteem en nog veel meer.", "url": "https://foodticket.nl/foodtruck/" },
+        { "key": "perorder", "value": "not_mentioned" },
+        { "key": "cardfee", "value": "not_mentioned" }
+      ],
+      "check_urls": ["https://foodticket.nl/foodtruck/", "https://foodticket.nl/start-nu/"]
+    },
+    {
+      "name": "FoodTruck POS",
+      "website": "https://foodtruckpos.nl",
+      "stored_id_prefix": "c762b9c2",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "food-truck till with QR ordering in the queue only ('QR-bestellen aan de rij'); the site never says customers can order before arriving or for a pickup time",
+      "eligibility": {
+        "food_quote": "Speciaal gebouwd voor foodtrucks",
+        "food_url": "https://foodtruckpos.nl"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter", "currency": "EUR", "price_major": 12.99, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "€12,99/maand", "url": "https://foodtruckpos.nl",
+          "note": "CORRECTS stored 1,299: today EUR 12.99/month; 1 vestiging, 2 medewerkers; QR ordering is a Pro feature"
+        },
+        {
+          "plan_name": "Pro", "currency": "EUR", "price_major": 29.99, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "€29,99/maand", "url": "https://foodtruckpos.nl",
+          "note": "includes QR ordering at the queue, kitchen screen, offline buffering, up to 3 locations"
+        },
+        {
+          "plan_name": "Founder", "currency": "EUR", "price_major": 12.99, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "€12,99", "url": "https://foodtruckpos.nl",
+          "note": "shown as '€12,99' 'levenslang per maand' (limited places left); quote is the amount only"
+        }
+      ],
+      "answers": [],
+      "check_urls": ["https://foodtruckpos.nl"]
+    },
+    {
+      "name": "Vev",
+      "website": "https://vev.co",
+      "stored_id_prefix": "5bec1864",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Dutch-language foodtruck page: takeaway pre-orders with pickup times and per-slot limits; prices shown only in USD",
+      "eligibility": {
+        "food_quote": "Ontsnap aan dure bestelsystemen en vereenvoudig afhaalbestellingen voor je foodtruck.",
+        "food_url": "https://vev.co/nl/specialty/foodtruck",
+        "order_quote": "Bepaal zelf hoe ver van tevoren klanten een maaltijd mogen bestellen.",
+        "order_url": "https://vev.co/nl/specialty/foodtruck",
+        "country_quote": "Prijzen zijn exclusief btw.",
+        "country_url": "https://vev.co/nl/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Pro", "currency": "USD", "price_major": 19.99, "period": "month", "vat": "excl",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": 0,
+          "quote": "Vanaf $19.99/m", "url": "https://vev.co/nl/pricing",
+          "note": "price shown only in USD even on the Dutch pricing page (no EUR); 'Vanaf' (from); yearly discount mentioned without a figure; 'Geen opstartkosten'"
+        },
+        {
+          "plan_name": "Vev", "currency": "USD", "price_major": 9.99, "period": "month", "vat": "excl",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": 0,
+          "quote": "Vanaf $9.99/m", "url": "https://vev.co/nl/pricing",
+          "note": "USD only; the pricing page does not say which plans include food ordering (feature ticks not readable as text)"
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "yes", "quote": "Klanten zien alleen de dagen en tijden waarop jij (nog) beschikbaar bent voor een bestelling.", "url": "https://vev.co/nl/specialty/foodtruck" },
+        { "key": "preorder", "value": "yes", "quote": "Bepaal zelf hoe ver van tevoren klanten een maaltijd mogen bestellen.", "url": "https://vev.co/nl/specialty/foodtruck" },
+        { "key": "capacity", "value": "yes", "quote": "Set up the number of customers you can have at the same time.", "url": "https://vev.co/specialty/foodtruck" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "partial", "quote": "Je kunt je Vev-link ook toevoegen aan je sociale media accounts.", "url": "https://vev.co/nl/specialty/foodtruck" },
+        { "key": "kds", "value": "not_mentioned" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "not_mentioned" },
+        { "key": "monthly", "value": "yes", "quote": "Vanaf $19.99/m", "url": "https://vev.co/nl/pricing" },
+        { "key": "perorder", "value": "not_mentioned" },
+        { "key": "cardfee", "value": "not_mentioned" }
+      ],
+      "check_urls": ["https://vev.co/specialty/foodtruck", "https://vev.co/nl/specialty/foodtruck", "https://vev.co/nl/pricing"]
+    },
+    {
+      "name": "Bestelly",
+      "website": "https://bestelly.nl",
+      "stored_id_prefix": "f349ff27",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Dutch restaurant/takeaway ordering site: customers pick a pickup time and pay by iDEAL; no food-truck wording (NL already has 4 food-truck tools, so rule 2 may exclude it)",
+      "eligibility": {
+        "order_quote": "Gerechten kiezen, afhaaltijd prikken en afrekenen met iDEAL.",
+        "order_url": "https://bestelly.nl"
+      },
+      "plans": [
+        {
+          "plan_name": "Start", "currency": "EUR", "price_major": 39, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": 0,
+          "quote": "€39/mnd", "url": "https://bestelly.nl",
+          "note": "first month free; also EUR 390 per jaar; 'geen opstartkosten'; 0% commission; Mollie charges 32 cent per iDEAL payment directly"
+        },
+        {
+          "plan_name": "Compleet", "currency": "EUR", "price_major": 59, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": 0,
+          "quote": "€59/mnd", "url": "https://bestelly.nl",
+          "note": "CORRECTS stored 0: today EUR 59/month (EUR 590 per year); includes 'Keukenscherm met geluid'"
+        },
+        {
+          "plan_name": "Pro", "currency": "EUR", "price_major": 89, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": 0,
+          "quote": "€89/mnd", "url": "https://bestelly.nl",
+          "note": "EUR 890 per year option"
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "yes", "quote": "Gerechten kiezen, afhaaltijd prikken en afrekenen met iDEAL.", "url": "https://bestelly.nl" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "yes", "quote": "Keukenscherm met geluid", "url": "https://bestelly.nl" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "yes", "quote": "Je eigen domein & merk", "url": "https://bestelly.nl" },
+        { "key": "monthly", "value": "yes", "quote": "€39/mnd", "url": "https://bestelly.nl" },
+        { "key": "perorder", "value": "no", "quote": "0% commissie", "url": "https://bestelly.nl" },
+        { "key": "cardfee", "value": "yes", "quote": "32 cent per iDEAL-betaling", "url": "https://bestelly.nl" }
+      ],
+      "check_urls": ["https://bestelly.nl"]
+    },
+    {
+      "name": "Jamezz",
+      "website": "https://jamezz.com",
+      "stored_id_prefix": "ce1df15a",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "Dutch hospitality ordering platform with an events/festivals page: visitors order ahead in a webshop and pick a pickup time; price only by quote",
+      "eligibility": {
+        "food_quote": "Op festivals en events bestellen en betalen bezoekers zelf",
+        "food_url": "https://jamezz.com/nl/branches/events-festivals",
+        "order_quote": "Bezoekers bestellen vooraf in je eigen webshop en kiezen een afhaaltijd",
+        "order_url": "https://jamezz.com/nl/branches/events-festivals"
+      },
+      "plans": [
+        {
+          "plan_name": "Abonnement (offerte)", "currency": "EUR", "price_major": null, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "Het bedrag voor jouw zaak staat in een offerte.", "url": "https://jamezz.com/nl/kosten-bestelsysteem-horeca",
+          "note": "price on request: fixed monthly amount per solution and location, one-off setup costs per solution (amounts only in the quote), 0% commission"
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "yes", "quote": "Bezoekers bestellen vooraf in je eigen webshop en kiezen een afhaaltijd", "url": "https://jamezz.com/nl/branches/events-festivals" },
+        { "key": "preorder", "value": "yes", "quote": "Bezoekers kunnen ook vóór het event eten en drinken bestellen", "url": "https://jamezz.com/nl/branches/events-festivals" },
+        { "key": "capacity", "value": "yes", "quote": "met tijdsloten bepaal je hoeveel bestellingen je per moment aanneemt", "url": "https://jamezz.com/nl/branches/events-festivals" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "yes", "quote": "Bestellingen komen binnen op keukenschermen of bonprinters.", "url": "https://jamezz.com/nl/" },
+        { "key": "offline", "value": "no", "quote": "Jamezz heeft op het terrein een stabiele internetverbinding nodig", "url": "https://jamezz.com/nl/branches/events-festivals" },
+        { "key": "walkup", "value": "yes", "quote": "Zie alle bestellingen live in de keuken — van QR, kiosk, tablet en webshop in één overzicht.", "url": "https://jamezz.com/nl/branches/events-festivals" },
+        { "key": "vans", "value": "yes", "quote": "Jamezz ondersteunt horecabedrijven van 1 tot meer dan 200 locaties.", "url": "https://jamezz.com/nl/" },
+        { "key": "domain", "value": "partial", "quote": "de webshop die je in je eigen website plaatst", "url": "https://jamezz.com/nl/" },
+        { "key": "monthly", "value": "yes", "quote": "Het abonnement op de software is een vast bedrag per maand.", "url": "https://jamezz.com/nl/kosten-bestelsysteem-horeca" },
+        { "key": "perorder", "value": "no", "quote": "Commissie per bestelling betaal je niet.", "url": "https://jamezz.com/nl/kosten-bestelsysteem-horeca" },
+        { "key": "cardfee", "value": "no", "quote": "Jamezz rekent zelf geen transactiekosten en geen commissie over je bestellingen", "url": "https://jamezz.com/nl/kosten-bestelsysteem-horeca" }
+      ],
+      "check_urls": ["https://jamezz.com/nl/", "https://jamezz.com/nl/branches/events-festivals", "https://jamezz.com/nl/kosten-bestelsysteem-horeca"]
+    },
+    {
+      "name": "iButler",
+      "website": "https://www.i-butler.nl",
+      "stored_id_prefix": "89a12466",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Dutch hospitality till + QR ordering with an own order link for takeaway/delivery paid online; no food-truck wording; price only by quote (NL already has 4 food-truck tools, so rule 2 may exclude it)",
+      "eligibility": {
+        "order_quote": "Je eigen bestellink voor afhalen en bezorgen. Gasten betalen direct online.",
+        "order_url": "https://www.i-butler.nl"
+      },
+      "plans": [
+        {
+          "plan_name": "Voorstel op maat", "currency": "EUR", "price_major": null, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "We nemen binnen één werkdag contact op en sturen je een voorstel op maat.", "url": "https://www.i-butler.nl/prijzen/",
+          "note": "price on request: /prijzen/ is a quote-request form with no amounts; period not stated"
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "partial", "quote": "Je eigen bestellink voor afhalen en bezorgen. Gasten betalen direct online.", "url": "https://www.i-butler.nl" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "yes", "quote": "Bestellingen verschijnen per afdeling op een scherm in keuken en bar, met de wachttijd erbij.", "url": "https://www.i-butler.nl" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "not_mentioned" },
+        { "key": "monthly", "value": "not_mentioned" },
+        { "key": "perorder", "value": "not_mentioned" },
+        { "key": "cardfee", "value": "not_mentioned" }
+      ],
+      "check_urls": ["https://www.i-butler.nl", "https://www.i-butler.nl/prijzen/"]
+    }
+  ],
+  "notes": "Group B re-check of stored NL competitors; no web searches made. Price corrections: Digitale Menukaart Menu is EUR 12/month (stored 1,200; Menu has no online ordering, only Bestellen EUR 39 does); FoodTruck POS Starter is EUR 12.99/month (stored 1,299); Bestelly Compleet is EUR 59/month (stored 0). Foodticket states its price only per day (EUR 1,50 per dag), so it is recorded with period 'day' - the stored 45.63/month was a derived figure that is not on the page. FoodTruck POS is not_relevant: QR ordering only in the queue at the truck, no ordering before arriving. Vev shows USD only, even on its Dutch pricing page; its pricing page does not say which plan includes food ordering. Jamezz qualifies as food_truck through its events/festivals page (food stands), not a food-truck page. Bestelly and iButler are restaurant tools (nearest_local); NL already has 4+ eligible food-truck tools, so under rule 2 a reviewer may leave them out. iButler offline: the only offline sentence is about its till (Kassa ... offline modus), so it is recorded as not_mentioned per the no-tills rule. Several page-reader answers were partly translated; only text the reader marked as quoted Dutch was used."
+}

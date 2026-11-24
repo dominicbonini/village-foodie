@@ -1,0 +1,737 @@
+{
+  "country": "BR",
+  "researched_on": "2026-11-24",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Simpliza",
+      "website": "https://simpliza.com.br",
+      "stored_id_prefix": "5f69d328",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "simpliza.com.br/food-truck.php and the home page both answered HTTP 403 Forbidden to the page reader (retried once); stored row left as is",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://simpliza.com.br/food-truck.php",
+        "https://simpliza.com.br"
+      ]
+    },
+    {
+      "name": "Food Pronto",
+      "website": "https://www.foodpronto.com.br",
+      "stored_id_prefix": "598df7ba",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "food-truck ordering app: customers find nearby trucks, order and pay by phone and collect at the truck counter when alerted (no chosen pickup time or later-day pre-order stated; ordering is partly QR-code at the truck); Brazilian site, R$ price",
+      "eligibility": {
+        "food_quote": "Descubra food trucks próximos, peça pelo celular e receba um alerta sonoro quando sua comida estiver pronta.",
+        "food_url": "https://www.foodpronto.com.br",
+        "order_quote": "Busque no balcão do truck",
+        "order_url": "https://www.foodpronto.com.br"
+      },
+      "plans": [
+        {
+          "plan_name": "Plano único",
+          "currency": "BRL",
+          "price_major": 200,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "R$ 200/mês",
+          "url": "https://www.foodpronto.com.br",
+          "note": "price read on the home page; /precos renders by script and showed no readable text, so the plan name is the stored one, not re-read. 30 days free: \"30dias grátis\". \"Sem contrato. Cancele quando quiser.\" No per-order fee stated either way."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Descubra food trucks próximos, peça pelo celular e receba um alerta sonoro quando sua comida estiver pronta.",
+          "url": "https://www.foodpronto.com.br"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "R$ 200/mês",
+          "url": "https://www.foodpronto.com.br"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.foodpronto.com.br",
+        "https://www.foodpronto.com.br/precos"
+      ]
+    },
+    {
+      "name": "VexMenu",
+      "website": "https://vexmenu.com",
+      "stored_id_prefix": "cff055db",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "digital menu / online ordering with a Food Truck use case, pickup and scheduled orders; Brazilian site, R$ prices",
+      "eligibility": {
+        "food_quote": "Do food truck ao restaurante com salão — o sistema se adapta à sua operação.",
+        "food_url": "https://vexmenu.com",
+        "order_quote": "entrega, retirada ou comer no local, com Pix online e checkout numa tela só.",
+        "order_url": "https://vexmenu.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Grátis",
+          "currency": "BRL",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.99,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "R$0/mês",
+          "url": "https://vexmenu.com",
+          "note": "\"Pix online obrigatório: 2,99% por pedido, mínimo de R$ 0,99\" (fee on online Pix orders only; minimum R$0.99 per order, not a fixed fee)"
+        },
+        {
+          "plan_name": "Profissional",
+          "currency": "BRL",
+          "price_major": 299,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 1.99,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "R$299/mês",
+          "url": "https://vexmenu.com",
+          "note": "\"Pix online: 1,99% por pedido, mínimo de R$ 0,99 (dá pra desligar)\"; \"Sem setup · 30 dias grátis\""
+        },
+        {
+          "plan_name": "Vex Black",
+          "currency": "BRL",
+          "price_major": 499,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 200,
+          "quote": "R$499/mês",
+          "url": "https://vexmenu.com",
+          "note": "\"R$ 200 de setup · 30 dias grátis\"; Pix per-order rate for this plan not read"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "agendamento do pedido e checkout numa tela só.",
+          "url": "https://vexmenu.com"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "WhatsApp: avisos automáticos do pedido pro cliente",
+          "url": "https://vexmenu.com"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Telas da cozinha por etapa (massa, borda, montagem e finalização) com metas de tempo",
+          "url": "https://vexmenu.com"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Balcão e entrega, pedido agendado, buffet por peso",
+          "url": "https://vexmenu.com"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Duas ou mais lojas formam um grupo: pedidos e conversas juntos, motoboys e impressoras compartilhados",
+          "url": "https://vexmenu.com"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Use o seu próprio domínio no cardápio (meurestaurante.com.br); sem ele, a loja já tem um endereço grátis.",
+          "url": "https://vexmenu.com"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Comece grátis. Cresça pra R$ 299 ou R$ 499/mês — do delivery caseiro à rede com 200+ lojas.",
+          "url": "https://vexmenu.com"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Taxa por pedido só no Pix online",
+          "url": "https://vexmenu.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://vexmenu.com"
+      ]
+    },
+    {
+      "name": "SisFood",
+      "website": "https://www.sisfood.com.br",
+      "stored_id_prefix": "20c3683b",
+      "focus": null,
+      "verdict": "unreadable",
+      "reason": "www.sisfood.com.br and sisfood.com.br both answered HTTP 403 Forbidden to the page reader; stored row left as is",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.sisfood.com.br",
+        "https://sisfood.com.br"
+      ]
+    },
+    {
+      "name": "Soften Food",
+      "website": "https://www.softensistemas.com.br",
+      "stored_id_prefix": "0c786162",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "general retail/restaurant ERP-PDV; names food trucks (offline mobile sales) and has a digital menu and delivery, but no quote on its own pages for customers ordering ahead (retirada, agendamento, pedido antecipado); no price shown",
+      "eligibility": {
+        "food_quote": "Sistema móvel com vendas offline, controle de localizações e gestão nômade",
+        "food_url": "https://www.softensistemas.com.br/sistema-para-restaurante"
+      },
+      "plans": [
+        {
+          "plan_name": "Soften Food",
+          "currency": "BRL",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://www.softensistemas.com.br/sistema-para-restaurante",
+          "note": "no price on the site; \"A mensalidade é fixa e não olha o seu faturamento.\" and \"sem taxa por pedido\""
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.softensistemas.com.br",
+        "https://www.softensistemas.com.br/sistema-para-restaurante",
+        "https://www.softensistemas.com.br/sistema-para-food-truck"
+      ]
+    },
+    {
+      "name": "VirtualLine",
+      "website": "https://virtualline.com.br",
+      "stored_id_prefix": "1af3a80c",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE: has a Food Truck operation, but the flow its page describes is the customer scanning a QR code at the truck and joining a virtual queue (\"Fila virtual e acompanhamento em tempo real\"); no quote for ordering ahead, retirada at a time or agendamento of orders (agendamento there is table reservations); no price, 30-day trial only",
+      "eligibility": {
+        "food_quote": "Pedido, pagamento e cozinha sem fila no balcão",
+        "food_url": "https://virtualline.com.br",
+        "order_quote": "Pedido web com acompanhamento da fila e do tempo estimado",
+        "order_url": "https://virtualline.com.br"
+      },
+      "plans": [
+        {
+          "plan_name": "Virtualline",
+          "currency": "BRL",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://virtualline.com.br",
+          "note": "no price on the site; \"Teste grátis por 30 dias para conhecer a operação completa\""
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://virtualline.com.br"
+      ]
+    },
+    {
+      "name": "Goomer",
+      "website": "https://goomer.com.br",
+      "stored_id_prefix": "5c808451",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant delivery / digital-menu ordering with scheduled orders (\"Agendamento de pedidos\"); Brazilian site, R$ prices; no food-truck mention; pickup (retirada) not named on the pages read",
+      "eligibility": {
+        "order_quote": "Agendamento de pedidos",
+        "order_url": "https://goomer.com.br"
+      },
+      "plans": [
+        {
+          "plan_name": "Grátis",
+          "currency": "BRL",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": 1.39,
+          "setup_major": null,
+          "quote": "R$ 0,00 /mês",
+          "url": "https://goomer.com.br/planos",
+          "note": "per-order fee only above 30 orders a month: \"R$ 1,39 por pedido excedido\""
+        },
+        {
+          "plan_name": "Básico",
+          "currency": "BRL",
+          "price_major": 99.9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "R$ 99,90/mês",
+          "url": "https://goomer.com.br/planos",
+          "note": "annual option \"12x R$ 59,94/mês\" (\"Economize 40% - Plano anual\")"
+        },
+        {
+          "plan_name": "Automatizar",
+          "currency": "BRL",
+          "price_major": 184.9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "R$ 184,90/mês",
+          "url": "https://goomer.com.br/planos",
+          "note": "annual option \"12x R$ 138,68/mês\". Fourth plan Integrar: \"R$ 299,90/mês\" (annual 12x R$ 224,92/mês); QR Code is an add-on (R$ 70,00/mês on Básico/Automatizar)"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Agendamento de pedidos",
+          "url": "https://goomer.com.br"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Pedidos no Whatsapp e no painel",
+          "url": "https://goomer.com.br"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Link para WhatsApp e redes sociais",
+          "url": "https://goomer.com.br/planos"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "envie pedidos diretamente ao KDS para ganhar agilidade",
+          "url": "https://goomer.com.br"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Use na mesa, balcão ou como comanda digital",
+          "url": "https://goomer.com.br"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Seja um restaurante pequeno ou uma rede de franquias",
+          "url": "https://goomer.com.br"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "planos mensais que se adaptam à realidade do seu negócio",
+          "url": "https://goomer.com.br"
+        },
+        {
+          "key": "perorder",
+          "value": "partial",
+          "quote": "R$ 1,39 por pedido excedido",
+          "url": "https://goomer.com.br/planos"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://goomer.com.br",
+        "https://goomer.com.br/planos"
+      ]
+    },
+    {
+      "name": "Pedizap",
+      "website": "https://pedizap.com.br",
+      "stored_id_prefix": "630bcb18",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "delivery/pickup ordering for restaurants via WhatsApp and own link, with scheduled orders; Brazilian site, R$ prices; no food-truck mention",
+      "eligibility": {
+        "order_quote": "oferecendo opções de delivery ou retirada no local com o Pedizap!",
+        "order_url": "https://pedizap.com.br"
+      },
+      "plans": [
+        {
+          "plan_name": "Pedi rápido",
+          "currency": "BRL",
+          "price_major": 99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "R$99,00/mês",
+          "url": "https://pedizap.com.br",
+          "note": "plan-to-price order as listed on the page; \"Nenhuma comissão por pedido\". There is also a Flex table: \"A mensalidade nunca passa de R$ 199, não importa quanto você venda.\""
+        },
+        {
+          "plan_name": "Pedi mais",
+          "currency": "BRL",
+          "price_major": 149,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "R$149,00/mês",
+          "url": "https://pedizap.com.br",
+          "note": ""
+        },
+        {
+          "plan_name": "Pedi tudo",
+          "currency": "BRL",
+          "price_major": 199,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "R$199,00/mês",
+          "url": "https://pedizap.com.br",
+          "note": ""
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Agendamento de pedidos",
+          "url": "https://pedizap.com.br"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Atende e fecha pedidos no WhatsApp 24h",
+          "url": "https://pedizap.com.br"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "pode ser divulgado em qualquer rede social, ou campanha de marketing.",
+          "url": "https://pedizap.com.br"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Pedido na mesa e PDV para o caixa",
+          "url": "https://pedizap.com.br"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "A mensalidade nunca passa de R$ 199, não importa quanto você venda.",
+          "url": "https://pedizap.com.br"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Nenhuma comissão por pedido",
+          "url": "https://pedizap.com.br"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://pedizap.com.br"
+      ]
+    },
+    {
+      "name": "Anota AI",
+      "website": "https://anota.ai",
+      "stored_id_prefix": "1217609a",
+      "focus": null,
+      "verdict": "unreadable",
+      "reason": "anota.ai and anota.ai/planos both answered HTTP 403 Forbidden to the page reader; stored row and prices left as is",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://anota.ai",
+        "https://anota.ai/planos"
+      ]
+    },
+    {
+      "name": "Cardápio Web",
+      "website": "https://www.cardapioweb.com",
+      "stored_id_prefix": "fdcd9f95",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "restaurant digital menu / ordering site for delivery, table and counter, with scheduled orders; Brazilian site, R$ prices; no food-truck mention",
+      "eligibility": {
+        "order_quote": "Se você trabalha com pedidos agendados, trazemos uma série de personalizações",
+        "order_url": "https://www.cardapioweb.com"
+      },
+      "plans": [
+        {
+          "plan_name": "A partir de",
+          "currency": "BRL",
+          "price_major": 169.99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "com planos a partir de R$169,99 por mês e podendo chegar até R$624,93",
+          "url": "https://www.cardapioweb.com",
+          "note": "lowest plan price; plan names (Premium, Delivery, Mesas) shown without per-plan prices; plans sold via a consultant form"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Se você trabalha com pedidos agendados, trazemos uma série de personalizações",
+          "url": "https://www.cardapioweb.com"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "yes",
+          "quote": "Envie mensagens em massa e personalizadas no WhatsApp dos seus clientes",
+          "url": "https://www.cardapioweb.com"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Use nosso sistema de KDS para gerenciar seus pedidos e a sua produção em tempo real",
+          "url": "https://www.cardapioweb.com"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Pelo cardápio digital você tem acesso a um site para receber pedidos online para delivery, mesas e balcão.",
+          "url": "https://www.cardapioweb.com"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "para rede de franquia com centenas de lojas",
+          "url": "https://www.cardapioweb.com"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "com planos a partir de R$169,99 por mês e podendo chegar até R$624,93",
+          "url": "https://www.cardapioweb.com"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.cardapioweb.com"
+      ]
+    },
+    {
+      "name": "OlaClick",
+      "website": "https://www.olaclick.com",
+      "stored_id_prefix": "c400f63a",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE (evidence gap, not a known non-fit): own online-ordering e-commerce, delivery and WhatsApp orders, but neither the pt-br home page nor the pt pricing page says pickup/retirada, scheduled or advance orders (keyword check: no 'agend', 'program', 'antecipad', 'para levar', 'retirar'); no food-truck mention",
+      "eligibility": {
+        "order_quote": "Compartilhe seu cardápio, receba pedidos direto pelo WhatsApp e organize tudo sem intermediários.",
+        "order_url": "https://www.olaclick.com/pt-br/",
+        "country_quote": "Modelo OlaClick (0% de comissão)",
+        "country_url": "https://www.olaclick.com/pt-br/"
+      },
+      "plans": [
+        {
+          "plan_name": "Advanced",
+          "currency": "USD",
+          "price_major": 9.9,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "US$ 9.90/mês",
+          "url": "https://pricing.olaclick.app/pt",
+          "note": "still USD only on the Portuguese pricing page, no BRL plan prices; \"Os preços são para assinaturas anuais pagas integralmente na compra.\" (billed yearly). Other plans: Premium US$ 25.00/mês, Elite US$ 59.00/mês, Impulso US$ 160.00/mês. The \"R$ 825/mês\" on the pt-br home page is a savings-calculator figure (\"Simular economia exata para o seu volume de vendas\"), not a plan price"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.olaclick.com/pt-br/",
+        "https://pricing.olaclick.app/pt"
+      ]
+    }
+  ],
+  "notes": "Group B re-check of the 11 stored BR competitors on their own sites only; no web searches made. Unreadable (HTTP 403 to the page reader, retried once each): Simpliza, SisFood, Anota AI; their stored rows and prices were left as they are. Eligible food-truck tools with a price: Food Pronto (R$ 200/mês; the stored plan name 'Plano único' could not be re-read because /precos renders by script) and VexMenu (R$0 + 2,99% Pix online / R$299 / R$499 + R$200 setup). Food Pronto's order-ahead evidence is thin: customers find nearby trucks, order by phone and collect at the counter when alerted; no chosen pickup time is stated. Because BR has 2 eligible food-truck tools, under the 24 Nov rule the restaurant tools (Goomer, Pedizap, Cardápio Web) may not count; they are recorded as eligible nearest_local with order-ahead quotes so the reviewer can decide. Goomer has 4 plans; 3 are recorded, and Integrar R$ 299,90/mês is in the note. VirtualLine and OlaClick are BORDERLINE not_relevant (see each reason): VirtualLine is QR-at-the-truck plus a virtual queue; OlaClick showed no pickup or advance-order wording and still has USD-only plan prices. The R$ 825/mês on its pt-br page is a calculator figure. Soften Food names food trucks (offline mobile sales) but shows no customer order-ahead and no price."
+}

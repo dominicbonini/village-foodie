@@ -1,0 +1,852 @@
+{
+  "country": "GB",
+  "researched_on": "2026-11-24",
+  "searches": [
+    "grafterr online ordering click and collect (site:grafterr.com)",
+    "grafterr food truck EPOS (site:grafterr.com)",
+    "NOQ mobile order and pay app pre-order events (site:noqgroup.com)",
+    "beatthequeue.co.uk food truck pre-order pricing (site:beatthequeue.co.uk)",
+    "\"Hatches Up\" food truck ordering",
+    "HatchesUp app UK food van pre-order",
+    "Eventifood food truck ordering"
+  ],
+  "vendors": [
+    {
+      "name": "Aphelios",
+      "website": "https://apheliossoftware.com",
+      "stored_id_prefix": "93cd38bf",
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "general POS/stock suite; its digital menu is scan-at-the-table/counter QR ordering only; its own QR-ordering page never mentions ordering ahead, pre-order, click and collect or a collection time",
+      "eligibility": {
+        "food_quote": "Perfect for restaurants, cafes, pubs, takeaways, food trucks, market stalls, and events.",
+        "food_url": "https://apheliossoftware.com/digital-menu-ordering-uk"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "GBP",
+          "price_major": 29.99,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "From £29.99/mo for 2 users — Pro £69.99/mo for 5.",
+          "url": "https://apheliossoftware.com",
+          "note": "for reference only (not relevant); Pro £69.99/mo in the same sentence; Enterprise not re-checked"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://apheliossoftware.com",
+        "https://apheliossoftware.com/digital-menu-ordering-uk"
+      ]
+    },
+    {
+      "name": "Grafterr",
+      "website": "https://www.grafterr.com/uk/",
+      "stored_id_prefix": "b32f19c9",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "EPOS-first (confirmed), but its own site shows web pre-ordering with collection timeslots and a UK 'ePOS for Food Trucks' page; keep. Caveat: the food-truck page itself pitches POS + QR Order & Pay, not order-ahead; the order-ahead evidence is from its help pages and takeaway page. Reviewer may prefer focus nearest_local.",
+      "eligibility": {
+        "food_quote": "ePOS for Food Trucks",
+        "food_url": "https://www.grafterr.com/uk/industries/food-trucks-epos",
+        "order_quote": "if enabled, this can be used to specify Collection or Delivery Timeslots for same-day orders.",
+        "order_url": "https://www.grafterr.com/gb/grafterr_academy/topic/Pre-Order-Settings",
+        "country_quote": "POS System for Food Trucks & Mobile Catering UK | Grafterr",
+        "country_url": "https://www.grafterr.com/uk/industries/food-trucks-epos"
+      },
+      "plans": [
+        {
+          "plan_name": "Standard",
+          "currency": "GBP",
+          "price_major": 55,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£55 / m",
+          "url": "https://www.grafterr.com/uk/epos-pricing",
+          "note": "'Includes 2 POS licences'; order line 'In-store, online, mobile and telephone ordering.' No VAT wording."
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "GBP",
+          "price_major": 75,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£75 / m",
+          "url": "https://www.grafterr.com/uk/epos-pricing",
+          "note": "'Includes 4 POS licences'; same online ordering line as Standard."
+        },
+        {
+          "plan_name": "Free forever",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£0 / m",
+          "url": "https://www.grafterr.com/uk/epos-pricing",
+          "note": "its order line reads 'In-store, collection, telephone, takeaway & delivery' and does not say 'online'; the stored '0 / 30' second figure was not seen today. Enterprise is 'Speak to sales'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "if enabled, this can be used to specify Collection or Delivery Timeslots for same-day orders.",
+          "url": "https://www.grafterr.com/gb/grafterr_academy/topic/Pre-Order-Settings"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "If No is selected, customers will only be able to place Pre-Orders for future dates",
+          "url": "https://www.grafterr.com/gb/grafterr_academy/topic/Pre-Order-Settings"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Next, select the number of Orders that can be placed by customers within the slot",
+          "url": "https://www.grafterr.com/gb/grafterr_academy/topic/Pre-Order-Settings"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Bring calm to your kitchen with an automated kitchen display",
+          "url": "https://www.grafterr.com/uk/industries/food-trucks-epos"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "In-store, online, mobile and telephone ordering.",
+          "url": "https://www.grafterr.com/uk/epos-pricing"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Cut commission with your very own online ordering platform & mobile app",
+          "url": "https://www.grafterr.com/uk/industries/takeaway-epos"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "£55 / m",
+          "url": "https://www.grafterr.com/uk/epos-pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.grafterr.com/uk/",
+        "https://www.grafterr.com/uk/epos-pricing",
+        "https://www.grafterr.com/uk/industries/takeaway-epos",
+        "https://www.grafterr.com/uk/industries/food-trucks-epos",
+        "https://www.grafterr.com/gb/grafterr_academy/topic/Pre-Order-Settings"
+      ]
+    },
+    {
+      "name": "NOQ",
+      "website": "https://noqgroup.com",
+      "stored_id_prefix": "ac1f084d",
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "event POS & payments platform sold to event/festival operators (demo only, no prices); today's home page pitches POS, not ordering ahead. Its in-event phone ordering 'for collection' appears only in an older street-food-market case study, and no page I read says customers order in advance or for a chosen time. Borderline; keep not_relevant unless the reviewer counts in-event order-for-collection.",
+      "eligibility": {
+        "food_quote": "Street food markets are a big part of the food scene, especially in the UK.",
+        "food_url": "https://noqgroup.com/resources/case-studies/street-food-markets",
+        "order_quote": "We implemented three solutions at the event: order for collection, order to table and order to car.",
+        "order_url": "https://noqgroup.com/resources/case-studies/street-food-markets"
+      },
+      "plans": [
+        {
+          "plan_name": "Event POS",
+          "currency": "GBP",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://noqgroup.com",
+          "note": "no prices on the site; 'Book a demo' only"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://noqgroup.com",
+        "https://noqgroup.com/verticals/food-events",
+        "https://noqgroup.com/resources/case-studies/street-food-markets",
+        "https://noqgroup.com/news-and-insights/food-and-beverage-management-at-events",
+        "https://www.noqgroup.com/news-and-insights/mobile-ordering-app/"
+      ]
+    },
+    {
+      "name": "Ordea",
+      "website": "https://www.ordea.uk",
+      "stored_id_prefix": "6dc60fd2",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "UK online ordering for food trucks, festival stalls and pop-ups with collection timeslots and per-slot capacity",
+      "eligibility": {
+        "food_quote": "For food trucks, festival stalls, pop-ups & event caterers",
+        "food_url": "https://www.ordea.uk",
+        "order_quote": "Let customers order from their phone before they reach your window.",
+        "order_url": "https://www.ordea.uk/food-trucks"
+      },
+      "plans": [
+        {
+          "plan_name": "Free",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 3,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "No monthly fees. No lock-in. Just 3% per order when you make a sale.",
+          "url": "https://www.ordea.uk",
+          "note": "Stripe fees separate ('3% per order (Stripe fees separate)'). CONFLICT: the /food-trucks page says 'Pricing model under review. Currently £50/month with 1 month free trial.' — the home-page pricing section was used."
+        },
+        {
+          "plan_name": "Enterprise",
+          "currency": "GBP",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://www.ordea.uk",
+          "note": "'Custom' pricing, 'Contact sales'; includes 'Reduced commission rate' and 'Multi-store management'"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Set collection and delivery slots with per-slot capacity limits.",
+          "url": "https://www.ordea.uk"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Customers pre-order and collect when ready.",
+          "url": "https://www.ordea.uk/food-trucks",
+          "note": "same-day pre-order; ordering for a later day or event not described"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Set how many orders you can handle every 15 minutes. When a slot fills up, it disappears.",
+          "url": "https://www.ordea.uk/food-trucks"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "partial",
+          "quote": "Multi-store management",
+          "url": "https://www.ordea.uk",
+          "note": "Enterprise plan only"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Your logo, your colours, your domain",
+          "url": "https://www.ordea.uk"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "No monthly fees. No lock-in. Just 3% per order when you make a sale.",
+          "url": "https://www.ordea.uk",
+          "note": "the /food-trucks page contradicts this ('Currently £50/month with 1 month free trial')"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "3% per order (Stripe fees separate)",
+          "url": "https://www.ordea.uk"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "3% per order (Stripe fees separate)",
+          "url": "https://www.ordea.uk",
+          "note": "Stripe fees are said to be separate; no rate given"
+        }
+      ],
+      "check_urls": [
+        "https://www.ordea.uk",
+        "https://www.ordea.uk/food-trucks"
+      ]
+    },
+    {
+      "name": "What The Truck",
+      "website": "https://whatthetruck.ai",
+      "stored_id_prefix": "3f0b6c2e",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "UK ordering + EPOS for food vans, trailers and street food stalls: pre-orders with collection slots per gig, walk-ups in the same queue",
+      "eligibility": {
+        "food_quote": "Is it for food vans, catering trailers and street food stalls too?",
+        "food_url": "https://whatthetruck.ai",
+        "order_quote": "Your own ordering page, pre-orders with collection slots, and one queue with walk-ups.",
+        "order_url": "https://whatthetruck.ai"
+      },
+      "plans": [
+        {
+          "plan_name": "No monthly fee (fee per payment)",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 3.95,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "No monthly fee. Here's what you'd pay.",
+          "url": "https://whatthetruck.ai/pricing",
+          "note": "online (pre-order) rate 3.95%* up to £75,000 yearly sales, falling to 3.75% / 3.50% / 3.25% in higher bands with proof of turnover; 'Online rates are shown before VAT on the platform fee.' Card fees appear to be included in the rate."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Your own ordering page, pre-orders with collection slots, and one queue with walk-ups.",
+          "url": "https://whatthetruck.ai"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "Each gig has collection slots with limits you set.",
+          "url": "https://whatthetruck.ai"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Online and walk-up orders: share the same time slot capacity rules so the kitchen doesn’t get overloaded.",
+          "url": "https://whatthetruck.ai"
+        },
+        {
+          "key": "schedule",
+          "value": "yes",
+          "quote": "Recurring events, auto go-live, collection slots and geo + live weather and phone signal checks for every pitch",
+          "url": "https://whatthetruck.ai"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "live kitchen queue with every order on its own clock",
+          "url": "https://whatthetruck.ai",
+          "note": "image caption"
+        },
+        {
+          "key": "offline",
+          "value": "yes",
+          "quote": "the app keeps taking walk-up orders and running the kitchen when the signal drops, then syncs when it’s back.",
+          "url": "https://whatthetruck.ai"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Pre-orders, collection slots and walk-ups on one cook sheet, even when the signal drops.",
+          "url": "https://whatthetruck.ai"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Your own ordering page, pre-orders with collection slots, and one queue with walk-ups.",
+          "url": "https://whatthetruck.ai",
+          "note": "own ordering page; own web address not stated"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "No. There is no monthly charge.",
+          "url": "https://whatthetruck.ai/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "A small fee on each payment: the more your turnover, the less you pay.",
+          "url": "https://whatthetruck.ai/pricing"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "A small fee on each payment: the more your turnover, the less you pay.",
+          "url": "https://whatthetruck.ai/pricing",
+          "note": "rate table 3.95%-3.25% online by yearly sales band"
+        }
+      ],
+      "check_urls": [
+        "https://whatthetruck.ai",
+        "https://whatthetruck.ai/pricing"
+      ]
+    },
+    {
+      "name": "Beat The Queue",
+      "website": "https://beatthequeue.co.uk",
+      "stored_id_prefix": "0b177e65",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "UK street-food pre-ordering with time slots and capacity controls (Taste Maps Ltd); home and /pricing pages are JavaScript-rendered and returned no text, so today's price could not be read",
+      "eligibility": {
+        "food_quote": "Beat The Queue supports time slots and capacity controls designed for street food.",
+        "food_url": "https://beatthequeue.co.uk/article/food-truck-time-slots-guide/",
+        "order_quote": "Customers book a slot, you see organised orders on one screen, and customers receive automatic updates.",
+        "order_url": "https://beatthequeue.co.uk/article/food-truck-time-slots-guide/"
+      },
+      "plans": [
+        {
+          "plan_name": "Platform fee per order",
+          "currency": "GBP",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://beatthequeue.co.uk/dd-terms",
+          "note": "no amount readable today: home page and /pricing return empty (JavaScript-rendered). /dd-terms confirms per-order platform fees ('A platform fee may still apply because we provide and maintain the complete ordering service for the transaction.') but gives no figure; the article says 'all without upfront cost or long-term contracts.' The stored two £0 options could not be re-confirmed."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers book a slot, you see organised orders on one screen, and customers receive automatic updates.",
+          "url": "https://beatthequeue.co.uk/article/food-truck-time-slots-guide/"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Time slots are one of the simplest ways to make pre orders work for a food truck.",
+          "url": "https://beatthequeue.co.uk/article/food-truck-time-slots-guide/",
+          "note": "pre-orders by time slot; ordering for a later day or event not stated on the pages read"
+        },
+        {
+          "key": "capacity",
+          "value": "yes",
+          "quote": "Beat The Queue supports time slots and capacity controls designed for street food.",
+          "url": "https://beatthequeue.co.uk/article/food-truck-time-slots-guide/"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Customers book a slot, you see organised orders on one screen, and customers receive automatic updates.",
+          "url": "https://beatthequeue.co.uk/article/food-truck-time-slots-guide/",
+          "note": "an order screen; not called a kitchen display"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "We may combine fees from more than one order into a single collection.",
+          "url": "https://beatthequeue.co.uk/dd-terms"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://beatthequeue.co.uk",
+        "https://beatthequeue.co.uk/article/food-truck-time-slots-guide/",
+        "https://docs.beatthequeue.co.uk/",
+        "https://beatthequeue.co.uk/pricing",
+        "https://beatthequeue.co.uk/dd-terms"
+      ]
+    },
+    {
+      "name": "Perkss",
+      "website": "https://perkss.co.uk",
+      "stored_id_prefix": "c71ae83d",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "UK restaurant EPOS + commission-free direct ordering with a food-truck page that says pre-ordering is offered for mobile caterers and street food traders",
+      "eligibility": {
+        "food_quote": "Ideal for mobile caterers and street food traders.",
+        "food_url": "https://perkss.co.uk/food-truck-management-system/",
+        "order_quote": "Yes. Pre-ordering helps reduce waiting.",
+        "order_url": "https://perkss.co.uk/food-truck-management-system/"
+      },
+      "plans": [
+        {
+          "plan_name": "Essential",
+          "currency": "GBP",
+          "price_major": 12.5,
+          "period": "week",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£12.5 /weekly",
+          "url": "https://perkss.co.uk/pricing/",
+          "note": "weekly billing as stated; includes Online ordering. CONFLICT: the home page shows a single option at £20/week, £80/month or £900/year and 'Pay no software subscription until your first 100 direct orders.' The stored 54.17 (a monthly conversion) is not shown anywhere."
+        },
+        {
+          "plan_name": "Plus",
+          "currency": "GBP",
+          "price_major": 15,
+          "period": "week",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£15.00 /weekly",
+          "url": "https://perkss.co.uk/pricing/",
+          "note": "adds Cashback Loyalty, Gift Cards"
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "GBP",
+          "price_major": 20,
+          "period": "week",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£20.00 /weekly",
+          "url": "https://perkss.co.uk/pricing/",
+          "note": "adds Reservation; Enterprise £25.00 /weekly adds EPOS System"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "The platform supports dine-in, collection and delivery workflows.",
+          "url": "https://perkss.co.uk",
+          "note": "collection orders; choosing a time not stated"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Yes. Pre-ordering helps reduce waiting.",
+          "url": "https://perkss.co.uk/food-truck-management-system/",
+          "note": "pre-ordering stated; for a later day or event not stated"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "partial",
+          "quote": "Yes. Track locations, sales and teams centrally.",
+          "url": "https://perkss.co.uk/food-truck-management-system/"
+        },
+        {
+          "key": "whatsapp",
+          "value": "partial",
+          "quote": "Email, SMS, WhatsApp & Push",
+          "url": "https://perkss.co.uk/food-truck-management-system/",
+          "note": "comparison-table row; WhatsApp messages, not WhatsApp ordering"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Manage every truck centrally",
+          "url": "https://perkss.co.uk/food-truck-management-system/"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Yes. Branded mobile ordering is available.",
+          "url": "https://perkss.co.uk/food-truck-management-system/"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Pay weekly with no long-term commitment.",
+          "url": "https://perkss.co.uk",
+          "note": "subscription billed weekly; home page also lists a monthly option"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Perkss takes 0% of your order value.",
+          "url": "https://perkss.co.uk"
+        },
+        {
+          "key": "cardfee",
+          "value": "partial",
+          "quote": "Standard payment processing fees apply.",
+          "url": "https://perkss.co.uk",
+          "note": "no rate given"
+        }
+      ],
+      "check_urls": [
+        "https://perkss.co.uk",
+        "https://perkss.co.uk/food-truck-management-system/",
+        "https://perkss.co.uk/pricing/"
+      ]
+    },
+    {
+      "name": "Hatches Up",
+      "website": null,
+      "stored_id_prefix": "fbbf6c37",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "no own website found: two web searches ('\"Hatches Up\" food truck ordering', 'HatchesUp app UK food van pre-order') returned nothing with that name",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Eventifood",
+      "website": "https://eventifood.com",
+      "stored_id_prefix": "6afa79bc",
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "UK food-van ordering + POS with £ prices; BORDERLINE: the main flow is scan-the-QR-at-the-van, and the only order-ahead wording is 'or even before they arrive' (no time slots or pre-order for a later time on the pages read). Reviewer may demote to not_relevant.",
+      "eligibility": {
+        "food_quote": "Eventifood is a food van software and ordering platform built specifically for UK food trucks",
+        "food_url": "https://eventifood.com",
+        "order_quote": "pay on their phone while waiting — or even before they arrive.",
+        "order_url": "https://eventifood.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic PAYG",
+          "currency": "GBP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 1,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£0/month · 1.0% platform fee + Stripe processing",
+          "url": "https://eventifood.com",
+          "note": "plus Stripe card processing (~1.5% + 20p); Pro PAYG 2% and Pro Max PAYG 3% also offered"
+        },
+        {
+          "plan_name": "Basic Pay Monthly",
+          "currency": "GBP",
+          "price_major": 30,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£30/mo",
+          "url": "https://eventifood.com",
+          "note": "no platform fee per order (per the page summary); Stripe processing still applies"
+        },
+        {
+          "plan_name": "Pro",
+          "currency": "GBP",
+          "price_major": 59.96,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "£59.96/mo",
+          "url": "https://eventifood.com",
+          "note": "Pro Max £75/mo"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "pay on their phone while waiting — or even before they arrive.",
+          "url": "https://eventifood.com",
+          "note": "no chosen collection time"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Orders appear on your kitchen screen the instant they're placed.",
+          "url": "https://eventifood.com"
+        },
+        {
+          "key": "offline",
+          "value": "partial",
+          "quote": "POS app (offline desktop)",
+          "url": "https://eventifood.com",
+          "note": "Pro feature label only"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "£30/mo",
+          "url": "https://eventifood.com",
+          "note": "PAYG plans have £0/month"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "£0/month · 1.0% platform fee + Stripe processing",
+          "url": "https://eventifood.com"
+        },
+        {
+          "key": "cardfee",
+          "value": "yes",
+          "quote": "Stripe card processing (~1.5% + 20p)",
+          "url": "https://eventifood.com"
+        }
+      ],
+      "check_urls": [
+        "https://eventifood.com",
+        "https://eventifood.com/how-it-works"
+      ]
+    }
+  ],
+  "notes": "Group B part 1 (stored GB re-check). Settled: Aphelios not_relevant (QR scan-and-pay only, no order ahead); NOQ not_relevant (event-operator POS, no prices; in-event order-for-collection only in an old case study; borderline); Grafterr KEPT as eligible (EPOS-first, but help pages show pre-orders for future dates and collection timeslots with per-slot limits; UK food-truck page exists but pitches POS + QR, so focus is debatable). Price conflicts on vendors' own sites: Ordea home page says free + 3% per order and 'No monthly fees', while /food-trucks says 'Currently £50/month'; Perkss /pricing shows Essential £12.5 /weekly (Plus £15, Pro £20, Enterprise £25 weekly) while its home page shows £20/week, £80/month, £900/year; Perkss prices are given with period 'week' as stated. Beat The Queue: home and /pricing are JavaScript-rendered (empty); no fee amount found anywhere today. Hatches Up: no website found. Eventifood found at eventifood.com (UK) but its order-ahead evidence is thin (QR at the van). Most quotes come from the page reader's verbatim answers; a few (Grafterr '£55 / m', Eventifood price lines) are short price strings. Weevi left to part 2."
+}
