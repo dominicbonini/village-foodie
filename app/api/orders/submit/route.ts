@@ -1119,6 +1119,7 @@ export async function POST(req: NextRequest) {
     const lock = await acquireEventLock(resolvedTruckId, orderEventDate)
     const haveLock = lock.ok
     let order: { order_key: string } | null = null
+    let placedForAudit: Record<string, unknown> | null = null   // france-records-1: the audit row's "after", written once the lock is released
     let orderId = ''
     const requestedSlot = slot ?? null
     let confirmedSlot: string | null = requestedSlot   // what the customer email shows (null = ASAP)
@@ -1320,9 +1321,7 @@ export async function POST(req: NextRequest) {
       }
       orderId = String((rpcData as any).order_number)
       order = { order_key: (rpcData as any).order_key }
-      // france-records-1: the placement (pay at the truck), in action_audit_log (best-effort — never stops the order).
-      await logOrderEvent(supabase, { action: 'order_placed', truckId: resolvedTruckId, orderKey: String(order.order_key), after: { ...p_order, status },
-        note: { path: 'customer_pay_at_truck' }, actor: { actorKind: 'unknown', actorId: null, actorLabel: 'customer' }, source: 'web' })
+      placedForAudit = { ...p_order, status }
       // P2/P3: the reservation, written INSIDE the lock (released in the finally below). Switch ON ⇒ the
       // exact record the walk admitted (claimReservation, from the same read); OFF ⇒ P2's today's split.
       if (batchReservationsOn && claimReservation) await writeReservationRecord(supabase, { truckId: resolvedTruckId, orderKey: String(order.order_key), record: claimReservation })
@@ -1336,6 +1335,10 @@ export async function POST(req: NextRequest) {
     if (!order) {
       return NextResponse.json(customerErrorBody(locale, 'save_failed'), { status: 500 })
     }
+    // france-records-1: the placement (pay at the truck), in action_audit_log — after the event lock is released, so it never
+    // lengthens it; best-effort, never stops the order.
+    await logOrderEvent(supabase, { action: 'order_placed', truckId: resolvedTruckId, orderKey: String(order.order_key), after: placedForAudit,
+      note: { path: 'customer_pay_at_truck' }, actor: { actorKind: 'unknown', actorId: null, actorLabel: 'customer' }, source: 'web' })
 
     // ── 🔴 CAPTURE SITE 1 of 4: AUTO-ACCEPT ON THE PAY-AT-HATCH PATH, AND ONLY THAT PATH. ─────────
     // 🔴 THIS COMMENT USED TO CLAIM MORE THAN THE CODE DOES, AND THAT COST AN ORDER ITS CAPTURE.

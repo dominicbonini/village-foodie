@@ -526,6 +526,14 @@ const NAMED = [
       what: '⚠️ RE-PINNED (capacity-one-source-1, 13 November 2026): GET /api/manage answers `capacityView` ({ firstVanId, vanCount, vansDiffer }) right after `categories`. STRUCTURAL: with exactly that key taken out, F equals the expected answer byte for byte.',
       views: id => new RegExp(`^api/${cc}\\|manageGET\\|`).test(id),
       proveWith: (exp, f) => require('./_named-capacity-one-source-1.cjs').proveManageGet(exp, f) })) : []),
+  // ── ⚠️ RE-PINNED (france-records-1, 24 November 2026, docs/france-records-1-report.md) ────────────────────────────────────────────
+  //    Manage › Settings gains ONE "Business details" card after "Where you trade" (operator-only; customers never see it). STRUCTURAL
+  //    in both countries (scripts/_named-france-records-1.cjs): with exactly that card taken out, F equals the expected view byte for byte.
+  ...(require('./_named-france-records-1.cjs').LANDED ? ['GB', 'US'].map(cc => (
+    { id: 'france-records-1-business-card', country: cc, agent: 'france-records-1 (24 Nov 2026)',
+      what: '⚠️ RE-PINNED (france-records-1, 24 November 2026): Manage › Settings — one "Business details" card (legal name, registered address, registration and VAT numbers; France: the VAT regime) after "Where you trade". STRUCTURAL: with exactly that card taken out, F equals the expected view byte for byte.',
+      views: id => new RegExp(`^settings/${cc}\\|[^|]+\\|page$`).test(id),
+      proveWith: (exp, f) => require('./_named-france-records-1.cjs').proveSettingsCard(exp, f) })) : []),
   // ── TODO: the agents' named code changes land here as they report them (SCHED-A: 12-hour hour pickers and US ZIP
   //    codes; SETTINGS / SCHED-B / MENU-A / MENU-B / API: any GB code change they list). Each one PRECISE where a
   //    transform can say it, LISTED (US only) where it cannot.

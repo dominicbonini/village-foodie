@@ -11407,7 +11407,7 @@ function useSettingsJumpBar(active: boolean) {
 /** store-badges-1: no app in the truck's country's stores — the default until /api/manage says otherwise. */
 const NO_APPS = { ios: false, android: false } as const
 
-function SettingsTab({ userRole, isAdmin = false, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, appsAvailable = NO_APPS, onOpenWalkthrough, notices }: {
+function SettingsTab({ userRole, truck, isAdmin = false, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, appsAvailable = NO_APPS, onOpenWalkthrough, notices }: {
   /** store-badges-1: the truck's country's app flags — the app-download card shows only where at least one app is available.
    *  Absent → none (no card). */
   appsAvailable?: { ios: boolean; android: boolean }

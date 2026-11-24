@@ -200,14 +200,17 @@ const stripComments = s => s.replace(/--.*$/gm, '')
     const rows = rowsOf([ord(1, { total: 1234.5, items: [{ name: 'Margherita', quantity: 1, unit_price: 1234.5 }] }), ord(2, { event_id: 'ev-b', total: 2, items: [{ name: 'Margherita', quantity: 1, unit_price: 2 }] })])
     const csv = CSV.ordersCsv(rows, words)
     const lines = csv.slice(1).split('\r\n')
-    t('UTF-8 with a byte-order mark, one header row, CRLF line ends, a final CRLF', csv.charCodeAt(0) === 0xFEFF && csv.endsWith('\r\n') && !/[^\r]\n/.test(csv) && lines[0] === 'Date,Time,Order number,Event,Channel,Payment method,Currency,Gross,Tax,Tax basis,Net,Refunded,Cost,Profit', lines[0])
-    t('a row: ISO date, 24-hour time, plain amounts with a dot (no £, no thousands mark), the currency column', lines[1] === '2026-10-20,12:30,1,"The Green, Testville",Online,Card online,GBP,1234.50,0.00,no tax rate set,1234.50,0.00,3.00,1231.50'.replace('Card online', 'Pay at Hatch'), lines[1])
+    // ⚠️ RE-PINNED (france-records-1, 24 November 2026, docs/france-records-1-report.md): the Orders CSV has a "Receipt no." column
+    // after "Order number" (the per-truck receipt number the database now assigns). These fixture orders have none, so it is empty;
+    // the three lines below are exactly as before with that one column added, nothing else.
+    t('UTF-8 with a byte-order mark, one header row, CRLF line ends, a final CRLF', csv.charCodeAt(0) === 0xFEFF && csv.endsWith('\r\n') && !/[^\r]\n/.test(csv) && lines[0] === 'Date,Time,Order number,Receipt no.,Event,Channel,Payment method,Currency,Gross,Tax,Tax basis,Net,Refunded,Cost,Profit', lines[0])
+    t('a row: ISO date, 24-hour time, plain amounts with a dot (no £, no thousands mark), the currency column', lines[1] === '2026-10-20,12:30,1,,"The Green, Testville",Online,Card online,GBP,1234.50,0.00,no tax rate set,1234.50,0.00,3.00,1231.50'.replace('Card online', 'Pay at Hatch'), lines[1])
     t('a negative profit stays a number ("-1.00"), a formula-like event is defused and quoted', lines[2].includes(`"'=HYPERLINK(""x""), ""Quoted"""`) && /,-1\.00$/.test(lines[2]), lines[2])
     t('no customer name, email or phone anywhere', !/Ann|example\.test|07700/.test(csv))
     const jpRows = LG.accountRows({ orders: [ord(1, { total: 1980, currency: 'JPY', items: [{ name: 'Margherita', quantity: 2, unit_price: 990 }] })], payments: [{ order_key: 'k1', kind: 'refund', channel: 'online', amount_minor: 990, state: 'succeeded' }],
       costs: [{ item_id: 'i-marg', cost_minor: 350, currency: 'JPY', effective_from: '2026-10-01' }], itemIdByName: ITEMS, tax: { inclusive: true, rateMilli: 10000 }, timeZone: 'Asia/Tokyo', currency: 'JPY' })
     const jp = CSV.ordersCsv(jpRows, words).slice(1).split('\r\n')[1]
-    t('JPY: whole yen, no decimals (gross 1980, refunded 990, cost 700; tax 90 = 10/110 of what was kept)', jp === '2026-10-20,20:30,1,The Green Testville,Online,Pay at Hatch,JPY,1980,90,estimated from your tax rate,900,990,700,200'.replace('The Green Testville', '"The Green, Testville"'), jp)
+    t('JPY: whole yen, no decimals (gross 1980, refunded 990, cost 700; tax 90 = 10/110 of what was kept)', jp === '2026-10-20,20:30,1,,The Green Testville,Online,Pay at Hatch,JPY,1980,90,estimated from your tax rate,900,990,700,200'.replace('The Green Testville', '"The Green, Testville"'), jp)
     t('csvAmount: 2-decimal and 0-decimal currencies; negatives', CSV.csvAmount(5, 'GBP') === '0.05' && CSV.csvAmount(123456, 'EUR') === '1234.56' && CSV.csvAmount(1980, 'JPY') === '1980' && CSV.csvAmount(-250, 'USD') === '-2.50')
     const ev = CSV.eventsCsv(LG.summarise(rows).events, 'GBP', words).slice(1).split('\r\n')
     t('the events file: one summary row per event, with dishes sold and dishes with a cost', ev[0] === 'Event date,Event,Orders,Currency,Gross,Tax,Tax basis,Net,Refunded,Dishes sold,Dishes with a cost,Cost,Profit' && ev.length === 4 && ev[3] === ''

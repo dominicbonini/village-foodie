@@ -271,8 +271,16 @@ function stripNamed(name, r) {
   // row is taken out here, and only it — matched on its table AND its action prefix; every other write is compared as before.
   // The in-memory database numbers new rows from ONE counter (scripts/_fake-pg.cjs, `<table>-new-<n>`), so each shadow insert also
   // moves every later id up by one: those ids are put back by exactly the number of shadow inserts before them.
+  // ⚠️ RE-PINNED (france-records-1, 24 November 2026, docs/france-records-1-report.md): placement, edit, cancel and reject now also
+  // write an action_audit_log row (order_placed / order_edited / order_cancelled / order_rejected, lib/audit/order-audit.ts). Those
+  // rows are taken out the same way, and only those four actions, each checked on the way: no customer name, email, phone or note.
+  const RECORDS_ACTIONS = new Set(['order_placed', 'order_edited', 'order_cancelled', 'order_rejected'])
+  if (Array.isArray(c.writes)) for (const w of c.writes) if (w.table === 'action_audit_log' && RECORDS_ACTIONS.has(String(w.row?.action ?? ''))) {
+    const snap = JSON.stringify([w.row?.before ?? null, w.row?.after ?? null])
+    t(`${name}: the ${w.row.action} audit row carries no customer details or notes`, !/"(customer_name|customer_email|customer_phone|notes|specialInstructions|slotNotes)"/.test(snap), snap.slice(0, 200))
+  }
   if (Array.isArray(c.writes)) {
-    const isShadow = w => w.table === 'action_audit_log' && String(w.row?.action ?? '').startsWith('auth_shadow:')
+    const isShadow = w => w.table === 'action_audit_log' && (String(w.row?.action ?? '').startsWith('auth_shadow:') || RECORDS_ACTIONS.has(String(w.row?.action ?? '')))
     let seen = 0
     const fix = v => (typeof v === 'string' && seen ? v.replace(/-new-(\d+)$/, (_, n) => `-new-${Number(n) - seen}`) : v)
     c.writes = c.writes.flatMap(w => {

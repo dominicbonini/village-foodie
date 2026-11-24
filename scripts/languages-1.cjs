@@ -242,7 +242,14 @@ const XX = P.pseudoTree(EN)
   const run = (msgs, b = back, extra = {}) => TC.check({ locale: 'eo-XA', messages: msgs, en: EN, glossary: gx, back: b, planKeys, guardLanguages: ['en', 'xx'], ...extra })
   const ok = run(xxFull)
   t(`the pseudo-language: 0 structural problems over ${ok.counts.translated} keys`, ok.S.missing.length + ok.S.extra.length + ok.S.icu.length === 0, ok.S)
-  t('…no glossary miss, no banned term, no number/brand change, no meaning drift, every plan named', !ok.F.glossary.length && !ok.F.banned.length && !ok.F.numbers.length && !ok.F.drift.length && !ok.F.plans.length, { g: ok.F.glossary.slice(0, 2), n: ok.F.numbers.slice(0, 2), d: ok.F.drift.slice(0, 2) })
+  // ⚠️ RE-PINNED (france-records-1, 24 November 2026): the en-GB "Réel simplifié" (France's VAT regime, kept in French on purpose)
+  // already carries accents, and the pseudo-language's back-translation unaccents EVERY letter (é → e), so it reads back as
+  // "Reel simplifie" — 0% word overlap, a drift the pseudo-language makes, not a translation. Set aside by NAME, and only while
+  // that is the reason (its back-translation is exactly its en-GB text unaccented); every other drift still fails.
+  const PSEUDO_ACCENT_ASIDE = ['manageSettings.business.regime.reelSimplifie']
+  const driftLeft = ok.F.drift.filter(([k]) => !PSEUDO_ACCENT_ASIDE.includes(k))
+  const asideOk = ok.F.drift.filter(([k]) => PSEUDO_ACCENT_ASIDE.includes(k)).every(([k]) => back[k] === P.unaccent(TC.flat(EN)[k] ?? ''))
+  t('…no glossary miss, no banned term, no number/brand change, no meaning drift, every plan named', !ok.F.glossary.length && !ok.F.banned.length && !ok.F.numbers.length && !driftLeft.length && asideOk && !ok.F.plans.length, { g: ok.F.glossary.slice(0, 2), n: ok.F.numbers.slice(0, 2), d: driftLeft.slice(0, 2), asideOk })
   const plant = (fn) => { const m = JSON.parse(JSON.stringify(xxFull)); fn(m); return m }
   const flat = TC.flat
   const r1 = run(plant(m => { delete m.order.tipHeading }))

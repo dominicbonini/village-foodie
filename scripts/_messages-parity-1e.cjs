@@ -344,6 +344,10 @@ for (const k of ['pricing.fee.feeOnlyMonthly', 'pricing.fee.includedMonthly', 'p
 // "Other…", the "Item rates" row and popup, the item-rates refusal, the two finished-order refusals, and the accountant CSV's per-rate
 // headers. Their en-GB text and every enabled base are held by scripts/france-vat-1.cjs §F (the list: scripts/_lp-france-vat-1.cjs).
 for (const k of require('./_lp-france-vat-1.cjs').NEW_KEYS) NEW_WORDING[k] = 'france-vat-1: item rates, No VAT, the finished-order lock, per-rate CSV headers'
+// ⚠️ RE-PINNED (france-records-1, 24 November 2026, docs/france-records-1-report.md): NEW messages — Manage › Settings › Business
+// details and its refusals, Reports' "Daily totals by VAT rate (CSV)" and its file's words, and the accountant CSV's "Receipt no.".
+// Their en-GB text and every enabled base are held by scripts/france-records-1.cjs §G (the list: scripts/_lp-france-records-1.cjs).
+for (const k of require('./_lp-france-records-1.cjs').NEW_KEYS) NEW_WORDING[k] = 'france-records-1: business details, the daily-totals file, Receipt no.'
 /** ⚠️ RE-PINNED (features-page-restore, 20 October 2026): a restored message EDITED on purpose → [ref, the old key, how]:
  *  its en-GB text must be EXACTLY the old text so edited (here: the old text's first sentence). */
 const RESTORED_EDITED = {
