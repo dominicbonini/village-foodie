@@ -119,3 +119,7 @@ None found: only Wolt and the Dostavka.az aggregator came up; Clopos and Delever
 ## AM (Armenia, AMD)
 
 None found: Waiterio has an Armenian translation but doesn't name Armenia, has no AMD price and no pickup wording; Glovo is a marketplace. count now: 0
+
+## KG (Kyrgyzstan, KGS)
+
+None found: only marketplaces, single-chain apps and Smartomato (no KG presence) came up. count now: 0
