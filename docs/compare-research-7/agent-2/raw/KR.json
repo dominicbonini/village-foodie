@@ -1,0 +1,104 @@
+{
+ "country": "KR",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "매장 픽업 예약주문 링크 서비스 요금제 월 원 사장님 무료체험 포장 주문 시간 선택 카페 베이커리",
+  "포스 스마트오더 픽업 주문 연동 월 이용료 원 요금표 VAT 별도 소상공인 자체 모바일 주문",
+  "링크 하나로 주문 받기 음식점 픽업 포장 주문 페이지 요금제 원/월 수수료 0% 사장님 가입",
+  "\"픽업 주문\" 솔루션 \"요금 안내\" 월 원 매장 자체 주문 앱 웹 개인 카페",
+  "소상공인 매장 픽업 선주문 서비스 출시 앱 설치 없이 링크 주문 월 구독료 원 2025"
+ ],
+ "vendors": [
+  {
+   "name": "Toss Place (토스오더 픽업주문)",
+   "website": "https://tossplace.com",
+   "stored_id_prefix": "87b9b92a",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "pickup ordering ahead on its own product page, but still no fee/price stated on its own site today → stays unclear (as compare-research-4)",
+   "eligibility": {
+    "order_quote": "미리 주문하고  바로 픽업하는 모바일 주문",
+    "order_url": "https://tossplace.com/product/toss-order/pickup"
+   },
+   "plans": [
+    {
+     "plan_name": "토스오더 픽업주문",
+     "currency": "KRW",
+     "price_major": null,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://tossplace.com/product/toss-order/pickup",
+     "note": "Re-read today: the product page has no sentence about 수수료 / 요금 / 0원 / 3.5% / 부가세. The '3.5% + 부가세' wording seen in search summaries comes from docs.channel.io (third party) and an older tossplace story (2024 plan), not a fee in force on its own site. Unpriced."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "미리 주문하고  바로 픽업하는 모바일 주문",
+     "url": "https://tossplace.com/product/toss-order/pickup"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://tossplace.com/product/toss-order/pickup"
+   ]
+  }
+ ],
+ "notes": "KR count now: 0 (unchanged). Block 1: Eats365 has a /kr/ region but its /kr/pricing shows no amounts (Online Ordering = unpriced Expansion Module) — see raw/V-eats365.json; MENU TIGER USD only (V-menu-tiger.json); Klikit not in KR. Block 2: five new Korean searches (픽업 예약주문 링크, 포스 스마트오더 연동, 링크 주문 요금제, '픽업 주문' 솔루션 '요금 안내', 선주문 서비스 출시) returned only Toss Order (no fee on its own site — product page re-read), Naver 주문 manuals (platform ordering, excluded), Shopify pickup apps (USD, generic web-shop add-ons), imweb / godo / Cafe24 (generic web-shop builders, excluded), Wix help pages, SK shieldus / KT-type table-order products (table only), kmong freelancer gigs (not vendors), Seoul public delivery apps (delivery marketplaces). No new vendor site with an own-site KRW pickup price was found to open; Korea's pickup ordering is platform-run (Naver / Kakao / Baemin / Toss). Stopped."
+}
