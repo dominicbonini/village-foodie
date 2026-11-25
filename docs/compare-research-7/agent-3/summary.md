@@ -43,3 +43,4 @@ FLAG: Sabbor (GT) lives only on a pages.dev default host and shows no real custo
 - AR: Pedix (ARS 19.000 / 25.500 / 35.000) -> 3
 - CL, EC, PR, NG, ZA: nothing new -> 2
 - MA, EG, IN, MV (extra Block 6, local vendors only): nothing new -> 2 each. IN note: DineOpen (agent 2's reject) has a new /products/orders/online page with ₹ prices — agent 2 could re-check.
+- Second pass (food-truck only; one new-angle search each for CL, EC, PR, NG, ZA, MA, EG, IN, MV, BR): nothing new — every result was a marketplace, single-business app, directory, press or another agent's vendor (Feasty is agent 2's). All stay at 2.

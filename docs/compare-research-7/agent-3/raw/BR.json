@@ -4,7 +4,8 @@
   "searches": [
     "sistema pedidos online para food truck cardápio digital retirada no balcão agendamento planos R$ mês",
     "app para food truck e eventos cliente faz pedido pelo celular e retira sem fila plano mensal preço R$ food park",
-    "Picks app pagamento eventos foodtrucks cardápio digital pedido lojista planos taxa"
+    "Picks app pagamento eventos foodtrucks cardápio digital pedido lojista planos taxa",
+    "aplicativo food truck pedido antecipado retirada Brasil associação food trucks recomenda sistema cardápio digital food truck eventos \"pedido pelo celular\" planos"
   ],
   "vendors": [
     {
@@ -126,5 +127,5 @@
       ]
     }
   ],
-  "notes": "Count now: 3 if SisFood is counted (was 2 food-truck: VexMenu, Food Pronto). SisFood (stored 20c3683b, food_truck, unreadable in compare-research-1) is readable today: food-truck page + pickup / scheduled pickup + 'A partir de R$ 149,90/mês' (BORDERLINE price, see its plan note). Simpliza (stored 5f69d328, food_truck): still blocked (Cloudflare 'Sorry, you have been blocked', HTTP 403 on /food-truck.php) — not counted. New: VISU (not_relevant, row above). Seen in search, not read: Picks (event / food-truck consumer ordering app — App Store only, no own site in results, no merchant price), Pede Pronto (multi-restaurant consumer order-ahead app, convenience fee to diners — marketplace-like, press only), Saipos (restaurant POS, from R$219 — restaurant tool, not needed while BR has 3 food-truck tools), Ticket (menu link / QR), Link Card Menu (Hotmart product), Asaas payment links (not vendor sites), Yumm Trux / Food Truck Pub (US). Goomer, Pedizap, Cardápio Web (stored restaurant tools) not re-read. Stopped at 3."
+  "notes": "Count now: 3 if SisFood is counted (was 2 food-truck: VexMenu, Food Pronto). SisFood (stored 20c3683b, food_truck, unreadable in compare-research-1) is readable today: food-truck page + pickup / scheduled pickup + 'A partir de R$ 149,90/mês' (BORDERLINE price, see its plan note). Simpliza (stored 5f69d328, food_truck): still blocked (Cloudflare 'Sorry, you have been blocked', HTTP 403 on /food-truck.php) — not counted. New: VISU (not_relevant, row above). Seen in search, not read: Picks (event / food-truck consumer ordering app — App Store only, no own site in results, no merchant price), Pede Pronto (multi-restaurant consumer order-ahead app, convenience fee to diners — marketplace-like, press only), Saipos (restaurant POS, from R$219 — restaurant tool, not needed while BR has 3 food-truck tools), Ticket (menu link / QR), Link Card Menu (Hotmart product), Asaas payment links (not vendor sites), Yumm Trux / Food Truck Pub (US). Goomer, Pedizap, Cardápio Web (stored restaurant tools) not re-read. Stopped at 3. SECOND PASS (food-truck only): no new Brazilian food-truck ordering tool found (SisFood left uncounted by the coordinator): AppMaster (generic no-code app builder blog), Food Truck nas Ruas / My Kind (truck-finder / social apps, no ordering), Chow Trux / Slurpalicious (App Store listings, US trucks), Burger Planet (single chain), Delivery Much (marketplace), a UTFPR thesis and a Sebrae PR guide. No vendor site to read. Count stays 2."
 }
