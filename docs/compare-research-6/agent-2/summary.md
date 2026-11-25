@@ -112,3 +112,8 @@ count now: 0
 
 Nothing eligible: EDA24.TJ / MotoTaxi.tj = marketplaces; Russian POS tools (agent 1) show no Tajikistan page.
 count now: 0
+
+## PG (PGK)
+
+Nothing eligible: GoFood PNG = marketplace; Kina Bank / BSP = payments; AU/SG tools show no PNG page.
+count now: 0
