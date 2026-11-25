@@ -29,7 +29,21 @@
       "plans": [],
       "answers": [],
       "check_urls": []
+    },
+    {
+      "name": "4SaleFood",
+      "website": "https://4salefood.net",
+      "stored_id_prefix": "a9825e32",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Romanian food-truck-capable shop builder (counted in RO) - its site names no Moldova and is priced only in euro ('Plans priced in euro'); no MDL price, so it does not count for MD.",
+      "check_urls": [
+        "https://4salefood.net/"
+      ],
+      "eligibility": {},
+      "plans": [],
+      "answers": []
     }
   ],
-  "notes": "MD counts Vitrina (MDL) only. HorecaSystems (Meniu QR, stored 08a78851) stays out: delivery-only ordering for a time window, priced 30 lei a day (delivery-only does not count; a per-day price is unclear) - not re-read. Earlier rounds also saw Glovo, MENU TIGER (agent 2), Paloma365 (KZ POS, agent 2), Poster (no Moldova page; /en/pages/md-main 404 today, see V-Poster.json) and Choice (403, see V-Choice.json). Two new searches (Russian 'доставка и самовывоз ... лей в месяц', Romanian 'comenzi online ... ridicare ... abonament lunar lei') found single-restaurant apps (Edison Pizza, SUSHKA Кишинёв - developers not named), 4mobile.me (Russian app builder, rejected in KZ round 6), Straus (marketplace), Glovo Prime and ECOM.md (generic). Nothing eligible; MD stays at 1."
+  "notes": "MD counts Vitrina (MDL) only. HorecaSystems (Meniu QR, stored 08a78851) stays out: delivery-only ordering for a time window, priced 30 lei a day (delivery-only does not count; a per-day price is unclear) - not re-read. Earlier rounds also saw Glovo, MENU TIGER (agent 2), Paloma365 (KZ POS, agent 2), Poster (no Moldova page; /en/pages/md-main 404 today, see V-Poster.json) and Choice (403, see V-Choice.json). Two new searches (Russian 'доставка и самовывоз ... лей в месяц', Romanian 'comenzi online ... ridicare ... abonament lunar lei') found single-restaurant apps (Edison Pizza, SUSHKA Кишинёв - developers not named), 4mobile.me (Russian app builder, rejected in KZ round 6), Straus (marketplace), Glovo Prime and ECOM.md (generic). Nothing eligible; MD stays at 1. Third pass: regional (Romanian) angle - 4SaleFood names no Moldova and is € only; MenuForma (also RO) has a script-rendered terms page (B5) - not re-read. Russian-language CIS tools (Delever, Poster, FoodSoul) show no Moldova or MDL (V-files, KZ.json). MD stays at 1."
 }
