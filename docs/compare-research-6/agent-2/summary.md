@@ -182,3 +182,8 @@ count now: 0
 
 None exists: only a Majuro eatery directory (phone orders); US tools are agent 3's.
 count now: 0
+
+## AS (USD)
+
+Nothing eligible among my vendors: Talofa Eats = marketplace; US tools are agent 3's.
+count now: 0
