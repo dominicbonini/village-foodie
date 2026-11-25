@@ -1,0 +1,102 @@
+{
+ "country": "SA",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Zyda",
+   "website": "https://www.zyda.com",
+   "stored_id_prefix": "797df612",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Gulf/Egypt restaurant ordering-website platform with pickup & curbside ('Order ahead, collect fast'); its own Saudi Arabia country page gives a plan price in SAR",
+   "eligibility": {
+    "order_quote": "Order ahead, collect fast",
+    "order_url": "https://www.zyda.com/saudi-arabia/",
+    "country_quote": "Plans from 3,350 SAR a year.",
+    "country_url": "https://www.zyda.com/saudi-arabia/"
+   },
+   "plans": [
+    {
+     "plan_name": "Zyda plans (lowest, 'from')",
+     "currency": "SAR",
+     "price_major": 3350,
+     "period": "year",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Plans from 3,350 SAR a year.",
+     "url": "https://www.zyda.com/saudi-arabia/",
+     "note": "A 'from' yearly price on the Saudi Arabia country page for an unnamed plan (as accepted for QA/BH: yearly ÷ 12). Site-wide /pricing is KWD ('Prices for Kuwait')."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Order ahead, collect fast",
+     "url": "https://www.zyda.com/saudi-arabia/"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Orders for a date, daily items and occasion peaks.",
+     "url": "https://www.zyda.com/pricing"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.zyda.com/saudi-arabia/"
+   ]
+  }
+ ],
+ "notes": "SA count now: 3 (Ordable, Linkin1 + Zyda). Zyda's Saudi Arabia country page carries 'Plans from 3,350 SAR a year.' and the pickup product ('Order ahead, collect fast'; cafés: 'Order ahead, curbside and rewards for regulars.'). Earlier rounds only read Zyda's KWD /pricing (and /sa/pricing, Kuwait prices). Same 'from' form as QA/BH. Stopped at 3."
+}
