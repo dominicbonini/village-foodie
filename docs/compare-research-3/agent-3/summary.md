@@ -69,3 +69,13 @@ count now: 1
 | Vendty | nearest_local | not_relevant (BORDERLINE: no pickup wording) | COP 85.000–155.000/mes | https://vendty.com |
 
 count now: 1
+
+## CR (CRC)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Avify | nearest_local | not_relevant (generic shop/POS, USD only, no pickup) | — | https://avify.com |
+
+Nothing eligible exists with a CRC price (Avify, Biko.cr, Eatsy, EDNA Foods, Justo, OlaClick, Pedix checked across waves).
+
+count now: 0

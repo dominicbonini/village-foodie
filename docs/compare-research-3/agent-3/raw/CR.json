@@ -1,0 +1,27 @@
+{
+ "country": "CR",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Costa Rica menú digital pedidos en línea restaurantes \"para recoger\" OR \"para llevar\" plataforma costarricense planes \"₡\" mensual sin comisión"
+ ],
+ "vendors": [
+  {
+   "name": "Avify",
+   "website": "https://avify.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Costa Rican e-commerce / POS (operates in Costa Rica and Central America, e-invoicing 'para Costa Rica'), but no restaurant offer, no pickup or ordering-ahead wording, and 'Todos los precios están en USD.'",
+   "eligibility": {
+    "country_quote": "Todos los precios están en USD.",
+    "country_url": "https://avify.com"
+   },
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://avify.com"
+   ]
+  }
+ ],
+ "notes": "Count now: 0. Nothing eligible exists with a CRC price that I could find (wave 2 + today ~6 sites/candidates). Avify (Costa Rican) is a generic shop / POS, USD only, no pickup wording. Biko.cr (marketplace, US$80/month) and Eatsy (own-order platform, press) did not resolve in wave 2; EDNA Foods (2020 chatbot, press) has no site found; Justo (Chilean) entered Costa Rica per press but shows no CR page or CRC price (wave 2). OlaClick and Pedix USD-only. MENU TIGER (agent 2), Square / DoorDash (no CR availability) not counted."
+}
