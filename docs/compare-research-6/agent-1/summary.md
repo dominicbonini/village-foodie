@@ -196,3 +196,8 @@ count now: 0
 
 FoxiFood, Storekit: not listed (Finland only). One Swedish search: Wolt and guides only. nothing eligible exists.
 count now: 0
+
+## BL
+
+FoxiFood, Storekit: not listed. One French search found nothing for Saint-Barthélemy. nothing eligible exists.
+count now: 0
