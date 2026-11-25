@@ -125,3 +125,7 @@ count now: 1 (Restora POS)
 | Oscar | nearest_local | not_relevant (no pickup wording, no price) | — | https://oscar.pk/solutions/restaurant-ecommerce |
 
 None found with an own-site PKR price (Nosh PKR prices only on a listing site). count now: 0
+
+## KH (Cambodia, KHR)
+
+None exists that I could find (marketplaces, App Store POS apps, Aldelo without price, MENU TIGER USD). count now: 0
