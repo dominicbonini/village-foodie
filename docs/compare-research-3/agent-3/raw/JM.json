@@ -1,0 +1,23 @@
+{
+  "country": "JM",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Jamaica restaurant online ordering platform pickup \"JMD\" pricing plan month Jamaican startup menu ordering website",
+    "Jamaican online store builder for restaurants and food vendors \"curbside\" OR \"pickup\" orders \"J$\" monthly subscription Kingston Montego Bay"
+  ],
+  "vendors": [
+    {
+      "name": "visuEats",
+      "website": "https://visueats.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Jamaican consumer visual-menu app listing many restaurants (diners 'see every dish before you order for pickup or delivery'); a multi-restaurant marketplace, restaurants book a demo, no price",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://visueats.com"]
+    }
+  ],
+  "notes": "Count now: 1 (Ezy Cart, JMD, stored). No second eligible JMD-priced tool. visuEats is a consumer marketplace-style app (no price). Take App has a Jamaican catering customer review (take.app) — owned by agent 2, only named. KFC Jamaica's own ordering (a chain's in-house system), Island Run, 7Krave, Driva, QuickPlate, Cutdiline, Pekkish: marketplaces / delivery services or defunct — never counted, not read. US tools in results (Owner.com, Popmenu, Flipdish [agent 1], MOBI) show no Jamaica presence or JMD price. Stopped after two searches plus wave-2's dead ends (Square / Toast / Clover / Owner.com: no Jamaica presence)."
+}

@@ -39,3 +39,13 @@ count now: 1
 No second GTQ-priced eligible tool (Quantika: no own site found; Go4us: marketplace app).
 
 count now: 1
+
+## JM (JMD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| visuEats | nearest_local | not_relevant (consumer marketplace app, no price) | — | https://visueats.com |
+
+No second JMD-priced eligible tool (Take App: agent 2, only named).
+
+count now: 1
