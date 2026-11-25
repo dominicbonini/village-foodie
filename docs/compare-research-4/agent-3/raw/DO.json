@@ -1,0 +1,25 @@
+{
+  "country": "DO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "República Dominicana \"pedidos en línea\" restaurante \"retiro en tienda\" OR \"para recoger\" OR \"pick up\" sistema POS módulo tienda online precio \"RD$\" mes",
+    "menú digital República Dominicana pedidos por WhatsApp \"recoger en el local\" OR \"pasar a buscar\" OR \"para llevar\" plan mensual RD$ negocios de comida",
+    "Meniu app meniuapp.com company headquarters founded restaurant digital menu",
+    "software restaurante dominicano \"menú online\" OR \"tienda online\" OR \"pedidos online\" clientes ordenan y recogen precios planes RD$ mensual Santo Domingo Santiago"
+  ],
+  "vendors": [
+    {
+      "name": "Meniu",
+      "website": "https://meniuapp.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "digital menu with WhatsApp orders; home page shows only 'Takeout or pickup order management' (no customer ordering ahead stated), no price text (script-rendered), no country / Dominican presence; /es-DO/plans answered 404. Home market unknown (search found nothing) — a search snippet showed a Business plan in MXN.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://meniuapp.com/en", "https://meniuapp.com/es-DO/plans"]
+    }
+  ],
+  "notes": "Count now: 1 (Gestióndo, DOP, stored). No second DOP-priced tool. Meniu (new, read twice) shows no Dominican presence, no readable price and no customer ordering-ahead sentence. Searches otherwise returned Capterra DO listings (Weevi [stored, European, agent 1's], Aldelo, BPA, Yelo, Toast, Lightspeed, TouchBistro — directories, not sources), Avify (WhatsApp sales AI, per-message USD, not a food tool), marketplaces (PedidosYa, Uber Eats, DoorDash) and Square's US pages (no DO availability). Wave-2/3 dead ends (Manú, POS DO, TOI's hidden events price) not re-read. Stopped."
+}
