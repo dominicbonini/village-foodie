@@ -23,7 +23,7 @@ const { researchProblems } = jiti(path.join(ROOT, 'lib/data-import/research.ts')
 const { toMinorUnits, minorDigits } = jiti(path.join(ROOT, 'lib/money-format.ts'))
 const { saysNotOffered, QUOTE_MAX } = jiti(path.join(ROOT, 'lib/competitor-check/model.ts'))
 
-const RAWS = ['agent-1', 'agent-2', 'agent-3'].map(a => path.join(__dirname, a, 'raw'))
+const RAWS = ['agent-1', 'agent-2', 'agent-3', 'agent-4'].map(a => path.join(__dirname, a, 'raw'))
 const OUT = path.join(ROOT, 'data/compare-research-3/competitors.json')
 const { implausibleMonthly } = jiti(path.join(ROOT, 'lib/price-units.ts'))
 const STORED = JSON.parse(fs.readFileSync(path.join(__dirname, 'stored-ids.json'), 'utf8'))   // { prefix: { id, name, website, lifecycle } }
@@ -65,6 +65,9 @@ const UNCLEAR = [
   ['rent-a-shop.ch', '*', /onlineshop/i, 'the Onlineshop is an add-on module to the till plan, not the whole monthly price'],
   ['fu.do', 'CO', /plan inicial/i, 'the base till plan; online ordering (Tu Delivery) is a separately priced add-on on top of it'],
   ['resto.co.za', 'ZA', /./, 'the price comes from the page reader\'s summary, not a verbatim quote'],
+  ['joinposter.com', 'UA', /^poster site/i, 'the ordering-website add-on on its own, not a whole monthly price (it needs a POS plan)'],
+  ['joinposter.kz', 'KZ', /^poster site/i, 'the ordering-website add-on on its own, not a whole monthly price (it needs a POS plan)'],
+  ['joinposter.kz', 'KZ', /^mini/i, 'a POS plan; the ordering website is a separately priced add-on'],
   ['zunapro.com', 'TR', /ba[sş]lang[ıi][cç]/i, 'not confirmed that the entry package includes "Paket sipariş & gel-al"'],
 ]
 // A vendor whose page prices only ONE country ("Prices for Kuwait"): its plans are written for that country only; elsewhere it keeps
@@ -74,6 +77,15 @@ const PLANS_ONLY_IN = { 'zyda.com': ['KW'] }
 // where its own site names the country; the others go to the reviewer's not_relevant list (the evidence stays in the raw files).
 const PRESENCE_ONLY_IN = { 'olaclick.com': ['EC'] }
 // compare-research-3 review: rows an agent marked eligible WITHOUT the required quotes — listed as unreadable (evidence incomplete), never imported.
+// compare-research-3b (Dominic, 25 Nov): a competitor found NOT RELEVANT on review (by website host) — its eligible rows become reviewer notes
+// and the file carries a set_lifecycle not_relevant row for it (its id is the build's own stable id for that host).
+const REVIEW_NOT_RELEVANT = [['resto-saas-production-a095.up.railway.app', 'not a confirmed live product: its prices are only on a hosting-platform "production" subdomain and its own domain resto-saas.mu does not resolve (compare-research-3b, 25 Nov)', 'https://resto-saas-production-a095.up.railway.app/']]
+// compare-research-3b (Dominic, 25 Nov): Poster's monthly-BILLING prices. A plan named "Starter + Poster Site add-on" is the Starter POS
+// plan PLUS the ordering-site add-on, both as printed on the page (the agent recorded Starter alone): [host, country, plan, total, quote, note].
+const PLAN_TOTAL = [
+  ['joinposter.com', 'UA', 'Starter + Poster Site add-on', 1360, '540 ₴600 ₴/міс. · Вартість — 760 ₴/міс.', 'Starter 600 ₴ + Poster Site 760 ₴ a month, billed monthly (Starter 540 ₴ a month if billed yearly)'],
+  ['joinposter.kz', 'KZ', 'Starter + Poster Site add-on', 21000, '8 640 ₸9 600 ₸/мес. · Стоимость — 11 400 ₸/мес.', 'Starter 9 600 ₸ + Poster Site 11 400 ₸ a month, billed monthly (Starter 8 640 ₸ a month if billed yearly)'],
+]
 const INCOMPLETE = [['joinposter.kz', 'KZ', 'no order-ahead or food-truck quote recorded; its KZ price sits under an unlabelled yearly toggle'],
   ['delivety.com', 'UA', 'no order-ahead quote recorded; its pricing page shows no prices']]
 // Display names for NEW competitors (the agents' product labels kept in the evidence, not in the name shown on the page).
@@ -81,7 +93,7 @@ const DISPLAY_NAME = { 'fu.do': 'Fudo', 'blinkco.io': 'Blink', 'zunapro.com': 'Z
   'foodics.com': 'Foodics', 'esb.id': 'ESB Order', 'sistemaquevende.pt': 'Sistema Que Vende',
   'gestiondo.com.do': 'Gestióndo', 'restaurant-saas-monorepo.pages.dev': 'Sabbor', 'ezywebpro.com': 'Ezy Cart', 'pedifacil.com.py': 'PedíFácil',
   'quicklyservices.com': 'RestroGreen', 'posmasters.lk': 'POS Masters' }
-const unclearOf = (website, cc, planName) => UNCLEAR.find(([h, c, re]) => ((host(website) ?? '').endsWith(h)) && (c === '*' || c === cc) && re.test(String(planName ?? '')))
+const unclearOf = (website, cc, planName, planUrl) => UNCLEAR.find(([h, c, re]) => [website, planUrl].some(u => (host(u) ?? '').endsWith(h)) && (c === '*' || c === cc) && re.test(String(planName ?? '')))
 const STORED_PLANS = JSON.parse(fs.readFileSync(path.join(__dirname, 'stored-plans.json'), 'utf8'))   // current plans, read once on 25 Nov 2026 (read-only SELECT)
 const storedPlan = new Map(STORED_PLANS.map(x => [`${x.c}|${x.cc}|${String(x.n).trim().toLowerCase()}`, x]))
 
@@ -125,8 +137,10 @@ function build() {
       if (v.verdict === 'not_relevant') { notRelevant.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: v.reason, url: v.eligibility?.order_url ?? v.eligibility?.food_url ?? (v.check_urls ?? [])[0] ?? v.website, plans: v.plans ?? [] }); continue }
       if (v.verdict !== 'eligible') { unreadable.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: v.reason }); continue }
       const h = host(v.website)
-      const inc = INCOMPLETE.find(([x, c]) => (h ?? '').endsWith(x) && c === cc)
+      const inc = f.startsWith('agent-1/') && INCOMPLETE.find(([x, c]) => (h ?? '').endsWith(x) && c === cc)
       if (inc) { unreadable.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: `left out on review: ${inc[2]}` }); continue }
+      const rnr = REVIEW_NOT_RELEVANT.find(([x]) => (h ?? '') === x)
+      if (rnr) { notRelevant.push({ country: cc, name: v.name, website: v.website, stored: null, reason: rnr[1], url: rnr[2], reviewHost: h }); continue }
       const pres = Object.entries(PRESENCE_ONLY_IN).find(([x]) => (h ?? '').endsWith(x))
       if (pres && !pres[1].includes(cc)) { notRelevant.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: `left out on review: its presence here rests only on "Restaurantes en América Latina" (own site names ${pres[1].join(', ')} only). ${v.reason ?? ''}`.trim() }); continue }
       // compare-fix-2: no stored id on this row, but a stored competitor has its website host (or its name) → that competitor
@@ -149,7 +163,8 @@ function build() {
       m.evidence.push({ country: cc, ...v.eligibility, reason: v.reason, ...(v.neighbour ? { neighbour: v.neighbour } : {}) })
       if (v.neighbour) { m.neighbours = m.neighbours ?? new Map(); m.neighbours.set(cc, String(v.neighbour).toUpperCase()) }
       const only = Object.entries(PLANS_ONLY_IN).find(([x]) => (h ?? '').endsWith(x))
-      m.countries.set(cc, only && !only[1].includes(cc) ? [] : (v.plans ?? []))
+      const totals = (v.plans ?? []).map(p => { const t = PLAN_TOTAL.find(([x, c, n]) => (h ?? '').endsWith(x) && c === cc && n === p.plan_name); return t ? { ...p, price_major: t[3], quote: t[4], note: t[5] } : p })
+      m.countries.set(cc, only && !only[1].includes(cc) ? [] : totals)
       for (const u of v.check_urls ?? []) if (m.check_urls.size < 10) m.check_urls.add(u)
       for (const a of v.answers ?? []) {
         if (!KEYS.includes(a.key)) continue                 // only the 14 key differentiators
@@ -223,7 +238,7 @@ function build() {
         const yearly = (p.period ?? 'month') === 'year'
         // per day / per week: an estimate per month (× 365 / 12, × 52 / 12), marked unclear — never published as a stated price
         const perDay = ['day', 'week'].includes(p.period ?? 'month')
-        const review = hidden ? null : unclearOf(m.website, cc, p.plan_name)
+        const review = hidden ? null : unclearOf(m.website, cc, p.plan_name, p.url)
         const perUnit = (p.period ?? 'month') === 'week' ? 52 : 365
         const monthlyMajor = hidden ? null : (yearly ? p.price_major / 12 : perDay ? Math.round((p.price_major * perUnit / 12) * 100) / 100 : p.price_major)
         const cur = String(p.currency ?? '').toUpperCase()
@@ -261,6 +276,10 @@ function build() {
   }
   // compare-fix-1: STORED competitors marked not relevant (NOT_RELEVANT) or not sold in a country, that are not already a row above —
   // a row carrying only the instruction, its reason and its page (and, for CORRECT_EVEN_IF_NOT_RELEVANT, the corrected plans).
+  for (const [x, reason, url] of REVIEW_NOT_RELEVANT) {
+    const ev = notRelevant.find(r => r.reviewHost === x)
+    if (ev) competitors.push({ id: uuid(`competitor:${x}`), name: ev.name, request_check: false, set_lifecycle: { value: 'not_relevant', reason: clip(reason, 280), source_url: url } })
+  }
   const have = new Set(competitors.map(c => c.id))
   const nrBy = (pre) => notRelevant.filter(x => x.stored === pre)
   for (const pre of [...new Set([...NOT_RELEVANT, ...Object.keys(NOT_SOLD_IN)])]) {

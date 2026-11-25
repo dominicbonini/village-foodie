@@ -1019,90 +1019,6 @@
    "set_focus": true
   },
   {
-   "id": "465f1ff8-1782-5364-a7bf-723f350c744f",
-   "name": "Resto-SaaS (Digital Bonsaï Ltd)",
-   "website": "https://resto-saas-production-a095.up.railway.app/",
-   "focus": "nearest_local",
-   "lifecycle": "active",
-   "payment_providers": null,
-   "features_checked_on": "2026-11-25",
-   "features_verified_at": null,
-   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: MU.",
-   "check_urls": [
-    "https://resto-saas-production-a095.up.railway.app/"
-   ],
-   "request_check": true,
-   "answers": [
-    {
-     "key": "ahead",
-     "value": "yes",
-     "quote": "Customers choose their slot, you control capacity. No more counter rush at peak hours.",
-     "source_url": "https://resto-saas-production-a095.up.railway.app/"
-    },
-    {
-     "key": "preorder",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "capacity",
-     "value": "yes",
-     "quote": "Customers choose their slot, you control capacity. No more counter rush at peak hours.",
-     "source_url": "https://resto-saas-production-a095.up.railway.app/"
-    },
-    {
-     "key": "schedule",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "whatsapp",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "social",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "kds",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "offline",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "walkup",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "vans",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "domain",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "monthly",
-     "value": "yes",
-     "quote": "1 800 MUR + VAT",
-     "source_url": "https://resto-saas-production-a095.up.railway.app/"
-    },
-    {
-     "key": "perorder",
-     "value": "no",
-     "quote": "No commission on your sales.",
-     "source_url": "https://resto-saas-production-a095.up.railway.app/"
-    },
-    {
-     "key": "cardfee",
-     "value": "partial",
-     "quote": "One fixed monthly price that includes the platform, MIPS and MCB fees, and support.",
-     "source_url": "https://resto-saas-production-a095.up.railway.app/"
-    }
-   ],
-   "set_focus": true
-  },
-  {
    "id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
    "name": "Mylo",
    "website": "https://mylo.africa",
@@ -1499,6 +1415,95 @@
     }
    ],
    "set_focus": true
+  },
+  {
+   "id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "name": "Poster",
+   "website": "https://joinposter.kz",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: KZ, UA.",
+   "check_urls": [
+    "https://joinposter.kz/pricing",
+    "https://joinposter.kz/business/foodtruck",
+    "https://joinposter.com/ua/pricing",
+    "https://joinposter.com/ua/business/foodtruck"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Доставка и самовывоз",
+     "source_url": "https://joinposter.kz/pricing"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "465f1ff8-1782-5364-a7bf-723f350c744f",
+   "name": "Resto-SaaS (Digital Bonsaï Ltd)",
+   "request_check": false,
+   "set_lifecycle": {
+    "value": "not_relevant",
+    "reason": "not a confirmed live product: its prices are only on a hosting-platform \"production\" subdomain and its own domain resto-saas.mu does not resolve (compare-research-3b, 25 Nov)",
+    "source_url": "https://resto-saas-production-a095.up.railway.app/"
+   }
   }
  ],
  "plans": [
@@ -2193,72 +2198,6 @@
    "notes": "compare-research-3, read 25 Nov 2026: \"A medida\" — price on request (custom after an on-site assessment); the page says all prices exclude ITBIS. Restaurant plan 'RD$ 5,500 /mes' (+0.40% above RD$1.3MM sales) has no customer online ordering ahead, so not used."
   },
   {
-   "id": "35a16e3d-1bf6-5f8d-91b1-d70534c9b537",
-   "competitor_id": "465f1ff8-1782-5364-a7bf-723f350c744f",
-   "country_code": "MU",
-   "plan_name": "Starter",
-   "currency": "MUR",
-   "price_hidden": false,
-   "monthly_minor": 180000,
-   "monthly_major": 1800,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "excl",
-   "status": "counted",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://resto-saas-production-a095.up.railway.app/",
-   "checked_on": "2026-11-25",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-3, read 25 Nov 2026: \"1 800 MUR + VAT\" — 'per month · All inclusive'; MIPS and MCB fees included; 30-day free trial"
-  },
-  {
-   "id": "e82a1c61-c42c-58cf-a275-1479f2e19de0",
-   "competitor_id": "465f1ff8-1782-5364-a7bf-723f350c744f",
-   "country_code": "MU",
-   "plan_name": "Pro",
-   "currency": "MUR",
-   "price_hidden": false,
-   "monthly_minor": 440000,
-   "monthly_major": 4400,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "excl",
-   "status": "counted",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://resto-saas-production-a095.up.railway.app/",
-   "checked_on": "2026-11-25",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-3, read 25 Nov 2026: \"4 400 MUR + VAT\" — per month"
-  },
-  {
    "id": "86457318-8577-53a0-8181-cb139b49abef",
    "competitor_id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
    "country_code": "NG",
@@ -2488,6 +2427,208 @@
    "verified_at": null,
    "verified_by": null,
    "notes": "compare-research-3, read 25 Nov 2026: \"R450\" — per branch per month; prices 'include VAT at South Africa's standard rate of 15%'; Combine (2 products) R850, Grow (3) R1,250"
+  },
+  {
+   "id": "c8576512-2186-5036-b80f-33a23abe5369",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "country_code": "KZ",
+   "plan_name": "Starter + Poster Site add-on",
+   "currency": "KZT",
+   "price_hidden": false,
+   "monthly_minor": 2100000,
+   "monthly_major": 21000,
+   "yearly_only": false,
+   "correct": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://joinposter.kz/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"8 640 ₸9 600 ₸/мес. · Стоимость — 11 400 ₸/мес.\" — Starter 9 600 ₸ + Poster Site 11 400 ₸ a month, billed monthly (Starter 8 640 ₸ a month if billed yearly)"
+  },
+  {
+   "id": "78427d99-b32c-572a-a0cf-9eafe2654f05",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "country_code": "KZ",
+   "plan_name": "Mini (food-truck page price)",
+   "currency": "KZT",
+   "price_hidden": false,
+   "monthly_minor": 1740000,
+   "monthly_major": 17400,
+   "yearly_only": false,
+   "correct": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://joinposter.kz/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"15 660 ₸17 400 ₸/мес.\" — 15 660 ₸ a month if billed yearly (the food-truck page shows '15 660 ₸/в мес.'); Poster Site add-on extra"
+  },
+  {
+   "id": "f911f34c-5ea3-58e8-af22-0be0d70095d8",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "country_code": "KZ",
+   "plan_name": "Poster Site (ordering website add-on)",
+   "currency": "KZT",
+   "price_hidden": false,
+   "monthly_minor": 1140000,
+   "monthly_major": 11400,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://joinposter.kz/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"Стоимость — 11 400 ₸/мес.\" — no separate yearly figure is shown for the add-on (only 11 400 ₸/мес.); add-on on top of a POS plan"
+  },
+  {
+   "id": "8b865fd9-652e-5172-a62a-508956265120",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "country_code": "UA",
+   "plan_name": "Business (includes Сайт для замовлень)",
+   "currency": "UAH",
+   "price_hidden": false,
+   "monthly_minor": 170000,
+   "monthly_major": 1700,
+   "yearly_only": false,
+   "correct": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://joinposter.com/ua/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"1 530 ₴1 700 ₴/міс.\" — 1 530 ₴ a month if billed yearly"
+  },
+  {
+   "id": "d5930bed-5c64-5808-b7e6-093d90f8e3e4",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "country_code": "UA",
+   "plan_name": "Poster Site (ordering website add-on)",
+   "currency": "UAH",
+   "price_hidden": false,
+   "monthly_minor": 76000,
+   "monthly_major": 760,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://joinposter.com/ua/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"Вартість — 760 ₴/міс.\" — no separate yearly figure is shown for the add-on (only 760 ₴/міс.); add-on on top of a POS plan"
+  },
+  {
+   "id": "d92e4490-762b-5ca6-a8e5-f5b2b1b7c4b9",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "country_code": "UA",
+   "plan_name": "Starter + Poster Site add-on",
+   "currency": "UAH",
+   "price_hidden": false,
+   "monthly_minor": 136000,
+   "monthly_major": 1360,
+   "yearly_only": false,
+   "correct": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://joinposter.com/ua/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026: \"540 ₴600 ₴/міс. · Вартість — 760 ₴/міс.\" — Starter 600 ₴ + Poster Site 760 ₴ a month, billed monthly (Starter 540 ₴ a month if billed yearly)"
   }
  ],
  "entries": [
@@ -2652,16 +2793,6 @@
    "verified_by": null
   },
   {
-   "id": "46766461-4b56-5544-a8bd-fa8c03b3d520",
-   "country_code": "MU",
-   "competitor_id": "465f1ff8-1782-5364-a7bf-723f350c744f",
-   "primary_plan_id": "35a16e3d-1bf6-5f8d-91b1-d70534c9b537",
-   "choose_when": null,
-   "sort_order": 50,
-   "verified_at": null,
-   "verified_by": null
-  },
-  {
    "id": "f04525e0-0911-5f35-8e31-3e2cde676d43",
    "country_code": "NG",
    "competitor_id": "7e788860-c3a8-5356-bd0b-bdc21724d333",
@@ -2706,6 +2837,26 @@
    "country_code": "ZA",
    "competitor_id": "fedc794a-993d-5890-9dbb-4e01c042042b",
    "primary_plan_id": "d2bdd393-b134-56b4-9681-9b3868a000a5",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "e01244ee-cbbf-5451-8ac2-dada1e0b6bcd",
+   "country_code": "KZ",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "primary_plan_id": "c8576512-2186-5036-b80f-33a23abe5369",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "467c6dcd-95a1-5c74-ac7b-fde36a47ec36",
+   "country_code": "UA",
+   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
+   "primary_plan_id": "d92e4490-762b-5ca6-a8e5-f5b2b1b7c4b9",
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -2922,19 +3073,6 @@
    ]
   },
   {
-   "name": "Resto-SaaS (Digital Bonsaï Ltd)",
-   "evidence": [
-    {
-     "country": "MU",
-     "order_quote": "Customers choose their slot, you control capacity. No more counter rush at peak hours.",
-     "order_url": "https://resto-saas-production-a095.up.railway.app/",
-     "country_quote": "The takeaway ordering platform built for Mauritius restaurants.",
-     "country_url": "https://resto-saas-production-a095.up.railway.app/",
-     "reason": "Mauritian takeaway ordering platform for restaurants: customers order from their phones and choose a pickup slot, capacity controlled; MUR monthly prices, no commission. Vendor's own site is on a railway.app subdomain."
-    }
-   ]
-  },
-  {
    "name": "Mylo",
    "evidence": [
     {
@@ -2996,6 +3134,31 @@
      "country_quote": "Built for South African Restaurants",
      "country_url": "https://bizzfo.co.za/restaurant-pos/",
      "reason": "South African restaurant POS with a stackable Online product: customers order from the restaurant's branded platform with delivery and pickup options; ZAR per-branch prices incl. VAT"
+    }
+   ]
+  },
+  {
+   "name": "Poster",
+   "evidence": [
+    {
+     "country": "KZ",
+     "food_quote": "Автоматизация фудтрака в Казахстане",
+     "food_url": "https://joinposter.kz/business/foodtruck",
+     "order_quote": "Сайт для заказов из вашего заведения — за 5 минут",
+     "order_url": "https://joinposter.kz/pricing",
+     "country_quote": "Автоматизация фудтрака в Казахстане",
+     "country_url": "https://joinposter.kz/business/foodtruck",
+     "reason": "Poster's own Kazakhstan site (joinposter.kz) with a Kazakhstan food-truck page and tenge prices; ordering website via the paid Poster Site add-on ('Доставка и самовывоз'). Prices are the higher (monthly-billing) figures."
+    },
+    {
+     "country": "UA",
+     "food_quote": "Автоматизація фудтрака: рішення для вашого бізнесу.",
+     "food_url": "https://joinposter.com/ua/business/foodtruck",
+     "order_quote": "Сайт для замовлень з вашого закладу — за 5 хвилин",
+     "order_url": "https://joinposter.com/ua/pricing",
+     "country_quote": "Вартість — 760 ₴/міс.",
+     "country_url": "https://joinposter.com/ua/pricing",
+     "reason": "Ukrainian cloud POS with a Ukrainian food-truck page and UAH prices; ordering website via Business/Pro or the Poster Site add-on. Prices here are the higher (monthly-billing) figures."
     }
    ]
   }
@@ -3433,6 +3596,15 @@
    "reason": "Jamaican consumer visual-menu app listing many restaurants (diners 'see every dish before you order for pickup or delivery'); a multi-restaurant marketplace, restaurants book a demo, no price",
    "url": "https://visueats.com",
    "plans": []
+  },
+  {
+   "country": "MU",
+   "name": "Resto-SaaS (Digital Bonsaï Ltd)",
+   "website": "https://resto-saas-production-a095.up.railway.app/",
+   "stored": null,
+   "reason": "not a confirmed live product: its prices are only on a hosting-platform \"production\" subdomain and its own domain resto-saas.mu does not resolve (compare-research-3b, 25 Nov)",
+   "url": "https://resto-saas-production-a095.up.railway.app/",
+   "reviewHost": "resto-saas-production-a095.up.railway.app"
   },
   {
    "country": "MU",
