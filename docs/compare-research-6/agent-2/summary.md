@@ -152,3 +152,8 @@ count now: 0
 
 Nothing eligible among my vendors: Good To Go, Grab N Grub = marketplaces. US tools (Square, Toast, Clover, ChowNow) may serve Guam — agent 3's, not fetched.
 count now: 0
+
+## WS (WST)
+
+None exists: My Samoa, SekiEats = marketplaces.
+count now: 0
