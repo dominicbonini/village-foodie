@@ -264,3 +264,11 @@ count now: 0
 
 None exists: no ordering tool or app found.
 count now: 0
+
+## AW (AWG) — Restolabs lead
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Restolabs (1c3ade45) | nearest_local | eligible on evidence (Aruba = its 4th market; 'Pickup & In-House Delivery'), no AWG price ($ placeholders) | – | https://www.restolabs.com/pricing |
+
+count now: 0 priced in AWG. (VI was filed by me before the coordinator's correction; agent 3 also filed it — both "none".)

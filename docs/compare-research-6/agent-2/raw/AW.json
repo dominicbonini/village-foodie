@@ -1,0 +1,49 @@
+{
+  "country": "AW",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Aruba restaurant online ordering pickup system Aruban company \"Afl\" OR \"AWG\" per month order online takeaway app snack"
+  ],
+  "vendors": [
+    {
+      "name": "Restolabs",
+      "website": "https://www.restolabs.com",
+      "stored_id_prefix": "1c3ade45",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "own site shows it sells in Aruba (case study: 4th-largest market by order volume) and every plan lists 'Online Ordering [Pickup & In-House Delivery]'; but no AWG price: the pricing page is $ only, with the amounts rendered as '$00' placeholders (script-filled) and billed annually by default, so no price could be read -> not counted in AW",
+      "eligibility": {
+        "country_quote": "Aruba is the 4th largest country by order volume on the Restolabs platform",
+        "country_url": "https://www.restolabs.com/case-studies/aruba-enterprise-direct-ordering",
+        "order_quote": "Online Ordering [Pickup & In-House Delivery]",
+        "order_url": "https://www.restolabs.com/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Basic / Growth / Pro", "currency": "USD", "price_major": null, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "", "url": "https://www.restolabs.com/pricing",
+          "note": "page reader saw only '$00/ month Billed Annually' placeholders (amounts filled by script); toggle 'Monthly Billing' / 'Annual Billing (save 20%)'; no currency selector, no AWG. USD would not count in AW anyway."
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "partial", "quote": "Online Ordering [Pickup & In-House Delivery]", "url": "https://www.restolabs.com/pricing" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "not_mentioned" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "not_mentioned" },
+        { "key": "monthly", "value": "not_mentioned" },
+        { "key": "perorder", "value": "not_mentioned" },
+        { "key": "cardfee", "value": "not_mentioned" }
+      ],
+      "check_urls": ["https://www.restolabs.com/case-studies/aruba-enterprise-direct-ordering", "https://www.restolabs.com/pricing"]
+    }
+  ],
+  "notes": "Count now: 0 priced in AWG (coordinator lead; agent 3 filed AW as none). Restolabs (stored 1c3ade45): its own site shows it sells in Aruba and offers pickup online ordering, so it is eligible on evidence, but its prices are $ only and were unreadable today ('$00' script placeholders) -> no AWG price, not counted. Seen in the same search, not read: VapVap Eats, Food-aw, Aruba To You, GG2GO (Aruban multi-restaurant ordering / delivery apps — marketplaces, never counted), Aruba Experience (a restaurant app built on UpMenu — UpMenu is agent 1's, only named), Gloria Aruba (single restaurant app)."
+}
