@@ -1,0 +1,245 @@
+-- docs/plan-names-1/sql.txt — every SQL statement of manual-v16-40 + plan-names-1 (25 November 2026). Read-only queries in the order run (the
+-- last two after the migration and publish); then the migration; then the publish statements.
+-- Read-only queries through the Supabase MCP; the migration in full; the publish statements as the entry point logged them ("SQL>" lines,
+-- de-duplicated, "-- ×n" = run n times with different bound parameters).
+-- The last read-only query (the 'from'-price notes list) failed with a Supabase MCP 502 and was not retried.
+
+
+-- A · section E
+select json_build_object(
+ 'live', (select count(*) filter (where auto_publish and auto_live and not coalesce(admin_off,false)) from public.comparison_publish),
+ 'live_list', (select string_agg(country_code, ' ' order by country_code) filter (where auto_publish and auto_live and not coalesce(admin_off,false)) from public.comparison_publish),
+ 'ae', (select json_agg(json_build_object('cc',country_code,'auto_publish',auto_publish,'auto_live',auto_live)) from public.comparison_publish where country_code='AE'),
+ 'newest', (select row_to_json(x) from (select file_path, result, imported_at from public.data_imports order by imported_at desc limit 1) x),
+ 'settings', (select json_agg(row_to_json(x)) from (select tier_intervals, deep_per_day, daily_cap_usd, monthly_cap_usd from public.competitor_check_settings) x));
+
+-- B · read-only (1)
+select country_code, shown->0 s0 from public.comparison_publish where country_code in ('QA');
+
+-- B · read-only (2)
+with live as (select country_code, shown from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+sp as (select l.country_code, (x->>'planId')::uuid plan_id, 'shown' how from live l, jsonb_array_elements(l.shown) x),
+mk as (select e.country_code, e.primary_plan_id plan_id, 'marked' how from public.comparison_entries e join live l on l.country_code=e.country_code where e.auto_verified_at is not null and e.primary_plan_id is not null),
+u as (select country_code, plan_id, string_agg(distinct how, '+') how from (select * from sp union all select * from mk) z group by 1,2)
+select u.country_code cc, cs.locale, c.name vendor, p.plan_name, u.how, left(p.id::text,8) pid
+from u join public.competitor_plans p on p.id=u.plan_id join public.competitors c on c.id=p.competitor_id join public.country_settings cs on cs.country_code=u.country_code
+order by p.plan_name, u.country_code;
+
+-- B · read-only (3)
+with live as (select country_code, shown from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+sp as (select (x->>'planId')::uuid plan_id from live l, jsonb_array_elements(l.shown) x),
+mk as (select e.primary_plan_id plan_id from public.comparison_entries e join live l on l.country_code=e.country_code where e.auto_verified_at is not null and e.primary_plan_id is not null),
+u as (select distinct plan_id from (select * from sp union all select * from mk) z)
+select json_agg(json_build_object('c',left(c.id::text,8),'v',c.name,'n',p.plan_name,'cc',ccs) order by c.name) from (
+ select p.competitor_id, p.plan_name, string_agg(p.country_code, ' ' order by p.country_code) ccs from u join public.competitor_plans p on p.id=u.plan_id group by 1,2) p join public.competitors c on c.id=p.competitor_id;
+
+-- B · read-only (4)
+select c.name vendor, p.country_code cc, p.plan_name, p.source_url, left(coalesce(p.notes,''),140) notes
+from public.competitor_plans p join public.competitors c on c.id=p.competitor_id
+where p.superseded_at is null and (c.name, p.country_code, p.plan_name) in (('Foodticket','NL','All-in (bestelsite + kassa + betaalsysteem)'),('GastroDok','DE','Bestellsystem (monatlich)'),('FoxiFood','DE','Pay-per-Order (einziger Tarif)'),('Moonrise','US','Pioneer (launch pricing)'),('UpMenu','PL','Online ordering tier 1'),('WEIQ','SE','Seasonal package'),('Wiiz Eat','CY','Online storefront'),('モバレジ (Mobaregi, EDDYS FACTORY)','JP','Single plan'),('どこでも注文くん (Chuzmonster)','JP','Flat'),('Frivo','PL','Starter'),('Spevdo','GR','Starter'),('Zyda','KW','Starter'),('Menuto','BG','Pro'),('Qromo','IT','Pro'),('ESB Order','ID','Advanced'),('OlaClick','EC','Advanced'),('Take App','PA','Basic'),('Take App','PR','Basic'),('Foodics','EG','Advanced Bundle'),('Vitrina','SE','Express'),('Superb','NO','Go'),('NemTakeAway','DK','Standard'),('Truckly','DK','1 food truck'),('Actib','PA','Actib Web'),('inyad','MA','inyad eCommerce'),('Liefersoft','DE','STARTUP'),('FoxiFood','AT','Pay-per-Order'),('Payli','BE','Webshop'),('MenuForma','RO','Regular'),('Restomax','BE','Table Menu'),('Oddle','HK','All Access for One Price'),('Vitrina','UA','Express'),('Vitrina','SI','Express'),('DISH','CZ','DISH Professional Order'),('Dinlr','MY','Dinlr Waiter + Dinlr Online Order'))
+order by 1,2;
+
+-- B · read-only (5)
+select distinct on (c.name, p.plan_name) c.name vendor, p.plan_name, p.source_url
+from public.competitor_plans p join public.competitors c on c.id=p.competitor_id
+where p.superseded_at is null and p.country_code in ('UA','IT','FR','GB','ES','BH','OM','QA','SA','EG','KW','TH','ZA','LU','HU','PT','NO','NZ','TR','IN','LI','CH','HK','JP')
+ and p.plan_name in ('Starter + Poster Site add-on','Food truck till (from)','One-off installation (owned site)','Standard (all-in-one: site, app, NF525 till, click & collect)','Click & Collect (module)','Essential (weekly billing)','pidopago (annual)','Online Ordering Basic','Launch (Online Ordering)','LaunchScale (Online Ordering)','แพ็คเกจเริ่มต้น (Starter)','Start (1 product, e.g. Online)','E-shop (Boutique en ligne)','Alapcsomag (base subscription)','Alapszolgáltatás (QR menu base)','Loja Online + App (Android & iOS)','Alt-i-ett kassesystem (from)','Vendor (single plan shown)','TekMenü (per order)','Dinehere + own ordering app','Food truck (from)','Gastro (yearly)','QR code ordering (from)','FoxiFood (no monthly fee, per order)')
+order by c.name, p.plan_name, p.country_code;
+
+-- B · read-only (6)
+select p.country_code, p.source_url from public.competitor_plans p join public.competitors c on c.id=p.competitor_id where c.name='Ordable' and p.plan_name='Online Ordering Basic' and p.superseded_at is null order by 1;
+
+-- B · read-only (7)
+select column_name from information_schema.columns where table_schema='public' and table_name='competitors' and column_name ilike any (array['%name%','%display%','%label%']);
+
+-- B · read-only (8)
+select tgname, pg_get_triggerdef(t.oid) from pg_trigger t where tgrelid='public.competitor_plans'::regclass and not tgisinternal;
+
+-- B · read-only (9)
+select indexdef from pg_indexes where schemaname='public' and tablename='competitor_plans';
+select conname, pg_get_constraintdef(oid) from pg_constraint where conrelid='public.competitor_plans'::regclass and contype='c' and pg_get_constraintdef(oid) ilike '%plan_name%';
+
+-- B · read-only (10)
+select c.name, p.country_code, p.plan_name, count(*), string_agg(left(p.id::text,8)||':'||p.status||coalesce(':'||p.monthly_minor::text,''), ' ') from public.competitor_plans p join public.competitors c on c.id=p.competitor_id where p.superseded_at is null group by 1,2,3 having count(*)>1;
+
+-- B · read-only (11)
+select c.name, p.country_code, p.plan_name, left(p.id::text,8) pid, p.status, p.monthly_minor, p.unclear
+from public.competitor_plans p join public.competitors c on c.id=p.competitor_id
+where p.superseded_at is null and (left(c.id::text,8), p.plan_name) in (('c413ad17','ared'),('c06e5b78','Asila'),('640ecd44','Click & Collect'),('fedc794a','Start'),('2c3751b0','Dinehere'),('b94c7a14','DISH Professional Order'),('a207b996','Standard'),('647628e6','Eats365'),('58b9820f','Alt-i-ett kassesystem'),('662c9884','Foodticket'),('d03a6e1f','FoxiFood'),('abd86253','Bestellsystem'),('2f51f8db','HungryTrucks'),('d4c5de98','İletmen'),('f44927e4','Core + Omni'),('26c4e040','Linkin1 PRO'),('832a682c','Menufy'),('647a5e78','Pioneer Launch Pricing'),('69a3cfce','Launch'),('69a3cfce','Basic'),('6dc60fd2','Free'),('1cccb6df','Alapcsomag'),('c71ae83d','Essential'),('51e6b79e','pidopago'),('0947b3fc','Place à emporter'),('0802a7c8','Starter + Poster Site'),('53395fcb','Alapcsomag'),('c4972b72','SM Max'),('ddc61529','แพ็คเกจเริ่มต้น'),('d0eb16fa','Boutique en ligne'),('5f28f634','Tilby'),('ef9dcbd8','Zamówienia online'),('462996c6','säsongspaket'),('430c8cb2','Wiiz Eat'),('aebf5a80','Yoveletta'),('aebf5a80','Gastro'),('797df612','Zyda'),('e6a09d6e','モバレジ'),('da91c9a7','Takeout'))
+order by 1,2;
+
+-- B · read-only (12)
+select json_build_object(
+ 'live', (select count(*) from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+ 'shown_ne_marked', (select count(*) from public.comparison_publish p where p.auto_live and jsonb_array_length(p.shown) <> (select count(*) from public.comparison_entries e where e.country_code=p.country_code and e.auto_verified_at is not null)),
+ 'ae', (select auto_publish::text||'/'||auto_live::text from public.comparison_publish where country_code='AE'),
+ 'helper_left', (with live as (select country_code, shown from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+   u as (select (x->>'planId')::uuid id from live l, jsonb_array_elements(l.shown) x union select e.primary_plan_id from public.comparison_entries e join live l using (country_code) where e.auto_verified_at is not null)
+   select json_agg(p.country_code||' '||p.plan_name order by p.country_code) from u join public.competitor_plans p on p.id=u.id
+    where p.plan_name ~* '[()"'']|\m(lowest|from|plans|unclear|note|yearly|monthly|weekly|annual|per order|tier)\M'),
+ 'zyda', (select json_agg(p.country_code||' '||p.plan_name||' '||p.monthly_minor||' '||p.currency order by 1) from public.competitor_plans p join public.competitors c on c.id=p.competitor_id where c.name='Zyda' and p.country_code in ('QA','BH') and p.superseded_at is null));
+
+-- B · read-only (13)
+with live as (select country_code, shown from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off,false)),
+u as (select (x->>'planId')::uuid id from live l, jsonb_array_elements(l.shown) x)
+select string_agg(distinct c.name||' '||p.country_code, ' · ' order by c.name||' '||p.country_code) from u join public.competitor_plans p on p.id=u.id join public.competitors c on c.id=p.competitor_id
+where p.notes ~* '(\mfrom\M\s*(S?\$|HK\$|rp|£|€|[0-9])|''from''|"from|\mfra\M [0-9]|\mab (CHF|Fr\.)|a partire da|-tól|start from|desde [0-9$])';
+
+-- B · supabase/migrations/20261142_plan_names_1.sql — pre-flighted twice with scripts/compare-db-proofs.cjs --preflight (the first refused by its own
+--     duplicate-name guard; the 4 collisions left out), then applied with npx -y -p pg@8.13.1 node scripts/db-migrate.cjs (commit ee2d855b)
+-- 20261142_plan_names_1.sql — plan-names-1 (Dominic approved the rename, 25 November 2026; docs/plan-names-1-report.md).
+-- Data only. Renames the 90 current plans that are shown or marked on a live comparison page and whose stored name carried helper text
+-- (brackets, quotes, "from", "monthly", "yearly", "plans", "per order"…) or English that the vendor's own page doesn't show. The new name
+-- is the plan name exactly as the vendor's own page for that country shows it, or — where the vendor names no plan — the vendor's name.
+-- ONLY public.competitor_plans.plan_name of the listed ids changes: every other column of every plan is checked by md5 before / after,
+-- and so is every other plan's name. The importer's corrected-plans route can't rename (it supersedes and inserts a new plan id).
+-- Guarded; pre-flighted with scripts/compare-db-proofs.cjs --preflight (rolled back).
+begin;
+
+create temporary table plan_names_1_map (prefix text, country_code text, old_name text, new_name text);
+insert into plan_names_1_map values
+  ('c413ad17','LT','ared (one plan)','ared'),
+  ('c06e5b78','MA','Asila (monthly)','Asila'),
+  ('640ecd44','*','Click & Collect (module)','Click & Collect'),
+  ('fedc794a','ZA','Start (1 product, e.g. Online)','Start'),
+  ('2c3751b0','IN','Dinehere + own ordering app','Dinehere'),
+  ('b94c7a14','HR','DISH Professional Order (12-month term)','DISH Professional Order'),
+  ('a207b996','*','Standard (all-in-one: site, app, NF525 till, click & collect)','Standard'),
+  ('647628e6','HK','QR code ordering (from)','Eats365'),
+  ('58b9820f','NO','Alt-i-ett kassesystem (from)','Alt-i-ett kassesystem'),
+  ('662c9884','NL','All-in (bestelsite + kassa + betaalsysteem)','Foodticket'),
+  ('d03a6e1f','*','FoxiFood (no monthly fee, per order)','FoxiFood'),
+  ('d03a6e1f','DE','Pay-per-Order (einziger Tarif)','FoxiFood'),
+  ('d03a6e1f','AT','Pay-per-Order','FoxiFood'),
+  ('abd86253','DE','Bestellsystem (monatlich)','Bestellsystem'),
+  ('abd86253','AT','Bestellsystem Jährlich','Bestellsystem'),
+  ('2f51f8db','NZ','Vendor (single plan shown)','HungryTrucks'),
+  ('d4c5de98','TR','TekMenü (per order)','İletmen'),
+  ('f44927e4','*','Core + Omni (webshop)','Core + Omni'),
+  ('f44927e4','*','Core + Omni (webshop / QR ordering)','Core + Omni'),
+  ('26c4e040','SA','Linkin1 PRO (E-Menu)','Linkin1 PRO'),
+  ('832a682c','PR','Menufy online ordering','Menufy'),
+  ('647a5e78','US','Pioneer (launch pricing)','Pioneer Launch Pricing'),
+  ('69a3cfce','EG','Launch (Online Ordering)','Launch'),
+  ('69a3cfce','KW','LaunchScale (Online Ordering)','Launch'),
+  ('69a3cfce','*','Online Ordering Basic','Basic'),
+  ('6dc60fd2','GI','Free (3% per order)','Free'),
+  ('1cccb6df','HU','Alapcsomag (base subscription)','Alapcsomag'),
+  ('0947b3fc','*','One-off installation (owned site)','Place à emporter'),
+  ('0802a7c8','UA','Starter + Poster Site add-on','Starter + Poster Site'),
+  ('53395fcb','HU','Alapszolgáltatás (QR menu base)','Alapcsomag'),
+  ('c4972b72','HU','SM Max (includes OnlineMágus alap)','SM Max'),
+  ('ddc61529','TH','แพ็คเกจเริ่มต้น (Starter)','แพ็คเกจเริ่มต้น'),
+  ('d0eb16fa','LU','E-shop (Boutique en ligne)','Boutique en ligne'),
+  ('5f28f634','*','Food truck till (from)','Tilby'),
+  ('ef9dcbd8','PL','Online ordering tier 1','Zamówienia online'),
+  ('462996c6','SE','Seasonal package','säsongspaket'),
+  ('430c8cb2','CY','Online storefront','Wiiz Eat'),
+  ('aebf5a80','LI','Food truck (from)','Yoveletta'),
+  ('797df612','*','Zyda plans (lowest, ''from'')','Zyda'),
+  ('e6a09d6e','JP','Single plan','モバレジ'),
+  ('da91c9a7','JP','Flat','Takeout');
+
+-- The listed ids: current plans of those names, shown or marked on a LIVE comparison page ('*' = every live country where shown).
+create temporary table plan_names_1_ids as
+with live as (select country_code, shown from public.comparison_publish where auto_publish and auto_live and not coalesce(admin_off, false)),
+onpage as (
+  select (x->>'planId')::uuid plan_id from live l, jsonb_array_elements(l.shown) x
+  union
+  select e.primary_plan_id from public.comparison_entries e join live l on l.country_code = e.country_code
+   where e.auto_verified_at is not null and e.primary_plan_id is not null)
+select p.id, p.plan_name old_name, m.new_name
+  from public.competitor_plans p
+  join plan_names_1_map m on left(p.competitor_id::text, 8) = m.prefix and p.plan_name = m.old_name and (m.country_code = '*' or m.country_code = p.country_code)
+ where p.superseded_at is null and p.id in (select plan_id from onpage)
+   -- left out: the new name is already a current plan of that vendor in that country (two current plans of one name would make the
+   -- importer's name match ambiguous) — Eatch FR "Standard"; Perkss GB "Essential", pidopago ES "pidopago", Yoveletta CH "Gastro"
+   -- (their map rows removed above). Flagged in the report.
+   and not (left(p.competitor_id::text, 8) = 'a207b996' and p.country_code = 'FR');
+
+create temporary table plan_names_1_before as
+select (select md5(string_agg((to_jsonb(p) - 'plan_name')::text, '|' order by p.id)) from public.competitor_plans p) other_cols_md5,
+       (select md5(string_agg(p.id::text || '=' || p.plan_name, '|' order by p.id)) from public.competitor_plans p
+         where p.id not in (select id from plan_names_1_ids)) other_names_md5;
+
+do $$
+declare n int; bad int; dup int;
+begin
+  select count(*) into bad from plan_names_1_map m where (select count(*) from public.competitors c where left(c.id::text, 8) = m.prefix) <> 1;
+  if bad > 0 then raise exception 'plan-names-1: % id prefixes do not name exactly one competitor', bad; end if;
+  select count(*) into n from plan_names_1_ids;
+  if n <> 90 then raise exception 'plan-names-1: expected 90 listed plans, found %', n; end if;
+  select count(*) into bad from plan_names_1_map m where not exists (select 1 from plan_names_1_ids i where i.old_name = m.old_name);
+  if bad > 0 then raise exception 'plan-names-1: % map rows matched no listed plan', bad; end if;
+end $$;
+
+update public.competitor_plans p set plan_name = i.new_name from plan_names_1_ids i where p.id = i.id;
+
+do $$
+declare n int; dup int; o text; nm text; ob text; nb text;
+begin
+  select count(*) into n from public.competitor_plans p join plan_names_1_ids i on i.id = p.id where p.plan_name = i.new_name;
+  if n <> 90 then raise exception 'plan-names-1: only % of 90 renamed', n; end if;
+  select other_cols_md5, other_names_md5 into ob, nb from plan_names_1_before;
+  select md5(string_agg((to_jsonb(p) - 'plan_name')::text, '|' order by p.id)) into o from public.competitor_plans p;
+  select md5(string_agg(p.id::text || '=' || p.plan_name, '|' order by p.id)) into nm from public.competitor_plans p where p.id not in (select id from plan_names_1_ids);
+  if o <> ob then raise exception 'plan-names-1: a column other than plan_name changed'; end if;
+  if nm <> nb then raise exception 'plan-names-1: an unlisted plan''s name changed'; end if;
+  -- no renamed plan shares its name with another current plan of its vendor in its country (Grafterr GB's three "Free forever" are older)
+  select count(*) into dup from plan_names_1_ids i join public.competitor_plans p on p.id = i.id
+   where exists (select 1 from public.competitor_plans q where q.superseded_at is null and q.id <> p.id and q.competitor_id = p.competitor_id
+                   and q.country_code = p.country_code and q.plan_name = p.plan_name);
+  if dup > 0 then raise exception 'plan-names-1: % renamed plans now share a name with another current plan of their vendor and country', dup; end if;
+  raise notice 'plan-names-1: 90 renamed; other columns md5 % = %; other plans'' names md5 % = %', ob, o, nb, nm;
+end $$;
+
+drop table plan_names_1_map;
+drop table plan_names_1_ids;
+drop table plan_names_1_before;
+
+commit;
+
+
+-- B · publish DRY RUN (npx -y -p pg@8.13.1 node scripts/competitor-check/run.mjs scripts/comparison-publish/main.ts --dry-run) — ROLLED BACK
+set statement_timeout = '120s';
+set lock_timeout = '10s';
+-- ×3
+select (select count(*) from public.competitors) … (the comparison tables' row counts — scripts/comparison-db.ts comparisonTally);
+begin;
+select coalesce(json_agg(x), '[]'::json) as rows from (select country_code, currency, locale, enabled, comparison_status from public.country_settings) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.comparison_publish) x;
+-- ×2
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at, group_label, pinned, hidden, auto_verified_at, auto_blocked from public.comparison_entries order by sort_order) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, name, website, focus, payment_providers, features_checked_on, features_verified_at, notes, lifecycle, added_as_candidate, check_urls, check_interval_days, next_check_at, last_checked_at, deep_checked_at, check_requested_at, category, category_by, check_failures, check_urls_by, not_in_countries, updated_at from public.competitors order by name) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, country_code, plan_name, currency, price_hidden, monthly_minor, yearly_only, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, card_rate_assumed, order_cap, included_orders, overage_fixed_minor, vat, status, unclear, second_hand, source, source_url, checked_on, verified_at, verified_by, notes, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_plans order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, currency, meal_minor, meal_source_label, meal_source_url, meal_source_ok, order_multiplier, eur_rate, eur_rate_date, card_bps, card_fixed_minor, planned_pro_minor, planned_pro_included_minor, planned_unlimited_minor, notes, checked_on, superseded_at, created_at from public.country_benchmarks order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, checked_on, pages_checked from public.competitor_feature_checks where pages_checked is not null order by competitor_id, feature_key, country_code) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_feature_values where superseded_at is null order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, country_code, plan_id, found, created_at from public.competitor_check_findings where field = 'monthly_price' and second_check = 'confirmed' and quote_in_page = true and review_status <> 'rejected' order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.competitor_check_findings where review_status = 'pending' order by id) x;
+-- ×209
+insert into public."comparison_publish" ("auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+insert into public."comparison_publish" ("auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "auto_publish" = excluded."auto_publish", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+rollback;
+
+-- B · publish, real run (same command without --dry-run) — committed; "no change"
+set statement_timeout = '120s';
+set lock_timeout = '10s';
+-- ×3
+select (select count(*) from public.competitors) … (the comparison tables' row counts — scripts/comparison-db.ts comparisonTally);
+begin;
+select coalesce(json_agg(x), '[]'::json) as rows from (select country_code, currency, locale, enabled, comparison_status from public.country_settings) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.comparison_publish) x;
+-- ×2
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at, group_label, pinned, hidden, auto_verified_at, auto_blocked from public.comparison_entries order by sort_order) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, name, website, focus, payment_providers, features_checked_on, features_verified_at, notes, lifecycle, added_as_candidate, check_urls, check_interval_days, next_check_at, last_checked_at, deep_checked_at, check_requested_at, category, category_by, check_failures, check_urls_by, not_in_countries, updated_at from public.competitors order by name) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, country_code, plan_name, currency, price_hidden, monthly_minor, yearly_only, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, card_rate_assumed, order_cap, included_orders, overage_fixed_minor, vat, status, unclear, second_hand, source, source_url, checked_on, verified_at, verified_by, notes, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_plans order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, currency, meal_minor, meal_source_label, meal_source_url, meal_source_ok, order_multiplier, eur_rate, eur_rate_date, card_bps, card_fixed_minor, planned_pro_minor, planned_pro_included_minor, planned_unlimited_minor, notes, checked_on, superseded_at, created_at from public.country_benchmarks order by created_at) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, checked_on, pages_checked from public.competitor_feature_checks where pages_checked is not null order by competitor_id, feature_key, country_code) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_feature_values where superseded_at is null order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, country_code, plan_id, found, created_at from public.competitor_check_findings where field = 'monthly_price' and second_check = 'confirmed' and quote_in_page = true and review_status <> 'rejected' order by id) x;
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.competitor_check_findings where review_status = 'pending' order by id) x;
+-- ×209
+insert into public."comparison_publish" ("auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+insert into public."comparison_publish" ("auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "auto_publish" = excluded."auto_publish", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+commit;
