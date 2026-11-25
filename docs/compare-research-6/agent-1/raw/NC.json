@@ -1,0 +1,37 @@
+{
+  "country": "NC",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Nouvelle-Calédonie OR Polynésie française restaurant commande en ligne à emporter click and collect logiciel Nouméa Papeete \"XPF\" OR \"F CFP\" par mois",
+    "Nouméa plateforme calédonienne commande en ligne restaurateurs click and collect sans commission abonnement francs par mois"
+  ],
+  "vendors": [
+    {
+      "name": "Liv'eats",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Nouméa consumer food-delivery app (App Store); delivery marketplace. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible exists that I could find (round 4, first research; searches shared by NC and PF). No vendor own site names New Caledonia / French Polynesia with pickup ordering and an XPF price. Results: EUR/CHF tools without Pacific presence (Eatself, Ardoiza, Deliver by Linkeo 49 € HT/mois, Pikit — none opened), Wix help pages (generic builder), a Comeup freelance gig, DoorDash Canada (agent 2's), local news (lnc.nc, not a source). Count: 0."
+}

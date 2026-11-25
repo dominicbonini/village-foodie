@@ -136,3 +136,8 @@ count now: 0
 
 FoxiFood: not listed. One French search named no tool for the territory. nothing eligible exists.
 count now: 0
+
+## NC
+
+FoxiFood: not listed. Liv'eats: delivery app. No tool names the territory or prices in XPF. nothing eligible exists.
+count now: 0
