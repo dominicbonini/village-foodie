@@ -157,3 +157,13 @@ count now: 2 (food-truck: 0)
 No vendor site worth reading (Deliva: marketplace; Zapchef: no MZ presence). Nothing eligible exists with an MZN price.
 
 count now: 0
+
+## AO (AOA)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Ocuioso | food_truck (BORDERLINE) | eligible, unpriced (kwanza prices not readable) | hidden | https://www.ocuioso.com/precos |
+
+Nothing eligible with a readable AOA price (Zapchef, Aquias Store, Mamboo, Tupuca not counted).
+
+count now: 0

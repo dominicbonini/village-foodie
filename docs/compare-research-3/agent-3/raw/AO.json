@@ -1,0 +1,46 @@
+{
+ "country": "AO",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Angola plataforma pedidos online restaurantes menu digital \"take away\" OR \"levantamento\" Luanda preço \"Kz\" por mês planos"
+ ],
+ "vendors": [
+  {
+   "name": "Ocuioso",
+   "website": "https://www.ocuioso.com",
+   "stored_id_prefix": "8bcbd76a",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "reason": "as in wave 2 (BORDERLINE): Luanda ordering from a public menu, 'Roulotes' category; re-read today for a price: the price page says prices are in kwanzas but the amounts are not in the page text (script-rendered plan cards) — hidden",
+   "eligibility": {
+    "food_quote": "Boa comida, por perto",
+    "food_url": "https://www.ocuioso.com",
+    "order_quote": "Pede sem filas",
+    "order_url": "https://www.ocuioso.com",
+    "country_quote": "Preços em kwanzas · período indicado em cada plano",
+    "country_url": "https://www.ocuioso.com/precos"
+   },
+   "plans": [
+    {
+     "plan_name": "(plan cards)",
+     "currency": "AOA",
+     "price_major": null,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "Preços em kwanzas · período indicado em cada plano",
+     "url": "https://www.ocuioso.com/precos",
+     "note": "amounts not readable (script-rendered cards); '14 dias gratuitos para conhecer o Ocuioso'"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://www.ocuioso.com",
+    "https://www.ocuioso.com/precos"
+   ]
+  }
+ ],
+ "notes": "Count now: 0 priced in AOA. Ocuioso (stored, Luanda, roulotes) stays eligible-unpriced: its /precos page states kwanza prices but the amounts are not in the readable page text; its home page has no takeaway / levantamento / pre-order sentence (only 'Pede sem filas' and ordering from the public menu) — BORDERLINE as in wave 2. Search today: Zapchef (WhatsApp/Instagram AI attendant sold on Hotmart, no price), Aquias Store (App Store only, restaurant-to-customer app in Luanda — not read), Mamboo, Tupuca (marketplaces, never counted). Stopped: nothing eligible with an AOA price after ~5 candidates across waves."
+}
