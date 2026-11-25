@@ -1,0 +1,110 @@
+-- compare-research-4: every distinct SQL statement sent to the live database (parameters: sizes only)
+-- migration 20261133 (pre-flighted rolled back via scripts/compare-db-proofs.cjs --preflight, then applied via scripts/db-migrate.cjs):
+-- 20261133_compare_research_4_corrections.sql — compare-research-4 (25 November 2026; docs/compare-research-4-report.md).
+-- Corrections to rows already imported that the importer cannot make (it corrects a plan only when its PRICE changes, and replaces an
+-- answer only when the stored one is bare). Competitor data only: 3 competitor_plans rows and 1 competitor_feature_values answer.
+-- Guarded: any surprise raises and nothing is written. Pre-flighted with scripts/compare-db-proofs.cjs --preflight (rolled back).
+--   · Toss Place KR "토스오더 픽업주문" (0 KRW): its own site does not state the pickup-order fee in force today (the 2025 story offers
+--     «주문 수수료 0원으로 써보기», the 2024 one planned 3.5 % excl. VAT) → unclear (Dominic: KR must not go live with it counted).
+--   · Fudo CL "Tu Delivery" (0 CLP): no quote on fu.do/es-cl states it has no monthly fee (only «Las primeras 25 ventas son sin costo.
+--     Luego pagas una tasa de servicio del 1,9% + IVA…») → unclear, as Dominic asked.
+--   · Resto ZA "Shop" (R1000): now quoted verbatim from its own site («Resto's simple pricing - R1000/month», resto.co.za) → not unclear.
+--   · Pedix `ahead` (every country): the stored quote was only an article title; replaced by a sentence from that article's body
+--     (the old answer is superseded, kept as history).
+begin;
+
+do $$
+declare n int;
+begin
+  select count(*) into n from public.competitor_plans
+   where id in ('99d8a60a-6ea6-534e-bd6b-193b1174e04c', '7ae635e1-f7a8-5ce8-be67-060c9f1fe559') and superseded_at is null and not unclear;
+  if n <> 2 then raise exception 'compare-research-4: expected Toss Place KR and Fudo CL plans current and not unclear, found %', n; end if;
+  select count(*) into n from public.competitor_plans where id = 'a83cd6f5-4a94-5e89-b740-d27882ec379d' and superseded_at is null and unclear and monthly_minor = 100000 and currency = 'ZAR';
+  if n <> 1 then raise exception 'compare-research-4: expected Resto ZA Shop (R1000, unclear) current, found %', n; end if;
+  select count(*) into n from public.competitor_feature_values
+   where id = 'dc9cfa42-4723-4722-b085-52ddc1fbb073' and competitor_id = 'c615e67d-1760-5314-9a81-b3d5ad2a06f0' and feature_key = 'ahead'
+     and country_code is null and superseded_at is null and verified_at is null;
+  if n <> 1 then raise exception 'compare-research-4: expected Pedix''s current, unverified every-country ahead answer, found %', n; end if;
+end $$;
+
+update public.competitor_plans
+   set unclear = true,
+       notes = coalesce(notes || ' · ', '') || 'marked unclear (compare-research-4, Dominic 25 Nov): its own site does not state the pickup-order fee in force today (2025: «주문 수수료 0원으로 써보기»; 2024: 3.5 % excl. VAT planned)'
+ where id = '99d8a60a-6ea6-534e-bd6b-193b1174e04c' and superseded_at is null and not unclear;
+
+update public.competitor_plans
+   set unclear = true,
+       notes = coalesce(notes || ' · ', '') || 'marked unclear (compare-research-4, Dominic 25 Nov): no quote on fu.do/es-cl states that Tu Delivery has no monthly fee'
+ where id = '7ae635e1-f7a8-5ce8-be67-060c9f1fe559' and superseded_at is null and not unclear;
+
+update public.competitor_plans
+   set unclear = false,
+       notes = coalesce(notes || ' · ', '') || 'not unclear (compare-research-4, 25 Nov): quoted verbatim from its own site: «Resto''s simple pricing - R1000/month» (https://resto.co.za)'
+ where id = 'a83cd6f5-4a94-5e89-b740-d27882ec379d' and superseded_at is null and unclear;
+
+update public.competitor_feature_values set superseded_at = now()
+ where id = 'dc9cfa42-4723-4722-b085-52ddc1fbb073' and superseded_at is null;
+
+insert into public.competitor_feature_values (competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on)
+values ('c615e67d-1760-5314-9a81-b3d5ad2a06f0', 'ahead', null, 'partial',
+        'online ordering for collection at the venue (compare-research-4, 25 Nov: a sentence from the article''s body replaces its bare title); a chosen time is not stated',
+        'La opción "Retiro en persona" permite que tus clientes hagan el pedido desde el catálogo online y pasen luego a buscarlo por el local.',
+        'https://ayuda.pedix.app/es/article/como-configurar-la-opcion-retiro-en-persona', '2026-11-25');
+
+do $$
+declare n int;
+begin
+  select count(*) into n from public.competitor_plans where id in ('99d8a60a-6ea6-534e-bd6b-193b1174e04c', '7ae635e1-f7a8-5ce8-be67-060c9f1fe559') and unclear;
+  if n <> 2 then raise exception 'compare-research-4: Toss / Fudo CL plans not both unclear (%)', n; end if;
+  select count(*) into n from public.competitor_plans where id = 'a83cd6f5-4a94-5e89-b740-d27882ec379d' and not unclear;
+  if n <> 1 then raise exception 'compare-research-4: Resto ZA still unclear'; end if;
+  select count(*) into n from public.competitor_feature_values
+   where competitor_id = 'c615e67d-1760-5314-9a81-b3d5ad2a06f0' and feature_key = 'ahead' and country_code is null and superseded_at is null;
+  if n <> 1 then raise exception 'compare-research-4: Pedix has % current ahead answers, expected 1', n; end if;
+end $$;
+
+commit;
+
+-- import (dry runs and real) and publish (dry run and real):
+set statement_timeout = '120s'
+set lock_timeout = '10s'
+select (select count(*) from public.competitors) … (the comparison tables' row counts — scripts/comparison-db.ts comparisonTally)
+select coalesce(json_agg(x), '[]'::json) as rows from (select file_path, sha256, imported_at, result, counts, message from public.data_imports order by imported_at desc limit 500) x
+begin
+select coalesce(json_agg(x), '[]'::json) as rows from (select key, checked, tier, checked_by, scope_by, updated_by from public.comparison_features) x
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, name, website, lifecycle, added_as_candidate, notes, focus, payment_providers, features_checked_on, not_in_countries, check_failures from public.competitors) x
+update public."competitors" t set "check_requested_at" = r."check_requested_at" from json_populate_record(null::public."competitors", $1::json) r where t."id" = $2   -- params: string, string
+insert into public."competitors" ("check_requested_at", "check_urls", "features_checked_on", "features_verified_at", "focus", "id", "lifecycle", "name", "notes", "payment_providers", "website") select "check_requested_at", "check_urls", "features_checked_on", "features_verified_at", "focus", "id", "lifecycle", "name", "notes", "payment_providers", "website" from json_populate_recordset(null::public."competitors", $1::json)   -- params: json[1 rows]
+update public."competitors" t set "focus" = r."focus", "check_requested_at" = r."check_requested_at" from json_populate_record(null::public."competitors", $1::json) r where t."id" = $2   -- params: string, string
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, feature_key, country_code, value, note, quote, source_url, superseded_at, verified_at, auto_blocked from public.competitor_feature_values where superseded_at is null) x
+insert into public."competitor_feature_values" ("checked_on", "competitor_id", "country_code", "feature_key", "id", "note", "quote", "source_url", "superseded_at", "value", "verified_at", "verified_by") select "checked_on", "competitor_id", "country_code", "feature_key", "id", "note", "quote", "source_url", "superseded_at", "value", "verified_at", "verified_by" from json_populate_recordset(null::public."competitor_feature_values", $1::json)   -- params: json[30 rows]
+update public.competitor_feature_values set superseded_at = $2 where id = any($1::uuid[]) and superseded_at is null   -- params: array[2], string
+update public.competitor_feature_values set superseded_at = null where id = any($1::uuid[]) and superseded_at = $2   -- params: array[30], string
+insert into public."competitor_feature_checks" ("checked_on", "competitor_id", "country_code", "feature_key", "pages_checked", "rejudge") select "checked_on", "competitor_id", "country_code", "feature_key", "pages_checked", "rejudge" from json_populate_recordset(null::public."competitor_feature_checks", $1::json) on conflict ("competitor_id", "feature_key", "country_code") do update set "checked_on" = excluded."checked_on", "pages_checked" = excluded."pages_checked", "rejudge" = excluded."rejudge"   -- params: json[30 rows]
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, country_code, plan_name, superseded_at from public.competitor_plans) x
+insert into public."competitor_plans" ("card_bps", "card_fixed_minor", "card_mode", "card_rate_assumed", "checked_on", "competitor_id", "country_code", "currency", "customer_fee_bps", "customer_fee_fixed_minor", "id", "included_orders", "monthly_minor", "notes", "order_cap", "overage_fixed_minor", "plan_name", "price_hidden", "second_hand", "setup_minor", "source", "source_url", "status", "truck_fee_bps", "truck_fee_fixed_minor", "unclear", "vat", "verified_at", "verified_by", "yearly_only") select "card_bps", "card_fixed_minor", "card_mode", "card_rate_assumed", "checked_on", "competitor_id", …   -- params: json[4 rows]
+update public.competitor_plans set superseded_at = $2 where id = any($1::uuid[]) and superseded_at is null   -- params: array[1], string
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, competitor_id from public.comparison_entries) x
+insert into public."comparison_entries" ("choose_when", "competitor_id", "country_code", "id", "primary_plan_id", "sort_order", "verified_at", "verified_by") select "choose_when", "competitor_id", "country_code", "id", "primary_plan_id", "sort_order", "verified_at", "verified_by" from json_populate_recordset(null::public."comparison_entries", $1::json)   -- params: json[2 rows]
+rollback
+insert into public.data_imports (file_path, sha256, imported_at, result, counts, message) values ($1, $2, $3, $4, $5::jsonb, $6)   -- params: string, string, string, string, string, object
+commit
+select coalesce(json_agg(x), '[]'::json) as rows from (select country_code, currency, locale, enabled, comparison_status from public.country_settings) x
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.comparison_publish) x
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, competitor_id, primary_plan_id, choose_when, sort_order, verified_at, verified_by, created_at, group_label, pinned, hidden, auto_verified_at, auto_blocked from public.comparison_entries order by sort_order) x
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, name, website, focus, payment_providers, features_checked_on, features_verified_at, notes, lifecycle, added_as_candidate, check_urls, check_interval_days, next_check_at, last_checked_at, deep_checked_at, check_requested_at, category, category_by, check_failures, check_urls_by, not_in_countries, updated_at from public.competitors order by name) x
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, country_code, plan_name, currency, price_hidden, monthly_minor, yearly_only, setup_minor, truck_fee_bps, truck_fee_fixed_minor, customer_fee_bps, customer_fee_fixed_minor, card_mode, card_bps, card_fixed_minor, card_rate_assumed, order_cap, included_orders, overage_fixed_minor, vat, status, unclear, second_hand, source, source_url, checked_on, verified_at, verified_by, notes, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_plans order by created_at) x
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, country_code, currency, meal_minor, meal_source_label, meal_source_url, meal_source_ok, order_multiplier, eur_rate, eur_rate_date, card_bps, card_fixed_minor, planned_pro_minor, planned_pro_included_minor, planned_unlimited_minor, notes, checked_on, superseded_at, created_at from public.country_benchmarks order by created_at) x
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, checked_on, pages_checked from public.competitor_feature_checks where pages_checked is not null order by competitor_id, feature_key, country_code) x
+select coalesce(json_agg(x), '[]'::json) as rows from (select id, competitor_id, feature_key, country_code, value, note, quote, source_url, checked_on, verified_at, verified_by, superseded_at, created_at, auto_verified_at, auto_blocked from public.competitor_feature_values where superseded_at is null order by id) x
+select coalesce(json_agg(x), '[]'::json) as rows from (select competitor_id, country_code, plan_id, found, created_at from public.competitor_check_findings where field = 'monthly_price' and second_check = 'confirmed' and quote_in_page = true and review_status <> 'rejected' order by id) x
+select coalesce(json_agg(x), '[]'::json) as rows from (select * from public.competitor_check_findings where review_status = 'pending' order by id) x
+insert into public."comparison_publish" ("auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+insert into public."comparison_publish" ("auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at") select "auto_live", "auto_publish", "country_code", "evaluated_at", "live_since", "shown", "updated_at" from json_populate_recordset(null::public."comparison_publish", $1::json) on conflict ("country_code") do update set "auto_live" = excluded."auto_live", "auto_publish" = excluded."auto_publish", "evaluated_at" = excluded."evaluated_at", "live_since" = excluded."live_since", "shown" = excluded."shown", "updated_at" = excluded."updated_at"   -- params: json[1 rows]
+update public."comparison_entries" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[4], string
+update public."comparison_entries" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[2], object
+update public.comparison_entries set primary_plan_id = $2 where id = $1   -- params: string, string
+update public."competitor_plans" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[5], string
+update public."competitor_plans" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[2], object
+update public."competitor_feature_values" set auto_verified_at = $2 where id = any($1::uuid[])   -- params: array[31], string
+insert into public."comparison_publish_events" ("at", "competitor_id", "country_code", "detail", "kind") select "at", "competitor_id", "country_code", "detail", "kind" from json_populate_recordset(null::public."comparison_publish_events", $1::json)   -- params: json[9 rows]
