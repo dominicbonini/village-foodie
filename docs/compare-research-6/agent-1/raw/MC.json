@@ -1,0 +1,68 @@
+{
+  "country": "MC",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Monaco click and collect restaurant logiciel commande en ligne à emporter \"Monaco\" tarif",
+    "solution commande en ligne restaurants \"France et Monaco\" click and collect abonnement mensuel",
+    "livepepper OR circlee OR \"click eat\" restaurant Monaco commande en ligne",
+    "\"Principauté de Monaco\" logiciel caisse restaurant click and collect commande en ligne éditeur monégasque",
+    "Circlee click and collect food truck tarifs par mois",
+    "food truck Monaco commander en ligne à emporter précommande",
+    "\"Nice\" \"Monaco\" logiciel caisse click and collect restaurant agence Côte d'Azur commande en ligne prix"
+  ],
+  "vendors": [
+    {
+      "name": "LivePepper",
+      "website": "https://www.livepepper.fr",
+      "stored_id_prefix": "5bb256b3",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "French click-and-collect tool (from 59 € HT/mois) but its own pricing page does not mention Monaco; country selector lists Australie, France, Royaume-Uni, Italy only. MC is strict (own site must show Monaco).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.livepepper.fr/tarifs/"
+      ]
+    },
+    {
+      "name": "Obypay",
+      "website": "https://obypay.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "HTTP 403 on https://obypay.com/fr/tarifs/ and on retry https://obypay.com/en/?p=987; Monaco presence not checkable.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Innovorder",
+      "website": "https://www.innovorder.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Paris POS with click and collect ('Développez votre chiffre d’affaires grâce à la livraison et au click and collect.') but no Monaco mention; home page says 'Fait avec amour à Paris'. /tarifs 404.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.innovorder.com/"
+      ]
+    },
+    {
+      "name": "L'Addition",
+      "website": "https://commande-en-ligne.laddition.com",
+      "stored_id_prefix": "fca70222",
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "Stored website https://commande-en-ligne.laddition.com/ returned HTTP 404 today; Monaco presence not checkable.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "Nothing eligible exists that I could find (round 2, 4 new vendor sites + 7 searches). No tool's own site shows it sells in Monaco; MC is strict (no neighbour rule). The only Monaco food truck found (Valentin, Villa Paloma, via visitmonaco.com) shows no online ordering. Round 2 (compare-research-6). Not re-read: EatIn Monaco, Mr Room Service, UpMenu, SumUp (rejected in compare-research-3). Lightspeed is agent 2's vendor (not fetched). French tools seen in search (Fiducial Pointex, Circlee, Foodr, Click Eat, Tabesto, Innovorder, Pulp, MenuTouch, L'Addition) show no Monaco presence in results; Circlee and Foodr are price-on-request per search. Count: 0."
+}
