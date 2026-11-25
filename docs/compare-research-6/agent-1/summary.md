@@ -151,3 +151,13 @@ count now: 0
 
 FoxiFood, Storekit: not listed. Food.je, Cuisine.JE, Fetch.je: marketplaces. nothing eligible exists.
 count now: 0
+
+## IM
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| ICRTouch TouchTakeaway | pos | eligible, no price (partners only; IoM via 2020 case study) | — (0% commission) | https://icrtouch.com/products/touchtakeaway |
+| Dazzler / Eatout.im | nearest_local | not_relevant (marketplaces) | — | — |
+
+FoxiFood, Storekit: not listed.
+count now: 0 priced (1 eligible unpriced)

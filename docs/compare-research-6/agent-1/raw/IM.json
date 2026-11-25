@@ -1,0 +1,161 @@
+{
+  "country": "IM",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "online ordering system takeaway click and collect \"Channel Islands\" OR \"Jersey\" OR \"Guernsey\" OR \"Isle of Man\" restaurants food trucks pricing per month £",
+    "Isle of Man takeaway restaurant online ordering system click and collect Manx company own website ordering for food businesses"
+  ],
+  "vendors": [
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://storekit.com/docs/getting-started/supported-regions"
+      ]
+    },
+    {
+      "name": "ICRTouch TouchTakeaway",
+      "website": "https://icrtouch.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "UK EPoS maker's own online-ordering product with collection and pre-orders for a chosen time; its own case-study page names an Isle of Man partner. No price on its site (sold via authorised partners): hidden plan, not counted as priced.",
+      "eligibility": {
+        "order_quote": "Customers can pre-order their meals for a time and date of their choosing.",
+        "order_url": "https://icrtouch.com/products/touchtakeaway",
+        "country_quote": "ICR Retail Systems are the Isle of Man's leading EPoS & Cash Register suppliers.",
+        "country_url": "https://icrtouch.com/case-study/24/4/2020/touchtakeaway-success-story-an-interview-with-shane-from-fryers-fish-and-chips"
+      },
+      "plans": [
+        {
+          "plan_name": "TouchTakeaway",
+          "currency": "GBP",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "TouchTakeaway charges 0% commission on every order, meaning 100% of the profit stays in your pocket.",
+          "url": "https://icrtouch.com/products/touchtakeaway",
+          "note": "No subscription price on the site; buyers are sent to 'Find your local ICRTouch Authorised Partner'. Country quote is from a 2020 case study; the 2026 where-to-buy list names no Isle of Man partner (weak presence)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Customers can pre-order their meals for a time and date of their choosing.",
+          "url": "https://icrtouch.com/products/touchtakeaway"
+        },
+        {
+          "key": "preorder",
+          "value": "yes",
+          "quote": "If a customer schedules their order for another time, it goes straight to a dedicated view",
+          "url": "https://icrtouch.com/products/touchtakeaway"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "TouchTakeaway charges 0% commission on every order, meaning 100% of the profit stays in your pocket.",
+          "url": "https://icrtouch.com/products/touchtakeaway"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://icrtouch.com/products/touchtakeaway",
+        "https://icrtouch.com/case-study/24/4/2020/touchtakeaway-success-story-an-interview-with-shane-from-fryers-fish-and-chips",
+        "https://icrtouch.com/where-to-buy"
+      ]
+    },
+    {
+      "name": "Dazzler",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Manx multi-business food directory/platform with click-and-collect and planned delivery ('Uber Eats-style', per news); marketplace. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "Eatout.im",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Pandemic-era Manx 'middleman' ordering platform (news only); marketplace, status unclear. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    }
+  ],
+  "notes": "One eligible tool, unpriced: ICRTouch TouchTakeaway (pre-orders for a time; Isle of Man named only via a 2020 case study about its Manx partner ICR Retail Systems; no price, sold through partners). Count of eligible priced in GBP: 0. Others are Manx marketplaces (Dazzler, Eatout.im) or Just Eat. FoxiFood and Storekit do not list the Isle of Man."
+}
