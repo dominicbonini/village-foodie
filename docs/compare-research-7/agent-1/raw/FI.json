@@ -1,0 +1,9 @@
+{
+  "country": "FI",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "verkkotilausjärjestelmä ravintolalle noutotilaukset ennakkotilaus oma verkkosivu hinta €/kk ruokarekka Suomi"
+  ],
+  "vendors": [],
+  "notes": "FI counts Food4you and SumUp. No third found. Earlier: Storekit (lists Finland, GBP only), Creavo Order, Zettle, Superb, GastroSprint (rejected) - not re-read. One Finnish search returned MENU TIGER (USD, agent 2's), Jotform (form builder), Anolla (never), Odoo (generic ERP), Restimo (Polish, no Finland presence), Restolabs (agent 2's) and a comparison site. FI stays at 2."
+}
