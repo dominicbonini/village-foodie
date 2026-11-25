@@ -738,15 +738,31 @@ $$;
 -- ════════════════════════════════════════════════════════════════════════════════════════════════════
 -- 8. Who may call what: the triggers' functions and the writers — nobody but the owner; till_verify — the service role too.
 -- ════════════════════════════════════════════════════════════════════════════════════════════════════
-revoke all on function public.till_ts(timestamptz), public.till_fiscal_state(text), public.till_pick(jsonb, text[]), public.till_pick_all(jsonb, text[]),
-  public.till_sealed_lines(jsonb, text), public.till_sealed_order(public.orders), public.till_sealed_payment(public.order_payments),
-  public.till_applies(text), public.till_truck_tz(text), public.till_day_closed(text, date),
-  public.till_append(text, text, text, integer, text, date, jsonb), public.till_log_failure(text, text, text, text, text),
-  public.till_guard_event(text, text, text, text, text, jsonb), public.till_seal_order(uuid, text),
-  public.till_payment_inserted(), public.till_order_insert_clear(), public.till_order_inserted(), public.till_order_guard(),
-  public.till_order_delete_guard(), public.till_payment_guard(), public.till_payment_delete_guard(), public.till_refuse_change(),
-  public.till_verify(text), public.till_baseline(text)
-  from public, anon, authenticated, service_role;
+-- One statement per function (the repo guard scripts/migration-function-grants.cjs reads one signature per revoke).
+revoke all on function public.till_ts(timestamptz) from public, anon, authenticated, service_role;
+revoke all on function public.till_fiscal_state(text) from public, anon, authenticated, service_role;
+revoke all on function public.till_pick(jsonb, text[]) from public, anon, authenticated, service_role;
+revoke all on function public.till_pick_all(jsonb, text[]) from public, anon, authenticated, service_role;
+revoke all on function public.till_sealed_lines(jsonb, text) from public, anon, authenticated, service_role;
+revoke all on function public.till_sealed_order(public.orders) from public, anon, authenticated, service_role;
+revoke all on function public.till_sealed_payment(public.order_payments) from public, anon, authenticated, service_role;
+revoke all on function public.till_applies(text) from public, anon, authenticated, service_role;
+revoke all on function public.till_truck_tz(text) from public, anon, authenticated, service_role;
+revoke all on function public.till_day_closed(text, date) from public, anon, authenticated, service_role;
+revoke all on function public.till_append(text, text, text, integer, text, date, jsonb) from public, anon, authenticated, service_role;
+revoke all on function public.till_log_failure(text, text, text, text, text) from public, anon, authenticated, service_role;
+revoke all on function public.till_guard_event(text, text, text, text, text, jsonb) from public, anon, authenticated, service_role;
+revoke all on function public.till_seal_order(uuid, text) from public, anon, authenticated, service_role;
+revoke all on function public.till_payment_inserted() from public, anon, authenticated, service_role;
+revoke all on function public.till_order_insert_clear() from public, anon, authenticated, service_role;
+revoke all on function public.till_order_inserted() from public, anon, authenticated, service_role;
+revoke all on function public.till_order_guard() from public, anon, authenticated, service_role;
+revoke all on function public.till_order_delete_guard() from public, anon, authenticated, service_role;
+revoke all on function public.till_payment_guard() from public, anon, authenticated, service_role;
+revoke all on function public.till_payment_delete_guard() from public, anon, authenticated, service_role;
+revoke all on function public.till_refuse_change() from public, anon, authenticated, service_role;
+revoke all on function public.till_verify(text) from public, anon, authenticated, service_role;
+revoke all on function public.till_baseline(text) from public, anon, authenticated, service_role;
 grant execute on function public.till_verify(text) to service_role;
 
 -- ════════════════════════════════════════════════════════════════════════════════════════════════════
