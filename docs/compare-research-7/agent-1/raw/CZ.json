@@ -6,6 +6,129 @@
   ],
   "vendors": [
     {
+      "name": "Vitrina",
+      "website": "https://vitrina.cafe",
+      "stored_id_prefix": "2bfa2064",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "country": "CZ",
+      "reason": "White-label ordering site + POS (Complete Solution s.r.o., Trnava, Slovakia) with a Czech-language site, Kč prices and Comgate payments 'v Česku'; delivery, pickup and orders for a set time.",
+      "eligibility": {
+        "order_quote": "Rozvoz, vyzvednutí a objednávky na konkrétní čas",
+        "order_url": "https://vitrina.cafe/cs",
+        "country_quote": "LiqPay, monobank nebo WayForPay na Ukrajině, Stripe v EU, Comgate v Česku a na Slovensku a Paynow v Polsku",
+        "country_url": "https://vitrina.cafe/cs"
+      },
+      "plans": [
+        {
+          "plan_name": "Start",
+          "currency": "CZK",
+          "price_major": 950,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0.9,
+          "per_order_fixed_major": null,
+          "setup_major": 2390,
+          "quote": "S předplatným: od 950 Kč měsíčně a nejvýš 0,9 %.",
+          "url": "https://vitrina.cafe/cs",
+          "note": "Start shows 950 / 855 / 760 Kč a month (monthly, 6-month, 12-month billing); monthly-billed 950 Kč recorded. Set-up 2 390 Kč one-time, free on annual billing. 'Ceny bez DPH.' 'Smlouva je měsíční, bez ročního závazku'. Card amounts summarised by the page reader; the 'od 950 Kč měsíčně' line is verbatim."
+        },
+        {
+          "plan_name": "Express",
+          "currency": "CZK",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 3,
+          "per_order_fixed_major": null,
+          "setup_major": 2390,
+          "quote": "Bez předplatného a minimální platby: 3 % z online plateb.",
+          "url": "https://vitrina.cafe/cs",
+          "note": "'+ 3 % z online plateb (rozvoz a osobní odběr)'."
+        },
+        {
+          "plan_name": "Restaurace",
+          "currency": "CZK",
+          "price_major": 1990,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0.9,
+          "per_order_fixed_major": null,
+          "setup_major": 4790,
+          "quote": "1 990 Kč",
+          "url": "https://vitrina.cafe/cs",
+          "note": "1 990 / 1 791 / 1 592 Kč a month; monthly-billed recorded (summarised by the page reader)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Rozvoz, vyzvednutí a objednávky na konkrétní čas",
+          "url": "https://vitrina.cafe/cs"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "S předplatným: od 950 Kč měsíčně a nejvýš 0,9 %.",
+          "url": "https://vitrina.cafe/cs"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "+ 3 % z online plateb (rozvoz a osobní odběr)",
+          "url": "https://vitrina.cafe/cs"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://vitrina.cafe/cs"
+      ]
+    },
+    {
       "name": "Dotykačka",
       "website": "https://www.dotykacka.cz",
       "stored_id_prefix": null,
@@ -48,5 +171,5 @@
       "check_urls": []
     }
   ],
-  "notes": "CZ counts DISH and Menu55. No third found. Dotykačka (Czech POS) prices its NEOMEZENĚ licence at 1 990 Kč a month, but its 'Objednávkové systémy' are third-party integrations (Choice, Speedlo, Adaptee Gastro, marketplaces) with no price, so it is not its own ordering tool. Speedlo unreadable; Storyous no ordering price. Choice (blocked, 403) not retried. Leads: Adaptee Gastro (Czech, timed online orders per Dotykačka's page) - not opened. CZ stays at 2."
+  "notes": "CZ counts DISH and Menu55. Third: Vitrina (stored 2bfa2064, restaurant tool, mine) - its Czech site read today (found via the RO page's currency selector, which lists 'Česko Kč'): Start 'od 950 Kč měsíčně a nejvýš 0,9 %' (monthly-billed; 855/760 Kč on 6/12 months), Express 0 Kč + 3 %, 'Ceny bez DPH', pickup and orders for a set time, 'Comgate v Česku'. Only the first 100 000 characters were read. Not eligible: Dotykačka (its 'Objednávkové systémy' are third-party integrations, NEOMEZENĚ 1 990 Kč/month), Speedlo (unreadable), Storyous (no price). CZ = 3 if Vitrina is accepted. Note: Vitrina's selector also lists Hungary (Ft) and Poland (zł)."
 }
