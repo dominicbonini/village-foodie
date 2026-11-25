@@ -836,7 +836,10 @@ function checkStatic(s) {
   ok('S2 · anon / authenticated cannot read till_chain or till_order_seals; the service role cannot INSERT, UPDATE or DELETE the chain, the heads or the seals', s.api_reads === false && s.service_writes === false, s)
   ok('S3 · the service role can no longer UPDATE or DELETE action_audit_log, and can still INSERT', s.service_changes_audit === false && s.service_inserts_audit === true, s)
   ok('S4 · nobody on the API can call till_append, till_write, till_seal or till_baseline; till_verify is the service role\'s only', s.api_appends === false && s.service_baseline === false && s.verify_service_only === true, s)
-  ok('S5 · guard_mode observe, software_version 0.x', s.guard_mode === 'observe' && /^0\.\d+\.\d+$/.test(s.software_version), s)
+  // RE-PINNED by till-pack-5-6 (25 November 2026, docs/till-pack-5-6-report.md §8): till-pack-6 sets the version to 1.0.0 (Q13) — the
+  // check keeps its rule (still observe; a version is set) and now asks for exactly the version lib/till/version.ts names, once applied.
+  const tillVersion = /export const TILL_VERSION = '(\d+\.\d+\.\d+)'/.exec(fs.readFileSync(path.join(REPO, 'lib/till/version.ts'), 'utf8'))[1]
+  ok(`S5 · guard_mode observe, software_version ${tillVersion} (lib/till/version.ts) — 0.x before till-pack-6 was applied`, s.guard_mode === 'observe' && (s.software_version === tillVersion || /^0\.\d+\.\d+$/.test(s.software_version)), s)
   ok('S6 · place_order_atomic_v2 untouched: md5 e4b273abcf8e7609c6ca54033ed59332', s.v2_md5 === 'e4b273abcf8e7609c6ca54033ed59332', s.v2_md5)
   ok('S7 · no seal column on orders or order_payments (the seal state lives in till_order_seals)', s.seal_columns === 0, s.seal_columns)
   ok('S8 · every till trigger on orders, order_payments and trucks is an AFTER trigger (it cannot change the row) — the seven of them', s.till_triggers === AFTER_TRIGGERS, s.till_triggers)
