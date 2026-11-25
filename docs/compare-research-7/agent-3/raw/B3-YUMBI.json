@@ -1,7 +1,13 @@
 {
   "vendor": "YUMBI",
-  "stored_id_prefix": null,
-  "countries": ["ZA", "BW", "NA", "ZM", "NG"],
+  "stored_id_prefix": "dad148a7",
+  "countries": [
+    "ZA",
+    "BW",
+    "NA",
+    "ZM",
+    "NG"
+  ],
   "researched_on": "2026-11-25",
   "result": "unpriced",
   "endpoint_url": null,
@@ -9,5 +15,5 @@
   "how_confirmed": "https://www.yumbi.com/ (HTTP 200) re-read as raw HTML: a static Astro page; its only scripts are /_astro/Base.astro_astro_type_script_index_0_lang.DMTq-E-6.js and /_astro/CookieConsent.astro_astro_type_script_index_0_lang.Bq8HuEdw.js; the HTML has no fetch( / XMLHttpRequest / /api reference and its navigation has no pricing link (links: /storefront/, /ordering/, /to-go/, /dine-in/, /contact/#sales, ... and the per-market management logins za./bw./na./zambia./kenya./nigeria./ci.yumbi.com). The word 'pricing' appears only in feature copy ('Publish channel-specific pricing and product subsets...'). compare-research-6 found https://www.yumbi.com/pricing = HTTP 404.",
   "endpoint_response": null,
   "plans": [],
-  "notes": "No pricing page and no page that loads plan amounts from any endpoint -> unpriced: the price is by sales contact ('Get Started' / /contact/#sales). It sells to QSR brands ('15 brands, 100 million+ orders, 2,000+ locations'). stored_id_prefix: not in stored-list (by name) — left null."
+  "notes": "No pricing page and no page that loads plan amounts from any endpoint -> unpriced: the price is by sales contact ('Get Started' / /contact/#sales). It sells to QSR brands ('15 brands, 100 million+ orders, 2,000+ locations')."
 }
