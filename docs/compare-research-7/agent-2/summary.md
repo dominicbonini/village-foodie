@@ -29,3 +29,23 @@
 | JO | Orange Jordan POS (till); 5 Arabic/English searches | nothing new | 1 |
 | LK | Merpacc (till); 3 searches | nothing new | 1 |
 | BD | YouthFireIT (delivery / chat only); 3 searches | nothing new | 1 |
+
+## Block 3 — Restolabs AW (raw/B3-Restolabs.json)
+
+No endpoint. The pricing page's own HTML holds the amounts in `data-month` / `data-year` attributes (`<span data-year="55" data-month="69" class="price_number">00`), filled by an inline jQuery/GSAP script; the only fetch() goes to ipapi.co (form geolocation). Same amounts in its JSON-LD offers (USD). Monthly billing: Basic $69, Growth $99, Pro $199 (yearly $55 / $79 / $159). USD only, no AWG → still not counted in AW.
+
+## Block 6 — a third tool for live countries
+
+| Country | Added | Price | Count now |
+|---|---|---|---|
+| AU | Bopple (stored) | AUD 49/month + 1.64% + $0.10 (server HTML renders AUD selected) | **3** |
+| NZ | Bopple (stored) | NZD 49/month + 2.4% + $0.10 (pricing script: only US differs, $29) | **3** |
+| JP | funfo (stored) | JPY 0/month + 3.35%～ (funfo.jp takeout page); KitchenCarMenu still 503 | **3** |
+| KW | Foodics (stored) | KWD 48.3/mo Advanced Bundle (quarterly billing; yearly 45.7), includes "Foodics Online Web Creation" | **3** |
+| OM | Zyda (stored) | «Plans from 190 OMR a year.» | **3** |
+| SA | Zyda (stored) | «Plans from 3,350 SAR a year.» | **3** |
+| TR | Komisyonsuz (new) | «999 ₺/ ay» Online Sipariş Sistemi (gel-al), + KDV | **3** |
+| EG | Zyda (stored) | «Plans from 27,000 EGP a year.» | **3** |
+| ID | — (majoo already "also counted" per compare-research-2 report; coordinator to confirm) | — | 2 (3?) |
+| SG HK MY TH TW MA | nothing new (Qashier per-day; Eats365 unpriced; iCHEF add-on unpriced; Wongnai POS borderline) | — | 2 |
+| IN, MV | handed to agent 3 (not started) | — | — |
