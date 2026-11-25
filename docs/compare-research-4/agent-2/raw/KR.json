@@ -1,0 +1,35 @@
+{
+  "country": "KR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "토스오더 픽업주문 수수료 (site:tossplace.com)",
+    "선주문 포장 주문 솔루션 매장 자체 링크 요금제 월 원 사장님 픽업 시간 예약",
+    "오더비 Order Bee 픽업 주문 매장 요금",
+    "카페 스마트오더 솔루션 미리 주문 픽업 앱 없이 링크 주문 월 이용료 원 무료 체험 사장님",
+    "포장 예약주문 서비스 매장 전용 주문페이지 카카오톡 공유 픽업 시간 지정 요금 안내 VAT 별도 월",
+    "페이히어 요금제 원 월 온라인 주문",
+    "자사 주문 채널 구축 픽업 포장 주문 수수료 없는 주문앱 식당 월 구독료 원 솔루션"
+  ],
+  "vendors": [
+    {
+      "name": "Toss Place (토스오더 픽업주문)",
+      "website": "https://tossplace.com",
+      "stored_id_prefix": "87b9b92a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "eligible on evidence (compare-research-2), but the pickup-order fee in force today is not stated on its own site — see raw/KR-toss.json",
+      "eligibility": {},
+      "plans": [
+        {
+          "plan_name": "토스오더 픽업주문", "currency": "KRW", "price_major": null, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "주문 수수료 0원으로 써보기", "url": "https://tossplace.com/story/pickup_order",
+          "note": "Fee in force not stated: 2025.04.08 '0원으로 써보기' (try, no end date) vs 2024.02.29 planned 3.5% excl. VAT; the terms say fees follow what is shown at sign-up. Not counted."
+        }
+      ],
+      "answers": [],
+      "check_urls": ["https://tossplace.com/story/tossorder-event", "https://tossplace.com/story/pickupoder_stampok", "https://tossplace.com/story/vat_return", "https://pages.tossplace.com/policies/1661/447"]
+    }
+  ],
+  "notes": "KR count now: 0 confirmed (Toss Place only if Dominic accepts the 2025 '0원' offer as in force). Seven Korean searches (pre-order 선주문, 포장 예약주문, 스마트오더, 자사 주문 채널, Payhere 요금제) found no own-site KRW-priced pickup/pre-order tool: results were Naver 주문 / Kakao 주문하기 (platform ordering, excluded), imweb / Wix / Cafe24-type web-shop builders (excluded), QR table-order and kiosk products (table-only), kmong / soomgo freelancer gigs (not vendors), Toast's Korean-language US page (US only), Shopify apps. Payhere: no price page found (site did not resolve in compare-research-2). Order Bee: only a third-party help desk, no own site found. No vendor site opened beyond tossplace.com; nothing eligible exists on these angles."
+}
