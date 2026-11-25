@@ -71,3 +71,7 @@ None found. EatIn Monaco and Mr Room Service are marketplaces, UpMenu shows USD 
 ## TN (Tunisia, EUR stored; TND checked)
 
 None found. Poslik (Tunisian till) has no online ordering and no prices; CapsaFood is a marketplace; the Linéo packs are retailer till bundles. count now: 0
+
+## CV (Cabo Verde, CVE)
+
+None found. Vendus serves Cabo Verde but is priced in EUR and shows no customer ordering ahead; Bafa is a marketplace; Cegid PHC is an ERP. count now: 0

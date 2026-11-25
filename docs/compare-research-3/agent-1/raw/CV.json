@@ -1,0 +1,17 @@
+{
+  "country": "CV",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Zonesoft OR Vendus OR \"Cabo Verde\" restaurante encomendas online take away software preço CVE mês",
+    "Cabo Verde Praia app encomendar comida take-away restaurantes plataforma para restaurantes mensalidade escudos"
+  ],
+  "vendors": [
+    { "name": "Vendus (Cegid / Vendus by Shine)", "website": "https://www.vendus.pt", "stored_id_prefix": null, "focus": "pos", "verdict": "not_relevant",
+      "reason": "Portuguese invoicing/POS software. Search snippets say it covers Cabo Verde among its markets, but its prices are in EUR only (e.g. 8,33 a month), not CVE, and no customer online ordering ahead appears in the results. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] },
+    { "name": "Bafa", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Praia consumer delivery app (marketplace), found via a third-party listing. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] },
+    { "name": "Cegid PHC", "website": "https://www.cegid.com/cv/", "stored_id_prefix": null, "focus": "pos", "verdict": "not_relevant",
+      "reason": "ERP for Cabo Verde businesses, not a food ordering tool. Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] }
+  ],
+  "notes": "None found: no tool sells in Cabo Verde with online ordering ahead and a CVE price. Zonesoft didn't come up in the search. Local Cabo Verde vendors would belong to agent 3 (sub-Saharan), and none showed up anyway. Count: 0."
+}
