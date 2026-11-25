@@ -1,0 +1,22 @@
+{
+ "country": "IN",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "DineOpen",
+   "website": "https://www.dineopen.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "branded online-ordering page with rupee prices ('From ₹899/mo in India' Starter, '₹1,799/mo in India' Pro; also '$20/mo' / '$99/mo'; 'Commission per order' 0%), but no takeaway / pickup / collection / scheduled-order / pre-order wording — only 'Customers order directly from you - no third-party branding.' → ordering ahead not shown (as in compare-research-2/-3)",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.dineopen.com/products/orders/online"
+   ]
+  }
+ ],
+ "notes": "Agent 3's lead: DineOpen's /products/orders/online read once today. Prices are quoted (no ₹299 seen on this page) but the page never says customers can order for pickup or ahead, so DineOpen still does not count. IN is otherwise agent 3's country; this file covers only DineOpen."
+}
