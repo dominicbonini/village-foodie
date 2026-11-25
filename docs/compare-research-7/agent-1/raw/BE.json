@@ -1,0 +1,103 @@
+{
+  "country": "BE",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Fritzy",
+      "country": "BE",
+      "website": "https://fritzy.be",
+      "stored_id_prefix": "80a8b5b2",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Belgian order-ahead platform for friteries (stored 80a8b5b2): customers order ahead on the Fritzy app and fritzy.be, the ticket prints with the pickup time; no subscription, 0,90 € HTVA per online order. Re-read today.",
+      "eligibility": {
+        "order_quote": "Le ticket s'imprime aussitôt sur votre imprimante, avec l'heure de retrait et le détail de la commande.",
+        "order_url": "https://fritzy.be/pro"
+      },
+      "plans": [
+        {
+          "plan_name": "Fritzy (sans abonnement)",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0,
+          "per_order_fixed_major": 0.9,
+          "setup_major": 0,
+          "quote": "0,90 € HTVA par commande en ligne",
+          "url": "https://fritzy.be/pro",
+          "note": "'Sans abonnement, sans engagement:'; '0 € sur les commandes de moins de 7 €'; 'Aucun pourcentage sur vos ventes'; 'Frais bancaires des paiements en ligne en plus'; 'Inscription gratuite'. Re-read today."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Vos clients commandent à l'avance sur l'app et sur fritzy.be.",
+          "url": "https://fritzy.be/pro"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "Sans abonnement, sans engagement:",
+          "url": "https://fritzy.be/pro"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "0,90 € HTVA par commande en ligne",
+          "url": "https://fritzy.be/pro"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://fritzy.be/pro"
+      ]
+    }
+  ],
+  "notes": "BE counts Payli and Restomax. Third candidate: Fritzy (stored 80a8b5b2, restaurant/friterie tool) re-read today: 0 € a month + 0,90 € HTVA per online order, pickup time on the ticket. Doubt for the reviewer: customers order 'sur l'app et sur fritzy.be' - a shared Fritzy app/site listing friteries, so it is close to a marketplace, though the business pays a fixed per-order fee, not a commission. Food-truck alternative Digitaste (stored 0e42d25f) has no price (configurator only, compare-research-1) - not re-read. Stopped at 3 if Fritzy is accepted."
+}
