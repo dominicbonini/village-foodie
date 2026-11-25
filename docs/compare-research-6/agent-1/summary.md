@@ -11,3 +11,9 @@
 
 nothing eligible exists: French-language searches for click and collect / précommande / Monaco / Principauté / Nice-Monaco; no tool's own site shows Monaco.
 count now: 0
+
+## CV (CVE)
+
+No vendor opened: three Portuguese searches (encomenda online para levantar / pedidos online take-away / CVE por mês) found no tool selling in Cabo Verde with a CVE price. Earlier rejects (Vendus, Bafa, Cegid PHC) not re-read.
+nothing eligible exists.
+count now: 0
