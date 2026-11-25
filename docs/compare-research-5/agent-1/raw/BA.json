@@ -1,0 +1,41 @@
+{
+  "country": "BA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "online narudžba preuzimanje u lokalu sistem za restorane cijena KM mjesečno Bosna i Hercegovina",
+    "\"naruči unaprijed\" OR \"online narudžbe\" aplikacija za ugostitelje vlastita web stranica bez provizije cjenik KM",
+    "softver za ugostiteljstvo BiH fiskalni POS modul online narudžbe web shop restoran cijena paketa KM",
+    "sistem za online naručivanje za restorane i food truck \"preuzimanje\" vlastita stranica Sarajevo Banja Luka cijena mjesečno",
+    "Remaris online narudžbe web narudžbe za preuzimanje BiH cijena",
+    "online naručivanje za restorane bez provizije cjenik paketi BiH KM mjesečno softver narudžbe preuzimanje (Glovo, Wolt, App Store, Zegashop blocked)"
+  ],
+  "vendors": [
+    {
+      "name": "DISH (DISH Order)", "website": "https://www.dish.co", "stored_id_prefix": null, "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "no Bosnia site: its country selector lists BE, DE, ES, FR, HR, International, IT, HU, NL, PL, PT, RO, SK, AT, CZ, UA only (summary of the selector, no verbatim quote)",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": ["https://www.dish.co/"]
+    },
+    {
+      "name": "Restaumatic", "website": "https://www.restaumatic.com", "stored_id_prefix": null, "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Polish ordering tool; English price list shows no amounts and no country but Polish signals; no Bosnia presence or KM price",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": ["https://www.restaumatic.com/en/price-list/"]
+    },
+    {
+      "name": "FoodBooking (foodbooking.ba)", "website": "https://foodbooking.ba", "stored_id_prefix": null, "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Bosnian-language page for an ordering system now 'AISHA' (early-access sign-up); shows delivery or pickup but no ordering for a later time and no platform price (KM amounts are only sample menu items); no company named",
+      "eligibility": {"order_quote": "Digitalni meni, porcije, dodaci, korpa, dostava ili preuzimanje", "order_url": "https://foodbooking.ba/"},
+      "plans": [], "answers": [], "check_urls": ["https://foodbooking.ba/"]
+    },
+    {
+      "name": "Shopwidget", "website": "https://www.shopwidget.app/ba", "stored_id_prefix": null, "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Serbian (DDBusiness d.o.o. Subotica) generic web-shop widget for any website; local pickup but no ordering ahead shown; priced only in EUR (25 € a month), no KM price",
+      "eligibility": {"order_quote": "Lokalno preuzimanje: Kupci naručuju online i preuzimaju sa vaše lokacije.", "order_url": "https://www.shopwidget.app/ba/blog/shopwidget-online-ordering-for-restaurants"},
+      "plans": [], "answers": [], "check_urls": ["https://www.shopwidget.app/ba/blog/shopwidget-online-ordering-for-restaurants"]
+    }
+  ],
+  "notes": "Vitrina (BAM) is already counted; count stays 1. Third round: 6 Bosnian searches (Glovo listings dominate; the last search blocked them). New vendor sites opened: DISH, Restaumatic, FoodBooking.ba, Shopwidget — none eligible with a KM price. Seen in search only, not opened (not KM-priced in the snippets or wrong country): Delivero (delivero.me, Montenegrin, €95/month + €350 set-up), AjDonesi (ajdonesi.rs, Serbian, €69/month), FoodApp (restorani.foodapp.hr, Croatian, €50/month), Food Ordering Now (WordPress plugin, €19.99), Ordera (restorani.ordera.app/bs, a BiH ordering marketplace), GloriaFood (agent 1's own; free, USD premium — no KM), Zegashop (generic builder, never), Gustico / QuickServe / Taxi Bar Catering (App Store only). Remaris search returned nothing. Not re-read (rejected earlier): FoxiFood (EUR only), Storekit, SumUp (no Bosnia). Stop rule applied."
+}
