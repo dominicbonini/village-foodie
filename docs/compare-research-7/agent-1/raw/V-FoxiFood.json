@@ -1,0 +1,9 @@
+{
+  "vendor": "FoxiFood",
+  "stored_id_prefix": "d03a6e1f",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "check_urls": [],
+  "notes": "Already counts in MT (the only EUR country among the one-short countries; country-terms page lists Malta, compare-research-2) - skipped. Its prices are EUR only (Basic 0 EUR + fee), so it cannot count in IS, RS, AL, BA, MK, MD, UZ, KZ, QA, BH, JO, BO, DO, SV, GT, JM, UY, CO, LK or BD (none of these stores EUR). Earlier rounds record it as eligible in IS, RS, AL, BA, MK with EUR prices only - not counted for ISK/RSD/ALL/BAM/MKD. No page read this round (nothing it could change)."
+}
