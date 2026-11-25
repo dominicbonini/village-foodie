@@ -95,3 +95,7 @@ No other tool priced in BAM: the search returned only Glovo marketplace pages. c
 ## MK (North Macedonia, MKD)
 
 No other tool priced in MKD: the results were only marketplaces (Wolt, Naracaj.com, Klikni Jadi). count now: 1 (Vitrina)
+
+## MD (Moldova, MDL)
+
+No other tool priced in MDL: the results were Glovo, MENU TIGER (agent 2's) and government PDFs. count now: 1 (Vitrina)

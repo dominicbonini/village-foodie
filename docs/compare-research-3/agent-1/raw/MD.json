@@ -1,0 +1,7 @@
+{
+  "country": "MD",
+  "researched_on": "2026-11-25",
+  "searches": ["sistem comenzi online restaurant Moldova ridicare personală preț \"lei/lună\" Chișinău platformă comenzi cafenea"],
+  "vendors": [],
+  "notes": "Vitrina (MDL) is already counted. No other tool priced in MDL was found. The results were Glovo (marketplace), MENU TIGER (agent 2's, not fetched) and government e-commerce PDFs (not a vendor). Paloma365 (Kazakh POS whose country selector includes MD; agent 2's) was not fetched; compare-research-2 marked it not_relevant in KZ. Count stays 1."
+}
