@@ -222,3 +222,8 @@ count now: 0
 
 None exists: one co-op store and one weekly takeaway; no ordering tool.
 count now: 0
+
+## NF (AUD)
+
+None exists: tourism bookings site and travel listings only; phone / in-person ordering.
+count now: 0
