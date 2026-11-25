@@ -3,7 +3,8 @@
  "researched_on": "2026-11-25",
  "searches": [
   "餐廳 線上點餐 預約自取 外帶 系統 方案 月費 NT$ 肚肚 OR 你訂 OR 快一點 OR 微碧 官網 價格",
-  "肚肚 Dudoo 線上點餐 方案價格 月費"
+  "肚肚 Dudoo 線上點餐 方案價格 月費",
+  "微碧 線上點餐 輕量型 LINE 官方帳號 自取 方案 費用 月費"
  ],
  "vendors": [
   {
@@ -95,7 +96,21 @@
    "check_urls": [
     "https://www.ichefpos.com/zh-tw/pricing"
    ]
+  },
+  {
+   "name": "微碧 Weiby",
+   "website": "https://www.weiby.tw",
+   "stored_id_prefix": null,
+   "focus": "pos",
+   "verdict": "not_relevant",
+   "reason": "Taiwanese POS; home page mentions '從櫃檯打單到線上點餐，進單1秒直達各站' but no pickup / pick-up-time wording and no prices (only '大省方案72折起' in a contact form; buttons go to /contact)",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.weiby.tw"
+   ]
   }
  ],
- "notes": "TW count now: 2 (Klikit, Oddle) — unchanged. iCHEF re-read for a price (it was eligible but unpriced): the online-takeaway add-on is still unpriced. Eats365 TW pricing page shows no amounts (earlier rounds). Searches for 肚肚 Dudoo / 你訂 nidin / 快一點 / 微碧 found only comparison articles, news (2020–21 promotions) and App Store pages — no own-site price found to open. MENU TIGER USD (rejected). Stopped."
+ "notes": "TW count now: 2 (Klikit, Oddle) — unchanged. iCHEF re-read for a price (it was eligible but unpriced): the online-takeaway add-on is still unpriced. Eats365 TW pricing page shows no amounts (earlier rounds). Searches for 肚肚 Dudoo / 你訂 nidin / 快一點 / 微碧 found only comparison articles, news (2020–21 promotions) and App Store pages — no own-site price found to open. MENU TIGER USD (rejected). Stopped. Extra round: 微碧 Weiby (no price, no pickup wording) not relevant."
 }
