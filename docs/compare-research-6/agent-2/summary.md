@@ -142,3 +142,8 @@ count now: 0
 
 None exists: only a single eatery notice and international tools with no Solomon Islands page (Foodhub: agent 1).
 count now: 0
+
+## VU (VUV)
+
+None exists: The Maua App = marketplace; Port Pizza Bar = one restaurant's app.
+count now: 0
