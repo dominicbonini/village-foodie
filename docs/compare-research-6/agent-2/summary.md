@@ -212,3 +212,8 @@ count now: 0
 
 None exists: a handful of cafes in travel guides; no ordering tool.
 count now: 0
+
+## TK (NZD)
+
+None exists: no food businesses with online ordering found at all.
+count now: 0
