@@ -1,0 +1,26 @@
+{
+  "country": "IN",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "India online ordering website for restaurants takeaway pickup commission-free \"₹\" per month plan own brand ordering food truck cafe software",
+    "Indian startup pre-order pickup skip the queue cafes restaurants own ordering page \"₹\" \"/month\" subscription Bengaluru Mumbai takeaway counter token",
+    "restaurant POS India \"online ordering\" website module takeaway pickup price \"₹\" per year Rista OR Torqus OR \"Slick POS\" OR Billberry OR \"Ezee\""
+  ],
+  "vendors": [
+    {
+      "name": "RoyalPOS",
+      "website": "https://royalpos.in",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Indian restaurant POS ('₹5,999 Per year'); its 'Online Orders' are Swiggy / Zomato aggregator orders ('Swiggy & Zomato in one screen'), plus 'Free takeaway & delivery QR menu with every plan' — a QR menu, no sentence that customers order online ahead for pickup",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://royalpos.in/pos-software-in-india"
+      ]
+    }
+  ],
+  "notes": "Count now: 2 (Dinehere, uEngage — agent 2's, not fetched) — no third. New: RoyalPOS (row above). Not read: RezoTap (Indian WhatsApp ordering, USD prices $11 / $28 per month per SoftwareSuggest — USD would not count in IN), Supaorder / Deonde / FoodChow (Indian multi-country, agent 2's), Petpooja / Prime POS / Mink Foodiee / Romio (tills, listing sites only), EasyQueue / SmartQ / Eatable / InvisQue / drivethruu (consumer multi-restaurant queue / pre-order apps — marketplace-like, press only), Foodiv (USD). For the coordinator: DineOpen (rejected by agent 2 in -2/-3 for no pickup wording) now has a product page https://www.dineopen.com/products/orders/online for a 'branded online ordering' page with India prices (search snippets: ₹299 / ₹899 / ₹1,799 per month) — not re-read (rejected vendor); agent 2 could re-check it. Stopped."
+}
