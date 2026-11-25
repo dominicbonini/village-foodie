@@ -1,0 +1,142 @@
+{
+  "country": "IE",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Flipdish",
+      "country": "IE",
+      "website": "https://www.flipdish.com/ie",
+      "stored_id_prefix": "5b50f4e3",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Stored restaurant/takeaway online ordering (collection for a chosen time at checkout, per its help centre); Irish /ie site with EUR prices ex. VAT; online-ordering page re-read today. Restaurant tool, not food truck.",
+      "eligibility": {
+        "order_quote": "Preorder for Collection. Collect from XXpm / Edit collection time at checkout",
+        "order_url": "https://help.flipdish.com/en/articles/9585671-delivery-and-collection-order-flow-for-online-orders",
+        "country_quote": "€139 if billed monthly (ex. VAT)",
+        "country_url": "https://www.flipdish.com/ie/pricing"
+      },
+      "plans": [
+        {
+          "plan_name": "Online ordering (untitled card 1)",
+          "currency": "EUR",
+          "price_major": 69,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Billed annually, per site. €69 if billed monthly (ex. VAT)",
+          "url": "https://www.flipdish.com/ie/online-ordering",
+          "note": "Card shows 'From €49/month' billed annually; €69 = monthly billing (recorded). Cards have no names or feature lists (re-read today)."
+        },
+        {
+          "plan_name": "Online ordering (untitled card 3)",
+          "currency": "EUR",
+          "price_major": 79,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Billed annually, per site. €79 if billed monthly (ex. VAT)",
+          "url": "https://www.flipdish.com/ie/online-ordering",
+          "note": "From €59/month billed annually."
+        },
+        {
+          "plan_name": "Online ordering (untitled card 2)",
+          "currency": "EUR",
+          "price_major": 99,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Billed annually, per site. €99 if billed monthly (ex. VAT)",
+          "url": "https://www.flipdish.com/ie/online-ordering",
+          "note": "From €79/month billed annually."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Preorder for Collection. Collect from XXpm / Edit collection time at checkout",
+          "url": "https://help.flipdish.com/en/articles/9585671-delivery-and-collection-order-flow-for-online-orders"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "A store is closed but does accept preorders: we will display the store as closed but accepting preorders",
+          "url": "https://help.flipdish.com/en/articles/9585671-delivery-and-collection-order-flow-for-online-orders"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "yes",
+          "quote": "organic social media posts",
+          "url": "https://www.flipdish.com/ie"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Streamline food prep and reduce mistakes with real-time order screens that connect directly to your POS.",
+          "url": "https://www.flipdish.com/ie"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "yes",
+          "quote": "Point of Sale & Online Ordering",
+          "url": "https://www.flipdish.com/ie/pricing"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "Flipdish works for all sizes, from single sites to growing chains.",
+          "url": "https://www.flipdish.com/ie"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Take orders through your own branded website",
+          "url": "https://www.flipdish.com/ie/online-ordering/websites"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "€139 if billed monthly (ex. VAT)",
+          "url": "https://www.flipdish.com/ie/pricing"
+        },
+        {
+          "key": "perorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.flipdish.com/ie/online-ordering",
+        "https://help.flipdish.com/en/articles/9585671-delivery-and-collection-order-flow-for-online-orders"
+      ]
+    }
+  ],
+  "notes": "IE counts Order Tiger and Click & Collection. Third candidate: Flipdish (stored 5b50f4e3, restaurant tool, mine) - its online-ordering page re-read today: three untitled cards, cheapest '€69 if billed monthly (ex. VAT)' (From €49/month billed annually). Order-ahead quote from its help centre (compare-research-1, 24 Nov, not re-read). No new food-truck tool searched (stopped at 3). If accepted, IE = 3."
+}
