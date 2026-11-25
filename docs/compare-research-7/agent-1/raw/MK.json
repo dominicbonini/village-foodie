@@ -1,7 +1,9 @@
 {
   "country": "MK",
   "researched_on": "2026-11-25",
-  "searches": [],
+  "searches": [
+    "POS систем за ресторани Македонија онлајн нарачки веб продавница подигнување модул цена денари месечно Скопје"
+  ],
   "vendors": [
     {
       "name": "Thinker POS",
@@ -114,7 +116,19 @@
         "https://thinkerpos.com/en/pricing/",
         "https://thinkerpos.com/en/online-ordering-delivery/"
       ]
+    },
+    {
+      "name": "Delivero",
+      "website": "https://delivero.me",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Montenegrin own-site ordering, € only, no country named (read today for BA) - no MKD price or North Macedonia presence.",
+      "check_urls": [],
+      "stored_id_prefix": null,
+      "eligibility": {},
+      "plans": [],
+      "answers": []
     }
   ],
-  "notes": "MK counts Vitrina (MKD). Thinker POS (stored e01cb953, food_truck, Skopje, MKD) was recorded eligible in compare-research-5 with one doubt: which plan carries online ordering. Re-read today (pricing + online-ordering pages): the pricing page still never says 'online ordering'; Standard (6.295 MKD/month incl. VAT) and Advanced (8.693) offer a free-choice 'Takeaway & delivery license', Basic and 'Basic + Website' ('*Does not include ecommerce') do not, and the online-ordering page names no plan ('Create your free ordering page today'). If the reviewer accepts the Takeaway & delivery licence as the online-ordering module, MK reaches 2 (Thinker POS is a food-truck tool). Stopped MK there (no new search). Earlier rejects not re-read: Naracaj.com, Klikni Jadi, Dinerra, Waiterio (unreadable), FoxiFood (EUR only)."
+  "notes": "MK counts Vitrina (MKD). Thinker POS (stored e01cb953, food_truck, Skopje, MKD) was recorded eligible in compare-research-5 with one doubt: which plan carries online ordering. Re-read today (pricing + online-ordering pages): the pricing page still never says 'online ordering'; Standard (6.295 MKD/month incl. VAT) and Advanced (8.693) offer a free-choice 'Takeaway & delivery license', Basic and 'Basic + Website' ('*Does not include ecommerce') do not, and the online-ordering page names no plan ('Create your free ordering page today'). If the reviewer accepts the Takeaway & delivery licence as the online-ordering module, MK reaches 2 (Thinker POS is a food-truck tool). Stopped MK there (no new search). Earlier rejects not re-read: Naracaj.com, Klikni Jadi, Dinerra, Waiterio (unreadable), FoxiFood (EUR only). Third pass: Macedonian POS resellers with an online-ordering module priced in denari - none surfaced (Poster USD, myPOS terminals, Ecwid generic, Shopify POS); regional Delivero / AjDonesi are € only with no North Macedonia. MK stays at 1, or 2 with Thinker POS (reviewer decision)."
 }
