@@ -1,0 +1,41 @@
+{
+  "country": "PR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "owner.com restaurant \"Puerto Rico\" online ordering San Juan",
+    "plataforma puertorriqueña pedidos en línea restaurantes recogido \"pick-up\" sin comisión planes mensual Puerto Rico software",
+    "food truck Puerto Rico ordenar en línea pre-order app goodfynd OR hotplate OR \"food truck\" San Juan pickup online ordering platform"
+  ],
+  "vendors": [
+    {
+      "name": "Clover",
+      "website": "https://www.clover.com",
+      "stored_id_prefix": "8ceb8696",
+      "focus": "pos",
+      "verdict": "unreadable",
+      "reason": "Clover hosts ordering pages for Puerto Rico restaurants on its own domain (compare-research-3), but today both https://www.clover.com/online-ordering/puerto-rico-bagel-co-san-juan (HTML is only the title 'Online Ordering | Clover', content script-loaded) and https://www.clover.com/pricing (250 characters of text) are script-rendered — no quotable PR presence, pickup or USD price",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.clover.com/online-ordering/puerto-rico-bagel-co-san-juan",
+        "https://www.clover.com/pricing"
+      ]
+    },
+    {
+      "name": "Best Food Trucks",
+      "website": "https://www.bestfoodtrucks.com",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "unreadable",
+      "reason": "US food-truck catering / event-ordering service with a 'san-juan' city page (which San Juan is not shown in results); the page answered HTTP 429 with a 'Vercel Security Checkpoint' bot check — not read (and it is a booking / catering marketplace, likely not countable)",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.bestfoodtrucks.com/food-trucks/san-juan"
+      ]
+    }
+  ],
+  "notes": "Count now: 2 (Menufy, Take App) — no third. Clover is the likeliest third (it hosts PR restaurants' ordering pages) but its pages are script-rendered today: a human reviewer could read clover.com/pricing in a browser. Owner.com: no owner.com page for a Puerto Rico restaurant in results (only Uber Eats / DoorDash / Postmates / Caviar listings). DoorDash Commerce Platform / Storefront: a marketplace's product (not counted, as in -2/-3). Square (excludes PR — raw/B4-Square.json), Toast and ChowNow (no PR presence — raw/B4-*.json) not re-read. Eatsy (CR), Reorder (UY) — no PR presence. Stopped after ~5 candidates."
+}
