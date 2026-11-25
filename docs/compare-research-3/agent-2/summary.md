@@ -94,3 +94,7 @@ None exist that I could find with an own-site shekel price (Zapiet Eats USD app 
 | DineOpen | nearest_local | not_relevant (no pickup wording) | from ₹899/month | https://www.dineopen.com |
 
 count now: 1 (uEngage)
+
+## LK (Sri Lanka, LKR)
+
+No vendor site read; one search found no second LKR tool (Deonde: no amount; iasoft one-off builds; marketplaces; directories). count now: 1 (POS Masters)
