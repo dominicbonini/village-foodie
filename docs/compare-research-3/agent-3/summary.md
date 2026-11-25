@@ -89,3 +89,13 @@ count now: 0
 Nothing eligible exists with an HNL price (also Avify, Sitec, WizPOS, Clinpays; Pedix/OlaClick USD only).
 
 count now: 0
+
+## NI (NIO)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Neolo Menú QR | nearest_local | not_relevant (view-only QR menu) | C$ 323 /mes | https://www.neolo.com/nicaragua/menu-qr/ |
+
+Nothing eligible exists with an NIO price (also Clickeat marketplace, Recafy, Avify; Pedix/OlaClick USD only).
+
+count now: 0

@@ -1,0 +1,24 @@
+{
+ "country": "NI",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Nicaragua menú digital pedidos en línea restaurantes \"para llevar\" OR \"retiro\" plataforma nicaragüense precio \"C$\" OR córdobas mensual"
+ ],
+ "vendors": [
+  {
+   "name": "Neolo Menú QR",
+   "website": "https://www.neolo.com/nicaragua/menu-qr/",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "QR menu to view only ('Tus clientes escanean el QR y ven el menú directo en el navegador. Sin descargar nada.'), no ordering; NIO prices (C$ 323 /mes)",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.neolo.com/nicaragua/menu-qr/"
+   ]
+  }
+ ],
+ "notes": "Count now: 0. Nothing eligible exists with an NIO price that I could find (wave 2 + today ~5 candidates). Neolo (NIO prices) is a view-only QR menu. Clickeat (multi-restaurant ordering site for all Nicaraguan restaurants, per a search snippet) is a marketplace — never counted, not read. Recafy (wave 2): free QR/table ordering. Avify lists Nicaragua but is a generic shop/POS, USD, no pickup (read for CR). Pedix / OlaClick USD only. MENU TIGER (agent 2), Meniu (other countries) not counted."
+}
