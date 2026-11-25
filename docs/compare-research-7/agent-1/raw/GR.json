@@ -1,0 +1,24 @@
+{
+  "country": "GR",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "online παραγγελίες για καντίνες food truck προπαραγγελία παραλαβή εφαρμογή για επιχειρήσεις τιμή €/μήνα"
+  ],
+  "vendors": [
+    {
+      "name": "Wiiz Eat",
+      "website": "https://wiizeat.com",
+      "stored_id_prefix": "430c8cb2",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Greek-language ordering link/QR with 'delivery ή παραλαβή' and '€0,15 / παραγγελία' (+ €250 set-up), but its business page names only Cyprus ('όπως αναφέρουν εστιατόρια στην Κύπρο') and never Greece - no Greek presence shown.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://wiizeat.com/business/"
+      ]
+    }
+  ],
+  "notes": "GR counts Spevdo and Worldline. No third found. Wiiz Eat (counted in CY) read today: Greek language but Cyprus only - not GR. Earlier: MENU TIGER (USD, agent 2's), Zuna (unreadable), SumUp (generic web shop, EUR 0 - single-fallback type; GR already has two real tools). One Greek food-truck (καντίνα) search returned Worldline (counted), Food Truck Pub (US app), Restimo (Polish, no Greece), Flipdish (no Greece), Vev, RapidOrderz and directories. GR stays at 2."
+}
