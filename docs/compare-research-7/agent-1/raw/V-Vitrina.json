@@ -1,0 +1,9 @@
+{
+  "vendor": "Vitrina",
+  "stored_id_prefix": "2bfa2064",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "check_urls": ["https://vitrina.cafe/en/prices/mt", "https://vitrina.cafe/en/prices/is"],
+  "notes": "Already counts in IS, RS, AL, BA, MK, MD (compare-research-2) - skipped. https://vitrina.cafe/en/prices/mt answered HTTP 404. The 'Prices in the currencies of other countries' list on /en/prices/is names only: Sweden (SEK), Denmark (DKK), Norway (NOK), Switzerland and Liechtenstein (CHF), United Kingdom (GBP), Serbia (RSD), Bosnia & Herzegovina (BAM), North Macedonia (MKD), Albania (ALL), Moldova (MDL) (plus the page's own ISK; default UAH, EUR on the sk/cs/hr/sl pages). No price list for MT, UZ, KZ, QA, BH, JO, BO, DO, SV, GT, JM, UY, CO, LK or BD, and none of them is named, so Vitrina counts in none of the remaining one-short countries. MT: no Malta page (404) and Malta not named - fails the strict rule even though EUR prices exist."
+}
