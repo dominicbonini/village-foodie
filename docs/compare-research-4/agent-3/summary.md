@@ -9,3 +9,9 @@ count now: 1 (Mezzita, BOB, stored)
 |---|---|---|---|---|
 | Meniu | nearest_local | not_relevant (no DO presence, no readable price, only "pickup order management") | — | https://meniuapp.com/en |
 count now: 1 (Gestióndo, DOP, stored)
+
+## SV
+| vendor | focus | verdict | price | URL |
+|---|---|---|---|---|
+| Kioskito (stored) | nearest_local | not_relevant (Panama only on its own site) | $5–15/mes USD | https://kioskito.app |
+count now: 1 (Pedix, USD, stored)

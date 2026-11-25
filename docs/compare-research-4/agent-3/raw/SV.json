@@ -1,0 +1,28 @@
+{
+  "country": "SV",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "kioskito.app El Salvador menú digital restaurante",
+    "El Salvador sistema de pedidos online para restaurantes \"pedidos programados\" OR \"pedidos anticipados\" OR \"pick up\" plataforma salvadoreña precio $ mensual",
+    "POS para restaurantes El Salvador facturación electrónica DTE \"pedidos en línea\" OR \"menú en línea\" OR \"tienda en línea\" planes precios mensual",
+    "\"El Salvador\" \"Guatemala\" \"Honduras\" plataforma pedidos online restaurantes WhatsApp \"para llevar\" sin comisión planes USD mes Centroamérica startup"
+  ],
+  "vendors": [
+    {
+      "name": "Kioskito",
+      "website": "https://kioskito.app",
+      "stored_id_prefix": "04a0ed24",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "USD prices ($5 / $10 / $15 per month) but Panama only on its own home page; no El Salvador presence, no country pages; the FAQ '¿Kioskito funciona solo en Panamá?' has its answer script-loaded (not in the page text). Home page also shows no pickup wording (its restaurant page in PA has 'retiro en el local').",
+      "eligibility": {
+        "country_quote": "Hecho en Panamá · Sin tarjeta de crédito",
+        "country_url": "https://kioskito.app"
+      },
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://kioskito.app"]
+    }
+  ],
+  "notes": "Count now: 1 (Pedix, USD, stored). No second USD-priced tool with an El Salvador presence. Kioskito (stored, Panamanian, USD) states only Panama. Searches otherwise returned marketplaces (PedidosYa, Uber Eats, Hugo, DoorDash), local delivery services (Ya!, Perulapía To-Go — commission delivery, not tools), MENU TIGER (agent 2), Prior (Spain, agent 1), Siigo (CO, COP), Toast US, Capterra listings, ChatFood (Capterra only) and Eatsy (Costa Rican, press only). OlaClick stays uncounted ('América Latina' only). Wave-2/3 dead ends (Click.sv, Menuestro, Genios Digital, TOI) not re-read. Stopped."
+}
