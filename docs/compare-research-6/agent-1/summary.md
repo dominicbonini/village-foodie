@@ -28,3 +28,15 @@ count now: 0
 
 nothing eligible exists: French searches (précommande / click and collect / FCFA par mois / Wave Orange Money) surface only Kolonell blog posts.
 count now: 0
+
+## TN (EUR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Dishop | nearest_local | not_relevant (no Tunisia on its site; price per week) | 49 €/semaine | https://www.dishop.co/ |
+| Kmandi | nearest_local | not_relevant (QR menu only) | on quote | https://kmandi-app.tn/ |
+| Menutium | nearest_local | not_relevant (delivery app) | — | — |
+| Tunisiano | nearest_local | not_relevant (delivery app) | — | — |
+
+nothing eligible exists: Arabic + French searches (طلب مسبق / استلام / click and collect / précommande / sans commission / disponible en Tunisie).
+count now: 0
