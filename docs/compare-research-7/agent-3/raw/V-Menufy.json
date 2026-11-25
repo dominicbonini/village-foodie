@@ -1,0 +1,9 @@
+{
+  "vendor": "Menufy",
+  "stored_id_prefix": "832a682c",
+  "countries": [],
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [],
+  "notes": "US tool priced in USD (counts in PR from its diner page https://www.menufy.com/PR). Of the one-short countries only SV (USD) is plausible: https://www.menufy.com/SV answered '302 Found' to the restaurant home page (https://restaurant.menufy.com/) — no El Salvador page, unlike /PR -> does not count in SV. JM needs JMD and the rest local currencies; no presence stated -> not plausible. No new country rows."
+}
