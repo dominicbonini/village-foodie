@@ -137,3 +137,8 @@ count now: 0
 
 Nothing eligible: Fiji Eats, FoodRunners, Cyber Food = marketplaces; CloudPOS (site not found), Pacific IT (retail POS).
 count now: 0
+
+## SB (SBD)
+
+None exists: only a single eatery notice and international tools with no Solomon Islands page (Foodhub: agent 1).
+count now: 0
