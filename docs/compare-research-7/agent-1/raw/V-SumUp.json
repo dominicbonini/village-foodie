@@ -1,0 +1,107 @@
+{
+  "vendor": "SumUp",
+  "stored_id_prefix": "d0eb16fa",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "country": "CO",
+      "name": "SumUp",
+      "website": "https://www.sumup.com/es-co/",
+      "stored_id_prefix": "d0eb16fa",
+      "focus": "pos",
+      "verdict": "eligible",
+      "reason": "SumUp's Colombian site (es-co) sells a free online store with in-store pickup; generic web shop, nothing food-specific: single fallback beside a real food tool (CO counts Fudo).",
+      "eligibility": {
+        "order_quote": "Offer customers shipping, in-store pickup and service locations.",
+        "order_url": "https://www.sumup.com/es-co/tienda-en-linea/",
+        "country_quote": "Offer customers shipping, in-store pickup and service locations.",
+        "country_url": "https://www.sumup.com/es-co/tienda-en-linea/"
+      },
+      "plans": [
+        {
+          "plan_name": "Online store",
+          "currency": "COP",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 4.3,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "$ 0",
+          "url": "https://www.sumup.com/es-co/tienda-en-linea/",
+          "note": "Re-read today: 'Monthly costs' '$ 0', 'Competitive transaction fee' '4.3%'. The es-co page is mixed: navigation, footer and FAQ in Spanish, product copy in English. '$' on the es-co path taken as COP (not stated). Weak; a reviewer may drop it."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "no",
+          "quote": "$ 0",
+          "url": "https://www.sumup.com/es-co/tienda-en-linea/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "4.3%",
+          "url": "https://www.sumup.com/es-co/tienda-en-linea/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://www.sumup.com/es-co/tienda-en-linea/"
+      ]
+    }
+  ],
+  "check_urls": [
+    "https://www.sumup.com/es-co/tienda-en-linea/"
+  ],
+  "notes": "SumUp's countries among the one-short list: CO and MT only (its other markets are EU/EEA, GB, CH, US, BR, CL, PE). CO: recorded as the single generic-web-shop fallback (CO already counts Fudo). MT: compare-research-2/-3 read the en-mt online-store page today: shipping only, no pickup or collection - not_relevant (not re-read). No SumUp site for IS, RS, AL, BA, MK, MD, UZ, KZ, QA, BH, JO, BO, DO, SV, GT, JM, UY, LK, BD."
+}
