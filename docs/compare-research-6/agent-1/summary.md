@@ -221,3 +221,8 @@ count now: 0
 
 FoxiFood, Storekit: not listed. One search: tourist listings only. nothing eligible exists.
 count now: 0
+
+## FK
+
+FoxiFood, Storekit: not listed. One search: tourist listings only. nothing eligible exists.
+count now: 0
