@@ -1,0 +1,86 @@
+{
+  "country": "PK",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "tossdown pricing Pakistan \"Rs\" per month online ordering pickup",
+    "restaurant online ordering website Pakistan takeaway pickup software \"Rs.\" \"per month\" plan commission free Lahore Karachi",
+    "Nosh restaurant POS Pakistan official site online ordering website Growth plan \"Rs 4,999\"",
+    "Pakistan restaurant online ordering system \"self pickup\" OR \"takeaway\" OR \"pick up\" own website app pricing PKR monthly cafe food truck",
+    "ریسٹورنٹ آن لائن آرڈر پک اپ سافٹ ویئر پاکستان ماہانہ روپے"
+  ],
+  "vendors": [
+    {
+      "name": "tossdown",
+      "website": "https://tossdown.com",
+      "stored_id_prefix": "85c5360a",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "eligible in earlier rounds (pickup ordering) but priced only in $ on tossdown.com/pricing; tried a Pakistan pricing page today (https://tossdown.com/pk/pricing answered 404) and found no Rs. figures -> still no PKR price, not counted",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://tossdown.com/pk/pricing"]
+    },
+    {
+      "name": "Deonde (Pakistan page)",
+      "website": "https://deonde.co/pakistan/online-ordering-and-delivery-system.shtml",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Indian white-label ordering vendor with a Pakistan page (JazzCash / Easypaisa / COD per search snippet); page answered HTTP 403, not retried",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://deonde.co/pakistan/online-ordering-and-delivery-system.shtml"]
+    },
+    {
+      "name": "Nosh",
+      "website": "https://noshpk.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "BORDERLINE: Pakistani cloud restaurant POS with an 'Online Ordering Website' in its Growth plan (Rs 4,999 /month/branch, onboarding Rs 10,000) and PKR prices, but none of its pages (home, pricing, online-ordering product page) shows pickup / takeaway-for-collection / order-ahead for website orders ('Let customers order directly from your branded website or app with zero commission.'); delivery-only can't be ruled out, so not counted",
+      "eligibility": {
+        "country_quote": "a complete cloud-based restaurant POS system for Pakistan",
+        "country_url": "https://noshpk.com",
+        "order_quote": "Let customers order directly from your branded website or app with zero commission.",
+        "order_url": "https://noshpk.com"
+      },
+      "plans": [
+        {
+          "plan_name": "Growth", "currency": "PKR", "price_major": 4999, "period": "month", "vat": "excl",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": 10000,
+          "quote": "Rs 4,999 /month/branch", "url": "https://noshpk.com/pricing/",
+          "note": "recorded for a reviewer only (vendor not counted: no pickup wording). Growth is the plan that lists 'Online Ordering Website'; also Rs 27,500 /6 months, Rs 50,000 /year; Starter Rs 1,999 has no online ordering website; prices exclude taxes"
+        }
+      ],
+      "answers": [],
+      "check_urls": ["https://noshpk.com", "https://noshpk.com/pricing/", "https://noshpk.com/products/online-ordering-system/"]
+    },
+    {
+      "name": "CORN POS",
+      "website": "https://www.cornpos.com",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Lahore restaurant POS with 'Launch a Food Ordering Website or App for Your Customers' ('Get instant orders from your website or app directly to your POS.') but no pickup / order-ahead wording and no prices on the page",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://www.cornpos.com/point-of-sale-system"]
+    },
+    {
+      "name": "Pakodus",
+      "website": "https://pakodus.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "restaurant ordering software seen on directories (SoftwareSuggest, TechImply); pakodus.com failed with a self-signed certificate error",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://pakodus.com"]
+    }
+  ],
+  "notes": "Count now: 0 priced in PKR. Round 3 (compare-research-6): nothing new eligible with a PKR price. Nosh (noshpk.com) is the nearest miss: PKR prices (Growth Rs 4,999/month/branch incl. 'Online Ordering Website') but no pickup / order-ahead wording anywhere I read -> BORDERLINE not_relevant; a reviewer could count it if pickup is accepted from 'order directly from your branded website'. tossdown (stored, eligible) still has no PKR amounts (/pk/pricing 404). Deonde PK page 403; Pakodus TLS error; CORN POS no pickup, no price. Seen in search, not read: HysabOne (accounting), sw3solutions eRestaurant (demo for pricing), Bhookly (directory only), Fiverr/Upwork freelancers. Earlier rejects not re-read: Moneypex (GBP), Oscar (no pickup). Blink (stored 14ed815d) belongs to agent 1 (coordinator) — not fetched. Take App (USD only, earlier rounds). foodpanda / Cheetay: marketplaces. Stopped after 5 new vendor sites."
+}

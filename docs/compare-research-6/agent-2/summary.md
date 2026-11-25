@@ -43,3 +43,18 @@ count now: 0
 ## Skipped
 
 NI, BS, TT: taken by agent 3 (coordinator, 25 Nov).
+
+# Round 3 (world-countries-5)
+
+## PK (PKR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| tossdown (85c5360a) | nearest_local | eligible, still no PKR price (/pk/pricing 404) | – | https://tossdown.com |
+| Deonde (PK page) | nearest_local | unreadable (403) | – | https://deonde.co/pakistan/online-ordering-and-delivery-system.shtml |
+| Nosh | pos | not_relevant BORDERLINE (no pickup wording) | Rs 4,999/month/branch Growth (not counted) | https://noshpk.com/pricing/ |
+| CORN POS | pos | not_relevant (no pickup, no price) | – | https://www.cornpos.com/point-of-sale-system |
+| Pakodus | nearest_local | unreadable (TLS error) | – | https://pakodus.com |
+
+Nothing eligible with a PKR price after 5 new vendor sites. Blink: agent 1.
+count now: 0
