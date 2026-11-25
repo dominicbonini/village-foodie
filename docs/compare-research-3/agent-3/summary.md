@@ -151,3 +151,9 @@ count now: 2 (food-truck: 0)
 | Restorant | nearest_local | eligible (BORDERLINE: also a marketplace; pickup quote from its guide page) | ₦0/month + 5% per online-paid order | https://restorant.com.ng/pricing |
 
 count now: 2 (food-truck: 0)
+
+## MZ (MZN)
+
+No vendor site worth reading (Deliva: marketplace; Zapchef: no MZ presence). Nothing eligible exists with an MZN price.
+
+count now: 0
