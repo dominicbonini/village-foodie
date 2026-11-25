@@ -106,3 +106,12 @@ No vendor site read; one search found no second LKR tool (Deonde: no amount; ias
 | Ewity POS (new) | nearest_local | eligible (timed pickup windows; ordering site included in every plan) | Free MVR 0; Starter MVR 450/month, Pro MVR 750/month (billed yearly) | https://ewity.com/pricing |
 
 count now: 2 (Qvian + Ewity)
+
+## BD (Bangladesh, BDT)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Cloudwave BD | nearest_local | not_relevant (hosting prices only, no ordering wording) | — | https://cloudwavebd.com/?p=25988 |
+| HisabPlus | nearest_local | not_relevant (table QR only, no price) | — | https://hisabplus.com/Blog/restaurant-pos-software-bangladesh-guide |
+
+count now: 1 (Restora POS)

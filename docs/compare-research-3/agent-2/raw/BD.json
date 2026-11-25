@@ -1,0 +1,36 @@
+{
+ "country": "BD",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Bangladesh restaurant POS online ordering website takeaway pickup price BDT taka per month"
+ ],
+ "vendors": [
+  {
+   "name": "Cloudwave BD",
+   "website": "https://cloudwavebd.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "the restaurant-POS page from search (cloudwavebd.com/?p=25988) shows only hosting/domain prices and no online pickup or order-ahead wording",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://cloudwavebd.com/?p=25988"
+   ]
+  },
+  {
+   "name": "HisabPlus",
+   "website": "https://hisabplus.com",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "its restaurant POS guide describes table QR ordering only (no takeaway/pickup/advance online ordering) and gives no BDT amount",
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://hisabplus.com/Blog/restaurant-pos-software-bangladesh-guide"
+   ]
+  }
+ ],
+ "notes": "BD: no second BDT tool. Info-iCafe (netlify page; QR ordering, ৳ prices per search) is table/QR ordering, not read. Deonde Bangladesh: flat monthly fee, no amount (per search; not read). Blink BD: USD. RestroGreen: no price (compare-research-2, not repeated). count now: 1 (Restora POS)."
+}
