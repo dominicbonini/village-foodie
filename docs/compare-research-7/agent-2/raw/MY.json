@@ -3,7 +3,9 @@
  "researched_on": "2026-11-25",
  "searches": [
   "Malaysia F&B online ordering system self pickup takeaway pre-order commission-free pricing \"RM\" per month restaurant cafe own website",
-  "EasyEat OR Delivereat OR Slurp Malaysia restaurant online ordering self-pickup pricing RM per month plan"
+  "EasyEat OR Delivereat OR Slurp Malaysia restaurant online ordering self-pickup pricing RM per month plan",
+  "aplikasi tempahan awal food truck Malaysia pre-order pickup peniaga bazar Ramadan sistem order online harga sebulan RM",
+  "TRUKADO food truck app pre-order"
  ],
  "vendors": [
   {
@@ -63,5 +65,5 @@
    ]
   }
  ],
- "notes": "MY count now: 2 (Klikit, StoreHub) — unchanged. Qashier MY (stored, eligible) is priced per day only (compare-research-1: 'RM8 a DAY'; a search snippet now shows 'Plan RM 1.50 / day') — a per-day price is unclear, so not counted. Oddle MY: a search snippet shows 'from RM199/month' on oddle.me/en-my, but oddle.me refused automated fetches twice today (403) — not tried again; worth a later re-try (Oddle is stored). Take App MY: USD only. New sites opened: Orderla (form not found), iCHEF (no MY price page), FeedMe (no plan prices, no order-ahead). Stopped. Extra round: Mobi (mobi2go.com → mobihq.com) quote-only, no country; EasyEat / Delivereat / Slurp not found in search; Deonde MY page (flat fee, no amount, Deonde 403 in other rounds) not opened."
+ "notes": "MY count now: 2 (Klikit, StoreHub) — unchanged. Qashier MY (stored, eligible) is priced per day only (compare-research-1: 'RM8 a DAY'; a search snippet now shows 'Plan RM 1.50 / day') — a per-day price is unclear, so not counted. Oddle MY: a search snippet shows 'from RM199/month' on oddle.me/en-my, but oddle.me refused automated fetches twice today (403) — not tried again; worth a later re-try (Oddle is stored). Take App MY: USD only. New sites opened: Orderla (form not found), iCHEF (no MY price page), FeedMe (no plan prices, no order-ahead). Stopped. Extra round: Mobi (mobi2go.com → mobihq.com) quote-only, no country; EasyEat / Delivereat / Slurp not found in search; Deonde MY page (flat fee, no amount, Deonde 403 in other rounds) not opened. PASS 2 (food-truck only): the Malay search returned Mobilefood.my (a food-truck e-marketplace, The Star 2017), Kapita / Tapak (food-truck locator app with a vendor app, Vulcan Post), MBPJ's truck-tracking app (council locator), Klikit / StoreHub food-truck blog posts (both already counted), food-truck rental sites, loan / SME articles. TRUKADO (App Store: Trukado LLC, 'Food Truck monthly USD 29.99') is a US food-truck network, not Malaysian, USD. No Malaysian food-truck pre-order tool with an own site and RM price. Count stays 2."
 }
