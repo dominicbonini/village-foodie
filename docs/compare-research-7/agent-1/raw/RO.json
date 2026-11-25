@@ -1,0 +1,133 @@
+{
+  "country": "RO",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Vitrina",
+      "website": "https://vitrina.cafe",
+      "stored_id_prefix": "2bfa2064",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "country": "RO",
+      "reason": "White-label ordering site + POS (Complete Solution s.r.o., Slovakia) with a Romanian-language site whose currency selector offers 'România lei' and quotes a lei price; pickup and orders for a set time. Its English main page names Romania as a market without the POS (compare-research-2).",
+      "eligibility": {
+        "order_quote": "Comenzi pentru o anumită oră și ridicare personală",
+        "order_url": "https://vitrina.cafe/ro",
+        "country_quote": "Cu abonament: de la 209 lei pe lună și cel mult 0,9%.",
+        "country_url": "https://vitrina.cafe/ro"
+      },
+      "plans": [
+        {
+          "plan_name": "Start (lei, 'de la')",
+          "currency": "RON",
+          "price_major": 209,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0.9,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Cu abonament: de la 209 lei pe lună și cel mult 0,9%.",
+          "url": "https://vitrina.cafe/ro",
+          "note": "The page text read shows the lei amount only as a 'from' line; per-plan lei amounts were not in the text read (the plan cards show €). 'Prețuri fără TVA.' Taken as the cheapest subscription (Start)."
+        },
+        {
+          "plan_name": "Start",
+          "currency": "EUR",
+          "price_major": 39,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0.9,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "39 €35,10 €31,20 €/lună",
+          "url": "https://vitrina.cafe/ro",
+          "note": "Three amounts: monthly billing first (39 €), then 6-month and yearly; monthly-billed recorded. EUR is RO's accepted second currency."
+        },
+        {
+          "plan_name": "Express",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 3,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "0 €/lună",
+          "url": "https://vitrina.cafe/ro",
+          "note": "'+ 3% din plățile online (livrare și ridicare personală)'."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Livrare, ridicare personală și comenzi pentru o anumită oră",
+          "url": "https://vitrina.cafe/ro"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Comenzi pentru o anumită oră și ridicare personală",
+          "url": "https://vitrina.cafe/ro"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "39 €35,10 €31,20 €/lună",
+          "url": "https://vitrina.cafe/ro"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "+ 3% din plățile online (livrare și ridicare personală)",
+          "url": "https://vitrina.cafe/ro"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://vitrina.cafe/ro"
+      ]
+    }
+  ],
+  "notes": "RO counts 4SaleFood and MenuForma. Third: Vitrina (stored 2bfa2064, restaurant tool, mine) - its Romanian site read today: currency selector 'România lei', 'Cu abonament: de la 209 lei pe lună și cel mult 0,9%.', € plan cards (Start 39 €/lună monthly-billed, Express 0 € + 3 %), 'Prețuri fără TVA.', pickup and orders for a set time. Presence: Romanian language + a lei price + its English page naming Romania (compare-research-2). Only the first 100 000 characters of the page were read. Stopped at 3."
+}
