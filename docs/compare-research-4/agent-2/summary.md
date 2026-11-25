@@ -37,3 +37,14 @@ count now: 2 (Ordable + Linkin1, if Linkin1's curbside pickup is accepted as cli
 | Take App | nearest_local | not_relevant (BH not listed) | — | https://www.take.app/countries |
 
 count now: 2 (Ordable + OrderFlow, if its duckdns site is accepted)
+
+## JO (USD; JOD accepted)
+| vendor | focus | verdict | price | URL |
+|---|---|---|---|---|
+| Mnasati | nearest_local | not_relevant (generic store builder + QR menu; no pickup wording) | JD plans exist | https://mnasati.com/en/pricing |
+| Supaorder | nearest_local | not_relevant (Jordan not a market) | — | https://www.supaorder.com/pricing |
+| Take App | nearest_local | not_relevant (JO not listed) | — | https://www.take.app/countries |
+
+count now: 1 (Ordable) — nothing eligible found. Foodics has a Jordan offers page (offers.foodics.com/en/?p=138, no price in snippet), not opened (rejected for JO before).
+
+Side note: Supaorder (Indian, agent-2-owned) publishes per-market local-currency pricing pages for ~28 other countries (e.g. /pricing/sweden, /pricing/norway, /pricing/switzerland, /pricing/south-africa, /pricing/philippines) — possibly useful for other short countries.
