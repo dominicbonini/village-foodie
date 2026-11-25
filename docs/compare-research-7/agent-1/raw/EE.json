@@ -4,7 +4,10 @@
   "searches": [
     "tellimiskeskkond restoranile oma veebileht järeletulemisega ette tellimine hind € kuus toiduauto Eesti",
     "kassasüsteem restoranile veebitellimused kaasa ostmiseks järeletulemine hinnakiri €/kuu Eesti ettevõte Erply OR Tickett OR Smartpos",
-    "eeltellimus järjekorrata kohvik toiduauto rakendus ettevõtetele liitu hind kuutasu Eesti tellimine ette"
+    "eeltellimus järjekorrata kohvik toiduauto rakendus ettevõtetele liitu hind kuutasu Eesti tellimine ette",
+    "toiduauto tellimine ette veebis järeletulek \"food truck\" Eesti tänavatoidu festival eeltellimine süsteem",
+    "Tallinn Food Truck Festival vendors cashless app order ahead \"telli\" app organiser DK Entertainment ordering",
+    "play.google.com toiduauto eeltellimus rakendus Eesti \"food truck\" telli ette ja võta kaasa"
   ],
   "vendors": [
     {
@@ -35,5 +38,5 @@
       "check_urls": []
     }
   ],
-  "notes": "EE counts FoxiFood and Jitmeal. No third found. Earlier evidence not counted: Poster (Estonia page, USD only - its Estonia ad page in today's search again shows '$24 per month'), Storekit (GBP only), SumUp (generic web shop - the single-fallback type, eligible EUR 0 in compare-research-2), EestiPOS, Tellikohe, Kassahaldus (rejected/unreadable). One Estonian search returned Wolt (marketplace), Subger, Restimo (Polish; no Estonia presence shown), TalTech theses and Capterra. EE stays at 2 (3 only if the coordinator lets SumUp's web shop count as a third). Second pass: Restimo (Polish, € prices, shows up in many countries' searches) read - no pickup / order-ahead wording, so not eligible anywhere on its own pages; Erply/Tickett/Smartpos did not surface. EE stays at 2. Third pass (Estonian 'eeltellimus ... toiduauto'): only Uber Eats for Business, Wolt, Telli Toit (consumer app), Sigosoft and Kavapp (custom dev / RU). After about 6 new sites, nothing."
+  "notes": "EE counts FoxiFood and Jitmeal. No third found. Earlier evidence not counted: Poster (Estonia page, USD only - its Estonia ad page in today's search again shows '$24 per month'), Storekit (GBP only), SumUp (generic web shop - the single-fallback type, eligible EUR 0 in compare-research-2), EestiPOS, Tellikohe, Kassahaldus (rejected/unreadable). One Estonian search returned Wolt (marketplace), Subger, Restimo (Polish; no Estonia presence shown), TalTech theses and Capterra. EE stays at 2 (3 only if the coordinator lets SumUp's web shop count as a third). Second pass: Restimo (Polish, € prices, shows up in many countries' searches) read - no pickup / order-ahead wording, so not eligible anywhere on its own pages; Erply/Tickett/Smartpos did not surface. EE stays at 2. Third pass (Estonian 'eeltellimus ... toiduauto'): only Uber Eats for Business, Wolt, Telli Toit (consumer app), Sigosoft and Kavapp (custom dev / RU). After about 6 new sites, nothing. Second pass (coordinator, food-truck angles): festival organisers (Tallinn Food Truck Festival, Tallinn Street Food Festival, DK Entertainment) name no ordering tool; Estonian food-truck / Google Play searches find only Wolt (LIT truck's scheduled orders on the marketplace), Telli Toit (consumer app), Ticket Fairy blog (US) and ERR news. No new vendor site worth opening. EE stays at 2."
 }
