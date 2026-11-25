@@ -2,7 +2,8 @@
   "country": "ZA",
   "researched_on": "2026-11-25",
   "searches": [
-    "South Africa online ordering system for restaurants \"collection\" \"per month\" rand own website no commission food truck order ahead \"R\" pricing"
+    "South Africa online ordering system for restaurants \"collection\" \"per month\" rand own website no commission food truck order ahead \"R\" pricing",
+    "\"click and collect\" ordering platform South African coffee shops restaurants \"R\" \"/month\" pre-order skip the queue local startup"
   ],
   "vendors": [
     {
@@ -38,5 +39,5 @@
       ]
     }
   ],
-  "notes": "Count now: 2 (Bizzfo, Resto) — no third. YUMBI (mine): still unpriced (raw/B3-YUMBI.json). SERVA: unpriced (row above). Supaorder (supaorder.com/pricing/south-africa) was read by agent 2 in compare-research-4 — agent 2's vendor, not fetched. The search otherwise returned only Capterra ZA listings priced in GBP / EUR / USD (Tekeats, MyFoodFast, Foodiv, UpMenu, Restolabs, Wiiz Eat, Orders2Me, Bite2u, Menue, SuiteDish, OrdraFood, RestApp, RestroSuite — not sources, none South African). Not re-read: Ordev, WebOrder (no pickup wording, -3), Yoco (till), Coffee Monster (closed), Orderin (403 in -2; a delivery marketplace), Aura NextGen POS (till), Wangu (18% commission, press only)."
+  "notes": "Count now: 2 (Bizzfo, Resto) — no third. YUMBI (mine): still unpriced (raw/B3-YUMBI.json). SERVA: unpriced (row above). Supaorder (supaorder.com/pricing/south-africa) was read by agent 2 in compare-research-4 — agent 2's vendor, not fetched. The search otherwise returned only Capterra ZA listings priced in GBP / EUR / USD (Tekeats, MyFoodFast, Foodiv, UpMenu, Restolabs, Wiiz Eat, Orders2Me, Bite2u, Menue, SuiteDish, OrdraFood, RestApp, RestroSuite — not sources, none South African). Not re-read: Ordev, WebOrder (no pickup wording, -3), Yoco (till), Coffee Monster (closed), Orderin (403 in -2; a delivery marketplace), Aura NextGen POS (till), Wangu (18% commission, press only). Second search: only consumer multi-merchant order-ahead apps (Coffee Monster — closed; Zapper Order Ahead — a payments app's consumer marketplace; 'Click and Collect SA', mypreorder — App Store only), chains (McDonald's, TotalEnergies) and GetEat (Capterra) — none read. Stopped."
 }
