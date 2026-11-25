@@ -41,7 +41,33 @@
       "plans": [],
       "answers": [],
       "check_urls": []
+    },
+    {
+      "name": "Delivero",
+      "website": "https://delivero.me",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Montenegrin branded web/mobile ordering platform ('Dostava, preuzimanje i prednarudžbe'; 95€ per month, 350€ set-up) - € only and no country named ('u regionu'); no KM price or Bosnia presence, so it does not count for BA.",
+      "check_urls": [
+        "https://delivero.me/"
+      ],
+      "stored_id_prefix": null,
+      "eligibility": {},
+      "plans": [],
+      "answers": []
+    },
+    {
+      "name": "AjDonesi",
+      "website": "https://ajdonesi.rs",
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Serbian own-site ordering, € only (19/39/69 € / mesec), no Bosnia named - read for RS today (RS.json); no KM price.",
+      "check_urls": [],
+      "stored_id_prefix": null,
+      "eligibility": {},
+      "plans": [],
+      "answers": []
     }
   ],
-  "notes": "BA counts Vitrina (BAM) only. Earlier rounds rejected FoxiFood (EUR only), DISH, Restaumatic, FoodBooking.ba, Shopwidget and saw Delivero (€, Montenegro), AjDonesi (€, Serbia), FoodApp (€, Croatia), Remaris, Zegashop, Glovo - not re-read. Two new searches (Bosnian 'aplikacija za narudžbe ... KM mjesečno ... preuzimanje', English Sarajevo/Banja Luka/Mostar startup) found only App Store listings of consumer apps (Korpa, Dostavica, Gustico, Ordera/COrdering - rejected in RS - MyMenu/QuickServe table QR), doXmenu (QR menu, rejected), Zegashop (generic builder) and directories. No Bosnian agency or POS sells an ordering product with a KM price. Nothing eligible; BA stays at 1."
+  "notes": "BA counts Vitrina (BAM) only. Earlier rounds rejected FoxiFood (EUR only), DISH, Restaumatic, FoodBooking.ba, Shopwidget and saw Delivero (€, Montenegro), AjDonesi (€, Serbia), FoodApp (€, Croatia), Remaris, Zegashop, Glovo - not re-read. Two new searches (Bosnian 'aplikacija za narudžbe ... KM mjesečno ... preuzimanje', English Sarajevo/Banja Luka/Mostar startup) found only App Store listings of consumer apps (Korpa, Dostavica, Gustico, Ordera/COrdering - rejected in RS - MyMenu/QuickServe table QR), doXmenu (QR menu, rejected), Zegashop (generic builder) and directories. No Bosnian agency or POS sells an ordering product with a KM price. Nothing eligible; BA stays at 1. Third pass: regional Balkan players with own-site ordering - Delivero (Montenegro, 95 € a month, 'u regionu', no country) and AjDonesi (Serbia, € only) - neither names Bosnia nor shows KM. FoodApp (Croatia) is HR-only. BA stays at 1."
 }
