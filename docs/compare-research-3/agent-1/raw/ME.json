@@ -1,0 +1,12 @@
+{
+  "country": "ME",
+  "researched_on": "2026-11-25",
+  "searches": ["online naručivanje restoran Crna Gora preuzimanje \"€\" mjesečno sistem za porudžbine Podgorica Budva aplikacija za restorane"],
+  "vendors": [
+    { "name": "MontEat", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Montenegrin consumer food app (App Store, one-line description; looks like a marketplace). Not opened.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] },
+    { "name": "COrdering", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "B2B app for restaurants supplying companies (workplace catering), no price or Montenegro coverage. App Store only.", "eligibility": {}, "plans": [], "answers": [], "check_urls": [] }
+  ],
+  "notes": "None found priced in EUR. Results were Glovo (marketplace), Brzzi (consumer app), Dobartek (Croatian), eSpoon (booking) and webcatalog listings (never a source). Compare-research-2 dead ends weren't repeated: FoxiFood's country terms, Storekit, SumUp, Vitrina (/en/prices/me 404) and Poster don't list Montenegro. Vitrina's EUR price list is labelled 'European Union' and Montenegro isn't named. Flipdish (Irish, European) showed no Montenegro presence and wasn't opened. Count: 0."
+}

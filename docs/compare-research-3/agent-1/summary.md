@@ -123,3 +123,7 @@ None found: Waiterio has an Armenian translation but doesn't name Armenia, has n
 ## KG (Kyrgyzstan, KGS)
 
 None found: only marketplaces, single-chain apps and Smartomato (no KG presence) came up. count now: 0
+
+## ME (Montenegro, EUR)
+
+None found: MontEat is a consumer app, COrdering is workplace catering, Glovo is a marketplace, and multi-country EUR tools don't list Montenegro. count now: 0
