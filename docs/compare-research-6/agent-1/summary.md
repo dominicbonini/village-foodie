@@ -109,3 +109,10 @@ count now: 0
 
 nothing eligible exists: French/Arabic searches (retrait sur place / à emporter / DA/mois / طلب مسبق / استلام) gave delivery marketplaces and classified ads.
 count now: 0
+
+# Round 4 (never researched before)
+
+## RE
+
+FoxiFood: not listed (country terms). Stick'Eat: consumer app only. No tool names La Réunion. nothing eligible exists.
+count now: 0
