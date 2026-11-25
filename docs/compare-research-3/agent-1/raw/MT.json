@@ -14,7 +14,7 @@
     {
       "name": "Storekit",
       "website": "https://storekit.com",
-      "stored_id_prefix": null,
+      "stored_id_prefix": "98c064da",
       "focus": "nearest_local",
       "verdict": "not_relevant",
       "reason": "Its own docs list Malta as supported (English, EUR payments), but no EUR plan price exists on its site: plans are shown in GBP only (round 1: Starter £0, Grow £99, Pro £199). Not counted: no EUR price.",
@@ -24,7 +24,10 @@
       },
       "plans": [],
       "answers": [],
-      "check_urls": ["https://storekit.com/docs/getting-started/supported-regions.md", "https://storekit.com/ie/pricing"]
+      "check_urls": [
+        "https://storekit.com/docs/getting-started/supported-regions.md",
+        "https://storekit.com/ie/pricing"
+      ]
     },
     {
       "name": "Order Tiger",
@@ -53,21 +56,30 @@
     {
       "name": "SumUp (online store)",
       "website": "https://www.sumup.com/en-mt/online-store/",
-      "stored_id_prefix": null,
+      "stored_id_prefix": "d0eb16fa",
       "focus": "pos",
       "verdict": "not_relevant",
       "reason": "Malta is a SumUp country (footer country selector lists Malta at /en-mt/; '€0' monthly, '2.5 %' transaction fee), but it is the generic web shop with no food ordering, pickup or order-ahead wording on the page. Fallback only, not a real food tool; not counted.",
       "eligibility": {},
       "plans": [
         {
-          "plan_name": "Online store", "currency": "EUR", "price_major": 0, "period": "month", "vat": "unknown",
-          "per_order_pct": 2.5, "per_order_fixed_major": null, "setup_major": null,
-          "quote": "€0", "url": "https://www.sumup.com/en-mt/online-store/",
+          "plan_name": "Online store",
+          "currency": "EUR",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 2.5,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "€0",
+          "url": "https://www.sumup.com/en-mt/online-store/",
           "note": "Generic web shop; 'Competitive transaction fee' 2.5 %. Recorded as fallback only."
         }
       ],
       "answers": [],
-      "check_urls": ["https://www.sumup.com/en-mt/online-store/"]
+      "check_urls": [
+        "https://www.sumup.com/en-mt/online-store/"
+      ]
     },
     {
       "name": "Maltix",
@@ -79,7 +91,10 @@
       "eligibility": {},
       "plans": [],
       "answers": [],
-      "check_urls": ["https://maltix.tawk.help/article/restaurant-saas", "https://maltix.tawk.help/article/saas-hospitality-order-and-collect-services"]
+      "check_urls": [
+        "https://maltix.tawk.help/article/restaurant-saas",
+        "https://maltix.tawk.help/article/saas-hospitality-order-and-collect-services"
+      ]
     }
   ],
   "notes": "Strict rule (no neighbour). FoxiFood (d03a6e1f) stored and counted. After 5 vendors, nothing else eligible: no other tool whose own site shows it sells in Malta AND has an EUR price. Closest: Storekit (Malta listed as a supported region, but GBP prices only) and SumUp (Malta site, EUR, but a generic web shop, fallback only). Round-2 dead ends not repeated (H360 ORDER, Time To Eat Malta, Deliwee, KantinApp, ATS Malta). Search lead not followed: whoswho.mt says Maltese firm Sixteen partnered with Storekit (news article, not a source). Count stays 1."
