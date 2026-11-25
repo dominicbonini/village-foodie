@@ -167,3 +167,14 @@ count now: 0
 Nothing eligible with a readable AOA price (Zapchef, Aquias Store, Mamboo, Tupuca not counted).
 
 count now: 0
+
+# Wave 3
+
+## PR (USD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Menufy | nearest_local | eligible (BORDERLINE price) | USD 0/month; the diner pays the processing fee | https://restaurant.menufy.com/article/online-ordering-features |
+| Clover | pos | unreadable (serves PR: Clover-hosted San Juan ordering pages; pages script-rendered) | — | https://www.clover.com/pricing |
+
+count now: 2 (Take App + Menufy)
