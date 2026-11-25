@@ -1,0 +1,555 @@
+{
+ "$comment": "compare-research-3 (25 Nov 2026): competitors read on their OWN websites by three Claude Code agents, one request at a time each (docs/compare-research-3-report.md; built by docs/compare-research-3/build.cjs). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import/). Every row source research, UNVERIFIED (35.an-1). Each answer carries the vendor’s verbatim quote and its page (35.an-4); \"no\" only with a quote saying it is not offered, silence is not_mentioned (35.ao-7). monthly_minor is MINOR units, converted from the page’s amount with lib/money-format.ts toMinorUnits (the 100× guard). request_check sets check_requested_at. \"evidence\" and \"not_relevant\" are for the reviewer; the import does not read them (the importer cannot mark a competitor not relevant).",
+ "id": "compare-research-3",
+ "checked_on": "2026-11-25",
+ "competitors": [
+  {
+   "id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+   "name": "Ordea",
+   "website": "https://www.ordea.uk",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: GI.",
+   "check_urls": [
+    "https://www.ordea.uk",
+    "https://www.ordea.uk/terms"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Let customers order from their phone before they reach your window.",
+     "source_url": "https://www.ordea.uk/food-trucks"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "no",
+     "quote": "No monthly fees. No lock-in. Just 3% per order when you make a sale.",
+     "source_url": "https://www.ordea.uk"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "Ordea charges a commission of 3% per order processed through the platform.",
+     "source_url": "https://www.ordea.uk/terms"
+    },
+    {
+     "key": "cardfee",
+     "value": "partial",
+     "quote": "3% per order (Stripe fees separate)",
+     "source_url": "https://www.ordea.uk"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "aebf5a80-8776-5bb5-8b06-95cca00866fb",
+   "name": "Yoveletta",
+   "website": "https://yoveletta.ch",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: LI.",
+   "check_urls": [
+    "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck",
+    "https://yoveletta.ch/preise-fuer-dein-kassensystem"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Gäste bestellen vorab über deine Website und holen ihr Essen direkt am Truck ab.",
+     "source_url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "6fa20b90-bd0b-40aa-9871-eca9ef932330",
+   "name": "Rent-a-Shop",
+   "website": "https://www.rent-a-shop.ch",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: LI.",
+   "check_urls": [
+    "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+    "https://www.rent-a-shop.ch/preise"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Online vorbestellen, lokal abholen",
+     "source_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  }
+ ],
+ "plans": [
+  {
+   "id": "0d823260-4c7c-58ee-83b7-c8b56a2d53d9",
+   "competitor_id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+   "country_code": "GI",
+   "plan_name": "Free (3% per order)",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 300,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.ordea.uk",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026 — serves GI from GB (neighbouring-market rule, Dominic 25 Nov): \"No monthly fees. No lock-in. Just 3% per order when you make a sale.\" — Stripe fees separate ('3% per order (Stripe fees separate)'). Terms: 'Ordea charges a commission of 3% per order processed through the platform.' (https://www.ordea.uk/terms)"
+  },
+  {
+   "id": "9dbd0cd7-0156-5491-9500-211a2a1d60d3",
+   "competitor_id": "aebf5a80-8776-5bb5-8b06-95cca00866fb",
+   "country_code": "LI",
+   "plan_name": "Gastro (monthly)",
+   "currency": "CHF",
+   "price_hidden": false,
+   "monthly_minor": 4900,
+   "monthly_major": 49,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://yoveletta.ch/preise-fuer-dein-kassensystem",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026 — serves LI from CH (neighbouring-market rule, Dominic 25 Nov): \"ab Fr. 49.–/Monat oder Fr. 490.–/Jahr · jede weitere Lizenz Fr. 39.–/Monat oder Fr. 390.–/Jahr\" — 'ab' price; MwSt not stated; pricing page says nothing about whether online ordering is included. Handel tariff: 'ab Fr. 29.–/Monat oder Fr. 290.–/Jahr' (the food-truck page's 'ab CHF 29.–' figure)."
+  },
+  {
+   "id": "87e1f4b5-3434-5fcb-81d1-eeccf13ec2e2",
+   "competitor_id": "aebf5a80-8776-5bb5-8b06-95cca00866fb",
+   "country_code": "LI",
+   "plan_name": "Food truck (from)",
+   "currency": "CHF",
+   "price_hidden": false,
+   "monthly_minor": 2900,
+   "monthly_major": 29,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026 — serves LI from CH (neighbouring-market rule, Dominic 25 Nov): \"Yoveletta startet für Foodtrucks bei einem Tarif ab CHF 29.– pro Monat.\" — matches the Handel tariff 'ab Fr. 29.–/Monat oder Fr. 290.–/Jahr' on the pricing page"
+  },
+  {
+   "id": "57ab1190-84c2-57f0-8701-4b5fe1446b7b",
+   "competitor_id": "6fa20b90-bd0b-40aa-9871-eca9ef932330",
+   "country_code": "LI",
+   "plan_name": "Kassensystem für Foodtruck",
+   "currency": "CHF",
+   "price_hidden": false,
+   "monthly_minor": 4490,
+   "monthly_major": 44.9,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026 — serves LI from CH (neighbouring-market rule, Dominic 25 Nov): \"ab CHF 44.90 pro Monat\" — 'ab' price; /preise: 'Alle Preise verstehen sich exkl. MwSt.' Whether online pre-ordering is included is not stated; the Onlineshop module is priced separately."
+  },
+  {
+   "id": "d9c7c62b-c319-56c3-b022-33daab197d8b",
+   "competitor_id": "6fa20b90-bd0b-40aa-9871-eca9ef932330",
+   "country_code": "LI",
+   "plan_name": "Onlineshop – Bis zu 100 Produkte",
+   "currency": "CHF",
+   "price_hidden": false,
+   "monthly_minor": 2500,
+   "monthly_major": 25,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.rent-a-shop.ch/preise",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-research-3, read 25 Nov 2026 — serves LI from CH (neighbouring-market rule, Dominic 25 Nov): \"Bis zu 100 Produkte | 25.00 CHF |\" — Onlineshop module monthly; 'Bis zu 25 Produkte | 0.00 CHF', 5'000 Produkte 55.00 CHF, Unlimitierte 85.00 CHF; 'Alle Preise verstehen sich exkl. MwSt.'"
+  }
+ ],
+ "entries": [
+  {
+   "id": "7d571a3b-b6cb-51b3-adbd-202b95a012ad",
+   "country_code": "GI",
+   "competitor_id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+   "primary_plan_id": "0d823260-4c7c-58ee-83b7-c8b56a2d53d9",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "a712bb50-7754-56af-91a8-536e6cf59418",
+   "country_code": "LI",
+   "competitor_id": "aebf5a80-8776-5bb5-8b06-95cca00866fb",
+   "primary_plan_id": "87e1f4b5-3434-5fcb-81d1-eeccf13ec2e2",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "822c529e-9645-54b4-8a46-a4916e9746e5",
+   "country_code": "LI",
+   "competitor_id": "6fa20b90-bd0b-40aa-9871-eca9ef932330",
+   "primary_plan_id": "d9c7c62b-c319-56c3-b022-33daab197d8b",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  }
+ ],
+ "evidence": [
+  {
+   "name": "Ordea",
+   "evidence": [
+    {
+     "country": "GI",
+     "food_quote": "From food trucks to festival stalls, businesses trust Ordea to handle their orders.",
+     "food_url": "https://www.ordea.uk",
+     "order_quote": "Let customers order from their phone before they reach your window.",
+     "order_url": "https://www.ordea.uk/food-trucks",
+     "country_quote": "Join food businesses across the UK serving more customers with less stress.",
+     "country_url": "https://www.ordea.uk",
+     "reason": "UK food-truck pre-ordering tool priced in GBP; its own site and terms do not exclude Gibraltar (no country list, no 'UK mainland' limit). Serves GI from GB.",
+     "neighbour": "GB"
+    }
+   ]
+  },
+  {
+   "name": "Yoveletta",
+   "evidence": [
+    {
+     "country": "LI",
+     "food_quote": "Yoveletta startet für Foodtrucks bei einem Tarif ab CHF 29.– pro Monat.",
+     "food_url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck",
+     "order_quote": "Gäste bestellen vorab über deine Website und holen ihr Essen direkt am Truck ab.",
+     "order_url": "https://yoveletta.ch/kassensystem-alle-branchen/cloud-kassensystem-foodtruck",
+     "country_quote": "Made in Switzerland — Hosting in Schweiz",
+     "country_url": "https://yoveletta.ch/preise-fuer-dein-kassensystem",
+     "reason": "serves LI from CH: Swiss cloud till whose food-truck page offers order-ahead pickup at the truck; CHF prices; its own pages do not exclude Liechtenstein (no country list, no 'nur in der Schweiz')",
+     "neighbour": "CH"
+    }
+   ]
+  },
+  {
+   "name": "Rent-a-Shop",
+   "evidence": [
+    {
+     "country": "LI",
+     "food_quote": "Kassensystem für Foodtruck",
+     "food_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+     "order_quote": "Online vorbestellen, lokal abholen",
+     "order_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+     "country_quote": "Mit unserem Kassensystem kannst du alle gängigen Zahlungsmittel in der Schweiz anbieten.",
+     "country_url": "https://www.rent-a-shop.ch/foodtruck-kassensystem",
+     "reason": "serves LI from CH: Swiss till/shop builder with a food-truck page offering online pre-order and local pickup; CHF prices excl. MwSt; its pages do not exclude Liechtenstein (food-truck page mentions trading 'im In- und Ausland')",
+     "neighbour": "CH"
+    }
+   ]
+  }
+ ],
+ "not_relevant": [
+  {
+   "country": "MT",
+   "name": "Storekit",
+   "website": "https://storekit.com",
+   "stored": "98c064da",
+   "reason": "Its own docs list Malta as supported (English, EUR payments), but no EUR plan price exists on its site: plans are shown in GBP only (round 1: Starter £0, Grow £99, Pro £199). Not counted: no EUR price.",
+   "url": "https://storekit.com/docs/getting-started/supported-regions.md",
+   "plans": []
+  },
+  {
+   "country": "MT",
+   "name": "Order Tiger",
+   "website": "https://www.ordertiger.com",
+   "stored": "aed7bf67",
+   "reason": "EUR price exists ('€59 in the EU'), but nothing found showing it sells in Malta (search only; strict MT rule). Not opened.",
+   "url": "https://www.ordertiger.com",
+   "plans": []
+  },
+  {
+   "country": "MT",
+   "name": "Zaype (LogicPass Ltd)",
+   "website": null,
+   "stored": null,
+   "reason": "Maltese consumer takeaway/delivery marketplace app (restaurants listed on Zaype for a flat monthly fee, per a news article); a marketplace, not the business's own ordering tool. Found by search, not opened.",
+   "url": null,
+   "plans": []
+  },
+  {
+   "country": "MT",
+   "name": "SumUp (online store)",
+   "website": "https://www.sumup.com/en-mt/online-store/",
+   "stored": "d0eb16fa",
+   "reason": "Malta is a SumUp country (footer country selector lists Malta at /en-mt/; '€0' monthly, '2.5 %' transaction fee), but it is the generic web shop with no food ordering, pickup or order-ahead wording on the page. Fallback only, not a real food tool; not counted.",
+   "url": "https://www.sumup.com/en-mt/online-store/",
+   "plans": [
+    {
+     "plan_name": "Online store",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 2.5,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "€0",
+     "url": "https://www.sumup.com/en-mt/online-store/",
+     "note": "Generic web shop; 'Competitive transaction fee' 2.5 %. Recorded as fallback only."
+    }
+   ]
+  }
+ ],
+ "unreadable": [
+  {
+   "country": "MT",
+   "name": "Maltix",
+   "website": "https://maltix.tawk.help",
+   "stored": null,
+   "reason": "Help-centre pages (search snippets) describe 'client QR order, pay and pick up' and mention 'UK £ Easy Pay'; both help-centre pages opened returned 404. No EUR price or Malta presence could be read from its own site."
+  }
+ ],
+ "not_needed": []
+}
