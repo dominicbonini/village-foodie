@@ -21,3 +21,13 @@ Count now: 1 (FoxiFood). Nothing more is eligible: Maltese-language, POS and ord
 | Glaze | nearest_local | not_relevant (in-venue self-pay; search only) | — | — |
 
 Count now: 1 (Vitrina). Nothing more is eligible after about 5 new vendors.
+
+## RS (RSD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Poster (0802a7c8) | food_truck | not_relevant (no Serbia, $ prices only) | — | https://joinposter.com/en/pricing |
+| Remaris | pos | not_relevant (no Serbian ordering module found; search only) | — | — |
+| iiko | pos | not_relevant (RUB, no Serbian presence found; search only) | — | — |
+
+Count now: 1 (Vitrina). Nothing more is eligible.

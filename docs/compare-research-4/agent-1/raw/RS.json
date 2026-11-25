@@ -1,0 +1,50 @@
+{
+  "country": "RS",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "POS kasa za restorane Srbija modul online porudžbine sajt preuzimanje cenovnik RSD mesečna pretplata",
+    "joinposter Srbija Poster POS restorani cena",
+    "\"za ugostitelje\" platforma online naručivanje sopstveni sajt \"preuzimanje\" bez provizije paket din mesečno",
+    "Remaris Srbija online porudžbine restoran cena paketa",
+    "iiko Srbija restoran softver online porudžbine cena"
+  ],
+  "vendors": [
+    {
+      "name": "Poster",
+      "website": "https://joinposter.com",
+      "stored_id_prefix": "0802a7c8",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "No Serbia on its own pricing page: the selector lists only languages (English, Español, Қазақша, Русский, Русский (Казахстан), Українська), and prices are in $ ('$26$29/mo'), not RSD.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": ["https://joinposter.com/en/pricing"]
+    },
+    {
+      "name": "Remaris",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Ex-Yugoslav hospitality POS; a search for a Serbian online-ordering module or price returned nothing from its own site. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "iiko",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "Russian restaurant POS with a delivery/online-orders module, priced in RUB on Russian sites; the search found no Serbian site, partner page or RSD price. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "Count stays 1 (Vitrina, RSD). Serbian-language searches (POS + online porudžbine modul, za ugostitelje, preuzimanje, din mesečno) and regional POS players (Remaris, iiko, Poster) found no other tool priced in RSD. Results were Glovo/Wolt listings (marketplaces), Jotform, subger.com (comparison site), Shopify POS (generic), Monri (payments/cash registers, no ordering price), and foreign tools in USD/EUR (UpMenu, GloriaFood, Restolabs, mobi2go, Restimo, Restaumatic: none show Serbia). Round 2/3 dead ends not repeated (doXmenu, Kafeterija, Ordera, FoxiFood EUR-only, UpMenu). Nothing else is eligible."
+}
