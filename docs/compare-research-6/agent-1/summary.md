@@ -161,3 +161,8 @@ count now: 0
 
 FoxiFood, Storekit: not listed.
 count now: 0 priced (1 eligible unpriced)
+
+## GG
+
+FoxiFood, Storekit: not listed. Food.gg: marketplace. nothing eligible exists.
+count now: 0

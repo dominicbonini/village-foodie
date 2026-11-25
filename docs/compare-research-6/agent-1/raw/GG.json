@@ -1,0 +1,51 @@
+{
+  "country": "GG",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "online ordering system takeaway click and collect \"Channel Islands\" OR \"Jersey\" OR \"Guernsey\" OR \"Isle of Man\" restaurants food trucks pricing per month £",
+    "Jersey Channel Islands company online ordering website for restaurants cafes click and collect order ahead local provider Jersey Guernsey monthly fee"
+  ],
+  "vendors": [
+    {
+      "name": "Storekit",
+      "website": "https://storekit.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Supported-regions page lists 36 countries (United Kingdom GBP, …) and no Crown Dependency / territory; 'If you're looking to launch in a country not listed above, contact our team'. Neighbour rule applies only to LI/GI.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://storekit.com/docs/getting-started/supported-regions"
+      ]
+    },
+    {
+      "name": "Food.gg",
+      "website": null,
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "Guernsey multi-restaurant takeaway app ('over 30 local restaurant menus'); marketplace. Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    },
+    {
+      "name": "FoxiFood",
+      "website": "https://www.foxifood.com",
+      "stored_id_prefix": "d03a6e1f",
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Its country-terms page lists 70 countries; the territory is not among them (no overseas / outre-mer / Crown Dependency wording).",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.foxifood.com/legal/country-terms/"
+      ]
+    }
+  ],
+  "notes": "Nothing eligible exists that I could find (round 4, first research; searches shared with JE). No tool's own site names Guernsey / Channel Islands with pickup ordering and a GBP price. ICRTouch's partner list names no Guernsey partner. Count: 0."
+}
