@@ -44,3 +44,5 @@ FLAG: Sabbor (GT) lives only on a pages.dev default host and shows no real custo
 - CL, EC, PR, NG, ZA: nothing new -> 2
 - MA, EG, IN, MV (extra Block 6, local vendors only): nothing new -> 2 each. IN note: DineOpen (agent 2's reject) has a new /products/orders/online page with ₹ prices — agent 2 could re-check.
 - Second pass (food-truck only; one new-angle search each for CL, EC, PR, NG, ZA, MA, EG, IN, MV, BR): nothing new — every result was a marketplace, single-business app, directory, press or another agent's vendor (Feasty is agent 2's). All stay at 2.
+- Clover PR retry: docs.clover.com/docs/us-merchants (text) never names Puerto Rico -> still uncounted.
+- Third pass (restaurant tools): EG NEW GoSufra (Giza; EGP 300 / 499 / 999 per month from its pricing page's own /api/plans?country=EG; "Customers can order and collect") -> EG 3 if accepted (BORDERLINE: script-loaded price; which plan carries the ordering site). IN: Kravon (₹4,999/month Growth) is early-access with only a demo restaurant -> not_relevant (V16.38). CL, EC, PR, NG, ZA, MA, MV: nothing new.
