@@ -1,0 +1,8 @@
+{
+  "vendor": "Square",
+  "stored_id_prefix": "9acae7b6",
+  "countries": [],
+  "researched_on": "2026-11-25",
+  "vendors": [],
+  "notes": "Does not count in GU, MP, AS or VI. Square's US hardware terms (https://squareup.com/us/en/legal/general/hardware, read today as raw HTML): 'We sell and ship Products only to customers located in the United States for their own use. We do not sell or ship Products to Puerto Rico, Guam, the U.S. Virgin Islands, American Samoa or the Northern Mariana Islands and our Products are not supported in any such U.S. territory.' A search snippet of its availability article (https://squareup.com/help/us/en/article/4956) also said 'We currently don't support payment card processing outside of these countries or in U.S. territories such as Puerto Rico, Guam, the U.S. Virgin Islands, American Samoa, and Northern Mariana Islands.' — but today's page text (page reader and raw HTML) does not contain that sentence, so it is not used as a quote."
+}
