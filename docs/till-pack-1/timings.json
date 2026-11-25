@@ -1,0 +1,18 @@
+{
+ "n": 40,
+ "measured": "2026-11-25T10:00:52.497Z",
+ "ms_per_write": {
+  "insert_accepted_off": 0.754,
+  "insert_accepted_on": 6.077,
+  "insert_pending_off": 0.412,
+  "insert_pending_on": 0.511,
+  "accept_off": 0.275,
+  "accept_on": 4.23,
+  "payment_off": 0.449,
+  "payment_on": 2.713,
+  "kitchen_move_off": 0.31,
+  "kitchen_move_on": 1.032,
+  "edit_sealed_off": 0.734,
+  "edit_sealed_on": 9.244
+ }
+}

@@ -890,7 +890,7 @@ async function tillProofs(file) {
     if (wrote) ok('S9 · the migration itself wrote NO row of orders, order_payments, action_audit_log or trucks (no row carries this transaction\'s xid after it)', Object.values(wrote).every(n => n === 0), wrote)
     checkStatic((await q(c, tag, TILL_STATIC)).rows[0])
     await tillExport(c, tag, mode)
-    say(`  the migration${body ? ' and' : ''} the proofs ran in ${held} ms${body ? ' (the DDL locks on orders, order_payments, action_audit_log and trucks are held until the rollback below)' : ''}`)
+    say(`  ${body ? 'the migration and ' : ''}the proofs ran in ${held} ms${body ? ' (the DDL locks on orders, order_payments, action_audit_log and trucks are held until the rollback below)' : ''}`)
   })
   if (!file) {
     await tillConcurrency()
