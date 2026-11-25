@@ -1,0 +1,30 @@
+{
+  "country": "MO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "澳門 餐廳 網上落單 自取 系統 月費 MOP 外賣自取 平台 POS 澳門",
+    "Macau restaurant online ordering system self pick-up QR order ahead \"MOP\" monthly fee POS Macao F&B 自取 預訂"
+  ],
+  "vendors": [
+    {
+      "name": "Eats365",
+      "website": "https://www.eats365pos.com/mo",
+      "stored_id_prefix": "647628e6",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "eligible in compare-research-2 (Macau region site, Branded Online Store); /mo/pricing re-read today for a price: still no amounts (14-day free trial, 'Request a Demo') -> unpriced, not counted",
+      "eligibility": {},
+      "plans": [
+        {
+          "plan_name": "Eats365 (Macau)", "currency": "MOP", "price_major": null, "period": "month", "vat": "unknown",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "", "url": "https://www.eats365pos.com/mo/pricing",
+          "note": "hidden plan: no amounts on the Macau pricing page (page reader summary: 'FREE FOR 14 DAYS', 'NO PAYMENT required', demo request only)"
+        }
+      ],
+      "answers": [],
+      "check_urls": ["https://www.eats365pos.com/mo/pricing"]
+    }
+  ],
+  "notes": "Count now: 0 priced in MOP (Eats365 eligible, price still hidden). Round 3 (compare-research-6): nothing new. Chinese and English searches returned mFood and Aomi (Macau multi-restaurant ordering apps with self pick-up — marketplaces, never counted), a 2022 CPTTM grant PDF (expired), Alibaba Cloud case study (University of Macau Next Kitchen — a single custom app), Macau Lifestyle listings, and foreign tools with no Macau presence (Dinlr MY, Getz, Access Group UK, mobile.cards AU). Take App lists Hong Kong but not Macau; Klikit has no Macau market (earlier rounds)."
+}

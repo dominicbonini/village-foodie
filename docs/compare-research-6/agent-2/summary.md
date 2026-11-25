@@ -86,3 +86,12 @@ count now: 0
 No vendor worth reading: Songo.mn (marketplace with self-pickup), Onis Food / Ones (App Store POS / waiter apps), QPay (payments), MENU TIGER / Saby (no Mongolia presence).
 Nothing eligible exists with an MNT price.
 count now: 0
+
+## MO (MOP)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Eats365 (647628e6) | nearest_local | eligible, price still hidden (re-checked) | – | https://www.eats365pos.com/mo/pricing |
+
+Nothing new: mFood / Aomi = marketplaces; others have no Macau presence.
+count now: 0
