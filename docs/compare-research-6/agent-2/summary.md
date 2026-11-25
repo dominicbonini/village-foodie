@@ -254,3 +254,8 @@ count now: 0
 
 Nothing eligible: Deliver VI, Dash Me = delivery marketplaces.
 count now: 0
+
+## AI (XCD)
+
+Nothing eligible: Axa Eats = delivery marketplace; restaurants take takeout by phone.
+count now: 0
