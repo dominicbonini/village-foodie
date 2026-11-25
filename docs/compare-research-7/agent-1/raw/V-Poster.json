@@ -1,0 +1,9 @@
+{
+  "vendor": "Poster",
+  "stored_id_prefix": "0802a7c8",
+  "researched_on": "2026-11-25",
+  "searches": ["joinposter Poster POS Moldova OR Uzbekistan OR Georgia OR Azerbaijan OR Armenia price site", "site:joinposter.com Молдова OR Узбекистан OR Сербия OR Грузия OR Азербайджан OR Армения OR Кыргызстан представитель"],
+  "vendors": [],
+  "check_urls": ["https://joinposter.com/en/pricing", "https://joinposter.com/en/pages/md-main", "https://joinposter.com/en/pages/uz-main"],
+  "notes": "Already counts in KZ (joinposter.kz, KZT) - skipped. The global pricing page (https://joinposter.com/en/pricing) shows only $ prices ('$26$29/mo' Mini, '$44$49/mo' Business, '$62$69/mo' Pro; Poster Site add-on 'Website for delivery and takeout — $19/month') and has no country or currency selector: its language selector links only to joinposter.mx (Español), joinposter.kz (Қазақша, Русский (Казахстан)) and joinposter.com (Русский, Українська, English). So no local site and no price in RSD, MDL, UZS, ALL, BAM or MKD: Poster counts in none of RS, MD, UZ, AL, BA, MK. Country pages: /en/pages/md-main and /en/pages/uz-main answer HTTP 404 (the Georgia page /en/pages/ge-main exists per compare-research-2: 'Official Representative of Poster in Georgia', USD prices). UZ: the only Uzbekistan mention is the Multikassa fiscal page (compare-research-2), USD prices - not UZS. For the record: GE = representative page + USD only (not GEL); AZ, AM, KG = no local site in the selector and USD only (no country page searched up; searches returned nothing from joinposter). Both searches returned no joinposter pages."
+}
