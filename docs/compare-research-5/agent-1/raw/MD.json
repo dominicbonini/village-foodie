@@ -1,0 +1,111 @@
+{
+  "country": "MD",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "sistem comenzi online restaurant ridicare la local precomandă site propriu preț lei lună Moldova (Glovo, Wolt, App Store, Zegashop, MENU TIGER, Straus blocked)",
+    "заказ онлайн самовывоз система для ресторана кафе Молдова Кишинёв предзаказ сайт цена лей в месяц"
+  ],
+  "vendors": [
+    {
+      "name": "HorecaSystems (Meniu QR)",
+      "website": "https://horecasystems.md/ro/",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Moldovan HoReCa automation firm; its Meniu QR module doubles as the venue's own delivery-ordering site where the customer picks a time window; fixed 30 lei a day. Delivery only — pickup not mentioned (see note)",
+      "eligibility": {
+        "order_quote": "Clientul introduce adresa de livrare, selectează intervalul de timp și pune instrucțiuni.",
+        "order_url": "https://horecasystems.md/ro/modul-meniu-qr.html",
+        "country_quote": "Același sistem funcționează ca site personalizat de livrări.",
+        "country_url": "https://horecasystems.md/ro/modul-meniu-qr.html",
+        "food_quote": "Automatizare pentru fast-food și food truck, construită pentru viteză",
+        "food_url": "https://horecasystems.md/ro/automatizare-fastfood-foodtruck.html"
+      },
+      "plans": [
+        {
+          "plan_name": "Meniu QR (site de comenzi online)",
+          "currency": "MDL",
+          "price_major": 30,
+          "period": "day",
+          "vat": "unknown",
+          "per_order_pct": 0,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Plătești fix 30 lei/zi (≈ 900 lei/lună), indiferent dacă primești 5 sau 500 de comenzi online.",
+          "url": "https://horecasystems.md/ro/modul-meniu-qr.html",
+          "note": "≈ 900 lei a month per the site. Presented as a standalone module (SmartCafé integration a bonus, not stated as required). The SmartCafé POS is 'de la 12 000 MDL', the food-truck package '26 200 MDL' (one-off packages)."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Clientul introduce adresa de livrare, selectează intervalul de timp și pune instrucțiuni.",
+          "url": "https://horecasystems.md/ro/modul-meniu-qr.html"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "O cafea pe zi ≈ 900 lei/lună · fără comisioane per comandă",
+          "url": "https://horecasystems.md/ro/modul-meniu-qr.html"
+        },
+        {
+          "key": "perorder",
+          "value": "no",
+          "quote": "Fără comision per comandă — fix 30 lei/zi",
+          "url": "https://horecasystems.md/ro/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://horecasystems.md/ro/",
+        "https://horecasystems.md/ro/modul-meniu-qr.html",
+        "https://horecasystems.md/ro/automatizare-fastfood-foodtruck.html"
+      ]
+    }
+  ],
+  "notes": "Vitrina (MDL) already counted. HorecaSystems is new: Moldovan, MDL prices, a food-truck/fast-food page (POS package, no online ordering on it) and a Meniu QR module that works as the venue's own delivery-ordering site where 'the customer enters the delivery address, selects the time window'. Doubt for the reviewer: it shows ordering for a chosen time but only for DELIVERY — no pickup / pre-order wording on any of the 3 pages read. If 'order for a time' by delivery is accepted, count is 2; otherwise 1. Focus left as nearest_local (the online ordering is not on the food-truck page). Seen in search, not opened: Syrve via RTI (rti.md, a reseller, EUR), Perfect Order (perfect-order.ro, Romanian, RON 200/month), Poloniq (Romanian), Restik and YumaPOS (Russian, RUB), SL:Ресторан (all.biz listing, 6000 lei, no online orders), allinone.md / foodhouse.md (multi-venue ordering sites, look like aggregators), Choice /ro (blog page only; choiceqr.com answered 403 in earlier rounds), GloriaFood (USD). Not re-read: Poster (no MD page), Paloma365, FoxiFood, Storekit, SumUp."
+}

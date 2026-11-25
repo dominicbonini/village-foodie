@@ -30,3 +30,10 @@ count now: 1 (Vitrina, BAM).
 
 count now: 2 if Thinker POS is accepted (food-truck page: "pre-order and pick up"; MKD price page, but no plan card names online
 ordering, and its pages carry "Ecash" template text); otherwise 1 (Vitrina).
+
+## MD
+| vendor | focus | verdict | price | URL |
+|---|---|---|---|---|
+| HorecaSystems (Meniu QR) | nearest_local | eligible (delivery for a chosen time window only — review) | 30 MDL a day (≈ 900 lei a month), 0% commission | https://horecasystems.md/ro/modul-meniu-qr.html |
+
+count now: 2 if a delivery order for a chosen time window counts as ordering ahead; otherwise 1 (Vitrina).
