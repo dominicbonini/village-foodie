@@ -1,0 +1,53 @@
+{
+  "country": "DO",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "República Dominicana menú digital pedidos online restaurante \"para recoger\" OR \"pickup\" plan \"RD$\" mensual sin comisiones",
+    "empresa dominicana sistema de pedidos en línea para restaurantes y food trucks \"Santo Domingo\" ordenar online recoger planes precios RD$",
+    "plataforma dominicana pedidos directos restaurantes \"pedidos programados\" OR \"retiro en tienda\" OR \"para llevar\" app propia restaurante RD precio mensual"
+  ],
+  "vendors": [
+    {
+      "name": "TOI",
+      "website": "https://web.toi.do",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "eligible",
+      "reason": "BORDERLINE: Dominican POS whose cashless events app lets festival-goers pre-order food from all vendors with a ready alert; that events offer is priced 'A medida' (hidden). The RD$ 5,500/mes restaurant plan has only kiosks, digital menu and PedidosYa/Uber Eats, no own online ordering ahead, so it is not used as this tool's price.",
+      "eligibility": {
+        "food_quote": "Compra desde la app de todos los vendors a la vez",
+        "food_url": "https://web.toi.do",
+        "order_quote": "Pre-orden en comida con aviso al estar lista",
+        "order_url": "https://web.toi.do",
+        "country_quote": "Facturación electrónica e-CF",
+        "country_url": "https://web.toi.do"
+      },
+      "plans": [
+        {
+          "plan_name": "Cadenas y eventos", "currency": "DOP", "price_major": null, "period": "month", "vat": "excl",
+          "per_order_pct": null, "per_order_fixed_major": null, "setup_major": null,
+          "quote": "A medida", "url": "https://web.toi.do",
+          "note": "price on request (custom after an on-site assessment); the page says all prices exclude ITBIS. Restaurant plan 'RD$ 5,500 /mes' (+0.40% above RD$1.3MM sales) has no customer online ordering ahead, so not used."
+        }
+      ],
+      "answers": [
+        { "key": "ahead", "value": "partial", "quote": "Pre-orden en comida con aviso al estar lista", "url": "https://web.toi.do" },
+        { "key": "preorder", "value": "not_mentioned" },
+        { "key": "capacity", "value": "not_mentioned" },
+        { "key": "schedule", "value": "not_mentioned" },
+        { "key": "whatsapp", "value": "not_mentioned" },
+        { "key": "social", "value": "not_mentioned" },
+        { "key": "kds", "value": "not_mentioned" },
+        { "key": "offline", "value": "not_mentioned" },
+        { "key": "walkup", "value": "not_mentioned" },
+        { "key": "vans", "value": "not_mentioned" },
+        { "key": "domain", "value": "not_mentioned" },
+        { "key": "monthly", "value": "not_mentioned" },
+        { "key": "perorder", "value": "not_mentioned" },
+        { "key": "cardfee", "value": "not_mentioned" }
+      ],
+      "check_urls": ["https://web.toi.do"]
+    }
+  ],
+  "notes": "Count now: 1 (Gestióndo, DOP, stored). No second eligible DOP-priced tool. TOI (web.toi.do, Dominican POS) is eligible only through its festival/events app pre-order, priced 'A medida' (hidden) — BORDERLINE; its RD$4,000 / RD$5,500 per month plans have no customer online ordering ahead. The page reader would not return the country sentence word for word; the e-CF (Dominican e-invoicing) phrase is used as the country quote. TOI's footer also gives an El Salvador price 'desde US$85/mes' (summary only, not quoted) — the same POS plan without own online ordering, so it does not count in SV. Three searches otherwise returned only marketplaces (PedidosYa, Uber Eats, DoorDash), MENU TIGER (agent 2, USD) and Capterra listings. Stopped (~5 candidates incl. wave-2 dead ends Manú, POS DO)."
+}

@@ -9,3 +9,13 @@
 Nothing new eligible in BOB after three searches; Mezzita (stored) is the only one.
 
 count now: 1
+
+## DO (DOP)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| TOI | food_truck | eligible, BORDERLINE (events app pre-order only) | hidden ("A medida") | https://web.toi.do |
+
+No second DOP-priced eligible tool; TOI's RD$5,500/mes restaurant plan has no own online ordering ahead.
+
+count now: 1
