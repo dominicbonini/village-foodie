@@ -213,3 +213,13 @@ count now: 0
 | MauriPros | nearest_local | not_relevant (US agency, no MU presence) | — | https://www.mauripros.com/services/restaurant-platform |
 
 count now: 1
+
+## NA (NAD)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| FlashTap | nearest_local | not_relevant (QR table ordering only) | N$499 / N$999 per month | https://www.flashtap.app/ |
+
+Nothing eligible exists with an NAD price (YUMBI unpriced).
+
+count now: 0

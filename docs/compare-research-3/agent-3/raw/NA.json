@@ -1,0 +1,27 @@
+{
+ "country": "NA",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "Namibia restaurant online ordering system collection pickup \"N$\" OR \"NAD\" per month Windhoek takeaway ordering software (Capterra/GetApp/G2/FoodChow excluded)"
+ ],
+ "vendors": [
+  {
+   "name": "FlashTap",
+   "website": "https://www.flashtap.app",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "Namibian QR table ordering only (customers 'scan, order and pay from their phone' at the table); no takeaway / pickup / order-ahead wording; N$499 / N$999 per month",
+   "eligibility": {
+    "country_quote": "Built for Namibia",
+    "country_url": "https://www.flashtap.app/"
+   },
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://www.flashtap.app/"
+   ]
+  }
+ ],
+ "notes": "Count now: 0. Nothing eligible exists with an NAD price that I could find (wave 2 + today ~5 candidates). FlashTap: table ordering only. Amateta APOS (Windhoek till, from N$150/month): a till, not read. Dial-A-Meal Namibia, Tap a Meal: consumer services / marketplaces. Slant POS blog: third-party estimates, not a source. Menutro, Fleksa: no Namibia presence in results. YUMBI lists Namibia but has no price (wave 2). South African tools Resto / Bizzfo (read for ZA) state South Africa only, so not recorded here."
+}
