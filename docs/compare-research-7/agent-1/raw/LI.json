@@ -1,0 +1,135 @@
+{
+  "country": "LI",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Sparissimo Food",
+      "website": "https://www.sparissimofood.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Swiss (Pfäffikon SZ) restaurant online-ordering platform: pickup and delivery orders from the restaurant's own Sparissimo page/website; a Liechtenstein restaurant (Nendeln) takes pickup orders on a sparissimofood.com subdomain; CHF prices + commission; no pickup-time choice stated, no food-truck wording",
+      "eligibility": {
+        "order_quote": "Enthält Abholung, Lieferung, Reservationen und E-Mail-Support.",
+        "order_url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland",
+        "country_quote": "in Nendeln, Liechtenstein",
+        "country_url": "https://anatolia.sparissimofood.com/"
+      },
+      "plans": [
+        {
+          "plan_name": "Starter",
+          "currency": "CHF",
+          "price_major": 49,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 8,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Starter-Plan (CHF 49/Monat + 8% Provision): Für den Einstieg in die digitale Bestellung.",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland",
+          "note": "from the vendor's own blog (blog.sparissimofood.com, 'Aktualisiert am: 1. Oktober 2026'); includes pickup ('Enthält Abholung, Lieferung, Reservationen und E-Mail-Support.'). The homepage instead shows a '0 CHF' Einstieg (Freemium) with '5–8 %' pro Bestellung — the two pages disagree; the plans page (manage.sparissimofood.com/plans) is a sign-up app, not opened."
+        },
+        {
+          "plan_name": "Business",
+          "currency": "CHF",
+          "price_major": 79,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 5,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Business-Plan (CHF 79/Monat + 5% Provision): Ergänzt durch eigene Domain, White-Label-Branding,",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland",
+          "note": "adds own domain, white-label branding"
+        },
+        {
+          "plan_name": "Professional",
+          "currency": "CHF",
+          "price_major": 148,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 5,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Professional-Plan (CHF 148/Monat + 5% Provision): Enthält ein kostenloses POS-Terminal,",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland",
+          "note": "adds own branded app, account manager, ads management"
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Google- und Social-Media-Anzeigenmanagement.",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland"
+        },
+        {
+          "key": "kds",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Business-Plan (CHF 79/Monat + 5% Provision): Ergänzt durch eigene Domain, White-Label-Branding,",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "Starter-Plan (CHF 49/Monat + 8% Provision): Für den Einstieg in die digitale Bestellung.",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Starter-Plan (CHF 49/Monat + 8% Provision): Für den Einstieg in die digitale Bestellung.",
+          "url": "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://anatolia.sparissimofood.com/",
+        "https://www.sparissimofood.com/",
+        "https://blog.sparissimofood.com/blog/restaurant-online-ordering-cost-switzerland"
+      ],
+      "country": "LI"
+    }
+  ],
+  "notes": "LI counts Yoveletta and Rent-a-Shop. Third: Sparissimo Food (stored 9c2e5c2a, Swiss restaurant online ordering, pickup and delivery; a Liechtenstein restaurant named per compare-research-2) copied from compare-research-2 agent-4 (read today, 25 Nov; not re-read): Starter CHF 49 a month + 8 %. Stopped at 3."
+}
