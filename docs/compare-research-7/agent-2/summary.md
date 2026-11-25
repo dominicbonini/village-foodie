@@ -49,3 +49,5 @@ No endpoint. The pricing page's own HTML holds the amounts in `data-month` / `da
 | ID | — (majoo already "also counted" per compare-research-2 report; coordinator to confirm) | — | 2 (3?) |
 | SG HK MY TH TW MA | nothing new (Qashier per-day; Eats365 unpriced; iCHEF add-on unpriced; Wongnai POS borderline) | — | 2 |
 | IN, MV | handed to agent 3 (not started) | — | — |
+
+## Pass 2 (food-truck only): SG HK MY TH TW — nothing found; ID already 3 (majoo). DineOpen IN: priced (₹899 / ₹1,799 a month) but no pickup wording → not relevant (raw/IN.json). TW leads for a restaurant pass: 快一點 QuickClick, 點點食.
