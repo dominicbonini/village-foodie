@@ -17,3 +17,14 @@ count now: 0
 No vendor opened: three Portuguese searches (encomenda online para levantar / pedidos online take-away / CVE por mês) found no tool selling in Cabo Verde with a CVE price. Earlier rejects (Vendus, Bafa, Cegid PHC) not re-read.
 nothing eligible exists.
 count now: 0
+
+## SN (XOF)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Haraka Pro | nearest_local | not_relevant (App Store only, no own site / price) | — | — |
+| Helio POS | pos | not_relevant (only third-party blog; no own site; no online ordering shown) | — | — |
+| Dakar Food Delivery | nearest_local | not_relevant (delivery marketplace) | — | — |
+
+nothing eligible exists: French searches (précommande / click and collect / FCFA par mois / Wave Orange Money) surface only Kolonell blog posts.
+count now: 0

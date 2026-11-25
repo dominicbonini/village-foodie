@@ -1,0 +1,28 @@
+{
+  "country": "SN",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Dakar application précommande restaurant \"click and collect\" commerçants abonnement FCFA Wave Orange Money commande à emporter",
+    "Haraka Pro Dakar application restaurant commande paiement en ligne tarif",
+    "logiciel caisse restaurant Sénégal module commande en ligne tarifs \"FCFA / mois\" OR \"FCFA par mois\" OR \"XOF\"",
+    "Helio POS Sénégal caisse restaurant commande en ligne tarifs FCFA"
+  ],
+  "vendors": [
+    {
+      "name": "Haraka Pro", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Dakar restaurant ordering app (publisher POINTEL - SAS, Dakar) found only via App Store listings; no own website and no merchant price found. Not opened.",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": []
+    },
+    {
+      "name": "Helio POS", "website": null, "stored_id_prefix": null, "focus": "pos", "verdict": "not_relevant",
+      "reason": "West-African POS named only in Kolonell blog posts (third party, '15 000 à 30 000 FCFA/mois'); no own site found in search and no evidence of online ordering. Not opened.",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": []
+    },
+    {
+      "name": "Dakar Food Delivery (DFD / DFD Admin)", "website": null, "stored_id_prefix": null, "focus": "nearest_local", "verdict": "not_relevant",
+      "reason": "Consumer delivery app with a restaurant-side order app (App Store); delivery only, marketplace. Not opened.",
+      "eligibility": {}, "plans": [], "answers": [], "check_urls": []
+    }
+  ],
+  "notes": "Nothing eligible exists that I could find (round 2). French searches return almost only Kolonell blog posts (a Dakar agency; rejected in compare-research-2, not re-read). Not re-read: Take App (eligible but USD only; agent 2's), inyad (no Senegal presence), Yassir / Glovo / KonectFood (marketplaces). Nyota Eats and Fioeat appeared via App Store with no Senegal mention. No vendor own site with pickup ordering and an XOF price surfaced. Count: 0."
+}
