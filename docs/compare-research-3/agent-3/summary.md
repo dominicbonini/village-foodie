@@ -229,3 +229,9 @@ count now: 0
 No vendor site worth reading (only marketplaces and chain apps). Nothing eligible exists with a BWP price (YUMBI unpriced).
 
 count now: 0
+
+## ZM (ZMW)
+
+No vendor site worth reading (only marketplaces). Nothing eligible exists with a ZMW price (YUMBI unpriced).
+
+count now: 0
