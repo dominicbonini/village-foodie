@@ -1,7 +1,9 @@
 {
   "country": "LT",
   "researched_on": "2026-11-25",
-  "searches": [],
+  "searches": [
+    "maisto furgonas užsakymas internetu iš anksto atsiėmimas sistema \"food truck\" Lietuva kaina mėn"
+  ],
   "vendors": [
     {
       "name": "FoxiFood",
@@ -220,5 +222,5 @@
       "country": "LT"
     }
   ],
-  "notes": "FoxiFood (food truck, EUR, country-terms page names Lithuania, read today) added as the third, ahead of the earlier candidate(s), food-truck tools first. LT counts ared and SumUp. Third: Refektorius (stored ef6eec53, Lithuanian restaurant ordering on its own branded page, delivery or pickup) copied from compare-research-2 agent-1 (read today, 25 Nov; not re-read): 'Užsakymai internetu' 7 EUR a month + 2-5 % commission. Vitrina (EUR, Lithuania named on its main page) is a possible fourth. Stopped at 3."
+  "notes": "FoxiFood (food truck, EUR, country-terms page names Lithuania, read today) added as the third, ahead of the earlier candidate(s), food-truck tools first. LT counts ared and SumUp. Third: Refektorius (stored ef6eec53, Lithuanian restaurant ordering on its own branded page, delivery or pickup) copied from compare-research-2 agent-1 (read today, 25 Nov; not re-read): 'Užsakymai internetu' 7 EUR a month + 2-5 % commission. Vitrina (EUR, Lithuania named on its main page) is a possible fourth. Stopped at 3. Food-truck pass (coordinator): FoxiFood (above) is the food-truck tool; a Lithuanian food-truck pre-order search found only paslaugos.lt / skelbiu.lt listings of food-truck caterers and Uber Eats; Jitmeal and WEIQ show no Lithuania site. No other food-truck tool."
 }
