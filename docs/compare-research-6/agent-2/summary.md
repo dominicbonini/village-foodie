@@ -227,3 +227,8 @@ count now: 0
 
 None exists: tourism bookings site and travel listings only; phone / in-person ordering.
 count now: 0
+
+## CX (AUD)
+
+None exists: tourism directory only; one food truck listed as closed; no ordering tool.
+count now: 0
