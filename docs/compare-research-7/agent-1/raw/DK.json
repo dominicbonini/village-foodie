@@ -7,6 +7,140 @@
   ],
   "vendors": [
     {
+      "name": "Vitrina",
+      "website": "https://vitrina.cafe",
+      "stored_id_prefix": "2bfa2064",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "White-label ordering website/app + POS (pickup, orders for a set time, own domain) with its own price page for Denmark in DKK; excl. VAT. Price page read today.",
+      "eligibility": {
+        "order_quote": "Order ahead on the website and pick up without queuing",
+        "order_url": "https://vitrina.cafe",
+        "country_quote": "Currency of this price list: Danish Krone (DKK).",
+        "country_url": "https://vitrina.cafe/en/prices/dk"
+      },
+      "plans": [
+        {
+          "plan_name": "Express",
+          "currency": "DKK",
+          "price_major": 0,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 3,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "kr 0/mo",
+          "url": "https://vitrina.cafe/en/prices/dk",
+          "note": "'+ 3% of online payments (delivery and pickup)'; 'Prices exclude VAT.'"
+        },
+        {
+          "plan_name": "Start",
+          "currency": "DKK",
+          "price_major": 289,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0.9,
+          "per_order_fixed_major": null,
+          "setup_major": 739,
+          "quote": "kr 289kr 260.10kr 231.20/mo",
+          "url": "https://vitrina.cafe/en/prices/dk",
+          "note": "First figure 'billed monthly' (kr 289); 6- and 12-month figures follow. Setup kr 739 one-off (free on 12 months)."
+        },
+        {
+          "plan_name": "Restaurant",
+          "currency": "DKK",
+          "price_major": 589,
+          "period": "month",
+          "vat": "excl",
+          "per_order_pct": 0.9,
+          "per_order_fixed_major": null,
+          "setup_major": 1489,
+          "quote": "kr 589kr 530.10kr 471.20/mo",
+          "url": "https://vitrina.cafe/en/prices/dk",
+          "note": "Monthly-billed kr 589; setup kr 1,489 one-off."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "yes",
+          "quote": "Delivery, pickup and orders for a set time",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "Orders for a set time and pickup",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "partial",
+          "quote": "Your venue's Wi-Fi and social links on the website",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Kitchen display on a tablet: stations, timers and Ready",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "yes",
+          "quote": "From 2 to 10 locations in one city: one system, a shared menu and separate records for each location.",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "domain",
+          "value": "yes",
+          "quote": "Your domain, logo and colours: guests see your brand, not ours",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "kr 289kr 260.10kr 231.20/mo",
+          "url": "https://vitrina.cafe/en/prices/dk"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "At most 0.9% (3% with no subscription) of what guests pay online through your acquirer.",
+          "url": "https://vitrina.cafe"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://vitrina.cafe/en/prices/dk",
+        "https://vitrina.cafe"
+      ],
+      "country": "DK"
+    },
+    {
       "name": "SumUp Kvik Order",
       "website": "https://www.sumup.com/da-dk/kvikorder/",
       "stored_id_prefix": null,
@@ -47,5 +181,5 @@
       "check_urls": []
     }
   ],
-  "notes": "DK counts Truckly and NemTakeAway. No third found. SumUp's Danish Kvik Order page is a restaurant online-ordering product with a price (1.25 % per transaction, no fixed cost) but shows no pickup / order-ahead wording; OrderYOYO and OnlinePOS show no price. Others in results: Worldline DK (resells NemTakeAway), Storekit/DISH (no DK prices), Shopify POS / PayPal / myPOS (tills). DK stays at 2."
+  "notes": "Third: Vitrina (stored 2bfa2064, restaurant tool, mine) - its Denmark price page read today: 'Currency of this price list: Danish Krone (DKK).', Start 'kr 289' a month billed monthly (+0.9 %), Express kr 0 + 3 %, 'Prices exclude VAT.' Order-ahead quotes from its main page (compare-research-2). DK counts Truckly and NemTakeAway. Apart from Vitrina, no third found. SumUp's Danish Kvik Order page is a restaurant online-ordering product with a price (1.25 % per transaction, no fixed cost) but shows no pickup / order-ahead wording; OrderYOYO and OnlinePOS show no price. Others in results: Worldline DK (resells NemTakeAway), Storekit/DISH (no DK prices), Shopify POS / PayPal / myPOS (tills). "
 }
