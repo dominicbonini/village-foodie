@@ -133,3 +133,7 @@ None exists that I could find (marketplaces, App Store POS apps, Aldelo without 
 ## NP (Nepal, NPR)
 
 None exists that I could find (NRestro and MeroMenu are table-QR only; others USD or directories). count now: 0
+
+## MN (Mongolia, MNT)
+
+None exists that I could find (Songo.mn / Cookoo-T consumer apps; foreign USD tools; directories). count now: 0
