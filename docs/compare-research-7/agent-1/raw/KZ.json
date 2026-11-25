@@ -2,9 +2,127 @@
   "country": "KZ",
   "researched_on": "2026-11-25",
   "searches": [
-    "Foodsoul OR \"Starter\" платформа сайт и приложение для доставки и самовывоза ресторана Казахстан тариф ₸ в месяц"
+    "Foodsoul OR \"Starter\" платформа сайт и приложение для доставки и самовывоза ресторана Казахстан тариф ₸ в месяц",
+    "Quick Resto Казахстан тарифы тенге модуль доставки самовывоз сайт заказов quickresto.kz"
   ],
   "vendors": [
+    {
+      "name": "Quick Resto",
+      "website": "https://quickresto.kz",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "eligible",
+      "country": "KZ",
+      "reason": "Russian-origin cloud POS with its own Kazakhstan site (quickresto.kz, +7 727, support@quickresto.kz, tenge prices, a Фудтрак business type). Its 'Бустер' option adds a branded guest website and app with pickup ('Сайт Удобное меню, самовывоз и доставка'). Priced in ₸ on its KZ price page. Restaurant/POS tool; order-for-a-time wording only in a customer story.",
+      "eligibility": {
+        "order_quote": "Сайт Удобное меню, самовывоз и доставка привлекают трафик и повышают узнаваемость бренда.",
+        "order_url": "https://quickresto.kz/booster/",
+        "country_quote": "Подробную информацию о каждом тарифе вы можете изучить в таблице . Если останутся вопросы, звоните по номеру +7 727 312 31 99 или пишите на почту support@quickresto.kz .",
+        "country_url": "https://quickresto.kz/price/"
+      },
+      "plans": [
+        {
+          "plan_name": "Старт",
+          "currency": "KZT",
+          "price_major": 25990,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "25 990 ₸ / в месяц, за год 259 900 ₸",
+          "url": "https://quickresto.kz/price/",
+          "note": "Price page text (raw HTML): 'Месяц Год -17% Старт 3% 21 658 ₸ 0 ₸ 25 990 ₸ / в месяц, за год 259 900 ₸'. 25 990 ₸ = monthly billing (21 658 ₸ = per month on the yearly toggle, 259 900 ₸ a year). The plan lists 'Доставка' among its modules. The '3% ... 0 ₸' figures are the Бустер variant (next plan)."
+        },
+        {
+          "plan_name": "Старт + Бустер (guest site and app)",
+          "currency": "KZT",
+          "price_major": 0,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": 3,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "Никакой абонентской платы — при подключении Бустера все модули Quick Resto будут бесплатны.",
+          "url": "https://quickresto.kz/booster/",
+          "note": "Бустер = 'тарифная опция для платформы Quick Resto'; instead of a subscription 'небольшая комиссия с онлайн оборота' - Старт '3% Ежемесячно с онлайн оплат'. The Бустер block on the KZ page shows a minimum commission in rubles ('Минимальная комиссия 15 000 ₽ / мес') - not tenge; reviewer may prefer the 25 990 ₸ subscription figure."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "partial",
+          "quote": "Ускорили выдачу заказов на самовывоз: гости видят время готовности",
+          "url": "https://quickresto.kz/booster/"
+        },
+        {
+          "key": "preorder",
+          "value": "partial",
+          "quote": "40% оборота Do.Bro — навынос: предзаказ становится точкой роста",
+          "url": "https://quickresto.kz/booster/"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "yes",
+          "quote": "Кухонный экран повара Заказ от столика в кухню. Очередь заказов, техкарты к блюдам",
+          "url": "https://quickresto.kz/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "monthly",
+          "value": "yes",
+          "quote": "25 990 ₸ / в месяц, за год 259 900 ₸",
+          "url": "https://quickresto.kz/price/"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "Вместо подписки — небольшая комиссия с онлайн оборота, ниже, чем у агрегаторов доставки.",
+          "url": "https://quickresto.kz/booster/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://quickresto.kz/",
+        "https://quickresto.kz/price/",
+        "https://quickresto.kz/booster/"
+      ],
+      "note": "Pages are very large and the page reader returned nothing; all quotes taken from the raw HTML text (tags stripped). Food-truck page exists (https://quickresto.kz/automation/avtomatizaciya-fudtraka/) - not read, so focus pos."
+    },
     {
       "name": "FoodSoul",
       "website": "https://foodsoul.pro",
@@ -33,5 +151,5 @@
       "check_urls": []
     }
   ],
-  "notes": "KZ counts Poster (joinposter.kz, KZT) only. Earlier rounds rejected Paloma365 (no pickup), Delever (UZS only; re-checked today, see V-Delever.json), 4mobile.me, SmartPikasso, Kaspi Рестораны, Clopos, iiko / Wipon / R-Keeper, Glovo / Wolt / Yandex Eda - not re-read. Vitrina has no KZ price list (V-Vitrina.json). One new search (Russian platforms that sell own-channel sites/apps for delivery and pickup into Kazakhstan: FoodSoul, Starter) - FoodSoul's rates pages are script-rendered (unreadable), Starter shows only rubles/Russia. Nothing eligible; KZ stays at 1. FoodSoul is the one lead worth a browser read (it may have a KZ / tenge option)."
+  "notes": "KZ counts Poster (joinposter.kz, KZT) only. Earlier rounds rejected Paloma365 (no pickup), Delever (UZS only; re-checked today, see V-Delever.json), 4mobile.me, SmartPikasso, Kaspi Рестораны, Clopos, iiko / Wipon / R-Keeper, Glovo / Wolt / Yandex Eda - not re-read. Vitrina has no KZ price list (V-Vitrina.json). One new search (Russian platforms that sell own-channel sites/apps for delivery and pickup into Kazakhstan: FoodSoul, Starter) - FoodSoul's rates pages are script-rendered (unreadable), Starter shows only rubles/Russia. Nothing eligible; KZ stays at 1. FoodSoul is the one lead worth a browser read (it may have a KZ / tenge option). Third pass (regional CIS angle): Quick Resto has its own Kazakhstan site with tenge prices - Старт 25 990 ₸ a month (monthly billing; 259 900 ₸ a year), or 0 ₸ + 3 % of online payments with its Бустер guest site/app ('самовывоз и доставка'). Eligible as a POS/restaurant tool (pickup via its branded site; order-for-a-time only in a customer story). KZ = 2 if accepted (Poster + Quick Resto). Stopped KZ."
 }
