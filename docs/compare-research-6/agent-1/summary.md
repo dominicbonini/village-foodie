@@ -79,3 +79,9 @@ count now: 0
 No vendor opened: three Azerbaijani/Russian searches (özün götür / əvvəlcədən sifariş / предзаказ навынос / manat) gave only Wolt/Bolt, single-restaurant apps and seller ads. Earlier rejects (Clopos, Delever, Dostavka.az) not re-read.
 nothing eligible exists.
 count now: 0
+
+## AM (AMD)
+
+No vendor opened: Armenian/English searches gave single-restaurant apps, Menu.am (marketplace), Dinebook (booking) and Orders.co (US, agent 2's). Earlier rejects not re-read.
+nothing eligible exists.
+count now: 0
