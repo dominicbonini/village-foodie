@@ -216,3 +216,8 @@ count now: 0
 
 FoxiFood, Storekit: not listed. One French search found nothing for Wallis-et-Futuna. nothing eligible exists.
 count now: 0
+
+## SJ
+
+FoxiFood, Storekit: not listed. One search: tourist listings only. nothing eligible exists.
+count now: 0
