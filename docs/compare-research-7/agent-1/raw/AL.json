@@ -1,0 +1,23 @@
+{
+  "country": "AL",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "program POS për bar restorant Shqipëri \"porosi online\" OR \"porositë online\" faqe web marrje çmimi lekë/muaj",
+    "Vlore POS+ online ordering restaurant Albania developer website pricing"
+  ],
+  "vendors": [
+    {
+      "name": "Vlore POS+ (POSPlus World LLC)",
+      "website": "https://apps.apple.com/us/app/vlore-pos/id1639162057",
+      "stored_id_prefix": null,
+      "focus": "pos",
+      "verdict": "not_relevant",
+      "reason": "POS app whose App Store listing mentions 'online ordering management'; seller POSPlus World LLC, no own website found, no Albania presence and no ALL price (the name only echoes the city Vlorë). Not opened.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": []
+    }
+  ],
+  "notes": "AL counts Vitrina (ALL) only. Earlier rounds rejected or saw Storekit (GBP only), FoxiFood (EUR only), easyBar (table QR), doXmenu, logic.al, DISH, Subger, Restaumatic, Zegashop, Hajde POS, E-Table, Foodini/Foodolino/ToGo/EasyMeal-ks, Sigosoft, MENU TIGER (agent 2) - not re-read. Two new Albanian/English searches (POS for bar-restaurant with 'porosi online', lekë/muaj) returned only those dead ends (easybar.al, logic.al Logibar, Hajde POS), Poster (USD, see V-Poster.json), a Mastercard terminal scheme and Vlore POS+ (US seller, no site). Local web agencies with an ordering product and an ALL price: none surfaced in three rounds plus this one. Nothing eligible; AL stays at 1."
+}
