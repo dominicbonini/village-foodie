@@ -1,0 +1,42 @@
+{
+ "country": "AX",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "notes": "compare-territories-1 coordinator: the FI counted competitors, no new reads; evidence from earlier raw files; FoxiFood excluded (its own country list omits AX); Software Food Good excluded from SM/VA (mainland only).",
+ "vendors": [
+  {
+   "name": "Food4you",
+   "website": "https://food4you.fi",
+   "stored_id_prefix": "f6a04474",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "neighbour": "FI",
+   "reason": "serves AX from FI: counted in FI; its own site does not exclude AX (compare-research-7 Block 5)",
+   "eligibility": {
+    "order_quote": "Ennakkoon tilaaminen ja jonoton nouto",
+    "order_url": "https://food4you.fi",
+    "country_quote": "Food4you hyödyntää suomalaista Paytrail maksupalvelua, joka tarjoaa laajan valikoiman maksutapoja.",
+    "country_url": "https://food4you.fi/ukk/"
+   },
+   "plans": [
+    {
+     "plan_name": "Startti",
+     "currency": "EUR",
+     "price_major": 0,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": 3.0,
+     "per_order_fixed_major": null,
+     "setup_major": 490,
+     "quote": "",
+     "url": "https://food4you.fi/#hinnasto",
+     "note": "serves AX from FI (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FI"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://food4you.fi/#hinnasto"
+   ]
+  }
+ ]
+}

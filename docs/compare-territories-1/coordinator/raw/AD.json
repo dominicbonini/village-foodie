@@ -1,0 +1,176 @@
+{
+ "country": "AD",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "notes": "compare-territories-1 coordinator: the ES/FR counted competitors, no new reads; evidence from earlier raw files; FoxiFood excluded (its own country list omits AD); Software Food Good excluded from SM/VA (mainland only).",
+ "vendors": [
+  {
+   "name": "pidopago",
+   "website": "https://pidopago.com",
+   "stored_id_prefix": "51e6b79e",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "neighbour": "ES",
+   "reason": "serves AD from ES: counted in ES; its own site does not exclude AD (compare-research-7 Block 5)",
+   "eligibility": {
+    "order_quote": "Aumenta tu beneficio en cada pedido a domicilio o para recoger en tu restaurante.",
+    "order_url": "https://pidopago.com"
+   },
+   "plans": [
+    {
+     "plan_name": "pidopago (annual)",
+     "currency": "EUR",
+     "price_major": 365,
+     "period": "year",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://pidopago.com/",
+     "note": "serves AD from ES (neighbouring-market rule, Dominic 25 Nov): the plan as counted in ES"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://pidopago.com/"
+   ]
+  },
+  {
+   "name": "Nomad (nomadcaisse.fr)",
+   "website": "https://www.nomadcaisse.fr",
+   "stored_id_prefix": "11e41caa",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "FR",
+   "reason": "serves AD from FR: counted in FR; its own site does not exclude AD (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+    "food_url": "https://www.nomadcaisse.fr",
+    "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+    "order_url": "https://www.nomadcaisse.fr"
+   },
+   "plans": [
+    {
+     "plan_name": "Start",
+     "currency": "EUR",
+     "price_major": 59,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": 250,
+     "quote": "",
+     "url": "https://www.nomadcaisse.fr/#tarifs",
+     "note": "serves AD from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://www.nomadcaisse.fr/#tarifs"
+   ]
+  },
+  {
+   "name": "Place à emporter",
+   "website": "https://placeaemporter.fr",
+   "stored_id_prefix": "0947b3fc",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "FR",
+   "reason": "serves AD from FR: counted in FR; its own site does not exclude AD (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "Food trucks, camions et commerces à emporter",
+    "food_url": "https://placeaemporter.fr",
+    "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+    "order_url": "https://placeaemporter.fr"
+   },
+   "plans": [
+    {
+     "plan_name": "One-off installation (owned site)",
+     "currency": "EUR",
+     "price_major": 2000,
+     "period": "one_off",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://placeaemporter.fr/",
+     "note": "serves AD from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://placeaemporter.fr/"
+   ]
+  },
+  {
+   "name": "Beau Camion",
+   "website": "https://beaucamion.fr",
+   "stored_id_prefix": "640ecd44",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "FR",
+   "reason": "serves AD from FR: counted in FR; its own site does not exclude AD (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+    "food_url": "https://beaucamion.fr/pricing",
+    "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+    "order_url": "https://beaucamion.fr"
+   },
+   "plans": [
+    {
+     "plan_name": "Click & Collect (module)",
+     "currency": "EUR",
+     "price_major": 49,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://beaucamion.fr/pricing",
+     "note": "serves AD from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://beaucamion.fr/pricing"
+   ]
+  },
+  {
+   "name": "Eatch",
+   "website": "https://eatch.app",
+   "stored_id_prefix": "a207b996",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "FR",
+   "reason": "serves AD from FR: counted in FR; its own site does not exclude AD (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+    "food_url": "https://eatch.app",
+    "order_quote": "Commande à l’avance, heure de retrait au choix",
+    "order_url": "https://eatch.app"
+   },
+   "plans": [
+    {
+     "plan_name": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+     "currency": "EUR",
+     "price_major": 89,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://eatch.app/#pricing",
+     "note": "serves AD from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://eatch.app/#pricing"
+   ]
+  }
+ ]
+}

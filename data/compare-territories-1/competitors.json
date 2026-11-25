@@ -1,0 +1,4014 @@
+{
+ "$comment": "compare-territories-1 (25 Nov 2026): competitors read on their OWN websites by three Claude Code agents, one request at a time each (docs/checker-prep-1-report.md; built by docs/compare-territories-1/build.cjs). Imported automatically, once per version of this file, by the first step of the nightly competitor check (lib/data-import/). Every row source research, UNVERIFIED (35.an-1). Each answer carries the vendor’s verbatim quote and its page (35.an-4); \"no\" only with a quote saying it is not offered, silence is not_mentioned (35.ao-7). monthly_minor is MINOR units, converted from the page’s amount with lib/money-format.ts toMinorUnits (the 100× guard). request_check sets check_requested_at. \"evidence\" and \"not_relevant\" are for the reviewer; the import does not read them (the importer cannot mark a competitor not relevant).",
+ "id": "compare-territories-1",
+ "checked_on": "2026-11-25",
+ "competitors": [
+  {
+   "id": "51e6b79e-8e7c-5c37-961e-766db5e2bfe6",
+   "name": "pidopago",
+   "website": "https://pidopago.com",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: AD.",
+   "check_urls": [
+    "https://pidopago.com/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Aumenta tu beneficio en cada pedido a domicilio o para recoger en tu restaurante.",
+     "source_url": "https://pidopago.com",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "name": "Nomad (nomadcaisse.fr)",
+   "website": "https://www.nomadcaisse.fr",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: AD, BL, GF, GP, MF, MQ, PM, RE, YT.",
+   "check_urls": [
+    "https://www.nomadcaisse.fr/#tarifs"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+     "source_url": "https://www.nomadcaisse.fr",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "name": "Place à emporter",
+   "website": "https://placeaemporter.fr",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: AD, BL, GF, GP, MF, MQ, PM, RE, YT.",
+   "check_urls": [
+    "https://placeaemporter.fr/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+     "source_url": "https://placeaemporter.fr",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "name": "Beau Camion",
+   "website": "https://beaucamion.fr",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: AD, BL, GF, GP, MF, MQ, PM, RE, YT.",
+   "check_urls": [
+    "https://beaucamion.fr/pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+     "source_url": "https://beaucamion.fr",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "name": "Eatch",
+   "website": "https://eatch.app",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: AD, BL, GF, GP, MF, MQ, PM, RE, YT.",
+   "check_urls": [
+    "https://eatch.app/#pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Commande à l’avance, heure de retrait au choix",
+     "source_url": "https://eatch.app",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "f6a04474-ebdc-5a08-bd4f-bfaaa4eed0b5",
+   "name": "Food4you",
+   "website": "https://food4you.fi",
+   "focus": "nearest_local",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: AX.",
+   "check_urls": [
+    "https://food4you.fi/#hinnasto"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Ennakkoon tilaaminen ja jonoton nouto",
+     "source_url": "https://food4you.fi",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+   "name": "Ordea",
+   "website": "https://www.ordea.uk",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: GG, IM, JE.",
+   "check_urls": [
+    "https://www.ordea.uk/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Let customers order from their phone before they reach your window.",
+     "source_url": "https://www.ordea.uk/food-trucks",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "aed7bf67-c977-5bc8-993d-ca74485e3939",
+   "name": "Order Tiger",
+   "website": "https://www.ordertiger.com",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: GG, IM, JE.",
+   "check_urls": [
+    "https://www.ordertiger.com/online-ordering-system-pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+     "source_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "c71ae83d-0a37-5974-9532-3fc74a5adc79",
+   "name": "Perkss",
+   "website": "https://perkss.co.uk",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: GG, IM, JE.",
+   "check_urls": [
+    "https://perkss.co.uk/pricing/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Yes. Pre-ordering helps reduce waiting.",
+     "source_url": "https://perkss.co.uk/food-truck-management-system/",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "b32f19c9-993d-5b51-8f7f-6a174e6f0ab2",
+   "name": "Grafterr",
+   "website": "https://www.grafterr.com",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: GG, IM, JE.",
+   "check_urls": [
+    "https://www.grafterr.com/uk/epos-pricing"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "if enabled, this can be used to specify Collection or Delivery Timeslots for same-day orders.",
+     "source_url": "https://www.grafterr.com/gb/grafterr_academy/topic/Pre-Order-Settings",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "b6a1a595-48be-5eba-a0d4-0efc637f1ef6",
+   "name": "Qromo",
+   "website": "https://qromo.it",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: SM, VA.",
+   "check_urls": [
+    "https://qromo.it/prezzi/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "configuri orari e ritiri programmati",
+     "source_url": "https://qromo.it/software-gestionale-per-pizzerie/",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "b70bbf5e-d3fd-4aa0-9871-939ff0e9fe40",
+   "name": "MenuForma",
+   "website": "https://menuforma.com",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: SM, VA.",
+   "check_urls": [
+    "https://menuforma.com/it"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Accetta ordini con consegna, ritiro, asporto e consumo sul posto direttamente dal tuo menu digitale e QR code menu.",
+     "source_url": "https://menuforma.com/it",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  },
+  {
+   "id": "5f28f634-cde0-4853-81a9-40e4521a7796",
+   "name": "Tilby",
+   "website": "https://tilby.com",
+   "focus": "food_truck",
+   "lifecycle": "active",
+   "payment_providers": null,
+   "features_checked_on": "2026-11-25",
+   "features_verified_at": null,
+   "notes": "compare-territories-1 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: SM, VA.",
+   "check_urls": [
+    "https://tilby.com/it/settori/app-cassa-foodtruck/"
+   ],
+   "request_check": true,
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "raccogli e organizza gli ordini per consegna a domicilio e asporto",
+     "source_url": "https://tilby.com/it/strumenti-di-vendita/app-ordinazione/",
+     "note": "online ordering ahead of collection (the eligibility evidence); a chosen time is not stated"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "set_focus": true
+  }
+ ],
+ "plans": [
+  {
+   "id": "677beb84-2d24-52d4-9c9b-581c3897e4da",
+   "competitor_id": "51e6b79e-8e7c-5c37-961e-766db5e2bfe6",
+   "country_code": "AD",
+   "plan_name": "pidopago (annual)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 3042,
+   "monthly_major": 30.416666666666668,
+   "yearly_only": true,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://pidopago.com/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves AD from ES (neighbouring-market rule, Dominic 25 Nov): \"\" (yearly price ÷ 12) — serves AD from ES (neighbouring-market rule, Dominic 25 Nov): the plan as counted in ES"
+  },
+  {
+   "id": "004e2e67-3d0c-519e-90b9-b1cc5112513f",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "country_code": "AD",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 25000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.nomadcaisse.fr/#tarifs",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves AD from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves AD from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "5c95f71a-5642-5147-9ede-9f05eef3f4f0",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "country_code": "BL",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 25000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.nomadcaisse.fr/#tarifs",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves BL from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves BL from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "d3a6b714-bbd5-575d-8b11-f3ebb60f3936",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "country_code": "GF",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 25000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.nomadcaisse.fr/#tarifs",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GF from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves GF from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "a31ce162-57d3-5c17-aea9-00ea2c0c9905",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "country_code": "GP",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 25000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.nomadcaisse.fr/#tarifs",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GP from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves GP from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "62a78b7c-0dcc-574f-8c40-58a1bc94a212",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "country_code": "MF",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 25000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.nomadcaisse.fr/#tarifs",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves MF from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves MF from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "7bde75a8-3d12-53c0-924d-9fa8fbfa519d",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "country_code": "MQ",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 25000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.nomadcaisse.fr/#tarifs",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves MQ from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves MQ from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "22f92534-f8e7-50b7-87c6-7860052c4748",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "country_code": "PM",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 25000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.nomadcaisse.fr/#tarifs",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves PM from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves PM from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "74496da5-8bbf-5a82-bf99-f6815a39518c",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "country_code": "RE",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 25000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.nomadcaisse.fr/#tarifs",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves RE from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves RE from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "fdf29bff-cac4-5fcf-858b-0e7fd7c1f3b6",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "country_code": "YT",
+   "plan_name": "Start",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 25000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.nomadcaisse.fr/#tarifs",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves YT from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves YT from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "548b6516-f0ae-5897-9844-aeaddc27e544",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "country_code": "AD",
+   "plan_name": "One-off installation (owned site)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 200000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://placeaemporter.fr/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves AD from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — one-off price 2000 EUR, no subscription; serves AD from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "524f65dd-d527-5db1-b175-d207c4fa089c",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "country_code": "BL",
+   "plan_name": "One-off installation (owned site)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 200000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://placeaemporter.fr/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves BL from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — one-off price 2000 EUR, no subscription; serves BL from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "bf7c0aa0-f3f9-5981-861e-85ba4476dfe4",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "country_code": "GF",
+   "plan_name": "One-off installation (owned site)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 200000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://placeaemporter.fr/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GF from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — one-off price 2000 EUR, no subscription; serves GF from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "c8b27eea-c281-579f-950f-d2a001f582c1",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "country_code": "GP",
+   "plan_name": "One-off installation (owned site)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 200000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://placeaemporter.fr/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GP from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — one-off price 2000 EUR, no subscription; serves GP from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "07460124-6333-5b8e-a2ec-17e072db7985",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "country_code": "MF",
+   "plan_name": "One-off installation (owned site)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 200000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://placeaemporter.fr/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves MF from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — one-off price 2000 EUR, no subscription; serves MF from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "01b94921-1127-57bb-93d4-59a9bb5fc971",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "country_code": "MQ",
+   "plan_name": "One-off installation (owned site)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 200000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://placeaemporter.fr/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves MQ from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — one-off price 2000 EUR, no subscription; serves MQ from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "332b6c10-e750-5961-801f-21cc3ba4cf5c",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "country_code": "PM",
+   "plan_name": "One-off installation (owned site)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 200000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://placeaemporter.fr/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves PM from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — one-off price 2000 EUR, no subscription; serves PM from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "e2096e25-1018-5112-9a73-9eb5fbc18e84",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "country_code": "RE",
+   "plan_name": "One-off installation (owned site)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 200000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://placeaemporter.fr/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves RE from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — one-off price 2000 EUR, no subscription; serves RE from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "b9ac056e-1d75-5ac2-bf33-98610735a33f",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "country_code": "YT",
+   "plan_name": "One-off installation (owned site)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 200000,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://placeaemporter.fr/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves YT from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — one-off price 2000 EUR, no subscription; serves YT from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "dbf3843c-c001-598f-9445-d7bf9c3348ff",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "country_code": "AD",
+   "plan_name": "Click & Collect (module)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 4900,
+   "monthly_major": 49,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://beaucamion.fr/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves AD from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves AD from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "36ee7ecc-b0ea-506e-a36a-fe8afc03c5ac",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "country_code": "BL",
+   "plan_name": "Click & Collect (module)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 4900,
+   "monthly_major": 49,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://beaucamion.fr/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves BL from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves BL from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "72ccb8f5-4774-5845-bb51-317657c1b9e4",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "country_code": "GF",
+   "plan_name": "Click & Collect (module)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 4900,
+   "monthly_major": 49,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://beaucamion.fr/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GF from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves GF from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "d2796c21-f167-524f-9d51-63f2ef281303",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "country_code": "GP",
+   "plan_name": "Click & Collect (module)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 4900,
+   "monthly_major": 49,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://beaucamion.fr/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GP from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves GP from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "f4f2f599-3cbe-508b-8ef3-c61164df335d",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "country_code": "MF",
+   "plan_name": "Click & Collect (module)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 4900,
+   "monthly_major": 49,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://beaucamion.fr/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves MF from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves MF from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "e5ae1f6d-fb5a-5c3f-824a-64d46a956af5",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "country_code": "MQ",
+   "plan_name": "Click & Collect (module)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 4900,
+   "monthly_major": 49,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://beaucamion.fr/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves MQ from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves MQ from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "9604551d-013f-5366-8dba-d63e31869fa1",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "country_code": "PM",
+   "plan_name": "Click & Collect (module)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 4900,
+   "monthly_major": 49,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://beaucamion.fr/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves PM from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves PM from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "c5eab457-01f2-57b3-8980-2a9a38684255",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "country_code": "RE",
+   "plan_name": "Click & Collect (module)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 4900,
+   "monthly_major": 49,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://beaucamion.fr/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves RE from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves RE from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "7eb4525d-8205-50b9-aa31-58d012bdcc35",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "country_code": "YT",
+   "plan_name": "Click & Collect (module)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 4900,
+   "monthly_major": 49,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://beaucamion.fr/pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves YT from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves YT from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "79b62b01-3256-5933-83db-d11f7c826971",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "country_code": "AD",
+   "plan_name": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 8900,
+   "monthly_major": 89,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://eatch.app/#pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves AD from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves AD from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "07ac4033-db9d-5725-b2a1-cd3d4e6ae605",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "country_code": "BL",
+   "plan_name": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 8900,
+   "monthly_major": 89,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://eatch.app/#pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves BL from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves BL from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "6bf2df9c-c87c-5255-91c4-7503017ff100",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "country_code": "GF",
+   "plan_name": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 8900,
+   "monthly_major": 89,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://eatch.app/#pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GF from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves GF from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "2b3efdab-11c8-5a74-adb3-9cf84ba84c1c",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "country_code": "GP",
+   "plan_name": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 8900,
+   "monthly_major": 89,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://eatch.app/#pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GP from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves GP from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "b1988b4f-5e45-5b66-b67b-7d6994e19173",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "country_code": "MF",
+   "plan_name": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 8900,
+   "monthly_major": 89,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://eatch.app/#pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves MF from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves MF from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "c531f040-a7df-5df5-b86e-2c6f913d845c",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "country_code": "MQ",
+   "plan_name": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 8900,
+   "monthly_major": 89,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://eatch.app/#pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves MQ from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves MQ from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "ae7b829a-c2fa-543e-8a4a-09674181fba5",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "country_code": "PM",
+   "plan_name": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 8900,
+   "monthly_major": 89,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://eatch.app/#pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves PM from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves PM from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "873c1bec-d81a-5571-b19a-55186e1e4182",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "country_code": "RE",
+   "plan_name": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 8900,
+   "monthly_major": 89,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://eatch.app/#pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves RE from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves RE from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "cd5a46c1-794a-5266-9afa-39fc06649a73",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "country_code": "YT",
+   "plan_name": "Standard (all-in-one: site, app, NF525 till, click & collect)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 8900,
+   "monthly_major": 89,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://eatch.app/#pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves YT from FR (neighbouring-market rule, Dominic 25 Nov): \"\" — serves YT from FR (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FR"
+  },
+  {
+   "id": "803c6f0f-3d90-5b50-98c0-3a9816ee32fa",
+   "competitor_id": "f6a04474-ebdc-5a08-bd4f-bfaaa4eed0b5",
+   "country_code": "AX",
+   "plan_name": "Startti",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 49000,
+   "truck_fee_bps": 300,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://food4you.fi/#hinnasto",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves AX from FI (neighbouring-market rule, Dominic 25 Nov): \"\" — serves AX from FI (neighbouring-market rule, Dominic 25 Nov): the plan as counted in FI"
+  },
+  {
+   "id": "9d3bf350-51b1-5335-b3e0-428e914cfb67",
+   "competitor_id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+   "country_code": "GG",
+   "plan_name": "Free",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 300,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.ordea.uk/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GG from GB (neighbouring-market rule, Dominic 25 Nov): \"\" — serves GG from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "dec5a5b4-a105-5289-95a5-3fa4197ebd0d",
+   "competitor_id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+   "country_code": "IM",
+   "plan_name": "Free",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 300,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.ordea.uk/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves IM from GB (neighbouring-market rule, Dominic 25 Nov): \"\" — serves IM from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "4ad89085-9c46-5748-af99-671497a4fb76",
+   "competitor_id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+   "country_code": "JE",
+   "plan_name": "Free",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 0,
+   "monthly_major": 0,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 300,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.ordea.uk/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves JE from GB (neighbouring-market rule, Dominic 25 Nov): \"\" — serves JE from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "028aad3b-1299-5294-a4cb-6de4b5a0c5a6",
+   "competitor_id": "aed7bf67-c977-5bc8-993d-ca74485e3939",
+   "country_code": "GG",
+   "plan_name": "Online Ordering",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.ordertiger.com/online-ordering-system-pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GG from GB (neighbouring-market rule, Dominic 25 Nov): \"\" — serves GG from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "3d104e7c-f507-535b-b5ac-629240dc3bed",
+   "competitor_id": "aed7bf67-c977-5bc8-993d-ca74485e3939",
+   "country_code": "IM",
+   "plan_name": "Online Ordering",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.ordertiger.com/online-ordering-system-pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves IM from GB (neighbouring-market rule, Dominic 25 Nov): \"\" — serves IM from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "fff83569-a4ea-5379-81d0-9ccdad9aa26f",
+   "competitor_id": "aed7bf67-c977-5bc8-993d-ca74485e3939",
+   "country_code": "JE",
+   "plan_name": "Online Ordering",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.ordertiger.com/online-ordering-system-pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves JE from GB (neighbouring-market rule, Dominic 25 Nov): \"\" — serves JE from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "946a4df7-bfae-5014-8996-cbb8464053db",
+   "competitor_id": "c71ae83d-0a37-5974-9532-3fc74a5adc79",
+   "country_code": "GG",
+   "plan_name": "Essential (weekly billing)",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 5417,
+   "monthly_major": 54.17,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://perkss.co.uk/pricing/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GG from GB (neighbouring-market rule, Dominic 25 Nov): \"\" (priced per week: 12.5 GBP a week × 52 ÷ 12 — an estimate, so marked unclear) — serves GG from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "2b17414a-6eda-5d3e-899d-8d63559571fb",
+   "competitor_id": "c71ae83d-0a37-5974-9532-3fc74a5adc79",
+   "country_code": "IM",
+   "plan_name": "Essential (weekly billing)",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 5417,
+   "monthly_major": 54.17,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://perkss.co.uk/pricing/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves IM from GB (neighbouring-market rule, Dominic 25 Nov): \"\" (priced per week: 12.5 GBP a week × 52 ÷ 12 — an estimate, so marked unclear) — serves IM from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "e0ef7f22-0ac0-57be-8bc6-2ad76ff1aee7",
+   "competitor_id": "c71ae83d-0a37-5974-9532-3fc74a5adc79",
+   "country_code": "JE",
+   "plan_name": "Essential (weekly billing)",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 5417,
+   "monthly_major": 54.17,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": true,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://perkss.co.uk/pricing/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves JE from GB (neighbouring-market rule, Dominic 25 Nov): \"\" (priced per week: 12.5 GBP a week × 52 ÷ 12 — an estimate, so marked unclear) — serves JE from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "0e7b208a-2fbc-54de-96c6-5a4347f5355c",
+   "competitor_id": "b32f19c9-993d-5b51-8f7f-6a174e6f0ab2",
+   "country_code": "GG",
+   "plan_name": "Standard",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 5500,
+   "monthly_major": 55,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.grafterr.com/uk/epos-pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves GG from GB (neighbouring-market rule, Dominic 25 Nov): \"\" — serves GG from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "d1b6cdb2-5769-57ee-a76f-e4938637d24d",
+   "competitor_id": "b32f19c9-993d-5b51-8f7f-6a174e6f0ab2",
+   "country_code": "IM",
+   "plan_name": "Standard",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 5500,
+   "monthly_major": 55,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.grafterr.com/uk/epos-pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves IM from GB (neighbouring-market rule, Dominic 25 Nov): \"\" — serves IM from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "c489d444-3458-5c2c-9831-3a840fcea458",
+   "competitor_id": "b32f19c9-993d-5b51-8f7f-6a174e6f0ab2",
+   "country_code": "JE",
+   "plan_name": "Standard",
+   "currency": "GBP",
+   "price_hidden": false,
+   "monthly_minor": 5500,
+   "monthly_major": 55,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://www.grafterr.com/uk/epos-pricing",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves JE from GB (neighbouring-market rule, Dominic 25 Nov): \"\" — serves JE from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+  },
+  {
+   "id": "7fe8ff82-4a63-5bf6-9aae-b01d59802d85",
+   "competitor_id": "b6a1a595-48be-5eba-a0d4-0efc637f1ef6",
+   "country_code": "SM",
+   "plan_name": "Pro",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://qromo.it/prezzi/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves SM from IT (neighbouring-market rule, Dominic 25 Nov): \"\" — serves SM from IT (neighbouring-market rule, Dominic 25 Nov): the plan as counted in IT"
+  },
+  {
+   "id": "8f09c2a5-7c93-5f7d-8d6b-a6c46fccba97",
+   "competitor_id": "b6a1a595-48be-5eba-a0d4-0efc637f1ef6",
+   "country_code": "VA",
+   "plan_name": "Pro",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 5900,
+   "monthly_major": 59,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://qromo.it/prezzi/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves VA from IT (neighbouring-market rule, Dominic 25 Nov): \"\" — serves VA from IT (neighbouring-market rule, Dominic 25 Nov): the plan as counted in IT"
+  },
+  {
+   "id": "3ff09432-cf9d-518d-8104-22279ab93f14",
+   "competitor_id": "b70bbf5e-d3fd-4aa0-9871-939ff0e9fe40",
+   "country_code": "SM",
+   "plan_name": "Regolare",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 899,
+   "monthly_major": 8.99,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://menuforma.com/it",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves SM from IT (neighbouring-market rule, Dominic 25 Nov): \"\" — serves SM from IT (neighbouring-market rule, Dominic 25 Nov): the plan as counted in IT"
+  },
+  {
+   "id": "82aaf11a-7132-5b05-b9ef-412da1471f86",
+   "competitor_id": "b70bbf5e-d3fd-4aa0-9871-939ff0e9fe40",
+   "country_code": "VA",
+   "plan_name": "Regolare",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 899,
+   "monthly_major": 8.99,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "unknown",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://menuforma.com/it",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves VA from IT (neighbouring-market rule, Dominic 25 Nov): \"\" — serves VA from IT (neighbouring-market rule, Dominic 25 Nov): the plan as counted in IT"
+  },
+  {
+   "id": "c8da36fe-7bdb-5bbf-87bc-402f99c60669",
+   "competitor_id": "5f28f634-cde0-4853-81a9-40e4521a7796",
+   "country_code": "SM",
+   "plan_name": "Food truck till (from)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 3500,
+   "monthly_major": 35,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://tilby.com/it/settori/app-cassa-foodtruck/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves SM from IT (neighbouring-market rule, Dominic 25 Nov): \"\" — serves SM from IT (neighbouring-market rule, Dominic 25 Nov): the plan as counted in IT"
+  },
+  {
+   "id": "fdbe853e-b135-557e-9df9-34957f604c1f",
+   "competitor_id": "5f28f634-cde0-4853-81a9-40e4521a7796",
+   "country_code": "VA",
+   "plan_name": "Food truck till (from)",
+   "currency": "EUR",
+   "price_hidden": false,
+   "monthly_minor": 3500,
+   "monthly_major": 35,
+   "yearly_only": false,
+   "setup_minor": 0,
+   "truck_fee_bps": 0,
+   "truck_fee_fixed_minor": 0,
+   "customer_fee_bps": 0,
+   "customer_fee_fixed_minor": 0,
+   "card_mode": "unknown",
+   "card_bps": null,
+   "card_fixed_minor": null,
+   "card_rate_assumed": false,
+   "order_cap": null,
+   "included_orders": null,
+   "overage_fixed_minor": null,
+   "vat": "excl",
+   "status": "counted",
+   "unclear": false,
+   "second_hand": false,
+   "source": "research",
+   "source_url": "https://tilby.com/it/settori/app-cassa-foodtruck/",
+   "checked_on": "2026-11-25",
+   "verified_at": null,
+   "verified_by": null,
+   "notes": "compare-territories-1, 25 Nov 2026 — serves VA from IT (neighbouring-market rule, Dominic 25 Nov): \"\" — serves VA from IT (neighbouring-market rule, Dominic 25 Nov): the plan as counted in IT"
+  }
+ ],
+ "entries": [
+  {
+   "id": "09d548ff-0740-57dc-b086-47873ec7a82c",
+   "country_code": "AD",
+   "competitor_id": "51e6b79e-8e7c-5c37-961e-766db5e2bfe6",
+   "primary_plan_id": "677beb84-2d24-52d4-9c9b-581c3897e4da",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "f8e4ca51-44c5-5bc6-acab-5d79c3a76e0c",
+   "country_code": "AD",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "primary_plan_id": "004e2e67-3d0c-519e-90b9-b1cc5112513f",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "b2d9dfa7-ad4d-5810-9937-cb2e54ffd364",
+   "country_code": "BL",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "primary_plan_id": "5c95f71a-5642-5147-9ede-9f05eef3f4f0",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "1d96b228-4454-5744-842b-f023e5f302c8",
+   "country_code": "GF",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "primary_plan_id": "d3a6b714-bbd5-575d-8b11-f3ebb60f3936",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "8b4e963a-ea76-5b9e-b4e5-5134011689fa",
+   "country_code": "GP",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "primary_plan_id": "a31ce162-57d3-5c17-aea9-00ea2c0c9905",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "2f105308-14bf-5cbd-9677-e26620e5dcec",
+   "country_code": "MF",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "primary_plan_id": "62a78b7c-0dcc-574f-8c40-58a1bc94a212",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "9a6c7171-abdf-5006-8232-44a7567a431d",
+   "country_code": "MQ",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "primary_plan_id": "7bde75a8-3d12-53c0-924d-9fa8fbfa519d",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "725757f5-f1bc-57ba-84eb-689564856eb5",
+   "country_code": "PM",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "primary_plan_id": "22f92534-f8e7-50b7-87c6-7860052c4748",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "358b6ae8-6c83-598f-a66e-dce435a6b6e8",
+   "country_code": "RE",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "primary_plan_id": "74496da5-8bbf-5a82-bf99-f6815a39518c",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "e90e49e8-059d-5cb5-b597-c969477469d7",
+   "country_code": "YT",
+   "competitor_id": "11e41caa-49c2-5b93-b1c5-b2891184e9c1",
+   "primary_plan_id": "fdf29bff-cac4-5fcf-858b-0e7fd7c1f3b6",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "032af1ba-c298-53a0-9483-4fbea64e7b41",
+   "country_code": "AD",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "primary_plan_id": "548b6516-f0ae-5897-9844-aeaddc27e544",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "876abaf3-7888-5ae5-bd09-e7ad5b7dce6f",
+   "country_code": "BL",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "primary_plan_id": "524f65dd-d527-5db1-b175-d207c4fa089c",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "920e37d6-5025-506d-9494-97c2ebef0e81",
+   "country_code": "GF",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "primary_plan_id": "bf7c0aa0-f3f9-5981-861e-85ba4476dfe4",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "720f908e-d775-5c46-9044-7ac63732ac29",
+   "country_code": "GP",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "primary_plan_id": "c8b27eea-c281-579f-950f-d2a001f582c1",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "540161be-81c1-535d-9a53-009b96c36101",
+   "country_code": "MF",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "primary_plan_id": "07460124-6333-5b8e-a2ec-17e072db7985",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "a52373f9-a09c-5007-b64f-fa0e427d7a7b",
+   "country_code": "MQ",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "primary_plan_id": "01b94921-1127-57bb-93d4-59a9bb5fc971",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "cfcd2de5-7801-57da-8145-93575f9e1203",
+   "country_code": "PM",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "primary_plan_id": "332b6c10-e750-5961-801f-21cc3ba4cf5c",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "64160eb0-319c-5a94-a55b-4fbf2260b6e7",
+   "country_code": "RE",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "primary_plan_id": "e2096e25-1018-5112-9a73-9eb5fbc18e84",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "16475339-0992-5bdc-a136-b5b47b8cfdab",
+   "country_code": "YT",
+   "competitor_id": "0947b3fc-2dfa-56e4-a50b-0100950bd499",
+   "primary_plan_id": "b9ac056e-1d75-5ac2-bf33-98610735a33f",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "3311a594-42cc-5629-8b51-3ca26578f8f0",
+   "country_code": "AD",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "primary_plan_id": "dbf3843c-c001-598f-9445-d7bf9c3348ff",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "6be1244d-4fac-50a8-9c83-6c647b6dbed8",
+   "country_code": "BL",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "primary_plan_id": "36ee7ecc-b0ea-506e-a36a-fe8afc03c5ac",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "fb7ab2fb-e7be-55bd-98bf-69a58e7cf19e",
+   "country_code": "GF",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "primary_plan_id": "72ccb8f5-4774-5845-bb51-317657c1b9e4",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "4d12c155-36d4-5bfe-8dae-61f0bb67e358",
+   "country_code": "GP",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "primary_plan_id": "d2796c21-f167-524f-9d51-63f2ef281303",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "1027b774-a9de-5967-8547-f9cdcc398d19",
+   "country_code": "MF",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "primary_plan_id": "f4f2f599-3cbe-508b-8ef3-c61164df335d",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "fa71bc7b-009d-5c02-98ca-c68587cd1f75",
+   "country_code": "MQ",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "primary_plan_id": "e5ae1f6d-fb5a-5c3f-824a-64d46a956af5",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "f705b88b-1f8f-523e-8ea0-f198dc472db5",
+   "country_code": "PM",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "primary_plan_id": "9604551d-013f-5366-8dba-d63e31869fa1",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "08200b85-272d-55b4-a1da-06b20f28a100",
+   "country_code": "RE",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "primary_plan_id": "c5eab457-01f2-57b3-8980-2a9a38684255",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "b3049e10-4bc3-5961-acf1-38cb642575e3",
+   "country_code": "YT",
+   "competitor_id": "640ecd44-a750-5d45-9802-ed29a1f280b6",
+   "primary_plan_id": "7eb4525d-8205-50b9-aa31-58d012bdcc35",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "5ea650f5-1e08-5a59-a0db-593734a62f00",
+   "country_code": "AD",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "primary_plan_id": "79b62b01-3256-5933-83db-d11f7c826971",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "75003ff9-c709-5e52-bcba-270c80002f49",
+   "country_code": "BL",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "primary_plan_id": "07ac4033-db9d-5725-b2a1-cd3d4e6ae605",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "4949cc60-1012-5838-bf45-ffc074dcd28c",
+   "country_code": "GF",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "primary_plan_id": "6bf2df9c-c87c-5255-91c4-7503017ff100",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "bf2982f4-4aea-598a-8d8b-b8f699898d7f",
+   "country_code": "GP",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "primary_plan_id": "2b3efdab-11c8-5a74-adb3-9cf84ba84c1c",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "c271c4d0-68ef-5831-b977-54ac22283455",
+   "country_code": "MF",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "primary_plan_id": "b1988b4f-5e45-5b66-b67b-7d6994e19173",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "7e1bdb52-858a-5d02-a529-48d644f34d7c",
+   "country_code": "MQ",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "primary_plan_id": "c531f040-a7df-5df5-b86e-2c6f913d845c",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "8a51cb3b-85dd-5213-a1b0-e9ed68bdd08e",
+   "country_code": "PM",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "primary_plan_id": "ae7b829a-c2fa-543e-8a4a-09674181fba5",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "21443441-84b2-51fe-a957-0b1fa0ce2d37",
+   "country_code": "RE",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "primary_plan_id": "873c1bec-d81a-5571-b19a-55186e1e4182",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "3116985b-4e0e-54e4-a5df-4e7e1294e3d1",
+   "country_code": "YT",
+   "competitor_id": "a207b996-9a0b-57a5-a09d-9c8860796a57",
+   "primary_plan_id": "cd5a46c1-794a-5266-9afa-39fc06649a73",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "87ad426c-c3f9-5f2a-8c94-e37bdaee0cf0",
+   "country_code": "AX",
+   "competitor_id": "f6a04474-ebdc-5a08-bd4f-bfaaa4eed0b5",
+   "primary_plan_id": "803c6f0f-3d90-5b50-98c0-3a9816ee32fa",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "eeda2419-025b-5098-a591-0f2113c3caf6",
+   "country_code": "GG",
+   "competitor_id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+   "primary_plan_id": "9d3bf350-51b1-5335-b3e0-428e914cfb67",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "32b68066-5c5f-588f-8295-9378a9091128",
+   "country_code": "IM",
+   "competitor_id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+   "primary_plan_id": "dec5a5b4-a105-5289-95a5-3fa4197ebd0d",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "b93c19da-b7cd-569f-a4f4-001a589a1806",
+   "country_code": "JE",
+   "competitor_id": "6dc60fd2-8095-5dcb-8408-35993d5c0ef5",
+   "primary_plan_id": "4ad89085-9c46-5748-af99-671497a4fb76",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "caff0e14-eca5-5369-9431-fcbca6d3c637",
+   "country_code": "GG",
+   "competitor_id": "aed7bf67-c977-5bc8-993d-ca74485e3939",
+   "primary_plan_id": "028aad3b-1299-5294-a4cb-6de4b5a0c5a6",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "1471d4ce-fb43-55ad-9602-9e1da3280896",
+   "country_code": "IM",
+   "competitor_id": "aed7bf67-c977-5bc8-993d-ca74485e3939",
+   "primary_plan_id": "3d104e7c-f507-535b-b5ac-629240dc3bed",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "4631a543-200f-5566-aae6-4fa6934498c0",
+   "country_code": "JE",
+   "competitor_id": "aed7bf67-c977-5bc8-993d-ca74485e3939",
+   "primary_plan_id": "fff83569-a4ea-5379-81d0-9ccdad9aa26f",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "73b1b5f6-0dee-5b4d-b27c-3b3044cb6f8b",
+   "country_code": "GG",
+   "competitor_id": "c71ae83d-0a37-5974-9532-3fc74a5adc79",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "b1b483e5-b2c6-5dd5-8d8a-b01ecfba4dd0",
+   "country_code": "IM",
+   "competitor_id": "c71ae83d-0a37-5974-9532-3fc74a5adc79",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "6b54506d-58ef-5683-b23f-5ecbd4cebbf2",
+   "country_code": "JE",
+   "competitor_id": "c71ae83d-0a37-5974-9532-3fc74a5adc79",
+   "primary_plan_id": null,
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "0b23cac7-98df-50b7-8c36-f4dab34a977b",
+   "country_code": "GG",
+   "competitor_id": "b32f19c9-993d-5b51-8f7f-6a174e6f0ab2",
+   "primary_plan_id": "0e7b208a-2fbc-54de-96c6-5a4347f5355c",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "dba643b2-9982-5992-adbe-ed476626b03b",
+   "country_code": "IM",
+   "competitor_id": "b32f19c9-993d-5b51-8f7f-6a174e6f0ab2",
+   "primary_plan_id": "d1b6cdb2-5769-57ee-a76f-e4938637d24d",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "8189b852-aee9-5f87-877b-36cdb1d0c4ec",
+   "country_code": "JE",
+   "competitor_id": "b32f19c9-993d-5b51-8f7f-6a174e6f0ab2",
+   "primary_plan_id": "c489d444-3458-5c2c-9831-3a840fcea458",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "f1103ff9-09a8-553b-ae0f-0ca8cc30da65",
+   "country_code": "SM",
+   "competitor_id": "b6a1a595-48be-5eba-a0d4-0efc637f1ef6",
+   "primary_plan_id": "7fe8ff82-4a63-5bf6-9aae-b01d59802d85",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "cde5b97b-158a-5916-9592-fbb571e0f62c",
+   "country_code": "VA",
+   "competitor_id": "b6a1a595-48be-5eba-a0d4-0efc637f1ef6",
+   "primary_plan_id": "8f09c2a5-7c93-5f7d-8d6b-a6c46fccba97",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "c241b376-fa2c-5270-9ec3-07751274f327",
+   "country_code": "SM",
+   "competitor_id": "b70bbf5e-d3fd-4aa0-9871-939ff0e9fe40",
+   "primary_plan_id": "3ff09432-cf9d-518d-8104-22279ab93f14",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "c677563b-1ece-5ea3-92d0-d8d0211e8d9b",
+   "country_code": "VA",
+   "competitor_id": "b70bbf5e-d3fd-4aa0-9871-939ff0e9fe40",
+   "primary_plan_id": "82aaf11a-7132-5b05-b9ef-412da1471f86",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "77def174-b1a2-51ee-a449-8eb67b74eca3",
+   "country_code": "SM",
+   "competitor_id": "5f28f634-cde0-4853-81a9-40e4521a7796",
+   "primary_plan_id": "c8da36fe-7bdb-5bbf-87bc-402f99c60669",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  },
+  {
+   "id": "8e0e65fc-0d2e-5a9e-98ad-a4f48c8dd803",
+   "country_code": "VA",
+   "competitor_id": "5f28f634-cde0-4853-81a9-40e4521a7796",
+   "primary_plan_id": "fdbe853e-b135-557e-9df9-34957f604c1f",
+   "choose_when": null,
+   "sort_order": 50,
+   "verified_at": null,
+   "verified_by": null
+  }
+ ],
+ "evidence": [
+  {
+   "name": "pidopago",
+   "evidence": [
+    {
+     "country": "AD",
+     "order_quote": "Aumenta tu beneficio en cada pedido a domicilio o para recoger en tu restaurante.",
+     "order_url": "https://pidopago.com",
+     "reason": "serves AD from ES: counted in ES; its own site does not exclude AD (compare-research-7 Block 5)",
+     "neighbour": "ES"
+    }
+   ]
+  },
+  {
+   "name": "Nomad (nomadcaisse.fr)",
+   "evidence": [
+    {
+     "country": "AD",
+     "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+     "food_url": "https://www.nomadcaisse.fr",
+     "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+     "order_url": "https://www.nomadcaisse.fr",
+     "reason": "serves AD from FR: counted in FR; its own site does not exclude AD (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "BL",
+     "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+     "food_url": "https://www.nomadcaisse.fr",
+     "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+     "order_url": "https://www.nomadcaisse.fr",
+     "reason": "serves BL from FR: counted in FR; its own site does not exclude BL (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "GF",
+     "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+     "food_url": "https://www.nomadcaisse.fr",
+     "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+     "order_url": "https://www.nomadcaisse.fr",
+     "reason": "serves GF from FR: counted in FR; its own site does not exclude GF (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "GP",
+     "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+     "food_url": "https://www.nomadcaisse.fr",
+     "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+     "order_url": "https://www.nomadcaisse.fr",
+     "reason": "serves GP from FR: counted in FR; its own site does not exclude GP (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "MF",
+     "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+     "food_url": "https://www.nomadcaisse.fr",
+     "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+     "order_url": "https://www.nomadcaisse.fr",
+     "reason": "serves MF from FR: counted in FR; its own site does not exclude MF (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "MQ",
+     "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+     "food_url": "https://www.nomadcaisse.fr",
+     "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+     "order_url": "https://www.nomadcaisse.fr",
+     "reason": "serves MQ from FR: counted in FR; its own site does not exclude MQ (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "PM",
+     "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+     "food_url": "https://www.nomadcaisse.fr",
+     "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+     "order_url": "https://www.nomadcaisse.fr",
+     "reason": "serves PM from FR: counted in FR; its own site does not exclude PM (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "RE",
+     "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+     "food_url": "https://www.nomadcaisse.fr",
+     "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+     "order_url": "https://www.nomadcaisse.fr",
+     "reason": "serves RE from FR: counted in FR; its own site does not exclude RE (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "YT",
+     "food_quote": "Le logiciel créé par un food truck, pour les food trucks.",
+     "food_url": "https://www.nomadcaisse.fr",
+     "order_quote": "Découvrez un exemple de click and collect que vous pourriez proposer à vos clients avec Nomad",
+     "order_url": "https://www.nomadcaisse.fr",
+     "reason": "serves YT from FR: counted in FR; its own site does not exclude YT (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    }
+   ]
+  },
+  {
+   "name": "Place à emporter",
+   "evidence": [
+    {
+     "country": "AD",
+     "food_quote": "Food trucks, camions et commerces à emporter",
+     "food_url": "https://placeaemporter.fr",
+     "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+     "order_url": "https://placeaemporter.fr",
+     "reason": "serves AD from FR: counted in FR; its own site does not exclude AD (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "BL",
+     "food_quote": "Food trucks, camions et commerces à emporter",
+     "food_url": "https://placeaemporter.fr",
+     "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+     "order_url": "https://placeaemporter.fr",
+     "reason": "serves BL from FR: counted in FR; its own site does not exclude BL (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "GF",
+     "food_quote": "Food trucks, camions et commerces à emporter",
+     "food_url": "https://placeaemporter.fr",
+     "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+     "order_url": "https://placeaemporter.fr",
+     "reason": "serves GF from FR: counted in FR; its own site does not exclude GF (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "GP",
+     "food_quote": "Food trucks, camions et commerces à emporter",
+     "food_url": "https://placeaemporter.fr",
+     "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+     "order_url": "https://placeaemporter.fr",
+     "reason": "serves GP from FR: counted in FR; its own site does not exclude GP (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "MF",
+     "food_quote": "Food trucks, camions et commerces à emporter",
+     "food_url": "https://placeaemporter.fr",
+     "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+     "order_url": "https://placeaemporter.fr",
+     "reason": "serves MF from FR: counted in FR; its own site does not exclude MF (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "MQ",
+     "food_quote": "Food trucks, camions et commerces à emporter",
+     "food_url": "https://placeaemporter.fr",
+     "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+     "order_url": "https://placeaemporter.fr",
+     "reason": "serves MQ from FR: counted in FR; its own site does not exclude MQ (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "PM",
+     "food_quote": "Food trucks, camions et commerces à emporter",
+     "food_url": "https://placeaemporter.fr",
+     "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+     "order_url": "https://placeaemporter.fr",
+     "reason": "serves PM from FR: counted in FR; its own site does not exclude PM (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "RE",
+     "food_quote": "Food trucks, camions et commerces à emporter",
+     "food_url": "https://placeaemporter.fr",
+     "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+     "order_url": "https://placeaemporter.fr",
+     "reason": "serves RE from FR: counted in FR; its own site does not exclude RE (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "YT",
+     "food_quote": "Food trucks, camions et commerces à emporter",
+     "food_url": "https://placeaemporter.fr",
+     "order_quote": "prend les commandes sur des créneaux que votre cuisine peut réellement tenir.",
+     "order_url": "https://placeaemporter.fr",
+     "reason": "serves YT from FR: counted in FR; its own site does not exclude YT (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    }
+   ]
+  },
+  {
+   "name": "Beau Camion",
+   "evidence": [
+    {
+     "country": "AD",
+     "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+     "food_url": "https://beaucamion.fr/pricing",
+     "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+     "order_url": "https://beaucamion.fr",
+     "reason": "serves AD from FR: counted in FR; its own site does not exclude AD (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "BL",
+     "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+     "food_url": "https://beaucamion.fr/pricing",
+     "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+     "order_url": "https://beaucamion.fr",
+     "reason": "serves BL from FR: counted in FR; its own site does not exclude BL (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "GF",
+     "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+     "food_url": "https://beaucamion.fr/pricing",
+     "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+     "order_url": "https://beaucamion.fr",
+     "reason": "serves GF from FR: counted in FR; its own site does not exclude GF (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "GP",
+     "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+     "food_url": "https://beaucamion.fr/pricing",
+     "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+     "order_url": "https://beaucamion.fr",
+     "reason": "serves GP from FR: counted in FR; its own site does not exclude GP (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "MF",
+     "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+     "food_url": "https://beaucamion.fr/pricing",
+     "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+     "order_url": "https://beaucamion.fr",
+     "reason": "serves MF from FR: counted in FR; its own site does not exclude MF (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "MQ",
+     "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+     "food_url": "https://beaucamion.fr/pricing",
+     "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+     "order_url": "https://beaucamion.fr",
+     "reason": "serves MQ from FR: counted in FR; its own site does not exclude MQ (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "PM",
+     "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+     "food_url": "https://beaucamion.fr/pricing",
+     "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+     "order_url": "https://beaucamion.fr",
+     "reason": "serves PM from FR: counted in FR; its own site does not exclude PM (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "RE",
+     "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+     "food_url": "https://beaucamion.fr/pricing",
+     "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+     "order_url": "https://beaucamion.fr",
+     "reason": "serves RE from FR: counted in FR; its own site does not exclude RE (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "YT",
+     "food_quote": "recevez un rapport personnalisé avec les meilleurs emplacements et événements pour votre food truck",
+     "food_url": "https://beaucamion.fr/pricing",
+     "order_quote": "Gestion des créneaux de retrait, paiement sécurisé, zéro commission.",
+     "order_url": "https://beaucamion.fr",
+     "reason": "serves YT from FR: counted in FR; its own site does not exclude YT (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    }
+   ]
+  },
+  {
+   "name": "Eatch",
+   "evidence": [
+    {
+     "country": "AD",
+     "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+     "food_url": "https://eatch.app",
+     "order_quote": "Commande à l’avance, heure de retrait au choix",
+     "order_url": "https://eatch.app",
+     "reason": "serves AD from FR: counted in FR; its own site does not exclude AD (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "BL",
+     "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+     "food_url": "https://eatch.app",
+     "order_quote": "Commande à l’avance, heure de retrait au choix",
+     "order_url": "https://eatch.app",
+     "reason": "serves BL from FR: counted in FR; its own site does not exclude BL (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "GF",
+     "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+     "food_url": "https://eatch.app",
+     "order_quote": "Commande à l’avance, heure de retrait au choix",
+     "order_url": "https://eatch.app",
+     "reason": "serves GF from FR: counted in FR; its own site does not exclude GF (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "GP",
+     "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+     "food_url": "https://eatch.app",
+     "order_quote": "Commande à l’avance, heure de retrait au choix",
+     "order_url": "https://eatch.app",
+     "reason": "serves GP from FR: counted in FR; its own site does not exclude GP (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "MF",
+     "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+     "food_url": "https://eatch.app",
+     "order_quote": "Commande à l’avance, heure de retrait au choix",
+     "order_url": "https://eatch.app",
+     "reason": "serves MF from FR: counted in FR; its own site does not exclude MF (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "MQ",
+     "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+     "food_url": "https://eatch.app",
+     "order_quote": "Commande à l’avance, heure de retrait au choix",
+     "order_url": "https://eatch.app",
+     "reason": "serves MQ from FR: counted in FR; its own site does not exclude MQ (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "PM",
+     "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+     "food_url": "https://eatch.app",
+     "order_quote": "Commande à l’avance, heure de retrait au choix",
+     "order_url": "https://eatch.app",
+     "reason": "serves PM from FR: counted in FR; its own site does not exclude PM (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "RE",
+     "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+     "food_url": "https://eatch.app",
+     "order_quote": "Commande à l’avance, heure de retrait au choix",
+     "order_url": "https://eatch.app",
+     "reason": "serves RE from FR: counted in FR; its own site does not exclude RE (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    },
+    {
+     "country": "YT",
+     "food_quote": "Construit avec MrCroques. Pour tous les food trucks.",
+     "food_url": "https://eatch.app",
+     "order_quote": "Commande à l’avance, heure de retrait au choix",
+     "order_url": "https://eatch.app",
+     "reason": "serves YT from FR: counted in FR; its own site does not exclude YT (compare-research-7 Block 5)",
+     "neighbour": "FR"
+    }
+   ]
+  },
+  {
+   "name": "Food4you",
+   "evidence": [
+    {
+     "country": "AX",
+     "order_quote": "Ennakkoon tilaaminen ja jonoton nouto",
+     "order_url": "https://food4you.fi",
+     "country_quote": "Food4you hyödyntää suomalaista Paytrail maksupalvelua, joka tarjoaa laajan valikoiman maksutapoja.",
+     "country_url": "https://food4you.fi/ukk/",
+     "reason": "serves AX from FI: counted in FI; its own site does not exclude AX (compare-research-7 Block 5)",
+     "neighbour": "FI"
+    }
+   ]
+  },
+  {
+   "name": "Ordea",
+   "evidence": [
+    {
+     "country": "GG",
+     "food_quote": "For food trucks, festival stalls, pop-ups & event caterers",
+     "food_url": "https://www.ordea.uk",
+     "order_quote": "Let customers order from their phone before they reach your window.",
+     "order_url": "https://www.ordea.uk/food-trucks",
+     "reason": "serves GG from GB: counted in GB; its own site does not exclude GG (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    },
+    {
+     "country": "IM",
+     "food_quote": "For food trucks, festival stalls, pop-ups & event caterers",
+     "food_url": "https://www.ordea.uk",
+     "order_quote": "Let customers order from their phone before they reach your window.",
+     "order_url": "https://www.ordea.uk/food-trucks",
+     "reason": "serves IM from GB: counted in GB; its own site does not exclude IM (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    },
+    {
+     "country": "JE",
+     "food_quote": "For food trucks, festival stalls, pop-ups & event caterers",
+     "food_url": "https://www.ordea.uk",
+     "order_quote": "Let customers order from their phone before they reach your window.",
+     "order_url": "https://www.ordea.uk/food-trucks",
+     "reason": "serves JE from GB: counted in GB; its own site does not exclude JE (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    }
+   ]
+  },
+  {
+   "name": "Order Tiger",
+   "evidence": [
+    {
+     "country": "GG",
+     "food_quote": "Take pre-orders before you park up",
+     "food_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+     "order_quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+     "order_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+     "country_quote": "Consider our Gibraltar location, which experienced remarkable growth and emerged as the dominant marketplace in its region.",
+     "country_url": "https://www.ordertiger.com/franchise",
+     "reason": "serves GG from GB: counted in GB; its own site does not exclude GG (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    },
+    {
+     "country": "IM",
+     "food_quote": "Take pre-orders before you park up",
+     "food_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+     "order_quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+     "order_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+     "country_quote": "Consider our Gibraltar location, which experienced remarkable growth and emerged as the dominant marketplace in its region.",
+     "country_url": "https://www.ordertiger.com/franchise",
+     "reason": "serves IM from GB: counted in GB; its own site does not exclude IM (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    },
+    {
+     "country": "JE",
+     "food_quote": "Take pre-orders before you park up",
+     "food_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+     "order_quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+     "order_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+     "country_quote": "Consider our Gibraltar location, which experienced remarkable growth and emerged as the dominant marketplace in its region.",
+     "country_url": "https://www.ordertiger.com/franchise",
+     "reason": "serves JE from GB: counted in GB; its own site does not exclude JE (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    }
+   ]
+  },
+  {
+   "name": "Perkss",
+   "evidence": [
+    {
+     "country": "GG",
+     "food_quote": "Ideal for mobile caterers and street food traders.",
+     "food_url": "https://perkss.co.uk/food-truck-management-system/",
+     "order_quote": "Yes. Pre-ordering helps reduce waiting.",
+     "order_url": "https://perkss.co.uk/food-truck-management-system/",
+     "reason": "serves GG from GB: counted in GB; its own site does not exclude GG (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    },
+    {
+     "country": "IM",
+     "food_quote": "Ideal for mobile caterers and street food traders.",
+     "food_url": "https://perkss.co.uk/food-truck-management-system/",
+     "order_quote": "Yes. Pre-ordering helps reduce waiting.",
+     "order_url": "https://perkss.co.uk/food-truck-management-system/",
+     "reason": "serves IM from GB: counted in GB; its own site does not exclude IM (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    },
+    {
+     "country": "JE",
+     "food_quote": "Ideal for mobile caterers and street food traders.",
+     "food_url": "https://perkss.co.uk/food-truck-management-system/",
+     "order_quote": "Yes. Pre-ordering helps reduce waiting.",
+     "order_url": "https://perkss.co.uk/food-truck-management-system/",
+     "reason": "serves JE from GB: counted in GB; its own site does not exclude JE (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    }
+   ]
+  },
+  {
+   "name": "Grafterr",
+   "evidence": [
+    {
+     "country": "GG",
+     "food_quote": "ePOS for Food Trucks",
+     "food_url": "https://www.grafterr.com/uk/industries/food-trucks-epos",
+     "order_quote": "if enabled, this can be used to specify Collection or Delivery Timeslots for same-day orders.",
+     "order_url": "https://www.grafterr.com/gb/grafterr_academy/topic/Pre-Order-Settings",
+     "country_quote": "POS System for Food Trucks & Mobile Catering UK | Grafterr",
+     "country_url": "https://www.grafterr.com/uk/industries/food-trucks-epos",
+     "reason": "serves GG from GB: counted in GB; its own site does not exclude GG (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    },
+    {
+     "country": "IM",
+     "food_quote": "ePOS for Food Trucks",
+     "food_url": "https://www.grafterr.com/uk/industries/food-trucks-epos",
+     "order_quote": "if enabled, this can be used to specify Collection or Delivery Timeslots for same-day orders.",
+     "order_url": "https://www.grafterr.com/gb/grafterr_academy/topic/Pre-Order-Settings",
+     "country_quote": "POS System for Food Trucks & Mobile Catering UK | Grafterr",
+     "country_url": "https://www.grafterr.com/uk/industries/food-trucks-epos",
+     "reason": "serves IM from GB: counted in GB; its own site does not exclude IM (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    },
+    {
+     "country": "JE",
+     "food_quote": "ePOS for Food Trucks",
+     "food_url": "https://www.grafterr.com/uk/industries/food-trucks-epos",
+     "order_quote": "if enabled, this can be used to specify Collection or Delivery Timeslots for same-day orders.",
+     "order_url": "https://www.grafterr.com/gb/grafterr_academy/topic/Pre-Order-Settings",
+     "country_quote": "POS System for Food Trucks & Mobile Catering UK | Grafterr",
+     "country_url": "https://www.grafterr.com/uk/industries/food-trucks-epos",
+     "reason": "serves JE from GB: counted in GB; its own site does not exclude JE (compare-research-7 Block 5)",
+     "neighbour": "GB"
+    }
+   ]
+  },
+  {
+   "name": "Qromo",
+   "evidence": [
+    {
+     "country": "SM",
+     "food_quote": "Qromo è usato da bar, ristoranti, food truck, negozi, eventi e altre attività",
+     "food_url": "https://qromo.it",
+     "order_quote": "configuri orari e ritiri programmati",
+     "order_url": "https://qromo.it/software-gestionale-per-pizzerie/",
+     "reason": "serves SM from IT: counted in IT; its own site does not exclude SM (compare-research-7 Block 5)",
+     "neighbour": "IT"
+    },
+    {
+     "country": "VA",
+     "food_quote": "Qromo è usato da bar, ristoranti, food truck, negozi, eventi e altre attività",
+     "food_url": "https://qromo.it",
+     "order_quote": "configuri orari e ritiri programmati",
+     "order_url": "https://qromo.it/software-gestionale-per-pizzerie/",
+     "reason": "serves VA from IT: counted in IT; its own site does not exclude VA (compare-research-7 Block 5)",
+     "neighbour": "IT"
+    }
+   ]
+  },
+  {
+   "name": "MenuForma",
+   "evidence": [
+    {
+     "country": "SM",
+     "food_quote": "Un menu digitale è adatto a ristoranti, caffetterie e panetterie, hotel e servizio in camera, food truck, bar e pub e locali di ristorazione veloce.",
+     "food_url": "https://menuforma.com/it",
+     "order_quote": "Accetta ordini con consegna, ritiro, asporto e consumo sul posto direttamente dal tuo menu digitale e QR code menu.",
+     "order_url": "https://menuforma.com/it",
+     "country_quote": "Ordini Ritiro e Consegna",
+     "country_url": "https://menuforma.com/it",
+     "reason": "serves SM from IT: counted in IT; its own site does not exclude SM (compare-research-7 Block 5)",
+     "neighbour": "IT"
+    },
+    {
+     "country": "VA",
+     "food_quote": "Un menu digitale è adatto a ristoranti, caffetterie e panetterie, hotel e servizio in camera, food truck, bar e pub e locali di ristorazione veloce.",
+     "food_url": "https://menuforma.com/it",
+     "order_quote": "Accetta ordini con consegna, ritiro, asporto e consumo sul posto direttamente dal tuo menu digitale e QR code menu.",
+     "order_url": "https://menuforma.com/it",
+     "country_quote": "Ordini Ritiro e Consegna",
+     "country_url": "https://menuforma.com/it",
+     "reason": "serves VA from IT: counted in IT; its own site does not exclude VA (compare-research-7 Block 5)",
+     "neighbour": "IT"
+    }
+   ]
+  },
+  {
+   "name": "Tilby",
+   "evidence": [
+    {
+     "country": "SM",
+     "food_quote": "L'app di cassa su smartphone e tablet per foodtruck",
+     "food_url": "https://tilby.com/it/settori/app-cassa-foodtruck/",
+     "order_quote": "raccogli e organizza gli ordini per consegna a domicilio e asporto",
+     "order_url": "https://tilby.com/it/strumenti-di-vendita/app-ordinazione/",
+     "reason": "serves SM from IT: counted in IT; its own site does not exclude SM (compare-research-7 Block 5)",
+     "neighbour": "IT"
+    },
+    {
+     "country": "VA",
+     "food_quote": "L'app di cassa su smartphone e tablet per foodtruck",
+     "food_url": "https://tilby.com/it/settori/app-cassa-foodtruck/",
+     "order_quote": "raccogli e organizza gli ordini per consegna a domicilio e asporto",
+     "order_url": "https://tilby.com/it/strumenti-di-vendita/app-ordinazione/",
+     "reason": "serves VA from IT: counted in IT; its own site does not exclude VA (compare-research-7 Block 5)",
+     "neighbour": "IT"
+    }
+   ]
+  }
+ ],
+ "not_relevant": [],
+ "unreadable": [],
+ "not_needed": [
+  {
+   "country": "AD",
+   "name": "pidopago",
+   "focus": "nearest_local"
+  }
+ ]
+}

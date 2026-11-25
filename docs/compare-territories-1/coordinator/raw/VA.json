@@ -1,0 +1,112 @@
+{
+ "country": "VA",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "notes": "compare-territories-1 coordinator: the IT counted competitors, no new reads; evidence from earlier raw files; FoxiFood excluded (its own country list omits VA); Software Food Good excluded from SM/VA (mainland only).",
+ "vendors": [
+  {
+   "name": "Qromo",
+   "website": "https://qromo.it",
+   "stored_id_prefix": "b6a1a595",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "IT",
+   "reason": "serves VA from IT: counted in IT; its own site does not exclude VA (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "Qromo è usato da bar, ristoranti, food truck, negozi, eventi e altre attività",
+    "food_url": "https://qromo.it",
+    "order_quote": "configuri orari e ritiri programmati",
+    "order_url": "https://qromo.it/software-gestionale-per-pizzerie/"
+   },
+   "plans": [
+    {
+     "plan_name": "Pro",
+     "currency": "EUR",
+     "price_major": 59,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://qromo.it/prezzi/",
+     "note": "serves VA from IT (neighbouring-market rule, Dominic 25 Nov): the plan as counted in IT"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://qromo.it/prezzi/"
+   ]
+  },
+  {
+   "name": "MenuForma",
+   "website": "https://menuforma.com",
+   "stored_id_prefix": "b70bbf5e",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "IT",
+   "reason": "serves VA from IT: counted in IT; its own site does not exclude VA (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "Un menu digitale è adatto a ristoranti, caffetterie e panetterie, hotel e servizio in camera, food truck, bar e pub e locali di ristorazione veloce.",
+    "food_url": "https://menuforma.com/it",
+    "order_quote": "Accetta ordini con consegna, ritiro, asporto e consumo sul posto direttamente dal tuo menu digitale e QR code menu.",
+    "order_url": "https://menuforma.com/it",
+    "country_quote": "Ordini Ritiro e Consegna",
+    "country_url": "https://menuforma.com/it"
+   },
+   "plans": [
+    {
+     "plan_name": "Regolare",
+     "currency": "EUR",
+     "price_major": 8.99,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://menuforma.com/it",
+     "note": "serves VA from IT (neighbouring-market rule, Dominic 25 Nov): the plan as counted in IT"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://menuforma.com/it"
+   ]
+  },
+  {
+   "name": "Tilby",
+   "website": "https://tilby.com",
+   "stored_id_prefix": "5f28f634",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "IT",
+   "reason": "serves VA from IT: counted in IT; its own site does not exclude VA (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "L'app di cassa su smartphone e tablet per foodtruck",
+    "food_url": "https://tilby.com/it/settori/app-cassa-foodtruck/",
+    "order_quote": "raccogli e organizza gli ordini per consegna a domicilio e asporto",
+    "order_url": "https://tilby.com/it/strumenti-di-vendita/app-ordinazione/"
+   },
+   "plans": [
+    {
+     "plan_name": "Food truck till (from)",
+     "currency": "EUR",
+     "price_major": 35,
+     "period": "month",
+     "vat": "excl",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://tilby.com/it/settori/app-cassa-foodtruck/",
+     "note": "serves VA from IT (neighbouring-market rule, Dominic 25 Nov): the plan as counted in IT"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://tilby.com/it/settori/app-cassa-foodtruck/"
+   ]
+  }
+ ]
+}

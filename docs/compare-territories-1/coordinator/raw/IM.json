@@ -1,0 +1,148 @@
+{
+ "country": "IM",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "notes": "compare-territories-1 coordinator: the GB counted competitors, no new reads; evidence from earlier raw files; FoxiFood excluded (its own country list omits IM); Software Food Good excluded from SM/VA (mainland only).",
+ "vendors": [
+  {
+   "name": "Ordea",
+   "website": "https://www.ordea.uk",
+   "stored_id_prefix": "6dc60fd2",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "GB",
+   "reason": "serves IM from GB: counted in GB; its own site does not exclude IM (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "For food trucks, festival stalls, pop-ups & event caterers",
+    "food_url": "https://www.ordea.uk",
+    "order_quote": "Let customers order from their phone before they reach your window.",
+    "order_url": "https://www.ordea.uk/food-trucks"
+   },
+   "plans": [
+    {
+     "plan_name": "Free",
+     "currency": "GBP",
+     "price_major": 0,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 3.0,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://www.ordea.uk/",
+     "note": "serves IM from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://www.ordea.uk/"
+   ]
+  },
+  {
+   "name": "Order Tiger",
+   "website": "https://www.ordertiger.com",
+   "stored_id_prefix": "aed7bf67",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "GB",
+   "reason": "serves IM from GB: counted in GB; its own site does not exclude IM (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "Take pre-orders before you park up",
+    "food_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+    "order_quote": "Customers order ahead, pay online and pick up at a time that suits them.",
+    "order_url": "https://www.ordertiger.com/online-ordering-system-for-food-trucks",
+    "country_quote": "Consider our Gibraltar location, which experienced remarkable growth and emerged as the dominant marketplace in its region.",
+    "country_url": "https://www.ordertiger.com/franchise"
+   },
+   "plans": [
+    {
+     "plan_name": "Online Ordering",
+     "currency": "GBP",
+     "price_major": 59,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://www.ordertiger.com/online-ordering-system-pricing",
+     "note": "serves IM from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://www.ordertiger.com/online-ordering-system-pricing"
+   ]
+  },
+  {
+   "name": "Perkss",
+   "website": "https://perkss.co.uk",
+   "stored_id_prefix": "c71ae83d",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "GB",
+   "reason": "serves IM from GB: counted in GB; its own site does not exclude IM (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "Ideal for mobile caterers and street food traders.",
+    "food_url": "https://perkss.co.uk/food-truck-management-system/",
+    "order_quote": "Yes. Pre-ordering helps reduce waiting.",
+    "order_url": "https://perkss.co.uk/food-truck-management-system/"
+   },
+   "plans": [
+    {
+     "plan_name": "Essential (weekly billing)",
+     "currency": "GBP",
+     "price_major": 12.5,
+     "period": "week",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://perkss.co.uk/pricing/",
+     "note": "serves IM from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://perkss.co.uk/pricing/"
+   ]
+  },
+  {
+   "name": "Grafterr",
+   "website": "https://www.grafterr.com",
+   "stored_id_prefix": "b32f19c9",
+   "focus": "food_truck",
+   "verdict": "eligible",
+   "neighbour": "GB",
+   "reason": "serves IM from GB: counted in GB; its own site does not exclude IM (compare-research-7 Block 5)",
+   "eligibility": {
+    "food_quote": "ePOS for Food Trucks",
+    "food_url": "https://www.grafterr.com/uk/industries/food-trucks-epos",
+    "order_quote": "if enabled, this can be used to specify Collection or Delivery Timeslots for same-day orders.",
+    "order_url": "https://www.grafterr.com/gb/grafterr_academy/topic/Pre-Order-Settings",
+    "country_quote": "POS System for Food Trucks & Mobile Catering UK | Grafterr",
+    "country_url": "https://www.grafterr.com/uk/industries/food-trucks-epos"
+   },
+   "plans": [
+    {
+     "plan_name": "Standard",
+     "currency": "GBP",
+     "price_major": 55,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "",
+     "url": "https://www.grafterr.com/uk/epos-pricing",
+     "note": "serves IM from GB (neighbouring-market rule, Dominic 25 Nov): the plan as counted in GB"
+    }
+   ],
+   "answers": [],
+   "check_urls": [
+    "https://www.grafterr.com/uk/epos-pricing"
+   ]
+  }
+ ]
+}
