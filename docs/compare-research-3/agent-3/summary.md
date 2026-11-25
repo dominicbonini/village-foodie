@@ -131,3 +131,14 @@ count now: 0
 No vendor read today (only marketplaces / booking directories in results). Nothing eligible exists with a BSD price.
 
 count now: 0
+
+## ZA (ZAR)
+
+| Vendor | Focus | Verdict | Price | URL |
+|---|---|---|---|---|
+| Resto | nearest_local | eligible | R1000 per month (VAT not stated) | https://resto.co.za/ |
+| Bizzfo | nearest_local | eligible | R450 per month per branch, incl. VAT | https://bizzfo.co.za/restaurant-pos/ |
+| Ordev | nearest_local | not_relevant (BORDERLINE: no pickup wording) | R515/mo | https://ordev.io/ |
+| WebOrder | nearest_local | not_relevant (BORDERLINE: no pickup wording) | R99 per month + R199 | https://weborder.co.za/ |
+
+count now: 2 (food-truck: 0)

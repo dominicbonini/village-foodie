@@ -1,0 +1,230 @@
+{
+ "country": "ZA",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "South Africa online ordering system for restaurants and food trucks collection \"order ahead\" pricing \"R\" per month South African",
+  "\"click and collect\" online ordering for restaurants coffee shops South Africa \".co.za\" pricing plan \"R\" \"/month\" \"excl. VAT\" no commission",
+  "South African restaurant online ordering platform own website collection orders WhatsApp pricing rand per month (Capterra/GetApp/G2 excluded)"
+ ],
+ "vendors": [
+  {
+   "name": "Resto",
+   "website": "https://resto.co.za",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "South African restaurant online-ordering shop for delivery or collection, no commissions; ZAR price",
+   "eligibility": {
+    "order_quote": "allows restaurants to take online orders, for either delivery or collection.",
+    "order_url": "https://resto.co.za/",
+    "country_quote": "Resto is a proudly South African software platform. Built in SA, by SA, for SA!",
+    "country_url": "https://resto.co.za/"
+   },
+   "plans": [
+    {
+     "plan_name": "Shop",
+     "currency": "ZAR",
+     "price_major": 1000,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 0,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "R1000 gets you started.",
+     "url": "https://resto.co.za/#cost",
+     "note": "page reader summary: R1000/month for a shop; optional white label 'R5000' once off; no commissions (summary only, not quoted)."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "allows restaurants to take online orders, for either delivery or collection.",
+     "url": "https://resto.co.za/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://resto.co.za/"
+   ]
+  },
+  {
+   "name": "Bizzfo",
+   "website": "https://bizzfo.co.za",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "South African restaurant POS with a stackable Online product: customers order from the restaurant's branded platform with delivery and pickup options; ZAR per-branch prices incl. VAT",
+   "eligibility": {
+    "order_quote": "Delivery and pickup options",
+    "order_url": "https://bizzfo.co.za/restaurant-pos/",
+    "country_quote": "Built for South African Restaurants",
+    "country_url": "https://bizzfo.co.za/restaurant-pos/"
+   },
+   "plans": [
+    {
+     "plan_name": "Start (1 product, e.g. Online)",
+     "currency": "ZAR",
+     "price_major": 450,
+     "period": "month",
+     "vat": "incl",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "R450",
+     "url": "https://bizzfo.co.za/restaurant-pos/",
+     "note": "per branch per month; prices 'include VAT at South Africa's standard rate of 15%'; Combine (2 products) R850, Grow (3) R1,250"
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "Delivery and pickup options",
+     "url": "https://bizzfo.co.za/restaurant-pos/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://bizzfo.co.za/restaurant-pos/"
+   ]
+  },
+  {
+   "name": "Ordev",
+   "website": "https://ordev.io",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "BORDERLINE: South African ordering platform ('Built for South African restaurant operators.'), Ordev.online R515/mo, but no collection / pickup / order-ahead wording ('Web-based ordering for direct sales.')",
+   "eligibility": {
+    "country_quote": "Built for South African restaurant operators.",
+    "country_url": "https://ordev.io/"
+   },
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://ordev.io/"
+   ]
+  },
+  {
+   "name": "WebOrder",
+   "website": "https://weborder.co.za",
+   "stored_id_prefix": null,
+   "focus": "nearest_local",
+   "verdict": "not_relevant",
+   "reason": "BORDERLINE: 'South Africa's Simple Online Ordering System' (Bronze R199 connection + R99 per month; Eatery add-on), but no collection / pickup wording, only a delivery module",
+   "eligibility": {
+    "country_quote": "South Africa's Simple Online Ordering System",
+    "country_url": "https://weborder.co.za/"
+   },
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://weborder.co.za/"
+   ]
+  }
+ ],
+ "notes": "Count now: 2 (Resto R1000/month; Bizzfo Start R450/month per branch incl. VAT) — both South African restaurant click-and-collect tools (nearest_local); no South African food-truck ordering tool found. Resto's monthly wording is from the page reader's summary ('R1000/month for a shop'); the verbatim quote is 'R1000 gets you started.'. Ordev and WebOrder are South African and ZAR-priced but show no pickup wording (BORDERLINE not_relevant). Seen, not read: Supaorder (supaorder.com/pricing/south-africa, R729 per location per month per snippet — home market unclear, possibly agent 1's), Aura NextGen POS (R995/month), Wangu (18% commission). YUMBI (hidden price) as in wave 2. Capterra listings ignored."
+}
