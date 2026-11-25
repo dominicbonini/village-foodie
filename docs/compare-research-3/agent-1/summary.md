@@ -87,3 +87,7 @@ Choice 403s again; Delivety's /uk/pricing shows no prices (compare-research-2 sa
 ## AL (Albania, ALL)
 
 No other tool priced in ALL: doXmenu is a QR menu, logic.al is a POS with loyalty, and the rest were marketplaces or foreign tools. count now: 1 (Vitrina)
+
+## BA (Bosnia and Herzegovina, BAM)
+
+No other tool priced in BAM: the search returned only Glovo marketplace pages. count now: 1 (Vitrina)
