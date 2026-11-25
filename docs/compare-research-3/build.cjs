@@ -73,6 +73,9 @@ const PLANS_ONLY_IN = { 'zyda.com': ['KW'] }
 // wave 2: a vendor whose presence in most countries rests only on a generic phrase ("Restaurantes en América Latina") — rows kept only
 // where its own site names the country; the others go to the reviewer's not_relevant list (the evidence stays in the raw files).
 const PRESENCE_ONLY_IN = { 'olaclick.com': ['EC'] }
+// compare-research-3 review: rows an agent marked eligible WITHOUT the required quotes — listed as unreadable (evidence incomplete), never imported.
+const INCOMPLETE = [['joinposter.kz', 'KZ', 'no order-ahead or food-truck quote recorded; its KZ price sits under an unlabelled yearly toggle'],
+  ['delivety.com', 'UA', 'no order-ahead quote recorded; its pricing page shows no prices']]
 // Display names for NEW competitors (the agents' product labels kept in the evidence, not in the name shown on the page).
 const DISPLAY_NAME = { 'fu.do': 'Fudo', 'blinkco.io': 'Blink', 'zunapro.com': 'Zunapro', 'tossplace.com': 'Toss Place', 'iletmen.com.tr': 'İletmen',
   'foodics.com': 'Foodics', 'esb.id': 'ESB Order', 'sistemaquevende.pt': 'Sistema Que Vende',
@@ -122,6 +125,8 @@ function build() {
       if (v.verdict === 'not_relevant') { notRelevant.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: v.reason, url: v.eligibility?.order_url ?? v.eligibility?.food_url ?? (v.check_urls ?? [])[0] ?? v.website, plans: v.plans ?? [] }); continue }
       if (v.verdict !== 'eligible') { unreadable.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: v.reason }); continue }
       const h = host(v.website)
+      const inc = INCOMPLETE.find(([x, c]) => (h ?? '').endsWith(x) && c === cc)
+      if (inc) { unreadable.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: `left out on review: ${inc[2]}` }); continue }
       const pres = Object.entries(PRESENCE_ONLY_IN).find(([x]) => (h ?? '').endsWith(x))
       if (pres && !pres[1].includes(cc)) { notRelevant.push({ country: cc, name: v.name, website: v.website, stored: v.stored_id_prefix ?? null, reason: `left out on review: its presence here rests only on "Restaurantes en América Latina" (own site names ${pres[1].join(', ')} only). ${v.reason ?? ''}`.trim() }); continue }
       // compare-fix-2: no stored id on this row, but a stored competitor has its website host (or its name) → that competitor

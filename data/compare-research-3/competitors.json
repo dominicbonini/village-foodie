@@ -87,80 +87,6 @@
    "set_focus": true
   },
   {
-   "id": "0802a7c8-e311-5b65-af51-44972ef2749c",
-   "name": "Poster",
-   "website": "https://joinposter.kz",
-   "focus": "food_truck",
-   "lifecycle": "active",
-   "payment_providers": null,
-   "features_checked_on": "2026-11-25",
-   "features_verified_at": null,
-   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: KZ.",
-   "check_urls": [
-    "https://joinposter.kz/pricing"
-   ],
-   "request_check": true,
-   "answers": [
-    {
-     "key": "ahead",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "preorder",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "capacity",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "schedule",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "whatsapp",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "social",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "kds",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "offline",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "walkup",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "vans",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "domain",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "monthly",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "perorder",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "cardfee",
-     "value": "not_mentioned"
-    }
-   ],
-   "set_focus": true
-  },
-  {
    "id": "c06e5b78-6f2f-5a3f-a85d-96881a273bb3",
    "name": "Asila",
    "website": "https://asila.ma",
@@ -229,80 +155,6 @@
      "value": "yes",
      "quote": "300 MAD/mois",
      "source_url": "https://asila.ma/"
-    },
-    {
-     "key": "perorder",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "cardfee",
-     "value": "not_mentioned"
-    }
-   ],
-   "set_focus": true
-  },
-  {
-   "id": "c0793a8a-4bf4-5693-9008-e45e28bbc78f",
-   "name": "Delivety",
-   "website": "https://delivety.com/uk",
-   "focus": "nearest_local",
-   "lifecycle": "active",
-   "payment_providers": null,
-   "features_checked_on": "2026-11-25",
-   "features_verified_at": null,
-   "notes": "compare-research-3 (25 Nov 2026): read on its own website; eligible — online ordering ahead (quotes in \"evidence\"). Countries: UA.",
-   "check_urls": [
-    "https://delivety.com/uk/pricing"
-   ],
-   "request_check": true,
-   "answers": [
-    {
-     "key": "ahead",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "preorder",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "capacity",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "schedule",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "whatsapp",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "social",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "kds",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "offline",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "walkup",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "vans",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "domain",
-     "value": "not_mentioned"
-    },
-    {
-     "key": "monthly",
-     "value": "not_mentioned"
     },
     {
      "key": "perorder",
@@ -1684,72 +1536,6 @@
    "notes": "compare-research-3, read 25 Nov 2026 — serves GI from GB (neighbouring-market rule, Dominic 25 Nov): \"No monthly fees. No lock-in. Just 3% per order when you make a sale.\" — Stripe fees separate ('3% per order (Stripe fees separate)'). Terms: 'Ordea charges a commission of 3% per order processed through the platform.' (https://www.ordea.uk/terms)"
   },
   {
-   "id": "c240e8b4-18a9-511b-bfd9-4cec7f3b5051",
-   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
-   "country_code": "KZ",
-   "plan_name": "Starter + Poster Site add-on",
-   "currency": "KZT",
-   "price_hidden": false,
-   "monthly_minor": 864000,
-   "monthly_major": 8640,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "unknown",
-   "status": "counted",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://joinposter.kz/pricing",
-   "checked_on": "2026-11-25",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-3, read 25 Nov 2026: \"8 640 ₸9 600 ₸/мес.\" — Only billing label on the page: 'Оплата за год' (no monthly label, no yearly total). 8 640 = 9 600 × 0.9, so 8 640 is likely billed yearly and 9 600 monthly-billed. The ordering website is extra: 'Стоимость — 11 400 ₸/мес.' (Poster Site, 'Сайт для заказов из вашего заведения — за 5 минут'), listed only under paid 'Расширения'."
-  },
-  {
-   "id": "f911f34c-5ea3-58e8-af22-0be0d70095d8",
-   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
-   "country_code": "KZ",
-   "plan_name": "Poster Site (ordering website add-on)",
-   "currency": "KZT",
-   "price_hidden": false,
-   "monthly_minor": 1140000,
-   "monthly_major": 11400,
-   "yearly_only": false,
-   "setup_minor": 0,
-   "truck_fee_bps": 0,
-   "truck_fee_fixed_minor": 0,
-   "customer_fee_bps": 0,
-   "customer_fee_fixed_minor": 0,
-   "card_mode": "unknown",
-   "card_bps": null,
-   "card_fixed_minor": null,
-   "card_rate_assumed": false,
-   "order_cap": null,
-   "included_orders": null,
-   "overage_fixed_minor": null,
-   "vat": "unknown",
-   "status": "counted",
-   "unclear": false,
-   "second_hand": false,
-   "source": "research",
-   "source_url": "https://joinposter.kz/pricing",
-   "checked_on": "2026-11-25",
-   "verified_at": null,
-   "verified_by": null,
-   "notes": "compare-research-3, read 25 Nov 2026: \"Стоимость — 11 400 ₸/мес.\" — Add-on on top of a POS plan; not included in Starter/Mini/Business/Pro."
-  },
-  {
    "id": "ae735226-20f0-5863-b186-92543b5ef790",
    "competitor_id": "c06e5b78-6f2f-5a3f-a85d-96881a273bb3",
    "country_code": "MA",
@@ -2716,30 +2502,10 @@
    "verified_by": null
   },
   {
-   "id": "e01244ee-cbbf-5451-8ac2-dada1e0b6bcd",
-   "country_code": "KZ",
-   "competitor_id": "0802a7c8-e311-5b65-af51-44972ef2749c",
-   "primary_plan_id": "c240e8b4-18a9-511b-bfd9-4cec7f3b5051",
-   "choose_when": null,
-   "sort_order": 50,
-   "verified_at": null,
-   "verified_by": null
-  },
-  {
    "id": "f50c7bc4-210b-5844-b7e8-87cee57ace16",
    "country_code": "MA",
    "competitor_id": "c06e5b78-6f2f-5a3f-a85d-96881a273bb3",
    "primary_plan_id": "ae735226-20f0-5863-b186-92543b5ef790",
-   "choose_when": null,
-   "sort_order": 50,
-   "verified_at": null,
-   "verified_by": null
-  },
-  {
-   "id": "d96dd9d7-9a9f-5956-b7b0-30d77d467814",
-   "country_code": "UA",
-   "competitor_id": "c0793a8a-4bf4-5693-9008-e45e28bbc78f",
-   "primary_plan_id": null,
    "choose_when": null,
    "sort_order": 50,
    "verified_at": null,
@@ -2964,17 +2730,6 @@
    ]
   },
   {
-   "name": "Poster",
-   "evidence": [
-    {
-     "country": "KZ",
-     "country_quote": "Русский (Казахстан)",
-     "country_url": "https://joinposter.kz/pricing",
-     "reason": "Own Kazakhstan site with a food-truck page (compare-research-2). Its ordering website is the paid Poster Site add-on, not part of any plan. Prices show the same billed-yearly ambiguity as UA, so count it only if Dominic accepts that."
-    }
-   ]
-  },
-  {
    "name": "Asila",
    "evidence": [
     {
@@ -2984,15 +2739,6 @@
      "country_quote": "Caisse, commandes en ligne, stocks et back-office dans un seul système conçu pour les restaurants et cafés marocains.",
      "country_url": "https://asila.ma/",
      "reason": "Moroccan restaurant/café POS + online-ordering platform: orders taken online on the business's own channel, for takeaway and delivery. One all-in plan priced in MAD. Borderline: no explicit 'order for a time' / pre-order wording."
-    }
-   ]
-  },
-  {
-   "name": "Delivety",
-   "evidence": [
-    {
-     "country": "UA",
-     "reason": "Eligible per compare-research-2 (takeaway time slots), but its Ukrainian pricing page shows no plans or prices at all ('У нас є ідеальний план саме для вас'; maybe loaded by script), and compare-research-2 saw USD only. No UAH price, so not counted."
     }
    ]
   },
@@ -3836,6 +3582,13 @@
  ],
  "unreadable": [
   {
+   "country": "KZ",
+   "name": "Poster",
+   "website": "https://joinposter.kz",
+   "stored": "0802a7c8",
+   "reason": "left out on review: no order-ahead or food-truck quote recorded; its KZ price sits under an unlabelled yearly toggle"
+  },
+  {
    "country": "MT",
    "name": "Maltix",
    "website": "https://maltix.tawk.help",
@@ -3848,6 +3601,13 @@
    "website": "https://choiceqr.com/ua",
    "stored": "70b34967",
    "reason": "https://choiceqr.com/ua/pricing answered HTTP 403 again today (tried once, as asked)."
+  },
+  {
+   "country": "UA",
+   "name": "Delivety",
+   "website": "https://delivety.com/uk",
+   "stored": "c0793a8a",
+   "reason": "left out on review: no order-ahead quote recorded; its pricing page shows no prices"
   },
   {
    "country": "IL",
