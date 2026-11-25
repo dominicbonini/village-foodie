@@ -1,0 +1,109 @@
+{
+ "country": "AU",
+ "researched_on": "2026-11-25",
+ "searches": [],
+ "vendors": [
+  {
+   "name": "Bopple",
+   "website": "https://bopple.com",
+   "stored_id_prefix": "a8ba9459",
+   "focus": "nearest_local",
+   "verdict": "eligible",
+   "reason": "Australian restaurant/café online ordering with pick-up and scheduled pre-ordering; the pricing page is server-rendered with the AUD currency selected; AUD platform fee on its fees page",
+   "eligibility": {
+    "order_quote": "Scheduled pre-ordering",
+    "order_url": "https://bopple.com/pricing",
+    "country_quote": "<option value=\"AU\" selected=\"\">$ AUD</option>",
+    "country_url": "https://bopple.com/pricing"
+   },
+   "plans": [
+    {
+     "plan_name": "Online ordering",
+     "currency": "AUD",
+     "price_major": 49,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": 1.64,
+     "per_order_fixed_major": 0.1,
+     "setup_major": null,
+     "quote": "$49<span>per month</span>",
+     "url": "https://bopple.com/pricing",
+     "note": "The compare-status-1 doubt ('probably the NZD one') is settled: the raw HTML of /pricing renders the plans with the currency select '<option value=\"AU\" selected=\"\">$ AUD</option>' (NZD and USD are the other options), so '$49 per month' is the AUD amount. Platform fee from /pricing/fees: 'Platform fee by region, from 1 October 2026 Region Currency Platform fee Australia AUD 1.64% + $0.10'. Read from the server HTML (curl), one request each page."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "yes",
+     "quote": "Pick-up and delivery ordering",
+     "url": "https://bopple.com/pricing"
+    },
+    {
+     "key": "preorder",
+     "value": "yes",
+     "quote": "Scheduled pre-ordering",
+     "url": "https://bopple.com/pricing"
+    },
+    {
+     "key": "capacity",
+     "value": "yes",
+     "quote": "Order limiting for busy service periods",
+     "url": "https://bopple.com/pricing"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "$49 per month",
+     "url": "https://bopple.com/pricing"
+    },
+    {
+     "key": "perorder",
+     "value": "yes",
+     "quote": "Australia AUD 1.64% + $0.10",
+     "url": "https://bopple.com/pricing/fees"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://bopple.com/pricing",
+    "https://bopple.com/pricing/fees"
+   ]
+  }
+ ],
+ "notes": "AU count now: 3 (Y wait, Square + Bopple). Bopple was stored eligible but its AU price was doubted (compare-status-1: 'probably the NZD one'); today's server-rendered /pricing has AUD selected, settling it. Stopped at 3."
+}
