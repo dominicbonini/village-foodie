@@ -1,7 +1,10 @@
 {
   "country": "NO",
   "researched_on": "2026-11-25",
-  "searches": [],
+  "searches": [
+    "food truck forhåndsbestilling bestill på nett og hent system for matvogn Norge pris kr per måned",
+    "\"bestillingssystem\" gatekjøkken ingen kommisjon \"850\" per måned hent maten klar nettbestilling leverandør"
+  ],
   "vendors": [
     {
       "name": "NemTakeAway",
@@ -125,7 +128,21 @@
         "https://www.nemtakeaway.no/"
       ],
       "country": "NO"
+    },
+    {
+      "name": "Unnamed 'bestillingssystem' for gatekjøkken (FINN ad)",
+      "website": "https://www.finn.no/recommerce/forsale/item/373209137",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "Classified ad on FINN for a takeaway ordering system for street-food kitchens (search snippets: 850 kr per month, no commission); the ad names no company or website - not a vendor's own site.",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://www.finn.no/recommerce/forsale/item/373209137"
+      ]
     }
   ],
-  "notes": "NO counts Favrit and Superb. Third: NemTakeAway (stored 54922ec3, mine; Norwegian site nemtakeaway.no, NOK prices, order or pre-order on the restaurant's own page) copied from compare-research-2 agent-1 (read today, 25 Nov; not re-read): Standard 555 NOK a month. Vitrina (NOK page, Start 419 NOK) is a possible fourth. Stopped at 3."
+  "notes": "NO counts Favrit and Superb. Third: NemTakeAway (stored 54922ec3, mine; Norwegian site nemtakeaway.no, NOK prices, order or pre-order on the restaurant's own page) copied from compare-research-2 agent-1 (read today, 25 Nov; not re-read): Standard 555 NOK a month. Vitrina (NOK page, Start 419 NOK) is a possible fourth. Stopped at 3. Food-truck pass (coordinator): WEIQ's site languages are sv/en/es/pt (no Norway); Truckly is Danish-only; Norwegian 'food truck / matvogn / gatekjøkken + forhåndsbestilling / hent' searches found Lightspeed (agent 3's), Favrit (counted), MENU TIGER (USD), Mattilsynet / Oslo kommune pages and FINN ads for an unnamed ordering system (no vendor named). No food-truck tool found for NO."
 }
