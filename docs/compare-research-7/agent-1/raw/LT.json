@@ -1,0 +1,105 @@
+{
+  "country": "LT",
+  "researched_on": "2026-11-25",
+  "searches": [],
+  "vendors": [
+    {
+      "name": "Refektorius",
+      "website": "https://refektorius.lt",
+      "stored_id_prefix": "ef6eec53",
+      "focus": "nearest_local",
+      "verdict": "eligible",
+      "reason": "Lithuanian online ordering for cafés/restaurants on their own branded ordering page: customer chooses delivery or pickup and pays online; 0 € set-up, 2–5% commission + 7 € a week. No pickup-time choice or food-truck wording",
+      "eligibility": {
+        "order_quote": "Klientas renkasi pristatymą ar atsiėmimą ir patogiai apmoka internetu.",
+        "order_url": "https://refektorius.lt/",
+        "country_quote": "Klientas renkasi pristatymą ar atsiėmimą ir patogiai apmoka internetu.",
+        "country_url": "https://refektorius.lt/"
+      },
+      "plans": [
+        {
+          "plan_name": "Užsakymai internetu",
+          "currency": "EUR",
+          "price_major": 7,
+          "period": "week",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": 0,
+          "quote": "+ 7 €/sav. aptarnavimo mokestis",
+          "url": "https://refektorius.lt/",
+          "note": "Weekly service fee as stated (not converted). Commission '2–5% komisinis' (a range, so per_order_pct null). Set-up '0 €' ('Sukūrimas ir paleidimas'). VAT not stated."
+        }
+      ],
+      "answers": [
+        {
+          "key": "ahead",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "preorder",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "capacity",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "schedule",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "whatsapp",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "social",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "kds",
+          "value": "partial",
+          "quote": "Planšetė virtuvėje priima užsakymus realiu laiku, o virtuvinis kvitas atspausdinamas per jūsų jau turimą spausdintuvą.",
+          "url": "https://refektorius.lt/"
+        },
+        {
+          "key": "offline",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "walkup",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "vans",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "domain",
+          "value": "partial",
+          "quote": "Modernus užsakymų puslapis su jūsų dizainu ir spalvomis.",
+          "url": "https://refektorius.lt/"
+        },
+        {
+          "key": "monthly",
+          "value": "not_mentioned"
+        },
+        {
+          "key": "perorder",
+          "value": "yes",
+          "quote": "2–5% komisinis",
+          "url": "https://refektorius.lt/"
+        },
+        {
+          "key": "cardfee",
+          "value": "not_mentioned"
+        }
+      ],
+      "check_urls": [
+        "https://refektorius.lt/"
+      ],
+      "country": "LT"
+    }
+  ],
+  "notes": "LT counts ared and SumUp. Third: Refektorius (stored ef6eec53, Lithuanian restaurant ordering on its own branded page, delivery or pickup) copied from compare-research-2 agent-1 (read today, 25 Nov; not re-read): 'Užsakymai internetu' 7 EUR a month + 2-5 % commission. Vitrina (EUR, Lithuania named on its main page) is a possible fourth. Stopped at 3."
+}
