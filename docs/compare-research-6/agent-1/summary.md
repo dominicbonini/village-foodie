@@ -126,3 +126,8 @@ count now: 0
 
 FoxiFood: not listed. EasyTaVie: Antilles marketplace (not relevant). No tool names the territory. nothing eligible exists.
 count now: 0
+
+## GF
+
+FoxiFood: not listed. One French search named no tool for the territory. nothing eligible exists.
+count now: 0
