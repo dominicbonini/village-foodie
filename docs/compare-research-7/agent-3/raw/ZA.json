@@ -1,0 +1,42 @@
+{
+  "country": "ZA",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "South Africa online ordering system for restaurants \"collection\" \"per month\" rand own website no commission food truck order ahead \"R\" pricing"
+  ],
+  "vendors": [
+    {
+      "name": "SERVA",
+      "website": "https://www.serva.co.za",
+      "stored_id_prefix": null,
+      "focus": "food_truck",
+      "verdict": "not_relevant",
+      "reason": "South African live-event food & drink ordering (unreadable in compare-research-2): read today from its own app bundle (/assets/index-BB__ImfG.js) — 'Skip the queue … SERVA gives attendees a simpler way to browse what is available, place orders quickly, and collect when ready.' — but no price anywhere (contact topics 'Pricing, contract, or commercial terms', 'Book a demo or discovery call'); ordering is by attendees at the event, sold to organisers. Unpriced — does not count",
+      "eligibility": {
+        "order_quote": "SERVA gives attendees a simpler way to browse what is available, place orders quickly, and collect when ready.",
+        "order_url": "https://www.serva.co.za/"
+      },
+      "plans": [
+        {
+          "plan_name": "(price on request)",
+          "currency": "ZAR",
+          "price_major": null,
+          "period": "month",
+          "vat": "unknown",
+          "per_order_pct": null,
+          "per_order_fixed_major": null,
+          "setup_major": null,
+          "quote": "",
+          "url": "https://www.serva.co.za/",
+          "note": "no price in the page or its script; sales contact only"
+        }
+      ],
+      "answers": [],
+      "check_urls": [
+        "https://www.serva.co.za/",
+        "https://www.serva.co.za/assets/index-BB__ImfG.js"
+      ]
+    }
+  ],
+  "notes": "Count now: 2 (Bizzfo, Resto) — no third. YUMBI (mine): still unpriced (raw/B3-YUMBI.json). SERVA: unpriced (row above). Supaorder (supaorder.com/pricing/south-africa) was read by agent 2 in compare-research-4 — agent 2's vendor, not fetched. The search otherwise returned only Capterra ZA listings priced in GBP / EUR / USD (Tekeats, MyFoodFast, Foodiv, UpMenu, Restolabs, Wiiz Eat, Orders2Me, Bite2u, Menue, SuiteDish, OrdraFood, RestApp, RestroSuite — not sources, none South African). Not re-read: Ordev, WebOrder (no pickup wording, -3), Yoco (till), Coffee Monster (closed), Orderin (403 in -2; a delivery marketplace), Aura NextGen POS (till), Wangu (18% commission, press only)."
+}
