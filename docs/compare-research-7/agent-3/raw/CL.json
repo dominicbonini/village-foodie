@@ -1,0 +1,57 @@
+{
+  "country": "CL",
+  "researched_on": "2026-11-25",
+  "searches": [
+    "Chile plataforma pedidos online propia restaurantes \"retiro en local\" programar pedido sin comisión planes \"CLP\" o \"$\" mensual menú digital chileno",
+    "sistema para food truck Chile pedidos por adelantado app carros de comida ferias pedir y retirar plan mensual",
+    "\"tienda online\" para restaurantes Chile \"retiro\" \"pedidos programados\" planes \"+ IVA\" mensual software gastronómico chileno",
+    "Resto software restaurantes bares cafés Chile Latinoamérica pedidos online retiro sitio oficial precios",
+    "carta digital con pedidos para retiro y delivery Chile emprendimiento gastronómico plan \"$\" \"al mes\" WhatsApp sin comisiones chilena"
+  ],
+  "vendors": [
+    {
+      "name": "Influye",
+      "website": "https://influye.app",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Chilean restaurant app (2021 press: own website where customers order, pay and get the boleta); https://influye.app/ is a JavaScript-only shell ('Influye requiere JavaScript activado para funcionar correctamente.') and https://influye.cl/ shows only 'hola' — no readable ordering, pickup or price text",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://influye.app/",
+        "https://influye.cl/"
+      ]
+    },
+    {
+      "name": "Orion Eat",
+      "website": "https://orioneat.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "unreadable",
+      "reason": "Chilean 2019 own-site ordering with scheduled pickup (press, from 5% commission); orioneat.com and www.orioneat.cl did not connect today — apparently gone",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://orioneat.com/"
+      ]
+    },
+    {
+      "name": "AyHungry",
+      "website": "https://ayhungry.com",
+      "stored_id_prefix": null,
+      "focus": "nearest_local",
+      "verdict": "not_relevant",
+      "reason": "consumer restaurant app; its site redirects to /es/restaurants titled 'Descubre la nueva forma de reservar en tu restaurante favorito' — a reservations / discovery app, not a business's own ordering tool",
+      "eligibility": {},
+      "plans": [],
+      "answers": [],
+      "check_urls": [
+        "https://ayhungry.com/"
+      ]
+    }
+  ],
+  "notes": "Count now: 2 (Fudo, Pedix) — no third. New vendor sites: Influye and Orion Eat (unreadable), AyHungry (not relevant) — rows above. Not read: DigitalizaMenú (Chilean digital menu 'desde 1UF por mes' per press — a UF price is unclear and does not count, as with Justo), Resto by Axoft (POS — Capterra only, no own site found), Flama Hub (delivery service, press only), Mallplaza 'Pide y Lleva' (a mall operator's service), CabMove Eats (marketplace), GrilledChili (US food-truck app), Plick (Mexican, stored), Shopify / Qamarero / DoorDash / Cegid (foreign, no CLP price), 2x3.cl (freelance services), Capterra listings. Earlier rejects (Toteat, Justo, OlaClick, Tiendanube, Weevi) not re-read. Stopped after ~5 new candidates."
+}
