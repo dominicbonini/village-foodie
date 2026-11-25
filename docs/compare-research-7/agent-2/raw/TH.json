@@ -1,0 +1,131 @@
+{
+ "country": "TH",
+ "researched_on": "2026-11-25",
+ "searches": [
+  "ระบบสั่งอาหารออนไลน์ ร้านอาหาร สั่งล่วงหน้า รับเองที่ร้าน เว็บไซต์ของร้าน ไม่เก็บค่า GP ราคา บาท/เดือน แพ็กเกจ"
+ ],
+ "vendors": [
+  {
+   "name": "Ocha POS",
+   "website": "https://ocha.in.th",
+   "stored_id_prefix": null,
+   "focus": "pos",
+   "verdict": "unreadable",
+   "reason": "raw HTML of https://ocha.in.th/price (8 KB) holds only the title 'Ocha POS - แอปพลิเคชันบริหารจัดการธุรกิจ'; content is script-rendered (as in compare-research-1); no price or ordering text readable",
+   "eligibility": {},
+   "plans": [],
+   "answers": [],
+   "check_urls": [
+    "https://ocha.in.th/price"
+   ]
+  },
+  {
+   "name": "Wongnai POS (formerly FoodStory)",
+   "website": "https://www.wongnai.com/pos/",
+   "stored_id_prefix": null,
+   "focus": "pos",
+   "verdict": "eligible",
+   "reason": "BORDERLINE (unchanged from compare-research-1): Thai restaurant POS with THB monthly packages; order-and-pay-ahead then self-pickup is through LINE MINI Eats (a LINE app where customers find shops — marketplace-like), and the page doesn't say which package includes it ('สิทธิ์ใช้งานเป็นไปตามแพ็กเกจ', 'ราคาซอฟต์แวร์ ไม่รวมอุปกรณ์และ Add-on')",
+   "eligibility": {
+    "order_quote": "สั่งและจ่ายล่วงหน้าผ่าน LINE แล้วเข้ามารับเอง",
+    "order_url": "https://www.wongnai.com/pos/",
+    "country_quote": "1,090บาท/เดือน",
+    "country_url": "https://www.wongnai.com/pos/"
+   },
+   "plans": [
+    {
+     "plan_name": "Quick Service",
+     "currency": "THB",
+     "price_major": 1090,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "1,090บาท/เดือน",
+     "url": "https://www.wongnai.com/pos/",
+     "note": "Standard | 13,080 บาท/ปี. Inclusion of LINE MINI Eats pickup in this package is not stated."
+    },
+    {
+     "plan_name": "Full Service",
+     "currency": "THB",
+     "price_major": 1790,
+     "period": "month",
+     "vat": "unknown",
+     "per_order_pct": null,
+     "per_order_fixed_major": null,
+     "setup_major": null,
+     "quote": "1,790บาท/เดือน",
+     "url": "https://www.wongnai.com/pos/",
+     "note": "Standard | 21,480 บาท/ปี. Inclusion not stated."
+    }
+   ],
+   "answers": [
+    {
+     "key": "ahead",
+     "value": "partial",
+     "quote": "สั่งและจ่ายล่วงหน้าผ่าน LINE แล้วเข้ามารับเอง",
+     "url": "https://www.wongnai.com/pos/"
+    },
+    {
+     "key": "preorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "capacity",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "schedule",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "whatsapp",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "social",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "kds",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "offline",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "walkup",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "vans",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "domain",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "monthly",
+     "value": "yes",
+     "quote": "1,090บาท/เดือน",
+     "url": "https://www.wongnai.com/pos/"
+    },
+    {
+     "key": "perorder",
+     "value": "not_mentioned"
+    },
+    {
+     "key": "cardfee",
+     "value": "not_mentioned"
+    }
+   ],
+   "check_urls": [
+    "https://www.wongnai.com/pos/"
+   ]
+  }
+ ],
+ "notes": "TH count now: 2 (Klikit, StoreHub) — unchanged unless Dominic accepts Wongnai POS (borderline: pickup via LINE MINI Eats, package inclusion unstated — the same doubts as compare-research-1, which is why it was never counted). Ocha POS still script-only. The Thai search found only MENU TIGER (USD, rejected), Toast (US), FlowAccount blog, Restolabs / Capterra / WordPress plugin / Popmenu (foreign or not sources). Earlier rejects not re-read: GloriaFood, Take App, Qashier TH (in-store QR only), Hato Hub (delivery), Loyverse (till), Restolabs (no Thai presence). Stopped."
+}
