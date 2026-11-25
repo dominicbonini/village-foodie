@@ -14,3 +14,6 @@ Yoveletta, Rent-a-Shop (AGB PDF), Ordea (/terms): none limits service to CH / UK
 
 ## KR: Toss Place (87b9b92a)
 Pickup order fee: 0 won per the newest own page (story/pickup_order, 2025-04-08, '주문 수수료 0원으로 써보기', no end date). The 2024-02-29 launch story planned 3.5% excl. VAT after end-2024. No current fee table on product page or FAQ.
+
+## MU: Resto-SaaS
+live_product: false (not confirmed). Priced 1 800 / 4 400 MUR + VAT a month on the railway.app page, but its own domain resto-saas.mu does not resolve; mockup dashboard, unverified testimonials. Not in stored-list.txt.

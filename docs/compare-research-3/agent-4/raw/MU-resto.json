@@ -1,0 +1,8 @@
+{
+ "vendor": "Resto-SaaS (Digital Bonsaï Ltd)",
+ "stored_id_prefix": null,
+ "live_product": false,
+ "price_quote": "1 800 MUR + VAT",
+ "url": "https://resto-saas-production-a095.up.railway.app/",
+ "note": "Not confirmed as live. The railway.app page is a full marketing site with prices (Starter '1 800 MUR + VAT', Pro '4 400 MUR + VAT', 'per month'), a 30-day free trial, legal footer '© 2026 Digital Bonsaï Ltd · Mauritius · All rights reserved', /cgv and /confidentialite pages, and contact 'hello@resto-saas.mu'. But the product's own domain resto-saas.mu does not resolve today (DNS: ENOTFOUND), so the only site is a hosting-platform 'production' subdomain; the order dashboard and order cards are mockups, the three testimonials are unverified, and Pro lists 'MIPS loyalty beta'. Reads as pre-launch, not an established live product; recommend not counting it until it runs on its own domain. Prefix: not in docs/compare-research-3/stored-list.txt, so null."
+}
